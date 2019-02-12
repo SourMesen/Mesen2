@@ -4,6 +4,7 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="CpuTypes.h" />
+    <ClInclude Include="MemoryManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

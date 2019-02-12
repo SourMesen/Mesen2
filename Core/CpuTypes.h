@@ -52,8 +52,11 @@ namespace ProcFlags
 	};
 }
 
-enum class AddrMode
+enum class AddrMode : uint8_t
 {
+	Imm8,
+	ImmX,
+	ImmM,
 	Abs,
 	AbsIdxXInd, //JMP/JSR only
 	AbsIdxX,
@@ -72,7 +75,6 @@ enum class AddrMode
 	DirIndLng,
 	DirInd,
 	Dir,
-	Imm,
 	Imp,
 	RelLng,
 	Rel,

@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 
+class MemoryManager;
+
 class Cpu
 {
 public:
@@ -21,12 +23,11 @@ private:
 	static constexpr uint32_t LegacyCoprocessorVector = 0x00FFF4;
 
 	typedef void(Cpu::*Func)();
-
+	
+	shared_ptr<MemoryManager> _memoryManager;
 	CpuState _state;
 	AddrMode _instAddrMode;
 	uint32_t _operand;
-
-	uint8_t *_memory;
 
 	Func _opTable[256];
 	AddrMode _addrMode[256];
@@ -54,7 +55,7 @@ private:
 	void SetFlags(uint8_t flags);
 	bool CheckFlag(uint8_t flag);
 
-	uint8_t ReadCode(uint16_t addr, MemoryOperationType type);
+	uint8_t ReadCode(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read);
 	uint8_t ReadData(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);
 	uint16_t ReadDataWord(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);
 	uint32_t ReadDataLong(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);
@@ -224,7 +225,7 @@ private:
 	void WAI();
 
 public:
-	Cpu(uint8_t* memory, bool enableLogging);
+	Cpu(shared_ptr<MemoryManager> memoryManager);
 	~Cpu();
 
 	void Reset();

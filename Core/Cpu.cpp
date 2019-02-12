@@ -1,10 +1,34 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "Cpu.h"
+#include "MemoryManager.h"
 #include "../Utilities/HexUtilities.h"
+
+//TODO: PER doesn't load the right number of bytes?
 
 uint8_t lastTest = -1;
 bool _enableLogging = false;
+string opNames[256] = {
+	//0	 1		2			3			4			5			6			7			8			9			A			B			C			D			E			F
+	"BRK", "ORA", "COP", "ORA", "TSB", "ORA", "ASL", "ORA", "PHP", "ORA", "ASL", "PHD", "TSB", "ORA", "ASL", "ORA", // 0
+	"BPL", "ORA", "ORA", "ORA", "TRB", "ORA", "ASL", "ORA", "CLC", "ORA", "INC", "TCS", "TRB", "ORA", "ASL", "ORA", // 1
+	"JSR", "AND", "JSL", "AND", "BIT", "AND", "ROL", "AND", "PLP", "AND", "ROL", "PLD", "BIT", "AND", "ROL", "AND", // 2
+	"BMI", "AND", "AND", "AND", "BIT", "AND", "ROL", "AND", "SEC", "AND", "DEC", "TSC", "BIT", "AND", "ROL", "AND", // 3
+	"RTI", "EOR", "WDM", "EOR", "MVP", "EOR", "LSR", "EOR", "PHA", "EOR", "LSR", "PHK", "JMP", "EOR", "LSR", "EOR", // 4
+	"BVC", "EOR", "EOR", "EOR", "MVN", "EOR", "LSR", "EOR", "CLI", "EOR", "PHY", "TCD", "JMP", "EOR", "LSR", "EOR", // 5
+	"RTS", "ADC", "PER", "ADC", "STZ", "ADC", "ROR", "ADC", "PLA", "ADC", "ROR", "RTL", "JMP", "ADC", "ROR", "ADC", // 6
+	"BVS", "ADC", "ADC", "ADC", "STZ", "ADC", "ROR", "ADC", "SEI", "ADC", "PLY", "TDC", "JMP", "ADC", "ROR", "ADC", // 7
+	"BRA", "STA", "BRL", "STA", "STY", "STA", "STX", "STA", "DEY", "BIT", "TXA", "PHB", "STY", "STA", "STX", "STA", // 8
+	"BCC", "STA", "STA", "STA", "STY", "STA", "STX", "STA", "TYA", "STA", "TXS", "TXY", "STZ", "STA", "STZ", "STA", // 9
+	"LDY", "LDA", "LDX", "LDA", "LDY", "LDA", "LDX", "LDA", "TAY", "LDA", "TAX", "PLB", "LDY", "LDA", "LDX", "LDA", // A
+	"BCS", "LDA", "LDA", "LDA", "LDY", "LDA", "LDX", "LDA", "CLV", "LDA", "TSX", "TYX", "LDY", "LDA", "LDX", "LDA", // B
+	"CPY", "CMP", "REP", "CMP", "CPY", "CMP", "DEC", "CMP", "INY", "CMP", "DEX", "WAI", "CPY", "CMP", "DEC", "CMP", // C
+	"BNE", "CMP", "CMP", "CMP", "PEI", "CMP", "DEC", "CMP", "CLD", "CMP", "PHX", "STP", "JML", "CMP", "DEC", "CMP", // D
+	"CPX", "SBC", "SEP", "SBC", "CPX", "SBC", "INC", "SBC", "INX", "SBC", "NOP", "XBA", "CPX", "SBC", "INC", "SBC", // E
+	"BEQ", "SBC", "SBC", "SBC", "PEA", "SBC", "INC", "SBC", "SED", "SBC", "PLX", "XCE", "JSR", "SBC", "INC", "SBC"  // F
+};
+
+
 
 /************************
 Add/substract operations
@@ -925,7 +949,7 @@ void Cpu::WAI()
 	//Wait for interrupt
 }
 
-Cpu::Cpu(uint8_t* memory, bool enableLogging)
+Cpu::Cpu(shared_ptr<MemoryManager> memoryManager)
 {
 	typedef Cpu C;
 	Func opTable[256] = {
@@ -951,31 +975,32 @@ Cpu::Cpu(uint8_t* memory, bool enableLogging)
 	typedef AddrMode M;
 	AddrMode addrMode[256] = {
 		//0       1              2            3                 4           5           6           7                 8       9           A       B       C              D           E           F           
-		M::Stk,   M::DirIdxIndX, M::Stk,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::Imm,     M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
+		M::Stk,   M::DirIdxIndX, M::Stk,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::Dir,     M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::Abs,        M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 1
-		M::Abs,   M::DirIdxIndX, M::AbsLng,   M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::Imm,     M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 2
+		M::Abs,   M::DirIdxIndX, M::AbsLng,   M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 2
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::DirIdxX, M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::AbsIdxX,    M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 3
-		M::Stk,   M::DirIdxIndX, M::Imm,      M::StkRel,        M::BlkMov,  M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::Imm,     M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 4
+		M::Stk,   M::DirIdxIndX, M::Imm8,     M::StkRel,        M::BlkMov,  M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 4
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::BlkMov,  M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Stk, M::Imp, M::AbsLng,     M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 5
-		M::Stk,   M::DirIdxIndX, M::Stk,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::Imm,     M::Acc, M::Stk, M::AbsInd,     M::Abs,     M::Abs,     M::AbsLng,     // 6
+		M::Stk,   M::DirIdxIndX, M::Stk,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::AbsInd,     M::Abs,     M::Abs,     M::AbsLng,     // 6
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::DirIdxX, M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Stk, M::Imp, M::AbsIdxXInd, M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 7
-		M::Rel,   M::DirIdxIndX, M::RelLng,   M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::Imm,     M::Imp, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 8
+		M::Rel,   M::DirIdxIndX, M::RelLng,   M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::ImmM,    M::Imp, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 8
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::DirIdxX, M::DirIdxX, M::DirIdxY, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Imp, M::Imp, M::Abs,        M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 9
-		M::Imm,   M::DirIdxIndX, M::Imm,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::Imm,     M::Imp, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // A
+		M::ImmX,  M::DirIdxIndX, M::ImmX,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::ImmM,    M::Imp, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // A
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::DirIdxX, M::DirIdxX, M::DirIdxY, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Imp, M::Imp, M::AbsIdxX,    M::AbsIdxX, M::AbsIdxY, M::AbsLngIdxX, // B
-		M::Imm,   M::DirIdxIndX, M::Imm,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::Imm,     M::Imp, M::Imp, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // C
+		M::ImmX,  M::DirIdxIndX, M::Imm8,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::ImmM,    M::Imp, M::Imp, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // C
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::Stk,     M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Stk, M::Imp, M::AbsIndLng,  M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // D
-		M::Imm,   M::DirIdxIndX, M::Imm,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::Imm,     M::Imp, M::Imp, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // E
+		M::ImmX,  M::DirIdxIndX, M::Imm8,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Imp, M::ImmM,    M::Imp, M::Imp, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // E
 		M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::Stk,     M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Stk, M::Imp, M::AbsIdxXInd, M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX  // F
 	};
 
 	memcpy(_opTable, opTable, sizeof(opTable));
 	memcpy(_addrMode, addrMode, sizeof(addrMode));
 
-	_enableLogging = enableLogging;
-	_memory = memory;
+	_memoryManager = memoryManager;
+	_enableLogging = false;
 	_state = {};
-	_state.PC = 0x400;
+	_state.PC = ReadDataWord(Cpu::ResetVector);
+	_state.SP = 0x1FF;
 	_state.EmulationMode = true;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
@@ -991,20 +1016,19 @@ void Cpu::Reset()
 
 void Cpu::Exec()
 {
-	if(lastTest != _memory[0x200] || _enableLogging) {
-		std::cout <<
-			"$" << HexUtilities::ToHex(_state.PC) <<
-			" $" << HexUtilities::ToHex(_memory[_state.PC]) <<
-			" A:$" << HexUtilities::ToHex(_state.A) <<
-			" X:$" << HexUtilities::ToHex(_state.X) <<
-			" Y:$" << HexUtilities::ToHex(_state.Y) <<
-			"   Test#:" << HexUtilities::ToHex(_memory[0x200]) <<
-			std::endl;
-		lastTest = _memory[0x200];
-		if(_memory[0x200] >= 0x2B) {
-			_enableLogging = true;
-		}
-	}
+	/*std::cout <<
+		"$" << HexUtilities::ToHex(_state.K) << ":" << HexUtilities::ToHex(_state.PC) <<
+		" $" << HexUtilities::ToHex(ReadCode(_state.PC)) <<
+		" (" << opNames[ReadCode(_state.PC)] << ")" <<
+		" A:$" << HexUtilities::ToHex(_state.A) <<
+		" X:$" << HexUtilities::ToHex(_state.X) <<
+		" Y:$" << HexUtilities::ToHex(_state.Y) <<
+		" S:$" << HexUtilities::ToHex(_state.SP) <<
+		" D:$" << HexUtilities::ToHex(_state.D) <<
+		" DB:$" << HexUtilities::ToHex(_state.DBR) <<
+		" P:$" << HexUtilities::ToHex(_state.PS) <<
+		std::endl;*/
+
 	uint8_t opCode = GetOpCode();
 	_instAddrMode = _addrMode[opCode];
 	_operand = FetchEffectiveAddress();
@@ -1062,12 +1086,12 @@ uint32_t Cpu::ReadOperandLong()
 
 uint8_t Cpu::ReadCode(uint16_t addr, MemoryOperationType type)
 {
-	return _memory[(_state.K << 16) | addr];
+	return _memoryManager->Read((_state.K << 16) | addr);
 }
 
 uint8_t Cpu::ReadData(uint32_t addr, MemoryOperationType type)
 {
-	return _memory[addr];
+	return _memoryManager->Read(addr);
 }
 
 uint16_t Cpu::ReadDataWord(uint32_t addr, MemoryOperationType type)
@@ -1087,7 +1111,7 @@ uint32_t Cpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 
 void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	_memory[addr] = value;
+	_memoryManager->Write(addr, value);
 	if(_enableLogging) {
 		std::cout << "W: $" << HexUtilities::ToHex(addr) << " = $" << HexUtilities::ToHex(value) << std::endl;
 	}
@@ -1101,7 +1125,7 @@ void Cpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)
 
 uint8_t Cpu::GetByteValue()
 {
-	if(_instAddrMode == AddrMode::Imm) {
+	if(_instAddrMode <= AddrMode::ImmM) {
 		return (uint8_t)_operand;
 	} else {
 		return ReadData(_operand);
@@ -1110,7 +1134,7 @@ uint8_t Cpu::GetByteValue()
 
 uint16_t Cpu::GetWordValue()
 {
-	if(_instAddrMode == AddrMode::Imm) {
+	if(_instAddrMode <= AddrMode::ImmM) {
 		return (uint16_t)_operand;
 	} else {
 		return ReadDataWord(_operand);
@@ -1136,7 +1160,7 @@ uint8_t Cpu::PopByte()
 	} else {
 		_state.SP++;
 	}
-	return _memory[_state.SP];
+	return ReadData(_state.SP);
 }
 
 void Cpu::PushWord(uint16_t value)
@@ -1165,38 +1189,38 @@ uint16_t Cpu::GetDirectAddress(uint8_t baseAddress, uint16_t offset, bool allowE
 uint32_t Cpu::FetchEffectiveAddress()
 {
 	switch(_instAddrMode) {
-		/* OK */ case AddrMode::Abs: return GetBank() | ReadOperandWord();
-		/* OK */ case AddrMode::AbsIdxXInd: return ReadDataWord((_state.K << 16) | ReadOperandWord()); //JMP/JSR
-		/* OK */ case AddrMode::AbsIdxX: return (GetBank() | ReadOperandWord()) + _state.X;
-		/* OK */ case AddrMode::AbsIdxY: return (GetBank() | ReadOperandWord()) + _state.Y;
-		/* OK */ case AddrMode::AbsInd: return ReadDataWord(ReadOperandWord()); //JMP only
-		/* OK */ case AddrMode::AbsIndLng: return ReadDataLong(ReadOperandLong()); //JML only
+		case AddrMode::Abs: return GetBank() | ReadOperandWord();
+		case AddrMode::AbsIdxXInd: return ReadDataWord((_state.K << 16) | ReadOperandWord()); //JMP/JSR
+		case AddrMode::AbsIdxX: return (GetBank() | ReadOperandWord()) + _state.X;
+		case AddrMode::AbsIdxY: return (GetBank() | ReadOperandWord()) + _state.Y;
+		case AddrMode::AbsInd: return ReadDataWord(ReadOperandWord()); //JMP only
+		case AddrMode::AbsIndLng: return ReadDataLong(ReadOperandLong()); //JML only
 		
-		/* OK */ case AddrMode::AbsLngIdxX: return ReadOperandLong() + _state.X;		
-		/* OK */ case AddrMode::AbsLng: return ReadOperandLong();
+		case AddrMode::AbsLngIdxX: return ReadOperandLong() + _state.X;		
+		case AddrMode::AbsLng: return ReadOperandLong();
 
-		/* OK */ case AddrMode::Acc: DummyRead(); return 0;
+		case AddrMode::Acc: DummyRead(); return 0;
 
 		case AddrMode::BlkMov: return ReadOperandWord();
 
-		/* OK */ case AddrMode::DirIdxIndX: {
+		case AddrMode::DirIdxIndX: {
 			uint8_t operand = ReadOperandByte();
 			uint8_t lsb = ReadData(GetDirectAddress(operand, _state.X));
 			uint8_t msb = ReadData(GetDirectAddress(operand, _state.X + 1));
 			return GetBank() | (msb << 8) | lsb;
 		}
 
-		/* OK */ case AddrMode::DirIdxX: return GetDirectAddress(ReadOperandByte(), _state.X);
-		/* OK */ case AddrMode::DirIdxY: return GetDirectAddress(ReadOperandByte(), _state.Y);
+		case AddrMode::DirIdxX: return GetDirectAddress(ReadOperandByte(), _state.X);
+		case AddrMode::DirIdxY: return GetDirectAddress(ReadOperandByte(), _state.Y);
 		
-		/* OK */ case AddrMode::DirIndIdxY:{
+		case AddrMode::DirIndIdxY:{
 			uint8_t operand = ReadOperandByte();
 			uint8_t lsb = ReadData(GetDirectAddress(operand));
 			uint8_t msb = ReadData(GetDirectAddress(operand, 1));
 			return (GetBank() | (msb << 8) | lsb) + _state.Y;
 		}
 
-		/* OK */ case AddrMode::DirIndLngIdxY: {
+		case AddrMode::DirIndLngIdxY: {
 			uint8_t operand = ReadOperandByte();
 			uint8_t b1 = ReadData(GetDirectAddress(operand));
 			uint8_t b2 = ReadData(GetDirectAddress(operand, 1));
@@ -1204,7 +1228,7 @@ uint32_t Cpu::FetchEffectiveAddress()
 			return ((b3 << 16) | (b2 << 8) | b1) + _state.Y;
 		}		
 
-		/* OK */ case AddrMode::DirIndLng: {
+		case AddrMode::DirIndLng: {
 			uint8_t operand = ReadOperandByte();
 			uint8_t b1 = ReadData(GetDirectAddress(operand));
 			uint8_t b2 = ReadData(GetDirectAddress(operand, 1));
@@ -1212,25 +1236,28 @@ uint32_t Cpu::FetchEffectiveAddress()
 			return (b3 << 16) | (b2 << 8) | b1;
 		}
 
-		/* OK */ case AddrMode::DirInd: {
+		case AddrMode::DirInd: {
 			uint8_t operand = ReadOperandByte();
 			uint8_t lsb = ReadData(GetDirectAddress(operand));
 			uint8_t msb = ReadData(GetDirectAddress(operand, 1));
 			return GetBank() | (msb << 8) | lsb;
 		}		
 
-		/* OK */ case AddrMode::Dir: return GetDirectAddress(ReadOperandByte());
+		case AddrMode::Dir: return GetDirectAddress(ReadOperandByte());
 
-		/* OK */ case AddrMode::Imm: return _state.EmulationMode ? ReadOperandByte() : ReadOperandWord();
-		/* OK */ case AddrMode::Imp: DummyRead(); return 0;
+		case AddrMode::Imm8: return ReadOperandByte();
+		case AddrMode::ImmX: return CheckFlag(ProcFlags::IndexMode8) ? ReadOperandByte() : ReadOperandWord();
+		case AddrMode::ImmM: return CheckFlag(ProcFlags::MemoryMode8) ? ReadOperandByte() : ReadOperandWord();
+		
+		case AddrMode::Imp: DummyRead(); return 0;
 
-		/* OK */ case AddrMode::RelLng: return ReadOperandWord();
-		/* OK */ case AddrMode::Rel: return ReadOperandByte();
+		case AddrMode::RelLng: return ReadOperandWord();
+		case AddrMode::Rel: return ReadOperandByte();
 
-		/* OK */ case AddrMode::Stk: return _state.SP;
-		/* OK */ case AddrMode::StkRel: return (uint16_t)(ReadOperandByte() + _state.SP);
+		case AddrMode::Stk: return _state.SP;
+		case AddrMode::StkRel: return (uint16_t)(ReadOperandByte() + _state.SP);
 
-		/* OK */ case AddrMode::StkRelIndIdxY: {
+		case AddrMode::StkRelIndIdxY: {
 			uint16_t addr = (uint16_t)(ReadOperandByte() + _state.SP);
 			return (GetBank() | addr) + _state.Y;
 		}

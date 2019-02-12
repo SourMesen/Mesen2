@@ -45,6 +45,7 @@
   <ItemGroup>
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="CpuTypes.h" />
+    <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
