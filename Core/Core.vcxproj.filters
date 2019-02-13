@@ -1,14 +1,104 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="Cpu.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="CpuTypes.h" />
-    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="Cpu.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="CpuTypes.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryManager.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="TraceLogger.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="DisassemblyInfo.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="IAudioDevice.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IInputProvider.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IInputRecorder.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IKeyManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IMessageManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="INotificationListener.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderingDevice.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseRenderer.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseSoundManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="Cpu.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Cpu.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="TraceLogger.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="DisassemblyInfo.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseRenderer.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseSoundManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="SNES">
+      <UniqueIdentifier>{9cd95372-4592-4f8d-a3fc-db38f474c5b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debugger">
+      <UniqueIdentifier>{eb8294f1-983e-4e76-8b52-0be06fb798d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{3dcfdfd1-4339-4513-b08b-70dc3bb735b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{0da6a615-3092-40f7-936c-253eb03a8784}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

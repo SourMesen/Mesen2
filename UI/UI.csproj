@@ -1,0 +1,558 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{08D83A7E-52A9-451E-A53A-1A7946F8BB77}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mesen.GUI</RootNamespace>
+    <AssemblyName>MesenS</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\Any CPU\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\bin\Any CPU\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PGO Profile|x64'">
+    <OutputPath>..\bin\x64\PGO Profile\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PGO Profile|x86'">
+    <OutputPath>..\bin\x86\PGO Profile\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PGO Profile|AnyCPU'">
+    <OutputPath>..\bin\Any CPU\PGO Profile\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PGO Optimize|x64'">
+    <OutputPath>..\bin\x64\PGO Profile\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PGO Optimize|x86'">
+    <OutputPath>..\bin\x86\PGO Profile\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PGO Optimize|AnyCPU'">
+    <OutputPath>..\bin\Any CPU\PGO Profile\</OutputPath>
+    <DefineConstants>TRACE;HIDETESTMENU</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Libretro|x64'">
+    <OutputPath>bin\x64\Libretro\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Libretro|x86'">
+    <OutputPath>bin\x86\Libretro\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Libretro|AnyCPU'">
+    <OutputPath>bin\Libretro\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommandLineHelper.cs" />
+    <Compile Include="Config\ConfigAttributes.cs" />
+    <Compile Include="Config\Configuration.cs" />
+    <Compile Include="Config\ConfigManager.cs" />
+    <Compile Include="Config\DebugInfo.cs" />
+    <Compile Include="Controls\BaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlAutoGrowLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlHorizontalTrackbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlHorizontalTrackbar.Designer.cs">
+      <DependentUpon>ctrlHorizontalTrackbar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ctrlLoadingRom.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlLoadingRom.Designer.cs">
+      <DependentUpon>ctrlLoadingRom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ctrlMesenContextMenuStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlMesenMenuStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlMesenPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlMesenToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlPathSelection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlPathSelection.designer.cs">
+      <DependentUpon>ctrlPathSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MesenNumericUpDown.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlRiskyOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlRiskyOption.Designer.cs">
+      <DependentUpon>ctrlRiskyOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ctrlSplitContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlTrackbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlTrackbar.Designer.cs">
+      <DependentUpon>ctrlTrackbar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ctrlRenderer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlRenderer.Designer.cs">
+      <DependentUpon>ctrlRenderer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MyListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlCodeScrollbar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlTextbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlTextbox.Designer.cs">
+      <DependentUpon>ctrlTextbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlScrollableTextbox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlScrollableTextbox.designer.cs">
+      <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\FontDialogHelper.cs" />
+    <Compile Include="Debugger\frmTraceLogger.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmTraceLogger.designer.cs">
+      <DependentUpon>frmTraceLogger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Controls\TextboxHistory.cs" />
+    <Compile Include="Forms\BaseConfigForm.Designer.cs">
+      <DependentUpon>BaseConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BaseConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BaseInputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityBinder.cs" />
+    <Compile Include="Forms\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MesenMsgBox.cs" />
+    <Compile Include="Forms\OpenSaveFileDialogExtensions.cs" />
+    <Compile Include="Forms\ResourceHelper.cs" />
+    <Compile Include="Forms\ResourcePath.cs" />
+    <Compile Include="Interop\DebugApi.cs" />
+    <Compile Include="Interop\EmuApi.cs" />
+    <Compile Include="Interop\Utf8Marshaler.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceExtractor.cs" />
+    <Compile Include="RuntimeChecker.cs" />
+    <Compile Include="SingleInstance.cs" />
+    <Compile Include="Utilities\Md5Helper.cs" />
+    <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="app.manifest" />
+    <EmbeddedResource Include="Controls\ctrlPathSelection.resx">
+      <DependentUpon>ctrlPathSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MesenNumericUpDown.resx">
+      <DependentUpon>MesenNumericUpDown.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlHorizontalTrackbar.resx">
+      <DependentUpon>ctrlHorizontalTrackbar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlLoadingRom.resx">
+      <DependentUpon>ctrlLoadingRom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlRiskyOption.resx">
+      <DependentUpon>ctrlRiskyOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlTrackbar.resx">
+      <DependentUpon>ctrlTrackbar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlRenderer.resx">
+      <DependentUpon>ctrlRenderer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlScrollableTextbox.resx">
+      <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmTraceLogger.resx">
+      <DependentUpon>frmTraceLogger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BaseConfigForm.resx">
+      <DependentUpon>BaseConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BaseForm.resx">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BaseInputForm.resx">
+      <DependentUpon>BaseInputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Dependencies\Font.24.spritefont">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Dependencies\Font.64.spritefont">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Dependencies\PixelFont.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Resources\Accept.png" />
+    <None Include="Resources\Add.png" />
+    <None Include="Resources\ArrowKeys.png" />
+    <None Include="Resources\Audio.png" />
+    <None Include="Resources\Barcode.png" />
+    <None Include="Resources\Breakpoint.png" />
+    <None Include="Resources\BreakpointDisabled.png" />
+    <None Include="Resources\BreakpointEnableDisable.png" />
+    <None Include="Resources\Camera.png" />
+    <None Include="Resources\CheatCode.png" />
+    <None Include="Resources\Chip.png" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\Coins.png" />
+    <None Include="Resources\Collapse.png" />
+    <None Include="Resources\CommandLine.png" />
+    <None Include="Resources\Comment.png" />
+    <None Include="Resources\Controller.png" />
+    <None Include="Resources\Copy.png" />
+    <None Include="Resources\Cut.png" />
+    <None Include="Resources\Debugger.png" />
+    <None Include="Resources\Dice.png" />
+    <None Include="Resources\DipSwitches.png" />
+    <None Include="Resources\Donate.png" />
+    <None Include="Resources\DownArrow.png" />
+    <None Include="Resources\DownArrowDarkTheme.png" />
+    <None Include="Resources\DownArrowWin10.png" />
+    <None Include="Resources\Edit.png" />
+    <None Include="Resources\EditLabel.png" />
+    <None Include="Resources\Enum.png" />
+    <None Include="Resources\Exclamation.png" />
+    <None Include="Resources\Exit.png" />
+    <None Include="Resources\Expand.png" />
+    <None Include="Resources\Export.png" />
+    <None Include="Resources\Find.png" />
+    <None Include="Resources\Folder.png" />
+    <None Include="Resources\Font.png" />
+    <None Include="Resources\Fullscreen.png" />
+    <None Include="Resources\Function.png" />
+    <None Include="Resources\HdPack.png" />
+    <None Include="Resources\Help.png" />
+    <None Include="Resources\HistoryViewer.png" />
+    <None Include="Resources\Icon.ico" />
+    <None Include="Resources\Import.png" />
+    <None Include="Resources\JumpTarget.png" />
+    <None Include="Resources\LogWindow.png" />
+    <None Include="Resources\MediaEject.png" />
+    <None Include="Resources\MediaPause.png" />
+    <None Include="Resources\MediaPlay.png" />
+    <None Include="Resources\MediaStop.png" />
+    <None Include="Resources\MesenSIconSmall.png" />
+    <None Include="Resources\Microphone.png" />
+    <None Include="Resources\MoveDown.png" />
+    <None Include="Resources\MoveUp.png" />
+    <None Include="Resources\Movie.png" />
+    <None Include="Resources\NavigateBack.png" />
+    <None Include="Resources\NavigateForward.png" />
+    <None Include="Resources\NesEventViewer.png" />
+    <None Include="Resources\Network.png" />
+    <None Include="Resources\NextArrow.png" />
+    <None Include="Resources\NextTrack.png" />
+    <None Include="Resources\NudDownArrow.png" />
+    <None Include="Resources\NudDownArrowDarkTheme.png" />
+    <None Include="Resources\NudUpArrow.png" />
+    <None Include="Resources\NudUpArrowDarkTheme.png" />
+    <None Include="Resources\Paste.png" />
+    <None Include="Resources\Pencil.png" />
+    <None Include="Resources\PerfTracker.png" />
+    <None Include="Resources\Pipette.png" />
+    <None Include="Resources\PipetteSmall.png" />
+    <None Include="Resources\PowerCycle.png" />
+    <None Include="Resources\PreviousArrow.png" />
+    <None Include="Resources\PrevTrack.png" />
+    <None Include="Resources\PsIcon.png" />
+    <None Include="Resources\Record.png" />
+    <None Include="Resources\Refresh.png" />
+    <None Include="Resources\RegisterIcon.png" />
+    <None Include="Resources\RunPpuCycle.png" />
+    <None Include="Resources\RunPpuFrame.png" />
+    <None Include="Resources\RunPpuScanline.png" />
+    <None Include="Resources\SaveFloppy.png" />
+    <None Include="Resources\Script.png" />
+    <None Include="Resources\SelectAll.png" />
+    <None Include="Resources\Settings.png" />
+    <None Include="Resources\Speed.png" />
+    <None Include="Resources\SplitView.png" />
+    <None Include="Resources\StepBack.png" />
+    <None Include="Resources\StepInto.png" />
+    <None Include="Resources\StepOut.png" />
+    <None Include="Resources\StepOver.png" />
+    <None Include="Resources\SwitchView.png" />
+    <None Include="Resources\Tape.png" />
+    <None Include="Resources\Undo.png" />
+    <None Include="Resources\UnidentifiedData.png" />
+    <None Include="Resources\Update.png" />
+    <None Include="Resources\VerifiedData.png" />
+    <None Include="Resources\VerticalLayout.png" />
+    <None Include="Resources\VideoFilter.png" />
+    <None Include="Resources\VideoOptions.png" />
+    <None Include="Resources\VideoRecorder.png" />
+    <None Include="Resources\Warning.png" />
+    <None Include="Resources\WasdKeys.png" />
+    <None Include="Resources\WebBrowser.png" />
+    <None Include="Resources\XbIcon.png" />
+    <None Include="Resources\Zoom2x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Dependencies\LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dependencies\resources.en.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <EmbeddedResource Include="$(OutputPath)Dependencies.zip">
+      <Link>Dependencies\Dependencies.zip</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>mkdir "Dependencies"
+
+if "x86" == "$(PlatformName)" copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\pgort140.dll" "pgort140.dll"
+
+if "x64" == "$(PlatformName)" copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\pgort140.dll" "pgort140.dll"
+
+if "PGO Optimize" == "$(ConfigurationName)" (
+copy "$(SolutionDir)bin\x86\PGO Profile\MesenCore.dll" "Dependencies\MesenCore.x86.dll"
+
+copy "$(SolutionDir)bin\x64\PGO Profile\MesenCore.dll" "Dependencies\MesenCore.x64.dll"
+)
+if NOT "PGO Optimize" == "$(ConfigurationName)" (
+copy "$(SolutionDir)bin\x86\$(ConfigurationName)\MesenCore.dll" "Dependencies\MesenCore.x86.dll"
+
+copy "$(SolutionDir)bin\x64\$(ConfigurationName)\MesenCore.dll" "Dependencies\MesenCore.x64.dll"
+)
+copy "MesenUpdater.exe" "Dependencies\MesenUpdater.exe"
+call DependencyPacker.exe
+</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

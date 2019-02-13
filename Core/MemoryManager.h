@@ -1,5 +1,8 @@
 #pragma once
 #include "stdafx.h"
+#include "Console.h"
+#include "../Utilities/HexUtilities.h"
+#include "../Utilities/VirtualFile.h"
 
 class IMemoryHandler
 {
@@ -16,17 +19,25 @@ public:
 class BaseCartridge : public IMemoryHandler
 {
 private:
-	uint32_t _prgRomSize;
+	size_t _prgRomSize;
 	uint8_t* _prgRom;
 
 public:
-	BaseCartridge()
+	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile romFile, VirtualFile patchFile)
 	{
-		_prgRomSize = 1024 * 1024;
-		_prgRom = new uint8_t[_prgRomSize];
+		if(romFile.IsValid()) {
+			vector<uint8_t> romData;
+			romFile.ReadFile(romData);
 
-		ifstream rom("..\\bin\\x64\\Debug\\game.sfc", ios::binary);
-		rom.read((char*)_prgRom, _prgRomSize);
+			shared_ptr<BaseCartridge> cart(new BaseCartridge());
+			cart->_prgRomSize = romData.size();
+			cart->_prgRom = new uint8_t[cart->_prgRomSize];
+			memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
+
+			return cart;
+		} else {
+			return nullptr;
+		}
 	}
 
 	uint8_t Read(uint32_t addr) override
@@ -65,16 +76,20 @@ public:
 class MemoryManager
 {
 private:
+	shared_ptr<Console> _console;
+
 	uint8_t * _workRam;
 	IMemoryHandler* _handlers[0x100 * 0x10];
 	vector<unique_ptr<WorkRamHandler>> _workRamHandlers;
-	unique_ptr<BaseCartridge> _cart;
+	shared_ptr<BaseCartridge> _cart;
 
 public:
-	MemoryManager()
+	MemoryManager(shared_ptr<BaseCartridge> cart, shared_ptr<Console> console)
 	{
-		_cart.reset(new BaseCartridge());
+		_console = console;
+		_cart = cart;
 
+		memset(_handlers, 0, sizeof(_handlers));
 		_workRam = new uint8_t[128 * 1024];
 		for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 			_workRamHandlers.push_back(unique_ptr<WorkRamHandler>(new WorkRamHandler(_workRam + i)));
@@ -105,19 +120,37 @@ public:
 		}
 	}
 
-	uint8_t Read(uint32_t addr)
+	uint8_t Read(uint32_t addr, MemoryOperationType type)
 	{
+		uint8_t value = 0;
 		if(_handlers[addr >> 12]) {
-			return _handlers[addr >> 12]->Read(addr);
+			value = _handlers[addr >> 12]->Read(addr);
 		} else {
-			return 0;
+			//std::cout << "Read - missing handler: $" << HexUtilities::ToHex(addr) << std::endl;
 		}
+		_console->ProcessCpuRead(addr, value, type);
+		return value;
 	}
 
-	void Write(uint32_t addr, uint8_t value)
+	uint8_t Peek(uint32_t addr)
 	{
+		//Read, without triggering side-effects
+		uint8_t value = 0;
+		if(_handlers[addr >> 12]) {
+			value = _handlers[addr >> 12]->Read(addr);
+		} else {
+			//std::cout << "Read - missing handler: $" << HexUtilities::ToHex(addr) << std::endl;
+		}
+		return value;
+	}
+
+	void Write(uint32_t addr, uint8_t value, MemoryOperationType type)
+	{
+		_console->ProcessCpuWrite(addr, value, type);
 		if(_handlers[addr >> 12]) {
 			return _handlers[addr >> 12]->Write(addr, value);
+		} else {
+			//std::cout << "Write - missing handler: $" << HexUtilities::ToHex(addr) << " = " << HexUtilities::ToHex(value) << std::endl;
 		}
 	}
 };

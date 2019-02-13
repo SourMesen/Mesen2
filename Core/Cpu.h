@@ -9,6 +9,7 @@ class Cpu
 public:
 	uint64_t opCount = 0;
 	uint16_t GetPc() { return _state.PC; }
+	CpuState GetState() { return _state; }
 
 private:
 	static constexpr uint32_t NmiVector = 0x00FFFA;

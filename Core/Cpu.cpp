@@ -2,33 +2,8 @@
 #include "CpuTypes.h"
 #include "Cpu.h"
 #include "MemoryManager.h"
-#include "../Utilities/HexUtilities.h"
 
 //TODO: PER doesn't load the right number of bytes?
-
-uint8_t lastTest = -1;
-bool _enableLogging = false;
-string opNames[256] = {
-	//0	 1		2			3			4			5			6			7			8			9			A			B			C			D			E			F
-	"BRK", "ORA", "COP", "ORA", "TSB", "ORA", "ASL", "ORA", "PHP", "ORA", "ASL", "PHD", "TSB", "ORA", "ASL", "ORA", // 0
-	"BPL", "ORA", "ORA", "ORA", "TRB", "ORA", "ASL", "ORA", "CLC", "ORA", "INC", "TCS", "TRB", "ORA", "ASL", "ORA", // 1
-	"JSR", "AND", "JSL", "AND", "BIT", "AND", "ROL", "AND", "PLP", "AND", "ROL", "PLD", "BIT", "AND", "ROL", "AND", // 2
-	"BMI", "AND", "AND", "AND", "BIT", "AND", "ROL", "AND", "SEC", "AND", "DEC", "TSC", "BIT", "AND", "ROL", "AND", // 3
-	"RTI", "EOR", "WDM", "EOR", "MVP", "EOR", "LSR", "EOR", "PHA", "EOR", "LSR", "PHK", "JMP", "EOR", "LSR", "EOR", // 4
-	"BVC", "EOR", "EOR", "EOR", "MVN", "EOR", "LSR", "EOR", "CLI", "EOR", "PHY", "TCD", "JMP", "EOR", "LSR", "EOR", // 5
-	"RTS", "ADC", "PER", "ADC", "STZ", "ADC", "ROR", "ADC", "PLA", "ADC", "ROR", "RTL", "JMP", "ADC", "ROR", "ADC", // 6
-	"BVS", "ADC", "ADC", "ADC", "STZ", "ADC", "ROR", "ADC", "SEI", "ADC", "PLY", "TDC", "JMP", "ADC", "ROR", "ADC", // 7
-	"BRA", "STA", "BRL", "STA", "STY", "STA", "STX", "STA", "DEY", "BIT", "TXA", "PHB", "STY", "STA", "STX", "STA", // 8
-	"BCC", "STA", "STA", "STA", "STY", "STA", "STX", "STA", "TYA", "STA", "TXS", "TXY", "STZ", "STA", "STZ", "STA", // 9
-	"LDY", "LDA", "LDX", "LDA", "LDY", "LDA", "LDX", "LDA", "TAY", "LDA", "TAX", "PLB", "LDY", "LDA", "LDX", "LDA", // A
-	"BCS", "LDA", "LDA", "LDA", "LDY", "LDA", "LDX", "LDA", "CLV", "LDA", "TSX", "TYX", "LDY", "LDA", "LDX", "LDA", // B
-	"CPY", "CMP", "REP", "CMP", "CPY", "CMP", "DEC", "CMP", "INY", "CMP", "DEX", "WAI", "CPY", "CMP", "DEC", "CMP", // C
-	"BNE", "CMP", "CMP", "CMP", "PEI", "CMP", "DEC", "CMP", "CLD", "CMP", "PHX", "STP", "JML", "CMP", "DEC", "CMP", // D
-	"CPX", "SBC", "SEP", "SBC", "CPX", "SBC", "INC", "SBC", "INX", "SBC", "NOP", "XBA", "CPX", "SBC", "INC", "SBC", // E
-	"BEQ", "SBC", "SBC", "SBC", "PEA", "SBC", "INC", "SBC", "SED", "SBC", "PLX", "XCE", "JSR", "SBC", "INC", "SBC"  // F
-};
-
-
 
 /************************
 Add/substract operations
@@ -997,7 +972,6 @@ Cpu::Cpu(shared_ptr<MemoryManager> memoryManager)
 	memcpy(_addrMode, addrMode, sizeof(addrMode));
 
 	_memoryManager = memoryManager;
-	_enableLogging = false;
 	_state = {};
 	_state.PC = ReadDataWord(Cpu::ResetVector);
 	_state.SP = 0x1FF;
@@ -1016,19 +990,6 @@ void Cpu::Reset()
 
 void Cpu::Exec()
 {
-	/*std::cout <<
-		"$" << HexUtilities::ToHex(_state.K) << ":" << HexUtilities::ToHex(_state.PC) <<
-		" $" << HexUtilities::ToHex(ReadCode(_state.PC)) <<
-		" (" << opNames[ReadCode(_state.PC)] << ")" <<
-		" A:$" << HexUtilities::ToHex(_state.A) <<
-		" X:$" << HexUtilities::ToHex(_state.X) <<
-		" Y:$" << HexUtilities::ToHex(_state.Y) <<
-		" S:$" << HexUtilities::ToHex(_state.SP) <<
-		" D:$" << HexUtilities::ToHex(_state.D) <<
-		" DB:$" << HexUtilities::ToHex(_state.DBR) <<
-		" P:$" << HexUtilities::ToHex(_state.PS) <<
-		std::endl;*/
-
 	uint8_t opCode = GetOpCode();
 	_instAddrMode = _addrMode[opCode];
 	_operand = FetchEffectiveAddress();
@@ -1086,12 +1047,12 @@ uint32_t Cpu::ReadOperandLong()
 
 uint8_t Cpu::ReadCode(uint16_t addr, MemoryOperationType type)
 {
-	return _memoryManager->Read((_state.K << 16) | addr);
+	return _memoryManager->Read((_state.K << 16) | addr, type);
 }
 
 uint8_t Cpu::ReadData(uint32_t addr, MemoryOperationType type)
 {
-	return _memoryManager->Read(addr);
+	return _memoryManager->Read(addr, type);
 }
 
 uint16_t Cpu::ReadDataWord(uint32_t addr, MemoryOperationType type)
@@ -1111,10 +1072,7 @@ uint32_t Cpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 
 void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	_memoryManager->Write(addr, value);
-	if(_enableLogging) {
-		std::cout << "W: $" << HexUtilities::ToHex(addr) << " = $" << HexUtilities::ToHex(value) << std::endl;
-	}
+	_memoryManager->Write(addr, value, type);
 }
 
 void Cpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)
