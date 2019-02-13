@@ -60,6 +60,8 @@
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="MessageManager.h" />
+    <ClInclude Include="Ppu.h" />
+    <ClInclude Include="PpuTypes.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TraceLogger.h" />
   </ItemGroup>
@@ -68,6 +70,7 @@
     <ClCompile Include="BaseSoundManager.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Cpu.cpp" />
+    <ClCompile Include="Cpu.Instructions.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="KeyManager.cpp" />

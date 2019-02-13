@@ -1,8 +1,10 @@
 #include "stdafx.h"
+#include <algorithm>
 #include "DisassemblyInfo.h"
 #include "CpuTypes.h"
 #include "MemoryManager.h"
 #include "../Utilities/HexUtilities.h"
+#include "../Utilities/FastString.h"
 
 DisassemblyInfo::DisassemblyInfo()
 {
@@ -10,6 +12,8 @@ DisassemblyInfo::DisassemblyInfo()
 
 DisassemblyInfo::DisassemblyInfo(CpuState &state, MemoryManager *memoryManager)
 {
+	_flags = state.PS;
+
 	uint32_t addr = (state.K << 16) | state.PC;
 	_byteCode[0] = memoryManager->Peek(addr);
 	_addrMode = DisassemblyInfo::OpMode[_byteCode[0]];
@@ -19,17 +23,79 @@ DisassemblyInfo::DisassemblyInfo(CpuState &state, MemoryManager *memoryManager)
 		_byteCode[i] = memoryManager->Peek(addr+i);
 	}
 
-	_flags = state.PS;
 	_emulationMode = state.EmulationMode;
 }
 
-void DisassemblyInfo::GetDisassembly(string &out, MemoryManager *memoryManager)
+void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 {
-	out += DisassemblyInfo::OpName[_byteCode[0]];
-	out += _opSize > 1 ? " $" : " ";
-	for(int i = _opSize - 1; i > 0; i--) {
-		out += HexUtilities::ToHex(_byteCode[i]);
+	FastString str;
+	str.Write(DisassemblyInfo::OpName[_byteCode[0]]);
+	str.Write(' ');
+
+	uint32_t opAddr = GetOperandAddress(memoryAddr);
+
+	FastString operand;
+	if(_opSize > 1) {
+		operand.Write('$');
+		operand.Write(HexUtilities::ToHex(opAddr));
 	}
+
+
+	switch(_addrMode) {
+		case AddrMode::Abs: str.Write(operand); break;
+		case AddrMode::AbsIdxXInd: str.Write('(', operand, ",X)"); break;
+		case AddrMode::AbsIdxX: str.Write(operand, ",X"); break;
+		case AddrMode::AbsIdxY: str.Write(operand, ",Y"); break;
+		case AddrMode::AbsInd:  str.Write('(', operand, ')'); break;
+		case AddrMode::AbsIndLng:  str.Write('[', operand, ']'); break;
+		case AddrMode::AbsLngIdxX: str.Write(operand, ",X"); break;
+		case AddrMode::AbsLng: str.Write(operand); break;
+		case AddrMode::Acc: break;
+		case AddrMode::BlkMov: str.Write(operand[0], operand[1], " <- ", operand[2], operand[3]); break; //TODO
+		case AddrMode::DirIdxIndX: str.Write('(', operand, ",X)"); break;
+		case AddrMode::DirIdxX: str.Write(operand, ",X"); break;
+		case AddrMode::DirIdxY: str.Write(operand, ",Y"); break;
+		case AddrMode::DirIndIdxY: str.Write("(", operand, "),Y"); break;
+		case AddrMode::DirIndLngIdxY: str.Write("[", operand, "],Y"); break;
+		case AddrMode::DirIndLng: str.Write("[", operand, "]"); break;
+		case AddrMode::DirInd: str.Write("(", operand, ")"); break;
+		case AddrMode::Dir: str.Write(operand); break;
+		
+		case AddrMode::Imm8: case AddrMode::ImmX: case AddrMode::ImmM:
+			str.Write('#', operand);
+			break;
+		
+		case AddrMode::Imp: break;;
+		case AddrMode::RelLng: str.Write(operand);
+		case AddrMode::Rel: str.Write(operand);
+		case AddrMode::Stk: break;
+		case AddrMode::StkRel: str.Write(operand, ",S"); break;
+		case AddrMode::StkRelIndIdxY: str.Write('(', operand, ",S),Y"); break;
+	}
+
+	out += str.ToString();
+}
+
+uint32_t DisassemblyInfo::GetOperandAddress(uint32_t memoryAddr)
+{
+	uint32_t opAddr = 0;
+	if(_opSize == 2) {
+		opAddr = _byteCode[1];
+	} else if(_opSize == 3) {
+		opAddr = _byteCode[1] | (_byteCode[2] << 8);
+	} else if(_opSize == 4) {
+		opAddr = _byteCode[1] | (_byteCode[2] << 8) | (_byteCode[3] << 16);
+	}
+
+	if(_addrMode == AddrMode::Rel) {
+		if(_opSize == 2) {
+			opAddr = (int8_t)opAddr + memoryAddr + 2;
+		} else {
+			opAddr = (int16_t)opAddr + memoryAddr + 2;
+		}
+	}
+
+	return opAddr;
 }
 
 uint8_t DisassemblyInfo::GetOperandSize()
@@ -39,12 +105,16 @@ uint8_t DisassemblyInfo::GetOperandSize()
 		case AddrMode::AbsIdxXInd: return 2;
 		case AddrMode::AbsIdxX: return 2;
 		case AddrMode::AbsIdxY: return 2;
+		
 		case AddrMode::AbsInd: return 2;
-		case AddrMode::AbsIndLng: return 3;
+		case AddrMode::AbsIndLng: return 2;
+
 		case AddrMode::AbsLngIdxX: return 3;
 		case AddrMode::AbsLng: return 3;
+
 		case AddrMode::Acc: return 0;
 		case AddrMode::BlkMov: return 2;
+		
 		case AddrMode::DirIdxIndX: return 1;
 		case AddrMode::DirIdxX: return 1;
 		case AddrMode::DirIdxY: return 1;
@@ -53,12 +123,15 @@ uint8_t DisassemblyInfo::GetOperandSize()
 		case AddrMode::DirIndLng: return 1;
 		case AddrMode::DirInd: return 1;
 		case AddrMode::Dir: return 1;
+
 		case AddrMode::Imm8: return 1;
-		case AddrMode::ImmX: return _flags & ProcFlags::IndexMode8 ? 1 : 2;
-		case AddrMode::ImmM: return _flags & ProcFlags::MemoryMode8 ? 1 : 2;
+		case AddrMode::ImmX: return (_flags & ProcFlags::IndexMode8) ? 1 : 2;
+		case AddrMode::ImmM: return (_flags & ProcFlags::MemoryMode8) ? 1 : 2;
+		
 		case AddrMode::Imp: return 0;
 		case AddrMode::RelLng: return 2;
 		case AddrMode::Rel: return 1;
+
 		case AddrMode::Stk: return 0; //TODO
 		case AddrMode::StkRel: return 1;
 		case AddrMode::StkRelIndIdxY: return 1;
@@ -69,8 +142,22 @@ uint8_t DisassemblyInfo::GetOperandSize()
 
 void DisassemblyInfo::GetByteCode(string &out)
 {
+	FastString str;
 	for(int i = 0; i < _opSize; i++) {
-		out += "$" + HexUtilities::ToHex(_byteCode[i]) + ((i < _opSize - 1) ? " " : "");
+		str.Write('$', HexUtilities::ToHex(_byteCode[i]));
+		if(i < _opSize - 1) {
+			str.Write(' ');
+		}
+	}
+	out += str.ToString();
+}
+
+int32_t DisassemblyInfo::GetEffectiveAddress(CpuState &cpuState, MemoryManager *memoryManager)
+{
+	uint32_t bank = (cpuState.K << 16);
+	//uint32_t opAddr = GetOperandAddress();
+	switch(_addrMode) {
+
 	}
 }
 

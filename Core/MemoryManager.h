@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Console.h"
+#include "Ppu.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 
@@ -51,6 +52,28 @@ public:
 	}
 };
 
+class CpuRegisterHandler : public IMemoryHandler
+{
+private:
+	shared_ptr<Ppu> _ppu;
+
+public:
+	CpuRegisterHandler(shared_ptr<Ppu> ppu)
+	{
+		_ppu = ppu;
+	}
+
+	uint8_t Read(uint32_t addr) override
+	{
+		return _ppu->Read(addr);
+	}
+
+	void Write(uint32_t addr, uint8_t value) override
+	{
+		_ppu->Write(addr, value);
+	}
+};
+
 class WorkRamHandler : public IMemoryHandler
 {
 private:
@@ -82,18 +105,33 @@ private:
 	IMemoryHandler* _handlers[0x100 * 0x10];
 	vector<unique_ptr<WorkRamHandler>> _workRamHandlers;
 	shared_ptr<BaseCartridge> _cart;
+	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
+	shared_ptr<Ppu> _ppu;
+
+	uint64_t _masterClock;
+	uint64_t _lastMasterClock;
 
 public:
 	MemoryManager(shared_ptr<BaseCartridge> cart, shared_ptr<Console> console)
 	{
+		_lastMasterClock = 0;
+		_masterClock = 0;
 		_console = console;
 		_cart = cart;
+		_ppu = console->GetPpu();
+
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		_workRam = new uint8_t[128 * 1024];
 		for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 			_workRamHandlers.push_back(unique_ptr<WorkRamHandler>(new WorkRamHandler(_workRam + i)));
 			RegisterHandler(0x7E0000 | i, 0x7E0000 | (i + 0xFFF), _workRamHandlers[_workRamHandlers.size() - 1].get());
+		}
+
+		for(int i = 0; i <= 0x3F; i++) {
+			RegisterHandler((i << 16) | 0x4000, (i << 16) | 0x5FFF, _cpuRegisterHandler.get());
+			RegisterHandler(((i | 0x80) << 16) | 0x4000, ((i | 0x80) << 16) | 0x5FFF, _cpuRegisterHandler.get());
 		}
 
 		RegisterHandler(0x0000, 0x0FFF, _workRamHandlers[0].get());
@@ -120,8 +158,51 @@ public:
 		}
 	}
 
+	void IncrementMasterClock(uint32_t addr)
+	{
+		//This is incredibly inaccurate
+		uint8_t bank = (addr & 0xFF0000) >> 8;
+		if(bank >= 0x40 && bank <= 0x7F) {
+			//Slow
+			_masterClock += 8;
+		} else if(bank >= 0xCF) {
+			//Slow or fast (depending on register)
+			//Use slow
+			_masterClock += 8;
+		} else {
+			uint8_t page = (addr & 0xFF00) >> 8;
+			if(page <= 0x1F) {
+				//Slow
+				_masterClock += 6;
+			} else if(page >= 0x20 && page <= 0x3F) {
+				//Fast
+				_masterClock += 6;
+			} else if(page == 0x40 || page == 0x41) {
+				//extra slow
+				_masterClock += 12;
+			} else if(page >= 0x42 && page <= 0x5F) {
+				//Fast
+				_masterClock += 6;
+			} else if(page >= 0x60 && page <= 0x7F) {
+				//Slow
+				_masterClock += 8;
+			} else {
+				//Slow or fast (depending on register)
+				//Use slow
+				_masterClock += 8;
+			}
+		}
+
+		while(_lastMasterClock < _masterClock - 3) {
+			_ppu->Exec();
+			_lastMasterClock += 4;
+		}
+	}
+
 	uint8_t Read(uint32_t addr, MemoryOperationType type)
 	{
+		IncrementMasterClock(addr);
+
 		uint8_t value = 0;
 		if(_handlers[addr >> 12]) {
 			value = _handlers[addr >> 12]->Read(addr);
@@ -146,6 +227,8 @@ public:
 
 	void Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 	{
+		IncrementMasterClock(addr);
+
 		_console->ProcessCpuWrite(addr, value, type);
 		if(_handlers[addr >> 12]) {
 			return _handlers[addr >> 12]->Write(addr, value);

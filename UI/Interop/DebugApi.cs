@@ -19,7 +19,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void ReleaseDebugger();
 
 		[DllImport(DllPath)] public static extern void ResumeExecution();
-		[DllImport(DllPath)] public static extern void Step(Int32 scanCode);
+		[DllImport(DllPath)] public static extern void Step(Int32 instructionCount);
 
 		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
@@ -27,6 +27,45 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
 		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
+
+		[DllImport(DllPath, EntryPoint = "GetState")] private static extern void GetStateWrapper(ref DebugState state);
+		public static DebugState GetState()
+		{
+			DebugState state = new DebugState();
+			DebugApi.GetStateWrapper(ref state);
+			return state;
+		}
+	}
+
+	public struct CpuState
+	{
+		public UInt64 CycleCount;
+
+		public UInt16 A;
+		public UInt16 X;
+		public UInt16 Y;
+
+		public UInt16 SP;
+		public UInt16 D;
+		public UInt16 PC;
+
+		public byte K;
+		public byte DBR;
+		public byte PS;
+		[MarshalAs(UnmanagedType.I1)] public bool EmulationMode;
+	};
+
+	public struct PpuState
+	{
+		public UInt16 Cycle;
+		public UInt16 Scanline;
+		public UInt32 FrameCount;
+	};
+
+	public struct DebugState
+	{
+		public CpuState Cpu;
+		public PpuState Ppu;
 	}
 
 	[Serializable]

@@ -1,8 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include "CpuTypes.h"
+#include "PpuTypes.h"
 
 class Cpu;
+class Ppu;
 class MemoryManager;
 
 enum class MemoryOperationType;
@@ -12,7 +14,7 @@ class TraceLogger;
 struct DebugState
 {
 	CpuState Cpu;
-	//PpuState ppuState;
+	PpuState Ppu;
 	//ApuState apuState;
 };
 
@@ -20,6 +22,7 @@ class Debugger
 {
 private:
 	shared_ptr<Cpu> _cpu;
+	shared_ptr<Ppu> _ppu;
 	shared_ptr<MemoryManager> _memoryManager;
 
 	shared_ptr<TraceLogger> _traceLogger;
@@ -28,7 +31,7 @@ private:
 	atomic<int32_t> _cpuStepCount;
 
 public:
-	Debugger(shared_ptr<Cpu> cpu, shared_ptr<MemoryManager> memoryManager);
+	Debugger(shared_ptr<Cpu> cpu, shared_ptr<Ppu> ppu, shared_ptr<MemoryManager> memoryManager);
 	~Debugger();
 
 	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
@@ -37,6 +40,8 @@ public:
 	void Run();
 	void Step(int32_t stepCount);
 	bool IsExecutionStopped();
+
+	void GetState(DebugState *state);
 
 	shared_ptr<TraceLogger> GetTraceLogger();
 };

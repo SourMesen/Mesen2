@@ -62,9 +62,11 @@ enum class AddrMode : uint8_t
 	AbsIdxX,
 	AbsIdxY,
 	AbsInd, //JMP only
-	AbsIndLng, //JMP only (unofficial)
+	AbsIndLng, //JML only
 	AbsLngIdxX,
 	AbsLng,
+	AbsJmp, //JSR/JMP only
+	AbsLngJmp, //JSL/JMP only
 	Acc,
 	BlkMov,
 	DirIdxIndX,

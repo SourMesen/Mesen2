@@ -56,6 +56,12 @@
     <ClInclude Include="KeyManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="Ppu.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="PpuTypes.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -85,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="KeyManager.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Cpu.Instructions.cpp">
+      <Filter>SNES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

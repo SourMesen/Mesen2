@@ -58,5 +58,10 @@ namespace Mesen.GUI.Forms
 		{
 			DebugApi.ResumeExecution();
 		}
+
+		private void mnuRun100Instructions_Click(object sender, EventArgs e)
+		{
+			DebugApi.Step(100);
+		}
 	}
 }

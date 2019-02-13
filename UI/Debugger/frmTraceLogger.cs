@@ -21,6 +21,7 @@ namespace Mesen.GUI.Debugger
 		private string _lastFilename;
 		private EntityBinder _entityBinder = new EntityBinder();
 		private string _previousTrace;
+		private UInt64 _previousCycleCount;
 		private volatile bool _refreshRunning;
 		private bool _initialized;
 
@@ -161,13 +162,12 @@ namespace Mesen.GUI.Debugger
 				format += "[Align," + alignValue.ToString() + "] ";
 
 				if(chkShowRegisters.Checked) {
-					format += "A:[A,h] X:[X,h] Y:[Y,h] ";
+					format += "A:[A,4h] X:[X,4h] Y:[Y,4h] S:[SP,4h] D:[D,4h] DB:[DB,2h] ";
 					switch(cboStatusFlagFormat.GetEnumValue<StatusFlagFormat>()) {
-						case StatusFlagFormat.Hexadecimal: format += "P:[P,h]"; break;
-						case StatusFlagFormat.CompactText: format += "P:[P]"; break;
-						case StatusFlagFormat.Text: format += "P:[P,8]"; break;
+						case StatusFlagFormat.Hexadecimal: format += "P:[P,h] "; break;
+						case StatusFlagFormat.CompactText: format += "P:[P] "; break;
+						case StatusFlagFormat.Text: format += "P:[P,8] "; break;
 					}
-					format += " SP:[SP,h] ";
 				}
 				if(chkShowPpuCycles.Checked) {
 					format += "CYC:[Cycle,3] ";
@@ -271,12 +271,10 @@ namespace Mesen.GUI.Debugger
 			Task.Run(() => {
 				//Update trace log in another thread for performance
 				//DebugState state = new DebugState();
-				//InteropEmu.DebugGetState(ref state);
-				//if(_previousCycleCount != state.CPU.CycleCount || forceUpdate) {
-				//TODO
-				if(true) {
+				DebugState state = DebugApi.GetState();
+				if(_previousCycleCount != state.Cpu.CycleCount || forceUpdate) {
 					string newTrace = DebugApi.GetExecutionTrace((UInt32)_lineCount);
-					//_previousCycleCount = state.CPU.CycleCount;
+					_previousCycleCount = state.Cpu.CycleCount;
 					_previousTrace = newTrace;
 
 					int index = 0;
@@ -367,7 +365,7 @@ namespace Mesen.GUI.Debugger
 			}
 
 			if(mnuAutoRefresh.Checked) {
-				RefreshLog(false, false);
+				RefreshLog(true, false);
 			}
 		}
 

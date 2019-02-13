@@ -33,10 +33,10 @@ private:
 	Func _opTable[256];
 	AddrMode _addrMode[256];
 	
-	uint32_t GetBank();
-	uint32_t GetProgramAddress();
-	uint16_t GetDirectAddress(uint8_t baseAddress, uint16_t offset = 0, bool allowEmulationMode = true);
+	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
+
+	uint16_t GetDirectAddress(uint8_t baseAddress, uint16_t offset = 0, bool allowEmulationMode = true);
 	uint8_t GetOpCode();
 
 	void DummyRead();
@@ -57,6 +57,8 @@ private:
 	bool CheckFlag(uint8_t flag);
 
 	uint8_t ReadCode(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read);
+	uint16_t ReadCodeWord(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read);
+
 	uint8_t ReadData(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);
 	uint16_t ReadDataWord(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);
 	uint32_t ReadDataLong(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);

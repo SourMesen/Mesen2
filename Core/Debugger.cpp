@@ -1,14 +1,16 @@
 #include "stdafx.h"
 #include "Debugger.h"
 #include "Cpu.h"
+#include "Ppu.h"
 #include "CpuTypes.h"
 #include "DisassemblyInfo.h"
 #include "TraceLogger.h"
 #include "../Utilities/HexUtilities.h"
 
-Debugger::Debugger(shared_ptr<Cpu> cpu, shared_ptr<MemoryManager> memoryManager)
+Debugger::Debugger(shared_ptr<Cpu> cpu, shared_ptr<Ppu> ppu, shared_ptr<MemoryManager> memoryManager)
 {
 	_cpu = cpu;
+	_ppu = ppu;
 	_memoryManager = memoryManager;
 	_traceLogger.reset(new TraceLogger(this, memoryManager));
 
@@ -24,10 +26,11 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	if(type == MemoryOperationType::ExecOpCode) {
 		CpuState state = _cpu->GetState();
 		DisassemblyInfo disassemblyInfo(state, _memoryManager.get());
-		DebugState debugState = { state };
+		DebugState debugState;
+		GetState(&debugState);
 		_traceLogger->Log(debugState, disassemblyInfo);
 
-		string out;
+		/*string out;
 		out += HexUtilities::ToHex(state.K) + HexUtilities::ToHex(state.PC);
 		out += " ";
 		disassemblyInfo.GetDisassembly(out, _memoryManager.get());
@@ -43,7 +46,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			" DB:$" << HexUtilities::ToHex(state.DBR) <<
 			" P:$" << HexUtilities::ToHex(state.PS) <<
 			std::endl;
-		//_traceLogger->Trace
+		//_traceLogger->Trace*/
 
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;
@@ -75,6 +78,12 @@ bool Debugger::IsExecutionStopped()
 {
 	//TODO
 	return false;
+}
+
+void Debugger::GetState(DebugState *state)
+{
+	state->Cpu = _cpu->GetState();
+	state->Ppu = _ppu->GetState();
 }
 
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()

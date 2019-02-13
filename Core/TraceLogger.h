@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "CpuTypes.h"
+#include "PpuTypes.h"
 #include "DisassemblyInfo.h"
 #include "../Utilities/SimpleLock.h"
 
@@ -32,6 +33,8 @@ enum class RowDataType
 	A,
 	X,
 	Y,
+	D,
+	DB,
 	SP,
 	PS,
 	Cycle,
@@ -73,11 +76,11 @@ private:
 	uint16_t _currentPos;
 	uint32_t _logCount;
 	CpuState _cpuStateCache[ExecutionLogSize] = {};
-	//PPUDebugState _ppuStateCache[ExecutionLogSize] = {};
+	PpuState _ppuStateCache[ExecutionLogSize] = {};
 	DisassemblyInfo _disassemblyCache[ExecutionLogSize];
 
 	CpuState _cpuStateCacheCopy[ExecutionLogSize] = {};
-	//PPUDebugState _ppuStateCacheCopy[ExecutionLogSize] = {};
+	PpuState _ppuStateCacheCopy[ExecutionLogSize] = {};
 	DisassemblyInfo _disassemblyCacheCopy[ExecutionLogSize];
 
 	SimpleLock _lock;
@@ -86,7 +89,7 @@ private:
 	void AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state);
 	//bool ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo);
 
-	void GetTraceRow(string &output, CpuState &cpuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 

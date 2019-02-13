@@ -32,6 +32,7 @@ void Console::Stop()
 	_runLock.WaitForRelease();
 
 	_cpu.reset();
+	_ppu.reset();
 	_memoryManager.reset();
 	_debugger.reset();
 }
@@ -42,10 +43,16 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
+		_ppu.reset(new Ppu());
 		_memoryManager.reset(new MemoryManager(cart, shared_from_this()));
 		_cpu.reset(new Cpu(_memoryManager));
-		_debugger.reset(new Debugger(_cpu, _memoryManager));
+		_debugger.reset(new Debugger(_cpu, _ppu, _memoryManager));
 	}
+}
+
+shared_ptr<Ppu> Console::GetPpu()
+{
+	return _ppu;
 }
 
 shared_ptr<Debugger> Console::GetDebugger(bool allowStart)
