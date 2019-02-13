@@ -28,25 +28,8 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		DisassemblyInfo disassemblyInfo(state, _memoryManager.get());
 		DebugState debugState;
 		GetState(&debugState);
+		_traceLogger->LogEffectiveAddress(_cpu->GetLastOperand());
 		_traceLogger->Log(debugState, disassemblyInfo);
-
-		/*string out;
-		out += HexUtilities::ToHex(state.K) + HexUtilities::ToHex(state.PC);
-		out += " ";
-		disassemblyInfo.GetDisassembly(out, _memoryManager.get());
-
-		out += string(20 - out.size(), ' ');
-
-		std::cout << out <<
-			" A:$" << HexUtilities::ToHex(state.A) <<
-			" X:$" << HexUtilities::ToHex(state.X) <<
-			" Y:$" << HexUtilities::ToHex(state.Y) <<
-			" S:$" << HexUtilities::ToHex(state.SP) <<
-			" D:$" << HexUtilities::ToHex(state.D) <<
-			" DB:$" << HexUtilities::ToHex(state.DBR) <<
-			" P:$" << HexUtilities::ToHex(state.PS) <<
-			std::endl;
-		//_traceLogger->Trace*/
 
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;

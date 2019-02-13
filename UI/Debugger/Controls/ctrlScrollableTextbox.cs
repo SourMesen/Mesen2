@@ -312,6 +312,11 @@ namespace Mesen.GUI.Debugger.Controls
 				return true;
 			}*/
 
+			if(keyData == (Keys.Control | Keys.F)) {
+				this.OpenSearchBox(true);
+				return true;
+			}
+
 			switch(keyData) {
 				case Keys.PageUp | Keys.Shift:
 					this.ctrlTextbox.MoveSelectionUp(20);

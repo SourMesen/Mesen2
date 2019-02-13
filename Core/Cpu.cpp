@@ -57,6 +57,7 @@ Cpu::Cpu(shared_ptr<MemoryManager> memoryManager)
 	_state.PC = ReadDataWord(Cpu::ResetVector);
 	_state.SP = 0x1FF;
 	_state.EmulationMode = true;
+	_nmiFlag = false;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
 }
@@ -77,6 +78,16 @@ void Cpu::Exec()
 	(this->*_opTable[opCode])();
 
 	opCount++;
+
+	if(_nmiFlag) {
+		ProcessInterrupt(Cpu::NmiVector);
+		_nmiFlag = false;
+	}
+}
+
+void Cpu::SetNmiFlag()
+{
+	_nmiFlag = true;
 }
 
 uint32_t Cpu::GetProgramAddress(uint16_t addr)
@@ -220,76 +231,59 @@ uint16_t Cpu::PopWord()
 	return lo | hi << 8;
 }
 
-uint16_t Cpu::GetDirectAddress(uint8_t baseAddress, uint16_t offset, bool allowEmulationMode)
+uint16_t Cpu::GetDirectAddress(uint16_t offset, bool allowEmulationMode)
 {
 	if(allowEmulationMode && _state.EmulationMode && (_state.D & 0xFF) == 0) {
 		//TODO: Check if new instruction or not (PEI)
-		return (uint16_t)((_state.D & 0xFF00) | ((baseAddress + offset) & 0xFF));
+		return (uint16_t)((_state.D & 0xFF00) | (offset & 0xFF));
 	} else {
-		return (uint16_t)(_state.D + baseAddress + offset);
+		return (uint16_t)(_state.D + offset);
 	}
+}
+
+uint16_t Cpu::GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulationMode)
+{
+	uint8_t lsb = ReadData(GetDirectAddress(offset + 0));
+	uint8_t msb = ReadData(GetDirectAddress(offset + 1));
+	return (msb << 8) | lsb;
+}
+
+uint32_t Cpu::GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode)
+{
+	uint8_t b1 = ReadData(GetDirectAddress(offset + 0));
+	uint8_t b2 = ReadData(GetDirectAddress(offset + 1));
+	uint8_t b3 = ReadData(GetDirectAddress(offset + 2));
+	return (b3 << 16) | (b2 << 8) | b1;
 }
 
 uint32_t Cpu::FetchEffectiveAddress()
 {
 	switch(_instAddrMode) {
 		case AddrMode::Abs: return GetDataAddress(ReadOperandWord());
-		case AddrMode::AbsIdxX: return GetDataAddress(ReadOperandWord()) + _state.X;
-		case AddrMode::AbsIdxY: return GetDataAddress(ReadOperandWord()) + _state.Y;
+		case AddrMode::AbsIdxX: return (GetDataAddress(ReadOperandWord()) + _state.X) & 0xFFFFFF;
+		case AddrMode::AbsIdxY: return (GetDataAddress(ReadOperandWord()) + _state.Y) & 0xFFFFFF;
 		case AddrMode::AbsLng: return ReadOperandLong();
-		case AddrMode::AbsLngIdxX: return ReadOperandLong() + _state.X;		
+		case AddrMode::AbsLngIdxX: return (ReadOperandLong() + _state.X) & 0xFFFFFF;
 		
 		case AddrMode::AbsJmp: return GetProgramAddress(ReadOperandWord());
 		case AddrMode::AbsLngJmp: return ReadOperandLong();
 		case AddrMode::AbsIdxXInd: return GetProgramAddress(ReadDataWord(GetProgramAddress(ReadOperandWord() + _state.X))); //JMP/JSR
-		case AddrMode::AbsInd: return GetProgramAddress(ReadDataWord(ReadOperandWord())); //JMP only
+		case AddrMode::AbsInd: return ReadDataWord(ReadOperandWord()); //JMP only
 		case AddrMode::AbsIndLng: return ReadDataLong(ReadOperandWord()); //JML only
 
 		case AddrMode::Acc: DummyRead(); return 0;
 
 		case AddrMode::BlkMov: return ReadOperandWord();
 
-		case AddrMode::DirIdxIndX: {
-			uint8_t operand = ReadOperandByte();
-			uint8_t lsb = ReadData(GetDirectAddress(operand, _state.X));
-			uint8_t msb = ReadData(GetDirectAddress(operand, _state.X + 1));
-			return GetDataAddress((msb << 8) | lsb);
-		}
-
-		case AddrMode::DirIdxX: return GetDirectAddress(ReadOperandByte(), _state.X);
-		case AddrMode::DirIdxY: return GetDirectAddress(ReadOperandByte(), _state.Y);
-		
-		case AddrMode::DirIndIdxY:{
-			uint8_t operand = ReadOperandByte();
-			uint8_t lsb = ReadData(GetDirectAddress(operand));
-			uint8_t msb = ReadData(GetDirectAddress(operand, 1));
-			return GetDataAddress((msb << 8) | lsb) + _state.Y;
-		}
-
-		case AddrMode::DirIndLngIdxY: {
-			uint8_t operand = ReadOperandByte();
-			uint8_t b1 = ReadData(GetDirectAddress(operand));
-			uint8_t b2 = ReadData(GetDirectAddress(operand, 1));
-			uint8_t b3 = ReadData(GetDirectAddress(operand, 2));
-			return ((b3 << 16) | (b2 << 8) | b1) + _state.Y;
-		}		
-
-		case AddrMode::DirIndLng: {
-			uint8_t operand = ReadOperandByte();
-			uint8_t b1 = ReadData(GetDirectAddress(operand));
-			uint8_t b2 = ReadData(GetDirectAddress(operand, 1));
-			uint8_t b3 = ReadData(GetDirectAddress(operand, 2));
-			return (b3 << 16) | (b2 << 8) | b1;
-		}
-
-		case AddrMode::DirInd: {
-			uint8_t operand = ReadOperandByte();
-			uint8_t lsb = ReadData(GetDirectAddress(operand));
-			uint8_t msb = ReadData(GetDirectAddress(operand, 1));
-			return GetDataAddress((msb << 8) | lsb);
-		}		
-
 		case AddrMode::Dir: return GetDirectAddress(ReadOperandByte());
+		case AddrMode::DirIdxX: return GetDirectAddress(ReadOperandByte() + _state.X);
+		case AddrMode::DirIdxY: return GetDirectAddress(ReadOperandByte() + _state.Y);
+
+		case AddrMode::DirInd: return GetDataAddress(GetDirectAddressIndirectWord(ReadOperandByte()));
+		case AddrMode::DirIdxIndX: return GetDataAddress(GetDirectAddressIndirectWord(ReadOperandByte() + _state.X));
+		case AddrMode::DirIndIdxY: return (GetDataAddress(GetDirectAddressIndirectWord(ReadOperandByte())) + _state.Y) & 0xFFFFFF;
+		case AddrMode::DirIndLng: return GetDirectAddressIndirectLong(ReadOperandByte());
+		case AddrMode::DirIndLngIdxY: return (GetDirectAddressIndirectLong(ReadOperandByte()) + _state.Y) & 0xFFFFFF;
 
 		case AddrMode::Imm8: return ReadOperandByte();
 		case AddrMode::ImmX: return CheckFlag(ProcFlags::IndexMode8) ? ReadOperandByte() : ReadOperandWord();
@@ -300,12 +294,12 @@ uint32_t Cpu::FetchEffectiveAddress()
 		case AddrMode::RelLng: return ReadOperandWord();
 		case AddrMode::Rel: return ReadOperandByte();
 
-		case AddrMode::Stk: return _state.SP;
+		case AddrMode::Stk: return 0;
 		case AddrMode::StkRel: return (uint16_t)(ReadOperandByte() + _state.SP);
 
 		case AddrMode::StkRelIndIdxY: {
 			uint16_t addr = (uint16_t)(ReadOperandByte() + _state.SP);
-			return GetDataAddress(addr) + _state.Y;
+			return (GetDataAddress(addr) + _state.Y) & 0xFFFFFF;
 		}
 	}
 

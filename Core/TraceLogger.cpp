@@ -217,9 +217,9 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 
 			case RowDataType::EffectiveAddress:
 			{
-				/*string effectiveAddress;
-				disassemblyInfo.GetEffectiveAddressString(effectiveAddress, cpuState, _memoryManager.get(), _options.UseLabels ? _labelManager.get() : nullptr);
-				WriteValue(output, effectiveAddress, rowPart);*/
+				string effectiveAddress;
+				disassemblyInfo.GetEffectiveAddressString(effectiveAddress);
+				WriteValue(output, effectiveAddress, rowPart);
 				break;
 			}
 
@@ -239,7 +239,7 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 				}
 				break;
 
-			case RowDataType::PC: WriteValue(output, pcAddress, rowPart); break;
+			case RowDataType::PC: WriteValue(output, HexUtilities::ToHex24(pcAddress), rowPart); break;
 			case RowDataType::A: WriteValue(output, cpuState.A, rowPart); break;
 			case RowDataType::X: WriteValue(output, cpuState.X, rowPart); break;
 			case RowDataType::Y: WriteValue(output, cpuState.Y, rowPart); break;
@@ -305,6 +305,15 @@ void TraceLogger::LogNonExec(OperationInfo& operationInfo)
 	}
 }*/
 
+void TraceLogger::LogEffectiveAddress(uint32_t effectiveAddress)
+{
+	if(_currentPos > 0) {
+		_disassemblyCache[_currentPos - 1].SetEffectiveAddress(effectiveAddress);
+	} else {
+		_disassemblyCache[ExecutionLogSize - 1].SetEffectiveAddress(effectiveAddress);
+	}
+}
+
 void TraceLogger::Log(DebugState &state, DisassemblyInfo &disassemblyInfo)
 {
 	auto lock = _lock.AcquireSafe();
@@ -329,7 +338,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 
 	for(int i = 0; i < (int)lineCount; i++) {
 		int index = (startPos + i) % ExecutionLogSize;
-		_executionTrace += HexUtilities::ToHex((_cpuStateCacheCopy[index].K << 16) | _cpuStateCacheCopy[index].PC) + "\x1";
+		_executionTrace += HexUtilities::ToHex24((_cpuStateCacheCopy[index].K << 16) | _cpuStateCacheCopy[index].PC) + "\x1";
 		string byteCode;
 		_disassemblyCacheCopy[index].GetByteCode(byteCode);
 		_executionTrace += byteCode + "\x1";

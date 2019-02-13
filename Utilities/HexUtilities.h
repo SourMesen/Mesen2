@@ -11,6 +11,7 @@ public:
 	static string ToHex(uint16_t value);
 	static string ToHex(uint32_t value, bool fullSize = false);
 	static string ToHex(int32_t value, bool fullSize = false);
+	static string ToHex24(int32_t value);
 	static string ToHex(vector<uint8_t> &data);
 
 	static int FromHex(string hex);

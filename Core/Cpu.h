@@ -10,6 +10,7 @@ public:
 	uint64_t opCount = 0;
 	uint16_t GetPc() { return _state.PC; }
 	CpuState GetState() { return _state; }
+	int32_t GetLastOperand() { return (int32_t)_operand; }
 
 private:
 	static constexpr uint32_t NmiVector = 0x00FFFA;
@@ -29,6 +30,7 @@ private:
 	CpuState _state;
 	AddrMode _instAddrMode;
 	uint32_t _operand;
+	bool _nmiFlag;
 
 	Func _opTable[256];
 	AddrMode _addrMode[256];
@@ -36,7 +38,11 @@ private:
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
 
-	uint16_t GetDirectAddress(uint8_t baseAddress, uint16_t offset = 0, bool allowEmulationMode = true);
+	uint16_t GetDirectAddress(uint16_t offset, bool allowEmulationMode = true);
+
+	uint16_t GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulationMode = true);
+	uint32_t GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode = true);
+	
 	uint8_t GetOpCode();
 
 	void DummyRead();
@@ -233,4 +239,6 @@ public:
 
 	void Reset();
 	void Exec();
+
+	void SetNmiFlag();
 };

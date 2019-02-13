@@ -20,6 +20,7 @@ private:
 	AddrMode _addrMode;
 	uint8_t _flags;
 	bool _emulationMode;
+	int32_t _effectiveAddress;
 
 public:
 	DisassemblyInfo();
@@ -30,8 +31,9 @@ public:
 	uint8_t GetOperandSize();
 	void GetByteCode(string &out);
 	
-	int32_t GetEffectiveAddress(CpuState &cpuState, MemoryManager *memoryManager);
-	void GetEffectiveAddressString(string &out, CpuState& cpuState, MemoryManager *memoryManager);
+	void SetEffectiveAddress(int32_t effectiveAddress);
+	void GetEffectiveAddressString(string &out);
+	int32_t GetEffectiveAddress();
 
 	/*int32_t GetMemoryValue(CpuState& cpuState, MemoryManager* memoryManager);
 	uint16_t GetJumpDestination(uint16_t pc, MemoryManager* memoryManager);
