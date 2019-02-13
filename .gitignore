@@ -183,15 +183,10 @@ packages/*
 
 Dependencies/*
 GUI.NET/*
-Windows/*
 Linux/*
 Libretro/*
 Docs/*
-SevenZip/*
 Lua/*
 TestHelper/*
 UpdateHelper/*
-Utilities/*
 PGOHelper/*
-DependencyPacker/*
-InteropDLL/*

@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="xBRZ">
+      <UniqueIdentifier>{34df7dd9-5f1b-4aec-9212-1b70f1fada59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HQX">
+      <UniqueIdentifier>{c29925fd-7698-4db8-a328-73ef7f8993a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scale2x">
+      <UniqueIdentifier>{87329bd1-28ac-4ced-a4c2-b51777018d16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="KreedSaiEagle">
+      <UniqueIdentifier>{8e159744-fb91-4e16-aa82-8d8703ba2762}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Avi">
+      <UniqueIdentifier>{8b0e23bf-1bd9-4cc1-8046-784fd01e8688}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Patches">
+      <UniqueIdentifier>{6d519bc1-7c40-448a-95d2-9ad94cd20644}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FolderUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UPnPPortMapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRC32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="miniz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UTF8Util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PNGHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoResetEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LowPassFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blip_buf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nes_ntsc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nes_ntsc_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nes_ntsc_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xBRZ\config.h">
+      <Filter>xBRZ</Filter>
+    </ClInclude>
+    <ClInclude Include="xBRZ\xbrz.h">
+      <Filter>xBRZ</Filter>
+    </ClInclude>
+    <ClInclude Include="HQX\hqx.h">
+      <Filter>HQX</Filter>
+    </ClInclude>
+    <ClInclude Include="HQX\common.h">
+      <Filter>HQX</Filter>
+    </ClInclude>
+    <ClInclude Include="Scale2x\scale2x.h">
+      <Filter>Scale2x</Filter>
+    </ClInclude>
+    <ClInclude Include="Scale2x\scale3x.h">
+      <Filter>Scale2x</Filter>
+    </ClInclude>
+    <ClInclude Include="Scale2x\scalebit.h">
+      <Filter>Scale2x</Filter>
+    </ClInclude>
+    <ClInclude Include="KreedSaiEagle\SaiEagle.h">
+      <Filter>KreedSaiEagle</Filter>
+    </ClInclude>
+    <ClInclude Include="SZReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HexUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZmbvCodec.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="AviWriter.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCodec.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="RawCodec.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="CamstudioCodec.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IpsPatcher.h">
+      <Filter>Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="UpsPatcher.h">
+      <Filter>Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="BpsPatcher.h">
+      <Filter>Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="orfanidis_eq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sha1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ArchiveReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_vorbis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Base64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FolderUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="miniz.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleLock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UPnPPortMapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UTF8Util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRC32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PNGHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoResetEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZipWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZipReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blip_buf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nes_ntsc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xBRZ\xbrz.cpp">
+      <Filter>xBRZ</Filter>
+    </ClCompile>
+    <ClCompile Include="HQX\hq2x.cpp">
+      <Filter>HQX</Filter>
+    </ClCompile>
+    <ClCompile Include="HQX\hq3x.cpp">
+      <Filter>HQX</Filter>
+    </ClCompile>
+    <ClCompile Include="HQX\hq4x.cpp">
+      <Filter>HQX</Filter>
+    </ClCompile>
+    <ClCompile Include="HQX\init.cpp">
+      <Filter>HQX</Filter>
+    </ClCompile>
+    <ClCompile Include="Scale2x\scale2x.cpp">
+      <Filter>Scale2x</Filter>
+    </ClCompile>
+    <ClCompile Include="Scale2x\scale3x.cpp">
+      <Filter>Scale2x</Filter>
+    </ClCompile>
+    <ClCompile Include="Scale2x\scalebit.cpp">
+      <Filter>Scale2x</Filter>
+    </ClCompile>
+    <ClCompile Include="KreedSaiEagle\SuperEagle.cpp">
+      <Filter>KreedSaiEagle</Filter>
+    </ClCompile>
+    <ClCompile Include="KreedSaiEagle\Super2xSai.cpp">
+      <Filter>KreedSaiEagle</Filter>
+    </ClCompile>
+    <ClCompile Include="KreedSaiEagle\2xSai.cpp">
+      <Filter>KreedSaiEagle</Filter>
+    </ClCompile>
+    <ClCompile Include="SZReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ArchiveReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HexUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZmbvCodec.cpp">
+      <Filter>Avi</Filter>
+    </ClCompile>
+    <ClCompile Include="AviWriter.cpp">
+      <Filter>Avi</Filter>
+    </ClCompile>
+    <ClCompile Include="CamstudioCodec.cpp">
+      <Filter>Avi</Filter>
+    </ClCompile>
+    <ClCompile Include="UpsPatcher.cpp">
+      <Filter>Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="IpsPatcher.cpp">
+      <Filter>Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="BpsPatcher.cpp">
+      <Filter>Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="sha1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_vorbis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
