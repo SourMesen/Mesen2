@@ -95,6 +95,9 @@
     <ClCompile Include="Cpu.Instructions.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
+    <ClCompile Include="Ppu.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

@@ -130,8 +130,11 @@ public:
 		}
 
 		for(int i = 0; i <= 0x3F; i++) {
-			RegisterHandler((i << 16) | 0x4000, (i << 16) | 0x5FFF, _cpuRegisterHandler.get());
-			RegisterHandler(((i | 0x80) << 16) | 0x4000, ((i | 0x80) << 16) | 0x5FFF, _cpuRegisterHandler.get());
+			RegisterHandler((i << 16) | 0x2000, (i << 16) | 0x2FFF, _cpuRegisterHandler.get());
+			RegisterHandler(((i | 0x80) << 16) | 0x2000, ((i | 0x80) << 16) | 0x2FFF, _cpuRegisterHandler.get());
+
+			RegisterHandler((i << 16) | 0x4000, (i << 16) | 0x4FFF, _cpuRegisterHandler.get());
+			RegisterHandler(((i | 0x80) << 16) | 0x4000, ((i | 0x80) << 16) | 0x4FFF, _cpuRegisterHandler.get());
 		}
 
 		RegisterHandler(0x0000, 0x0FFF, _workRamHandlers[0].get());

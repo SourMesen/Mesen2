@@ -26,6 +26,7 @@ public:
 
 	void LoadRom(VirtualFile romFile, VirtualFile patchFile);
 
+	shared_ptr<Cpu> GetCpu();
 	shared_ptr<Ppu> GetPpu();
 	shared_ptr<Debugger> GetDebugger(bool allowStart = true);
 

@@ -75,6 +75,7 @@
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">Create</PrecompiledHeader>
