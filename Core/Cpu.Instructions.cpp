@@ -627,7 +627,7 @@ void Cpu::PER()
 
 void Cpu::PHB()
 {
-	PushWord(_state.DBR);
+	PushByte(_state.DBR);
 }
 
 void Cpu::PHD()
@@ -891,7 +891,13 @@ void Cpu::XBA()
 
 void Cpu::XCE()
 {
-	_state.EmulationMode = (_state.PS & ProcFlags::Carry) ? true : false;
+	bool carry = (_state.PS & ProcFlags::Carry) != 0;
+	if(_state.EmulationMode) {
+		SetFlags(ProcFlags::Carry);
+	} else {
+		ClearFlags(ProcFlags::Carry);
+	}
+	_state.EmulationMode = carry;
 }
 
 /*****************
