@@ -22,12 +22,16 @@ private:
 	bool _vramAddrIncrementOnSecondReg;
 	
 	uint16_t _cgramAddress;
-	uint16_t _cgram[256];
+	uint8_t _cgram[512];
 
 	uint16_t *_outputBuffers[2];
 	uint16_t *_currentBuffer;
 
 	LayerConfig _layerConfig[4];
+
+	uint8_t _dmaDest = 0;
+	uint32_t _dmaSource = 0;
+	uint16_t _dmaSize = 0;
 
 public:
 	Ppu(shared_ptr<Console> console);
