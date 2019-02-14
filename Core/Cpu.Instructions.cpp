@@ -799,9 +799,9 @@ void Cpu::STZ()
 /*******************
 Bit test operations
 ********************/
-template<typename T> void Cpu::TestBits(T value)
+template<typename T> void Cpu::TestBits(T value, bool alterZeroFlagOnly)
 {
-	if(_instAddrMode <= AddrMode::ImmM) {
+	if(alterZeroFlagOnly) {
 		//"Immediate addressing only affects the z flag (with the result of the bitwise And), but does not affect the n and v flags."
 		if(((T)_state.A & value) == 0) {
 			SetFlags(ProcFlags::Zero);
@@ -827,20 +827,44 @@ template<typename T> void Cpu::TestBits(T value)
 void Cpu::BIT()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
-		TestBits<uint8_t>(GetByteValue());
+		TestBits<uint8_t>(GetByteValue(), _instAddrMode <= AddrMode::ImmM);
 	} else {
-		TestBits<uint16_t>(GetWordValue());
+		TestBits<uint16_t>(GetWordValue(), _instAddrMode <= AddrMode::ImmM);
 	}
 }
 
 void Cpu::TRB()
 {
-	//TODO
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		TestBits<uint8_t>(GetByteValue(), true);
+
+		uint8_t value = ReadData(_operand);
+		value &= ~_state.A;
+		Write(_operand, value);
+	} else {
+		TestBits<uint16_t>(GetWordValue(), true);
+		
+		uint16_t value = ReadDataWord(_operand);
+		value &= ~_state.A;
+		WriteWord(_operand, value);
+	}	
 }
 
 void Cpu::TSB()
 {
-	//TODO
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		TestBits<uint8_t>(GetByteValue(), true);
+
+		uint8_t value = ReadData(_operand);
+		value |= _state.A;
+		Write(_operand, value);
+	} else {
+		TestBits<uint16_t>(GetWordValue(), true);
+
+		uint16_t value = ReadDataWord(_operand);
+		value |= _state.A;
+		WriteWord(_operand, value);
+	}
 }
 
 /******************

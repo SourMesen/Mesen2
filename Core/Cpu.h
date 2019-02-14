@@ -205,7 +205,7 @@ private:
 	void STZ();
 		
 	//Test bits
-	template<typename T> void TestBits(T value);
+	template<typename T> void TestBits(T value, bool alterZeroFlagOnly);
 	void BIT();
 
 	void TRB();
