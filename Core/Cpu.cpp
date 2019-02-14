@@ -198,23 +198,13 @@ uint16_t Cpu::GetWordValue()
 
 void Cpu::PushByte(uint8_t value)
 {
-	if(_state.EmulationMode) {
-		_state.SP = 0x100 | (_state.SP & 0xFF);
-		Write(_state.SP, value);
-		_state.SP = 0x100 | ((_state.SP - 1) & 0xFF);
-	} else {
-		Write(_state.SP, value);
-		_state.SP--;
-	}
+	Write(_state.SP, value);
+	SetSP(_state.SP - 1);
 }
 
 uint8_t Cpu::PopByte()
 {
-	if(_state.EmulationMode) {
-		_state.SP = 0x100 | ((_state.SP + 1) & 0xFF);
-	} else {
-		_state.SP++;
-	}
+	SetSP(_state.SP + 1);
 	return ReadData(_state.SP);
 }
 
@@ -299,11 +289,20 @@ uint32_t Cpu::FetchEffectiveAddress()
 
 		case AddrMode::StkRelIndIdxY: {
 			uint16_t addr = (uint16_t)(ReadOperandByte() + _state.SP);
-			return (GetDataAddress(addr) + _state.Y) & 0xFFFFFF;
+			return (GetDataAddress(ReadDataWord(addr)) + _state.Y) & 0xFFFFFF;
 		}
 	}
 
 	throw new std::runtime_error("Unreacheable code");
+}
+
+void Cpu::SetSP(uint16_t sp)
+{
+	if(_state.EmulationMode) {
+		_state.SP = 0x100 | (sp & 0xFF);
+	} else {
+		_state.SP = sp;
+	}
 }
 
 void Cpu::SetRegister(uint8_t &reg, uint8_t value)

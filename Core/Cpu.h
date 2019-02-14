@@ -52,6 +52,8 @@ private:
 	uint32_t ReadOperandLong();
 	uint32_t FetchEffectiveAddress();
 
+	void SetSP(uint16_t sp);
+
 	void SetRegister(uint8_t &reg, uint8_t value);
 	void SetRegister(uint16_t &reg, uint16_t value, bool eightBitMode);
 	

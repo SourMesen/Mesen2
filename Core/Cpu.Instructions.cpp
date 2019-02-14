@@ -459,17 +459,29 @@ Bitwise operations
 *******************/
 void Cpu::AND()
 {
-	SetRegister(_state.A, _state.A & GetByteValue(), CheckFlag(ProcFlags::MemoryMode8));
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		SetRegister(_state.A, _state.A & GetByteValue(), true);
+	} else {
+		SetRegister(_state.A, _state.A & GetWordValue(), false);
+	}
 }
 
 void Cpu::EOR()
 {
-	SetRegister(_state.A, _state.A ^ GetByteValue(), CheckFlag(ProcFlags::MemoryMode8));
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		SetRegister(_state.A, _state.A ^ GetByteValue(), true);
+	} else {
+		SetRegister(_state.A, _state.A ^ GetWordValue(), false);
+	}
 }
 
 void Cpu::ORA()
 {
-	SetRegister(_state.A, _state.A | GetByteValue(), CheckFlag(ProcFlags::MemoryMode8));
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		SetRegister(_state.A, _state.A | GetByteValue(), true);
+	} else {
+		SetRegister(_state.A, _state.A | GetWordValue(), false);
+	}
 }
 
 /****************
@@ -840,7 +852,7 @@ void Cpu::TCD()
 
 void Cpu::TCS()
 {
-	_state.SP = _state.A;
+	SetSP(_state.A);
 }
 
 void Cpu::TDC()
@@ -865,7 +877,7 @@ void Cpu::TXA()
 
 void Cpu::TXS()
 {
-	_state.SP = _state.X;
+	SetSP(_state.X);
 }
 
 void Cpu::TXY()
