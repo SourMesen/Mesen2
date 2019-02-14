@@ -44,9 +44,6 @@
     <ClInclude Include="IRenderingDevice.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="BaseRenderer.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include="BaseSoundManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
@@ -61,6 +58,45 @@
     </ClInclude>
     <ClInclude Include="PpuTypes.h">
       <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoRenderer.h">
+      <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoDecoder.h">
+      <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseRenderer.h">
+      <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultVideoFilter.h">
+      <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseVideoFilter.h">
+      <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingTypes.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugHud.h">
+      <Filter>Video\DebugHud</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawCommand.h">
+      <Filter>Video\DebugHud</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawLineCommand.h">
+      <Filter>Video\DebugHud</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawPixelCommand.h">
+      <Filter>Video\DebugHud</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawRectangleCommand.h">
+      <Filter>Video\DebugHud</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawScreenBufferCommand.h">
+      <Filter>Video\DebugHud</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawStringCommand.h">
+      <Filter>Video\DebugHud</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,9 +116,6 @@
     <ClCompile Include="Console.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="BaseRenderer.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
     <ClCompile Include="BaseSoundManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
@@ -98,6 +131,24 @@
     <ClCompile Include="Ppu.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
+    <ClCompile Include="VideoDecoder.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoRenderer.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseRenderer.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultVideoFilter.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseVideoFilter.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugHud.cpp">
+      <Filter>Video\DebugHud</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -111,6 +162,12 @@
     </Filter>
     <Filter Include="Misc">
       <UniqueIdentifier>{0da6a615-3092-40f7-936c-253eb03a8784}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Video">
+      <UniqueIdentifier>{7aa5124a-c2c1-418e-b7bb-5ba7846aa9b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Video\DebugHud">
+      <UniqueIdentifier>{0d0cf24e-4126-4bfb-b391-27a015e7722a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

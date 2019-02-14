@@ -3,8 +3,21 @@
 #include "Cpu.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
+#include "VideoDecoder.h"
+#include "VideoRenderer.h"
+#include "DebugHud.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
+
+void Console::Initialize()
+{
+	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
+	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
+	_debugHud.reset(new DebugHud());
+
+	_videoDecoder->StartThread();
+	_videoRenderer->StartThread();
+}
 
 void Console::Run()
 {
@@ -50,6 +63,21 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	}
 }
 
+shared_ptr<VideoRenderer> Console::GetVideoRenderer()
+{
+	return _videoRenderer;
+}
+
+shared_ptr<VideoDecoder> Console::GetVideoDecoder()
+{
+	return _videoDecoder;
+}
+
+shared_ptr<DebugHud> Console::GetDebugHud()
+{
+	return _debugHud;
+}
+
 shared_ptr<Cpu> Console::GetCpu()
 {
 	return _cpu;
@@ -58,6 +86,11 @@ shared_ptr<Cpu> Console::GetCpu()
 shared_ptr<Ppu> Console::GetPpu()
 {
 	return _ppu;
+}
+
+shared_ptr<MemoryManager> Console::GetMemoryManager()
+{
+	return _memoryManager;
 }
 
 shared_ptr<Debugger> Console::GetDebugger(bool allowStart)

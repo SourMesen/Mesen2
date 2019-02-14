@@ -30,7 +30,8 @@ namespace Mesen.GUI.Forms
 
 		private void mnuTraceLogger_Click(object sender, EventArgs e)
 		{
-
+			frmTraceLogger frm = new frmTraceLogger();
+			frm.Show();
 		}
 
 		private void mnuStep_Click(object sender, EventArgs e)
@@ -47,9 +48,6 @@ namespace Mesen.GUI.Forms
 					Task.Run(() => {
 						EmuApi.Run();
 					});
-
-					frmTraceLogger frm = new frmTraceLogger();
-					frm.Show();
 				}
 			}
 		}
@@ -61,7 +59,7 @@ namespace Mesen.GUI.Forms
 
 		private void mnuRun100Instructions_Click(object sender, EventArgs e)
 		{
-			DebugApi.Step(100);
+			DebugApi.Step(1000);
 		}
 	}
 }

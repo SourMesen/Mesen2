@@ -1,15 +1,9 @@
 #pragma once
-#include "../Core/IMessageManager.h"
+#include "IMessageManager.h"
+#include "SettingTypes.h"
 #include "../Utilities/Timer.h"
 
 class Console;
-
-//TODO
-enum class VideoResizeFilter
-{
-	NearestNeighbor = 0,
-	Bilinear = 1
-};
 
 class BaseRenderer : public IMessageManager
 {

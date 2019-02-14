@@ -16,6 +16,7 @@
 #include <sstream>
 #include <list>
 #include <atomic>
+#include <thread>
 
 #include "../Utilities/UTF8Util.h"
 
@@ -42,6 +43,7 @@ using std::max;
 using std::string;
 using std::atomic_flag;
 using std::atomic;
+using std::thread;
 
 #ifdef _DEBUG
 #pragma comment(lib, "C:\\Code\\Mesen-S\\bin\\x64\\Debug\\Utilities.lib")

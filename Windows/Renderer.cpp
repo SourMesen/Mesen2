@@ -3,8 +3,11 @@
 #include "DirectXTK/SpriteBatch.h"
 #include "DirectXTK/SpriteFont.h"
 #include "../Core/Console.h"
+#include "../Core/VideoDecoder.h"
+#include "../Core/VideoRenderer.h"
 #include "../Core/Debugger.h"
 #include "../Core/MessageManager.h"
+#include "../Core/SettingTypes.h"
 #include "../Utilities/UTF8Util.h"
 
 using namespace DirectX;
@@ -13,16 +16,15 @@ Renderer::Renderer(shared_ptr<Console> console, HWND hWnd, bool registerAsMessag
 {
 	_hWnd = hWnd;
 
-	SetScreenSize(256, 240);
+	SetScreenSize(256, 224);
 }
 
 Renderer::~Renderer()
 {
-	//TODO
-	/*shared_ptr<VideoRenderer> videoRenderer = _console->GetVideoRenderer();
+	shared_ptr<VideoRenderer> videoRenderer = _console->GetVideoRenderer();
 	if(videoRenderer) {
 		videoRenderer->UnregisterRenderingDevice(this);
-	}*/
+	}
 	CleanupDevice();
 }
 
@@ -38,20 +40,20 @@ void Renderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t m
 
 void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
-	//TODO
-	/*ScreenSize screenSize;
+	ScreenSize screenSize;
 	_console->GetVideoDecoder()->GetScreenSize(screenSize, false);
 
-	if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _resizeFilter != _console->GetSettings()->GetVideoResizeFilter() || _newFullscreen != _fullscreen) {
+	//TODO  _resizeFilter != _console->GetSettings()->GetVideoResizeFilter()
+	if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
 		_console->GetVideoDecoder()->GetScreenSize(screenSize, false);
-		if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _resizeFilter != _console->GetSettings()->GetVideoResizeFilter() || _newFullscreen != _fullscreen) {
+		if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen) {
 			_nesFrameHeight = height;
 			_nesFrameWidth = width;
 			_newFrameBufferSize = width*height;
 
-			bool needReset = _fullscreen != _newFullscreen || _resizeFilter != _console->GetSettings()->GetVideoResizeFilter();
+			bool needReset = _fullscreen != _newFullscreen;//TODO || _resizeFilter != _console->GetSettings()->GetVideoResizeFilter();
 			bool fullscreenResizeMode = _fullscreen && _newFullscreen;
 
 			if(_pSwapChain && _fullscreen && !_newFullscreen) {
@@ -94,7 +96,7 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 				}
 			}
 		}
-	}*/
+	}
 }
 
 void Renderer::Reset()
@@ -104,8 +106,7 @@ void Renderer::Reset()
 	if(FAILED(InitDevice())) {
 		CleanupDevice();
 	} else {
-		//TODO
-		//_console->GetVideoRenderer()->RegisterRenderingDevice(this);
+		_console->GetVideoRenderer()->RegisterRenderingDevice(this);
 	}
 }
 

@@ -14,7 +14,7 @@ Debugger::Debugger(shared_ptr<Cpu> cpu, shared_ptr<Ppu> ppu, shared_ptr<MemoryMa
 	_memoryManager = memoryManager;
 	_traceLogger.reset(new TraceLogger(this, memoryManager));
 
-	_cpuStepCount = 1;
+	_cpuStepCount = 0;
 }
 
 Debugger::~Debugger()

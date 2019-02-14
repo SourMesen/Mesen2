@@ -45,11 +45,20 @@
   <ItemGroup>
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
+    <ClInclude Include="BaseVideoFilter.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="CpuTypes.h" />
     <ClInclude Include="Debugger.h" />
+    <ClInclude Include="DebugHud.h" />
+    <ClInclude Include="DefaultVideoFilter.h" />
     <ClInclude Include="DisassemblyInfo.h" />
+    <ClInclude Include="DrawCommand.h" />
+    <ClInclude Include="DrawLineCommand.h" />
+    <ClInclude Include="DrawPixelCommand.h" />
+    <ClInclude Include="DrawRectangleCommand.h" />
+    <ClInclude Include="DrawScreenBufferCommand.h" />
+    <ClInclude Include="DrawStringCommand.h" />
     <ClInclude Include="IAudioDevice.h" />
     <ClInclude Include="IInputProvider.h" />
     <ClInclude Include="IInputRecorder.h" />
@@ -62,16 +71,22 @@
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="Ppu.h" />
     <ClInclude Include="PpuTypes.h" />
+    <ClInclude Include="SettingTypes.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TraceLogger.h" />
+    <ClInclude Include="VideoDecoder.h" />
+    <ClInclude Include="VideoRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseRenderer.cpp" />
     <ClCompile Include="BaseSoundManager.cpp" />
+    <ClCompile Include="BaseVideoFilter.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="Cpu.Instructions.cpp" />
     <ClCompile Include="Debugger.cpp" />
+    <ClCompile Include="DebugHud.cpp" />
+    <ClCompile Include="DefaultVideoFilter.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />
@@ -89,6 +104,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TraceLogger.cpp" />
+    <ClCompile Include="VideoDecoder.cpp" />
+    <ClCompile Include="VideoRenderer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}</ProjectGuid>

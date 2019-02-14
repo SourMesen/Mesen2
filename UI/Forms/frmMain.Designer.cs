@@ -34,10 +34,10 @@
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRun = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuStep = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRun100Instructions = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuRun100Instructions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -55,7 +55,7 @@
             this.debugToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
-			this.mnuMain.Size = new System.Drawing.Size(514, 24);
+			this.mnuMain.Size = new System.Drawing.Size(512, 24);
 			this.mnuMain.TabIndex = 1;
 			this.mnuMain.Text = "ctrlMesenMenuStrip1";
 			// 
@@ -71,7 +71,8 @@
 			// 
 			this.mnuOpen.Image = global::Mesen.GUI.Properties.Resources.Folder;
 			this.mnuOpen.Name = "mnuOpen";
-			this.mnuOpen.Size = new System.Drawing.Size(103, 22);
+			this.mnuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+			this.mnuOpen.Size = new System.Drawing.Size(152, 22);
 			this.mnuOpen.Text = "Open";
 			this.mnuOpen.Click += new System.EventHandler(this.mnuOpen_Click);
 			// 
@@ -92,7 +93,7 @@
 			// 
 			this.mnuRun.Name = "mnuRun";
 			this.mnuRun.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.mnuRun.Size = new System.Drawing.Size(157, 22);
+			this.mnuRun.Size = new System.Drawing.Size(163, 22);
 			this.mnuRun.Text = "Run";
 			this.mnuRun.Click += new System.EventHandler(this.mnuRun_Click);
 			// 
@@ -100,41 +101,41 @@
 			// 
 			this.mnuStep.Name = "mnuStep";
 			this.mnuStep.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.mnuStep.Size = new System.Drawing.Size(157, 22);
+			this.mnuStep.Size = new System.Drawing.Size(163, 22);
 			this.mnuStep.Text = "Step";
 			this.mnuStep.Click += new System.EventHandler(this.mnuStep_Click);
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(154, 6);
-			// 
-			// mnuDebugger
-			// 
-			this.mnuDebugger.Name = "mnuDebugger";
-			this.mnuDebugger.Size = new System.Drawing.Size(157, 22);
-			this.mnuDebugger.Text = "Debugger";
-			// 
-			// mnuTraceLogger
-			// 
-			this.mnuTraceLogger.Name = "mnuTraceLogger";
-			this.mnuTraceLogger.Size = new System.Drawing.Size(157, 22);
-			this.mnuTraceLogger.Text = "Trace Logger";
-			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
 			// mnuRun100Instructions
 			// 
 			this.mnuRun100Instructions.Name = "mnuRun100Instructions";
 			this.mnuRun100Instructions.ShortcutKeys = System.Windows.Forms.Keys.F6;
-			this.mnuRun100Instructions.Size = new System.Drawing.Size(157, 22);
-			this.mnuRun100Instructions.Text = "Run 100 ops";
+			this.mnuRun100Instructions.Size = new System.Drawing.Size(163, 22);
+			this.mnuRun100Instructions.Text = "Run 1000 ops";
 			this.mnuRun100Instructions.Click += new System.EventHandler(this.mnuRun100Instructions_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
+			// 
+			// mnuDebugger
+			// 
+			this.mnuDebugger.Name = "mnuDebugger";
+			this.mnuDebugger.Size = new System.Drawing.Size(163, 22);
+			this.mnuDebugger.Text = "Debugger";
+			// 
+			// mnuTraceLogger
+			// 
+			this.mnuTraceLogger.Name = "mnuTraceLogger";
+			this.mnuTraceLogger.Size = new System.Drawing.Size(163, 22);
+			this.mnuTraceLogger.Text = "Trace Logger";
+			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(514, 476);
+			this.ClientSize = new System.Drawing.Size(512, 475);
 			this.Controls.Add(this.ctrlRenderer);
 			this.Controls.Add(this.mnuMain);
 			this.MainMenuStrip = this.mnuMain;
