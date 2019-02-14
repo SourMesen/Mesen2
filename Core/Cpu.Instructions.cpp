@@ -835,7 +835,7 @@ void Cpu::TAY()
 
 void Cpu::TCD()
 {
-	SetRegister(_state.DBR, (uint8_t)_state.A);
+	SetRegister(_state.D, _state.A, false);
 }
 
 void Cpu::TCS()
@@ -845,7 +845,7 @@ void Cpu::TCS()
 
 void Cpu::TDC()
 {
-	SetRegister(_state.A, _state.DBR, CheckFlag(ProcFlags::MemoryMode8));
+	SetRegister(_state.A, _state.D, CheckFlag(ProcFlags::MemoryMode8));
 }
 
 void Cpu::TSC()
@@ -891,13 +891,21 @@ void Cpu::XBA()
 
 void Cpu::XCE()
 {
-	bool carry = (_state.PS & ProcFlags::Carry) != 0;
+	bool carry = CheckFlag(ProcFlags::Carry);
 	if(_state.EmulationMode) {
 		SetFlags(ProcFlags::Carry);
 	} else {
 		ClearFlags(ProcFlags::Carry);
 	}
 	_state.EmulationMode = carry;
+
+	if(_state.EmulationMode) {
+		SetFlags(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
+		//_state.A &= 0xFF;
+		_state.Y &= 0xFF;
+		_state.X &= 0xFF;
+		_state.SP = 0x100 | (_state.SP & 0xFF);
+	}
 }
 
 /*****************
