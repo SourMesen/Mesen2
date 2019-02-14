@@ -801,15 +801,26 @@ Bit test operations
 ********************/
 template<typename T> void Cpu::TestBits(T value)
 {
-	ClearFlags(ProcFlags::Zero | ProcFlags::Overflow | ProcFlags::Negative);
-	if(((T)_state.A & value) == 0) {
-		SetFlags(ProcFlags::Zero);
-	}
-	if(value & (1 << (sizeof(T) * 8 - 2))) {
-		SetFlags(ProcFlags::Overflow);
-	}
-	if(value & (1 << (sizeof(T) * 8 - 1))) {
-		SetFlags(ProcFlags::Negative);
+	if(_instAddrMode <= AddrMode::ImmM) {
+		//"Immediate addressing only affects the z flag (with the result of the bitwise And), but does not affect the n and v flags."
+		if(((T)_state.A & value) == 0) {
+			SetFlags(ProcFlags::Zero);
+		} else {
+			ClearFlags(ProcFlags::Zero);
+		}
+	} else {
+		ClearFlags(ProcFlags::Zero | ProcFlags::Overflow | ProcFlags::Negative);
+
+		if(((T)_state.A & value) == 0) {
+			SetFlags(ProcFlags::Zero);
+		}
+
+		if(value & (1 << (sizeof(T) * 8 - 2))) {
+			SetFlags(ProcFlags::Overflow);
+		}
+		if(value & (1 << (sizeof(T) * 8 - 1))) {
+			SetFlags(ProcFlags::Negative);
+		}
 	}
 }
 
