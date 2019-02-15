@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Console.h"
 #include "Ppu.h"
+#include "DmaController.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 
@@ -56,21 +57,26 @@ class CpuRegisterHandler : public IMemoryHandler
 {
 private:
 	shared_ptr<Ppu> _ppu;
+	shared_ptr<MemoryManager> _memoryManager;
+	unique_ptr<DmaController> _dmaController;
 
 public:
-	CpuRegisterHandler(shared_ptr<Ppu> ppu)
+	CpuRegisterHandler(shared_ptr<Console> console)
 	{
-		_ppu = ppu;
+		_ppu = console->GetPpu();
+		_memoryManager = console->GetMemoryManager();
+		_dmaController.reset(new DmaController(_memoryManager));
 	}
 
 	uint8_t Read(uint32_t addr) override
 	{
-		return _ppu->Read(addr);
+		return _ppu->Read(addr & 0xFFFF);
 	}
 
 	void Write(uint32_t addr, uint8_t value) override
 	{
-		_ppu->Write(addr, value);
+		_ppu->Write(addr & 0xFFFF, value);
+		_dmaController->Write(addr & 0xFFFF, value);
 	}
 };
 
@@ -107,12 +113,16 @@ private:
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
 	shared_ptr<Ppu> _ppu;
+	
+	unique_ptr<DmaController> _dmaController;
+
+	uint32_t _wramPosition;
 
 	uint64_t _masterClock;
 	uint64_t _lastMasterClock;
 
 public:
-	MemoryManager(shared_ptr<BaseCartridge> cart, shared_ptr<Console> console)
+	void Initialize(shared_ptr<BaseCartridge> cart, shared_ptr<Console> console)
 	{
 		_lastMasterClock = 0;
 		_masterClock = 0;
@@ -120,11 +130,11 @@ public:
 		_cart = cart;
 		_ppu = console->GetPpu();
 
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(console));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		_workRam = new uint8_t[128 * 1024];
-		memset(_workRam, 0, 128 * 1024);
+		//memset(_workRam, 0, 128 * 1024);
 
 		for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 			_workRamHandlers.push_back(unique_ptr<WorkRamHandler>(new WorkRamHandler(_workRam + i)));
@@ -233,6 +243,25 @@ public:
 	void Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 	{
 		IncrementMasterClock(addr);
+
+		switch(addr & 0xFFFF) {
+			case 0x2180:
+				_workRam[_wramPosition] = value;
+				_wramPosition++;
+				break;
+
+			case 0x2181:
+				_wramPosition = (_wramPosition & 0x1FF00) | value;
+				break;
+
+			case 0x2182:
+				_wramPosition = (_wramPosition & 0x100FF) | (value << 8);
+				break;
+
+			case 0x2183:
+				_wramPosition = (_wramPosition & 0xFFFF) | ((value & 0x01) << 16);
+				break;
+		}
 
 		_console->ProcessCpuWrite(addr, value, type);
 		if(_handlers[addr >> 12]) {

@@ -86,7 +86,9 @@ void Ppu::SendFrame()
 						color >>= 1;
 					}
 
-					uint16_t paletteColor = _cgram[(palette * 4 + color) * 2] | (_cgram[(palette * 4 + color) * 2 + 1] << 8);
+					uint16_t paletteRamOffset = color == 0 ? 0 : ((palette * 4 + color) * 2);
+
+					uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 					_currentBuffer[(y * 8 + i) * 256 + x * 8 + j] = paletteColor;
 				}
 			}
@@ -106,9 +108,9 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x4212:
 			return (
-				(_scanline >= 225 ? 0x80 : 0) ||
+				(_scanline >= 225 ? 0x80 : 0) |
 				((_cycle >= 0x121 || _cycle <= 0x15) ? 0x40 : 0)
-				);
+			);
 	}
 
 	return 0;
@@ -184,46 +186,5 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_enableNmi = (value & 0x80) != 0;
 			break;
 
-		case 0x420B:
-			//MDMAEN - DMA Enable
-			if(value & 0x01) {
-				for(int i = 0; i < _dmaSize; i++) {
-					uint8_t valToWrite = _console->GetMemoryManager()->Read(_dmaSource, MemoryOperationType::Read);
-					_console->GetMemoryManager()->Write(0x2100 | _dmaDest, valToWrite, MemoryOperationType::Write);
-					_dmaSource++;
-				}
-			}
-			break;
-
-		case 0x4300:
-			//DMAPx - DMA Control for Channel x
-			break;
-
-		case 0x4301:
-			//BBADx - DMA Destination Register for Channel x
-			_dmaDest = value;
-			break;
-
-		case 0x4305:
-			//DASxL - DMA Size / HDMA Indirect Address low byte(x = 0 - 7)
-			_dmaSize = (_dmaSize & 0xFF00) | value;
-			break;
-
-		case 0x4306:
-			//DASxL - DMA Size / HDMA Indirect Address low byte(x = 0 - 7)
-			_dmaSize = (_dmaSize & 0xFF) | (value << 8);
-			break;
-
-		case 0x4302:
-			_dmaSource = (_dmaSource & 0xFFFF00) | value;
-			break;
-
-		case 0x4303:
-			_dmaSource = (_dmaSource & 0xFF00FF) | (value << 8);
-			break;
-
-		case 0x4304:
-			_dmaSource = (_dmaSource & 0x00FFFF) | (value << 16);
-			break;
 	}
 }

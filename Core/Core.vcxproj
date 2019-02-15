@@ -53,6 +53,7 @@
     <ClInclude Include="DebugHud.h" />
     <ClInclude Include="DefaultVideoFilter.h" />
     <ClInclude Include="DisassemblyInfo.h" />
+    <ClInclude Include="DmaController.h" />
     <ClInclude Include="DrawCommand.h" />
     <ClInclude Include="DrawLineCommand.h" />
     <ClInclude Include="DrawPixelCommand.h" />
@@ -88,6 +89,7 @@
     <ClCompile Include="DebugHud.cpp" />
     <ClCompile Include="DefaultVideoFilter.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
+    <ClCompile Include="DmaController.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="Ppu.cpp" />

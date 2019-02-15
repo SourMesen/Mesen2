@@ -57,7 +57,10 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
 		_ppu.reset(new Ppu(shared_from_this()));
-		_memoryManager.reset(new MemoryManager(cart, shared_from_this()));
+		
+		_memoryManager.reset(new MemoryManager());
+		_memoryManager->Initialize(cart, shared_from_this());
+
 		_cpu.reset(new Cpu(_memoryManager));
 		_debugger.reset(new Debugger(_cpu, _ppu, _memoryManager));
 	}

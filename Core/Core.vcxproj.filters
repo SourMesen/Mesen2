@@ -98,6 +98,9 @@
     <ClInclude Include="DrawStringCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
+    <ClInclude Include="DmaController.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="DebugHud.cpp">
       <Filter>Video\DebugHud</Filter>
+    </ClCompile>
+    <ClCompile Include="DmaController.cpp">
+      <Filter>SNES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
