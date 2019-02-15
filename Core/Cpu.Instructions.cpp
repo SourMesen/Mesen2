@@ -628,13 +628,13 @@ void Cpu::PEA()
 void Cpu::PEI()
 {
 	//Push Effective Indirect address
-	PushWord((uint16_t)_operand);
+	PushWord(ReadDataWord(_operand));
 }
 
 void Cpu::PER()
 {
 	//Push Effective Relative address
-	PushWord((uint16_t)_operand);
+	PushWord((uint16_t)((int16_t)_operand + _state.PC));
 }
 
 void Cpu::PHB()

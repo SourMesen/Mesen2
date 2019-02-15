@@ -101,15 +101,14 @@ uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
 		case 0x4210:
-			return _nmiFlag ? 0x80 : 0;
-			break;
+			//open bus implementation here is needed to pass CPUPHL test
+			return (_nmiFlag ? 0x80 : 0) | ((addr >> 8) & 0x70);
 
 		case 0x4212:
 			return (
 				(_scanline >= 225 ? 0x80 : 0) ||
 				((_cycle >= 0x121 || _cycle <= 0x15) ? 0x40 : 0)
 				);
-			break;
 	}
 
 	return 0;

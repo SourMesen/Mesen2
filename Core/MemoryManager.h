@@ -124,6 +124,8 @@ public:
 
 		memset(_handlers, 0, sizeof(_handlers));
 		_workRam = new uint8_t[128 * 1024];
+		memset(_workRam, 0, 128 * 1024);
+
 		for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 			_workRamHandlers.push_back(unique_ptr<WorkRamHandler>(new WorkRamHandler(_workRam + i)));
 			RegisterHandler(0x7E0000 | i, 0x7E0000 | (i + 0xFFF), _workRamHandlers[_workRamHandlers.size() - 1].get());

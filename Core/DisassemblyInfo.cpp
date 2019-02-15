@@ -64,7 +64,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		case AddrMode::DirInd: str.Write("(", operand, ")"); break;
 		case AddrMode::Dir: str.Write(operand); break;
 		
-		case AddrMode::Imm8: case AddrMode::ImmX: case AddrMode::ImmM:
+		case AddrMode::Imm8: case AddrMode::Imm16: case AddrMode::ImmX: case AddrMode::ImmM:
 			str.Write('#', operand);
 			break;
 		
@@ -133,7 +133,8 @@ uint8_t DisassemblyInfo::GetOperandSize()
 		case AddrMode::AbsIndLng:
 		case AddrMode::AbsJmp:
 		case AddrMode::BlkMov:
-		case AddrMode::RelLng: 
+		case AddrMode::Imm16:
+		case AddrMode::RelLng:
 			return 2;
 
 		case AddrMode::AbsLngJmp:

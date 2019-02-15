@@ -55,6 +55,7 @@ namespace ProcFlags
 enum class AddrMode : uint8_t
 {
 	Imm8,
+	Imm16,
 	ImmX,
 	ImmM,
 	Abs,
