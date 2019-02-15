@@ -13,9 +13,9 @@ public:
 	int32_t GetLastOperand() { return (int32_t)_operand; }
 
 private:
-	static constexpr uint32_t NmiVector = 0x00FFFA;
+	static constexpr uint32_t NmiVector = 0x00FFEA;
 	static constexpr uint32_t ResetVector = 0x00FFFC;
-	static constexpr uint32_t IrqVector = 0x00FFFE;
+	static constexpr uint32_t IrqVector = 0x00FFEE;
 	static constexpr uint32_t AbortVector = 0x00FFE8;
 	static constexpr uint32_t BreakVector = 0x00FFE6;
 	static constexpr uint32_t CoprocessorVector = 0x00FFE4;

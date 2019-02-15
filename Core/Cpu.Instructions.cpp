@@ -425,7 +425,7 @@ Interrupts
 void Cpu::ProcessInterrupt(uint16_t vector)
 {
 	if(_state.EmulationMode) {
-		PushWord(_state.PC + 1);
+		PushWord(_state.PC);
 		PushByte(_state.PS | 0x20);
 
 		SetFlags(ProcFlags::IrqDisable);
@@ -434,12 +434,13 @@ void Cpu::ProcessInterrupt(uint16_t vector)
 		_state.PC = ReadDataWord(vector);
 	} else {
 		PushByte(_state.K);
-		PushWord(_state.PC + 1);
+		PushWord(_state.PC);
 		PushByte(_state.PS);
 
 		SetFlags(ProcFlags::IrqDisable);
 		ClearFlags(ProcFlags::Decimal);
 
+		_state.K = 0;
 		_state.PC = ReadDataWord(vector);
 	}
 }

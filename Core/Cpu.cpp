@@ -13,7 +13,7 @@ Cpu::Cpu(shared_ptr<MemoryManager> memoryManager)
 		&C::JSR, &C::AND, &C::JSL, &C::AND, &C::BIT, &C::AND, &C::ROL, &C::AND, &C::PLP, &C::AND, &C::ROL, &C::PLD, &C::BIT, &C::AND, &C::ROL, &C::AND, // 2
 		&C::BMI, &C::AND, &C::AND, &C::AND, &C::BIT, &C::AND, &C::ROL, &C::AND, &C::SEC, &C::AND, &C::DEC, &C::TSC, &C::BIT, &C::AND, &C::ROL, &C::AND, // 3
 		&C::RTI, &C::EOR, &C::WDM, &C::EOR, &C::MVP, &C::EOR, &C::LSR, &C::EOR, &C::PHA, &C::EOR, &C::LSR, &C::PHK, &C::JMP, &C::EOR, &C::LSR, &C::EOR, // 4
-		&C::BVC, &C::EOR, &C::EOR, &C::EOR, &C::MVN, &C::EOR, &C::LSR, &C::EOR, &C::CLI, &C::EOR, &C::PHY, &C::TCD, &C::JMP, &C::EOR, &C::LSR, &C::EOR, // 5
+		&C::BVC, &C::EOR, &C::EOR, &C::EOR, &C::MVN, &C::EOR, &C::LSR, &C::EOR, &C::CLI, &C::EOR, &C::PHY, &C::TCD, &C::JML, &C::EOR, &C::LSR, &C::EOR, // 5
 		&C::RTS, &C::ADC, &C::PER, &C::ADC, &C::STZ, &C::ADC, &C::ROR, &C::ADC, &C::PLA, &C::ADC, &C::ROR, &C::RTL, &C::JMP, &C::ADC, &C::ROR, &C::ADC, // 6
 		&C::BVS, &C::ADC, &C::ADC, &C::ADC, &C::STZ, &C::ADC, &C::ROR, &C::ADC, &C::SEI, &C::ADC, &C::PLY, &C::TDC, &C::JMP, &C::ADC, &C::ROR, &C::ADC, // 7
 		&C::BRA, &C::STA, &C::BRL, &C::STA, &C::STY, &C::STA, &C::STX, &C::STA, &C::DEY, &C::BIT, &C::TXA, &C::PHB, &C::STY, &C::STA, &C::STX, &C::STA, // 8
@@ -78,7 +78,7 @@ void Cpu::Exec()
 	opCount++;
 
 	if(_nmiFlag) {
-		ProcessInterrupt(Cpu::NmiVector);
+		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
 		_nmiFlag = false;
 	}
 }
