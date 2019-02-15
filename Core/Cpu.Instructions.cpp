@@ -608,12 +608,30 @@ Move operations
 ****************/
 void Cpu::MVN()
 {
-	//TODO
+	uint32_t srcBank = (_operand << 16) & 0xFF0000;
+	uint32_t destBank = (_operand << 8) & 0xFF0000;
+	while(_state.A != 0xFFFF) {
+		uint8_t value = ReadData(srcBank | _state.X);
+		Write(destBank | _state.Y, value);
+		
+		_state.X++;
+		_state.Y++;
+		_state.A--;
+	}
 }
 
 void Cpu::MVP()
 {
-	//TODO
+	uint32_t srcBank = (_operand << 16) & 0xFF0000;
+	uint32_t destBank = (_operand << 8) & 0xFF0000;
+	while(_state.A != 0xFFFF) {
+		uint8_t value = ReadData(srcBank | _state.X);
+		Write(destBank | _state.Y, value);
+
+		_state.X--;
+		_state.Y--;
+		_state.A--;
+	}
 }
 
 /********************
