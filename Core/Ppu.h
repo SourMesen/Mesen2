@@ -39,6 +39,7 @@ private:
 
 public:
 	Ppu(shared_ptr<Console> console);
+	~Ppu();
 
 	PpuState GetState();
 

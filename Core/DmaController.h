@@ -27,13 +27,13 @@ private:
 	};
 
 	DmaChannelConfig _channel[8] = {};
-	shared_ptr<MemoryManager> _memoryManager;
+	MemoryManager *_memoryManager;
 	
 	void RunSingleTransfer(DmaChannelConfig &channel, uint32_t &bytesLeft);
 	void RunDma(DmaChannelConfig &channel);
 
 public:
-	DmaController(shared_ptr<MemoryManager> memoryManager);
+	DmaController(MemoryManager *memoryManager);
 
 	void Write(uint16_t addr, uint8_t value);
 };

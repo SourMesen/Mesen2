@@ -13,6 +13,12 @@ private:
 	uint32_t _saveRamSize = 0;
 
 public:
+	~BaseCartridge()
+	{
+		delete[] _prgRom;
+		delete[] _saveRam;
+	}
+
 	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile romFile, VirtualFile patchFile)
 	{
 		if(romFile.IsValid()) {

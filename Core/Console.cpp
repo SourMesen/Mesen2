@@ -48,6 +48,7 @@ void Console::Stop()
 
 	_cpu.reset();
 	_ppu.reset();
+	_cart.reset();
 	_memoryManager.reset();
 }
 
@@ -60,7 +61,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		_ppu.reset(new Ppu(shared_from_this()));
 		_cart = cart;
 		_memoryManager.reset(new MemoryManager());
-		_memoryManager->Initialize(cart, shared_from_this());
+		_memoryManager->Initialize(shared_from_this());
 
 		_cpu.reset(new Cpu(_memoryManager));
 

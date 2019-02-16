@@ -2,7 +2,7 @@
 #include "DmaController.h"
 #include "MemoryManager.h"
 
-DmaController::DmaController(shared_ptr<MemoryManager> memoryManager)
+DmaController::DmaController(MemoryManager *memoryManager)
 {
 	_memoryManager = memoryManager;
 }

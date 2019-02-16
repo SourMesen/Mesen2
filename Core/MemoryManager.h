@@ -10,16 +10,14 @@
 class CpuRegisterHandler : public IMemoryHandler
 {
 private:
-	shared_ptr<Ppu> _ppu;
-	shared_ptr<MemoryManager> _memoryManager;
-	unique_ptr<DmaController> _dmaController;
+	Ppu *_ppu;
+	DmaController *_dmaController;
 
 public:
-	CpuRegisterHandler(shared_ptr<Console> console)
+	CpuRegisterHandler(Ppu *ppu, DmaController *dmaController)
 	{
-		_ppu = console->GetPpu();
-		_memoryManager = console->GetMemoryManager();
-		_dmaController.reset(new DmaController(_memoryManager));
+		_ppu = ppu;
+		_dmaController = dmaController;
 	}
 
 	uint8_t Read(uint32_t addr) override
@@ -70,8 +68,7 @@ private:
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
 	shared_ptr<Ppu> _ppu;
-	
-	unique_ptr<DmaController> _dmaController;
+	shared_ptr<DmaController> _dmaController;
 
 	uint32_t _wramPosition;
 
@@ -79,15 +76,16 @@ private:
 	uint64_t _lastMasterClock;
 
 public:
-	void Initialize(shared_ptr<BaseCartridge> cart, shared_ptr<Console> console)
+	void Initialize(shared_ptr<Console> console)
 	{
 		_lastMasterClock = 0;
 		_masterClock = 0;
 		_console = console;
-		_cart = cart;
+		_cart = console->GetCartridge();
 		_ppu = console->GetPpu();
 
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(console));
+		_dmaController.reset(new DmaController(console->GetMemoryManager().get()));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), _dmaController.get()));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		_workRam = new uint8_t[MemoryManager::WorkRamSize];
@@ -117,6 +115,7 @@ public:
 
 	~MemoryManager()
 	{
+		delete[] _workRam;
 	}
 
 	void RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler* handler)

@@ -10,25 +10,32 @@ Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
 
-	_vram = new uint8_t[Ppu::VideoRamSize];
-	memset(_vram, 0, Ppu::VideoRamSize);
+	_outputBuffers[0] = new uint16_t[256 * 224];
+	_outputBuffers[1] = new uint16_t[256 * 224];
+
+	_currentBuffer = _outputBuffers[0];
 
 	_layerConfig[0] = {};
 	_layerConfig[1] = {};
 	_layerConfig[2] = {};
 	_layerConfig[3] = {};
 
-	_outputBuffers[0] = new uint16_t[256 * 224];
-	_outputBuffers[1] = new uint16_t[256 * 224];
-
-	_currentBuffer = _outputBuffers[0];
-
 	_cgramAddress = 0;
+
+	_vram = new uint8_t[Ppu::VideoRamSize];
+	memset(_vram, 0, Ppu::VideoRamSize);
 
 	_vramAddress = 0;
 	_vramIncrementValue = 1;
 	_vramAddressRemapping = 0;
 	_vramAddrIncrementOnSecondReg = false;
+}
+
+Ppu::~Ppu()
+{
+	delete[] _vram;
+	delete[] _outputBuffers[0];
+	delete[] _outputBuffers[1];
 }
 
 PpuState Ppu::GetState()
@@ -164,12 +171,12 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2116:
 			//VMADDL - VRAM Address low byte
-			_vramAddress = (_vramAddress & 0xFF00) | value;
+			_vramAddress = (_vramAddress & 0x7F00) | value;
 			break;
 
 		case 0x2117:
 			//VMADDH - VRAM Address high byte
-			_vramAddress = (_vramAddress & 0x00FF) | (value << 8);
+			_vramAddress = (_vramAddress & 0x00FF) | ((value & 0x7F) << 8);
 			break;
 
 		case 0x2118:
