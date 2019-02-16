@@ -20,13 +20,20 @@ struct DmaChannelConfig
 class DmaController
 {
 private:
+	static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 2, 4 };
+	static constexpr uint8_t _transferOffset[8][4] = {
+		{ 0, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 },
+		{ 0, 1, 2, 3 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 }
+	};
+
 	DmaChannelConfig _channel[8] = {};
 	shared_ptr<MemoryManager> _memoryManager;
+	
+	void RunSingleTransfer(DmaChannelConfig &channel, uint32_t &bytesLeft);
+	void RunDma(DmaChannelConfig &channel);
 
 public:
 	DmaController(shared_ptr<MemoryManager> memoryManager);
-
-	void RunDma(DmaChannelConfig & channel);
 
 	void Write(uint16_t addr, uint8_t value);
 };

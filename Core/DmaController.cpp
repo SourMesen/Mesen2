@@ -7,34 +7,39 @@ DmaController::DmaController(shared_ptr<MemoryManager> memoryManager)
 	_memoryManager = memoryManager;
 }
 
+void DmaController::RunSingleTransfer(DmaChannelConfig &channel, uint32_t &bytesLeft)
+{
+	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
+	uint8_t transferByteCount = _transferByteCount[channel.TransferMode];
+
+	uint8_t i = 0;
+	while(bytesLeft > 0 && transferByteCount > 0) {
+		if(channel.InvertDirection) {
+			uint8_t valToWrite = _memoryManager->Read(0x2100 | channel.DestAddress + transferOffsets[i], MemoryOperationType::DmaRead);
+			_memoryManager->Write(channel.SrcAddress, valToWrite, MemoryOperationType::DmaWrite);
+		} else {
+			uint8_t valToWrite = _memoryManager->Read(channel.SrcAddress, MemoryOperationType::DmaRead);
+			_memoryManager->Write(0x2100 | channel.DestAddress + transferOffsets[i], valToWrite, MemoryOperationType::DmaWrite);
+		}
+
+		if(!channel.FixedTransfer) {
+			channel.SrcAddress = (channel.SrcAddress + (channel.Decrement ? -1 : 1)) & 0xFFFFFF;
+		}
+
+		transferByteCount--;
+		bytesLeft--;
+		i++;
+	}
+}
+
 void DmaController::RunDma(DmaChannelConfig &channel)
 {
 	//"Note, however, that writing $0000 to this register actually results in a transfer of $10000 bytes, not 0."
-	uint32_t transferSize = channel.TransferSize ? channel.TransferSize : 0x10000;
+	uint32_t bytesLeft = channel.TransferSize ? channel.TransferSize : 0x10000;
 
-	uint8_t offset = 0;
-	if(channel.InvertDirection) {
-		for(uint32_t i = 0; i < transferSize; i++) {
-			uint8_t valToWrite = _memoryManager->Read(0x2100 | channel.DestAddress + offset, MemoryOperationType::DmaRead);
-			_memoryManager->Write(channel.SrcAddress, valToWrite, MemoryOperationType::DmaWrite);
-
-			if(!channel.FixedTransfer) {
-				channel.SrcAddress += channel.Decrement ? -1 : 1;
-			}
-		}
-	} else {
-		for(uint32_t i = 0; i < transferSize; i++) {
-			uint8_t valToWrite = _memoryManager->Read(channel.SrcAddress, MemoryOperationType::DmaRead);
-			_memoryManager->Write(0x2100 | channel.DestAddress + offset, valToWrite, MemoryOperationType::DmaWrite);
-
-			if(channel.TransferMode == 1) {
-				offset = (offset + 1) & 0x01;
-			}
-
-			if(!channel.FixedTransfer) {
-				channel.SrcAddress += channel.Decrement ? -1 : 1;
-			}
-		}
+	while(bytesLeft > 0) {
+		//Manual DMA transfers run to the end of the transfer when started
+		RunSingleTransfer(channel, bytesLeft);
 	}
 }
 
