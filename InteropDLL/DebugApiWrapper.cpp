@@ -6,15 +6,10 @@
 #include "../Core/DebugTypes.h"
 
 extern shared_ptr<Console> _console;
-shared_ptr<Debugger> _debugger;
 
 shared_ptr<Debugger> GetDebugger()
 {
-	if(!_debugger) {
-		_debugger = _console->GetDebugger();
-	}
-	
-	return _debugger;
+	return _console->GetDebugger();
 }
 
 extern "C"
@@ -27,7 +22,7 @@ extern "C"
 
 	DllExport void __stdcall ReleaseDebugger()
 	{
-		_debugger.reset();
+		//_debugger.reset();
 		//_console->StopDebugger();
 	}
 

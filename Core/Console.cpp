@@ -49,7 +49,6 @@ void Console::Stop()
 	_cpu.reset();
 	_ppu.reset();
 	_memoryManager.reset();
-	_debugger.reset();
 }
 
 void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
@@ -64,7 +63,13 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		_memoryManager->Initialize(cart, shared_from_this());
 
 		_cpu.reset(new Cpu(_memoryManager));
-		_debugger.reset(new Debugger(shared_from_this()));
+
+		if(_debugger) {
+			//Reset debugger if it was running before
+			auto lock = _debuggerLock.AcquireSafe();
+			_debugger.reset();
+			GetDebugger();
+		}
 	}
 }
 
@@ -108,9 +113,19 @@ shared_ptr<MemoryManager> Console::GetMemoryManager()
 	return _memoryManager;
 }
 
-shared_ptr<Debugger> Console::GetDebugger(bool allowStart)
+shared_ptr<Debugger> Console::GetDebugger(bool autoStart)
 {
-	return _debugger;
+	shared_ptr<Debugger> debugger = _debugger;
+	if(!debugger && autoStart) {
+		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
+		auto lock = _debuggerLock.AcquireSafe();
+		debugger = _debugger;
+		if(!debugger) {
+			debugger.reset(new Debugger(shared_from_this()));
+			_debugger = debugger;
+		}
+	}
+	return debugger;
 }
 
 void Console::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)
