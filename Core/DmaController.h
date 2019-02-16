@@ -20,7 +20,7 @@ struct DmaChannelConfig
 class DmaController
 {
 private:
-	static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 2, 4 };
+	static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };
 	static constexpr uint8_t _transferOffset[8][4] = {
 		{ 0, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 },
 		{ 0, 1, 2, 3 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 }
