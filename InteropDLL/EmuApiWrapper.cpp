@@ -154,15 +154,13 @@ namespace InteropEmu {
 		
 		DllExport void __stdcall Release()
 		{
-			//_shortcutKeyHandler.reset();
-			
 			_console->Stop();
 
 			_renderer.reset();
 			_soundManager.reset();
 			_keyManager.reset();
 
-			//_console->Release(true);
+			_console->Release();
 			_console.reset();
 			
 			//_shortcutKeyHandler.reset();

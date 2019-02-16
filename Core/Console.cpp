@@ -21,6 +21,19 @@ void Console::Initialize()
 	_videoRenderer->StartThread();
 }
 
+void Console::Release()
+{
+	Stop();
+
+	_videoDecoder->StopThread();
+	_videoRenderer->StopThread();
+	
+	_videoDecoder.reset();
+	_videoRenderer.reset();
+	_debugHud.reset();
+	_notificationManager.reset();
+}
+
 void Console::Run()
 {
 	if(!_cpu) {

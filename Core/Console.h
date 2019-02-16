@@ -34,6 +34,7 @@ private:
 
 public:
 	void Initialize();
+	void Release();
 
 	void Run();
 	void Stop();

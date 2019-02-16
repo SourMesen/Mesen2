@@ -27,6 +27,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void Release();
 
 		[DllImport(DllPath)] public static extern void Run();
+		[DllImport(DllPath)] public static extern void Stop();
 
 		[DllImport(DllPath)] public static extern void LoadRom(
 			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath,

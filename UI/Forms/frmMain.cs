@@ -29,6 +29,14 @@ namespace Mesen.GUI.Forms
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, Handle, ctrlRenderer.Handle, false, false, false);
 		}
 
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			EmuApi.Stop();
+			EmuApi.Release();
+		}
+
 		private void mnuTraceLogger_Click(object sender, EventArgs e)
 		{
 			frmTraceLogger frm = new frmTraceLogger();
