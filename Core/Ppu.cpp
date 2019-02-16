@@ -183,7 +183,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//VMDATAL - VRAM Data Write low byte
 			_vram[_vramAddress << 1] = value;
 			if(!_vramAddrIncrementOnSecondReg) {
-				_vramAddress = (_vramIncrementValue + _vramIncrementValue) & 0x7FFF;
+				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
 			break;
 
@@ -191,7 +191,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//VMDATAH - VRAM Data Write high byte
 			_vram[(_vramAddress << 1) + 1] = value;
 			if(_vramAddrIncrementOnSecondReg) {
-				_vramAddress = (_vramIncrementValue + _vramIncrementValue) & 0x7FFF;
+				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
 			break;
 
