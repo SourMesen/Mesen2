@@ -57,6 +57,12 @@ void Console::Run()
 void Console::Stop()
 {
 	_stopFlag = true;
+
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->Run();
+	}
+
 	_runLock.WaitForRelease();
 
 	_cpu.reset();
@@ -78,12 +84,12 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_cpu.reset(new Cpu(_memoryManager));
 
-		if(_debugger) {
+		//if(_debugger) {
 			//Reset debugger if it was running before
 			auto lock = _debuggerLock.AcquireSafe();
 			_debugger.reset();
 			GetDebugger();
-		}
+		//}
 	}
 }
 

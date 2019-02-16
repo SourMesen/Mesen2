@@ -78,7 +78,7 @@ namespace Mesen.GUI.Debugger
 			InitMemoryTypeDropdown(true);
 
 			_notifListener = new NotificationListener();
-			_notifListener.OnNotification += _notifListener_OnNotification;
+			_notifListener.OnNotification += OnNotificationReceived;
 
 			this.mnuShowCharacters.CheckedChanged += this.mnuShowCharacters_CheckedChanged;
 			this.mnuIgnoreRedundantWrites.CheckedChanged += mnuIgnoreRedundantWrites_CheckedChanged;
@@ -230,7 +230,7 @@ namespace Mesen.GUI.Debugger
 			}
 		}*/
 
-		private void _notifListener_OnNotification(NotificationEventArgs e)
+		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:

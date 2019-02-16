@@ -24,6 +24,7 @@ struct DebugState
 class Debugger
 {
 private:
+	shared_ptr<Console> _console;
 	shared_ptr<Cpu> _cpu;
 	shared_ptr<Ppu> _ppu;
 	shared_ptr<MemoryManager> _memoryManager;

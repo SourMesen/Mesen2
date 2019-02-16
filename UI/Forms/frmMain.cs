@@ -15,6 +15,8 @@ namespace Mesen.GUI.Forms
 {
 	public partial class frmMain : BaseForm
 	{
+		private NotificationListener _notifListener;
+
 		public frmMain(string[] args)
 		{
 			InitializeComponent();
@@ -27,26 +29,44 @@ namespace Mesen.GUI.Forms
 
 			EmuApi.InitDll();
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, Handle, ctrlRenderer.Handle, false, false, false);
+
+			_notifListener = new NotificationListener();
+			_notifListener.OnNotification += OnNotificationReceived;
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
 
+			if(_notifListener != null) {
+				_notifListener.Dispose();
+				_notifListener = null;
+			}
+
+			DebugApi.ResumeExecution();
 			EmuApi.Stop();
 			EmuApi.Release();
 		}
 
+		private void OnNotificationReceived(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.CodeBreak:
+					this.BeginInvoke((Action)(() => {
+						DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger);
+					}));
+					break;
+			}
+		}
+
 		private void mnuTraceLogger_Click(object sender, EventArgs e)
 		{
-			frmTraceLogger frm = new frmTraceLogger();
-			frm.Show();
+			DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger);
 		}
 
 		private void mnuMemoryTools_Click(object sender, EventArgs e)
 		{
-			frmMemoryTools frm = new frmMemoryTools();
-			frm.Show();
+			DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools);
 		}
 
 		private void mnuStep_Click(object sender, EventArgs e)

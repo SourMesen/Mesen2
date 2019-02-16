@@ -371,6 +371,7 @@
     <Compile Include="Debugger\HexBox\TblByteCharConverter.cs" />
     <Compile Include="Debugger\HexBox\Util.cs" />
     <Compile Include="Debugger\TblLoader.cs" />
+    <Compile Include="Debugger\DebugWindowManager.cs" />
     <Compile Include="Forms\BaseConfigForm.Designer.cs">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>
     </Compile>
