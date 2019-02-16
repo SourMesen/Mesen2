@@ -47,6 +47,10 @@
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
     <ClInclude Include="BaseVideoFilter.h" />
+    <ClInclude Include="blargg_common.h" />
+    <ClInclude Include="blargg_config.h" />
+    <ClInclude Include="blargg_endian.h" />
+    <ClInclude Include="blargg_source.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="CpuTypes.h" />
@@ -62,6 +66,7 @@
     <ClInclude Include="DrawRectangleCommand.h" />
     <ClInclude Include="DrawScreenBufferCommand.h" />
     <ClInclude Include="DrawStringCommand.h" />
+    <ClInclude Include="dsp.h" />
     <ClInclude Include="IAudioDevice.h" />
     <ClInclude Include="IInputProvider.h" />
     <ClInclude Include="IInputRecorder.h" />
@@ -78,6 +83,12 @@
     <ClInclude Include="Ppu.h" />
     <ClInclude Include="PpuTypes.h" />
     <ClInclude Include="SettingTypes.h" />
+    <ClInclude Include="SNES_SPC.h" />
+    <ClInclude Include="SoundMixer.h" />
+    <ClInclude Include="Spc.h" />
+    <ClInclude Include="SPC_CPU.h" />
+    <ClInclude Include="SPC_DSP.h" />
+    <ClInclude Include="SPC_Filter.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TraceLogger.h" />
     <ClInclude Include="VideoDecoder.h" />
@@ -100,6 +111,13 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="NotificationManager.cpp" />
     <ClCompile Include="Ppu.cpp" />
+    <ClCompile Include="SNES_SPC.cpp" />
+    <ClCompile Include="SNES_SPC_misc.cpp" />
+    <ClCompile Include="SNES_SPC_state.cpp" />
+    <ClCompile Include="SoundMixer.cpp" />
+    <ClCompile Include="Spc.cpp" />
+    <ClCompile Include="SPC_DSP.cpp" />
+    <ClCompile Include="SPC_Filter.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">Create</PrecompiledHeader>

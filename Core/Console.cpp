@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "Console.h"
 #include "Cpu.h"
+#include "Ppu.h"
+#include "Spc.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
 #include "NotificationManager.h"
+#include "SoundMixer.h"
 #include "VideoDecoder.h"
 #include "VideoRenderer.h"
 #include "DebugHud.h"
@@ -15,6 +18,7 @@ void Console::Initialize()
 	_notificationManager.reset(new NotificationManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
+	_soundMixer.reset(new SoundMixer());
 	_debugHud.reset(new DebugHud());
 
 	_videoDecoder->StartThread();
@@ -67,6 +71,7 @@ void Console::Stop()
 
 	_cpu.reset();
 	_ppu.reset();
+	_spc.reset();
 	_cart.reset();
 	_memoryManager.reset();
 }
@@ -78,6 +83,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
 		_ppu.reset(new Ppu(shared_from_this()));
+		_spc.reset(new Spc(shared_from_this()));
 		_cart = cart;
 		_memoryManager.reset(new MemoryManager());
 		_memoryManager->Initialize(shared_from_this());
@@ -91,6 +97,11 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 			GetDebugger();
 		//}
 	}
+}
+
+shared_ptr<SoundMixer> Console::GetSoundMixer()
+{
+	return _soundMixer;
 }
 
 shared_ptr<VideoRenderer> Console::GetVideoRenderer()
@@ -121,6 +132,11 @@ shared_ptr<Cpu> Console::GetCpu()
 shared_ptr<Ppu> Console::GetPpu()
 {
 	return _ppu;
+}
+
+shared_ptr<Spc> Console::GetSpc()
+{
+	return _spc;
 }
 
 shared_ptr<BaseCartridge> Console::GetCartridge()

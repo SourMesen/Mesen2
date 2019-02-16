@@ -116,6 +116,39 @@
     <ClInclude Include="NotificationManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="blargg_common.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="blargg_config.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="dsp.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES_SPC.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="SPC_Filter.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="SPC_DSP.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="SPC_CPU.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="blargg_source.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="blargg_endian.h">
+      <Filter>SNES\SPC</Filter>
+    </ClInclude>
+    <ClInclude Include="Spc.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundMixer.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -176,6 +209,27 @@
     <ClCompile Include="NotificationManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="SNES_SPC.cpp">
+      <Filter>SNES\SPC</Filter>
+    </ClCompile>
+    <ClCompile Include="SPC_DSP.cpp">
+      <Filter>SNES\SPC</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES_SPC_misc.cpp">
+      <Filter>SNES\SPC</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES_SPC_state.cpp">
+      <Filter>SNES\SPC</Filter>
+    </ClCompile>
+    <ClCompile Include="SPC_Filter.cpp">
+      <Filter>SNES\SPC</Filter>
+    </ClCompile>
+    <ClCompile Include="Spc.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundMixer.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -195,6 +249,9 @@
     </Filter>
     <Filter Include="Video\DebugHud">
       <UniqueIdentifier>{0d0cf24e-4126-4bfb-b391-27a015e7722a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\SPC">
+      <UniqueIdentifier>{e0e6a67b-620e-4fe4-9846-26a6c80ca6b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

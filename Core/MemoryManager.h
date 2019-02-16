@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Console.h"
 #include "Ppu.h"
+#include "Spc.h"
 #include "DmaController.h"
 #include "BaseCartridge.h"
 #include "IMemoryHandler.h"
@@ -11,31 +12,43 @@ class CpuRegisterHandler : public IMemoryHandler
 {
 private:
 	Ppu *_ppu;
+	Spc *_spc;
 	DmaController *_dmaController;
 
 public:
-	CpuRegisterHandler(Ppu *ppu, DmaController *dmaController)
+	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController)
 	{
 		_ppu = ppu;
+		_spc = spc;
 		_dmaController = dmaController;
 	}
 
 	uint8_t Read(uint32_t addr) override
 	{
-		return _ppu->Read(addr & 0xFFFF);
+		addr &= 0xFFFF;
+		if(addr >= 0x2140 && addr <= 0x217F) {
+			return _spc->Read(addr & 0x03);
+		} else {
+			return _ppu->Read(addr);
+		}
 	}
 
 	void Write(uint32_t addr, uint8_t value) override
 	{
-		_ppu->Write(addr & 0xFFFF, value);
-		_dmaController->Write(addr & 0xFFFF, value);
+		addr &= 0xFFFF;
+		if(addr >= 0x2140 && addr <= 0x217F) {
+			return _spc->Write(addr & 0x03, value);
+		} else {
+			_ppu->Write(addr, value);
+			_dmaController->Write(addr, value);
+		}
 	}
 };
 
 class WorkRamHandler : public IMemoryHandler
 {
 private:
-	uint8_t * _workRam;
+	uint8_t *_workRam;
 
 public:
 	WorkRamHandler(uint8_t *workRam)
@@ -85,7 +98,7 @@ public:
 		_ppu = console->GetPpu();
 
 		_dmaController.reset(new DmaController(console->GetMemoryManager().get()));
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), _dmaController.get()));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get()));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		_workRam = new uint8_t[MemoryManager::WorkRamSize];
@@ -227,5 +240,6 @@ public:
 		}
 	}
 
+	uint64_t GetMasterClock() { return _masterClock; }
 	uint8_t* DebugGetWorkRam() { return _workRam; }
 };

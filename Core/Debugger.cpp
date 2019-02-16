@@ -37,15 +37,19 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_traceLogger->LogEffectiveAddress(_cpu->GetLastOperand());
 		_traceLogger->Log(debugState, disassemblyInfo);
 
+		bool sendNotif = false;
 		if(value == 0x00) {
 			//break on BRK
 			_cpuStepCount = 1;
+			sendNotif = true;
 		}
 
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;
 			if(_cpuStepCount == 0) {
-				_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
+				if(sendNotif) {
+					_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
+				}
 				while(_cpuStepCount == 0) {
 					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 				}

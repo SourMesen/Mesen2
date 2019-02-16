@@ -5,10 +5,12 @@
 
 class Cpu;
 class Ppu;
+class Spc;
 class BaseCartridge;
 class MemoryManager;
 class Debugger;
 class DebugHud;
+class SoundMixer;
 class VideoRenderer;
 class VideoDecoder;
 class NotificationManager;
@@ -19,11 +21,13 @@ class Console : public std::enable_shared_from_this<Console>
 private:
 	shared_ptr<Cpu> _cpu;
 	shared_ptr<Ppu> _ppu;
+	shared_ptr<Spc> _spc;
 	shared_ptr<MemoryManager> _memoryManager;
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<Debugger> _debugger;
 
 	shared_ptr<NotificationManager> _notificationManager;
+	shared_ptr<SoundMixer> _soundMixer;
 	shared_ptr<VideoRenderer> _videoRenderer;
 	shared_ptr<VideoDecoder> _videoDecoder;
 	shared_ptr<DebugHud> _debugHud;
@@ -41,6 +45,7 @@ public:
 
 	void LoadRom(VirtualFile romFile, VirtualFile patchFile);
 
+	shared_ptr<SoundMixer> GetSoundMixer();
 	shared_ptr<VideoRenderer> GetVideoRenderer();
 	shared_ptr<VideoDecoder> GetVideoDecoder();
 	shared_ptr<NotificationManager> GetNotificationManager();
@@ -49,6 +54,7 @@ public:
 
 	shared_ptr<Cpu> GetCpu();
 	shared_ptr<Ppu> GetPpu();
+	shared_ptr<Spc> GetSpc();
 	shared_ptr<BaseCartridge> GetCartridge();
 	shared_ptr<MemoryManager> GetMemoryManager();
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);

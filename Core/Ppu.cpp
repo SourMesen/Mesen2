@@ -3,6 +3,7 @@
 #include "Console.h"
 #include "MemoryManager.h"
 #include "Cpu.h"
+#include "Spc.h"
 #include "VideoDecoder.h"
 #include "NotificationManager.h"
 
@@ -50,10 +51,11 @@ PpuState Ppu::GetState()
 void Ppu::Exec()
 {
 	if(_cycle == 340) {
-		_cycle = 0;
+		_cycle = -1;
 		_scanline++;
 
 		if(_scanline == 225) {
+			_console->GetSpc()->ProcessEndFrame();
 			_nmiFlag = true;
 			SendFrame();
 
@@ -62,7 +64,7 @@ void Ppu::Exec()
 			}
 		}
 
-		if(_scanline == 260) {
+		if(_scanline == 261) {
 			_nmiFlag = false;
 			_scanline = 0;
 			_frameCount++;
