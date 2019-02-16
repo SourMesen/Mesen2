@@ -38,6 +38,7 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -84,6 +85,7 @@
             this.mnuRun100Instructions,
             this.toolStripMenuItem1,
             this.mnuDebugger,
+            this.mnuMemoryTools,
             this.mnuTraceLogger});
 			this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
 			this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
@@ -120,19 +122,31 @@
 			// 
 			// mnuDebugger
 			// 
+			this.mnuDebugger.Enabled = false;
+			this.mnuDebugger.Image = global::Mesen.GUI.Properties.Resources.Debugger;
 			this.mnuDebugger.Name = "mnuDebugger";
 			this.mnuDebugger.Size = new System.Drawing.Size(163, 22);
 			this.mnuDebugger.Text = "Debugger";
 			// 
 			// mnuTraceLogger
 			// 
+			this.mnuTraceLogger.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
 			this.mnuTraceLogger.Name = "mnuTraceLogger";
 			this.mnuTraceLogger.Size = new System.Drawing.Size(163, 22);
 			this.mnuTraceLogger.Text = "Trace Logger";
 			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
+			// mnuMemoryTools
+			// 
+			this.mnuMemoryTools.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
+			this.mnuMemoryTools.Name = "mnuMemoryTools";
+			this.mnuMemoryTools.Size = new System.Drawing.Size(163, 22);
+			this.mnuMemoryTools.Text = "Memory Tools";
+			this.mnuMemoryTools.Click += new System.EventHandler(this.mnuMemoryTools_Click);
+			// 
 			// frmMain
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(512, 475);
@@ -161,5 +175,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuRun;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem mnuRun100Instructions;
+		private System.Windows.Forms.ToolStripMenuItem mnuMemoryTools;
 	}
 }

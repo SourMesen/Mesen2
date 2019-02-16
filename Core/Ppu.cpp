@@ -4,13 +4,14 @@
 #include "MemoryManager.h"
 #include "Cpu.h"
 #include "VideoDecoder.h"
+#include "NotificationManager.h"
 
 Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
 
-	_vram = new uint8_t[0x10000];
-	memset(_vram, 0, 0x10000);
+	_vram = new uint8_t[Ppu::VideoRamSize];
+	memset(_vram, 0, Ppu::VideoRamSize);
 
 	_layerConfig[0] = {};
 	_layerConfig[1] = {};
@@ -95,8 +96,24 @@ void Ppu::SendFrame()
 		}
 	}
 
+	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 	_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, _frameCount);
+}
+
+uint8_t* Ppu::GetVideoRam()
+{
+	return _vram;
+}
+
+uint8_t* Ppu::GetCgRam()
+{
+	return _cgram;
+}
+
+uint8_t* Ppu::GetSpriteRam()
+{
+	return _spriteRam;
 }
 
 uint8_t Ppu::Read(uint16_t addr)

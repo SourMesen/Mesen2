@@ -10,12 +10,12 @@ enum class ConsoleNotificationType
 	GameResumed = 4,
 	GameStopped = 5,
 	CodeBreak = 6,
-	PpuFrameDone = 9,
-	ResolutionChanged = 11,
-	ConfigChanged = 13,
-	ExecuteShortcut = 16,
-	EmulationStopped = 17,
-	BeforeEmulationStop = 19,
+	PpuFrameDone = 7,
+	ResolutionChanged = 8,
+	ConfigChanged = 9,
+	ExecuteShortcut = 10,
+	EmulationStopped = 11,
+	BeforeEmulationStop = 12,
 };
 
 class INotificationListener

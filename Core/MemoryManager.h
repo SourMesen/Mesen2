@@ -3,55 +3,9 @@
 #include "Console.h"
 #include "Ppu.h"
 #include "DmaController.h"
+#include "BaseCartridge.h"
+#include "IMemoryHandler.h"
 #include "../Utilities/HexUtilities.h"
-#include "../Utilities/VirtualFile.h"
-
-class IMemoryHandler
-{
-public:
-	virtual uint8_t Read(uint32_t addr) = 0;
-	virtual void Write(uint32_t addr, uint8_t value) = 0;
-
-	//virtual void GetMemoryRanges(MemoryRanges &ranges) = 0;
-	//virtual uint8_t PeekRAM(uint16_t addr) { return 0; }
-
-	virtual ~IMemoryHandler() {}
-};
-
-class BaseCartridge : public IMemoryHandler
-{
-private:
-	size_t _prgRomSize;
-	uint8_t* _prgRom;
-
-public:
-	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile romFile, VirtualFile patchFile)
-	{
-		if(romFile.IsValid()) {
-			vector<uint8_t> romData;
-			romFile.ReadFile(romData);
-
-			shared_ptr<BaseCartridge> cart(new BaseCartridge());
-			cart->_prgRomSize = romData.size();
-			cart->_prgRom = new uint8_t[cart->_prgRomSize];
-			memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
-
-			return cart;
-		} else {
-			return nullptr;
-		}
-	}
-
-	uint8_t Read(uint32_t addr) override
-	{
-		uint8_t bank = (addr >> 16) & 0x7F;
-		return _prgRom[((bank * 0x8000) | (addr & 0x7FFF)) & (_prgRomSize - 1)];
-	}
-
-	void Write(uint32_t addr, uint8_t value) override
-	{
-	}
-};
 
 class CpuRegisterHandler : public IMemoryHandler
 {
@@ -104,6 +58,9 @@ public:
 
 class MemoryManager
 {
+public:
+	constexpr static uint32_t WorkRamSize = 0x20000;
+
 private:
 	shared_ptr<Console> _console;
 
@@ -133,7 +90,7 @@ public:
 		_cpuRegisterHandler.reset(new CpuRegisterHandler(console));
 
 		memset(_handlers, 0, sizeof(_handlers));
-		_workRam = new uint8_t[128 * 1024];
+		_workRam = new uint8_t[MemoryManager::WorkRamSize];
 		//memset(_workRam, 0, 128 * 1024);
 
 		for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
@@ -270,4 +227,6 @@ public:
 			//std::cout << "Write - missing handler: $" << HexUtilities::ToHex(addr) << " = " << HexUtilities::ToHex(value) << std::endl;
 		}
 	}
+
+	uint8_t* DebugGetWorkRam() { return _workRam; }
 };

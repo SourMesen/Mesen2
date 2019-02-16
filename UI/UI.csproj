@@ -213,7 +213,10 @@
     <Compile Include="Config\ConfigAttributes.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\ConfigManager.cs" />
-    <Compile Include="Config\DebugInfo.cs" />
+    <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
+    <Compile Include="Debugger\Config\HexEditorInfo.cs" />
+    <Compile Include="Debugger\Config\TraceLoggerInfo.cs" />
+    <Compile Include="Debugger\Config\DebugInfo.cs" />
     <Compile Include="Controls\BaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -277,6 +280,33 @@
     <Compile Include="Controls\MyListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\Controls\ComboBoxWithSeparator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlDbgShortcuts.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlDbgShortcuts.designer.cs">
+      <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlHexViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlHexViewer.designer.cs">
+      <DependentUpon>ctrlHexViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmDbgPreferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmDbgPreferences.designer.cs">
+      <DependentUpon>frmDbgPreferences.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmDbgShortcutGetKey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmDbgShortcutGetKey.designer.cs">
+      <DependentUpon>frmDbgShortcutGetKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlCodeScrollbar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -293,6 +323,24 @@
       <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\FontDialogHelper.cs" />
+    <Compile Include="Debugger\frmFadeSpeed.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmFadeSpeed.designer.cs">
+      <DependentUpon>frmFadeSpeed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmGoToLine.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmGoToLine.designer.cs">
+      <DependentUpon>frmGoToLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmMemoryTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmMemoryTools.designer.cs">
+      <DependentUpon>frmMemoryTools.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\frmTraceLogger.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -300,6 +348,29 @@
       <DependentUpon>frmTraceLogger.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\TextboxHistory.cs" />
+    <Compile Include="Debugger\HexBox\BuiltInContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\HexBox\ByteCharConverters.cs" />
+    <Compile Include="Debugger\HexBox\ByteCollection.cs" />
+    <Compile Include="Debugger\HexBox\BytePositionInfo.cs" />
+    <Compile Include="Debugger\HexBox\DataBlock.cs" />
+    <Compile Include="Debugger\HexBox\DataMap.cs" />
+    <Compile Include="Debugger\HexBox\DynamicByteProvider.cs" />
+    <Compile Include="Debugger\HexBox\FileDataBlock.cs" />
+    <Compile Include="Debugger\HexBox\FindOptions.cs" />
+    <Compile Include="Debugger\HexBox\HexBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\HexBox\HexCasing.cs" />
+    <Compile Include="Debugger\HexBox\IByteColorProvider.cs" />
+    <Compile Include="Debugger\HexBox\IByteProvider.cs" />
+    <Compile Include="Debugger\HexBox\MemoryDataBlock.cs" />
+    <Compile Include="Debugger\HexBox\NativeMethods.cs" />
+    <Compile Include="Debugger\HexBox\StaticByteProvider.cs" />
+    <Compile Include="Debugger\HexBox\TblByteCharConverter.cs" />
+    <Compile Include="Debugger\HexBox\Util.cs" />
+    <Compile Include="Debugger\TblLoader.cs" />
     <Compile Include="Forms\BaseConfigForm.Designer.cs">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>
     </Compile>
@@ -325,6 +396,7 @@
     <Compile Include="Forms\ResourcePath.cs" />
     <Compile Include="Interop\DebugApi.cs" />
     <Compile Include="Interop\EmuApi.cs" />
+    <Compile Include="Interop\NotificationListener.cs" />
     <Compile Include="Interop\Utf8Marshaler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -355,11 +427,35 @@
     <EmbeddedResource Include="Controls\ctrlRenderer.resx">
       <DependentUpon>ctrlRenderer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlDbgShortcuts.resx">
+      <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlHexViewer.resx">
+      <DependentUpon>ctrlHexViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmDbgPreferences.resx">
+      <DependentUpon>frmDbgPreferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmDbgShortcutGetKey.resx">
+      <DependentUpon>frmDbgShortcutGetKey.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlScrollableTextbox.resx">
       <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmFadeSpeed.resx">
+      <DependentUpon>frmFadeSpeed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmGoToLine.resx">
+      <DependentUpon>frmGoToLine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmMemoryTools.resx">
+      <DependentUpon>frmMemoryTools.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmTraceLogger.resx">
       <DependentUpon>frmTraceLogger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\HexBox\HexBox.resx">
+      <DependentUpon>HexBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BaseConfigForm.resx">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>

@@ -6,6 +6,11 @@ class Console;
 
 class Ppu
 {
+public:
+	constexpr static uint32_t SpriteRamSize = 544;
+	constexpr static uint32_t CgRamSize = 512;
+	constexpr static uint32_t VideoRamSize = 0x10000;
+
 private:
 	shared_ptr<Console> _console;
 
@@ -22,7 +27,9 @@ private:
 	bool _vramAddrIncrementOnSecondReg;
 	
 	uint16_t _cgramAddress;
-	uint8_t _cgram[512];
+	uint8_t _cgram[Ppu::CgRamSize];
+
+	uint8_t _spriteRam[Ppu::SpriteRamSize];
 
 	uint16_t *_outputBuffers[2];
 	uint16_t *_currentBuffer;
@@ -38,6 +45,10 @@ public:
 	void Exec();
 
 	void SendFrame();
+
+	uint8_t* GetVideoRam();
+	uint8_t* GetCgRam();
+	uint8_t* GetSpriteRam();
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint32_t addr, uint8_t value);

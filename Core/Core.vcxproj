@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
     <ClInclude Include="BaseVideoFilter.h" />
@@ -51,6 +52,7 @@
     <ClInclude Include="CpuTypes.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugHud.h" />
+    <ClInclude Include="DebugTypes.h" />
     <ClInclude Include="DefaultVideoFilter.h" />
     <ClInclude Include="DisassemblyInfo.h" />
     <ClInclude Include="DmaController.h" />
@@ -64,12 +66,15 @@
     <ClInclude Include="IInputProvider.h" />
     <ClInclude Include="IInputRecorder.h" />
     <ClInclude Include="IKeyManager.h" />
+    <ClInclude Include="IMemoryHandler.h" />
     <ClInclude Include="IMessageManager.h" />
     <ClInclude Include="INotificationListener.h" />
     <ClInclude Include="IRenderingDevice.h" />
     <ClInclude Include="KeyManager.h" />
+    <ClInclude Include="MemoryDumper.h" />
     <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="MessageManager.h" />
+    <ClInclude Include="NotificationManager.h" />
     <ClInclude Include="Ppu.h" />
     <ClInclude Include="PpuTypes.h" />
     <ClInclude Include="SettingTypes.h" />
@@ -91,7 +96,9 @@
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="DmaController.cpp" />
     <ClCompile Include="KeyManager.cpp" />
+    <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="NotificationManager.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

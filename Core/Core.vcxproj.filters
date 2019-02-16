@@ -101,6 +101,21 @@
     <ClInclude Include="DmaController.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryDumper.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugTypes.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCartridge.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="IMemoryHandler.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -154,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="DmaController.cpp">
       <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryDumper.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationManager.cpp">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

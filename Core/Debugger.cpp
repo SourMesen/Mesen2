@@ -1,18 +1,22 @@
 #include "stdafx.h"
 #include "Debugger.h"
+#include "Console.h"
 #include "Cpu.h"
 #include "Ppu.h"
 #include "CpuTypes.h"
 #include "DisassemblyInfo.h"
 #include "TraceLogger.h"
+#include "MemoryDumper.h"
 #include "../Utilities/HexUtilities.h"
 
-Debugger::Debugger(shared_ptr<Cpu> cpu, shared_ptr<Ppu> ppu, shared_ptr<MemoryManager> memoryManager)
+Debugger::Debugger(shared_ptr<Console> console)
 {
-	_cpu = cpu;
-	_ppu = ppu;
-	_memoryManager = memoryManager;
-	_traceLogger.reset(new TraceLogger(this, memoryManager));
+	_cpu = console->GetCpu();
+	_ppu = console->GetPpu();
+	_memoryManager = console->GetMemoryManager();
+
+	_traceLogger.reset(new TraceLogger(this, _memoryManager));
+	_memoryDumper.reset(new MemoryDumper(_ppu, _memoryManager, console->GetCartridge()));
 
 	_cpuStepCount = 0;
 }
@@ -72,4 +76,9 @@ void Debugger::GetState(DebugState *state)
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()
 {
 	return _traceLogger;
+}
+
+shared_ptr<MemoryDumper> Debugger::GetMemoryDumper()
+{
+	return _memoryDumper;
 }

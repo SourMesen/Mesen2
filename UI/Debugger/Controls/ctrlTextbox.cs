@@ -1050,8 +1050,8 @@ namespace Mesen.GUI.Debugger.Controls
 						string indirect = match.Groups[14].Value;
 						string paren3 = match.Groups[15].Value;
 						string rest = match.Groups[16].Value;
-						Color operandColor = operand.Length > 0 ? (operand[0] == '#' ? (Color)info.AssemblerImmediateColor : (operand[0] == '$' ? (Color)info.AssemblerAddressColor : (Color)info.AssemblerLabelDefinitionColor)) : Color.Black;
-						List<Color> colors = new List<Color>() { defaultColor, info.AssemblerOpcodeColor, defaultColor, defaultColor, defaultColor, operandColor, defaultColor, defaultColor, defaultColor };
+						Color operandColor = operand.Length > 0 ? (operand[0] == '#' ? (Color)info.CodeImmediateColor : (operand[0] == '$' ? (Color)info.CodeAddressColor : (Color)info.CodeLabelDefinitionColor)) : Color.Black;
+						List<Color> colors = new List<Color>() { defaultColor, info.CodeOpcodeColor, defaultColor, defaultColor, defaultColor, operandColor, defaultColor, defaultColor, defaultColor };
 						int codePartCount = colors.Count;
 
 						List<string> parts = new List<string>() { padding, opcode, invalidStar, " ", paren1, operand, paren2, indirect, paren3 };
@@ -1110,7 +1110,7 @@ namespace Mesen.GUI.Debugger.Controls
 						}
 						codeStringLength = xOffset;
 					} else {
-						using(Brush fgBrush = new SolidBrush(codeString.EndsWith(":") ? (Color)info.AssemblerLabelDefinitionColor : (textColor ?? defaultColor))) {
+						using(Brush fgBrush = new SolidBrush(codeString.EndsWith(":") ? (Color)info.CodeLabelDefinitionColor : (textColor ?? defaultColor))) {
 							g.DrawString(codeString, this.Font, fgBrush, marginLeft, positionY, StringFormat.GenericTypographic);
 						}
 						characterCount = codeString.Trim().Length;
@@ -1118,7 +1118,7 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 
 				if(!string.IsNullOrWhiteSpace(commentString)) {
-					using(Brush commentBrush = new SolidBrush(info.AssemblerCommentColor)) {
+					using(Brush commentBrush = new SolidBrush(info.CodeCommentColor)) {
 						int padding = Math.Max(CommentSpacingCharCount, characterCount + 1);
 						if(characterCount == 0) {
 							//Draw comment left-aligned, next to the margin when there is no code on the line

@@ -29,20 +29,20 @@ namespace Mesen.GUI.Debugger
 		{
 			InitializeComponent();
 
-			DebugInfo debugInfo = ConfigManager.Config.Debug;
-			if(!debugInfo.TraceLoggerSize.IsEmpty) {
+			TraceLoggerInfo config = ConfigManager.Config.Debug.TraceLogger;
+			if(!config.WindowSize.IsEmpty) {
 				this.StartPosition = FormStartPosition.Manual;
-				this.Size = debugInfo.TraceLoggerSize;
-				this.Location = debugInfo.TraceLoggerLocation;
+				this.Size = config.WindowSize;
+				this.Location = config.WindowLocation;
 			}
 
-			txtTraceLog.BaseFont = new Font(debugInfo.TraceFontFamily, debugInfo.TraceFontSize, debugInfo.TraceFontStyle);
-			txtTraceLog.TextZoom = debugInfo.TraceTextZoom;
+			txtTraceLog.BaseFont = new Font(config.FontFamily, config.FontSize, config.FontStyle);
+			txtTraceLog.TextZoom = config.TextZoom;
 
-			mnuAutoRefresh.Checked = debugInfo.TraceAutoRefresh;
-			_lineCount = debugInfo.TraceLineCount;
+			mnuAutoRefresh.Checked = config.AutoRefresh;
+			_lineCount = config.LineCount;
 
-			_entityBinder.Entity = debugInfo.TraceLoggerOptions;
+			_entityBinder.Entity = config.LogOptions;
 			_entityBinder.AddBinding("ShowByteCode", chkShowByteCode);
 			_entityBinder.AddBinding("ShowCpuCycles", chkShowCpuCycles);
 			_entityBinder.AddBinding("ShowEffectiveAddresses", chkShowEffectiveAddresses);
@@ -90,16 +90,16 @@ namespace Mesen.GUI.Debugger
 
 		private void InitShortcuts()
 		{
-			//TODO
-			/*mnuIncreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.IncreaseFontSize));
+			mnuIncreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.IncreaseFontSize));
 			mnuDecreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.DecreaseFontSize));
 			mnuResetFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.ResetFontSize));
 			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
 			mnuCopy.InitShortcut(this, nameof(DebuggerShortcutsConfig.Copy));
 			mnuSelectAll.InitShortcut(this, nameof(DebuggerShortcutsConfig.SelectAll));
 
-			mnuEditInMemoryViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer));
-			mnuViewInDisassembly.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInDisassembly));*/
+			//TODO
+			//mnuEditInMemoryViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer));
+			//mnuViewInDisassembly.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInDisassembly));
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -122,16 +122,16 @@ namespace Mesen.GUI.Debugger
 
 			base.OnFormClosing(e);
 
-			DebugInfo debugInfo = ConfigManager.Config.Debug;
-			debugInfo.TraceAutoRefresh = mnuAutoRefresh.Checked;
-			debugInfo.TraceLineCount = _lineCount;
-			debugInfo.TraceLoggerSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
-			debugInfo.TraceLoggerLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
+			TraceLoggerInfo config = ConfigManager.Config.Debug.TraceLogger;
+			config.AutoRefresh = mnuAutoRefresh.Checked;
+			config.LineCount = _lineCount;
+			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
+			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
 
-			debugInfo.TraceFontFamily = txtTraceLog.BaseFont.FontFamily.Name;
-			debugInfo.TraceFontSize = txtTraceLog.BaseFont.Size;
-			debugInfo.TraceFontStyle = txtTraceLog.BaseFont.Style;
-			debugInfo.TraceTextZoom = txtTraceLog.TextZoom;
+			config.FontFamily = txtTraceLog.BaseFont.FontFamily.Name;
+			config.FontSize = txtTraceLog.BaseFont.Size;
+			config.FontStyle = txtTraceLog.BaseFont.Style;
+			config.TextZoom = txtTraceLog.TextZoom;
 
 			_entityBinder.UpdateObject();
 
@@ -270,7 +270,6 @@ namespace Mesen.GUI.Debugger
 			SetOptions();
 			Task.Run(() => {
 				//Update trace log in another thread for performance
-				//DebugState state = new DebugState();
 				DebugState state = DebugApi.GetState();
 				if(_previousCycleCount != state.Cpu.CycleCount || forceUpdate) {
 					string newTrace = DebugApi.GetExecutionTrace((UInt32)_lineCount);

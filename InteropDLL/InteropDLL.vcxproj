@@ -448,6 +448,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="InteropNotificationListeners.h" />
+    <ClInclude Include="InteropNotificationListener.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

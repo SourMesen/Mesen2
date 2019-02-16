@@ -14,7 +14,7 @@ namespace Mesen.GUI.Forms
 {
 	public class EntityBinder
 	{
-		private Dictionary<string, Control> _bindings = new Dictionary<string, Control>();
+		private Dictionary<string, object> _bindings = new Dictionary<string, object>();
 		private Dictionary<string, eNumberFormat> _fieldFormat = new Dictionary<string, eNumberFormat>();
 		private Dictionary<string, FieldInfoWrapper> _fieldInfo = null;
 
@@ -27,7 +27,7 @@ namespace Mesen.GUI.Forms
 
 		public bool Updating { get; private set; }
 
-		public void AddBinding(string fieldName, Control bindedField, eNumberFormat format = eNumberFormat.Default)
+		public void AddBinding(string fieldName, object bindedField, eNumberFormat format = eNumberFormat.Default)
 		{
 			if(BindedType == null) {
 				throw new Exception("Need to override BindedType to use bindings");
@@ -62,7 +62,7 @@ namespace Mesen.GUI.Forms
 		{
 			this.Updating = true;
 
-			foreach(KeyValuePair<string, Control> kvp in _bindings) {
+			foreach(KeyValuePair<string, object> kvp in _bindings) {
 				if(!_fieldInfo.ContainsKey(kvp.Key)) {
 					throw new Exception("Invalid binding key");
 				} else {
@@ -71,20 +71,22 @@ namespace Mesen.GUI.Forms
 					object value = field.GetValue(this.Entity);
 					if(kvp.Value is TextBox) {
 						if(value is IFormattable) {
-							kvp.Value.Text = ((IFormattable)value).ToString(format == eNumberFormat.Decimal ? "" : "X", System.Globalization.CultureInfo.InvariantCulture);
+							((TextBox)kvp.Value).Text = ((IFormattable)value).ToString(format == eNumberFormat.Decimal ? "" : "X", System.Globalization.CultureInfo.InvariantCulture);
 						} else {
-							kvp.Value.Text = value == null ? "" : ((string)value).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine);
+							((TextBox)kvp.Value).Text = value == null ? "" : ((string)value).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine);
 						}
 					} else if(kvp.Value is ctrlPathSelection) {
-						kvp.Value.Text = (string)value;
+						((ctrlPathSelection)kvp.Value).Text = (string)value;
 					} else if(kvp.Value is CheckBox) {
 						((CheckBox)kvp.Value).Checked = Convert.ToBoolean(value);
+					} else if(kvp.Value is ToolStripMenuItem) {
+						((ToolStripMenuItem)kvp.Value).Checked = Convert.ToBoolean(value);
 					} else if(kvp.Value is ctrlRiskyOption) {
 						((ctrlRiskyOption)kvp.Value).Checked = Convert.ToBoolean(value);
 					} else if(kvp.Value is RadioButton) {
 						((RadioButton)kvp.Value).Checked = (bool)value;
 					} else if(kvp.Value is Panel) {
-						RadioButton radio = kvp.Value.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Tag.Equals(value));
+						RadioButton radio = ((Panel)kvp.Value).Controls.OfType<RadioButton>().FirstOrDefault(r => r.Tag.Equals(value));
 						if(radio != null) {
 							radio.Checked = true;
 						} else {
@@ -146,7 +148,7 @@ namespace Mesen.GUI.Forms
 
 		public void UpdateObject()
 		{
-			foreach(KeyValuePair<string, Control> kvp in _bindings) {
+			foreach(KeyValuePair<string, object> kvp in _bindings) {
 				if(!_fieldInfo.ContainsKey(kvp.Key)) {
 					throw new Exception("Invalid binding key");
 				} else {
@@ -154,7 +156,7 @@ namespace Mesen.GUI.Forms
 						FieldInfoWrapper field = _fieldInfo[kvp.Key];
 						eNumberFormat format = _fieldFormat[kvp.Key];
 						if(kvp.Value is TextBox) {
-							object value = kvp.Value.Text;
+							object value = ((TextBox)kvp.Value).Text;
 							NumberStyles numberStyle = format == eNumberFormat.Decimal ? NumberStyles.Integer : NumberStyles.HexNumber;
 							if(field.FieldType != typeof(string)) {
 								value = ((string)value).Trim().Replace("$", "").Replace("0x", "");
@@ -208,6 +210,10 @@ namespace Mesen.GUI.Forms
 							} else if(field.FieldType == typeof(byte)) {
 								field.SetValue(Entity, ((CheckBox)kvp.Value).Checked ? (byte)1 : (byte)0);
 							}
+						} else if(kvp.Value is ToolStripMenuItem) {
+							if(field.FieldType == typeof(bool)) {
+								field.SetValue(Entity, ((ToolStripMenuItem)kvp.Value).Checked);
+							}
 						} else if(kvp.Value is ctrlRiskyOption) {
 							if(field.FieldType == typeof(bool)) {
 								field.SetValue(Entity, ((ctrlRiskyOption)kvp.Value).Checked);
@@ -217,7 +223,7 @@ namespace Mesen.GUI.Forms
 						} else if(kvp.Value is RadioButton) {
 							field.SetValue(Entity, ((RadioButton)kvp.Value).Checked);
 						} else if(kvp.Value is Panel) {
-							field.SetValue(Entity, kvp.Value.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Tag);
+							field.SetValue(Entity, ((Panel)kvp.Value).Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Tag);
 						} else if(kvp.Value is ctrlTrackbar) {
 							if(field.FieldType == typeof(Int32)) {
 								field.SetValue(Entity, (Int32)((ctrlTrackbar)kvp.Value).Value);

@@ -17,6 +17,7 @@
 #include <list>
 #include <atomic>
 #include <thread>
+#include <deque>
 
 #include "../Utilities/UTF8Util.h"
 
@@ -44,6 +45,7 @@ using std::string;
 using std::atomic_flag;
 using std::atomic;
 using std::thread;
+using std::deque;
 
 #ifdef _DEBUG
 #pragma comment(lib, "C:\\Code\\Mesen-S\\bin\\x64\\Debug\\Utilities.lib")

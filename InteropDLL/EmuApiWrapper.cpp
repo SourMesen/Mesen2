@@ -3,8 +3,8 @@
 #include "../Core/MessageManager.h"
 #include "../Core/INotificationListener.h"
 #include "../Core/KeyManager.h"
-#include "../Utilities/SimpleLock.h"
 #include "../Utilities/ArchiveReader.h"
+#include "InteropNotificationListeners.h"
 
 #ifdef _WIN32
 	#include "../Windows/Renderer.h"
@@ -26,31 +26,9 @@ void* _viewerHandle = nullptr;
 string _returnString;
 string _logString;
 shared_ptr<Console> _console;
-SimpleLock _externalNotificationListenerLock;
-vector<shared_ptr<INotificationListener>> _externalNotificationListeners;
-
-typedef void (__stdcall *NotificationListenerCallback)(int, void*);
+InteropNotificationListeners _listeners;
 
 namespace InteropEmu {
-	class InteropNotificationListener : public INotificationListener
-	{
-		NotificationListenerCallback _callback;
-	public:
-		InteropNotificationListener(NotificationListenerCallback callback)
-		{
-			_callback = callback;
-		}
-
-		virtual ~InteropNotificationListener()
-		{
-		}
-		
-		void ProcessNotification(ConsoleNotificationType type, void* parameter)
-		{
-			_callback((int)type, parameter);
-		}
-	};
-
 	extern "C" {
 		DllExport bool __stdcall TestDll()
 		{
@@ -192,24 +170,12 @@ namespace InteropEmu {
 
 		DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
 		{
-			auto lock = _externalNotificationListenerLock.AcquireSafe();
-			auto listener = shared_ptr<INotificationListener>(new InteropNotificationListener(callback));
-			_externalNotificationListeners.push_back(listener);
-			//_console->GetNotificationManager()->RegisterNotificationListener(listener);
-			return listener.get();
+			return _listeners.RegisterNotificationCallback(callback, _console);
 		}
 
 		DllExport void __stdcall UnregisterNotificationCallback(INotificationListener *listener)
 		{
-			auto lock = _externalNotificationListenerLock.AcquireSafe();
-			_externalNotificationListeners.erase(
-				std::remove_if(
-					_externalNotificationListeners.begin(),
-					_externalNotificationListeners.end(),
-					[=](shared_ptr<INotificationListener> ptr) { return ptr.get() == listener; }
-				),
-				_externalNotificationListeners.end()
-			);
+			_listeners.UnregisterNotificationCallback(listener);
 		}
 
 		DllExport void __stdcall DisplayMessage(char* title, char* message, char* param1) { MessageManager::DisplayMessage(title, message, param1 ? param1 : ""); }

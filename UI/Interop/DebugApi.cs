@@ -35,6 +35,31 @@ namespace Mesen.GUI
 			DebugApi.GetStateWrapper(ref state);
 			return state;
 		}
+
+		[DllImport(DllPath)] public static extern Int32 GetMemorySize(SnesMemoryType type);
+		[DllImport(DllPath)] public static extern Byte GetMemoryValue(SnesMemoryType type, UInt32 address);
+		[DllImport(DllPath)] public static extern void SetMemoryValue(SnesMemoryType type, UInt32 address, byte value);
+		[DllImport(DllPath)] public static extern void SetMemoryValues(SnesMemoryType type, UInt32 address, [In] byte[] data, Int32 length);
+		[DllImport(DllPath)] public static extern void SetMemoryState(SnesMemoryType type, [In] byte[] buffer, Int32 length);
+
+		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(SnesMemoryType type, [In, Out] byte[] buffer);
+		public static byte[] GetMemoryState(SnesMemoryType type)
+		{
+			byte[] buffer = new byte[DebugApi.GetMemorySize(type)];
+			DebugApi.GetMemoryStateWrapper(type, buffer);
+			return buffer;
+		}
+	}
+
+	public enum SnesMemoryType
+	{
+		CpuMemory,
+		PrgRom,
+		WorkRam,
+		SaveRam,
+		VideoRam,
+		SpriteRam,
+		CGRam,
 	}
 
 	public struct CpuState

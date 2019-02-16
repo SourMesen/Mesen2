@@ -3,6 +3,7 @@
 #include "Cpu.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
+#include "NotificationManager.h"
 #include "VideoDecoder.h"
 #include "VideoRenderer.h"
 #include "DebugHud.h"
@@ -11,6 +12,7 @@
 
 void Console::Initialize()
 {
+	_notificationManager.reset(new NotificationManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
 	_debugHud.reset(new DebugHud());
@@ -57,12 +59,12 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
 		_ppu.reset(new Ppu(shared_from_this()));
-		
+		_cart = cart;
 		_memoryManager.reset(new MemoryManager());
 		_memoryManager->Initialize(cart, shared_from_this());
 
 		_cpu.reset(new Cpu(_memoryManager));
-		_debugger.reset(new Debugger(_cpu, _ppu, _memoryManager));
+		_debugger.reset(new Debugger(shared_from_this()));
 	}
 }
 
@@ -74,6 +76,11 @@ shared_ptr<VideoRenderer> Console::GetVideoRenderer()
 shared_ptr<VideoDecoder> Console::GetVideoDecoder()
 {
 	return _videoDecoder;
+}
+
+shared_ptr<NotificationManager> Console::GetNotificationManager()
+{
+	return _notificationManager;
 }
 
 shared_ptr<DebugHud> Console::GetDebugHud()
@@ -89,6 +96,11 @@ shared_ptr<Cpu> Console::GetCpu()
 shared_ptr<Ppu> Console::GetPpu()
 {
 	return _ppu;
+}
+
+shared_ptr<BaseCartridge> Console::GetCartridge()
+{
+	return _cart;
 }
 
 shared_ptr<MemoryManager> Console::GetMemoryManager()
