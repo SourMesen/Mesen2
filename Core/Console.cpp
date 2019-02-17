@@ -10,6 +10,7 @@
 #include "VideoDecoder.h"
 #include "VideoRenderer.h"
 #include "DebugHud.h"
+#include "MessageManager.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 
@@ -82,6 +83,8 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
+		MessageManager::ClearLog();
+
 		_ppu.reset(new Ppu(shared_from_this()));
 		_spc.reset(new Spc(shared_from_this()));
 		_cart = cart;

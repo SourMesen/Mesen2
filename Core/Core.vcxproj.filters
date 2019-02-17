@@ -149,6 +149,12 @@
     <ClInclude Include="SoundMixer.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="RomHandler.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="RamHandler.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -229,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="SoundMixer.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCartridge.cpp">
+      <Filter>SNES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

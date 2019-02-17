@@ -21,7 +21,7 @@ DisassemblyInfo::DisassemblyInfo(CpuState &state, MemoryManager *memoryManager)
 	_opSize = GetOperandSize() + 1;
 
 	for(int i = 1; i < _opSize; i++) {
-		_byteCode[i] = memoryManager->Peek(addr+i);
+		_byteCode[i] = memoryManager->Peek((addr+i) & 0xFFFFFF);
 	}
 
 	_emulationMode = state.EmulationMode;

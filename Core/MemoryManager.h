@@ -3,9 +3,11 @@
 #include "Console.h"
 #include "Ppu.h"
 #include "Spc.h"
+#include "RamHandler.h"
 #include "DmaController.h"
 #include "BaseCartridge.h"
 #include "IMemoryHandler.h"
+#include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
 
 class CpuRegisterHandler : public IMemoryHandler
@@ -14,13 +16,18 @@ private:
 	Ppu *_ppu;
 	Spc *_spc;
 	DmaController *_dmaController;
+	uint8_t *_workRam;
+	uint32_t _wramPosition;
 
 public:
-	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController)
+	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController, uint8_t *workRam)
 	{
 		_ppu = ppu;
 		_spc = spc;
 		_dmaController = dmaController;
+		
+		_workRam = workRam;
+		_wramPosition = 0;
 	}
 
 	uint8_t Read(uint32_t addr) override
@@ -38,32 +45,22 @@ public:
 		addr &= 0xFFFF;
 		if(addr >= 0x2140 && addr <= 0x217F) {
 			return _spc->Write(addr & 0x03, value);
+		} if(addr >= 0x2180 && addr <= 0x2183) {
+			switch(addr & 0xFFFF) {
+				case 0x2180:
+					_workRam[_wramPosition] = value;
+					_wramPosition = (_wramPosition + 1) & (0x1FFFF);
+					break;
+
+				case 0x2181: _wramPosition = (_wramPosition & 0x1FF00) | value; break;
+				case 0x2182: _wramPosition = (_wramPosition & 0x100FF) | (value << 8); break;
+				case 0x2183: _wramPosition = (_wramPosition & 0xFFFF) | ((value & 0x01) << 16); break;
+			}
+		} else if(addr == 0x420B || addr == 0x420C || addr >= 0x4300) {
+			_dmaController->Write(addr, value);
 		} else {
 			_ppu->Write(addr, value);
-			_dmaController->Write(addr, value);
 		}
-	}
-};
-
-class WorkRamHandler : public IMemoryHandler
-{
-private:
-	uint8_t *_workRam;
-
-public:
-	WorkRamHandler(uint8_t *workRam)
-	{
-		_workRam = workRam;
-	}
-
-	uint8_t Read(uint32_t addr) override
-	{
-		return _workRam[addr & 0xFFF];
-	}
-
-	void Write(uint32_t addr, uint8_t value) override
-	{
-		_workRam[addr & 0xFFF] = value;
 	}
 };
 
@@ -75,15 +72,15 @@ public:
 private:
 	shared_ptr<Console> _console;
 
-	uint8_t * _workRam;
-	IMemoryHandler* _handlers[0x100 * 0x10];
-	vector<unique_ptr<WorkRamHandler>> _workRamHandlers;
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
 	shared_ptr<Ppu> _ppu;
 	shared_ptr<DmaController> _dmaController;
 
-	uint32_t _wramPosition;
+	IMemoryHandler* _handlers[0x100 * 0x10];
+	vector<unique_ptr<RamHandler>> _workRamHandlers;
+
+	uint8_t * _workRam;
 
 	uint64_t _masterClock;
 	uint64_t _lastMasterClock;
@@ -97,15 +94,16 @@ public:
 		_cart = console->GetCartridge();
 		_ppu = console->GetPpu();
 
+		_workRam = new uint8_t[MemoryManager::WorkRamSize];
+
 		_dmaController.reset(new DmaController(console->GetMemoryManager().get()));
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get()));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get(), _workRam));
 
 		memset(_handlers, 0, sizeof(_handlers));
-		_workRam = new uint8_t[MemoryManager::WorkRamSize];
 		//memset(_workRam, 0, 128 * 1024);
 
 		for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
-			_workRamHandlers.push_back(unique_ptr<WorkRamHandler>(new WorkRamHandler(_workRam + i)));
+			_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam + i)));
 			RegisterHandler(0x7E0000 | i, 0x7E0000 | (i + 0xFFF), _workRamHandlers[_workRamHandlers.size() - 1].get());
 		}
 
@@ -117,13 +115,17 @@ public:
 			RegisterHandler(((i | 0x80) << 16) | 0x4000, ((i | 0x80) << 16) | 0x4FFF, _cpuRegisterHandler.get());
 		}
 
-		RegisterHandler(0x0000, 0x0FFF, _workRamHandlers[0].get());
-		RegisterHandler(0x1000, 0x1FFF, _workRamHandlers[1].get());
-
-		for(int bank = 0; bank < 0x20; bank++) {
-			RegisterHandler((bank << 16) | 0x8000, (bank << 16) | 0xFFFF, _cart.get());
-			RegisterHandler(((0x80 | bank) << 16) | 0x8000, ((0x80 | bank) << 16) | 0xFFFF, _cart.get());
+		for(int i = 0; i < 0x3F; i++) {
+			RegisterHandler((i << 16) | 0x0000, (i << 16) | 0x0FFF, _workRamHandlers[0].get());
+			RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
 		}
+
+		for(int i = 0x80; i < 0xBF; i++) {
+			RegisterHandler((i << 16) | 0x0000, (i << 16) | 0x0FFF, _workRamHandlers[0].get());
+			RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
+		}
+
+		_cart->RegisterHandlers(*this);
 	}
 
 	~MemoryManager()
@@ -138,6 +140,10 @@ public:
 		}
 
 		for(uint32_t addr = startAddr; addr < endAddr; addr += 0x1000) {
+			if(_handlers[addr >> 12]) {
+				throw new std::runtime_error("handler already set");
+			}
+
 			_handlers[addr >> 12] = handler;
 		}
 	}
@@ -191,7 +197,10 @@ public:
 		if(_handlers[addr >> 12]) {
 			value = _handlers[addr >> 12]->Read(addr);
 		} else {
-			//std::cout << "Read - missing handler: $" << HexUtilities::ToHex(addr) << std::endl;
+			//open bus
+			value = (addr>> 12);
+
+			MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
 		}
 		_console->ProcessCpuRead(addr, value, type);
 		return value;
@@ -203,8 +212,6 @@ public:
 		uint8_t value = 0;
 		if(_handlers[addr >> 12]) {
 			value = _handlers[addr >> 12]->Read(addr);
-		} else {
-			//std::cout << "Read - missing handler: $" << HexUtilities::ToHex(addr) << std::endl;
 		}
 		return value;
 	}
@@ -213,30 +220,11 @@ public:
 	{
 		IncrementMasterClock(addr);
 
-		switch(addr & 0xFFFF) {
-			case 0x2180:
-				_workRam[_wramPosition] = value;
-				_wramPosition++;
-				break;
-
-			case 0x2181:
-				_wramPosition = (_wramPosition & 0x1FF00) | value;
-				break;
-
-			case 0x2182:
-				_wramPosition = (_wramPosition & 0x100FF) | (value << 8);
-				break;
-
-			case 0x2183:
-				_wramPosition = (_wramPosition & 0xFFFF) | ((value & 0x01) << 16);
-				break;
-		}
-
 		_console->ProcessCpuWrite(addr, value, type);
 		if(_handlers[addr >> 12]) {
 			return _handlers[addr >> 12]->Write(addr, value);
 		} else {
-			//std::cout << "Write - missing handler: $" << HexUtilities::ToHex(addr) << " = " << HexUtilities::ToHex(value) << std::endl;
+			MessageManager::DisplayMessage("Debug", "Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 		}
 	}
 

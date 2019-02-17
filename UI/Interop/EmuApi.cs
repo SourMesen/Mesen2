@@ -39,5 +39,8 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetMousePosition(double x, double y);
 
 		[DllImport(DllPath)] public static extern void SetDisplayLanguage(Language lang);
+
+		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
+		public static string GetLog() { return Utf8Marshaler.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
 	}
 }

@@ -172,6 +172,12 @@ void MessageManager::Log(string message)
 #endif
 }
 
+void MessageManager::ClearLog()
+{
+	auto lock = _logLock.AcquireSafe();
+	_log.clear();
+}
+
 string MessageManager::GetLog()
 {
 	auto lock = _logLock.AcquireSafe();

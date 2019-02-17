@@ -44,7 +44,7 @@ void VideoDecoder::GetScreenSize(ScreenSize &size, bool ignoreScale)
 
 		size.Scale = scale;*/
 
-		if(true || ignoreScale) {
+		if(ignoreScale) {
 			size.Width = 256;
 			size.Height = 224;
 		} else {

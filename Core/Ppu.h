@@ -35,6 +35,10 @@ private:
 	uint8_t _vramIncrementValue;
 	uint8_t _vramAddressRemapping;
 	bool _vramAddrIncrementOnSecondReg;
+
+	uint8_t _multOperand1 = 0;
+	uint8_t _multOperand2 = 0;
+	uint16_t _multResult = 0;
 	
 	uint16_t _cgramAddress;
 	uint8_t _cgram[Ppu::CgRamSize];

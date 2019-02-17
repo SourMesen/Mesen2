@@ -284,14 +284,6 @@ void TraceLogger::AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state)
 		_logCount++;
 	}
 
-	if(_logToFile) {
-		GetTraceRow(_outputBuffer, state.Cpu, state.Ppu, disassemblyInfo);
-		if(_outputBuffer.size() > 32768) {
-			_outputFile << _outputBuffer;
-			_outputBuffer.clear();
-		}
-	}
-
 	_currentPos = (_currentPos + 1) % ExecutionLogSize;
 }
 /*
@@ -307,10 +299,20 @@ void TraceLogger::LogNonExec(OperationInfo& operationInfo)
 
 void TraceLogger::LogEffectiveAddress(uint32_t effectiveAddress)
 {
+	uint32_t pos;
 	if(_currentPos > 0) {
-		_disassemblyCache[_currentPos - 1].SetEffectiveAddress(effectiveAddress);
+		pos = _currentPos - 1;
 	} else {
-		_disassemblyCache[ExecutionLogSize - 1].SetEffectiveAddress(effectiveAddress);
+		pos = ExecutionLogSize - 1;
+	}
+	
+	_disassemblyCache[pos].SetEffectiveAddress(effectiveAddress);
+	if(_logToFile) {
+		GetTraceRow(_outputBuffer, _cpuStateCache[pos], _ppuStateCache[pos], _disassemblyCache[pos]);
+		if(_outputBuffer.size() > 32768) {
+			_outputFile << _outputBuffer;
+			_outputBuffer.clear();
+		}
 	}
 }
 

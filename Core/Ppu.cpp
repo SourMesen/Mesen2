@@ -192,6 +192,13 @@ uint8_t Ppu::Read(uint16_t addr)
 				(_scanline >= 225 ? 0x80 : 0) |
 				((_cycle >= 0x121 || _cycle <= 0x15) ? 0x40 : 0)
 			);
+
+		case 0x4216: return (uint8_t)_multResult;
+		case 0x4217: return (uint8_t)(_multResult >> 8);
+
+		default:
+			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
+			break;
 	}
 
 	return 0;
@@ -284,10 +291,20 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//_autoJoypadRead = (value & 0x01) != 0;
 			break;
 
+		case 0x4202: _multOperand1 = value; break;
+		case 0x4203: 
+			_multOperand2 = value; 
+			_multResult = _multOperand1 * _multOperand2;
+			break;
+
 		case 0x4207: _horizontalTimer = (_horizontalTimer & 0x100) | value; break;
 		case 0x4208: _horizontalTimer = (_horizontalTimer & 0xFF) | ((value & 0x01) << 8); break;
 
 		case 0x4209: _verticalTimer = (_verticalTimer & 0x100) | value; break;
 		case 0x420A: _verticalTimer = (_verticalTimer & 0xFF) | ((value & 0x01) << 8); break;
+
+		default:
+			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr));
+			break;
 	}
 }

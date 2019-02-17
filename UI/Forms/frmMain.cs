@@ -32,6 +32,8 @@ namespace Mesen.GUI.Forms
 
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
+
+			new frmLogWindow().Show();
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DmaController.h"
 #include "MemoryManager.h"
+#include "MessageManager.h"
 
 DmaController::DmaController(MemoryManager *memoryManager)
 {
@@ -37,6 +38,8 @@ void DmaController::RunDma(DmaChannelConfig &channel)
 	//"Note, however, that writing $0000 to this register actually results in a transfer of $10000 bytes, not 0."
 	uint32_t bytesLeft = channel.TransferSize ? channel.TransferSize : 0x10000;
 
+	MessageManager::Log("Run DMA: " + HexUtilities::ToHex(channel.DestAddress) + " -> " + HexUtilities::ToHex(channel.SrcAddress) + " Bytes: " + std::to_string(bytesLeft));
+
 	while(bytesLeft > 0) {
 		//Manual DMA transfers run to the end of the transfer when started
 		RunSingleTransfer(channel, bytesLeft);
@@ -52,6 +55,13 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 				if(value & (1 << i)) {
 					RunDma(_channel[i]);
 				}
+			}
+			break;
+
+		case 0x420C:
+			//HDMAEN - HDMA Enable
+			if(value > 0) {
+				MessageManager::DisplayMessage("Debug", "Unsupported HDMA operation");
 			}
 			break;
 

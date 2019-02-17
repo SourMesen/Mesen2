@@ -27,5 +27,6 @@ public:
 	static void DisplayMessage(string title, string message, string param1 = "", string param2 = "");
 
 	static void Log(string message = "");
+	static void ClearLog();
 	static string GetLog();
 };
