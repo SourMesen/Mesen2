@@ -17,8 +17,15 @@ private:
 	uint16_t _cycle = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
+	
 	bool _nmiFlag = false;
 	bool _enableNmi = false;
+
+	bool _irqFlag = false;
+	bool _enableHorizontalIrq = false;
+	bool _enableVerticalIrq = false;
+	uint16_t _horizontalTimer = 0x1FF;
+	uint16_t _verticalTimer = 0x1FF;
 	
 	uint8_t _bgMode = 0;
 	LayerConfig _layerConfig[4];

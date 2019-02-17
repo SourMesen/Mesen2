@@ -97,3 +97,9 @@ enum class MemoryOperationType
 	DmaRead = 7,
 	DmaWrite = 8
 };
+
+enum class IrqSource
+{
+	None = 0,
+	Ppu = 1,
+};

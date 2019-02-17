@@ -21,7 +21,7 @@ private:
 	static constexpr uint32_t CoprocessorVector = 0x00FFE4;
 
 	static constexpr uint16_t LegacyNmiVector = 0xFFFA;
-	static constexpr uint32_t LegacyBreakVector = 0xFFFE;
+	static constexpr uint32_t LegacyIrqVector = 0xFFFE;
 	static constexpr uint32_t LegacyCoprocessorVector = 0x00FFF4;
 
 	typedef void(Cpu::*Func)();
@@ -31,6 +31,7 @@ private:
 	AddrMode _instAddrMode;
 	uint32_t _operand;
 	bool _nmiFlag;
+	uint8_t _irqSource;
 
 	Func _opTable[256];
 	AddrMode _addrMode[256];
@@ -243,4 +244,6 @@ public:
 	void Exec();
 
 	void SetNmiFlag();
+	void SetIrqSource(IrqSource source);
+	void ClearIrqSource(IrqSource source);
 };

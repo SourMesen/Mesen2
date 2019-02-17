@@ -447,7 +447,7 @@ void Cpu::ProcessInterrupt(uint16_t vector)
 
 void Cpu::BRK()
 {
-	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyBreakVector : Cpu::BreakVector);
+	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::BreakVector);
 }
 
 void Cpu::COP()

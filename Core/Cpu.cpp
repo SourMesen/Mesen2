@@ -56,6 +56,7 @@ Cpu::Cpu(shared_ptr<MemoryManager> memoryManager)
 	_state.SP = 0x1FF;
 	_state.EmulationMode = true;
 	_nmiFlag = false;
+	_irqSource = (uint8_t)IrqSource::None;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
 }
@@ -80,12 +81,24 @@ void Cpu::Exec()
 	if(_nmiFlag) {
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
 		_nmiFlag = false;
+	} else if(_irqSource && !CheckFlag(ProcFlags::IrqDisable)) {
+		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
 	}
 }
 
 void Cpu::SetNmiFlag()
 {
 	_nmiFlag = true;
+}
+
+void Cpu::SetIrqSource(IrqSource source)
+{
+	_irqSource |= (uint8_t)source;
+}
+
+void Cpu::ClearIrqSource(IrqSource source)
+{
+	_irqSource |= (uint8_t)source;
 }
 
 uint32_t Cpu::GetProgramAddress(uint16_t addr)

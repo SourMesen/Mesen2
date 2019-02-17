@@ -62,13 +62,21 @@ void Ppu::Exec()
 			if(_enableNmi) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		}
-
-		if(_scanline == 261) {
+		} else if(_scanline == 261) {
 			_nmiFlag = false;
 			_scanline = 0;
 			_frameCount++;
 		}
+
+		if(_enableVerticalIrq && !_enableHorizontalIrq && _cycle == _verticalTimer) {
+			//An IRQ will occur sometime just after the V Counter reaches the value set in $4209/$420A.
+			_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+		}
+	}
+
+	if(_enableHorizontalIrq && _cycle == _horizontalTimer && (!_enableVerticalIrq || _scanline == _verticalTimer)) {
+		//An IRQ will occur sometime just after the H Counter reaches the value set in $4207/$4208.
+		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 	}
 
 	_cycle++;
@@ -165,9 +173,19 @@ uint8_t* Ppu::GetSpriteRam()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
-		case 0x4210:
+		case 0x4210: {
 			//open bus implementation here is needed to pass CPUPHL test
-			return (_nmiFlag ? 0x80 : 0) | ((addr >> 8) & 0x70);
+			uint8_t value = (_nmiFlag ? 0x80 : 0) | ((addr >> 8) & 0x70);
+			_nmiFlag = false;
+			return value;
+		}
+
+		case 0x4211: {
+			uint8_t value = (_irqFlag ? 0x80 : 0) | ((addr >> 8) & 0x7F);
+			_irqFlag = false;
+			_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
+			return value;
+		}
 
 		case 0x4212:
 			return (
@@ -184,7 +202,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 	switch(addr) {
 		case 0x2105:
 			_bgMode = value & 0x07;
+			
+			//TODO
 			//_mode1Bg3Priority = (value & 0x08) != 0;
+
 			_layerConfig[0].LargeTiles = (value & 0x10) != 0;
 			_layerConfig[1].LargeTiles = (value & 0x20) != 0;
 			_layerConfig[2].LargeTiles = (value & 0x30) != 0;
@@ -256,7 +277,17 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x4200:
 			_enableNmi = (value & 0x80) != 0;
+			_enableVerticalIrq = (value & 0x20) != 0;
+			_enableHorizontalIrq = (value & 0x10) != 0;
+
+			//TODO
+			//_autoJoypadRead = (value & 0x01) != 0;
 			break;
 
+		case 0x4207: _horizontalTimer = (_horizontalTimer & 0x100) | value; break;
+		case 0x4208: _horizontalTimer = (_horizontalTimer & 0xFF) | ((value & 0x01) << 8); break;
+
+		case 0x4209: _verticalTimer = (_verticalTimer & 0x100) | value; break;
+		case 0x420A: _verticalTimer = (_verticalTimer & 0xFF) | ((value & 0x01) << 8); break;
 	}
 }
