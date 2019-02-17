@@ -167,6 +167,11 @@ shared_ptr<Debugger> Console::GetDebugger(bool autoStart)
 	return debugger;
 }
 
+bool Console::IsRunning()
+{
+	return _cpu != nullptr;
+}
+
 void Console::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	if(_debugger) {

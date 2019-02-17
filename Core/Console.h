@@ -58,6 +58,8 @@ public:
 	shared_ptr<BaseCartridge> GetCartridge();
 	shared_ptr<MemoryManager> GetMemoryManager();
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
+	
+	bool IsRunning();
 
 	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);

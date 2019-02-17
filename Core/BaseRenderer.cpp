@@ -2,6 +2,7 @@
 #include <cmath>
 #include "BaseRenderer.h"
 #include "Console.h"
+#include "Ppu.h"
 #include "MessageManager.h"
 
 BaseRenderer::BaseRenderer(shared_ptr<Console> console, bool registerAsMessageManager)
@@ -118,8 +119,8 @@ void BaseRenderer::ShowFpsCounter(int lineNumber)
 	int yPos = 13 + 24 * lineNumber;
 	if(_fpsTimer.GetElapsedMS() > 1000) {
 		//Update fps every sec
-		//TODO
-		uint32_t frameCount = 0; //_console->GetFrameCount();
+		shared_ptr<Ppu> ppu = _console->GetPpu();
+		uint32_t frameCount = ppu ? ppu->GetState().FrameCount : 0;
 		if(_lastFrameCount > frameCount) {
 			_currentFPS = 0;
 		} else {
@@ -161,24 +162,20 @@ void BaseRenderer::ShowGameTimer(int lineNumber)
 	DrawString(ss.str(), _screenWidth - 95, yPos, 250, 235, 215);*/
 }
 
-void BaseRenderer::ShowLagCounter(int lineNumber)
-{
-	//TODO
-	/*int yPos = 13 + 24 * lineNumber;
-	string lagCounter = MessageManager::Localize("Lag") + ": " + std::to_string(_console->GetLagCounter());
-	DrawString(lagCounter, _screenWidth - 123, yPos, 250, 235, 215);*/
-}
-
 void BaseRenderer::ShowFrameCounter(int lineNumber)
 {
-	//TODO
-	/*int yPos = 13 + 24 * lineNumber;
-	string lagCounter = MessageManager::Localize("Frame") + ": " + std::to_string(_console->GetFrameCount());
-	DrawString(lagCounter, _screenWidth - 146, yPos, 250, 235, 215);*/
+	int yPos = 13 + 24 * lineNumber;
+	shared_ptr<Ppu> ppu = _console->GetPpu();
+
+	string frameCounter = MessageManager::Localize("Frame") + ": " + std::to_string(ppu ? ppu->GetState().FrameCount : 0);
+	DrawString(frameCounter, _screenWidth - 146, yPos, 250, 235, 215);
 }
 
 void BaseRenderer::DrawCounters()
 {
+	int lineNumber = 0;
+	ShowFpsCounter(lineNumber++);
+	ShowFrameCounter(lineNumber++);
 	//TODO
 	/*int lineNumber = 0;
 	EmulationSettings* settings = _console->GetSettings();

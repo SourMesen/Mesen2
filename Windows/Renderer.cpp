@@ -626,10 +626,10 @@ void Renderer::Render()
 		if(paused) {
 			DrawPauseScreen(disableOverlay);
 		}
-				
+		*/		
 		if(_console->IsRunning()) {
 			DrawCounters();
-		}*/
+		}
 
 		DrawToasts();
 
