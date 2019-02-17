@@ -6,6 +6,7 @@
 #include "RamHandler.h"
 #include "DmaController.h"
 #include "BaseCartridge.h"
+#include "InternalRegisters.h"
 #include "IMemoryHandler.h"
 #include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
@@ -16,14 +17,16 @@ private:
 	Ppu *_ppu;
 	Spc *_spc;
 	DmaController *_dmaController;
+	InternalRegisters *_regs;
 	uint8_t *_workRam;
 	uint32_t _wramPosition;
 
 public:
-	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController, uint8_t *workRam)
+	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController, InternalRegisters *regs, uint8_t *workRam)
 	{
 		_ppu = ppu;
 		_spc = spc;
+		_regs = regs;
 		_dmaController = dmaController;
 		
 		_workRam = workRam;
@@ -35,8 +38,10 @@ public:
 		addr &= 0xFFFF;
 		if(addr >= 0x2140 && addr <= 0x217F) {
 			return _spc->Read(addr & 0x03);
-		} else {
+		} else if(addr < 0x4200) {
 			return _ppu->Read(addr);
+		} else {
+			return _regs->Read(addr);
 		}
 	}
 
@@ -58,8 +63,10 @@ public:
 			}
 		} else if(addr == 0x420B || addr == 0x420C || addr >= 0x4300) {
 			_dmaController->Write(addr, value);
-		} else {
+		} else if(addr < 0x4200) {
 			_ppu->Write(addr, value);
+		} else {
+			_regs->Write(addr, value);
 		}
 	}
 };
@@ -97,7 +104,7 @@ public:
 		_workRam = new uint8_t[MemoryManager::WorkRamSize];
 
 		_dmaController.reset(new DmaController(console->GetMemoryManager().get()));
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get(), _workRam));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get(), console->GetInternalRegisters().get(), _workRam));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		//memset(_workRam, 0, 128 * 1024);

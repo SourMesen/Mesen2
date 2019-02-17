@@ -74,6 +74,7 @@
     <ClInclude Include="IMemoryHandler.h" />
     <ClInclude Include="IMessageManager.h" />
     <ClInclude Include="INotificationListener.h" />
+    <ClInclude Include="InternalRegisters.h" />
     <ClInclude Include="IRenderingDevice.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="MemoryDumper.h" />
@@ -109,6 +110,7 @@
     <ClCompile Include="DefaultVideoFilter.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="DmaController.cpp" />
+    <ClCompile Include="InternalRegisters.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MessageManager.cpp" />

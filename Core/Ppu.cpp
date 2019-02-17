@@ -4,12 +4,14 @@
 #include "MemoryManager.h"
 #include "Cpu.h"
 #include "Spc.h"
+#include "InternalRegisters.h"
 #include "VideoDecoder.h"
 #include "NotificationManager.h"
 
 Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
+	_regs = console->GetInternalRegisters();
 
 	_outputBuffers[0] = new uint16_t[256 * 224];
 	_outputBuffers[1] = new uint16_t[256 * 224];
@@ -59,7 +61,7 @@ void Ppu::Exec()
 			_nmiFlag = true;
 			SendFrame();
 
-			if(_enableNmi) {
+			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
 		} else if(_scanline == 261) {
@@ -68,13 +70,13 @@ void Ppu::Exec()
 			_frameCount++;
 		}
 
-		if(_enableVerticalIrq && !_enableHorizontalIrq && _cycle == _verticalTimer) {
+		if(_regs->IsVerticalIrqEnabled() && !_regs->IsHorizontalIrqEnabled() && _scanline == _regs->GetVerticalTimer()) {
 			//An IRQ will occur sometime just after the V Counter reaches the value set in $4209/$420A.
 			_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 		}
 	}
 
-	if(_enableHorizontalIrq && _cycle == _horizontalTimer && (!_enableVerticalIrq || _scanline == _verticalTimer)) {
+	if(_regs->IsHorizontalIrqEnabled() && _cycle == _regs->GetHorizontalTimer() && (!_regs->IsVerticalIrqEnabled() || _scanline == _regs->GetVerticalTimer())) {
 		//An IRQ will occur sometime just after the H Counter reaches the value set in $4207/$4208.
 		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 	}
@@ -181,8 +183,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		}
 
 		case 0x4211: {
-			uint8_t value = (_irqFlag ? 0x80 : 0) | ((addr >> 8) & 0x7F);
-			_irqFlag = false;
+			uint8_t value = (_console->GetCpu()->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0) | ((addr >> 8) & 0x7F);
 			_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
 			return value;
 		}
@@ -192,9 +193,6 @@ uint8_t Ppu::Read(uint16_t addr)
 				(_scanline >= 225 ? 0x80 : 0) |
 				((_cycle >= 0x121 || _cycle <= 0x15) ? 0x40 : 0)
 			);
-
-		case 0x4216: return (uint8_t)_multResult;
-		case 0x4217: return (uint8_t)(_multResult >> 8);
 
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
@@ -281,27 +279,6 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_cgram[_cgramAddress] = value;
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			break;
-
-		case 0x4200:
-			_enableNmi = (value & 0x80) != 0;
-			_enableVerticalIrq = (value & 0x20) != 0;
-			_enableHorizontalIrq = (value & 0x10) != 0;
-
-			//TODO
-			//_autoJoypadRead = (value & 0x01) != 0;
-			break;
-
-		case 0x4202: _multOperand1 = value; break;
-		case 0x4203: 
-			_multOperand2 = value; 
-			_multResult = _multOperand1 * _multOperand2;
-			break;
-
-		case 0x4207: _horizontalTimer = (_horizontalTimer & 0x100) | value; break;
-		case 0x4208: _horizontalTimer = (_horizontalTimer & 0xFF) | ((value & 0x01) << 8); break;
-
-		case 0x4209: _verticalTimer = (_verticalTimer & 0x100) | value; break;
-		case 0x420A: _verticalTimer = (_verticalTimer & 0xFF) | ((value & 0x01) << 8); break;
 
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr));

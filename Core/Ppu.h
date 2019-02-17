@@ -3,6 +3,7 @@
 #include "PpuTypes.h"
 
 class Console;
+class InternalRegisters;
 
 class Ppu
 {
@@ -13,32 +14,22 @@ public:
 
 private:
 	shared_ptr<Console> _console;
+	shared_ptr<InternalRegisters> _regs;
 
 	uint16_t _cycle = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
 	
-	bool _nmiFlag = false;
-	bool _enableNmi = false;
-
-	bool _irqFlag = false;
-	bool _enableHorizontalIrq = false;
-	bool _enableVerticalIrq = false;
-	uint16_t _horizontalTimer = 0x1FF;
-	uint16_t _verticalTimer = 0x1FF;
-	
 	uint8_t _bgMode = 0;
 	LayerConfig _layerConfig[4];
 	
+	bool _nmiFlag = false;
+
 	uint8_t *_vram;
 	uint16_t _vramAddress;
 	uint8_t _vramIncrementValue;
 	uint8_t _vramAddressRemapping;
 	bool _vramAddrIncrementOnSecondReg;
-
-	uint8_t _multOperand1 = 0;
-	uint8_t _multOperand2 = 0;
-	uint16_t _multResult = 0;
 	
 	uint16_t _cgramAddress;
 	uint8_t _cgram[Ppu::CgRamSize];

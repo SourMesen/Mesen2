@@ -3,6 +3,7 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "Spc.h"
+#include "InternalRegisters.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
 #include "NotificationManager.h"
@@ -74,6 +75,7 @@ void Console::Stop()
 	_ppu.reset();
 	_spc.reset();
 	_cart.reset();
+	_internalRegisters.reset();
 	_memoryManager.reset();
 }
 
@@ -84,7 +86,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
 		MessageManager::ClearLog();
-
+		_internalRegisters.reset(new InternalRegisters());
 		_ppu.reset(new Ppu(shared_from_this()));
 		_spc.reset(new Spc(shared_from_this()));
 		_cart = cart;
@@ -150,6 +152,11 @@ shared_ptr<BaseCartridge> Console::GetCartridge()
 shared_ptr<MemoryManager> Console::GetMemoryManager()
 {
 	return _memoryManager;
+}
+
+shared_ptr<InternalRegisters> Console::GetInternalRegisters()
+{
+	return _internalRegisters;
 }
 
 shared_ptr<Debugger> Console::GetDebugger(bool autoStart)

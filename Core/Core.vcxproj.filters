@@ -155,6 +155,9 @@
     <ClInclude Include="RamHandler.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="InternalRegisters.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -237,6 +240,9 @@
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="BaseCartridge.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="InternalRegisters.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
   </ItemGroup>

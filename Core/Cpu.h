@@ -245,5 +245,6 @@ public:
 
 	void SetNmiFlag();
 	void SetIrqSource(IrqSource source);
+	bool CheckIrqSource(IrqSource source);
 	void ClearIrqSource(IrqSource source);
 };

@@ -96,6 +96,15 @@ void Cpu::SetIrqSource(IrqSource source)
 	_irqSource |= (uint8_t)source;
 }
 
+bool Cpu::CheckIrqSource(IrqSource source)
+{
+	if(_irqSource & (uint8_t)source) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 void Cpu::ClearIrqSource(IrqSource source)
 {
 	_irqSource |= (uint8_t)source;
