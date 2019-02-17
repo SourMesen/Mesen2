@@ -19,7 +19,10 @@ private:
 	uint32_t _frameCount = 0;
 	bool _nmiFlag = false;
 	bool _enableNmi = false;
-
+	
+	uint8_t _bgMode = 0;
+	LayerConfig _layerConfig[4];
+	
 	uint8_t *_vram;
 	uint16_t _vramAddress;
 	uint8_t _vramIncrementValue;
@@ -34,8 +37,7 @@ private:
 	uint16_t *_outputBuffers[2];
 	uint16_t *_currentBuffer;
 
-	LayerConfig _layerConfig[4];
-
+	void RenderTilemap(LayerConfig & config, uint8_t bpp);
 
 public:
 	Ppu(shared_ptr<Console> console);

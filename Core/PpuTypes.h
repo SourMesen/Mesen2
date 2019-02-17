@@ -15,4 +15,6 @@ struct LayerConfig
 
 	bool HorizontalMirrorring;
 	bool VerticalMirrorring;
+
+	bool LargeTiles;
 };
