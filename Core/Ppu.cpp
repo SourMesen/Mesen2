@@ -102,6 +102,8 @@ void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
 		return;
 	}
 
+	bool useColorMath = ((_colorMathEnabled >> layerIndex) & 0x01) != 0;
+
 	LayerConfig &config = _layerConfig[layerIndex];
 
 	uint16_t tilemapAddr = config.TilemapAddress;
@@ -126,7 +128,15 @@ void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
 					if(color > 0) {
 						uint16_t paletteRamOffset = (palette * (1 << bpp) + color) * 2;
 						uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-						_currentBuffer[(y * 8 + i) * 256 + x * 8 + j] = paletteColor;
+						
+						uint16_t &currentPixel = _currentBuffer[(y * 8 + i) * 256 + x * 8 + j];
+						if(useColorMath) {
+							uint16_t r = std::min(((currentPixel & 0x001F) + (paletteColor & 0x001F)), 0x1F);
+							uint16_t g = std::min(((currentPixel & 0x03E0) + (paletteColor & 0x03E0)), 0x3E0);
+							uint16_t b = std::min(((currentPixel & 0x7C00) + (paletteColor & 0x7C00)), 0x7C00);
+							paletteColor = r | g | b;
+						}
+						currentPixel = paletteColor;
 					}
 				}
 			}
@@ -384,6 +394,20 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x212C:
 			//TM - Main Screen Designation
 			_mainScreenLayers = value & 0x1F;
+			break;
+		
+		case 0x2130:
+			//CGWSEL - Color Addition Select
+			_colorMathClipMode = (value >> 6) & 0x03;
+			_colorMathPreventMode = (value >> 4) & 0x03;
+			_colorMathAddSubscreen = (value & 0x02) != 0;
+			_colorMathDirectColorMode = (value & 0x01) != 0;
+			break;
+
+		case 0x2131:
+			_colorMathEnabled = value & 0x3F;
+			_colorMathSubstractMode = (value & 0x80) != 0;
+			_colorMathHalveResult = (value & 0x80) != 0;
 			break;
 
 		default:
