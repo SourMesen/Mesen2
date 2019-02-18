@@ -95,8 +95,15 @@ void Ppu::Exec()
 	_cycle++;
 }
 
-void Ppu::RenderTilemap(LayerConfig &config, uint8_t bpp)
+void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
 {
+	if(((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
+		//This screen is disabled
+		return;
+	}
+
+	LayerConfig &config = _layerConfig[layerIndex];
+
 	uint16_t tilemapAddr = config.TilemapAddress;
 	uint16_t chrAddr = config.ChrAddress;
 	
@@ -116,10 +123,11 @@ void Ppu::RenderTilemap(LayerConfig &config, uint8_t bpp)
 						color >>= 1;
 					}
 
-					uint16_t paletteRamOffset = color == 0 ? 0 : ((palette * (1 << bpp) + color) * 2);
-
-					uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-					_currentBuffer[(y * 8 + i) * 256 + x * 8 + j] = paletteColor;
+					if(color > 0) {
+						uint16_t paletteRamOffset = (palette * (1 << bpp) + color) * 2;
+						uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+						_currentBuffer[(y * 8 + i) * 256 + x * 8 + j] = paletteColor;
+					}
 				}
 			}
 			addr+=2;
@@ -129,42 +137,58 @@ void Ppu::RenderTilemap(LayerConfig &config, uint8_t bpp)
 
 void Ppu::SendFrame()
 {
+	uint16_t bgColor = _cgram[0] | (_cgram[1]);
+	for(int i = 0; i < 256 * 224; i++) {
+		_currentBuffer[i] = bgColor;
+	}
+
 	switch(_bgMode) {
 		case 0:
-			RenderTilemap(_layerConfig[3], 2);
-			RenderTilemap(_layerConfig[2], 2);
-			RenderTilemap(_layerConfig[1], 2);
-			RenderTilemap(_layerConfig[0], 2);
+			RenderTilemap(3, 2);
+			RenderTilemap(2, 2);
+			RenderTilemap(1, 2);
+			RenderTilemap(0, 2);
 			break;
 
 		case 1:
-			RenderTilemap(_layerConfig[2], 2);
-			RenderTilemap(_layerConfig[1], 4);
-			RenderTilemap(_layerConfig[0], 4);
+			RenderTilemap(2, 2);
+			RenderTilemap(1, 4);
+			RenderTilemap(0, 4);
 			break;
 
 		case 2:
-			RenderTilemap(_layerConfig[1], 4);
-			RenderTilemap(_layerConfig[0], 4);
+			RenderTilemap(1, 4);
+			RenderTilemap(0, 4);
 			break;
 
 		case 3:
-			RenderTilemap(_layerConfig[1], 4);
-			RenderTilemap(_layerConfig[0], 8);
+			RenderTilemap(1, 4);
+			RenderTilemap(0, 8);
 			break;
 
 		case 5:
-			RenderTilemap(_layerConfig[1], 2);
-			RenderTilemap(_layerConfig[0], 4);
+			RenderTilemap(1, 2);
+			RenderTilemap(0, 4);
 			break;
 		
 		case 6:
-			RenderTilemap(_layerConfig[0], 8);
+			RenderTilemap(0, 8);
 			break;
 	}
 
 	//Draw sprites
-	for(int i = 0; i < 512; i+=4) {
+	if(_mainScreenLayers & 0x10) {
+		DrawSprites();
+	}
+	
+	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+	_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, _frameCount);
+}
+
+void Ppu::DrawSprites()
+{
+	for(int i = 0; i < 512; i += 4) {
 		uint8_t y = _oamRam[i + 1];
 		if(y >= 225) {
 			continue;
@@ -219,10 +243,6 @@ void Ppu::SendFrame()
 			}
 		}
 	}
-	
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
-	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-	_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, _frameCount);
 }
 
 uint8_t* Ppu::GetVideoRam()
@@ -307,8 +327,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x210B: case 0x210C:
 			//BG1+2 / BG3+4 Chr Address (BG12NBA / BG34NBA)
-			_layerConfig[addr - 0x210B].ChrAddress = (value & 0x0F) << 12;
-			_layerConfig[addr - 0x210B + 1].ChrAddress = (value & 0xF0) << 8;
+			_layerConfig[(addr - 0x210B) * 2].ChrAddress = (value & 0x0F) << 12;
+			_layerConfig[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0xF0) << 8;
 			break;
 		
 		case 0x2115:
@@ -359,6 +379,11 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//CGRAM Data write (CGDATA)
 			_cgram[_cgramAddress] = value;
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
+			break;
+
+		case 0x212C:
+			//TM - Main Screen Designation
+			_mainScreenLayers = value & 0x1F;
 			break;
 
 		default:

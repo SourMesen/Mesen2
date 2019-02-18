@@ -32,6 +32,8 @@ private:
 	uint32_t _frameCount = 0;
 	
 	uint8_t _bgMode = 0;
+	
+	uint8_t _mainScreenLayers = 0;
 	LayerConfig _layerConfig[4];
 	
 	uint8_t *_vram;
@@ -57,7 +59,8 @@ private:
 	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
 
-	void RenderTilemap(LayerConfig &config, uint8_t bpp);
+	void RenderTilemap(uint8_t layerIndex, uint8_t bpp);
+	void DrawSprites();
 
 public:
 	Ppu(shared_ptr<Console> console);
