@@ -13,6 +13,17 @@ public:
 	constexpr static uint32_t VideoRamSize = 0x10000;
 
 private:
+	constexpr static const uint8_t _oamSizes[8][2][2] = {
+		{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16
+		{ { 1, 1 }, { 4, 4 } }, //8x8 + 32x32
+		{ { 1, 1 }, { 8, 8 } }, //8x8 + 64x64
+		{ { 2, 2 }, { 4, 4 } }, //16x16 + 32x32
+		{ { 2, 2 }, { 8, 8 } }, //16x16 + 64x64
+		{ { 4, 4 }, { 8, 8 } }, //32x32 + 64x64
+		{ { 2, 4 }, { 4, 8 } }, //16x32 + 32x64
+		{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
+	};
+
 	shared_ptr<Console> _console;
 	shared_ptr<InternalRegisters> _regs;
 
@@ -36,8 +47,8 @@ private:
 	uint16_t *_currentBuffer;
 
 	uint8_t _oamMode = 0;
-	uint8_t _oamBaseAddress = 0;
-	uint8_t _oamAddressOffset = 0;
+	uint16_t _oamBaseAddress = 0;
+	uint16_t _oamAddressOffset = 0;
 
 	uint8_t _oamRam[Ppu::SpriteRamSize];
 	uint16_t _oamRamAddress = 0;

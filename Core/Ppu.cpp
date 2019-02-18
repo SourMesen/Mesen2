@@ -162,6 +162,63 @@ void Ppu::SendFrame()
 			RenderTilemap(_layerConfig[0], 8);
 			break;
 	}
+
+	//Draw sprites
+	for(int i = 0; i < 512; i+=4) {
+		uint8_t y = _oamRam[i + 1];
+		if(y >= 225) {
+			continue;
+		}
+
+		int16_t x = _oamRam[i];
+		uint8_t tileRow = (_oamRam[i + 2] & 0xF0) >> 4;
+		uint8_t tileColumn = _oamRam[i + 2] & 0x0F;
+		uint8_t flags = _oamRam[i + 3];
+
+		uint8_t palette = (flags >> 1) & 0x07;
+		bool useSecondTable = (flags & 0x01) != 0;
+
+		//TODO: vertical, horizontal flip, priority
+
+		uint8_t highTableOffset = i >> 4;
+		uint8_t shift = ((i >> 2) & 0x03) << 1;
+
+		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
+		bool negativeX = (highTableValue & 0x01) != 0;
+		uint8_t size = (highTableValue & 0x02) >> 1;
+
+		if(negativeX) {
+			x = -x;
+		}
+
+		for(int rowOffset = 0; rowOffset < _oamSizes[_oamMode][size][1]; rowOffset++) {
+			for(int columnOffset = 0; columnOffset < _oamSizes[_oamMode][size][0]; columnOffset++) {
+				uint8_t column = (tileColumn + columnOffset) & 0x0F;
+				uint8_t row = (tileRow + rowOffset) & 0x0F;
+				uint8_t tileIndex = (row << 4) | column;
+
+				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
+				uint16_t bpp = 4;
+				for(int i = 0; i < 8; i++) {
+					for(int j = 0; j < 8; j++) {
+						uint16_t color = 0;
+						for(int plane = 0; plane < bpp; plane++) {
+							uint8_t offset = (plane >> 1) * 16;
+							color |= (((_vram[tileStart + i * 2 + offset + (plane & 0x01)] >> (7 - j)) & 0x01) << bpp);
+							color >>= 1;
+						}
+
+						if(color != 0) {
+							uint16_t paletteRamOffset = 256 + ((palette * (1 << bpp) + color) * 2);
+
+							uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+							_currentBuffer[(y + i + rowOffset * 8) * 256 + x + j + columnOffset * 8] = paletteColor;
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
@@ -200,7 +257,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2101:
 			_oamMode = (value & 0xE0) >> 5;
 			_oamBaseAddress = (value & 0x07) << 13;
-			_oamAddressOffset = (value & 0x18) << 9;
+			_oamAddressOffset = (((value & 0x18) >> 3) + 1) << 12;
 			break;
 
 		case 0x2102:
