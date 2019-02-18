@@ -63,6 +63,9 @@ void Ppu::Exec()
 		_scanline++;
 
 		if(_scanline == 225) {
+			//Reset OAM address at the start of vblank?
+			_internalOamAddress = (_oamRamAddress << 1);
+
 			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();
 			_console->GetControlManager()->UpdateInputState();
@@ -177,7 +180,7 @@ uint8_t* Ppu::GetCgRam()
 
 uint8_t* Ppu::GetSpriteRam()
 {
-	return _spriteRam;
+	return _oamRam;
 }
 
 uint8_t Ppu::Read(uint16_t addr)
@@ -195,27 +198,35 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0x2101:
-			//TODO
-			//_spriteMode = (value & 0xE0) >> 5;
-			//_spriteBaseAddress = (value & 0x07) << 13;
-			//_spriteAddressOffset = (value & 0x18) << 9;
+			_oamMode = (value & 0xE0) >> 5;
+			_oamBaseAddress = (value & 0x07) << 13;
+			_oamAddressOffset = (value & 0x18) << 9;
 			break;
 
 		case 0x2102:
-			//TODO
-			//_oamAddress = (value << 1);
+			_oamRamAddress = (_oamRamAddress & 0x100) | value;
+			_internalOamAddress = (_oamRamAddress << 1);
 			break;
 
 		case 0x2103:
-			//TODO
-			//_oamTableSelect = value & 0x01;
-			//_enableOamPriority = (value & 0x80) != 0;
+			_oamRamAddress = (_oamRamAddress & 0xFF) | ((value & 0x01) << 8);
+			_internalOamAddress = (_oamRamAddress << 1);
+			_enableOamPriority = (value & 0x80) != 0;
 			break;
 
 		case 0x2104:
-			//TODO
-			//_oam[_oamAddress] = value;
-			//_oamAddress++;
+			if(_internalOamAddress < 512) {
+				if(_internalOamAddress & 0x01) {
+					_oamRam[_internalOamAddress - 1] = _oamWriteBuffer;
+					_oamRam[_internalOamAddress] = value;
+				} else {
+					_oamWriteBuffer = value;
+				}
+			} else if(_internalOamAddress >= 512) {
+				uint16_t address = 0x200 | (_internalOamAddress & 0x1F);
+				_oamRam[address] = value;
+			}
+			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
 			break;
 			
 		case 0x2105:

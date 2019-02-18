@@ -32,12 +32,21 @@ private:
 	uint16_t _cgramAddress;
 	uint8_t _cgram[Ppu::CgRamSize];
 
-	uint8_t _spriteRam[Ppu::SpriteRamSize];
-
 	uint16_t *_outputBuffers[2];
 	uint16_t *_currentBuffer;
 
-	void RenderTilemap(LayerConfig & config, uint8_t bpp);
+	uint8_t _oamMode = 0;
+	uint8_t _oamBaseAddress = 0;
+	uint8_t _oamAddressOffset = 0;
+
+	uint8_t _oamRam[Ppu::SpriteRamSize];
+	uint16_t _oamRamAddress = 0;
+	bool _enableOamPriority = false;
+	
+	uint16_t _internalOamAddress = 0;
+	uint8_t _oamWriteBuffer = 0;
+
+	void RenderTilemap(LayerConfig &config, uint8_t bpp);
 
 public:
 	Ppu(shared_ptr<Console> console);
