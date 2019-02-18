@@ -114,14 +114,18 @@ void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
 		for(int x = 0; x < 32; x++) {
 			uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
 			uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
+			bool vMirror = (_vram[addr + 1] & 0x80) != 0;
+			bool hMirror = (_vram[addr + 1] & 0x40) != 0;
 
 			uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
 			for(int i = 0; i < 8; i++) {
+				uint8_t yOffset = vMirror ? (7 - i) : i;
 				for(int j = 0; j < 8; j++) {
 					uint16_t color = 0;
+					uint8_t shift = hMirror ? j : (7 - j);
 					for(int plane = 0; plane < bpp; plane++) {
 						uint8_t offset = (plane >> 1) * 16;
-						color |= (((_vram[tileStart + i * 2 + offset + (plane & 0x01)] >> (7 - j)) & 0x01) << bpp);
+						color |= (((_vram[tileStart + i * 2 + offset + (plane & 0x01)] >> shift) & 0x01) << bpp);
 						color >>= 1;
 					}
 
@@ -129,12 +133,14 @@ void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
 						uint16_t paletteRamOffset = (palette * (1 << bpp) + color) * 2;
 						uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 						
-						uint16_t &currentPixel = _currentBuffer[(y * 8 + i) * 256 + x * 8 + j];
-						if(useColorMath) {
-							uint16_t r = std::min(((currentPixel & 0x001F) + (paletteColor & 0x001F)), 0x1F);
-							uint16_t g = std::min(((currentPixel & 0x03E0) + (paletteColor & 0x03E0)), 0x3E0);
-							uint16_t b = std::min(((currentPixel & 0x7C00) + (paletteColor & 0x7C00)), 0x7C00);
-							paletteColor = r | g | b;
+						uint16_t &currentPixel = _currentBuffer[(y * 8 + yOffset) * 256 + x * 8 + j];
+						if(useColorMath && layerIndex == 0) {
+							uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
+							uint16_t r = std::min(((currentPixel & 0x001F) + (paletteColor & 0x001F)) >> halfShift, 0x1F);
+							uint16_t g = std::min((((currentPixel >> 5) & 0x001F) + ((paletteColor >> 5) & 0x001F)) >> halfShift, 0x1F);
+							uint16_t b = std::min((((currentPixel >> 10) & 0x001F) + ((paletteColor >> 10) & 0x001F)) >> halfShift, 0x1F);
+								
+							paletteColor = r | (g << 5) | (b << 10);
 						}
 						currentPixel = paletteColor;
 					}
@@ -407,7 +413,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2131:
 			_colorMathEnabled = value & 0x3F;
 			_colorMathSubstractMode = (value & 0x80) != 0;
-			_colorMathHalveResult = (value & 0x80) != 0;
+			_colorMathHalveResult = (value & 0x40) != 0;
 			break;
 
 		default:
