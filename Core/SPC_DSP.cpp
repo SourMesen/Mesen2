@@ -156,7 +156,7 @@ inline void SPC_DSP::init_counter()
 	// counters start out with this synchronization
 	m.counters [0] =     1;
 	m.counters [1] =     0;
-	m.counters [2] = -0x20u;
+	m.counters [2] = (unsigned int)-0x20;
 	m.counters [3] =  0x0B;
 	
 	int n = 2;
