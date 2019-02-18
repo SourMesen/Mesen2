@@ -120,7 +120,7 @@ void BaseRenderer::ShowFpsCounter(int lineNumber)
 	if(_fpsTimer.GetElapsedMS() > 1000) {
 		//Update fps every sec
 		shared_ptr<Ppu> ppu = _console->GetPpu();
-		uint32_t frameCount = ppu ? ppu->GetState().FrameCount : 0;
+		uint32_t frameCount = ppu ? ppu->GetFrameCount() : 0;
 		if(_lastFrameCount > frameCount) {
 			_currentFPS = 0;
 		} else {
@@ -167,7 +167,7 @@ void BaseRenderer::ShowFrameCounter(int lineNumber)
 	int yPos = 13 + 24 * lineNumber;
 	shared_ptr<Ppu> ppu = _console->GetPpu();
 
-	string frameCounter = MessageManager::Localize("Frame") + ": " + std::to_string(ppu ? ppu->GetState().FrameCount : 0);
+	string frameCounter = MessageManager::Localize("Frame") + ": " + std::to_string(ppu ? ppu->GetFrameCount() : 0);
 	DrawString(frameCounter, _screenWidth - 146, yPos, 250, 235, 215);
 }
 

@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Forms
 {
-	public partial class frmMain : BaseForm
+	public partial class frmMain : BaseInputForm
 	{
 		private NotificationListener _notifListener;
 

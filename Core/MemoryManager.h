@@ -6,6 +6,7 @@
 #include "RamHandler.h"
 #include "DmaController.h"
 #include "BaseCartridge.h"
+#include "ControlManager.h"
 #include "InternalRegisters.h"
 #include "IMemoryHandler.h"
 #include "MessageManager.h"
@@ -18,16 +19,18 @@ private:
 	Spc *_spc;
 	DmaController *_dmaController;
 	InternalRegisters *_regs;
+	ControlManager *_controlManager;
 	uint8_t *_workRam;
 	uint32_t _wramPosition;
 
 public:
-	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController, InternalRegisters *regs, uint8_t *workRam)
+	CpuRegisterHandler(Ppu *ppu, Spc *spc, DmaController *dmaController, InternalRegisters *regs, ControlManager *controlManager, uint8_t *workRam)
 	{
 		_ppu = ppu;
 		_spc = spc;
 		_regs = regs;
 		_dmaController = dmaController;
+		_controlManager = controlManager;
 		
 		_workRam = workRam;
 		_wramPosition = 0;
@@ -38,6 +41,8 @@ public:
 		addr &= 0xFFFF;
 		if(addr >= 0x2140 && addr <= 0x217F) {
 			return _spc->Read(addr & 0x03);
+		} else if(addr == 0x4016 || addr == 0x4017) {
+			return _controlManager->Read(addr);
 		} else if(addr < 0x4200) {
 			return _ppu->Read(addr);
 		} else {
@@ -61,6 +66,8 @@ public:
 				case 0x2182: _wramPosition = (_wramPosition & 0x100FF) | (value << 8); break;
 				case 0x2183: _wramPosition = (_wramPosition & 0xFFFF) | ((value & 0x01) << 16); break;
 			}
+		} else if(addr == 0x4016) {
+			return _controlManager->Write(addr, value);
 		} else if(addr == 0x420B || addr == 0x420C || addr >= 0x4300) {
 			_dmaController->Write(addr, value);
 		} else if(addr < 0x4200) {
@@ -104,7 +111,7 @@ public:
 		_workRam = new uint8_t[MemoryManager::WorkRamSize];
 
 		_dmaController.reset(new DmaController(console->GetMemoryManager().get()));
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get(), console->GetInternalRegisters().get(), _workRam));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get(), console->GetInternalRegisters().get(), console->GetControlManager().get(), _workRam));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		//memset(_workRam, 0, 128 * 1024);

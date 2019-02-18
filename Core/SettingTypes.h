@@ -127,3 +127,80 @@ struct ScreenSize
 	int32_t Height;
 	double Scale;
 };
+
+struct KeyMapping
+{
+	uint32_t A = 0;
+	uint32_t B = 0;
+	uint32_t X = 0;
+	uint32_t Y = 0;
+	uint32_t L = 0;
+	uint32_t R = 0;
+	uint32_t Up = 0;
+	uint32_t Down = 0;
+	uint32_t Left = 0;
+	uint32_t Right = 0;
+	uint32_t Start = 0;
+	uint32_t Select = 0;
+
+	uint32_t TurboA = 0;
+	uint32_t TurboB = 0;
+	uint32_t TurboX = 0;
+	uint32_t TurboY = 0;
+	uint32_t TurboL = 0;
+	uint32_t TurboR = 0;
+	uint32_t TurboSelect = 0;
+	uint32_t TurboStart = 0;
+
+	bool HasKeySet()
+	{
+		if(A || B || X || Y || L || R || Up || Down || Left || Right || Start || Select || TurboA || TurboB || TurboX || TurboY || TurboL || TurboR || TurboStart || TurboSelect) {
+			return true;
+		}
+		return false;
+	}
+
+private:
+	bool HasKeyBinding(uint32_t* buttons, uint32_t count)
+	{
+		for(uint32_t i = 0; i < count; i++) {
+			if(buttons[i] != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+};
+
+struct KeyMappingSet
+{
+	KeyMapping Mapping1;
+	KeyMapping Mapping2;
+	KeyMapping Mapping3;
+	KeyMapping Mapping4;
+	uint32_t TurboSpeed = 0;
+
+	vector<KeyMapping> GetKeyMappingArray()
+	{
+		vector<KeyMapping> keyMappings;
+		if(Mapping1.HasKeySet()) {
+			keyMappings.push_back(Mapping1);
+		}
+		if(Mapping2.HasKeySet()) {
+			keyMappings.push_back(Mapping2);
+		}
+		if(Mapping3.HasKeySet()) {
+			keyMappings.push_back(Mapping3);
+		}
+		if(Mapping4.HasKeySet()) {
+			keyMappings.push_back(Mapping4);
+		}
+		return keyMappings;
+	}
+};
+
+enum class ControllerType
+{
+	None = 0,
+	SnesController = 1
+};

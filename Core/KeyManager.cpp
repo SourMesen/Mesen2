@@ -23,10 +23,9 @@ void KeyManager::RefreshKeyState()
 
 bool KeyManager::IsKeyPressed(uint32_t keyCode)
 {
-	//TODO
-	/*if(_keyManager != nullptr) {
-		return _settings->InputEnabled() && _keyManager->IsKeyPressed(keyCode);
-	}*/
+	if(_keyManager != nullptr) {
+		return _keyManager->IsKeyPressed(keyCode);
+	}
 	return false;
 }
 

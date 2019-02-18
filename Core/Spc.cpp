@@ -3,7 +3,6 @@
 #include "SNES_SPC.h"
 #include "Console.h"
 #include "MemoryManager.h"
-#include "Ppu.h"
 #include "SoundMixer.h"
 #include "../Utilities/VirtualFile.h"
 

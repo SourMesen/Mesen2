@@ -4,6 +4,7 @@
 #include "Ppu.h"
 #include "Spc.h"
 #include "InternalRegisters.h"
+#include "ControlManager.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
 #include "NotificationManager.h"
@@ -52,12 +53,6 @@ void Console::Run()
 	while(!_stopFlag) {
 		_cpu->Exec();
 	}
-
-	//Timer timer;
-	/*std::cout << "Time: " << std::to_string(timer.GetElapsedMS()) << std::endl;
-	std::cout << "OP Count: " << std::to_string(_cpu->opCount) << std::endl;
-	std::cout << "OP/sec: " << std::to_string(_cpu->opCount * 1000 / timer.GetElapsedMS()) << std::endl;
-	while(true);*/
 }
 
 void Console::Stop()
@@ -76,6 +71,7 @@ void Console::Stop()
 	_spc.reset();
 	_cart.reset();
 	_internalRegisters.reset();
+	_controlManager.reset();
 	_memoryManager.reset();
 }
 
@@ -86,10 +82,11 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
 		MessageManager::ClearLog();
-		_internalRegisters.reset(new InternalRegisters());
+		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
 		_ppu.reset(new Ppu(shared_from_this()));
 		_spc.reset(new Spc(shared_from_this()));
 		_cart = cart;
+		_controlManager.reset(new ControlManager(shared_from_this()));
 		_memoryManager.reset(new MemoryManager());
 		_memoryManager->Initialize(shared_from_this());
 
@@ -157,6 +154,11 @@ shared_ptr<MemoryManager> Console::GetMemoryManager()
 shared_ptr<InternalRegisters> Console::GetInternalRegisters()
 {
 	return _internalRegisters;
+}
+
+shared_ptr<ControlManager> Console::GetControlManager()
+{
+	return _controlManager;
 }
 
 shared_ptr<Debugger> Console::GetDebugger(bool autoStart)

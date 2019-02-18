@@ -9,6 +9,7 @@ class Spc;
 class BaseCartridge;
 class MemoryManager;
 class InternalRegisters;
+class ControlManager;
 class Debugger;
 class DebugHud;
 class SoundMixer;
@@ -26,6 +27,7 @@ private:
 	shared_ptr<MemoryManager> _memoryManager;
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<InternalRegisters> _internalRegisters;
+	shared_ptr<ControlManager> _controlManager;
 
 	shared_ptr<Debugger> _debugger;
 
@@ -61,6 +63,7 @@ public:
 	shared_ptr<BaseCartridge> GetCartridge();
 	shared_ptr<MemoryManager> GetMemoryManager();
 	shared_ptr<InternalRegisters> GetInternalRegisters();
+	shared_ptr<ControlManager> GetControlManager();
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
 	
 	bool IsRunning();

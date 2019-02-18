@@ -5,6 +5,7 @@
 #include "Cpu.h"
 #include "Spc.h"
 #include "InternalRegisters.h"
+#include "ControlManager.h"
 #include "VideoDecoder.h"
 #include "NotificationManager.h"
 
@@ -41,6 +42,11 @@ Ppu::~Ppu()
 	delete[] _outputBuffers[1];
 }
 
+uint32_t Ppu::GetFrameCount()
+{
+	return _frameCount;
+}
+
 PpuState Ppu::GetState()
 {
 	return {
@@ -57,17 +63,19 @@ void Ppu::Exec()
 		_scanline++;
 
 		if(_scanline == 225) {
+			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();
-			_nmiFlag = true;
+			_console->GetControlManager()->UpdateInputState();
+			_regs->ProcessAutoJoypadRead();
+			_regs->SetNmiFlag(true);
 			SendFrame();
 
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
 		} else if(_scanline == 261) {
-			_nmiFlag = false;
+			_regs->SetNmiFlag(false);
 			_scanline = 0;
-			_frameCount++;
 		}
 
 		if(_regs->IsVerticalIrqEnabled() && !_regs->IsHorizontalIrqEnabled() && _scanline == _regs->GetVerticalTimer()) {
@@ -175,25 +183,6 @@ uint8_t* Ppu::GetSpriteRam()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
-		case 0x4210: {
-			//open bus implementation here is needed to pass CPUPHL test
-			uint8_t value = (_nmiFlag ? 0x80 : 0) | ((addr >> 8) & 0x70);
-			_nmiFlag = false;
-			return value;
-		}
-
-		case 0x4211: {
-			uint8_t value = (_console->GetCpu()->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0) | ((addr >> 8) & 0x7F);
-			_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
-			return value;
-		}
-
-		case 0x4212:
-			return (
-				(_scanline >= 225 ? 0x80 : 0) |
-				((_cycle >= 0x121 || _cycle <= 0x15) ? 0x40 : 0)
-			);
-
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
 			break;
@@ -205,6 +194,30 @@ uint8_t Ppu::Read(uint16_t addr)
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
 	switch(addr) {
+		case 0x2101:
+			//TODO
+			//_spriteMode = (value & 0xE0) >> 5;
+			//_spriteBaseAddress = (value & 0x07) << 13;
+			//_spriteAddressOffset = (value & 0x18) << 9;
+			break;
+
+		case 0x2102:
+			//TODO
+			//_oamAddress = (value << 1);
+			break;
+
+		case 0x2103:
+			//TODO
+			//_oamTableSelect = value & 0x01;
+			//_enableOamPriority = (value & 0x80) != 0;
+			break;
+
+		case 0x2104:
+			//TODO
+			//_oam[_oamAddress] = value;
+			//_oamAddress++;
+			break;
+			
 		case 0x2105:
 			_bgMode = value & 0x07;
 			

@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "PpuTypes.h"
 
 class Console;
 struct SNES_SPC;

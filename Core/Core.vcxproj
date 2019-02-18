@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseCartridge.h" />
+    <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
     <ClInclude Include="BaseVideoFilter.h" />
@@ -52,6 +53,8 @@
     <ClInclude Include="blargg_endian.h" />
     <ClInclude Include="blargg_source.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="ControlDeviceState.h" />
+    <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="CpuTypes.h" />
     <ClInclude Include="Debugger.h" />
@@ -86,6 +89,7 @@
     <ClInclude Include="RamHandler.h" />
     <ClInclude Include="RomHandler.h" />
     <ClInclude Include="SettingTypes.h" />
+    <ClInclude Include="SnesController.h" />
     <ClInclude Include="SNES_SPC.h" />
     <ClInclude Include="SoundMixer.h" />
     <ClInclude Include="Spc.h" />
@@ -99,10 +103,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseCartridge.cpp" />
+    <ClCompile Include="BaseControlDevice.cpp" />
     <ClCompile Include="BaseRenderer.cpp" />
     <ClCompile Include="BaseSoundManager.cpp" />
     <ClCompile Include="BaseVideoFilter.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="ControlManager.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="Cpu.Instructions.cpp" />
     <ClCompile Include="Debugger.cpp" />

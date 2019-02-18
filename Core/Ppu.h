@@ -23,8 +23,6 @@ private:
 	uint8_t _bgMode = 0;
 	LayerConfig _layerConfig[4];
 	
-	bool _nmiFlag = false;
-
 	uint8_t *_vram;
 	uint16_t _vramAddress;
 	uint8_t _vramIncrementValue;
@@ -45,6 +43,7 @@ public:
 	Ppu(shared_ptr<Console> console);
 	~Ppu();
 
+	uint32_t GetFrameCount();
 	PpuState GetState();
 
 	void Exec();

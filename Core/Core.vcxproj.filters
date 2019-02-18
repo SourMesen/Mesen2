@@ -158,6 +158,18 @@
     <ClInclude Include="InternalRegisters.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="BaseControlDevice.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SnesController.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlDeviceState.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlManager.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -245,6 +257,12 @@
     <ClCompile Include="InternalRegisters.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
+    <ClCompile Include="BaseControlDevice.cpp">
+      <Filter>SNES\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlManager.cpp">
+      <Filter>SNES\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -267,6 +285,9 @@
     </Filter>
     <Filter Include="SNES\SPC">
       <UniqueIdentifier>{e0e6a67b-620e-4fe4-9846-26a6c80ca6b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Input">
+      <UniqueIdentifier>{3a9ea5fe-e818-4e65-bd50-cb9591de3e0d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
