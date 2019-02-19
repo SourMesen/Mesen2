@@ -122,6 +122,10 @@ template<uint8_t priority, bool forMainScreen>
 void Ppu::DrawSprites()
 {
 	if(forMainScreen) {
+		if((_mainScreenLayers & 0x10) == 0) {
+			return;
+		}
+
 		for(int x = 0; x < 256; x++) {
 			if(!_filled[x] && _spritePriority[x] == priority) {
 				_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
@@ -129,6 +133,10 @@ void Ppu::DrawSprites()
 			}
 		}
 	} else {
+		if((_subScreenLayers & 0x10) == 0) {
+			return;
+		}
+
 		for(int x = 0; x < 256; x++) {
 			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
 				_subScreenBuffer[(_scanline << 8) | x] = _spritePixels[x];
@@ -356,15 +364,16 @@ void Ppu::RenderTilemap()
 	}
 
 	LayerConfig &config = _layerConfig[layerIndex];
-	uint16_t tilemapAddr = config.TilemapAddress;
+	uint16_t tilemapAddr = config.TilemapAddress >> 1;
 	uint16_t chrAddr = config.ChrAddress;
-	uint32_t addr = tilemapAddr + ((_scanline >> 3) << 6) - 2;
-
-	for(int x = 0; x < 256; x++) {
-		if((x & 0x07) == 0) {
-			addr += 2;
-		}
 		
+	for(int x = 0; x < 256; x++) {
+		uint16_t row = (_scanline + config.VScroll) >> 3;
+		uint16_t column = (x + config.HScroll) >> 3;
+
+		uint32_t addr = tilemapAddr + ((row & 0x1F) << 5) + (column & 0x1F) + (config.VerticalMirroring ? ((row & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0);
+		addr <<= 1;
+
 		if(forMainScreen) {
 			if(_filled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
@@ -381,10 +390,16 @@ void Ppu::RenderTilemap()
 		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
 
 		uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
-		uint8_t yOffset = vMirror ? (7 - (_scanline & 0x07)) : (_scanline & 0x07);
+
+		uint8_t yOffset = (_scanline + config.VScroll) & 0x07;
+		if(vMirror) {
+			yOffset = 7 - yOffset;
+		}
 
 		uint16_t color = 0;
-		uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
+
+		uint8_t xOffset = (x + config.HScroll) & 0x07;
+		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 		for(int plane = 0; plane < bpp; plane++) {
 			uint8_t offset = (plane >> 1) * 16;
 			color |= (((_vram[tileStart + yOffset * 2 + offset + (plane & 0x01)] >> shift) & 0x01) << bpp);
@@ -507,16 +522,31 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
 			//BG 1-4 Tilemap Address and Size (BG1SC, BG2SC, BG3SC, BG4SC)
 			_layerConfig[addr - 0x2107].TilemapAddress = (value & 0xFC) << 9;
-			_layerConfig[addr - 0x2107].HorizontalMirrorring = (value & 0x01) != 0;
-			_layerConfig[addr - 0x2107].VerticalMirrorring = (value & 0x02) != 0;
+			_layerConfig[addr - 0x2107].HorizontalMirroring = (value & 0x01) != 0;
+			_layerConfig[addr - 0x2107].VerticalMirroring = (value & 0x02) != 0;
 			break;
 
 		case 0x210B: case 0x210C:
 			//BG1+2 / BG3+4 Chr Address (BG12NBA / BG34NBA)
-			_layerConfig[(addr - 0x210B) * 2].ChrAddress = (value & 0x0F) << 12;
-			_layerConfig[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0xF0) << 8;
+			_layerConfig[(addr - 0x210B) * 2].ChrAddress = (value & 0x0F) << 13;
+			_layerConfig[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0xF0) << 9;
 			break;
 		
+		case 0x210D:
+			//TODO Mode 7 portion of register
+		case 0x210F: case 0x2111: case 0x2113:
+			_layerConfig[(addr - 0x210D) >> 1].HScroll = ((value << 8) | (_hvScrollLatchValue & ~0x07) | (_hScrollLatchValue & 0x07)) & 0x3FF;
+			_hvScrollLatchValue = value;
+			_hScrollLatchValue = value;
+			break;
+
+		case 0x210E:
+			//TODO Mode 7 portion of register
+		case 0x2110: case 0x2112: case 0x2114:
+			_layerConfig[(addr - 0x210E) >> 1].VScroll = ((value << 8) | _hvScrollLatchValue) & 0x3FF;
+			_hvScrollLatchValue = value;
+			break;
+
 		case 0x2115:
 			//VMAIN - Video Port Control
 			switch(value & 0x03) {

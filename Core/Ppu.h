@@ -74,6 +74,9 @@ private:
 	bool _colorMathSubstractMode = false;
 	bool _colorMathHalveResult = false;
 
+	uint8_t _hvScrollLatchValue = 0;
+	uint8_t _hScrollLatchValue = 0;
+
 	template<bool forMainScreen>
 	void RenderBgColor();
 

@@ -13,8 +13,11 @@ struct LayerConfig
 	uint16_t TilemapAddress;
 	uint16_t ChrAddress;
 
-	bool HorizontalMirrorring;
-	bool VerticalMirrorring;
+	uint16_t HScroll;
+	uint16_t VScroll;
+
+	bool HorizontalMirroring;
+	bool VerticalMirroring;
 
 	bool LargeTiles;
 };
