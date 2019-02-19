@@ -540,7 +540,7 @@ void Cpu::ASL()
 {
 	if(_instAddrMode == AddrMode::Acc) {
 		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = ShiftLeft<uint8_t>((uint8_t)_state.A);
+			_state.A = (_state.A & 0xFF00) | (ShiftLeft<uint8_t>((uint8_t)_state.A));
 		} else {
 			_state.A = ShiftLeft<uint16_t>(_state.A);
 		}
@@ -557,7 +557,7 @@ void Cpu::LSR()
 {
 	if(_instAddrMode == AddrMode::Acc) {
 		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = ShiftRight<uint8_t>((uint8_t)_state.A);
+			_state.A = (_state.A & 0xFF00) | ShiftRight<uint8_t>((uint8_t)_state.A);
 		} else {
 			_state.A = ShiftRight<uint16_t>(_state.A);
 		}
@@ -574,7 +574,7 @@ void Cpu::ROL()
 {
 	if(_instAddrMode == AddrMode::Acc) {
 		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = RollLeft<uint8_t>((uint8_t)_state.A);
+			_state.A = (_state.A & 0xFF00) | RollLeft<uint8_t>((uint8_t)_state.A);
 		} else {
 			_state.A = RollLeft<uint16_t>(_state.A);
 		}
@@ -591,7 +591,7 @@ void Cpu::ROR()
 {
 	if(_instAddrMode == AddrMode::Acc) {
 		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = RollRight<uint8_t>((uint8_t)_state.A);
+			_state.A = (_state.A & 0xFF00) | RollRight<uint8_t>((uint8_t)_state.A);
 		} else {
 			_state.A = RollRight<uint16_t>(_state.A);
 		}
