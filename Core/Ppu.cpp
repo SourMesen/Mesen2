@@ -61,8 +61,9 @@ void Ppu::Exec()
 	if(_cycle == 340) {
 		_cycle = -1;
 		_scanline++;
-
-		if(_scanline == 225) {
+		if(_scanline < 225) {
+			RenderScanline();
+		} else if(_scanline == 225) {
 			//Reset OAM address at the start of vblank?
 			_internalOamAddress = (_oamRamAddress << 1);
 
@@ -93,6 +94,125 @@ void Ppu::Exec()
 	}
 
 	_cycle++;
+}
+
+struct SpriteInfo
+{
+	int16_t X;
+	bool HorizontalMirror;
+	bool VerticalMirror;
+	uint8_t Priority;
+
+	uint8_t TileColumn;
+	uint8_t TileRow;
+	uint8_t Palette;
+	bool UseSecondTable;
+	uint8_t LargeSprite;
+};
+
+SpriteInfo _sprites[32] = {};
+uint8_t _spriteCount = 0;
+uint8_t _spritePriority[256] = {};
+uint16_t _spritePixels[256] = {};
+
+void Ppu::RenderScanline()
+{
+	for(int x = 0; x < 256; x++) {
+		if(_spritePriority[x] != 0xFF && _spritePixels[x] != 0xFFFF) {
+			_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
+		}
+	}
+
+/*	switch(_bgMode) {
+		case 1:
+			break;
+	}*/
+
+	//Process sprites for next scanline
+	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
+	memset(_spritePixels, 0xFFFF, sizeof(_spritePixels));
+	_spriteCount = 0;
+	for(int i = 0; i < 512; i += 4) {
+		uint8_t y = _oamRam[i + 1];
+
+		uint8_t highTableOffset = i >> 4;
+		uint8_t shift = ((i >> 2) & 0x03) << 1;
+		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
+		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
+		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
+
+		if(y > _scanline + 1 || y + height < _scanline + 1) {
+			//Not visible on this scanline
+			continue;
+		}
+
+		SpriteInfo &info = _sprites[_spriteCount];
+		info.LargeSprite = largeSprite;
+		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
+
+		bool negativeX = (highTableValue & 0x01) != 0;
+		info.X = negativeX ? -_oamRam[i] : _oamRam[i];
+		info.TileRow = (_oamRam[i + 2] & 0xF0) >> 4;
+		info.TileColumn = _oamRam[i + 2] & 0x0F;
+
+		uint8_t flags = _oamRam[i + 3];
+		info.UseSecondTable = (flags & 0x01) != 0;
+		info.Palette = (flags >> 1) & 0x07;
+		info.Priority = (flags >> 4) & 0x03;
+		info.HorizontalMirror = (flags & 0x40) != 0;
+		info.VerticalMirror = (flags & 0x80) != 0;
+
+		uint8_t yOffset;
+		int rowOffset;
+		if(info.VerticalMirror) {
+			yOffset = (height - (_scanline + 1 - y)) & 0x07;
+			rowOffset = (height - (_scanline + 1 - y)) >> 3;
+		} else {
+			yOffset = (_scanline + 1 - y) & 0x07;
+			rowOffset = (_scanline + 1 - y) >> 3;
+		} 
+
+		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
+		constexpr uint16_t bpp = 4;
+
+		for(int x = info.X; x < info.X + width; x++) {
+			if(_spritePixels[x] == 0xFFFF) {
+				uint8_t xOffset;
+				int columnOffset;
+				if(info.HorizontalMirror) {
+					xOffset = (width - (x - info.X)) & 0x07;
+					columnOffset = (width - (x - info.X)) >> 3;
+				} else {
+					xOffset = (x - info.X) & 0x07;
+					columnOffset = (x - info.X) >> 3;
+				}
+
+				uint8_t column = (info.TileColumn + columnOffset) & 0x0F;
+				uint8_t tileIndex = (row << 4) | column;
+				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
+
+				uint16_t color = 0;
+				for(int plane = 0; plane < bpp; plane++) {
+					uint8_t offset = (plane >> 1) * 16;
+					uint8_t tileData = _vram[tileStart + yOffset * 2 + offset + (plane & 0x01)];
+					color |= ((tileData >> (7 - xOffset)) & 0x01) << plane;
+				}
+
+				if(color != 0) {
+					uint16_t paletteRamOffset = 256 + ((info.Palette * (1 << bpp) + color) * 2);
+					_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+					_spritePriority[x] = info.Priority;
+				}
+			}
+		}
+
+		_spriteCount++;
+
+		if(_spriteCount == 32) {
+			break;
+		}
+	}
+
 }
 
 void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
@@ -153,11 +273,11 @@ void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
 
 void Ppu::SendFrame()
 {
-	uint16_t bgColor = _cgram[0] | (_cgram[1]);
+	/*uint16_t bgColor = _cgram[0] | (_cgram[1]);
 	for(int i = 0; i < 256 * 224; i++) {
 		_currentBuffer[i] = bgColor;
 	}
-
+	
 	switch(_bgMode) {
 		case 0:
 			RenderTilemap(3, 2);
@@ -196,10 +316,15 @@ void Ppu::SendFrame()
 	if(_mainScreenLayers & 0x10) {
 		DrawSprites();
 	}
-	
+	*/
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
-	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 	_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, _frameCount);
+	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+
+	uint16_t bgColor = _cgram[0] | (_cgram[1]);
+	for(int i = 0; i < 256 * 224; i++) {
+		_currentBuffer[i] = bgColor;
+	}
 }
 
 void Ppu::DrawSprites()
@@ -407,7 +532,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_colorMathClipMode = (value >> 6) & 0x03;
 			_colorMathPreventMode = (value >> 4) & 0x03;
 			_colorMathAddSubscreen = (value & 0x02) != 0;
-			_colorMathDirectColorMode = (value & 0x01) != 0;
+			_directColorMode = (value & 0x01) != 0;
 			break;
 
 		case 0x2131:

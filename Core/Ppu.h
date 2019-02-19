@@ -59,10 +59,11 @@ private:
 	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
 
+	bool _directColorMode = false;
+
 	uint8_t _colorMathClipMode = 0;
 	uint8_t _colorMathPreventMode = 0;
 	bool _colorMathAddSubscreen = false;
-	bool _colorMathDirectColorMode = false;
 	uint8_t _colorMathEnabled = 0;
 	bool _colorMathSubstractMode = false;
 	bool _colorMathHalveResult = false;
@@ -78,6 +79,8 @@ public:
 	PpuState GetState();
 
 	void Exec();
+
+	void RenderScanline();
 
 	void SendFrame();
 
