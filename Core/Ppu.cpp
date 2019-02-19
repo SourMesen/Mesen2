@@ -70,7 +70,9 @@ void Ppu::Exec()
 			RenderScanline();
 		} else if(_scanline == 225) {
 			//Reset OAM address at the start of vblank?
-			_internalOamAddress = (_oamRamAddress << 1);
+			if(!_forcedVblank) {
+				_internalOamAddress = (_oamRamAddress << 1);
+			}
 
 			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();
@@ -483,6 +485,17 @@ uint8_t* Ppu::GetSpriteRam()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
+		case 0x2138: {
+			uint8_t value;
+			if(_internalOamAddress < 512) {
+				value = _oamRam[_internalOamAddress];
+			} else {
+				value = _oamRam[0x200 | (_internalOamAddress & 0x1F)];
+			}
+			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
+			return value;
+		}
+
 		case 0x213E:
 			//TODO open bus on bit 4
 			return (
@@ -536,8 +549,11 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				} else {
 					_oamWriteBuffer = value;
 				}
-			} else if(_internalOamAddress >= 512) {
+			} else {
 				uint16_t address = 0x200 | (_internalOamAddress & 0x1F);
+				if((_internalOamAddress & 0x01) == 0) {
+					_oamWriteBuffer = value;
+				}
 				_oamRam[address] = value;
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
