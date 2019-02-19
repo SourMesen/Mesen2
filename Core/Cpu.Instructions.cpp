@@ -12,7 +12,7 @@ void Cpu::Add8(uint8_t value)
 		if(result > 0x09) result += 0x06;
 		result = (_state.A & 0xF0) + (value & 0xF0) + (result > 0x0F ? 0x10 : 0) + (result & 0x0F);
 	} else {
-		result = (uint32_t)_state.A + value + (_state.PS & ProcFlags::Carry);
+		result = (_state.A & 0xFF) + value + (_state.PS & ProcFlags::Carry);
 	}
 
 	if(~(_state.A ^ value) & (_state.A ^ result) & 0x80) {
@@ -28,11 +28,11 @@ void Cpu::Add8(uint8_t value)
 	ClearFlags(ProcFlags::Carry | ProcFlags::Negative | ProcFlags::Zero);
 	SetZeroNegativeFlags((uint8_t)result);
 
-	if(result & 0x100) {
+	if(result > 0xFF) {
 		SetFlags(ProcFlags::Carry);
 	}
 
-	_state.A = (uint8_t)result;
+	_state.A = (_state.A & 0xFF00) | (uint8_t)result;
 }
 
 void Cpu::Add16(uint16_t value)
@@ -50,7 +50,7 @@ void Cpu::Add16(uint16_t value)
 		if(result > 0x9FF) result += 0x600;
 		result = (_state.A & 0xF000) + (value & 0xF000) + (result > 0xFFF ? 0x1000 : 0) + (result & 0xFFF);
 	} else {
-		result = (uint32_t)_state.A + value + (_state.PS & ProcFlags::Carry);
+		result = _state.A + value + (_state.PS & ProcFlags::Carry);
 	}
 
 	if(~(_state.A ^ value) & (_state.A ^ result) & 0x8000) {
@@ -66,7 +66,7 @@ void Cpu::Add16(uint16_t value)
 	ClearFlags(ProcFlags::Carry | ProcFlags::Negative | ProcFlags::Zero);
 	SetZeroNegativeFlags((uint16_t)result);
 
-	if(result & 0x10000) {
+	if(result > 0xFFFF) {
 		SetFlags(ProcFlags::Carry);
 	}
 
@@ -84,13 +84,13 @@ void Cpu::ADC()
 
 void Cpu::Sub8(uint8_t value)
 {
-	uint32_t result;
+	int32_t result;
 	if(CheckFlag(ProcFlags::Decimal)) {
 		result = (_state.A & 0x0F) + (value & 0x0F) + (_state.PS & ProcFlags::Carry);
 		if(result <= 0x0F) result -= 0x06;
 		result = (_state.A & 0xF0) + (value & 0xF0) + (result > 0x0F ? 0x10 : 0) + (result & 0x0F);
 	} else {
-		result = (uint32_t)_state.A + value + (_state.PS & ProcFlags::Carry);
+		result = (_state.A & 0xFF) + value + (_state.PS & ProcFlags::Carry);
 	}
 
 	if(~(_state.A ^ value) & (_state.A ^ result) & 0x80) {
@@ -106,16 +106,16 @@ void Cpu::Sub8(uint8_t value)
 	ClearFlags(ProcFlags::Carry | ProcFlags::Negative | ProcFlags::Zero);
 	SetZeroNegativeFlags((uint8_t)result);
 
-	if(result & 0x100) {
+	if(result > 0xFF) {
 		SetFlags(ProcFlags::Carry);
 	}
 
-	_state.A = (uint8_t)result;
+	_state.A = (_state.A & 0xFF00) | (uint8_t)result;
 }
 
 void Cpu::Sub16(uint16_t value)
 {
-	uint32_t result;
+	int32_t result;
 	if(CheckFlag(ProcFlags::Decimal)) {
 		result = (_state.A & 0x0F) + (value & 0x0F) + (_state.PS & ProcFlags::Carry);
 
@@ -128,7 +128,7 @@ void Cpu::Sub16(uint16_t value)
 		if(result <= 0xFFF) result -= 0x600;
 		result = (_state.A & 0xF000) + (value & 0xF000) + (result > 0xFFF ? 0x1000 : 0) + (result & 0xFFF);
 	} else {
-		result = (uint32_t)_state.A + value + (_state.PS & ProcFlags::Carry);
+		result = _state.A + value + (_state.PS & ProcFlags::Carry);
 	}
 
 	if(~(_state.A ^ value) & (_state.A ^ result) & 0x8000) {
@@ -144,7 +144,7 @@ void Cpu::Sub16(uint16_t value)
 	ClearFlags(ProcFlags::Carry | ProcFlags::Negative | ProcFlags::Zero);
 	SetZeroNegativeFlags((uint16_t)result);
 
-	if(result & 0x10000) {
+	if(result > 0xFFFF) {
 		SetFlags(ProcFlags::Carry);
 	}
 
