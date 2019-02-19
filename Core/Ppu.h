@@ -32,8 +32,10 @@ private:
 	uint32_t _frameCount = 0;
 	
 	uint8_t _bgMode = 0;
+	bool _mode1Bg3Priority = false;
 	
 	uint8_t _mainScreenLayers = 0;
+	uint8_t _subScreenLayers = 0;
 	LayerConfig _layerConfig[4];
 	
 	uint8_t *_vram;
@@ -46,7 +48,11 @@ private:
 	uint8_t _cgram[Ppu::CgRamSize];
 
 	uint16_t *_outputBuffers[2];
+	bool _filled[256];
 	uint16_t *_currentBuffer;
+
+	bool _subScreenFilled[256];
+	uint16_t *_subScreenBuffer;
 
 	uint8_t _oamMode = 0;
 	uint16_t _oamBaseAddress = 0;
@@ -68,8 +74,18 @@ private:
 	bool _colorMathSubstractMode = false;
 	bool _colorMathHalveResult = false;
 
-	void RenderTilemap(uint8_t layerIndex, uint8_t bpp);
+	template<bool forMainScreen>
+	void RenderBgColor();
+
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen>
+	void RenderTilemap();
+
+	template<uint8_t priority, bool forMainScreen>
 	void DrawSprites();
+
+	void RenderScanline();
+	void ApplyColorMath();
+	void SendFrame();
 
 public:
 	Ppu(shared_ptr<Console> console);
@@ -79,10 +95,6 @@ public:
 	PpuState GetState();
 
 	void Exec();
-
-	void RenderScanline();
-
-	void SendFrame();
 
 	uint8_t* GetVideoRam();
 	uint8_t* GetCgRam();

@@ -16,6 +16,7 @@ Ppu::Ppu(shared_ptr<Console> console)
 
 	_outputBuffers[0] = new uint16_t[256 * 224];
 	_outputBuffers[1] = new uint16_t[256 * 224];
+	_subScreenBuffer = new uint16_t[256 * 224];
 
 	_currentBuffer = _outputBuffers[0];
 
@@ -38,6 +39,7 @@ Ppu::Ppu(shared_ptr<Console> console)
 Ppu::~Ppu()
 {
 	delete[] _vram;
+	delete[] _subScreenBuffer;
 	delete[] _outputBuffers[0];
 	delete[] _outputBuffers[1];
 }
@@ -61,7 +63,7 @@ void Ppu::Exec()
 	if(_cycle == 340) {
 		_cycle = -1;
 		_scanline++;
-		if(_scanline < 225) {
+		if(_scanline < 224) {
 			RenderScanline();
 		} else if(_scanline == 225) {
 			//Reset OAM address at the start of vblank?
@@ -80,6 +82,7 @@ void Ppu::Exec()
 		} else if(_scanline == 261) {
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
+			RenderScanline();
 		}
 
 		if(_regs->IsVerticalIrqEnabled() && !_regs->IsHorizontalIrqEnabled() && _scanline == _regs->GetVerticalTimer()) {
@@ -115,19 +118,124 @@ uint8_t _spriteCount = 0;
 uint8_t _spritePriority[256] = {};
 uint16_t _spritePixels[256] = {};
 
-void Ppu::RenderScanline()
+template<uint8_t priority, bool forMainScreen>
+void Ppu::DrawSprites()
 {
-	for(int x = 0; x < 256; x++) {
-		if(_spritePriority[x] != 0xFF && _spritePixels[x] != 0xFFFF) {
-			_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
+	if(forMainScreen) {
+		for(int x = 0; x < 256; x++) {
+			if(!_filled[x] && _spritePriority[x] == priority) {
+				_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
+				_filled[x] = true;
+			}
+		}
+	} else {
+		for(int x = 0; x < 256; x++) {
+			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
+				_subScreenBuffer[(_scanline << 8) | x] = _spritePixels[x];
+				_subScreenFilled[x] = true;
+			}
 		}
 	}
+}
 
-/*	switch(_bgMode) {
-		case 1:
+void Ppu::RenderScanline()
+{
+	memset(_filled, 0, sizeof(_filled));
+	memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
+
+	switch(_bgMode) {
+		case 0:
+			DrawSprites<3, true>();
+			RenderTilemap<0, 2, true, true>();
+			RenderTilemap<1, 2, true, true>();
+			DrawSprites<2, true>();
+			RenderTilemap<0, 2, false, true>();
+			RenderTilemap<1, 2, false, true>();
+			DrawSprites<1, true>();
+			RenderTilemap<2, 2, true, true>();
+			RenderTilemap<3, 2, true, true>();
+			DrawSprites<0, true>();
+			RenderTilemap<2, 2, false, true>();
+			RenderTilemap<3, 2, false, true>();
+			RenderBgColor<true>();
 			break;
-	}*/
 
+		case 1:
+			//Main screen
+			if(_mode1Bg3Priority) {
+				RenderTilemap<2, 2, true, true>();
+			}
+			DrawSprites<3, true>();
+			RenderTilemap<0, 4, true, true>();
+			RenderTilemap<1, 4, true, true>();
+			DrawSprites<2, true>();
+			RenderTilemap<0, 4, false, true>();
+			RenderTilemap<1, 4, false, true>();
+			DrawSprites<1, true>();
+			if(!_mode1Bg3Priority) {
+				RenderTilemap<2, 2, true, true>();
+			}
+			DrawSprites<0, true>();
+			RenderTilemap<2, 2, false, true>();
+			RenderBgColor<true>();
+
+			//Subscreen
+			if(_mode1Bg3Priority) {
+				RenderTilemap<2, 2, true, false>();
+			}
+			DrawSprites<3, false>();
+			RenderTilemap<0, 4, true, false>();
+			RenderTilemap<1, 4, true, false>();
+			DrawSprites<2, false>();
+			RenderTilemap<0, 4, false, false>();
+			RenderTilemap<1, 4, false, false>();
+			DrawSprites<1, false>();
+			if(!_mode1Bg3Priority) {
+				RenderTilemap<2, 2, true, false>();
+			}
+			DrawSprites<0, true>();
+			RenderTilemap<2, 2, false, false>();
+			RenderBgColor<false>();
+
+			ApplyColorMath();
+			break;
+
+		case 2:
+			DrawSprites<3, true>();
+			RenderTilemap<0, 4, true, true>();
+			DrawSprites<2, true>();
+			RenderTilemap<1, 4, true, true>();
+			DrawSprites<1, true>();
+			RenderTilemap<0, 4, false, true>();
+			DrawSprites<0, true>();
+			RenderTilemap<1, 4, false, true>();
+			RenderBgColor<true>();
+			break;
+
+		case 3:
+			DrawSprites<3, true>();
+			RenderTilemap<0, 8, true, true>();
+			DrawSprites<2, true>();
+			RenderTilemap<1, 4, true, true>();
+			DrawSprites<1, true>();
+			RenderTilemap<0, 8, false, true>();
+			DrawSprites<0, true>();
+			RenderTilemap<1, 4, false, true>();
+			RenderBgColor<true>();
+			break;
+
+		case 5:
+			RenderTilemap<1, 2, false, true>();
+			RenderTilemap<0, 4, false, true>();
+			RenderBgColor<true>();
+			break;
+
+		case 6:
+			RenderTilemap<0, 8, false, true>();
+			RenderBgColor<true>();
+			break;
+	}
+	
 	//Process sprites for next scanline
 	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
 	memset(_spritePixels, 0xFFFF, sizeof(_spritePixels));
@@ -141,7 +249,7 @@ void Ppu::RenderScanline()
 		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
 
-		if(y > _scanline + 1 || y + height < _scanline + 1) {
+		if(y > _scanline + 1 || y + height <= _scanline + 1) {
 			//Not visible on this scanline
 			continue;
 		}
@@ -180,8 +288,8 @@ void Ppu::RenderScanline()
 				uint8_t xOffset;
 				int columnOffset;
 				if(info.HorizontalMirror) {
-					xOffset = (width - (x - info.X)) & 0x07;
-					columnOffset = (width - (x - info.X)) >> 3;
+					xOffset = (width - (x - info.X) - 1) & 0x07;
+					columnOffset = (width - (x - info.X) - 1) >> 3;
 				} else {
 					xOffset = (x - info.X) & 0x07;
 					columnOffset = (x - info.X) >> 3;
@@ -215,175 +323,114 @@ void Ppu::RenderScanline()
 
 }
 
-void Ppu::RenderTilemap(uint8_t layerIndex, uint8_t bpp)
+template<bool forMainScreen>
+void Ppu::RenderBgColor()
 {
-	if(((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
-		//This screen is disabled
+	uint16_t bgColor = _cgram[0] | (_cgram[1] << 8);
+	for(int x = 0; x < 256; x++) {
+		if(forMainScreen) {
+			if(!_filled[x]) {
+				_currentBuffer[(_scanline << 8) | x] = bgColor;
+			}
+		} else {
+			if(!_subScreenFilled[x]) {
+				_subScreenBuffer[(_scanline << 8) | x] = bgColor;
+			}
+		}
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen>
+void Ppu::RenderTilemap()
+{
+	if(forMainScreen) {
+		if(((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled
+			return;
+		}
+	} else {
+		if(((_subScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled
+			return;
+		}
+	}
+
+	LayerConfig &config = _layerConfig[layerIndex];
+	uint16_t tilemapAddr = config.TilemapAddress;
+	uint16_t chrAddr = config.ChrAddress;
+	uint32_t addr = tilemapAddr + ((_scanline >> 3) << 6) - 2;
+
+	for(int x = 0; x < 256; x++) {
+		if((x & 0x07) == 0) {
+			addr += 2;
+		}
+		
+		if(forMainScreen) {
+			if(_filled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+				continue;
+			}
+		} else {
+			if(_subScreenFilled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+				continue;
+			}
+		}
+
+		uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
+		uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
+		bool vMirror = (_vram[addr + 1] & 0x80) != 0;
+		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
+
+		uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
+		uint8_t yOffset = vMirror ? (7 - (_scanline & 0x07)) : (_scanline & 0x07);
+
+		uint16_t color = 0;
+		uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
+		for(int plane = 0; plane < bpp; plane++) {
+			uint8_t offset = (plane >> 1) * 16;
+			color |= (((_vram[tileStart + yOffset * 2 + offset + (plane & 0x01)] >> shift) & 0x01) << bpp);
+			color >>= 1;
+		}
+
+		if(color > 0) {
+			uint16_t paletteRamOffset = (palette * (1 << bpp) + color) * 2;
+			uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+
+			if(forMainScreen) {
+				_currentBuffer[(_scanline << 8) | x] = paletteColor;
+				_filled[x] = true;
+			} else {
+				_subScreenBuffer[(_scanline << 8) | x] = paletteColor;
+				_subScreenFilled[x] = true;
+			}
+		}
+	}
+}
+
+void Ppu::ApplyColorMath()
+{
+	bool useColorMath = _colorMathEnabled;// >> layerIndex) & 0x01) != 0;
+	if(!useColorMath) {
 		return;
 	}
 
-	bool useColorMath = ((_colorMathEnabled >> layerIndex) & 0x01) != 0;
+	for(int x = 0; x < 256; x++) {
+		uint16_t &mainPixel = _currentBuffer[(_scanline << 8) | x];
+		uint16_t &subPixel = _subScreenBuffer[(_scanline << 8) | x];
+		
+		uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
+		uint16_t r = std::min(((mainPixel & 0x001F) + (subPixel & 0x001F)) >> halfShift, 0x1F);
+		uint16_t g = std::min((((mainPixel >> 5) & 0x001F) + ((subPixel >> 5) & 0x001F)) >> halfShift, 0x1F);
+		uint16_t b = std::min((((mainPixel >> 10) & 0x001F) + ((subPixel >> 10) & 0x001F)) >> halfShift, 0x1F);
 
-	LayerConfig &config = _layerConfig[layerIndex];
-
-	uint16_t tilemapAddr = config.TilemapAddress;
-	uint16_t chrAddr = config.ChrAddress;
-	
-	uint32_t addr = tilemapAddr;
-	for(int y = 0; y < 28; y++) {
-		for(int x = 0; x < 32; x++) {
-			uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
-			uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
-			bool vMirror = (_vram[addr + 1] & 0x80) != 0;
-			bool hMirror = (_vram[addr + 1] & 0x40) != 0;
-
-			uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
-			for(int i = 0; i < 8; i++) {
-				uint8_t yOffset = vMirror ? (7 - i) : i;
-				for(int j = 0; j < 8; j++) {
-					uint16_t color = 0;
-					uint8_t shift = hMirror ? j : (7 - j);
-					for(int plane = 0; plane < bpp; plane++) {
-						uint8_t offset = (plane >> 1) * 16;
-						color |= (((_vram[tileStart + i * 2 + offset + (plane & 0x01)] >> shift) & 0x01) << bpp);
-						color >>= 1;
-					}
-
-					if(color > 0) {
-						uint16_t paletteRamOffset = (palette * (1 << bpp) + color) * 2;
-						uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-						
-						uint16_t &currentPixel = _currentBuffer[(y * 8 + yOffset) * 256 + x * 8 + j];
-						if(useColorMath && layerIndex == 0) {
-							uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
-							uint16_t r = std::min(((currentPixel & 0x001F) + (paletteColor & 0x001F)) >> halfShift, 0x1F);
-							uint16_t g = std::min((((currentPixel >> 5) & 0x001F) + ((paletteColor >> 5) & 0x001F)) >> halfShift, 0x1F);
-							uint16_t b = std::min((((currentPixel >> 10) & 0x001F) + ((paletteColor >> 10) & 0x001F)) >> halfShift, 0x1F);
-								
-							paletteColor = r | (g << 5) | (b << 10);
-						}
-						currentPixel = paletteColor;
-					}
-				}
-			}
-			addr+=2;
-		}
+		mainPixel = r | (g << 5) | (b << 10);
 	}
 }
 
 void Ppu::SendFrame()
 {
-	/*uint16_t bgColor = _cgram[0] | (_cgram[1]);
-	for(int i = 0; i < 256 * 224; i++) {
-		_currentBuffer[i] = bgColor;
-	}
-	
-	switch(_bgMode) {
-		case 0:
-			RenderTilemap(3, 2);
-			RenderTilemap(2, 2);
-			RenderTilemap(1, 2);
-			RenderTilemap(0, 2);
-			break;
-
-		case 1:
-			RenderTilemap(2, 2);
-			RenderTilemap(1, 4);
-			RenderTilemap(0, 4);
-			break;
-
-		case 2:
-			RenderTilemap(1, 4);
-			RenderTilemap(0, 4);
-			break;
-
-		case 3:
-			RenderTilemap(1, 4);
-			RenderTilemap(0, 8);
-			break;
-
-		case 5:
-			RenderTilemap(1, 2);
-			RenderTilemap(0, 4);
-			break;
-		
-		case 6:
-			RenderTilemap(0, 8);
-			break;
-	}
-
-	//Draw sprites
-	if(_mainScreenLayers & 0x10) {
-		DrawSprites();
-	}
-	*/
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 	_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, _frameCount);
 	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-
-	uint16_t bgColor = _cgram[0] | (_cgram[1]);
-	for(int i = 0; i < 256 * 224; i++) {
-		_currentBuffer[i] = bgColor;
-	}
-}
-
-void Ppu::DrawSprites()
-{
-	for(int i = 0; i < 512; i += 4) {
-		uint8_t y = _oamRam[i + 1];
-		if(y >= 225) {
-			continue;
-		}
-
-		int16_t x = _oamRam[i];
-		uint8_t tileRow = (_oamRam[i + 2] & 0xF0) >> 4;
-		uint8_t tileColumn = _oamRam[i + 2] & 0x0F;
-		uint8_t flags = _oamRam[i + 3];
-
-		uint8_t palette = (flags >> 1) & 0x07;
-		bool useSecondTable = (flags & 0x01) != 0;
-
-		//TODO: vertical, horizontal flip, priority
-
-		uint8_t highTableOffset = i >> 4;
-		uint8_t shift = ((i >> 2) & 0x03) << 1;
-
-		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
-		bool negativeX = (highTableValue & 0x01) != 0;
-		uint8_t size = (highTableValue & 0x02) >> 1;
-
-		if(negativeX) {
-			x = -x;
-		}
-
-		for(int rowOffset = 0; rowOffset < _oamSizes[_oamMode][size][1]; rowOffset++) {
-			for(int columnOffset = 0; columnOffset < _oamSizes[_oamMode][size][0]; columnOffset++) {
-				uint8_t column = (tileColumn + columnOffset) & 0x0F;
-				uint8_t row = (tileRow + rowOffset) & 0x0F;
-				uint8_t tileIndex = (row << 4) | column;
-
-				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
-				uint16_t bpp = 4;
-				for(int i = 0; i < 8; i++) {
-					for(int j = 0; j < 8; j++) {
-						uint16_t color = 0;
-						for(int plane = 0; plane < bpp; plane++) {
-							uint8_t offset = (plane >> 1) * 16;
-							color |= (((_vram[tileStart + i * 2 + offset + (plane & 0x01)] >> (7 - j)) & 0x01) << bpp);
-							color >>= 1;
-						}
-
-						if(color != 0) {
-							uint16_t paletteRamOffset = 256 + ((palette * (1 << bpp) + color) * 2);
-
-							uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-							_currentBuffer[(y + i + rowOffset * 8) * 256 + x + j + columnOffset * 8] = paletteColor;
-						}
-					}
-				}
-			}
-		}
-	}
 }
 
 uint8_t* Ppu::GetVideoRam()
@@ -449,9 +496,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			
 		case 0x2105:
 			_bgMode = value & 0x07;
-			
-			//TODO
-			//_mode1Bg3Priority = (value & 0x08) != 0;
+			_mode1Bg3Priority = (value & 0x08) != 0;
 
 			_layerConfig[0].LargeTiles = (value & 0x10) != 0;
 			_layerConfig[1].LargeTiles = (value & 0x20) != 0;
@@ -525,6 +570,11 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x212C:
 			//TM - Main Screen Designation
 			_mainScreenLayers = value & 0x1F;
+			break;
+
+		case 0x212D:
+			//TS - Subscreen Designation
+			_subScreenLayers = value & 0x1F;
 			break;
 		
 		case 0x2130:
