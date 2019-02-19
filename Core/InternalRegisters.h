@@ -25,6 +25,8 @@ private:
 	uint16_t _horizontalTimer = 0x1FF;
 	uint16_t _verticalTimer = 0x1FF;
 
+	uint8_t _ioPortOutput = 0;
+
 	uint16_t _controllerData[4];
 
 public:

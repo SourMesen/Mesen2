@@ -27,6 +27,9 @@ private:
 	shared_ptr<Console> _console;
 	shared_ptr<InternalRegisters> _regs;
 
+	bool _forcedVblank = false;
+	uint8_t _screenBrightness = 0;
+
 	uint16_t _cycle = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
@@ -64,6 +67,9 @@ private:
 	
 	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
+
+	bool _timeOver = false;
+	bool _rangeOver = false;
 
 	bool _directColorMode = false;
 

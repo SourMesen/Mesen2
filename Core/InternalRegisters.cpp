@@ -73,6 +73,10 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			);
 		}
 
+		case 0x4213:
+			//TODO  RDIO - Programmable I/O port (in-port)
+			return 0;
+						 
 		case 0x4214: return (uint8_t)_divResult;
 		case 0x4215: return (uint8_t)(_divResult >> 8);
 
@@ -102,6 +106,11 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			_enableAutoJoypadRead = (value & 0x01) != 0;
 			break;
 
+		case 0x4201: 
+			//TODO WRIO - Programmable I/O port (out-port)
+			_ioPortOutput = value;
+			break;
+
 		case 0x4202: _multOperand1 = value; break;
 		case 0x4203:
 			_multOperand2 = value;
@@ -129,7 +138,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x420A: _verticalTimer = (_verticalTimer & 0xFF) | ((value & 0x01) << 8); break;
 
 		default:
-			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr));
+			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
 	}
 }

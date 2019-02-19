@@ -63,6 +63,9 @@ void Ppu::Exec()
 	if(_cycle == 340) {
 		_cycle = -1;
 		_scanline++;
+
+		_rangeOver = false;
+		_timeOver = false;
 		if(_scanline < 224) {
 			RenderScanline();
 		} else if(_scanline == 225) {
@@ -150,6 +153,11 @@ void Ppu::RenderScanline()
 {
 	memset(_filled, 0, sizeof(_filled));
 	memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
+
+	if(_forcedVblank) {
+		RenderBgColor<true>();
+		return;
+	}
 
 	switch(_bgMode) {
 		case 0:
@@ -248,6 +256,8 @@ void Ppu::RenderScanline()
 	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
 	memset(_spritePixels, 0xFFFF, sizeof(_spritePixels));
 	_spriteCount = 0;
+	uint16_t totalWidth = 0;
+
 	for(int i = 0; i < 512; i += 4) {
 		uint8_t y = _oamRam[i + 1];
 
@@ -322,13 +332,20 @@ void Ppu::RenderScanline()
 			}
 		}
 
-		_spriteCount++;
+		totalWidth += width;
+		if(totalWidth >= 34 * 8) {
+			_timeOver = true;
+		}
 
+		_spriteCount++;
 		if(_spriteCount == 32) {
+			_rangeOver = true;
+		}
+
+		if(_timeOver || _rangeOver) {
 			break;
 		}
 	}
-
 }
 
 template<bool forMainScreen>
@@ -466,6 +483,14 @@ uint8_t* Ppu::GetSpriteRam()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
+		case 0x213E:
+			//TODO open bus on bit 4
+			return (
+				(_timeOver ? 0x80 : 0) |
+				(_rangeOver ? 0x40 : 0) |
+				0x01 //PPU chip version
+			);
+
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
 			break;
@@ -477,6 +502,15 @@ uint8_t Ppu::Read(uint16_t addr)
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
 	switch(addr) {
+		case 0x2100:
+			_forcedVblank = (value & 0x80) != 0;
+
+			//TODO Apply brightness
+			_screenBrightness = value & 0x0F;
+
+			//TODO : Also, writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur. 
+			break;
+
 		case 0x2101:
 			_oamMode = (value & 0xE0) >> 5;
 			_oamBaseAddress = (value & 0x07) << 13;
@@ -622,7 +656,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			break;
 
 		default:
-			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr));
+			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
 	}
 }
