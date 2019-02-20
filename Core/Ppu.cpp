@@ -9,6 +9,12 @@
 #include "VideoDecoder.h"
 #include "NotificationManager.h"
 
+enum PixelFlags
+{
+	Filled = 0x01,
+	AllowColorMath = 0x02,
+};
+
 Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
@@ -126,6 +132,7 @@ struct SpriteInfo
 SpriteInfo _sprites[32] = {};
 uint8_t _spriteCount = 0;
 uint8_t _spritePriority[256] = {};
+uint8_t _spritePalette[256] = {};
 uint16_t _spritePixels[256] = {};
 
 template<uint8_t priority, bool forMainScreen>
@@ -137,9 +144,9 @@ void Ppu::DrawSprites()
 		}
 
 		for(int x = 0; x < 256; x++) {
-			if(!_filled[x] && _spritePriority[x] == priority) {
+			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
 				_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
-				_filled[x] = true;
+				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
 		}
 	} else {
@@ -158,7 +165,7 @@ void Ppu::DrawSprites()
 
 void Ppu::RenderScanline()
 {
-	memset(_filled, 0, sizeof(_filled));
+	memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
 	memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
 
 	if(_forcedVblank) {
@@ -219,8 +226,6 @@ void Ppu::RenderScanline()
 			DrawSprites<0, true>();
 			RenderTilemap<2, 2, false, false>();
 			RenderBgColor<false>();
-
-			ApplyColorMath();
 			break;
 
 		case 2:
@@ -258,10 +263,13 @@ void Ppu::RenderScanline()
 			RenderBgColor<true>();
 			break;
 	}
+
+	ApplyColorMath();
 	
 	//Process sprites for next scanline
 	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
-	memset(_spritePixels, 0xFFFF, sizeof(_spritePixels));
+	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
+	memset(_spritePalette, 0, sizeof(_spritePalette));	
 	_spriteCount = 0;
 	uint16_t totalWidth = 0;
 
@@ -335,6 +343,7 @@ void Ppu::RenderScanline()
 					uint16_t paletteRamOffset = 256 + ((info.Palette * (1 << bpp) + color) * 2);
 					_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 					_spritePriority[x] = info.Priority;
+					_spritePalette[x] = info.Palette;
 				}
 			}
 		}
@@ -361,8 +370,10 @@ void Ppu::RenderBgColor()
 	uint16_t bgColor = _cgram[0] | (_cgram[1] << 8);
 	for(int x = 0; x < 256; x++) {
 		if(forMainScreen) {
-			if(!_filled[x]) {
+			uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
+			if(!_rowPixelFlags[x]) {
 				_currentBuffer[(_scanline << 8) | x] = bgColor;
+				_rowPixelFlags[x] = pixelFlags;
 			}
 		} else {
 			if(!_subScreenFilled[x]) {
@@ -387,6 +398,8 @@ void Ppu::RenderTilemap()
 		}
 	}
 
+	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+
 	LayerConfig &config = _layerConfig[layerIndex];
 	uint16_t tilemapAddr = config.TilemapAddress >> 1;
 	uint16_t chrAddr = config.ChrAddress;
@@ -399,7 +412,7 @@ void Ppu::RenderTilemap()
 		addr <<= 1;
 
 		if(forMainScreen) {
-			if(_filled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+			if(_rowPixelFlags[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
 			}
 		} else {
@@ -436,7 +449,7 @@ void Ppu::RenderTilemap()
 
 			if(forMainScreen) {
 				_currentBuffer[(_scanline << 8) | x] = paletteColor;
-				_filled[x] = true;
+				_rowPixelFlags[x] = pixelFlags;
 			} else {
 				_subScreenBuffer[(_scanline << 8) | x] = paletteColor;
 				_subScreenFilled[x] = true;
@@ -447,21 +460,42 @@ void Ppu::RenderTilemap()
 
 void Ppu::ApplyColorMath()
 {
-	bool useColorMath = _colorMathEnabled;// >> layerIndex) & 0x01) != 0;
-	if(!useColorMath) {
+	if(!_colorMathEnabled) {
 		return;
 	}
 
 	for(int x = 0; x < 256; x++) {
-		uint16_t &mainPixel = _currentBuffer[(_scanline << 8) | x];
-		uint16_t &subPixel = _subScreenBuffer[(_scanline << 8) | x];
-		
-		uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
-		uint16_t r = std::min(((mainPixel & 0x001F) + (subPixel & 0x001F)) >> halfShift, 0x1F);
-		uint16_t g = std::min((((mainPixel >> 5) & 0x001F) + ((subPixel >> 5) & 0x001F)) >> halfShift, 0x1F);
-		uint16_t b = std::min((((mainPixel >> 10) & 0x001F) + ((subPixel >> 10) & 0x001F)) >> halfShift, 0x1F);
+		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
+			uint16_t otherPixel;
+			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
+			if(_colorMathAddSubscreen) {
+				if(_subScreenFilled[x]) {
+					otherPixel = _subScreenBuffer[(_scanline << 8) | x];
+				} else {
+					//there's nothing in the subscreen at this pixel, use the fixed color and disable halve operation
+					otherPixel = _fixedColor;
+					halfShift = 0;
+				}
+			} else {
+				otherPixel = _fixedColor;
+			}
 
-		mainPixel = r | (g << 5) | (b << 10);
+			uint16_t &mainPixel = _currentBuffer[(_scanline << 8) | x];
+
+			if(_colorMathSubstractMode) {
+				uint16_t r = std::max((mainPixel & 0x001F) - (otherPixel & 0x001F), 0) >> halfShift;
+				uint16_t g = std::max(((mainPixel >> 5) & 0x001F) - ((otherPixel >> 5) & 0x001F), 0) >> halfShift;
+				uint16_t b = std::max(((mainPixel >> 10) & 0x001F) - ((otherPixel >> 10) & 0x001F), 0) >> halfShift;
+
+				mainPixel = r | (g << 5) | (b << 10);
+			} else {
+				uint16_t r = std::min(((mainPixel & 0x001F) + (otherPixel & 0x001F)) >> halfShift, 0x1F);
+				uint16_t g = std::min((((mainPixel >> 5) & 0x001F) + ((otherPixel >> 5) & 0x001F)) >> halfShift, 0x1F);
+				uint16_t b = std::min((((mainPixel >> 10) & 0x001F) + ((otherPixel >> 10) & 0x001F)) >> halfShift, 0x1F);
+
+				mainPixel = r | (g << 5) | (b << 10);
+			}
+		}
 	}
 }
 
@@ -664,16 +698,30 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		
 		case 0x2130:
 			//CGWSEL - Color Addition Select
-			_colorMathClipMode = (value >> 6) & 0x03;
-			_colorMathPreventMode = (value >> 4) & 0x03;
+			_colorMathClipMode = (value >> 6) & 0x03; //TODO
+			_colorMathPreventMode = (value >> 4) & 0x03; //TODO
 			_colorMathAddSubscreen = (value & 0x02) != 0;
-			_directColorMode = (value & 0x01) != 0;
+			_directColorMode = (value & 0x01) != 0; //TODO
 			break;
 
 		case 0x2131:
+			//CGADSUB - Color math designation
 			_colorMathEnabled = value & 0x3F;
 			_colorMathSubstractMode = (value & 0x80) != 0;
 			_colorMathHalveResult = (value & 0x40) != 0;
+			break;
+
+		case 0x2132: 
+			//COLDATA - Fixed Color Data
+			if(value & 0x80) { //B
+				_fixedColor = (_fixedColor & ~0x7C00) | ((value & 0x1F) << 10);
+			}
+			if(value & 0x40) { //G
+				_fixedColor = (_fixedColor & ~0x3E0) | ((value & 0x1F) << 5);
+			}
+			if(value & 0x20) { //R
+				_fixedColor = (_fixedColor & ~0x1F) | (value & 0x1F);
+			}
 			break;
 
 		default:

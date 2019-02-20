@@ -51,7 +51,8 @@ private:
 	uint8_t _cgram[Ppu::CgRamSize];
 
 	uint16_t *_outputBuffers[2];
-	bool _filled[256];
+
+	uint8_t _rowPixelFlags[256];
 	uint16_t *_currentBuffer;
 
 	bool _subScreenFilled[256];
@@ -79,6 +80,7 @@ private:
 	uint8_t _colorMathEnabled = 0;
 	bool _colorMathSubstractMode = false;
 	bool _colorMathHalveResult = false;
+	uint16_t _fixedColor = 0;
 
 	uint8_t _hvScrollLatchValue = 0;
 	uint8_t _hScrollLatchValue = 0;
