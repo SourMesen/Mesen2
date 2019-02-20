@@ -115,26 +115,6 @@ void Ppu::Exec()
 	}
 }
 
-struct SpriteInfo
-{
-	int16_t X;
-	bool HorizontalMirror;
-	bool VerticalMirror;
-	uint8_t Priority;
-
-	uint8_t TileColumn;
-	uint8_t TileRow;
-	uint8_t Palette;
-	bool UseSecondTable;
-	uint8_t LargeSprite;
-};
-
-SpriteInfo _sprites[32] = {};
-uint8_t _spriteCount = 0;
-uint8_t _spritePriority[256] = {};
-uint8_t _spritePalette[256] = {};
-uint16_t _spritePixels[256] = {};
-
 template<uint8_t priority, bool forMainScreen>
 void Ppu::DrawSprites()
 {
