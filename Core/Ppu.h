@@ -78,6 +78,11 @@ private:
 	bool _subScreenFilled[256];
 	uint16_t *_subScreenBuffer;
 
+	uint16_t _mosaicColor[256] = {};
+	uint8_t _mosaicSize = 0;
+	uint8_t _mosaicEnabled = 0;
+	uint16_t _mosaicStartScanline = 0;
+
 	uint8_t _oamMode = 0;
 	uint16_t _oamBaseAddress = 0;
 	uint16_t _oamAddressOffset = 0;

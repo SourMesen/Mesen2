@@ -93,6 +93,9 @@ void Ppu::Exec()
 		} else if(_scanline == 261) {
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
+			if(_mosaicEnabled) {
+				_mosaicStartScanline = 0;
+			}
 			_console->GetDmaController()->InitHdmaChannels();
 			RenderScanline();
 		}
@@ -378,12 +381,15 @@ void Ppu::RenderTilemap()
 		}
 	}
 
+	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
+	bool mosaicScanline = applyMosaic && (_scanline - _mosaicStartScanline) % _mosaicSize != 0;
+
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	LayerConfig &config = _layerConfig[layerIndex];
 	uint16_t tilemapAddr = config.TilemapAddress >> 1;
 	uint16_t chrAddr = config.ChrAddress;
-		
+	
 	for(int x = 0; x < 256; x++) {
 		uint16_t row = (_scanline + config.VScroll) >> 3;
 		uint16_t column = (x + config.HScroll) >> 3;
@@ -399,6 +405,13 @@ void Ppu::RenderTilemap()
 			if(_subScreenFilled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
 			}
+		}
+
+		if(mosaicScanline || (applyMosaic && x % _mosaicSize != 0)) {
+			//If this is not the top-left pixels in the mosaic pattern, override it with the top-left pixel data
+			_currentBuffer[(_scanline << 8) | x] = _mosaicColor[x];
+			_rowPixelFlags[x] = pixelFlags;
+			continue;
 		}
 
 		uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
@@ -430,6 +443,12 @@ void Ppu::RenderTilemap()
 			if(forMainScreen) {
 				_currentBuffer[(_scanline << 8) | x] = paletteColor;
 				_rowPixelFlags[x] = pixelFlags;
+				if(applyMosaic && x % _mosaicSize == 0) {
+					//This is the source for the mosaic pattern, store it for use in the next scanlines
+					for(int i = 0; i < _mosaicSize && x + i < 256; i++) {
+						_mosaicColor[x+i] = paletteColor;
+					}
+				}
 			} else {
 				_subScreenBuffer[(_scanline << 8) | x] = paletteColor;
 				_subScreenFilled[x] = true;
@@ -586,6 +605,16 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_layerConfig[1].LargeTiles = (value & 0x20) != 0;
 			_layerConfig[2].LargeTiles = (value & 0x30) != 0;
 			_layerConfig[3].LargeTiles = (value & 0x40) != 0;
+			break;
+
+		case 0x2106:
+			//MOSAIC - Screen Pixelation
+			_mosaicSize = ((value & 0xF0) >> 4) + 1;
+			_mosaicEnabled = value & 0x0F;
+			if(_mosaicEnabled) {
+				//"If this register is set during the frame, the Åestarting scanlineÅf is the current scanline, otherwise it is the first visible scanline of the frame."
+				_mosaicStartScanline = _scanline;
+			}
 			break;
 
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
