@@ -86,7 +86,7 @@ private:
 	template<bool forMainScreen>
 	void RenderBgColor();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen>
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset = 0>
 	void RenderTilemap();
 
 	template<uint8_t priority, bool forMainScreen>

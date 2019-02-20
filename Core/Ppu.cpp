@@ -170,16 +170,16 @@ void Ppu::RenderScanline()
 		case 0:
 			DrawSprites<3, true>();
 			RenderTilemap<0, 2, true, true>();
-			RenderTilemap<1, 2, true, true>();
+			RenderTilemap<1, 2, true, true, 64>();
 			DrawSprites<2, true>();
 			RenderTilemap<0, 2, false, true>();
-			RenderTilemap<1, 2, false, true>();
+			RenderTilemap<1, 2, false, true, 64>();
 			DrawSprites<1, true>();
-			RenderTilemap<2, 2, true, true>();
-			RenderTilemap<3, 2, true, true>();
+			RenderTilemap<2, 2, true, true, 128>();
+			RenderTilemap<3, 2, true, true, 192>();
 			DrawSprites<0, true>();
-			RenderTilemap<2, 2, false, true>();
-			RenderTilemap<3, 2, false, true>();
+			RenderTilemap<2, 2, false, true, 128>();
+			RenderTilemap<3, 2, false, true, 192>();
 			RenderBgColor<true>();
 			break;
 
@@ -372,7 +372,7 @@ void Ppu::RenderBgColor()
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
 void Ppu::RenderTilemap()
 {
 	if(forMainScreen) {
@@ -431,7 +431,7 @@ void Ppu::RenderTilemap()
 		}
 
 		if(color > 0) {
-			uint16_t paletteRamOffset = (palette * (1 << bpp) + color) * 2;
+			uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
 			uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 
 			if(forMainScreen) {
