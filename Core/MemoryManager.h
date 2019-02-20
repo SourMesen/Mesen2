@@ -89,7 +89,6 @@ private:
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
 	shared_ptr<Ppu> _ppu;
-	shared_ptr<DmaController> _dmaController;
 
 	IMemoryHandler* _handlers[0x100 * 0x10];
 	vector<unique_ptr<RamHandler>> _workRamHandlers;
@@ -110,8 +109,14 @@ public:
 
 		_workRam = new uint8_t[MemoryManager::WorkRamSize];
 
-		_dmaController.reset(new DmaController(console->GetMemoryManager().get()));
-		_cpuRegisterHandler.reset(new CpuRegisterHandler(_ppu.get(), console->GetSpc().get(), _dmaController.get(), console->GetInternalRegisters().get(), console->GetControlManager().get(), _workRam));
+		_cpuRegisterHandler.reset(new CpuRegisterHandler(
+			_ppu.get(),
+			console->GetSpc().get(),
+			console->GetDmaController().get(),
+			console->GetInternalRegisters().get(),
+			console->GetControlManager().get(),
+			_workRam
+		));
 
 		memset(_handlers, 0, sizeof(_handlers));
 		//memset(_workRam, 0, 128 * 1024);

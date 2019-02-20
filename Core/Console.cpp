@@ -6,6 +6,7 @@
 #include "InternalRegisters.h"
 #include "ControlManager.h"
 #include "MemoryManager.h"
+#include "DmaController.h"
 #include "Debugger.h"
 #include "NotificationManager.h"
 #include "SoundMixer.h"
@@ -73,6 +74,7 @@ void Console::Stop()
 	_internalRegisters.reset();
 	_controlManager.reset();
 	_memoryManager.reset();
+	_dmaController.reset();
 }
 
 void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
@@ -88,6 +90,8 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		_cart = cart;
 		_controlManager.reset(new ControlManager(shared_from_this()));
 		_memoryManager.reset(new MemoryManager());
+		_dmaController.reset(new DmaController(_memoryManager.get()));
+
 		_memoryManager->Initialize(shared_from_this());
 
 		_cpu.reset(new Cpu(_memoryManager));
@@ -159,6 +163,11 @@ shared_ptr<InternalRegisters> Console::GetInternalRegisters()
 shared_ptr<ControlManager> Console::GetControlManager()
 {
 	return _controlManager;
+}
+
+shared_ptr<DmaController> Console::GetDmaController()
+{
+	return _dmaController;
 }
 
 shared_ptr<Debugger> Console::GetDebugger(bool autoStart)

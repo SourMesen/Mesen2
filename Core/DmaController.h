@@ -9,12 +9,20 @@ struct DmaChannelConfig
 	bool InvertDirection;
 	bool Decrement;
 	bool FixedTransfer;
-	bool HdmaPointers;
+	bool HdmaIndirectAddressing;
 	uint8_t TransferMode;
 
-	uint32_t SrcAddress;
+	uint16_t SrcAddress;
+	uint16_t SrcBank;
+
 	uint8_t DestAddress;
 	uint16_t TransferSize;
+
+	uint8_t HdmaBank;
+	uint16_t HdmaTableAddress;
+	uint8_t HdmaLineCounterAndRepeat;
+	bool DoTransfer;
+	bool HdmaFinished;
 };
 
 class DmaController
@@ -26,14 +34,21 @@ private:
 		{ 0, 1, 2, 3 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 }
 	};
 
+	bool _hdmaPending = false;
+	uint8_t _hdmaChannels = 0;
+
 	DmaChannelConfig _channel[8] = {};
 	MemoryManager *_memoryManager;
 	
-	void RunSingleTransfer(DmaChannelConfig &channel, uint32_t &bytesLeft);
+	void RunSingleTransfer(DmaChannelConfig &channel);
 	void RunDma(DmaChannelConfig &channel);
-
+	void RunHdmaTransfer(DmaChannelConfig &channel);
+	
 public:
 	DmaController(MemoryManager *memoryManager);
+	
+	void InitHdmaChannels();
+	void ProcessHdmaChannels();
 
 	void Write(uint16_t addr, uint8_t value);
 };

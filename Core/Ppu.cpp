@@ -87,6 +87,7 @@ void Ppu::Exec()
 		} else if(_scanline == 261) {
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
+			_console->GetDmaController()->InitHdmaChannels();
 			RenderScanline();
 		}
 
@@ -102,6 +103,10 @@ void Ppu::Exec()
 	}
 
 	_cycle++;
+
+	if(_cycle == 278 && _scanline < 225) {
+		_console->GetDmaController()->ProcessHdmaChannels();
+	}
 }
 
 struct SpriteInfo
