@@ -296,7 +296,7 @@ void Ppu::RenderScanline()
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
 		constexpr uint16_t bpp = 4;
 
-		for(int x = info.X; x < info.X + width; x++) {
+		for(int x = info.X; x > 0 && x < info.X + width && x < 256; x++) {
 			if(_spritePixels[x] == 0xFFFF) {
 				uint8_t xOffset;
 				int columnOffset;
