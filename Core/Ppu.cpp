@@ -524,6 +524,7 @@ void Ppu::LatchLocationValues()
 {
 	_horizontalLocation = _cycle;
 	_verticalLocation = _scanline;
+	_locationLatched = true;
 }
 
 uint8_t Ppu::Read(uint16_t addr)
@@ -606,6 +607,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 
 		case 0x213E:
+			//STAT77 - PPU Status Flag and Version
 			//TODO open bus on bit 4
 
 			//"The high/low selector is reset to elowf when $213f is read"
@@ -615,8 +617,25 @@ uint8_t Ppu::Read(uint16_t addr)
 			return (
 				(_timeOver ? 0x80 : 0) |
 				(_rangeOver ? 0x40 : 0) |
-				0x01 //PPU chip version
+				0x01 //PPU (5c77) chip version
 			);
+
+		case 0x213F: {
+			//STAT78 - PPU Status Flag and Version
+			//TODO open bus on bit 5
+			uint8_t value = (
+				((_frameCount & 0x01) ? 0x80 : 0) |
+				(_locationLatched ? 0x40 : 0) |
+				//TODO (_isPal ? 0x10 : 0)
+				0x02 //PPU (5c78) chip version
+			);
+
+			if(_regs->GetIoPortOutput() & 0x80) {
+				_locationLatched = false;
+			}
+
+			return value;
+		}
 
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));

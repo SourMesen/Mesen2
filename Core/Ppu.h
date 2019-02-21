@@ -113,9 +113,9 @@ private:
 
 	uint16_t _horizontalLocation = 0;
 	bool _horizontalLocToggle = false;
-
 	uint16_t _verticalLocation = 0;
 	bool _verticalLocationToggle = false;
+	bool _locationLatched = false;
 
 	uint16_t _mode7MatrixA = 0;
 	uint16_t _mode7MatrixB = 0;
