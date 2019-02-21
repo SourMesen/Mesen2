@@ -101,6 +101,7 @@ private:
 
 	uint64_t _masterClock;
 	uint64_t _lastMasterClock;
+	uint8_t _masterClockTable[0x10000];
 
 public:
 	void Initialize(shared_ptr<Console> console)
@@ -149,6 +150,8 @@ public:
 		}
 
 		_cart->RegisterHandlers(*this);
+
+		GenerateMasterClockTable();
 	}
 
 	~MemoryManager()
@@ -171,41 +174,47 @@ public:
 		}
 	}
 
-	void IncrementMasterClock(uint32_t addr)
+	void GenerateMasterClockTable()
 	{
 		//This is incredibly inaccurate
-		uint8_t bank = (addr & 0xFF0000) >> 8;
-		if(bank >= 0x40 && bank <= 0x7F) {
-			//Slow
-			_masterClock += 8;
-		} else if(bank >= 0xCF) {
-			//Slow or fast (depending on register)
-			//Use slow
-			_masterClock += 8;
-		} else {
-			uint8_t page = (addr & 0xFF00) >> 8;
-			if(page <= 0x1F) {
+		for(int i = 0; i < 0x10000; i++) {
+			uint8_t bank = (i & 0xFF00) >> 8;
+			if(bank >= 0x40 && bank <= 0x7F) {
 				//Slow
-				_masterClock += 6;
-			} else if(page >= 0x20 && page <= 0x3F) {
-				//Fast
-				_masterClock += 6;
-			} else if(page == 0x40 || page == 0x41) {
-				//extra slow
-				_masterClock += 12;
-			} else if(page >= 0x42 && page <= 0x5F) {
-				//Fast
-				_masterClock += 6;
-			} else if(page >= 0x60 && page <= 0x7F) {
-				//Slow
-				_masterClock += 8;
-			} else {
+				_masterClockTable[i] = 8;
+			} else if(bank >= 0xCF) {
 				//Slow or fast (depending on register)
 				//Use slow
-				_masterClock += 8;
+				_masterClockTable[i] = 8;
+			} else {
+				uint8_t page = (i & 0xFF);
+				if(page <= 0x1F) {
+					//Slow
+					_masterClockTable[i] = 6;
+				} else if(page >= 0x20 && page <= 0x3F) {
+					//Fast
+					_masterClockTable[i] = 6;
+				} else if(page == 0x40 || page == 0x41) {
+					//extra slow
+					_masterClockTable[i] = 12;
+				} else if(page >= 0x42 && page <= 0x5F) {
+					//Fast
+					_masterClockTable[i] = 6;
+				} else if(page >= 0x60 && page <= 0x7F) {
+					//Slow
+					_masterClockTable[i] = 8;
+				} else {
+					//Slow or fast (depending on register)
+					//Use slow
+					_masterClockTable[i] = 8;
+				}
 			}
 		}
+	}
 
+	void IncrementMasterClock(uint32_t addr)
+	{
+		_masterClock += _masterClockTable[addr >> 8];
 		while(_lastMasterClock < _masterClock - 3) {
 			_ppu->Exec();
 			_lastMasterClock += 4;
