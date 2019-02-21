@@ -154,7 +154,7 @@ private:
 
 #include <assert.h>
 
-inline int SPC_DSP::sample_count() const { return m.out - m.out_begin; }
+inline int SPC_DSP::sample_count() const { return (int)(m.out - m.out_begin); }
 
 inline int SPC_DSP::read( int addr ) const
 {

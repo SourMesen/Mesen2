@@ -14,7 +14,7 @@ SoundManager::SoundManager(shared_ptr<Console> console, HWND hwnd)
 
 	memset(&_audioDeviceID, 0, sizeof(_audioDeviceID));
 
-	if(InitializeDirectSound(44100, false)) {
+	if(InitializeDirectSound(44100, true)) {
 		_console->GetSoundMixer()->RegisterAudioDevice(this);
 	} else {
 		MessageManager::DisplayMessage("Error", "CouldNotInitializeAudioSystem");

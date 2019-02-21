@@ -31,5 +31,6 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 {
 	if(_audioDevice) {
 		_audioDevice->PlayBuffer(samples, sampleCount, _sampleRate, true);
+		_audioDevice->ProcessEndOfFrame();
 	}
 }
