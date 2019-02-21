@@ -43,6 +43,11 @@ void InternalRegisters::ProcessAutoJoypadRead()
 	}
 }
 
+uint8_t InternalRegisters::GetIoPortOutput()
+{
+	return _ioPortOutput;
+}
+
 void InternalRegisters::SetNmiFlag(bool nmiFlag)
 {
 	_nmiFlag = nmiFlag;
@@ -53,7 +58,11 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 	switch(addr) {
 		case 0x4210: {
 			//open bus implementation here is needed to pass CPUPHL test
-			uint8_t value = (_nmiFlag ? 0x80 : 0) | ((addr >> 8) & 0x70);
+			uint8_t value = 
+				(_nmiFlag ? 0x80 : 0) | 
+				((addr >> 8) & 0x70) | 
+				0x2; //CPU revision
+
 			_nmiFlag = false;
 			return value;
 		}
@@ -106,8 +115,11 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			_enableAutoJoypadRead = (value & 0x01) != 0;
 			break;
 
-		case 0x4201: 
+		case 0x4201:
 			//TODO WRIO - Programmable I/O port (out-port)
+			if((_ioPortOutput & 0x80) && !(value & 0x80)) {
+				_console->GetPpu()->LatchLocationValues();
+			}
 			_ioPortOutput = value;
 			break;
 

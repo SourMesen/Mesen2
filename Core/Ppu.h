@@ -60,6 +60,7 @@ private:
 	uint8_t _vramIncrementValue;
 	uint8_t _vramAddressRemapping;
 	bool _vramAddrIncrementOnSecondReg;
+	uint8_t _vramReadBuffer = 0;
 	
 	uint16_t _cgramAddress;
 	uint8_t _cgram[Ppu::CgRamSize];
@@ -110,6 +111,12 @@ private:
 	uint8_t _hvScrollLatchValue = 0;
 	uint8_t _hScrollLatchValue = 0;
 
+	uint16_t _horizontalLocation = 0;
+	bool _horizontalLocToggle = false;
+
+	uint16_t _verticalLocation = 0;
+	bool _verticalLocationToggle = false;
+
 	template<bool forMainScreen>
 	void RenderBgColor();
 
@@ -135,6 +142,8 @@ public:
 	uint8_t* GetVideoRam();
 	uint8_t* GetCgRam();
 	uint8_t* GetSpriteRam();
+
+	void LatchLocationValues();
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint32_t addr, uint8_t value);

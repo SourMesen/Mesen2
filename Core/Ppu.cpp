@@ -520,10 +520,23 @@ uint8_t* Ppu::GetSpriteRam()
 	return _oamRam;
 }
 
+void Ppu::LatchLocationValues()
+{
+	_horizontalLocation = _cycle;
+	_verticalLocation = _scanline;
+}
+
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
+		case 0x2137:
+			//SLHV - Software Latch for H/V Counter
+			//Latch values on read, and return open bus
+			LatchLocationValues();
+			break;
+			
 		case 0x2138: {
+			//OAMDATAREAD - Data for OAM read
 			uint8_t value;
 			if(_internalOamAddress < 512) {
 				value = _oamRam[_internalOamAddress];
@@ -534,8 +547,61 @@ uint8_t Ppu::Read(uint16_t addr)
 			return value;
 		}
 
+		case 0x2139: {
+			//VMDATALREAD - VRAM Data Read low byte
+			uint8_t returnValue = _vramReadBuffer;
+			_vramReadBuffer = _vram[_vramAddress << 1];
+			if(!_vramAddrIncrementOnSecondReg) {
+				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
+			}
+			return returnValue;
+		}
+
+		case 0x213A: {
+			//VMDATAHREAD - VRAM Data Read high byte
+			uint8_t returnValue = _vramReadBuffer;
+			_vramReadBuffer = _vram[(_vramAddress << 1) + 1];
+			if(_vramAddrIncrementOnSecondReg) {
+				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
+			}
+			return returnValue;
+		}
+
+		case 0x213B:{
+			//CGDATAREAD - CGRAM Data read
+			uint8_t value = _cgram[_cgramAddress];
+			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
+			return value;
+		}
+
+		case 0x213C:
+			//OPHCT - Horizontal Scanline Location
+			if(_horizontalLocToggle) {
+				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
+				return ((_horizontalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
+			} else {
+				return _horizontalLocation & 0xFF;
+			}
+			break;
+
+		case 0x213D:
+			//OPVCT - Vertical Scanline Location
+			if(_verticalLocationToggle) {
+				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
+				return ((_verticalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
+			} else {
+				return _verticalLocation & 0xFF;
+			}
+			break;
+
+
 		case 0x213E:
 			//TODO open bus on bit 4
+
+			//"The high/low selector is reset to elowf when $213f is read"
+			_horizontalLocToggle = false;
+			_verticalLocationToggle = false;
+
 			return (
 				(_timeOver ? 0x80 : 0) |
 				(_rangeOver ? 0x40 : 0) |
@@ -547,7 +613,7 @@ uint8_t Ppu::Read(uint16_t addr)
 			break;
 	}
 
-	return 0;
+	return addr >> 8;
 }
 
 void Ppu::Write(uint32_t addr, uint8_t value)
@@ -654,7 +720,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				case 2: 
 				case 3: _vramIncrementValue = 128; break;
 			}
+
+			//TODO : Remapping is not implemented yet
 			_vramAddressRemapping = (value & 0x0C) >> 2;
+
 			_vramAddrIncrementOnSecondReg = (value & 0x80) != 0;
 			break;
 

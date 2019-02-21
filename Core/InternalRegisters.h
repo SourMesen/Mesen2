@@ -33,6 +33,7 @@ public:
 	InternalRegisters(shared_ptr<Console> console);
 
 	void ProcessAutoJoypadRead();
+	uint8_t GetIoPortOutput();
 	void SetNmiFlag(bool nmiFlag);
 
 	bool IsVerticalIrqEnabled() { return _enableVerticalIrq; }

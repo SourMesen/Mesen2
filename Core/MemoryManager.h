@@ -41,6 +41,8 @@ public:
 		addr &= 0xFFFF;
 		if(addr >= 0x2140 && addr <= 0x217F) {
 			return _spc->Read(addr & 0x03);
+		} else if(addr == 0x2180) {
+			return _workRam[_wramPosition++];
 		} else if(addr == 0x4016 || addr == 0x4017) {
 			return _controlManager->Read(addr);
 		} else if(addr < 0x4200) {
