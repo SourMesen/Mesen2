@@ -117,6 +117,10 @@ private:
 	uint16_t _verticalLocation = 0;
 	bool _verticalLocationToggle = false;
 
+	uint16_t _mode7MatrixA = 0;
+	uint16_t _mode7MatrixB = 0;
+	uint8_t _mode7Latch = 0;
+
 	template<bool forMainScreen>
 	void RenderBgColor();
 

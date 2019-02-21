@@ -529,6 +529,10 @@ void Ppu::LatchLocationValues()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
+		case 0x2134: return ((int16_t)_mode7MatrixA * ((int16_t)_mode7MatrixB >> 8)) & 0xFF;
+		case 0x2135: return (((int16_t)_mode7MatrixA * ((int16_t)_mode7MatrixB >> 8)) >> 8) & 0xFF;
+		case 0x2136: return (((int16_t)_mode7MatrixA * ((int16_t)_mode7MatrixB >> 8)) >> 16) & 0xFF;
+
 		case 0x2137:
 			//SLHV - Software Latch for H/V Counter
 			//Latch values on read, and return open bus
@@ -751,6 +755,18 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			if(_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
+			break;
+
+		case 0x211B:
+			//M7A - Mode 7 Matrix A (also used with $2134/6)
+			_mode7MatrixA = (value << 8) | _mode7Latch;
+			_mode7Latch = value;
+			break;
+
+		case 0x211C:
+			//M7B - Mode 7 Matrix B (also used with $2134/6)
+			_mode7MatrixB = (value << 8) | _mode7Latch;
+			_mode7Latch = value;
 			break;
 
 		case 0x2121:
