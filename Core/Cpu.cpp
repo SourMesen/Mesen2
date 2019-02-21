@@ -326,6 +326,16 @@ void Cpu::SetSP(uint16_t sp)
 	}
 }
 
+void Cpu::SetPS(uint8_t ps)
+{
+	_state.PS = ps;
+	if(CheckFlag(ProcFlags::IndexMode8)) {
+		//Truncate X/Y when 8-bit indexes are enabled
+		_state.Y &= 0xFF;
+		_state.X &= 0xFF;
+	}
+}
+
 void Cpu::SetRegister(uint8_t &reg, uint8_t value)
 {
 	SetZeroNegativeFlags(value);

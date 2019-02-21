@@ -402,10 +402,10 @@ void Cpu::JSR()
 void Cpu::RTI()
 {
 	if(_state.EmulationMode) {
-		_state.PS = PopByte(); //TODO: incorrect
+		SetPS(PopByte());
 		_state.PC = PopWord();
 	} else {
-		_state.PS = PopByte(); //TODO: incorrect
+		SetPS(PopByte());
 		_state.PC = PopWord();
 		_state.K = PopByte();
 	}
@@ -699,9 +699,9 @@ void Cpu::PLP()
 {
 	//"For PLP, (all of) the flags are pulled from the stack. Note that when the e flag is 1, the m and x flag are forced to 1, so after the PLP, both flags will still be 1 no matter what value is pulled from the stack."
 	if(_state.EmulationMode) {
-		_state.PS = PopByte() | ProcFlags::MemoryMode8 | ProcFlags::IndexMode8;
+		SetPS(PopByte() | ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
 	} else {
-		_state.PS = PopByte();
+		SetPS(PopByte());
 	}
 }
 
@@ -971,9 +971,7 @@ void Cpu::XCE()
 	_state.EmulationMode = carry;
 
 	if(_state.EmulationMode) {
-		SetFlags(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
-		_state.Y &= 0xFF;
-		_state.X &= 0xFF;
+		SetPS(_state.PS | ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		_state.SP = 0x100 | (_state.SP & 0xFF);
 	}
 }
