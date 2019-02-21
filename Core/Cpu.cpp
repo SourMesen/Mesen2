@@ -107,7 +107,7 @@ bool Cpu::CheckIrqSource(IrqSource source)
 
 void Cpu::ClearIrqSource(IrqSource source)
 {
-	_irqSource |= (uint8_t)source;
+	_irqSource &= ~(uint8_t)source;
 }
 
 uint32_t Cpu::GetProgramAddress(uint16_t addr)
