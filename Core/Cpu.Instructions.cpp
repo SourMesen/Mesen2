@@ -616,28 +616,28 @@ void Cpu::MVN()
 {
 	uint32_t destBank = (_operand << 16) & 0xFF0000;
 	uint32_t srcBank = (_operand << 8) & 0xFF0000;
-	while(_state.A != 0xFFFF) {
+	do {
 		uint8_t value = ReadData(srcBank | _state.X);
 		Write(destBank | _state.Y, value);
 		
 		_state.X++;
 		_state.Y++;
 		_state.A--;
-	}
+	} while(_state.A != 0xFFFF);
 }
 
 void Cpu::MVP()
 {
 	uint32_t destBank = (_operand << 16) & 0xFF0000;
 	uint32_t srcBank = (_operand << 8) & 0xFF0000;
-	while(_state.A != 0xFFFF) {
+	do {
 		uint8_t value = ReadData(srcBank | _state.X);
 		Write(destBank | _state.Y, value);
 
 		_state.X--;
 		_state.Y--;
 		_state.A--;
-	}
+	} while(_state.A != 0xFFFF);
 }
 
 /********************
