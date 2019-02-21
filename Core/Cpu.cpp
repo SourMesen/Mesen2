@@ -314,7 +314,7 @@ uint32_t Cpu::FetchEffectiveAddress()
 		}
 	}
 
-	throw new std::runtime_error("Unreacheable code");
+	throw std::runtime_error("Unreacheable code");
 }
 
 void Cpu::SetSP(uint16_t sp)

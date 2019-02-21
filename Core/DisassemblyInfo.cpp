@@ -75,7 +75,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		case AddrMode::StkRel: str.Write(operand, ",S"); break;
 		case AddrMode::StkRelIndIdxY: str.Write('(', operand, ",S),Y"); break;
 
-		default: throw new std::runtime_error("invalid address mode");
+		default: throw std::runtime_error("invalid address mode");
 	}
 
 	out += str.ToString();
@@ -146,7 +146,7 @@ uint8_t DisassemblyInfo::GetOperandSize()
 		case AddrMode::ImmM: return (_flags & ProcFlags::MemoryMode8) ? 1 : 2;
 	}
 
-	throw new std::runtime_error("Invalid mode");
+	throw std::runtime_error("Invalid mode");
 }
 
 void DisassemblyInfo::GetByteCode(string &out)

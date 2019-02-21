@@ -164,12 +164,12 @@ public:
 	void RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler* handler)
 	{
 		if((startAddr & 0xFFF) != 0 || (endAddr & 0xFFF) != 0xFFF) {
-			throw new std::runtime_error("invalid start/end address");
+			throw std::runtime_error("invalid start/end address");
 		}
 
 		for(uint32_t addr = startAddr; addr < endAddr; addr += 0x1000) {
 			if(_handlers[addr >> 12]) {
-				throw new std::runtime_error("handler already set");
+				throw std::runtime_error("handler already set");
 			}
 
 			_handlers[addr >> 12] = handler;
