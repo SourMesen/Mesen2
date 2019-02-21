@@ -916,12 +916,12 @@ void Cpu::TCS()
 
 void Cpu::TDC()
 {
-	SetRegister(_state.A, _state.D, CheckFlag(ProcFlags::MemoryMode8));
+	SetRegister(_state.A, _state.D, false);
 }
 
 void Cpu::TSC()
 {
-	SetRegister(_state.A, _state.SP, CheckFlag(ProcFlags::MemoryMode8));
+	SetRegister(_state.A, _state.SP, false);
 }
 
 void Cpu::TSX()
