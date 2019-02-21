@@ -186,6 +186,7 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
 			channel.InvertDirection = (value & 0x80) != 0;
 			channel.HdmaIndirectAddressing = (value & 0x40) != 0;
+			channel.UnusedFlag = (value & 0x20) != 0;
 			channel.Decrement = (value & 0x10) != 0;
 			channel.FixedTransfer = (value & 0x08) != 0;
 			channel.TransferMode = value & 0x07;
@@ -269,4 +270,91 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 			break;
 		}
 	}
+}
+
+uint8_t DmaController::Read(uint16_t addr)
+{
+	switch(addr) {
+		case 0x4300: case 0x4310: case 0x4320: case 0x4330: case 0x4340: case 0x4350: case 0x4360: case 0x4370:
+		{
+			//DMAPx - DMA Control for Channel x
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return (
+				(channel.InvertDirection ? 0x80 : 0) |
+				(channel.HdmaIndirectAddressing ? 0x40 : 0) |
+				(channel.UnusedFlag ? 0x20 : 0) |
+				(channel.Decrement ? 0x10 : 0) |
+				(channel.FixedTransfer ? 0x08 : 0) |
+				(channel.TransferMode & 0x07)
+			);
+		}
+
+		case 0x4301: case 0x4311: case 0x4321: case 0x4331: case 0x4341: case 0x4351: case 0x4361: case 0x4371:
+		{
+			//BBADx - DMA Destination Register for Channel x
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.DestAddress;
+		}
+
+		case 0x4302: case 0x4312: case 0x4322: case 0x4332: case 0x4342: case 0x4352: case 0x4362: case 0x4372:
+		{
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.SrcAddress & 0xFF;
+		}
+
+		case 0x4303: case 0x4313: case 0x4323: case 0x4333: case 0x4343: case 0x4353: case 0x4363: case 0x4373:
+		{
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return (channel.SrcAddress >> 8) & 0xFF;
+		}
+
+		case 0x4304: case 0x4314: case 0x4324: case 0x4334: case 0x4344: case 0x4354: case 0x4364: case 0x4374:
+		{
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.SrcBank;
+		}
+
+		case 0x4305: case 0x4315: case 0x4325: case 0x4335: case 0x4345: case 0x4355: case 0x4365: case 0x4375:
+		{
+			//DASxL - DMA Size / HDMA Indirect Address low byte(x = 0 - 7)
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.TransferSize & 0xFF;
+		}
+
+		case 0x4306: case 0x4316: case 0x4326: case 0x4336: case 0x4346: case 0x4356: case 0x4366: case 0x4376:
+		{
+			//DASxL - DMA Size / HDMA Indirect Address low byte(x = 0 - 7)
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return (channel.TransferSize >> 8) & 0xFF;
+		}
+
+		case 0x4307: case 0x4317: case 0x4327: case 0x4337: case 0x4347: case 0x4357: case 0x4367: case 0x4377:
+		{
+			//DASBx - HDMA Indirect Address bank byte (x=0-7)
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.HdmaBank;
+		}
+
+		case 0x4308: case 0x4318: case 0x4328: case 0x4338: case 0x4348: case 0x4358: case 0x4368: case 0x4378:
+		{
+			//A2AxL - HDMA Table Address low byte (x=0-7)
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.HdmaTableAddress & 0xFF;
+		}
+
+		case 0x4309: case 0x4319: case 0x4329: case 0x4339: case 0x4349: case 0x4359: case 0x4369: case 0x4379:
+		{
+			//A2AxH - HDMA Table Address high byte (x=0-7)
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return (channel.HdmaTableAddress >> 8) & 0xFF;
+		}
+
+		case 0x430A: case 0x431A: case 0x432A: case 0x433A: case 0x434A: case 0x435A: case 0x436A: case 0x437A:
+		{
+			//DASBx - HDMA Indirect Address bank byte (x=0-7)
+			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
+			return channel.HdmaLineCounterAndRepeat;
+		}
+	}
+	return 0; //TODO : open bus
 }

@@ -47,6 +47,8 @@ public:
 			return _controlManager->Read(addr);
 		} else if(addr < 0x4200) {
 			return _ppu->Read(addr);
+		} else if(addr >= 0x4300) {
+			return _dmaController->Read(addr);
 		} else {
 			return _regs->Read(addr);
 		}

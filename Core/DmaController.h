@@ -13,7 +13,7 @@ struct DmaChannelConfig
 	uint8_t TransferMode;
 
 	uint16_t SrcAddress;
-	uint16_t SrcBank;
+	uint8_t SrcBank;
 
 	uint8_t DestAddress;
 	uint16_t TransferSize;
@@ -23,6 +23,8 @@ struct DmaChannelConfig
 	uint8_t HdmaLineCounterAndRepeat;
 	bool DoTransfer;
 	bool HdmaFinished;
+
+	bool UnusedFlag;
 };
 
 class DmaController
@@ -51,4 +53,5 @@ public:
 	void ProcessHdmaChannels();
 
 	void Write(uint16_t addr, uint8_t value);
+	uint8_t Read(uint16_t addr);
 };
