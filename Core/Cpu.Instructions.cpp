@@ -267,6 +267,11 @@ void Cpu::REP()
 void Cpu::SEP()
 {
 	SetFlags((uint8_t)_operand);
+	if(CheckFlag(ProcFlags::IndexMode8)) {
+		//Truncate X/Y when 8-bit indexes are enabled
+		_state.Y &= 0xFF;
+		_state.X &= 0xFF;
+	}
 }
 
 /******************************
@@ -967,7 +972,6 @@ void Cpu::XCE()
 
 	if(_state.EmulationMode) {
 		SetFlags(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
-		//_state.A &= 0xFF;
 		_state.Y &= 0xFF;
 		_state.X &= 0xFF;
 		_state.SP = 0x100 | (_state.SP & 0xFF);
