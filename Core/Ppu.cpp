@@ -571,32 +571,38 @@ uint8_t Ppu::Read(uint16_t addr)
 			return returnValue;
 		}
 
-		case 0x213B:{
+		case 0x213B: {
 			//CGDATAREAD - CGRAM Data read
 			uint8_t value = _cgram[_cgramAddress];
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			return value;
 		}
 
-		case 0x213C:
+		case 0x213C: {
 			//OPHCT - Horizontal Scanline Location
+			uint8_t value;
 			if(_horizontalLocToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
-				return ((_horizontalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
+				value = ((_horizontalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
 			} else {
-				return _horizontalLocation & 0xFF;
+				value = _horizontalLocation & 0xFF;
 			}
-			break;
+			_horizontalLocToggle = !_horizontalLocToggle;
+			return value;
+		}
 
-		case 0x213D:
+		case 0x213D: {
 			//OPVCT - Vertical Scanline Location
+			uint8_t value;
 			if(_verticalLocationToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
-				return ((_verticalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
+				value = ((_verticalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
 			} else {
-				return _verticalLocation & 0xFF;
+				value = _verticalLocation & 0xFF;
 			}
-			break;
+			_verticalLocationToggle = !_verticalLocationToggle;
+			return value;
+		}
 
 
 		case 0x213E:
