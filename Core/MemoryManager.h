@@ -92,6 +92,7 @@ private:
 
 	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
+	InternalRegisters* _regs;
 	shared_ptr<Ppu> _ppu;
 
 	IMemoryHandler* _handlers[0x100 * 0x10];
@@ -101,7 +102,7 @@ private:
 
 	uint64_t _masterClock;
 	uint64_t _lastMasterClock;
-	uint8_t _masterClockTable[0x10000];
+	uint8_t _masterClockTable[2][0x10000];
 
 public:
 	void Initialize(shared_ptr<Console> console)
@@ -110,6 +111,7 @@ public:
 		_masterClock = 0;
 		_console = console;
 		_cart = console->GetCartridge();
+		_regs = console->GetInternalRegisters().get();
 		_ppu = console->GetPpu();
 
 		_workRam = new uint8_t[MemoryManager::WorkRamSize];
@@ -177,36 +179,37 @@ public:
 	void GenerateMasterClockTable()
 	{
 		//This is incredibly inaccurate
-		for(int i = 0; i < 0x10000; i++) {
-			uint8_t bank = (i & 0xFF00) >> 8;
-			if(bank >= 0x40 && bank <= 0x7F) {
-				//Slow
-				_masterClockTable[i] = 8;
-			} else if(bank >= 0xCF) {
-				//Slow or fast (depending on register)
-				//Use slow
-				_masterClockTable[i] = 8;
-			} else {
-				uint8_t page = (i & 0xFF);
-				if(page <= 0x1F) {
+		for(int j = 0; j < 2; j++) {
+			for(int i = 0; i < 0x10000; i++) {
+				uint8_t bank = (i & 0xFF00) >> 8;
+				if(bank >= 0x40 && bank <= 0x7F) {
 					//Slow
-					_masterClockTable[i] = 6;
-				} else if(page >= 0x20 && page <= 0x3F) {
-					//Fast
-					_masterClockTable[i] = 6;
-				} else if(page == 0x40 || page == 0x41) {
-					//extra slow
-					_masterClockTable[i] = 12;
-				} else if(page >= 0x42 && page <= 0x5F) {
-					//Fast
-					_masterClockTable[i] = 6;
-				} else if(page >= 0x60 && page <= 0x7F) {
-					//Slow
-					_masterClockTable[i] = 8;
-				} else {
+					_masterClockTable[j][i] = 8;
+				} else if(bank >= 0xCF) {
 					//Slow or fast (depending on register)
-					//Use slow
-					_masterClockTable[i] = 8;
+					_masterClockTable[j][i] = j == 1 ? 6 : 8;
+				} else {
+					uint8_t page = (i & 0xFF);
+					if(page <= 0x1F) {
+						//Slow
+						_masterClockTable[j][i] = 6;
+					} else if(page >= 0x20 && page <= 0x3F) {
+						//Fast
+						_masterClockTable[j][i] = 6;
+					} else if(page == 0x40 || page == 0x41) {
+						//Extra slow
+						_masterClockTable[j][i] = 12;
+					} else if(page >= 0x42 && page <= 0x5F) {
+						//Fast
+						_masterClockTable[j][i] = 6;
+					} else if(page >= 0x60 && page <= 0x7F) {
+						//Slow
+						_masterClockTable[j][i] = 8;
+					} else {
+						//page >= $80
+						//Slow or fast (depending on register)
+						_masterClockTable[j][i] = j == 1 ? 6 : 8;
+					}
 				}
 			}
 		}
@@ -214,7 +217,7 @@ public:
 
 	void IncrementMasterClock(uint32_t addr)
 	{
-		_masterClock += _masterClockTable[addr >> 8];
+		_masterClock += _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
 		while(_lastMasterClock < _masterClock - 3) {
 			_ppu->Exec();
 			_lastMasterClock += 4;

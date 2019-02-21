@@ -149,6 +149,8 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x4209: _verticalTimer = (_verticalTimer & 0x100) | value; break;
 		case 0x420A: _verticalTimer = (_verticalTimer & 0xFF) | ((value & 0x01) << 8); break;
 
+		case 0x420D: _enableFastRom = (value & 0x01) != 0; break;
+
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;

@@ -17,6 +17,7 @@ private:
 	uint16_t _divResult = 0;
 
 	bool _enableAutoJoypadRead = false;
+	bool _enableFastRom = false;
 	
 	bool _nmiFlag = false;
 	bool _enableNmi = false;
@@ -39,6 +40,7 @@ public:
 	bool IsVerticalIrqEnabled() { return _enableVerticalIrq; }
 	bool IsHorizontalIrqEnabled() { return _enableHorizontalIrq; }
 	bool IsNmiEnabled() { return _enableNmi; }
+	bool IsFastRomEnabled() { return _enableFastRom; }
 	uint16_t GetHorizontalTimer() { return _horizontalTimer; }
 	uint16_t GetVerticalTimer() { return _verticalTimer; }
 	
