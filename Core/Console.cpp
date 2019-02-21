@@ -13,9 +13,11 @@
 #include "VideoDecoder.h"
 #include "VideoRenderer.h"
 #include "DebugHud.h"
+#include "FrameLimiter.h"
 #include "MessageManager.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
+#include "../Utilities/PlatformUtilities.h"
 
 void Console::Initialize()
 {
@@ -49,11 +51,24 @@ void Console::Run()
 	}
 
 	_stopFlag = false;
+	uint32_t previousFrameCount = 0;
+	
+	FrameLimiter frameLimiter(16.63926405550947);
+
+	PlatformUtilities::EnableHighResolutionTimer();
 
 	auto lock = _runLock.AcquireSafe();
 	while(!_stopFlag) {
 		_cpu->Exec();
+
+		if(previousFrameCount != _ppu->GetFrameCount()) {
+			frameLimiter.ProcessFrame();
+			frameLimiter.WaitForNextFrame();
+			previousFrameCount = _ppu->GetFrameCount();
+		}
 	}
+
+	PlatformUtilities::RestoreTimerResolution();
 }
 
 void Console::Stop()

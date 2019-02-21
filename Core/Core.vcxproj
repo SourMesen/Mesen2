@@ -70,6 +70,7 @@
     <ClInclude Include="DrawScreenBufferCommand.h" />
     <ClInclude Include="DrawStringCommand.h" />
     <ClInclude Include="dsp.h" />
+    <ClInclude Include="FrameLimiter.h" />
     <ClInclude Include="IAudioDevice.h" />
     <ClInclude Include="IInputProvider.h" />
     <ClInclude Include="IInputRecorder.h" />

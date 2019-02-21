@@ -170,6 +170,9 @@
     <ClInclude Include="ControlManager.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
+    <ClInclude Include="FrameLimiter.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
