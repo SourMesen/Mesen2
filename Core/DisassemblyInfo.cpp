@@ -54,7 +54,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		case AddrMode::AbsLng: str.Write(operand); break;
 		case AddrMode::AbsLngJmp: str.Write(operand); break;
 		case AddrMode::Acc: break;
-		case AddrMode::BlkMov: str.Write(operand[0], operand[1], " <- ", operand[2], operand[3]); break; //TODO
+		case AddrMode::BlkMov: str.Write(operand[1], operand[2], " -> ", operand[3], operand[4]); break;
 		case AddrMode::DirIdxIndX: str.Write('(', operand, ",X)"); break;
 		case AddrMode::DirIdxX: str.Write(operand, ",X"); break;
 		case AddrMode::DirIdxY: str.Write(operand, ",Y"); break;
