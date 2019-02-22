@@ -73,11 +73,14 @@ private:
 	uint8_t _spritePalette[256] = {};
 	uint16_t _spritePixels[256] = {};
 
+	uint16_t _pixelsDrawn = 0;
+	uint16_t _subPixelsDrawn = 0;
+
 	uint8_t _rowPixelFlags[256];
 	uint16_t *_currentBuffer;
 
 	bool _subScreenFilled[256];
-	uint16_t *_subScreenBuffer;
+	uint16_t _subScreenBuffer[256];
 
 	uint16_t _mosaicColor[256] = {};
 	uint8_t _mosaicSize = 0;

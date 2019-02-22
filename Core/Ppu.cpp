@@ -22,7 +22,6 @@ Ppu::Ppu(shared_ptr<Console> console)
 
 	_outputBuffers[0] = new uint16_t[256 * 224];
 	_outputBuffers[1] = new uint16_t[256 * 224];
-	_subScreenBuffer = new uint16_t[256 * 224];
 
 	_currentBuffer = _outputBuffers[0];
 
@@ -45,7 +44,6 @@ Ppu::Ppu(shared_ptr<Console> console)
 Ppu::~Ppu()
 {
 	delete[] _vram;
-	delete[] _subScreenBuffer;
 	delete[] _outputBuffers[0];
 	delete[] _outputBuffers[1];
 }
@@ -129,10 +127,14 @@ template<uint8_t priority, bool forMainScreen>
 void Ppu::DrawSprites()
 {
 	if(forMainScreen) {
-		if((_mainScreenLayers & 0x10) == 0) {
+		if(_pixelsDrawn == 256 || (_mainScreenLayers & 0x10) == 0) {
 			return;
 		}
+	} else if(_subPixelsDrawn == 256 || (_subScreenLayers & 0x10) == 0) {
+		return;
+	}
 
+	if(forMainScreen) {
 		for(int x = 0; x < 256; x++) {
 			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
 				_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
@@ -140,13 +142,9 @@ void Ppu::DrawSprites()
 			}
 		}
 	} else {
-		if((_subScreenLayers & 0x10) == 0) {
-			return;
-		}
-
 		for(int x = 0; x < 256; x++) {
 			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
-				_subScreenBuffer[(_scanline << 8) | x] = _spritePixels[x];
+				_subScreenBuffer[x] = _spritePixels[x];
 				_subScreenFilled[x] = true;
 			}
 		}
@@ -155,6 +153,8 @@ void Ppu::DrawSprites()
 
 void Ppu::RenderScanline()
 {
+	_pixelsDrawn = 0;
+	_subPixelsDrawn = 0;
 	memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
 	memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
 
@@ -357,17 +357,21 @@ void Ppu::RenderScanline()
 template<bool forMainScreen>
 void Ppu::RenderBgColor()
 {
+	if((forMainScreen && _pixelsDrawn == 256) || (!forMainScreen && _subPixelsDrawn)) {
+		return;
+	}
+
 	uint16_t bgColor = _cgram[0] | (_cgram[1] << 8);
 	for(int x = 0; x < 256; x++) {
 		if(forMainScreen) {
-			uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
 			if(!_rowPixelFlags[x]) {
+				uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
 				_currentBuffer[(_scanline << 8) | x] = bgColor;
 				_rowPixelFlags[x] = pixelFlags;
 			}
 		} else {
 			if(!_subScreenFilled[x]) {
-				_subScreenBuffer[(_scanline << 8) | x] = bgColor;
+				_subScreenBuffer[x] = bgColor;
 			}
 		}
 	}
@@ -377,13 +381,13 @@ template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMain
 void Ppu::RenderTilemap()
 {
 	if(forMainScreen) {
-		if(((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
-			//This screen is disabled
+		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled, or we've drawn all pixels already
 			return;
 		}
 	} else {
-		if(((_subScreenLayers >> layerIndex) & 0x01) == 0) {
-			//This screen is disabled
+		if(_subPixelsDrawn == 256 || ((_subScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled, or we've drawn all pixels already
 			return;
 		}
 	}
@@ -396,13 +400,15 @@ void Ppu::RenderTilemap()
 	LayerConfig &config = _layerConfig[layerIndex];
 	uint16_t tilemapAddr = config.TilemapAddress >> 1;
 	uint16_t chrAddr = config.ChrAddress;
-	
-	for(int x = 0; x < 256; x++) {
-		uint16_t row = (_scanline + config.VScroll) >> 3;
-		uint16_t column = (x + config.HScroll) >> 3;
+	uint16_t row = (_scanline + config.VScroll) >> 3;
+	uint8_t baseYOffset = (_scanline + config.VScroll) & 0x07;
 
-		uint32_t addr = tilemapAddr + ((row & 0x1F) << 5) + (column & 0x1F) + (config.VerticalMirroring ? ((row & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0);
-		addr <<= 1;
+	uint16_t addrVerticalScrollingOffset = config.VerticalMirroring ? ((row & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0;
+	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+
+	for(int x = 0; x < 256; x++) {
+		uint16_t column = (x + config.HScroll) >> 3;
+		uint32_t addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
 
 		if(forMainScreen) {
 			if(_rowPixelFlags[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
@@ -418,32 +424,49 @@ void Ppu::RenderTilemap()
 			//If this is not the top-left pixels in the mosaic pattern, override it with the top-left pixel data
 			_currentBuffer[(_scanline << 8) | x] = _mosaicColor[x];
 			_rowPixelFlags[x] = pixelFlags;
+			if(forMainScreen) {
+				_pixelsDrawn++;
+			} else {
+				_subPixelsDrawn++;
+			}
 			continue;
 		}
 
-		uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
 		uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
 		bool vMirror = (_vram[addr + 1] & 0x80) != 0;
 		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
 
 		uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
 
-		uint8_t yOffset = (_scanline + config.VScroll) & 0x07;
-		if(vMirror) {
-			yOffset = 7 - yOffset;
-		}
-
-		uint16_t color = 0;
-
+		uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
+		uint16_t pixelStart = tileStart + yOffset * 2;
+		
 		uint8_t xOffset = (x + config.HScroll) & 0x07;
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
-		for(int plane = 0; plane < bpp; plane++) {
-			uint8_t offset = (plane >> 1) * 16;
-			color |= (((_vram[tileStart + yOffset * 2 + offset + (plane & 0x01)] >> shift) & 0x01) << bpp);
-			color >>= 1;
+		uint16_t color = 0;
+		if(bpp == 2) {
+			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
+			color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
+		} else if(bpp == 4) {
+			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
+			color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
+			color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
+			color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
+		} else if(bpp == 8) {
+			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
+			color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
+			color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
+			color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
+			color |= (((_vram[pixelStart + 32] >> shift) & 0x01) << 4);
+			color |= (((_vram[pixelStart + 33] >> shift) & 0x01) << 5);
+			color |= (((_vram[pixelStart + 48] >> shift) & 0x01) << 6);
+			color |= (((_vram[pixelStart + 49] >> shift) & 0x01) << 7);
+		} else {
+			throw std::runtime_error("unsupported bpp");
 		}
 
 		if(color > 0) {
+			uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
 			uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
 			uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 
@@ -456,9 +479,11 @@ void Ppu::RenderTilemap()
 						_mosaicColor[x+i] = paletteColor;
 					}
 				}
+				_pixelsDrawn++;
 			} else {
-				_subScreenBuffer[(_scanline << 8) | x] = paletteColor;
+				_subScreenBuffer[x] = paletteColor;
 				_subScreenFilled[x] = true;
+				_subPixelsDrawn++;
 			}
 		}
 	}
@@ -476,7 +501,7 @@ void Ppu::ApplyColorMath()
 			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
 			if(_colorMathAddSubscreen) {
 				if(_subScreenFilled[x]) {
-					otherPixel = _subScreenBuffer[(_scanline << 8) | x];
+					otherPixel = _subScreenBuffer[x];
 				} else {
 					//there's nothing in the subscreen at this pixel, use the fixed color and disable halve operation
 					otherPixel = _fixedColor;
