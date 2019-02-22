@@ -338,7 +338,7 @@ uint8_t Cpu::GetOpCode()
 
 void Cpu::Idle()
 {
-	_memoryManager->ProcessCpuInternalOperation();
+	_memoryManager->IncrementMasterClockValue<6>();
 }
 
 uint8_t Cpu::ReadOperandByte()

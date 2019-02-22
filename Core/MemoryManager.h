@@ -226,18 +226,19 @@ public:
 		}
 	}
 	
-	void ProcessCpuInternalOperation()
+	template<uint16_t value>
+	void IncrementMasterClockValue()
 	{
-		_masterClock += 6;
+		_masterClock += value;
 		while(_lastMasterClock < _masterClock - 3) {
 			_ppu->Exec();
 			_lastMasterClock += 4;
 		}
 	}
 
-	void ProcessDramRefresh()
+	void IncrementMasterClockValue(uint16_t value)
 	{
-		_masterClock += 40;
+		_masterClock += value;
 		while(_lastMasterClock < _masterClock - 3) {
 			_ppu->Exec();
 			_lastMasterClock += 4;
@@ -248,7 +249,7 @@ public:
 	{
 		IncrementMasterClock(addr);
 
-		uint8_t value = 0;
+		uint8_t value;
 		if(_handlers[addr >> 12]) {
 			value = _handlers[addr >> 12]->Read(addr);
 		} else {
@@ -258,6 +259,21 @@ public:
 			MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
 		}
 		_console->ProcessCpuRead(addr, value, type);
+		return value;
+	}
+
+	uint8_t ReadDma(uint32_t addr)
+	{
+		IncrementMasterClockValue<4>();
+		uint8_t value;
+		if(_handlers[addr >> 12]) {
+			value = _handlers[addr >> 12]->Read(addr);
+		} else {
+			//open bus
+			value = (addr >> 12);
+			MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
+		}
+		_console->ProcessCpuRead(addr, value, MemoryOperationType::DmaRead);
 		return value;
 	}
 
@@ -276,6 +292,18 @@ public:
 		IncrementMasterClock(addr);
 
 		_console->ProcessCpuWrite(addr, value, type);
+		if(_handlers[addr >> 12]) {
+			return _handlers[addr >> 12]->Write(addr, value);
+		} else {
+			MessageManager::DisplayMessage("Debug", "Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+		}
+	}
+
+	void WriteDma(uint32_t addr, uint8_t value)
+	{
+		IncrementMasterClockValue<4>();
+
+		_console->ProcessCpuWrite(addr, value, MemoryOperationType::DmaWrite);
 		if(_handlers[addr >> 12]) {
 			return _handlers[addr >> 12]->Write(addr, value);
 		} else {

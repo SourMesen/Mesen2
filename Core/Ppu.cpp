@@ -119,7 +119,7 @@ void Ppu::Exec()
 		_console->GetDmaController()->ProcessHdmaChannels();
 	} else if(_cycle == 134) {
 		//TODO Approximation
-		_console->GetMemoryManager()->ProcessDramRefresh();
+		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
 	}
 }
 
