@@ -153,18 +153,18 @@ void DmaController::ProcessHdmaChannels()
 			//5. If Line Counter is zero...
 			if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
 				//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
-				ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma(ch.HdmaTableAddress++);
+				ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
 
 				//"b. If Addressing Mode is Indirect, read two bytes from Address into Indirect Address(and increment Address by two bytes)."
 				if(ch.HdmaIndirectAddressing) {
 					if(ch.HdmaLineCounterAndRepeat == 0) {
 						//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
 						//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
-						uint8_t msb = _memoryManager->ReadDma(ch.HdmaTableAddress++);
+						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
 						ch.TransferSize = (msb << 8);
 					} else {
-						uint8_t lsb = _memoryManager->ReadDma(ch.HdmaTableAddress++);
-						uint8_t msb = _memoryManager->ReadDma(ch.HdmaTableAddress++);
+						uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
+						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
 						ch.TransferSize = (msb << 8) | lsb;
 					}
 
