@@ -101,6 +101,7 @@ private:
 	uint8_t * _workRam;
 
 	uint64_t _masterClock;
+	uint8_t _previousSpeed;
 	uint64_t _lastMasterClock;
 	uint8_t _masterClockTable[2][0x10000];
 
@@ -217,7 +218,26 @@ public:
 
 	void IncrementMasterClock(uint32_t addr)
 	{
-		_masterClock += _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
+		_previousSpeed = _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
+		_masterClock += _previousSpeed;
+		while(_lastMasterClock < _masterClock - 3) {
+			_ppu->Exec();
+			_lastMasterClock += 4;
+		}
+	}
+	
+	void ProcessCpuInternalOperation()
+	{
+		_masterClock += 6;
+		while(_lastMasterClock < _masterClock - 3) {
+			_ppu->Exec();
+			_lastMasterClock += 4;
+		}
+	}
+
+	void ProcessDramRefresh()
+	{
+		_masterClock += 40;
 		while(_lastMasterClock < _masterClock - 3) {
 			_ppu->Exec();
 			_lastMasterClock += 4;

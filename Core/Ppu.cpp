@@ -90,9 +90,13 @@ void Ppu::Exec()
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
+		} else if(_scanline == 240 && _cycle == 0 && _frameCount & 0x01) {
+			//Skip 1 tick every other frame
+			_cycle++;
 		} else if(_scanline == 261) {
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
+
 			if(_mosaicEnabled) {
 				_mosaicStartScanline = 0;
 			}
@@ -115,6 +119,9 @@ void Ppu::Exec()
 
 	if(_cycle == 278 && _scanline < 225) {
 		_console->GetDmaController()->ProcessHdmaChannels();
+	} else if(_cycle == 134) {
+		//TODO Approximation
+		_console->GetMemoryManager()->ProcessDramRefresh();
 	}
 }
 

@@ -7,7 +7,6 @@ class MemoryManager;
 class Cpu
 {
 public:
-	uint64_t opCount = 0;
 	uint16_t GetPc() { return _state.PC; }
 	CpuState GetState() { return _state; }
 	int32_t GetLastOperand() { return (int32_t)_operand; }
@@ -27,8 +26,10 @@ private:
 	typedef void(Cpu::*Func)();
 	
 	shared_ptr<MemoryManager> _memoryManager;
+
+	bool _immediateMode = false;
+
 	CpuState _state;
-	AddrMode _instAddrMode;
 	uint32_t _operand;
 	bool _nmiFlag;
 	uint8_t _irqSource;
@@ -46,12 +47,11 @@ private:
 	
 	uint8_t GetOpCode();
 
-	void DummyRead();
+	void Idle();
 	
 	uint8_t ReadOperandByte();
 	uint16_t ReadOperandWord();
 	uint32_t ReadOperandLong();
-	uint32_t FetchEffectiveAddress();
 
 	void SetSP(uint16_t sp);
 	void SetPS(uint8_t ps);
@@ -128,6 +128,9 @@ private:
 	void DEC();
 	void INC();
 
+	void DEC_Acc();
+	void INC_Acc();
+
 	void IncDecReg(uint16_t & reg, int8_t offset);
 	void IncDec(int8_t offset);
 
@@ -162,9 +165,13 @@ private:
 	template<typename T> T RollRight(T value);
 
 	//Shift operations
+	void ASL_Acc();
 	void ASL();
+	void LSR_Acc();
 	void LSR();
+	void ROL_Acc();
 	void ROL();
+	void ROR_Acc();
 	void ROR();
 
 	//Move operations
@@ -236,6 +243,46 @@ private:
 	//Misc.
 	void STP();
 	void WAI();
+
+	//Addressing modes
+	void AddrMode_Abs();
+	void AddrMode_AbsIdxX();
+	void AddrMode_AbsIdxY();
+	void AddrMode_AbsLng();
+	void AddrMode_AbsLngIdxX();
+
+	void AddrMode_AbsJmp();
+	void AddrMode_AbsLngJmp();
+	void AddrMode_AbsIdxXInd(); //JMP/JSR
+	void AddrMode_AbsInd(); //JMP only
+	void AddrMode_AbsIndLng(); //JML only
+
+	void AddrMode_Acc();
+
+	void AddrMode_BlkMov();
+
+	uint8_t ReadDirectOperandByte();
+	void AddrMode_Dir();
+	void AddrMode_DirIdxX();
+	void AddrMode_DirIdxY();
+	void AddrMode_DirInd();
+	void AddrMode_DirIdxIndX();
+	void AddrMode_DirIndIdxY();
+	void AddrMode_DirIndLng();
+	void AddrMode_DirIndLngIdxY();
+
+	void AddrMode_Imm8();
+	void AddrMode_Imm16();
+	void AddrMode_ImmX();
+	void AddrMode_ImmM();
+
+	void AddrMode_Imp();
+
+	void AddrMode_RelLng();
+	void AddrMode_Rel();
+
+	void AddrMode_StkRel();
+	void AddrMode_StkRelIndIdxY();
 
 public:
 	Cpu(shared_ptr<MemoryManager> memoryManager);

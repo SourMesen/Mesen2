@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Cpu.h"
+#include "MemoryManager.h"
 
 /************************
 Add/substract operations
@@ -217,6 +218,12 @@ void Cpu::BranchRelative(bool branch)
 {
 	int8_t offset = _operand;
 	if(branch) {
+		Idle();
+		if(_state.EmulationMode) {
+			if(((uint16_t)(_state.PC + offset) & 0xFF00) != (_state.PC & 0xFF00)) {
+				Idle();
+			}
+		}
 		_state.PC = (uint16_t)(_state.PC + offset);
 	}
 }
@@ -307,6 +314,16 @@ void Cpu::INC()
 	IncDec(1);
 }
 
+void Cpu::DEC_Acc()
+{
+	SetRegister(_state.A, _state.A - 1, CheckFlag(ProcFlags::MemoryMode8));
+}
+
+void Cpu::INC_Acc()
+{
+	SetRegister(_state.A, _state.A + 1, CheckFlag(ProcFlags::MemoryMode8));
+}
+
 void Cpu::IncDecReg(uint16_t &reg, int8_t offset)
 {
 	SetRegister(reg, reg + offset, CheckFlag(ProcFlags::IndexMode8));
@@ -314,18 +331,16 @@ void Cpu::IncDecReg(uint16_t &reg, int8_t offset)
 
 void Cpu::IncDec(int8_t offset)
 {
-	if(_instAddrMode == AddrMode::Acc) {
-		SetRegister(_state.A, _state.A + offset, CheckFlag(ProcFlags::MemoryMode8));
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		uint8_t value = GetByteValue() + offset;
+		SetZeroNegativeFlags(value);
+		Idle();
+		Write(_operand, value);
 	} else {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			uint8_t value = GetByteValue() + offset;
-			SetZeroNegativeFlags(value);
-			Write(_operand, value);
-		} else {
-			uint16_t value = GetWordValue() + offset;
-			SetZeroNegativeFlags(value);
-			WriteWord(_operand, value);
-		}
+		uint16_t value = GetWordValue() + offset;
+		SetZeroNegativeFlags(value);
+		Idle();
+		WriteWord(_operand, value);
 	}
 }
 
@@ -388,6 +403,7 @@ void Cpu::JMP()
 void Cpu::JSL()
 {
 	PushByte(_state.K);
+	Idle();
 	PushWord(_state.PC - 1);
 	_state.K = (_operand >> 16) & 0xFF;
 	_state.PC = (uint16_t)_operand;
@@ -401,6 +417,9 @@ void Cpu::JSR()
 
 void Cpu::RTI()
 {
+	Idle();
+	Idle();
+
 	if(_state.EmulationMode) {
 		SetPS(PopByte());
 		_state.PC = PopWord();
@@ -413,6 +432,9 @@ void Cpu::RTI()
 
 void Cpu::RTL()
 {
+	Idle();
+	Idle();
+
 	_state.PC = PopWord();
 	_state.PC++;
 	_state.K = PopByte();
@@ -420,7 +442,11 @@ void Cpu::RTL()
 
 void Cpu::RTS()
 {
+	Idle();
+	Idle();
+
 	_state.PC = PopWord();
+	Idle();
 	_state.PC++;
 }
 
@@ -429,6 +455,9 @@ Interrupts
 ***********/
 void Cpu::ProcessInterrupt(uint16_t vector)
 {
+	Idle();
+	Idle();
+
 	if(_state.EmulationMode) {
 		PushWord(_state.PC);
 		PushByte(_state.PS | 0x20);
@@ -541,71 +570,83 @@ template<typename T> T Cpu::RollRight(T value)
 	return result;
 }
 
+void Cpu::ASL_Acc()
+{
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		_state.A = (_state.A & 0xFF00) | (ShiftLeft<uint8_t>((uint8_t)_state.A));
+	} else {
+		_state.A = ShiftLeft<uint16_t>(_state.A);
+	}
+}
+
 void Cpu::ASL()
 {
-	if(_instAddrMode == AddrMode::Acc) {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = (_state.A & 0xFF00) | (ShiftLeft<uint8_t>((uint8_t)_state.A));
-		} else {
-			_state.A = ShiftLeft<uint16_t>(_state.A);
-		}
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		Idle();
+		Write(_operand, ShiftLeft<uint8_t>(GetByteValue()));
 	} else {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			Write(_operand, ShiftLeft<uint8_t>(GetByteValue()));
-		} else {
-			WriteWord(_operand, ShiftLeft<uint16_t>(GetWordValue()));
-		}
+		Idle();
+		WriteWord(_operand, ShiftLeft<uint16_t>(GetWordValue()));
+	}
+}
+
+void Cpu::LSR_Acc()
+{
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		_state.A = (_state.A & 0xFF00) | ShiftRight<uint8_t>((uint8_t)_state.A);
+	} else {
+		_state.A = ShiftRight<uint16_t>(_state.A);
 	}
 }
 
 void Cpu::LSR()
 {
-	if(_instAddrMode == AddrMode::Acc) {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = (_state.A & 0xFF00) | ShiftRight<uint8_t>((uint8_t)_state.A);
-		} else {
-			_state.A = ShiftRight<uint16_t>(_state.A);
-		}
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		Idle();
+		Write(_operand, ShiftRight<uint8_t>(GetByteValue()));
 	} else {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			Write(_operand, ShiftRight<uint8_t>(GetByteValue()));
-		} else {
-			WriteWord(_operand, ShiftRight<uint16_t>(GetWordValue()));
-		}
+		Idle();
+		WriteWord(_operand, ShiftRight<uint16_t>(GetWordValue()));
+	}
+}
+
+void Cpu::ROL_Acc()
+{
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		_state.A = (_state.A & 0xFF00) | RollLeft<uint8_t>((uint8_t)_state.A);
+	} else {
+		_state.A = RollLeft<uint16_t>(_state.A);
 	}
 }
 
 void Cpu::ROL()
 {
-	if(_instAddrMode == AddrMode::Acc) {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = (_state.A & 0xFF00) | RollLeft<uint8_t>((uint8_t)_state.A);
-		} else {
-			_state.A = RollLeft<uint16_t>(_state.A);
-		}
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		Idle();
+		Write(_operand, RollLeft<uint8_t>(GetByteValue()));
 	} else {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			Write(_operand, RollLeft<uint8_t>(GetByteValue()));
-		} else {
-			WriteWord(_operand, RollLeft<uint16_t>(GetWordValue()));
-		}
+		Idle();
+		WriteWord(_operand, RollLeft<uint16_t>(GetWordValue()));
+	}
+}
+
+void Cpu::ROR_Acc()
+{
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		_state.A = (_state.A & 0xFF00) | RollRight<uint8_t>((uint8_t)_state.A);
+	} else {
+		_state.A = RollRight<uint16_t>(_state.A);
 	}
 }
 
 void Cpu::ROR()
 {
-	if(_instAddrMode == AddrMode::Acc) {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			_state.A = (_state.A & 0xFF00) | RollRight<uint8_t>((uint8_t)_state.A);
-		} else {
-			_state.A = RollRight<uint16_t>(_state.A);
-		}
+	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		Idle();
+		Write(_operand, RollRight<uint8_t>(GetByteValue()));
 	} else {
-		if(CheckFlag(ProcFlags::MemoryMode8)) {
-			Write(_operand, RollRight<uint8_t>(GetByteValue()));
-		} else {
-			WriteWord(_operand, RollRight<uint16_t>(GetWordValue()));
-		}
+		Idle();
+		WriteWord(_operand, RollRight<uint16_t>(GetWordValue()));
 	}
 }
 
@@ -620,10 +661,20 @@ void Cpu::MVN()
 	do {
 		uint8_t value = ReadData(srcBank | _state.X);
 		Write(destBank | _state.Y, value);
-		
+
+		Idle();
+		Idle();
+
 		_state.X++;
 		_state.Y++;
 		_state.A--;
+
+		if(_state.A != 0xFFFF) {
+			//"Idle" cycles, instruction re-reads OP code and operands before every new byte
+			_memoryManager->Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
+			_memoryManager->Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
+			_memoryManager->Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
+		}
 	} while(_state.A != 0xFFFF);
 }
 
@@ -636,9 +687,19 @@ void Cpu::MVP()
 		uint8_t value = ReadData(srcBank | _state.X);
 		Write(destBank | _state.Y, value);
 
+		Idle();
+		Idle();
+
 		_state.X--;
 		_state.Y--;
 		_state.A--;
+		
+		if(_state.A != 0xFFFF) {
+			//"Idle" cycles, instruction re-reads OP code and operands before every new byte
+			_memoryManager->Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
+			_memoryManager->Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
+			_memoryManager->Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
+		}
 	} while(_state.A != 0xFFFF);
 }
 
@@ -654,52 +715,64 @@ void Cpu::PEA()
 void Cpu::PEI()
 {
 	//Push Effective Indirect address
+	Idle();
 	PushWord(ReadDataWord(_operand));
 }
 
 void Cpu::PER()
 {
 	//Push Effective Relative address
+	Idle();
 	PushWord((uint16_t)((int16_t)_operand + _state.PC));
 }
 
 void Cpu::PHB()
 {
+	Idle();
 	PushByte(_state.DBR);
 }
 
 void Cpu::PHD()
 {
+	Idle();
 	PushWord(_state.D);
 }
 
 void Cpu::PHK()
 {
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
+	Idle();
 	PushByte(_state.K);
 }
 
 void Cpu::PHP()
 {
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
+	Idle();
 	PushByte(_state.PS);
 }
 
 void Cpu::PLB()
 {
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
+	Idle();
+	Idle();
 	SetRegister(_state.DBR, PopByte());
 }
 
 void Cpu::PLD()
 {
 	//"PHD and PLD push and pull two bytes from the stack."
+	Idle();
+	Idle();
 	SetRegister(_state.D, PopWord(), false);
 }
 
 void Cpu::PLP()
 {
 	//"For PLP, (all of) the flags are pulled from the stack. Note that when the e flag is 1, the m and x flag are forced to 1, so after the PLP, both flags will still be 1 no matter what value is pulled from the stack."
+	Idle();
+	Idle();
 	if(_state.EmulationMode) {
 		SetPS(PopByte() | ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
 	} else {
@@ -710,32 +783,41 @@ void Cpu::PLP()
 void Cpu::PHA()
 {
 	//"When the m flag is 0, PHA and PLA push and pull a 16-bit value, and when the m flag is 1, PHA and PLA push and pull an 8-bit value. "
+	Idle();
 	PushRegister(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
 void Cpu::PHX()
 {
+	Idle();
 	PushRegister(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
 void Cpu::PHY()
 {
+	Idle();
 	PushRegister(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
 void Cpu::PLA()
 {
 	//"When the m flag is 0, PHA and PLA push and pull a 16-bit value, and when the m flag is 1, PHA and PLA push and pull an 8-bit value."
+	Idle();
+	Idle();
 	PullRegister(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
 void Cpu::PLX()
 {
+	Idle();
+	Idle();
 	PullRegister(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
 void Cpu::PLY()
 {
+	Idle();
+	Idle();
 	PullRegister(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
@@ -853,9 +935,9 @@ template<typename T> void Cpu::TestBits(T value, bool alterZeroFlagOnly)
 void Cpu::BIT()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
-		TestBits<uint8_t>(GetByteValue(), _instAddrMode <= AddrMode::ImmM);
+		TestBits<uint8_t>(GetByteValue(), _immediateMode);
 	} else {
-		TestBits<uint16_t>(GetWordValue(), _instAddrMode <= AddrMode::ImmM);
+		TestBits<uint16_t>(GetWordValue(), _immediateMode);
 	}
 }
 
@@ -866,14 +948,16 @@ void Cpu::TRB()
 
 		uint8_t value = ReadData(_operand);
 		value &= ~_state.A;
+		Idle();
 		Write(_operand, value);
 	} else {
 		TestBits<uint16_t>(GetWordValue(), true);
-		
+
 		uint16_t value = ReadDataWord(_operand);
 		value &= ~_state.A;
+		Idle();
 		WriteWord(_operand, value);
-	}	
+	}
 }
 
 void Cpu::TSB()
@@ -958,6 +1042,7 @@ void Cpu::TYX()
 
 void Cpu::XBA()
 {
+	Idle();
 	_state.A = ((_state.A & 0xFF) << 8) | ((_state.A >> 8) & 0xFF);
 	SetZeroNegativeFlags((uint8_t)_state.A);
 }
@@ -1002,4 +1087,179 @@ void Cpu::STP()
 void Cpu::WAI()
 {
 	//Wait for interrupt
+}
+
+/****************
+Addressing modes
+*****************/
+void Cpu::AddrMode_Abs()
+{
+	_operand = GetDataAddress(ReadOperandWord());
+}
+
+void Cpu::AddrMode_AbsIdxX()
+{
+	_operand = (GetDataAddress(ReadOperandWord()) + _state.X) & 0xFFFFFF;
+	Idle();
+}
+
+void Cpu::AddrMode_AbsIdxY()
+{
+	_operand = (GetDataAddress(ReadOperandWord()) + _state.Y) & 0xFFFFFF;
+	Idle();
+}
+
+void Cpu::AddrMode_AbsLng()
+{
+	_operand = ReadOperandLong();
+}
+
+void Cpu::AddrMode_AbsLngIdxX()
+{
+	_operand = (ReadOperandLong() + _state.X) & 0xFFFFFF;
+}
+
+void Cpu::AddrMode_AbsJmp()
+{
+	_operand = GetProgramAddress(ReadOperandWord());
+}
+
+void Cpu::AddrMode_AbsLngJmp()
+{
+	_operand = ReadOperandLong();
+}
+
+void Cpu::AddrMode_AbsIdxXInd()
+{
+	_operand = GetProgramAddress(ReadDataWord(GetProgramAddress(ReadOperandWord() + _state.X)));
+	Idle();
+}
+
+void Cpu::AddrMode_AbsInd()
+{
+	_operand = ReadDataWord(ReadOperandWord());
+}
+
+void Cpu::AddrMode_AbsIndLng()
+{
+	_operand = ReadDataLong(ReadOperandWord());
+}
+
+void Cpu::AddrMode_Acc()
+{
+	Idle();
+}
+
+void Cpu::AddrMode_BlkMov()
+{
+	_operand = ReadOperandWord();
+}
+
+uint8_t Cpu::ReadDirectOperandByte()
+{
+	uint8_t value = ReadOperandByte();
+	if(_state.D & 0xFF) {
+		//Add 1 cycle for direct register low (DL) not equal 0
+		Idle();
+	}
+	return value;
+}
+
+void Cpu::AddrMode_Dir()
+{
+	_operand = GetDirectAddress(ReadDirectOperandByte());
+}
+
+void Cpu::AddrMode_DirIdxX()
+{
+	_operand = GetDirectAddress(ReadDirectOperandByte() + _state.X);
+	Idle();
+}
+
+void Cpu::AddrMode_DirIdxY()
+{
+	_operand = GetDirectAddress(ReadDirectOperandByte() + _state.Y);
+	Idle();
+}
+
+void Cpu::AddrMode_DirInd()
+{
+	_operand = GetDataAddress(GetDirectAddressIndirectWord(ReadDirectOperandByte()));
+}
+
+void Cpu::AddrMode_DirIdxIndX()
+{
+	uint8_t operandByte = ReadDirectOperandByte();
+	Idle();
+	_operand = GetDataAddress(GetDirectAddressIndirectWord(operandByte + _state.X));
+}
+
+void Cpu::AddrMode_DirIndIdxY()
+{
+	_operand = (GetDataAddress(GetDirectAddressIndirectWord(ReadDirectOperandByte())) + _state.Y) & 0xFFFFFF;
+	Idle();
+}
+
+void Cpu::AddrMode_DirIndLng()
+{
+	_operand = GetDirectAddressIndirectLong(ReadDirectOperandByte());
+}
+
+void Cpu::AddrMode_DirIndLngIdxY()
+{
+	_operand = (GetDirectAddressIndirectLong(ReadDirectOperandByte()) + _state.Y) & 0xFFFFFF;
+}
+
+void Cpu::AddrMode_Imm8()
+{
+	_immediateMode = true;
+	_operand = ReadOperandByte();
+}
+
+void Cpu::AddrMode_Imm16()
+{
+	_immediateMode = true;
+	_operand = ReadOperandWord();
+}
+
+void Cpu::AddrMode_ImmX()
+{
+	_immediateMode = true;
+	_operand = CheckFlag(ProcFlags::IndexMode8) ? ReadOperandByte() : ReadOperandWord();
+}
+
+void Cpu::AddrMode_ImmM()
+{
+	_immediateMode = true; 
+	_operand = CheckFlag(ProcFlags::MemoryMode8) ? ReadOperandByte() : ReadOperandWord();
+}
+
+void Cpu::AddrMode_Imp()
+{
+	Idle();
+}
+
+void Cpu::AddrMode_RelLng()
+{
+	_operand = ReadOperandWord();
+	Idle();
+}
+
+void Cpu::AddrMode_Rel()
+{
+	_operand = ReadOperandByte();
+}
+
+void Cpu::AddrMode_StkRel()
+{
+	_operand = (uint16_t)(ReadOperandByte() + _state.SP);
+	Idle();
+}
+
+void Cpu::AddrMode_StkRelIndIdxY()
+{
+	uint16_t addr = (uint16_t)(ReadOperandByte() + _state.SP);
+	Idle();
+	_operand = (GetDataAddress(ReadDataWord(addr)) + _state.Y) & 0xFFFFFF;
+	Idle();
 }
