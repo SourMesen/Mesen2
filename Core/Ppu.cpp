@@ -124,7 +124,7 @@ void Ppu::Exec()
 }
 
 template<uint8_t priority, bool forMainScreen>
-void Ppu::DrawSprites()
+void Ppu::RenderSprites()
 {
 	if(forMainScreen) {
 		if(_pixelsDrawn == 256 || (_mainScreenLayers & 0x10) == 0) {
@@ -151,6 +151,87 @@ void Ppu::DrawSprites()
 	}
 }
 
+template<bool forMainScreen>
+void Ppu::RenderMode0()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 2, true, forMainScreen>();
+	RenderTilemap<1, 2, true, forMainScreen, 64>();
+	RenderSprites<2, forMainScreen>();
+	RenderTilemap<0, 2, false, forMainScreen>();
+	RenderTilemap<1, 2, false, forMainScreen, 64>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemap<2, 2, true, forMainScreen, 128>();
+	RenderTilemap<3, 2, true, forMainScreen, 192>();
+	RenderSprites<0, forMainScreen>();
+	RenderTilemap<2, 2, false, forMainScreen, 128>();
+	RenderTilemap<3, 2, false, forMainScreen, 192>();
+	RenderBgColor<forMainScreen>();
+}
+
+template<bool forMainScreen>
+void Ppu::RenderMode1()
+{
+	if(_mode1Bg3Priority) {
+		RenderTilemap<2, 2, true, forMainScreen>();
+	}
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 4, true, forMainScreen>();
+	RenderTilemap<1, 4, true, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderTilemap<0, 4, false, forMainScreen>();
+	RenderTilemap<1, 4, false, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	if(!_mode1Bg3Priority) {
+		RenderTilemap<2, 2, true, forMainScreen>();
+	}
+	RenderSprites<0, true>();
+	RenderTilemap<2, 2, false, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
+template<bool forMainScreen>
+void Ppu::RenderMode2()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 4, true, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderTilemap<1, 4, true, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemap<0, 4, false, forMainScreen>();
+	RenderSprites<0, forMainScreen>();
+	RenderTilemap<1, 4, false, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
+template<bool forMainScreen>
+void Ppu::RenderMode3()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 8, true, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderTilemap<1, 4, true, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemap<0, 8, false, forMainScreen>();
+	RenderSprites<0, forMainScreen>();
+	RenderTilemap<1, 4, false, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
+template<bool forMainScreen>
+void Ppu::RenderMode4()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 8, true, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderTilemap<1, 4, true, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemap<0, 8, false, forMainScreen>();
+	RenderSprites<0, forMainScreen>();
+	RenderTilemap<1, 4, false, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
 void Ppu::RenderScanline()
 {
 	_pixelsDrawn = 0;
@@ -165,92 +246,50 @@ void Ppu::RenderScanline()
 
 	switch(_bgMode) {
 		case 0:
-			DrawSprites<3, true>();
-			RenderTilemap<0, 2, true, true>();
-			RenderTilemap<1, 2, true, true, 64>();
-			DrawSprites<2, true>();
-			RenderTilemap<0, 2, false, true>();
-			RenderTilemap<1, 2, false, true, 64>();
-			DrawSprites<1, true>();
-			RenderTilemap<2, 2, true, true, 128>();
-			RenderTilemap<3, 2, true, true, 192>();
-			DrawSprites<0, true>();
-			RenderTilemap<2, 2, false, true, 128>();
-			RenderTilemap<3, 2, false, true, 192>();
-			RenderBgColor<true>();
+			RenderMode0<true>();
+			RenderMode0<false>();
 			break;
 
 		case 1:
-			//Main screen
-			if(_mode1Bg3Priority) {
-				RenderTilemap<2, 2, true, true>();
-			}
-			DrawSprites<3, true>();
-			RenderTilemap<0, 4, true, true>();
-			RenderTilemap<1, 4, true, true>();
-			DrawSprites<2, true>();
-			RenderTilemap<0, 4, false, true>();
-			RenderTilemap<1, 4, false, true>();
-			DrawSprites<1, true>();
-			if(!_mode1Bg3Priority) {
-				RenderTilemap<2, 2, true, true>();
-			}
-			DrawSprites<0, true>();
-			RenderTilemap<2, 2, false, true>();
-			RenderBgColor<true>();
-
-			//Subscreen
-			if(_mode1Bg3Priority) {
-				RenderTilemap<2, 2, true, false>();
-			}
-			DrawSprites<3, false>();
-			RenderTilemap<0, 4, true, false>();
-			RenderTilemap<1, 4, true, false>();
-			DrawSprites<2, false>();
-			RenderTilemap<0, 4, false, false>();
-			RenderTilemap<1, 4, false, false>();
-			DrawSprites<1, false>();
-			if(!_mode1Bg3Priority) {
-				RenderTilemap<2, 2, true, false>();
-			}
-			DrawSprites<0, true>();
-			RenderTilemap<2, 2, false, false>();
-			RenderBgColor<false>();
+			RenderMode1<true>();
+			RenderMode1<false>();
 			break;
 
 		case 2:
-			DrawSprites<3, true>();
-			RenderTilemap<0, 4, true, true>();
-			DrawSprites<2, true>();
-			RenderTilemap<1, 4, true, true>();
-			DrawSprites<1, true>();
-			RenderTilemap<0, 4, false, true>();
-			DrawSprites<0, true>();
-			RenderTilemap<1, 4, false, true>();
-			RenderBgColor<true>();
+			MessageManager::Log("[Debug] Using mode 2");
+			RenderMode2<true>();
+			RenderMode2<false>();
 			break;
 
 		case 3:
-			DrawSprites<3, true>();
-			RenderTilemap<0, 8, true, true>();
-			DrawSprites<2, true>();
-			RenderTilemap<1, 4, true, true>();
-			DrawSprites<1, true>();
-			RenderTilemap<0, 8, false, true>();
-			DrawSprites<0, true>();
-			RenderTilemap<1, 4, false, true>();
-			RenderBgColor<true>();
+			MessageManager::Log("[Debug] Using mode 3");
+			RenderMode3<true>();
+			RenderMode3<false>();
+			break;
+		
+		case 4:
+			MessageManager::Log("[Debug] Using mode 4");
+			RenderMode4<true>();
+			RenderMode4<false>();
 			break;
 
 		case 5:
+			MessageManager::Log("[Debug] Using mode 5");
 			RenderTilemap<1, 2, false, true>();
 			RenderTilemap<0, 4, false, true>();
 			RenderBgColor<true>();
 			break;
 
 		case 6:
+			MessageManager::Log("[Debug] Using mode 6");
 			RenderTilemap<0, 8, false, true>();
 			RenderBgColor<true>();
+			break;
+
+		case 7:
+			MessageManager::Log("[Debug] Using mode 7");
+			RenderBgColor<true>();
+			RenderBgColor<false>();
 			break;
 	}
 

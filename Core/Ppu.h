@@ -131,7 +131,22 @@ private:
 	void RenderTilemap();
 
 	template<uint8_t priority, bool forMainScreen>
-	void DrawSprites();
+	void RenderSprites();
+
+	template<bool forMainScreen>
+	void RenderMode0();
+
+	template<bool forMainScreen>
+	void RenderMode1();
+
+	template<bool forMainScreen>
+	void RenderMode2();
+
+	template<bool forMainScreen>
+	void RenderMode3();
+
+	template<bool forMainScreen>
+	void RenderMode4();
 
 	void RenderScanline();
 	void ApplyColorMath();
