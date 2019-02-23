@@ -445,6 +445,16 @@ void Ppu::RenderBgColor()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
 void Ppu::RenderTilemap()
 {
+	if(_layerConfig[layerIndex].LargeTiles) {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset>();
+	} else {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset>();
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTiles, uint16_t basePaletteOffset>
+void Ppu::RenderTilemap()
+{
 	if(forMainScreen) {
 		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
 			//This screen is disabled, or we've drawn all pixels already
@@ -470,14 +480,14 @@ void Ppu::RenderTilemap()
 	LayerConfig &config = _layerConfig[layerIndex];
 	uint16_t tilemapAddr = config.TilemapAddress >> 1;
 	uint16_t chrAddr = config.ChrAddress;
-	uint16_t row = (_scanline + config.VScroll) >> 3;
+	uint16_t row = (_scanline + config.VScroll) >> (largeTiles ? 4 : 3);
 	uint8_t baseYOffset = (_scanline + config.VScroll) & 0x07;
 
 	uint16_t addrVerticalScrollingOffset = config.VerticalMirroring ? ((row & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0;
 	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
 	for(int x = 0; x < 256; x++) {
-		uint16_t column = (x + config.HScroll) >> 3;
+		uint16_t column = (x + config.HScroll) >> (largeTiles ? 4 : 3);
 		uint32_t addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
 
 		if(forMainScreen) {
@@ -507,9 +517,17 @@ void Ppu::RenderTilemap()
 			continue;
 		}
 
-		uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
 		bool vMirror = (_vram[addr + 1] & 0x80) != 0;
 		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
+
+		uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
+		if(largeTiles) {
+			tileIndex = (
+				tileIndex +
+				(((_scanline + config.VScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) +
+				(((x + config.HScroll) & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0))
+			) & 0x3FF;
+		}
 
 		uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
 
@@ -894,8 +912,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 			_layerConfig[0].LargeTiles = (value & 0x10) != 0;
 			_layerConfig[1].LargeTiles = (value & 0x20) != 0;
-			_layerConfig[2].LargeTiles = (value & 0x30) != 0;
-			_layerConfig[3].LargeTiles = (value & 0x40) != 0;
+			_layerConfig[2].LargeTiles = (value & 0x40) != 0;
+			_layerConfig[3].LargeTiles = (value & 0x80) != 0;
 			break;
 
 		case 0x2106:

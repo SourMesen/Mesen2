@@ -160,6 +160,9 @@ private:
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset = 0>
 	void RenderTilemap();
 
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTiles, uint16_t basePaletteOffset>
+	void RenderTilemap();
+
 	void ApplyColorMath();
 	void ApplyBrightness();
 
