@@ -126,7 +126,7 @@ void DmaController::ProcessHdmaChannels()
 		for(int i = 0; i < 8; i++) {
 			DmaChannelConfig &ch = _channel[i];
 			if((_hdmaChannels & (1 << i)) == 0 || ch.HdmaFinished) {
-				return;
+				continue;
 			}
 
 			if(needOverhead) {
