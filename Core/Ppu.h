@@ -158,6 +158,7 @@ private:
 
 	void RenderScanline();
 	void ApplyColorMath();
+	void ApplyBrightness();
 
 	template<uint8_t layerIndex>
 	bool ProcessMaskWindow(uint8_t activeWindowCount, int x);

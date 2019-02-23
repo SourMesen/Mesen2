@@ -314,6 +314,7 @@ void Ppu::RenderScanline()
 	}
 
 	ApplyColorMath();
+	ApplyBrightness();
 	
 	//Process sprites for next scanline
 	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
@@ -627,7 +628,6 @@ void Ppu::ApplyColorMath()
 				otherPixel = _fixedColor;
 			}
 
-
 			if(_colorMathSubstractMode) {
 				uint16_t r = std::max((mainPixel & 0x001F) - (otherPixel & 0x001F), 0) >> halfShift;
 				uint16_t g = std::max(((mainPixel >> 5) & 0x001F) - ((otherPixel >> 5) & 0x001F), 0) >> halfShift;
@@ -641,6 +641,19 @@ void Ppu::ApplyColorMath()
 
 				mainPixel = r | (g << 5) | (b << 10);
 			}
+		}
+	}
+}
+
+void Ppu::ApplyBrightness()
+{
+	if(_screenBrightness != 15) {
+		for(int x = 0; x < 256; x++) {
+			uint16_t &pixel = _currentBuffer[(_scanline << 8) | x];
+			uint16_t r = (pixel & 0x1F) * _screenBrightness / 15;
+			uint16_t g = ((pixel >> 5) & 0x1F) * _screenBrightness / 15;
+			uint16_t b = ((pixel >> 10) & 0x1F) * _screenBrightness / 15;
+			pixel = r | (g << 5) | (b << 10);
 		}
 	}
 }
@@ -830,8 +843,6 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 	switch(addr) {
 		case 0x2100:
 			_forcedVblank = (value & 0x80) != 0;
-
-			//TODO Apply brightness
 			_screenBrightness = value & 0x0F;
 
 			//TODO : Also, writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur. 
