@@ -164,7 +164,7 @@ private:
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTiles, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
 	void RenderTilemap();
 
-	template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic>
+	template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic, bool processHighPriority>
 	void RenderTilemapMode7();
 
 	template<bool applyMosaic>

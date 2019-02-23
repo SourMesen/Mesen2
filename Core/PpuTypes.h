@@ -24,21 +24,20 @@ struct LayerConfig
 
 struct Mode7Config
 {
+	int16_t Matrix[4];
+
 	int16_t HScroll;
 	int16_t VScroll;
-
-	bool LargeMap;
-	bool FillWithTile0;
-
-	bool HorizontalMirroring;
-	bool VerticalMirroring;
-
 	int16_t CenterX;
 	int16_t CenterY;
 
-	int16_t Matrix[4];
-
 	uint8_t ValueLatch;
+	
+	bool LargeMap;
+	bool FillWithTile0;
+	bool HorizontalMirroring;
+	bool VerticalMirroring;
+	bool ExtBgEnabled;
 };
 
 struct WindowConfig

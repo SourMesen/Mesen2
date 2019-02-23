@@ -352,9 +352,15 @@ void Ppu::RenderMode7()
 {
 	RenderSprites<3, forMainScreen>();
 	RenderSprites<2, forMainScreen>();
+	if(_mode7.ExtBgEnabled) {
+		RenderTilemapMode7<1, forMainScreen, false, true>();
+	}
 	RenderSprites<1, forMainScreen>();
-	RenderTilemapMode7<0, forMainScreen, false>();
+	RenderTilemapMode7<0, forMainScreen, false, false>();
 	RenderSprites<0, forMainScreen>();
+	if(_mode7.ExtBgEnabled) {
+		RenderTilemapMode7<1, forMainScreen, false, false>();
+	}
 	RenderBgColor<forMainScreen>();
 }
 
@@ -619,7 +625,7 @@ void Ppu::RenderTilemap()
 	}
 }
 
-template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic>
+template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic, bool processHighPriority>
 void Ppu::RenderTilemapMode7()
 {
 	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
@@ -699,7 +705,18 @@ void Ppu::RenderTilemapMode7()
 		}
 
 		uint8_t tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1] & tileMask;
-		uint16_t paletteRamOffset = (_vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1]) << 1;
+		uint16_t paletteRamOffset;
+
+		if(layerIndex == 1) {
+			uint8_t color = _vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1];
+			if(((uint8_t)processHighPriority << 7) != (color & 0x80)) {
+				//Wrong priority, skip this pixel
+				continue;
+			}
+			paletteRamOffset = (color & 0x7F) << 1;
+		} else {
+			paletteRamOffset = (_vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1]) << 1;
+		}
 
 		if(paletteRamOffset > 0) {
 			if(forMainScreen) {
@@ -1300,6 +1317,16 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			if(value & 0x20) { //R
 				_fixedColor = (_fixedColor & ~0x1F) | (value & 0x1F);
 			}
+			break;
+
+		case 0x2133:
+			//SETINI - Screen Mode/Video Select
+			//_externalSync = (value & 0x80) != 0;  //NOT USED
+			_mode7.ExtBgEnabled = (value & 0x40) != 0;
+			//_hiresMode = (value & 0x08) != 0; //TODO
+			//_overscanMode = (value & 0x04) != 0; //TODO
+			//_objInterlace = (value & 0x02) != 0; //TODO
+			//_screenInterlace = (value & 0x01) != 0; //TODO
 			break;
 
 		default:
