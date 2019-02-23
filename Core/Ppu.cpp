@@ -9,12 +9,6 @@
 #include "VideoDecoder.h"
 #include "NotificationManager.h"
 
-enum PixelFlags
-{
-	Filled = 0x01,
-	AllowColorMath = 0x02,
-};
-
 Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
@@ -353,6 +347,17 @@ void Ppu::RenderMode4()
 	RenderBgColor<forMainScreen>();
 }
 
+template<bool forMainScreen>
+void Ppu::RenderMode7()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemapMode7<0, forMainScreen, false>();
+	RenderSprites<0, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
 void Ppu::RenderScanline()
 {
 	_pixelsDrawn = 0;
@@ -408,9 +413,8 @@ void Ppu::RenderScanline()
 			break;
 
 		case 7:
-			MessageManager::Log("[Debug] Using mode 7");
-			RenderBgColor<true>();
-			RenderBgColor<false>();
+			RenderMode7<true>();
+			RenderMode7<false>();
 			break;
 	}
 
@@ -532,6 +536,7 @@ void Ppu::RenderTilemap()
 		uint16_t column = (x + config.HScroll) >> (largeTiles ? 4 : 3);
 		uint32_t addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
 
+		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
 		if(forMainScreen) {
 			if(_rowPixelFlags[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
@@ -543,7 +548,7 @@ void Ppu::RenderTilemap()
 		}
 
 		if(activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
-			//This pixel was masked
+			//This pixel was masked, skip it
 			continue;
 		}
 
@@ -559,6 +564,7 @@ void Ppu::RenderTilemap()
 			continue;
 		}
 
+		//The pixel is empty, not clipped and not part of a mosaic pattern, process it
 		bool vMirror = (_vram[addr + 1] & 0x80) != 0;
 		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
 
@@ -603,25 +609,130 @@ void Ppu::RenderTilemap()
 		if(color > 0) {
 			uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
 			uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
-			uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 
 			if(forMainScreen) {
-				_currentBuffer[outBaseAddress | x] = paletteColor;
-				_rowPixelFlags[x] = pixelFlags;
-				if(applyMosaic && x % _mosaicSize == 0) {
-					//This is the source for the mosaic pattern, store it for use in the next scanlines
-					for(int i = 0; i < _mosaicSize && x + i < 256; i++) {
-						_mosaicColor[x+i] = paletteColor;
-					}
-				}
-				_pixelsDrawn++;
+				DrawMainPixel<applyMosaic>(x, paletteRamOffset, pixelFlags);
 			} else {
-				_subScreenBuffer[x] = paletteColor;
-				_subScreenFilled[x] = true;
-				_subPixelsDrawn++;
+				DrawSubPixel(x, paletteRamOffset);
 			}
 		}
 	}
+}
+
+template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic>
+void Ppu::RenderTilemapMode7()
+{
+	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
+
+	if(forMainScreen) {
+		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled, or we've drawn all pixels already
+			return;
+		}
+	} else {
+		if(_subPixelsDrawn == 256 || ((_subScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled, or we've drawn all pixels already
+			return;
+		}
+	}
+
+	constexpr auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };
+
+	int32_t lutX[256];
+	int32_t lutY[256];
+
+	int32_t hScroll = ((int32_t)_mode7.HScroll << 19) >> 19;
+	int32_t vScroll = ((int32_t)_mode7.VScroll << 19) >> 19;
+	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
+	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
+
+	lutX[0] = (
+		((_mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
+		((_mode7.Matrix[1] * realY) & ~63) +
+		((_mode7.Matrix[1] * clip(vScroll - centerY)) & ~63) +
+		(centerX << 8)
+	);
+
+	lutY[0] = (
+		((_mode7.Matrix[2] * clip(hScroll - centerX)) & ~63) +
+		((_mode7.Matrix[3] * realY) & ~63) +
+		((_mode7.Matrix[3] * clip(vScroll - centerY)) & ~63) +
+		(centerY << 8)
+	);
+
+	for(int x = 1; x < 256; x++) {
+		lutX[x] = lutX[x - 1] + _mode7.Matrix[0];
+		lutY[x] = lutY[x - 1] + _mode7.Matrix[2];
+	}
+
+	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+
+	for(int x = 0; x < 256; x++) {
+		uint16_t realX = _mode7.HorizontalMirroring ? (255 - x) : x;
+
+		if(forMainScreen) {
+			if(_rowPixelFlags[x]) {
+				continue;
+			}
+		} else {
+			if(_subScreenFilled[x]) {
+				continue;
+			}
+		}
+
+		int32_t xOffset = (lutX[realX] >> 8);
+		int32_t yOffset = (lutY[realX] >> 8);
+
+		uint8_t tileMask = 0xFF;
+		if(!_mode7.LargeMap) {
+			yOffset &= 0x3FF;
+			xOffset &= 0x3FF;
+		} else {
+			if(yOffset < 0 || yOffset > 0x3FF || xOffset < 0 || xOffset > 0x3FF) {
+				if(_mode7.FillWithTile0) {
+					tileMask = 0;
+				} else {
+					//Draw nothing for this pixel, we're outside the map
+					continue;
+				}
+			}
+		}
+
+		uint8_t tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1] & tileMask;
+		uint16_t paletteRamOffset = (_vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1]) << 1;
+
+		if(paletteRamOffset > 0) {
+			if(forMainScreen) {
+				DrawMainPixel<applyMosaic>(x, paletteRamOffset, pixelFlags);
+			} else {
+				DrawSubPixel(x, paletteRamOffset);
+			}
+		}
+	}
+}
+
+template<bool applyMosaic>
+void Ppu::DrawMainPixel(uint8_t x, uint16_t paletteRamOffset, uint8_t flags)
+{
+	_currentBuffer[(_scanline << 8) | x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+	_rowPixelFlags[x] = flags;
+
+	if(applyMosaic && x % _mosaicSize == 0) {
+		uint16_t paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+		//This is the source for the mosaic pattern, store it for use in the next scanlines
+		for(int i = 0; i < _mosaicSize && x + i < 256; i++) {
+			_mosaicColor[x + i] = paletteColor;
+		}
+	}
+
+	_pixelsDrawn++;
+}
+
+void Ppu::DrawSubPixel(uint8_t x, uint16_t paletteRamOffset)
+{
+	_subScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+	_subScreenFilled[x] = true;
+	_subPixelsDrawn++;
 }
 
 void Ppu::ApplyColorMath()
@@ -791,9 +902,9 @@ void Ppu::LatchLocationValues()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
-		case 0x2134: return ((int16_t)_mode7MatrixA * ((int16_t)_mode7MatrixB >> 8)) & 0xFF;
-		case 0x2135: return (((int16_t)_mode7MatrixA * ((int16_t)_mode7MatrixB >> 8)) >> 8) & 0xFF;
-		case 0x2136: return (((int16_t)_mode7MatrixA * ((int16_t)_mode7MatrixB >> 8)) >> 16) & 0xFF;
+		case 0x2134: return ((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) & 0xFF;
+		case 0x2135: return (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 8) & 0xFF;
+		case 0x2136: return (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 16) & 0xFF;
 
 		case 0x2137:
 			//SLHV - Software Latch for H/V Counter
@@ -985,16 +1096,28 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			break;
 		
 		case 0x210D:
-			//TODO Mode 7 portion of register
+			//M7HOFS - Mode 7 BG Horizontal Scroll
+			//BG1HOFS - BG1 Horizontal Scroll
+			_mode7.HScroll = ((value << 8) | (_mode7.ValueLatch)) & 0x1FFF;
+			_mode7.ValueLatch = value;
+			//no break, keep executing to set the matching BG1 HScroll register, too
+
 		case 0x210F: case 0x2111: case 0x2113:
+			//BGXHOFS - BG1/2/3/4 Horizontal Scroll
 			_layerConfig[(addr - 0x210D) >> 1].HScroll = ((value << 8) | (_hvScrollLatchValue & ~0x07) | (_hScrollLatchValue & 0x07)) & 0x3FF;
 			_hvScrollLatchValue = value;
 			_hScrollLatchValue = value;
 			break;
 
 		case 0x210E:
-			//TODO Mode 7 portion of register
+			//M7VOFS - Mode 7 BG Vertical Scroll
+			//BG1VOFS - BG1 Vertical Scroll
+			_mode7.VScroll = ((value << 8) | (_mode7.ValueLatch)) & 0x1FFF;
+			_mode7.ValueLatch = value;
+			//no break, keep executing to set the matching BG1 HScroll register, too
+
 		case 0x2110: case 0x2112: case 0x2114:
+			//BGXVOFS - BG1/2/3/4 Vertical Scroll
 			_layerConfig[(addr - 0x210E) >> 1].VScroll = ((value << 8) | _hvScrollLatchValue) & 0x3FF;
 			_hvScrollLatchValue = value;
 			break;
@@ -1041,16 +1164,30 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			}
 			break;
 
-		case 0x211B:
-			//M7A - Mode 7 Matrix A (also used with $2134/6)
-			_mode7MatrixA = (value << 8) | _mode7Latch;
-			_mode7Latch = value;
+		case 0x211A:
+			//M7SEL - Mode 7 Settings
+			_mode7.LargeMap = (value & 0x80) != 0;
+			_mode7.FillWithTile0 = (value & 0x40) != 0;
+			_mode7.HorizontalMirroring = (value & 0x01) != 0;
+			_mode7.VerticalMirroring = (value & 0x02) != 0;
 			break;
 
-		case 0x211C:
-			//M7B - Mode 7 Matrix B (also used with $2134/6)
-			_mode7MatrixB = (value << 8) | _mode7Latch;
-			_mode7Latch = value;
+		case 0x211B: case 0x211C: case 0x211D: case 0x211E:
+			//M7A/B/C/D - Mode 7 Matrix A/B/C/D (A/B are also used with $2134/6)
+			_mode7.Matrix[addr - 0x211B] = (value << 8) | _mode7.ValueLatch;
+			_mode7.ValueLatch = value;
+			break;
+		
+		case 0x211F:
+			//M7X - Mode 7 Center X
+			_mode7.CenterX = ((value << 8) | _mode7.ValueLatch);
+			_mode7.ValueLatch = value;
+			break;
+
+		case 0x2120:
+			//M7Y - Mode 7 Center Y
+			_mode7.CenterY = ((value << 8) | _mode7.ValueLatch);
+			_mode7.ValueLatch = value;
 			break;
 
 		case 0x2121:

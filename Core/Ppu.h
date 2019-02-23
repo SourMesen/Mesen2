@@ -62,6 +62,8 @@ private:
 	WindowMaskLogic _maskLogic[6];
 	bool _windowMaskMain[5];
 	bool _windowMaskSub[5];
+
+	Mode7Config _mode7;
 	
 	uint8_t *_vram;
 	uint16_t _vramAddress;
@@ -128,10 +130,6 @@ private:
 	bool _verticalLocationToggle = false;
 	bool _locationLatched = false;
 
-	uint16_t _mode7MatrixA = 0;
-	uint16_t _mode7MatrixB = 0;
-	uint8_t _mode7Latch = 0;
-
 	void EvaluateNextLineSprites();
 	
 	template<uint8_t priority, bool forMainScreen>
@@ -152,6 +150,9 @@ private:
 	template<bool forMainScreen>
 	void RenderMode4();
 
+	template<bool forMainScreen>
+	void RenderMode7();
+
 	void RenderScanline();
 
 	template<bool forMainScreen>
@@ -162,6 +163,14 @@ private:
 
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTiles, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
 	void RenderTilemap();
+
+	template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic>
+	void RenderTilemapMode7();
+
+	template<bool applyMosaic>
+	__forceinline void DrawMainPixel(uint8_t x, uint16_t paletteRamOffset, uint8_t flags);
+
+	__forceinline void DrawSubPixel(uint8_t x, uint16_t paletteRamOffset);
 
 	void ApplyColorMath();
 	void ApplyBrightness();

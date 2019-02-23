@@ -22,6 +22,25 @@ struct LayerConfig
 	bool LargeTiles;
 };
 
+struct Mode7Config
+{
+	int16_t HScroll;
+	int16_t VScroll;
+
+	bool LargeMap;
+	bool FillWithTile0;
+
+	bool HorizontalMirroring;
+	bool VerticalMirroring;
+
+	int16_t CenterX;
+	int16_t CenterY;
+
+	int16_t Matrix[4];
+
+	uint8_t ValueLatch;
+};
+
 struct WindowConfig
 {
 	bool ActiveLayers[6];
@@ -62,4 +81,10 @@ enum class ColorWindowMode
 	OutsideWindow = 1,
 	InsideWindow = 2,
 	Always = 3
+};
+
+enum PixelFlags
+{
+	Filled = 0x01,
+	AllowColorMath = 0x02,
 };
