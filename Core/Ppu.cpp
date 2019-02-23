@@ -564,10 +564,57 @@ void Ppu::ApplyColorMath()
 		return;
 	}
 
+	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
+
 	for(int x = 0; x < 256; x++) {
 		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
-			uint16_t otherPixel;
 			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
+			uint16_t &mainPixel = _currentBuffer[(_scanline << 8) | x];
+
+			bool isInsideWindow = activeWindowCount && ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
+			//Set color to black as needed based on clip mode
+			switch(_colorMathClipMode) {
+				default:
+				case ColorWindowMode::Never: break;
+
+				case ColorWindowMode::OutsideWindow: 
+					if(!isInsideWindow) {
+						mainPixel = 0;
+						halfShift = 0;
+					}
+					break;
+
+				case ColorWindowMode::InsideWindow:
+					if(isInsideWindow) {
+						mainPixel = 0;
+						halfShift = 0;
+					}
+					break;
+
+				case ColorWindowMode::Always: mainPixel = 0; break;
+			}
+
+			//Prevent color math as needed based on mode
+			switch(_colorMathPreventMode) {
+				default:
+				case ColorWindowMode::Never: break;
+
+				case ColorWindowMode::OutsideWindow:
+					if(!isInsideWindow) {
+						continue;
+					}
+					break;
+
+				case ColorWindowMode::InsideWindow:
+					if(isInsideWindow) {
+						continue;
+					}
+					break;
+
+				case ColorWindowMode::Always: continue;
+			}
+
+			uint16_t otherPixel;
 			if(_colorMathAddSubscreen) {
 				if(_subScreenFilled[x]) {
 					otherPixel = _subScreenBuffer[x];
@@ -580,7 +627,6 @@ void Ppu::ApplyColorMath()
 				otherPixel = _fixedColor;
 			}
 
-			uint16_t &mainPixel = _currentBuffer[(_scanline << 8) | x];
 
 			if(_colorMathSubstractMode) {
 				uint16_t r = std::max((mainPixel & 0x001F) - (otherPixel & 0x001F), 0) >> halfShift;
@@ -1014,8 +1060,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		
 		case 0x2130:
 			//CGWSEL - Color Addition Select
-			_colorMathClipMode = (value >> 6) & 0x03; //TODO
-			_colorMathPreventMode = (value >> 4) & 0x03; //TODO
+			_colorMathClipMode = (ColorWindowMode)((value >> 6) & 0x03);
+			_colorMathPreventMode = (ColorWindowMode)((value >> 4) & 0x03);
 			_colorMathAddSubscreen = (value & 0x02) != 0;
 			_directColorMode = (value & 0x01) != 0; //TODO
 			break;

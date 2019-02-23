@@ -55,3 +55,11 @@ enum class  WindowMaskLogic
 	Xor = 2,
 	Xnor = 3
 };
+
+enum class ColorWindowMode
+{
+	Never = 0,
+	OutsideWindow = 1,
+	InsideWindow = 2,
+	Always = 3
+};

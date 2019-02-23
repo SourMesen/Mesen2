@@ -28,6 +28,7 @@ public:
 
 private:
 	constexpr static int SpriteLayerIndex = 4;
+	constexpr static int ColorWindowIndex = 5;
 
 	constexpr static const uint8_t _oamSizes[8][2][2] = {
 		{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16
@@ -110,8 +111,8 @@ private:
 
 	bool _directColorMode = false;
 
-	uint8_t _colorMathClipMode = 0;
-	uint8_t _colorMathPreventMode = 0;
+	ColorWindowMode _colorMathClipMode = ColorWindowMode::Never;
+	ColorWindowMode _colorMathPreventMode = ColorWindowMode::Never;
 	bool _colorMathAddSubscreen = false;
 	uint8_t _colorMathEnabled = 0;
 	bool _colorMathSubstractMode = false;
