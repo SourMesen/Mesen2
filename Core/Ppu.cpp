@@ -126,17 +126,32 @@ void Ppu::Exec()
 template<uint8_t priority, bool forMainScreen>
 void Ppu::RenderSprites()
 {
+	uint8_t activeWindowCount = 0;
 	if(forMainScreen) {
 		if(_pixelsDrawn == 256 || (_mainScreenLayers & 0x10) == 0) {
 			return;
 		}
-	} else if(_subPixelsDrawn == 256 || (_subScreenLayers & 0x10) == 0) {
-		return;
+		if(_windowMaskMain[Ppu::SpriteLayerIndex]) {
+			activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
+		}
+	} else {
+		if(_subPixelsDrawn == 256 || (_subScreenLayers & 0x10) == 0) {
+			return;
+		}
+
+		if(_windowMaskSub[Ppu::SpriteLayerIndex]) {
+			activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
+		}
 	}
 
 	if(forMainScreen) {
 		for(int x = 0; x < 256; x++) {
 			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
+				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
+					//This pixel was masked
+					continue;
+				}
+
 				_currentBuffer[(_scanline << 8) | x] = _spritePixels[x];
 				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
@@ -144,6 +159,11 @@ void Ppu::RenderSprites()
 	} else {
 		for(int x = 0; x < 256; x++) {
 			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
+				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
+					//This pixel was masked
+					continue;
+				}
+
 				_subScreenBuffer[x] = _spritePixels[x];
 				_subScreenFilled[x] = true;
 			}
@@ -431,6 +451,11 @@ void Ppu::RenderTilemap()
 		}
 	}
 
+	uint8_t activeWindowCount = 0;
+	if((forMainScreen && _windowMaskMain[layerIndex]) || (!forMainScreen && _windowMaskSub[layerIndex])) {
+		activeWindowCount = (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex];
+	}
+
 	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
 	bool mosaicScanline = applyMosaic && (_scanline - _mosaicStartScanline) % _mosaicSize != 0;
 
@@ -457,6 +482,11 @@ void Ppu::RenderTilemap()
 			if(_subScreenFilled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
 			}
+		}
+
+		if(activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
+			//This pixel was masked
+			continue;
 		}
 
 		if(mosaicScanline || (applyMosaic && x % _mosaicSize != 0)) {
@@ -567,6 +597,39 @@ void Ppu::ApplyColorMath()
 			}
 		}
 	}
+}
+
+template<uint8_t layerIndex>
+bool Ppu::ProcessMaskWindow(uint8_t activeWindowCount, int x)
+{
+	if(activeWindowCount == 1) {
+		if(_window[0].ActiveLayers[layerIndex]) {
+			return _window[0].PixelNeedsMasking<layerIndex>(x);
+		} else {
+			return _window[1].PixelNeedsMasking<layerIndex>(x);
+		}
+	} else {
+		switch(_maskLogic[layerIndex]) {
+			default:
+			case WindowMaskLogic::Or: return _window[0].PixelNeedsMasking<layerIndex>(x) | _window[1].PixelNeedsMasking<layerIndex>(x);
+			case WindowMaskLogic::And: return _window[0].PixelNeedsMasking<layerIndex>(x) & _window[1].PixelNeedsMasking<layerIndex>(x);
+			case WindowMaskLogic::Xor: return _window[0].PixelNeedsMasking<layerIndex>(x) ^ _window[1].PixelNeedsMasking<layerIndex>(x);
+			case WindowMaskLogic::Xnor: return !(_window[0].PixelNeedsMasking<layerIndex>(x) ^ _window[1].PixelNeedsMasking<layerIndex>(x));
+		}
+	}
+}
+
+void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
+{
+	_window[0].ActiveLayers[0 + offset] = (value & 0x02) != 0;
+	_window[0].ActiveLayers[1 + offset] = (value & 0x20) != 0;
+	_window[0].InvertedLayers[0 + offset] = (value & 0x01) != 0;
+	_window[0].InvertedLayers[1 + offset] = (value & 0x10) != 0;
+
+	_window[1].ActiveLayers[0 + offset] = (value & 0x08) != 0;
+	_window[1].ActiveLayers[1 + offset] = (value & 0x80) != 0;
+	_window[1].InvertedLayers[0 + offset] = (value & 0x04) != 0;
+	_window[1].InvertedLayers[1 + offset] = (value & 0x40) != 0;
 }
 
 void Ppu::SendFrame()
@@ -876,6 +939,55 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			break;
 
+		case 0x2123:
+			//W12SEL - Window Mask Settings for BG1 and BG2
+			ProcessWindowMaskSettings(value, 0);
+			break;
+
+		case 0x2124:
+			//W34SEL - Window Mask Settings for BG3 and BG4
+			ProcessWindowMaskSettings(value, 2);
+			break;
+
+		case 0x2125:
+			//WOBJSEL - Window Mask Settings for OBJ and Color Window
+			ProcessWindowMaskSettings(value, 4);
+			break;
+
+		case 0x2126:
+			//WH0 - Window 1 Left Position
+			_window[0].Left = value;
+			break;
+		
+		case 0x2127:
+			//WH1 - Window 1 Right Position
+			_window[0].Right = value;
+			break;
+
+		case 0x2128:
+			//WH2 - Window 2 Left Position
+			_window[1].Left = value;
+			break;
+
+		case 0x2129:
+			//WH3 - Window 2 Right Position
+			_window[1].Right = value;
+			break;
+
+		case 0x212A:
+			//WBGLOG - Window mask logic for BG
+			_maskLogic[0] = (WindowMaskLogic)(value & 0x03);
+			_maskLogic[1] = (WindowMaskLogic)((value >> 2) & 0x03);
+			_maskLogic[2] = (WindowMaskLogic)((value >> 4) & 0x03);
+			_maskLogic[3] = (WindowMaskLogic)((value >> 6) & 0x03);
+			break;
+
+		case 0x212B:
+			//WOBJLOG - Window mask logic for OBJs and Color Window
+			_maskLogic[5] = (WindowMaskLogic)((value >> 0) & 0x03);
+			_maskLogic[6] = (WindowMaskLogic)((value >> 2) & 0x03);
+			break;
+
 		case 0x212C:
 			//TM - Main Screen Designation
 			_mainScreenLayers = value & 0x1F;
@@ -884,6 +996,20 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x212D:
 			//TS - Subscreen Designation
 			_subScreenLayers = value & 0x1F;
+			break;
+
+		case 0x212E:
+			//TMW - Window Mask Designation for the Main Screen
+			for(int i = 0; i < 5; i++) {
+				_windowMaskMain[i] = ((value >> i) & 0x01) != 0;
+			}
+			break;
+
+		case 0x212F:
+			//TSW - Window Mask Designation for the Subscreen
+			for(int i = 0; i < 5; i++) {
+				_windowMaskSub[i] = ((value >> i) & 0x01) != 0;
+			}
 			break;
 		
 		case 0x2130:

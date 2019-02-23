@@ -21,3 +21,37 @@ struct LayerConfig
 
 	bool LargeTiles;
 };
+
+struct WindowConfig
+{
+	bool ActiveLayers[6];
+	bool InvertedLayers[6];
+	uint8_t Left;
+	uint8_t Right;
+
+	template<uint8_t layerIndex>
+	bool PixelNeedsMasking(int x)
+	{
+		if(InvertedLayers[layerIndex]) {
+			if(Left > Right) {
+				return true;
+			} else {
+				return x < Left || x > Right;
+			}
+		} else {
+			if(Left > Right) {
+				return false;
+			} else {
+				return x >= Left && x <= Right;
+			}
+		}
+	}
+};
+
+enum class  WindowMaskLogic
+{
+	Or = 0,
+	And = 1,
+	Xor = 2,
+	Xnor = 3
+};

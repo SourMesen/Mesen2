@@ -27,6 +27,8 @@ public:
 	constexpr static uint32_t VideoRamSize = 0x10000;
 
 private:
+	constexpr static int SpriteLayerIndex = 4;
+
 	constexpr static const uint8_t _oamSizes[8][2][2] = {
 		{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16
 		{ { 1, 1 }, { 4, 4 } }, //8x8 + 32x32
@@ -54,6 +56,11 @@ private:
 	uint8_t _mainScreenLayers = 0;
 	uint8_t _subScreenLayers = 0;
 	LayerConfig _layerConfig[4];
+
+	WindowConfig _window[2];
+	WindowMaskLogic _maskLogic[6];
+	bool _windowMaskMain[5];
+	bool _windowMaskSub[5];
 	
 	uint8_t *_vram;
 	uint16_t _vramAddress;
@@ -150,6 +157,11 @@ private:
 
 	void RenderScanline();
 	void ApplyColorMath();
+
+	template<uint8_t layerIndex>
+	bool ProcessMaskWindow(uint8_t activeWindowCount, int x);
+	void ProcessWindowMaskSettings(uint8_t value, uint8_t offset);
+
 	void SendFrame();
 
 public:
