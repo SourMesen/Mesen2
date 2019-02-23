@@ -123,6 +123,105 @@ void Ppu::Exec()
 	}
 }
 
+void Ppu::EvaluateNextLineSprites()
+{
+	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
+	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
+	memset(_spritePalette, 0, sizeof(_spritePalette));
+	_spriteCount = 0;
+	uint16_t totalWidth = 0;
+
+	for(int i = 0; i < 512; i += 4) {
+		uint8_t y = _oamRam[i + 1];
+
+		uint8_t highTableOffset = i >> 4;
+		uint8_t shift = ((i >> 2) & 0x03) << 1;
+		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
+		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
+		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
+
+		if(y > _scanline + 1 || y + height <= _scanline + 1) {
+			//Not visible on this scanline
+			continue;
+		}
+
+		SpriteInfo &info = _sprites[_spriteCount];
+		info.LargeSprite = largeSprite;
+		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
+
+		bool negativeX = (highTableValue & 0x01) != 0;
+		info.X = negativeX ? -_oamRam[i] : _oamRam[i];
+		info.TileRow = (_oamRam[i + 2] & 0xF0) >> 4;
+		info.TileColumn = _oamRam[i + 2] & 0x0F;
+
+		uint8_t flags = _oamRam[i + 3];
+		info.UseSecondTable = (flags & 0x01) != 0;
+		info.Palette = (flags >> 1) & 0x07;
+		info.Priority = (flags >> 4) & 0x03;
+		info.HorizontalMirror = (flags & 0x40) != 0;
+		info.VerticalMirror = (flags & 0x80) != 0;
+
+		uint8_t yOffset;
+		int rowOffset;
+		if(info.VerticalMirror) {
+			yOffset = (height - (_scanline + 1 - y)) & 0x07;
+			rowOffset = (height - (_scanline + 1 - y)) >> 3;
+		} else {
+			yOffset = (_scanline + 1 - y) & 0x07;
+			rowOffset = (_scanline + 1 - y) >> 3;
+		}
+
+		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
+		constexpr uint16_t bpp = 4;
+
+		for(int x = info.X; x > 0 && x < info.X + width && x < 256; x++) {
+			if(_spritePixels[x] == 0xFFFF) {
+				uint8_t xOffset;
+				int columnOffset;
+				if(info.HorizontalMirror) {
+					xOffset = (width - (x - info.X) - 1) & 0x07;
+					columnOffset = (width - (x - info.X) - 1) >> 3;
+				} else {
+					xOffset = (x - info.X) & 0x07;
+					columnOffset = (x - info.X) >> 3;
+				}
+
+				uint8_t column = (info.TileColumn + columnOffset) & 0x0F;
+				uint8_t tileIndex = (row << 4) | column;
+				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
+
+				uint16_t color = 0;
+				for(int plane = 0; plane < bpp; plane++) {
+					uint8_t offset = (plane >> 1) * 16;
+					uint8_t tileData = _vram[tileStart + yOffset * 2 + offset + (plane & 0x01)];
+					color |= ((tileData >> (7 - xOffset)) & 0x01) << plane;
+				}
+
+				if(color != 0) {
+					uint16_t paletteRamOffset = 256 + ((info.Palette * (1 << bpp) + color) * 2);
+					_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+					_spritePriority[x] = info.Priority;
+					_spritePalette[x] = info.Palette;
+				}
+			}
+		}
+
+		totalWidth += width;
+		if(totalWidth >= 34 * 8) {
+			_timeOver = true;
+		}
+
+		_spriteCount++;
+		if(_spriteCount == 32) {
+			_rangeOver = true;
+		}
+
+		if(_timeOver || _rangeOver) {
+			break;
+		}
+	}
+}
+
 template<uint8_t priority, bool forMainScreen>
 void Ppu::RenderSprites()
 {
@@ -317,107 +416,13 @@ void Ppu::RenderScanline()
 	ApplyBrightness();
 	
 	//Process sprites for next scanline
-	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
-	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
-	memset(_spritePalette, 0, sizeof(_spritePalette));	
-	_spriteCount = 0;
-	uint16_t totalWidth = 0;
-
-	for(int i = 0; i < 512; i += 4) {
-		uint8_t y = _oamRam[i + 1];
-
-		uint8_t highTableOffset = i >> 4;
-		uint8_t shift = ((i >> 2) & 0x03) << 1;
-		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
-		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
-		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
-
-		if(y > _scanline + 1 || y + height <= _scanline + 1) {
-			//Not visible on this scanline
-			continue;
-		}
-
-		SpriteInfo &info = _sprites[_spriteCount];
-		info.LargeSprite = largeSprite;
-		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
-
-		bool negativeX = (highTableValue & 0x01) != 0;
-		info.X = negativeX ? -_oamRam[i] : _oamRam[i];
-		info.TileRow = (_oamRam[i + 2] & 0xF0) >> 4;
-		info.TileColumn = _oamRam[i + 2] & 0x0F;
-
-		uint8_t flags = _oamRam[i + 3];
-		info.UseSecondTable = (flags & 0x01) != 0;
-		info.Palette = (flags >> 1) & 0x07;
-		info.Priority = (flags >> 4) & 0x03;
-		info.HorizontalMirror = (flags & 0x40) != 0;
-		info.VerticalMirror = (flags & 0x80) != 0;
-
-		uint8_t yOffset;
-		int rowOffset;
-		if(info.VerticalMirror) {
-			yOffset = (height - (_scanline + 1 - y)) & 0x07;
-			rowOffset = (height - (_scanline + 1 - y)) >> 3;
-		} else {
-			yOffset = (_scanline + 1 - y) & 0x07;
-			rowOffset = (_scanline + 1 - y) >> 3;
-		} 
-
-		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
-		constexpr uint16_t bpp = 4;
-
-		for(int x = info.X; x > 0 && x < info.X + width && x < 256; x++) {
-			if(_spritePixels[x] == 0xFFFF) {
-				uint8_t xOffset;
-				int columnOffset;
-				if(info.HorizontalMirror) {
-					xOffset = (width - (x - info.X) - 1) & 0x07;
-					columnOffset = (width - (x - info.X) - 1) >> 3;
-				} else {
-					xOffset = (x - info.X) & 0x07;
-					columnOffset = (x - info.X) >> 3;
-				}
-
-				uint8_t column = (info.TileColumn + columnOffset) & 0x0F;
-				uint8_t tileIndex = (row << 4) | column;
-				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
-
-				uint16_t color = 0;
-				for(int plane = 0; plane < bpp; plane++) {
-					uint8_t offset = (plane >> 1) * 16;
-					uint8_t tileData = _vram[tileStart + yOffset * 2 + offset + (plane & 0x01)];
-					color |= ((tileData >> (7 - xOffset)) & 0x01) << plane;
-				}
-
-				if(color != 0) {
-					uint16_t paletteRamOffset = 256 + ((info.Palette * (1 << bpp) + color) * 2);
-					_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-					_spritePriority[x] = info.Priority;
-					_spritePalette[x] = info.Palette;
-				}
-			}
-		}
-
-		totalWidth += width;
-		if(totalWidth >= 34 * 8) {
-			_timeOver = true;
-		}
-
-		_spriteCount++;
-		if(_spriteCount == 32) {
-			_rangeOver = true;
-		}
-
-		if(_timeOver || _rangeOver) {
-			break;
-		}
-	}
+	EvaluateNextLineSprites();	
 }
 
 template<bool forMainScreen>
 void Ppu::RenderBgColor()
 {
-	if((forMainScreen && _pixelsDrawn == 256) || (!forMainScreen && _subPixelsDrawn)) {
+	if((forMainScreen && _pixelsDrawn == 256) || (!forMainScreen && _subPixelsDrawn == 256)) {
 		return;
 	}
 

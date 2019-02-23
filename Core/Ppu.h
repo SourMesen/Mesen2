@@ -132,12 +132,8 @@ private:
 	uint16_t _mode7MatrixB = 0;
 	uint8_t _mode7Latch = 0;
 
-	template<bool forMainScreen>
-	void RenderBgColor();
-
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset = 0>
-	void RenderTilemap();
-
+	void EvaluateNextLineSprites();
+	
 	template<uint8_t priority, bool forMainScreen>
 	void RenderSprites();
 
@@ -157,6 +153,13 @@ private:
 	void RenderMode4();
 
 	void RenderScanline();
+
+	template<bool forMainScreen>
+	void RenderBgColor();
+
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset = 0>
+	void RenderTilemap();
+
 	void ApplyColorMath();
 	void ApplyBrightness();
 
