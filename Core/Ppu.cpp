@@ -16,6 +16,8 @@ Ppu::Ppu(shared_ptr<Console> console)
 
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];
+	memset(_outputBuffers[0], 0, 512 * 478);
+	memset(_outputBuffers[1], 0, 512 * 478);
 
 	_currentBuffer = _outputBuffers[0];
 
@@ -351,6 +353,7 @@ void Ppu::RenderScanline()
 
 	if(_forcedVblank) {
 		RenderBgColor<true>();
+		RenderBgColor<false>();
 		ApplyHiResMode();
 		return;
 	}
@@ -473,67 +476,7 @@ void Ppu::RenderSprites()
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic>
-void Ppu::RenderTilemap()
-{
-	if(_directColorMode) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, activeWindowCount, applyMosaic, true>();
-	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, activeWindowCount, applyMosaic, false>();
-	}
-}
-
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount>
-void Ppu::RenderTilemap()
-{
-	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
-
-	if(applyMosaic) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, activeWindowCount, true>();
-	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, activeWindowCount, false>();
-	}	
-}
-
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight>
-void Ppu::RenderTilemap()
-{
-	uint8_t activeWindowCount = 0;
-	if((forMainScreen && _windowMaskMain[layerIndex]) || (!forMainScreen && _windowMaskSub[layerIndex])) {
-		activeWindowCount = (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex];
-	}
-
-	if(activeWindowCount == 0) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, 0>();
-	} else if(activeWindowCount == 1) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, 1>();
-	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, largeTileWidth, largeTileHeight, 2>();
-	}
-}
-
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
-void Ppu::RenderTilemap()
-{
-	bool largeTileWidth = _layerConfig[layerIndex].LargeTiles || _bgMode == 5;
-	bool largeTileHeight = _layerConfig[layerIndex].LargeTiles;
-
-	if(largeTileWidth) {
-		if(largeTileHeight) {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, true, true>();
-		} else {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, true, false>();
-		} 
-	} else {
-		if(largeTileHeight) {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, false, true>();
-		} else {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, false, false>();
-		}
-	}
-}
-
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemap()
 {
 	if(!IsRenderRequired<forMainScreen>(layerIndex)) {
@@ -573,7 +516,7 @@ void Ppu::RenderTilemap()
 	for(int x = 0; x < 256; x++) {
 		/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
 		uint16_t realX;
-		if(largeTileWidth && !largeTileHeight) {
+		if(hiResMode) {
 			realX = (x << 1) + (forMainScreen ? 1 : 0);
 		} else {
 			realX = x;
@@ -704,28 +647,6 @@ uint16_t Ppu::GetTilePixelColor(const uint16_t pixelStart, const uint8_t shift)
 		throw std::runtime_error("unsupported bpp");
 	}
 	return color;
-}
-
-template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
-void Ppu::RenderTilemapMode7()
-{
-	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
-
-	if(applyMosaic) {
-		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, true>();
-	} else {
-		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, false>();
-	}
-}
-
-template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic>
-void Ppu::RenderTilemapMode7()
-{
-	if(_directColorMode) {
-		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, applyMosaic, true>();
-	} else {
-		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, applyMosaic, false>();
-	}
 }
 
 template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic, bool directColorMode>
@@ -957,7 +878,7 @@ void Ppu::ApplyHiResMode()
 {
 	uint32_t screenY = _screenInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
-	if(_hiresMode || _bgMode == 5 || _bgMode == 6) {
+	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
 		ApplyBrightness<false>();
 		for(int i = 0; i < 512; i += 2) {
 			_currentBuffer[(screenY << 9) + i] = _subScreenBuffer[i >> 1];
@@ -1007,7 +928,7 @@ void Ppu::SendFrame()
 
 	uint16_t width;
 	uint16_t height;
-	if(_hiresMode || _bgMode == 5 || _bgMode == 6) {
+	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
 		width = 512;
 	} else {
 		width = 256;
@@ -1466,7 +1387,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//SETINI - Screen Mode/Video Select
 			//_externalSync = (value & 0x80) != 0;  //NOT USED
 			_mode7.ExtBgEnabled = (value & 0x40) != 0;
-			_hiresMode = (value & 0x08) != 0;
+			_hiResMode = (value & 0x08) != 0;
 			_overscanMode = (value & 0x04) != 0;
 			//_objInterlace = (value & 0x02) != 0; //TODO
 			_screenInterlace = (value & 0x01) != 0;
@@ -1475,5 +1396,98 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		default:
 			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
+	}
+}
+
+/* Everything below this point is used to select the proper arguments for templates */
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic>
+void Ppu::RenderTilemap()
+{
+	if(_directColorMode) {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, applyMosaic, true>();
+	} else {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, applyMosaic, false>();
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount>
+void Ppu::RenderTilemap()
+{
+	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
+
+	if(applyMosaic) {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, true>();
+	} else {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, false>();
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight>
+void Ppu::RenderTilemap()
+{
+	uint8_t activeWindowCount = 0;
+	if((forMainScreen && _windowMaskMain[layerIndex]) || (!forMainScreen && _windowMaskSub[layerIndex])) {
+		activeWindowCount = (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex];
+	}
+
+	if(activeWindowCount == 0) {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, 0>();
+	} else if(activeWindowCount == 1) {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, 1>();
+	} else {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, 2>();
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode>
+void Ppu::RenderTilemap()
+{
+	bool largeTileWidth = _layerConfig[layerIndex].LargeTiles | hiResMode;
+	bool largeTileHeight = _layerConfig[layerIndex].LargeTiles;
+
+	if(largeTileWidth) {
+		if(largeTileHeight) {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, true, true>();
+		} else {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, true, false>();
+		}
+	} else {
+		if(largeTileHeight) {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, false, true>();
+		} else {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, false, false>();
+		}
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
+void Ppu::RenderTilemap()
+{
+	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, true>();
+	} else {
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, false>();
+	}
+}
+
+template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
+void Ppu::RenderTilemapMode7()
+{
+	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
+
+	if(applyMosaic) {
+		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, true>();
+	} else {
+		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, false>();
+	}
+}
+
+template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic>
+void Ppu::RenderTilemapMode7()
+{
+	if(_directColorMode) {
+		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, applyMosaic, true>();
+	} else {
+		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, applyMosaic, false>();
 	}
 }
