@@ -15,6 +15,7 @@
 #include "DebugHud.h"
 #include "FrameLimiter.h"
 #include "MessageManager.h"
+#include "KeyManager.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
@@ -57,13 +58,17 @@ void Console::Run()
 
 	PlatformUtilities::EnableHighResolutionTimer();
 
+	uint32_t keyCode = KeyManager::GetKeyCode("Tab");
+
 	auto lock = _runLock.AcquireSafe();
 	while(!_stopFlag) {
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
-			frameLimiter.ProcessFrame();
-			frameLimiter.WaitForNextFrame();
+			if(!KeyManager::IsKeyPressed(keyCode)) {
+				frameLimiter.ProcessFrame();
+				frameLimiter.WaitForNextFrame();
+			}
 			previousFrameCount = _ppu->GetFrameCount();
 		}
 	}
@@ -90,6 +95,8 @@ void Console::Stop()
 	_controlManager.reset();
 	_memoryManager.reset();
 	_dmaController.reset();
+
+	_soundMixer->StopAudio();
 }
 
 void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
@@ -99,23 +106,34 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
 		MessageManager::ClearLog();
+
+		vector<uint8_t> spcRomData;
+		VirtualFile spcBios("spc700.rom");
+		if(spcBios.IsValid()) {
+			spcBios.ReadFile(spcRomData);
+		} else {
+			MessageManager::Log("[SPC] spc700.rom not found, cannot launch game.");
+			return;
+		}
+
 		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
 		_ppu.reset(new Ppu(shared_from_this()));
-		_spc.reset(new Spc(shared_from_this()));
+		_spc.reset(new Spc(shared_from_this(), spcRomData));
 		_cart = cart;
 		_controlManager.reset(new ControlManager(shared_from_this()));
 		_memoryManager.reset(new MemoryManager());
-		_dmaController.reset(new DmaController(_memoryManager.get()));
+		_dmaController.reset(new DmaController(shared_from_this()));
 
 		_memoryManager->Initialize(shared_from_this());
 
 		_cpu.reset(new Cpu(_memoryManager));
+		_memoryManager->IncrementMasterClockValue<160>();
 
 		//if(_debugger) {
 			//Reset debugger if it was running before
-			auto lock = _debuggerLock.AcquireSafe();
-			_debugger.reset();
-			GetDebugger();
+			//auto lock = _debuggerLock.AcquireSafe();
+			//_debugger.reset();
+			//GetDebugger();
 		//}
 	}
 }

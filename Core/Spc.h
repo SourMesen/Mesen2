@@ -18,7 +18,7 @@ private:
 	int GetSpcTime();
 
 public:
-	Spc(shared_ptr<Console> console);
+	Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData);
 	~Spc();
 
 	uint8_t Read(uint16_t addr);

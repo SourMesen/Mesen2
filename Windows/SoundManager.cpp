@@ -23,6 +23,7 @@ SoundManager::SoundManager(shared_ptr<Console> console, HWND hwnd)
 
 SoundManager::~SoundManager()
 {
+	_console->GetSoundMixer()->RegisterAudioDevice(nullptr);
 	Release();
 }
 

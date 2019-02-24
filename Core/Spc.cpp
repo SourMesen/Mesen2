@@ -4,16 +4,12 @@
 #include "Console.h"
 #include "MemoryManager.h"
 #include "SoundMixer.h"
-#include "../Utilities/VirtualFile.h"
 
-Spc::Spc(shared_ptr<Console> console)
+Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 {
 	_console = console;
-
-	vector<uint8_t> fileData;
-	VirtualFile spcBios("spc700.rom");
-	spcBios.ReadFile(fileData);
-	memcpy(_spcBios, fileData.data(), 64);
+	
+	memcpy(_spcBios, spcRomData.data(), 64);
 
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
