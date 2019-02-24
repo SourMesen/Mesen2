@@ -771,24 +771,25 @@ void Ppu::RenderTilemapMode7()
 		int32_t xOffset = (lutX[realX] >> 8);
 		int32_t yOffset = (lutY[realX] >> 8);
 
-		uint8_t tileMask = 0xFF;
+		uint8_t tileIndex;
 		if(!_mode7.LargeMap) {
 			yOffset &= 0x3FF;
 			xOffset &= 0x3FF;
+			tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1];
 		} else {
 			if(yOffset < 0 || yOffset > 0x3FF || xOffset < 0 || xOffset > 0x3FF) {
 				if(_mode7.FillWithTile0) {
-					tileMask = 0;
+					tileIndex = 0;
 				} else {
 					//Draw nothing for this pixel, we're outside the map
 					continue;
 				}
+			} else {
+				tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1];
 			}
 		}
 
-		uint8_t tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1] & tileMask;
 		uint16_t colorIndex;
-
 		if(layerIndex == 1) {
 			uint8_t color = _vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1];
 			if(((uint8_t)processHighPriority << 7) != (color & 0x80)) {
