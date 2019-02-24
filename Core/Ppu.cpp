@@ -146,9 +146,15 @@ void Ppu::EvaluateNextLineSprites()
 		SpriteInfo &info = _sprites[_spriteCount];
 		info.LargeSprite = largeSprite;
 		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
+		uint16_t sign = (highTableValue & 0x01) << 8;
+		info.X = (int16_t)((sign | _oamRam[i]) << 7) >> 7;
+		
+		if(info.X != -256 && info.X + width <= 0 || info.X > 255) {
+			//Sprite is not visible (and must be ignored for time/range flag calculations)
+			//Sprites at X=-256 are always used when considering Time/Range flag calculations, but not actually drawn.
+			continue;
+		}
 
-		bool negativeX = (highTableValue & 0x01) != 0;
-		info.X = negativeX ? -_oamRam[i] : _oamRam[i];
 		info.TileRow = (_oamRam[i + 2] & 0xF0) >> 4;
 		info.TileColumn = _oamRam[i + 2] & 0x0F;
 
@@ -170,9 +176,7 @@ void Ppu::EvaluateNextLineSprites()
 		}
 
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
-		constexpr uint16_t bpp = 4;
-
-		for(int x = info.X; x > 0 && x < info.X + width && x < 256; x++) {
+		for(int x = std::max<int16_t>(info.X, 0); x < info.X + width && x < 256; x++) {
 			if(_spritePixels[x] == 0xFFFF) {
 				uint8_t xOffset;
 				int columnOffset;
@@ -188,15 +192,10 @@ void Ppu::EvaluateNextLineSprites()
 				uint8_t tileIndex = (row << 4) | column;
 				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
 
-				uint16_t color = 0;
-				for(int plane = 0; plane < bpp; plane++) {
-					uint8_t offset = (plane >> 1) * 16;
-					uint8_t tileData = _vram[tileStart + yOffset * 2 + offset + (plane & 0x01)];
-					color |= ((tileData >> (7 - xOffset)) & 0x01) << plane;
-				}
+				uint16_t color = GetTilePixelColor<4>(tileStart + yOffset * 2, 7 - xOffset);
 
 				if(color != 0) {
-					uint16_t paletteRamOffset = 256 + ((info.Palette * (1 << bpp) + color) * 2);
+					uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
 					_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 					_spritePriority[x] = info.Priority;
 					_spritePalette[x] = info.Palette;
