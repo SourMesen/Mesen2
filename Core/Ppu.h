@@ -70,7 +70,7 @@ private:
 	uint8_t _vramIncrementValue;
 	uint8_t _vramAddressRemapping;
 	bool _vramAddrIncrementOnSecondReg;
-	uint8_t _vramReadBuffer = 0;
+	uint16_t _vramReadBuffer = 0;
 	
 	uint16_t _cgramAddress;
 	uint8_t _cgram[Ppu::CgRamSize];
@@ -197,6 +197,8 @@ private:
 	template<uint8_t layerIndex>
 	bool ProcessMaskWindow(uint8_t activeWindowCount, int x);
 	void ProcessWindowMaskSettings(uint8_t value, uint8_t offset);
+
+	void UpdateVramReadBuffer();
 
 	void SendFrame();
 

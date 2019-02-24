@@ -1036,6 +1036,11 @@ void Ppu::LatchLocationValues()
 	_locationLatched = true;
 }
 
+void Ppu::UpdateVramReadBuffer()
+{
+	_vramReadBuffer = _vram[_vramAddress << 1] | (_vram[(_vramAddress << 1) + 1] << 8);
+}
+
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
@@ -1063,9 +1068,9 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
-			uint8_t returnValue = _vramReadBuffer;
-			_vramReadBuffer = _vram[_vramAddress << 1];
+			uint8_t returnValue = (uint8_t)_vramReadBuffer;
 			if(!_vramAddrIncrementOnSecondReg) {
+				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
 			return returnValue;
@@ -1073,9 +1078,9 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
-			uint8_t returnValue = _vramReadBuffer;
-			_vramReadBuffer = _vram[(_vramAddress << 1) + 1];
+			uint8_t returnValue = (uint8_t)(_vramReadBuffer >> 8);
 			if(_vramAddrIncrementOnSecondReg) {
+				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
 			return returnValue;
@@ -1281,11 +1286,13 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2116:
 			//VMADDL - VRAM Address low byte
 			_vramAddress = (_vramAddress & 0x7F00) | value;
+			UpdateVramReadBuffer();
 			break;
 
 		case 0x2117:
 			//VMADDH - VRAM Address high byte
 			_vramAddress = (_vramAddress & 0x00FF) | ((value & 0x7F) << 8);
+			UpdateVramReadBuffer();
 			break;
 
 		case 0x2118:
