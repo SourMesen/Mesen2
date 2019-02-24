@@ -512,20 +512,37 @@ void Ppu::RenderTilemap()
 	/* The start address for tiles on this row */
 	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
+	uint16_t vScroll = config.VScroll;
+	uint16_t hScroll = config.HScroll;
+
+	//"Offset per tile" mode (modes 2, 4 and 6 support this)
+	bool offsetPerTileMode = (_bgMode & 0x03) == 2;
+
+	/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
+	uint16_t realX;
+
+	/* The current column index (in terms of 8x8 or 16x16 tiles) */
+	uint16_t column;
+
+	/* The tilemap address to read the tile data from */
+	uint16_t addr;
+
 	for(int x = 0; x < 256; x++) {
-		/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
-		uint16_t realX;
 		if(hiResMode) {
 			realX = (x << 1) + (forMainScreen ? 1 : 0);
 		} else {
 			realX = x;
 		}
 
-		/* The current column index (in terms of 8x8 or 16x16 tiles) */
-		uint16_t column = (realX + config.HScroll) >> (largeTileWidth ? 4 : 3);
-
-		/* The tilemap address to read the tile data from */
-		uint32_t addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
+		if(offsetPerTileMode) {
+			ProcessOffsetMode<layerIndex, largeTileWidth, largeTileHeight>(x, realX, realY, hScroll, vScroll, addr);
+			
+			//Need to recalculate this because vScroll may change from one tile to another
+			baseYOffset = (realY + vScroll) & 0x07;
+		} else {
+			column = (realX + hScroll) >> (largeTileWidth ? 4 : 3);
+			addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
+		}
 
 		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
 		if(forMainScreen) {
@@ -563,8 +580,8 @@ void Ppu::RenderTilemap()
 		if(largeTileWidth || largeTileHeight) {
 			tileIndex = (
 				tileIndex +
-				(largeTileHeight ? (((realY + config.VScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
-				(largeTileWidth ? (((realX + config.HScroll) & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
+				(largeTileHeight ? (((realY + vScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
+				(largeTileWidth ? (((realX + hScroll) & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
 			) & 0x3FF;
 		}
 
@@ -573,7 +590,7 @@ void Ppu::RenderTilemap()
 		uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
 		uint16_t pixelStart = tileStart + yOffset * 2;
 		
-		uint8_t xOffset = (realX + config.HScroll) & 0x07;
+		uint8_t xOffset = (realX + hScroll) & 0x07;
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 		
 		uint16_t color = GetTilePixelColor<bpp>(pixelStart, shift);
@@ -602,6 +619,59 @@ void Ppu::RenderTilemap()
 			}
 		}
 	}
+}
+
+template<uint8_t layerIndex, bool largeTileWidth, bool largeTileHeight>
+void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t &hScroll, uint16_t &vScroll, uint16_t &addr)
+{
+	constexpr uint16_t enableBit = layerIndex == 0 ? 0x2000 : 0x4000;
+	LayerConfig &config = _layerConfig[layerIndex];
+	
+	hScroll = config.HScroll;
+	vScroll = config.VScroll;
+
+	//TODO: Check+fix behavior with 16x16 tiles
+	//TODO: Test mode 4/6 behavior
+
+	if((realX + hScroll) & ~0x07) {
+		//For all tiles after the first tile on the row, check if an active offset exists and use it
+		uint16_t columnOffset = (((x - 8) & ~0x07) + (_layerConfig[2].HScroll & ~0x07)) >> 3;
+		uint16_t rowOffset = (_layerConfig[2].VScroll >> 3);
+
+		uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + (columnOffset << 1) + (rowOffset << 6);
+
+		if(_bgMode == 4) {
+			int16_t offsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
+
+			if((offsetValue & 0x8000) == 0 && (offsetValue & enableBit)) {
+				hScroll = (hScroll & 0x07) | ((x & ~0x07) + (offsetValue & 0x3F8));
+			}
+			if((offsetValue & 0x8000) != 0 && (offsetValue & enableBit)) {
+				vScroll = (offsetValue & 0x3FF);
+			}
+		} else {
+			uint16_t vOffsetAddr = hOffsetAddr + 0x40;
+
+			int16_t hOffsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
+			int16_t vOffsetValue = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
+
+			if(hOffsetValue & enableBit) {
+				hScroll = (hScroll & 0x07) | ((x & ~0x07) + (hOffsetValue & 0x3F8));
+			}
+			if(vOffsetValue & enableBit) {
+				vScroll = (vOffsetValue & 0x3FF);
+			}
+		}
+	}
+
+	//Recalculate the tile's address based on the new scroll offsets
+	uint16_t tilemapAddr = config.TilemapAddress >> 1;
+	uint16_t offsetModeRow = (realY + vScroll) >> (largeTileHeight ? 4 : 3);
+	uint16_t offsetModeColumn = (realX + hScroll) >> (largeTileWidth ? 4 : 3);
+
+	uint16_t addrVerticalScrollingOffset = config.VerticalMirroring ? ((offsetModeRow & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0;
+	uint16_t offsetModeBaseAddress = tilemapAddr + addrVerticalScrollingOffset + ((offsetModeRow & 0x1F) << 5);
+	addr = (offsetModeBaseAddress + (offsetModeColumn & 0x1F) + (config.HorizontalMirroring ? ((offsetModeColumn & 0x20) << 5) : 0)) << 1;
 }
 
 template<bool forMainScreen>

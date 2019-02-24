@@ -171,6 +171,9 @@ private:
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 	void RenderTilemap();
 
+	template<uint8_t layerIndex, bool largeTileWidth, bool largeTileHeight>
+	void ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t &hScroll, uint16_t &vScroll, uint16_t &addr);
+
 	template<bool forMainScreen>
 	__forceinline bool IsRenderRequired(uint8_t layerIndex);
 
