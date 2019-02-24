@@ -62,28 +62,10 @@ enum class VideoAspectRatio
 
 struct OverscanDimensions
 {
-	static const int ScreenWidth = 256;
-	static const int ScreenHeight = 224;
-
 	uint32_t Left = 0;
 	uint32_t Right = 0;
 	uint32_t Top = 0;
 	uint32_t Bottom = 0;
-
-	uint32_t GetPixelCount()
-	{
-		return GetScreenWidth() * GetScreenHeight();
-	}
-
-	uint32_t GetScreenWidth()
-	{
-		return 256 - Left - Right;
-	}
-
-	uint32_t GetScreenHeight()
-	{
-		return 224 - Top - Bottom;
-	}
 };
 
 struct PictureSettings
@@ -116,9 +98,6 @@ struct FrameInfo
 {
 	uint32_t Width;
 	uint32_t Height;
-	uint32_t OriginalWidth;
-	uint32_t OriginalHeight;
-	uint32_t BitsPerPixel;
 };
 
 struct ScreenSize

@@ -76,6 +76,7 @@ private:
 	uint8_t _cgram[Ppu::CgRamSize];
 
 	uint16_t *_outputBuffers[2];
+	uint16_t *_currentBuffer;
 
 	SpriteInfo _sprites[32] = {};
 	uint8_t _spriteCount = 0;
@@ -87,7 +88,7 @@ private:
 	uint16_t _subPixelsDrawn = 0;
 
 	uint8_t _rowPixelFlags[256];
-	uint16_t *_currentBuffer;
+	uint16_t _mainScreenBuffer[256];
 
 	bool _subScreenFilled[256];
 	uint16_t _subScreenBuffer[256];
@@ -111,6 +112,9 @@ private:
 	bool _timeOver = false;
 	bool _rangeOver = false;
 
+	bool _hiresMode = false;
+	bool _screenInterlace = false;
+	bool _overscanMode = false;
 	bool _directColorMode = false;
 
 	ColorWindowMode _colorMathClipMode = ColorWindowMode::Never;
@@ -151,6 +155,9 @@ private:
 	void RenderMode4();
 
 	template<bool forMainScreen>
+	void RenderMode5();
+
+	template<bool forMainScreen>
 	void RenderMode7();
 
 	void RenderScanline();
@@ -158,10 +165,13 @@ private:
 	template<bool forMainScreen>
 	void RenderBgColor();
 
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTileWidth, bool largeTileHeight, uint16_t basePaletteOffset>
+	void RenderTilemapLargeTiles();
+
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset = 0>
 	void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTiles, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTileWidth, bool largeTileHeight, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
 	void RenderTilemap();
 
 	template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic, bool processHighPriority>
@@ -173,7 +183,11 @@ private:
 	__forceinline void DrawSubPixel(uint8_t x, uint16_t paletteRamOffset);
 
 	void ApplyColorMath();
+	
+	template<bool forMainScreen>
 	void ApplyBrightness();
+
+	void ApplyHiResMode();
 
 	template<uint8_t layerIndex>
 	bool ProcessMaskWindow(uint8_t activeWindowCount, int x);

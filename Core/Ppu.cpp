@@ -14,8 +14,8 @@ Ppu::Ppu(shared_ptr<Console> console)
 	_console = console;
 	_regs = console->GetInternalRegisters();
 
-	_outputBuffers[0] = new uint16_t[256 * 224];
-	_outputBuffers[1] = new uint16_t[256 * 224];
+	_outputBuffers[0] = new uint16_t[512 * 478];
+	_outputBuffers[1] = new uint16_t[512 * 478];
 
 	_currentBuffer = _outputBuffers[0];
 
@@ -64,9 +64,9 @@ void Ppu::Exec()
 
 		_rangeOver = false;
 		_timeOver = false;
-		if(_scanline < 224) {
+		if(_scanline < (_overscanMode ? 240 : 224)) {
 			RenderScanline();
-		} else if(_scanline == 225) {
+		} else if(_scanline == (_overscanMode ? 241 : 225)) {
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
 				_internalOamAddress = (_oamRamAddress << 1);
@@ -238,8 +238,6 @@ void Ppu::RenderSprites()
 	}
 
 	if(forMainScreen) {
-		uint16_t outBaseAddress = (_scanline << 8);
-
 		for(int x = 0; x < 256; x++) {
 			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
 				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
@@ -247,7 +245,7 @@ void Ppu::RenderSprites()
 					continue;
 				}
 
-				_currentBuffer[outBaseAddress | x] = _spritePixels[x];
+				_mainScreenBuffer[x] = _spritePixels[x];
 				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
 		}
@@ -348,6 +346,20 @@ void Ppu::RenderMode4()
 }
 
 template<bool forMainScreen>
+void Ppu::RenderMode5()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 4, true, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderTilemap<1, 2, true, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemap<0, 4, false, forMainScreen>();
+	RenderSprites<0, forMainScreen>();
+	RenderTilemap<1, 2, false, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
+template<bool forMainScreen>
 void Ppu::RenderMode7()
 {
 	RenderSprites<3, forMainScreen>();
@@ -388,32 +400,26 @@ void Ppu::RenderScanline()
 			break;
 
 		case 2:
-			MessageManager::Log("[Debug] Using mode 2");
 			RenderMode2<true>();
 			RenderMode2<false>();
 			break;
 
 		case 3:
-			MessageManager::Log("[Debug] Using mode 3");
 			RenderMode3<true>();
 			RenderMode3<false>();
 			break;
 		
 		case 4:
-			MessageManager::Log("[Debug] Using mode 4");
 			RenderMode4<true>();
 			RenderMode4<false>();
 			break;
 
 		case 5:
-			MessageManager::Log("[Debug] Using mode 5");
-			RenderTilemap<1, 2, false, true>();
-			RenderTilemap<0, 4, false, true>();
-			RenderBgColor<true>();
+			RenderMode5<true>();
+			RenderMode5<false>();
 			break;
 
 		case 6:
-			MessageManager::Log("[Debug] Using mode 6");
 			RenderTilemap<0, 8, false, true>();
 			RenderBgColor<true>();
 			break;
@@ -425,7 +431,8 @@ void Ppu::RenderScanline()
 	}
 
 	ApplyColorMath();
-	ApplyBrightness();
+	ApplyBrightness<true>();
+	ApplyHiResMode();
 	
 	//Process sprites for next scanline
 	EvaluateNextLineSprites();	
@@ -439,12 +446,11 @@ void Ppu::RenderBgColor()
 	}
 
 	uint16_t bgColor = _cgram[0] | (_cgram[1] << 8);
-	uint16_t outBaseAddress = (_scanline << 8);
 	for(int x = 0; x < 256; x++) {
 		if(forMainScreen) {
 			if(!_rowPixelFlags[x]) {
 				uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
-				_currentBuffer[outBaseAddress | x] = bgColor;
+				_mainScreenBuffer[x] = bgColor;
 				_rowPixelFlags[x] = pixelFlags;
 			}
 		} else {
@@ -455,8 +461,8 @@ void Ppu::RenderBgColor()
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
-void Ppu::RenderTilemap()
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTileWidth, bool largeTileHeight, uint16_t basePaletteOffset>
+void Ppu::RenderTilemapLargeTiles()
 {
 	uint8_t activeWindowCount = 0;
 	if((forMainScreen && _windowMaskMain[layerIndex]) || (!forMainScreen && _windowMaskSub[layerIndex])) {
@@ -465,50 +471,49 @@ void Ppu::RenderTilemap()
 
 	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
 
-	if(_layerConfig[layerIndex].LargeTiles) {
-		if(activeWindowCount == 0) {
-			if(applyMosaic) {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset, 0, true>();
-			} else {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset, 0, false>();
-			}
-		} else if(activeWindowCount == 1) {
-			if(applyMosaic) {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset, 1, true>();
-			} else {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset, 1, false>();
-			}
+	if(activeWindowCount == 0) {
+		if(applyMosaic) {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, largeTileWidth, largeTileHeight, basePaletteOffset, 0, true>();
 		} else {
-			if(applyMosaic) {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset, 2, true>();
-			} else {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, true, basePaletteOffset, 2, false>();
-			}
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, largeTileWidth, largeTileHeight, basePaletteOffset, 0, false>();
+		}
+	} else if(activeWindowCount == 1) {
+		if(applyMosaic) {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, largeTileWidth, largeTileHeight, basePaletteOffset, 1, true>();
+		} else {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, largeTileWidth, largeTileHeight, basePaletteOffset, 1, false>();
 		}
 	} else {
-		if(activeWindowCount == 0) {
-			if(applyMosaic) {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset, 0, true>();
-			} else {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset, 0, false>();
-			}
-		} else if(activeWindowCount == 1) {
-			if(applyMosaic) {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset, 1, true>();
-			} else {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset, 1, false>();
-			}
+		if(applyMosaic) {
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, largeTileWidth, largeTileHeight, basePaletteOffset, 2, true>();
 		} else {
-			if(applyMosaic) {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset, 2, true>();
-			} else {
-				RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, false, basePaletteOffset, 2, false>();
-			}
+			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, largeTileWidth, largeTileHeight, basePaletteOffset, 2, false>();
 		}
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTiles, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
+void Ppu::RenderTilemap()
+{
+	bool largeTileWidth = _layerConfig[layerIndex].LargeTiles || _bgMode == 5;
+	bool largeTileHeight = _layerConfig[layerIndex].LargeTiles;
+
+	if(largeTileWidth) {
+		if(largeTileHeight) {
+			RenderTilemapLargeTiles<layerIndex, bpp, processHighPriority, forMainScreen, true, true, basePaletteOffset>();
+		} else {
+			RenderTilemapLargeTiles<layerIndex, bpp, processHighPriority, forMainScreen, true, false, basePaletteOffset>();
+		} 
+	} else {
+		if(largeTileHeight) {
+			RenderTilemapLargeTiles<layerIndex, bpp, processHighPriority, forMainScreen, false, true, basePaletteOffset>();
+		} else {
+			RenderTilemapLargeTiles<layerIndex, bpp, processHighPriority, forMainScreen, false, false, basePaletteOffset>();
+		}
+	}
+}
+
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTileWidth, bool largeTileHeight, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
 void Ppu::RenderTilemap()
 {
 	if(forMainScreen) {
@@ -523,23 +528,49 @@ void Ppu::RenderTilemap()
 		}
 	}
 
-	bool mosaicScanline = applyMosaic && (_scanline - _mosaicStartScanline) % _mosaicSize != 0;
+	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
+	uint16_t realY = _screenInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
+	/* True when the entire scanline has to be replaced by a mosaic pattern */
+	bool mosaicScanline = applyMosaic && (realY - _mosaicStartScanline) % _mosaicSize != 0;
+
+	/* Keeps track of whether or not the pixel is allowed to participate in color math */
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
+	/* The current layer's options */
 	LayerConfig &config = _layerConfig[layerIndex];
-	uint16_t tilemapAddr = config.TilemapAddress >> 1;
-	uint16_t chrAddr = config.ChrAddress;
-	uint16_t row = (_scanline + config.VScroll) >> (largeTiles ? 4 : 3);
-	uint8_t baseYOffset = (_scanline + config.VScroll) & 0x07;
 
+	/* Layer's tilemap start address */
+	uint16_t tilemapAddr = config.TilemapAddress >> 1;
+
+	/* Layer's CHR data start address */
+	uint16_t chrAddr = config.ChrAddress;
+
+	/* The current row of tiles (e.g scanlines 16-23 is row 2) */
+	uint16_t row = (realY + config.VScroll) >> (largeTileHeight ? 4 : 3);
+
+	/* The vertical offset to read in the tile we're processing */
+	uint8_t baseYOffset = (realY + config.VScroll) & 0x07;
+
+	/* Tilemap offset based on the current row & tilemap size options */
 	uint16_t addrVerticalScrollingOffset = config.VerticalMirroring ? ((row & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0;
+
+	/* The start address for tiles on this row */
 	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
-	uint16_t outBaseAddress = (_scanline << 8);
-
 	for(int x = 0; x < 256; x++) {
-		uint16_t column = (x + config.HScroll) >> (largeTiles ? 4 : 3);
+		/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
+		uint16_t realX;
+		if(largeTileWidth && !largeTileHeight) {
+			realX = (x << 1) + (forMainScreen ? 1 : 0);
+		} else {
+			realX = x;
+		}
+
+		/* The current column index (in terms of 8x8 or 16x16 tiles) */
+		uint16_t column = (realX + config.HScroll) >> (largeTileWidth ? 4 : 3);
+
+		/* The tilemap address to read the tile data from */
 		uint32_t addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
 
 		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
@@ -560,7 +591,7 @@ void Ppu::RenderTilemap()
 
 		if(applyMosaic && (mosaicScanline || x % _mosaicSize != 0)) {
 			//If this is not the top-left pixels in the mosaic pattern, override it with the top-left pixel data
-			_currentBuffer[outBaseAddress | x] = _mosaicColor[x];
+			_mainScreenBuffer[x] = _mosaicColor[x];
 			_rowPixelFlags[x] = pixelFlags;
 			if(forMainScreen) {
 				_pixelsDrawn++;
@@ -575,11 +606,11 @@ void Ppu::RenderTilemap()
 		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
 
 		uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
-		if(largeTiles) {
+		if(largeTileWidth || largeTileHeight) {
 			tileIndex = (
 				tileIndex +
-				(((_scanline + config.VScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) +
-				(((x + config.HScroll) & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0))
+				(largeTileHeight ? (((realY + config.VScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
+				(largeTileWidth ? (((realX + config.HScroll) & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
 			) & 0x3FF;
 		}
 
@@ -588,8 +619,9 @@ void Ppu::RenderTilemap()
 		uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
 		uint16_t pixelStart = tileStart + yOffset * 2;
 		
-		uint8_t xOffset = (x + config.HScroll) & 0x07;
+		uint8_t xOffset = (realX + config.HScroll) & 0x07;
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
+		
 		uint16_t color = 0;
 		if(bpp == 2) {
 			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
@@ -628,8 +660,6 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic, bool processHighPriority>
 void Ppu::RenderTilemapMode7()
 {
-	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
-
 	if(forMainScreen) {
 		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
 			//This screen is disabled, or we've drawn all pixels already
@@ -651,6 +681,7 @@ void Ppu::RenderTilemapMode7()
 	int32_t vScroll = ((int32_t)_mode7.VScroll << 19) >> 19;
 	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
 	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
+	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
 
 	lutX[0] = (
 		((_mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
@@ -731,7 +762,7 @@ void Ppu::RenderTilemapMode7()
 template<bool applyMosaic>
 void Ppu::DrawMainPixel(uint8_t x, uint16_t paletteRamOffset, uint8_t flags)
 {
-	_currentBuffer[(_scanline << 8) | x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+	_mainScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 	_rowPixelFlags[x] = flags;
 
 	if(applyMosaic && x % _mosaicSize == 0) {
@@ -764,7 +795,7 @@ void Ppu::ApplyColorMath()
 	for(int x = 0; x < 256; x++) {
 		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
 			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
-			uint16_t &mainPixel = _currentBuffer[outBaseAddress | x];
+			uint16_t &mainPixel = _mainScreenBuffer[x];
 
 			bool isInsideWindow = activeWindowCount && ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
 			//Set color to black as needed based on clip mode
@@ -839,18 +870,32 @@ void Ppu::ApplyColorMath()
 	}
 }
 
+template<bool forMainScreen>
 void Ppu::ApplyBrightness()
 {
 	if(_screenBrightness != 15) {
-		uint16_t outBaseAddress = (_scanline << 8);
-
 		for(int x = 0; x < 256; x++) {
-			uint16_t &pixel = _currentBuffer[outBaseAddress | x];
+			uint16_t &pixel = (forMainScreen ? _mainScreenBuffer : _subScreenBuffer)[x];
 			uint16_t r = (pixel & 0x1F) * _screenBrightness / 15;
 			uint16_t g = ((pixel >> 5) & 0x1F) * _screenBrightness / 15;
 			uint16_t b = ((pixel >> 10) & 0x1F) * _screenBrightness / 15;
 			pixel = r | (g << 5) | (b << 10);
 		}
+	}
+}
+
+void Ppu::ApplyHiResMode()
+{
+	uint32_t screenY = _screenInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+
+	if(_hiresMode || _bgMode == 5 || _bgMode == 6) {
+		ApplyBrightness<false>();
+		for(int i = 0; i < 512; i += 2) {
+			_currentBuffer[(screenY << 9) + i] = _subScreenBuffer[i >> 1];
+			_currentBuffer[(screenY << 9) + i + 1] = _mainScreenBuffer[i >> 1];
+		}
+	} else {
+		memcpy(_currentBuffer + (screenY << 8), _mainScreenBuffer, sizeof(_mainScreenBuffer));
 	}
 }
 
@@ -890,8 +935,27 @@ void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 void Ppu::SendFrame()
 {
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
-	_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, _frameCount);
-	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+
+	uint16_t width;
+	uint16_t height;
+	if(_hiresMode || _bgMode == 5 || _bgMode == 6) {
+		width = 512;
+	} else {
+		width = 256;
+	}
+
+	if(_screenInterlace && (_bgMode == 5 || _bgMode == 6)) {
+		height = _overscanMode ? 478 : 448;
+	} else {
+		height = _overscanMode ? 239 : 224;
+	}
+
+	if(_screenInterlace) {
+		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount);
+	} else {
+		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
+		_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+	}
 }
 
 uint8_t* Ppu::GetVideoRam()
@@ -1080,6 +1144,9 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			break;
 			
 		case 0x2105:
+			if(_bgMode != (value & 0x07)) {
+				MessageManager::DisplayMessage("Debug", "Entering mode: " + std::to_string(value & 0x07));
+			}
 			_bgMode = value & 0x07;
 			_mode1Bg3Priority = (value & 0x08) != 0;
 
@@ -1323,10 +1390,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//SETINI - Screen Mode/Video Select
 			//_externalSync = (value & 0x80) != 0;  //NOT USED
 			_mode7.ExtBgEnabled = (value & 0x40) != 0;
-			//_hiresMode = (value & 0x08) != 0; //TODO
-			//_overscanMode = (value & 0x04) != 0; //TODO
+			_hiresMode = (value & 0x08) != 0;
+			_overscanMode = (value & 0x04) != 0;
 			//_objInterlace = (value & 0x02) != 0; //TODO
-			//_screenInterlace = (value & 0x01) != 0; //TODO
+			_screenInterlace = (value & 0x01) != 0;
 			break;
 
 		default:

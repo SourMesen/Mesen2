@@ -20,12 +20,6 @@ protected:
 	virtual void InternalDraw() = 0;
 	__forceinline void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
-		if(x < _overscan.Left || x >= _overscan.Left + _overscan.GetScreenWidth() ||
-			y < _overscan.Top || y >= _overscan.Top + _overscan.GetScreenHeight()) {
-			//In overscan (out of bounds), skip drawing
-			return;
-		}
-
 		uint32_t alpha = (color & 0xFF000000);
 		if(alpha > 0) {
 			if(_yScale == 1) {
@@ -82,8 +76,8 @@ public:
 			_argbBuffer = argbBuffer;
 			_overscan = overscan;
 			_lineWidth = lineWidth;
-			_yScale = lineWidth / overscan.GetScreenWidth();
-			_xScale = (float)lineWidth / overscan.GetScreenWidth();
+			_yScale = 1; //TODO
+			_xScale = 2; //TODO
 
 			InternalDraw();
 

@@ -43,15 +43,23 @@ void VideoDecoder::GetScreenSize(ScreenSize &size, bool ignoreScale)
 		}
 
 		size.Scale = scale;*/
-
-		if(ignoreScale) {
-			size.Width = 256;
-			size.Height = 224;
-		} else {
-			size.Width = 512;
-			size.Height = 448;
-		}
+		
 		size.Scale = 2;
+		if(ignoreScale) {
+			size.Width = _baseFrameInfo.Width;
+			size.Height = _baseFrameInfo.Height;
+		} else {
+			if(_baseFrameInfo.Width == 256) {
+				size.Width = (int32_t)(_baseFrameInfo.Width * size.Scale);
+				size.Height = (int32_t)(_baseFrameInfo.Height * size.Scale);
+			} else {
+				size.Width = (int32_t)_baseFrameInfo.Width;
+				size.Height = (int32_t)_baseFrameInfo.Height;
+				if(_baseFrameInfo.Height <= 240) {
+					size.Height *= 2;
+				}
+			}
+		}
 	}
 }
 
@@ -93,6 +101,7 @@ void VideoDecoder::DecodeFrame(bool synchronous)
 {
 	UpdateVideoFilter();
 
+	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
 	_videoFilter->SendFrame(_ppuOutputBuffer, _frameNumber);
 
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
@@ -150,15 +159,17 @@ uint32_t VideoDecoder::GetFrameCount()
 	return _frameCount;
 }
 
-void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
+void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber)
 {
+	_baseFrameInfo.Width = width;
+	_baseFrameInfo.Height = height;
 	_frameNumber = frameNumber;
 	_ppuOutputBuffer = ppuOutputBuffer;
 	DecodeFrame(true);
 	_frameCount++;
 }
 
-void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
+void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber)
 {
 	if(_frameChanged) {
 		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
@@ -168,6 +179,8 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
 		//At this point, we are sure that the decode thread is no longer busy
 	}
 	
+	_baseFrameInfo.Width = width;
+	_baseFrameInfo.Height = height;
 	_frameNumber = frameNumber;
 	_ppuOutputBuffer = ppuOutputBuffer;
 	_frameChanged = true;

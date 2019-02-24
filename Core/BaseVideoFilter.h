@@ -13,6 +13,7 @@ private:
 	SimpleLock _frameLock;
 	OverscanDimensions _overscan;
 	bool _isOddFrame;
+	FrameInfo _baseFrameInfo;
 
 	void UpdateBufferSize();
 
@@ -33,5 +34,7 @@ public:
 	void TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream = nullptr);
 
 	virtual OverscanDimensions GetOverscan();
-	virtual FrameInfo GetFrameInfo() = 0;
+	
+	void SetBaseFrameInfo(FrameInfo frameInfo);
+	virtual FrameInfo GetFrameInfo();
 };

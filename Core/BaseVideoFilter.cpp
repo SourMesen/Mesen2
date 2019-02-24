@@ -20,6 +20,16 @@ BaseVideoFilter::~BaseVideoFilter()
 	}
 }
 
+void BaseVideoFilter::SetBaseFrameInfo(FrameInfo frameInfo)
+{
+	_baseFrameInfo = frameInfo;
+}
+
+FrameInfo BaseVideoFilter::GetFrameInfo()
+{
+	return _baseFrameInfo;
+}
+
 void BaseVideoFilter::UpdateBufferSize()
 {
 	uint32_t newBufferSize = GetFrameInfo().Width*GetFrameInfo().Height;

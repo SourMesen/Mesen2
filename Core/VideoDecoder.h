@@ -28,6 +28,7 @@ private:
 	atomic<bool> _stopFlag;
 	uint32_t _frameCount = 0;
 
+	FrameInfo _baseFrameInfo = { 256, 224 };
 	ScreenSize _previousScreenSize = {};
 	double _previousScale = 0;
 	FrameInfo _lastFrameInfo;
@@ -54,8 +55,8 @@ public:
 	FrameInfo GetFrameInfo();
 	void GetScreenSize(ScreenSize &size, bool ignoreScale);
 
-	void UpdateFrameSync(uint16_t *ppuOutputBuffer, uint32_t frameNumber);
-	void UpdateFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber);
+	void UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber);
+	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber);
 
 	bool IsRunning();
 	void StartThread();

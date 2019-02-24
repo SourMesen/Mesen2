@@ -34,12 +34,6 @@ void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturation
 	}
 }
 
-FrameInfo DefaultVideoFilter::GetFrameInfo()
-{
-	OverscanDimensions overscan = GetOverscan();
-	return { overscan.GetScreenWidth(), overscan.GetScreenHeight(), OverscanDimensions::ScreenWidth, OverscanDimensions::ScreenHeight, 4 };
-}
-
 void DefaultVideoFilter::OnBeforeApplyFilter()
 {
 	/*PictureSettings currentSettings = _console->GetSettings()->GetPictureSettings();
@@ -99,7 +93,8 @@ void DefaultVideoFilter::DecodePpuBuffer(uint16_t *ppuOutputBuffer, uint32_t* ou
 void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	uint32_t *out = GetOutputBuffer();
-	for(int i = 0; i < 256 * 224; i++) {
+	uint32_t pixelCount = GetFrameInfo().Width * GetFrameInfo().Height;
+	for(int i = 0; i < pixelCount; i++) {
 		uint16_t rgb555 = ppuOutputBuffer[i];
 		uint8_t b = (rgb555 >> 10) * 256 / 32;
 		uint8_t g = ((rgb555 >> 5) & 0x1F) * 256 / 32;
