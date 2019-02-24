@@ -218,54 +218,6 @@ void Ppu::EvaluateNextLineSprites()
 	}
 }
 
-template<uint8_t priority, bool forMainScreen>
-void Ppu::RenderSprites()
-{
-	uint8_t activeWindowCount = 0;
-	if(forMainScreen) {
-		if(_pixelsDrawn == 256 || (_mainScreenLayers & 0x10) == 0) {
-			return;
-		}
-		if(_windowMaskMain[Ppu::SpriteLayerIndex]) {
-			activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
-		}
-	} else {
-		if(_subPixelsDrawn == 256 || (_subScreenLayers & 0x10) == 0) {
-			return;
-		}
-
-		if(_windowMaskSub[Ppu::SpriteLayerIndex]) {
-			activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
-		}
-	}
-
-	if(forMainScreen) {
-		for(int x = 0; x < 256; x++) {
-			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
-				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
-					//This pixel was masked
-					continue;
-				}
-
-				_mainScreenBuffer[x] = _spritePixels[x];
-				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
-			}
-		}
-	} else {
-		for(int x = 0; x < 256; x++) {
-			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
-				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
-					//This pixel was masked
-					continue;
-				}
-
-				_subScreenBuffer[x] = _spritePixels[x];
-				_subScreenFilled[x] = true;
-			}
-		}
-	}
-}
-
 template<bool forMainScreen>
 void Ppu::RenderMode0()
 {
@@ -464,6 +416,51 @@ void Ppu::RenderBgColor()
 	}
 }
 
+template<uint8_t priority, bool forMainScreen>
+void Ppu::RenderSprites()
+{
+	if(!IsRenderRequired<forMainScreen>(Ppu::SpriteLayerIndex)) {
+		return;
+	}
+
+	uint8_t activeWindowCount = 0;
+	if(forMainScreen) {
+		if(_windowMaskMain[Ppu::SpriteLayerIndex]) {
+			activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
+		}
+	} else {
+		if(_windowMaskSub[Ppu::SpriteLayerIndex]) {
+			activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
+		}
+	}
+
+	if(forMainScreen) {
+		for(int x = 0; x < 256; x++) {
+			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
+				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
+					//This pixel was masked
+					continue;
+				}
+
+				_mainScreenBuffer[x] = _spritePixels[x];
+				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
+			}
+		}
+	} else {
+		for(int x = 0; x < 256; x++) {
+			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
+				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
+					//This pixel was masked
+					continue;
+				}
+
+				_subScreenBuffer[x] = _spritePixels[x];
+				_subScreenFilled[x] = true;
+			}
+		}
+	}
+}
+
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic>
 void Ppu::RenderTilemap()
 {
@@ -527,16 +524,8 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemap()
 {
-	if(forMainScreen) {
-		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
-			//This screen is disabled, or we've drawn all pixels already
-			return;
-		}
-	} else {
-		if(_subPixelsDrawn == 256 || ((_subScreenLayers >> layerIndex) & 0x01) == 0) {
-			//This screen is disabled, or we've drawn all pixels already
-			return;
-		}
+	if(!IsRenderRequired<forMainScreen>(layerIndex)) {
+		return;
 	}
 
 	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
@@ -633,27 +622,7 @@ void Ppu::RenderTilemap()
 		uint8_t xOffset = (realX + config.HScroll) & 0x07;
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 		
-		uint16_t color = 0;
-		if(bpp == 2) {
-			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
-			color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
-		} else if(bpp == 4) {
-			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
-			color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
-			color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
-			color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
-		} else if(bpp == 8) {
-			color |= (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
-			color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
-			color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
-			color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
-			color |= (((_vram[pixelStart + 32] >> shift) & 0x01) << 4);
-			color |= (((_vram[pixelStart + 33] >> shift) & 0x01) << 5);
-			color |= (((_vram[pixelStart + 48] >> shift) & 0x01) << 6);
-			color |= (((_vram[pixelStart + 49] >> shift) & 0x01) << 7);
-		} else {
-			throw std::runtime_error("unsupported bpp");
-		}
+		uint16_t color = GetTilePixelColor<bpp>(pixelStart, shift);
 
 		if(color > 0) {
 			/* Ignore palette bits for 256-color layers */
@@ -681,6 +650,50 @@ void Ppu::RenderTilemap()
 	}
 }
 
+template<bool forMainScreen>
+bool Ppu::IsRenderRequired(uint8_t layerIndex)
+{
+	if(forMainScreen) {
+		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled, or we've drawn all pixels already
+			return false;
+		}
+	} else {
+		if(_subPixelsDrawn == 256 || ((_subScreenLayers >> layerIndex) & 0x01) == 0) {
+			//This screen is disabled, or we've drawn all pixels already
+			return false;
+		}
+	}
+	return true;
+}
+
+template<uint8_t bpp>
+uint16_t Ppu::GetTilePixelColor(const uint16_t pixelStart, const uint8_t shift)
+{
+	uint16_t color;
+	if(bpp == 2) {
+		color = (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
+		color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
+	} else if(bpp == 4) {
+		color = (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
+		color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
+		color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
+		color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
+	} else if(bpp == 8) {
+		color = (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
+		color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
+		color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
+		color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
+		color |= (((_vram[pixelStart + 32] >> shift) & 0x01) << 4);
+		color |= (((_vram[pixelStart + 33] >> shift) & 0x01) << 5);
+		color |= (((_vram[pixelStart + 48] >> shift) & 0x01) << 6);
+		color |= (((_vram[pixelStart + 49] >> shift) & 0x01) << 7);
+	} else {
+		throw std::runtime_error("unsupported bpp");
+	}
+	return color;
+}
+
 template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
 void Ppu::RenderTilemapMode7()
 {
@@ -706,16 +719,8 @@ void Ppu::RenderTilemapMode7()
 template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemapMode7()
 {
-	if(forMainScreen) {
-		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
-			//This screen is disabled, or we've drawn all pixels already
-			return;
-		}
-	} else {
-		if(_subPixelsDrawn == 256 || ((_subScreenLayers >> layerIndex) & 0x01) == 0) {
-			//This screen is disabled, or we've drawn all pixels already
-			return;
-		}
+	if(!IsRenderRequired<forMainScreen>(layerIndex)) {
+		return;
 	}
 
 	constexpr auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };

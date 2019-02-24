@@ -167,6 +167,12 @@ private:
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 	void RenderTilemap();
 
+	template<bool forMainScreen>
+	__forceinline bool IsRenderRequired(uint8_t layerIndex);
+
+	template<uint8_t bpp>
+	__forceinline uint16_t GetTilePixelColor(const uint16_t pixelStart, const uint8_t shift);
+
 	template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
 	__forceinline void RenderTilemapMode7();
 
