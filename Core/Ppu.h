@@ -139,48 +139,47 @@ private:
 	template<uint8_t priority, bool forMainScreen>
 	void RenderSprites();
 
-	template<bool forMainScreen>
-	void RenderMode0();
-
-	template<bool forMainScreen>
-	void RenderMode1();
-
-	template<bool forMainScreen>
-	void RenderMode2();
-
-	template<bool forMainScreen>
-	void RenderMode3();
-
-	template<bool forMainScreen>
-	void RenderMode4();
-
-	template<bool forMainScreen>
-	void RenderMode5();
-
-	template<bool forMainScreen>
-	void RenderMode7();
+	template<bool forMainScreen> void RenderMode0();
+	template<bool forMainScreen> void RenderMode1();
+	template<bool forMainScreen> void RenderMode2();
+	template<bool forMainScreen> void RenderMode3();
+	template<bool forMainScreen> void RenderMode4();
+	template<bool forMainScreen> void RenderMode5();
+	template<bool forMainScreen> void RenderMode7();
 
 	void RenderScanline();
 
 	template<bool forMainScreen>
 	void RenderBgColor();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTileWidth, bool largeTileHeight, uint16_t basePaletteOffset>
-	void RenderTilemapLargeTiles();
-
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset = 0>
+	__forceinline void RenderTilemap();
+
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight>
+	__forceinline void RenderTilemap();
+
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount>
+	__forceinline void RenderTilemap();
+
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic>
+	__forceinline void RenderTilemap();
+
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 	void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, bool largeTileWidth, bool largeTileHeight, uint16_t basePaletteOffset, uint8_t activeWindowCount, bool applyMosaic>
-	void RenderTilemap();
+	template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
+	__forceinline void RenderTilemapMode7();
 
-	template<uint8_t layerIndex, bool forMainScreen, bool applyMosaic, bool processHighPriority>
+	template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic>
+	__forceinline void RenderTilemapMode7();
+
+	template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic, bool directColorMode>
 	void RenderTilemapMode7();
 
 	template<bool applyMosaic>
-	__forceinline void DrawMainPixel(uint8_t x, uint16_t paletteRamOffset, uint8_t flags);
+	__forceinline void DrawMainPixel(uint8_t x, uint16_t color, uint8_t flags);
 
-	__forceinline void DrawSubPixel(uint8_t x, uint16_t paletteRamOffset);
+	__forceinline void DrawSubPixel(uint8_t x, uint16_t color);
 
 	void ApplyColorMath();
 	
