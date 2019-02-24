@@ -314,6 +314,18 @@ void Ppu::RenderMode5()
 }
 
 template<bool forMainScreen>
+void Ppu::RenderMode6()
+{
+	RenderSprites<3, forMainScreen>();
+	RenderTilemap<0, 4, true, forMainScreen>();
+	RenderSprites<2, forMainScreen>();
+	RenderSprites<1, forMainScreen>();
+	RenderTilemap<0, 4, false, forMainScreen>();
+	RenderSprites<0, forMainScreen>();
+	RenderBgColor<forMainScreen>();
+}
+
+template<bool forMainScreen>
 void Ppu::RenderMode7()
 {
 	RenderSprites<3, forMainScreen>();
@@ -375,8 +387,8 @@ void Ppu::RenderScanline()
 			break;
 
 		case 6:
-			RenderTilemap<0, 8, false, true>();
-			RenderBgColor<true>();
+			RenderMode6<true>();
+			RenderMode6<false>();
 			break;
 
 		case 7:

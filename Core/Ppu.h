@@ -145,6 +145,7 @@ private:
 	template<bool forMainScreen> void RenderMode3();
 	template<bool forMainScreen> void RenderMode4();
 	template<bool forMainScreen> void RenderMode5();
+	template<bool forMainScreen> void RenderMode6();
 	template<bool forMainScreen> void RenderMode7();
 
 	void RenderScanline();
