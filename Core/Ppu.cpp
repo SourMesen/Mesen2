@@ -160,8 +160,8 @@ void Ppu::EvaluateNextLineSprites()
 		uint8_t yOffset;
 		int rowOffset;
 		if(info.VerticalMirror) {
-			yOffset = (height - (_scanline + 1 - y)) & 0x07;
-			rowOffset = (height - (_scanline + 1 - y)) >> 3;
+			yOffset = (height - 1 - (_scanline + 1 - y)) & 0x07;
+			rowOffset = (height - 1 - (_scanline + 1 - y)) >> 3;
 		} else {
 			yOffset = (_scanline + 1 - y) & 0x07;
 			rowOffset = (_scanline + 1 - y) >> 3;
