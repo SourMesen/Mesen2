@@ -94,7 +94,7 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	uint32_t *out = GetOutputBuffer();
 	uint32_t pixelCount = GetFrameInfo().Width * GetFrameInfo().Height;
-	for(int i = 0; i < pixelCount; i++) {
+	for(uint32_t i = 0; i < pixelCount; i++) {
 		uint16_t rgb555 = ppuOutputBuffer[i];
 		uint8_t b = (rgb555 >> 10) * 256 / 32;
 		uint8_t g = ((rgb555 >> 5) & 0x1F) * 256 / 32;

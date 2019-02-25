@@ -85,6 +85,8 @@ void Console::Stop()
 		debugger->Run();
 	}
 
+	_debugger.reset();
+
 	_runLock.WaitForRelease();
 
 	_cpu.reset();
@@ -122,7 +124,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		_cart = cart;
 		_controlManager.reset(new ControlManager(shared_from_this()));
 		_memoryManager.reset(new MemoryManager());
-		_dmaController.reset(new DmaController(shared_from_this()));
+		_dmaController.reset(new DmaController(_memoryManager.get()));
 
 		_memoryManager->Initialize(shared_from_this());
 
