@@ -160,6 +160,7 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 *.nes
+*.sfc
 *.sav
 *.svs
 *.trt
@@ -182,11 +183,9 @@ packages/*
 !Libretro/hakchi/bin
 
 Dependencies/*
-GUI.NET/*
 Linux/*
 Libretro/*
 Docs/*
 Lua/*
 TestHelper/*
 UpdateHelper/*
-PGOHelper/*

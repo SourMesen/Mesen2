@@ -38,7 +38,7 @@
 	#pragma comment(lib, "Utilities.lib")
 	#pragma comment(lib, "Windows.lib")
 	#pragma comment(lib, "SevenZip.lib")
-	#pragma comment(lib, "Lua.lib")
+	//#pragma comment(lib, "Lua.lib")
 	#pragma comment(lib, "../Dependencies/DirectXTK." MESEN_LIBRARY_DEBUG_SUFFIX ".Static." MESEN_LIBRARY_SUFFIX)
 	#define DllExport __declspec(dllexport)
 #else

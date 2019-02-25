@@ -184,5 +184,26 @@ namespace InteropEmu {
 		}
 
 		DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
+
+		DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
+		{
+			FolderUtilities::SetHomeFolder("../PGOMesenHome");
+
+			for(size_t i = 0; i < testRoms.size(); i++) {
+				std::cout << "Running: " << testRoms[i] << std::endl;
+
+				_console.reset(new Console());
+				_console->Initialize();
+				_console->LoadRom((VirtualFile)testRoms[i], VirtualFile());
+
+				thread testThread([=] {
+					_console->Run();
+				});
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
+				_console->Stop();
+				testThread.join();
+				_console->Release();
+			}
+		}
 	}
 }

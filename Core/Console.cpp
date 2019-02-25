@@ -19,6 +19,7 @@
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
+#include "../Utilities/FolderUtilities.h"
 
 void Console::Initialize()
 {
@@ -110,7 +111,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		MessageManager::ClearLog();
 
 		vector<uint8_t> spcRomData;
-		VirtualFile spcBios("spc700.rom");
+		VirtualFile spcBios(FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "spc700.rom"));
 		if(spcBios.IsValid()) {
 			spcBios.ReadFile(spcRomData);
 		} else {
