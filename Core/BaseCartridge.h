@@ -47,6 +47,8 @@ private:
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
 	SnesCartInformation _cartInfo;
 
+	string _romPath;
+
 	uint8_t* _prgRom = nullptr;
 	uint8_t* _saveRam = nullptr;
 	
@@ -54,6 +56,9 @@ private:
 	uint32_t _saveRamSize = 0;
 
 	void MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage = 0, uint16_t endPage = 0x0F, uint16_t pageIncrement = 0, bool mirror = false);
+	
+	void LoadBattery();
+	void SaveBattery();
 
 public:
 	~BaseCartridge();

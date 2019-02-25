@@ -5,9 +5,12 @@
 #include "MemoryManager.h"
 #include "IMemoryHandler.h"
 #include "../Utilities/VirtualFile.h"
+#include "../Utilities/FolderUtilities.h"
 
 BaseCartridge::~BaseCartridge()
 {
+	SaveBattery();
+
 	delete[] _prgRom;
 	delete[] _saveRam;
 }
@@ -19,6 +22,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, V
 		romFile.ReadFile(romData);
 
 		shared_ptr<BaseCartridge> cart(new BaseCartridge());
+		cart->_romPath = romFile.GetFilePath();
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
 		memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
@@ -46,13 +50,41 @@ void BaseCartridge::Init()
 		//HiROM
 		headerOffset = 0xFFB0;
 	} else {
-		throw new std::runtime_error("invalid rom (?)");
+		headerOffset = 0x7FB0;
+		//throw std::runtime_error("invalid rom (?)");
 	}
 
 	_cartInfo = *(SnesCartInformation*)(&_prgRom[headerOffset]);
 
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
+
+	LoadBattery();
+}
+
+void BaseCartridge::LoadBattery()
+{
+	if(_saveRamSize > 0) {
+		string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
+		VirtualFile saveFile(saveFilePath);
+		if(saveFile.IsValid()) {
+			vector<uint8_t> saveData;
+			saveFile.ReadFile(saveData);
+
+			if(saveData.size() == _saveRamSize) {
+				memcpy(_saveRam, saveData.data(), _saveRamSize);
+			}
+		}
+	}
+}
+
+void BaseCartridge::SaveBattery()
+{
+	if(_saveRamSize > 0) {
+		string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
+		ofstream saveFile(saveFilePath, ios::binary);
+		saveFile.write((char*)_saveRam, _saveRamSize);
+	}
 }
 
 CartFlags::CartFlags BaseCartridge::GetCartFlags()
@@ -111,18 +143,24 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	}
 
 	if(GetCartFlags() & CartFlags::LoRom) {
-		MapBanks(mm, _prgRomHandlers, 0x00, 0x6F, 0x08, 0x0F, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
+		if(_saveRamSize > 0) {
+			MapBanks(mm, _prgRomHandlers, 0x00, 0x6F, 0x08, 0x0F, 0, true);
+			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
 
-		MapBanks(mm, _prgRomHandlers, 0x80, 0xEF, 0x08, 0x0F, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x0F, 0, true);
+			MapBanks(mm, _prgRomHandlers, 0x80, 0xEF, 0x08, 0x0F, 0, true);
+			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x0F, 0, true);
+		} else {
+			MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
+			MapBanks(mm, _prgRomHandlers, 0x80, 0xEF, 0x08, 0x0F, 0, true);
+		}
 	} else {
-		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true);
-		MapBanks(mm, _prgRomHandlers, 0xC0, 0xFF, 0x00, 0x0F, 0, true);
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true);
+		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true);
 		MapBanks(mm, _prgRomHandlers, 0x80, 0xBF, 0x08, 0x0F, 8, true);
+		MapBanks(mm, _prgRomHandlers, 0xC0, 0xFF, 0x00, 0x0F, 0, true);
 
 		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
+		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
 	}
 
 }

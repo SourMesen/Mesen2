@@ -90,7 +90,6 @@ public:
 private:
 	shared_ptr<Console> _console;
 
-	shared_ptr<BaseCartridge> _cart;
 	shared_ptr<CpuRegisterHandler> _cpuRegisterHandler;
 	InternalRegisters* _regs;
 	shared_ptr<Ppu> _ppu;
@@ -111,7 +110,6 @@ public:
 		_lastMasterClock = 0;
 		_masterClock = 0;
 		_console = console;
-		_cart = console->GetCartridge();
 		_regs = console->GetInternalRegisters().get();
 		_ppu = console->GetPpu();
 
@@ -152,7 +150,7 @@ public:
 			RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
 		}
 
-		_cart->RegisterHandlers(*this);
+		console->GetCartridge()->RegisterHandlers(*this);
 
 		GenerateMasterClockTable();
 	}
