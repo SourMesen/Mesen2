@@ -128,6 +128,7 @@ void Ppu::EvaluateNextLineSprites()
 	memset(_spritePalette, 0, sizeof(_spritePalette));
 	_spriteCount = 0;
 	uint16_t totalWidth = 0;
+	uint16_t screenY = _objInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
 	for(int i = 0; i < 512; i += 4) {
 		uint8_t y = _oamRam[i + 1];
@@ -138,7 +139,7 @@ void Ppu::EvaluateNextLineSprites()
 		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
 
-		if(y > _scanline + 1 || y + height <= _scanline + 1) {
+		if(y > screenY + 1 || y + height <= screenY + 1) {
 			//Not visible on this scanline
 			continue;
 		}
@@ -168,11 +169,11 @@ void Ppu::EvaluateNextLineSprites()
 		uint8_t yOffset;
 		int rowOffset;
 		if(info.VerticalMirror) {
-			yOffset = (height - 1 - (_scanline + 1 - y)) & 0x07;
-			rowOffset = (height - 1 - (_scanline + 1 - y)) >> 3;
+			yOffset = (height - 1 - (screenY + 1 - y)) & 0x07;
+			rowOffset = (height - 1 - (screenY + 1 - y)) >> 3;
 		} else {
-			yOffset = (_scanline + 1 - y) & 0x07;
-			rowOffset = (_scanline + 1 - y) >> 3;
+			yOffset = (screenY + 1 - y) & 0x07;
+			rowOffset = (screenY + 1 - y) >> 3;
 		}
 
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
@@ -1428,7 +1429,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_colorMathClipMode = (ColorWindowMode)((value >> 6) & 0x03);
 			_colorMathPreventMode = (ColorWindowMode)((value >> 4) & 0x03);
 			_colorMathAddSubscreen = (value & 0x02) != 0;
-			_directColorMode = (value & 0x01) != 0; //TODO
+			_directColorMode = (value & 0x01) != 0;
 			break;
 
 		case 0x2131:
@@ -1457,7 +1458,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_mode7.ExtBgEnabled = (value & 0x40) != 0;
 			_hiResMode = (value & 0x08) != 0;
 			_overscanMode = (value & 0x04) != 0;
-			//_objInterlace = (value & 0x02) != 0; //TODO
+			_objInterlace = (value & 0x02) != 0;
 			_screenInterlace = (value & 0x01) != 0;
 			break;
 

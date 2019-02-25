@@ -114,6 +114,7 @@ private:
 
 	bool _hiResMode = false;
 	bool _screenInterlace = false;
+	bool _objInterlace = false;
 	bool _overscanMode = false;
 	bool _directColorMode = false;
 
