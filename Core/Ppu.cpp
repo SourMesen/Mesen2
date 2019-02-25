@@ -849,7 +849,6 @@ void Ppu::ApplyColorMath()
 	}
 
 	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
-	uint16_t outBaseAddress = (_scanline << 8);
 
 	for(int x = 0; x < 256; x++) {
 		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
@@ -1396,8 +1395,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x212B:
 			//WOBJLOG - Window mask logic for OBJs and Color Window
-			_maskLogic[5] = (WindowMaskLogic)((value >> 0) & 0x03);
-			_maskLogic[6] = (WindowMaskLogic)((value >> 2) & 0x03);
+			_maskLogic[4] = (WindowMaskLogic)((value >> 0) & 0x03);
+			_maskLogic[5] = (WindowMaskLogic)((value >> 2) & 0x03);
 			break;
 
 		case 0x212C:
