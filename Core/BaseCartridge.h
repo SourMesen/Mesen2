@@ -28,6 +28,12 @@ struct SnesCartInformation
 	uint8_t Checksum[2];
 };
 
+struct RomInfo
+{
+	SnesCartInformation Header;
+	string RomPath;
+};
+
 namespace CartFlags
 {
 	enum CartFlags
@@ -68,6 +74,8 @@ public:
 	void Init();
 
 	CartFlags::CartFlags GetCartFlags();
+
+	RomInfo GetRomInfo();
 
 	void RegisterHandlers(MemoryManager &mm);
 

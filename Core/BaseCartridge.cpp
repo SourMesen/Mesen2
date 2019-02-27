@@ -54,12 +54,20 @@ void BaseCartridge::Init()
 		//throw std::runtime_error("invalid rom (?)");
 	}
 
-	_cartInfo = *(SnesCartInformation*)(&_prgRom[headerOffset]);
+	memcpy(&_cartInfo, _prgRom + headerOffset, sizeof(SnesCartInformation));
 
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
 
 	LoadBattery();
+}
+
+RomInfo BaseCartridge::GetRomInfo()
+{
+	RomInfo info;
+	info.Header = _cartInfo;
+	info.RomPath = _romPath;
+	return info;
 }
 
 void BaseCartridge::LoadBattery()
@@ -135,11 +143,11 @@ void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler
 void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 {
 	for(uint32_t i = 0; i < _prgRomSize; i += 0x1000) {
-		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom + i)));
+		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, SnesMemoryType::PrgRom)));
 	}
 
 	for(uint32_t i = 0; i < _saveRamSize; i += 0x1000) {
-		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam + i)));
+		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, SnesMemoryType::SaveRam)));
 	}
 
 	if(GetCartFlags() & CartFlags::LoRom) {

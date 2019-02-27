@@ -44,6 +44,8 @@ private:
 	atomic<bool> _stopFlag;
 
 public:
+	~Console();
+
 	void Initialize();
 	void Release();
 

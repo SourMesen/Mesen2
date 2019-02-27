@@ -8,6 +8,9 @@
 #include "ControlManager.h"
 #include "VideoDecoder.h"
 #include "NotificationManager.h"
+#include "DmaController.h"
+#include "MessageManager.h"
+#include "../Utilities/HexUtilities.h"
 
 Ppu::Ppu(shared_ptr<Console> console)
 {

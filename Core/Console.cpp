@@ -7,6 +7,8 @@
 #include "ControlManager.h"
 #include "MemoryManager.h"
 #include "DmaController.h"
+#include "BaseCartridge.h"
+#include "RamHandler.h"
 #include "Debugger.h"
 #include "NotificationManager.h"
 #include "SoundMixer.h"
@@ -20,6 +22,10 @@
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
 #include "../Utilities/FolderUtilities.h"
+
+Console::~Console()
+{
+}
 
 void Console::Initialize()
 {
@@ -86,9 +92,11 @@ void Console::Stop()
 		debugger->Run();
 	}
 
-	_debugger.reset();
-
 	_runLock.WaitForRelease();
+
+	//Make sure we release both pointers to destroy the debugger before everything else
+	_debugger.reset();
+	debugger.reset();
 
 	_cpu.reset();
 	_ppu.reset();
