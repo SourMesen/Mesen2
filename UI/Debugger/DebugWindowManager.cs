@@ -31,6 +31,7 @@ namespace Mesen.GUI.Debugger
 			} else {
 				BaseForm frm = null;
 				switch(window) {
+					case DebugWindow.Debugger: frm = new frmDebugger(); frm.Icon = Properties.Resources.Debugger; break;
 					case DebugWindow.TraceLogger: frm = new frmTraceLogger(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.MemoryTools: frm = new frmMemoryTools(); frm.Icon = Properties.Resources.CheatCode; break;
 				}
@@ -85,6 +86,7 @@ namespace Mesen.GUI.Debugger
 		{
 			//Only one of each of these windows can be opened at once, check if one is already opened
 			switch(window) {
+				case DebugWindow.Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger));
 				case DebugWindow.TraceLogger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmTraceLogger));
 			}
 
@@ -111,6 +113,7 @@ namespace Mesen.GUI.Debugger
 
 	public enum DebugWindow
 	{
+		Debugger,
 		MemoryTools,
 		TraceLogger
 	}

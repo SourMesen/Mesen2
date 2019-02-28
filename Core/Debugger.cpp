@@ -3,12 +3,17 @@
 #include "Console.h"
 #include "Cpu.h"
 #include "Ppu.h"
+#include "BaseCartridge.h"
+#include "MemoryManager.h"
 #include "NotificationManager.h"
 #include "CpuTypes.h"
 #include "DisassemblyInfo.h"
 #include "TraceLogger.h"
 #include "MemoryDumper.h"
+#include "CodeDataLogger.h"
+#include "Disassembler.h"
 #include "../Utilities/HexUtilities.h"
+#include "../Utilities/FolderUtilities.h"
 
 Debugger::Debugger(shared_ptr<Console> console)
 {
@@ -17,51 +22,90 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_ppu = console->GetPpu();
 	_memoryManager = console->GetMemoryManager();
 
+	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize()));
+	_disassembler.reset(new Disassembler(console, _codeDataLogger));
 	_traceLogger.reset(new TraceLogger(this, _memoryManager));
 	_memoryDumper.reset(new MemoryDumper(_ppu, _memoryManager, console->GetCartridge()));
-
 	_cpuStepCount = 0;
+
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
+	_codeDataLogger->LoadCdlFile(cdlFile);
+
+	//TODO: Thread safety
+	uint32_t prgRomSize = console->GetCartridge()->DebugGetPrgRomSize();
+	AddressInfo addrInfo;
+	addrInfo.Type = SnesMemoryType::PrgRom;
+	for(uint32_t i = 0; i < prgRomSize; i++) {
+		if(_codeDataLogger->IsCode(i)) {
+			addrInfo.Address = (int32_t)i;
+			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i)) - 1;
+		}
+	}
 }
 
 Debugger::~Debugger()
 {
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
+	_codeDataLogger->SaveCdlFile(cdlFile);
 }
 
 void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
+	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
+	CpuState state = _cpu->GetState();
+
 	if(type == MemoryOperationType::ExecOpCode) {
-		CpuState state = _cpu->GetState();
-		DisassemblyInfo disassemblyInfo(state, _memoryManager.get());
+		if(addressInfo.Address >= 0) {
+			if(addressInfo.Type == SnesMemoryType::PrgRom) {
+				uint8_t flags = CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
+				if(_prevOpCode == 0x20 || _prevOpCode == 0x5C || _prevOpCode == 0xDC || _prevOpCode == 0xFC) {
+					flags |= CdlFlags::SubEntryPoint;
+				}
+				_codeDataLogger->SetFlags(addressInfo.Address, flags);
+			}
+			_disassembler->BuildCache(addressInfo, state.PS);
+		}
+
 		DebugState debugState;
 		GetState(&debugState);
 		_traceLogger->LogEffectiveAddress(_cpu->GetLastOperand());
-		_traceLogger->Log(debugState, disassemblyInfo);
 
-		bool sendNotif = false;
-		if(value == 0x00) {
-			//break on BRK
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+		_traceLogger->Log(debugState, disInfo);
+
+		_prevOpCode = value;
+
+		if(value == 0x00 || value == 0xCB) {
+			//break on BRK/WAI
 			_cpuStepCount = 1;
-			sendNotif = true;
 		}
 
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;
 			if(_cpuStepCount == 0) {
-				if(sendNotif) {
-					_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
-				}
+				_disassembler->Disassemble();
+				_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
 				while(_cpuStepCount == 0) {
 					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 				}
 			}
+		}
+	} else if(type == MemoryOperationType::ExecOperand) {
+		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
+		}
+	} else {
+		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
 	}
 }
 
 void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	if(type == MemoryOperationType::ExecOpCode) {
-		//_traceLogger->Trace
+	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
+	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
+		_disassembler->InvalidateCache(addressInfo);
 	}
 }
 
@@ -95,4 +139,9 @@ shared_ptr<TraceLogger> Debugger::GetTraceLogger()
 shared_ptr<MemoryDumper> Debugger::GetMemoryDumper()
 {
 	return _memoryDumper;
+}
+
+shared_ptr<Disassembler> Debugger::GetDisassembler()
+{
+	return _disassembler;
 }

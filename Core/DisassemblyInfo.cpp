@@ -10,21 +10,23 @@ DisassemblyInfo::DisassemblyInfo()
 {
 }
 
-DisassemblyInfo::DisassemblyInfo(CpuState &state, MemoryManager *memoryManager)
+DisassemblyInfo::DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags)
 {
-	_flags = state.PS;
+	Initialize(opPointer, cpuFlags);
+}
+
+void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags)
+{
+	_flags = cpuFlags;
 	_effectiveAddress = -1;
 
-	uint32_t addr = (state.K << 16) | state.PC;
-	_byteCode[0] = memoryManager->Peek(addr);
+	_byteCode[0] = opPointer[0];
 	_addrMode = DisassemblyInfo::OpMode[_byteCode[0]];
-	_opSize = GetOperandSize() + 1;
+	_opSize = GetOperandSize(_addrMode, _flags) + 1;
 
 	for(int i = 1; i < _opSize; i++) {
-		_byteCode[i] = memoryManager->Peek((addr+i) & 0xFFFFFF);
+		_byteCode[i] = opPointer[i];
 	}
-
-	_emulationMode = state.EmulationMode;
 }
 
 void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
@@ -41,7 +43,6 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		operand.Write(HexUtilities::ToHex(opAddr));
 	}
 
-
 	switch(_addrMode) {
 		case AddrMode::Abs: str.Write(operand); break;
 		case AddrMode::AbsJmp: str.Write(operand); break;
@@ -54,7 +55,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		case AddrMode::AbsLng: str.Write(operand); break;
 		case AddrMode::AbsLngJmp: str.Write(operand); break;
 		case AddrMode::Acc: break;
-		case AddrMode::BlkMov: str.Write(operand[1], operand[2], " -> ", operand[3], operand[4]); break;
+		case AddrMode::BlkMov: str.Write(operand[1], operand[2], " -> "); str.Write(operand[3], operand[4]); break;
 		case AddrMode::DirIdxIndX: str.Write('(', operand, ",X)"); break;
 		case AddrMode::DirIdxX: str.Write(operand, ",X"); break;
 		case AddrMode::DirIdxY: str.Write(operand, ",Y"); break;
@@ -105,7 +106,12 @@ uint32_t DisassemblyInfo::GetOperandAddress(uint32_t memoryAddr)
 
 uint8_t DisassemblyInfo::GetOperandSize()
 {
-	switch(_addrMode) {
+	return _opSize - 1;
+}
+
+uint8_t DisassemblyInfo::GetOperandSize(AddrMode addrMode, uint8_t flags)
+{
+	switch(addrMode) {
 		case AddrMode::Acc:
 		case AddrMode::Imp:
 		case AddrMode::Stk:
@@ -142,11 +148,21 @@ uint8_t DisassemblyInfo::GetOperandSize()
 		case AddrMode::AbsLng:
 			return 3;
 
-		case AddrMode::ImmX: return (_flags & ProcFlags::IndexMode8) ? 1 : 2;
-		case AddrMode::ImmM: return (_flags & ProcFlags::MemoryMode8) ? 1 : 2;
+		case AddrMode::ImmX: return (flags & ProcFlags::IndexMode8) ? 1 : 2;
+		case AddrMode::ImmM: return (flags & ProcFlags::MemoryMode8) ? 1 : 2;
 	}
 
 	throw std::runtime_error("Invalid mode");
+}
+
+uint8_t DisassemblyInfo::GetOperandSize(uint8_t opCode, uint8_t flags)
+{
+	return GetOperandSize(DisassemblyInfo::OpMode[opCode], flags);
+}
+
+void DisassemblyInfo::GetByteCode(uint8_t copyBuffer[4])
+{
+	memcpy(copyBuffer, _byteCode, _opSize);
 }
 
 void DisassemblyInfo::GetByteCode(string &out)

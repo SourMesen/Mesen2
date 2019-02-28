@@ -173,6 +173,18 @@
     <ClInclude Include="FrameLimiter.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="Disassembler.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeDataLogger.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="RegisterHandlerB.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="RegisterHandlerA.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -265,6 +277,15 @@
     </ClCompile>
     <ClCompile Include="ControlManager.cpp">
       <Filter>SNES\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Disassembler.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeDataLogger.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryManager.cpp">
+      <Filter>SNES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

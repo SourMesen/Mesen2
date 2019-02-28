@@ -279,6 +279,7 @@
     <Compile Include="Controls\MyListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\CodeLineData.cs" />
     <Compile Include="Debugger\Controls\ComboBoxWithSeparator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -287,6 +288,12 @@
     </Compile>
     <Compile Include="Debugger\Controls\ctrlDbgShortcuts.designer.cs">
       <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlDisassemblyView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlDisassemblyView.Designer.cs">
+      <DependentUpon>ctrlDisassemblyView.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlHexViewer.cs">
       <SubType>UserControl</SubType>
@@ -322,6 +329,12 @@
       <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\FontDialogHelper.cs" />
+    <Compile Include="Debugger\frmDebugger.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmDebugger.Designer.cs">
+      <DependentUpon>frmDebugger.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\frmFadeSpeed.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -409,6 +422,7 @@
     <Compile Include="ResourceExtractor.cs" />
     <Compile Include="RuntimeChecker.cs" />
     <Compile Include="SingleInstance.cs" />
+    <Compile Include="Utilities\HexConverter.cs" />
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
     <None Include="app.manifest" />
@@ -436,6 +450,9 @@
     <EmbeddedResource Include="Debugger\Controls\ctrlDbgShortcuts.resx">
       <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlDisassemblyView.resx">
+      <DependentUpon>ctrlDisassemblyView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlHexViewer.resx">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>
     </EmbeddedResource>
@@ -447,6 +464,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlScrollableTextbox.resx">
       <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmDebugger.resx">
+      <DependentUpon>frmDebugger.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmFadeSpeed.resx">
       <DependentUpon>frmFadeSpeed.cs</DependentUpon>

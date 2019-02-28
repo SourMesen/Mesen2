@@ -3,6 +3,7 @@
 #include "../Core/Debugger.h"
 #include "../Core/TraceLogger.h"
 #include "../Core/MemoryDumper.h"
+#include "../Core/Disassembler.h"
 #include "../Core/DebugTypes.h"
 
 extern shared_ptr<Console> _console;
@@ -34,7 +35,11 @@ extern "C"
 	DllExport bool __stdcall IsExecutionStopped() { return GetDebugger()->IsExecutionStopped(); }
 	DllExport void __stdcall ResumeExecution() { GetDebugger()->Run(); }
 	DllExport void __stdcall Step(uint32_t count) { GetDebugger()->Step(count); }
-	//DllExport const char* __stdcall DebugGetCode(uint32_t &length) { return GetDebugger()->GetCode(length); }
+
+	DllExport void __stdcall GetDisassemblyLineData(uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(lineIndex, data); }
+	DllExport uint32_t __stdcall GetDisassemblyLineCount() { return GetDebugger()->GetDisassembler()->GetLineCount(); }
+	DllExport uint32_t __stdcall GetDisassemblyLineIndex(uint32_t cpuAddress) { return GetDebugger()->GetDisassembler()->GetLineIndex(cpuAddress); }
+	DllExport int32_t __stdcall SearchDisassembly(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchCode(searchString, startPosition, endPosition, searchBackwards); }
 
 	DllExport void __stdcall SetTraceOptions(TraceLoggerOptions options) { GetDebugger()->GetTraceLogger()->SetOptions(options); }
 	DllExport void __stdcall StartTraceLogger(char* filename) { GetDebugger()->GetTraceLogger()->StartLogging(filename); }

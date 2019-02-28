@@ -42,7 +42,7 @@ namespace Mesen.GUI
 					}
 				} catch { }
 			} else {
-				this._identifier = new Guid("{A46606B7-2D1C-4CC5-A52F-43BCAF094AED}");
+				this._identifier = new Guid("{A46606B7-2D1C-4CC5-A52F-43BCAF094AEF}");
 				this._mutex = new Mutex(true, _identifier.ToString(), out _firstInstance);
 			}
 		}

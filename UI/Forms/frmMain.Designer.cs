@@ -37,8 +37,8 @@
 			this.mnuRun100Instructions = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -73,7 +73,7 @@
 			this.mnuOpen.Image = global::Mesen.GUI.Properties.Resources.Folder;
 			this.mnuOpen.Name = "mnuOpen";
 			this.mnuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.mnuOpen.Size = new System.Drawing.Size(152, 22);
+			this.mnuOpen.Size = new System.Drawing.Size(146, 22);
 			this.mnuOpen.Text = "Open";
 			this.mnuOpen.Click += new System.EventHandler(this.mnuOpen_Click);
 			// 
@@ -122,19 +122,11 @@
 			// 
 			// mnuDebugger
 			// 
-			this.mnuDebugger.Enabled = false;
 			this.mnuDebugger.Image = global::Mesen.GUI.Properties.Resources.Debugger;
 			this.mnuDebugger.Name = "mnuDebugger";
 			this.mnuDebugger.Size = new System.Drawing.Size(163, 22);
 			this.mnuDebugger.Text = "Debugger";
-			// 
-			// mnuTraceLogger
-			// 
-			this.mnuTraceLogger.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
-			this.mnuTraceLogger.Name = "mnuTraceLogger";
-			this.mnuTraceLogger.Size = new System.Drawing.Size(163, 22);
-			this.mnuTraceLogger.Text = "Trace Logger";
-			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
+			this.mnuDebugger.Click += new System.EventHandler(this.mnuDebugger_Click);
 			// 
 			// mnuMemoryTools
 			// 
@@ -143,6 +135,14 @@
 			this.mnuMemoryTools.Size = new System.Drawing.Size(163, 22);
 			this.mnuMemoryTools.Text = "Memory Tools";
 			this.mnuMemoryTools.Click += new System.EventHandler(this.mnuMemoryTools_Click);
+			// 
+			// mnuTraceLogger
+			// 
+			this.mnuTraceLogger.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
+			this.mnuTraceLogger.Name = "mnuTraceLogger";
+			this.mnuTraceLogger.Size = new System.Drawing.Size(163, 22);
+			this.mnuTraceLogger.Text = "Trace Logger";
+			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
 			// frmMain
 			// 

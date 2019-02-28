@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
 using Mesen.GUI.Controls;
+using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Debugger
@@ -316,17 +317,13 @@ namespace Mesen.GUI.Debugger
 							}
 						}
 						lineContent.Add(content.TrimStart());
-						indent.Add(10);
 					}
 					this.BeginInvoke((Action)(() => {
 						txtTraceLog.ShowContentNotes = showByteCode;
 						txtTraceLog.ShowSingleContentLineNotes = showByteCode;
 
-						txtTraceLog.LineIndentations = indent.ToArray();
-						txtTraceLog.LineNumbers = programCounter.ToArray();
-						txtTraceLog.TextLineNotes = byteCode.ToArray();
-						txtTraceLog.TextLines = lineContent.ToArray();
-
+						txtTraceLog.DataProvider = new TraceLoggerCodeDataProvider(lineContent, programCounter, byteCode);
+						
 						if(scrollToBottom) {
 							txtTraceLog.ScrollToLineIndex(txtTraceLog.LineCount - 1);
 						}
@@ -475,6 +472,52 @@ namespace Mesen.GUI.Debugger
 		private void mnuSelectAll_Click(object sender, EventArgs e)
 		{
 			txtTraceLog.SelectAll();
+		}
+	}
+
+	public class TraceLoggerCodeDataProvider : ICodeDataProvider
+	{
+		private List<string> _textLines;
+		private List<Int32> _addresses;
+		private List<string> _byteCode;
+
+		public TraceLoggerCodeDataProvider(List<string> lineContent, List<int> programCounter, List<string> byteCode)
+		{
+			_addresses = programCounter;
+			_byteCode = byteCode;
+			_textLines = lineContent;
+		}
+
+		public CodeLineData GetCodeLineData(int lineIndex)
+		{
+			return new CodeLineData() {
+				Address = _addresses[lineIndex],
+				Text = _textLines[lineIndex],
+				ByteCode = _byteCode[lineIndex],
+				EffectiveAddress = -1
+			};
+		}
+
+		public bool UseOptimizedSearch { get { return false; } }
+
+		public int GetLineAddress(int lineIndex)
+		{
+			return _addresses[lineIndex];
+		}
+
+		public int GetLineCount()
+		{
+			return _textLines.Count;
+		}
+
+		public int GetLineIndex(uint address)
+		{
+			throw new NotImplementedException();
+		}
+
+		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

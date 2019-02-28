@@ -8,11 +8,12 @@ class Cpu;
 class Ppu;
 class BaseCartridge;
 class MemoryManager;
+class CodeDataLogger;
 
 enum class MemoryOperationType;
 class TraceLogger;
 class MemoryDumper;
-//class Disassembler;
+class Disassembler;
 
 struct DebugState
 {
@@ -32,9 +33,11 @@ private:
 
 	shared_ptr<TraceLogger> _traceLogger;
 	shared_ptr<MemoryDumper> _memoryDumper;
-	//unique_ptr<Disassembler> _disassembler;
+	shared_ptr<CodeDataLogger> _codeDataLogger;
+	shared_ptr<Disassembler> _disassembler;
 
 	atomic<int32_t> _cpuStepCount;
+	uint8_t _prevOpCode = 0;
 
 public:
 	Debugger(shared_ptr<Console> console);
@@ -51,4 +54,5 @@ public:
 
 	shared_ptr<TraceLogger> GetTraceLogger();
 	shared_ptr<MemoryDumper> GetMemoryDumper();
+	shared_ptr<Disassembler> GetDisassembler();
 };

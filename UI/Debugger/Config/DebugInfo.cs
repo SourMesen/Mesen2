@@ -30,7 +30,15 @@ namespace Mesen.GUI.Config
 		public XmlColor CodeCommentColor = Color.Green;
 		public XmlColor CodeEffectiveAddressColor = Color.SteelBlue;
 
-		
+		public XmlColor CodeVerifiedDataColor = Color.FromArgb(255, 252, 236);
+		public XmlColor CodeUnidentifiedDataColor = Color.FromArgb(255, 242, 242);
+		public XmlColor CodeUnexecutedCodeColor = Color.FromArgb(225, 244, 228);
+
+		public XmlColor CodeExecBreakpointColor = Color.FromArgb(140, 40, 40);
+		public XmlColor CodeWriteBreakpointColor = Color.FromArgb(40, 120, 80);
+		public XmlColor CodeReadBreakpointColor = Color.FromArgb(40, 40, 200);
+		public XmlColor CodeActiveStatementColor = Color.Yellow;
+
 		public DebugInfo()
 		{		
 		}

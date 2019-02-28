@@ -19,16 +19,22 @@ private:
 	uint8_t _opSize;
 	AddrMode _addrMode;
 	uint8_t _flags;
-	bool _emulationMode;
 	int32_t _effectiveAddress;
 
 public:
 	DisassemblyInfo();
-	DisassemblyInfo(CpuState &state, MemoryManager *memoryManager);
+	DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags);
+
+	void Initialize(uint8_t * opPointer, uint8_t cpuFlags);
 
 	void GetDisassembly(string &out, uint32_t memoryAddr);
 	uint32_t GetOperandAddress(uint32_t memoryAddr);
+	
 	uint8_t GetOperandSize();
+	static uint8_t GetOperandSize(AddrMode addrMode, uint8_t flags);
+	static uint8_t GetOperandSize(uint8_t opCode, uint8_t flags);
+
+	void GetByteCode(uint8_t copyBuffer[4]);
 	void GetByteCode(string &out);
 	
 	void SetEffectiveAddress(int32_t effectiveAddress);

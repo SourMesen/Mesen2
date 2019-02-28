@@ -61,7 +61,6 @@ namespace Mesen.GUI.Debugger.Controls
 				this.panelSearch.Location = new System.Drawing.Point(this.Width - this.panelSearch.Width - 20, -1);
 
 				this.ctrlTextbox.ShowLineNumbers = true;
-				this.ctrlTextbox.ShowLineInHex = true;
 
 				this.hScrollBar.ValueChanged += hScrollBar_ValueChanged;
 				this.vScrollBar.ValueChanged += vScrollBar_ValueChanged;
@@ -164,35 +163,21 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public ctrlTextbox.ILineStyleProvider StyleProvider { set { this.ctrlTextbox.StyleProvider = value; } }
 
-		public int GetLineIndex(int lineNumber)
+		public ICodeDataProvider DataProvider
 		{
-			return this.ctrlTextbox.GetLineIndex(lineNumber);
+			set
+			{
+				this.ctrlTextbox.DataProvider = value;
+				UpdateHorizontalScrollbar();
+				UpdateVerticalScrollbar();
+			}
 		}
 
 		public int GetLineIndexAtPosition(int yPos)
 		{
 			return this.ctrlTextbox.GetLineIndexAtPosition(yPos);
 		}
-
-		public string GetLineNoteAtLineIndex(int lineIndex)
-		{
-			if(lineIndex >= 0 && lineIndex < this.ctrlTextbox.LineNumberNotes.Length) {
-				return this.ctrlTextbox.LineNumberNotes[lineIndex];
-			} else {
-				return "";
-			}
-		}
-
-		public int GetLineNumber(int lineIndex)
-		{
-			return this.ctrlTextbox.GetLineNumber(lineIndex);
-		}
-
-		public int GetLineNumberAtPosition(int yPos)
-		{
-			return this.GetLineNumber(this.GetLineIndexAtPosition(yPos));
-		}
-
+		
 		public int GetNumberVisibleLines()
 		{
 			return this.ctrlTextbox.GetNumberVisibleLines();
@@ -203,9 +188,9 @@ namespace Mesen.GUI.Debugger.Controls
 			this.ctrlTextbox.ScrollToLineIndex(lineIndex, historyType, scrollToTop, forceScroll);
 		}
 
-		public void ScrollToLineNumber(int lineNumber, eHistoryType historyType = eHistoryType.Always, bool scrollToTop = false, bool forceScroll = false)
+		public void ScrollToAddress(int lineNumber, eHistoryType historyType = eHistoryType.Always, bool scrollToTop = false, bool forceScroll = false)
 		{
-			this.ctrlTextbox.ScrollToLineNumber(lineNumber, historyType, scrollToTop, forceScroll);
+			this.ctrlTextbox.ScrollToAddress(lineNumber, historyType, scrollToTop, forceScroll);
 		}
 
 		public void CopySelection(bool copyLineNumbers, bool copyContentNotes, bool copyComments)
@@ -363,52 +348,6 @@ namespace Mesen.GUI.Debugger.Controls
 			this.ctrlTextbox.HorizontalScrollPosition = this.hScrollBar.Value;
 		}
 
-		public string[] Addressing { set { this.ctrlTextbox.Addressing = value; } }
-		public string[] Comments { set { this.ctrlTextbox.Comments = value; } }
-		public int[] LineIndentations{ set { this.ctrlTextbox.LineIndentations = value; } }
-
-		public string[] TextLines
-		{
-			set
-			{
-				this.ctrlTextbox.TextLines = value;
-				UpdateVerticalScrollbar();
-				UpdateHorizontalScrollbar();
-			}
-		}
-
-		public string[] TextLineNotes
-		{
-			set
-			{
-				this.ctrlTextbox.TextLineNotes = value;
-			}
-		}
-
-		public string[] CompareLines
-		{
-			set
-			{
-				this.ctrlTextbox.CompareLines = value;
-			}
-		}
-		
-		public int[] LineNumbers
-		{
-			set
-			{
-				this.ctrlTextbox.LineNumbers = value;
-			}
-		}
-
-		public string[] LineNumberNotes
-		{
-			set
-			{
-				this.ctrlTextbox.LineNumberNotes = value;
-			}
-		}
-
 		public bool ShowSingleContentLineNotes
 		{
 			get { return this.ctrlTextbox.ShowSingleContentLineNotes; }
@@ -417,16 +356,16 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public bool ShowContentNotes
 		{
-			get { return this.ctrlTextbox.ShowContentNotes; }
-			set { this.ctrlTextbox.ShowContentNotes = value; }
+			get { return this.ctrlTextbox.ShowByteCode; }
+			set { this.ctrlTextbox.ShowByteCode = value; }
 		}
 
 		public bool ShowCompactPrgAddresses { get { return this.ctrlTextbox.ShowCompactPrgAddresses; } set { this.ctrlTextbox.ShowCompactPrgAddresses = value; } }
 
 		public bool ShowLineNumberNotes
 		{
-			get { return this.ctrlTextbox.ShowLineNumberNotes; }
-			set { this.ctrlTextbox.ShowLineNumberNotes = value; }
+			get { return this.ctrlTextbox.ShowAbsoluteAddreses; }
+			set { this.ctrlTextbox.ShowAbsoluteAddreses = value; }
 		}
 
 		public bool ShowSingleLineLineNumberNotes
@@ -456,14 +395,6 @@ namespace Mesen.GUI.Debugger.Controls
 		public int LineCount { get { return this.ctrlTextbox.LineCount; } }
 		public int SelectionStart { get { return this.ctrlTextbox.SelectionStart; } }
 		public int SelectionLength { get { return this.ctrlTextbox.SelectionLength; } }
-
-		public string Header
-		{
-			set
-			{
-				this.ctrlTextbox.Header = value;
-			}
-		}
 
 		public int MarginWidth { set { this.ctrlTextbox.MarginWidth = value; } }
 
@@ -534,11 +465,6 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 		}
 		
-		public string GetLineContent(int lineIndex)
-		{
-			return this.ctrlTextbox.GetFullWidthString(lineIndex);
-		}
-
 		public void NavigateForward()
 		{
 			this.ctrlTextbox.NavigateForward();
@@ -547,30 +473,6 @@ namespace Mesen.GUI.Debugger.Controls
 		public void NavigateBackward()
 		{
 			this.ctrlTextbox.NavigateBackward();
-		}
-
-		public bool GetNoteRangeAtLocation(int yPos, out int rangeStart, out int rangeEnd)
-		{
-			rangeStart = -1;
-			rangeEnd = -1;
-			int lineIndex = GetLineIndexAtPosition(yPos);
-
-			while(lineIndex < LineCount - 2 && string.IsNullOrWhiteSpace(GetLineNoteAtLineIndex(lineIndex))) {
-				//Find the address of the next line with an address
-				lineIndex++;
-			}
-
-			if(Int32.TryParse(GetLineNoteAtLineIndex(lineIndex), NumberStyles.AllowHexSpecifier, null, out rangeStart)) {
-				while(lineIndex < LineCount - 2 && string.IsNullOrWhiteSpace(GetLineNoteAtLineIndex(lineIndex + 1))) {
-					//Find the next line with an address
-					lineIndex++;
-				}
-				if(Int32.TryParse(GetLineNoteAtLineIndex(lineIndex + 1), NumberStyles.AllowHexSpecifier, null, out rangeEnd)) {
-					rangeEnd--;
-					return true;
-				}
-			}
-			return false;
 		}
 	}
 }

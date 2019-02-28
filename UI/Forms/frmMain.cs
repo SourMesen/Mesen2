@@ -54,11 +54,13 @@ namespace Mesen.GUI.Forms
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
-					this.BeginInvoke((Action)(() => {
-						DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger);
-					}));
 					break;
 			}
+		}
+
+		private void mnuDebugger_Click(object sender, EventArgs e)
+		{
+			DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger);
 		}
 
 		private void mnuTraceLogger_Click(object sender, EventArgs e)

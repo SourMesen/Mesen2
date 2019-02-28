@@ -155,9 +155,8 @@
 			this.ctrlTextbox.Location = new System.Drawing.Point(0, 0);
 			this.ctrlTextbox.Name = "ctrlTextbox";
 			this.ctrlTextbox.ShowCompactPrgAddresses = false;
-			this.ctrlTextbox.ShowContentNotes = false;
-			this.ctrlTextbox.ShowLineInHex = false;
-			this.ctrlTextbox.ShowLineNumberNotes = false;
+			this.ctrlTextbox.ShowByteCode = false;
+			this.ctrlTextbox.ShowAbsoluteAddreses = false;
 			this.ctrlTextbox.ShowLineNumbers = true;
 			this.ctrlTextbox.ShowMemoryValues = false;
 			this.ctrlTextbox.ShowSingleContentLineNotes = true;

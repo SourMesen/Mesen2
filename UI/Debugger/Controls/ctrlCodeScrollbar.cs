@@ -15,6 +15,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private Timer _tmrScroll;
 		private bool _scrollUp = false;
+		private bool _mouseDown = false;
 
 		private const int _buttonSize = 15;
 
@@ -137,14 +138,13 @@ namespace Mesen.GUI.Debugger.Controls
 			e.Graphics.FillPolygon(Brushes.DimGray, new Point[] { new Point(left, bottom - arrowHeight), new Point(left + arrowWidth, bottom - arrowHeight), new Point(left + arrowWidth / 2, bottom) }, FillMode.Winding);
 		}
 
-		//private bool _mouseDown = false;
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
 
 			if(e.Y > _buttonSize && e.Y < (this.Height - _buttonSize)) {
 				this.UpdatePosition(e.Y);
-				//this._mouseDown = true;
+				this._mouseDown = true;
 			} else {
 				if(e.Y <= _buttonSize) {
 					if(this.Value > 0) {
@@ -175,21 +175,20 @@ namespace Mesen.GUI.Debugger.Controls
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
-			//this._mouseDown = false;
+			this._mouseDown = false;
 			this._tmrScroll.Stop();
 		}
 
 		//TODO
-		/*
-		frmCodePreviewTooltip _codeTooltip = null;
-		int _lastPreviewScrollPosition = -1;
+		//frmCodePreviewTooltip _codeTooltip = null;
+		//int _lastPreviewScrollPosition = -1;
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
 			if(this._mouseDown) {
 				this.UpdatePosition(e.Y);
 			} else {
-				if(this.ColorProvider != null && e.Y > _buttonSize && e.Y < (this.Height - _buttonSize)) {
+				/*if(this.ColorProvider != null && e.Y > _buttonSize && e.Y < (this.Height - _buttonSize)) {
 					int scrollPosition = Math.Max(0, (e.Y - this.Top - _buttonSize) * this.Maximum / (this.Height - _buttonSize * 2));
 					if(_lastPreviewScrollPosition != scrollPosition) {
 						Point p = this.PointToScreen(new Point(this.ClientRectangle.Right, e.Y));
@@ -206,12 +205,12 @@ namespace Mesen.GUI.Debugger.Controls
 						}
 						_lastPreviewScrollPosition = scrollPosition;
 					}
-				}
+				}*/
 			}
 		}
 		
-
-		protected override void OnMouseLeave(EventArgs e)
+		//TODO
+		/*protected override void OnMouseLeave(EventArgs e)
 		{
 			base.OnMouseLeave(e);
 			if(_codeTooltip != null) {
@@ -242,7 +241,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void UpdatePosition(int y)
 		{
-			this.Value = Math.Max(0 , y - HighlightHeight / 2 + HighlightOffset - this.Top - _buttonSize) * this.Maximum / (this.Height - _buttonSize * 2);
+			this.Value = (int)(Math.Max(0 , y - HighlightHeight / 2 + HighlightOffset - this.Top - _buttonSize) * (long)this.Maximum / (this.Height - _buttonSize * 2));
 		}
 
 		private int _value = 0;

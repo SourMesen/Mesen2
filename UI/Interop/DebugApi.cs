@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
+using Mesen.GUI.Debugger;
 using Mesen.GUI.Forms;
 
 namespace Mesen.GUI
@@ -24,6 +25,22 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
 		[DllImport(DllPath)] public static extern void SetTraceOptions(InteropTraceLoggerOptions options);
+
+		[DllImport(DllPath, EntryPoint = "GetDisassemblyLineData")] private static extern void GetDisassemblyLineDataWrapper(UInt32 lineIndex, ref InteropCodeLineData lineData);
+		public static CodeLineData GetDisassemblyLineData(UInt32 lineIndex)
+		{
+			InteropCodeLineData data = new InteropCodeLineData();
+			data.Comment = new byte[1000];
+			data.Text = new byte[1000];
+			data.ByteCode = new byte[4];
+
+			DebugApi.GetDisassemblyLineDataWrapper(lineIndex, ref data);
+			return new CodeLineData(data);
+		}
+
+		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineCount();
+		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineIndex(UInt32 cpuAddress);
+		[DllImport(DllPath)] public static extern int SearchDisassembly([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
 		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
@@ -60,6 +77,12 @@ namespace Mesen.GUI
 		VideoRam,
 		SpriteRam,
 		CGRam,
+	}
+
+	public class AddressInfo
+	{
+		public Int32 Address;
+		public SnesMemoryType Type;
 	}
 
 	public struct CpuState
