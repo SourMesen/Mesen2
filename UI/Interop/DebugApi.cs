@@ -53,6 +53,8 @@ namespace Mesen.GUI
 			return state;
 		}
 
+		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string expression, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
+
 		[DllImport(DllPath)] public static extern Int32 GetMemorySize(SnesMemoryType type);
 		[DllImport(DllPath)] public static extern Byte GetMemoryValue(SnesMemoryType type, UInt32 address);
 		[DllImport(DllPath)] public static extern void SetMemoryValue(SnesMemoryType type, UInt32 address, byte value);
@@ -130,5 +132,14 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1000)]
 		public byte[] Format;
+	}
+
+	public enum EvalResultType
+	{
+		Numeric = 0,
+		Boolean = 1,
+		Invalid = 2,
+		DivideBy0 = 3,
+		OutOfScope = 4
 	}
 }

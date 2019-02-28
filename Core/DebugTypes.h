@@ -1,5 +1,13 @@
 #pragma once
 #include "stdafx.h"
+#include "CpuTypes.h"
+#include "PpuTypes.h"
+
+struct DebugState
+{
+	CpuState Cpu;
+	PpuState Ppu;
+};
 
 enum class SnesMemoryType
 {
@@ -16,6 +24,13 @@ struct AddressInfo
 {
 	int32_t Address;
 	SnesMemoryType Type;
+};
+
+struct MemoryOperationInfo
+{
+	uint32_t Address;
+	int32_t Value;
+	MemoryOperationType OperationType;
 };
 
 namespace CdlFlags

@@ -301,6 +301,12 @@
     <Compile Include="Debugger\Controls\ctrlHexViewer.designer.cs">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\Controls\ctrlWatch.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlWatch.designer.cs">
+      <DependentUpon>ctrlWatch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\frmDbgPreferences.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -384,6 +390,7 @@
     <Compile Include="Debugger\HexBox\Util.cs" />
     <Compile Include="Debugger\TblLoader.cs" />
     <Compile Include="Debugger\DebugWindowManager.cs" />
+    <Compile Include="Debugger\WatchManager.cs" />
     <Compile Include="Forms\BaseConfigForm.Designer.cs">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>
     </Compile>
@@ -455,6 +462,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlHexViewer.resx">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlWatch.resx">
+      <DependentUpon>ctrlWatch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmDbgPreferences.resx">
       <DependentUpon>frmDbgPreferences.cs</DependentUpon>

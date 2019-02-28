@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Debugger.h"
+#include "DebugTypes.h"
 #include "Console.h"
 #include "Cpu.h"
 #include "Ppu.h"
@@ -12,6 +13,7 @@
 #include "MemoryDumper.h"
 #include "CodeDataLogger.h"
 #include "Disassembler.h"
+#include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -22,6 +24,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_ppu = console->GetPpu();
 	_memoryManager = console->GetMemoryManager();
 
+	_watchExpEval.reset(new ExpressionEvaluator(this));
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger));
 	_traceLogger.reset(new TraceLogger(this, _memoryManager));
@@ -106,6 +109,19 @@ void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
 		_disassembler->InvalidateCache(addressInfo);
+	}
+}
+
+int32_t Debugger::EvaluateExpression(string expression, EvalResultType &resultType, bool useCache)
+{
+	DebugState state;
+	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::DummyRead };
+	GetState(&state);
+	if(useCache) {
+		return _watchExpEval->Evaluate(expression, state, resultType, operationInfo);
+	} else {
+		ExpressionEvaluator expEval(this);
+		return expEval.Evaluate(expression, state, resultType, operationInfo);
 	}
 }
 

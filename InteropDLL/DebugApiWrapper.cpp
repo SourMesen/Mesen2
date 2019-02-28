@@ -46,6 +46,8 @@ extern "C"
 	DllExport void __stdcall StopTraceLogger() { GetDebugger()->GetTraceLogger()->StopLogging(); }
 	DllExport const char* GetExecutionTrace(uint32_t lineCount) { return GetDebugger()->GetTraceLogger()->GetExecutionTrace(lineCount); }
 
+	DllExport int32_t __stdcall EvaluateExpression(char* expression, EvalResultType *resultType, bool useCache) { return GetDebugger()->EvaluateExpression(expression, *resultType, useCache); }
+
 	DllExport void __stdcall GetState(DebugState *state) { GetDebugger()->GetState(state); }
 
 	DllExport void __stdcall SetMemoryState(SnesMemoryType type, uint8_t *buffer, int32_t length) { GetDebugger()->GetMemoryDumper()->SetMemoryState(type, buffer, length); }

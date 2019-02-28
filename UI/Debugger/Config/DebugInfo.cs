@@ -39,6 +39,8 @@ namespace Mesen.GUI.Config
 		public XmlColor CodeReadBreakpointColor = Color.FromArgb(40, 40, 200);
 		public XmlColor CodeActiveStatementColor = Color.Yellow;
 
+		public WatchFormatStyle WatchFormat = WatchFormatStyle.Hex;
+
 		public DebugInfo()
 		{		
 		}

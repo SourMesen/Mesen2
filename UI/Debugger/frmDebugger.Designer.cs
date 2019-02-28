@@ -55,15 +55,23 @@
 			this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuBreakIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOn = new System.Windows.Forms.ToolStripMenuItem();
+			this.ctrlSplitContainer = new Mesen.GUI.Controls.ctrlSplitContainer();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.ctrlWatch = new Mesen.GUI.Debugger.ctrlWatch();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
+			this.ctrlSplitContainer.Panel1.SuspendLayout();
+			this.ctrlSplitContainer.Panel2.SuspendLayout();
+			this.ctrlSplitContainer.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctrlDisassemblyView
 			// 
-			this.ctrlDisassemblyView.Dock = System.Windows.Forms.DockStyle.Left;
-			this.ctrlDisassemblyView.Location = new System.Drawing.Point(0, 24);
+			this.ctrlDisassemblyView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlDisassemblyView.Location = new System.Drawing.Point(0, 0);
 			this.ctrlDisassemblyView.Name = "ctrlDisassemblyView";
-			this.ctrlDisassemblyView.Size = new System.Drawing.Size(559, 620);
+			this.ctrlDisassemblyView.Size = new System.Drawing.Size(852, 439);
 			this.ctrlDisassemblyView.TabIndex = 0;
 			// 
 			// ctrlMesenMenuStrip1
@@ -243,17 +251,63 @@
 			this.mnuBreakOn.Size = new System.Drawing.Size(212, 22);
 			this.mnuBreakOn.Text = "Break on...";
 			// 
+			// ctrlSplitContainer
+			// 
+			this.ctrlSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlSplitContainer.HidePanel2 = false;
+			this.ctrlSplitContainer.Location = new System.Drawing.Point(0, 24);
+			this.ctrlSplitContainer.Name = "ctrlSplitContainer";
+			this.ctrlSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// ctrlSplitContainer.Panel1
+			// 
+			this.ctrlSplitContainer.Panel1.Controls.Add(this.ctrlDisassemblyView);
+			// 
+			// ctrlSplitContainer.Panel2
+			// 
+			this.ctrlSplitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
+			this.ctrlSplitContainer.Size = new System.Drawing.Size(852, 620);
+			this.ctrlSplitContainer.SplitterDistance = 439;
+			this.ctrlSplitContainer.TabIndex = 2;
+			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.Controls.Add(this.ctrlWatch, 0, 0);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 1;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(852, 177);
+			this.tableLayoutPanel1.TabIndex = 0;
+			// 
+			// ctrlWatch
+			// 
+			this.ctrlWatch.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlWatch.Location = new System.Drawing.Point(3, 3);
+			this.ctrlWatch.Name = "ctrlWatch";
+			this.ctrlWatch.Size = new System.Drawing.Size(420, 171);
+			this.ctrlWatch.TabIndex = 0;
+			// 
 			// frmDebugger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(852, 644);
-			this.Controls.Add(this.ctrlDisassemblyView);
+			this.Controls.Add(this.ctrlSplitContainer);
 			this.Controls.Add(this.ctrlMesenMenuStrip1);
 			this.Name = "frmDebugger";
-			this.Text = "frmDebugger";
+			this.Text = "Debugger";
 			this.ctrlMesenMenuStrip1.ResumeLayout(false);
 			this.ctrlMesenMenuStrip1.PerformLayout();
+			this.ctrlSplitContainer.Panel1.ResumeLayout(false);
+			this.ctrlSplitContainer.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).EndInit();
+			this.ctrlSplitContainer.ResumeLayout(false);
+			this.tableLayoutPanel1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -285,5 +339,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem8;
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakIn;
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakOn;
+		private GUI.Controls.ctrlSplitContainer ctrlSplitContainer;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private ctrlWatch ctrlWatch;
 	}
 }

@@ -76,6 +76,7 @@ namespace Mesen.GUI.Debugger
 
 					this.BeginInvoke((MethodInvoker)(() => {
 						ctrlDisassemblyView.SetActiveAddress(activeAddress);
+						ctrlWatch.UpdateWatch(true);
 					}));
 					break;
 			}

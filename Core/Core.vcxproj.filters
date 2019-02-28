@@ -185,6 +185,9 @@
     <ClInclude Include="RegisterHandlerA.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="ExpressionEvaluator.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -286,6 +289,9 @@
     </ClCompile>
     <ClCompile Include="MemoryManager.cpp">
       <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionEvaluator.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

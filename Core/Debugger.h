@@ -11,16 +11,12 @@ class MemoryManager;
 class CodeDataLogger;
 
 enum class MemoryOperationType;
+enum class EvalResultType : int32_t;
 class TraceLogger;
+class ExpressionEvaluator;
 class MemoryDumper;
 class Disassembler;
-
-struct DebugState
-{
-	CpuState Cpu;
-	PpuState Ppu;
-	//ApuState apuState;
-};
+struct DebugState;
 
 class Debugger
 {
@@ -36,6 +32,8 @@ private:
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 	shared_ptr<Disassembler> _disassembler;
 
+	unique_ptr<ExpressionEvaluator> _watchExpEval;
+
 	atomic<int32_t> _cpuStepCount;
 	uint8_t _prevOpCode = 0;
 
@@ -45,6 +43,8 @@ public:
 
 	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
+
+	int32_t EvaluateExpression(string expression, EvalResultType &resultType, bool useCache);
 
 	void Run();
 	void Step(int32_t stepCount);
