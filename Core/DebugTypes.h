@@ -107,7 +107,8 @@ struct CodeLineData
 	uint8_t Flags;
 
 	int32_t EffectiveAddress;
-	int32_t Value;
+	uint16_t Value;
+	uint8_t ValueSize;
 
 	uint8_t ByteCode[4];
 	char Text[1000];

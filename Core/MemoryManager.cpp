@@ -185,6 +185,13 @@ uint8_t MemoryManager::Peek(uint32_t addr)
 	return value;
 }
 
+uint16_t MemoryManager::PeekWord(uint32_t addr)
+{
+	uint8_t lsb = Peek(addr);
+	uint8_t msb = Peek((addr + 1) & 0xFFFFFF);
+	return (msb << 8) | lsb;
+}
+
 void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	IncrementMasterClock(addr);

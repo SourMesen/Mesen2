@@ -235,9 +235,13 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 			vector<shared_ptr<DisassemblyInfo>> *cache;
 			GetSource(result.Address, &source, sourceLength, &cache);
 			disInfo = (*cache)[result.Address.Address];
+			
+			CpuState state = _console->GetCpu()->GetState();
+			state.PC = (uint16_t)result.CpuAddress;
+			state.K = (result.CpuAddress >> 16);
 
 			if(!disInfo) {
-				disInfo.reset(new DisassemblyInfo(source + result.Address.Address, 0));
+				disInfo.reset(new DisassemblyInfo(source + result.Address.Address, state.PS));
 			} else {
 				data.Flags |= (uint8_t)LineFlags::VerifiedCode;
 			}
@@ -247,8 +251,14 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
 
 			data.OpSize = disInfo->GetOperandSize() + 1;
-			data.EffectiveAddress = disInfo->GetEffectiveAddress();
-			data.Value = _memoryManager->Peek(result.CpuAddress);
+
+			MemoryManager *memoryManager = _console->GetMemoryManager().get();
+			data.EffectiveAddress = disInfo->GetEffectiveAddress(state, memoryManager);
+			if(data.EffectiveAddress >= 0) {
+				data.Value = disInfo->GetMemoryValue(data.EffectiveAddress, memoryManager, data.ValueSize);
+			} else {
+				data.ValueSize = 0;
+			}
 
 			disInfo->GetByteCode(data.ByteCode);
 			data.Comment[0] = 0;
@@ -266,7 +276,7 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 	return false;
 }
 
-int32_t Disassembler::SearchCode(const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)
+int32_t Disassembler::SearchDisassembly(const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
 	int step = searchBackwards ? -1 : 1;

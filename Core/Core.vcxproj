@@ -57,6 +57,7 @@
     <ClInclude Include="ControlDeviceState.h" />
     <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
+    <ClInclude Include="DummyCpu.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
     <ClInclude Include="RegisterHandlerB.h" />
     <ClInclude Include="CpuTypes.h" />

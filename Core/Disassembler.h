@@ -46,5 +46,5 @@ public:
 	uint32_t GetLineCount();
 	uint32_t GetLineIndex(uint32_t cpuAddress);
 	bool GetLineData(uint32_t lineIndex, CodeLineData &data);
-	int32_t SearchCode(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards);
+	int32_t SearchDisassembly(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards);
 };

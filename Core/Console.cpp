@@ -137,7 +137,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_memoryManager->Initialize(shared_from_this());
 
-		_cpu.reset(new Cpu(_memoryManager));
+		_cpu.reset(new Cpu(_memoryManager.get()));
 		_memoryManager->IncrementMasterClockValue<160>();
 
 		//if(_debugger) {

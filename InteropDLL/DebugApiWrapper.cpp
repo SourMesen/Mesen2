@@ -39,7 +39,7 @@ extern "C"
 	DllExport void __stdcall GetDisassemblyLineData(uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(lineIndex, data); }
 	DllExport uint32_t __stdcall GetDisassemblyLineCount() { return GetDebugger()->GetDisassembler()->GetLineCount(); }
 	DllExport uint32_t __stdcall GetDisassemblyLineIndex(uint32_t cpuAddress) { return GetDebugger()->GetDisassembler()->GetLineIndex(cpuAddress); }
-	DllExport int32_t __stdcall SearchDisassembly(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchCode(searchString, startPosition, endPosition, searchBackwards); }
+	DllExport int32_t __stdcall SearchDisassembly(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchDisassembly(searchString, startPosition, endPosition, searchBackwards); }
 
 	DllExport void __stdcall SetTraceOptions(TraceLoggerOptions options) { GetDebugger()->GetTraceLogger()->SetOptions(options); }
 	DllExport void __stdcall StartTraceLogger(char* filename) { GetDebugger()->GetTraceLogger()->StartLogging(filename); }

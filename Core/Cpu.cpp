@@ -3,7 +3,7 @@
 #include "Cpu.h"
 #include "MemoryManager.h"
 
-Cpu::Cpu(shared_ptr<MemoryManager> memoryManager)
+Cpu::Cpu(MemoryManager* memoryManager)
 {
 	_memoryManager = memoryManager;
 	_state = {};
@@ -338,7 +338,9 @@ uint8_t Cpu::GetOpCode()
 
 void Cpu::Idle()
 {
+#ifndef DUMMYCPU
 	_memoryManager->IncrementMasterClockValue<6>();
+#endif
 }
 
 uint8_t Cpu::ReadOperandByte()
@@ -361,10 +363,22 @@ uint32_t Cpu::ReadOperandLong()
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 
-uint8_t Cpu::ReadCode(uint16_t addr, MemoryOperationType type)
+uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 {
 	_state.CycleCount++;
-	return _memoryManager->Read((_state.K << 16) | addr, type);
+
+#ifdef DUMMYCPU
+	uint8_t value = _memoryManager->Peek(addr);
+	LogRead(addr, value);
+	return value;
+#else
+	return _memoryManager->Read(addr, type);
+#endif
+}
+
+uint8_t Cpu::ReadCode(uint16_t addr, MemoryOperationType type)
+{
+	return Read((_state.K << 16) | addr, type);
 }
 
 uint16_t Cpu::ReadCodeWord(uint16_t addr, MemoryOperationType type)
@@ -376,8 +390,7 @@ uint16_t Cpu::ReadCodeWord(uint16_t addr, MemoryOperationType type)
 
 uint8_t Cpu::ReadData(uint32_t addr, MemoryOperationType type)
 {
-	_state.CycleCount++;
-	return _memoryManager->Read(addr & 0xFFFFFF, type);
+	return Read(addr & 0xFFFFFF, type);
 }
 
 uint16_t Cpu::ReadDataWord(uint32_t addr, MemoryOperationType type)
@@ -398,7 +411,12 @@ uint32_t Cpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	_state.CycleCount++;
+
+#ifdef DUMMYCPU
+	LogWrite(addr, value);
+#else
 	_memoryManager->Write(addr, value, type);
+#endif
 }
 
 void Cpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)

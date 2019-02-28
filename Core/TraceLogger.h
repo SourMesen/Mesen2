@@ -97,8 +97,6 @@ public:
 	TraceLogger(Debugger* debugger, shared_ptr<MemoryManager> memoryManager);
 	~TraceLogger();
 
-	void LogEffectiveAddress(uint32_t effectiveAddress);
-
 	void Log(DebugState &state, DisassemblyInfo &disassemblyInfo);
 	//void LogNonExec(OperationInfo& operationInfo);
 	void SetOptions(TraceLoggerOptions options);

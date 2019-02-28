@@ -71,7 +71,6 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 		DebugState debugState;
 		GetState(&debugState);
-		_traceLogger->LogEffectiveAddress(_cpu->GetLastOperand());
 
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
 		_traceLogger->Log(debugState, disInfo);

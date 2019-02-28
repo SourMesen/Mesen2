@@ -3,6 +3,7 @@
 #include "DisassemblyInfo.h"
 #include "CpuTypes.h"
 #include "MemoryManager.h"
+#include "DummyCpu.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
@@ -17,8 +18,7 @@ DisassemblyInfo::DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags)
 
 void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags)
 {
-	_flags = cpuFlags;
-	_effectiveAddress = -1;
+	_flags = cpuFlags & (ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
 
 	_byteCode[0] = opPointer[0];
 	_addrMode = DisassemblyInfo::OpMode[_byteCode[0]];
@@ -55,7 +55,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		case AddrMode::AbsLng: str.Write(operand); break;
 		case AddrMode::AbsLngJmp: str.Write(operand); break;
 		case AddrMode::Acc: break;
-		case AddrMode::BlkMov: str.Write(operand[1], operand[2], " -> "); str.Write(operand[3], operand[4]); break;
+		case AddrMode::BlkMov: str.Write('$', operand[1], operand[2], " -> "); str.Write('$', operand[3], operand[4]); break;
 		case AddrMode::DirIdxIndX: str.Write('(', operand, ",X)"); break;
 		case AddrMode::DirIdxX: str.Write(operand, ",X"); break;
 		case AddrMode::DirIdxY: str.Write(operand, ",Y"); break;
@@ -177,76 +177,36 @@ void DisassemblyInfo::GetByteCode(string &out)
 	out += str.ToString();
 }
 
-void DisassemblyInfo::GetEffectiveAddressString(string &out)
+void DisassemblyInfo::GetEffectiveAddressString(string &out, CpuState &state, MemoryManager* memoryManager)
 {
-	int32_t effectiveAddress = GetEffectiveAddress();
+	int32_t effectiveAddress = GetEffectiveAddress(state, memoryManager);
 	if(effectiveAddress >= 0) {
 		out += " [" + HexUtilities::ToHex24(effectiveAddress) + "]";
 	}
 }
 
-void DisassemblyInfo::SetEffectiveAddress(int32_t effectiveAddress)
+int32_t DisassemblyInfo::GetEffectiveAddress(CpuState &state, MemoryManager *memoryManager)
 {
-	_effectiveAddress = effectiveAddress;
-}
-
-int32_t DisassemblyInfo::GetEffectiveAddress()
-{
-	if(_addrMode > AddrMode::ImmM && _addrMode != AddrMode::Acc && _addrMode != AddrMode::Imp && _addrMode != AddrMode::Stk) {
-		return _effectiveAddress;
+	if(_addrMode > AddrMode::ImmM && _addrMode != AddrMode::Acc && _addrMode != AddrMode::Imp && _addrMode != AddrMode::Stk && _addrMode != AddrMode::Rel && _addrMode != AddrMode::RelLng && _addrMode != AddrMode::BlkMov) {
+		DummyCpu cpu(memoryManager);
+		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
+		state.PS |= _flags;
+		cpu.SetDummyState(state);
+		cpu.Exec();
+		return cpu.GetLastOperand();
 	}
 	return -1;
+}
 
-	/*auto getProgramAddress = [&state](uint16_t addr) { return (state.K << 16) | addr; };
-	auto getDataAddress = [&state](uint16_t addr) { return (state.DBR << 16) | addr; };
-	auto getDirectAddress = [&state](uint8_t baseAddress, uint16_t offset = 0, bool allowEmulationMode = true) {
-		if(allowEmulationMode && state.EmulationMode && (state.D & 0xFF) == 0) {
-			//TODO: Check if new instruction or not (PEI)
-			return (uint16_t)((state.D & 0xFF00) | ((baseAddress + offset) & 0xFF));
-		} else {
-			return (uint16_t)(state.D + baseAddress + offset);
-		}
-	};
-
-	auto getDirectAddressIndirectWord = [&state, mm, &getDirectAddress](uint8_t baseAddress, uint16_t offset = 0, bool allowEmulationMode = true) {
-		uint8_t b1 = mm->Peek(getDirectAddress(baseAddress, offset + 0));
-		uint8_t b2 = mm->Peek(getDirectAddress(baseAddress, offset + 1));
-		return (b2 << 8) | b1;
-	};
-
-	auto getDirectAddressIndirectLong = [&state, mm, &getDirectAddress](uint8_t baseAddress, uint16_t offset = 0, bool allowEmulationMode = true) {
-		uint8_t b1 = mm->Peek(getDirectAddress(baseAddress, offset + 0));
-		uint8_t b2 = mm->Peek(getDirectAddress(baseAddress, offset + 1));
-		uint8_t b3 = mm->Peek(getDirectAddress(baseAddress, offset + 2));
-		return (b3 << 16) | (b2 << 8) | b1;
-	};
-
-
-	uint32_t bank = (state.K << 16);
-	uint32_t opAddr = GetOperandAddress(bank | state.PC);
-	switch(_addrMode) {
-		case AddrMode::AbsIdxX: return opAddr + state.X;
-		case AddrMode::AbsIdxY: return opAddr + state.Y;
-		case AddrMode::AbsLngIdxX: return opAddr + state.X;
-		case AddrMode::AbsIdxXInd: return getProgramAddress(mm->PeekWord(getProgramAddress(opAddr + state.X)));
-		case AddrMode::AbsInd: return getProgramAddress(mm->PeekWord(opAddr));
-		case AddrMode::AbsIndLng: return mm->PeekLong(opAddr);
-
-		case AddrMode::BlkMov: break; //TODO
-
-		case AddrMode::Dir: return getDirectAddress(opAddr);
-		case AddrMode::DirIdxX: return getDirectAddress(opAddr, state.X);
-		case AddrMode::DirIdxY: return getDirectAddress(opAddr, state.Y);
-
-		case AddrMode::DirInd: return getDirectAddressIndirectWord(opAddr);
-		case AddrMode::DirIdxIndX: return getDirectAddressIndirectWord(opAddr, state.X);
-		case AddrMode::DirIndIdxY: return getDirectAddressIndirectWord(opAddr) + state.Y;
-		case AddrMode::DirIndLng: return getDirectAddressIndirectLong(opAddr);
-		case AddrMode::DirIndLngIdxY: return getDirectAddressIndirectLong(opAddr) + state.Y;
-
-		case AddrMode::StkRel: return opAddr + state.SP;
-		case AddrMode::StkRelIndIdxY: break;
-	}*/
+uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize)
+{
+	if(_flags & ProcFlags::MemoryMode8) {
+		valueSize = 1;
+		return memoryManager->Peek(effectiveAddress);
+	} else {
+		valueSize = 2;
+		return memoryManager->PeekWord(effectiveAddress);
+	}
 }
 
 string DisassemblyInfo::OpName[256] = {

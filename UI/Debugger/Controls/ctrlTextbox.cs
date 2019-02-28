@@ -16,7 +16,7 @@ namespace Mesen.GUI.Debugger.Controls
 {
 	public partial class ctrlTextbox : Control
 	{
-		private Regex _codeRegex = new Regex("^(\\s*)([a-z]{3})([*]{0,1})($|[ ]){1}([(]{0,1})(([$][0-9a-f]*)|(#[@$:_0-9a-z]*)|([@_a-z]([@_a-z0-9])*){0,1}(\\+(\\d+)){0,1}){0,1}([)]{0,1})(,X|,Y){0,1}([)]{0,1})(.*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private Regex _codeRegex = new Regex("^(\\s*)([a-z]{3})([*]{0,1})($|[ ]){1}([(\\[]{0,1})(([$][0-9a-f]*)|(#[@$:_0-9a-z]*)|([@_a-z]([@_a-z0-9])*){0,1}(\\+(\\d+)){0,1}){0,1}([)\\]]{0,1})(,X|,Y){0,1}([)\\]]{0,1})(.*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		public event EventHandler ScrollPositionChanged;
 		public event EventHandler SelectedLineChanged;
 		private bool _disableScrollPositionChangedEvent;
@@ -902,8 +902,6 @@ namespace Mesen.GUI.Debugger.Controls
 		private void DrawLineText(Graphics g, int currentLine, int marginLeft, int positionY, CodeLineData lineData, float codeStringLength, Color? textColor, int lineHeight)
 		{
 			string codeString = lineData.Text;
-			string addressString = lineData.EffectiveAddress>= 0 ? (" [" + lineData.EffectiveAddress.ToString("X6") + "]") : "";
-			float addressStringLength = g.MeasureString(addressString, this.Font, int.MaxValue, StringFormat.GenericTypographic).Width;
 			string commentString = lineData.Comment;
 
 			DebugInfo info = ConfigManager.Config.Debug;
@@ -962,24 +960,15 @@ namespace Mesen.GUI.Debugger.Controls
 						int codePartCount = colors.Count;
 
 						List<string> parts = new List<string>() { padding, opcode, invalidStar, " ", paren1, operand, paren2, indirect, paren3 };
-						string memoryAddress = "";
-						if(!string.IsNullOrWhiteSpace(addressString)) {
-							colors.Add(info.CodeEffectiveAddressColor);
-							parts.Add(addressString);
-							memoryAddress = addressString.Substring(3).Trim();
 
-							//Update the contents of "arrayPosition" based on the address string, rather than use the one from the original address
-							int plusIndex = memoryAddress.IndexOf("+");
-							arrayPosition = plusIndex >= 0 ? memoryAddress.Substring(plusIndex+1) : "";
-						} else if(operand.Length > 0 && operand[0] != '#') {
-							memoryAddress = operand.Trim();
+						if(lineData.EffectiveAddress >= 0) {
+							colors.Add(info.CodeEffectiveAddressColor);
+							parts.Add(" [" + lineData.EffectiveAddress.ToString("X6") + "]");
 						}
 
-						if(this.ShowMemoryValues && memoryAddress.Length > 0) {
-							if(lineData.Value >= 0) {
-								colors.Add(defaultColor);
-								parts.Add(" = $" + lineData.Value.ToString("X4"));
-							}
+						if(this.ShowMemoryValues && lineData.ValueSize > 0) {
+							colors.Add(defaultColor);
+							parts.Add(lineData.GetValueString());
 						}
 
 						//Display the rest of the line (used by trace logger)

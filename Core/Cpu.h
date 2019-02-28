@@ -1,4 +1,10 @@
-#pragma once
+#if (defined(DUMMYCPU) && !defined(__DUMMYCPU__H)) || (!defined(DUMMYCPU) && !defined(__CPU__H))
+#ifdef DUMMYCPU
+#define __DUMMYCPU__H
+#else
+#define __CPU__H
+#endif
+
 #include "stdafx.h"
 #include "CpuTypes.h"
 
@@ -25,7 +31,7 @@ private:
 
 	typedef void(Cpu::*Func)();
 	
-	shared_ptr<MemoryManager> _memoryManager;
+	MemoryManager* _memoryManager;
 
 	bool _immediateMode = false;
 
@@ -52,6 +58,8 @@ private:
 	uint8_t ReadOperandByte();
 	uint16_t ReadOperandWord();
 	uint32_t ReadOperandLong();
+
+	uint8_t Read(uint32_t addr, MemoryOperationType type);
 
 	void SetSP(uint16_t sp);
 	void SetPS(uint8_t ps);
@@ -285,7 +293,7 @@ private:
 	void AddrMode_StkRelIndIdxY();
 
 public:
-	Cpu(shared_ptr<MemoryManager> memoryManager);
+	Cpu(MemoryManager* memoryManager);
 	~Cpu();
 
 	void Reset();
@@ -295,4 +303,30 @@ public:
 	void SetIrqSource(IrqSource source);
 	bool CheckIrqSource(IrqSource source);
 	void ClearIrqSource(IrqSource source);
+
+#ifdef DUMMYCPU
+private:
+	uint32_t _writeCounter = 0;
+	uint32_t _writeAddresses[10];
+	uint8_t _writeValue[10];
+
+	uint32_t _readCounter = 0;
+	uint32_t _readAddresses[10];
+	uint8_t _readValue[10];
+
+	uint32_t _valueSize = 0;
+
+	void LogRead(uint32_t addr, uint8_t value);
+	void LogWrite(uint32_t addr, uint8_t value);
+
+public:
+	void SetDummyState(CpuState &state);
+
+	uint32_t GetWriteCount();
+	uint32_t GetReadCount();
+	void GetWriteInfo(uint32_t index, uint32_t &addr, uint8_t &value);
+	void GetReadInfo(uint32_t index, uint32_t &addr, uint8_t &value);
+#endif
 };
+
+#endif

@@ -21,11 +21,27 @@ namespace Mesen.GUI.Debugger
 		public string Comment;
 
 		public Int32 EffectiveAddress;
-		public Int32 Value;
+		public UInt16 Value;
+		public byte ValueSize;
 
 		public string GetEffectiveAddressString()
 		{
-			return "[" + EffectiveAddress.ToString("X6") + "]";
+			if(EffectiveAddress >= 0) {
+				return "[" + EffectiveAddress.ToString("X6") + "]";
+			} else {
+				return "";
+			}
+		}
+
+		public string GetValueString()
+		{
+			if(ValueSize == 1) {
+				return " = $" + Value.ToString("X2");
+			} else if(ValueSize == 2) {
+				return " = $" + Value.ToString("X4");
+			} else {
+				return "";
+			}
 		}
 
 		public int Indentation
@@ -58,6 +74,7 @@ namespace Mesen.GUI.Debugger
 			this.EffectiveAddress = data.EffectiveAddress;
 			this.Flags = (LineFlags)data.Flags;
 			this.Value = data.Value;
+			this.ValueSize = data.ValueSize;
 		}
 
 		private string ConvertString(byte[] stringArray)
@@ -81,7 +98,8 @@ namespace Mesen.GUI.Debugger
 		public byte Flags;
 
 		public Int32 EffectiveAddress;
-		public Int32 Value;
+		public UInt16 Value;
+		public byte ValueSize;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 		public byte[] ByteCode;

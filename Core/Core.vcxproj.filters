@@ -188,6 +188,9 @@
     <ClInclude Include="ExpressionEvaluator.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="DummyCpu.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

@@ -655,6 +655,7 @@ Move operations
 ****************/
 void Cpu::MVN()
 {
+#ifndef DUMMYCPU
 	_state.DBR = _operand & 0xFF;
 	uint32_t destBank = _state.DBR << 16;
 	uint32_t srcBank = (_operand << 8) & 0xFF0000;
@@ -671,15 +672,17 @@ void Cpu::MVN()
 
 		if(_state.A != 0xFFFF) {
 			//"Idle" cycles, instruction re-reads OP code and operands before every new byte
-			_memoryManager->Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
-			_memoryManager->Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
-			_memoryManager->Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
+			Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
+			Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
+			Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
 		}
 	} while(_state.A != 0xFFFF);
+#endif
 }
 
 void Cpu::MVP()
 {
+#ifndef DUMMYCPU
 	_state.DBR = _operand & 0xFF;
 	uint32_t destBank = _state.DBR << 16;
 	uint32_t srcBank = (_operand << 8) & 0xFF0000;
@@ -696,11 +699,12 @@ void Cpu::MVP()
 		
 		if(_state.A != 0xFFFF) {
 			//"Idle" cycles, instruction re-reads OP code and operands before every new byte
-			_memoryManager->Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
-			_memoryManager->Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
-			_memoryManager->Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
+			Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
+			Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
+			Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
 		}
 	} while(_state.A != 0xFFFF);
+#endif
 }
 
 /********************

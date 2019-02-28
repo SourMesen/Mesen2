@@ -19,7 +19,6 @@ private:
 	uint8_t _opSize;
 	AddrMode _addrMode;
 	uint8_t _flags;
-	int32_t _effectiveAddress;
 
 public:
 	DisassemblyInfo();
@@ -37,13 +36,8 @@ public:
 	void GetByteCode(uint8_t copyBuffer[4]);
 	void GetByteCode(string &out);
 	
-	void SetEffectiveAddress(int32_t effectiveAddress);
-	void GetEffectiveAddressString(string &out);
-	int32_t GetEffectiveAddress();
-
-	/*int32_t GetMemoryValue(CpuState& cpuState, MemoryManager* memoryManager);
-	uint16_t GetJumpDestination(uint16_t pc, MemoryManager* memoryManager);
-	uint16_t GetIndirectJumpDestination(MemoryManager* memoryManager);
-	*/
+	void GetEffectiveAddressString(string &out, CpuState &state, MemoryManager* memoryManager);
+	int32_t GetEffectiveAddress(CpuState &state, MemoryManager *memoryManager);
+	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);
 };
 

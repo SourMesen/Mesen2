@@ -218,18 +218,28 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::EffectiveAddress:
 			{
 				string effectiveAddress;
-				disassemblyInfo.GetEffectiveAddressString(effectiveAddress);
+				disassemblyInfo.GetEffectiveAddressString(effectiveAddress, cpuState, _memoryManager.get());
 				WriteValue(output, effectiveAddress, rowPart);
 				break;
 			}
 
 			case RowDataType::MemoryValue:
 			{
-				/*int32_t value = disassemblyInfo.GetMemoryValue(cpuState, _memoryManager.get());
-				if(value >= 0) {
-					output += rowPart.DisplayInHex ? "= $" : "= ";
-					WriteValue(output, (uint8_t)value, rowPart);
-				}*/
+				int32_t address = disassemblyInfo.GetEffectiveAddress(cpuState, _memoryManager.get());
+				if(address >= 0) {
+					uint8_t valueSize;
+					uint16_t value = disassemblyInfo.GetMemoryValue(address, _memoryManager.get(), valueSize);
+					if(rowPart.DisplayInHex) {
+						output += "= $";
+						if(valueSize == 2) {
+							WriteValue(output, (uint16_t)value, rowPart);
+						} else {
+							WriteValue(output, (uint8_t)value, rowPart);
+						}
+					} else {
+						output += "= ";
+					}
+				}
 				break;
 			}
 
@@ -284,6 +294,14 @@ void TraceLogger::AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state)
 		_logCount++;
 	}
 
+	if(_logToFile) {
+		GetTraceRow(_outputBuffer, _cpuStateCache[_currentPos], _ppuStateCache[_currentPos], _disassemblyCache[_currentPos]);
+		if(_outputBuffer.size() > 32768) {
+			_outputFile << _outputBuffer;
+			_outputBuffer.clear();
+		}
+	}
+
 	_currentPos = (_currentPos + 1) % ExecutionLogSize;
 }
 /*
@@ -296,25 +314,6 @@ void TraceLogger::LogNonExec(OperationInfo& operationInfo)
 		}
 	}
 }*/
-
-void TraceLogger::LogEffectiveAddress(uint32_t effectiveAddress)
-{
-	uint32_t pos;
-	if(_currentPos > 0) {
-		pos = _currentPos - 1;
-	} else {
-		pos = ExecutionLogSize - 1;
-	}
-	
-	_disassemblyCache[pos].SetEffectiveAddress(effectiveAddress);
-	if(_logToFile) {
-		GetTraceRow(_outputBuffer, _cpuStateCache[pos], _ppuStateCache[pos], _disassemblyCache[pos]);
-		if(_outputBuffer.size() > 32768) {
-			_outputFile << _outputBuffer;
-			_outputBuffer.clear();
-		}
-	}
-}
 
 void TraceLogger::Log(DebugState &state, DisassemblyInfo &disassemblyInfo)
 {
