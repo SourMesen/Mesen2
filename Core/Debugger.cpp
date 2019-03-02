@@ -13,6 +13,7 @@
 #include "MemoryDumper.h"
 #include "CodeDataLogger.h"
 #include "Disassembler.h"
+#include "BreakpointManager.h"
 #include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
@@ -29,6 +30,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_disassembler.reset(new Disassembler(console, _codeDataLogger));
 	_traceLogger.reset(new TraceLogger(this, _memoryManager));
 	_memoryDumper.reset(new MemoryDumper(_ppu, _memoryManager, console->GetCartridge()));
+	_breakpointManager.reset(new BreakpointManager(this));
 	_cpuStepCount = 0;
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
@@ -55,6 +57,7 @@ Debugger::~Debugger()
 void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
+	MemoryOperationInfo operation = { addr, value, type };
 	CpuState state = _cpu->GetState();
 
 	if(type == MemoryOperationType::ExecOpCode) {
@@ -70,27 +73,20 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		DebugState debugState;
-		GetState(&debugState);
+		GetState(debugState);
 
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
 		_traceLogger->Log(debugState, disInfo);
 
 		_prevOpCode = value;
 
-		if(value == 0x00 || value == 0xCB) {
-			//break on BRK/WAI
-			_cpuStepCount = 1;
-		}
-
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;
-			if(_cpuStepCount == 0) {
-				_disassembler->Disassemble();
-				_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
-				while(_cpuStepCount == 0) {
-					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
-				}
-			}
+		}
+
+		if(value == 0x00 || value == 0xCB) {
+			//Break on BRK/WAI
+			_cpuStepCount = 0;
 		}
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
@@ -101,21 +97,71 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
 	}
+
+	ProcessBreakConditions(operation, addressInfo);
 }
 
 void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
+	MemoryOperationInfo operation = { addr, value, type };
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
 		_disassembler->InvalidateCache(addressInfo);
+	}
+
+	ProcessBreakConditions(operation, addressInfo);
+}
+
+void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
+{
+	AddressInfo addressInfo(addr, SnesMemoryType::WorkRam);
+	//TODO Make this more flexible/accurate
+	MemoryOperationInfo operation(0x7E0000 | addr, value, MemoryOperationType::Read);
+	ProcessBreakConditions(operation, addressInfo);
+}
+
+void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
+{
+	AddressInfo addressInfo(addr, SnesMemoryType::WorkRam);
+	//TODO Make this more flexible/accurate
+	MemoryOperationInfo operation(0x7E0000 | addr, value, MemoryOperationType::Write);
+	ProcessBreakConditions(operation, addressInfo);
+}
+
+void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	AddressInfo addressInfo(addr, memoryType);
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read);
+	ProcessBreakConditions(operation, addressInfo);
+}
+
+void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	AddressInfo addressInfo(addr, memoryType);
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write);
+	ProcessBreakConditions(operation, addressInfo);
+}
+
+void Debugger::ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo)
+{
+	if(_breakpointManager->CheckBreakpoint(operation, addressInfo)) {
+		_cpuStepCount = 0;
+	}
+
+	if(_cpuStepCount == 0) {
+		_disassembler->Disassemble();
+		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
+		while(_cpuStepCount == 0) {
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+		}
 	}
 }
 
 int32_t Debugger::EvaluateExpression(string expression, EvalResultType &resultType, bool useCache)
 {
+	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read };
 	DebugState state;
-	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::DummyRead };
-	GetState(&state);
+	GetState(state);
 	if(useCache) {
 		return _watchExpEval->Evaluate(expression, state, resultType, operationInfo);
 	} else {
@@ -140,10 +186,10 @@ bool Debugger::IsExecutionStopped()
 	return false;
 }
 
-void Debugger::GetState(DebugState *state)
+void Debugger::GetState(DebugState &state)
 {
-	state->Cpu = _cpu->GetState();
-	state->Ppu = _ppu->GetState();
+	state.Cpu = _cpu->GetState();
+	state.Ppu = _ppu->GetState();
 }
 
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()
@@ -159,4 +205,9 @@ shared_ptr<MemoryDumper> Debugger::GetMemoryDumper()
 shared_ptr<Disassembler> Debugger::GetDisassembler()
 {
 	return _disassembler;
+}
+
+shared_ptr<BreakpointManager> Debugger::GetBreakpointManager()
+{
+	return _breakpointManager;
 }

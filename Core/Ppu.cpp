@@ -1065,8 +1065,10 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(_internalOamAddress < 512) {
 				value = _oamRam[_internalOamAddress];
+				_console->ProcessPpuRead(_internalOamAddress, value, SnesMemoryType::SpriteRam);
 			} else {
 				value = _oamRam[0x200 | (_internalOamAddress & 0x1F)];
+				_console->ProcessPpuRead(0x200 | (_internalOamAddress & 0x1F), value, SnesMemoryType::SpriteRam);
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
 			return value;
@@ -1075,6 +1077,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
 			uint8_t returnValue = (uint8_t)_vramReadBuffer;
+			_console->ProcessPpuRead(_vramAddress, returnValue, SnesMemoryType::VideoRam);
 			if(!_vramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
@@ -1085,6 +1088,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
 			uint8_t returnValue = (uint8_t)(_vramReadBuffer >> 8);
+			_console->ProcessPpuRead(_vramAddress + 1, returnValue, SnesMemoryType::VideoRam);
 			if(_vramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
@@ -1095,6 +1099,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x213B: {
 			//CGDATAREAD - CGRAM Data read
 			uint8_t value = _cgram[_cgramAddress];
+			_console->ProcessPpuRead(_cgramAddress, value, SnesMemoryType::CGRam);
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			return value;
 		}
@@ -1195,7 +1200,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2104:
 			if(_internalOamAddress < 512) {
 				if(_internalOamAddress & 0x01) {
+					_console->ProcessPpuWrite(_internalOamAddress - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
 					_oamRam[_internalOamAddress - 1] = _oamWriteBuffer;
+	
+					_console->ProcessPpuWrite(_internalOamAddress, value, SnesMemoryType::SpriteRam);
 					_oamRam[_internalOamAddress] = value;
 				} else {
 					_oamWriteBuffer = value;
@@ -1205,6 +1213,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				if((_internalOamAddress & 0x01) == 0) {
 					_oamWriteBuffer = value;
 				}
+				_console->ProcessPpuWrite(address, value, SnesMemoryType::SpriteRam);
 				_oamRam[address] = value;
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1303,6 +1312,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
+			_console->ProcessPpuWrite(_vramAddress << 1, value, SnesMemoryType::VideoRam);
+
 			_vram[_vramAddress << 1] = value;
 			if(!_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
@@ -1311,6 +1322,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
+			_console->ProcessPpuWrite((_vramAddress << 1) + 1, value, SnesMemoryType::VideoRam);
+
 			_vram[(_vramAddress << 1) + 1] = value;
 			if(_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
@@ -1350,6 +1363,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2122: 
 			//CGRAM Data write (CGDATA)
+			_console->ProcessPpuWrite(_cgramAddress, value, SnesMemoryType::CGRam);
+
 			_cgram[_cgramAddress] = value;
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			break;

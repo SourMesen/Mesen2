@@ -5,6 +5,8 @@
 #include "../Core/MemoryDumper.h"
 #include "../Core/Disassembler.h"
 #include "../Core/DebugTypes.h"
+#include "../Core/Breakpoint.h"
+#include "../Core/BreakpointManager.h"
 
 extern shared_ptr<Console> _console;
 
@@ -33,7 +35,7 @@ extern "C"
 	}
 
 	DllExport bool __stdcall IsExecutionStopped() { return GetDebugger()->IsExecutionStopped(); }
-	DllExport void __stdcall ResumeExecution() { GetDebugger()->Run(); }
+	DllExport void __stdcall ResumeExecution() { if(IsDebuggerRunning()) GetDebugger()->Run(); }
 	DllExport void __stdcall Step(uint32_t count) { GetDebugger()->Step(count); }
 
 	DllExport void __stdcall GetDisassemblyLineData(uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(lineIndex, data); }
@@ -46,9 +48,10 @@ extern "C"
 	DllExport void __stdcall StopTraceLogger() { GetDebugger()->GetTraceLogger()->StopLogging(); }
 	DllExport const char* GetExecutionTrace(uint32_t lineCount) { return GetDebugger()->GetTraceLogger()->GetExecutionTrace(lineCount); }
 
+	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { GetDebugger()->GetBreakpointManager()->SetBreakpoints(breakpoints, length); }
 	DllExport int32_t __stdcall EvaluateExpression(char* expression, EvalResultType *resultType, bool useCache) { return GetDebugger()->EvaluateExpression(expression, *resultType, useCache); }
 
-	DllExport void __stdcall GetState(DebugState *state) { GetDebugger()->GetState(state); }
+	DllExport void __stdcall GetState(DebugState &state) { GetDebugger()->GetState(state); }
 
 	DllExport void __stdcall SetMemoryState(SnesMemoryType type, uint8_t *buffer, int32_t length) { GetDebugger()->GetMemoryDumper()->SetMemoryState(type, buffer, length); }
 	DllExport uint32_t __stdcall GetMemorySize(SnesMemoryType type) { return GetDebugger()->GetMemoryDumper()->GetMemorySize(type); }

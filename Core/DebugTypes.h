@@ -24,13 +24,53 @@ struct AddressInfo
 {
 	int32_t Address;
 	SnesMemoryType Type;
+
+	AddressInfo() { }
+
+	AddressInfo(int32_t address, SnesMemoryType type)
+	{
+		Address = address;
+		Type = type;
+	}
 };
 
 struct MemoryOperationInfo
 {
 	uint32_t Address;
 	int32_t Value;
-	MemoryOperationType OperationType;
+	MemoryOperationType Type;
+	
+	MemoryOperationInfo() { }
+
+	MemoryOperationInfo(uint32_t address, int32_t value, MemoryOperationType type)
+	{
+		Address = address;
+		Value = value;
+		Type = type;
+	}
+};
+
+enum class BreakpointTypeFlags
+{
+	None = 0,
+	Execute = 1,
+	Read = 2,
+	Write = 4,
+};
+
+enum class BreakpointType
+{
+	Execute = 0,
+	Read = 1,
+	Write = 2,
+};
+
+enum class BreakpointCategory
+{
+	Cpu = 0,
+	VideoRam = 1,
+	Oam = 2,
+	CgRam = 3
 };
 
 namespace CdlFlags

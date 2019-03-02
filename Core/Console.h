@@ -18,6 +18,7 @@ class VideoRenderer;
 class VideoDecoder;
 class NotificationManager;
 enum class MemoryOperationType;
+enum class SnesMemoryType;
 
 class Console : public std::enable_shared_from_this<Console>
 {
@@ -75,4 +76,8 @@ public:
 
 	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
+	void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
+	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
+	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
 };

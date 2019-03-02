@@ -10,6 +10,7 @@
 #include "BaseCartridge.h"
 #include "RamHandler.h"
 #include "Debugger.h"
+#include "DebugTypes.h"
 #include "NotificationManager.h"
 #include "SoundMixer.h"
 #include "VideoDecoder.h"
@@ -245,5 +246,32 @@ void Console::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	if(_debugger) {
 		_debugger->ProcessCpuWrite(addr, value, type);
+	}
+}
+
+void Console::ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	if(_debugger) {
+		_debugger->ProcessPpuRead(addr, value, memoryType);
+	}
+}
+
+void Console::ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	if(_debugger) {
+		_debugger->ProcessPpuWrite(addr, value, memoryType);
+	}
+}
+
+void Console::ProcessWorkRamRead(uint32_t addr, uint8_t value)
+{
+	if(_debugger) {
+		_debugger->ProcessWorkRamRead(addr, value);
+	}
+}
+void Console::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
+{
+	if(_debugger) {
+		_debugger->ProcessWorkRamWrite(addr, value);
 	}
 }

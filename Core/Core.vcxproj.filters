@@ -191,6 +191,12 @@
     <ClInclude Include="DummyCpu.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="BreakpointManager.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Breakpoint.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -296,6 +302,10 @@
     <ClCompile Include="ExpressionEvaluator.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
+    <ClCompile Include="Breakpoint.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="BreakpointManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

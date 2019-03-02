@@ -52,6 +52,8 @@
     <ClInclude Include="blargg_config.h" />
     <ClInclude Include="blargg_endian.h" />
     <ClInclude Include="blargg_source.h" />
+    <ClInclude Include="Breakpoint.h" />
+    <ClInclude Include="BreakpointManager.h" />
     <ClInclude Include="CodeDataLogger.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ControlDeviceState.h" />
@@ -114,6 +116,8 @@
     <ClCompile Include="BaseRenderer.cpp" />
     <ClCompile Include="BaseSoundManager.cpp" />
     <ClCompile Include="BaseVideoFilter.cpp" />
+    <ClCompile Include="Breakpoint.cpp" />
+    <ClCompile Include="BreakpointManager.cpp" />
     <ClCompile Include="CodeDataLogger.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="ControlManager.cpp" />

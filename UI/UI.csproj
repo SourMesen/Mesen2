@@ -212,6 +212,21 @@
     <Compile Include="Config\ConfigAttributes.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\ConfigManager.cs" />
+    <Compile Include="Debugger\Breakpoints\Breakpoint.cs" />
+    <Compile Include="Debugger\Breakpoints\BreakpointManager.cs" />
+    <Compile Include="Debugger\Breakpoints\ctrlBreakpoints.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Breakpoints\ctrlBreakpoints.designer.cs">
+      <DependentUpon>ctrlBreakpoints.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Breakpoints\frmBreakpoint.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Breakpoints\frmBreakpoint.designer.cs">
+      <DependentUpon>frmBreakpoint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
     <Compile Include="Debugger\Config\TraceLoggerInfo.cs" />
@@ -453,6 +468,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ctrlRenderer.resx">
       <DependentUpon>ctrlRenderer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Breakpoints\ctrlBreakpoints.resx">
+      <DependentUpon>ctrlBreakpoints.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Breakpoints\frmBreakpoint.resx">
+      <DependentUpon>frmBreakpoint.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlDbgShortcuts.resx">
       <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>

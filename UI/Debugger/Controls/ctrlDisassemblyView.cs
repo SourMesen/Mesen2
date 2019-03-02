@@ -116,13 +116,14 @@ namespace Mesen.GUI.Debugger.Controls
 				props.Symbol |= LineSymbol.Arrow;
 			}
 
-			public LineProperties GetLineStyle(CodeLineData lineData, int lineNumber)
+			public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
 			{
 				DebugInfo info = ConfigManager.Config.Debug;
 				LineProperties props = new LineProperties();
-				//TODO
-				//AddressInfo addressInfo = _code.GetAddressInfo(lineNumber);
-				//GetBreakpointLineProperties(props, cpuAddress, addressInfo);
+
+				if(lineData.Address >= 0) {
+					GetBreakpointLineProperties(props, lineData.Address);
+				}
 
 				bool isActiveStatement = ActiveAddress.HasValue && ActiveAddress.Value == lineData.Address;
 				if(isActiveStatement) {
@@ -151,13 +152,11 @@ namespace Mesen.GUI.Debugger.Controls
 				return props;
 			}
 
-			public static void GetBreakpointLineProperties(LineProperties props, int cpuAddress, AddressInfo addressInfo)
+			public static void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
 			{
-				//TODO
-
-				/*DebugInfo config = ConfigManager.Config.Debug;
+				DebugInfo config = ConfigManager.Config.Debug;
 				foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
-					if(breakpoint.Matches(cpuAddress, addressInfo)) {
+					if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.CpuMemory)) {
 						Color fgColor = Color.White;
 						Color? bgColor = null;
 						Color bpColor = breakpoint.BreakOnExec ? config.CodeExecBreakpointColor : (breakpoint.BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor);
@@ -185,7 +184,7 @@ namespace Mesen.GUI.Debugger.Controls
 						props.Symbol = symbol;
 						return;
 					}
-				}*/
+				}
 			}
 		}
 	}

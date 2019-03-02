@@ -1,20 +1,23 @@
 #pragma once
 #include "stdafx.h"
 #include "IMemoryHandler.h"
+#include "Console.h"
 #include "Ppu.h"
 #include "Spc.h"
 
 class RegisterHandlerB : public IMemoryHandler
 {
 private:
-	Ppu * _ppu;
+	Console *_console;
+	Ppu *_ppu;
 	Spc *_spc;
 	uint8_t *_workRam;
 	uint32_t _wramPosition;
 
 public:
-	RegisterHandlerB(Ppu *ppu, Spc *spc, uint8_t *workRam)
+	RegisterHandlerB(Console *console, Ppu *ppu, Spc *spc, uint8_t *workRam)
 	{
+		_console = console;
 		_ppu = ppu;
 		_spc = spc;
 		_workRam = workRam;
@@ -28,6 +31,7 @@ public:
 			return _spc->Read(addr & 0x03);
 		} else if(addr == 0x2180) {
 			uint8_t value = _workRam[_wramPosition];
+			_console->ProcessWorkRamRead(_wramPosition, value);
 			_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 			return value;
 		} else {
@@ -49,8 +53,9 @@ public:
 		} if(addr >= 0x2180 && addr <= 0x2183) {
 			switch(addr & 0xFFFF) {
 				case 0x2180:
+					_console->ProcessWorkRamWrite(_wramPosition, value);
 					_workRam[_wramPosition] = value;
-					_wramPosition = (_wramPosition + 1) & (0x1FFFF);
+					_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 					break;
 
 				case 0x2181: _wramPosition = (_wramPosition & 0x1FF00) | value; break;

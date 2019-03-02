@@ -29,6 +29,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	));
 	
 	_registerHandlerB.reset(new RegisterHandlerB(
+		_console.get(),
 		_ppu.get(),
 		console->GetSpc().get(),
 		_workRam
