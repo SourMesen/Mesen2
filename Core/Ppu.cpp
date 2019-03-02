@@ -143,7 +143,7 @@ void Ppu::EvaluateNextLineSprites()
 		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
 
-		if(y > screenY + 1 || y + height <= screenY + 1) {
+		if(y > screenY || y + height <= screenY) {
 			//Not visible on this scanline
 			continue;
 		}
@@ -173,11 +173,11 @@ void Ppu::EvaluateNextLineSprites()
 		uint8_t yOffset;
 		int rowOffset;
 		if(info.VerticalMirror) {
-			yOffset = (height - 1 - (screenY + 1 - y)) & 0x07;
-			rowOffset = (height - 1 - (screenY + 1 - y)) >> 3;
+			yOffset = (height - 1 - (screenY - y)) & 0x07;
+			rowOffset = (height - 1 - (screenY - y)) >> 3;
 		} else {
-			yOffset = (screenY + 1 - y) & 0x07;
-			rowOffset = (screenY + 1 - y) >> 3;
+			yOffset = (screenY - y) & 0x07;
+			rowOffset = (screenY - y) >> 3;
 		}
 
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
