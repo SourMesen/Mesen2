@@ -72,9 +72,7 @@ void Ppu::Exec()
 
 		_rangeOver = false;
 		_timeOver = false;
-		if(_scanline < (_overscanMode ? 240 : 224)) {
-			RenderScanline();
-		} else if(_scanline == (_overscanMode ? 241 : 225)) {
+		if(_scanline == (_overscanMode ? 240 : 225)) {
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
 				_internalOamAddress = (_oamRamAddress << 1);
@@ -101,7 +99,6 @@ void Ppu::Exec()
 				_mosaicStartScanline = 0;
 			}
 			_console->GetDmaController()->InitHdmaChannels();
-			RenderScanline();
 		}
 
 		if(_regs->IsVerticalIrqEnabled() && !_regs->IsHorizontalIrqEnabled() && _scanline == _regs->GetVerticalTimer()) {
@@ -117,7 +114,10 @@ void Ppu::Exec()
 
 	_cycle++;
 
-	if(_cycle == 278 && _scanline < 225) {
+	if(_cycle == 278 && _scanline <= (_overscanMode ? 239 : 224)) {
+		if(_scanline > 0) {
+			RenderScanline();
+		}
 		_console->GetDmaController()->ProcessHdmaChannels();
 	} else if(_cycle == 134) {
 		//TODO Approximation
@@ -949,7 +949,8 @@ void Ppu::ApplyBrightness()
 
 void Ppu::ApplyHiResMode()
 {
-	uint32_t screenY = _screenInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+	uint16_t scanline = _scanline - 1;
+	uint32_t screenY = _screenInterlace ? ((_frameCount & 0x01) ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
 
 	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
 		ApplyBrightness<false>();
