@@ -131,7 +131,7 @@ void Ppu::EvaluateNextLineSprites()
 	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
 	memset(_spritePalette, 0, sizeof(_spritePalette));
 	_spriteCount = 0;
-	uint16_t screenY = _objInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+	uint16_t screenY = _scanline;
 
 	uint16_t baseAddr = _enableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
 	for(int i = 0; i < 512; i += 4) {
@@ -143,6 +143,9 @@ void Ppu::EvaluateNextLineSprites()
 		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
 		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
+		if(_objInterlace) {
+			height /= 2;
+		}
 
 		if(y > screenY || y + height <= screenY) {
 			//Not visible on this scanline
@@ -188,12 +191,17 @@ void Ppu::EvaluateNextLineSprites()
 
 		uint8_t yOffset;
 		int rowOffset;
+		int yGap = (screenY - info.Y);
+		if(_objInterlace) {
+			yGap <<= 1;
+			yGap |= (_frameCount & 0x01);
+		}
 		if(info.VerticalMirror) {
-			yOffset = (height - 1 - (screenY - info.Y)) & 0x07;
-			rowOffset = (height - 1 - (screenY - info.Y)) >> 3;
+			yOffset = (height - 1 - yGap) & 0x07;
+			rowOffset = (height - 1 - yGap) >> 3;
 		} else {
-			yOffset = (screenY - info.Y) & 0x07;
-			rowOffset = (screenY - info.Y) >> 3;
+			yOffset = yGap & 0x07;
+			rowOffset = yGap >> 3;
 		}
 
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
@@ -231,10 +239,6 @@ void Ppu::EvaluateNextLineSprites()
 				_spritePriority[x] = info.Priority;
 				_spritePalette[x] = info.Palette;
 			}
-		}
-
-		if(_timeOver) {
-			break;
 		}
 	}
 }
@@ -503,7 +507,7 @@ void Ppu::RenderTilemap()
 	}
 
 	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
-	uint16_t realY = _screenInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+	uint16_t realY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
 	/* True when the entire scanline has to be replaced by a mosaic pattern */
 	bool mosaicScanline = applyMosaic && (realY - _mosaicStartScanline) % _mosaicSize != 0;
@@ -533,7 +537,7 @@ void Ppu::RenderTilemap()
 	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
 	uint16_t vScroll = config.VScroll;
-	uint16_t hScroll = config.HScroll;
+	uint16_t hScroll = IsDoubleWidth() ? (config.HScroll << 1) : config.HScroll;
 
 	//"Offset per tile" mode (modes 2, 4 and 6 support this)
 	bool offsetPerTileMode = (_bgMode & 0x03) == 2;
@@ -965,16 +969,24 @@ void Ppu::ApplyBrightness()
 void Ppu::ApplyHiResMode()
 {
 	uint16_t scanline = _scanline - 1;
-	uint32_t screenY = _screenInterlace ? ((_frameCount & 0x01) ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
+	uint32_t screenY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
+	uint32_t baseAddr = (screenY << 9);
 
-	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
+	if(IsDoubleWidth()) {
 		ApplyBrightness<false>();
 		for(int i = 0; i < 512; i += 2) {
-			_currentBuffer[(screenY << 9) + i] = _subScreenBuffer[i >> 1];
-			_currentBuffer[(screenY << 9) + i + 1] = _mainScreenBuffer[i >> 1];
+			_currentBuffer[baseAddr + i] = _subScreenBuffer[i >> 1];
+			_currentBuffer[baseAddr + i + 1] = _mainScreenBuffer[i >> 1];
 		}
 	} else {
-		memcpy(_currentBuffer + (screenY << 8), _mainScreenBuffer, sizeof(_mainScreenBuffer));
+		for(int i = 0; i < 512; i += 2) {
+			_currentBuffer[baseAddr + i] = _mainScreenBuffer[i >> 1];
+			_currentBuffer[baseAddr + i + 1] = _mainScreenBuffer[i >> 1];
+		}
+	}
+
+	if(!IsDoubleHeight()) {
+		memcpy(_currentBuffer + baseAddr + 512, _currentBuffer + baseAddr, 512 * 2);
 	}
 }
 
@@ -1015,19 +1027,8 @@ void Ppu::SendFrame()
 {
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	uint16_t width;
-	uint16_t height;
-	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
-		width = 512;
-	} else {
-		width = 256;
-	}
-
-	if(_screenInterlace && (_bgMode == 5 || _bgMode == 6)) {
-		height = _overscanMode ? 478 : 448;
-	} else {
-		height = _overscanMode ? 239 : 224;
-	}
+	uint16_t width = 512;
+	uint16_t height = _overscanMode ? 478 : 448;
 
 	if(_screenInterlace) {
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount);
@@ -1050,6 +1051,16 @@ uint8_t* Ppu::GetCgRam()
 uint8_t* Ppu::GetSpriteRam()
 {
 	return _oamRam;
+}
+
+bool Ppu::IsDoubleHeight()
+{
+	return _screenInterlace && (_bgMode == 5 || _bgMode == 6);
+}
+
+bool Ppu::IsDoubleWidth()
+{
+	return _hiResMode || _bgMode == 5 || _bgMode == 6;
 }
 
 void Ppu::LatchLocationValues()
@@ -1579,7 +1590,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
 void Ppu::RenderTilemap()
 {
-	if(_hiResMode || _bgMode == 5 || _bgMode == 6) {
+	if(IsDoubleWidth()) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, true>();
 	} else {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, false>();

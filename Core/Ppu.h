@@ -212,6 +212,9 @@ private:
 
 	void SendFrame();
 
+	bool IsDoubleHeight();
+	bool IsDoubleWidth();
+
 public:
 	Ppu(shared_ptr<Console> console);
 	~Ppu();
