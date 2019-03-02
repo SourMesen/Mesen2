@@ -655,56 +655,47 @@ Move operations
 ****************/
 void Cpu::MVN()
 {
-#ifndef DUMMYCPU
 	_state.DBR = _operand & 0xFF;
 	uint32_t destBank = _state.DBR << 16;
 	uint32_t srcBank = (_operand << 8) & 0xFF0000;
-	do {
-		uint8_t value = ReadData(srcBank | _state.X);
-		Write(destBank | _state.Y, value);
 
-		Idle();
-		Idle();
+	uint8_t value = ReadData(srcBank | _state.X);
+	Write(destBank | _state.Y, value);
 
-		_state.X++;
-		_state.Y++;
-		_state.A--;
+	Idle();
+	Idle();
 
-		if(_state.A != 0xFFFF) {
-			//"Idle" cycles, instruction re-reads OP code and operands before every new byte
-			Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
-			Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
-			Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
-		}
-	} while(_state.A != 0xFFFF);
-#endif
+	_state.X++;
+	_state.Y++;
+	_state.A--;
+
+
+	if(_state.A != 0xFFFF) {
+		//Operation isn't done, set the PC back to the start of the instruction
+		_state.PC -= 3;
+	}
 }
 
 void Cpu::MVP()
 {
-#ifndef DUMMYCPU
 	_state.DBR = _operand & 0xFF;
 	uint32_t destBank = _state.DBR << 16;
 	uint32_t srcBank = (_operand << 8) & 0xFF0000;
-	do {
-		uint8_t value = ReadData(srcBank | _state.X);
-		Write(destBank | _state.Y, value);
 
-		Idle();
-		Idle();
+	uint8_t value = ReadData(srcBank | _state.X);
+	Write(destBank | _state.Y, value);
 
-		_state.X--;
-		_state.Y--;
-		_state.A--;
+	Idle();
+	Idle();
+
+	_state.X--;
+	_state.Y--;
+	_state.A--;
 		
-		if(_state.A != 0xFFFF) {
-			//"Idle" cycles, instruction re-reads OP code and operands before every new byte
-			Read((_state.K << 16) | (_state.PC - 3), MemoryOperationType::Read);
-			Read((_state.K << 16) | (_state.PC - 2), MemoryOperationType::Read);
-			Read((_state.K << 16) | (_state.PC - 1), MemoryOperationType::Read);
-		}
-	} while(_state.A != 0xFFFF);
-#endif
+	if(_state.A != 0xFFFF) {
+		//Operation isn't done, set the PC back to the start of the instruction
+		_state.PC -= 3;
+	}
 }
 
 /********************
@@ -1090,7 +1081,14 @@ void Cpu::STP()
 
 void Cpu::WAI()
 {
+#ifndef DUMMYCPU
 	//Wait for interrupt
+	while(!_irqSource && !_nmiFlag) {
+		_memoryManager->IncrementMasterClockValue<4>();
+	}
+	Idle();
+	Idle();
+#endif
 }
 
 /****************
