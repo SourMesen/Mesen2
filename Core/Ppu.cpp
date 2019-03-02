@@ -131,14 +131,15 @@ void Ppu::EvaluateNextLineSprites()
 	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
 	memset(_spritePalette, 0, sizeof(_spritePalette));
 	_spriteCount = 0;
-	uint16_t totalWidth = 0;
 	uint16_t screenY = _objInterlace ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
+	uint16_t baseAddr = _enableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
 	for(int i = 0; i < 512; i += 4) {
-		uint8_t y = _oamRam[i + 1];
+		uint16_t addr = (baseAddr + i) & 0x1FF;
+		uint8_t y = _oamRam[addr + 1];
 
-		uint8_t highTableOffset = i >> 4;
-		uint8_t shift = ((i >> 2) & 0x03) << 1;
+		uint8_t highTableOffset = addr >> 4;
+		uint8_t shift = ((addr >> 2) & 0x03) << 1;
 		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
 		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
@@ -152,73 +153,87 @@ void Ppu::EvaluateNextLineSprites()
 		info.LargeSprite = largeSprite;
 		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
 		uint16_t sign = (highTableValue & 0x01) << 8;
-		info.X = (int16_t)((sign | _oamRam[i]) << 7) >> 7;
-		
-		if(info.X != -256 && info.X + width <= 0 || info.X > 255) {
+		info.X = (int16_t)((sign | _oamRam[addr]) << 7) >> 7;
+		info.Y = y;
+
+		if(info.X != -256 && (info.X + width <= 0 || info.X > 255)) {
 			//Sprite is not visible (and must be ignored for time/range flag calculations)
 			//Sprites at X=-256 are always used when considering Time/Range flag calculations, but not actually drawn.
 			continue;
 		}
 
-		info.TileRow = (_oamRam[i + 2] & 0xF0) >> 4;
-		info.TileColumn = _oamRam[i + 2] & 0x0F;
+		info.TileRow = (_oamRam[addr + 2] & 0xF0) >> 4;
+		info.TileColumn = _oamRam[addr + 2] & 0x0F;
 
-		uint8_t flags = _oamRam[i + 3];
+		uint8_t flags = _oamRam[addr + 3];
 		info.UseSecondTable = (flags & 0x01) != 0;
 		info.Palette = (flags >> 1) & 0x07;
 		info.Priority = (flags >> 4) & 0x03;
 		info.HorizontalMirror = (flags & 0x40) != 0;
 		info.VerticalMirror = (flags & 0x80) != 0;
 
+		if(_spriteCount < 32) {
+			_spriteCount++;
+		} else {
+			_rangeOver = true;
+			break;
+		}
+	}
+
+	uint16_t spriteTileCount = 0;
+	for(int i = (int16_t)_spriteCount - 1; i >= 0; i--) {
+		SpriteInfo &info = _sprites[i];
+		uint8_t height = _oamSizes[_oamMode][info.LargeSprite][1] << 3;
+		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
+
 		uint8_t yOffset;
 		int rowOffset;
 		if(info.VerticalMirror) {
-			yOffset = (height - 1 - (screenY - y)) & 0x07;
-			rowOffset = (height - 1 - (screenY - y)) >> 3;
+			yOffset = (height - 1 - (screenY - info.Y)) & 0x07;
+			rowOffset = (height - 1 - (screenY - info.Y)) >> 3;
 		} else {
-			yOffset = (screenY - y) & 0x07;
-			rowOffset = (screenY - y) >> 3;
+			yOffset = (screenY - info.Y) & 0x07;
+			rowOffset = (screenY - info.Y) >> 3;
 		}
 
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
+		int prevColumnOffset = -1;
+
 		for(int x = std::max<int16_t>(info.X, 0); x < info.X + width && x < 256; x++) {
-			if(_spritePixels[x] == 0xFFFF) {
-				uint8_t xOffset;
-				int columnOffset;
-				if(info.HorizontalMirror) {
-					xOffset = (width - (x - info.X) - 1) & 0x07;
-					columnOffset = (width - (x - info.X) - 1) >> 3;
-				} else {
-					xOffset = (x - info.X) & 0x07;
-					columnOffset = (x - info.X) >> 3;
+			uint8_t xOffset;
+			int columnOffset;
+			if(info.HorizontalMirror) {
+				xOffset = (width - (x - info.X) - 1) & 0x07;
+				columnOffset = (width - (x - info.X) - 1) >> 3;
+			} else {
+				xOffset = (x - info.X) & 0x07;
+				columnOffset = (x - info.X) >> 3;
+			}
+
+			if(prevColumnOffset != columnOffset) {
+				spriteTileCount++;
+				if(spriteTileCount > 34) {
+					_timeOver = true;
+					return;
 				}
+				prevColumnOffset = columnOffset;
+			}
 
-				uint8_t column = (info.TileColumn + columnOffset) & 0x0F;
-				uint8_t tileIndex = (row << 4) | column;
-				uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
+			uint8_t column = (info.TileColumn + columnOffset) & 0x0F;
+			uint8_t tileIndex = (row << 4) | column;
+			uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
 
-				uint16_t color = GetTilePixelColor<4>(tileStart + yOffset * 2, 7 - xOffset);
+			uint16_t color = GetTilePixelColor<4>(tileStart + yOffset * 2, 7 - xOffset);
 
-				if(color != 0) {
-					uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
-					_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-					_spritePriority[x] = info.Priority;
-					_spritePalette[x] = info.Palette;
-				}
+			if(color != 0) {
+				uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
+				_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+				_spritePriority[x] = info.Priority;
+				_spritePalette[x] = info.Palette;
 			}
 		}
 
-		totalWidth += width;
-		if(totalWidth > 34 * 8) {
-			_timeOver = true;
-		}
-
-		_spriteCount++;
-		if(_spriteCount > 32) {
-			_rangeOver = true;
-		}
-
-		if(_timeOver || _rangeOver) {
+		if(_timeOver) {
 			break;
 		}
 	}

@@ -8,6 +8,7 @@ class InternalRegisters;
 struct SpriteInfo
 {
 	int16_t X;
+	uint8_t Y;
 	bool HorizontalMirror;
 	bool VerticalMirror;
 	uint8_t Priority;
