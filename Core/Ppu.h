@@ -207,6 +207,7 @@ private:
 	void ProcessWindowMaskSettings(uint8_t value, uint8_t offset);
 
 	void UpdateVramReadBuffer();
+	uint16_t GetVramAddress();
 
 	void SendFrame();
 

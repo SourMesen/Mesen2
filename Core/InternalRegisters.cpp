@@ -75,10 +75,12 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 
 		case 0x4212: {
 			PpuState state = _console->GetPpu()->GetState();
+			uint32_t vblankStart = state.OverscanMode ? 241 : 225;
+			//TODO TIMING (set/clear timing)
 			return (
-				(state.Scanline >= 225 ? 0x80 : 0) |
+				(state.Scanline >= vblankStart ? 0x80 : 0) |
 				((state.Cycle >= 0x121 || state.Cycle <= 0x15) ? 0x40 : 0) |
-				((_enableAutoJoypadRead && state.Scanline >= 225 && state.Scanline <= 227) ? 0x01 : 0) //Auto joypad read in progress
+				((_enableAutoJoypadRead && state.Scanline >= vblankStart && state.Scanline <= vblankStart + 2) ? 0x01 : 0) //Auto joypad read in progress
 			);
 		}
 
@@ -111,6 +113,11 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			_enableNmi = (value & 0x80) != 0;
 			_enableVerticalIrq = (value & 0x20) != 0;
 			_enableHorizontalIrq = (value & 0x10) != 0;
+
+			if(!_enableHorizontalIrq && !_enableVerticalIrq) {
+				//TODO VERIFY
+				_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
+			}
 
 			_enableAutoJoypadRead = (value & 0x01) != 0;
 			break;

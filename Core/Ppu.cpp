@@ -59,7 +59,8 @@ PpuState Ppu::GetState()
 	return {
 		_cycle,
 		_scanline,
-		_frameCount
+		_frameCount,
+		_overscanMode
 	};
 }
 
@@ -1044,7 +1045,20 @@ void Ppu::LatchLocationValues()
 
 void Ppu::UpdateVramReadBuffer()
 {
-	_vramReadBuffer = _vram[_vramAddress << 1] | (_vram[(_vramAddress << 1) + 1] << 8);
+	uint16_t addr = GetVramAddress();
+	_vramReadBuffer = _vram[addr << 1] | (_vram[(addr << 1) + 1] << 8);
+}
+
+uint16_t Ppu::GetVramAddress()
+{
+	uint16_t addr = _vramAddress;
+	switch(_vramAddressRemapping) {
+		default:
+		case 0: return addr;
+		case 1: return (addr & 0xFF00) | ((addr & 0xE0) >> 5) | ((addr & 0x1F) << 3);
+		case 2: return (addr & 0xFE00) | ((addr & 0x1C0) >> 6) | ((addr & 0x3F) << 3);
+		case 3: return (addr & 0xFC00) | ((addr & 0x380) >> 7) | ((addr & 0x7F) << 3);
+	}
 }
 
 uint8_t Ppu::Read(uint16_t addr)
@@ -1077,7 +1091,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
 			uint8_t returnValue = (uint8_t)_vramReadBuffer;
-			_console->ProcessPpuRead(_vramAddress, returnValue, SnesMemoryType::VideoRam);
+			_console->ProcessPpuRead(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
 			if(!_vramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
@@ -1088,7 +1102,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
 			uint8_t returnValue = (uint8_t)(_vramReadBuffer >> 8);
-			_console->ProcessPpuRead(_vramAddress + 1, returnValue, SnesMemoryType::VideoRam);
+			_console->ProcessPpuRead(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
 			if(_vramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
@@ -1135,10 +1149,6 @@ uint8_t Ppu::Read(uint16_t addr)
 			//STAT77 - PPU Status Flag and Version
 			//TODO open bus on bit 4
 
-			//"The high/low selector is reset to elowf when $213f is read"
-			_horizontalLocToggle = false;
-			_verticalLocationToggle = false;
-
 			return (
 				(_timeOver ? 0x80 : 0) |
 				(_rangeOver ? 0x40 : 0) |
@@ -1157,6 +1167,10 @@ uint8_t Ppu::Read(uint16_t addr)
 
 			if(_regs->GetIoPortOutput() & 0x80) {
 				_locationLatched = false;
+
+				//"The high/low selector is reset to elowf when $213F is read" (the selector is NOT reset when the counter is latched)
+				_horizontalLocToggle = false;
+				_verticalLocationToggle = false;
 			}
 
 			return value;
@@ -1312,9 +1326,9 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
-			_console->ProcessPpuWrite(_vramAddress << 1, value, SnesMemoryType::VideoRam);
+			_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
 
-			_vram[_vramAddress << 1] = value;
+			_vram[GetVramAddress() << 1] = value;
 			if(!_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
@@ -1322,9 +1336,9 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
-			_console->ProcessPpuWrite((_vramAddress << 1) + 1, value, SnesMemoryType::VideoRam);
+			_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
 
-			_vram[(_vramAddress << 1) + 1] = value;
+			_vram[(GetVramAddress() << 1) + 1] = value;
 			if(_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}

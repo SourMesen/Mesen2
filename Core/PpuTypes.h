@@ -6,6 +6,7 @@ struct PpuState
 	uint16_t Cycle;
 	uint16_t Scanline;
 	uint32_t FrameCount;
+	bool OverscanMode;
 };
 
 struct LayerConfig
