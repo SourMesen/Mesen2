@@ -70,8 +70,6 @@ void Ppu::Exec()
 		_cycle = -1;
 		_scanline++;
 
-		_rangeOver = false;
-		_timeOver = false;
 		if(_scanline == (_overscanMode ? 240 : 225)) {
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
@@ -94,6 +92,8 @@ void Ppu::Exec()
 		} else if(_scanline == 261) {
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
+			_rangeOver = false;
+			_timeOver = false;
 
 			if(_mosaicEnabled) {
 				_mosaicStartScanline = 0;
@@ -209,12 +209,12 @@ void Ppu::EvaluateNextLineSprites()
 		}
 
 		totalWidth += width;
-		if(totalWidth >= 34 * 8) {
+		if(totalWidth > 34 * 8) {
 			_timeOver = true;
 		}
 
 		_spriteCount++;
-		if(_spriteCount == 32) {
+		if(_spriteCount > 32) {
 			_rangeOver = true;
 		}
 
@@ -1144,7 +1144,6 @@ uint8_t Ppu::Read(uint16_t addr)
 			_verticalLocationToggle = !_verticalLocationToggle;
 			return value;
 		}
-
 
 		case 0x213E:
 			//STAT77 - PPU Status Flag and Version

@@ -78,7 +78,7 @@ private:
 	uint16_t *_outputBuffers[2];
 	uint16_t *_currentBuffer;
 
-	SpriteInfo _sprites[32] = {};
+	SpriteInfo _sprites[33] = {};
 	uint8_t _spriteCount = 0;
 	uint8_t _spritePriority[256] = {};
 	uint8_t _spritePalette[256] = {};

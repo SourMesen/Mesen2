@@ -79,7 +79,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			//TODO TIMING (set/clear timing)
 			return (
 				(state.Scanline >= vblankStart ? 0x80 : 0) |
-				((state.Cycle >= 0x121 || state.Cycle <= 0x15) ? 0x40 : 0) |
+				(state.Cycle >= 0x121 ? 0x40 : 0) | //TODO VERIFY (seems to contradict Anomie's docs?)
 				((_enableAutoJoypadRead && state.Scanline >= vblankStart && state.Scanline <= vblankStart + 2) ? 0x01 : 0) //Auto joypad read in progress
 			);
 		}
