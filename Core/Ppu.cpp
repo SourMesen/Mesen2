@@ -551,7 +551,7 @@ void Ppu::RenderTilemap()
 	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;
 
 	//"Offset per tile" mode (modes 2, 4 and 6 support this)
-	bool offsetPerTileMode = (_bgMode & 0x03) == 2;
+	bool offsetPerTileMode = _bgMode == 2 || _bgMode == 4 || _bgMode == 6;
 
 	/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
 	uint16_t realX;
@@ -678,7 +678,7 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 			int16_t offsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
 
 			if((offsetValue & 0x8000) == 0 && (offsetValue & enableBit)) {
-				hScroll = (hScroll & 0x07) | ((x & ~0x07) + (offsetValue & 0x3F8));
+				hScroll = (hScroll & 0x07) | (offsetValue & 0x3F8);
 			}
 			if((offsetValue & 0x8000) != 0 && (offsetValue & enableBit)) {
 				vScroll = (offsetValue & 0x3FF);
@@ -690,7 +690,7 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 			int16_t vOffsetValue = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
 
 			if(hOffsetValue & enableBit) {
-				hScroll = (hScroll & 0x07) | ((x & ~0x07) + (hOffsetValue & 0x3F8));
+				hScroll = (hScroll & 0x07) | (hOffsetValue & 0x3F8);
 			}
 			if(vOffsetValue & enableBit) {
 				vScroll = (vOffsetValue & 0x3FF);
