@@ -537,7 +537,7 @@ void Ppu::RenderTilemap()
 	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
 	uint16_t vScroll = config.VScroll;
-	uint16_t hScroll = IsDoubleWidth() ? (config.HScroll << 1) : config.HScroll;
+	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;
 
 	//"Offset per tile" mode (modes 2, 4 and 6 support this)
 	bool offsetPerTileMode = (_bgMode & 0x03) == 2;
@@ -1590,7 +1590,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
 void Ppu::RenderTilemap()
 {
-	if(IsDoubleWidth()) {
+	if(_bgMode == 5 || _bgMode == 6) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, true>();
 	} else {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, false>();
