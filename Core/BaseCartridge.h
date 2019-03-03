@@ -66,14 +66,15 @@ private:
 	void LoadBattery();
 	void SaveBattery();
 
+	CartFlags::CartFlags GetCartFlags();
+	void DisplayCartInfo();
+
 public:
 	~BaseCartridge();
 
 	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile &romFile, VirtualFile &patchFile);
 
 	void Init();
-
-	CartFlags::CartFlags GetCartFlags();
 
 	RomInfo GetRomInfo();
 

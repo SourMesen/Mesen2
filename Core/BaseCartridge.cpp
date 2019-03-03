@@ -4,6 +4,8 @@
 #include "RomHandler.h"
 #include "MemoryManager.h"
 #include "IMemoryHandler.h"
+#include "MessageManager.h"
+#include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -60,6 +62,8 @@ void BaseCartridge::Init()
 	_saveRam = new uint8_t[_saveRamSize];
 
 	LoadBattery();
+
+	DisplayCartInfo();
 }
 
 RomInfo BaseCartridge::GetRomInfo()
@@ -98,7 +102,7 @@ void BaseCartridge::SaveBattery()
 CartFlags::CartFlags BaseCartridge::GetCartFlags()
 {
 	uint32_t flags = 0;
-	if(_cartInfo.MapMode  & 0x04) {
+	if(_cartInfo.MapMode & 0x04) {
 		flags |= CartFlags::ExHiRom;
 	} else if(_cartInfo.MapMode & 0x02) {
 		flags |= CartFlags::ExLoRom;
@@ -170,5 +174,40 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
 		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
 	}
+}
 
+void BaseCartridge::DisplayCartInfo()
+{
+	int nameLength = 21;
+	for(int i = 0; i < 21; i++) {
+		if(_cartInfo.CartName[i] == 0) {
+			nameLength = i;
+			break;
+		}
+	}
+
+	CartFlags::CartFlags flags = GetCartFlags();
+	MessageManager::Log("-----------------------------");
+	MessageManager::Log("Game: " + string(_cartInfo.CartName, nameLength));
+	if(flags & CartFlags::HiRom) {
+		MessageManager::Log("Type: HiROM");
+	} else if(flags & CartFlags::LoRom) {
+		MessageManager::Log("Type: LoROM");
+	} else if(flags & CartFlags::ExHiRom) {
+		MessageManager::Log("Type: ExHiROM");
+	} else if(flags & CartFlags::ExLoRom) {
+		MessageManager::Log("Type: ExLoROM");
+	}
+
+	if(flags & CartFlags::FastRom) {
+		MessageManager::Log("FastROM");
+	}
+
+	MessageManager::Log("Map Mode: $" + HexUtilities::ToHex(_cartInfo.MapMode));
+	MessageManager::Log("Rom Type: $" + HexUtilities::ToHex(_cartInfo.RomType));
+
+	MessageManager::Log("File size: " + std::to_string(_prgRomSize / 1024) + " KB");
+	MessageManager::Log("ROM size: " + std::to_string((0x400 << _cartInfo.RomSize) / 1024) + " KB");
+	MessageManager::Log("SRAM size: " + std::to_string(1 << _cartInfo.SramSize) + " KB");
+	MessageManager::Log("-----------------------------");
 }

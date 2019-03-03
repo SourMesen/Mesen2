@@ -117,8 +117,6 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
-		MessageManager::ClearLog();
-
 		vector<uint8_t> spcRomData;
 		VirtualFile spcBios(FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "spc700.rom"));
 		if(spcBios.IsValid()) {
