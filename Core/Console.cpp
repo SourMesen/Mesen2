@@ -267,9 +267,17 @@ void Console::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 		_debugger->ProcessWorkRamRead(addr, value);
 	}
 }
+
 void Console::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 {
 	if(_debugger) {
 		_debugger->ProcessWorkRamWrite(addr, value);
+	}
+}
+
+void Console::ProcessPpuCycle()
+{
+	if(_debugger) {
+		_debugger->ProcessPpuCycle();
 	}
 }

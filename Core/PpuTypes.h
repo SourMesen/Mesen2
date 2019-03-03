@@ -1,14 +1,6 @@
 #pragma once
 #include "stdafx.h"
 
-struct PpuState
-{
-	uint16_t Cycle;
-	uint16_t Scanline;
-	uint32_t FrameCount;
-	bool OverscanMode;
-};
-
 struct LayerConfig
 {
 	uint16_t TilemapAddress;
@@ -17,10 +9,21 @@ struct LayerConfig
 	uint16_t HScroll;
 	uint16_t VScroll;
 
-	bool HorizontalMirroring;
-	bool VerticalMirroring;
+	bool DoubleWidth;
+	bool DoubleHeight;
 
 	bool LargeTiles;
+};
+
+struct PpuState
+{
+	uint16_t Cycle;
+	uint16_t Scanline;
+	uint32_t FrameCount;
+	bool OverscanMode;
+
+	uint8_t BgMode;
+	LayerConfig Layers[4];
 };
 
 struct Mode7Config

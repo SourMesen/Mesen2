@@ -61,6 +61,7 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="DummyCpu.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
+    <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RegisterHandlerB.h" />
     <ClInclude Include="CpuTypes.h" />
     <ClInclude Include="Debugger.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="NotificationManager.cpp" />
     <ClCompile Include="Ppu.cpp" />
+    <ClCompile Include="PpuTools.cpp" />
     <ClCompile Include="SNES_SPC.cpp" />
     <ClCompile Include="SNES_SPC_misc.cpp" />
     <ClCompile Include="SNES_SPC_state.cpp" />

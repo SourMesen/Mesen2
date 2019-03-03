@@ -14,6 +14,7 @@
 #include "CodeDataLogger.h"
 #include "Disassembler.h"
 #include "BreakpointManager.h"
+#include "PpuTools.h"
 #include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
@@ -31,6 +32,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_traceLogger.reset(new TraceLogger(this, _memoryManager));
 	_memoryDumper.reset(new MemoryDumper(_ppu, _memoryManager, console->GetCartridge()));
 	_breakpointManager.reset(new BreakpointManager(this));
+	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_cpuStepCount = 0;
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
@@ -84,10 +86,10 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_cpuStepCount--;
 		}
 
-		if(value == 0x00 || value == 0xCB) {
-			//Break on BRK/WAI
+		/*if(value == 0x00 || value == 0xDB || value == 0x42) {
+			//Break on BRK/STP/WDM
 			_cpuStepCount = 0;
-		}
+		}*/
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
@@ -140,6 +142,13 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 	AddressInfo addressInfo(addr, memoryType);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write);
 	ProcessBreakConditions(operation, addressInfo);
+}
+
+void Debugger::ProcessPpuCycle()
+{
+	uint16_t scanline = _ppu->GetState().Scanline;
+	uint16_t cycle = _ppu->GetState().Cycle;
+	_ppuTools->UpdateViewers(scanline, cycle);
 }
 
 void Debugger::ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo)
@@ -210,4 +219,9 @@ shared_ptr<Disassembler> Debugger::GetDisassembler()
 shared_ptr<BreakpointManager> Debugger::GetBreakpointManager()
 {
 	return _breakpointManager;
+}
+
+shared_ptr<PpuTools> Debugger::GetPpuTools()
+{
+	return _ppuTools;
 }

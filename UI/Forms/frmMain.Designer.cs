@@ -39,6 +39,7 @@
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -86,7 +87,8 @@
             this.toolStripMenuItem1,
             this.mnuDebugger,
             this.mnuMemoryTools,
-            this.mnuTraceLogger});
+            this.mnuTraceLogger,
+            this.mnuTilemapViewer});
 			this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
 			this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
 			this.debugToolStripMenuItem.Text = "Debug";
@@ -144,6 +146,14 @@
 			this.mnuTraceLogger.Text = "Trace Logger";
 			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
+			// mnuTilemapViewer
+			// 
+			this.mnuTilemapViewer.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
+			this.mnuTilemapViewer.Name = "mnuTilemapViewer";
+			this.mnuTilemapViewer.Size = new System.Drawing.Size(163, 22);
+			this.mnuTilemapViewer.Text = "Tilemap Viewer";
+			this.mnuTilemapViewer.Click += new System.EventHandler(this.mnuTilemapViewer_Click);
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -176,5 +186,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem mnuRun100Instructions;
 		private System.Windows.Forms.ToolStripMenuItem mnuMemoryTools;
+		private System.Windows.Forms.ToolStripMenuItem mnuTilemapViewer;
 	}
 }

@@ -73,6 +73,11 @@ namespace Mesen.GUI.Forms
 			DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools);
 		}
 
+		private void mnuTilemapViewer_Click(object sender, EventArgs e)
+		{
+			DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer);
+		}
+
 		private void mnuStep_Click(object sender, EventArgs e)
 		{
 			DebugApi.Step(1);

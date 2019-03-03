@@ -56,12 +56,17 @@ uint32_t Ppu::GetFrameCount()
 
 PpuState Ppu::GetState()
 {
-	return {
-		_cycle,
-		_scanline,
-		_frameCount,
-		_overscanMode
-	};
+	PpuState state;
+	state.Cycle = _cycle;
+	state.Scanline = _scanline;
+	state.FrameCount = _frameCount;
+	state.OverscanMode = _overscanMode;
+	state.BgMode = _bgMode;
+	state.Layers[0] = _layerConfig[0];
+	state.Layers[1] = _layerConfig[1];
+	state.Layers[2] = _layerConfig[2];
+	state.Layers[3] = _layerConfig[3];
+	return state;
 }
 
 void Ppu::Exec()
@@ -86,7 +91,7 @@ void Ppu::Exec()
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		} else if(_scanline == 240 && _cycle == 0 && _frameCount & 0x01) {
+		} else if(_scanline == 240 && _frameCount & 0x01) {
 			//Skip 1 tick every other frame
 			_cycle++;
 		} else if(_scanline == 261) {
@@ -107,13 +112,14 @@ void Ppu::Exec()
 		}
 	}
 
+	_cycle++;
+	_console->ProcessPpuCycle();
+
 	if(_regs->IsHorizontalIrqEnabled() && _cycle == _regs->GetHorizontalTimer() && (!_regs->IsVerticalIrqEnabled() || _scanline == _regs->GetVerticalTimer())) {
 		//An IRQ will occur sometime just after the H Counter reaches the value set in $4207/$4208.
 		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 	}
-
-	_cycle++;
-
+	
 	if(_cycle == 278 && _scanline <= (_overscanMode ? 239 : 224)) {
 		if(_scanline != 0) {
 			RenderScanline();
@@ -536,7 +542,7 @@ void Ppu::RenderTilemap()
 	uint8_t baseYOffset = (realY + config.VScroll) & 0x07;
 
 	/* Tilemap offset based on the current row & tilemap size options */
-	uint16_t addrVerticalScrollingOffset = config.VerticalMirroring ? ((row & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0;
+	uint16_t addrVerticalScrollingOffset = config.DoubleHeight ? ((row & 0x20) << (config.DoubleWidth ? 6 : 5)) : 0;
 
 	/* The start address for tiles on this row */
 	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
@@ -570,7 +576,7 @@ void Ppu::RenderTilemap()
 			baseYOffset = (realY + vScroll) & 0x07;
 		} else {
 			column = (realX + hScroll) >> (largeTileWidth ? 4 : 3);
-			addr = (baseOffset + (column & 0x1F) + (config.HorizontalMirroring ? ((column & 0x20) << 5) : 0)) << 1;
+			addr = (baseOffset + (column & 0x1F) + (config.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
 		}
 
 		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
@@ -625,9 +631,7 @@ void Ppu::RenderTilemap()
 		uint16_t color = GetTilePixelColor<bpp>(pixelStart, shift);
 
 		if(color > 0) {
-			/* Ignore palette bits for 256-color layers */
 			uint16_t paletteColor;
-
 			if(bpp == 8 && directColorMode) {
 				uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
 				paletteColor = (
@@ -636,6 +640,7 @@ void Ppu::RenderTilemap()
 					(((color & 0xC0) | ((palette & 0x04) << 3)) << 7)
 				);
 			} else {
+				/* Ignore palette bits for 256-color layers */
 				uint8_t palette = bpp == 8 ? 0 : (_vram[addr + 1] >> 2) & 0x07;
 				uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
 				paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
@@ -698,9 +703,9 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 	uint16_t offsetModeRow = (realY + vScroll) >> (largeTileHeight ? 4 : 3);
 	uint16_t offsetModeColumn = (realX + hScroll) >> (largeTileWidth ? 4 : 3);
 
-	uint16_t addrVerticalScrollingOffset = config.VerticalMirroring ? ((offsetModeRow & 0x20) << (config.HorizontalMirroring ? 6 : 5)) : 0;
+	uint16_t addrVerticalScrollingOffset = config.DoubleHeight ? ((offsetModeRow & 0x20) << (config.DoubleWidth ? 6 : 5)) : 0;
 	uint16_t offsetModeBaseAddress = tilemapAddr + addrVerticalScrollingOffset + ((offsetModeRow & 0x1F) << 5);
-	addr = (offsetModeBaseAddress + (offsetModeColumn & 0x1F) + (config.HorizontalMirroring ? ((offsetModeColumn & 0x20) << 5) : 0)) << 1;
+	addr = (offsetModeBaseAddress + (offsetModeColumn & 0x1F) + (config.DoubleWidth ? ((offsetModeColumn & 0x20) << 5) : 0)) << 1;
 }
 
 template<bool forMainScreen>
@@ -1266,7 +1271,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			
 		case 0x2105:
 			if(_bgMode != (value & 0x07)) {
-				MessageManager::DisplayMessage("Debug", "Entering mode: " + std::to_string(value & 0x07));
+				MessageManager::DisplayMessage("Debug", "Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
 			}
 			_bgMode = value & 0x07;
 			_mode1Bg3Priority = (value & 0x08) != 0;
@@ -1290,8 +1295,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
 			//BG 1-4 Tilemap Address and Size (BG1SC, BG2SC, BG3SC, BG4SC)
 			_layerConfig[addr - 0x2107].TilemapAddress = (value & 0xFC) << 9;
-			_layerConfig[addr - 0x2107].HorizontalMirroring = (value & 0x01) != 0;
-			_layerConfig[addr - 0x2107].VerticalMirroring = (value & 0x02) != 0;
+			_layerConfig[addr - 0x2107].DoubleWidth = (value & 0x01) != 0;
+			_layerConfig[addr - 0x2107].DoubleHeight = (value & 0x02) != 0;
 			break;
 
 		case 0x210B: case 0x210C:

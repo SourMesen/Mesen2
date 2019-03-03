@@ -7,6 +7,7 @@
 #include "../Core/DebugTypes.h"
 #include "../Core/Breakpoint.h"
 #include "../Core/BreakpointManager.h"
+#include "../Core/PpuTools.h"
 
 extern shared_ptr<Console> _console;
 
@@ -59,4 +60,7 @@ extern "C"
 	DllExport uint8_t __stdcall GetMemoryValue(SnesMemoryType type, uint32_t address) { return GetDebugger()->GetMemoryDumper()->GetMemoryValue(type, address); }
 	DllExport void __stdcall SetMemoryValue(SnesMemoryType type, uint32_t address, uint8_t value) { return GetDebugger()->GetMemoryDumper()->SetMemoryValue(type, address, value); }
 	DllExport void __stdcall SetMemoryValues(SnesMemoryType type, uint32_t address, uint8_t* data, int32_t length) { return GetDebugger()->GetMemoryDumper()->SetMemoryValues(type, address, data, length); }
+
+	DllExport void __stdcall GetTilemap(GetTilemapOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, buffer); }
+	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle); }
 };

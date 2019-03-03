@@ -16,6 +16,7 @@ enum class ConsoleNotificationType
 	ExecuteShortcut = 10,
 	EmulationStopped = 11,
 	BeforeEmulationStop = 12,
+	ViewerRefresh = 13,
 };
 
 class INotificationListener

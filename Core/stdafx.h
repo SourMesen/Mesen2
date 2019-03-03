@@ -12,6 +12,8 @@
 #include <cctype>
 #include <memory>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
 #include <array>
 #include <sstream>
 #include <list>
@@ -30,6 +32,8 @@
 #endif
 
 using std::vector;
+using std::unordered_map;
+using std::unordered_set;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::weak_ptr;

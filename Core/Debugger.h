@@ -19,6 +19,7 @@ class ExpressionEvaluator;
 class MemoryDumper;
 class Disassembler;
 class BreakpointManager;
+class PpuTools;
 struct DebugState;
 struct MemoryOperationInfo;
 struct AddressInfo;
@@ -37,6 +38,7 @@ private:
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 	shared_ptr<Disassembler> _disassembler;
 	shared_ptr<BreakpointManager> _breakpointManager;
+	shared_ptr<PpuTools> _ppuTools;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval;
 
@@ -55,6 +57,7 @@ public:
 
 	void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+	void ProcessPpuCycle();
 
 	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);
 
@@ -70,4 +73,5 @@ public:
 	shared_ptr<MemoryDumper> GetMemoryDumper();
 	shared_ptr<Disassembler> GetDisassembler();
 	shared_ptr<BreakpointManager> GetBreakpointManager();
+	shared_ptr<PpuTools> GetPpuTools();
 };

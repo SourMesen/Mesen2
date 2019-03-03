@@ -70,6 +70,16 @@ namespace Mesen.GUI
 			DebugApi.GetMemoryStateWrapper(type, buffer);
 			return buffer;
 		}
+
+		[DllImport(DllPath, EntryPoint = "GetTilemap")] private static extern void GetTilemapWrapper(GetTilemapOptions options, [In, Out] byte[] buffer);
+		public static byte[] GetTilemap(GetTilemapOptions options)
+		{
+			byte[] buffer = new byte[512*512*4];
+			DebugApi.GetTilemapWrapper(options, buffer);
+			return buffer;
+		}
+
+		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
 	}
 
 	public enum SnesMemoryType
@@ -112,12 +122,45 @@ namespace Mesen.GUI
 		public UInt16 Cycle;
 		public UInt16 Scanline;
 		public UInt32 FrameCount;
+		[MarshalAs(UnmanagedType.I1)] public bool OverscanMode;
+
+		public byte BgMode;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public LayerConfig[] Layers;
 	};
+
+	public struct LayerConfig
+	{
+		public UInt16 TilemapAddress;
+		public UInt16 ChrAddress;
+
+		public UInt16 HScroll;
+		public UInt16 VScroll;
+
+		[MarshalAs(UnmanagedType.I1)] public bool DoubleWidth;
+		[MarshalAs(UnmanagedType.I1)] public bool DoubleHeight;
+
+		[MarshalAs(UnmanagedType.I1)] public bool LargeTiles;
+	}
 
 	public struct DebugState
 	{
 		public CpuState Cpu;
 		public PpuState Ppu;
+	}
+
+	public struct GetTilemapOptions
+	{
+		public byte BgMode;
+		public byte Layer;
+
+		public byte Bpp;
+		public Int32 TilemapAddr;
+		public Int32 ChrAddr;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowScrollOverlay;
 	}
 
 	[Serializable]

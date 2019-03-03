@@ -197,6 +197,9 @@
     <ClInclude Include="Breakpoint.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="PpuTools.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -306,6 +309,7 @@
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="BreakpointManager.cpp" />
+    <ClCompile Include="PpuTools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

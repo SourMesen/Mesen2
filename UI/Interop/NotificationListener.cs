@@ -22,7 +22,10 @@ namespace Mesen.GUI
 
 		public void Dispose()
 		{
-			EmuApi.UnregisterNotificationCallback(_notificationListener);
+			if(_notificationListener != IntPtr.Zero) {
+				EmuApi.UnregisterNotificationCallback(_notificationListener);
+				_notificationListener = IntPtr.Zero;
+			}
 		}
 
 		public void ProcessNotification(int type, IntPtr parameter)
@@ -57,5 +60,6 @@ namespace Mesen.GUI
 		ExecuteShortcut = 10,
 		EmulationStopped = 11,
 		BeforeEmulationStop = 12,
+		ViewerRefresh = 13,
 	}
 }

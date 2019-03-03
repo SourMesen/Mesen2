@@ -80,4 +80,5 @@ public:
 	void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
+	void ProcessPpuCycle();
 };
