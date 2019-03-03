@@ -49,7 +49,11 @@ void DmaController::InitHdmaChannels()
 	_memoryManager->IncrementMasterClockValue<18>();
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
+
+		//Reset internal flags on every frame
 		ch.HdmaFinished = false;
+		ch.DoTransfer = false; //not resetting this causes graphical glitches in some games (Aladdin, Super Ghouls and Ghosts)
+
 		if(_hdmaChannels & (1 << i)) {
 			//"1. Copy AAddress into Address."
 			ch.HdmaTableAddress = ch.SrcAddress;
