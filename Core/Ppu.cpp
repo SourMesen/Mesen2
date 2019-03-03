@@ -321,11 +321,11 @@ void Ppu::RenderMode4()
 	RenderSprites<3, forMainScreen>();
 	RenderTilemap<0, 8, true, forMainScreen>();
 	RenderSprites<2, forMainScreen>();
-	RenderTilemap<1, 4, true, forMainScreen>();
+	RenderTilemap<1, 2, true, forMainScreen>();
 	RenderSprites<1, forMainScreen>();
 	RenderTilemap<0, 8, false, forMainScreen>();
 	RenderSprites<0, forMainScreen>();
-	RenderTilemap<1, 4, false, forMainScreen>();
+	RenderTilemap<1, 2, false, forMainScreen>();
 	RenderBgColor<forMainScreen>();
 }
 
