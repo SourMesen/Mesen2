@@ -115,8 +115,10 @@ void Ppu::Exec()
 	_cycle++;
 
 	if(_cycle == 278 && _scanline <= (_overscanMode ? 239 : 224)) {
-		if(_scanline > 0) {
+		if(_scanline != 0) {
 			RenderScanline();
+		} else {
+			EvaluateNextLineSprites();
 		}
 		_console->GetDmaController()->ProcessHdmaChannels();
 	} else if(_cycle == 134) {
@@ -147,7 +149,10 @@ void Ppu::EvaluateNextLineSprites()
 			height /= 2;
 		}
 
-		if(y > screenY || y + height <= screenY) {
+		uint8_t startY = y + 16;
+		uint8_t endY = y + height + 16;
+
+		if(startY > screenY + 16 || endY <= screenY + 16) {
 			//Not visible on this scanline
 			continue;
 		}
