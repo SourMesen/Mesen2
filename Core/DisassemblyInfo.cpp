@@ -75,7 +75,8 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 			str.Write('#', operand);
 			break;
 		
-		case AddrMode::Imp: break;;
+		case AddrMode::Sig8: //BRK/COP signature, ignore them
+		case AddrMode::Imp: break;
 		case AddrMode::RelLng: str.Write(operand);
 		case AddrMode::Rel: str.Write(operand);
 		case AddrMode::Stk: break;
@@ -131,6 +132,7 @@ uint8_t DisassemblyInfo::GetOperandSize(AddrMode addrMode, uint8_t flags)
 		case AddrMode::DirIndLng:
 		case AddrMode::DirInd:
 		case AddrMode::Dir:
+		case AddrMode::Sig8:
 		case AddrMode::Imm8:
 		case AddrMode::Rel:
 		case AddrMode::StkRel:
@@ -238,7 +240,7 @@ string DisassemblyInfo::OpName[256] = {
 typedef AddrMode M;
 AddrMode DisassemblyInfo::OpMode[256] = {
 	//0       1              2            3                 4           5           6           7                 8       9           A       B       C              D           E           F           
-	M::Stk,   M::DirIdxIndX, M::Stk,      M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
+	M::Sig8,  M::DirIdxIndX, M::Sig8,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
 	M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::Dir,     M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::Abs,        M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 1
 	M::Abs,   M::DirIdxIndX, M::AbsLng,   M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 2
 	M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::DirIdxX, M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::AbsIdxX,    M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 3

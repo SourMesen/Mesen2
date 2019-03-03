@@ -41,3 +41,37 @@ public:
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);
 };
 
+enum class AddrMode : uint8_t
+{
+	Sig8,
+	Imm8,
+	Imm16,
+	ImmX,
+	ImmM,
+	Abs,
+	AbsIdxXInd, //JMP/JSR only
+	AbsIdxX,
+	AbsIdxY,
+	AbsInd, //JMP only
+	AbsIndLng, //JML only
+	AbsLngIdxX,
+	AbsLng,
+	AbsJmp, //JSR/JMP only
+	AbsLngJmp, //JSL/JMP only
+	Acc,
+	BlkMov,
+	DirIdxIndX,
+	DirIdxX,
+	DirIdxY,
+	DirIndIdxY,
+	DirIndLngIdxY,
+	DirIndLng,
+	DirInd,
+	Dir,
+	Imp,
+	RelLng,
+	Rel,
+	Stk,
+	StkRel,
+	StkRelIndIdxY
+};

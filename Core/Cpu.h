@@ -40,9 +40,6 @@ private:
 	bool _nmiFlag;
 	uint8_t _irqSource;
 
-	Func _opTable[256];
-	AddrMode _addrMode[256];
-	
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
 

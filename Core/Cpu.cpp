@@ -29,9 +29,9 @@ void Cpu::Exec()
 	_immediateMode = false;
 
 	switch(GetOpCode()) {
-		case 0x00: BRK(); break;
+		case 0x00: AddrMode_Imm8(); BRK(); break;
 		case 0x01: AddrMode_DirIdxIndX(); ORA(); break;
-		case 0x02: COP(); break;
+		case 0x02: AddrMode_Imm8(); COP(); break;
 		case 0x03: AddrMode_StkRel(); ORA(); break;
 		case 0x04: AddrMode_Dir(); TSB(); break;
 		case 0x05: AddrMode_Dir(); ORA(); break;

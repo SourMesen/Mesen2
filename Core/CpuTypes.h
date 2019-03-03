@@ -52,40 +52,6 @@ namespace ProcFlags
 	};
 }
 
-enum class AddrMode : uint8_t
-{
-	Imm8,
-	Imm16,
-	ImmX,
-	ImmM,
-	Abs,
-	AbsIdxXInd, //JMP/JSR only
-	AbsIdxX,
-	AbsIdxY,
-	AbsInd, //JMP only
-	AbsIndLng, //JML only
-	AbsLngIdxX,
-	AbsLng,
-	AbsJmp, //JSR/JMP only
-	AbsLngJmp, //JSL/JMP only
-	Acc,
-	BlkMov,
-	DirIdxIndX,
-	DirIdxX,
-	DirIdxY,
-	DirIndIdxY,
-	DirIndLngIdxY,
-	DirIndLng,
-	DirInd,
-	Dir,
-	Imp,
-	RelLng,
-	Rel,
-	Stk,
-	StkRel,
-	StkRelIndIdxY
-};
-
 enum class MemoryOperationType
 {
 	Read = 0,
