@@ -71,9 +71,19 @@ PpuState Ppu::GetState()
 
 void Ppu::Exec()
 {
+	//"normally dots 323 and 327 are 6 master cycles instead of 4."
+	//Add 1 extra dot to compensate (0-340 instead of 0-339)
+	//TODO fix this properly
 	if(_cycle == 340) {
 		_cycle = -1;
 		_scanline++;
+		
+		_drawStartX = 0;
+		_drawEndX = 0;
+		_pixelsDrawn = 0;
+		_subPixelsDrawn = 0;
+		memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
+		memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
 
 		if(_scanline == (_overscanMode ? 240 : 225)) {
 			//Reset OAM address at the start of vblank?
@@ -93,8 +103,9 @@ void Ppu::Exec()
 			}
 		} else if(_scanline == 240 && _frameCount & 0x01) {
 			//Skip 1 tick every other frame
+			//TODO : some modes don't skip this?
 			_cycle++;
-		} else if(_scanline == 261) {
+		} else if(_scanline == 262) {
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
 			_rangeOver = false;
@@ -109,6 +120,7 @@ void Ppu::Exec()
 		if(_regs->IsVerticalIrqEnabled() && !_regs->IsHorizontalIrqEnabled() && _scanline == _regs->GetVerticalTimer()) {
 			//An IRQ will occur sometime just after the V Counter reaches the value set in $4209/$420A.
 			_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+			_irqDelay = 4;
 		}
 	}
 
@@ -117,18 +129,24 @@ void Ppu::Exec()
 
 	if(_regs->IsHorizontalIrqEnabled() && _cycle == _regs->GetHorizontalTimer() && (!_regs->IsVerticalIrqEnabled() || _scanline == _regs->GetVerticalTimer())) {
 		//An IRQ will occur sometime just after the H Counter reaches the value set in $4207/$4208.
-		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+		_irqDelay = 4;
+	}
+
+	if(_irqDelay > 0) {
+		_irqDelay--;
+		if(_irqDelay == 0) {
+			_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+		}
 	}
 	
 	if(_cycle == 278 && _scanline <= (_overscanMode ? 239 : 224)) {
 		if(_scanline != 0) {
 			RenderScanline();
-		} else {
-			EvaluateNextLineSprites();
 		}
+		EvaluateNextLineSprites();
 		_console->GetDmaController()->ProcessHdmaChannels();
 	} else if(_cycle == 134) {
-		//TODO Approximation
+		//TODO Approximation (DRAM refresh timing is not exact)
 		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
 	}
 }
@@ -380,10 +398,7 @@ void Ppu::RenderMode7()
 
 void Ppu::RenderScanline()
 {
-	_pixelsDrawn = 0;
-	_subPixelsDrawn = 0;
-	memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
-	memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
+	_drawEndX = std::min(_cycle - 22, 255);
 
 	if(_forcedVblank) {
 		RenderBgColor<true>();
@@ -437,9 +452,8 @@ void Ppu::RenderScanline()
 	ApplyColorMath();
 	ApplyBrightness<true>();
 	ApplyHiResMode();
-	
-	//Process sprites for next scanline
-	EvaluateNextLineSprites();	
+
+	_drawStartX = _drawEndX + 1;
 }
 
 template<bool forMainScreen>
@@ -450,7 +464,7 @@ void Ppu::RenderBgColor()
 	}
 
 	uint16_t bgColor = _cgram[0] | (_cgram[1] << 8);
-	for(int x = 0; x < 256; x++) {
+	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(forMainScreen) {
 			if(!_rowPixelFlags[x]) {
 				uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
@@ -484,7 +498,7 @@ void Ppu::RenderSprites()
 	}
 
 	if(forMainScreen) {
-		for(int x = 0; x < 256; x++) {
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
 			if(!_rowPixelFlags[x] && _spritePriority[x] == priority) {
 				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
 					//This pixel was masked
@@ -496,7 +510,7 @@ void Ppu::RenderSprites()
 			}
 		}
 	} else {
-		for(int x = 0; x < 256; x++) {
+		for(int x = _drawStartX; x < _drawEndX; x++) {
 			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
 				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
 					//This pixel was masked
@@ -562,7 +576,7 @@ void Ppu::RenderTilemap()
 	/* The tilemap address to read the tile data from */
 	uint16_t addr;
 
-	for(int x = 0; x < 256; x++) {
+	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(hiResMode) {
 			realX = (x << 1) + (forMainScreen ? 1 : 0);
 		} else {
@@ -791,7 +805,7 @@ void Ppu::RenderTilemapMode7()
 
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
-	for(int x = 0; x < 256; x++) {
+	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		uint16_t realX = _mode7.HorizontalMirroring ? (255 - x) : x;
 
 		if(forMainScreen) {
@@ -884,7 +898,7 @@ void Ppu::ApplyColorMath()
 
 	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
 
-	for(int x = 0; x < 256; x++) {
+	for(int x = _drawStartX; x < _drawEndX; x++) {
 		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
 			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
 			uint16_t &mainPixel = _mainScreenBuffer[x];
@@ -966,7 +980,7 @@ template<bool forMainScreen>
 void Ppu::ApplyBrightness()
 {
 	if(_screenBrightness != 15) {
-		for(int x = 0; x < 256; x++) {
+		for(int x = _drawStartX; x < _drawEndX; x++) {
 			uint16_t &pixel = (forMainScreen ? _mainScreenBuffer : _subScreenBuffer)[x];
 			uint16_t r = (pixel & 0x1F) * _screenBrightness / 15;
 			uint16_t g = ((pixel >> 5) & 0x1F) * _screenBrightness / 15;
@@ -1222,6 +1236,10 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
+	if(_scanline < (_overscanMode ? 239 : 224) && _scanline > 0 && _cycle >= 22 && _cycle <= 277) {
+		RenderScanline();
+	}
+
 	switch(addr) {
 		case 0x2100:
 			_forcedVblank = (value & 0x80) != 0;

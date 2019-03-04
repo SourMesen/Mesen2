@@ -23,17 +23,16 @@ private:
 	shared_ptr<RegisterHandlerA> _registerHandlerA;
 	shared_ptr<RegisterHandlerB> _registerHandlerB;
 
-	InternalRegisters* _regs;
+	InternalRegisters *_regs;
 	shared_ptr<Ppu> _ppu;
 
 	IMemoryHandler* _handlers[0x100 * 0x10];
 	vector<unique_ptr<RamHandler>> _workRamHandlers;
 
-	uint8_t * _workRam;
+	uint8_t *_workRam;
 
 	uint64_t _masterClock;
-	uint8_t _previousSpeed;
-	uint64_t _lastMasterClock;
+	uint64_t _cyclesToRun;
 	uint8_t _masterClockTable[2][0x10000];
 
 public:
@@ -67,8 +66,9 @@ template<uint16_t value>
 void MemoryManager::IncrementMasterClockValue()
 {
 	_masterClock += value;
-	while(_lastMasterClock < _masterClock - 3) {
+	_cyclesToRun += value;
+	while(_cyclesToRun >= 4) {
+		_cyclesToRun -= 4;
 		_ppu->Exec();
-		_lastMasterClock += 4;
 	}
 }

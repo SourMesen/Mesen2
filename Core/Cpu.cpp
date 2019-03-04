@@ -11,7 +11,9 @@ Cpu::Cpu(MemoryManager* memoryManager)
 	_state.SP = 0x1FF;
 	_state.EmulationMode = true;
 	_nmiFlag = false;
+	_prevNmiFlag = false;
 	_irqSource = (uint8_t)IrqSource::None;
+	_prevIrqSource = (uint8_t)IrqSource::None;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
 }
@@ -286,11 +288,12 @@ void Cpu::Exec()
 		case 0xFE: AddrMode_AbsIdxX(); INC(); break;
 		case 0xFF: AddrMode_AbsLngIdxX(); SBC(); break;
 	}
-		
-	if(_nmiFlag) {
+	
+	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
+	if(_prevNmiFlag) {
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
 		_nmiFlag = false;
-	} else if(_irqSource && !CheckFlag(ProcFlags::IrqDisable)) {
+	} else if(_prevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
 	}
 }
@@ -339,6 +342,8 @@ uint8_t Cpu::GetOpCode()
 void Cpu::Idle()
 {
 #ifndef DUMMYCPU
+	_prevNmiFlag = _nmiFlag;
+	_prevIrqSource = _irqSource;
 	_memoryManager->IncrementMasterClockValue<6>();
 #endif
 }
@@ -372,6 +377,8 @@ uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 	LogRead(addr, value);
 	return value;
 #else
+	_prevNmiFlag = _nmiFlag;
+	_prevIrqSource = _irqSource;
 	return _memoryManager->Read(addr, type);
 #endif
 }
@@ -415,6 +422,8 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 #ifdef DUMMYCPU
 	LogWrite(addr, value);
 #else
+	_prevNmiFlag = _nmiFlag;
+	_prevIrqSource = _irqSource;
 	_memoryManager->Write(addr, value, type);
 #endif
 }

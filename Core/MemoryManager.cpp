@@ -14,7 +14,7 @@
 
 void MemoryManager::Initialize(shared_ptr<Console> console)
 {
-	_lastMasterClock = 0;
+	_cyclesToRun = 0;
 	_masterClock = 0;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
@@ -102,7 +102,7 @@ void MemoryManager::GenerateMasterClockTable()
 				uint8_t page = (i & 0xFF);
 				if(page <= 0x1F) {
 					//Slow
-					_masterClockTable[j][i] = 6;
+					_masterClockTable[j][i] = 8;
 				} else if(page >= 0x20 && page <= 0x3F) {
 					//Fast
 					_masterClockTable[j][i] = 6;
@@ -127,20 +127,26 @@ void MemoryManager::GenerateMasterClockTable()
 
 void MemoryManager::IncrementMasterClock(uint32_t addr)
 {
-	_previousSpeed = _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
-	_masterClock += _previousSpeed;
-	while(_lastMasterClock < _masterClock - 3) {
-		_ppu->Exec();
-		_lastMasterClock += 4;
-	}
+	IncrementMasterClockValue(_masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8]);
 }
 
 void MemoryManager::IncrementMasterClockValue(uint16_t value)
 {
 	_masterClock += value;
-	while(_lastMasterClock < _masterClock - 3) {
+	_cyclesToRun += value;
+
+	if(_cyclesToRun >= 12) {
+		_cyclesToRun -= 12;
 		_ppu->Exec();
-		_lastMasterClock += 4;
+		_ppu->Exec();
+		_ppu->Exec();
+	} else if(_cyclesToRun >= 8) {
+		_cyclesToRun -= 8;
+		_ppu->Exec();
+		_ppu->Exec();
+	} else if(_cyclesToRun >= 4) {
+		_cyclesToRun -= 4;
+		_ppu->Exec();
 	}
 }
 

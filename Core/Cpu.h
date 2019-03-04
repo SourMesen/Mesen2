@@ -38,7 +38,9 @@ private:
 	CpuState _state;
 	uint32_t _operand;
 	bool _nmiFlag;
+	bool _prevNmiFlag;
 	uint8_t _irqSource;
+	uint8_t _prevIrqSource;
 
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);

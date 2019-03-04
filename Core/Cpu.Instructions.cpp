@@ -268,11 +268,13 @@ void Cpu::SEI()
 
 void Cpu::REP()
 {
+	Idle();
 	ClearFlags((uint8_t)_operand);
 }
 
 void Cpu::SEP()
 {
+	Idle();
 	SetFlags((uint8_t)_operand);
 	if(CheckFlag(ProcFlags::IndexMode8)) {
 		//Truncate X/Y when 8-bit indexes are enabled
