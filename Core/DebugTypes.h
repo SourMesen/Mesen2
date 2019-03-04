@@ -154,3 +154,16 @@ struct CodeLineData
 	char Text[1000];
 	char Comment[1000];
 };
+
+struct GetTilemapOptions
+{
+	uint8_t BgMode;
+	uint8_t Layer;
+
+	int8_t Bpp;
+	int32_t TilemapAddr;
+	int32_t ChrAddr;
+
+	bool ShowTileGrid;
+	bool ShowScrollOverlay;
+};
