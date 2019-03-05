@@ -683,13 +683,13 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 
 	if((realX + hScroll) & ~0x07) {
 		//For all tiles after the first tile on the row, check if an active offset exists and use it
-		uint16_t columnOffset = (((x - 8) & ~0x07) + (_layerConfig[2].HScroll & ~0x07)) >> 3;
-		uint16_t rowOffset = (_layerConfig[2].VScroll >> 3);
+		uint16_t columnOffset = ((((x - 8) & ~0x07) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
+		uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
 
 		uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + (columnOffset << 1) + (rowOffset << 6);
 
 		if(_bgMode == 4) {
-			int16_t offsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
+			uint16_t offsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
 
 			if((offsetValue & 0x8000) == 0 && (offsetValue & enableBit)) {
 				hScroll = (hScroll & 0x07) | (offsetValue & 0x3F8);
@@ -700,8 +700,8 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 		} else {
 			uint16_t vOffsetAddr = hOffsetAddr + 0x40;
 
-			int16_t hOffsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
-			int16_t vOffsetValue = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
+			uint16_t hOffsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
+			uint16_t vOffsetValue = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
 
 			if(hOffsetValue & enableBit) {
 				hScroll = (hScroll & 0x07) | (hOffsetValue & 0x3F8);
