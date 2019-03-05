@@ -106,9 +106,7 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 			_memoryManager->WriteDma(0x2100 | channel.DestAddress + transferOffsets[i], valToWrite);
 		}
 
-		if(!channel.FixedTransfer) {
-			srcAddress = (srcAddress + (channel.Decrement ? -1 : 1)) & 0xFFFFFF;
-		}
+		srcAddress = (srcAddress + (channel.Decrement ? -1 : 1)) & 0xFFFFFF;
 
 		transferByteCount--;
 		i++;
