@@ -147,11 +147,11 @@ void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler
 void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 {
 	for(uint32_t i = 0; i < _prgRomSize; i += 0x1000) {
-		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, SnesMemoryType::PrgRom)));
+		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, _prgRomSize, SnesMemoryType::PrgRom)));
 	}
 
 	for(uint32_t i = 0; i < _saveRamSize; i += 0x1000) {
-		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, SnesMemoryType::SaveRam)));
+		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, SnesMemoryType::SaveRam)));
 	}
 
 	if(GetCartFlags() & CartFlags::LoRom) {
@@ -208,6 +208,8 @@ void BaseCartridge::DisplayCartInfo()
 
 	MessageManager::Log("File size: " + std::to_string(_prgRomSize / 1024) + " KB");
 	MessageManager::Log("ROM size: " + std::to_string((0x400 << _cartInfo.RomSize) / 1024) + " KB");
-	MessageManager::Log("SRAM size: " + std::to_string(1 << _cartInfo.SramSize) + " KB");
+	if(_saveRamSize > 0) {
+		MessageManager::Log("SRAM size: " + std::to_string(_saveRamSize / 1024) + " KB");
+	}
 	MessageManager::Log("-----------------------------");
 }
