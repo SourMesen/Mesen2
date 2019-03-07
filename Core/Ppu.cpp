@@ -510,7 +510,7 @@ void Ppu::RenderSprites()
 			}
 		}
 	} else {
-		for(int x = _drawStartX; x < _drawEndX; x++) {
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
 			if(!_subScreenFilled[x] && _spritePriority[x] == priority) {
 				if(activeWindowCount && ProcessMaskWindow<Ppu::SpriteLayerIndex>(activeWindowCount, x)) {
 					//This pixel was masked
@@ -898,7 +898,7 @@ void Ppu::ApplyColorMath()
 
 	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
 
-	for(int x = _drawStartX; x < _drawEndX; x++) {
+	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
 			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
 			uint16_t &mainPixel = _mainScreenBuffer[x];
@@ -980,7 +980,7 @@ template<bool forMainScreen>
 void Ppu::ApplyBrightness()
 {
 	if(_screenBrightness != 15) {
-		for(int x = _drawStartX; x < _drawEndX; x++) {
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
 			uint16_t &pixel = (forMainScreen ? _mainScreenBuffer : _subScreenBuffer)[x];
 			uint16_t r = (pixel & 0x1F) * _screenBrightness / 15;
 			uint16_t g = ((pixel >> 5) & 0x1F) * _screenBrightness / 15;
