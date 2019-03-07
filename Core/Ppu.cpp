@@ -400,14 +400,12 @@ void Ppu::RenderScanline()
 {
 	_drawEndX = std::min(_cycle - 22, 255);
 
+	uint8_t bgMode = _bgMode;
 	if(_forcedVblank) {
-		RenderBgColor<true>();
-		RenderBgColor<false>();
-		ApplyHiResMode();
-		return;
+		bgMode = 8;
 	}
 
-	switch(_bgMode) {
+	switch(bgMode) {
 		case 0:
 			RenderMode0<true>();
 			RenderMode0<false>();
@@ -446,6 +444,12 @@ void Ppu::RenderScanline()
 		case 7:
 			RenderMode7<true>();
 			RenderMode7<false>();
+			break;
+
+		case 8: 
+			//Forced blank
+			RenderBgColor<true>();
+			RenderBgColor<false>();
 			break;
 	}
 
