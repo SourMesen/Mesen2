@@ -40,7 +40,9 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 	FastString operand;
 	if(_opSize > 1) {
 		operand.Write('$');
-		if(_opSize == 2) {
+		if(_addrMode == AddrMode::Rel || _addrMode == AddrMode::RelLng) {
+			operand.Write(HexUtilities::ToHex24(opAddr));
+		} else if(_opSize == 2) {
 			operand.Write(HexUtilities::ToHex((uint8_t)opAddr));
 		} else if(_opSize == 3) {
 			operand.Write(HexUtilities::ToHex((uint16_t)opAddr));
@@ -100,11 +102,11 @@ uint32_t DisassemblyInfo::GetOperandAddress(uint32_t memoryAddr)
 		opAddr = _byteCode[1] | (_byteCode[2] << 8) | (_byteCode[3] << 16);
 	}
 
-	if(_addrMode == AddrMode::Rel) {
+	if(_addrMode == AddrMode::Rel || _addrMode == AddrMode::RelLng) {
 		if(_opSize == 2) {
-			opAddr = (int8_t)opAddr + memoryAddr + 2;
+			opAddr = (memoryAddr & 0xFF0000) | (((int8_t)opAddr + memoryAddr + 2) & 0xFFFF);
 		} else {
-			opAddr = (int16_t)opAddr + memoryAddr + 2;
+			opAddr = (memoryAddr & 0xFF0000) | (((int16_t)opAddr + memoryAddr + 2) & 0xFFFF);
 		}
 	}
 

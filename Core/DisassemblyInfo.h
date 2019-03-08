@@ -13,7 +13,6 @@ class DisassemblyInfo
 public:
 	static string OpName[256];
 	static AddrMode OpMode[256];
-	static uint8_t OpSize[256];
 
 private:
 	uint8_t _byteCode[4];
