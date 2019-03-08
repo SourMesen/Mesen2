@@ -410,6 +410,9 @@ void Ppu::RenderMode7()
 
 void Ppu::RenderScanline()
 {
+	if(_drawStartX > 255) {
+		return;
+	}
 	_drawEndX = std::min(_cycle - 22, 255);
 
 	uint8_t bgMode = _bgMode;

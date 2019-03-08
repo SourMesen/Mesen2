@@ -52,8 +52,8 @@ private:
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
 
-	uint8_t _drawStartX = 0;
-	uint8_t _drawEndX = 0;
+	uint16_t _drawStartX = 0;
+	uint16_t _drawEndX = 0;
 	uint8_t _irqDelay = 0;
 	
 	uint8_t _bgMode = 0;
