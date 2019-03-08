@@ -40,7 +40,7 @@ namespace Mesen.GUI.Debugger
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
-				case ConsoleNotificationType.PpuFrameDone:
+				case ConsoleNotificationType.EventViewerRefresh:
 					ctrlPpuView.RefreshData();
 					this.BeginInvoke((Action)(() => {
 						ctrlPpuView.RefreshViewer();

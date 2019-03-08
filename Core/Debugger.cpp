@@ -190,7 +190,10 @@ void Debugger::ProcessEvent(EventType type)
 	switch(type) {
 		case EventType::Nmi: _eventManager->AddEvent(DebugEventType::Nmi); break;
 		case EventType::Irq: _eventManager->AddEvent(DebugEventType::Irq); break;
-		case EventType::StartFrame: _eventManager->ClearFrameEvents(); break;
+		case EventType::StartFrame:
+			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh);
+			_eventManager->ClearFrameEvents();
+			break;
 	}
 }
 

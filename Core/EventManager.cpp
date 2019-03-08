@@ -141,7 +141,7 @@ void EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 
 	_snapshot = _debugEvents;
 	_snapshotScanline = scanline;
-	if(options.ShowPreviousFrameEvents) {
+	if(options.ShowPreviousFrameEvents && scanline != 0) {
 		for(DebugEventInfo &evt : _prevDebugEvents) {
 			uint32_t evtKey = (evt.Scanline << 9) + evt.Cycle;
 			if(evtKey > key) {
@@ -174,13 +174,14 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	}
 
 	constexpr uint32_t nmiColor = 0xFF55FFFF;
+	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
 	int nmiScanline = (overscanMode ? 240 : 225) * 2 * 340 * 2;
 	uint32_t scanlineOffset = _snapshotScanline * 2 * 340 * 2;
 	for(int i = 0; i < 340 * 2; i++) {
 		buffer[nmiScanline + i] = nmiColor;
 		buffer[nmiScanline + 340 * 2 + i] = nmiColor;
-		buffer[scanlineOffset + i] = nmiColor;
-		buffer[scanlineOffset + 340 * 2 + i] = nmiColor;
+		buffer[scanlineOffset + i] = currentScanlineColor;
+		buffer[scanlineOffset + 340 * 2 + i] = currentScanlineColor;
 	}
 
 	for(DebugEventInfo &evt : _snapshot) {
