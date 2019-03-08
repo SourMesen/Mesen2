@@ -12,7 +12,7 @@ Cpu::Cpu(Console *console)
 	_state = {};
 	_state.PC = ReadDataWord(Cpu::ResetVector);
 	_state.SP = 0x1FF;
-	_state.SP = ProcFlags::IrqDisable;
+	_state.PS = ProcFlags::IrqDisable;
 	_state.EmulationMode = true;
 	_nmiFlag = false;
 	_prevNmiFlag = false;
