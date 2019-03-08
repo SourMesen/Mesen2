@@ -228,6 +228,7 @@
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
+    <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
     <Compile Include="Debugger\Config\TraceLoggerInfo.cs" />
     <Compile Include="Debugger\Config\DebugInfo.cs" />
@@ -298,6 +299,9 @@
     <Compile Include="Debugger\Controls\ComboBoxWithSeparator.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\Controls\ctrlColorPicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlDbgShortcuts.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -321,6 +325,18 @@
     </Compile>
     <Compile Include="Debugger\Controls\ctrlWatch.designer.cs">
       <DependentUpon>ctrlWatch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerPpuView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerPpuView.designer.cs">
+      <DependentUpon>ctrlEventViewerPpuView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\frmEventViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\frmEventViewer.Designer.cs">
+      <DependentUpon>frmEventViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmDbgPreferences.cs">
       <SubType>Form</SubType>
@@ -374,6 +390,7 @@
     <Compile Include="Debugger\frmMemoryTools.designer.cs">
       <DependentUpon>frmMemoryTools.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\GraphicsExtensions.cs" />
     <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -417,6 +434,15 @@
     <Compile Include="Debugger\HexBox\Util.cs" />
     <Compile Include="Debugger\TblLoader.cs" />
     <Compile Include="Debugger\DebugWindowManager.cs" />
+    <Compile Include="Debugger\Tooltips\frmInfoTooltip.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Tooltips\frmInfoTooltip.designer.cs">
+      <DependentUpon>frmInfoTooltip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Tooltips\TooltipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Debugger\WatchManager.cs" />
     <Compile Include="Forms\BaseConfigForm.Designer.cs">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>
@@ -499,6 +525,12 @@
     <EmbeddedResource Include="Debugger\Controls\ctrlWatch.resx">
       <DependentUpon>ctrlWatch.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\EventViewer\ctrlEventViewerPpuView.resx">
+      <DependentUpon>ctrlEventViewerPpuView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\EventViewer\frmEventViewer.resx">
+      <DependentUpon>frmEventViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmDbgPreferences.resx">
       <DependentUpon>frmDbgPreferences.cs</DependentUpon>
     </EmbeddedResource>
@@ -531,6 +563,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\HexBox\HexBox.resx">
       <DependentUpon>HexBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Tooltips\frmInfoTooltip.resx">
+      <DependentUpon>frmInfoTooltip.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BaseConfigForm.resx">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>

@@ -10,9 +10,9 @@
 
 string TraceLogger::_executionTrace = "";
 
-TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<MemoryManager> memoryManager)
+TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 {
-	_memoryManager = memoryManager;
+	_console = console;
 	_currentPos = 0;
 	_logCount = 0;
 	_logToFile = false;
@@ -218,17 +218,17 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::EffectiveAddress:
 			{
 				string effectiveAddress;
-				disassemblyInfo.GetEffectiveAddressString(effectiveAddress, cpuState, _memoryManager.get());
+				disassemblyInfo.GetEffectiveAddressString(effectiveAddress, cpuState, _console.get());
 				WriteValue(output, effectiveAddress, rowPart);
 				break;
 			}
 
 			case RowDataType::MemoryValue:
 			{
-				int32_t address = disassemblyInfo.GetEffectiveAddress(cpuState, _memoryManager.get());
+				int32_t address = disassemblyInfo.GetEffectiveAddress(cpuState, _console.get());
 				if(address >= 0) {
 					uint8_t valueSize;
-					uint16_t value = disassemblyInfo.GetMemoryValue(address, _memoryManager.get(), valueSize);
+					uint16_t value = disassemblyInfo.GetMemoryValue(address, _console->GetMemoryManager().get(), valueSize);
 					if(rowPart.DisplayInHex) {
 						output += "= $";
 						if(valueSize == 2) {

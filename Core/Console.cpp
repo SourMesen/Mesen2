@@ -19,6 +19,7 @@
 #include "FrameLimiter.h"
 #include "MessageManager.h"
 #include "KeyManager.h"
+#include "EventType.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
@@ -68,6 +69,8 @@ void Console::Run()
 
 	uint32_t keyCode = KeyManager::GetKeyCode("Tab");
 
+	_emulationThreadId = std::this_thread::get_id();
+
 	auto lock = _runLock.AcquireSafe();
 	while(!_stopFlag) {
 		_cpu->Exec();
@@ -80,6 +83,8 @@ void Console::Run()
 			previousFrameCount = _ppu->GetFrameCount();
 		}
 	}
+
+	_emulationThreadId = thread::id();
 
 	PlatformUtilities::RestoreTimerResolution();
 }
@@ -136,7 +141,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_memoryManager->Initialize(shared_from_this());
 
-		_cpu.reset(new Cpu(_memoryManager.get()));
+		_cpu.reset(new Cpu(this));
 		_memoryManager->IncrementMasterClockValue<162>();
 
 		//if(_debugger) {
@@ -228,6 +233,11 @@ shared_ptr<Debugger> Console::GetDebugger(bool autoStart)
 	return debugger;
 }
 
+thread::id Console::GetEmulationThreadId()
+{
+	return _emulationThreadId;
+}
+
 bool Console::IsRunning()
 {
 	return _cpu != nullptr;
@@ -279,5 +289,12 @@ void Console::ProcessPpuCycle()
 {
 	if(_debugger) {
 		_debugger->ProcessPpuCycle();
+	}
+}
+
+void Console::ProcessEvent(EventType type)
+{
+	if(_debugger) {
+		_debugger->ProcessEvent(type);
 	}
 }

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <unordered_map>
 
+class Console;
 class MemoryManager;
 
 struct CpuState;
@@ -36,8 +37,8 @@ public:
 	void GetByteCode(uint8_t copyBuffer[4]);
 	void GetByteCode(string &out);
 	
-	void GetEffectiveAddressString(string &out, CpuState &state, MemoryManager* memoryManager);
-	int32_t GetEffectiveAddress(CpuState &state, MemoryManager *memoryManager);
+	void GetEffectiveAddressString(string &out, CpuState &state, Console* console);
+	int32_t GetEffectiveAddress(CpuState &state, Console *console);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);
 };
 

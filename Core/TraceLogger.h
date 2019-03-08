@@ -5,7 +5,7 @@
 #include "DisassemblyInfo.h"
 #include "../Utilities/SimpleLock.h"
 
-class MemoryManager;
+class Console;
 class Debugger;
 struct DebugState;
 
@@ -63,7 +63,7 @@ private:
 	string _outputFilepath;
 	string _outputBuffer;
 	ofstream _outputFile;
-	shared_ptr<MemoryManager> _memoryManager;
+	shared_ptr<Console> _console;
 	//shared_ptr<LabelManager> _labelManager;
 
 	vector<RowPart> _rowParts;
@@ -94,7 +94,7 @@ private:
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 
 public:
-	TraceLogger(Debugger* debugger, shared_ptr<MemoryManager> memoryManager);
+	TraceLogger(Debugger* debugger, shared_ptr<Console> console);
 	~TraceLogger();
 
 	void Log(DebugState &state, DisassemblyInfo &disassemblyInfo);

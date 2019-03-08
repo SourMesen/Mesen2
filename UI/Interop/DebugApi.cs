@@ -80,6 +80,33 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
+
+		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount([MarshalAs(UnmanagedType.I1)]bool getPreviousFrameData);
+		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper([In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount, [MarshalAs(UnmanagedType.I1)]bool getPreviousFrameData);
+		public static DebugEventInfo[] GetDebugEvents(bool getPreviousFrameData)
+		{
+			UInt32 maxEventCount = GetDebugEventCount(getPreviousFrameData);
+			DebugEventInfo[] debugEvents = new DebugEventInfo[maxEventCount];
+
+			DebugApi.GetDebugEventsWrapper(debugEvents, ref maxEventCount, getPreviousFrameData);
+			if(maxEventCount < debugEvents.Length) {
+				//Remove the excess from the array if needed
+				Array.Resize(ref debugEvents, (int)maxEventCount);
+			}
+
+			return debugEvents;
+		}
+
+		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
+		[DllImport(DllPath)] public static extern void TakeEventSnapshot(EventViewerDisplayOptions options);		
+
+		[DllImport(DllPath, EntryPoint = "GetEventViewerOutput")] private static extern void GetEventViewerOutputWrapper([In, Out]byte[] buffer, EventViewerDisplayOptions options);
+		public static byte[] GetEventViewerOutput(EventViewerDisplayOptions options)
+		{
+			byte[] buffer = new byte[340*2 * 262*2 * 4];
+			DebugApi.GetEventViewerOutputWrapper(buffer, options);
+			return buffer;
+		}		
 	}
 
 	public enum SnesMemoryType
@@ -148,6 +175,74 @@ namespace Mesen.GUI
 	{
 		public CpuState Cpu;
 		public PpuState Ppu;
+	}
+
+	public enum MemoryOperationType
+	{
+		Read = 0,
+		Write = 1,
+		ExecOpCode = 2,
+		ExecOperand = 3,
+		DmaRead = 4,
+		DmaWrite = 5
+	}
+
+	public struct MemoryOperationInfo
+	{
+		public UInt32 Address;
+		public Int32 Value;
+		public MemoryOperationType Type;
+	}
+
+	public enum DebugEventType
+	{
+		Register,
+		Nmi,
+		Irq,
+		Breakpoint
+	}
+
+	public struct DebugEventInfo
+	{
+		//public DmaChannelConfig DmaChannelInfo;
+		public MemoryOperationInfo Operation;
+		public DebugEventType Type;
+		public UInt32 ProgramCounter;
+		public UInt16 Scanline;
+		public UInt16 Cycle;
+		public UInt16 BreakpointId;
+		//public byte DmaChannel;
+	};
+
+	public struct EventViewerDisplayOptions
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterWrites;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterReads;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowCpuRegisterWrites;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowCpuRegisterReads;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowApuRegisterWrites;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowApuRegisterReads;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowWorkRamRegisterWrites;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowWorkRamRegisterReads;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowNmi;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowIrq;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowMarkedBreakpoints;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
+
+		public UInt32 IrqColor;
+		public UInt32 NmiColor;
+		public UInt32 BreakpointColor;
+		public UInt32 PpuRegisterReadColor;
+		public UInt32 PpuRegisterWriteColor;
+		public UInt32 ApuRegisterReadColor;
+		public UInt32 ApuRegisterWriteColor;
+		public UInt32 CpuRegisterReadColor;
+		public UInt32 CpuRegisterWriteColor;
+		public UInt32 WorkRamRegisterReadColor;
+		public UInt32 WorkRamRegisterWriteColor;
 	}
 
 	public struct GetTilemapOptions

@@ -59,7 +59,10 @@
     <ClInclude Include="ControlDeviceState.h" />
     <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
+    <ClInclude Include="DebugBreakHelper.h" />
     <ClInclude Include="DummyCpu.h" />
+    <ClInclude Include="EventManager.h" />
+    <ClInclude Include="EventType.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
     <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RegisterHandlerB.h" />
@@ -130,6 +133,7 @@
     <ClCompile Include="Disassembler.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="DmaController.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="ExpressionEvaluator.cpp" />
     <ClCompile Include="InternalRegisters.cpp" />
     <ClCompile Include="KeyManager.cpp" />

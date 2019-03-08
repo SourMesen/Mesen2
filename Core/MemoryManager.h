@@ -58,6 +58,7 @@ public:
 	uint64_t GetMasterClock();
 	uint8_t* DebugGetWorkRam();
 
+	bool IsRegister(uint32_t cpuAddress);
 	AddressInfo GetAbsoluteAddress(uint32_t addr);
 	int GetRelativeAddress(AddressInfo &address, int32_t cpuAddress = -1);
 };

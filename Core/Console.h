@@ -19,6 +19,7 @@ class VideoDecoder;
 class NotificationManager;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
+enum class EventType;
 
 class Console : public std::enable_shared_from_this<Console>
 {
@@ -40,6 +41,8 @@ private:
 	shared_ptr<VideoDecoder> _videoDecoder;
 	shared_ptr<DebugHud> _debugHud;
 	
+	thread::id _emulationThreadId;
+
 	SimpleLock _runLock;
 	SimpleLock _debuggerLock;
 	atomic<bool> _stopFlag;
@@ -71,6 +74,8 @@ public:
 	shared_ptr<ControlManager> GetControlManager();
 	shared_ptr<DmaController> GetDmaController();
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
+
+	thread::id GetEmulationThreadId();
 	
 	bool IsRunning();
 
@@ -81,4 +86,5 @@ public:
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
 	void ProcessPpuCycle();
+	void ProcessEvent(EventType type);
 };

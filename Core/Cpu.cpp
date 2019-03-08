@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "Cpu.h"
+#include "Console.h"
 #include "MemoryManager.h"
+#include "EventType.h"
 
-Cpu::Cpu(MemoryManager* memoryManager)
+Cpu::Cpu(Console *console)
 {
-	_memoryManager = memoryManager;
+	_console = console;
+	_memoryManager = console->GetMemoryManager().get();
 	_state = {};
 	_state.PC = ReadDataWord(Cpu::ResetVector);
 	_state.SP = 0x1FF;
@@ -292,9 +295,11 @@ void Cpu::Exec()
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
 	if(_prevNmiFlag) {
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
+		_console->ProcessEvent(EventType::Nmi);
 		_nmiFlag = false;
 	} else if(_prevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
+		_console->ProcessEvent(EventType::Irq);
 	}
 }
 

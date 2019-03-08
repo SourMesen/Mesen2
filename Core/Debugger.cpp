@@ -6,6 +6,7 @@
 #include "Ppu.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
+#include "SoundMixer.h"
 #include "NotificationManager.h"
 #include "CpuTypes.h"
 #include "DisassemblyInfo.h"
@@ -15,6 +16,8 @@
 #include "Disassembler.h"
 #include "BreakpointManager.h"
 #include "PpuTools.h"
+#include "EventManager.h"
+#include "EventType.h"
 #include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
@@ -29,11 +32,15 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval.reset(new ExpressionEvaluator(this));
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger));
-	_traceLogger.reset(new TraceLogger(this, _memoryManager));
+	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryDumper.reset(new MemoryDumper(_ppu, _memoryManager, console->GetCartridge()));
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
+	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
+	
 	_cpuStepCount = 0;
+	_executionStopped = false;
+	_breakRequestCount = 0;
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
 	_codeDataLogger->LoadCdlFile(cdlFile);
@@ -100,6 +107,10 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
+	if(_memoryManager->IsRegister(addr)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
+	}
+
 	ProcessBreakConditions(operation, addressInfo);
 }
 
@@ -109,6 +120,10 @@ void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	MemoryOperationInfo operation = { addr, value, type };
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
 		_disassembler->InvalidateCache(addressInfo);
+	}
+
+	if(_memoryManager->IsRegister(addr)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
 	ProcessBreakConditions(operation, addressInfo);
@@ -157,12 +172,25 @@ void Debugger::ProcessBreakConditions(MemoryOperationInfo &operation, AddressInf
 		_cpuStepCount = 0;
 	}
 
-	if(_cpuStepCount == 0) {
+	if(_cpuStepCount == 0 || _breakRequestCount) {
+		_console->GetSoundMixer()->StopAudio();
 		_disassembler->Disassemble();
+
 		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
-		while(_cpuStepCount == 0) {
+		_executionStopped = true;
+		while(_cpuStepCount == 0 || _breakRequestCount) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 		}
+		_executionStopped = false;
+	}
+}
+
+void Debugger::ProcessEvent(EventType type)
+{
+	switch(type) {
+		case EventType::Nmi: _eventManager->AddEvent(DebugEventType::Nmi); break;
+		case EventType::Irq: _eventManager->AddEvent(DebugEventType::Irq); break;
+		case EventType::StartFrame: _eventManager->ClearFrameEvents(); break;
 	}
 }
 
@@ -191,8 +219,16 @@ void Debugger::Step(int32_t stepCount)
 
 bool Debugger::IsExecutionStopped()
 {
-	//TODO
-	return false;
+	return _executionStopped;
+}
+
+void Debugger::BreakRequest(bool release)
+{
+	if(release) {
+		_breakRequestCount--;
+	} else {
+		_breakRequestCount++;
+	}
 }
 
 void Debugger::GetState(DebugState &state)
@@ -224,4 +260,14 @@ shared_ptr<BreakpointManager> Debugger::GetBreakpointManager()
 shared_ptr<PpuTools> Debugger::GetPpuTools()
 {
 	return _ppuTools;
+}
+
+shared_ptr<EventManager> Debugger::GetEventManager()
+{
+	return _eventManager;
+}
+
+shared_ptr<Console> Debugger::GetConsole()
+{
+	return _console;
 }

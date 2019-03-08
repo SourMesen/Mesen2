@@ -9,6 +9,7 @@
 #include "CpuTypes.h"
 
 class MemoryManager;
+class Console;
 
 class Cpu
 {
@@ -31,7 +32,8 @@ private:
 
 	typedef void(Cpu::*Func)();
 	
-	MemoryManager* _memoryManager;
+	MemoryManager *_memoryManager;
+	Console *_console;
 
 	bool _immediateMode = false;
 
@@ -292,7 +294,7 @@ private:
 	void AddrMode_StkRelIndIdxY();
 
 public:
-	Cpu(MemoryManager* memoryManager);
+	Cpu(Console *console);
 	~Cpu();
 
 	void Reset();

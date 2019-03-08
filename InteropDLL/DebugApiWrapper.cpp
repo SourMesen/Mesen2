@@ -8,6 +8,7 @@
 #include "../Core/Breakpoint.h"
 #include "../Core/BreakpointManager.h"
 #include "../Core/PpuTools.h"
+#include "../Core/EventManager.h"
 
 extern shared_ptr<Console> _console;
 
@@ -63,4 +64,10 @@ extern "C"
 
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, buffer); }
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle); }
+
+	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount, bool getPreviousFrameData) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount, getPreviousFrameData); }
+	DllExport uint32_t __stdcall GetDebugEventCount(bool getPreviousFrameData) { return GetDebugger()->GetEventManager()->GetEventCount(getPreviousFrameData); }
+	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, options); }
+	DllExport DebugEventInfo __stdcall GetEventViewerEvent(uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->GetEvent(scanline, cycle, options); }
+	DllExport void __stdcall TakeEventSnapshot(EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->TakeEventSnapshot(options); }
 };

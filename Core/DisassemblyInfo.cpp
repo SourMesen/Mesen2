@@ -185,18 +185,18 @@ void DisassemblyInfo::GetByteCode(string &out)
 	out += str.ToString();
 }
 
-void DisassemblyInfo::GetEffectiveAddressString(string &out, CpuState &state, MemoryManager* memoryManager)
+void DisassemblyInfo::GetEffectiveAddressString(string &out, CpuState &state, Console* console)
 {
-	int32_t effectiveAddress = GetEffectiveAddress(state, memoryManager);
+	int32_t effectiveAddress = GetEffectiveAddress(state, console);
 	if(effectiveAddress >= 0) {
 		out += " [" + HexUtilities::ToHex24(effectiveAddress) + "]";
 	}
 }
 
-int32_t DisassemblyInfo::GetEffectiveAddress(CpuState &state, MemoryManager *memoryManager)
+int32_t DisassemblyInfo::GetEffectiveAddress(CpuState &state, Console *console)
 {
 	if(_addrMode > AddrMode::ImmM && _addrMode != AddrMode::Acc && _addrMode != AddrMode::Imp && _addrMode != AddrMode::Stk && _addrMode != AddrMode::Rel && _addrMode != AddrMode::RelLng && _addrMode != AddrMode::BlkMov) {
-		DummyCpu cpu(memoryManager);
+		DummyCpu cpu(console);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= _flags;
 		cpu.SetDummyState(state);

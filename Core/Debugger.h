@@ -8,18 +8,22 @@ class Cpu;
 class Ppu;
 class BaseCartridge;
 class MemoryManager;
-class CodeDataLogger;
 
-enum class SnesMemoryType;
-enum class MemoryOperationType;
-enum class BreakpointCategory;
-enum class EvalResultType : int32_t;
 class TraceLogger;
 class ExpressionEvaluator;
 class MemoryDumper;
 class Disassembler;
 class BreakpointManager;
 class PpuTools;
+class CodeDataLogger;
+class EventManager;
+
+enum class EventType;
+enum class SnesMemoryType;
+enum class MemoryOperationType;
+enum class BreakpointCategory;
+enum class EvalResultType : int32_t;
+
 struct DebugState;
 struct MemoryOperationInfo;
 struct AddressInfo;
@@ -39,8 +43,12 @@ private:
 	shared_ptr<Disassembler> _disassembler;
 	shared_ptr<BreakpointManager> _breakpointManager;
 	shared_ptr<PpuTools> _ppuTools;
+	shared_ptr<EventManager> _eventManager;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval;
+
+	atomic<bool> _executionStopped;
+	atomic<uint32_t> _breakRequestCount;
 
 	atomic<int32_t> _cpuStepCount;
 	uint8_t _prevOpCode = 0;
@@ -60,12 +68,15 @@ public:
 	void ProcessPpuCycle();
 
 	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);
+	void ProcessEvent(EventType type);
 
 	int32_t EvaluateExpression(string expression, EvalResultType &resultType, bool useCache);
 
 	void Run();
 	void Step(int32_t stepCount);
 	bool IsExecutionStopped();
+
+	void BreakRequest(bool release);
 
 	void GetState(DebugState &state);
 
@@ -74,4 +85,6 @@ public:
 	shared_ptr<Disassembler> GetDisassembler();
 	shared_ptr<BreakpointManager> GetBreakpointManager();
 	shared_ptr<PpuTools> GetPpuTools();
+	shared_ptr<EventManager> GetEventManager();
+	shared_ptr<Console> GetConsole();
 };

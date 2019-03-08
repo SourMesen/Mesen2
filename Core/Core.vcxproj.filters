@@ -200,6 +200,15 @@
     <ClInclude Include="PpuTools.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="EventType.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugBreakHelper.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -308,8 +317,15 @@
     <ClCompile Include="Breakpoint.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="BreakpointManager.cpp" />
-    <ClCompile Include="PpuTools.cpp" />
+    <ClCompile Include="BreakpointManager.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PpuTools.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

@@ -233,6 +233,11 @@ uint8_t * MemoryManager::DebugGetWorkRam()
 	return _workRam;
 }
 
+bool MemoryManager::IsRegister(uint32_t cpuAddress)
+{
+	return _handlers[cpuAddress >> 12] == _registerHandlerA.get() || _handlers[cpuAddress >> 12] == _registerHandlerB.get();
+}
+
 AddressInfo MemoryManager::GetAbsoluteAddress(uint32_t addr)
 {
 	if(_handlers[addr >> 12]) {

@@ -252,10 +252,9 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 
 			data.OpSize = disInfo->GetOperandSize() + 1;
 
-			MemoryManager *memoryManager = _console->GetMemoryManager().get();
-			data.EffectiveAddress = disInfo->GetEffectiveAddress(state, memoryManager);
+			data.EffectiveAddress = disInfo->GetEffectiveAddress(state, _console);
 			if(data.EffectiveAddress >= 0) {
-				data.Value = disInfo->GetMemoryValue(data.EffectiveAddress, memoryManager, data.ValueSize);
+				data.Value = disInfo->GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
 			} else {
 				data.ValueSize = 0;
 			}

@@ -224,10 +224,13 @@ public:
 	~Ppu();
 
 	uint32_t GetFrameCount();
+	uint16_t GetScanline();
+	uint16_t GetCycle();
 	PpuState GetState();
 
 	void Exec();
 
+	uint16_t* GetScreenBuffer();
 	uint8_t* GetVideoRam();
 	uint8_t* GetCgRam();
 	uint8_t* GetSpriteRam();

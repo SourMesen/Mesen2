@@ -1052,7 +1052,7 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 
 			if(lineProperties.Symbol.HasFlag(LineSymbol.Mark)) {
-				using(Brush b = new SolidBrush(ConfigManager.Config.Debug.EventViewerBreakpointColor)) {
+				using(Brush b = new SolidBrush(ConfigManager.Config.Debug.EventViewer.BreakpointColor)) {
 					g.FillEllipse(b, circleOffsetX + circleSize * 3 / 4, positionY + 1, lineHeight / 2.0f, lineHeight / 2.0f);
 				}
 				g.DrawEllipse(Pens.Black, circleOffsetX + circleSize * 3 / 4, positionY + 1, lineHeight / 2.0f, lineHeight / 2.0f);

@@ -10,6 +10,7 @@
 #include "NotificationManager.h"
 #include "DmaController.h"
 #include "MessageManager.h"
+#include "EventType.h"
 #include "../Utilities/HexUtilities.h"
 
 Ppu::Ppu(shared_ptr<Console> console)
@@ -52,6 +53,16 @@ Ppu::~Ppu()
 uint32_t Ppu::GetFrameCount()
 {
 	return _frameCount;
+}
+
+uint16_t Ppu::GetScanline()
+{
+	return _scanline;
+}
+
+uint16_t Ppu::GetCycle()
+{
+	return _cycle;
 }
 
 PpuState Ppu::GetState()
@@ -110,6 +121,7 @@ void Ppu::Exec()
 			_scanline = 0;
 			_rangeOver = false;
 			_timeOver = false;
+			_console->ProcessEvent(EventType::StartFrame);
 
 			if(_mosaicEnabled) {
 				_mosaicStartScanline = 0;
@@ -1064,6 +1076,11 @@ void Ppu::SendFrame()
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
 		_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 	}
+}
+
+uint16_t* Ppu::GetScreenBuffer()
+{
+	return _currentBuffer;
 }
 
 uint8_t* Ppu::GetVideoRam()
