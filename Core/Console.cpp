@@ -69,6 +69,7 @@ void Console::Run()
 
 	uint32_t keyCode = KeyManager::GetKeyCode("Tab");
 
+	_videoDecoder->StartThread();
 	_emulationThreadId = std::this_thread::get_id();
 
 	auto lock = _runLock.AcquireSafe();
@@ -103,6 +104,8 @@ void Console::Stop()
 	//Make sure we release both pointers to destroy the debugger before everything else
 	_debugger.reset();
 	debugger.reset();
+
+	_videoDecoder->StopThread();
 
 	_cpu.reset();
 	_ppu.reset();
