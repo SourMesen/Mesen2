@@ -112,11 +112,11 @@ void Ppu::Exec()
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		} else if(_scanline == 240 && _frameCount & 0x01) {
-			//Skip 1 tick every other frame
-			//TODO : some modes don't skip this?
+		} else if(_scanline == 240 && _frameCount & 0x01 && !_screenInterlace) {
+			//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
 			_cycle++;
-		} else if(_scanline == 262) {
+		} else if((_scanline == 262 && (!_screenInterlace || (_frameCount & 0x01))) || _scanline == 263) {
+			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
 			_rangeOver = false;
@@ -157,7 +157,7 @@ void Ppu::Exec()
 		}
 		EvaluateNextLineSprites();
 		_console->GetDmaController()->ProcessHdmaChannels();
-	} else if(_cycle == 134) {
+	} else if((_cycle == 134 || _cycle == 135) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
 		//TODO Approximation (DRAM refresh timing is not exact)
 		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
 	}

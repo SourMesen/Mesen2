@@ -191,23 +191,24 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 	switch(addr) {
 		case 0x420B: {
 			//MDMAEN - DMA Enable
-			
-			//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
-			uint8_t clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
-			_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
+			if(value) {
+				//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
+				uint8_t clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
+				_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
 
-			//"and an extra 8 master cycles overhead for the whole thing"
-			_memoryManager->IncrementMasterClockValue<8>();
-			for(int i = 0; i < 8; i++) {
-				if(value & (1 << i)) {
-					//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
-					_memoryManager->IncrementMasterClockValue<8>();
-					RunDma(_channel[i]);
+				//"and an extra 8 master cycles overhead for the whole thing"
+				_memoryManager->IncrementMasterClockValue<8>();
+				for(int i = 0; i < 8; i++) {
+					if(value & (1 << i)) {
+						//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
+						_memoryManager->IncrementMasterClockValue<8>();
+						RunDma(_channel[i]);
+					}
 				}
+				//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
+				clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
+				_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
 			}
-			//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
-			clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
-			_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
 			break;
 		}
 

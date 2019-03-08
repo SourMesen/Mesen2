@@ -14,7 +14,6 @@
 
 void MemoryManager::Initialize(shared_ptr<Console> console)
 {
-	_cyclesToRun = 0;
 	_masterClock = 0;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
@@ -88,17 +87,18 @@ void MemoryManager::RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemor
 
 void MemoryManager::GenerateMasterClockTable()
 {
-	//This is incredibly inaccurate
 	for(int j = 0; j < 2; j++) {
 		for(int i = 0; i < 0x10000; i++) {
 			uint8_t bank = (i & 0xFF00) >> 8;
 			if(bank >= 0x40 && bank <= 0x7F) {
 				//Slow
 				_masterClockTable[j][i] = 8;
-			} else if(bank >= 0xCF) {
+			} else if(bank >= 0xC0) {
+				//Banks $C0-$FF
 				//Slow or fast (depending on register)
 				_masterClockTable[j][i] = j == 1 ? 6 : 8;
 			} else {
+				//Banks $00-$3F and $80-$BF
 				uint8_t page = (i & 0xFF);
 				if(page <= 0x1F) {
 					//Slow
@@ -113,6 +113,9 @@ void MemoryManager::GenerateMasterClockTable()
 					//Fast
 					_masterClockTable[j][i] = 6;
 				} else if(page >= 0x60 && page <= 0x7F) {
+					//Slow
+					_masterClockTable[j][i] = 8;
+				} else if(bank <= 0x3F) {
 					//Slow
 					_masterClockTable[j][i] = 8;
 				} else {
@@ -130,22 +133,22 @@ void MemoryManager::IncrementMasterClock(uint32_t addr)
 	IncrementMasterClockValue(_masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8]);
 }
 
-void MemoryManager::IncrementMasterClockValue(uint16_t value)
+void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 {
-	_masterClock += value;
-	_cyclesToRun += value;
+	switch(cyclesToRun) {
+		case 12: cyclesToRun -= 2; Exec();
+		case 10: cyclesToRun -= 2; Exec();
+		case 8: cyclesToRun -= 2; Exec();
+		case 6: cyclesToRun -= 2; Exec();
+		case 4: cyclesToRun -= 2; Exec();
+		case 2: cyclesToRun -= 2; Exec();
+	}
+}
 
-	if(_cyclesToRun >= 12) {
-		_cyclesToRun -= 12;
-		_ppu->Exec();
-		_ppu->Exec();
-		_ppu->Exec();
-	} else if(_cyclesToRun >= 8) {
-		_cyclesToRun -= 8;
-		_ppu->Exec();
-		_ppu->Exec();
-	} else if(_cyclesToRun >= 4) {
-		_cyclesToRun -= 4;
+void MemoryManager::Exec()
+{
+	_masterClock += 2;
+	if((_masterClock & 0x03) == 0) {
 		_ppu->Exec();
 	}
 }

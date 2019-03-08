@@ -32,8 +32,9 @@ private:
 	uint8_t *_workRam;
 
 	uint64_t _masterClock;
-	uint64_t _cyclesToRun;
 	uint8_t _masterClockTable[2][0x10000];
+
+	__forceinline void Exec();
 
 public:
 	void Initialize(shared_ptr<Console> console);
@@ -66,10 +67,9 @@ public:
 template<uint16_t value>
 void MemoryManager::IncrementMasterClockValue()
 {
-	_masterClock += value;
-	_cyclesToRun += value;
-	while(_cyclesToRun >= 4) {
-		_cyclesToRun -= 4;
-		_ppu->Exec();
+	uint16_t cyclesToRun = value;
+	while(cyclesToRun >= 2) {
+		cyclesToRun -= 2;
+		Exec();
 	}
 }
