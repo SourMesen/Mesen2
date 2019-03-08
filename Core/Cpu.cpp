@@ -438,7 +438,7 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 void Cpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)
 {
 	Write(addr, (uint8_t)value);
-	Write(addr + 1, (uint8_t)(value >> 8));
+	Write((addr + 1) & 0xFFFFFF, (uint8_t)(value >> 8));
 }
 
 uint8_t Cpu::GetByteValue()
