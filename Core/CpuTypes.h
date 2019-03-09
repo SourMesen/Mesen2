@@ -67,3 +67,10 @@ enum class IrqSource
 	None = 0,
 	Ppu = 1,
 };
+
+enum class CpuStopState
+{
+	Running = 0,
+	Stopped = 1,
+	WaitingForIrq = 2
+};

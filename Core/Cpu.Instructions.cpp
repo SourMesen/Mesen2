@@ -1079,18 +1079,13 @@ Misc. operations
 void Cpu::STP()
 {
 	//Stop the CPU
+	_stopState = CpuStopState::Stopped;
 }
 
 void Cpu::WAI()
 {
-#ifndef DUMMYCPU
 	//Wait for interrupt
-	while(!_irqSource && !_nmiFlag) {
-		_memoryManager->IncrementMasterClockValue<4>();
-	}
-	Idle();
-	Idle();
-#endif
+	_stopState = CpuStopState::WaitingForIrq;
 }
 
 /****************

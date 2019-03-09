@@ -16,6 +16,7 @@ Cpu::Cpu(Console *console)
 	_state.EmulationMode = true;
 	_nmiFlag = false;
 	_prevNmiFlag = false;
+	_stopState = CpuStopState::Running;
 	_irqSource = (uint8_t)IrqSource::None;
 	_prevIrqSource = (uint8_t)IrqSource::None;
 	SetFlags(ProcFlags::MemoryMode8);
@@ -34,6 +35,43 @@ void Cpu::Exec()
 {
 	_immediateMode = false;
 
+	switch(_stopState) {
+		case CpuStopState::Running: RunOp(); break;
+		case CpuStopState::Stopped:
+			//STP was executed, CPU no longer executes any code
+			#ifndef DUMMYCPU
+			_memoryManager->IncrementMasterClockValue<4>();
+			#endif
+			return;
+
+		case CpuStopState::WaitingForIrq:
+			//WAI
+			if(!_irqSource && !_nmiFlag) {
+				#ifndef DUMMYCPU
+				_memoryManager->IncrementMasterClockValue<4>();
+				#endif
+				return;
+			} else {
+				Idle();
+				Idle();
+				_stopState = CpuStopState::Running;
+			}
+			break;
+	}
+
+	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
+	if(_prevNmiFlag) {
+		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
+		_console->ProcessEvent(EventType::Nmi);
+		_nmiFlag = false;
+	} else if(_prevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
+		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
+		_console->ProcessEvent(EventType::Irq);
+	}
+}
+
+void Cpu::RunOp()
+{
 	switch(GetOpCode()) {
 		case 0x00: AddrMode_Imm8(); BRK(); break;
 		case 0x01: AddrMode_DirIdxIndX(); ORA(); break;
@@ -291,16 +329,6 @@ void Cpu::Exec()
 		case 0xFD: AddrMode_AbsIdxX(); SBC(); break;
 		case 0xFE: AddrMode_AbsIdxX(); INC(); break;
 		case 0xFF: AddrMode_AbsLngIdxX(); SBC(); break;
-	}
-	
-	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
-	if(_prevNmiFlag) {
-		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
-		_console->ProcessEvent(EventType::Nmi);
-		_nmiFlag = false;
-	} else if(_prevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
-		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
-		_console->ProcessEvent(EventType::Irq);
 	}
 }
 

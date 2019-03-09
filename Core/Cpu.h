@@ -43,6 +43,7 @@ private:
 	bool _prevNmiFlag;
 	uint8_t _irqSource;
 	uint8_t _prevIrqSource;
+	CpuStopState _stopState;
 
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
@@ -292,6 +293,8 @@ private:
 
 	void AddrMode_StkRel();
 	void AddrMode_StkRelIndIdxY();
+	
+	void RunOp();
 
 public:
 	Cpu(Console *console);
