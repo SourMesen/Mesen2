@@ -75,7 +75,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 
 		case 0x4212: {
 			PpuState state = _console->GetPpu()->GetState();
-			uint32_t vblankStart = state.OverscanMode ? 241 : 225;
+			uint32_t vblankStart = state.OverscanMode ? 240 : 225;
 			//TODO TIMING (set/clear timing)
 			return (
 				(state.Scanline >= vblankStart ? 0x80 : 0) |
