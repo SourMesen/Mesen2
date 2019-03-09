@@ -24,6 +24,7 @@ struct DmaChannelConfig
 	bool DoTransfer;
 	bool HdmaFinished;
 
+	bool InterruptedByHdma;
 	bool UnusedFlag;
 };
 

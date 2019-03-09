@@ -30,17 +30,21 @@ void DmaController::RunSingleTransfer(DmaChannelConfig &channel)
 		channel.TransferSize--;
 		transferByteCount--;
 		i++;
-	} while(channel.TransferSize > 0 && transferByteCount > 0);
+	} while(channel.TransferSize > 0 && transferByteCount > 0 && !channel.InterruptedByHdma);
 }
 
 void DmaController::RunDma(DmaChannelConfig &channel)
 {
+	if(channel.InterruptedByHdma) {
+		return;
+	}
+
 	do {
 		//Manual DMA transfers run to the end of the transfer when started
 		RunSingleTransfer(channel);
 
 		//TODO : Run HDMA when needed, between 2 DMA transfers
-	} while(channel.TransferSize > 0);
+	} while(channel.TransferSize > 0 && !channel.InterruptedByHdma);
 }
 
 void DmaController::InitHdmaChannels()
@@ -57,6 +61,7 @@ void DmaController::InitHdmaChannels()
 		if(_hdmaChannels & (1 << i)) {
 			//"1. Copy AAddress into Address."
 			ch.HdmaTableAddress = ch.SrcAddress;
+			ch.InterruptedByHdma = true;
 
 			//"2. Load $43xA (Line Counter and Repeat) from the table. I believe $00 will terminate this channel immediately."
 			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress);
@@ -88,6 +93,8 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 {
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
 	uint8_t transferByteCount = _transferByteCount[channel.TransferMode];
+
+	channel.InterruptedByHdma = true;
 
 	uint32_t srcAddress;
 	if(channel.HdmaIndirectAddressing) {
@@ -124,6 +131,12 @@ void DmaController::ProcessHdmaChannels()
 	bool needOverhead = true;
 	if(_hdmaChannels) {
 		_hdmaPending = true;
+
+		for(int i = 0; i < 8; i++) {
+			if(_hdmaChannels & (1 << i)) {
+				_channel[i].InterruptedByHdma = true;
+			}
+		}
 
 		for(int i = 0; i < 8; i++) {
 			DmaChannelConfig &ch = _channel[i];
@@ -198,6 +211,10 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 
 				//"and an extra 8 master cycles overhead for the whole thing"
 				_memoryManager->IncrementMasterClockValue<8>();
+				for(int i = 0; i < 8; i++) {
+					_channel[i].InterruptedByHdma = false;
+				}
+
 				for(int i = 0; i < 8; i++) {
 					if(value & (1 << i)) {
 						//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
