@@ -18,6 +18,7 @@ enum class SnesMemoryType
 	VideoRam,
 	SpriteRam,
 	CGRam,
+	Register
 };
 
 struct AddressInfo

@@ -9,7 +9,6 @@ private:
 	uint8_t * _ram;
 	uint32_t _offset;
 	uint32_t _mask;
-	SnesMemoryType _memoryType;
 
 public:
 	RamHandler(uint8_t *ram, uint32_t offset, uint32_t size, SnesMemoryType memoryType)

@@ -248,6 +248,12 @@ bool MemoryManager::IsRegister(uint32_t cpuAddress)
 	return _handlers[cpuAddress >> 12] == _registerHandlerA.get() || _handlers[cpuAddress >> 12] == _registerHandlerB.get();
 }
 
+bool MemoryManager::IsWorkRam(uint32_t cpuAddress)
+{
+	IMemoryHandler* handler = _handlers[cpuAddress >> 12];
+	return handler && handler->GetMemoryType() == SnesMemoryType::WorkRam;
+}
+
 AddressInfo MemoryManager::GetAbsoluteAddress(uint32_t addr)
 {
 	if(_handlers[addr >> 12]) {

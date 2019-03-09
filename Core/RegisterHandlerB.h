@@ -22,6 +22,7 @@ public:
 		_spc = spc;
 		_workRam = workRam;
 		_wramPosition = 0;
+		_memoryType = SnesMemoryType::Register;
 	}
 
 	uint8_t Read(uint32_t addr) override

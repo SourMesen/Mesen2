@@ -8,6 +8,28 @@ DmaController::DmaController(MemoryManager *memoryManager)
 	_memoryManager = memoryManager;
 }
 
+void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)
+{
+	if(fromBtoA) {
+		if(addressBusB != 0x2180 || !_memoryManager->IsWorkRam(addressBusA)) {
+			uint8_t valToWrite = _memoryManager->ReadDma(addressBusB);
+			_memoryManager->WriteDma(addressBusA, valToWrite);
+		} else {
+			//$2180->WRAM do cause a write to occur (but no read), but the value written is invalid
+			_memoryManager->IncrementMasterClockValue<4>();
+			_memoryManager->WriteDma(addressBusA, 0xFF);
+		}
+	} else {
+		if(addressBusB != 0x2180 || !_memoryManager->IsWorkRam(addressBusA)) {
+			uint8_t valToWrite = _memoryManager->ReadDma(addressBusA);
+			_memoryManager->WriteDma(addressBusB, valToWrite);
+		} else {
+			//WRAM->$2180 does not cause a write to occur
+			_memoryManager->IncrementMasterClockValue<8>();
+		}
+	}
+}
+
 void DmaController::RunSingleTransfer(DmaChannelConfig &channel)
 {
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
@@ -15,13 +37,11 @@ void DmaController::RunSingleTransfer(DmaChannelConfig &channel)
 
 	uint8_t i = 0;
 	do {
-		if(channel.InvertDirection) {
-			uint8_t valToWrite = _memoryManager->ReadDma(0x2100 | channel.DestAddress + transferOffsets[i]);
-			_memoryManager->WriteDma((channel.SrcBank << 16) | channel.SrcAddress, valToWrite);
-		} else {
-			uint8_t valToWrite = _memoryManager->ReadDma((channel.SrcBank << 16) | channel.SrcAddress);
-			_memoryManager->WriteDma(0x2100 | channel.DestAddress + transferOffsets[i], valToWrite);
-		}
+		CopyDmaByte(
+			(channel.SrcBank << 16) | channel.SrcAddress,
+			0x2100 | channel.DestAddress + transferOffsets[i],
+			channel.InvertDirection
+		);
 
 		if(!channel.FixedTransfer) {
 			channel.SrcAddress += channel.Decrement ? -1 : 1;
@@ -105,13 +125,11 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 
 	uint8_t i = 0;
 	do {
-		if(channel.InvertDirection) {
-			uint8_t valToWrite = _memoryManager->ReadDma(0x2100 | channel.DestAddress + transferOffsets[i]);
-			_memoryManager->WriteDma(srcAddress, valToWrite);
-		} else {
-			uint8_t valToWrite = _memoryManager->ReadDma(srcAddress);
-			_memoryManager->WriteDma(0x2100 | channel.DestAddress + transferOffsets[i], valToWrite);
-		}
+		CopyDmaByte(
+			srcAddress,
+			0x2100 | channel.DestAddress + transferOffsets[i],
+			channel.InvertDirection
+		);
 
 		srcAddress = (srcAddress + (channel.Decrement ? -1 : 1)) & 0xFFFFFF;
 

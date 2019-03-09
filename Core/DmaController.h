@@ -43,13 +43,15 @@ private:
 	DmaChannelConfig _channel[8] = {};
 	MemoryManager *_memoryManager;
 	
+	void CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA);
+
 	void RunSingleTransfer(DmaChannelConfig &channel);
 	void RunDma(DmaChannelConfig &channel);
 	void RunHdmaTransfer(DmaChannelConfig &channel);
 	
 public:
 	DmaController(MemoryManager *memoryManager);
-	
+
 	void InitHdmaChannels();
 	void ProcessHdmaChannels();
 
