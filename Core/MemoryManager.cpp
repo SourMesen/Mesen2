@@ -50,12 +50,12 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 		RegisterHandler(((i | 0x80) << 16) | 0x4000, ((i | 0x80) << 16) | 0x4FFF, _registerHandlerA.get());
 	}
 
-	for(int i = 0; i < 0x3F; i++) {
+	for(int i = 0; i <= 0x3F; i++) {
 		RegisterHandler((i << 16) | 0x0000, (i << 16) | 0x0FFF, _workRamHandlers[0].get());
 		RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
 	}
 
-	for(int i = 0x80; i < 0xBF; i++) {
+	for(int i = 0x80; i <= 0xBF; i++) {
 		RegisterHandler((i << 16) | 0x0000, (i << 16) | 0x0FFF, _workRamHandlers[0].get());
 		RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
 	}
