@@ -302,6 +302,12 @@
     <Compile Include="Debugger\Controls\ctrlColorPicker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\Controls\ctrlConsoleStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlConsoleStatus.Designer.cs">
+      <DependentUpon>ctrlConsoleStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlDbgShortcuts.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -512,6 +518,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Breakpoints\frmBreakpoint.resx">
       <DependentUpon>frmBreakpoint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlConsoleStatus.resx">
+      <DependentUpon>ctrlConsoleStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlDbgShortcuts.resx">
       <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>

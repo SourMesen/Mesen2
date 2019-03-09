@@ -75,6 +75,7 @@ namespace Mesen.GUI.Debugger
 					int activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC);
 
 					this.BeginInvoke((MethodInvoker)(() => {
+						ctrlStatus.UpdateStatus(state);
 						ctrlDisassemblyView.SetActiveAddress(activeAddress);
 						ctrlWatch.UpdateWatch(true);
 					}));

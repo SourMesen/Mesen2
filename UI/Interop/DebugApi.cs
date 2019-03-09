@@ -133,6 +133,19 @@ namespace Mesen.GUI
 		WaitingForIrq = 2
 	}
 
+	[Flags]
+	public enum ProcFlags : byte
+	{
+		Carry = 0x01,
+		Zero = 0x02,
+		IrqDisable = 0x04,
+		Decimal = 0x08,
+		IndexMode8 = 0x10,
+		MemoryMode8 = 0x20,
+		Overflow = 0x40,
+		Negative = 0x80
+	}
+
 	public struct CpuState
 	{
 		public UInt64 CycleCount;
@@ -147,14 +160,14 @@ namespace Mesen.GUI
 
 		public byte K;
 		public byte DBR;
-		public byte PS;
+		public ProcFlags PS;
 		[MarshalAs(UnmanagedType.I1)] public bool EmulationMode;
 
-		[MarshalAs(UnmanagedType.I1)] bool NmiFlag;
-		[MarshalAs(UnmanagedType.I1)] bool PrevNmiFlag;
+		[MarshalAs(UnmanagedType.I1)] public bool NmiFlag;
+		[MarshalAs(UnmanagedType.I1)] public bool PrevNmiFlag;
 		public byte IrqSource;
 		public byte PrevIrqSource;
-		CpuStopState StopState;
+		public CpuStopState StopState;
 	};
 
 	public struct PpuState
