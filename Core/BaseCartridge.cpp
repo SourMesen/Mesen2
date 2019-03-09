@@ -36,28 +36,89 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, V
 	}
 }
 
-void BaseCartridge::Init()
+int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 {
-	uint32_t headerOffset = 0;
-	if(((0x400 << _prgRom[0x7FD7]) == _prgRomSize && (_prgRom[0x7FD5] & 0x20)) || _prgRomSize < 0xFFFF) {
-		//LoROM
-		headerOffset = 0x7FB0;
-	} else if((0x400 << _prgRom[0xFFD7]) == _prgRomSize && (_prgRom[0xFFD5] & 0x20)) {
-		//HiROM
-		headerOffset = 0xFFB0;
-	} else if(_prgRom[0x7FD5] & 0x20) {
-		//LoROM
-		headerOffset = 0x7FB0;
-	} else if(_prgRom[0xFFD5] & 0x20) {
-		//HiROM
-		headerOffset = 0xFFB0;
-	} else {
-		headerOffset = 0x7FB0;
-		//throw std::runtime_error("invalid rom (?)");
+	//Try to figure out where the header is by using a scoring system
+	if(_prgRomSize < addr + 0x7FFF) {
+		return -1;
 	}
 
+	SnesCartInformation cartInfo;
+	memcpy(&cartInfo, _prgRom + addr + 0x7FB0, sizeof(SnesCartInformation));
+	
+	uint32_t score = 0;
+	uint8_t mode = (cartInfo.MapMode & ~0x10);
+	if((mode == 0x20 || mode == 0x22) && addr < 0x8000) {
+		score++;
+	} else if((mode == 0x21 || mode == 0x25) && addr >= 0x8000) {
+		score++;
+	}
+
+	if(cartInfo.RomType < 0x08) {
+		score++;
+	}
+	if(cartInfo.RomSize < 0x10) {
+		score++;
+	}
+	if(cartInfo.SramSize < 0x08) {
+		score++;
+	}
+
+	uint16_t checksum = cartInfo.Checksum[0] | (cartInfo.Checksum[1] << 8);
+	uint16_t complement = cartInfo.ChecksumComplement[0] | (cartInfo.ChecksumComplement[1] << 8);
+	if(checksum + complement == 0xFFFF && checksum != 0 && complement != 0) {
+		score += 8;
+	}
+
+	uint16_t resetVectorAddr = addr + 0x7FFC;
+	uint16_t resetVector = _prgRom[resetVectorAddr] | (_prgRom[resetVectorAddr + 1] << 8);
+	if(resetVector < 0x8000) {
+		return -1;
+	}
+	
+	uint8_t op = _prgRom[addr | (resetVector & 0x7FFF)];
+	if(op == 0x18 || op == 0x78 || op == 0x4C || op == 0x5C || op == 0x20 || op == 0x22 || op == 0x9C) {
+		//CLI, SEI, JMP, JML, JSR, JSl, STZ
+		score += 8;
+	} else if(op == 0xC2 || op == 0xE2 || op == 0xA9 || op == 0xA2 || op == 0xA0) {
+		//REP, SEP, LDA, LDX, LDY
+		score += 4;
+	} else if(op == 0x00 || op == 0xFF || op == 0xCC) {
+		//BRK, SBC, CPY
+		score -= 8;
+	}
+
+	return std::max<int32_t>(0, score);
+}
+
+void BaseCartridge::Init()
+{
+	int32_t loRomScore = GetHeaderScore(0x0000);
+	int32_t hiRomScore = GetHeaderScore(0x8000);
+
+	uint32_t headerOffset = 0;
+	uint32_t flags = 0;
+	if(loRomScore >= hiRomScore) {
+		flags |= CartFlags::LoRom;
+		headerOffset = 0x7FB0;
+	} else {
+		flags |= CartFlags::HiRom;
+		headerOffset = 0xFFB0;
+	}
+	
 	memcpy(&_cartInfo, _prgRom + headerOffset, sizeof(SnesCartInformation));
 
+	if((flags & CartFlags::HiRom) && (_cartInfo.MapMode & 0x27) == 0x25) {
+		flags |= CartFlags::ExHiRom;
+	} else if((flags & CartFlags::LoRom) && (_cartInfo.MapMode & 0x27) == 0x22) {
+		flags |= CartFlags::ExLoRom;
+	}
+
+	if(_cartInfo.MapMode & 0x10) {
+		flags |= CartFlags::FastRom;
+	}
+	_flags = (CartFlags::CartFlags)flags;
+	
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
 
@@ -99,26 +160,6 @@ void BaseCartridge::SaveBattery()
 	}
 }
 
-CartFlags::CartFlags BaseCartridge::GetCartFlags()
-{
-	uint32_t flags = 0;
-	if(_cartInfo.MapMode & 0x04) {
-		flags |= CartFlags::ExHiRom;
-	} else if(_cartInfo.MapMode & 0x02) {
-		flags |= CartFlags::ExLoRom;
-	} else if(_cartInfo.MapMode & 0x01) {
-		flags |= CartFlags::HiRom;
-	} else {
-		flags |= CartFlags::LoRom;
-	}
-
-	if(_cartInfo.MapMode & 0x10) {
-		flags |= CartFlags::FastRom;
-	}
-
-	return (CartFlags::CartFlags)flags;
-}
-
 void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, uint16_t pageIncrement, bool mirror)
 {
 	if(handlers.empty()) {
@@ -154,7 +195,7 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, SnesMemoryType::SaveRam)));
 	}
 
-	if(GetCartFlags() & CartFlags::LoRom) {
+	if(_flags & CartFlags::LoRom) {
 		if(_saveRamSize > 0) {
 			MapBanks(mm, _prgRomHandlers, 0x00, 0x6F, 0x08, 0x0F, 0, true);
 			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
@@ -186,20 +227,19 @@ void BaseCartridge::DisplayCartInfo()
 		}
 	}
 
-	CartFlags::CartFlags flags = GetCartFlags();
 	MessageManager::Log("-----------------------------");
 	MessageManager::Log("Game: " + string(_cartInfo.CartName, nameLength));
-	if(flags & CartFlags::HiRom) {
-		MessageManager::Log("Type: HiROM");
-	} else if(flags & CartFlags::LoRom) {
-		MessageManager::Log("Type: LoROM");
-	} else if(flags & CartFlags::ExHiRom) {
+	if(_flags & CartFlags::ExHiRom) {
 		MessageManager::Log("Type: ExHiROM");
-	} else if(flags & CartFlags::ExLoRom) {
+	} else if(_flags & CartFlags::ExLoRom) {
 		MessageManager::Log("Type: ExLoROM");
+	} else if(_flags & CartFlags::HiRom) {
+		MessageManager::Log("Type: HiROM");
+	} else if(_flags & CartFlags::LoRom) {
+		MessageManager::Log("Type: LoROM");
 	}
 
-	if(flags & CartFlags::FastRom) {
+	if(_flags & CartFlags::FastRom) {
 		MessageManager::Log("FastROM");
 	}
 

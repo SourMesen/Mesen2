@@ -53,6 +53,7 @@ private:
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
 	SnesCartInformation _cartInfo;
 
+	CartFlags::CartFlags _flags;
 	string _romPath;
 
 	uint8_t* _prgRom = nullptr;
@@ -66,7 +67,7 @@ private:
 	void LoadBattery();
 	void SaveBattery();
 
-	CartFlags::CartFlags GetCartFlags();
+	int32_t GetHeaderScore(uint32_t addr);
 	void DisplayCartInfo();
 
 public:
