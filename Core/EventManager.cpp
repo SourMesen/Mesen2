@@ -5,6 +5,7 @@
 #include "Ppu.h"
 #include "Debugger.h"
 #include "DebugBreakHelper.h"
+#include "DefaultVideoFilter.h"
 
 EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu)
 {
@@ -164,12 +165,7 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	uint32_t pixelCount = 256*2*239*2;
 	for(uint32_t y = 0, len = overscanMode ? 239*2 : 224*2; y < len; y++) {
 		for(uint32_t x = 0; x < 512; x++) {
-			uint16_t rgb555 = ppuBuffer[(y << 9) | x];
-			uint8_t b = (rgb555 >> 10) * 256 / 32;
-			uint8_t g = ((rgb555 >> 5) & 0x1F) * 256 / 32;
-			uint8_t r = (rgb555 & 0x1F) * 256 / 32;
-
-			buffer[(y + 2)*340*2 + x + 22*2] = 0xFF000000 | (r << 16) | (g << 8) | b;
+			buffer[(y + 2)*340*2 + x + 22*2] = DefaultVideoFilter::ToArgb(ppuBuffer[(y << 9) | x]);
 		}
 	}
 
@@ -180,8 +176,10 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	for(int i = 0; i < 340 * 2; i++) {
 		buffer[nmiScanline + i] = nmiColor;
 		buffer[nmiScanline + 340 * 2 + i] = nmiColor;
-		buffer[scanlineOffset + i] = currentScanlineColor;
-		buffer[scanlineOffset + 340 * 2 + i] = currentScanlineColor;
+		if(_snapshotScanline != 0) {
+			buffer[scanlineOffset + i] = currentScanlineColor;
+			buffer[scanlineOffset + 340 * 2 + i] = currentScanlineColor;
+		}
 	}
 
 	for(DebugEventInfo &evt : _snapshot) {

@@ -90,19 +90,28 @@ void DefaultVideoFilter::DecodePpuBuffer(uint16_t *ppuOutputBuffer, uint32_t* ou
 	}*/
 }
 
+uint8_t DefaultVideoFilter::To8Bit(uint8_t color)
+{
+	return (color << 3) + (color >> 2);
+}
+
+uint32_t DefaultVideoFilter::ToArgb(uint16_t rgb555)
+{
+	uint8_t b = To8Bit(rgb555 >> 10);
+	uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
+	uint8_t r = To8Bit(rgb555 & 0x1F);
+
+	return 0xFF000000 | (r << 16) | (g << 8) | b;
+}
+
 void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	uint32_t *out = GetOutputBuffer();
 	uint32_t pixelCount = GetFrameInfo().Width * GetFrameInfo().Height;
+	
 	for(uint32_t i = 0; i < pixelCount; i++) {
-		uint16_t rgb555 = ppuOutputBuffer[i];
-		uint8_t b = (rgb555 >> 10) * 256 / 32;
-		uint8_t g = ((rgb555 >> 5) & 0x1F) * 256 / 32;
-		uint8_t r = (rgb555 & 0x1F) * 256 / 32;
-
-		out[i] = 0xFF000000 | (r << 16) | (g << 8) | b;
+		out[i] = ToArgb(ppuOutputBuffer[i]);
 	}
-	//DecodePpuBuffer(ppuOutputBuffer, GetOutputBuffer(), _console->GetSettings()->GetVideoFilterType() <= VideoFilterType::BisqwitNtsc);
 }
 
 void DefaultVideoFilter::RgbToYiq(double r, double g, double b, double &y, double &i, double &q)

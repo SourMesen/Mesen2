@@ -15,6 +15,7 @@ private:
 
 	void RgbToYiq(double r, double g, double b, double &y, double &i, double &q);
 	void YiqToRgb(double y, double i, double q, double &r, double &g, double &b);
+	__forceinline static uint8_t To8Bit(uint8_t color);
 
 protected:
 	void DecodePpuBuffer(uint16_t *ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines);
@@ -24,4 +25,6 @@ protected:
 public:
 	DefaultVideoFilter(shared_ptr<Console> console);
 	void ApplyFilter(uint16_t *ppuOutputBuffer);
+
+	static uint32_t ToArgb(uint16_t rgb555);
 };
