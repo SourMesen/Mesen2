@@ -1079,13 +1079,13 @@ Misc. operations
 void Cpu::STP()
 {
 	//Stop the CPU
-	_stopState = CpuStopState::Stopped;
+	_state.StopState = CpuStopState::Stopped;
 }
 
 void Cpu::WAI()
 {
 	//Wait for interrupt
-	_stopState = CpuStopState::WaitingForIrq;
+	_state.StopState = CpuStopState::WaitingForIrq;
 }
 
 /****************

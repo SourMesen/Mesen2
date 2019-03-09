@@ -13,11 +13,6 @@ class Console;
 
 class Cpu
 {
-public:
-	uint16_t GetPc() { return _state.PC; }
-	CpuState GetState() { return _state; }
-	int32_t GetLastOperand() { return (int32_t)_operand; }
-
 private:
 	static constexpr uint32_t NmiVector = 0x00FFEA;
 	static constexpr uint32_t ResetVector = 0x00FFFC;
@@ -39,11 +34,6 @@ private:
 
 	CpuState _state;
 	uint32_t _operand;
-	bool _nmiFlag;
-	bool _prevNmiFlag;
-	uint8_t _irqSource;
-	uint8_t _prevIrqSource;
-	CpuStopState _stopState;
 
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
@@ -303,6 +293,8 @@ public:
 	void Reset();
 	void Exec();
 
+	CpuState GetState();
+
 	void SetNmiFlag();
 	void SetIrqSource(IrqSource source);
 	bool CheckIrqSource(IrqSource source);
@@ -325,6 +317,7 @@ private:
 
 public:
 	void SetDummyState(CpuState &state);
+	int32_t GetLastOperand();
 
 	uint32_t GetWriteCount();
 	uint32_t GetReadCount();

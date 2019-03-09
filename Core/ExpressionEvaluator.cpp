@@ -392,15 +392,14 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 					case EvalValues::PpuFrameCount: token = state.Ppu.FrameCount; break;
 					case EvalValues::PpuCycle: token = state.Ppu.Cycle; break;
 					case EvalValues::PpuScanline: token = state.Ppu.Scanline; break;
-					//TODO
-					/*case EvalValues::Nmi: token = state.CPU.NMIFlag; resultType = EvalResultType::Boolean; break;
-					case EvalValues::Irq: token = state.CPU.IRQFlag; resultType = EvalResultType::Boolean; break;
+					case EvalValues::Nmi: token = state.Cpu.NmiFlag; resultType = EvalResultType::Boolean; break;
+					case EvalValues::Irq: token = state.Cpu.IrqSource != 0; resultType = EvalResultType::Boolean; break;
 					case EvalValues::Value: token = operationInfo.Value; break;
 					case EvalValues::Address: token = operationInfo.Address; break;
-					case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
-					case EvalValues::IsWrite: token = operationInfo.OperationType == MemoryOperationType::Write || operationInfo.OperationType == MemoryOperationType::DummyWrite; break;
-					case EvalValues::IsRead: token = operationInfo.OperationType == MemoryOperationType::Read || operationInfo.OperationType == MemoryOperationType::DummyRead; break;
-					case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
+					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
+					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite; break;
+					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite; break;
+					/*case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
 					case EvalValues::Sprite0Hit: token = state.PPU.StatusFlags.Sprite0Hit; resultType = EvalResultType::Boolean; break;
 					case EvalValues::SpriteOverflow: token = state.PPU.StatusFlags.SpriteOverflow; resultType = EvalResultType::Boolean; break;
 					case EvalValues::VerticalBlank: token = state.PPU.StatusFlags.VerticalBlank; resultType = EvalResultType::Boolean; break;

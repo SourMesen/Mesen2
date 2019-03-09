@@ -53,3 +53,8 @@ void DummyCpu::GetReadInfo(uint32_t index, uint32_t &addr, uint8_t &value)
 	addr = _readAddresses[index];
 	value = _readValue[index];
 }
+
+int32_t DummyCpu::GetLastOperand()
+{
+	return _operand;
+}

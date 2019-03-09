@@ -1,6 +1,13 @@
 #pragma once
 #include "stdafx.h"
 
+enum class CpuStopState : uint8_t
+{
+	Running = 0,
+	Stopped = 1,
+	WaitingForIrq = 2
+};
+
 struct CpuState
 {
 	uint64_t CycleCount;
@@ -30,6 +37,13 @@ struct CpuState
 
 	/* 6502 emulation mode */
 	bool EmulationMode;
+
+	/* Misc internal state */
+	bool NmiFlag;
+	bool PrevNmiFlag;
+	uint8_t IrqSource;
+	uint8_t PrevIrqSource;
+	CpuStopState StopState;
 };
 
 namespace ProcFlags
@@ -68,9 +82,3 @@ enum class IrqSource
 	Ppu = 1,
 };
 
-enum class CpuStopState
-{
-	Running = 0,
-	Stopped = 1,
-	WaitingForIrq = 2
-};

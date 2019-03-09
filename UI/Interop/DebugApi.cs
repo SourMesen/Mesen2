@@ -126,6 +126,13 @@ namespace Mesen.GUI
 		public SnesMemoryType Type;
 	}
 
+	public enum CpuStopState : byte
+	{
+		Running = 0,
+		Stopped = 1,
+		WaitingForIrq = 2
+	}
+
 	public struct CpuState
 	{
 		public UInt64 CycleCount;
@@ -142,6 +149,12 @@ namespace Mesen.GUI
 		public byte DBR;
 		public byte PS;
 		[MarshalAs(UnmanagedType.I1)] public bool EmulationMode;
+
+		[MarshalAs(UnmanagedType.I1)] bool NmiFlag;
+		[MarshalAs(UnmanagedType.I1)] bool PrevNmiFlag;
+		public byte IrqSource;
+		public byte PrevIrqSource;
+		CpuStopState StopState;
 	};
 
 	public struct PpuState
