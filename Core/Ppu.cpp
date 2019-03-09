@@ -1139,9 +1139,17 @@ uint16_t Ppu::GetVramAddress()
 uint8_t Ppu::Read(uint16_t addr)
 {
 	switch(addr) {
-		case 0x2134: return ((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) & 0xFF;
-		case 0x2135: return (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 8) & 0xFF;
-		case 0x2136: return (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 16) & 0xFF;
+		case 0x2134:
+			_ppu1OpenBus = ((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) & 0xFF;
+			return _ppu1OpenBus;
+
+		case 0x2135:
+			_ppu1OpenBus = (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 8) & 0xFF;
+			return _ppu1OpenBus;
+
+		case 0x2136:
+			_ppu1OpenBus = (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 16) & 0xFF;
+			return _ppu1OpenBus;
 
 		case 0x2137:
 			//SLHV - Software Latch for H/V Counter
@@ -1160,6 +1168,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				_console->ProcessPpuRead(0x200 | (_internalOamAddress & 0x1F), value, SnesMemoryType::SpriteRam);
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
+			_ppu1OpenBus = value;
 			return value;
 		}
 
@@ -1171,6 +1180,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
+			_ppu1OpenBus = returnValue;
 			return returnValue;
 		}
 
@@ -1182,14 +1192,19 @@ uint8_t Ppu::Read(uint16_t addr)
 				UpdateVramReadBuffer();
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
+			_ppu1OpenBus = returnValue;
 			return returnValue;
 		}
 
 		case 0x213B: {
 			//CGDATAREAD - CGRAM Data read
 			uint8_t value = _cgram[_cgramAddress];
+			if(_cgramAddress & 0x01) {
+				value = (value & 0x7F) | (_ppu2OpenBus & 0x80);
+			}
 			_console->ProcessPpuRead(_cgramAddress, value, SnesMemoryType::CGRam);
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
+			_ppu2OpenBus = value;
 			return value;
 		}
 
@@ -1198,10 +1213,11 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(_horizontalLocToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
-				value = ((_horizontalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
+				value = ((_horizontalLocation & 0x100) >> 8) | (_ppu2OpenBus & 0xFE);
 			} else {
 				value = _horizontalLocation & 0xFF;
 			}
+			_ppu2OpenBus = value;
 			_horizontalLocToggle = !_horizontalLocToggle;
 			return value;
 		}
@@ -1211,30 +1227,33 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(_verticalLocationToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
-				value = ((_verticalLocation & 0x100) >> 8) | ((addr >> 8) & 0xFE);
+				value = ((_verticalLocation & 0x100) >> 8) | (_ppu2OpenBus & 0xFE);
 			} else {
 				value = _verticalLocation & 0xFF;
 			}
+			_ppu2OpenBus = value;
 			_verticalLocationToggle = !_verticalLocationToggle;
 			return value;
 		}
 
-		case 0x213E:
+		case 0x213E: {
 			//STAT77 - PPU Status Flag and Version
-			//TODO open bus on bit 4
-
-			return (
+			uint8_t value = (
 				(_timeOver ? 0x80 : 0) |
 				(_rangeOver ? 0x40 : 0) |
+				(_ppu1OpenBus & 0x10) |
 				0x01 //PPU (5c77) chip version
 			);
+			_ppu1OpenBus = value;
+			return value;
+		}
 
 		case 0x213F: {
 			//STAT78 - PPU Status Flag and Version
-			//TODO open bus on bit 5
 			uint8_t value = (
 				((_frameCount & 0x01) ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |
+				(_ppu2OpenBus & 0x20) |
 				//TODO (_isPal ? 0x10 : 0)
 				0x02 //PPU (5c78) chip version
 			);
@@ -1246,7 +1265,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				_horizontalLocToggle = false;
 				_verticalLocationToggle = false;
 			}
-
+			_ppu2OpenBus = value;
 			return value;
 		}
 
@@ -1254,7 +1273,12 @@ uint8_t Ppu::Read(uint16_t addr)
 			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
 			break;
 	}
-
+	
+	uint16_t reg = addr & 0x210F;
+	if((reg >= 0x2104 && reg <= 0x2106) || (reg >= 0x2108 && reg <= 0x210A)) {
+		//Registers matching $21x4-6 or $21x8-A (where x is 0-2) return the last value read from any of the PPU1 registers $2134-6, $2138-A, or $213E.
+		return _ppu1OpenBus;
+	}
 	return _console->GetMemoryManager()->GetOpenBus();
 }
 
@@ -1384,9 +1408,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				case 3: _vramIncrementValue = 128; break;
 			}
 
-			//TODO : Remapping is not implemented yet
 			_vramAddressRemapping = (value & 0x0C) >> 2;
-
 			_vramAddrIncrementOnSecondReg = (value & 0x80) != 0;
 			break;
 

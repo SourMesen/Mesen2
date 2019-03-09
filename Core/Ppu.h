@@ -77,6 +77,9 @@ private:
 	bool _vramAddrIncrementOnSecondReg;
 	uint16_t _vramReadBuffer = 0;
 	
+	uint8_t _ppu1OpenBus = 0;
+	uint8_t _ppu2OpenBus = 0;
+
 	uint16_t _cgramAddress;
 	uint8_t _cgram[Ppu::CgRamSize];
 
