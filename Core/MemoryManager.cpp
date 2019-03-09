@@ -15,6 +15,7 @@
 void MemoryManager::Initialize(shared_ptr<Console> console)
 {
 	_masterClock = 0;
+	_openBus = 0;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
 	_ppu = console->GetPpu();
@@ -160,10 +161,10 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 	uint8_t value;
 	if(_handlers[addr >> 12]) {
 		value = _handlers[addr >> 12]->Read(addr);
+		_openBus = value;
 	} else {
 		//open bus
-		value = (addr >> 12);
-
+		value = _openBus;
 		MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_console->ProcessCpuRead(addr, value, type);
@@ -176,9 +177,10 @@ uint8_t MemoryManager::ReadDma(uint32_t addr)
 	uint8_t value;
 	if(_handlers[addr >> 12]) {
 		value = _handlers[addr >> 12]->Read(addr);
+		_openBus = value;
 	} else {
 		//open bus
-		value = (addr >> 12);
+		value = _openBus;
 		MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_console->ProcessCpuRead(addr, value, MemoryOperationType::DmaRead);
@@ -224,6 +226,11 @@ void MemoryManager::WriteDma(uint32_t addr, uint8_t value)
 	} else {
 		MessageManager::DisplayMessage("Debug", "Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 	}
+}
+
+uint8_t MemoryManager::GetOpenBus()
+{
+	return _openBus;
 }
 
 uint64_t MemoryManager::GetMasterClock()

@@ -30,6 +30,7 @@ private:
 	vector<unique_ptr<RamHandler>> _workRamHandlers;
 
 	uint8_t *_workRam;
+	uint8_t _openBus;
 
 	uint64_t _masterClock;
 	uint8_t _masterClockTable[2][0x10000];
@@ -56,6 +57,7 @@ public:
 	void Write(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void WriteDma(uint32_t addr, uint8_t value);
 
+	uint8_t GetOpenBus();
 	uint64_t GetMasterClock();
 	uint8_t* DebugGetWorkRam();
 

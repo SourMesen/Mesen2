@@ -1255,7 +1255,7 @@ uint8_t Ppu::Read(uint16_t addr)
 			break;
 	}
 
-	return addr >> 8;
+	return _console->GetMemoryManager()->GetOpenBus();
 }
 
 void Ppu::Write(uint32_t addr, uint8_t value)
