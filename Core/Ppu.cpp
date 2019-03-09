@@ -318,7 +318,7 @@ void Ppu::RenderMode1()
 	if(!_mode1Bg3Priority) {
 		RenderTilemap<2, 2, true, forMainScreen>();
 	}
-	RenderSprites<0, true>();
+	RenderSprites<0, forMainScreen>();
 	RenderTilemap<2, 2, false, forMainScreen>();
 	RenderBgColor<forMainScreen>();
 }
