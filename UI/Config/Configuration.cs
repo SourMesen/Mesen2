@@ -12,11 +12,10 @@ namespace Mesen.GUI.Config
 {
 	public class Configuration
 	{
-		private const int MaxRecentFiles = 10;
 		private bool _needToSave = false;
 
 		public string Version = "0.1.0";
-		public List<RecentItem> RecentFiles;
+		public RecentItems RecentFiles;
 		public VideoConfig Video;
 		public AudioConfig Audio;
 		public DebugInfo Debug;
@@ -25,7 +24,7 @@ namespace Mesen.GUI.Config
 
 		public Configuration()
 		{
-			RecentFiles = new List<RecentItem>();
+			RecentFiles = new RecentItems();
 			Debug = new DebugInfo();
 			Video = new VideoConfig();
 			Audio = new AudioConfig();
@@ -60,21 +59,6 @@ namespace Mesen.GUI.Config
 
 		public void InitializeDefaults()
 		{
-		}
-		
-		public void AddRecentFile(ResourcePath romFile, ResourcePath? patchFile)
-		{
-			RecentItem existingItem = RecentFiles.Where((item) => item.RomFile == romFile && item.PatchFile == patchFile).FirstOrDefault();
-			if(existingItem != null) {
-				RecentFiles.Remove(existingItem);
-			}
-			RecentItem recentItem = new RecentItem { RomFile = romFile, PatchFile = patchFile };
-
-			RecentFiles.Insert(0, recentItem);
-			if(RecentFiles.Count > Configuration.MaxRecentFiles) {
-				RecentFiles.RemoveAt(Configuration.MaxRecentFiles);
-			}
-			ConfigManager.ApplyChanges();
 		}
 
 		public static Configuration Deserialize(string configFile)
@@ -119,27 +103,6 @@ namespace Mesen.GUI.Config
 			Configuration config = (Configuration)xmlSerializer.Deserialize(stringReader);
 			config.NeedToSave = false;
 			return config;
-		}
-	}
-
-	public class RecentItem
-	{
-		public ResourcePath RomFile;
-		public ResourcePath? PatchFile;
-
-		public override string ToString()
-		{
-			string text;
-			/*if(ConfigManager.Config.PreferenceInfo.ShowFullPathInRecents) {
-				text = RomFile.ReadablePath.Replace("&", "&&");
-			} else {*/
-				text = Path.GetFileName(RomFile.FileName).Replace("&", "&&");
-			//}
-
-			if(PatchFile.HasValue) {
-				text += " [" + Path.GetFileName(PatchFile.Value) + "]";
-			}
-			return text;
 		}
 	}
 

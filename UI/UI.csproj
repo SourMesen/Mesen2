@@ -233,6 +233,7 @@
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
+    <Compile Include="Config\RecentItems.cs" />
     <Compile Include="Debugger\Config\TraceLoggerInfo.cs" />
     <Compile Include="Debugger\Config\DebugInfo.cs" />
     <Compile Include="Controls\BaseControl.cs">
@@ -502,6 +503,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceExtractor.cs" />
+    <Compile Include="EmuRunner.cs" />
     <Compile Include="RuntimeChecker.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="Utilities\HexConverter.cs" />

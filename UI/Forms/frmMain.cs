@@ -136,7 +136,7 @@ namespace Mesen.GUI.Forms
 			using(OpenFileDialog ofd = new OpenFileDialog()) {
 				ofd.Filter = ResourceHelper.GetMessage("FilterRom");
 				if(ofd.ShowDialog() == DialogResult.OK) {
-					LoadFile(ofd.FileName);
+					EmuRunner.LoadRom(ofd.FileName);
 				}
 			}
 		}
@@ -151,14 +151,6 @@ namespace Mesen.GUI.Forms
 			DebugApi.Step(1000);
 		}
 
-		private void LoadFile(string filepath)
-		{
-			EmuApi.LoadRom(filepath);
-			Task.Run(() => {
-				EmuApi.Run();
-			});
-		}
-
 		protected override void OnDragDrop(DragEventArgs e)
 		{
 			base.OnDragDrop(e);
@@ -166,7 +158,7 @@ namespace Mesen.GUI.Forms
 			try {
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 				if(File.Exists(files[0])) {
-					LoadFile(files[0]);
+					EmuRunner.LoadRom(files[0]);
 					this.Activate();
 				} else {
 					//InteropEmu.DisplayMessage("Error", "File not found: " + files[0]);
@@ -189,6 +181,18 @@ namespace Mesen.GUI.Forms
 			} catch(Exception ex) {
 				MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
 			}
+		}
+
+		private void mnuExit_Click(object sender, EventArgs e)
+		{
+			this.Close();
+		}
+
+		private void mnuFile_DropDownOpening(object sender, EventArgs e)
+		{
+			mnuRecentFiles.DropDownItems.Clear();
+			mnuRecentFiles.DropDownItems.AddRange(ConfigManager.Config.RecentFiles.GetMenuItems().ToArray());
+			mnuRecentFiles.Enabled = ConfigManager.Config.RecentFiles.Items.Count > 0;
 		}
 	}
 }

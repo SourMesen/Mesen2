@@ -32,6 +32,7 @@
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuOpen = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAudioConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuVideoConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRun = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,7 +45,10 @@
 			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
-			this.mnuAudioConfig = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRecentFiles = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -71,17 +75,22 @@
 			// mnuFile
 			// 
 			this.mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuOpen});
+            this.mnuOpen,
+            this.toolStripMenuItem2,
+            this.mnuRecentFiles,
+            this.toolStripMenuItem6,
+            this.mnuExit});
 			this.mnuFile.Name = "mnuFile";
 			this.mnuFile.Size = new System.Drawing.Size(37, 20);
 			this.mnuFile.Text = "File";
+			this.mnuFile.DropDownOpening += new System.EventHandler(this.mnuFile_DropDownOpening);
 			// 
 			// mnuOpen
 			// 
 			this.mnuOpen.Image = global::Mesen.GUI.Properties.Resources.Folder;
 			this.mnuOpen.Name = "mnuOpen";
 			this.mnuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.mnuOpen.Size = new System.Drawing.Size(146, 22);
+			this.mnuOpen.Size = new System.Drawing.Size(152, 22);
 			this.mnuOpen.Text = "Open";
 			this.mnuOpen.Click += new System.EventHandler(this.mnuOpen_Click);
 			// 
@@ -93,6 +102,14 @@
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
 			this.optionsToolStripMenuItem.Text = "Options";
+			// 
+			// mnuAudioConfig
+			// 
+			this.mnuAudioConfig.Image = global::Mesen.GUI.Properties.Resources.Audio;
+			this.mnuAudioConfig.Name = "mnuAudioConfig";
+			this.mnuAudioConfig.Size = new System.Drawing.Size(152, 22);
+			this.mnuAudioConfig.Text = "Audio";
+			this.mnuAudioConfig.Click += new System.EventHandler(this.mnuAudioConfig_Click);
 			// 
 			// mnuVideoConfig
 			// 
@@ -197,13 +214,29 @@
 			this.pnlRenderer.Size = new System.Drawing.Size(512, 448);
 			this.pnlRenderer.TabIndex = 2;
 			// 
-			// mnuAudioConfig
+			// mnuRecentFiles
 			// 
-			this.mnuAudioConfig.Image = global::Mesen.GUI.Properties.Resources.Audio;
-			this.mnuAudioConfig.Name = "mnuAudioConfig";
-			this.mnuAudioConfig.Size = new System.Drawing.Size(152, 22);
-			this.mnuAudioConfig.Text = "Audio";
-			this.mnuAudioConfig.Click += new System.EventHandler(this.mnuAudioConfig_Click);
+			this.mnuRecentFiles.Name = "mnuRecentFiles";
+			this.mnuRecentFiles.Size = new System.Drawing.Size(152, 22);
+			this.mnuRecentFiles.Text = "Recent Files";
+			// 
+			// toolStripMenuItem6
+			// 
+			this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+			this.toolStripMenuItem6.Size = new System.Drawing.Size(149, 6);
+			// 
+			// mnuExit
+			// 
+			this.mnuExit.Image = global::Mesen.GUI.Properties.Resources.Exit;
+			this.mnuExit.Name = "mnuExit";
+			this.mnuExit.Size = new System.Drawing.Size(152, 22);
+			this.mnuExit.Text = "Exit";
+			this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
 			// 
 			// frmMain
 			// 
@@ -244,5 +277,9 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuVideoConfig;
 		private System.Windows.Forms.Panel pnlRenderer;
 		private System.Windows.Forms.ToolStripMenuItem mnuAudioConfig;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem mnuRecentFiles;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
+		private System.Windows.Forms.ToolStripMenuItem mnuExit;
 	}
 }
