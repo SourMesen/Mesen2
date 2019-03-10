@@ -42,7 +42,7 @@ private:
 	SimpleLock					_frameLock;
 	SimpleLock					_textureLock;
 
-	VideoResizeFilter _resizeFilter = VideoResizeFilter::NearestNeighbor;
+	bool _useBilinearInterpolation = false;
 
 	unique_ptr<SpriteFont>	_font;
 	unique_ptr<SpriteFont>	_largeFont;

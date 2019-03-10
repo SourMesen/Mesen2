@@ -8,6 +8,7 @@
 #include "../Core/Debugger.h"
 #include "../Core/MessageManager.h"
 #include "../Core/SettingTypes.h"
+#include "../Core/EmuSettings.h"
 #include "../Utilities/UTF8Util.h"
 
 using namespace DirectX;
@@ -40,20 +41,18 @@ void Renderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t m
 
 void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
-	ScreenSize screenSize;
-	_console->GetVideoDecoder()->GetScreenSize(screenSize, false);
-
-	//TODO  _resizeFilter != _console->GetSettings()->GetVideoResizeFilter()
-	if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen) {
+	ScreenSize screenSize = _console->GetVideoDecoder()->GetScreenSize(false);
+	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+	if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
-		_console->GetVideoDecoder()->GetScreenSize(screenSize, false);
-		if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen) {
+		screenSize = _console->GetVideoDecoder()->GetScreenSize(false);
+		if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 			_nesFrameHeight = height;
 			_nesFrameWidth = width;
 			_newFrameBufferSize = width*height;
 
-			bool needReset = _fullscreen != _newFullscreen;//TODO || _resizeFilter != _console->GetSettings()->GetVideoResizeFilter();
+			bool needReset = _fullscreen != _newFullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation;
 			bool fullscreenResizeMode = _fullscreen && _newFullscreen;
 
 			if(_pSwapChain && _fullscreen && !_newFullscreen) {
@@ -278,7 +277,7 @@ HRESULT Renderer::InitDevice()
 	sd.BufferDesc.Width = _realScreenWidth;
 	sd.BufferDesc.Height = _realScreenHeight;
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 60; //TODO _console->GetSettings()->GetExclusiveRefreshRate();
+	sd.BufferDesc.RefreshRate.Numerator = _console->GetSettings()->GetVideoConfig().ExclusiveFullscreenRefreshRate;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.Flags = _fullscreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
@@ -401,12 +400,12 @@ HRESULT Renderer::InitDevice()
 
 HRESULT Renderer::CreateSamplerState()
 {
-	_resizeFilter = VideoResizeFilter::NearestNeighbor; //TODO _console->GetSettings()->GetVideoResizeFilter();
+	_useBilinearInterpolation = _console->GetSettings()->GetVideoConfig().UseBilinearInterpolation;
 
 	//Sample state
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = _resizeFilter == VideoResizeFilter::Bilinear ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.Filter = _useBilinearInterpolation ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -637,7 +636,7 @@ void Renderer::Render()
 
 		// Present the information rendered to the back buffer to the front buffer (the screen)
 
-		bool waitVSync = false; //TODO _console->GetSettings()->CheckFlag(EmulationFlags::VerticalSync)
+		bool waitVSync = _console->GetSettings()->GetVideoConfig().VerticalSync;
 		HRESULT hr = _pSwapChain->Present(waitVSync ? 1 : 0, 0);
 		if(FAILED(hr)) {
 			MessageManager::Log("SwapChain::Present() failed - Error:" + std::to_string(hr));

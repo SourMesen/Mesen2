@@ -76,6 +76,15 @@ uint32_t* BaseVideoFilter::GetOutputBuffer()
 	return _outputBuffer;
 }
 
+uint32_t BaseVideoFilter::ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity)
+{
+	uint8_t r = ((argb & 0xFF0000) >> 16) * scanlineIntensity / 255;
+	uint8_t g = ((argb & 0xFF00) >> 8) * scanlineIntensity / 255;
+	uint8_t b = (argb & 0xFF) * scanlineIntensity / 255;
+
+	return 0xFF000000 | (r << 16) | (g << 8) | b;
+}
+
 void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream)
 {
 	uint32_t* pngBuffer;

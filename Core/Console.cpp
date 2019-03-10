@@ -20,6 +20,7 @@
 #include "MessageManager.h"
 #include "KeyManager.h"
 #include "EventType.h"
+#include "EmuSettings.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
@@ -31,6 +32,7 @@ Console::~Console()
 
 void Console::Initialize()
 {
+	_settings.reset(new EmuSettings());
 	_notificationManager.reset(new NotificationManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
@@ -174,6 +176,11 @@ shared_ptr<VideoDecoder> Console::GetVideoDecoder()
 shared_ptr<NotificationManager> Console::GetNotificationManager()
 {
 	return _notificationManager;
+}
+
+shared_ptr<EmuSettings> Console::GetSettings()
+{
+	return _settings;
 }
 
 shared_ptr<DebugHud> Console::GetDebugHud()

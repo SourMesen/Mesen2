@@ -102,7 +102,11 @@ namespace Mesen.GUI.Forms
 							((ctrlTrackbar)kvp.Value).Value = (int)(uint)value;
 						}
 					} else if(kvp.Value is ctrlHorizontalTrackbar) {
-						((ctrlHorizontalTrackbar)kvp.Value).Value = (int)value;
+						if(field.FieldType == typeof(double)) {
+							((ctrlHorizontalTrackbar)kvp.Value).Value = (int)((double)value * 100);
+						} else {
+							((ctrlHorizontalTrackbar)kvp.Value).Value = (int)value;
+						}
 					} else if(kvp.Value is TrackBar) {
 						if(field.FieldType == typeof(Int32)) {
 							((TrackBar)kvp.Value).Value = (int)value;
@@ -236,7 +240,11 @@ namespace Mesen.GUI.Forms
 								field.SetValue(Entity, (UInt32)((ctrlTrackbar)kvp.Value).Value);
 							}
 						} else if(kvp.Value is ctrlHorizontalTrackbar) {
-							field.SetValue(Entity, (Int32)((ctrlHorizontalTrackbar)kvp.Value).Value);
+							if(field.FieldType == typeof(double)) {
+								field.SetValue(Entity, ((ctrlHorizontalTrackbar)kvp.Value).Value / 100.0);
+							} else {
+								field.SetValue(Entity, (Int32)((ctrlHorizontalTrackbar)kvp.Value).Value);
+							}
 						} else if(kvp.Value is TrackBar) {
 							if(field.FieldType == typeof(Int32)) {
 								field.SetValue(Entity, ((TrackBar)kvp.Value).Value);

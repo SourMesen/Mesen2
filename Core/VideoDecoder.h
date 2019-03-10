@@ -5,7 +5,7 @@
 #include "SettingTypes.h"
 
 class BaseVideoFilter;
-//class ScaleFilter;
+class ScaleFilter;
 //class RotateFilter;
 class IRenderingDevice;
 //class VideoHud;
@@ -35,7 +35,7 @@ private:
 
 	VideoFilterType _videoFilterType = VideoFilterType::None;
 	unique_ptr<BaseVideoFilter> _videoFilter;
-	//shared_ptr<ScaleFilter> _scaleFilter;
+	shared_ptr<ScaleFilter> _scaleFilter;
 	//shared_ptr<RotateFilter> _rotateFilter;
 
 	void UpdateVideoFilter();
@@ -53,7 +53,7 @@ public:
 	uint32_t GetFrameCount();
 
 	FrameInfo GetFrameInfo();
-	void GetScreenSize(ScreenSize &size, bool ignoreScale);
+	ScreenSize GetScreenSize(bool ignoreScale);
 
 	void UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber);
 	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber);

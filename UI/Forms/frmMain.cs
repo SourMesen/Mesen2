@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Debugger;
+using Mesen.GUI.Forms.Config;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +31,8 @@ namespace Mesen.GUI.Forms
 			EmuApi.InitDll();
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, Handle, ctrlRenderer.Handle, false, false, false);
 
+			ConfigManager.Config.ApplyConfig();
+
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
@@ -45,6 +48,8 @@ namespace Mesen.GUI.Forms
 				_notifListener = null;
 			}
 
+			ConfigManager.ApplyChanges();
+
 			DebugApi.ResumeExecution();
 			EmuApi.Stop();
 			EmuApi.Release();
@@ -53,9 +58,39 @@ namespace Mesen.GUI.Forms
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
-				case ConsoleNotificationType.CodeBreak:
+				case ConsoleNotificationType.ResolutionChanged:
+					ScreenSize size = EmuApi.GetScreenSize(false);
+					this.BeginInvoke((Action)(() => {
+						UpdateViewerSize(size);
+					}));
 					break;
 			}
+		}
+		
+		private void UpdateViewerSize(ScreenSize screenSize)
+		{
+			//this.Resize -= frmMain_Resize;
+
+			//if(forceUpdate || (!_customSize && this.WindowState != FormWindowState.Maximized)) {
+				Size newSize = new Size(screenSize.Width, screenSize.Height);
+
+				//UpdateScaleMenu(size.Scale);
+				this.ClientSize = new Size(newSize.Width, newSize.Height + pnlRenderer.Top);
+			//}
+
+			ctrlRenderer.Size = new Size(screenSize.Width, screenSize.Height);
+			ctrlRenderer.Top = (pnlRenderer.Height - ctrlRenderer.Height) / 2;
+			ctrlRenderer.Left = (pnlRenderer.Width - ctrlRenderer.Width) / 2;
+
+			//this.Resize += frmMain_Resize;
+		}
+
+		private void mnuVideoConfig_Click(object sender, EventArgs e)
+		{
+			using(frmVideoConfig frm = new frmVideoConfig()) {
+				frm.ShowDialog(sender, this);
+			}
+			ConfigManager.Config.Video.ApplyConfig();
 		}
 
 		private void mnuDebugger_Click(object sender, EventArgs e)

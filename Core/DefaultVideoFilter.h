@@ -2,24 +2,24 @@
 
 #include "stdafx.h"
 #include "BaseVideoFilter.h"
+#include "SettingTypes.h"
 
 class DefaultVideoFilter : public BaseVideoFilter
 {
 private:
+	uint32_t _calculatedPalette[0x8000];
 	double _yiqToRgbMatrix[6];
-	uint32_t _calculatedPalette[512];
-	PictureSettings _pictureSettings;
+	VideoConfig _videoConfig;
 	bool _needToProcess = false;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
+	void InitLookupTable();
 
 	void RgbToYiq(double r, double g, double b, double &y, double &i, double &q);
 	void YiqToRgb(double y, double i, double q, double &r, double &g, double &b);
 	__forceinline static uint8_t To8Bit(uint8_t color);
 
 protected:
-	void DecodePpuBuffer(uint16_t *ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines);
-	uint32_t ApplyScanlineEffect(uint16_t ppuPixel, uint8_t scanlineIntensity);
 	void OnBeforeApplyFilter();
 
 public:

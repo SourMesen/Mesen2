@@ -61,9 +61,11 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="DebugBreakHelper.h" />
     <ClInclude Include="DummyCpu.h" />
+    <ClInclude Include="EmuSettings.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="EventType.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
+    <ClInclude Include="NtscFilter.h" />
     <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RegisterHandlerB.h" />
     <ClInclude Include="CpuTypes.h" />
@@ -101,6 +103,7 @@
     <ClInclude Include="RamHandler.h" />
     <ClInclude Include="RegisterHandlerA.h" />
     <ClInclude Include="RomHandler.h" />
+    <ClInclude Include="ScaleFilter.h" />
     <ClInclude Include="SettingTypes.h" />
     <ClInclude Include="SnesController.h" />
     <ClInclude Include="SNES_SPC.h" />
@@ -133,6 +136,7 @@
     <ClCompile Include="Disassembler.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="DmaController.cpp" />
+    <ClCompile Include="EmuSettings.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="ExpressionEvaluator.cpp" />
     <ClCompile Include="InternalRegisters.cpp" />
@@ -141,8 +145,10 @@
     <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="NotificationManager.cpp" />
+    <ClCompile Include="NtscFilter.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
+    <ClCompile Include="ScaleFilter.cpp" />
     <ClCompile Include="SNES_SPC.cpp" />
     <ClCompile Include="SNES_SPC_misc.cpp" />
     <ClCompile Include="SNES_SPC_state.cpp" />

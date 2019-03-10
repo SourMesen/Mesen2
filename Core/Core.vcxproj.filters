@@ -209,6 +209,15 @@
     <ClInclude Include="DebugBreakHelper.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="EmuSettings.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="ScaleFilter.h">
+      <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="NtscFilter.h">
+      <Filter>Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -325,6 +334,15 @@
     </ClCompile>
     <ClCompile Include="PpuTools.cpp">
       <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="EmuSettings.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="ScaleFilter.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="NtscFilter.cpp">
+      <Filter>Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

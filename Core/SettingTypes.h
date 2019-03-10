@@ -15,32 +15,27 @@ enum class ScaleFilterType
 enum class VideoFilterType
 {
 	None = 0,
-	NTSC = 1,
-	BisqwitNtscQuarterRes = 2,
-	BisqwitNtscHalfRes = 3,
-	BisqwitNtsc = 4,
-	xBRZ2x = 5,
-	xBRZ3x = 6,
-	xBRZ4x = 7,
-	xBRZ5x = 8,
-	xBRZ6x = 9,
-	HQ2x = 10,
-	HQ3x = 11,
-	HQ4x = 12,
-	Scale2x = 13,
-	Scale3x = 14,
-	Scale4x = 15,
-	_2xSai = 16,
-	Super2xSai = 17,
-	SuperEagle = 18,
-	Prescale2x = 19,
-	Prescale3x = 20,
-	Prescale4x = 21,
-	Prescale6x = 22,
-	Prescale8x = 23,
-	Prescale10x = 24,
-	Raw = 25,
-	HdPack = 999
+	NTSC,
+	xBRZ2x,
+	xBRZ3x,
+	xBRZ4x,
+	xBRZ5x,
+	xBRZ6x,
+	HQ2x,
+	HQ3x,
+	HQ4x,
+	Scale2x,
+	Scale3x,
+	Scale4x,
+	_2xSai,
+	Super2xSai,
+	SuperEagle,
+	Prescale2x,
+	Prescale3x,
+	Prescale4x,
+	Prescale6x,
+	Prescale8x,
+	Prescale10x
 };
 
 enum class VideoResizeFilter
@@ -60,38 +55,41 @@ enum class VideoAspectRatio
 	Custom = 6
 };
 
+struct VideoConfig
+{
+	double VideoScale = 2;
+	double CustomAspectRatio = 1.0;
+	VideoFilterType VideoFilter = VideoFilterType::NTSC;
+	VideoAspectRatio AspectRatio = VideoAspectRatio::NoStretching;
+	bool UseBilinearInterpolation = false;
+	bool VerticalSync = false;
+	bool IntegerFpsMode = false;
+
+	double Brightness = 0;
+	double Contrast = 0;
+	double Hue = 0;
+	double Saturation = 0;
+	double ScanlineIntensity = 0;
+
+	double NtscArtifacts = 0;
+	double NtscBleed = 0;
+	double NtscFringing = 0;
+	double NtscGamma = 0;
+	double NtscResolution = 0;
+	double NtscSharpness = 0;
+	bool NtscMergeFields = false;
+
+	bool FullscreenForceIntegerScale = false;
+	bool UseExclusiveFullscreen = false;
+	int32_t ExclusiveFullscreenRefreshRate = 60;
+};
+
 struct OverscanDimensions
 {
 	uint32_t Left = 0;
 	uint32_t Right = 0;
 	uint32_t Top = 0;
 	uint32_t Bottom = 0;
-};
-
-struct PictureSettings
-{
-	double Brightness = 0;
-	double Contrast = 0;
-	double Saturation = 0;
-	double Hue = 0;
-	double ScanlineIntensity = 0;
-};
-
-struct NtscFilterSettings
-{
-	double Sharpness = 0;
-	double Gamma = 0;
-	double Resolution = 0;
-	double Artifacts = 0;
-	double Fringing = 0;
-	double Bleed = 0;
-	bool MergeFields = false;
-	bool VerticalBlend = false;
-	bool KeepVerticalResolution = false;
-
-	double YFilterLength = 0;
-	double IFilterLength = 0;
-	double QFilterLength = 0;
 };
 
 struct FrameInfo

@@ -1,4 +1,4 @@
-/* nes_ntsc 0.2.2. http://www.slack.net/~ant/ */
+/* snes_ntsc 0.2.2. http://www.slack.net/~ant/ */
 
 /* Common implementation of NTSC filters */
 
@@ -44,7 +44,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 #define rgb_unit            (1 << rgb_bits)
 #define rgb_offset          (rgb_unit * 2 + 0.5f)
 
-enum { burst_size  = nes_ntsc_entry_size / burst_count };
+enum { burst_size  = snes_ntsc_entry_size / burst_count };
 enum { kernel_half = 16 };
 enum { kernel_size = kernel_half * 2 + 1 };
 
@@ -66,7 +66,7 @@ typedef struct init_t
 	i = t;\
 }
 
-static void init_filters( init_t* impl, nes_ntsc_setup_t const* setup )
+static void init_filters( init_t* impl, snes_ntsc_setup_t const* setup )
 {
 #if rescale_out > 1
 	float kernels [kernel_size * 2];
@@ -195,7 +195,7 @@ static void init_filters( init_t* impl, nes_ntsc_setup_t const* setup )
 static float const default_decoder [6] =
 	{ 0.956f, 0.621f, -0.272f, -0.647f, -1.105f, 1.702f };
 
-static void init( init_t* impl, nes_ntsc_setup_t const* setup )
+static void init( init_t* impl, snes_ntsc_setup_t const* setup )
 {
 	impl->brightness = (float) setup->brightness * (0.5f * rgb_unit) + rgb_offset;
 	impl->contrast   = (float) setup->contrast   * (0.5f * rgb_unit) + rgb_unit;
@@ -285,7 +285,7 @@ static void init( init_t* impl, nes_ntsc_setup_t const* setup )
 #define PACK_RGB( r, g, b ) ((r) << 21 | (g) << 11 | (b) << 1)
 
 enum { rgb_kernel_size = burst_size / alignment_count };
-enum { rgb_bias = rgb_unit * 2 * nes_ntsc_rgb_builder };
+enum { rgb_bias = rgb_unit * 2 * snes_ntsc_rgb_builder };
 
 typedef struct pixel_info_t
 {
@@ -309,10 +309,10 @@ typedef struct pixel_info_t
 		(1.0f - (((ntsc) + 100) & 2))
 #endif
 
-extern pixel_info_t const nes_ntsc_pixels [alignment_count];
+extern pixel_info_t const snes_ntsc_pixels [alignment_count];
 
 /* Generate pixel at all burst phases and column alignments */
-static void gen_kernel( init_t* impl, float y, float i, float q, nes_ntsc_rgb_t* out )
+static void gen_kernel( init_t* impl, float y, float i, float q, snes_ntsc_rgb_t* out )
 {
 	/* generate for each scanline burst phase */
 	float const* to_rgb = impl->to_rgb;
@@ -324,7 +324,7 @@ static void gen_kernel( init_t* impl, float y, float i, float q, nes_ntsc_rgb_t*
 		Convolve these with kernels which: filter respective components, apply
 		sharpening, and rescale horizontally. Convert resulting yiq to rgb and pack
 		into integer. Based on algorithm by NewRisingSun. */
-		pixel_info_t const* pixel = nes_ntsc_pixels;
+		pixel_info_t const* pixel = snes_ntsc_pixels;
 		int alignment_remain = alignment_count;
 		do
 		{
@@ -377,7 +377,7 @@ static void gen_kernel( init_t* impl, float y, float i, float q, nes_ntsc_rgb_t*
 	while ( --burst_remain );
 }
 
-static void correct_errors( nes_ntsc_rgb_t color, nes_ntsc_rgb_t* out );
+static void correct_errors( snes_ntsc_rgb_t color, snes_ntsc_rgb_t* out );
 
 #if DISABLE_CORRECTION
 	#define CORRECT_ERROR( a ) { out [i] += rgb_bias; }
@@ -385,8 +385,8 @@ static void correct_errors( nes_ntsc_rgb_t color, nes_ntsc_rgb_t* out );
 #else
 	#define CORRECT_ERROR( a ) { out [a] += error; }
 	#define DISTRIBUTE_ERROR( a, b, c ) {\
-		nes_ntsc_rgb_t fourth = (error + 2 * nes_ntsc_rgb_builder) >> 2;\
-		fourth &= (rgb_bias >> 1) - nes_ntsc_rgb_builder;\
+		snes_ntsc_rgb_t fourth = (error + 2 * snes_ntsc_rgb_builder) >> 2;\
+		fourth &= (rgb_bias >> 1) - snes_ntsc_rgb_builder;\
 		fourth -= rgb_bias >> 2;\
 		out [a] += fourth;\
 		out [b] += fourth;\
@@ -398,8 +398,8 @@ static void correct_errors( nes_ntsc_rgb_t color, nes_ntsc_rgb_t* out );
 #define RGB_PALETTE_OUT( rgb, out_ )\
 {\
 	unsigned char* out = (out_);\
-	nes_ntsc_rgb_t clamped = (rgb);\
-	NES_NTSC_CLAMP_( clamped, (8 - rgb_bits) );\
+	snes_ntsc_rgb_t clamped = (rgb);\
+	SNES_NTSC_CLAMP_( clamped, (8 - rgb_bits) );\
 	out [0] = (unsigned char) (clamped >> 21);\
 	out [1] = (unsigned char) (clamped >> 11);\
 	out [2] = (unsigned char) (clamped >>  1);\
@@ -420,18 +420,18 @@ static void correct_errors( nes_ntsc_rgb_t color, nes_ntsc_rgb_t* out );
 
 #include <limits.h>
 
-#if NES_NTSC_OUT_DEPTH <= 16
+#if SNES_NTSC_OUT_DEPTH <= 16
 	#if USHRT_MAX == 0xFFFF
-		typedef unsigned short nes_ntsc_out_t;
+		typedef unsigned short snes_ntsc_out_t;
 	#else
 		#error "Need 16-bit int type"
 	#endif
 
 #else
 	#if UINT_MAX == 0xFFFFFFFF
-		typedef unsigned int  nes_ntsc_out_t;
+		typedef unsigned int  snes_ntsc_out_t;
 	#elif ULONG_MAX == 0xFFFFFFFF
-		typedef unsigned long nes_ntsc_out_t;
+		typedef unsigned long snes_ntsc_out_t;
 	#else
 		#error "Need 32-bit int type"
 	#endif

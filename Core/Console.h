@@ -17,6 +17,7 @@ class SoundMixer;
 class VideoRenderer;
 class VideoDecoder;
 class NotificationManager;
+class EmuSettings;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -40,6 +41,7 @@ private:
 	shared_ptr<VideoRenderer> _videoRenderer;
 	shared_ptr<VideoDecoder> _videoDecoder;
 	shared_ptr<DebugHud> _debugHud;
+	shared_ptr<EmuSettings> _settings;
 	
 	thread::id _emulationThreadId;
 
@@ -62,6 +64,7 @@ public:
 	shared_ptr<VideoRenderer> GetVideoRenderer();
 	shared_ptr<VideoDecoder> GetVideoDecoder();
 	shared_ptr<NotificationManager> GetNotificationManager();
+	shared_ptr<EmuSettings> GetSettings();
 
 	shared_ptr<DebugHud> GetDebugHud();
 

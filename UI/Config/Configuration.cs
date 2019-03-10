@@ -17,6 +17,7 @@ namespace Mesen.GUI.Config
 
 		public string Version = "0.1.0";
 		public List<RecentItem> RecentFiles;
+		public VideoConfig Video;
 		public DebugInfo Debug;
 		public Point? WindowLocation;
 		public Size? WindowSize;
@@ -25,6 +26,7 @@ namespace Mesen.GUI.Config
 		{
 			RecentFiles = new List<RecentItem>();
 			Debug = new DebugInfo();
+			Video = new VideoConfig();
 		}
 
 		~Configuration()
@@ -50,6 +52,7 @@ namespace Mesen.GUI.Config
 
 		public void ApplyConfig()
 		{
+			Video.ApplyConfig();
 		}
 
 		public void InitializeDefaults()

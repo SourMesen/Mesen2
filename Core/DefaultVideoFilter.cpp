@@ -5,17 +5,16 @@
 #include <algorithm>
 #include "DebugHud.h"
 #include "Console.h"
+#include "EmuSettings.h"
+#include "SettingTypes.h"
 
 DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Console> console) : BaseVideoFilter(console)
 {
-	InitConversionMatrix(_pictureSettings.Hue, _pictureSettings.Saturation);
+	InitLookupTable();
 }
 
 void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturationShift)
 {
-	_pictureSettings.Hue = hueShift;
-	_pictureSettings.Saturation = saturationShift;
-
 	double hue = hueShift * M_PI;
 	double sat = saturationShift + 1;
 
@@ -34,60 +33,40 @@ void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturation
 	}
 }
 
-void DefaultVideoFilter::OnBeforeApplyFilter()
+void DefaultVideoFilter::InitLookupTable()
 {
-	/*PictureSettings currentSettings = _console->GetSettings()->GetPictureSettings();
-	if(_pictureSettings.Hue != currentSettings.Hue || _pictureSettings.Saturation != currentSettings.Saturation) {
-		InitConversionMatrix(currentSettings.Hue, currentSettings.Saturation);
+	VideoConfig config = _console->GetSettings()->GetVideoConfig();
+
+	InitConversionMatrix(config.Hue, config.Saturation);
+
+	double y, i, q;
+	for(int rgb555 = 0; rgb555 < 0x8000; rgb555++) {
+		double redChannel = To8Bit(rgb555 & 0x1F) / 255.0;
+		double greenChannel = To8Bit((rgb555 >> 5) & 0x1F) / 255.0;
+		double blueChannel = To8Bit(rgb555 >> 10) / 255.0;
+
+		//Apply brightness, contrast, hue & saturation
+		RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
+		y *= config.Contrast * 0.5f + 1;
+		y += config.Brightness * 0.5f;
+		YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
+
+		int r = std::min(255, (int)(redChannel * 255));
+		int g = std::min(255, (int)(greenChannel * 255));
+		int b = std::min(255, (int)(blueChannel * 255));
+
+		_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
 	}
-	_pictureSettings = currentSettings;
-	_needToProcess = _pictureSettings.Hue != 0 || _pictureSettings.Saturation != 0 || _pictureSettings.Brightness || _pictureSettings.Contrast;
 
-	if(_needToProcess) {
-		double y, i, q;
-		uint32_t* originalPalette = _console->GetSettings()->GetRgbPalette();
-
-		for(int pal = 0; pal < 512; pal++) {
-			uint32_t pixelOutput = originalPalette[pal];
-			double redChannel = ((pixelOutput & 0xFF0000) >> 16) / 255.0;
-			double greenChannel = ((pixelOutput & 0xFF00) >> 8) / 255.0;
-			double blueChannel = (pixelOutput & 0xFF) / 255.0;
-
-			//Apply brightness, contrast, hue & saturation
-			RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
-			y *= _pictureSettings.Contrast * 0.5f + 1;
-			y += _pictureSettings.Brightness * 0.5f;
-			YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
-
-			int r = std::min(255, (int)(redChannel * 255));
-			int g = std::min(255, (int)(greenChannel * 255));
-			int b = std::min(255, (int)(blueChannel * 255));
-
-			_calculatedPalette[pal] = 0xFF000000 | (r << 16) | (g << 8) | b;
-		}
-	} else {
-		memcpy(_calculatedPalette, _console->GetSettings()->GetRgbPalette(), sizeof(_calculatedPalette));
-	}*/
+	_videoConfig = config;
 }
 
-void DefaultVideoFilter::DecodePpuBuffer(uint16_t *ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines)
+void DefaultVideoFilter::OnBeforeApplyFilter()
 {
-	/*uint32_t* out = outputBuffer;
-	OverscanDimensions overscan = GetOverscan();
-	uint8_t scanlineIntensity = (uint8_t)((1.0 - _console->GetSettings()->GetPictureSettings().ScanlineIntensity) * 255);
-	for(uint32_t i = overscan.Top, iMax = 240 - overscan.Bottom; i < iMax; i++) {
-		if(displayScanlines && (i + overscan.Top) % 2 == 0) {
-			for(uint32_t j = overscan.Left, jMax = 256 - overscan.Right; j < jMax; j++) {
-				*out = ApplyScanlineEffect(ppuOutputBuffer[i * 256 + j], scanlineIntensity);
-				out++;
-			}
-		} else {
-			for(uint32_t j = overscan.Left, jMax = 256 - overscan.Right; j < jMax; j++) {
-				*out = _calculatedPalette[ppuOutputBuffer[i * 256 + j]];
-				out++;
-			}
-		}
-	}*/
+	VideoConfig config = _console->GetSettings()->GetVideoConfig();
+	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
+		InitLookupTable();
+	}
 }
 
 uint8_t DefaultVideoFilter::To8Bit(uint8_t color)
@@ -107,10 +86,28 @@ uint32_t DefaultVideoFilter::ToArgb(uint16_t rgb555)
 void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	uint32_t *out = GetOutputBuffer();
-	uint32_t pixelCount = GetFrameInfo().Width * GetFrameInfo().Height;
-	
-	for(uint32_t i = 0; i < pixelCount; i++) {
-		out[i] = ToArgb(ppuOutputBuffer[i]);
+	FrameInfo frameInfo = GetFrameInfo();
+
+	uint8_t scanlineIntensity = (uint8_t)((1.0 - _console->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
+	if(scanlineIntensity < 255) {
+		for(uint32_t i = 0; i < frameInfo.Height; i++) {
+			if(i & 0x01) {
+				for(uint32_t j = 0; j < frameInfo.Width; j++) {
+					*out = ApplyScanlineEffect(_calculatedPalette[ppuOutputBuffer[i * 512 + j]], scanlineIntensity);
+					out++;
+				}
+			} else {
+				for(uint32_t j = 0; j < frameInfo.Width; j++) {
+					*out = _calculatedPalette[ppuOutputBuffer[i * 512 + j]];
+					out++;
+				}
+			}
+		}
+	} else {
+		uint32_t pixelCount = frameInfo.Width * frameInfo.Height;
+		for(uint32_t i = 0; i < pixelCount; i++) {
+			out[i] = _calculatedPalette[ppuOutputBuffer[i]];
+		}
 	}
 }
 
@@ -126,15 +123,4 @@ void DefaultVideoFilter::YiqToRgb(double y, double i, double q, double &r, doubl
 	r = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[0] * i + _yiqToRgbMatrix[1] * q)));
 	g = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[2] * i + _yiqToRgbMatrix[3] * q)));
 	b = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[4] * i + _yiqToRgbMatrix[5] * q)));
-}
-
-uint32_t DefaultVideoFilter::ApplyScanlineEffect(uint16_t ppuPixel, uint8_t scanlineIntensity)
-{
-	uint32_t pixelOutput = _calculatedPalette[ppuPixel];
-
-	uint8_t r = ((pixelOutput & 0xFF0000) >> 16) * scanlineIntensity / 255;
-	uint8_t g = ((pixelOutput & 0xFF00) >> 8) * scanlineIntensity / 255;
-	uint8_t b = (pixelOutput & 0xFF) * scanlineIntensity / 255;
-
-	return 0xFF000000 | (r << 16) | (g << 8) | b;
 }

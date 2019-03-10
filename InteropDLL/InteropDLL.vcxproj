@@ -453,6 +453,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigApiWrapper.cpp" />
     <ClCompile Include="EmuApiWrapper.cpp" />
     <ClCompile Include="DebugApiWrapper.cpp" />
     <ClCompile Include="stdafx.cpp">

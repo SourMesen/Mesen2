@@ -31,6 +31,8 @@
 			this.mnuMain = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuVideoConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRun = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuStep = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,12 +43,14 @@
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.mnuMain.SuspendLayout();
+			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctrlRenderer
 			// 
-			this.ctrlRenderer.Location = new System.Drawing.Point(0, 27);
+			this.ctrlRenderer.Location = new System.Drawing.Point(0, 0);
 			this.ctrlRenderer.Name = "ctrlRenderer";
 			this.ctrlRenderer.Size = new System.Drawing.Size(512, 448);
 			this.ctrlRenderer.TabIndex = 0;
@@ -55,6 +59,7 @@
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuFile,
+            this.optionsToolStripMenuItem,
             this.debugToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
@@ -78,6 +83,22 @@
 			this.mnuOpen.Size = new System.Drawing.Size(146, 22);
 			this.mnuOpen.Text = "Open";
 			this.mnuOpen.Click += new System.EventHandler(this.mnuOpen_Click);
+			// 
+			// optionsToolStripMenuItem
+			// 
+			this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuVideoConfig});
+			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+			this.optionsToolStripMenuItem.Text = "Options";
+			// 
+			// mnuVideoConfig
+			// 
+			this.mnuVideoConfig.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
+			this.mnuVideoConfig.Name = "mnuVideoConfig";
+			this.mnuVideoConfig.Size = new System.Drawing.Size(104, 22);
+			this.mnuVideoConfig.Text = "Video";
+			this.mnuVideoConfig.Click += new System.EventHandler(this.mnuVideoConfig_Click);
 			// 
 			// debugToolStripMenuItem
 			// 
@@ -164,19 +185,30 @@
 			this.mnuEventViewer.Text = "Event Viewer";
 			this.mnuEventViewer.Click += new System.EventHandler(this.mnuEventViewer_Click);
 			// 
+			// pnlRenderer
+			// 
+			this.pnlRenderer.BackColor = System.Drawing.Color.Black;
+			this.pnlRenderer.Controls.Add(this.ctrlRenderer);
+			this.pnlRenderer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnlRenderer.Location = new System.Drawing.Point(0, 24);
+			this.pnlRenderer.Name = "pnlRenderer";
+			this.pnlRenderer.Size = new System.Drawing.Size(512, 448);
+			this.pnlRenderer.TabIndex = 2;
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(512, 475);
-			this.Controls.Add(this.ctrlRenderer);
+			this.ClientSize = new System.Drawing.Size(512, 472);
+			this.Controls.Add(this.pnlRenderer);
 			this.Controls.Add(this.mnuMain);
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "frmMain";
 			this.Text = "frmMain";
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
+			this.pnlRenderer.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -198,5 +230,8 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuMemoryTools;
 		private System.Windows.Forms.ToolStripMenuItem mnuTilemapViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuEventViewer;
+		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mnuVideoConfig;
+		private System.Windows.Forms.Panel pnlRenderer;
 	}
 }

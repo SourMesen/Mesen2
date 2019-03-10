@@ -40,7 +40,16 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetDisplayLanguage(Language lang);
 
+		[DllImport(DllPath)] public static extern ScreenSize GetScreenSize([MarshalAs(UnmanagedType.I1)]bool ignoreScale);
+
 		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
 		public static string GetLog() { return Utf8Marshaler.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
+	}
+
+	public struct ScreenSize
+	{
+		public Int32 Width;
+		public Int32 Height;
+		public double Scale;
 	}
 }

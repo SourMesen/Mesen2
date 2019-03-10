@@ -3,7 +3,12 @@
 #include "VideoDecoder.h"
 #include "VideoRenderer.h"
 #include "DefaultVideoFilter.h"
+#include "NotificationManager.h"
 #include "Console.h"
+#include "EmuSettings.h"
+#include "SettingTypes.h"
+#include "NtscFilter.h"
+#include "ScaleFilter.h"
 #include "Ppu.h"
 #include "DebugHud.h"
 
@@ -25,64 +30,40 @@ FrameInfo VideoDecoder::GetFrameInfo()
 	return _lastFrameInfo;
 }
 
-void VideoDecoder::GetScreenSize(ScreenSize &size, bool ignoreScale)
+ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 {
+	ScreenSize size = {};
 	if(_videoFilter) {
-		/*OverscanDimensions overscan = ignoreScale ? _videoFilter->GetOverscan() : _console->GetSettings()->GetOverscanDimensions();
-		FrameInfo frameInfo{ overscan.GetScreenWidth(), overscan.GetScreenHeight(), PPU::ScreenWidth, PPU::ScreenHeight, 4 };
-		double aspectRatio = _console->GetSettings()->GetAspectRatio(_console);
-		double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoScale());
-		size.Width = (int32_t)(frameInfo.Width * scale);
-		size.Height = (int32_t)(frameInfo.Height * scale);
+		VideoConfig config = _console->GetSettings()->GetVideoConfig();
+		double aspectRatio = _console->GetSettings()->GetAspectRatio();
+		double scale = (ignoreScale ? 1 : config.VideoScale);
+		size.Width = (int32_t)(_baseFrameInfo.Width * scale / 2);
+		size.Height = (int32_t)(_baseFrameInfo.Height * scale / 2);
+		size.Scale = scale;
 		if(aspectRatio != 0.0) {
-			size.Width = (uint32_t)(frameInfo.OriginalHeight * scale * aspectRatio * ((double)frameInfo.Width / frameInfo.OriginalWidth));
+			size.Width = (uint32_t)(_baseFrameInfo.Height * scale * aspectRatio / 2);
 		}
 
-		if(_console->GetSettings()->GetScreenRotation() % 180) {
+		/*if(_console->GetSettings()->GetScreenRotation() % 180) {
 			std::swap(size.Width, size.Height);
-		}
-
-		size.Scale = scale;*/
-		
-		size.Scale = 2;
-		if(ignoreScale) {
-			size.Width = _baseFrameInfo.Width;
-			size.Height = _baseFrameInfo.Height;
-		} else {
-			if(_baseFrameInfo.Width == 256) {
-				size.Width = (int32_t)(_baseFrameInfo.Width * size.Scale);
-				size.Height = (int32_t)(_baseFrameInfo.Height * size.Scale);
-			} else {
-				size.Width = (int32_t)_baseFrameInfo.Width;
-				size.Height = (int32_t)_baseFrameInfo.Height;
-				if(_baseFrameInfo.Height <= 240) {
-					size.Height *= 2;
-				}
-			}
-		}
+		}*/
 	}
+	return size;
 }
 
 void VideoDecoder::UpdateVideoFilter()
 {
-	VideoFilterType newFilter = VideoFilterType::None;
+	VideoFilterType newFilter = _console->GetSettings()->GetVideoConfig().VideoFilter;
 
 	if(_videoFilterType != newFilter || _videoFilter == nullptr) {
 		_videoFilterType = newFilter;
 		_videoFilter.reset(new DefaultVideoFilter(_console));
-		//_scaleFilter.reset();
+		_scaleFilter.reset();
 
 		switch(_videoFilterType) {
 			case VideoFilterType::None: break;
-
-			//TODO
-			/*
 			case VideoFilterType::NTSC: _videoFilter.reset(new NtscFilter(_console)); break;
-			case VideoFilterType::BisqwitNtsc: _videoFilter.reset(new BisqwitNtscFilter(_console, 1)); break;
-			case VideoFilterType::BisqwitNtscHalfRes: _videoFilter.reset(new BisqwitNtscFilter(_console, 2)); break;
-			case VideoFilterType::BisqwitNtscQuarterRes: _videoFilter.reset(new BisqwitNtscFilter(_console, 4)); break;
-			case VideoFilterType::Raw: _videoFilter.reset(new RawVideoFilter(_console)); break;
-			default: _scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType); break;*/
+			default: _scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType); break;
 		}
 	}
 
@@ -112,23 +93,24 @@ void VideoDecoder::DecodeFrame(bool synchronous)
 	if(_rotateFilter) {
 		outputBuffer = _rotateFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height);
 		frameInfo = _rotateFilter->GetFrameInfo(frameInfo);
-	}
+	}*/
 
 	if(_scaleFilter) {
-		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _console->GetSettings()->GetPictureSettings().ScanlineIntensity);
+		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _console->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = _scaleFilter->GetFrameInfo(frameInfo);
 	}
 
+	/*
 	if(_hud) {
 		_hud->DrawHud(_console, outputBuffer, frameInfo, _videoFilter->GetOverscan());
 	}*/
 
-	ScreenSize screenSize;
-	GetScreenSize(screenSize, true);
-	/*if(_previousScale != _console->GetSettings()->GetVideoScale() || screenSize.Height != _previousScreenSize.Height || screenSize.Width != _previousScreenSize.Width) {
+	ScreenSize screenSize = GetScreenSize(true);
+	VideoConfig config = _console->GetSettings()->GetVideoConfig();
+	if(_previousScale != config.VideoScale || screenSize.Height != _previousScreenSize.Height || screenSize.Width != _previousScreenSize.Width) {
 		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ResolutionChanged);
-	}*/
-	_previousScale = 1; // _console->GetSettings()->GetVideoScale();
+	}
+	_previousScale = config.VideoScale;
 	_previousScreenSize = screenSize;
 	_lastFrameInfo = frameInfo;
 

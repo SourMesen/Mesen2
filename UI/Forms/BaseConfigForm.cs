@@ -74,11 +74,7 @@ namespace Mesen.GUI.Forms
 			if(this.DialogResult == System.Windows.Forms.DialogResult.OK) {
 				UpdateObject();
 				if(ApplyChangesOnOK) {
-					ConfigManager.ApplyChanges();
-				}
-			} else {
-				if(ApplyChangesOnOK) {
-					ConfigManager.RejectChanges();
+					OnApply();
 				}
 			}
 			base.OnFormClosed(e);
@@ -89,6 +85,9 @@ namespace Mesen.GUI.Forms
 			get { return true; }
 		}
 
+		protected virtual void OnApply()
+		{
+		}
 
 		protected virtual void UpdateConfig()
 		{
