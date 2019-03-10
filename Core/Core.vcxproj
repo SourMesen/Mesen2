@@ -60,6 +60,7 @@
     <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="DebugBreakHelper.h" />
+    <ClInclude Include="DebugStats.h" />
     <ClInclude Include="DummyCpu.h" />
     <ClInclude Include="EmuSettings.h" />
     <ClInclude Include="EventManager.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="SnesController.h" />
     <ClInclude Include="SNES_SPC.h" />
     <ClInclude Include="SoundMixer.h" />
+    <ClInclude Include="SoundResampler.h" />
     <ClInclude Include="Spc.h" />
     <ClInclude Include="SPC_CPU.h" />
     <ClInclude Include="SPC_DSP.h" />
@@ -132,6 +134,7 @@
     <ClCompile Include="Cpu.Instructions.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugHud.cpp" />
+    <ClCompile Include="DebugStats.cpp" />
     <ClCompile Include="DefaultVideoFilter.cpp" />
     <ClCompile Include="Disassembler.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
@@ -153,6 +156,7 @@
     <ClCompile Include="SNES_SPC_misc.cpp" />
     <ClCompile Include="SNES_SPC_state.cpp" />
     <ClCompile Include="SoundMixer.cpp" />
+    <ClCompile Include="SoundResampler.cpp" />
     <ClCompile Include="Spc.cpp" />
     <ClCompile Include="SPC_DSP.cpp" />
     <ClCompile Include="SPC_Filter.cpp" />

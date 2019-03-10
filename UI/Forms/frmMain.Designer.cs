@@ -44,6 +44,7 @@
 			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
+			this.mnuAudioConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -87,6 +88,7 @@
 			// optionsToolStripMenuItem
 			// 
 			this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuAudioConfig,
             this.mnuVideoConfig});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -96,7 +98,7 @@
 			// 
 			this.mnuVideoConfig.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
 			this.mnuVideoConfig.Name = "mnuVideoConfig";
-			this.mnuVideoConfig.Size = new System.Drawing.Size(104, 22);
+			this.mnuVideoConfig.Size = new System.Drawing.Size(152, 22);
 			this.mnuVideoConfig.Text = "Video";
 			this.mnuVideoConfig.Click += new System.EventHandler(this.mnuVideoConfig_Click);
 			// 
@@ -195,6 +197,14 @@
 			this.pnlRenderer.Size = new System.Drawing.Size(512, 448);
 			this.pnlRenderer.TabIndex = 2;
 			// 
+			// mnuAudioConfig
+			// 
+			this.mnuAudioConfig.Image = global::Mesen.GUI.Properties.Resources.Audio;
+			this.mnuAudioConfig.Name = "mnuAudioConfig";
+			this.mnuAudioConfig.Size = new System.Drawing.Size(152, 22);
+			this.mnuAudioConfig.Text = "Audio";
+			this.mnuAudioConfig.Click += new System.EventHandler(this.mnuAudioConfig_Click);
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -233,5 +243,6 @@
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnuVideoConfig;
 		private System.Windows.Forms.Panel pnlRenderer;
+		private System.Windows.Forms.ToolStripMenuItem mnuAudioConfig;
 	}
 }

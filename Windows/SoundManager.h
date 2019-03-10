@@ -40,7 +40,8 @@ private:
 	HWND _hWnd;
 	GUID _audioDeviceID;
 	bool _needReset = false;
-	
+	string _audioDeviceName = "";
+
 	DWORD _lastWriteOffset = 0;
 	uint32_t _previousLatency = 0;
 	bool _playing = false;

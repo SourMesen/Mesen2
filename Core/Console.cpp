@@ -21,6 +21,7 @@
 #include "KeyManager.h"
 #include "EventType.h"
 #include "EmuSettings.h"
+#include "DebugStats.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
@@ -36,7 +37,7 @@ void Console::Initialize()
 	_notificationManager.reset(new NotificationManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
-	_soundMixer.reset(new SoundMixer());
+	_soundMixer.reset(new SoundMixer(this));
 	_debugHud.reset(new DebugHud());
 
 	_videoDecoder->StartThread();
@@ -62,6 +63,8 @@ void Console::Run()
 		return;
 	}
 
+	DebugStats stats(this);
+	Timer lastFrameTimer;
 	_stopFlag = false;
 	uint32_t previousFrameCount = 0;
 	
@@ -69,7 +72,8 @@ void Console::Run()
 
 	PlatformUtilities::EnableHighResolutionTimer();
 
-	uint32_t keyCode = KeyManager::GetKeyCode("Tab");
+	uint32_t tabKeyCode = KeyManager::GetKeyCode("Tab");
+	uint32_t semiKeyCode = KeyManager::GetKeyCode(";");
 
 	_videoDecoder->StartThread();
 	_emulationThreadId = std::this_thread::get_id();
@@ -79,10 +83,17 @@ void Console::Run()
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
-			if(!KeyManager::IsKeyPressed(keyCode)) {
+			if(!KeyManager::IsKeyPressed(tabKeyCode)) {
 				frameLimiter.ProcessFrame();
 				frameLimiter.WaitForNextFrame();
 			}
+			
+			if(KeyManager::IsKeyPressed(semiKeyCode)) {
+				double lastFrameTime = lastFrameTimer.GetElapsedMS();
+				lastFrameTimer.Reset();
+				stats.DisplayStats(lastFrameTime);
+			}
+
 			previousFrameCount = _ppu->GetFrameCount();
 		}
 	}

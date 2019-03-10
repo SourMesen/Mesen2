@@ -11,6 +11,7 @@
 #include "UTF8Util.h"
 
 using std::shared_ptr;
+using std::unique_ptr;
 using utf8::ifstream;
 using utf8::ofstream;
 using std::string;

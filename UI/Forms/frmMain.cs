@@ -93,6 +93,14 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.Video.ApplyConfig();
 		}
 
+		private void mnuAudioConfig_Click(object sender, EventArgs e)
+		{
+			using(frmAudioConfig frm = new frmAudioConfig()) {
+				frm.ShowDialog(sender, this);
+			}
+			ConfigManager.Config.Audio.ApplyConfig();
+		}
+
 		private void mnuDebugger_Click(object sender, EventArgs e)
 		{
 			DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger);

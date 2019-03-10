@@ -11,6 +11,25 @@ VideoConfig EmuSettings::GetVideoConfig()
 	return _video;
 }
 
+void EmuSettings::SetAudioConfig(AudioConfig config)
+{
+	//Make a copy of the string and keep it (the original pointer will not be valid after the call is over)
+	_audioDevice = config.AudioDevice;
+	config.AudioDevice = _audioDevice.c_str();
+
+	_audio = config;
+}
+
+AudioConfig EmuSettings::GetAudioConfig()
+{
+	return _audio;
+}
+
+uint32_t EmuSettings::GetEmulationSpeed()
+{
+	return 100;
+}
+
 double EmuSettings::GetAspectRatio()
 {
 	switch(_video.AspectRatio) {

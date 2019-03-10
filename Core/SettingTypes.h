@@ -84,6 +84,44 @@ struct VideoConfig
 	int32_t ExclusiveFullscreenRefreshRate = 60;
 };
 
+struct AudioConfig
+{
+	const char* AudioDevice = nullptr;
+	bool EnableAudio = true;
+	bool DisableDynamicSampleRate = false;
+
+	uint32_t MasterVolume = 25;
+	uint32_t SampleRate = 48000;
+	uint32_t AudioLatency = 60;
+
+	bool MuteSoundInBackground = false;
+	bool ReduceSoundInBackground = true;
+	bool ReduceSoundInFastForward = false;
+	uint32_t VolumeReduction = 75;
+
+	bool EnableEqualizer = false;
+	double Band1Gain = 0;
+	double Band2Gain = 0;
+	double Band3Gain = 0;
+	double Band4Gain = 0;
+	double Band5Gain = 0;
+	double Band6Gain = 0;
+	double Band7Gain = 0;
+	double Band8Gain = 0;
+	double Band9Gain = 0;
+	double Band10Gain = 0;
+	double Band11Gain = 0;
+	double Band12Gain = 0;
+	double Band13Gain = 0;
+	double Band14Gain = 0;
+	double Band15Gain = 0;
+	double Band16Gain = 0;
+	double Band17Gain = 0;
+	double Band18Gain = 0;
+	double Band19Gain = 0;
+	double Band20Gain = 0;
+};
+
 struct OverscanDimensions
 {
 	uint32_t Left = 0;

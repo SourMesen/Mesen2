@@ -76,7 +76,7 @@ public:
 			_argbBuffer = argbBuffer;
 			_overscan = overscan;
 			_lineWidth = lineWidth;
-			_yScale = 1; //TODO
+			_yScale = 2; //TODO
 			_xScale = 2; //TODO
 
 			InternalDraw();

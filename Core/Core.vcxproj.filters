@@ -44,9 +44,6 @@
     <ClInclude Include="IRenderingDevice.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="BaseSoundManager.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include="MessageManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
@@ -146,9 +143,6 @@
     <ClInclude Include="Spc.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="SoundMixer.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include="RomHandler.h">
       <Filter>SNES</Filter>
     </ClInclude>
@@ -218,6 +212,18 @@
     <ClInclude Include="NtscFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
+    <ClInclude Include="SoundMixer.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundResampler.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseSoundManager.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugStats.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -235,9 +241,6 @@
     </ClCompile>
     <ClCompile Include="Console.cpp">
       <Filter>SNES</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseSoundManager.cpp">
-      <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="MessageManager.cpp">
       <Filter>Misc</Filter>
@@ -296,9 +299,6 @@
     <ClCompile Include="Spc.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="SoundMixer.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
     <ClCompile Include="BaseCartridge.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
@@ -344,6 +344,16 @@
     <ClCompile Include="NtscFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
+    <ClCompile Include="SoundMixer.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundResampler.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseSoundManager.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugStats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -369,6 +379,9 @@
     </Filter>
     <Filter Include="SNES\Input">
       <UniqueIdentifier>{3a9ea5fe-e818-4e65-bd50-cb9591de3e0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{cfc63477-84ed-48e4-81dc-8f960303b40a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

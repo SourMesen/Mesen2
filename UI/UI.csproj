@@ -209,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineHelper.cs" />
+    <Compile Include="Config\AudioConfig.cs" />
     <Compile Include="Config\BaseConfig.cs" />
     <Compile Include="Config\ConfigAttributes.cs" />
     <Compile Include="Config\Configuration.cs" />
@@ -464,6 +465,12 @@
     <Compile Include="Forms\BaseInputForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Config\frmAudioConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmAudioConfig.Designer.cs">
+      <DependentUpon>frmAudioConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Config\frmVideoConfig.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -593,6 +600,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BaseInputForm.resx">
       <DependentUpon>BaseInputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmAudioConfig.resx">
+      <DependentUpon>frmAudioConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmVideoConfig.resx">
       <DependentUpon>frmVideoConfig.cs</DependentUpon>

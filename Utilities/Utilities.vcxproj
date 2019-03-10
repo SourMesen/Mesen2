@@ -406,6 +406,7 @@
     <ClInclude Include="BpsPatcher.h" />
     <ClInclude Include="CamstudioCodec.h" />
     <ClInclude Include="CRC32.h" />
+    <ClInclude Include="Equalizer.h" />
     <ClInclude Include="FastString.h" />
     <ClInclude Include="FolderUtilities.h" />
     <ClInclude Include="HexUtilities.h" />
@@ -454,6 +455,7 @@
     <ClCompile Include="BpsPatcher.cpp" />
     <ClCompile Include="CamstudioCodec.cpp" />
     <ClCompile Include="CRC32.cpp" />
+    <ClCompile Include="Equalizer.cpp" />
     <ClCompile Include="FolderUtilities.cpp" />
     <ClCompile Include="HexUtilities.cpp" />
     <ClCompile Include="HQX\hq2x.cpp">

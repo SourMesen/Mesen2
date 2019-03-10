@@ -96,7 +96,9 @@ namespace Mesen.GUI.Forms
 							throw new Exception("No radio button matching value found");
 						}
 					} else if(kvp.Value is ctrlTrackbar) {
-						if(field.FieldType == typeof(Int32)) {
+						if(field.FieldType == typeof(double)) {
+							((ctrlTrackbar)kvp.Value).Value = (int)((double)value * 100);
+						} else if(field.FieldType == typeof(Int32)) {
 							((ctrlTrackbar)kvp.Value).Value = (int)value;
 						} else {
 							((ctrlTrackbar)kvp.Value).Value = (int)(uint)value;
@@ -104,6 +106,8 @@ namespace Mesen.GUI.Forms
 					} else if(kvp.Value is ctrlHorizontalTrackbar) {
 						if(field.FieldType == typeof(double)) {
 							((ctrlHorizontalTrackbar)kvp.Value).Value = (int)((double)value * 100);
+						} else if(field.FieldType == typeof(UInt32)) {
+							((ctrlHorizontalTrackbar)kvp.Value).Value = (int)(uint)value;
 						} else {
 							((ctrlHorizontalTrackbar)kvp.Value).Value = (int)value;
 						}
@@ -234,7 +238,9 @@ namespace Mesen.GUI.Forms
 						} else if(kvp.Value is Panel) {
 							field.SetValue(Entity, ((Panel)kvp.Value).Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Tag);
 						} else if(kvp.Value is ctrlTrackbar) {
-							if(field.FieldType == typeof(Int32)) {
+							if(field.FieldType == typeof(double)) {
+								field.SetValue(Entity, ((ctrlTrackbar)kvp.Value).Value / 100.0);
+							} else if(field.FieldType == typeof(Int32)) {
 								field.SetValue(Entity, (Int32)((ctrlTrackbar)kvp.Value).Value);
 							} else {
 								field.SetValue(Entity, (UInt32)((ctrlTrackbar)kvp.Value).Value);
@@ -242,6 +248,8 @@ namespace Mesen.GUI.Forms
 						} else if(kvp.Value is ctrlHorizontalTrackbar) {
 							if(field.FieldType == typeof(double)) {
 								field.SetValue(Entity, ((ctrlHorizontalTrackbar)kvp.Value).Value / 100.0);
+							} else if(field.FieldType == typeof(UInt32)) {
+								field.SetValue(Entity, (UInt32)((ctrlHorizontalTrackbar)kvp.Value).Value);
 							} else {
 								field.SetValue(Entity, (Int32)((ctrlHorizontalTrackbar)kvp.Value).Value);
 							}
