@@ -1479,7 +1479,12 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//CGRAM Data write (CGDATA)
 			_console->ProcessPpuWrite(_cgramAddress, value, SnesMemoryType::CGRam);
 
-			_cgram[_cgramAddress] = value;
+			if(_cgramAddress & 0x01) {
+				//MSB ignores the 7th bit (colors are 15-bit only)
+				_cgram[_cgramAddress] = value & 0x7F;
+			} else {
+				_cgram[_cgramAddress] = value;
+			}
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			break;
 
