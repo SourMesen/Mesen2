@@ -55,16 +55,15 @@ namespace Mesen.GUI.Config
 
 		public override string ToString()
 		{
-			string text;
-			/*if(ConfigManager.Config.PreferenceInfo.ShowFullPathInRecents) {
-				text = RomFile.ReadablePath.Replace("&", "&&");
-			} else {*/
-			text = Path.GetFileName(RomFile.FileName).Replace("&", "&&");
-			//}
+			string path = RomFile.ReadablePath.Replace("&", "&&");
+			string file = Path.GetFileName(path);
+			string folder = Path.GetDirectoryName(path);
 
+			string text = file;
 			if(PatchFile.HasValue) {
 				text += " [" + Path.GetFileName(PatchFile.Value) + "]";
 			}
+			text += " (" + folder + ")";
 			return text;
 		}
 	}

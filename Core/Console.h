@@ -49,6 +49,8 @@ private:
 	SimpleLock _debuggerLock;
 	atomic<bool> _stopFlag;
 
+	double GetFrameDelay();
+
 public:
 	~Console();
 

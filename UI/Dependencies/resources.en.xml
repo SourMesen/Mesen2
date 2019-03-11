@@ -347,7 +347,7 @@
 		<Form ID="frmPreferences" Title="Preferences">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
-			<Control ID="chkSingleInstance">Only allow one instance of Mesen at a time</Control>
+			<Control ID="chkSingleInstance">Only allow one instance of Mesen-S at a time</Control>
 			<Control ID="chkAutomaticallyCheckForUpdates">Automatically check for updates</Control>
 
 			<Control ID="chkDeveloperMode">Enable developer mode</Control>
@@ -370,19 +370,18 @@
 			<Control ID="chkAutoLoadIps">Automatically load IPS/BPS patches</Control>
 			<Control ID="chkHidePauseOverlay">Hide the pause screen</Control>
 			<Control ID="chkDisplayMovieIcons">Display play/record icon when playing or recording a movie</Control>
-			<Control ID="btnOpenMesenFolder">Open Mesen Folder</Control>
+			<Control ID="btnOpenMesenFolder">Open Mesen-S Folder</Control>
 			<Control ID="btnResetSettings">Reset All Settings</Control>
 
 			<Control ID="tpgFiles">Folders/Files</Control>
 			<Control ID="grpFileAssociations">File Associations</Control>
-			<Control ID="chkNesFormat">.NES</Control>
-			<Control ID="chkFdsFormat">.FDS (Famicom Disk System)</Control>
-			<Control ID="chkMmoFormat">.MMO (Mesen Movies)</Control>
-			<Control ID="chkMstFormat">.MST (Mesen Save State)</Control>
+			<Control ID="chkRomFormat">.SFC, .SMC, .SWC, .FIG (Roms)</Control>
+			<Control ID="chkMsmFormat">.MMO (Movie)</Control>
+			<Control ID="chkMssFormat">.MST (Save State)</Control>
 
 			<Control ID="grpDataStorageLocation">Data Storage Location</Control>
-			<Control ID="radStorageDocuments">Store Mesen's data in my user profile</Control>
-			<Control ID="radStoragePortable">Store Mesen's data in the same folder as the application</Control>
+			<Control ID="radStorageDocuments">Store data in my user profile</Control>
+			<Control ID="radStoragePortable">Store data in the same folder as the application</Control>
 			<Control ID="lblDataLocation">Folder:</Control>
 
 			<Control ID="grpPathOverrides">Folder Overrides</Control>
@@ -554,24 +553,24 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmAbout" Title="About - Mesen">
-			<Control ID="labelProductName">Mesen</Control>
+		<Form ID="frmAbout" Title="About - Mesen-S">
+			<Control ID="labelProductName">Mesen-S</Control>
 			<Control ID="labelCopyright">© 2019 M. Bibaud (aka Sour)</Control>
 			<Control ID="lblWebsite">Website:</Control>
 			<Control ID="lblLink">www.mesen.ca</Control>
 			<Control ID="labelVersion">Version:</Control>
 			<Control ID="lblBuildDateLabel">Build Date:</Control>
-			<Control ID="lblDonate">If you want to support Mesen, please consider donating.&#13;Thank you for your support!</Control>
+			<Control ID="lblDonate">If you want to support Mesen-S, please consider donating.&#13;Thank you for your support!</Control>
 			<Control ID="okButton">&amp;OK</Control>
 		</Form>
 		<Form ID="frmGameConfig" Title="Game Configuration">
 			<Control ID="grpDipSwitches">DIP Switches</Control>
 		</Form>
-		<Form ID="frmUpdatePrompt" Title="Mesen - Update Available">
+		<Form ID="frmUpdatePrompt" Title="Mesen-S - Update Available">
 			<Control ID="lblLatestVersion">Latest Version:</Control>
 			<Control ID="lblCurrentVersion">Current Version:</Control>
 			<Control ID="lblChangeLog">Changelog:</Control>
-			<Control ID="lblDonate">If you want to support Mesen, please consider donating.  Thank you!</Control>
+			<Control ID="lblDonate">If you want to support Mesen-S, please consider donating.  Thank you!</Control>
 			<Control ID="btnUpdate">Update</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
@@ -644,17 +643,17 @@
 			<Control ID="tpgVideoOptions">Video Options</Control>
 			<Control ID="tpgAudioOptions">Audio Options</Control>
 			<Control ID="tpgEmulationOptions">Emulation Options</Control>
-			<Control ID="lblExplanation">This will start Mesen in fullscreen mode with the "MyGame.nes" rom loaded.  It will also use the NTSC filter, set at a 2x scale and configure the Overscan settings.  The "DoNotSaveSettings" flag is used to prevent the command line switches from pernanently altering Mesen's settings.</Control>
+			<Control ID="lblExplanation">This will start Mesen-S in fullscreen mode with the "MyGame.nes" rom loaded.  It will also use the NTSC filter, set at a 2x scale and configure the Overscan settings.  The "DoNotSaveSettings" flag is used to prevent the command line switches from pernanently altering Mesen-S's settings.</Control>
 		</Form>
 		<Form ID="frmCopyFiles" Title="Please wait...">
 			<Control ID="lblCopying">Copying:</Control>
 		</Form>
-		<Form ID="frmConfigWizard" Title="Mesen - Configuration">
-			<Control ID="lblMesen">Mesen - NES Emulator</Control>
+		<Form ID="frmConfigWizard" Title="Mesen-S - Configuration">
+			<Control ID="lblMesen">Mesen-S - SNES Emulator</Control>
 			<Control ID="lblConfigWizard">Configuration Wizard</Control>
-			<Control ID="lblInitialSetup">Please take a moment to perform Mesen's initial setup.</Control>
+			<Control ID="lblInitialSetup">Please take a moment to perform Mesen-S's initial setup.</Control>
 			<Control ID="lblStorageLocation">Data Storage Location</Control>
-			<Control ID="lblStorageHint">Select where you want to store Mesen's data:</Control>
+			<Control ID="lblStorageHint">Select where you want to store Mesen-S's data:</Control>
 			<Control ID="radStorageDocuments">Store the data in my user profile</Control>
 			<Control ID="radStoragePortable">Store the data in the same folder as the application</Control>
 			<Control ID="lblDataLocation">Folder:</Control>
@@ -774,7 +773,7 @@
 		<Message ID="FilterRomIps">All supported formats (*.nes, *.zip, *.7z, *.fds, *.nsf, *.nsfe, *.unf, *.ips, *.bps, *.ups)|*.NES;*.ZIP;*.7z;*.IPS;*.BPS;*.UPS;*.FDS;*.NSF;*.NSFE;*.UNF|NES Roms (*.nes, *.unf)|*.NES;*.UNF|Famicom Disk System Roms (*.fds)|*.FDS|NSF files (*.nsf, *.nsfe)|*.nsf;*.nsfe|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|IPS/UPS/BPS Patches (*.ips, *.bps, *.ups)|*.IPS;*.BPS;*.UPS|All (*.*)|*.*</Message>
 		<Message ID="FilterTest">Test files (*.mtp)|*.mtp|All (*.*)|*.*</Message>
 		<Message ID="FilterCheat">All supported formats (*.cht, *.xml)|*.cht;*.xml</Message>
-		<Message ID="FilterSavestate">Mesen Savestates (*.mst)|*.mst|All files (*.*)|*.*</Message>
+		<Message ID="FilterSavestate">Mesen-S Savestates (*.mss)|*.mss|All files (*.*)|*.*</Message>
 		<Message ID="FilterTapeFiles">Family Basic Tape files (*.fbt)|*.fbt|All Files (*.*)|*.*</Message>
 
 		<Message ID="LoadFromFile">Load from file...</Message>
@@ -793,7 +792,7 @@
 		<Message ID="BandaiMicrophone">Bandai Microphone</Message>
 		<Message ID="DatachBarcodeReader">Datach Barcode Reader</Message>
 
-		<Message ID="HelpFullscreen">/fullscreen - Start Mesen in fullscreen mode</Message>
+		<Message ID="HelpFullscreen">/fullscreen - Start Mesen-S in fullscreen mode</Message>
 		<Message ID="HelpDoNotSaveSettings">/DoNotSaveSettings - Prevent settings from being saved to the disk (useful to prevent command line options from becoming the default settings)</Message>
 		<Message ID="HelpRecordMovie">/RecordMovie="filename.mmo" - Start recording a movie after the specified game is loaded.</Message>
 		<Message ID="HelpLoadLastSession">/LoadLastSession - Resumes the game in the state it was left in when it was last played.</Message>
@@ -815,11 +814,11 @@
 
 		<Message ID="ResetSettingsConfirmation">Warning: This will reset ALL of settings and cannot be undone!&#xA;&#xA;Continue?</Message>
 
-		<Message ID="RandomGameNoGameFound">Mesen could not find any games to load.</Message>
+		<Message ID="RandomGameNoGameFound">Mesen-S could not find any games to load.</Message>
 
 		<Message ID="CannotWriteToFolder">The selected folder cannot be written to - please select another folder and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
 		<Message ID="InvalidPaths">The following path overrides are invalid:&#xA;&#xA;{0}&#xA;&#xA;Please use valid and writable folders and try again.</Message>
-		<Message ID="CopyMesenDataPrompt">All files will be copied from:&#xA;&#xA;{0}&#xA;to&#xA;{1}&#xA;&#xA;Once the copy is completed, Mesen will restart.&#xA;Continue?</Message>
+		<Message ID="CopyMesenDataPrompt">All files will be copied from:&#xA;&#xA;{0}&#xA;to&#xA;{1}&#xA;&#xA;Once the copy is completed, Mesen-S will restart.&#xA;Continue?</Message>
 
 		<Message ID="CheatsFound">{0} games and {1} cheats in database</Message>
 		<Message ID="CheatsImported">{0} cheats imported for {1}.</Message>
@@ -831,40 +830,23 @@
 		<Message ID="CouldNotInstallRuntime">The Visual Studio Runtime could not be installed properly.</Message>
 		<Message ID="EmptyState">&lt;empty&gt;</Message>
 		<Message ID="ErrorWhileCheckingUpdates">An error has occurred while trying to check for updates. Check your internet connection and try again.&#xA;&#xA;Error details:&#xA;{0}</Message>
-		<Message ID="AutoUpdateDisabledMessage">Automatic updates are not enabled on this build - please download the latest version of the code and recompile Mesen to get the latest updates.</Message>
+		<Message ID="AutoUpdateDisabledMessage">Automatic updates are not enabled on this build - please download the latest version of the code and recompile Mesen-S to get the latest updates.</Message>
 		<Message ID="FdsBiosNotFound">FDS bios not found. The bios is required to run FDS games.&#xA;&#xA;Select bios file now?</Message>
 		<Message ID="FdsDiskSide">Disk {0} Side {1}</Message>
 		<Message ID="FileNotFound">File not found: {0}</Message>
 		<Message ID="InvalidFdsBios">The selected bios file is invalid.</Message>
 
-		<Message ID="HDNesTooltip">This option allows Mesen to load HDNes-format HD packs if they are found.&#xA;&#xA;HD Packs should be placed in the "HdPacks" folder in a subfolder matching the name of the ROM.&#xA;e.g: MyRom.nes should have their HD Pack in "HdPacks\MyRom\hires.txt".</Message>
-		<Message ID="HdPackBuilderScaleHelp">Selects the scale and video filter to use when generating the PNG files&#xA;for the HD Pack. Use the "Prescale" filters to generate the tiles&#xA;at a larger scale without applying any transformation to the pixels.</Message>
-		<Message ID="HdPackBuilderBankSizeHelp">This option is only available for CHR RAM games.  CHR RAM games have no&#xA;fixed "banks" - they are dynamically created by the game's code.&#xA;This option alters the HD Pack Builder's behavior when grouping the tiles into &#xA;the PNG files - a smaller bank size will usually result in less PNG &#xA;files (but depending on the game's code, larger values may produce &#xA;better results).</Message>
-		<Message ID="HdPackBuilderFrequencyHelp">When this option is enabled, the tiles in PNG files are sorted by the&#xA;frequency at which they are shown on the screen while recording (more &#xA;common palettes will be grouped together in the first PNG for a specific bank &#xA;number. If this option is unchecked, the PNGs will be sorted by palette - &#xA;each PNG will only contain up to 4 different colors in this case.</Message>
-		<Message ID="HdPackBuilderGroupBlankHelp">This option groups all the blank tiles sequentially into the same PNG&#xA;files - this helps reduce the number of PNG files produced by removing &#xA;almost-empty PNG files containing only blank tiles.</Message>
-		<Message ID="HdPackBuilderLargeSpritesHelp">When enabled, this option will alter the display order of CHR banks&#xA;that contain only sprites to make the sprites easier to edit in the PNG file.</Message>
-		<Message ID="HdPackBuilderIgnoreOverscanHelp">When enabled, this will make the builder ignore any pixels in the overscan area.&#xA;This is useful in games that contain glitches on the outer edge of the screen.&#xA;Incorrect palette combinations due to these glitches will be ignored and won't be shown in the PNG files.</Message>
-
-		<Message ID="InstallHdPackWrongRom">The selected HD Pack is not compatible with the currently running game and cannot be installed.</Message>
-		<Message ID="InstallHdPackError">An error occurred while trying to install the HD Pack: &#xA;&#xA;{0}</Message>
-		<Message ID="InstallHdPackInvalidPack">The selected file is not a valid HD Pack.</Message>
-		<Message ID="InstallHdPackInvalidZipFile">The selected file is not a valid Zip file.</Message>
-		<Message ID="InstallHdPackConfirmOverwrite">The destination folder ({0}) already exists - are you sure you want to overwrite it?</Message>
-		<Message ID="InstallHdPackConfirmReset">The HD Pack has been installed successfully. Do you want to reset the game and load the HD Pack now?</Message>
-
-		<Message ID="MesenUpToDate">You are running the latest version of Mesen</Message>
+		<Message ID="MesenUpToDate">You are running the latest version of Mesen-S.</Message>
 		<Message ID="PatchAndReset">Patch and reset the current game?</Message>
 		<Message ID="SelectRomIps">Please select a ROM matching the IPS/UPS/BPS patch file.</Message>
 		<Message ID="UnableToDownload">Unable to download file. Check your internet connection and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
-		<Message ID="UnableToStartMissingDependencies">Mesen could not launch because it was unable to load MesenCore.dll due to missing dependencies.</Message>
-		<Message ID="UnableToStartMissingFiles">Mesen was unable to start due to missing files.&#xA;&#xA;Error: MesenCore.dll is missing.</Message>
+		<Message ID="UnableToStartMissingDependencies">Mesen-S could not launch because it was unable to load MesenSCore.dll due to missing dependencies.</Message>
+		<Message ID="UnableToStartMissingFiles">Mesen-S was unable to start due to missing files.&#xA;&#xA;Error: MesenSCore.dll is missing.</Message>
 		<Message ID="UnexpectedError">An unexpected error has occurred.&#xA;&#xA;Error details:&#xA;{0}</Message>
 		<Message ID="UpdateDownloadFailed">Download failed - the file appears to be corrupted. Please visit the Mesen website to download the latest version manually.</Message>
 		<Message ID="UpgradeSuccess">Upgrade completed successfully.</Message>
 		<Message ID="UpdaterNotFound">The update process could not be started due to missing files.</Message>
 		<Message ID="Net45NotFound">The Microsoft .NET Framework 4.5 could not be found. Please download and install the latest version of the .NET Framework from Microsoft's website and try again.</Message>
-
-		<Message ID="GoogleDriveIntegrationError">Mesen could not connect to your Google Drive account - please try again.</Message>
 
 		<Message ID="InvalidCheatFile">The selected file ({0}) is not a valid cheat file.</Message>
 		<Message ID="InvalidXmlFile">The selected file ({0}) is not a valid XML file.</Message>

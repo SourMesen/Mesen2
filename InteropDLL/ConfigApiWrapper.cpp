@@ -19,6 +19,22 @@ extern "C" {
 		_console->GetSettings()->SetAudioConfig(config);
 	}
 	
+	DllExport void __stdcall SetEmulationConfig(EmulationConfig config)
+	{
+		_console->GetSettings()->SetEmulationConfig(config);
+	}
+
+	DllExport void __stdcall SetPreferences(PreferencesConfig config)
+	{
+		_console->GetSettings()->SetPreferences(config);
+	}
+
+	DllExport void __stdcall SetShortcutKeys(ShortcutKeyInfo shortcuts[], uint32_t count)
+	{
+		vector<ShortcutKeyInfo> shortcutList(shortcuts, shortcuts + count);
+		_console->GetSettings()->SetShortcutKeys(shortcutList);
+	}
+
 	DllExport const char* __stdcall GetAudioDevices()
 	{
 		_returnString = _soundManager ? _soundManager->GetAvailableDevices() : "";

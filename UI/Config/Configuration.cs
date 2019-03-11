@@ -18,6 +18,8 @@ namespace Mesen.GUI.Config
 		public RecentItems RecentFiles;
 		public VideoConfig Video;
 		public AudioConfig Audio;
+		public EmulationConfig Emulation;
+		public PreferencesConfig Preferences;
 		public DebugInfo Debug;
 		public Point? WindowLocation;
 		public Size? WindowSize;
@@ -28,6 +30,8 @@ namespace Mesen.GUI.Config
 			Debug = new DebugInfo();
 			Video = new VideoConfig();
 			Audio = new AudioConfig();
+			Emulation = new EmulationConfig();
+			Preferences = new PreferencesConfig();
 		}
 
 		~Configuration()
@@ -55,10 +59,13 @@ namespace Mesen.GUI.Config
 		{
 			Video.ApplyConfig();
 			Audio.ApplyConfig();
+			Preferences.ApplyConfig();
+			Emulation.ApplyConfig();
 		}
 
 		public void InitializeDefaults()
 		{
+			Preferences.InitializeDefaultShortcuts();
 		}
 
 		public static Configuration Deserialize(string configFile)

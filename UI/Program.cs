@@ -111,7 +111,7 @@ namespace Mesen.GUI
 				}
 
 				using(SingleInstance singleInstance = new SingleInstance()) {
-					//if(singleInstance.FirstInstance || !ConfigManager.Config.PreferenceInfo.SingleInstance) {
+					if(singleInstance.FirstInstance || !ConfigManager.Config.Preferences.SingleInstance) {
 						frmMain frmMain = new frmMain(args);
 
 						singleInstance.ListenForArgumentsFromSuccessiveInstances();
@@ -125,7 +125,7 @@ namespace Mesen.GUI
 						};
 
 						Application.Run(frmMain);
-					/*} else {
+					} else {
 						if(singleInstance.PassArgumentsToFirstInstance(args)) {
 							Process current = Process.GetCurrentProcess();
 							foreach(Process process in Process.GetProcessesByName(current.ProcessName)) {
@@ -137,7 +137,7 @@ namespace Mesen.GUI
 						} else {
 							Application.Run(new frmMain(args));
 						}
-					}*/
+					}
 				}
 			} catch(Exception e) {
 				MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, e.ToString());

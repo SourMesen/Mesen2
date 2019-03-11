@@ -224,6 +224,9 @@
     <ClInclude Include="DebugStats.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="ShortcutKeyHandler.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -353,7 +356,12 @@
     <ClCompile Include="BaseSoundManager.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="DebugStats.cpp" />
+    <ClCompile Include="ShortcutKeyHandler.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugStats.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

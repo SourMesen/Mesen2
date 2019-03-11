@@ -59,7 +59,7 @@ struct VideoConfig
 {
 	double VideoScale = 2;
 	double CustomAspectRatio = 1.0;
-	VideoFilterType VideoFilter = VideoFilterType::NTSC;
+	VideoFilterType VideoFilter = VideoFilterType::None;
 	VideoAspectRatio AspectRatio = VideoAspectRatio::NoStretching;
 	bool UseBilinearInterpolation = false;
 	bool VerticalSync = false;
@@ -120,6 +120,41 @@ struct AudioConfig
 	double Band18Gain = 0;
 	double Band19Gain = 0;
 	double Band20Gain = 0;
+};
+
+enum class RamPowerOnState
+{
+	AllZeros = 0,
+	AllOnes = 1,
+	Random = 2
+};
+
+struct EmulationConfig
+{
+	uint32_t EmulationSpeed = 100;
+	uint32_t TurboSpeed = 300;
+	uint32_t RewindSpeed = 100;
+
+	bool AllowInvalidInput = false;
+	bool EnableRandomPowerOnState = false;
+
+	uint32_t PpuExtraScanlinesBeforeNmi = 0;
+	uint32_t PpuExtraScanlinesAfterNmi = 0;
+
+	RamPowerOnState RamPowerOnState = RamPowerOnState::AllZeros;
+};
+
+struct PreferencesConfig
+{
+	bool ShowFps;
+	bool ShowFrameCounter;
+	bool ShowGameTimer;
+	bool ShowDebugInfo;
+	bool DisableOsd;
+
+	const char* SaveFolderOverride;
+	const char* SaveStateFolderOverride;
+	const char* ScreenshotFolderOverride;
 };
 
 struct OverscanDimensions
@@ -212,6 +247,124 @@ struct KeyMappingSet
 		}
 		return keyMappings;
 	}
+};
+
+enum class EmulatorShortcut
+{
+	FastForward,
+	Rewind,
+	RewindTenSecs,
+	RewindOneMin,
+
+	MoveToNextStateSlot,
+	MoveToPreviousStateSlot,
+	SaveState,
+	LoadState,
+
+	ToggleAudio,
+	ToggleFastForward,
+	ToggleRewind,
+
+	RunSingleFrame,
+
+	// Everything below this is handled UI-side
+	TakeScreenshot,
+
+	IncreaseSpeed,
+	DecreaseSpeed,
+	MaxSpeed,
+
+	Pause,
+	Reset,
+	PowerCycle,
+	PowerOff,
+	Exit,
+
+	SetScale1x,
+	SetScale2x,
+	SetScale3x,
+	SetScale4x,
+	SetScale5x,
+	SetScale6x,
+	ToggleFullscreen,
+	ToggleFps,
+	ToggleGameTimer,
+	ToggleFrameCounter,
+	ToggleOsd,
+	ToggleAlwaysOnTop,
+	ToggleDebugInfo,
+
+	SaveStateSlot1,
+	SaveStateSlot2,
+	SaveStateSlot3,
+	SaveStateSlot4,
+	SaveStateSlot5,
+	SaveStateSlot6,
+	SaveStateSlot7,
+	SaveStateSlot8,
+	SaveStateSlot9,
+	SaveStateSlot10,
+	SaveStateToFile,
+
+	LoadStateSlot1,
+	LoadStateSlot2,
+	LoadStateSlot3,
+	LoadStateSlot4,
+	LoadStateSlot5,
+	LoadStateSlot6,
+	LoadStateSlot7,
+	LoadStateSlot8,
+	LoadStateSlot9,
+	LoadStateSlot10,
+	LoadStateFromFile,
+
+	OpenFile,
+	ShortcutCount
+};
+
+struct KeyCombination
+{
+	uint32_t Key1 = 0;
+	uint32_t Key2 = 0;
+	uint32_t Key3 = 0;
+
+	vector<uint32_t> GetKeys()
+	{
+		vector<uint32_t> result;
+		if(Key1) {
+			result.push_back(Key1);
+		}
+		if(Key2) {
+			result.push_back(Key2);
+		}
+		if(Key3) {
+			result.push_back(Key3);
+		}
+		return result;
+	}
+
+	bool IsSubsetOf(KeyCombination keyCombination)
+	{
+		vector<uint32_t> myKeys = GetKeys();
+		vector<uint32_t> otherKeys = keyCombination.GetKeys();
+
+		if(otherKeys.size() > myKeys.size()) {
+			for(size_t i = 0; i < myKeys.size(); i++) {
+				if(std::find(otherKeys.begin(), otherKeys.end(), myKeys[i]) == otherKeys.end()) {
+					//Current key combination contains a key not found in the other combination, so it's not a subset
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+};
+
+struct ShortcutKeyInfo
+{
+	EmulatorShortcut Shortcut;
+	KeyCombination KeyCombination;
 };
 
 enum class ControllerType

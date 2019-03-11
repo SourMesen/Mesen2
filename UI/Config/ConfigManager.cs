@@ -45,7 +45,6 @@ namespace Mesen.GUI.Config
 			string portableFolder = DefaultPortableFolder;
 			string documentsFolder = DefaultDocumentsFolder;
 			
-			//Linux only
 			string portableConfig = Path.Combine(portableFolder, "settings.xml");
 			string documentsConfig = Path.Combine(documentsFolder, "settings.xml");
 
@@ -169,10 +168,9 @@ namespace Mesen.GUI.Config
 					string switchName = match.Groups[1].Value;
 					string switchValue = match.Groups[2].Value;
 
-					/*ApplySetting(typeof(VideoInfo), Config.VideoInfo, switchName, switchValue);
-					ApplySetting(typeof(AudioInfo), Config.AudioInfo, switchName, switchValue);
-					ApplySetting(typeof(EmulationInfo), Config.EmulationInfo, switchName, switchValue);*/
-					ApplySetting(typeof(Configuration), Config, switchName, switchValue);
+					ApplySetting(typeof(VideoConfig), Config.Video, switchName, switchValue);
+					ApplySetting(typeof(AudioConfig), Config.Audio, switchName, switchValue);
+					ApplySetting(typeof(EmulationConfig), Config.Emulation, switchName, switchValue);
 				}
 			}
 		}
@@ -199,19 +197,19 @@ namespace Mesen.GUI.Config
 				}
 			} catch {
 				//If the folder doesn't exist and we couldn't create it, use the default folder
-				//EmuApi.WriteLogEntry("[UI] Folder could not be created: " + folder);
+				EmuApi.WriteLogEntry("[UI] Folder could not be created: " + folder);
 				folder = defaultFolderName;
 			}
 			return folder;
 		}
 
-/*		public static string AviFolder { get { return GetFolder(DefaultAviFolder, Config.PreferenceInfo.AviFolder, Config.PreferenceInfo.OverrideAviFolder); } }
-		public static string MovieFolder { get { return GetFolder(DefaultMovieFolder, Config.PreferenceInfo.MovieFolder, Config.PreferenceInfo.OverrideMovieFolder); } }
-		public static string SaveFolder { get { return GetFolder(DefaultSaveDataFolder, Config.PreferenceInfo.SaveDataFolder, Config.PreferenceInfo.OverrideSaveDataFolder); } }
-		public static string SaveStateFolder { get { return GetFolder(DefaultSaveStateFolder, Config.PreferenceInfo.SaveStateFolder, Config.PreferenceInfo.OverrideSaveStateFolder); } }
-		public static string ScreenshotFolder { get { return GetFolder(DefaultScreenshotFolder, Config.PreferenceInfo.ScreenshotFolder, Config.PreferenceInfo.OverrideScreenshotFolder); } }
-		public static string WaveFolder { get { return GetFolder(DefaultWaveFolder, Config.PreferenceInfo.WaveFolder, Config.PreferenceInfo.OverrideWaveFolder); } }
-*/
+		public static string AviFolder { get { return GetFolder(DefaultAviFolder, Config.Preferences.AviFolder, Config.Preferences.OverrideAviFolder); } }
+		public static string MovieFolder { get { return GetFolder(DefaultMovieFolder, Config.Preferences.MovieFolder, Config.Preferences.OverrideMovieFolder); } }
+		public static string SaveFolder { get { return GetFolder(DefaultSaveDataFolder, Config.Preferences.SaveDataFolder, Config.Preferences.OverrideSaveDataFolder); } }
+		public static string SaveStateFolder { get { return GetFolder(DefaultSaveStateFolder, Config.Preferences.SaveStateFolder, Config.Preferences.OverrideSaveStateFolder); } }
+		public static string ScreenshotFolder { get { return GetFolder(DefaultScreenshotFolder, Config.Preferences.ScreenshotFolder, Config.Preferences.OverrideScreenshotFolder); } }
+		public static string WaveFolder { get { return GetFolder(DefaultWaveFolder, Config.Preferences.WaveFolder, Config.Preferences.OverrideWaveFolder); } }
+
 		public static string DebuggerFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Debugger"), null, false); } }
 		public static string DownloadFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Downloads"), null, false); } }
 		public static string BackupFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Backups"), null, false); } }
@@ -277,6 +275,7 @@ namespace Mesen.GUI.Config
 
 		public static void ResetSettings()
 		{
+			//TODO
 			//DefaultKeyMappingType defaultMappings = Config.InputInfo.DefaultMapping;
 			_dirtyConfig = new Configuration();
 			//Config.InputInfo.DefaultMapping = defaultMappings;

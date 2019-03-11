@@ -68,12 +68,10 @@ void Console::Run()
 	_stopFlag = false;
 	uint32_t previousFrameCount = 0;
 	
-	FrameLimiter frameLimiter(16.63926405550947);
+	double frameDelay = GetFrameDelay();
+	FrameLimiter frameLimiter(frameDelay);
 
 	PlatformUtilities::EnableHighResolutionTimer();
-
-	uint32_t tabKeyCode = KeyManager::GetKeyCode("Tab");
-	uint32_t semiKeyCode = KeyManager::GetKeyCode(";");
 
 	_videoDecoder->StartThread();
 	_emulationThreadId = std::this_thread::get_id();
@@ -83,12 +81,17 @@ void Console::Run()
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
-			if(!KeyManager::IsKeyPressed(tabKeyCode)) {
-				frameLimiter.ProcessFrame();
-				frameLimiter.WaitForNextFrame();
+			frameLimiter.ProcessFrame();
+			frameLimiter.WaitForNextFrame();
+			
+			double newFrameDelay = GetFrameDelay();
+			if(newFrameDelay != frameDelay) {
+				frameDelay = newFrameDelay;
+				frameLimiter.SetDelay(frameDelay);
 			}
 			
-			if(KeyManager::IsKeyPressed(semiKeyCode)) {
+			PreferencesConfig cfg = _settings->GetPreferences();
+			if(cfg.ShowDebugInfo) {
 				double lastFrameTime = lastFrameTimer.GetElapsedMS();
 				lastFrameTimer.Reset();
 				stats.DisplayStats(lastFrameTime);
@@ -167,6 +170,18 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 			//GetDebugger();
 		//}
 	}
+}
+
+double Console::GetFrameDelay()
+{
+	uint32_t emulationSpeed = _settings->GetEmulationSpeed();
+	double frameDelay;
+	if(emulationSpeed == 0) {
+		frameDelay = 0;
+	} else {
+		frameDelay = 16.63926405550947 / (emulationSpeed / 100.0);
+	}
+	return frameDelay;
 }
 
 shared_ptr<SoundMixer> Console::GetSoundMixer()

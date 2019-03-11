@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
+using Mesen.GUI.Config.Shortcuts;
 using Mesen.GUI.Forms;
 
 namespace Mesen.GUI
@@ -18,6 +19,10 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetVideoConfig(VideoConfig config);
 		[DllImport(DllPath)] public static extern void SetAudioConfig(AudioConfig config);
+		[DllImport(DllPath)] public static extern void SetEmulationConfig(EmulationConfig config);
+
+		[DllImport(DllPath)] public static extern void SetPreferences(InteropPreferencesConfig config);
+		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]ShortcutKeyInfo[] shortcuts, UInt32 count);
 
 		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern IntPtr GetAudioDevicesWrapper();
 		public static List<string> GetAudioDevices()

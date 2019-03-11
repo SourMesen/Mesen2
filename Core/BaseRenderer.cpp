@@ -2,6 +2,7 @@
 #include <cmath>
 #include "BaseRenderer.h"
 #include "Console.h"
+#include "EmuSettings.h"
 #include "Ppu.h"
 #include "MessageManager.h"
 
@@ -145,11 +146,10 @@ void BaseRenderer::ShowFpsCounter(int lineNumber)
 
 void BaseRenderer::ShowGameTimer(int lineNumber)
 {
-	//TODO
-	/*int yPos = 13 + 24 * lineNumber;
-	double frameCount = _console->GetFrameCount();
-	double frameRate = _console->GetModel() == NesModel::NTSC ? 60.098811862348404716732985230828 : 50.006977968268290848936010226333;
-	//uint32_t milliseconds = (uint32_t)(frameCount / 60.1 * 1000) % 1000;
+	int yPos = 13 + 24 * lineNumber;
+	double frameCount = _console->GetPpu()->GetFrameCount();
+	bool isPal = false; //TODO
+	double frameRate = isPal ? 50.006977968268290848936010226333 : 60.098811862348404716732985230828;
 	uint32_t seconds = (uint32_t)(frameCount / frameRate) % 60;
 	uint32_t minutes = (uint32_t)(frameCount / frameRate / 60) % 60;
 	uint32_t hours = (uint32_t)(frameCount / frameRate / 3600);
@@ -158,8 +158,7 @@ void BaseRenderer::ShowGameTimer(int lineNumber)
 	ss << std::setw(2) << std::setfill('0') << hours << ":";
 	ss << std::setw(2) << std::setfill('0') << minutes << ":";
 	ss << std::setw(2) << std::setfill('0') << seconds;
-	//ss << "." << std::setw(3) << std::setfill('0') << milliseconds;
-	DrawString(ss.str(), _screenWidth - 95, yPos, 250, 235, 215);*/
+	DrawString(ss.str(), _screenWidth - 95, yPos, 250, 235, 215);
 }
 
 void BaseRenderer::ShowFrameCounter(int lineNumber)
@@ -174,23 +173,16 @@ void BaseRenderer::ShowFrameCounter(int lineNumber)
 void BaseRenderer::DrawCounters()
 {
 	int lineNumber = 0;
-	ShowFpsCounter(lineNumber++);
-	ShowFrameCounter(lineNumber++);
-	//TODO
-	/*int lineNumber = 0;
-	EmulationSettings* settings = _console->GetSettings();
-	if(settings->CheckFlag(EmulationFlags::ShowGameTimer)) {
+	PreferencesConfig cfg = _console->GetSettings()->GetPreferences();
+	if(cfg.ShowGameTimer) {
 		ShowGameTimer(lineNumber++);
 	}
-	if(settings->CheckFlag(EmulationFlags::ShowFPS)) {
+	if(cfg.ShowFps) {
 		ShowFpsCounter(lineNumber++);
 	}
-	if(settings->CheckFlag(EmulationFlags::ShowLagCounter)) {
-		ShowLagCounter(lineNumber++);
-	}
-	if(settings->CheckFlag(EmulationFlags::ShowFrameCounter)) {
+	if(cfg.ShowFrameCounter) {
 		ShowFrameCounter(lineNumber++);
-	}*/
+	}
 }
 
 bool BaseRenderer::IsMessageShown()

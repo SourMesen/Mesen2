@@ -214,6 +214,12 @@
     <Compile Include="Config\ConfigAttributes.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\ConfigManager.cs" />
+    <Compile Include="Config\FileAssociationHelper.cs" />
+    <Compile Include="Config\PreferencesConfig.cs" />
+    <Compile Include="Config\Shortcuts\EmulatorShortcut.cs" />
+    <Compile Include="Config\Shortcuts\KeyCombination.cs" />
+    <Compile Include="Config\Shortcuts\ShortcutKeyInfo.cs" />
+    <Compile Include="Config\EmulationConfig.cs" />
     <Compile Include="Config\VideoConfig.cs" />
     <Compile Include="Debugger\Breakpoints\Breakpoint.cs" />
     <Compile Include="Debugger\Breakpoints\BreakpointManager.cs" />
@@ -466,11 +472,29 @@
     <Compile Include="Forms\BaseInputForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Config\ctrlEmulatorShortcuts.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\ctrlEmulatorShortcuts.designer.cs">
+      <DependentUpon>ctrlEmulatorShortcuts.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Config\frmAudioConfig.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Config\frmAudioConfig.Designer.cs">
       <DependentUpon>frmAudioConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Config\frmGetKey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmGetKey.designer.cs">
+      <DependentUpon>frmGetKey.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Config\frmPreferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmPreferences.Designer.cs">
+      <DependentUpon>frmPreferences.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\frmVideoConfig.cs">
       <SubType>Form</SubType>
@@ -501,8 +525,10 @@
     <Compile Include="Forms\OpenSaveFileDialogExtensions.cs" />
     <Compile Include="Forms\ResourceHelper.cs" />
     <Compile Include="Forms\ResourcePath.cs" />
+    <Compile Include="Forms\ShortcutHandler.cs" />
     <Compile Include="Interop\DebugApi.cs" />
     <Compile Include="Interop\ConfigApi.cs" />
+    <Compile Include="Interop\InputApi.cs" />
     <Compile Include="Interop\EmuApi.cs" />
     <Compile Include="Interop\NotificationListener.cs" />
     <Compile Include="Interop\Utf8Marshaler.cs" />
@@ -610,8 +636,17 @@
     <EmbeddedResource Include="Forms\BaseInputForm.resx">
       <DependentUpon>BaseInputForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\ctrlEmulatorShortcuts.resx">
+      <DependentUpon>ctrlEmulatorShortcuts.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmAudioConfig.resx">
       <DependentUpon>frmAudioConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmGetKey.resx">
+      <DependentUpon>frmGetKey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmPreferences.resx">
+      <DependentUpon>frmPreferences.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmVideoConfig.resx">
       <DependentUpon>frmVideoConfig.cs</DependentUpon>

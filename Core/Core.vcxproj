@@ -106,6 +106,7 @@
     <ClInclude Include="RomHandler.h" />
     <ClInclude Include="ScaleFilter.h" />
     <ClInclude Include="SettingTypes.h" />
+    <ClInclude Include="ShortcutKeyHandler.h" />
     <ClInclude Include="SnesController.h" />
     <ClInclude Include="SNES_SPC.h" />
     <ClInclude Include="SoundMixer.h" />
@@ -152,6 +153,7 @@
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
     <ClCompile Include="ScaleFilter.cpp" />
+    <ClCompile Include="ShortcutKeyHandler.cpp" />
     <ClCompile Include="SNES_SPC.cpp" />
     <ClCompile Include="SNES_SPC_misc.cpp" />
     <ClCompile Include="SNES_SPC_state.cpp" />

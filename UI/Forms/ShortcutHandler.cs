@@ -1,0 +1,280 @@
+﻿using Mesen.GUI.Config;
+using Mesen.GUI.Config.Shortcuts;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Mesen.GUI.Forms
+{
+	public class ShortcutHandler
+	{
+		private Dictionary<EmulatorShortcut, Func<bool>> _actionEnabledFuncs = new Dictionary<EmulatorShortcut, Func<bool>>();
+		private List<uint> _speedValues = new List<uint> { 1, 3, 6, 12, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 750, 1000, 2000, 4000 };
+
+		public void BindShortcut(ToolStripMenuItem item, EmulatorShortcut shortcut, Func<bool> isActionEnabled = null)
+		{
+			item.Click += (object sender, EventArgs e) => {
+				if(isActionEnabled == null || isActionEnabled()) {
+					ExecuteShortcut(shortcut);
+				}
+			};
+
+			_actionEnabledFuncs[shortcut] = isActionEnabled;
+
+			PreferencesConfig cfg = ConfigManager.Config.Preferences;
+			if(item.OwnerItem is ToolStripMenuItem) {
+				Action updateShortcut = () => {
+					int keyIndex = cfg.ShortcutKeys1.FindIndex((ShortcutKeyInfo shortcutInfo) => shortcutInfo.Shortcut == shortcut);
+					if(keyIndex >= 0) {
+						item.ShortcutKeyDisplayString = cfg.ShortcutKeys1[keyIndex].KeyCombination.ToString();
+					} else {
+						keyIndex = cfg.ShortcutKeys2.FindIndex((ShortcutKeyInfo shortcutInfo) => shortcutInfo.Shortcut == shortcut);
+						if(keyIndex >= 0) {
+							item.ShortcutKeyDisplayString = cfg.ShortcutKeys2[keyIndex].KeyCombination.ToString();
+						} else {
+							item.ShortcutKeyDisplayString = "";
+						}
+					}
+					item.Enabled = isActionEnabled == null || isActionEnabled();
+				};
+
+				updateShortcut();
+
+				//Update item shortcut text when its parent opens
+				((ToolStripMenuItem)item.OwnerItem).DropDownOpening += (object sender, EventArgs e) => { updateShortcut(); };
+			}
+		}
+
+		public void ExecuteShortcut(EmulatorShortcut shortcut)
+		{
+			Func<bool> isActionEnabled;
+			if(_actionEnabledFuncs.TryGetValue(shortcut, out isActionEnabled)) {
+				isActionEnabled = _actionEnabledFuncs[shortcut];
+				if(isActionEnabled != null && !isActionEnabled()) {
+					//Action disabled
+					return;
+				}
+			}
+
+			//TODO bool restoreFullscreen = _frmFullscreenRenderer != null;
+
+			switch(shortcut) {
+				case EmulatorShortcut.Pause: PauseEmu(); break;
+				case EmulatorShortcut.Reset: ResetEmu(); break;
+				case EmulatorShortcut.PowerCycle: PowerCycleEmu(); break;
+				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); break;
+				case EmulatorShortcut.Exit: Application.OpenForms[0].Close(); break;
+
+				case EmulatorShortcut.ToggleAudio: ToggleAudio(); break;
+				case EmulatorShortcut.ToggleFps: ToggleFps(); break;
+				case EmulatorShortcut.ToggleGameTimer: ToggleGameTimer(); break;
+				case EmulatorShortcut.ToggleFrameCounter: ToggleFrameCounter(); break;
+				case EmulatorShortcut.ToggleOsd: ToggleOsd(); break;
+				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
+				case EmulatorShortcut.ToggleDebugInfo: ToggleDebugInfo(); break;
+				case EmulatorShortcut.MaxSpeed: ToggleMaxSpeed(); break;
+				//case EmulatorShortcut.ToggleFullscreen: ToggleFullscreen(); restoreFullscreen = false; break;
+
+				case EmulatorShortcut.OpenFile: OpenFile(); break;
+				case EmulatorShortcut.IncreaseSpeed: IncreaseEmulationSpeed(); break;
+				case EmulatorShortcut.DecreaseSpeed: DecreaseEmulationSpeed(); break;
+
+				case EmulatorShortcut.SetScale1x: SetScale(1); break;
+				case EmulatorShortcut.SetScale2x: SetScale(2); break;
+				case EmulatorShortcut.SetScale3x: SetScale(3); break;
+				case EmulatorShortcut.SetScale4x: SetScale(4); break;
+				case EmulatorShortcut.SetScale5x: SetScale(5); break;
+				case EmulatorShortcut.SetScale6x: SetScale(6); break;
+		
+				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
+
+				case EmulatorShortcut.LoadStateFromFile: EmuRunner.LoadStateFromFile(); break;
+				case EmulatorShortcut.SaveStateToFile: EmuRunner.SaveStateToFile(); break;
+
+				case EmulatorShortcut.SaveStateSlot1: EmuRunner.SaveState(1); break;
+				case EmulatorShortcut.SaveStateSlot2: EmuRunner.SaveState(2); break;
+				case EmulatorShortcut.SaveStateSlot3: EmuRunner.SaveState(3); break;
+				case EmulatorShortcut.SaveStateSlot4: EmuRunner.SaveState(4); break;
+				case EmulatorShortcut.SaveStateSlot5: EmuRunner.SaveState(5); break;
+				case EmulatorShortcut.SaveStateSlot6: EmuRunner.SaveState(6); break;
+				case EmulatorShortcut.SaveStateSlot7: EmuRunner.SaveState(7); break;
+				case EmulatorShortcut.SaveStateSlot8: EmuRunner.SaveState(8); break;
+				case EmulatorShortcut.SaveStateSlot9: EmuRunner.SaveState(9); break;
+				case EmulatorShortcut.SaveStateSlot10: EmuRunner.SaveState(10); break;
+				case EmulatorShortcut.LoadStateSlot1: EmuRunner.LoadState(1); break;
+				case EmulatorShortcut.LoadStateSlot2: EmuRunner.LoadState(2); break;
+				case EmulatorShortcut.LoadStateSlot3: EmuRunner.LoadState(3); break;
+				case EmulatorShortcut.LoadStateSlot4: EmuRunner.LoadState(4); break;
+				case EmulatorShortcut.LoadStateSlot5: EmuRunner.LoadState(5); break;
+				case EmulatorShortcut.LoadStateSlot6: EmuRunner.LoadState(6); break;
+				case EmulatorShortcut.LoadStateSlot7: EmuRunner.LoadState(7); break;
+				case EmulatorShortcut.LoadStateSlot8: EmuRunner.LoadState(8); break;
+				case EmulatorShortcut.LoadStateSlot9: EmuRunner.LoadState(9); break;
+				case EmulatorShortcut.LoadStateSlot10: EmuRunner.LoadState(10); break;
+			}
+
+			//TODO
+			/*
+			if(restoreFullscreen && _frmFullscreenRenderer == null && !_shuttingDown) {
+				//Need to restore fullscreen mode after showing a dialog
+				this.SetFullscreenState(true);
+			}*/
+		}
+		
+		private void OpenFile()
+		{
+			using(OpenFileDialog ofd = new OpenFileDialog()) {
+				ofd.Filter = ResourceHelper.GetMessage("FilterRom");
+				
+				if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
+					ofd.InitialDirectory = ConfigManager.Config.Preferences.GameFolder;
+				} else if(ConfigManager.Config.RecentFiles.Items.Count > 0) {
+					ofd.InitialDirectory = ConfigManager.Config.RecentFiles.Items[0].RomFile.Folder;
+				}
+
+				if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
+					EmuRunner.LoadRom(ofd.FileName);
+				}
+			}
+		}
+
+		public void SetVideoFilter(VideoFilterType filter)
+		{
+			ConfigManager.Config.Video.VideoFilter = filter;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void SetScale(int scale)
+		{
+			ConfigManager.Config.Video.VideoScale = scale;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		public void ToggleBilinearInterpolation()
+		{
+			ConfigManager.Config.Video.UseBilinearInterpolation = !ConfigManager.Config.Video.UseBilinearInterpolation;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void SetEmulationSpeed(uint emulationSpeed)
+		{
+			ConfigManager.Config.Emulation.EmulationSpeed = emulationSpeed;
+			ConfigManager.Config.Emulation.ApplyConfig();
+			ConfigManager.ApplyChanges();
+
+			if(emulationSpeed == 0) {
+				EmuApi.DisplayMessage("EmulationSpeed", "EmulationMaximumSpeed");
+			} else {
+				EmuApi.DisplayMessage("EmulationSpeed", "EmulationSpeedPercent", emulationSpeed.ToString());
+			}
+		}
+
+		private void IncreaseEmulationSpeed()
+		{
+			uint emulationSpeed = ConfigManager.Config.Emulation.EmulationSpeed;
+			if(emulationSpeed == _speedValues[_speedValues.Count - 1]) {
+				SetEmulationSpeed(0);
+			} else if(emulationSpeed != 0) {
+				for(int i = 0; i < _speedValues.Count; i++) {
+					if(_speedValues[i] > emulationSpeed) {
+						SetEmulationSpeed(_speedValues[i]);
+						break;
+					}
+				}
+			}
+		}
+
+		private void DecreaseEmulationSpeed()
+		{
+			uint emulationSpeed = ConfigManager.Config.Emulation.EmulationSpeed;
+			if(emulationSpeed == 0) {
+				SetEmulationSpeed(_speedValues[_speedValues.Count - 1]);
+			} else if(emulationSpeed > _speedValues[0]) {
+				for(int i = _speedValues.Count - 1; i >= 0; i--) {
+					if(_speedValues[i] < emulationSpeed) {
+						SetEmulationSpeed(_speedValues[i]);
+						break;
+					}
+				}
+			}
+		}
+		
+		private void ToggleMaxSpeed()
+		{
+			if(ConfigManager.Config.Emulation.EmulationSpeed == 0) {
+				SetEmulationSpeed(100);
+			} else {
+				SetEmulationSpeed(0);
+			}
+		}
+
+		private void ToggleOsd()
+		{
+			//TODO
+		}
+
+		private void ToggleFps()
+		{
+			ConfigManager.Config.Preferences.ShowFps = !ConfigManager.Config.Preferences.ShowFps;
+			ConfigManager.Config.Preferences.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleAudio()
+		{
+			ConfigManager.Config.Audio.EnableAudio = !ConfigManager.Config.Audio.EnableAudio;
+			ConfigManager.Config.Audio.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleFrameCounter()
+		{
+			ConfigManager.Config.Preferences.ShowFrameCounter = !ConfigManager.Config.Preferences.ShowFrameCounter;
+			ConfigManager.Config.Preferences.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+		
+		private void ToggleGameTimer()
+		{
+			ConfigManager.Config.Preferences.ShowGameTimer = !ConfigManager.Config.Preferences.ShowGameTimer;
+			ConfigManager.Config.Preferences.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleAlwaysOnTop()
+		{
+			ConfigManager.Config.Preferences.AlwaysOnTop = !ConfigManager.Config.Preferences.AlwaysOnTop;
+			ConfigManager.Config.Preferences.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleDebugInfo()
+		{
+			ConfigManager.Config.Preferences.ShowDebugInfo = !ConfigManager.Config.Preferences.ShowDebugInfo;
+			ConfigManager.Config.Preferences.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void PauseEmu()
+		{
+			//TODO
+		}
+
+		private void ResetEmu()
+		{
+			//TODO
+		}
+
+		private void PowerCycleEmu()
+		{
+			//TODO
+		}
+	}
+}

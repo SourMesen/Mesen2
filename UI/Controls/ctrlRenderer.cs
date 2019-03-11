@@ -36,9 +36,9 @@ namespace Mesen.GUI.Controls
 
 		private void SetMouseButtonState(MouseButtons pressedButtons)
 		{
-			EmuApi.SetKeyState(LeftMouseButtonKeyCode, pressedButtons.HasFlag(MouseButtons.Left));
-			EmuApi.SetKeyState(RightMouseButtonKeyCode, pressedButtons.HasFlag(MouseButtons.Right));
-			EmuApi.SetKeyState(MiddleMouseButtonKeyCode, pressedButtons.HasFlag(MouseButtons.Middle));
+			InputApi.SetKeyState(LeftMouseButtonKeyCode, pressedButtons.HasFlag(MouseButtons.Left));
+			InputApi.SetKeyState(RightMouseButtonKeyCode, pressedButtons.HasFlag(MouseButtons.Right));
+			InputApi.SetKeyState(MiddleMouseButtonKeyCode, pressedButtons.HasFlag(MouseButtons.Middle));
 		}
 
 		private void ctrlRenderer_MouseMove(object sender, MouseEventArgs e)
@@ -55,13 +55,13 @@ namespace Mesen.GUI.Controls
 			xPos = Math.Max(0.0, Math.Min(1.0, xPos));
 			yPos = Math.Max(0.0, Math.Min(1.0, yPos));
 
-			EmuApi.SetMousePosition(xPos, yPos);
+			InputApi.SetMousePosition(xPos, yPos);
 		}
 
 		private void ctrlRenderer_MouseLeave(object sender, EventArgs e)
 		{
 			//CursorManager.OnMouseLeave();
-			EmuApi.SetMousePosition(-1, -1);
+			InputApi.SetMousePosition(-1, -1);
 		}
 	}
 }
