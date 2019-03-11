@@ -70,13 +70,13 @@ int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 		score += 8;
 	}
 
-	uint16_t resetVectorAddr = addr + 0x7FFC;
-	uint16_t resetVector = _prgRom[resetVectorAddr] | (_prgRom[resetVectorAddr + 1] << 8);
+	uint32_t resetVectorAddr = addr + 0x7FFC;
+	uint32_t resetVector = _prgRom[resetVectorAddr] | (_prgRom[resetVectorAddr + 1] << 8);
 	if(resetVector < 0x8000) {
 		return -1;
 	}
 	
-	uint8_t op = _prgRom[addr | (resetVector & 0x7FFF)];
+	uint8_t op = _prgRom[addr + (resetVector & 0x7FFF)];
 	if(op == 0x18 || op == 0x78 || op == 0x4C || op == 0x5C || op == 0x20 || op == 0x22 || op == 0x9C) {
 		//CLI, SEI, JMP, JML, JSR, JSl, STZ
 		score += 8;
@@ -93,17 +93,40 @@ int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 
 void BaseCartridge::Init()
 {
-	int32_t loRomScore = GetHeaderScore(0x0000);
-	int32_t hiRomScore = GetHeaderScore(0x8000);
+	//Find the best potential header among lorom/hirom + headerless/headered combinations
+	vector<uint32_t> baseAddresses = { 0, 0x200, 0x8000, 0x8200 };
+	int32_t bestScore = -1;
+	bool hasHeader = false;
+	bool isLoRom = true;
+	for(uint32_t baseAddress : baseAddresses) {
+		int32_t score = GetHeaderScore(baseAddress);
+		if(score > bestScore) {
+			bestScore = score;
+			isLoRom = (baseAddress & 0x8000) == 0;
+			hasHeader = (baseAddress & 0x200) != 0;
+		}
+	}
 
 	uint32_t headerOffset = 0;
 	uint32_t flags = 0;
-	if(loRomScore >= hiRomScore) {
+	if(isLoRom) {
+		if(hasHeader) {
+			flags |= CartFlags::CopierHeader;
+		}
 		flags |= CartFlags::LoRom;
 		headerOffset = 0x7FB0;
 	} else {
+		if(hasHeader) {
+			flags |= CartFlags::CopierHeader;
+		}
 		flags |= CartFlags::HiRom;
 		headerOffset = 0xFFB0;
+	}
+
+	if(flags & CartFlags::CopierHeader) {
+		//Remove the copier header
+		memmove(_prgRom, _prgRom + 512, _prgRomSize - 512);
+		_prgRomSize -= 512;
 	}
 	
 	memcpy(&_cartInfo, _prgRom + headerOffset, sizeof(SnesCartInformation));
@@ -241,6 +264,10 @@ void BaseCartridge::DisplayCartInfo()
 
 	if(_flags & CartFlags::FastRom) {
 		MessageManager::Log("FastROM");
+	}
+
+	if(_flags & CartFlags::CopierHeader) {
+		MessageManager::Log("Copier header found.");
 	}
 
 	MessageManager::Log("Map Mode: $" + HexUtilities::ToHex(_cartInfo.MapMode));

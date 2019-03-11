@@ -42,7 +42,8 @@ namespace CartFlags
 		HiRom = 2,
 		FastRom = 4,
 		ExLoRom = 8,
-		ExHiRom = 16
+		ExHiRom = 16,
+		CopierHeader = 32
 	};
 }
 
