@@ -95,7 +95,7 @@ extern "C" {
 		std::ostringstream out;
 		shared_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filename);
 		if(reader) {
-			for(string romName : reader->GetFileList({ ".sfc" })) {
+			for(string romName : reader->GetFileList(VirtualFile::RomExtensions)) {
 				out << romName << "[!|!]";
 			}
 		}

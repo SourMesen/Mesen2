@@ -491,6 +491,12 @@
     <Compile Include="Forms\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmSelectRom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmSelectRom.designer.cs">
+      <DependentUpon>frmSelectRom.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MesenMsgBox.cs" />
     <Compile Include="Forms\OpenSaveFileDialogExtensions.cs" />
     <Compile Include="Forms\ResourceHelper.cs" />
@@ -506,6 +512,7 @@
     <Compile Include="EmuRunner.cs" />
     <Compile Include="RuntimeChecker.cs" />
     <Compile Include="SingleInstance.cs" />
+    <Compile Include="Utilities\ArchiveHelper.cs" />
     <Compile Include="Utilities\HexConverter.cs" />
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
@@ -614,6 +621,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmSelectRom.resx">
+      <DependentUpon>frmSelectRom.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

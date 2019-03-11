@@ -11,7 +11,7 @@
 #include "../Utilities/UpsPatcher.h"
 
 //TODO
-const std::initializer_list<string> VirtualFile::RomExtensions = { ".nes", ".fds", ".nsf", ".nsfe", "*.unf", "*.unif" };
+const std::initializer_list<string> VirtualFile::RomExtensions = { ".sfc", ".smc", ".swc", ".fig" };
 
 VirtualFile::VirtualFile()
 {

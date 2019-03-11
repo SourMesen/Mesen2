@@ -15,6 +15,10 @@ namespace Mesen.GUI
 
 		public static void LoadRom(ResourcePath romPath, ResourcePath? patchPath = null)
 		{
+			if(!frmSelectRom.SelectRom(ref romPath)) {
+				return;
+			}
+
 			EmuApi.LoadRom(romPath, patchPath);
 
 			ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
