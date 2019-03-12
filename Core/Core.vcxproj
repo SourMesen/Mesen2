@@ -105,6 +105,8 @@
     <ClInclude Include="PpuTypes.h" />
     <ClInclude Include="RamHandler.h" />
     <ClInclude Include="RegisterHandlerA.h" />
+    <ClInclude Include="RewindData.h" />
+    <ClInclude Include="RewindManager.h" />
     <ClInclude Include="RomHandler.h" />
     <ClInclude Include="SaveStateManager.h" />
     <ClInclude Include="ScaleFilter.h" />
@@ -157,6 +159,8 @@
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
     <ClCompile Include="RegisterHandlerB.cpp" />
+    <ClCompile Include="RewindData.cpp" />
+    <ClCompile Include="RewindManager.cpp" />
     <ClCompile Include="SaveStateManager.cpp" />
     <ClCompile Include="ScaleFilter.cpp" />
     <ClCompile Include="ShortcutKeyHandler.cpp" />

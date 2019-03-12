@@ -10,6 +10,8 @@ private:
 	EmulationConfig _emulation;
 	PreferencesConfig _preferences;
 
+	atomic<uint32_t> _flags;
+
 	string _audioDevice;
 	string _saveFolder;
 	string _saveStateFolder;
@@ -42,6 +44,12 @@ public:
 	KeyCombination GetShortcutKey(EmulatorShortcut shortcut, int keySetIndex);
 	vector<KeyCombination> GetShortcutSupersets(EmulatorShortcut shortcut, int keySetIndex);
 
+	uint32_t GetRewindBufferSize();
 	uint32_t GetEmulationSpeed();
 	double GetAspectRatio();
+
+	void SetFlag(EmulationFlags flag);
+	void SetFlagState(EmulationFlags flag, bool enabled);
+	void ClearFlag(EmulationFlags flag);
+	bool CheckFlag(EmulationFlags flag);
 };

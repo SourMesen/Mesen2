@@ -21,6 +21,7 @@ class VideoDecoder;
 class NotificationManager;
 class EmuSettings;
 class SaveStateManager;
+class RewindManager;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -46,6 +47,7 @@ private:
 	shared_ptr<DebugHud> _debugHud;
 	shared_ptr<EmuSettings> _settings;
 	shared_ptr<SaveStateManager> _saveStateManager;
+	shared_ptr<RewindManager> _rewindManager;
 	
 	thread::id _emulationThreadId;
 	
@@ -83,7 +85,7 @@ public:
 	shared_ptr<NotificationManager> GetNotificationManager();
 	shared_ptr<EmuSettings> GetSettings();
 	shared_ptr<SaveStateManager> GetSaveStateManager();
-
+	shared_ptr<RewindManager> GetRewindManager();
 	shared_ptr<DebugHud> GetDebugHud();
 
 	shared_ptr<Cpu> GetCpu();

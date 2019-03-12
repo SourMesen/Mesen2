@@ -129,9 +129,22 @@ vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortc
 	return _shortcutSupersets[keySetIndex][(uint32_t)shortcut];
 }
 
+uint32_t EmuSettings::GetRewindBufferSize()
+{
+	return _preferences.RewindBufferSize;
+}
+
 uint32_t EmuSettings::GetEmulationSpeed()
 {
-	return _emulation.EmulationSpeed;
+	if(CheckFlag(EmulationFlags::MaximumSpeed)) {
+		return 0;
+	} else if(CheckFlag(EmulationFlags::Turbo)) {
+		return _emulation.TurboSpeed;
+	} else if(CheckFlag(EmulationFlags::Rewind)) {
+		return _emulation.RewindSpeed;
+	} else {
+		return _emulation.EmulationSpeed;
+	}
 }
 
 double EmuSettings::GetAspectRatio()
@@ -152,4 +165,32 @@ double EmuSettings::GetAspectRatio()
 		case VideoAspectRatio::Custom: return _video.CustomAspectRatio;
 	}
 	return 0.0;
+}
+
+void EmuSettings::SetFlag(EmulationFlags flag)
+{
+	if((_flags & (int)flag) == 0) {
+		_flags |= (int)flag;
+	}
+}
+
+void EmuSettings::SetFlagState(EmulationFlags flag, bool enabled)
+{
+	if(enabled) {
+		SetFlag(flag);
+	} else {
+		ClearFlag(flag);
+	}
+}
+
+void EmuSettings::ClearFlag(EmulationFlags flag)
+{
+	if((_flags & (int)flag) != 0) {
+		_flags &= ~(int)flag;
+	}
+}
+
+bool EmuSettings::CheckFlag(EmulationFlags flag)
+{
+	return (_flags & (int)flag) != 0;
 }

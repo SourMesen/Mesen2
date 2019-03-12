@@ -5,6 +5,7 @@
 #include "VideoDecoder.h"
 #include "ControlManager.h"
 #include "Console.h"
+#include "RewindManager.h"
 #include "NotificationManager.h"
 
 ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Console> console)
@@ -12,7 +13,6 @@ ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Console> console)
 	_console = console;
 	_keySetIndex = 0;
 	_isKeyUp = false;
-	_keyboardMode = false;
 	_repeatStarted = false;
 
 	_stopThread = false;
@@ -60,11 +60,7 @@ bool ShortcutKeyHandler::IsKeyPressed(KeyCombination comb)
 
 bool ShortcutKeyHandler::IsKeyPressed(uint32_t keyCode)
 {
-	if(keyCode >= 0x200 || !_keyboardMode) {
-		return KeyManager::IsKeyPressed(keyCode);
-	} else {
-		return false;
-	}
+	return KeyManager::IsKeyPressed(keyCode);
 }
 
 bool ShortcutKeyHandler::DetectKeyPress(EmulatorShortcut shortcut)
@@ -125,22 +121,21 @@ void ShortcutKeyHandler::CheckMappedKeys()
 		}
 	}
 
-	//TODO
-	/*
 	if(DetectKeyPress(EmulatorShortcut::FastForward)) {
-		settings->SetFlags(EmulationFlags::Turbo);
+		settings->SetFlag(EmulationFlags::Turbo);
 	} else if(DetectKeyRelease(EmulatorShortcut::FastForward)) {
-		settings->ClearFlags(EmulationFlags::Turbo);
+		settings->ClearFlag(EmulationFlags::Turbo);
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::ToggleFastForward)) {
 		if(settings->CheckFlag(EmulationFlags::Turbo)) {
-			settings->ClearFlags(EmulationFlags::Turbo);
+			settings->ClearFlag(EmulationFlags::Turbo);
 		} else {
-			settings->SetFlags(EmulationFlags::Turbo);
+			settings->SetFlag(EmulationFlags::Turbo);
 		}
 	}
 
+	/*
 	if(DetectKeyPress(EmulatorShortcut::MoveToNextStateSlot)) {
 		_console->GetSaveStateManager()->MoveToNextSlot();
 	}
@@ -175,8 +170,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 	}
 
 	if(!isNetplayClient && !isMovieRecording) {
-		//TODO
-		/*shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
+		shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
 		if(rewindManager) {
 			if(DetectKeyPress(EmulatorShortcut::ToggleRewind)) {
 				if(rewindManager->IsRewinding()) {
@@ -195,7 +189,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 			} else if(DetectKeyPress(EmulatorShortcut::RewindOneMin)) {
 				rewindManager->RewindSeconds(60);
 			}
-		}*/
+		}
 	}
 }
 

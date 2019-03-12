@@ -3,6 +3,7 @@
 #include "Console.h"
 #include "EmuSettings.h"
 #include "SoundResampler.h"
+#include "RewindManager.h"
 #include "../Utilities/Equalizer.h"
 #include "../Utilities/blip_buf.h"
 
@@ -65,11 +66,14 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 			}
 		}
 
-		if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
-			_audioDevice->PlayBuffer(samples, sampleCount, cfg.SampleRate, true);
-		} else {
-			uint32_t resampledCount = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
-			_audioDevice->PlayBuffer(_sampleBuffer, resampledCount, cfg.SampleRate, true);
+		shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
+		if(rewindManager && rewindManager->SendAudio(samples, (uint32_t)sampleCount)) {
+			if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
+				_audioDevice->PlayBuffer(samples, sampleCount, cfg.SampleRate, true);
+			} else {
+				uint32_t resampledCount = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
+				_audioDevice->PlayBuffer(_sampleBuffer, resampledCount, cfg.SampleRate, true);
+			}
 		}
 		_audioDevice->ProcessEndOfFrame();
 	}

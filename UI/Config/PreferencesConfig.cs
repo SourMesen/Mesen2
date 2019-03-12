@@ -21,6 +21,8 @@ namespace Mesen.GUI.Config
 		public bool AssociateMsmFiles = false;
 		public bool AssociateMssFiles = false;
 
+		public UInt32 RewindBufferSize = 600;
+
 		public bool AlwaysOnTop = false;
 
 		public bool ShowFps = false;
@@ -128,17 +130,6 @@ namespace Mesen.GUI.Config
 				FileAssociationHelper.UpdateFileAssociation("mss", this.AssociateMssFiles);
 			}
 
-			ConfigApi.SetPreferences(new InteropPreferencesConfig() {
-				ShowFps = ShowFps,
-				ShowFrameCounter = ShowFrameCounter,
-				ShowGameTimer = ShowGameTimer,
-				ShowDebugInfo = ShowDebugInfo,
-				DisableOsd = DisableOsd,
-				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
-				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
-				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : ""
-			});
-
 			Application.OpenForms[0].TopMost = AlwaysOnTop;
 
 			ShortcutKeyInfo[] shortcutKeys = new ShortcutKeyInfo[ShortcutKeys1.Count + ShortcutKeys2.Count];
@@ -150,6 +141,18 @@ namespace Mesen.GUI.Config
 				shortcutKeys[i++] = shortcutInfo;
 			}
 			ConfigApi.SetShortcutKeys(shortcutKeys, (UInt32)shortcutKeys.Length);
+
+			ConfigApi.SetPreferences(new InteropPreferencesConfig() {
+				ShowFps = ShowFps,
+				ShowFrameCounter = ShowFrameCounter,
+				ShowGameTimer = ShowGameTimer,
+				ShowDebugInfo = ShowDebugInfo,
+				DisableOsd = DisableOsd,
+				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
+				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
+				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
+				RewindBufferSize = RewindBufferSize
+			});
 		}
 	}
 	
@@ -160,6 +163,8 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ShowGameTimer;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowDebugInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOsd;
+
+		public UInt32 RewindBufferSize;
 
 		public string SaveFolderOverride;
 		public string SaveStateFolderOverride;

@@ -236,6 +236,12 @@
     <ClInclude Include="ConsoleLock.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="RewindData.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="RewindManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -378,6 +384,12 @@
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleLock.cpp" />
+    <ClCompile Include="RewindData.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="RewindManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

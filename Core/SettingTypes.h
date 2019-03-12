@@ -1,6 +1,13 @@
 #pragma once
 #include "stdafx.h"
 
+enum class EmulationFlags
+{
+	Turbo = 1,
+	Rewind = 2,
+	MaximumSpeed = 4
+};
+
 enum class ScaleFilterType
 {
 	xBRZ = 0,
@@ -146,15 +153,17 @@ struct EmulationConfig
 
 struct PreferencesConfig
 {
-	bool ShowFps;
-	bool ShowFrameCounter;
-	bool ShowGameTimer;
-	bool ShowDebugInfo;
-	bool DisableOsd;
+	bool ShowFps = false;
+	bool ShowFrameCounter = false;
+	bool ShowGameTimer = false;
+	bool ShowDebugInfo = false;
+	bool DisableOsd = false;
 
-	const char* SaveFolderOverride;
-	const char* SaveStateFolderOverride;
-	const char* ScreenshotFolderOverride;
+	uint32_t RewindBufferSize = 600;
+
+	const char* SaveFolderOverride = nullptr;
+	const char* SaveStateFolderOverride = nullptr;
+	const char* ScreenshotFolderOverride = nullptr;
 };
 
 struct OverscanDimensions

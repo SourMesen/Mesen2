@@ -5,6 +5,7 @@
 #include "DefaultVideoFilter.h"
 #include "NotificationManager.h"
 #include "Console.h"
+#include "RewindManager.h"
 #include "EmuSettings.h"
 #include "SettingTypes.h"
 #include "NtscFilter.h"
@@ -78,7 +79,7 @@ void VideoDecoder::UpdateVideoFilter()
 	}*/
 }
 
-void VideoDecoder::DecodeFrame(bool synchronous)
+void VideoDecoder::DecodeFrame(bool forRewind)
 {
 	UpdateVideoFilter();
 
@@ -117,7 +118,7 @@ void VideoDecoder::DecodeFrame(bool synchronous)
 	_frameChanged = false;
 	
 	//Rewind manager will take care of sending the correct frame to the video renderer
-	_console->GetVideoRenderer()->UpdateFrame(outputBuffer, frameInfo.Width, frameInfo.Height);
+	_console->GetRewindManager()->SendFrame(outputBuffer, frameInfo.Width, frameInfo.Height, forRewind);
 }
 
 void VideoDecoder::DecodeThread()
@@ -141,13 +142,13 @@ uint32_t VideoDecoder::GetFrameCount()
 	return _frameCount;
 }
 
-void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber)
+void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool forRewind)
 {
 	_baseFrameInfo.Width = width;
 	_baseFrameInfo.Height = height;
 	_frameNumber = frameNumber;
 	_ppuOutputBuffer = ppuOutputBuffer;
-	DecodeFrame(true);
+	DecodeFrame(forRewind);
 	_frameCount++;
 }
 

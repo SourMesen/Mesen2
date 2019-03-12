@@ -24,6 +24,7 @@
 #include "SaveStateManager.h"
 #include "DebugStats.h"
 #include "CartTypes.h"
+#include "RewindManager.h"
 #include "ConsoleLock.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
@@ -91,6 +92,8 @@ void Console::Run()
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
+			_rewindManager->ProcessEndOfFrame();
+
 			WaitForLock();
 
 			frameLimiter.ProcessFrame();
@@ -134,6 +137,7 @@ void Console::Stop()
 	debugger.reset();
 
 	_videoDecoder->StopThread();
+	_rewindManager.reset();
 
 	_cpu.reset();
 	_ppu.reset();
@@ -174,6 +178,9 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_cpu.reset(new Cpu(this));
 		_memoryManager->IncrementMasterClockValue<170>();
+
+		_rewindManager.reset(new RewindManager(shared_from_this()));
+		_notificationManager->RegisterNotificationListener(_rewindManager);
 
 		//if(_debugger) {
 			//Reset debugger if it was running before
@@ -263,6 +270,8 @@ void Console::Deserialize(istream &in, uint32_t fileFormatVersion)
 	serializer.Stream(_cart.get());
 	serializer.Stream(_controlManager.get());
 	serializer.Stream(_spc.get());
+
+	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 }
 
 shared_ptr<SoundMixer> Console::GetSoundMixer()
@@ -293,6 +302,11 @@ shared_ptr<EmuSettings> Console::GetSettings()
 shared_ptr<SaveStateManager> Console::GetSaveStateManager()
 {
 	return _saveStateManager;
+}
+
+shared_ptr<RewindManager> Console::GetRewindManager()
+{
+	return _rewindManager;
 }
 
 shared_ptr<DebugHud> Console::GetDebugHud()

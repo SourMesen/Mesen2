@@ -11,6 +11,7 @@
 #include "DmaController.h"
 #include "MessageManager.h"
 #include "EventType.h"
+#include "RewindManager.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/Serializer.h"
 
@@ -1074,8 +1075,9 @@ void Ppu::SendFrame()
 	uint16_t width = 512;
 	uint16_t height = _overscanMode ? 478 : 448;
 
-	if(_screenInterlace) {
-		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount);
+	bool isRewinding = _console->GetRewindManager()->IsRewinding();
+	if(isRewinding || _screenInterlace) {
+		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
 		_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];

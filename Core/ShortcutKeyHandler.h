@@ -19,7 +19,6 @@ private:
 	vector<uint32_t> _pressedKeys;
 	vector<uint32_t> _lastPressedKeys;
 	bool _isKeyUp;
-	bool _keyboardMode;
 
 	shared_ptr<Timer> _runSingleFrameRepeatTimer;
 	bool _repeatStarted;

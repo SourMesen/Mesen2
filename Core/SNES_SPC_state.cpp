@@ -27,7 +27,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 #define REGS        (m.smp_regs [0])
 #define REGS_IN     (m.smp_regs [1])
 
-void SNES_SPC::save_regs( uint8_t out [reg_count] )
+void SNES_SPC::save_regs( uint8_t out [reg_count*2] )
 {
 	// Use current timer counter values
 	for ( int i = 0; i < timer_count; i++ )
@@ -35,6 +35,7 @@ void SNES_SPC::save_regs( uint8_t out [reg_count] )
 	
 	// Last written values
 	memcpy( out, REGS, r_t0out );
+	memcpy( out + reg_count, REGS_IN, reg_count);
 }
 
 void SNES_SPC::init_header( void* spc_out )
@@ -92,12 +93,15 @@ void SNES_SPC::copy_state( unsigned char** io, copy_func_t copy )
 	{
 		// SMP registers
 		uint8_t out_ports [port_count];
-		uint8_t regs [reg_count];
+		uint8_t regs [reg_count*2];
 		memcpy( out_ports, &REGS [r_cpuio0], sizeof out_ports );
 		save_regs( regs );
 		copier.copy( regs, sizeof regs );
 		copier.copy( out_ports, sizeof out_ports );
-		load_regs( regs );
+		
+		memcpy(REGS, regs, reg_count);
+		memcpy(REGS_IN, regs + reg_count, reg_count);
+
 		regs_loaded();
 		memcpy( &REGS [r_cpuio0], out_ports, sizeof out_ports );
 	}
