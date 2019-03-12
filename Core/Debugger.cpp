@@ -42,7 +42,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_executionStopped = false;
 	_breakRequestCount = 0;
 
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->LoadCdlFile(cdlFile);
 
 	//TODO: Thread safety
@@ -59,7 +59,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 
 Debugger::~Debugger()
 {
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomPath, false) + ".cdl");
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->SaveCdlFile(cdlFile);
 }
 

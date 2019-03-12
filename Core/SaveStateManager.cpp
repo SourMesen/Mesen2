@@ -17,9 +17,9 @@ SaveStateManager::SaveStateManager(shared_ptr<Console> console)
 
 string SaveStateManager::GetStateFilepath(int stateIndex)
 {
-	string romPath = _console->GetRomInfo().RomPath;
+	string romFile = _console->GetRomInfo().RomFile.GetFileName();
 	string folder = FolderUtilities::GetSaveStateFolder();
-	string filename = FolderUtilities::GetFilename(romPath, false) + "_" + std::to_string(stateIndex) + ".mst";
+	string filename = FolderUtilities::GetFilename(romFile, false) + "_" + std::to_string(stateIndex) + ".mst";
 	return FolderUtilities::CombinePath(folder, filename);
 }
 
@@ -69,7 +69,7 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	stream.write(sha1Hash.c_str(), sha1Hash.size());
 
 	RomInfo romInfo = _console->GetCartridge()->GetRomInfo();
-	string romName = FolderUtilities::GetFilename(romInfo.RomPath, true);
+	string romName = FolderUtilities::GetFilename(romInfo.RomFile.GetFileName(), true);
 	uint32_t nameLength = (uint32_t)romName.size();
 	stream.write((char*)&nameLength, sizeof(uint32_t));
 	stream.write(romName.c_str(), romName.size());

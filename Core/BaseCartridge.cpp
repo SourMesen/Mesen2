@@ -26,7 +26,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, V
 		romFile.ReadFile(romData);
 
 		shared_ptr<BaseCartridge> cart(new BaseCartridge());
-		cart->_romPath = romFile.GetFilePath();
+		cart->_romPath = romFile;
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
 		memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
@@ -156,7 +156,7 @@ RomInfo BaseCartridge::GetRomInfo()
 {
 	RomInfo info;
 	info.Header = _cartInfo;
-	info.RomPath = _romPath;
+	info.RomFile = static_cast<VirtualFile>(_romPath);
 	return info;
 }
 

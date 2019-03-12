@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "../Utilities/VirtualFile.h"
 
 struct SnesCartInformation
 {
@@ -27,5 +28,5 @@ struct SnesCartInformation
 struct RomInfo
 {
 	SnesCartInformation Header;
-	string RomPath;
+	VirtualFile RomFile;
 };
