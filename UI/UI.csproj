@@ -485,6 +485,12 @@
     <Compile Include="Forms\Config\frmAudioConfig.Designer.cs">
       <DependentUpon>frmAudioConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Config\frmEmulationConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmEmulationConfig.Designer.cs">
+      <DependentUpon>frmEmulationConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Config\frmGetKey.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -642,6 +648,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmAudioConfig.resx">
       <DependentUpon>frmAudioConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmEmulationConfig.resx">
+      <DependentUpon>frmEmulationConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmGetKey.resx">
       <DependentUpon>frmGetKey.cs</DependentUpon>

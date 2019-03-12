@@ -191,6 +191,14 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.Audio.ApplyConfig();
 		}
 		
+		private void mnuEmulationConfig_Click(object sender, EventArgs e)
+		{
+			using(frmEmulationConfig frm = new frmEmulationConfig()) {
+				frm.ShowDialog(sender, this);
+			}
+			ConfigManager.Config.Emulation.ApplyConfig();
+		}
+
 		private void mnuPreferences_Click(object sender, EventArgs e)
 		{
 			using(frmPreferences frm = new frmPreferences()) {
