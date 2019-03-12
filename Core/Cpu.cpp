@@ -4,6 +4,7 @@
 #include "Console.h"
 #include "MemoryManager.h"
 #include "EventType.h"
+#include "../Utilities/Serializer.h"
 
 Cpu::Cpu(Console *console)
 {
@@ -611,4 +612,13 @@ void Cpu::SetFlags(uint8_t flags)
 bool Cpu::CheckFlag(uint8_t flag)
 {
 	return (_state.PS & flag) == flag;
+}
+
+void Cpu::Serialize(Serializer &s)
+{
+	s.Stream(
+		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.IrqSource, _state.K,
+		_state.NmiFlag, _state.PC, _state.PrevIrqSource, _state.PrevNmiFlag, _state.PS, _state.SP, _state.StopState,
+		_state.X, _state.Y
+	);
 }

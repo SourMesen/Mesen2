@@ -24,6 +24,8 @@ private:
 	void SetShortcutKey(EmulatorShortcut shortcut, KeyCombination keyCombination, int keySetIndex);
 
 public:
+	uint32_t GetVersion();
+
 	void SetVideoConfig(VideoConfig config);
 	VideoConfig GetVideoConfig();
 

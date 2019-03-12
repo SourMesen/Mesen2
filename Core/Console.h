@@ -1,5 +1,7 @@
 #pragma once
 #include "stdafx.h"
+#include "CartTypes.h"
+#include "ConsoleLock.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/SimpleLock.h"
 
@@ -18,6 +20,7 @@ class VideoRenderer;
 class VideoDecoder;
 class NotificationManager;
 class EmuSettings;
+class SaveStateManager;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -42,14 +45,18 @@ private:
 	shared_ptr<VideoDecoder> _videoDecoder;
 	shared_ptr<DebugHud> _debugHud;
 	shared_ptr<EmuSettings> _settings;
+	shared_ptr<SaveStateManager> _saveStateManager;
 	
 	thread::id _emulationThreadId;
-
+	
+	atomic<uint32_t> _lockCounter;
 	SimpleLock _runLock;
+
 	SimpleLock _debuggerLock;
 	atomic<bool> _stopFlag;
 
 	double GetFrameDelay();
+	void WaitForLock();
 
 public:
 	~Console();
@@ -61,12 +68,21 @@ public:
 	void Stop();
 
 	void LoadRom(VirtualFile romFile, VirtualFile patchFile);
+	RomInfo GetRomInfo();
+
+	ConsoleLock AcquireLock();
+	void Lock();
+	void Unlock();
+
+	void Serialize(ostream &out);
+	void Deserialize(istream &in, uint32_t fileFormatVersion);
 
 	shared_ptr<SoundMixer> GetSoundMixer();
 	shared_ptr<VideoRenderer> GetVideoRenderer();
 	shared_ptr<VideoDecoder> GetVideoDecoder();
 	shared_ptr<NotificationManager> GetNotificationManager();
 	shared_ptr<EmuSettings> GetSettings();
+	shared_ptr<SaveStateManager> GetSaveStateManager();
 
 	shared_ptr<DebugHud> GetDebugHud();
 

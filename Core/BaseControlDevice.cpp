@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "BaseControlDevice.h"
+#include "Console.h"
 #include "KeyManager.h"
 #include "../Utilities/StringUtilities.h"
-#include "Console.h"
-//#include "EmulationSettings.h"
+#include "../Utilities/Serializer.h"
 
 BaseControlDevice::BaseControlDevice(shared_ptr<Console> console, uint8_t port, KeyMappingSet keyMappingSet)
 {
@@ -31,16 +31,6 @@ void BaseControlDevice::SetStateFromInput()
 void BaseControlDevice::InternalSetStateFromInput()
 {
 }
-
-//TODO
-/*
-void BaseControlDevice::StreamState(bool saving)
-{
-	auto lock = _stateLock.AcquireSafe();
-	VectorInfo<uint8_t> state{ &_state.State };
-	Stream(_strobe, state);
-}
-*/
 
 bool BaseControlDevice::IsCurrentPort(uint16_t addr)
 {
@@ -276,4 +266,11 @@ void BaseControlDevice::SwapButtons(shared_ptr<BaseControlDevice> state1, uint8_
 	if(pressed2) {
 		state1->SetBit(button1);
 	}
+}
+
+void BaseControlDevice::Serialize(Serializer &s)
+{
+	auto lock = _stateLock.AcquireSafe();
+	s.Stream(_strobe);
+	s.StreamVector(_state.State);
 }

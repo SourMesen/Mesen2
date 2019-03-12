@@ -227,6 +227,15 @@
     <ClInclude Include="ShortcutKeyHandler.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="SaveStateManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="CartTypes.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleLock.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -362,6 +371,13 @@
     <ClCompile Include="DebugStats.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="RegisterHandlerB.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveStateManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleLock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

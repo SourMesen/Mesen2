@@ -33,6 +33,7 @@ public:
     static std::string GetHash(const std::string &filename);
 	 static std::string GetHash(std::istream &stream);
 	 static std::string GetHash(vector<uint8_t> &data);
+	 static std::string GetHash(uint8_t* data, size_t size);
 
 private:
     uint32_t digest[5];

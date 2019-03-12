@@ -54,8 +54,10 @@
     <ClInclude Include="blargg_source.h" />
     <ClInclude Include="Breakpoint.h" />
     <ClInclude Include="BreakpointManager.h" />
+    <ClInclude Include="CartTypes.h" />
     <ClInclude Include="CodeDataLogger.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="ConsoleLock.h" />
     <ClInclude Include="ControlDeviceState.h" />
     <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
@@ -104,6 +106,7 @@
     <ClInclude Include="RamHandler.h" />
     <ClInclude Include="RegisterHandlerA.h" />
     <ClInclude Include="RomHandler.h" />
+    <ClInclude Include="SaveStateManager.h" />
     <ClInclude Include="ScaleFilter.h" />
     <ClInclude Include="SettingTypes.h" />
     <ClInclude Include="ShortcutKeyHandler.h" />
@@ -130,6 +133,7 @@
     <ClCompile Include="BreakpointManager.cpp" />
     <ClCompile Include="CodeDataLogger.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="ConsoleLock.cpp" />
     <ClCompile Include="ControlManager.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="Cpu.Instructions.cpp" />
@@ -152,6 +156,8 @@
     <ClCompile Include="NtscFilter.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
+    <ClCompile Include="RegisterHandlerB.cpp" />
+    <ClCompile Include="SaveStateManager.cpp" />
     <ClCompile Include="ScaleFilter.cpp" />
     <ClCompile Include="ShortcutKeyHandler.cpp" />
     <ClCompile Include="SNES_SPC.cpp" />

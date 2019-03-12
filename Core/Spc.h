@@ -1,10 +1,11 @@
 #pragma once
 #include "stdafx.h"
+#include "../Utilities/ISerializable.h"
 
 class Console;
 struct SNES_SPC;
 
-class Spc
+class Spc : public ISerializable
 {
 private:
 	static constexpr int SampleBufferSize = 0x100000;
@@ -25,4 +26,6 @@ public:
 	void Write(uint32_t addr, uint8_t value);
 
 	void ProcessEndFrame();
+
+	void Serialize(Serializer &s) override;
 };

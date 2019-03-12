@@ -5,6 +5,7 @@
 #include "Ppu.h"
 #include "ControlManager.h"
 #include "MessageManager.h"
+#include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
 InternalRegisters::InternalRegisters(shared_ptr<Console> console)
@@ -101,7 +102,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			return (uint8_t)(_controllerData[((addr & 0x0E) - 8) >> 1] >> 8);
 
 		default:
-			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
+			MessageManager::Log("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
 			return 0;
 	}
 }
@@ -159,7 +160,16 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x420D: _enableFastRom = (value & 0x01) != 0; break;
 
 		default:
-			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			MessageManager::Log("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
 	}
+}
+
+void InternalRegisters::Serialize(Serializer &s)
+{
+	s.Stream(
+		_multOperand1, _multOperand2, _multOrRemainderResult, _dividend, _divisor, _divResult, _enableAutoJoypadRead,
+		_enableFastRom, _nmiFlag, _enableNmi, _enableHorizontalIrq, _enableVerticalIrq, _horizontalTimer,
+		_verticalTimer, _ioPortOutput, _controllerData[0], _controllerData[1], _controllerData[2], _controllerData[3]
+	);
 }

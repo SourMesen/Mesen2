@@ -1,9 +1,10 @@
 #pragma once
 #include "stdafx.h"
+#include "../Utilities/ISerializable.h"
 
 class Console;
 
-class InternalRegisters
+class InternalRegisters : public ISerializable
 {
 private:
 	shared_ptr<Console> _console;
@@ -46,4 +47,6 @@ public:
 	
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	void Serialize(Serializer &s) override;
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "BaseControlDevice.h"
+#include "../Utilities/Serializer.h"
 
 class SnesController : public BaseControlDevice
 {
@@ -52,13 +53,11 @@ protected:
 			((uint8_t)IsPressed(Buttons::R) << 11);
 	}
 
-	//TODO
-	/*
-	void StreamState(bool saving) override
+	void Serialize(Serializer &s) override
 	{
-		BaseControlDevice::StreamState(saving);
-		Stream(_stateBuffer);
-	}*/
+		BaseControlDevice::Serialize(s);
+		s.Stream(_stateBuffer);
+	}
 
 	void RefreshStateBuffer() override
 	{

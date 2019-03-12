@@ -7,6 +7,7 @@
 #include "IInputProvider.h"
 #include "IInputRecorder.h"
 #include "SnesController.h"
+#include "../Utilities/Serializer.h"
 
 ControlManager::ControlManager(shared_ptr<Console> console)
 {
@@ -215,5 +216,12 @@ void ControlManager::Write(uint16_t addr, uint8_t value)
 {
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		device->WriteRam(addr, value);
+	}
+}
+
+void ControlManager::Serialize(Serializer &s)
+{
+	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
+		s.Stream(device.get());
 	}
 }

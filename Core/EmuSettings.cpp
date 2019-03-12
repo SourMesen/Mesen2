@@ -4,6 +4,12 @@
 #include "MessageManager.h"
 #include "../Utilities/FolderUtilities.h"
 
+uint32_t EmuSettings::GetVersion()
+{
+	//0.1.0
+	return 0x00000100;
+}
+
 void EmuSettings::ProcessString(string & str, const char ** strPointer)
 {
 	//Make a copy of the string and keep it (the original pointer will not be valid after the call is over)

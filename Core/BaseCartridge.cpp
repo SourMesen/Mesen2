@@ -8,6 +8,8 @@
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
+#include "../Utilities/Serializer.h"
+#include "../Utilities/sha1.h"
 
 BaseCartridge::~BaseCartridge()
 {
@@ -158,6 +160,11 @@ RomInfo BaseCartridge::GetRomInfo()
 	return info;
 }
 
+string BaseCartridge::GetSha1Hash()
+{
+	return SHA1::GetHash(_prgRom, _prgRomSize);
+}
+
 void BaseCartridge::LoadBattery()
 {
 	if(_saveRamSize > 0) {
@@ -238,6 +245,11 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
 		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
 	}
+}
+
+void BaseCartridge::Serialize(Serializer &s)
+{
+	s.StreamArray(_saveRam, _saveRamSize);
 }
 
 void BaseCartridge::DisplayCartInfo()

@@ -12,6 +12,7 @@
 #include "MessageManager.h"
 #include "EventType.h"
 #include "../Utilities/HexUtilities.h"
+#include "../Utilities/Serializer.h"
 
 Ppu::Ppu(shared_ptr<Console> console)
 {
@@ -1270,7 +1271,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		}
 
 		default:
-			MessageManager::DisplayMessage("Debug", "Unimplemented register read: " + HexUtilities::ToHex(addr));
+			MessageManager::Log("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
 			break;
 	}
 	
@@ -1600,9 +1601,48 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			break;
 
 		default:
-			MessageManager::DisplayMessage("Debug", "Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			MessageManager::Log("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
 	}
+}
+
+void Ppu::Serialize(Serializer &s)
+{
+	s.Stream(
+		_forcedVblank, _screenBrightness, _cycle, _scanline, _frameCount, _drawStartX, _drawEndX, _irqDelay, _bgMode,
+		_mode1Bg3Priority, _mainScreenLayers, _subScreenLayers, _vramAddress, _vramIncrementValue, _vramAddressRemapping,
+		_vramAddrIncrementOnSecondReg, _vramReadBuffer, _ppu1OpenBus, _ppu2OpenBus, _cgramAddress, _mosaicSize, _mosaicEnabled,
+		_mosaicStartScanline, _oamMode, _oamBaseAddress, _oamAddressOffset, _oamRamAddress, _enableOamPriority,
+		_internalOamAddress, _oamWriteBuffer, _timeOver, _rangeOver, _hiResMode, _screenInterlace, _objInterlace,
+		_overscanMode, _directColorMode, _colorMathClipMode, _colorMathPreventMode, _colorMathAddSubscreen, _colorMathEnabled,
+		_colorMathSubstractMode, _colorMathHalveResult, _fixedColor, _hvScrollLatchValue, _hScrollLatchValue, 
+		_horizontalLocation, _horizontalLocToggle, _verticalLocation, _verticalLocationToggle, _locationLatched,
+		_maskLogic[0], _maskLogic[1], _maskLogic[2], _maskLogic[3], _maskLogic[4], _maskLogic[5],
+		_windowMaskMain[0], _windowMaskMain[1], _windowMaskMain[2], _windowMaskMain[3], _windowMaskMain[4],
+		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
+		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
+		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll
+	);
+
+	for(int i = 0; i < 4; i++) {
+		s.Stream(
+			_layerConfig[i].ChrAddress, _layerConfig[i].DoubleHeight, _layerConfig[i].DoubleWidth, _layerConfig[i].HScroll,
+			_layerConfig[i].LargeTiles, _layerConfig[i].TilemapAddress, _layerConfig[i].VScroll
+		);
+	}
+
+	for(int i = 0; i < 2; i++) {
+		s.Stream(
+			_window[i].ActiveLayers[0], _window[i].ActiveLayers[1], _window[i].ActiveLayers[2], _window[i].ActiveLayers[3], _window[i].ActiveLayers[4], _window[i].ActiveLayers[5],
+			_window[i].InvertedLayers[0], _window[i].InvertedLayers[1], _window[i].InvertedLayers[2], _window[i].InvertedLayers[3], _window[i].InvertedLayers[4], _window[i].InvertedLayers[5],
+			_window[i].Left, _window[i].Right
+		);
+	}
+
+	s.StreamArray(_vram, Ppu::VideoRamSize);
+	s.StreamArray(_oamRam, Ppu::SpriteRamSize);
+	s.StreamArray(_cgram, Ppu::CgRamSize);
 }
 
 /* Everything below this point is used to select the proper arguments for templates */

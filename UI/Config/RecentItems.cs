@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.GUI.Emulation;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.IO;

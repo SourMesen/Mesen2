@@ -4,6 +4,7 @@
 #include "Console.h"
 #include "MemoryManager.h"
 #include "SoundMixer.h"
+#include "../Utilities/Serializer.h"
 
 Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 {
@@ -54,4 +55,31 @@ void Spc::ProcessEndFrame()
 
 	uint64_t remainder = (_console->GetMemoryManager()->GetMasterClock() - _startFrameMasterClock) * 1024000 % 21477000 / 1024000;
 	_startFrameMasterClock = _console->GetMemoryManager()->GetMasterClock() - remainder;
+}
+
+void Spc::Serialize(Serializer &s)
+{
+	s.Stream(_startFrameMasterClock);
+
+	uint8_t state[SNES_SPC::state_size];
+	memset(state, 0, SNES_SPC::state_size);
+	if(s.IsSaving()) {
+		uint8_t *out = state;
+		_spc->copy_state(&out, [](uint8_t** output, void* in, size_t size) {
+			memcpy(*output, in, size);
+			*output += size;
+		});
+
+		s.StreamArray(state, SNES_SPC::state_size);
+	} else {
+		s.StreamArray(state, SNES_SPC::state_size);
+
+		uint8_t *in = state;
+		_spc->copy_state(&in, [](uint8_t** input, void* output, size_t size) {
+			memcpy(output, *input, size);
+			*input += size;
+		});
+
+		_spc->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
+	}
 }

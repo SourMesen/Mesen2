@@ -7,11 +7,12 @@
 
 #include "stdafx.h"
 #include "CpuTypes.h"
+#include "../Utilities/ISerializable.h"
 
 class MemoryManager;
 class Console;
 
-class Cpu
+class Cpu : public ISerializable
 {
 private:
 	static constexpr uint32_t NmiVector = 0x00FFEA;
@@ -299,6 +300,9 @@ public:
 	void SetIrqSource(IrqSource source);
 	bool CheckIrqSource(IrqSource source);
 	void ClearIrqSource(IrqSource source);
+
+	// Inherited via ISerializable
+	void Serialize(Serializer &s) override;
 
 #ifdef DUMMYCPU
 private:

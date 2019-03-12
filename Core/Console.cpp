@@ -21,7 +21,11 @@
 #include "KeyManager.h"
 #include "EventType.h"
 #include "EmuSettings.h"
+#include "SaveStateManager.h"
 #include "DebugStats.h"
+#include "CartTypes.h"
+#include "ConsoleLock.h"
+#include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
@@ -33,10 +37,13 @@ Console::~Console()
 
 void Console::Initialize()
 {
+	_lockCounter = 0;
+
 	_settings.reset(new EmuSettings());
 	_notificationManager.reset(new NotificationManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
+	_saveStateManager.reset(new SaveStateManager(shared_from_this()));
 	_soundMixer.reset(new SoundMixer(this));
 	_debugHud.reset(new DebugHud());
 
@@ -55,6 +62,9 @@ void Console::Release()
 	_videoRenderer.reset();
 	_debugHud.reset();
 	_notificationManager.reset();
+	_saveStateManager.reset();
+	_soundMixer.reset();
+	_settings.reset();
 }
 
 void Console::Run()
@@ -81,6 +91,8 @@ void Console::Run()
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
+			WaitForLock();
+
 			frameLimiter.ProcessFrame();
 			frameLimiter.WaitForNextFrame();
 			
@@ -169,6 +181,18 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 			//_debugger.reset();
 			//GetDebugger();
 		//}
+
+		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
+	}
+}
+
+RomInfo Console::GetRomInfo()
+{
+	shared_ptr<BaseCartridge> cart = _cart;
+	if(cart) {
+		return cart->GetRomInfo();
+	} else {
+		return {};
 	}
 }
 
@@ -182,6 +206,63 @@ double Console::GetFrameDelay()
 		frameDelay = 16.63926405550947 / (emulationSpeed / 100.0);
 	}
 	return frameDelay;
+}
+
+ConsoleLock Console::AcquireLock()
+{
+	return ConsoleLock(this);
+}
+
+void Console::Lock()
+{
+	_lockCounter++;
+	_runLock.Acquire();
+}
+
+void Console::Unlock()
+{
+	_runLock.Release();
+	_lockCounter--;
+}
+
+void Console::WaitForLock()
+{
+	if(_lockCounter > 0) {
+		//Need to temporarely pause the emu (to save/load a state, etc.)
+		_runLock.Release();
+
+		//Spin wait until we are allowed to start again
+		while(_lockCounter > 0) {}
+
+		_runLock.Acquire();
+	}
+}
+
+void Console::Serialize(ostream &out)
+{
+	Serializer serializer(SaveStateManager::FileFormatVersion);
+	serializer.Stream(_cpu.get());
+	serializer.Stream(_memoryManager.get());
+	serializer.Stream(_ppu.get());
+	serializer.Stream(_dmaController.get());
+	serializer.Stream(_internalRegisters.get());
+	serializer.Stream(_cart.get());
+	serializer.Stream(_controlManager.get());
+	serializer.Stream(_spc.get());
+	serializer.Save(out);
+}
+
+void Console::Deserialize(istream &in, uint32_t fileFormatVersion)
+{
+	Serializer serializer(in, fileFormatVersion);
+	serializer.Stream(_cpu.get());
+	serializer.Stream(_memoryManager.get());
+	serializer.Stream(_ppu.get());
+	serializer.Stream(_dmaController.get());
+	serializer.Stream(_internalRegisters.get());
+	serializer.Stream(_cart.get());
+	serializer.Stream(_controlManager.get());
+	serializer.Stream(_spc.get());
 }
 
 shared_ptr<SoundMixer> Console::GetSoundMixer()
@@ -207,6 +288,11 @@ shared_ptr<NotificationManager> Console::GetNotificationManager()
 shared_ptr<EmuSettings> Console::GetSettings()
 {
 	return _settings;
+}
+
+shared_ptr<SaveStateManager> Console::GetSaveStateManager()
+{
+	return _saveStateManager;
 }
 
 shared_ptr<DebugHud> Console::GetDebugHud()

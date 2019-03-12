@@ -14,6 +14,8 @@ using std::shared_ptr;
 using std::unique_ptr;
 using utf8::ifstream;
 using utf8::ofstream;
+using std::ostream;
+using std::istream;
 using std::string;
 using std::vector;
 using std::atomic;

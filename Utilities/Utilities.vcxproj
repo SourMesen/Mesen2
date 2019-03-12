@@ -413,6 +413,7 @@
     <ClInclude Include="HQX\common.h" />
     <ClInclude Include="HQX\hqx.h" />
     <ClInclude Include="IpsPatcher.h" />
+    <ClInclude Include="ISerializable.h" />
     <ClInclude Include="KreedSaiEagle\SaiEagle.h" />
     <ClInclude Include="LowPassFilter.h" />
     <ClInclude Include="md5.h" />
@@ -426,6 +427,7 @@
     <ClInclude Include="Scale2x\scale2x.h" />
     <ClInclude Include="Scale2x\scale3x.h" />
     <ClInclude Include="Scale2x\scalebit.h" />
+    <ClInclude Include="Serializer.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="snes_ntsc.h" />
     <ClInclude Include="snes_ntsc_config.h" />
@@ -584,6 +586,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Libretro|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="SimpleLock.cpp" />
     <ClCompile Include="snes_ntsc.cpp" />

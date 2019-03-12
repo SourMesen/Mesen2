@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "PpuTypes.h"
+#include "../Utilities/ISerializable.h"
 
 class Console;
 class InternalRegisters;
@@ -20,7 +21,7 @@ struct SpriteInfo
 	uint8_t LargeSprite;
 };
 
-class Ppu
+class Ppu : public ISerializable
 {
 public:
 	constexpr static uint32_t SpriteRamSize = 544;
@@ -242,4 +243,6 @@ public:
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint32_t addr, uint8_t value);
+
+	void Serialize(Serializer &s) override;
 };

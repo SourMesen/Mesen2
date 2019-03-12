@@ -316,6 +316,7 @@ enum class EmulatorShortcut
 	LoadStateSlot8,
 	LoadStateSlot9,
 	LoadStateSlot10,
+	LoadStateSlotAuto,
 	LoadStateFromFile,
 
 	OpenFile,

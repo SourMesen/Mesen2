@@ -2,6 +2,7 @@
 #include "DmaController.h"
 #include "MemoryManager.h"
 #include "MessageManager.h"
+#include "../Utilities/Serializer.h"
 
 DmaController::DmaController(MemoryManager *memoryManager)
 {
@@ -428,5 +429,19 @@ uint8_t DmaController::Read(uint16_t addr)
 			return channel.HdmaLineCounterAndRepeat;
 		}
 	}
-	return 0; //TODO : open bus
+	return _memoryManager->GetOpenBus();
+}
+
+void DmaController::Serialize(Serializer &s)
+{
+	s.Stream(_hdmaPending, _hdmaChannels);
+	for(int i = 0; i < 8; i++) {
+		s.Stream(
+			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,
+			_channel[i].HdmaBank, _channel[i].HdmaFinished, _channel[i].HdmaIndirectAddressing,
+			_channel[i].HdmaLineCounterAndRepeat, _channel[i].HdmaTableAddress, _channel[i].InterruptedByHdma,
+			_channel[i].InvertDirection, _channel[i].SrcAddress, _channel[i].SrcBank, _channel[i].TransferMode,
+			_channel[i].TransferSize, _channel[i].UnusedFlag
+		);
+	}
 }

@@ -1,38 +1,11 @@
 #pragma once
 #include "stdafx.h"
 #include "IMemoryHandler.h"
+#include "CartTypes.h"
+#include "../Utilities/ISerializable.h"
 
 class MemoryManager;
 class VirtualFile;
-
-struct SnesCartInformation
-{
-	uint8_t MakerCode[2];
-	uint8_t GameCode[4];
-	uint8_t Reserved[7];
-	uint8_t ExpansionRamSize;
-	uint8_t SpecialVersion;
-	uint8_t CartridgeType;
-
-	char CartName[21];
-	uint8_t MapMode;
-	uint8_t RomType;
-	uint8_t RomSize;
-	uint8_t SramSize;
-
-	uint8_t DestinationCode;
-	uint8_t Reserved2;
-	uint8_t Version;
-
-	uint8_t ChecksumComplement[2];
-	uint8_t Checksum[2];
-};
-
-struct RomInfo
-{
-	SnesCartInformation Header;
-	string RomPath;
-};
 
 namespace CartFlags
 {
@@ -47,7 +20,7 @@ namespace CartFlags
 	};
 }
 
-class BaseCartridge
+class BaseCartridge : public ISerializable
 {
 private:
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
@@ -79,6 +52,7 @@ public:
 	void Init();
 
 	RomInfo GetRomInfo();
+	string GetSha1Hash();
 
 	void RegisterHandlers(MemoryManager &mm);
 
@@ -86,4 +60,6 @@ public:
 	uint8_t* DebugGetSaveRam() { return _saveRam; }
 	uint32_t DebugGetPrgRomSize() { return _prgRomSize; }
 	uint32_t DebugGetSaveRamSize() { return _saveRamSize; }
+
+	void Serialize(Serializer &s) override;
 };

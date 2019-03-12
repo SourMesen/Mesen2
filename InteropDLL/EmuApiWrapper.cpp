@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "../Core/Console.h"
+#include "../Core/EmuSettings.h"
 #include "../Core/VideoDecoder.h"
 #include "../Core/MessageManager.h"
+#include "../Core/SaveStateManager.h"
 #include "../Core/INotificationListener.h"
 #include "../Core/KeyManager.h"
 #include "../Core/ShortcutKeyHandler.h"
@@ -36,7 +38,7 @@ extern "C" {
 		return true;
 	}
 
-	DllExport uint32_t __stdcall GetMesenVersion() { return 0x00000100; }
+	DllExport uint32_t __stdcall GetMesenVersion() { return _console->GetSettings()->GetVersion(); }
 
 	DllExport void __stdcall InitDll()
 	{
@@ -156,6 +158,12 @@ extern "C" {
 	}
 
 	DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
+
+	DllExport void __stdcall SaveState(uint32_t stateIndex) { _console->GetSaveStateManager()->SaveState(stateIndex); }
+	DllExport void __stdcall LoadState(uint32_t stateIndex) { _console->GetSaveStateManager()->LoadState(stateIndex); }
+	DllExport void __stdcall SaveStateFile(char* filepath) { _console->GetSaveStateManager()->SaveState(filepath); }
+	DllExport void __stdcall LoadStateFile(char* filepath) { _console->GetSaveStateManager()->LoadState(filepath); }
+	DllExport int64_t  __stdcall GetStateInfo(uint32_t stateIndex) { return _console->GetSaveStateManager()->GetStateInfo(stateIndex); }
 
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
 	{

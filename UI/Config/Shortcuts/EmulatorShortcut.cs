@@ -73,6 +73,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		LoadStateSlot8,
 		LoadStateSlot9,
 		LoadStateSlot10,
+		LoadStateSlotAuto,
 		LoadStateFromFile,
 
 		OpenFile

@@ -1,6 +1,7 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
 using Mesen.GUI.Debugger;
+using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms.Config;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,9 @@ namespace Mesen.GUI.Forms
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
+			SaveStateManager.InitializeStateMenu(mnuSaveState, true, _shortcuts);
+			SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
+
 			BindShortcuts();
 		}
 
@@ -64,6 +68,13 @@ namespace Mesen.GUI.Forms
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					this.BeginInvoke((Action)(() => {
+						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
+						SaveStateManager.UpdateStateMenu(mnuSaveState, true);
+					}));
+					break;
+
 				case ConsoleNotificationType.ResolutionChanged:
 					ScreenSize size = EmuApi.GetScreenSize(false);
 					this.BeginInvoke((Action)(() => {
@@ -326,6 +337,16 @@ namespace Mesen.GUI.Forms
 			mnuEmuSpeedDouble.Checked = emulationSpeed == 200;
 			mnuEmuSpeedTriple.Checked = emulationSpeed == 300;
 			mnuEmuSpeedMaximumSpeed.Checked = emulationSpeed == 0;
+		}
+
+		private void mnuLoadState_DropDownOpening(object sender, EventArgs e)
+		{
+			SaveStateManager.UpdateStateMenu(mnuLoadState, false);
+		}
+
+		private void mnuSaveState_DropDownOpening(object sender, EventArgs e)
+		{
+			SaveStateManager.UpdateStateMenu(mnuSaveState, true);
 		}
 	}
 }

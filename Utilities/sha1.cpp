@@ -303,6 +303,16 @@ std::string SHA1::GetHash(vector<uint8_t> &data)
 	return checksum.final();
 }
 
+std::string SHA1::GetHash(uint8_t* data, size_t size)
+{
+	std::stringstream ss;
+	ss.write((char*)data, size);
+
+	SHA1 checksum;
+	checksum.update(ss);
+	return checksum.final();
+}
+
 std::string SHA1::GetHash(std::istream &stream)
 {
 	SHA1 checksum;

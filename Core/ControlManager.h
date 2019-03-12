@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "../Utilities/SimpleLock.h"
+#include "../Utilities/ISerializable.h"
 #include "IMemoryHandler.h"
 
 class BaseControlDevice;
@@ -12,13 +13,13 @@ struct ControlDeviceState;
 enum class ControllerType;
 enum class ExpansionPortDevice;
 
-class ControlManager
+class ControlManager : public ISerializable
 {
 private:
 	vector<IInputRecorder*> _inputRecorders;
 	vector<IInputProvider*> _inputProviders;
 	
-	//Static so that power cycle does not reset its value
+	//TODO: Static so that power cycle does not reset its value
 	uint32_t _pollCounter;
 
 protected:
@@ -57,4 +58,6 @@ public:
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	void Serialize(Serializer &s) override;
 };

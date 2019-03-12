@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "CpuTypes.h"
+#include "../Utilities/ISerializable.h"
 
 class MemoryManager;
 
@@ -28,7 +29,7 @@ struct DmaChannelConfig
 	bool UnusedFlag;
 };
 
-class DmaController
+class DmaController : public ISerializable
 {
 private:
 	static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };
@@ -57,4 +58,6 @@ public:
 
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);
+
+	void Serialize(Serializer &s) override;
 };

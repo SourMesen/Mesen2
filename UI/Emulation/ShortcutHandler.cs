@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Mesen.GUI.Forms
+namespace Mesen.GUI.Emulation
 {
 	public class ShortcutHandler
 	{
@@ -92,29 +93,30 @@ namespace Mesen.GUI.Forms
 		
 				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
 
-				case EmulatorShortcut.LoadStateFromFile: EmuRunner.LoadStateFromFile(); break;
-				case EmulatorShortcut.SaveStateToFile: EmuRunner.SaveStateToFile(); break;
+				case EmulatorShortcut.LoadStateFromFile: SaveStateManager.LoadStateFromFile(); break;
+				case EmulatorShortcut.SaveStateToFile: SaveStateManager.SaveStateToFile(); break;
 
-				case EmulatorShortcut.SaveStateSlot1: EmuRunner.SaveState(1); break;
-				case EmulatorShortcut.SaveStateSlot2: EmuRunner.SaveState(2); break;
-				case EmulatorShortcut.SaveStateSlot3: EmuRunner.SaveState(3); break;
-				case EmulatorShortcut.SaveStateSlot4: EmuRunner.SaveState(4); break;
-				case EmulatorShortcut.SaveStateSlot5: EmuRunner.SaveState(5); break;
-				case EmulatorShortcut.SaveStateSlot6: EmuRunner.SaveState(6); break;
-				case EmulatorShortcut.SaveStateSlot7: EmuRunner.SaveState(7); break;
-				case EmulatorShortcut.SaveStateSlot8: EmuRunner.SaveState(8); break;
-				case EmulatorShortcut.SaveStateSlot9: EmuRunner.SaveState(9); break;
-				case EmulatorShortcut.SaveStateSlot10: EmuRunner.SaveState(10); break;
-				case EmulatorShortcut.LoadStateSlot1: EmuRunner.LoadState(1); break;
-				case EmulatorShortcut.LoadStateSlot2: EmuRunner.LoadState(2); break;
-				case EmulatorShortcut.LoadStateSlot3: EmuRunner.LoadState(3); break;
-				case EmulatorShortcut.LoadStateSlot4: EmuRunner.LoadState(4); break;
-				case EmulatorShortcut.LoadStateSlot5: EmuRunner.LoadState(5); break;
-				case EmulatorShortcut.LoadStateSlot6: EmuRunner.LoadState(6); break;
-				case EmulatorShortcut.LoadStateSlot7: EmuRunner.LoadState(7); break;
-				case EmulatorShortcut.LoadStateSlot8: EmuRunner.LoadState(8); break;
-				case EmulatorShortcut.LoadStateSlot9: EmuRunner.LoadState(9); break;
-				case EmulatorShortcut.LoadStateSlot10: EmuRunner.LoadState(10); break;
+				case EmulatorShortcut.SaveStateSlot1: SaveStateManager.SaveState(1); break;
+				case EmulatorShortcut.SaveStateSlot2: SaveStateManager.SaveState(2); break;
+				case EmulatorShortcut.SaveStateSlot3: SaveStateManager.SaveState(3); break;
+				case EmulatorShortcut.SaveStateSlot4: SaveStateManager.SaveState(4); break;
+				case EmulatorShortcut.SaveStateSlot5: SaveStateManager.SaveState(5); break;
+				case EmulatorShortcut.SaveStateSlot6: SaveStateManager.SaveState(6); break;
+				case EmulatorShortcut.SaveStateSlot7: SaveStateManager.SaveState(7); break;
+				case EmulatorShortcut.SaveStateSlot8: SaveStateManager.SaveState(8); break;
+				case EmulatorShortcut.SaveStateSlot9: SaveStateManager.SaveState(9); break;
+				case EmulatorShortcut.SaveStateSlot10: SaveStateManager.SaveState(10); break;
+				case EmulatorShortcut.LoadStateSlot1: SaveStateManager.LoadState(1); break;
+				case EmulatorShortcut.LoadStateSlot2: SaveStateManager.LoadState(2); break;
+				case EmulatorShortcut.LoadStateSlot3: SaveStateManager.LoadState(3); break;
+				case EmulatorShortcut.LoadStateSlot4: SaveStateManager.LoadState(4); break;
+				case EmulatorShortcut.LoadStateSlot5: SaveStateManager.LoadState(5); break;
+				case EmulatorShortcut.LoadStateSlot6: SaveStateManager.LoadState(6); break;
+				case EmulatorShortcut.LoadStateSlot7: SaveStateManager.LoadState(7); break;
+				case EmulatorShortcut.LoadStateSlot8: SaveStateManager.LoadState(8); break;
+				case EmulatorShortcut.LoadStateSlot9: SaveStateManager.LoadState(9); break;
+				case EmulatorShortcut.LoadStateSlot10: SaveStateManager.LoadState(10); break;
+				case EmulatorShortcut.LoadStateSlotAuto: SaveStateManager.LoadState(11); break;
 			}
 
 			//TODO

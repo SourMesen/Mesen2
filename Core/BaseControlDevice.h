@@ -4,10 +4,11 @@
 #include "SettingTypes.h"
 #include "IKeyManager.h"
 #include "../Utilities/SimpleLock.h"
+#include "../Utilities/ISerializable.h"
 
 class Console;
 
-class BaseControlDevice
+class BaseControlDevice : public ISerializable
 {
 private:
 	ControlDeviceState _state;
@@ -80,4 +81,6 @@ public:
 	virtual void WriteRam(uint16_t addr, uint8_t value) = 0;
 	
 	void static SwapButtons(shared_ptr<BaseControlDevice> state1, uint8_t button1, shared_ptr<BaseControlDevice> state2, uint8_t button2);
+
+	void Serialize(Serializer &s) override;
 };

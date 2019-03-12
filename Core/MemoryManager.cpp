@@ -10,6 +10,7 @@
 #include "RamHandler.h"
 #include "MessageManager.h"
 #include "DebugTypes.h"
+#include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
 void MemoryManager::Initialize(shared_ptr<Console> console)
@@ -165,7 +166,7 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 	} else {
 		//open bus
 		value = _openBus;
-		MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
+		MessageManager::Log("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_console->ProcessCpuRead(addr, value, type);
 	return value;
@@ -181,7 +182,7 @@ uint8_t MemoryManager::ReadDma(uint32_t addr)
 	} else {
 		//open bus
 		value = _openBus;
-		MessageManager::DisplayMessage("Debug", "Read - missing handler: $" + HexUtilities::ToHex(addr));
+		MessageManager::Log("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_console->ProcessCpuRead(addr, value, MemoryOperationType::DmaRead);
 	return value;
@@ -212,7 +213,7 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 	if(_handlers[addr >> 12]) {
 		return _handlers[addr >> 12]->Write(addr, value);
 	} else {
-		MessageManager::DisplayMessage("Debug", "Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+		MessageManager::Log("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 	}
 }
 
@@ -224,7 +225,7 @@ void MemoryManager::WriteDma(uint32_t addr, uint8_t value)
 	if(_handlers[addr >> 12]) {
 		return _handlers[addr >> 12]->Write(addr, value);
 	} else {
-		MessageManager::DisplayMessage("Debug", "Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+		MessageManager::Log("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 	}
 }
 
@@ -290,4 +291,10 @@ int MemoryManager::GetRelativeAddress(AddressInfo &address, int32_t cpuAddress)
 		}
 	}
 	return -1;
+}
+
+void MemoryManager::Serialize(Serializer &s)
+{
+	s.Stream(_masterClock, _openBus);
+	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
 }

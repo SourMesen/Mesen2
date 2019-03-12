@@ -460,6 +460,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Debugger\WatchManager.cs" />
+    <Compile Include="Emulation\SaveStateManager.cs" />
     <Compile Include="Forms\BaseConfigForm.Designer.cs">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>
     </Compile>
@@ -525,7 +526,7 @@
     <Compile Include="Forms\OpenSaveFileDialogExtensions.cs" />
     <Compile Include="Forms\ResourceHelper.cs" />
     <Compile Include="Forms\ResourcePath.cs" />
-    <Compile Include="Forms\ShortcutHandler.cs" />
+    <Compile Include="Emulation\ShortcutHandler.cs" />
     <Compile Include="Interop\DebugApi.cs" />
     <Compile Include="Interop\ConfigApi.cs" />
     <Compile Include="Interop\InputApi.cs" />
@@ -535,7 +536,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceExtractor.cs" />
-    <Compile Include="EmuRunner.cs" />
+    <Compile Include="Emulation\EmuRunner.cs" />
     <Compile Include="RuntimeChecker.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="Utilities\ArchiveHelper.cs" />

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
-#include "Ppu.h"
+#include "../Utilities/ISerializable.h"
 
 class IMemoryHandler;
 class RegisterHandlerA;
@@ -12,7 +12,7 @@ class Console;
 class Ppu;
 enum class MemoryOperationType;
 
-class MemoryManager
+class MemoryManager : public ISerializable
 {
 public:
 	constexpr static uint32_t WorkRamSize = 0x20000;
@@ -65,6 +65,8 @@ public:
 	bool IsWorkRam(uint32_t cpuAddress);
 	AddressInfo GetAbsoluteAddress(uint32_t addr);
 	int GetRelativeAddress(AddressInfo &address, int32_t cpuAddress = -1);
+
+	void Serialize(Serializer &s) override;
 };
 
 template<uint16_t value>
