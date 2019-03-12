@@ -536,64 +536,16 @@ void Renderer::DrawScreen()
 	_spriteBatch->Draw(_pTextureSrv, destRect);
 }
 
-void Renderer::DrawPauseScreen(bool disableOverlay)
+void Renderer::DrawPauseScreen()
 {
-	if(disableOverlay) {
-		const static XMVECTORF32 transparentBlue = { { { 0.415686309f, 0.352941185f, 0.803921640f, 0.66f } } };
-		DrawString("I", 15, 15, transparentBlue, 2.0f, _font.get());
-		DrawString("I", 32, 15, transparentBlue, 2.0f, _font.get());
-	} else {
-		RECT destRect;
-		destRect.left = 0;
-		destRect.top = 0;
-		destRect.right = _realScreenWidth;
-		destRect.bottom = _realScreenHeight;
-
-		D3D11_MAPPED_SUBRESOURCE dd;
-		HRESULT hr = _pDeviceContext->Map(_overlayTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &dd);
-		if(FAILED(hr)) {
-			MessageManager::Log("(DrawPauseScreen) DeviceContext::Map() failed - Error:" + std::to_string(hr));
-			return;
-		}
-
-		uint8_t* surfacePointer = (uint8_t*)dd.pData;
-		for(uint32_t i = 0, len = 8; i < len; i++) {
-			//Gray transparent overlay
-			for(int j = 0; j < 8; j++) {
-				((uint32_t*)surfacePointer)[j] = 0xAA222222;
-			}
-			surfacePointer += dd.RowPitch;
-		}
-		_pDeviceContext->Unmap(_overlayTexture, 0);
-
-		_spriteBatch->Draw(_pOverlaySrv, destRect);
-
-		XMVECTOR stringDimensions = _largeFont->MeasureString(L"PAUSE");
-		float x = (float)_screenWidth / 2 - stringDimensions.m128_f32[0] / 2;
-		float y = (float)_screenHeight / 2 - stringDimensions.m128_f32[1] / 2 - 8;
-		DrawString("PAUSE", x, y, Colors::AntiqueWhite, 1.0f, _largeFont.get());
-
-		//TODO
-		/*string utf8Message = _console->GetSettings()->GetPauseScreenMessage();
-		if(utf8Message.size() > 0) {
-			std::wstring message = utf8::utf8::decode(utf8Message);
-			float width = MeasureString(message);
-			DrawString(message, (float)_screenWidth - width - 20, (float)_screenHeight - 40, Colors::AntiqueWhite, 1.0f, _font.get());
-		}*/
-	}
+	const static XMVECTORF32 transparentBlue = { { { 1.0f, 0.6f, 0.0f, 0.66f } } };
+	DrawString("I", 15, 15, transparentBlue, 2.0f, _font.get());
+	DrawString("I", 32, 15, transparentBlue, 2.0f, _font.get());
 }
 
 void Renderer::Render()
 {
-	//TODO
-	/*bool paused = _console->IsPaused() && _console->IsRunning();
-	bool disableOverlay = _console->GetSettings()->CheckFlag(EmulationFlags::HidePauseOverlay);
-	shared_ptr<Debugger> debugger = _console->GetDebugger(false);
-	if(debugger && debugger->IsExecutionStopped()) {
-		paused = debugger->IsPauseIconShown();
-		disableOverlay = true;
-	}*/
-	bool paused = false;
+	bool paused = _console->IsPaused();
 
 	if(_noUpdateCount > 10 || _frameChanged || paused || IsMessageShown()) {
 		_noUpdateCount = 0;
@@ -620,12 +572,10 @@ void Renderer::Render()
 		//Draw screen
 		DrawScreen();
 
-		//TODO
-		/*
 		if(paused) {
-			DrawPauseScreen(disableOverlay);
+			DrawPauseScreen();
 		}
-		*/		
+
 		if(_console->IsRunning()) {
 			DrawCounters();
 		}

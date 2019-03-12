@@ -76,7 +76,7 @@ private:
 	ID3D11Texture2D* CreateTexture(uint32_t width, uint32_t height);
 	ID3D11ShaderResourceView* GetShaderResourceView(ID3D11Texture2D* texture);
 	void DrawScreen();
-	void DrawPauseScreen(bool disableOverlay);
+	void DrawPauseScreen();
 		
 	void DrawString(string message, float x, float y, DirectX::FXMVECTOR color, float scale, SpriteFont* font = nullptr);
 	void DrawString(std::wstring message, float x, float y, DirectX::FXMVECTOR color, float scale, SpriteFont* font = nullptr);

@@ -29,6 +29,10 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void Run();
 		[DllImport(DllPath)] public static extern void Stop();
 
+		[DllImport(DllPath)] public static extern void Pause();
+		[DllImport(DllPath)] public static extern void Resume();
+		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsPaused();
+
 		[DllImport(DllPath)] public static extern void TakeScreenshot();
 
 		[DllImport(DllPath)] public static extern void LoadRom(

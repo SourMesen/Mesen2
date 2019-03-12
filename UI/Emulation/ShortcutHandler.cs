@@ -64,7 +64,7 @@ namespace Mesen.GUI.Emulation
 			//TODO bool restoreFullscreen = _frmFullscreenRenderer != null;
 
 			switch(shortcut) {
-				case EmulatorShortcut.Pause: PauseEmu(); break;
+				case EmulatorShortcut.Pause: TogglePause(); break;
 				case EmulatorShortcut.Reset: ResetEmu(); break;
 				case EmulatorShortcut.PowerCycle: PowerCycleEmu(); break;
 				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); break;
@@ -264,9 +264,13 @@ namespace Mesen.GUI.Emulation
 			ConfigManager.ApplyChanges();
 		}
 
-		private void PauseEmu()
+		private void TogglePause()
 		{
-			//TODO
+			if(EmuApi.IsPaused()) {
+				EmuApi.Resume();
+			} else {
+				EmuApi.Pause();
+			}
 		}
 
 		private void ResetEmu()

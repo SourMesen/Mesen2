@@ -56,9 +56,11 @@ private:
 
 	SimpleLock _debuggerLock;
 	atomic<bool> _stopFlag;
+	atomic<bool> _paused;
 
 	double GetFrameDelay();
 	void WaitForLock();
+	void WaitForPauseEnd();
 
 public:
 	~Console();
@@ -68,6 +70,10 @@ public:
 
 	void Run();
 	void Stop();
+
+	void Pause();
+	void Resume();
+	bool IsPaused();
 
 	void LoadRom(VirtualFile romFile, VirtualFile patchFile);
 	RomInfo GetRomInfo();

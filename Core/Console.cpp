@@ -96,6 +96,13 @@ void Console::Run()
 
 			WaitForLock();
 
+			if(_paused && !_stopFlag && !_debugger) {
+				WaitForPauseEnd();
+				if(_stopFlag) {
+					break;
+				}
+			}
+
 			frameLimiter.ProcessFrame();
 			frameLimiter.WaitForNextFrame();
 			
@@ -189,6 +196,7 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 			//GetDebugger();
 		//}
 
+		_paused = false;
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
 	}
 }
@@ -213,6 +221,56 @@ double Console::GetFrameDelay()
 		frameDelay = 16.63926405550947 / (emulationSpeed / 100.0);
 	}
 	return frameDelay;
+}
+
+void Console::Pause()
+{
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->Step(1);
+	} else {
+		_paused = true;
+	}
+}
+
+void Console::Resume()
+{
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->Run();
+	} else {
+		_paused = false;
+	}
+}
+
+bool Console::IsPaused()
+{
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		return debugger->IsExecutionStopped();
+	} else {
+		return _paused;
+	}
+}
+
+void Console::WaitForPauseEnd()
+{
+	_notificationManager->SendNotification(ConsoleNotificationType::GamePaused);
+
+	//Prevent audio from looping endlessly while game is paused
+	_soundMixer->StopAudio();
+	_runLock.Release();
+
+	PlatformUtilities::EnableScreensaver();
+	PlatformUtilities::RestoreTimerResolution();
+	while(_paused && !_stopFlag && !_debugger) {
+		//Sleep until emulation is resumed
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(30));
+	}
+
+	PlatformUtilities::DisableScreensaver();
+	_runLock.Acquire();
+	_notificationManager->SendNotification(ConsoleNotificationType::GameResumed);
 }
 
 ConsoleLock Console::AcquireLock()

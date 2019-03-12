@@ -109,18 +109,29 @@ extern "C" {
 
 	DllExport void __stdcall Run()
 	{
-		if(_console) {
-			_console->Run();
-		}
+		_console->Run();
 	}
 
 	DllExport void __stdcall Stop()
 	{
-		if(_console) {
-			_console->Stop();
-		}
+		_console->Stop();
 	}
-		
+
+	DllExport void __stdcall Pause()
+	{
+		_console->Pause();
+	}
+
+	DllExport void __stdcall Resume()
+	{
+		_console->Resume();
+	}
+
+	DllExport void __stdcall IsPaused()
+	{
+		_console->IsPaused();
+	}
+
 	DllExport void __stdcall Release()
 	{
 		_console->Stop();
