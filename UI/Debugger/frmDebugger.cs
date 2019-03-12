@@ -92,5 +92,10 @@ namespace Mesen.GUI.Debugger
 		{
 			DebugApi.ResumeExecution();
 		}
+
+		private void mnuRun1000Cycles_Click(object sender, EventArgs e)
+		{
+			DebugApi.Step(1000);
+		}
 	}
 }

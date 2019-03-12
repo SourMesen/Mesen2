@@ -101,6 +101,7 @@
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuAudioConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuVideoConfig = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuEmulationConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -108,10 +109,6 @@
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuTakeScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuRun = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuStep = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuRun100Instructions = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
@@ -124,7 +121,6 @@
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
-			this.mnuEmulationConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -245,6 +241,7 @@
 			this.mnuReset.Name = "mnuReset";
 			this.mnuReset.Size = new System.Drawing.Size(152, 22);
 			this.mnuReset.Text = "Reset";
+			this.mnuReset.Visible = false;
 			// 
 			// mnuPowerCycle
 			// 
@@ -253,6 +250,7 @@
 			this.mnuPowerCycle.Name = "mnuPowerCycle";
 			this.mnuPowerCycle.Size = new System.Drawing.Size(152, 22);
 			this.mnuPowerCycle.Text = "Power Cycle";
+			this.mnuPowerCycle.Visible = false;
 			// 
 			// toolStripMenuItem24
 			// 
@@ -672,6 +670,14 @@
 			this.mnuVideoConfig.Text = "Video";
 			this.mnuVideoConfig.Click += new System.EventHandler(this.mnuVideoConfig_Click);
 			// 
+			// mnuEmulationConfig
+			// 
+			this.mnuEmulationConfig.Image = global::Mesen.GUI.Properties.Resources.DipSwitches;
+			this.mnuEmulationConfig.Name = "mnuEmulationConfig";
+			this.mnuEmulationConfig.Size = new System.Drawing.Size(152, 22);
+			this.mnuEmulationConfig.Text = "Emulation";
+			this.mnuEmulationConfig.Click += new System.EventHandler(this.mnuEmulationConfig_Click);
+			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
@@ -718,10 +724,6 @@
 			// debugToolStripMenuItem
 			// 
 			this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuRun,
-            this.mnuStep,
-            this.mnuRun100Instructions,
-            this.toolStripMenuItem1,
             this.mnuDebugger,
             this.mnuMemoryTools,
             this.mnuTraceLogger,
@@ -731,40 +733,11 @@
 			this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
 			this.debugToolStripMenuItem.Text = "Debug";
 			// 
-			// mnuRun
-			// 
-			this.mnuRun.Name = "mnuRun";
-			this.mnuRun.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.mnuRun.Size = new System.Drawing.Size(163, 22);
-			this.mnuRun.Text = "Run";
-			this.mnuRun.Click += new System.EventHandler(this.mnuRun_Click);
-			// 
-			// mnuStep
-			// 
-			this.mnuStep.Name = "mnuStep";
-			this.mnuStep.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.mnuStep.Size = new System.Drawing.Size(163, 22);
-			this.mnuStep.Text = "Step";
-			this.mnuStep.Click += new System.EventHandler(this.mnuStep_Click);
-			// 
-			// mnuRun100Instructions
-			// 
-			this.mnuRun100Instructions.Name = "mnuRun100Instructions";
-			this.mnuRun100Instructions.ShortcutKeys = System.Windows.Forms.Keys.F6;
-			this.mnuRun100Instructions.Size = new System.Drawing.Size(163, 22);
-			this.mnuRun100Instructions.Text = "Run 1000 ops";
-			this.mnuRun100Instructions.Click += new System.EventHandler(this.mnuRun100Instructions_Click);
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
-			// 
 			// mnuDebugger
 			// 
 			this.mnuDebugger.Image = global::Mesen.GUI.Properties.Resources.Debugger;
 			this.mnuDebugger.Name = "mnuDebugger";
-			this.mnuDebugger.Size = new System.Drawing.Size(163, 22);
+			this.mnuDebugger.Size = new System.Drawing.Size(155, 22);
 			this.mnuDebugger.Text = "Debugger";
 			this.mnuDebugger.Click += new System.EventHandler(this.mnuDebugger_Click);
 			// 
@@ -772,7 +745,7 @@
 			// 
 			this.mnuMemoryTools.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
 			this.mnuMemoryTools.Name = "mnuMemoryTools";
-			this.mnuMemoryTools.Size = new System.Drawing.Size(163, 22);
+			this.mnuMemoryTools.Size = new System.Drawing.Size(155, 22);
 			this.mnuMemoryTools.Text = "Memory Tools";
 			this.mnuMemoryTools.Click += new System.EventHandler(this.mnuMemoryTools_Click);
 			// 
@@ -780,7 +753,7 @@
 			// 
 			this.mnuTraceLogger.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
 			this.mnuTraceLogger.Name = "mnuTraceLogger";
-			this.mnuTraceLogger.Size = new System.Drawing.Size(163, 22);
+			this.mnuTraceLogger.Size = new System.Drawing.Size(155, 22);
 			this.mnuTraceLogger.Text = "Trace Logger";
 			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
@@ -788,7 +761,7 @@
 			// 
 			this.mnuTilemapViewer.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
 			this.mnuTilemapViewer.Name = "mnuTilemapViewer";
-			this.mnuTilemapViewer.Size = new System.Drawing.Size(163, 22);
+			this.mnuTilemapViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuTilemapViewer.Text = "Tilemap Viewer";
 			this.mnuTilemapViewer.Click += new System.EventHandler(this.mnuTilemapViewer_Click);
 			// 
@@ -796,7 +769,7 @@
 			// 
 			this.mnuEventViewer.Image = global::Mesen.GUI.Properties.Resources.NesEventViewer;
 			this.mnuEventViewer.Name = "mnuEventViewer";
-			this.mnuEventViewer.Size = new System.Drawing.Size(163, 22);
+			this.mnuEventViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuEventViewer.Text = "Event Viewer";
 			this.mnuEventViewer.Click += new System.EventHandler(this.mnuEventViewer_Click);
 			// 
@@ -811,6 +784,7 @@
 			this.mnuHelp.Name = "mnuHelp";
 			this.mnuHelp.Size = new System.Drawing.Size(44, 20);
 			this.mnuHelp.Text = "Help";
+			this.mnuHelp.Visible = false;
 			// 
 			// mnuCheckForUpdates
 			// 
@@ -852,14 +826,6 @@
 			this.pnlRenderer.Size = new System.Drawing.Size(512, 448);
 			this.pnlRenderer.TabIndex = 2;
 			// 
-			// mnuEmulationConfig
-			// 
-			this.mnuEmulationConfig.Image = global::Mesen.GUI.Properties.Resources.DipSwitches;
-			this.mnuEmulationConfig.Name = "mnuEmulationConfig";
-			this.mnuEmulationConfig.Size = new System.Drawing.Size(152, 22);
-			this.mnuEmulationConfig.Text = "Emulation";
-			this.mnuEmulationConfig.Click += new System.EventHandler(this.mnuEmulationConfig_Click);
-			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -886,12 +852,8 @@
 		private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnuDebugger;
 		private System.Windows.Forms.ToolStripMenuItem mnuTraceLogger;
-		private System.Windows.Forms.ToolStripMenuItem mnuStep;
 		private System.Windows.Forms.ToolStripMenuItem mnuFile;
 		private System.Windows.Forms.ToolStripMenuItem mnuOpen;
-		private System.Windows.Forms.ToolStripMenuItem mnuRun;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem mnuRun100Instructions;
 		private System.Windows.Forms.ToolStripMenuItem mnuMemoryTools;
 		private System.Windows.Forms.ToolStripMenuItem mnuTilemapViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuEventViewer;

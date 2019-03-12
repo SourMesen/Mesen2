@@ -49,6 +49,7 @@
 			this.mnuDisableEnableBreakpoint = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRunCpuCycle = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRun1000Cycles = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRunPpuCycle = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRunScanline = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRunOneFrame = new System.Windows.Forms.ToolStripMenuItem();
@@ -108,6 +109,7 @@
             this.mnuDisableEnableBreakpoint,
             this.toolStripMenuItem2,
             this.mnuRunCpuCycle,
+            this.mnuRun1000Cycles,
             this.mnuRunPpuCycle,
             this.mnuRunScanline,
             this.mnuRunOneFrame,
@@ -218,6 +220,14 @@
 			this.mnuRunCpuCycle.Name = "mnuRunCpuCycle";
 			this.mnuRunCpuCycle.Size = new System.Drawing.Size(212, 22);
 			this.mnuRunCpuCycle.Text = "Run one CPU cycle";
+			// 
+			// mnuRun1000Cycles
+			// 
+			this.mnuRun1000Cycles.Name = "mnuRun1000Cycles";
+			this.mnuRun1000Cycles.ShortcutKeys = System.Windows.Forms.Keys.F9;
+			this.mnuRun1000Cycles.Size = new System.Drawing.Size(212, 22);
+			this.mnuRun1000Cycles.Text = "Run 1000 CPU cycles";
+			this.mnuRun1000Cycles.Click += new System.EventHandler(this.mnuRun1000Cycles_Click);
 			// 
 			// mnuRunPpuCycle
 			// 
@@ -395,5 +405,6 @@
 		private System.Windows.Forms.GroupBox grpBreakpoints;
 		private Controls.ctrlBreakpoints ctrlBreakpoints;
 		private Controls.ctrlConsoleStatus ctrlStatus;
+		private System.Windows.Forms.ToolStripMenuItem mnuRun1000Cycles;
 	}
 }

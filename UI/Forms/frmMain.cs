@@ -232,21 +232,6 @@ namespace Mesen.GUI.Forms
 			DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer);
 		}
 
-		private void mnuStep_Click(object sender, EventArgs e)
-		{
-			DebugApi.Step(1);
-		}
-
-		private void mnuRun_Click(object sender, EventArgs e)
-		{
-			DebugApi.ResumeExecution();
-		}
-
-		private void mnuRun100Instructions_Click(object sender, EventArgs e)
-		{
-			DebugApi.Step(1000);
-		}
-
 		protected override void OnDragDrop(DragEventArgs e)
 		{
 			base.OnDragDrop(e);
