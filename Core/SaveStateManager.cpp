@@ -195,30 +195,26 @@ bool SaveStateManager::LoadState(int stateIndex)
 	return false;
 }
 
-//TODO
-/*
 void SaveStateManager::SaveRecentGame(string romName, string romPath, string patchPath)
 {
-	if(!_console->GetSettings()->CheckFlag(EmulationFlags::ConsoleMode) && !_console->GetSettings()->CheckFlag(EmulationFlags::DisableGameSelectionScreen) && _console->GetRomInfo().Format != RomFormat::Nsf) {
-		string filename = FolderUtilities::GetFilename(_console->GetRomInfo().RomName, false) + ".rgd";
-		ZipWriter writer;
-		writer.Initialize(FolderUtilities::CombinePath(FolderUtilities::GetRecentGamesFolder(), filename));
+	string filename = FolderUtilities::GetFilename(_console->GetRomInfo().RomFile.GetFileName(), false) + ".rgd";
+	ZipWriter writer;
+	writer.Initialize(FolderUtilities::CombinePath(FolderUtilities::GetRecentGamesFolder(), filename));
 
-		std::stringstream pngStream;
-		_console->GetVideoDecoder()->TakeScreenshot(pngStream);
-		writer.AddFile(pngStream, "Screenshot.png");
+	std::stringstream pngStream;
+	_console->GetVideoDecoder()->TakeScreenshot(pngStream);
+	writer.AddFile(pngStream, "Screenshot.png");
 
-		std::stringstream stateStream;
-		SaveStateManager::SaveState(stateStream);
-		writer.AddFile(stateStream, "Savestate.mst");
+	std::stringstream stateStream;
+	SaveStateManager::SaveState(stateStream);
+	writer.AddFile(stateStream, "Savestate.mst");
 
-		std::stringstream romInfoStream;
-		romInfoStream << romName << std::endl;
-		romInfoStream << romPath << std::endl;
-		romInfoStream << patchPath << std::endl;
-		writer.AddFile(romInfoStream, "RomInfo.txt");
-		writer.Save();
-	}
+	std::stringstream romInfoStream;
+	romInfoStream << romName << std::endl;
+	romInfoStream << romPath << std::endl;
+	romInfoStream << patchPath << std::endl;
+	writer.AddFile(romInfoStream, "RomInfo.txt");
+	writer.Save();
 }
 
 void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
@@ -237,14 +233,13 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 
 	_console->Pause();
 	try {
-		if(_console->Initialize(romPath, patchPath)) {
+		if(_console->LoadRom(romPath, patchPath)) {
 			if(!resetGame) {
 				SaveStateManager::LoadState(stateStream, false);
 			}
 		}
 	} catch(std::exception ex) { 
-		_console->Stop();
+		_console->Stop(true);
 	}
 	_console->Resume();
 }
-*/

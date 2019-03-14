@@ -57,14 +57,10 @@ namespace Mesen.GUI.Config
 		public override string ToString()
 		{
 			string path = RomFile.ReadablePath.Replace("&", "&&");
-			string file = Path.GetFileName(path);
-			string folder = Path.GetDirectoryName(path);
-
-			string text = file;
+			string text = Path.GetFileName(path);
 			if(PatchFile.HasValue) {
 				text += " [" + Path.GetFileName(PatchFile.Value) + "]";
 			}
-			text += " (" + folder + ")";
 			return text;
 		}
 	}

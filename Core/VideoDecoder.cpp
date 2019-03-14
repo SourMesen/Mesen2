@@ -202,14 +202,12 @@ void VideoDecoder::StopThread()
 		
 		//TODO
 		//_hud.reset();
-		/*UpdateVideoFilter();
+		/*UpdateVideoFilter();*/
 		if(_ppuOutputBuffer != nullptr) {
 			//Clear whole screen
-			for(uint32_t i = 0; i < PPU::PixelCount; i++) {
-				_ppuOutputBuffer[i] = 14; //Black
-			}
+			memset(_ppuOutputBuffer, 0, 512 * 478 * 2);
 			DecodeFrame();
-		}*/
+		}
 		_ppuOutputBuffer = nullptr;
 	}
 #endif

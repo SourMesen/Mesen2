@@ -49,6 +49,9 @@ namespace Mesen.GUI.Forms
 			SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
 
 			BindShortcuts();
+
+			ctrlRecentGames.Initialize();
+			ctrlRecentGames.Visible = true;
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
@@ -72,8 +75,16 @@ namespace Mesen.GUI.Forms
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
 					this.BeginInvoke((Action)(() => {
+						ctrlRecentGames.Visible = false;
 						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
 						SaveStateManager.UpdateStateMenu(mnuSaveState, true);
+					}));
+					break;
+
+				case ConsoleNotificationType.EmulationStopped:
+					this.BeginInvoke((Action)(() => {
+						ctrlRecentGames.Initialize();
+						ctrlRecentGames.Visible = true;
 					}));
 					break;
 
@@ -179,6 +190,12 @@ namespace Mesen.GUI.Forms
 			ctrlRenderer.Left = (pnlRenderer.Width - ctrlRenderer.Width) / 2;
 
 			//this.Resize += frmMain_Resize;
+		}
+
+		protected override void OnResize(EventArgs e)
+		{
+			base.OnResize(e);
+			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - 80;
 		}
 
 		private void mnuVideoConfig_Click(object sender, EventArgs e)

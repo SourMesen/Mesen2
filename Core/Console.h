@@ -74,13 +74,13 @@ public:
 	void Release();
 
 	void Run();
-	void Stop();
+	void Stop(bool sendNotification);
 
 	void Pause();
 	void Resume();
 	bool IsPaused();
 
-	void LoadRom(VirtualFile romFile, VirtualFile patchFile);
+	bool LoadRom(VirtualFile romFile, VirtualFile patchFile);
 	RomInfo GetRomInfo();
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();

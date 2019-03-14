@@ -114,7 +114,7 @@ extern "C" {
 
 	DllExport void __stdcall Stop()
 	{
-		_console->Stop();
+		_console->Stop(true);
 	}
 
 	DllExport void __stdcall Pause()
@@ -134,7 +134,7 @@ extern "C" {
 
 	DllExport void __stdcall Release()
 	{
-		_console->Stop();
+		_console->Stop(true);
 
 		_renderer.reset();
 		_soundManager.reset();
@@ -175,6 +175,7 @@ extern "C" {
 	DllExport void __stdcall SaveStateFile(char* filepath) { _console->GetSaveStateManager()->SaveState(filepath); }
 	DllExport void __stdcall LoadStateFile(char* filepath) { _console->GetSaveStateManager()->LoadState(filepath); }
 	DllExport int64_t  __stdcall GetStateInfo(uint32_t stateIndex) { return _console->GetSaveStateManager()->GetStateInfo(stateIndex); }
+	DllExport void __stdcall LoadRecentGame(char* filepath, bool resetGame) { _console->GetSaveStateManager()->LoadRecentGame(filepath, resetGame); }
 
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
 	{
@@ -191,7 +192,7 @@ extern "C" {
 				_console->Run();
 			});
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
-			_console->Stop();
+			_console->Stop(false);
 			testThread.join();
 			_console->Release();
 		}

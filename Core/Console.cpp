@@ -54,7 +54,7 @@ void Console::Initialize()
 
 void Console::Release()
 {
-	Stop();
+	Stop(true);
 
 	_videoDecoder->StopThread();
 	_videoRenderer->StopThread();
@@ -130,7 +130,7 @@ void Console::Run()
 	PlatformUtilities::RestoreTimerResolution();
 }
 
-void Console::Stop()
+void Console::Stop(bool sendNotification)
 {
 	_stopFlag = true;
 
@@ -140,6 +140,11 @@ void Console::Stop()
 	}
 
 	_runLock.WaitForRelease();
+
+	if(_cart) {
+		//TODO IPS/BPS patch support
+		_saveStateManager->SaveRecentGame(GetRomInfo().RomFile.GetFileName(), _cart->GetRomInfo().RomFile, "");
+	}
 
 	//Make sure we release both pointers to destroy the debugger before everything else
 	_debugger.reset();
@@ -158,21 +163,25 @@ void Console::Stop()
 	_dmaController.reset();
 
 	_soundMixer->StopAudio();
+
+	if(sendNotification) {
+		_notificationManager->SendNotification(ConsoleNotificationType::EmulationStopped);
+	}
 }
 
-void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
+bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 {
-	Stop();
-
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
+		Stop(false);
+
 		vector<uint8_t> spcRomData;
 		VirtualFile spcBios(FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "spc700.rom"));
 		if(spcBios.IsValid()) {
 			spcBios.ReadFile(spcRomData);
 		} else {
 			MessageManager::Log("[SPC] spc700.rom not found, cannot launch game.");
-			return;
+			return false;
 		}
 
 		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
@@ -204,7 +213,11 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_paused = false;
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
+
+		return true;
 	}
+
+	return false;
 }
 
 RomInfo Console::GetRomInfo()

@@ -32,8 +32,8 @@ public:
 	bool LoadState(string filepath, bool hashCheckRequired = true);
 	bool LoadState(int stateIndex);
 
-	//void SaveRecentGame(string romName, string romPath, string patchPath);
-	//void LoadRecentGame(string filename, bool resetGame);
+	void SaveRecentGame(string romName, string romPath, string patchPath);
+	void LoadRecentGame(string filename, bool resetGame);
 
 	void MoveToNextSlot();
 	void MoveToPreviousSlot();

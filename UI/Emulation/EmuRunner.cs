@@ -21,11 +21,21 @@ namespace Mesen.GUI.Emulation
 			}
 
 			EmuApi.LoadRom(romPath, patchPath);
-
 			ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
+			StartEmulation();
+		}
 
+		public static void LoadRecentGame(string recentGameArchivePath)
+		{
+			EmuApi.LoadRecentGame(recentGameArchivePath, false /* TODO , ConfigManager.Config.Preferences.GameSelectionScreenResetGame */);
+			StartEmulation();
+		}
+
+		private static void StartEmulation()
+		{
 			_emuThread = new Thread(() => {
 				EmuApi.Run();
+				_emuThread = null;
 			});
 			_emuThread.Start();
 		}

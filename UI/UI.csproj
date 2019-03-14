@@ -222,6 +222,12 @@
     <Compile Include="Config\Shortcuts\ShortcutKeyInfo.cs" />
     <Compile Include="Config\EmulationConfig.cs" />
     <Compile Include="Config\VideoConfig.cs" />
+    <Compile Include="Controls\ctrlRecentGames.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlRecentGames.designer.cs">
+      <DependentUpon>ctrlRecentGames.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Breakpoints\Breakpoint.cs" />
     <Compile Include="Debugger\Breakpoints\BreakpointManager.cs" />
     <Compile Include="Debugger\Breakpoints\ctrlBreakpoints.cs">
@@ -604,6 +610,9 @@
     <None Include="app.manifest" />
     <EmbeddedResource Include="Controls\ctrlPathSelection.resx">
       <DependentUpon>ctrlPathSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlRecentGames.resx">
+      <DependentUpon>ctrlRecentGames.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\MesenNumericUpDown.resx">
       <DependentUpon>MesenNumericUpDown.cs</DependentUpon>
