@@ -945,33 +945,9 @@
 	<Enums>
 		<Enum ID="ControllerType">
 			<Value ID="None">None</Value>
-			<Value ID="StandardController">Standard Controller</Value>
-			<Value ID="Zapper">Zapper</Value>
-			<Value ID="ArkanoidController">Arkanoid Controller</Value>
 			<Value ID="SnesController">SNES Controller</Value>
-			<Value ID="PowerPad">Power Pad</Value>
 			<Value ID="SnesMouse">SNES Mouse</Value>
-			<Value ID="SuborMouse">Subor Mouse</Value>
-		</Enum>
-		<Enum ID="ExpansionPortDevice">
-			<Value ID="None">None</Value>
-			<Value ID="Zapper">Zapper</Value>
-			<Value ID="FourPlayerAdapter">Four Player Adapter</Value>
-			<Value ID="ArkanoidController">Arkanoid Controller</Value>
-			<Value ID="OekaKidsTablet">Oeka Kids Tablet</Value>
-			<Value ID="FamilyTrainerMat">Family Trainer</Value>
-			<Value ID="KonamiHyperShot">Konami Hyper Shot</Value>
-			<Value ID="FamilyBasicKeyboard">Family Basic Keyboard</Value>
-			<Value ID="PartyTap">Partytap</Value>
-			<Value ID="Pachinko">Pachinko Controller</Value>
-			<Value ID="ExcitingBoxing">Exciting Boxing Punching Bag</Value>
-			<Value ID="JissenMahjong">Jissen Mahjong Controller</Value>
-			<Value ID="SuborKeyboard">Subor Keyboard</Value>
-			<Value ID="BarcodeBattler">Barcode Battler</Value>
-			<Value ID="HoriTrack">Hori Track</Value>
-			<Value ID="BandaiHyperShot">Bandai Hyper Shot</Value>
-			<Value ID="AsciiTurboFile">Turbo File</Value>
-			<Value ID="BattleBox">Battle Box</Value>
+			<Value ID="SuperScope">Super Scope</Value>
 		</Enum>
 		<Enum ID="VideoAspectRatio">
 			<Value ID="NoStretching">Default (No Stretching)</Value>

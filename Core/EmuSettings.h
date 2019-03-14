@@ -7,10 +7,12 @@ class EmuSettings
 private:
 	VideoConfig _video;
 	AudioConfig _audio;
+	InputConfig _input;
 	EmulationConfig _emulation;
 	PreferencesConfig _preferences;
 
 	atomic<uint32_t> _flags;
+	atomic<uint32_t> _inputConfigVersion;
 
 	string _audioDevice;
 	string _saveFolder;
@@ -26,6 +28,7 @@ private:
 	void SetShortcutKey(EmulatorShortcut shortcut, KeyCombination keyCombination, int keySetIndex);
 
 public:
+	EmuSettings();
 	uint32_t GetVersion();
 
 	void SetVideoConfig(VideoConfig config);
@@ -33,6 +36,10 @@ public:
 
 	void SetAudioConfig(AudioConfig config);
 	AudioConfig GetAudioConfig();
+
+	void SetInputConfig(InputConfig config);
+	InputConfig GetInputConfig();
+	uint32_t GetInputConfigVersion();
 
 	void SetEmulationConfig(EmulationConfig config);
 	EmulationConfig GetEmulationConfig();

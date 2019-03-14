@@ -21,6 +21,7 @@ private:
 	
 	//TODO: Static so that power cycle does not reset its value
 	uint32_t _pollCounter;
+	uint32_t _inputConfigVersion;
 
 protected:
 	shared_ptr<Console> _console;

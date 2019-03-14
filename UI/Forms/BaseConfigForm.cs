@@ -73,16 +73,9 @@ namespace Mesen.GUI.Forms
 		{
 			if(this.DialogResult == System.Windows.Forms.DialogResult.OK) {
 				UpdateObject();
-				if(ApplyChangesOnOK) {
-					OnApply();
-				}
+				OnApply();
 			}
 			base.OnFormClosed(e);
-		}
-
-		protected virtual bool ApplyChangesOnOK
-		{
-			get { return true; }
 		}
 
 		protected virtual void OnApply()

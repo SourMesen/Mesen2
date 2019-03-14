@@ -198,6 +198,14 @@ namespace Mesen.GUI.Forms
 			}
 			ConfigManager.Config.Emulation.ApplyConfig();
 		}
+		
+		private void mnuInputConfig_Click(object sender, EventArgs e)
+		{
+			using(frmInputConfig frm = new frmInputConfig()) {
+				frm.ShowDialog(sender, this);
+			}
+			ConfigManager.Config.Input.ApplyConfig();
+		}
 
 		private void mnuPreferences_Click(object sender, EventArgs e)
 		{

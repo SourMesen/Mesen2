@@ -15,14 +15,16 @@ namespace Mesen.GUI.Config
 		private bool _needToSave = false;
 
 		public string Version = "0.1.0";
-		public RecentItems RecentFiles;
 		public VideoConfig Video;
 		public AudioConfig Audio;
+		public InputConfig Input;
 		public EmulationConfig Emulation;
 		public PreferencesConfig Preferences;
 		public DebugInfo Debug;
+		public RecentItems RecentFiles;
 		public Point? WindowLocation;
 		public Size? WindowSize;
+		public bool NeedInputReinit = true;
 
 		public Configuration()
 		{
@@ -30,6 +32,7 @@ namespace Mesen.GUI.Config
 			Debug = new DebugInfo();
 			Video = new VideoConfig();
 			Audio = new AudioConfig();
+			Input = new InputConfig();
 			Emulation = new EmulationConfig();
 			Preferences = new PreferencesConfig();
 		}
@@ -59,13 +62,19 @@ namespace Mesen.GUI.Config
 		{
 			Video.ApplyConfig();
 			Audio.ApplyConfig();
-			Preferences.ApplyConfig();
+			Input.ApplyConfig();
 			Emulation.ApplyConfig();
+			Preferences.ApplyConfig();
 		}
 
 		public void InitializeDefaults()
 		{
 			Preferences.InitializeDefaultShortcuts();
+			if(NeedInputReinit) {
+				Input.InitializeDefaults();
+				NeedInputReinit = false;
+			}
+			ConfigManager.ApplyChanges();
 		}
 
 		public static Configuration Deserialize(string configFile)

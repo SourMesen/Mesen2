@@ -18,7 +18,12 @@ extern "C" {
 	{
 		_console->GetSettings()->SetAudioConfig(config);
 	}
-	
+
+	DllExport void __stdcall SetInputConfig(InputConfig config)
+	{
+		_console->GetSettings()->SetInputConfig(config);
+	}
+
 	DllExport void __stdcall SetEmulationConfig(EmulationConfig config)
 	{
 		_console->GetSettings()->SetEmulationConfig(config);

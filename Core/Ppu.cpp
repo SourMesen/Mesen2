@@ -1340,7 +1340,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			
 		case 0x2105:
 			if(_bgMode != (value & 0x07)) {
-				MessageManager::DisplayMessage("Debug", "Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
+				MessageManager::Log("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
 			}
 			_bgMode = value & 0x07;
 			_mode1Bg3Priority = (value & 0x08) != 0;

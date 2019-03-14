@@ -129,62 +129,12 @@ struct AudioConfig
 	double Band20Gain = 0;
 };
 
-enum class RamPowerOnState
+enum class ControllerType
 {
-	AllZeros = 0,
-	AllOnes = 1,
-	Random = 2
-};
-
-struct EmulationConfig
-{
-	uint32_t EmulationSpeed = 100;
-	uint32_t TurboSpeed = 300;
-	uint32_t RewindSpeed = 100;
-
-	bool AllowInvalidInput = false;
-	bool EnableRandomPowerOnState = false;
-
-	uint32_t PpuExtraScanlinesBeforeNmi = 0;
-	uint32_t PpuExtraScanlinesAfterNmi = 0;
-
-	RamPowerOnState RamPowerOnState = RamPowerOnState::AllZeros;
-};
-
-struct PreferencesConfig
-{
-	bool ShowFps = false;
-	bool ShowFrameCounter = false;
-	bool ShowGameTimer = false;
-	bool ShowDebugInfo = false;
-	bool DisableOsd = false;
-
-	uint32_t RewindBufferSize = 600;
-
-	const char* SaveFolderOverride = nullptr;
-	const char* SaveStateFolderOverride = nullptr;
-	const char* ScreenshotFolderOverride = nullptr;
-};
-
-struct OverscanDimensions
-{
-	uint32_t Left = 0;
-	uint32_t Right = 0;
-	uint32_t Top = 0;
-	uint32_t Bottom = 0;
-};
-
-struct FrameInfo
-{
-	uint32_t Width;
-	uint32_t Height;
-};
-
-struct ScreenSize
-{
-	int32_t Width;
-	int32_t Height;
-	double Scale;
+	None = 0,
+	SnesController = 1,
+	SnesMouse = 2,
+	SuperScope = 3
 };
 
 struct KeyMapping
@@ -256,6 +206,77 @@ struct KeyMappingSet
 		}
 		return keyMappings;
 	}
+};
+
+struct ControllerConfig
+{
+	KeyMappingSet Keys;
+	ControllerType Type = ControllerType::SnesController;
+};
+
+struct InputConfig
+{
+	ControllerConfig Controllers[4];
+	uint32_t ControllerDeadzoneSize = 2;
+	uint32_t MouseSensitivity = 1;
+};
+
+enum class RamPowerOnState
+{
+	AllZeros = 0,
+	AllOnes = 1,
+	Random = 2
+};
+
+struct EmulationConfig
+{
+	uint32_t EmulationSpeed = 100;
+	uint32_t TurboSpeed = 300;
+	uint32_t RewindSpeed = 100;
+
+	bool AllowInvalidInput = false;
+	bool EnableRandomPowerOnState = false;
+
+	uint32_t PpuExtraScanlinesBeforeNmi = 0;
+	uint32_t PpuExtraScanlinesAfterNmi = 0;
+
+	RamPowerOnState RamPowerOnState = RamPowerOnState::AllZeros;
+};
+
+struct PreferencesConfig
+{
+	bool ShowFps = false;
+	bool ShowFrameCounter = false;
+	bool ShowGameTimer = false;
+	bool ShowDebugInfo = false;
+	bool DisableOsd = false;
+
+	uint32_t RewindBufferSize = 600;
+
+	const char* SaveFolderOverride = nullptr;
+	const char* SaveStateFolderOverride = nullptr;
+	const char* ScreenshotFolderOverride = nullptr;
+};
+
+struct OverscanDimensions
+{
+	uint32_t Left = 0;
+	uint32_t Right = 0;
+	uint32_t Top = 0;
+	uint32_t Bottom = 0;
+};
+
+struct FrameInfo
+{
+	uint32_t Width;
+	uint32_t Height;
+};
+
+struct ScreenSize
+{
+	int32_t Width;
+	int32_t Height;
+	double Scale;
 };
 
 enum class EmulatorShortcut
@@ -375,10 +396,4 @@ struct ShortcutKeyInfo
 {
 	EmulatorShortcut Shortcut;
 	KeyCombination KeyCombination;
-};
-
-enum class ControllerType
-{
-	None = 0,
-	SnesController = 1
 };

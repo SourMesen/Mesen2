@@ -19,6 +19,7 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetVideoConfig(VideoConfig config);
 		[DllImport(DllPath)] public static extern void SetAudioConfig(AudioConfig config);
+		[DllImport(DllPath)] public static extern void SetInputConfig(InputConfig config);
 		[DllImport(DllPath)] public static extern void SetEmulationConfig(EmulationConfig config);
 
 		[DllImport(DllPath)] public static extern void SetPreferences(InteropPreferencesConfig config);

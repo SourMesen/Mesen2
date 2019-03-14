@@ -4,6 +4,12 @@
 #include "MessageManager.h"
 #include "../Utilities/FolderUtilities.h"
 
+EmuSettings::EmuSettings()
+{
+	_flags = 0;
+	_inputConfigVersion = 0;
+}
+
 uint32_t EmuSettings::GetVersion()
 {
 	//0.1.0
@@ -37,6 +43,22 @@ void EmuSettings::SetAudioConfig(AudioConfig config)
 AudioConfig EmuSettings::GetAudioConfig()
 {
 	return _audio;
+}
+
+void EmuSettings::SetInputConfig(InputConfig config)
+{
+	_input = config;
+	_inputConfigVersion++;
+}
+
+InputConfig EmuSettings::GetInputConfig()
+{
+	return _input;
+}
+
+uint32_t EmuSettings::GetInputConfigVersion()
+{
+	return _inputConfigVersion;
 }
 
 void EmuSettings::SetEmulationConfig(EmulationConfig config)

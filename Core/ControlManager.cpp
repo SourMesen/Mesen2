@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ControlManager.h"
 #include "Console.h"
+#include "EmuSettings.h"
 #include "MemoryManager.h"
 #include "KeyManager.h"
 #include "IKeyManager.h"
@@ -12,6 +13,7 @@
 ControlManager::ControlManager(shared_ptr<Console> console)
 {
 	_console = console;
+	_inputConfigVersion = -1;
 	_pollCounter = 0;
 
 	UpdateControlDevices();
@@ -86,46 +88,20 @@ void ControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> control
 
 ControllerType ControlManager::GetControllerType(uint8_t port)
 {
-	return ControllerType::SnesController;
-	//TODO _console->GetSettings()->GetControllerType(port);
+	return _console->GetSettings()->GetInputConfig().Controllers[port].Type;
 }
 
 shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerType type, uint8_t port, shared_ptr<Console> console)
 {
 	shared_ptr<BaseControlDevice> device;
-
-	KeyMappingSet keyMappings = {};
-	if(port == 0) {
-		keyMappings.Mapping1.Up = KeyManager::GetKeyCode("Pad1 Up");
-		keyMappings.Mapping1.Down = KeyManager::GetKeyCode("Pad1 Down");
-		keyMappings.Mapping1.Left = KeyManager::GetKeyCode("Pad1 Left");
-		keyMappings.Mapping1.Right = KeyManager::GetKeyCode("Pad1 Right");
-		keyMappings.Mapping1.A = KeyManager::GetKeyCode("Pad1 B");
-		keyMappings.Mapping1.B = KeyManager::GetKeyCode("Pad1 A");
-		keyMappings.Mapping1.X = KeyManager::GetKeyCode("Pad1 Y");
-		keyMappings.Mapping1.Y = KeyManager::GetKeyCode("Pad1 X");
-		keyMappings.Mapping1.L = KeyManager::GetKeyCode("Pad1 L1");
-		keyMappings.Mapping1.R = KeyManager::GetKeyCode("Pad1 R1");
-		keyMappings.Mapping1.Select = KeyManager::GetKeyCode("Pad1 Back");
-		keyMappings.Mapping1.Start = KeyManager::GetKeyCode("Pad1 Start");
-
-		keyMappings.Mapping2.Up = KeyManager::GetKeyCode("Up Arrow");
-		keyMappings.Mapping2.Down = KeyManager::GetKeyCode("Down Arrow");
-		keyMappings.Mapping2.Left = KeyManager::GetKeyCode("Left Arrow");
-		keyMappings.Mapping2.Right = KeyManager::GetKeyCode("Right Arrow");
-		keyMappings.Mapping2.A = KeyManager::GetKeyCode("Z");
-		keyMappings.Mapping2.B = KeyManager::GetKeyCode("X");
-		keyMappings.Mapping2.X = KeyManager::GetKeyCode("S");
-		keyMappings.Mapping2.Y = KeyManager::GetKeyCode("A");
-		keyMappings.Mapping2.L = KeyManager::GetKeyCode("Q");
-		keyMappings.Mapping2.R = KeyManager::GetKeyCode("W");
-		keyMappings.Mapping2.Select = KeyManager::GetKeyCode("E");
-		keyMappings.Mapping2.Start = KeyManager::GetKeyCode("D");
-	}
+	
+	InputConfig cfg = console->GetSettings()->GetInputConfig();
 
 	switch(type) {
 		case ControllerType::None: break;
-		case ControllerType::SnesController: device.reset(new SnesController(console, port, keyMappings)); break;
+		case ControllerType::SnesController: device.reset(new SnesController(console, port, cfg.Controllers[port].Keys)); break;
+		case ControllerType::SnesMouse: break;
+		case ControllerType::SuperScope: break;
 	}
 	
 	return device;
@@ -133,13 +109,18 @@ shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerT
 
 void ControlManager::UpdateControlDevices()
 {
-	auto lock = _deviceLock.AcquireSafe();
-	_controlDevices.clear();
+	uint32_t version = _console->GetSettings()->GetInputConfigVersion();
+	if(_inputConfigVersion != version) {
+		_inputConfigVersion = version;
 
-	for(int i = 0; i < 4; i++) {
-		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i, _console);
-		if(device) {
-			RegisterControlDevice(device);
+		auto lock = _deviceLock.AcquireSafe();
+		_controlDevices.clear();
+
+		for(int i = 0; i < 4; i++) {
+			shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i, _console);
+			if(device) {
+				RegisterControlDevice(device);
+			}
 		}
 	}
 }
@@ -153,7 +134,7 @@ void ControlManager::UpdateInputState()
 {
 	KeyManager::RefreshKeyState();
 
-	//auto lock = _deviceLock.AcquireSafe();
+	auto lock = _deviceLock.AcquireSafe();
 
 	string log = "";
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {

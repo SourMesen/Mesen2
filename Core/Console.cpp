@@ -105,7 +105,9 @@ void Console::Run()
 
 			frameLimiter.ProcessFrame();
 			frameLimiter.WaitForNextFrame();
-			
+
+			_controlManager->UpdateControlDevices();
+
 			double newFrameDelay = GetFrameDelay();
 			if(newFrameDelay != frameDelay) {
 				frameDelay = newFrameDelay;
@@ -188,6 +190,8 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);
+
+		_controlManager->UpdateControlDevices();
 
 		//if(_debugger) {
 			//Reset debugger if it was running before

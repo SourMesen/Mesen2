@@ -9,11 +9,11 @@ private:
 	uint32_t _stateBuffer = 0;
 
 protected:
-	enum Buttons { A = 0, B, Select, Start, Up, Down, Left, Right, Y, X, L, R };
+	enum Buttons { A = 0, B, X, Y, L, R, Select, Start, Up, Down, Left, Right };
 
 	string GetKeyNames() override
 	{
-		return "ABSTUDLRYXLR";
+		return "ABXYLRSTUDLR";
 	}
 
 	void InternalSetStateFromInput() override
@@ -21,16 +21,16 @@ protected:
 		for(KeyMapping keyMapping : _keyMappings) {
 			SetPressedState(Buttons::A, keyMapping.A);
 			SetPressedState(Buttons::B, keyMapping.B);
+			SetPressedState(Buttons::X, keyMapping.X);
+			SetPressedState(Buttons::Y, keyMapping.Y);
+			SetPressedState(Buttons::L, keyMapping.L);
+			SetPressedState(Buttons::R, keyMapping.R);
 			SetPressedState(Buttons::Start, keyMapping.Start);
 			SetPressedState(Buttons::Select, keyMapping.Select);
 			SetPressedState(Buttons::Up, keyMapping.Up);
 			SetPressedState(Buttons::Down, keyMapping.Down);
 			SetPressedState(Buttons::Left, keyMapping.Left);
 			SetPressedState(Buttons::Right, keyMapping.Right);
-			SetPressedState(Buttons::X, keyMapping.X);
-			SetPressedState(Buttons::Y, keyMapping.Y);
-			SetPressedState(Buttons::L, keyMapping.L);
-			SetPressedState(Buttons::R, keyMapping.R);
 		}
 	}
 
