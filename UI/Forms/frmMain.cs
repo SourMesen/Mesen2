@@ -157,6 +157,10 @@ namespace Mesen.GUI.Forms
 			mnuXBRZ6xFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.xBRZ6x); };
 
 			mnuBilinearInterpolation.Click += (s, e) => { _shortcuts.ToggleBilinearInterpolation(); };
+
+			mnuRegionAuto.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Auto); };
+			mnuRegionNtsc.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Ntsc); };
+			mnuRegionPal.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Pal); };
 		}
 		
 		private void UpdateViewerSize(ScreenSize screenSize)
@@ -367,6 +371,13 @@ namespace Mesen.GUI.Forms
 		private void mnuSaveState_DropDownOpening(object sender, EventArgs e)
 		{
 			SaveStateManager.UpdateStateMenu(mnuSaveState, true);
+		}
+
+		private void mnuRegion_DropDownOpening(object sender, EventArgs e)
+		{
+			mnuRegionAuto.Checked = ConfigManager.Config.Emulation.Region == ConsoleRegion.Auto;
+			mnuRegionNtsc.Checked = ConfigManager.Config.Emulation.Region == ConsoleRegion.Ntsc;
+			mnuRegionPal.Checked = ConfigManager.Config.Emulation.Region == ConsoleRegion.Pal;
 		}
 	}
 }

@@ -228,11 +228,20 @@ enum class RamPowerOnState
 	Random = 2
 };
 
+enum class ConsoleRegion
+{
+	Auto = 0,
+	Ntsc = 1,
+	Pal = 2
+};
+
 struct EmulationConfig
 {
 	uint32_t EmulationSpeed = 100;
 	uint32_t TurboSpeed = 300;
 	uint32_t RewindSpeed = 100;
+
+	ConsoleRegion Region = ConsoleRegion::Auto;
 
 	bool AllowInvalidInput = false;
 	bool EnableRandomPowerOnState = false;

@@ -117,7 +117,10 @@ void Ppu::Exec()
 		} else if(_scanline == 240 && _frameCount & 0x01 && !_screenInterlace) {
 			//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
 			_cycle++;
-		} else if((_scanline == 262 && (!_screenInterlace || (_frameCount & 0x01))) || _scanline == 263) {
+		} else if(
+			(_console->GetRegion() == ConsoleRegion::Ntsc && ((_scanline == 262 && (!_screenInterlace || (_frameCount & 0x01))) || _scanline == 263)) ||
+			(_console->GetRegion() == ConsoleRegion::Pal && ((_scanline == 312 && (!_screenInterlace || (_frameCount & 0x01))) || _scanline == 313))
+		) {
 			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
@@ -1257,7 +1260,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				((_frameCount & 0x01) ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |
 				(_ppu2OpenBus & 0x20) |
-				//TODO (_isPal ? 0x10 : 0)
+				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
 				0x02 //PPU (5c78) chip version
 			);
 

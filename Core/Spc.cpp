@@ -32,7 +32,7 @@ int Spc::GetSpcTime()
 {
 	uint64_t currentClock = _console->GetMemoryManager()->GetMasterClock();
 	uint64_t elapsedClocks = currentClock - _startFrameMasterClock;
-	return (int)(elapsedClocks * 1024000 / 21477000);
+	return (int)(elapsedClocks * 1024000 / _console->GetMasterClockRate());
 }
 
 uint8_t Spc::Read(uint16_t addr)
@@ -53,7 +53,7 @@ void Spc::ProcessEndFrame()
 	_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2);
 	_spc->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 
-	uint64_t remainder = (_console->GetMemoryManager()->GetMasterClock() - _startFrameMasterClock) * 1024000 % 21477000 / 1024000;
+	uint64_t remainder = (_console->GetMemoryManager()->GetMasterClock() - _startFrameMasterClock) * 1024000 % _console->GetMasterClockRate() / 1024000;
 	_startFrameMasterClock = _console->GetMemoryManager()->GetMasterClock() - remainder;
 }
 

@@ -42,6 +42,8 @@
 			this.flowLayoutPanel10 = new System.Windows.Forms.FlowLayoutPanel();
 			this.nudRewindSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblRewindSpeedHint = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this.cboRegion = new System.Windows.Forms.ComboBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -82,16 +84,19 @@
 			this.tableLayoutPanel4.ColumnCount = 2;
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel4.Controls.Add(this.label1, 0, 3);
 			this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel9, 1, 1);
 			this.tableLayoutPanel4.Controls.Add(this.lblTurboSpeed, 0, 1);
 			this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel6, 1, 0);
 			this.tableLayoutPanel4.Controls.Add(this.lblEmulationSpeed, 0, 0);
 			this.tableLayoutPanel4.Controls.Add(this.lblRewindSpeed, 0, 2);
 			this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel10, 1, 2);
+			this.tableLayoutPanel4.Controls.Add(this.cboRegion, 1, 3);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-			this.tableLayoutPanel4.RowCount = 4;
+			this.tableLayoutPanel4.RowCount = 5;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -285,6 +290,25 @@
 			this.lblRewindSpeedHint.TabIndex = 2;
 			this.lblRewindSpeedHint.Text = "%  (0 = Maximum speed)";
 			// 
+			// label1
+			// 
+			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(3, 88);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(44, 13);
+			this.label1.TabIndex = 17;
+			this.label1.Text = "Region:";
+			// 
+			// cboRegion
+			// 
+			this.cboRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboRegion.FormattingEnabled = true;
+			this.cboRegion.Location = new System.Drawing.Point(114, 84);
+			this.cboRegion.Name = "cboRegion";
+			this.cboRegion.Size = new System.Drawing.Size(121, 21);
+			this.cboRegion.TabIndex = 18;
+			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -331,5 +355,7 @@
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel10;
 		private Controls.MesenNumericUpDown nudRewindSpeed;
 		private System.Windows.Forms.Label lblRewindSpeedHint;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.ComboBox cboRegion;
 	}
 }

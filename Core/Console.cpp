@@ -186,7 +186,6 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		_memoryManager->Initialize(shared_from_this());
 
 		_cpu.reset(new Cpu(this));
-		_memoryManager->IncrementMasterClockValue<170>();
 
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);
@@ -199,6 +198,9 @@ void Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 			//_debugger.reset();
 			//GetDebugger();
 		//}
+		
+		UpdateRegion();
+		_memoryManager->IncrementMasterClockValue<170>();
 
 		_paused = false;
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
@@ -215,6 +217,38 @@ RomInfo Console::GetRomInfo()
 	}
 }
 
+uint32_t Console::GetMasterClockRate()
+{
+	return _masterClockRate;
+}
+
+ConsoleRegion Console::GetRegion()
+{
+	return _region;
+}
+
+void Console::UpdateRegion()
+{
+	switch(_settings->GetEmulationConfig().Region) {
+		case ConsoleRegion::Auto:
+		{
+			uint8_t destCode = _cart->GetRomInfo().Header.DestinationCode;
+			if((destCode >= 0x02 && destCode <= 0x0C) || destCode == 0x11) {
+				_region = ConsoleRegion::Pal;
+			} else {
+				_region = ConsoleRegion::Ntsc;
+			}
+			break;
+		}
+
+		default:
+		case ConsoleRegion::Ntsc: _region = ConsoleRegion::Ntsc; break;
+		case ConsoleRegion::Pal: _region = ConsoleRegion::Pal; break;
+	}
+
+	_masterClockRate = _region == ConsoleRegion::Pal ? 21281370 : 21477270;
+}
+
 double Console::GetFrameDelay()
 {
 	uint32_t emulationSpeed = _settings->GetEmulationSpeed();
@@ -222,7 +256,12 @@ double Console::GetFrameDelay()
 	if(emulationSpeed == 0) {
 		frameDelay = 0;
 	} else {
-		frameDelay = 16.63926405550947 / (emulationSpeed / 100.0);
+		UpdateRegion();
+		switch(_region) {
+			case ConsoleRegion::Ntsc: frameDelay = 16.63926405550947; break;
+			case ConsoleRegion::Pal: frameDelay = 19.99720882631146; break;
+		}
+		frameDelay /= (emulationSpeed / 100.0);
 	}
 	return frameDelay;
 }

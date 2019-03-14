@@ -25,6 +25,7 @@ class RewindManager;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
+enum class ConsoleRegion;
 
 class Console : public std::enable_shared_from_this<Console>
 {
@@ -58,7 +59,11 @@ private:
 	atomic<bool> _stopFlag;
 	atomic<bool> _paused;
 
+	ConsoleRegion _region;
+	uint32_t _masterClockRate;
+
 	double GetFrameDelay();
+	void UpdateRegion();
 	void WaitForLock();
 	void WaitForPauseEnd();
 
@@ -77,6 +82,8 @@ public:
 
 	void LoadRom(VirtualFile romFile, VirtualFile patchFile);
 	RomInfo GetRomInfo();
+	uint32_t GetMasterClockRate();
+	ConsoleRegion GetRegion();
 
 	ConsoleLock AcquireLock();
 	void Lock();

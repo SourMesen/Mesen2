@@ -14,6 +14,8 @@ namespace Mesen.GUI.Config
 		[MinMax(0, 5000)] public UInt32 TurboSpeed = 300;
 		[MinMax(0, 5000)] public UInt32 RewindSpeed = 100;
 
+		public ConsoleRegion Region = ConsoleRegion.Auto;
+
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput = false;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableMapperRandomPowerOnState = false;
 
@@ -26,6 +28,13 @@ namespace Mesen.GUI.Config
 		{
 			ConfigApi.SetEmulationConfig(this);
 		}
+	}
+
+	public enum ConsoleRegion
+	{
+		Auto = 0,
+		Ntsc = 1,
+		Pal = 2
 	}
 
 	public enum RamPowerOnState

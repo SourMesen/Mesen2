@@ -143,7 +143,14 @@ namespace Mesen.GUI.Emulation
 				}
 			}
 		}
-
+		
+		public void SetRegion(ConsoleRegion region)
+		{
+			ConfigManager.Config.Emulation.Region = region;
+			ConfigManager.Config.Emulation.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+		
 		public void SetVideoFilter(VideoFilterType filter)
 		{
 			ConfigManager.Config.Video.VideoFilter = filter;
