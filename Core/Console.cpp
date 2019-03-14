@@ -258,8 +258,8 @@ double Console::GetFrameDelay()
 	} else {
 		UpdateRegion();
 		switch(_region) {
-			case ConsoleRegion::Ntsc: frameDelay = 16.63926405550947; break;
-			case ConsoleRegion::Pal: frameDelay = 19.99720882631146; break;
+			case ConsoleRegion::Ntsc: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947; break;
+			case ConsoleRegion::Pal: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146; break;
 		}
 		frameDelay /= (emulationSpeed / 100.0);
 	}

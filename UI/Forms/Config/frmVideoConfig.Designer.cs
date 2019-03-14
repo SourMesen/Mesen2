@@ -41,7 +41,6 @@
 			this.lblCustomRatio = new System.Windows.Forms.Label();
 			this.nudCustomRatio = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.chkFullscreenForceIntegerScale = new System.Windows.Forms.CheckBox();
-			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkIntegerFpsMode = new System.Windows.Forms.CheckBox();
 			this.flpRefreshRate = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblRequestedRefreshRate = new System.Windows.Forms.Label();
@@ -133,15 +132,13 @@
 			this.tlpMain.Controls.Add(this.nudScale, 1, 0);
 			this.tlpMain.Controls.Add(this.flowLayoutPanel6, 1, 1);
 			this.tlpMain.Controls.Add(this.chkFullscreenForceIntegerScale, 0, 6);
-			this.tlpMain.Controls.Add(this.chkShowFps, 0, 7);
 			this.tlpMain.Controls.Add(this.chkIntegerFpsMode, 0, 2);
 			this.tlpMain.Controls.Add(this.flpRefreshRate, 0, 5);
 			this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tlpMain.Location = new System.Drawing.Point(3, 3);
 			this.tlpMain.Margin = new System.Windows.Forms.Padding(0);
 			this.tlpMain.Name = "tlpMain";
-			this.tlpMain.RowCount = 9;
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tlpMain.RowCount = 8;
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -314,19 +311,6 @@
 			this.chkFullscreenForceIntegerScale.UseVisualStyleBackColor = true;
 			this.chkFullscreenForceIntegerScale.Visible = false;
 			// 
-			// chkShowFps
-			// 
-			this.chkShowFps.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.chkShowFps.AutoSize = true;
-			this.tlpMain.SetColumnSpan(this.chkShowFps, 2);
-			this.chkShowFps.Location = new System.Drawing.Point(3, 169);
-			this.chkShowFps.Name = "chkShowFps";
-			this.chkShowFps.Size = new System.Drawing.Size(76, 17);
-			this.chkShowFps.TabIndex = 9;
-			this.chkShowFps.Text = "Show FPS";
-			this.chkShowFps.UseVisualStyleBackColor = true;
-			this.chkShowFps.Visible = false;
-			// 
 			// chkIntegerFpsMode
 			// 
 			this.chkIntegerFpsMode.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -338,7 +322,6 @@
 			this.chkIntegerFpsMode.TabIndex = 24;
 			this.chkIntegerFpsMode.Text = "Enable integer FPS mode (e.g: run at 60 fps instead of 60.1)";
 			this.chkIntegerFpsMode.UseVisualStyleBackColor = true;
-			this.chkIntegerFpsMode.Visible = false;
 			// 
 			// flpRefreshRate
 			// 
@@ -863,7 +846,6 @@
 		private System.Windows.Forms.Label lblCustomRatio;
 		private Controls.MesenNumericUpDown nudCustomRatio;
 		private System.Windows.Forms.CheckBox chkFullscreenForceIntegerScale;
-		private System.Windows.Forms.CheckBox chkShowFps;
 		private System.Windows.Forms.CheckBox chkIntegerFpsMode;
 		private System.Windows.Forms.FlowLayoutPanel flpRefreshRate;
 		private System.Windows.Forms.Label lblRequestedRefreshRate;
