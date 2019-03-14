@@ -19,6 +19,14 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void InitDll();
 
 		[DllImport(DllPath, EntryPoint = "GetMesenVersion")] private static extern UInt32 GetMesenVersionWrapper();
+		public static Version GetMesenVersion()
+		{
+			UInt32 version = GetMesenVersionWrapper();
+			UInt32 revision = version & 0xFF;
+			UInt32 minor = (version >> 8) & 0xFF;
+			UInt32 major = (version >> 16) & 0xFFFF;
+			return new Version((int)major, (int)minor, (int)revision, 0);
+		}
 
 		[DllImport(DllPath)] public static extern IntPtr RegisterNotificationCallback(NotificationListener.NotificationCallback callback);
 		[DllImport(DllPath)] public static extern void UnregisterNotificationCallback(IntPtr notificationListener);

@@ -3,10 +3,12 @@ using Mesen.GUI.Config.Shortcuts;
 using Mesen.GUI.Debugger;
 using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms.Config;
+using Mesen.GUI.Updates;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -280,6 +282,23 @@ namespace Mesen.GUI.Forms
 		private void mnuLogWindow_Click(object sender, EventArgs e)
 		{
 			new frmLogWindow().Show();
+		}
+
+		private void mnuCheckForUpdates_Click(object sender, EventArgs e)
+		{
+			UpdateHelper.CheckForUpdates(false);
+		}
+
+		private void mnuReportBug_Click(object sender, EventArgs e)
+		{
+			Process.Start("https://www.mesen.ca/snes/ReportBug.php");
+		}
+
+		private void mnuAbout_Click(object sender, EventArgs e)
+		{
+			using(frmAbout frm = new frmAbout()) {
+				frm.ShowDialog(this);
+			}
 		}
 
 		private void mnuFile_DropDownOpening(object sender, EventArgs e)

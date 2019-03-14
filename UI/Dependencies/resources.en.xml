@@ -557,7 +557,7 @@
 			<Control ID="labelProductName">Mesen-S</Control>
 			<Control ID="labelCopyright">© 2019 M. Bibaud (aka Sour)</Control>
 			<Control ID="lblWebsite">Website:</Control>
-			<Control ID="lblLink">www.mesen.ca</Control>
+			<Control ID="lblLink">www.mesen.ca/snes/</Control>
 			<Control ID="labelVersion">Version:</Control>
 			<Control ID="lblBuildDateLabel">Build Date:</Control>
 			<Control ID="lblDonate">If you want to support Mesen-S, please consider donating.&#13;Thank you for your support!</Control>

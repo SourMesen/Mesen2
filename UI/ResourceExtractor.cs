@@ -98,7 +98,7 @@ namespace Mesen.GUI
 					string outputFilename = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), entry.Name.Replace(suffix, ""));
 					ExtractFile(entry, outputFilename);
 				} else if(entry.Name == "MesenUpdater.exe") {
-					string outputFilename = Path.Combine(ConfigManager.HomeFolder, entry.Name);
+					string outputFilename = Path.Combine(ConfigManager.HomeFolder, "Resources", entry.Name);
 					ExtractFile(entry, outputFilename);
 				} else if(entry.Name == "Font.24.spritefont" || entry.Name == "Font.64.spritefont" || entry.Name == "LICENSE.txt" || entry.Name == "PixelFont.ttf") {
 					string outputFilename = Path.Combine(ConfigManager.HomeFolder, "Resources", entry.Name);
