@@ -13,12 +13,12 @@ private:
 	SimpleLock _frameLock;
 	OverscanDimensions _overscan;
 	bool _isOddFrame;
-	FrameInfo _baseFrameInfo;
 
 	void UpdateBufferSize();
 
 protected:
 	shared_ptr<Console> _console;
+	FrameInfo _baseFrameInfo;
 
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer) = 0;
 	virtual void OnBeforeApplyFilter();

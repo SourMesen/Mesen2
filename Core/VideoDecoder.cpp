@@ -18,7 +18,10 @@ VideoDecoder::VideoDecoder(shared_ptr<Console> console)
 	_console = console;
 	_frameChanged = false;
 	_stopFlag = false;
+	_baseFrameInfo = { 512, 478 };
+	_lastFrameInfo = _baseFrameInfo;
 	UpdateVideoFilter();
+	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
 }
 
 VideoDecoder::~VideoDecoder()
@@ -33,22 +36,25 @@ FrameInfo VideoDecoder::GetFrameInfo()
 
 ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 {
-	ScreenSize size = {};
-	if(_videoFilter) {
-		VideoConfig config = _console->GetSettings()->GetVideoConfig();
-		double aspectRatio = _console->GetSettings()->GetAspectRatio();
-		double scale = (ignoreScale ? 1 : config.VideoScale);
-		size.Width = (int32_t)(_baseFrameInfo.Width * scale / 2);
-		size.Height = (int32_t)(_baseFrameInfo.Height * scale / 2);
-		size.Scale = scale;
-		if(aspectRatio != 0.0) {
-			size.Width = (uint32_t)(_baseFrameInfo.Height * scale * aspectRatio / 2);
-		}
-
-		/*if(_console->GetSettings()->GetScreenRotation() % 180) {
-			std::swap(size.Width, size.Height);
-		}*/
+	ScreenSize size;
+	OverscanDimensions overscan = ignoreScale ? _videoFilter->GetOverscan() : _console->GetSettings()->GetOverscan();
+	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
+	double aspectRatio = _console->GetSettings()->GetAspectRatio();
+	double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoConfig().VideoScale);
+	size.Width = (int32_t)(frameInfo.Width * scale / 2);
+	size.Height = (int32_t)(frameInfo.Height * scale / 2);
+	if(aspectRatio != 0.0) {
+		uint32_t originalHeight = frameInfo.Height + (overscan.Top + overscan.Bottom) * 2;
+		uint32_t originalWidth = frameInfo.Width + (overscan.Left + overscan.Right) * 2;
+		size.Width = (uint32_t)(originalHeight * scale * aspectRatio * ((double)frameInfo.Width / originalWidth)) / 2;
 	}
+
+	/*
+	if(_console->GetSettings()->GetScreenRotation() % 180) {
+		std::swap(size.Width, size.Height);
+	}*/
+
+	size.Scale = scale;
 	return size;
 }
 

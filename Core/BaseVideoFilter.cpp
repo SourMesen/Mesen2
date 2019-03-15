@@ -10,7 +10,7 @@
 BaseVideoFilter::BaseVideoFilter(shared_ptr<Console> console)
 {
 	_console = console;
-	_overscan = {}; //TODO _console->GetSettings()->GetOverscanDimensions();
+	_overscan = _console->GetSettings()->GetOverscan();
 }
 
 BaseVideoFilter::~BaseVideoFilter()
@@ -29,7 +29,11 @@ void BaseVideoFilter::SetBaseFrameInfo(FrameInfo frameInfo)
 
 FrameInfo BaseVideoFilter::GetFrameInfo()
 {
-	return _baseFrameInfo;
+	FrameInfo frameInfo = _baseFrameInfo;
+	OverscanDimensions overscan = GetOverscan();
+	frameInfo.Width -= overscan.Left * 2 + overscan.Right * 2;
+	frameInfo.Height -= overscan.Top * 2 + overscan.Bottom * 2;
+	return frameInfo;
 }
 
 void BaseVideoFilter::UpdateBufferSize()
@@ -64,7 +68,7 @@ bool BaseVideoFilter::IsOddFrame()
 void BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
 {
 	_frameLock.Acquire();
-	_overscan = {}; //TODO _console->GetSettings()->GetOverscanDimensions();
+	_overscan = _console->GetSettings()->GetOverscan();
 	_isOddFrame = frameNumber % 2;
 	UpdateBufferSize();
 	OnBeforeApplyFilter();

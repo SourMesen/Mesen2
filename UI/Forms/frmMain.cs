@@ -57,7 +57,7 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.ApplyConfig();
 
 			_displayManager = new DisplayManager(this, ctrlRenderer, pnlRenderer);
-			_displayManager.UpdateViewerSize(false);
+			_displayManager.UpdateViewerSize();
 			_shortcuts = new ShortcutHandler(_displayManager);
 
 			_notifListener = new NotificationListener();
@@ -109,6 +109,12 @@ namespace Mesen.GUI.Forms
 						ctrlRecentGames.Initialize();
 						ctrlRecentGames.Visible = true;
 						ResizeRecentGames();
+					}));
+					break;
+
+				case ConsoleNotificationType.ResolutionChanged:
+					this.BeginInvoke((Action)(() => {
+						_displayManager.UpdateViewerSize();
 					}));
 					break;
 

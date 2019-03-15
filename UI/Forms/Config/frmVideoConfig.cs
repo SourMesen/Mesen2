@@ -47,6 +47,11 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(VideoConfig.NtscResolution), trkResolution);
 			AddBinding(nameof(VideoConfig.NtscSharpness), trkSharpness);
 			AddBinding(nameof(VideoConfig.NtscMergeFields), chkMergeFields);
+
+			AddBinding(nameof(VideoConfig.OverscanLeft), nudOverscanLeft);
+			AddBinding(nameof(VideoConfig.OverscanRight), nudOverscanRight);
+			AddBinding(nameof(VideoConfig.OverscanTop), nudOverscanTop);
+			AddBinding(nameof(VideoConfig.OverscanBottom), nudOverscanBottom);
 		}
 
 		protected override bool ValidateInput()
@@ -122,6 +127,25 @@ namespace Mesen.GUI.Forms.Config
 		private void mnuPresetMonochrome_Click(object sender, EventArgs e)
 		{
 			SetNtscPreset(0, -100, 0, 0, 20, 0, 70, -20, -20, -10, 15, false);
+		}
+
+		private void UpdateOverscanImage(PictureBox picture, int top, int bottom, int left, int right)
+		{
+			Bitmap overscan = new Bitmap(picture.Width - 2, picture.Height - 2);
+
+			using(Graphics g = Graphics.FromImage(overscan)) {
+				g.Clear(Color.DarkGray);
+
+				Rectangle fg = new Rectangle(left, top, 256 - left - right, 240 - top - bottom);
+				g.ScaleTransform((float)overscan.Width / 256, (float)overscan.Height / 240);
+				g.FillRectangle(Brushes.LightCyan, fg);
+			}
+			picture.Image = overscan;
+		}
+
+		private void nudOverscan_ValueChanged(object sender, EventArgs e)
+		{
+			UpdateOverscanImage(picOverscan, (int)nudOverscanTop.Value, (int)nudOverscanBottom.Value, (int)nudOverscanLeft.Value, (int)nudOverscanRight.Value);
 		}
 	}
 }

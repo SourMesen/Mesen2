@@ -86,6 +86,11 @@ struct VideoConfig
 	double NtscSharpness = 0;
 	bool NtscMergeFields = false;
 
+	uint32_t OverscanLeft = 0;
+	uint32_t OverscanRight = 0;
+	uint32_t OverscanTop = 0;
+	uint32_t OverscanBottom = 0;
+
 	bool FullscreenForceIntegerScale = false;
 	bool UseExclusiveFullscreen = false;
 	int32_t ExclusiveFullscreenRefreshRate = 60;

@@ -15,7 +15,8 @@ NtscFilter::NtscFilter(shared_ptr<Console> console) : BaseVideoFilter(console)
 FrameInfo NtscFilter::GetFrameInfo()
 {
 	FrameInfo frameInfo = BaseVideoFilter::GetFrameInfo();
-	frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width / 2);
+	OverscanDimensions overscan = GetOverscan();
+	frameInfo.Width = SNES_NTSC_OUT_WIDTH(_baseFrameInfo.Width / 2) - overscan.Left * 2 - overscan.Right * 2;
 	return frameInfo;
 }
 
@@ -45,22 +46,29 @@ void NtscFilter::OnBeforeApplyFilter()
 void NtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	FrameInfo frameInfo = GetFrameInfo();
+	OverscanDimensions overscan = GetOverscan();
+	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(256);
+	uint32_t xOffset = overscan.Left * 2;
+	uint32_t yOffset = overscan.Top * 2 * baseWidth;
+
 	snes_ntsc_blit_hires(&_ntscData, ppuOutputBuffer, 512, IsOddFrame() ? 0 : 1, 512, frameInfo.Height, _ntscBuffer, SNES_NTSC_OUT_WIDTH(256)*4);
 	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
 
 	if(cfg.ScanlineIntensity == 0) {
-		memcpy(GetOutputBuffer(), _ntscBuffer, frameInfo.Width * frameInfo.Height * sizeof(uint32_t));
+		for(uint32_t i = 0; i < frameInfo.Height; i++) {
+			memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
+		}
 	} else {
 		uint8_t intensity = (uint8_t)((1.0 - cfg.ScanlineIntensity) * 255);
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			if(i & 0x01) {
-				uint32_t *in = _ntscBuffer + i * frameInfo.Width;
+				uint32_t *in = _ntscBuffer + yOffset + xOffset + i * baseWidth;
 				uint32_t *out = GetOutputBuffer() + i * frameInfo.Width;
 				for(uint32_t j = 0; j < frameInfo.Width; j++) {
 					out[j] = ApplyScanlineEffect(in[j], intensity);
 				}
 			} else {
-				memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer+i*frameInfo.Width, frameInfo.Width * sizeof(uint32_t));
+				memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
 			}
 		}
 	}

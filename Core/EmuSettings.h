@@ -51,6 +51,7 @@ public:
 	KeyCombination GetShortcutKey(EmulatorShortcut shortcut, int keySetIndex);
 	vector<KeyCombination> GetShortcutSupersets(EmulatorShortcut shortcut, int keySetIndex);
 
+	OverscanDimensions GetOverscan();
 	uint32_t GetRewindBufferSize();
 	uint32_t GetEmulationSpeed();
 	double GetAspectRatio();

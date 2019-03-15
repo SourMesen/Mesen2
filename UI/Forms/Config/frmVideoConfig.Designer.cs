@@ -76,6 +76,21 @@
 			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
+			this.tpgOverscan = new System.Windows.Forms.TabPage();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.picOverscan = new System.Windows.Forms.PictureBox();
+			this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
+			this.nudOverscanTop = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblTop = new System.Windows.Forms.Label();
+			this.tableLayoutPanel12 = new System.Windows.Forms.TableLayoutPanel();
+			this.nudOverscanBottom = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblBottom = new System.Windows.Forms.Label();
+			this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
+			this.nudOverscanRight = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblRight = new System.Windows.Forms.Label();
+			this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
+			this.nudOverscanLeft = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblLeft = new System.Windows.Forms.Label();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -91,6 +106,13 @@
 			this.grpScanlines.SuspendLayout();
 			this.tableLayoutPanel8.SuspendLayout();
 			this.ctxPicturePresets.SuspendLayout();
+			this.tpgOverscan.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picOverscan)).BeginInit();
+			this.tableLayoutPanel11.SuspendLayout();
+			this.tableLayoutPanel12.SuspendLayout();
+			this.tableLayoutPanel13.SuspendLayout();
+			this.tableLayoutPanel14.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -102,6 +124,7 @@
 			// 
 			this.tabMain.Controls.Add(this.tpgGeneral);
 			this.tabMain.Controls.Add(this.tpgPicture);
+			this.tabMain.Controls.Add(this.tpgOverscan);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
@@ -791,6 +814,294 @@
 			this.mnuPresetMonochrome.Text = "Monochrome";
 			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
 			// 
+			// tpgOverscan
+			// 
+			this.tpgOverscan.Controls.Add(this.tableLayoutPanel1);
+			this.tpgOverscan.Location = new System.Drawing.Point(4, 22);
+			this.tpgOverscan.Name = "tpgOverscan";
+			this.tpgOverscan.Padding = new System.Windows.Forms.Padding(3);
+			this.tpgOverscan.Size = new System.Drawing.Size(566, 382);
+			this.tpgOverscan.TabIndex = 6;
+			this.tpgOverscan.Text = "Overscan";
+			this.tpgOverscan.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.ColumnCount = 3;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 262F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.Controls.Add(this.picOverscan, 1, 1);
+			this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel11, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel12, 1, 2);
+			this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel13, 2, 1);
+			this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel14, 0, 1);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 3;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 246F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(560, 376);
+			this.tableLayoutPanel1.TabIndex = 1;
+			// 
+			// picOverscan
+			// 
+			this.picOverscan.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.picOverscan.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.picOverscan.Location = new System.Drawing.Point(152, 68);
+			this.picOverscan.Name = "picOverscan";
+			this.picOverscan.Size = new System.Drawing.Size(256, 240);
+			this.picOverscan.TabIndex = 1;
+			this.picOverscan.TabStop = false;
+			// 
+			// tableLayoutPanel11
+			// 
+			this.tableLayoutPanel11.ColumnCount = 1;
+			this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel11.Controls.Add(this.nudOverscanTop, 0, 1);
+			this.tableLayoutPanel11.Controls.Add(this.lblTop, 0, 0);
+			this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel11.Location = new System.Drawing.Point(149, 0);
+			this.tableLayoutPanel11.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel11.Name = "tableLayoutPanel11";
+			this.tableLayoutPanel11.RowCount = 2;
+			this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel11.Size = new System.Drawing.Size(262, 65);
+			this.tableLayoutPanel11.TabIndex = 4;
+			// 
+			// nudOverscanTop
+			// 
+			this.nudOverscanTop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.nudOverscanTop.DecimalPlaces = 0;
+			this.nudOverscanTop.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudOverscanTop.Location = new System.Drawing.Point(110, 44);
+			this.nudOverscanTop.Margin = new System.Windows.Forms.Padding(0);
+			this.nudOverscanTop.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudOverscanTop.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudOverscanTop.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanTop.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudOverscanTop.Name = "nudOverscanTop";
+			this.nudOverscanTop.Size = new System.Drawing.Size(41, 21);
+			this.nudOverscanTop.TabIndex = 2;
+			this.nudOverscanTop.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanTop.ValueChanged += new System.EventHandler(this.nudOverscan_ValueChanged);
+			// 
+			// lblTop
+			// 
+			this.lblTop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.lblTop.AutoSize = true;
+			this.lblTop.Location = new System.Drawing.Point(118, 31);
+			this.lblTop.Name = "lblTop";
+			this.lblTop.Size = new System.Drawing.Size(26, 13);
+			this.lblTop.TabIndex = 0;
+			this.lblTop.Text = "Top";
+			this.lblTop.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// tableLayoutPanel12
+			// 
+			this.tableLayoutPanel12.ColumnCount = 1;
+			this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel12.Controls.Add(this.nudOverscanBottom, 0, 1);
+			this.tableLayoutPanel12.Controls.Add(this.lblBottom, 0, 0);
+			this.tableLayoutPanel12.Location = new System.Drawing.Point(149, 311);
+			this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel12.Name = "tableLayoutPanel12";
+			this.tableLayoutPanel12.RowCount = 2;
+			this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel12.Size = new System.Drawing.Size(262, 58);
+			this.tableLayoutPanel12.TabIndex = 5;
+			// 
+			// nudOverscanBottom
+			// 
+			this.nudOverscanBottom.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.nudOverscanBottom.DecimalPlaces = 0;
+			this.nudOverscanBottom.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudOverscanBottom.Location = new System.Drawing.Point(110, 13);
+			this.nudOverscanBottom.Margin = new System.Windows.Forms.Padding(0);
+			this.nudOverscanBottom.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudOverscanBottom.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudOverscanBottom.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanBottom.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudOverscanBottom.Name = "nudOverscanBottom";
+			this.nudOverscanBottom.Size = new System.Drawing.Size(41, 21);
+			this.nudOverscanBottom.TabIndex = 2;
+			this.nudOverscanBottom.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanBottom.ValueChanged += new System.EventHandler(this.nudOverscan_ValueChanged);
+			// 
+			// lblBottom
+			// 
+			this.lblBottom.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.lblBottom.AutoSize = true;
+			this.lblBottom.Location = new System.Drawing.Point(111, 0);
+			this.lblBottom.Name = "lblBottom";
+			this.lblBottom.Size = new System.Drawing.Size(40, 13);
+			this.lblBottom.TabIndex = 0;
+			this.lblBottom.Text = "Bottom";
+			this.lblBottom.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// tableLayoutPanel13
+			// 
+			this.tableLayoutPanel13.ColumnCount = 2;
+			this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel13.Controls.Add(this.nudOverscanRight, 0, 2);
+			this.tableLayoutPanel13.Controls.Add(this.lblRight, 0, 1);
+			this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel13.Location = new System.Drawing.Point(411, 65);
+			this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel13.Name = "tableLayoutPanel13";
+			this.tableLayoutPanel13.RowCount = 4;
+			this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel13.Size = new System.Drawing.Size(149, 246);
+			this.tableLayoutPanel13.TabIndex = 6;
+			// 
+			// nudOverscanRight
+			// 
+			this.nudOverscanRight.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.nudOverscanRight.DecimalPlaces = 0;
+			this.nudOverscanRight.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudOverscanRight.Location = new System.Drawing.Point(0, 119);
+			this.nudOverscanRight.Margin = new System.Windows.Forms.Padding(0);
+			this.nudOverscanRight.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudOverscanRight.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudOverscanRight.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanRight.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudOverscanRight.Name = "nudOverscanRight";
+			this.nudOverscanRight.Size = new System.Drawing.Size(41, 21);
+			this.nudOverscanRight.TabIndex = 1;
+			this.nudOverscanRight.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanRight.ValueChanged += new System.EventHandler(this.nudOverscan_ValueChanged);
+			// 
+			// lblRight
+			// 
+			this.lblRight.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.lblRight.AutoSize = true;
+			this.lblRight.Location = new System.Drawing.Point(4, 106);
+			this.lblRight.Name = "lblRight";
+			this.lblRight.Size = new System.Drawing.Size(32, 13);
+			this.lblRight.TabIndex = 0;
+			this.lblRight.Text = "Right";
+			this.lblRight.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// tableLayoutPanel14
+			// 
+			this.tableLayoutPanel14.ColumnCount = 2;
+			this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel14.Controls.Add(this.nudOverscanLeft, 1, 2);
+			this.tableLayoutPanel14.Controls.Add(this.lblLeft, 1, 1);
+			this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel14.Location = new System.Drawing.Point(0, 65);
+			this.tableLayoutPanel14.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel14.Name = "tableLayoutPanel14";
+			this.tableLayoutPanel14.RowCount = 4;
+			this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel14.Size = new System.Drawing.Size(149, 246);
+			this.tableLayoutPanel14.TabIndex = 7;
+			// 
+			// nudOverscanLeft
+			// 
+			this.nudOverscanLeft.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.nudOverscanLeft.DecimalPlaces = 0;
+			this.nudOverscanLeft.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudOverscanLeft.Location = new System.Drawing.Point(108, 119);
+			this.nudOverscanLeft.Margin = new System.Windows.Forms.Padding(0);
+			this.nudOverscanLeft.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudOverscanLeft.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudOverscanLeft.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanLeft.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudOverscanLeft.Name = "nudOverscanLeft";
+			this.nudOverscanLeft.Size = new System.Drawing.Size(41, 21);
+			this.nudOverscanLeft.TabIndex = 2;
+			this.nudOverscanLeft.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudOverscanLeft.ValueChanged += new System.EventHandler(this.nudOverscan_ValueChanged);
+			// 
+			// lblLeft
+			// 
+			this.lblLeft.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.lblLeft.AutoSize = true;
+			this.lblLeft.Location = new System.Drawing.Point(116, 106);
+			this.lblLeft.Name = "lblLeft";
+			this.lblLeft.Size = new System.Drawing.Size(25, 13);
+			this.lblLeft.TabIndex = 0;
+			this.lblLeft.Text = "Left";
+			this.lblLeft.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
 			// frmVideoConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -827,6 +1138,17 @@
 			this.tableLayoutPanel8.ResumeLayout(false);
 			this.tableLayoutPanel8.PerformLayout();
 			this.ctxPicturePresets.ResumeLayout(false);
+			this.tpgOverscan.ResumeLayout(false);
+			this.tableLayoutPanel1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.picOverscan)).EndInit();
+			this.tableLayoutPanel11.ResumeLayout(false);
+			this.tableLayoutPanel11.PerformLayout();
+			this.tableLayoutPanel12.ResumeLayout(false);
+			this.tableLayoutPanel12.PerformLayout();
+			this.tableLayoutPanel13.ResumeLayout(false);
+			this.tableLayoutPanel13.PerformLayout();
+			this.tableLayoutPanel14.ResumeLayout(false);
+			this.tableLayoutPanel14.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -881,5 +1203,20 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuPresetSVideo;
 		private System.Windows.Forms.ToolStripMenuItem mnuPresetRgb;
 		private System.Windows.Forms.ToolStripMenuItem mnuPresetMonochrome;
+		private System.Windows.Forms.TabPage tpgOverscan;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private System.Windows.Forms.PictureBox picOverscan;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
+		private Controls.MesenNumericUpDown nudOverscanTop;
+		private System.Windows.Forms.Label lblTop;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel12;
+		private Controls.MesenNumericUpDown nudOverscanBottom;
+		private System.Windows.Forms.Label lblBottom;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel13;
+		private Controls.MesenNumericUpDown nudOverscanRight;
+		private System.Windows.Forms.Label lblRight;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel14;
+		private Controls.MesenNumericUpDown nudOverscanLeft;
+		private System.Windows.Forms.Label lblLeft;
 	}
 }

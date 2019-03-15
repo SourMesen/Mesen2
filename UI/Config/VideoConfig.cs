@@ -33,6 +33,11 @@ namespace Mesen.GUI.Config
 		[MinMax(-1, 1.0)] public double NtscSharpness = 0;
 		[MarshalAs(UnmanagedType.I1)] public bool NtscMergeFields = false;
 
+		[MinMax(0, 100)] public UInt32 OverscanLeft = 0;
+		[MinMax(0, 100)] public UInt32 OverscanRight = 0;
+		[MinMax(0, 100)] public UInt32 OverscanTop = 0;
+		[MinMax(0, 100)] public UInt32 OverscanBottom = 0;
+
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale = false;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen = false;
 		public Int32 ExclusiveFullscreenRefreshRate = 60;

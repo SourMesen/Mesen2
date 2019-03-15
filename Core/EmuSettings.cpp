@@ -151,6 +151,16 @@ vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortc
 	return _shortcutSupersets[keySetIndex][(uint32_t)shortcut];
 }
 
+OverscanDimensions EmuSettings::GetOverscan()
+{
+	OverscanDimensions overscan;
+	overscan.Left = _video.OverscanLeft;
+	overscan.Right = _video.OverscanRight;
+	overscan.Top = _video.OverscanTop;
+	overscan.Bottom = _video.OverscanBottom;
+	return overscan;
+}
+
 uint32_t EmuSettings::GetRewindBufferSize()
 {
 	return _preferences.RewindBufferSize;

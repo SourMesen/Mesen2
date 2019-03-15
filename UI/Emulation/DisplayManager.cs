@@ -16,6 +16,7 @@ namespace Mesen.GUI.Emulation
 		private frmMain _frm;
 		private ctrlRenderer _renderer;
 		private Panel _panel;
+		private bool _resizeForm;
 
 		public DisplayManager(frmMain frm, ctrlRenderer renderer, Panel panel)
 		{
@@ -30,11 +31,11 @@ namespace Mesen.GUI.Emulation
 			SetScaleBasedOnWindowSize();
 		}
 
-		public void UpdateViewerSize(bool resizeForm)
+		public void UpdateViewerSize()
 		{
 			ScreenSize screenSize = EmuApi.GetScreenSize(false);
 
-			if(resizeForm && _frm.WindowState != FormWindowState.Maximized) {
+			if(_resizeForm && _frm.WindowState != FormWindowState.Maximized) {
 				_frm.Resize -= frmMain_Resize;
 				Size newSize = new Size(screenSize.Width, screenSize.Height);
 				_frm.ClientSize = new Size(newSize.Width, newSize.Height + _panel.Top);
@@ -72,11 +73,12 @@ namespace Mesen.GUI.Emulation
 
 		public void SetScale(double scale, bool resizeForm)
 		{
+			_resizeForm = resizeForm;
 			ConfigManager.Config.Video.VideoScale = scale;
 			ConfigManager.Config.Video.ApplyConfig();
 			ConfigManager.ApplyChanges();
 
-			UpdateViewerSize(resizeForm);
+			UpdateViewerSize();
 		}
 
 		public void ToggleFullscreen()
