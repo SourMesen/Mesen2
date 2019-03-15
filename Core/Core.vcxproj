@@ -114,6 +114,7 @@
     <ClInclude Include="SettingTypes.h" />
     <ClInclude Include="ShortcutKeyHandler.h" />
     <ClInclude Include="SnesController.h" />
+    <ClInclude Include="SnesMouse.h" />
     <ClInclude Include="SNES_SPC.h" />
     <ClInclude Include="SoundMixer.h" />
     <ClInclude Include="SoundResampler.h" />

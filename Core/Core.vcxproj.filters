@@ -248,6 +248,9 @@
     <ClInclude Include="WaveRecorder.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="SnesMouse.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

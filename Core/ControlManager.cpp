@@ -8,6 +8,7 @@
 #include "IInputProvider.h"
 #include "IInputRecorder.h"
 #include "SnesController.h"
+#include "SnesMouse.h"
 #include "../Utilities/Serializer.h"
 
 ControlManager::ControlManager(shared_ptr<Console> console)
@@ -100,7 +101,7 @@ shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerT
 	switch(type) {
 		case ControllerType::None: break;
 		case ControllerType::SnesController: device.reset(new SnesController(console, port, cfg.Controllers[port].Keys)); break;
-		case ControllerType::SnesMouse: break;
+		case ControllerType::SnesMouse: device.reset(new SnesMouse(console, port)); break;
 		case ControllerType::SuperScope: break;
 	}
 	

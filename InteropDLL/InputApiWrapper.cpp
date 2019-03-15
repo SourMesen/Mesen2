@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include "../Core/Console.h"
 #include "../Core/KeyManager.h"
 #include "../Core/ShortcutKeyHandler.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
 extern unique_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
+extern shared_ptr<Console> _console;
 
 static string _returnString;
 
@@ -11,7 +13,7 @@ extern "C"
 {
 	DllExport void __stdcall SetMousePosition(double x, double y)
 	{
-		KeyManager::SetMousePosition(x, y); 
+		KeyManager::SetMousePosition(_console, x, y); 
 	}
 
 	DllExport void __stdcall SetMouseMovement(int16_t x, int16_t y)

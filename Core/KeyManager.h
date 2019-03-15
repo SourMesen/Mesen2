@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "IKeyManager.h"
 
+class Console;
+
 class KeyManager
 {
 private:
@@ -23,8 +25,8 @@ public:
 	static void UpdateDevices();
 	
 	static void SetMouseMovement(int16_t x, int16_t y);
-	static MouseMovement GetMouseMovement(double mouseSensitivity);
+	static MouseMovement GetMouseMovement(double videoScale, double mouseSensitivity);
 	
-	static void SetMousePosition(double x, double y);
+	static void SetMousePosition(shared_ptr<Console> console, double x, double y);
 	static MousePosition GetMousePosition();
 };
