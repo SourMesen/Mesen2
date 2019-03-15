@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "IRenderingDevice.h"
 #include "VideoRenderer.h"
-//#include "AviRecorder.h"
+#include "AviRecorder.h"
 #include "VideoDecoder.h"
 #include "Console.h"
+#include "EmuSettings.h"
 
 VideoRenderer::VideoRenderer(shared_ptr<Console> console)
 {
@@ -58,11 +59,10 @@ void VideoRenderer::RenderThread()
 
 void VideoRenderer::UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height)
 {
-	//TODO
-	/*shared_ptr<AviRecorder> aviRecorder = _aviRecorder;
+	shared_ptr<AviRecorder> aviRecorder = _aviRecorder;
 	if(aviRecorder) {
 		aviRecorder->AddFrame(frameBuffer, width, height);
-	}*/
+	}
 	
 	if(_renderer) {		
 		_renderer->UpdateFrame(frameBuffer, width, height);
@@ -84,14 +84,12 @@ void VideoRenderer::UnregisterRenderingDevice(IRenderingDevice *renderer)
 	}
 }
 
-//TODO
-/*
 void VideoRenderer::StartRecording(string filename, VideoCodec codec, uint32_t compressionLevel)
 {
 	shared_ptr<AviRecorder> recorder(new AviRecorder(_console));
 
 	FrameInfo frameInfo = _console->GetVideoDecoder()->GetFrameInfo();
-	if(recorder->StartRecording(filename, codec, frameInfo.Width, frameInfo.Height, frameInfo.BitsPerPixel, _console->GetSettings()->GetSampleRate(), compressionLevel)) {
+	if(recorder->StartRecording(filename, codec, frameInfo.Width, frameInfo.Height, 4, _console->GetSettings()->GetAudioConfig().SampleRate, compressionLevel)) {
 		_aviRecorder = recorder;
 	}
 }
@@ -113,4 +111,3 @@ bool VideoRenderer::IsRecording()
 {
 	return _aviRecorder != nullptr && _aviRecorder->IsRecording();
 }
-*/

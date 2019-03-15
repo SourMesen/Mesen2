@@ -4,6 +4,7 @@
 #include "EmuSettings.h"
 #include "SoundResampler.h"
 #include "RewindManager.h"
+#include "VideoRenderer.h"
 #include "../Utilities/Equalizer.h"
 #include "../Utilities/blip_buf.h"
 
@@ -47,35 +48,45 @@ void SoundMixer::StopAudio(bool clearBuffer)
 
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 {
-	if(_audioDevice) {
-		AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
+	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
 		
-		if(!cfg.EnableAudio) {
-			_audioDevice->Stop();
-			return;
+	if(cfg.EnableEqualizer) {
+		ProcessEqualizer(samples, sampleCount);
+	}
+
+	if(cfg.MasterVolume != 25) {
+		//Apply volume if not using the default value
+		for(uint32_t i = 0; i < sampleCount * 2; i++) {
+			samples[i] = (int32_t)samples[i] * (int32_t)cfg.MasterVolume / 25;
+		}
+	}
+
+	shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
+	if(rewindManager && rewindManager->SendAudio(samples, (uint32_t)sampleCount)) {
+		int16_t *out = nullptr;
+		uint32_t count = 0;
+		if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
+			out = samples;
+			count = sampleCount;
+		} else {
+			count = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
+			out = _sampleBuffer;
 		}
 
-		if(cfg.EnableEqualizer) {
-			ProcessEqualizer(samples, sampleCount);
+		bool isRecording = _console->GetVideoRenderer()->IsRecording() /* TODO || _waveRecorder*/;
+		if(isRecording) {
+			_console->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
 		}
 
-		if(cfg.MasterVolume != 25) {
-			//Apply volume if not using the default value
-			for(uint32_t i = 0; i < sampleCount * 2; i++) {
-				samples[i] = (int32_t)samples[i] * (int32_t)cfg.MasterVolume / 25;
+		if(_audioDevice) {
+			if(!cfg.EnableAudio) {
+				_audioDevice->Stop();
+				return;
 			}
-		}
 
-		shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
-		if(rewindManager && rewindManager->SendAudio(samples, (uint32_t)sampleCount)) {
-			if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
-				_audioDevice->PlayBuffer(samples, sampleCount, cfg.SampleRate, true);
-			} else {
-				uint32_t resampledCount = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
-				_audioDevice->PlayBuffer(_sampleBuffer, resampledCount, cfg.SampleRate, true);
-			}
+			_audioDevice->PlayBuffer(out, count, cfg.SampleRate, true);
+			_audioDevice->ProcessEndOfFrame();
 		}
-		_audioDevice->ProcessEndOfFrame();
 	}
 }
 

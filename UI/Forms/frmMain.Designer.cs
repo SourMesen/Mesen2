@@ -111,6 +111,10 @@
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuVideoRecorder = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAviRecord = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAviStop = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuLogWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuTakeScreenshot = new System.Windows.Forms.ToolStripMenuItem();
@@ -747,12 +751,46 @@
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuVideoRecorder,
+            this.toolStripMenuItem11,
             this.mnuLogWindow,
             this.toolStripMenuItem7,
             this.mnuTakeScreenshot});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
 			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
 			this.toolsToolStripMenuItem.Text = "Tools";
+			this.toolsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.toolsToolStripMenuItem_DropDownOpening);
+			// 
+			// mnuVideoRecorder
+			// 
+			this.mnuVideoRecorder.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuAviRecord,
+            this.mnuAviStop});
+			this.mnuVideoRecorder.Image = global::Mesen.GUI.Properties.Resources.VideoRecorder;
+			this.mnuVideoRecorder.Name = "mnuVideoRecorder";
+			this.mnuVideoRecorder.Size = new System.Drawing.Size(159, 22);
+			this.mnuVideoRecorder.Text = "Video Recorder";
+			// 
+			// mnuAviRecord
+			// 
+			this.mnuAviRecord.Image = global::Mesen.GUI.Properties.Resources.Record;
+			this.mnuAviRecord.Name = "mnuAviRecord";
+			this.mnuAviRecord.Size = new System.Drawing.Size(155, 22);
+			this.mnuAviRecord.Text = "Record...";
+			this.mnuAviRecord.Click += new System.EventHandler(this.mnuAviRecord_Click);
+			// 
+			// mnuAviStop
+			// 
+			this.mnuAviStop.Image = global::Mesen.GUI.Properties.Resources.MediaStop;
+			this.mnuAviStop.Name = "mnuAviStop";
+			this.mnuAviStop.Size = new System.Drawing.Size(155, 22);
+			this.mnuAviStop.Text = "Stop Recording";
+			this.mnuAviStop.Click += new System.EventHandler(this.mnuAviStop_Click);
+			// 
+			// toolStripMenuItem11
+			// 
+			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+			this.toolStripMenuItem11.Size = new System.Drawing.Size(156, 6);
 			// 
 			// mnuLogWindow
 			// 
@@ -1015,5 +1053,9 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuRegionNtsc;
 		private System.Windows.Forms.ToolStripMenuItem mnuRegionPal;
 		private Controls.ctrlRecentGames ctrlRecentGames;
+		private System.Windows.Forms.ToolStripMenuItem mnuVideoRecorder;
+		private System.Windows.Forms.ToolStripMenuItem mnuAviRecord;
+		private System.Windows.Forms.ToolStripMenuItem mnuAviStop;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
 	}
 }

@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AviRecorder.h" />
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseRenderer.h" />
@@ -126,6 +127,7 @@
     <ClInclude Include="VideoRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AviRecorder.cpp" />
     <ClCompile Include="BaseCartridge.cpp" />
     <ClCompile Include="BaseControlDevice.cpp" />
     <ClCompile Include="BaseRenderer.cpp" />

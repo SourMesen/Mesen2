@@ -431,5 +431,26 @@ namespace Mesen.GUI.Forms
 			mnuRegionNtsc.Checked = ConfigManager.Config.Emulation.Region == ConsoleRegion.Ntsc;
 			mnuRegionPal.Checked = ConfigManager.Config.Emulation.Region == ConsoleRegion.Pal;
 		}
+
+		private void mnuAviRecord_Click(object sender, EventArgs e)
+		{
+			using(frmRecordAvi frm = new frmRecordAvi()) {
+				if(frm.ShowDialog(mnuVideoRecorder, this) == DialogResult.OK) {
+					RecordApi.AviRecord(frm.Filename, ConfigManager.Config.AviRecord.Codec, ConfigManager.Config.AviRecord.CompressionLevel);
+				}
+			}
+		}
+
+		private void mnuAviStop_Click(object sender, EventArgs e)
+		{
+			RecordApi.AviStop();
+		}
+
+		private void toolsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+		{
+			mnuVideoRecorder.Enabled = EmuRunner.IsRunning();
+			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
+			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
+		}
 	}
 }

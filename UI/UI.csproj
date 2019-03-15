@@ -209,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\AudioConfig.cs" />
+    <Compile Include="Config\AviRecordConfig.cs" />
     <Compile Include="Config\BaseConfig.cs" />
     <Compile Include="Config\ConfigAttributes.cs" />
     <Compile Include="Config\Configuration.cs" />
@@ -557,10 +558,10 @@
     <Compile Include="Forms\frmFullscreenRenderer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmLogWindow.cs">
+    <Compile Include="Forms\Tools\frmLogWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmLogWindow.designer.cs">
+    <Compile Include="Forms\Tools\frmLogWindow.designer.cs">
       <DependentUpon>frmLogWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmMain.cs">
@@ -575,6 +576,13 @@
     <Compile Include="Forms\frmSelectRom.designer.cs">
       <DependentUpon>frmSelectRom.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Tools\frmRecordAvi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Tools\frmRecordAvi.designer.cs">
+      <DependentUpon>frmRecordAvi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interop\RecordApi.cs" />
     <Compile Include="Updates\frmDownloadProgress.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -744,7 +752,7 @@
     <EmbeddedResource Include="Forms\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmLogWindow.resx">
+    <EmbeddedResource Include="Forms\Tools\frmLogWindow.resx">
       <DependentUpon>frmLogWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmMain.resx">
@@ -752,6 +760,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmSelectRom.resx">
       <DependentUpon>frmSelectRom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Tools\frmRecordAvi.resx">
+      <DependentUpon>frmRecordAvi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Updates\frmDownloadProgress.resx">
       <DependentUpon>frmDownloadProgress.cs</DependentUpon>

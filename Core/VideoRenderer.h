@@ -6,9 +6,8 @@
 class IRenderingDevice;
 class Console;
 
-//TODO
-//class AviRecorder;
-//enum class VideoCodec;
+class AviRecorder;
+enum class VideoCodec;
 
 class VideoRenderer
 {
@@ -20,8 +19,7 @@ private:
 	IRenderingDevice* _renderer = nullptr;
 	atomic<bool> _stopFlag;
 
-	//TODO
-	//shared_ptr<AviRecorder> _aviRecorder;
+	shared_ptr<AviRecorder> _aviRecorder;
 
 	void RenderThread();
 
@@ -36,10 +34,8 @@ public:
 	void RegisterRenderingDevice(IRenderingDevice *renderer);
 	void UnregisterRenderingDevice(IRenderingDevice *renderer);
 
-	//TODO
-	/*
 	void StartRecording(string filename, VideoCodec codec, uint32_t compressionLevel);
 	void AddRecordingSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate);
 	void StopRecording();
-	bool IsRecording();*/
+	bool IsRecording();
 };
