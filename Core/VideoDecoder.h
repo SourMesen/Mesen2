@@ -28,7 +28,7 @@ private:
 	atomic<bool> _stopFlag;
 	uint32_t _frameCount = 0;
 
-	FrameInfo _baseFrameInfo = { 256, 224 };
+	FrameInfo _baseFrameInfo = { 512, 478 };
 	ScreenSize _previousScreenSize = {};
 	double _previousScale = 0;
 	FrameInfo _lastFrameInfo;

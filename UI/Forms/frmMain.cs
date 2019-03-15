@@ -22,10 +22,15 @@ namespace Mesen.GUI.Forms
 	{
 		private NotificationListener _notifListener;
 		private ShortcutHandler _shortcuts;
+		private DisplayManager _displayManager;
 
 		public frmMain(string[] args)
 		{
 			InitializeComponent();
+			if(DesignMode) {
+				return;
+			}
+
 			ResourceHelper.LoadResources(Language.English);
 		}
 
@@ -44,8 +49,6 @@ namespace Mesen.GUI.Forms
 		{
 			base.OnShown(e);
 
-			_shortcuts = new ShortcutHandler();
-
 			EmuApi.InitDll();
 			ConfigManager.Config.Video.ApplyConfig();
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, Handle, ctrlRenderer.Handle, false, false, false);
@@ -53,9 +56,13 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
 
+			_displayManager = new DisplayManager(this, ctrlRenderer, pnlRenderer);
+			_displayManager.UpdateViewerSize(false);
+			_shortcuts = new ShortcutHandler(_displayManager);
+
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
-
+			
 			SaveStateManager.InitializeStateMenu(mnuSaveState, true, _shortcuts);
 			SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
 
@@ -63,9 +70,9 @@ namespace Mesen.GUI.Forms
 
 			ctrlRecentGames.Initialize();
 			ctrlRecentGames.Visible = true;
+			ResizeRecentGames();
 
 			this.Resize += frmMain_Resize;
-			ResizeRecentGames();
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
@@ -102,13 +109,6 @@ namespace Mesen.GUI.Forms
 						ctrlRecentGames.Initialize();
 						ctrlRecentGames.Visible = true;
 						ResizeRecentGames();
-					}));
-					break;
-
-				case ConsoleNotificationType.ResolutionChanged:
-					ScreenSize size = EmuApi.GetScreenSize(false);
-					this.BeginInvoke((Action)(() => {
-						UpdateViewerSize(size);
 					}));
 					break;
 
@@ -191,58 +191,14 @@ namespace Mesen.GUI.Forms
 			mnuRegionPal.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Pal); };
 		}
 		
-		private void UpdateViewerSize(ScreenSize screenSize)
-		{
-			if(_shortcuts.AutoResizeForm && this.WindowState != FormWindowState.Maximized) {
-				this.Resize -= frmMain_Resize;
-				Size newSize = new Size(screenSize.Width, screenSize.Height);
-				this.ClientSize = new Size(newSize.Width, newSize.Height + pnlRenderer.Top);
-				this.Resize += frmMain_Resize;
-			}
-
-			ctrlRenderer.Size = new Size(screenSize.Width, screenSize.Height);
-			ctrlRenderer.Top = (pnlRenderer.Height - ctrlRenderer.Height) / 2;
-			ctrlRenderer.Left = (pnlRenderer.Width - ctrlRenderer.Width) / 2;
-		}
-		
-		private void SetScaleBasedOnDimensions(Size dimensions)
-		{
-			ScreenSize size = EmuApi.GetScreenSize(true);
-
-			double verticalScale = (double)dimensions.Height / size.Height;
-			double horizontalScale = (double)dimensions.Width / size.Width;
-			double scale = Math.Min(verticalScale, horizontalScale);
-			/*if(_fullscreenMode && ConfigManager.Config.Video.FullscreenForceIntegerScale) {
-				scale = Math.Floor(scale);
-			}*/
-
-			_shortcuts.SetScale(scale, false);
-		}
-
-		private void SetScaleBasedOnWindowSize()
-		{
-			SetScaleBasedOnDimensions(pnlRenderer.ClientSize);
-		}
-
-		private void SetScaleBasedOnScreenSize()
-		{
-			SetScaleBasedOnDimensions(Screen.FromControl(this).Bounds.Size);
-		}
-
 		private void ResizeRecentGames()
 		{
 			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - 80;
 		}
 
-		private void ProcessResize()
-		{
-			ResizeRecentGames();
-			SetScaleBasedOnWindowSize();
-		}
-
 		private void frmMain_Resize(object sender, EventArgs e)
 		{
-			ProcessResize();
+			ResizeRecentGames();
 		}
 		
 		private void mnuVideoConfig_Click(object sender, EventArgs e)

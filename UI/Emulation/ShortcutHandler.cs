@@ -13,10 +13,14 @@ namespace Mesen.GUI.Emulation
 {
 	public class ShortcutHandler
 	{
+		private DisplayManager _displayManager;
 		private Dictionary<EmulatorShortcut, Func<bool>> _actionEnabledFuncs = new Dictionary<EmulatorShortcut, Func<bool>>();
 		private List<uint> _speedValues = new List<uint> { 1, 3, 6, 12, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 750, 1000, 2000, 4000 };
 
-		public bool AutoResizeForm { get; internal set; }
+		public ShortcutHandler(DisplayManager displayManager)
+		{
+			_displayManager = displayManager;
+		}
 
 		public void BindShortcut(ToolStripMenuItem item, EmulatorShortcut shortcut, Func<bool> isActionEnabled = null)
 		{
@@ -80,18 +84,18 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
 				case EmulatorShortcut.ToggleDebugInfo: ToggleDebugInfo(); break;
 				case EmulatorShortcut.MaxSpeed: ToggleMaxSpeed(); break;
-				//case EmulatorShortcut.ToggleFullscreen: ToggleFullscreen(); restoreFullscreen = false; break;
+				case EmulatorShortcut.ToggleFullscreen: _displayManager.ToggleFullscreen(); break;
 
 				case EmulatorShortcut.OpenFile: OpenFile(); break;
 				case EmulatorShortcut.IncreaseSpeed: IncreaseEmulationSpeed(); break;
 				case EmulatorShortcut.DecreaseSpeed: DecreaseEmulationSpeed(); break;
 
-				case EmulatorShortcut.SetScale1x: SetScale(1); break;
-				case EmulatorShortcut.SetScale2x: SetScale(2); break;
-				case EmulatorShortcut.SetScale3x: SetScale(3); break;
-				case EmulatorShortcut.SetScale4x: SetScale(4); break;
-				case EmulatorShortcut.SetScale5x: SetScale(5); break;
-				case EmulatorShortcut.SetScale6x: SetScale(6); break;
+				case EmulatorShortcut.SetScale1x: _displayManager.SetScale(1, true); break;
+				case EmulatorShortcut.SetScale2x: _displayManager.SetScale(2, true); break;
+				case EmulatorShortcut.SetScale3x: _displayManager.SetScale(3, true); break;
+				case EmulatorShortcut.SetScale4x: _displayManager.SetScale(4, true); break;
+				case EmulatorShortcut.SetScale5x: _displayManager.SetScale(5, true); break;
+				case EmulatorShortcut.SetScale6x: _displayManager.SetScale(6, true); break;
 		
 				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
 
@@ -145,7 +149,7 @@ namespace Mesen.GUI.Emulation
 				}
 			}
 		}
-		
+				
 		public void SetRegion(ConsoleRegion region)
 		{
 			ConfigManager.Config.Emulation.Region = region;
@@ -156,14 +160,6 @@ namespace Mesen.GUI.Emulation
 		public void SetVideoFilter(VideoFilterType filter)
 		{
 			ConfigManager.Config.Video.VideoFilter = filter;
-			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.ApplyChanges();
-		}
-
-		public void SetScale(double scale, bool autoResize = true)
-		{
-			this.AutoResizeForm = autoResize;
-			ConfigManager.Config.Video.VideoScale = scale;
 			ConfigManager.Config.Video.ApplyConfig();
 			ConfigManager.ApplyChanges();
 		}
@@ -229,7 +225,9 @@ namespace Mesen.GUI.Emulation
 
 		private void ToggleOsd()
 		{
-			//TODO
+			ConfigManager.Config.Preferences.DisableOsd = !ConfigManager.Config.Preferences.DisableOsd;
+			ConfigManager.Config.Preferences.ApplyConfig();
+			ConfigManager.ApplyChanges();
 		}
 
 		private void ToggleFps()

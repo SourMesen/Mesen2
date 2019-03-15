@@ -22,8 +22,8 @@ Ppu::Ppu(shared_ptr<Console> console)
 
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];
-	memset(_outputBuffers[0], 0, 512 * 478);
-	memset(_outputBuffers[1], 0, 512 * 478);
+	memset(_outputBuffers[0], 0, 512 * 478 * sizeof(uint16_t));
+	memset(_outputBuffers[1], 0, 512 * 478 * sizeof(uint16_t));
 
 	_currentBuffer = _outputBuffers[0];
 
@@ -1016,7 +1016,8 @@ void Ppu::ApplyBrightness()
 
 void Ppu::ApplyHiResMode()
 {
-	uint16_t scanline = _scanline - 1;
+	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
+	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 7);
 	uint32_t screenY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 	uint32_t baseAddr = (screenY << 9);
 
@@ -1073,10 +1074,16 @@ void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 
 void Ppu::SendFrame()
 {
+	constexpr uint16_t width = 512;
+	constexpr uint16_t height = 478;
+
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	uint16_t width = 512;
-	uint16_t height = _overscanMode ? 478 : 448;
+	if(!_overscanMode) {
+		//Clear the top 7 and bottom 8 rows
+		memset(_currentBuffer, 0, width * 14 * sizeof(uint16_t));
+		memset(_currentBuffer + width * 462, 0, width * 16 * sizeof(uint16_t));
+	}
 
 	bool isRewinding = _console->GetRewindManager()->IsRewinding();
 	if(isRewinding || _screenInterlace) {

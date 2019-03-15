@@ -467,6 +467,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Debugger\WatchManager.cs" />
+    <Compile Include="Emulation\DisplayManager.cs" />
     <Compile Include="Emulation\SaveStateManager.cs" />
     <Compile Include="Forms\BaseConfigForm.Designer.cs">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>
