@@ -109,6 +109,9 @@ namespace Mesen.GUI.Forms
 						ctrlRecentGames.Initialize();
 						ctrlRecentGames.Visible = true;
 						ResizeRecentGames();
+						if(_displayManager.ExclusiveFullscreen) {
+							_displayManager.SetFullscreenState(false);
+						}
 					}));
 					break;
 

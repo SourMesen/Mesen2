@@ -185,7 +185,7 @@
 			this.chkUseExclusiveFullscreen.TabIndex = 24;
 			this.chkUseExclusiveFullscreen.Text = "Use exclusive fullscreen mode";
 			this.chkUseExclusiveFullscreen.UseVisualStyleBackColor = true;
-			this.chkUseExclusiveFullscreen.Visible = false;
+			this.chkUseExclusiveFullscreen.CheckedChanged += new System.EventHandler(this.chkUseExclusiveFullscreen_CheckedChanged);
 			// 
 			// lblVideoScale
 			// 
@@ -373,11 +373,12 @@
 			this.cboRefreshRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cboRefreshRate.FormattingEnabled = true;
 			this.cboRefreshRate.Items.AddRange(new object[] {
-            "Auto",
-            "NTSC (8:7)",
-            "PAL (18:13)",
-            "Standard (4:3)",
-            "Widescreen (16:9)"});
+            "50 Hz",
+            "60 Hz",
+            "100 Hz",
+            "120 Hz",
+            "200 Hz",
+            "240 Hz"});
 			this.cboRefreshRate.Location = new System.Drawing.Point(137, 3);
 			this.cboRefreshRate.Name = "cboRefreshRate";
 			this.cboRefreshRate.Size = new System.Drawing.Size(68, 21);

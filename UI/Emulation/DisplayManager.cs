@@ -22,8 +22,10 @@ namespace Mesen.GUI.Emulation
 		private bool _fullscreenMode;
 		private FormWindowState _originalWindowState;
 		private Size _originalWindowMinimumSize;
+		private frmFullscreenRenderer _frmFullscreenRenderer = null;
 
 		public bool Fullscreen { get { return _fullscreenMode; } }
+		public bool ExclusiveFullscreen { get { return _frmFullscreenRenderer != null; } }
 
 		public DisplayManager(frmMain frm, ctrlRenderer renderer, Panel panel, MenuStrip menu, ctrlRecentGames recentGames)
 		{
@@ -162,7 +164,7 @@ namespace Mesen.GUI.Emulation
 			SetFullscreenState(!_fullscreenMode);
 		}
 
-		private void SetFullscreenState(bool enabled)
+		public void SetFullscreenState(bool enabled)
 		{
 			if(_fullscreenMode == enabled) {
 				//Fullscreen mode already matches, no need to do anything
@@ -173,12 +175,10 @@ namespace Mesen.GUI.Emulation
 			_fullscreenMode = enabled;
 
 			if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
-				if(EmuRunner.IsRunning()) {
-					if(enabled) {
-						//StartExclusiveFullscreenMode();
-					} else {
-						//StopExclusiveFullscreenMode();
-					}
+				if(enabled && EmuRunner.IsRunning()) {
+					StartExclusiveFullscreenMode();
+				} else {
+					StopExclusiveFullscreenMode();
 				}
 			} else {
 				_frm.Resize -= frmMain_Resize;
@@ -213,6 +213,38 @@ namespace Mesen.GUI.Emulation
 			_frm.MinimumSize = _originalWindowMinimumSize;
 			_frm.FormBorderStyle = FormBorderStyle.Sizable;
 			frmMain_Resize(null, EventArgs.Empty);
+		}
+
+		private void StopExclusiveFullscreenMode()
+		{
+			if(_frmFullscreenRenderer != null) {
+				_frmFullscreenRenderer.Close();
+			}
+			_fullscreenMode = false;
+		}
+
+		private void StartExclusiveFullscreenMode()
+		{
+			Size screenSize = Screen.FromControl(_frm).Bounds.Size;
+			_frmFullscreenRenderer = new frmFullscreenRenderer();
+			_frmFullscreenRenderer.Shown += (object sender, EventArgs e) => {
+				_renderer.Visible = false;
+				SetScaleBasedOnScreenSize();
+				EmuApi.SetFullscreenMode(true, _frmFullscreenRenderer.Handle, (UInt32)screenSize.Width, (UInt32)screenSize.Height);
+			};
+			_frmFullscreenRenderer.FormClosing += (object sender, FormClosingEventArgs e) => {
+				EmuApi.SetFullscreenMode(false, _renderer.Handle, (UInt32)screenSize.Width, (UInt32)screenSize.Height);
+				_frmFullscreenRenderer = null;
+				_renderer.Visible = true;
+				_fullscreenMode = false;
+				frmMain_Resize(null, EventArgs.Empty);
+			};
+
+			Screen currentScreen = Screen.FromHandle(_frm.Handle);
+			_frmFullscreenRenderer.StartPosition = FormStartPosition.Manual;
+			_frmFullscreenRenderer.Top = currentScreen.Bounds.Top;
+			_frmFullscreenRenderer.Left = currentScreen.Bounds.Left;
+			_frmFullscreenRenderer.Show();
 		}
 	}
 }

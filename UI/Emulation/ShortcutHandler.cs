@@ -67,14 +67,14 @@ namespace Mesen.GUI.Emulation
 				}
 			}
 
-			//TODO bool restoreFullscreen = _frmFullscreenRenderer != null;
+			bool restoreFullscreen = _displayManager.ExclusiveFullscreen;
 
 			switch(shortcut) {
 				case EmulatorShortcut.Pause: TogglePause(); break;
 				case EmulatorShortcut.Reset: ResetEmu(); break;
 				case EmulatorShortcut.PowerCycle: PowerCycleEmu(); break;
-				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); break;
-				case EmulatorShortcut.Exit: Application.OpenForms[0].Close(); break;
+				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); restoreFullscreen = false; break;
+				case EmulatorShortcut.Exit: Application.OpenForms[0].Close(); restoreFullscreen = false; break;
 
 				case EmulatorShortcut.ToggleAudio: ToggleAudio(); break;
 				case EmulatorShortcut.ToggleFps: ToggleFps(); break;
@@ -84,7 +84,7 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
 				case EmulatorShortcut.ToggleDebugInfo: ToggleDebugInfo(); break;
 				case EmulatorShortcut.MaxSpeed: ToggleMaxSpeed(); break;
-				case EmulatorShortcut.ToggleFullscreen: _displayManager.ToggleFullscreen(); break;
+				case EmulatorShortcut.ToggleFullscreen: _displayManager.ToggleFullscreen(); restoreFullscreen = false; break;
 
 				case EmulatorShortcut.OpenFile: OpenFile(); break;
 				case EmulatorShortcut.IncreaseSpeed: IncreaseEmulationSpeed(); break;
@@ -125,12 +125,10 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.LoadStateSlotAuto: SaveStateManager.LoadState(11); break;
 			}
 
-			//TODO
-			/*
-			if(restoreFullscreen && _frmFullscreenRenderer == null && !_shuttingDown) {
+			if(restoreFullscreen && !_displayManager.ExclusiveFullscreen) {
 				//Need to restore fullscreen mode after showing a dialog
-				this.SetFullscreenState(true);
-			}*/
+				_displayManager.SetFullscreenState(true);
+			}
 		}
 		
 		private void OpenFile()

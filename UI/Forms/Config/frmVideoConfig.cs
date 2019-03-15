@@ -147,5 +147,10 @@ namespace Mesen.GUI.Forms.Config
 		{
 			UpdateOverscanImage(picOverscan, (int)nudOverscanTop.Value, (int)nudOverscanBottom.Value, (int)nudOverscanLeft.Value, (int)nudOverscanRight.Value);
 		}
+
+		private void chkUseExclusiveFullscreen_CheckedChanged(object sender, EventArgs e)
+		{
+			flpRefreshRate.Visible = chkUseExclusiveFullscreen.Checked;
+		}
 	}
 }
