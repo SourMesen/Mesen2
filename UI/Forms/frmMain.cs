@@ -29,6 +29,17 @@ namespace Mesen.GUI.Forms
 			ResourceHelper.LoadResources(Language.English);
 		}
 
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			if(!ConfigManager.Config.WindowSize.IsEmpty) {
+				this.StartPosition = FormStartPosition.Manual;
+				this.Location = ConfigManager.Config.WindowLocation;
+				this.Size = ConfigManager.Config.WindowSize;
+			}
+		}
+
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
@@ -52,6 +63,9 @@ namespace Mesen.GUI.Forms
 
 			ctrlRecentGames.Initialize();
 			ctrlRecentGames.Visible = true;
+
+			this.Resize += frmMain_Resize;
+			ResizeRecentGames();
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
@@ -63,6 +77,8 @@ namespace Mesen.GUI.Forms
 				_notifListener = null;
 			}
 
+			ConfigManager.Config.WindowLocation = this.WindowState == FormWindowState.Normal ? this.Location : this.RestoreBounds.Location;
+			ConfigManager.Config.WindowSize = this.WindowState == FormWindowState.Normal ? this.Size : this.RestoreBounds.Size;
 			ConfigManager.ApplyChanges();
 
 			DebugApi.ResumeExecution();
@@ -85,6 +101,7 @@ namespace Mesen.GUI.Forms
 					this.BeginInvoke((Action)(() => {
 						ctrlRecentGames.Initialize();
 						ctrlRecentGames.Visible = true;
+						ResizeRecentGames();
 					}));
 					break;
 
@@ -176,28 +193,58 @@ namespace Mesen.GUI.Forms
 		
 		private void UpdateViewerSize(ScreenSize screenSize)
 		{
-			//this.Resize -= frmMain_Resize;
-
-			//if(forceUpdate || (!_customSize && this.WindowState != FormWindowState.Maximized)) {
+			if(_shortcuts.AutoResizeForm && this.WindowState != FormWindowState.Maximized) {
+				this.Resize -= frmMain_Resize;
 				Size newSize = new Size(screenSize.Width, screenSize.Height);
-
-				//UpdateScaleMenu(size.Scale);
 				this.ClientSize = new Size(newSize.Width, newSize.Height + pnlRenderer.Top);
-			//}
+				this.Resize += frmMain_Resize;
+			}
 
 			ctrlRenderer.Size = new Size(screenSize.Width, screenSize.Height);
 			ctrlRenderer.Top = (pnlRenderer.Height - ctrlRenderer.Height) / 2;
 			ctrlRenderer.Left = (pnlRenderer.Width - ctrlRenderer.Width) / 2;
+		}
+		
+		private void SetScaleBasedOnDimensions(Size dimensions)
+		{
+			ScreenSize size = EmuApi.GetScreenSize(true);
 
-			//this.Resize += frmMain_Resize;
+			double verticalScale = (double)dimensions.Height / size.Height;
+			double horizontalScale = (double)dimensions.Width / size.Width;
+			double scale = Math.Min(verticalScale, horizontalScale);
+			/*if(_fullscreenMode && ConfigManager.Config.Video.FullscreenForceIntegerScale) {
+				scale = Math.Floor(scale);
+			}*/
+
+			_shortcuts.SetScale(scale, false);
 		}
 
-		protected override void OnResize(EventArgs e)
+		private void SetScaleBasedOnWindowSize()
 		{
-			base.OnResize(e);
+			SetScaleBasedOnDimensions(pnlRenderer.ClientSize);
+		}
+
+		private void SetScaleBasedOnScreenSize()
+		{
+			SetScaleBasedOnDimensions(Screen.FromControl(this).Bounds.Size);
+		}
+
+		private void ResizeRecentGames()
+		{
 			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - 80;
 		}
 
+		private void ProcessResize()
+		{
+			ResizeRecentGames();
+			SetScaleBasedOnWindowSize();
+		}
+
+		private void frmMain_Resize(object sender, EventArgs e)
+		{
+			ProcessResize();
+		}
+		
 		private void mnuVideoConfig_Click(object sender, EventArgs e)
 		{
 			using(frmVideoConfig frm = new frmVideoConfig()) {

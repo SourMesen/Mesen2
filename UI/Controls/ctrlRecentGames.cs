@@ -20,7 +20,6 @@ namespace Mesen.GUI.Controls
 	public partial class ctrlRecentGames : BaseControl
 	{
 		public delegate void RecentGameLoadedHandler(RecentGameInfo gameInfo);
-		public event RecentGameLoadedHandler OnRecentGameLoaded;
 
 		public new event MouseEventHandler MouseMove
 		{

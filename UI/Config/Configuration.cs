@@ -22,8 +22,8 @@ namespace Mesen.GUI.Config
 		public PreferencesConfig Preferences;
 		public DebugInfo Debug;
 		public RecentItems RecentFiles;
-		public Point? WindowLocation;
-		public Size? WindowSize;
+		public Point WindowLocation;
+		public Size WindowSize;
 		public bool NeedInputReinit = true;
 
 		public Configuration()

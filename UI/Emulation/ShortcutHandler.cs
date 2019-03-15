@@ -16,6 +16,8 @@ namespace Mesen.GUI.Emulation
 		private Dictionary<EmulatorShortcut, Func<bool>> _actionEnabledFuncs = new Dictionary<EmulatorShortcut, Func<bool>>();
 		private List<uint> _speedValues = new List<uint> { 1, 3, 6, 12, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 750, 1000, 2000, 4000 };
 
+		public bool AutoResizeForm { get; internal set; }
+
 		public void BindShortcut(ToolStripMenuItem item, EmulatorShortcut shortcut, Func<bool> isActionEnabled = null)
 		{
 			item.Click += (object sender, EventArgs e) => {
@@ -158,8 +160,9 @@ namespace Mesen.GUI.Emulation
 			ConfigManager.ApplyChanges();
 		}
 
-		private void SetScale(int scale)
+		public void SetScale(double scale, bool autoResize = true)
 		{
+			this.AutoResizeForm = autoResize;
 			ConfigManager.Config.Video.VideoScale = scale;
 			ConfigManager.Config.Video.ApplyConfig();
 			ConfigManager.ApplyChanges();
