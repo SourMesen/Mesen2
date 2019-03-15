@@ -16,29 +16,105 @@ namespace Mesen.GUI.Emulation
 		private frmMain _frm;
 		private ctrlRenderer _renderer;
 		private Panel _panel;
+		private MenuStrip _menu;
+		private ctrlRecentGames _recentGames;
 		private bool _resizeForm;
+		private bool _fullscreenMode;
+		private FormWindowState _originalWindowState;
+		private Size _originalWindowMinimumSize;
 
-		public DisplayManager(frmMain frm, ctrlRenderer renderer, Panel panel)
+		public bool Fullscreen { get { return _fullscreenMode; } }
+
+		public DisplayManager(frmMain frm, ctrlRenderer renderer, Panel panel, MenuStrip menu, ctrlRecentGames recentGames)
 		{
 			_frm = frm;
 			_renderer = renderer;
 			_panel = panel;
+			_menu = menu;
+			_recentGames = recentGames;
+
+			_renderer.MouseClick += ctrlRenderer_MouseClick;
+			_renderer.Enter += ctrlRenderer_Enter;
+			_renderer.MouseMove += ctrlRenderer_MouseMove;
+			_panel.MouseMove += ctrlRenderer_MouseMove;
+			_recentGames.MouseMove += ctrlRenderer_MouseMove;
+			_panel.Click += panelRenderer_Click;
+
 			_frm.Resize += frmMain_Resize;
+			_menu.VisibleChanged += menu_VisibleChanged;
 		}
 
 		private void frmMain_Resize(object sender, EventArgs e)
 		{
 			SetScaleBasedOnWindowSize();
 		}
+		
+		private void menu_VisibleChanged(object sender, EventArgs e)
+		{
+			if(!_menu.Visible) {
+				_renderer.Top += _menu.Height;
+			} else {
+				_renderer.Top -= _menu.Height;
+			}
+		}
+
+		public bool HideMenuStrip
+		{
+			get {	return (_fullscreenMode && !ConfigManager.Config.Video.UseExclusiveFullscreen) || ConfigManager.Config.Preferences.AutoHideMenu; }
+		}
+
+		private void ctrlRenderer_MouseMove(object sender, MouseEventArgs e)
+		{
+			if(sender != _recentGames) {
+				//CursorManager.OnMouseMove((Control)sender);
+			}
+
+			if(this.HideMenuStrip && !_menu.ContainsFocus) {
+				if(sender == _renderer) {
+					_menu.Visible = _renderer.Top + e.Y < 30;
+				} else {
+					_menu.Visible = e.Y < 30;
+				}
+			}
+		}
+
+		private void ctrlRenderer_MouseClick(object sender, MouseEventArgs e)
+		{
+			if(this.HideMenuStrip) {
+				_menu.Visible = false;
+			}
+			//CursorManager.CaptureMouse();
+		}
+
+		private void panelRenderer_Click(object sender, EventArgs e)
+		{
+			if(this.HideMenuStrip) {
+				_menu.Visible = false;
+			}
+			//CursorManager.CaptureMouse();
+
+			_renderer.Focus();
+		}
+
+		private void ctrlRenderer_Enter(object sender, EventArgs e)
+		{
+			if(this.HideMenuStrip) {
+				_menu.Visible = false;
+			}
+		}
 
 		public void UpdateViewerSize()
 		{
+			if(HideMenuStrip) {
+				_menu.Visible = false;
+			}
+
 			ScreenSize screenSize = EmuApi.GetScreenSize(false);
 
 			if(_resizeForm && _frm.WindowState != FormWindowState.Maximized) {
 				_frm.Resize -= frmMain_Resize;
 				Size newSize = new Size(screenSize.Width, screenSize.Height);
-				_frm.ClientSize = new Size(newSize.Width, newSize.Height + _panel.Top);
+				_frm.ClientSize = new Size(newSize.Width, newSize.Height + (HideMenuStrip ? 0 : _panel.Top));
 				_frm.Resize += frmMain_Resize;
 			}
 
@@ -54,9 +130,9 @@ namespace Mesen.GUI.Emulation
 			double verticalScale = (double)dimensions.Height / size.Height;
 			double horizontalScale = (double)dimensions.Width / size.Width;
 			double scale = Math.Min(verticalScale, horizontalScale);
-			/*if(_fullscreenMode && ConfigManager.Config.Video.FullscreenForceIntegerScale) {
+			if(_fullscreenMode && ConfigManager.Config.Video.FullscreenForceIntegerScale) {
 				scale = Math.Floor(scale);
-			}*/
+			}
 
 			SetScale(scale, false);
 		}
@@ -83,7 +159,60 @@ namespace Mesen.GUI.Emulation
 
 		public void ToggleFullscreen()
 		{
+			SetFullscreenState(!_fullscreenMode);
+		}
 
+		private void SetFullscreenState(bool enabled)
+		{
+			if(_fullscreenMode == enabled) {
+				//Fullscreen mode already matches, no need to do anything
+				return;
+			}
+
+			bool saveState = !_fullscreenMode;
+			_fullscreenMode = enabled;
+
+			if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
+				if(EmuRunner.IsRunning()) {
+					if(enabled) {
+						//StartExclusiveFullscreenMode();
+					} else {
+						//StopExclusiveFullscreenMode();
+					}
+				}
+			} else {
+				_frm.Resize -= frmMain_Resize;
+				if(enabled) {
+					StartFullscreenWindowMode(saveState);
+				} else {
+					StopFullscreenWindowMode();
+				}
+				_frm.Resize += frmMain_Resize;
+				UpdateViewerSize();
+			}
+		}
+
+		private void StartFullscreenWindowMode(bool saveState)
+		{
+			_menu.Visible = false;
+			if(saveState) {
+				_originalWindowState = _frm.WindowState;
+				_originalWindowMinimumSize = _frm.MinimumSize;
+			}
+			_frm.MinimumSize = new Size(0, 0);
+			_frm.WindowState = FormWindowState.Normal;
+			_frm.FormBorderStyle = FormBorderStyle.None;
+			_frm.WindowState = FormWindowState.Maximized;
+			SetScaleBasedOnWindowSize();
+		}
+
+		private void StopFullscreenWindowMode()
+		{
+			_menu.Visible = true;
+			_frm.WindowState = _originalWindowState;
+			_frm.MinimumSize = _originalWindowMinimumSize;
+			_frm.FormBorderStyle = FormBorderStyle.Sizable;
+			frmMain_Resize(null, EventArgs.Empty);
 		}
 	}
 }

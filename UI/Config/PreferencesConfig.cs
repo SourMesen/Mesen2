@@ -24,6 +24,7 @@ namespace Mesen.GUI.Config
 		public UInt32 RewindBufferSize = 600;
 
 		public bool AlwaysOnTop = false;
+		public bool AutoHideMenu = false;
 
 		public bool ShowFps = false;
 		public bool ShowFrameCounter = false;

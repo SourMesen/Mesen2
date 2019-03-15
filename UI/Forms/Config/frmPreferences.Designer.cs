@@ -41,6 +41,7 @@
 			this.btnOpenMesenFolder = new System.Windows.Forms.Button();
 			this.btnResetSettings = new System.Windows.Forms.Button();
 			this.tpgShortcuts = new System.Windows.Forms.TabPage();
+			this.ctrlEmulatorShortcuts = new Mesen.GUI.Forms.Config.ctrlEmulatorShortcuts();
 			this.tpgFiles = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
 			this.grpPathOverrides = new System.Windows.Forms.GroupBox();
@@ -82,8 +83,8 @@
 			this.lblWindowSettings = new System.Windows.Forms.Label();
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
-			this.ctrlEmulatorShortcuts = new Mesen.GUI.Forms.Config.ctrlEmulatorShortcuts();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
+			this.chkAutoHideMenu = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -137,34 +138,25 @@
 			// 
 			this.tlpMain.ColumnCount = 1;
 			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tlpMain.Controls.Add(this.chkAutoHideMenu, 0, 5);
 			this.tlpMain.Controls.Add(this.chkSingleInstance, 0, 2);
 			this.tlpMain.Controls.Add(this.chkAutomaticallyCheckForUpdates, 0, 1);
 			this.tlpMain.Controls.Add(this.flowLayoutPanel2, 0, 0);
 			this.tlpMain.Controls.Add(this.lblMiscSettings, 0, 3);
 			this.tlpMain.Controls.Add(this.chkAutoLoadPatches, 0, 4);
-			this.tlpMain.Controls.Add(this.tableLayoutPanel5, 0, 6);
+			this.tlpMain.Controls.Add(this.tableLayoutPanel5, 0, 7);
 			this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tlpMain.Location = new System.Drawing.Point(3, 3);
 			this.tlpMain.Name = "tlpMain";
-			this.tlpMain.RowCount = 7;
+			this.tlpMain.RowCount = 8;
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tlpMain.Size = new System.Drawing.Size(534, 383);
 			this.tlpMain.TabIndex = 1;
 			// 
@@ -289,6 +281,14 @@
 			this.tpgShortcuts.TabIndex = 7;
 			this.tpgShortcuts.Text = "Shortcut Keys";
 			this.tpgShortcuts.UseVisualStyleBackColor = true;
+			// 
+			// ctrlEmulatorShortcuts
+			// 
+			this.ctrlEmulatorShortcuts.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlEmulatorShortcuts.Location = new System.Drawing.Point(3, 3);
+			this.ctrlEmulatorShortcuts.Name = "ctrlEmulatorShortcuts";
+			this.ctrlEmulatorShortcuts.Size = new System.Drawing.Size(534, 383);
+			this.ctrlEmulatorShortcuts.TabIndex = 0;
 			// 
 			// tpgFiles
 			// 
@@ -847,14 +847,6 @@
 			this.chkShowFps.Text = "Show FPS";
 			this.chkShowFps.UseVisualStyleBackColor = true;
 			// 
-			// ctrlEmulatorShortcuts
-			// 
-			this.ctrlEmulatorShortcuts.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ctrlEmulatorShortcuts.Location = new System.Drawing.Point(3, 3);
-			this.ctrlEmulatorShortcuts.Name = "ctrlEmulatorShortcuts";
-			this.ctrlEmulatorShortcuts.Size = new System.Drawing.Size(534, 383);
-			this.ctrlEmulatorShortcuts.TabIndex = 0;
-			// 
 			// chkShowDebugInfo
 			// 
 			this.chkShowDebugInfo.AutoSize = true;
@@ -865,6 +857,17 @@
 			this.chkShowDebugInfo.TabIndex = 34;
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
+			// 
+			// chkAutoHideMenu
+			// 
+			this.chkAutoHideMenu.AutoSize = true;
+			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 118);
+			this.chkAutoHideMenu.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkAutoHideMenu.Name = "chkAutoHideMenu";
+			this.chkAutoHideMenu.Size = new System.Drawing.Size(158, 17);
+			this.chkAutoHideMenu.TabIndex = 25;
+			this.chkAutoHideMenu.Text = "Automatically hide menu bar";
+			this.chkAutoHideMenu.UseVisualStyleBackColor = true;
 			// 
 			// frmPreferences
 			// 
@@ -967,5 +970,6 @@
 		private System.Windows.Forms.Button btnResetSettings;
 		private ctrlEmulatorShortcuts ctrlEmulatorShortcuts;
 		private System.Windows.Forms.CheckBox chkShowDebugInfo;
+		private System.Windows.Forms.CheckBox chkAutoHideMenu;
 	}
 }

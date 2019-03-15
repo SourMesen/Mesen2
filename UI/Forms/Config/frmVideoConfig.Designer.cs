@@ -71,11 +71,6 @@
 			this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
 			this.cboFilter = new System.Windows.Forms.ComboBox();
 			this.lblVideoFilter = new System.Windows.Forms.Label();
-			this.ctxPicturePresets = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mnuPresetComposite = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
 			this.tpgOverscan = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.picOverscan = new System.Windows.Forms.PictureBox();
@@ -91,6 +86,11 @@
 			this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
 			this.nudOverscanLeft = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblLeft = new System.Windows.Forms.Label();
+			this.ctxPicturePresets = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mnuPresetComposite = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -105,7 +105,6 @@
 			this.tableLayoutPanel4.SuspendLayout();
 			this.grpScanlines.SuspendLayout();
 			this.tableLayoutPanel8.SuspendLayout();
-			this.ctxPicturePresets.SuspendLayout();
 			this.tpgOverscan.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picOverscan)).BeginInit();
@@ -113,6 +112,7 @@
 			this.tableLayoutPanel12.SuspendLayout();
 			this.tableLayoutPanel13.SuspendLayout();
 			this.tableLayoutPanel14.SuspendLayout();
+			this.ctxPicturePresets.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -332,7 +332,6 @@
 			this.chkFullscreenForceIntegerScale.TabIndex = 23;
 			this.chkFullscreenForceIntegerScale.Text = "Use integer scale values when entering fullscreen mode";
 			this.chkFullscreenForceIntegerScale.UseVisualStyleBackColor = true;
-			this.chkFullscreenForceIntegerScale.Visible = false;
 			// 
 			// chkIntegerFpsMode
 			// 
@@ -776,44 +775,6 @@
 			this.lblVideoFilter.TabIndex = 13;
 			this.lblVideoFilter.Text = "Filter:";
 			// 
-			// ctxPicturePresets
-			// 
-			this.ctxPicturePresets.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuPresetComposite,
-            this.mnuPresetSVideo,
-            this.mnuPresetRgb,
-            this.mnuPresetMonochrome});
-			this.ctxPicturePresets.Name = "contextPicturePresets";
-			this.ctxPicturePresets.Size = new System.Drawing.Size(148, 92);
-			// 
-			// mnuPresetComposite
-			// 
-			this.mnuPresetComposite.Name = "mnuPresetComposite";
-			this.mnuPresetComposite.Size = new System.Drawing.Size(147, 22);
-			this.mnuPresetComposite.Text = "Composite";
-			this.mnuPresetComposite.Click += new System.EventHandler(this.mnuPresetComposite_Click);
-			// 
-			// mnuPresetSVideo
-			// 
-			this.mnuPresetSVideo.Name = "mnuPresetSVideo";
-			this.mnuPresetSVideo.Size = new System.Drawing.Size(147, 22);
-			this.mnuPresetSVideo.Text = "S-Video";
-			this.mnuPresetSVideo.Click += new System.EventHandler(this.mnuPresetSVideo_Click);
-			// 
-			// mnuPresetRgb
-			// 
-			this.mnuPresetRgb.Name = "mnuPresetRgb";
-			this.mnuPresetRgb.Size = new System.Drawing.Size(147, 22);
-			this.mnuPresetRgb.Text = "RGB";
-			this.mnuPresetRgb.Click += new System.EventHandler(this.mnuPresetRgb_Click);
-			// 
-			// mnuPresetMonochrome
-			// 
-			this.mnuPresetMonochrome.Name = "mnuPresetMonochrome";
-			this.mnuPresetMonochrome.Size = new System.Drawing.Size(147, 22);
-			this.mnuPresetMonochrome.Text = "Monochrome";
-			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
-			// 
 			// tpgOverscan
 			// 
 			this.tpgOverscan.Controls.Add(this.tableLayoutPanel1);
@@ -1102,6 +1063,44 @@
 			this.lblLeft.Text = "Left";
 			this.lblLeft.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
+			// ctxPicturePresets
+			// 
+			this.ctxPicturePresets.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuPresetComposite,
+            this.mnuPresetSVideo,
+            this.mnuPresetRgb,
+            this.mnuPresetMonochrome});
+			this.ctxPicturePresets.Name = "contextPicturePresets";
+			this.ctxPicturePresets.Size = new System.Drawing.Size(148, 92);
+			// 
+			// mnuPresetComposite
+			// 
+			this.mnuPresetComposite.Name = "mnuPresetComposite";
+			this.mnuPresetComposite.Size = new System.Drawing.Size(147, 22);
+			this.mnuPresetComposite.Text = "Composite";
+			this.mnuPresetComposite.Click += new System.EventHandler(this.mnuPresetComposite_Click);
+			// 
+			// mnuPresetSVideo
+			// 
+			this.mnuPresetSVideo.Name = "mnuPresetSVideo";
+			this.mnuPresetSVideo.Size = new System.Drawing.Size(147, 22);
+			this.mnuPresetSVideo.Text = "S-Video";
+			this.mnuPresetSVideo.Click += new System.EventHandler(this.mnuPresetSVideo_Click);
+			// 
+			// mnuPresetRgb
+			// 
+			this.mnuPresetRgb.Name = "mnuPresetRgb";
+			this.mnuPresetRgb.Size = new System.Drawing.Size(147, 22);
+			this.mnuPresetRgb.Text = "RGB";
+			this.mnuPresetRgb.Click += new System.EventHandler(this.mnuPresetRgb_Click);
+			// 
+			// mnuPresetMonochrome
+			// 
+			this.mnuPresetMonochrome.Name = "mnuPresetMonochrome";
+			this.mnuPresetMonochrome.Size = new System.Drawing.Size(147, 22);
+			this.mnuPresetMonochrome.Text = "Monochrome";
+			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
+			// 
 			// frmVideoConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1137,7 +1136,6 @@
 			this.grpScanlines.ResumeLayout(false);
 			this.tableLayoutPanel8.ResumeLayout(false);
 			this.tableLayoutPanel8.PerformLayout();
-			this.ctxPicturePresets.ResumeLayout(false);
 			this.tpgOverscan.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.picOverscan)).EndInit();
@@ -1149,6 +1147,7 @@
 			this.tableLayoutPanel13.PerformLayout();
 			this.tableLayoutPanel14.ResumeLayout(false);
 			this.tableLayoutPanel14.PerformLayout();
+			this.ctxPicturePresets.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}

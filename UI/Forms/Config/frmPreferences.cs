@@ -35,6 +35,7 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(PreferencesConfig.AssociateMssFiles), chkMssFormat);
 
 			AddBinding(nameof(PreferencesConfig.AlwaysOnTop), chkAlwaysOnTop);
+			AddBinding(nameof(PreferencesConfig.AutoHideMenu), chkAutoHideMenu);
 
 			AddBinding(nameof(PreferencesConfig.ShowTitleBarInfo), chkDisplayTitleBarInfo);
 			AddBinding(nameof(PreferencesConfig.DisableOsd), chkDisableOsd);

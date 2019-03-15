@@ -56,7 +56,7 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
 
-			_displayManager = new DisplayManager(this, ctrlRenderer, pnlRenderer);
+			_displayManager = new DisplayManager(this, ctrlRenderer, pnlRenderer, mnuMain, ctrlRecentGames);
 			_displayManager.UpdateViewerSize();
 			_shortcuts = new ShortcutHandler(_displayManager);
 
@@ -124,6 +124,19 @@ namespace Mesen.GUI.Forms
 					}));
 					break;
 			}
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if(_displayManager.HideMenuStrip && (keyData & Keys.Alt) == Keys.Alt) {
+				if(mnuMain.Visible && !mnuMain.ContainsFocus) {
+					mnuMain.Visible = false;
+				} else {
+					mnuMain.Visible = true;
+					mnuMain.Focus();
+				}
+			}
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
 		private void BindShortcuts()
@@ -376,6 +389,8 @@ namespace Mesen.GUI.Forms
 			mnuScale4x.Checked = (scale == 4.0);
 			mnuScale5x.Checked = (scale == 5.0);
 			mnuScale6x.Checked = (scale == 6.0);
+
+			mnuFullscreen.Checked = _displayManager.Fullscreen;
 		}
 
 		private void mnuEmulationSpeed_DropDownOpening(object sender, EventArgs e)
