@@ -13,7 +13,7 @@ namespace Mesen.GUI.Config
 	public class RecentItems
 	{
 		private const int MaxRecentFiles = 10;
-		public List<RecentItem> Items;
+		public List<RecentItem> Items = new List<RecentItem>();
 
 		public void AddRecentFile(ResourcePath romFile, ResourcePath? patchFile)
 		{

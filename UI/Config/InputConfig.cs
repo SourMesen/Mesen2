@@ -34,45 +34,41 @@ namespace Mesen.GUI.Config
 		{
 			if(Controllers.Length != 5) {
 				Controllers = new ControllerConfig[5];
-				InitializeDefaults();
 			}
 			ConfigApi.SetInputConfig(this);
 		}
 
-		public void InitializeDefaults()
+		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			KeyMapping m1 = new KeyMapping();
-			m1.Up = InputApi.GetKeyCode("Pad1 Up");
-			m1.Down = InputApi.GetKeyCode("Pad1 Down");
-			m1.Left = InputApi.GetKeyCode("Pad1 Left");
-			m1.Right = InputApi.GetKeyCode("Pad1 Right");
-			m1.A = InputApi.GetKeyCode("Pad1 B");
-			m1.B = InputApi.GetKeyCode("Pad1 A");
-			m1.X = InputApi.GetKeyCode("Pad1 Y");
-			m1.Y = InputApi.GetKeyCode("Pad1 X");
-			m1.L = InputApi.GetKeyCode("Pad1 L1");
-			m1.R = InputApi.GetKeyCode("Pad1 R1");
-			m1.Select = InputApi.GetKeyCode("Pad1 Back");
-			m1.Start = InputApi.GetKeyCode("Pad1 Start");
-
-			KeyMapping m2 = new KeyMapping();
-			m2.Up = InputApi.GetKeyCode("Up Arrow");
-			m2.Down = InputApi.GetKeyCode("Down Arrow");
-			m2.Left = InputApi.GetKeyCode("Left Arrow");
-			m2.Right = InputApi.GetKeyCode("Right Arrow");
-			m2.A = InputApi.GetKeyCode("Z");
-			m2.B = InputApi.GetKeyCode("X");
-			m2.X = InputApi.GetKeyCode("S");
-			m2.Y = InputApi.GetKeyCode("A");
-			m2.L = InputApi.GetKeyCode("Q");
-			m2.R = InputApi.GetKeyCode("W");
-			m2.Select = InputApi.GetKeyCode("E");
-			m2.Start = InputApi.GetKeyCode("D");
-
+			KeyPresets presets = new KeyPresets();
+			List<KeyMapping> mappings = new List<KeyMapping>();
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
+				mappings.Add(presets.XboxLayout1);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
+				mappings.Add(presets.Ps4Layout1);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
+				mappings.Add(presets.WasdLayout);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
+				mappings.Add(presets.ArrowLayout);
+			}
+			
 			Controllers[0].Type = ControllerType.SnesController;
 			Controllers[0].Keys.TurboSpeed = 2;
-			Controllers[0].Keys.Mapping1 = m1;
-			Controllers[0].Keys.Mapping2 = m2;
+			if(mappings.Count > 0) {
+				Controllers[0].Keys.Mapping1 = mappings[0];
+				if(mappings.Count > 1) {
+					Controllers[0].Keys.Mapping2 = mappings[1];
+					if(mappings.Count > 2) {
+						Controllers[0].Keys.Mapping3 = mappings[2];
+						if(mappings.Count > 3) {
+							Controllers[0].Keys.Mapping4 = mappings[3];
+						}
+					}
+				}
+			}
 		}
 	}
 

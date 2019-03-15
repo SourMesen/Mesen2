@@ -275,10 +275,9 @@ namespace Mesen.GUI.Config
 
 		public static void ResetSettings()
 		{
-			//TODO
-			//DefaultKeyMappingType defaultMappings = Config.InputInfo.DefaultMapping;
+			DefaultKeyMappingType defaultMappings = Config.DefaultKeyMappings;
 			_dirtyConfig = new Configuration();
-			//Config.InputInfo.DefaultMapping = defaultMappings;
+			Config.DefaultKeyMappings = defaultMappings;
 			Config.InitializeDefaults();
 			ApplyChanges();
 			Config.ApplyConfig();

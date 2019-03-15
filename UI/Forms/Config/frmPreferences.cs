@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Config;
+using Mesen.GUI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -120,6 +121,71 @@ namespace Mesen.GUI.Forms.Config
 		private void radStorageDocuments_CheckedChanged(object sender, EventArgs e)
 		{
 			UpdateLocationText();
+		}
+
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			if(this.DialogResult == DialogResult.OK) {
+				if(!ValidateFolderSettings()) {
+					e.Cancel = true;
+					return;
+				}
+
+				if(radStorageDocuments.Checked != (ConfigManager.HomeFolder == ConfigManager.DefaultDocumentsFolder)) {
+					//Need to copy files and display confirmation
+					string targetFolder = radStorageDocuments.Checked ? ConfigManager.DefaultDocumentsFolder : ConfigManager.DefaultPortableFolder;
+					if(MesenMsgBox.Show("CopyMesenDataPrompt", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, ConfigManager.HomeFolder, targetFolder) == DialogResult.OK) {
+						try {
+							FolderHelper.MigrateData(ConfigManager.HomeFolder, targetFolder, this);
+						} catch(Exception ex) {
+							MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
+							e.Cancel = true;
+						}
+					} else {
+						e.Cancel = true;
+						return;
+					}
+				}
+			} else {
+				base.OnFormClosing(e);
+			}
+		}
+
+		private bool ValidateFolderSettings()
+		{
+			bool result = true;
+			List<string> invalidFolders = new List<string>();
+			try {
+				if(chkGameOverride.Checked && !FolderHelper.CheckFolderPermissions(psGame.Text, false)) {
+					invalidFolders.Add(chkGameOverride.Text.Replace(":", "").Trim());
+				}
+				if(chkAviOverride.Checked && !FolderHelper.CheckFolderPermissions(psAvi.Text)) {
+					invalidFolders.Add(chkAviOverride.Text.Replace(":", "").Trim());
+				}
+				if(chkMoviesOverride.Checked && !FolderHelper.CheckFolderPermissions(psMovies.Text)) {
+					invalidFolders.Add(chkMoviesOverride.Text.Replace(":", "").Trim());
+				}
+				if(chkSaveDataOverride.Checked && !FolderHelper.CheckFolderPermissions(psSaveData.Text)) {
+					invalidFolders.Add(chkSaveDataOverride.Text.Replace(":", "").Trim());
+				}
+				if(chkSaveStatesOverride.Checked && !FolderHelper.CheckFolderPermissions(psSaveStates.Text)) {
+					invalidFolders.Add(chkSaveStatesOverride.Text.Replace(":", "").Trim());
+				}
+				if(chkScreenshotsOverride.Checked && !FolderHelper.CheckFolderPermissions(psScreenshots.Text)) {
+					invalidFolders.Add(chkScreenshotsOverride.Text.Replace(":", "").Trim());
+				}
+				if(chkWaveOverride.Checked && !FolderHelper.CheckFolderPermissions(psWave.Text)) {
+					invalidFolders.Add(chkWaveOverride.Text.Replace(":", "").Trim());
+				}
+
+				result = invalidFolders.Count == 0;
+			} catch {
+				result = false;
+			}
+			if(!result) {
+				MesenMsgBox.Show("InvalidPaths", MessageBoxButtons.OK, MessageBoxIcon.Error, string.Join(Environment.NewLine, invalidFolders));
+			}
+			return result;
 		}
 	}
 }

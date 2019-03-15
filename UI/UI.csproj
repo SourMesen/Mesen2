@@ -518,6 +518,12 @@
     <Compile Include="Forms\Config\Controllers\frmControllerConfig.designer.cs">
       <DependentUpon>frmControllerConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Config\frmCopyFiles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmCopyFiles.designer.cs">
+      <DependentUpon>frmCopyFiles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Config\frmInputConfig.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -555,6 +561,12 @@
     </Compile>
     <Compile Include="Forms\frmAbout.designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmConfigWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmConfigWizard.designer.cs">
+      <DependentUpon>frmConfigWizard.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmFullscreenRenderer.cs">
       <SubType>Form</SubType>
@@ -615,6 +627,7 @@
     <Compile Include="SingleInstance.cs" />
     <Compile Include="Utilities\ArchiveHelper.cs" />
     <Compile Include="Utilities\CommandLineHelper.cs" />
+    <Compile Include="Utilities\FolderHelper.cs" />
     <Compile Include="Utilities\HexConverter.cs" />
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
@@ -735,6 +748,9 @@
     <EmbeddedResource Include="Forms\Config\Controllers\frmControllerConfig.resx">
       <DependentUpon>frmControllerConfig.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmCopyFiles.resx">
+      <DependentUpon>frmCopyFiles.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmInputConfig.resx">
       <DependentUpon>frmInputConfig.cs</DependentUpon>
     </EmbeddedResource>
@@ -752,6 +768,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmConfigWizard.resx">
+      <DependentUpon>frmConfigWizard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Tools\frmLogWindow.resx">
       <DependentUpon>frmLogWindow.cs</DependentUpon>

@@ -26,6 +26,7 @@ namespace Mesen.GUI.Config
 		public Point WindowLocation;
 		public Size WindowSize;
 		public bool NeedInputReinit = true;
+		public DefaultKeyMappingType DefaultKeyMappings = DefaultKeyMappingType.None;
 
 		public Configuration()
 		{
@@ -73,7 +74,7 @@ namespace Mesen.GUI.Config
 		{
 			Preferences.InitializeDefaultShortcuts();
 			if(NeedInputReinit) {
-				Input.InitializeDefaults();
+				Input.InitializeDefaults(DefaultKeyMappings);
 				NeedInputReinit = false;
 			}
 			ConfigManager.ApplyChanges();
