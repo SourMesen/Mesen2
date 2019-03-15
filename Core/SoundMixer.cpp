@@ -5,6 +5,7 @@
 #include "SoundResampler.h"
 #include "RewindManager.h"
 #include "VideoRenderer.h"
+#include "WaveRecorder.h"
 #include "../Utilities/Equalizer.h"
 #include "../Utilities/blip_buf.h"
 
@@ -73,8 +74,11 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 			out = _sampleBuffer;
 		}
 
-		bool isRecording = _console->GetVideoRenderer()->IsRecording() /* TODO || _waveRecorder*/;
+		bool isRecording = _waveRecorder || _console->GetVideoRenderer()->IsRecording();
 		if(isRecording) {
+			if(_waveRecorder) {
+				_waveRecorder->WriteSamples(out, count, cfg.SampleRate, true);
+			}
 			_console->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
 		}
 
@@ -109,4 +113,19 @@ void SoundMixer::ProcessEqualizer(int16_t* samples, uint32_t sampleCount)
 double SoundMixer::GetRateAdjustment()
 {
 	return _resampler->GetRateAdjustment();
+}
+
+void SoundMixer::StartRecording(string filepath)
+{
+	_waveRecorder.reset(new WaveRecorder(filepath, _console->GetSettings()->GetAudioConfig().SampleRate, true));
+}
+
+void SoundMixer::StopRecording()
+{
+	_waveRecorder.reset();
+}
+
+bool SoundMixer::IsRecording()
+{
+	return _waveRecorder.get() != nullptr;
 }

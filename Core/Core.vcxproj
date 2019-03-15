@@ -125,6 +125,7 @@
     <ClInclude Include="TraceLogger.h" />
     <ClInclude Include="VideoDecoder.h" />
     <ClInclude Include="VideoRenderer.h" />
+    <ClInclude Include="WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AviRecorder.cpp" />
@@ -189,6 +190,7 @@
     <ClCompile Include="TraceLogger.cpp" />
     <ClCompile Include="VideoDecoder.cpp" />
     <ClCompile Include="VideoRenderer.cpp" />
+    <ClCompile Include="WaveRecorder.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}</ProjectGuid>

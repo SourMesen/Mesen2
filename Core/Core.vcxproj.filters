@@ -245,6 +245,9 @@
     <ClInclude Include="AviRecorder.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="WaveRecorder.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -394,6 +397,9 @@
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="AviRecorder.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveRecorder.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>

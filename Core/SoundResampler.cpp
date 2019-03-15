@@ -27,7 +27,7 @@ double SoundResampler::GetRateAdjustment()
 double SoundResampler::GetTargetRateAdjustment()
 {
 	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
-	bool isRecording = _console->GetVideoRenderer()->IsRecording() /* TODO || _waveRecorder */;
+	bool isRecording = _console->GetSoundMixer()->IsRecording() || _console->GetVideoRenderer()->IsRecording();
 	if(!isRecording && !cfg.DisableDynamicSampleRate) {
 		//Don't deviate from selected sample rate while recording
 		//TODO: Have 2 output streams (one for recording, one for the speakers)

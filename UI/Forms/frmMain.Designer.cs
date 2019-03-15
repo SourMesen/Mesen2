@@ -132,6 +132,9 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
+			this.mnuSoundRecorder = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuWaveRecord = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuWaveStop = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -751,6 +754,7 @@
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuSoundRecorder,
             this.mnuVideoRecorder,
             this.toolStripMenuItem11,
             this.mnuLogWindow,
@@ -930,6 +934,33 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
+			// mnuSoundRecorder
+			// 
+			this.mnuSoundRecorder.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuWaveRecord,
+            this.mnuWaveStop});
+			this.mnuSoundRecorder.Image = global::Mesen.GUI.Properties.Resources.Microphone;
+			this.mnuSoundRecorder.Name = "mnuSoundRecorder";
+			this.mnuSoundRecorder.Size = new System.Drawing.Size(159, 22);
+			this.mnuSoundRecorder.Text = "Sound Recorder";
+			this.mnuSoundRecorder.DropDownOpening += new System.EventHandler(this.mnuSoundRecorder_DropDownOpening);
+			// 
+			// mnuWaveRecord
+			// 
+			this.mnuWaveRecord.Image = global::Mesen.GUI.Properties.Resources.Record;
+			this.mnuWaveRecord.Name = "mnuWaveRecord";
+			this.mnuWaveRecord.Size = new System.Drawing.Size(155, 22);
+			this.mnuWaveRecord.Text = "Record...";
+			this.mnuWaveRecord.Click += new System.EventHandler(this.mnuWaveRecord_Click);
+			// 
+			// mnuWaveStop
+			// 
+			this.mnuWaveStop.Image = global::Mesen.GUI.Properties.Resources.MediaStop;
+			this.mnuWaveStop.Name = "mnuWaveStop";
+			this.mnuWaveStop.Size = new System.Drawing.Size(155, 22);
+			this.mnuWaveStop.Text = "Stop Recording";
+			this.mnuWaveStop.Click += new System.EventHandler(this.mnuWaveStop_Click);
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -1057,5 +1088,8 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuAviRecord;
 		private System.Windows.Forms.ToolStripMenuItem mnuAviStop;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
+		private System.Windows.Forms.ToolStripMenuItem mnuSoundRecorder;
+		private System.Windows.Forms.ToolStripMenuItem mnuWaveRecord;
+		private System.Windows.Forms.ToolStripMenuItem mnuWaveStop;
 	}
 }

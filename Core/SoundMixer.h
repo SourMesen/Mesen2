@@ -5,6 +5,7 @@
 class Console;
 class Equalizer;
 class SoundResampler;
+class WaveRecorder;
 
 class SoundMixer 
 {
@@ -13,6 +14,7 @@ private:
 	Console *_console;
 	unique_ptr<Equalizer> _equalizer;
 	unique_ptr<SoundResampler> _resampler;
+	shared_ptr<WaveRecorder> _waveRecorder;
 	int16_t *_sampleBuffer = nullptr;
 
 	void ProcessEqualizer(int16_t *samples, uint32_t sampleCount);
@@ -27,4 +29,8 @@ public:
 	void RegisterAudioDevice(IAudioDevice *audioDevice);
 	AudioStatistics GetStatistics();
 	double GetRateAdjustment();
+
+	void StartRecording(string filepath);
+	void StopRecording();
+	bool IsRecording();
 };

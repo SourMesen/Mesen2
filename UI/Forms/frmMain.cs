@@ -452,5 +452,30 @@ namespace Mesen.GUI.Forms
 			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
 			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
 		}
+
+		private void mnuWaveRecord_Click(object sender, EventArgs e)
+		{
+			using(SaveFileDialog sfd = new SaveFileDialog()) {
+				sfd.SetFilter(ResourceHelper.GetMessage("FilterWave"));
+				sfd.InitialDirectory = ConfigManager.WaveFolder;
+				//TODO
+				//sfd.FileName = InteropEmu.GetRomInfo().GetRomName() + ".wav";
+				if(sfd.ShowDialog(this) == DialogResult.OK) {
+					RecordApi.WaveRecord(sfd.FileName);
+				}
+			}
+		}
+
+		private void mnuWaveStop_Click(object sender, EventArgs e)
+		{
+			RecordApi.WaveStop();
+		}
+
+		private void mnuSoundRecorder_DropDownOpening(object sender, EventArgs e)
+		{
+			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
+			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
+			mnuWaveStop.Enabled = EmuRunner.IsRunning() && RecordApi.WaveIsRecording();
+		}
 	}
 }
