@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using Mesen.GUI.Config;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Utilities;
 
 namespace Mesen.GUI
 {
@@ -118,8 +119,7 @@ namespace Mesen.GUI
 						singleInstance.ArgumentsReceived += (object sender, ArgumentsReceivedEventArgs e) => {
 							if(frmMain.IsHandleCreated) {
 								frmMain.BeginInvoke((MethodInvoker)(() => {
-									//frmMain.ProcessCommandLineArguments(CommandLineHelper.PreprocessCommandLineArguments(e.Args, true), false);
-									//frmMain.LoadGameFromCommandLine(CommandLineHelper.PreprocessCommandLineArguments(e.Args, false));
+									new CommandLineHelper(e.Args).LoadGameFromCommandLine();
 								}));
 							}
 						};

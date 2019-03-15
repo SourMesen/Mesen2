@@ -4,6 +4,7 @@ using Mesen.GUI.Debugger;
 using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms.Config;
 using Mesen.GUI.Updates;
+using Mesen.GUI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +24,7 @@ namespace Mesen.GUI.Forms
 		private NotificationListener _notifListener;
 		private ShortcutHandler _shortcuts;
 		private DisplayManager _displayManager;
+		private CommandLineHelper _commandLine;
 
 		public frmMain(string[] args)
 		{
@@ -30,6 +32,8 @@ namespace Mesen.GUI.Forms
 			if(DesignMode) {
 				return;
 			}
+
+			_commandLine = new CommandLineHelper(args);
 
 			ResourceHelper.LoadResources(Language.English);
 		}
@@ -69,8 +73,12 @@ namespace Mesen.GUI.Forms
 			BindShortcuts();
 
 			ctrlRecentGames.Initialize();
-			ctrlRecentGames.Visible = true;
 			ResizeRecentGames();
+
+			_commandLine.LoadGameFromCommandLine();
+			if(!EmuRunner.IsRunning()) {
+				ctrlRecentGames.Visible = true;
+			}
 
 			this.Resize += frmMain_Resize;
 		}

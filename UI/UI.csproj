@@ -208,7 +208,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineHelper.cs" />
     <Compile Include="Config\AudioConfig.cs" />
     <Compile Include="Config\BaseConfig.cs" />
     <Compile Include="Config\ConfigAttributes.cs" />
@@ -606,6 +605,7 @@
     <Compile Include="RuntimeChecker.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="Utilities\ArchiveHelper.cs" />
+    <Compile Include="Utilities\CommandLineHelper.cs" />
     <Compile Include="Utilities\HexConverter.cs" />
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
