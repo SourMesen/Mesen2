@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.GUI.Emulation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace Mesen.GUI.Forms
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			if(keyData == Keys.Escape) {
-				//CursorManager.ReleaseMouse();
+				CursorManager.ReleaseMouse();
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);

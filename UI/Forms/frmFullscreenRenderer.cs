@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.GUI.Emulation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -43,7 +44,7 @@ namespace Mesen.GUI.Forms
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
-			//CursorManager.CaptureMouse();
+			CursorManager.CaptureMouse();
 			SetMouseButtonState(Control.MouseButtons);
 		}
 
@@ -68,11 +69,11 @@ namespace Mesen.GUI.Forms
 			int leftMargin = (this.Width - size.Width) / 2;
 			int topMargin = (this.Height - size.Height) / 2;
 
-			//CursorManager.OnMouseMove(this);
+			CursorManager.OnMouseMove(this);
 
-			/*if(CursorManager.NeedMouseIcon) {
+			if(CursorManager.NeedMouseIcon) {
 				this.Cursor = Cursors.Cross;
-			}*/
+			}
 
 			double xPos = (double)(e.X - leftMargin) / size.Width;
 			double yPos = (double)(e.Y - topMargin) / size.Height;
@@ -87,7 +88,7 @@ namespace Mesen.GUI.Forms
 		{
 			base.OnMouseLeave(e);
 
-			//CursorManager.OnMouseLeave();
+			CursorManager.OnMouseLeave();
 			InputApi.SetMousePosition(-1, -1);
 		}
 	}

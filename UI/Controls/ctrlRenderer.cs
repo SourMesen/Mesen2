@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
+using Mesen.GUI.Emulation;
 
 namespace Mesen.GUI.Controls
 {
@@ -43,12 +44,12 @@ namespace Mesen.GUI.Controls
 
 		private void ctrlRenderer_MouseMove(object sender, MouseEventArgs e)
 		{
-			/*CursorManager.OnMouseMove(this);
+			CursorManager.OnMouseMove(this);
 
 			if(CursorManager.NeedMouseIcon) {
 				this.Cursor = Cursors.Cross;
 			}
-			*/
+			
 			double xPos = (double)e.X / this.Width;
 			double yPos = (double)e.Y / this.Height;
 
@@ -60,7 +61,7 @@ namespace Mesen.GUI.Controls
 
 		private void ctrlRenderer_MouseLeave(object sender, EventArgs e)
 		{
-			//CursorManager.OnMouseLeave();
+			CursorManager.OnMouseLeave();
 			InputApi.SetMousePosition(-1, -1);
 		}
 	}

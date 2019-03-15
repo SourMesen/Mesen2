@@ -68,7 +68,7 @@ namespace Mesen.GUI.Emulation
 		private void ctrlRenderer_MouseMove(object sender, MouseEventArgs e)
 		{
 			if(sender != _recentGames) {
-				//CursorManager.OnMouseMove((Control)sender);
+				CursorManager.OnMouseMove((Control)sender);
 			}
 
 			if(this.HideMenuStrip && !_menu.ContainsFocus) {
@@ -85,7 +85,7 @@ namespace Mesen.GUI.Emulation
 			if(this.HideMenuStrip) {
 				_menu.Visible = false;
 			}
-			//CursorManager.CaptureMouse();
+			CursorManager.CaptureMouse();
 		}
 
 		private void panelRenderer_Click(object sender, EventArgs e)
@@ -93,7 +93,7 @@ namespace Mesen.GUI.Emulation
 			if(this.HideMenuStrip) {
 				_menu.Visible = false;
 			}
-			//CursorManager.CaptureMouse();
+			CursorManager.CaptureMouse();
 
 			_renderer.Focus();
 		}

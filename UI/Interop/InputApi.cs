@@ -11,6 +11,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetKeyState(Int32 scanCode, [MarshalAs(UnmanagedType.I1)]bool pressed);
 		[DllImport(DllPath)] public static extern void ResetKeyState();
 
+		[DllImport(DllPath)] public static extern void SetMouseMovement(Int16 x, Int16 y);
 		[DllImport(DllPath)] public static extern void SetMousePosition(double x, double y);
 		[DllImport(DllPath)] public static extern void DisableAllKeys([MarshalAs(UnmanagedType.I1)]bool disabled);
 		[DllImport(DllPath)] public static extern void UpdateInputDevices();

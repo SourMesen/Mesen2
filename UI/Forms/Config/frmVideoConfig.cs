@@ -52,6 +52,8 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(VideoConfig.OverscanRight), nudOverscanRight);
 			AddBinding(nameof(VideoConfig.OverscanTop), nudOverscanTop);
 			AddBinding(nameof(VideoConfig.OverscanBottom), nudOverscanBottom);
+
+			UpdateOverscanImage(picOverscan, 0, 0, 0, 0);
 		}
 
 		protected override bool ValidateInput()
