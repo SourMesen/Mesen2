@@ -79,8 +79,8 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 		
 		case AddrMode::Sig8: //BRK/COP signature, ignore them
 		case AddrMode::Imp: break;
-		case AddrMode::RelLng: str.Write(operand);
-		case AddrMode::Rel: str.Write(operand);
+		case AddrMode::RelLng: str.Write(operand); break;
+		case AddrMode::Rel: str.Write(operand); break;
 		case AddrMode::Stk: break;
 		case AddrMode::StkRel: str.Write(operand, ",S"); break;
 		case AddrMode::StkRelIndIdxY: str.Write('(', operand, ",S),Y"); break;
@@ -106,7 +106,7 @@ uint32_t DisassemblyInfo::GetOperandAddress(uint32_t memoryAddr)
 		if(_opSize == 2) {
 			opAddr = (memoryAddr & 0xFF0000) | (((int8_t)opAddr + memoryAddr + 2) & 0xFFFF);
 		} else {
-			opAddr = (memoryAddr & 0xFF0000) | (((int16_t)opAddr + memoryAddr + 2) & 0xFFFF);
+			opAddr = (memoryAddr & 0xFF0000) | (((int16_t)opAddr + memoryAddr + 3) & 0xFFFF);
 		}
 	}
 
@@ -197,7 +197,7 @@ void DisassemblyInfo::GetEffectiveAddressString(string &out, CpuState &state, Co
 
 int32_t DisassemblyInfo::GetEffectiveAddress(CpuState &state, Console *console)
 {
-	if(_addrMode > AddrMode::ImmM && _addrMode != AddrMode::Acc && _addrMode != AddrMode::Imp && _addrMode != AddrMode::Stk && _addrMode != AddrMode::Rel && _addrMode != AddrMode::RelLng && _addrMode != AddrMode::BlkMov) {
+	if(_addrMode > AddrMode::ImmM && _addrMode != AddrMode::Acc && _addrMode != AddrMode::Imp && _addrMode != AddrMode::Stk && _addrMode != AddrMode::Rel && _addrMode != AddrMode::RelLng && _addrMode != AddrMode::AbsLngJmp && _addrMode != AddrMode::BlkMov) {
 		DummyCpu cpu(console);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= _flags;

@@ -180,7 +180,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 		if(spcBios.IsValid()) {
 			spcBios.ReadFile(spcRomData);
 		} else {
-			MessageManager::Log("[SPC] spc700.rom not found, cannot launch game.");
+			MessageManager::DisplayMessage("SPC", "spc700.rom not found, cannot launch game.");
 			return false;
 		}
 
