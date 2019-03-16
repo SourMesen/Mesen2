@@ -288,7 +288,7 @@ void Ppu::EvaluateNextLineSprites()
 
 			if(color != 0) {
 				uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
-				_spritePixels[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+				_spritePixels[x] = paletteRamOffset;
 				_spritePriority[x] = info.Priority;
 				_spritePalette[x] = info.Palette;
 			}
@@ -536,7 +536,8 @@ void Ppu::RenderSprites()
 					continue;
 				}
 
-				_mainScreenBuffer[x] = _spritePixels[x];
+				uint16_t paletteRamOffset = _spritePixels[x];
+				_mainScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
 		}
@@ -547,8 +548,9 @@ void Ppu::RenderSprites()
 					//This pixel was masked
 					continue;
 				}
-
-				_subScreenBuffer[x] = _spritePixels[x];
+				
+				uint16_t paletteRamOffset = _spritePixels[x];
+				_subScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 				_subScreenFilled[x] = true;
 			}
 		}
