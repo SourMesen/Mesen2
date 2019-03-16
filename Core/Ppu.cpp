@@ -1439,6 +1439,11 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
+			if(!_forcedVblank && _scanline < (_overscanMode ? 240 : 225)) {
+				//Invalid VRAM access - can't write VRAM outside vblank/force blank
+				return;
+			}
+
 			_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
 
 			_vram[GetVramAddress() << 1] = value;
@@ -1449,6 +1454,11 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
+			if(!_forcedVblank && _scanline < (_overscanMode ? 240 : 225)) {
+				//Invalid VRAM access - can't write VRAM outside vblank/force blank
+				return;
+			}
+
 			_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
 
 			_vram[(GetVramAddress() << 1) + 1] = value;
