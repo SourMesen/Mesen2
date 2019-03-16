@@ -177,12 +177,26 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 	return value;
 }
 
-uint8_t MemoryManager::ReadDma(uint32_t addr)
+uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 {
 	IncrementMasterClockValue<4>();
 	uint8_t value;
-	if(_handlers[addr >> 12]) {
-		value = _handlers[addr >> 12]->Read(addr);
+	IMemoryHandler* handlers = _handlers[addr >> 12];
+	if(handlers) {
+		if(forBusA && handlers == _registerHandlerB.get()) {
+			//Trying to read from bus B using bus A returns open bus
+			value = _openBus;
+		} else if(handlers == _registerHandlerA.get()) {
+			uint16_t regAddr = addr & 0xFFFF;
+			if(regAddr == 0x420B || regAddr == 0x420C || (regAddr >= 0x4300 && regAddr <= 0x437F)) {
+				//Trying to read the DMA controller with DMA returns open bus
+				value = _openBus;
+			} else {
+				value = handlers->Read(addr);
+			}
+		} else {
+			value = handlers->Read(addr);
+		}
 		_openBus = value;
 	} else {
 		//open bus
@@ -216,19 +230,32 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 
 	_console->ProcessCpuWrite(addr, value, type);
 	if(_handlers[addr >> 12]) {
-		return _handlers[addr >> 12]->Write(addr, value);
+		_handlers[addr >> 12]->Write(addr, value);
 	} else {
 		MessageManager::Log("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 	}
 }
 
-void MemoryManager::WriteDma(uint32_t addr, uint8_t value)
+void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
 	IncrementMasterClockValue<4>();
 
 	_console->ProcessCpuWrite(addr, value, MemoryOperationType::DmaWrite);
-	if(_handlers[addr >> 12]) {
-		return _handlers[addr >> 12]->Write(addr, value);
+
+	IMemoryHandler* handlers = _handlers[addr >> 12];
+	if(handlers) {
+		if(forBusA && handlers == _registerHandlerB.get()) {
+			//Trying to write to bus B using bus A does nothing
+		} else if(handlers == _registerHandlerA.get()) {
+			uint16_t regAddr = addr & 0xFFFF;
+			if(regAddr == 0x420B || regAddr == 0x420C || (regAddr >= 0x4300 && regAddr <= 0x437F)) {
+				//Trying to write to the DMA controller with DMA does nothing
+			} else {
+				handlers->Write(addr, value);
+			}
+		} else {
+			handlers->Write(addr, value);
+		}
 	} else {
 		MessageManager::Log("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 	}

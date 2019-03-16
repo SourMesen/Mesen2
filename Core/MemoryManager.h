@@ -52,12 +52,12 @@ public:
 	void IncrementMasterClockValue(uint16_t value);
 
 	uint8_t Read(uint32_t addr, MemoryOperationType type);
-	uint8_t ReadDma(uint32_t addr);
+	uint8_t ReadDma(uint32_t addr, bool forBusA);
 	uint8_t Peek(uint32_t addr);
 	uint16_t PeekWord(uint32_t addr);
 
 	void Write(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void WriteDma(uint32_t addr, uint8_t value);
+	void WriteDma(uint32_t addr, uint8_t value, bool forBusA);
 
 	uint8_t GetOpenBus();
 	uint64_t GetMasterClock();

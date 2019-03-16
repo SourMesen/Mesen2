@@ -26,17 +26,17 @@ void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool
 {
 	if(fromBtoA) {
 		if(addressBusB != 0x2180 || !_memoryManager->IsWorkRam(addressBusA)) {
-			uint8_t valToWrite = _memoryManager->ReadDma(addressBusB);
-			_memoryManager->WriteDma(addressBusA, valToWrite);
+			uint8_t valToWrite = _memoryManager->ReadDma(addressBusB, false);
+			_memoryManager->WriteDma(addressBusA, valToWrite, true);
 		} else {
 			//$2180->WRAM do cause a write to occur (but no read), but the value written is invalid
 			_memoryManager->IncrementMasterClockValue<4>();
-			_memoryManager->WriteDma(addressBusA, 0xFF);
+			_memoryManager->WriteDma(addressBusA, 0xFF, true);
 		}
 	} else {
 		if(addressBusB != 0x2180 || !_memoryManager->IsWorkRam(addressBusA)) {
-			uint8_t valToWrite = _memoryManager->ReadDma(addressBusA);
-			_memoryManager->WriteDma(addressBusB, valToWrite);
+			uint8_t valToWrite = _memoryManager->ReadDma(addressBusA, true);
+			_memoryManager->WriteDma(addressBusB, valToWrite, false);
 		} else {
 			//WRAM->$2180 does not cause a write to occur
 			_memoryManager->IncrementMasterClockValue<8>();
@@ -98,7 +98,7 @@ void DmaController::InitHdmaChannels()
 			ch.InterruptedByHdma = true;
 
 			//"2. Load $43xA (Line Counter and Repeat) from the table. I believe $00 will terminate this channel immediately."
-			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress);
+			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
 			ch.HdmaTableAddress++;
 			if(ch.HdmaLineCounterAndRepeat == 0) {
 				ch.HdmaFinished = true;
@@ -106,8 +106,8 @@ void DmaController::InitHdmaChannels()
 
 			//3. Load Indirect Address, if necessary.
 			if(ch.HdmaIndirectAddressing) {
-				uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
-				uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
+				uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+				uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 				ch.TransferSize = (msb << 8) | lsb;
 
 				//"and 24 master cycles for each channel set for indirect HDMA"
@@ -127,34 +127,31 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 {
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
 	uint8_t transferByteCount = _transferByteCount[channel.TransferMode];
-
 	channel.InterruptedByHdma = true;
 
-	uint32_t srcAddress;
-	if(channel.HdmaIndirectAddressing) {
-		srcAddress = (channel.HdmaBank << 16) | channel.TransferSize;
-	} else {
-		srcAddress = (channel.SrcBank << 16) | channel.HdmaTableAddress;
-	}
-
 	uint8_t i = 0;
-	do {
-		CopyDmaByte(
-			srcAddress,
-			0x2100 | channel.DestAddress + transferOffsets[i],
-			channel.InvertDirection
-		);
-
-		srcAddress = (srcAddress + (channel.Decrement ? -1 : 1)) & 0xFFFFFF;
-
-		transferByteCount--;
-		i++;
-	} while(transferByteCount > 0);
-
 	if(channel.HdmaIndirectAddressing) {
-		channel.TransferSize = srcAddress;
+		do {
+			CopyDmaByte(
+				(channel.HdmaBank << 16) | channel.TransferSize,
+				0x2100 | channel.DestAddress + transferOffsets[i],
+				channel.InvertDirection
+			);
+			channel.TransferSize += (channel.Decrement ? -1 : 1);
+			transferByteCount--;
+			i++;
+		} while(transferByteCount > 0);
 	} else {
-		channel.HdmaTableAddress = srcAddress;
+		do {
+			CopyDmaByte(
+				(channel.SrcBank << 16) | channel.HdmaTableAddress,
+				0x2100 | channel.DestAddress + transferOffsets[i],
+				channel.InvertDirection
+			);
+			channel.HdmaTableAddress += (channel.Decrement ? -1 : 1);
+			transferByteCount--;
+			i++;
+		} while(transferByteCount > 0);
 	}
 }
 
@@ -200,18 +197,18 @@ void DmaController::ProcessHdmaChannels()
 			//5. If Line Counter is zero...
 			if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
 				//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
-				ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
+				ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 
 				//"b. If Addressing Mode is Indirect, read two bytes from Address into Indirect Address(and increment Address by two bytes)."
 				if(ch.HdmaIndirectAddressing) {
 					if(ch.HdmaLineCounterAndRepeat == 0) {
 						//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
 						//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
-						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
+						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 						ch.TransferSize = (msb << 8);
 					} else {
-						uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
-						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++);
+						uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 						ch.TransferSize = (msb << 8) | lsb;
 					}
 
