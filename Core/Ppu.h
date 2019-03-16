@@ -227,6 +227,8 @@ public:
 	Ppu(shared_ptr<Console> console);
 	~Ppu();
 
+	void Reset();
+
 	uint32_t GetFrameCount();
 	uint16_t GetScanline();
 	uint16_t GetCycle();

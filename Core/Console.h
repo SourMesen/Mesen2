@@ -76,11 +76,14 @@ public:
 	void Run();
 	void Stop(bool sendNotification);
 
+	void Reset();
+	void PowerCycle();
+
 	void Pause();
 	void Resume();
 	bool IsPaused();
 
-	bool LoadRom(VirtualFile romFile, VirtualFile patchFile);
+	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true);
 	RomInfo GetRomInfo();
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();
@@ -109,7 +112,9 @@ public:
 	shared_ptr<InternalRegisters> GetInternalRegisters();
 	shared_ptr<ControlManager> GetControlManager();
 	shared_ptr<DmaController> GetDmaController();
+
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
+	void StopDebugger();
 
 	thread::id GetEmulationThreadId();
 	

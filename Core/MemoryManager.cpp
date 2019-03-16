@@ -72,6 +72,11 @@ MemoryManager::~MemoryManager()
 	delete[] _workRam;
 }
 
+void MemoryManager::Reset()
+{
+	_masterClock = 0;
+}
+
 void MemoryManager::RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler * handler)
 {
 	if((startAddr & 0xFFF) != 0 || (endAddr & 0xFFF) != 0xFFF) {

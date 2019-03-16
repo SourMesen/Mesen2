@@ -56,6 +56,7 @@ private:
 public:
 	Debugger(shared_ptr<Console> console);
 	~Debugger();
+	void Release();
 
 	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);

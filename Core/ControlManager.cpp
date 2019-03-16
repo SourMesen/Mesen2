@@ -7,6 +7,7 @@
 #include "IKeyManager.h"
 #include "IInputProvider.h"
 #include "IInputRecorder.h"
+#include "SystemActionManager.h"
 #include "SnesController.h"
 #include "SnesMouse.h"
 #include "../Utilities/Serializer.h"
@@ -16,7 +17,7 @@ ControlManager::ControlManager(shared_ptr<Console> console)
 	_console = console;
 	_inputConfigVersion = -1;
 	_pollCounter = 0;
-
+	_systemActionManager.reset(new SystemActionManager(console));
 	UpdateControlDevices();
 }
 
@@ -64,6 +65,11 @@ vector<ControlDeviceState> ControlManager::GetPortStates()
 		}
 	}
 	return states;
+}
+
+shared_ptr<SystemActionManager> ControlManager::GetSystemActionManager()
+{
+	return _systemActionManager;
 }
 
 shared_ptr<BaseControlDevice> ControlManager::GetControlDevice(uint8_t port)
@@ -116,7 +122,7 @@ void ControlManager::UpdateControlDevices()
 
 		auto lock = _deviceLock.AcquireSafe();
 		_controlDevices.clear();
-
+		RegisterControlDevice(_systemActionManager);
 		for(int i = 0; i < 4; i++) {
 			shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i, _console);
 			if(device) {
@@ -124,6 +130,7 @@ void ControlManager::UpdateControlDevices()
 			}
 		}
 	}
+	_systemActionManager->ProcessSystemActions();
 }
 
 uint8_t ControlManager::GetOpenBusMask(uint8_t port)

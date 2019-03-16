@@ -373,11 +373,8 @@ void WindowsKeyManager::UpdateDevices()
 		return;
 	}
 
-	//TODO
-	//_console->Pause();
 	_xInput->UpdateDeviceList();
 	_directInput->UpdateDeviceList();
-	//_console->Resume();
 }
 
 void WindowsKeyManager::SetKeyState(uint16_t scanCode, bool state)

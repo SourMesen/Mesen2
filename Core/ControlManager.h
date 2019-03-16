@@ -9,6 +9,7 @@ class BaseControlDevice;
 class IInputRecorder;
 class IInputProvider;
 class Console;
+class SystemActionManager;
 struct ControlDeviceState;
 enum class ControllerType;
 enum class ExpansionPortDevice;
@@ -27,7 +28,7 @@ protected:
 	shared_ptr<Console> _console;
 	SimpleLock _deviceLock;
 	vector<shared_ptr<BaseControlDevice>> _controlDevices;
-	shared_ptr<BaseControlDevice> _systemActionManager;
+	shared_ptr<SystemActionManager> _systemActionManager;
 
 	void RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice);
 
@@ -52,6 +53,7 @@ public:
 
 	vector<ControlDeviceState> GetPortStates();
 
+	shared_ptr<SystemActionManager> GetSystemActionManager();
 	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);
 	vector<shared_ptr<BaseControlDevice>> GetControlDevices();
 	

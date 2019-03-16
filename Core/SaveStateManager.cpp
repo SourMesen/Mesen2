@@ -231,7 +231,7 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 	std::getline(romInfoStream, romPath);
 	std::getline(romInfoStream, patchPath);
 
-	_console->Pause();
+	_console->Lock();
 	try {
 		if(_console->LoadRom(romPath, patchPath)) {
 			if(!resetGame) {
@@ -241,5 +241,5 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 	} catch(std::exception ex) { 
 		_console->Stop(true);
 	}
-	_console->Resume();
+	_console->Unlock();
 }

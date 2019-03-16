@@ -27,8 +27,7 @@ extern "C"
 
 	DllExport void __stdcall ReleaseDebugger()
 	{
-		//_debugger.reset();
-		//_console->StopDebugger();
+		_console->StopDebugger();
 	}
 
 	DllExport bool __stdcall IsDebuggerRunning()

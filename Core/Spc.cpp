@@ -28,6 +28,13 @@ Spc::~Spc()
 	delete _spc;
 }
 
+void Spc::Reset()
+{
+	_spc->soft_reset();
+	_spc->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
+	_startFrameMasterClock = _console->GetMemoryManager()->GetMasterClock();
+}
+
 int Spc::GetSpcTime()
 {
 	uint64_t currentClock = _console->GetMemoryManager()->GetMasterClock();

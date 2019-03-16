@@ -102,7 +102,7 @@ namespace Mesen.GUI.Debugger
 				//TODO
 				//DebugWorkspaceManager.SaveWorkspace();
 				//DebugWorkspaceManager.Clear();
-				//DebugApi.ReleaseDebugger();
+				DebugApi.ReleaseDebugger();
 			}
 		}
 

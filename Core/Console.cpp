@@ -169,11 +169,52 @@ void Console::Stop(bool sendNotification)
 	}
 }
 
-bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
+void Console::Reset()
 {
+	Lock();
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->Run();
+	}
+
+	_dmaController->Reset();
+	_internalRegisters->Reset();
+	_memoryManager->Reset();
+	_spc->Reset();
+	_cpu->Reset();
+	_ppu->Reset();
+	//_cart->Reset();
+	//_controlManager->Reset();
+
+	if(debugger) {
+		debugger->Step(1);
+	}
+	Unlock();
+}
+
+void Console::PowerCycle()
+{
+	shared_ptr<BaseCartridge> cart = _cart;
+	if(cart) {
+		RomInfo info = cart->GetRomInfo();
+		Lock();
+		LoadRom(info.RomFile, info.PatchFile, false);
+		Unlock();
+	}
+}
+
+bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
+{
+	if(_cart) {
+		//Make sure the battery is saved to disk before we load another game (or reload the same game)
+		_cart->SaveBattery();
+	}
+
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
 	if(cart) {
-		Stop(false);
+		if(stopRom) {
+			Stop(false);
+		}
 
 		vector<uint8_t> spcRomData;
 		VirtualFile spcBios(FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "spc700.rom"));
@@ -201,12 +242,13 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile)
 
 		_controlManager->UpdateControlDevices();
 
-		//if(_debugger) {
+		if(_debugger) {
 			//Reset debugger if it was running before
-			//auto lock = _debuggerLock.AcquireSafe();
-			//_debugger.reset();
-			//GetDebugger();
-		//}
+			auto lock = _debuggerLock.AcquireSafe();
+			_debugger.reset();
+			GetDebugger();
+			_debugger->Step(1);
+		}
 		
 		UpdateRegion();
 		_memoryManager->IncrementMasterClockValue<170>();
@@ -481,6 +523,11 @@ shared_ptr<Debugger> Console::GetDebugger(bool autoStart)
 		}
 	}
 	return debugger;
+}
+
+void Console::StopDebugger()
+{
+	_debugger.reset();
 }
 
 thread::id Console::GetEmulationThreadId()

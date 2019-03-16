@@ -22,6 +22,8 @@ public:
 	Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData);
 	~Spc();
 
+	void Reset();
+
 	uint8_t Read(uint16_t addr);
 	void Write(uint32_t addr, uint8_t value);
 

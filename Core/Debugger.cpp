@@ -59,8 +59,17 @@ Debugger::Debugger(shared_ptr<Console> console)
 
 Debugger::~Debugger()
 {
+	Release();
+}
+
+void Debugger::Release()
+{
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->SaveCdlFile(cdlFile);
+
+	while(_executionStopped) {
+		Run();
+	}
 }
 
 void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)

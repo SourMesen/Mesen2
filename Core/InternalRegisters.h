@@ -34,6 +34,8 @@ private:
 public:
 	InternalRegisters(shared_ptr<Console> console);
 
+	void Reset();
+
 	void ProcessAutoJoypadRead();
 	uint8_t GetIoPortOutput();
 	void SetNmiFlag(bool nmiFlag);

@@ -39,7 +39,6 @@ private:
 	void MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage = 0, uint16_t endPage = 0x0F, uint16_t pageIncrement = 0, bool mirror = false);
 	
 	void LoadBattery();
-	void SaveBattery();
 
 	int32_t GetHeaderScore(uint32_t addr);
 	void DisplayCartInfo();
@@ -50,6 +49,8 @@ public:
 	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile &romFile, VirtualFile &patchFile);
 
 	void Init();
+
+	void SaveBattery();
 
 	RomInfo GetRomInfo();
 	string GetSha1Hash();

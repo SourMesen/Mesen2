@@ -52,6 +52,13 @@ Ppu::~Ppu()
 	delete[] _outputBuffers[1];
 }
 
+void Ppu::Reset()
+{
+	_scanline = 0;
+	_cycle = 0;
+	_forcedVblank = true;
+}
+
 uint32_t Ppu::GetFrameCount()
 {
 	return _frameCount;

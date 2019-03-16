@@ -2,6 +2,8 @@
 #include "../Core/Console.h"
 #include "../Core/EmuSettings.h"
 #include "../Core/VideoDecoder.h"
+#include "../Core/ControlManager.h"
+#include "../Core/SystemActionManager.h"
 #include "../Core/MessageManager.h"
 #include "../Core/SaveStateManager.h"
 #include "../Core/INotificationListener.h"
@@ -130,6 +132,16 @@ extern "C" {
 	DllExport void __stdcall IsPaused()
 	{
 		_console->IsPaused();
+	}
+
+	DllExport void __stdcall Reset()
+	{
+		_console->GetControlManager()->GetSystemActionManager()->Reset();
+	}
+
+	DllExport void __stdcall PowerCycle()
+	{
+		_console->GetControlManager()->GetSystemActionManager()->PowerCycle();
 	}
 
 	DllExport void __stdcall Release()

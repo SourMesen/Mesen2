@@ -41,6 +41,8 @@ public:
 	void Initialize(shared_ptr<Console> console);
 	~MemoryManager();
 
+	void Reset();
+
 	void RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler* handler);
 
 	void GenerateMasterClockTable();

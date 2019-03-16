@@ -30,6 +30,14 @@ Cpu::~Cpu()
 
 void Cpu::Reset()
 {
+	_state.EmulationMode = true;
+	_state.NmiFlag = false;
+	_state.PrevNmiFlag = false;
+	_state.IrqSource = (uint8_t)IrqSource::None;
+	_state.PrevIrqSource = (uint8_t)IrqSource::None;
+	_state.StopState = CpuStopState::Running;
+	SetSP(_state.SP);
+	ProcessInterrupt(Cpu::ResetVector);
 }
 
 void Cpu::Exec()

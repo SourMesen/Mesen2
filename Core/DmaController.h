@@ -53,6 +53,8 @@ private:
 public:
 	DmaController(MemoryManager *memoryManager);
 
+	void Reset();
+	
 	void InitHdmaChannels();
 	void ProcessHdmaChannels();
 

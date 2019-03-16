@@ -11,6 +11,23 @@
 InternalRegisters::InternalRegisters(shared_ptr<Console> console)
 {
 	_console = console;
+	Reset();
+
+	//Power on values
+	_horizontalTimer = 0x1FF;
+	_verticalTimer = 0x1FF;
+	_multOperand1 = 0xFF;
+	_dividend = 0xFFFF;
+	_ioPortOutput = 0xFF;
+}
+
+void InternalRegisters::Reset()
+{
+	_enableAutoJoypadRead = false;
+	_enableNmi = false;
+	_enableHorizontalIrq = false;
+	_enableVerticalIrq = false;
+	_nmiFlag = false;
 }
 
 void InternalRegisters::ProcessAutoJoypadRead()

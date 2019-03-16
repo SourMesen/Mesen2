@@ -71,8 +71,8 @@ namespace Mesen.GUI.Emulation
 
 			switch(shortcut) {
 				case EmulatorShortcut.Pause: TogglePause(); break;
-				case EmulatorShortcut.Reset: ResetEmu(); break;
-				case EmulatorShortcut.PowerCycle: PowerCycleEmu(); break;
+				case EmulatorShortcut.Reset: EmuApi.Reset(); break;
+				case EmulatorShortcut.PowerCycle: EmuApi.PowerCycle(); break;
 				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); restoreFullscreen = false; break;
 				case EmulatorShortcut.Exit: Application.OpenForms[0].Close(); restoreFullscreen = false; break;
 
@@ -277,16 +277,6 @@ namespace Mesen.GUI.Emulation
 			} else {
 				EmuApi.Pause();
 			}
-		}
-
-		private void ResetEmu()
-		{
-			//TODO
-		}
-
-		private void PowerCycleEmu()
-		{
-			//TODO
 		}
 	}
 }

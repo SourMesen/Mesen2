@@ -123,6 +123,7 @@
     <ClInclude Include="SPC_DSP.h" />
     <ClInclude Include="SPC_Filter.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SystemActionManager.h" />
     <ClInclude Include="TraceLogger.h" />
     <ClInclude Include="VideoDecoder.h" />
     <ClInclude Include="VideoRenderer.h" />

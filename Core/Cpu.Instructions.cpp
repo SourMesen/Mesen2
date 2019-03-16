@@ -467,6 +467,7 @@ void Cpu::ProcessInterrupt(uint16_t vector)
 		SetFlags(ProcFlags::IrqDisable);
 		ClearFlags(ProcFlags::Decimal);
 
+		_state.K = 0;
 		_state.PC = ReadDataWord(vector);
 	} else {
 		PushByte(_state.K);

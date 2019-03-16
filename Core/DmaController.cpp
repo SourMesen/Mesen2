@@ -7,6 +7,19 @@
 DmaController::DmaController(MemoryManager *memoryManager)
 {
 	_memoryManager = memoryManager;
+	Reset();
+
+	//Power on values
+	for(int j = 0; j < 8; j++) {
+		for(int i = 0; i <= 0x0A; i++) {
+			Write(0x4300 | i | (j << 4), 0xFF);
+		}
+	}
+}
+
+void DmaController::Reset()
+{
+	_hdmaChannels = 0;
 }
 
 void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)

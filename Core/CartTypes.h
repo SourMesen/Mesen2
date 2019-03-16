@@ -29,4 +29,5 @@ struct RomInfo
 {
 	SnesCartInformation Header;
 	VirtualFile RomFile;
+	VirtualFile PatchFile;
 };
