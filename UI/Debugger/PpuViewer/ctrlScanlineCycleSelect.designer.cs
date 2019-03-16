@@ -64,22 +64,22 @@
 			this.nudScanline.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.nudScanline.DecimalPlaces = 0;
 			this.nudScanline.Increment = new decimal(new int[] {
-            0,
+            1,
             0,
             0,
             0});
 			this.nudScanline.Location = new System.Drawing.Point(144, 4);
 			this.nudScanline.Maximum = new decimal(new int[] {
-            260,
+            312,
             0,
             0,
             0});
 			this.nudScanline.MaximumSize = new System.Drawing.Size(10000, 20);
 			this.nudScanline.Minimum = new decimal(new int[] {
-            1,
             0,
             0,
-            -2147483648});
+            0,
+            0});
 			this.nudScanline.MinimumSize = new System.Drawing.Size(0, 21);
 			this.nudScanline.Name = "nudScanline";
 			this.nudScanline.Size = new System.Drawing.Size(52, 21);
