@@ -74,8 +74,6 @@ namespace Mesen.GUI.Config
 		public XmlKeys OpenEventViewer = Keys.Control | Keys.E;
 		[ShortcutName("Open Memory Tools")]
 		public XmlKeys OpenMemoryTools = Keys.Control | Keys.M;
-		[ShortcutName("Open PPU Viewer")]
-		public XmlKeys OpenPpuViewer = Keys.Control | Keys.P;
 		[ShortcutName("Open Performance Profiler")]
 		public XmlKeys OpenProfiler = Keys.Control | Keys.Y;
 		[ShortcutName("Open Script Window")]
@@ -87,13 +85,13 @@ namespace Mesen.GUI.Config
 		[ShortcutName("Open Watch Window")]
 		public XmlKeys OpenWatchWindow = Keys.Control | Keys.W;
 
-		[ShortcutName("Open Nametabler Viewer (Compact)")]
-		public XmlKeys OpenNametableViewer = Keys.Control | Keys.D1;
-		[ShortcutName("Open CHR Viewer (Compact)")]
-		public XmlKeys OpenChrViewer = Keys.Control | Keys.D2;
-		[ShortcutName("Open Sprite Viewer (Compact)")]
+		[ShortcutName("Open Tilemap Viewer")]
+		public XmlKeys OpenTilemapViewer = Keys.Control | Keys.D1;
+		[ShortcutName("Open Tile Viewer")]
+		public XmlKeys OpenTileViewer = Keys.Control | Keys.D2;
+		[ShortcutName("Open Sprite Viewer")]
 		public XmlKeys OpenSpriteViewer = Keys.Control | Keys.D3;
-		[ShortcutName("Open Palette Viewer (Compact)")]
+		[ShortcutName("Open Palette Viewer")]
 		public XmlKeys OpenPaletteViewer = Keys.Control | Keys.D4;
 
 		//Debugger window

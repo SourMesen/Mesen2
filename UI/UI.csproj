@@ -420,6 +420,12 @@
     <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.designer.cs">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\PpuViewer\frmPaletteViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmPaletteViewer.Designer.cs">
+      <DependentUpon>frmPaletteViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\PpuViewer\frmTilemapViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -708,6 +714,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.resx">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\frmPaletteViewer.resx">
+      <DependentUpon>frmPaletteViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmTilemapViewer.resx">
       <DependentUpon>frmTilemapViewer.cs</DependentUpon>

@@ -183,7 +183,8 @@ namespace Mesen.GUI.Forms
 			mnuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenDebugger));
 			mnuMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenMemoryTools));
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
-			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenPpuViewer));
+			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
+			mnuPaletteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenPaletteViewer));
 			mnuTraceLogger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTraceLogger));
 
 			mnuNoneFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.None); };
@@ -289,6 +290,11 @@ namespace Mesen.GUI.Forms
 		private void mnuTilemapViewer_Click(object sender, EventArgs e)
 		{
 			DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer);
+		}
+
+		private void mnuPaletteViewer_Click(object sender, EventArgs e)
+		{
+			DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer);
 		}
 
 		private void mnuEventViewer_Click(object sender, EventArgs e)

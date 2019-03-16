@@ -25,21 +25,27 @@ namespace Mesen.GUI.Debugger
 		public frmTilemapViewer()
 		{
 			InitializeComponent();
+		}
 
-			if(!this.DesignMode) {
-				_options.BgMode = 0;
-
-				_notifListener = new NotificationListener();
-				_notifListener.OnNotification += OnNotificationReceived;
-				
-				_tilemapImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
-				picTilemap.Image = _tilemapImage;
-
-				ctrlScanlineCycleSelect.Initialize(241, 0);
-
-				RefreshData();
-				RefreshViewer();
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			if(DesignMode) {
+				return;
 			}
+
+			_options.BgMode = 0;
+
+			_notifListener = new NotificationListener();
+			_notifListener.OnNotification += OnNotificationReceived;
+
+			_tilemapImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
+			picTilemap.Image = _tilemapImage;
+
+			ctrlScanlineCycleSelect.Initialize(241, 0);
+
+			RefreshData();
+			RefreshViewer();
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
