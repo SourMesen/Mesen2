@@ -224,11 +224,13 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 			MessageManager::DisplayMessage("SPC", "spc700.rom not found, cannot launch game.");
 			return false;
 		}
+		
+		_cart = cart;
+		UpdateRegion();
 
 		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
 		_ppu.reset(new Ppu(shared_from_this()));
 		_spc.reset(new Spc(shared_from_this(), spcRomData));
-		_cart = cart;
 		_controlManager.reset(new ControlManager(shared_from_this()));
 		_memoryManager.reset(new MemoryManager());
 		_dmaController.reset(new DmaController(_memoryManager.get()));
@@ -236,12 +238,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_memoryManager->Initialize(shared_from_this());
 
 		_cpu.reset(new Cpu(this));
-
-		_rewindManager.reset(new RewindManager(shared_from_this()));
-		_notificationManager->RegisterNotificationListener(_rewindManager);
-
-		_controlManager->UpdateControlDevices();
-
+		
 		if(_debugger) {
 			//Reset debugger if it was running before
 			auto lock = _debuggerLock.AcquireSafe();
@@ -249,9 +246,16 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 			GetDebugger();
 			_debugger->Step(1);
 		}
-		
-		UpdateRegion();
+
+		_cpu->PowerOn();
 		_memoryManager->IncrementMasterClockValue<170>();
+
+		_rewindManager.reset(new RewindManager(shared_from_this()));
+		_notificationManager->RegisterNotificationListener(_rewindManager);
+
+		_controlManager->UpdateControlDevices();
+				
+		UpdateRegion();
 
 		_paused = false;
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);

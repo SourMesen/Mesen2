@@ -10,6 +10,14 @@ Cpu::Cpu(Console *console)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
+}
+
+Cpu::~Cpu()
+{
+}
+
+void Cpu::PowerOn()
+{
 	_state = {};
 	_state.PC = ReadDataWord(Cpu::ResetVector);
 	_state.SP = 0x1FF;
@@ -22,10 +30,6 @@ Cpu::Cpu(Console *console)
 	_state.PrevIrqSource = (uint8_t)IrqSource::None;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
-}
-
-Cpu::~Cpu()
-{
 }
 
 void Cpu::Reset()
@@ -57,9 +61,8 @@ void Cpu::Exec()
 			//WAI
 			if(!_state.IrqSource && !_state.NmiFlag) {
 				#ifndef DUMMYCPU
-				_memoryManager->IncrementMasterClockValue<4>();
+				Idle();
 				#endif
-				return;
 			} else {
 				Idle();
 				Idle();

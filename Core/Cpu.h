@@ -291,6 +291,8 @@ public:
 	Cpu(Console *console);
 	~Cpu();
 
+	void PowerOn();
+
 	void Reset();
 	void Exec();
 
