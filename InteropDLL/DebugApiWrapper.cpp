@@ -62,6 +62,7 @@ extern "C"
 	DllExport void __stdcall SetMemoryValues(SnesMemoryType type, uint32_t address, uint8_t* data, int32_t length) { return GetDebugger()->GetMemoryDumper()->SetMemoryValues(type, address, data, length); }
 
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, buffer); }
+	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, buffer); }
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle); }
 
 	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount, bool getPreviousFrameData) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount, getPreviousFrameData); }

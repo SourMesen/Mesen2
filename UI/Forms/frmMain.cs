@@ -184,6 +184,7 @@ namespace Mesen.GUI.Forms
 			mnuMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenMemoryTools));
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
 			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
+			mnuTileViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTileViewer));
 			mnuPaletteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenPaletteViewer));
 			mnuTraceLogger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTraceLogger));
 
@@ -290,6 +291,11 @@ namespace Mesen.GUI.Forms
 		private void mnuTilemapViewer_Click(object sender, EventArgs e)
 		{
 			DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer);
+		}
+
+		private void mnuTileViewer_Click(object sender, EventArgs e)
+		{
+			DebugWindowManager.OpenDebugWindow(DebugWindow.TileViewer);
 		}
 
 		private void mnuPaletteViewer_Click(object sender, EventArgs e)

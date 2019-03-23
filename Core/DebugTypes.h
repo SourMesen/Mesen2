@@ -169,3 +169,24 @@ struct GetTilemapOptions
 	bool ShowTileGrid;
 	bool ShowScrollOverlay;
 };
+
+enum TileFormat
+{
+	Bpp2,
+	Bpp4,
+	Bpp8,
+	DirectColor,
+	Mode7,
+	Mode7DirectColor,
+};
+
+struct GetTileViewOptions
+{
+	TileFormat Format;
+	int32_t Width;
+	int32_t Palette;
+	SnesMemoryType MemoryType;
+	int32_t AddressOffset;
+
+	bool ShowTileGrid;
+};

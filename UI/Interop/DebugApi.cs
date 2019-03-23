@@ -79,6 +79,14 @@ namespace Mesen.GUI
 			return buffer;
 		}
 
+		[DllImport(DllPath, EntryPoint = "GetTileView")] private static extern void GetTileViewWrapper(GetTileViewOptions options, [In, Out] byte[] buffer);
+		public static byte[] GetTileView(GetTileViewOptions options)
+		{
+			byte[] buffer = new byte[512 * 512 * 4];
+			DebugApi.GetTileViewWrapper(options, buffer);
+			return buffer;
+		}
+
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
 
 		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount([MarshalAs(UnmanagedType.I1)]bool getPreviousFrameData);
@@ -284,6 +292,27 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowScrollOverlay;
+	}
+
+	public struct GetTileViewOptions
+	{
+		public TileFormat Format;
+		public Int32 Width;
+		public Int32 Palette;
+		public SnesMemoryType MemoryType;
+		public Int32 AddressOffset;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
+	}
+
+	public enum TileFormat
+	{
+		Bpp2,
+		Bpp4,
+		Bpp8,
+		DirectColor,
+		Mode7,
+		Mode7DirectColor,
 	}
 
 	[Serializable]

@@ -125,7 +125,11 @@
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuTileViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuPaletteViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuCheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
@@ -135,9 +139,6 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
-			this.mnuPaletteViewer = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -852,6 +853,7 @@
             this.mnuTraceLogger,
             this.toolStripMenuItem12,
             this.mnuTilemapViewer,
+            this.mnuTileViewer,
             this.mnuPaletteViewer,
             this.toolStripMenuItem22,
             this.mnuEventViewer});
@@ -883,6 +885,19 @@
 			this.mnuTraceLogger.Text = "Trace Logger";
 			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
+			// toolStripMenuItem12
+			// 
+			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+			this.toolStripMenuItem12.Size = new System.Drawing.Size(152, 6);
+			// 
+			// mnuTileViewer
+			// 
+			this.mnuTileViewer.Image = global::Mesen.GUI.Properties.Resources.VerticalLayout;
+			this.mnuTileViewer.Name = "mnuTileViewer";
+			this.mnuTileViewer.Size = new System.Drawing.Size(155, 22);
+			this.mnuTileViewer.Text = "Tile Viewer";
+			this.mnuTileViewer.Click += new System.EventHandler(this.mnuTileViewer_Click);
+			// 
 			// mnuTilemapViewer
 			// 
 			this.mnuTilemapViewer.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
@@ -890,6 +905,19 @@
 			this.mnuTilemapViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuTilemapViewer.Text = "Tilemap Viewer";
 			this.mnuTilemapViewer.Click += new System.EventHandler(this.mnuTilemapViewer_Click);
+			// 
+			// mnuPaletteViewer
+			// 
+			this.mnuPaletteViewer.Image = global::Mesen.GUI.Properties.Resources.VideoFilter;
+			this.mnuPaletteViewer.Name = "mnuPaletteViewer";
+			this.mnuPaletteViewer.Size = new System.Drawing.Size(155, 22);
+			this.mnuPaletteViewer.Text = "Palette Viewer";
+			this.mnuPaletteViewer.Click += new System.EventHandler(this.mnuPaletteViewer_Click);
+			// 
+			// toolStripMenuItem22
+			// 
+			this.toolStripMenuItem22.Name = "toolStripMenuItem22";
+			this.toolStripMenuItem22.Size = new System.Drawing.Size(152, 6);
 			// 
 			// mnuEventViewer
 			// 
@@ -964,24 +992,6 @@
 			this.ctrlRecentGames.Size = new System.Drawing.Size(512, 265);
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
-			// 
-			// mnuPaletteViewer
-			// 
-			this.mnuPaletteViewer.Image = global::Mesen.GUI.Properties.Resources.VideoFilter;
-			this.mnuPaletteViewer.Name = "mnuPaletteViewer";
-			this.mnuPaletteViewer.Size = new System.Drawing.Size(155, 22);
-			this.mnuPaletteViewer.Text = "Palette Viewer";
-			this.mnuPaletteViewer.Click += new System.EventHandler(this.mnuPaletteViewer_Click);
-			// 
-			// toolStripMenuItem12
-			// 
-			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-			this.toolStripMenuItem12.Size = new System.Drawing.Size(152, 6);
-			// 
-			// toolStripMenuItem22
-			// 
-			this.toolStripMenuItem22.Name = "toolStripMenuItem22";
-			this.toolStripMenuItem22.Size = new System.Drawing.Size(152, 6);
 			// 
 			// frmMain
 			// 
@@ -1116,5 +1126,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
 		private System.Windows.Forms.ToolStripMenuItem mnuPaletteViewer;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem22;
+		private System.Windows.Forms.ToolStripMenuItem mnuTileViewer;
 	}
 }

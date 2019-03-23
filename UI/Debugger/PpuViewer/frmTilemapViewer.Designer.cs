@@ -51,7 +51,6 @@
 			// 
 			this.picTilemap.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 			this.picTilemap.Location = new System.Drawing.Point(0, 0);
-			this.picTilemap.MinimumSize = new System.Drawing.Size(256, 256);
 			this.picTilemap.Name = "picTilemap";
 			this.picTilemap.Size = new System.Drawing.Size(512, 512);
 			this.picTilemap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;

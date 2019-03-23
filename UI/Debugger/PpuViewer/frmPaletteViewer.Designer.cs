@@ -27,23 +27,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.picPalette = new Mesen.GUI.Controls.ctrlMesenPictureBox();
 			this.ctrlScanlineCycleSelect = new Mesen.GUI.Debugger.Controls.ctrlScanlineCycleSelect();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			((System.ComponentModel.ISupportInitialize)(this.picPalette)).BeginInit();
+			this.ctrlPaletteViewer = new Mesen.GUI.Debugger.ctrlPaletteViewer();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// picPalette
-			// 
-			this.picPalette.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			this.picPalette.Location = new System.Drawing.Point(3, 3);
-			this.picPalette.MinimumSize = new System.Drawing.Size(256, 256);
-			this.picPalette.Name = "picPalette";
-			this.picPalette.Size = new System.Drawing.Size(256, 256);
-			this.picPalette.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.picPalette.TabIndex = 0;
-			this.picPalette.TabStop = false;
 			// 
 			// ctrlScanlineCycleSelect
 			// 
@@ -58,7 +46,7 @@
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.Controls.Add(this.picPalette, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.ctrlPaletteViewer, 0, 1);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -68,6 +56,13 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(485, 263);
 			this.tableLayoutPanel1.TabIndex = 7;
 			// 
+			// ctrlPaletteViewer1
+			// 
+			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 3);
+			this.ctrlPaletteViewer.Name = "ctrlPaletteViewer";
+			this.ctrlPaletteViewer.Size = new System.Drawing.Size(256, 256);
+			this.ctrlPaletteViewer.TabIndex = 0;
+			// 
 			// frmPaletteViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -76,17 +71,15 @@
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.ctrlScanlineCycleSelect);
 			this.Name = "frmPaletteViewer";
-			this.Text = "Tilemap Viewer";
-			((System.ComponentModel.ISupportInitialize)(this.picPalette)).EndInit();
+			this.Text = "Palette Viewer";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
-
-		private GUI.Controls.ctrlMesenPictureBox picPalette;
 		private Controls.ctrlScanlineCycleSelect ctrlScanlineCycleSelect;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private ctrlPaletteViewer ctrlPaletteViewer;
 	}
 }

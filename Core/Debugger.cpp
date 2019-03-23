@@ -38,7 +38,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
 	
-	_cpuStepCount = 0;
+	_cpuStepCount = -1;
 	_executionStopped = false;
 	_breakRequestCount = 0;
 

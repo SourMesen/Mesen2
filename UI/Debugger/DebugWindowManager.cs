@@ -34,6 +34,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.Debugger: frm = new frmDebugger(); frm.Icon = Properties.Resources.Debugger; break;
 					case DebugWindow.TraceLogger: frm = new frmTraceLogger(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.MemoryTools: frm = new frmMemoryTools(); frm.Icon = Properties.Resources.CheatCode; break;
+					case DebugWindow.TileViewer: frm = new frmTileViewer(); frm.Icon = Properties.Resources.VerticalLayout; break;
 					case DebugWindow.TilemapViewer: frm = new frmTilemapViewer(); frm.Icon = Properties.Resources.VideoOptions; break;
 					case DebugWindow.PaletteViewer: frm = new frmPaletteViewer(); frm.Icon = Properties.Resources.VideoFilter; break;
 					case DebugWindow.EventViewer: frm = new frmEventViewer(); frm.Icon = Properties.Resources.NesEventViewer; break;
@@ -119,6 +120,7 @@ namespace Mesen.GUI.Debugger
 		Debugger,
 		MemoryTools,
 		TraceLogger,
+		TileViewer,
 		TilemapViewer,
 		PaletteViewer,
 		EventViewer

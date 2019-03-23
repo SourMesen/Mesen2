@@ -414,6 +414,12 @@
       <DependentUpon>frmMemoryTools.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\GraphicsExtensions.cs" />
+    <Compile Include="Debugger\PpuViewer\ctrlPaletteViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlPaletteViewer.Designer.cs">
+      <DependentUpon>ctrlPaletteViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -425,6 +431,12 @@
     </Compile>
     <Compile Include="Debugger\PpuViewer\frmPaletteViewer.Designer.cs">
       <DependentUpon>frmPaletteViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmTileViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmTileViewer.Designer.cs">
+      <DependentUpon>frmTileViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\frmTilemapViewer.cs">
       <SubType>Form</SubType>
@@ -712,11 +724,17 @@
     <EmbeddedResource Include="Debugger\frmMemoryTools.resx">
       <DependentUpon>frmMemoryTools.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\ctrlPaletteViewer.resx">
+      <DependentUpon>ctrlPaletteViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.resx">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmPaletteViewer.resx">
       <DependentUpon>frmPaletteViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\frmTileViewer.resx">
+      <DependentUpon>frmTileViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmTilemapViewer.resx">
       <DependentUpon>frmTilemapViewer.cs</DependentUpon>
