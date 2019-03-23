@@ -15,17 +15,6 @@ struct LayerConfig
 	bool LargeTiles;
 };
 
-struct PpuState
-{
-	uint16_t Cycle;
-	uint16_t Scanline;
-	uint32_t FrameCount;
-	bool OverscanMode;
-
-	uint8_t BgMode;
-	LayerConfig Layers[4];
-};
-
 struct Mode7Config
 {
 	int16_t Matrix[4];
@@ -42,6 +31,19 @@ struct Mode7Config
 	bool HorizontalMirroring;
 	bool VerticalMirroring;
 	bool ExtBgEnabled;
+};
+
+struct PpuState
+{
+	uint16_t Cycle;
+	uint16_t Scanline;
+	uint32_t FrameCount;
+	bool OverscanMode;
+
+	uint8_t BgMode;
+	bool DirectColorMode;
+	Mode7Config Mode7;
+	LayerConfig Layers[4];
 };
 
 struct WindowConfig

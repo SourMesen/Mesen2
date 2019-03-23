@@ -43,6 +43,7 @@ namespace Mesen.GUI.Debugger
 			cboFormat.SetEnumValue(TileFormat.Bpp4);
 			ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
 
+			_tileData = new byte[512 * 512 * 4];
 			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
 			picTilemap.Image = _tileImage;
 
@@ -91,7 +92,9 @@ namespace Mesen.GUI.Debugger
 		private void RefreshData()
 		{
 			_options.Palette = ctrlPaletteViewer.SelectedPalette;
-			_tileData = DebugApi.GetTileView(_options);
+			lock(_tileData) {
+				DebugApi.GetTileView(_options, _tileData);
+			}
 			ctrlPaletteViewer.RefreshData();
 		}
 
@@ -108,12 +111,14 @@ namespace Mesen.GUI.Debugger
 			}
 
 			using(Graphics g = Graphics.FromImage(_tileImage)) {
-				GCHandle handle = GCHandle.Alloc(_tileData, GCHandleType.Pinned);
-				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * mapWidth, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
-				try {
-					g.DrawImage(source, 0, 0);
-				} finally {
-					handle.Free();
+				lock(_tileData) {
+					GCHandle handle = GCHandle.Alloc(_tileData, GCHandleType.Pinned);
+					Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * mapWidth, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+					try {
+						g.DrawImage(source, 0, 0);
+					} finally {
+						handle.Free();
+					}
 				}
 			}
 

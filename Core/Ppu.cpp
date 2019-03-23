@@ -82,6 +82,8 @@ PpuState Ppu::GetState()
 	state.FrameCount = _frameCount;
 	state.OverscanMode = _overscanMode;
 	state.BgMode = _bgMode;
+	state.DirectColorMode = _directColorMode;
+	state.Mode7 = _mode7;
 	state.Layers[0] = _layerConfig[0];
 	state.Layers[1] = _layerConfig[1];
 	state.Layers[2] = _layerConfig[2];

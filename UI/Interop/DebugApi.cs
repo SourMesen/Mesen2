@@ -71,21 +71,8 @@ namespace Mesen.GUI
 			return buffer;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetTilemap")] private static extern void GetTilemapWrapper(GetTilemapOptions options, [In, Out] byte[] buffer);
-		public static byte[] GetTilemap(GetTilemapOptions options)
-		{
-			byte[] buffer = new byte[512*512*4];
-			DebugApi.GetTilemapWrapper(options, buffer);
-			return buffer;
-		}
-
-		[DllImport(DllPath, EntryPoint = "GetTileView")] private static extern void GetTileViewWrapper(GetTileViewOptions options, [In, Out] byte[] buffer);
-		public static byte[] GetTileView(GetTileViewOptions options)
-		{
-			byte[] buffer = new byte[512 * 512 * 4];
-			DebugApi.GetTileViewWrapper(options, buffer);
-			return buffer;
-		}
+		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, [In, Out] byte[] buffer);
+		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, [In, Out] byte[] buffer);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
 
@@ -188,6 +175,9 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool OverscanMode;
 
 		public byte BgMode;
+		[MarshalAs(UnmanagedType.I1)] public bool DirectColorMode;
+
+		public Mode7Config Mode7;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 		public LayerConfig[] Layers;
@@ -205,6 +195,25 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool DoubleHeight;
 
 		[MarshalAs(UnmanagedType.I1)] public bool LargeTiles;
+	}
+
+	public struct Mode7Config
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public Int16[] Matrix;
+
+		public Int16 HScroll;
+		public Int16 VScroll;
+		public Int16 CenterX;
+		public Int16 CenterY;
+
+		public Byte ValueLatch;
+
+		[MarshalAs(UnmanagedType.I1)] public bool LargeMap;
+		[MarshalAs(UnmanagedType.I1)] public bool FillWithTile0;
+		[MarshalAs(UnmanagedType.I1)] public bool HorizontalMirroring;
+		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirroring;
+		[MarshalAs(UnmanagedType.I1)] public bool ExtBgEnabled;
 	}
 
 	public struct DebugState

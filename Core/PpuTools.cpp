@@ -141,6 +141,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 
 				for(int y = 0; y < 8; y++) {
 					uint32_t pixelStart = addr + y * 16;
+
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = ram[(pixelStart + x * 2 + 1) & ramMask];
 
@@ -198,6 +199,8 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 	PpuState state = _ppu->GetState();
 	options.BgMode = state.BgMode;
 
+	bool directColor = state.DirectColorMode && (options.BgMode == 3 || options.BgMode == 4 || options.BgMode == 7);
+
 	uint16_t basePaletteOffset = 0;
 	if(options.BgMode == 0) {
 		basePaletteOffset = options.Layer * 64;
@@ -207,10 +210,8 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 	uint8_t *cgram = _ppu->GetCgRam();
 	LayerConfig layer = state.Layers[options.Layer];
 
-	uint16_t bgColor = (cgram[1] << 8) | cgram[0];
-	for(int i = 0; i < 512 * 512; i++) {
-		outBuffer[i] = ToArgb(bgColor);
-	}
+	uint32_t bgColor = ToArgb((cgram[1] << 8) | cgram[0]);
+	std::fill(outBuffer, outBuffer + 1024*1024, bgColor);
 
 	uint8_t bpp = layerBpp[options.BgMode][options.Layer];
 	if(bpp == 0) {
@@ -220,37 +221,64 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 	bool largeTileWidth = layer.LargeTiles || options.BgMode == 5 || options.BgMode == 6;
 	bool largeTileHeight = layer.LargeTiles;
 
-	for(int row = 0; row < (layer.DoubleHeight ? 64 : 32); row++) {
-		uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
-		uint16_t baseOffset = (layer.TilemapAddress >> 1) + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+	if(options.BgMode == 7) {
+		for(int row = 0; row < 128; row++) {
+			for(int column = 0; column < 128; column++) {
+				uint32_t tileIndex = vram[row * 256 + column * 2];
+				uint32_t tileAddr = tileIndex * 128;
 
-		for(int column = 0; column < (layer.DoubleWidth ? 64 : 32); column++) {
-			uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+				for(int y = 0; y < 8; y++) {
+					uint32_t pixelStart = tileAddr + y * 16;
 
-			bool vMirror = (vram[addr + 1] & 0x80) != 0;
-			bool hMirror = (vram[addr + 1] & 0x40) != 0;
+					for(int x = 0; x < 8; x++) {
+						uint8_t color = vram[pixelStart + x * 2 + 1];
 
-			uint16_t tileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
-			uint16_t tileStart = layer.ChrAddress + tileIndex * 8 * bpp;
-
-			if(largeTileWidth || largeTileHeight) {
-				tileIndex = (
-					tileIndex +
-					(largeTileHeight ? ((row & 0x01) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
-					(largeTileWidth ? ((column & 0x01) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
-				) & 0x3FF;
+						if(color != 0) {
+							uint32_t rgbColor;
+							if(directColor) {
+								rgbColor = ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
+							} else {
+								rgbColor = GetRgbPixelColor(color, 0, 8, false, 0);
+							}
+							outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = rgbColor;
+						}
+					}
+				}
 			}
+		}
+	} else {
+		for(int row = 0; row < (layer.DoubleHeight ? 64 : 32); row++) {
+			uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
+			uint16_t baseOffset = (layer.TilemapAddress >> 1) + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
-			for(int y = 0; y < 8; y++) {
-				uint8_t yOffset = vMirror ? (7 - y) : y;
-				uint16_t pixelStart = tileStart + yOffset * 2;
+			for(int column = 0; column < (layer.DoubleWidth ? 64 : 32); column++) {
+				uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
 
-				for(int x = 0; x < 8; x++) {
-					uint8_t shift = hMirror ? x : (7 - x);
-					uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, bpp, pixelStart, shift);
-					if(color != 0) {
-						uint8_t palette = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
-						outBuffer[((row * 8) + y) * 512 + column * 8 + x] = GetRgbPixelColor(color, palette, bpp, false, basePaletteOffset);
+				bool vMirror = (vram[addr + 1] & 0x80) != 0;
+				bool hMirror = (vram[addr + 1] & 0x40) != 0;
+
+				uint16_t tileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
+				uint16_t tileStart = layer.ChrAddress + tileIndex * 8 * bpp;
+
+				if(largeTileWidth || largeTileHeight) {
+					tileIndex = (
+						tileIndex +
+						(largeTileHeight ? ((row & 0x01) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
+						(largeTileWidth ? ((column & 0x01) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
+					) & 0x3FF;
+				}
+
+				for(int y = 0; y < 8; y++) {
+					uint8_t yOffset = vMirror ? (7 - y) : y;
+					uint16_t pixelStart = tileStart + yOffset * 2;
+
+					for(int x = 0; x < 8; x++) {
+						uint8_t shift = hMirror ? x : (7 - x);
+						uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, bpp, pixelStart, shift);
+						if(color != 0) {
+							uint8_t palette = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
+							outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = GetRgbPixelColor(color, palette, bpp, directColor, basePaletteOffset);
+						}
 					}
 				}
 			}
@@ -259,8 +287,8 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 
 	if(options.ShowTileGrid) {
 		constexpr uint32_t gridColor = 0xA0AAAAFF;
-		for(int i = 0; i < 512 * 512; i++) {
-			if((i & 0x07) == 0x07 || (i & 0x0E00) == 0x0E00) {
+		for(int i = 0; i < 1024 * 1024; i++) {
+			if((i & 0x07) == 0x07 || (i & 0x1C00) == 0x1C00) {
 				BlendColors((uint8_t*)&outBuffer[i], (uint8_t*)&gridColor);
 			}
 		}
@@ -268,18 +296,22 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 
 	if(options.ShowScrollOverlay) {
 		constexpr uint32_t overlayColor = 0x40FFFFFF;
+		int widthMask = options.BgMode == 7 ? 0x3FF : (layer.DoubleWidth ? 0x1FF : 0xFF);
+		int heightMask = options.BgMode == 7 ? 0x3FF : (layer.DoubleHeight ? 0x1FF : 0xFF);
+		int hScroll = options.BgMode == 7 ? state.Mode7.HScroll : layer.HScroll;
+		int vScroll = options.BgMode == 7 ? state.Mode7.VScroll : layer.VScroll;
 		for(int y = 0; y < 240; y++) {
 			for(int x = 0; x < 256; x++) {
-				int xPos = layer.HScroll + x;
-				int yPos = layer.VScroll + y;
+				int xPos = hScroll + x;
+				int yPos = vScroll + y;
 				
-				xPos &= layer.DoubleWidth ? 0x1FF : 0xFF;
-				yPos &= layer.DoubleHeight ? 0x1FF : 0xFF;
+				xPos &= widthMask;
+				yPos &= heightMask;
 
 				if(x == 0 || y == 0 || x == 255 || y == 239) {
-					outBuffer[(yPos << 9) | xPos] = 0xAFFFFFFF;
+					outBuffer[(yPos * 1024) | xPos] = 0xAFFFFFFF;
 				} else {
-					BlendColors((uint8_t*)&outBuffer[(yPos << 9) | xPos], (uint8_t*)&overlayColor);
+					BlendColors((uint8_t*)&outBuffer[(yPos * 1024) | xPos], (uint8_t*)&overlayColor);
 				}
 			}
 		}
