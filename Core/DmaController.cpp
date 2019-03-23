@@ -83,8 +83,11 @@ void DmaController::RunDma(DmaChannelConfig &channel)
 
 void DmaController::InitHdmaChannels()
 {
-	//"The overhead is ~18 master cycles"
-	_memoryManager->IncrementMasterClockValue<18>();
+	if(_hdmaChannels) {
+		//"The overhead is ~18 master cycles"
+		_memoryManager->IncrementMasterClockValue<18>();
+	}
+
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
 
