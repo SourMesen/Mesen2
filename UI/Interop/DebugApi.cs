@@ -118,6 +118,8 @@ namespace Mesen.GUI
 		VideoRam,
 		SpriteRam,
 		CGRam,
+		Register,
+		SpcRam
 	}
 
 	public class AddressInfo

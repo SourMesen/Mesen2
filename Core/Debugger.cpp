@@ -33,7 +33,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger));
 	_traceLogger.reset(new TraceLogger(this, _console));
-	_memoryDumper.reset(new MemoryDumper(_ppu, _memoryManager, console->GetCartridge()));
+	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));

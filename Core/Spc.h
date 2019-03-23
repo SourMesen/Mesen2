@@ -10,9 +10,11 @@ class SPC_DSP;
 
 class Spc : public ISerializable
 {
+public:
+	static constexpr int SpcRamSize = 0x10000;
+
 private:
 	static constexpr int SampleBufferSize = 0x100000;
-	static constexpr int SpcRamSize = 0x10000;
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
 	shared_ptr<Console> _console;
@@ -242,6 +244,8 @@ public:
 	void CpuWriteRegister(uint32_t addr, uint8_t value);
 
 	void ProcessEndFrame();
+
+	uint8_t* GetSpcRam();
 
 	void Serialize(Serializer &s) override;
 };

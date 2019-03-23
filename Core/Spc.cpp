@@ -213,6 +213,11 @@ void Spc::ProcessEndFrame()
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 }
 
+uint8_t* Spc::GetSpcRam()
+{
+	return _ram;
+}
+
 void Spc::Serialize(Serializer &s)
 {
 	s.Stream(_state.A, _state.Cycle, _state.PC, _state.PS, _state.SP, _state.X, _state.Y);

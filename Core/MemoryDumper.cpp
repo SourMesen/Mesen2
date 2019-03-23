@@ -2,14 +2,16 @@
 #include "Debugger.h"
 #include "MemoryManager.h"
 #include "Ppu.h"
+#include "Spc.h"
 #include "MemoryDumper.h"
 #include "BaseCartridge.h"
 #include "VideoDecoder.h"
 #include "DebugTypes.h"
 
-MemoryDumper::MemoryDumper(shared_ptr<Ppu> ppu, shared_ptr<MemoryManager> memoryManager, shared_ptr<BaseCartridge> cartridge)
+MemoryDumper::MemoryDumper(shared_ptr<Ppu> ppu, shared_ptr<Spc> spc, shared_ptr<MemoryManager> memoryManager, shared_ptr<BaseCartridge> cartridge)
 {
 	_ppu = ppu;
+	_spc = spc;
 	_memoryManager = memoryManager;
 	_cartridge = cartridge;
 }
@@ -30,6 +32,7 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 		case SnesMemoryType::VideoRam: memcpy(_ppu->GetVideoRam(), buffer, length); break;
 		case SnesMemoryType::SpriteRam: memcpy(_ppu->GetSpriteRam(), buffer, length); break;
 		case SnesMemoryType::CGRam: memcpy(_ppu->GetCgRam(), buffer, length); break;
+		case SnesMemoryType::SpcRam: memcpy(_spc->GetSpcRam(), buffer, length); break;
 	}
 }
 
@@ -43,6 +46,7 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::VideoRam: return Ppu::VideoRamSize;
 		case SnesMemoryType::SpriteRam: return Ppu::SpriteRamSize;
 		case SnesMemoryType::CGRam: return Ppu::CgRamSize;
+		case SnesMemoryType::SpcRam: return Spc::SpcRamSize;
 	}
 	return 0;
 }
@@ -62,6 +66,7 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 		case SnesMemoryType::VideoRam: memcpy(buffer, _ppu->GetVideoRam(), Ppu::VideoRamSize);	break;
 		case SnesMemoryType::SpriteRam: memcpy(buffer, _ppu->GetSpriteRam(), Ppu::SpriteRamSize);	break;
 		case SnesMemoryType::CGRam: memcpy(buffer, _ppu->GetCgRam(), Ppu::CgRamSize); break;
+		case SnesMemoryType::SpcRam: memcpy(buffer, _spc->GetSpcRam(), Spc::SpcRamSize); break;
 	}
 }
 
@@ -85,9 +90,10 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::WorkRam: _memoryManager->DebugGetWorkRam()[address] = value; break;
 		case SnesMemoryType::SaveRam: _cartridge->DebugGetSaveRam()[address] = value; break;
 
-		case SnesMemoryType::VideoRam: _ppu->GetVideoRam()[address & (Ppu::VideoRamSize - 1)] = value;
-		case SnesMemoryType::SpriteRam: _ppu->GetSpriteRam()[address % Ppu::SpriteRamSize] = value; break;
-		case SnesMemoryType::CGRam: _ppu->GetCgRam()[address & (Ppu::CgRamSize - 1)] = value; break;
+		case SnesMemoryType::VideoRam: _ppu->GetVideoRam()[address] = value;
+		case SnesMemoryType::SpriteRam: _ppu->GetSpriteRam()[address] = value; break;
+		case SnesMemoryType::CGRam: _ppu->GetCgRam()[address] = value; break;
+		case SnesMemoryType::SpcRam: _spc->GetSpcRam()[address] = value; break;
 	}
 }
 
@@ -104,9 +110,10 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 		case SnesMemoryType::WorkRam: return  _memoryManager->DebugGetWorkRam()[address];
 		case SnesMemoryType::SaveRam: return _cartridge->DebugGetSaveRam()[address];
 
-		case SnesMemoryType::VideoRam: return _ppu->GetVideoRam()[address & (Ppu::VideoRamSize - 1)];
-		case SnesMemoryType::SpriteRam: return _ppu->GetSpriteRam()[address % Ppu::SpriteRamSize];
-		case SnesMemoryType::CGRam: return _ppu->GetCgRam()[address & (Ppu::CgRamSize - 1)];
+		case SnesMemoryType::VideoRam: return _ppu->GetVideoRam()[address];
+		case SnesMemoryType::SpriteRam: return _ppu->GetSpriteRam()[address];
+		case SnesMemoryType::CGRam: return _ppu->GetCgRam()[address];
+		case SnesMemoryType::SpcRam: return _spc->GetSpcRam()[address];
 	}
 
 	return 0;
