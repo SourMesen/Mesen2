@@ -15,7 +15,12 @@ public:
 	{
 		_ram = ram + offset;
 		_offset = offset;
-		_mask = (size - 1) & 0xFFF;
+
+		if(size - offset < 0x1000) {
+			_mask = size - offset;
+		} else {
+			_mask = 0xFFF;
+		}
 		_memoryType = memoryType;
 	}
 
