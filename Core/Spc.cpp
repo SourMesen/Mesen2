@@ -40,6 +40,9 @@ void Spc::Reset()
 	_state.Timer0.Reset();
 	_state.Timer1.Reset();
 	_state.Timer2.Reset();
+	
+	_state.RomEnabled = true;
+	_state.Cycle = 0;
 	_state.PC = ReadWord(Spc::ResetVector);
 
 	_dsp->soft_reset();
@@ -209,7 +212,9 @@ void Spc::ProcessEndFrame()
 	Run();
 
 	int sampleCount = _dsp->sample_count();
-	_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2);
+	if(sampleCount != 0) {
+		_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2);
+	}
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 }
 
