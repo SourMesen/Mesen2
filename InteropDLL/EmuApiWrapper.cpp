@@ -146,16 +146,16 @@ extern "C" {
 
 	DllExport void __stdcall Release()
 	{
+		_shortcutKeyHandler.reset();
+		
 		_console->Stop(true);
-
+		
 		_renderer.reset();
 		_soundManager.reset();
 		_keyManager.reset();
 
 		_console->Release();
-		_console.reset();
-			
-		_shortcutKeyHandler.reset();
+		_console.reset();			
 	}
 
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
