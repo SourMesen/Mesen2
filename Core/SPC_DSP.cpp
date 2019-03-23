@@ -708,8 +708,9 @@ ECHO_CLOCK( 28 )
 }
 inline void SPC_DSP::echo_write( int ch )
 {
-	if ( !(m.t_echo_enabled & 0x20) )
-		SET_LE16A( ECHO_PTR( ch ), m.t_echo_out [ch] );
+	if(!(m.t_echo_enabled & 0x20) && _echoWriteEnabled) {
+		SET_LE16A(ECHO_PTR(ch), m.t_echo_out[ch]);
+	}
 	m.t_echo_out [ch] = 0;
 }
 ECHO_CLOCK( 29 )
@@ -785,22 +786,14 @@ PHASE(31)  V(V4,0)       V(V1,2)\
 
 #if !SPC_DSP_CUSTOM_RUN
 
-void SPC_DSP::run( int clocks_remain )
+void SPC_DSP::run()
 {
-	require( clocks_remain > 0 );
-	
-	int const phase = m.phase;
-	m.phase = (phase + clocks_remain) & 31;
-	switch ( phase )
+	m.phase = (m.phase + 1) & 31;
+	switch (m.phase)
 	{
-	loop:
-	
-		#define PHASE( n ) if ( n && !--clocks_remain ) break; case n:
+		#define PHASE( n ) if ( n ) break; case n:
 		GEN_DSP_TIMING
 		#undef PHASE
-	
-		if ( --clocks_remain )
-			goto loop;
 	}
 }
 

@@ -19,7 +19,7 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 {
 	addr &= 0xFFFF;
 	if(addr >= 0x2140 && addr <= 0x217F) {
-		return _spc->Read(addr & 0x03);
+		return _spc->CpuReadRegister(addr & 0x03);
 	} else if(addr == 0x2180) {
 		uint8_t value = _workRam[_wramPosition];
 		_console->ProcessWorkRamRead(_wramPosition, value);
@@ -40,7 +40,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 {
 	addr &= 0xFFFF;
 	if(addr >= 0x2140 && addr <= 0x217F) {
-		return _spc->Write(addr & 0x03, value);
+		return _spc->CpuWriteRegister(addr & 0x03, value);
 	} if(addr >= 0x2180 && addr <= 0x2183) {
 		switch(addr & 0xFFFF) {
 			case 0x2180:

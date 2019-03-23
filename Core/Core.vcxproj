@@ -86,7 +86,6 @@
     <ClInclude Include="DrawRectangleCommand.h" />
     <ClInclude Include="DrawScreenBufferCommand.h" />
     <ClInclude Include="DrawStringCommand.h" />
-    <ClInclude Include="dsp.h" />
     <ClInclude Include="FrameLimiter.h" />
     <ClInclude Include="IAudioDevice.h" />
     <ClInclude Include="IInputProvider.h" />
@@ -115,11 +114,11 @@
     <ClInclude Include="ShortcutKeyHandler.h" />
     <ClInclude Include="SnesController.h" />
     <ClInclude Include="SnesMouse.h" />
-    <ClInclude Include="SNES_SPC.h" />
     <ClInclude Include="SoundMixer.h" />
     <ClInclude Include="SoundResampler.h" />
     <ClInclude Include="Spc.h" />
-    <ClInclude Include="SPC_CPU.h" />
+    <ClInclude Include="SpcTimer.h" />
+    <ClInclude Include="SpcTypes.h" />
     <ClInclude Include="SPC_DSP.h" />
     <ClInclude Include="SPC_Filter.h" />
     <ClInclude Include="stdafx.h" />
@@ -169,12 +168,10 @@
     <ClCompile Include="SaveStateManager.cpp" />
     <ClCompile Include="ScaleFilter.cpp" />
     <ClCompile Include="ShortcutKeyHandler.cpp" />
-    <ClCompile Include="SNES_SPC.cpp" />
-    <ClCompile Include="SNES_SPC_misc.cpp" />
-    <ClCompile Include="SNES_SPC_state.cpp" />
     <ClCompile Include="SoundMixer.cpp" />
     <ClCompile Include="SoundResampler.cpp" />
     <ClCompile Include="Spc.cpp" />
+    <ClCompile Include="Spc.Instructions.cpp" />
     <ClCompile Include="SPC_DSP.cpp" />
     <ClCompile Include="SPC_Filter.cpp" />
     <ClCompile Include="stdafx.cpp">

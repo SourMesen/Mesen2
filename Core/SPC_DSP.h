@@ -42,8 +42,10 @@ public:
 
 	// Runs DSP for specified number of clocks (~1024000 per second). Every 32 clocks
 	// a pair of samples is be generated.
-	void run( int clock_count );
+	void run();
 	
+	void setEchoWriteEnabled(bool enabled);
+
 // Sound control
 
 	// Mutes voices corresponding to non-zero bits in mask (issues repeated KOFF events).
@@ -187,6 +189,8 @@ private:
 	};
 	state_t m;
 	
+	bool _echoWriteEnabled = true;
+
 	void init_counter();
 	void run_counters();
 	unsigned read_counter( int rate );
@@ -270,6 +274,8 @@ inline void SPC_DSP::write( int addr, int data )
 		break;
 	}
 }
+
+inline void SPC_DSP::setEchoWriteEnabled(bool enabled) { _echoWriteEnabled = enabled; }
 
 inline void SPC_DSP::mute_voices( int mask ) { m.mute_mask = mask; }
 
