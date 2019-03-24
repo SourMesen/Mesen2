@@ -304,6 +304,12 @@ namespace Mesen.GUI.Debugger.Controls
 			} else if(keyData == ConfigManager.Config.Debug.Shortcuts.Find) {
 				this.OpenSearchBox(true);
 				return true;
+			} else if(keyData == ConfigManager.Config.Debug.Shortcuts.FindNext) {
+				this.FindNext();
+				return true;
+			} else if(keyData == ConfigManager.Config.Debug.Shortcuts.FindPrev) {
+				this.FindPrevious();
+				return true;
 			}
 
 			if(keyData == (Keys.Control | Keys.F)) {

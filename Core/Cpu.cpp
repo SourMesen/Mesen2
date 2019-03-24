@@ -73,12 +73,14 @@ void Cpu::Exec()
 
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
 	if(_state.PrevNmiFlag) {
+		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
-		_console->ProcessEvent(EventType::Nmi);
+		_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
 		_state.NmiFlag = false;
 	} else if(_state.PrevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
+		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
-		_console->ProcessEvent(EventType::Irq);
+		_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
 	}
 }
 

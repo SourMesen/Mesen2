@@ -32,8 +32,10 @@ void CallstackManager::Pop(uint32_t destAddress)
 		return;
 	}
 
-	uint32_t returnAddr = _callstack.back().Return;
+	StackFrameInfo prevFrame = _callstack.back();
 	_callstack.pop_back();
+
+	uint32_t returnAddr = prevFrame.Return;
 
 	if(!_callstack.empty() && destAddress != returnAddr) {
 		//Mismatch, pop that stack frame and add the new one
@@ -65,4 +67,13 @@ void CallstackManager::GetCallstack(StackFrameInfo* callstackArray, uint32_t &ca
 		i++;
 	}
 	callstackSize = i;
+}
+
+int32_t CallstackManager::GetReturnAddress()
+{
+	DebugBreakHelper helper(_debugger);
+	if(_callstack.empty()) {
+		return -1;
+	}
+	return _callstack.back().Return;
 }

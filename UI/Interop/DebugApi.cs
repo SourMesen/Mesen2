@@ -20,7 +20,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void ReleaseDebugger();
 
 		[DllImport(DllPath)] public static extern void ResumeExecution();
-		[DllImport(DllPath)] public static extern void Step(Int32 instructionCount);
+		[DllImport(DllPath)] public static extern void Step(Int32 instructionCount, StepType type = StepType.CpuStep);
 
 		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
@@ -374,5 +374,13 @@ namespace Mesen.GUI
 		None = 0,
 		Nmi = 1,
 		Irq = 2
+	}
+
+	public enum StepType
+	{
+		CpuStep,
+		CpuStepOut,
+		CpuStepOver,
+		PpuStep,
 	}
 }

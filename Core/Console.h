@@ -127,5 +127,6 @@ public:
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
 	void ProcessPpuCycle();
+	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 };

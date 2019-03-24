@@ -38,7 +38,7 @@ extern "C"
 
 	DllExport bool __stdcall IsExecutionStopped() { return GetDebugger()->IsExecutionStopped(); }
 	DllExport void __stdcall ResumeExecution() { if(IsDebuggerRunning()) GetDebugger()->Run(); }
-	DllExport void __stdcall Step(uint32_t count) { GetDebugger()->Step(count); }
+	DllExport void __stdcall Step(uint32_t count, StepType type) { GetDebugger()->Step(count, type); }
 
 	DllExport void __stdcall GetDisassemblyLineData(uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(lineIndex, data); }
 	DllExport uint32_t __stdcall GetDisassemblyLineCount() { return GetDebugger()->GetDisassembler()->GetLineCount(); }

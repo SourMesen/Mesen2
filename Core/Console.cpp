@@ -593,6 +593,13 @@ void Console::ProcessPpuCycle()
 	}
 }
 
+void Console::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
+{
+	if(_debugger) {
+		_debugger->ProcessInterrupt(originalPc, currentPc, forNmi);
+	}
+}
+
 void Console::ProcessEvent(EventType type)
 {
 	if(_debugger) {

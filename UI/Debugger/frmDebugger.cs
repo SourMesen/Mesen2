@@ -66,6 +66,15 @@ namespace Mesen.GUI.Debugger
 			mnuRunPpuCycle.InitShortcut(this, nameof(DebuggerShortcutsConfig.RunPpuCycle));
 			mnuRunScanline.InitShortcut(this, nameof(DebuggerShortcutsConfig.RunPpuScanline));
 			mnuRunOneFrame.InitShortcut(this, nameof(DebuggerShortcutsConfig.RunPpuFrame));
+
+			mnuStepInto.Click += (s, e) => { DebugApi.Step(1); };
+			mnuStepOver.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOver); };
+			mnuStepOut.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOut); };
+			mnuRun1000Instructions.Click += (s, e) => { DebugApi.Step(1000); };
+			mnuRunPpuCycle.Click += (s, e) => { DebugApi.Step(1, StepType.PpuStep); };
+			mnuRunScanline.Click += (s, e) => { DebugApi.Step(341, StepType.PpuStep); };
+			mnuRunOneFrame.Click += (s, e) => { DebugApi.Step(341*262, StepType.PpuStep); }; //TODO ntsc/pal
+			mnuContinue.Click += (s, e) => { DebugApi.ResumeExecution(); };
 		}
 
 		private void InitToolbar()
@@ -97,21 +106,6 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 		
-		private void mnuStepInto_Click(object sender, EventArgs e)
-		{
-			DebugApi.Step(1);
-		}
-
-		private void mnuContinue_Click(object sender, EventArgs e)
-		{
-			DebugApi.ResumeExecution();
-		}
-
-		private void mnuRun1000Cycles_Click(object sender, EventArgs e)
-		{
-			DebugApi.Step(1000);
-		}
-
 		private void ctrlCallstack_FunctionSelected(uint address)
 		{
 			ctrlDisassemblyView.ScrollToAddress(address);

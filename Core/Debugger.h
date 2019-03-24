@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "PpuTypes.h"
+#include "DebugTypes.h"
 
 class Console;
 class Cpu;
@@ -20,14 +21,7 @@ class EventManager;
 class CallstackManager;
 
 enum class EventType;
-enum class SnesMemoryType;
-enum class MemoryOperationType;
-enum class BreakpointCategory;
 enum class EvalResultType : int32_t;
-
-struct DebugState;
-struct MemoryOperationInfo;
-struct AddressInfo;
 
 class Debugger
 {
@@ -53,12 +47,15 @@ private:
 	atomic<uint32_t> _breakRequestCount;
 
 	atomic<int32_t> _cpuStepCount;
+	atomic<int32_t> _ppuStepCount;
+	atomic<int32_t> _breakAddress;
 	
 	uint8_t _prevOpCode = 0;
 	uint32_t _prevProgramCounter = 0;
 
+	void SleepUntilResume();
+	void ProcessStepConditions(uint8_t opCode, uint32_t currentPc);
 	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);
-	void ProcessInterrupt(bool forNmi);
 
 public:
 	Debugger(shared_ptr<Console> console);
@@ -75,12 +72,13 @@ public:
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuCycle();
 
+	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 
 	int32_t EvaluateExpression(string expression, EvalResultType &resultType, bool useCache);
 
 	void Run();
-	void Step(int32_t stepCount);
+	void Step(int32_t stepCount, StepType type = StepType::CpuStep);
 	bool IsExecutionStopped();
 
 	void BreakRequest(bool release);

@@ -49,7 +49,7 @@
 			this.mnuDisableEnableBreakpoint = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRunCpuCycle = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuRun1000Cycles = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRun1000Instructions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRunPpuCycle = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRunScanline = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRunOneFrame = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,7 +113,7 @@
             this.mnuDisableEnableBreakpoint,
             this.toolStripMenuItem2,
             this.mnuRunCpuCycle,
-            this.mnuRun1000Cycles,
+            this.mnuRun1000Instructions,
             this.mnuRunPpuCycle,
             this.mnuRunScanline,
             this.mnuRunOneFrame,
@@ -128,9 +128,8 @@
 			// 
 			this.mnuContinue.Image = global::Mesen.GUI.Properties.Resources.MediaPlay;
 			this.mnuContinue.Name = "mnuContinue";
-			this.mnuContinue.Size = new System.Drawing.Size(212, 22);
+			this.mnuContinue.Size = new System.Drawing.Size(213, 22);
 			this.mnuContinue.Text = "Continue";
-			this.mnuContinue.Click += new System.EventHandler(this.mnuContinue_Click);
 			// 
 			// mnuBreak
 			// 
@@ -138,136 +137,134 @@
 			this.mnuBreak.Image = global::Mesen.GUI.Properties.Resources.MediaPause;
 			this.mnuBreak.Name = "mnuBreak";
 			this.mnuBreak.ShortcutKeyDisplayString = "";
-			this.mnuBreak.Size = new System.Drawing.Size(212, 22);
+			this.mnuBreak.Size = new System.Drawing.Size(213, 22);
 			this.mnuBreak.Text = "Break";
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(209, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(210, 6);
 			// 
 			// mnuStepInto
 			// 
 			this.mnuStepInto.Image = global::Mesen.GUI.Properties.Resources.StepInto;
 			this.mnuStepInto.Name = "mnuStepInto";
-			this.mnuStepInto.Size = new System.Drawing.Size(212, 22);
+			this.mnuStepInto.Size = new System.Drawing.Size(213, 22);
 			this.mnuStepInto.Text = "Step Into";
-			this.mnuStepInto.Click += new System.EventHandler(this.mnuStepInto_Click);
 			// 
 			// mnuStepOver
 			// 
 			this.mnuStepOver.Image = global::Mesen.GUI.Properties.Resources.StepOver;
 			this.mnuStepOver.Name = "mnuStepOver";
-			this.mnuStepOver.Size = new System.Drawing.Size(212, 22);
+			this.mnuStepOver.Size = new System.Drawing.Size(213, 22);
 			this.mnuStepOver.Text = "Step Over";
 			// 
 			// mnuStepOut
 			// 
 			this.mnuStepOut.Image = global::Mesen.GUI.Properties.Resources.StepOut;
 			this.mnuStepOut.Name = "mnuStepOut";
-			this.mnuStepOut.Size = new System.Drawing.Size(212, 22);
+			this.mnuStepOut.Size = new System.Drawing.Size(213, 22);
 			this.mnuStepOut.Text = "Step Out";
 			// 
 			// mnuStepBack
 			// 
 			this.mnuStepBack.Image = global::Mesen.GUI.Properties.Resources.StepBack;
 			this.mnuStepBack.Name = "mnuStepBack";
-			this.mnuStepBack.Size = new System.Drawing.Size(212, 22);
+			this.mnuStepBack.Size = new System.Drawing.Size(213, 22);
 			this.mnuStepBack.Text = "Step Back";
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(209, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(210, 6);
 			// 
 			// mnuReset
 			// 
 			this.mnuReset.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuReset.Name = "mnuReset";
-			this.mnuReset.Size = new System.Drawing.Size(212, 22);
+			this.mnuReset.Size = new System.Drawing.Size(213, 22);
 			this.mnuReset.Text = "Reset";
 			// 
 			// mnuPowerCycle
 			// 
 			this.mnuPowerCycle.Image = global::Mesen.GUI.Properties.Resources.PowerCycle;
 			this.mnuPowerCycle.Name = "mnuPowerCycle";
-			this.mnuPowerCycle.Size = new System.Drawing.Size(212, 22);
+			this.mnuPowerCycle.Size = new System.Drawing.Size(213, 22);
 			this.mnuPowerCycle.Text = "Power Cycle";
 			// 
 			// toolStripMenuItem24
 			// 
 			this.toolStripMenuItem24.Name = "toolStripMenuItem24";
-			this.toolStripMenuItem24.Size = new System.Drawing.Size(209, 6);
+			this.toolStripMenuItem24.Size = new System.Drawing.Size(210, 6);
 			// 
 			// mnuToggleBreakpoint
 			// 
 			this.mnuToggleBreakpoint.Image = global::Mesen.GUI.Properties.Resources.Breakpoint;
 			this.mnuToggleBreakpoint.Name = "mnuToggleBreakpoint";
-			this.mnuToggleBreakpoint.Size = new System.Drawing.Size(212, 22);
+			this.mnuToggleBreakpoint.Size = new System.Drawing.Size(213, 22);
 			this.mnuToggleBreakpoint.Text = "Toggle Breakpoint";
 			// 
 			// mnuDisableEnableBreakpoint
 			// 
 			this.mnuDisableEnableBreakpoint.Image = global::Mesen.GUI.Properties.Resources.BreakpointDisabled;
 			this.mnuDisableEnableBreakpoint.Name = "mnuDisableEnableBreakpoint";
-			this.mnuDisableEnableBreakpoint.Size = new System.Drawing.Size(212, 22);
+			this.mnuDisableEnableBreakpoint.Size = new System.Drawing.Size(213, 22);
 			this.mnuDisableEnableBreakpoint.Text = "Disable/Enable Breakpoint";
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(209, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(210, 6);
 			// 
 			// mnuRunCpuCycle
 			// 
 			this.mnuRunCpuCycle.Image = global::Mesen.GUI.Properties.Resources.JumpTarget;
 			this.mnuRunCpuCycle.Name = "mnuRunCpuCycle";
-			this.mnuRunCpuCycle.Size = new System.Drawing.Size(212, 22);
+			this.mnuRunCpuCycle.Size = new System.Drawing.Size(213, 22);
 			this.mnuRunCpuCycle.Text = "Run one CPU cycle";
 			// 
-			// mnuRun1000Cycles
+			// mnuRun1000Instructions
 			// 
-			this.mnuRun1000Cycles.Name = "mnuRun1000Cycles";
-			this.mnuRun1000Cycles.Size = new System.Drawing.Size(212, 22);
-			this.mnuRun1000Cycles.Text = "Run 1000 CPU cycles";
-			this.mnuRun1000Cycles.Click += new System.EventHandler(this.mnuRun1000Cycles_Click);
+			this.mnuRun1000Instructions.Name = "mnuRun1000Instructions";
+			this.mnuRun1000Instructions.Size = new System.Drawing.Size(213, 22);
+			this.mnuRun1000Instructions.Text = "Run 1000 CPU instructions";
 			// 
 			// mnuRunPpuCycle
 			// 
 			this.mnuRunPpuCycle.Image = global::Mesen.GUI.Properties.Resources.RunPpuCycle;
 			this.mnuRunPpuCycle.Name = "mnuRunPpuCycle";
-			this.mnuRunPpuCycle.Size = new System.Drawing.Size(212, 22);
+			this.mnuRunPpuCycle.Size = new System.Drawing.Size(213, 22);
 			this.mnuRunPpuCycle.Text = "Run one PPU cycle";
 			// 
 			// mnuRunScanline
 			// 
 			this.mnuRunScanline.Image = global::Mesen.GUI.Properties.Resources.RunPpuScanline;
 			this.mnuRunScanline.Name = "mnuRunScanline";
-			this.mnuRunScanline.Size = new System.Drawing.Size(212, 22);
+			this.mnuRunScanline.Size = new System.Drawing.Size(213, 22);
 			this.mnuRunScanline.Text = "Run one scanline";
 			// 
 			// mnuRunOneFrame
 			// 
 			this.mnuRunOneFrame.Image = global::Mesen.GUI.Properties.Resources.RunPpuFrame;
 			this.mnuRunOneFrame.Name = "mnuRunOneFrame";
-			this.mnuRunOneFrame.Size = new System.Drawing.Size(212, 22);
+			this.mnuRunOneFrame.Size = new System.Drawing.Size(213, 22);
 			this.mnuRunOneFrame.Text = "Run one frame";
 			// 
 			// toolStripMenuItem8
 			// 
 			this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-			this.toolStripMenuItem8.Size = new System.Drawing.Size(209, 6);
+			this.toolStripMenuItem8.Size = new System.Drawing.Size(210, 6);
 			// 
 			// mnuBreakIn
 			// 
 			this.mnuBreakIn.Name = "mnuBreakIn";
-			this.mnuBreakIn.Size = new System.Drawing.Size(212, 22);
+			this.mnuBreakIn.Size = new System.Drawing.Size(213, 22);
 			this.mnuBreakIn.Text = "Break in...";
 			// 
 			// mnuBreakOn
 			// 
 			this.mnuBreakOn.Name = "mnuBreakOn";
-			this.mnuBreakOn.Size = new System.Drawing.Size(212, 22);
+			this.mnuBreakOn.Size = new System.Drawing.Size(213, 22);
 			this.mnuBreakOn.Text = "Break on...";
 			// 
 			// ctrlSplitContainer
@@ -440,7 +437,7 @@
 		private System.Windows.Forms.GroupBox grpBreakpoints;
 		private Controls.ctrlBreakpoints ctrlBreakpoints;
 		private Controls.ctrlConsoleStatus ctrlStatus;
-		private System.Windows.Forms.ToolStripMenuItem mnuRun1000Cycles;
+		private System.Windows.Forms.ToolStripMenuItem mnuRun1000Instructions;
 		private GUI.Controls.ctrlMesenToolStrip tsToolbar;
 		private System.Windows.Forms.GroupBox grpCallstack;
 		private Controls.ctrlCallstack ctrlCallstack;

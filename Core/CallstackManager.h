@@ -17,4 +17,5 @@ public:
 	void Pop(uint32_t destAddr);
 
 	void GetCallstack(StackFrameInfo* callstackArray, uint32_t &callstackSize);
+	int32_t GetReturnAddress();
 };

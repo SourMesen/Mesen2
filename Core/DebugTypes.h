@@ -205,3 +205,11 @@ struct StackFrameInfo
 	uint32_t Return;
 	StackFrameFlags Flags;
 };
+
+enum class StepType
+{
+	CpuStep,
+	CpuStepOut,
+	CpuStepOver,
+	PpuStep,
+};
