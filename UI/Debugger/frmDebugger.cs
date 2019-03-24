@@ -91,6 +91,7 @@ namespace Mesen.GUI.Debugger
 						ctrlStatus.UpdateStatus(state);
 						ctrlDisassemblyView.SetActiveAddress(activeAddress);
 						ctrlWatch.UpdateWatch(true);
+						ctrlCallstack.UpdateCallstack();
 					}));
 					break;
 			}
@@ -109,6 +110,11 @@ namespace Mesen.GUI.Debugger
 		private void mnuRun1000Cycles_Click(object sender, EventArgs e)
 		{
 			DebugApi.Step(1000);
+		}
+
+		private void ctrlCallstack_FunctionSelected(uint address)
+		{
+			ctrlDisassemblyView.ScrollToAddress(address);
 		}
 	}
 }

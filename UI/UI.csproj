@@ -320,6 +320,12 @@
     <Compile Include="Debugger\Controls\ComboBoxWithSeparator.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\Controls\ctrlCallstack.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlCallstack.designer.cs">
+      <DependentUpon>ctrlCallstack.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlColorPicker.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -685,6 +691,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Breakpoints\frmBreakpoint.resx">
       <DependentUpon>frmBreakpoint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlCallstack.resx">
+      <DependentUpon>ctrlCallstack.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlConsoleStatus.resx">
       <DependentUpon>ctrlConsoleStatus.cs</DependentUpon>

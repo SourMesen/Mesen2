@@ -17,6 +17,7 @@ class BreakpointManager;
 class PpuTools;
 class CodeDataLogger;
 class EventManager;
+class CallstackManager;
 
 enum class EventType;
 enum class SnesMemoryType;
@@ -44,6 +45,7 @@ private:
 	shared_ptr<BreakpointManager> _breakpointManager;
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<EventManager> _eventManager;
+	shared_ptr<CallstackManager> _callstackManager;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval;
 
@@ -51,7 +53,12 @@ private:
 	atomic<uint32_t> _breakRequestCount;
 
 	atomic<int32_t> _cpuStepCount;
+	
 	uint8_t _prevOpCode = 0;
+	uint32_t _prevProgramCounter = 0;
+
+	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);
+	void ProcessInterrupt(bool forNmi);
 
 public:
 	Debugger(shared_ptr<Console> console);
@@ -68,7 +75,6 @@ public:
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuCycle();
 
-	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);
 	void ProcessEvent(EventType type);
 
 	int32_t EvaluateExpression(string expression, EvalResultType &resultType, bool useCache);
@@ -87,5 +93,6 @@ public:
 	shared_ptr<BreakpointManager> GetBreakpointManager();
 	shared_ptr<PpuTools> GetPpuTools();
 	shared_ptr<EventManager> GetEventManager();
+	shared_ptr<CallstackManager> GetCallstackManager();
 	shared_ptr<Console> GetConsole();
 };

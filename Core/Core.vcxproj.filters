@@ -251,6 +251,9 @@
     <ClInclude Include="SpcTimer.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="CallstackManager.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -398,6 +401,9 @@
     </ClCompile>
     <ClCompile Include="Spc.Instructions.cpp">
       <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="CallstackManager.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

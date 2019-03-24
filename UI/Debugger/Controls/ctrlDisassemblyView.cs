@@ -65,6 +65,11 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 		}
 
+		public void ScrollToAddress(uint address)
+		{
+			ctrlCode.ScrollToAddress((int)address);
+		}
+
 		private void UpdateCode()
 		{
 			int centerLineIndex = ctrlCode.GetLineIndexAtPosition(0) + ctrlCode.GetNumberVisibleLines() / 2;

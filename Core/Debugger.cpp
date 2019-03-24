@@ -18,6 +18,7 @@
 #include "PpuTools.h"
 #include "EventManager.h"
 #include "EventType.h"
+#include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
@@ -37,6 +38,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
+	_callstackManager.reset(new CallstackManager(this));
 	
 	_cpuStepCount = -1;
 	_executionStopped = false;
@@ -96,7 +98,19 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
 		_traceLogger->Log(debugState, disInfo);
 
+		uint32_t pc = (state.K << 16) | state.PC;
+		if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
+			//JSR, JSL
+			uint8_t opSize = DisassemblyInfo::GetOperandSize(_prevOpCode, 0) + 1;
+			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
+			_callstackManager->Push(_prevProgramCounter, pc, returnPc, StackFrameFlags::None);
+		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
+			//RTS, RTL, RTI
+			_callstackManager->Pop(pc);
+		}
+
 		_prevOpCode = value;
+		_prevProgramCounter = pc;
 
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;
@@ -194,11 +208,19 @@ void Debugger::ProcessBreakConditions(MemoryOperationInfo &operation, AddressInf
 	}
 }
 
+void Debugger::ProcessInterrupt(bool forNmi)
+{
+	CpuState state = _cpu->GetState();
+	_callstackManager->Push(_prevProgramCounter, (state.K << 16) | state.PC, _prevProgramCounter, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
+	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
+}
+
 void Debugger::ProcessEvent(EventType type)
 {
 	switch(type) {
-		case EventType::Nmi: _eventManager->AddEvent(DebugEventType::Nmi); break;
-		case EventType::Irq: _eventManager->AddEvent(DebugEventType::Irq); break;
+		case EventType::Nmi: ProcessInterrupt(true); break;
+		case EventType::Irq: ProcessInterrupt(false); break;
+
 		case EventType::StartFrame:
 			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh);
 			_eventManager->ClearFrameEvents();
@@ -277,6 +299,11 @@ shared_ptr<PpuTools> Debugger::GetPpuTools()
 shared_ptr<EventManager> Debugger::GetEventManager()
 {
 	return _eventManager;
+}
+
+shared_ptr<CallstackManager> Debugger::GetCallstackManager()
+{
+	return _callstackManager;
 }
 
 shared_ptr<Console> Debugger::GetConsole()

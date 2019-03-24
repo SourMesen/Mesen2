@@ -63,6 +63,8 @@
 			this.ctrlWatch = new Mesen.GUI.Debugger.ctrlWatch();
 			this.grpBreakpoints = new System.Windows.Forms.GroupBox();
 			this.ctrlBreakpoints = new Mesen.GUI.Debugger.Controls.ctrlBreakpoints();
+			this.grpCallstack = new System.Windows.Forms.GroupBox();
+			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
@@ -72,6 +74,7 @@
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpWatch.SuspendLayout();
 			this.grpBreakpoints.SuspendLayout();
+			this.grpCallstack.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctrlDisassemblyView
@@ -298,11 +301,13 @@
 			// 
 			// tableLayoutPanel1
 			// 
-			this.tableLayoutPanel1.ColumnCount = 2;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.ColumnCount = 3;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
 			this.tableLayoutPanel1.Controls.Add(this.grpWatch, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.grpBreakpoints, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.grpCallstack, 2, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -317,7 +322,7 @@
 			this.grpWatch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpWatch.Location = new System.Drawing.Point(3, 3);
 			this.grpWatch.Name = "grpWatch";
-			this.grpWatch.Size = new System.Drawing.Size(410, 164);
+			this.grpWatch.Size = new System.Drawing.Size(271, 164);
 			this.grpWatch.TabIndex = 1;
 			this.grpWatch.TabStop = false;
 			this.grpWatch.Text = "Watch";
@@ -327,16 +332,16 @@
 			this.ctrlWatch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlWatch.Location = new System.Drawing.Point(3, 16);
 			this.ctrlWatch.Name = "ctrlWatch";
-			this.ctrlWatch.Size = new System.Drawing.Size(404, 145);
+			this.ctrlWatch.Size = new System.Drawing.Size(265, 145);
 			this.ctrlWatch.TabIndex = 0;
 			// 
 			// grpBreakpoints
 			// 
 			this.grpBreakpoints.Controls.Add(this.ctrlBreakpoints);
 			this.grpBreakpoints.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpBreakpoints.Location = new System.Drawing.Point(419, 3);
+			this.grpBreakpoints.Location = new System.Drawing.Point(280, 3);
 			this.grpBreakpoints.Name = "grpBreakpoints";
-			this.grpBreakpoints.Size = new System.Drawing.Size(410, 164);
+			this.grpBreakpoints.Size = new System.Drawing.Size(271, 164);
 			this.grpBreakpoints.TabIndex = 2;
 			this.grpBreakpoints.TabStop = false;
 			this.grpBreakpoints.Text = "Breakpoints";
@@ -346,8 +351,28 @@
 			this.ctrlBreakpoints.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlBreakpoints.Location = new System.Drawing.Point(3, 16);
 			this.ctrlBreakpoints.Name = "ctrlBreakpoints";
-			this.ctrlBreakpoints.Size = new System.Drawing.Size(404, 145);
+			this.ctrlBreakpoints.Size = new System.Drawing.Size(265, 145);
 			this.ctrlBreakpoints.TabIndex = 0;
+			// 
+			// grpCallstack
+			// 
+			this.grpCallstack.Controls.Add(this.ctrlCallstack);
+			this.grpCallstack.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.grpCallstack.Location = new System.Drawing.Point(557, 3);
+			this.grpCallstack.Name = "grpCallstack";
+			this.grpCallstack.Size = new System.Drawing.Size(272, 164);
+			this.grpCallstack.TabIndex = 3;
+			this.grpCallstack.TabStop = false;
+			this.grpCallstack.Text = "Call Stack";
+			// 
+			// ctrlCallstack
+			// 
+			this.ctrlCallstack.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlCallstack.Location = new System.Drawing.Point(3, 16);
+			this.ctrlCallstack.Name = "ctrlCallstack";
+			this.ctrlCallstack.Size = new System.Drawing.Size(266, 145);
+			this.ctrlCallstack.TabIndex = 0;
+			this.ctrlCallstack.FunctionSelected += new Mesen.GUI.Debugger.Controls.ctrlCallstack.NavigateToAddressHandler(this.ctrlCallstack_FunctionSelected);
 			// 
 			// tsToolbar
 			// 
@@ -376,6 +401,7 @@
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.grpWatch.ResumeLayout(false);
 			this.grpBreakpoints.ResumeLayout(false);
+			this.grpCallstack.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -416,5 +442,7 @@
 		private Controls.ctrlConsoleStatus ctrlStatus;
 		private System.Windows.Forms.ToolStripMenuItem mnuRun1000Cycles;
 		private GUI.Controls.ctrlMesenToolStrip tsToolbar;
+		private System.Windows.Forms.GroupBox grpCallstack;
+		private Controls.ctrlCallstack ctrlCallstack;
 	}
 }

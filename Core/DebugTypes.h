@@ -190,3 +190,18 @@ struct GetTileViewOptions
 
 	bool ShowTileGrid;
 };
+
+enum class StackFrameFlags
+{
+	None = 0,
+	Nmi = 1,
+	Irq = 2
+};
+
+struct StackFrameInfo
+{
+	uint32_t Source;
+	uint32_t Target;
+	uint32_t Return;
+	StackFrameFlags Flags;
+};

@@ -55,6 +55,7 @@
     <ClInclude Include="blargg_source.h" />
     <ClInclude Include="Breakpoint.h" />
     <ClInclude Include="BreakpointManager.h" />
+    <ClInclude Include="CallstackManager.h" />
     <ClInclude Include="CartTypes.h" />
     <ClInclude Include="CodeDataLogger.h" />
     <ClInclude Include="Console.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="BaseVideoFilter.cpp" />
     <ClCompile Include="Breakpoint.cpp" />
     <ClCompile Include="BreakpointManager.cpp" />
+    <ClCompile Include="CallstackManager.cpp" />
     <ClCompile Include="CodeDataLogger.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="ConsoleLock.cpp" />

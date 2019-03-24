@@ -9,6 +9,7 @@
 #include "../Core/BreakpointManager.h"
 #include "../Core/PpuTools.h"
 #include "../Core/EventManager.h"
+#include "../Core/CallstackManager.h"
 
 extern shared_ptr<Console> _console;
 
@@ -51,6 +52,7 @@ extern "C"
 
 	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { GetDebugger()->GetBreakpointManager()->SetBreakpoints(breakpoints, length); }
 	DllExport int32_t __stdcall EvaluateExpression(char* expression, EvalResultType *resultType, bool useCache) { return GetDebugger()->EvaluateExpression(expression, *resultType, useCache); }
+	DllExport void __stdcall GetCallstack(StackFrameInfo *callstackArray, uint32_t &callstackSize) { GetDebugger()->GetCallstackManager()->GetCallstack(callstackArray, callstackSize); }
 
 	DllExport void __stdcall GetState(DebugState &state) { GetDebugger()->GetState(state); }
 

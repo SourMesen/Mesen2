@@ -101,7 +101,19 @@ namespace Mesen.GUI
 			byte[] buffer = new byte[340*2 * 262*2 * 4];
 			DebugApi.GetEventViewerOutputWrapper(buffer, options);
 			return buffer;
-		}		
+		}
+
+		[DllImport(DllPath, EntryPoint = "GetCallstack")] private static extern void DebugGetCallstackWrapper([In, Out]StackFrameInfo[] callstackArray, ref UInt32 callstackSize);
+		public static StackFrameInfo[] GetCallstack()
+		{
+			StackFrameInfo[] callstack = new StackFrameInfo[512];
+			UInt32 callstackSize = 0;
+
+			DebugApi.DebugGetCallstackWrapper(callstack, ref callstackSize);
+			Array.Resize(ref callstack, (int)callstackSize);
+
+			return callstack;
+		}
 	}
 
 	public enum SnesMemoryType
@@ -347,5 +359,20 @@ namespace Mesen.GUI
 		Invalid = 2,
 		DivideBy0 = 3,
 		OutOfScope = 4
+	}
+	
+	public struct StackFrameInfo
+	{
+		public UInt32 Source;
+		public UInt32 Target;
+		public UInt32 Return;
+		public StackFrameFlags Flags;
+	};
+
+	public enum StackFrameFlags
+	{
+		None = 0,
+		Nmi = 1,
+		Irq = 2
 	}
 }
