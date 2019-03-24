@@ -32,6 +32,7 @@ namespace Mesen.GUI.Debugger
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			InitShortcuts();
+			InitToolbar();
 
 			DebugApi.Step(10000);
 		}
@@ -65,6 +66,18 @@ namespace Mesen.GUI.Debugger
 			mnuRunPpuCycle.InitShortcut(this, nameof(DebuggerShortcutsConfig.RunPpuCycle));
 			mnuRunScanline.InitShortcut(this, nameof(DebuggerShortcutsConfig.RunPpuScanline));
 			mnuRunOneFrame.InitShortcut(this, nameof(DebuggerShortcutsConfig.RunPpuFrame));
+		}
+
+		private void InitToolbar()
+		{
+			tsToolbar.AddItemsToToolbar(
+				mnuContinue, mnuBreak, null,
+				mnuStepInto, mnuStepOver, mnuStepOut, mnuStepBack, null,
+				mnuRunCpuCycle, null,
+				mnuRunPpuCycle, mnuRunScanline, mnuRunOneFrame, null,
+				mnuToggleBreakpoint, mnuDisableEnableBreakpoint, null,
+				mnuBreakIn, null, mnuBreakOn
+			);
 		}
 
 		private void OnNotificationReceived(NotificationEventArgs e)
