@@ -224,7 +224,6 @@
 			// mnuRun1000Cycles
 			// 
 			this.mnuRun1000Cycles.Name = "mnuRun1000Cycles";
-			this.mnuRun1000Cycles.ShortcutKeys = System.Windows.Forms.Keys.F9;
 			this.mnuRun1000Cycles.Size = new System.Drawing.Size(212, 22);
 			this.mnuRun1000Cycles.Text = "Run 1000 CPU cycles";
 			this.mnuRun1000Cycles.Click += new System.EventHandler(this.mnuRun1000Cycles_Click);

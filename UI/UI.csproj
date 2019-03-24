@@ -243,6 +243,10 @@
       <DependentUpon>frmBreakpoint.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
+    <Compile Include="Debugger\Code\CpuCodeProvider.cs" />
+    <Compile Include="Debugger\Code\CpuDisassemblyManager.cs" />
+    <Compile Include="Debugger\Code\CpuLineStyleProvider.cs" />
+    <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />

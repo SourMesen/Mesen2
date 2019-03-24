@@ -46,7 +46,6 @@ namespace Mesen.GUI.Debugger.Controls
 		private int _marginWidth = 9;
 		private int _extendedMarginWidth = 16;
 		private float _maxLineWidth = 0;
-		private int _maxLineWidthIndex = 0;
 		private TextboxMessageInfo _message;
 
 		public ctrlTextbox()
@@ -1017,7 +1016,7 @@ namespace Mesen.GUI.Debugger.Controls
 			if((circleSize % 2) == 1) {
 				circleSize++;
 			}
-			int circleOffsetY = positionY + 4;
+			int circleOffsetY = positionY + 2;
 			int circleOffsetX = 3;
 
 			Action<Brush> drawPlus = (Brush b) => {

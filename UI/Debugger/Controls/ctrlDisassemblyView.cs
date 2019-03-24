@@ -9,21 +9,50 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Controls;
 using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Code;
 
 namespace Mesen.GUI.Debugger.Controls
 {
 	public partial class ctrlDisassemblyView : BaseControl
 	{
-		private LineStyleProvider _styleProvider;
+		private CpuLineStyleProvider _styleProvider;
+		private IDisassemblyManager _manager;
 
 		public ctrlDisassemblyView()
 		{
 			InitializeComponent();
+			if(IsDesignMode) {
+				return;
+			}
 
-			_styleProvider = new LineStyleProvider();
+			_manager = new CpuDisassemblyManager();
+			_manager.RefreshCode();
+
+			_styleProvider = new CpuLineStyleProvider();
 			ctrlCode.StyleProvider = _styleProvider;
 			ctrlCode.ShowContentNotes = true;
 			ctrlCode.ShowMemoryValues = true;
+
+			InitShortcuts();
+
+			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
+		}
+
+		protected override void OnHandleDestroyed(EventArgs e)
+		{
+			base.OnHandleDestroyed(e);
+
+			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
+		}
+
+		private void BreakpointManager_BreakpointsChanged(object sender, EventArgs e)
+		{
+			ctrlCode.Invalidate();
+		}
+
+		private void InitShortcuts()
+		{
+			mnuToggleBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_ToggleBreakpoint));
 		}
 
 		public void SetActiveAddress(int? address)
@@ -38,153 +67,36 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void UpdateCode()
 		{
-			CodeDataProvider provider = new CodeDataProvider();
-
 			int centerLineIndex = ctrlCode.GetLineIndexAtPosition(0) + ctrlCode.GetNumberVisibleLines() / 2;
 			int centerLineAddress;
 			int scrollOffset = -1;
 			do {
 				//Save the address at the center of the debug view
-				centerLineAddress = provider.GetLineAddress(centerLineIndex);
+				centerLineAddress = _manager.Provider.GetLineAddress(centerLineIndex);
 				centerLineIndex--;
 				scrollOffset++;
 			} while(centerLineAddress < 0 && centerLineIndex > 0);
 
-			ctrlCode.DataProvider = provider;
+			_manager.RefreshCode();
+			ctrlCode.DataProvider = _manager.Provider;
 
 			if(centerLineAddress >= 0) {
 				//Scroll to the same address as before, to prevent the code view from changing due to setting or banking changes, etc.
-				int lineIndex = provider.GetLineIndex((UInt32)centerLineAddress) + scrollOffset;
+				int lineIndex = _manager.Provider.GetLineIndex((UInt32)centerLineAddress) + scrollOffset;
 				ctrlCode.ScrollToLineIndex(lineIndex, eHistoryType.None, false, true);
 			}
 		}
-
-		public class CodeDataProvider : ICodeDataProvider
+		
+		private void mnuToggleBreakpoint_Click(object sender, EventArgs e)
 		{
-			private int _lineCount;
-
-			public CodeDataProvider()
-			{
-				_lineCount = (int)DebugApi.GetDisassemblyLineCount();
-			}
-
-			public CodeLineData GetCodeLineData(int lineIndex)
-			{
-				return DebugApi.GetDisassemblyLineData((UInt32)lineIndex);
-			}
-
-			public int GetLineAddress(int lineIndex)
-			{
-				return DebugApi.GetDisassemblyLineData((UInt32)lineIndex).Address;
-			}
-
-			public int GetLineCount()
-			{
-				return _lineCount;
-			}
-
-			public int GetLineIndex(uint cpuAddress)
-			{
-				return (int)DebugApi.GetDisassemblyLineIndex(cpuAddress);
-			}
-
-			public bool UseOptimizedSearch { get { return true; } }
-
-			public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
-			{
-				return DebugApi.SearchDisassembly(searchString, startPosition, endPosition, searchBackwards);
-			}
+			_manager.ToggleBreakpoint(ctrlCode.SelectedLine);
 		}
 
-		public class LineStyleProvider : ctrlTextbox.ILineStyleProvider
+		private void ctrlCode_MouseDown(object sender, MouseEventArgs e)
 		{
-			public LineStyleProvider()
-			{
-			}
-
-			public int? ActiveAddress { get; set; }
-
-			public string GetLineComment(int lineNumber)
-			{
-				return null;
-			}
-
-			public static void ConfigureActiveStatement(LineProperties props)
-			{
-				props.FgColor = Color.Black;
-				props.TextBgColor = ConfigManager.Config.Debug.CodeActiveStatementColor;
-				props.Symbol |= LineSymbol.Arrow;
-			}
-
-			public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
-			{
-				DebugInfo info = ConfigManager.Config.Debug;
-				LineProperties props = new LineProperties();
-
-				if(lineData.Address >= 0) {
-					GetBreakpointLineProperties(props, lineData.Address);
-				}
-
-				bool isActiveStatement = ActiveAddress.HasValue && ActiveAddress.Value == lineData.Address;
-				if(isActiveStatement) {
-					ConfigureActiveStatement(props);
-				}
-
-				//TODO
-				/* else if(_code._code.UnexecutedAddresses.Contains(lineNumber)) {
-					props.LineBgColor = info.CodeUnexecutedCodeColor;
-				}*/
-
-				if(lineData.Flags.HasFlag(LineFlags.PrgRom)) {
-					props.AddressColor = Color.Gray;
-				} else if(lineData.Flags.HasFlag(LineFlags.WorkRam)) {
-					props.AddressColor = Color.DarkBlue;
-				} else if(lineData.Flags.HasFlag(LineFlags.SaveRam)) {
-					props.AddressColor = Color.DarkRed;
-				}
-
-				if(lineData.Flags.HasFlag(LineFlags.VerifiedData)) {
-					props.LineBgColor = info.CodeVerifiedDataColor;
-				} else if(!lineData.Flags.HasFlag(LineFlags.VerifiedCode)) {
-					props.LineBgColor = info.CodeUnidentifiedDataColor;
-				}
-
-				return props;
-			}
-
-			public static void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
-			{
-				DebugInfo config = ConfigManager.Config.Debug;
-				foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
-					if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.CpuMemory)) {
-						Color fgColor = Color.White;
-						Color? bgColor = null;
-						Color bpColor = breakpoint.BreakOnExec ? config.CodeExecBreakpointColor : (breakpoint.BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor);
-						Color outlineColor = bpColor;
-						LineSymbol symbol;
-						if(breakpoint.Enabled) {
-							bgColor = bpColor;
-							symbol = LineSymbol.Circle;
-						} else {
-							fgColor = Color.Black;
-							symbol = LineSymbol.CircleOutline;
-						}
-
-						if(breakpoint.MarkEvent) {
-							symbol |= LineSymbol.Mark;
-						}
-
-						if(!string.IsNullOrWhiteSpace(breakpoint.Condition)) {
-							symbol |= LineSymbol.Plus;
-						}
-
-						props.FgColor = fgColor;
-						props.TextBgColor = bgColor;
-						props.OutlineColor = outlineColor;
-						props.Symbol = symbol;
-						return;
-					}
-				}
+			if(e.X < 20) {
+				int lineIndex = ctrlCode.GetLineIndexAtPosition(e.Y);
+				_manager.ToggleBreakpoint(lineIndex);
 			}
 		}
 	}

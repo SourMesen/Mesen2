@@ -31,6 +31,12 @@ namespace Mesen.GUI.Debugger.Controls
 			remove { this.ctrlTextbox.MouseMove -= value; }
 		}
 
+		public new event MouseEventHandler MouseClick
+		{
+			add { this.ctrlTextbox.MouseClick += value; }
+			remove { this.ctrlTextbox.MouseClick -= value; }
+		}
+
 		public new event MouseEventHandler MouseDown
 		{
 			add { this.ctrlTextbox.MouseDown += value; }
@@ -77,6 +83,12 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			base.OnResize(e);
 			this.panelSearch.Location = new System.Drawing.Point(this.Width - this.panelSearch.Width - 20, -1);
+		}
+
+		protected override void OnInvalidated(InvalidateEventArgs e)
+		{
+			base.OnInvalidated(e);
+			ctrlTextbox.Invalidate();
 		}
 
 		public bool ShowScrollbars
@@ -232,11 +244,10 @@ namespace Mesen.GUI.Debugger.Controls
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			if(!this.cboSearch.Focused) {
-				//TODO
-				/*if(keyData == ConfigManager.Config.DebugInfo.Shortcuts.SelectAll) {
+				if(keyData == ConfigManager.Config.Debug.Shortcuts.SelectAll) {
 					this.SelectAll();
 					return true;
-				}*/
+				}
 
 				switch(keyData) {
 					case Keys.Right | Keys.Shift:
@@ -281,21 +292,19 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 			}
 
-			//TODO
-			/*
-			if(keyData == ConfigManager.Config.DebugInfo.Shortcuts.IncreaseFontSize) {
+			if(keyData == ConfigManager.Config.Debug.Shortcuts.IncreaseFontSize) {
 				this.TextZoom += 10;
 				return true;
-			} else if(keyData == ConfigManager.Config.DebugInfo.Shortcuts.DecreaseFontSize) {
+			} else if(keyData == ConfigManager.Config.Debug.Shortcuts.DecreaseFontSize) {
 				this.TextZoom -= 10;
 				return true;
-			} else if(keyData == ConfigManager.Config.DebugInfo.Shortcuts.ResetFontSize) {
+			} else if(keyData == ConfigManager.Config.Debug.Shortcuts.ResetFontSize) {
 				this.TextZoom = 100;
 				return true;
-			} else if(keyData == ConfigManager.Config.DebugInfo.Shortcuts.Find) {
+			} else if(keyData == ConfigManager.Config.Debug.Shortcuts.Find) {
 				this.OpenSearchBox(true);
 				return true;
-			}*/
+			}
 
 			if(keyData == (Keys.Control | Keys.F)) {
 				this.OpenSearchBox(true);
