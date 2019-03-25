@@ -670,8 +670,12 @@ void Cpu::MVN()
 
 	_state.X++;
 	_state.Y++;
-	_state.A--;
+	if(CheckFlag(ProcFlags::IndexMode8)) {
+		_state.X &= 0xFF;
+		_state.Y &= 0xFF;
+	}
 
+	_state.A--;
 
 	if(_state.A != 0xFFFF) {
 		//Operation isn't done, set the PC back to the start of the instruction
@@ -693,6 +697,11 @@ void Cpu::MVP()
 
 	_state.X--;
 	_state.Y--;
+	if(CheckFlag(ProcFlags::IndexMode8)) {
+		_state.X &= 0xFF;
+		_state.Y &= 0xFF;
+	}
+
 	_state.A--;
 		
 	if(_state.A != 0xFFFF) {
