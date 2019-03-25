@@ -226,15 +226,11 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	}
 
 	if(_flags & CartFlags::LoRom) {
+		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
+		MapBanks(mm, _prgRomHandlers, 0x80, 0xFF, 0x08, 0x0F, 0, true);
 		if(_saveRamSize > 0) {
-			MapBanks(mm, _prgRomHandlers, 0x00, 0x6F, 0x08, 0x0F, 0, true);
-			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
-
-			MapBanks(mm, _prgRomHandlers, 0x80, 0xEF, 0x08, 0x0F, 0, true);
-			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x0F, 0, true);
-		} else {
-			MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
-			MapBanks(mm, _prgRomHandlers, 0x80, 0xEF, 0x08, 0x0F, 0, true);
+			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
+			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
 		}
 	} else {
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true);
