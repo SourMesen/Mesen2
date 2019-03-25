@@ -140,7 +140,7 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 				0x2100 | channel.DestAddress + transferOffsets[i],
 				channel.InvertDirection
 			);
-			channel.TransferSize += (channel.Decrement ? -1 : 1);
+			channel.TransferSize++;
 			transferByteCount--;
 			i++;
 		} while(transferByteCount > 0);
@@ -151,7 +151,7 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 				0x2100 | channel.DestAddress + transferOffsets[i],
 				channel.InvertDirection
 			);
-			channel.HdmaTableAddress += (channel.Decrement ? -1 : 1);
+			channel.HdmaTableAddress++;
 			transferByteCount--;
 			i++;
 		} while(transferByteCount > 0);
