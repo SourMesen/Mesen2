@@ -169,8 +169,10 @@ void Ppu::Exec()
 		if(_scanline != 0) {
 			RenderScanline();
 		}
-		EvaluateNextLineSprites();
-		_console->GetDmaController()->ProcessHdmaChannels();
+		if(!_forcedVblank) {
+			EvaluateNextLineSprites();
+			_console->GetDmaController()->ProcessHdmaChannels();
+		}
 	} else if((_cycle == 134 || _cycle == 135) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
 		//TODO Approximation (DRAM refresh timing is not exact)
 		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
