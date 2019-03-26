@@ -482,9 +482,9 @@ void Ppu::RenderScanline()
 			break;
 
 		case 8: 
-			//Forced blank
-			RenderBgColor<true>();
-			RenderBgColor<false>();
+			//Forced blank, output black
+			memset(_mainScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
+			memset(_subScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
 			break;
 	}
 
