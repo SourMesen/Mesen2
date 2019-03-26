@@ -22,7 +22,9 @@ void EventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operation,
 	evt.Scanline = _ppu->GetScanline();
 	evt.Cycle = _ppu->GetCycle();
 	evt.BreakpointId = breakpointId;
-	evt.ProgramCounter = _cpu->GetState().PC;
+
+	CpuState state = _cpu->GetState();
+	evt.ProgramCounter = (state.K << 16) | state.PC;
 
 	_debugEvents.push_back(evt);
 }
@@ -33,7 +35,10 @@ void EventManager::AddEvent(DebugEventType type)
 	evt.Type = type;
 	evt.Scanline = _ppu->GetScanline();
 	evt.Cycle = _ppu->GetCycle();
-	evt.ProgramCounter = _cpu->GetState().PC;
+	
+	CpuState state = _cpu->GetState();
+	evt.ProgramCounter = (state.K << 16) | state.PC;
+
 	_debugEvents.push_back(evt);
 }
 
