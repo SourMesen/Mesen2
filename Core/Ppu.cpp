@@ -842,7 +842,11 @@ void Ppu::RenderTilemapMode7()
 		lutY[x] = lutY[x - 1] + _mode7.Matrix[2];
 	}
 
-	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex];
+	uint8_t activeWindowCount = 0;
+	if((forMainScreen && _windowMaskMain[layerIndex]) || (!forMainScreen && _windowMaskSub[layerIndex])) {
+		activeWindowCount = (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex];
+	}
+
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
