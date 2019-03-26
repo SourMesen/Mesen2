@@ -114,10 +114,10 @@ void DmaController::InitHdmaChannels()
 				ch.TransferSize = (msb << 8) | lsb;
 
 				//"and 24 master cycles for each channel set for indirect HDMA"
-				_memoryManager->IncrementMasterClockValue<24>();
+				_memoryManager->IncrementMasterClockValue<16>();
 			} else {
 				//"plus 8 master cycles for each channel set for direct HDMA"
-				_memoryManager->IncrementMasterClockValue<8>();
+				_memoryManager->IncrementMasterClockValue<4>();
 			}
 			
 			//4. Set DoTransfer to true.
@@ -216,7 +216,7 @@ void DmaController::ProcessHdmaChannels()
 					}
 
 					//"If a new indirect address is required, 16 master cycles are taken to load it."
-					_memoryManager->IncrementMasterClockValue<8>(); //minus 8 before the ReadDmas call will increment it by 4 twice
+					_memoryManager->IncrementMasterClockValue<8>(); //minus 8 because the ReadDmas call will increment it by 4 twice
 				}
 
 				//"c. If $43xA is zero, terminate this HDMA channel for this frame. The bit in $420c is not cleared, though, so it may be automatically restarted next frame."
