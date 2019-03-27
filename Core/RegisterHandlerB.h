@@ -22,6 +22,7 @@ public:
 
 	uint8_t Read(uint32_t addr) override;
 	uint8_t Peek(uint32_t addr) override;
+	void PeekBlock(uint8_t *output) override;
 	void Write(uint32_t addr, uint8_t value) override;
 
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;

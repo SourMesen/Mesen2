@@ -10,6 +10,7 @@ protected:
 public:
 	virtual uint8_t Read(uint32_t addr) = 0;
 	virtual uint8_t Peek(uint32_t addr) = 0;
+	virtual void PeekBlock(uint8_t *output) = 0;
 	virtual void Write(uint32_t addr, uint8_t value) = 0;
 
 	__forceinline SnesMemoryType GetMemoryType()

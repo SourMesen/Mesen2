@@ -36,6 +36,12 @@ uint8_t RegisterHandlerB::Peek(uint32_t addr)
 	return 0;
 }
 
+void RegisterHandlerB::PeekBlock(uint8_t *output)
+{
+	//Avoid side effects for now
+	memset(output, 0, 0x1000);
+}
+
 void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 {
 	addr &= 0xFFFF;

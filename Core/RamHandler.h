@@ -34,6 +34,17 @@ public:
 		return _ram[addr & _mask];
 	}
 
+	void PeekBlock(uint8_t *output) override
+	{
+		if(_mask != 0xFFF) {
+			for(int i = 0; i < 0x1000; i++) {
+				output[i] = _ram[i & _mask];
+			}
+		} else {
+			memcpy(output, _ram, 0x1000);
+		}
+	}
+
 	void Write(uint32_t addr, uint8_t value) override
 	{
 		_ram[addr & _mask] = value;

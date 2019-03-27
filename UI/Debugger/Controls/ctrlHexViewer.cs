@@ -60,9 +60,9 @@ namespace Mesen.GUI.Debugger.Controls
 
 			if(data != null) {
 				bool changed = true;
-				if(this._byteProvider != null && data.Length == this._byteProvider.Bytes.Count) {
+				if(this._byteProvider != null && data.Length == this._byteProvider.Length) {
 					changed = false;
-					for(int i = 0; i < this._byteProvider.Bytes.Count; i++) {
+					for(int i = 0; i < this._byteProvider.Length; i++) {
 						if(this._byteProvider.Bytes[i] != data[i]) {
 							changed = true;
 							break;

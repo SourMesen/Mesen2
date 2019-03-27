@@ -55,8 +55,8 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 {
 	switch(type) {
 		case SnesMemoryType::CpuMemory:
-			for(int i = 0; i <= 0xFFFFFF; i++) {
-				buffer[i] = _memoryManager->Peek(i);
+			for(int i = 0; i <= 0xFFFFFF; i+=0x1000) {
+				_memoryManager->PeekBlock(i, buffer+i);
 			}
 			break;
 

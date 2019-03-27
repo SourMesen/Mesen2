@@ -97,6 +97,8 @@ namespace Mesen.GUI.Forms
 			ConfigManager.ApplyChanges();
 
 			DebugApi.ResumeExecution();
+			DebugWindowManager.CloseAll();
+
 			EmuApi.Stop();
 			EmuApi.Release();
 		}

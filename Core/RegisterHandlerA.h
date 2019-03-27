@@ -39,6 +39,12 @@ public:
 		return 0;
 	}
 
+	void PeekBlock(uint8_t *output) override
+	{
+		//Avoid side effects for now
+		memset(output, 0, 0x1000);
+	}
+
 	void Write(uint32_t addr, uint8_t value) override
 	{
 		addr &= 0xFFFF;

@@ -224,6 +224,15 @@ uint16_t MemoryManager::PeekWord(uint32_t addr)
 	return (msb << 8) | lsb;
 }
 
+void MemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
+{
+	if(_handlers[addr >> 12]) {
+		_handlers[addr >> 12]->PeekBlock(dest);
+	} else {
+		memset(dest, 0, 0x1000);
+	}
+}
+
 void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	IncrementMasterClock(addr);
