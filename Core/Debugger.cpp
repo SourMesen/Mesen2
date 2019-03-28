@@ -12,6 +12,7 @@
 #include "DisassemblyInfo.h"
 #include "TraceLogger.h"
 #include "MemoryDumper.h"
+#include "MemoryAccessCounter.h"
 #include "CodeDataLogger.h"
 #include "Disassembler.h"
 #include "BreakpointManager.h"
@@ -31,16 +32,19 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_memoryManager = console->GetMemoryManager();
 
 	_watchExpEval.reset(new ExpressionEvaluator(this));
-	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize()));
+	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), _memoryManager.get()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
+	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _memoryManager.get()));
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
 	_callstackManager.reset(new CallstackManager(this));
 	
 	_cpuStepCount = -1;
+	_ppuStepCount = -1;
+	_breakAddress = -1;
 	_executionStopped = false;
 	_breakRequestCount = 0;
 
@@ -132,6 +136,8 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
+	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
+
 	if(_memoryManager->IsRegister(addr)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
@@ -150,6 +156,8 @@ void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	if(_memoryManager->IsRegister(addr)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
+
+	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
 
 	ProcessBreakConditions(operation, addressInfo);
 }
@@ -170,11 +178,31 @@ void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 	ProcessBreakConditions(operation, addressInfo);
 }
 
+void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType type)
+{
+	AddressInfo addressInfo(addr, SnesMemoryType::SpcRam);
+	MemoryOperationInfo operation(addr, value, type);
+	ProcessBreakConditions(operation, addressInfo);
+
+	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
+}
+
+void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
+{
+	AddressInfo addressInfo(addr, SnesMemoryType::SpcRam);
+	MemoryOperationInfo operation(addr, value, type);
+	ProcessBreakConditions(operation, addressInfo);
+
+	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
+}
+
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo(addr, memoryType);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read);
 	ProcessBreakConditions(operation, addressInfo);
+
+	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Read, _memoryManager->GetMasterClock());
 }
 
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
@@ -182,6 +210,8 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 	AddressInfo addressInfo(addr, memoryType);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write);
 	ProcessBreakConditions(operation, addressInfo);
+
+	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Write, _memoryManager->GetMasterClock());
 }
 
 void Debugger::ProcessPpuCycle()
@@ -320,6 +350,7 @@ void Debugger::BreakRequest(bool release)
 
 void Debugger::GetState(DebugState &state)
 {
+	state.MasterClock = _memoryManager->GetMasterClock();
 	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
 }
@@ -332,6 +363,16 @@ shared_ptr<TraceLogger> Debugger::GetTraceLogger()
 shared_ptr<MemoryDumper> Debugger::GetMemoryDumper()
 {
 	return _memoryDumper;
+}
+
+shared_ptr<MemoryAccessCounter> Debugger::GetMemoryAccessCounter()
+{
+	return _memoryAccessCounter;
+}
+
+shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger()
+{
+	return _codeDataLogger;
 }
 
 shared_ptr<Disassembler> Debugger::GetDisassembler()

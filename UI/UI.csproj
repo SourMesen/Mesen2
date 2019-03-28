@@ -347,10 +347,11 @@
     <Compile Include="Debugger\Controls\ctrlDisassemblyView.Designer.cs">
       <DependentUpon>ctrlDisassemblyView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlHexViewer.cs">
+    <Compile Include="Debugger\MemoryTools\ByteColorProvider.cs" />
+    <Compile Include="Debugger\MemoryTools\ctrlHexViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlHexViewer.designer.cs">
+    <Compile Include="Debugger\MemoryTools\ctrlHexViewer.designer.cs">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlWatch.cs">
@@ -405,10 +406,10 @@
     <Compile Include="Debugger\frmDebugger.Designer.cs">
       <DependentUpon>frmDebugger.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debugger\frmFadeSpeed.cs">
+    <Compile Include="Debugger\MemoryTools\frmFadeSpeed.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmFadeSpeed.designer.cs">
+    <Compile Include="Debugger\MemoryTools\frmFadeSpeed.designer.cs">
       <DependentUpon>frmFadeSpeed.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmGoToLine.cs">
@@ -417,13 +418,19 @@
     <Compile Include="Debugger\frmGoToLine.designer.cs">
       <DependentUpon>frmGoToLine.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debugger\frmMemoryTools.cs">
+    <Compile Include="Debugger\MemoryTools\frmMemoryTools.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmMemoryTools.designer.cs">
+    <Compile Include="Debugger\MemoryTools\frmMemoryTools.designer.cs">
       <DependentUpon>frmMemoryTools.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\GraphicsExtensions.cs" />
+    <Compile Include="Debugger\MemoryTools\frmMemoryViewerColors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\MemoryTools\frmMemoryViewerColors.designer.cs">
+      <DependentUpon>frmMemoryViewerColors.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\PpuViewer\ctrlPaletteViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -483,7 +490,7 @@
     <Compile Include="Debugger\HexBox\StaticByteProvider.cs" />
     <Compile Include="Debugger\HexBox\TblByteCharConverter.cs" />
     <Compile Include="Debugger\HexBox\Util.cs" />
-    <Compile Include="Debugger\TblLoader.cs" />
+    <Compile Include="Debugger\MemoryTools\TblLoader.cs" />
     <Compile Include="Debugger\DebugWindowManager.cs" />
     <Compile Include="Debugger\Tooltips\frmInfoTooltip.cs">
       <SubType>Form</SubType>
@@ -704,7 +711,7 @@
     <EmbeddedResource Include="Debugger\Controls\ctrlDisassemblyView.resx">
       <DependentUpon>ctrlDisassemblyView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debugger\Controls\ctrlHexViewer.resx">
+    <EmbeddedResource Include="Debugger\MemoryTools\ctrlHexViewer.resx">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlWatch.resx">
@@ -728,14 +735,17 @@
     <EmbeddedResource Include="Debugger\frmDebugger.resx">
       <DependentUpon>frmDebugger.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debugger\frmFadeSpeed.resx">
+    <EmbeddedResource Include="Debugger\MemoryTools\frmFadeSpeed.resx">
       <DependentUpon>frmFadeSpeed.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmGoToLine.resx">
       <DependentUpon>frmGoToLine.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debugger\frmMemoryTools.resx">
+    <EmbeddedResource Include="Debugger\MemoryTools\frmMemoryTools.resx">
       <DependentUpon>frmMemoryTools.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\MemoryTools\frmMemoryViewerColors.resx">
+      <DependentUpon>frmMemoryViewerColors.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlPaletteViewer.resx">
       <DependentUpon>ctrlPaletteViewer.cs</DependentUpon>

@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "CodeDataLogger.h"
+#include "MemoryManager.h"
 
-CodeDataLogger::CodeDataLogger(uint32_t prgSize)
+CodeDataLogger::CodeDataLogger(uint32_t prgSize, MemoryManager* memoryManager)
 {
+	_memoryManager = memoryManager;
 	_prgSize = prgSize;
 	_cdlData = new uint8_t[prgSize];
 	Reset();
@@ -130,5 +132,17 @@ void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
 	if(length <= _prgSize) {
 		memcpy(_cdlData, cdlData, length);
 		CalculateStats();
+	}
+}
+
+void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t *cdlData)
+{
+	if(memoryType == SnesMemoryType::PrgRom) {
+		memcpy(cdlData, _cdlData + offset, length);
+	} else if(memoryType == SnesMemoryType::CpuMemory) {
+		for(uint32_t i = 0; i < length; i++) {
+			AddressInfo info = _memoryManager->GetAbsoluteAddress(offset + i);
+			cdlData[i] = (info.Type == SnesMemoryType::PrgRom && info.Address >= 0) ? _cdlData[info.Address] : 0;
+		}
 	}
 }

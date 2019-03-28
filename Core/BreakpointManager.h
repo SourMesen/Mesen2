@@ -13,7 +13,7 @@ class BreakpointManager
 {
 private:
 	static constexpr int BreakpointTypeCount = 3; //Read, Write, Exec
-	static constexpr int CategoryCount = 4; //CPU, VRAM, OAM, CGRAM
+	static constexpr int CategoryCount = 5; //CPU, VRAM, OAM, CGRAM, SPC
 
 	Debugger *_debugger;
 	

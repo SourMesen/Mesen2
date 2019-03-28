@@ -114,6 +114,30 @@ namespace Mesen.GUI
 
 			return callstack;
 		}
+
+		[DllImport(DllPath, EntryPoint = "GetMemoryAccessStamps")] private static extern void GetMemoryAccessStampsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType, [In,Out]UInt64[] stamps);
+		public static UInt64[] GetMemoryAccessStamps(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType)
+		{
+			UInt64[] stamps = new UInt64[length];
+			DebugApi.GetMemoryAccessStampsWrapper(offset, length, type, operationType, stamps);
+			return stamps;
+		}
+
+		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType, [In,Out]UInt32[] counts);
+		public static UInt32[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType)
+		{
+			UInt32[] counts = new UInt32[length];
+			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, operationType, counts);
+			return counts;
+		}
+
+		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, SnesMemoryType memType, [In,Out] byte[] cdlData);
+		public static byte[] GetCdlData(UInt32 offset, UInt32 length, SnesMemoryType memType)
+		{
+			byte[] cdlData = new byte[length];
+			DebugApi.GetCdlDataWrapper(offset, length, memType, cdlData);
+			return cdlData;
+		}
 	}
 
 	public enum SnesMemoryType
@@ -125,8 +149,8 @@ namespace Mesen.GUI
 		VideoRam,
 		SpriteRam,
 		CGRam,
-		Register,
-		SpcRam
+		SpcRam,
+		Register
 	}
 
 	public class AddressInfo
@@ -230,6 +254,7 @@ namespace Mesen.GUI
 
 	public struct DebugState
 	{
+		public UInt64 MasterClock;
 		public CpuState Cpu;
 		public PpuState Ppu;
 	}
@@ -382,5 +407,17 @@ namespace Mesen.GUI
 		CpuStepOut,
 		CpuStepOver,
 		PpuStep,
+	}
+
+	public enum CdlFlags : byte
+	{
+		None = 0x00,
+		Code = 0x01,
+		Data = 0x02,
+		JumpTarget = 0x04,
+		SubEntryPoint = 0x08,
+
+		IndexMode8 = 0x10,
+		MemoryMode8 = 0x20,
 	}
 }

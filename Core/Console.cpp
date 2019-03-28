@@ -572,6 +572,20 @@ void Console::ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memor
 	}
 }
 
+void Console::ProcessSpcRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+{
+	if(_debugger) {
+		_debugger->ProcessSpcRead(addr, value, type);
+	}
+}
+
+void Console::ProcessSpcWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
+{
+	if(_debugger) {
+		_debugger->ProcessSpcWrite(addr, value, type);
+	}
+}
+
 void Console::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 {
 	if(_debugger) {

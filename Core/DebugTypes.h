@@ -5,6 +5,7 @@
 
 struct DebugState
 {
+	uint64_t MasterClock;
 	CpuState Cpu;
 	PpuState Ppu;
 };
@@ -18,8 +19,8 @@ enum class SnesMemoryType
 	VideoRam,
 	SpriteRam,
 	CGRam,
-	Register,
 	SpcRam,
+	Register,
 };
 
 struct AddressInfo
@@ -72,7 +73,8 @@ enum class BreakpointCategory
 	Cpu = 0,
 	VideoRam = 1,
 	Oam = 2,
-	CgRam = 3
+	CgRam = 3,
+	Spc = 4
 };
 
 namespace CdlFlags

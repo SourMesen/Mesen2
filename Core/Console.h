@@ -124,6 +124,8 @@ public:
 	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
+	void ProcessSpcRead(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessSpcWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
 	void ProcessPpuCycle();

@@ -254,6 +254,9 @@
     <ClInclude Include="CallstackManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryAccessCounter.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -403,6 +406,9 @@
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="CallstackManager.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryAccessCounter.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>

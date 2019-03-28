@@ -70,6 +70,7 @@
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="EventType.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
+    <ClInclude Include="MemoryAccessCounter.h" />
     <ClInclude Include="NtscFilter.h" />
     <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RegisterHandlerB.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="ExpressionEvaluator.cpp" />
     <ClCompile Include="InternalRegisters.cpp" />
     <ClCompile Include="KeyManager.cpp" />
+    <ClCompile Include="MemoryAccessCounter.cpp" />
     <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />

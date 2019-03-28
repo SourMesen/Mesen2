@@ -2,9 +2,12 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 
+class MemoryManager;
+
 class CodeDataLogger
 {
 private:
+	MemoryManager *_memoryManager;
 	uint8_t *_cdlData = nullptr;
 	uint32_t _prgSize = 0;
 	uint32_t _codeSize = 0;
@@ -13,7 +16,7 @@ private:
 	void CalculateStats();
 
 public:
-	CodeDataLogger(uint32_t prgSize);
+	CodeDataLogger(uint32_t prgSize, MemoryManager* memoryManager);
 	~CodeDataLogger();
 
 	void Reset();
@@ -32,4 +35,5 @@ public:
 	uint8_t GetCpuFlags(uint32_t absoluteAddr);
 
 	void SetCdlData(uint8_t *cdlData, uint32_t length);
+	void GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t *cdlData);
 };

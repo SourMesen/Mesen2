@@ -166,7 +166,6 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.EndUpdate();
 			UpdateMemoryType();
 		}
-
 		
 		private void UpdateFlags()
 		{
@@ -285,52 +284,21 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateByteColorProvider()
 		{
-			//TODO
-			/*switch(this._memoryType) {
-				case SnesMemoryType.CpuMemory:
-				case SnesMemoryType.PrgRom:
-				case SnesMemoryType.WorkRam:
-				case SnesMemoryType.SaveRam:
-					this.ctrlHexViewer.ByteColorProvider = new ByteColorProvider(
-						this._memoryType,
-						mnuHighlightExecution.Checked,
-						mnuHighlightWrites.Checked,
-						mnuHightlightReads.Checked,
-						ConfigManager.Config.Debug.RamFadeSpeed,
-						mnuHideUnusedBytes.Checked,
-						mnuHideReadBytes.Checked,
-						mnuHideWrittenBytes.Checked,
-						mnuHideExecutedBytes.Checked,
-						mnuHighlightDataBytes.Checked,
-						mnuHighlightCodeBytes.Checked,
-						mnuHighlightLabelledBytes.Checked,
-						mnuHighlightBreakpoints.Checked
-					);
-					break;
-
-				case SnesMemoryType.VideoRam:
-				case DebugMemoryType.ChrRom:
-				case DebugMemoryType.ChrRam:
-				case DebugMemoryType.PaletteMemory:
-				case DebugMemoryType.NametableRam:
-					this.ctrlHexViewer.ByteColorProvider = new ChrByteColorProvider(
-						this._memoryType,
-						mnuHighlightWrites.Checked,
-						mnuHightlightReads.Checked,
-						ConfigManager.Config.Debug.RamFadeSpeed,
-						mnuHideUnusedBytes.Checked,
-						mnuHideReadBytes.Checked,
-						mnuHideWrittenBytes.Checked,
-						mnuHighlightChrDrawnBytes.Checked,
-						mnuHighlightChrReadBytes.Checked,
-						mnuHighlightBreakpoints.Checked
-					);
-					break;
-
-				default:
-					this.ctrlHexViewer.ByteColorProvider = null;
-					break;
-			}*/
+			this.ctrlHexViewer.ByteColorProvider = new ByteColorProvider(
+				this._memoryType,
+				mnuHighlightExecution.Checked,
+				mnuHighlightWrites.Checked,
+				mnuHightlightReads.Checked,
+				ConfigManager.Config.Debug.HexEditor.FadeSpeed,
+				mnuHideUnusedBytes.Checked,
+				mnuHideReadBytes.Checked,
+				mnuHideWrittenBytes.Checked,
+				mnuHideExecutedBytes.Checked,
+				mnuHighlightDataBytes.Checked,
+				mnuHighlightCodeBytes.Checked,
+				mnuHighlightLabelledBytes.Checked,
+				mnuHighlightBreakpoints.Checked
+			);
 		}
 
 		private void mnuRefresh_Click(object sender, EventArgs e)
@@ -547,12 +515,11 @@ namespace Mesen.GUI.Debugger
 		
 		private void mnuConfigureColors_Click(object sender, EventArgs e)
 		{
-			//TODO
-			//using(frmMemoryViewerColors frm = new frmMemoryViewerColors()) {
-			//	if(frm.ShowDialog(this, this) == DialogResult.OK) {
-			//		this.RefreshData();
-			//	}
-			//}
+			using(frmMemoryToolsColors frm = new frmMemoryToolsColors()) {
+				if(frm.ShowDialog(this, this) == DialogResult.OK) {
+					this.RefreshData();
+				}
+			}
 		}
 
 		/*private frmCodeTooltip _tooltip = null;

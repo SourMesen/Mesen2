@@ -118,7 +118,9 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 		case 0xFF: return _state.Timer2.GetOutput();
 	}
 
-	return _ram[addr];
+	uint8_t value = _ram[addr];
+	_console->ProcessSpcRead(addr, value, type);
+	return value;
 }
 
 void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
@@ -127,6 +129,7 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 
 	//Writes always affect the underlying RAM
 	if(_state.WriteEnabled) {
+		_console->ProcessSpcWrite(addr, value, type);
 		_ram[addr] = value;
 	}
 

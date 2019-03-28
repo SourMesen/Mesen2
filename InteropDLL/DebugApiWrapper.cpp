@@ -3,11 +3,13 @@
 #include "../Core/Debugger.h"
 #include "../Core/TraceLogger.h"
 #include "../Core/MemoryDumper.h"
+#include "../Core/MemoryAccessCounter.h"
 #include "../Core/Disassembler.h"
 #include "../Core/DebugTypes.h"
 #include "../Core/Breakpoint.h"
 #include "../Core/BreakpointManager.h"
 #include "../Core/PpuTools.h"
+#include "../Core/CodeDataLogger.h"
 #include "../Core/EventManager.h"
 #include "../Core/CallstackManager.h"
 
@@ -62,6 +64,10 @@ extern "C"
 	DllExport uint8_t __stdcall GetMemoryValue(SnesMemoryType type, uint32_t address) { return GetDebugger()->GetMemoryDumper()->GetMemoryValue(type, address); }
 	DllExport void __stdcall SetMemoryValue(SnesMemoryType type, uint32_t address, uint8_t value) { return GetDebugger()->GetMemoryDumper()->SetMemoryValue(type, address, value); }
 	DllExport void __stdcall SetMemoryValues(SnesMemoryType type, uint32_t address, uint8_t* data, int32_t length) { return GetDebugger()->GetMemoryDumper()->SetMemoryValues(type, address, data, length); }
+
+	DllExport void __stdcall GetMemoryAccessStamps(uint32_t offset, uint32_t length, SnesMemoryType memoryType, MemoryOperationType operationType, uint64_t* stamps) { GetDebugger()->GetMemoryAccessCounter()->GetAccessStamps(offset, length, memoryType, operationType, stamps); }
+	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, MemoryOperationType operationType, uint32_t* counts) { GetDebugger()->GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, operationType, counts); }
+	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { GetDebugger()->GetCodeDataLogger()->GetCdlData(offset, length, memoryType, cdlData); }
 
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, buffer); }
 	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, buffer); }
