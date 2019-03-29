@@ -1,6 +1,7 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
 using Mesen.GUI.Debugger;
+using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms.Config;
 using Mesen.GUI.Updates;
@@ -114,6 +115,10 @@ namespace Mesen.GUI.Forms
 
 						RomInfo romInfo = EmuApi.GetRomInfo();
 						this.Text = "Mesen-S - " + romInfo.GetRomName();
+
+						if(DebugWindowManager.HasOpenedWindow) {
+							DebugWorkspaceManager.GetWorkspace();
+						}
 					}));
 					break;
 

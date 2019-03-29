@@ -40,6 +40,11 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.PaletteViewer: frm = new frmPaletteViewer(); frm.Icon = Properties.Resources.VideoFilter; break;
 					case DebugWindow.EventViewer: frm = new frmEventViewer(); frm.Icon = Properties.Resources.NesEventViewer; break;
 				}
+
+				if(_openedWindows.Count == 0) {
+					DebugWorkspaceManager.GetWorkspace();
+				}
+				
 				_openedWindows.Add(frm);
 				frm.FormClosed += Debugger_FormClosed;
 				frm.Show();
