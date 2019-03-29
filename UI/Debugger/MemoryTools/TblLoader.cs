@@ -10,23 +10,6 @@ namespace Mesen.GUI.Debugger
 {
 	public class TblLoader
 	{
-		public struct TblKey
-		{
-			public UInt64 Key;
-			public int Length;
-
-			public byte[] GetBytes()
-			{
-				byte[] bytes = new byte[this.Length];
-				UInt64 value = this.Key;
-				for(int i = 0; i < this.Length; i++) {
-					bytes[i] = (byte)value;
-					value >>= 8;
-				}
-				return bytes;
-			}
-		}
-
 		public static Dictionary<TblKey, string> ToDictionary(string[] fileContents)
 		{
 			try {
@@ -56,6 +39,23 @@ namespace Mesen.GUI.Debugger
 			} catch {
 				return null;
 			}
+		}
+	}
+
+	public struct TblKey
+	{
+		public UInt64 Key;
+		public int Length;
+
+		public byte[] GetBytes()
+		{
+			byte[] bytes = new byte[this.Length];
+			UInt64 value = this.Key;
+			for(int i = 0; i < this.Length; i++) {
+				bytes[i] = (byte)value;
+				value >>= 8;
+			}
+			return bytes;
 		}
 	}
 }

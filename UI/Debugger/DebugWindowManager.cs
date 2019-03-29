@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.GUI.Debugger.Workspace;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,9 +102,8 @@ namespace Mesen.GUI.Debugger
 		{
 			if(_openedWindows.Count == 0) {
 				//All windows have been closed, disable debugger
-				//TODO
-				//DebugWorkspaceManager.SaveWorkspace();
-				//DebugWorkspaceManager.Clear();
+				DebugWorkspaceManager.SaveWorkspace();
+				DebugWorkspaceManager.Clear();
 				DebugApi.ReleaseDebugger();
 			}
 		}

@@ -248,6 +248,7 @@
     <Compile Include="Debugger\Code\CpuLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
+    <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
     <Compile Include="Config\RecentItems.cs" />
@@ -431,6 +432,7 @@
     <Compile Include="Debugger\MemoryTools\frmMemoryViewerColors.designer.cs">
       <DependentUpon>frmMemoryViewerColors.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\MemoryTools\TblByteCharConverter.cs" />
     <Compile Include="Debugger\PpuViewer\ctrlPaletteViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -488,7 +490,6 @@
     <Compile Include="Debugger\HexBox\MemoryDataBlock.cs" />
     <Compile Include="Debugger\HexBox\NativeMethods.cs" />
     <Compile Include="Debugger\HexBox\StaticByteProvider.cs" />
-    <Compile Include="Debugger\HexBox\TblByteCharConverter.cs" />
     <Compile Include="Debugger\HexBox\Util.cs" />
     <Compile Include="Debugger\MemoryTools\TblLoader.cs" />
     <Compile Include="Debugger\DebugWindowManager.cs" />
@@ -502,6 +503,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Debugger\WatchManager.cs" />
+    <Compile Include="Debugger\Workspace\DebugWorkspaceManager.cs" />
     <Compile Include="Emulation\CursorManager.cs" />
     <Compile Include="Emulation\DisplayManager.cs" />
     <Compile Include="Emulation\SaveStateManager.cs" />

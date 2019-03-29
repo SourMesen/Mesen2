@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using Mesen.GUI.Config;
 using Mesen.GUI.Forms;
 using Mesen.GUI.Debugger.Controls;
+using System.Collections.Generic;
+using Mesen.GUI.Debugger.Workspace;
 
 namespace Mesen.GUI.Debugger
 {
@@ -67,8 +69,7 @@ namespace Mesen.GUI.Debugger
 
 			this.UpdateFadeOptions();
 
-			//TODO
-			//this.InitTblMappings();
+			this.InitTblMappings();
 
 			this.ctrlHexViewer.StringViewVisible = mnuShowCharacters.Checked;
 			//TODO
@@ -215,7 +216,7 @@ namespace Mesen.GUI.Debugger
 					GoToDestination(frm.Destination);
 				}
 			}
-		}
+		}*/
 
 		private void InitTblMappings()
 		{
@@ -228,7 +229,7 @@ namespace Mesen.GUI.Debugger
 			} else {
 				this.ctrlHexViewer.ByteCharConverter = null;
 			}
-		}*/
+		}
 
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
@@ -243,6 +244,7 @@ namespace Mesen.GUI.Debugger
 						if(_formClosed) {
 							return;
 						}
+						this.InitTblMappings();
 						this.InitMemoryTypeDropdown(false);
 						//TODO ctrlMemoryAccessCounters.InitMemoryTypeDropdown();
 					}));
@@ -311,14 +313,6 @@ namespace Mesen.GUI.Debugger
 			if(_formClosed) {
 				return;
 			}
-
-			//TODO
-			/*
-			if(DebugWorkspaceManager.GetWorkspace() != this._previousWorkspace) {
-				this.InitTblMappings();
-				_previousWorkspace = DebugWorkspaceManager.GetWorkspace();
-			}
-			*/
 
 			if(this.tabMain.SelectedTab == this.tpgAccessCounters) {
 				//TODO this.ctrlMemoryAccessCounters.RefreshData();
@@ -416,7 +410,7 @@ namespace Mesen.GUI.Debugger
 			using(SaveFileDialog sfd = new SaveFileDialog()) {
 				sfd.SetFilter("Memory dump files (*.dmp)|*.dmp|All files (*.*)|*.*");
 				sfd.InitialDirectory = ConfigManager.DebuggerFolder;
-				//TODO sfd.FileName = InteropEmu.GetRomInfo().GetRomName() + " - " + cboMemoryType.SelectedItem.ToString() + ".dmp";
+				sfd.FileName = EmuApi.GetRomInfo().GetRomName() + " - " + cboMemoryType.SelectedItem.ToString() + ".dmp";
 				sfd.FileName = cboMemoryType.SelectedItem.ToString() + ".dmp";
 				if(sfd.ShowDialog() == DialogResult.OK) {
 					File.WriteAllBytes(sfd.FileName, this.ctrlHexViewer.GetData());
@@ -437,27 +431,27 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuLoadTblFile_Click(object sender, EventArgs e)
 		{
-			//TODO
-			/*OpenFileDialog ofd = new OpenFileDialog();
-			ofd.SetFilter("TBL files (*.tbl)|*.tbl");
-			if(ofd.ShowDialog() == DialogResult.OK) {
-				string[] fileContents = File.ReadAllLines(ofd.FileName);
-				var tblDict = TblLoader.ToDictionary(fileContents);
-				if(tblDict == null) {
-					MessageBox.Show("Could not load TBL file.  The file selected file appears to be invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				} else {
-					DebugWorkspaceManager.GetWorkspace().TblMappings = new List<string>(fileContents);
-					this.ctrlHexViewer.ByteCharConverter = new TblByteCharConverter(tblDict);
-					this.mnuShowCharacters.Checked = true;
+			using(OpenFileDialog ofd = new OpenFileDialog()) {
+				ofd.SetFilter("TBL files (*.tbl)|*.tbl");
+				if(ofd.ShowDialog() == DialogResult.OK) {
+					string[] fileContents = File.ReadAllLines(ofd.FileName);
+					var tblDict = TblLoader.ToDictionary(fileContents);
+					if(tblDict == null) {
+						MessageBox.Show("Could not load TBL file.  The file selected file appears to be invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					} else {
+						DebugWorkspaceManager.GetWorkspace().TblMappings = new List<string>(fileContents);
+						this.ctrlHexViewer.ByteCharConverter = new TblByteCharConverter(tblDict);
+						this.mnuShowCharacters.Checked = true;
+						InitTblMappings();
+					}
 				}
-			}*/
+			}
 		}
 
 		private void mnuResetTblMappings_Click(object sender, EventArgs e)
 		{
-			//TODO
-			//DebugWorkspaceManager.GetWorkspace().TblMappings = null;
-			//this.ctrlHexViewer.ByteCharConverter = null;
+			DebugWorkspaceManager.GetWorkspace().TblMappings = null;
+			this.ctrlHexViewer.ByteCharConverter = null;
 		}
 
 		private void mnuShowCharacters_CheckedChanged(object sender, EventArgs e)

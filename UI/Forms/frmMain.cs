@@ -111,6 +111,9 @@ namespace Mesen.GUI.Forms
 						ctrlRecentGames.Visible = false;
 						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
 						SaveStateManager.UpdateStateMenu(mnuSaveState, true);
+
+						RomInfo romInfo = EmuApi.GetRomInfo();
+						this.Text = "Mesen-S - " + romInfo.GetRomName();
 					}));
 					break;
 
@@ -472,8 +475,7 @@ namespace Mesen.GUI.Forms
 			using(SaveFileDialog sfd = new SaveFileDialog()) {
 				sfd.SetFilter(ResourceHelper.GetMessage("FilterWave"));
 				sfd.InitialDirectory = ConfigManager.WaveFolder;
-				//TODO
-				//sfd.FileName = InteropEmu.GetRomInfo().GetRomName() + ".wav";
+				sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".wav";
 				if(sfd.ShowDialog(this) == DialogResult.OK) {
 					RecordApi.WaveRecord(sfd.FileName);
 				}

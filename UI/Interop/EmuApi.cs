@@ -51,6 +51,14 @@ namespace Mesen.GUI
 			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string patchFile = ""
 		);
 
+		[DllImport(DllPath, EntryPoint = "GetRomInfo")] private static extern void GetRomInfoWrapper(out InteropRomInfo romInfo);
+		public static RomInfo GetRomInfo()
+		{
+			InteropRomInfo info;
+			EmuApi.GetRomInfoWrapper(out info);
+			return new RomInfo(info);
+		}
+
 		[DllImport(DllPath)] public static extern void LoadRecentGame([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath, [MarshalAs(UnmanagedType.I1)]bool resetGame);
 
 		[DllImport(DllPath)] public static extern void AddKnownGameFolder([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string folder);
@@ -85,5 +93,65 @@ namespace Mesen.GUI
 		public Int32 Width;
 		public Int32 Height;
 		public double Scale;
+	}
+
+	public struct InteropRomInfo
+	{
+		public IntPtr RomPath;
+		public IntPtr PatchPath;
+		public SnesCartInformation Header;
+	}
+
+	public struct RomInfo
+	{
+		public string RomPath;
+		public string PatchPath;
+		public SnesCartInformation Header;
+
+		public RomInfo(InteropRomInfo romInfo)
+		{
+			RomPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.RomPath);
+			PatchPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.PatchPath);
+			Header = romInfo.Header;
+		}
+
+		public string GetRomName()
+		{
+			return Path.GetFileNameWithoutExtension(((ResourcePath)RomPath).FileName);
+		}
+	}
+
+	public struct SnesCartInformation
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public byte[] MakerCode;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public byte[] GameCode;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
+		public byte[] Reserved;
+
+		public byte ExpansionRamSize;
+		public byte SpecialVersion;
+		public byte CartridgeType;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 21)]
+		public byte[] CartName;
+
+		public byte MapMode;
+		public byte RomType;
+		public byte RomSize;
+		public byte SramSize;
+
+		public byte DestinationCode;
+		public byte Reserved2;
+		public byte Version;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public byte[] ChecksumComplement;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public byte[] Checksum;
 	}
 }

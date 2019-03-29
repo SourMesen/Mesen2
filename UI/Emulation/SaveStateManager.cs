@@ -103,8 +103,7 @@ namespace Mesen.GUI.Emulation
 			if(EmuRunner.IsRunning()) {
 				using(SaveFileDialog sfd = new SaveFileDialog()) {
 					sfd.InitialDirectory = ConfigManager.SaveStateFolder;
-					//TODO
-					//sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".mst";
+					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".mst";
 					sfd.SetFilter(ResourceHelper.GetMessage("FilterSavestate"));
 					if(sfd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
 						EmuApi.SaveStateFile(sfd.FileName);

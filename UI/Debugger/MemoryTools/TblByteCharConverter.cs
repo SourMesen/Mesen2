@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Be.Windows.Forms;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Mesen.GUI.Debugger.TblLoader;
 
-namespace Be.Windows.Forms
+namespace Mesen.GUI.Debugger
 {
 	/// <summary>
 	/// The default <see cref="IByteCharConverter"/> implementation.
@@ -72,7 +72,7 @@ namespace Be.Windows.Forms
 		public virtual byte[] GetBytes(string text)
 		{
 			List<byte> bytes = new List<byte>();
-			
+
 			bool match = false;
 			while(text.Length > 0) {
 				do {

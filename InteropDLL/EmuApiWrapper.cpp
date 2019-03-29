@@ -3,6 +3,7 @@
 #include "../Core/EmuSettings.h"
 #include "../Core/VideoDecoder.h"
 #include "../Core/ControlManager.h"
+#include "../Core/BaseCartridge.h"
 #include "../Core/SystemActionManager.h"
 #include "../Core/MessageManager.h"
 #include "../Core/SaveStateManager.h"
@@ -33,6 +34,16 @@ string _returnString;
 string _logString;
 shared_ptr<Console> _console;
 InteropNotificationListeners _listeners;
+
+struct InteropRomInfo
+{
+	const char* RomPath;
+	const char* PatchPath;
+	SnesCartInformation Header;
+};
+
+string _romPath;
+string _patchPath;
 
 extern "C" {
 	DllExport bool __stdcall TestDll()
@@ -95,6 +106,17 @@ extern "C" {
 	DllExport void __stdcall LoadRom(char* filename, char* patchFile) { _console->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile()); }
 	//DllExport void __stdcall AddKnownGameFolder(char* folder) { FolderUtilities::AddKnownGameFolder(folder); }
 
+	DllExport void __stdcall GetRomInfo(InteropRomInfo &info)
+	{
+		RomInfo romInfo = _console->GetCartridge()->GetRomInfo();
+		_romPath = romInfo.RomFile;
+		_patchPath = romInfo.PatchFile;
+
+		info.Header = romInfo.Header;
+		info.RomPath = _romPath.c_str();
+		info.PatchPath = _patchPath.c_str();
+	}
+	
 	DllExport void __stdcall TakeScreenshot() { _console->GetVideoDecoder()->TakeScreenshot(); }
 
 	DllExport const char* __stdcall GetArchiveRomList(char* filename) { 

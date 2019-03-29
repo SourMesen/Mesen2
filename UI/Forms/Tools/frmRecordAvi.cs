@@ -38,13 +38,13 @@ namespace Mesen.GUI.Forms
 
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.SetFilter(ResourceHelper.GetMessage("FilterAvi"));
-			sfd.InitialDirectory = ConfigManager.AviFolder;
-			//TODO
-			//sfd.FileName = InteropEmu.GetRomInfo().GetRomName() + ".avi";
-			if(sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-				txtFilename.Text = sfd.FileName;
+			using(SaveFileDialog sfd = new SaveFileDialog()) {
+				sfd.SetFilter(ResourceHelper.GetMessage("FilterAvi"));
+				sfd.InitialDirectory = ConfigManager.AviFolder;
+				sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".avi";
+				if(sfd.ShowDialog() == DialogResult.OK) {
+					txtFilename.Text = sfd.FileName;
+				}
 			}
 		}
 
