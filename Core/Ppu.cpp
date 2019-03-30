@@ -170,8 +170,8 @@ void Ppu::Exec()
 		}
 		if(!_forcedVblank) {
 			EvaluateNextLineSprites();
-			_console->GetDmaController()->ProcessHdmaChannels();
 		}
+		_console->GetDmaController()->ProcessHdmaChannels();
 	} else if(_scanline == 0 && _cycle == 6) {
 		//TODO : To verify: Do HDMA channels get initialized even in forced blank?
 		_console->GetDmaController()->InitHdmaChannels();
