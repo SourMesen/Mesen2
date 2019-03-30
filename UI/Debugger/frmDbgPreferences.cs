@@ -23,6 +23,8 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.IncreaseFontSize)),
 				GetMember(nameof(DebuggerShortcutsConfig.DecreaseFontSize)),
 				GetMember(nameof(DebuggerShortcutsConfig.ResetFontSize)),
+				GetMember(nameof(DebuggerShortcutsConfig.ZoomIn)),
+				GetMember(nameof(DebuggerShortcutsConfig.ZoomOut)),
 				GetMember(nameof(DebuggerShortcutsConfig.GoTo)),
 				GetMember(nameof(DebuggerShortcutsConfig.Find)),
 				GetMember(nameof(DebuggerShortcutsConfig.FindNext)),
@@ -39,8 +41,6 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.GoToAll)),
 				GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInDisassembly)),
-				GetMember(nameof(DebuggerShortcutsConfig.PpuViewer_ToggleView)),
-				GetMember(nameof(DebuggerShortcutsConfig.PpuViewer_ToggleZoom)),
 
 				GetMember(nameof(DebuggerShortcutsConfig.OpenApuViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenAssembler)),

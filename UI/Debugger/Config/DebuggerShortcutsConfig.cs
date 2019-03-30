@@ -54,10 +54,10 @@ namespace Mesen.GUI.Config
 		[ShortcutName("Go to All")]
 		public XmlKeys GoToAll = Keys.Control | Keys.Oemcomma;
 
-		[ShortcutName("PPU Viewer: Toggle View")]
-		public XmlKeys PpuViewer_ToggleView = Keys.Control | Keys.Q;
-		[ShortcutName("PPU Viewer: Toggle Zoom")]
-		public XmlKeys PpuViewer_ToggleZoom = Keys.Control | Keys.W;
+		[ShortcutName("Zoom In")]
+		public XmlKeys ZoomIn = Keys.Control | Keys.Oemplus;
+		[ShortcutName("Zoom Out")]
+		public XmlKeys ZoomOut = Keys.Control | Keys.OemMinus;
 
 		[ShortcutName("Edit in Memory Viewer")]
 		public XmlKeys CodeWindow_EditInMemoryViewer = Keys.F1;

@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.GUI.Config;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,7 +23,7 @@ namespace Mesen.GUI.Debugger
 		private byte[] _vram;
 		private byte[] _tilemapData;
 		private Bitmap _tilemapImage;
-		private bool _zoomed;
+		private int _scale = 1;
 
 		public frmTilemapViewer()
 		{
@@ -49,6 +50,15 @@ namespace Mesen.GUI.Debugger
 
 			RefreshData();
 			RefreshViewer();
+
+			InitShortcuts();
+		}
+
+		private void InitShortcuts()
+		{
+			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
+			mnuZoomIn.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomIn));
+			mnuZoomOut.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomOut));
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
@@ -78,12 +88,22 @@ namespace Mesen.GUI.Debugger
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 
+		private int GetWidth()
+		{
+			return _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleWidth ? 512 : 256;
+		}
+
+		private int GetHeight()
+		{
+			return _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleHeight ? 512 : 256;
+		}
+
 		private void RefreshViewer()
 		{
 			DebugApi.GetTilemap(_options, _vram, _cgram, _tilemapData);
 
-			int mapWidth = _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleWidth ? 512 : 256;
-			int mapHeight = _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleHeight ? 512 : 256;
+			int mapWidth = GetWidth();
+			int mapHeight = GetHeight();
 			if(_tilemapImage.Width != mapWidth || _tilemapImage.Height != mapHeight) {
 				_tilemapImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppArgb);
 				picTilemap.Image = _tilemapImage;
@@ -98,44 +118,45 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
+			btnLayer1.BackColor = _options.Layer == 0 ? SystemColors.GradientActiveCaption : SystemColors.ControlLight;
+			btnLayer2.BackColor = _options.Layer == 1 ? SystemColors.GradientActiveCaption : SystemColors.ControlLight;
+			btnLayer3.BackColor = _options.Layer == 2 ? SystemColors.GradientActiveCaption : SystemColors.ControlLight;
+			btnLayer4.BackColor = _options.Layer == 3 ? SystemColors.GradientActiveCaption : SystemColors.ControlLight;
+
 			UpdateMapSize();
 			picTilemap.Invalidate();
 		}
 
 		private void UpdateMapSize()
 		{
-			int mapWidth = _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleWidth ? 512 : 256;
-			int mapHeight = _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleHeight ? 512 : 256;
-			picTilemap.Width = _zoomed ? mapWidth * 2 : mapWidth;
-			picTilemap.Height = _zoomed ? mapHeight * 2  : mapHeight;
+			picTilemap.Width = GetWidth() * _scale;
+			picTilemap.Height = GetHeight() * _scale;
 		}
 
 		private void btnLayer1_Click(object sender, EventArgs e)
 		{
 			_options.Layer = 0;
+			RefreshViewer();
 		}
 
 		private void btnLayer2_Click(object sender, EventArgs e)
 		{
 			_options.Layer = 1;
+			RefreshViewer();
 		}
 
 		private void btnLayer3_Click(object sender, EventArgs e)
 		{
 			_options.Layer = 2;
+			RefreshViewer();
 		}
 
 		private void btnLayer4_Click(object sender, EventArgs e)
 		{
 			_options.Layer = 3;
+			RefreshViewer();
 		}
-
-		private void picTilemap_DoubleClick(object sender, EventArgs e)
-		{
-			_zoomed = !_zoomed;
-			UpdateMapSize();
-		}
-
+		
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
 		{
 			_options.ShowTileGrid = chkShowTileGrid.Checked;
@@ -144,6 +165,29 @@ namespace Mesen.GUI.Debugger
 		private void chkShowScrollOverlay_Click(object sender, EventArgs e)
 		{
 			_options.ShowScrollOverlay = chkShowScrollOverlay.Checked;
+		}
+
+		private void mnuRefresh_Click(object sender, EventArgs e)
+		{
+			RefreshData();
+			RefreshViewer();
+		}
+
+		private void mnuZoomIn_Click(object sender, EventArgs e)
+		{
+			_scale = Math.Min(8, _scale + 1);
+			UpdateMapSize();
+		}
+
+		private void mnuZoomOut_Click(object sender, EventArgs e)
+		{
+			_scale = Math.Max(1, _scale - 1);
+			UpdateMapSize();
+		}
+
+		private void mnuClose_Click(object sender, EventArgs e)
+		{
+			Close();
 		}
 	}
 }
