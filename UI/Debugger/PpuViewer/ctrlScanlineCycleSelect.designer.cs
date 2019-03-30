@@ -46,7 +46,7 @@
 			this.flpRefreshTiming.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flpRefreshTiming.Location = new System.Drawing.Point(0, 0);
 			this.flpRefreshTiming.Name = "flpRefreshTiming";
-			this.flpRefreshTiming.Size = new System.Drawing.Size(399, 28);
+			this.flpRefreshTiming.Size = new System.Drawing.Size(317, 28);
 			this.flpRefreshTiming.TabIndex = 5;
 			// 
 			// lblShowFrameAt
@@ -55,9 +55,9 @@
 			this.lblShowFrameAt.AutoSize = true;
 			this.lblShowFrameAt.Location = new System.Drawing.Point(3, 8);
 			this.lblShowFrameAt.Name = "lblShowFrameAt";
-			this.lblShowFrameAt.Size = new System.Drawing.Size(135, 13);
+			this.lblShowFrameAt.Size = new System.Drawing.Size(101, 13);
 			this.lblShowFrameAt.TabIndex = 0;
-			this.lblShowFrameAt.Text = "Refresh viewer on scanline";
+			this.lblShowFrameAt.Text = "Refresh on scanline";
 			// 
 			// nudScanline
 			// 
@@ -68,7 +68,7 @@
             0,
             0,
             0});
-			this.nudScanline.Location = new System.Drawing.Point(144, 4);
+			this.nudScanline.Location = new System.Drawing.Point(110, 4);
 			this.nudScanline.Maximum = new decimal(new int[] {
             312,
             0,
@@ -82,7 +82,7 @@
             0});
 			this.nudScanline.MinimumSize = new System.Drawing.Size(0, 21);
 			this.nudScanline.Name = "nudScanline";
-			this.nudScanline.Size = new System.Drawing.Size(52, 21);
+			this.nudScanline.Size = new System.Drawing.Size(42, 21);
 			this.nudScanline.TabIndex = 5;
 			this.nudScanline.Value = new decimal(new int[] {
             241,
@@ -95,7 +95,7 @@
 			// 
 			this.lblCycle.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblCycle.AutoSize = true;
-			this.lblCycle.Location = new System.Drawing.Point(202, 8);
+			this.lblCycle.Location = new System.Drawing.Point(158, 8);
 			this.lblCycle.Name = "lblCycle";
 			this.lblCycle.Size = new System.Drawing.Size(53, 13);
 			this.lblCycle.TabIndex = 5;
@@ -110,7 +110,7 @@
             0,
             0,
             0});
-			this.nudCycle.Location = new System.Drawing.Point(261, 4);
+			this.nudCycle.Location = new System.Drawing.Point(217, 4);
 			this.nudCycle.Maximum = new decimal(new int[] {
             340,
             0,
@@ -124,7 +124,7 @@
             0});
 			this.nudCycle.MinimumSize = new System.Drawing.Size(0, 21);
 			this.nudCycle.Name = "nudCycle";
-			this.nudCycle.Size = new System.Drawing.Size(52, 21);
+			this.nudCycle.Size = new System.Drawing.Size(42, 21);
 			this.nudCycle.TabIndex = 6;
 			this.nudCycle.Value = new decimal(new int[] {
             0,
@@ -135,9 +135,9 @@
 			// 
 			// btnReset
 			// 
-			this.btnReset.Location = new System.Drawing.Point(319, 3);
+			this.btnReset.Location = new System.Drawing.Point(265, 3);
 			this.btnReset.Name = "btnReset";
-			this.btnReset.Size = new System.Drawing.Size(75, 23);
+			this.btnReset.Size = new System.Drawing.Size(49, 23);
 			this.btnReset.TabIndex = 7;
 			this.btnReset.Text = "Reset";
 			this.btnReset.UseVisualStyleBackColor = true;
@@ -149,7 +149,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.flpRefreshTiming);
 			this.Name = "ctrlScanlineCycleSelect";
-			this.Size = new System.Drawing.Size(399, 28);
+			this.Size = new System.Drawing.Size(317, 28);
 			this.flpRefreshTiming.ResumeLayout(false);
 			this.flpRefreshTiming.PerformLayout();
 			this.ResumeLayout(false);

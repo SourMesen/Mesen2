@@ -29,6 +29,19 @@ namespace Mesen.GUI.Debugger
 			ctrlPaletteViewer.RefreshViewer();
 		}
 
+		private void UpdateFields()
+		{
+			int index = ctrlPaletteViewer.SelectedPalette;
+			byte[] cgram = ctrlPaletteViewer.CgRam;
+			int color = (cgram[index * 2] | (cgram[index * 2 + 1] << 8));
+			txtIndex.Text = index.ToString();
+			txtValue.Text = color.ToString("X4");
+			txtR.Text = (color & 0x1F).ToString();
+			txtG.Text = ((color >> 5) & 0x1F).ToString();
+			txtB.Text = ((color >> 10) & 0x1F).ToString();
+			txtRgb.Text = (ctrlPaletteViewer.ToArgb(color) & 0xFFFFFF).ToString("X6");
+		}
+
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
 			base.OnFormClosed(e);
@@ -43,10 +56,16 @@ namespace Mesen.GUI.Debugger
 						ctrlPaletteViewer.RefreshData();
 						this.BeginInvoke((Action)(() => {
 							ctrlPaletteViewer.RefreshViewer();
+							UpdateFields();
 						}));
 					}
 					break;
 			}
+		}
+
+		private void ctrlPaletteViewer_SelectionChanged()
+		{
+			UpdateFields();
 		}
 	}
 }
