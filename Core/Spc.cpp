@@ -9,6 +9,7 @@
 Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 {
 	_console = console;
+	_memoryManager = console->GetMemoryManager();
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 	_immediateMode = false;
 	_operandA = 0;
@@ -28,6 +29,8 @@ Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 	_state.RomEnabled = true;
 	_state.SP = 0xFF;
 	_state.PC = ReadWord(Spc::ResetVector);
+
+	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
 }
 
 Spc::~Spc()
@@ -202,9 +205,7 @@ void Spc::CpuWriteRegister(uint32_t addr, uint8_t value)
 
 void Spc::Run()
 {
-	int64_t masterClock = _console->GetMemoryManager()->GetMasterClock();
-	//TODO: This will overflow after 100+ hours, needs to be fixed
-	uint64_t targetCycle = (masterClock * (uint64_t)1024000 / (uint64_t)_console->GetMasterClockRate()) * 2;
+	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
 	while(_state.Cycle < targetCycle) {
 		Exec();
 	}
@@ -213,6 +214,8 @@ void Spc::Run()
 void Spc::ProcessEndFrame()
 {
 	Run();
+
+	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
 
 	int sampleCount = _dsp->sample_count();
 	if(sampleCount != 0) {
@@ -233,14 +236,14 @@ void Spc::Serialize(Serializer &s)
 	s.Stream(_state.OutputReg[0], _state.OutputReg[1], _state.OutputReg[2], _state.OutputReg[3]);
 	s.Stream(_state.RamReg[0], _state.RamReg[1]);
 	s.Stream(_state.ExternalSpeed, _state.InternalSpeed, _state.WriteEnabled, _state.TimersEnabled);
-	s.Stream(_state.DspReg, _state.RomEnabled);
+	s.Stream(_state.DspReg, _state.RomEnabled, _clockRatio);
 
 	_state.Timer0.Serialize(s);
 	_state.Timer1.Serialize(s);
 	_state.Timer2.Serialize(s);
 
 	ArrayInfo<uint8_t> ram { _ram, Spc::SpcRamSize };
-	s.Stream(ram, _state.DspReg, _state.RomEnabled);
+	s.Stream(ram);
 
 	uint8_t dspState[SPC_DSP::state_size];
 	memset(dspState, 0, SPC_DSP::state_size);

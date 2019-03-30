@@ -230,10 +230,10 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 
 		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
 		_ppu.reset(new Ppu(shared_from_this()));
-		_spc.reset(new Spc(shared_from_this(), spcRomData));
 		_controlManager.reset(new ControlManager(shared_from_this()));
 		_memoryManager.reset(new MemoryManager());
 		_dmaController.reset(new DmaController(_memoryManager.get()));
+		_spc.reset(new Spc(shared_from_this(), spcRomData));
 
 		_memoryManager->Initialize(shared_from_this());
 

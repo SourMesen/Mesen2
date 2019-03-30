@@ -6,6 +6,7 @@
 #include "../Utilities/ISerializable.h"
 
 class Console;
+class MemoryManager;
 class SPC_DSP;
 
 class Spc : public ISerializable
@@ -18,11 +19,13 @@ private:
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
 	shared_ptr<Console> _console;
+	shared_ptr<MemoryManager> _memoryManager;
 	unique_ptr<SPC_DSP> _dsp;
 
 	bool _immediateMode;
 	uint16_t _operandA;
 	uint16_t _operandB;
+	double _clockRatio;
 
 	SpcState _state;
 	uint8_t _ram[Spc::SpcRamSize];
