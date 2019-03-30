@@ -74,10 +74,10 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t 
 	return ToArgb(paletteColor);
 }
 
-void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
+void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer)
 {
-	uint8_t* ram;
-	uint32_t ramMask;
+	uint8_t* ram = source;
+	uint32_t ramMask = srcSize - 1;
 	uint8_t bpp;
 
 	bool directColor = false;
@@ -102,25 +102,6 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 		default: bpp = 8; break;
 	}
 
-	switch(options.MemoryType) {
-		default:
-		case SnesMemoryType::VideoRam:
-			ramMask = Ppu::VideoRamSize - 1;
-			ram = _ppu->GetVideoRam();
-			break;
-
-		case SnesMemoryType::PrgRom:
-			ramMask = _console->GetCartridge()->DebugGetPrgRomSize() - 1;
-			ram = _console->GetCartridge()->DebugGetPrgRom();
-			break;
-
-		case SnesMemoryType::WorkRam:
-			ramMask = MemoryManager::WorkRamSize - 1;
-			ram = _console->GetMemoryManager()->DebugGetWorkRam();
-			break;
-	}
-
-	uint8_t* cgram = _ppu->GetCgRam();
 	int bytesPerTile = 64 * bpp / 8;
 	int tileCount = 0x10000 / bytesPerTile;
 	
@@ -133,7 +114,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 
 	if(options.Format == TileFormat::Mode7 || options.Format == TileFormat::Mode7DirectColor) {
 		for(int row = 0; row < rowCount; row++) {
-			uint32_t baseOffset = row * bytesPerTile * options.Width + options.AddressOffset;
+			uint32_t baseOffset = row * bytesPerTile * options.Width;
 
 			for(int column = 0; column < options.Width; column++) {
 				uint32_t addr = baseOffset + bytesPerTile * column;
@@ -159,7 +140,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 		}
 	} else {
 		for(int row = 0; row < rowCount; row++) {
-			uint32_t baseOffset = row * bytesPerTile * options.Width + options.AddressOffset;
+			uint32_t baseOffset = row * bytesPerTile * options.Width;
 
 			for(int column = 0; column < options.Width; column++) {
 				uint32_t addr = baseOffset + bytesPerTile * column;

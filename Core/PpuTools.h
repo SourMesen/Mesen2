@@ -22,7 +22,7 @@ private:
 public:
 	PpuTools(Console *console, Ppu *ppu);
 
-	void GetTileView(GetTileViewOptions options, uint32_t *outBuffer);
+	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer);
 	void GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgram, uint32_t *outBuffer);
 
 	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);

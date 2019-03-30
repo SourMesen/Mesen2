@@ -70,7 +70,7 @@ extern "C"
 	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { GetDebugger()->GetCodeDataLogger()->GetCdlData(offset, length, memoryType, cdlData); }
 
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, uint8_t *vram, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, vram, cgram, buffer); }
-	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, buffer); }
+	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, source, srcSize, cgram, buffer); }
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle); }
 
 	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount, bool getPreviousFrameData) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount, getPreviousFrameData); }

@@ -18,8 +18,12 @@ namespace Mesen.GUI.Debugger
 		private NotificationListener _notifListener;
 		private GetTileViewOptions _options;
 		private byte[] _tileData;
+		private byte[] _cgram;
+		private byte[] _tileSource;
 		private Bitmap _tileImage;
 		private bool _zoomed;
+		private SnesMemoryType _memoryType = SnesMemoryType.VideoRam;
+		private int _addressOffset = 0;
 
 		public frmTileViewer()
 		{
@@ -92,14 +96,20 @@ namespace Mesen.GUI.Debugger
 		private void RefreshData()
 		{
 			_options.Palette = ctrlPaletteViewer.SelectedPalette;
-			lock(_tileData) {
-				DebugApi.GetTileView(_options, _tileData);
-			}
+			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+
+			byte[] source = DebugApi.GetMemoryState(_memoryType);
+			int size = Math.Min(source.Length - _addressOffset, 0x10000);
+			_tileSource = new byte[0x10000];
+			Array.Copy(source, _addressOffset, _tileSource, 0, size);
+			
 			ctrlPaletteViewer.RefreshData();
 		}
 
 		private void RefreshViewer()
 		{
+			DebugApi.GetTileView(_options, _tileSource, _tileSource.Length, _cgram, _tileData);
+
 			int tileCount = 0x10000 / GetBytesPerTile();
 
 			int mapWidth = _options.Width * 8;
@@ -111,14 +121,12 @@ namespace Mesen.GUI.Debugger
 			}
 
 			using(Graphics g = Graphics.FromImage(_tileImage)) {
-				lock(_tileData) {
-					GCHandle handle = GCHandle.Alloc(_tileData, GCHandleType.Pinned);
-					Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * mapWidth, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
-					try {
-						g.DrawImage(source, 0, 0);
-					} finally {
-						handle.Free();
-					}
+				GCHandle handle = GCHandle.Alloc(_tileData, GCHandleType.Pinned);
+				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * mapWidth, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				try {
+					g.DrawImage(source, 0, 0);
+				} finally {
+					handle.Free();
 				}
 			}
 
@@ -165,9 +173,9 @@ namespace Mesen.GUI.Debugger
 
 		private void cboMemoryType_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_options.MemoryType = cboMemoryType.GetEnumValue<SnesMemoryType>();
+			_memoryType = cboMemoryType.GetEnumValue<SnesMemoryType>();
 
-			bool isVram = _options.MemoryType == SnesMemoryType.VideoRam;
+			bool isVram = _memoryType == SnesMemoryType.VideoRam;
 			nudOffset.Visible = !isVram;
 			nudBank.Visible = !isVram;
 			lblOffset.Visible = !isVram;
@@ -176,6 +184,8 @@ namespace Mesen.GUI.Debugger
 				nudBank.Value = 0;
 				nudOffset.Value = 0;
 			}
+
+			nudBank.Maximum = Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
 		}
 
 		private void cboBpp_SelectedIndexChanged(object sender, EventArgs e)
@@ -199,12 +209,12 @@ namespace Mesen.GUI.Debugger
 
 		private void nudBank_ValueChanged(object sender, EventArgs e)
 		{
-			_options.AddressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
 		}
 
 		private void nudOffset_ValueChanged(object sender, EventArgs e)
 		{
-			_options.AddressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
 		}
 	}
 }

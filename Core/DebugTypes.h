@@ -187,9 +187,6 @@ struct GetTileViewOptions
 	TileFormat Format;
 	int32_t Width;
 	int32_t Palette;
-	SnesMemoryType MemoryType;
-	int32_t AddressOffset;
-
 	bool ShowTileGrid;
 };
 

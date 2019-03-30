@@ -72,7 +72,7 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, byte[] vram, byte[] cgram, [In, Out] byte[] buffer);
-		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, [In, Out] byte[] buffer);
+		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, byte[] cgram, [In, Out] byte[] buffer);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
 
@@ -345,8 +345,6 @@ namespace Mesen.GUI
 		public TileFormat Format;
 		public Int32 Width;
 		public Int32 Palette;
-		public SnesMemoryType MemoryType;
-		public Int32 AddressOffset;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
 	}
