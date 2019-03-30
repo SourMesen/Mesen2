@@ -51,6 +51,7 @@ namespace Mesen.GUI.Debugger
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.ViewerRefresh:
 					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
 						ctrlPaletteViewer.RefreshData();
