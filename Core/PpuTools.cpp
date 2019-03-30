@@ -58,7 +58,7 @@ void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
 	output[3] = 0xFF;
 }
 
-uint32_t PpuTools::GetRgbPixelColor(uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset)
+uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset)
 {
 	uint16_t paletteColor;
 	if(bpp == 8 && directColorMode) {
@@ -68,7 +68,6 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t colorIndex, uint8_t palette, uint8_t
 			(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
 		);
 	} else {
-		uint8_t* cgram = _ppu->GetCgRam();
 		uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + colorIndex) * 2;
 		paletteColor = cgram[paletteRamOffset] | (cgram[paletteRamOffset + 1] << 8);
 	}
@@ -150,7 +149,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 							if(directColor) {
 								rgbColor = ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
-								rgbColor = GetRgbPixelColor(color, 0, 8, false, 0);
+								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
 							}
 							outBuffer[((row * 8) + y) * (options.Width * 8) + column * 8 + x] = rgbColor;
 						}
@@ -170,7 +169,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, 7 - x);
 						if(color != 0) {
-							outBuffer[((row * 8) + y) * (options.Width * 8) + column * 8 + x] = GetRgbPixelColor(color, options.Palette, bpp, directColor, 0);
+							outBuffer[((row * 8) + y) * (options.Width * 8) + column * 8 + x] = GetRgbPixelColor(cgram, color, options.Palette, bpp, directColor, 0);
 						}
 					}
 				}
@@ -190,7 +189,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint32_t *outBuffer)
 	}
 }
 
-void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
+void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgram, uint32_t* outBuffer)
 {
 	static constexpr uint8_t layerBpp[8][4] = {
 		{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 }
@@ -206,8 +205,6 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 		basePaletteOffset = options.Layer * 64;
 	}
 
-	uint8_t *vram = _ppu->GetVideoRam();
-	uint8_t *cgram = _ppu->GetCgRam();
 	LayerConfig layer = state.Layers[options.Layer];
 
 	uint32_t bgColor = ToArgb((cgram[1] << 8) | cgram[0]);
@@ -238,7 +235,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 							if(directColor) {
 								rgbColor = ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
-								rgbColor = GetRgbPixelColor(color, 0, 8, false, 0);
+								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
 							}
 							outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = rgbColor;
 						}
@@ -277,7 +274,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint32_t* outBuffer)
 						uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, bpp, pixelStart, shift);
 						if(color != 0) {
 							uint8_t palette = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
-							outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = GetRgbPixelColor(color, palette, bpp, directColor, basePaletteOffset);
+							outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = GetRgbPixelColor(cgram, color, palette, bpp, directColor, basePaletteOffset);
 						}
 					}
 				}

@@ -71,7 +71,7 @@ namespace Mesen.GUI
 			return buffer;
 		}
 
-		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, [In, Out] byte[] buffer);
+		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, byte[] vram, byte[] cgram, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, [In, Out] byte[] buffer);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);

@@ -17,13 +17,13 @@ private:
 	uint32_t ToArgb(uint16_t color);
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 
-	uint32_t GetRgbPixelColor(uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
+	uint32_t GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
 
 public:
 	PpuTools(Console *console, Ppu *ppu);
 
 	void GetTileView(GetTileViewOptions options, uint32_t *outBuffer);
-	void GetTilemap(GetTilemapOptions options, uint32_t *outBuffer);
+	void GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgram, uint32_t *outBuffer);
 
 	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);

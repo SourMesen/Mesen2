@@ -18,6 +18,8 @@ namespace Mesen.GUI.Debugger
 		private NotificationListener _notifListener;
 		private GetTilemapOptions _options;
 		private DebugState _state;
+		private byte[] _cgram;
+		private byte[] _vram;
 		private byte[] _tilemapData;
 		private Bitmap _tilemapImage;
 		private bool _zoomed;
@@ -72,13 +74,14 @@ namespace Mesen.GUI.Debugger
 		private void RefreshData()
 		{
 			_state = DebugApi.GetState();
-			lock(_tilemapData) {
-				DebugApi.GetTilemap(_options, _tilemapData);
-			}
+			_vram = DebugApi.GetMemoryState(SnesMemoryType.VideoRam);
+			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 
 		private void RefreshViewer()
 		{
+			DebugApi.GetTilemap(_options, _vram, _cgram, _tilemapData);
+
 			int mapWidth = _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleWidth ? 512 : 256;
 			int mapHeight = _state.Ppu.BgMode == 7 ? 1024 : _state.Ppu.Layers[_options.Layer].DoubleHeight ? 512 : 256;
 			if(_tilemapImage.Width != mapWidth || _tilemapImage.Height != mapHeight) {
@@ -86,14 +89,12 @@ namespace Mesen.GUI.Debugger
 				picTilemap.Image = _tilemapImage;
 			}
 			using(Graphics g = Graphics.FromImage(_tilemapImage)) {
-				lock(_tilemapData) {
-					GCHandle handle = GCHandle.Alloc(_tilemapData, GCHandleType.Pinned);
-					Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * 1024, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
-					try {
-						g.DrawImage(source, 0, 0);
-					} finally {
-						handle.Free();
-					}
+				GCHandle handle = GCHandle.Alloc(_tilemapData, GCHandleType.Pinned);
+				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * 1024, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				try {
+					g.DrawImage(source, 0, 0);
+				} finally {
+					handle.Free();
 				}
 			}
 
