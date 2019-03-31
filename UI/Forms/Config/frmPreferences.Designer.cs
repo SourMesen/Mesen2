@@ -30,6 +30,7 @@
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tpgGeneral = new System.Windows.Forms.TabPage();
 			this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
+			this.chkAutoHideMenu = new System.Windows.Forms.CheckBox();
 			this.chkSingleInstance = new System.Windows.Forms.CheckBox();
 			this.chkAutomaticallyCheckForUpdates = new System.Windows.Forms.CheckBox();
 			this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
@@ -84,7 +85,6 @@
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
-			this.chkAutoHideMenu = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -160,6 +160,17 @@
 			this.tlpMain.Size = new System.Drawing.Size(534, 383);
 			this.tlpMain.TabIndex = 1;
 			// 
+			// chkAutoHideMenu
+			// 
+			this.chkAutoHideMenu.AutoSize = true;
+			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 118);
+			this.chkAutoHideMenu.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkAutoHideMenu.Name = "chkAutoHideMenu";
+			this.chkAutoHideMenu.Size = new System.Drawing.Size(158, 17);
+			this.chkAutoHideMenu.TabIndex = 25;
+			this.chkAutoHideMenu.Text = "Automatically hide menu bar";
+			this.chkAutoHideMenu.UseVisualStyleBackColor = true;
+			// 
 			// chkSingleInstance
 			// 
 			this.chkSingleInstance.AutoSize = true;
@@ -190,6 +201,7 @@
 			this.flowLayoutPanel2.Name = "flowLayoutPanel2";
 			this.flowLayoutPanel2.Size = new System.Drawing.Size(534, 26);
 			this.flowLayoutPanel2.TabIndex = 18;
+			this.flowLayoutPanel2.Visible = false;
 			// 
 			// lblDisplayLanguage
 			// 
@@ -595,6 +607,7 @@
 			this.chkMssFormat.TabIndex = 15;
 			this.chkMssFormat.Text = ".MSS (Mesen-S Save State)";
 			this.chkMssFormat.UseVisualStyleBackColor = true;
+			this.chkMssFormat.Visible = false;
 			// 
 			// chkMsmFormat
 			// 
@@ -605,6 +618,7 @@
 			this.chkMsmFormat.TabIndex = 11;
 			this.chkMsmFormat.Text = ".MSM (Mesen-S Movies)";
 			this.chkMsmFormat.UseVisualStyleBackColor = true;
+			this.chkMsmFormat.Visible = false;
 			// 
 			// grpDataStorageLocation
 			// 
@@ -857,17 +871,6 @@
 			this.chkShowDebugInfo.TabIndex = 34;
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
-			// 
-			// chkAutoHideMenu
-			// 
-			this.chkAutoHideMenu.AutoSize = true;
-			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 118);
-			this.chkAutoHideMenu.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
-			this.chkAutoHideMenu.Name = "chkAutoHideMenu";
-			this.chkAutoHideMenu.Size = new System.Drawing.Size(158, 17);
-			this.chkAutoHideMenu.TabIndex = 25;
-			this.chkAutoHideMenu.Text = "Automatically hide menu bar";
-			this.chkAutoHideMenu.UseVisualStyleBackColor = true;
 			// 
 			// frmPreferences
 			// 

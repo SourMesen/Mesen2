@@ -28,7 +28,11 @@ namespace Mesen.GUI.Forms.Config
 			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer3, typeof(ControllerType));
 			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer4, typeof(ControllerType));
 			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer5, typeof(ControllerType));
-			
+
+			//Remove super scope for now
+			cboPlayer1.Items.RemoveAt(3);
+			cboPlayer2.Items.RemoveAt(3);
+
 			cboPlayer1.SetEnumValue(cfg.Controllers[0].Type);
 			cboPlayer2.SetEnumValue(cfg.Controllers[1].Type);
 			cboPlayer3.SetEnumValue(cfg.Controllers[2].Type);
