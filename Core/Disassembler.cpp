@@ -211,7 +211,7 @@ uint32_t Disassembler::GetLineIndex(uint32_t cpuAddress)
 		}
 
 		if(cpuAddress >= lastAddress && cpuAddress < (uint32_t)_disassembly[i].CpuAddress) {
-			return i - 1;
+			return (uint32_t)i - 1;
 		}
 
 		lastAddress = _disassembly[i].CpuAddress;
