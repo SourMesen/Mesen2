@@ -8,12 +8,13 @@ If you want to support this project, please consider making a donation:
 ## Roadmap
 
 Mesen-S is very early in its development and some features are still missing.  
-The following should be added over time:
+The following should be added over time (in no particular order):
 
 * Movies
 * Netplay  
 * Cheats  
-* More debugging tools and improvements to the current tools
+* Additions/improvements in the debugging tools
+* Lua scripting
 * Support for the enhancement chips used in some games
 * Libretro core (once the emulation core is stable/accurate enough)
 
