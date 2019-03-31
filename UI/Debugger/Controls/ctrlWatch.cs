@@ -52,13 +52,12 @@ namespace Mesen.GUI.Debugger
 
 		public string GetTooltipText()
 		{
-			return "";
-			/*return (
+			return (
 				frmBreakpoint.GetConditionTooltip(true) + Environment.NewLine + Environment.NewLine +
 				"Additionally, the watch window supports a syntax to display X bytes starting from a specific address. e.g:" + Environment.NewLine +
 				"[$10, 16]: Display 16 bytes starting from address $10" + Environment.NewLine +
 				"[MyLabel, 4]: Display 4 bytes starting from the address the specified label (MyLabel) refers to"
-			);*/
+			);
 		}
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

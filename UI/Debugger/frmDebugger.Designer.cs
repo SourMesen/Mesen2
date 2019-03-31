@@ -82,6 +82,7 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
+			this.picWatchHelp = new System.Windows.Forms.PictureBox();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -91,6 +92,7 @@
 			this.grpWatch.SuspendLayout();
 			this.grpBreakpoints.SuspendLayout();
 			this.grpCallstack.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// ctrlDisassemblyView
@@ -451,6 +453,7 @@
 			// 
 			// grpWatch
 			// 
+			this.grpWatch.Controls.Add(this.picWatchHelp);
 			this.grpWatch.Controls.Add(this.ctrlWatch);
 			this.grpWatch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpWatch.Location = new System.Drawing.Point(3, 3);
@@ -516,6 +519,16 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
+			// picWatchHelp
+			// 
+			this.picWatchHelp.Image = global::Mesen.GUI.Properties.Resources.Help;
+			this.picWatchHelp.Location = new System.Drawing.Point(44, -1);
+			this.picWatchHelp.Name = "picWatchHelp";
+			this.picWatchHelp.Size = new System.Drawing.Size(16, 16);
+			this.picWatchHelp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.picWatchHelp.TabIndex = 4;
+			this.picWatchHelp.TabStop = false;
+			// 
 			// frmDebugger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -536,6 +549,7 @@
 			this.grpWatch.ResumeLayout(false);
 			this.grpBreakpoints.ResumeLayout(false);
 			this.grpCallstack.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -594,5 +608,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuGoToCopHandler;
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnuPreferences;
+		private System.Windows.Forms.PictureBox picWatchHelp;
 	}
 }

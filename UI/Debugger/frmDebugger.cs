@@ -34,6 +34,8 @@ namespace Mesen.GUI.Debugger
 			InitShortcuts();
 			InitToolbar();
 
+			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
+			
 			BreakpointManager.BreakpointsEnabled = true;
 			DebugApi.Step(10000);
 		}
