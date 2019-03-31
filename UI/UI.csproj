@@ -248,6 +248,18 @@
     <Compile Include="Debugger\Code\CpuLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
+    <Compile Include="Debugger\frmBreakIn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmBreakIn.designer.cs">
+      <DependentUpon>frmBreakIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmBreakOn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmBreakOn.designer.cs">
+      <DependentUpon>frmBreakOn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
@@ -712,6 +724,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlDisassemblyView.resx">
       <DependentUpon>ctrlDisassemblyView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmBreakIn.resx">
+      <DependentUpon>frmBreakIn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmBreakOn.resx">
+      <DependentUpon>frmBreakOn.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\MemoryTools\ctrlHexViewer.resx">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>

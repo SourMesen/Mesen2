@@ -45,6 +45,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_cpuStepCount = -1;
 	_ppuStepCount = -1;
 	_breakAddress = -1;
+	_breakScanline = -1;
 	_executionStopped = false;
 	_breakRequestCount = 0;
 
@@ -227,6 +228,12 @@ void Debugger::ProcessPpuCycle()
 			SleepUntilResume();
 		}
 	}
+
+	if(cycle == 0 && scanline == _breakScanline) {
+		_cpuStepCount = 0;
+		_breakScanline = -1;
+		SleepUntilResume();
+	}
 }
 
 void Debugger::SleepUntilResume()
@@ -293,8 +300,9 @@ int32_t Debugger::EvaluateExpression(string expression, EvalResultType &resultTy
 void Debugger::Run()
 {
 	_cpuStepCount = -1;
-	_breakAddress = -1;
 	_ppuStepCount = -1;
+	_breakAddress = -1;
+	_breakScanline = -1;
 }
 
 void Debugger::Step(int32_t stepCount, StepType type)
@@ -304,12 +312,14 @@ void Debugger::Step(int32_t stepCount, StepType type)
 			_cpuStepCount = stepCount;
 			_breakAddress = -1;
 			_ppuStepCount = -1;
+			_breakScanline = -1;
 			break;
 
 		case StepType::CpuStepOut:
 			_breakAddress = _callstackManager->GetReturnAddress();
 			_cpuStepCount = -1;
 			_ppuStepCount = -1;
+			_breakScanline = -1;
 			break;
 
 		case StepType::CpuStepOver:
@@ -318,16 +328,26 @@ void Debugger::Step(int32_t stepCount, StepType type)
 				_breakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOperandSize(_prevOpCode, 0) + 1) & 0xFFFF);
 				_cpuStepCount = -1;
 				_ppuStepCount = -1;
+				_breakScanline = -1;
 			} else {
 				//For any other instruction, step over is the same as step into
 				_cpuStepCount = 1;
 				_breakAddress = -1;
 				_ppuStepCount = -1;
+				_breakScanline = -1;
 			}
 			break;
 
 		case StepType::PpuStep:
 			_ppuStepCount = stepCount;
+			_cpuStepCount = -1;
+			_breakAddress = -1;
+			_breakScanline = -1;
+			break;
+
+		case StepType::SpecificScanline:
+			_breakScanline = stepCount;
+			_ppuStepCount = -1;
 			_cpuStepCount = -1;
 			_breakAddress = -1;
 			break;

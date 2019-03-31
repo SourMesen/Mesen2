@@ -211,4 +211,5 @@ enum class StepType
 	CpuStepOut,
 	CpuStepOver,
 	PpuStep,
+	SpecificScanline,
 };

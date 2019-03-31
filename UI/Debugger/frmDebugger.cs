@@ -95,6 +95,9 @@ namespace Mesen.GUI.Debugger
 			mnuFindNext.InitShortcut(this, nameof(DebuggerShortcutsConfig.FindNext));
 			mnuFindPrev.InitShortcut(this, nameof(DebuggerShortcutsConfig.FindPrev));
 
+			mnuBreakIn.InitShortcut(this, nameof(DebuggerShortcutsConfig.BreakIn));
+			mnuBreakOn.InitShortcut(this, nameof(DebuggerShortcutsConfig.BreakOn));
+
 			mnuStepInto.Click += (s, e) => { DebugApi.Step(1); };
 			mnuStepOver.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOver); };
 			mnuStepOut.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOut); };
@@ -121,6 +124,9 @@ namespace Mesen.GUI.Debugger
 			mnuFind.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.OpenSearchBox(); };
 			mnuFindNext.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.FindNext(); };
 			mnuFindPrev.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.FindPrevious(); };
+
+			mnuBreakIn.Click += (s, e) => { using(frmBreakIn frm = new frmBreakIn()) { frm.ShowDialog(); } };
+			mnuBreakOn.Click += (s, e) => { using(frmBreakOn frm = new frmBreakOn()) { frm.ShowDialog(); } };
 		}
 
 		private void InitToolbar()

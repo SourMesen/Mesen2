@@ -21,6 +21,10 @@ namespace Mesen.GUI.Config
 		public HexEditorInfo HexEditor = new HexEditorInfo();
 		public EventViewerInfo EventViewer = new EventViewerInfo();
 
+		public int BreakOnValue = 0;
+		public int BreakInCount = 1;
+		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
+
 		public bool ShowSelectionLength = false;
 
 		public XmlColor CodeOpcodeColor = Color.FromArgb(22, 37, 37);
@@ -51,5 +55,13 @@ namespace Mesen.GUI.Config
 		Low = 0,
 		Normal = 1,
 		High = 2
+	}
+
+	public enum BreakInMetric
+	{
+		CpuInstructions,
+		PpuCycles,
+		Scanlines,
+		Frames
 	}
 }

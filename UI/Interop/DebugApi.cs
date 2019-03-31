@@ -405,6 +405,7 @@ namespace Mesen.GUI
 		CpuStepOut,
 		CpuStepOver,
 		PpuStep,
+		SpecificScanline,
 	}
 
 	public enum CdlFlags : byte

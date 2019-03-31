@@ -51,6 +51,7 @@ private:
 	atomic<int32_t> _cpuStepCount;
 	atomic<int32_t> _ppuStepCount;
 	atomic<int32_t> _breakAddress;
+	atomic<int32_t> _breakScanline;
 	
 	uint8_t _prevOpCode = 0;
 	uint32_t _prevProgramCounter = 0;

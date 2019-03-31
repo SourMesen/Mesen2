@@ -258,21 +258,18 @@
 			// 
 			this.toolStripMenuItem8.Name = "toolStripMenuItem8";
 			this.toolStripMenuItem8.Size = new System.Drawing.Size(209, 6);
-			this.toolStripMenuItem8.Visible = false;
 			// 
 			// mnuBreakIn
 			// 
 			this.mnuBreakIn.Name = "mnuBreakIn";
 			this.mnuBreakIn.Size = new System.Drawing.Size(212, 22);
 			this.mnuBreakIn.Text = "Break in...";
-			this.mnuBreakIn.Visible = false;
 			// 
 			// mnuBreakOn
 			// 
 			this.mnuBreakOn.Name = "mnuBreakOn";
 			this.mnuBreakOn.Size = new System.Drawing.Size(212, 22);
 			this.mnuBreakOn.Text = "Break on...";
-			this.mnuBreakOn.Visible = false;
 			// 
 			// searchToolStripMenuItem
 			// 
