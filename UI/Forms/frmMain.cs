@@ -132,6 +132,7 @@ namespace Mesen.GUI.Forms
 
 				case ConsoleNotificationType.EmulationStopped:
 					this.BeginInvoke((Action)(() => {
+						this.Text = "Mesen-S";
 						UpdateDebuggerMenu();
 						ctrlRecentGames.Initialize();
 						ctrlRecentGames.Visible = true;
@@ -324,7 +325,7 @@ namespace Mesen.GUI.Forms
 					EmuRunner.LoadRom(files[0]);
 					this.Activate();
 				} else {
-					//InteropEmu.DisplayMessage("Error", "File not found: " + files[0]);
+					EmuApi.DisplayMessage("Error", "File not found: " + files[0]);
 				}
 			} catch(Exception ex) {
 				MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
@@ -339,18 +340,13 @@ namespace Mesen.GUI.Forms
 				if(e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
 					e.Effect = DragDropEffects.Copy;
 				} else {
-					//InteropEmu.DisplayMessage("Error", "Unsupported operation.");
+					EmuApi.DisplayMessage("Error", "Unsupported operation.");
 				}
 			} catch(Exception ex) {
 				MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
 			}
 		}
 
-		private void mnuExit_Click(object sender, EventArgs e)
-		{
-			this.Close();
-		}
-		
 		private void mnuLogWindow_Click(object sender, EventArgs e)
 		{
 			new frmLogWindow().Show();
