@@ -25,7 +25,9 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, V
 		shared_ptr<BaseCartridge> cart(new BaseCartridge());
 		if(patchFile.IsValid()) {
 			cart->_patchPath = patchFile;
-			romFile.ApplyPatch(patchFile);
+			if(romFile.ApplyPatch(patchFile)) {
+				MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
+			}
 		}
 
 		vector<uint8_t> romData;

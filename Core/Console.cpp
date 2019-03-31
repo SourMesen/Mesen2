@@ -270,6 +270,10 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_paused = false;
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
 
+		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
+		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
+		MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
+
 		return true;
 	}
 
