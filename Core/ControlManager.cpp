@@ -210,6 +210,13 @@ void ControlManager::Write(uint16_t addr, uint8_t value)
 
 void ControlManager::Serialize(Serializer &s)
 {
+	InputConfig cfg = _console->GetSettings()->GetInputConfig();
+	s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type);
+	if(!s.IsSaving()) {
+		_console->GetSettings()->SetInputConfig(cfg);
+		UpdateControlDevices();
+	}
+
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		s.Stream(device.get());
 	}
