@@ -132,5 +132,11 @@ namespace Mesen.GUI.Debugger.Controls
 				_manager.ToggleBreakpoint(lineIndex);
 			}
 		}
+
+		private void ctrlCode_TextZoomChanged(object sender, EventArgs e)
+		{
+			ConfigManager.Config.Debug.TextZoom = ctrlCode.TextZoom;
+			ConfigManager.ApplyChanges();
+		}
 	}
 }

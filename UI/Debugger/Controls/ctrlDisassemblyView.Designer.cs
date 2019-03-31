@@ -60,6 +60,7 @@
 			this.ctrlCode.Size = new System.Drawing.Size(465, 398);
 			this.ctrlCode.TabIndex = 0;
 			this.ctrlCode.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ctrlCode_MouseDown);
+			this.ctrlCode.TextZoomChanged += new System.EventHandler(this.ctrlCode_TextZoomChanged);
 			// 
 			// ctxMenu
 			// 

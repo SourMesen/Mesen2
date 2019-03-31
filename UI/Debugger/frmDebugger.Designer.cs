@@ -76,13 +76,20 @@
 			this.ctrlStatus = new Mesen.GUI.Debugger.Controls.ctrlConsoleStatus();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.grpWatch = new System.Windows.Forms.GroupBox();
+			this.picWatchHelp = new System.Windows.Forms.PictureBox();
 			this.ctrlWatch = new Mesen.GUI.Debugger.ctrlWatch();
 			this.grpBreakpoints = new System.Windows.Forms.GroupBox();
 			this.ctrlBreakpoints = new Mesen.GUI.Debugger.Controls.ctrlBreakpoints();
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.picWatchHelp = new System.Windows.Forms.PictureBox();
+			this.fontSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuIncreaseFontSize = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuDecreaseFontSize = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuResetFontSize = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuSelectFont = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -90,9 +97,9 @@
 			this.ctrlSplitContainer.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpWatch.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).BeginInit();
 			this.grpBreakpoints.SuspendLayout();
 			this.grpCallstack.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// ctrlDisassemblyView
@@ -392,6 +399,8 @@
 			// optionsToolStripMenuItem
 			// 
 			this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fontSizeToolStripMenuItem,
+            this.toolStripMenuItem4,
             this.mnuPreferences});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -463,6 +472,16 @@
 			this.grpWatch.TabStop = false;
 			this.grpWatch.Text = "Watch";
 			// 
+			// picWatchHelp
+			// 
+			this.picWatchHelp.Image = global::Mesen.GUI.Properties.Resources.Help;
+			this.picWatchHelp.Location = new System.Drawing.Point(44, -1);
+			this.picWatchHelp.Name = "picWatchHelp";
+			this.picWatchHelp.Size = new System.Drawing.Size(16, 16);
+			this.picWatchHelp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.picWatchHelp.TabIndex = 4;
+			this.picWatchHelp.TabStop = false;
+			// 
 			// ctrlWatch
 			// 
 			this.ctrlWatch.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -519,15 +538,56 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
-			// picWatchHelp
+			// fontSizeToolStripMenuItem
 			// 
-			this.picWatchHelp.Image = global::Mesen.GUI.Properties.Resources.Help;
-			this.picWatchHelp.Location = new System.Drawing.Point(44, -1);
-			this.picWatchHelp.Name = "picWatchHelp";
-			this.picWatchHelp.Size = new System.Drawing.Size(16, 16);
-			this.picWatchHelp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-			this.picWatchHelp.TabIndex = 4;
-			this.picWatchHelp.TabStop = false;
+			this.fontSizeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuIncreaseFontSize,
+            this.mnuDecreaseFontSize,
+            this.mnuResetFontSize,
+            this.toolStripMenuItem21,
+            this.mnuSelectFont});
+			this.fontSizeToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.Font;
+			this.fontSizeToolStripMenuItem.Name = "fontSizeToolStripMenuItem";
+			this.fontSizeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+			this.fontSizeToolStripMenuItem.Text = "Font Options";
+			// 
+			// mnuIncreaseFontSize
+			// 
+			this.mnuIncreaseFontSize.Name = "mnuIncreaseFontSize";
+			this.mnuIncreaseFontSize.ShortcutKeyDisplayString = "";
+			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(157, 22);
+			this.mnuIncreaseFontSize.Text = "Increase Size";
+			// 
+			// mnuDecreaseFontSize
+			// 
+			this.mnuDecreaseFontSize.Name = "mnuDecreaseFontSize";
+			this.mnuDecreaseFontSize.ShortcutKeyDisplayString = "";
+			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(157, 22);
+			this.mnuDecreaseFontSize.Text = "Decrease Size";
+			// 
+			// mnuResetFontSize
+			// 
+			this.mnuResetFontSize.Name = "mnuResetFontSize";
+			this.mnuResetFontSize.ShortcutKeyDisplayString = "";
+			this.mnuResetFontSize.Size = new System.Drawing.Size(157, 22);
+			this.mnuResetFontSize.Text = "Reset to Default";
+			// 
+			// toolStripMenuItem21
+			// 
+			this.toolStripMenuItem21.Name = "toolStripMenuItem21";
+			this.toolStripMenuItem21.Size = new System.Drawing.Size(154, 6);
+			// 
+			// mnuSelectFont
+			// 
+			this.mnuSelectFont.Name = "mnuSelectFont";
+			this.mnuSelectFont.Size = new System.Drawing.Size(157, 22);
+			this.mnuSelectFont.Text = "Select Font...";
+			this.mnuSelectFont.Click += new System.EventHandler(this.mnuSelectFont_Click);
+			// 
+			// toolStripMenuItem4
+			// 
+			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(206, 6);
 			// 
 			// frmDebugger
 			// 
@@ -547,9 +607,9 @@
 			this.ctrlSplitContainer.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.grpWatch.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).EndInit();
 			this.grpBreakpoints.ResumeLayout(false);
 			this.grpCallstack.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -609,5 +669,12 @@
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnuPreferences;
 		private System.Windows.Forms.PictureBox picWatchHelp;
+		private System.Windows.Forms.ToolStripMenuItem fontSizeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mnuIncreaseFontSize;
+		private System.Windows.Forms.ToolStripMenuItem mnuDecreaseFontSize;
+		private System.Windows.Forms.ToolStripMenuItem mnuResetFontSize;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem21;
+		private System.Windows.Forms.ToolStripMenuItem mnuSelectFont;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
 	}
 }

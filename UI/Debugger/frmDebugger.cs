@@ -34,6 +34,11 @@ namespace Mesen.GUI.Debugger
 			InitShortcuts();
 			InitToolbar();
 
+			DebugInfo cfg = ConfigManager.Config.Debug;
+			Font font = new Font(cfg.FontFamily, cfg.FontSize, cfg.FontStyle);
+			ctrlDisassemblyView.CodeViewer.BaseFont = font;
+			ctrlDisassemblyView.CodeViewer.TextZoom = cfg.TextZoom;
+
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 			
 			BreakpointManager.BreakpointsEnabled = true;
@@ -100,6 +105,10 @@ namespace Mesen.GUI.Debugger
 			mnuBreakIn.InitShortcut(this, nameof(DebuggerShortcutsConfig.BreakIn));
 			mnuBreakOn.InitShortcut(this, nameof(DebuggerShortcutsConfig.BreakOn));
 
+			mnuIncreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.IncreaseFontSize));
+			mnuDecreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.DecreaseFontSize));
+			mnuResetFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.ResetFontSize));
+
 			mnuStepInto.Click += (s, e) => { DebugApi.Step(1); };
 			mnuStepOver.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOver); };
 			mnuStepOut.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOut); };
@@ -129,6 +138,10 @@ namespace Mesen.GUI.Debugger
 
 			mnuBreakIn.Click += (s, e) => { using(frmBreakIn frm = new frmBreakIn()) { frm.ShowDialog(); } };
 			mnuBreakOn.Click += (s, e) => { using(frmBreakOn frm = new frmBreakOn()) { frm.ShowDialog(); } };
+
+			mnuIncreaseFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom += 10; };
+			mnuDecreaseFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom -= 10; };
+			mnuResetFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom = 100; };
 		}
 
 		private void InitToolbar()
@@ -240,6 +253,18 @@ namespace Mesen.GUI.Debugger
 			mnuGoToResetHandler.Text = "Reset Handler ($" + GetVectorAddress(CpuVector.Reset).ToString("X4") + ")";
 			mnuGoToBrkHandler.Text = "BRK Handler ($" + GetVectorAddress(CpuVector.Brk).ToString("X4") + ")";
 			mnuGoToCopHandler.Text = "COP Handler ($" + GetVectorAddress(CpuVector.Cop).ToString("X4") + ")";
+		}
+
+		private void mnuSelectFont_Click(object sender, EventArgs e)
+		{
+			Font newFont = FontDialogHelper.SelectFont(ctrlDisassemblyView.CodeViewer.BaseFont);
+
+			ConfigManager.Config.Debug.FontFamily = newFont.FontFamily.Name;
+			ConfigManager.Config.Debug.FontStyle = newFont.Style;
+			ConfigManager.Config.Debug.FontSize = newFont.Size;
+			ConfigManager.ApplyChanges();
+
+			ctrlDisassemblyView.CodeViewer.BaseFont = newFont;
 		}
 	}
 

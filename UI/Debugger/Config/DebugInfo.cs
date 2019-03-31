@@ -25,6 +25,11 @@ namespace Mesen.GUI.Config
 		public int BreakInCount = 1;
 		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
 
+		public string FontFamily = BaseControl.MonospaceFontFamily;
+		public FontStyle FontStyle = FontStyle.Regular;
+		public float FontSize = BaseControl.DefaultFontSize;
+		public int TextZoom = 100;
+
 		public bool ShowSelectionLength = false;
 
 		public XmlColor CodeOpcodeColor = Color.FromArgb(22, 37, 37);
