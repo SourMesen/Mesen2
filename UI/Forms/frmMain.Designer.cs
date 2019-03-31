@@ -866,7 +866,6 @@
 			this.mnuDebugger.Name = "mnuDebugger";
 			this.mnuDebugger.Size = new System.Drawing.Size(155, 22);
 			this.mnuDebugger.Text = "Debugger";
-			this.mnuDebugger.Click += new System.EventHandler(this.mnuDebugger_Click);
 			// 
 			// mnuMemoryTools
 			// 
@@ -874,7 +873,6 @@
 			this.mnuMemoryTools.Name = "mnuMemoryTools";
 			this.mnuMemoryTools.Size = new System.Drawing.Size(155, 22);
 			this.mnuMemoryTools.Text = "Memory Tools";
-			this.mnuMemoryTools.Click += new System.EventHandler(this.mnuMemoryTools_Click);
 			// 
 			// mnuTraceLogger
 			// 
@@ -882,7 +880,6 @@
 			this.mnuTraceLogger.Name = "mnuTraceLogger";
 			this.mnuTraceLogger.Size = new System.Drawing.Size(155, 22);
 			this.mnuTraceLogger.Text = "Trace Logger";
-			this.mnuTraceLogger.Click += new System.EventHandler(this.mnuTraceLogger_Click);
 			// 
 			// toolStripMenuItem12
 			// 
@@ -895,7 +892,6 @@
 			this.mnuTilemapViewer.Name = "mnuTilemapViewer";
 			this.mnuTilemapViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuTilemapViewer.Text = "Tilemap Viewer";
-			this.mnuTilemapViewer.Click += new System.EventHandler(this.mnuTilemapViewer_Click);
 			// 
 			// mnuTileViewer
 			// 
@@ -903,7 +899,6 @@
 			this.mnuTileViewer.Name = "mnuTileViewer";
 			this.mnuTileViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuTileViewer.Text = "Tile Viewer";
-			this.mnuTileViewer.Click += new System.EventHandler(this.mnuTileViewer_Click);
 			// 
 			// mnuPaletteViewer
 			// 
@@ -911,7 +906,6 @@
 			this.mnuPaletteViewer.Name = "mnuPaletteViewer";
 			this.mnuPaletteViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuPaletteViewer.Text = "Palette Viewer";
-			this.mnuPaletteViewer.Click += new System.EventHandler(this.mnuPaletteViewer_Click);
 			// 
 			// toolStripMenuItem22
 			// 
@@ -924,7 +918,6 @@
 			this.mnuEventViewer.Name = "mnuEventViewer";
 			this.mnuEventViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuEventViewer.Text = "Event Viewer";
-			this.mnuEventViewer.Click += new System.EventHandler(this.mnuEventViewer_Click);
 			// 
 			// mnuHelp
 			// 

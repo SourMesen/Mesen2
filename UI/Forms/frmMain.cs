@@ -109,6 +109,7 @@ namespace Mesen.GUI.Forms
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
 					this.BeginInvoke((Action)(() => {
+						UpdateDebuggerMenu();
 						ctrlRecentGames.Visible = false;
 						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
 						SaveStateManager.UpdateStateMenu(mnuSaveState, true);
@@ -122,8 +123,15 @@ namespace Mesen.GUI.Forms
 					}));
 					break;
 
+				case ConsoleNotificationType.BeforeEmulationStop:
+					this.Invoke((Action)(() => {
+						DebugWindowManager.CloseAll();
+					}));
+					break;
+
 				case ConsoleNotificationType.EmulationStopped:
 					this.BeginInvoke((Action)(() => {
+						UpdateDebuggerMenu();
 						ctrlRecentGames.Initialize();
 						ctrlRecentGames.Visible = true;
 						ResizeRecentGames();
@@ -231,6 +239,28 @@ namespace Mesen.GUI.Forms
 			mnuRegionAuto.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Auto); };
 			mnuRegionNtsc.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Ntsc); };
 			mnuRegionPal.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Pal); };
+
+			mnuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger); };
+			mnuTraceLogger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger); };
+			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
+			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
+			mnuTileViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TileViewer); };
+			mnuPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer); };
+			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer); };
+
+			UpdateDebuggerMenu();
+		}
+
+		private void UpdateDebuggerMenu()
+		{
+			bool running = EmuRunner.IsRunning();
+			mnuDebugger.Enabled = running;
+			mnuTraceLogger.Enabled = running;
+			mnuMemoryTools.Enabled = running;
+			mnuTilemapViewer.Enabled = running;
+			mnuTileViewer.Enabled = running;
+			mnuPaletteViewer.Enabled = running;
+			mnuEventViewer.Enabled = running;
 		}
 		
 		private void ResizeRecentGames()
@@ -281,41 +311,6 @@ namespace Mesen.GUI.Forms
 				frm.ShowDialog(sender, this);
 			}
 			ConfigManager.Config.Preferences.ApplyConfig();
-		}
-
-		private void mnuDebugger_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger);
-		}
-
-		private void mnuTraceLogger_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger);
-		}
-
-		private void mnuMemoryTools_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools);
-		}
-
-		private void mnuTilemapViewer_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer);
-		}
-
-		private void mnuTileViewer_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.TileViewer);
-		}
-
-		private void mnuPaletteViewer_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer);
-		}
-
-		private void mnuEventViewer_Click(object sender, EventArgs e)
-		{
-			DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer);
 		}
 
 		protected override void OnDragDrop(DragEventArgs e)

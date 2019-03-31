@@ -169,29 +169,42 @@ namespace Mesen.GUI.Debugger
 			ctrlDisassemblyView.GoToAddress(GetVectorAddress(vector));
 		}
 
+		private void UpdateDebugger(DebugState state, int? activeAddress)
+		{
+			ctrlStatus.UpdateStatus(state);
+			ctrlDisassemblyView.UpdateCode();
+			ctrlDisassemblyView.SetActiveAddress(activeAddress);
+			ctrlWatch.UpdateWatch(true);
+			ctrlCallstack.UpdateCallstack();
+		}
+
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded: {
+					DebugState state = DebugApi.GetState();
+					this.BeginInvoke((MethodInvoker)(() => {
+						UpdateDebugger(state, null);
+					}));
+					break;
+				}
+
 				case ConsoleNotificationType.PpuFrameDone:
 					this.BeginInvoke((MethodInvoker)(() => {
 						UpdateContinueAction();
 					}));
 					break;
 
-				case ConsoleNotificationType.CodeBreak:
+				case ConsoleNotificationType.CodeBreak: {
 					DebugState state = DebugApi.GetState();
 					int activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC);
 
 					this.BeginInvoke((MethodInvoker)(() => {
 						UpdateContinueAction();
-
-						ctrlStatus.UpdateStatus(state);
-						ctrlDisassemblyView.UpdateCode();
-						ctrlDisassemblyView.SetActiveAddress(activeAddress);
-						ctrlWatch.UpdateWatch(true);
-						ctrlCallstack.UpdateCallstack();
+						UpdateDebugger(state, activeAddress);
 					}));
 					break;
+				}
 			}
 		}
 		

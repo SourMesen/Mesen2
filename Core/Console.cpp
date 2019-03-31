@@ -146,6 +146,10 @@ void Console::Stop(bool sendNotification)
 		_saveStateManager->SaveRecentGame(GetRomInfo().RomFile.GetFileName(), _cart->GetRomInfo().RomFile, "");
 	}
 
+	if(sendNotification) {
+		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
+	}
+
 	//Make sure we release both pointers to destroy the debugger before everything else
 	_debugger.reset();
 	debugger.reset();
