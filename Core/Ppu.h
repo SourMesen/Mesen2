@@ -102,7 +102,7 @@ private:
 	bool _subScreenFilled[256];
 	uint16_t _subScreenBuffer[256];
 
-	uint16_t _mosaicColor[256] = {};
+	uint16_t _mosaicColor[4][2][256] = {};
 	uint8_t _mosaicSize = 0;
 	uint8_t _mosaicEnabled = 0;
 	uint16_t _mosaicStartScanline = 0;
@@ -199,9 +199,7 @@ private:
 	template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic, bool directColorMode>
 	void RenderTilemapMode7();
 
-	template<bool applyMosaic>
 	__forceinline void DrawMainPixel(uint8_t x, uint16_t color, uint8_t flags);
-
 	__forceinline void DrawSubPixel(uint8_t x, uint16_t color);
 
 	void ApplyColorMath();

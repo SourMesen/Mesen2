@@ -138,7 +138,7 @@ void Ppu::Exec()
 			_console->ProcessEvent(EventType::StartFrame);
 
 			if(_mosaicEnabled) {
-				_mosaicStartScanline = 0;
+				_mosaicStartScanline = 1;
 			}
 		}
 
@@ -573,11 +573,16 @@ void Ppu::RenderTilemap()
 	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
 	uint16_t realY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
-	/* True when the entire scanline has to be replaced by a mosaic pattern */
-	bool mosaicScanline = applyMosaic && (realY - _mosaicStartScanline) % _mosaicSize != 0;
-
 	/* Keeps track of whether or not the pixel is allowed to participate in color math */
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+
+	/* True when the entire scanline has to be replaced by a mosaic pattern */
+	bool mosaicScanline = applyMosaic && (realY - _mosaicStartScanline) % _mosaicSize != 0;
+	
+	if(applyMosaic && ((realY - _mosaicStartScanline) % _mosaicSize == 0)) {
+		//On each "first" line of the mosaic pattern, clear the entire buffer before processing the scanline
+		memset(_mosaicColor[layerIndex][processHighPriority], 0xFF, 256*2);
+	}
 
 	/* The current layer's options */
 	LayerConfig &config = _layerConfig[layerIndex];
@@ -634,29 +639,17 @@ void Ppu::RenderTilemap()
 
 		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
 		if(forMainScreen) {
-			if(_rowPixelFlags[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+			if((!applyMosaic && _rowPixelFlags[x]) || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
 			}
 		} else {
-			if(_subScreenFilled[x] || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+			if((!applyMosaic && _subScreenFilled[x]) || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
 				continue;
 			}
 		}
 
-		if(activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
+		if(!applyMosaic && activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
 			//This pixel was masked, skip it
-			continue;
-		}
-
-		if(applyMosaic && (mosaicScanline || x % _mosaicSize != 0)) {
-			//If this is not the top-left pixels in the mosaic pattern, override it with the top-left pixel data
-			_mainScreenBuffer[x] = _mosaicColor[x];
-			_rowPixelFlags[x] = pixelFlags;
-			if(forMainScreen) {
-				_pixelsDrawn++;
-			} else {
-				_subPixelsDrawn++;
-			}
 			continue;
 		}
 
@@ -700,7 +693,28 @@ void Ppu::RenderTilemap()
 			}
 
 			if(forMainScreen) {
-				DrawMainPixel<applyMosaic>(x, paletteColor, pixelFlags);
+				if(applyMosaic) {
+					bool skipDraw = activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x);
+					if(!mosaicScanline && (x % _mosaicSize) == 0) {
+						//If this is the top-left pixel, save its color and use it
+						for(int i = 0; i < _mosaicSize && x+i < 256; i++) {
+							_mosaicColor[layerIndex][processHighPriority][x+i] = paletteColor;
+						}
+					} else {
+						//Otherwise, use the top-left pixel's color
+						paletteColor = _mosaicColor[layerIndex][processHighPriority][x];
+						if(paletteColor == 0xFFFF) {
+							continue;
+						}
+					}
+					
+					if(!skipDraw && !_rowPixelFlags[x]) {
+						//If this pixel isn't hidden by the window or already set, draw it
+						DrawMainPixel(x, paletteColor, pixelFlags);
+					}
+				} else {
+					DrawMainPixel(x, paletteColor, pixelFlags);
+				}
 			} else {
 				DrawSubPixel(x, paletteColor);
 			}
@@ -908,7 +922,7 @@ void Ppu::RenderTilemapMode7()
 				paletteColor = _cgram[colorIndex << 1] | (_cgram[(colorIndex << 1) + 1] << 8);
 			}
 			if(forMainScreen) {
-				DrawMainPixel<applyMosaic>(x, paletteColor, pixelFlags);
+				DrawMainPixel(x, paletteColor, pixelFlags);
 			} else {
 				DrawSubPixel(x, paletteColor);
 			}
@@ -916,19 +930,10 @@ void Ppu::RenderTilemapMode7()
 	}
 }
 
-template<bool applyMosaic>
 void Ppu::DrawMainPixel(uint8_t x, uint16_t color, uint8_t flags)
 {
 	_mainScreenBuffer[x] = color;
 	_rowPixelFlags[x] = flags;
-
-	if(applyMosaic && x % _mosaicSize == 0) {
-		//This is the source for the mosaic pattern, store it for use in the next scanlines
-		for(int i = 0; i < _mosaicSize && x + i < 256; i++) {
-			_mosaicColor[x + i] = color;
-		}
-	}
-
 	_pixelsDrawn++;
 }
 
@@ -1391,7 +1396,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_mosaicSize = ((value & 0xF0) >> 4) + 1;
 			_mosaicEnabled = value & 0x0F;
 			if(_mosaicEnabled) {
-				//"If this register is set during the frame, the Åestarting scanlineÅf is the current scanline, otherwise it is the first visible scanline of the frame."
+				//"If this register is set during the frame, the Åstarting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
 				_mosaicStartScanline = _scanline;
 			}
 			break;
@@ -1706,7 +1711,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount>
 void Ppu::RenderTilemap()
 {
-	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
+	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0 && (_mosaicSize > 1 || _bgMode == 5 || _bgMode == 6);
 
 	if(applyMosaic) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, true>();
