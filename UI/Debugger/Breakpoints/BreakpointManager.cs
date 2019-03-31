@@ -11,10 +11,21 @@ namespace Mesen.GUI.Debugger
 		public static event EventHandler BreakpointsChanged;
 
 		private static List<Breakpoint> _breakpoints = new List<Breakpoint>();
+		private static bool _breakpointsEnabled = false;
 
 		public static ReadOnlyCollection<Breakpoint> Breakpoints
 		{
 			get { return _breakpoints.ToList().AsReadOnly(); }
+		}
+
+		public static bool BreakpointsEnabled
+		{
+			get { return _breakpointsEnabled; }
+			set
+			{
+				_breakpointsEnabled = value;
+				SetBreakpoints();
+			}
 		}
 
 		public static void RefreshBreakpoints(Breakpoint bp = null)
@@ -105,8 +116,10 @@ namespace Mesen.GUI.Debugger
 		public static void SetBreakpoints()
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
-			for(int i = 0; i < Breakpoints.Count; i++) {
-				breakpoints.Add(Breakpoints[i].ToInteropBreakpoint(i));
+			if(BreakpointsEnabled) {
+				for(int i = 0; i < Breakpoints.Count; i++) {
+					breakpoints.Add(Breakpoints[i].ToInteropBreakpoint(i));
+				}
 			}
 			DebugApi.SetBreakpoints(breakpoints.ToArray(), (UInt32)breakpoints.Count);
 		}

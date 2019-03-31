@@ -34,6 +34,7 @@ namespace Mesen.GUI.Debugger
 			InitShortcuts();
 			InitToolbar();
 
+			BreakpointManager.BreakpointsEnabled = true;
 			DebugApi.Step(10000);
 		}
 
@@ -41,6 +42,7 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnClosing(e);
 
+			BreakpointManager.BreakpointsEnabled = false;
 			if(this._notifListener != null) {
 				this._notifListener.Dispose();
 				this._notifListener = null;
@@ -184,6 +186,7 @@ namespace Mesen.GUI.Debugger
 						UpdateContinueAction();
 
 						ctrlStatus.UpdateStatus(state);
+						ctrlDisassemblyView.UpdateCode();
 						ctrlDisassemblyView.SetActiveAddress(activeAddress);
 						ctrlWatch.UpdateWatch(true);
 						ctrlCallstack.UpdateCallstack();

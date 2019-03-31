@@ -57,12 +57,16 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void SetActiveAddress(int? address)
 		{
-			UpdateCode();
+			if(_styleProvider.ActiveAddress == address) {
+				return;
+			}
 
 			_styleProvider.ActiveAddress = address;
 			if(address.HasValue && address.Value >= 0) {
 				ctrlCode.ScrollToAddress(address.Value);
 			}
+
+			ctrlCode.Invalidate();
 		}
 
 		public void ScrollToAddress(uint address)
@@ -70,7 +74,7 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.ScrollToAddress((int)address);
 		}
 
-		private void UpdateCode()
+		public void UpdateCode()
 		{
 			int centerLineIndex = ctrlCode.GetLineIndexAtPosition(0) + ctrlCode.GetNumberVisibleLines() / 2;
 			int centerLineAddress;

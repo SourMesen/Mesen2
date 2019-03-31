@@ -40,6 +40,8 @@ namespace Mesen.GUI.Debugger.Controls
 				mnuGoToLocation.Enabled = false;
 
 				InitShortcuts();
+
+				RefreshList();
 			}
 		}
 

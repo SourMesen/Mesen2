@@ -35,6 +35,7 @@ namespace Mesen.GUI.Debugger
 			this.pnlPicture = new System.Windows.Forms.Panel();
 			this.grpOptions = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkShowPreviousFrameEvents = new System.Windows.Forms.CheckBox();
 			this.picNmi = new Mesen.GUI.Debugger.ctrlColorPicker();
 			this.chkShowNmi = new System.Windows.Forms.CheckBox();
 			this.picIrq = new Mesen.GUI.Debugger.ctrlColorPicker();
@@ -62,7 +63,6 @@ namespace Mesen.GUI.Debugger
 			this.picPpuReads = new Mesen.GUI.Debugger.ctrlColorPicker();
 			this.chkShowMarkedBreakpoints = new System.Windows.Forms.CheckBox();
 			this.picMarkedBreakpoints = new Mesen.GUI.Debugger.ctrlColorPicker();
-			this.chkShowPreviousFrameEvents = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.picViewer)).BeginInit();
 			this.pnlPicture.SuspendLayout();
 			this.grpOptions.SuspendLayout();
@@ -172,6 +172,19 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(255, 510);
 			this.tableLayoutPanel1.TabIndex = 0;
+			// 
+			// chkShowPreviousFrameEvents
+			// 
+			this.chkShowPreviousFrameEvents.AutoSize = true;
+			this.tableLayoutPanel1.SetColumnSpan(this.chkShowPreviousFrameEvents, 6);
+			this.chkShowPreviousFrameEvents.Location = new System.Drawing.Point(3, 148);
+			this.chkShowPreviousFrameEvents.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
+			this.chkShowPreviousFrameEvents.Name = "chkShowPreviousFrameEvents";
+			this.chkShowPreviousFrameEvents.Size = new System.Drawing.Size(167, 17);
+			this.chkShowPreviousFrameEvents.TabIndex = 28;
+			this.chkShowPreviousFrameEvents.Text = "Show previous frame\'s events";
+			this.chkShowPreviousFrameEvents.UseVisualStyleBackColor = true;
+			this.chkShowPreviousFrameEvents.Click += new System.EventHandler(this.chkOption_Click);
 			// 
 			// picNmi
 			// 
@@ -427,6 +440,7 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.chkShowMarkedBreakpoints.AutoSize = true;
 			this.tableLayoutPanel1.SetColumnSpan(this.chkShowMarkedBreakpoints, 2);
+			this.chkShowMarkedBreakpoints.Enabled = false;
 			this.chkShowMarkedBreakpoints.Location = new System.Drawing.Point(3, 118);
 			this.chkShowMarkedBreakpoints.Name = "chkShowMarkedBreakpoints";
 			this.chkShowMarkedBreakpoints.Size = new System.Drawing.Size(121, 17);
@@ -443,19 +457,6 @@ namespace Mesen.GUI.Debugger
 			this.picMarkedBreakpoints.Size = new System.Drawing.Size(14, 14);
 			this.picMarkedBreakpoints.TabIndex = 27;
 			this.picMarkedBreakpoints.TabStop = false;
-			// 
-			// chkShowPreviousFrameEvents
-			// 
-			this.chkShowPreviousFrameEvents.AutoSize = true;
-			this.tableLayoutPanel1.SetColumnSpan(this.chkShowPreviousFrameEvents, 6);
-			this.chkShowPreviousFrameEvents.Location = new System.Drawing.Point(3, 148);
-			this.chkShowPreviousFrameEvents.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
-			this.chkShowPreviousFrameEvents.Name = "chkShowPreviousFrameEvents";
-			this.chkShowPreviousFrameEvents.Size = new System.Drawing.Size(167, 17);
-			this.chkShowPreviousFrameEvents.TabIndex = 28;
-			this.chkShowPreviousFrameEvents.Text = "Show previous frame\'s events";
-			this.chkShowPreviousFrameEvents.UseVisualStyleBackColor = true;
-			this.chkShowPreviousFrameEvents.Click += new System.EventHandler(this.chkOption_Click);
 			// 
 			// ctrlEventViewerPpuView
 			// 
