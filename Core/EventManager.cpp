@@ -166,7 +166,8 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 		buffer[i] = 0xFF555555;
 	}
 	bool overscanMode = _ppu->GetState().OverscanMode;
-	uint16_t *ppuBuffer = _ppu->GetScreenBuffer();
+	//Skip the first 8 blank lines in the buffer when overscan mode is off
+	uint16_t *ppuBuffer = _ppu->GetScreenBuffer() + (overscanMode ? 0 : (512 * 16));
 	uint32_t pixelCount = 256*2*239*2;
 	for(uint32_t y = 0, len = overscanMode ? 239*2 : 224*2; y < len; y++) {
 		for(uint32_t x = 0; x < 512; x++) {
