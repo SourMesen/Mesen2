@@ -201,7 +201,7 @@ void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler
 		uint32_t baseAddress = i << 16;
 		pageNumber += pageIncrement;
 		for(uint32_t j = startPage; j <= endPage; j++) {
-			mm.RegisterHandler(baseAddress + (j * 0x1000), baseAddress + (j * 0x1000) | 0xFFF, handlers[pageNumber].get());
+			mm.RegisterHandler(baseAddress + (j * 0x1000), (baseAddress + (j * 0x1000)) | 0xFFF, handlers[pageNumber].get());
 			//MessageManager::Log("Map [$" + HexUtilities::ToHex(i) + ":" + HexUtilities::ToHex(j)[1] + "xxx] to page number " + HexUtilities::ToHex(pageNumber));
 			pageNumber++;
 			if(pageNumber >= handlers.size()) {

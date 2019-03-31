@@ -22,7 +22,7 @@ namespace Mesen.GUI.Config
 		[MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi = 0;
 		[MinMax(0, 1000)] public UInt32 PpuExtraScanlinesAfterNmi = 0;
 
-		public RamPowerOnState RamPowerOnState;
+		public RamState RamPowerOnState = RamState.AllZeros;
 		
 		public void ApplyConfig()
 		{
@@ -37,7 +37,7 @@ namespace Mesen.GUI.Config
 		Pal = 2
 	}
 
-	public enum RamPowerOnState
+	public enum RamState
 	{
 		AllZeros = 0,
 		AllOnes = 1,

@@ -130,9 +130,9 @@ void EmuSettings::SetShortcutKeys(vector<ShortcutKeyInfo> shortcuts)
 
 	for(ShortcutKeyInfo &shortcut : shortcuts) {
 		if(_emulatorKeys[0][(uint32_t)shortcut.Shortcut].GetKeys().empty()) {
-			SetShortcutKey(shortcut.Shortcut, shortcut.KeyCombination, 0);
+			SetShortcutKey(shortcut.Shortcut, shortcut.Keys, 0);
 		} else {
-			SetShortcutKey(shortcut.Shortcut, shortcut.KeyCombination, 1);
+			SetShortcutKey(shortcut.Shortcut, shortcut.Keys, 1);
 		}
 	}
 }

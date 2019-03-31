@@ -4,6 +4,12 @@
 #include "MessageManager.h"
 #include "../Utilities/Serializer.h"
 
+static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };
+static constexpr uint8_t _transferOffset[8][4] = {
+	{ 0, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 },
+	{ 0, 1, 2, 3 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 }
+};
+
 DmaController::DmaController(MemoryManager *memoryManager)
 {
 	_memoryManager = memoryManager;
@@ -53,7 +59,7 @@ void DmaController::RunSingleTransfer(DmaChannelConfig &channel)
 	do {
 		CopyDmaByte(
 			(channel.SrcBank << 16) | channel.SrcAddress,
-			0x2100 | channel.DestAddress + transferOffsets[i],
+			0x2100 | (channel.DestAddress + transferOffsets[i]),
 			channel.InvertDirection
 		);
 
@@ -137,7 +143,7 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 		do {
 			CopyDmaByte(
 				(channel.HdmaBank << 16) | channel.TransferSize,
-				0x2100 | channel.DestAddress + transferOffsets[i],
+				0x2100 | (channel.DestAddress + transferOffsets[i]),
 				channel.InvertDirection
 			);
 			channel.TransferSize++;
@@ -148,7 +154,7 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 		do {
 			CopyDmaByte(
 				(channel.SrcBank << 16) | channel.HdmaTableAddress,
-				0x2100 | channel.DestAddress + transferOffsets[i],
+				0x2100 | (channel.DestAddress + transferOffsets[i]),
 				channel.InvertDirection
 			);
 			channel.HdmaTableAddress++;

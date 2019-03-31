@@ -182,6 +182,7 @@ DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info)
 {
 	DisassemblyInfo* disassemblyInfo = nullptr;
 	switch(info.Type) {
+		default: break;
 		case SnesMemoryType::PrgRom: disassemblyInfo = _prgCache[info.Address].get(); break;
 		case SnesMemoryType::WorkRam: disassemblyInfo = _wramCache[info.Address].get(); break;
 		case SnesMemoryType::SaveRam: disassemblyInfo = _sramCache[info.Address].get(); break;
@@ -204,7 +205,7 @@ uint32_t Disassembler::GetLineIndex(uint32_t cpuAddress)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
 	uint32_t lastAddress = 0;
-	for(int i = 1; i < _disassembly.size(); i++) {
+	for(size_t i = 1; i < _disassembly.size(); i++) {
 		if(_disassembly[i].CpuAddress < 0) {
 			continue;
 		}
@@ -228,6 +229,7 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 		data.Flags = result.Flags;
 
 		switch(result.Address.Type) {
+			default: break;
 			case SnesMemoryType::PrgRom: data.Flags |= (uint8_t)LineFlags::PrgRom; break;
 			case SnesMemoryType::WorkRam: data.Flags |= (uint8_t)LineFlags::WorkRam; break;
 			case SnesMemoryType::SaveRam: data.Flags |= (uint8_t)LineFlags::SaveRam; break;
@@ -297,7 +299,7 @@ int32_t Disassembler::SearchDisassembly(const char *searchString, int32_t startP
 		}
 
 		//Continue search from start/end of document
-		if(!searchBackwards && i == _disassembly.size() - 1) {
+		if(!searchBackwards && i == (int)(_disassembly.size() - 1)) {
 			i = 0;
 		} else if(searchBackwards && i == 0) {
 			i = (int32_t)(_disassembly.size() - 1);

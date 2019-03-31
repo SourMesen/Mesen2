@@ -10,7 +10,6 @@ private:
 	uint32_t _calculatedPalette[0x8000];
 	double _yiqToRgbMatrix[6];
 	VideoConfig _videoConfig;
-	bool _needToProcess = false;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
 	void InitLookupTable();

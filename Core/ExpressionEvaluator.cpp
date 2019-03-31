@@ -56,7 +56,7 @@ EvalOperators ExpressionEvaluator::GetOperator(string token, bool unaryOperator)
 bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, string &output, ExpressionData &data)
 {
 	string token;
-	size_t initialPos = pos;
+	//size_t initialPos = pos;
 	size_t len = expression.size();
 	do {
 		char c = std::tolower(expression[pos]);

@@ -251,7 +251,7 @@ void Debugger::SleepUntilResume()
 
 void Debugger::ProcessStepConditions(uint8_t opCode, uint32_t currentPc)
 {
-	if(_breakAddress == currentPc && (opCode == 0x60 || opCode == 0x40 || opCode == 0x6B || opCode == 0x44 || opCode == 0x54)) {
+	if(_breakAddress == (int32_t)currentPc && (opCode == 0x60 || opCode == 0x40 || opCode == 0x6B || opCode == 0x44 || opCode == 0x54)) {
 		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 		_cpuStepCount = 0;
 	}
@@ -277,6 +277,8 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 void Debugger::ProcessEvent(EventType type)
 {
 	switch(type) {
+		default: break;
+
 		case EventType::StartFrame:
 			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh);
 			_eventManager->ClearFrameEvents();

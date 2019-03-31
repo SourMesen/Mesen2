@@ -11,6 +11,7 @@
 #include <string>
 #include <cctype>
 #include <memory>
+#include <cmath>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -50,9 +51,3 @@ using std::atomic_flag;
 using std::atomic;
 using std::thread;
 using std::deque;
-
-#ifdef _DEBUG
-#pragma comment(lib, "C:\\Code\\Mesen-S\\bin\\x64\\Debug\\Utilities.lib")
-#else
-#pragma comment(lib, "C:\\Code\\Mesen-S\\bin\\x64\\Release\\Utilities.lib")
-#endif

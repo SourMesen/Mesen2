@@ -238,7 +238,7 @@ private:
 
 public:
 	Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData);
-	~Spc();
+	virtual ~Spc();
 
 	void Run();
 	void Reset();

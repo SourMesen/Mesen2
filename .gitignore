@@ -182,8 +182,6 @@ packages/*
 
 !Libretro/hakchi/bin
 
-Dependencies/*
-Linux/*
 Libretro/*
 Docs/*
 Lua/*

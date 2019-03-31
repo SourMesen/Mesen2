@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <atomic>
+#include <cstring>
 
 #include "UTF8Util.h"
 

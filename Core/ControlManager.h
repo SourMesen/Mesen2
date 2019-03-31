@@ -37,7 +37,7 @@ protected:
 
 public:
 	ControlManager(shared_ptr<Console> console);
-	~ControlManager();
+	virtual ~ControlManager();
 
 	void UpdateControlDevices();
 	void UpdateInputState();

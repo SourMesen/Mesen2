@@ -4,7 +4,7 @@
 
 class Console;
 
-class InternalRegisters : public ISerializable
+class InternalRegisters final : public ISerializable
 {
 private:
 	shared_ptr<Console> _console;

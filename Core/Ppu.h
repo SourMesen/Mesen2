@@ -32,17 +32,6 @@ private:
 	constexpr static int SpriteLayerIndex = 4;
 	constexpr static int ColorWindowIndex = 5;
 
-	constexpr static const uint8_t _oamSizes[8][2][2] = {
-		{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16
-		{ { 1, 1 }, { 4, 4 } }, //8x8 + 32x32
-		{ { 1, 1 }, { 8, 8 } }, //8x8 + 64x64
-		{ { 2, 2 }, { 4, 4 } }, //16x16 + 32x32
-		{ { 2, 2 }, { 8, 8 } }, //16x16 + 64x64
-		{ { 4, 4 }, { 8, 8 } }, //32x32 + 64x64
-		{ { 2, 4 }, { 4, 8 } }, //16x32 + 32x64
-		{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
-	};
-
 	shared_ptr<Console> _console;
 	shared_ptr<InternalRegisters> _regs;
 
@@ -223,7 +212,7 @@ private:
 
 public:
 	Ppu(shared_ptr<Console> console);
-	~Ppu();
+	virtual ~Ppu();
 
 	void Reset();
 

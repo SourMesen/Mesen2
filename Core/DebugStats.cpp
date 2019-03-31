@@ -43,10 +43,8 @@ void DebugStats::DisplayStats(double lastFrameTime)
 	hud->DrawString(134, 10, "Video Stats", 0xFFFFFF, 0xFF000000, 1, startFrame);
 
 	double totalDuration = 0;
-	if(_frameDurations) {
-		for(int i = 0; i < 60; i++) {
-			totalDuration += _frameDurations[i];
-		}
+	for(int i = 0; i < 60; i++) {
+		totalDuration += _frameDurations[i];
 	}
 
 	ss = std::stringstream();

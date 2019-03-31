@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include <algorithm>
 
 enum class EmulationFlags
 {
@@ -226,7 +227,7 @@ struct InputConfig
 	uint32_t MouseSensitivity = 1;
 };
 
-enum class RamPowerOnState
+enum class RamState
 {
 	AllZeros = 0,
 	AllOnes = 1,
@@ -254,7 +255,7 @@ struct EmulationConfig
 	uint32_t PpuExtraScanlinesBeforeNmi = 0;
 	uint32_t PpuExtraScanlinesAfterNmi = 0;
 
-	RamPowerOnState RamPowerOnState = RamPowerOnState::AllZeros;
+	RamState RamPowerOnState = RamState::AllZeros;
 };
 
 struct PreferencesConfig
@@ -409,5 +410,5 @@ struct KeyCombination
 struct ShortcutKeyInfo
 {
 	EmulatorShortcut Shortcut;
-	KeyCombination KeyCombination;
+	KeyCombination Keys;
 };

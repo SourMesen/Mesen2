@@ -88,6 +88,11 @@ namespace Mesen.GUI.Forms
 		{
 			base.OnFormClosing(e);
 
+			DebugApi.ResumeExecution();
+			DebugWindowManager.CloseAll();
+
+			EmuApi.Stop();
+
 			if(_notifListener != null) {
 				_notifListener.Dispose();
 				_notifListener = null;
@@ -97,10 +102,6 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.WindowSize = this.WindowState == FormWindowState.Normal ? this.Size : this.RestoreBounds.Size;
 			ConfigManager.ApplyChanges();
 
-			DebugApi.ResumeExecution();
-			DebugWindowManager.CloseAll();
-
-			EmuApi.Stop();
 			EmuApi.Release();
 		}
 

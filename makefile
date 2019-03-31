@@ -62,8 +62,8 @@ ifeq ($(PGO),optimize)
 endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
-SHAREDLIB=libMesenCore.$(MESENPLATFORM).dll
-LIBRETROLIB=mesen_libretro.$(MESENPLATFORM).so
+SHAREDLIB=libMesenSCore.$(MESENPLATFORM).dll
+LIBRETROLIB=mesens_libretro.$(MESENPLATFORM).so
 RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 
 COREOBJ=$(patsubst Core/%.cpp,Core/$(OBJFOLDER)/%.o,$(wildcard Core/*.cpp))
@@ -71,6 +71,7 @@ UTILOBJ=$(patsubst Utilities/%.cpp,Utilities/$(OBJFOLDER)/%.o,$(wildcard Utiliti
 LINUXOBJ=$(patsubst Linux/%.cpp,Linux/$(OBJFOLDER)/%.o,$(wildcard Linux/*.cpp)) 
 SEVENZIPOBJ=$(patsubst SevenZip/%.c,SevenZip/$(OBJFOLDER)/%.o,$(wildcard SevenZip/*.c))
 LUAOBJ=$(patsubst Lua/%.c,Lua/$(OBJFOLDER)/%.o,$(wildcard Lua/*.c))
+DLLOBJ=$(patsubst InteropDLL/%.cpp,InteropDLL/$(OBJFOLDER)/%.o,$(wildcard InteropDLL/*.cpp))
 
 ifeq ($(SYSTEM_LIBEVDEV), true)
 	LIBEVDEVLIB=$(shell pkg-config --libs libevdev)
@@ -90,10 +91,10 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
 	cd UpdateHelper && msbuild /property:Configuration="Release" /property:Platform="AnyCPU"
 	cp "bin/Any CPU/Release/MesenUpdater.exe" $(RELEASEFOLDER)/Dependencies/
-	cp -r GUI.NET/Dependencies/* $(RELEASEFOLDER)/Dependencies/
+	cp -r UI/Dependencies/* $(RELEASEFOLDER)/Dependencies/
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(RELEASEFOLDER)/Dependencies/$(SHAREDLIB)	
 	cd $(RELEASEFOLDER)/Dependencies && zip -r ../Dependencies.zip *	
-	cd GUI.NET && msbuild /property:Configuration="Release" /property:Platform="$(MESENPLATFORM)" /property:PreBuildEvent="" '/property:DefineConstants="HIDETESTMENU;DISABLEAUTOUPDATE"' /property:CodeAnalysisRuleSet=""
+	cd UI && msbuild /property:Configuration="Release" /property:Platform="$(MESENPLATFORM)" /property:PreBuildEvent="" '/property:DefineConstants="HIDETESTMENU;DISABLEAUTOUPDATE"' /property:CodeAnalysisRuleSet=""
 
 libretro: Libretro/$(OBJFOLDER)/$(LIBRETROLIB)
 	mkdir -p bin
@@ -103,9 +104,6 @@ core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
 runtests:
 	cd TestHelper/$(OBJFOLDER) && ./testhelper
-
-rungametests:
-	cd TestHelper/$(OBJFOLDER) && ./testhelper ~/Mesen/TestGames
 
 testhelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p TestHelper/$(OBJFOLDER)
@@ -135,10 +133,12 @@ Linux/$(OBJFOLDER)/%.o: Linux/%.cpp
 	mkdir -p Linux/$(OBJFOLDER) && cd Linux/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Linux/%, ../%, $<) $(SDL2INC) $(LIBEVDEVINC)
 Linux/$(OBJFOLDER)/%.o: Linux/libevdev/%.c
 	mkdir -p Linux/$(OBJFOLDER) && cd Linux/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst Linux/%, ../%, $<)
-
-InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) InteropDLL/ConsoleWrapper.cpp InteropDLL/DebugWrapper.cpp
+InteropDLL/$(OBJFOLDER)/%.o: InteropDLL/%.cpp
+	mkdir -p InteropDLL/$(OBJFOLDER) && cd InteropDLL/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS)  -c $(patsubst InteropDLL/%, ../%, $<)
+	
+InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) InteropDLL/*.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 	
@@ -155,10 +155,10 @@ official:
 	./build.sh
 	
 debug:
-	MONO_LOG_LEVEL=debug mono $(RELEASEFOLDER)/Mesen.exe
+	MONO_LOG_LEVEL=debug mono $(RELEASEFOLDER)/Mesen-S.exe
 
 run:
-	mono $(RELEASEFOLDER)/Mesen.exe
+	mono $(RELEASEFOLDER)/Mesen-S.exe
 
 clean:
 	rm -rf Lua/$(OBJFOLDER)

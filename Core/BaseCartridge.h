@@ -44,7 +44,7 @@ private:
 	void DisplayCartInfo();
 
 public:
-	~BaseCartridge();
+	virtual ~BaseCartridge();
 
 	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile &romFile, VirtualFile &patchFile);
 

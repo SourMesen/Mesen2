@@ -289,7 +289,7 @@ private:
 
 public:
 	Cpu(Console *console);
-	~Cpu();
+	virtual ~Cpu();
 
 	void PowerOn();
 
@@ -315,8 +315,6 @@ private:
 	uint32_t _readCounter = 0;
 	uint32_t _readAddresses[10];
 	uint8_t _readValue[10];
-
-	uint32_t _valueSize = 0;
 
 	void LogRead(uint32_t addr, uint8_t value);
 	void LogWrite(uint32_t addr, uint8_t value);

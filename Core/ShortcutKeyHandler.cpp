@@ -7,6 +7,7 @@
 #include "Console.h"
 #include "RewindManager.h"
 #include "NotificationManager.h"
+#include "SaveStateManager.h"
 
 ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Console> console)
 {
@@ -110,7 +111,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 {
 	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	bool isNetplayClient = false; //TODO GameClient::Connected();
-	bool isMovieActive = false; //TODO MovieManager::Playing() || MovieManager::Recording();
+	//bool isMovieActive = false; //TODO MovieManager::Playing() || MovieManager::Recording();
 	bool isMovieRecording = false; //TODO MovieManager::Recording();
 
 	//Let the UI handle these shortcuts
@@ -135,7 +136,6 @@ void ShortcutKeyHandler::CheckMappedKeys()
 		}
 	}
 
-	/*
 	if(DetectKeyPress(EmulatorShortcut::MoveToNextStateSlot)) {
 		_console->GetSaveStateManager()->MoveToNextSlot();
 	}
@@ -152,7 +152,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 		_console->GetSaveStateManager()->LoadState();
 	}
 
-	if(DetectKeyPress(EmulatorShortcut::ToggleCheats) && !isNetplayClient && !isMovieActive) {
+	/*if(DetectKeyPress(EmulatorShortcut::ToggleCheats) && !isNetplayClient && !isMovieActive) {
 		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, (void*)EmulatorShortcut::ToggleCheats);
 	}*/
 

@@ -39,7 +39,7 @@ private:
 
 public:
 	void Initialize(shared_ptr<Console> console);
-	~MemoryManager();
+	virtual ~MemoryManager();
 
 	void Reset();
 

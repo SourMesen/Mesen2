@@ -11,6 +11,7 @@
 #include "../Core/KeyManager.h"
 #include "../Core/ShortcutKeyHandler.h"
 #include "../Utilities/ArchiveReader.h"
+#include "../Utilities/FolderUtilities.h"
 #include "InteropNotificationListeners.h"
 
 #ifdef _WIN32
@@ -172,12 +173,12 @@ extern "C" {
 		
 		_console->Stop(true);
 		
+		_console->Release();
+		_console.reset();			
+
 		_renderer.reset();
 		_soundManager.reset();
 		_keyManager.reset();
-
-		_console->Release();
-		_console.reset();			
 	}
 
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
