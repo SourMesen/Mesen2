@@ -22,10 +22,15 @@ BaseCartridge::~BaseCartridge()
 shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, VirtualFile &patchFile)
 {
 	if(romFile.IsValid()) {
+		shared_ptr<BaseCartridge> cart(new BaseCartridge());
+		if(patchFile.IsValid()) {
+			cart->_patchPath = patchFile;
+			romFile.ApplyPatch(patchFile);
+		}
+
 		vector<uint8_t> romData;
 		romFile.ReadFile(romData);
-
-		shared_ptr<BaseCartridge> cart(new BaseCartridge());
+		
 		cart->_romPath = romFile;
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
@@ -157,6 +162,7 @@ RomInfo BaseCartridge::GetRomInfo()
 	RomInfo info;
 	info.Header = _cartInfo;
 	info.RomFile = static_cast<VirtualFile>(_romPath);
+	info.PatchFile = static_cast<VirtualFile>(_patchPath);
 	return info;
 }
 

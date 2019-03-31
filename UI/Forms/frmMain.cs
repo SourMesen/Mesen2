@@ -322,7 +322,7 @@ namespace Mesen.GUI.Forms
 			try {
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 				if(File.Exists(files[0])) {
-					EmuRunner.LoadRom(files[0]);
+					EmuRunner.LoadFile(files[0]);
 					this.Activate();
 				} else {
 					EmuApi.DisplayMessage("Error", "File not found: " + files[0]);

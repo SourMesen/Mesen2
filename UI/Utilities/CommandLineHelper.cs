@@ -90,7 +90,7 @@ namespace Mesen.GUI.Utilities
 			CommandLineHelper.GetRomPathFromCommandLine(switches, out romPath, out _luaScriptsToLoad);
 
 			if(romPath != null) {
-				EmuRunner.LoadRom(romPath);
+				EmuRunner.LoadFile(romPath);
 			} else {
 				if(!EmuRunner.IsRunning()) {
 					//When no ROM is loaded, only process Lua scripts if a ROM was specified as a command line param

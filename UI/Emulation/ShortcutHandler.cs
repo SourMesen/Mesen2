@@ -143,7 +143,7 @@ namespace Mesen.GUI.Emulation
 				}
 
 				if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
-					EmuRunner.LoadRom(ofd.FileName);
+					EmuRunner.LoadFile(ofd.FileName);
 				}
 			}
 		}

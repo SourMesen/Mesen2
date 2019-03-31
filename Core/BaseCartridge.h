@@ -29,6 +29,7 @@ private:
 
 	CartFlags::CartFlags _flags;
 	string _romPath;
+	string _patchPath;
 
 	uint8_t* _prgRom = nullptr;
 	uint8_t* _saveRam = nullptr;
