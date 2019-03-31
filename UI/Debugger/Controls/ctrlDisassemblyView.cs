@@ -135,7 +135,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void ctrlCode_TextZoomChanged(object sender, EventArgs e)
 		{
-			ConfigManager.Config.Debug.TextZoom = ctrlCode.TextZoom;
+			ConfigManager.Config.Debug.Debugger.TextZoom = ctrlCode.TextZoom;
 			ConfigManager.ApplyChanges();
 		}
 	}

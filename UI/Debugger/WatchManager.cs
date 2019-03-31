@@ -28,7 +28,7 @@ namespace Mesen.GUI.Debugger
 
 		public static List<WatchValueInfo> GetWatchContent(List<WatchValueInfo> previousValues)
 		{
-			WatchFormatStyle defaultStyle = ConfigManager.Config.Debug.WatchFormat;
+			WatchFormatStyle defaultStyle = ConfigManager.Config.Debug.Debugger.WatchFormat;
 			int defaultByteLength = 1;
 			if(defaultStyle == WatchFormatStyle.Signed) {
 				defaultByteLength = 4;

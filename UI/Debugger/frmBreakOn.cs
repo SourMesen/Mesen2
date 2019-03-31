@@ -18,7 +18,7 @@ namespace Mesen.GUI.Debugger
 		{
 			InitializeComponent();
 
-			nudCount.Value = ConfigManager.Config.Debug.BreakOnValue;			
+			nudCount.Value = ConfigManager.Config.Debug.Debugger.BreakOnValue;			
 		}
 
 		protected override void OnShown(EventArgs e)
@@ -32,7 +32,7 @@ namespace Mesen.GUI.Debugger
 			base.OnFormClosed(e);
 			if(this.DialogResult == DialogResult.OK) {
 				int count = (int)nudCount.Value;
-				ConfigManager.Config.Debug.BreakOnValue = count;
+				ConfigManager.Config.Debug.Debugger.BreakOnValue = count;
 				DebugApi.Step(count, StepType.SpecificScanline);
 				ConfigManager.ApplyChanges();
 			}

@@ -18,11 +18,12 @@ namespace Mesen.GUI.Debugger
 		{
 			InitializeComponent();
 
-			nudCount.Value = ConfigManager.Config.Debug.BreakInCount;
-			radCpuInstructions.Checked = ConfigManager.Config.Debug.BreakInMetric == BreakInMetric.CpuInstructions;
-			radPpuCycles.Checked = ConfigManager.Config.Debug.BreakInMetric == BreakInMetric.PpuCycles;
-			radScanlines.Checked = ConfigManager.Config.Debug.BreakInMetric == BreakInMetric.Scanlines;
-			radFrames.Checked = ConfigManager.Config.Debug.BreakInMetric == BreakInMetric.Frames;
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
+			nudCount.Value = cfg.BreakInCount;
+			radCpuInstructions.Checked = cfg.BreakInMetric == BreakInMetric.CpuInstructions;
+			radPpuCycles.Checked = cfg.BreakInMetric == BreakInMetric.PpuCycles;
+			radScanlines.Checked = cfg.BreakInMetric == BreakInMetric.Scanlines;
+			radFrames.Checked = cfg.BreakInMetric == BreakInMetric.Frames;
 		}
 
 		protected override void OnShown(EventArgs e)
@@ -35,20 +36,21 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnFormClosed(e);
 			if(this.DialogResult == DialogResult.OK) {
+				DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 				int count = (int)nudCount.Value;
-				ConfigManager.Config.Debug.BreakInCount = (int)count;
+				cfg.BreakInCount = (int)count;
 				if(radCpuInstructions.Checked) {
 					DebugApi.Step(count, StepType.CpuStep);
-					ConfigManager.Config.Debug.BreakInMetric = BreakInMetric.CpuInstructions;
+					cfg.BreakInMetric = BreakInMetric.CpuInstructions;
 				} else if(radPpuCycles.Checked) {
 					DebugApi.Step(count, StepType.PpuStep);
-					ConfigManager.Config.Debug.BreakInMetric = BreakInMetric.PpuCycles;
+					cfg.BreakInMetric = BreakInMetric.PpuCycles;
 				} else if(radScanlines.Checked) {
 					DebugApi.Step(count * 341, StepType.PpuStep);
-					ConfigManager.Config.Debug.BreakInMetric = BreakInMetric.Scanlines;
+					cfg.BreakInMetric = BreakInMetric.Scanlines;
 				} else {
 					DebugApi.Step(count * 341 * 262, StepType.PpuStep);
-					ConfigManager.Config.Debug.BreakInMetric = BreakInMetric.Frames;
+					cfg.BreakInMetric = BreakInMetric.Frames;
 				}
 				ConfigManager.ApplyChanges();
 			}

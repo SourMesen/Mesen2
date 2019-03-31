@@ -903,7 +903,7 @@ namespace Mesen.GUI.Debugger.Controls
 			string codeString = lineData.Text;
 			string commentString = lineData.Comment;
 
-			DebugInfo info = ConfigManager.Config.Debug;
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			
 			if(lineData.Flags.HasFlag(LineFlags.BlockEnd) || lineData.Flags.HasFlag(LineFlags.BlockStart)) {
 				//Draw block start/end
@@ -954,14 +954,14 @@ namespace Mesen.GUI.Debugger.Controls
 						string indirect = match.Groups[14].Value;
 						string paren3 = match.Groups[15].Value;
 						string rest = match.Groups[16].Value;
-						Color operandColor = operand.Length > 0 ? (operand[0] == '#' ? (Color)info.CodeImmediateColor : (operand[0] == '$' ? (Color)info.CodeAddressColor : (Color)info.CodeLabelDefinitionColor)) : Color.Black;
-						List<Color> colors = new List<Color>() { defaultColor, info.CodeOpcodeColor, defaultColor, defaultColor, defaultColor, operandColor, defaultColor, defaultColor, defaultColor };
+						Color operandColor = operand.Length > 0 ? (operand[0] == '#' ? (Color)cfg.CodeImmediateColor : (operand[0] == '$' ? (Color)cfg.CodeAddressColor : (Color)cfg.CodeLabelDefinitionColor)) : Color.Black;
+						List<Color> colors = new List<Color>() { defaultColor, cfg.CodeOpcodeColor, defaultColor, defaultColor, defaultColor, operandColor, defaultColor, defaultColor, defaultColor };
 						int codePartCount = colors.Count;
 
 						List<string> parts = new List<string>() { padding, opcode, invalidStar, " ", paren1, operand, paren2, indirect, paren3 };
 
 						if(lineData.EffectiveAddress >= 0) {
-							colors.Add(info.CodeEffectiveAddressColor);
+							colors.Add(cfg.CodeEffectiveAddressColor);
 							parts.Add(" [" + lineData.EffectiveAddress.ToString("X6") + "]");
 						}
 
@@ -984,7 +984,7 @@ namespace Mesen.GUI.Debugger.Controls
 						}
 						codeStringLength = xOffset;
 					} else {
-						using(Brush fgBrush = new SolidBrush(codeString.EndsWith(":") ? (Color)info.CodeLabelDefinitionColor : (textColor ?? defaultColor))) {
+						using(Brush fgBrush = new SolidBrush(codeString.EndsWith(":") ? (Color)cfg.CodeLabelDefinitionColor : (textColor ?? defaultColor))) {
 							g.DrawString(codeString, this.Font, fgBrush, marginLeft, positionY, StringFormat.GenericTypographic);
 						}
 						characterCount = codeString.Trim().Length;
@@ -992,7 +992,7 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 
 				if(!string.IsNullOrWhiteSpace(commentString)) {
-					using(Brush commentBrush = new SolidBrush(info.CodeCommentColor)) {
+					using(Brush commentBrush = new SolidBrush(cfg.CodeCommentColor)) {
 						int padding = Math.Max(CommentSpacingCharCount, characterCount + 1);
 						if(characterCount == 0) {
 							//Draw comment left-aligned, next to the margin when there is no code on the line
@@ -1171,7 +1171,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void DrawSelectionLength(Graphics g, int currentLine, int positionY, int lineHeight)
 		{
-			if(ConfigManager.Config.Debug.ShowSelectionLength && currentLine == this.SelectedLine && this.SelectionLength > 0) {
+			if(ConfigManager.Config.Debug.Debugger.ShowSelectionLength && currentLine == this.SelectedLine && this.SelectionLength > 0) {
 				int startAddress = -1;
 				int endAddress = -1;
 

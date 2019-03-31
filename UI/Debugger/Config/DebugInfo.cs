@@ -20,35 +20,7 @@ namespace Mesen.GUI.Config
 		public TraceLoggerInfo TraceLogger = new TraceLoggerInfo();
 		public HexEditorInfo HexEditor = new HexEditorInfo();
 		public EventViewerInfo EventViewer = new EventViewerInfo();
-
-		public int BreakOnValue = 0;
-		public int BreakInCount = 1;
-		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
-
-		public string FontFamily = BaseControl.MonospaceFontFamily;
-		public FontStyle FontStyle = FontStyle.Regular;
-		public float FontSize = BaseControl.DefaultFontSize;
-		public int TextZoom = 100;
-
-		public bool ShowSelectionLength = false;
-
-		public XmlColor CodeOpcodeColor = Color.FromArgb(22, 37, 37);
-		public XmlColor CodeLabelDefinitionColor = Color.Blue;
-		public XmlColor CodeImmediateColor = Color.Chocolate;
-		public XmlColor CodeAddressColor = Color.DarkRed;
-		public XmlColor CodeCommentColor = Color.Green;
-		public XmlColor CodeEffectiveAddressColor = Color.SteelBlue;
-
-		public XmlColor CodeVerifiedDataColor = Color.FromArgb(255, 252, 236);
-		public XmlColor CodeUnidentifiedDataColor = Color.FromArgb(255, 242, 242);
-		public XmlColor CodeUnexecutedCodeColor = Color.FromArgb(225, 244, 228);
-
-		public XmlColor CodeExecBreakpointColor = Color.FromArgb(140, 40, 40);
-		public XmlColor CodeWriteBreakpointColor = Color.FromArgb(40, 120, 80);
-		public XmlColor CodeReadBreakpointColor = Color.FromArgb(40, 40, 200);
-		public XmlColor CodeActiveStatementColor = Color.Yellow;
-
-		public WatchFormatStyle WatchFormat = WatchFormatStyle.Hex;
+		public DebuggerInfo Debugger = new DebuggerInfo();
 
 		public DebugInfo()
 		{		
@@ -62,11 +34,4 @@ namespace Mesen.GUI.Config
 		High = 2
 	}
 
-	public enum BreakInMetric
-	{
-		CpuInstructions,
-		PpuCycles,
-		Scanlines,
-		Frames
-	}
 }

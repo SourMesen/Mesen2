@@ -168,9 +168,9 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateActions()
 		{
-			mnuHexDisplay.Checked = ConfigManager.Config.Debug.WatchFormat == WatchFormatStyle.Hex;
-			mnuDecimalDisplay.Checked = ConfigManager.Config.Debug.WatchFormat == WatchFormatStyle.Signed;
-			mnuBinaryDisplay.Checked = ConfigManager.Config.Debug.WatchFormat == WatchFormatStyle.Binary;
+			mnuHexDisplay.Checked = ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Hex;
+			mnuDecimalDisplay.Checked = ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Signed;
+			mnuBinaryDisplay.Checked = ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Binary;
 			mnuRowDisplayFormat.Enabled = lstWatch.SelectedItems.Count > 0;
 
 			mnuEditInMemoryViewer.Enabled = false;
@@ -411,21 +411,21 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuHexDisplay_Click(object sender, EventArgs e)
 		{
-			ConfigManager.Config.Debug.WatchFormat = WatchFormatStyle.Hex;
+			ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Hex;
 			ConfigManager.ApplyChanges();
 			UpdateWatch();
 		}
 
 		private void mnuDecimalDisplay_Click(object sender, EventArgs e)
 		{
-			ConfigManager.Config.Debug.WatchFormat = WatchFormatStyle.Signed;
+			ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Signed;
 			ConfigManager.ApplyChanges();
 			UpdateWatch();
 		}
 
 		private void mnuBinaryDisplay_Click(object sender, EventArgs e)
 		{
-			ConfigManager.Config.Debug.WatchFormat = WatchFormatStyle.Binary;
+			ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Binary;
 			ConfigManager.ApplyChanges();
 			UpdateWatch();
 		}

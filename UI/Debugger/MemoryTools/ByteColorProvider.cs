@@ -166,13 +166,13 @@ namespace Mesen.GUI.Debugger
 			if(_breakpointTypes != null) {
 				switch(_breakpointTypes[index]) {
 					case BreakpointTypeFlags.Execute:
-						_colors.BorderColor = ConfigManager.Config.Debug.CodeExecBreakpointColor;
+						_colors.BorderColor = ConfigManager.Config.Debug.Debugger.CodeExecBreakpointColor;
 						break;
 					case BreakpointTypeFlags.Write:
-						_colors.BorderColor = ConfigManager.Config.Debug.CodeWriteBreakpointColor;
+						_colors.BorderColor = ConfigManager.Config.Debug.Debugger.CodeWriteBreakpointColor;
 						break;
 					case BreakpointTypeFlags.Read:
-						_colors.BorderColor = ConfigManager.Config.Debug.CodeReadBreakpointColor;
+						_colors.BorderColor = ConfigManager.Config.Debug.Debugger.CodeReadBreakpointColor;
 						break;
 				}
 			}

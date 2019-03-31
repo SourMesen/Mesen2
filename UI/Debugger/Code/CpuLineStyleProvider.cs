@@ -25,13 +25,13 @@ namespace Mesen.GUI.Debugger.Code
 		public static void ConfigureActiveStatement(LineProperties props)
 		{
 			props.FgColor = Color.Black;
-			props.TextBgColor = ConfigManager.Config.Debug.CodeActiveStatementColor;
+			props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor;
 			props.Symbol |= LineSymbol.Arrow;
 		}
 
 		public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
 		{
-			DebugInfo info = ConfigManager.Config.Debug;
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			LineProperties props = new LineProperties();
 
 			if(lineData.Address >= 0) {
@@ -57,9 +57,9 @@ namespace Mesen.GUI.Debugger.Code
 			}
 
 			if(lineData.Flags.HasFlag(LineFlags.VerifiedData)) {
-				props.LineBgColor = info.CodeVerifiedDataColor;
+				props.LineBgColor = cfg.CodeVerifiedDataColor;
 			} else if(!lineData.Flags.HasFlag(LineFlags.VerifiedCode)) {
-				props.LineBgColor = info.CodeUnidentifiedDataColor;
+				props.LineBgColor = cfg.CodeUnidentifiedDataColor;
 			}
 
 			return props;
@@ -67,7 +67,7 @@ namespace Mesen.GUI.Debugger.Code
 
 		public static void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
 		{
-			DebugInfo config = ConfigManager.Config.Debug;
+			DebuggerInfo config = ConfigManager.Config.Debug.Debugger;
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
 				if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.CpuMemory)) {
 					Color fgColor = Color.White;

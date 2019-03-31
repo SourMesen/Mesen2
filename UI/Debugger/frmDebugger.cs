@@ -14,6 +14,7 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class frmDebugger : BaseForm
 	{
+		private EntityBinder _entityBinder = new EntityBinder();
 		private NotificationListener _notifListener;
 
 		public frmDebugger()
@@ -34,10 +35,16 @@ namespace Mesen.GUI.Debugger
 			InitShortcuts();
 			InitToolbar();
 
-			DebugInfo cfg = ConfigManager.Config.Debug;
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			Font font = new Font(cfg.FontFamily, cfg.FontSize, cfg.FontStyle);
 			ctrlDisassemblyView.CodeViewer.BaseFont = font;
 			ctrlDisassemblyView.CodeViewer.TextZoom = cfg.TextZoom;
+
+			if(!cfg.WindowSize.IsEmpty) {
+				this.StartPosition = FormStartPosition.Manual;
+				this.Size = cfg.WindowSize;
+				this.Location = cfg.WindowLocation;
+			}
 
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 			
@@ -48,6 +55,11 @@ namespace Mesen.GUI.Debugger
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
+
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
+			cfg.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
+			cfg.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
+			ConfigManager.ApplyChanges();
 
 			BreakpointManager.BreakpointsEnabled = false;
 			if(this._notifListener != null) {
@@ -259,9 +271,10 @@ namespace Mesen.GUI.Debugger
 		{
 			Font newFont = FontDialogHelper.SelectFont(ctrlDisassemblyView.CodeViewer.BaseFont);
 
-			ConfigManager.Config.Debug.FontFamily = newFont.FontFamily.Name;
-			ConfigManager.Config.Debug.FontStyle = newFont.Style;
-			ConfigManager.Config.Debug.FontSize = newFont.Size;
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
+			cfg.FontFamily = newFont.FontFamily.Name;
+			cfg.FontStyle = newFont.Style;
+			cfg.FontSize = newFont.Size;
 			ConfigManager.ApplyChanges();
 
 			ctrlDisassemblyView.CodeViewer.BaseFont = newFont;

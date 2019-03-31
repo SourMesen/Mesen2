@@ -248,6 +248,7 @@
     <Compile Include="Debugger\Code\CpuLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
+    <Compile Include="Debugger\Config\DebuggerInfo.cs" />
     <Compile Include="Debugger\frmBreakIn.cs">
       <SubType>Form</SubType>
     </Compile>
