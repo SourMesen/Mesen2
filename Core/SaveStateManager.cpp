@@ -19,7 +19,7 @@ string SaveStateManager::GetStateFilepath(int stateIndex)
 {
 	string romFile = _console->GetRomInfo().RomFile.GetFileName();
 	string folder = FolderUtilities::GetSaveStateFolder();
-	string filename = FolderUtilities::GetFilename(romFile, false) + "_" + std::to_string(stateIndex) + ".mst";
+	string filename = FolderUtilities::GetFilename(romFile, false) + "_" + std::to_string(stateIndex) + ".mss";
 	return FolderUtilities::CombinePath(folder, filename);
 }
 
@@ -61,7 +61,7 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 {
 	uint32_t emuVersion = _console->GetSettings()->GetVersion();
 	uint32_t formatVersion = SaveStateManager::FileFormatVersion;
-	stream.write("MST", 3);
+	stream.write("MSS", 3);
 	stream.write((char*)&emuVersion, sizeof(emuVersion));
 	stream.write((char*)&formatVersion, sizeof(uint32_t));
 
@@ -114,7 +114,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 {
 	char header[3];
 	stream.read(header, 3);
-	if(memcmp(header, "MST", 3) == 0) {
+	if(memcmp(header, "MSS", 3) == 0) {
 		uint32_t emuVersion, fileFormatVersion;
 
 		stream.read((char*)&emuVersion, sizeof(emuVersion));
@@ -138,15 +138,12 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 			stream.read(nameBuffer.data(), nameBuffer.size());
 			string romName(nameBuffer.data(), nameLength);
 			
-			//TODO
-			/*shared_ptr<BaseCartridge> cartridge = _console->GetCartridge();
-			if(cartridge) {
-				string sha1Hash = cartridge->GetSha1Hash();
-				bool gameLoaded = !sha1Hash.empty();
-				if(sha1Hash != string(hash)) {
-					//CRC doesn't match
-				}
-			}*/
+			shared_ptr<BaseCartridge> cartridge = _console->GetCartridge();
+			if(!cartridge || cartridge->GetSha1Hash() != string(hash)) {
+				//Game isn't loaded, or CRC doesn't match
+				//TODO: Try to find and load the game
+				return false;
+			}
 		}
 
 		//Stop any movie that might have been playing/recording if a state is loaded
@@ -207,7 +204,7 @@ void SaveStateManager::SaveRecentGame(string romName, string romPath, string pat
 
 	std::stringstream stateStream;
 	SaveStateManager::SaveState(stateStream);
-	writer.AddFile(stateStream, "Savestate.mst");
+	writer.AddFile(stateStream, "Savestate.mss");
 
 	std::stringstream romInfoStream;
 	romInfoStream << romName << std::endl;
@@ -224,7 +221,7 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 
 	stringstream romInfoStream, stateStream;
 	reader.GetStream("RomInfo.txt", romInfoStream);
-	reader.GetStream("Savestate.mst", stateStream);
+	reader.GetStream("Savestate.mss", stateStream);
 
 	string romName, romPath, patchPath;
 	std::getline(romInfoStream, romName);
