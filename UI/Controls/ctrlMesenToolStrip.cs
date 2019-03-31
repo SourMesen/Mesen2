@@ -28,14 +28,14 @@ namespace Mesen.GUI.Controls
 				if(item.Image == null) {
 					newItem.Text = item.Text;
 				}
-				//newItem.ToolTipText = (caption ?? item.Text) + (item.ShortcutKeys != Keys.None ? $" ({DebuggerShortcutsConfig.GetShortcutDisplay(item.ShortcutKeys)})" : "");
+				newItem.ToolTipText = (caption ?? item.Text) + (item.ShortcutKeys != Keys.None ? $" ({DebuggerShortcutsConfig.GetShortcutDisplay(item.ShortcutKeys)})" : "");
 				newItem.Click += (s, e) => item.PerformClick();
 				if(newItem is ToolStripButton) {
 					((ToolStripButton)newItem).Checked = item.Checked;
 					item.CheckedChanged += (s, e) => ((ToolStripButton)newItem).Checked = item.Checked;
 				}
 				newItem.Enabled = item.Enabled;
-				//newItem.MouseEnter += (s, e) => newItem.ToolTipText = (caption ?? item.Text) + (item.ShortcutKeys != Keys.None ? $" ({DebuggerShortcutsConfig.GetShortcutDisplay(item.ShortcutKeys)})" : "");
+				newItem.MouseEnter += (s, e) => newItem.ToolTipText = (caption ?? item.Text) + (item.ShortcutKeys != Keys.None ? $" ({DebuggerShortcutsConfig.GetShortcutDisplay(item.ShortcutKeys)})" : "");
 				item.EnabledChanged += (s, e) => newItem.Enabled = item.Enabled;
 				item.VisibleChanged += (s, e) => newItem.Visible = item.Visible;
 
