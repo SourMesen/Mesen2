@@ -83,6 +83,11 @@ namespace Mesen.GUI.Debugger
 						}));
 					}
 					break;
+
+				case ConsoleNotificationType.GameLoaded:
+					//Configuration is lost when debugger is restarted (when switching game or power cycling)
+					ctrlScanlineCycleSelect.RefreshSettings();
+					break;
 			}
 		}
 

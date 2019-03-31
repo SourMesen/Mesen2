@@ -203,10 +203,17 @@ uint32_t Disassembler::GetLineCount()
 uint32_t Disassembler::GetLineIndex(uint32_t cpuAddress)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
-	for(int i = 0; i < _disassembly.size(); i++) {
-		if(_disassembly[i].CpuAddress == cpuAddress) {
-			return i;
+	uint32_t lastAddress = 0;
+	for(int i = 1; i < _disassembly.size(); i++) {
+		if(_disassembly[i].CpuAddress < 0) {
+			continue;
 		}
+
+		if(cpuAddress >= lastAddress && cpuAddress < (uint32_t)_disassembly[i].CpuAddress) {
+			return i - 1;
+		}
+
+		lastAddress = _disassembly[i].CpuAddress;
 	}
 	return 0;
 }

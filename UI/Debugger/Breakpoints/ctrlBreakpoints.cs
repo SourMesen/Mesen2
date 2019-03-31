@@ -15,7 +15,8 @@ namespace Mesen.GUI.Debugger.Controls
 {
 	public partial class ctrlBreakpoints : BaseControl
 	{
-		public event EventHandler BreakpointNavigation;
+		public delegate void BreakpointNavigationHandler(Breakpoint bp);
+		public event BreakpointNavigationHandler BreakpointNavigation;
 		private Font _markedColumnFont;
 
 		public ctrlBreakpoints()
@@ -125,7 +126,7 @@ namespace Mesen.GUI.Debugger.Controls
 			if(BreakpointNavigation != null) {
 				Breakpoint bp = lstBreakpoints.SelectedItems[0].Tag as Breakpoint;
 				if(bp.IsCpuBreakpoint && bp.GetRelativeAddress() >= 0) {
-					BreakpointNavigation(bp, null);
+					BreakpointNavigation(bp);
 				}
 			}
 		}

@@ -171,11 +171,12 @@ void Console::Stop(bool sendNotification)
 
 void Console::Reset()
 {
-	Lock();
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
 		debugger->Run();
 	}
+
+	Lock();
 
 	_dmaController->Reset();
 	_internalRegisters->Reset();
@@ -196,6 +197,11 @@ void Console::PowerCycle()
 {
 	shared_ptr<BaseCartridge> cart = _cart;
 	if(cart) {
+		shared_ptr<Debugger> debugger = _debugger;
+		if(debugger) {
+			debugger->Run();
+		}
+
 		RomInfo info = cart->GetRomInfo();
 		Lock();
 		LoadRom(info.RomFile, info.PatchFile, false);

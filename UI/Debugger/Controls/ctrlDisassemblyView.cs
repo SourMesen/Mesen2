@@ -91,10 +91,34 @@ namespace Mesen.GUI.Debugger.Controls
 				ctrlCode.ScrollToLineIndex(lineIndex, eHistoryType.None, false, true);
 			}
 		}
-		
-		private void mnuToggleBreakpoint_Click(object sender, EventArgs e)
+
+		public ctrlScrollableTextbox CodeViewer { get { return ctrlCode; } }
+
+		public void GoToAddress(int address)
+		{
+			ctrlCode.ScrollToAddress(address);
+		}
+
+		public void GoToActiveAddress()
+		{
+			if(_styleProvider.ActiveAddress.HasValue) {
+				ctrlCode.ScrollToAddress(_styleProvider.ActiveAddress.Value);
+			}
+		}
+
+		public void ToggleBreakpoint()
 		{
 			_manager.ToggleBreakpoint(ctrlCode.SelectedLine);
+		}
+
+		public void EnableDisableBreakpoint()
+		{
+			_manager.EnableDisableBreakpoint(ctrlCode.SelectedLine);
+		}
+
+		private void mnuToggleBreakpoint_Click(object sender, EventArgs e)
+		{
+			ToggleBreakpoint();
 		}
 
 		private void ctrlCode_MouseDown(object sender, MouseEventArgs e)

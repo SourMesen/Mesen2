@@ -13,5 +13,6 @@ namespace Mesen.GUI.Debugger.Code
 
 		void RefreshCode();
 		void ToggleBreakpoint(int lineIndex);
+		void EnableDisableBreakpoint(int lineIndex);
 	}
 }

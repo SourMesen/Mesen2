@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "BaseControlDevice.h"
 #include "Console.h"
+#include "Debugger.h"
 
 class SystemActionManager : public BaseControlDevice
 {
@@ -46,6 +47,11 @@ public:
 	bool Reset()
 	{
 		if(!_needReset) {
+			shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+			if(debugger) {
+				debugger->Run();
+			}
+
 			_needReset = true;
 			return true;
 		}
@@ -55,6 +61,11 @@ public:
 	bool PowerCycle()
 	{
 		if(!_needPowerCycle) {
+			shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+			if(debugger) {
+				debugger->Run();
+			}
+
 			_needPowerCycle = true;
 			return true;
 		}

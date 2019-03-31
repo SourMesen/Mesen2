@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Forms;
 using Mesen.GUI.Utilities;
 
@@ -46,7 +47,7 @@ namespace Mesen.GUI
 				Task.Run(() => {
 					//Cache deserializers in another thread
 					new XmlSerializer(typeof(Configuration));
-					//new XmlSerializer(typeof(DebugWorkspace));
+					new XmlSerializer(typeof(DebugWorkspace));
 				});
 
 				if(Type.GetType("Mono.Runtime") != null) {

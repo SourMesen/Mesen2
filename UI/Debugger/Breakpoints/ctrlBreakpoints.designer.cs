@@ -99,6 +99,7 @@
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
 			this.toolStripMenuItem2.Size = new System.Drawing.Size(146, 6);
+			this.toolStripMenuItem2.Visible = false;
 			// 
 			// mnuShowLabels
 			// 
@@ -106,6 +107,7 @@
 			this.mnuShowLabels.Name = "mnuShowLabels";
 			this.mnuShowLabels.Size = new System.Drawing.Size(149, 22);
 			this.mnuShowLabels.Text = "Show Labels";
+			this.mnuShowLabels.Visible = false;
 			// 
 			// lstBreakpoints
 			// 

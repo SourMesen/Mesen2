@@ -28,5 +28,16 @@ namespace Mesen.GUI.Debugger.Code
 				});
 			}
 		}
+
+		public void EnableDisableBreakpoint(int lineIndex)
+		{
+			int address = this._provider.GetLineAddress(lineIndex);
+			if(address >= 0) {
+				BreakpointManager.EnableDisableBreakpoint(new AddressInfo() {
+					Address = address,
+					Type = SnesMemoryType.CpuMemory
+				});
+			}
+		}
 	}
 }
