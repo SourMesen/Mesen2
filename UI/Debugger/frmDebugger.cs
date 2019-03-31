@@ -34,17 +34,7 @@ namespace Mesen.GUI.Debugger
 
 			InitShortcuts();
 			InitToolbar();
-
-			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
-			Font font = new Font(cfg.FontFamily, cfg.FontSize, cfg.FontStyle);
-			ctrlDisassemblyView.CodeViewer.BaseFont = font;
-			ctrlDisassemblyView.CodeViewer.TextZoom = cfg.TextZoom;
-
-			if(!cfg.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = cfg.WindowSize;
-				this.Location = cfg.WindowLocation;
-			}
+			LoadConfig();
 
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 			
@@ -59,6 +49,7 @@ namespace Mesen.GUI.Debugger
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			cfg.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			cfg.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
+			_entityBinder.UpdateObject();
 			ConfigManager.ApplyChanges();
 
 			BreakpointManager.BreakpointsEnabled = false;
@@ -165,6 +156,27 @@ namespace Mesen.GUI.Debugger
 				mnuToggleBreakpoint, mnuEnableDisableBreakpoint, null,
 				mnuBreakIn, null, mnuBreakOn
 			);
+		}
+
+		private void LoadConfig()
+		{
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
+			_entityBinder.Entity = cfg;
+			_entityBinder.AddBinding(nameof(cfg.ShowByteCode), mnuShowByteCode);
+
+			mnuShowByteCode.CheckedChanged += (s, e) => { ctrlDisassemblyView.CodeViewer.ShowContentNotes = mnuShowByteCode.Checked; };
+
+			_entityBinder.UpdateUI();
+
+			Font font = new Font(cfg.FontFamily, cfg.FontSize, cfg.FontStyle);
+			ctrlDisassemblyView.CodeViewer.BaseFont = font;
+			ctrlDisassemblyView.CodeViewer.TextZoom = cfg.TextZoom;
+
+			if(!cfg.WindowSize.IsEmpty) {
+				this.StartPosition = FormStartPosition.Manual;
+				this.Size = cfg.WindowSize;
+				this.Location = cfg.WindowLocation;
+			}
 		}
 
 		private void UpdateContinueAction()

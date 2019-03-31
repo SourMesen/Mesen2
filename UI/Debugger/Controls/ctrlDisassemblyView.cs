@@ -30,7 +30,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 			_styleProvider = new CpuLineStyleProvider();
 			ctrlCode.StyleProvider = _styleProvider;
-			ctrlCode.ShowContentNotes = true;
+			ctrlCode.ShowContentNotes = false;
 			ctrlCode.ShowMemoryValues = true;
 
 			InitShortcuts();

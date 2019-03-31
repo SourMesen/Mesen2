@@ -107,10 +107,7 @@ namespace Mesen.GUI.Debugger
 			config.MemoryType = cboMemoryType.GetEnumValue<SnesMemoryType>();
 			_entityBinder.UpdateObject();
 			ConfigManager.ApplyChanges();
-
-			//TODO?
-			//DebugWorkspaceManager.SaveWorkspace();
-
+			
 			if(this._notifListener != null) {
 				this._notifListener.Dispose();
 				this._notifListener = null;

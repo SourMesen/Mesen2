@@ -71,6 +71,8 @@
 			this.mnuGoToBrkHandler = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuGoToCopHandler = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuShowByteCode = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.fontSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuIncreaseFontSize = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDecreaseFontSize = new System.Windows.Forms.ToolStripMenuItem();
@@ -399,12 +401,26 @@
 			// optionsToolStripMenuItem
 			// 
 			this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuShowByteCode,
+            this.toolStripMenuItem5,
             this.fontSizeToolStripMenuItem,
             this.toolStripMenuItem4,
             this.mnuPreferences});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
 			this.optionsToolStripMenuItem.Text = "Options";
+			// 
+			// mnuShowByteCode
+			// 
+			this.mnuShowByteCode.CheckOnClick = true;
+			this.mnuShowByteCode.Name = "mnuShowByteCode";
+			this.mnuShowByteCode.Size = new System.Drawing.Size(209, 22);
+			this.mnuShowByteCode.Text = "Show byte code";
+			// 
+			// toolStripMenuItem5
+			// 
+			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+			this.toolStripMenuItem5.Size = new System.Drawing.Size(206, 6);
 			// 
 			// fontSizeToolStripMenuItem
 			// 
@@ -676,5 +692,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem21;
 		private System.Windows.Forms.ToolStripMenuItem mnuSelectFont;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+		private System.Windows.Forms.ToolStripMenuItem mnuShowByteCode;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
 	}
 }

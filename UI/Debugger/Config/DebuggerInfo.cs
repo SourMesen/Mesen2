@@ -15,6 +15,8 @@ namespace Mesen.GUI.Config
 		public Size WindowSize = new Size(0, 0);
 		public Point WindowLocation;
 
+		public bool ShowByteCode = false;
+
 		public int BreakOnValue = 0;
 		public int BreakInCount = 1;
 		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
