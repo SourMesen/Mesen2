@@ -119,7 +119,7 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 	return 0;
 }
 
-uint8_t MemoryDumper::GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address)
+uint16_t MemoryDumper::GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address)
 {
 	uint32_t memorySize = GetMemorySize(memoryType);
 	uint8_t lsb = GetMemoryValue(memoryType, address);

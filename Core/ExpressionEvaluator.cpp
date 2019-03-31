@@ -95,12 +95,6 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 		output += std::to_string((int64_t)EvalValues::Irq);
 	} else if(token == "nmi") {
 		output += std::to_string((int64_t)EvalValues::Nmi);
-	} else if(token == "verticalblank") {
-		output += std::to_string((int64_t)EvalValues::VerticalBlank);
-	} else if(token == "sprite0hit") {
-		output += std::to_string((int64_t)EvalValues::Sprite0Hit);
-	} else if(token == "spriteoverflow") {
-		output += std::to_string((int64_t)EvalValues::SpriteOverflow);
 	} else if(token == "value") {
 		output += std::to_string((int64_t)EvalValues::Value);
 	} else if(token == "address") {
@@ -111,8 +105,6 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 		output += std::to_string((int64_t)EvalValues::IsWrite);
 	} else if(token == "isread") {
 		output += std::to_string((int64_t)EvalValues::IsRead);
-	} else if(token == "branched") {
-		output += std::to_string((int64_t)EvalValues::Branched);
 	} else {
 		return false;
 		//TODO LABELS
@@ -399,11 +391,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
 					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite; break;
 					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite; break;
-					/*case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
-					case EvalValues::Sprite0Hit: token = state.PPU.StatusFlags.Sprite0Hit; resultType = EvalResultType::Boolean; break;
-					case EvalValues::SpriteOverflow: token = state.PPU.StatusFlags.SpriteOverflow; resultType = EvalResultType::Boolean; break;
-					case EvalValues::VerticalBlank: token = state.PPU.StatusFlags.VerticalBlank; resultType = EvalResultType::Boolean; break;
-					case EvalValues::Branched: token = Disassembler::IsJump(_debugger->GetMemoryDumper()->GetMemoryValue(DebugMemoryType::CpuMemory, state.CPU.PreviousDebugPC, true)); resultType = EvalResultType::Boolean; break;*/
+					//case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
 				}
 			}
 		} else if(token >= EvalOperators::Multiplication) {
