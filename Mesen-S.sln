@@ -38,11 +38,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PGOHelper", "PGOHelper\PGOH
 		{37749BB2-FA78-4EC9-8990-5628FC0BBA19} = {37749BB2-FA78-4EC9-8990-5628FC0BBA19}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestHelper", "TestHelper\TestHelper.vcxproj", "{2A607369-8B5D-494A-9E40-C5DC8D821AA3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{37749BB2-FA78-4EC9-8990-5628FC0BBA19} = {37749BB2-FA78-4EC9-8990-5628FC0BBA19}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyPacker", "DependencyPacker\DependencyPacker.csproj", "{AABB5225-3A49-47FF-8A48-031673CADCE9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{37749BB2-FA78-4EC9-8990-5628FC0BBA19} = {37749BB2-FA78-4EC9-8990-5628FC0BBA19}
@@ -51,14 +46,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateHelper", "UpdateHelper\UpdateHelper.csproj", "{36ABBF1C-66E1-4577-828A-619A2EF0DAE9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SevenZip", "SevenZip\SevenZip.vcxproj", "{52C4BA3A-E699-4305-B23F-C9083FD07AB6}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcxproj", "{B609E0A0-5050-4871-91D6-E760633BCDD1}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Libretro", "Libretro\Libretro.vcxproj", "{4432139E-528B-44DE-961C-B37CD5E92E0E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B5330148-E8C7-46BA-B54E-69BE59EA337D} = {B5330148-E8C7-46BA-B54E-69BE59EA337D}
-		{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0} = {78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
