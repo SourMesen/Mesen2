@@ -53,10 +53,12 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 			return BreakpointType::Execute;
 
 		case MemoryOperationType::DmaRead:
-		case MemoryOperationType::Read: return BreakpointType::Read;
+		case MemoryOperationType::Read:
+			return BreakpointType::Read;
 
 		case MemoryOperationType::DmaWrite:
-		case MemoryOperationType::Write: return BreakpointType::Write;
+		case MemoryOperationType::Write:
+			return BreakpointType::Write;
 	}
 }
 
@@ -74,9 +76,8 @@ bool BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, Addre
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)category][(int)type];
 	for(size_t i = 0; i < breakpoints.size(); i++) {
-		Breakpoint bp = breakpoints[i];
-		if(bp.Matches(operationInfo.Address, address)) {
-			if(!bp.HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)category][(int)type][i], state, resultType, operationInfo)) {
+		if(breakpoints[i].Matches(operationInfo.Address, address)) {
+			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)category][(int)type][i], state, resultType, operationInfo)) {
 				return true;
 			}
 		}
