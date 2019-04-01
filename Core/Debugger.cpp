@@ -241,11 +241,17 @@ void Debugger::SleepUntilResume()
 	_console->GetSoundMixer()->StopAudio();
 	_disassembler->Disassemble();
 
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
 	_executionStopped = true;
+	
+	if(_cpuStepCount == 0) {
+		//Only trigger code break event if the pause was caused by user action
+		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
+	}
+
 	while(_cpuStepCount == 0 || _breakRequestCount) {
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 	}
+
 	_executionStopped = false;
 }
 
