@@ -134,7 +134,7 @@ namespace Mesen.GUI.Emulation
 		private void OpenFile()
 		{
 			using(OpenFileDialog ofd = new OpenFileDialog()) {
-				ofd.Filter = ResourceHelper.GetMessage("FilterRom");
+				ofd.SetFilter(ResourceHelper.GetMessage("FilterRom"));
 				
 				if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
 					ofd.InitialDirectory = ConfigManager.Config.Preferences.GameFolder;

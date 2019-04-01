@@ -1019,13 +1019,9 @@
     <PreBuildEvent>mkdir "Dependencies"
 
 if "PGO Optimize" == "$(ConfigurationName)" (
-copy "$(SolutionDir)bin\x86\PGO Profile\MesenSCore.dll" "Dependencies\MesenSCore.x86.dll"
-
 copy "$(SolutionDir)bin\x64\PGO Profile\MesenSCore.dll" "Dependencies\MesenSCore.x64.dll"
 )
 if NOT "PGO Optimize" == "$(ConfigurationName)" (
-copy "$(SolutionDir)bin\x86\$(ConfigurationName)\MesenSCore.dll" "Dependencies\MesenSCore.x86.dll"
-
 copy "$(SolutionDir)bin\x64\$(ConfigurationName)\MesenSCore.dll" "Dependencies\MesenSCore.x64.dll"
 )
 copy "MesenUpdater.exe" "Dependencies\MesenUpdater.exe"

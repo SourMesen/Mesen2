@@ -769,7 +769,7 @@
 		<Message ID="FilterWave">Wave files (*.wav)|*.wav|All Files (*.*)|*.*</Message>
 		<Message ID="FilterAvi">Avi files (*.avi)|*.avi|All Files (*.*)|*.*</Message>
 		<Message ID="FilterPalette">Palette Files (*.pal)|*.pal|All Files (*.*)|*.*</Message>
-		<Message ID="FilterRom">All supported formats (*.sfc, *.zip, *.7z)|*.SFC;*.ZIP;*.7Z|SNES Roms (*.sfc)|*.SFC|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
+		<Message ID="FilterRom">All supported formats (*.sfc, *.zip, *.7z)|*.SFC;*.SMC;*.SWC;*.FIG;*.ZIP;*.7Z|SNES Roms (*.sfc)|*.SFC;*.SMC;*.SWC;*.FIG|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
 		<Message ID="FilterRomIps">All supported formats (*.nes, *.zip, *.7z, *.fds, *.nsf, *.nsfe, *.unf, *.ips, *.bps, *.ups)|*.NES;*.ZIP;*.7z;*.IPS;*.BPS;*.UPS;*.FDS;*.NSF;*.NSFE;*.UNF|NES Roms (*.nes, *.unf)|*.NES;*.UNF|Famicom Disk System Roms (*.fds)|*.FDS|NSF files (*.nsf, *.nsfe)|*.nsf;*.nsfe|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|IPS/UPS/BPS Patches (*.ips, *.bps, *.ups)|*.IPS;*.BPS;*.UPS|All (*.*)|*.*</Message>
 		<Message ID="FilterTest">Test files (*.mtp)|*.mtp|All (*.*)|*.*</Message>
 		<Message ID="FilterCheat">All supported formats (*.cht, *.xml)|*.cht;*.xml</Message>
