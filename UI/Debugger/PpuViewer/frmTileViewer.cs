@@ -24,6 +24,7 @@ namespace Mesen.GUI.Debugger
 		private bool _zoomed;
 		private SnesMemoryType _memoryType = SnesMemoryType.VideoRam;
 		private int _addressOffset = 0;
+		private DateTime _lastUpdate = DateTime.MinValue;
 
 		public frmTileViewer()
 		{
@@ -71,10 +72,13 @@ namespace Mesen.GUI.Debugger
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.ViewerRefresh:
 					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
-						RefreshData();
-						this.BeginInvoke((Action)(() => {
-							this.RefreshViewer();
-						}));
+						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
+							_lastUpdate = DateTime.Now;
+							RefreshData();
+							this.BeginInvoke((Action)(() => {
+								this.RefreshViewer();
+							}));
+						}
 					}
 					break;
 

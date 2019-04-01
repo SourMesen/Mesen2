@@ -28,6 +28,7 @@ namespace Mesen.GUI.Debugger
 		private int _scale = 1;
 		private int _selectedRow = 0;
 		private int _selectedColumn = 0;
+		private DateTime _lastUpdate = DateTime.MinValue;
 
 		public frmTilemapViewer()
 		{
@@ -77,10 +78,13 @@ namespace Mesen.GUI.Debugger
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.ViewerRefresh:
 					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
-						RefreshData();
-						this.BeginInvoke((Action)(() => {
-							this.RefreshViewer();
-						}));
+						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
+							_lastUpdate = DateTime.Now;
+							RefreshData();
+							this.BeginInvoke((Action)(() => {
+								this.RefreshViewer();
+							}));
+						}
 					}
 					break;
 

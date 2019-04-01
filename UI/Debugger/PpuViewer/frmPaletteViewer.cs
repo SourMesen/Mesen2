@@ -7,6 +7,7 @@ namespace Mesen.GUI.Debugger
 	public partial class frmPaletteViewer : BaseForm
 	{
 		private NotificationListener _notifListener;
+		private DateTime _lastUpdate = DateTime.MinValue;
 
 		public frmPaletteViewer()
 		{
@@ -54,11 +55,14 @@ namespace Mesen.GUI.Debugger
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.ViewerRefresh:
 					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
-						ctrlPaletteViewer.RefreshData();
-						this.BeginInvoke((Action)(() => {
-							ctrlPaletteViewer.RefreshViewer();
-							UpdateFields();
-						}));
+						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
+							_lastUpdate = DateTime.Now;
+							ctrlPaletteViewer.RefreshData();
+							this.BeginInvoke((Action)(() => {
+								ctrlPaletteViewer.RefreshViewer();
+								UpdateFields();
+							}));
+						}
 					}
 					break;
 

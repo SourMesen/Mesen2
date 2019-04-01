@@ -14,6 +14,7 @@ namespace Mesen.GUI.Debugger
 	public partial class frmEventViewer : BaseForm
 	{
 		private NotificationListener _notifListener;
+		private DateTime _lastUpdate = DateTime.MinValue;
 
 		public frmEventViewer()
 		{
@@ -41,10 +42,14 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.EventViewerRefresh:
-					ctrlPpuView.RefreshData();
-					this.BeginInvoke((Action)(() => {
-						ctrlPpuView.RefreshViewer();
-					}));
+					if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
+						_lastUpdate = DateTime.Now;
+
+						ctrlPpuView.RefreshData();
+						this.BeginInvoke((Action)(() => {
+							ctrlPpuView.RefreshViewer();
+						}));
+					}
 					break;
 			}
 		}
