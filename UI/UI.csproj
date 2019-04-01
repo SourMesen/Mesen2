@@ -225,7 +225,7 @@
     <Compile Include="Controls\ctrlRecentGames.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\ctrlRecentGames.designer.cs">
+    <Compile Include="Controls\ctrlRecentGames.Designer.cs">
       <DependentUpon>ctrlRecentGames.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Breakpoints\Breakpoint.cs" />
@@ -233,13 +233,13 @@
     <Compile Include="Debugger\Breakpoints\ctrlBreakpoints.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Breakpoints\ctrlBreakpoints.designer.cs">
+    <Compile Include="Debugger\Breakpoints\ctrlBreakpoints.Designer.cs">
       <DependentUpon>ctrlBreakpoints.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Breakpoints\frmBreakpoint.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\Breakpoints\frmBreakpoint.designer.cs">
+    <Compile Include="Debugger\Breakpoints\frmBreakpoint.Designer.cs">
       <DependentUpon>frmBreakpoint.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
@@ -252,13 +252,13 @@
     <Compile Include="Debugger\frmBreakIn.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmBreakIn.designer.cs">
+    <Compile Include="Debugger\frmBreakIn.Designer.cs">
       <DependentUpon>frmBreakIn.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmBreakOn.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmBreakOn.designer.cs">
+    <Compile Include="Debugger\frmBreakOn.Designer.cs">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
@@ -300,7 +300,7 @@
     <Compile Include="Controls\ctrlPathSelection.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\ctrlPathSelection.designer.cs">
+    <Compile Include="Controls\ctrlPathSelection.Designer.cs">
       <DependentUpon>ctrlPathSelection.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\MesenNumericUpDown.cs">
@@ -337,7 +337,7 @@
     <Compile Include="Debugger\Controls\ctrlCallstack.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlCallstack.designer.cs">
+    <Compile Include="Debugger\Controls\ctrlCallstack.Designer.cs">
       <DependentUpon>ctrlCallstack.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlColorPicker.cs">
@@ -352,7 +352,7 @@
     <Compile Include="Debugger\Controls\ctrlDbgShortcuts.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlDbgShortcuts.designer.cs">
+    <Compile Include="Debugger\Controls\ctrlDbgShortcuts.Designer.cs">
       <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlDisassemblyView.cs">
@@ -365,19 +365,19 @@
     <Compile Include="Debugger\MemoryTools\ctrlHexViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\MemoryTools\ctrlHexViewer.designer.cs">
+    <Compile Include="Debugger\MemoryTools\ctrlHexViewer.Designer.cs">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlWatch.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlWatch.designer.cs">
+    <Compile Include="Debugger\Controls\ctrlWatch.Designer.cs">
       <DependentUpon>ctrlWatch.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\EventViewer\ctrlEventViewerPpuView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\EventViewer\ctrlEventViewerPpuView.designer.cs">
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerPpuView.Designer.cs">
       <DependentUpon>ctrlEventViewerPpuView.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\EventViewer\frmEventViewer.cs">
@@ -389,13 +389,13 @@
     <Compile Include="Debugger\frmDbgPreferences.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmDbgPreferences.designer.cs">
+    <Compile Include="Debugger\frmDbgPreferences.Designer.cs">
       <DependentUpon>frmDbgPreferences.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmDbgShortcutGetKey.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmDbgShortcutGetKey.designer.cs">
+    <Compile Include="Debugger\frmDbgShortcutGetKey.Designer.cs">
       <DependentUpon>frmDbgShortcutGetKey.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlCodeScrollbar.cs">
@@ -410,7 +410,7 @@
     <Compile Include="Debugger\Controls\ctrlScrollableTextbox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlScrollableTextbox.designer.cs">
+    <Compile Include="Debugger\Controls\ctrlScrollableTextbox.Designer.cs">
       <DependentUpon>ctrlScrollableTextbox.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\FontDialogHelper.cs" />
@@ -423,26 +423,26 @@
     <Compile Include="Debugger\MemoryTools\frmFadeSpeed.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\MemoryTools\frmFadeSpeed.designer.cs">
+    <Compile Include="Debugger\MemoryTools\frmFadeSpeed.Designer.cs">
       <DependentUpon>frmFadeSpeed.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmGoToLine.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmGoToLine.designer.cs">
+    <Compile Include="Debugger\frmGoToLine.Designer.cs">
       <DependentUpon>frmGoToLine.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\MemoryTools\frmMemoryTools.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\MemoryTools\frmMemoryTools.designer.cs">
+    <Compile Include="Debugger\MemoryTools\frmMemoryTools.Designer.cs">
       <DependentUpon>frmMemoryTools.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\GraphicsExtensions.cs" />
     <Compile Include="Debugger\MemoryTools\frmMemoryViewerColors.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\MemoryTools\frmMemoryViewerColors.designer.cs">
+    <Compile Include="Debugger\MemoryTools\frmMemoryViewerColors.Designer.cs">
       <DependentUpon>frmMemoryViewerColors.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\MemoryTools\TblByteCharConverter.cs" />
@@ -455,7 +455,7 @@
     <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.designer.cs">
+    <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.Designer.cs">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\frmPaletteViewer.cs">
@@ -479,7 +479,7 @@
     <Compile Include="Debugger\frmTraceLogger.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmTraceLogger.designer.cs">
+    <Compile Include="Debugger\frmTraceLogger.Designer.cs">
       <DependentUpon>frmTraceLogger.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\TextboxHistory.cs" />
@@ -509,7 +509,7 @@
     <Compile Include="Debugger\Tooltips\frmInfoTooltip.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\Tooltips\frmInfoTooltip.designer.cs">
+    <Compile Include="Debugger\Tooltips\frmInfoTooltip.Designer.cs">
       <DependentUpon>frmInfoTooltip.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Tooltips\TooltipForm.cs">
@@ -541,19 +541,19 @@
     <Compile Include="Forms\Config\ctrlEmulatorShortcuts.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Config\ctrlEmulatorShortcuts.designer.cs">
+    <Compile Include="Forms\Config\ctrlEmulatorShortcuts.Designer.cs">
       <DependentUpon>ctrlEmulatorShortcuts.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\Controllers\ctrlKeyBindingHint.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Config\Controllers\ctrlKeyBindingHint.designer.cs">
+    <Compile Include="Forms\Config\Controllers\ctrlKeyBindingHint.Designer.cs">
       <DependentUpon>ctrlKeyBindingHint.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\Controllers\ctrlStandardController.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Config\Controllers\ctrlStandardController.designer.cs">
+    <Compile Include="Forms\Config\Controllers\ctrlStandardController.Designer.cs">
       <DependentUpon>ctrlStandardController.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\frmAudioConfig.cs">
@@ -565,13 +565,13 @@
     <Compile Include="Forms\Config\Controllers\frmControllerConfig.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Config\Controllers\frmControllerConfig.designer.cs">
+    <Compile Include="Forms\Config\Controllers\frmControllerConfig.Designer.cs">
       <DependentUpon>frmControllerConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\frmCopyFiles.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Config\frmCopyFiles.designer.cs">
+    <Compile Include="Forms\Config\frmCopyFiles.Designer.cs">
       <DependentUpon>frmCopyFiles.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\frmInputConfig.cs">
@@ -589,7 +589,7 @@
     <Compile Include="Forms\Config\frmGetKey.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Config\frmGetKey.designer.cs">
+    <Compile Include="Forms\Config\frmGetKey.Designer.cs">
       <DependentUpon>frmGetKey.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Config\frmPreferences.cs">
@@ -609,13 +609,13 @@
     <Compile Include="Forms\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmAbout.designer.cs">
+    <Compile Include="Forms\frmAbout.Designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmConfigWizard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmConfigWizard.designer.cs">
+    <Compile Include="Forms\frmConfigWizard.Designer.cs">
       <DependentUpon>frmConfigWizard.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmFullscreenRenderer.cs">
@@ -624,7 +624,7 @@
     <Compile Include="Forms\Tools\frmLogWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Tools\frmLogWindow.designer.cs">
+    <Compile Include="Forms\Tools\frmLogWindow.Designer.cs">
       <DependentUpon>frmLogWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmMain.cs">
@@ -636,26 +636,26 @@
     <Compile Include="Forms\frmSelectRom.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmSelectRom.designer.cs">
+    <Compile Include="Forms\frmSelectRom.Designer.cs">
       <DependentUpon>frmSelectRom.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Tools\frmRecordAvi.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Tools\frmRecordAvi.designer.cs">
+    <Compile Include="Forms\Tools\frmRecordAvi.Designer.cs">
       <DependentUpon>frmRecordAvi.cs</DependentUpon>
     </Compile>
     <Compile Include="Interop\RecordApi.cs" />
     <Compile Include="Updates\frmDownloadProgress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Updates\frmDownloadProgress.designer.cs">
+    <Compile Include="Updates\frmDownloadProgress.Designer.cs">
       <DependentUpon>frmDownloadProgress.cs</DependentUpon>
     </Compile>
     <Compile Include="Updates\frmUpdatePrompt.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Updates\frmUpdatePrompt.designer.cs">
+    <Compile Include="Updates\frmUpdatePrompt.Designer.cs">
       <DependentUpon>frmUpdatePrompt.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MesenMsgBox.cs" />
