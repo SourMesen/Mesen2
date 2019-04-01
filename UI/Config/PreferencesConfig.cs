@@ -12,7 +12,7 @@ namespace Mesen.GUI.Config
 {
 	public class PreferencesConfig
 	{
-		public Language DisplayLanguage = Language.SystemDefault;
+		public Language DisplayLanguage = Language.English;
 		public bool AutomaticallyCheckForUpdates = true;
 		public bool SingleInstance = true;
 		public bool AutoLoadPatches = true;
