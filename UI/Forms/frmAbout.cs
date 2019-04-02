@@ -23,7 +23,7 @@ namespace Mesen.GUI.Forms
 			lblBuildDate.Text = buildTime.ToShortDateString() + " " + buildTime.ToShortTimeString();
 
 #if AUTOBUILD
-			string devVersion = ResourceManager.ReadZippedResource("DevBuild.txt");
+			string devVersion = ResourceExtractor.ReadZippedResource("DevBuild.txt");
 			if(devVersion != null) {
 				lblMesenVersion.Text = devVersion;
 			}
