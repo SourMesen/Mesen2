@@ -229,6 +229,20 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, _prgRomSize, SnesMemoryType::PrgRom)));
 	}
 
+	uint32_t power = (uint32_t)std::log2(_prgRomSize);
+	if(_prgRomSize > (1 << power)) {
+		//If size isn't a power of 2, mirror the part above the nearest (lower) power of 2 until the size reaches the next power of 2.
+		uint32_t halfSize = 1 << power;
+		uint32_t fullSize = 1 << (power + 1);
+		uint32_t extraSize = _prgRomSize - halfSize;
+
+		while(_prgRomHandlers.size() < fullSize / 0x1000) {
+			for(uint32_t i = 0; i < extraSize / 0x1000; i += 0x1000) {
+				_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, halfSize + i, _prgRomSize, SnesMemoryType::PrgRom)));
+			}
+		}
+	}
+
 	for(uint32_t i = 0; i < _saveRamSize; i += 0x1000) {
 		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, SnesMemoryType::SaveRam)));
 	}
