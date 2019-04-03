@@ -427,6 +427,8 @@ namespace Mesen.GUI.Forms
 			mnuEmuSpeedDouble.Checked = emulationSpeed == 200;
 			mnuEmuSpeedTriple.Checked = emulationSpeed == 300;
 			mnuEmuSpeedMaximumSpeed.Checked = emulationSpeed == 0;
+
+			mnuShowFPS.Checked = ConfigManager.Config.Preferences.ShowFps;
 		}
 
 		private void mnuLoadState_DropDownOpening(object sender, EventArgs e)
