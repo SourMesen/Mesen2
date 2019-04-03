@@ -1058,7 +1058,7 @@ void Ppu::ApplyBrightness()
 void Ppu::ApplyHiResMode()
 {
 	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
-	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 7);
+	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
 	uint32_t screenY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 	uint32_t baseAddr = (screenY << 9);
 
