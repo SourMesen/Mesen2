@@ -33,6 +33,10 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, V
 		vector<uint8_t> romData;
 		romFile.ReadFile(romData);
 		
+		if(romData.size() < 0x8000) {
+			return nullptr;
+		}
+
 		cart->_romPath = romFile;
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
@@ -103,33 +107,34 @@ int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 void BaseCartridge::Init()
 {
 	//Find the best potential header among lorom/hirom + headerless/headered combinations
-	vector<uint32_t> baseAddresses = { 0, 0x200, 0x8000, 0x8200 };
+	vector<uint32_t> baseAddresses = { 0, 0x200, 0x8000, 0x8200, 0x408000, 0x408200 };
 	int32_t bestScore = -1;
 	bool hasHeader = false;
 	bool isLoRom = true;
+	bool isExRom = true;
+	uint32_t headerOffset = 0;
 	for(uint32_t baseAddress : baseAddresses) {
 		int32_t score = GetHeaderScore(baseAddress);
-		if(score > bestScore) {
+		if(score >= 0 && score >= bestScore) {
 			bestScore = score;
 			isLoRom = (baseAddress & 0x8000) == 0;
+			isExRom = (baseAddress & 0x400000) != 0;
 			hasHeader = (baseAddress & 0x200) != 0;
+			headerOffset = std::min(baseAddress + 0x7FB0, _prgRomSize - 0x40);
 		}
 	}
 
-	uint32_t headerOffset = 0;
 	uint32_t flags = 0;
 	if(isLoRom) {
 		if(hasHeader) {
 			flags |= CartFlags::CopierHeader;
 		}
 		flags |= CartFlags::LoRom;
-		headerOffset = 0x7FB0;
 	} else {
 		if(hasHeader) {
 			flags |= CartFlags::CopierHeader;
 		}
-		flags |= CartFlags::HiRom;
-		headerOffset = 0xFFB0;
+		flags |= isExRom ? CartFlags::ExHiRom : CartFlags::HiRom;
 	}
 
 	if(flags & CartFlags::CopierHeader) {
@@ -198,13 +203,13 @@ void BaseCartridge::SaveBattery()
 	}
 }
 
-void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, uint16_t pageIncrement, bool mirror)
+void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, uint16_t pageIncrement, bool mirror, uint16_t startPageNumber)
 {
 	if(handlers.empty()) {
 		return;
 	}
 
-	uint32_t pageNumber = 0;
+	uint32_t pageNumber = startPageNumber;
 	for(uint32_t i = startBank; i <= endBank; i++) {
 		uint32_t baseAddress = i << 16;
 		pageNumber += pageIncrement;
@@ -230,7 +235,7 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	}
 
 	uint32_t power = (uint32_t)std::log2(_prgRomSize);
-	if(_prgRomSize > (1 << power)) {
+	if(_prgRomSize > (1u << power)) {
 		//If size isn't a power of 2, mirror the part above the nearest (lower) power of 2 until the size reaches the next power of 2.
 		uint32_t halfSize = 1 << power;
 		uint32_t fullSize = 1 << (power + 1);
@@ -254,7 +259,7 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
 			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
 		}
-	} else {
+	} else if(_flags & CartFlags::HiRom) {
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true);
 		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true);
 		MapBanks(mm, _prgRomHandlers, 0x80, 0xBF, 0x08, 0x0F, 8, true);
@@ -262,6 +267,16 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 
 		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
 		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
+	} else if(_flags & CartFlags::ExHiRom) {
+		//First half is at the end
+		MapBanks(mm, _prgRomHandlers, 0xC0, 0xFF, 0x00, 0x0F, 0, true);
+		MapBanks(mm, _prgRomHandlers, 0x80, 0xBF, 0x08, 0x0F, 8, true); //mirror
+
+		//Last part of the ROM is at the start
+		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true, 0x400);
+		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true, 0x400); //mirror
+
+		MapBanks(mm, _saveRamHandlers, 0x80, 0xBF, 0x06, 0x07, 0, true);
 	}
 }
 

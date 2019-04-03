@@ -37,7 +37,7 @@ private:
 	uint32_t _prgRomSize = 0;
 	uint32_t _saveRamSize = 0;
 
-	void MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage = 0, uint16_t endPage = 0x0F, uint16_t pageIncrement = 0, bool mirror = false);
+	void MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage = 0, uint16_t endPage = 0x0F, uint16_t pageIncrement = 0, bool mirror = false, uint16_t startPageNumber = 0);
 	
 	void LoadBattery();
 
