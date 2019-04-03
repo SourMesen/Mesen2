@@ -214,10 +214,10 @@ void Ppu::EvaluateNextLineSprites()
 			height /= 2;
 		}
 
-		uint8_t startY = y + 16;
-		uint8_t endY = y + height + 16;
+		uint8_t endY = (y + height) & 0xFF;
 
-		if(startY > screenY + 16 || endY <= screenY + 16) {
+		bool visible = (screenY >= y && screenY < endY) || (endY < y && screenY < endY);
+		if(!visible) {
 			//Not visible on this scanline
 			continue;
 		}
