@@ -192,6 +192,7 @@ private:
 	__forceinline void DrawSubPixel(uint8_t x, uint16_t color);
 
 	void ApplyColorMath();
+	void ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool isInsideWindow);
 	
 	template<bool forMainScreen>
 	void ApplyBrightness();

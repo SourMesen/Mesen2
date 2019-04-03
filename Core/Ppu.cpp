@@ -961,83 +961,98 @@ void Ppu::ApplyColorMath()
 		return;
 	}
 
+	bool hiResMode = _hiResMode || _bgMode == 5 || _bgMode == 6;
 	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
+	uint16_t prevMainPixel = 0;
+	int prevX = 0;
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
-			uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
-			uint16_t &mainPixel = _mainScreenBuffer[x];
-
 			bool isInsideWindow = activeWindowCount && ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
-			//Set color to black as needed based on clip mode
-			switch(_colorMathClipMode) {
-				default:
-				case ColorWindowMode::Never: break;
 
-				case ColorWindowMode::OutsideWindow: 
-					if(!isInsideWindow) {
-						mainPixel = 0;
-						halfShift = 0;
-					}
-					break;
-
-				case ColorWindowMode::InsideWindow:
-					if(isInsideWindow) {
-						mainPixel = 0;
-						halfShift = 0;
-					}
-					break;
-
-				case ColorWindowMode::Always: mainPixel = 0; break;
+			uint16_t subPixel = _subScreenBuffer[x];
+			if(hiResMode) {
+				//Apply the color math based on the previous main pixel
+				ApplyColorMathToPixel(_subScreenBuffer[x], prevMainPixel, prevX, isInsideWindow);
+				prevMainPixel = _mainScreenBuffer[x];
+				prevX = x;
 			}
-
-			//Prevent color math as needed based on mode
-			switch(_colorMathPreventMode) {
-				default:
-				case ColorWindowMode::Never: break;
-
-				case ColorWindowMode::OutsideWindow:
-					if(!isInsideWindow) {
-						continue;
-					}
-					break;
-
-				case ColorWindowMode::InsideWindow:
-					if(isInsideWindow) {
-						continue;
-					}
-					break;
-
-				case ColorWindowMode::Always: continue;
-			}
-
-			uint16_t otherPixel;
-			if(_colorMathAddSubscreen) {
-				if(_subScreenFilled[x]) {
-					otherPixel = _subScreenBuffer[x];
-				} else {
-					//there's nothing in the subscreen at this pixel, use the fixed color and disable halve operation
-					otherPixel = _fixedColor;
-					halfShift = 0;
-				}
-			} else {
-				otherPixel = _fixedColor;
-			}
-
-			if(_colorMathSubstractMode) {
-				uint16_t r = std::max((mainPixel & 0x001F) - (otherPixel & 0x001F), 0) >> halfShift;
-				uint16_t g = std::max(((mainPixel >> 5) & 0x001F) - ((otherPixel >> 5) & 0x001F), 0) >> halfShift;
-				uint16_t b = std::max(((mainPixel >> 10) & 0x001F) - ((otherPixel >> 10) & 0x001F), 0) >> halfShift;
-
-				mainPixel = r | (g << 5) | (b << 10);
-			} else {
-				uint16_t r = std::min(((mainPixel & 0x001F) + (otherPixel & 0x001F)) >> halfShift, 0x1F);
-				uint16_t g = std::min((((mainPixel >> 5) & 0x001F) + ((otherPixel >> 5) & 0x001F)) >> halfShift, 0x1F);
-				uint16_t b = std::min((((mainPixel >> 10) & 0x001F) + ((otherPixel >> 10) & 0x001F)) >> halfShift, 0x1F);
-
-				mainPixel = r | (g << 5) | (b << 10);
-			}
+			ApplyColorMathToPixel(_mainScreenBuffer[x], subPixel, x, isInsideWindow);
 		}
+	}
+}
+
+void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool isInsideWindow)
+{
+	uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
+
+	//Set color to black as needed based on clip mode
+	switch(_colorMathClipMode) {
+		default:
+		case ColorWindowMode::Never: break;
+
+		case ColorWindowMode::OutsideWindow:
+			if(!isInsideWindow) {
+				pixelA = 0;
+				halfShift = 0;
+			}
+			break;
+
+		case ColorWindowMode::InsideWindow:
+			if(isInsideWindow) {
+				pixelA = 0;
+				halfShift = 0;
+			}
+			break;
+
+		case ColorWindowMode::Always: pixelA = 0; break;
+	}
+
+	//Prevent color math as needed based on mode
+	switch(_colorMathPreventMode) {
+		default:
+		case ColorWindowMode::Never: break;
+
+		case ColorWindowMode::OutsideWindow:
+			if(!isInsideWindow) {
+				return;
+			}
+			break;
+
+		case ColorWindowMode::InsideWindow:
+			if(isInsideWindow) {
+				return;
+			}
+			break;
+
+		case ColorWindowMode::Always: return;
+	}
+
+	uint16_t otherPixel;
+	if(_colorMathAddSubscreen) {
+		if(_subScreenFilled[x]) {
+			otherPixel = pixelB;
+		} else {
+			//there's nothing in the subscreen at this pixel, use the fixed color and disable halve operation
+			otherPixel = _fixedColor;
+			halfShift = 0;
+		}
+	} else {
+		otherPixel = _fixedColor;
+	}
+
+	if(_colorMathSubstractMode) {
+		uint16_t r = std::max((pixelA & 0x001F) - (otherPixel & 0x001F), 0) >> halfShift;
+		uint16_t g = std::max(((pixelA >> 5) & 0x001F) - ((otherPixel >> 5) & 0x001F), 0) >> halfShift;
+		uint16_t b = std::max(((pixelA >> 10) & 0x001F) - ((otherPixel >> 10) & 0x001F), 0) >> halfShift;
+
+		pixelA = r | (g << 5) | (b << 10);
+	} else {
+		uint16_t r = std::min(((pixelA & 0x001F) + (otherPixel & 0x001F)) >> halfShift, 0x1F);
+		uint16_t g = std::min((((pixelA >> 5) & 0x001F) + ((otherPixel >> 5) & 0x001F)) >> halfShift, 0x1F);
+		uint16_t b = std::min((((pixelA >> 10) & 0x001F) + ((otherPixel >> 10) & 0x001F)) >> halfShift, 0x1F);
+
+		pixelA = r | (g << 5) | (b << 10);
 	}
 }
 
