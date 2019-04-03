@@ -744,10 +744,10 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 
 	//TODO: Check+fix behavior with 16x16 tiles
 	//TODO: Test mode 4/6 behavior
-
-	if((realX + hScroll) & ~0x07) {
+	int columnIndex = (realX + (hScroll & 0x07)) >> 3;
+	if(columnIndex > 0) {
 		//For all tiles after the first tile on the row, check if an active offset exists and use it
-		uint16_t columnOffset = ((((x - 8) & ~0x07) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
+		uint16_t columnOffset = ((((columnIndex - 1) << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
 		uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
 
 		uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + (columnOffset << 1) + (rowOffset << 6);
