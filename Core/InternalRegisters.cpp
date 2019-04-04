@@ -128,6 +128,11 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0x4200:
+			if((value & 0x20) && !_enableVerticalIrq && _console->GetPpu()->GetScanline() == _verticalTimer) {
+				//When enabling vertical irqs, if the current scanline matches the target scanline, set the irq flag right away
+				_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+			}
+
 			_enableNmi = (value & 0x80) != 0;
 			_enableVerticalIrq = (value & 0x20) != 0;
 			_enableHorizontalIrq = (value & 0x10) != 0;
@@ -136,7 +141,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 				//TODO VERIFY
 				_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
 			}
-
+			
 			_enableAutoJoypadRead = (value & 0x01) != 0;
 			break;
 
