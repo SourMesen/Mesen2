@@ -3,6 +3,7 @@
 #include "Cpu.h"
 #include "Console.h"
 #include "MemoryManager.h"
+#include "DmaController.h"
 #include "EventType.h"
 #include "../Utilities/Serializer.h"
 
@@ -10,6 +11,7 @@ Cpu::Cpu(Console *console)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
+	_dmaController = console->GetDmaController().get();
 }
 
 Cpu::~Cpu()
@@ -72,15 +74,17 @@ void Cpu::Exec()
 	}
 
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
-	if(_state.PrevNmiFlag) {
-		uint32_t originalPc = GetProgramAddress(_state.PC);
-		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
-		_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
-		_state.NmiFlag = false;
-	} else if(_state.PrevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
-		uint32_t originalPc = GetProgramAddress(_state.PC);
-		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
-		_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
+	if(!_dmaController->HasNmiIrqDelay()) {
+		if(_state.PrevNmiFlag) {
+			uint32_t originalPc = GetProgramAddress(_state.PC);
+			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
+			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
+			_state.NmiFlag = false;
+		} else if(_state.PrevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
+			uint32_t originalPc = GetProgramAddress(_state.PC);
+			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
+			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
+		}
 	}
 }
 

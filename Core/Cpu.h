@@ -10,6 +10,7 @@
 #include "../Utilities/ISerializable.h"
 
 class MemoryManager;
+class DmaController;
 class Console;
 
 class Cpu : public ISerializable
@@ -29,6 +30,7 @@ private:
 	typedef void(Cpu::*Func)();
 	
 	MemoryManager *_memoryManager;
+	DmaController *_dmaController;
 	Console *_console;
 
 	bool _immediateMode = false;

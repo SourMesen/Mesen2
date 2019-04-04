@@ -28,6 +28,15 @@ void DmaController::Reset()
 	_hdmaChannels = 0;
 }
 
+bool DmaController::HasNmiIrqDelay()
+{
+	if(_nmiIrqDelayCounter > 0) {
+		_nmiIrqDelayCounter--;
+		return true;
+	}
+	return false;
+}
+
 void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)
 {
 	if(fromBtoA) {
@@ -234,6 +243,9 @@ void DmaController::ProcessHdmaChannels()
 				ch.DoTransfer = true;
 			}
 		}
+
+		//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
+		_nmiIrqDelayCounter = 2;
 	}
 }
 
@@ -263,6 +275,9 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 				//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
 				clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
 				_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
+
+				//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
+				_nmiIrqDelayCounter = 2;
 			}
 			break;
 		}
@@ -453,7 +468,7 @@ uint8_t DmaController::Read(uint16_t addr)
 
 void DmaController::Serialize(Serializer &s)
 {
-	s.Stream(_hdmaPending, _hdmaChannels);
+	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter);
 	for(int i = 0; i < 8; i++) {
 		s.Stream(
 			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,
