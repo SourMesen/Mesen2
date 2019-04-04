@@ -17,7 +17,7 @@ public:
 		_offset = offset;
 
 		if(size - offset < 0x1000) {
-			_mask = size - offset;
+			_mask = size - offset - 1;
 		} else {
 			_mask = 0xFFF;
 		}
