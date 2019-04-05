@@ -196,9 +196,9 @@ void Serializer::RecursiveStream(T &value, T2&... args)
 template<typename... T>
 void Serializer::Stream(T&... args)
 {
-	//StreamStartBlock();
+	StreamStartBlock();
 	RecursiveStream(args...);
-	//StreamEndBlock();
+	StreamEndBlock();
 }
 
 template<typename T>
