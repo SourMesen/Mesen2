@@ -13,7 +13,7 @@
 void DummyCpu::SetDummyState(CpuState &state)
 {
 	_state = state;
-
+	_state.StopState = CpuStopState::Running;
 	_writeCounter = 0;
 	_readCounter = 0;
 }

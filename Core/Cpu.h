@@ -36,7 +36,7 @@ private:
 	bool _immediateMode = false;
 
 	CpuState _state;
-	uint32_t _operand;
+	uint32_t _operand = -1;
 
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
