@@ -235,6 +235,7 @@ void Ppu::EvaluateNextLineSprites()
 			continue;
 		}
 
+		info.Index = i >> 2;
 		info.TileRow = (_oamRam[addr + 2] & 0xF0) >> 4;
 		info.TileColumn = _oamRam[addr + 2] & 0x0F;
 
@@ -276,6 +277,9 @@ void Ppu::EvaluateNextLineSprites()
 
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
 		int prevColumnOffset = -1;
+
+		//Keep the last address the PPU used while rendering sprites (needed for Uniracers, which writes to OAM during rendering)
+		_oamRenderAddress = 0x200 + (info.Index >> 2);
 
 		for(int x = std::max<int16_t>(info.X, 0); x < info.X + width && x < 256; x++) {
 			uint8_t xOffset;
@@ -1228,13 +1232,15 @@ uint8_t Ppu::Read(uint16_t addr)
 			
 		case 0x2138: {
 			//OAMDATAREAD - Data for OAM read
+			//When trying to read/write during rendering, the internal address used by the PPU's sprite rendering is used
+			uint16_t addr = (_forcedVblank || (_scanline >= (_overscanMode ? 240 : 225))) ? _internalOamAddress : _oamRenderAddress;
 			uint8_t value;
-			if(_internalOamAddress < 512) {
-				value = _oamRam[_internalOamAddress];
-				_console->ProcessPpuRead(_internalOamAddress, value, SnesMemoryType::SpriteRam);
+			if(addr < 512) {
+				value = _oamRam[addr];
+				_console->ProcessPpuRead(addr, value, SnesMemoryType::SpriteRam);
 			} else {
-				value = _oamRam[0x200 | (_internalOamAddress & 0x1F)];
-				_console->ProcessPpuRead(0x200 | (_internalOamAddress & 0x1F), value, SnesMemoryType::SpriteRam);
+				value = _oamRam[0x200 | (addr & 0x1F)];
+				_console->ProcessPpuRead(0x200 | (addr & 0x1F), value, SnesMemoryType::SpriteRam);
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
 			_ppu1OpenBus = value;
@@ -1382,20 +1388,24 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_enableOamPriority = (value & 0x80) != 0;
 			break;
 
-		case 0x2104:
-			if(_internalOamAddress < 512) {
-				if(_internalOamAddress & 0x01) {
-					_console->ProcessPpuWrite(_internalOamAddress - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
-					_oamRam[_internalOamAddress - 1] = _oamWriteBuffer;
+		case 0x2104: {
+			//When trying to read/write during rendering, the internal address used by the PPU's sprite rendering is used
+			//This is approximated by _oamRenderAddress (but is not cycle accurate) - needed for Uniracers
+			uint16_t addr = (_forcedVblank || (_scanline >= (_overscanMode ? 240 : 225))) ? _internalOamAddress : _oamRenderAddress;
+
+			if(addr < 512) {
+				if(addr & 0x01) {
+					_console->ProcessPpuWrite(addr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
+					_oamRam[addr - 1] = _oamWriteBuffer;
 	
-					_console->ProcessPpuWrite(_internalOamAddress, value, SnesMemoryType::SpriteRam);
-					_oamRam[_internalOamAddress] = value;
+					_console->ProcessPpuWrite(addr, value, SnesMemoryType::SpriteRam);
+					_oamRam[addr] = value;
 				} else {
 					_oamWriteBuffer = value;
 				}
 			} else {
-				uint16_t address = 0x200 | (_internalOamAddress & 0x1F);
-				if((_internalOamAddress & 0x01) == 0) {
+				uint16_t address = 0x200 | (addr & 0x1F);
+				if((addr & 0x01) == 0) {
 					_oamWriteBuffer = value;
 				}
 				_console->ProcessPpuWrite(address, value, SnesMemoryType::SpriteRam);
@@ -1403,7 +1413,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
 			break;
-			
+		}
+
 		case 0x2105:
 			if(_bgMode != (value & 0x07)) {
 				MessageManager::Log("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
@@ -1700,7 +1711,7 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress
 	);
 
 	for(int i = 0; i < 4; i++) {

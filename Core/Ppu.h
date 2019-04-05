@@ -8,6 +8,7 @@ class InternalRegisters;
 
 struct SpriteInfo
 {
+	uint8_t Index;
 	int16_t X;
 	uint8_t Y;
 	bool HorizontalMirror;
@@ -104,6 +105,7 @@ private:
 	uint16_t _oamRamAddress = 0;
 	bool _enableOamPriority = false;
 	
+	uint16_t _oamRenderAddress = 0;
 	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
 
