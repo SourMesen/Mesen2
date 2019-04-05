@@ -43,21 +43,22 @@ namespace Mesen.GUI.Debugger
 
 			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
 
-			_options.Format = TileFormat.Bpp4;
-			_options.Width = 32;
-			cboFormat.SetEnumValue(TileFormat.Bpp4);
-			ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
-
 			_tileData = new byte[512 * 512 * 4];
 			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
 			picTilemap.Image = _tileImage;
 
 			ctrlScanlineCycleSelect.Initialize(241, 0);
 
-			InitMemoryTypeDropdown();
+			_options.Format = TileFormat.Bpp4;
+			_options.Width = 32;
+			_options.Palette = ctrlPaletteViewer.SelectedPalette;
 
 			RefreshData();
 			RefreshViewer();
+
+			InitMemoryTypeDropdown();
+			cboFormat.SetEnumValue(TileFormat.Bpp4);
+			ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
@@ -105,7 +106,6 @@ namespace Mesen.GUI.Debugger
 
 		private void RefreshData()
 		{
-			_options.Palette = ctrlPaletteViewer.SelectedPalette;
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 
 			byte[] source = DebugApi.GetMemoryState(_memoryType);
@@ -179,6 +179,7 @@ namespace Mesen.GUI.Debugger
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
 		{
 			_options.ShowTileGrid = chkShowTileGrid.Checked;
+			RefreshViewer();
 		}
 
 		private void cboMemoryType_SelectedIndexChanged(object sender, EventArgs e)
@@ -196,6 +197,7 @@ namespace Mesen.GUI.Debugger
 			}
 
 			nudBank.Maximum = Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
+			RefreshViewer();
 		}
 
 		private void cboBpp_SelectedIndexChanged(object sender, EventArgs e)
@@ -210,21 +212,31 @@ namespace Mesen.GUI.Debugger
 			}
 
 			_options.Palette = ctrlPaletteViewer.SelectedPalette;
+			RefreshViewer();
 		}
 
 		private void nudColumns_ValueChanged(object sender, EventArgs e)
 		{
 			_options.Width = (int)nudColumns.Value;
+			RefreshViewer();
 		}
 
 		private void nudBank_ValueChanged(object sender, EventArgs e)
 		{
 			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			RefreshViewer();
 		}
 
 		private void nudOffset_ValueChanged(object sender, EventArgs e)
 		{
 			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			RefreshViewer();
+		}
+
+		private void ctrlPaletteViewer_SelectionChanged()
+		{
+			_options.Palette = ctrlPaletteViewer.SelectedPalette;
+			RefreshViewer();
 		}
 	}
 }

@@ -318,6 +318,7 @@
 			this.ctrlPaletteViewer.SelectionMode = Mesen.GUI.Debugger.PaletteSelectionMode.None;
 			this.ctrlPaletteViewer.Size = new System.Drawing.Size(176, 176);
 			this.ctrlPaletteViewer.TabIndex = 12;
+			this.ctrlPaletteViewer.SelectionChanged += new Mesen.GUI.Debugger.ctrlPaletteViewer.SelectionChangedHandler(this.ctrlPaletteViewer_SelectionChanged);
 			// 
 			// frmTileViewer
 			// 
