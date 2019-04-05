@@ -121,6 +121,7 @@ void Ppu::Exec()
 		if(_scanline == (_overscanMode ? 240 : 225)) {
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
+				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
 				_internalOamAddress = (_oamRamAddress << 1);
 			}
 
@@ -184,7 +185,6 @@ void Ppu::Exec()
 		}
 		_console->GetDmaController()->ProcessHdmaChannels();
 	} else if(_scanline == 0 && _cycle == 6) {
-		//TODO : To verify: Do HDMA channels get initialized even in forced blank?
 		_console->GetDmaController()->InitHdmaChannels();
 	} else if((_cycle == 134 || _cycle == 135) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
 		//TODO Approximation (DRAM refresh timing is not exact)
@@ -1365,10 +1365,13 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 	switch(addr) {
 		case 0x2100:
+			if(_forcedVblank && _scanline == (_overscanMode ? 240 : 225)) {
+				//"writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur."
+				_internalOamAddress = (_oamRamAddress << 1);
+			}
+
 			_forcedVblank = (value & 0x80) != 0;
 			_screenBrightness = value & 0x0F;
-
-			//TODO : Also, writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur. 
 			break;
 
 		case 0x2101:
