@@ -19,12 +19,15 @@ private:
 	uint8_t _opSize;
 	AddrMode _addrMode;
 	uint8_t _flags;
+	bool _initialized = false;
 
 public:
 	DisassemblyInfo();
 	DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags);
 
 	void Initialize(uint8_t * opPointer, uint8_t cpuFlags);
+	bool IsInitialized();
+	void Reset();
 
 	void GetDisassembly(string &out, uint32_t memoryAddr);
 	uint32_t GetOperandAddress(uint32_t memoryAddr);

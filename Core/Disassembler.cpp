@@ -23,12 +23,12 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_wram = _memoryManager->DebugGetWorkRam();
 	_wramSize = MemoryManager::WorkRamSize;
 	
-	_prgCache = vector<shared_ptr<DisassemblyInfo>>(_prgRomSize);
-	_sramCache = vector<shared_ptr<DisassemblyInfo>>(_sramSize);
-	_wramCache = vector<shared_ptr<DisassemblyInfo>>(_wramSize);
+	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
+	_sramCache = vector<DisassemblyInfo>(_sramSize);
+	_wramCache = vector<DisassemblyInfo>(_wramSize);
 }
 
-void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<shared_ptr<DisassemblyInfo>> **cache)
+void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache)
 {
 	switch(info.Type) {
 		case SnesMemoryType::PrgRom:
@@ -58,18 +58,18 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags)
 {
 	uint8_t *source;
 	uint32_t sourceLength;
-	vector<shared_ptr<DisassemblyInfo>> *cache;
+	vector<DisassemblyInfo> *cache;
 	GetSource(addrInfo, &source, sourceLength, &cache);
 
 	if(addrInfo.Address >= 0) {
-		DisassemblyInfo *disInfo = (*cache)[addrInfo.Address].get();
-		if(!disInfo) {
-			shared_ptr<DisassemblyInfo> disassemblyInfo(new DisassemblyInfo(source+addrInfo.Address, cpuFlags));
+		DisassemblyInfo disInfo = (*cache)[addrInfo.Address];
+		if(!disInfo.IsInitialized()) {
+			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags);
 			(*cache)[addrInfo.Address] = disassemblyInfo;
 			_needDisassemble = true;
-			disInfo = disassemblyInfo.get();
+			disInfo = disassemblyInfo;
 		}
-		return disInfo->GetOperandSize() + 1;
+		return disInfo.GetOperandSize() + 1;
 	}
 	return 0;
 }
@@ -78,15 +78,15 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo)
 {
 	uint8_t *source;
 	uint32_t sourceLength;
-	vector<shared_ptr<DisassemblyInfo>> *cache;
+	vector<DisassemblyInfo> *cache;
 	GetSource(addrInfo, &source, sourceLength, &cache);
 
 	if(addrInfo.Address >= 0) {
 		for(int i = 0; i < 4; i++) {
 			if(addrInfo.Address >= i) {
-				if((*cache)[addrInfo.Address - i]) {
+				if((*cache)[addrInfo.Address - i].IsInitialized()) {
 					_needDisassemble = true;
-					(*cache)[addrInfo.Address - i].reset();
+					(*cache)[addrInfo.Address - i].Reset();
 				}
 			}
 		}
@@ -107,13 +107,11 @@ void Disassembler::Disassemble()
 
 	uint8_t *source;
 	uint32_t sourceLength;
-	vector<shared_ptr<DisassemblyInfo>> *cache;
+	vector<DisassemblyInfo> *cache;
 
 	bool disassembleAll = false;
 	bool inUnknownBlock = false;
-	shared_ptr<DisassemblyInfo> disassemblyInfo;
-	shared_ptr<DisassemblyInfo> tmpInfo(new DisassemblyInfo());
-
+	
 	AddressInfo addrInfo = {};
 	AddressInfo prevAddrInfo = {};
 	for(int32_t i = 0; i <= 0xFFFFFF; i++) {
@@ -126,19 +124,19 @@ void Disassembler::Disassemble()
 
 		GetSource(addrInfo, &source, sourceLength, &cache);
 
-		DisassemblyInfo *disassemblyInfo = (*cache)[addrInfo.Address].get();
+		DisassemblyInfo disassemblyInfo = (*cache)[addrInfo.Address];
 		
 		uint8_t opSize = 0;
 		uint8_t opCode = (source + addrInfo.Address)[0];
 		bool needRealign = true;
-		if(!disassemblyInfo && disassembleAll) {
+		if(!disassemblyInfo.IsInitialized() && disassembleAll) {
 			opSize = DisassemblyInfo::GetOperandSize(opCode, 0);
-		} else if(disassemblyInfo) {
-			opSize = disassemblyInfo->GetOperandSize();
+		} else if(disassemblyInfo.IsInitialized()) {
+			opSize = disassemblyInfo.GetOperandSize();
 			needRealign = false;
 		}
 
-		if(disassemblyInfo || disassembleAll) {
+		if(disassemblyInfo.IsInitialized() || disassembleAll) {
 			if(inUnknownBlock) {
 				_disassembly.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd));
 				inUnknownBlock = false;
@@ -151,7 +149,7 @@ void Disassembler::Disassemble()
 			_disassembly.push_back(DisassemblyResult(addrInfo, i));
 			if(needRealign) {
 				for(int j = 1; j < opSize; j++) {
-					if((*cache)[addrInfo.Address + j]) {
+					if((*cache)[addrInfo.Address + j].IsInitialized()) {
 						break;
 					}
 					i++;
@@ -180,16 +178,16 @@ void Disassembler::Disassemble()
 
 DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info)
 {
-	DisassemblyInfo* disassemblyInfo = nullptr;
+	DisassemblyInfo disassemblyInfo;
 	switch(info.Type) {
 		default: break;
-		case SnesMemoryType::PrgRom: disassemblyInfo = _prgCache[info.Address].get(); break;
-		case SnesMemoryType::WorkRam: disassemblyInfo = _wramCache[info.Address].get(); break;
-		case SnesMemoryType::SaveRam: disassemblyInfo = _sramCache[info.Address].get(); break;
+		case SnesMemoryType::PrgRom: disassemblyInfo = _prgCache[info.Address]; break;
+		case SnesMemoryType::WorkRam: disassemblyInfo = _wramCache[info.Address]; break;
+		case SnesMemoryType::SaveRam: disassemblyInfo = _sramCache[info.Address]; break;
 	}
 
-	if(disassemblyInfo) {
-		return *disassemblyInfo;
+	if(disassemblyInfo.IsInitialized()) {
+		return disassemblyInfo;
 	} else {
 		return DisassemblyInfo();
 	}
@@ -240,10 +238,10 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 		bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) != 0;
 
 		if(!isBlockStartEnd && result.Address.Address >= 0) {
-			shared_ptr<DisassemblyInfo> disInfo;
+			DisassemblyInfo disInfo;
 			uint8_t *source;
 			uint32_t sourceLength;
-			vector<shared_ptr<DisassemblyInfo>> *cache;
+			vector<DisassemblyInfo> *cache;
 			GetSource(result.Address, &source, sourceLength, &cache);
 			disInfo = (*cache)[result.Address.Address];
 			
@@ -251,26 +249,26 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 			state.PC = (uint16_t)result.CpuAddress;
 			state.K = (result.CpuAddress >> 16);
 
-			if(!disInfo) {
-				disInfo.reset(new DisassemblyInfo(source + result.Address.Address, state.PS));
+			if(!disInfo.IsInitialized()) {
+				disInfo = DisassemblyInfo(source + result.Address.Address, state.PS);
 			} else {
 				data.Flags |= (uint8_t)LineFlags::VerifiedCode;
 			}
 
 			string text;
-			disInfo->GetDisassembly(text, result.CpuAddress);
+			disInfo.GetDisassembly(text, result.CpuAddress);
 			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
 
-			data.OpSize = disInfo->GetOperandSize() + 1;
+			data.OpSize = disInfo.GetOperandSize() + 1;
 
-			data.EffectiveAddress = disInfo->GetEffectiveAddress(state, _console);
+			data.EffectiveAddress = disInfo.GetEffectiveAddress(state, _console);
 			if(data.EffectiveAddress >= 0) {
-				data.Value = disInfo->GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
+				data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
 			} else {
 				data.ValueSize = 0;
 			}
 
-			disInfo->GetByteCode(data.ByteCode);
+			disInfo.GetByteCode(data.ByteCode);
 			data.Comment[0] = 0;
 		} else {
 			if(data.Flags & LineFlags::SubStart) {

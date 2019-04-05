@@ -16,9 +16,9 @@ private:
 	Console *_console;
 	shared_ptr<CodeDataLogger> _cdl;
 
-	vector<shared_ptr<DisassemblyInfo>> _prgCache;
-	vector<shared_ptr<DisassemblyInfo>> _wramCache;
-	vector<shared_ptr<DisassemblyInfo>> _sramCache;
+	vector<DisassemblyInfo> _prgCache;
+	vector<DisassemblyInfo> _wramCache;
+	vector<DisassemblyInfo> _sramCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
@@ -32,7 +32,7 @@ private:
 	uint8_t *_sram;
 	uint32_t _sramSize;
 
-	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<shared_ptr<DisassemblyInfo>> **cache);
+	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
 
 public:
 	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl);

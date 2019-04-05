@@ -19,7 +19,6 @@ DisassemblyInfo::DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags)
 void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags)
 {
 	_flags = cpuFlags & (ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
-
 	_byteCode[0] = opPointer[0];
 	_addrMode = DisassemblyInfo::OpMode[_byteCode[0]];
 	_opSize = GetOperandSize(_addrMode, _flags) + 1;
@@ -27,6 +26,18 @@ void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags)
 	for(int i = 1; i < _opSize; i++) {
 		_byteCode[i] = opPointer[i];
 	}
+
+	_initialized = true;
+}
+
+bool DisassemblyInfo::IsInitialized()
+{
+	return _initialized;
+}
+
+void DisassemblyInfo::Reset()
+{
+	_initialized = false;
 }
 
 void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
