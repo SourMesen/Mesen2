@@ -63,6 +63,7 @@
     <ClInclude Include="ControlDeviceState.h" />
     <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
+    <ClInclude Include="CpuDisUtils.h" />
     <ClInclude Include="DebugBreakHelper.h" />
     <ClInclude Include="DebugStats.h" />
     <ClInclude Include="DummyCpu.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="ControlManager.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="Cpu.Instructions.cpp" />
+    <ClCompile Include="CpuDisUtils.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugHud.cpp" />
     <ClCompile Include="DebugStats.cpp" />

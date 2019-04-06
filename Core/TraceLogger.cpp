@@ -217,15 +217,16 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 
 			case RowDataType::EffectiveAddress:
 			{
-				string effectiveAddress;
-				disassemblyInfo.GetEffectiveAddressString(effectiveAddress, cpuState, _console.get());
-				WriteValue(output, effectiveAddress, rowPart);
+				int32_t effectiveAddress = disassemblyInfo.GetEffectiveAddress(_console.get(), &cpuState);
+				if(effectiveAddress >= 0) {
+					WriteValue(output, " [" + HexUtilities::ToHex24(effectiveAddress) + "]", rowPart);
+				}
 				break;
 			}
 
 			case RowDataType::MemoryValue:
 			{
-				int32_t address = disassemblyInfo.GetEffectiveAddress(cpuState, _console.get());
+				int32_t address = disassemblyInfo.GetEffectiveAddress(_console.get(), &cpuState);
 				if(address >= 0) {
 					uint8_t valueSize;
 					uint16_t value = disassemblyInfo.GetMemoryValue(address, _console->GetMemoryManager().get(), valueSize);

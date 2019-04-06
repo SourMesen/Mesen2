@@ -14,9 +14,6 @@
     <ClInclude Include="TraceLogger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="DisassemblyInfo.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="Debugger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
@@ -158,9 +155,6 @@
     <ClInclude Include="FrameLimiter.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="Disassembler.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="CodeDataLogger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
@@ -257,6 +251,15 @@
     <ClInclude Include="MemoryAccessCounter.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="Disassembler.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
+    <ClInclude Include="DisassemblyInfo.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
+    <ClInclude Include="CpuDisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -264,9 +267,6 @@
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="TraceLogger.cpp">
-      <Filter>Debugger</Filter>
-    </ClCompile>
-    <ClCompile Include="DisassemblyInfo.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="Debugger.cpp">
@@ -334,9 +334,6 @@
     </ClCompile>
     <ClCompile Include="ControlManager.cpp">
       <Filter>SNES\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Disassembler.cpp">
-      <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="CodeDataLogger.cpp">
       <Filter>Debugger</Filter>
@@ -411,6 +408,15 @@
     <ClCompile Include="MemoryAccessCounter.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
+    <ClCompile Include="Disassembler.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="DisassemblyInfo.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="CpuDisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -439,6 +445,9 @@
     </Filter>
     <Filter Include="SNES\DSP">
       <UniqueIdentifier>{e0e6a67b-620e-4fe4-9846-26a6c80ca6b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debugger\Disassembler">
+      <UniqueIdentifier>{68bd1e52-d8b5-4ebb-b961-858e9db1cd00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

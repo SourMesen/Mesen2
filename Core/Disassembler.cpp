@@ -64,7 +64,7 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags)
 	if(addrInfo.Address >= 0) {
 		DisassemblyInfo disInfo = (*cache)[addrInfo.Address];
 		if(!disInfo.IsInitialized()) {
-			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags);
+			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags, CpuType::Cpu);
 			(*cache)[addrInfo.Address] = disassemblyInfo;
 			_needDisassemble = true;
 			disInfo = disassemblyInfo;
@@ -130,7 +130,7 @@ void Disassembler::Disassemble()
 		uint8_t opCode = (source + addrInfo.Address)[0];
 		bool needRealign = true;
 		if(!disassemblyInfo.IsInitialized() && disassembleAll) {
-			opSize = DisassemblyInfo::GetOperandSize(opCode, 0);
+			opSize = DisassemblyInfo::GetOperandSize(opCode, 0, CpuType::Cpu);
 		} else if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOperandSize();
 			needRealign = false;
@@ -250,7 +250,7 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 			state.K = (result.CpuAddress >> 16);
 
 			if(!disInfo.IsInitialized()) {
-				disInfo = DisassemblyInfo(source + result.Address.Address, state.PS);
+				disInfo = DisassemblyInfo(source + result.Address.Address, state.PS, CpuType::Cpu);
 			} else {
 				data.Flags |= (uint8_t)LineFlags::VerifiedCode;
 			}
@@ -261,7 +261,7 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 
 			data.OpSize = disInfo.GetOperandSize() + 1;
 
-			data.EffectiveAddress = disInfo.GetEffectiveAddress(state, _console);
+			data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
 			if(data.EffectiveAddress >= 0) {
 				data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
 			} else {

@@ -106,7 +106,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		uint32_t pc = (state.K << 16) | state.PC;
 		if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
 			//JSR, JSL
-			uint8_t opSize = DisassemblyInfo::GetOperandSize(_prevOpCode, 0) + 1;
+			uint8_t opSize = DisassemblyInfo::GetOperandSize(_prevOpCode, state.PS, CpuType::Cpu) + 1;
 			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
 			_callstackManager->Push(_prevProgramCounter, pc, returnPc, StackFrameFlags::None);
 		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
@@ -333,7 +333,7 @@ void Debugger::Step(int32_t stepCount, StepType type)
 		case StepType::CpuStepOver:
 			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
 				//JSR, JSL, BRK, COP, MVP, MVN
-				_breakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOperandSize(_prevOpCode, 0) + 1) & 0xFFFF);
+				_breakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOperandSize(_prevOpCode, 0, CpuType::Cpu) + 1) & 0xFFFF);
 				_cpuStepCount = -1;
 				_ppuStepCount = -1;
 				_breakScanline = -1;

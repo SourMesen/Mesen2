@@ -213,3 +213,11 @@ enum class StepType
 	PpuStep,
 	SpecificScanline,
 };
+
+enum class CpuType : uint8_t
+{
+	Cpu,
+	Spc,
+	SuperFx,
+	Sa1,
+};
