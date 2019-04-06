@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "PpuTypes.h"
+#include "SpcTypes.h"
+#include "DebugTypes.h"
 #include "DisassemblyInfo.h"
 #include "../Utilities/SimpleLock.h"
 
@@ -67,6 +69,7 @@ private:
 	//shared_ptr<LabelManager> _labelManager;
 
 	vector<RowPart> _rowParts;
+	vector<RowPart> _spcRowParts;
 
 	bool _pendingLog;
 	//CpuState _lastState;
@@ -75,21 +78,28 @@ private:
 	bool _logToFile;
 	uint16_t _currentPos;
 	uint32_t _logCount;
-	CpuState _cpuStateCache[ExecutionLogSize] = {};
-	PpuState _ppuStateCache[ExecutionLogSize] = {};
+	DebugState _stateCache[ExecutionLogSize] = {};
 	DisassemblyInfo _disassemblyCache[ExecutionLogSize];
 
-	CpuState _cpuStateCacheCopy[ExecutionLogSize] = {};
-	PpuState _ppuStateCacheCopy[ExecutionLogSize] = {};
+	DebugState _stateCacheCopy[ExecutionLogSize] = {};
 	DisassemblyInfo _disassemblyCacheCopy[ExecutionLogSize];
 
 	SimpleLock _lock;
 
 	void GetStatusFlag(string &output, uint8_t ps, RowPart& part);
+	void WriteByteCode(DisassemblyInfo &info, RowPart &rowPart, string &output);
+	void WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint8_t sp, uint32_t pc, string &output);
+	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output);
+	void WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output);
+	void WriteAlign(int originalSize, RowPart &rowPart, string &output);
 	void AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state);
 	//bool ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo);
+	
+	void ParseFormatString(vector<RowPart> &rowParts, string format);
 
+	void GetTraceRow(string &output, DisassemblyInfo &disassemblyInfo, DebugState &state);
 	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 

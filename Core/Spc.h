@@ -8,11 +8,13 @@
 class Console;
 class MemoryManager;
 class SPC_DSP;
+struct AddressInfo;
 
 class Spc : public ISerializable
 {
 public:
 	static constexpr int SpcRamSize = 0x10000;
+	static constexpr int SpcRomSize = 0x40;
 
 private:
 	static constexpr int SampleBufferSize = 0x100000;
@@ -248,7 +250,11 @@ public:
 
 	void ProcessEndFrame();
 
+	SpcState GetState();
+	AddressInfo GetAbsoluteAddress(uint16_t addr);
+
 	uint8_t* GetSpcRam();
+	uint8_t* GetSpcRom();
 
 	void Serialize(Serializer &s) override;
 };

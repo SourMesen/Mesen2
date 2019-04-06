@@ -260,6 +260,9 @@
     <ClInclude Include="CpuDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
+    <ClInclude Include="SpcDisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -417,6 +420,7 @@
     <ClCompile Include="CpuDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
+    <ClCompile Include="SpcDisUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

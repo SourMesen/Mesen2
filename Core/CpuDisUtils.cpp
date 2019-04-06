@@ -18,7 +18,7 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	str.Write(' ');
 
 	uint32_t opAddr = CpuDisUtils::GetOperandAddress(info, memoryAddr);
-	uint32_t opSize = info.GetOperandSize() + 1;
+	uint32_t opSize = info.GetOpSize();
 
 	FastString operand;
 	if(opSize > 1) {
@@ -76,7 +76,7 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAddr)
 {
-	uint32_t opSize = info.GetOperandSize() + 1;
+	uint32_t opSize = info.GetOpSize();
 	uint32_t opAddr = 0;
 	uint8_t* byteCode = info.GetByteCode();
 	if(opSize == 2) {
@@ -113,13 +113,13 @@ int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console
 	return -1;
 }
 
-uint8_t CpuDisUtils::GetOperandSize(AddrMode addrMode, uint8_t flags)
+uint8_t CpuDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
 {
 	switch(addrMode) {
 		case AddrMode::Acc:
 		case AddrMode::Imp:
 		case AddrMode::Stk:
-			return 0;
+			return 1;
 
 		case AddrMode::DirIdxIndX:
 		case AddrMode::DirIdxX:
@@ -134,7 +134,7 @@ uint8_t CpuDisUtils::GetOperandSize(AddrMode addrMode, uint8_t flags)
 		case AddrMode::Rel:
 		case AddrMode::StkRel:
 		case AddrMode::StkRelIndIdxY:
-			return 1;
+			return 2;
 
 		case AddrMode::Abs:
 		case AddrMode::AbsIdxXInd:
@@ -146,23 +146,23 @@ uint8_t CpuDisUtils::GetOperandSize(AddrMode addrMode, uint8_t flags)
 		case AddrMode::BlkMov:
 		case AddrMode::Imm16:
 		case AddrMode::RelLng:
-			return 2;
+			return 3;
 
 		case AddrMode::AbsLngJmp:
 		case AddrMode::AbsLngIdxX:
 		case AddrMode::AbsLng:
-			return 3;
+			return 4;
 
-		case AddrMode::ImmX: return (flags & ProcFlags::IndexMode8) ? 1 : 2;
-		case AddrMode::ImmM: return (flags & ProcFlags::MemoryMode8) ? 1 : 2;
+		case AddrMode::ImmX: return (flags & ProcFlags::IndexMode8) ? 2 : 3;
+		case AddrMode::ImmM: return (flags & ProcFlags::MemoryMode8) ? 2 : 3;
 	}
 
 	throw std::runtime_error("Invalid mode");
 }
 
-uint8_t CpuDisUtils::GetOperandSize(uint8_t opCode, uint8_t flags)
+uint8_t CpuDisUtils::GetOpSize(uint8_t opCode, uint8_t flags)
 {
-	return GetOperandSize(CpuDisUtils::OpMode[opCode], flags);
+	return GetOpSize(CpuDisUtils::OpMode[opCode], flags);
 }
 
 string CpuDisUtils::OpName[256] = {

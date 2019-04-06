@@ -8,6 +8,7 @@ class MemoryManager;
 class Console;
 class CodeDataLogger;
 struct CpuState;
+enum class CpuType : uint8_t;
 
 class Disassembler
 {
@@ -19,7 +20,8 @@ private:
 	vector<DisassemblyInfo> _prgCache;
 	vector<DisassemblyInfo> _wramCache;
 	vector<DisassemblyInfo> _sramCache;
-	vector<DisassemblyInfo> _spcCache;
+	vector<DisassemblyInfo> _spcRamCache;
+	vector<DisassemblyInfo> _spcRomCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
@@ -34,13 +36,15 @@ private:
 	uint32_t _sramSize;
 	uint8_t *_spcRam;
 	uint32_t _spcRamSize;
+	uint8_t *_spcRom;
+	uint32_t _spcRomSize;
 
 	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
 
 public:
 	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl);
 
-	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags);
+	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void InvalidateCache(AddressInfo addrInfo);
 	void Disassemble();
 

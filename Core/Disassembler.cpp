@@ -3,6 +3,7 @@
 #include "Disassembler.h"
 #include "DisassemblyInfo.h"
 #include "Cpu.h"
+#include "Spc.h"
 #include "MemoryManager.h"
 #include "CpuTypes.h"
 #include "Console.h"
@@ -22,10 +23,17 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_sramSize = console->GetCartridge()->DebugGetSaveRamSize();
 	_wram = _memoryManager->DebugGetWorkRam();
 	_wramSize = MemoryManager::WorkRamSize;
-	
+
+	_spcRam = console->GetSpc()->GetSpcRam();
+	_spcRamSize = Spc::SpcRamSize;
+	_spcRom = console->GetSpc()->GetSpcRom();
+	_spcRomSize = Spc::SpcRomSize;
+
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_sramCache = vector<DisassemblyInfo>(_sramSize);
 	_wramCache = vector<DisassemblyInfo>(_wramSize);
+	_spcRamCache = vector<DisassemblyInfo>(_spcRamSize);
+	_spcRomCache = vector<DisassemblyInfo>(_spcRomSize);
 }
 
 void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache)
@@ -48,13 +56,25 @@ void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size
 			*cache = &_sramCache;
 			size = _sramSize;
 			break;
+		
+		case SnesMemoryType::SpcRam:
+			*source = _spcRam;
+			*cache = &_spcRamCache;
+			size = _spcRamSize;
+			break;
+
+		case SnesMemoryType::SpcRom:
+			*source = _spcRom;
+			*cache = &_spcRomCache;
+			size = _spcRomSize;
+			break;
 
 		default:
 			throw std::runtime_error("Disassembler::GetSource() invalid memory type");
 	}
 }
 
-uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags)
+uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type)
 {
 	uint8_t *source;
 	uint32_t sourceLength;
@@ -64,12 +84,12 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags)
 	if(addrInfo.Address >= 0) {
 		DisassemblyInfo disInfo = (*cache)[addrInfo.Address];
 		if(!disInfo.IsInitialized()) {
-			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags, CpuType::Cpu);
+			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags, type);
 			(*cache)[addrInfo.Address] = disassemblyInfo;
 			_needDisassemble = true;
 			disInfo = disassemblyInfo;
 		}
-		return disInfo.GetOperandSize() + 1;
+		return disInfo.GetOpSize();
 	}
 	return 0;
 }
@@ -130,9 +150,9 @@ void Disassembler::Disassemble()
 		uint8_t opCode = (source + addrInfo.Address)[0];
 		bool needRealign = true;
 		if(!disassemblyInfo.IsInitialized() && disassembleAll) {
-			opSize = DisassemblyInfo::GetOperandSize(opCode, 0, CpuType::Cpu);
+			opSize = DisassemblyInfo::GetOpSize(opCode, 0, CpuType::Cpu);
 		} else if(disassemblyInfo.IsInitialized()) {
-			opSize = disassemblyInfo.GetOperandSize();
+			opSize = disassemblyInfo.GetOpSize();
 			needRealign = false;
 		}
 
@@ -155,7 +175,7 @@ void Disassembler::Disassemble()
 					i++;
 				}
 			} else {
-				i += opSize;
+				i += opSize - 1;
 			}
 
 			if(opCode == 0x60 || opCode == 0x6B) {
@@ -184,6 +204,8 @@ DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info)
 		case SnesMemoryType::PrgRom: disassemblyInfo = _prgCache[info.Address]; break;
 		case SnesMemoryType::WorkRam: disassemblyInfo = _wramCache[info.Address]; break;
 		case SnesMemoryType::SaveRam: disassemblyInfo = _sramCache[info.Address]; break;
+		case SnesMemoryType::SpcRam: disassemblyInfo = _spcRamCache[info.Address]; break;
+		case SnesMemoryType::SpcRom: disassemblyInfo = _spcRomCache[info.Address]; break;
 	}
 
 	if(disassemblyInfo.IsInitialized()) {
@@ -259,7 +281,7 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 			disInfo.GetDisassembly(text, result.CpuAddress);
 			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
 
-			data.OpSize = disInfo.GetOperandSize() + 1;
+			data.OpSize = disInfo.GetOpSize();
 
 			data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
 			if(data.EffectiveAddress >= 0) {

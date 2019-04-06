@@ -290,6 +290,7 @@ namespace Mesen.GUI.Debugger
 						}
 					};
 
+					List<int> lineFlags = new List<int>(30000);
 					List<int> programCounter = new List<int>(30000);
 					List<string> byteCode = new List<string>(30000);
 					List<string> lineContent = new List<string>(30000);
@@ -298,18 +299,19 @@ namespace Mesen.GUI.Debugger
 					bool showByteCode = false;
 					while(readLine()) {
 						string[] parts = line.Split('\x1');
-						programCounter.Add(Int32.Parse(parts[0], System.Globalization.NumberStyles.HexNumber));
-						byteCode.Add(parts[1]);
+						lineFlags.Add((int)parts[0][0]);
+						programCounter.Add(Int32.Parse(parts[1], System.Globalization.NumberStyles.HexNumber));
+						byteCode.Add(parts[2]);
 
-						string content = parts[2];
+						string content = parts[3];
 						while(true) {
 							string str = content.TrimStart();
-							if(str.StartsWith(parts[0])) {
-								content = str.Substring(parts[0].Length);
-							} else if(str.StartsWith(parts[1])) {
+							if(str.StartsWith(parts[1])) {
 								content = str.Substring(parts[1].Length);
+							} else if(str.StartsWith(parts[2])) {
+								content = str.Substring(parts[2].Length);
 								showByteCode = true;
-							} else if(str.StartsWith(parts[1].Replace("$", ""))) {
+							} else if(str.StartsWith(parts[3].Replace("$", ""))) {
 								content = str.Substring(8);
 								showByteCode = true;
 							} else {
@@ -323,6 +325,7 @@ namespace Mesen.GUI.Debugger
 						txtTraceLog.ShowSingleContentLineNotes = showByteCode;
 
 						txtTraceLog.DataProvider = new TraceLoggerCodeDataProvider(lineContent, programCounter, byteCode);
+						txtTraceLog.StyleProvider = new TraceLoggerStyleProvider(lineFlags);
 						
 						if(scrollToBottom) {
 							txtTraceLog.ScrollToLineIndex(txtTraceLog.LineCount - 1);
@@ -518,6 +521,29 @@ namespace Mesen.GUI.Debugger
 		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
 		{
 			throw new NotImplementedException();
+		}
+	}
+
+	public class TraceLoggerStyleProvider : ctrlTextbox.ILineStyleProvider
+	{
+		private Color _spcColor = Color.FromArgb(030, 145, 030);
+		private List<int> _flags;
+
+		public TraceLoggerStyleProvider(List<int> lineFlags)
+		{
+			_flags = lineFlags;
+		}
+
+		public string GetLineComment(int lineIndex)
+		{
+			return null;
+		}
+
+		public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
+		{
+			return new LineProperties() {
+				FgColor = _flags[lineIndex] == 3 ? (Color?)_spcColor : null
+			};
 		}
 	}
 }

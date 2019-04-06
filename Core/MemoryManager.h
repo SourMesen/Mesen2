@@ -10,6 +10,7 @@ class InternalRegisters;
 class RamHandler;
 class Console;
 class Ppu;
+class Spc;
 enum class MemoryOperationType;
 
 class MemoryManager : public ISerializable
@@ -25,6 +26,7 @@ private:
 
 	InternalRegisters *_regs;
 	shared_ptr<Ppu> _ppu;
+	shared_ptr<Spc> _spc;
 
 	IMemoryHandler* _handlers[0x100 * 0x10];
 	vector<unique_ptr<RamHandler>> _workRamHandlers;

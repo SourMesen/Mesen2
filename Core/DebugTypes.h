@@ -2,17 +2,20 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "PpuTypes.h"
+#include "SpcTypes.h"
 
 struct DebugState
 {
 	uint64_t MasterClock;
 	CpuState Cpu;
 	PpuState Ppu;
+	SpcState Spc;
 };
 
 enum class SnesMemoryType
 {
 	CpuMemory,
+	SpcMemory,
 	PrgRom,
 	WorkRam,
 	SaveRam,
@@ -20,6 +23,7 @@ enum class SnesMemoryType
 	SpriteRam,
 	CGRam,
 	SpcRam,
+	SpcRom,
 	Register,
 };
 

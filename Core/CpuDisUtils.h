@@ -12,11 +12,11 @@ private:
 	static string OpName[256];
 	static AddrMode OpMode[256];
 	static uint32_t GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAddr);
+	static uint8_t GetOpSize(AddrMode addrMode, uint8_t flags);
 
 public:
 	static void GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr);
-	static uint8_t GetOperandSize(AddrMode addrMode, uint8_t flags);
-	static uint8_t GetOperandSize(uint8_t opCode, uint8_t flags);
+	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags);
 	static int32_t GetEffectiveAddress(DisassemblyInfo &info, Console* console, CpuState &state);
 };
 

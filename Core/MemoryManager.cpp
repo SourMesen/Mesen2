@@ -20,6 +20,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
 	_ppu = console->GetPpu();
+	_spc = console->GetSpc();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
 
@@ -157,6 +158,9 @@ void MemoryManager::Exec()
 	_masterClock += 2;
 	if((_masterClock & 0x03) == 0) {
 		_ppu->Exec();
+		if(_console->IsDebugging()) {
+			_spc->Run();
+		}
 	}
 }
 

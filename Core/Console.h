@@ -115,6 +115,7 @@ public:
 
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
 	void StopDebugger();
+	bool IsDebugging();
 
 	thread::id GetEmulationThreadId();
 	

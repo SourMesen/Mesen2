@@ -120,6 +120,7 @@
     <ClInclude Include="SoundMixer.h" />
     <ClInclude Include="SoundResampler.h" />
     <ClInclude Include="Spc.h" />
+    <ClInclude Include="SpcDisUtils.h" />
     <ClInclude Include="SpcTimer.h" />
     <ClInclude Include="SpcTypes.h" />
     <ClInclude Include="SPC_DSP.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="SoundResampler.cpp" />
     <ClCompile Include="Spc.cpp" />
     <ClCompile Include="Spc.Instructions.cpp" />
+    <ClCompile Include="SpcDisUtils.cpp" />
     <ClCompile Include="SPC_DSP.cpp" />
     <ClCompile Include="SPC_Filter.cpp" />
     <ClCompile Include="stdafx.cpp">

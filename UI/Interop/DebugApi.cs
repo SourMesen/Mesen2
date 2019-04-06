@@ -143,6 +143,7 @@ namespace Mesen.GUI
 	public enum SnesMemoryType
 	{
 		CpuMemory,
+		SpcMemory,
 		PrgRom,
 		WorkRam,
 		SaveRam,
@@ -150,6 +151,7 @@ namespace Mesen.GUI
 		SpriteRam,
 		CGRam,
 		SpcRam,
+		SpcRom,
 		Register
 	}
 

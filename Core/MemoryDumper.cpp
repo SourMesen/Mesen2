@@ -34,6 +34,7 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 		case SnesMemoryType::SpriteRam: memcpy(_ppu->GetSpriteRam(), buffer, length); break;
 		case SnesMemoryType::CGRam: memcpy(_ppu->GetCgRam(), buffer, length); break;
 		case SnesMemoryType::SpcRam: memcpy(_spc->GetSpcRam(), buffer, length); break;
+		case SnesMemoryType::SpcRom: memcpy(_spc->GetSpcRom(), buffer, length); break;
 	}
 }
 
@@ -49,6 +50,7 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::SpriteRam: return Ppu::SpriteRamSize;
 		case SnesMemoryType::CGRam: return Ppu::CgRamSize;
 		case SnesMemoryType::SpcRam: return Spc::SpcRamSize;
+		case SnesMemoryType::SpcRom: return Spc::SpcRomSize;
 	}
 }
 
@@ -70,6 +72,7 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 		case SnesMemoryType::SpriteRam: memcpy(buffer, _ppu->GetSpriteRam(), Ppu::SpriteRamSize);	break;
 		case SnesMemoryType::CGRam: memcpy(buffer, _ppu->GetCgRam(), Ppu::CgRamSize); break;
 		case SnesMemoryType::SpcRam: memcpy(buffer, _spc->GetSpcRam(), Spc::SpcRamSize); break;
+		case SnesMemoryType::SpcRom: memcpy(buffer, _spc->GetSpcRom(), Spc::SpcRomSize); break;
 	}
 }
 
@@ -99,6 +102,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::SpriteRam: _ppu->GetSpriteRam()[address] = value; break;
 		case SnesMemoryType::CGRam: _ppu->GetCgRam()[address] = value; break;
 		case SnesMemoryType::SpcRam: _spc->GetSpcRam()[address] = value; break;
+		case SnesMemoryType::SpcRom: _spc->GetSpcRom()[address] = value; break;
 	}
 }
 
@@ -121,6 +125,7 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 		case SnesMemoryType::SpriteRam: return _ppu->GetSpriteRam()[address];
 		case SnesMemoryType::CGRam: return _ppu->GetCgRam()[address];
 		case SnesMemoryType::SpcRam: return _spc->GetSpcRam()[address];
+		case SnesMemoryType::SpcRom: return _spc->GetSpcRom()[address];
 	}
 }
 

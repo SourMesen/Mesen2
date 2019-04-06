@@ -4,6 +4,7 @@
 #include "CpuTypes.h"
 #include "MemoryManager.h"
 #include "CpuDisUtils.h"
+#include "SpcDisUtils.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
@@ -20,7 +21,7 @@ void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags, CpuType t
 {
 	_cpuType = type;
 	_flags = cpuFlags & (ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
-	_opSize = GetOperandSize(opPointer[0], _flags, _cpuType) + 1;
+	_opSize = GetOpSize(opPointer[0], _flags, _cpuType);
 	memcpy(_byteCode, opPointer, _opSize);
 
 	_initialized = true;
@@ -39,7 +40,8 @@ void DisassemblyInfo::Reset()
 void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
 {
 	switch(_cpuType) {
-		case CpuType::Cpu: CpuDisUtils::GetDisassembly(*this, out, memoryAddr);
+		case CpuType::Cpu: CpuDisUtils::GetDisassembly(*this, out, memoryAddr); break;
+		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr); break;
 	}
 }
 
@@ -47,6 +49,7 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState)
 {
 	switch(_cpuType) {
 		case CpuType::Cpu: return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
+		//case CpuType::Spc: return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
 	}
 	return -1;
 }
@@ -56,14 +59,19 @@ uint8_t DisassemblyInfo::GetOpCode()
 	return _byteCode[0];
 }
 
-uint8_t DisassemblyInfo::GetOperandSize()
+uint8_t DisassemblyInfo::GetOpSize()
 {
-	return _opSize - 1;
+	return _opSize;
 }
 
 uint8_t DisassemblyInfo::GetFlags()
 {
 	return _flags;
+}
+
+CpuType DisassemblyInfo::GetCpuType()
+{
+	return _cpuType;
 }
 
 uint8_t* DisassemblyInfo::GetByteCode()
@@ -88,10 +96,11 @@ void DisassemblyInfo::GetByteCode(string &out)
 	out += str.ToString();
 }
 
-uint8_t DisassemblyInfo::GetOperandSize(uint8_t opCode, uint8_t flags, CpuType type)
+uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 {
 	switch(type) {
-		case CpuType::Cpu: return CpuDisUtils::GetOperandSize(opCode, flags);
+		case CpuType::Cpu: return CpuDisUtils::GetOpSize(opCode, flags);
+		case CpuType::Spc: return SpcDisUtils::GetOpSize(opCode);
 	}
 	return 0;
 }

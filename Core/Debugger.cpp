@@ -4,6 +4,7 @@
 #include "Console.h"
 #include "Cpu.h"
 #include "Ppu.h"
+#include "Spc.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "SoundMixer.h"
@@ -29,6 +30,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_console = console;
 	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
+	_spc = console->GetSpc();
 	_memoryManager = console->GetMemoryManager();
 
 	_watchExpEval.reset(new ExpressionEvaluator(this));
@@ -59,7 +61,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	for(uint32_t i = 0; i < prgRomSize; i++) {
 		if(_codeDataLogger->IsCode(i)) {
 			addrInfo.Address = (int32_t)i;
-			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i)) - 1;
+			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i), CpuType::Cpu) - 1;
 		}
 	}
 }
@@ -94,7 +96,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				}
 				_codeDataLogger->SetFlags(addressInfo.Address, flags);
 			}
-			_disassembler->BuildCache(addressInfo, state.PS);
+			_disassembler->BuildCache(addressInfo, state.PS, CpuType::Cpu);
 		}
 
 		DebugState debugState;
@@ -106,7 +108,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		uint32_t pc = (state.K << 16) | state.PC;
 		if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
 			//JSR, JSL
-			uint8_t opSize = DisassemblyInfo::GetOperandSize(_prevOpCode, state.PS, CpuType::Cpu) + 1;
+			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, CpuType::Cpu);
 			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
 			_callstackManager->Push(_prevProgramCounter, pc, returnPc, StackFrameFlags::None);
 		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
@@ -181,8 +183,20 @@ void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 
 void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo(addr, SnesMemoryType::SpcRam);
+	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type);
+
+	if(type == MemoryOperationType::ExecOpCode) {
+		_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
+		DisassemblyInfo dis = _disassembler->GetDisassemblyInfo(addressInfo);
+
+		DebugState debugState;
+		GetState(debugState);
+
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+		_traceLogger->Log(debugState, disInfo);
+	}
+
 	ProcessBreakConditions(operation, addressInfo);
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
@@ -190,7 +204,7 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 
 void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo(addr, SnesMemoryType::SpcRam);
+	AddressInfo addressInfo(addr, SnesMemoryType::SpcRam); //Writes never affect the SPC ROM
 	MemoryOperationInfo operation(addr, value, type);
 	ProcessBreakConditions(operation, addressInfo);
 
@@ -333,7 +347,7 @@ void Debugger::Step(int32_t stepCount, StepType type)
 		case StepType::CpuStepOver:
 			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
 				//JSR, JSL, BRK, COP, MVP, MVN
-				_breakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOperandSize(_prevOpCode, 0, CpuType::Cpu) + 1) & 0xFFFF);
+				_breakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Cpu)) & 0xFFFF);
 				_cpuStepCount = -1;
 				_ppuStepCount = -1;
 				_breakScanline = -1;
@@ -381,6 +395,7 @@ void Debugger::GetState(DebugState &state)
 	state.MasterClock = _memoryManager->GetMasterClock();
 	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
+	state.Spc = _spc->GetState();
 }
 
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()

@@ -29,14 +29,15 @@ public:
 	void GetDisassembly(string &out, uint32_t memoryAddr);
 	
 	uint8_t GetOpCode();
-	uint8_t GetOperandSize();
+	uint8_t GetOpSize();
 	uint8_t GetFlags();
+	CpuType GetCpuType();
 	uint8_t* GetByteCode();
 
 	void GetByteCode(uint8_t copyBuffer[4]);
 	void GetByteCode(string &out);
 
-	static uint8_t GetOperandSize(uint8_t opCode, uint8_t flags, CpuType type);
+	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type);
 	
 	int32_t GetEffectiveAddress(Console *console, void *cpuState);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);

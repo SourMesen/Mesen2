@@ -94,34 +94,38 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 	IncCycleCount(addr);
 
 	if(addr >= 0xFFC0 && _state.RomEnabled) {
-		return _spcBios[addr & 0x3F];
+		uint8_t value = _spcBios[addr & 0x3F];
+		_console->ProcessSpcRead(addr, value, type);
+		return value;
 	}
 
+	uint8_t value;
 	switch(addr) {
-		case 0xF0: return 0;
-		case 0xF1: return 0;
+		case 0xF0: value = 0; break;
+		case 0xF1: value = 0; break;
 
-		case 0xF2: return _state.DspReg;
-		case 0xF3: return _dsp->read(_state.DspReg & 0x7F);
+		case 0xF2: value = _state.DspReg; break;
+		case 0xF3: value = _dsp->read(_state.DspReg & 0x7F); break;
 			
-		case 0xF4: return _state.CpuRegs[0];
-		case 0xF5: return _state.CpuRegs[1];
-		case 0xF6: return _state.CpuRegs[2];
-		case 0xF7: return _state.CpuRegs[3];
+		case 0xF4: value = _state.CpuRegs[0]; break;
+		case 0xF5: value = _state.CpuRegs[1]; break;
+		case 0xF6: value = _state.CpuRegs[2]; break;
+		case 0xF7: value = _state.CpuRegs[3]; break;
 
-		case 0xF8: return _state.RamReg[0];
-		case 0xF9: return _state.RamReg[1];
+		case 0xF8: value = _state.RamReg[0]; break;
+		case 0xF9: value = _state.RamReg[1]; break;
 
-		case 0xFA: return 0;
-		case 0xFB: return 0;
-		case 0xFC: return 0;
+		case 0xFA: value = 0; break;
+		case 0xFB: value = 0; break;
+		case 0xFC: value = 0; break;
 
-		case 0xFD: return _state.Timer0.GetOutput();
-		case 0xFE: return _state.Timer1.GetOutput();
-		case 0xFF: return _state.Timer2.GetOutput();
+		case 0xFD: value = _state.Timer0.GetOutput(); break;
+		case 0xFE: value = _state.Timer1.GetOutput(); break;
+		case 0xFF: value = _state.Timer2.GetOutput(); break;
+
+		default: value = _ram[addr]; break;
 	}
 
-	uint8_t value = _ram[addr];
 	_console->ProcessSpcRead(addr, value, type);
 	return value;
 }
@@ -224,9 +228,27 @@ void Spc::ProcessEndFrame()
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 }
 
+SpcState Spc::GetState()
+{
+	return _state;
+}
+
+AddressInfo Spc::GetAbsoluteAddress(uint16_t addr)
+{
+	if(addr < 0xFFC0 || !_state.RomEnabled) {
+		return AddressInfo(addr, SnesMemoryType::SpcRam);
+	}
+	return AddressInfo(addr & 0x3F, SnesMemoryType::SpcRom);
+}
+
 uint8_t* Spc::GetSpcRam()
 {
 	return _ram;
+}
+
+uint8_t* Spc::GetSpcRom()
+{
+	return _spcBios;
 }
 
 void Spc::Serialize(Serializer &s)

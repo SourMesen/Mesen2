@@ -549,6 +549,11 @@ void Console::StopDebugger()
 	_debugger.reset();
 }
 
+bool Console::IsDebugging()
+{
+	return _debugger != nullptr;
+}
+
 thread::id Console::GetEmulationThreadId()
 {
 	return _emulationThreadId;

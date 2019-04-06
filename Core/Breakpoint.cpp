@@ -65,6 +65,8 @@ BreakpointCategory Breakpoint::GetBreakpointCategory(SnesMemoryType memoryType)
 			return BreakpointCategory::Cpu;
 
 		case SnesMemoryType::SpcRam:
+		case SnesMemoryType::SpcRom:
+		case SnesMemoryType::SpcMemory:
 			return BreakpointCategory::Spc;
 
 		case SnesMemoryType::VideoRam:
