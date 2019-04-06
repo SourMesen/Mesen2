@@ -62,9 +62,7 @@ void Cpu::Exec()
 		case CpuStopState::WaitingForIrq:
 			//WAI
 			if(!_state.IrqSource && !_state.NmiFlag) {
-				#ifndef DUMMYCPU
 				Idle();
-				#endif
 			} else {
 				Idle();
 				Idle();
@@ -73,6 +71,7 @@ void Cpu::Exec()
 			break;
 	}
 
+#ifndef DUMMYCPU
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
 	if(!_dmaController->HasNmiIrqDelay()) {
 		if(_state.PrevNmiFlag) {
@@ -86,6 +85,7 @@ void Cpu::Exec()
 			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
 		}
 	}
+#endif
 }
 
 void Cpu::RunOp()
