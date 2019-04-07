@@ -155,7 +155,7 @@ namespace Mesen.GUI.Debugger
 			mnuFindNext.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.FindNext(); };
 			mnuFindPrev.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.FindPrevious(); };
 
-			mnuBreakIn.Click += (s, e) => { using(frmBreakIn frm = new frmBreakIn()) { frm.ShowDialog(); } };
+			mnuBreakIn.Click += (s, e) => { using(frmBreakIn frm = new frmBreakIn(_cpuType)) { frm.ShowDialog(); } };
 			mnuBreakOn.Click += (s, e) => { using(frmBreakOn frm = new frmBreakOn()) { frm.ShowDialog(); } };
 
 			mnuIncreaseFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom += 10; };

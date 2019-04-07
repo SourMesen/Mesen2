@@ -14,9 +14,13 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class frmBreakIn : BaseConfigForm
 	{
-		public frmBreakIn()
+		private CpuType _cpuType;
+
+		public frmBreakIn(CpuType cpuType)
 		{
 			InitializeComponent();
+
+			_cpuType = cpuType;
 
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			nudCount.Value = cfg.BreakInCount;
@@ -40,7 +44,7 @@ namespace Mesen.GUI.Debugger
 				int count = (int)nudCount.Value;
 				cfg.BreakInCount = (int)count;
 				if(radCpuInstructions.Checked) {
-					DebugApi.Step(count, StepType.CpuStep);
+					DebugApi.Step(count, _cpuType == CpuType.Cpu ? StepType.CpuStep : StepType.SpcStep);
 					cfg.BreakInMetric = BreakInMetric.CpuInstructions;
 				} else if(radPpuCycles.Checked) {
 					DebugApi.Step(count, StepType.PpuStep);
