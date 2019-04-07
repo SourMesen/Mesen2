@@ -100,6 +100,7 @@ namespace Mesen.GUI.Debugger.Controls
 				int lineIndex = _manager.Provider.GetLineIndex((UInt32)centerLineAddress) + scrollOffset;
 				ctrlCode.ScrollToLineIndex(lineIndex, eHistoryType.None, false, true);
 			}
+			GoToActiveAddress();
 		}
 
 		public ctrlScrollableTextbox CodeViewer { get { return ctrlCode; } }
