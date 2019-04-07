@@ -24,10 +24,10 @@ namespace Mesen.GUI.Debugger
 		public UInt16 Value;
 		public byte ValueSize;
 
-		public string GetEffectiveAddressString()
+		public string GetEffectiveAddressString(string format)
 		{
 			if(EffectiveAddress >= 0) {
-				return "[" + EffectiveAddress.ToString("X6") + "]";
+				return "[" + EffectiveAddress.ToString(format) + "]";
 			} else {
 				return "";
 			}

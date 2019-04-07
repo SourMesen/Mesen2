@@ -15,13 +15,16 @@ Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 	_operandA = 0;
 	_operandB = 0;
 
+	_ram = new uint8_t[Spc::SpcRamSize];
+	_spcBios = new uint8_t[Spc::SpcRomSize];
+
+	memcpy(_spcBios, spcRomData.data(), 64);
+	memset(_ram, 0, sizeof(_ram));
+
 	_dsp.reset(new SPC_DSP());
 	_dsp->init(_ram);
 	_dsp->reset();
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
-
-	memcpy(_spcBios, spcRomData.data(), 64);
-	memset(_ram, 0, sizeof(_ram));
 
 	_state = {};
 	_state.WriteEnabled = true;
@@ -33,10 +36,14 @@ Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
 }
 
+#ifndef DUMMYSPC
 Spc::~Spc()
 {
 	delete[] _soundBuffer;
+	delete[] _ram;
+	delete[] _spcBios;
 }
+#endif
 
 void Spc::Reset()
 {
@@ -81,8 +88,10 @@ void Spc::IncCycleCount(int32_t addr)
 	}
 
 	_state.Cycle += cpuWait[speedSelect];
+#ifndef DUMMYSPC
 	_dsp->run();
-	
+#endif
+
 	uint8_t timerInc = timerMultiplier[speedSelect];
 	_state.Timer0.Run(timerInc);
 	_state.Timer1.Run(timerInc);
@@ -131,46 +140,59 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 {
 	IncCycleCount(addr);
 
-	if(addr >= 0xFFC0 && _state.RomEnabled) {
-		uint8_t value = _spcBios[addr & 0x3F];
-		_console->ProcessSpcRead(addr, value, type);
-		return value;
-	}
-
 	uint8_t value;
-	switch(addr) {
-		case 0xF0: value = 0; break;
-		case 0xF1: value = 0; break;
+	if(addr >= 0xFFC0 && _state.RomEnabled) {
+		value = _spcBios[addr & 0x3F];
+	} else {
+		switch(addr) {
+			case 0xF0: value = 0; break;
+			case 0xF1: value = 0; break;
 
-		case 0xF2: value = _state.DspReg; break;
-		case 0xF3: value = _dsp->read(_state.DspReg & 0x7F); break;
-			
-		case 0xF4: value = _state.CpuRegs[0]; break;
-		case 0xF5: value = _state.CpuRegs[1]; break;
-		case 0xF6: value = _state.CpuRegs[2]; break;
-		case 0xF7: value = _state.CpuRegs[3]; break;
+			case 0xF2: value = _state.DspReg; break;
+			case 0xF3: 
+				#ifndef DUMMYSPC
+				value = _dsp->read(_state.DspReg & 0x7F);
+				#else
+				value = 0;
+				#endif
+				break;
 
-		case 0xF8: value = _state.RamReg[0]; break;
-		case 0xF9: value = _state.RamReg[1]; break;
+			case 0xF4: value = _state.CpuRegs[0]; break;
+			case 0xF5: value = _state.CpuRegs[1]; break;
+			case 0xF6: value = _state.CpuRegs[2]; break;
+			case 0xF7: value = _state.CpuRegs[3]; break;
 
-		case 0xFA: value = 0; break;
-		case 0xFB: value = 0; break;
-		case 0xFC: value = 0; break;
+			case 0xF8: value = _state.RamReg[0]; break;
+			case 0xF9: value = _state.RamReg[1]; break;
 
-		case 0xFD: value = _state.Timer0.GetOutput(); break;
-		case 0xFE: value = _state.Timer1.GetOutput(); break;
-		case 0xFF: value = _state.Timer2.GetOutput(); break;
+			case 0xFA: value = 0; break;
+			case 0xFB: value = 0; break;
+			case 0xFC: value = 0; break;
 
-		default: value = _ram[addr]; break;
+			case 0xFD: value = _state.Timer0.GetOutput(); break;
+			case 0xFE: value = _state.Timer1.GetOutput(); break;
+			case 0xFF: value = _state.Timer2.GetOutput(); break;
+
+			default: value = _ram[addr]; break;
+		}
 	}
 
+#ifndef DUMMYSPC
 	_console->ProcessSpcRead(addr, value, type);
+#else 
+	LogRead(addr, value);
+#endif
+
 	return value;
 }
 
 void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
 	IncCycleCount(addr);
+
+#ifdef DUMMYSPC
+	LogWrite(addr, value);
+#else
 
 	//Writes always affect the underlying RAM
 	if(_state.WriteEnabled) {
@@ -231,6 +253,7 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 		case 0xFE: break;
 		case 0xFF: break;
 	}
+#endif
 }
 
 uint8_t Spc::CpuReadRegister(uint16_t addr)

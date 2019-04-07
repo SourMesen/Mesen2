@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "SpcDisUtils.h"
+#include "Console.h"
+#include "DummySpc.h"
 #include "DisassemblyInfo.h"
 #include "../Utilities/FastString.h"
 #include "../Utilities/HexUtilities.h"
@@ -28,17 +30,17 @@ constexpr const char* _opTemplate[256] = {
 	"BPL r",	"JST1",	"CLR1 d.0",	"BBC d.0, q",	"ORA d,X",	"ORA a,X",	"ORA a,Y",	"ORA [d],Y",	"OR e, #i",		"OR (X), (Y)",	"DEW d",			"ASL d,X",	"ASL A",	"DEX",	"CPX a",			"JMP [a,X]",
 	"CLP",	"JST2",	"SET1 d.1",	"BBS d.1, q",	"AND d",		"AND a",		"AND (X)",	"AND [d,X]",	"AND #i",		"AND t, s",		"ORC /m.b",		"ROL d",		"ROL a",	"PHA",	"CBNE d, q",	"BRA r",
 	"BMI r",	"JST3",	"CLR1 d.1",	"BBC d.1, q",	"AND d,X",	"AND a,X",	"AND a,Y",	"AND [d],Y",	"AND e, #i",	"AND (X), (Y)","INW d",			"ROL d,X",	"ROL A",	"INX",	"CPX d",			"JSR a",
-	"SEP",	"JST4",	"SET1 d.2",	"BBS d.2, q",	"EOR d",		"EOR a",		"EOR (X)",	"EOR [d,X]",	"EOR #i",		"EOR t, s",		"ANDC, m.b",	"LSR d",		"LSR a",	"PHX",	"CLR1 a",		"JSP u",
+	"SEP",	"JST4",	"SET1 d.2",	"BBS d.2, q",	"EOR d",		"EOR a",		"EOR (X)",	"EOR [d,X]",	"EOR #i",		"EOR t, s",		"ANDC m.b",		"LSR d",		"LSR a",	"PHX",	"CLR1 a",		"JSP u",
 	"BVC r",	"JST5",	"CLR1 d.2",	"BBC d.2, q",	"EOR d,X",	"EOR a,X",	"EOR a,Y",	"EOR [d],Y",	"EOR e, #i",	"EOR (X), (Y)","CPW d",			"LSR d,X",	"LSR A",	"TAX",	"CPY a",			"JMP a",
-	"CLC",	"JST6",	"SET1 d.3",	"BBS d.3, q",	"CMP d",		"CMP a",		"CMP (X)",	"CMP [d,X]",	"CMP #i",		"CMP t, s",		"ANDC, /m.b",	"ROR d",		"ROR a",	"PHY",	"DBNZ d, q",	"RTS",
-	"BVS r",	"JST7",	"CLR1 d.3",	"BBC d.3, q",	"CMP d,X",	"CMP a,X",	"CMP a,Y",	"CMP [d],Y",	"CMP e, #i",	"CMP (X), (Y)","ADW d",			"ROR d,X",	"ROR A",	"TXA",	"CPY, d",		"RTI",
-	"SEC",	"JST8",	"SET1 d.4",	"BBS d.4, q",	"ADC d",		"ADC a",		"ADC (X)",	"ADC [d,X]",	"ADC #i",		"ADC t, s",		"EORC, m.b",	"DEC d",		"DEC a",	"LDY #i","PLP",			"MOV e, #i",
+	"CLC",	"JST6",	"SET1 d.3",	"BBS d.3, q",	"CMP d",		"CMP a",		"CMP (X)",	"CMP [d,X]",	"CMP #i",		"CMP t, s",		"ANDC /m.b",	"ROR d",		"ROR a",	"PHY",	"DBNZ d, q",	"RTS",
+	"BVS r",	"JST7",	"CLR1 d.3",	"BBC d.3, q",	"CMP d,X",	"CMP a,X",	"CMP a,Y",	"CMP [d],Y",	"CMP e, #i",	"CMP (X), (Y)","ADW d",			"ROR d,X",	"ROR A",	"TXA",	"CPY d",			"RTI",
+	"SEC",	"JST8",	"SET1 d.4",	"BBS d.4, q",	"ADC d",		"ADC a",		"ADC (X)",	"ADC [d,X]",	"ADC #i",		"ADC t, s",		"EORC m.b",		"DEC d",		"DEC a",	"LDY #i","PLP",			"MOV e, #i",
 	"BCC r",	"JST9",	"CLR1 d.4",	"BBC d.4, q",	"ADC d,X",	"ADC a,X",	"ADC a,Y",	"ADC [d],Y",	"ADC e, #i",	"ADC (X), (Y)","SBW d",			"DEC d,X",	"DEC A",	"TSX",	"DIV YA, X",	"XCN A",
 	"CLI",	"JSTA",	"SET1 d.5",	"BBS d.5, q",	"SBC d",		"SBC a",		"SBC (X)",	"SBC [d,X]",	"SBC #i",		"SBC t, s",		"LDC m.b",		"INC d",		"INC a",	"CMY #i","PLA",			"STA (X)+, A",
 	"BCS r",	"JSTB",	"CLR1 d.5",	"BBC d.5, q",	"SBC d,X",	"SBC a,X",	"SBC a,Y",	"SBC [d],Y",	"SBC e, #i",	"SBC (X), (Y)","LDW d",			"INC d,X",	"INC A",	"TXS",	"DAS A",			"LDA (X)+",
 	"SEI",	"JSTC",	"SET1 d.6",	"BBS d.6, q",	"STA d",		"STA a",		"STA (X)",	"STA [d,X]",	"CPX #i",		"STX a",			"STC m.b",		"STY d",		"STY a",	"LDX #i","PLX",			"MUL YA",
 	"BNE r",	"JSTD",	"CLR1 d.6",	"BBC d.6, q",	"STA d,X",	"STA a,X",	"STA a,Y",	"STA [d],Y",	"STX e",			"STX d,Y",		"STW d",			"STY d,X",	"DEY",	"TYA",	"CBNE d,X, q",	"DAA A",
-	"CLV",	"JSTE",	"SET1 d.7",	"BBS d.7, q",	"LDA d",		"LDA a",		"LDA (X)",	"LDA [d,X]",	"LDA #i",		"LDX a",			"NOT m.b",		"LDY d",		"LDY, a","NOTC",	"PLY",			"WAI",
+	"CLV",	"JSTE",	"SET1 d.7",	"BBS d.7, q",	"LDA d",		"LDA a",		"LDA (X)",	"LDA [d,X]",	"LDA #i",		"LDX a",			"NOT m.b",		"LDY d",		"LDY a",	"NOTC",	"PLY",			"WAI",
 	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7, q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",			"LDX d,Y",		"MOV t, s",		"LDY d,X",	"INC Y",	"TAY",	"DBNZ Y, q",	"HLT"
 };
 
@@ -59,6 +61,25 @@ constexpr const uint8_t _opSize[256] = {
 	2, 1, 2, 3, 2, 3, 3, 2, 2, 2, 2, 2, 1, 1, 3, 1,
 	1, 1, 2, 3, 2, 3, 1, 2, 2, 3, 3, 2, 3, 1, 1, 1,
 	2, 1, 2, 3, 2, 3, 3, 2, 2, 2, 3, 2, 1, 1, 2, 1,
+};
+
+constexpr bool _needAddress[256] = {
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, true,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, true,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, true,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
+	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
+	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false
 };
 
 void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr)
@@ -93,6 +114,27 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 	out += str.ToString();
 }
+
+int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, SpcState &state)
+{
+	if(_needAddress[info.GetOpCode()]) {
+		Spc* spc = console->GetSpc().get();
+		DummySpc dummySpc(spc->GetSpcRam(), spc->GetSpcRom(), state);
+		dummySpc.Step();
+		uint32_t addr;
+		uint8_t value;
+		uint32_t writeCount = dummySpc.GetWriteCount();
+		if(writeCount > 0) {
+			dummySpc.GetWriteInfo(writeCount - 1, addr, value);
+		} else {
+			uint32_t readCount = dummySpc.GetReadCount();
+			dummySpc.GetReadInfo(readCount - 1, addr, value);
+		}
+		return addr;
+	}
+	return -1;
+}
+
 
 uint8_t SpcDisUtils::GetOpSize(uint8_t opCode)
 {

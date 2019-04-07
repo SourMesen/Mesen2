@@ -64,7 +64,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	}*/
 
 	ParseFormatString(_rowParts, format);
-	ParseFormatString(_spcRowParts, "[PC,4h]   [ByteCode,15h] [Disassembly][EffectiveAddress][MemoryValue,h][Align,48] A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] P:[P,8] H:[Cycle,3] V:[Scanline,3]");
+	ParseFormatString(_spcRowParts, "[PC,4h]   [ByteCode,15h] [Disassembly][EffectiveAddress] [MemoryValue,h][Align,48] A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] P:[P,8] H:[Cycle,3] V:[Scanline,3]");
 }
 
 void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)

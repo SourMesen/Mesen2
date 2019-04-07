@@ -1,4 +1,10 @@
-#pragma once
+#if (defined(DUMMYSPC) && !defined(__DUMMYSPC__H)) || (!defined(DUMMYSPC) && !defined(__SPC__H))
+#ifdef DUMMYSPC
+#define __DUMMYSPC__H
+#else
+#define __SPC__H
+#endif
+
 #include "stdafx.h"
 #include "SpcTypes.h"
 #include "CpuTypes.h"
@@ -30,8 +36,8 @@ private:
 	double _clockRatio;
 
 	SpcState _state;
-	uint8_t _ram[Spc::SpcRamSize];
-	uint8_t _spcBios[64];
+	uint8_t* _ram;
+	uint8_t* _spcBios;
 
 	int16_t *_soundBuffer;
 	//Store operations
@@ -260,4 +266,33 @@ public:
 	uint8_t* GetSpcRom();
 
 	void Serialize(Serializer &s) override;
+
+#ifdef DUMMYSPC
+private:
+	uint32_t _writeCounter = 0;
+	uint32_t _writeAddresses[10];
+	uint8_t _writeValue[10];
+
+	uint32_t _readCounter = 0;
+	uint32_t _readAddresses[10];
+	uint8_t _readValue[10];
+
+	void LogRead(uint32_t addr, uint8_t value);
+	void LogWrite(uint32_t addr, uint8_t value);
+
+public:
+	DummySpc(uint8_t *spcRam, uint8_t *spcRom, SpcState &state);
+
+	void Step();
+
+	void SetDummyState(SpcState &state);
+	int32_t GetLastOperand();
+
+	uint32_t GetWriteCount();
+	uint32_t GetReadCount();
+	void GetWriteInfo(uint32_t index, uint32_t &addr, uint8_t &value);
+	void GetReadInfo(uint32_t index, uint32_t &addr, uint8_t &value);
+#endif
 };
+
+#endif

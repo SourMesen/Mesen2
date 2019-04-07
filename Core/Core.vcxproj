@@ -67,6 +67,7 @@
     <ClInclude Include="DebugBreakHelper.h" />
     <ClInclude Include="DebugStats.h" />
     <ClInclude Include="DummyCpu.h" />
+    <ClInclude Include="DummySpc.h" />
     <ClInclude Include="EmuSettings.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="EventType.h" />

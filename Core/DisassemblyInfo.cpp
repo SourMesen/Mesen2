@@ -49,7 +49,7 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState)
 {
 	switch(_cpuType) {
 		case CpuType::Cpu: return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
-		//case CpuType::Spc: return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
+		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, console, *(SpcState*)cpuState);
 	}
 	return -1;
 }

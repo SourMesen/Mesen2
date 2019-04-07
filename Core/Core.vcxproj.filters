@@ -263,6 +263,9 @@
     <ClInclude Include="SpcDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
+    <ClInclude Include="DummySpc.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

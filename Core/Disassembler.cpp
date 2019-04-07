@@ -296,9 +296,15 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					data.ValueSize = 0;
 				}
 			} else {
-				//TODO
-				data.EffectiveAddress = -1;
-				data.ValueSize = 0;
+				SpcState state = _console->GetSpc()->GetState();
+				state.PC = (uint16_t)result.CpuAddress; 
+				data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
+				if(data.EffectiveAddress >= 0) {
+					data.Value = _spc->DebugRead(data.EffectiveAddress);
+					data.ValueSize = 1;
+				} else {
+					data.ValueSize = 0;
+				}
 			}
 			
 			string text;

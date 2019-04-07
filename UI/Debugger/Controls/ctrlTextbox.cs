@@ -401,7 +401,7 @@ namespace Mesen.GUI.Debugger.Controls
 		public string GetFullWidthString(int lineIndex)
 		{
 			CodeLineData lineData = _dataProvider.GetCodeLineData(lineIndex);
-			string text = lineData.Text + lineData.GetEffectiveAddressString();
+			string text = lineData.Text + lineData.GetEffectiveAddressString(_addressFormat);
 			if(lineData.Comment.Length > 0) {
 				return text.PadRight(text.Length > 0 ? CommentSpacingCharCount : 0) + lineData.Comment;
 			}
@@ -981,7 +981,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 						if(lineData.EffectiveAddress >= 0) {
 							colors.Add(cfg.CodeEffectiveAddressColor);
-							parts.Add(" [" + lineData.EffectiveAddress.ToString("X6") + "]");
+							parts.Add(" [" + lineData.EffectiveAddress.ToString(_addressFormat) + "]");
 						}
 
 						if(this.ShowMemoryValues && lineData.ValueSize > 0) {
