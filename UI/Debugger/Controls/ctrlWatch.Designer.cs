@@ -16,7 +16,9 @@
 			if(disposing && (components != null)) {
 				components.Dispose();
 			}
-			WatchManager.WatchChanged -= WatchManager_WatchChanged;
+			if(_watchManager != null) {
+				_watchManager.WatchChanged -= WatchManager_WatchChanged;
+			}
 			base.Dispose(disposing);
 		}
 

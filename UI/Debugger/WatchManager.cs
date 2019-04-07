@@ -11,12 +11,25 @@ namespace Mesen.GUI.Debugger
 {
 	class WatchManager
 	{
-		public static event EventHandler WatchChanged;
-		private static List<string> _watchEntries = new List<string>();
-		private static Regex _arrayWatchRegex = new Regex(@"\[((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+))\s*,\s*(\d+)\]", RegexOptions.Compiled);
 		public static Regex FormatSuffixRegex = new Regex(@"^(.*),\s*([B|H|S|U])([\d]){0,1}$", RegexOptions.Compiled);
+		private static Regex _arrayWatchRegex = new Regex(@"\[((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+))\s*,\s*(\d+)\]", RegexOptions.Compiled);
 
-		public static List<string> WatchEntries
+		public event EventHandler WatchChanged;
+		private List<string> _watchEntries = new List<string>();
+
+		private static Dictionary<CpuType, WatchManager> _watchManagers = new Dictionary<CpuType, WatchManager>();
+
+		public static WatchManager GetWatchManager(CpuType cpuType)
+		{
+			WatchManager manager;
+			if(!_watchManagers.TryGetValue(cpuType, out manager)) {
+				manager = new WatchManager();
+				_watchManagers[cpuType] = manager;
+			}
+			return manager;
+		}
+
+		public List<string> WatchEntries
 		{
 			get { return _watchEntries; }
 			set
@@ -26,7 +39,7 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		public static List<WatchValueInfo> GetWatchContent(CpuType cpuType, List<WatchValueInfo> previousValues)
+		public List<WatchValueInfo> GetWatchContent(CpuType cpuType, List<WatchValueInfo> previousValues)
 		{
 			WatchFormatStyle defaultStyle = ConfigManager.Config.Debug.Debugger.WatchFormat;
 			int defaultByteLength = 1;
@@ -72,7 +85,7 @@ namespace Mesen.GUI.Debugger
 			return list;
 		}
 
-		private static string FormatValue(int value, WatchFormatStyle style, int byteLength)
+		private string FormatValue(int value, WatchFormatStyle style, int byteLength)
 		{
 			switch(style) {
 				case WatchFormatStyle.Unsigned: return ((UInt32)value).ToString();
@@ -101,12 +114,12 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		public static bool IsArraySyntax(string expression)
+		public bool IsArraySyntax(string expression)
 		{
 			return _arrayWatchRegex.IsMatch(expression);
 		}
 
-		private static bool ProcessFormatSpecifier(ref string expression, ref WatchFormatStyle style, ref int byteLength)
+		private bool ProcessFormatSpecifier(ref string expression, ref WatchFormatStyle style, ref int byteLength)
 		{
 			Match match = WatchManager.FormatSuffixRegex.Match(expression);
 			if(!match.Success) {
@@ -132,7 +145,7 @@ namespace Mesen.GUI.Debugger
 			return true;
 		}
 
-		private static string ProcessArrayDisplaySyntax(WatchFormatStyle style, ref bool forceHasChanged, Match match)
+		private string ProcessArrayDisplaySyntax(WatchFormatStyle style, ref bool forceHasChanged, Match match)
 		{
 			string newValue;
 			int address;
@@ -166,7 +179,7 @@ namespace Mesen.GUI.Debugger
 			return newValue;
 		}
 
-		public static void AddWatch(params string[] expressions)
+		public void AddWatch(params string[] expressions)
 		{
 			foreach(string expression in expressions) {
 				_watchEntries.Add(expression);
@@ -174,7 +187,7 @@ namespace Mesen.GUI.Debugger
 			WatchChanged?.Invoke(null, EventArgs.Empty);
 		}
 
-		public static void UpdateWatch(int index, string expression)
+		public void UpdateWatch(int index, string expression)
 		{
 			if(string.IsNullOrWhiteSpace(expression)) {
 				RemoveWatch(index);
@@ -188,7 +201,7 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		public static void RemoveWatch(params int[] indexes)
+		public void RemoveWatch(params int[] indexes)
 		{
 			HashSet<int> set = new HashSet<int>(indexes);
 			_watchEntries = _watchEntries.Where((el, index) => !set.Contains(index)).ToList();
@@ -196,16 +209,16 @@ namespace Mesen.GUI.Debugger
 			WatchChanged?.Invoke(null, EventArgs.Empty);
 		}
 
-		public static void Import(string filename)
+		public void Import(string filename)
 		{
 			if(File.Exists(filename)) {
-				WatchManager.WatchEntries = new List<string>(File.ReadAllLines(filename));
+				WatchEntries = new List<string>(File.ReadAllLines(filename));
 			}
 		}
 
-		public static void Export(string filename)
+		public void Export(string filename)
 		{
-			File.WriteAllLines(filename, WatchManager.WatchEntries);
+			File.WriteAllLines(filename, WatchEntries);
 		}
 	}
 

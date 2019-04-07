@@ -15,7 +15,8 @@ namespace Mesen.GUI.Debugger.Workspace
 		public static void SaveWorkspace()
 		{
 			if(_workspace != null) {
-				_workspace.WatchValues = new List<string>(WatchManager.WatchEntries);
+				_workspace.WatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries);
+				_workspace.SpcWatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Spc).WatchEntries);
 				_workspace.Breakpoints = new List<Breakpoint>(BreakpointManager.Breakpoints);
 				_workspace.Save();
 			}
@@ -32,7 +33,9 @@ namespace Mesen.GUI.Debugger.Workspace
 			if(_workspace != null) {
 				_workspace.Breakpoints = new List<Breakpoint>();
 				_workspace.WatchValues = new List<string>();
-				WatchManager.WatchEntries = _workspace.WatchValues;
+				_workspace.SpcWatchValues = new List<string>();
+				WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries = _workspace.WatchValues;
+				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
 				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
 				_workspace.Save();
 				Clear();
@@ -50,7 +53,8 @@ namespace Mesen.GUI.Debugger.Workspace
 				_workspace = DebugWorkspace.GetWorkspace();
 
 				//Load watch entries
-				WatchManager.WatchEntries = _workspace.WatchValues;
+				WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries = _workspace.WatchValues;
+				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
 
 				//Load breakpoints
 				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);

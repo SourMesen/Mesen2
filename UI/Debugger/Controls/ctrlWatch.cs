@@ -29,6 +29,8 @@ namespace Mesen.GUI.Debugger
 
 		private bool _isEditing = false;
 		ListViewItem _keyDownItem = null;
+		private CpuType _cpuType;
+		private WatchManager _watchManager;
 
 		public ctrlWatch()
 		{
@@ -37,13 +39,24 @@ namespace Mesen.GUI.Debugger
 			this.DoubleBuffered = true;
 		}
 
-		public CpuType CpuType { get; set; }
+		public CpuType CpuType
+		{
+			get { return _cpuType; }
+			set
+			{
+				_cpuType = value;
+				if(_watchManager != null) {
+					_watchManager.WatchChanged -= WatchManager_WatchChanged;
+				}
+				_watchManager = WatchManager.GetWatchManager(value);
+				_watchManager.WatchChanged += WatchManager_WatchChanged;
+			}
+		}
 
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
 			if(!IsDesignMode) {
-				WatchManager.WatchChanged += WatchManager_WatchChanged;
 				mnuRemoveWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.WatchList_Delete));
 				mnuEditInMemoryViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer));
 				mnuViewInDisassembly.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInDisassembly));
@@ -104,7 +117,7 @@ namespace Mesen.GUI.Debugger
 
 		public void UpdateWatch(bool autoResizeColumns = true)
 		{
-			List<WatchValueInfo> watchContent = WatchManager.GetWatchContent(this.CpuType, _previousValues);
+			List<WatchValueInfo> watchContent = _watchManager.GetWatchContent(this.CpuType, _previousValues);
 			_previousValues = watchContent;
 
 			bool updating = false;
@@ -161,7 +174,7 @@ namespace Mesen.GUI.Debugger
 				lstWatch.EndUpdate();
 			}
 		}
-				
+
 		private void lstWatch_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			mnuRemoveWatch.Enabled = lstWatch.SelectedItems.Count >= 1;
@@ -216,7 +229,7 @@ namespace Mesen.GUI.Debugger
 				foreach(ListViewItem item in lstWatch.SelectedItems) {
 					itemsToRemove.Add(item.Index);
 				}
-				WatchManager.RemoveWatch(itemsToRemove.ToArray());
+				_watchManager.RemoveWatch(itemsToRemove.ToArray());
 			}
 		}
 
@@ -287,7 +300,7 @@ namespace Mesen.GUI.Debugger
 		{
 			if(lstWatch.SelectedItems.Count > 0) {
 				lstWatch.SelectedItems[0].Text = txtEdit.Text;
-				WatchManager.UpdateWatch(lstWatch.SelectedIndices[0], txtEdit.Text);
+				_watchManager.UpdateWatch(lstWatch.SelectedIndices[0], txtEdit.Text);
 			}
 			lstWatch.Focus();
 		}
@@ -355,8 +368,8 @@ namespace Mesen.GUI.Debugger
 				string currentEntry = lstWatch.Items[index].SubItems[0].Text;
 				string entryAbove = lstWatch.Items[index - 1].SubItems[0].Text;
 				SetSelectedItem(index - 1);
-				WatchManager.UpdateWatch(index - 1, currentEntry);
-				WatchManager.UpdateWatch(index, entryAbove);
+				_watchManager.UpdateWatch(index - 1, currentEntry);
+				_watchManager.UpdateWatch(index, entryAbove);
 			} else {
 				SetSelectedItem(index);
 			}
@@ -373,8 +386,8 @@ namespace Mesen.GUI.Debugger
 				string currentEntry = lstWatch.Items[index].SubItems[0].Text;
 				string entryBelow = lstWatch.Items[index + 1].SubItems[0].Text;
 				SetSelectedItem(index + 1);
-				WatchManager.UpdateWatch(index + 1, currentEntry);
-				WatchManager.UpdateWatch(index, entryBelow);
+				_watchManager.UpdateWatch(index + 1, currentEntry);
+				_watchManager.UpdateWatch(index, entryBelow);
 			} else {
 				SetSelectedItem(index);
 			}
@@ -396,7 +409,7 @@ namespace Mesen.GUI.Debugger
 			using(OpenFileDialog ofd = new OpenFileDialog()) {
 				ofd.SetFilter("Watch files (*.mwf)|*.mwf");
 				if(ofd.ShowDialog() == DialogResult.OK) {
-					WatchManager.Import(ofd.FileName);
+					_watchManager.Import(ofd.FileName);
 				}
 			}
 		}
@@ -406,7 +419,7 @@ namespace Mesen.GUI.Debugger
 			using(SaveFileDialog sfd = new SaveFileDialog()) {
 				sfd.SetFilter("Watch files (*.mwf)|*.mwf");
 				if(sfd.ShowDialog() == DialogResult.OK) {
-					WatchManager.Export(sfd.FileName);
+					_watchManager.Export(sfd.FileName);
 				}
 			}
 		}
@@ -455,15 +468,15 @@ namespace Mesen.GUI.Debugger
 
 		private void SetSelectionFormat(string formatString)
 		{
-			List<string> entries = WatchManager.WatchEntries;
+			List<string> entries = _watchManager.WatchEntries;
 			foreach(int i in lstWatch.SelectedIndices) {
 				if(i < entries.Count) {
 					Match match = WatchManager.FormatSuffixRegex.Match(entries[i]);
 					if(match.Success) {
-						WatchManager.UpdateWatch(i, match.Groups[1].Value + formatString);
+						_watchManager.UpdateWatch(i, match.Groups[1].Value + formatString);
 					} else {
-						WatchManager.UpdateWatch(i, entries[i] + formatString);
-					}					
+						_watchManager.UpdateWatch(i, entries[i] + formatString);
+					}
 				}
 			}
 		}

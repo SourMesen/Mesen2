@@ -15,6 +15,7 @@ namespace Mesen.GUI.Debugger.Workspace
 	{
 		public List<Breakpoint> Breakpoints = new List<Breakpoint>();
 		public List<string> WatchValues = new List<string>();
+		public List<string> SpcWatchValues = new List<string>();
 		//public List<CodeLabel> Labels = new List<CodeLabel>();
 		public List<string> TblMappings = null;
 		private string _filePath;
