@@ -30,22 +30,24 @@ namespace Mesen.GUI.Config
 		public TraceLoggerInfo()
 		{
 			LogOptions = new TraceLoggerOptions() {
+				LogCpu = true,
 				ShowByteCode = true,
-				ShowCpuCycles = true,
 				ShowEffectiveAddresses = true,
-				ShowExtraInfo = true,
 				ShowPpuFrames = false,
 				ShowPpuCycles = true,
 				ShowPpuScanline = true,
 				ShowRegisters = true,
 				UseLabels = false,
-				StatusFormat = StatusFlagFormat.Hexadecimal
+				StatusFormat = StatusFlagFormat.Text
 			};
 		}
 	}
 
 	public class TraceLoggerOptions
 	{
+		public bool LogCpu;
+		public bool LogSpc;
+
 		public bool ShowByteCode;
 		public bool ShowRegisters;
 		public bool ShowCpuCycles;

@@ -13,6 +13,9 @@ struct DebugState;
 
 struct TraceLoggerOptions
 {
+	bool LogCpu;
+	bool LogSpc;
+
 	bool ShowExtraInfo;
 	bool IndentCode;
 	bool UseLabels;
@@ -56,7 +59,7 @@ struct RowPart
 class TraceLogger
 {
 private:
-	static constexpr int ExecutionLogSize = 30000;
+	static constexpr int ExecutionLogSize = 60000;
 
 	//Must be static to be thread-safe when switching game
 	static string _executionTrace;
@@ -71,12 +74,14 @@ private:
 	vector<RowPart> _rowParts;
 	vector<RowPart> _spcRowParts;
 
+	bool _logCpu[(int)CpuType::Spc + 1] = {};
+
 	bool _pendingLog;
 	//CpuState _lastState;
 	//DisassemblyInfo _lastDisassemblyInfo;
 
 	bool _logToFile;
-	uint16_t _currentPos;
+	uint32_t _currentPos;
 	uint32_t _logCount;
 	DebugState _stateCache[ExecutionLogSize] = {};
 	DisassemblyInfo _disassemblyCache[ExecutionLogSize];
@@ -86,7 +91,8 @@ private:
 
 	SimpleLock _lock;
 
-	void GetStatusFlag(string &output, uint8_t ps, RowPart& part);
+	template<CpuType cpuType> void GetStatusFlag(string &output, uint8_t ps, RowPart& part);
+
 	void WriteByteCode(DisassemblyInfo &info, RowPart &rowPart, string &output);
 	void WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint8_t sp, uint32_t pc, string &output);
 	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output);

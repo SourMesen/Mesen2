@@ -46,6 +46,10 @@ void TraceLogger::WriteValue(string &output, string value, RowPart& rowPart)
 void TraceLogger::SetOptions(TraceLoggerOptions options)
 {
 	_options = options;
+	
+	_logCpu[(int)CpuType::Cpu] = options.LogCpu;
+	_logCpu[(int)CpuType::Spc] = options.LogSpc;
+
 	string condition = _options.Condition;
 	string format = _options.Format;
 
@@ -60,7 +64,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	}*/
 
 	ParseFormatString(_rowParts, format);
-	ParseFormatString(_spcRowParts, "[PC,4h]   [ByteCode,15h] [Disassembly][EffectiveAddress][MemoryValue,h][Align,48] A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] P:[P,h] H:[Cycle,3] V:[Scanline,3]");
+	ParseFormatString(_spcRowParts, "[PC,4h]   [ByteCode,15h] [Disassembly][EffectiveAddress][MemoryValue,h][Align,48] A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] P:[P,8] H:[Cycle,3] V:[Scanline,3]");
 }
 
 void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)
@@ -165,13 +169,21 @@ void TraceLogger::LogExtraInfo(const char *log, uint32_t cycleCount)
 	}
 }
 
+template<CpuType cpuType>
 void TraceLogger::GetStatusFlag(string &output, uint8_t ps, RowPart& part)
 {
+	constexpr char cpuActiveStatusLetters[8] = { 'N', 'V', 'M', 'X', 'D', 'I', 'Z', 'C' };
+	constexpr char cpuInactiveStatusLetters[8] = { 'n', 'v', 'p', 'x', 'd', 'i', 'z', 'c' };
+
+	constexpr char spcActiveStatusLetters[8] = { 'N', 'V', 'P', 'B', 'H', 'I', 'Z', 'C' };
+	constexpr char spcInactiveStatusLetters[8] = { 'n', 'v', 'p', 'b', 'h', 'i', 'z', 'c' };
+
+	constexpr char activeStatusLetters[8] = cpuType == CpuType::Cpu ? cpuActiveStatusLetters : spcActiveStatusLetters;
+	constexpr char inactiveStatusLetters[8] = cpuType == CpuType::Cpu ? cpuInactiveStatusLetters : spcInactiveStatusLetters;
+
 	if(part.DisplayInHex) {
 		WriteValue(output, ps, part);
 	} else {
-		constexpr char activeStatusLetters[8] = { 'N', 'V', 'M', 'X', 'D', 'I', 'Z', 'C' };
-		constexpr char inactiveStatusLetters[8] = { 'n', 'v', 'm', 'x', 'd', 'i', 'z', 'c' };
 		string flags;
 		for(int i = 0; i < 8; i++) {
 			if(ps & 0x80) {
@@ -265,7 +277,7 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::D: WriteValue(output, cpuState.D, rowPart); break;
 			case RowDataType::DB: WriteValue(output, cpuState.DBR, rowPart); break;
 			case RowDataType::SP: WriteValue(output, cpuState.SP, rowPart); break;
-			case RowDataType::PS: GetStatusFlag(output, cpuState.PS, rowPart); break;
+			case RowDataType::PS: GetStatusFlag<CpuType::Cpu>(output, cpuState.PS, rowPart); break;
 			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
@@ -293,7 +305,7 @@ void TraceLogger::GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuS
 			case RowDataType::X: WriteValue(output, cpuState.X, rowPart); break;
 			case RowDataType::Y: WriteValue(output, cpuState.Y, rowPart); break;
 			case RowDataType::SP: WriteValue(output, cpuState.SP, rowPart); break;
-			case RowDataType::PS: GetStatusFlag(output, cpuState.PS, rowPart); break;
+			case RowDataType::PS: GetStatusFlag<CpuType::Spc>(output, cpuState.PS, rowPart); break;
 			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
@@ -339,7 +351,7 @@ void TraceLogger::AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state)
 		_logCount++;
 	}
 
-	if(_logToFile) {
+	if(_logToFile && _logCpu[(int)disassemblyInfo.GetCpuType()]) {
 		GetTraceRow(_outputBuffer, _disassemblyCache[_currentPos], _stateCache[_currentPos]);
 		if(_outputBuffer.size() > 32768) {
 			_outputFile << _outputBuffer;
@@ -381,19 +393,38 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 		startPos = _currentPos + ExecutionLogSize - lineCount;
 	}
 
-	for(int i = 0; i < (int)lineCount; i++) {
-		int index = (startPos + i) % ExecutionLogSize;
-
-		switch(_disassemblyCacheCopy[index].GetCpuType()) {
-			case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Cpu.K << 16) | _stateCacheCopy[index].Cpu.PC) + "\x1"; break;
-			case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(_stateCacheCopy[index].Spc.PC) + "\x1"; break;
-		}
-		
-		string byteCode;
-		_disassemblyCacheCopy[index].GetByteCode(byteCode);
-		_executionTrace += byteCode + "\x1";
-		GetTraceRow(_executionTrace, _disassemblyCacheCopy[index], _stateCacheCopy[index]);
+	bool enabled = false;
+	for(int i = 0; i <= (int)CpuType::Spc; i++) {
+		enabled |= _logCpu[i];
 	}
 
+	if(enabled) {
+		for(int i = 0; i < (int)lineCount; i++) {
+			int index = (startPos + i) % ExecutionLogSize;
+
+			if(i > 0 && startPos == index) {
+				//If we're back at the start, we didn't manage to find 
+				break;
+			}
+
+			CpuType cpuType = _disassemblyCacheCopy[index].GetCpuType();
+			if(!_logCpu[(int)cpuType]) {
+				//This line isn't for a CPU currently being logged, increase the line count to try and
+				//get the number of lines the UI requested for the CPU type currently being logged
+				lineCount++;
+				continue;
+			}
+
+			switch(cpuType) {
+				case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Cpu.K << 16) | _stateCacheCopy[index].Cpu.PC) + "\x1"; break;
+				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(_stateCacheCopy[index].Spc.PC) + "\x1"; break;
+			}
+
+			string byteCode;
+			_disassemblyCacheCopy[index].GetByteCode(byteCode);
+			_executionTrace += byteCode + "\x1";
+			GetTraceRow(_executionTrace, _disassemblyCacheCopy[index], _stateCacheCopy[index]);
+		}
+	}
 	return _executionTrace.c_str();
 }

@@ -44,21 +44,25 @@ namespace Mesen.GUI.Debugger
 			_lineCount = config.LineCount;
 
 			_entityBinder.Entity = config.LogOptions;
-			_entityBinder.AddBinding("ShowByteCode", chkShowByteCode);
-			_entityBinder.AddBinding("ShowCpuCycles", chkShowCpuCycles);
-			_entityBinder.AddBinding("ShowEffectiveAddresses", chkShowEffectiveAddresses);
-			_entityBinder.AddBinding("ShowMemoryValues", chkShowMemoryValues);
-			_entityBinder.AddBinding("ShowExtraInfo", chkShowExtraInfo);
-			_entityBinder.AddBinding("ShowPpuFrames", chkShowFrameCount);
-			_entityBinder.AddBinding("ShowPpuCycles", chkShowPpuCycles);
-			_entityBinder.AddBinding("ShowPpuScanline", chkShowPpuScanline);
-			_entityBinder.AddBinding("ShowRegisters", chkShowRegisters);
-			_entityBinder.AddBinding("IndentCode", chkIndentCode);
-			_entityBinder.AddBinding("UseLabels", chkUseLabels);
-			_entityBinder.AddBinding("ExtendZeroPage", chkExtendZeroPage);
-			_entityBinder.AddBinding("UseWindowsEol", chkUseWindowsEol);
-			_entityBinder.AddBinding("StatusFormat", cboStatusFlagFormat);
-			_entityBinder.AddBinding("OverrideFormat", chkOverrideFormat);
+
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogCpu), chkLogCpu);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogSpc), chkLogSpc);
+
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowByteCode), chkShowByteCode);
+			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowCpuCycles), chkShowCpuCycles);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowEffectiveAddresses), chkShowEffectiveAddresses);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowMemoryValues), chkShowMemoryValues);
+			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowExtraInfo), chkShowExtraInfo);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowPpuFrames), chkShowFrameCount);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowPpuCycles), chkShowPpuCycles);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowPpuScanline), chkShowPpuScanline);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowRegisters), chkShowRegisters);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.IndentCode), chkIndentCode);
+			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.UseLabels), chkUseLabels);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ExtendZeroPage), chkExtendZeroPage);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.UseWindowsEol), chkUseWindowsEol);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.StatusFormat), cboStatusFlagFormat);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.OverrideFormat), chkOverrideFormat);
 			_entityBinder.UpdateUI();
 
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");
@@ -170,11 +174,11 @@ namespace Mesen.GUI.Debugger
 						case StatusFlagFormat.Text: format += "P:[P,8] "; break;
 					}
 				}
-				if(chkShowPpuCycles.Checked) {
-					format += "CYC:[Cycle,3] ";
-				}
 				if(chkShowPpuScanline.Checked) {
-					format += "SL:[Scanline,3] ";
+					format += "V:[Scanline,3] ";
+				}
+				if(chkShowPpuCycles.Checked) {
+					format += "H:[Cycle,3] ";
 				}
 				if(chkShowFrameCount.Checked) {
 					format += "FC:[FrameCount] ";
@@ -207,6 +211,8 @@ namespace Mesen.GUI.Debugger
 			TraceLoggerOptions options = (TraceLoggerOptions)_entityBinder.Entity;
 
 			InteropTraceLoggerOptions interopOptions = new InteropTraceLoggerOptions();
+			interopOptions.LogCpu = options.LogCpu;
+			interopOptions.LogSpc = options.LogSpc;
 			interopOptions.IndentCode = options.IndentCode;
 			interopOptions.ShowExtraInfo = options.ShowExtraInfo;
 			interopOptions.UseLabels = options.UseLabels;
@@ -527,6 +533,7 @@ namespace Mesen.GUI.Debugger
 	public class TraceLoggerStyleProvider : ctrlTextbox.ILineStyleProvider
 	{
 		private Color _spcColor = Color.FromArgb(030, 145, 030);
+		private Color _spcBgColor = Color.FromArgb(230, 245, 230);
 		private List<int> _flags;
 
 		public TraceLoggerStyleProvider(List<int> lineFlags)
@@ -542,7 +549,8 @@ namespace Mesen.GUI.Debugger
 		public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
 		{
 			return new LineProperties() {
-				FgColor = _flags[lineIndex] == 3 ? (Color?)_spcColor : null
+				AddressColor = _flags[lineIndex] == 3 ? (Color?)_spcColor : null,
+				LineBgColor = _flags[lineIndex] == 3 ? (Color?)_spcBgColor : null
 			};
 		}
 	}

@@ -423,6 +423,9 @@ namespace Mesen.GUI
 	[Serializable]
 	public struct InteropTraceLoggerOptions
 	{
+		[MarshalAs(UnmanagedType.I1)] public bool LogCpu;
+		[MarshalAs(UnmanagedType.I1)] public bool LogSpc;
+
 		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;
 		[MarshalAs(UnmanagedType.I1)] public bool UseLabels;
