@@ -25,6 +25,7 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 	switch(type) {
 		default:
 		case SnesMemoryType::CpuMemory:
+		case SnesMemoryType::SpcMemory:
 			break;
 		
 		case SnesMemoryType::PrgRom: memcpy(_cartridge->DebugGetPrgRom(), buffer, length); break;
@@ -43,6 +44,7 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 	switch(type) {
 		default: return 0;
 		case SnesMemoryType::CpuMemory: return 0x1000000;
+		case SnesMemoryType::SpcMemory: return 0x10000;
 		case SnesMemoryType::PrgRom: return _cartridge->DebugGetPrgRomSize();
 		case SnesMemoryType::WorkRam: return MemoryManager::WorkRamSize;
 		case SnesMemoryType::SaveRam: return _cartridge->DebugGetSaveRamSize();

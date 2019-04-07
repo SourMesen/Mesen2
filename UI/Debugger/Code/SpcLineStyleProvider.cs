@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Debugger.Code
 {
-	public class CpuLineStyleProvider : BaseStyleProvider
+	public class SpcLineStyleProvider : BaseStyleProvider
 	{
-		public CpuLineStyleProvider()
+		public SpcLineStyleProvider()
 		{
 		}
 
@@ -40,35 +40,16 @@ namespace Mesen.GUI.Debugger.Code
 			if(isActiveStatement) {
 				ConfigureActiveStatement(props);
 			}
-
-			//TODO
-			/* else if(_code._code.UnexecutedAddresses.Contains(lineNumber)) {
-				props.LineBgColor = info.CodeUnexecutedCodeColor;
-			}*/
-
-			if(lineData.Flags.HasFlag(LineFlags.PrgRom)) {
-				props.AddressColor = Color.Gray;
-			} else if(lineData.Flags.HasFlag(LineFlags.WorkRam)) {
-				props.AddressColor = Color.DarkBlue;
-			} else if(lineData.Flags.HasFlag(LineFlags.SaveRam)) {
-				props.AddressColor = Color.DarkRed;
-			}
-
-			if(lineData.Flags.HasFlag(LineFlags.VerifiedData)) {
-				props.LineBgColor = cfg.CodeVerifiedDataColor;
-			} else if(!lineData.Flags.HasFlag(LineFlags.VerifiedCode)) {
-				props.LineBgColor = cfg.CodeUnidentifiedDataColor;
-			}
-
+			
 			return props;
 		}
 
-		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
+		private void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
 		{
-			DebuggerInfo config = ConfigManager.Config.Debug.Debugger;
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
-				if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.CpuMemory)) {
+				if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.SpcMemory)) {
 					SetBreakpointLineProperties(props, breakpoint);
+					return;
 				}
 			}
 		}

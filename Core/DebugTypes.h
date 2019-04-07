@@ -214,6 +214,9 @@ enum class StepType
 	CpuStep,
 	CpuStepOut,
 	CpuStepOver,
+	SpcStep,
+	SpcStepOut,
+	SpcStepOver,
 	PpuStep,
 	SpecificScanline,
 };
@@ -222,6 +225,6 @@ enum class CpuType : uint8_t
 {
 	Cpu,
 	Spc,
-	SuperFx,
-	Sa1,
+	//SuperFx,
+	//Sa1,
 };

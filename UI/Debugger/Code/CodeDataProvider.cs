@@ -7,23 +7,25 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Debugger.Code
 {
-	public class CpuCodeDataProvider : ICodeDataProvider
+	public class CodeDataProvider : ICodeDataProvider
 	{
 		private int _lineCount;
+		protected CpuType _type;
 
-		public CpuCodeDataProvider()
+		public CodeDataProvider(CpuType type)
 		{
-			_lineCount = (int)DebugApi.GetDisassemblyLineCount();
+			_type = type;
+			_lineCount = (int)DebugApi.GetDisassemblyLineCount(_type);
 		}
 
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
-			return DebugApi.GetDisassemblyLineData((UInt32)lineIndex);
+			return DebugApi.GetDisassemblyLineData(_type, (UInt32)lineIndex);
 		}
 
 		public int GetLineAddress(int lineIndex)
 		{
-			return DebugApi.GetDisassemblyLineData((UInt32)lineIndex).Address;
+			return DebugApi.GetDisassemblyLineData(_type, (UInt32)lineIndex).Address;
 		}
 
 		public int GetLineCount()
@@ -33,14 +35,14 @@ namespace Mesen.GUI.Debugger.Code
 
 		public int GetLineIndex(uint cpuAddress)
 		{
-			return (int)DebugApi.GetDisassemblyLineIndex(cpuAddress);
+			return (int)DebugApi.GetDisassemblyLineIndex(_type, cpuAddress);
 		}
 
 		public bool UseOptimizedSearch { get { return true; } }
 
 		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
 		{
-			return DebugApi.SearchDisassembly(searchString, startPosition, endPosition, searchBackwards);
+			return DebugApi.SearchDisassembly(_type, searchString, startPosition, endPosition, searchBackwards);
 		}
 	}
 }

@@ -11,6 +11,9 @@ namespace Mesen.GUI.Debugger.Code
 	{
 		ICodeDataProvider Provider { get; }
 
+		int AddressSize { get; }
+		int ByteCodeSize { get; }
+
 		void RefreshCode();
 		void ToggleBreakpoint(int lineIndex);
 		void EnableDisableBreakpoint(int lineIndex);

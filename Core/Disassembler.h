@@ -6,6 +6,7 @@
 
 class MemoryManager;
 class Console;
+class Spc;
 class CodeDataLogger;
 struct CpuState;
 enum class CpuType : uint8_t;
@@ -15,6 +16,7 @@ class Disassembler
 private:
 	MemoryManager *_memoryManager;
 	Console *_console;
+	Spc *_spc;
 	shared_ptr<CodeDataLogger> _cdl;
 
 	vector<DisassemblyInfo> _prgCache;
@@ -25,8 +27,9 @@ private:
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
+	vector<DisassemblyResult> _spcDisassembly;
 
-	bool _needDisassemble = true;
+	bool _needDisassemble[2] = { true, true };
 
 	uint8_t *_prgRom;
 	uint32_t _prgRomSize;
@@ -46,12 +49,12 @@ public:
 
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void InvalidateCache(AddressInfo addrInfo);
-	void Disassemble();
+	void Disassemble(CpuType cpuType);
 
 	DisassemblyInfo GetDisassemblyInfo(AddressInfo &info);
 
-	uint32_t GetLineCount();
-	uint32_t GetLineIndex(uint32_t cpuAddress);
-	bool GetLineData(uint32_t lineIndex, CodeLineData &data);
-	int32_t SearchDisassembly(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards);
+	uint32_t GetLineCount(CpuType type);
+	uint32_t GetLineIndex(CpuType type, uint32_t cpuAddress);
+	bool GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &data);
+	int32_t SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards);
 };

@@ -32,7 +32,8 @@ namespace Mesen.GUI.Debugger
 			} else {
 				BaseForm frm = null;
 				switch(window) {
-					case DebugWindow.Debugger: frm = new frmDebugger(); frm.Icon = Properties.Resources.Debugger; break;
+					case DebugWindow.Debugger: frm = new frmDebugger(CpuType.Cpu); frm.Icon = Properties.Resources.Debugger; break;
+					case DebugWindow.SpcDebugger: frm = new frmDebugger(CpuType.Spc); frm.Icon = Properties.Resources.SpcDebugger; break;
 					case DebugWindow.TraceLogger: frm = new frmTraceLogger(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.MemoryTools: frm = new frmMemoryTools(); frm.Icon = Properties.Resources.CheatCode; break;
 					case DebugWindow.TileViewer: frm = new frmTileViewer(); frm.Icon = Properties.Resources.VerticalLayout; break;
@@ -96,7 +97,8 @@ namespace Mesen.GUI.Debugger
 		{
 			//Only one of each of these windows can be opened at once, check if one is already opened
 			switch(window) {
-				case DebugWindow.Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger));
+				case DebugWindow.Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Cpu);
+				case DebugWindow.SpcDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Spc);
 				case DebugWindow.TraceLogger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmTraceLogger));
 			}
 
@@ -123,6 +125,7 @@ namespace Mesen.GUI.Debugger
 	public enum DebugWindow
 	{
 		Debugger,
+		SpcDebugger,
 		MemoryTools,
 		TraceLogger,
 		TileViewer,

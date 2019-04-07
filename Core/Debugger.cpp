@@ -43,11 +43,15 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
 	_callstackManager.reset(new CallstackManager(this));
+	_spcCallstackManager.reset(new CallstackManager(this));
 	
 	_cpuStepCount = -1;
+	_spcStepCount = -1;
 	_ppuStepCount = -1;
-	_breakAddress = -1;
+	_cpuBreakAddress = -1;
+	_spcBreakAddress = -1;
 	_breakScanline = -1;
+
 	_executionStopped = false;
 	_breakRequestCount = 0;
 
@@ -195,6 +199,32 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
 		_traceLogger->Log(debugState, disInfo);
+
+		if(_spcPrevOpCode == 0x3F || _spcPrevOpCode == 0x0F) {
+			//JSR, BRK
+			uint8_t opSize = DisassemblyInfo::GetOpSize(_spcPrevOpCode, 0, CpuType::Spc);
+			uint16_t returnPc = _spcPrevProgramCounter + opSize;
+			_spcCallstackManager->Push(_spcPrevProgramCounter, debugState.Spc.PC, returnPc, StackFrameFlags::None);
+		} else if(_spcPrevOpCode == 0x6F || _spcPrevOpCode == 0x7F) {
+			//RTS, RTI
+			_spcCallstackManager->Pop(debugState.Spc.PC);
+		}
+
+		if(_spcBreakAddress == (int32_t)debugState.Spc.PC && (_spcPrevOpCode == 0x6F || _spcPrevOpCode == 0x7F)) {
+			//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
+			_cpuStepCount = 0;
+		}
+
+		_spcPrevOpCode = value;
+		_spcPrevProgramCounter = debugState.Spc.PC;
+
+		if(_spcStepCount > 0) {
+			_spcStepCount--;
+			if(_spcStepCount == 0) {
+				_spcStepCount = -1;
+				_cpuStepCount = 0;
+			}
+		}
 	}
 
 	ProcessBreakConditions(operation, addressInfo);
@@ -253,7 +283,8 @@ void Debugger::ProcessPpuCycle()
 void Debugger::SleepUntilResume()
 {
 	_console->GetSoundMixer()->StopAudio();
-	_disassembler->Disassemble();
+	_disassembler->Disassemble(CpuType::Cpu);
+	_disassembler->Disassemble(CpuType::Spc);
 
 	_executionStopped = true;
 	
@@ -271,7 +302,7 @@ void Debugger::SleepUntilResume()
 
 void Debugger::ProcessStepConditions(uint8_t opCode, uint32_t currentPc)
 {
-	if(_breakAddress == (int32_t)currentPc && (opCode == 0x60 || opCode == 0x40 || opCode == 0x6B || opCode == 0x44 || opCode == 0x54)) {
+	if(_cpuBreakAddress == (int32_t)currentPc && (opCode == 0x60 || opCode == 0x40 || opCode == 0x6B || opCode == 0x44 || opCode == 0x54)) {
 		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 		_cpuStepCount = 0;
 	}
@@ -322,8 +353,10 @@ int32_t Debugger::EvaluateExpression(string expression, EvalResultType &resultTy
 void Debugger::Run()
 {
 	_cpuStepCount = -1;
+	_spcStepCount = -1;
 	_ppuStepCount = -1;
-	_breakAddress = -1;
+	_cpuBreakAddress = -1;
+	_spcBreakAddress = -1;
 	_breakScanline = -1;
 }
 
@@ -332,29 +365,75 @@ void Debugger::Step(int32_t stepCount, StepType type)
 	switch(type) {
 		case StepType::CpuStep:
 			_cpuStepCount = stepCount;
-			_breakAddress = -1;
+			_cpuBreakAddress = -1;
+			_spcBreakAddress = -1;
+			_spcStepCount = -1;
 			_ppuStepCount = -1;
 			_breakScanline = -1;
 			break;
 
 		case StepType::CpuStepOut:
-			_breakAddress = _callstackManager->GetReturnAddress();
+			_cpuBreakAddress = _callstackManager->GetReturnAddress();
 			_cpuStepCount = -1;
+			_spcStepCount = -1;
 			_ppuStepCount = -1;
+			_spcBreakAddress = -1;
 			_breakScanline = -1;
 			break;
 
 		case StepType::CpuStepOver:
 			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
 				//JSR, JSL, BRK, COP, MVP, MVN
-				_breakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Cpu)) & 0xFFFF);
+				_cpuBreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Cpu)) & 0xFFFF);
 				_cpuStepCount = -1;
+				_spcStepCount = -1;
 				_ppuStepCount = -1;
+				_spcBreakAddress = -1;
 				_breakScanline = -1;
 			} else {
 				//For any other instruction, step over is the same as step into
 				_cpuStepCount = 1;
-				_breakAddress = -1;
+				_spcStepCount = -1;
+				_cpuBreakAddress = -1;
+				_spcBreakAddress = -1;
+				_ppuStepCount = -1;
+				_breakScanline = -1;
+			}
+			break;
+
+		case StepType::SpcStep:
+			_spcStepCount = stepCount;
+			_cpuStepCount = -1;
+			_cpuBreakAddress = -1;
+			_spcBreakAddress = -1;
+			_ppuStepCount = -1;
+			_breakScanline = -1;
+			break;
+
+		case StepType::SpcStepOut:
+			_spcBreakAddress = _spcCallstackManager->GetReturnAddress();
+			_spcStepCount = -1;
+			_cpuBreakAddress = -1;
+			_cpuStepCount = -1;
+			_ppuStepCount = -1;
+			_breakScanline = -1;
+			break;
+
+		case StepType::SpcStepOver:
+			if(_spcPrevOpCode == 0x3F || _spcPrevOpCode == 0x0F) {
+				//JSR, BRK
+				_spcBreakAddress = _spcPrevProgramCounter + DisassemblyInfo::GetOpSize(_spcPrevOpCode, 0, CpuType::Spc);
+				_cpuStepCount = -1;
+				_spcStepCount = -1;
+				_ppuStepCount = -1;
+				_cpuBreakAddress = -1;
+				_breakScanline = -1;
+			} else {
+				//For any other instruction, step over is the same as step into
+				_spcStepCount = 1;
+				_cpuStepCount = -1;
+				_cpuBreakAddress = -1;
+				_spcBreakAddress = -1;
 				_ppuStepCount = -1;
 				_breakScanline = -1;
 			}
@@ -363,7 +442,9 @@ void Debugger::Step(int32_t stepCount, StepType type)
 		case StepType::PpuStep:
 			_ppuStepCount = stepCount;
 			_cpuStepCount = -1;
-			_breakAddress = -1;
+			_spcStepCount = -1;
+			_cpuBreakAddress = -1;
+			_spcBreakAddress = -1;
 			_breakScanline = -1;
 			break;
 
@@ -371,7 +452,9 @@ void Debugger::Step(int32_t stepCount, StepType type)
 			_breakScanline = stepCount;
 			_ppuStepCount = -1;
 			_cpuStepCount = -1;
-			_breakAddress = -1;
+			_spcStepCount = -1;
+			_cpuBreakAddress = -1;
+			_spcBreakAddress = -1;
 			break;
 	}
 }
@@ -438,9 +521,9 @@ shared_ptr<EventManager> Debugger::GetEventManager()
 	return _eventManager;
 }
 
-shared_ptr<CallstackManager> Debugger::GetCallstackManager()
+shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 {
-	return _callstackManager;
+	return cpuType == CpuType::Cpu ? _callstackManager : _spcCallstackManager;
 }
 
 shared_ptr<Console> Debugger::GetConsole()

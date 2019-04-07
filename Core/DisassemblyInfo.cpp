@@ -105,6 +105,25 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 	return 0;
 }
 
+bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
+{
+	switch(type) {
+		case CpuType::Cpu: return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
+		case CpuType::Spc: return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
+	}
+}
+
+bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
+{
+	//RTS/RTI
+	switch(type) {
+		case CpuType::Cpu: return opCode == 0x60 || opCode == 0x6B || opCode == 0x40;
+		case CpuType::Spc: return opCode == 0x6F || opCode == 0x7F;
+	}
+	
+	return false;
+}
+
 uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize)
 {
 	if(_flags & ProcFlags::MemoryMode8) {

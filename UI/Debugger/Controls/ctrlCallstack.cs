@@ -18,23 +18,30 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private StackFrameInfo[] _stackFrames;
 		private UInt32 _programCounter;
+		private string _format = "X6";
 
 		public ctrlCallstack()
 		{
 			InitializeComponent();
 		}
 
-		public void UpdateCallstack()
+		public void UpdateCallstack(CpuType cpuType)
 		{
-			List<StackInfo> stack = GetStackInfo();
+			_format = cpuType == CpuType.Cpu ? "X6" : "X4";
+			List<StackInfo> stack = GetStackInfo(cpuType);
 			this.UpdateList(stack);
 		}
 
-		private List<StackInfo> GetStackInfo()
+		private List<StackInfo> GetStackInfo(CpuType cpuType)
 		{
-			_stackFrames = DebugApi.GetCallstack();
+			_stackFrames = DebugApi.GetCallstack(cpuType);
 			DebugState state = DebugApi.GetState();
-			_programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;
+
+			if(cpuType == CpuType.Cpu) {
+				_programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;
+			} else {
+				_programCounter = (uint)state.Spc.PC;
+			}
 
 			int relDestinationAddr = -1;
 
@@ -74,7 +81,7 @@ namespace Mesen.GUI.Debugger.Controls
 				ListViewItem item = this.lstCallstack.Items[len - i - 1];
 
 				item.Text = stackInfo.SubName;
-				item.SubItems[1].Text = "@ $" + stackInfo.Address.ToString("X6");
+				item.SubItems[1].Text = "@ $" + stackInfo.Address.ToString(_format);
 				item.Font = new Font(item.Font, FontStyle.Regular);
 			}
 			this.lstCallstack.EndUpdate();
@@ -101,7 +108,7 @@ namespace Mesen.GUI.Debugger.Controls
 			} else if(flags == StackFrameFlags.Irq) {
 				funcName = "[irq] ";
 			}
-			funcName += "$" + relSubEntryAddr.ToString("X6");
+			funcName += "$" + relSubEntryAddr.ToString(_format);
 
 			return funcName;
 		}

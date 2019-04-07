@@ -292,12 +292,16 @@ void Spc::Serialize(Serializer &s)
 
 uint8_t Spc::GetOpCode()
 {
-	return Read(_state.PC++, MemoryOperationType::ExecOpCode);
+	uint8_t value = Read(_state.PC, MemoryOperationType::ExecOpCode);
+	_state.PC++;
+	return value;
 }
 
 uint8_t Spc::ReadOperandByte()
 {
-	return Read(_state.PC++, MemoryOperationType::ExecOperand);
+	uint8_t value = Read(_state.PC, MemoryOperationType::ExecOperand);
+	_state.PC++;
+	return value;
 }
 
 uint16_t Spc::ReadWord(uint16_t addr, MemoryOperationType type)

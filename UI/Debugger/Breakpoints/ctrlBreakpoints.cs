@@ -18,6 +18,7 @@ namespace Mesen.GUI.Debugger.Controls
 		public delegate void BreakpointNavigationHandler(Breakpoint bp);
 		public event BreakpointNavigationHandler BreakpointNavigation;
 		private Font _markedColumnFont;
+		private CpuType _cpuType;
 
 		public ctrlBreakpoints()
 		{
@@ -53,6 +54,15 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuGoToLocation.InitShortcut(this, nameof(DebuggerShortcutsConfig.BreakpointList_GoToLocation));
 		}
 
+		public CpuType CpuType
+		{
+			set
+			{
+				_cpuType = value;
+				RefreshList();
+			}
+		}
+
 		private void BreakpointManager_OnBreakpointChanged(object sender, EventArgs e)
 		{
 			RefreshList();
@@ -63,6 +73,10 @@ namespace Mesen.GUI.Debugger.Controls
 			lstBreakpoints.BeginUpdate();
 			ReadOnlyCollection<Breakpoint> breakpoints = BreakpointManager.Breakpoints;
 			for(int i = 0; i < breakpoints.Count; i++) {
+				if(!breakpoints[i].Matches(_cpuType)) {
+					continue;
+				}
+
 				lstBreakpoints.Items[i].SubItems[3].Text = breakpoints[i].GetAddressString(mnuShowLabels.Checked);
 			}
 			lstBreakpoints.EndUpdate();
@@ -76,6 +90,10 @@ namespace Mesen.GUI.Debugger.Controls
 			lstBreakpoints.BeginUpdate();
 			lstBreakpoints.Items.Clear();
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
+				if(!breakpoint.Matches(_cpuType)) {
+					continue;
+				}
+
 				ListViewItem item = new ListViewItem();
 				item.Tag = breakpoint;
 				item.Checked = breakpoint.Enabled;
@@ -117,7 +135,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void mnuAddBreakpoint_Click(object sender, EventArgs e)
 		{
-			Breakpoint breakpoint = new Breakpoint();
+			Breakpoint breakpoint = new Breakpoint() { MemoryType = _cpuType == CpuType.Cpu ? SnesMemoryType.CpuMemory : SnesMemoryType.SpcMemory };
 			if(new frmBreakpoint(breakpoint).ShowDialog() == DialogResult.OK) {
 				BreakpointManager.AddBreakpoint(breakpoint);
 			}

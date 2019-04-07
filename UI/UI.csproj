@@ -243,12 +243,27 @@
       <DependentUpon>frmBreakpoint.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
-    <Compile Include="Debugger\Code\CpuCodeProvider.cs" />
+    <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
+    <Compile Include="Debugger\Code\SpcLineStyleProvider.cs" />
+    <Compile Include="Debugger\Code\CodeDataProvider.cs" />
+    <Compile Include="Debugger\Code\SpcDisassemblyManager.cs" />
     <Compile Include="Debugger\Code\CpuDisassemblyManager.cs" />
     <Compile Include="Debugger\Code\CpuLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Controls\ctrlPpuStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlPpuStatus.Designer.cs">
+      <DependentUpon>ctrlPpuStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlSpcStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlSpcStatus.Designer.cs">
+      <DependentUpon>ctrlSpcStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\frmBreakIn.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -343,11 +358,11 @@
     <Compile Include="Debugger\Controls\ctrlColorPicker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlConsoleStatus.cs">
+    <Compile Include="Debugger\Controls\ctrlCpuStatus.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlConsoleStatus.Designer.cs">
-      <DependentUpon>ctrlConsoleStatus.cs</DependentUpon>
+    <Compile Include="Debugger\Controls\ctrlCpuStatus.Designer.cs">
+      <DependentUpon>ctrlCpuStatus.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlDbgShortcuts.cs">
       <SubType>UserControl</SubType>
@@ -682,6 +697,7 @@
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\SpcDebugger.png" />
     <None Include="Resources\MesenSIcon.png" />
     <None Include="app.manifest" />
     <EmbeddedResource Include="Controls\ctrlPathSelection.resx">
@@ -717,8 +733,14 @@
     <EmbeddedResource Include="Debugger\Controls\ctrlCallstack.resx">
       <DependentUpon>ctrlCallstack.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debugger\Controls\ctrlConsoleStatus.resx">
-      <DependentUpon>ctrlConsoleStatus.cs</DependentUpon>
+    <EmbeddedResource Include="Debugger\Controls\ctrlPpuStatus.resx">
+      <DependentUpon>ctrlPpuStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlSpcStatus.resx">
+      <DependentUpon>ctrlSpcStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlCpuStatus.resx">
+      <DependentUpon>ctrlCpuStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlDbgShortcuts.resx">
       <DependentUpon>ctrlDbgShortcuts.cs</DependentUpon>

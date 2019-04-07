@@ -408,7 +408,9 @@ void Cpu::Idle()
 
 uint8_t Cpu::ReadOperandByte()
 {
-	return ReadCode(_state.PC++, MemoryOperationType::ExecOperand);
+	uint8_t value = ReadCode(_state.PC, MemoryOperationType::ExecOperand);
+	_state.PC++;
+	return value;
 }
 
 uint16_t Cpu::ReadOperandWord()

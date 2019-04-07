@@ -15,6 +15,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 {
 	_cdl = cdl;
 	_console = console.get();
+	_spc = console->GetSpc().get();
 	_memoryManager = console->GetMemoryManager().get();
 
 	_prgRom = console->GetCartridge()->DebugGetPrgRom();
@@ -86,7 +87,7 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 		if(!disInfo.IsInitialized()) {
 			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags, type);
 			(*cache)[addrInfo.Address] = disassemblyInfo;
-			_needDisassemble = true;
+			_needDisassemble[(int)type] = true;
 			disInfo = disassemblyInfo;
 		}
 		return disInfo.GetOpSize();
@@ -105,7 +106,8 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo)
 		for(int i = 0; i < 4; i++) {
 			if(addrInfo.Address >= i) {
 				if((*cache)[addrInfo.Address - i].IsInitialized()) {
-					_needDisassemble = true;
+					_needDisassemble[(int)CpuType::Cpu] = true;
+					_needDisassemble[(int)CpuType::Spc] = true;
 					(*cache)[addrInfo.Address - i].Reset();
 				}
 			}
@@ -113,17 +115,20 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo)
 	}
 }
 
-void Disassembler::Disassemble()
+void Disassembler::Disassemble(CpuType cpuType)
 {
-	if(!_needDisassemble) {
+	if(!_needDisassemble[(int)cpuType]) {
 		return;
 	}
 
-	_needDisassemble = false;
+	_needDisassemble[(int)cpuType] = false;
 
 	auto lock = _disassemblyLock.AcquireSafe(); 
-		
-	_disassembly.clear();
+	
+	bool isSpc = cpuType == CpuType::Spc;
+	vector<DisassemblyResult> &results = isSpc ? _spcDisassembly : _disassembly;
+	int32_t maxAddr = isSpc ? 0xFFFF : 0xFFFFFF;
+	results.clear();
 
 	uint8_t *source;
 	uint32_t sourceLength;
@@ -134,9 +139,9 @@ void Disassembler::Disassemble()
 	
 	AddressInfo addrInfo = {};
 	AddressInfo prevAddrInfo = {};
-	for(int32_t i = 0; i <= 0xFFFFFF; i++) {
+	for(int32_t i = 0; i <= maxAddr; i++) {
 		prevAddrInfo = addrInfo;
-		addrInfo = _memoryManager->GetAbsoluteAddress(i);
+		addrInfo = isSpc ? _spc->GetAbsoluteAddress(i) : _memoryManager->GetAbsoluteAddress(i);
 
 		if(addrInfo.Address < 0) {
 			continue;
@@ -150,7 +155,7 @@ void Disassembler::Disassemble()
 		uint8_t opCode = (source + addrInfo.Address)[0];
 		bool needRealign = true;
 		if(!disassemblyInfo.IsInitialized() && disassembleAll) {
-			opSize = DisassemblyInfo::GetOpSize(opCode, 0, CpuType::Cpu);
+			opSize = DisassemblyInfo::GetOpSize(opCode, 0, cpuType);
 		} else if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
 			needRealign = false;
@@ -158,15 +163,15 @@ void Disassembler::Disassemble()
 
 		if(disassemblyInfo.IsInitialized() || disassembleAll) {
 			if(inUnknownBlock) {
-				_disassembly.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd));
+				results.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd));
 				inUnknownBlock = false;
 			}
 
 			if(addrInfo.Type == SnesMemoryType::PrgRom && _cdl->IsSubEntryPoint(addrInfo.Address)) {
-				_disassembly.push_back(DisassemblyResult(-1, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
+				results.push_back(DisassemblyResult(-1, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 
-			_disassembly.push_back(DisassemblyResult(addrInfo, i));
+			results.push_back(DisassemblyResult(addrInfo, i));
 			if(needRealign) {
 				for(int j = 1; j < opSize; j++) {
 					if((*cache)[addrInfo.Address + j].IsInitialized()) {
@@ -178,21 +183,21 @@ void Disassembler::Disassemble()
 				i += opSize - 1;
 			}
 
-			if(opCode == 0x60 || opCode == 0x6B) {
+			if(DisassemblyInfo::IsReturnInstruction(opCode, cpuType)) {
 				//End of function
-				_disassembly.push_back(DisassemblyResult(-1, LineFlags::VerifiedCode | LineFlags::BlockEnd));
+				results.push_back(DisassemblyResult(-1, LineFlags::VerifiedCode | LineFlags::BlockEnd));
 			} 
 		} else {
 			if(!inUnknownBlock) {
 				inUnknownBlock = true;
-				_disassembly.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockStart));
-				_disassembly.push_back(DisassemblyResult(-1, LineFlags::None));
+				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockStart));
+				results.push_back(DisassemblyResult(-1, LineFlags::None));
 			}
 		}
 	}
 
 	if(inUnknownBlock) {
-		_disassembly.push_back(DisassemblyResult(addrInfo, 0xFFFFFF, LineFlags::BlockEnd));
+		results.push_back(DisassemblyResult(addrInfo, maxAddr, LineFlags::BlockEnd));
 	}
 }
 
@@ -215,37 +220,40 @@ DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info)
 	}
 }
 
-uint32_t Disassembler::GetLineCount()
+uint32_t Disassembler::GetLineCount(CpuType type)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
-	return (uint32_t)_disassembly.size();
+	vector<DisassemblyResult> &source = type == CpuType::Cpu ? _disassembly : _spcDisassembly;
+	return (uint32_t)source.size();
 }
 
-uint32_t Disassembler::GetLineIndex(uint32_t cpuAddress)
+uint32_t Disassembler::GetLineIndex(CpuType type, uint32_t cpuAddress)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
+	vector<DisassemblyResult> &source = type == CpuType::Cpu ? _disassembly : _spcDisassembly;
 	uint32_t lastAddress = 0;
-	for(size_t i = 1; i < _disassembly.size(); i++) {
-		if(_disassembly[i].CpuAddress < 0) {
+	for(size_t i = 1; i < source.size(); i++) {
+		if(source[i].CpuAddress < 0) {
 			continue;
 		}
 
-		if(cpuAddress == (uint32_t)_disassembly[i].CpuAddress) {
+		if(cpuAddress == (uint32_t)source[i].CpuAddress) {
 			return (uint32_t)i;
-		} else if(cpuAddress >= lastAddress && cpuAddress < (uint32_t)_disassembly[i].CpuAddress) {
+		} else if(cpuAddress >= lastAddress && cpuAddress < (uint32_t)source[i].CpuAddress) {
 			return (uint32_t)i - 1;
 		}
 
-		lastAddress = _disassembly[i].CpuAddress;
+		lastAddress = source[i].CpuAddress;
 	}
 	return 0;
 }
 
-bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
+bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &data)
 {
 	auto lock =_disassemblyLock.AcquireSafe();
-	if(lineIndex < _disassembly.size()) {
-		DisassemblyResult result = _disassembly[lineIndex];
+	vector<DisassemblyResult> &source = type == CpuType::Cpu ? _disassembly : _spcDisassembly;
+	if(lineIndex < source.size()) {
+		DisassemblyResult result = source[lineIndex];
 		data.Address = result.CpuAddress;
 		data.AbsoluteAddress = result.Address.Address;
 		data.Flags = result.Flags;
@@ -267,28 +275,35 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 			GetSource(result.Address, &source, sourceLength, &cache);
 			disInfo = (*cache)[result.Address.Address];
 			
-			CpuState state = _console->GetCpu()->GetState();
-			state.PC = (uint16_t)result.CpuAddress;
-			state.K = (result.CpuAddress >> 16);
+			data.OpSize = disInfo.GetOpSize();
 
-			if(!disInfo.IsInitialized()) {
-				disInfo = DisassemblyInfo(source + result.Address.Address, state.PS, CpuType::Cpu);
+			if(type == CpuType::Cpu) {
+				CpuState state = _console->GetCpu()->GetState();
+				state.PC = (uint16_t)result.CpuAddress;
+				state.K = (result.CpuAddress >> 16);
+
+				if(!disInfo.IsInitialized()) {
+					disInfo = DisassemblyInfo(source + result.Address.Address, state.PS, CpuType::Cpu);
+				} else {
+					data.Flags |= (uint8_t)LineFlags::VerifiedCode;
+				}
+				
+				data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
+
+				if(data.EffectiveAddress >= 0) {
+					data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
+				} else {
+					data.ValueSize = 0;
+				}
 			} else {
-				data.Flags |= (uint8_t)LineFlags::VerifiedCode;
+				//TODO
+				data.EffectiveAddress = -1;
+				data.ValueSize = 0;
 			}
-
+			
 			string text;
 			disInfo.GetDisassembly(text, result.CpuAddress);
 			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
-
-			data.OpSize = disInfo.GetOpSize();
-
-			data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
-			if(data.EffectiveAddress >= 0) {
-				data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
-			} else {
-				data.ValueSize = 0;
-			}
 
 			disInfo.GetByteCode(data.ByteCode);
 			data.Comment[0] = 0;
@@ -306,13 +321,14 @@ bool Disassembler::GetLineData(uint32_t lineIndex, CodeLineData &data)
 	return false;
 }
 
-int32_t Disassembler::SearchDisassembly(const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)
+int32_t Disassembler::SearchDisassembly(CpuType type, const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
+	vector<DisassemblyResult> &source = type == CpuType::Cpu ? _disassembly : _spcDisassembly;
 	int step = searchBackwards ? -1 : 1;
 	CodeLineData lineData = {};
 	for(int i = startPosition; i != endPosition; i += step) {
-		GetLineData(i, lineData);
+		GetLineData(type, i, lineData);
 		string line = lineData.Text;
 		std::transform(line.begin(), line.end(), line.begin(), ::tolower);
 
@@ -321,10 +337,10 @@ int32_t Disassembler::SearchDisassembly(const char *searchString, int32_t startP
 		}
 
 		//Continue search from start/end of document
-		if(!searchBackwards && i == (int)(_disassembly.size() - 1)) {
+		if(!searchBackwards && i == (int)(source.size() - 1)) {
 			i = 0;
 		} else if(searchBackwards && i == 0) {
-			i = (int32_t)(_disassembly.size() - 1);
+			i = (int32_t)(source.size() - 1);
 		}
 	}
 

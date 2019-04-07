@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Code;
 using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,16 @@ namespace Mesen.GUI.Debugger
 	{
 		private EntityBinder _entityBinder = new EntityBinder();
 		private NotificationListener _notifListener;
+		private CpuType _cpuType;
 
-		public frmDebugger()
+		public CpuType CpuType { get { return _cpuType; } }
+
+		public frmDebugger(CpuType cpuType)
 		{
 			InitializeComponent();
+
+			_cpuType = cpuType;
+
 			if(DesignMode) {
 				return;
 			}
@@ -29,9 +36,17 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnLoad(e);
 
+			this.Text = _cpuType == CpuType.Cpu ? "CPU Debugger" : "SPC Debugger";
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
+			switch(_cpuType) {
+				case CpuType.Cpu: ctrlDisassemblyView.Initialize(new CpuDisassemblyManager(), new CpuLineStyleProvider()); break;
+				case CpuType.Spc: ctrlDisassemblyView.Initialize(new SpcDisassemblyManager(), new SpcLineStyleProvider()); break;
+			}
+
+			ctrlBreakpoints.CpuType = _cpuType;
+			
 			InitShortcuts();
 			InitToolbar();
 			LoadConfig();
@@ -39,7 +54,7 @@ namespace Mesen.GUI.Debugger
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 			
 			BreakpointManager.BreakpointsEnabled = true;
-			DebugApi.Step(10000);
+			DebugApi.Step(10000, StepType.CpuStep);
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -65,7 +80,7 @@ namespace Mesen.GUI.Debugger
 				if(EmuApi.IsPaused()) {
 					DebugApi.ResumeExecution();
 				} else {
-					DebugApi.Step(1);
+					DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStep : StepType.SpcStep);
 				}
 				return true;
 			}
@@ -112,9 +127,9 @@ namespace Mesen.GUI.Debugger
 			mnuDecreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.DecreaseFontSize));
 			mnuResetFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.ResetFontSize));
 
-			mnuStepInto.Click += (s, e) => { DebugApi.Step(1); };
-			mnuStepOver.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOver); };
-			mnuStepOut.Click += (s, e) => { DebugApi.Step(1, StepType.CpuStepOut); };
+			mnuStepInto.Click += (s, e) => { DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStep : StepType.SpcStep); };
+			mnuStepOver.Click += (s, e) => { DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStepOver : StepType.SpcStepOver); };
+			mnuStepOut.Click += (s, e) => { DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStepOut : StepType.SpcStepOut); };
 			mnuRunPpuCycle.Click += (s, e) => { DebugApi.Step(1, StepType.PpuStep); };
 			mnuRunScanline.Click += (s, e) => { DebugApi.Step(341, StepType.PpuStep); };
 			mnuRunOneFrame.Click += (s, e) => { DebugApi.Step(341*262, StepType.PpuStep); }; //TODO ntsc/pal
@@ -193,7 +208,7 @@ namespace Mesen.GUI.Debugger
 		private void GoToAddress()
 		{
 			GoToAddress address = new GoToAddress();
-			using(frmGoToLine frm = new frmGoToLine(address, 6)) {
+			using(frmGoToLine frm = new frmGoToLine(address, _cpuType == CpuType.Spc ? 4 : 6)) {
 				frm.StartPosition = FormStartPosition.CenterParent;
 				if(frm.ShowDialog(ctrlDisassemblyView) == DialogResult.OK) {
 					ctrlDisassemblyView.GoToAddress((int)address.Address);
@@ -216,11 +231,23 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateDebugger(DebugState state, int? activeAddress)
 		{
-			ctrlStatus.UpdateStatus(state);
+			if(_cpuType == CpuType.Cpu) {
+				ctrlCpuStatus.UpdateStatus(state);
+			} else {
+				ctrlCpuStatus.Visible = false;
+			}
+
+			if(_cpuType == CpuType.Spc) {
+				ctrlSpcStatus.UpdateStatus(state);
+			} else {
+				ctrlSpcStatus.Visible = false;
+			}
+
+			ctrlPpuStatus.UpdateStatus(state);
 			ctrlDisassemblyView.UpdateCode();
 			ctrlDisassemblyView.SetActiveAddress(activeAddress);
 			ctrlWatch.UpdateWatch(true);
-			ctrlCallstack.UpdateCallstack();
+			ctrlCallstack.UpdateCallstack(_cpuType);
 		}
 
 		private void OnNotificationReceived(NotificationEventArgs e)
@@ -242,7 +269,7 @@ namespace Mesen.GUI.Debugger
 
 				case ConsoleNotificationType.CodeBreak: {
 					DebugState state = DebugApi.GetState();
-					int activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC);
+					int activeAddress = _cpuType == CpuType.Cpu ? (int)((state.Cpu.K << 16) | state.Cpu.PC) : (int)state.Spc.PC;
 
 					this.BeginInvoke((MethodInvoker)(() => {
 						UpdateContinueAction();

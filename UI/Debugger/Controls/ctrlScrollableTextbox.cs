@@ -412,6 +412,8 @@ namespace Mesen.GUI.Debugger.Controls
 		public int SelectionLength { get { return this.ctrlTextbox.SelectionLength; } }
 
 		public int MarginWidth { set { this.ctrlTextbox.MarginWidth = value; } }
+		public int ExtendedMarginWidth { set { this.ctrlTextbox.ExtendedMarginWidth = value; } }
+		public int AddressSize { set { this.ctrlTextbox.AddressSize = value; } }
 
 		public void OpenSearchBox(bool forceFocus = false)
 		{

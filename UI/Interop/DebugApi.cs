@@ -26,21 +26,21 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
 		[DllImport(DllPath)] public static extern void SetTraceOptions(InteropTraceLoggerOptions options);
 
-		[DllImport(DllPath, EntryPoint = "GetDisassemblyLineData")] private static extern void GetDisassemblyLineDataWrapper(UInt32 lineIndex, ref InteropCodeLineData lineData);
-		public static CodeLineData GetDisassemblyLineData(UInt32 lineIndex)
+		[DllImport(DllPath, EntryPoint = "GetDisassemblyLineData")] private static extern void GetDisassemblyLineDataWrapper(CpuType type, UInt32 lineIndex, ref InteropCodeLineData lineData);
+		public static CodeLineData GetDisassemblyLineData(CpuType type, UInt32 lineIndex)
 		{
 			InteropCodeLineData data = new InteropCodeLineData();
 			data.Comment = new byte[1000];
 			data.Text = new byte[1000];
 			data.ByteCode = new byte[4];
 
-			DebugApi.GetDisassemblyLineDataWrapper(lineIndex, ref data);
+			DebugApi.GetDisassemblyLineDataWrapper(type, lineIndex, ref data);
 			return new CodeLineData(data);
 		}
 
-		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineCount();
-		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineIndex(UInt32 cpuAddress);
-		[DllImport(DllPath)] public static extern int SearchDisassembly([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
+		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineCount(CpuType type);
+		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineIndex(CpuType type, UInt32 cpuAddress);
+		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
 		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
@@ -103,13 +103,13 @@ namespace Mesen.GUI
 			return buffer;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetCallstack")] private static extern void DebugGetCallstackWrapper([In, Out]StackFrameInfo[] callstackArray, ref UInt32 callstackSize);
-		public static StackFrameInfo[] GetCallstack()
+		[DllImport(DllPath, EntryPoint = "GetCallstack")] private static extern void GetCallstackWrapper(CpuType type, [In, Out]StackFrameInfo[] callstackArray, ref UInt32 callstackSize);
+		public static StackFrameInfo[] GetCallstack(CpuType type)
 		{
 			StackFrameInfo[] callstack = new StackFrameInfo[512];
 			UInt32 callstackSize = 0;
 
-			DebugApi.DebugGetCallstackWrapper(callstack, ref callstackSize);
+			DebugApi.GetCallstackWrapper(type, callstack, ref callstackSize);
 			Array.Resize(ref callstack, (int)callstackSize);
 
 			return callstack;
@@ -180,6 +180,19 @@ namespace Mesen.GUI
 		Overflow = 0x40,
 		Negative = 0x80
 	}
+
+	[Flags]
+	public enum SpcFlags : byte
+	{
+		Carry = 0x01,
+		Zero = 0x02,
+		IrqEnable = 0x04,
+		HalfCarry = 0x08,
+		Break = 0x10,
+		DirectPage = 0x20,
+		Overflow = 0x40,
+		Negative = 0x80
+	};
 
 	public struct CpuState
 	{
@@ -254,11 +267,56 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool ExtBgEnabled;
 	}
 
+	public struct SpcTimer
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
+		[MarshalAs(UnmanagedType.I1)] public bool TimersEnabled;
+		public byte Output;
+		public byte Stage0;
+		public byte Stage1;
+		public byte PrevStage1;
+		public byte Stage2;
+		public byte Target;
+	}
+
+	public struct SpcState
+	{
+		public UInt64 Cycle;
+		public UInt16 PC;
+		public byte A;
+		public byte X;
+		public byte Y;
+		public byte SP;
+		public SpcFlags PS;
+
+		[MarshalAs(UnmanagedType.I1)] public bool WriteEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool RomEnabled;
+		public byte InternalSpeed;
+		public byte ExternalSpeed;
+		[MarshalAs(UnmanagedType.I1)] public bool TimersEnabled;
+
+		public byte DspReg;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public byte[] OutputReg;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public byte[] RamReg;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public byte[] CpuRegs;
+
+		public SpcTimer Timer0;
+		public SpcTimer Timer1;
+		public SpcTimer Timer2;
+	};
+
 	public struct DebugState
 	{
 		public UInt64 MasterClock;
 		public CpuState Cpu;
 		public PpuState Ppu;
+		public SpcState Spc;
 	}
 
 	public enum MemoryOperationType
@@ -400,12 +458,21 @@ namespace Mesen.GUI
 		Nmi = 1,
 		Irq = 2
 	}
+	
+	public enum CpuType
+	{
+		Cpu,
+		Spc,
+	}
 
 	public enum StepType
 	{
 		CpuStep,
 		CpuStepOut,
 		CpuStepOver,
+		SpcStep,
+		SpcStepOut,
+		SpcStepOver,
 		PpuStep,
 		SpecificScanline,
 	}

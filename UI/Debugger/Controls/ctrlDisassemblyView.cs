@@ -15,7 +15,7 @@ namespace Mesen.GUI.Debugger.Controls
 {
 	public partial class ctrlDisassemblyView : BaseControl
 	{
-		private CpuLineStyleProvider _styleProvider;
+		private BaseStyleProvider _styleProvider;
 		private IDisassemblyManager _manager;
 
 		public ctrlDisassemblyView()
@@ -24,14 +24,6 @@ namespace Mesen.GUI.Debugger.Controls
 			if(IsDesignMode) {
 				return;
 			}
-
-			_manager = new CpuDisassemblyManager();
-			_manager.RefreshCode();
-
-			_styleProvider = new CpuLineStyleProvider();
-			ctrlCode.StyleProvider = _styleProvider;
-			ctrlCode.ShowContentNotes = false;
-			ctrlCode.ShowMemoryValues = true;
 
 			InitShortcuts();
 
@@ -48,6 +40,20 @@ namespace Mesen.GUI.Debugger.Controls
 		private void BreakpointManager_BreakpointsChanged(object sender, EventArgs e)
 		{
 			ctrlCode.Invalidate();
+		}
+
+		public void Initialize(IDisassemblyManager manager, BaseStyleProvider styleProvider)
+		{
+			_manager = manager;
+			_styleProvider = styleProvider;
+
+			ctrlCode.StyleProvider = _styleProvider;
+			ctrlCode.ShowContentNotes = false;
+			ctrlCode.ShowMemoryValues = true;
+			ctrlCode.ExtendedMarginWidth = manager.ByteCodeSize * 4;
+			ctrlCode.AddressSize = manager.AddressSize;
+
+			_manager.RefreshCode();
 		}
 
 		private void InitShortcuts()

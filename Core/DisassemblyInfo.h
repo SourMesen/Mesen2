@@ -38,7 +38,9 @@ public:
 	void GetByteCode(string &out);
 
 	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type);
-	
+	static bool IsJumpToSub(uint8_t opCode, CpuType type);
+	static bool IsReturnInstruction(uint8_t opCode, CpuType type);
+
 	int32_t GetEffectiveAddress(Console *console, void *cpuState);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);
 };

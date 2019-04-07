@@ -420,7 +420,9 @@
     <ClCompile Include="CpuDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="SpcDisUtils.cpp" />
+    <ClCompile Include="SpcDisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

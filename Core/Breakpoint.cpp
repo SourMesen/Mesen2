@@ -4,7 +4,7 @@
 
 bool Breakpoint::Matches(uint32_t memoryAddr, AddressInfo &info)
 {
-	if(_memoryType == SnesMemoryType::CpuMemory) {
+	if(_memoryType <= SnesMemoryType::SpcMemory) {
 		if(_startAddr == -1) {
 			return true;
 		} else if(_endAddr == -1) {

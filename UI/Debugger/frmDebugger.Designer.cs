@@ -82,7 +82,10 @@
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlSplitContainer = new Mesen.GUI.Controls.ctrlSplitContainer();
-			this.ctrlStatus = new Mesen.GUI.Debugger.Controls.ctrlConsoleStatus();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.ctrlPpuStatus = new Mesen.GUI.Debugger.Controls.ctrlPpuStatus();
+			this.ctrlSpcStatus = new Mesen.GUI.Debugger.Controls.ctrlSpcStatus();
+			this.ctrlCpuStatus = new Mesen.GUI.Debugger.Controls.ctrlCpuStatus();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.grpWatch = new System.Windows.Forms.GroupBox();
 			this.picWatchHelp = new System.Windows.Forms.PictureBox();
@@ -97,6 +100,7 @@
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
 			this.ctrlSplitContainer.Panel2.SuspendLayout();
 			this.ctrlSplitContainer.SuspendLayout();
+			this.panel1.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpWatch.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).BeginInit();
@@ -492,7 +496,7 @@
 			// ctrlSplitContainer.Panel1
 			// 
 			this.ctrlSplitContainer.Panel1.Controls.Add(this.ctrlDisassemblyView);
-			this.ctrlSplitContainer.Panel1.Controls.Add(this.ctrlStatus);
+			this.ctrlSplitContainer.Panel1.Controls.Add(this.panel1);
 			// 
 			// ctrlSplitContainer.Panel2
 			// 
@@ -501,14 +505,43 @@
 			this.ctrlSplitContainer.SplitterDistance = 421;
 			this.ctrlSplitContainer.TabIndex = 2;
 			// 
-			// ctrlStatus
+			// panel1
 			// 
-			this.ctrlStatus.Dock = System.Windows.Forms.DockStyle.Right;
-			this.ctrlStatus.Location = new System.Drawing.Point(484, 0);
-			this.ctrlStatus.Name = "ctrlStatus";
-			this.ctrlStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-			this.ctrlStatus.Size = new System.Drawing.Size(348, 421);
-			this.ctrlStatus.TabIndex = 1;
+			this.panel1.Controls.Add(this.ctrlPpuStatus);
+			this.panel1.Controls.Add(this.ctrlSpcStatus);
+			this.panel1.Controls.Add(this.ctrlCpuStatus);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+			this.panel1.Location = new System.Drawing.Point(484, 0);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(348, 421);
+			this.panel1.TabIndex = 2;
+			// 
+			// ctrlPpuStatus
+			// 
+			this.ctrlPpuStatus.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ctrlPpuStatus.Location = new System.Drawing.Point(0, 268);
+			this.ctrlPpuStatus.Name = "ctrlPpuStatus";
+			this.ctrlPpuStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+			this.ctrlPpuStatus.Size = new System.Drawing.Size(348, 47);
+			this.ctrlPpuStatus.TabIndex = 3;
+			// 
+			// ctrlSpcStatus
+			// 
+			this.ctrlSpcStatus.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ctrlSpcStatus.Location = new System.Drawing.Point(0, 148);
+			this.ctrlSpcStatus.Name = "ctrlSpcStatus";
+			this.ctrlSpcStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+			this.ctrlSpcStatus.Size = new System.Drawing.Size(348, 120);
+			this.ctrlSpcStatus.TabIndex = 2;
+			// 
+			// ctrlCpuStatus
+			// 
+			this.ctrlCpuStatus.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ctrlCpuStatus.Location = new System.Drawing.Point(0, 0);
+			this.ctrlCpuStatus.Name = "ctrlCpuStatus";
+			this.ctrlCpuStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+			this.ctrlCpuStatus.Size = new System.Drawing.Size(348, 148);
+			this.ctrlCpuStatus.TabIndex = 1;
 			// 
 			// tableLayoutPanel1
 			// 
@@ -621,6 +654,7 @@
 			this.ctrlSplitContainer.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).EndInit();
 			this.ctrlSplitContainer.ResumeLayout(false);
+			this.panel1.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.grpWatch.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).EndInit();
@@ -662,7 +696,7 @@
 		private System.Windows.Forms.GroupBox grpWatch;
 		private System.Windows.Forms.GroupBox grpBreakpoints;
 		private Controls.ctrlBreakpoints ctrlBreakpoints;
-		private Controls.ctrlConsoleStatus ctrlStatus;
+		private Controls.ctrlCpuStatus ctrlCpuStatus;
 		private GUI.Controls.ctrlMesenToolStrip tsToolbar;
 		private System.Windows.Forms.GroupBox grpCallstack;
 		private Controls.ctrlCallstack ctrlCallstack;
@@ -694,5 +728,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
 		private System.Windows.Forms.ToolStripMenuItem mnuShowByteCode;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
+		private System.Windows.Forms.Panel panel1;
+		private Controls.ctrlPpuStatus ctrlPpuStatus;
+		private Controls.ctrlSpcStatus ctrlSpcStatus;
 	}
 }

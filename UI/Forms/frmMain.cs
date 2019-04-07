@@ -201,6 +201,7 @@ namespace Mesen.GUI.Forms
 			_shortcuts.BindShortcut(mnuTakeScreenshot, EmulatorShortcut.TakeScreenshot);
 
 			mnuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenDebugger));
+			mnuSpcDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpcDebugger));
 			mnuMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenMemoryTools));
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
 			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
@@ -243,6 +244,7 @@ namespace Mesen.GUI.Forms
 			mnuRegionPal.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Pal); };
 
 			mnuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger); };
+			mnuSpcDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpcDebugger); };
 			mnuTraceLogger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger); };
 			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
 			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
@@ -257,6 +259,7 @@ namespace Mesen.GUI.Forms
 		{
 			bool running = EmuRunner.IsRunning();
 			mnuDebugger.Enabled = running;
+			mnuSpcDebugger.Enabled = running;
 			mnuTraceLogger.Enabled = running;
 			mnuMemoryTools.Enabled = running;
 			mnuTilemapViewer.Enabled = running;

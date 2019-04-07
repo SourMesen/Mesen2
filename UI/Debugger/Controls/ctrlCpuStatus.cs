@@ -12,12 +12,12 @@ using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Debugger.Controls
 {
-	public partial class ctrlConsoleStatus : BaseControl
+	public partial class ctrlCpuStatus : BaseControl
 	{
 		private EntityBinder _cpuBinder = new EntityBinder();
 		private DebugState _lastState;
 
-		public ctrlConsoleStatus()
+		public ctrlCpuStatus()
 		{
 			InitializeComponent();
 			if(IsDesignMode) {
@@ -25,15 +25,15 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 
 			_cpuBinder.Entity = new CpuState();
-			_cpuBinder.AddBinding("A", txtA);
-			_cpuBinder.AddBinding("X", txtX);
-			_cpuBinder.AddBinding("Y", txtY);
-			_cpuBinder.AddBinding("D", txtD);
-			_cpuBinder.AddBinding("DBR", txtDB);
-			_cpuBinder.AddBinding("SP", txtS);
-			_cpuBinder.AddBinding("PS", txtP);
+			_cpuBinder.AddBinding(nameof(CpuState.A), txtA);
+			_cpuBinder.AddBinding(nameof(CpuState.X), txtX);
+			_cpuBinder.AddBinding(nameof(CpuState.Y), txtY);
+			_cpuBinder.AddBinding(nameof(CpuState.D), txtD);
+			_cpuBinder.AddBinding(nameof(CpuState.DBR), txtDB);
+			_cpuBinder.AddBinding(nameof(CpuState.SP), txtS);
+			_cpuBinder.AddBinding(nameof(CpuState.PS), txtP);
 
-			_cpuBinder.AddBinding("NmiFlag", chkNmi);
+			_cpuBinder.AddBinding(nameof(CpuState.NmiFlag), chkNmi);
 		}
 
 		public void UpdateStatus(DebugState state)
@@ -44,9 +44,6 @@ namespace Mesen.GUI.Debugger.Controls
 			_cpuBinder.UpdateUI();
 
 			txtPC.Text = ((state.Cpu.K << 16) | state.Cpu.PC).ToString("X6");
-			txtCycle.Text = state.Ppu.Cycle.ToString();
-			txtScanline.Text = state.Ppu.Scanline.ToString();
-			txtHClocks.Text = (state.Ppu.Cycle * 4).ToString();
 
 			UpdateCpuFlags();
 

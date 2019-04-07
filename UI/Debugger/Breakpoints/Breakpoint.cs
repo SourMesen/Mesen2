@@ -33,22 +33,23 @@ namespace Mesen.GUI.Debugger
 		public string GetAddressString(bool showLabel)
 		{
 			string addr = "";
+			string format = _memoryType == SnesMemoryType.SpcMemory ? "X4" : "X6";
 			switch(AddressType) {
 				case BreakpointAddressType.AnyAddress:
 					return "<any>";
 				case BreakpointAddressType.SingleAddress:
 					if(IsAbsoluteAddress) {
-						addr += $"[${Address.ToString("X6")}]";
+						addr += $"[${Address.ToString(format)}]";
 					} else {
-						addr = $"${Address.ToString("X6")}";
+						addr = $"${Address.ToString(format)}";
 					}
 					break;
 
 				case BreakpointAddressType.AddressRange:
 					if(IsAbsoluteAddress) {
-						addr = $"[${StartAddress.ToString("X6")}] - [${EndAddress.ToString("X6")}]";
+						addr = $"[${StartAddress.ToString(format)}] - [${EndAddress.ToString(format)}]";
 					} else {
-						addr = $"${StartAddress.ToString("X6")} - ${EndAddress.ToString("X6")}";
+						addr = $"${StartAddress.ToString(format)} - ${EndAddress.ToString(format)}";
 					}
 					break;
 			}
@@ -65,6 +66,7 @@ namespace Mesen.GUI.Debugger
 		{
 			return (
 				type == SnesMemoryType.CpuMemory ||
+				type == SnesMemoryType.SpcMemory ||
 				type == SnesMemoryType.WorkRam ||
 				type == SnesMemoryType.SaveRam ||
 				type == SnesMemoryType.PrgRom
@@ -83,7 +85,7 @@ namespace Mesen.GUI.Debugger
 			BreakpointManager.RefreshBreakpoints(this);
 		}
 
-		public bool IsAbsoluteAddress { get { return MemoryType != SnesMemoryType.CpuMemory; } }
+		public bool IsAbsoluteAddress { get { return MemoryType != SnesMemoryType.CpuMemory && MemoryType != SnesMemoryType.SpcMemory; } }
 		public bool IsCpuBreakpoint { get { return this._isCpuBreakpoint; } }
 
 		private BreakpointTypeFlags Type
@@ -111,6 +113,7 @@ namespace Mesen.GUI.Debugger
 			switch(MemoryType) {
 				default:	throw new Exception("invalid type");
 				case SnesMemoryType.CpuMemory: type = "CPU"; break;
+				case SnesMemoryType.SpcMemory: type = "SPC"; break;
 				case SnesMemoryType.PrgRom: type = "PRG"; break;
 				case SnesMemoryType.WorkRam: type = "WRAM"; break;
 				case SnesMemoryType.SaveRam: type = "SRAM"; break;
@@ -153,13 +156,19 @@ namespace Mesen.GUI.Debugger
 			return -1;
 		}
 
+		public bool Matches(CpuType type)
+		{
+			return (
+				(type == CpuType.Spc && _memoryType == SnesMemoryType.SpcMemory) ||
+				(type == CpuType.Cpu && _memoryType != SnesMemoryType.SpcMemory)
+			);			
+		}
+
 		public bool Matches(UInt32 address, SnesMemoryType type)
 		{
 			if(IsTypeCpuBreakpoint(type) != this.IsCpuBreakpoint) {
 				return false;
 			}
-
-			bool isRelativeMemory = type == SnesMemoryType.CpuMemory;
 
 			if(this.AddressType == BreakpointAddressType.SingleAddress) {
 				return address == this.Address && type == this.MemoryType;

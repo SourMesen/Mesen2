@@ -45,6 +45,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private Font _noteFont = null;
 		private int _marginWidth = 9;
 		private int _extendedMarginWidth = 16;
+		private string _addressFormat = "X6";
 		private float _maxLineWidth = 0;
 		private TextboxMessageInfo _message;
 
@@ -197,6 +198,24 @@ namespace Mesen.GUI.Debugger.Controls
 			set
 			{
 				this._marginWidth = value;
+				this.Invalidate();
+			}
+		}
+
+		public int ExtendedMarginWidth
+		{
+			set
+			{
+				this._extendedMarginWidth = value;
+				this.Invalidate();
+			}
+		}
+		
+		public int AddressSize
+		{
+			set
+			{
+				this._addressFormat = "X" + value.ToString();
 				this.Invalidate();
 			}
 		}
@@ -872,7 +891,7 @@ namespace Mesen.GUI.Debugger.Controls
 					g.DrawString(lineNumber, this.Font, numberBrush, marginLeft - width, positionY, StringFormat.GenericTypographic);
 				} else {
 					//Display line number
-					string lineNumber = lineData.Address >= 0 ? lineData.Address.ToString("X6") : "..";
+					string lineNumber = lineData.Address >= 0 ? lineData.Address.ToString(_addressFormat) : "..";
 
 					if(ShowCompactPrgAddresses) {
 						string lineNumberNote = lineData.AbsoluteAddress.ToString("X6");

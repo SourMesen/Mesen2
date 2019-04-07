@@ -42,10 +42,10 @@ extern "C"
 	DllExport void __stdcall ResumeExecution() { if(IsDebuggerRunning()) GetDebugger()->Run(); }
 	DllExport void __stdcall Step(uint32_t count, StepType type) { GetDebugger()->Step(count, type); }
 
-	DllExport void __stdcall GetDisassemblyLineData(uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(lineIndex, data); }
-	DllExport uint32_t __stdcall GetDisassemblyLineCount() { return GetDebugger()->GetDisassembler()->GetLineCount(); }
-	DllExport uint32_t __stdcall GetDisassemblyLineIndex(uint32_t cpuAddress) { return GetDebugger()->GetDisassembler()->GetLineIndex(cpuAddress); }
-	DllExport int32_t __stdcall SearchDisassembly(const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchDisassembly(searchString, startPosition, endPosition, searchBackwards); }
+	DllExport void __stdcall GetDisassemblyLineData(CpuType type, uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(type, lineIndex, data); }
+	DllExport uint32_t __stdcall GetDisassemblyLineCount(CpuType type) { return GetDebugger()->GetDisassembler()->GetLineCount(type); }
+	DllExport uint32_t __stdcall GetDisassemblyLineIndex(CpuType type, uint32_t cpuAddress) { return GetDebugger()->GetDisassembler()->GetLineIndex(type, cpuAddress); }
+	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchDisassembly(type, searchString, startPosition, endPosition, searchBackwards); }
 
 	DllExport void __stdcall SetTraceOptions(TraceLoggerOptions options) { GetDebugger()->GetTraceLogger()->SetOptions(options); }
 	DllExport void __stdcall StartTraceLogger(char* filename) { GetDebugger()->GetTraceLogger()->StartLogging(filename); }
@@ -54,7 +54,7 @@ extern "C"
 
 	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { GetDebugger()->GetBreakpointManager()->SetBreakpoints(breakpoints, length); }
 	DllExport int32_t __stdcall EvaluateExpression(char* expression, EvalResultType *resultType, bool useCache) { return GetDebugger()->EvaluateExpression(expression, *resultType, useCache); }
-	DllExport void __stdcall GetCallstack(StackFrameInfo *callstackArray, uint32_t &callstackSize) { GetDebugger()->GetCallstackManager()->GetCallstack(callstackArray, callstackSize); }
+	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo *callstackArray, uint32_t &callstackSize) { GetDebugger()->GetCallstackManager(cpuType)->GetCallstack(callstackArray, callstackSize); }
 
 	DllExport void __stdcall GetState(DebugState &state) { GetDebugger()->GetState(state); }
 

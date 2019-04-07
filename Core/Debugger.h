@@ -44,6 +44,7 @@ private:
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<CallstackManager> _callstackManager;
+	shared_ptr<CallstackManager> _spcCallstackManager;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval;
 
@@ -51,12 +52,17 @@ private:
 	atomic<uint32_t> _breakRequestCount;
 
 	atomic<int32_t> _cpuStepCount;
+	atomic<int32_t> _spcStepCount;
 	atomic<int32_t> _ppuStepCount;
-	atomic<int32_t> _breakAddress;
+	atomic<int32_t> _cpuBreakAddress;
+	atomic<int32_t> _spcBreakAddress;
 	atomic<int32_t> _breakScanline;
 	
 	uint8_t _prevOpCode = 0;
 	uint32_t _prevProgramCounter = 0;
+
+	uint8_t _spcPrevOpCode = 0;
+	uint32_t _spcPrevProgramCounter = 0;
 
 	void SleepUntilResume();
 	void ProcessStepConditions(uint8_t opCode, uint32_t currentPc);
@@ -101,6 +107,6 @@ public:
 	shared_ptr<BreakpointManager> GetBreakpointManager();
 	shared_ptr<PpuTools> GetPpuTools();
 	shared_ptr<EventManager> GetEventManager();
-	shared_ptr<CallstackManager> GetCallstackManager();
+	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
 	shared_ptr<Console> GetConsole();
 };
