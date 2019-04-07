@@ -73,6 +73,11 @@ public:
 		_target = target;
 	}
 
+	uint8_t DebugRead()
+	{
+		return _output & 0x0F;
+	}
+
 	uint8_t GetOutput()
 	{
 		uint8_t value = _output & 0x0F;

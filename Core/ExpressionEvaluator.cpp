@@ -372,26 +372,44 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 				}*/
 			} else {
 				switch(token) {
-					case EvalValues::RegA: token = state.Cpu.A; break;
-					case EvalValues::RegX: token = state.Cpu.X; break;
-					case EvalValues::RegY: token = state.Cpu.Y; break;
-					case EvalValues::RegSP: token = state.Cpu.SP; break;
-					case EvalValues::RegPS: token = state.Cpu.PS; break;
-					case EvalValues::RegPC: token = state.Cpu.PC; break;
-					
-					//TODO
 					/*case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;*/
 					case EvalValues::PpuFrameCount: token = state.Ppu.FrameCount; break;
 					case EvalValues::PpuCycle: token = state.Ppu.Cycle; break;
 					case EvalValues::PpuScanline: token = state.Ppu.Scanline; break;
-					case EvalValues::Nmi: token = state.Cpu.NmiFlag; resultType = EvalResultType::Boolean; break;
-					case EvalValues::Irq: token = state.Cpu.IrqSource != 0; resultType = EvalResultType::Boolean; break;
 					case EvalValues::Value: token = operationInfo.Value; break;
 					case EvalValues::Address: token = operationInfo.Address; break;
 					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
 					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite; break;
 					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite; break;
 					//case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
+
+					default:
+						switch(_cpuType) {
+							case CpuType::Cpu:
+								switch(token) {
+									case EvalValues::RegA: token = state.Cpu.A; break;
+									case EvalValues::RegX: token = state.Cpu.X; break;
+									case EvalValues::RegY: token = state.Cpu.Y; break;
+									case EvalValues::RegSP: token = state.Cpu.SP; break;
+									case EvalValues::RegPS: token = state.Cpu.PS; break;
+									case EvalValues::RegPC: token = state.Cpu.PC; break;
+									case EvalValues::Nmi: token = state.Cpu.NmiFlag; resultType = EvalResultType::Boolean; break;
+									case EvalValues::Irq: token = state.Cpu.IrqSource != 0; resultType = EvalResultType::Boolean; break;
+								}
+								break;
+
+							case CpuType::Spc:
+								switch(token) {
+									case EvalValues::RegA: token = state.Spc.A; break;
+									case EvalValues::RegX: token = state.Spc.X; break;
+									case EvalValues::RegY: token = state.Spc.Y; break;
+									case EvalValues::RegSP: token = state.Spc.SP; break;
+									case EvalValues::RegPS: token = state.Spc.PS; break;
+									case EvalValues::RegPC: token = state.Spc.PC; break;
+								}
+								break;
+						}
+						break;
 				}
 			}
 		} else if(token >= EvalOperators::Multiplication) {
@@ -438,8 +456,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 				case EvalOperators::Minus: token = -right; break;
 				case EvalOperators::BinaryNot: token = ~right; break;
 				case EvalOperators::LogicalNot: token = !right; break;
-				case EvalOperators::Bracket: token = _debugger->GetMemoryDumper()->GetMemoryValue(SnesMemoryType::CpuMemory, (uint32_t)right); break;
-				case EvalOperators::Braces: token = _debugger->GetMemoryDumper()->GetMemoryValueWord(SnesMemoryType::CpuMemory, (uint32_t)right); break;
+				case EvalOperators::Bracket: token = _debugger->GetMemoryDumper()->GetMemoryValue(_cpuMemory, (uint32_t)right); break;
+				case EvalOperators::Braces: token = _debugger->GetMemoryDumper()->GetMemoryValueWord(_cpuMemory, (uint32_t)right); break;
 				default: throw std::runtime_error("Invalid operator");
 			}
 		}
@@ -448,9 +466,11 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 	return (int32_t)operandStack[0];
 }
 
-ExpressionEvaluator::ExpressionEvaluator(Debugger* debugger)
+ExpressionEvaluator::ExpressionEvaluator(Debugger* debugger, CpuType cpuType)
 {
 	_debugger = debugger;
+	_cpuType = cpuType;
+	_cpuMemory = cpuType == CpuType::Cpu ? SnesMemoryType::CpuMemory : SnesMemoryType::SpcMemory;
 }
 
 ExpressionData ExpressionEvaluator::GetRpnList(string expression, bool &success)

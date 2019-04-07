@@ -21,7 +21,7 @@ private:
 	vector<ExpressionData> _rpnList[CategoryCount][BreakpointTypeCount];
 	bool _hasBreakpoint[CategoryCount][BreakpointTypeCount] = {};
 
-	unique_ptr<ExpressionEvaluator> _bpExpEval;
+	unique_ptr<ExpressionEvaluator> _bpExpEval[2]; //CpuType::Spc + 1
 
 	BreakpointType GetBreakpointType(MemoryOperationType type);
 

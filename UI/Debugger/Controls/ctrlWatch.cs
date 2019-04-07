@@ -37,6 +37,8 @@ namespace Mesen.GUI.Debugger
 			this.DoubleBuffered = true;
 		}
 
+		public CpuType CpuType { get; set; }
+
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
@@ -102,7 +104,7 @@ namespace Mesen.GUI.Debugger
 
 		public void UpdateWatch(bool autoResizeColumns = true)
 		{
-			List<WatchValueInfo> watchContent = WatchManager.GetWatchContent(_previousValues);
+			List<WatchValueInfo> watchContent = WatchManager.GetWatchContent(this.CpuType, _previousValues);
 			_previousValues = watchContent;
 
 			bool updating = false;

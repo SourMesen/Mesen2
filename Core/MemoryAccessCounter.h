@@ -4,6 +4,7 @@
 
 class Debugger;
 class MemoryManager;
+class Spc;
 
 class MemoryAccessCounter
 {
@@ -20,13 +21,14 @@ private:
 
 	Debugger* _debugger;
 	MemoryManager* _memoryManager;
+	Spc* _spc;
 
 	vector<uint32_t>& GetCountArray(MemoryOperationType operationType, SnesMemoryType memType);
 	vector<uint64_t>& GetStampArray(MemoryOperationType operationType, SnesMemoryType memType);
 	bool IsAddressUninitialized(AddressInfo &addressInfo);
 
 public:
-	MemoryAccessCounter(Debugger *debugger, MemoryManager* memoryManager);
+	MemoryAccessCounter(Debugger *debugger, Spc* spc, MemoryManager* memoryManager);
 
 	bool ProcessMemoryAccess(AddressInfo &addressInfo, MemoryOperationType operation, uint64_t masterClock);
 	void ResetCounts();

@@ -105,9 +105,11 @@ private:
 
 	std::unordered_map<string, ExpressionData, StringHasher> _cache;
 	SimpleLock _cacheLock;
-
+	
 	int64_t operandStack[1000];
 	Debugger* _debugger;
+	CpuType _cpuType;
+	SnesMemoryType _cpuMemory;
 
 	bool IsOperator(string token, int &precedence, bool unaryOperator);
 	EvalOperators GetOperator(string token, bool unaryOperator);
@@ -119,7 +121,7 @@ private:
 	ExpressionData* PrivateGetRpnList(string expression, bool& success);
 
 public:
-	ExpressionEvaluator(Debugger* debugger);
+	ExpressionEvaluator(Debugger* debugger, CpuType cpuType);
 
 	int32_t Evaluate(ExpressionData &data, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
 	int32_t Evaluate(string expression, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);

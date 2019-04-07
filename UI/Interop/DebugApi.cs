@@ -53,7 +53,7 @@ namespace Mesen.GUI
 			return state;
 		}
 
-		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string expression, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
+		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
 
 		[DllImport(DllPath)] public static extern Int32 GetMemorySize(SnesMemoryType type);
 		[DllImport(DllPath)] public static extern Byte GetMemoryValue(SnesMemoryType type, UInt32 address);
@@ -326,7 +326,8 @@ namespace Mesen.GUI
 		ExecOpCode = 2,
 		ExecOperand = 3,
 		DmaRead = 4,
-		DmaWrite = 5
+		DmaWrite = 5,
+		DummyRead = 6
 	}
 
 	public struct MemoryOperationInfo

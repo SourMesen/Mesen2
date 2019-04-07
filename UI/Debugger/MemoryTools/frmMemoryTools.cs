@@ -155,7 +155,7 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
 			cboMemoryType.Items.Add("-");
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRam));
+			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
 
 			cboMemoryType.SelectedIndex = 0;
 			cboMemoryType.SetEnumValue(originalValue);

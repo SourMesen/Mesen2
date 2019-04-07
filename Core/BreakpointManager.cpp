@@ -20,7 +20,9 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 		}
 	}
 
-	_bpExpEval.reset(new ExpressionEvaluator(_debugger));
+	_bpExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(_debugger, CpuType::Cpu));
+	_bpExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(_debugger, CpuType::Spc));
+
 	for(uint32_t j = 0; j < count; j++) {
 		Breakpoint &bp = breakpoints[j];
 		for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
@@ -28,11 +30,12 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 			bool isEnabled = bp.IsEnabled(); //TODO && _console->GetSettings()->CheckFlag(EmulationFlags::DebuggerWindowEnabled);
 			if((bp.IsMarked() || isEnabled) && bp.HasBreakpointType(bpType)) {
 				BreakpointCategory category = bp.GetBreakpointCategory();
+				CpuType cpuType = category == BreakpointCategory::Spc ? CpuType::Spc : CpuType::Cpu;
 				_breakpoints[(int)category][i].push_back(bp);
 
 				if(bp.HasCondition()) {
 					bool success = true;
-					ExpressionData data = _bpExpEval->GetRpnList(bp.GetCondition(), success);
+					ExpressionData data = _bpExpEval[(int)cpuType]->GetRpnList(bp.GetCondition(), success);
 					_rpnList[(int)category][i].push_back(success ? data : ExpressionData());
 				} else {
 					_rpnList[(int)category][i].push_back(ExpressionData());
@@ -71,13 +74,15 @@ bool BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, Addre
 		return false;
 	}
 
+	CpuType cpuType = category == BreakpointCategory::Spc ? CpuType::Spc : CpuType::Cpu;
+
 	DebugState state;
 	_debugger->GetState(state);
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)category][(int)type];
 	for(size_t i = 0; i < breakpoints.size(); i++) {
 		if(breakpoints[i].Matches(operationInfo.Address, address)) {
-			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)category][(int)type][i], state, resultType, operationInfo)) {
+			if(!breakpoints[i].HasCondition() || _bpExpEval[(int)cpuType]->Evaluate(_rpnList[(int)category][(int)type][i], state, resultType, operationInfo)) {
 				return true;
 			}
 		}

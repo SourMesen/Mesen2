@@ -9,6 +9,8 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class frmBreakpoint : BaseConfigForm
 	{
+		private CpuType _cpuType;
+
 		public frmBreakpoint(Breakpoint breakpoint)
 		{
 			InitializeComponent();
@@ -32,10 +34,10 @@ namespace Mesen.GUI.Debugger
 			AddBinding(nameof(Breakpoint.BreakOnExec), chkExec);
 			AddBinding(nameof(Breakpoint.Condition), txtCondition);
 
-			CpuType cpuType = breakpoint.MemoryType == SnesMemoryType.SpcMemory ? CpuType.Spc : CpuType.Cpu;
+			_cpuType = breakpoint.MemoryType == SnesMemoryType.SpcMemory ? CpuType.Spc : CpuType.Cpu;
 
 			cboBreakpointType.Items.Clear();
-			if(cpuType == CpuType.Cpu) {
+			if(_cpuType == CpuType.Cpu) {
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
 				cboBreakpointType.Items.Add("-");
 
@@ -57,7 +59,7 @@ namespace Mesen.GUI.Debugger
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
-			} else if(cpuType == CpuType.Spc) {
+			} else if(_cpuType == CpuType.Spc) {
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
 			}
 			
@@ -155,7 +157,7 @@ namespace Mesen.GUI.Debugger
 		{
 			if(txtCondition.Text.Trim().Length > 0) {
 				EvalResultType resultType;
-				DebugApi.EvaluateExpression(txtCondition.Text.Replace(Environment.NewLine, " "), out resultType, false);
+				DebugApi.EvaluateExpression(txtCondition.Text.Replace(Environment.NewLine, " "), _cpuType, out resultType, false);
 				if(resultType == EvalResultType.Invalid) {
 					picExpressionWarning.Visible = true;
 					return false;

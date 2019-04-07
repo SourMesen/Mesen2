@@ -26,7 +26,7 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		public static List<WatchValueInfo> GetWatchContent(List<WatchValueInfo> previousValues)
+		public static List<WatchValueInfo> GetWatchContent(CpuType cpuType, List<WatchValueInfo> previousValues)
 		{
 			WatchFormatStyle defaultStyle = ConfigManager.Config.Debug.Debugger.WatchFormat;
 			int defaultByteLength = 1;
@@ -56,7 +56,7 @@ namespace Mesen.GUI.Debugger
 					//Watch expression matches the array display syntax (e.g: [$300,10] = display 10 bytes starting from $300)
 					newValue = ProcessArrayDisplaySyntax(style, ref forceHasChanged, match);
 				} else {
-					Int32 result = DebugApi.EvaluateExpression(exprToEvaluate, out resultType, true);
+					Int32 result = DebugApi.EvaluateExpression(exprToEvaluate, cpuType, out resultType, true);
 					switch(resultType) {
 						case EvalResultType.Numeric: newValue = FormatValue(result, style, byteLength); break;
 						case EvalResultType.Boolean: newValue = result == 0 ? "false" : "true";	break;

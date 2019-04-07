@@ -62,7 +62,7 @@ namespace Mesen.GUI.Debugger.Controls
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (uint)_lastState.Spc.SP + 1; (i & 0xFF) != 0; i++) {
 				sb.Append("$");
-				sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.SpcMemory, i).ToString("X2"));
+				sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.SpcMemory, 0x100 | i).ToString("X2"));
 				sb.Append(", ");
 			}
 			string stack = sb.ToString();

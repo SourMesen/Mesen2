@@ -73,7 +73,8 @@ enum class MemoryOperationType
 	ExecOpCode = 2,
 	ExecOperand = 3,
 	DmaRead = 4,
-	DmaWrite = 5
+	DmaWrite = 5,
+	DummyRead = 6
 };
 
 enum class IrqSource

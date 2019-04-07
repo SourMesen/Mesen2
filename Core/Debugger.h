@@ -46,7 +46,7 @@ private:
 	shared_ptr<CallstackManager> _callstackManager;
 	shared_ptr<CallstackManager> _spcCallstackManager;
 
-	unique_ptr<ExpressionEvaluator> _watchExpEval;
+	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)CpuType::Spc + 1];
 
 	atomic<bool> _executionStopped;
 	atomic<uint32_t> _breakRequestCount;
@@ -89,7 +89,7 @@ public:
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 
-	int32_t EvaluateExpression(string expression, EvalResultType &resultType, bool useCache);
+	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
 
 	void Run();
 	void Step(int32_t stepCount, StepType type = StepType::CpuStep);

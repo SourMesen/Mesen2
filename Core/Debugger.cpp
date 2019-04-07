@@ -33,12 +33,14 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_spc = console->GetSpc();
 	_memoryManager = console->GetMemoryManager();
 
-	_watchExpEval.reset(new ExpressionEvaluator(this));
+	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
+	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
+
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), _memoryManager.get()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
-	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _memoryManager.get()));
+	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _spc.get(), _memoryManager.get()));
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
@@ -187,6 +189,11 @@ void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 
 void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
+	if(type == MemoryOperationType::DummyRead) {
+		//Ignore all dummy reads for now
+		return;
+	}
+
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type);
 
@@ -337,15 +344,15 @@ void Debugger::ProcessEvent(EventType type)
 	}
 }
 
-int32_t Debugger::EvaluateExpression(string expression, EvalResultType &resultType, bool useCache)
+int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read };
 	DebugState state;
 	GetState(state);
 	if(useCache) {
-		return _watchExpEval->Evaluate(expression, state, resultType, operationInfo);
+		return _watchExpEval[(int)cpuType]->Evaluate(expression, state, resultType, operationInfo);
 	} else {
-		ExpressionEvaluator expEval(this);
+		ExpressionEvaluator expEval(this, cpuType);
 		return expEval.Evaluate(expression, state, resultType, operationInfo);
 	}
 }

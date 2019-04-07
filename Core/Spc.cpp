@@ -59,12 +59,12 @@ void Spc::Idle()
 
 void Spc::DummyRead()
 {
-	Read(_state.PC);
+	Read(_state.PC, MemoryOperationType::DummyRead);
 }
 
 void Spc::DummyRead(uint16_t addr)
 {
-	Read(addr);
+	Read(addr, MemoryOperationType::DummyRead);
 }
 
 void Spc::IncCycleCount(int32_t addr)
@@ -87,6 +87,44 @@ void Spc::IncCycleCount(int32_t addr)
 	_state.Timer0.Run(timerInc);
 	_state.Timer1.Run(timerInc);
 	_state.Timer2.Run(timerInc);
+}
+
+uint8_t Spc::DebugRead(uint16_t addr)
+{
+	if(addr >= 0xFFC0 && _state.RomEnabled) {
+		return _spcBios[addr & 0x3F];
+	}
+
+	switch(addr) {
+		case 0xF0: return 0;
+		case 0xF1: return 0;
+
+		case 0xF2: return _state.DspReg;
+		case 0xF3: return _dsp->read(_state.DspReg & 0x7F);
+
+		case 0xF4: return _state.CpuRegs[0];
+		case 0xF5: return _state.CpuRegs[1];
+		case 0xF6: return _state.CpuRegs[2];
+		case 0xF7: return _state.CpuRegs[3];
+
+		case 0xF8: return _state.RamReg[0];
+		case 0xF9: return _state.RamReg[1];
+
+		case 0xFA: return 0;
+		case 0xFB: return 0;
+		case 0xFC: return 0;
+
+		case 0xFD: return _state.Timer0.DebugRead();
+		case 0xFE: return _state.Timer1.DebugRead();
+		case 0xFF: return _state.Timer2.DebugRead();
+
+		default: return _ram[addr];
+	}
+}
+
+void Spc::DebugWrite(uint16_t addr, uint8_t value)
+{
+	_ram[addr] = value;
 }
 
 uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)

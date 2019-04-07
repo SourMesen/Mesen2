@@ -46,7 +46,8 @@ namespace Mesen.GUI.Debugger
 			}
 
 			ctrlBreakpoints.CpuType = _cpuType;
-			
+			ctrlWatch.CpuType = _cpuType;
+
 			InitShortcuts();
 			InitToolbar();
 			LoadConfig();
