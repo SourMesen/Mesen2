@@ -180,10 +180,10 @@ void Ppu::Exec()
 		if(_scanline != 0) {
 			RenderScanline();
 		}
-		if(!_forcedVblank) {
-			EvaluateNextLineSprites();
-		}
 		_console->GetDmaController()->ProcessHdmaChannels();
+	} else if(_cycle == 285 && !_forcedVblank) {
+		//Approximate timing (any earlier will break Mega Lo Mania)
+		EvaluateNextLineSprites();
 	} else if(_scanline == 0 && _cycle == 6) {
 		_console->GetDmaController()->InitHdmaChannels();
 	} else if((_cycle == 134 || _cycle == 135) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
