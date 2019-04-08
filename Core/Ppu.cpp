@@ -961,28 +961,27 @@ void Ppu::DrawSubPixel(uint8_t x, uint16_t color)
 
 void Ppu::ApplyColorMath()
 {
-	if(!_colorMathEnabled) {
+	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
+
+	if(!_colorMathEnabled || activeWindowCount == 0) {
 		return;
 	}
 
 	bool hiResMode = _hiResMode || _bgMode == 5 || _bgMode == 6;
-	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
 	uint16_t prevMainPixel = 0;
 	int prevX = 0;
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
-		if(_rowPixelFlags[x] & PixelFlags::AllowColorMath) {
-			bool isInsideWindow = activeWindowCount && ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
+		bool isInsideWindow = activeWindowCount && ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
 
-			uint16_t subPixel = _subScreenBuffer[x];
-			if(hiResMode) {
-				//Apply the color math based on the previous main pixel
-				ApplyColorMathToPixel(_subScreenBuffer[x], prevMainPixel, prevX, isInsideWindow);
-				prevMainPixel = _mainScreenBuffer[x];
-				prevX = x;
-			}
-			ApplyColorMathToPixel(_mainScreenBuffer[x], subPixel, x, isInsideWindow);
+		uint16_t subPixel = _subScreenBuffer[x];
+		if(hiResMode) {
+			//Apply the color math based on the previous main pixel
+			ApplyColorMathToPixel(_subScreenBuffer[x], prevMainPixel, prevX, isInsideWindow);
+			prevMainPixel = _mainScreenBuffer[x];
+			prevX = x;
 		}
+		ApplyColorMathToPixel(_mainScreenBuffer[x], subPixel, x, isInsideWindow);
 	}
 }
 
@@ -1010,6 +1009,11 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 			break;
 
 		case ColorWindowMode::Always: pixelA = 0; break;
+	}
+
+	if(!(_rowPixelFlags[x] & PixelFlags::AllowColorMath)) {
+		//Color math doesn't apply to this pixel
+		return;
 	}
 
 	//Prevent color math as needed based on mode
