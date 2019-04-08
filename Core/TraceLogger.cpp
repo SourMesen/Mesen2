@@ -402,8 +402,8 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 		for(int i = 0; i < (int)lineCount; i++) {
 			int index = (startPos + i) % ExecutionLogSize;
 
-			if(i > 0 && startPos == index) {
-				//If we're back at the start, we didn't manage to find 
+			if((i > 0 && startPos == index) || !_disassemblyCacheCopy[index].IsInitialized()) {
+				//If the entire array was checked, or this element is not initialized, stop
 				break;
 			}
 
