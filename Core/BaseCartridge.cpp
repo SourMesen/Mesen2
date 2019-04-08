@@ -112,7 +112,6 @@ void BaseCartridge::Init()
 	bool hasHeader = false;
 	bool isLoRom = true;
 	bool isExRom = true;
-	uint32_t headerOffset = 0;
 	for(uint32_t baseAddress : baseAddresses) {
 		int32_t score = GetHeaderScore(baseAddress);
 		if(score >= 0 && score >= bestScore) {
@@ -120,7 +119,8 @@ void BaseCartridge::Init()
 			isLoRom = (baseAddress & 0x8000) == 0;
 			isExRom = (baseAddress & 0x400000) != 0;
 			hasHeader = (baseAddress & 0x200) != 0;
-			headerOffset = std::min(baseAddress + 0x7FB0, _prgRomSize - 0x40);
+			uint32_t headerOffset = std::min(baseAddress + 0x7FB0, _prgRomSize - 0x40);
+			memcpy(&_cartInfo, _prgRom + headerOffset, sizeof(SnesCartInformation));
 		}
 	}
 
@@ -143,8 +143,6 @@ void BaseCartridge::Init()
 		_prgRomSize -= 512;
 	}
 	
-	memcpy(&_cartInfo, _prgRom + headerOffset, sizeof(SnesCartInformation));
-
 	if((flags & CartFlags::HiRom) && (_cartInfo.MapMode & 0x27) == 0x25) {
 		flags |= CartFlags::ExHiRom;
 	} else if((flags & CartFlags::LoRom) && (_cartInfo.MapMode & 0x27) == 0x22) {
