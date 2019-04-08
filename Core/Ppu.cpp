@@ -135,14 +135,15 @@ void Ppu::Exec()
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		} else if(_scanline == 240 && _frameCount & 0x01 && !_screenInterlace) {
+		} else if(_scanline == 240 && _oddFrame && !_screenInterlace) {
 			//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
 			_cycle++;
 		} else if(
-			(_console->GetRegion() == ConsoleRegion::Ntsc && ((_scanline == 262 && (!_screenInterlace || (_frameCount & 0x01))) || _scanline == 263)) ||
-			(_console->GetRegion() == ConsoleRegion::Pal && ((_scanline == 312 && (!_screenInterlace || (_frameCount & 0x01))) || _scanline == 313))
+			(_console->GetRegion() == ConsoleRegion::Ntsc && ((_scanline == 262 && (!_screenInterlace || _oddFrame)) || _scanline >= 263)) ||
+			(_console->GetRegion() == ConsoleRegion::Pal && ((_scanline == 312 && (!_screenInterlace || _oddFrame)) || _scanline >= 313))
 		) {
 			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
+			_oddFrame ^= 1;
 			_regs->SetNmiFlag(false);
 			_scanline = 0;
 			_rangeOver = false;
@@ -265,7 +266,7 @@ void Ppu::EvaluateNextLineSprites()
 		int yGap = (screenY - info.Y);
 		if(_objInterlace) {
 			yGap <<= 1;
-			yGap |= (_frameCount & 0x01);
+			yGap |= _oddFrame;
 		}
 		if(info.VerticalMirror) {
 			yOffset = (height - 1 - yGap) & 0x07;
@@ -586,7 +587,7 @@ void Ppu::RenderTilemap()
 	}
 
 	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
-	uint16_t realY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
 	/* Keeps track of whether or not the pixel is allowed to participate in color math */
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
@@ -1082,7 +1083,7 @@ void Ppu::ApplyHiResMode()
 {
 	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
 	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
-	uint32_t screenY = IsDoubleHeight() ? ((_frameCount & 0x01) ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
+	uint32_t screenY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 	uint32_t baseAddr = (screenY << 9);
 
 	if(IsDoubleWidth()) {
@@ -1330,7 +1331,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x213F: {
 			//STAT78 - PPU Status Flag and Version
 			uint8_t value = (
-				((_frameCount & 0x01) ? 0x80 : 0) |
+				(_oddFrame ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |
 				(_ppu2OpenBus & 0x20) |
 				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
@@ -1718,7 +1719,7 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress, _oddFrame
 	);
 
 	for(int i = 0; i < 4; i++) {

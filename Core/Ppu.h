@@ -42,6 +42,7 @@ private:
 	uint16_t _cycle = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
+	uint8_t _oddFrame = 0;
 
 	uint16_t _drawStartX = 0;
 	uint16_t _drawEndX = 0;
