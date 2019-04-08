@@ -133,6 +133,10 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 				_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 			}
 
+			if((value & 0x80) && !_enableNmi && _nmiFlag) {
+				_console->GetCpu()->SetNmiFlag();
+			}
+
 			_enableNmi = (value & 0x80) != 0;
 			_enableVerticalIrq = (value & 0x20) != 0;
 			_enableHorizontalIrq = (value & 0x10) != 0;
