@@ -1088,19 +1088,24 @@ void Ppu::ApplyHiResMode()
 
 	if(IsDoubleWidth()) {
 		ApplyBrightness<false>();
-		for(int i = 0; i < 512; i += 2) {
-			_currentBuffer[baseAddr + i] = _subScreenBuffer[i >> 1];
-			_currentBuffer[baseAddr + i + 1] = _mainScreenBuffer[i >> 1];
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
+			_currentBuffer[baseAddr + (x << 1)] = _subScreenBuffer[x];
+			_currentBuffer[baseAddr + (x << 1) + 1] = _mainScreenBuffer[x];
 		}
 	} else {
-		for(int i = 0; i < 512; i += 2) {
-			_currentBuffer[baseAddr + i] = _mainScreenBuffer[i >> 1];
-			_currentBuffer[baseAddr + i + 1] = _mainScreenBuffer[i >> 1];
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
+			_currentBuffer[baseAddr + (x << 1)] = _mainScreenBuffer[x];
+			_currentBuffer[baseAddr + (x << 1) + 1] = _mainScreenBuffer[x];
 		}
 	}
 
 	if(!IsDoubleHeight()) {
-		memcpy(_currentBuffer + baseAddr + 512, _currentBuffer + baseAddr, 512 * 2);
+		//Copy this line's content to the next line (between the current start & end bounds)
+		memcpy(
+			_currentBuffer + baseAddr + 512 + (_drawStartX << 1),
+			_currentBuffer + baseAddr + (_drawStartX << 1),
+			(_drawEndX - _drawStartX + 1) << 2
+		);
 	}
 }
 
@@ -1364,7 +1369,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline < (_overscanMode ? 239 : 224) && _scanline > 0 && _cycle >= 22 && _cycle <= 277) {
+	if(_scanline <= (_overscanMode ? 239 : 224) && _scanline > 0 && _cycle >= 22 && _cycle <= 277) {
 		RenderScanline();
 	}
 
