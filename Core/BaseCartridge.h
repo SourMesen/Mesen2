@@ -44,6 +44,9 @@ private:
 	int32_t GetHeaderScore(uint32_t addr);
 	void DisplayCartInfo();
 
+	bool MapSpecificCarts(MemoryManager &mm);
+	string GetCartName();
+
 public:
 	virtual ~BaseCartridge();
 

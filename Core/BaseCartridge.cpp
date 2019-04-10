@@ -207,6 +207,10 @@ void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler
 		return;
 	}
 
+	while(startPageNumber >= handlers.size()) {
+		startPageNumber -= (uint32_t)handlers.size();
+	}
+
 	uint32_t pageNumber = startPageNumber;
 	for(uint32_t i = startBank; i <= endBank; i++) {
 		uint32_t baseAddress = i << 16;
@@ -250,6 +254,10 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, SnesMemoryType::SaveRam)));
 	}
 
+	if(MapSpecificCarts(mm)) {
+		return;
+	}
+
 	if(_flags & CartFlags::LoRom) {
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
 		MapBanks(mm, _prgRomHandlers, 0x80, 0xFF, 0x08, 0x0F, 0, true);
@@ -278,12 +286,30 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	}
 }
 
+bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
+{
+	string name = GetCartName();
+	if(_cartInfo.GameCode[0] == 'Z' && _cartInfo.GameCode[3] == 'J') {
+		//BSC-1A5M-02, BSC-1A7M-01
+		//Games: Sound Novel Tsukuuru, RPG Tsukuuru, Derby Stallion 96
+		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 0, true);
+		MapBanks(mm, _prgRomHandlers, 0x80, 0x9F, 0x08, 0x0F, 0, true, 0x200);
+		MapBanks(mm, _prgRomHandlers, 0xA0, 0xBF, 0x08, 0x0F, 0, true, 0x100);
+		if(_saveRamSize > 0) {
+			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
+			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+		}
+		return true;
+	}
+	return false;
+}
+
 void BaseCartridge::Serialize(Serializer &s)
 {
 	s.StreamArray(_saveRam, _saveRamSize);
 }
 
-void BaseCartridge::DisplayCartInfo()
+string BaseCartridge::GetCartName()
 {
 	int nameLength = 21;
 	for(int i = 0; i < 21; i++) {
@@ -292,9 +318,13 @@ void BaseCartridge::DisplayCartInfo()
 			break;
 		}
 	}
+	return string(_cartInfo.CartName, nameLength);
+}
 
+void BaseCartridge::DisplayCartInfo()
+{
 	MessageManager::Log("-----------------------------");
-	MessageManager::Log("Game: " + string(_cartInfo.CartName, nameLength));
+	MessageManager::Log("Game: " + GetCartName());
 	if(_flags & CartFlags::ExHiRom) {
 		MessageManager::Log("Type: ExHiROM");
 	} else if(_flags & CartFlags::ExLoRom) {
