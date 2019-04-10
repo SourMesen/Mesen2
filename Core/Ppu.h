@@ -42,11 +42,11 @@ private:
 	uint16_t _cycle = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
+	uint16_t _vblankStart;
 	uint8_t _oddFrame = 0;
 
 	uint16_t _drawStartX = 0;
 	uint16_t _drawEndX = 0;
-	uint8_t _irqDelay = 0;
 	
 	uint8_t _bgMode = 0;
 	bool _mode1Bg3Priority = false;
@@ -218,11 +218,14 @@ public:
 	Ppu(shared_ptr<Console> console);
 	virtual ~Ppu();
 
+	void PowerOn();
 	void Reset();
 
 	uint32_t GetFrameCount();
 	uint16_t GetScanline();
 	uint16_t GetCycle();
+	uint16_t GetVblankStart();
+
 	PpuState GetState();
 
 	void Exec();

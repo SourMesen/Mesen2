@@ -29,13 +29,27 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
-	_regs = console->GetInternalRegisters();
 
+	_vram = new uint8_t[Ppu::VideoRamSize];
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];
 	memset(_outputBuffers[0], 0, 512 * 478 * sizeof(uint16_t));
 	memset(_outputBuffers[1], 0, 512 * 478 * sizeof(uint16_t));
+}
 
+Ppu::~Ppu()
+{
+	delete[] _vram;
+	delete[] _outputBuffers[0];
+	delete[] _outputBuffers[1];
+}
+
+void Ppu::PowerOn()
+{
+	_regs = _console->GetInternalRegisters();
+
+	_vblankStart = _overscanMode ? 240 : 225;
+	
 	_currentBuffer = _outputBuffers[0];
 
 	_layerConfig[0] = {};
@@ -45,7 +59,6 @@ Ppu::Ppu(shared_ptr<Console> console)
 
 	_cgramAddress = 0;
 
-	_vram = new uint8_t[Ppu::VideoRamSize];
 	memset(_vram, 0, Ppu::VideoRamSize);
 	memset(_oamRam, 0, Ppu::SpriteRamSize);
 	memset(_cgram, 0, Ppu::CgRamSize);
@@ -54,13 +67,6 @@ Ppu::Ppu(shared_ptr<Console> console)
 	_vramIncrementValue = 1;
 	_vramAddressRemapping = 0;
 	_vramAddrIncrementOnSecondReg = false;
-}
-
-Ppu::~Ppu()
-{
-	delete[] _vram;
-	delete[] _outputBuffers[0];
-	delete[] _outputBuffers[1];
 }
 
 void Ppu::Reset()
@@ -83,6 +89,11 @@ uint16_t Ppu::GetScanline()
 uint16_t Ppu::GetCycle()
 {
 	return _cycle;
+}
+
+uint16_t Ppu::GetVblankStart()
+{
+	return _vblankStart;
 }
 
 PpuState Ppu::GetState()
@@ -118,7 +129,7 @@ void Ppu::Exec()
 		memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
 		memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
 
-		if(_scanline == (_overscanMode ? 240 : 225)) {
+		if(_scanline == _vblankStart) {
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
@@ -154,30 +165,13 @@ void Ppu::Exec()
 				_mosaicStartScanline = 1;
 			}
 		}
-
-		if(_regs->IsVerticalIrqEnabled() && !_regs->IsHorizontalIrqEnabled() && _scanline == _regs->GetVerticalTimer()) {
-			//An IRQ will occur sometime just after the V Counter reaches the value set in $4209/$420A.
-			_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
-			_irqDelay = 4;
-		}
 	}
 
 	_cycle++;
 	_console->ProcessPpuCycle();
-
-	if(_regs->IsHorizontalIrqEnabled() && _cycle == _regs->GetHorizontalTimer() && (!_regs->IsVerticalIrqEnabled() || _scanline == _regs->GetVerticalTimer())) {
-		//An IRQ will occur sometime just after the H Counter reaches the value set in $4207/$4208.
-		_irqDelay = 4;
-	}
-
-	if(_irqDelay > 0) {
-		_irqDelay--;
-		if(_irqDelay == 0) {
-			_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
-		}
-	}
+	_regs->ProcessIrqCounters();
 	
-	if(_cycle == 278 && _scanline <= (_overscanMode ? 239 : 224)) {
+	if(_cycle == 278 && _scanline < _vblankStart) {
 		if(_scanline != 0) {
 			RenderScanline();
 		}
@@ -1243,7 +1237,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2138: {
 			//OAMDATAREAD - Data for OAM read
 			//When trying to read/write during rendering, the internal address used by the PPU's sprite rendering is used
-			uint16_t addr = (_forcedVblank || (_scanline >= (_overscanMode ? 240 : 225))) ? _internalOamAddress : _oamRenderAddress;
+			uint16_t addr = (_forcedVblank || (_scanline >= _vblankStart)) ? _internalOamAddress : _oamRenderAddress;
 			uint8_t value;
 			if(addr < 512) {
 				value = _oamRam[addr];
@@ -1375,7 +1369,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 	switch(addr) {
 		case 0x2100:
-			if(_forcedVblank && _scanline == (_overscanMode ? 240 : 225)) {
+			if(_forcedVblank && _scanline == _vblankStart) {
 				//"writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur."
 				_internalOamAddress = (_oamRamAddress << 1);
 			}
@@ -1404,7 +1398,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2104: {
 			//When trying to read/write during rendering, the internal address used by the PPU's sprite rendering is used
 			//This is approximated by _oamRenderAddress (but is not cycle accurate) - needed for Uniracers
-			uint16_t addr = (_forcedVblank || (_scanline >= (_overscanMode ? 240 : 225))) ? _internalOamAddress : _oamRenderAddress;
+			uint16_t addr = (_forcedVblank || (_scanline >= _vblankStart)) ? _internalOamAddress : _oamRenderAddress;
 
 			if(addr < 512) {
 				if(addr & 0x01) {
@@ -1519,7 +1513,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
-			if(!_forcedVblank && _scanline < (_overscanMode ? 240 : 225)) {
+			if(!_forcedVblank && _scanline < _vblankStart) {
 				//Invalid VRAM access - can't write VRAM outside vblank/force blank
 				return;
 			}
@@ -1534,7 +1528,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
-			if(!_forcedVblank && _scanline < (_overscanMode ? 240 : 225)) {
+			if(!_forcedVblank && _scanline < _vblankStart) {
 				//Invalid VRAM access - can't write VRAM outside vblank/force blank
 				return;
 			}
@@ -1698,6 +1692,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_mode7.ExtBgEnabled = (value & 0x40) != 0;
 			_hiResMode = (value & 0x08) != 0;
 			_overscanMode = (value & 0x04) != 0;
+			_vblankStart = _overscanMode ? 240 : 225;
 			_objInterlace = (value & 0x02) != 0;
 			_screenInterlace = (value & 0x01) != 0;
 			break;
@@ -1710,8 +1705,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 void Ppu::Serialize(Serializer &s)
 {
+	uint8_t unusedIrqDelay = 0;
+
 	s.Stream(
-		_forcedVblank, _screenBrightness, _cycle, _scanline, _frameCount, _drawStartX, _drawEndX, _irqDelay, _bgMode,
+		_forcedVblank, _screenBrightness, _cycle, _scanline, _frameCount, _drawStartX, _drawEndX, unusedIrqDelay, _bgMode,
 		_mode1Bg3Priority, _mainScreenLayers, _subScreenLayers, _vramAddress, _vramIncrementValue, _vramAddressRemapping,
 		_vramAddrIncrementOnSecondReg, _vramReadBuffer, _ppu1OpenBus, _ppu2OpenBus, _cgramAddress, _mosaicSize, _mosaicEnabled,
 		_mosaicStartScanline, _oamMode, _oamBaseAddress, _oamAddressOffset, _oamRamAddress, _enableOamPriority,
@@ -1724,7 +1721,7 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress, _oddFrame
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress, _oddFrame, _vblankStart
 	);
 
 	for(int i = 0; i < 4; i++) {

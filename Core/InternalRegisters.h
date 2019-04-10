@@ -3,11 +3,13 @@
 #include "../Utilities/ISerializable.h"
 
 class Console;
+class Ppu;
 
 class InternalRegisters final : public ISerializable
 {
 private:
 	shared_ptr<Console> _console;
+	Ppu* _ppu;
 
 	uint8_t _multOperand1 = 0;
 	uint8_t _multOperand2 = 0;
@@ -22,10 +24,13 @@ private:
 	
 	bool _nmiFlag = false;
 	bool _enableNmi = false;
+	
 	bool _enableHorizontalIrq = false;
 	bool _enableVerticalIrq = false;
 	uint16_t _horizontalTimer = 0x1FF;
 	uint16_t _verticalTimer = 0x1FF;
+	bool _irqLevel = false;
+	bool _needIrq = false;
 
 	uint8_t _ioPortOutput = 0;
 
@@ -37,6 +42,7 @@ public:
 	void Reset();
 
 	void ProcessAutoJoypadRead();
+	void ProcessIrqCounters();
 	uint8_t GetIoPortOutput();
 	void SetNmiFlag(bool nmiFlag);
 

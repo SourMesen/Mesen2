@@ -11,6 +11,7 @@
 InternalRegisters::InternalRegisters(shared_ptr<Console> console)
 {
 	_console = console;
+	_ppu = _console->GetPpu().get();
 	Reset();
 
 	//Power on values
@@ -28,6 +29,8 @@ void InternalRegisters::Reset()
 	_enableHorizontalIrq = false;
 	_enableVerticalIrq = false;
 	_nmiFlag = false;
+	_irqLevel = false;
+	_needIrq = false;
 }
 
 void InternalRegisters::ProcessAutoJoypadRead()
@@ -61,6 +64,25 @@ void InternalRegisters::ProcessAutoJoypadRead()
 	}
 }
 
+void InternalRegisters::ProcessIrqCounters()
+{
+	if(_needIrq) {
+		_needIrq = false;
+		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+	}
+
+	bool irqLevel = (
+		(_enableHorizontalIrq || _enableVerticalIrq) &&
+		(!_enableHorizontalIrq || _ppu->GetCycle() ==  _horizontalTimer) &&
+		(!_enableVerticalIrq || _ppu->GetScanline() == _verticalTimer)
+	);
+
+	if(!_irqLevel && irqLevel) {
+		_needIrq = true;
+	}
+	_irqLevel = irqLevel;
+}
+
 uint8_t InternalRegisters::GetIoPortOutput()
 {
 	return _ioPortOutput;
@@ -92,13 +114,14 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		}
 
 		case 0x4212: {
-			PpuState state = _console->GetPpu()->GetState();
-			uint32_t vblankStart = state.OverscanMode ? 240 : 225;
+			uint16_t cycle = _ppu->GetCycle();
+			uint16_t scanline = _ppu->GetScanline();
+			uint16_t vblankStart = _ppu->GetVblankStart();
 			//TODO TIMING (set/clear timing)
 			return (
-				(state.Scanline >= vblankStart ? 0x80 : 0) |
-				(state.Cycle >= 0x121 ? 0x40 : 0) | //TODO VERIFY (seems to contradict Anomie's docs?)
-				((_enableAutoJoypadRead && state.Scanline >= vblankStart && state.Scanline <= vblankStart + 2) ? 0x01 : 0) //Auto joypad read in progress
+				(scanline >= vblankStart ? 0x80 : 0) |
+				(cycle >= 0x121 ? 0x40 : 0) | //TODO VERIFY (seems to contradict Anomie's docs?)
+				((_enableAutoJoypadRead && scanline >= vblankStart && scanline <= vblankStart + 2) ? 0x01 : 0) //Auto joypad read in progress
 			);
 		}
 
@@ -128,7 +151,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0x4200:
-			if((value & 0x30) == 0x20 && !_enableVerticalIrq && _console->GetPpu()->GetScanline() == _verticalTimer) {
+			if((value & 0x30) == 0x20 && !_enableVerticalIrq && _ppu->GetScanline() == _verticalTimer) {
 				//When enabling vertical irqs, if the current scanline matches the target scanline, set the irq flag right away
 				_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 			}
@@ -152,7 +175,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x4201:
 			//TODO WRIO - Programmable I/O port (out-port)
 			if((_ioPortOutput & 0x80) && !(value & 0x80)) {
-				_console->GetPpu()->LatchLocationValues();
+				_ppu->LatchLocationValues();
 			}
 			_ioPortOutput = value;
 			break;
@@ -196,6 +219,7 @@ void InternalRegisters::Serialize(Serializer &s)
 	s.Stream(
 		_multOperand1, _multOperand2, _multOrRemainderResult, _dividend, _divisor, _divResult, _enableAutoJoypadRead,
 		_enableFastRom, _nmiFlag, _enableNmi, _enableHorizontalIrq, _enableVerticalIrq, _horizontalTimer,
-		_verticalTimer, _ioPortOutput, _controllerData[0], _controllerData[1], _controllerData[2], _controllerData[3]
+		_verticalTimer, _ioPortOutput, _controllerData[0], _controllerData[1], _controllerData[2], _controllerData[3],
+		_irqLevel, _needIrq
 	);
 }
