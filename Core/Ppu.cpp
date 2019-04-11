@@ -5,8 +5,10 @@
 #include "Cpu.h"
 #include "Spc.h"
 #include "InternalRegisters.h"
+#include "EmuSettings.h"
 #include "ControlManager.h"
 #include "VideoDecoder.h"
+#include "VideoRenderer.h"
 #include "NotificationManager.h"
 #include "DmaController.h"
 #include "MessageManager.h"
@@ -46,6 +48,7 @@ Ppu::~Ppu()
 
 void Ppu::PowerOn()
 {
+	_allowFrameSkip = false;
 	_regs = _console->GetInternalRegisters();
 
 	_vblankStart = _overscanMode ? 240 : 225;
@@ -139,6 +142,8 @@ void Ppu::Exec()
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
 				_internalOamAddress = (_oamRamAddress << 1);
 			}
+
+			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && _console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150;
 
 			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();
@@ -441,7 +446,7 @@ void Ppu::RenderMode7()
 
 void Ppu::RenderScanline()
 {
-	if(_drawStartX > 255) {
+	if(_drawStartX > 255 || (_allowFrameSkip && (_frameCount & 0x03) != 0)) {
 		return;
 	}
 	_drawEndX = std::min((_hClock - 22*4) >> 2, 255);
@@ -1156,7 +1161,10 @@ void Ppu::SendFrame()
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
-		_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+
+		if(!_allowFrameSkip || (_frameCount & 0x03) == 0) {
+			_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+		}
 	}
 }
 

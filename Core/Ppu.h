@@ -136,6 +136,8 @@ private:
 	bool _verticalLocationToggle = false;
 	bool _locationLatched = false;
 
+	bool _allowFrameSkip = false;
+
 	void EvaluateNextLineSprites();
 	
 	template<uint8_t priority, bool forMainScreen>
