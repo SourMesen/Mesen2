@@ -98,17 +98,25 @@ void DmaController::RunDma(DmaChannelConfig &channel)
 
 void DmaController::InitHdmaChannels()
 {
-	if(_hdmaChannels) {
-		//"The overhead is ~18 master cycles"
-		_memoryManager->IncrementMasterClockValue<18>();
+	for(int i = 0; i < 8; i++) {
+		//Reset internal flags on every frame, whether or not the channels are enabled
+		_channel[i].HdmaFinished = false;
+		_channel[i].DoTransfer = false; //not resetting this causes graphical glitches in some games (Aladdin, Super Ghouls and Ghosts)
 	}
 
+	if(!_hdmaChannels) {
+		//No channels are enabled, no more processing needs to be done
+		return;
+	}
+
+	//"The overhead is ~18 master cycles"
+	_memoryManager->IncrementMasterClockValue<18>();
+	
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
-
-		//Reset internal flags on every frame
-		ch.HdmaFinished = false;
-		ch.DoTransfer = false; //not resetting this causes graphical glitches in some games (Aladdin, Super Ghouls and Ghosts)
+		
+		//Set DoTransfer to true for all channels if any HDMA channel is enabled
+		ch.DoTransfer = true;
 
 		if(_hdmaChannels & (1 << i)) {
 			//"1. Copy AAddress into Address."
@@ -134,9 +142,6 @@ void DmaController::InitHdmaChannels()
 				//"plus 8 master cycles for each channel set for direct HDMA"
 				_memoryManager->IncrementMasterClockValue<4>();
 			}
-			
-			//4. Set DoTransfer to true.
-			ch.DoTransfer = true;
 		}
 	}
 }
@@ -175,78 +180,89 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 
 void DmaController::ProcessHdmaChannels()
 {
-	bool needOverhead = true;
-	if(_hdmaChannels) {
-		_hdmaPending = true;
-
-		for(int i = 0; i < 8; i++) {
-			if(_hdmaChannels & (1 << i)) {
-				_channel[i].InterruptedByHdma = true;
-			}
-		}
-
-		for(int i = 0; i < 8; i++) {
-			DmaChannelConfig &ch = _channel[i];
-			if((_hdmaChannels & (1 << i)) == 0 || ch.HdmaFinished) {
-				continue;
-			}
-
-			if(needOverhead) {
-				//"For each scanline during which HDMA is active (i.e.at least one channel has not yet terminated for the frame), there are ~18 master cycles overhead."
-				_memoryManager->IncrementMasterClockValue<8>();
-				needOverhead = false;
-			}
-
-			//"Each active channel incurs another 8 master cycles overhead for every scanline"
-			_memoryManager->IncrementMasterClockValue<8>();
-
-			//1. If DoTransfer is false, skip to step 3.
-			if(ch.DoTransfer) {
-				//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
-				RunHdmaTransfer(ch);
-			}
-				
-			//3. Decrement $43xA.
-			ch.HdmaLineCounterAndRepeat--;
-
-			//4. Set DoTransfer to the value of Repeat.
-			ch.DoTransfer = (ch.HdmaLineCounterAndRepeat & 0x80) != 0;
-
-			//5. If Line Counter is zero...
-			if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
-				//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
-				ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-
-				//"b. If Addressing Mode is Indirect, read two bytes from Address into Indirect Address(and increment Address by two bytes)."
-				if(ch.HdmaIndirectAddressing) {
-					if(ch.HdmaLineCounterAndRepeat == 0) {
-						//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
-						//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
-						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-						ch.TransferSize = (msb << 8);
-					} else {
-						uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-						uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-						ch.TransferSize = (msb << 8) | lsb;
-					}
-
-					//"If a new indirect address is required, 16 master cycles are taken to load it."
-					_memoryManager->IncrementMasterClockValue<8>(); //minus 8 because the ReadDmas call will increment it by 4 twice
-				}
-
-				//"c. If $43xA is zero, terminate this HDMA channel for this frame. The bit in $420c is not cleared, though, so it may be automatically restarted next frame."
-				if(ch.HdmaLineCounterAndRepeat == 0) {
-					ch.HdmaFinished = true;
-				}
-
-				//"d. Set DoTransfer to true."
-				ch.DoTransfer = true;
-			}
-		}
-
-		//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
-		_nmiIrqDelayCounter = 2;
+	if(!_hdmaChannels) {
+		return;
 	}
+	
+	_hdmaPending = true;
+
+	for(int i = 0; i < 8; i++) {
+		if(_hdmaChannels & (1 << i)) {
+			_channel[i].InterruptedByHdma = true;
+		}
+	}
+
+	//Run all the DMA transfers for each channel first, before fetching data for the next scanline
+	bool needOverhead = true;
+	for(int i = 0; i < 8; i++) {
+		DmaChannelConfig &ch = _channel[i];
+		if((_hdmaChannels & (1 << i)) == 0 || ch.HdmaFinished) {
+			continue;
+		}
+
+		if(needOverhead) {
+			//"For each scanline during which HDMA is active (i.e.at least one channel has not yet terminated for the frame), there are ~18 master cycles overhead."
+			_memoryManager->IncrementMasterClockValue<8>();
+			needOverhead = false;
+		}
+
+		//"Each active channel incurs another 8 master cycles overhead for every scanline"
+		_memoryManager->IncrementMasterClockValue<8>();
+
+		//1. If DoTransfer is false, skip to step 3.
+		if(ch.DoTransfer) {
+			//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
+			RunHdmaTransfer(ch);
+		}
+	}
+
+	//Update the channel's state & fetch data for the next scanline
+	for(int i = 0; i < 8; i++) {
+		DmaChannelConfig &ch = _channel[i];
+		if((_hdmaChannels & (1 << i)) == 0 || ch.HdmaFinished) {
+			continue;
+		}
+
+		//3. Decrement $43xA.
+		ch.HdmaLineCounterAndRepeat--;
+
+		//4. Set DoTransfer to the value of Repeat.
+		ch.DoTransfer = (ch.HdmaLineCounterAndRepeat & 0x80) != 0;
+
+		//5. If Line Counter is zero...
+		if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
+			//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
+			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+
+			//"b. If Addressing Mode is Indirect, read two bytes from Address into Indirect Address(and increment Address by two bytes)."
+			if(ch.HdmaIndirectAddressing) {
+				if(ch.HdmaLineCounterAndRepeat == 0) {
+					//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
+					//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
+					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+					ch.TransferSize = (msb << 8);
+				} else {
+					uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+					ch.TransferSize = (msb << 8) | lsb;
+				}
+
+				//"If a new indirect address is required, 16 master cycles are taken to load it."
+				_memoryManager->IncrementMasterClockValue<8>(); //minus 8 because the ReadDmas call will increment it by 4 twice
+			}
+
+			//"c. If $43xA is zero, terminate this HDMA channel for this frame. The bit in $420c is not cleared, though, so it may be automatically restarted next frame."
+			if(ch.HdmaLineCounterAndRepeat == 0) {
+				ch.HdmaFinished = true;
+			}
+
+			//"d. Set DoTransfer to true."
+			ch.DoTransfer = true;
+		}
+	}
+
+	//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
+	_nmiIrqDelayCounter = 2;
 }
 
 void DmaController::Write(uint16_t addr, uint8_t value)
