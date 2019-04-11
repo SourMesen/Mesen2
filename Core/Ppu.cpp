@@ -965,10 +965,6 @@ void Ppu::DrawSubPixel(uint8_t x, uint16_t color)
 
 void Ppu::ApplyColorMath()
 {
-	if(!_colorMathEnabled) {
-		return;
-	}
-
 	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
 	bool hiResMode = _hiResMode || _bgMode == 5 || _bgMode == 6;
 	uint16_t prevMainPixel = 0;
