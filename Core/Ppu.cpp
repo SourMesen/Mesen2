@@ -110,6 +110,7 @@ PpuState Ppu::GetState()
 	PpuState state;
 	state.Cycle = GetCycle();
 	state.Scanline = _scanline;
+	state.HClock = _hClock;
 	state.FrameCount = _frameCount;
 	state.OverscanMode = _overscanMode;
 	state.BgMode = _bgMode;

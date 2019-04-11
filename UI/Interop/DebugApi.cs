@@ -222,6 +222,7 @@ namespace Mesen.GUI
 	{
 		public UInt16 Cycle;
 		public UInt16 Scanline;
+		public UInt16 HClock;
 		public UInt32 FrameCount;
 		[MarshalAs(UnmanagedType.I1)] public bool OverscanMode;
 

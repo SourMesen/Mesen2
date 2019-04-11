@@ -37,6 +37,7 @@ struct PpuState
 {
 	uint16_t Cycle;
 	uint16_t Scanline;
+	uint16_t HClock;
 	uint32_t FrameCount;
 	bool OverscanMode;
 

@@ -27,6 +27,7 @@ namespace Mesen.GUI.Debugger.Controls
 			_binder.Entity = new PpuState();
 			_binder.AddBinding(nameof(PpuState.Cycle), txtCycle, eNumberFormat.Decimal);
 			_binder.AddBinding(nameof(PpuState.Scanline), txtScanline, eNumberFormat.Decimal);
+			_binder.AddBinding(nameof(PpuState.HClock), txtHClocks, eNumberFormat.Decimal);
 		}
 
 		public void UpdateStatus(DebugState state)
@@ -35,8 +36,6 @@ namespace Mesen.GUI.Debugger.Controls
 
 			_binder.Entity = state.Ppu;
 			_binder.UpdateUI();
-
-			txtHClocks.Text = (state.Ppu.Cycle * 4).ToString();
 		}
 	}
 }
