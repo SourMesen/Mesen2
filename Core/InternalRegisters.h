@@ -4,12 +4,14 @@
 
 class Console;
 class Ppu;
+class MemoryManager;
 
 class InternalRegisters final : public ISerializable
 {
 private:
 	shared_ptr<Console> _console;
 	Ppu* _ppu;
+	MemoryManager* _memoryManager;
 
 	uint8_t _multOperand1 = 0;
 	uint8_t _multOperand2 = 0;

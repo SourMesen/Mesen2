@@ -4,6 +4,7 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "ControlManager.h"
+#include "MemoryManager.h"
 #include "MessageManager.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
@@ -11,6 +12,7 @@
 InternalRegisters::InternalRegisters(shared_ptr<Console> console)
 {
 	_console = console;
+	_memoryManager = console->GetMemoryManager().get();
 	_ppu = _console->GetPpu().get();
 	Reset();
 
@@ -97,20 +99,18 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 {
 	switch(addr) {
 		case 0x4210: {
-			//open bus implementation here is needed to pass CPUPHL test
 			uint8_t value = 
-				(_nmiFlag ? 0x80 : 0) | 
-				((addr >> 8) & 0x70) | 
-				0x2; //CPU revision
+				(_nmiFlag ? 0x80 : 0) |
+				0x02; //CPU revision
 
 			_nmiFlag = false;
-			return value;
+			return value | (_memoryManager->GetOpenBus() & 0x70);
 		}
 
 		case 0x4211: {
-			uint8_t value = (_console->GetCpu()->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0) | ((addr >> 8) & 0x7F);
+			uint8_t value = (_console->GetCpu()->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
 			_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
-			return value;
+			return value | (_memoryManager->GetOpenBus() & 0x7F);
 		}
 
 		case 0x4212: {
@@ -121,7 +121,8 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			return (
 				(scanline >= vblankStart ? 0x80 : 0) |
 				(cycle >= 0x121 ? 0x40 : 0) | //TODO VERIFY (seems to contradict Anomie's docs?)
-				((_enableAutoJoypadRead && scanline >= vblankStart && scanline <= vblankStart + 2) ? 0x01 : 0) //Auto joypad read in progress
+				((_enableAutoJoypadRead && scanline >= vblankStart && scanline <= vblankStart + 2) ? 0x01 : 0) | //Auto joypad read in progress
+				(_memoryManager->GetOpenBus() & 0x3E)
 			);
 		}
 

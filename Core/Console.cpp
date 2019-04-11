@@ -238,10 +238,10 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_cart = cart;
 		UpdateRegion();
 
+		_memoryManager.reset(new MemoryManager());
 		_ppu.reset(new Ppu(shared_from_this()));
 		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
 		_controlManager.reset(new ControlManager(shared_from_this()));
-		_memoryManager.reset(new MemoryManager());
 		_dmaController.reset(new DmaController(_memoryManager.get()));
 		_spc.reset(new Spc(shared_from_this(), spcRomData));
 
