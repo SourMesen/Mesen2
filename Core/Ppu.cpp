@@ -1370,7 +1370,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline <= (_overscanMode ? 239 : 224) && _scanline > 0 && _hClock >= 22*4 && _hClock <= 277*4) {
+	if(_scanline < _vblankStart && _scanline > 0 && _hClock >= 22*4 && _hClock <= 278*4) {
 		RenderScanline();
 	}
 
