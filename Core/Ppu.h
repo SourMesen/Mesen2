@@ -39,7 +39,7 @@ private:
 	bool _forcedVblank = false;
 	uint8_t _screenBrightness = 0;
 
-	uint16_t _cycle = 0;
+	uint16_t _hClock = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
 	uint16_t _vblankStart;
@@ -224,6 +224,7 @@ public:
 	uint32_t GetFrameCount();
 	uint16_t GetScanline();
 	uint16_t GetCycle();
+	uint16_t GetHClock();
 	uint16_t GetVblankStart();
 
 	PpuState GetState();

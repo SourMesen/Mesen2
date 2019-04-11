@@ -72,7 +72,7 @@ void Ppu::PowerOn()
 void Ppu::Reset()
 {
 	_scanline = 0;
-	_cycle = 0;
+	_hClock = 0;
 	_forcedVblank = true;
 }
 
@@ -88,7 +88,13 @@ uint16_t Ppu::GetScanline()
 
 uint16_t Ppu::GetCycle()
 {
-	return _cycle;
+	//"normally dots 323 and 327 are 6 master cycles instead of 4."
+	return (_hClock - ((_hClock > 1292) << 1) - ((_hClock > 1310) << 1)) >> 2;
+}
+
+uint16_t Ppu::GetHClock()
+{
+	return _hClock;
 }
 
 uint16_t Ppu::GetVblankStart()
@@ -99,7 +105,7 @@ uint16_t Ppu::GetVblankStart()
 PpuState Ppu::GetState()
 {
 	PpuState state;
-	state.Cycle = _cycle;
+	state.Cycle = GetCycle();
 	state.Scanline = _scanline;
 	state.FrameCount = _frameCount;
 	state.OverscanMode = _overscanMode;
@@ -115,11 +121,9 @@ PpuState Ppu::GetState()
 
 void Ppu::Exec()
 {
-	//"normally dots 323 and 327 are 6 master cycles instead of 4."
-	//Add 1 extra dot to compensate (0-340 instead of 0-339)
-	//TODO fix this properly
-	if(_cycle == 340) {
-		_cycle = -1;
+	if(_hClock >= 1364 || (_hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
+		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
+		_hClock = 0;
 		_scanline++;
 		
 		_drawStartX = 0;
@@ -146,9 +150,6 @@ void Ppu::Exec()
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		} else if(_scanline == 240 && _oddFrame && !_screenInterlace) {
-			//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
-			_cycle++;
 		} else if(
 			(_console->GetRegion() == ConsoleRegion::Ntsc && ((_scanline == 262 && (!_screenInterlace || _oddFrame)) || _scanline >= 263)) ||
 			(_console->GetRegion() == ConsoleRegion::Pal && ((_scanline == 312 && (!_screenInterlace || _oddFrame)) || _scanline >= 313))
@@ -167,21 +168,23 @@ void Ppu::Exec()
 		}
 	}
 
-	_cycle++;
 	_console->ProcessPpuCycle();
 	_regs->ProcessIrqCounters();
 	
-	if(_cycle == 278 && _scanline < _vblankStart) {
+	uint16_t hClock = _hClock;
+	_hClock += 4;
+
+	if(hClock == 278*4 && _scanline < _vblankStart) {
 		if(_scanline != 0) {
 			RenderScanline();
 		}
 		_console->GetDmaController()->ProcessHdmaChannels();
-	} else if(_cycle == 285 && !_forcedVblank) {
+	} else if(hClock == 285*4 && !_forcedVblank) {
 		//Approximate timing (any earlier will break Mega Lo Mania)
 		EvaluateNextLineSprites();
-	} else if(_scanline == 0 && _cycle == 6) {
+	} else if(_scanline == 0 && hClock == 6*4) {
 		_console->GetDmaController()->InitHdmaChannels();
-	} else if((_cycle == 134 || _cycle == 135) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
+	} else if((hClock == 134*4 || hClock == 135*4) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
 		//TODO Approximation (DRAM refresh timing is not exact)
 		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
 	}
@@ -441,7 +444,7 @@ void Ppu::RenderScanline()
 	if(_drawStartX > 255) {
 		return;
 	}
-	_drawEndX = std::min(_cycle - 22, 255);
+	_drawEndX = std::min((_hClock - 22*4) >> 2, 255);
 
 	uint8_t bgMode = _bgMode;
 	if(_forcedVblank) {
@@ -1189,7 +1192,7 @@ bool Ppu::IsDoubleWidth()
 
 void Ppu::LatchLocationValues()
 {
-	_horizontalLocation = _cycle;
+	_horizontalLocation = GetCycle();
 	_verticalLocation = _scanline;
 	_locationLatched = true;
 }
@@ -1362,7 +1365,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline <= (_overscanMode ? 239 : 224) && _scanline > 0 && _cycle >= 22 && _cycle <= 277) {
+	if(_scanline <= (_overscanMode ? 239 : 224) && _scanline > 0 && _hClock >= 22*4 && _hClock <= 277*4) {
 		RenderScanline();
 	}
 
@@ -1704,10 +1707,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 void Ppu::Serialize(Serializer &s)
 {
-	uint8_t unusedIrqDelay = 0;
-
 	s.Stream(
-		_forcedVblank, _screenBrightness, _cycle, _scanline, _frameCount, _drawStartX, _drawEndX, unusedIrqDelay, _bgMode,
+		_forcedVblank, _screenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _bgMode,
 		_mode1Bg3Priority, _mainScreenLayers, _subScreenLayers, _vramAddress, _vramIncrementValue, _vramAddressRemapping,
 		_vramAddrIncrementOnSecondReg, _vramReadBuffer, _ppu1OpenBus, _ppu2OpenBus, _cgramAddress, _mosaicSize, _mosaicEnabled,
 		_mosaicStartScanline, _oamMode, _oamBaseAddress, _oamAddressOffset, _oamRamAddress, _enableOamPriority,

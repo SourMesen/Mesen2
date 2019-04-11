@@ -75,7 +75,7 @@ void InternalRegisters::ProcessIrqCounters()
 
 	bool irqLevel = (
 		(_enableHorizontalIrq || _enableVerticalIrq) &&
-		(!_enableHorizontalIrq || _ppu->GetCycle() ==  _horizontalTimer) &&
+		(!_enableHorizontalIrq || (_ppu->GetHClock() >> 2) ==  _horizontalTimer) &&
 		(!_enableVerticalIrq || _ppu->GetScanline() == _verticalTimer)
 	);
 
@@ -114,13 +114,13 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		}
 
 		case 0x4212: {
-			uint16_t cycle = _ppu->GetCycle();
+			uint16_t hClock = _ppu->GetHClock();
 			uint16_t scanline = _ppu->GetScanline();
 			uint16_t vblankStart = _ppu->GetVblankStart();
 			//TODO TIMING (set/clear timing)
 			return (
 				(scanline >= vblankStart ? 0x80 : 0) |
-				(cycle >= 0x121 ? 0x40 : 0) | //TODO VERIFY (seems to contradict Anomie's docs?)
+				((hClock >= 1*4 && hClock <= 274*4) ? 0 : 0x40) |
 				((_enableAutoJoypadRead && scanline >= vblankStart && scanline <= vblankStart + 2) ? 0x01 : 0) | //Auto joypad read in progress
 				(_memoryManager->GetOpenBus() & 0x3E)
 			);
