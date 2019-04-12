@@ -56,6 +56,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 
 	_executionStopped = false;
 	_breakRequestCount = 0;
+	_suspendRequestCount = 0;
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->LoadCdlFile(cdlFile);
@@ -288,6 +289,10 @@ void Debugger::ProcessPpuCycle()
 
 void Debugger::SleepUntilResume()
 {
+	if(_suspendRequestCount) {
+		return;
+	}
+
 	_console->GetSoundMixer()->StopAudio();
 	_disassembler->Disassemble(CpuType::Cpu);
 	_disassembler->Disassemble(CpuType::Spc);
@@ -299,7 +304,7 @@ void Debugger::SleepUntilResume()
 		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
 	}
 
-	while(_cpuStepCount == 0 || _breakRequestCount) {
+	while((_cpuStepCount == 0 && !_suspendRequestCount) || _breakRequestCount) {
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 	}
 
@@ -476,6 +481,15 @@ void Debugger::BreakRequest(bool release)
 		_breakRequestCount--;
 	} else {
 		_breakRequestCount++;
+	}
+}
+
+void Debugger::SuspendDebugger(bool release)
+{
+	if(release) {
+		_suspendRequestCount--;
+	} else {
+		_suspendRequestCount++;
 	}
 }
 

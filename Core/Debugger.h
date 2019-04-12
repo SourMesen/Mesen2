@@ -50,6 +50,7 @@ private:
 
 	atomic<bool> _executionStopped;
 	atomic<uint32_t> _breakRequestCount;
+	atomic<uint32_t> _suspendRequestCount;
 
 	atomic<int32_t> _cpuStepCount;
 	atomic<int32_t> _spcStepCount;
@@ -96,6 +97,7 @@ public:
 	bool IsExecutionStopped();
 
 	void BreakRequest(bool release);
+	void SuspendDebugger(bool release);
 
 	void GetState(DebugState &state);
 
