@@ -111,6 +111,7 @@ bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
 		case CpuType::Cpu: return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
 		case CpuType::Spc: return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
 	}
+	return false;
 }
 
 bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)

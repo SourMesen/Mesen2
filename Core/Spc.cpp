@@ -18,8 +18,8 @@ Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 	_ram = new uint8_t[Spc::SpcRamSize];
 	_spcBios = new uint8_t[Spc::SpcRomSize];
 
-	memcpy(_spcBios, spcRomData.data(), 64);
-	memset(_ram, 0, sizeof(_ram));
+	memcpy(_spcBios, spcRomData.data(), Spc::SpcRomSize);
+	memset(_ram, 0, Spc::SpcRamSize);
 
 	_dsp.reset(new SPC_DSP());
 	_dsp->init(_ram);

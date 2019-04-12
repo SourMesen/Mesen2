@@ -178,8 +178,8 @@ void TraceLogger::GetStatusFlag(string &output, uint8_t ps, RowPart& part)
 	constexpr char spcActiveStatusLetters[8] = { 'N', 'V', 'P', 'B', 'H', 'I', 'Z', 'C' };
 	constexpr char spcInactiveStatusLetters[8] = { 'n', 'v', 'p', 'b', 'h', 'i', 'z', 'c' };
 
-	constexpr char activeStatusLetters[8] = cpuType == CpuType::Cpu ? cpuActiveStatusLetters : spcActiveStatusLetters;
-	constexpr char inactiveStatusLetters[8] = cpuType == CpuType::Cpu ? cpuInactiveStatusLetters : spcInactiveStatusLetters;
+	const char *activeStatusLetters = cpuType == CpuType::Cpu ? cpuActiveStatusLetters : spcActiveStatusLetters;
+	const char *inactiveStatusLetters = cpuType == CpuType::Cpu ? cpuInactiveStatusLetters : spcInactiveStatusLetters;
 
 	if(part.DisplayInHex) {
 		WriteValue(output, ps, part);
@@ -309,6 +309,8 @@ void TraceLogger::GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuS
 			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
+
+			default: break;
 		}
 	}
 	output += _options.UseWindowsEol ? "\r\n" : "\n";

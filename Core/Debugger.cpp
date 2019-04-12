@@ -130,7 +130,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_cpuStepCount > 0) {
 			_cpuStepCount--;
 		}
-
+		
 		/*if(value == 0x00 || value == 0xDB || value == 0x42) {
 			//Break on BRK/STP/WDM
 			_cpuStepCount = 0;
@@ -199,7 +199,6 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
-		DisassemblyInfo dis = _disassembler->GetDisassemblyInfo(addressInfo);
 
 		DebugState debugState;
 		GetState(debugState);

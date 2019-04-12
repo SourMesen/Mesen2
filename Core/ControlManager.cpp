@@ -133,15 +133,6 @@ void ControlManager::UpdateControlDevices()
 	_systemActionManager->ProcessSystemActions();
 }
 
-uint8_t ControlManager::GetOpenBusMask(uint8_t port)
-{
-	if(port == 0x4016) {
-		return 0xFC;
-	} else {
-		return 0xE0;
-	}
-}
-
 void ControlManager::UpdateInputState()
 {
 	KeyManager::RefreshKeyState();
@@ -197,7 +188,7 @@ void ControlManager::SetPollCounter(uint32_t value)
 
 uint8_t ControlManager::Read(uint16_t addr)
 {
-	uint8_t value = _console->GetMemoryManager()->GetOpenBus() & GetOpenBusMask(addr - 0x4016);
+	uint8_t value = _console->GetMemoryManager()->GetOpenBus() & (addr == 0x4016 ? 0xFC : 0xE0);
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		value |= device->ReadRam(addr);
 	}

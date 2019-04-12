@@ -144,7 +144,7 @@ void Ppu::Exec()
 				_internalOamAddress = (_oamRamAddress << 1);
 			}
 
-			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && _console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150;
+			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
 
 			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();

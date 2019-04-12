@@ -33,7 +33,6 @@ protected:
 	void RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice);
 
 	ControllerType GetControllerType(uint8_t port);
-	uint8_t GetOpenBusMask(uint8_t port);
 
 public:
 	ControlManager(shared_ptr<Console> console);
