@@ -357,10 +357,15 @@ int ZmbvCodec::FinishCompressFrame(uint8_t** compressedData)
 void ZmbvCodec::FreeBuffers()
 {
 	delete[] blocks;
+	blocks = nullptr;
 	delete[] buf1;
+	buf1 = nullptr;
 	delete[] buf2;
+	buf2 = nullptr;
 	delete[] work;
+	work = nullptr;
 	delete[] _buf;
+	_buf = nullptr;
 }
 
 ZmbvCodec::ZmbvCodec() 
