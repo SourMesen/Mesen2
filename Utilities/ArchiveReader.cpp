@@ -9,10 +9,7 @@
 
 ArchiveReader::~ArchiveReader()
 {
-	if(_buffer) {
-		delete[] _buffer;
-		_buffer = nullptr;
-	}
+	delete[] _buffer;
 }
 
 bool ArchiveReader::GetStream(string filename, std::stringstream &stream)
@@ -61,11 +58,7 @@ bool ArchiveReader::LoadArchive(std::istream &in)
 	std::streampos filesize = in.tellg();
 	in.seekg(0, std::ios::beg);
 
-	if(_buffer) {
-		delete[] _buffer;
-		_buffer = nullptr;
-	}
-
+	delete[] _buffer;
 	_buffer = new uint8_t[(uint32_t)filesize];
 	in.read((char*)_buffer, filesize);
 	in.seekg(0, std::ios::beg);

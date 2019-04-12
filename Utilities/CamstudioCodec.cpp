@@ -7,26 +7,10 @@
 
 CamstudioCodec::~CamstudioCodec()
 {
-	if(_prevFrame) {
-		delete[] _prevFrame;
-		_prevFrame = nullptr;
-	}
-
-	if(_currentFrame) {
-		delete[] _currentFrame;
-		_currentFrame = nullptr;
-	}
-
-	if(_buffer) {
-		delete[] _buffer;
-		_buffer = nullptr;
-	}
-
-	if(_compressBuffer) {
-		delete[] _compressBuffer;
-		_compressBuffer = nullptr;
-	}
-
+	delete[] _prevFrame;
+	delete[] _currentFrame;
+	delete[] _buffer;
+	delete[] _compressBuffer;
 	deflateEnd(&_compressor);
 }
 

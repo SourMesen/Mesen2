@@ -20,10 +20,7 @@ AviRecorder::~AviRecorder()
 		StopRecording();
 	}
 
-	if(_frameBuffer) {
-		delete[] _frameBuffer;
-		_frameBuffer = nullptr;
-	}
+	delete[] _frameBuffer;
 }
 
 uint32_t AviRecorder::GetFps()

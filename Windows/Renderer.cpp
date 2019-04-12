@@ -158,14 +158,11 @@ void Renderer::ResetNesBuffers()
 		_pOverlaySrv->Release();
 		_pOverlaySrv = nullptr;
 	}
-	if(_textureBuffer[0]) {
-		delete[] _textureBuffer[0];
-		_textureBuffer[0] = nullptr;
-	}
-	if(_textureBuffer[1]) {
-		delete[] _textureBuffer[1];
-		_textureBuffer[1] = nullptr;
-	}
+
+	delete[] _textureBuffer[0];
+	_textureBuffer[0] = nullptr;
+	delete[] _textureBuffer[1];
+	_textureBuffer[1] = nullptr;
 }
 
 void Renderer::ReleaseRenderTargetView()

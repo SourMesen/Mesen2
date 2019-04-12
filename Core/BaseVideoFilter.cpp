@@ -16,10 +16,7 @@ BaseVideoFilter::BaseVideoFilter(shared_ptr<Console> console)
 BaseVideoFilter::~BaseVideoFilter()
 {
 	auto lock = _frameLock.AcquireSafe();
-	if(_outputBuffer) {
-		delete[] _outputBuffer;
-		_outputBuffer = nullptr;
-	}
+	delete[] _outputBuffer;
 }
 
 void BaseVideoFilter::SetBaseFrameInfo(FrameInfo frameInfo)
@@ -41,10 +38,7 @@ void BaseVideoFilter::UpdateBufferSize()
 	uint32_t newBufferSize = GetFrameInfo().Width*GetFrameInfo().Height;
 	if(_bufferSize != newBufferSize) {
 		_frameLock.Acquire();
-		if(_outputBuffer) {
-			delete[] _outputBuffer;
-		}
-
+		delete[] _outputBuffer;
 		_bufferSize = newBufferSize;
 		_outputBuffer = new uint32_t[newBufferSize];
 		_frameLock.Release();

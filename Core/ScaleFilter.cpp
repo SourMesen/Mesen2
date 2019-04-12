@@ -20,9 +20,7 @@ ScaleFilter::ScaleFilter(ScaleFilterType scaleFilterType, uint32_t scale)
 
 ScaleFilter::~ScaleFilter()
 {
-	if(_outputBuffer) {
-		delete[] _outputBuffer;
-	}
+	delete[] _outputBuffer;
 }
 
 uint32_t ScaleFilter::GetScale()
@@ -51,10 +49,7 @@ void ScaleFilter::ApplyPrescaleFilter(uint32_t *inputArgbBuffer)
 void ScaleFilter::UpdateOutputBuffer(uint32_t width, uint32_t height)
 {
 	if(!_outputBuffer || width != _width || height != _height) {
-		if(_outputBuffer) {
-			delete[] _outputBuffer;
-		}
-
+		delete[] _outputBuffer;
 		_width = width;
 		_height = height;
 		_outputBuffer = new uint32_t[_width*_height*_filterScale*_filterScale];
