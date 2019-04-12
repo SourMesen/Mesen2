@@ -5,6 +5,7 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "Spc.h"
+#include "DmaController.h"
 #include "RegisterHandlerA.h"
 #include "RegisterHandlerB.h"
 #include "RamHandler.h"
@@ -17,6 +18,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 {
 	_masterClock = 0;
 	_openBus = 0;
+	_lastSpeed = 8;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
 	_ppu = console->GetPpu();
@@ -138,7 +140,8 @@ void MemoryManager::GenerateMasterClockTable()
 
 void MemoryManager::IncrementMasterClock(uint32_t addr)
 {
-	IncrementMasterClockValue(_masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8]);
+	_lastSpeed = _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
+	IncrementMasterClockValue(_lastSpeed);
 }
 
 void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
@@ -279,6 +282,11 @@ uint8_t MemoryManager::GetOpenBus()
 	return _openBus;
 }
 
+uint8_t MemoryManager::GetLastSpeed()
+{
+	return _lastSpeed;
+}
+
 uint64_t MemoryManager::GetMasterClock()
 {
 	return _masterClock;
@@ -340,6 +348,6 @@ int MemoryManager::GetRelativeAddress(AddressInfo &address, int32_t cpuAddress)
 
 void MemoryManager::Serialize(Serializer &s)
 {
-	s.Stream(_masterClock, _openBus);
+	s.Stream(_masterClock, _openBus, _lastSpeed);
 	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
 }

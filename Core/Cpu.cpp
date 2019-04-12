@@ -400,6 +400,7 @@ void Cpu::Idle()
 {
 	_state.CycleCount++;
 #ifndef DUMMYCPU
+	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
 	_state.PrevIrqSource = _state.IrqSource;
 	_memoryManager->IncrementMasterClockValue<6>();
@@ -437,6 +438,7 @@ uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 	LogRead(addr, value);
 	return value;
 #else
+	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
 	_state.PrevIrqSource = _state.IrqSource;
 	return _memoryManager->Read(addr, type);
@@ -482,6 +484,7 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 #ifdef DUMMYCPU
 	LogWrite(addr, value);
 #else
+	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
 	_state.PrevIrqSource = _state.IrqSource;
 	_memoryManager->Write(addr, value, type);

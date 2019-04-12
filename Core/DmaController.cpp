@@ -91,8 +91,6 @@ void DmaController::RunDma(DmaChannelConfig &channel)
 	do {
 		//Manual DMA transfers run to the end of the transfer when started
 		RunSingleTransfer(channel);
-
-		//TODO : Run HDMA when needed, between 2 DMA transfers
 	} while(channel.TransferSize > 0 && !channel.InterruptedByHdma);
 }
 
@@ -109,8 +107,7 @@ void DmaController::InitHdmaChannels()
 		return;
 	}
 
-	//"The overhead is ~18 master cycles"
-	_memoryManager->IncrementMasterClockValue<18>();
+	SyncStartDma();
 	
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
@@ -144,6 +141,8 @@ void DmaController::InitHdmaChannels()
 			}
 		}
 	}
+
+	SyncEndDma();
 }
 
 void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
@@ -178,20 +177,32 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 	}
 }
 
-void DmaController::ProcessHdmaChannels()
+void DmaController::SyncStartDma()
+{
+	//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
+	_memoryManager->IncrementMasterClockValue(8 - (_memoryManager->GetMasterClock() & 0x07));
+
+	//"and an extra 8 master cycles overhead for the whole thing"
+	//"Best guess at this point is that 2-4 of the "whole DMA overhead" is before the transfer and the rest after"
+	_memoryManager->IncrementMasterClockValue<2>();
+}
+
+void DmaController::SyncEndDma()
+{
+	//Last part of the 8 cycle overhead
+	_memoryManager->IncrementMasterClockValue<6>();
+
+	//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
+	uint8_t cpuSpeed = _memoryManager->GetLastSpeed();
+	_memoryManager->IncrementMasterClockValue(cpuSpeed - (_memoryManager->GetMasterClock() % cpuSpeed));
+}
+
+void DmaController::ProcessHdmaChannels(bool applyOverhead)
 {
 	if(!_hdmaChannels) {
 		return;
 	}
 	
-	_hdmaPending = true;
-
-	for(int i = 0; i < 8; i++) {
-		if(_hdmaChannels & (1 << i)) {
-			_channel[i].InterruptedByHdma = true;
-		}
-	}
-
 	//Run all the DMA transfers for each channel first, before fetching data for the next scanline
 	bool needOverhead = true;
 	for(int i = 0; i < 8; i++) {
@@ -200,9 +211,8 @@ void DmaController::ProcessHdmaChannels()
 			continue;
 		}
 
-		if(needOverhead) {
-			//"For each scanline during which HDMA is active (i.e.at least one channel has not yet terminated for the frame), there are ~18 master cycles overhead."
-			_memoryManager->IncrementMasterClockValue<8>();
+		if(applyOverhead && needOverhead) {
+			SyncStartDma();
 			needOverhead = false;
 		}
 
@@ -261,8 +271,69 @@ void DmaController::ProcessHdmaChannels()
 		}
 	}
 
+	if(applyOverhead && !needOverhead) {
+		//If we ran a HDMA transfer, sync
+		SyncEndDma();
+	}
+
 	//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
 	_nmiIrqDelayCounter = 2;
+}
+
+void DmaController::BeginHdmaTransfer()
+{
+	_hdmaPending = true;
+
+	for(int i = 0; i < 8; i++) {
+		if(_hdmaChannels & (1 << i)) {
+			_channel[i].InterruptedByHdma = true;
+		}
+	}
+}
+
+void DmaController::ProcessPendingTransfers()
+{
+	if(_inDma) {
+		return;
+	}
+
+	if(_hdmaPending) {
+		_inDma = true;
+		ProcessHdmaChannels(true);
+		_inDma = false;
+		_hdmaPending = false;
+	} else if(_requestedDmaChannels) {
+		_inDma = true;
+
+		SyncStartDma();
+
+		for(int i = 0; i < 8; i++) {
+			_channel[i].InterruptedByHdma = false;
+		}
+
+		for(int i = 0; i < 8; i++) {
+			if(_requestedDmaChannels & (1 << i)) {
+				//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
+				_memoryManager->IncrementMasterClockValue<8>();
+				RunDma(_channel[i]);
+			}
+		}
+
+		if(_hdmaPending) {
+			//If DMA was interrupted by a HDMA transfer, run it (but don't add the cycle alignment overhead at the end and the start)
+			ProcessHdmaChannels(false);
+			_hdmaPending = false;
+		}
+
+		SyncEndDma();
+
+		//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
+		_nmiIrqDelayCounter = 2;
+
+		_requestedDmaChannels = 0;
+
+		_inDma = false;
+	}
 }
 
 void DmaController::Write(uint16_t addr, uint8_t value)
@@ -270,31 +341,7 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 	switch(addr) {
 		case 0x420B: {
 			//MDMAEN - DMA Enable
-			if(value) {
-				//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
-				uint8_t clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
-				_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
-
-				//"and an extra 8 master cycles overhead for the whole thing"
-				_memoryManager->IncrementMasterClockValue<8>();
-				for(int i = 0; i < 8; i++) {
-					_channel[i].InterruptedByHdma = false;
-				}
-
-				for(int i = 0; i < 8; i++) {
-					if(value & (1 << i)) {
-						//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
-						_memoryManager->IncrementMasterClockValue<8>();
-						RunDma(_channel[i]);
-					}
-				}
-				//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
-				clocksToWait = 8 - (_memoryManager->GetMasterClock() % 8);
-				_memoryManager->IncrementMasterClockValue(clocksToWait ? clocksToWait : 8);
-
-				//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
-				_nmiIrqDelayCounter = 2;
-			}
+			_requestedDmaChannels = value;
 			break;
 		}
 
@@ -484,7 +531,7 @@ uint8_t DmaController::Read(uint16_t addr)
 
 void DmaController::Serialize(Serializer &s)
 {
-	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter);
+	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter, _requestedDmaChannels, _inDma);
 	for(int i = 0; i < 8; i++) {
 		s.Stream(
 			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,

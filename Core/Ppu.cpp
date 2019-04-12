@@ -184,7 +184,7 @@ void Ppu::Exec()
 		if(_scanline != 0) {
 			RenderScanline();
 		}
-		_console->GetDmaController()->ProcessHdmaChannels();
+		_console->GetDmaController()->BeginHdmaTransfer();
 	} else if(hClock == 285*4 && !_forcedVblank) {
 		//Approximate timing (any earlier will break Mega Lo Mania)
 		EvaluateNextLineSprites();

@@ -33,6 +33,7 @@ private:
 
 	uint8_t *_workRam;
 	uint8_t _openBus;
+	uint8_t _lastSpeed;
 
 	uint64_t _masterClock;
 	uint8_t _masterClockTable[2][0x10000];
@@ -64,6 +65,7 @@ public:
 	void WriteDma(uint32_t addr, uint8_t value, bool forBusA);
 
 	uint8_t GetOpenBus();
+	uint8_t GetLastSpeed();
 	uint64_t GetMasterClock();
 	uint8_t* DebugGetWorkRam();
 
