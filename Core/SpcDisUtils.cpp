@@ -39,9 +39,9 @@ constexpr const char* _opTemplate[256] = {
 	"CLI",	"JSTA",	"SET1 d.5",	"BBS d.5, q",	"SBC d",		"SBC a",		"SBC (X)",	"SBC [d,X]",	"SBC #i",		"SBC t, s",		"LDC m.b",		"INC d",		"INC a",	"CMY #i","PLA",			"STA (X)+, A",
 	"BCS r",	"JSTB",	"CLR1 d.5",	"BBC d.5, q",	"SBC d,X",	"SBC a,X",	"SBC a,Y",	"SBC [d],Y",	"SBC e, #i",	"SBC (X), (Y)","LDW d",			"INC d,X",	"INC A",	"TXS",	"DAS A",			"LDA (X)+",
 	"SEI",	"JSTC",	"SET1 d.6",	"BBS d.6, q",	"STA d",		"STA a",		"STA (X)",	"STA [d,X]",	"CPX #i",		"STX a",			"STC m.b",		"STY d",		"STY a",	"LDX #i","PLX",			"MUL YA",
-	"BNE r",	"JSTD",	"CLR1 d.6",	"BBC d.6, q",	"STA d,X",	"STA a,X",	"STA a,Y",	"STA [d],Y",	"STX e",			"STX d,Y",		"STW d",			"STY d,X",	"DEY",	"TYA",	"CBNE d,X, q",	"DAA A",
+	"BNE r",	"JSTD",	"CLR1 d.6",	"BBC d.6, q",	"STA d,X",	"STA a,X",	"STA a,Y",	"STA [d],Y",	"STX d",			"STX d,Y",		"STW d",			"STY d,X",	"DEY",	"TYA",	"CBNE d,X, q",	"DAA A",
 	"CLV",	"JSTE",	"SET1 d.7",	"BBS d.7, q",	"LDA d",		"LDA a",		"LDA (X)",	"LDA [d,X]",	"LDA #i",		"LDX a",			"NOT m.b",		"LDY d",		"LDY a",	"NOTC",	"PLY",			"WAI",
-	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7, q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",			"LDX d,Y",		"MOV t, s",		"LDY d,X",	"INC Y",	"TAY",	"DBNZ Y, q",	"HLT"
+	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7, q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",			"LDX d,Y",		"MOV t,s",		"LDY d,X",	"INC Y",	"TAY",	"DBNZ Y, r",	"HLT"
 };
 
 constexpr const uint8_t _opSize[256] = {
@@ -91,10 +91,10 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	int i = 0;
 	while(op[i]) {
 		switch(op[i]) {
-			case 'r': str.Write('$', HexUtilities::ToHex(memoryAddr + (int8_t)byteCode[1] + GetOpSize(byteCode[0]))); break;
-			case 'q': str.Write('$', HexUtilities::ToHex(memoryAddr + (int8_t)byteCode[2] + GetOpSize(byteCode[0]))); break; //relative 2nd byte
+			case 'r': str.Write('$', HexUtilities::ToHex((uint16_t)(memoryAddr + (int8_t)byteCode[1] + GetOpSize(byteCode[0])))); break;
+			case 'q': str.Write('$', HexUtilities::ToHex((uint16_t)(memoryAddr + (int8_t)byteCode[2] + GetOpSize(byteCode[0])))); break; //relative 2nd byte
 
-			case 'a': str.Write('$', HexUtilities::ToHex(byteCode[1] | (byteCode[2] << 8)));	break;
+			case 'a': str.Write('$', HexUtilities::ToHex((uint16_t)(byteCode[1] | (byteCode[2] << 8)))); break;
 			
 			case 'd': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
 			case 'e': str.Write('$', HexUtilities::ToHex(byteCode[2])); break; //direct 2nd byte
@@ -104,10 +104,10 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 			case 'i': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
 
-			case 'm': str.Write('$', HexUtilities::ToHex((byteCode[1] | (byteCode[2] << 8)) & 0x1FFF)); break;
+			case 'm': str.Write('$', HexUtilities::ToHex((uint16_t)((byteCode[1] | (byteCode[2] << 8)) & 0x1FFF))); break;
 			case 'b': str.Write('$', (char)('0' + (byteCode[2] >> 5))); break;
 
-			default: str.Write(op[i]);
+			default: str.Write(op[i]); break;
 		}
 		i++;
 	}

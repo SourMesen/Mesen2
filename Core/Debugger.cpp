@@ -245,6 +245,8 @@ void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType
 	MemoryOperationInfo operation(addr, value, type);
 	ProcessBreakConditions(operation, addressInfo);
 
+	_disassembler->InvalidateCache(addressInfo);
+
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
 }
 

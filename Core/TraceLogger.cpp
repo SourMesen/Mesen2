@@ -173,7 +173,7 @@ template<CpuType cpuType>
 void TraceLogger::GetStatusFlag(string &output, uint8_t ps, RowPart& part)
 {
 	constexpr char cpuActiveStatusLetters[8] = { 'N', 'V', 'M', 'X', 'D', 'I', 'Z', 'C' };
-	constexpr char cpuInactiveStatusLetters[8] = { 'n', 'v', 'p', 'x', 'd', 'i', 'z', 'c' };
+	constexpr char cpuInactiveStatusLetters[8] = { 'n', 'v', 'm', 'x', 'd', 'i', 'z', 'c' };
 
 	constexpr char spcActiveStatusLetters[8] = { 'N', 'V', 'P', 'B', 'H', 'I', 'Z', 'C' };
 	constexpr char spcInactiveStatusLetters[8] = { 'n', 'v', 'p', 'b', 'h', 'i', 'z', 'c' };
