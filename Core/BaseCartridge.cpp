@@ -241,10 +241,10 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		//If size isn't a power of 2, mirror the part above the nearest (lower) power of 2 until the size reaches the next power of 2.
 		uint32_t halfSize = 1 << power;
 		uint32_t fullSize = 1 << (power + 1);
-		uint32_t extraSize = _prgRomSize - halfSize;
+		uint32_t extraHandlers = std::max<uint32_t>((_prgRomSize - halfSize) / 0x1000, 1);
 
 		while(_prgRomHandlers.size() < fullSize / 0x1000) {
-			for(uint32_t i = 0; i < extraSize / 0x1000; i += 0x1000) {
+			for(uint32_t i = 0; i < extraHandlers; i += 0x1000) {
 				_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, halfSize + i, _prgRomSize, SnesMemoryType::PrgRom)));
 			}
 		}
