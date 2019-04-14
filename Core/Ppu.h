@@ -232,6 +232,7 @@ public:
 	PpuState GetState();
 
 	void Exec();
+	uint16_t GetLastScanline();
 
 	uint16_t* GetScreenBuffer();
 	uint8_t* GetVideoRam();

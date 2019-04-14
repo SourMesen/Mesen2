@@ -79,7 +79,7 @@ void Cpu::Exec()
 			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
 			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
 			_state.NmiFlag = false;
-		} else if(_state.PrevIrqSource && !CheckFlag(ProcFlags::IrqDisable)) {
+		} else if(_state.PrevIrqSource) {
 			uint32_t originalPc = GetProgramAddress(_state.PC);
 			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
 			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
@@ -402,7 +402,7 @@ void Cpu::Idle()
 #ifndef DUMMYCPU
 	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource;
+	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
 	_memoryManager->IncrementMasterClockValue<6>();
 #endif
 }
@@ -440,7 +440,7 @@ uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 #else
 	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource;
+	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
 	return _memoryManager->Read(addr, type);
 #endif
 }
@@ -486,7 +486,7 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 #else
 	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource;
+	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
 	_memoryManager->Write(addr, value, type);
 #endif
 }

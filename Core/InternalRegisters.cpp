@@ -75,7 +75,7 @@ void InternalRegisters::ProcessIrqCounters()
 
 	bool irqLevel = (
 		(_enableHorizontalIrq || _enableVerticalIrq) &&
-		(!_enableHorizontalIrq || (_ppu->GetHClock() >> 2) ==  _horizontalTimer) &&
+		(!_enableHorizontalIrq || (_horizontalTimer <= 339 && (_ppu->GetCycle() == _horizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetScanline() || _horizontalTimer < 339))) &&
 		(!_enableVerticalIrq || _ppu->GetScanline() == _verticalTimer)
 	);
 

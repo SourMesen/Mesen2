@@ -156,10 +156,7 @@ void Ppu::Exec()
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		} else if(
-			(_console->GetRegion() == ConsoleRegion::Ntsc && ((_scanline == 262 && (!_screenInterlace || _oddFrame)) || _scanline >= 263)) ||
-			(_console->GetRegion() == ConsoleRegion::Pal && ((_scanline == 312 && (!_screenInterlace || _oddFrame)) || _scanline >= 313))
-		) {
+		} else if(_scanline >= GetLastScanline() + 1) {
 			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
 			_oddFrame ^= 1;
 			_regs->SetNmiFlag(false);
@@ -193,6 +190,23 @@ void Ppu::Exec()
 	} else if((hClock == 134*4 || hClock == 135*4) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
 		//TODO Approximation (DRAM refresh timing is not exact)
 		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
+	}
+}
+
+uint16_t Ppu::GetLastScanline()
+{
+	if(_console->GetRegion() == ConsoleRegion::Ntsc) {
+		if(!_screenInterlace || _oddFrame) {
+			return 261;
+		} else {
+			return 262;
+		}
+	} else {
+		if(!_screenInterlace || _oddFrame) {
+			return 311;
+		} else {
+			return 312;
+		}
 	}
 }
 
