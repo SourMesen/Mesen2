@@ -34,7 +34,6 @@ class DmaController final : public ISerializable
 private:
 	bool _hdmaPending = false;
 	bool _hdmaInitPending = false;
-	bool _startDmaDelay = false;
 	bool _inDma = false;
 	uint8_t _hdmaChannels = 0;
 	uint8_t _nmiIrqDelayCounter = 0;

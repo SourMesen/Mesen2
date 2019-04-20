@@ -40,7 +40,14 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	));
 
 	memset(_handlers, 0, sizeof(_handlers));
-	//memset(_workRam, 0, 128 * 1024);
+	
+	memset(_hasEvent, 0, sizeof(_hasEvent));
+	_hasEvent[276*4] = true;
+	_hasEvent[278*4] = true;
+	_hasEvent[285*4] = true;
+	_hasEvent[1360] = true;
+	_hasEvent[1364] = true;
+	_hasEvent[1368] = true;
 
 	for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, MemoryManager::WorkRamSize, SnesMemoryType::WorkRam)));
@@ -160,36 +167,50 @@ void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 
 void MemoryManager::UpdateEvents()
 {
+	_hasEvent[_hdmaInitPosition] = false;
+	_hasEvent[_dramRefreshPosition] = false;
+
 	if(_ppu->GetScanline() == 0) {
 		_hdmaInitPosition = 12 + (_masterClock & 0x07);
+		_hasEvent[_hdmaInitPosition] = true;
 	}
-	_dramRefreshPosition = 530 + 8 - (_masterClock & 0x07);
+
+	_dramRefreshPosition = 538 - (_masterClock & 0x07);
+	_hasEvent[_dramRefreshPosition] = true;
 }
 
 void MemoryManager::Exec()
 {
 	_masterClock += 2;
 	_hClock += 2;
-	if((_masterClock & 0x03) == 0) {
-		_ppu->Exec();
+	if((_hClock & 0x03) == 0) {
+		_console->ProcessPpuCycle();
 		_regs->ProcessIrqCounters();
 
-		if(_ppu->GetHClock() == 0) {
-			_hClock = 0;
-			UpdateEvents();
-		}
 		if(_console->IsDebugging()) {
 			_spc->Run();
 		}
 	}
 
-	if(_hClock == _dramRefreshPosition) {
-		_dramRefreshPosition = 0xFFFF;
-		IncrementMasterClockValue<40>();
-	} else if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
-		if(_hClock == 276 * 4) {
-			_console->GetDmaController()->BeginHdmaTransfer();
-		} else if(_ppu->GetScanline() == 0 && _hClock == _hdmaInitPosition) {
+	if(_hasEvent[_hClock]) {
+		if(_hClock >= 1260 && _ppu->ProcessEndOfScanline(_hClock)) {
+			_hClock = 0;
+			UpdateEvents();
+		}
+
+		if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
+			if(_hClock == 276 * 4) {
+				_console->GetDmaController()->BeginHdmaTransfer();
+			} else if(_hClock == 278 * 4 && _ppu->GetScanline() != 0) {
+				_ppu->RenderScanline();
+			} else if(_hClock == 285 * 4) {
+				//Approximate timing (any earlier will break Mega Lo Mania)
+				_ppu->EvaluateNextLineSprites();
+			}
+		}
+		if(_hClock == _dramRefreshPosition) {
+			IncrementMasterClockValue<40>();
+		} else if(_hClock == _hdmaInitPosition && _ppu->GetScanline() == 0) {
 			_console->GetDmaController()->BeginHdmaInit();
 		}
 	}
@@ -315,6 +336,11 @@ uint64_t MemoryManager::GetMasterClock()
 	return _masterClock;
 }
 
+uint16_t MemoryManager::GetHClock()
+{
+	return _hClock;
+}
+
 uint8_t * MemoryManager::DebugGetWorkRam()
 {
 	return _workRam;
@@ -386,6 +412,7 @@ int MemoryManager::GetRelativeAddress(AddressInfo &address, int32_t cpuAddress)
 
 void MemoryManager::Serialize(Serializer &s)
 {
-	s.Stream(_masterClock, _openBus, _cpuSpeed);
+	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition, _hdmaInitPosition);
 	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
+	s.StreamArray(_hasEvent, sizeof(_hasEvent));
 }

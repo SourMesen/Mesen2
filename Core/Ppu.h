@@ -5,6 +5,7 @@
 
 class Console;
 class InternalRegisters;
+class MemoryManager;
 
 struct SpriteInfo
 {
@@ -35,11 +36,11 @@ private:
 
 	shared_ptr<Console> _console;
 	shared_ptr<InternalRegisters> _regs;
+	shared_ptr<MemoryManager> _memoryManager;
 
 	bool _forcedVblank = false;
 	uint8_t _screenBrightness = 0;
 
-	uint16_t _hClock = 0;
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
 	uint16_t _vblankStart;
@@ -138,8 +139,6 @@ private:
 
 	bool _allowFrameSkip = false;
 
-	void EvaluateNextLineSprites();
-	
 	template<uint8_t priority, bool forMainScreen>
 	void RenderSprites();
 
@@ -151,8 +150,6 @@ private:
 	template<bool forMainScreen> void RenderMode5();
 	template<bool forMainScreen> void RenderMode6();
 	template<bool forMainScreen> void RenderMode7();
-
-	void RenderScanline();
 
 	template<bool forMainScreen>
 	void RenderBgColor();
@@ -223,15 +220,17 @@ public:
 	void PowerOn();
 	void Reset();
 
+	void EvaluateNextLineSprites();
+	void RenderScanline();
+
 	uint32_t GetFrameCount();
 	uint16_t GetScanline();
 	uint16_t GetCycle();
-	uint16_t GetHClock();
 	uint16_t GetVblankStart();
 
 	PpuState GetState();
 
-	void Exec();
+	bool ProcessEndOfScanline(uint16_t hClock);
 	uint16_t GetLastScanline();
 
 	uint16_t* GetScreenBuffer();

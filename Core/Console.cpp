@@ -191,7 +191,7 @@ void Console::Reset()
 	//_cart->Reset();
 	//_controlManager->Reset();
 
-	_memoryManager->IncrementMasterClockValue<170>();
+	_memoryManager->IncrementMasterClockValue<166>();
 	
 	if(debugger) {
 		debugger->Step(1);
@@ -262,7 +262,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 
 		_ppu->PowerOn();
 		_cpu->PowerOn();
-		_memoryManager->IncrementMasterClockValue<170>();
+		_memoryManager->IncrementMasterClockValue<166>();
 
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);

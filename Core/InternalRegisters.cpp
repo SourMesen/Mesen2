@@ -114,7 +114,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		}
 
 		case 0x4212: {
-			uint16_t hClock = _ppu->GetHClock();
+			uint16_t hClock = _memoryManager->GetHClock();
 			uint16_t scanline = _ppu->GetScanline();
 			uint16_t vblankStart = _ppu->GetVblankStart();
 			//TODO TIMING (set/clear timing)

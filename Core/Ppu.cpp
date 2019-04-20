@@ -50,6 +50,7 @@ void Ppu::PowerOn()
 {
 	_allowFrameSkip = false;
 	_regs = _console->GetInternalRegisters();
+	_memoryManager = _console->GetMemoryManager();
 
 	_vblankStart = _overscanMode ? 240 : 225;
 	
@@ -75,7 +76,6 @@ void Ppu::PowerOn()
 void Ppu::Reset()
 {
 	_scanline = 0;
-	_hClock = -4;
 	_forcedVblank = true;
 	_oddFrame = 0;
 }
@@ -93,12 +93,8 @@ uint16_t Ppu::GetScanline()
 uint16_t Ppu::GetCycle()
 {
 	//"normally dots 323 and 327 are 6 master cycles instead of 4."
-	return (_hClock - ((_hClock > 1292) << 1) - ((_hClock > 1310) << 1)) >> 2;
-}
-
-uint16_t Ppu::GetHClock()
-{
-	return _hClock;
+	uint16_t hClock = _memoryManager->GetHClock();
+	return (hClock - ((hClock > 1292) << 1) - ((hClock > 1310) << 1)) >> 2;
 }
 
 uint16_t Ppu::GetVblankStart()
@@ -111,7 +107,7 @@ PpuState Ppu::GetState()
 	PpuState state;
 	state.Cycle = GetCycle();
 	state.Scanline = _scanline;
-	state.HClock = _hClock;
+	state.HClock = _memoryManager->GetHClock();
 	state.FrameCount = _frameCount;
 	state.OverscanMode = _overscanMode;
 	state.BgMode = _bgMode;
@@ -124,13 +120,10 @@ PpuState Ppu::GetState()
 	return state;
 }
 
-void Ppu::Exec()
+bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 {
-	_hClock += 4;
-	
-	if(_hClock >= 1364 || (_hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
+	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
 		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
-		_hClock = 0;
 		_scanline++;
 		
 		_drawStartX = 0;
@@ -172,16 +165,9 @@ void Ppu::Exec()
 				_mosaicStartScanline = 1;
 			}
 		}
+		return true;
 	}
-
-	_console->ProcessPpuCycle();
-
-	if(_hClock == 278*4 && _scanline != 0 && _scanline < _vblankStart) {
-		RenderScanline();
-	} else if(_hClock == 285*4 && !_forcedVblank) {
-		//Approximate timing (any earlier will break Mega Lo Mania)
-		EvaluateNextLineSprites();
-	}
+	return false;
 }
 
 uint16_t Ppu::GetLastScanline()
@@ -203,6 +189,10 @@ uint16_t Ppu::GetLastScanline()
 
 void Ppu::EvaluateNextLineSprites()
 {
+	if(_forcedVblank) {
+		return;
+	}
+
 	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
 	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
 	memset(_spritePalette, 0, sizeof(_spritePalette));
@@ -455,7 +445,7 @@ void Ppu::RenderScanline()
 	if(_drawStartX > 255 || (_allowFrameSkip && (_frameCount & 0x03) != 0)) {
 		return;
 	}
-	_drawEndX = std::min((_hClock - 22*4) >> 2, 255);
+	_drawEndX = std::min((_memoryManager->GetHClock() - 22*4) >> 2, 255);
 
 	uint8_t bgMode = _bgMode;
 	if(_forcedVblank) {
@@ -1375,7 +1365,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline < _vblankStart && _scanline > 0 && _hClock >= 22*4 && _hClock <= 278*4) {
+	if(_scanline < _vblankStart && _scanline > 0 && _memoryManager->GetHClock() >= 22*4 && _memoryManager->GetHClock() <= 278*4) {
 		RenderScanline();
 	}
 
@@ -1731,7 +1721,7 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress, _oddFrame, _vblankStart, _hClock
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress, _oddFrame, _vblankStart
 	);
 
 	for(int i = 0; i < 4; i++) {

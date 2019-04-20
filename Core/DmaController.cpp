@@ -305,9 +305,6 @@ void DmaController::ProcessPendingTransfers()
 {
 	if(_inDma) {
 		return;
-	} else if(_startDmaDelay) {
-		_startDmaDelay = false;
-		return;
 	}
 
 	if(_hdmaPending) {
@@ -360,7 +357,6 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 		case 0x420B: {
 			//MDMAEN - DMA Enable
 			_requestedDmaChannels = value;
-			_startDmaDelay = true;
 			break;
 		}
 
@@ -550,7 +546,7 @@ uint8_t DmaController::Read(uint16_t addr)
 
 void DmaController::Serialize(Serializer &s)
 {
-	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter, _requestedDmaChannels, _inDma, _dmaStartClock, _startDmaDelay, _hdmaInitPending);
+	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter, _requestedDmaChannels, _inDma, _dmaStartClock, _hdmaInitPending);
 	for(int i = 0; i < 8; i++) {
 		s.Stream(
 			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,

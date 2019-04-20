@@ -32,18 +32,18 @@ private:
 	vector<unique_ptr<RamHandler>> _workRamHandlers;
 
 	uint8_t *_workRam;
-	uint8_t _openBus;
-	uint8_t _cpuSpeed;
-
 	uint64_t _masterClock;
-	uint8_t _masterClockTable[2][0x10000];
-	
 	uint16_t _hClock = 0;
 	uint16_t _dramRefreshPosition = 0;
 	uint16_t _hdmaInitPosition = 0;
+	uint8_t _openBus;
+	uint8_t _cpuSpeed;
+
+	bool _hasEvent[1368];
+	uint8_t _masterClockTable[2][0x10000];
 
 	void UpdateEvents();
-	__forceinline void Exec();
+	void Exec();
 
 public:
 	void Initialize(shared_ptr<Console> console);
@@ -59,8 +59,6 @@ public:
 	void IncrementMasterClockValue();
 	void IncrementMasterClockValue(uint16_t value);
 
-	void BeginDramRefresh();
-
 	uint8_t Read(uint32_t addr, MemoryOperationType type);
 	uint8_t ReadDma(uint32_t addr, bool forBusA);
 
@@ -73,6 +71,7 @@ public:
 
 	uint8_t GetOpenBus();
 	uint64_t GetMasterClock();
+	uint16_t GetHClock();
 	uint8_t* DebugGetWorkRam();
 
 	uint8_t GetCpuSpeed(uint32_t addr);
