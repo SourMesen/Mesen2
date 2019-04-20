@@ -33,10 +33,13 @@ class DmaController final : public ISerializable
 {
 private:
 	bool _hdmaPending = false;
+	bool _hdmaInitPending = false;
+	bool _startDmaDelay = false;
 	bool _inDma = false;
 	uint8_t _hdmaChannels = 0;
 	uint8_t _nmiIrqDelayCounter = 0;
 	uint8_t _requestedDmaChannels = 0;
+	uint64_t _dmaStartClock = 0;
 
 	DmaChannelConfig _channel[8] = {};
 	MemoryManager *_memoryManager;
@@ -48,6 +51,7 @@ private:
 	
 	void RunHdmaTransfer(DmaChannelConfig &channel);
 	void ProcessHdmaChannels(bool applyOverhead);
+	void InitHdmaChannels();
 
 	void SyncStartDma();
 	void SyncEndDma();
@@ -59,8 +63,8 @@ public:
 
 	bool HasNmiIrqDelay();
 	
-	void InitHdmaChannels();
 	void BeginHdmaTransfer();
+	void BeginHdmaInit();
 
 	void ProcessPendingTransfers();
 

@@ -49,6 +49,7 @@ private:
 	uint8_t GetOpCode();
 
 	void Idle();
+	void IdleOrRead();
 	
 	uint8_t ReadOperandByte();
 	uint16_t ReadOperandWord();

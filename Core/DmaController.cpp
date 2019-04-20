@@ -122,6 +122,8 @@ void DmaController::InitHdmaChannels()
 
 			//"2. Load $43xA (Line Counter and Repeat) from the table. I believe $00 will terminate this channel immediately."
 			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
+			_memoryManager->IncrementMasterClockValue<4>();
+
 			ch.HdmaTableAddress++;
 			if(ch.HdmaLineCounterAndRepeat == 0) {
 				ch.HdmaFinished = true;
@@ -130,14 +132,10 @@ void DmaController::InitHdmaChannels()
 			//3. Load Indirect Address, if necessary.
 			if(ch.HdmaIndirectAddressing) {
 				uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-				uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-				ch.TransferSize = (msb << 8) | lsb;
-
-				//"and 24 master cycles for each channel set for indirect HDMA"
-				_memoryManager->IncrementMasterClockValue<16>();
-			} else {
-				//"plus 8 master cycles for each channel set for direct HDMA"
 				_memoryManager->IncrementMasterClockValue<4>();
+				uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+				_memoryManager->IncrementMasterClockValue<4>();
+				ch.TransferSize = (msb << 8) | lsb;
 			}
 		}
 	}
@@ -180,6 +178,7 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 void DmaController::SyncStartDma()
 {
 	//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
+	_dmaStartClock = _memoryManager->GetMasterClock();
 	_memoryManager->IncrementMasterClockValue(8 - (_memoryManager->GetMasterClock() & 0x07));
 
 	//"and an extra 8 master cycles overhead for the whole thing"
@@ -193,8 +192,8 @@ void DmaController::SyncEndDma()
 	_memoryManager->IncrementMasterClockValue<6>();
 
 	//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
-	uint8_t cpuSpeed = _memoryManager->GetLastSpeed();
-	_memoryManager->IncrementMasterClockValue(cpuSpeed - (_memoryManager->GetMasterClock() % cpuSpeed));
+	uint8_t cpuSpeed = _memoryManager->GetCpuSpeed();
+	_memoryManager->IncrementMasterClockValue(cpuSpeed - ((_memoryManager->GetMasterClock() - _dmaStartClock) % cpuSpeed));
 }
 
 void DmaController::ProcessHdmaChannels(bool applyOverhead)
@@ -216,9 +215,6 @@ void DmaController::ProcessHdmaChannels(bool applyOverhead)
 			needOverhead = false;
 		}
 
-		//"Each active channel incurs another 8 master cycles overhead for every scanline"
-		_memoryManager->IncrementMasterClockValue<8>();
-
 		//1. If DoTransfer is false, skip to step 3.
 		if(ch.DoTransfer) {
 			//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
@@ -239,10 +235,15 @@ void DmaController::ProcessHdmaChannels(bool applyOverhead)
 		//4. Set DoTransfer to the value of Repeat.
 		ch.DoTransfer = (ch.HdmaLineCounterAndRepeat & 0x80) != 0;
 
+		//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
+		//This value is discarded if the line counter isn't 0
+		uint8_t newCounter = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
+		_memoryManager->IncrementMasterClockValue<4>();
+
 		//5. If Line Counter is zero...
 		if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
-			//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
-			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+			ch.HdmaLineCounterAndRepeat = newCounter;
+			ch.HdmaTableAddress++;
 
 			//"b. If Addressing Mode is Indirect, read two bytes from Address into Indirect Address(and increment Address by two bytes)."
 			if(ch.HdmaIndirectAddressing) {
@@ -250,15 +251,18 @@ void DmaController::ProcessHdmaChannels(bool applyOverhead)
 					//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
 					//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+					_memoryManager->IncrementMasterClockValue<4>();
 					ch.TransferSize = (msb << 8);
 				} else {
+					//"If a new indirect address is required, 16 master cycles are taken to load it."
 					uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+					_memoryManager->IncrementMasterClockValue<4>();
+					
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-					ch.TransferSize = (msb << 8) | lsb;
-				}
+					_memoryManager->IncrementMasterClockValue<4>();
 
-				//"If a new indirect address is required, 16 master cycles are taken to load it."
-				_memoryManager->IncrementMasterClockValue<8>(); //minus 8 because the ReadDmas call will increment it by 4 twice
+					ch.TransferSize = (msb << 8) | lsb;
+				}				
 			}
 
 			//"c. If $43xA is zero, terminate this HDMA channel for this frame. The bit in $420c is not cleared, though, so it may be automatically restarted next frame."
@@ -291,15 +295,29 @@ void DmaController::BeginHdmaTransfer()
 	}
 }
 
+void DmaController::BeginHdmaInit()
+{
+	_hdmaPending = true;
+	_hdmaInitPending = true;
+}
+
 void DmaController::ProcessPendingTransfers()
 {
 	if(_inDma) {
+		return;
+	} else if(_startDmaDelay) {
+		_startDmaDelay = false;
 		return;
 	}
 
 	if(_hdmaPending) {
 		_inDma = true;
-		ProcessHdmaChannels(true);
+		if(_hdmaInitPending) {
+			InitHdmaChannels();
+			_hdmaInitPending = false;
+		} else {
+			ProcessHdmaChannels(true);
+		}
 		_inDma = false;
 		_hdmaPending = false;
 	} else if(_requestedDmaChannels) {
@@ -342,6 +360,7 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 		case 0x420B: {
 			//MDMAEN - DMA Enable
 			_requestedDmaChannels = value;
+			_startDmaDelay = true;
 			break;
 		}
 
@@ -531,7 +550,7 @@ uint8_t DmaController::Read(uint16_t addr)
 
 void DmaController::Serialize(Serializer &s)
 {
-	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter, _requestedDmaChannels, _inDma);
+	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter, _requestedDmaChannels, _inDma, _dmaStartClock, _startDmaDelay, _hdmaInitPending);
 	for(int i = 0; i < 8; i++) {
 		s.Stream(
 			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,

@@ -33,11 +33,16 @@ private:
 
 	uint8_t *_workRam;
 	uint8_t _openBus;
-	uint8_t _lastSpeed;
+	uint8_t _cpuSpeed;
 
 	uint64_t _masterClock;
 	uint8_t _masterClockTable[2][0x10000];
+	
+	uint16_t _hClock = 0;
+	uint16_t _dramRefreshPosition = 0;
+	uint16_t _hdmaInitPosition = 0;
 
+	void UpdateEvents();
 	__forceinline void Exec();
 
 public:
@@ -49,10 +54,12 @@ public:
 	void RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler* handler);
 
 	void GenerateMasterClockTable();
-	void IncrementMasterClock(uint32_t addr);
+	void IncrementMasterClock();
 	template<uint16_t value>
 	void IncrementMasterClockValue();
 	void IncrementMasterClockValue(uint16_t value);
+
+	void BeginDramRefresh();
 
 	uint8_t Read(uint32_t addr, MemoryOperationType type);
 	uint8_t ReadDma(uint32_t addr, bool forBusA);
@@ -65,9 +72,12 @@ public:
 	void WriteDma(uint32_t addr, uint8_t value, bool forBusA);
 
 	uint8_t GetOpenBus();
-	uint8_t GetLastSpeed();
 	uint64_t GetMasterClock();
 	uint8_t* DebugGetWorkRam();
+
+	uint8_t GetCpuSpeed(uint32_t addr);
+	uint8_t GetCpuSpeed();
+	void SetCpuSpeed(uint8_t speed);
 
 	bool IsRegister(uint32_t cpuAddress);
 	bool IsWorkRam(uint32_t cpuAddress);

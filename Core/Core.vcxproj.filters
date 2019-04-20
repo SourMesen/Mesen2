@@ -392,7 +392,6 @@
     <ClCompile Include="SaveStateManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleLock.cpp" />
     <ClCompile Include="RewindData.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
@@ -425,6 +424,9 @@
     </ClCompile>
     <ClCompile Include="SpcDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleLock.cpp">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

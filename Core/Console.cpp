@@ -186,14 +186,17 @@ void Console::Reset()
 	_internalRegisters->Reset();
 	_memoryManager->Reset();
 	_spc->Reset();
-	_cpu->Reset();
 	_ppu->Reset();
+	_cpu->Reset();
 	//_cart->Reset();
 	//_controlManager->Reset();
 
+	_memoryManager->IncrementMasterClockValue<170>();
+	
 	if(debugger) {
 		debugger->Step(1);
 	}
+	
 	Unlock();
 }
 

@@ -43,7 +43,8 @@ void Cpu::Reset()
 	_state.PrevIrqSource = (uint8_t)IrqSource::None;
 	_state.StopState = CpuStopState::Running;
 	SetSP(_state.SP);
-	ProcessInterrupt(Cpu::ResetVector);
+	_state.K = 0;
+	_state.PC = ReadDataWord(Cpu::ResetVector);
 }
 
 void Cpu::Exec()
@@ -400,11 +401,21 @@ void Cpu::Idle()
 {
 	_state.CycleCount++;
 #ifndef DUMMYCPU
+	_memoryManager->SetCpuSpeed(6);
 	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
 	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
 	_memoryManager->IncrementMasterClockValue<6>();
 #endif
+}
+
+void Cpu::IdleOrRead()
+{
+	if(_state.PrevIrqSource) {
+		ReadCode(_state.PC);
+	} else {
+		Idle();
+	}
 }
 
 uint8_t Cpu::ReadOperandByte()
@@ -438,6 +449,7 @@ uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 	LogRead(addr, value);
 	return value;
 #else
+	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
 	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
@@ -484,6 +496,7 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 #ifdef DUMMYCPU
 	LogWrite(addr, value);
 #else
+	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	_dmaController->ProcessPendingTransfers();
 	_state.PrevNmiFlag = _state.NmiFlag;
 	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);

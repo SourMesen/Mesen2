@@ -457,7 +457,7 @@ Interrupts
 ***********/
 void Cpu::ProcessInterrupt(uint16_t vector)
 {
-	Idle();
+	ReadCode(_state.PC);
 	Idle();
 
 	if(_state.EmulationMode) {
@@ -1156,7 +1156,7 @@ void Cpu::AddrMode_AbsIndLng()
 
 void Cpu::AddrMode_Acc()
 {
-	Idle();
+	IdleOrRead();
 }
 
 void Cpu::AddrMode_BlkMov()
@@ -1245,7 +1245,7 @@ void Cpu::AddrMode_ImmM()
 
 void Cpu::AddrMode_Imp()
 {
-	Idle();
+	IdleOrRead();
 }
 
 void Cpu::AddrMode_RelLng()

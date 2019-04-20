@@ -18,7 +18,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 {
 	_masterClock = 0;
 	_openBus = 0;
-	_lastSpeed = 8;
+	_cpuSpeed = 8;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
 	_ppu = console->GetPpu();
@@ -68,6 +68,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	console->GetCartridge()->RegisterHandlers(*this);
 
 	GenerateMasterClockTable();
+	UpdateEvents();
 }
 
 MemoryManager::~MemoryManager()
@@ -78,6 +79,8 @@ MemoryManager::~MemoryManager()
 void MemoryManager::Reset()
 {
 	_masterClock = 0;
+	_hClock = 0;
+	UpdateEvents();
 }
 
 void MemoryManager::RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler * handler)
@@ -138,10 +141,9 @@ void MemoryManager::GenerateMasterClockTable()
 	}
 }
 
-void MemoryManager::IncrementMasterClock(uint32_t addr)
+void MemoryManager::IncrementMasterClock()
 {
-	_lastSpeed = _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
-	IncrementMasterClockValue(_lastSpeed);
+	IncrementMasterClockValue(_cpuSpeed);
 }
 
 void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
@@ -156,20 +158,46 @@ void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 	}
 }
 
+void MemoryManager::UpdateEvents()
+{
+	if(_ppu->GetScanline() == 0) {
+		_hdmaInitPosition = 12 + (_masterClock & 0x07);
+	}
+	_dramRefreshPosition = 530 + 8 - (_masterClock & 0x07);
+}
+
 void MemoryManager::Exec()
 {
 	_masterClock += 2;
+	_hClock += 2;
 	if((_masterClock & 0x03) == 0) {
 		_ppu->Exec();
+		_regs->ProcessIrqCounters();
+
+		if(_ppu->GetHClock() == 0) {
+			_hClock = 0;
+			UpdateEvents();
+		}
 		if(_console->IsDebugging()) {
 			_spc->Run();
+		}
+	}
+
+	if(_hClock == _dramRefreshPosition) {
+		_dramRefreshPosition = 0xFFFF;
+		IncrementMasterClockValue<40>();
+	} else if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
+		if(_hClock == 276 * 4) {
+			_console->GetDmaController()->BeginHdmaTransfer();
+		} else if(_ppu->GetScanline() == 0 && _hClock == _hdmaInitPosition) {
+			_console->GetDmaController()->BeginHdmaInit();
 		}
 	}
 }
 
 uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 {
-	IncrementMasterClock(addr);
+	IncrementMasterClock();
 
 	uint8_t value;
 	if(_handlers[addr >> 12]) {
@@ -187,6 +215,7 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 {
 	IncrementMasterClockValue<4>();
+
 	uint8_t value;
 	IMemoryHandler* handlers = _handlers[addr >> 12];
 	if(handlers) {
@@ -242,7 +271,7 @@ void MemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
 
 void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	IncrementMasterClock(addr);
+	IncrementMasterClock();
 
 	_console->ProcessCpuWrite(addr, value, type);
 	if(_handlers[addr >> 12]) {
@@ -255,7 +284,6 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
 	IncrementMasterClockValue<4>();
-
 	_console->ProcessCpuWrite(addr, value, MemoryOperationType::DmaWrite);
 
 	IMemoryHandler* handlers = _handlers[addr >> 12];
@@ -282,11 +310,6 @@ uint8_t MemoryManager::GetOpenBus()
 	return _openBus;
 }
 
-uint8_t MemoryManager::GetLastSpeed()
-{
-	return _lastSpeed;
-}
-
 uint64_t MemoryManager::GetMasterClock()
 {
 	return _masterClock;
@@ -295,6 +318,21 @@ uint64_t MemoryManager::GetMasterClock()
 uint8_t * MemoryManager::DebugGetWorkRam()
 {
 	return _workRam;
+}
+
+uint8_t MemoryManager::GetCpuSpeed(uint32_t addr)
+{
+	return _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
+}
+
+uint8_t MemoryManager::GetCpuSpeed()
+{
+	return _cpuSpeed;
+}
+
+void MemoryManager::SetCpuSpeed(uint8_t speed)
+{
+	_cpuSpeed = speed;
 }
 
 bool MemoryManager::IsRegister(uint32_t cpuAddress)
@@ -348,6 +386,6 @@ int MemoryManager::GetRelativeAddress(AddressInfo &address, int32_t cpuAddress)
 
 void MemoryManager::Serialize(Serializer &s)
 {
-	s.Stream(_masterClock, _openBus, _lastSpeed);
+	s.Stream(_masterClock, _openBus, _cpuSpeed);
 	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
 }

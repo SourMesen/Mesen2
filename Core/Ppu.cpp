@@ -75,8 +75,9 @@ void Ppu::PowerOn()
 void Ppu::Reset()
 {
 	_scanline = 0;
-	_hClock = 0;
+	_hClock = -4;
 	_forcedVblank = true;
+	_oddFrame = 0;
 }
 
 uint32_t Ppu::GetFrameCount()
@@ -125,6 +126,8 @@ PpuState Ppu::GetState()
 
 void Ppu::Exec()
 {
+	_hClock += 4;
+	
 	if(_hClock >= 1364 || (_hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
 		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
 		_hClock = 0;
@@ -172,24 +175,12 @@ void Ppu::Exec()
 	}
 
 	_console->ProcessPpuCycle();
-	_regs->ProcessIrqCounters();
-	
-	uint16_t hClock = _hClock;
-	_hClock += 4;
 
-	if(hClock == 278*4 && _scanline < _vblankStart) {
-		if(_scanline != 0) {
-			RenderScanline();
-		}
-		_console->GetDmaController()->BeginHdmaTransfer();
-	} else if(hClock == 285*4 && !_forcedVblank) {
+	if(_hClock == 278*4 && _scanline != 0 && _scanline < _vblankStart) {
+		RenderScanline();
+	} else if(_hClock == 285*4 && !_forcedVblank) {
 		//Approximate timing (any earlier will break Mega Lo Mania)
 		EvaluateNextLineSprites();
-	} else if(_scanline == 0 && hClock == 6*4) {
-		_console->GetDmaController()->InitHdmaChannels();
-	} else if((hClock == 134*4 || hClock == 135*4) && (_console->GetMemoryManager()->GetMasterClock() & 0x07) == 0) {
-		//TODO Approximation (DRAM refresh timing is not exact)
-		_console->GetMemoryManager()->IncrementMasterClockValue<40>();
 	}
 }
 
