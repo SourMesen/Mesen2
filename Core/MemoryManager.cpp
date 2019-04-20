@@ -4,7 +4,6 @@
 #include "BaseCartridge.h"
 #include "Cpu.h"
 #include "Ppu.h"
-#include "Spc.h"
 #include "DmaController.h"
 #include "RegisterHandlerA.h"
 #include "RegisterHandlerB.h"
@@ -22,7 +21,6 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
 	_ppu = console->GetPpu();
-	_spc = console->GetSpc();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
 
@@ -183,19 +181,16 @@ void MemoryManager::Exec()
 {
 	_masterClock += 2;
 	_hClock += 2;
-	if((_hClock & 0x03) == 0) {
-		_console->ProcessPpuCycle();
-		_regs->ProcessIrqCounters();
-
-		if(_console->IsDebugging()) {
-			_spc->Run();
-		}
-	}
 
 	if(_hasEvent[_hClock]) {
 		if(_hClock >= 1260 && _ppu->ProcessEndOfScanline(_hClock)) {
 			_hClock = 0;
 			UpdateEvents();
+		}
+
+		if((_hClock & 0x03) == 0) {
+			_console->ProcessPpuCycle();
+			_regs->ProcessIrqCounters();
 		}
 
 		if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
@@ -213,6 +208,9 @@ void MemoryManager::Exec()
 		} else if(_hClock == _hdmaInitPosition && _ppu->GetScanline() == 0) {
 			_console->GetDmaController()->BeginHdmaInit();
 		}
+	} else if((_hClock & 0x03) == 0) {
+		_console->ProcessPpuCycle();
+		_regs->ProcessIrqCounters();
 	}
 }
 
