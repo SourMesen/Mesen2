@@ -27,7 +27,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.picTilemap = new Mesen.GUI.Controls.ctrlMesenPictureBox();
+			this.picTilemap = new Mesen.GUI.Debugger.PpuViewer.ctrlImageViewer();
 			this.btnLayer1 = new System.Windows.Forms.Button();
 			this.btnLayer2 = new System.Windows.Forms.Button();
 			this.btnLayer3 = new System.Windows.Forms.Button();
@@ -79,7 +79,6 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			((System.ComponentModel.ISupportInitialize)(this.picTilemap)).BeginInit();
 			this.pnlTilemap.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -93,11 +92,13 @@
 			// 
 			// picTilemap
 			// 
-			this.picTilemap.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.picTilemap.Image = null;
+			this.picTilemap.ImageScale = 1;
 			this.picTilemap.Location = new System.Drawing.Point(0, 0);
+			this.picTilemap.Margin = new System.Windows.Forms.Padding(0);
 			this.picTilemap.Name = "picTilemap";
+			this.picTilemap.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.picTilemap.Size = new System.Drawing.Size(512, 471);
-			this.picTilemap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.picTilemap.TabIndex = 0;
 			this.picTilemap.TabStop = false;
 			this.picTilemap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picTilemap_MouseClick);
@@ -674,7 +675,6 @@
 			this.MainMenuStrip = this.ctrlMesenMenuStrip1;
 			this.Name = "frmTilemapViewer";
 			this.Text = "Tilemap Viewer";
-			((System.ComponentModel.ISupportInitialize)(this.picTilemap)).EndInit();
 			this.pnlTilemap.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
@@ -696,7 +696,7 @@
 
 		#endregion
 
-		private GUI.Controls.ctrlMesenPictureBox picTilemap;
+		private Mesen.GUI.Debugger.PpuViewer.ctrlImageViewer picTilemap;
 		private System.Windows.Forms.Button btnLayer1;
 		private System.Windows.Forms.Button btnLayer2;
 		private System.Windows.Forms.Button btnLayer3;

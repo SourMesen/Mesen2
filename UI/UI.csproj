@@ -276,6 +276,9 @@
     <Compile Include="Debugger\frmBreakOn.Designer.cs">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlImageViewer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />

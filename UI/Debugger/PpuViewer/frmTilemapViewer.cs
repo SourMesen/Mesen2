@@ -168,10 +168,6 @@ namespace Mesen.GUI.Debugger
 				GCHandle handle = GCHandle.Alloc(_tilemapData, GCHandleType.Pinned);
 				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * 1024, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
 				g.DrawImage(source, 0, 0);
-
-				g.DrawRectangle(Pens.Gray, _selectedColumn * 8 - 2, _selectedRow * 8 - 2, IsLargeTileWidth ? 19 : 11, IsLargeTileHeight ? 19 : 11);
-				g.DrawRectangle(Pens.White, _selectedColumn * 8 - 1, _selectedRow * 8 - 1, IsLargeTileWidth ? 17 : 9, IsLargeTileHeight ? 17 : 9);
-
 				handle.Free();
 			}
 
@@ -186,6 +182,7 @@ namespace Mesen.GUI.Debugger
 			btnLayer4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
 
 			UpdateMapSize();
+			picTilemap.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
 			picTilemap.Invalidate();
 
 			UpdateFields();
@@ -193,6 +190,7 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateMapSize()
 		{
+			picTilemap.ImageScale = _scale;
 			picTilemap.Width = GetWidth() * _scale;
 			picTilemap.Height = GetHeight() * _scale;
 		}
