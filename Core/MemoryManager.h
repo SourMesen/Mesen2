@@ -37,7 +37,7 @@ private:
 	uint8_t _openBus;
 	uint8_t _cpuSpeed;
 
-	bool _hasEvent[1368];
+	bool _hasEvent[1369];
 	uint8_t _masterClockTable[2][0x10000];
 
 	void UpdateEvents();
