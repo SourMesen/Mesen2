@@ -62,6 +62,11 @@ namespace Mesen.GUI.Debugger.Controls
 			set
 			{
 				this._dataProvider = value;
+
+				int lineCount = this._dataProvider.GetLineCount();
+				if(this.SelectedLine >= lineCount) {
+					this.SelectedLine = lineCount - 1;
+				}
 				this.Invalidate();
 			}
 		}

@@ -475,6 +475,7 @@ namespace Mesen.GUI.Debugger
 			this.chkIndentCode.TabIndex = 8;
 			this.chkIndentCode.Text = "Indent code based on stack pointer";
 			this.chkIndentCode.UseVisualStyleBackColor = true;
+			this.chkIndentCode.Visible = false;
 			this.chkIndentCode.CheckedChanged += new System.EventHandler(this.chkOptions_CheckedChanged);
 			// 
 			// chkUseLabels
@@ -533,6 +534,7 @@ namespace Mesen.GUI.Debugger
 			this.chkExtendZeroPage.TabIndex = 20;
 			this.chkExtendZeroPage.Text = "Show zero page addresses as 2 bytes";
 			this.chkExtendZeroPage.UseVisualStyleBackColor = true;
+			this.chkExtendZeroPage.Visible = false;
 			this.chkExtendZeroPage.CheckedChanged += new System.EventHandler(this.chkOptions_CheckedChanged);
 			// 
 			// chkLogCpu

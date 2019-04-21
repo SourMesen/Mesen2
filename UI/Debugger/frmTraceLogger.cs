@@ -378,7 +378,7 @@ namespace Mesen.GUI.Debugger
 		{
 			_lineCount = count;
 			UpdateMenu();
-			RefreshLog(false, true);
+			RefreshLog(true, true);
 		}
 
 		private void mnu30000Lines_Click(object sender, EventArgs e)
@@ -499,10 +499,11 @@ namespace Mesen.GUI.Debugger
 
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
+			int count = _textLines.Count - 1;
 			return new CodeLineData() {
-				Address = _addresses[lineIndex],
-				Text = _textLines[lineIndex],
-				ByteCode = _byteCode[lineIndex],
+				Address = _addresses[count - lineIndex],
+				Text = _textLines[count - lineIndex],
+				ByteCode = _byteCode[count - lineIndex],
 				EffectiveAddress = -1
 			};
 		}

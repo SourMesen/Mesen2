@@ -392,7 +392,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 		lineCount = std::min(lineCount, _logCount);
 		memcpy(_stateCacheCopy, _stateCache, sizeof(_stateCacheCopy));
 		memcpy(_disassemblyCacheCopy, _disassemblyCache, sizeof(_disassemblyCacheCopy));
-		startPos = _currentPos + ExecutionLogSize - lineCount;
+		startPos = (_currentPos > 0 ? _currentPos : TraceLogger::ExecutionLogSize) - 1;
 	}
 
 	bool enabled = false;
@@ -401,8 +401,11 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 	}
 
 	if(enabled) {
-		for(int i = 0; i < (int)lineCount; i++) {
-			int index = (startPos + i) % ExecutionLogSize;
+		for(int i = 0; i < TraceLogger::ExecutionLogSize; i++) {
+			int index = (startPos - i);
+			if(index < 0) {
+				index = TraceLogger::ExecutionLogSize + index;
+			}
 
 			if((i > 0 && startPos == index) || !_disassemblyCacheCopy[index].IsInitialized()) {
 				//If the entire array was checked, or this element is not initialized, stop
@@ -411,9 +414,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 
 			CpuType cpuType = _disassemblyCacheCopy[index].GetCpuType();
 			if(!_logCpu[(int)cpuType]) {
-				//This line isn't for a CPU currently being logged, increase the line count to try and
-				//get the number of lines the UI requested for the CPU type currently being logged
-				lineCount++;
+				//This line isn't for a CPU currently being logged
 				continue;
 			}
 
@@ -426,6 +427,11 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 			_disassemblyCacheCopy[index].GetByteCode(byteCode);
 			_executionTrace += byteCode + "\x1";
 			GetTraceRow(_executionTrace, _disassemblyCacheCopy[index], _stateCacheCopy[index]);
+
+			lineCount--;
+			if(lineCount == 0) {
+				break;
+			}
 		}
 	}
 	return _executionTrace.c_str();
