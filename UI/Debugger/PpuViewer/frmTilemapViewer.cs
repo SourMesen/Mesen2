@@ -28,6 +28,7 @@ namespace Mesen.GUI.Debugger
 		private int _selectedRow = 0;
 		private int _selectedColumn = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
+		private bool _autoRefresh = false;
 
 		public frmTilemapViewer()
 		{
@@ -41,21 +42,34 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			_options.BgMode = 0;
-
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			_tilemapData = new byte[1024 * 1024 * 4];
 			_tilemapImage = new Bitmap(1024, 1024, PixelFormat.Format32bppArgb);
 			ctrlImagePanel.Image = _tilemapImage;
+			
+			InitShortcuts();
 
-			ctrlScanlineCycleSelect.Initialize(241, 0);
+			TilemapViewerConfig config = ConfigManager.Config.Debug.TilemapViewer;
+			if(!config.WindowSize.IsEmpty) {
+				this.StartPosition = FormStartPosition.Manual;
+				this.Size = config.WindowSize;
+				this.Location = config.WindowLocation;
+			}
+
+			mnuAutoRefresh.Checked = config.AutoRefresh;
+			chkShowTileGrid.Checked = config.ShowTileGrid;
+			chkShowScrollOverlay.Checked = config.ShowScrollOverlay;
+			ctrlImagePanel.ImageScale = config.ImageScale;
+			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
+
+			_options.BgMode = 0;
+			_options.ShowTileGrid = config.ShowTileGrid;
+			_options.ShowScrollOverlay = config.ShowScrollOverlay;
 
 			RefreshData();
 			RefreshViewer();
-
-			InitShortcuts();
 		}
 
 		private void InitShortcuts()
@@ -69,6 +83,17 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnFormClosed(e);
 			_notifListener?.Dispose();
+
+			TilemapViewerConfig config = ConfigManager.Config.Debug.TilemapViewer;
+			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
+			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
+			config.AutoRefresh = mnuAutoRefresh.Checked;
+			config.ShowTileGrid = chkShowTileGrid.Checked;
+			config.ShowScrollOverlay = chkShowScrollOverlay.Checked;
+			config.RefreshScanline = ctrlScanlineCycleSelect.Scanline;
+			config.RefreshCycle = ctrlScanlineCycleSelect.Cycle;
+			config.ImageScale = ctrlImagePanel.ImageScale;
+			ConfigManager.ApplyChanges();
 		}
 
 		private void OnNotificationReceived(NotificationEventArgs e)
@@ -76,7 +101,7 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.ViewerRefresh:
-					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
+					if(_autoRefresh && e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
 						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
 							_lastUpdate = DateTime.Now;
 							RefreshData();
@@ -309,6 +334,11 @@ namespace Mesen.GUI.Debugger
 			}
 
 			RefreshViewer();
+		}
+
+		private void mnuAutoRefresh_CheckedChanged(object sender, EventArgs e)
+		{
+			_autoRefresh = mnuAutoRefresh.Checked;
 		}
 	}
 }

@@ -21,6 +21,7 @@ namespace Mesen.GUI.Config
 		public HexEditorInfo HexEditor = new HexEditorInfo();
 		public EventViewerInfo EventViewer = new EventViewerInfo();
 		public DebuggerInfo Debugger = new DebuggerInfo();
+		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
 
 		public DebugInfo()
 		{		

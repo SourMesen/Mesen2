@@ -562,6 +562,7 @@
 			// 
 			this.ctrlImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlImagePanel.Image = null;
+			this.ctrlImagePanel.ImageScale = 1;
 			this.ctrlImagePanel.ImageSize = new System.Drawing.Size(0, 0);
 			this.ctrlImagePanel.Location = new System.Drawing.Point(3, 31);
 			this.ctrlImagePanel.Name = "ctrlImagePanel";
@@ -616,38 +617,39 @@
 			this.mnuAutoRefresh.CheckOnClick = true;
 			this.mnuAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mnuAutoRefresh.Name = "mnuAutoRefresh";
-			this.mnuAutoRefresh.Size = new System.Drawing.Size(141, 22);
+			this.mnuAutoRefresh.Size = new System.Drawing.Size(152, 22);
 			this.mnuAutoRefresh.Text = "Auto-refresh";
+			this.mnuAutoRefresh.CheckedChanged += new System.EventHandler(this.mnuAutoRefresh_CheckedChanged);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(138, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
 			// 
 			// mnuRefresh
 			// 
 			this.mnuRefresh.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuRefresh.Name = "mnuRefresh";
-			this.mnuRefresh.Size = new System.Drawing.Size(141, 22);
+			this.mnuRefresh.Size = new System.Drawing.Size(152, 22);
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// mnuZoomIn
 			// 
 			this.mnuZoomIn.Name = "mnuZoomIn";
-			this.mnuZoomIn.Size = new System.Drawing.Size(141, 22);
+			this.mnuZoomIn.Size = new System.Drawing.Size(152, 22);
 			this.mnuZoomIn.Text = "Zoom In";
 			this.mnuZoomIn.Click += new System.EventHandler(this.mnuZoomIn_Click);
 			// 
 			// mnuZoomOut
 			// 
 			this.mnuZoomOut.Name = "mnuZoomOut";
-			this.mnuZoomOut.Size = new System.Drawing.Size(141, 22);
+			this.mnuZoomOut.Size = new System.Drawing.Size(152, 22);
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 

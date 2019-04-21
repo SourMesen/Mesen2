@@ -252,6 +252,7 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
     <Compile Include="Debugger\Controls\ctrlPanel.cs">
       <SubType>Component</SubType>
     </Compile>
