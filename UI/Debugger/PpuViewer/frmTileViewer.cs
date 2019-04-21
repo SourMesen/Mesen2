@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.GUI.Config;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +22,6 @@ namespace Mesen.GUI.Debugger
 		private byte[] _cgram;
 		private byte[] _tileSource;
 		private Bitmap _tileImage;
-		private bool _zoomed;
 		private SnesMemoryType _memoryType = SnesMemoryType.VideoRam;
 		private int _addressOffset = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
@@ -45,7 +45,7 @@ namespace Mesen.GUI.Debugger
 
 			_tileData = new byte[512 * 512 * 4];
 			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
-			picTilemap.Image = _tileImage;
+			ctrlImagePanel.Image = _tileImage;
 
 			ctrlScanlineCycleSelect.Initialize(241, 0);
 
@@ -59,6 +59,15 @@ namespace Mesen.GUI.Debugger
 			InitMemoryTypeDropdown();
 			cboFormat.SetEnumValue(TileFormat.Bpp4);
 			ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
+
+			InitShortcuts();
+		}
+
+		private void InitShortcuts()
+		{
+			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
+			mnuZoomIn.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomIn));
+			mnuZoomOut.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomOut));
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
@@ -127,7 +136,7 @@ namespace Mesen.GUI.Debugger
 
 			if(_tileImage.Width != mapWidth || _tileImage.Height != mapHeight) {
 				_tileImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppArgb);
-				picTilemap.Image = _tileImage;
+				ctrlImagePanel.Image = _tileImage;
 			}
 
 			using(Graphics g = Graphics.FromImage(_tileImage)) {
@@ -141,7 +150,7 @@ namespace Mesen.GUI.Debugger
 			}
 
 			UpdateMapSize();
-			picTilemap.Invalidate();
+			ctrlImagePanel.Invalidate();
 
 			ctrlPaletteViewer.RefreshViewer();
 		}
@@ -152,8 +161,7 @@ namespace Mesen.GUI.Debugger
 			int mapWidth = _options.Width * 8;
 			int mapHeight = tileCount / _options.Width * 8;
 
-			picTilemap.Width = _zoomed ? mapWidth * 2 : mapWidth;
-			picTilemap.Height = _zoomed ? mapHeight * 2  : mapHeight;
+			ctrlImagePanel.ImageSize = new Size(mapWidth, mapHeight);
 		}
 
 		private void InitMemoryTypeDropdown()
@@ -168,12 +176,6 @@ namespace Mesen.GUI.Debugger
 
 			cboMemoryType.SelectedIndex = 0;
 			cboMemoryType.EndUpdate();
-		}
-
-		private void picTilemap_DoubleClick(object sender, EventArgs e)
-		{
-			_zoomed = !_zoomed;
-			UpdateMapSize();
 		}
 
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
@@ -237,6 +239,27 @@ namespace Mesen.GUI.Debugger
 		{
 			_options.Palette = ctrlPaletteViewer.SelectedPalette;
 			RefreshViewer();
+		}
+		
+		private void mnuRefresh_Click(object sender, EventArgs e)
+		{
+			RefreshData();
+			RefreshViewer();
+		}
+
+		private void mnuZoomIn_Click(object sender, EventArgs e)
+		{
+			ctrlImagePanel.ZoomIn();
+		}
+
+		private void mnuZoomOut_Click(object sender, EventArgs e)
+		{
+			ctrlImagePanel.ZoomOut();
+		}
+
+		private void mnuClose_Click(object sender, EventArgs e)
+		{
+			Close();
 		}
 	}
 }

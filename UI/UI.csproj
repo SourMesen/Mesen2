@@ -252,6 +252,9 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Controls\ctrlPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlPpuStatus.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -275,6 +278,12 @@
     </Compile>
     <Compile Include="Debugger\frmBreakOn.Designer.cs">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlImagePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlImagePanel.Designer.cs">
+      <DependentUpon>ctrlImagePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\ctrlImageViewer.cs">
       <SubType>Component</SubType>
@@ -792,6 +801,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\MemoryTools\frmMemoryViewerColors.resx">
       <DependentUpon>frmMemoryViewerColors.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\ctrlImagePanel.resx">
+      <DependentUpon>ctrlImagePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlPaletteViewer.resx">
       <DependentUpon>ctrlPaletteViewer.cs</DependentUpon>

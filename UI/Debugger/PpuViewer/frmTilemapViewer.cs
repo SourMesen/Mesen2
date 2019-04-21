@@ -25,7 +25,6 @@ namespace Mesen.GUI.Debugger
 		private byte[] _vram;
 		private byte[] _tilemapData;
 		private Bitmap _tilemapImage;
-		private int _scale = 1;
 		private int _selectedRow = 0;
 		private int _selectedColumn = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
@@ -49,7 +48,7 @@ namespace Mesen.GUI.Debugger
 
 			_tilemapData = new byte[1024 * 1024 * 4];
 			_tilemapImage = new Bitmap(1024, 1024, PixelFormat.Format32bppArgb);
-			picTilemap.Image = _tilemapImage;
+			ctrlImagePanel.Image = _tilemapImage;
 
 			ctrlScanlineCycleSelect.Initialize(241, 0);
 
@@ -162,7 +161,7 @@ namespace Mesen.GUI.Debugger
 			int mapHeight = GetHeight();
 			if(_tilemapImage.Width != mapWidth || _tilemapImage.Height != mapHeight) {
 				_tilemapImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppArgb);
-				picTilemap.Image = _tilemapImage;
+				ctrlImagePanel.Image = _tilemapImage;
 			}
 			using(Graphics g = Graphics.FromImage(_tilemapImage)) {
 				GCHandle handle = GCHandle.Alloc(_tilemapData, GCHandleType.Pinned);
@@ -181,18 +180,10 @@ namespace Mesen.GUI.Debugger
 			btnLayer3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
 			btnLayer4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
 
-			UpdateMapSize();
-			picTilemap.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
-			picTilemap.Invalidate();
+			ctrlImagePanel.ImageSize = new Size(GetWidth(), GetHeight());
+			ctrlImagePanel.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
 
 			UpdateFields();
-		}
-
-		private void UpdateMapSize()
-		{
-			picTilemap.ImageScale = _scale;
-			picTilemap.Width = GetWidth() * _scale;
-			picTilemap.Height = GetHeight() * _scale;
 		}
 
 		private void UpdateFields()
@@ -292,14 +283,12 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuZoomIn_Click(object sender, EventArgs e)
 		{
-			_scale = Math.Min(8, _scale + 1);
-			UpdateMapSize();
+			ctrlImagePanel.ZoomIn();
 		}
 
 		private void mnuZoomOut_Click(object sender, EventArgs e)
 		{
-			_scale = Math.Max(1, _scale - 1);
-			UpdateMapSize();
+			ctrlImagePanel.ZoomOut();
 		}
 
 		private void mnuClose_Click(object sender, EventArgs e)
@@ -307,10 +296,10 @@ namespace Mesen.GUI.Debugger
 			Close();
 		}
 
-		private void picTilemap_MouseClick(object sender, MouseEventArgs e)
+		private void ctrlImagePanel_MouseClick(object sender, MouseEventArgs e)
 		{
-			_selectedColumn = e.X / (8 * _scale);
-			_selectedRow = e.Y / (8 * _scale);
+			_selectedColumn = e.X / (8 * ctrlImagePanel.ImageScale);
+			_selectedRow = e.Y / (8 * ctrlImagePanel.ImageScale);
 
 			if(IsLargeTileWidth) {
 				_selectedColumn &= 0xFE;
