@@ -54,7 +54,7 @@ namespace Mesen.GUI.Debugger
 
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 			
-			BreakpointManager.BreakpointsEnabled = true;
+			BreakpointManager.AddCpuType(_cpuType);
 			DebugApi.Step(10000, StepType.CpuStep);
 		}
 
@@ -68,7 +68,8 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.UpdateObject();
 			ConfigManager.ApplyChanges();
 
-			BreakpointManager.BreakpointsEnabled = false;
+			BreakpointManager.RemoveCpuType(_cpuType);
+
 			if(this._notifListener != null) {
 				this._notifListener.Dispose();
 				this._notifListener = null;
@@ -258,6 +259,7 @@ namespace Mesen.GUI.Debugger
 					DebugState state = DebugApi.GetState();
 					this.BeginInvoke((MethodInvoker)(() => {
 						UpdateDebugger(state, null);
+						BreakpointManager.SetBreakpoints();
 					}));
 					break;
 				}

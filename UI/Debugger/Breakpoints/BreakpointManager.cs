@@ -11,21 +11,23 @@ namespace Mesen.GUI.Debugger
 		public static event EventHandler BreakpointsChanged;
 
 		private static List<Breakpoint> _breakpoints = new List<Breakpoint>();
-		private static bool _breakpointsEnabled = false;
+		private static HashSet<CpuType> _activeCpuTypes = new HashSet<CpuType>();
 
 		public static ReadOnlyCollection<Breakpoint> Breakpoints
 		{
 			get { return _breakpoints.ToList().AsReadOnly(); }
 		}
 
-		public static bool BreakpointsEnabled
+		public static void AddCpuType(CpuType cpuType)
 		{
-			get { return _breakpointsEnabled; }
-			set
-			{
-				_breakpointsEnabled = value;
-				SetBreakpoints();
-			}
+			_activeCpuTypes.Add(cpuType);
+			SetBreakpoints();
+		}
+
+		public static void RemoveCpuType(CpuType cpuType)
+		{
+			_activeCpuTypes.Remove(cpuType);
+			SetBreakpoints();
 		}
 
 		public static void RefreshBreakpoints(Breakpoint bp = null)
@@ -116,8 +118,8 @@ namespace Mesen.GUI.Debugger
 		public static void SetBreakpoints()
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
-			if(BreakpointsEnabled) {
-				for(int i = 0; i < Breakpoints.Count; i++) {
+			for(int i = 0; i < Breakpoints.Count; i++) {
+				if(_activeCpuTypes.Contains(Breakpoints[i].GetCpuType())) {
 					breakpoints.Add(Breakpoints[i].ToInteropBreakpoint(i));
 				}
 			}

@@ -156,12 +156,14 @@ namespace Mesen.GUI.Debugger
 			return -1;
 		}
 
+		public CpuType GetCpuType()
+		{
+			return _memoryType == SnesMemoryType.SpcMemory ? CpuType.Spc : CpuType.Cpu;
+		}
+
 		public bool Matches(CpuType type)
 		{
-			return (
-				(type == CpuType.Spc && _memoryType == SnesMemoryType.SpcMemory) ||
-				(type == CpuType.Cpu && _memoryType != SnesMemoryType.SpcMemory)
-			);			
+			return GetCpuType() == type;		
 		}
 
 		public bool Matches(UInt32 address, SnesMemoryType type)
