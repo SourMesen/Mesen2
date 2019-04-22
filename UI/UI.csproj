@@ -252,6 +252,7 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Config\TileViewerConfig.cs" />
     <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
     <Compile Include="Debugger\Controls\ctrlPanel.cs">
       <SubType>Component</SubType>
@@ -475,10 +476,7 @@
     </Compile>
     <Compile Include="Debugger\MemoryTools\TblByteCharConverter.cs" />
     <Compile Include="Debugger\PpuViewer\ctrlPaletteViewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Debugger\PpuViewer\ctrlPaletteViewer.Designer.cs">
-      <DependentUpon>ctrlPaletteViewer.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.cs">
       <SubType>UserControl</SubType>
@@ -805,9 +803,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlImagePanel.resx">
       <DependentUpon>ctrlImagePanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Debugger\PpuViewer\ctrlPaletteViewer.resx">
-      <DependentUpon>ctrlPaletteViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.resx">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>

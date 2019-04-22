@@ -14,27 +14,90 @@ using System.Drawing.Drawing2D;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class ctrlPaletteViewer : BaseControl
+	public partial class ctrlPaletteViewer : PictureBox
 	{
 		public delegate void SelectionChangedHandler();
 		public event SelectionChangedHandler SelectionChanged;
 
 		private byte[] _cgRam;
 		private Bitmap _paletteImage;
+		private int _selectedPalette = 0;
+		private PaletteSelectionMode _selectionMode = PaletteSelectionMode.None;
 
 		public int PaletteScale { get; set; } = 16;
-		public int SelectedPalette { get; private set; } = 0;
-		public PaletteSelectionMode SelectionMode { get; set; } = PaletteSelectionMode.None;
 
 		public ctrlPaletteViewer()
 		{
-			InitializeComponent();
-			if(IsDesignMode) {
-				return;
-			}
+			this.SetStyle(ControlStyles.Selectable, true);
 
 			_paletteImage = new Bitmap(PaletteScale * 16, PaletteScale * 16, PixelFormat.Format32bppArgb);
-			picPalette.Image = _paletteImage;
+			this.Image = _paletteImage;
+		}
+
+		public int SelectedPalette
+		{
+			get { return _selectedPalette; }
+			set
+			{
+				int maxPalette = 0;
+				switch(this.SelectionMode) {
+					case PaletteSelectionMode.SingleColor: maxPalette = 255; break;
+					case PaletteSelectionMode.FourColors: maxPalette = 63; break;
+					case PaletteSelectionMode.SixteenColors: maxPalette = 15; break;
+				}
+
+				int newPalette = Math.Max(0, Math.Min(value, maxPalette));
+
+				if(newPalette != _selectedPalette) {
+					_selectedPalette = newPalette;
+					SelectionChanged?.Invoke();
+				}
+			}
+		}
+
+		public PaletteSelectionMode SelectionMode
+		{
+			get { return _selectionMode; }
+			set
+			{
+				_selectionMode = value;
+				this.SelectedPalette = _selectedPalette;
+			}
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			switch(keyData) {
+				case Keys.Left:
+					this.SelectedPalette--;
+					RefreshViewer();
+					return true;
+
+				case Keys.Right:
+					this.SelectedPalette++;
+					RefreshViewer();
+					return true;
+
+				case Keys.Down:
+					switch(this.SelectionMode) {
+						case PaletteSelectionMode.SingleColor: this.SelectedPalette+=16; break;
+						case PaletteSelectionMode.FourColors: this.SelectedPalette+=4; break;
+						case PaletteSelectionMode.SixteenColors: this.SelectedPalette++; break;
+					}
+					RefreshViewer();
+					return true;
+
+				case Keys.Up:
+					switch(this.SelectionMode) {
+						case PaletteSelectionMode.SingleColor: this.SelectedPalette-=16; break;
+						case PaletteSelectionMode.FourColors: this.SelectedPalette-=4; break;
+						case PaletteSelectionMode.SixteenColors: this.SelectedPalette--; break;
+					}
+					RefreshViewer();
+					return true;
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
 		public byte[] CgRam
@@ -52,7 +115,8 @@ namespace Mesen.GUI.Debugger
 			return (uint)((color << 3) + (color >> 2));
 		}
 
-		public uint ToArgb(int rgb555) {
+		public uint ToArgb(int rgb555)
+		{
 			uint b = To8Bit(rgb555 >> 10);
 			uint g = To8Bit((rgb555 >> 5) & 0x1F);
 			uint r = To8Bit(rgb555 & 0x1F);
@@ -94,12 +158,14 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
-			picPalette.Size = _paletteImage.Size;
-			picPalette.Invalidate();
+			this.Size = _paletteImage.Size;
+			this.Invalidate();
 		}
 
-		private void picPalette_MouseClick(object sender, MouseEventArgs e)
+		protected override void OnMouseClick(MouseEventArgs e)
 		{
+			base.OnMouseClick(e);
+
 			int paletteIndex = 0;
 			if(SelectionMode == PaletteSelectionMode.SingleColor) {
 				paletteIndex = (e.Y / PaletteScale) * 16 + (e.X / PaletteScale);
@@ -111,9 +177,9 @@ namespace Mesen.GUI.Debugger
 			}
 			SelectedPalette = paletteIndex;
 
-			SelectionChanged?.Invoke();
-
 			RefreshViewer();
+
+			this.Focus();
 		}
 	}
 

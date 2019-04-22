@@ -22,6 +22,7 @@ namespace Mesen.GUI.Config
 		public EventViewerInfo EventViewer = new EventViewerInfo();
 		public DebuggerInfo Debugger = new DebuggerInfo();
 		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
+		public TileViewerConfig TileViewer = new TileViewerConfig();
 
 		public DebugInfo()
 		{		

@@ -78,7 +78,7 @@
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 1;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 522F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(737, 522);
 			this.tableLayoutPanel1.TabIndex = 7;
 			// 
@@ -301,6 +301,7 @@
 			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 161);
 			this.ctrlPaletteViewer.Name = "ctrlPaletteViewer";
 			this.ctrlPaletteViewer.PaletteScale = 11;
+			this.ctrlPaletteViewer.SelectedPalette = 0;
 			this.ctrlPaletteViewer.SelectionMode = Mesen.GUI.Debugger.PaletteSelectionMode.None;
 			this.ctrlPaletteViewer.Size = new System.Drawing.Size(176, 176);
 			this.ctrlPaletteViewer.TabIndex = 12;
@@ -341,7 +342,7 @@
 			// 
 			this.mnuClose.Image = global::Mesen.GUI.Properties.Resources.Exit;
 			this.mnuClose.Name = "mnuClose";
-			this.mnuClose.Size = new System.Drawing.Size(152, 22);
+			this.mnuClose.Size = new System.Drawing.Size(103, 22);
 			this.mnuClose.Text = "Close";
 			this.mnuClose.Click += new System.EventHandler(this.mnuClose_Click);
 			// 
@@ -366,6 +367,7 @@
 			this.mnuAutoRefresh.Name = "mnuAutoRefresh";
 			this.mnuAutoRefresh.Size = new System.Drawing.Size(152, 22);
 			this.mnuAutoRefresh.Text = "Auto-refresh";
+			this.mnuAutoRefresh.CheckedChanged += new System.EventHandler(this.mnuAutoRefresh_CheckedChanged);
 			// 
 			// toolStripMenuItem2
 			// 

@@ -25,6 +25,7 @@ namespace Mesen.GUI.Debugger
 		private SnesMemoryType _memoryType = SnesMemoryType.VideoRam;
 		private int _addressOffset = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
+		private bool _autoRefresh = true;
 
 		public frmTileViewer()
 		{
@@ -42,25 +43,36 @@ namespace Mesen.GUI.Debugger
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
+			InitMemoryTypeDropdown();
 
 			_tileData = new byte[512 * 512 * 4];
 			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
 			ctrlImagePanel.Image = _tileImage;
 
-			ctrlScanlineCycleSelect.Initialize(241, 0);
+			InitShortcuts();
 
-			_options.Format = TileFormat.Bpp4;
-			_options.Width = 32;
-			_options.Palette = ctrlPaletteViewer.SelectedPalette;
+			TileViewerConfig config = ConfigManager.Config.Debug.TileViewer;
+			if(!config.WindowSize.IsEmpty) {
+				this.StartPosition = FormStartPosition.Manual;
+				this.Size = config.WindowSize;
+				this.Location = config.WindowLocation;
+			}
+
+			cboMemoryType.SetEnumValue(config.Source);
+			cboFormat.SetEnumValue(config.Format);
+			nudColumns.Value = config.ColumnCount;
+			nudBank.Value = config.Bank;
+			nudOffset.Value = config.Offset;
+			mnuAutoRefresh.Checked = config.AutoRefresh;
+			chkShowTileGrid.Checked = config.ShowTileGrid;
+			ctrlImagePanel.ImageScale = config.ImageScale;
+			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
+			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
+
+			_options.ShowTileGrid = config.ShowTileGrid;
 
 			RefreshData();
 			RefreshViewer();
-
-			InitMemoryTypeDropdown();
-			cboFormat.SetEnumValue(TileFormat.Bpp4);
-			ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
-
-			InitShortcuts();
 		}
 
 		private void InitShortcuts()
@@ -74,6 +86,24 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnFormClosed(e);
 			_notifListener?.Dispose();
+
+			TileViewerConfig config = ConfigManager.Config.Debug.TileViewer;
+			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
+			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
+			config.AutoRefresh = mnuAutoRefresh.Checked;
+			config.ShowTileGrid = chkShowTileGrid.Checked;
+			config.RefreshScanline = ctrlScanlineCycleSelect.Scanline;
+			config.RefreshCycle = ctrlScanlineCycleSelect.Cycle;
+			config.ImageScale = ctrlImagePanel.ImageScale;
+
+			config.Source = cboMemoryType.GetEnumValue<SnesMemoryType>();
+			config.Format = cboFormat.GetEnumValue<TileFormat>();
+			config.ColumnCount = (int)nudColumns.Value;
+			config.Bank = (int)nudBank.Value;
+			config.Offset = (int)nudOffset.Value;
+			config.SelectedPalette = ctrlPaletteViewer.SelectedPalette;
+
+			ConfigManager.ApplyChanges();
 		}
 
 		private void OnNotificationReceived(NotificationEventArgs e)
@@ -81,7 +111,7 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.ViewerRefresh:
-					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
+					if(_autoRefresh && e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
 						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
 							_lastUpdate = DateTime.Now;
 							RefreshData();
@@ -127,6 +157,10 @@ namespace Mesen.GUI.Debugger
 
 		private void RefreshViewer()
 		{
+			if(_tileSource == null) {
+				return;
+			}
+
 			DebugApi.GetTileView(_options, _tileSource, _tileSource.Length, _cgram, _tileData);
 
 			int tileCount = 0x10000 / GetBytesPerTile();
@@ -226,12 +260,14 @@ namespace Mesen.GUI.Debugger
 		private void nudBank_ValueChanged(object sender, EventArgs e)
 		{
 			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			RefreshData();
 			RefreshViewer();
 		}
 
 		private void nudOffset_ValueChanged(object sender, EventArgs e)
 		{
 			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			RefreshData();
 			RefreshViewer();
 		}
 
@@ -260,6 +296,11 @@ namespace Mesen.GUI.Debugger
 		private void mnuClose_Click(object sender, EventArgs e)
 		{
 			Close();
+		}
+
+		private void mnuAutoRefresh_CheckedChanged(object sender, EventArgs e)
+		{
+			_autoRefresh = mnuAutoRefresh.Checked;
 		}
 	}
 }
