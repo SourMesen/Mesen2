@@ -39,6 +39,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.TileViewer: frm = new frmTileViewer(); frm.Icon = Properties.Resources.VerticalLayout; break;
 					case DebugWindow.TilemapViewer: frm = new frmTilemapViewer(); frm.Icon = Properties.Resources.VideoOptions; break;
 					case DebugWindow.PaletteViewer: frm = new frmPaletteViewer(); frm.Icon = Properties.Resources.VideoFilter; break;
+					case DebugWindow.SpriteViewer: frm = new frmSpriteViewer(); frm.Icon = Properties.Resources.PerfTracker; break;
 					case DebugWindow.EventViewer: frm = new frmEventViewer(); frm.Icon = Properties.Resources.NesEventViewer; break;
 				}
 
@@ -132,6 +133,7 @@ namespace Mesen.GUI.Debugger
 		TileViewer,
 		TilemapViewer,
 		PaletteViewer,
+		SpriteViewer,
 		EventViewer
 	}
 }

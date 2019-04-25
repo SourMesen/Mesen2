@@ -194,6 +194,11 @@ struct GetTileViewOptions
 	bool ShowTileGrid;
 };
 
+struct GetSpritePreviewOptions
+{
+	int32_t SelectedSprite;
+};
+
 enum class StackFrameFlags
 {
 	None = 0,

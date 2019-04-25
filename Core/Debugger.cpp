@@ -270,8 +270,8 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 
 void Debugger::ProcessPpuCycle()
 {
-	uint16_t scanline = _ppu->GetState().Scanline;
-	uint16_t cycle = _ppu->GetState().Cycle;
+	uint16_t scanline = _ppu->GetScanline();
+	uint16_t cycle = _ppu->GetCycle();
 	_ppuTools->UpdateViewers(scanline, cycle);
 
 	if(_ppuStepCount > 0) {

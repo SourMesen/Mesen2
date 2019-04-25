@@ -23,6 +23,7 @@ namespace Mesen.GUI.Config
 		public DebuggerInfo Debugger = new DebuggerInfo();
 		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
 		public TileViewerConfig TileViewer = new TileViewerConfig();
+		public SpriteViewerConfig SpriteViewer = new SpriteViewerConfig();
 
 		public DebugInfo()
 		{		

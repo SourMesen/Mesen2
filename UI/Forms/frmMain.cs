@@ -206,6 +206,7 @@ namespace Mesen.GUI.Forms
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
 			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
 			mnuTileViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTileViewer));
+			mnuSpriteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpriteViewer));
 			mnuPaletteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenPaletteViewer));
 			mnuTraceLogger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTraceLogger));
 
@@ -249,6 +250,7 @@ namespace Mesen.GUI.Forms
 			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
 			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
 			mnuTileViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TileViewer); };
+			mnuSpriteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpriteViewer); };
 			mnuPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer); };
 			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer); };
 
@@ -264,6 +266,7 @@ namespace Mesen.GUI.Forms
 			mnuMemoryTools.Enabled = running;
 			mnuTilemapViewer.Enabled = running;
 			mnuTileViewer.Enabled = running;
+			mnuSpriteViewer.Enabled = running;
 			mnuPaletteViewer.Enabled = running;
 			mnuEventViewer.Enabled = running;
 		}

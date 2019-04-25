@@ -45,6 +45,12 @@ struct PpuState
 	bool DirectColorMode;
 	Mode7Config Mode7;
 	LayerConfig Layers[4];
+
+	uint8_t OamMode;
+	uint16_t OamBaseAddress;
+	uint16_t OamAddressOffset;
+	bool EnableOamPriority;
+	bool ObjInterlace;
 };
 
 struct WindowConfig

@@ -312,6 +312,119 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgr
 	}
 }
 
+static constexpr uint8_t _oamSizes[8][2][2] = {
+	{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16
+	{ { 1, 1 }, { 4, 4 } }, //8x8 + 32x32
+	{ { 1, 1 }, { 8, 8 } }, //8x8 + 64x64
+	{ { 2, 2 }, { 4, 4 } }, //16x16 + 32x32
+	{ { 2, 2 }, { 8, 8 } }, //16x16 + 64x64
+	{ { 4, 4 }, { 8, 8 } }, //32x32 + 64x64
+	{ { 2, 4 }, { 4, 8 } }, //16x32 + 32x64
+	{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
+};
+
+void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t *vram, uint8_t *oamRam, uint8_t *cgram, uint32_t *outBuffer)
+{
+	//uint16_t baseAddr = state.EnableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
+	uint16_t baseAddr = 0;
+
+	bool filled[256 * 240] = {};
+	int lastScanline = state.OverscanMode ? 239 : 224;
+	std::fill(outBuffer, outBuffer + 256 * lastScanline, 0xFF888888);
+	std::fill(outBuffer + 256 * lastScanline, outBuffer + 256 * 240, 0xFF000000);
+
+	for(int screenY = 0; screenY < lastScanline; screenY++) {
+		for(int i = 508; i >= 0; i -= 4) {
+			uint16_t addr = (baseAddr + i) & 0x1FF;
+			uint8_t y = oamRam[addr + 1];
+
+			uint8_t highTableOffset = addr >> 4;
+			uint8_t shift = ((addr >> 2) & 0x03) << 1;
+			uint8_t highTableValue = oamRam[0x200 | highTableOffset] >> shift;
+			uint8_t largeSprite = (highTableValue & 0x02) >> 1;
+			uint8_t height = _oamSizes[state.OamMode][largeSprite][1] << 3;
+
+			if(state.ObjInterlace) {
+				height /= 2;
+			}
+
+			uint8_t endY = (y + height) & 0xFF;
+
+			bool visible = (screenY >= y && screenY < endY) || (endY < y && screenY < endY);
+			if(!visible) {
+				//Not visible on this scanline
+				continue;
+			}
+
+			uint8_t width = _oamSizes[state.OamMode][largeSprite][0] << 3;
+			uint16_t sign = (highTableValue & 0x01) << 8;
+			int16_t x = (int16_t)((sign | oamRam[addr]) << 7) >> 7;
+
+			if(x != -256 && (x + width <= 0 || x > 255)) {
+				//Sprite is not visible (and must be ignored for time/range flag calculations)
+				//Sprites at X=-256 are always used when considering Time/Range flag calculations, but not actually drawn.
+				continue;
+			}
+
+			int tileRow = (oamRam[addr + 2] & 0xF0) >> 4;
+			int tileColumn = oamRam[addr + 2] & 0x0F;
+
+			uint8_t flags = oamRam[addr + 3];
+			bool useSecondTable = (flags & 0x01) != 0;
+			uint8_t palette = (flags >> 1) & 0x07;
+			uint8_t priority = (flags >> 4) & 0x03;
+			bool horizontalMirror = (flags & 0x40) != 0;
+			bool verticalMirror = (flags & 0x80) != 0;
+			
+			uint8_t yOffset;
+			int rowOffset;
+
+			int yGap = (screenY - y);
+			if(state.ObjInterlace) {
+				yGap <<= 1;
+			}
+			if(verticalMirror) {
+				yOffset = (height - 1 - yGap) & 0x07;
+				rowOffset = (height - 1 - yGap) >> 3;
+			} else {
+				yOffset = yGap & 0x07;
+				rowOffset = yGap >> 3;
+			}
+
+			uint8_t row = (tileRow + rowOffset) & 0x0F;
+
+			for(int j = std::max<int16_t>(x, 0); j < x + width && j < 256; j++) {
+				uint32_t outOffset = screenY * 256 + j;
+				if(filled[outOffset]) {
+					continue;
+				}
+
+				uint8_t xOffset;
+				int columnOffset;
+				if(horizontalMirror) {
+					xOffset = (width - (j - x) - 1) & 0x07;
+					columnOffset = (width - (j - x) - 1) >> 3;
+				} else {
+					xOffset = (j - x) & 0x07;
+					columnOffset = (j - x) >> 3;
+				}
+
+				uint8_t column = (tileColumn + columnOffset) & 0x0F;
+				uint8_t tileIndex = (row << 4) | column;
+				uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+
+				uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset);
+				if(color != 0) {
+					if(options.SelectedSprite == i / 4) {
+						filled[outOffset] = true;
+					}
+					outBuffer[outOffset] = GetRgbPixelColor(cgram, color, palette, 4, false, 256);
+				}
+			}
+		}
+	}
+}
+
 void PpuTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle)
 {
 	//TODO Thread safety

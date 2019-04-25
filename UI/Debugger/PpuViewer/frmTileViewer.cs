@@ -70,6 +70,7 @@ namespace Mesen.GUI.Debugger
 			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
 
 			_options.ShowTileGrid = config.ShowTileGrid;
+			_autoRefresh = config.AutoRefresh;
 
 			RefreshData();
 			RefreshViewer();

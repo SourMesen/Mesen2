@@ -73,6 +73,7 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, byte[] vram, byte[] cgram, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, byte[] cgram, [In, Out] byte[] buffer);
+		[DllImport(DllPath)] public static extern void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, byte[] cgram, [In, Out] byte[] buffer);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
 
@@ -233,6 +234,12 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 		public LayerConfig[] Layers;
+
+		public byte OamMode;
+		public UInt16 OamBaseAddress;
+		public UInt16 OamAddressOffset;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableOamPriority;
+		[MarshalAs(UnmanagedType.I1)] public bool ObjInterlace;
 	};
 
 	public struct LayerConfig
@@ -409,6 +416,11 @@ namespace Mesen.GUI
 		public Int32 Palette;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
+	}
+
+	public struct GetSpritePreviewOptions
+	{
+		public Int32 SelectedSprite;
 	}
 
 	public enum TileFormat

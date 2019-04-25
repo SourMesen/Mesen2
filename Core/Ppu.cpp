@@ -117,6 +117,13 @@ PpuState Ppu::GetState()
 	state.Layers[1] = _layerConfig[1];
 	state.Layers[2] = _layerConfig[2];
 	state.Layers[3] = _layerConfig[3];
+
+	state.OamMode = _oamMode;
+	state.OamBaseAddress = _oamBaseAddress;
+	state.OamAddressOffset = _oamAddressOffset;
+	state.EnableOamPriority = _enableOamPriority;
+	state.ObjInterlace = _objInterlace;
+
 	return state;
 }
 

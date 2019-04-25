@@ -64,6 +64,8 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.ImageScale = config.ImageScale;
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 
+			_autoRefresh = config.AutoRefresh;
+
 			_options.BgMode = 0;
 			_options.ShowTileGrid = config.ShowTileGrid;
 			_options.ShowScrollOverlay = config.ShowScrollOverlay;

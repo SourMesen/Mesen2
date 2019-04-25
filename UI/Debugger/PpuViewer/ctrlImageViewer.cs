@@ -12,6 +12,7 @@ namespace Mesen.GUI.Debugger.PpuViewer
 	{
 		private Image _image = null;
 		private Rectangle _selection = Rectangle.Empty;
+		private int _selectionWrapPosition = 0;
 
 		public ctrlImageViewer()
 		{
@@ -31,6 +32,12 @@ namespace Mesen.GUI.Debugger.PpuViewer
 			set { _selection = value; this.Invalidate(); }
 		}
 
+		public int SelectionWrapPosition
+		{
+			get { return _selectionWrapPosition; }
+			set { _selectionWrapPosition = value; this.Invalidate(); }
+		}
+
 		public int ImageScale { get; set; } = 1;
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -48,8 +55,14 @@ namespace Mesen.GUI.Debugger.PpuViewer
 			e.Graphics.ResetTransform();
 
 			if(_selection != Rectangle.Empty) {
-				e.Graphics.DrawRectangle(Pens.White, _selection.Left * this.ImageScale, _selection.Top * this.ImageScale, _selection.Width * this.ImageScale + 0.5f, _selection.Height * this.ImageScale + 0.5f);
-				e.Graphics.DrawRectangle(Pens.Gray, _selection.Left * this.ImageScale - 1, _selection.Top * this.ImageScale - 1, _selection.Width * this.ImageScale + 2.5f, _selection.Height * this.ImageScale + 2.5f);
+				int scale = this.ImageScale;
+				e.Graphics.DrawRectangle(Pens.White, _selection.Left * scale, _selection.Top * scale, _selection.Width * scale + 0.5f, _selection.Height * scale + 0.5f);
+				e.Graphics.DrawRectangle(Pens.Gray, _selection.Left * scale - 1, _selection.Top * scale - 1, _selection.Width * scale + 2.5f, _selection.Height * scale + 2.5f);
+
+				if(_selectionWrapPosition > 0 && _selection.Top + _selection.Height > _selectionWrapPosition) {
+					e.Graphics.DrawRectangle(Pens.White, _selection.Left * scale, _selection.Top * scale - _selectionWrapPosition * scale, _selection.Width * scale + 0.5f, _selection.Height * scale + 0.5f);
+					e.Graphics.DrawRectangle(Pens.Gray, _selection.Left * scale - 1, _selection.Top * scale - 1 - _selectionWrapPosition * scale, _selection.Width * scale + 2.5f, _selection.Height * scale + 2.5f);
+				}
 			}
 		}
 	}

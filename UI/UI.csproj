@@ -252,6 +252,7 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Config\SpriteViewerConfig.cs" />
     <Compile Include="Debugger\Config\TileViewerConfig.cs" />
     <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
     <Compile Include="Debugger\Controls\ctrlPanel.cs">
@@ -290,6 +291,19 @@
     <Compile Include="Debugger\PpuViewer\ctrlImageViewer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlSpriteList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlSpriteList.Designer.cs">
+      <DependentUpon>ctrlSpriteList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmSpriteViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmSpriteViewer.Designer.cs">
+      <DependentUpon>frmSpriteViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\SpriteInfo.cs" />
     <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
@@ -807,8 +821,14 @@
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.resx">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\ctrlSpriteList.resx">
+      <DependentUpon>ctrlSpriteList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmPaletteViewer.resx">
       <DependentUpon>frmPaletteViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\frmSpriteViewer.resx">
+      <DependentUpon>frmSpriteViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmTileViewer.resx">
       <DependentUpon>frmTileViewer.cs</DependentUpon>

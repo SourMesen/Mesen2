@@ -17,9 +17,11 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private Size _imageSize;
 
 		public Rectangle Selection { get { return ctrlImageViewer.Selection; } set { ctrlImageViewer.Selection = value; } }
+		public int SelectionWrapPosition { get { return ctrlImageViewer.SelectionWrapPosition; } set { ctrlImageViewer.SelectionWrapPosition = value; } }
+
 		public Size ImageSize { get { return _imageSize; } set { _imageSize = value; UpdateMapSize(); } }
 		public Image Image { get { return ctrlImageViewer.Image; } set { ctrlImageViewer.Image = value; } }
-		public int ImageScale { get { return _scale; } set { _scale = value; } }
+		public int ImageScale { get { return _scale; } set { _scale = value; UpdateMapSize(); } }
 
 		public new event MouseEventHandler MouseClick { add { ctrlImageViewer.MouseClick += value; } remove { ctrlImageViewer.MouseClick -= value; } }
 
