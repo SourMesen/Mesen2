@@ -7,39 +7,15 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Debugger.Code
 {
-	public class SpcDisassemblyManager : IDisassemblyManager
+	public class SpcDisassemblyManager : CpuDisassemblyManager
 	{
-		private CodeDataProvider _provider;
+		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.SpcMemory; } }
+		public override int AddressSize { get { return 4; } }
+		public override int ByteCodeSize { get { return 3; } }
 
-		public ICodeDataProvider Provider { get { return this._provider; } }
-		public int AddressSize { get { return 4; } }
-		public int ByteCodeSize { get { return 3; } }
-
-		public void RefreshCode()
+		public override void RefreshCode()
 		{
 			this._provider = new CodeDataProvider(CpuType.Spc);
-		}
-
-		public void ToggleBreakpoint(int lineIndex)
-		{
-			int address = this._provider.GetLineAddress(lineIndex);
-			if(address >= 0) {
-				BreakpointManager.ToggleBreakpoint(new AddressInfo() {
-					Address = address,
-					Type = SnesMemoryType.SpcMemory
-				});
-			}
-		}
-
-		public void EnableDisableBreakpoint(int lineIndex)
-		{
-			int address = this._provider.GetLineAddress(lineIndex);
-			if(address >= 0) {
-				BreakpointManager.EnableDisableBreakpoint(new AddressInfo() {
-					Address = address,
-					Type = SnesMemoryType.SpcMemory
-				});
-			}
 		}
 	}
 }

@@ -9,13 +9,14 @@ namespace Mesen.GUI.Debugger.Code
 {
 	public class CpuDisassemblyManager : IDisassemblyManager
 	{
-		private CodeDataProvider _provider;
-
+		protected CodeDataProvider _provider;
 		public ICodeDataProvider Provider { get { return this._provider; } }
-		public int AddressSize { get { return 6; } }
-		public int ByteCodeSize { get { return 4; } }
 
-		public void RefreshCode()
+		public virtual SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.CpuMemory; } }
+		public virtual int AddressSize { get { return 6; } }
+		public virtual int ByteCodeSize { get { return 4; } }
+
+		public virtual void RefreshCode()
 		{
 			this._provider = new CodeDataProvider(CpuType.Cpu);
 		}
@@ -24,10 +25,17 @@ namespace Mesen.GUI.Debugger.Code
 		{
 			int address = this._provider.GetLineAddress(lineIndex);
 			if(address >= 0) {
-				BreakpointManager.ToggleBreakpoint(new AddressInfo() {
+				AddressInfo relAddress = new AddressInfo() {
 					Address = address,
-					Type = SnesMemoryType.CpuMemory
-				});
+					Type = RelativeMemoryType
+				};
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+				if(absAddress.Address < 0) {
+					BreakpointManager.ToggleBreakpoint(relAddress);
+				} else {
+					BreakpointManager.ToggleBreakpoint(absAddress);
+				}
 			}
 		}
 
@@ -37,7 +45,7 @@ namespace Mesen.GUI.Debugger.Code
 			if(address >= 0) {
 				BreakpointManager.EnableDisableBreakpoint(new AddressInfo() {
 					Address = address,
-					Type = SnesMemoryType.CpuMemory
+					Type = RelativeMemoryType
 				});
 			}
 		}

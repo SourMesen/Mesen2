@@ -261,6 +261,7 @@ public:
 
 	SpcState GetState();
 	AddressInfo GetAbsoluteAddress(uint16_t addr);
+	int GetRelativeAddress(AddressInfo & absAddress);
 
 	uint8_t* GetSpcRam();
 	uint8_t* GetSpcRom();

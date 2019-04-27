@@ -174,7 +174,7 @@ void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType
 
 void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 {
-	AddressInfo addressInfo(addr, SnesMemoryType::WorkRam);
+	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
 	//TODO Make this more flexible/accurate
 	MemoryOperationInfo operation(0x7E0000 | addr, value, MemoryOperationType::Read);
 	ProcessBreakConditions(operation, addressInfo);
@@ -182,7 +182,7 @@ void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 
 void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 {
-	AddressInfo addressInfo(addr, SnesMemoryType::WorkRam);
+	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
 	//TODO Make this more flexible/accurate
 	MemoryOperationInfo operation(0x7E0000 | addr, value, MemoryOperationType::Write);
 	ProcessBreakConditions(operation, addressInfo);
@@ -241,7 +241,7 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 
 void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo(addr, SnesMemoryType::SpcRam); //Writes never affect the SPC ROM
+	AddressInfo addressInfo { addr, SnesMemoryType::SpcRam }; //Writes never affect the SPC ROM
 	MemoryOperationInfo operation(addr, value, type);
 	ProcessBreakConditions(operation, addressInfo);
 
@@ -252,7 +252,7 @@ void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType
 
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	AddressInfo addressInfo(addr, memoryType);
+	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read);
 	ProcessBreakConditions(operation, addressInfo);
 
@@ -261,7 +261,7 @@ void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memor
 
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	AddressInfo addressInfo(addr, memoryType);
+	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write);
 	ProcessBreakConditions(operation, addressInfo);
 
@@ -501,6 +501,34 @@ void Debugger::GetState(DebugState &state)
 	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
 	state.Spc = _spc->GetState();
+}
+
+AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
+{
+	if(relAddress.Type == SnesMemoryType::CpuMemory) {
+		return _memoryManager->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::SpcMemory) {
+		return _spc->GetAbsoluteAddress(relAddress.Address);
+	}
+
+	throw std::runtime_error("Unsupported address type");
+}
+
+AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress)
+{
+	switch(absAddress.Type) {
+		case SnesMemoryType::PrgRom:
+		case SnesMemoryType::WorkRam:
+		case SnesMemoryType::SaveRam:
+			return { _memoryManager->GetRelativeAddress(absAddress), SnesMemoryType::CpuMemory };
+
+		case SnesMemoryType::SpcRam:
+		case SnesMemoryType::SpcRom:
+			return { _spc->GetRelativeAddress(absAddress), SnesMemoryType::SpcMemory };
+
+		default: 
+			throw std::runtime_error("Unsupported address type");
+	}
 }
 
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()

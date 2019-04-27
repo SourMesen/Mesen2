@@ -41,8 +41,7 @@ namespace Mesen.GUI.Debugger
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
 				cboBreakpointType.Items.Add("-");
 
-				//TODO - Might not be useful on the SNES?
-				/*if(DebugApi.GetMemorySize(SnesMemoryType.PrgRom) > 0) {
+				if(DebugApi.GetMemorySize(SnesMemoryType.PrgRom) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 				}
 				if(DebugApi.GetMemorySize(SnesMemoryType.WorkRam) > 0) {
@@ -54,13 +53,16 @@ namespace Mesen.GUI.Debugger
 
 				if(cboBreakpointType.Items.Count > 2) {
 					cboBreakpointType.Items.Add("-");
-				}*/
+				}
 
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
 			} else if(_cpuType == CpuType.Spc) {
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
+				cboBreakpointType.Items.Add("-");
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRam));
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRom));
 			}
 			
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");

@@ -67,6 +67,8 @@ namespace Mesen.GUI.Debugger
 			return (
 				type == SnesMemoryType.CpuMemory ||
 				type == SnesMemoryType.SpcMemory ||
+				type == SnesMemoryType.SpcRom ||
+				type == SnesMemoryType.SpcRam ||
 				type == SnesMemoryType.WorkRam ||
 				type == SnesMemoryType.SaveRam ||
 				type == SnesMemoryType.PrgRom
@@ -114,12 +116,18 @@ namespace Mesen.GUI.Debugger
 				default:	throw new Exception("invalid type");
 				case SnesMemoryType.CpuMemory: type = "CPU"; break;
 				case SnesMemoryType.SpcMemory: type = "SPC"; break;
+				
 				case SnesMemoryType.PrgRom: type = "PRG"; break;
 				case SnesMemoryType.WorkRam: type = "WRAM"; break;
 				case SnesMemoryType.SaveRam: type = "SRAM"; break;
 				case SnesMemoryType.VideoRam: type = "VRAM"; break;
 				case SnesMemoryType.SpriteRam: type = "OAM"; break;
 				case SnesMemoryType.CGRam: type = "CG"; break;
+
+				case SnesMemoryType.SpcRam: type = "SPC RAM"; break;
+				case SnesMemoryType.SpcRom: type = "SPC ROM"; break;
+
+				case SnesMemoryType.Register: type = "REG"; break;
 			}
 
 			type += ":";
@@ -135,9 +143,7 @@ namespace Mesen.GUI.Debugger
 		{
 			UInt32 address = AddressType == BreakpointAddressType.SingleAddress ? this.Address : this.StartAddress;
 			if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
-				//TODO
-				//return InteropEmu.DebugGetRelativeAddress(address, this.MemoryType.ToAddressType());
-				return -1;
+				return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)address, Type = this.MemoryType }).Address;
 			} else {
 				return (int)address;
 			}
@@ -147,8 +153,7 @@ namespace Mesen.GUI.Debugger
 		{
 			if(this.AddressType == BreakpointAddressType.AddressRange){
 				if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
-					//TODO
-					//return InteropEmu.DebugGetRelativeAddress(this.EndAddress, this.MemoryType.ToAddressType());
+					return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)this.EndAddress, Type = this.MemoryType }).Address;
 				} else {
 					return (int)this.EndAddress;
 				}
@@ -158,7 +163,15 @@ namespace Mesen.GUI.Debugger
 
 		public CpuType GetCpuType()
 		{
-			return _memoryType == SnesMemoryType.SpcMemory ? CpuType.Spc : CpuType.Cpu;
+			switch(_memoryType) {
+				case SnesMemoryType.SpcMemory:
+				case SnesMemoryType.SpcRam:
+				case SnesMemoryType.SpcRom:
+					return CpuType.Spc;
+
+				default:
+					return CpuType.Cpu;
+			}
 		}
 
 		public bool Matches(CpuType type)

@@ -381,6 +381,10 @@ AddressInfo MemoryManager::GetAbsoluteAddress(uint32_t addr)
 
 int MemoryManager::GetRelativeAddress(AddressInfo &address, int32_t cpuAddress)
 {
+	if(address.Type == SnesMemoryType::WorkRam) {
+		return 0x7E0000 | address.Address;
+	}
+
 	uint16_t startPosition;
 	if(cpuAddress < 0) {
 		uint8_t bank = _console->GetCpu()->GetState().K;

@@ -101,6 +101,9 @@ public:
 
 	void GetState(DebugState &state);
 
+	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
+	AddressInfo GetRelativeAddress(AddressInfo absAddress);
+
 	shared_ptr<TraceLogger> GetTraceLogger();
 	shared_ptr<MemoryDumper> GetMemoryDumper();
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();

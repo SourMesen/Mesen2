@@ -31,14 +31,6 @@ struct AddressInfo
 {
 	int32_t Address;
 	SnesMemoryType Type;
-
-	AddressInfo() { }
-
-	AddressInfo(int32_t address, SnesMemoryType type)
-	{
-		Address = address;
-		Type = type;
-	}
 };
 
 struct MemoryOperationInfo

@@ -46,8 +46,9 @@ namespace Mesen.GUI.Debugger.Code
 
 		private void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
 		{
+			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = cpuAddress, Type = SnesMemoryType.SpcMemory });
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
-				if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.SpcMemory)) {
+				if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.SpcMemory) || (absAddress.Address > 0 && breakpoint.Matches((uint)absAddress.Address, absAddress.Type))) {
 					SetBreakpointLineProperties(props, breakpoint);
 					return;
 				}

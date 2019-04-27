@@ -61,6 +61,9 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetMemoryValues(SnesMemoryType type, UInt32 address, [In] byte[] data, Int32 length);
 		[DllImport(DllPath)] public static extern void SetMemoryState(SnesMemoryType type, [In] byte[] buffer, Int32 length);
 
+		[DllImport(DllPath)] public static extern AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
+		[DllImport(DllPath)] public static extern AddressInfo GetRelativeAddress(AddressInfo absAddress);
+
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropBreakpoint[] breakpoints, UInt32 length);
 
 		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(SnesMemoryType type, [In, Out] byte[] buffer);
@@ -156,7 +159,7 @@ namespace Mesen.GUI
 		Register
 	}
 
-	public class AddressInfo
+	public struct AddressInfo
 	{
 		public Int32 Address;
 		public SnesMemoryType Type;

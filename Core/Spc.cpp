@@ -297,9 +297,23 @@ SpcState Spc::GetState()
 AddressInfo Spc::GetAbsoluteAddress(uint16_t addr)
 {
 	if(addr < 0xFFC0 || !_state.RomEnabled) {
-		return AddressInfo(addr, SnesMemoryType::SpcRam);
+		return AddressInfo { addr, SnesMemoryType::SpcRam };
 	}
-	return AddressInfo(addr & 0x3F, SnesMemoryType::SpcRom);
+	return AddressInfo { addr & 0x3F, SnesMemoryType::SpcRom };
+}
+
+int Spc::GetRelativeAddress(AddressInfo &absAddress)
+{
+	if(absAddress.Type == SnesMemoryType::SpcRom) {
+		if(_state.RomEnabled) {
+			return 0xFFC0 | (absAddress.Address & 0x3F);
+		}
+	} else {
+		if(absAddress.Address < 0xFFC0 || !_state.RomEnabled) {
+			return absAddress.Address;
+		}
+	}
+	return -1;
 }
 
 uint8_t* Spc::GetSpcRam()
