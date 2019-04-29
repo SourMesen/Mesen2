@@ -58,7 +58,7 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowPpuScanline), chkShowPpuScanline);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowRegisters), chkShowRegisters);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.IndentCode), chkIndentCode);
-			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.UseLabels), chkUseLabels);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.UseLabels), chkUseLabels);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ExtendZeroPage), chkExtendZeroPage);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.UseWindowsEol), chkUseWindowsEol);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.StatusFormat), cboStatusFlagFormat);
@@ -330,7 +330,7 @@ namespace Mesen.GUI.Debugger
 						txtTraceLog.ShowContentNotes = showByteCode;
 						txtTraceLog.ShowSingleContentLineNotes = showByteCode;
 
-						txtTraceLog.DataProvider = new TraceLoggerCodeDataProvider(lineContent, programCounter, byteCode);
+						txtTraceLog.DataProvider = new TraceLoggerCodeDataProvider(lineContent, programCounter, byteCode, lineFlags);
 						txtTraceLog.StyleProvider = new TraceLoggerStyleProvider(lineFlags);
 						
 						if(scrollToBottom) {
@@ -489,18 +489,20 @@ namespace Mesen.GUI.Debugger
 		private List<string> _textLines;
 		private List<Int32> _addresses;
 		private List<string> _byteCode;
+		private List<int> _flags;
 
-		public TraceLoggerCodeDataProvider(List<string> lineContent, List<int> programCounter, List<string> byteCode)
+		public TraceLoggerCodeDataProvider(List<string> lineContent, List<int> programCounter, List<string> byteCode, List<int> lineFlags)
 		{
 			_addresses = programCounter;
 			_byteCode = byteCode;
 			_textLines = lineContent;
+			_flags = lineFlags;
 		}
 
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
 			int count = _textLines.Count - 1;
-			return new CodeLineData() {
+			return new CodeLineData(_flags[count - lineIndex] == 3 ? CpuType.Spc : CpuType.Cpu) {
 				Address = _addresses[count - lineIndex],
 				Text = _textLines[count - lineIndex],
 				ByteCode = _byteCode[count - lineIndex],
@@ -549,9 +551,10 @@ namespace Mesen.GUI.Debugger
 
 		public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
 		{
+			int count = _flags.Count - 1;
 			return new LineProperties() {
-				AddressColor = _flags[lineIndex] == 3 ? (Color?)_spcColor : null,
-				LineBgColor = _flags[lineIndex] == 3 ? (Color?)_spcBgColor : null
+				AddressColor = _flags[count - lineIndex] == 3 ? (Color?)_spcColor : null,
+				LineBgColor = _flags[count - lineIndex] == 3 ? (Color?)_spcBgColor : null
 			};
 		}
 	}

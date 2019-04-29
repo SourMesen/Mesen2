@@ -72,7 +72,19 @@ namespace Mesen.GUI.Debugger
 			frm.Show();
 			return frm;
 		}
-		
+
+		public static frmMemoryTools OpenMemoryViewer(AddressInfo address)
+		{
+			frmMemoryTools frm = OpenMemoryViewer();
+			frm.ShowAddress(address.Address, address.Type);
+			return frm;
+		}
+
+		public static frmDebugger OpenDebugger(CpuType type)
+		{
+			return (frmDebugger)OpenDebugWindow(type == CpuType.Cpu ? DebugWindow.Debugger : DebugWindow.SpcDebugger);
+		}
+
 		public static frmMemoryTools GetMemoryViewer()
 		{
 			return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmMemoryTools)) as frmMemoryTools;

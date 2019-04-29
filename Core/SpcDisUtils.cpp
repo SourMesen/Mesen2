@@ -3,6 +3,7 @@
 #include "Console.h"
 #include "DummySpc.h"
 #include "DisassemblyInfo.h"
+#include "LabelManager.h"
 #include "../Utilities/FastString.h"
 #include "../Utilities/HexUtilities.h"
 
@@ -64,37 +65,48 @@ constexpr const uint8_t _opSize[256] = {
 };
 
 constexpr bool _needAddress[256] = {
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, true,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, true,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, true,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false,
-	false, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false,
-	false, true, false, false, true,  true,  true, true, false, false, false, true,  false, false, false, false
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, false, false,
+	false, true, true, true, true, true,  true, true, true,  false, true,  true,  false, false, false, true,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, true, false,
+	false, true, true, true, true, true,  true, true, true,  false, true,  true,  false, false, true, false,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, false, false,
+	false, true, true, true, true, true,  true, true, true,  false, true,  true,  false, false, false, false,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, true, false,
+	false, true, true, true, true, true,  true, true, true,  false, true,  true,  false, false, true, false,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, false, true,
+	false, true, true, true, true, true,  true, true, true,  false, true,  true,  false, false, false, false,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, false, true,
+	false, true, true, true, true, true,  true, true, true,  false, true,  true,  false, false, false, true,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, false, false,
+	false, true, true, true, true, true,  true, true, true,  true,  true,  true,  false, false, true, false,
+	false, true, true, true, true, false, true, true, false, false, false, true, false, false, false, false,
+	false, true, true, true, true, true,  true, true, true,  true,  false, true,  false, false, false, false
 };
 
-void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr)
+void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager)
 {
 	FastString str;
+
+	AddressInfo addrInfo { 0, SnesMemoryType::SpcMemory };
+	auto getOperand = [&str, &addrInfo, labelManager](uint16_t addr) {
+		addrInfo.Address = addr;
+		string label = labelManager ? labelManager->GetLabel(addrInfo) : "";
+		if(label.empty()) {
+			str.Write('$', HexUtilities::ToHex(addr));
+		} else {
+			str.Write(label);
+		}
+	};
 
 	uint8_t* byteCode = info.GetByteCode();
 	const char* op = _opTemplate[byteCode[0]];
 	int i = 0;
 	while(op[i]) {
 		switch(op[i]) {
-			case 'r': str.Write('$', HexUtilities::ToHex((uint16_t)(memoryAddr + (int8_t)byteCode[1] + GetOpSize(byteCode[0])))); break;
-			case 'q': str.Write('$', HexUtilities::ToHex((uint16_t)(memoryAddr + (int8_t)byteCode[2] + GetOpSize(byteCode[0])))); break; //relative 2nd byte
+			case 'r': getOperand((uint16_t)(memoryAddr + (int8_t)byteCode[1] + GetOpSize(byteCode[0]))); break;
+			case 'q': getOperand((uint16_t)(memoryAddr + (int8_t)byteCode[2] + GetOpSize(byteCode[0]))); break; //relative 2nd byte
 
-			case 'a': str.Write('$', HexUtilities::ToHex((uint16_t)(byteCode[1] | (byteCode[2] << 8)))); break;
+			case 'a': getOperand((uint16_t)(byteCode[1] | (byteCode[2] << 8))); break;
 			
 			case 'd': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
 			case 'e': str.Write('$', HexUtilities::ToHex(byteCode[2])); break; //direct 2nd byte
@@ -104,7 +116,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 			case 'i': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
 
-			case 'm': str.Write('$', HexUtilities::ToHex((uint16_t)((byteCode[1] | (byteCode[2] << 8)) & 0x1FFF))); break;
+			case 'm': getOperand((uint16_t)((byteCode[1] | (byteCode[2] << 8)) & 0x1FFF)); break;
 			case 'b': str.Write('$', (char)('0' + (byteCode[2] >> 5))); break;
 
 			default: str.Write(op[i]); break;

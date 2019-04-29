@@ -35,9 +35,10 @@ namespace Mesen.GUI
 			data.ByteCode = new byte[4];
 
 			DebugApi.GetDisassemblyLineDataWrapper(type, lineIndex, ref data);
-			return new CodeLineData(data);
+			return new CodeLineData(data, type);
 		}
 
+		[DllImport(DllPath)] public static extern void RefreshDisassembly(CpuType type);
 		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineCount(CpuType type);
 		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineIndex(CpuType type, UInt32 cpuAddress);
 		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
@@ -63,6 +64,9 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 		[DllImport(DllPath)] public static extern AddressInfo GetRelativeAddress(AddressInfo absAddress);
+
+		[DllImport(DllPath)] public static extern void SetLabel(uint address, SnesMemoryType memType, string label, string comment);
+		[DllImport(DllPath)] public static extern void ClearLabels();
 
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropBreakpoint[] breakpoints, UInt32 length);
 
@@ -157,6 +161,22 @@ namespace Mesen.GUI
 		SpcRam,
 		SpcRom,
 		Register
+	}
+
+	public static class SnesMemoryTypeExtensions
+	{
+		public static CpuType ToCpuType(this SnesMemoryType memType)
+		{
+			switch(memType) {
+				case SnesMemoryType.SpcMemory:
+				case SnesMemoryType.SpcRam:
+				case SnesMemoryType.SpcRom:
+					return CpuType.Spc;
+
+				default:
+					return CpuType.Cpu;
+			}
+		}
 	}
 
 	public struct AddressInfo

@@ -106,36 +106,41 @@ struct DisassemblyResult
 {
 	AddressInfo Address;
 	int32_t CpuAddress;
-	uint8_t Flags;
+	uint16_t Flags;
+	int16_t CommentLine;
 
-	DisassemblyResult(int32_t cpuAddress, uint8_t flags)
+	DisassemblyResult(int32_t cpuAddress, uint16_t flags, int16_t commentLine = -1)
 	{
 		Flags = flags;
 		CpuAddress = cpuAddress;
 		Address.Address = -1;
+		CommentLine = commentLine;
 	}
 
-	DisassemblyResult(AddressInfo address, int32_t cpuAddress, uint8_t flags = 0)
+	DisassemblyResult(AddressInfo address, int32_t cpuAddress, uint16_t flags = 0, int16_t commentLine = -1)
 	{
 		Address = address;
 		CpuAddress = cpuAddress;
 		Flags = flags;
+		CommentLine = commentLine;
 	}
 };
 
 namespace LineFlags
 {
-	enum LineFlags : uint8_t
+	enum LineFlags : uint16_t
 	{
 		None = 0,
-		PrgRom = 1,
-		WorkRam = 2,
-		SaveRam = 4,
-		VerifiedData = 8,
-		VerifiedCode = 16,
-		BlockStart = 32,
-		BlockEnd = 64,
-		SubStart = 128
+		PrgRom = 0x01,
+		WorkRam = 0x02,
+		SaveRam = 0x04,
+		VerifiedData = 0x08,
+		VerifiedCode = 0x10,
+		BlockStart = 0x20,
+		BlockEnd = 0x40,
+		SubStart = 0x80,
+		Label = 0x100,
+		Comment = 0x200,
 	};
 }
 
@@ -144,7 +149,7 @@ struct CodeLineData
 	int32_t Address;
 	int32_t AbsoluteAddress;
 	uint8_t OpSize;
-	uint8_t Flags;
+	uint16_t Flags;
 
 	int32_t EffectiveAddress;
 	uint16_t Value;

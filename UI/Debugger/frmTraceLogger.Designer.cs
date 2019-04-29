@@ -488,7 +488,6 @@ namespace Mesen.GUI.Debugger
 			this.chkUseLabels.TabIndex = 11;
 			this.chkUseLabels.Text = "Use Labels";
 			this.chkUseLabels.UseVisualStyleBackColor = true;
-			this.chkUseLabels.Visible = false;
 			this.chkUseLabels.CheckedChanged += new System.EventHandler(this.chkOptions_CheckedChanged);
 			// 
 			// label1

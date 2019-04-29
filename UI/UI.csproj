@@ -282,6 +282,20 @@
     <Compile Include="Debugger\frmBreakOn.Designer.cs">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\Labels\CodeLabel.cs" />
+    <Compile Include="Debugger\Labels\ctrlLabelList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Labels\ctrlLabelList.Designer.cs">
+      <DependentUpon>ctrlLabelList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Labels\frmEditLabel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Labels\frmEditLabel.Designer.cs">
+      <DependentUpon>frmEditLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Labels\LabelManager.cs" />
     <Compile Include="Debugger\PpuViewer\ctrlImagePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -778,6 +792,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmBreakOn.resx">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Labels\ctrlLabelList.resx">
+      <DependentUpon>ctrlLabelList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Labels\frmEditLabel.resx">
+      <DependentUpon>frmEditLabel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\MemoryTools\ctrlHexViewer.resx">
       <DependentUpon>ctrlHexViewer.cs</DependentUpon>

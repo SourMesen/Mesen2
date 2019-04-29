@@ -4,6 +4,7 @@
 
 class Console;
 class MemoryManager;
+class LabelManager;
 
 struct CpuState;
 enum class AddrMode : uint8_t;
@@ -26,7 +27,7 @@ public:
 	bool IsInitialized();
 	void Reset();
 
-	void GetDisassembly(string &out, uint32_t memoryAddr);
+	void GetDisassembly(string &out, uint32_t memoryAddr, LabelManager *labelManager);
 	
 	uint8_t GetOpCode();
 	uint8_t GetOpSize();

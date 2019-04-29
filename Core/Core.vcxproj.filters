@@ -266,6 +266,9 @@
     <ClInclude Include="DummySpc.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="LabelManager.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -427,6 +430,9 @@
     </ClCompile>
     <ClCompile Include="ConsoleLock.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="LabelManager.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

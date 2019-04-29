@@ -27,6 +27,8 @@ namespace Mesen.GUI.Debugger
 
 			_cpuType = cpuType;
 
+			ctrlLabelList.CpuType = cpuType;
+
 			if(DesignMode) {
 				return;
 			}
@@ -205,6 +207,11 @@ namespace Mesen.GUI.Debugger
 			if(!paused) {
 				ctrlDisassemblyView.SetActiveAddress(null);
 			}
+		}
+
+		public void GoToAddress(int address)
+		{
+			ctrlDisassemblyView.GoToAddress((int)address);
 		}
 
 		private void GoToAddress()

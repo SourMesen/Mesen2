@@ -3,6 +3,7 @@
 
 class DisassemblyInfo;
 class Console;
+class LabelManager;
 struct CpuState;
 enum class AddrMode : uint8_t;
 
@@ -15,7 +16,7 @@ private:
 	static uint8_t GetOpSize(AddrMode addrMode, uint8_t flags);
 
 public:
-	static void GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr);
+	static void GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager);
 	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags);
 	static int32_t GetEffectiveAddress(DisassemblyInfo &info, Console* console, CpuState &state);
 };

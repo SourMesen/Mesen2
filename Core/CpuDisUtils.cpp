@@ -4,11 +4,12 @@
 #include "Cpu.h"
 #include "Console.h"
 #include "DisassemblyInfo.h"
+#include "LabelManager.h"
 #include "DummyCpu.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
-void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr)
+void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager)
 {
 	FastString str;
 
@@ -22,15 +23,18 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 	FastString operand;
 	if(opSize > 1) {
-		operand.Write('$');
-		if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng) {
-			operand.Write(HexUtilities::ToHex24(opAddr));
+		if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng || opSize == 4) {
+			AddressInfo address { (int32_t)opAddr, SnesMemoryType::CpuMemory };
+			string label = labelManager ? labelManager->GetLabel(address) : "";
+			if(label.size()) {
+				operand.Write(label);
+			} else {
+				operand.Write('$', HexUtilities::ToHex24(opAddr));
+			}
 		} else if(opSize == 2) {
-			operand.Write(HexUtilities::ToHex((uint8_t)opAddr));
+			operand.Write('$', HexUtilities::ToHex((uint8_t)opAddr));
 		} else if(opSize == 3) {
-			operand.Write(HexUtilities::ToHex((uint16_t)opAddr));
-		} else if(opSize == 4) {
-			operand.Write(HexUtilities::ToHex24(opAddr));
+			operand.Write('$', HexUtilities::ToHex((uint16_t)opAddr));
 		}
 	}
 
@@ -102,7 +106,7 @@ uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAd
 int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, CpuState &state)
 {
 	AddrMode addrMode = CpuDisUtils::OpMode[info.GetOpCode()];
-	if(addrMode > AddrMode::ImmM && addrMode != AddrMode::Acc && addrMode != AddrMode::Imp && addrMode != AddrMode::Stk && addrMode != AddrMode::Rel && addrMode != AddrMode::RelLng && addrMode != AddrMode::AbsLngJmp && addrMode != AddrMode::BlkMov) {
+	if(addrMode != AddrMode::Rel && addrMode != AddrMode::RelLng && addrMode > AddrMode::ImmM && info.GetOpSize() < 4) {
 		DummyCpu cpu(console);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= info.GetFlags();

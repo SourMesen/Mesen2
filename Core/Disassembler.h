@@ -7,6 +7,8 @@
 class MemoryManager;
 class Console;
 class Spc;
+class Debugger;
+class LabelManager;
 class CodeDataLogger;
 struct CpuState;
 enum class CpuType : uint8_t;
@@ -17,7 +19,9 @@ private:
 	MemoryManager *_memoryManager;
 	Console *_console;
 	Spc *_spc;
+	Debugger *_debugger;
 	shared_ptr<CodeDataLogger> _cdl;
+	shared_ptr<LabelManager> _labelManager;
 
 	vector<DisassemblyInfo> _prgCache;
 	vector<DisassemblyInfo> _wramCache;
@@ -45,7 +49,7 @@ private:
 	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
 
 public:
-	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl);
+	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger);
 
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void InvalidateCache(AddressInfo addrInfo);
@@ -53,6 +57,7 @@ public:
 
 	DisassemblyInfo GetDisassemblyInfo(AddressInfo &info);
 
+	void RefreshDisassembly(CpuType type);
 	uint32_t GetLineCount(CpuType type);
 	uint32_t GetLineIndex(CpuType type, uint32_t cpuAddress);
 	bool GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &data);

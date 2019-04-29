@@ -115,7 +115,7 @@ namespace Mesen.GUI.Debugger
 			switch(MemoryType) {
 				default:	throw new Exception("invalid type");
 				case SnesMemoryType.CpuMemory: type = "CPU"; break;
-				case SnesMemoryType.SpcMemory: type = "SPC"; break;
+				case SnesMemoryType.SpcMemory: type = "CPU"; break;
 				
 				case SnesMemoryType.PrgRom: type = "PRG"; break;
 				case SnesMemoryType.WorkRam: type = "WRAM"; break;
@@ -124,8 +124,8 @@ namespace Mesen.GUI.Debugger
 				case SnesMemoryType.SpriteRam: type = "OAM"; break;
 				case SnesMemoryType.CGRam: type = "CG"; break;
 
-				case SnesMemoryType.SpcRam: type = "SPC RAM"; break;
-				case SnesMemoryType.SpcRom: type = "SPC ROM"; break;
+				case SnesMemoryType.SpcRam: type = "RAM"; break;
+				case SnesMemoryType.SpcRom: type = "ROM"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}
@@ -160,23 +160,10 @@ namespace Mesen.GUI.Debugger
 			}
 			return -1;
 		}
-
-		public CpuType GetCpuType()
-		{
-			switch(_memoryType) {
-				case SnesMemoryType.SpcMemory:
-				case SnesMemoryType.SpcRam:
-				case SnesMemoryType.SpcRom:
-					return CpuType.Spc;
-
-				default:
-					return CpuType.Cpu;
-			}
-		}
-
+		
 		public bool Matches(CpuType type)
 		{
-			return GetCpuType() == type;		
+			return _memoryType.ToCpuType() == type;		
 		}
 
 		public bool Matches(UInt32 address, SnesMemoryType type)

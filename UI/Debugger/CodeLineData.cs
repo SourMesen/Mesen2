@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.GUI.Debugger.Labels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,6 +10,8 @@ namespace Mesen.GUI.Debugger
 {
 	public class CodeLineData
 	{
+		private CpuType _cpuType;
+
 		public string Text;
 
 		public Int32 Address;
@@ -27,7 +30,19 @@ namespace Mesen.GUI.Debugger
 		public string GetEffectiveAddressString(string format)
 		{
 			if(EffectiveAddress >= 0) {
-				return "[" + EffectiveAddress.ToString(format) + "]";
+				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = _cpuType == CpuType.Spc ? SnesMemoryType.SpcMemory : SnesMemoryType.CpuMemory };
+				CodeLabel label = LabelManager.GetLabel(relAddress);
+				if(label != null) {
+					if(label.Length > 1) {
+						int gap = DebugApi.GetAbsoluteAddress(relAddress).Address - label.GetAbsoluteAddress().Address;
+						if(gap > 0) {
+							return "[" + label.Label + "+" + gap.ToString() + "]";
+						}
+					}
+					return "[" + label.Label + "]";
+				} else {
+					return "[" + EffectiveAddress.ToString(format) + "]";
+				}
 			} else {
 				return "";
 			}
@@ -48,20 +63,23 @@ namespace Mesen.GUI.Debugger
 		{
 			get
 			{
-				if(Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd)) {
+				if(Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd) || Flags.HasFlag(LineFlags.Label) || (Flags.HasFlag(LineFlags.Comment) && Text.Length == 0)) {
 					return 0;
 				} else {
-					return 10;
+					return 15;
 				}
 			}
 		}
 
-		public CodeLineData()
+		public CodeLineData(CpuType cpuType)
 		{
+			_cpuType = cpuType;
 		}
 
-		public CodeLineData(InteropCodeLineData data)
+		public CodeLineData(InteropCodeLineData data, CpuType cpuType)
 		{
+			_cpuType = cpuType;
+
 			this.Text = ConvertString(data.Text);
 			this.Comment = ConvertString(data.Comment);
 			this.OpSize = data.OpSize;
@@ -95,7 +113,7 @@ namespace Mesen.GUI.Debugger
 		public Int32 Address;
 		public Int32 AbsoluteAddress;
 		public byte OpSize;
-		public byte Flags;
+		public UInt16 Flags;
 
 		public Int32 EffectiveAddress;
 		public UInt16 Value;
@@ -111,14 +129,18 @@ namespace Mesen.GUI.Debugger
 		public byte[] Comment;
 	}
 
-	public enum LineFlags : byte
+	public enum LineFlags : UInt16
 	{
-		PrgRom = 1,
-		WorkRam = 2,
-		SaveRam = 4,
-		VerifiedData = 8,
-		VerifiedCode = 16,
-		BlockStart = 32,
-		BlockEnd = 64,
+		None = 0,
+		PrgRom = 0x01,
+		WorkRam = 0x02,
+		SaveRam = 0x04,
+		VerifiedData = 0x08,
+		VerifiedCode = 0x10,
+		BlockStart = 0x20,
+		BlockEnd = 0x40,
+		SubStart = 0x80,
+		Label = 0x100,
+		Comment = 0x200,
 	}
 }

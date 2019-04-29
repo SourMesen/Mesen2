@@ -6,6 +6,7 @@
 #include "Console.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
+#include "LabelManager.h"
 #include "../Utilities/HexUtilities.h"
 
 string TraceLogger::_executionTrace = "";
@@ -13,6 +14,7 @@ string TraceLogger::_executionTrace = "";
 TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 {
 	_console = console;
+	_labelManager = debugger->GetLabelManager();
 	_currentPos = 0;
 	_logCount = 0;
 	_logToFile = false;
@@ -218,15 +220,23 @@ void TraceLogger::WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint
 		code = std::string(indentLevel, ' ');
 	}
 
-	//LabelManager* labelManager = _options.UseLabels ? _labelManager.get() : nullptr;
-	info.GetDisassembly(code, pc);
+	LabelManager* labelManager = _options.UseLabels ? _labelManager.get() : nullptr;
+	info.GetDisassembly(code, pc, labelManager);
 	WriteValue(output, code, rowPart);
 }
 
-void TraceLogger::WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output)
+void TraceLogger::WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType)
 {
 	int32_t effectiveAddress = info.GetEffectiveAddress(_console.get(), cpuState);
 	if(effectiveAddress >= 0) {
+		if(_options.UseLabels) {
+			AddressInfo addr { effectiveAddress, cpuMemoryType };
+			string label = _labelManager->GetLabel(addr);
+			if(!label.empty()) {
+				WriteValue(output, " [" + label + "]", rowPart);
+				return;
+			}
+		}
 		WriteValue(output, " [" + HexUtilities::ToHex24(effectiveAddress) + "]", rowPart);
 	}
 }
@@ -266,7 +276,7 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::Text: output += rowPart.Text; break;
 			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
 			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, (uint8_t)cpuState.SP, pcAddress, output); break;
-			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output); break;
+			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::CpuMemory); break;
 			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output); break;
 			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
 
@@ -296,7 +306,7 @@ void TraceLogger::GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuS
 			case RowDataType::Text: output += rowPart.Text; break;
 			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
 			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, cpuState.SP, pcAddress, output); break;
-			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output); break;
+			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::SpcMemory); break;
 			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output); break;
 			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
 

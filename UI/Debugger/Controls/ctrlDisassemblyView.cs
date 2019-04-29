@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Mesen.GUI.Controls;
 using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Code;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger.Controls
 {
@@ -28,13 +29,19 @@ namespace Mesen.GUI.Debugger.Controls
 			InitShortcuts();
 
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
+			LabelManager.OnLabelUpdated += OnLabelUpdated;
 		}
-
+	
 		protected override void OnHandleDestroyed(EventArgs e)
 		{
 			base.OnHandleDestroyed(e);
-
+			LabelManager.OnLabelUpdated -= OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
+		}
+
+		private void OnLabelUpdated(object sender, EventArgs e)
+		{
+			ctrlCode.Invalidate();
 		}
 
 		private void BreakpointManager_BreakpointsChanged(object sender, EventArgs e)

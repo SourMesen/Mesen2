@@ -53,6 +53,7 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::CGRam: return Ppu::CgRamSize;
 		case SnesMemoryType::SpcRam: return Spc::SpcRamSize;
 		case SnesMemoryType::SpcRom: return Spc::SpcRomSize;
+		case SnesMemoryType::Register: return 0x10000;
 	}
 }
 

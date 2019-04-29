@@ -1072,51 +1072,18 @@
 		</Enum>
 
 		<!-- Resources below are used by the debugger only - no translation is needed -->
-		<Enum ID="AddressType">
-			<Value ID="InternalRam">NES RAM (2 KB)</Value>
-			<Value ID="PrgRom">PRG ROM</Value>
-			<Value ID="WorkRam">Work RAM</Value>
-			<Value ID="SaveRam">Save RAM</Value>
-			<Value ID="Register">Register</Value>
-		</Enum>
-		<Enum ID="PpuAddressType">
-			<Value ID="ChrRom">CHR ROM</Value>
-			<Value ID="ChrRam">CHR RAM</Value>
-			<Value ID="NametableRam">Nametable RAM</Value>
-			<Value ID="PaletteRam">Palette RAM</Value>
-		</Enum>
-		<Enum ID="DebugMemoryType">
+		<Enum ID="SnesMemoryType">
 			<Value ID="CpuMemory">CPU Memory</Value>
-			<Value ID="PpuMemory">PPU Memory</Value>
-			<Value ID="PaletteMemory">Palette RAM</Value>
-			<Value ID="SpriteMemory">Sprite / OAM RAM</Value>
-			<Value ID="SecondarySpriteMemory">Secondary OAM RAM</Value>
+			<Value ID="SpcMemory">SPC Memory</Value>
 			<Value ID="PrgRom">PRG ROM</Value>
-			<Value ID="ChrRom">CHR ROM</Value>
-			<Value ID="ChrRam">CHR RAM</Value>
 			<Value ID="WorkRam">Work RAM</Value>
 			<Value ID="SaveRam">Save RAM</Value>
-			<Value ID="InternalRam">NES RAM (2 KB)</Value>
-			<Value ID="NametableRam">Nametable RAM</Value>
-		</Enum>
-		<Enum ID="AddrMode">
-			<Value ID="None">None</Value>
-			<Value ID="Acc">Accumulator</Value>
-			<Value ID="Imp">Implicit</Value>
-			<Value ID="Imm">Immediate</Value>
-			<Value ID="Rel">Relative</Value>
-			<Value ID="Zero">Zero Page</Value>
-			<Value ID="Abs">Absolute</Value>
-			<Value ID="ZeroX">Zero Page, X</Value>
-			<Value ID="ZeroY">Zero Page, Y</Value>
-			<Value ID="Ind">Indirect</Value>
-			<Value ID="IndX">Indexed Indirect</Value>
-			<Value ID="IndY">Indirect Indexed</Value>
-			<Value ID="IndYW">Indirect Indexed</Value>
-			<Value ID="AbsX">Absolute, X</Value>
-			<Value ID="AbsXW">Absolute, X</Value>
-			<Value ID="AbsY">Absolute, Y</Value>
-			<Value ID="AbsYW">Absolute, Y</Value>
+			<Value ID="VideoRam">Video RAM</Value>
+			<Value ID="SpriteRam">OAM (Sprites)</Value>
+			<Value ID="CGRam">CG RAM (Palette)</Value>
+			<Value ID="SpcRam">SPC RAM</Value>
+			<Value ID="SpcRom">SPC ROM (IPL)</Value>
+			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="StatusFlagFormat">
 			<Value ID="Hexadecimal">Hexadecimal</Value>

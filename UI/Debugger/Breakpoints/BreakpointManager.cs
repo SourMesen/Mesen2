@@ -119,7 +119,7 @@ namespace Mesen.GUI.Debugger
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
 			for(int i = 0; i < Breakpoints.Count; i++) {
-				if(_activeCpuTypes.Contains(Breakpoints[i].GetCpuType())) {
+				if(_activeCpuTypes.Contains(Breakpoints[i].MemoryType.ToCpuType())) {
 					breakpoints.Add(Breakpoints[i].ToInteropBreakpoint(i));
 				}
 			}

@@ -95,6 +95,7 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
+			this.ctrlLabelList = new Mesen.GUI.Debugger.Controls.ctrlLabelList();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -507,6 +508,7 @@
 			// 
 			// panel1
 			// 
+			this.panel1.Controls.Add(this.ctrlLabelList);
 			this.panel1.Controls.Add(this.ctrlPpuStatus);
 			this.panel1.Controls.Add(this.ctrlSpcStatus);
 			this.panel1.Controls.Add(this.ctrlCpuStatus);
@@ -584,6 +586,7 @@
 			// 
 			// ctrlWatch
 			// 
+			this.ctrlWatch.CpuType = Mesen.GUI.CpuType.Cpu;
 			this.ctrlWatch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlWatch.Location = new System.Drawing.Point(3, 16);
 			this.ctrlWatch.Name = "ctrlWatch";
@@ -637,6 +640,14 @@
 			this.tsToolbar.Size = new System.Drawing.Size(832, 25);
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
+			// 
+			// ctrlLabelList
+			// 
+			this.ctrlLabelList.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlLabelList.Location = new System.Drawing.Point(0, 315);
+			this.ctrlLabelList.Name = "ctrlLabelList";
+			this.ctrlLabelList.Size = new System.Drawing.Size(348, 106);
+			this.ctrlLabelList.TabIndex = 4;
 			// 
 			// frmDebugger
 			// 
@@ -731,5 +742,6 @@
 		private System.Windows.Forms.Panel panel1;
 		private Controls.ctrlPpuStatus ctrlPpuStatus;
 		private Controls.ctrlSpcStatus ctrlSpcStatus;
+		private Controls.ctrlLabelList ctrlLabelList;
 	}
 }

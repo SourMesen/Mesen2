@@ -29,6 +29,8 @@ namespace Mesen.GUI.Config
 		public bool ShowSelectionLength = false;
 		public WatchFormatStyle WatchFormat = WatchFormatStyle.Hex;
 
+		public bool ShowCommentsInLabelList = true;
+
 		public XmlColor CodeOpcodeColor = Color.FromArgb(22, 37, 37);
 		public XmlColor CodeLabelDefinitionColor = Color.Blue;
 		public XmlColor CodeImmediateColor = Color.Chocolate;

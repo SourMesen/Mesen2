@@ -20,6 +20,7 @@
 #include "PpuTools.h"
 #include "EventManager.h"
 #include "EventType.h"
+#include "LabelManager.h"
 #include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
@@ -36,8 +37,9 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
 	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
 
+	_labelManager.reset(new LabelManager(this));
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), _memoryManager.get()));
-	_disassembler.reset(new Disassembler(console, _codeDataLogger));
+	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _spc.get(), _memoryManager.get()));
@@ -506,7 +508,11 @@ void Debugger::GetState(DebugState &state)
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 {
 	if(relAddress.Type == SnesMemoryType::CpuMemory) {
-		return _memoryManager->GetAbsoluteAddress(relAddress.Address);
+		if(_memoryManager->IsRegister(relAddress.Address)) {
+			return { relAddress.Address & 0xFFFF, SnesMemoryType::Register };
+		} else {
+			return _memoryManager->GetAbsoluteAddress(relAddress.Address);
+		}
 	} else if(relAddress.Type == SnesMemoryType::SpcMemory) {
 		return _spc->GetAbsoluteAddress(relAddress.Address);
 	}
@@ -525,6 +531,9 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress)
 		case SnesMemoryType::SpcRam:
 		case SnesMemoryType::SpcRom:
 			return { _spc->GetRelativeAddress(absAddress), SnesMemoryType::SpcMemory };
+
+		case SnesMemoryType::Register:
+			return { -1, SnesMemoryType::Register };
 
 		default: 
 			throw std::runtime_error("Unsupported address type");
@@ -569,6 +578,11 @@ shared_ptr<PpuTools> Debugger::GetPpuTools()
 shared_ptr<EventManager> Debugger::GetEventManager()
 {
 	return _eventManager;
+}
+
+shared_ptr<LabelManager> Debugger::GetLabelManager()
+{
+	return _labelManager;
 }
 
 shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)

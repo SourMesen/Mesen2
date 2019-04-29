@@ -986,7 +986,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 						if(lineData.EffectiveAddress >= 0) {
 							colors.Add(cfg.CodeEffectiveAddressColor);
-							parts.Add(" [" + lineData.EffectiveAddress.ToString(_addressFormat) + "]");
+							parts.Add(" " + lineData.GetEffectiveAddressString(_addressFormat));
 						}
 
 						if(this.ShowMemoryValues && lineData.ValueSize > 0) {

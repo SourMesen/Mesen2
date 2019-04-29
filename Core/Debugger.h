@@ -21,6 +21,7 @@ class PpuTools;
 class CodeDataLogger;
 class EventManager;
 class CallstackManager;
+class LabelManager;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -43,6 +44,7 @@ private:
 	shared_ptr<BreakpointManager> _breakpointManager;
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<EventManager> _eventManager;
+	shared_ptr<LabelManager> _labelManager;
 	shared_ptr<CallstackManager> _callstackManager;
 	shared_ptr<CallstackManager> _spcCallstackManager;
 
@@ -112,6 +114,7 @@ public:
 	shared_ptr<BreakpointManager> GetBreakpointManager();
 	shared_ptr<PpuTools> GetPpuTools();
 	shared_ptr<EventManager> GetEventManager();
+	shared_ptr<LabelManager> GetLabelManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
 	shared_ptr<Console> GetConsole();
 };

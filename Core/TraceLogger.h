@@ -9,6 +9,7 @@
 
 class Console;
 class Debugger;
+class LabelManager;
 struct DebugState;
 
 struct TraceLoggerOptions
@@ -69,7 +70,7 @@ private:
 	string _outputBuffer;
 	ofstream _outputFile;
 	shared_ptr<Console> _console;
-	//shared_ptr<LabelManager> _labelManager;
+	shared_ptr<LabelManager> _labelManager;
 
 	vector<RowPart> _rowParts;
 	vector<RowPart> _spcRowParts;
@@ -95,7 +96,7 @@ private:
 
 	void WriteByteCode(DisassemblyInfo &info, RowPart &rowPart, string &output);
 	void WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint8_t sp, uint32_t pc, string &output);
-	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output);
+	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType);
 	void WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output);
 	void WriteAlign(int originalSize, RowPart &rowPart, string &output);
 	void AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state);

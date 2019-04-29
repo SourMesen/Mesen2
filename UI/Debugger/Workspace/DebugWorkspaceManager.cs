@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.GUI.Debugger.Labels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,8 @@ namespace Mesen.GUI.Debugger.Workspace
 				_workspace.WatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries);
 				_workspace.SpcWatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Spc).WatchEntries);
 				_workspace.Breakpoints = new List<Breakpoint>(BreakpointManager.Breakpoints);
+				_workspace.CpuLabels = new List<CodeLabel>(LabelManager.GetLabels(CpuType.Cpu));
+				_workspace.SpcLabels = new List<CodeLabel>(LabelManager.GetLabels(CpuType.Spc));
 				_workspace.Save();
 			}
 		}
@@ -34,9 +37,13 @@ namespace Mesen.GUI.Debugger.Workspace
 				_workspace.Breakpoints = new List<Breakpoint>();
 				_workspace.WatchValues = new List<string>();
 				_workspace.SpcWatchValues = new List<string>();
+				_workspace.CpuLabels = new List<CodeLabel>();
+				_workspace.SpcLabels = new List<CodeLabel>();
 				WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries = _workspace.WatchValues;
 				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
 				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
+				LabelManager.SetDefaultLabels();
+				LabelManager.RefreshLabels();
 				_workspace.Save();
 				Clear();
 			}
@@ -55,6 +62,10 @@ namespace Mesen.GUI.Debugger.Workspace
 				//Load watch entries
 				WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries = _workspace.WatchValues;
 				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
+				LabelManager.SetLabels(_workspace.CpuLabels);
+				LabelManager.SetLabels(_workspace.SpcLabels);
+				LabelManager.SetDefaultLabels();
+				LabelManager.RefreshLabels();
 
 				//Load breakpoints
 				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);

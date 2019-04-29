@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Debugger;
+using Mesen.GUI.Debugger.Labels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,8 @@ namespace Mesen.GUI.Debugger.Workspace
 		public List<Breakpoint> Breakpoints = new List<Breakpoint>();
 		public List<string> WatchValues = new List<string>();
 		public List<string> SpcWatchValues = new List<string>();
-		//public List<CodeLabel> Labels = new List<CodeLabel>();
+		public List<CodeLabel> CpuLabels = new List<CodeLabel>();
+		public List<CodeLabel> SpcLabels = new List<CodeLabel>();
 		public List<string> TblMappings = null;
 		private string _filePath;
 

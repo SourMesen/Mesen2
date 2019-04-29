@@ -37,11 +37,11 @@ void DisassemblyInfo::Reset()
 	_initialized = false;
 }
 
-void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr)
+void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelManager* labelManager)
 {
 	switch(_cpuType) {
-		case CpuType::Cpu: CpuDisUtils::GetDisassembly(*this, out, memoryAddr); break;
-		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr); break;
+		case CpuType::Cpu: CpuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
+		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
 	}
 }
 
