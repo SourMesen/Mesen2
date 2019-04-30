@@ -106,6 +106,9 @@ public:
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress);
 
+	void SetCdlData(uint8_t * cdlData, uint32_t length);
+	void RefreshCodeCache();
+
 	shared_ptr<TraceLogger> GetTraceLogger();
 	shared_ptr<MemoryDumper> GetMemoryDumper();
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();

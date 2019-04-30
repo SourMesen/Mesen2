@@ -146,6 +146,8 @@ namespace Mesen.GUI
 			DebugApi.GetCdlDataWrapper(offset, length, memType, cdlData);
 			return cdlData;
 		}
+
+		[DllImport(DllPath)] public static extern void SetCdlData([In]byte[] cdlData, Int32 length);
 	}
 
 	public enum SnesMemoryType

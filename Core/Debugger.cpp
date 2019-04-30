@@ -20,6 +20,7 @@
 #include "PpuTools.h"
 #include "EventManager.h"
 #include "EventType.h"
+#include "DebugBreakHelper.h"
 #include "LabelManager.h"
 #include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
@@ -63,16 +64,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->LoadCdlFile(cdlFile);
 
-	//TODO: Thread safety
-	uint32_t prgRomSize = console->GetCartridge()->DebugGetPrgRomSize();
-	AddressInfo addrInfo;
-	addrInfo.Type = SnesMemoryType::PrgRom;
-	for(uint32_t i = 0; i < prgRomSize; i++) {
-		if(_codeDataLogger->IsCode(i)) {
-			addrInfo.Address = (int32_t)i;
-			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i), CpuType::Cpu) - 1;
-		}
-	}
+	RefreshCodeCache();
 }
 
 Debugger::~Debugger()
@@ -100,7 +92,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(addressInfo.Address >= 0) {
 			if(addressInfo.Type == SnesMemoryType::PrgRom) {
 				uint8_t flags = CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
-				if(_prevOpCode == 0x20 || _prevOpCode == 0x5C || _prevOpCode == 0xDC || _prevOpCode == 0xFC) {
+				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
 					flags |= CdlFlags::SubEntryPoint;
 				}
 				_codeDataLogger->SetFlags(addressInfo.Address, flags);
@@ -537,6 +529,28 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress)
 
 		default: 
 			throw std::runtime_error("Unsupported address type");
+	}
+}
+
+void Debugger::SetCdlData(uint8_t *cdlData, uint32_t length)
+{
+	DebugBreakHelper helper(this);
+	_codeDataLogger->SetCdlData(cdlData, length);
+	RefreshCodeCache();
+}
+
+void Debugger::RefreshCodeCache()
+{
+	_disassembler->ResetPrgCache();
+	uint32_t prgRomSize = _console->GetCartridge()->DebugGetPrgRomSize();
+	AddressInfo addrInfo;
+	addrInfo.Type = SnesMemoryType::PrgRom;
+
+	for(uint32_t i = 0; i < prgRomSize; i++) {
+		if(_codeDataLogger->IsCode(i)) {
+			addrInfo.Address = (int32_t)i;
+			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i), CpuType::Cpu) - 1;
+		}
 	}
 }
 

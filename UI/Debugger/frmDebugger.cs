@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Code;
+using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
@@ -265,6 +266,8 @@ namespace Mesen.GUI.Debugger
 				case ConsoleNotificationType.GameLoaded: {
 					DebugState state = DebugApi.GetState();
 					this.BeginInvoke((MethodInvoker)(() => {
+						DebugWorkspaceManager.ImportDbgFile();
+						DebugApi.RefreshDisassembly(_cpuType);
 						UpdateDebugger(state, null);
 						BreakpointManager.SetBreakpoints();
 					}));

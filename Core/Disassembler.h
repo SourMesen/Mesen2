@@ -52,6 +52,7 @@ public:
 	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger);
 
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
+	void ResetPrgCache();
 	void InvalidateCache(AddressInfo addrInfo);
 	void Disassemble(CpuType cpuType);
 

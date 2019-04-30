@@ -101,6 +101,12 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 	return 0;
 }
 
+void Disassembler::ResetPrgCache()
+{
+	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
+	_needDisassemble[(int)CpuType::Cpu] = true;
+}
+
 void Disassembler::InvalidateCache(AddressInfo addrInfo)
 {
 	uint8_t *source;

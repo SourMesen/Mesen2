@@ -255,6 +255,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		if(_debugger) {
 			//Reset debugger if it was running before
 			auto lock = _debuggerLock.AcquireSafe();
+			_debugger->Release();
 			_debugger.reset();
 			GetDebugger();
 			_debugger->Step(1);

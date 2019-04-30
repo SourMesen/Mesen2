@@ -1,6 +1,8 @@
-﻿using Mesen.GUI.Debugger.Labels;
+﻿using Mesen.GUI.Debugger.Integration;
+using Mesen.GUI.Debugger.Labels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +51,17 @@ namespace Mesen.GUI.Debugger.Workspace
 			}
 		}
 
+		private static void ResetLabels()
+		{
+			if(_workspace != null) {
+				_workspace.CpuLabels = new List<CodeLabel>();
+				_workspace.SpcLabels = new List<CodeLabel>();
+				LabelManager.ResetLabels();
+				LabelManager.SetDefaultLabels();
+				LabelManager.RefreshLabels();
+			}
+		}
+
 		public static DebugWorkspace GetWorkspace()
 		{
 			string romName = EmuApi.GetRomInfo().GetRomName();
@@ -65,12 +78,26 @@ namespace Mesen.GUI.Debugger.Workspace
 				LabelManager.SetLabels(_workspace.CpuLabels);
 				LabelManager.SetLabels(_workspace.SpcLabels);
 				LabelManager.SetDefaultLabels();
+
+				ImportDbgFile();
 				LabelManager.RefreshLabels();
 
 				//Load breakpoints
 				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
 			}
 			return _workspace;
+		}
+
+		public static void ImportDbgFile()
+		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			string dbgPath = Path.Combine(Path.GetDirectoryName(romInfo.RomPath), romInfo.GetRomName() + ".dbg");
+			if(File.Exists(dbgPath)) {
+				DbgImporter import = new DbgImporter();
+				ResetLabels();
+				import.Import(dbgPath, true);
+				LabelManager.RefreshLabels();
+			}
 		}
 	}
 }
