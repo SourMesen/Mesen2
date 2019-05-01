@@ -191,11 +191,9 @@ void Console::Reset()
 	//_cart->Reset();
 	//_controlManager->Reset();
 
+	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
+
 	_memoryManager->IncrementMasterClockValue<166>();
-	
-	if(debugger) {
-		debugger->Step(1);
-	}
 	
 	Unlock();
 }
@@ -258,11 +256,13 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 			_debugger->Release();
 			_debugger.reset();
 			GetDebugger();
-			_debugger->Step(1);
 		}
 
 		_ppu->PowerOn();
 		_cpu->PowerOn();
+
+		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
+
 		_memoryManager->IncrementMasterClockValue<166>();
 
 		_rewindManager.reset(new RewindManager(shared_from_this()));
@@ -273,7 +273,6 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		UpdateRegion();
 
 		_paused = false;
-		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
 
 		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
 		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";

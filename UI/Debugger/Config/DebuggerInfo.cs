@@ -17,6 +17,18 @@ namespace Mesen.GUI.Config
 
 		public bool ShowByteCode = false;
 
+		public bool BreakOnBrk = false;
+		public bool BreakOnCop = false;
+		public bool BreakOnWdm = false;
+		public bool BreakOnStp = false;
+		public bool BreakOnUninitRead = false;
+
+		public bool BreakOnOpen = true;
+		public bool BreakOnPowerCycleReset = true;
+
+		public bool BringToFrontOnBreak = true;
+		public bool BringToFrontOnPause = false;
+
 		public int BreakOnValue = 0;
 		public int BreakInCount = 1;
 		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
@@ -46,6 +58,15 @@ namespace Mesen.GUI.Config
 		public XmlColor CodeWriteBreakpointColor = Color.FromArgb(40, 120, 80);
 		public XmlColor CodeReadBreakpointColor = Color.FromArgb(40, 40, 200);
 		public XmlColor CodeActiveStatementColor = Color.Yellow;
+
+		public void ApplyConfig()
+		{
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnBrk, BreakOnBrk);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnCop, BreakOnCop);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnWdm, BreakOnWdm);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnStp, BreakOnStp);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
+		}
 	}
 	
 	public enum BreakInMetric

@@ -45,4 +45,9 @@ extern "C" {
 		_returnString = _soundManager ? _soundManager->GetAvailableDevices() : "";
 		return _returnString.c_str();
 	}
+
+	DllExport void __stdcall SetDebuggerFlag(DebuggerFlags flag, bool enabled)
+	{
+		_console->GetSettings()->SetDebuggerFlag(flag, enabled);
+	}
 }

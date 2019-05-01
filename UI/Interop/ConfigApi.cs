@@ -25,10 +25,30 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetPreferences(InteropPreferencesConfig config);
 		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]ShortcutKeyInfo[] shortcuts, UInt32 count);
 
+		[DllImport(DllPath)] public static extern void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
+
 		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern IntPtr GetAudioDevicesWrapper();
 		public static List<string> GetAudioDevices()
 		{
 			return new List<string>(Utf8Marshaler.PtrToStringUtf8(ConfigApi.GetAudioDevicesWrapper()).Split(new string[1] { "||" }, StringSplitOptions.RemoveEmptyEntries));
 		}
+	}
+	
+	public enum DebuggerFlags : UInt32
+	{
+		BreakOnBrk = 0x01,
+		BreakOnCop = 0x02,
+		BreakOnWdm = 0x04,
+		BreakOnStp = 0x08,
+		BreakOnUninitRead = 0x10,
+
+		ShowVerifiedData = 0x100,
+		DisassembleVerifiedData = 0x200,
+
+		ShowUnidentifiedData = 0x400,
+		DisassembleUnidentifiedData = 0x800,
+
+		SpcDebuggerEnabled = 0x40000000,
+		CpuDebuggerEnabled = 0x80000000
 	}
 }

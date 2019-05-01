@@ -68,6 +68,7 @@ namespace Mesen.GUI.Config
 			Input.ApplyConfig();
 			Emulation.ApplyConfig();
 			Preferences.ApplyConfig();
+			Debug.Debugger.ApplyConfig();
 		}
 
 		public void InitializeDefaults()

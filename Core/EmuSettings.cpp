@@ -7,6 +7,7 @@
 EmuSettings::EmuSettings()
 {
 	_flags = 0;
+	_debuggerFlags = 0;
 	_inputConfigVersion = 0;
 }
 
@@ -225,4 +226,22 @@ void EmuSettings::ClearFlag(EmulationFlags flag)
 bool EmuSettings::CheckFlag(EmulationFlags flag)
 {
 	return (_flags & (int)flag) != 0;
+}
+
+void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
+{
+	if(enabled) {
+		if((_debuggerFlags & (int)flag) == 0) {
+			_debuggerFlags |= (int)flag;
+		}
+	} else {
+		if((_debuggerFlags & (int)flag) != 0) {
+			_debuggerFlags &= ~(int)flag;
+		}
+	}
+}
+
+bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
+{
+	return (_debuggerFlags & (int)flag) != 0;
 }

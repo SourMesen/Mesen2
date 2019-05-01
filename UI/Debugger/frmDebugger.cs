@@ -19,6 +19,7 @@ namespace Mesen.GUI.Debugger
 		private EntityBinder _entityBinder = new EntityBinder();
 		private NotificationListener _notifListener;
 		private CpuType _cpuType;
+		private bool _firstBreak = true;
 
 		public CpuType CpuType { get { return _cpuType; } }
 
@@ -56,7 +57,8 @@ namespace Mesen.GUI.Debugger
 			LoadConfig();
 
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
-			
+
+			ConfigApi.SetDebuggerFlag(_cpuType == CpuType.Cpu ? DebuggerFlags.CpuDebuggerEnabled : DebuggerFlags.SpcDebuggerEnabled, true);
 			BreakpointManager.AddCpuType(_cpuType);
 			DebugApi.Step(10000, StepType.CpuStep);
 		}
@@ -65,12 +67,14 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnClosing(e);
 
+
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			cfg.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			cfg.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
 			_entityBinder.UpdateObject();
 			ConfigManager.ApplyChanges();
 
+			ConfigApi.SetDebuggerFlag(_cpuType == CpuType.Cpu ? DebuggerFlags.CpuDebuggerEnabled : DebuggerFlags.SpcDebuggerEnabled, false);
 			BreakpointManager.RemoveCpuType(_cpuType);
 
 			if(this._notifListener != null) {
@@ -165,6 +169,37 @@ namespace Mesen.GUI.Debugger
 			mnuIncreaseFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom += 10; };
 			mnuDecreaseFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom -= 10; };
 			mnuResetFontSize.Click += (s, e) => { ctrlDisassemblyView.CodeViewer.TextZoom = 100; };
+
+			mnuBreakOnBrk.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnBrk); };
+			mnuBreakOnCop.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnCop); };
+			mnuBreakOnStp.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnStp); };
+			mnuBreakOnWdm.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnWdm); };
+			mnuBreakOnOpen.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnOpen); };
+			mnuBreakOnPowerCycleReset.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset); };
+			mnuBreakOnUnitRead.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnUninitRead); };
+			mnuBringToFrontOnBreak.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak); };
+			mnuBringToFrontOnPause.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnPause); };
+		}
+
+		private void InvertFlag(ref bool flag)
+		{
+			flag = !flag;
+			ConfigManager.ApplyChanges();
+			ConfigManager.Config.Debug.Debugger.ApplyConfig();
+		}
+
+		private void mnuBreakOptions_DropDownOpening(object sender, EventArgs e)
+		{
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
+			mnuBreakOnBrk.Checked = cfg.BreakOnBrk;
+			mnuBreakOnCop.Checked = cfg.BreakOnCop;
+			mnuBreakOnStp.Checked = cfg.BreakOnStp;
+			mnuBreakOnWdm.Checked = cfg.BreakOnWdm;
+			mnuBreakOnOpen.Checked = cfg.BreakOnOpen;
+			mnuBreakOnPowerCycleReset.Checked = cfg.BreakOnPowerCycleReset;
+			mnuBreakOnUnitRead.Checked = cfg.BreakOnUninitRead;
+			mnuBringToFrontOnBreak.Checked = cfg.BringToFrontOnBreak;
+			mnuBringToFrontOnPause.Checked = cfg.BringToFrontOnPause;
 		}
 
 		private void InitToolbar()
@@ -264,6 +299,10 @@ namespace Mesen.GUI.Debugger
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded: {
+					if(ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset) {
+						DebugApi.Step(1, StepType.PpuStep);
+					}
+
 					DebugState state = DebugApi.GetState();
 					this.BeginInvoke((MethodInvoker)(() => {
 						DebugWorkspaceManager.ImportDbgFile();
@@ -273,6 +312,12 @@ namespace Mesen.GUI.Debugger
 					}));
 					break;
 				}
+
+				case ConsoleNotificationType.GameReset:
+					if(ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset) {
+						DebugApi.Step(1, StepType.PpuStep);
+					}
+					break;
 
 				case ConsoleNotificationType.PpuFrameDone:
 					this.BeginInvoke((MethodInvoker)(() => {
@@ -285,8 +330,17 @@ namespace Mesen.GUI.Debugger
 					int activeAddress = _cpuType == CpuType.Cpu ? (int)((state.Cpu.K << 16) | state.Cpu.PC) : (int)state.Spc.PC;
 
 					this.BeginInvoke((MethodInvoker)(() => {
+						if(ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak) {
+							DebugWindowManager.BringToFront(this);
+						}
+
 						UpdateContinueAction();
 						UpdateDebugger(state, activeAddress);
+
+						if(_firstBreak && !ConfigManager.Config.Debug.Debugger.BreakOnOpen) {
+							DebugApi.ResumeExecution();
+						}
+						_firstBreak = false;
 					}));
 					break;
 				}

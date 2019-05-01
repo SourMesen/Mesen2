@@ -7,6 +7,7 @@
 #include "Spc.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
+#include "EmuSettings.h"
 #include "SoundMixer.h"
 #include "NotificationManager.h"
 #include "CpuTypes.h"
@@ -33,6 +34,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
 	_spc = console->GetSpc();
+	_settings = console->GetSettings();
 	_memoryManager = console->GetMemoryManager();
 
 	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
@@ -126,10 +128,20 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_cpuStepCount--;
 		}
 		
-		/*if(value == 0x00 || value == 0xDB || value == 0x42) {
-			//Break on BRK/STP/WDM
-			_cpuStepCount = 0;
-		}*/
+		if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled)) {
+			if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
+				//Break on BRK/STP/WDM/COP
+				if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+					_cpuStepCount = 0;
+				} else if(value == 0x02 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) {
+					_cpuStepCount = 0;
+				} else if(value == 0x42 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) {
+					_cpuStepCount = 0;
+				} else if(value == 0xDB && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
+					_cpuStepCount = 0;
+				}
+			}
+		}
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));

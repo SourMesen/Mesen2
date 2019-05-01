@@ -10,6 +10,7 @@ class Ppu;
 class Spc;
 class BaseCartridge;
 class MemoryManager;
+class EmuSettings;
 
 class TraceLogger;
 class ExpressionEvaluator;
@@ -35,6 +36,8 @@ private:
 	shared_ptr<Spc> _spc;
 	shared_ptr<MemoryManager> _memoryManager;
 	shared_ptr<BaseCartridge> _baseCartridge;
+	
+	shared_ptr<EmuSettings> _settings;
 
 	shared_ptr<TraceLogger> _traceLogger;
 	shared_ptr<MemoryDumper> _memoryDumper;

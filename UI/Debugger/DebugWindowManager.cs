@@ -17,17 +17,11 @@ namespace Mesen.GUI.Debugger
 		{
 			return new List<Form>(_openedWindows);
 		}
-
 		public static Form OpenDebugWindow(DebugWindow window)
 		{
 			Form existingWindow = GetExistingSingleInstanceWindow(window);
 			if(existingWindow != null) {
-				existingWindow.BringToFront();
-				if(existingWindow.WindowState == FormWindowState.Minimized) {
-					//Unminimize window if it was minimized
-					existingWindow.WindowState = FormWindowState.Normal;
-				}
-				existingWindow.Focus();
+				BringToFront(existingWindow);
 				return existingWindow;
 			} else {
 				BaseForm frm = null;
@@ -133,6 +127,16 @@ namespace Mesen.GUI.Debugger
 		{
 			_openedWindows.Remove((Form)sender);
 			CleanupDebugger();
+		}
+
+		public static void BringToFront(Form form)
+		{
+			form.BringToFront();
+			if(form.WindowState == FormWindowState.Minimized) {
+				//Unminimize window if it was minimized
+				form.WindowState = FormWindowState.Normal;
+			}
+			form.Focus();
 		}
 	}
 

@@ -14,6 +14,8 @@ private:
 	atomic<uint32_t> _flags;
 	atomic<uint32_t> _inputConfigVersion;
 
+	atomic<uint32_t> _debuggerFlags;
+
 	string _audioDevice;
 	string _saveFolder;
 	string _saveStateFolder;
@@ -60,4 +62,7 @@ public:
 	void SetFlagState(EmulationFlags flag, bool enabled);
 	void ClearFlag(EmulationFlags flag);
 	bool CheckFlag(EmulationFlags flag);
+
+	void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
+	bool CheckDebuggerFlag(DebuggerFlags flags);
 };

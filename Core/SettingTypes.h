@@ -412,3 +412,21 @@ struct ShortcutKeyInfo
 	EmulatorShortcut Shortcut;
 	KeyCombination Keys;
 };
+
+enum class DebuggerFlags : uint32_t
+{
+	BreakOnBrk = 0x01,
+	BreakOnCop = 0x02,
+	BreakOnWdm = 0x04,
+	BreakOnStp = 0x08,
+	BreakOnUninitRead = 0x10,
+
+	ShowVerifiedData = 0x100,
+	DisassembleVerifiedData = 0x200,
+	
+	ShowUnidentifiedData = 0x400,
+	DisassembleUnidentifiedData = 0x800,
+
+	SpcDebuggerEnabled = 0x40000000,
+	CpuDebuggerEnabled = 0x80000000
+};
