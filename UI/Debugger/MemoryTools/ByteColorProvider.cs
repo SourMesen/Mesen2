@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using Be.Windows.Forms;
 using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger
 {
@@ -16,7 +17,7 @@ namespace Mesen.GUI.Debugger
 		UInt32[] _writeCounts;
 		UInt32[] _execCounts;
 		byte[] _cdlData;
-		//bool[] _hasLabel;
+		bool[] _hasLabel;
 		DebugState _state = new DebugState();
 		bool _showExec;
 		bool _showWrite;
@@ -28,7 +29,7 @@ namespace Mesen.GUI.Debugger
 		bool _hideExecutedBytes;
 		bool _highlightDataBytes;
 		bool _highlightCodeBytes;
-		//bool _highlightLabelledBytes;
+		bool _highlightLabelledBytes;
 		bool _highlightBreakpoints;
 		ByteColors _colors = new ByteColors();
 		BreakpointTypeFlags[] _breakpointTypes;
@@ -46,7 +47,7 @@ namespace Mesen.GUI.Debugger
 			_hideExecutedBytes = hideExecutedBytes;
 			_highlightDataBytes = highlightDataBytes;
 			_highlightCodeBytes = highlightCodeBytes;
-			//_highlightLabelledBytes = highlightLabelledBytes;
+			_highlightLabelledBytes = highlightLabelledBytes;
 			_highlightBreakpoints = highlightBreakpoints;
 		}
 
@@ -89,22 +90,21 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
-			//TODO LABELS
-			/*_hasLabel = new bool[visibleByteCount];
+			_hasLabel = new bool[visibleByteCount];
 			if(_highlightLabelledBytes) {
-				if(_memoryType == DebugMemoryType.CpuMemory) {
+				if(_memoryType <= SnesMemoryType.SpcMemory) {
+					AddressInfo addr = new AddressInfo();
+					addr.Type = _memoryType;
 					for(long i = 0; i < _hasLabel.Length; i++) {
-						_hasLabel[i] = (
-							!string.IsNullOrWhiteSpace(LabelManager.GetLabel((UInt16)(i + firstByteIndex))?.Label) ||
-							!string.IsNullOrWhiteSpace(LabelManager.GetLabel((uint)(i + firstByteIndex), AddressType.Register)?.Label)
-						);
+						addr.Address = (int)(firstByteIndex + i);
+						_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel(addr)?.Label);
 					}
-				} else if(_memoryType == DebugMemoryType.PrgRom || _memoryType == DebugMemoryType.WorkRam || _memoryType == DebugMemoryType.SaveRam) {
+				} else if(_memoryType == SnesMemoryType.PrgRom || _memoryType == SnesMemoryType.WorkRam || _memoryType == SnesMemoryType.SaveRam) {
 					for(long i = 0; i < _hasLabel.Length; i++) {
-						_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel((uint)(firstByteIndex + i), _memoryType.ToAddressType())?.Label);
+						_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel((uint)(firstByteIndex + i), _memoryType)?.Label);
 					}
 				}
-			}*/
+			}
 
 			_state = DebugApi.GetState();
 		}
@@ -156,11 +156,10 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
-			//TODO LABELS
-			/*if(_hasLabel[index]) {
+			if(_hasLabel[index]) {
 				//Labels/comments
 				_colors.BackColor = cfg.LabelledByteColor;
-			}*/
+			}
 
 			_colors.BorderColor = Color.Empty;
 			if(_breakpointTypes != null) {

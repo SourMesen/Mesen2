@@ -184,7 +184,7 @@ namespace Mesen.GUI.Debugger.Labels
 			LabelManager.SetLabel(0x2107, SnesMemoryType.Register, "BG1SC", "BG Tilemap Address Registers (BG1)");
 			LabelManager.SetLabel(0x2108, SnesMemoryType.Register, "BG2SC", "BG Tilemap Address Registers (BG2)");
 			LabelManager.SetLabel(0x2109, SnesMemoryType.Register, "BG3SC", "BG Tilemap Address Registers (BG3)");
-			LabelManager.SetLabel(0x210A, SnesMemoryType.Register, "BG3SC", "BG Tilemap Address Registers (BG4)");
+			LabelManager.SetLabel(0x210A, SnesMemoryType.Register, "BG4SC", "BG Tilemap Address Registers (BG4)");
 			LabelManager.SetLabel(0x210B, SnesMemoryType.Register, "BG12NBA", "BG Character Address Registers (BG1&2)");
 			LabelManager.SetLabel(0x210C, SnesMemoryType.Register, "BG34NBA", "BG Character Address Registers (BG3&4)");
 			LabelManager.SetLabel(0x210D, SnesMemoryType.Register, "BG1HOFS", "BG Scroll Registers (BG1)");

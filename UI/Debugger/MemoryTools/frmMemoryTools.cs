@@ -150,8 +150,9 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.Items.Clear();
 
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
+			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
 			cboMemoryType.Items.Add("-");
+			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
 			if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
@@ -160,8 +161,6 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
-			cboMemoryType.Items.Add("-");
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
 
 			cboMemoryType.SelectedIndex = 0;
 			cboMemoryType.SetEnumValue(originalValue);
