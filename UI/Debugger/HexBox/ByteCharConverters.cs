@@ -40,7 +40,7 @@ namespace Be.Windows.Forms
 		{
 			keyLength = 1;
 			byte b = (byte)value;
-			return new string(b > 0x1F && !(b > 0x7E && b < 0xA0) ? (char)b : '.', 1);
+			return new string((b > 0x1F && b <= 0x7E) ? (char)b : '.', 1);
 		}
 
 		/// <summary>
