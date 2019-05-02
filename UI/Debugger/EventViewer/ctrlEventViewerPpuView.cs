@@ -20,7 +20,6 @@ namespace Mesen.GUI.Debugger
 		private int _baseHeight = 262 * 2;
 
 		private EntityBinder _entityBinder = new EntityBinder();
-		private frmInfoTooltip _tooltip = null;
 		private Point _lastPos = new Point(-1, -1);
 		private bool _needUpdate = false;
 		private Bitmap _screenBitmap = null;
@@ -148,7 +147,7 @@ namespace Mesen.GUI.Debugger
 						y = _lastPos.Y + 5;
 					}
 
-					g.DrawOutlinedString(location, _overlayFont, Brushes.Black, Brushes.White, x, y);
+					g.DrawOutlinedString(location, _overlayFont, Brushes.Black, Brushes.White, x*2, y*2);
 				}
 			}
 
@@ -158,10 +157,9 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateOverlay(Point p)
 		{
-			int x = ((p.X & ~0x01) / (_zoomed ? 2 : 1)) & ~0x01;
-			int y = ((p.Y & ~0x01) / (_zoomed ? 2 : 1)) & ~0x01;
+			Point pos = GetCycleScanline(p);
 
-			if(_lastPos.X == x && _lastPos.Y == y) {
+			if(_lastPos == pos) {
 				//Same x,y location, no need to update
 				return;
 			}
@@ -169,13 +167,13 @@ namespace Mesen.GUI.Debugger
 			using(Graphics g = Graphics.FromImage(_overlayBitmap)) {
 				g.Clear(Color.Transparent);
 				using(Pen bg = new Pen(Color.FromArgb(128, Color.LightGray))) {
-					g.DrawRectangle(bg, x - 1, 0, 3, _overlayBitmap.Height);
-					g.DrawRectangle(bg, 0, y - 1, _overlayBitmap.Width, 3);
+					g.DrawRectangle(bg, pos.X * 2 - 1, 0, 3, _overlayBitmap.Height);
+					g.DrawRectangle(bg, 0, pos.Y * 2 - 1, _overlayBitmap.Width, 3);
 				}
 			}
 
 			_needUpdate = true;
-			_lastPos = new Point(x, y);
+			_lastPos = pos;
 		}
 
 		private void ClearOverlay()
@@ -187,13 +185,23 @@ namespace Mesen.GUI.Debugger
 			_lastPos = new Point(-1, -1);
 		}
 
+		private Point GetCycleScanline(Point location)
+		{
+			return new Point(
+				((location.X & ~0x01) / (_zoomed ? 2 : 1)) / 2,
+				((location.Y & ~0x01) / (_zoomed ? 2 : 1)) / 2
+			);
+		}
+
 		private void picPicture_MouseMove(object sender, MouseEventArgs e)
 		{
-			int cycle = ((e.X & ~0x01) / (_zoomed ? 2 : 1)) / 2;
-			int scanline = ((e.Y & ~0x01) / (_zoomed ? 2 : 1)) / 2;
+			Point pos = GetCycleScanline(e.Location);
+			if(_lastPos == pos) {
+				return;
+			}
 
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			DebugEventInfo evt = DebugApi.GetEventViewerEvent((UInt16)scanline, (UInt16)cycle, options);
+			DebugEventInfo evt = DebugApi.GetEventViewerEvent((UInt16)pos.Y, (UInt16)pos.X, options);
 			if(evt.ProgramCounter == 0xFFFFFFFF) {
 				ResetTooltip();
 				UpdateOverlay(e.Location);
@@ -232,21 +240,14 @@ namespace Mesen.GUI.Debugger
 			double scale = _zoomed ? 2 : 1;
 			UpdateOverlay(new Point((int)(evt.Cycle * 2 * scale), (int)(evt.Scanline * 2 * scale)));
 
-			ResetTooltip();
 			Form parentForm = this.FindForm();
-			_tooltip = new frmInfoTooltip(parentForm, values, 10);
-			_tooltip.FormClosed += (s, ev) => { _tooltip = null; };
-			Point location = picViewer.PointToScreen(e.Location);
-			location.Offset(10, 10);
-			_tooltip.SetFormLocation(location, this);
+			Point location = parentForm.PointToClient(picViewer.PointToScreen(e.Location));
+			BaseForm.GetPopupTooltip(parentForm).SetTooltip(location, values);
 		}
 
 		private void ResetTooltip()
 		{
-			if(_tooltip != null) {
-				_tooltip.Close();
-				_tooltip = null;
-			}
+			BaseForm.GetPopupTooltip(this.FindForm()).Visible = false;
 		}
 
 		private void picPicture_MouseLeave(object sender, EventArgs e)

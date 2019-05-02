@@ -319,6 +319,12 @@
       <DependentUpon>frmSpriteViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\SpriteInfo.cs" />
+    <Compile Include="Debugger\Tooltips\ctrlTooltip.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Tooltips\ctrlTooltip.Designer.cs">
+      <DependentUpon>ctrlTooltip.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
     <Compile Include="Debugger\Config\EventViewerInfo.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
@@ -561,15 +567,6 @@
     <Compile Include="Debugger\HexBox\Util.cs" />
     <Compile Include="Debugger\MemoryTools\TblLoader.cs" />
     <Compile Include="Debugger\DebugWindowManager.cs" />
-    <Compile Include="Debugger\Tooltips\frmInfoTooltip.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Debugger\Tooltips\frmInfoTooltip.Designer.cs">
-      <DependentUpon>frmInfoTooltip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Debugger\Tooltips\TooltipForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Debugger\WatchManager.cs" />
     <Compile Include="Debugger\Workspace\DebugWorkspaceManager.cs" />
     <Compile Include="Emulation\CursorManager.cs" />
@@ -863,8 +860,8 @@
     <EmbeddedResource Include="Debugger\HexBox\HexBox.resx">
       <DependentUpon>HexBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debugger\Tooltips\frmInfoTooltip.resx">
-      <DependentUpon>frmInfoTooltip.cs</DependentUpon>
+    <EmbeddedResource Include="Debugger\Tooltips\ctrlTooltip.resx">
+      <DependentUpon>ctrlTooltip.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BaseConfigForm.resx">
       <DependentUpon>BaseConfigForm.cs</DependentUpon>

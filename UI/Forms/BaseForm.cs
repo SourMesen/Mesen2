@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Config;
+using Mesen.GUI.Debugger;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,7 @@ namespace Mesen.GUI.Forms
 		private System.ComponentModel.IContainer components;
 		private bool _iconSet = false;
 		protected int _inMenu = 0;
+		private ctrlTooltip ctrlTooltip;
 		private static Timer _tmrUpdateBackground;
 		//private static bool _needResume = false;
 
@@ -28,6 +30,11 @@ namespace Mesen.GUI.Forms
 		}
 
 		protected virtual bool IsConfigForm { get { return false; } }
+
+		public static ctrlTooltip GetPopupTooltip(Form form)
+		{
+			return (form as BaseForm).ctrlTooltip;
+		}
 
 		public static void StartBackgroundTimer()
 		{
@@ -202,6 +209,7 @@ namespace Mesen.GUI.Forms
 		{
 			this.components = new System.ComponentModel.Container();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.ctrlTooltip = new Mesen.GUI.Debugger.ctrlTooltip();
 			this.SuspendLayout();
 			// 
 			// toolTip
@@ -211,10 +219,22 @@ namespace Mesen.GUI.Forms
 			this.toolTip.InitialDelay = 10;
 			this.toolTip.ReshowDelay = 10;
 			// 
+			// ctrlTooltip
+			// 
+			this.ctrlTooltip.AutoSize = true;
+			this.ctrlTooltip.Location = new System.Drawing.Point(77, 89);
+			this.ctrlTooltip.Name = "ctrlTooltip";
+			this.ctrlTooltip.Size = new System.Drawing.Size(97, 83);
+			this.ctrlTooltip.TabIndex = 0;
+			this.ctrlTooltip.Visible = false;
+			// 
 			// BaseForm
 			// 
+			this.ClientSize = new System.Drawing.Size(284, 261);
+			this.Controls.Add(this.ctrlTooltip);
 			this.Name = "BaseForm";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 	}

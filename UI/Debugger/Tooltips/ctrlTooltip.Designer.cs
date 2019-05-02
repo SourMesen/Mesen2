@@ -1,6 +1,6 @@
 ﻿namespace Mesen.GUI.Debugger
 {
-	partial class frmInfoTooltip
+	partial class ctrlTooltip
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -61,23 +61,15 @@
 			this.tlpMain.Size = new System.Drawing.Size(8, 8);
 			this.tlpMain.TabIndex = 0;
 			// 
-			// frmCodeTooltip
+			// ctrlTooltip
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(10, 10);
-			this.ControlBox = false;
 			this.Controls.Add(this.panel);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
-			this.Name = "frmCodeTooltip";
-			this.ShowIcon = false;
-			this.ShowInTaskbar = false;
-			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-			this.Text = "frmCodeTooltip";
+			this.Name = "ctrlTooltip";
+			this.Text = "ctrlTooltip";
 			this.panel.ResumeLayout(false);
 			this.panel.PerformLayout();
 			this.ResumeLayout(false);

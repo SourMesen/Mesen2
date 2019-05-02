@@ -13,34 +13,38 @@ using Mesen.GUI.Debugger.Controls;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmInfoTooltip : TooltipForm
+	public partial class ctrlTooltip : UserControl
 	{
 		private Dictionary<string, string> _values;
-		private int _showOnLeftOffset;
+		private Form _parentForm;
 
-		protected override bool ShowWithoutActivation
+		public ctrlTooltip()
 		{
-			get { return true; }
-		}
-
-		public frmInfoTooltip(Form parent, Dictionary<string, string> values, int showOnLeftOffset = 0)
-		{
-			_showOnLeftOffset = showOnLeftOffset;
-			_parentForm = parent;
-			_values = values;
 			InitializeComponent();
-			this.TopLevel = false;
-			this.Parent = _parentForm;
-			_parentForm.Controls.Add(this);
 		}
 
-		protected override void OnLoad(EventArgs e)
+		public void SetTooltip(Point location, Dictionary<string, string> values)
+		{
+			_parentForm = this.FindForm();
+			_values = values;
+			location.Offset(5, 5);
+			Location = location;
+
+			UpdateContentLayout();
+
+			this.Visible = true;
+		}
+
+		private void UpdateContentLayout()
 		{
 			tlpMain.SuspendLayout();
 
 			TableLayoutPanel tlpLabels = new TableLayoutPanel();
 			tlpLabels.SuspendLayout();
 			tlpLabels.AutoSize = true;
+			this.Size = new Size(1, 1);
+			tlpMain.Size = new Size(1, 1);
+			tlpMain.Controls.Clear();
 			tlpMain.Controls.Add(tlpLabels, 0, 0);
 			int i = 0;
 			int maxLabelWidth = (_parentForm.ClientSize.Width - this.Location.X - 150);
@@ -57,11 +61,7 @@ namespace Mesen.GUI.Debugger
 				lbl.Font = new Font(BaseControl.MonospaceFontFamily, 10);
 				lbl.Margin = new Padding(2);
 				lbl.Text = kvp.Value;
-				if(_showOnLeftOffset == 0) {
-					lbl.Size = new Size(maxLabelWidth, 10);
-				} else {
-					lbl.Size = new Size(500, 10);
-				}
+				lbl.Size = new Size(500, 10);
 				tlpLabels.Controls.Add(lbl, 1, i);
 
 				i++;
@@ -70,19 +70,16 @@ namespace Mesen.GUI.Debugger
 			tlpLabels.ResumeLayout();
 			tlpMain.ResumeLayout();
 
-			base.OnLoad(e);
-
 			this.Width = this.tlpMain.Width;
-			if(this.Location.X + this.Width > _parentForm.ClientSize.Width) {
-				if(_showOnLeftOffset > 0) {
-					this.Left -= this.Width + _showOnLeftOffset * 2;
-				} else {
-					int maxWidth = Math.Max(10, _parentForm.ClientSize.Width - this.Location.X - 10);
-					this.tlpMain.MaximumSize = new Size(maxWidth, _parentForm.ClientSize.Height - 10);
-					this.MaximumSize = new Size(maxWidth, _parentForm.ClientSize.Height - 10);
-				}
+			if(this.Left + this.Width > _parentForm.ClientSize.Width) {
+				this.Left = this.Left - this.Width - 5;
 			}
+
 			this.Height = this.tlpMain.Height;
+			if(this.Height + this.Top > _parentForm.ClientSize.Height) {
+				this.Top = _parentForm.ClientSize.Height - this.Height - 5;
+			}
+
 			this.BringToFront();
 
 			panel.BackColor = SystemColors.Info;
