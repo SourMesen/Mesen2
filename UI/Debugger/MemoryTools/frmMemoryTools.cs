@@ -93,6 +93,12 @@ namespace Mesen.GUI.Debugger
 			this.InitShortcuts();
 		}
 
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			ctrlHexViewer.Focus();
+		}
+
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);

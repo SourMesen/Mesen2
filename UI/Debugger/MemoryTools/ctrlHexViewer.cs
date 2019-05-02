@@ -43,7 +43,12 @@ namespace Mesen.GUI.Debugger.Controls
 				this.cboNumberColumns.SelectedIndex = ConfigManager.Config.Debug.HexEditor.ColumnCount;
 			}
 		}
-		
+
+		public new void Focus()
+		{
+			this.ctrlHexBox.Focus();
+		}
+
 		public byte[] GetData()
 		{
 			return this._byteProvider != null ? this._byteProvider.Bytes.ToArray() : new byte[0];

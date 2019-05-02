@@ -313,7 +313,7 @@
 			// mnuFadeSlow
 			// 
 			this.mnuFadeSlow.Name = "mnuFadeSlow";
-			this.mnuFadeSlow.Size = new System.Drawing.Size(152, 22);
+			this.mnuFadeSlow.Size = new System.Drawing.Size(136, 22);
 			this.mnuFadeSlow.Text = "Slow";
 			this.mnuFadeSlow.Click += new System.EventHandler(this.mnuFadeSpeed_Click);
 			// 
@@ -322,33 +322,33 @@
 			this.mnuFadeNormal.Checked = true;
 			this.mnuFadeNormal.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mnuFadeNormal.Name = "mnuFadeNormal";
-			this.mnuFadeNormal.Size = new System.Drawing.Size(152, 22);
+			this.mnuFadeNormal.Size = new System.Drawing.Size(136, 22);
 			this.mnuFadeNormal.Text = "Normal";
 			this.mnuFadeNormal.Click += new System.EventHandler(this.mnuFadeSpeed_Click);
 			// 
 			// mnuFadeFast
 			// 
 			this.mnuFadeFast.Name = "mnuFadeFast";
-			this.mnuFadeFast.Size = new System.Drawing.Size(152, 22);
+			this.mnuFadeFast.Size = new System.Drawing.Size(136, 22);
 			this.mnuFadeFast.Text = "Fast";
 			this.mnuFadeFast.Click += new System.EventHandler(this.mnuFadeSpeed_Click);
 			// 
 			// mnuFadeNever
 			// 
 			this.mnuFadeNever.Name = "mnuFadeNever";
-			this.mnuFadeNever.Size = new System.Drawing.Size(152, 22);
+			this.mnuFadeNever.Size = new System.Drawing.Size(136, 22);
 			this.mnuFadeNever.Text = "Do not fade";
 			this.mnuFadeNever.Click += new System.EventHandler(this.mnuFadeSpeed_Click);
 			// 
 			// toolStripMenuItem7
 			// 
 			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-			this.toolStripMenuItem7.Size = new System.Drawing.Size(149, 6);
+			this.toolStripMenuItem7.Size = new System.Drawing.Size(133, 6);
 			// 
 			// mnuCustomFadeSpeed
 			// 
 			this.mnuCustomFadeSpeed.Name = "mnuCustomFadeSpeed";
-			this.mnuCustomFadeSpeed.Size = new System.Drawing.Size(152, 22);
+			this.mnuCustomFadeSpeed.Size = new System.Drawing.Size(136, 22);
 			this.mnuCustomFadeSpeed.Text = "Custom...";
 			this.mnuCustomFadeSpeed.Click += new System.EventHandler(this.mnuCustomFadeSpeed_Click);
 			// 
@@ -648,27 +648,28 @@
 			// mnuGoToAll
 			// 
 			this.mnuGoToAll.Name = "mnuGoToAll";
-			this.mnuGoToAll.Size = new System.Drawing.Size(145, 22);
+			this.mnuGoToAll.Size = new System.Drawing.Size(152, 22);
 			this.mnuGoToAll.Text = "Go to All";
+			this.mnuGoToAll.Visible = false;
 			this.mnuGoToAll.Click += new System.EventHandler(this.mnuGoToAll_Click);
 			// 
 			// mnuGoTo
 			// 
 			this.mnuGoTo.Name = "mnuGoTo";
-			this.mnuGoTo.Size = new System.Drawing.Size(145, 22);
+			this.mnuGoTo.Size = new System.Drawing.Size(152, 22);
 			this.mnuGoTo.Text = "Go To...";
 			this.mnuGoTo.Click += new System.EventHandler(this.mnuGoTo_Click);
 			// 
 			// toolStripMenuItem14
 			// 
 			this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-			this.toolStripMenuItem14.Size = new System.Drawing.Size(142, 6);
+			this.toolStripMenuItem14.Size = new System.Drawing.Size(149, 6);
 			// 
 			// mnuFind
 			// 
 			this.mnuFind.Image = global::Mesen.GUI.Properties.Resources.Find;
 			this.mnuFind.Name = "mnuFind";
-			this.mnuFind.Size = new System.Drawing.Size(145, 22);
+			this.mnuFind.Size = new System.Drawing.Size(152, 22);
 			this.mnuFind.Text = "Find...";
 			this.mnuFind.Click += new System.EventHandler(this.mnuFind_Click);
 			// 
@@ -676,7 +677,7 @@
 			// 
 			this.mnuFindNext.Image = global::Mesen.GUI.Properties.Resources.NextArrow;
 			this.mnuFindNext.Name = "mnuFindNext";
-			this.mnuFindNext.Size = new System.Drawing.Size(145, 22);
+			this.mnuFindNext.Size = new System.Drawing.Size(152, 22);
 			this.mnuFindNext.Text = "Find Next";
 			this.mnuFindNext.Click += new System.EventHandler(this.mnuFindNext_Click);
 			// 
@@ -684,7 +685,7 @@
 			// 
 			this.mnuFindPrev.Image = global::Mesen.GUI.Properties.Resources.PreviousArrow;
 			this.mnuFindPrev.Name = "mnuFindPrev";
-			this.mnuFindPrev.Size = new System.Drawing.Size(145, 22);
+			this.mnuFindPrev.Size = new System.Drawing.Size(152, 22);
 			this.mnuFindPrev.Text = "Find Previous";
 			this.mnuFindPrev.Click += new System.EventHandler(this.mnuFindPrev_Click);
 			// 
