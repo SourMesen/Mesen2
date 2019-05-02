@@ -69,6 +69,9 @@ namespace Mesen.GUI.Debugger
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
 
+			_options.Format = config.Format;
+			_options.Palette = config.SelectedPalette;
+			_options.Width = config.ColumnCount;
 			_options.ShowTileGrid = config.ShowTileGrid;
 			_autoRefresh = config.AutoRefresh;
 
