@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.GUI.Debugger.Labels;
+using System;
 using System.Text;
 
 namespace Mesen.GUI.Debugger
@@ -38,27 +39,20 @@ namespace Mesen.GUI.Debugger
 				case BreakpointAddressType.AnyAddress:
 					return "<any>";
 				case BreakpointAddressType.SingleAddress:
-					if(IsAbsoluteAddress) {
-						addr += $"[${Address.ToString(format)}]";
-					} else {
-						addr = $"${Address.ToString(format)}";
-					}
+					addr += $"${Address.ToString(format)}";
 					break;
 
 				case BreakpointAddressType.AddressRange:
-					if(IsAbsoluteAddress) {
-						addr = $"[${StartAddress.ToString(format)}] - [${EndAddress.ToString(format)}]";
-					} else {
-						addr = $"${StartAddress.ToString(format)} - ${EndAddress.ToString(format)}";
-					}
+					addr = $"${StartAddress.ToString(format)} - ${EndAddress.ToString(format)}";
 					break;
 			}
 
-			//TODO LABELS
-			/*string label = GetAddressLabel();
-			if(showLabel && !string.IsNullOrWhiteSpace(label)) {
-				addr = label + $", {addr}";
-			}*/
+			if(showLabel) {
+				string label = GetAddressLabel();
+				if(!string.IsNullOrWhiteSpace(label)) {
+					addr += " [" + label + "]";
+				}
+			}
 			return addr;
 		}
 
@@ -137,6 +131,24 @@ namespace Mesen.GUI.Debugger
 				type += BreakOnExec ? "X" : "‒";
 			}
 			return type;
+		}
+		
+		public string GetAddressLabel()
+		{
+			UInt32 address = AddressType == BreakpointAddressType.SingleAddress ? this.Address : this.StartAddress;
+
+			if(IsCpuBreakpoint) {
+				CodeLabel label;
+				if(this.IsAbsoluteAddress) {
+					label = LabelManager.GetLabel(address, this.MemoryType);
+				} else {
+					label = LabelManager.GetLabel(new AddressInfo() { Address = (int)address, Type = this.MemoryType });
+				}
+				if(label != null) {
+					return label.Label;
+				}
+			}
+			return string.Empty;
 		}
 
 		public int GetRelativeAddress()

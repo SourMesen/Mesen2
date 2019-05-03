@@ -31,10 +31,6 @@ namespace Mesen.GUI.Debugger.Controls
 			if(!IsDesignMode) {
 				_markedColumnFont = new Font(this.Font.FontFamily, 13f);
 
-				//TODO Labels
-				//mnuShowLabels.Checked = ConfigManager.Config.Debug.ShowBreakpointLabels;
-				mnuShowLabels.CheckedChanged += mnuShowLabels_CheckedChanged;
-
 				BreakpointManager.BreakpointsChanged += BreakpointManager_OnBreakpointChanged;
 				mnuRemoveBreakpoint.Enabled = false;
 				mnuEditBreakpoint.Enabled = false;
@@ -77,7 +73,7 @@ namespace Mesen.GUI.Debugger.Controls
 					continue;
 				}
 
-				lstBreakpoints.Items[i].SubItems[3].Text = breakpoints[i].GetAddressString(mnuShowLabels.Checked);
+				lstBreakpoints.Items[i].SubItems[3].Text = breakpoints[i].GetAddressString(true);
 			}
 			lstBreakpoints.EndUpdate();
 		}
@@ -100,7 +96,7 @@ namespace Mesen.GUI.Debugger.Controls
 				item.UseItemStyleForSubItems = false;
 				item.SubItems.Add(breakpoint.MarkEvent ? "☑" : "☐").Font = _markedColumnFont;
 				item.SubItems.Add(breakpoint.ToReadableType());
-				item.SubItems.Add(breakpoint.GetAddressString(mnuShowLabels.Checked));
+				item.SubItems.Add(breakpoint.GetAddressString(true));
 				item.SubItems.Add(breakpoint.Condition);
 				lstBreakpoints.Items.Add(item);
 			}
@@ -169,15 +165,6 @@ namespace Mesen.GUI.Debugger.Controls
 			
 		}
 		
-		private void mnuShowLabels_CheckedChanged(object sender, EventArgs e)
-		{
-			//TODO
-			/*ConfigManager.Config.Debug.ShowBreakpointLabels = mnuShowLabels.Checked;
-			ConfigManager.ApplyChanges();
-			*/
-			this.RefreshListAddresses();
-		}
-
 		private void lstBreakpoints_MouseDown(object sender, MouseEventArgs e)
 		{
 			ListViewHitTestInfo info = lstBreakpoints.HitTest(e.X, e.Y);

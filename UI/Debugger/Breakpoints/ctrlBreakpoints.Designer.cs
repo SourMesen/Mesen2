@@ -35,8 +35,6 @@
 			this.mnuRemoveBreakpoint = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuGoToLocation = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuShowLabels = new System.Windows.Forms.ToolStripMenuItem();
 			this.lstBreakpoints = new Mesen.GUI.Controls.MyListView();
 			this.colEnabled = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colMarker = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -53,11 +51,9 @@
             this.mnuEditBreakpoint,
             this.mnuRemoveBreakpoint,
             this.toolStripMenuItem1,
-            this.mnuGoToLocation,
-            this.toolStripMenuItem2,
-            this.mnuShowLabels});
+            this.mnuGoToLocation});
 			this.mnuBreakpoints.Name = "mnuBreakpoints";
-			this.mnuBreakpoints.Size = new System.Drawing.Size(150, 126);
+			this.mnuBreakpoints.Size = new System.Drawing.Size(150, 98);
 			// 
 			// mnuAddBreakpoint
 			// 
@@ -94,20 +90,6 @@
 			this.mnuGoToLocation.Size = new System.Drawing.Size(149, 22);
 			this.mnuGoToLocation.Text = "Go to location";
 			this.mnuGoToLocation.Click += new System.EventHandler(this.mnuGoToLocation_Click);
-			// 
-			// toolStripMenuItem2
-			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(146, 6);
-			this.toolStripMenuItem2.Visible = false;
-			// 
-			// mnuShowLabels
-			// 
-			this.mnuShowLabels.CheckOnClick = true;
-			this.mnuShowLabels.Name = "mnuShowLabels";
-			this.mnuShowLabels.Size = new System.Drawing.Size(149, 22);
-			this.mnuShowLabels.Text = "Show Labels";
-			this.mnuShowLabels.Visible = false;
 			// 
 			// lstBreakpoints
 			// 
@@ -183,8 +165,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuGoToLocation;
 		private System.Windows.Forms.ToolStripMenuItem mnuEditBreakpoint;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-		private System.Windows.Forms.ToolStripMenuItem mnuShowLabels;
 		private System.Windows.Forms.ColumnHeader colMarker;
 	}
 }

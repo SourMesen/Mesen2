@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Controls;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger.Controls
 {
@@ -19,6 +20,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private StackFrameInfo[] _stackFrames;
 		private UInt32 _programCounter;
 		private string _format = "X6";
+		private CpuType _cpuType;
 
 		public ctrlCallstack()
 		{
@@ -27,17 +29,18 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void UpdateCallstack(CpuType cpuType)
 		{
+			_cpuType = cpuType;
 			_format = cpuType == CpuType.Cpu ? "X6" : "X4";
-			List<StackInfo> stack = GetStackInfo(cpuType);
+			List<StackInfo> stack = GetStackInfo();
 			this.UpdateList(stack);
 		}
 
-		private List<StackInfo> GetStackInfo(CpuType cpuType)
+		private List<StackInfo> GetStackInfo()
 		{
-			_stackFrames = DebugApi.GetCallstack(cpuType);
+			_stackFrames = DebugApi.GetCallstack(_cpuType);
 			DebugState state = DebugApi.GetState();
 
-			if(cpuType == CpuType.Cpu) {
+			if(_cpuType == CpuType.Cpu) {
 				_programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;
 			} else {
 				_programCounter = (uint)state.Spc.PC;
@@ -93,24 +96,16 @@ namespace Mesen.GUI.Debugger.Controls
 				return "[bottom of stack]";
 			}
 
-			string funcName = "";
-
-			//TODO LABELS
-			/*CodeLabel label = absSubEntryAddr >= 0 ? LabelManager.GetLabel((UInt32)absSubEntryAddr, AddressType.PrgRom) : null;
+			CodeLabel label = relSubEntryAddr >= 0 ? LabelManager.GetLabel(new AddressInfo() { Address = relSubEntryAddr, Type = _cpuType == CpuType.Cpu ? SnesMemoryType.CpuMemory : SnesMemoryType.SpcMemory }) : null;
 			if(label != null) {
-				funcName = label.Label + (relSubEntryAddr >= 0 ? (" ($" + relSubEntryAddr.ToString("X6") + ")") : "");
-			} else {
-				funcName = (relSubEntryAddr >= 0 ? ("$" + relSubEntryAddr.ToString("X6")) : "n/a");
-			}*/
-
-			if(flags == StackFrameFlags.Nmi) {
-				funcName = "[nmi] ";
+				return label.Label + " ($" + relSubEntryAddr.ToString(_format) + ")";
+			} else if(flags == StackFrameFlags.Nmi) {
+				return "[nmi] $" + relSubEntryAddr.ToString(_format);
 			} else if(flags == StackFrameFlags.Irq) {
-				funcName = "[irq] ";
+				return "[irq] $" + relSubEntryAddr.ToString(_format);
 			}
-			funcName += "$" + relSubEntryAddr.ToString(_format);
 
-			return funcName;
+			return "$" + relSubEntryAddr.ToString(_format);
 		}
 
 		private void lstCallstack_DoubleClick(object sender, EventArgs e)
