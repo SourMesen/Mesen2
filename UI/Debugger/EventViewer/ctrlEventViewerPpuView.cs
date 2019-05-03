@@ -27,8 +27,9 @@ namespace Mesen.GUI.Debugger
 		private Bitmap _displayBitmap = null;
 		private byte[] _pictureData = null;
 		private Font _overlayFont;
-		private bool _zoomed = false;
-		
+
+		public int ImageScale { get { return picViewer.ImageScale; } set { picViewer.ImageScale = value; } }
+
 		public ctrlEventViewerPpuView()
 		{
 			InitializeComponent();
@@ -43,31 +44,31 @@ namespace Mesen.GUI.Debugger
 				_overlayFont = new Font(BaseControl.MonospaceFontFamily, 10);
 
 				_entityBinder.Entity = ConfigManager.Config.Debug.EventViewer;
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ApuRegisterReadColor), picApuReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ApuRegisterWriteColor), picApuWrites);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.CpuRegisterReadColor), picCpuReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.CpuRegisterWriteColor), picCpuWrites);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.IrqColor), picIrq);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.BreakpointColor), picMarkedBreakpoints);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.NmiColor), picNmi);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.PpuRegisterReadColor), picPpuReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.PpuRegisterWriteColor), picPpuWrites);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.WorkRamRegisterReadColor), picWramReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.WorkRamRegisterWriteColor), picWramWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ApuRegisterReadColor), picApuReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ApuRegisterWriteColor), picApuWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.CpuRegisterReadColor), picCpuReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.CpuRegisterWriteColor), picCpuWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.IrqColor), picIrq);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.BreakpointColor), picMarkedBreakpoints);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.NmiColor), picNmi);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterReadColor), picPpuReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteColor), picPpuWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.WorkRamRegisterReadColor), picWramReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.WorkRamRegisterWriteColor), picWramWrites);
 
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowApuRegisterReads), chkShowApuRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowApuRegisterWrites), chkShowApuRegisterWrites);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowCpuRegisterReads), chkShowCpuRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowCpuRegisterWrites), chkShowCpuRegisterWrites);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowIrq), chkShowIrq);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowMarkedBreakpoints), chkShowMarkedBreakpoints);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowNmi), chkShowNmi);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowPpuRegisterReads), chkShowPpuRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowPpuRegisterWrites), chkShowPpuRegisterWrites);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowWorkRamRegisterReads), chkShowWorkRamRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowWorkRamRegisterWrites), chkShowWorkRamRegisterWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowApuRegisterReads), chkShowApuRegisterReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowApuRegisterWrites), chkShowApuRegisterWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowCpuRegisterReads), chkShowCpuRegisterReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowCpuRegisterWrites), chkShowCpuRegisterWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowIrq), chkShowIrq);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowMarkedBreakpoints), chkShowMarkedBreakpoints);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowNmi), chkShowNmi);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterReads), chkShowPpuRegisterReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterWrites), chkShowPpuRegisterWrites);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterReads), chkShowWorkRamRegisterReads);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterWrites), chkShowWorkRamRegisterWrites);
 
-				_entityBinder.AddBinding(nameof(EventViewerInfo.ShowPreviousFrameEvents), chkShowPreviousFrameEvents);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPreviousFrameEvents), chkShowPreviousFrameEvents);
 
 				_entityBinder.UpdateUI();
 
@@ -136,14 +137,15 @@ namespace Mesen.GUI.Debugger
 				g.DrawImage(_overlayBitmap, 0, 0);
 
 				if(_lastPos.X >= 0) {
-					string location = _lastPos.X / 2 + ", " + (_lastPos.Y / 2);
+					string location = _lastPos.X + ", " + _lastPos.Y;
 					SizeF size = g.MeasureString(location, _overlayFont);
-					int x = _lastPos.X + 15;
-					int y = _lastPos.Y - (int)size.Height - 5;
-					if(x + size.Width > _displayBitmap.Width - 5) {
-						x -= (int)size.Width + 20;
+					int x = _lastPos.X + 5;
+					int y = _lastPos.Y - (int)size.Height / 2 - 5;
+					
+					if(x*2 - picViewer.ScrollOffsets.X / picViewer.ImageScale + size.Width > (picViewer.Width / picViewer.ImageScale) - 5) {
+						x -= (int)size.Width / 2 + 10;
 					}
-					if(y < size.Height + 5) {
+					if(y*2 - picViewer.ScrollOffsets.Y / picViewer.ImageScale < size.Height + 5) {
 						y = _lastPos.Y + 5;
 					}
 
@@ -151,6 +153,7 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
+			picViewer.ImageSize = new Size(_baseWidth, _baseHeight);
 			picViewer.Image = _displayBitmap;
 			_needUpdate = false;
 		}
@@ -188,8 +191,8 @@ namespace Mesen.GUI.Debugger
 		private Point GetCycleScanline(Point location)
 		{
 			return new Point(
-				((location.X & ~0x01) / (_zoomed ? 2 : 1)) / 2,
-				((location.Y & ~0x01) / (_zoomed ? 2 : 1)) / 2
+				((location.X & ~0x01) / this.ImageScale) / 2,
+				((location.Y & ~0x01) / this.ImageScale) / 2
 			);
 		}
 
@@ -237,11 +240,10 @@ namespace Mesen.GUI.Debugger
 					break;
 			}
 
-			double scale = _zoomed ? 2 : 1;
-			UpdateOverlay(new Point((int)(evt.Cycle * 2 * scale), (int)(evt.Scanline * 2 * scale)));
+			UpdateOverlay(new Point((int)(evt.Cycle * 2 * this.ImageScale), (int)(evt.Scanline * 2 * this.ImageScale)));
 
 			Form parentForm = this.FindForm();
-			Point location = parentForm.PointToClient(picViewer.PointToScreen(e.Location));
+			Point location = parentForm.PointToClient(this.PointToScreen(new Point(e.Location.X - picViewer.ScrollOffsets.X, e.Location.Y - picViewer.ScrollOffsets.Y)));
 			BaseForm.GetPopupTooltip(parentForm).SetTooltip(location, values);
 		}
 
@@ -260,22 +262,20 @@ namespace Mesen.GUI.Debugger
 		{
 			UpdateDisplay(false);
 		}
-
-		private void picPicture_DoubleClick(object sender, EventArgs e)
-		{
-			_zoomed = !_zoomed;
-			UpdateViewerSize();
-		}
-
-		private void UpdateViewerSize()
-		{
-			picViewer.Width = (_zoomed ? _baseWidth * 2 : _baseWidth) + 2;
-			picViewer.Height = (_zoomed ? _baseHeight * 2 : _baseHeight) + 2;
-		}
-
+		
 		private void chkOption_Click(object sender, EventArgs e)
 		{
 			RefreshViewer();
+		}
+
+		public void ZoomIn()
+		{
+			picViewer.ZoomIn();
+		}
+
+		public void ZoomOut()
+		{
+			picViewer.ZoomOut();
 		}
 	}
 }

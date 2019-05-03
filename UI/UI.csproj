@@ -326,7 +326,7 @@
       <DependentUpon>ctrlTooltip.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Workspace\DebugWorkspace.cs" />
-    <Compile Include="Debugger\Config\EventViewerInfo.cs" />
+    <Compile Include="Debugger\Config\EventViewerConfig.cs" />
     <Compile Include="Debugger\Config\HexEditorInfo.cs" />
     <Compile Include="Config\RecentItems.cs" />
     <Compile Include="Debugger\Config\TraceLoggerInfo.cs" />

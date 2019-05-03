@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class EventViewerInfo
+	public class EventViewerConfig
 	{
+		public Size WindowSize = new Size(0, 0);
+		public Point WindowLocation;
+
+		public int ImageScale = 1;
+		public bool RefreshOnBreakPause = true;
+
 		public bool ShowPpuRegisterWrites = true;
 		public bool ShowPpuRegisterReads = true;
 		public bool ShowCpuRegisterWrites = true;

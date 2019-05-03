@@ -22,7 +22,10 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		public Size ImageSize { get { return _imageSize; } set { _imageSize = value; UpdateMapSize(); } }
 		public Image Image { get { return ctrlImageViewer.Image; } set { ctrlImageViewer.Image = value; } }
 		public int ImageScale { get { return _scale; } set { _scale = value; UpdateMapSize(); } }
+		public Point ScrollOffsets { get { return new Point(ctrlPanel.HorizontalScroll.Value, ctrlPanel.VerticalScroll.Value); } }
 
+		public new event EventHandler MouseLeave { add { ctrlImageViewer.MouseLeave += value; } remove { ctrlImageViewer.MouseLeave -= value; } }
+		public new event MouseEventHandler MouseMove { add { ctrlImageViewer.MouseMove += value; } remove { ctrlImageViewer.MouseMove -= value; } }
 		public new event MouseEventHandler MouseClick { add { ctrlImageViewer.MouseClick += value; } remove { ctrlImageViewer.MouseClick -= value; } }
 
 		public ctrlImagePanel()

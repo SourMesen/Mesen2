@@ -19,7 +19,7 @@ namespace Mesen.GUI.Config
 		public DebuggerShortcutsConfig Shortcuts = new DebuggerShortcutsConfig();
 		public TraceLoggerInfo TraceLogger = new TraceLoggerInfo();
 		public HexEditorInfo HexEditor = new HexEditorInfo();
-		public EventViewerInfo EventViewer = new EventViewerInfo();
+		public EventViewerConfig EventViewer = new EventViewerConfig();
 		public DebuggerInfo Debugger = new DebuggerInfo();
 		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
 		public TileViewerConfig TileViewer = new TileViewerConfig();
