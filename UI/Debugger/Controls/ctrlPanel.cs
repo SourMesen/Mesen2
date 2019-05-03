@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,13 @@ namespace Mesen.GUI.Debugger.Controls
 		public ctrlPanel()
 		{
 			this.DoubleBuffered = true;
+		}
+
+		protected override Point ScrollToControl(Control activeControl)
+		{
+			// Returning the current location prevents the panel from
+			// scrolling to the active control when the panel loses and regains focus
+			return this.DisplayRectangle.Location;
 		}
 
 		protected override void OnMouseWheel(MouseEventArgs e)
