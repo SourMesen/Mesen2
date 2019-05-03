@@ -88,6 +88,7 @@
 			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuBreakOnBrk = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOnCop = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuBreakOnStp = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOnWdm = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuBreakOnUnitRead = new System.Windows.Forms.ToolStripMenuItem();
@@ -118,7 +119,9 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.mnuBreakOnStp = new System.Windows.Forms.ToolStripMenuItem();
+			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuDbgIntegrationSettings = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -143,6 +146,7 @@
 			// ctrlMesenMenuStrip1
 			// 
 			this.ctrlMesenMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
             this.debugToolStripMenuItem,
             this.searchToolStripMenuItem,
             this.optionsToolStripMenuItem});
@@ -572,6 +576,12 @@
 			this.mnuBreakOnCop.Size = new System.Drawing.Size(261, 22);
 			this.mnuBreakOnCop.Text = "Break on COP";
 			// 
+			// mnuBreakOnStp
+			// 
+			this.mnuBreakOnStp.Name = "mnuBreakOnStp";
+			this.mnuBreakOnStp.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnStp.Text = "Break on STP";
+			// 
 			// mnuBreakOnWdm
 			// 
 			this.mnuBreakOnWdm.Name = "mnuBreakOnWdm";
@@ -837,11 +847,30 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
-			// mnuBreakOnStp
+			// fileToolStripMenuItem
 			// 
-			this.mnuBreakOnStp.Name = "mnuBreakOnStp";
-			this.mnuBreakOnStp.Size = new System.Drawing.Size(261, 22);
-			this.mnuBreakOnStp.Text = "Break on STP";
+			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importExportToolStripMenuItem});
+			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+			this.fileToolStripMenuItem.Text = "File";
+			// 
+			// importExportToolStripMenuItem
+			// 
+			this.importExportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuDbgIntegrationSettings});
+			this.importExportToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.Import;
+			this.importExportToolStripMenuItem.Name = "importExportToolStripMenuItem";
+			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.importExportToolStripMenuItem.Text = "Import/Export";
+			// 
+			// mnuDbgIntegrationSettings
+			// 
+			this.mnuDbgIntegrationSettings.Image = global::Mesen.GUI.Properties.Resources.Settings;
+			this.mnuDbgIntegrationSettings.Name = "mnuDbgIntegrationSettings";
+			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(241, 22);
+			this.mnuDbgIntegrationSettings.Text = "CC65/CA65 Integration Settings";
+			this.mnuDbgIntegrationSettings.Click += new System.EventHandler(this.mnuDbgIntegrationSettings_Click);
 			// 
 			// frmDebugger
 			// 
@@ -853,6 +882,9 @@
 			this.Controls.Add(this.ctrlMesenMenuStrip1);
 			this.Name = "frmDebugger";
 			this.Text = "Debugger";
+			this.Controls.SetChildIndex(this.ctrlMesenMenuStrip1, 0);
+			this.Controls.SetChildIndex(this.tsToolbar, 0);
+			this.Controls.SetChildIndex(this.ctrlSplitContainer, 0);
 			this.ctrlMesenMenuStrip1.ResumeLayout(false);
 			this.ctrlMesenMenuStrip1.PerformLayout();
 			this.ctrlSplitContainer.Panel1.ResumeLayout(false);
@@ -960,5 +992,8 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakOnPowerCycleReset;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakOnStp;
+		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem importExportToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mnuDbgIntegrationSettings;
 	}
 }

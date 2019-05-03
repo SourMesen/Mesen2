@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Debugger.Integration;
+﻿using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Integration;
 using Mesen.GUI.Debugger.Labels;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace Mesen.GUI.Debugger.Workspace
 			}
 		}
 
-		private static void ResetLabels()
+		public static void ResetLabels()
 		{
 			if(_workspace != null) {
 				_workspace.CpuLabels = new List<CodeLabel>();
@@ -90,11 +91,14 @@ namespace Mesen.GUI.Debugger.Workspace
 
 		public static void ImportDbgFile()
 		{
+			if(!ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
+				return;
+			}
+
 			RomInfo romInfo = EmuApi.GetRomInfo();
 			string dbgPath = Path.Combine(Path.GetDirectoryName(romInfo.RomPath), romInfo.GetRomName() + ".dbg");
 			if(File.Exists(dbgPath)) {
 				DbgImporter import = new DbgImporter();
-				ResetLabels();
 				import.Import(dbgPath, true);
 				LabelManager.RefreshLabels();
 			}

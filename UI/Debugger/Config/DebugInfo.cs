@@ -24,6 +24,7 @@ namespace Mesen.GUI.Config
 		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
 		public TileViewerConfig TileViewer = new TileViewerConfig();
 		public SpriteViewerConfig SpriteViewer = new SpriteViewerConfig();
+		public DbgIntegrationConfig DbgIntegration = new DbgIntegrationConfig();
 
 		public DebugInfo()
 		{		

@@ -209,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\AudioConfig.cs" />
+    <Compile Include="Config\DbgIntegrationConfig.cs" />
     <Compile Include="Config\AviRecordConfig.cs" />
     <Compile Include="Config\BaseConfig.cs" />
     <Compile Include="Config\ConfigAttributes.cs" />
@@ -283,6 +284,12 @@
       <DependentUpon>frmBreakOn.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Integration\DbgImporter.cs" />
+    <Compile Include="Debugger\Integration\frmIntegrationSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Integration\frmIntegrationSettings.Designer.cs">
+      <DependentUpon>frmIntegrationSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Labels\CodeLabel.cs" />
     <Compile Include="Debugger\Labels\ctrlLabelList.cs">
       <SubType>UserControl</SubType>
@@ -790,6 +797,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmBreakOn.resx">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Integration\frmIntegrationSettings.resx">
+      <DependentUpon>frmIntegrationSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Labels\ctrlLabelList.resx">
       <DependentUpon>ctrlLabelList.cs</DependentUpon>

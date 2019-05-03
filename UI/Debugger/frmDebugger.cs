@@ -385,6 +385,13 @@ namespace Mesen.GUI.Debugger
 
 			ctrlDisassemblyView.CodeViewer.BaseFont = newFont;
 		}
+
+		private void mnuDbgIntegrationSettings_Click(object sender, EventArgs e)
+		{
+			using(frmIntegrationSettings frm = new frmIntegrationSettings()) {
+				frm.ShowDialog();
+			}
+		}
 	}
 
 	public enum CpuVector

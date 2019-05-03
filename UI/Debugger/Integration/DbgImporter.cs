@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Labels;
+using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Debugger.Integration
@@ -558,6 +559,7 @@ namespace Mesen.GUI.Debugger.Integration
 
 		private void LoadComments()
 		{
+			DbgIntegrationConfig config = ConfigManager.Config.Debug.DbgIntegration;
 			foreach(KeyValuePair<int, LineInfo> kvp in _lines) {
 				try {
 					LineInfo line = kvp.Value;
@@ -619,6 +621,12 @@ namespace Mesen.GUI.Debugger.Integration
 						} else {
 							address = GetPrgAddress(span);
 							memoryType = SnesMemoryType.PrgRom;
+						}
+
+						if(memoryType == SnesMemoryType.SpcRam && !config.ImportSpcComments) {
+							continue;
+						} else if(memoryType != SnesMemoryType.SpcRam && !config.ImportCpuComments) {
+							continue;
 						}
 
 						if(address >= 0 && memoryType != null) {
@@ -803,33 +811,31 @@ namespace Mesen.GUI.Debugger.Integration
 
 			int labelCount = 0;
 
-			//TODO LABELS
-			//DebugImportConfig config = ConfigManager.Config.DebugInfo.ImportConfig;
-			//if(config.DbgImportComments) {
+			DbgIntegrationConfig config = ConfigManager.Config.Debug.DbgIntegration;
+			if(config.ImportCpuComments || config.ImportSpcComments) {
 				LoadComments();
-			//}
+			}
 			List<CodeLabel> labels = new List<CodeLabel>(_romLabels.Count + _ramLabels.Count + _workRamLabels.Count + _saveRamLabels.Count);
-			//if(config.DbgImportPrgRomLabels) {
+			if(config.ImportCpuPrgRomLabels) {
 				labels.AddRange(_romLabels.Values);
 				labelCount += _romLabels.Count;
-			//}
-			//if(config.DbgImportRamLabels) {
-				labels.AddRange(_ramLabels.Values);
-				labelCount += _ramLabels.Count;
-			//}
-			//if(config.DbgImportWorkRamLabels) {
+			}
+			if(config.ImportCpuWorkRamLabels) {
 				labels.AddRange(_workRamLabels.Values);
 				labelCount += _workRamLabels.Count;
-			//}
-			//if(config.DbgImportSaveRamLabels) {
+			}
+			if(config.ImportCpuSaveRamLabels) {
 				labels.AddRange(_saveRamLabels.Values);
 				labelCount += _saveRamLabels.Count;
-			//}
-			//if(config.DbgImportSpcRamLabels) {
+			}
+			if(config.ImportSpcRamLabels) {
 				labels.AddRange(_spcRamLabels.Values);
 				labelCount += _spcRamLabels.Count;
-			//}
+			}
 
+			if(ConfigManager.Config.Debug.DbgIntegration.ResetLabelsOnImport) {
+				DebugWorkspaceManager.ResetLabels();
+			}
 			LabelManager.SetLabels(labels, true);
 			
 			if(!silent) {
