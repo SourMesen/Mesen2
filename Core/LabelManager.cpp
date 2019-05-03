@@ -55,7 +55,7 @@ uint64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType
 
 SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 {
-	switch(key & ~0xFFFFFFFF) {
+	switch(key & ~(uint64_t)0xFFFFFFFF) {
 		case ((uint64_t)1 << 32): return SnesMemoryType::PrgRom; break;
 		case ((uint64_t)2 << 32): return SnesMemoryType::WorkRam; break;
 		case ((uint64_t)3 << 32): return SnesMemoryType::SaveRam; break;

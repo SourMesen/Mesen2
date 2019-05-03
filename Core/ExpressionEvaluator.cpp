@@ -7,6 +7,7 @@
 #include "Debugger.h"
 #include "MemoryDumper.h"
 #include "Disassembler.h"
+#include "LabelManager.h"
 #include "../Utilities/HexUtilities.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };
@@ -56,7 +57,7 @@ EvalOperators ExpressionEvaluator::GetOperator(string token, bool unaryOperator)
 bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, string &output, ExpressionData &data)
 {
 	string token;
-	//size_t initialPos = pos;
+	size_t initialPos = pos;
 	size_t len = expression.size();
 	do {
 		char c = std::tolower(expression[pos]);
@@ -106,14 +107,12 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 	} else if(token == "isread") {
 		output += std::to_string((int64_t)EvalValues::IsRead);
 	} else {
-		return false;
-		//TODO LABELS
-		/*string originalExpression = expression.substr(initialPos, pos - initialPos);
-		bool validLabel = _debugger->GetLabelManager()->ContainsLabel(originalExpression);
+		string originalExpression = expression.substr(initialPos, pos - initialPos);
+		bool validLabel = _labelManager->ContainsLabel(originalExpression);
 		if(!validLabel) {
 			//Check if a multi-byte label exists for this name
 			string label = originalExpression + "+0";
-			validLabel = _debugger->GetLabelManager()->ContainsLabel(label);
+			validLabel = _labelManager->ContainsLabel(label);
 		}
 
 		if(validLabel) {
@@ -121,7 +120,7 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 			output += std::to_string(EvalValues::FirstLabelIndex + data.Labels.size() - 1);
 		} else {
 			return false;
-		}*/
+		}
 	}
 
 	return true;
@@ -350,17 +349,13 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 		if(token >= EvalValues::RegA) {
 			//Replace value with a special value
 			if(token >= EvalValues::FirstLabelIndex) {
-				resultType = EvalResultType::Invalid;
-				return 0;
-				
-				//TODO
-				/*int64_t labelIndex = token - EvalValues::FirstLabelIndex;
+				int64_t labelIndex = token - EvalValues::FirstLabelIndex;
 				if((size_t)labelIndex < data.Labels.size()) {
-					token = _debugger->GetLabelManager()->GetLabelRelativeAddress(data.Labels[(uint32_t)labelIndex]);
+					token = _labelManager->GetLabelRelativeAddress(data.Labels[(uint32_t)labelIndex]);
 					if(token < -1) {
 						//Label doesn't exist, try to find a matching multi-byte label
 						string label = data.Labels[(uint32_t)labelIndex] + "+0";
-						token = _debugger->GetLabelManager()->GetLabelRelativeAddress(label);
+						token = _labelManager->GetLabelRelativeAddress(label);
 					}
 				} else {
 					token = -2;
@@ -369,7 +364,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 					//Label is no longer valid
 					resultType = token == -1 ? EvalResultType::OutOfScope : EvalResultType::Invalid;
 					return 0;
-				}*/
+				}
 			} else {
 				switch(token) {
 					/*case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;*/
@@ -469,6 +464,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 ExpressionEvaluator::ExpressionEvaluator(Debugger* debugger, CpuType cpuType)
 {
 	_debugger = debugger;
+	_labelManager = debugger->GetLabelManager().get();
 	_cpuType = cpuType;
 	_cpuMemory = cpuType == CpuType::Cpu ? SnesMemoryType::CpuMemory : SnesMemoryType::SpcMemory;
 }

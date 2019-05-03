@@ -8,6 +8,7 @@
 #include "../Utilities/SimpleLock.h"
 
 class Debugger;
+class LabelManager;
 
 enum EvalOperators : int64_t
 {
@@ -108,6 +109,7 @@ private:
 	
 	int64_t operandStack[1000];
 	Debugger* _debugger;
+	LabelManager* _labelManager;
 	CpuType _cpuType;
 	SnesMemoryType _cpuMemory;
 

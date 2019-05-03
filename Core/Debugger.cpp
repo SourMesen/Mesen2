@@ -37,10 +37,10 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_settings = console->GetSettings();
 	_memoryManager = console->GetMemoryManager();
 
+	_labelManager.reset(new LabelManager(this));
 	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
 	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
 
-	_labelManager.reset(new LabelManager(this));
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), _memoryManager.get()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
