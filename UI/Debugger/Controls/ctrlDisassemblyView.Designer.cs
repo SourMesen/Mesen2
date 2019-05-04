@@ -56,7 +56,7 @@
 			this.ctrlCode.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlCode.HideSelection = false;
 			this.ctrlCode.Location = new System.Drawing.Point(0, 27);
-			this.ctrlCode.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+			this.ctrlCode.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlCode.Name = "ctrlCode";
 			this.ctrlCode.ShowCompactPrgAddresses = false;
 			this.ctrlCode.ShowContentNotes = false;
@@ -67,7 +67,9 @@
 			this.ctrlCode.ShowSingleLineLineNumberNotes = false;
 			this.ctrlCode.Size = new System.Drawing.Size(465, 371);
 			this.ctrlCode.TabIndex = 0;
+			this.ctrlCode.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ctrlCode_MouseMove);
 			this.ctrlCode.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ctrlCode_MouseDown);
+			this.ctrlCode.MouseLeave += new System.EventHandler(this.ctrlCode_MouseLeave);
 			this.ctrlCode.TextZoomChanged += new System.EventHandler(this.ctrlCode_TextZoomChanged);
 			// 
 			// ctxMenu

@@ -14,6 +14,7 @@ using Mesen.GUI.Debugger.Labels;
 using Mesen.GUI.Debugger.Integration;
 using Mesen.GUI.Debugger.Workspace;
 using static Mesen.GUI.Debugger.Integration.DbgImporter;
+using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Debugger.Controls
 {
@@ -230,6 +231,36 @@ namespace Mesen.GUI.Debugger.Controls
 				int lineIndex = ctrlCode.GetLineIndexAtPosition(e.Y);
 				_manager.ToggleBreakpoint(lineIndex);
 			}
+			BaseForm.GetPopupTooltip(this.FindForm()).Hide();
+		}
+
+		private string _lastWord = null;
+		private void ctrlCode_MouseMove(object sender, MouseEventArgs e)
+		{
+			string word = ctrlCode.GetWordUnderLocation(e.Location).Trim();
+			if(word == _lastWord) {
+				return;
+			}
+
+			if(word.Length > 0) {
+				Dictionary<string, string> values = _manager.GetTooltipData(word, ctrlCode.GetLineIndexAtPosition(e.Y));
+				if(values != null) {
+					Form form = this.FindForm();
+					Point tooltipLocation = ctrlCode.GetWordEndPosition(e.Location);
+					BaseForm.GetPopupTooltip(form).SetTooltip(form.PointToClient(ctrlCode.PointToScreen(tooltipLocation)), values);
+				} else {
+					BaseForm.GetPopupTooltip(this.FindForm()).Hide();
+				}
+			} else {
+				BaseForm.GetPopupTooltip(this.FindForm()).Hide();
+			}
+
+			_lastWord = word;
+		}
+
+		private void ctrlCode_MouseLeave(object sender, EventArgs e)
+		{
+			BaseForm.GetPopupTooltip(this.FindForm()).Hide();
 		}
 
 		private void ctrlCode_TextZoomChanged(object sender, EventArgs e)

@@ -19,5 +19,7 @@ namespace Mesen.GUI.Debugger.Code
 		void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file);
 		void ToggleBreakpoint(int lineIndex);
 		void EnableDisableBreakpoint(int lineIndex);
+
+		Dictionary<string, string> GetTooltipData(string word, int lineIndex);
 	}
 }

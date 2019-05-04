@@ -147,6 +147,11 @@ namespace Mesen.GUI.Debugger.Controls
 			return this.ctrlTextbox.GetWordUnderLocation(position);
 		}
 
+		public Point GetWordEndPosition(Point position)
+		{
+			return this.ctrlTextbox.GetWordEndPosition(position);
+		}
+
 		private void ctrlTextbox_ScrollPositionChanged(object sender, EventArgs e)
 		{
 			this.vScrollBar.Value = this.ctrlTextbox.ScrollPosition;

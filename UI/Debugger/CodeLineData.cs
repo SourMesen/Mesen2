@@ -43,7 +43,7 @@ namespace Mesen.GUI.Debugger
 					}
 					return "[" + label.Label + "]";
 				} else {
-					return "[" + EffectiveAddress.ToString(format) + "]";
+					return "[$" + EffectiveAddress.ToString(format) + "]";
 				}
 			} else {
 				return "";

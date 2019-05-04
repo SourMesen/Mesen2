@@ -65,6 +65,7 @@ namespace Mesen.GUI.Debugger.Code
 				data.Comment = trimmed.Substring(commentIndex);
 				data.Text = trimmed.Substring(0, commentIndex).TrimEnd();
 			} else {
+				data.Comment = "";
 				data.Text = trimmed;
 			}
 

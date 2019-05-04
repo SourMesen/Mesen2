@@ -406,7 +406,15 @@ namespace Mesen.GUI.Debugger.Controls
 		public string GetFullWidthString(int lineIndex)
 		{
 			CodeLineData lineData = _dataProvider.GetCodeLineData(lineIndex);
-			string text = lineData.Text + lineData.GetEffectiveAddressString(_addressFormat);
+			if(lineData.Flags.HasFlag(LineFlags.BlockStart) || lineData.Flags.HasFlag(LineFlags.BlockEnd)) {
+				return string.Empty;
+			}
+
+			string text = lineData.Text;
+			if(!lineData.Flags.HasFlag(LineFlags.Label) && text.Length > 0) {
+				text += " " + lineData.GetEffectiveAddressString(_addressFormat);
+			}
+			
 			if(lineData.Comment.Length > 0) {
 				return text.PadRight(text.Length > 0 ? CommentSpacingCharCount : 0) + lineData.Comment;
 			}
@@ -424,8 +432,7 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 
 				int positionX = position.X - marginLeft;
-				//TODO
-				//positionX -= (LineIndentations != null ? LineIndentations[lineIndex] : 0);
+				positionX -= _dataProvider.GetCodeLineData(lineIndex).Indentation;
 				if(positionX >= 0) {
 					float charWidth = g.MeasureString("W", this.Font, int.MaxValue, StringFormat.GenericTypographic).Width;
 					charIndex = (int)(positionX / charWidth);
@@ -452,7 +459,7 @@ namespace Mesen.GUI.Debugger.Controls
 						}
 						int startIndex = text.LastIndexOfAny(_wordDelimiters, charIndex);
 
-						if(startIndex >= 0 && text[startIndex] == '#' && text.Length > startIndex && text[startIndex + 1] == '$') {
+						if(startIndex >= 0 && text[startIndex] == '#' && text.Length > startIndex && (text[startIndex + 1] == '$' || text[startIndex + 1] >= '0' && text[startIndex + 1] <= '9')) {
 							//Special case for immediate values. e.g: we want to show a tooltip for #MyLabel, but not for #$EF
 							return text.Substring(startIndex, endIndex - startIndex);
 						} else {
@@ -462,6 +469,32 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 			}
 			return string.Empty;
+		}
+
+		public Point GetWordEndPosition(Point position)
+		{
+			int charIndex;
+			int lineIndex;
+			if(this.GetCharIndex(position, out charIndex, out lineIndex)) {
+				using(Graphics g = Graphics.FromHwnd(this.Handle)) {
+					int marginLeft = this.GetMargin(g, true);
+					int positionX = marginLeft + _dataProvider.GetCodeLineData(lineIndex).Indentation;
+
+					string text = this.GetFullWidthString(lineIndex);
+					int endIndex = text.IndexOfAny(_wordDelimiters, charIndex);
+					if(endIndex == -1) {
+						endIndex = text.Length;
+					}
+
+					float charWidth = g.MeasureString("W", this.Font, int.MaxValue, StringFormat.GenericTypographic).Width;
+					positionX += (int)(endIndex * charWidth);
+
+					int positionY = (GetLineAtPosition(position.Y) + 1) * this.LineHeight;
+
+					return new Point(positionX, positionY);
+				}
+			}
+			return Point.Empty;
 		}
 
 		private int GetLineAtPosition(int yPos)
@@ -967,7 +1000,7 @@ namespace Mesen.GUI.Debugger.Controls
 				Color defaultColor = Color.FromArgb(60, 60, 60);
 				if(codeString.Length > 0) {
 					Match match = CodeHighlightingEnabled ? _codeRegex.Match(codeString) : null;
-					if(match != null && match.Success && !codeString.EndsWith(":")) {
+					if(match != null && match.Success && !lineData.Flags.HasFlag(LineFlags.Label)) {
 						string padding = match.Groups[1].Value;
 						string opcode = match.Groups[2].Value;
 						string invalidStar = match.Groups[3].Value;
@@ -1000,7 +1033,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 						float xOffset = 0;
 						for(int i = 0; i < parts.Count; i++) {
-							using(Brush b = new SolidBrush(textColor.HasValue && (i < codePartCount || i == parts.Count - 1) ? textColor.Value : colors[i])) {
+							using(Brush b = new SolidBrush(textColor.HasValue && (i <= codePartCount) ? textColor.Value : colors[i])) {
 								g.DrawString(parts[i], this.Font, b, marginLeft + xOffset, positionY, StringFormat.GenericTypographic);
 								xOffset += g.MeasureString("".PadLeft(parts[i].Length, 'w'), this.Font, Point.Empty, StringFormat.GenericTypographic).Width;
 								characterCount += parts[i].Length;
