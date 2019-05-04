@@ -27,8 +27,7 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 		Breakpoint &bp = breakpoints[j];
 		for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
 			BreakpointType bpType = (BreakpointType)i;
-			bool isEnabled = bp.IsEnabled(); //TODO && _console->GetSettings()->CheckFlag(EmulationFlags::DebuggerWindowEnabled);
-			if((bp.IsMarked() || isEnabled) && bp.HasBreakpointType(bpType)) {
+			if((bp.IsMarked() || bp.IsEnabled()) && bp.HasBreakpointType(bpType)) {
 				BreakpointCategory category = bp.GetBreakpointCategory();
 				CpuType cpuType = category == BreakpointCategory::Spc ? CpuType::Spc : CpuType::Cpu;
 				_breakpoints[(int)category][i].push_back(bp);

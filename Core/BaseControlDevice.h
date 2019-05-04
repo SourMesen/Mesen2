@@ -22,9 +22,6 @@ protected:
 
 	virtual void RefreshStateBuffer() { }
 	
-	//TODO
-	//virtual void StreamState(bool saving);
-	
 	void EnsureCapacity(int32_t minBitCount);
 	uint32_t GetByteIndex(uint8_t bit);
 	virtual bool HasCoordinates();

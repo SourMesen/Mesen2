@@ -148,7 +148,7 @@ void BaseRenderer::ShowGameTimer(int lineNumber)
 {
 	int yPos = 13 + 24 * lineNumber;
 	double frameCount = _console->GetPpu()->GetFrameCount();
-	bool isPal = false; //TODO
+	bool isPal = _console->GetRegion() == ConsoleRegion::Pal;
 	double frameRate = isPal ? 50.006977968268290848936010226333 : 60.098811862348404716732985230828;
 	uint32_t seconds = (uint32_t)(frameCount / frameRate) % 60;
 	uint32_t minutes = (uint32_t)(frameCount / frameRate / 60) % 60;

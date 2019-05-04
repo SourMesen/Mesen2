@@ -144,8 +144,8 @@ void Console::Stop(bool sendNotification)
 	_runLock.WaitForRelease();
 
 	if(_cart) {
-		//TODO IPS/BPS patch support
-		_saveStateManager->SaveRecentGame(GetRomInfo().RomFile.GetFileName(), _cart->GetRomInfo().RomFile, "");
+		RomInfo romInfo = _cart->GetRomInfo();
+		_saveStateManager->SaveRecentGame(romInfo.RomFile.GetFileName(), romInfo.RomFile, romInfo.PatchFile);
 	}
 
 	if(sendNotification) {
