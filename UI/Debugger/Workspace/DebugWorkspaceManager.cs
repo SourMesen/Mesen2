@@ -12,7 +12,10 @@ namespace Mesen.GUI.Debugger.Workspace
 {
 	public class DebugWorkspaceManager
 	{
+		public delegate void SymbolProviderChangedHandler(DbgImporter symbolProvider);
+		public static event SymbolProviderChangedHandler SymbolProviderChanged;
 		private static DebugWorkspace _workspace;
+		private static DbgImporter _symbolProvider;
 		private static string _romName;
 		private static object _lock = new object();
 
@@ -91,17 +94,25 @@ namespace Mesen.GUI.Debugger.Workspace
 
 		public static void ImportDbgFile()
 		{
-			if(!ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
-				return;
+			_symbolProvider = null;
+
+			if(ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
+				RomInfo romInfo = EmuApi.GetRomInfo();
+				string dbgPath = Path.Combine(Path.GetDirectoryName(romInfo.RomPath), romInfo.GetRomName() + ".dbg");
+				if(File.Exists(dbgPath)) {
+					_symbolProvider = new DbgImporter();
+					_symbolProvider.Import(dbgPath, true);
+					SymbolProviderChanged?.Invoke(_symbolProvider);
+					LabelManager.RefreshLabels();
+				}
 			}
 
-			RomInfo romInfo = EmuApi.GetRomInfo();
-			string dbgPath = Path.Combine(Path.GetDirectoryName(romInfo.RomPath), romInfo.GetRomName() + ".dbg");
-			if(File.Exists(dbgPath)) {
-				DbgImporter import = new DbgImporter();
-				import.Import(dbgPath, true);
-				LabelManager.RefreshLabels();
-			}
+			SymbolProviderChanged?.Invoke(_symbolProvider);
+		}
+
+		public static DbgImporter GetSymbolProvider()
+		{
+			return _symbolProvider;
 		}
 	}
 }

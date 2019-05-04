@@ -19,6 +19,8 @@ namespace Mesen.GUI.Debugger
 
 		public LineFlags Flags;
 
+		public int? CustomIndent = null;
+
 		public byte OpSize;
 		public string ByteCode;
 		public string Comment;
@@ -63,7 +65,9 @@ namespace Mesen.GUI.Debugger
 		{
 			get
 			{
-				if(Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd) || Flags.HasFlag(LineFlags.Label) || (Flags.HasFlag(LineFlags.Comment) && Text.Length == 0)) {
+				if(CustomIndent.HasValue) {
+					return CustomIndent.Value;
+				} else if(Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd) || Flags.HasFlag(LineFlags.Label) || (Flags.HasFlag(LineFlags.Comment) && Text.Length == 0)) {
 					return 0;
 				} else {
 					return 15;

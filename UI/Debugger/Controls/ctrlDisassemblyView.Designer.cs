@@ -38,17 +38,25 @@
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuGoToLocation = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuFindOccurrences = new System.Windows.Forms.ToolStripMenuItem();
+			this.sepSwitchView = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuSwitchView = new System.Windows.Forms.ToolStripMenuItem();
+			this.cboSourceFile = new System.Windows.Forms.ComboBox();
+			this.lblSourceFile = new System.Windows.Forms.Label();
+			this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
 			this.ctxMenu.SuspendLayout();
+			this.tlpMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctrlCode
 			// 
 			this.ctrlCode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.ctrlCode.CodeHighlightingEnabled = true;
+			this.tlpMain.SetColumnSpan(this.ctrlCode, 2);
 			this.ctrlCode.ContextMenuStrip = this.ctxMenu;
 			this.ctrlCode.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlCode.HideSelection = false;
-			this.ctrlCode.Location = new System.Drawing.Point(0, 0);
+			this.ctrlCode.Location = new System.Drawing.Point(0, 27);
+			this.ctrlCode.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
 			this.ctrlCode.Name = "ctrlCode";
 			this.ctrlCode.ShowCompactPrgAddresses = false;
 			this.ctrlCode.ShowContentNotes = false;
@@ -57,7 +65,7 @@
 			this.ctrlCode.ShowScrollbars = true;
 			this.ctrlCode.ShowSingleContentLineNotes = true;
 			this.ctrlCode.ShowSingleLineLineNumberNotes = false;
-			this.ctrlCode.Size = new System.Drawing.Size(465, 398);
+			this.ctrlCode.Size = new System.Drawing.Size(465, 371);
 			this.ctrlCode.TabIndex = 0;
 			this.ctrlCode.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ctrlCode_MouseDown);
 			this.ctrlCode.TextZoomChanged += new System.EventHandler(this.ctrlCode_TextZoomChanged);
@@ -72,28 +80,30 @@
             this.mnuEditInMemoryTools,
             this.toolStripMenuItem2,
             this.mnuGoToLocation,
-            this.mnuFindOccurrences});
+            this.mnuFindOccurrences,
+            this.sepSwitchView,
+            this.mnuSwitchView});
 			this.ctxMenu.Name = "ctxMenu";
-			this.ctxMenu.Size = new System.Drawing.Size(187, 148);
+			this.ctxMenu.Size = new System.Drawing.Size(191, 176);
 			// 
 			// mnuToggleBreakpoint
 			// 
 			this.mnuToggleBreakpoint.Image = global::Mesen.GUI.Properties.Resources.Breakpoint;
 			this.mnuToggleBreakpoint.Name = "mnuToggleBreakpoint";
-			this.mnuToggleBreakpoint.Size = new System.Drawing.Size(186, 22);
+			this.mnuToggleBreakpoint.Size = new System.Drawing.Size(190, 22);
 			this.mnuToggleBreakpoint.Text = "Toggle Breakpoint";
 			this.mnuToggleBreakpoint.Click += new System.EventHandler(this.mnuToggleBreakpoint_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(183, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(187, 6);
 			// 
 			// mnuAddToWatch
 			// 
 			this.mnuAddToWatch.Enabled = false;
 			this.mnuAddToWatch.Name = "mnuAddToWatch";
-			this.mnuAddToWatch.Size = new System.Drawing.Size(186, 22);
+			this.mnuAddToWatch.Size = new System.Drawing.Size(190, 22);
 			this.mnuAddToWatch.Text = "Add to Watch";
 			// 
 			// mnuEditLabel
@@ -101,7 +111,7 @@
 			this.mnuEditLabel.Enabled = false;
 			this.mnuEditLabel.Image = global::Mesen.GUI.Properties.Resources.EditLabel;
 			this.mnuEditLabel.Name = "mnuEditLabel";
-			this.mnuEditLabel.Size = new System.Drawing.Size(186, 22);
+			this.mnuEditLabel.Size = new System.Drawing.Size(190, 22);
 			this.mnuEditLabel.Text = "Edit Label";
 			// 
 			// mnuEditInMemoryTools
@@ -109,19 +119,19 @@
 			this.mnuEditInMemoryTools.Enabled = false;
 			this.mnuEditInMemoryTools.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
 			this.mnuEditInMemoryTools.Name = "mnuEditInMemoryTools";
-			this.mnuEditInMemoryTools.Size = new System.Drawing.Size(186, 22);
+			this.mnuEditInMemoryTools.Size = new System.Drawing.Size(190, 22);
 			this.mnuEditInMemoryTools.Text = "Edit in Memory Tools";
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(183, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(187, 6);
 			// 
 			// mnuGoToLocation
 			// 
 			this.mnuGoToLocation.Enabled = false;
 			this.mnuGoToLocation.Name = "mnuGoToLocation";
-			this.mnuGoToLocation.Size = new System.Drawing.Size(186, 22);
+			this.mnuGoToLocation.Size = new System.Drawing.Size(190, 22);
 			this.mnuGoToLocation.Text = "Go to Location";
 			// 
 			// mnuFindOccurrences
@@ -129,17 +139,70 @@
 			this.mnuFindOccurrences.Enabled = false;
 			this.mnuFindOccurrences.Image = global::Mesen.GUI.Properties.Resources.Find;
 			this.mnuFindOccurrences.Name = "mnuFindOccurrences";
-			this.mnuFindOccurrences.Size = new System.Drawing.Size(186, 22);
+			this.mnuFindOccurrences.Size = new System.Drawing.Size(190, 22);
 			this.mnuFindOccurrences.Text = "Find Occurrences";
+			// 
+			// sepSwitchView
+			// 
+			this.sepSwitchView.Name = "sepSwitchView";
+			this.sepSwitchView.Size = new System.Drawing.Size(187, 6);
+			// 
+			// mnuSwitchView
+			// 
+			this.mnuSwitchView.Image = global::Mesen.GUI.Properties.Resources.SwitchView;
+			this.mnuSwitchView.Name = "mnuSwitchView";
+			this.mnuSwitchView.Size = new System.Drawing.Size(190, 22);
+			this.mnuSwitchView.Text = "Switch to Source View";
+			// 
+			// cboSourceFile
+			// 
+			this.cboSourceFile.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.cboSourceFile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboSourceFile.FormattingEnabled = true;
+			this.cboSourceFile.Location = new System.Drawing.Point(35, 3);
+			this.cboSourceFile.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+			this.cboSourceFile.Name = "cboSourceFile";
+			this.cboSourceFile.Size = new System.Drawing.Size(430, 21);
+			this.cboSourceFile.TabIndex = 1;
+			this.cboSourceFile.SelectedIndexChanged += new System.EventHandler(this.cboSourceFile_SelectedIndexChanged);
+			// 
+			// lblSourceFile
+			// 
+			this.lblSourceFile.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblSourceFile.AutoSize = true;
+			this.lblSourceFile.Location = new System.Drawing.Point(3, 7);
+			this.lblSourceFile.Name = "lblSourceFile";
+			this.lblSourceFile.Size = new System.Drawing.Size(26, 13);
+			this.lblSourceFile.TabIndex = 2;
+			this.lblSourceFile.Text = "File:";
+			// 
+			// tlpMain
+			// 
+			this.tlpMain.ColumnCount = 2;
+			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tlpMain.Controls.Add(this.lblSourceFile, 0, 0);
+			this.tlpMain.Controls.Add(this.cboSourceFile, 1, 0);
+			this.tlpMain.Controls.Add(this.ctrlCode, 0, 1);
+			this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tlpMain.Location = new System.Drawing.Point(0, 0);
+			this.tlpMain.Name = "tlpMain";
+			this.tlpMain.RowCount = 2;
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tlpMain.Size = new System.Drawing.Size(465, 398);
+			this.tlpMain.TabIndex = 3;
 			// 
 			// ctrlDisassemblyView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.ctrlCode);
+			this.Controls.Add(this.tlpMain);
 			this.Name = "ctrlDisassemblyView";
 			this.Size = new System.Drawing.Size(465, 398);
 			this.ctxMenu.ResumeLayout(false);
+			this.tlpMain.ResumeLayout(false);
+			this.tlpMain.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -156,5 +219,10 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
 		private System.Windows.Forms.ToolStripMenuItem mnuGoToLocation;
 		private System.Windows.Forms.ToolStripMenuItem mnuFindOccurrences;
+		private System.Windows.Forms.ComboBox cboSourceFile;
+		private System.Windows.Forms.ToolStripSeparator sepSwitchView;
+		private System.Windows.Forms.ToolStripMenuItem mnuSwitchView;
+		private System.Windows.Forms.TableLayoutPanel tlpMain;
+		private System.Windows.Forms.Label lblSourceFile;
 	}
 }

@@ -245,6 +245,7 @@
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
+    <Compile Include="Debugger\Code\DbgCodeDataProvider.cs" />
     <Compile Include="Debugger\Code\SpcLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\CodeDataProvider.cs" />
     <Compile Include="Debugger\Code\SpcDisassemblyManager.cs" />

@@ -104,7 +104,7 @@ namespace Mesen.GUI.Debugger
 				//GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_NavigateForward)),
 				GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_ToggleBreakpoint)),
 				GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_DisableEnableBreakpoint)),
-				//GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_SwitchView)),
+				GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_SwitchView)),
 				//GetMember(nameof(DebuggerShortcutsConfig.FunctionList_EditLabel)),
 				//GetMember(nameof(DebuggerShortcutsConfig.FunctionList_AddBreakpoint)),
 				//GetMember(nameof(DebuggerShortcutsConfig.FunctionList_FindOccurrences)),

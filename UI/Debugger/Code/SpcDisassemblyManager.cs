@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Debugger.Controls;
+using Mesen.GUI.Debugger.Integration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,9 @@ namespace Mesen.GUI.Debugger.Code
 		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.SpcMemory; } }
 		public override int AddressSize { get { return 4; } }
 		public override int ByteCodeSize { get { return 3; } }
+		public override bool AllowSourceView { get { return false; } }
 
-		public override void RefreshCode()
+		public override void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file)
 		{
 			this._provider = new CodeDataProvider(CpuType.Spc);
 		}

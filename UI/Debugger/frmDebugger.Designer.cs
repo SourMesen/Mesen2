@@ -33,6 +33,9 @@
 		{
 			this.ctrlDisassemblyView = new Mesen.GUI.Debugger.Controls.ctrlDisassemblyView();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
+			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuDbgIntegrationSettings = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuContinue = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreak = new System.Windows.Forms.ToolStripMenuItem();
@@ -119,9 +122,6 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.importExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuDbgIntegrationSettings = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -155,6 +155,31 @@
 			this.ctrlMesenMenuStrip1.Size = new System.Drawing.Size(832, 24);
 			this.ctrlMesenMenuStrip1.TabIndex = 1;
 			this.ctrlMesenMenuStrip1.Text = "ctrlMesenMenuStrip1";
+			// 
+			// fileToolStripMenuItem
+			// 
+			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importExportToolStripMenuItem});
+			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+			this.fileToolStripMenuItem.Text = "File";
+			// 
+			// importExportToolStripMenuItem
+			// 
+			this.importExportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuDbgIntegrationSettings});
+			this.importExportToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.Import;
+			this.importExportToolStripMenuItem.Name = "importExportToolStripMenuItem";
+			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.importExportToolStripMenuItem.Text = "Import/Export";
+			// 
+			// mnuDbgIntegrationSettings
+			// 
+			this.mnuDbgIntegrationSettings.Image = global::Mesen.GUI.Properties.Resources.Settings;
+			this.mnuDbgIntegrationSettings.Name = "mnuDbgIntegrationSettings";
+			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(241, 22);
+			this.mnuDbgIntegrationSettings.Text = "CC65/CA65 Integration Settings";
+			this.mnuDbgIntegrationSettings.Click += new System.EventHandler(this.mnuDbgIntegrationSettings_Click);
 			// 
 			// debugToolStripMenuItem
 			// 
@@ -846,31 +871,6 @@
 			this.tsToolbar.Size = new System.Drawing.Size(832, 25);
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
-			// 
-			// fileToolStripMenuItem
-			// 
-			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importExportToolStripMenuItem});
-			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-			this.fileToolStripMenuItem.Text = "File";
-			// 
-			// importExportToolStripMenuItem
-			// 
-			this.importExportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuDbgIntegrationSettings});
-			this.importExportToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.Import;
-			this.importExportToolStripMenuItem.Name = "importExportToolStripMenuItem";
-			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.importExportToolStripMenuItem.Text = "Import/Export";
-			// 
-			// mnuDbgIntegrationSettings
-			// 
-			this.mnuDbgIntegrationSettings.Image = global::Mesen.GUI.Properties.Resources.Settings;
-			this.mnuDbgIntegrationSettings.Name = "mnuDbgIntegrationSettings";
-			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(241, 22);
-			this.mnuDbgIntegrationSettings.Text = "CC65/CA65 Integration Settings";
-			this.mnuDbgIntegrationSettings.Click += new System.EventHandler(this.mnuDbgIntegrationSettings_Click);
 			// 
 			// frmDebugger
 			// 

@@ -11,6 +11,9 @@ using Mesen.GUI.Controls;
 using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Code;
 using Mesen.GUI.Debugger.Labels;
+using Mesen.GUI.Debugger.Integration;
+using Mesen.GUI.Debugger.Workspace;
+using static Mesen.GUI.Debugger.Integration.DbgImporter;
 
 namespace Mesen.GUI.Debugger.Controls
 {
@@ -18,6 +21,8 @@ namespace Mesen.GUI.Debugger.Controls
 	{
 		private BaseStyleProvider _styleProvider;
 		private IDisassemblyManager _manager;
+		private DbgImporter _symbolProvider;
+		private bool _inSourceView = false;
 
 		public ctrlDisassemblyView()
 		{
@@ -28,15 +33,31 @@ namespace Mesen.GUI.Debugger.Controls
 
 			InitShortcuts();
 
+			DebugWorkspaceManager.SymbolProviderChanged += DebugWorkspaceManager_SymbolProviderChanged;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 			LabelManager.OnLabelUpdated += OnLabelUpdated;
 		}
-	
+
 		protected override void OnHandleDestroyed(EventArgs e)
 		{
 			base.OnHandleDestroyed(e);
+			DebugWorkspaceManager.SymbolProviderChanged -= DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated -= OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
+		}
+
+		private void DebugWorkspaceManager_SymbolProviderChanged(DbgImporter symbolProvider)
+		{
+			_symbolProvider = symbolProvider;
+
+			if(_symbolProvider == null && _inSourceView) {
+				ToggleView();
+			}
+
+			if(_manager?.Provider != null) {
+				UpdateSourceFileDropdown();
+				UpdateCode();
+			}
 		}
 
 		private void OnLabelUpdated(object sender, EventArgs e)
@@ -53,6 +74,7 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			_manager = manager;
 			_styleProvider = styleProvider;
+			_symbolProvider = DebugWorkspaceManager.GetSymbolProvider();
 
 			ctrlCode.StyleProvider = _styleProvider;
 			ctrlCode.ShowContentNotes = false;
@@ -60,12 +82,60 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.ExtendedMarginWidth = manager.ByteCodeSize * 4;
 			ctrlCode.AddressSize = manager.AddressSize;
 
-			_manager.RefreshCode();
+			UpdateSourceFileDropdown();
+			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as DbgImporter.FileInfo : null);
+		}
+
+		private void UpdateSourceFileDropdown()
+		{
+			mnuSwitchView.Enabled = false;
+			mnuSwitchView.Visible = false;
+			sepSwitchView.Visible = false;
+			cboSourceFile.Visible = false;
+			lblSourceFile.Visible = false;
+
+			if(_manager.AllowSourceView && _symbolProvider != null) {
+				cboSourceFile.BeginUpdate();
+				cboSourceFile.Items.Clear();
+				cboSourceFile.Sorted = false;
+				if(_symbolProvider != null) {
+					foreach(DbgImporter.FileInfo file in _symbolProvider.Files.Values) {
+						if(file.Data != null && file.Data.Length > 0 && !file.Name.ToLower().EndsWith(".chr")) {
+							cboSourceFile.Items.Add(file);
+						}
+					}
+				}
+				cboSourceFile.Sorted = true;
+				cboSourceFile.EndUpdate();
+
+				if(cboSourceFile.Items.Count > 0) {
+					cboSourceFile.SelectedIndex = 0;
+				}
+
+				mnuSwitchView.Enabled = true;
+				mnuSwitchView.Visible = true;
+				sepSwitchView.Visible = true;
+
+				if(_inSourceView) {
+					lblSourceFile.Visible = true;
+					cboSourceFile.Visible = true;
+				}
+			}
 		}
 
 		private void InitShortcuts()
 		{
 			mnuToggleBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_ToggleBreakpoint));
+			mnuSwitchView.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_SwitchView));
+
+			mnuSwitchView.Click += (s, e) => { ToggleView(); };
+		}
+
+		public void ToggleView()
+		{
+			_inSourceView = !_inSourceView;
+			UpdateSourceFileDropdown();
+			UpdateCode();
 		}
 
 		public void SetActiveAddress(int? address)
@@ -76,7 +146,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 			_styleProvider.ActiveAddress = address;
 			if(address.HasValue && address.Value >= 0) {
-				ctrlCode.ScrollToAddress(address.Value);
+				ScrollToAddress((uint)address.Value);
 			}
 
 			ctrlCode.Invalidate();
@@ -84,6 +154,22 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void ScrollToAddress(uint address)
 		{
+			if(_inSourceView) {
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)address, Type = SnesMemoryType.CpuMemory });
+				if(absAddress.Address >= 0 && absAddress.Type == SnesMemoryType.PrgRom) {
+					LineInfo line = _symbolProvider?.GetSourceCodeLineInfo(absAddress.Address);
+					if(line != null) {
+						foreach(DbgImporter.FileInfo fileInfo in cboSourceFile.Items) {
+							if(fileInfo.ID == line.FileID) {
+								cboSourceFile.SelectedItem = fileInfo;
+								ctrlCode.ScrollToLineIndex(line.LineNumber);
+								return;
+							}
+						}
+					}
+				}
+				ToggleView();
+			}
 			ctrlCode.ScrollToAddress((int)address);
 		}
 
@@ -99,7 +185,7 @@ namespace Mesen.GUI.Debugger.Controls
 				scrollOffset++;
 			} while(centerLineAddress < 0 && centerLineIndex > 0);
 
-			_manager.RefreshCode();
+			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as DbgImporter.FileInfo : null);
 			ctrlCode.DataProvider = _manager.Provider;
 
 			if(centerLineAddress >= 0) {
@@ -107,20 +193,19 @@ namespace Mesen.GUI.Debugger.Controls
 				int lineIndex = _manager.Provider.GetLineIndex((UInt32)centerLineAddress) + scrollOffset;
 				ctrlCode.ScrollToLineIndex(lineIndex, eHistoryType.None, false, true);
 			}
-			GoToActiveAddress();
 		}
 
 		public ctrlScrollableTextbox CodeViewer { get { return ctrlCode; } }
 
 		public void GoToAddress(int address)
 		{
-			ctrlCode.ScrollToAddress(address);
+			ScrollToAddress((uint)address);
 		}
 
 		public void GoToActiveAddress()
 		{
 			if(_styleProvider.ActiveAddress.HasValue) {
-				ctrlCode.ScrollToAddress(_styleProvider.ActiveAddress.Value);
+				ScrollToAddress((uint)_styleProvider.ActiveAddress.Value);
 			}
 		}
 
@@ -151,6 +236,13 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			ConfigManager.Config.Debug.Debugger.TextZoom = ctrlCode.TextZoom;
 			ConfigManager.ApplyChanges();
+		}
+
+		private void cboSourceFile_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if(_manager?.Provider != null) {
+				UpdateCode();
+			}
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Debugger.Controls;
+using Mesen.GUI.Debugger.Integration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,21 @@ namespace Mesen.GUI.Debugger.Code
 {
 	public class CpuDisassemblyManager : IDisassemblyManager
 	{
-		protected CodeDataProvider _provider;
+		protected ICodeDataProvider _provider;
 		public ICodeDataProvider Provider { get { return this._provider; } }
 
 		public virtual SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.CpuMemory; } }
 		public virtual int AddressSize { get { return 6; } }
 		public virtual int ByteCodeSize { get { return 4; } }
+		public virtual bool AllowSourceView { get { return true; } }
 
-		public virtual void RefreshCode()
+		public virtual void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file)
 		{
-			this._provider = new CodeDataProvider(CpuType.Cpu);
+			if(file == null) {
+				this._provider = new CodeDataProvider(CpuType.Cpu);
+			} else {
+				this._provider = new DbgCodeDataProvider(CpuType.Cpu, symbolProvider, file);
+			}
 		}
 
 		public void ToggleBreakpoint(int lineIndex)

@@ -984,6 +984,10 @@ namespace Mesen.GUI.Debugger.Controls
 
 						List<string> parts = new List<string>() { padding, opcode, invalidStar, " ", paren1, operand, paren2, indirect, paren3 };
 
+						//Display the rest of the line (used by trace logger)
+						colors.Add(defaultColor);
+						parts.Add(rest);
+
 						if(lineData.EffectiveAddress >= 0) {
 							colors.Add(cfg.CodeEffectiveAddressColor);
 							parts.Add(" " + lineData.GetEffectiveAddressString(_addressFormat));
@@ -993,10 +997,6 @@ namespace Mesen.GUI.Debugger.Controls
 							colors.Add(defaultColor);
 							parts.Add(lineData.GetValueString());
 						}
-
-						//Display the rest of the line (used by trace logger)
-						colors.Add(defaultColor);
-						parts.Add(rest);
 
 						float xOffset = 0;
 						for(int i = 0; i < parts.Count; i++) {

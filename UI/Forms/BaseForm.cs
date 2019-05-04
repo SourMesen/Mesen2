@@ -222,9 +222,9 @@ namespace Mesen.GUI.Forms
 			// ctrlTooltip
 			// 
 			this.ctrlTooltip.AutoSize = true;
-			this.ctrlTooltip.Location = new System.Drawing.Point(77, 89);
+			this.ctrlTooltip.Location = new System.Drawing.Point(0, 0);
 			this.ctrlTooltip.Name = "ctrlTooltip";
-			this.ctrlTooltip.Size = new System.Drawing.Size(97, 83);
+			this.ctrlTooltip.Size = new System.Drawing.Size(1, 1);
 			this.ctrlTooltip.TabIndex = 0;
 			this.ctrlTooltip.Visible = false;
 			// 

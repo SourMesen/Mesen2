@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Debugger.Controls;
+using Mesen.GUI.Debugger.Integration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace Mesen.GUI.Debugger.Code
 
 		int AddressSize { get; }
 		int ByteCodeSize { get; }
+		bool AllowSourceView { get; }
 
-		void RefreshCode();
+		void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file);
 		void ToggleBreakpoint(int lineIndex);
 		void EnableDisableBreakpoint(int lineIndex);
 	}
