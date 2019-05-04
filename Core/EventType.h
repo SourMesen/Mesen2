@@ -5,5 +5,6 @@ enum class EventType
 	Nmi = 0,
 	Irq = 1,
 	StartFrame = 2,
-	EndFrame = 3
+	EndFrame = 3,
+	Reset = 4
 };

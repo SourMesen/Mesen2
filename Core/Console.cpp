@@ -87,6 +87,8 @@ void Console::Run()
 	_videoDecoder->StartThread();
 	_emulationThreadId = std::this_thread::get_id();
 
+	_memoryManager->IncrementMasterClockValue<182>();
+
 	auto lock = _runLock.AcquireSafe();
 	while(!_stopFlag) {
 		_cpu->Exec();
@@ -192,8 +194,9 @@ void Console::Reset()
 	//_controlManager->Reset();
 
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
+	ProcessEvent(EventType::Reset);
 
-	_memoryManager->IncrementMasterClockValue<166>();
+	_memoryManager->IncrementMasterClockValue<182>();
 	
 	Unlock();
 }
@@ -262,8 +265,6 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_cpu->PowerOn();
 
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
-
-		_memoryManager->IncrementMasterClockValue<166>();
 
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);

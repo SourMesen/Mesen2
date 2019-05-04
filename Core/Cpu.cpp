@@ -21,7 +21,7 @@ Cpu::~Cpu()
 void Cpu::PowerOn()
 {
 	_state = {};
-	_state.PC = ReadDataWord(Cpu::ResetVector);
+	_state.PC = _memoryManager->PeekWord(Cpu::ResetVector);
 	_state.SP = 0x1FF;
 	_state.PS = ProcFlags::IrqDisable;
 	_state.EmulationMode = true;
@@ -44,7 +44,7 @@ void Cpu::Reset()
 	_state.StopState = CpuStopState::Running;
 	SetSP(_state.SP);
 	_state.K = 0;
-	_state.PC = ReadDataWord(Cpu::ResetVector);
+	_state.PC = _memoryManager->PeekWord(Cpu::ResetVector);
 }
 
 void Cpu::Exec()

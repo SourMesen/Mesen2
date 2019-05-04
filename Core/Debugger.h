@@ -64,12 +64,13 @@ private:
 	atomic<int32_t> _spcBreakAddress;
 	atomic<int32_t> _breakScanline;
 	
-	uint8_t _prevOpCode = 0;
+	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
 
-	uint8_t _spcPrevOpCode = 0;
+	uint8_t _spcPrevOpCode = 0xFF;
 	uint32_t _spcPrevProgramCounter = 0;
 
+	void Reset();
 	void SleepUntilResume();
 	void ProcessStepConditions(uint8_t opCode, uint32_t currentPc);
 	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);

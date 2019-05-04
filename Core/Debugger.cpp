@@ -84,6 +84,12 @@ void Debugger::Release()
 	}
 }
 
+void Debugger::Reset()
+{
+	_prevOpCode = 0xFF;
+	_spcPrevOpCode = 0xFF;
+}
+
 void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
@@ -352,6 +358,10 @@ void Debugger::ProcessEvent(EventType type)
 		case EventType::StartFrame:
 			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh);
 			_eventManager->ClearFrameEvents();
+			break;
+
+		case EventType::Reset:
+			Reset();
 			break;
 	}
 }
