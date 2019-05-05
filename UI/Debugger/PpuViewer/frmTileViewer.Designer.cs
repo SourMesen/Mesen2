@@ -51,6 +51,8 @@
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
 			this.btnPresetOam1 = new System.Windows.Forms.Button();
 			this.btnPresetOam2 = new System.Windows.Forms.Button();
+			this.lblTileAddress = new System.Windows.Forms.Label();
+			this.txtTileAddress = new System.Windows.Forms.TextBox();
 			this.ctrlImagePanel = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -114,9 +116,14 @@
 			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 6);
 			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 6);
 			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 7);
+			this.tableLayoutPanel2.Controls.Add(this.lblTileAddress, 0, 9);
+			this.tableLayoutPanel2.Controls.Add(this.txtTileAddress, 1, 9);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(540, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 9;
+			this.tableLayoutPanel2.RowCount = 11;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -126,17 +133,18 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(194, 457);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(194, 516);
 			this.tableLayoutPanel2.TabIndex = 7;
 			// 
 			// cboMemoryType
 			// 
+			this.cboMemoryType.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.cboMemoryType.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.cboMemoryType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cboMemoryType.FormattingEnabled = true;
-			this.cboMemoryType.Location = new System.Drawing.Point(59, 3);
+			this.cboMemoryType.Location = new System.Drawing.Point(77, 3);
 			this.cboMemoryType.Name = "cboMemoryType";
-			this.cboMemoryType.Size = new System.Drawing.Size(132, 21);
+			this.cboMemoryType.Size = new System.Drawing.Size(114, 21);
 			this.cboMemoryType.TabIndex = 11;
 			// 
 			// nudBank
@@ -147,7 +155,7 @@
             0,
             0,
             0});
-			this.nudBank.Location = new System.Drawing.Point(59, 84);
+			this.nudBank.Location = new System.Drawing.Point(77, 84);
 			this.nudBank.Maximum = new decimal(new int[] {
             63,
             0,
@@ -222,6 +230,7 @@
 			// 
 			// cboFormat
 			// 
+			this.cboFormat.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.cboFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cboFormat.FormattingEnabled = true;
 			this.cboFormat.Items.AddRange(new object[] {
@@ -231,9 +240,9 @@
             "8 BPP - Direct Color Mode",
             "Mode 7",
             "Mode 7 - Direct Color Mode"});
-			this.cboFormat.Location = new System.Drawing.Point(59, 30);
+			this.cboFormat.Location = new System.Drawing.Point(77, 30);
 			this.cboFormat.Name = "cboFormat";
-			this.cboFormat.Size = new System.Drawing.Size(132, 21);
+			this.cboFormat.Size = new System.Drawing.Size(114, 21);
 			this.cboFormat.TabIndex = 2;
 			// 
 			// nudColumns
@@ -244,7 +253,7 @@
             0,
             0,
             0});
-			this.nudColumns.Location = new System.Drawing.Point(59, 57);
+			this.nudColumns.Location = new System.Drawing.Point(77, 57);
 			this.nudColumns.Maximum = new decimal(new int[] {
             64,
             0,
@@ -284,7 +293,7 @@
             0,
             0,
             0});
-			this.nudOffset.Location = new System.Drawing.Point(59, 111);
+			this.nudOffset.Location = new System.Drawing.Point(77, 111);
 			this.nudOffset.Maximum = new decimal(new int[] {
             63,
             0,
@@ -340,12 +349,12 @@
 			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg3, 2, 0);
 			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg4, 3, 0);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel3.Location = new System.Drawing.Point(56, 158);
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(74, 158);
 			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 1;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(138, 28);
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(120, 28);
 			this.tableLayoutPanel3.TabIndex = 14;
 			// 
 			// btnPresetBg1
@@ -392,12 +401,12 @@
 			this.tableLayoutPanel4.Controls.Add(this.btnPresetOam1, 0, 0);
 			this.tableLayoutPanel4.Controls.Add(this.btnPresetOam2, 1, 0);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel4.Location = new System.Drawing.Point(56, 186);
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(74, 186);
 			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
 			this.tableLayoutPanel4.RowCount = 1;
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(138, 28);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(120, 28);
 			this.tableLayoutPanel4.TabIndex = 15;
 			// 
 			// btnPresetOam1
@@ -418,6 +427,24 @@
 			this.btnPresetOam2.Text = "OAM2";
 			this.btnPresetOam2.UseVisualStyleBackColor = true;
 			// 
+			// lblTileAddress
+			// 
+			this.lblTileAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblTileAddress.AutoSize = true;
+			this.lblTileAddress.Location = new System.Drawing.Point(3, 402);
+			this.lblTileAddress.Name = "lblTileAddress";
+			this.lblTileAddress.Size = new System.Drawing.Size(68, 13);
+			this.lblTileAddress.TabIndex = 16;
+			this.lblTileAddress.Text = "Tile Address:";
+			// 
+			// txtTileAddress
+			// 
+			this.txtTileAddress.Location = new System.Drawing.Point(77, 399);
+			this.txtTileAddress.Name = "txtTileAddress";
+			this.txtTileAddress.ReadOnly = true;
+			this.txtTileAddress.Size = new System.Drawing.Size(60, 20);
+			this.txtTileAddress.TabIndex = 17;
+			// 
 			// ctrlImagePanel
 			// 
 			this.ctrlImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -430,6 +457,7 @@
 			this.ctrlImagePanel.SelectionWrapPosition = 0;
 			this.ctrlImagePanel.Size = new System.Drawing.Size(531, 516);
 			this.ctrlImagePanel.TabIndex = 8;
+			this.ctrlImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ctrlImagePanel_MouseClick);
 			// 
 			// ctrlMesenMenuStrip1
 			// 
@@ -574,5 +602,7 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
 		private System.Windows.Forms.Button btnPresetOam1;
 		private System.Windows.Forms.Button btnPresetOam2;
+		private System.Windows.Forms.Label lblTileAddress;
+		private System.Windows.Forms.TextBox txtTileAddress;
 	}
 }

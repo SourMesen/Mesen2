@@ -1085,6 +1085,14 @@
 			<Value ID="SpcRom">SPC ROM (IPL)</Value>
 			<Value ID="Register">Register</Value>
 		</Enum>
+		<Enum ID="TileFormat">
+			<Value ID="Bpp2">2 bpp</Value>
+			<Value ID="Bpp4">4 bpp</Value>
+			<Value ID="Bpp8">8 bpp</Value>
+			<Value ID="DirectColor">Direct Color</Value>
+			<Value ID="Mode7">Mode 7</Value>
+			<Value ID="Mode7DirectColor">Mode 7 + Direct Color</Value>
+		</Enum>
 		<Enum ID="StatusFlagFormat">
 			<Value ID="Hexadecimal">Hexadecimal</Value>
 			<Value ID="Text">Text</Value>

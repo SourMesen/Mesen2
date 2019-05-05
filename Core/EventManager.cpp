@@ -154,8 +154,8 @@ void EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 	auto lock = _lock.AcquireSafe();
 	_snapshot.clear();
 
-	uint16_t cycle = _ppu->GetState().Cycle;
-	uint16_t scanline = _ppu->GetState().Scanline;
+	uint16_t cycle = _ppu->GetCycle();
+	uint16_t scanline = _ppu->GetScanline();
 	uint32_t key = (scanline << 9) + cycle;
 
 	_snapshot = _debugEvents;

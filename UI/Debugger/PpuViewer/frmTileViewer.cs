@@ -29,8 +29,8 @@ namespace Mesen.GUI.Debugger
 		private DateTime _lastUpdate = DateTime.MinValue;
 		private bool _autoRefresh = true;
 		private DebugState _state;
-
-
+		private int _selectedTile = 0;
+		
 		public frmTileViewer()
 		{
 			InitializeComponent();
@@ -73,7 +73,7 @@ namespace Mesen.GUI.Debugger
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
 
-			_memoryType = config.Source;
+			UpdateMemoryType(config.Source);
 			_addressOffset = config.Bank * 0x10000 + config.Offset;
 			_options.Format = config.Format;
 			_options.Palette = config.SelectedPalette;
@@ -212,6 +212,11 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
+			int selectedColumn = _selectedTile % _options.Width;
+			int selectedRow = _selectedTile / _options.Width;
+			ctrlImagePanel.Selection = new Rectangle(selectedColumn * 8, selectedRow * 8, 8, 8);
+			txtTileAddress.Text = (_selectedTile * GetBytesPerTile() + _addressOffset).ToString("X4");
+
 			btnPresetBg1.Enabled = _layerBpp[_state.Ppu.BgMode, 0] > 0;
 			btnPresetBg2.Enabled = _layerBpp[_state.Ppu.BgMode, 1] > 0;
 			btnPresetBg3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
@@ -259,13 +264,7 @@ namespace Mesen.GUI.Debugger
 			_options.Palette = ctrlPaletteViewer.SelectedPalette;
 		}
 
-		private void chkShowTileGrid_Click(object sender, EventArgs e)
-		{
-			_options.ShowTileGrid = chkShowTileGrid.Checked;
-			RefreshViewer();
-		}
-
-		private void cboMemoryType_SelectedIndexChanged(object sender, EventArgs e)
+		private void UpdateMemoryType(SnesMemoryType memType)
 		{
 			_memoryType = cboMemoryType.GetEnumValue<SnesMemoryType>();
 
@@ -280,6 +279,18 @@ namespace Mesen.GUI.Debugger
 			}
 
 			nudBank.Maximum = Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
+		}
+
+		private void chkShowTileGrid_Click(object sender, EventArgs e)
+		{
+			_options.ShowTileGrid = chkShowTileGrid.Checked;
+			RefreshViewer();
+		}
+
+		private void cboMemoryType_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			UpdateMemoryType(cboMemoryType.GetEnumValue<SnesMemoryType>());
+			
 			RefreshData();
 			RefreshViewer();
 		}
@@ -347,20 +358,29 @@ namespace Mesen.GUI.Debugger
 		{
 			int bpp = _layerBpp[_state.Ppu.BgMode, layer];
 			TileFormat format = TileFormat.Bpp2;
-			if(bpp == 4) {
+
+			if(_state.Ppu.BgMode == 7) {
+				format = _state.Ppu.DirectColorMode ? TileFormat.Mode7DirectColor : TileFormat.Mode7;
+			} else if(bpp == 4) {
 				format = TileFormat.Bpp4;
 			} else if(bpp == 8) {
 				format = _state.Ppu.DirectColorMode ? TileFormat.DirectColor : TileFormat.Bpp8;
-			} else if(_state.Ppu.BgMode == 7) {
-				format = _state.Ppu.DirectColorMode ? TileFormat.Mode7DirectColor : TileFormat.Mode7;
 			}
 
 			cboMemoryType.SetEnumValue(SnesMemoryType.VideoRam);
 			cboFormat.SetEnumValue(format);
 
-			int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
-			int scrollRow = (_state.Ppu.Layers[layer].ChrAddress / bytesPerRow) & 0xFFF8;
-			ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
+			if(_state.Ppu.BgMode == 7) {
+				_selectedTile = 0;
+				RefreshViewer();
+				ctrlImagePanel.ScrollTo(0);
+			} else {
+				int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+				int scrollRow = (_state.Ppu.Layers[layer].ChrAddress / bytesPerRow) & 0xFFF8;
+				_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+				RefreshViewer();
+				ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
+			}			
 		}
 
 		private void GoToOamPreset(int layer)
@@ -374,7 +394,19 @@ namespace Mesen.GUI.Debugger
 
 			int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
 			int scrollRow = (address * 2 / bytesPerRow) & 0xFFF8;
+			_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+			RefreshViewer();
 			ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
+		}
+
+		private void ctrlImagePanel_MouseClick(object sender, MouseEventArgs e)
+		{
+			int selectedColumn = e.X / (8 * ctrlImagePanel.ImageScale);
+			int selectedRow = e.Y / (8 * ctrlImagePanel.ImageScale);
+
+			_selectedTile = selectedRow * _options.Width + selectedColumn;
+
+			RefreshViewer();
 		}
 	}
 }
