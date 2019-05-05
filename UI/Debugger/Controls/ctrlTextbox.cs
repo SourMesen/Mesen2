@@ -194,7 +194,7 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			get
 			{
-				return _dataProvider.GetLineCount();
+				return _dataProvider?.GetLineCount() ?? 0;
 			}
 		}
 		
