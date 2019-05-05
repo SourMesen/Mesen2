@@ -3,15 +3,17 @@
 #include "DebugTypes.h"
 #include "Cpu.h"
 #include "Ppu.h"
+#include "DmaController.h"
 #include "Debugger.h"
 #include "DebugBreakHelper.h"
 #include "DefaultVideoFilter.h"
 
-EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu)
+EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, DmaController *dmaController)
 {
 	_debugger = debugger;
 	_cpu = cpu;
 	_ppu = ppu;
+	_dmaController = dmaController;
 }
 
 void EventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId)
@@ -22,6 +24,11 @@ void EventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operation,
 	evt.Scanline = _ppu->GetScanline();
 	evt.Cycle = _ppu->GetCycle();
 	evt.BreakpointId = breakpointId;
+
+	if(operation.Type == MemoryOperationType::DmaRead || operation.Type == MemoryOperationType::DmaWrite) {
+		evt.DmaChannel = _dmaController->GetActiveChannel();
+		evt.DmaChannelInfo = _dmaController->GetChannelConfig(evt.DmaChannel);
+	}
 
 	CpuState state = _cpu->GetState();
 	evt.ProgramCounter = (state.K << 16) | state.PC;
@@ -82,6 +89,7 @@ void EventManager::ClearFrameEvents()
 void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer, EventViewerDisplayOptions &options)
 {
 	bool isWrite = evt.Operation.Type == MemoryOperationType::Write || evt.Operation.Type == MemoryOperationType::DmaWrite;
+	bool isDma = evt.Operation.Type == MemoryOperationType::DmaWrite || evt.Operation.Type == MemoryOperationType::DmaRead;
 	bool showEvent = false;
 	uint32_t color = 0;
 	switch(evt.Type) {
@@ -89,6 +97,11 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 		case DebugEventType::Irq: showEvent = options.ShowIrq; color = options.IrqColor; break;
 		case DebugEventType::Nmi: showEvent = options.ShowNmi; color = options.NmiColor; break;
 		case DebugEventType::Register:
+			if(isDma && !options.ShowDmaChannels[evt.DmaChannel]) {
+				showEvent = false;
+				break;
+			}
+
 			uint16_t reg = evt.Operation.Address & 0xFFFF;
 			if(reg <= 0x213F) {
 				showEvent = isWrite ? options.ShowPpuRegisterWrites : options.ShowPpuRegisterReads;

@@ -32,6 +32,15 @@ namespace Mesen.GUI.Config
 		public bool ShowMarkedBreakpoints = true;
 		public bool ShowPreviousFrameEvents = true;
 
+		public bool ShowDmaChannel0 = true;
+		public bool ShowDmaChannel1 = true;
+		public bool ShowDmaChannel2 = true;
+		public bool ShowDmaChannel3 = true;
+		public bool ShowDmaChannel4 = true;
+		public bool ShowDmaChannel5 = true;
+		public bool ShowDmaChannel6 = true;
+		public bool ShowDmaChannel7 = true;
+		
 		public XmlColor IrqColor = ColorTranslator.FromHtml("#FFADAC");
 		public XmlColor NmiColor = ColorTranslator.FromHtml("#FFADAC");
 		public XmlColor BreakpointColor = ColorTranslator.FromHtml("#FFADAC");
@@ -69,7 +78,18 @@ namespace Mesen.GUI.Config
 				CpuRegisterReadColor = (uint)this.CpuRegisterReadColor.Color.ToArgb(),
 				CpuRegisterWriteColor = (uint)this.CpuRegisterWriteColor.Color.ToArgb(),
 				WorkRamRegisterReadColor = (uint)this.WorkRamRegisterReadColor.Color.ToArgb(),
-				WorkRamRegisterWriteColor = (uint)this.WorkRamRegisterWriteColor.Color.ToArgb()
+				WorkRamRegisterWriteColor = (uint)this.WorkRamRegisterWriteColor.Color.ToArgb(),
+
+				ShowDmaChannels = new bool[8] {
+					this.ShowDmaChannel0,
+					this.ShowDmaChannel1,
+					this.ShowDmaChannel2,
+					this.ShowDmaChannel3,
+					this.ShowDmaChannel4,
+					this.ShowDmaChannel5,
+					this.ShowDmaChannel6,
+					this.ShowDmaChannel7
+				}
 			};
 		}
 	}

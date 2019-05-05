@@ -48,7 +48,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _spc.get(), _memoryManager.get()));
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
-	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get()));
+	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _console->GetDmaController().get()));
 	_callstackManager.reset(new CallstackManager(this));
 	_spcCallstackManager.reset(new CallstackManager(this));
 	

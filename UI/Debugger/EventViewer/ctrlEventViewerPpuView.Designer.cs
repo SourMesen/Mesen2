@@ -33,7 +33,6 @@ namespace Mesen.GUI.Debugger
 			this.tmrOverlay = new System.Windows.Forms.Timer(this.components);
 			this.grpOptions = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.chkShowPreviousFrameEvents = new System.Windows.Forms.CheckBox();
 			this.picNmi = new Mesen.GUI.Debugger.ctrlColorPicker();
 			this.chkShowNmi = new System.Windows.Forms.CheckBox();
 			this.picIrq = new Mesen.GUI.Debugger.ctrlColorPicker();
@@ -61,6 +60,17 @@ namespace Mesen.GUI.Debugger
 			this.picPpuReads = new Mesen.GUI.Debugger.ctrlColorPicker();
 			this.chkShowMarkedBreakpoints = new System.Windows.Forms.CheckBox();
 			this.picMarkedBreakpoints = new Mesen.GUI.Debugger.ctrlColorPicker();
+			this.chkShowPreviousFrameEvents = new System.Windows.Forms.CheckBox();
+			this.grpDmaFilters = new System.Windows.Forms.GroupBox();
+			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkDmaChannel0 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel1 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel2 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel3 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel4 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel5 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel6 = new System.Windows.Forms.CheckBox();
+			this.chkDmaChannel7 = new System.Windows.Forms.CheckBox();
 			this.picViewer = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.grpOptions.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -75,6 +85,8 @@ namespace Mesen.GUI.Debugger
 			((System.ComponentModel.ISupportInitialize)(this.picPpuWrites)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPpuReads)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picMarkedBreakpoints)).BeginInit();
+			this.grpDmaFilters.SuspendLayout();
+			this.tableLayoutPanel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// tmrOverlay
@@ -102,7 +114,6 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 15F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.Controls.Add(this.chkShowPreviousFrameEvents, 0, 6);
 			this.tableLayoutPanel1.Controls.Add(this.picNmi, 5, 4);
 			this.tableLayoutPanel1.Controls.Add(this.chkShowNmi, 4, 4);
 			this.tableLayoutPanel1.Controls.Add(this.picIrq, 2, 4);
@@ -130,10 +141,13 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel1.Controls.Add(this.picPpuReads, 2, 0);
 			this.tableLayoutPanel1.Controls.Add(this.chkShowMarkedBreakpoints, 0, 5);
 			this.tableLayoutPanel1.Controls.Add(this.picMarkedBreakpoints, 2, 5);
+			this.tableLayoutPanel1.Controls.Add(this.chkShowPreviousFrameEvents, 0, 6);
+			this.tableLayoutPanel1.Controls.Add(this.grpDmaFilters, 0, 7);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 7;
+			this.tableLayoutPanel1.RowCount = 8;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -143,19 +157,6 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(255, 510);
 			this.tableLayoutPanel1.TabIndex = 0;
-			// 
-			// chkShowPreviousFrameEvents
-			// 
-			this.chkShowPreviousFrameEvents.AutoSize = true;
-			this.tableLayoutPanel1.SetColumnSpan(this.chkShowPreviousFrameEvents, 6);
-			this.chkShowPreviousFrameEvents.Location = new System.Drawing.Point(3, 148);
-			this.chkShowPreviousFrameEvents.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
-			this.chkShowPreviousFrameEvents.Name = "chkShowPreviousFrameEvents";
-			this.chkShowPreviousFrameEvents.Size = new System.Drawing.Size(167, 17);
-			this.chkShowPreviousFrameEvents.TabIndex = 28;
-			this.chkShowPreviousFrameEvents.Text = "Show previous frame\'s events";
-			this.chkShowPreviousFrameEvents.UseVisualStyleBackColor = true;
-			this.chkShowPreviousFrameEvents.Click += new System.EventHandler(this.chkOption_Click);
 			// 
 			// picNmi
 			// 
@@ -429,6 +430,143 @@ namespace Mesen.GUI.Debugger
 			this.picMarkedBreakpoints.TabIndex = 27;
 			this.picMarkedBreakpoints.TabStop = false;
 			// 
+			// chkShowPreviousFrameEvents
+			// 
+			this.chkShowPreviousFrameEvents.AutoSize = true;
+			this.tableLayoutPanel1.SetColumnSpan(this.chkShowPreviousFrameEvents, 6);
+			this.chkShowPreviousFrameEvents.Location = new System.Drawing.Point(3, 148);
+			this.chkShowPreviousFrameEvents.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
+			this.chkShowPreviousFrameEvents.Name = "chkShowPreviousFrameEvents";
+			this.chkShowPreviousFrameEvents.Size = new System.Drawing.Size(167, 17);
+			this.chkShowPreviousFrameEvents.TabIndex = 28;
+			this.chkShowPreviousFrameEvents.Text = "Show previous frame\'s events";
+			this.chkShowPreviousFrameEvents.UseVisualStyleBackColor = true;
+			this.chkShowPreviousFrameEvents.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// grpDmaFilters
+			// 
+			this.tableLayoutPanel1.SetColumnSpan(this.grpDmaFilters, 6);
+			this.grpDmaFilters.Controls.Add(this.tableLayoutPanel2);
+			this.grpDmaFilters.Location = new System.Drawing.Point(3, 171);
+			this.grpDmaFilters.Name = "grpDmaFilters";
+			this.grpDmaFilters.Size = new System.Drawing.Size(249, 113);
+			this.grpDmaFilters.TabIndex = 29;
+			this.grpDmaFilters.TabStop = false;
+			this.grpDmaFilters.Text = "DMA Filters";
+			// 
+			// tableLayoutPanel2
+			// 
+			this.tableLayoutPanel2.ColumnCount = 2;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel0, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel1, 0, 1);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel2, 0, 2);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel3, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel4, 1, 0);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel5, 1, 1);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel6, 1, 2);
+			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel7, 1, 3);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+			this.tableLayoutPanel2.RowCount = 5;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(243, 94);
+			this.tableLayoutPanel2.TabIndex = 0;
+			// 
+			// chkDmaChannel0
+			// 
+			this.chkDmaChannel0.AutoSize = true;
+			this.chkDmaChannel0.Location = new System.Drawing.Point(3, 3);
+			this.chkDmaChannel0.Name = "chkDmaChannel0";
+			this.chkDmaChannel0.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel0.TabIndex = 0;
+			this.chkDmaChannel0.Text = "Channel 0";
+			this.chkDmaChannel0.UseVisualStyleBackColor = true;
+			this.chkDmaChannel0.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel1
+			// 
+			this.chkDmaChannel1.AutoSize = true;
+			this.chkDmaChannel1.Location = new System.Drawing.Point(3, 26);
+			this.chkDmaChannel1.Name = "chkDmaChannel1";
+			this.chkDmaChannel1.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel1.TabIndex = 2;
+			this.chkDmaChannel1.Text = "Channel 1";
+			this.chkDmaChannel1.UseVisualStyleBackColor = true;
+			this.chkDmaChannel1.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel2
+			// 
+			this.chkDmaChannel2.AutoSize = true;
+			this.chkDmaChannel2.Location = new System.Drawing.Point(3, 49);
+			this.chkDmaChannel2.Name = "chkDmaChannel2";
+			this.chkDmaChannel2.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel2.TabIndex = 4;
+			this.chkDmaChannel2.Text = "Channel 2";
+			this.chkDmaChannel2.UseVisualStyleBackColor = true;
+			this.chkDmaChannel2.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel3
+			// 
+			this.chkDmaChannel3.AutoSize = true;
+			this.chkDmaChannel3.Location = new System.Drawing.Point(3, 72);
+			this.chkDmaChannel3.Name = "chkDmaChannel3";
+			this.chkDmaChannel3.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel3.TabIndex = 6;
+			this.chkDmaChannel3.Text = "Channel 3";
+			this.chkDmaChannel3.UseVisualStyleBackColor = true;
+			this.chkDmaChannel3.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel4
+			// 
+			this.chkDmaChannel4.AutoSize = true;
+			this.chkDmaChannel4.Location = new System.Drawing.Point(124, 3);
+			this.chkDmaChannel4.Name = "chkDmaChannel4";
+			this.chkDmaChannel4.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel4.TabIndex = 1;
+			this.chkDmaChannel4.Text = "Channel 4";
+			this.chkDmaChannel4.UseVisualStyleBackColor = true;
+			this.chkDmaChannel4.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel5
+			// 
+			this.chkDmaChannel5.AutoSize = true;
+			this.chkDmaChannel5.Location = new System.Drawing.Point(124, 26);
+			this.chkDmaChannel5.Name = "chkDmaChannel5";
+			this.chkDmaChannel5.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel5.TabIndex = 3;
+			this.chkDmaChannel5.Text = "Channel 5";
+			this.chkDmaChannel5.UseVisualStyleBackColor = true;
+			this.chkDmaChannel5.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel6
+			// 
+			this.chkDmaChannel6.AutoSize = true;
+			this.chkDmaChannel6.Location = new System.Drawing.Point(124, 49);
+			this.chkDmaChannel6.Name = "chkDmaChannel6";
+			this.chkDmaChannel6.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel6.TabIndex = 5;
+			this.chkDmaChannel6.Text = "Channel 6";
+			this.chkDmaChannel6.UseVisualStyleBackColor = true;
+			this.chkDmaChannel6.Click += new System.EventHandler(this.chkOption_Click);
+			// 
+			// chkDmaChannel7
+			// 
+			this.chkDmaChannel7.AutoSize = true;
+			this.chkDmaChannel7.Location = new System.Drawing.Point(124, 72);
+			this.chkDmaChannel7.Name = "chkDmaChannel7";
+			this.chkDmaChannel7.Size = new System.Drawing.Size(74, 17);
+			this.chkDmaChannel7.TabIndex = 7;
+			this.chkDmaChannel7.Text = "Channel 7";
+			this.chkDmaChannel7.UseVisualStyleBackColor = true;
+			this.chkDmaChannel7.Click += new System.EventHandler(this.chkOption_Click);
+			// 
 			// picViewer
 			// 
 			this.picViewer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -466,6 +604,9 @@ namespace Mesen.GUI.Debugger
 			((System.ComponentModel.ISupportInitialize)(this.picPpuWrites)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPpuReads)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picMarkedBreakpoints)).EndInit();
+			this.grpDmaFilters.ResumeLayout(false);
+			this.tableLayoutPanel2.ResumeLayout(false);
+			this.tableLayoutPanel2.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -503,5 +644,15 @@ namespace Mesen.GUI.Debugger
 		private ctrlColorPicker picMarkedBreakpoints;
 		private System.Windows.Forms.CheckBox chkShowPreviousFrameEvents;
 		private PpuViewer.ctrlImagePanel picViewer;
+		private System.Windows.Forms.GroupBox grpDmaFilters;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+		private System.Windows.Forms.CheckBox chkDmaChannel0;
+		private System.Windows.Forms.CheckBox chkDmaChannel1;
+		private System.Windows.Forms.CheckBox chkDmaChannel2;
+		private System.Windows.Forms.CheckBox chkDmaChannel3;
+		private System.Windows.Forms.CheckBox chkDmaChannel4;
+		private System.Windows.Forms.CheckBox chkDmaChannel5;
+		private System.Windows.Forms.CheckBox chkDmaChannel6;
+		private System.Windows.Forms.CheckBox chkDmaChannel7;
 	}
 }

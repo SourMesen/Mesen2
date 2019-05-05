@@ -10,12 +10,14 @@ struct EventViewerDisplayOptions;
 class Cpu;
 class Ppu;
 class Debugger;
+class DmaController;
 
 class EventManager
 {
 private:
 	Cpu * _cpu;
 	Ppu *_ppu;
+	DmaController *_dmaController;
 	Debugger *_debugger;
 	vector<DebugEventInfo> _debugEvents;
 	vector<DebugEventInfo> _prevDebugEvents;
@@ -28,7 +30,7 @@ private:
 	void DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer, EventViewerDisplayOptions &options);
 
 public:
-	EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu);
+	EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, DmaController *dmaController);
 
 	void AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId = -1);
 	void AddEvent(DebugEventType type);
@@ -58,8 +60,8 @@ struct DebugEventInfo
 	uint16_t Scanline;
 	uint16_t Cycle;
 	int16_t BreakpointId;
-	//DmaChannelConfig DmaChannelInfo;
-	//uint8_t DmaChannel;
+	uint8_t DmaChannel;
+	DmaChannelConfig DmaChannelInfo;
 };
 
 struct EventViewerDisplayOptions
@@ -79,6 +81,8 @@ struct EventViewerDisplayOptions
 
 	bool ShowMarkedBreakpoints;
 	bool ShowPreviousFrameEvents;
+
+	bool ShowDmaChannels[8];
 
 	uint32_t IrqColor;
 	uint32_t NmiColor;

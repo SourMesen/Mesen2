@@ -378,16 +378,40 @@ namespace Mesen.GUI
 		Breakpoint
 	}
 
+	public struct DmaChannelConfig
+	{
+		public byte InvertDirection;
+		public byte Decrement;
+		public byte FixedTransfer;
+		public byte HdmaIndirectAddressing;
+		public byte TransferMode;
+
+		public UInt16 SrcAddress;
+		public byte SrcBank;
+
+		public UInt16 TransferSize;
+		public byte DestAddress;
+
+		public UInt16 HdmaTableAddress;
+		public byte HdmaBank;
+		public byte HdmaLineCounterAndRepeat;
+		public byte DoTransfer;
+		public byte HdmaFinished;
+
+		public byte InterruptedByHdma;
+		public byte UnusedFlag;
+	}
+
 	public struct DebugEventInfo
 	{
-		//public DmaChannelConfig DmaChannelInfo;
 		public MemoryOperationInfo Operation;
 		public DebugEventType Type;
 		public UInt32 ProgramCounter;
 		public UInt16 Scanline;
 		public UInt16 Cycle;
 		public UInt16 BreakpointId;
-		//public byte DmaChannel;
+		public byte DmaChannel;
+		public DmaChannelConfig DmaChannelInfo;
 	};
 
 	public struct EventViewerDisplayOptions
@@ -407,6 +431,9 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowMarkedBreakpoints;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8, ArraySubType = UnmanagedType.I1)]
+		public bool[] ShowDmaChannels;
 
 		public UInt32 IrqColor;
 		public UInt32 NmiColor;

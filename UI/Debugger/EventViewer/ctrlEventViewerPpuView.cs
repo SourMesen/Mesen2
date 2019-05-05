@@ -68,6 +68,15 @@ namespace Mesen.GUI.Debugger
 				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterReads), chkShowWorkRamRegisterReads);
 				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterWrites), chkShowWorkRamRegisterWrites);
 
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel0), chkDmaChannel0);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel1), chkDmaChannel1);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel2), chkDmaChannel2);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel3), chkDmaChannel3);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel4), chkDmaChannel4);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel5), chkDmaChannel5);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel6), chkDmaChannel6);
+				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel7), chkDmaChannel7);
+
 				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPreviousFrameEvents), chkShowPreviousFrameEvents);
 
 				_entityBinder.UpdateUI();
@@ -224,6 +233,30 @@ namespace Mesen.GUI.Debugger
 					bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite|| evt.Operation.Type == MemoryOperationType.DmaRead;
 					values["Register"] = "$" + evt.Operation.Address.ToString("X4") + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "");
 					values["Value"] = "$" + evt.Operation.Value.ToString("X2");
+
+					if(isDma) {
+						bool indirectHdma = false;
+						values["Channel"] = evt.DmaChannel.ToString();
+						if(evt.DmaChannelInfo.InterruptedByHdma != 0) {
+							indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing != 0;
+							values["Channel"] += indirectHdma ? " (Indirect HDMA)" : " (HDMA)";
+							values["Line Counter"] = "$" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2");
+						}
+						values["Mode"] = evt.DmaChannelInfo.TransferMode.ToString();
+
+						int aBusAddress;
+						if(indirectHdma) {
+							aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
+						} else {
+							aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
+						}
+
+						if(evt.DmaChannelInfo.InvertDirection == 0) {
+							values["Transfer"] = "$" + aBusAddress.ToString("X4") + " -> $" + evt.DmaChannelInfo.DestAddress.ToString("X2");
+						} else {
+							values["Transfer"] = "$" + aBusAddress.ToString("X4") + " <- $" + evt.DmaChannelInfo.DestAddress.ToString("X2");
+						}					
+					}
 					break;
 
 				case DebugEventType.Breakpoint:

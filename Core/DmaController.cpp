@@ -218,6 +218,7 @@ void DmaController::ProcessHdmaChannels(bool applyOverhead)
 		//1. If DoTransfer is false, skip to step 3.
 		if(ch.DoTransfer) {
 			//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
+			_activeChannel = i;
 			RunHdmaTransfer(ch);
 		}
 	}
@@ -330,6 +331,7 @@ void DmaController::ProcessPendingTransfers()
 			if(_requestedDmaChannels & (1 << i)) {
 				//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
 				_memoryManager->IncrementMasterClockValue<8>();
+				_activeChannel = i;
 				RunDma(_channel[i]);
 			}
 		}
@@ -542,6 +544,16 @@ uint8_t DmaController::Read(uint16_t addr)
 		}
 	}
 	return _memoryManager->GetOpenBus();
+}
+
+uint8_t DmaController::GetActiveChannel()
+{
+	return _activeChannel;
+}
+
+DmaChannelConfig DmaController::GetChannelConfig(uint8_t channel)
+{
+	return _channel[channel];
 }
 
 void DmaController::Serialize(Serializer &s)

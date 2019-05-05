@@ -16,11 +16,11 @@ struct DmaChannelConfig
 	uint16_t SrcAddress;
 	uint8_t SrcBank;
 
-	uint8_t DestAddress;
 	uint16_t TransferSize;
+	uint8_t DestAddress;
 
-	uint8_t HdmaBank;
 	uint16_t HdmaTableAddress;
+	uint8_t HdmaBank;
 	uint8_t HdmaLineCounterAndRepeat;
 	bool DoTransfer;
 	bool HdmaFinished;
@@ -39,6 +39,8 @@ private:
 	uint8_t _nmiIrqDelayCounter = 0;
 	uint8_t _requestedDmaChannels = 0;
 	uint64_t _dmaStartClock = 0;
+	
+	uint8_t _activeChannel = 0; //Used by debugger's event viewer
 
 	DmaChannelConfig _channel[8] = {};
 	MemoryManager *_memoryManager;
@@ -69,6 +71,9 @@ public:
 
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);
+
+	uint8_t GetActiveChannel();
+	DmaChannelConfig GetChannelConfig(uint8_t channel);
 
 	void Serialize(Serializer &s) override;
 };
