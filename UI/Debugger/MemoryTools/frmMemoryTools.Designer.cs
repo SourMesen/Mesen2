@@ -607,6 +607,7 @@
 			this.mnuIgnoreRedundantWrites.Name = "mnuIgnoreRedundantWrites";
 			this.mnuIgnoreRedundantWrites.Size = new System.Drawing.Size(256, 22);
 			this.mnuIgnoreRedundantWrites.Text = "Ignore writes that do not alter data";
+			this.mnuIgnoreRedundantWrites.Visible = false;
 			// 
 			// mnuEnablePerByteNavigation
 			// 
@@ -744,6 +745,8 @@
 			this.MinimumSize = new System.Drawing.Size(429, 337);
 			this.Name = "frmMemoryTools";
 			this.Text = "Memory Tools";
+			this.Controls.SetChildIndex(this.menuStrip1, 0);
+			this.Controls.SetChildIndex(this.tabMain, 0);
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flowLayoutPanel1.PerformLayout();
 			this.menuStrip1.ResumeLayout(false);

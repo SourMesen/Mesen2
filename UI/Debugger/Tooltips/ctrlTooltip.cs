@@ -25,6 +25,8 @@ namespace Mesen.GUI.Debugger
 
 		public void SetTooltip(Point location, Dictionary<string, string> values)
 		{
+			this.Visible = false;
+
 			_parentForm = this.FindForm();
 			_values = values;
 			location.Offset(5, 5);
@@ -73,6 +75,10 @@ namespace Mesen.GUI.Debugger
 			this.Width = this.tlpMain.Width;
 			if(this.Left + this.Width > _parentForm.ClientSize.Width) {
 				this.Left = this.Left - this.Width - 5;
+				if(this.Left < 0) {
+					this.Left = 5;
+					this.Width += (this.Left - 5);
+				}
 			}
 
 			this.Height = this.tlpMain.Height;

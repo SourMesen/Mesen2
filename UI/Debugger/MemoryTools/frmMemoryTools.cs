@@ -7,6 +7,7 @@ using Mesen.GUI.Forms;
 using Mesen.GUI.Debugger.Controls;
 using System.Collections.Generic;
 using Mesen.GUI.Debugger.Workspace;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger
 {
@@ -518,24 +519,15 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		/*private frmCodeTooltip _tooltip = null;
-		private CodeLabel _lastLabelTooltip = null;
-		private int _lastLabelArrayOffset = -1;
-		private int _lastTooltipAddress = -1;*/
+		private int _lastTooltipAddress = -1;
 		private void ctrlHexViewer_ByteMouseHover(int address, Point position)
 		{
-			//TODO
-			/*if(address < 0 || !mnuShowLabelInfoOnMouseOver.Checked) {
-				if(_tooltip != null) {
-					_tooltip.Close();
-					_lastLabelTooltip = null;
-					_lastLabelArrayOffset = -1;
-					_lastTooltipAddress = -1;
-				}
+			ctrlTooltip tooltip = BaseForm.GetPopupTooltip(this);
+			if(address < 0 || !mnuShowLabelInfoOnMouseOver.Checked) {
+				_lastTooltipAddress = -1;
+				tooltip.Hide();
 				return;
-			}
-
-			if(_lastTooltipAddress == address) {
+			} else if(_lastTooltipAddress == address) {
 				return;
 			}
 
@@ -544,64 +536,51 @@ namespace Mesen.GUI.Debugger
 			CodeLabel label = null;
 			int arrayOffset = 0;
 			switch(_memoryType) {
-				case DebugMemoryType.CpuMemory:
-					AddressTypeInfo info = new AddressTypeInfo();
-					InteropEmu.DebugGetAbsoluteAddressAndType((UInt32)address, info);
-					if(info.Address >= 0) {
-						label = LabelManager.GetLabel((UInt32)info.Address, info.Type);
+				case SnesMemoryType.CpuMemory:
+				case SnesMemoryType.SpcMemory:
+					AddressInfo relAddress = new AddressInfo() {
+						Address = address,
+						Type = _memoryType
+					};
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					if(absAddress.Address >= 0) {
+						label = LabelManager.GetLabel((uint)absAddress.Address, absAddress.Type);
 						if(label != null) {
-							arrayOffset = info.Address - (int)label.Address;
+							arrayOffset = relAddress.Address - (int)label.Address;
 						}
-					}
-					if(label == null) {
-						label = LabelManager.GetLabel((UInt32)address, AddressType.Register);
 					}
 					break;
 
-				case DebugMemoryType.InternalRam:
-				case DebugMemoryType.WorkRam:
-				case DebugMemoryType.SaveRam:
-				case DebugMemoryType.PrgRom:
-					label = LabelManager.GetLabel((UInt32)address, _memoryType.ToAddressType());
+				case SnesMemoryType.WorkRam:
+				case SnesMemoryType.SaveRam:
+				case SnesMemoryType.PrgRom:
+				case SnesMemoryType.SpcRam:
+				case SnesMemoryType.SpcRom:
+					label = LabelManager.GetLabel((uint)address, _memoryType);
 					if(label != null) {
 						arrayOffset = address - (int)label.Address;
 					}
 					break;
 			}
 
-			if(label != null) {
-				if(_lastLabelTooltip != label || _lastLabelArrayOffset != arrayOffset) {
-					if(_tooltip != null) {
-						_tooltip.Close();
+			if(label != null && !string.IsNullOrWhiteSpace(label.Label)) {
+				Dictionary<string, string> values = new Dictionary<string, string>();
+				if(!string.IsNullOrWhiteSpace(label.Label)) {
+					values["Label"] = label.Label;
+					if(label.Length > 1) {
+						values["Label"] += "+" + arrayOffset.ToString();
 					}
-
-					Dictionary<string, string> values = new Dictionary<string, string>();
-					if(!string.IsNullOrWhiteSpace(label.Label)) {
-						values["Label"] = label.Label;
-						if(label.Length > 1) {
-							values["Label"] += "+" + arrayOffset.ToString();
-						}
-					}
-					values["Address"] = "$" + (label.Address + arrayOffset).ToString("X4");
-					values["Address Type"] = label.AddressType.ToString();
-					if(!string.IsNullOrWhiteSpace(label.Comment)) {
-						values["Comment"] = label.Comment;
-					}
-
-					_tooltip = new frmCodeTooltip(this, values);
-					_tooltip.FormClosed += (s, evt) => { _tooltip = null; };
-					_tooltip.SetFormLocation(new Point(position.X, position.Y), ctrlHexViewer);
-					_lastLabelTooltip = label;
-					_lastLabelArrayOffset = arrayOffset;
 				}
+				values["Address"] = "$" + (label.Address + arrayOffset).ToString("X4");
+				values["Type"] = ResourceHelper.GetEnumText(label.MemoryType);
+				if(!string.IsNullOrWhiteSpace(label.Comment)) {
+					values["Comment"] = label.Comment;
+				}
+
+				tooltip.SetTooltip(this.PointToClient(position), values);
 			} else {
-				if(_tooltip != null) {
-					_tooltip.Close();
-					_lastLabelTooltip = null;
-					_lastLabelArrayOffset = -1;
-					_lastTooltipAddress = -1;
-				}
-			}*/
+				tooltip.Hide();
+			}
 		}
 		
 		private void mnuAutoRefreshSpeed_Click(object sender, EventArgs e)
