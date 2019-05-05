@@ -90,7 +90,7 @@ namespace Mesen.GUI.Debugger.Labels
 		{
 			if(_reverseLookup.ContainsKey(label.Label)) {
 				//Another identical label exists, we need to remove it
-				DeleteLabel(_reverseLookup[label.Label], raiseEvent);
+				DeleteLabel(_reverseLookup[label.Label], false);
 			}
 
 			string comment = label.Comment;
@@ -98,6 +98,7 @@ namespace Mesen.GUI.Debugger.Labels
 				UInt64 key = GetKey(i, label.MemoryType);
 				CodeLabel existingLabel;
 				if(_labelsByKey.TryGetValue(key, out existingLabel)) {
+					DeleteLabel(existingLabel, false);
 					_reverseLookup.Remove(existingLabel.Label);
 				}
 

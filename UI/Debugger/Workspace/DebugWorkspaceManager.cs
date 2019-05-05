@@ -35,6 +35,7 @@ namespace Mesen.GUI.Debugger.Workspace
 		{
 			_workspace = null;
 			_romName = null;
+			LabelManager.ResetLabels();
 		}
 
 		public static void ResetWorkspace()
@@ -79,6 +80,8 @@ namespace Mesen.GUI.Debugger.Workspace
 				//Load watch entries
 				WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries = _workspace.WatchValues;
 				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
+
+				LabelManager.ResetLabels();
 				LabelManager.SetLabels(_workspace.CpuLabels);
 				LabelManager.SetLabels(_workspace.SpcLabels);
 				LabelManager.SetDefaultLabels();
