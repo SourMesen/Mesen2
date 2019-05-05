@@ -23,15 +23,22 @@ namespace Mesen.GUI.Debugger
 		private Bitmap _paletteImage;
 		private int _selectedPalette = 0;
 		private PaletteSelectionMode _selectionMode = PaletteSelectionMode.None;
-
-		public int PaletteScale { get; set; } = 16;
+		private int _paletteScale = 16;
 
 		public ctrlPaletteViewer()
 		{
 			this.SetStyle(ControlStyles.Selectable, true);
+			this.PaletteScale = 16;
+		}
 
-			_paletteImage = new Bitmap(PaletteScale * 16, PaletteScale * 16, PixelFormat.Format32bppArgb);
-			this.Image = _paletteImage;
+		public int PaletteScale
+		{
+			get { return _paletteScale; }
+			set
+			{
+				_paletteScale = value;
+				_paletteImage = new Bitmap(PaletteScale * 16, PaletteScale * 16, PixelFormat.Format32bppArgb);
+			}
 		}
 
 		public int SelectedPalette
@@ -158,6 +165,7 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
+			this.Image = _paletteImage;
 			this.Size = _paletteImage.Size;
 			this.Invalidate();
 		}

@@ -43,10 +43,14 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				_scale = Math.Min(16, Math.Max(1, _scale + scaleDelta));
 				UpdateMapSize();
 
-				ctrlPanel.HorizontalScroll.Value = Math.Max(0, Math.Min((int)(hori * _scale) - ctrlPanel.Width / 2, ctrlPanel.HorizontalScroll.Maximum));
-				ctrlPanel.HorizontalScroll.Value = Math.Max(0, Math.Min((int)(hori * _scale) - ctrlPanel.Width / 2, ctrlPanel.HorizontalScroll.Maximum));
-				ctrlPanel.VerticalScroll.Value = Math.Max(0, Math.Min((int)(vert * _scale) - ctrlPanel.Height / 2, ctrlPanel.VerticalScroll.Maximum));
-				ctrlPanel.VerticalScroll.Value = Math.Max(0, Math.Min((int)(vert * _scale) - ctrlPanel.Height / 2, ctrlPanel.VerticalScroll.Maximum));
+				int horizontalScroll = Math.Max(0, Math.Min((int)(hori * _scale) - ctrlPanel.Width / 2, ctrlPanel.HorizontalScroll.Maximum));
+				int verticalScroll = Math.Max(0, Math.Min((int)(vert * _scale) - ctrlPanel.Height / 2, ctrlPanel.VerticalScroll.Maximum));
+				
+				//Set the values twice to avoid a scroll position bug
+				ctrlPanel.HorizontalScroll.Value = horizontalScroll;
+				ctrlPanel.HorizontalScroll.Value = horizontalScroll;
+				ctrlPanel.VerticalScroll.Value = verticalScroll;
+				ctrlPanel.VerticalScroll.Value = verticalScroll;
 			};
 		}
 
@@ -74,6 +78,15 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		{
 			_scale = Math.Max(1, _scale - 1);
 			UpdateMapSize();
+		}
+
+		public void ScrollTo(int scrollPos)
+		{
+			ctrlPanel.VerticalScroll.Value = scrollPos;
+			ctrlPanel.VerticalScroll.Value = scrollPos;
+
+			ctrlPanel.HorizontalScroll.Value = 0;
+			ctrlPanel.HorizontalScroll.Value = 0;
 		}
 	}
 }

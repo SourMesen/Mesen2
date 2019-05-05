@@ -42,6 +42,15 @@
 			this.lblOffset = new System.Windows.Forms.Label();
 			this.nudOffset = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.ctrlPaletteViewer = new Mesen.GUI.Debugger.ctrlPaletteViewer();
+			this.lblPresets = new System.Windows.Forms.Label();
+			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.btnPresetBg1 = new System.Windows.Forms.Button();
+			this.btnPresetBg2 = new System.Windows.Forms.Button();
+			this.btnPresetBg3 = new System.Windows.Forms.Button();
+			this.btnPresetBg4 = new System.Windows.Forms.Button();
+			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.btnPresetOam1 = new System.Windows.Forms.Button();
+			this.btnPresetOam2 = new System.Windows.Forms.Button();
 			this.ctrlImagePanel = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +64,9 @@
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).BeginInit();
+			this.tableLayoutPanel3.SuspendLayout();
+			this.tableLayoutPanel4.SuspendLayout();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -98,10 +110,15 @@
 			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 2);
 			this.tableLayoutPanel2.Controls.Add(this.lblOffset, 0, 4);
 			this.tableLayoutPanel2.Controls.Add(this.nudOffset, 1, 4);
-			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 6);
+			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 8);
+			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 6);
+			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 6);
+			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 7);
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(540, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 7;
+			this.tableLayoutPanel2.RowCount = 9;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -121,7 +138,6 @@
 			this.cboMemoryType.Name = "cboMemoryType";
 			this.cboMemoryType.Size = new System.Drawing.Size(132, 21);
 			this.cboMemoryType.TabIndex = 11;
-			this.cboMemoryType.SelectedIndexChanged += new System.EventHandler(this.cboMemoryType_SelectedIndexChanged);
 			// 
 			// nudBank
 			// 
@@ -152,7 +168,6 @@
             0,
             0,
             0});
-			this.nudBank.ValueChanged += new System.EventHandler(this.nudBank_ValueChanged);
 			// 
 			// lblBank
 			// 
@@ -194,7 +209,6 @@
 			this.chkShowTileGrid.TabIndex = 0;
 			this.chkShowTileGrid.Text = "Show tile grid";
 			this.chkShowTileGrid.UseVisualStyleBackColor = true;
-			this.chkShowTileGrid.Click += new System.EventHandler(this.chkShowTileGrid_Click);
 			// 
 			// lblBpp
 			// 
@@ -221,7 +235,6 @@
 			this.cboFormat.Name = "cboFormat";
 			this.cboFormat.Size = new System.Drawing.Size(132, 21);
 			this.cboFormat.TabIndex = 2;
-			this.cboFormat.SelectedIndexChanged += new System.EventHandler(this.cboBpp_SelectedIndexChanged);
 			// 
 			// nudColumns
 			// 
@@ -252,7 +265,6 @@
             0,
             0,
             0});
-			this.nudColumns.ValueChanged += new System.EventHandler(this.nudColumns_ValueChanged);
 			// 
 			// lblOffset
 			// 
@@ -293,19 +305,118 @@
             0,
             0,
             0});
-			this.nudOffset.ValueChanged += new System.EventHandler(this.nudOffset_ValueChanged);
 			// 
 			// ctrlPaletteViewer
 			// 
 			this.tableLayoutPanel2.SetColumnSpan(this.ctrlPaletteViewer, 2);
-			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 161);
+			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 217);
 			this.ctrlPaletteViewer.Name = "ctrlPaletteViewer";
 			this.ctrlPaletteViewer.PaletteScale = 11;
 			this.ctrlPaletteViewer.SelectedPalette = 0;
 			this.ctrlPaletteViewer.SelectionMode = Mesen.GUI.Debugger.PaletteSelectionMode.None;
 			this.ctrlPaletteViewer.Size = new System.Drawing.Size(176, 176);
 			this.ctrlPaletteViewer.TabIndex = 12;
-			this.ctrlPaletteViewer.SelectionChanged += new Mesen.GUI.Debugger.ctrlPaletteViewer.SelectionChangedHandler(this.ctrlPaletteViewer_SelectionChanged);
+			this.ctrlPaletteViewer.TabStop = false;
+			// 
+			// lblPresets
+			// 
+			this.lblPresets.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblPresets.AutoSize = true;
+			this.lblPresets.Location = new System.Drawing.Point(3, 165);
+			this.lblPresets.Name = "lblPresets";
+			this.lblPresets.Size = new System.Drawing.Size(45, 13);
+			this.lblPresets.TabIndex = 13;
+			this.lblPresets.Text = "Presets:";
+			// 
+			// tableLayoutPanel3
+			// 
+			this.tableLayoutPanel3.ColumnCount = 4;
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg1, 0, 0);
+			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg2, 1, 0);
+			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg3, 2, 0);
+			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg4, 3, 0);
+			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(56, 158);
+			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+			this.tableLayoutPanel3.RowCount = 1;
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(138, 28);
+			this.tableLayoutPanel3.TabIndex = 14;
+			// 
+			// btnPresetBg1
+			// 
+			this.btnPresetBg1.Location = new System.Drawing.Point(3, 3);
+			this.btnPresetBg1.Name = "btnPresetBg1";
+			this.btnPresetBg1.Size = new System.Drawing.Size(23, 23);
+			this.btnPresetBg1.TabIndex = 0;
+			this.btnPresetBg1.Text = "1";
+			this.btnPresetBg1.UseVisualStyleBackColor = true;
+			// 
+			// btnPresetBg2
+			// 
+			this.btnPresetBg2.Location = new System.Drawing.Point(32, 3);
+			this.btnPresetBg2.Name = "btnPresetBg2";
+			this.btnPresetBg2.Size = new System.Drawing.Size(23, 23);
+			this.btnPresetBg2.TabIndex = 1;
+			this.btnPresetBg2.Text = "2";
+			this.btnPresetBg2.UseVisualStyleBackColor = true;
+			// 
+			// btnPresetBg3
+			// 
+			this.btnPresetBg3.Location = new System.Drawing.Point(61, 3);
+			this.btnPresetBg3.Name = "btnPresetBg3";
+			this.btnPresetBg3.Size = new System.Drawing.Size(23, 23);
+			this.btnPresetBg3.TabIndex = 2;
+			this.btnPresetBg3.Text = "3";
+			this.btnPresetBg3.UseVisualStyleBackColor = true;
+			// 
+			// btnPresetBg4
+			// 
+			this.btnPresetBg4.Location = new System.Drawing.Point(90, 3);
+			this.btnPresetBg4.Name = "btnPresetBg4";
+			this.btnPresetBg4.Size = new System.Drawing.Size(23, 23);
+			this.btnPresetBg4.TabIndex = 3;
+			this.btnPresetBg4.Text = "4";
+			this.btnPresetBg4.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel4
+			// 
+			this.tableLayoutPanel4.ColumnCount = 2;
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel4.Controls.Add(this.btnPresetOam1, 0, 0);
+			this.tableLayoutPanel4.Controls.Add(this.btnPresetOam2, 1, 0);
+			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(56, 186);
+			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+			this.tableLayoutPanel4.RowCount = 1;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(138, 28);
+			this.tableLayoutPanel4.TabIndex = 15;
+			// 
+			// btnPresetOam1
+			// 
+			this.btnPresetOam1.Location = new System.Drawing.Point(3, 3);
+			this.btnPresetOam1.Name = "btnPresetOam1";
+			this.btnPresetOam1.Size = new System.Drawing.Size(45, 22);
+			this.btnPresetOam1.TabIndex = 4;
+			this.btnPresetOam1.Text = "OAM1";
+			this.btnPresetOam1.UseVisualStyleBackColor = true;
+			// 
+			// btnPresetOam2
+			// 
+			this.btnPresetOam2.Location = new System.Drawing.Point(54, 3);
+			this.btnPresetOam2.Name = "btnPresetOam2";
+			this.btnPresetOam2.Size = new System.Drawing.Size(45, 22);
+			this.btnPresetOam2.TabIndex = 5;
+			this.btnPresetOam2.Text = "OAM2";
+			this.btnPresetOam2.UseVisualStyleBackColor = true;
 			// 
 			// ctrlImagePanel
 			// 
@@ -316,6 +427,7 @@
 			this.ctrlImagePanel.Location = new System.Drawing.Point(3, 3);
 			this.ctrlImagePanel.Name = "ctrlImagePanel";
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
+			this.ctrlImagePanel.SelectionWrapPosition = 0;
 			this.ctrlImagePanel.Size = new System.Drawing.Size(531, 516);
 			this.ctrlImagePanel.TabIndex = 8;
 			// 
@@ -365,39 +477,38 @@
 			this.mnuAutoRefresh.CheckOnClick = true;
 			this.mnuAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mnuAutoRefresh.Name = "mnuAutoRefresh";
-			this.mnuAutoRefresh.Size = new System.Drawing.Size(152, 22);
+			this.mnuAutoRefresh.Size = new System.Drawing.Size(141, 22);
 			this.mnuAutoRefresh.Text = "Auto-refresh";
-			this.mnuAutoRefresh.CheckedChanged += new System.EventHandler(this.mnuAutoRefresh_CheckedChanged);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(138, 6);
 			// 
 			// mnuRefresh
 			// 
 			this.mnuRefresh.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuRefresh.Name = "mnuRefresh";
-			this.mnuRefresh.Size = new System.Drawing.Size(152, 22);
+			this.mnuRefresh.Size = new System.Drawing.Size(141, 22);
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 6);
 			// 
 			// mnuZoomIn
 			// 
 			this.mnuZoomIn.Name = "mnuZoomIn";
-			this.mnuZoomIn.Size = new System.Drawing.Size(152, 22);
+			this.mnuZoomIn.Size = new System.Drawing.Size(141, 22);
 			this.mnuZoomIn.Text = "Zoom In";
 			this.mnuZoomIn.Click += new System.EventHandler(this.mnuZoomIn_Click);
 			// 
 			// mnuZoomOut
 			// 
 			this.mnuZoomOut.Name = "mnuZoomOut";
-			this.mnuZoomOut.Size = new System.Drawing.Size(152, 22);
+			this.mnuZoomOut.Size = new System.Drawing.Size(141, 22);
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
@@ -411,9 +522,15 @@
 			this.Controls.Add(this.ctrlMesenMenuStrip1);
 			this.Name = "frmTileViewer";
 			this.Text = "Tile Viewer";
+			this.Controls.SetChildIndex(this.ctrlMesenMenuStrip1, 0);
+			this.Controls.SetChildIndex(this.ctrlScanlineCycleSelect, 0);
+			this.Controls.SetChildIndex(this.tableLayoutPanel1, 0);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).EndInit();
+			this.tableLayoutPanel3.ResumeLayout(false);
+			this.tableLayoutPanel4.ResumeLayout(false);
 			this.ctrlMesenMenuStrip1.ResumeLayout(false);
 			this.ctrlMesenMenuStrip1.PerformLayout();
 			this.ResumeLayout(false);
@@ -448,5 +565,14 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem mnuZoomIn;
 		private System.Windows.Forms.ToolStripMenuItem mnuZoomOut;
+		private System.Windows.Forms.Label lblPresets;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+		private System.Windows.Forms.Button btnPresetBg1;
+		private System.Windows.Forms.Button btnPresetBg2;
+		private System.Windows.Forms.Button btnPresetBg3;
+		private System.Windows.Forms.Button btnPresetBg4;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+		private System.Windows.Forms.Button btnPresetOam1;
+		private System.Windows.Forms.Button btnPresetOam2;
 	}
 }

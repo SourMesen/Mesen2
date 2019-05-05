@@ -16,6 +16,8 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class frmTileViewer : BaseForm
 	{
+		private int[,] _layerBpp = new int[8, 4] { { 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 } };
+
 		private NotificationListener _notifListener;
 		private GetTileViewOptions _options;
 		private byte[] _tileData;
@@ -26,15 +28,17 @@ namespace Mesen.GUI.Debugger
 		private int _addressOffset = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
 		private bool _autoRefresh = true;
+		private DebugState _state;
+
 
 		public frmTileViewer()
 		{
 			InitializeComponent();
 		}
 
-		protected override void OnLoad(EventArgs e)
+		protected override void OnLoad(EventArgs evt)
 		{
-			base.OnLoad(e);
+			base.OnLoad(evt);
 			if(DesignMode) {
 				return;
 			}
@@ -42,12 +46,12 @@ namespace Mesen.GUI.Debugger
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
-			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
-			InitMemoryTypeDropdown();
-
 			_tileData = new byte[512 * 512 * 4];
 			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
 			ctrlImagePanel.Image = _tileImage;
+
+			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
+			InitMemoryTypeDropdown();
 
 			InitShortcuts();
 
@@ -69,6 +73,8 @@ namespace Mesen.GUI.Debugger
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
 
+			_memoryType = config.Source;
+			_addressOffset = config.Bank * 0x10000 + config.Offset;
 			_options.Format = config.Format;
 			_options.Palette = config.SelectedPalette;
 			_options.Width = config.ColumnCount;
@@ -77,6 +83,24 @@ namespace Mesen.GUI.Debugger
 
 			RefreshData();
 			RefreshViewer();
+
+			cboMemoryType.SelectedIndexChanged += cboMemoryType_SelectedIndexChanged;
+			nudBank.ValueChanged += nudBank_ValueChanged;
+			chkShowTileGrid.Click += chkShowTileGrid_Click;
+			cboFormat.SelectedIndexChanged += cboBpp_SelectedIndexChanged;
+			nudColumns.ValueChanged += nudColumns_ValueChanged;
+			nudOffset.ValueChanged += this.nudOffset_ValueChanged;
+			ctrlPaletteViewer.SelectionChanged += this.ctrlPaletteViewer_SelectionChanged;
+			mnuAutoRefresh.CheckedChanged += this.mnuAutoRefresh_CheckedChanged;
+
+			UpdatePaletteControl();
+
+			btnPresetBg1.Click += (s, e) => GoToBgLayer(0);
+			btnPresetBg2.Click += (s, e) => GoToBgLayer(1);
+			btnPresetBg3.Click += (s, e) => GoToBgLayer(2);
+			btnPresetBg4.Click += (s, e) => GoToBgLayer(3);
+			btnPresetOam1.Click += (s, e) => GoToOamPreset(0);
+			btnPresetOam2.Click += (s, e) => GoToOamPreset(1);
 		}
 
 		private void InitShortcuts()
@@ -149,6 +173,7 @@ namespace Mesen.GUI.Debugger
 
 		private void RefreshData()
 		{
+			_state = DebugApi.GetState();
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 
 			byte[] source = DebugApi.GetMemoryState(_memoryType);
@@ -187,6 +212,11 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
+			btnPresetBg1.Enabled = _layerBpp[_state.Ppu.BgMode, 0] > 0;
+			btnPresetBg2.Enabled = _layerBpp[_state.Ppu.BgMode, 1] > 0;
+			btnPresetBg3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
+			btnPresetBg4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
+
 			UpdateMapSize();
 			ctrlImagePanel.Invalidate();
 
@@ -216,6 +246,19 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.EndUpdate();
 		}
 
+		private void UpdatePaletteControl()
+		{
+			if(_options.Format == TileFormat.Bpp2) {
+				ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.FourColors;
+			} else if(_options.Format == TileFormat.Bpp4) {
+				ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
+			} else {
+				ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.None;
+			}
+
+			_options.Palette = ctrlPaletteViewer.SelectedPalette;
+		}
+
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
 		{
 			_options.ShowTileGrid = chkShowTileGrid.Checked;
@@ -237,21 +280,14 @@ namespace Mesen.GUI.Debugger
 			}
 
 			nudBank.Maximum = Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
+			RefreshData();
 			RefreshViewer();
 		}
 
 		private void cboBpp_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			_options.Format = cboFormat.GetEnumValue<TileFormat>();
-			if(_options.Format == TileFormat.Bpp2) {
-				ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.FourColors;
-			} else if(_options.Format == TileFormat.Bpp4) {
-				ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.SixteenColors;
-			} else {
-				ctrlPaletteViewer.SelectionMode = PaletteSelectionMode.None;
-			}
-
-			_options.Palette = ctrlPaletteViewer.SelectedPalette;
+			UpdatePaletteControl();
 			RefreshViewer();
 		}
 
@@ -305,6 +341,40 @@ namespace Mesen.GUI.Debugger
 		private void mnuAutoRefresh_CheckedChanged(object sender, EventArgs e)
 		{
 			_autoRefresh = mnuAutoRefresh.Checked;
+		}
+
+		private void GoToBgLayer(int layer)
+		{
+			int bpp = _layerBpp[_state.Ppu.BgMode, layer];
+			TileFormat format = TileFormat.Bpp2;
+			if(bpp == 4) {
+				format = TileFormat.Bpp4;
+			} else if(bpp == 8) {
+				format = _state.Ppu.DirectColorMode ? TileFormat.DirectColor : TileFormat.Bpp8;
+			} else if(_state.Ppu.BgMode == 7) {
+				format = _state.Ppu.DirectColorMode ? TileFormat.Mode7DirectColor : TileFormat.Mode7;
+			}
+
+			cboMemoryType.SetEnumValue(SnesMemoryType.VideoRam);
+			cboFormat.SetEnumValue(format);
+
+			int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+			int scrollRow = (_state.Ppu.Layers[layer].ChrAddress / bytesPerRow) & 0xFFF8;
+			ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
+		}
+
+		private void GoToOamPreset(int layer)
+		{
+			int bpp = _layerBpp[_state.Ppu.BgMode, layer];
+			TileFormat format = TileFormat.Bpp4;
+			int address = _state.Ppu.OamBaseAddress + (layer == 1 ? _state.Ppu.OamAddressOffset : 0);
+
+			cboMemoryType.SetEnumValue(SnesMemoryType.VideoRam);
+			cboFormat.SetEnumValue(format);
+
+			int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+			int scrollRow = (address * 2 / bytesPerRow) & 0xFFF8;
+			ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
 		}
 	}
 }
