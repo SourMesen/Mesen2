@@ -179,6 +179,32 @@ namespace Mesen.GUI
 					return CpuType.Cpu;
 			}
 		}
+
+		public static bool SupportsLabels(this SnesMemoryType memType)
+		{
+			switch(memType) {
+				case SnesMemoryType.PrgRom:
+				case SnesMemoryType.WorkRam:
+				case SnesMemoryType.SaveRam:
+				case SnesMemoryType.Register:
+				case SnesMemoryType.SpcRam:
+				case SnesMemoryType.SpcRom:
+					return true;
+			}
+
+			return false;
+		}
+
+		public static bool SupportsWatch(this SnesMemoryType memType)
+		{
+			switch(memType) {
+				case SnesMemoryType.CpuMemory:
+				case SnesMemoryType.SpcMemory:
+					return true;
+			}
+
+			return false;
+		}
 	}
 
 	public struct AddressInfo

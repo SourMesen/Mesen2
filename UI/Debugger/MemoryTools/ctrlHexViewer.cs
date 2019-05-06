@@ -12,6 +12,7 @@ using Be.Windows.Forms;
 using Mesen.GUI.Controls;
 using static Be.Windows.Forms.DynamicByteProvider;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger.Controls
 {
@@ -20,6 +21,9 @@ namespace Mesen.GUI.Debugger.Controls
 		private FindOptions _findOptions;
 		private StaticByteProvider _byteProvider;
 		private SnesMemoryType _memoryType;
+
+		private int SelectionStartAddress { get { return (int)ctrlHexBox.SelectionStart; } }
+		private int SelectionEndAddress { get { return (int)(ctrlHexBox.SelectionStart + (ctrlHexBox.SelectionLength == 0 ? 0 : (ctrlHexBox.SelectionLength - 1))); } }
 
 		public ctrlHexViewer()
 		{
@@ -40,8 +44,16 @@ namespace Mesen.GUI.Debugger.Controls
 			base.OnLoad(e);
 
 			if(!IsDesignMode) {
-				this.cboNumberColumns.SelectedIndex = ConfigManager.Config.Debug.HexEditor.ColumnCount;
+				cboNumberColumns.SelectedIndex = ConfigManager.Config.Debug.HexEditor.ColumnCount;
+				InitShortcuts();
 			}
+		}
+
+		private void InitShortcuts()
+		{
+			mnuAddToWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_AddToWatch));
+			mnuEditBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_EditBreakpoint));
+			mnuEditLabel.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_EditLabel));
 		}
 
 		public new void Focus()
@@ -209,6 +221,8 @@ namespace Mesen.GUI.Debugger.Controls
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
+			UpdateActionAvailability();
+
 			if(keyData == ConfigManager.Config.Debug.Shortcuts.Find) {
 				this.OpenSearchBox(true);
 				return true;
@@ -457,6 +471,97 @@ namespace Mesen.GUI.Debugger.Controls
 		private void mnuSelectAll_Click(object sender, EventArgs e)
 		{
 			ctrlHexBox.SelectAll();
+		}
+
+		private void UpdateActionAvailability()
+		{
+			UInt32 startAddress = (UInt32)SelectionStartAddress;
+			UInt32 endAddress = (UInt32)SelectionEndAddress;
+
+			string address = "$" + startAddress.ToString("X4");
+			string addressRange;
+			if(startAddress != endAddress) {
+				addressRange = "$" + startAddress.ToString("X4") + "-$" + endAddress.ToString("X4");
+			} else {
+				addressRange = address;
+			}
+
+			mnuEditLabel.Text = $"Edit Label ({address})";
+			mnuEditBreakpoint.Text = $"Edit Breakpoint ({addressRange})";
+			mnuAddToWatch.Text = $"Add to Watch ({addressRange})";
+
+			if(_memoryType == SnesMemoryType.CpuMemory || _memoryType == SnesMemoryType.SpcMemory) {
+				AddressInfo relAddress = new AddressInfo() {
+					Address = (int)startAddress,
+					Type = _memoryType
+				};
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+				mnuEditLabel.Enabled = absAddress.Address != -1 && absAddress.Type.SupportsLabels();
+				mnuAddToWatch.Enabled = _memoryType.SupportsWatch();
+			} else {
+				mnuEditLabel.Enabled = _memoryType.SupportsLabels();
+				mnuAddToWatch.Enabled = false;
+			}
+
+			mnuEditBreakpoint.Enabled = true;
+		}
+
+		private void mnuAddToWatch_Click(object sender, EventArgs e)
+		{
+			if(_memoryType.SupportsWatch()) {
+				string[] toAdd = Enumerable.Range(SelectionStartAddress, SelectionEndAddress - SelectionStartAddress + 1).Select((num) => $"[${num.ToString("X6")}]").ToArray();
+				WatchManager.GetWatchManager(_memoryType.ToCpuType()).AddWatch(toAdd);
+			}
+		}
+
+		private void mnuEditBreakpoint_Click(object sender, EventArgs e)
+		{
+			UInt32 startAddress = (UInt32)SelectionStartAddress;
+			UInt32 endAddress = (UInt32)SelectionEndAddress;
+			BreakpointAddressType addressType = startAddress == endAddress ? BreakpointAddressType.SingleAddress : BreakpointAddressType.AddressRange;
+
+			Breakpoint bp = BreakpointManager.GetMatchingBreakpoint(startAddress, endAddress, _memoryType);
+			if(bp == null) {
+				bp = new Breakpoint() { Address = startAddress, MemoryType = _memoryType, StartAddress = startAddress, EndAddress = endAddress, AddressType = addressType, BreakOnWrite = true, BreakOnRead = true };
+				if(bp.IsCpuBreakpoint) {
+					bp.BreakOnExec = true;
+				}
+			}
+			BreakpointManager.EditBreakpoint(bp);
+		}
+
+		private void mnuEditLabel_Click(object sender, EventArgs e)
+		{
+			UInt32 address = (UInt32)ctrlHexBox.SelectionStart;
+			SnesMemoryType memType = _memoryType;
+			if(!memType.SupportsLabels()) {
+				AddressInfo relAddress = new AddressInfo() {
+					Address = (int)address,
+					Type = memType
+				};
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+				if(absAddress.Address < 0 || !absAddress.Type.SupportsLabels()) {
+					return;
+				}
+				address = (uint)absAddress.Address;
+				memType = absAddress.Type;
+			}
+
+			CodeLabel label = LabelManager.GetLabel(address, memType);
+			if(label == null) {
+				label = new CodeLabel() {
+					Address = address,
+					MemoryType = memType
+				};
+			}
+
+			ctrlLabelList.EditLabel(label);
+		}
+
+		private void ctxMenuStrip_Opening(object sender, CancelEventArgs e)
+		{
+			UpdateActionAvailability();
 		}
 	}
 }
