@@ -847,7 +847,7 @@ void Ppu::RenderTilemapMode7()
 		return;
 	}
 
-	constexpr auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };
+	auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };
 
 	int32_t lutX[256];
 	int32_t lutY[256];
