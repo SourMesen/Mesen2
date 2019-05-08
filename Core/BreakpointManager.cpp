@@ -64,13 +64,13 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 	}
 }
 
-bool BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
+int BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
 {
 	BreakpointCategory category = Breakpoint::GetBreakpointCategory(address.Type);
 	BreakpointType type = GetBreakpointType(operationInfo.Type);
 
 	if(!_hasBreakpoint[(int)category][(int)type]) {
-		return false;
+		return -1;
 	}
 
 	CpuType cpuType = category == BreakpointCategory::Spc ? CpuType::Spc : CpuType::Cpu;
@@ -82,10 +82,10 @@ bool BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, Addre
 	for(size_t i = 0; i < breakpoints.size(); i++) {
 		if(breakpoints[i].Matches(operationInfo.Address, address)) {
 			if(!breakpoints[i].HasCondition() || _bpExpEval[(int)cpuType]->Evaluate(_rpnList[(int)category][(int)type][i], state, resultType, operationInfo)) {
-				return true;
+				return breakpoints[i].GetId();
 			}
 		}
 	}
 
-	return false;
+	return -1;
 }

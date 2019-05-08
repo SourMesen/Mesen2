@@ -572,6 +572,25 @@ namespace Mesen.GUI
 		SpecificScanline,
 	}
 
+	public enum BreakSource
+	{
+		Unspecified = -1,
+		Breakpoint = 0,
+		CpuStep = 1,
+		PpuStep = 2,
+		BreakOnBrk = 3,
+		BreakOnCop = 4,
+		BreakOnWdm = 5,
+		BreakOnStp = 6
+	}
+
+	public struct BreakEvent
+	{
+		public BreakSource Source;
+		public MemoryOperationInfo Operation;
+		public Int32 BreakpointId;
+	}
+
 	public enum CdlFlags : byte
 	{
 		None = 0x00,

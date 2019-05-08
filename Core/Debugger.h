@@ -71,9 +71,9 @@ private:
 	uint32_t _spcPrevProgramCounter = 0;
 
 	void Reset();
-	void SleepUntilResume();
+	void SleepUntilResume(BreakSource source, MemoryOperationInfo *operation = nullptr, int breakpointId = -1);
 	void ProcessStepConditions(uint8_t opCode, uint32_t currentPc);
-	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo);
+	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 
 public:
 	Debugger(shared_ptr<Console> console);

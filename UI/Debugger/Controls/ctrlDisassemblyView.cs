@@ -141,7 +141,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void SetActiveAddress(int? address)
 		{
-			if(_styleProvider.ActiveAddress == address) {
+			if(_styleProvider.ActiveAddress == null && address == null) {
 				return;
 			}
 
@@ -274,6 +274,11 @@ namespace Mesen.GUI.Debugger.Controls
 			if(_manager?.Provider != null) {
 				UpdateCode();
 			}
+		}
+
+		public void SetMessage(TextboxMessageInfo msg)
+		{
+			ctrlCode.SetMessage(msg);
 		}
 	}
 }

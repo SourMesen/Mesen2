@@ -29,5 +29,5 @@ public:
 	BreakpointManager(Debugger *debugger);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t count);
-	bool CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
+	int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
 };

@@ -38,15 +38,6 @@ struct MemoryOperationInfo
 	uint32_t Address;
 	int32_t Value;
 	MemoryOperationType Type;
-	
-	MemoryOperationInfo() { }
-
-	MemoryOperationInfo(uint32_t address, int32_t value, MemoryOperationType type)
-	{
-		Address = address;
-		Value = value;
-		Type = type;
-	}
 };
 
 enum class BreakpointTypeFlags
@@ -209,6 +200,25 @@ struct StackFrameInfo
 	uint32_t Target;
 	uint32_t Return;
 	StackFrameFlags Flags;
+};
+
+enum class BreakSource
+{
+	Unspecified = -1,
+	Breakpoint = 0,
+	CpuStep = 1,
+	PpuStep = 2,
+	BreakOnBrk = 3,
+	BreakOnCop = 4,
+	BreakOnWdm = 5,
+	BreakOnStp = 6
+};
+
+struct BreakEvent
+{
+	BreakSource Source;
+	MemoryOperationInfo Operation;
+	int32_t BreakpointId;
 };
 
 enum class StepType

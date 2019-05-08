@@ -125,5 +125,13 @@ namespace Mesen.GUI.Debugger
 			}
 			DebugApi.SetBreakpoints(breakpoints.ToArray(), (UInt32)breakpoints.Count);
 		}
+
+		public static Breakpoint GetBreakpointById(int breakpointId)
+		{
+			if(breakpointId < 0 || breakpointId >= _breakpoints.Count) {
+				return null;
+			}
+			return _breakpoints[breakpointId];
+		}
 	}
 }

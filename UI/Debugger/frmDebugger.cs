@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Code;
+using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Forms;
 using System;
@@ -8,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -295,6 +297,27 @@ namespace Mesen.GUI.Debugger
 			ctrlCallstack.UpdateCallstack(_cpuType);
 		}
 
+		void ProcessBreakEvent(BreakEvent evt, DebugState state, int activeAddress)
+		{
+			if(ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak) {
+				Breakpoint bp = BreakpointManager.GetBreakpointById(evt.BreakpointId);
+				if(bp?.MemoryType.ToCpuType() == _cpuType || evt.Source > BreakSource.PpuStep) {
+					DebugWindowManager.BringToFront(this);
+				}
+			}
+
+			UpdateContinueAction();
+			UpdateDebugger(state, activeAddress);
+
+			if(evt.Source == BreakSource.Breakpoint || evt.Source > BreakSource.PpuStep) {
+				string message = ResourceHelper.GetEnumText(evt.Source);
+				if(evt.Source == BreakSource.Breakpoint) {
+					message += ": " + ResourceHelper.GetEnumText(evt.Operation.Type) + " ($" + evt.Operation.Address.ToString("X4") + ":$" + evt.Operation.Value.ToString("X2") + ")";
+				}
+				ctrlDisassemblyView.SetMessage(new TextboxMessageInfo() { Message = message });
+			}
+		}
+
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
@@ -326,16 +349,12 @@ namespace Mesen.GUI.Debugger
 					break;
 
 				case ConsoleNotificationType.CodeBreak: {
+					BreakEvent evt = (BreakEvent)Marshal.PtrToStructure(e.Parameter, typeof(BreakEvent));
 					DebugState state = DebugApi.GetState();
 					int activeAddress = _cpuType == CpuType.Cpu ? (int)((state.Cpu.K << 16) | state.Cpu.PC) : (int)state.Spc.PC;
 
 					this.BeginInvoke((MethodInvoker)(() => {
-						if(ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak) {
-							DebugWindowManager.BringToFront(this);
-						}
-
-						UpdateContinueAction();
-						UpdateDebugger(state, activeAddress);
+						ProcessBreakEvent(evt, state, activeAddress);
 
 						if(_firstBreak && !ConfigManager.Config.Debug.Debugger.BreakOnOpen) {
 							DebugApi.ResumeExecution();

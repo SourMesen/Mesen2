@@ -95,6 +95,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
 	CpuState state = _cpu->GetState();
+	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(addressInfo.Address >= 0) {
@@ -138,12 +139,16 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
 				//Break on BRK/STP/WDM/COP
 				if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+					breakSource = BreakSource::BreakOnBrk;
 					_cpuStepCount = 0;
 				} else if(value == 0x02 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) {
+					breakSource = BreakSource::BreakOnCop;
 					_cpuStepCount = 0;
 				} else if(value == 0x42 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) {
+					breakSource = BreakSource::BreakOnWdm;
 					_cpuStepCount = 0;
 				} else if(value == 0xDB && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
+					breakSource = BreakSource::BreakOnStp;
 					_cpuStepCount = 0;
 				}
 			}
@@ -164,7 +169,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	ProcessBreakConditions(operation, addressInfo);
+	ProcessBreakConditions(operation, addressInfo, breakSource);
 }
 
 void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -188,7 +193,7 @@ void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 {
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
 	//TODO Make this more flexible/accurate
-	MemoryOperationInfo operation(0x7E0000 | addr, value, MemoryOperationType::Read);
+	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Read };
 	ProcessBreakConditions(operation, addressInfo);
 }
 
@@ -196,7 +201,7 @@ void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 {
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
 	//TODO Make this more flexible/accurate
-	MemoryOperationInfo operation(0x7E0000 | addr, value, MemoryOperationType::Write);
+	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Write };
 	ProcessBreakConditions(operation, addressInfo);
 }
 
@@ -208,7 +213,7 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type);
+	MemoryOperationInfo operation { addr, value, type };
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
@@ -254,7 +259,7 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { addr, SnesMemoryType::SpcRam }; //Writes never affect the SPC ROM
-	MemoryOperationInfo operation(addr, value, type);
+	MemoryOperationInfo operation { addr, value, type };
 	ProcessBreakConditions(operation, addressInfo);
 
 	_disassembler->InvalidateCache(addressInfo);
@@ -265,7 +270,7 @@ void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo { addr, memoryType };
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read);
+	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
 	ProcessBreakConditions(operation, addressInfo);
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Read, _memoryManager->GetMasterClock());
@@ -274,7 +279,7 @@ void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memor
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo { addr, memoryType };
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write);
+	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
 	ProcessBreakConditions(operation, addressInfo);
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Write, _memoryManager->GetMasterClock());
@@ -290,18 +295,18 @@ void Debugger::ProcessPpuCycle()
 		_ppuStepCount--;
 		if(_ppuStepCount == 0) {
 			_cpuStepCount = 0;
-			SleepUntilResume();
+			SleepUntilResume(BreakSource::PpuStep);
 		}
 	}
 
 	if(cycle == 0 && scanline == _breakScanline) {
 		_cpuStepCount = 0;
 		_breakScanline = -1;
-		SleepUntilResume();
+		SleepUntilResume(BreakSource::PpuStep);
 	}
 }
 
-void Debugger::SleepUntilResume()
+void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
 {
 	if(_suspendRequestCount) {
 		return;
@@ -313,9 +318,15 @@ void Debugger::SleepUntilResume()
 
 	_executionStopped = true;
 	
-	if(_cpuStepCount == 0) {
+	if(_cpuStepCount == 0 && _breakRequestCount == 0) {
 		//Only trigger code break event if the pause was caused by user action
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak);
+		BreakEvent evt = {};
+		evt.BreakpointId = breakpointId;
+		evt.Source = source;
+		if(operation) {
+			evt.Operation = *operation;
+		}
+		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
 	}
 
 	while((_cpuStepCount == 0 && !_suspendRequestCount) || _breakRequestCount) {
@@ -333,14 +344,16 @@ void Debugger::ProcessStepConditions(uint8_t opCode, uint32_t currentPc)
 	}
 }
 
-void Debugger::ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo)
+void Debugger::ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
 {
-	if(_breakpointManager->CheckBreakpoint(operation, addressInfo)) {
-		_cpuStepCount = 0;
-	}
-
 	if(_cpuStepCount == 0 || _breakRequestCount) {
-		SleepUntilResume();
+		SleepUntilResume(source);
+	} else {
+		int breakpointId = _breakpointManager->CheckBreakpoint(operation, addressInfo);
+		if(breakpointId >= 0) {
+			_cpuStepCount = 0;
+			SleepUntilResume(BreakSource::Breakpoint, &operation, breakpointId);
+		}
 	}
 }
 
