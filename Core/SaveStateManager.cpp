@@ -139,7 +139,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 			string romName(nameBuffer.data(), nameLength);
 			
 			shared_ptr<BaseCartridge> cartridge = _console->GetCartridge();
-			if(!cartridge || cartridge->GetSha1Hash() != string(hash)) {
+			if(!cartridge /*|| cartridge->GetSha1Hash() != string(hash)*/) {
 				//Game isn't loaded, or CRC doesn't match
 				//TODO: Try to find and load the game
 				return false;
