@@ -81,6 +81,10 @@ namespace Mesen.GUI.Forms
 				ctrlRecentGames.Visible = true;
 			}
 
+			if(ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates) {
+				UpdateHelper.CheckForUpdates(true);
+			}
+
 			this.Resize += frmMain_Resize;
 		}
 
