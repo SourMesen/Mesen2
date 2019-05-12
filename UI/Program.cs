@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -59,6 +60,9 @@ namespace Mesen.GUI
 				Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 				Application.ThreadException += Application_ThreadException;
 				AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+				//Enable TLS 1.0/1.1/1.2 support
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
