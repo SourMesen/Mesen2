@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5330148-E8C7-46BA-B54E-69BE59EA337D} = {B5330148-E8C7-46BA-B54E-69BE59EA337D}
+		{B609E0A0-5050-4871-91D6-E760633BCDD1} = {B609E0A0-5050-4871-91D6-E760633BCDD1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utilities", "Utilities\Utilities.vcxproj", "{B5330148-E8C7-46BA-B54E-69BE59EA337D}"
@@ -46,6 +47,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateHelper", "UpdateHelper\UpdateHelper.csproj", "{36ABBF1C-66E1-4577-828A-619A2EF0DAE9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SevenZip", "SevenZip\SevenZip.vcxproj", "{52C4BA3A-E699-4305-B23F-C9083FD07AB6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcxproj", "{B609E0A0-5050-4871-91D6-E760633BCDD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -294,6 +297,31 @@ Global
 		{52C4BA3A-E699-4305-B23F-C9083FD07AB6}.Release|x64.Build.0 = Release|x64
 		{52C4BA3A-E699-4305-B23F-C9083FD07AB6}.Release|x86.ActiveCfg = Release|Win32
 		{52C4BA3A-E699-4305-B23F-C9083FD07AB6}.Release|x86.Build.0 = Release|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Debug|x64.ActiveCfg = Debug|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Debug|x64.Build.0 = Debug|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Debug|x86.ActiveCfg = Debug|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Debug|x86.Build.0 = Debug|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Libretro|Any CPU.ActiveCfg = Libretro|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Libretro|x64.ActiveCfg = Libretro|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Libretro|x64.Build.0 = Libretro|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Libretro|x86.ActiveCfg = Libretro|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Libretro|x86.Build.0 = Libretro|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Optimize|Any CPU.ActiveCfg = PGO Optimize|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Optimize|x64.ActiveCfg = PGO Optimize|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Optimize|x64.Build.0 = PGO Optimize|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Optimize|x86.ActiveCfg = PGO Optimize|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Optimize|x86.Build.0 = PGO Optimize|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Profile|Any CPU.ActiveCfg = PGO Profile|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Profile|x64.ActiveCfg = PGO Profile|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Profile|x64.Build.0 = PGO Profile|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Profile|x86.ActiveCfg = PGO Profile|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.PGO Profile|x86.Build.0 = PGO Profile|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|Any CPU.ActiveCfg = Release|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|x64.ActiveCfg = Release|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|x64.Build.0 = Release|x64
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|x86.ActiveCfg = Release|Win32
+		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

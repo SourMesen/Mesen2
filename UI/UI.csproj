@@ -254,6 +254,7 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Config\ScriptWindowConfig.cs" />
     <Compile Include="Debugger\Config\SpriteViewerConfig.cs" />
     <Compile Include="Debugger\Config\TileViewerConfig.cs" />
     <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
@@ -327,6 +328,81 @@
       <DependentUpon>frmSpriteViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\SpriteInfo.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\AutocompleteItem.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\AutocompleteMenu.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Bookmarks.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Char.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\CommandManager.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Commands.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\DocumentMap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\EncodingDetector.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\ExportToHTML.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\ExportToRTF.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\FastColoredTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\FileTextSource.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\FindForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\FindForm.designer.cs">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\GoToForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\GoToForm.designer.cs">
+      <DependentUpon>GoToForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Hints.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Hotkeys.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\HotkeysEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\HotkeysEditorForm.designer.cs">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\LimitedStack.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Line.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\LinesAccessor.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\MacrosManager.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\MonoUtility.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\NativeMethods.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\NativeMethodsWrapper.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Place.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\PlatformType.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Range.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\ReplaceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\ReplaceForm.designer.cs">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Ruler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Ruler.designer.cs">
+      <DependentUpon>Ruler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\Style.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\SyntaxDescriptor.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\SyntaxHighlighter.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\TextSource.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\TypeDescriptor.cs" />
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\UnfocusablePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\FastColoredTextBox\VisualMarker.cs" />
+    <Compile Include="Debugger\Scripts\frmScript.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Scripts\frmScript.Designer.cs">
+      <DependentUpon>frmScript.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Tooltips\ctrlTooltip.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -742,6 +818,18 @@
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Dependencies\LuaScripts\DrawMode.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Dependencies\LuaScripts\Example.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Dependencies\LuaScripts\Grid.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Dependencies\LuaScripts\NtscSafeArea.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\SpcDebugger.png" />
     <None Include="Resources\MesenSIcon.png" />
     <None Include="app.manifest" />
@@ -870,6 +958,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\HexBox\HexBox.resx">
       <DependentUpon>HexBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Scripts\FastColoredTextBox\FastColoredTextBox.resx">
+      <DependentUpon>FastColoredTextBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Scripts\FastColoredTextBox\FindForm.resx">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Scripts\FastColoredTextBox\GoToForm.resx">
+      <DependentUpon>GoToForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Scripts\FastColoredTextBox\HotkeysEditorForm.resx">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Scripts\FastColoredTextBox\ReplaceForm.resx">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Scripts\frmScript.resx">
+      <DependentUpon>frmScript.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Tooltips\ctrlTooltip.resx">
       <DependentUpon>ctrlTooltip.cs</DependentUpon>

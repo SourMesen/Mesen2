@@ -23,6 +23,7 @@ class CodeDataLogger;
 class EventManager;
 class CallstackManager;
 class LabelManager;
+class ScriptManager;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -39,6 +40,7 @@ private:
 	
 	shared_ptr<EmuSettings> _settings;
 
+	shared_ptr<ScriptManager> _scriptManager;
 	shared_ptr<TraceLogger> _traceLogger;
 	shared_ptr<MemoryDumper> _memoryDumper;
 	shared_ptr<MemoryAccessCounter> _memoryAccessCounter;
@@ -122,6 +124,7 @@ public:
 	shared_ptr<PpuTools> GetPpuTools();
 	shared_ptr<EventManager> GetEventManager();
 	shared_ptr<LabelManager> GetLabelManager();
+	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
 	shared_ptr<Console> GetConsole();
 };

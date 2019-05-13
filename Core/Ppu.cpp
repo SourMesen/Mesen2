@@ -149,6 +149,8 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 
 			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
 
+			_console->ProcessEvent(EventType::EndFrame);
+
 			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();
 			_console->GetControlManager()->UpdateInputState();

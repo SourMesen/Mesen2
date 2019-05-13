@@ -35,6 +35,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.PaletteViewer: frm = new frmPaletteViewer(); frm.Icon = Properties.Resources.VideoFilter; break;
 					case DebugWindow.SpriteViewer: frm = new frmSpriteViewer(); frm.Icon = Properties.Resources.PerfTracker; break;
 					case DebugWindow.EventViewer: frm = new frmEventViewer(); frm.Icon = Properties.Resources.NesEventViewer; break;
+					case DebugWindow.ScriptWindow: frm = new frmScript(); frm.Icon = Properties.Resources.Script; break;
 				}
 
 				if(_openedWindows.Count == 0) {
@@ -150,6 +151,7 @@ namespace Mesen.GUI.Debugger
 		TilemapViewer,
 		PaletteViewer,
 		SpriteViewer,
-		EventViewer
+		EventViewer,
+		ScriptWindow
 	}
 }

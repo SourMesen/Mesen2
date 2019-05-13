@@ -23,6 +23,7 @@
 #include "EventType.h"
 #include "DebugBreakHelper.h"
 #include "LabelManager.h"
+#include "ScriptManager.h"
 #include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
 #include "../Utilities/HexUtilities.h"
@@ -49,9 +50,10 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _console->GetDmaController().get()));
+	_scriptManager.reset(new ScriptManager(this));
 	_callstackManager.reset(new CallstackManager(this));
 	_spcCallstackManager.reset(new CallstackManager(this));
-	
+
 	_cpuStepCount = -1;
 	_spcStepCount = -1;
 	_ppuStepCount = -1;
@@ -170,6 +172,8 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	ProcessBreakConditions(operation, addressInfo, breakSource);
+
+	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
 
 void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -187,6 +191,8 @@ void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
 
 	ProcessBreakConditions(operation, addressInfo);
+
+	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
 
 void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
@@ -365,6 +371,8 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 
 void Debugger::ProcessEvent(EventType type)
 {
+	_scriptManager->ProcessEvent(type);
+
 	switch(type) {
 		default: break;
 
@@ -632,6 +640,11 @@ shared_ptr<EventManager> Debugger::GetEventManager()
 shared_ptr<LabelManager> Debugger::GetLabelManager()
 {
 	return _labelManager;
+}
+
+shared_ptr<ScriptManager> Debugger::GetScriptManager()
+{
+	return _scriptManager;
 }
 
 shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)

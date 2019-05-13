@@ -184,5 +184,4 @@ packages/*
 
 Libretro/*
 Docs/*
-Lua/*
 TestHelper/*

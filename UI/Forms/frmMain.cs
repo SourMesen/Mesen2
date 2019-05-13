@@ -213,6 +213,7 @@ namespace Mesen.GUI.Forms
 			mnuSpriteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpriteViewer));
 			mnuPaletteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenPaletteViewer));
 			mnuTraceLogger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTraceLogger));
+			mnuScriptWindow.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenScriptWindow));
 
 			mnuNoneFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.None); };
 			mnuNtscFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.NTSC); };
@@ -257,6 +258,7 @@ namespace Mesen.GUI.Forms
 			mnuSpriteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpriteViewer); };
 			mnuPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer); };
 			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer); };
+			mnuScriptWindow.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.ScriptWindow); };
 
 			UpdateDebuggerMenu();
 		}

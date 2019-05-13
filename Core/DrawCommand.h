@@ -20,6 +20,11 @@ protected:
 	virtual void InternalDraw() = 0;
 	__forceinline void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
+		if(x < _overscan.Left || x >= (256 - _overscan.Right) || y < _overscan.Top || y >= (239 - _overscan.Bottom)) {
+			//Out of bounds, skip drawing
+			return;
+		}
+
 		uint32_t alpha = (color & 0xFF000000);
 		if(alpha > 0) {
 			if(_yScale == 1) {

@@ -9,8 +9,6 @@ private:
 	uint32_t _stateBuffer = 0;
 
 protected:
-	enum Buttons { A = 0, B, X, Y, L, R, Select, Start, Up, Down, Left, Right };
-
 	string GetKeyNames() override
 	{
 		return "ABXYLRSTUDLR";
@@ -65,6 +63,8 @@ protected:
 	}
 
 public:
+	enum Buttons { A = 0, B, X, Y, L, R, Select, Start, Up, Down, Left, Right };
+
 	SnesController(shared_ptr<Console> console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console, port, keyMappings)
 	{
 	}

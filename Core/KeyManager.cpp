@@ -98,8 +98,8 @@ void KeyManager::SetMousePosition(shared_ptr<Console> console, double x, double 
 	} else {
 		OverscanDimensions overscan = console->GetSettings()->GetOverscan();
 		ScreenSize size = console->GetVideoDecoder()->GetScreenSize(false);
-		_mousePosition.X = (int32_t)(x*size.Width + overscan.Left);
-		_mousePosition.Y = (int32_t)(y*size.Height + overscan.Top);
+		_mousePosition.X = (int32_t)(x*size.Width/2 + overscan.Left);
+		_mousePosition.Y = (int32_t)(y*size.Height/2 + overscan.Top);
 	}
 }
 

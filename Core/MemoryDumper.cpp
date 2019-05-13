@@ -141,10 +141,16 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 	}
 }
 
-uint16_t MemoryDumper::GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address)
+uint16_t MemoryDumper::GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, bool disableSideEffects)
 {
 	uint32_t memorySize = GetMemorySize(memoryType);
 	uint8_t lsb = GetMemoryValue(memoryType, address);
 	uint8_t msb = GetMemoryValue(memoryType, (address + 1) & (memorySize - 1));
 	return (msb << 8) | lsb;
+}
+
+void MemoryDumper::SetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, uint16_t value, bool disableSideEffects)
+{
+	SetMemoryValue(memoryType, address, (uint8_t)value, disableSideEffects);
+	SetMemoryValue(memoryType, address + 1, (uint8_t)(value >> 8), disableSideEffects);
 }

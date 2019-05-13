@@ -24,7 +24,8 @@ public:
 	void GetMemoryState(SnesMemoryType type, uint8_t *buffer);
 
 	uint8_t GetMemoryValue(SnesMemoryType memoryType, uint32_t address, bool disableSideEffects = true);
-	uint16_t GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address);
+	uint16_t GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, bool disableSideEffects = true);
+	void SetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, uint16_t value, bool disableSideEffects = true);
 	void SetMemoryValue(SnesMemoryType memoryType, uint32_t address, uint8_t value, bool disableSideEffects = true);
 	void SetMemoryValues(SnesMemoryType memoryType, uint32_t address, uint8_t* data, uint32_t length);
 	void SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t length);

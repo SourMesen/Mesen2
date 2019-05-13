@@ -269,6 +269,24 @@
     <ClInclude Include="LabelManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptingContext.h">
+      <Filter>Debugger\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaScriptingContext.h">
+      <Filter>Debugger\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptHost.h">
+      <Filter>Debugger\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaApi.h">
+      <Filter>Debugger\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaCallHelper.h">
+      <Filter>Debugger\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptManager.h">
+      <Filter>Debugger\Scripts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -434,6 +452,24 @@
     <ClCompile Include="LabelManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
+    <ClCompile Include="LuaScriptingContext.cpp">
+      <Filter>Debugger\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptingContext.cpp">
+      <Filter>Debugger\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptHost.cpp">
+      <Filter>Debugger\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaApi.cpp">
+      <Filter>Debugger\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCallHelper.cpp">
+      <Filter>Debugger\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptManager.cpp">
+      <Filter>Debugger\Scripts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -465,6 +501,9 @@
     </Filter>
     <Filter Include="Debugger\Disassembler">
       <UniqueIdentifier>{68bd1e52-d8b5-4ebb-b961-858e9db1cd00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debugger\Scripts">
+      <UniqueIdentifier>{ca39cd9a-a95c-4b7a-b6d5-de41565dd8f6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

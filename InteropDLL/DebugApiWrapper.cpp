@@ -13,6 +13,7 @@
 #include "../Core/EventManager.h"
 #include "../Core/CallstackManager.h"
 #include "../Core/LabelManager.h"
+#include "../Core/ScriptManager.h"
 
 extern shared_ptr<Console> _console;
 
@@ -89,4 +90,9 @@ extern "C"
 	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, options); }
 	DllExport DebugEventInfo __stdcall GetEventViewerEvent(uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->GetEvent(scanline, cycle, options); }
 	DllExport void __stdcall TakeEventSnapshot(EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->TakeEventSnapshot(options); }
+
+	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return GetDebugger()->GetScriptManager()->LoadScript(name, content, scriptId); }
+	DllExport void __stdcall RemoveScript(int32_t scriptId) { GetDebugger()->GetScriptManager()->RemoveScript(scriptId); }
+	DllExport const char* __stdcall GetScriptLog(int32_t scriptId) { return GetDebugger()->GetScriptManager()->GetScriptLog(scriptId); }
+	//DllExport void __stdcall DebugSetScriptTimeout(uint32_t timeout) { LuaScriptingContext::SetScriptTimeout(timeout); }
 };

@@ -129,6 +129,7 @@
 			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTileViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSpriteViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPaletteViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
@@ -140,7 +141,7 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
-			this.mnuSpriteViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuScriptWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -851,6 +852,7 @@
             this.mnuSpcDebugger,
             this.mnuMemoryTools,
             this.mnuTraceLogger,
+            this.mnuScriptWindow,
             this.toolStripMenuItem12,
             this.mnuTilemapViewer,
             this.mnuTileViewer,
@@ -908,6 +910,13 @@
 			this.mnuTileViewer.Name = "mnuTileViewer";
 			this.mnuTileViewer.Size = new System.Drawing.Size(155, 22);
 			this.mnuTileViewer.Text = "Tile Viewer";
+			// 
+			// mnuSpriteViewer
+			// 
+			this.mnuSpriteViewer.Image = global::Mesen.GUI.Properties.Resources.PerfTracker;
+			this.mnuSpriteViewer.Name = "mnuSpriteViewer";
+			this.mnuSpriteViewer.Size = new System.Drawing.Size(155, 22);
+			this.mnuSpriteViewer.Text = "Sprite Viewer";
 			// 
 			// mnuPaletteViewer
 			// 
@@ -994,12 +1003,12 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
-			// mnuSpriteViewer
+			// mnuScriptWindow
 			// 
-			this.mnuSpriteViewer.Image = global::Mesen.GUI.Properties.Resources.PerfTracker;
-			this.mnuSpriteViewer.Name = "mnuSpriteViewer";
-			this.mnuSpriteViewer.Size = new System.Drawing.Size(155, 22);
-			this.mnuSpriteViewer.Text = "Sprite Viewer";
+			this.mnuScriptWindow.Image = global::Mesen.GUI.Properties.Resources.Script;
+			this.mnuScriptWindow.Name = "mnuScriptWindow";
+			this.mnuScriptWindow.Size = new System.Drawing.Size(155, 22);
+			this.mnuScriptWindow.Text = "Script Window";
 			// 
 			// frmMain
 			// 
@@ -1013,6 +1022,9 @@
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "frmMain";
 			this.Text = "frmMain";
+			this.Controls.SetChildIndex(this.mnuMain, 0);
+			this.Controls.SetChildIndex(this.pnlRenderer, 0);
+			this.Controls.SetChildIndex(this.ctrlRecentGames, 0);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
 			this.pnlRenderer.ResumeLayout(false);
@@ -1137,5 +1149,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuTileViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuSpcDebugger;
 		private System.Windows.Forms.ToolStripMenuItem mnuSpriteViewer;
+		private System.Windows.Forms.ToolStripMenuItem mnuScriptWindow;
 	}
 }

@@ -10,6 +10,7 @@
 #include "SystemActionManager.h"
 #include "SnesController.h"
 #include "SnesMouse.h"
+#include "EventType.h"
 #include "../Utilities/Serializer.h"
 
 ControlManager::ControlManager(shared_ptr<Console> console)
@@ -160,12 +161,10 @@ void ControlManager::UpdateInputState()
 		//log += "|" + device->GetTextState();
 	}
 
-	//TODO
-	/*
 	shared_ptr<Debugger> debugger = _console->GetDebugger(false);
 	if(debugger) {
 		debugger->ProcessEvent(EventType::InputPolled);
-	}*/
+	}
 
 	for(IInputRecorder* recorder : _inputRecorders) {
 		recorder->RecordInput(_controlDevices);

@@ -73,6 +73,9 @@
     <ClInclude Include="EventType.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
     <ClInclude Include="LabelManager.h" />
+    <ClInclude Include="LuaApi.h" />
+    <ClInclude Include="LuaCallHelper.h" />
+    <ClInclude Include="LuaScriptingContext.h" />
     <ClInclude Include="MemoryAccessCounter.h" />
     <ClInclude Include="NtscFilter.h" />
     <ClInclude Include="PpuTools.h" />
@@ -115,6 +118,9 @@
     <ClInclude Include="RomHandler.h" />
     <ClInclude Include="SaveStateManager.h" />
     <ClInclude Include="ScaleFilter.h" />
+    <ClInclude Include="ScriptHost.h" />
+    <ClInclude Include="ScriptingContext.h" />
+    <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="SettingTypes.h" />
     <ClInclude Include="ShortcutKeyHandler.h" />
     <ClInclude Include="SnesController.h" />
@@ -164,6 +170,9 @@
     <ClCompile Include="InternalRegisters.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="LabelManager.cpp" />
+    <ClCompile Include="LuaApi.cpp" />
+    <ClCompile Include="LuaCallHelper.cpp" />
+    <ClCompile Include="LuaScriptingContext.cpp" />
     <ClCompile Include="MemoryAccessCounter.cpp" />
     <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
@@ -177,6 +186,9 @@
     <ClCompile Include="RewindManager.cpp" />
     <ClCompile Include="SaveStateManager.cpp" />
     <ClCompile Include="ScaleFilter.cpp" />
+    <ClCompile Include="ScriptHost.cpp" />
+    <ClCompile Include="ScriptingContext.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="ShortcutKeyHandler.cpp" />
     <ClCompile Include="SoundMixer.cpp" />
     <ClCompile Include="SoundResampler.cpp" />
