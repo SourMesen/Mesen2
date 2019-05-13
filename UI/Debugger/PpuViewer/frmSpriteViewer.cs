@@ -91,19 +91,25 @@ namespace Mesen.GUI.Debugger
 			ConfigManager.ApplyChanges();
 		}
 
+		private void RefreshContent()
+		{
+			_lastUpdate = DateTime.Now;
+			RefreshData();
+			this.BeginInvoke((Action)(() => {
+				this.RefreshViewer();
+			}));
+		}
+
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
+					RefreshContent();
+					break;
+
 				case ConsoleNotificationType.ViewerRefresh:
-					if(_autoRefresh && e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
-						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
-							_lastUpdate = DateTime.Now;
-							RefreshData();
-							this.BeginInvoke((Action)(() => {
-								this.RefreshViewer();
-							}));
-						}
+					if(_autoRefresh && e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId && (DateTime.Now - _lastUpdate).Milliseconds > 10) {
+						RefreshContent();
 					}
 					break;
 

@@ -49,20 +49,26 @@ namespace Mesen.GUI.Debugger
 			_notifListener?.Dispose();
 		}
 
+		private void RefreshContent()
+		{
+			_lastUpdate = DateTime.Now;
+			ctrlPaletteViewer.RefreshData();
+			this.BeginInvoke((Action)(() => {
+				ctrlPaletteViewer.RefreshViewer();
+				UpdateFields();
+			}));
+		}
+
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
+					RefreshContent();
+					break;
+
 				case ConsoleNotificationType.ViewerRefresh:
-					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId) {
-						if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
-							_lastUpdate = DateTime.Now;
-							ctrlPaletteViewer.RefreshData();
-							this.BeginInvoke((Action)(() => {
-								ctrlPaletteViewer.RefreshViewer();
-								UpdateFields();
-							}));
-						}
+					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId && (DateTime.Now - _lastUpdate).Milliseconds > 10) {
+						RefreshContent();
 					}
 					break;
 
