@@ -19,7 +19,7 @@ public:
 
 		if(!_isEmulationThread) {
 			//Only attempt to break if this is done in a thread other than the main emulation thread
-			debugger->BreakRequest(true);
+			debugger->BreakRequest(false);
 			if(!debugger->IsExecutionStopped()) {
 				while(!debugger->IsExecutionStopped()) {}
 				_needResume = true;
@@ -30,7 +30,7 @@ public:
 	~DebugBreakHelper()
 	{
 		if(!_isEmulationThread) {
-			_debugger->BreakRequest(false);
+			_debugger->BreakRequest(true);
 		}
 	}
 };
