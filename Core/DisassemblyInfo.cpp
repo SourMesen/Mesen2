@@ -32,6 +32,11 @@ bool DisassemblyInfo::IsInitialized()
 	return _initialized;
 }
 
+bool DisassemblyInfo::IsValid(uint8_t cpuFlags)
+{
+	return _flags == (cpuFlags & (ProcFlags::MemoryMode8 | ProcFlags::IndexMode8));
+}
+
 void DisassemblyInfo::Reset()
 {
 	_initialized = false;
@@ -123,6 +128,32 @@ bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
 	}
 	
 	return false;
+}
+
+bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
+{
+	uint8_t opCode = GetOpCode();
+	switch(_cpuType) {
+		case CpuType::Cpu:
+			if(opCode == 0x00 || opCode == 0x20 || opCode == 0x40 || opCode == 0x60 || opCode == 0x80 || opCode == 0x22 || opCode == 0xFC || opCode == 0x6B || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C || opCode == 0x6C || opCode == 0x02) {
+				//Jumps, RTI, RTS, BRK, COP, etc., stop disassembling
+				return false;
+			} else if(opCode == 0xC2) {
+				//REP, update the flags and keep disassembling
+				uint8_t flags = GetByteCode()[1];
+				cpuFlags &= ~flags;
+			} else if(opCode == 0xE2) {
+				//SEP, update the flags and keep disassembling
+				uint8_t flags = GetByteCode()[1];
+				cpuFlags |= flags;
+			} else if(opCode == 0x28) {
+				//PLP, stop disassembling
+				return false;
+			}
+			return true;
+			
+		case CpuType::Spc: return false;
+	}
 }
 
 uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize)

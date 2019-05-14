@@ -74,17 +74,10 @@ void CodeDataLogger::SetFlags(int32_t absoluteAddr, uint8_t flags)
 	if(absoluteAddr >= 0 && absoluteAddr < (int32_t)_prgSize) {
 		if((_cdlData[absoluteAddr] & flags) != flags) {
 			if(flags & CdlFlags::Code) {
-				if(IsData(absoluteAddr)) {
-					//Remove the data flag from bytes that we are flagging as code
-					_cdlData[absoluteAddr] &= ~CdlFlags::Data;
-					_dataSize--;
-				}
-				_cdlData[absoluteAddr] |= flags;
-				_codeSize++;
+				_cdlData[absoluteAddr] = flags | (_cdlData[absoluteAddr] & ~(CdlFlags::Data | CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
 			} else if(flags & CdlFlags::Data) {
 				if(!IsCode(absoluteAddr)) {
 					_cdlData[absoluteAddr] |= flags;
-					_dataSize++;
 				}
 			} else {
 				_cdlData[absoluteAddr] |= flags;
@@ -95,6 +88,8 @@ void CodeDataLogger::SetFlags(int32_t absoluteAddr, uint8_t flags)
 
 CdlRatios CodeDataLogger::GetRatios()
 {
+	CalculateStats();
+
 	CdlRatios ratios;
 	ratios.CodeRatio = (float)_codeSize / (float)_prgSize;
 	ratios.DataRatio = (float)_dataSize / (float)_prgSize;

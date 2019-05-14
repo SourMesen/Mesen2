@@ -88,17 +88,24 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 	vector<DisassemblyInfo> *cache;
 	GetSource(addrInfo, &source, sourceLength, &cache);
 
-	if(addrInfo.Address >= 0) {
-		DisassemblyInfo disInfo = (*cache)[addrInfo.Address];
-		if(!disInfo.IsInitialized()) {
-			DisassemblyInfo disassemblyInfo(source+addrInfo.Address, cpuFlags, type);
-			(*cache)[addrInfo.Address] = disassemblyInfo;
+	int returnSize = 0;
+	int32_t address = addrInfo.Address;
+	while(address >= 0 && address < cache->size()) {
+		DisassemblyInfo &disInfo = (*cache)[address];
+		if(!disInfo.IsInitialized() || !disInfo.IsValid(cpuFlags)) {
+			disInfo.Initialize(source+address, cpuFlags, type);
 			_needDisassemble[(int)type] = true;
-			disInfo = disassemblyInfo;
 		}
-		return disInfo.GetOpSize();
+
+		returnSize += disInfo.GetOpSize();
+
+		if(disInfo.UpdateCpuFlags(cpuFlags)) {
+			address += disInfo.GetOpSize();
+		} else {
+			break;
+		}
 	}
-	return 0;
+	return returnSize;
 }
 
 void Disassembler::ResetPrgCache()

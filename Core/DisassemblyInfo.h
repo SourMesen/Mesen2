@@ -25,6 +25,7 @@ public:
 
 	void Initialize(uint8_t *opPointer, uint8_t cpuFlags, CpuType type);
 	bool IsInitialized();
+	bool IsValid(uint8_t cpuFlags);
 	void Reset();
 
 	void GetDisassembly(string &out, uint32_t memoryAddr, LabelManager *labelManager);
@@ -41,6 +42,8 @@ public:
 	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type);
 	static bool IsJumpToSub(uint8_t opCode, CpuType type);
 	static bool IsReturnInstruction(uint8_t opCode, CpuType type);
+
+	bool UpdateCpuFlags(uint8_t & cpuFlags);
 
 	int32_t GetEffectiveAddress(Console *console, void *cpuState);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);
