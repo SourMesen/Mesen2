@@ -112,13 +112,26 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 
 	int rowCount = tileCount / options.Width;
 
-	if(options.Format == TileFormat::Mode7 || options.Format == TileFormat::Mode7DirectColor) {
-		for(int row = 0; row < rowCount; row++) {
-			uint32_t baseOffset = row * bytesPerTile * options.Width;
+	for(int row = 0; row < rowCount; row++) {
+		uint32_t baseOffset = row * bytesPerTile * options.Width;
 
-			for(int column = 0; column < options.Width; column++) {
-				uint32_t addr = baseOffset + bytesPerTile * column;
+		for(int column = 0; column < options.Width; column++) {
+			uint32_t addr = baseOffset + bytesPerTile * column;
 
+			int baseOutputOffset;				
+			if(options.Layout == TileLayout::SingleLine8x16) {
+				int displayColumn = column / 2 + ((row & 0x01) ? options.Width/2 : 0);
+				int displayRow = (row & ~0x01) + ((column & 0x01) ? 1 : 0);
+				baseOutputOffset = displayRow * options.Width * 64 + displayColumn * 8;
+			} else if(options.Layout == TileLayout::SingleLine16x16) {
+				int displayColumn = (column / 2) + (column & 0x01) + ((row & 0x01) ? options.Width/2 : 0) + ((column & 0x02) ? -1 : 0);
+				int displayRow = (row & ~0x01) + ((column & 0x02) ? 1 : 0);
+				baseOutputOffset = displayRow * options.Width * 64 + displayColumn * 8;
+			} else {
+				baseOutputOffset = row * options.Width * 64 + column * 8;
+			}
+
+			if(options.Format == TileFormat::Mode7 || options.Format == TileFormat::Mode7DirectColor) {
 				for(int y = 0; y < 8; y++) {
 					uint32_t pixelStart = addr + y * 16;
 
@@ -132,25 +145,17 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 							} else {
 								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
 							}
-							outBuffer[((row * 8) + y) * (options.Width * 8) + column * 8 + x] = rgbColor;
+							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = rgbColor;
 						}
 					}
 				}
-			}
-		}
-	} else {
-		for(int row = 0; row < rowCount; row++) {
-			uint32_t baseOffset = row * bytesPerTile * options.Width;
-
-			for(int column = 0; column < options.Width; column++) {
-				uint32_t addr = baseOffset + bytesPerTile * column;
-
+			} else {
 				for(int y = 0; y < 8; y++) {
 					uint32_t pixelStart = addr + y * 2;
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, 7 - x);
 						if(color != 0) {
-							outBuffer[((row * 8) + y) * (options.Width * 8) + column * 8 + x] = GetRgbPixelColor(cgram, color, options.Palette, bpp, directColor, 0);
+							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = GetRgbPixelColor(cgram, color, options.Palette, bpp, directColor, 0);
 						}
 					}
 				}

@@ -51,6 +51,7 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.Image = _tileImage;
 
 			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
+			BaseConfigForm.InitializeComboBox(cboLayout, typeof(TileLayout));
 			InitMemoryTypeDropdown();
 
 			InitShortcuts();
@@ -64,6 +65,7 @@ namespace Mesen.GUI.Debugger
 
 			cboMemoryType.SetEnumValue(config.Source);
 			cboFormat.SetEnumValue(config.Format);
+			cboLayout.SetEnumValue(config.Layout);
 			nudColumns.Value = config.ColumnCount;
 			nudBank.Value = config.Bank;
 			nudOffset.Value = config.Offset;
@@ -76,6 +78,7 @@ namespace Mesen.GUI.Debugger
 			UpdateMemoryType(config.Source);
 			_addressOffset = config.Bank * 0x10000 + config.Offset;
 			_options.Format = config.Format;
+			_options.Layout = config.Layout;
 			_options.Palette = config.SelectedPalette;
 			_options.Width = config.ColumnCount;
 			_options.ShowTileGrid = config.ShowTileGrid;
@@ -87,11 +90,12 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.SelectedIndexChanged += cboMemoryType_SelectedIndexChanged;
 			nudBank.ValueChanged += nudBank_ValueChanged;
 			chkShowTileGrid.Click += chkShowTileGrid_Click;
-			cboFormat.SelectedIndexChanged += cboBpp_SelectedIndexChanged;
+			cboFormat.SelectedIndexChanged += cboFormat_SelectedIndexChanged;
+			cboLayout.SelectedIndexChanged += cboLayout_SelectedIndexChanged;
 			nudColumns.ValueChanged += nudColumns_ValueChanged;
-			nudOffset.ValueChanged += this.nudOffset_ValueChanged;
-			ctrlPaletteViewer.SelectionChanged += this.ctrlPaletteViewer_SelectionChanged;
-			mnuAutoRefresh.CheckedChanged += this.mnuAutoRefresh_CheckedChanged;
+			nudOffset.ValueChanged += nudOffset_ValueChanged;
+			ctrlPaletteViewer.SelectionChanged += ctrlPaletteViewer_SelectionChanged;
+			mnuAutoRefresh.CheckedChanged += mnuAutoRefresh_CheckedChanged;
 
 			UpdatePaletteControl();
 
@@ -126,6 +130,7 @@ namespace Mesen.GUI.Debugger
 
 			config.Source = cboMemoryType.GetEnumValue<SnesMemoryType>();
 			config.Format = cboFormat.GetEnumValue<TileFormat>();
+			config.Layout = cboLayout.GetEnumValue<TileLayout>();
 			config.ColumnCount = (int)nudColumns.Value;
 			config.Bank = (int)nudBank.Value;
 			config.Offset = (int)nudOffset.Value;
@@ -221,6 +226,8 @@ namespace Mesen.GUI.Debugger
 			int selectedColumn = _selectedTile % _options.Width;
 			int selectedRow = _selectedTile / _options.Width;
 			ctrlImagePanel.Selection = new Rectangle(selectedColumn * 8, selectedRow * 8, 8, 8);
+
+			//TODO: Properly update tile address based on the selected tile layout
 			txtTileAddress.Text = (_selectedTile * GetBytesPerTile() + _addressOffset).ToString("X4");
 
 			btnPresetBg1.Enabled = _layerBpp[_state.Ppu.BgMode, 0] > 0;
@@ -301,16 +308,37 @@ namespace Mesen.GUI.Debugger
 			RefreshViewer();
 		}
 
-		private void cboBpp_SelectedIndexChanged(object sender, EventArgs e)
+		private void cboFormat_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			_options.Format = cboFormat.GetEnumValue<TileFormat>();
 			UpdatePaletteControl();
 			RefreshViewer();
 		}
 
+		private void cboLayout_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			_options.Layout = cboLayout.GetEnumValue<TileLayout>();
+
+			if(_options.Layout == TileLayout.SingleLine8x16 && _options.Width % 2 != 0) {
+				nudColumns.Value++;
+			} else if(_options.Layout == TileLayout.SingleLine16x16 && _options.Width % 4 != 0) {
+				nudColumns.Value += 4 - (_options.Width % 4);
+			}
+
+			RefreshViewer();
+		}
+
 		private void nudColumns_ValueChanged(object sender, EventArgs e)
 		{
+			bool smaller = _options.Width > nudColumns.Value;
 			_options.Width = (int)nudColumns.Value;
+
+			if(_options.Layout == TileLayout.SingleLine8x16 && _options.Width % 2 != 0) {
+				nudColumns.Value += smaller ? -1 : 1;
+			} else if(_options.Layout == TileLayout.SingleLine16x16 && _options.Width % 4 != 0) {
+				nudColumns.Value += smaller ? -(_options.Width % 4) : (4 - _options.Width % 4);
+			}
+
 			RefreshViewer();
 		}
 

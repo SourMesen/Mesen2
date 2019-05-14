@@ -496,6 +496,7 @@ namespace Mesen.GUI
 	public struct GetTileViewOptions
 	{
 		public TileFormat Format;
+		public TileLayout Layout;
 		public Int32 Width;
 		public Int32 Palette;
 
@@ -516,6 +517,13 @@ namespace Mesen.GUI
 		Mode7,
 		Mode7DirectColor,
 	}
+
+	public enum TileLayout
+	{
+		Normal,
+		SingleLine8x16,
+		SingleLine16x16
+	};
 
 	[Serializable]
 	public struct InteropTraceLoggerOptions

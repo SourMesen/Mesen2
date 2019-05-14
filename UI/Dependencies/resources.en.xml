@@ -1093,6 +1093,11 @@
 			<Value ID="Mode7">Mode 7</Value>
 			<Value ID="Mode7DirectColor">Mode 7 + Direct Color</Value>
 		</Enum>
+		<Enum ID="TileLayout">
+			<Value ID="Normal">Normal</Value>
+			<Value ID="SingleLine8x16">8x16 (same line)</Value>
+			<Value ID="SingleLine16x16">16x16 (same line)</Value>
+		</Enum>
 		<Enum ID="StatusFlagFormat">
 			<Value ID="Hexadecimal">Hexadecimal</Value>
 			<Value ID="Text">Text</Value>

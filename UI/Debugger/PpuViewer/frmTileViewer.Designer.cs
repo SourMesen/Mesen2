@@ -64,6 +64,8 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
+			this.lblTileLayout = new System.Windows.Forms.Label();
+			this.cboLayout = new System.Windows.Forms.ComboBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).BeginInit();
@@ -102,26 +104,29 @@
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.Controls.Add(this.cboMemoryType, 1, 0);
-			this.tableLayoutPanel2.Controls.Add(this.nudBank, 1, 3);
-			this.tableLayoutPanel2.Controls.Add(this.lblBank, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.nudBank, 1, 4);
+			this.tableLayoutPanel2.Controls.Add(this.lblBank, 0, 4);
 			this.tableLayoutPanel2.Controls.Add(this.lblSource, 0, 0);
-			this.tableLayoutPanel2.Controls.Add(this.lblColumns, 0, 2);
-			this.tableLayoutPanel2.Controls.Add(this.chkShowTileGrid, 0, 5);
+			this.tableLayoutPanel2.Controls.Add(this.lblColumns, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.chkShowTileGrid, 0, 6);
 			this.tableLayoutPanel2.Controls.Add(this.lblBpp, 0, 1);
 			this.tableLayoutPanel2.Controls.Add(this.cboFormat, 1, 1);
-			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 2);
-			this.tableLayoutPanel2.Controls.Add(this.lblOffset, 0, 4);
-			this.tableLayoutPanel2.Controls.Add(this.nudOffset, 1, 4);
-			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 8);
-			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 6);
-			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 6);
-			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 7);
-			this.tableLayoutPanel2.Controls.Add(this.lblTileAddress, 0, 9);
-			this.tableLayoutPanel2.Controls.Add(this.txtTileAddress, 1, 9);
+			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 3);
+			this.tableLayoutPanel2.Controls.Add(this.lblOffset, 0, 5);
+			this.tableLayoutPanel2.Controls.Add(this.nudOffset, 1, 5);
+			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 9);
+			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 7);
+			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 7);
+			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 8);
+			this.tableLayoutPanel2.Controls.Add(this.lblTileAddress, 0, 10);
+			this.tableLayoutPanel2.Controls.Add(this.txtTileAddress, 1, 10);
+			this.tableLayoutPanel2.Controls.Add(this.lblTileLayout, 0, 2);
+			this.tableLayoutPanel2.Controls.Add(this.cboLayout, 1, 2);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(540, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 11;
+			this.tableLayoutPanel2.RowCount = 12;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -155,7 +160,7 @@
             0,
             0,
             0});
-			this.nudBank.Location = new System.Drawing.Point(77, 84);
+			this.nudBank.Location = new System.Drawing.Point(77, 111);
 			this.nudBank.Maximum = new decimal(new int[] {
             63,
             0,
@@ -181,7 +186,7 @@
 			// 
 			this.lblBank.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblBank.AutoSize = true;
-			this.lblBank.Location = new System.Drawing.Point(3, 88);
+			this.lblBank.Location = new System.Drawing.Point(3, 115);
 			this.lblBank.Name = "lblBank";
 			this.lblBank.Size = new System.Drawing.Size(35, 13);
 			this.lblBank.TabIndex = 9;
@@ -201,7 +206,7 @@
 			// 
 			this.lblColumns.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblColumns.AutoSize = true;
-			this.lblColumns.Location = new System.Drawing.Point(3, 61);
+			this.lblColumns.Location = new System.Drawing.Point(3, 88);
 			this.lblColumns.Name = "lblColumns";
 			this.lblColumns.Size = new System.Drawing.Size(50, 13);
 			this.lblColumns.TabIndex = 3;
@@ -211,7 +216,7 @@
 			// 
 			this.chkShowTileGrid.AutoSize = true;
 			this.tableLayoutPanel2.SetColumnSpan(this.chkShowTileGrid, 2);
-			this.chkShowTileGrid.Location = new System.Drawing.Point(3, 138);
+			this.chkShowTileGrid.Location = new System.Drawing.Point(3, 165);
 			this.chkShowTileGrid.Name = "chkShowTileGrid";
 			this.chkShowTileGrid.Size = new System.Drawing.Size(89, 17);
 			this.chkShowTileGrid.TabIndex = 0;
@@ -253,7 +258,7 @@
             0,
             0,
             0});
-			this.nudColumns.Location = new System.Drawing.Point(77, 57);
+			this.nudColumns.Location = new System.Drawing.Point(77, 84);
 			this.nudColumns.Maximum = new decimal(new int[] {
             64,
             0,
@@ -279,7 +284,7 @@
 			// 
 			this.lblOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblOffset.AutoSize = true;
-			this.lblOffset.Location = new System.Drawing.Point(3, 115);
+			this.lblOffset.Location = new System.Drawing.Point(3, 142);
 			this.lblOffset.Name = "lblOffset";
 			this.lblOffset.Size = new System.Drawing.Size(38, 13);
 			this.lblOffset.TabIndex = 5;
@@ -293,7 +298,7 @@
             0,
             0,
             0});
-			this.nudOffset.Location = new System.Drawing.Point(77, 111);
+			this.nudOffset.Location = new System.Drawing.Point(77, 138);
 			this.nudOffset.Maximum = new decimal(new int[] {
             63,
             0,
@@ -318,7 +323,7 @@
 			// ctrlPaletteViewer
 			// 
 			this.tableLayoutPanel2.SetColumnSpan(this.ctrlPaletteViewer, 2);
-			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 217);
+			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 244);
 			this.ctrlPaletteViewer.Name = "ctrlPaletteViewer";
 			this.ctrlPaletteViewer.PaletteScale = 11;
 			this.ctrlPaletteViewer.SelectedPalette = 0;
@@ -331,7 +336,7 @@
 			// 
 			this.lblPresets.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblPresets.AutoSize = true;
-			this.lblPresets.Location = new System.Drawing.Point(3, 165);
+			this.lblPresets.Location = new System.Drawing.Point(3, 192);
 			this.lblPresets.Name = "lblPresets";
 			this.lblPresets.Size = new System.Drawing.Size(45, 13);
 			this.lblPresets.TabIndex = 13;
@@ -349,7 +354,7 @@
 			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg3, 2, 0);
 			this.tableLayoutPanel3.Controls.Add(this.btnPresetBg4, 3, 0);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel3.Location = new System.Drawing.Point(74, 158);
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(74, 185);
 			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 1;
@@ -401,7 +406,7 @@
 			this.tableLayoutPanel4.Controls.Add(this.btnPresetOam1, 0, 0);
 			this.tableLayoutPanel4.Controls.Add(this.btnPresetOam2, 1, 0);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel4.Location = new System.Drawing.Point(74, 186);
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(74, 213);
 			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
 			this.tableLayoutPanel4.RowCount = 1;
@@ -431,7 +436,7 @@
 			// 
 			this.lblTileAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblTileAddress.AutoSize = true;
-			this.lblTileAddress.Location = new System.Drawing.Point(3, 402);
+			this.lblTileAddress.Location = new System.Drawing.Point(3, 429);
 			this.lblTileAddress.Name = "lblTileAddress";
 			this.lblTileAddress.Size = new System.Drawing.Size(68, 13);
 			this.lblTileAddress.TabIndex = 16;
@@ -439,7 +444,7 @@
 			// 
 			// txtTileAddress
 			// 
-			this.txtTileAddress.Location = new System.Drawing.Point(77, 399);
+			this.txtTileAddress.Location = new System.Drawing.Point(77, 426);
 			this.txtTileAddress.Name = "txtTileAddress";
 			this.txtTileAddress.ReadOnly = true;
 			this.txtTileAddress.Size = new System.Drawing.Size(60, 20);
@@ -540,6 +545,33 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
+			// lblTileLayout
+			// 
+			this.lblTileLayout.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblTileLayout.AutoSize = true;
+			this.lblTileLayout.Location = new System.Drawing.Point(3, 61);
+			this.lblTileLayout.Name = "lblTileLayout";
+			this.lblTileLayout.Size = new System.Drawing.Size(62, 13);
+			this.lblTileLayout.TabIndex = 18;
+			this.lblTileLayout.Text = "Tile Layout:";
+			// 
+			// cboLayout
+			// 
+			this.cboLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.cboLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboLayout.FormattingEnabled = true;
+			this.cboLayout.Items.AddRange(new object[] {
+            "2 BPP",
+            "4 BPP",
+            "8 BPP",
+            "8 BPP - Direct Color Mode",
+            "Mode 7",
+            "Mode 7 - Direct Color Mode"});
+			this.cboLayout.Location = new System.Drawing.Point(77, 57);
+			this.cboLayout.Name = "cboLayout";
+			this.cboLayout.Size = new System.Drawing.Size(114, 21);
+			this.cboLayout.TabIndex = 19;
+			// 
 			// frmTileViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -604,5 +636,7 @@
 		private System.Windows.Forms.Button btnPresetOam2;
 		private System.Windows.Forms.Label lblTileAddress;
 		private System.Windows.Forms.TextBox txtTileAddress;
+		private System.Windows.Forms.Label lblTileLayout;
+		private System.Windows.Forms.ComboBox cboLayout;
 	}
 }

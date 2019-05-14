@@ -128,7 +128,9 @@ namespace Mesen.GUI.Controls
 				ValueChanged?.Invoke(this, EventArgs.Empty);
 			}
 			if(updateText) {
-				txtValue.Text = value.ToString("0" + (this.DecimalPlaces > 0 ? "." : "") + new string('0', this.DecimalPlaces));
+				txtValue.TextChanged -= txtValue_TextChanged;
+				txtValue.Text = _value.ToString("0" + (this.DecimalPlaces > 0 ? "." : "") + new string('0', this.DecimalPlaces));
+				txtValue.TextChanged += txtValue_TextChanged;
 			}
 		}
 

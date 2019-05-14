@@ -164,7 +164,7 @@ struct GetTilemapOptions
 	bool ShowScrollOverlay;
 };
 
-enum TileFormat
+enum class TileFormat
 {
 	Bpp2,
 	Bpp4,
@@ -174,9 +174,17 @@ enum TileFormat
 	Mode7DirectColor,
 };
 
+enum class TileLayout
+{
+	Normal,
+	SingleLine8x16,
+	SingleLine16x16
+};
+
 struct GetTileViewOptions
 {
 	TileFormat Format;
+	TileLayout Layout;
 	int32_t Width;
 	int32_t Palette;
 	bool ShowTileGrid;
