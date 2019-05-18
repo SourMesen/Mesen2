@@ -16,6 +16,10 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private int _scale = 1;
 		private Size _imageSize;
 
+		private bool _mouseDown = false;
+		private bool _dragging = false;
+		private Point _lastLocation = Point.Empty;
+
 		public Rectangle Selection { get { return ctrlImageViewer.Selection; } set { ctrlImageViewer.Selection = value; } }
 		public int SelectionWrapPosition { get { return ctrlImageViewer.SelectionWrapPosition; } set { ctrlImageViewer.SelectionWrapPosition = value; } }
 
@@ -26,7 +30,7 @@ namespace Mesen.GUI.Debugger.PpuViewer
 
 		public new event EventHandler MouseLeave { add { ctrlImageViewer.MouseLeave += value; } remove { ctrlImageViewer.MouseLeave -= value; } }
 		public new event MouseEventHandler MouseMove { add { ctrlImageViewer.MouseMove += value; } remove { ctrlImageViewer.MouseMove -= value; } }
-		public new event MouseEventHandler MouseClick { add { ctrlImageViewer.MouseClick += value; } remove { ctrlImageViewer.MouseClick -= value; } }
+		public new event MouseEventHandler MouseClick;
 
 		public ctrlImagePanel()
 		{
@@ -52,6 +56,42 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				ctrlPanel.VerticalScroll.Value = verticalScroll;
 				ctrlPanel.VerticalScroll.Value = verticalScroll;
 			};
+
+			ctrlImageViewer.MouseDown += (s, e) => {
+				if(e.Button == MouseButtons.Left) {
+					_mouseDown = true;
+					_lastLocation = e.Location;
+				}
+			};
+
+			ctrlImageViewer.MouseUp += (s, e) => {
+				_mouseDown = false;
+				_dragging = false;
+			};
+
+			ctrlImageViewer.MouseClick += (s, e) => {
+				if(!_dragging) {
+					this.MouseClick?.Invoke(s, e);
+				}
+			};
+
+			ctrlImageViewer.MouseMove += ctrlImageViewer_MouseMove;
+		}
+
+		private void ctrlImageViewer_MouseMove(object sender, MouseEventArgs e)
+		{
+			if(_mouseDown) {
+				_dragging = true;
+				ctrlImageViewer.MouseMove -= ctrlImageViewer_MouseMove;
+				int hScroll = Math.Min(ctrlPanel.HorizontalScroll.Maximum, Math.Max(0, ctrlPanel.HorizontalScroll.Value - (e.Location.X - _lastLocation.X)));
+				int vScroll = Math.Min(ctrlPanel.VerticalScroll.Maximum, Math.Max(0, ctrlPanel.VerticalScroll.Value - (e.Location.Y - _lastLocation.Y)));
+
+				ctrlPanel.HorizontalScroll.Value = hScroll;
+				ctrlPanel.HorizontalScroll.Value = hScroll;
+				ctrlPanel.VerticalScroll.Value = vScroll;
+				ctrlPanel.VerticalScroll.Value = vScroll;
+				ctrlImageViewer.MouseMove += ctrlImageViewer_MouseMove;
+			}
 		}
 
 		private void UpdateMapSize()
