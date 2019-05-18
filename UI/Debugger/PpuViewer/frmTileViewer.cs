@@ -81,7 +81,8 @@ namespace Mesen.GUI.Debugger
 			_options.Layout = config.Layout;
 			_options.Palette = config.SelectedPalette;
 			_options.Width = config.ColumnCount;
-			_options.ShowTileGrid = config.ShowTileGrid;
+			ctrlImagePanel.GridSizeX = config.ShowTileGrid ? 8 : 0;
+			ctrlImagePanel.GridSizeY = config.ShowTileGrid ? 8 : 0;
 			_autoRefresh = config.AutoRefresh;
 
 			RefreshData();
@@ -296,7 +297,8 @@ namespace Mesen.GUI.Debugger
 
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
 		{
-			_options.ShowTileGrid = chkShowTileGrid.Checked;
+			ctrlImagePanel.GridSizeX = chkShowTileGrid.Checked ? 8 : 0;
+			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? 8 : 0;
 			RefreshViewer();
 		}
 

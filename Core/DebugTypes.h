@@ -160,7 +160,6 @@ struct GetTilemapOptions
 	int32_t TilemapAddr;
 	int32_t ChrAddr;
 
-	bool ShowTileGrid;
 	bool ShowScrollOverlay;
 };
 
@@ -187,7 +186,6 @@ struct GetTileViewOptions
 	TileLayout Layout;
 	int32_t Width;
 	int32_t Palette;
-	bool ShowTileGrid;
 };
 
 struct GetSpritePreviewOptions

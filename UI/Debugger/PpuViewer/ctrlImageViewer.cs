@@ -13,6 +13,8 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private Image _image = null;
 		private Rectangle _selection = Rectangle.Empty;
 		private int _selectionWrapPosition = 0;
+		private int _gridSizeX = 0;
+		private int _gridSizeY = 0;
 
 		public ctrlImageViewer()
 		{
@@ -30,6 +32,18 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		{
 			get { return _selection; }
 			set { _selection = value; this.Invalidate(); }
+		}
+
+		public int GridSizeX
+		{
+			get { return _gridSizeX; }
+			set { _gridSizeX = value; this.Invalidate(); }
+		}
+
+		public int GridSizeY
+		{
+			get { return _gridSizeY; }
+			set { _gridSizeY = value; this.Invalidate(); }
 		}
 
 		public int SelectionWrapPosition
@@ -53,6 +67,19 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				e.Graphics.DrawImage(this.Image, 0, 0);
 			}
 			e.Graphics.ResetTransform();
+
+			using(Pen gridPen = new Pen(Color.FromArgb(180, Color.LightBlue))) {
+				if(_gridSizeX > 1) {
+					for(int i = this.ImageScale * _gridSizeX; i < this.Width; i += this.ImageScale * _gridSizeX) {
+						e.Graphics.DrawLine(gridPen, i, 0, i, this.Height);
+					}
+				}
+				if(_gridSizeY > 1) {
+					for(int i = this.ImageScale * _gridSizeY; i < this.Height; i += this.ImageScale * _gridSizeY) {
+						e.Graphics.DrawLine(gridPen, 0, i, this.Width, i);
+					}
+				}
+			}
 
 			if(_selection != Rectangle.Empty) {
 				int scale = this.ImageScale;

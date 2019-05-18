@@ -67,7 +67,6 @@ namespace Mesen.GUI.Debugger
 			_autoRefresh = config.AutoRefresh;
 
 			_options.BgMode = 0;
-			_options.ShowTileGrid = config.ShowTileGrid;
 			_options.ShowScrollOverlay = config.ShowScrollOverlay;
 
 			RefreshData();
@@ -216,6 +215,9 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.ImageSize = new Size(GetWidth(), GetHeight());
 			ctrlImagePanel.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
 
+			ctrlImagePanel.GridSizeX = chkShowTileGrid.Checked ? (IsLargeTileWidth ? 16 : 8): 0;
+			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? (IsLargeTileHeight ? 16 : 8): 0;
+
 			UpdateFields();
 		}
 
@@ -298,7 +300,6 @@ namespace Mesen.GUI.Debugger
 		
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
 		{
-			_options.ShowTileGrid = chkShowTileGrid.Checked;
 			RefreshViewer();
 		}
 

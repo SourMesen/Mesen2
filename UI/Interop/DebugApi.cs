@@ -488,8 +488,6 @@ namespace Mesen.GUI
 		public byte Bpp;
 		public Int32 TilemapAddr;
 		public Int32 ChrAddr;
-
-		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowScrollOverlay;
 	}
 
@@ -499,8 +497,6 @@ namespace Mesen.GUI
 		public TileLayout Layout;
 		public Int32 Width;
 		public Int32 Palette;
-
-		[MarshalAs(UnmanagedType.I1)] public bool ShowTileGrid;
 	}
 
 	public struct GetSpritePreviewOptions

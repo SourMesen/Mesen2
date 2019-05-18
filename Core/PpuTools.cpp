@@ -162,17 +162,6 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 			}
 		}
 	}
-
-	if(options.ShowTileGrid) {
-		constexpr uint32_t gridColor = 0xA0AAAAFF;
-		for(int j = 0; j < rowCount * 8; j++) {
-			for(int i = 0; i < options.Width * 8; i++) {
-				if((i & 0x07) == 0x07 || (j & 0x07) == 0x07) {
-					BlendColors((uint8_t*)&outBuffer[j*options.Width*8+i], (uint8_t*)&gridColor);
-				}
-			}
-		}
-	}
 }
 
 void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgram, uint32_t* outBuffer)
@@ -263,15 +252,6 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgr
 						}
 					}
 				}
-			}
-		}
-	}
-
-	if(options.ShowTileGrid) {
-		constexpr uint32_t gridColor = 0xA0AAAAFF;
-		for(int i = 0; i < 1024 * 1024; i++) {
-			if((i & 0x07) == 0x07 || (i & 0x1C00) == 0x1C00) {
-				BlendColors((uint8_t*)&outBuffer[i], (uint8_t*)&gridColor);
 			}
 		}
 	}

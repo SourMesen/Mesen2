@@ -26,6 +26,8 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		public Size ImageSize { get { return _imageSize; } set { _imageSize = value; UpdateMapSize(); } }
 		public Image Image { get { return ctrlImageViewer.Image; } set { ctrlImageViewer.Image = value; } }
 		public int ImageScale { get { return _scale; } set { _scale = value; UpdateMapSize(); } }
+		public int GridSizeX { get { return ctrlImageViewer.GridSizeX; } set { ctrlImageViewer.GridSizeX = value; } }
+		public int GridSizeY { get { return ctrlImageViewer.GridSizeY; } set { ctrlImageViewer.GridSizeY = value; } }
 		public Point ScrollOffsets { get { return new Point(ctrlPanel.HorizontalScroll.Value, ctrlPanel.VerticalScroll.Value); } }
 
 		public new event EventHandler MouseLeave { add { ctrlImageViewer.MouseLeave += value; } remove { ctrlImageViewer.MouseLeave -= value; } }
