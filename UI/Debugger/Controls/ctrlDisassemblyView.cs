@@ -127,6 +127,11 @@ namespace Mesen.GUI.Debugger.Controls
 		private void InitShortcuts()
 		{
 			mnuToggleBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_ToggleBreakpoint));
+
+			mnuEditLabel.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditLabel));
+			mnuEditInMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer));
+			mnuAddToWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.LabelList_AddToWatch));
+
 			mnuSwitchView.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_SwitchView));
 
 			mnuSwitchView.Click += (s, e) => { ToggleView(); };
@@ -151,6 +156,24 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 
 			ctrlCode.Invalidate();
+		}
+
+		public void ScrollToSymbol(SymbolInfo symbol)
+		{
+			if(!_inSourceView) {
+				ToggleView();
+			}
+
+			ReferenceInfo definition = _symbolProvider?.GetSymbolDefinition(symbol);
+			if(definition != null) {
+				foreach(DbgImporter.FileInfo fileInfo in cboSourceFile.Items) {
+					if(fileInfo.Name == definition.FileName) {
+						cboSourceFile.SelectedItem = fileInfo;
+						ctrlCode.ScrollToLineIndex(definition.LineNumber);
+						return;
+					}
+				}
+			}
 		}
 
 		public void ScrollToAddress(uint address)
@@ -198,11 +221,6 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public ctrlScrollableTextbox CodeViewer { get { return ctrlCode; } }
 
-		public void GoToAddress(int address)
-		{
-			ScrollToAddress((uint)address);
-		}
-
 		public void GoToActiveAddress()
 		{
 			if(_styleProvider.ActiveAddress.HasValue) {
@@ -212,47 +230,195 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void ToggleBreakpoint()
 		{
-			_manager.ToggleBreakpoint(ctrlCode.SelectedLine);
+			ToggleBreakpoint(_manager.Provider.GetLineAddress(ctrlCode.SelectedLine));
 		}
 
 		public void EnableDisableBreakpoint()
 		{
-			_manager.EnableDisableBreakpoint(ctrlCode.SelectedLine);
+			EnableDisableBreakpoint(_manager.Provider.GetLineAddress(ctrlCode.SelectedLine));
+		}
+		
+		private void ToggleBreakpoint(int address)
+		{
+			if(address >= 0) {
+				AddressInfo relAddress = new AddressInfo() {
+					Address = address,
+					Type = _manager.RelativeMemoryType
+				};
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+				if(absAddress.Address < 0) {
+					BreakpointManager.ToggleBreakpoint(relAddress);
+				} else {
+					BreakpointManager.ToggleBreakpoint(absAddress);
+				}
+			}
+		}
+
+		private void EnableDisableBreakpoint(int address)
+		{
+			if(address >= 0) {
+				AddressInfo relAddress = new AddressInfo() {
+					Address = address,
+					Type = _manager.RelativeMemoryType
+				};
+
+				if(!BreakpointManager.EnableDisableBreakpoint(relAddress)) {
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					BreakpointManager.EnableDisableBreakpoint(absAddress);
+				}
+			}
+		}
+
+		private void EditLabel(LocationInfo location)
+		{
+			if(location.Symbol != null) {
+				//Don't allow edit label on symbols
+				return;
+			}
+
+			if(location.Label != null) {
+				using(frmEditLabel frm = new frmEditLabel(location.Label)) {
+					frm.ShowDialog();
+				}
+			} else if(location.Address >= 0) {
+				AddressInfo relAddress = new AddressInfo() {
+					Address = location.Address,
+					Type = _manager.RelativeMemoryType
+				};
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+				if(absAddress.Address >= 0) {
+					CodeLabel label = LabelManager.GetLabel((uint)absAddress.Address, absAddress.Type);
+					if(label == null) {
+						label = new CodeLabel() {
+							Address = (uint)absAddress.Address,
+							MemoryType = absAddress.Type
+						};
+					}
+
+					using(frmEditLabel frm = new frmEditLabel(label)) {
+						frm.ShowDialog();
+					}
+				}
+			}
+		}
+		
+		private void EditInMemoryTools(LocationInfo location)
+		{
+			if(location.Symbol != null) {
+				AddressInfo? address = _symbolProvider.GetSymbolAddressInfo(location.Symbol);
+				if(address.HasValue) {
+					DebugWindowManager.OpenMemoryViewer(address.Value);
+				}
+			} else if(location.Address >= 0) {
+				AddressInfo relAddress = new AddressInfo() {
+					Address = location.Address,
+					Type = _manager.RelativeMemoryType
+				};
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+				if(absAddress.Address >= 0) {
+					DebugWindowManager.OpenMemoryViewer(absAddress);
+				} else {
+					DebugWindowManager.OpenMemoryViewer(relAddress);
+				}
+			} else if(location.Label != null) {
+				DebugWindowManager.OpenMemoryViewer(location.Label.GetAbsoluteAddress());
+			}
+		}
+
+		private void GoToLocation(LocationInfo location)
+		{
+			if(location.Symbol != null) {
+				ScrollToSymbol(location.Symbol);
+			} else if(location.Address >= 0) {
+				ScrollToAddress((uint)location.Address);
+			}
+		}
+
+		private LocationInfo GetActionTarget()
+		{
+			string word = _lastWord;
+			int lineIndex;
+			if(string.IsNullOrWhiteSpace(word)) {
+				word = "$" + _manager.Provider.GetLineAddress(ctrlCode.SelectedLine).ToString("X6");
+				lineIndex = ctrlCode.SelectedLine;
+			} else {
+				lineIndex = ctrlCode.GetLineIndexAtPosition(_lastLocation.Y);
+			}
+
+			return _manager.GetLocationInfo(word, lineIndex);
 		}
 
 		private void mnuToggleBreakpoint_Click(object sender, EventArgs e)
 		{
 			ToggleBreakpoint();
 		}
+		
+		private void mnuEditLabel_Click(object sender, EventArgs e)
+		{
+			EditLabel(GetActionTarget());
+		}
+
+		private void mnuEditInMemoryTools_Click(object sender, EventArgs e)
+		{
+			EditInMemoryTools(GetActionTarget());
+		}
+
+		private void mnuGoToLocation_Click(object sender, EventArgs e)
+		{
+			GoToLocation(GetActionTarget());
+		}
+
+		private void mnuAddToWatch_Click(object sender, EventArgs e)
+		{
+			LocationInfo location = GetActionTarget();
+
+			if(location.Symbol != null) {
+				WatchManager.GetWatchManager(_manager.CpuType).AddWatch("[" + location.Symbol.Name + "]");
+			} else if(location.Label != null) {
+				string label = location.Label.Label;
+				if(location.ArrayIndex.HasValue) {
+					label += "+" + location.ArrayIndex.Value.ToString();
+				}
+				WatchManager.GetWatchManager(_manager.CpuType).AddWatch("[" + label + "]");
+			} else if(location.Address >= 0) {
+				WatchManager.GetWatchManager(_manager.CpuType).AddWatch("[$" + location.Address.ToString("X" + _manager.AddressSize.ToString()) + "]");
+			}
+		}
 
 		private void ctrlCode_MouseDown(object sender, MouseEventArgs e)
 		{
-			if(e.X < 20) {
+			if(e.X < 20 && e.Button == MouseButtons.Left) {
 				int lineIndex = ctrlCode.GetLineIndexAtPosition(e.Y);
-				_manager.ToggleBreakpoint(lineIndex);
+				ToggleBreakpoint(_manager.Provider.GetLineAddress(lineIndex));
 			}
 			BaseForm.GetPopupTooltip(this.FindForm()).Hide();
 		}
 
 		private string _lastWord = null;
+		private Point _lastLocation = Point.Empty;
 		private void ctrlCode_MouseMove(object sender, MouseEventArgs e)
 		{
+			_lastLocation = e.Location;
+
 			string word = ctrlCode.GetWordUnderLocation(e.Location).Trim();
 			if(word == _lastWord) {
 				return;
 			}
 
+			Form form = this.FindForm();
 			if(word.Length > 0) {
 				Dictionary<string, string> values = _manager.GetTooltipData(word, ctrlCode.GetLineIndexAtPosition(e.Y));
 				if(values != null) {
-					Form form = this.FindForm();
 					Point tooltipLocation = ctrlCode.GetWordEndPosition(e.Location);
 					BaseForm.GetPopupTooltip(form).SetTooltip(form.PointToClient(ctrlCode.PointToScreen(tooltipLocation)), values);
 				} else {
-					BaseForm.GetPopupTooltip(this.FindForm()).Hide();
+					BaseForm.GetPopupTooltip(form).Hide();
 				}
 			} else {
-				BaseForm.GetPopupTooltip(this.FindForm()).Hide();
+				BaseForm.GetPopupTooltip(form).Hide();
 			}
 
 			_lastWord = word;
@@ -279,6 +445,54 @@ namespace Mesen.GUI.Debugger.Controls
 		public void SetMessage(TextboxMessageInfo msg)
 		{
 			ctrlCode.SetMessage(msg);
+		}
+
+		private void ctxMenu_Opening(object sender, CancelEventArgs e)
+		{
+			LocationInfo location = GetActionTarget();
+			bool active = location.Address >= 0 || location.Label != null || location.Symbol != null;
+			
+			string suffix = location.Symbol?.Name ?? location.Label?.Label;
+			if(string.IsNullOrWhiteSpace(suffix)) {
+				suffix = (location.Address >= 0 ? ("$" + location.Address.ToString("X6")) : "");
+			}
+
+			string labelName = ""; 
+			if(suffix.Length > 0) {
+				labelName = " (" + suffix + ")";
+				if(location.ArrayIndex.HasValue) {
+					suffix += "+" + location.ArrayIndex.Value.ToString();
+				}
+				suffix = " (" + suffix + ")";
+			} else if(!active || location.Symbol != null) {
+				suffix = "";
+				labelName = "";
+			}
+			
+			bool enableGoToLocation = (location.Address != _manager.Provider.GetLineAddress(ctrlCode.SelectedLine));
+
+			mnuAddToWatch.Text = "Add to Watch" + suffix;
+			mnuEditInMemoryTools.Text = "Edit in Memory Tools" + suffix;
+			mnuEditLabel.Text = "Edit Label" + labelName;
+			mnuGoToLocation.Text = "Go to Location" + (enableGoToLocation ? suffix : "");
+
+			mnuAddToWatch.Enabled = active;
+			mnuEditInMemoryTools.Enabled = active;
+			mnuEditLabel.Enabled = active && location.Symbol == null;
+			mnuGoToLocation.Enabled = active && enableGoToLocation;
+		}
+
+		private void ctxMenu_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			mnuAddToWatch.Enabled = true;
+			mnuEditInMemoryTools.Enabled = true;
+			mnuEditLabel.Enabled = true;
+			mnuGoToLocation.Enabled = true;
+		}
+
+		private void ctrlCode_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			GoToLocation(GetActionTarget());
 		}
 	}
 }

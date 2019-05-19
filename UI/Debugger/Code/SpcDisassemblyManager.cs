@@ -10,6 +10,7 @@ namespace Mesen.GUI.Debugger.Code
 {
 	public class SpcDisassemblyManager : CpuDisassemblyManager
 	{
+		public override CpuType CpuType { get { return CpuType.Spc; } }
 		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.SpcMemory; } }
 		public override int AddressSize { get { return 4; } }
 		public override int ByteCodeSize { get { return 3; } }

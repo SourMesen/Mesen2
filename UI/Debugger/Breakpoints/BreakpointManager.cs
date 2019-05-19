@@ -81,12 +81,14 @@ namespace Mesen.GUI.Debugger
 				).FirstOrDefault();
 		}
 
-		public static void EnableDisableBreakpoint(AddressInfo info)
+		public static bool EnableDisableBreakpoint(AddressInfo info)
 		{
 			Breakpoint breakpoint = BreakpointManager.GetMatchingBreakpoint(info);
 			if(breakpoint != null) {
 				breakpoint.SetEnabled(!breakpoint.Enabled);
+				return true;
 			}
+			return false;
 		}
 
 		public static void ToggleBreakpoint(AddressInfo info)

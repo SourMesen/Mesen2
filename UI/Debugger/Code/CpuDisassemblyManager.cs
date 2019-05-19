@@ -17,6 +17,7 @@ namespace Mesen.GUI.Debugger.Code
 
 		public ICodeDataProvider Provider { get { return this._provider; } }
 
+		public virtual CpuType CpuType { get { return CpuType.Cpu; } }
 		public virtual SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.CpuMemory; } }
 		public virtual int AddressSize { get { return 6; } }
 		public virtual int ByteCodeSize { get { return 4; } }
@@ -32,43 +33,15 @@ namespace Mesen.GUI.Debugger.Code
 			}
 		}
 
-		public void ToggleBreakpoint(int lineIndex)
+		public LocationInfo GetLocationInfo(string word, int lineIndex)
 		{
-			int address = this._provider.GetLineAddress(lineIndex);
-			if(address >= 0) {
-				AddressInfo relAddress = new AddressInfo() {
-					Address = address,
-					Type = RelativeMemoryType
-				};
+			LocationInfo location = new LocationInfo();
 
-				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-				if(absAddress.Address < 0) {
-					BreakpointManager.ToggleBreakpoint(relAddress);
-				} else {
-					BreakpointManager.ToggleBreakpoint(absAddress);
-				}
-			}
-		}
-
-		public void EnableDisableBreakpoint(int lineIndex)
-		{
-			int address = this._provider.GetLineAddress(lineIndex);
-			if(address >= 0) {
-				BreakpointManager.EnableDisableBreakpoint(new AddressInfo() {
-					Address = address,
-					Type = RelativeMemoryType
-				});
-			}
-		}
-
-		public Dictionary<string, string> GetTooltipData(string word, int lineIndex)
-		{
-			int? arrayIndex = null;
 			int arraySeparatorIndex = word.IndexOf("+");
 			if(arraySeparatorIndex >= 0) {
 				int index;
 				if(int.TryParse(word.Substring(arraySeparatorIndex + 1), out index)) {
-					arrayIndex = index;
+					location.ArrayIndex = index;
 				}
 				word = word.Substring(0, arraySeparatorIndex);
 			}
@@ -76,77 +49,127 @@ namespace Mesen.GUI.Debugger.Code
 			if(_provider is DbgCodeDataProvider && _symbolProvider != null) {
 				int rangeStart, rangeEnd;
 				GetSymbolByteRange(lineIndex, out rangeStart, out rangeEnd);
-				SymbolInfo symbol = _symbolProvider.GetSymbol(word, rangeStart, rangeEnd);
-				if(symbol != null) {
-					AddressInfo? symbolAddress = _symbolProvider.GetSymbolAddressInfo(symbol);
+				location.Symbol = _symbolProvider.GetSymbol(word, rangeStart, rangeEnd);
+			}
 
-					if(symbolAddress != null && symbolAddress.Value.Address >= 0) {
-						int relativeAddress = DebugApi.GetRelativeAddress(symbolAddress.Value).Address;
-						byte byteValue = relativeAddress >= 0 ? DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress) : (byte)0;
-						UInt16 wordValue = relativeAddress >= 0 ? (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress + 1) << 8)) : (UInt16)0;
+			location.Label = LabelManager.GetLabel(word);
 
-						var values = new Dictionary<string, string>() {
-							{ "Symbol", symbol.Name + (arrayIndex != null ? $"+{arrayIndex.Value}" : "") }
-						};
-
-						if(relativeAddress >= 0) {
-							values["CPU Address"] = "$" + relativeAddress.ToString("X4");
-						} else {
-							values["CPU Address"] = "<out of scope>";
+			int address;
+			if(location.Label != null) {
+				address = location.Label.GetRelativeAddress().Address;
+				if(address >= 0) {
+					location.Address = location.Label.GetRelativeAddress().Address + (location.ArrayIndex ?? 0);
+				} else {
+					location.Address = -1;
+				}
+			} else if(word.StartsWith("$")) {
+				word = word.Replace("$", "");
+				if(Int32.TryParse(word, System.Globalization.NumberStyles.HexNumber, null, out address)) {
+					location.Address = address;
+					if(word.Length <= 4) {
+						CpuState state = DebugApi.GetState().Cpu;
+						if(word.Length == 4) {
+							//Append current DB register to 2-byte addresses
+							location.Address = (state.DBR << 16) | address;
+						} else if(word.Length == 2) {
+							//Add direct register to 1-byte addresses
+							location.Address = (state.D + address);
 						}
-
-						if(symbolAddress.Value.Type == SnesMemoryType.PrgRom) {
-							values["PRG Offset"] = "$" + (symbolAddress.Value.Address + (arrayIndex ?? 0)).ToString("X4");
-						}
-
-						values["Value"] = (relativeAddress >= 0 ? $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" : "n/a");
-						return values;
-					} else {
-						return new Dictionary<string, string>() {
-							{ "Symbol", symbol.Name },
-							{ "Constant", symbol.Address.HasValue ? ("$" + symbol.Address.Value.ToString("X2")) : "<unknown>" }
-						};
 					}
 				}
+			} else if(Int32.TryParse(word, out address)) {
+				location.Address = (int)address;
 			} else {
-				CodeLabel label = LabelManager.GetLabel(word);
-				if(label != null) {
-					AddressInfo absAddress = label.GetAbsoluteAddress();
-					int relativeAddress;
-					if(absAddress.Type == SnesMemoryType.Register) {
-						relativeAddress = absAddress.Address;
-					} else {
-						relativeAddress = label.GetRelativeAddress().Address;
-					}
+				location.Address = -1;
+			}
 
+			if(location.Label == null && location.Address >= 0) {
+				AddressInfo relAddress = new AddressInfo() { Address = location.Address, Type = RelativeMemoryType };
+				CodeLabel label = LabelManager.GetLabel(relAddress);
+				if(label != null && !string.IsNullOrWhiteSpace(label.Label)) {
+					//ignore comment-only labels
+					location.Label = label; 
+				}
+			}
+
+			if(location.Label != null && location.Address >= 0) {
+				AddressInfo absAddress = location.Label.GetAbsoluteAddress();
+				AddressInfo absIndexedAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = location.Address, Type = RelativeMemoryType });
+				if(absIndexedAddress.Address > absAddress.Address) {
+					location.ArrayIndex = absIndexedAddress.Address - absAddress.Address;
+				}
+			}
+
+			return location;
+		}
+
+		public Dictionary<string, string> GetTooltipData(string word, int lineIndex)
+		{
+			LocationInfo location = GetLocationInfo(word, lineIndex);
+
+			if(location.Symbol != null) {
+				AddressInfo? symbolAddress = _symbolProvider.GetSymbolAddressInfo(location.Symbol);
+
+				if(symbolAddress != null && symbolAddress.Value.Address >= 0) {
+					int relativeAddress = DebugApi.GetRelativeAddress(symbolAddress.Value).Address;
 					byte byteValue = relativeAddress >= 0 ? DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress) : (byte)0;
 					UInt16 wordValue = relativeAddress >= 0 ? (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress + 1) << 8)) : (UInt16)0;
 
 					var values = new Dictionary<string, string>() {
-						{ "Label", label.Label + (arrayIndex != null ? $"+{arrayIndex.Value}" : "") },
-						{ "Address", (relativeAddress >= 0 ? "$" + relativeAddress.ToString("X4") : "n/a") },
-						{ "Value", (relativeAddress >= 0 ? $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" : "n/a") },
+						{ "Symbol", location.Symbol.Name + (location.ArrayIndex != null ? $"+{location.ArrayIndex.Value}" : "") }
 					};
 
-					if(!string.IsNullOrWhiteSpace(label.Comment)) {
-						values["Comment"] = label.Comment;
+					if(relativeAddress >= 0) {
+						values["CPU Address"] = "$" + relativeAddress.ToString("X4");
+					} else {
+						values["CPU Address"] = "<out of scope>";
 					}
+
+					if(symbolAddress.Value.Type == SnesMemoryType.PrgRom) {
+						values["PRG Offset"] = "$" + (symbolAddress.Value.Address + (location.ArrayIndex ?? 0)).ToString("X4");
+					}
+
+					values["Value"] = (relativeAddress >= 0 ? $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" : "n/a");
 					return values;
-				} 
-			}
+				} else {
+					return new Dictionary<string, string>() {
+						{ "Symbol", location.Symbol.Name },
+						{ "Constant", location.Symbol.Address.HasValue ? ("$" + location.Symbol.Address.Value.ToString("X2")) : "<unknown>" }
+					};
+				}
+			} else if(location.Label != null) {
+				AddressInfo absAddress = location.Label.GetAbsoluteAddress();
+				int relativeAddress;
+				if(location.Address >= 0) {
+					relativeAddress = location.Address;
+					AddressInfo absIndexedAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = location.Address, Type = RelativeMemoryType });
+					if(absIndexedAddress.Address > absAddress.Address) {
+						location.ArrayIndex = absIndexedAddress.Address - absAddress.Address;
+					}
+				} else if(absAddress.Type == SnesMemoryType.Register) {
+					relativeAddress = absAddress.Address;
+				} else {
+					relativeAddress = location.Label.GetRelativeAddress().Address + (location.ArrayIndex ?? 0);
+				}
 
-			System.Globalization.NumberStyles style = System.Globalization.NumberStyles.None;
-			if(word.StartsWith("$")) {
-				style = System.Globalization.NumberStyles.HexNumber;
-				word = word.Replace("$", "");
-			}
+				byte byteValue = relativeAddress >= 0 ? DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress) : (byte)0;
+				UInt16 wordValue = relativeAddress >= 0 ? (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress + 1) << 8)) : (UInt16)0;
 
-			uint address;
-			if(UInt32.TryParse(word, style, null, out address)) {
-				byte byteValue = DebugApi.GetMemoryValue(this.RelativeMemoryType, address);
-				UInt16 wordValue = (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, address + 1) << 8));
+				var values = new Dictionary<string, string>() {
+					{ "Label", location.Label.Label + (location.ArrayIndex != null ? $"+{location.ArrayIndex.Value}" : "") },
+					{ "Address", (relativeAddress >= 0 ? "$" + relativeAddress.ToString("X4") : "n/a") },
+					{ "Value", (relativeAddress >= 0 ? $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" : "n/a") },
+				};
+
+				if(!string.IsNullOrWhiteSpace(location.Label.Comment)) {
+					values["Comment"] = location.Label.Comment;
+				}
+				return values;
+			} else if(location.Address >= 0) {
+				byte byteValue = DebugApi.GetMemoryValue(this.RelativeMemoryType, (uint)location.Address);
+				UInt16 wordValue = (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, (uint)location.Address + 1) << 8));
 				return new Dictionary<string, string>() {
-					{ "Address", "$" + address.ToString("X4") },
+					{ "Address", "$" + location.Address.ToString("X4") },
 					{ "Value", $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" }
 				};
 			}

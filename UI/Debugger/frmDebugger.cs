@@ -249,7 +249,7 @@ namespace Mesen.GUI.Debugger
 
 		public void GoToAddress(int address)
 		{
-			ctrlDisassemblyView.GoToAddress((int)address);
+			ctrlDisassemblyView.ScrollToAddress((uint)address);
 		}
 
 		private void GoToAddress()
@@ -258,7 +258,7 @@ namespace Mesen.GUI.Debugger
 			using(frmGoToLine frm = new frmGoToLine(address, _cpuType == CpuType.Spc ? 4 : 6)) {
 				frm.StartPosition = FormStartPosition.CenterParent;
 				if(frm.ShowDialog(ctrlDisassemblyView) == DialogResult.OK) {
-					ctrlDisassemblyView.GoToAddress((int)address.Address);
+					ctrlDisassemblyView.ScrollToAddress(address.Address);
 				}
 			}
 		}
@@ -273,7 +273,7 @@ namespace Mesen.GUI.Debugger
 
 		private void GoToVector(CpuVector vector)
 		{
-			ctrlDisassemblyView.GoToAddress(GetVectorAddress(vector));
+			ctrlDisassemblyView.ScrollToAddress((uint)GetVectorAddress(vector));
 		}
 
 		private void UpdateDebugger(DebugState state, int? activeAddress)
@@ -380,7 +380,7 @@ namespace Mesen.GUI.Debugger
 
 		private void ctrlBreakpoints_BreakpointNavigation(Breakpoint bp)
 		{
-			ctrlDisassemblyView.GoToAddress(bp.GetRelativeAddress());
+			ctrlDisassemblyView.ScrollToAddress((uint)bp.GetRelativeAddress());
 		}
 
 		private void mnuGoTo_DropDownOpening(object sender, EventArgs e)
