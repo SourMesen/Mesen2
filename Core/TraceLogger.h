@@ -115,6 +115,7 @@ public:
 	~TraceLogger();
 
 	void Log(DebugState &state, DisassemblyInfo &disassemblyInfo);
+	void Clear();
 	//void LogNonExec(OperationInfo& operationInfo);
 	void SetOptions(TraceLoggerOptions options);
 	void StartLogging(string filename);

@@ -482,6 +482,12 @@ namespace Mesen.GUI.Debugger
 		{
 			txtTraceLog.SelectAll();
 		}
+
+		private void btnClearLog_Click(object sender, EventArgs e)
+		{
+			DebugApi.ClearTraceLog();
+			RefreshLog(true, true);
+		}
 	}
 
 	public class TraceLoggerCodeDataProvider : ICodeDataProvider

@@ -25,6 +25,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
 		[DllImport(DllPath)] public static extern void SetTraceOptions(InteropTraceLoggerOptions options);
+		[DllImport(DllPath)] public static extern void ClearTraceLog();
 
 		[DllImport(DllPath, EntryPoint = "GetDisassemblyLineData")] private static extern void GetDisassemblyLineDataWrapper(CpuType type, UInt32 lineIndex, ref InteropCodeLineData lineData);
 		public static CodeLineData GetDisassemblyLineData(CpuType type, UInt32 lineIndex)

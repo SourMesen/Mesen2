@@ -64,6 +64,7 @@ namespace Mesen.GUI.Debugger
 			this.chkLogCpu = new System.Windows.Forms.CheckBox();
 			this.chkLogSpc = new System.Windows.Forms.CheckBox();
 			this.lblTarget = new System.Windows.Forms.Label();
+			this.btnClearLog = new System.Windows.Forms.Button();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.grpExecutionLog = new System.Windows.Forms.GroupBox();
 			this.txtTraceLog = new Mesen.GUI.Debugger.Controls.ctrlScrollableTextbox();
@@ -105,14 +106,16 @@ namespace Mesen.GUI.Debugger
 			// 
 			// tableLayoutPanel1
 			// 
-			this.tableLayoutPanel1.ColumnCount = 3;
+			this.tableLayoutPanel1.ColumnCount = 4;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.btnOpenTrace, 2, 0);
+			this.tableLayoutPanel1.Controls.Add(this.btnOpenTrace, 3, 0);
 			this.tableLayoutPanel1.Controls.Add(this.btnStartLogging, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.btnStopLogging, 1, 0);
 			this.tableLayoutPanel1.Controls.Add(this.grpLogOptions, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.btnClearLog, 2, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 226);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -120,7 +123,6 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(778, 195);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
@@ -160,7 +162,7 @@ namespace Mesen.GUI.Debugger
 			// 
 			// grpLogOptions
 			// 
-			this.tableLayoutPanel1.SetColumnSpan(this.grpLogOptions, 3);
+			this.tableLayoutPanel1.SetColumnSpan(this.grpLogOptions, 4);
 			this.grpLogOptions.Controls.Add(this.tableLayoutPanel2);
 			this.grpLogOptions.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpLogOptions.Location = new System.Drawing.Point(3, 32);
@@ -572,6 +574,16 @@ namespace Mesen.GUI.Debugger
 			this.lblTarget.TabIndex = 23;
 			this.lblTarget.Text = "Targets:";
 			// 
+			// btnClearLog
+			// 
+			this.btnClearLog.Location = new System.Drawing.Point(205, 3);
+			this.btnClearLog.Name = "btnClearLog";
+			this.btnClearLog.Size = new System.Drawing.Size(81, 23);
+			this.btnClearLog.TabIndex = 4;
+			this.btnClearLog.Text = "Clear Log";
+			this.btnClearLog.UseVisualStyleBackColor = true;
+			this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
+			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.ColumnCount = 1;
@@ -808,6 +820,8 @@ namespace Mesen.GUI.Debugger
 			this.Name = "frmTraceLogger";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Trace Logger";
+			this.Controls.SetChildIndex(this.menuStrip1, 0);
+			this.Controls.SetChildIndex(this.tableLayoutPanel3, 0);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.grpLogOptions.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
@@ -890,5 +904,6 @@ namespace Mesen.GUI.Debugger
 		private System.Windows.Forms.CheckBox chkLogCpu;
 		private System.Windows.Forms.CheckBox chkLogSpc;
 		private System.Windows.Forms.Label lblTarget;
+		private System.Windows.Forms.Button btnClearLog;
 	}
 }

@@ -392,6 +392,11 @@ void TraceLogger::Log(DebugState &state, DisassemblyInfo &disassemblyInfo)
 	//}
 }
 
+void TraceLogger::Clear()
+{
+	_logCount = 0;
+}
+
 const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 {
 	int startPos;
@@ -410,7 +415,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 		enabled |= _logCpu[i];
 	}
 
-	if(enabled) {
+	if(enabled && lineCount > 0) {
 		for(int i = 0; i < TraceLogger::ExecutionLogSize; i++) {
 			int index = (startPos - i);
 			if(index < 0) {
