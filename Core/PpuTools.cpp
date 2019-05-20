@@ -255,46 +255,6 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgr
 			}
 		}
 	}
-
-	if(options.ShowScrollOverlay) {
-		constexpr uint32_t overlayColor = 0x40FFFFFF;
-		int widthMask = 0xFF;
-		int heightMask = 0xFF;
-		if(options.BgMode == 7) {
-			widthMask = 0x3FF;
-			heightMask = 0x3FF;
-		} else {
-			if(layer.DoubleWidth && largeTileWidth) {
-				widthMask = 0x3FF;
-			} else if(layer.DoubleWidth || largeTileWidth) {
-				widthMask = 0x1FF;
-			}
-
-			if(layer.DoubleHeight && largeTileHeight) {
-				heightMask = 0x3FF;
-			} else if(layer.DoubleHeight || largeTileHeight) {
-				heightMask = 0x1FF;
-			}
-		}
-
-		int hScroll = options.BgMode == 7 ? state.Mode7.HScroll : layer.HScroll;
-		int vScroll = options.BgMode == 7 ? state.Mode7.VScroll : layer.VScroll;
-		for(int y = 0; y < 240; y++) {
-			for(int x = 0; x < 256; x++) {
-				int xPos = hScroll + x;
-				int yPos = vScroll + y;
-				
-				xPos &= widthMask;
-				yPos &= heightMask;
-
-				if(x == 0 || y == 0 || x == 255 || y == 239) {
-					outBuffer[(yPos * 1024) | xPos] = 0xAFFFFFFF;
-				} else {
-					BlendColors((uint8_t*)&outBuffer[(yPos * 1024) | xPos], (uint8_t*)&overlayColor);
-				}
-			}
-		}
-	}
 }
 
 static constexpr uint8_t _oamSizes[8][2][2] = {
@@ -310,6 +270,7 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 
 void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t *vram, uint8_t *oamRam, uint8_t *cgram, uint32_t *outBuffer)
 {
+	//TODO
 	//uint16_t baseAddr = state.EnableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
 	uint16_t baseAddr = 0;
 

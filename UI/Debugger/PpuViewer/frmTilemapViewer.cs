@@ -67,7 +67,6 @@ namespace Mesen.GUI.Debugger
 			_autoRefresh = config.AutoRefresh;
 
 			_options.BgMode = 0;
-			_options.ShowScrollOverlay = config.ShowScrollOverlay;
 
 			RefreshData();
 			RefreshViewer();
@@ -218,6 +217,19 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.GridSizeX = chkShowTileGrid.Checked ? (IsLargeTileWidth ? 16 : 8): 0;
 			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? (IsLargeTileHeight ? 16 : 8): 0;
 
+			if(chkShowScrollOverlay.Checked) {
+				LayerConfig layer = _state.Ppu.Layers[_options.Layer];
+				bool largeTileWidth = layer.LargeTiles || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6;
+				bool largeTileHeight = layer.LargeTiles;
+
+				int hScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.HScroll : layer.HScroll;
+				int vScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.VScroll : layer.VScroll;
+
+				int height = _state.Ppu.OverscanMode ? 239 : 224;
+				ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, largeTileWidth ? 512 : 256, largeTileHeight ? height*2 : height);
+			} else {
+				ctrlImagePanel.Overlay = Rectangle.Empty;
+			}
 			UpdateFields();
 		}
 
@@ -305,7 +317,6 @@ namespace Mesen.GUI.Debugger
 
 		private void chkShowScrollOverlay_Click(object sender, EventArgs e)
 		{
-			_options.ShowScrollOverlay = chkShowScrollOverlay.Checked;
 			RefreshViewer();
 		}
 

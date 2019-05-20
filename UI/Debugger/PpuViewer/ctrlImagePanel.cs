@@ -21,6 +21,7 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private Point _lastLocation = Point.Empty;
 
 		public Rectangle Selection { get { return ctrlImageViewer.Selection; } set { ctrlImageViewer.Selection = value; } }
+		public Rectangle Overlay { get { return ctrlImageViewer.Overlay; } set { ctrlImageViewer.Overlay = value; } }
 		public int SelectionWrapPosition { get { return ctrlImageViewer.SelectionWrapPosition; } set { ctrlImageViewer.SelectionWrapPosition = value; } }
 
 		public Size ImageSize { get { return _imageSize; } set { _imageSize = value; UpdateMapSize(); } }

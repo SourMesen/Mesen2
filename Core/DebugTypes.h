@@ -159,8 +159,6 @@ struct GetTilemapOptions
 	int8_t Bpp;
 	int32_t TilemapAddr;
 	int32_t ChrAddr;
-
-	bool ShowScrollOverlay;
 };
 
 enum class TileFormat

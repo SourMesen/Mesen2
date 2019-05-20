@@ -488,7 +488,6 @@ namespace Mesen.GUI
 		public byte Bpp;
 		public Int32 TilemapAddr;
 		public Int32 ChrAddr;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowScrollOverlay;
 	}
 
 	public struct GetTileViewOptions

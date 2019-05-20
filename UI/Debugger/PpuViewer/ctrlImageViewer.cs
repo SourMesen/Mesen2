@@ -12,6 +12,7 @@ namespace Mesen.GUI.Debugger.PpuViewer
 	{
 		private Image _image = null;
 		private Rectangle _selection = Rectangle.Empty;
+		private Rectangle _overlay = Rectangle.Empty;
 		private int _selectionWrapPosition = 0;
 		private int _gridSizeX = 0;
 		private int _gridSizeY = 0;
@@ -32,6 +33,12 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		{
 			get { return _selection; }
 			set { _selection = value; this.Invalidate(); }
+		}
+		
+		public Rectangle Overlay
+		{
+			get { return _overlay; }
+			set { _overlay = value; this.Invalidate(); }
 		}
 
 		public int GridSizeX
@@ -77,6 +84,31 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				if(_gridSizeY > 1) {
 					for(int i = this.ImageScale * _gridSizeY; i < this.Height; i += this.ImageScale * _gridSizeY) {
 						e.Graphics.DrawLine(gridPen, 0, i, this.Width, i);
+					}
+				}
+			}
+
+			if(_overlay != Rectangle.Empty) {
+				using(SolidBrush brush = new SolidBrush(Color.FromArgb(100, 240, 240, 240))) {
+					int scale = this.ImageScale;
+					Rectangle rect = new Rectangle(_overlay.Left * scale % this.Width, _overlay.Top * scale % this.Height, _overlay.Width * scale, _overlay.Height * scale);
+
+					e.Graphics.FillRectangle(brush, rect.Left, rect.Top, rect.Width, rect.Height);
+					e.Graphics.DrawRectangle(Pens.Gray, rect.Left, rect.Top, rect.Width, rect.Height);
+
+					if((rect.Top + rect.Height) > this.Height) {
+						e.Graphics.FillRectangle(brush, rect.Left, rect.Top - this.Height, rect.Width, rect.Height);
+						e.Graphics.DrawRectangle(Pens.Gray, rect.Left, rect.Top - this.Height, rect.Width, rect.Height);
+					}
+
+					if((rect.Left + rect.Width) > this.Width) {
+						e.Graphics.FillRectangle(brush, rect.Left - this.Width, rect.Top, rect.Width, rect.Height);
+						e.Graphics.DrawRectangle(Pens.Gray, rect.Left - this.Width, rect.Top, rect.Width, rect.Height);
+
+						if((rect.Top + rect.Height) > this.Height) {
+							e.Graphics.FillRectangle(brush, rect.Left - this.Width, rect.Top - this.Height, rect.Width, rect.Height);
+							e.Graphics.DrawRectangle(Pens.Gray, rect.Left - this.Width, rect.Top - this.Height, rect.Width, rect.Height);
+						}
 					}
 				}
 			}
