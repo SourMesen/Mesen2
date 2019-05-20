@@ -19,6 +19,12 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalSync = false;
 		[MarshalAs(UnmanagedType.I1)] public bool IntegerFpsMode = false;
 
+		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer0 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer1 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer2 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer3 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool HideSprites = false;
+
 		[MinMax(-1, 1.0)] public double Brightness = 0;
 		[MinMax(-1, 1.0)] public double Contrast = 0;
 		[MinMax(-1, 1.0)] public double Hue = 0;

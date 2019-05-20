@@ -149,6 +149,9 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 
 			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
 
+			VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+			_configVisibleLayers = (cfg.HideBgLayer0 ? 0 : 1) | (cfg.HideBgLayer1 ? 0 : 2) | (cfg.HideBgLayer2 ? 0 : 4) | (cfg.HideBgLayer3 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
+
 			_console->ProcessEvent(EventType::EndFrame);
 
 			_frameCount++;
@@ -802,12 +805,12 @@ template<bool forMainScreen>
 bool Ppu::IsRenderRequired(uint8_t layerIndex)
 {
 	if(forMainScreen) {
-		if(_pixelsDrawn == 256 || ((_mainScreenLayers >> layerIndex) & 0x01) == 0) {
+		if(_pixelsDrawn == 256 || (((_mainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) == 0) {
 			//This screen is disabled, or we've drawn all pixels already
 			return false;
 		}
 	} else {
-		if(_subPixelsDrawn == 256 || ((_subScreenLayers >> layerIndex) & 0x01) == 0) {
+		if(_subPixelsDrawn == 256 || (((_subScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) == 0) {
 			//This screen is disabled, or we've drawn all pixels already
 			return false;
 		}

@@ -66,6 +66,12 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.ToggleAlwaysOnTop,
 				EmulatorShortcut.ToggleAudio,
 
+				EmulatorShortcut.ToggleBgLayer0,
+				EmulatorShortcut.ToggleBgLayer1,
+				EmulatorShortcut.ToggleBgLayer2,
+				EmulatorShortcut.ToggleBgLayer3,
+				EmulatorShortcut.ToggleSprites,
+
 				EmulatorShortcut.MaxSpeed,
 				EmulatorShortcut.IncreaseSpeed,
 				EmulatorShortcut.DecreaseSpeed,

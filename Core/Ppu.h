@@ -138,6 +138,7 @@ private:
 	bool _locationLatched = false;
 
 	bool _allowFrameSkip = false;
+	uint8_t _configVisibleLayers = 0xFF;
 
 	template<uint8_t priority, bool forMainScreen>
 	void RenderSprites();

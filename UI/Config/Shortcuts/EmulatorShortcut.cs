@@ -51,6 +51,12 @@ namespace Mesen.GUI.Config.Shortcuts
 		ToggleAlwaysOnTop,
 		ToggleDebugInfo,
 
+		ToggleBgLayer0,
+		ToggleBgLayer1,
+		ToggleBgLayer2,
+		ToggleBgLayer3,
+		ToggleSprites,
+
 		SaveStateSlot1,
 		SaveStateSlot2,
 		SaveStateSlot3,

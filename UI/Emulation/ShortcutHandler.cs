@@ -97,6 +97,12 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.SetScale5x: _displayManager.SetScale(5, true); break;
 				case EmulatorShortcut.SetScale6x: _displayManager.SetScale(6, true); break;
 		
+				case EmulatorShortcut.ToggleBgLayer0: ToggleBgLayer0(); break;
+				case EmulatorShortcut.ToggleBgLayer1: ToggleBgLayer1(); break;
+				case EmulatorShortcut.ToggleBgLayer2: ToggleBgLayer2(); break;
+				case EmulatorShortcut.ToggleBgLayer3: ToggleBgLayer3(); break;
+				case EmulatorShortcut.ToggleSprites: ToggleSprites(); break;
+
 				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
 
 				case EmulatorShortcut.LoadStateFromFile: SaveStateManager.LoadStateFromFile(); break;
@@ -165,6 +171,41 @@ namespace Mesen.GUI.Emulation
 		public void ToggleBilinearInterpolation()
 		{
 			ConfigManager.Config.Video.UseBilinearInterpolation = !ConfigManager.Config.Video.UseBilinearInterpolation;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+		
+		private void ToggleBgLayer0()
+		{
+			ConfigManager.Config.Video.HideBgLayer0 = !ConfigManager.Config.Video.HideBgLayer0;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleBgLayer1()
+		{
+			ConfigManager.Config.Video.HideBgLayer1 = !ConfigManager.Config.Video.HideBgLayer1;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleBgLayer2()
+		{
+			ConfigManager.Config.Video.HideBgLayer2 = !ConfigManager.Config.Video.HideBgLayer2;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleBgLayer3()
+		{
+			ConfigManager.Config.Video.HideBgLayer3 = !ConfigManager.Config.Video.HideBgLayer3;
+			ConfigManager.Config.Video.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void ToggleSprites()
+		{
+			ConfigManager.Config.Video.HideSprites = !ConfigManager.Config.Video.HideSprites;
 			ConfigManager.Config.Video.ApplyConfig();
 			ConfigManager.ApplyChanges();
 		}

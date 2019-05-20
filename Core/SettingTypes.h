@@ -73,6 +73,12 @@ struct VideoConfig
 	bool VerticalSync = false;
 	bool IntegerFpsMode = false;
 
+	bool HideBgLayer0 = false;
+	bool HideBgLayer1 = false;
+	bool HideBgLayer2 = false;
+	bool HideBgLayer3 = false;
+	bool HideSprites = false;
+
 	double Brightness = 0;
 	double Contrast = 0;
 	double Hue = 0;
@@ -338,6 +344,12 @@ enum class EmulatorShortcut
 	ToggleOsd,
 	ToggleAlwaysOnTop,
 	ToggleDebugInfo,
+
+	ToggleBgLayer0,
+	ToggleBgLayer1,
+	ToggleBgLayer2,
+	ToggleBgLayer3,
+	ToggleSprites,
 
 	SaveStateSlot1,
 	SaveStateSlot2,

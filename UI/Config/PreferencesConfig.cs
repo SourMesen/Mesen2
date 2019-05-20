@@ -81,6 +81,12 @@ namespace Mesen.GUI.Config
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFullscreen, new KeyCombination() { Key1 = InputApi.GetKeyCode("F11") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.TakeScreenshot, new KeyCombination() { Key1 = InputApi.GetKeyCode("F12") }));
 
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer0, new KeyCombination() { Key1 = InputApi.GetKeyCode("1") }));
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer1, new KeyCombination() { Key1 = InputApi.GetKeyCode("2") }));
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer2, new KeyCombination() { Key1 = InputApi.GetKeyCode("3") }));
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer3, new KeyCombination() { Key1 = InputApi.GetKeyCode("4") }));
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleSprites, new KeyCombination() { Key1 = InputApi.GetKeyCode("5") }));
+
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.Reset, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("R") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.PowerCycle, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("T") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.Pause, new KeyCombination() { Key1 = InputApi.GetKeyCode("Esc") }));

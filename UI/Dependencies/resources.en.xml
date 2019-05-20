@@ -291,10 +291,12 @@
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flashing)</Control>
 			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>
-			<Control ID="chkDisableBackground">Disable background</Control>
-			<Control ID="chkDisableSprites">Disable sprites</Control>
-			<Control ID="chkForceBackgroundFirstColumn">Force background display in first column</Control>
-			<Control ID="chkForceSpritesFirstColumn">Force sprite display in first column</Control>
+			
+			<Control ID="chkHideBgLayer0">Hide background layer 0</Control>
+			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
+			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
+			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
+			<Control ID="chkHideSprites">Hide sprites</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -905,6 +907,12 @@
 		<Message ID="EmulatorShortcutMappings_ToggleBackground">Toggle Background Layer</Message>
 		<Message ID="EmulatorShortcutMappings_ToggleSprites">Toggle Sprite Layer</Message>
 		<Message ID="EmulatorShortcutMappings_ToggleKeyboardMode">Toggle Keyboard Mode</Message>
+
+		<Message ID="EmulatorShortcutMappings_ToggleBgLayer0">Toggle BG Layer 0</Message>
+		<Message ID="EmulatorShortcutMappings_ToggleBgLayer1">Toggle BG Layer 1</Message>
+		<Message ID="EmulatorShortcutMappings_ToggleBgLayer2">Toggle BG Layer 2</Message>
+		<Message ID="EmulatorShortcutMappings_ToggleBgLayer3">Toggle BG Layer 3</Message>
+		<Message ID="EmulatorShortcutMappings_ToggleSprites">Toggle Sprites</Message>
 
 		<Message ID="EmulatorShortcutMappings_MaxSpeed">Toggle Maximum Speed</Message>
 		<Message ID="EmulatorShortcutMappings_LoadRandomGame">Load Random Game</Message>

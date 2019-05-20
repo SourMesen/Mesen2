@@ -91,6 +91,13 @@
 			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
+			this.tpgAdvanced = new System.Windows.Forms.TabPage();
+			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkHideBgLayer0 = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkHideBgLayer1 = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkHideBgLayer2 = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkHideBgLayer3 = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkHideSprites = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -113,23 +120,27 @@
 			this.tableLayoutPanel13.SuspendLayout();
 			this.tableLayoutPanel14.SuspendLayout();
 			this.ctxPicturePresets.SuspendLayout();
+			this.tpgAdvanced.SuspendLayout();
+			this.tableLayoutPanel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 408);
 			this.baseConfigPanel.Size = new System.Drawing.Size(574, 29);
+			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tabMain
 			// 
 			this.tabMain.Controls.Add(this.tpgGeneral);
 			this.tabMain.Controls.Add(this.tpgPicture);
 			this.tabMain.Controls.Add(this.tpgOverscan);
+			this.tabMain.Controls.Add(this.tpgAdvanced);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
-			this.tabMain.Size = new System.Drawing.Size(574, 408);
+			this.tabMain.Size = new System.Drawing.Size(574, 437);
 			this.tabMain.TabIndex = 2;
 			// 
 			// tpgGeneral
@@ -1102,6 +1113,89 @@
 			this.mnuPresetMonochrome.Text = "Monochrome";
 			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
 			// 
+			// tpgAdvanced
+			// 
+			this.tpgAdvanced.Controls.Add(this.tableLayoutPanel2);
+			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
+			this.tpgAdvanced.Name = "tpgAdvanced";
+			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
+			this.tpgAdvanced.Size = new System.Drawing.Size(566, 411);
+			this.tpgAdvanced.TabIndex = 7;
+			this.tpgAdvanced.Text = "Advanced";
+			this.tpgAdvanced.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel2
+			// 
+			this.tableLayoutPanel2.ColumnCount = 1;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer0, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer1, 0, 1);
+			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer2, 0, 2);
+			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer3, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.chkHideSprites, 0, 4);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+			this.tableLayoutPanel2.RowCount = 6;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(560, 405);
+			this.tableLayoutPanel2.TabIndex = 0;
+			// 
+			// chkHideBgLayer0
+			// 
+			this.chkHideBgLayer0.Checked = false;
+			this.chkHideBgLayer0.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkHideBgLayer0.Location = new System.Drawing.Point(0, 0);
+			this.chkHideBgLayer0.Name = "chkHideBgLayer0";
+			this.chkHideBgLayer0.Size = new System.Drawing.Size(560, 24);
+			this.chkHideBgLayer0.TabIndex = 0;
+			this.chkHideBgLayer0.Text = "Hide background layer 0";
+			// 
+			// chkHideBgLayer1
+			// 
+			this.chkHideBgLayer1.Checked = false;
+			this.chkHideBgLayer1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkHideBgLayer1.Location = new System.Drawing.Point(0, 24);
+			this.chkHideBgLayer1.Name = "chkHideBgLayer1";
+			this.chkHideBgLayer1.Size = new System.Drawing.Size(560, 24);
+			this.chkHideBgLayer1.TabIndex = 1;
+			this.chkHideBgLayer1.Text = "Hide background layer 1";
+			// 
+			// chkHideBgLayer2
+			// 
+			this.chkHideBgLayer2.Checked = false;
+			this.chkHideBgLayer2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkHideBgLayer2.Location = new System.Drawing.Point(0, 48);
+			this.chkHideBgLayer2.Name = "chkHideBgLayer2";
+			this.chkHideBgLayer2.Size = new System.Drawing.Size(560, 24);
+			this.chkHideBgLayer2.TabIndex = 2;
+			this.chkHideBgLayer2.Text = "Hide background layer 2";
+			// 
+			// chkHideBgLayer3
+			// 
+			this.chkHideBgLayer3.Checked = false;
+			this.chkHideBgLayer3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkHideBgLayer3.Location = new System.Drawing.Point(0, 72);
+			this.chkHideBgLayer3.Name = "chkHideBgLayer3";
+			this.chkHideBgLayer3.Size = new System.Drawing.Size(560, 24);
+			this.chkHideBgLayer3.TabIndex = 3;
+			this.chkHideBgLayer3.Text = "Hide background layer 3";
+			// 
+			// chkHideSprites
+			// 
+			this.chkHideSprites.Checked = false;
+			this.chkHideSprites.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkHideSprites.Location = new System.Drawing.Point(0, 96);
+			this.chkHideSprites.Name = "chkHideSprites";
+			this.chkHideSprites.Size = new System.Drawing.Size(560, 24);
+			this.chkHideSprites.TabIndex = 4;
+			this.chkHideSprites.Text = "Hide sprites";
+			// 
 			// frmVideoConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1114,8 +1208,8 @@
 			this.Name = "frmVideoConfig";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "frmVideoConfig";
-			this.Controls.SetChildIndex(this.baseConfigPanel, 0);
 			this.Controls.SetChildIndex(this.tabMain, 0);
+			this.Controls.SetChildIndex(this.baseConfigPanel, 0);
 			this.tabMain.ResumeLayout(false);
 			this.tpgGeneral.ResumeLayout(false);
 			this.tlpMain.ResumeLayout(false);
@@ -1149,7 +1243,10 @@
 			this.tableLayoutPanel14.ResumeLayout(false);
 			this.tableLayoutPanel14.PerformLayout();
 			this.ctxPicturePresets.ResumeLayout(false);
+			this.tpgAdvanced.ResumeLayout(false);
+			this.tableLayoutPanel2.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -1218,5 +1315,12 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel14;
 		private Controls.MesenNumericUpDown nudOverscanLeft;
 		private System.Windows.Forms.Label lblLeft;
+		private System.Windows.Forms.TabPage tpgAdvanced;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+		private Controls.ctrlRiskyOption chkHideBgLayer0;
+		private Controls.ctrlRiskyOption chkHideBgLayer1;
+		private Controls.ctrlRiskyOption chkHideBgLayer2;
+		private Controls.ctrlRiskyOption chkHideBgLayer3;
+		private Controls.ctrlRiskyOption chkHideSprites;
 	}
 }
