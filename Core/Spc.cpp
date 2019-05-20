@@ -208,8 +208,6 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 				_state.TimersEnabled = (value & 0x09) == 0x08;
 				_state.WriteEnabled = value & 0x02;
 
-				_dsp->setEchoWriteEnabled(_state.WriteEnabled);
-
 				_state.Timer0.SetGlobalEnabled(_state.TimersEnabled);
 				_state.Timer1.SetGlobalEnabled(_state.TimersEnabled);
 				_state.Timer2.SetGlobalEnabled(_state.TimersEnabled);

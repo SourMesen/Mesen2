@@ -189,8 +189,6 @@ private:
 	};
 	state_t m;
 	
-	bool _echoWriteEnabled = true;
-
 	void init_counter();
 	void run_counters();
 	unsigned read_counter( int rate );
@@ -274,8 +272,6 @@ inline void SPC_DSP::write( int addr, int data )
 		break;
 	}
 }
-
-inline void SPC_DSP::setEchoWriteEnabled(bool enabled) { _echoWriteEnabled = enabled; }
 
 inline void SPC_DSP::mute_voices( int mask ) { m.mute_mask = mask; }
 
