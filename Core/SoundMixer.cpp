@@ -55,10 +55,10 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 		ProcessEqualizer(samples, sampleCount);
 	}
 
-	if(cfg.MasterVolume != 25) {
+	if(cfg.MasterVolume < 100) {
 		//Apply volume if not using the default value
 		for(uint32_t i = 0; i < sampleCount * 2; i++) {
-			samples[i] = (int32_t)samples[i] * (int32_t)cfg.MasterVolume / 25;
+			samples[i] = (int32_t)samples[i] * (int32_t)cfg.MasterVolume / 100;
 		}
 	}
 

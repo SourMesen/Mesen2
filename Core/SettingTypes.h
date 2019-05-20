@@ -103,7 +103,7 @@ struct AudioConfig
 	bool EnableAudio = true;
 	bool DisableDynamicSampleRate = false;
 
-	uint32_t MasterVolume = 25;
+	uint32_t MasterVolume = 100;
 	uint32_t SampleRate = 48000;
 	uint32_t AudioLatency = 60;
 

@@ -14,7 +14,7 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool EnableAudio = true;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableDynamicSampleRate = false;
 
-		[MinMax(0, 100)] public UInt32 MasterVolume = 25;
+		[MinMax(0, 100)] public UInt32 MasterVolume = 100;
 		[ValidValues(11025, 22050, 32000, 44100, 48000, 96000)] public UInt32 SampleRate = 48000;
 		[MinMax(15, 300)] public UInt32 AudioLatency = 60;
 
