@@ -25,6 +25,7 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.ResetFontSize)),
 				GetMember(nameof(DebuggerShortcutsConfig.ZoomIn)),
 				GetMember(nameof(DebuggerShortcutsConfig.ZoomOut)),
+				GetMember(nameof(DebuggerShortcutsConfig.SaveAsPng)),
 				GetMember(nameof(DebuggerShortcutsConfig.GoTo)),
 				GetMember(nameof(DebuggerShortcutsConfig.Find)),
 				GetMember(nameof(DebuggerShortcutsConfig.FindNext)),
@@ -71,12 +72,12 @@ namespace Mesen.GUI.Debugger
 				//GetMember(nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInMemoryType))
 			};
 
-			/*ctrlDbgShortcutsScriptWindow.Shortcuts = new FieldInfo[] {
+			ctrlDbgShortcutsScriptWindow.Shortcuts = new FieldInfo[] {
 				GetMember(nameof(DebuggerShortcutsConfig.ScriptWindow_OpenScript)),
 				GetMember(nameof(DebuggerShortcutsConfig.ScriptWindow_SaveScript)),
 				GetMember(nameof(DebuggerShortcutsConfig.ScriptWindow_RunScript)),
 				GetMember(nameof(DebuggerShortcutsConfig.ScriptWindow_StopScript))
-			};*/
+			};
 
 			ctrlDbgShortcutsDebugger.Shortcuts = new FieldInfo[] {
 				GetMember(nameof(DebuggerShortcutsConfig.Reset)),

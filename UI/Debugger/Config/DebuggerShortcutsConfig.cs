@@ -59,6 +59,9 @@ namespace Mesen.GUI.Config
 		[ShortcutName("Zoom Out")]
 		public XmlKeys ZoomOut = Keys.Control | Keys.OemMinus;
 
+		[ShortcutName("Save as PNG")]
+		public XmlKeys SaveAsPng = Keys.Control | Keys.S;
+
 		[ShortcutName("Edit in Memory Viewer")]
 		public XmlKeys CodeWindow_EditInMemoryViewer = Keys.F1;
 		[ShortcutName("View in disassembly")]

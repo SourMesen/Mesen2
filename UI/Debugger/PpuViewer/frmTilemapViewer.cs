@@ -77,6 +77,12 @@ namespace Mesen.GUI.Debugger
 			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
 			mnuZoomIn.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomIn));
 			mnuZoomOut.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomOut));
+
+			mnuCopyToClipboard.InitShortcut(this, nameof(DebuggerShortcutsConfig.Copy));
+			mnuSaveAsPng.InitShortcut(this, nameof(DebuggerShortcutsConfig.SaveAsPng));
+
+			mnuCopyToClipboard.Click += (s, e) => { ctrlImagePanel.CopyToClipboard(); };
+			mnuSaveAsPng.Click += (s, e) => { ctrlImagePanel.SaveAsPng(); };
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)

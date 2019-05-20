@@ -78,6 +78,9 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.grpTileInfo.SuspendLayout();
@@ -561,12 +564,16 @@
 			// ctrlImagePanel
 			// 
 			this.ctrlImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlImagePanel.GridSizeX = 0;
+			this.ctrlImagePanel.GridSizeY = 0;
 			this.ctrlImagePanel.Image = null;
 			this.ctrlImagePanel.ImageScale = 1;
 			this.ctrlImagePanel.ImageSize = new System.Drawing.Size(0, 0);
 			this.ctrlImagePanel.Location = new System.Drawing.Point(3, 31);
 			this.ctrlImagePanel.Name = "ctrlImagePanel";
+			this.ctrlImagePanel.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
+			this.ctrlImagePanel.SelectionWrapPosition = 0;
 			this.ctrlImagePanel.Size = new System.Drawing.Size(513, 474);
 			this.ctrlImagePanel.TabIndex = 9;
 			this.ctrlImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ctrlImagePanel_MouseClick);
@@ -585,6 +592,9 @@
 			// mnuFile
 			// 
 			this.mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCopyToClipboard,
+            this.mnuSaveAsPng,
+            this.toolStripMenuItem3,
             this.mnuClose});
 			this.mnuFile.Name = "mnuFile";
 			this.mnuFile.Size = new System.Drawing.Size(37, 20);
@@ -594,7 +604,7 @@
 			// 
 			this.mnuClose.Image = global::Mesen.GUI.Properties.Resources.Exit;
 			this.mnuClose.Name = "mnuClose";
-			this.mnuClose.Size = new System.Drawing.Size(103, 22);
+			this.mnuClose.Size = new System.Drawing.Size(169, 22);
 			this.mnuClose.Text = "Close";
 			this.mnuClose.Click += new System.EventHandler(this.mnuClose_Click);
 			// 
@@ -617,41 +627,60 @@
 			this.mnuAutoRefresh.CheckOnClick = true;
 			this.mnuAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mnuAutoRefresh.Name = "mnuAutoRefresh";
-			this.mnuAutoRefresh.Size = new System.Drawing.Size(152, 22);
+			this.mnuAutoRefresh.Size = new System.Drawing.Size(141, 22);
 			this.mnuAutoRefresh.Text = "Auto-refresh";
 			this.mnuAutoRefresh.CheckedChanged += new System.EventHandler(this.mnuAutoRefresh_CheckedChanged);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(138, 6);
 			// 
 			// mnuRefresh
 			// 
 			this.mnuRefresh.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuRefresh.Name = "mnuRefresh";
-			this.mnuRefresh.Size = new System.Drawing.Size(152, 22);
+			this.mnuRefresh.Size = new System.Drawing.Size(141, 22);
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 6);
 			// 
 			// mnuZoomIn
 			// 
 			this.mnuZoomIn.Name = "mnuZoomIn";
-			this.mnuZoomIn.Size = new System.Drawing.Size(152, 22);
+			this.mnuZoomIn.Size = new System.Drawing.Size(141, 22);
 			this.mnuZoomIn.Text = "Zoom In";
 			this.mnuZoomIn.Click += new System.EventHandler(this.mnuZoomIn_Click);
 			// 
 			// mnuZoomOut
 			// 
 			this.mnuZoomOut.Name = "mnuZoomOut";
-			this.mnuZoomOut.Size = new System.Drawing.Size(152, 22);
+			this.mnuZoomOut.Size = new System.Drawing.Size(141, 22);
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
+			// 
+			// mnuSaveAsPng
+			// 
+			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
+			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
+			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
+			this.mnuSaveAsPng.Text = "Save as PNG";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
+			// 
+			// mnuCopyToClipboard
+			// 
+			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
+			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
+			this.mnuCopyToClipboard.Text = "Copy to clipboard";
 			// 
 			// frmTilemapViewer
 			// 
@@ -664,6 +693,9 @@
 			this.MainMenuStrip = this.ctrlMesenMenuStrip1;
 			this.Name = "frmTilemapViewer";
 			this.Text = "Tilemap Viewer";
+			this.Controls.SetChildIndex(this.ctrlMesenMenuStrip1, 0);
+			this.Controls.SetChildIndex(this.ctrlScanlineCycleSelect, 0);
+			this.Controls.SetChildIndex(this.tableLayoutPanel1, 0);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel2.PerformLayout();
@@ -734,5 +766,8 @@
 		private System.Windows.Forms.TextBox txtTilesetAddress;
 		private System.Windows.Forms.TextBox txtBitDepth;
 		private PpuViewer.ctrlImagePanel ctrlImagePanel;
+		private System.Windows.Forms.ToolStripMenuItem mnuCopyToClipboard;
+		private System.Windows.Forms.ToolStripMenuItem mnuSaveAsPng;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
 	}
 }

@@ -41,6 +41,9 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
 			this.ctrlSplitContainer.Panel2.SuspendLayout();
@@ -81,12 +84,16 @@
 			// ctrlImagePanel
 			// 
 			this.ctrlImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlImagePanel.GridSizeX = 0;
+			this.ctrlImagePanel.GridSizeY = 0;
 			this.ctrlImagePanel.Image = null;
 			this.ctrlImagePanel.ImageScale = 1;
 			this.ctrlImagePanel.ImageSize = new System.Drawing.Size(0, 0);
 			this.ctrlImagePanel.Location = new System.Drawing.Point(0, 0);
 			this.ctrlImagePanel.Name = "ctrlImagePanel";
+			this.ctrlImagePanel.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
+			this.ctrlImagePanel.SelectionWrapPosition = 0;
 			this.ctrlImagePanel.Size = new System.Drawing.Size(512, 488);
 			this.ctrlImagePanel.TabIndex = 9;
 			this.ctrlImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ctrlImagePanel_MouseClick);
@@ -114,6 +121,9 @@
 			// mnuFile
 			// 
 			this.mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCopyToClipboard,
+            this.mnuSaveAsPng,
+            this.toolStripMenuItem3,
             this.mnuClose});
 			this.mnuFile.Name = "mnuFile";
 			this.mnuFile.Size = new System.Drawing.Size(37, 20);
@@ -123,7 +133,7 @@
 			// 
 			this.mnuClose.Image = global::Mesen.GUI.Properties.Resources.Exit;
 			this.mnuClose.Name = "mnuClose";
-			this.mnuClose.Size = new System.Drawing.Size(103, 22);
+			this.mnuClose.Size = new System.Drawing.Size(169, 22);
 			this.mnuClose.Text = "Close";
 			this.mnuClose.Click += new System.EventHandler(this.mnuClose_Click);
 			// 
@@ -182,6 +192,25 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
+			// mnuCopyToClipboard
+			// 
+			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
+			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
+			this.mnuCopyToClipboard.Text = "Copy to clipboard";
+			// 
+			// mnuSaveAsPng
+			// 
+			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
+			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
+			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
+			this.mnuSaveAsPng.Text = "Save as PNG";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
+			// 
 			// frmSpriteViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -193,6 +222,9 @@
 			this.MainMenuStrip = this.ctrlMesenMenuStrip1;
 			this.Name = "frmSpriteViewer";
 			this.Text = "Sprite Viewer";
+			this.Controls.SetChildIndex(this.ctrlMesenMenuStrip1, 0);
+			this.Controls.SetChildIndex(this.ctrlScanlineCycleSelect, 0);
+			this.Controls.SetChildIndex(this.ctrlSplitContainer, 0);
 			this.ctrlSplitContainer.Panel1.ResumeLayout(false);
 			this.ctrlSplitContainer.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).EndInit();
@@ -219,5 +251,8 @@
 		private PpuViewer.ctrlImagePanel ctrlImagePanel;
 		private GUI.Controls.ctrlSplitContainer ctrlSplitContainer;
 		private PpuViewer.ctrlSpriteList ctrlSpriteList;
+		private System.Windows.Forms.ToolStripMenuItem mnuCopyToClipboard;
+		private System.Windows.Forms.ToolStripMenuItem mnuSaveAsPng;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
 	}
 }

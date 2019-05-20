@@ -53,6 +53,8 @@
 			this.btnPresetOam2 = new System.Windows.Forms.Button();
 			this.lblTileAddress = new System.Windows.Forms.Label();
 			this.txtTileAddress = new System.Windows.Forms.TextBox();
+			this.lblTileLayout = new System.Windows.Forms.Label();
+			this.cboLayout = new System.Windows.Forms.ComboBox();
 			this.ctrlImagePanel = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,8 +66,9 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			this.lblTileLayout = new System.Windows.Forms.Label();
-			this.cboLayout = new System.Windows.Forms.ComboBox();
+			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).BeginInit();
@@ -450,14 +453,44 @@
 			this.txtTileAddress.Size = new System.Drawing.Size(60, 20);
 			this.txtTileAddress.TabIndex = 17;
 			// 
+			// lblTileLayout
+			// 
+			this.lblTileLayout.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblTileLayout.AutoSize = true;
+			this.lblTileLayout.Location = new System.Drawing.Point(3, 61);
+			this.lblTileLayout.Name = "lblTileLayout";
+			this.lblTileLayout.Size = new System.Drawing.Size(62, 13);
+			this.lblTileLayout.TabIndex = 18;
+			this.lblTileLayout.Text = "Tile Layout:";
+			// 
+			// cboLayout
+			// 
+			this.cboLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.cboLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboLayout.FormattingEnabled = true;
+			this.cboLayout.Items.AddRange(new object[] {
+            "2 BPP",
+            "4 BPP",
+            "8 BPP",
+            "8 BPP - Direct Color Mode",
+            "Mode 7",
+            "Mode 7 - Direct Color Mode"});
+			this.cboLayout.Location = new System.Drawing.Point(77, 57);
+			this.cboLayout.Name = "cboLayout";
+			this.cboLayout.Size = new System.Drawing.Size(114, 21);
+			this.cboLayout.TabIndex = 19;
+			// 
 			// ctrlImagePanel
 			// 
 			this.ctrlImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlImagePanel.GridSizeX = 0;
+			this.ctrlImagePanel.GridSizeY = 0;
 			this.ctrlImagePanel.Image = null;
 			this.ctrlImagePanel.ImageScale = 1;
 			this.ctrlImagePanel.ImageSize = new System.Drawing.Size(0, 0);
 			this.ctrlImagePanel.Location = new System.Drawing.Point(3, 3);
 			this.ctrlImagePanel.Name = "ctrlImagePanel";
+			this.ctrlImagePanel.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.SelectionWrapPosition = 0;
 			this.ctrlImagePanel.Size = new System.Drawing.Size(531, 516);
@@ -478,6 +511,9 @@
 			// mnuFile
 			// 
 			this.mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCopyToClipboard,
+            this.mnuSaveAsPng,
+            this.toolStripMenuItem3,
             this.mnuClose});
 			this.mnuFile.Name = "mnuFile";
 			this.mnuFile.Size = new System.Drawing.Size(37, 20);
@@ -487,7 +523,7 @@
 			// 
 			this.mnuClose.Image = global::Mesen.GUI.Properties.Resources.Exit;
 			this.mnuClose.Name = "mnuClose";
-			this.mnuClose.Size = new System.Drawing.Size(103, 22);
+			this.mnuClose.Size = new System.Drawing.Size(169, 22);
 			this.mnuClose.Text = "Close";
 			this.mnuClose.Click += new System.EventHandler(this.mnuClose_Click);
 			// 
@@ -545,32 +581,24 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
-			// lblTileLayout
+			// mnuCopyToClipboard
 			// 
-			this.lblTileLayout.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblTileLayout.AutoSize = true;
-			this.lblTileLayout.Location = new System.Drawing.Point(3, 61);
-			this.lblTileLayout.Name = "lblTileLayout";
-			this.lblTileLayout.Size = new System.Drawing.Size(62, 13);
-			this.lblTileLayout.TabIndex = 18;
-			this.lblTileLayout.Text = "Tile Layout:";
+			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
+			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
+			this.mnuCopyToClipboard.Text = "Copy to clipboard";
 			// 
-			// cboLayout
+			// mnuSaveAsPng
 			// 
-			this.cboLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.cboLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cboLayout.FormattingEnabled = true;
-			this.cboLayout.Items.AddRange(new object[] {
-            "2 BPP",
-            "4 BPP",
-            "8 BPP",
-            "8 BPP - Direct Color Mode",
-            "Mode 7",
-            "Mode 7 - Direct Color Mode"});
-			this.cboLayout.Location = new System.Drawing.Point(77, 57);
-			this.cboLayout.Name = "cboLayout";
-			this.cboLayout.Size = new System.Drawing.Size(114, 21);
-			this.cboLayout.TabIndex = 19;
+			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
+			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
+			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
+			this.mnuSaveAsPng.Text = "Save as PNG";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
 			// 
 			// frmTileViewer
 			// 
@@ -638,5 +666,8 @@
 		private System.Windows.Forms.TextBox txtTileAddress;
 		private System.Windows.Forms.Label lblTileLayout;
 		private System.Windows.Forms.ComboBox cboLayout;
+		private System.Windows.Forms.ToolStripMenuItem mnuCopyToClipboard;
+		private System.Windows.Forms.ToolStripMenuItem mnuSaveAsPng;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
 	}
 }

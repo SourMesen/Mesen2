@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Controls;
+using Mesen.GUI.Forms;
+using System.Drawing.Imaging;
 
 namespace Mesen.GUI.Debugger.PpuViewer
 {
@@ -130,6 +132,21 @@ namespace Mesen.GUI.Debugger.PpuViewer
 
 			ctrlPanel.HorizontalScroll.Value = 0;
 			ctrlPanel.HorizontalScroll.Value = 0;
+		}
+
+		public void CopyToClipboard()
+		{
+			Clipboard.SetImage(this.Image);
+		}
+
+		public void SaveAsPng()
+		{
+			using(SaveFileDialog sfd = new SaveFileDialog()) {
+				sfd.SetFilter("PNG files|*.png");
+				if(sfd.ShowDialog() == DialogResult.OK) {
+					this.Image.Save(sfd.FileName, ImageFormat.Png);
+				}
+			}
 		}
 	}
 }
