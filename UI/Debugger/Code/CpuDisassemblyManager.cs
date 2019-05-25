@@ -33,6 +33,20 @@ namespace Mesen.GUI.Debugger.Code
 			}
 		}
 
+		protected virtual int GetFullAddress(int address, int length)
+		{
+			CpuState state = DebugApi.GetState().Cpu;
+			if(length == 4) {
+				//Append current DB register to 2-byte addresses
+				return (state.DBR << 16) | address;
+			} else if(length == 2) {
+				//Add direct register to 1-byte addresses
+				return (state.D + address);
+			}
+
+			return address;
+		}
+
 		public LocationInfo GetLocationInfo(string word, int lineIndex)
 		{
 			LocationInfo location = new LocationInfo();
@@ -65,17 +79,7 @@ namespace Mesen.GUI.Debugger.Code
 			} else if(word.StartsWith("$")) {
 				word = word.Replace("$", "");
 				if(Int32.TryParse(word, System.Globalization.NumberStyles.HexNumber, null, out address)) {
-					location.Address = address;
-					if(word.Length <= 4) {
-						CpuState state = DebugApi.GetState().Cpu;
-						if(word.Length == 4) {
-							//Append current DB register to 2-byte addresses
-							location.Address = (state.DBR << 16) | address;
-						} else if(word.Length == 2) {
-							//Add direct register to 1-byte addresses
-							location.Address = (state.D + address);
-						}
-					}
+					location.Address = GetFullAddress(address, word.Length);
 				}
 			} else if(Int32.TryParse(word, out address)) {
 				location.Address = (int)address;
@@ -105,6 +109,11 @@ namespace Mesen.GUI.Debugger.Code
 
 		public Dictionary<string, string> GetTooltipData(string word, int lineIndex)
 		{
+			if(_provider.GetCodeLineData(lineIndex).Flags.HasFlag(LineFlags.ShowAsData)) {
+				//Disable tooltips for .db statements
+				return null;
+			}
+
 			LocationInfo location = GetLocationInfo(word, lineIndex);
 
 			if(location.Symbol != null) {
