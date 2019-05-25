@@ -67,7 +67,7 @@ namespace Mesen.GUI.Debugger
 			{
 				if(CustomIndent.HasValue) {
 					return CustomIndent.Value;
-				} else if(Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd) || Flags.HasFlag(LineFlags.Label) || (Flags.HasFlag(LineFlags.Comment) && Text.Length == 0)) {
+				} else if(Flags.HasFlag(LineFlags.ShowAsData) || Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd) || Flags.HasFlag(LineFlags.Label) || (Flags.HasFlag(LineFlags.Comment) && Text.Length == 0)) {
 					return 0;
 				} else {
 					return 15;
@@ -146,5 +146,6 @@ namespace Mesen.GUI.Debugger
 		SubStart = 0x80,
 		Label = 0x100,
 		Comment = 0x200,
+		ShowAsData = 0x400
 	}
 }

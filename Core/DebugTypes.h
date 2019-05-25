@@ -132,6 +132,7 @@ namespace LineFlags
 		SubStart = 0x80,
 		Label = 0x100,
 		Comment = 0x200,
+		ShowAsData = 0x400
 	};
 }
 

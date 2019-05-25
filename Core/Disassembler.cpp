@@ -8,10 +8,12 @@
 #include "MemoryManager.h"
 #include "LabelManager.h"
 #include "CpuTypes.h"
+#include "MemoryDumper.h"
 #include "Console.h"
 #include "CodeDataLogger.h"
 #include "DebugBreakHelper.h"
 #include "BaseCartridge.h"
+#include "EmuSettings.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/StringUtilities.h"
 
@@ -22,6 +24,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_labelManager = debugger->GetLabelManager();
 	_console = console.get();
 	_spc = console->GetSpc().get();
+	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_memoryManager = console->GetMemoryManager().get();
 
 	_prgRom = console->GetCartridge()->DebugGetPrgRom();
@@ -125,10 +128,10 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo)
 		for(int i = 0; i < 4; i++) {
 			if(addrInfo.Address >= i) {
 				if((*cache)[addrInfo.Address - i].IsInitialized()) {
-					_needDisassemble[(int)CpuType::Cpu] = true;
-					_needDisassemble[(int)CpuType::Spc] = true;
 					(*cache)[addrInfo.Address - i].Reset();
 				}
+				_needDisassemble[(int)CpuType::Cpu] = true;
+				_needDisassemble[(int)CpuType::Spc] = true;
 			}
 		}
 	}
@@ -153,13 +156,19 @@ void Disassembler::Disassemble(CpuType cpuType)
 	uint32_t sourceLength;
 	vector<DisassemblyInfo> *cache;
 
-	bool disassembleAll = false;
+	bool disUnident = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
+	bool disData = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
+	bool showUnident = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
+	bool showData = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
+
 	bool inUnknownBlock = false;
-	
+	bool inVerifiedBlock = false;
+
 	AddressInfo addrInfo = {};
 	AddressInfo prevAddrInfo = {};
 	string label;
 	string comment;
+	int byteCounter = 0;
 	for(int32_t i = 0; i <= maxAddr; i++) {
 		prevAddrInfo = addrInfo;
 		addrInfo = isSpc ? _spc->GetAbsoluteAddress(i) : _memoryManager->GetAbsoluteAddress(i);
@@ -175,18 +184,25 @@ void Disassembler::Disassemble(CpuType cpuType)
 		uint8_t opSize = 0;
 		uint8_t opCode = (source + addrInfo.Address)[0];
 		bool needRealign = true;
-		if(!disassemblyInfo.IsInitialized() && disassembleAll) {
-			opSize = DisassemblyInfo::GetOpSize(opCode, 0, cpuType);
-		} else if(disassemblyInfo.IsInitialized()) {
+
+		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsCode(addrInfo.Address) : false;
+		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsData(addrInfo.Address) : false;
+
+		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
 			needRealign = false;
+		} else if((isData && disData) || (!isData && !isCode && disUnident)) {
+			opSize = DisassemblyInfo::GetOpSize(opCode, 0, cpuType);
 		}
 
-		if(disassemblyInfo.IsInitialized() || disassembleAll) {
-			if(inUnknownBlock) {
-				results.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd));
+		if(opSize > 0) {
+			if(inUnknownBlock || inVerifiedBlock) {
+				int flags = LineFlags::BlockEnd | (inVerifiedBlock ? LineFlags::VerifiedData : 0) | (((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) ? LineFlags::ShowAsData : 0);
+				results.push_back(DisassemblyResult(prevAddrInfo, i - 1, flags));
 				inUnknownBlock = false;
+				inVerifiedBlock = false;
 			}
+			byteCounter = 0;
 
 			if(addrInfo.Type == SnesMemoryType::PrgRom && _cdl->IsSubEntryPoint(addrInfo.Address)) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
@@ -232,16 +248,54 @@ void Disassembler::Disassemble(CpuType cpuType)
 				results.push_back(DisassemblyResult(-1, LineFlags::VerifiedCode | LineFlags::BlockEnd));
 			} 
 		} else {
-			if(!inUnknownBlock) {
-				inUnknownBlock = true;
-				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockStart));
-				results.push_back(DisassemblyResult(-1, LineFlags::None));
+			if(showData || showUnident) {
+				if((isData && inUnknownBlock) || (!isData && inVerifiedBlock)) {
+					if(isData && inUnknownBlock) {
+						//In an unknown block and the next byte is data, end the block
+						results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockEnd | (showUnident ? LineFlags::ShowAsData : 0)));
+					} else if(!isData && inVerifiedBlock) {
+						//In a verified data block and the next byte is unknown, end the block
+						results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockEnd | LineFlags::VerifiedData | (showData ? LineFlags::ShowAsData : 0)));
+					}
+					inUnknownBlock = false;
+					inVerifiedBlock = false;
+					byteCounter = 0;
+				}
+			}
+
+			if(byteCounter > 0) {
+				//If showing as hex data, add a new data line every 8 bytes
+				byteCounter--;
+				if(byteCounter == 0) {
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::ShowAsData | (isData ? LineFlags::VerifiedData : 0)));
+					byteCounter = 8;
+				}
+			} else if(!inUnknownBlock && !inVerifiedBlock) {
+				//If not in a block, start a new block based on the current byte's type (data vs unidentified)
+				bool showAsData = isData && showData || (!isData && !isCode) && showUnident;
+				if(isData) {
+					inVerifiedBlock = true;
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockStart | LineFlags::VerifiedData | (showAsData ? LineFlags::ShowAsData : 0)));
+				} else {
+					inUnknownBlock = true;
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockStart | (showAsData ? LineFlags::ShowAsData : 0)));
+				}
+
+				if(showAsData) {
+					//If showing data as hex, add the first row of the block
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::ShowAsData | (isData ? LineFlags::VerifiedData : 0)));
+					byteCounter = 8;
+				} else {
+					//If not showing the data at all, display 1 empty line
+					results.push_back(DisassemblyResult(-1, LineFlags::None | (isData ? LineFlags::VerifiedData : 0)));
+				}
 			}
 		}
 	}
 
-	if(inUnknownBlock) {
-		results.push_back(DisassemblyResult(addrInfo, maxAddr, LineFlags::BlockEnd));
+	if(inUnknownBlock || inVerifiedBlock) {
+		int flags = LineFlags::BlockEnd | (inVerifiedBlock ? LineFlags::VerifiedData : 0) | (((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) ? LineFlags::ShowAsData : 0);
+		results.push_back(DisassemblyResult(addrInfo, maxAddr + 1, flags));
 	}
 }
 
@@ -302,7 +356,9 @@ uint32_t Disassembler::GetLineIndex(CpuType type, uint32_t cpuAddress)
 bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &data)
 {
 	auto lock =_disassemblyLock.AcquireSafe();
-	vector<DisassemblyResult> &source = type == CpuType::Cpu ? _disassembly : _spcDisassembly;
+	bool isSpc = type == CpuType::Spc;
+	vector<DisassemblyResult> &source = isSpc ? _spcDisassembly : _disassembly;
+	int32_t maxAddr = isSpc ? 0xFFFF : 0xFFFFFF;
 	if(lineIndex < source.size()) {
 		DisassemblyResult result = source[lineIndex];
 		data.Address = -1;
@@ -318,7 +374,16 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 
 		bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) != 0;
 		if(!isBlockStartEnd && result.Address.Address >= 0) {
-			if((data.Flags & LineFlags::Comment) && result.CommentLine >= 0) {
+			if((data.Flags & LineFlags::ShowAsData)) {
+				string str = ".db";
+				int nextAddr = lineIndex < source.size() - 1 ? source[lineIndex+1].CpuAddress : (maxAddr + 1);
+				for(int i = 0; i < 8 && result.CpuAddress+i < nextAddr; i++) {
+					str += " $" + HexUtilities::ToHex(_memoryDumper->GetMemoryValue(isSpc ? SnesMemoryType::SpcMemory : SnesMemoryType::CpuMemory, result.CpuAddress+i));
+				}
+				data.Address = result.CpuAddress;
+				data.AbsoluteAddress = result.Address.Address;
+				memcpy(data.Text, str.c_str(), str.size());
+			} else if((data.Flags & LineFlags::Comment) && result.CommentLine >= 0) {
 				string comment = ";" + StringUtilities::Split(_labelManager->GetComment(result.Address), '\n')[result.CommentLine];
 				data.Flags |= LineFlags::VerifiedCode;
 				memcpy(data.Comment, comment.c_str(), std::min<int>((int)comment.size(), 1000));
@@ -335,7 +400,6 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 
 				data.Address = result.CpuAddress;
 				data.AbsoluteAddress = result.Address.Address;
-				data.OpSize = disInfo.GetOpSize();
 
 				if(type == CpuType::Cpu) {
 					CpuState state = _console->GetCpu()->GetState();
@@ -348,16 +412,25 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						data.Flags |= LineFlags::VerifiedCode;
 					}
 
+					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
 
 					if(data.EffectiveAddress >= 0) {
-						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _console->GetMemoryManager().get(), data.ValueSize);
+						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryManager, data.ValueSize);
 					} else {
 						data.ValueSize = 0;
 					}
 				} else {
 					SpcState state = _console->GetSpc()->GetState();
 					state.PC = (uint16_t)result.CpuAddress;
+
+					if(!disInfo.IsInitialized()) {
+						disInfo = DisassemblyInfo(source + result.Address.Address, 0, CpuType::Spc);
+					} else {
+						data.Flags |= LineFlags::VerifiedCode;
+					}
+
+					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
 					if(data.EffectiveAddress >= 0) {
 						data.Value = _spc->DebugRead(data.EffectiveAddress);
@@ -388,8 +461,16 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				}
 				memcpy(data.Text, label.c_str(), label.size() + 1);
 			} else if(data.Flags & LineFlags::BlockStart) {
-				string label = (data.Flags & LineFlags::VerifiedCode) ? "verified code" : "unidentified";
+				string label = (data.Flags & LineFlags::VerifiedData) ? "data" : "unidentified";
 				memcpy(data.Text, label.c_str(), label.size() + 1);
+			}
+
+			if(data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) {
+				if(!(data.Flags & LineFlags::ShowAsData)) {
+					//For hidden blocks, give the start/end lines an address
+					data.Address = result.CpuAddress;
+					data.AbsoluteAddress = result.Address.Address;
+				}
 			}
 		}
 		return true;

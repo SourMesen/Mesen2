@@ -43,9 +43,9 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
 
 	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), _memoryManager.get()));
+	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
-	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _spc.get(), _memoryManager.get()));
 	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));

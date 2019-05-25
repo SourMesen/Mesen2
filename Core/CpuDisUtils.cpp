@@ -64,7 +64,7 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 			str.Write('#', operand);
 			break;
 
-		case AddrMode::Sig8: break; //BRK/COP signature, ignore them
+		case AddrMode::Sig8: str.Write('#', operand); break; //BRK/COP signature
 		case AddrMode::Imp: break;
 		case AddrMode::RelLng: str.Write(operand); break;
 		case AddrMode::Rel: str.Write(operand); break;

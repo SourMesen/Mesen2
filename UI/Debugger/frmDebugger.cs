@@ -181,6 +181,21 @@ namespace Mesen.GUI.Debugger
 			mnuBreakOnUnitRead.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnUninitRead); };
 			mnuBringToFrontOnBreak.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak); };
 			mnuBringToFrontOnPause.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnPause); };
+
+			mnuHideUnident.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.UnidentifiedBlockDisplay, CodeDisplayMode.Hide);  RefreshDisassembly(); };
+			mnuDisassembleUnident.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.UnidentifiedBlockDisplay, CodeDisplayMode.Disassemble); RefreshDisassembly(); };
+			mnuShowUnident.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.UnidentifiedBlockDisplay, CodeDisplayMode.Show); RefreshDisassembly(); };
+
+			mnuHideData.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.VerifiedDataDisplay, CodeDisplayMode.Hide); RefreshDisassembly(); };
+			mnuDisassembleData.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.VerifiedDataDisplay, CodeDisplayMode.Disassemble); RefreshDisassembly(); };
+			mnuShowData.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.VerifiedDataDisplay, CodeDisplayMode.Show); RefreshDisassembly(); };
+		}
+
+		private void SetValue<T>(ref T setting, T value)
+		{
+			setting = value;
+			ConfigManager.ApplyChanges();
+			ConfigManager.Config.Debug.Debugger.ApplyConfig();
 		}
 
 		private void InvertFlag(ref bool flag)
@@ -188,6 +203,13 @@ namespace Mesen.GUI.Debugger
 			flag = !flag;
 			ConfigManager.ApplyChanges();
 			ConfigManager.Config.Debug.Debugger.ApplyConfig();
+		}
+
+		private void RefreshDisassembly()
+		{
+			DebugApi.RefreshDisassembly(CpuType.Cpu);
+			DebugApi.RefreshDisassembly(CpuType.Spc);
+			ctrlDisassemblyView.UpdateCode();
 		}
 
 		private void mnuBreakOptions_DropDownOpening(object sender, EventArgs e)
@@ -410,6 +432,22 @@ namespace Mesen.GUI.Debugger
 			using(frmIntegrationSettings frm = new frmIntegrationSettings()) {
 				frm.ShowDialog();
 			}
+		}
+
+		private void mnuUnidentifiedData_DropDownOpening(object sender, EventArgs e)
+		{
+			CodeDisplayMode mode = ConfigManager.Config.Debug.Debugger.UnidentifiedBlockDisplay;
+			mnuShowUnident.Checked = mode == CodeDisplayMode.Show;
+			mnuHideUnident.Checked = mode == CodeDisplayMode.Hide;
+			mnuDisassembleUnident.Checked = mode == CodeDisplayMode.Disassemble;
+		}
+
+		private void mnuVerifiedData_DropDownOpening(object sender, EventArgs e)
+		{
+			CodeDisplayMode mode = ConfigManager.Config.Debug.Debugger.VerifiedDataDisplay;
+			mnuShowData.Checked = mode == CodeDisplayMode.Show;
+			mnuHideData.Checked = mode == CodeDisplayMode.Hide;
+			mnuDisassembleData.Checked = mode == CodeDisplayMode.Disassemble;
 		}
 	}
 

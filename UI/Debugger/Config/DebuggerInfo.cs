@@ -29,6 +29,9 @@ namespace Mesen.GUI.Config
 		public bool BringToFrontOnBreak = true;
 		public bool BringToFrontOnPause = false;
 
+		public CodeDisplayMode UnidentifiedBlockDisplay = CodeDisplayMode.Hide;
+		public CodeDisplayMode VerifiedDataDisplay = CodeDisplayMode.Hide;
+
 		public int BreakOnValue = 0;
 		public int BreakInCount = 1;
 		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
@@ -66,6 +69,11 @@ namespace Mesen.GUI.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnWdm, BreakOnWdm);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnStp, BreakOnStp);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
+
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Show);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Show);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Disassemble);
 		}
 	}
 	
@@ -75,5 +83,12 @@ namespace Mesen.GUI.Config
 		PpuCycles,
 		Scanlines,
 		Frames
+	}
+
+	public enum CodeDisplayMode
+	{
+		Hide,
+		Show,
+		Disassemble
 	}
 }

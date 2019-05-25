@@ -76,13 +76,13 @@
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDisassemblyOptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuUnidentifiedData = new System.Windows.Forms.ToolStripMenuItem();
-			this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.showDisassemblyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.showAsDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuHideUnident = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuDisassembleUnident = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuShowUnident = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuVerifiedData = new System.Windows.Forms.ToolStripMenuItem();
-			this.hideToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.showDisassemblyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.showAsDataToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuHideData = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuDisassembleData = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuShowData = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuShowByteCode = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOptions = new System.Windows.Forms.ToolStripMenuItem();
@@ -482,74 +482,73 @@
 			// mnuUnidentifiedData
 			// 
 			this.mnuUnidentifiedData.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.hideToolStripMenuItem,
-            this.showDisassemblyToolStripMenuItem,
-            this.showAsDataToolStripMenuItem});
+            this.mnuHideUnident,
+            this.mnuDisassembleUnident,
+            this.mnuShowUnident});
 			this.mnuUnidentifiedData.Image = global::Mesen.GUI.Properties.Resources.UnidentifiedData;
 			this.mnuUnidentifiedData.Name = "mnuUnidentifiedData";
-			this.mnuUnidentifiedData.Size = new System.Drawing.Size(166, 22);
-			this.mnuUnidentifiedData.Text = "Unidentified Data";
-			this.mnuUnidentifiedData.Visible = false;
+			this.mnuUnidentifiedData.Size = new System.Drawing.Size(199, 22);
+			this.mnuUnidentifiedData.Text = "Unidentified Code/Data";
+			this.mnuUnidentifiedData.DropDownOpening += new System.EventHandler(this.mnuUnidentifiedData_DropDownOpening);
 			// 
-			// hideToolStripMenuItem
+			// mnuHideUnident
 			// 
-			this.hideToolStripMenuItem.Name = "hideToolStripMenuItem";
-			this.hideToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-			this.hideToolStripMenuItem.Text = "Hide";
+			this.mnuHideUnident.Name = "mnuHideUnident";
+			this.mnuHideUnident.Size = new System.Drawing.Size(170, 22);
+			this.mnuHideUnident.Text = "Hide";
 			// 
-			// showDisassemblyToolStripMenuItem
+			// mnuDisassembleUnident
 			// 
-			this.showDisassemblyToolStripMenuItem.Name = "showDisassemblyToolStripMenuItem";
-			this.showDisassemblyToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-			this.showDisassemblyToolStripMenuItem.Text = "Show disassembly";
+			this.mnuDisassembleUnident.Name = "mnuDisassembleUnident";
+			this.mnuDisassembleUnident.Size = new System.Drawing.Size(170, 22);
+			this.mnuDisassembleUnident.Text = "Show disassembly";
 			// 
-			// showAsDataToolStripMenuItem
+			// mnuShowUnident
 			// 
-			this.showAsDataToolStripMenuItem.Name = "showAsDataToolStripMenuItem";
-			this.showAsDataToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-			this.showAsDataToolStripMenuItem.Text = "Show as data";
+			this.mnuShowUnident.Name = "mnuShowUnident";
+			this.mnuShowUnident.Size = new System.Drawing.Size(170, 22);
+			this.mnuShowUnident.Text = "Show as data";
 			// 
 			// mnuVerifiedData
 			// 
 			this.mnuVerifiedData.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.hideToolStripMenuItem1,
-            this.showDisassemblyToolStripMenuItem1,
-            this.showAsDataToolStripMenuItem1});
+            this.mnuHideData,
+            this.mnuDisassembleData,
+            this.mnuShowData});
 			this.mnuVerifiedData.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
 			this.mnuVerifiedData.Name = "mnuVerifiedData";
-			this.mnuVerifiedData.Size = new System.Drawing.Size(166, 22);
+			this.mnuVerifiedData.Size = new System.Drawing.Size(199, 22);
 			this.mnuVerifiedData.Text = "Verified Data";
-			this.mnuVerifiedData.Visible = false;
+			this.mnuVerifiedData.DropDownOpening += new System.EventHandler(this.mnuVerifiedData_DropDownOpening);
 			// 
-			// hideToolStripMenuItem1
+			// mnuHideData
 			// 
-			this.hideToolStripMenuItem1.Name = "hideToolStripMenuItem1";
-			this.hideToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
-			this.hideToolStripMenuItem1.Text = "Hide";
+			this.mnuHideData.Name = "mnuHideData";
+			this.mnuHideData.Size = new System.Drawing.Size(170, 22);
+			this.mnuHideData.Text = "Hide";
 			// 
-			// showDisassemblyToolStripMenuItem1
+			// mnuDisassembleData
 			// 
-			this.showDisassemblyToolStripMenuItem1.Name = "showDisassemblyToolStripMenuItem1";
-			this.showDisassemblyToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
-			this.showDisassemblyToolStripMenuItem1.Text = "Show disassembly";
+			this.mnuDisassembleData.Name = "mnuDisassembleData";
+			this.mnuDisassembleData.Size = new System.Drawing.Size(170, 22);
+			this.mnuDisassembleData.Text = "Show disassembly";
 			// 
-			// showAsDataToolStripMenuItem1
+			// mnuShowData
 			// 
-			this.showAsDataToolStripMenuItem1.Name = "showAsDataToolStripMenuItem1";
-			this.showAsDataToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
-			this.showAsDataToolStripMenuItem1.Text = "Show as data";
+			this.mnuShowData.Name = "mnuShowData";
+			this.mnuShowData.Size = new System.Drawing.Size(170, 22);
+			this.mnuShowData.Text = "Show as data";
 			// 
 			// toolStripMenuItem6
 			// 
 			this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-			this.toolStripMenuItem6.Size = new System.Drawing.Size(163, 6);
-			this.toolStripMenuItem6.Visible = false;
+			this.toolStripMenuItem6.Size = new System.Drawing.Size(196, 6);
 			// 
 			// mnuShowByteCode
 			// 
 			this.mnuShowByteCode.CheckOnClick = true;
 			this.mnuShowByteCode.Name = "mnuShowByteCode";
-			this.mnuShowByteCode.Size = new System.Drawing.Size(166, 22);
+			this.mnuShowByteCode.Size = new System.Drawing.Size(199, 22);
 			this.mnuShowByteCode.Text = "Show byte code";
 			// 
 			// mnuBreakOptions
@@ -970,13 +969,13 @@
 		private Controls.ctrlLabelList ctrlLabelList;
 		private System.Windows.Forms.ToolStripMenuItem mnuDisassemblyOptions;
 		private System.Windows.Forms.ToolStripMenuItem mnuUnidentifiedData;
-		private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem showDisassemblyToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem showAsDataToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mnuHideUnident;
+		private System.Windows.Forms.ToolStripMenuItem mnuDisassembleUnident;
+		private System.Windows.Forms.ToolStripMenuItem mnuShowUnident;
 		private System.Windows.Forms.ToolStripMenuItem mnuVerifiedData;
-		private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem showDisassemblyToolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem showAsDataToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem mnuHideData;
+		private System.Windows.Forms.ToolStripMenuItem mnuDisassembleData;
+		private System.Windows.Forms.ToolStripMenuItem mnuShowData;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
 		private System.Windows.Forms.ToolStripMenuItem mnuShowByteCode;
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakOptions;

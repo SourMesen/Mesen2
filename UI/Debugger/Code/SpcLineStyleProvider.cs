@@ -40,7 +40,13 @@ namespace Mesen.GUI.Debugger.Code
 			if(isActiveStatement) {
 				ConfigureActiveStatement(props);
 			}
-			
+
+			if(lineData.Flags.HasFlag(LineFlags.VerifiedData)) {
+				props.LineBgColor = cfg.CodeVerifiedDataColor;
+			} else if(!lineData.Flags.HasFlag(LineFlags.VerifiedCode)) {
+				props.LineBgColor = cfg.CodeUnidentifiedDataColor;
+			}
+
 			return props;
 		}
 
