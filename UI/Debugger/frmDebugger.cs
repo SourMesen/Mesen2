@@ -68,11 +68,12 @@ namespace Mesen.GUI.Debugger
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
-
-
+			
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			cfg.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			cfg.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
+			cfg.SplitterDistance = ctrlSplitContainer.SplitterDistance;
+
 			_entityBinder.UpdateObject();
 			ConfigManager.ApplyChanges();
 
@@ -255,6 +256,10 @@ namespace Mesen.GUI.Debugger
 				this.StartPosition = FormStartPosition.Manual;
 				this.Size = cfg.WindowSize;
 				this.Location = cfg.WindowLocation;
+			}
+
+			if(cfg.SplitterDistance.HasValue) {
+				ctrlSplitContainer.SplitterDistance = cfg.SplitterDistance.Value;
 			}
 		}
 

@@ -14,6 +14,7 @@ namespace Mesen.GUI.Config
 	{
 		public Size WindowSize = new Size(0, 0);
 		public Point WindowLocation;
+		public int? SplitterDistance = null;
 
 		public bool ShowByteCode = false;
 
