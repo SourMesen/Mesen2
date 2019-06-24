@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
 using Mesen.GUI.Controls;
+using System.Drawing.Imaging;
 
 namespace Mesen.GUI.Forms.Config
 {
@@ -35,7 +36,7 @@ namespace Mesen.GUI.Forms.Config
 		{
 			float xFactor = picBackground.Width / 585f;
 			float yFactor = picBackground.Height / 253f;
-			Bitmap bitmap = new Bitmap(picBackground.Width, picBackground.Height);
+			Bitmap bitmap = new Bitmap(picBackground.Width, picBackground.Height, PixelFormat.Format32bppPArgb);
 			using(Graphics g = Graphics.FromImage(bitmap)) {
 				g.ScaleTransform(xFactor, yFactor);
 				using(Pen pen = new Pen(Color.LightGray, 2f)) {

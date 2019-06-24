@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using Mesen.GUI.Controls;
 using Mesen.GUI.Forms;
 using Mesen.GUI.Config;
+using System.Drawing.Imaging;
 
 namespace Mesen.GUI.Debugger
 {
@@ -114,14 +115,14 @@ namespace Mesen.GUI.Debugger
 
 			int picHeight = _baseHeight;
 			if(_screenBitmap == null || _screenBitmap.Height != picHeight) {
-				_screenBitmap = new Bitmap(_baseWidth, picHeight);
-				_overlayBitmap = new Bitmap(_baseWidth, picHeight);
-				_displayBitmap = new Bitmap(_baseWidth, picHeight);
+				_screenBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
+				_overlayBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
+				_displayBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
 			}
 
 			GCHandle handle = GCHandle.Alloc(this._pictureData, GCHandleType.Pinned);
 			try {
-				Bitmap source = new Bitmap(_baseWidth, _baseHeight, _baseWidth*4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(_baseWidth, _baseHeight, _baseWidth*4, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				using(Graphics g = Graphics.FromImage(_screenBitmap)) {
 					g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 					g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;

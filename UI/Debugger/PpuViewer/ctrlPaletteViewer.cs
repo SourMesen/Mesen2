@@ -37,7 +37,7 @@ namespace Mesen.GUI.Debugger
 			set
 			{
 				_paletteScale = value;
-				_paletteImage = new Bitmap(PaletteScale * 16, PaletteScale * 16, PixelFormat.Format32bppArgb);
+				_paletteImage = new Bitmap(PaletteScale * 16, PaletteScale * 16, PixelFormat.Format32bppPArgb);
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace Mesen.GUI.Debugger
 
 			using(Graphics g = Graphics.FromImage(_paletteImage)) {
 				GCHandle handle = GCHandle.Alloc(argbPalette, GCHandleType.Pinned);
-				Bitmap source = new Bitmap(16, 16, 16 * 4, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(16, 16, 16 * 4, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				try {
 					g.InterpolationMode = InterpolationMode.NearestNeighbor;
 					g.SmoothingMode = SmoothingMode.None;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -139,7 +140,7 @@ namespace Mesen.GUI.Forms.Config
 
 		private void UpdateOverscanImage(PictureBox picture, int top, int bottom, int left, int right)
 		{
-			Bitmap overscan = new Bitmap(picture.Width - 2, picture.Height - 2);
+			Bitmap overscan = new Bitmap(picture.Width - 2, picture.Height - 2, PixelFormat.Format32bppPArgb);
 
 			using(Graphics g = Graphics.FromImage(overscan)) {
 				g.Clear(Color.DarkGray);

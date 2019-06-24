@@ -46,7 +46,7 @@ namespace Mesen.GUI.Debugger
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			_tilemapData = new byte[1024 * 1024 * 4];
-			_tilemapImage = new Bitmap(1024, 1024, PixelFormat.Format32bppArgb);
+			_tilemapImage = new Bitmap(1024, 1024, PixelFormat.Format32bppPArgb);
 			ctrlImagePanel.Image = _tilemapImage;
 			
 			InitShortcuts();
@@ -197,12 +197,12 @@ namespace Mesen.GUI.Debugger
 			int mapWidth = GetWidth();
 			int mapHeight = GetHeight();
 			if(_tilemapImage.Width != mapWidth || _tilemapImage.Height != mapHeight) {
-				_tilemapImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppArgb);
+				_tilemapImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppPArgb);
 				ctrlImagePanel.Image = _tilemapImage;
 			}
 			using(Graphics g = Graphics.FromImage(_tilemapImage)) {
 				GCHandle handle = GCHandle.Alloc(_tilemapData, GCHandleType.Pinned);
-				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * 1024, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * 1024, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				g.DrawImage(source, 0, 0);
 				handle.Free();
 			}

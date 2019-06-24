@@ -44,7 +44,7 @@ namespace Mesen.GUI.Debugger
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			_previewData = new byte[256 * 240 * 4];
-			_previewImage = new Bitmap(256, 240, PixelFormat.Format32bppArgb);
+			_previewImage = new Bitmap(256, 240, PixelFormat.Format32bppPArgb);
 			ctrlImagePanel.ImageSize = new Size(256, 240);
 			ctrlImagePanel.Image = _previewImage;
 
@@ -142,7 +142,7 @@ namespace Mesen.GUI.Debugger
 
 			using(Graphics g = Graphics.FromImage(_previewImage)) {
 				GCHandle handle = GCHandle.Alloc(_previewData, GCHandleType.Pinned);
-				Bitmap source = new Bitmap(256, 240, 4 * 256, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(256, 240, 4 * 256, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				g.DrawImage(source, 0, 0);
 				handle.Free();
 			}

@@ -47,7 +47,7 @@ namespace Mesen.GUI.Debugger
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			_tileData = new byte[512 * 512 * 4];
-			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppArgb);
+			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppPArgb);
 			ctrlImagePanel.Image = _tileImage;
 
 			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
@@ -216,13 +216,13 @@ namespace Mesen.GUI.Debugger
 			int mapHeight = tileCount / _options.Width * 8;
 
 			if(_tileImage.Width != mapWidth || _tileImage.Height != mapHeight) {
-				_tileImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppArgb);
+				_tileImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppPArgb);
 				ctrlImagePanel.Image = _tileImage;
 			}
 
 			using(Graphics g = Graphics.FromImage(_tileImage)) {
 				GCHandle handle = GCHandle.Alloc(_tileData, GCHandleType.Pinned);
-				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * mapWidth, PixelFormat.Format32bppArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(mapWidth, mapHeight, 4 * mapWidth, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				try {
 					g.DrawImage(source, 0, 0);
 				} finally {

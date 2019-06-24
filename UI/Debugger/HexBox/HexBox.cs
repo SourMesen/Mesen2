@@ -8,6 +8,7 @@ using System.Windows.Forms.VisualStyles;
 using System.Text;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Drawing.Imaging;
 
 namespace Be.Windows.Forms
 {
@@ -2837,7 +2838,7 @@ namespace Be.Windows.Forms
 			Point dimensions = new Point(rec.Width, rec.Height);
 			Bitmap bitmap;
 			if(!_shadowSelectionCache.TryGetValue(dimensions, out bitmap)) {
-				bitmap = new Bitmap(rec.Width, rec.Height);
+				bitmap = new Bitmap(rec.Width, rec.Height, PixelFormat.Format32bppPArgb);
 				using(Graphics bitmapGraphics = Graphics.FromImage(bitmap)) {
 					using(SolidBrush shadowSelectionBrush = new SolidBrush(_shadowSelectionColor)) {
 						bitmapGraphics.FillRectangle(shadowSelectionBrush, 0, 0, rec.Width, rec.Height);
