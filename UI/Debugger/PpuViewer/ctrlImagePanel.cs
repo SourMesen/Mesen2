@@ -19,7 +19,6 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private Size _imageSize;
 
 		private bool _mouseDown = false;
-		private bool _dragging = false;
 		private Point _lastLocation = Point.Empty;
 
 		public Rectangle Selection { get { return ctrlImageViewer.Selection; } set { ctrlImageViewer.Selection = value; } }
@@ -71,13 +70,10 @@ namespace Mesen.GUI.Debugger.PpuViewer
 
 			ctrlImageViewer.MouseUp += (s, e) => {
 				_mouseDown = false;
-				_dragging = false;
 			};
 
 			ctrlImageViewer.MouseClick += (s, e) => {
-				if(!_dragging) {
-					this.MouseClick?.Invoke(s, e);
-				}
+				this.MouseClick?.Invoke(s, e);
 			};
 
 			ctrlImageViewer.MouseMove += ctrlImageViewer_MouseMove;
@@ -86,7 +82,6 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private void ctrlImageViewer_MouseMove(object sender, MouseEventArgs e)
 		{
 			if(_mouseDown) {
-				_dragging = true;
 				ctrlImageViewer.MouseMove -= ctrlImageViewer_MouseMove;
 				int hScroll = Math.Min(ctrlPanel.HorizontalScroll.Maximum, Math.Max(0, ctrlPanel.HorizontalScroll.Value - (e.Location.X - _lastLocation.X)));
 				int vScroll = Math.Min(ctrlPanel.VerticalScroll.Maximum, Math.Max(0, ctrlPanel.VerticalScroll.Value - (e.Location.Y - _lastLocation.Y)));
