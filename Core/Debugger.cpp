@@ -181,7 +181,7 @@ void Debugger::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
-		_disassembler->InvalidateCache(addressInfo);
+		_disassembler->InvalidateCache(addressInfo, CpuType::Cpu);
 	}
 
 	if(_memoryManager->IsRegister(addr)) {
@@ -268,7 +268,7 @@ void Debugger::ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType
 	MemoryOperationInfo operation { addr, value, type };
 	ProcessBreakConditions(operation, addressInfo);
 
-	_disassembler->InvalidateCache(addressInfo);
+	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
 }

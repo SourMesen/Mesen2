@@ -152,6 +152,7 @@ bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
 			}
 			return true;
 			
+		default:
 		case CpuType::Spc: return false;
 	}
 }

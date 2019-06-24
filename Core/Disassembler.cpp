@@ -98,9 +98,11 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 		if(!disInfo.IsInitialized() || !disInfo.IsValid(cpuFlags)) {
 			disInfo.Initialize(source+address, cpuFlags, type);
 			_needDisassemble[(int)type] = true;
+			returnSize += disInfo.GetOpSize();
+		} else {
+			returnSize += disInfo.GetOpSize();
+			break;
 		}
-
-		returnSize += disInfo.GetOpSize();
 
 		if(disInfo.UpdateCpuFlags(cpuFlags)) {
 			address += disInfo.GetOpSize();
@@ -117,7 +119,7 @@ void Disassembler::ResetPrgCache()
 	_needDisassemble[(int)CpuType::Cpu] = true;
 }
 
-void Disassembler::InvalidateCache(AddressInfo addrInfo)
+void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
 {
 	uint8_t *source;
 	uint32_t sourceLength;
@@ -129,9 +131,8 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo)
 			if(addrInfo.Address >= i) {
 				if((*cache)[addrInfo.Address - i].IsInitialized()) {
 					(*cache)[addrInfo.Address - i].Reset();
+					_needDisassemble[(int)type] = true;
 				}
-				_needDisassemble[(int)CpuType::Cpu] = true;
-				_needDisassemble[(int)CpuType::Spc] = true;
 			}
 		}
 	}

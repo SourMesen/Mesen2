@@ -55,7 +55,7 @@ public:
 
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void ResetPrgCache();
-	void InvalidateCache(AddressInfo addrInfo);
+	void InvalidateCache(AddressInfo addrInfo, CpuType type);
 	void Disassemble(CpuType cpuType);
 
 	DisassemblyInfo GetDisassemblyInfo(AddressInfo &info);
