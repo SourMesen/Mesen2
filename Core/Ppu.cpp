@@ -1527,14 +1527,13 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
-			if(!_forcedVblank && _scanline < _vblankStart) {
-				//Invalid VRAM access - can't write VRAM outside vblank/force blank
-				return;
+			if(_scanline >= _vblankStart || _forcedVblank) {
+				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
+				_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
+				_vram[GetVramAddress() << 1] = value;
 			}
 
-			_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
-
-			_vram[GetVramAddress() << 1] = value;
+			//The VRAM address is incremented even outside of vblank/forced blank
 			if(!_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
@@ -1542,14 +1541,13 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
-			if(!_forcedVblank && _scanline < _vblankStart) {
-				//Invalid VRAM access - can't write VRAM outside vblank/force blank
-				return;
+			if(_scanline >= _vblankStart || _forcedVblank) {
+				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
+				_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
+				_vram[(GetVramAddress() << 1) + 1] = value;
 			}
-
-			_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
-
-			_vram[(GetVramAddress() << 1) + 1] = value;
+			
+			//The VRAM address is incremented even outside of vblank/forced blank
 			if(_vramAddrIncrementOnSecondReg) {
 				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
 			}
