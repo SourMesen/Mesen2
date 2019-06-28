@@ -135,7 +135,7 @@ bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
 	uint8_t opCode = GetOpCode();
 	switch(_cpuType) {
 		case CpuType::Cpu:
-			if(opCode == 0x00 || opCode == 0x20 || opCode == 0x40 || opCode == 0x60 || opCode == 0x80 || opCode == 0x22 || opCode == 0xFC || opCode == 0x6B || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C || opCode == 0x6C || opCode == 0x02) {
+			if(opCode == 0x00 || opCode == 0x20 || opCode == 0x40 || opCode == 0x60 || opCode == 0x80 || opCode == 0x22 || opCode == 0xFC || opCode == 0x6B || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C || opCode == 0x7C || opCode == 0x02) {
 				//Jumps, RTI, RTS, BRK, COP, etc., stop disassembling
 				return false;
 			} else if(opCode == 0xC2) {
