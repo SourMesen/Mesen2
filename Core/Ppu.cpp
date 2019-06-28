@@ -707,8 +707,8 @@ void Ppu::RenderTilemap()
 			if(bpp == 8 && directColorMode) {
 				uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
 				paletteColor = (
-					(((color & 0x07) | (palette & 0x01)) << 1) |
-					(((color & 0x38) | ((palette & 0x02) << 1)) << 3) |
+					((((color & 0x07) << 1) | (palette & 0x01)) << 1) |
+					(((color & 0x38) | ((palette & 0x02) << 1)) << 4) |
 					(((color & 0xC0) | ((palette & 0x04) << 3)) << 7)
 				);
 			} else {

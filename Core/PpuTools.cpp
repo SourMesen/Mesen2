@@ -63,8 +63,8 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t 
 	uint16_t paletteColor;
 	if(bpp == 8 && directColorMode) {
 		paletteColor = (
-			(((colorIndex & 0x07) | (palette & 0x01)) << 1) |
-			(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 3) |
+			((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
+			(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
 			(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
 		);
 	} else {
