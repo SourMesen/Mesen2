@@ -654,7 +654,7 @@ void Ppu::RenderTilemap()
 		}
 
 		if(offsetPerTileMode) {
-			ProcessOffsetMode<layerIndex, largeTileWidth, largeTileHeight>(x, realX, realY, hScroll, vScroll, addr);
+			ProcessOffsetMode<layerIndex, largeTileWidth, largeTileHeight, hiResMode>(x, realX, realY, hScroll, vScroll, addr);
 			
 			//Need to recalculate this because vScroll may change from one tile to another
 			baseYOffset = (realY + vScroll) & 0x07;
@@ -748,18 +748,18 @@ void Ppu::RenderTilemap()
 	}
 }
 
-template<uint8_t layerIndex, bool largeTileWidth, bool largeTileHeight>
+template<uint8_t layerIndex, bool largeTileWidth, bool largeTileHeight, bool hiResMode>
 void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t &hScroll, uint16_t &vScroll, uint16_t &addr)
 {
 	constexpr uint16_t enableBit = layerIndex == 0 ? 0x2000 : 0x4000;
 	LayerConfig &config = _layerConfig[layerIndex];
 	
-	hScroll = config.HScroll;
+	hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;
 	vScroll = config.VScroll;
 
 	//TODO: Check+fix behavior with 16x16 tiles
 	//TODO: Test mode 4/6 behavior
-	int columnIndex = (realX + (hScroll & 0x07)) >> 3;
+	int columnIndex = (realX + (hScroll & 0x07)) >> (hiResMode ? 4 : 3);
 	if(columnIndex > 0) {
 		//For all tiles after the first tile on the row, check if an active offset exists and use it
 		uint16_t columnOffset = ((((columnIndex - 1) << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
