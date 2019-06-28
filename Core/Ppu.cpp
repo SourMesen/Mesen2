@@ -765,7 +765,8 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 		uint16_t columnOffset = ((((columnIndex - 1) << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
 		uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
 
-		uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + (columnOffset << 1) + (rowOffset << 6);
+		uint16_t tileOffset = (columnOffset << 1) + (rowOffset << 6);
+		uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + tileOffset;
 
 		if(_bgMode == 4) {
 			uint16_t offsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
@@ -777,7 +778,8 @@ void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t 
 				vScroll = (offsetValue & 0x3FF);
 			}
 		} else {
-			uint16_t vOffsetAddr = hOffsetAddr + 0x40;
+			//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
+			uint16_t vOffsetAddr = _layerConfig[2].TilemapAddress + ((tileOffset + 0x40) & (_layerConfig[2].DoubleHeight ? 0xFFF : 0x7FF));
 
 			uint16_t hOffsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
 			uint16_t vOffsetValue = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
