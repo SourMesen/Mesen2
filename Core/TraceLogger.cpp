@@ -117,6 +117,8 @@ void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)
 				part.DataType = RowDataType::SP;
 			} else if(dataType == "Cycle") {
 				part.DataType = RowDataType::Cycle;
+			} else if(dataType == "HClock") {
+				part.DataType = RowDataType::HClock;
 			} else if(dataType == "Scanline") {
 				part.DataType = RowDataType::Scanline;
 			} else if(dataType == "FrameCount") {
@@ -290,6 +292,7 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::PS: GetStatusFlag<CpuType::Cpu>(output, cpuState.PS, rowPart); break;
 			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
+			case RowDataType::HClock: WriteValue(output, ppuState.HClock, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
 			case RowDataType::CycleCount: WriteValue(output, (uint32_t)cpuState.CycleCount, rowPart); break;
 		}
@@ -318,6 +321,7 @@ void TraceLogger::GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuS
 			case RowDataType::PS: GetStatusFlag<CpuType::Spc>(output, cpuState.PS, rowPart); break;
 			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
+			case RowDataType::HClock: WriteValue(output, ppuState.HClock, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
 
 			default: break;

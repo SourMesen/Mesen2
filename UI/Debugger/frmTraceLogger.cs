@@ -80,8 +80,9 @@ namespace Mesen.GUI.Debugger
 				"[Y]: Y register" + Environment.NewLine +
 				"[SP]: Stack Pointer" + Environment.NewLine +
 				"[P]: Processor Flags" + Environment.NewLine +
-				"[Cycle]: The current PPU cycle." + Environment.NewLine +
-				"[Scanline]: The current PPU scanline." + Environment.NewLine +
+				"[Cycle]: The current PPU cycle (H)" + Environment.NewLine +
+				"[HClock]: The PPU's current H-clock position (H, in terms of master clocks)" + Environment.NewLine +
+				"[Scanline]: The current PPU scanline (V)" + Environment.NewLine +
 				"[FrameCount]: The current PPU frame." + Environment.NewLine +
 				"[CycleCount]: The current CPU cycle (32-bit signed value, resets to 0 at power on)" + Environment.NewLine + Environment.NewLine +
 				"You can also specify some options by using a comma. e.g:" + Environment.NewLine +

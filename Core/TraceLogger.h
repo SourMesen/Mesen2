@@ -45,6 +45,7 @@ enum class RowDataType
 	PS,
 	Cycle,
 	Scanline,
+	HClock,
 	FrameCount,
 	CycleCount
 };
