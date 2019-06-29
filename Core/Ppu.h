@@ -54,30 +54,31 @@ private:
 	
 	uint8_t _mainScreenLayers = 0;
 	uint8_t _subScreenLayers = 0;
-	LayerConfig _layerConfig[4];
+	LayerConfig _layerConfig[4] = {};
 
-	WindowConfig _window[2];
-	WindowMaskLogic _maskLogic[6];
-	bool _windowMaskMain[5];
-	bool _windowMaskSub[5];
+	WindowConfig _window[2] = {};
+	WindowMaskLogic _maskLogic[6] = {};
+	bool _windowMaskMain[5] = {};
+	bool _windowMaskSub[5] = {};
 
-	Mode7Config _mode7;
+	Mode7Config _mode7 = {};
 	
-	uint8_t *_vram;
-	uint16_t _vramAddress;
-	uint8_t _vramIncrementValue;
-	uint8_t _vramAddressRemapping;
-	bool _vramAddrIncrementOnSecondReg;
+	uint8_t *_vram = nullptr;
+	uint16_t _vramAddress = 0;
+	uint8_t _vramIncrementValue = 0;
+	uint8_t _vramAddressRemapping = 0;
+	bool _vramAddrIncrementOnSecondReg = 0;
 	uint16_t _vramReadBuffer = 0;
 	
 	uint8_t _ppu1OpenBus = 0;
 	uint8_t _ppu2OpenBus = 0;
 
-	uint16_t _cgramAddress;
-	uint8_t _cgram[Ppu::CgRamSize];
+	uint16_t _cgramAddress = 0;
+	uint8_t _cgramWriteBuffer = 0;
+	uint8_t _cgram[Ppu::CgRamSize] = {};
 
-	uint16_t *_outputBuffers[2];
-	uint16_t *_currentBuffer;
+	uint16_t *_outputBuffers[2] = {};
+	uint16_t *_currentBuffer = nullptr;
 
 	SpriteInfo _sprites[33] = {};
 	uint8_t _spriteCount = 0;
@@ -88,11 +89,11 @@ private:
 	uint16_t _pixelsDrawn = 0;
 	uint16_t _subPixelsDrawn = 0;
 
-	uint8_t _rowPixelFlags[256];
-	uint16_t _mainScreenBuffer[256];
+	uint8_t _rowPixelFlags[256] = {};
+	uint16_t _mainScreenBuffer[256] = {};
 
-	bool _subScreenFilled[256];
-	uint16_t _subScreenBuffer[256];
+	bool _subScreenFilled[256] = {};
+	uint16_t _subScreenBuffer[256] = {};
 
 	uint16_t _mosaicColor[4][2][256] = {};
 	uint8_t _mosaicSize = 0;
@@ -103,7 +104,7 @@ private:
 	uint16_t _oamBaseAddress = 0;
 	uint16_t _oamAddressOffset = 0;
 
-	uint8_t _oamRam[Ppu::SpriteRamSize];
+	uint8_t _oamRam[Ppu::SpriteRamSize] = {};
 	uint16_t _oamRamAddress = 0;
 	bool _enableOamPriority = false;
 	

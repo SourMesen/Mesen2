@@ -1588,13 +1588,15 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2122: 
 			//CGRAM Data write (CGDATA)
-			_console->ProcessPpuWrite(_cgramAddress, value, SnesMemoryType::CGRam);
-
 			if(_cgramAddress & 0x01) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
+				_console->ProcessPpuWrite(_cgramAddress - 1, _cgramWriteBuffer, SnesMemoryType::CGRam);
+				_cgram[_cgramAddress - 1] = _cgramWriteBuffer;
+
+				_console->ProcessPpuWrite(_cgramAddress, value & 0x7F, SnesMemoryType::CGRam);
 				_cgram[_cgramAddress] = value & 0x7F;
 			} else {
-				_cgram[_cgramAddress] = value;
+				_cgramWriteBuffer = value;
 			}
 			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
 			break;
