@@ -74,17 +74,15 @@ void Cpu::Exec()
 
 #ifndef DUMMYCPU
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
-	if(!_dmaController->HasNmiIrqDelay()) {
-		if(_state.PrevNmiFlag) {
-			uint32_t originalPc = GetProgramAddress(_state.PC);
-			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector, true);
-			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
-			_state.NmiFlag = false;
-		} else if(_state.PrevIrqSource) {
-			uint32_t originalPc = GetProgramAddress(_state.PC);
-			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector, true);
-			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
-		}
+	if(_state.PrevNmiFlag) {
+		uint32_t originalPc = GetProgramAddress(_state.PC);
+		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector, true);
+		_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
+		_state.NmiFlag = false;
+	} else if(_state.PrevIrqSource) {
+		uint32_t originalPc = GetProgramAddress(_state.PC);
+		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector, true);
+		_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
 	}
 #endif
 }

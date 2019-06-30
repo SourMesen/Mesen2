@@ -25,16 +25,8 @@ DmaController::DmaController(MemoryManager *memoryManager)
 
 void DmaController::Reset()
 {
+	_dmaStartDelay = false;
 	_hdmaChannels = 0;
-}
-
-bool DmaController::HasNmiIrqDelay()
-{
-	if(_nmiIrqDelayCounter > 0) {
-		_nmiIrqDelayCounter--;
-		return true;
-	}
-	return false;
 }
 
 void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)
@@ -280,9 +272,6 @@ void DmaController::ProcessHdmaChannels(bool applyOverhead)
 		//If we ran a HDMA transfer, sync
 		SyncEndDma();
 	}
-
-	//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
-	_nmiIrqDelayCounter = 2;
 }
 
 void DmaController::BeginHdmaTransfer()
@@ -304,7 +293,8 @@ void DmaController::BeginHdmaInit()
 
 void DmaController::ProcessPendingTransfers()
 {
-	if(_inDma) {
+	if(_inDma || _dmaStartDelay) {
+		_dmaStartDelay = false;
 		return;
 	}
 
@@ -344,9 +334,6 @@ void DmaController::ProcessPendingTransfers()
 
 		SyncEndDma();
 
-		//When DMA runs, the next instruction will not check the NMI/IRQ flags, which allows 2 instructions to run after DMA
-		_nmiIrqDelayCounter = 2;
-
 		_requestedDmaChannels = 0;
 
 		_inDma = false;
@@ -359,6 +346,7 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 		case 0x420B: {
 			//MDMAEN - DMA Enable
 			_requestedDmaChannels = value;
+			_dmaStartDelay = true;
 			break;
 		}
 
@@ -558,7 +546,8 @@ DmaChannelConfig DmaController::GetChannelConfig(uint8_t channel)
 
 void DmaController::Serialize(Serializer &s)
 {
-	s.Stream(_hdmaPending, _hdmaChannels, _nmiIrqDelayCounter, _requestedDmaChannels, _inDma, _dmaStartClock, _hdmaInitPending);
+	uint8_t unused_nmiIrqDelayCounter = 0;
+	s.Stream(_hdmaPending, _hdmaChannels, unused_nmiIrqDelayCounter, _requestedDmaChannels, _inDma, _dmaStartClock, _hdmaInitPending, _dmaStartDelay);
 	for(int i = 0; i < 8; i++) {
 		s.Stream(
 			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,

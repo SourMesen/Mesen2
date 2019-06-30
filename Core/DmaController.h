@@ -35,8 +35,8 @@ private:
 	bool _hdmaPending = false;
 	bool _hdmaInitPending = false;
 	bool _inDma = false;
+	bool _dmaStartDelay = false;
 	uint8_t _hdmaChannels = 0;
-	uint8_t _nmiIrqDelayCounter = 0;
 	uint8_t _requestedDmaChannels = 0;
 	uint64_t _dmaStartClock = 0;
 	
@@ -62,8 +62,6 @@ public:
 
 	void Reset();
 
-	bool HasNmiIrqDelay();
-	
 	void BeginHdmaTransfer();
 	void BeginHdmaInit();
 
