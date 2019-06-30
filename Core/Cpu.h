@@ -154,7 +154,7 @@ private:
 	void RTS();
 
 	//Interrupts
-	void ProcessInterrupt(uint16_t vector);
+	void ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt);
 	void BRK();
 	void COP();
 
@@ -249,10 +249,15 @@ private:
 	void WAI();
 
 	//Addressing modes
+	//Absolute: a
 	void AddrMode_Abs();
-	void AddrMode_AbsIdxX();
-	void AddrMode_AbsIdxY();
+	//Absolute Indexed: a,x
+	void AddrMode_AbsIdxX(bool isWrite);
+	//Absolute Indexed: a,y
+	void AddrMode_AbsIdxY(bool isWrite);
+	//Absolute Long: al
 	void AddrMode_AbsLng();
+	//Absolute Long Indexed: al,x
 	void AddrMode_AbsLngIdxX();
 
 	void AddrMode_AbsJmp();
@@ -266,13 +271,23 @@ private:
 	void AddrMode_BlkMov();
 
 	uint8_t ReadDirectOperandByte();
+	
+	//Direct: d
 	void AddrMode_Dir();
+	//Direct Indexed: d,x
 	void AddrMode_DirIdxX();
+	//Direct Indexed: d,y
 	void AddrMode_DirIdxY();
+	//Direct Indirect: (d)
 	void AddrMode_DirInd();
+	
+	//Direct Indexed Indirect: (d,x)
 	void AddrMode_DirIdxIndX();
-	void AddrMode_DirIndIdxY();
+	//Direct Indirect Indexed: (d),y
+	void AddrMode_DirIndIdxY(bool isWrite);
+	//Direct Indirect Long: [d]
 	void AddrMode_DirIndLng();
+	//Direct Indirect Indexed Long: [d],y
 	void AddrMode_DirIndLngIdxY();
 
 	void AddrMode_Imm8();

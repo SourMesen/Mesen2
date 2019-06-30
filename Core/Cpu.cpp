@@ -77,12 +77,12 @@ void Cpu::Exec()
 	if(!_dmaController->HasNmiIrqDelay()) {
 		if(_state.PrevNmiFlag) {
 			uint32_t originalPc = GetProgramAddress(_state.PC);
-			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector);
+			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector, true);
 			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), true);
 			_state.NmiFlag = false;
 		} else if(_state.PrevIrqSource) {
 			uint32_t originalPc = GetProgramAddress(_state.PC);
-			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector);
+			ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector, true);
 			_console->ProcessInterrupt(originalPc, GetProgramAddress(_state.PC), false);
 		}
 	}
@@ -109,7 +109,7 @@ void Cpu::RunOp()
 		case 0x0E: AddrMode_Abs(); ASL(); break;
 		case 0x0F: AddrMode_AbsLng(); ORA(); break;
 		case 0x10: AddrMode_Rel(); BPL(); break;
-		case 0x11: AddrMode_DirIndIdxY(); ORA(); break;
+		case 0x11: AddrMode_DirIndIdxY(false); ORA(); break;
 		case 0x12: AddrMode_DirInd(); ORA(); break;
 		case 0x13: AddrMode_StkRelIndIdxY(); ORA(); break;
 		case 0x14: AddrMode_Dir(); TRB(); break;
@@ -117,12 +117,12 @@ void Cpu::RunOp()
 		case 0x16: AddrMode_DirIdxX(); ASL(); break;
 		case 0x17: AddrMode_DirIndLngIdxY(); ORA(); break;
 		case 0x18: AddrMode_Imp(); CLC(); break;
-		case 0x19: AddrMode_AbsIdxY(); ORA(); break;
+		case 0x19: AddrMode_AbsIdxY(false); ORA(); break;
 		case 0x1A: AddrMode_Acc(); INC_Acc(); break;
 		case 0x1B: AddrMode_Imp(); TCS(); break;
 		case 0x1C: AddrMode_Abs(); TRB(); break;
-		case 0x1D: AddrMode_AbsIdxX(); ORA(); break;
-		case 0x1E: AddrMode_AbsIdxX(); ASL(); break;
+		case 0x1D: AddrMode_AbsIdxX(false); ORA(); break;
+		case 0x1E: AddrMode_AbsIdxX(true); ASL(); break;
 		case 0x1F: AddrMode_AbsLngIdxX(); ORA(); break;
 		case 0x20: AddrMode_AbsJmp(); Idle(); JSR(); break;
 		case 0x21: AddrMode_DirIdxIndX(); AND(); break;
@@ -141,7 +141,7 @@ void Cpu::RunOp()
 		case 0x2E: AddrMode_Abs(); ROL(); break;
 		case 0x2F: AddrMode_AbsLng(); AND(); break;
 		case 0x30: AddrMode_Rel(); BMI(); break;
-		case 0x31: AddrMode_DirIndIdxY(); AND(); break;
+		case 0x31: AddrMode_DirIndIdxY(false); AND(); break;
 		case 0x32: AddrMode_DirInd(); AND(); break;
 		case 0x33: AddrMode_StkRelIndIdxY(); AND(); break;
 		case 0x34: AddrMode_DirIdxX(); BIT(); break;
@@ -149,12 +149,12 @@ void Cpu::RunOp()
 		case 0x36: AddrMode_DirIdxX(); ROL(); break;
 		case 0x37: AddrMode_DirIndLngIdxY(); AND(); break;
 		case 0x38: AddrMode_Imp(); SEC(); break;
-		case 0x39: AddrMode_AbsIdxY(); AND(); break;
+		case 0x39: AddrMode_AbsIdxY(false); AND(); break;
 		case 0x3A: AddrMode_Acc(); DEC_Acc(); break;
 		case 0x3B: AddrMode_Imp(); TSC(); break;
-		case 0x3C: AddrMode_AbsIdxX(); BIT(); break;
-		case 0x3D: AddrMode_AbsIdxX(); AND(); break;
-		case 0x3E: AddrMode_AbsIdxX(); ROL(); break;
+		case 0x3C: AddrMode_AbsIdxX(false); BIT(); break;
+		case 0x3D: AddrMode_AbsIdxX(false); AND(); break;
+		case 0x3E: AddrMode_AbsIdxX(true); ROL(); break;
 		case 0x3F: AddrMode_AbsLngIdxX(); AND(); break;
 		case 0x40: RTI(); break;
 		case 0x41: AddrMode_DirIdxIndX(); EOR(); break;
@@ -173,7 +173,7 @@ void Cpu::RunOp()
 		case 0x4E: AddrMode_Abs(); LSR(); break;
 		case 0x4F: AddrMode_AbsLng(); EOR(); break;
 		case 0x50: AddrMode_Rel(); BVC(); break;
-		case 0x51: AddrMode_DirIndIdxY(); EOR(); break;
+		case 0x51: AddrMode_DirIndIdxY(false); EOR(); break;
 		case 0x52: AddrMode_DirInd(); EOR(); break;
 		case 0x53: AddrMode_StkRelIndIdxY(); EOR(); break;
 		case 0x54: AddrMode_BlkMov(); MVN(); break;
@@ -181,12 +181,12 @@ void Cpu::RunOp()
 		case 0x56: AddrMode_DirIdxX(); LSR(); break;
 		case 0x57: AddrMode_DirIndLngIdxY(); EOR(); break;
 		case 0x58: AddrMode_Imp(); CLI(); break;
-		case 0x59: AddrMode_AbsIdxY(); EOR(); break;
+		case 0x59: AddrMode_AbsIdxY(false); EOR(); break;
 		case 0x5A: PHY(); break;
 		case 0x5B: AddrMode_Imp(); TCD(); break;
 		case 0x5C: AddrMode_AbsLngJmp(); JML(); break;
-		case 0x5D: AddrMode_AbsIdxX(); EOR(); break;
-		case 0x5E: AddrMode_AbsIdxX(); LSR(); break;
+		case 0x5D: AddrMode_AbsIdxX(false); EOR(); break;
+		case 0x5E: AddrMode_AbsIdxX(true); LSR(); break;
 		case 0x5F: AddrMode_AbsLngIdxX(); EOR(); break;
 		case 0x60: RTS(); break;
 		case 0x61: AddrMode_DirIdxIndX(); ADC(); break;
@@ -205,7 +205,7 @@ void Cpu::RunOp()
 		case 0x6E: AddrMode_Abs(); ROR(); break;
 		case 0x6F: AddrMode_AbsLng(); ADC(); break;
 		case 0x70: AddrMode_Rel(); BVS(); break;
-		case 0x71: AddrMode_DirIndIdxY(); ADC(); break;
+		case 0x71: AddrMode_DirIndIdxY(false); ADC(); break;
 		case 0x72: AddrMode_DirInd(); ADC(); break;
 		case 0x73: AddrMode_StkRelIndIdxY(); ADC(); break;
 		case 0x74: AddrMode_DirIdxX(); STZ(); break;
@@ -213,12 +213,12 @@ void Cpu::RunOp()
 		case 0x76: AddrMode_DirIdxX(); ROR(); break;
 		case 0x77: AddrMode_DirIndLngIdxY(); ADC(); break;
 		case 0x78: AddrMode_Imp(); SEI(); break;
-		case 0x79: AddrMode_AbsIdxY(); ADC(); break;
+		case 0x79: AddrMode_AbsIdxY(false); ADC(); break;
 		case 0x7A: PLY(); break;
 		case 0x7B: AddrMode_Imp(); TDC(); break;
 		case 0x7C: AddrMode_AbsIdxXInd(); JMP(); break;
-		case 0x7D: AddrMode_AbsIdxX(); ADC(); break;
-		case 0x7E: AddrMode_AbsIdxX(); ROR(); break;
+		case 0x7D: AddrMode_AbsIdxX(false); ADC(); break;
+		case 0x7E: AddrMode_AbsIdxX(true); ROR(); break;
 		case 0x7F: AddrMode_AbsLngIdxX(); ADC(); break;
 		case 0x80: AddrMode_Rel(); BRA(); break;
 		case 0x81: AddrMode_DirIdxIndX(); STA(); break;
@@ -237,7 +237,7 @@ void Cpu::RunOp()
 		case 0x8E: AddrMode_Abs(); STX(); break;
 		case 0x8F: AddrMode_AbsLng(); STA(); break;
 		case 0x90: AddrMode_Rel(); BCC(); break;
-		case 0x91: AddrMode_DirIndIdxY(); STA(); break;
+		case 0x91: AddrMode_DirIndIdxY(true); STA(); break;
 		case 0x92: AddrMode_DirInd(); STA(); break;
 		case 0x93: AddrMode_StkRelIndIdxY(); STA(); break;
 		case 0x94: AddrMode_DirIdxX(); STY(); break;
@@ -245,12 +245,12 @@ void Cpu::RunOp()
 		case 0x96: AddrMode_DirIdxY(); STX(); break;
 		case 0x97: AddrMode_DirIndLngIdxY(); STA(); break;
 		case 0x98: AddrMode_Imp(); TYA(); break;
-		case 0x99: AddrMode_AbsIdxY(); STA(); break;
+		case 0x99: AddrMode_AbsIdxY(true); STA(); break;
 		case 0x9A: AddrMode_Imp(); TXS(); break;
 		case 0x9B: AddrMode_Imp(); TXY(); break;
 		case 0x9C: AddrMode_Abs(); STZ(); break;
-		case 0x9D: AddrMode_AbsIdxX(); STA(); break;
-		case 0x9E: AddrMode_AbsIdxX(); STZ(); break;
+		case 0x9D: AddrMode_AbsIdxX(true); STA(); break;
+		case 0x9E: AddrMode_AbsIdxX(true); STZ(); break;
 		case 0x9F: AddrMode_AbsLngIdxX(); STA(); break;
 		case 0xA0: AddrMode_ImmX(); LDY(); break;
 		case 0xA1: AddrMode_DirIdxIndX(); LDA(); break;
@@ -269,7 +269,7 @@ void Cpu::RunOp()
 		case 0xAE: AddrMode_Abs(); LDX(); break;
 		case 0xAF: AddrMode_AbsLng(); LDA(); break;
 		case 0xB0: AddrMode_Rel(); BCS(); break;
-		case 0xB1: AddrMode_DirIndIdxY(); LDA(); break;
+		case 0xB1: AddrMode_DirIndIdxY(false); LDA(); break;
 		case 0xB2: AddrMode_DirInd(); LDA(); break;
 		case 0xB3: AddrMode_StkRelIndIdxY(); LDA(); break;
 		case 0xB4: AddrMode_DirIdxX(); LDY(); break;
@@ -277,12 +277,12 @@ void Cpu::RunOp()
 		case 0xB6: AddrMode_DirIdxY(); LDX(); break;
 		case 0xB7: AddrMode_DirIndLngIdxY(); LDA(); break;
 		case 0xB8: AddrMode_Imp(); CLV(); break;
-		case 0xB9: AddrMode_AbsIdxY(); LDA(); break;
+		case 0xB9: AddrMode_AbsIdxY(false); LDA(); break;
 		case 0xBA: AddrMode_Imp(); TSX(); break;
 		case 0xBB: AddrMode_Imp(); TYX(); break;
-		case 0xBC: AddrMode_AbsIdxX(); LDY(); break;
-		case 0xBD: AddrMode_AbsIdxX(); LDA(); break;
-		case 0xBE: AddrMode_AbsIdxY(); LDX(); break;
+		case 0xBC: AddrMode_AbsIdxX(false); LDY(); break;
+		case 0xBD: AddrMode_AbsIdxX(false); LDA(); break;
+		case 0xBE: AddrMode_AbsIdxY(false); LDX(); break;
 		case 0xBF: AddrMode_AbsLngIdxX(); LDA(); break;
 		case 0xC0: AddrMode_ImmX(); CPY(); break;
 		case 0xC1: AddrMode_DirIdxIndX(); CMP(); break;
@@ -301,7 +301,7 @@ void Cpu::RunOp()
 		case 0xCE: AddrMode_Abs(); DEC(); break;
 		case 0xCF: AddrMode_AbsLng(); CMP(); break;
 		case 0xD0: AddrMode_Rel(); BNE(); break;
-		case 0xD1: AddrMode_DirIndIdxY(); CMP(); break;
+		case 0xD1: AddrMode_DirIndIdxY(false); CMP(); break;
 		case 0xD2: AddrMode_DirInd(); CMP(); break;
 		case 0xD3: AddrMode_StkRelIndIdxY(); CMP(); break;
 		case 0xD4: AddrMode_Dir(); PEI(); break;
@@ -309,12 +309,12 @@ void Cpu::RunOp()
 		case 0xD6: AddrMode_DirIdxX(); DEC(); break;
 		case 0xD7: AddrMode_DirIndLngIdxY(); CMP(); break;
 		case 0xD8: AddrMode_Imp(); CLD(); break;
-		case 0xD9: AddrMode_AbsIdxY(); CMP(); break;
+		case 0xD9: AddrMode_AbsIdxY(false); CMP(); break;
 		case 0xDA: PHX(); break;
 		case 0xDB: AddrMode_Imp(); STP(); break;
 		case 0xDC: AddrMode_AbsIndLng(); JML(); break;
-		case 0xDD: AddrMode_AbsIdxX(); CMP(); break;
-		case 0xDE: AddrMode_AbsIdxX(); DEC(); break;
+		case 0xDD: AddrMode_AbsIdxX(false); CMP(); break;
+		case 0xDE: AddrMode_AbsIdxX(true); DEC(); break;
 		case 0xDF: AddrMode_AbsLngIdxX(); CMP(); break;
 		case 0xE0: AddrMode_ImmX(); CPX(); break;
 		case 0xE1: AddrMode_DirIdxIndX(); SBC(); break;
@@ -333,7 +333,7 @@ void Cpu::RunOp()
 		case 0xEE: AddrMode_Abs(); INC(); break;
 		case 0xEF: AddrMode_AbsLng(); SBC(); break;
 		case 0xF0: AddrMode_Rel(); BEQ(); break;
-		case 0xF1: AddrMode_DirIndIdxY(); SBC(); break;
+		case 0xF1: AddrMode_DirIndIdxY(false); SBC(); break;
 		case 0xF2: AddrMode_DirInd(); SBC(); break;
 		case 0xF3: AddrMode_StkRelIndIdxY(); SBC(); break;
 		case 0xF4: AddrMode_Imm16(); PEA(); break;
@@ -341,12 +341,12 @@ void Cpu::RunOp()
 		case 0xF6: AddrMode_DirIdxX(); INC(); break;
 		case 0xF7: AddrMode_DirIndLngIdxY(); SBC(); break;
 		case 0xF8: AddrMode_Imp(); SED(); break;
-		case 0xF9: AddrMode_AbsIdxY(); SBC(); break;
+		case 0xF9: AddrMode_AbsIdxY(false); SBC(); break;
 		case 0xFA: PLX(); break;
 		case 0xFB: AddrMode_Imp(); XCE(); break;
 		case 0xFC: AddrMode_AbsIdxXInd(); JSR(); break;
-		case 0xFD: AddrMode_AbsIdxX(); SBC(); break;
-		case 0xFE: AddrMode_AbsIdxX(); INC(); break;
+		case 0xFD: AddrMode_AbsIdxX(false); SBC(); break;
+		case 0xFE: AddrMode_AbsIdxX(true); INC(); break;
 		case 0xFF: AddrMode_AbsLngIdxX(); SBC(); break;
 	}
 }

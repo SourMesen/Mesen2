@@ -216,13 +216,12 @@ void Cpu::BVS()
 
 void Cpu::BranchRelative(bool branch)
 {
-	int8_t offset = _operand;
 	if(branch) {
+		int8_t offset = _operand;
 		Idle();
-		if(_state.EmulationMode) {
-			if(((uint16_t)(_state.PC + offset) & 0xFF00) != (_state.PC & 0xFF00)) {
-				Idle();
-			}
+		if(_state.EmulationMode && ((uint16_t)(_state.PC + offset) & 0xFF00) != (_state.PC & 0xFF00)) {
+			//Extra cycle in emulation mode if crossing a page
+			Idle();
 		}
 		_state.PC = (uint16_t)(_state.PC + offset);
 	}
@@ -455,10 +454,13 @@ void Cpu::RTS()
 /**********
 Interrupts
 ***********/
-void Cpu::ProcessInterrupt(uint16_t vector)
+void Cpu::ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt)
 {
-	ReadCode(_state.PC);
-	Idle();
+	if(forHardwareInterrupt) {
+		//IRQ/NMI waste 2 cycles here.  BRK/COP do not (because they do those 2 cycles while loading the OP code + signature byte)
+		ReadCode(_state.PC);
+		Idle();
+	}
 
 	if(_state.EmulationMode) {
 		PushWord(_state.PC);
@@ -484,12 +486,12 @@ void Cpu::ProcessInterrupt(uint16_t vector)
 
 void Cpu::BRK()
 {
-	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::BreakVector);
+	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::BreakVector, false);
 }
 
 void Cpu::COP()
 {
-	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyCoprocessorVector : Cpu::CoprocessorVector);
+	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyCoprocessorVector : Cpu::CoprocessorVector, false);
 }
 
 /******************
@@ -585,11 +587,13 @@ void Cpu::ASL_Acc()
 void Cpu::ASL()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		uint8_t value = GetByteValue();
 		Idle();
-		Write(_operand, ShiftLeft<uint8_t>(GetByteValue()));
+		Write(_operand, ShiftLeft<uint8_t>(value));
 	} else {
+		uint16_t value = GetWordValue();
 		Idle();
-		WriteWord(_operand, ShiftLeft<uint16_t>(GetWordValue()));
+		WriteWord(_operand, ShiftLeft<uint16_t>(value));
 	}
 }
 
@@ -605,11 +609,13 @@ void Cpu::LSR_Acc()
 void Cpu::LSR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		uint8_t value = GetByteValue();
 		Idle();
-		Write(_operand, ShiftRight<uint8_t>(GetByteValue()));
+		Write(_operand, ShiftRight<uint8_t>(value));
 	} else {
+		uint16_t value = GetWordValue();
 		Idle();
-		WriteWord(_operand, ShiftRight<uint16_t>(GetWordValue()));
+		WriteWord(_operand, ShiftRight<uint16_t>(value));
 	}
 }
 
@@ -625,11 +631,13 @@ void Cpu::ROL_Acc()
 void Cpu::ROL()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		uint8_t value = GetByteValue();
 		Idle();
-		Write(_operand, RollLeft<uint8_t>(GetByteValue()));
+		Write(_operand, RollLeft<uint8_t>(value));
 	} else {
+		uint16_t value = GetWordValue();
 		Idle();
-		WriteWord(_operand, RollLeft<uint16_t>(GetWordValue()));
+		WriteWord(_operand, RollLeft<uint16_t>(value));
 	}
 }
 
@@ -645,11 +653,13 @@ void Cpu::ROR_Acc()
 void Cpu::ROR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
+		uint8_t value = GetByteValue();
 		Idle();
-		Write(_operand, RollRight<uint8_t>(GetByteValue()));
+		Write(_operand, RollRight<uint8_t>(value));
 	} else {
+		uint16_t value = GetWordValue();
 		Idle();
-		WriteWord(_operand, RollRight<uint16_t>(GetWordValue()));
+		WriteWord(_operand, RollRight<uint16_t>(value));
 	}
 }
 
@@ -722,14 +732,12 @@ void Cpu::PEA()
 void Cpu::PEI()
 {
 	//Push Effective Indirect address
-	Idle();
 	PushWord(ReadDataWord(_operand));
 }
 
 void Cpu::PER()
 {
 	//Push Effective Relative address
-	Idle();
 	PushWord((uint16_t)((int16_t)_operand + _state.PC));
 }
 
@@ -951,18 +959,20 @@ void Cpu::BIT()
 void Cpu::TRB()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
-		TestBits<uint8_t>(GetByteValue(), true);
+		uint8_t value = GetByteValue();
+		TestBits<uint8_t>(value, true);
 
-		uint8_t value = ReadData(_operand);
 		value &= ~_state.A;
 		Idle();
+
 		Write(_operand, value);
 	} else {
-		TestBits<uint16_t>(GetWordValue(), true);
+		uint16_t value = GetWordValue();
+		TestBits<uint16_t>(value, true);
 
-		uint16_t value = ReadDataWord(_operand);
 		value &= ~_state.A;
 		Idle();
+
 		WriteWord(_operand, value);
 	}
 }
@@ -970,16 +980,20 @@ void Cpu::TRB()
 void Cpu::TSB()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
-		TestBits<uint8_t>(GetByteValue(), true);
+		uint8_t value = GetByteValue();
+		TestBits<uint8_t>(value, true);
 
-		uint8_t value = ReadData(_operand);
 		value |= _state.A;
+		Idle();
+
 		Write(_operand, value);
 	} else {
-		TestBits<uint16_t>(GetWordValue(), true);
+		uint16_t value = GetWordValue();
+		TestBits<uint16_t>(value, true);
 
-		uint16_t value = ReadDataWord(_operand);
 		value |= _state.A;
+		Idle();
+
 		WriteWord(_operand, value);
 	}
 }
@@ -1106,16 +1120,22 @@ void Cpu::AddrMode_Abs()
 	_operand = GetDataAddress(ReadOperandWord());
 }
 
-void Cpu::AddrMode_AbsIdxX()
+void Cpu::AddrMode_AbsIdxX(bool isWrite)
 {
-	_operand = (GetDataAddress(ReadOperandWord()) + _state.X) & 0xFFFFFF;
-	Idle();
+	uint32_t baseAddr = GetDataAddress(ReadOperandWord());
+	_operand = (baseAddr + _state.X) & 0xFFFFFF;
+	if(isWrite || !CheckFlag(ProcFlags::IndexMode8) || (_operand & 0xFF00) != (baseAddr & 0xFF00)) {
+		Idle();
+	}
 }
 
-void Cpu::AddrMode_AbsIdxY()
+void Cpu::AddrMode_AbsIdxY(bool isWrite)
 {
-	_operand = (GetDataAddress(ReadOperandWord()) + _state.Y) & 0xFFFFFF;
-	Idle();
+	uint32_t baseAddr = GetDataAddress(ReadOperandWord());
+	_operand = (baseAddr + _state.Y) & 0xFFFFFF;
+	if(isWrite || !CheckFlag(ProcFlags::IndexMode8) || (_operand & 0xFF00) != (baseAddr & 0xFF00)) {
+		Idle();
+	}
 }
 
 void Cpu::AddrMode_AbsLng()
@@ -1203,10 +1223,14 @@ void Cpu::AddrMode_DirIdxIndX()
 	_operand = GetDataAddress(GetDirectAddressIndirectWord(operandByte + _state.X));
 }
 
-void Cpu::AddrMode_DirIndIdxY()
+void Cpu::AddrMode_DirIndIdxY(bool isWrite)
 {
-	_operand = (GetDataAddress(GetDirectAddressIndirectWord(ReadDirectOperandByte())) + _state.Y) & 0xFFFFFF;
-	Idle();
+	uint32_t baseAddr = GetDataAddress(GetDirectAddressIndirectWord(ReadDirectOperandByte()));
+	_operand = (baseAddr + _state.Y) & 0xFFFFFF;
+	
+	if(isWrite || !CheckFlag(ProcFlags::IndexMode8) || (_operand & 0xFF00) != (baseAddr & 0xFF00)) {
+		Idle();
+	}
 }
 
 void Cpu::AddrMode_DirIndLng()
