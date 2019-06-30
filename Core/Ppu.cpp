@@ -1247,7 +1247,10 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2137:
 			//SLHV - Software Latch for H/V Counter
 			//Latch values on read, and return open bus
-			LatchLocationValues();
+			if(_regs->GetIoPortOutput() & 0x80) {
+				//Only latch H/V counters if bit 7 of $4201 is set.
+				LatchLocationValues();
+			}
 			break;
 			
 		case 0x2138: {
