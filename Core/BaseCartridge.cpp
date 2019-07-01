@@ -261,9 +261,17 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	if(_flags & CartFlags::LoRom) {
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
 		MapBanks(mm, _prgRomHandlers, 0x80, 0xFF, 0x08, 0x0F, 0, true);
+
 		if(_saveRamSize > 0) {
-			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
-			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+			if(_prgRomSize >= 1024 * 1024 * 2) {
+				//For games >= 2mb in size, put ROM at 70-7D/F0-FF:0000-7FFF (e.g: Fire Emblem: Thracia 776) 
+				MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
+				MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+			} else {
+				//For games < 2mb in size, put save RAM at 70-7D/F0-FF:0000-7FFF (e.g: Wanderers from Ys) 
+				MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
+				MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x0F, 0, true);
+			}
 		}
 	} else if(_flags & CartFlags::HiRom) {
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true);
