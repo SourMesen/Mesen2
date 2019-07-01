@@ -234,7 +234,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 			}
 
 			if(needRealign) {
-				for(int j = 1; j < opSize; j++) {
+				for(int j = 1, max = (int)(*cache).size(); j < opSize && addrInfo.Address + j < max; j++) {
 					if((*cache)[addrInfo.Address + j].IsInitialized()) {
 						break;
 					}
