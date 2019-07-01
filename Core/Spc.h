@@ -30,16 +30,24 @@ private:
 	shared_ptr<MemoryManager> _memoryManager;
 	unique_ptr<SPC_DSP> _dsp;
 
-	bool _immediateMode;
+	double _clockRatio;
+
+	/* Temporary data used in the middle of operations */
 	uint16_t _operandA;
 	uint16_t _operandB;
-	double _clockRatio;
+	uint16_t _tmp1;
+	uint16_t _tmp2;
+	uint16_t _tmp3;
+	uint8_t _opCode;
+	SpcOpStep _opStep;
+	uint8_t _opSubStep;
 
 	SpcState _state;
 	uint8_t* _ram;
 	uint8_t* _spcBios;
 
 	int16_t *_soundBuffer;
+
 	//Store operations
 	void STA();
 	void STX();
@@ -51,11 +59,15 @@ private:
 
 	//Load operations
 	void LDA();
+	void LDA_Imm();
 	void LDX();
+	void LDX_Imm();
 	void LDY();
+	void LDY_Imm();
 	void LDW();
 
 	//Transfer
+	void Transfer(uint8_t & dst, uint8_t src);
 	void TXA();
 	void TYA();
 	void TAX();
@@ -66,6 +78,7 @@ private:
 	void STC();
 	void LDC();
 	void MOV();
+	void MOV_Imm();
 
 	//Arithmetic
 	uint8_t Add(uint8_t a, uint8_t b);
@@ -73,16 +86,21 @@ private:
 
 	void ADC();
 	void ADC_Acc();
+	void ADC_Imm();
 	void ADDW();
 	void SBC();
 	void SBC_Acc();
+	void SBC_Imm();
 	void SUBW();
 
 	void Compare(uint8_t a, uint8_t b);
 	void CMP();
 	void CMP_Acc();
+	void CMP_Imm();
 	void CPX();
+	void CPX_Imm();
 	void CPY();
+	void CPY_Imm();
 	void CMPW();
 
 	//Increment/decrement
@@ -108,10 +126,13 @@ private:
 	//Logical
 	void AND();
 	void AND_Acc();
+	void AND_Imm();
 	void OR();
 	void OR_Acc();
+	void OR_Imm();
 	void EOR();
 	void EOR_Acc();
+	void EOR_Imm();
 
 	void SetCarry(uint8_t carry);
 	void OR1();
@@ -183,6 +204,9 @@ private:
 	template<uint8_t offset> void TCALL();
 
 	//Stack operations
+	void PushOperation(uint8_t value);
+	void PullOperation(uint8_t & dst);
+
 	void PHA();
 	void PHX();
 	void PHY();
@@ -229,12 +253,9 @@ private:
 	void SetZeroNegativeFlags16(uint16_t value);
 
 	uint8_t GetByteValue();
-	uint16_t GetWordValue();
 
 	void Push(uint8_t value);
 	uint8_t Pop();
-	void PushWord(uint16_t value);
-	uint16_t PopWord();
 
 	uint16_t GetDirectAddress(uint8_t offset);
 
@@ -242,6 +263,8 @@ private:
 	uint8_t ReadOperandByte();
 
 	void IncCycleCount(int32_t addr);
+	void EndOp();
+	void EndAddr();
 	void Exec();
 
 public:

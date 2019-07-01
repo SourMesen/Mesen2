@@ -11,7 +11,7 @@ struct SpcState
 	uint8_t Y;
 	uint8_t SP;
 	uint8_t PS;
-	
+
 	bool WriteEnabled;
 	bool RomEnabled;
 	uint8_t InternalSpeed;
@@ -68,3 +68,11 @@ namespace SpcTestFlags {
 		InternalSpeed = 0xC0,
 	};
 }
+
+enum class SpcOpStep : uint8_t
+{
+	ReadOpCode = 0,
+	Addressing = 1,
+	AfterAddressing = 2,
+	Operation = 3
+};

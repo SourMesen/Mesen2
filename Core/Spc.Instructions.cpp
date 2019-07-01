@@ -2,10 +2,20 @@
 #include "Spc.h"
 #include "../Utilities/HexUtilities.h"
 
+void Spc::EndOp()
+{
+	_opStep = SpcOpStep::ReadOpCode;
+}
+
+void Spc::EndAddr()
+{
+	_opStep = SpcOpStep::AfterAddressing;
+	_opSubStep = 0;
+}
+
 void Spc::Exec()
 {
-	uint8_t opCode = GetOpCode();
-	switch(opCode) {
+	switch(_opCode) {
 		case 0x00: NOP(); break;
 		case 0x01: TCALL<0>(); break;
 		case 0x02: Addr_Dir(); SET1<0>(); break;
@@ -14,7 +24,7 @@ void Spc::Exec()
 		case 0x05: Addr_Abs(); OR_Acc(); break;
 		case 0x06: Addr_IndX(); OR_Acc(); break;
 		case 0x07: Addr_DirIdxXInd(); OR_Acc(); break;
-		case 0x08: Addr_Imm(); OR_Acc(); _immediateMode = false; break;
+		case 0x08: Addr_Imm(); OR_Imm(); break;
 		case 0x09: Addr_DirToDir(); OR(); break;
 		case 0x0A: Addr_AbsBit(); OR1(); break;
 		case 0x0B: Addr_Dir(); ASL(); break;
@@ -46,7 +56,7 @@ void Spc::Exec()
 		case 0x25: Addr_Abs(); AND_Acc(); break;
 		case 0x26: Addr_IndX(); AND_Acc(); break;
 		case 0x27: Addr_DirIdxXInd(); AND_Acc(); break;
-		case 0x28: Addr_Imm(); AND_Acc(); _immediateMode = false; break;
+		case 0x28: Addr_Imm(); AND_Imm(); break;
 		case 0x29: Addr_DirToDir(); AND(); break;
 		case 0x2A: Addr_AbsBit(); NOR1(); break;
 		case 0x2B: Addr_Dir(); ROL(); break;
@@ -78,7 +88,7 @@ void Spc::Exec()
 		case 0x45: Addr_Abs(); EOR_Acc(); break;
 		case 0x46: Addr_IndX(); EOR_Acc(); break;
 		case 0x47: Addr_DirIdxXInd(); EOR_Acc(); break;
-		case 0x48: Addr_Imm(); EOR_Acc(); _immediateMode = false; break;
+		case 0x48: Addr_Imm(); EOR_Imm(); break;
 		case 0x49: Addr_DirToDir(); EOR(); break;
 		case 0x4A: Addr_AbsBit(); AND1(); break;
 		case 0x4B: Addr_Dir(); LSR(); break;
@@ -110,7 +120,7 @@ void Spc::Exec()
 		case 0x65: Addr_Abs(); CMP_Acc(); break;
 		case 0x66: Addr_IndX(); CMP_Acc(); break;
 		case 0x67: Addr_DirIdxXInd(); CMP_Acc(); break;
-		case 0x68: Addr_Imm(); CMP_Acc(); _immediateMode = false; break;
+		case 0x68: Addr_Imm(); CMP_Imm(); break;
 		case 0x69: Addr_DirToDir(); CMP(); break;
 		case 0x6A: Addr_AbsBit(); NAND1(); break;
 		case 0x6B: Addr_Dir(); ROR(); break;
@@ -142,14 +152,14 @@ void Spc::Exec()
 		case 0x85: Addr_Abs(); ADC_Acc(); break;
 		case 0x86: Addr_IndX(); ADC_Acc(); break;
 		case 0x87: Addr_DirIdxXInd(); ADC_Acc(); break;
-		case 0x88: Addr_Imm(); ADC_Acc(); _immediateMode = false; break;
+		case 0x88: Addr_Imm(); ADC_Imm(); break;
 		case 0x89: Addr_DirToDir(); ADC(); break;
 		case 0x8A: Addr_AbsBit(); EOR1(); break;
 		case 0x8B: Addr_Dir(); DEC(); break;
 		case 0x8C: Addr_Abs(); DEC(); break;
-		case 0x8D: Addr_Imm(); LDY(); _immediateMode = false; break;
+		case 0x8D: Addr_Imm(); LDY_Imm(); break;
 		case 0x8E: PLP(); break;
-		case 0x8F: Addr_DirImm(); DummyRead(_operandB); MOV(); break;
+		case 0x8F: Addr_DirImm(); MOV_Imm(); break;
 		case 0x90: Addr_Rel(); BCC(); break;
 		case 0x91: TCALL<9>(); break;
 		case 0x92: Addr_Dir(); CLR1<4>(); break;
@@ -174,12 +184,12 @@ void Spc::Exec()
 		case 0xA5: Addr_Abs(); SBC_Acc(); break;
 		case 0xA6: Addr_IndX(); SBC_Acc(); break;
 		case 0xA7: Addr_DirIdxXInd(); SBC_Acc(); break;
-		case 0xA8: Addr_Imm(); SBC_Acc(); _immediateMode = false; break;
+		case 0xA8: Addr_Imm(); SBC_Imm(); break;
 		case 0xA9: Addr_DirToDir(); SBC(); break;
 		case 0xAA: Addr_AbsBit(); LDC(); break;
 		case 0xAB: Addr_Dir(); INC(); break;
 		case 0xAC: Addr_Abs(); INC(); break;
-		case 0xAD: Addr_Imm(); CPY(); _immediateMode = false; break;
+		case 0xAD: Addr_Imm(); CPY_Imm(); break;
 		case 0xAE: PLA(); break;
 		case 0xAF: Addr_IndX(); STA_AutoIncX(); break;
 		case 0xB0: Addr_Rel(); BCS(); break;
@@ -206,12 +216,12 @@ void Spc::Exec()
 		case 0xC5: Addr_Abs(); STA(); break;
 		case 0xC6: Addr_IndX(); STA(); break;
 		case 0xC7: Addr_DirIdxXInd(); STA(); break;
-		case 0xC8: Addr_Imm(); CPX(); _immediateMode = false; break;
+		case 0xC8: Addr_Imm(); CPX_Imm(); break;
 		case 0xC9: Addr_Abs(); STX(); break;
 		case 0xCA: Addr_AbsBit(); STC(); break;
 		case 0xCB: Addr_Dir(); STY(); break;
 		case 0xCC: Addr_Abs(); STY(); break;
-		case 0xCD: Addr_Imm(); LDX(); _immediateMode = false; break;
+		case 0xCD: Addr_Imm(); LDX_Imm(); break;
 		case 0xCE: PLX(); break;
 		case 0xCF: MUL(); break;
 		case 0xD0: Addr_Rel(); BNE(); break;
@@ -238,7 +248,7 @@ void Spc::Exec()
 		case 0xE5: Addr_Abs(); LDA(); break;
 		case 0xE6: Addr_IndX(); LDA(); break;
 		case 0xE7: Addr_DirIdxXInd(); LDA(); break;
-		case 0xE8: Addr_Imm(); LDA(); _immediateMode = false; break;
+		case 0xE8: Addr_Imm(); LDA_Imm(); break;
 		case 0xE9: Addr_Abs(); LDX(); break;
 		case 0xEA: Addr_AbsBit(); NOT1(); break;
 		case 0xEB: Addr_Dir(); LDY(); break;
@@ -263,6 +273,10 @@ void Spc::Exec()
 		case 0xFE: DBNZ_Y(); break;
 		case 0xFF: STOP(); break;
 	}
+
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_opStep = SpcOpStep::Operation;
+	}
 }
 
 //*****************
@@ -270,113 +284,211 @@ void Spc::Exec()
 //*****************
 void Spc::Addr_Dir()
 {
-	_operandA = GetDirectAddress(ReadOperandByte());
+	if(_opStep == SpcOpStep::Addressing) {
+		_operandA = GetDirectAddress(ReadOperandByte());
+		EndAddr();
+	}
 }
 
 void Spc::Addr_DirIdxX()
 {
-	_operandA = GetDirectAddress(ReadOperandByte() + _state.X);
-	Idle();
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _operandA = GetDirectAddress(ReadOperandByte() + _state.X); break;
+			case 1: Idle(); EndAddr(); break;
+		}
+	}
 }
 
 void Spc::Addr_DirIdxY()
 {
-	_operandA = GetDirectAddress(ReadOperandByte() + _state.Y);
-	Idle();
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _operandA = GetDirectAddress(ReadOperandByte() + _state.Y); break;
+			case 1: Idle(); EndAddr(); break;
+		}
+	}
 }
 
 void Spc::Addr_DirToDir()
 {
-	_operandA = Read(GetDirectAddress(ReadOperandByte()));
-	_operandB = GetDirectAddress(ReadOperandByte());
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = GetDirectAddress(ReadOperandByte()); break;
+			case 1: _operandA = Read(_tmp1); break;
+			case 2: _operandB = GetDirectAddress(ReadOperandByte()); EndAddr(); break;
+		}
+	}
 }
 
 void Spc::Addr_DirImm()
 {
-	_operandA = ReadOperandByte();
-	_operandB = GetDirectAddress(ReadOperandByte());
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _operandA = ReadOperandByte(); break;
+			case 1: _operandB = GetDirectAddress(ReadOperandByte()); EndAddr(); break;
+		}
+	}
 }
 
 void Spc::Addr_DirIdxXInd()
 {
-	uint16_t addr = GetDirectAddress(ReadOperandByte() + _state.X);
-	Idle();
-	uint8_t lsb = Read(addr);
-	uint8_t msb = Read(GetDirectAddress(addr + 1));
-	_operandA = (msb << 8) | lsb;
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = GetDirectAddress(ReadOperandByte() + _state.X); break;
+			case 1: Idle(); break;
+			case 2: _tmp2 = Read(_tmp1); break;
+			case 3:
+				_tmp3 = Read(GetDirectAddress(_tmp1 + 1));
+				_operandA = (_tmp3 << 8) | _tmp2;
+				EndAddr(); 
+				break;
+		}
+	}
 }
 
 void Spc::Addr_DirIndIdxY()
 {
-	uint16_t addr = GetDirectAddress(ReadOperandByte());
-	uint8_t lsb = Read(addr);
-	uint8_t msb = Read(GetDirectAddress(addr + 1));
-	Idle();
-	_operandA = ((msb << 8) | lsb) + _state.Y;
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = GetDirectAddress(ReadOperandByte()); break;
+			case 1: _tmp2 = Read(_tmp1); break;
+			case 2: _tmp3 = Read(GetDirectAddress(_tmp1 + 1)); break;
+			case 4:
+				Idle();
+				_operandA = ((_tmp3 << 8) | _tmp2) + _state.Y;
+				EndAddr(); 
+				break;
+		}
+	}
 }
 
 void Spc::Addr_IndX()
 {
-	DummyRead();
-	_operandA = GetDirectAddress(_state.X);
+	if(_opStep == SpcOpStep::Addressing) {
+		DummyRead();
+		_operandA = GetDirectAddress(_state.X);
+		EndAddr();
+	}
 }
 
 void Spc::Addr_IndXToIndY()
 {
-	DummyRead();
-	_operandA = Read(GetDirectAddress(_state.Y));
-	_operandB = GetDirectAddress(_state.X);
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: DummyRead(); break;
+			case 1:
+				_operandA = Read(GetDirectAddress(_state.Y));
+				_operandB = GetDirectAddress(_state.X);
+				EndAddr();
+				break;
+		}
+	}
 }
 
 void Spc::Addr_Abs()
 {
-	uint8_t lsb = ReadOperandByte();
-	uint8_t msb = ReadOperandByte();
-	_operandA = ((msb << 8) | lsb);
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ReadOperandByte(); break;
+			case 1:
+				_tmp2 = ReadOperandByte();
+				_operandA = ((_tmp2 << 8) | _tmp1);
+				EndAddr();
+				break;
+		}
+	}
 }
 
 void Spc::Addr_AbsBit()
 {
-	Addr_Abs();
-	_operandB = _operandA >> 13;
-	_operandA = _operandA & 0x1FFF;
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ReadOperandByte(); break;
+			case 1:
+				_tmp2 = ReadOperandByte();
+				_operandA = ((_tmp2 << 8) | _tmp1);
+				_operandB = _operandA >> 13;
+				_operandA = _operandA & 0x1FFF;
+				EndAddr();
+				break;
+		}
+	}
 }
 
 void Spc::Addr_AbsIdxX()
 {
-	Addr_Abs();
-	Idle();
-	_operandA += _state.X;
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ReadOperandByte(); break;
+			case 1:
+				_tmp2 = ReadOperandByte();
+				_operandA = ((_tmp2 << 8) | _tmp1);
+				break;
+
+			case 2:
+				Idle();
+				_operandA += _state.X;
+				EndAddr();
+				break;
+		}
+	}
 }
 
 void Spc::Addr_AbsIdxY()
 {
-	Addr_Abs();
-	Idle();
-	_operandA += _state.Y;
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ReadOperandByte(); break;
+			case 1:
+				_tmp2 = ReadOperandByte();
+				_operandA = ((_tmp2 << 8) | _tmp1);
+				break;
+			
+			case 2:
+				Idle();
+				_operandA += _state.Y;
+				EndAddr();
+				break;
+		}
+	}
 }
 
 void Spc::Addr_AbsIdxXInd()
 {
 	//Used by JMP only
-	uint8_t lsb = ReadOperandByte();
-	uint8_t msb = ReadOperandByte();
-	Idle();
-	uint16_t addr = ((msb << 8) | lsb);
-	uint8_t addrLsb = Read(addr + _state.X);
-	uint8_t addrMsb = Read(addr + _state.X + 1);
-	_operandA = (addrMsb << 8) | addrLsb;
+	if(_opStep == SpcOpStep::Addressing) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ReadOperandByte(); break;
+			case 1: _tmp2 = ReadOperandByte(); break;
+			case 2: Idle(); break;
+			case 3:
+			{
+				uint16_t addr = ((_tmp2 << 8) | _tmp1);
+				_tmp1 = Read(addr + _state.X);
+				_tmp2 = Read(addr + _state.X + 1);
+				_operandA = (_tmp2 << 8) | _tmp1;
+				EndAddr();
+				break;
+			}
+		}
+	}
 }
 
 void Spc::Addr_Rel()
 {
-	_operandA = ReadOperandByte();
+	if(_opStep == SpcOpStep::Addressing) {
+		_operandA = ReadOperandByte();
+		EndAddr();
+	}
 }
 
 void Spc::Addr_Imm()
 {
-	_immediateMode = true;
-	_operandA = ReadOperandByte();
+	if(_opStep == SpcOpStep::Addressing) {
+		_operandA = ReadOperandByte();
+		EndAddr();
+	}
 }
 
 //*****************
@@ -384,121 +496,209 @@ void Spc::Addr_Imm()
 //*****************
 void Spc::STA()
 {
-	Read(_operandA);
-	Write(_operandA, _state.A);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: Read(_operandA); break;
+			case 1: Write(_operandA, _state.A); EndOp(); break;
+		}
+	}
 }
 
 void Spc::STX()
 {
-	Read(_operandA);
-	Write(_operandA, _state.X);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: Read(_operandA); break;
+			case 1: Write(_operandA, _state.X); EndOp(); break;
+		}
+	}
 }
 
 void Spc::STY()
 {
-	Read(_operandA);
-	Write(_operandA, _state.Y);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: Read(_operandA); break;
+			case 1: Write(_operandA, _state.Y); EndOp(); break;
+		}
+	}
 }
 
 void Spc::STW()
 {
-	DummyRead(_operandA);
-
-	Write(_operandA, _state.A);
-
-	uint16_t msbAddress = GetDirectAddress(_operandA + 1);
-	Write(msbAddress, _state.Y);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: DummyRead(_operandA); break;
+			case 1: Write(_operandA, _state.A); break;
+			case 2:
+				uint16_t msbAddress = GetDirectAddress(_operandA + 1);
+				Write(msbAddress, _state.Y);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::STA_AutoIncX()
 {
-	Idle();
-	Write(_operandA, _state.A);
-	_state.X++;
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: Idle(); break;
+			case 1:
+				Write(_operandA, _state.A);
+				_state.X++;
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::LDA_AutoIncX()
 {
-	_state.A = Read(_operandA);
-	SetZeroNegativeFlags(_state.A);
-	Idle();
-	_state.X++;
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0:
+				_state.A = Read(_operandA);
+				SetZeroNegativeFlags(_state.A);
+				break;
+
+			case 1:
+				Idle();
+				_state.X++;
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::LDA()
 {
-	_state.A = GetByteValue();
-	SetZeroNegativeFlags(_state.A);
+	if(_opStep == SpcOpStep::Operation) {
+		_state.A = GetByteValue();
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
+}
+
+void Spc::LDA_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.A = (uint8_t)_operandA;
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
 }
 
 void Spc::LDX()
 {
-	_state.X = GetByteValue();
-	SetZeroNegativeFlags(_state.X);
+	if(_opStep == SpcOpStep::Operation) {
+		_state.X = GetByteValue();
+		SetZeroNegativeFlags(_state.X);
+		EndOp();
+	}
+}
+
+void Spc::LDX_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.X = (uint8_t)_operandA;
+		SetZeroNegativeFlags(_state.X);
+		EndOp();
+	}
 }
 
 void Spc::LDY()
 {
-	_state.Y = GetByteValue();
-	SetZeroNegativeFlags(_state.Y);
+	if(_opStep == SpcOpStep::Operation) {
+		_state.Y = GetByteValue();
+		SetZeroNegativeFlags(_state.Y);
+		EndOp();
+	}
+}
+
+void Spc::LDY_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.Y = (uint8_t)_operandA;
+		SetZeroNegativeFlags(_state.Y);
+		EndOp();
+	}
 }
 
 void Spc::LDW()
 {
-	uint8_t lsb = Read(_operandA);
-	Idle();
-	uint8_t msb = Read(GetDirectAddress(_operandA + 1));
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				uint8_t msb = Read(GetDirectAddress(_operandA + 1));
+				uint16_t value = (msb << 8) | _tmp1;
+				_state.A = (uint8_t)value;
+				_state.Y = (value >> 8);
+				SetZeroNegativeFlags16(value);
+				EndOp();
+				break;
+		}
+	}
+}
 
-	uint16_t value = (msb << 8) | lsb;
-	_state.A = (uint8_t)value;
-	_state.Y = (value >> 8);
-	SetZeroNegativeFlags16(value);
+void Spc::Transfer(uint8_t &dst, uint8_t src)
+{
+	DummyRead();
+	dst = src;
+	SetZeroNegativeFlags(src);
+	EndOp();
 }
 
 void Spc::TXA()
 {
-	DummyRead();
-	_state.A = _state.X;
-	SetZeroNegativeFlags(_state.A);
+	Transfer(_state.A, _state.X);
 }
 
 void Spc::TYA()
 {
-	DummyRead();
-	_state.A = _state.Y;
-	SetZeroNegativeFlags(_state.A);
+	Transfer(_state.A, _state.Y);
 }
 
 void Spc::TAX()
 {
-	DummyRead();
-	_state.X = _state.A;
-	SetZeroNegativeFlags(_state.X);
+	Transfer(_state.X, _state.A);
 }
 
 void Spc::TAY()
 {
-	DummyRead();
-	_state.Y = _state.A;
-	SetZeroNegativeFlags(_state.Y);
+	Transfer(_state.Y, _state.A);
 }
 
 void Spc::TSX()
 {
-	DummyRead();
-	_state.X = _state.SP;
-	SetZeroNegativeFlags(_state.X);
+	Transfer(_state.X, _state.SP);
 }
 
 void Spc::TXS()
 {
 	DummyRead();
 	_state.SP = _state.X;
+	EndOp();
 }
 
 void Spc::MOV()
 {
-	Write(_operandB, (uint8_t)_operandA);
+	if(_opStep == SpcOpStep::Operation) {
+		Write(_operandB, (uint8_t)_operandA);
+		EndOp();
+	}
+}
+
+void Spc::MOV_Imm()
+{
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: DummyRead(_operandB); break;
+			case 1: Write(_operandB, (uint8_t)_operandA); EndOp(); break;
+		}
+	}
 }
 
 uint8_t Spc::Add(uint8_t a, uint8_t b)
@@ -538,87 +738,143 @@ uint8_t Spc::Sub(uint8_t a, uint8_t b)
 
 void Spc::ADC()
 {
-	uint8_t val1 = (uint8_t)_operandA;
-	uint8_t val2 = Read(_operandB);
-	Write(_operandB, Add(val2, val1));
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0:
+				_tmp1 = (uint8_t)_operandA;
+				_tmp2 = Read(_operandB);
+				break;
+
+			case 1:
+				Write(_operandB, Add(_tmp2, _tmp1));
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::ADC_Acc()
 {
-	_state.A = Add(_state.A, GetByteValue());
+	if(_opStep == SpcOpStep::Operation) {
+		_state.A = Add(_state.A, GetByteValue());
+		EndOp();
+	}
+}
+
+void Spc::ADC_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.A = Add(_state.A, _operandA);
+		EndOp();
+	}
 }
 
 void Spc::ADDW()
 {
-	uint8_t lsb = Read(_operandA);
-	Idle();
-	uint8_t msb = Read(GetDirectAddress(_operandA + 1));
-	uint16_t value = ((msb << 8) | lsb);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				uint8_t msb = Read(GetDirectAddress(_operandA + 1));
+				uint16_t value = ((msb << 8) | _tmp1);
 
-	uint8_t lowCarry = (lsb + _state.A) > 0xFF ? 1 : 0;
-	ClearFlags(SpcFlags::Carry | SpcFlags::HalfCarry | SpcFlags::Overflow);
-	if(((_state.Y & 0x0F) + (msb & 0x0F) + lowCarry) & 0x10) {
-		SetFlags(SpcFlags::HalfCarry);
+				uint8_t lowCarry = (_tmp1 + _state.A) > 0xFF ? 1 : 0;
+				ClearFlags(SpcFlags::Carry | SpcFlags::HalfCarry | SpcFlags::Overflow);
+				if(((_state.Y & 0x0F) + (msb & 0x0F) + lowCarry) & 0x10) {
+					SetFlags(SpcFlags::HalfCarry);
+				}
+
+				uint16_t ya = (_state.Y << 8) | _state.A;
+				uint32_t result = ya + value;
+				if(result > 0xFFFF) {
+					SetFlags(SpcFlags::Carry);
+				}
+				SetZeroNegativeFlags16(result);
+
+				if(~(ya ^ value) & (ya ^ result) & 0x8000) {
+					SetFlags(SpcFlags::Overflow);
+				}
+
+				_state.Y = result >> 8;
+				_state.A = (uint8_t)result;
+
+				EndOp();
+		}
 	}
-
-	uint16_t ya = (_state.Y << 8) | _state.A;
-	uint32_t result = ya + value;
-	if(result > 0xFFFF) {
-		SetFlags(SpcFlags::Carry);
-	}
-	SetZeroNegativeFlags16(result);
-
-	if(~(ya ^ value) & (ya ^ result) & 0x8000) {
-		SetFlags(SpcFlags::Overflow);
-	}
-
-	_state.Y = result >> 8;
-	_state.A = (uint8_t)result;
 }
 
 void Spc::SBC()
 {
-	uint8_t val1 = (uint8_t)_operandA;
-	uint8_t val2 = Read(_operandB);
-	Write(_operandB, Sub(val2, val1));
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0:
+				_tmp1 = (uint8_t)_operandA;
+				_tmp2 = Read(_operandB);
+				break;
+
+			case 1:
+				Write(_operandB, Sub(_tmp2, _tmp1));
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::SBC_Acc()
 {
-	_state.A = Sub(_state.A, GetByteValue());
+	if(_opStep == SpcOpStep::Operation) {
+		_state.A = Sub(_state.A, GetByteValue());
+		EndOp();
+	}
+}
+
+void Spc::SBC_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.A = Sub(_state.A, _operandA);
+		EndOp();
+	}
 }
 
 void Spc::SUBW()
 {
-	uint8_t lsb = Read(_operandA);
-	Idle();
-	uint8_t msb = Read(GetDirectAddress(_operandA + 1));
-	uint16_t value = ((msb << 8) | lsb);
-	uint16_t ya = (_state.Y << 8) | _state.A;
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				uint8_t msb = Read(GetDirectAddress(_operandA + 1));
+				uint16_t value = ((msb << 8) | _tmp1);
+				uint16_t ya = (_state.Y << 8) | _state.A;
 
-	uint32_t l = _state.A - lsb;
-	uint8_t carry = l > 0xFF ? 1 : 0;
-	uint32_t h = _state.Y - msb - carry;
+				uint32_t l = _state.A - _tmp1;
+				uint8_t carry = l > 0xFF ? 1 : 0;
+				uint32_t h = _state.Y - msb - carry;
 
-	ClearFlags(SpcFlags::Carry | SpcFlags::HalfCarry | SpcFlags::Overflow);
-	if(h <= 0xFF) {
-		SetFlags(SpcFlags::Carry);
+				ClearFlags(SpcFlags::Carry | SpcFlags::HalfCarry | SpcFlags::Overflow);
+				if(h <= 0xFF) {
+					SetFlags(SpcFlags::Carry);
+				}
+
+				if((((_state.Y & 0x0F) - (msb & 0x0F) - carry) & 0x10) == 0) {
+					SetFlags(SpcFlags::HalfCarry);
+				}
+
+				_state.Y = h;
+				_state.A = l;
+
+				uint16_t result = (_state.Y << 8) | _state.A;
+
+				if((ya ^ value) & (ya ^ result) & 0x8000) {
+					SetFlags(SpcFlags::Overflow);
+				}
+
+				SetZeroNegativeFlags16(result);
+				EndOp();
+				break;
+		}
 	}
-
-	if((((_state.Y & 0x0F) - (msb & 0x0F) - carry) & 0x10) == 0) {
-		SetFlags(SpcFlags::HalfCarry);
-	}
-
-	_state.Y = h;
-	_state.A = l;
-
-	uint16_t result = (_state.Y << 8) | _state.A;
-
-	if((ya ^ value) & (ya ^ result) & 0x8000) {
-		SetFlags(SpcFlags::Overflow);
-	}
-
-	SetZeroNegativeFlags16(result);
 }
 
 void Spc::Compare(uint8_t a, uint8_t b)
@@ -635,48 +891,99 @@ void Spc::Compare(uint8_t a, uint8_t b)
 
 void Spc::CMP()
 {
-	Compare(Read(_operandB), (uint8_t)_operandA);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: Compare(Read(_operandB), (uint8_t)_operandA); break;
+			case 1: Idle(); EndOp(); break;
+		}
+	}
 }
 
 void Spc::CMP_Acc()
 {
-	Compare(_state.A, GetByteValue());
+	if(_opStep == SpcOpStep::Operation) {
+		Compare(_state.A, GetByteValue());
+		EndOp();
+	}
+}
+
+void Spc::CMP_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		Compare(_state.A, _operandA);
+		EndOp();
+	}
 }
 
 void Spc::CPX()
 {
-	Compare(_state.X, GetByteValue());
+	if(_opStep == SpcOpStep::Operation) {
+		Compare(_state.X, GetByteValue());
+		EndOp();
+	}
+}
+
+void Spc::CPX_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		Compare(_state.X, _operandA);
+		EndOp();
+	}
 }
 
 void Spc::CPY()
 {
-	Compare(_state.Y, GetByteValue());
+	if(_opStep == SpcOpStep::Operation) {
+		Compare(_state.Y, GetByteValue());
+		EndOp();
+	}
+}
+
+void Spc::CPY_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		Compare(_state.Y, _operandA);
+		EndOp();
+	}
 }
 
 void Spc::CMPW()
 {
-	uint8_t lsb = Read(_operandA);
-	uint8_t msb = Read(GetDirectAddress(_operandA + 1));
-	uint16_t value = ((msb << 8) | lsb);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1:
+				uint8_t msb = Read(GetDirectAddress(_operandA + 1));
+				uint16_t value = ((msb << 8) | _tmp1);
 
-	uint16_t ya = (_state.Y << 8) | _state.A;
+				uint16_t ya = (_state.Y << 8) | _state.A;
 
-	if(ya >= value) {
-		SetFlags(SpcFlags::Carry);
-	} else {
-		ClearFlags(SpcFlags::Carry);
+				if(ya >= value) {
+					SetFlags(SpcFlags::Carry);
+				} else {
+					ClearFlags(SpcFlags::Carry);
+				}
+
+				uint16_t result = ya - value;
+				SetZeroNegativeFlags16(result);
+				EndOp();
+				break;
+		}
 	}
-
-	uint16_t result = ya - value;
-	SetZeroNegativeFlags16(result);
 }
 
 void Spc::INC()
 {
-	uint8_t result = Read(_operandA) + 1;
-	Write(_operandA, result);
-	SetZeroNegativeFlags(result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA) + 1; break;
+			case 1:
+				Write(_operandA, _tmp1);
+				SetZeroNegativeFlags(_tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::INC_Acc()
@@ -684,6 +991,7 @@ void Spc::INC_Acc()
 	DummyRead();
 	_state.A++;
 	SetZeroNegativeFlags(_state.A);
+	EndOp();
 }
 
 void Spc::INX()
@@ -691,6 +999,7 @@ void Spc::INX()
 	DummyRead();
 	_state.X++;
 	SetZeroNegativeFlags(_state.X);
+	EndOp();
 }
 
 void Spc::INY()
@@ -698,25 +1007,40 @@ void Spc::INY()
 	DummyRead();
 	_state.Y++;
 	SetZeroNegativeFlags(_state.Y);
+	EndOp();
 }
 
 void Spc::INCW()
 {
-	uint8_t lsb = Read(_operandA);
-	Write(_operandA, lsb + 1);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1:
+				Write(_operandA, _tmp1 + 1);
 
-	uint16_t msbAddress = GetDirectAddress(_operandA + 1);
-	uint8_t msb = Read(msbAddress);
-	uint16_t value = ((msb << 8) | lsb) + 1;
-	Write(msbAddress, value >> 8);
-	SetZeroNegativeFlags16(value);
+				uint16_t msbAddress = GetDirectAddress(_operandA + 1);
+				uint8_t msb = Read(msbAddress);
+				uint16_t value = ((msb << 8) | _tmp1) + 1;
+				Write(msbAddress, value >> 8);
+				SetZeroNegativeFlags16(value);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::DEC()
 {
-	uint8_t result = Read(_operandA) - 1;
-	Write(_operandA, result);
-	SetZeroNegativeFlags(result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA) - 1; break;
+			case 1:
+				Write(_operandA, _tmp1);
+				SetZeroNegativeFlags(_tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::DEC_Acc()
@@ -724,6 +1048,7 @@ void Spc::DEC_Acc()
 	DummyRead();
 	_state.A--;
 	SetZeroNegativeFlags(_state.A);
+	EndOp();
 }
 
 void Spc::DEX()
@@ -731,6 +1056,7 @@ void Spc::DEX()
 	DummyRead();
 	_state.X--;
 	SetZeroNegativeFlags(_state.X);
+	EndOp();
 }
 
 void Spc::DEY()
@@ -738,155 +1064,242 @@ void Spc::DEY()
 	DummyRead();
 	_state.Y--;
 	SetZeroNegativeFlags(_state.Y);
+	EndOp();
 }
 
 void Spc::DECW()
 {
-	uint8_t lsb = Read(_operandA);
-	Write(_operandA, lsb - 1);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1:
+				Write(_operandA, _tmp1 - 1);
 
-	uint16_t msbAddress = GetDirectAddress(_operandA + 1);
-	uint8_t msb = Read(msbAddress);
-	uint16_t value = ((msb << 8) | lsb) - 1;
-	Write(msbAddress, value >> 8);
-	SetZeroNegativeFlags16(value);
+				uint16_t msbAddress = GetDirectAddress(_operandA + 1);
+				uint8_t msb = Read(msbAddress);
+				uint16_t value = ((msb << 8) | _tmp1) - 1;
+				Write(msbAddress, value >> 8);
+				SetZeroNegativeFlags16(value);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::MUL()
 {
-	uint16_t result = _state.Y * _state.A;
-	_state.Y = result >> 8;
-	_state.A = (uint8_t)result;
-
-	DummyRead();
-	Idle();
-	Idle();
-	Idle();
-	Idle();
-	Idle();
-	Idle();
-	Idle();
-
-	SetZeroNegativeFlags(_state.Y);
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2: Idle(); break;
+		case 3: Idle(); break;
+		case 4: Idle(); break;
+		case 5: Idle(); break;
+		case 6: Idle(); break;
+		case 7:
+			Idle();
+			uint16_t result = _state.Y * _state.A;
+			_state.Y = result >> 8;
+			_state.A = (uint8_t)result;
+			SetZeroNegativeFlags(_state.Y);
+			EndOp();
+			break;
+	}
 }
 
 void Spc::DIV()
 {
-	uint32_t ya = (_state.Y << 8) | _state.A;
-	uint32_t sub = _state.X << 9;
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2: Idle(); break;
+		case 3: Idle(); break;
+		case 4: Idle(); break;
+		case 5: Idle(); break;
+		case 6: Idle(); break;
+		case 7: Idle(); break;
+		case 8: Idle(); break;
+		case 9: Idle(); break;
+		case 11:
+			Idle();
+			uint32_t ya = (_state.Y << 8) | _state.A;
+			uint32_t sub = _state.X << 9;
 
-	DummyRead();
+			for(int i = 0; i < 9; i++) {
+				if(ya & 0x10000) {
+					ya = ((ya << 1) | 0x01) & 0x1FFFF;
+				} else {
+					ya = (ya << 1) & 0x1FFFF;
+				}
 
-	for(int i = 0; i < 9; i++) {
-		if(ya & 0x10000) {
-			ya = ((ya << 1) | 0x01) & 0x1FFFF;
-		} else {
-			ya = (ya << 1) & 0x1FFFF;
-		}
+				if(ya >= sub) {
+					ya ^= 0x01;
+				}
 
-		if(ya >= sub) {
-			ya ^= 0x01;
-		}
+				if(ya & 0x01) {
+					ya = (ya - sub) & 0x1FFFF;
+				}
+			}
 
-		if(ya & 0x01) {
-			ya = (ya - sub) & 0x1FFFF;
-		}
 
-		Idle();
+			if((_state.Y & 0x0F) >= (_state.X & 0x0F)) {
+				SetFlags(SpcFlags::HalfCarry);
+			} else {
+				ClearFlags(SpcFlags::HalfCarry);
+			}
+
+			_state.A = (uint8_t)ya;
+			_state.Y = ya >> 9;
+
+			if(ya & 0x100) {
+				SetFlags(SpcFlags::Overflow);
+			} else {
+				ClearFlags(SpcFlags::Overflow);
+			}
+
+			SetZeroNegativeFlags(_state.A);
+			EndOp();
+			break;
 	}
-
-	//12 cycles total
-	Idle();
-
-	if((_state.Y & 0x0F) >= (_state.X & 0x0F)) {
-		SetFlags(SpcFlags::HalfCarry);
-	} else {
-		ClearFlags(SpcFlags::HalfCarry);
-	}
-
-	_state.A = (uint8_t)ya;
-	_state.Y = ya >> 9;
-
-	if(ya & 0x100) {
-		SetFlags(SpcFlags::Overflow);
-	} else {
-		ClearFlags(SpcFlags::Overflow);
-	}
-
-	SetZeroNegativeFlags(_state.A);
 }
 
 void Spc::DAA()
 {
-	Idle();
-	Idle();
+	switch(_opSubStep++) {
+		case 0: Idle(); break;
+		case 1:
+			Idle();
+			if(CheckFlag(SpcFlags::Carry) || _state.A > 0x99) {
+				_state.A += 0x60;
+				SetFlags(SpcFlags::Carry);
+			}
 
-	if(CheckFlag(SpcFlags::Carry) || _state.A > 0x99) {
-		_state.A += 0x60;
-		SetFlags(SpcFlags::Carry);
+			if(CheckFlag(SpcFlags::HalfCarry) || ((_state.A & 0x0F) > 9)) {
+				_state.A += 6;
+			}
+
+			SetZeroNegativeFlags(_state.A);
+			EndOp();
+			break;
 	}
-
-	if(CheckFlag(SpcFlags::HalfCarry) || ((_state.A & 0x0F) > 9)) {
-		_state.A += 6;
-	}
-
-	SetZeroNegativeFlags(_state.A);
 }
 
 void Spc::DAS()
 {
-	Idle();
-	Idle();
+	switch(_opSubStep++) {
+		case 0: Idle(); break;
+		case 1:
+			Idle();
 
-	if(!CheckFlag(SpcFlags::Carry) || _state.A > 0x99) {
-		_state.A -= 0x60;
-		ClearFlags(SpcFlags::Carry);
+			if(!CheckFlag(SpcFlags::Carry) || _state.A > 0x99) {
+				_state.A -= 0x60;
+				ClearFlags(SpcFlags::Carry);
+			}
+
+			if(!CheckFlag(SpcFlags::HalfCarry) || ((_state.A & 0x0F) > 9)) {
+				_state.A -= 6;
+			}
+
+			SetZeroNegativeFlags(_state.A);
+			EndOp();
+			break;
 	}
-
-	if(!CheckFlag(SpcFlags::HalfCarry) || ((_state.A & 0x0F) > 9)) {
-		_state.A -= 6;
-	}
-
-	SetZeroNegativeFlags(_state.A);
 }
 
 void Spc::AND()
 {
-	uint8_t result = _operandA & Read(_operandB);
-	Write(_operandB, result);
-	SetZeroNegativeFlags(result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = _operandA & Read(_operandB); break;
+			case 1:
+				Write(_operandB, _tmp1);
+				SetZeroNegativeFlags(_tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::AND_Acc()
 {
-	_state.A &= GetByteValue();
-	SetZeroNegativeFlags(_state.A);
+	if(_opStep == SpcOpStep::Operation) {
+		_state.A &= GetByteValue();
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
+}
+
+void Spc::AND_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.A &= _operandA;
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
 }
 
 void Spc::OR()
 {
-	uint8_t result = _operandA | Read(_operandB);
-	Write(_operandB, result);
-	SetZeroNegativeFlags(result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = _operandA | Read(_operandB); break;
+			case 1:
+				Write(_operandB, _tmp1);
+				SetZeroNegativeFlags(_tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::OR_Acc()
 {
-	_state.A |= GetByteValue();
-	SetZeroNegativeFlags(_state.A);
+	if(_opStep == SpcOpStep::Operation) {
+		_state.A |= GetByteValue();
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
+}
+
+void Spc::OR_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.A |= _operandA;
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
 }
 
 void Spc::EOR()
 {
-	uint8_t result = _operandA ^ Read(_operandB);
-	Write(_operandB, result);
-	SetZeroNegativeFlags(result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = _operandA ^ Read(_operandB); break;
+			case 1:
+				Write(_operandB, _tmp1);
+				SetZeroNegativeFlags(_tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::EOR_Acc()
 {
-	_state.A ^= GetByteValue();
-	SetZeroNegativeFlags(_state.A);
+	if(_opStep == SpcOpStep::Operation) {
+		_state.A ^= GetByteValue();
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
+}
+
+void Spc::EOR_Imm()
+{
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.A ^= _operandA;
+		SetZeroNegativeFlags(_state.A);
+		EndOp();
+	}
 }
 
 void Spc::SetCarry(uint8_t carry)
@@ -896,62 +1309,121 @@ void Spc::SetCarry(uint8_t carry)
 
 void Spc::OR1()
 {
-	uint8_t carry = _state.PS & SpcFlags::Carry;
-	carry |= (Read(_operandA) >> _operandB) & 0x01;
-	SetCarry(carry);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0:
+			{
+				uint8_t carry = _state.PS & SpcFlags::Carry;
+				carry |= (Read(_operandA) >> _operandB) & 0x01;
+				SetCarry(carry);
+				break;
+			}
+
+			case 1:
+				Idle();
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::NOR1()
 {
-	uint8_t carry = _state.PS & SpcFlags::Carry;
-	carry |= ~((Read(_operandA) >> _operandB)) & 0x01;
-	SetCarry(carry);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0:
+			{
+				uint8_t carry = _state.PS & SpcFlags::Carry;
+				carry |= ~((Read(_operandA) >> _operandB)) & 0x01;
+				SetCarry(carry);
+				break;
+			}
+
+			case 1:
+				Idle();
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::AND1()
 {
-	uint8_t carry = _state.PS & SpcFlags::Carry;
-	carry &= (Read(_operandA) >> _operandB) & 0x01;
-	SetCarry(carry);
+	if(_opStep == SpcOpStep::Operation) {
+		uint8_t carry = _state.PS & SpcFlags::Carry;
+		carry &= (Read(_operandA) >> _operandB) & 0x01;
+		SetCarry(carry);
+		EndOp();
+	}
 }
 
 void Spc::NAND1()
 {
-	uint8_t carry = _state.PS & SpcFlags::Carry;
-	carry &= ~((Read(_operandA) >> _operandB)) & 0x01;
-	SetCarry(carry);
+	if(_opStep == SpcOpStep::Operation) {
+		uint8_t carry = _state.PS & SpcFlags::Carry;
+		carry &= ~((Read(_operandA) >> _operandB)) & 0x01;
+		SetCarry(carry);
+		EndOp();
+	}
 }
 
 void Spc::EOR1()
 {
-	uint8_t carry = _state.PS & SpcFlags::Carry;
-	carry ^= (Read(_operandA) >> _operandB) & 0x01;
-	SetCarry(carry);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0:
+			{
+				uint8_t carry = _state.PS & SpcFlags::Carry;
+				carry ^= (Read(_operandA) >> _operandB) & 0x01;
+				SetCarry(carry);
+				break;
+			}
+
+			case 1:
+				Idle();
+				EndOp(); 
+				break;
+		}
+	}
 }
 
 void Spc::NOT1()
 {
-	uint8_t value = Read(_operandA);
-	uint8_t mask = (1 << _operandB);
-	Write(_operandA, value ^ mask);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1:
+				uint8_t mask = (1 << _operandB);
+				Write(_operandA, _tmp1 ^ mask);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::STC()
 {
-	uint8_t value = Read(_operandA);
-	uint8_t mask = (1 << _operandB);
-	uint8_t carry = (_state.PS & SpcFlags::Carry) << _operandB;
-	Idle();
-	Write(_operandA, (value & ~mask) | carry);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				uint8_t mask = (1 << _operandB);
+				uint8_t carry = (_state.PS & SpcFlags::Carry) << _operandB;
+				Write(_operandA, (_tmp1 & ~mask) | carry);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::LDC()
 {
-	uint8_t carry = (Read(_operandA) >> _operandB) & 0x01;
-	SetCarry(carry);
+	if(_opStep == SpcOpStep::Operation) {
+		uint8_t carry = (Read(_operandA) >> _operandB) & 0x01;
+		SetCarry(carry);
+		EndOp();
+	}
 }
 
 uint8_t Spc::ShiftLeft(uint8_t value)
@@ -1004,230 +1476,373 @@ uint8_t Spc::RollRight(uint8_t value)
 
 void Spc::ASL()
 {
-	uint8_t result = ShiftLeft(Read(_operandA));
-	Write(_operandA, result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ShiftLeft(Read(_operandA)); break;
+			case 1:
+				Write(_operandA, _tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::ASL_Acc()
 {
 	DummyRead();
 	_state.A = ShiftLeft(_state.A);
+	EndOp();
 }
 
 void Spc::LSR()
 {
-	uint8_t result = ShiftRight(Read(_operandA));
-	Write(_operandA, result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = ShiftRight(Read(_operandA)); break;
+			case 1:
+				Write(_operandA, _tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::LSR_Acc()
 {
 	DummyRead();
 	_state.A = ShiftRight(_state.A);
+	EndOp();
 }
 
 void Spc::ROL()
 {
-	uint8_t result = RollLeft(Read(_operandA));
-	Write(_operandA, result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = RollLeft(Read(_operandA)); break;
+			case 1:
+				Write(_operandA, _tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::ROL_Acc()
 {
 	DummyRead();
 	_state.A = RollLeft(_state.A);
+	EndOp();
 }
 
 void Spc::ROR()
 {
-	uint8_t result = RollRight(Read(_operandA));
-	Write(_operandA, result);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = RollRight(Read(_operandA)); break;
+			case 1:
+				Write(_operandA, _tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::ROR_Acc()
 {
 	DummyRead();
 	_state.A = RollRight(_state.A);
+	EndOp();
 }
 
 void Spc::XCN()
 {
-	DummyRead();
-	Idle();
-	Idle();
-	Idle();
-	_state.A = (_state.A >> 4) | (_state.A << 4);
-	SetZeroNegativeFlags(_state.A);
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2: Idle(); break;
+		case 3:
+			Idle();
+			_state.A = (_state.A >> 4) | (_state.A << 4);
+			SetZeroNegativeFlags(_state.A);
+			EndOp(); 
+			break;
+	}
 }
 
 void Spc::Branch()
 {
-	Idle();
-	Idle();
-	int8_t offset = (int8_t)_operandA;
-	_state.PC = _state.PC + offset;
+	switch(_opSubStep++) {
+		case 0: Idle(); break;
+		case 1:
+			Idle();
+			int8_t offset = (int8_t)_operandA;
+			_state.PC = _state.PC + offset;
+			EndOp();
+			break;
+	}
 }
 
 void Spc::BRA()
 {
-	Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		Branch();
+	}
 }
 
 void Spc::BEQ()
 {
-	if(CheckFlag(SpcFlags::Zero)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(CheckFlag(SpcFlags::Zero)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BNE()
 {
-	if(!CheckFlag(SpcFlags::Zero)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(!CheckFlag(SpcFlags::Zero)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BCS()
 {
-	if(CheckFlag(SpcFlags::Carry)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(CheckFlag(SpcFlags::Carry)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BCC()
 {
-	if(!CheckFlag(SpcFlags::Carry)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(!CheckFlag(SpcFlags::Carry)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BVS()
 {
-	if(CheckFlag(SpcFlags::Overflow)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(CheckFlag(SpcFlags::Overflow)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BVC()
 {
-	if(!CheckFlag(SpcFlags::Overflow)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(!CheckFlag(SpcFlags::Overflow)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BMI()
 {
-	if(CheckFlag(SpcFlags::Negative)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(CheckFlag(SpcFlags::Negative)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 void Spc::BPL()
 {
-	if(!CheckFlag(SpcFlags::Negative)) {
-		Branch();
+	if(_opStep == SpcOpStep::Operation) {
+		if(!CheckFlag(SpcFlags::Negative)) {
+			Branch();
+		} else {
+			EndOp();
+		}
 	}
 }
 
 template<uint8_t bit>
 void Spc::SET1()
 {
-	uint8_t value = Read(_operandA);
-	Write(_operandA, value | (1 << bit));
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1:
+				Write(_operandA, _tmp1 | (1 << bit));
+				EndOp(); 
+				break;
+		}
+	}
 }
 
 template<uint8_t bit>
 void Spc::CLR1()
 {
-	uint8_t value = Read(_operandA);
-	Write(_operandA, value & ~(1 << bit));
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1:
+				Write(_operandA, _tmp1 & ~(1 << bit));
+				EndOp();
+				break;
+		}
+	}
 }
 
 template<uint8_t bit>
 void Spc::BBS()
 {
-	uint8_t compareValue = Read(_operandA);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				_tmp2 = ReadOperandByte();
+				if(!(_tmp1 & (1 << bit))) {
+					EndOp();
+				}
+				break;
 
-	int8_t offset = ReadOperandByte();
-	if(compareValue & (1 << bit)) {
-		Idle();
-		Idle();
-		_state.PC += offset;
+			case 3: Idle(); break;
+			case 4:
+				Idle();
+				_state.PC += (int8_t)_tmp2;
+				EndOp();
+				break;
+		}
 	}
 }
 
 template<uint8_t bit>
 void Spc::BBC()
 {
-	uint8_t compareValue = Read(_operandA);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				_tmp2 = ReadOperandByte();
+				if(_tmp1 & (1 << bit)) {
+					EndOp();
+				}
+				break;
 
-	int8_t offset = ReadOperandByte();
-	if((compareValue & (1 << bit)) == 0) {
-		Idle();
-		Idle();
-		_state.PC += offset;
+			case 3: Idle(); break;
+			case 4:
+				Idle();
+				_state.PC += (int8_t)_tmp2;
+				EndOp();
+				break;
+		}
 	}
 }
 
 void Spc::CBNE()
 {
-	uint8_t compareValue = Read(_operandA);
-	Idle();
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: Idle(); break;
+			case 2:
+				_tmp2  = ReadOperandByte();
+				if(_state.A == _tmp1) {
+					EndOp();
+				}
+				break;
 
-	int8_t offset = ReadOperandByte();
-	if(_state.A != compareValue) {
-		Idle();
-		Idle();
-		_state.PC = _state.PC + offset;
+			case 3: Idle(); break;
+
+			case 4:
+				Idle();
+				_state.PC += (int8_t)_tmp2;
+				EndOp();
+				break;
+		}
 	}
 }
 
 void Spc::DBNZ()
 {
-	uint8_t value = Read(_operandA);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA) - 1; break;
+			case 1: Write(_operandA, _tmp1); break;
+			case 2:
+				_tmp2 = ReadOperandByte();
+				if(!_tmp1) {
+					EndOp();
+				}
+				break;
 
-	value--;
-	Write(_operandA, value);
-
-	int8_t offset = ReadOperandByte();
-	if(value) {
-		Idle();
-		Idle();
-		_state.PC = _state.PC + offset;
+			case 3: Idle(); break;
+			case 4:
+				Idle();
+				_state.PC += (int8_t)_tmp2;
+				EndOp();
+				break;
+		}
 	}
 }
 
 void Spc::DBNZ_Y()
 {
-	DummyRead();
-	Idle();
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2:
+			_state.Y--;
+			_tmp2 = ReadOperandByte();
+			if(!_state.Y) {
+				EndOp();
+			}
+			break;
 
-	_state.Y--;
-
-	int8_t offset = ReadOperandByte();
-	if(_state.Y) {
-		Idle();
-		Idle();
-		_state.PC = _state.PC + offset;
+		case 3: Idle(); break;
+		case 4:
+			Idle();
+			_state.PC += (int8_t)_tmp2;
+			EndOp();
+			break;
 	}
 }
 
-
 void Spc::JMP()
 {
-	_state.PC = _operandA;
+	if(_opStep == SpcOpStep::AfterAddressing) {
+		_state.PC = _operandA;
+		EndOp();
+	}
 }
 
 void Spc::NOTC()
 {
-	DummyRead();
-	Idle();
-	if(CheckFlag(SpcFlags::Carry)) {
-		ClearFlags(SpcFlags::Carry);
-	} else {
-		SetFlags(SpcFlags::Carry);
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1:
+			Idle();
+			if(CheckFlag(SpcFlags::Carry)) {
+				ClearFlags(SpcFlags::Carry);
+			} else {
+				SetFlags(SpcFlags::Carry);
+			}
+			EndOp(); 
+			break;
 	}
 }
 
@@ -1235,184 +1850,256 @@ void Spc::CLRC()
 {
 	DummyRead();
 	ClearFlags(SpcFlags::Carry);
+	EndOp();
 }
 
 void Spc::CLRP()
 {
 	DummyRead();
 	ClearFlags(SpcFlags::DirectPage);
+	EndOp();
 }
 
 void Spc::CLRV()
 {
 	DummyRead();
 	ClearFlags(SpcFlags::Overflow | SpcFlags::HalfCarry);
+	EndOp();
 }
 
 void Spc::SETC()
 {
 	DummyRead();
 	SetFlags(SpcFlags::Carry);
+	EndOp();
 }
 
 void Spc::SETP()
 {
 	DummyRead();
 	SetFlags(SpcFlags::DirectPage);
+	EndOp();
 }
 
 void Spc::EI()
 {
-	DummyRead();
-	SetFlags(SpcFlags::IrqEnable);
-	Idle();
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1:
+			SetFlags(SpcFlags::IrqEnable);
+			Idle();
+			EndOp();
+			break;
+	}
 }
 
 void Spc::DI()
 {
-	DummyRead();
-	ClearFlags(SpcFlags::IrqEnable);
-	Idle();
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1:
+			ClearFlags(SpcFlags::IrqEnable);
+			Idle();
+			EndOp();
+			break;
+	}
 }
 
 void Spc::TSET1()
 {
-	uint8_t value = Read(_operandA);
-	DummyRead(_operandA);
-
-	Write(_operandA, value | _state.A);
-	SetZeroNegativeFlags(_state.A - value);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: DummyRead(_operandA); break;
+			case 2:
+				Write(_operandA, _tmp1 | _state.A);
+				SetZeroNegativeFlags(_state.A - _tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::TCLR1()
 {
-	uint8_t value = Read(_operandA);
-	DummyRead(_operandA);
-
-	Write(_operandA, value & ~_state.A);
-	SetZeroNegativeFlags(_state.A - value);
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: _tmp1 = Read(_operandA); break;
+			case 1: DummyRead(_operandA); break;
+			case 2:
+				Write(_operandA, _tmp1 & ~_state.A);
+				SetZeroNegativeFlags(_state.A - _tmp1);
+				EndOp();
+				break;
+		}
+	}
 }
 
 template<uint8_t offset>
 void Spc::TCALL()
 {
-	DummyRead();
-	Idle();
-	PushWord(_state.PC);
-	Idle();
-
 	constexpr uint16_t vectorAddr = 0xFFDE - (offset * 2);
-	_state.PC = ReadWord(vectorAddr);
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2: Push(_state.PC >> 8); break;
+		case 3: Push((uint8_t)_state.PC); break;
+		case 4: Idle(); break;
+		case 5: _tmp1 = Read(vectorAddr); break;
+		case 6:
+			_state.PC = (Read(vectorAddr + 1) << 8) | _tmp1;
+			EndOp();
+			break;
+	}
 }
 
 void Spc::PCALL()
 {
-	uint8_t offset = ReadOperandByte();
-	Idle();
-	PushWord(_state.PC);
-
-	Idle();
-	_state.PC = 0xFF00 | offset;
+	switch(_opSubStep++) {
+		case 0: _tmp1 = ReadOperandByte(); break;
+		case 1: Idle(); break;
+		case 2: Push(_state.PC >> 8); break;
+		case 3: Push((uint8_t)_state.PC); break;
+		case 4:
+			Idle();
+			_state.PC = 0xFF00 | _tmp1;
+			EndOp();
+			break;
+	}
 }
 
 void Spc::JSR()
 {
-	Idle();
-	PushWord(_state.PC);
-	Idle();
-	Idle();
-	_state.PC = _operandA;
+	if(_opStep == SpcOpStep::Operation) {
+		switch(_opSubStep++) {
+			case 0: Idle(); break;
+			case 1: Push(_state.PC >> 8); break;
+			case 2: Push((uint8_t)_state.PC); break;
+			case 3: Idle(); break;
+			case 4:
+				Idle();
+				_state.PC = _operandA;
+				EndOp();
+				break;
+		}
+	}
 }
 
 void Spc::RTS()
 {
-	DummyRead();
-	Idle();
-	_state.PC = PopWord();
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2: _tmp1 = Pop(); break;
+		case 3:
+			_state.PC = (Pop() << 8) | _tmp1;
+			EndOp(); 
+			break;
+	}
 }
 
 void Spc::RTI()
 {
-	DummyRead();
-	Idle();
-	_state.PS = Pop();
-	_state.PC = PopWord();
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2: _state.PS = Pop(); break;
+		case 3: _tmp1 = Pop(); break;
+		case 4:
+			_state.PC = (Pop() << 8) | _tmp1;
+			EndOp();
+			break;
+	}
 }
 
 void Spc::BRK()
 {
-	DummyRead();
-	PushWord(_state.PC);
-	Push(_state.PS);
-	Idle();
+	switch(_opSubStep++) {
+		case 0: Idle(); break;
+		case 1: Push(_state.PC >> 8); break;
+		case 2: Push((uint8_t)_state.PC); break;
+		case 3: Push(_state.PS); break;
+		case 4: Idle(); break;
+		case 5: _tmp1 = Read(0xFFDE); break;
+		case 6:
+			uint8_t msb = Read(0xFFDF);
+			_state.PC = (msb << 8) | _tmp1;
 
-	uint8_t lsb = Read(0xFFDE);
-	uint8_t msb = Read(0xFFDF);
-	_state.PC = (msb << 8) | lsb;
+			SetFlags(SpcFlags::Break);
+			ClearFlags(SpcFlags::IrqEnable);
+			EndOp();
+			break;
+	}
+}
 
-	SetFlags(SpcFlags::Break);
-	ClearFlags(SpcFlags::IrqEnable);
+void Spc::PushOperation(uint8_t value)
+{
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Push(value); break;
+		case 2:
+			Idle();
+			EndOp();
+			break;
+	}
+}
+
+void Spc::PullOperation(uint8_t &dst)
+{
+	switch(_opSubStep++) {
+		case 0: DummyRead(); break;
+		case 1: Idle(); break;
+		case 2:
+			dst = Pop();
+			EndOp();
+			break;
+	}
 }
 
 void Spc::PHA()
 {
-	DummyRead();
-	Push(_state.A);
-	Idle();
+	PushOperation(_state.A);
 }
 
 void Spc::PHX()
 {
-	DummyRead();
-	Push(_state.X);
-	Idle();
+	PushOperation(_state.X);
 }
 
 void Spc::PHY()
 {
-	DummyRead();
-	Push(_state.Y);
-	Idle();
+	PushOperation(_state.Y);
 }
 
 void Spc::PHP()
 {
-	DummyRead();
-	Push(_state.PS);
-	Idle();
+	PushOperation(_state.PS);
 }
 
 void Spc::PLA()
 {
-	DummyRead();
-	Idle();
-	_state.A = Pop();
+	PullOperation(_state.A);
 }
 
 void Spc::PLX()
 {
-	DummyRead();
-	Idle();
-	_state.X = Pop();
+	PullOperation(_state.X);
 }
 
 void Spc::PLY()
 {
-	DummyRead();
-	Idle();
-	_state.Y = Pop();
+	PullOperation(_state.Y);
 }
 
 void Spc::PLP()
 {
-	DummyRead();
-	Idle();
-	_state.PS = Pop();
+	PullOperation(_state.PS);
 }
 
 void Spc::NOP()
 {
 	DummyRead();
+	EndOp();
 }
 
 void Spc::SLEEP()

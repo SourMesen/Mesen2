@@ -11,9 +11,6 @@ Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
-	_immediateMode = false;
-	_operandA = 0;
-	_operandB = 0;
 
 	_ram = new uint8_t[Spc::SpcRamSize];
 	_spcBios = new uint8_t[Spc::SpcRomSize];
@@ -32,6 +29,15 @@ Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
 	_state.RomEnabled = true;
 	_state.SP = 0xFF;
 	_state.PC = ReadWord(Spc::ResetVector);
+
+	_opCode = 0;
+	_opStep = SpcOpStep::ReadOpCode;
+	_opSubStep = 0;
+	_tmp1 = 0;
+	_tmp2 = 0;
+	_tmp3 = 0;
+	_operandA = 0;
+	_operandB = 0;
 
 	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
 }
@@ -54,6 +60,15 @@ void Spc::Reset()
 	_state.RomEnabled = true;
 	_state.Cycle = 0;
 	_state.PC = ReadWord(Spc::ResetVector);
+	
+	_opCode = 0;
+	_opStep = SpcOpStep::ReadOpCode;
+	_opSubStep = 0;
+	_tmp1 = 0;
+	_tmp2 = 0;
+	_tmp3 = 0;
+	_operandA = 0;
+	_operandB = 0;
 
 	_dsp->soft_reset();
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
@@ -270,7 +285,13 @@ void Spc::Run()
 {
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
 	while(_state.Cycle < targetCycle) {
-		Exec();
+		if(_opStep == SpcOpStep::ReadOpCode) {
+			_opCode = GetOpCode();
+			_opStep = SpcOpStep::Addressing;
+			_opSubStep = 0;
+		} else {
+			Exec();
+		}
 	}
 }
 
@@ -361,6 +382,8 @@ void Spc::Serialize(Serializer &s)
 
 		_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 	}
+
+	s.Stream(_operandA, _operandB, _tmp1, _tmp2, _tmp3, _opCode, _opStep, _opSubStep);
 }
 
 uint8_t Spc::GetOpCode()
@@ -421,20 +444,7 @@ void Spc::SetZeroNegativeFlags16(uint16_t value)
 
 uint8_t Spc::GetByteValue()
 {
-	if(_immediateMode) {
-		return (uint8_t)_operandA;
-	} else {
-		return Read(_operandA);
-	}
-}
-
-uint16_t Spc::GetWordValue()
-{
-	if(_immediateMode) {
-		return (uint16_t)_operandA;
-	} else {
-		return ReadWord(_operandA);
-	}
+	return Read(_operandA);
 }
 
 void Spc::Push(uint8_t value)
@@ -447,19 +457,6 @@ uint8_t Spc::Pop()
 {
 	_state.SP++;
 	return Read(0x100 | _state.SP);
-}
-
-void Spc::PushWord(uint16_t value)
-{
-	Push(value >> 8);
-	Push((uint8_t)value);
-}
-
-uint16_t Spc::PopWord()
-{
-	uint8_t lo = Pop();
-	uint8_t hi = Pop();
-	return lo | hi << 8;
 }
 
 uint16_t Spc::GetDirectAddress(uint8_t offset)

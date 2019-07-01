@@ -16,7 +16,16 @@ DummySpc::DummySpc(uint8_t *spcRam, uint8_t *spcRom, SpcState &state)
 {
 	_ram = spcRam;
 	_spcBios = spcRom;
-	_immediateMode = false;
+
+	_opCode = 0;
+	_opStep = SpcOpStep::ReadOpCode;
+	_opSubStep = 0;
+	_tmp1 = 0;
+	_tmp2 = 0;
+	_tmp3 = 0;
+	_operandA = 0;
+	_operandB = 0;
+
 	_state = state;
 	_writeCounter = 0;
 	_readCounter = 0;
@@ -30,7 +39,9 @@ DummySpc::~DummySpc()
 
 void DummySpc::Step()
 {
-	Exec();
+	do {
+		Exec();
+	} while(_opStep != SpcOpStep::ReadOpCode);
 }
 
 uint32_t DummySpc::GetWriteCount()
