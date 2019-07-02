@@ -746,7 +746,7 @@ void Spc::ADC()
 				break;
 
 			case 1:
-				Write(_operandB, Add(_tmp2, _tmp1));
+				Write(_operandB, Add((uint8_t)_tmp2, (uint8_t)_tmp1));
 				EndOp();
 				break;
 		}
@@ -764,7 +764,7 @@ void Spc::ADC_Acc()
 void Spc::ADC_Imm()
 {
 	if(_opStep == SpcOpStep::AfterAddressing) {
-		_state.A = Add(_state.A, _operandA);
+		_state.A = Add(_state.A, (uint8_t)_operandA);
 		EndOp();
 	}
 }
@@ -814,7 +814,7 @@ void Spc::SBC()
 				break;
 
 			case 1:
-				Write(_operandB, Sub(_tmp2, _tmp1));
+				Write(_operandB, Sub((uint8_t)_tmp2, (uint8_t)_tmp1));
 				EndOp();
 				break;
 		}
@@ -832,7 +832,7 @@ void Spc::SBC_Acc()
 void Spc::SBC_Imm()
 {
 	if(_opStep == SpcOpStep::AfterAddressing) {
-		_state.A = Sub(_state.A, _operandA);
+		_state.A = Sub(_state.A, (uint8_t)_operandA);
 		EndOp();
 	}
 }
@@ -910,7 +910,7 @@ void Spc::CMP_Acc()
 void Spc::CMP_Imm()
 {
 	if(_opStep == SpcOpStep::AfterAddressing) {
-		Compare(_state.A, _operandA);
+		Compare(_state.A, (uint8_t)_operandA);
 		EndOp();
 	}
 }
@@ -926,7 +926,7 @@ void Spc::CPX()
 void Spc::CPX_Imm()
 {
 	if(_opStep == SpcOpStep::AfterAddressing) {
-		Compare(_state.X, _operandA);
+		Compare(_state.X, (uint8_t)_operandA);
 		EndOp();
 	}
 }
@@ -942,7 +942,7 @@ void Spc::CPY()
 void Spc::CPY_Imm()
 {
 	if(_opStep == SpcOpStep::AfterAddressing) {
-		Compare(_state.Y, _operandA);
+		Compare(_state.Y, (uint8_t)_operandA);
 		EndOp();
 	}
 }
@@ -978,8 +978,8 @@ void Spc::INC()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = Read(_operandA) + 1; break;
 			case 1:
-				Write(_operandA, _tmp1);
-				SetZeroNegativeFlags(_tmp1);
+				Write(_operandA, (uint8_t)_tmp1);
+				SetZeroNegativeFlags((uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1035,8 +1035,8 @@ void Spc::DEC()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = Read(_operandA) - 1; break;
 			case 1:
-				Write(_operandA, _tmp1);
-				SetZeroNegativeFlags(_tmp1);
+				Write(_operandA, (uint8_t)_tmp1);
+				SetZeroNegativeFlags((uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1212,8 +1212,8 @@ void Spc::AND()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = _operandA & Read(_operandB); break;
 			case 1:
-				Write(_operandB, _tmp1);
-				SetZeroNegativeFlags(_tmp1);
+				Write(_operandB, (uint8_t)_tmp1);
+				SetZeroNegativeFlags((uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1244,8 +1244,8 @@ void Spc::OR()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = _operandA | Read(_operandB); break;
 			case 1:
-				Write(_operandB, _tmp1);
-				SetZeroNegativeFlags(_tmp1);
+				Write(_operandB, (uint8_t)_tmp1);
+				SetZeroNegativeFlags((uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1276,8 +1276,8 @@ void Spc::EOR()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = _operandA ^ Read(_operandB); break;
 			case 1:
-				Write(_operandB, _tmp1);
-				SetZeroNegativeFlags(_tmp1);
+				Write(_operandB, (uint8_t)_tmp1);
+				SetZeroNegativeFlags((uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1480,7 +1480,7 @@ void Spc::ASL()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = ShiftLeft(Read(_operandA)); break;
 			case 1:
-				Write(_operandA, _tmp1);
+				Write(_operandA, (uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1500,7 +1500,7 @@ void Spc::LSR()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = ShiftRight(Read(_operandA)); break;
 			case 1:
-				Write(_operandA, _tmp1);
+				Write(_operandA, (uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1520,7 +1520,7 @@ void Spc::ROL()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = RollLeft(Read(_operandA)); break;
 			case 1:
-				Write(_operandA, _tmp1);
+				Write(_operandA, (uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1540,7 +1540,7 @@ void Spc::ROR()
 		switch(_opSubStep++) {
 			case 0: _tmp1 = RollRight(Read(_operandA)); break;
 			case 1:
-				Write(_operandA, _tmp1);
+				Write(_operandA, (uint8_t)_tmp1);
 				EndOp();
 				break;
 		}
@@ -1782,7 +1782,7 @@ void Spc::DBNZ()
 	if(_opStep == SpcOpStep::Operation) {
 		switch(_opSubStep++) {
 			case 0: _tmp1 = Read(_operandA) - 1; break;
-			case 1: Write(_operandA, _tmp1); break;
+			case 1: Write(_operandA, (uint8_t)_tmp1); break;
 			case 2:
 				_tmp2 = ReadOperandByte();
 				if(!_tmp1) {
