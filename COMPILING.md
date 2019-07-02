@@ -1,8 +1,15 @@
 ### Windows
 
 1) Open the solution in VS2017
-2) Compile as Release/x64 or Release/x86
+2) Compile as Release/x64
 3) Run
+
+#### *Libretro*
+
+1) Open the solution in VS2017
+2) Compile as Libretro/x64
+3) Use the "mesen-s_libretro.dll" file in bin/(x64 or x86)/Libretro/mesen-s_libretro.dll
+
 
 ### Linux
 
@@ -20,3 +27,12 @@ LTO is supported under clang, which gives a large performance boost (25-30%+), s
 Examples:  
 `LTO=true make` will compile with clang and LTO.  
 `USE_GCC=true LTO=true make` will compile with gcc and LTO.  
+
+#### *Libretro*
+
+To compile the libretro core you will need a recent version of clang/gcc.  This is because Mesen-S requires a C++14 compiler, along with support for the filesystem API (C++17).
+
+Running "make libretro" will build the core and put it in "bin/mesen-s_libretro.(x64 or x86).so".
+LTO is supported under clang, which gives a large performance boost (25-30%+), so turning it on is highly recommended (see makefile for details).
+
+**Note:** There is also another makefile in the Libretro folder - this is used by the RetroArch buildbot to build the core.  You can also try using this makefile if you are having issues with the one in the root folder.

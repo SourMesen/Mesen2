@@ -24,9 +24,7 @@ The following should be added over time (in no particular order):
 * Netplay  
 * Cheats  
 * Additions/improvements in the debugging tools
-* Lua scripting
 * Support for the enhancement chips used in some games
-* Libretro core (once the emulation core is stable/accurate enough)
 
 ## Compiling
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifndef LIBRETRO
 #include "LuaCallHelper.h"
 
 LuaCallHelper::LuaCallHelper(lua_State *lua) : _lua(lua)
@@ -145,3 +146,5 @@ int LuaCallHelper::ReturnCount()
 {
 	return _returnCount;
 }
+
+#endif

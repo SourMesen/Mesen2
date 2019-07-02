@@ -13,14 +13,27 @@ EmuSettings::EmuSettings()
 
 uint32_t EmuSettings::GetVersion()
 {
-	//0.1.0
-	return 0x00000100;
+	//Version 0.1.0
+	uint16_t major = 0;
+	uint8_t minor = 1;
+	uint8_t revision = 0;
+	return (major << 16) | (minor << 8) | revision;
+}
+
+string EmuSettings::GetVersionString()
+{
+	uint32_t version = GetVersion();
+	return std::to_string(version >> 16) + "." + std::to_string((version >> 8) & 0xFF) + "." + std::to_string(version & 0xFF);
 }
 
 void EmuSettings::ProcessString(string & str, const char ** strPointer)
 {
 	//Make a copy of the string and keep it (the original pointer will not be valid after the call is over)
-	str = *strPointer;
+	if(*strPointer) {
+		str = *strPointer;
+	} else {
+		str.clear();
+	}
 	*strPointer = str.c_str();
 }
 
@@ -180,17 +193,11 @@ uint32_t EmuSettings::GetEmulationSpeed()
 	}
 }
 
-double EmuSettings::GetAspectRatio()
+double EmuSettings::GetAspectRatio(ConsoleRegion region)
 {
 	switch(_video.AspectRatio) {
 		case VideoAspectRatio::NoStretching: return 0.0;
-
-		case VideoAspectRatio::Auto:
-		{
-			bool isPal = false;
-			return isPal ? (9440000.0 / 6384411.0) : (128.0 / 105.0);
-		}
-
+		case VideoAspectRatio::Auto: return region == ConsoleRegion::Pal ? (9440000.0 / 6384411.0) : (128.0 / 105.0);
 		case VideoAspectRatio::NTSC: return 128.0 / 105.0;
 		case VideoAspectRatio::PAL: return 9440000.0 / 6384411.0;
 		case VideoAspectRatio::Standard: return 4.0 / 3.0;

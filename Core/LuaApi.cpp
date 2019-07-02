@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#ifndef LIBRETRO
 #include "LuaApi.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
@@ -703,3 +705,4 @@ int LuaApi::GetState(lua_State *lua)
 	
 	return 1;
 }
+#endif

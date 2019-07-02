@@ -31,7 +31,9 @@ private:
 
 public:
 	EmuSettings();
+
 	uint32_t GetVersion();
+	string GetVersionString();
 
 	void SetVideoConfig(VideoConfig config);
 	VideoConfig GetVideoConfig();
@@ -56,7 +58,7 @@ public:
 	OverscanDimensions GetOverscan();
 	uint32_t GetRewindBufferSize();
 	uint32_t GetEmulationSpeed();
-	double GetAspectRatio();
+	double GetAspectRatio(ConsoleRegion region);
 
 	void SetFlag(EmulationFlags flag);
 	void SetFlagState(EmulationFlags flag, bool enabled);

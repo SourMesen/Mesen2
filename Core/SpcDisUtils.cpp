@@ -131,7 +131,7 @@ int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console
 {
 	if(_needAddress[info.GetOpCode()]) {
 		Spc* spc = console->GetSpc().get();
-		DummySpc dummySpc(spc->GetSpcRam(), spc->GetSpcRom(), state);
+		DummySpc dummySpc(spc->GetSpcRam(), state);
 		dummySpc.Step();
 		uint32_t addr;
 		uint8_t value;

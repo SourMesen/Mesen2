@@ -12,10 +12,9 @@
 
 #include "Spc.h"
 
-DummySpc::DummySpc(uint8_t *spcRam, uint8_t *spcRom, SpcState &state)
+DummySpc::DummySpc(uint8_t *spcRam, SpcState &state)
 {
 	_ram = spcRam;
-	_spcBios = spcRom;
 
 	_opCode = 0;
 	_opStep = SpcOpStep::ReadOpCode;
@@ -34,7 +33,6 @@ DummySpc::DummySpc(uint8_t *spcRam, uint8_t *spcRom, SpcState &state)
 DummySpc::~DummySpc()
 {
 	_ram = nullptr;
-	_spcBios = nullptr;
 }
 
 void DummySpc::Step()

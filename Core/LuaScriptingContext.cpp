@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#ifndef LIBRETRO
 #include "../Lua/lua.hpp"
 #include "../Lua/luasocket.hpp"
 #include "LuaScriptingContext.h"
@@ -155,3 +157,4 @@ int LuaScriptingContext::InternalCallEventCallback(EventType type)
 	}
 	return l.ReturnCount();
 }
+#endif

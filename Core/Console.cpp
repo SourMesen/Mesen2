@@ -132,6 +132,19 @@ void Console::Run()
 	PlatformUtilities::RestoreTimerResolution();
 }
 
+void Console::RunSingleFrame()
+{
+	//Used by Libretro
+	uint32_t lastFrameNumber = _ppu->GetFrameCount();
+	_emulationThreadId = std::this_thread::get_id();
+
+	while(_ppu->GetFrameCount() == lastFrameNumber) {
+		_cpu->Exec();
+	}
+
+	_controlManager->UpdateControlDevices();
+}
+
 void Console::Stop(bool sendNotification)
 {
 	_stopFlag = true;
@@ -213,6 +226,7 @@ void Console::PowerCycle()
 		RomInfo info = cart->GetRomInfo();
 		Lock();
 		LoadRom(info.RomFile, info.PatchFile, false);
+		_memoryManager->IncrementMasterClockValue<182>();
 		Unlock();
 	}
 }
@@ -229,15 +243,6 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		if(stopRom) {
 			Stop(false);
 		}
-
-		vector<uint8_t> spcRomData;
-		VirtualFile spcBios(FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "spc700.rom"));
-		if(spcBios.IsValid()) {
-			spcBios.ReadFile(spcRomData);
-		} else {
-			MessageManager::DisplayMessage("SPC", "spc700.rom not found, cannot launch game.");
-			return false;
-		}
 		
 		_cart = cart;
 		UpdateRegion();
@@ -247,7 +252,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
 		_controlManager.reset(new ControlManager(shared_from_this()));
 		_dmaController.reset(new DmaController(_memoryManager.get()));
-		_spc.reset(new Spc(shared_from_this(), spcRomData));
+		_spc.reset(new Spc(shared_from_this()));
 
 		_memoryManager->Initialize(shared_from_this());
 

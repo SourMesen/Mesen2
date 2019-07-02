@@ -1163,6 +1163,9 @@ void Ppu::SendFrame()
 	}
 
 	bool isRewinding = _console->GetRewindManager()->IsRewinding();
+#ifdef LIBRETRO
+	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
+#else
 	if(isRewinding || _screenInterlace) {
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
@@ -1172,6 +1175,7 @@ void Ppu::SendFrame()
 			_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 		}
 	}
+#endif
 }
 
 uint16_t* Ppu::GetScreenBuffer()

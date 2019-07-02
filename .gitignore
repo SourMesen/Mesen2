@@ -182,6 +182,5 @@ packages/*
 
 !Libretro/hakchi/bin
 
-Libretro/*
 Docs/*
 TestHelper/*

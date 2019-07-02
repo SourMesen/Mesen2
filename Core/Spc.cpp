@@ -6,16 +6,13 @@
 #include "SPC_DSP.h"
 #include "../Utilities/Serializer.h"
 
-Spc::Spc(shared_ptr<Console> console, vector<uint8_t> &spcRomData)
+Spc::Spc(shared_ptr<Console> console)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];
-	_spcBios = new uint8_t[Spc::SpcRomSize];
-
-	memcpy(_spcBios, spcRomData.data(), Spc::SpcRomSize);
 	memset(_ram, 0, Spc::SpcRamSize);
 
 	_dsp.reset(new SPC_DSP());
@@ -47,7 +44,6 @@ Spc::~Spc()
 {
 	delete[] _soundBuffer;
 	delete[] _ram;
-	delete[] _spcBios;
 }
 #endif
 

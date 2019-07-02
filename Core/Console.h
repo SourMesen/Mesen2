@@ -74,6 +74,7 @@ public:
 	void Release();
 
 	void Run();
+	void RunSingleFrame();
 	void Stop(bool sendNotification);
 
 	void Reset();

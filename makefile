@@ -63,7 +63,7 @@ endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
 SHAREDLIB=libMesenSCore.$(MESENPLATFORM).dll
-LIBRETROLIB=mesens_libretro.$(MESENPLATFORM).so
+LIBRETROLIB=mesen-s_libretro.$(MESENPLATFORM).so
 RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 
 COREOBJ=$(patsubst Core/%.cpp,Core/$(OBJFOLDER)/%.o,$(wildcard Core/*.cpp))
@@ -143,10 +143,10 @@ InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(CORE
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 	
-Libretro/$(OBJFOLDER)/$(LIBRETROLIB): $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) $(LUAOBJ) Libretro/libretro.cpp
+Libretro/$(OBJFOLDER)/$(LIBRETROLIB): $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) Libretro/libretro.cpp
 	mkdir -p bin
 	mkdir -p Libretro/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) $(LUAOBJ) -pthread $(FSLIB)
+	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) -pthread
 	cp $(LIBRETROLIB) bin/pgohelperlib.so
 	mv $(LIBRETROLIB) Libretro/$(OBJFOLDER) 
 
