@@ -529,7 +529,7 @@ int32_t ExpressionEvaluator::Evaluate(string expression, DebugState &state, Eval
 		if(success) {
 			return result;
 		}
-	} catch(std::exception &e) {
+	} catch(std::exception&) {
 	}
 	resultType = EvalResultType::Invalid;
 	return 0;
@@ -544,7 +544,7 @@ bool ExpressionEvaluator::Validate(string expression)
 		bool success;
 		PrivateEvaluate(expression, state, type, operationInfo, success);
 		return success;
-	} catch(std::exception &e) {
+	} catch(std::exception&) {
 		return false;
 	}
 }
