@@ -318,7 +318,7 @@ void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state,
 			uint8_t flags = oamRam[addr + 3];
 			bool useSecondTable = (flags & 0x01) != 0;
 			uint8_t palette = (flags >> 1) & 0x07;
-			uint8_t priority = (flags >> 4) & 0x03;
+			//uint8_t priority = (flags >> 4) & 0x03;
 			bool horizontalMirror = (flags & 0x40) != 0;
 			bool verticalMirror = (flags & 0x80) != 0;
 			

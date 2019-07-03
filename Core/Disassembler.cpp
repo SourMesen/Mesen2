@@ -273,7 +273,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 				}
 			} else if(!inUnknownBlock && !inVerifiedBlock) {
 				//If not in a block, start a new block based on the current byte's type (data vs unidentified)
-				bool showAsData = isData && showData || (!isData && !isCode) && showUnident;
+				bool showAsData = (isData && showData) || ((!isData && !isCode) && showUnident);
 				if(isData) {
 					inVerifiedBlock = true;
 					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockStart | LineFlags::VerifiedData | (showAsData ? LineFlags::ShowAsData : 0)));

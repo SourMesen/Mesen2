@@ -49,6 +49,7 @@ uint64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType
 		case SnesMemoryType::Register: key |= ((uint64_t)4 << 32); break;
 		case SnesMemoryType::SpcRam: key |= ((uint64_t)5 << 32); break;
 		case SnesMemoryType::SpcRom: key |= ((uint64_t)6 << 32); break;
+		default: throw std::runtime_error("Invalid memory type for label");
 	}
 	return key;
 }
