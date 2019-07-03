@@ -194,6 +194,8 @@ bool SaveStateManager::LoadState(int stateIndex)
 
 void SaveStateManager::SaveRecentGame(string romName, string romPath, string patchPath)
 {
+#ifndef LIBRETRO
+	//Don't do this for libretro core
 	string filename = FolderUtilities::GetFilename(_console->GetRomInfo().RomFile.GetFileName(), false) + ".rgd";
 	ZipWriter writer;
 	writer.Initialize(FolderUtilities::CombinePath(FolderUtilities::GetRecentGamesFolder(), filename));
@@ -212,6 +214,7 @@ void SaveStateManager::SaveRecentGame(string romName, string romPath, string pat
 	romInfoStream << patchPath << std::endl;
 	writer.AddFile(romInfoStream, "RomInfo.txt");
 	writer.Save();
+#endif
 }
 
 void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
