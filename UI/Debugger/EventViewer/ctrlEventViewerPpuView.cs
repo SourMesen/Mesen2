@@ -12,6 +12,7 @@ using Mesen.GUI.Controls;
 using Mesen.GUI.Forms;
 using Mesen.GUI.Config;
 using System.Drawing.Imaging;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger
 {
@@ -232,7 +233,14 @@ namespace Mesen.GUI.Debugger
 				case DebugEventType.Register:
 					bool isWrite = evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite;
 					bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite|| evt.Operation.Type == MemoryOperationType.DmaRead;
-					values["Register"] = "$" + evt.Operation.Address.ToString("X4") + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "");
+
+					CodeLabel label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = SnesMemoryType.CpuMemory });
+					string registerText = "$" + evt.Operation.Address.ToString("X4");
+					if(label != null) {
+						registerText = label.Label + " (" + registerText + ")";
+					}
+
+					values["Register"] = registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "");
 					values["Value"] = "$" + evt.Operation.Value.ToString("X2");
 
 					if(isDma) {
