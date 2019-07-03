@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "DefaultVideoFilter.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <algorithm>
 #include "DebugHud.h"
 #include "Console.h"
 #include "EmuSettings.h"
 #include "SettingTypes.h"
+
+const static double PI = 3.14159265358979323846;
 
 DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Console> console) : BaseVideoFilter(console)
 {
@@ -15,7 +15,7 @@ DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Console> console) : BaseVideoF
 
 void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturationShift)
 {
-	double hue = hueShift * M_PI;
+	double hue = hueShift * PI;
 	double sat = saturationShift + 1;
 
 	double baseValues[6] = { 0.956f, 0.621f, -0.272f, -0.647f, -1.105f, 1.702f };

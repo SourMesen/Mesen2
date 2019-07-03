@@ -103,9 +103,9 @@ void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr
 		endAddr = 0xFFFFFF;
 	}
 
-	for(int i = 0; i < _callbacks[(int)type].size(); i++) {
+	for(size_t i = 0; i < _callbacks[(int)type].size(); i++) {
 		MemoryCallback &callback = _callbacks[(int)type][i];
-		if(callback.Reference == reference && callback.StartAddress == startAddr && callback.EndAddress == endAddr) {
+		if(callback.Reference == reference && (int)callback.StartAddress == startAddr && (int)callback.EndAddress == endAddr) {
 			_callbacks[(int)type].erase(_callbacks[(int)type].begin() + i);
 			break;
 		}

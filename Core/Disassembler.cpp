@@ -93,7 +93,7 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 
 	int returnSize = 0;
 	int32_t address = addrInfo.Address;
-	while(address >= 0 && address < cache->size()) {
+	while(address >= 0 && address < (int32_t)cache->size()) {
 		DisassemblyInfo &disInfo = (*cache)[address];
 		if(!disInfo.IsInitialized() || !disInfo.IsValid(cpuFlags)) {
 			disInfo.Initialize(source+address, cpuFlags, type);

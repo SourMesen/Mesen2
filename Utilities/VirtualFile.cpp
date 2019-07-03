@@ -32,7 +32,7 @@ VirtualFile::VirtualFile(const string & file)
 		if(tokens.size() > 2) {
 			try {
 				_innerFileIndex = std::stoi(tokens[2]);
-			} catch(std::exception) {}
+			} catch(std::exception &) {}
 		}
 	}
 }

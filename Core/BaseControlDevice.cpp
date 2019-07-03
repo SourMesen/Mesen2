@@ -92,7 +92,7 @@ void BaseControlDevice::SetTextState(string textState)
 				try {
 					pos.X = (int16_t)std::stol(data[0]);
 					pos.Y = (int16_t)std::stol(data[1]);
-				} catch(std::exception ex) {
+				} catch(std::exception &ex) {
 					pos.X = -1;
 					pos.Y = -1;
 				}
