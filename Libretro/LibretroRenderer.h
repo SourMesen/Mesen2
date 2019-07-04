@@ -54,8 +54,8 @@ public:
 	{
 		AudioConfig audio = _console->GetSettings()->GetAudioConfig();
 		EmulationConfig emulation = _console->GetSettings()->GetEmulationConfig();
-
-		info.timing.fps = emulation.Region == ConsoleRegion::Ntsc ? 60.098811862348404716732985230828 : 50.006977968268290848936010226333;
+		
+		info.timing.fps = _console->GetRegion() == ConsoleRegion::Ntsc ? 60.098811862348404716732985230828 : 50.006977968268290848936010226333;
 		info.timing.sample_rate = audio.SampleRate;
 
 		float ratio = (float)_console->GetSettings()->GetAspectRatio(_console->GetRegion());
