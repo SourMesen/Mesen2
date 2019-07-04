@@ -33,11 +33,11 @@ static std::unique_ptr<LibretroSoundManager> _soundManager;
 static std::unique_ptr<LibretroKeyManager> _keyManager;
 static std::unique_ptr<LibretroMessageManager> _messageManager;
 
-static const char* MesenNtscFilter = "mesen-s_ntsc_filter";
-static const char* MesenRegion = "mesen-s_region";
-static const char* MesenAspectRatio = "mesen-s_aspect_ratio";
-static const char* MesenOverscanVertical = "mesen-s_overscan_vertical";
-static const char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
+static constexpr char* MesenNtscFilter = "mesen-s_ntsc_filter";
+static constexpr char* MesenRegion = "mesen-s_region";
+static constexpr char* MesenAspectRatio = "mesen-s_aspect_ratio";
+static constexpr char* MesenOverscanVertical = "mesen-s_overscan_vertical";
+static constexpr char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
 
 extern "C" {
 	void logMessage(retro_log_level level, const char* message)
@@ -94,7 +94,7 @@ extern "C" {
 	{
 		retroEnv = env;
 
-		static const struct retro_variable vars[] = {
+		static constexpr struct retro_variable vars[] = {
 			{ MesenNtscFilter, "NTSC filter; Disabled|Composite (Blargg)|S-Video (Blargg)|RGB (Blargg)|Monochrome (Blargg)" },
 			{ MesenRegion, "Region; Auto|NTSC|PAL" },
 			{ MesenOverscanVertical, "Vertical Overscan; None|8px|16px" },
@@ -103,21 +103,21 @@ extern "C" {
 			{ NULL, NULL },
 		};
 
-		static const struct retro_controller_description pads1[] = {
+		static constexpr struct retro_controller_description pads1[] = {
 			//{ "Auto", DEVICE_AUTO },
 			{ "SNES Controller", DEVICE_GAMEPAD },
 			{ "SNES Mouse", DEVICE_SNESMOUSE },
 			{ NULL, 0 },
 		};
 
-		static const struct retro_controller_description pads2[] = {
+		static constexpr struct retro_controller_description pads2[] = {
 			//{ "Auto", DEVICE_AUTO },
 			{ "SNES Controller", DEVICE_GAMEPAD },
 			{ "SNES Mouse", DEVICE_SNESMOUSE },
 			{ NULL, 0 },
 		};
 		
-		static const struct retro_controller_info ports[] = {
+		static constexpr struct retro_controller_info ports[] = {
 			{ pads1, 2 },
 			{ pads2, 2 },
 			{ 0 },
@@ -316,18 +316,6 @@ extern "C" {
 
 	RETRO_API void retro_run()
 	{
-		if(_console->GetSettings()->CheckFlag(EmulationFlags::MaximumSpeed)) {
-			//Skip frames to speed up emulation while still outputting at 50/60 fps (needed for FDS fast forward while loading)
-			_renderer->SetSkipMode(true);
-			_soundManager->SetSkipMode(true);
-			for(int i = 0; i < 9; i++) {
-				//Attempt to speed up to 1000% speed
-				_console->RunSingleFrame();
-			}
-			_renderer->SetSkipMode(false);
-			_soundManager->SetSkipMode(false);
-		}
-
 		bool updated = false;
 		if(retroEnv(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated) {
 			update_settings();
