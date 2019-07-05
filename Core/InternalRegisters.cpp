@@ -136,12 +136,15 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		case 0x4216: return (uint8_t)_multOrRemainderResult;
 		case 0x4217: return (uint8_t)(_multOrRemainderResult >> 8);
 
-		case 0x4218: case 0x421A: case 0x421C: case 0x421E: 
-			return (uint8_t)_controllerData[((addr & 0x0E) - 8) >> 1];
+		case 0x4218: return (uint8_t)_controllerData[0];
+		case 0x4219: return (uint8_t)(_controllerData[0] >> 8);
+		case 0x421A: return (uint8_t)_controllerData[1];
+		case 0x421B: return (uint8_t)(_controllerData[1] >> 8);
+		case 0x421C: return (uint8_t)_controllerData[2];
+		case 0x421D: return (uint8_t)(_controllerData[2] >> 8);
+		case 0x421E: return (uint8_t)_controllerData[3];
+		case 0x421F: return (uint8_t)(_controllerData[3] >> 8);
 		
-		case 0x4219: case 0x421B: case 0x421D: case 0x421F:
-			return (uint8_t)(_controllerData[((addr & 0x0E) - 8) >> 1] >> 8);
-
 		default:
 			MessageManager::Log("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
 			return 0;
