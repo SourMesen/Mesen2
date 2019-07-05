@@ -39,19 +39,17 @@ void LabelManager::SetLabel(uint32_t address, SnesMemoryType memType, string lab
 	}
 }
 
-uint64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
+int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
 {
-	uint64_t key = absoluteAddr;
 	switch(memType) {
-		case SnesMemoryType::PrgRom: key |= ((uint64_t)1 << 32); break;
-		case SnesMemoryType::WorkRam: key |= ((uint64_t)2 << 32); break;
-		case SnesMemoryType::SaveRam: key |= ((uint64_t)3 << 32); break;
-		case SnesMemoryType::Register: key |= ((uint64_t)4 << 32); break;
-		case SnesMemoryType::SpcRam: key |= ((uint64_t)5 << 32); break;
-		case SnesMemoryType::SpcRom: key |= ((uint64_t)6 << 32); break;
-		default: throw std::runtime_error("Invalid memory type for label");
+		case SnesMemoryType::PrgRom: return absoluteAddr | ((uint64_t)1 << 32);
+		case SnesMemoryType::WorkRam: return absoluteAddr | ((uint64_t)2 << 32);
+		case SnesMemoryType::SaveRam: return absoluteAddr | ((uint64_t)3 << 32);
+		case SnesMemoryType::Register: return absoluteAddr | ((uint64_t)4 << 32);
+		case SnesMemoryType::SpcRam: return absoluteAddr | ((uint64_t)5 << 32);
+		case SnesMemoryType::SpcRom: return absoluteAddr | ((uint64_t)6 << 32);
+		default: return -1;
 	}
-	return key;
 }
 
 SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
@@ -73,15 +71,17 @@ string LabelManager::GetLabel(AddressInfo address)
 	if(address.Type <= SnesMemoryType::SpcMemory) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
-	uint64_t key = GetLabelKey(address.Address, address.Type);
 
-	if(key >= 0) {
-		auto result = _codeLabels.find(key);
-		if(result != _codeLabels.end()) {
-			return result->second;
+	if(address.Address >= 0) {
+		int64_t key = GetLabelKey(address.Address, address.Type);
+		if(key >= 0) {
+			auto result = _codeLabels.find(key);
+			if(result != _codeLabels.end()) {
+				return result->second;
+			}
 		}
 	}
-	
+
 	return "";
 }
 
@@ -104,22 +104,28 @@ void LabelManager::GetLabelAndComment(AddressInfo address, string &label, string
 	if(address.Type <= SnesMemoryType::SpcMemory) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
-	uint64_t key = GetLabelKey(address.Address, address.Type);
 
-	if(key >= 0) {
-		auto result = _codeLabels.find(key);
-		if(result != _codeLabels.end()) {
-			label = result->second;
-		} else {
-			label.clear();
-		}
+	if(address.Address >= 0) {
+		int64_t key = GetLabelKey(address.Address, address.Type);
 
-		auto commentResult = _codeComments.find(key);
-		if(commentResult != _codeComments.end()) {
-			comment = commentResult->second;
-		} else {
-			comment.clear();
+		if(key >= 0) {
+			auto result = _codeLabels.find(key);
+			if(result != _codeLabels.end()) {
+				label = result->second;
+			} else {
+				label.clear();
+			}
+
+			auto commentResult = _codeComments.find(key);
+			if(commentResult != _codeComments.end()) {
+				comment = commentResult->second;
+			} else {
+				comment.clear();
+			}
 		}
+	} else {
+		label.clear();
+		comment.clear();
 	}
 }
 
@@ -147,12 +153,13 @@ bool LabelManager::HasLabelOrComment(AddressInfo address)
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 
-	uint64_t key = GetLabelKey(address.Address, address.Type);
-	if(key >= 0) {
-		return
-			_codeLabels.find(key) != _codeLabels.end() ||
-			_codeComments.find(key) != _codeComments.end();
+	if(address.Address >= 0) {
+		uint64_t key = GetLabelKey(address.Address, address.Type);
+		if(key >= 0) {
+			return
+				_codeLabels.find(key) != _codeLabels.end() ||
+				_codeComments.find(key) != _codeComments.end();
+		}
 	}
-
 	return false;
 }

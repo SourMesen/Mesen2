@@ -25,7 +25,7 @@ private:
 
 	Debugger *_debugger;
 
-	uint64_t GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType);
+	int64_t GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType);
 	SnesMemoryType GetKeyMemoryType(uint64_t key);
 
 public:
