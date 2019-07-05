@@ -290,7 +290,10 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true, 0x400);
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true, 0x400); //mirror
 
-		MapBanks(mm, _saveRamHandlers, 0x80, 0xBF, 0x06, 0x07, 0, true);
+		//Save RAM
+		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
+		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
+		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
 	}
 }
 
