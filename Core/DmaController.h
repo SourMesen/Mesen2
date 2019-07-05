@@ -65,7 +65,7 @@ public:
 	void BeginHdmaTransfer();
 	void BeginHdmaInit();
 
-	void ProcessPendingTransfers();
+	bool ProcessPendingTransfers();
 
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);

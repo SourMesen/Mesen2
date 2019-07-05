@@ -291,11 +291,11 @@ void DmaController::BeginHdmaInit()
 	_hdmaInitPending = true;
 }
 
-void DmaController::ProcessPendingTransfers()
+bool DmaController::ProcessPendingTransfers()
 {
 	if(_inDma || _dmaStartDelay) {
 		_dmaStartDelay = false;
-		return;
+		return false;
 	}
 
 	if(_hdmaPending) {
@@ -308,6 +308,7 @@ void DmaController::ProcessPendingTransfers()
 		}
 		_inDma = false;
 		_hdmaPending = false;
+		return true;
 	} else if(_requestedDmaChannels) {
 		_inDma = true;
 
@@ -337,7 +338,11 @@ void DmaController::ProcessPendingTransfers()
 		_requestedDmaChannels = 0;
 
 		_inDma = false;
+
+		return true;
 	}
+
+	return false;
 }
 
 void DmaController::Write(uint16_t addr, uint8_t value)

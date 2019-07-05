@@ -48,6 +48,8 @@ private:
 	
 	uint8_t GetOpCode();
 
+	void ProcessCpuCycle();
+
 	void Idle();
 	void IdleOrRead();
 	

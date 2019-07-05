@@ -397,12 +397,9 @@ uint8_t Cpu::GetOpCode()
 
 void Cpu::Idle()
 {
-	_state.CycleCount++;
 #ifndef DUMMYCPU
 	_memoryManager->SetCpuSpeed(6);
-	_dmaController->ProcessPendingTransfers();
-	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	ProcessCpuCycle();
 	_memoryManager->IncrementMasterClockValue<6>();
 #endif
 }
@@ -438,19 +435,31 @@ uint32_t Cpu::ReadOperandLong()
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 
-uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
+void Cpu::ProcessCpuCycle()
 {
 	_state.CycleCount++;
 
+	bool irqLock = false;
+	if(_dmaController->ProcessPendingTransfers()) {
+		//If we just finished processing a DMA transfer, ignore the NMI/IRQ flags for this cycle
+		irqLock = true;
+	}
+
+	if(!irqLock) {
+		_state.PrevNmiFlag = _state.NmiFlag;
+		_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	}
+}
+
+uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
+{
 #ifdef DUMMYCPU
 	uint8_t value = _memoryManager->Peek(addr);
 	LogRead(addr, value);
 	return value;
 #else
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
-	_dmaController->ProcessPendingTransfers();
-	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	ProcessCpuCycle();
 	return _memoryManager->Read(addr, type);
 #endif
 }
@@ -489,15 +498,11 @@ uint32_t Cpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 
 void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	_state.CycleCount++;
-
 #ifdef DUMMYCPU
 	LogWrite(addr, value);
 #else
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
-	_dmaController->ProcessPendingTransfers();
-	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	ProcessCpuCycle();
 	_memoryManager->Write(addr, value, type);
 #endif
 }
