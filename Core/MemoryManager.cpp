@@ -216,7 +216,7 @@ void MemoryManager::Exec()
 
 uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 {
-	IncrementMasterClock();
+	IncrementMasterClockValue(_cpuSpeed - 4);
 
 	uint8_t value;
 	if(_handlers[addr >> 12]) {
@@ -228,6 +228,8 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 		MessageManager::Log("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_console->ProcessCpuRead(addr, value, type);
+
+	IncrementMasterClockValue<4>();
 	return value;
 }
 
