@@ -20,6 +20,7 @@ SOURCES_C   := $(SEVENZIP_DIR)/7zAlloc.c \
                $(SEVENZIP_DIR)/Precomp.c \
 
 SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
+               $(CORE_DIR)/AluMulDiv.cpp \
                $(CORE_DIR)/AviRecorder.cpp \
                $(CORE_DIR)/BaseCartridge.cpp \
                $(CORE_DIR)/BaseControlDevice.cpp \

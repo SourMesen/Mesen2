@@ -20,6 +20,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	_cpuSpeed = 8;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
+	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
@@ -205,6 +206,7 @@ void MemoryManager::Exec()
 		}
 		if(_hClock == _dramRefreshPosition) {
 			IncrementMasterClockValue<40>();
+			_cpu->IncreaseCycleCount<5>();
 		} else if(_hClock == _hdmaInitPosition && _ppu->GetScanline() == 0) {
 			_console->GetDmaController()->BeginHdmaInit();
 		}

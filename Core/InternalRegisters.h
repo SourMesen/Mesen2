@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "AluMulDiv.h"
 #include "../Utilities/ISerializable.h"
 
 class Console;
@@ -13,13 +14,7 @@ private:
 	Ppu* _ppu;
 	MemoryManager* _memoryManager;
 
-	uint8_t _multOperand1 = 0;
-	uint8_t _multOperand2 = 0;
-	uint16_t _multOrRemainderResult = 0;
-
-	uint16_t _dividend = 0;
-	uint8_t _divisor = 0;
-	uint16_t _divResult = 0;
+	AluMulDiv _aluMulDiv;
 
 	bool _enableAutoJoypadRead = false;
 	bool _enableFastRom = false;

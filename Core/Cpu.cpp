@@ -354,6 +354,11 @@ CpuState Cpu::GetState()
 	return _state;
 }
 
+uint64_t Cpu::GetCycleCount()
+{
+	return _state.CycleCount;
+}
+
 void Cpu::SetNmiFlag()
 {
 	_state.NmiFlag = true;

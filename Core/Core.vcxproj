@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AluMulDiv.h" />
     <ClInclude Include="AviRecorder.h" />
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
@@ -141,6 +142,7 @@
     <ClInclude Include="WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AluMulDiv.cpp" />
     <ClCompile Include="AviRecorder.cpp" />
     <ClCompile Include="BaseCartridge.cpp" />
     <ClCompile Include="BaseControlDevice.cpp" />

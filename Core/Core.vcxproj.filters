@@ -287,6 +287,9 @@
     <ClInclude Include="ScriptManager.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="AluMulDiv.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -470,6 +473,7 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
+    <ClCompile Include="AluMulDiv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

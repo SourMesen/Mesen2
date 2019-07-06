@@ -317,6 +317,10 @@ public:
 	void Exec();
 
 	CpuState GetState();
+	uint64_t GetCycleCount();
+
+	template<uint64_t value>
+	void IncreaseCycleCount();
 
 	void SetNmiFlag();
 	void SetIrqSource(IrqSource source);
@@ -349,5 +353,11 @@ public:
 	void GetReadInfo(uint32_t index, uint32_t &addr, uint8_t &value);
 #endif
 };
+
+template<uint64_t count>
+void Cpu::IncreaseCycleCount()
+{
+	_state.CycleCount += count;
+}
 
 #endif

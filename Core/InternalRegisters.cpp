@@ -9,7 +9,7 @@
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
-InternalRegisters::InternalRegisters(shared_ptr<Console> console)
+InternalRegisters::InternalRegisters(shared_ptr<Console> console) : _aluMulDiv(console->GetCpu().get())
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
@@ -19,8 +19,6 @@ InternalRegisters::InternalRegisters(shared_ptr<Console> console)
 	//Power on values
 	_horizontalTimer = 0x1FF;
 	_verticalTimer = 0x1FF;
-	_multOperand1 = 0xFF;
-	_dividend = 0xFFFF;
 	_ioPortOutput = 0xFF;
 }
 
@@ -130,11 +128,11 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			//TODO  RDIO - Programmable I/O port (in-port)
 			return 0;
 						 
-		case 0x4214: return (uint8_t)_divResult;
-		case 0x4215: return (uint8_t)(_divResult >> 8);
-
-		case 0x4216: return (uint8_t)_multOrRemainderResult;
-		case 0x4217: return (uint8_t)(_multOrRemainderResult >> 8);
+		case 0x4214:
+		case 0x4215:
+		case 0x4216:
+		case 0x4217: 
+			return _aluMulDiv.Read(addr);
 
 		case 0x4218: return (uint8_t)_controllerData[0];
 		case 0x4219: return (uint8_t)(_controllerData[0] >> 8);
@@ -184,25 +182,12 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			_ioPortOutput = value;
 			break;
 
-		case 0x4202: _multOperand1 = value; break;
+		case 0x4202:
 		case 0x4203:
-			_multOperand2 = value;
-			_multOrRemainderResult = _multOperand1 * _multOperand2;
-			break;
-
-		case 0x4204: _dividend = (_dividend & 0xFF00) | value; break;
-		case 0x4205: _dividend = (_dividend & 0xFF) | (value << 8); break;
+		case 0x4204:
+		case 0x4205:
 		case 0x4206:
-			_divisor = value;
-			if(_divisor == 0) {
-				//"Division by 0 gives a quotient of $FFFF and a remainder of C."
-				_divResult = 0xFFFF;
-				_multOrRemainderResult = _dividend;
-			} else {
-				_divResult = _dividend / _divisor;
-				_multOrRemainderResult = _dividend % _divisor;
-			}
-			break;
+			_aluMulDiv.Write(addr, value);
 
 		case 0x4207: _horizontalTimer = (_horizontalTimer & 0x100) | value; break;
 		case 0x4208: _horizontalTimer = (_horizontalTimer & 0xFF) | ((value & 0x01) << 8); break;
@@ -221,9 +206,10 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 void InternalRegisters::Serialize(Serializer &s)
 {
 	s.Stream(
-		_multOperand1, _multOperand2, _multOrRemainderResult, _dividend, _divisor, _divResult, _enableAutoJoypadRead,
 		_enableFastRom, _nmiFlag, _enableNmi, _enableHorizontalIrq, _enableVerticalIrq, _horizontalTimer,
 		_verticalTimer, _ioPortOutput, _controllerData[0], _controllerData[1], _controllerData[2], _controllerData[3],
-		_irqLevel, _needIrq
+		_irqLevel, _needIrq, _enableAutoJoypadRead
 	);
+
+	s.Stream(&_aluMulDiv);
 }
