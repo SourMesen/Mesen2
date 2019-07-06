@@ -238,7 +238,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_cart->SaveBattery();
 	}
 
-	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(romFile, patchFile);
+	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(_settings.get(), romFile, patchFile);
 	if(cart) {
 		if(stopRom) {
 			Stop(false);

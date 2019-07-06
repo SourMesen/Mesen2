@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <random>
 #include "EmuSettings.h"
 #include "KeyManager.h"
 #include "MessageManager.h"
@@ -251,4 +252,21 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 {
 	return (_debuggerFlags & (int)flag) != 0;
+}
+
+void EmuSettings::InitializeRam(void* data, uint32_t length)
+{
+	switch(_emulation.RamPowerOnState) {
+		default:
+		case RamState::AllZeros: memset(data, 0, length); break;
+		case RamState::AllOnes: memset(data, 0xFF, length); break;
+		case RamState::Random:
+			std::random_device rd;
+			std::mt19937 mt(rd());
+			std::uniform_int_distribution<> dist(0, 255);
+			for(uint32_t i = 0; i < length; i++) {
+				((uint8_t*)data)[i] = dist(mt);
+			}
+			break;
+	}
 }

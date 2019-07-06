@@ -6,6 +6,7 @@
 
 class MemoryManager;
 class VirtualFile;
+class EmuSettings;
 
 namespace CartFlags
 {
@@ -23,6 +24,8 @@ namespace CartFlags
 class BaseCartridge : public ISerializable
 {
 private:
+	EmuSettings *_settings;
+
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
 	SnesCartInformation _cartInfo;
@@ -51,7 +54,7 @@ private:
 public:
 	virtual ~BaseCartridge();
 
-	static shared_ptr<BaseCartridge> CreateCartridge(VirtualFile &romFile, VirtualFile &patchFile);
+	static shared_ptr<BaseCartridge> CreateCartridge(EmuSettings* settings, VirtualFile &romFile, VirtualFile &patchFile);
 
 	void Init();
 

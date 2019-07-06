@@ -26,6 +26,8 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(EmulationConfig.TurboSpeed), nudTurboSpeed);
 			AddBinding(nameof(EmulationConfig.RewindSpeed), nudRewindSpeed);
 			AddBinding(nameof(EmulationConfig.Region), cboRegion);
+
+			AddBinding(nameof(EmulationConfig.RamPowerOnState), cboRamPowerOnState);
 		}
 
 		protected override void OnApply()

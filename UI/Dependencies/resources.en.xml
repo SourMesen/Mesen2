@@ -1051,7 +1051,7 @@
 			<Value ID="Catalan">Català</Value>
 			<Value ID="Chinese">中文</Value>
 		</Enum>
-		<Enum ID="RamPowerOnState">
+		<Enum ID="RamState">
 			<Value ID="AllZeros">All 0s (Default)</Value>
 			<Value ID="AllOnes">All 1s</Value>
 			<Value ID="Random">Random Values</Value>

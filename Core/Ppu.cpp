@@ -33,6 +33,10 @@ Ppu::Ppu(shared_ptr<Console> console)
 	_console = console;
 
 	_vram = new uint8_t[Ppu::VideoRamSize];
+	_console->GetSettings()->InitializeRam(_vram, Ppu::VideoRamSize);
+	_console->GetSettings()->InitializeRam(_cgram, Ppu::CgRamSize);
+	_console->GetSettings()->InitializeRam(_oamRam, Ppu::SpriteRamSize);
+
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];
 	memset(_outputBuffers[0], 0, 512 * 478 * sizeof(uint16_t));

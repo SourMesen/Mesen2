@@ -38,6 +38,7 @@ static constexpr char* MesenRegion = "mesen-s_region";
 static constexpr char* MesenAspectRatio = "mesen-s_aspect_ratio";
 static constexpr char* MesenOverscanVertical = "mesen-s_overscan_vertical";
 static constexpr char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
+static constexpr char* MesenRamState = "mesen-s_ramstate";
 
 extern "C" {
 	void logMessage(retro_log_level level, const char* message)
@@ -100,6 +101,7 @@ extern "C" {
 			{ MesenOverscanVertical, "Vertical Overscan; None|8px|16px" },
 			{ MesenOverscanHorizontal, "Horizontal Overscan; None|8px|16px" },
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
+			{ MesenRamState, "Default power-on state for RAM; All 0s (Default)|All 1s|Random Values" },
 			{ NULL, NULL },
 		};
 
@@ -272,6 +274,17 @@ extern "C" {
 				emulation.Region = ConsoleRegion::Ntsc;
 			} else if(value == "PAL") {
 				emulation.Region = ConsoleRegion::Pal;
+			}
+		}
+
+		if(readVariable(MesenRamState, var)) {
+			string value = string(var.value);
+			if(value == "All 0s (Default)") {
+				emulation.RamPowerOnState = RamState::AllZeros;
+			} else if(value == "All 1s") {
+				emulation.RamPowerOnState = RamState::AllOnes;
+			} else if(value == "Random Values") {
+				emulation.RamPowerOnState = RamState::Random;
 			}
 		}
 

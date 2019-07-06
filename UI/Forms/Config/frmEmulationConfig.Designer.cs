@@ -30,6 +30,7 @@
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tpgGeneral = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.label1 = new System.Windows.Forms.Label();
 			this.flowLayoutPanel9 = new System.Windows.Forms.FlowLayoutPanel();
 			this.nudTurboSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblTurboSpeedHint = new System.Windows.Forms.Label();
@@ -42,29 +43,36 @@
 			this.flowLayoutPanel10 = new System.Windows.Forms.FlowLayoutPanel();
 			this.nudRewindSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblRewindSpeedHint = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
 			this.cboRegion = new System.Windows.Forms.ComboBox();
+			this.tpgAdvanced = new System.Windows.Forms.TabPage();
+			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblRamPowerOnState = new System.Windows.Forms.Label();
+			this.cboRamPowerOnState = new System.Windows.Forms.ComboBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
 			this.flowLayoutPanel9.SuspendLayout();
 			this.flowLayoutPanel6.SuspendLayout();
 			this.flowLayoutPanel10.SuspendLayout();
+			this.tpgAdvanced.SuspendLayout();
+			this.flowLayoutPanel8.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 290);
 			this.baseConfigPanel.Size = new System.Drawing.Size(414, 29);
+			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tabMain
 			// 
 			this.tabMain.Controls.Add(this.tpgGeneral);
+			this.tabMain.Controls.Add(this.tpgAdvanced);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
-			this.tabMain.Size = new System.Drawing.Size(414, 290);
+			this.tabMain.Size = new System.Drawing.Size(414, 319);
 			this.tabMain.TabIndex = 2;
 			// 
 			// tpgGeneral
@@ -103,6 +111,16 @@
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel4.Size = new System.Drawing.Size(400, 258);
 			this.tableLayoutPanel4.TabIndex = 0;
+			// 
+			// label1
+			// 
+			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(3, 88);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(44, 13);
+			this.label1.TabIndex = 17;
+			this.label1.Text = "Region:";
 			// 
 			// flowLayoutPanel9
 			// 
@@ -290,16 +308,6 @@
 			this.lblRewindSpeedHint.TabIndex = 2;
 			this.lblRewindSpeedHint.Text = "%  (0 = Maximum speed)";
 			// 
-			// label1
-			// 
-			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(3, 88);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(44, 13);
-			this.label1.TabIndex = 17;
-			this.label1.Text = "Region:";
-			// 
 			// cboRegion
 			// 
 			this.cboRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -308,6 +316,47 @@
 			this.cboRegion.Name = "cboRegion";
 			this.cboRegion.Size = new System.Drawing.Size(121, 21);
 			this.cboRegion.TabIndex = 18;
+			// 
+			// tpgAdvanced
+			// 
+			this.tpgAdvanced.Controls.Add(this.flowLayoutPanel8);
+			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
+			this.tpgAdvanced.Name = "tpgAdvanced";
+			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
+			this.tpgAdvanced.Size = new System.Drawing.Size(406, 293);
+			this.tpgAdvanced.TabIndex = 3;
+			this.tpgAdvanced.Text = "Advanced";
+			this.tpgAdvanced.UseVisualStyleBackColor = true;
+			// 
+			// flowLayoutPanel8
+			// 
+			this.flowLayoutPanel8.Controls.Add(this.lblRamPowerOnState);
+			this.flowLayoutPanel8.Controls.Add(this.cboRamPowerOnState);
+			this.flowLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flowLayoutPanel8.Location = new System.Drawing.Point(3, 3);
+			this.flowLayoutPanel8.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
+			this.flowLayoutPanel8.Name = "flowLayoutPanel8";
+			this.flowLayoutPanel8.Size = new System.Drawing.Size(400, 287);
+			this.flowLayoutPanel8.TabIndex = 4;
+			// 
+			// lblRamPowerOnState
+			// 
+			this.lblRamPowerOnState.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblRamPowerOnState.AutoSize = true;
+			this.lblRamPowerOnState.Location = new System.Drawing.Point(3, 7);
+			this.lblRamPowerOnState.Name = "lblRamPowerOnState";
+			this.lblRamPowerOnState.Size = new System.Drawing.Size(159, 13);
+			this.lblRamPowerOnState.TabIndex = 0;
+			this.lblRamPowerOnState.Text = "Default power on state for RAM:";
+			// 
+			// cboRamPowerOnState
+			// 
+			this.cboRamPowerOnState.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboRamPowerOnState.FormattingEnabled = true;
+			this.cboRamPowerOnState.Location = new System.Drawing.Point(168, 3);
+			this.cboRamPowerOnState.Name = "cboRamPowerOnState";
+			this.cboRamPowerOnState.Size = new System.Drawing.Size(176, 21);
+			this.cboRamPowerOnState.TabIndex = 1;
 			// 
 			// frmEmulationConfig
 			// 
@@ -321,8 +370,8 @@
 			this.Name = "frmEmulationConfig";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Emulation Config";
-			this.Controls.SetChildIndex(this.baseConfigPanel, 0);
 			this.Controls.SetChildIndex(this.tabMain, 0);
+			this.Controls.SetChildIndex(this.baseConfigPanel, 0);
 			this.tabMain.ResumeLayout(false);
 			this.tpgGeneral.ResumeLayout(false);
 			this.tpgGeneral.PerformLayout();
@@ -334,7 +383,11 @@
 			this.flowLayoutPanel6.PerformLayout();
 			this.flowLayoutPanel10.ResumeLayout(false);
 			this.flowLayoutPanel10.PerformLayout();
+			this.tpgAdvanced.ResumeLayout(false);
+			this.flowLayoutPanel8.ResumeLayout(false);
+			this.flowLayoutPanel8.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -357,5 +410,9 @@
 		private System.Windows.Forms.Label lblRewindSpeedHint;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ComboBox cboRegion;
+		private System.Windows.Forms.TabPage tpgAdvanced;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel8;
+		private System.Windows.Forms.Label lblRamPowerOnState;
+		private System.Windows.Forms.ComboBox cboRamPowerOnState;
 	}
 }

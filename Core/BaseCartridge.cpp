@@ -5,6 +5,7 @@
 #include "MemoryManager.h"
 #include "IMemoryHandler.h"
 #include "MessageManager.h"
+#include "EmuSettings.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -19,7 +20,7 @@ BaseCartridge::~BaseCartridge()
 	delete[] _saveRam;
 }
 
-shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, VirtualFile &patchFile)
+shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(EmuSettings* settings, VirtualFile &romFile, VirtualFile &patchFile)
 {
 	if(romFile.IsValid()) {
 		shared_ptr<BaseCartridge> cart(new BaseCartridge());
@@ -37,6 +38,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(VirtualFile &romFile, V
 			return nullptr;
 		}
 
+		cart->_settings = settings;
 		cart->_romPath = romFile;
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
@@ -156,6 +158,7 @@ void BaseCartridge::Init()
 	
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
+	_settings->InitializeRam(_saveRam, _saveRamSize);
 
 	LoadBattery();
 

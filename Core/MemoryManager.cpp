@@ -10,6 +10,7 @@
 #include "RamHandler.h"
 #include "MessageManager.h"
 #include "DebugTypes.h"
+#include "EmuSettings.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
@@ -24,6 +25,7 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	_ppu = console->GetPpu();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
+	_console->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(
 		console->GetDmaController().get(),

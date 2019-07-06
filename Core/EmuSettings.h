@@ -67,4 +67,5 @@ public:
 
 	void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 	bool CheckDebuggerFlag(DebuggerFlags flags);
+	void InitializeRam(void* data, uint32_t length);
 };
