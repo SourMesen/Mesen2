@@ -26,10 +26,11 @@ void BaseVideoFilter::SetBaseFrameInfo(FrameInfo frameInfo)
 
 FrameInfo BaseVideoFilter::GetFrameInfo()
 {
+	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
 	FrameInfo frameInfo = _baseFrameInfo;
 	OverscanDimensions overscan = GetOverscan();
-	frameInfo.Width -= overscan.Left * 2 + overscan.Right * 2;
-	frameInfo.Height -= overscan.Top * 2 + overscan.Bottom * 2;
+	frameInfo.Width -= overscan.Left * overscanMultiplier + overscan.Right * overscanMultiplier;
+	frameInfo.Height -= overscan.Top * overscanMultiplier + overscan.Bottom * overscanMultiplier;
 	return frameInfo;
 }
 

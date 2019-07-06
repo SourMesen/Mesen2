@@ -41,12 +41,16 @@ ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	double aspectRatio = _console->GetSettings()->GetAspectRatio(_console->GetRegion());
 	double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoConfig().VideoScale);
-	size.Width = (int32_t)(frameInfo.Width * scale / 2);
-	size.Height = (int32_t)(frameInfo.Height * scale / 2);
+
+	bool useHighResOutput = _baseFrameInfo.Width >= 512 || _videoFilterType == VideoFilterType::NTSC;
+	int divider = useHighResOutput ? 2 : 1;
+
+	size.Width = (int32_t)(frameInfo.Width * scale / divider);
+	size.Height = (int32_t)(frameInfo.Height * scale / divider);
 	if(aspectRatio != 0.0) {
-		uint32_t originalHeight = frameInfo.Height + (overscan.Top + overscan.Bottom) * 2;
-		uint32_t originalWidth = frameInfo.Width + (overscan.Left + overscan.Right) * 2;
-		size.Width = (uint32_t)(originalHeight * scale * aspectRatio * ((double)frameInfo.Width / originalWidth)) / 2;
+		uint32_t originalHeight = frameInfo.Height + (overscan.Top + overscan.Bottom) * divider;
+		uint32_t originalWidth = frameInfo.Width + (overscan.Left + overscan.Right) * divider;
+		size.Width = (uint32_t)(originalHeight * scale * aspectRatio * ((double)frameInfo.Width / originalWidth)) / divider;
 	}
 
 	/*

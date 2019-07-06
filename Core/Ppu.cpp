@@ -147,8 +147,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 				_internalOamAddress = (_oamRamAddress << 1);
 			}
 
-			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
-
 			VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
 			_configVisibleLayers = (cfg.HideBgLayer0 ? 0 : 1) | (cfg.HideBgLayer1 ? 0 : 2) | (cfg.HideBgLayer2 ? 0 : 4) | (cfg.HideBgLayer3 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
 
@@ -160,6 +158,12 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_regs->ProcessAutoJoypadRead();
 			_regs->SetNmiFlag(true);
 			SendFrame();
+
+			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
+			if(!_allowFrameSkip || (_frameCount & 0x03) == 0) {
+				//If we're not skipping this frame, reset the high resolution flag
+				_useHighResOutput = false;
+			}
 
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
@@ -1086,33 +1090,66 @@ void Ppu::ApplyBrightness()
 	}
 }
 
+void Ppu::ConvertToHiRes()
+{
+	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
+
+	if(_drawStartX > 0) {
+		for(int x = 0; x < _drawStartX; x++) {
+			_currentBuffer[(scanline << 10) + (x << 1)] = _currentBuffer[(scanline << 8) + x];
+			_currentBuffer[(scanline << 10) + (x << 1) + 1] = _currentBuffer[(scanline << 8) + x];
+		}
+		memcpy(_currentBuffer + (scanline << 10) + 512, _currentBuffer + (scanline << 10), 512 * sizeof(uint16_t));
+	}
+
+	for(int i = scanline - 1; i >= 0; i--) {
+		for(int x = 0; x < 256; x++) {
+			_currentBuffer[(i << 10) + (x << 1)] = _currentBuffer[(i << 8) + x];
+			_currentBuffer[(i << 10) + (x << 1) + 1] = _currentBuffer[(i << 8) + x];
+		}
+		memcpy(_currentBuffer + (i << 10) + 512, _currentBuffer + (i << 10), 512 * sizeof(uint16_t));
+	}
+}
+
 void Ppu::ApplyHiResMode()
 {
 	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
 	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
-	uint32_t screenY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
-	uint32_t baseAddr = (screenY << 9);
 
-	if(IsDoubleWidth()) {
-		ApplyBrightness<false>();
-		for(int x = _drawStartX; x <= _drawEndX; x++) {
-			_currentBuffer[baseAddr + (x << 1)] = _subScreenBuffer[x];
-			_currentBuffer[baseAddr + (x << 1) + 1] = _mainScreenBuffer[x];
-		}
-	} else {
-		for(int x = _drawStartX; x <= _drawEndX; x++) {
-			_currentBuffer[baseAddr + (x << 1)] = _mainScreenBuffer[x];
-			_currentBuffer[baseAddr + (x << 1) + 1] = _mainScreenBuffer[x];
-		}
+	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || IsDoubleHeight();
+	if(_useHighResOutput != useHighResOutput) {
+		//Convert standard res picture to high resolution when the PPU starts drawing in high res mid frame
+		ConvertToHiRes();
+		_useHighResOutput = useHighResOutput;
 	}
 
-	if(!IsDoubleHeight()) {
-		//Copy this line's content to the next line (between the current start & end bounds)
-		memcpy(
-			_currentBuffer + baseAddr + 512 + (_drawStartX << 1),
-			_currentBuffer + baseAddr + (_drawStartX << 1),
-			(_drawEndX - _drawStartX + 1) << 2
-		);
+	if(!_useHighResOutput) {
+		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 2);
+	} else {
+		uint32_t screenY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
+		uint32_t baseAddr = (screenY << 9);
+
+		if(IsDoubleWidth()) {
+			ApplyBrightness<false>();
+			for(int x = _drawStartX; x <= _drawEndX; x++) {
+				_currentBuffer[baseAddr + (x << 1)] = _subScreenBuffer[x];
+				_currentBuffer[baseAddr + (x << 1) + 1] = _mainScreenBuffer[x];
+			}
+		} else {
+			for(int x = _drawStartX; x <= _drawEndX; x++) {
+				_currentBuffer[baseAddr + (x << 1)] = _mainScreenBuffer[x];
+				_currentBuffer[baseAddr + (x << 1) + 1] = _mainScreenBuffer[x];
+			}
+		}
+
+		if(!IsDoubleHeight()) {
+			//Copy this line's content to the next line (between the current start & end bounds)
+			memcpy(
+				_currentBuffer + baseAddr + 512 + (_drawStartX << 1),
+				_currentBuffer + baseAddr + (_drawStartX << 1),
+				(_drawEndX - _drawStartX + 1) << 2
+			);
+		}
 	}
 }
 
@@ -1151,15 +1188,17 @@ void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 
 void Ppu::SendFrame()
 {
-	constexpr uint16_t width = 512;
-	constexpr uint16_t height = 478;
+	uint16_t width = _useHighResOutput ? 512 : 256;
+	uint16_t height = _useHighResOutput ? 478 : 239;
 
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	if(!_overscanMode) {
 		//Clear the top 7 and bottom 8 rows
-		memset(_currentBuffer, 0, width * 14 * sizeof(uint16_t));
-		memset(_currentBuffer + width * 462, 0, width * 16 * sizeof(uint16_t));
+		int top = (_useHighResOutput ? 14 : 7);
+		int bottom = (_useHighResOutput ? 16 : 8);
+		memset(_currentBuffer, 0, width * top * sizeof(uint16_t));
+		memset(_currentBuffer + width * (height - bottom), 0, width * bottom * sizeof(uint16_t));
 	}
 
 	bool isRewinding = _console->GetRewindManager()->IsRewinding();
@@ -1176,6 +1215,12 @@ void Ppu::SendFrame()
 		}
 	}
 #endif
+}
+
+
+bool Ppu::IsHighResOutput()
+{
+	return _useHighResOutput;
 }
 
 uint16_t* Ppu::GetScreenBuffer()

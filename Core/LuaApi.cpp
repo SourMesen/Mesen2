@@ -415,10 +415,12 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 
+	int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
+
 	lua_newtable(lua);
 	for(int y = 0; y < 239; y++) {
 		for(int x = 0; x < 256; x++) {
-			lua_pushinteger(lua, DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 1024 + x * 2)) & 0xFFFFFF);
+			lua_pushinteger(lua, DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
 			lua_rawseti(lua, -2, (y << 8) + x);
 		}
 	}
@@ -450,8 +452,10 @@ int LuaApi::GetPixel(lua_State *lua)
 	checkparams();
 	errorCond(x < 0 || x > 255 || y < 0 || y > 238, "invalid x,y coordinates (must be between 0-255, 0-238)");
 
+	int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
+
 	//Ignores intensify & grayscale bits
-	l.Return(DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 1024 + x * 2)) & 0xFFFFFF);
+	l.Return(DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
 	return l.ReturnCount();
 }
 

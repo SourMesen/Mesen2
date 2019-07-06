@@ -35,7 +35,7 @@ public:
 		if(!_skipMode && _sendFrame) {
 			//Use Blargg's NTSC filter's max size as a minimum resolution, to prevent changing resolution too often
 			int32_t newWidth = std::max<int32_t>(width, SNES_NTSC_OUT_WIDTH(256));
-			int32_t newHeight = std::max<int32_t>(height, 240);
+			int32_t newHeight = std::max<int32_t>(height, 239 * 2);
 			if(_retroEnv != nullptr && (_previousWidth != newWidth || _previousHeight != newHeight)) {
 				//Resolution change is needed
 				retro_system_av_info avInfo = {};
@@ -63,8 +63,8 @@ public:
 			ratio = (float)256 / 239;
 		}
 		OverscanDimensions overscan = _console->GetSettings()->GetOverscan();
-		int width = (256 - overscan.Left - overscan.Right) * 2;
-		int height = (239 - overscan.Top - overscan.Bottom) * 2;
+		int width = (256 - overscan.Left - overscan.Right);
+		int height = (239 - overscan.Top - overscan.Bottom);
 		ratio *= (float)width / height / 256 * 239;
 
 		info.geometry.aspect_ratio = ratio;

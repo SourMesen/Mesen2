@@ -88,21 +88,23 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t *out = GetOutputBuffer();
 	FrameInfo frameInfo = GetFrameInfo();
 	OverscanDimensions overscan = GetOverscan();
-
-	uint32_t xOffset = overscan.Left * 2;
-	uint32_t yOffset = overscan.Top * 2 * 512;
+	
+	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
+	uint32_t width = _baseFrameInfo.Width;
+	uint32_t xOffset = overscan.Left * overscanMultiplier;
+	uint32_t yOffset = overscan.Top * overscanMultiplier * width;
 
 	uint8_t scanlineIntensity = (uint8_t)((1.0 - _console->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
 	if(scanlineIntensity < 255) {
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			if(i & 0x01) {
 				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = ApplyScanlineEffect(_calculatedPalette[ppuOutputBuffer[i * 512 + j + yOffset + xOffset]], scanlineIntensity);
+					*out = ApplyScanlineEffect(_calculatedPalette[ppuOutputBuffer[i * width + j + yOffset + xOffset]], scanlineIntensity);
 					out++;
 				}
 			} else {
 				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = _calculatedPalette[ppuOutputBuffer[i * 512 + j + yOffset + xOffset]];
+					*out = _calculatedPalette[ppuOutputBuffer[i * width + j + yOffset + xOffset]];
 					out++;
 				}
 			}
@@ -110,7 +112,7 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	} else {
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			for(uint32_t j = 0; j < frameInfo.Width; j++) {
-				out[i*frameInfo.Width+j] = _calculatedPalette[ppuOutputBuffer[i * 512 + j + yOffset + xOffset]];
+				out[i*frameInfo.Width+j] = _calculatedPalette[ppuOutputBuffer[i * width + j + yOffset + xOffset]];
 			}
 		}
 	}

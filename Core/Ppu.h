@@ -79,6 +79,7 @@ private:
 
 	uint16_t *_outputBuffers[2] = {};
 	uint16_t *_currentBuffer = nullptr;
+	bool _useHighResOutput = false;
 
 	SpriteInfo _sprites[33] = {};
 	uint8_t _spriteCount = 0;
@@ -201,6 +202,7 @@ private:
 	template<bool forMainScreen>
 	void ApplyBrightness();
 
+	void ConvertToHiRes();
 	void ApplyHiResMode();
 
 	template<uint8_t layerIndex>
@@ -235,6 +237,7 @@ public:
 	bool ProcessEndOfScanline(uint16_t hClock);
 	uint16_t GetLastScanline();
 
+	bool IsHighResOutput();
 	uint16_t* GetScreenBuffer();
 	uint8_t* GetVideoRam();
 	uint8_t* GetCgRam();
