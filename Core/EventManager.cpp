@@ -14,6 +14,14 @@ EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, DmaController
 	_cpu = cpu;
 	_ppu = ppu;
 	_dmaController = dmaController;
+
+	_ppuBuffer = new uint16_t[512 * 478];
+	memset(_ppuBuffer, 0, 512 * 478 * sizeof(uint16_t));
+}
+
+EventManager::~EventManager()
+{
+	delete[] _ppuBuffer;
 }
 
 void EventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId)
@@ -158,6 +166,10 @@ void EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 	uint16_t scanline = _ppu->GetScanline();
 	uint32_t key = (scanline << 9) + cycle;
 
+	_overscanMode = _ppu->GetState().OverscanMode;
+	_useHighResOutput = _ppu->IsHighResOutput();
+	memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), (_useHighResOutput ? (512 * 478) : (256*239)) * sizeof(uint16_t));
+
 	_snapshot = _debugEvents;
 	_snapshotScanline = scanline;
 	if(options.ShowPreviousFrameEvents && scanline != 0) {
@@ -178,18 +190,20 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	for(int i = 0; i < 340 * 2 * 262 * 2; i++) {
 		buffer[i] = 0xFF555555;
 	}
-	bool overscanMode = _ppu->GetState().OverscanMode;
+
 	//Skip the first 7 blank lines in the buffer when overscan mode is off
-	uint16_t *ppuBuffer = _ppu->GetScreenBuffer() + (overscanMode ? 0 : (512 * 14));
-	for(uint32_t y = 0, len = overscanMode ? 239*2 : 224*2; y < len; y++) {
+	uint16_t *src = _ppuBuffer + (_overscanMode ? 0 : (_useHighResOutput ? (512 * 14) : (256 * 7)));
+
+	for(uint32_t y = 0, len = _overscanMode ? 239*2 : 224*2; y < len; y++) {
 		for(uint32_t x = 0; x < 512; x++) {
-			buffer[(y + 2)*340*2 + x + 22*2] = DefaultVideoFilter::ToArgb(ppuBuffer[(y << 9) | x]);
+			int srcOffset = _useHighResOutput ? ((y << 9) | x) : (((y >> 1) << 8) | (x >> 1));
+			buffer[(y + 2)*340*2 + x + 22*2] = DefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
 	}
 
 	constexpr uint32_t nmiColor = 0xFF55FFFF;
 	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
-	int nmiScanline = (overscanMode ? 240 : 225) * 2 * 340 * 2;
+	int nmiScanline = (_overscanMode ? 240 : 225) * 2 * 340 * 2;
 	uint32_t scanlineOffset = _snapshotScanline * 2 * 340 * 2;
 	for(int i = 0; i < 340 * 2; i++) {
 		buffer[nmiScanline + i] = nmiColor;

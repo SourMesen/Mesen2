@@ -163,12 +163,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_regs->SetNmiFlag(true);
 			SendFrame();
 
-			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
-			if(!_allowFrameSkip || (_frameCount & 0x03) == 0) {
-				//If we're not skipping this frame, reset the high resolution flag
-				_useHighResOutput = false;
-			}
-
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
@@ -180,6 +174,12 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_rangeOver = false;
 			_timeOver = false;
 			_console->ProcessEvent(EventType::StartFrame);
+
+			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
+			if(!_allowFrameSkip || (_frameCount & 0x03) == 0) {
+				//If we're not skipping this frame, reset the high resolution flag
+				_useHighResOutput = false;
+			}
 
 			if(_mosaicEnabled) {
 				_mosaicStartScanline = 1;

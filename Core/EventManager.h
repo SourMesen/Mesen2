@@ -27,10 +27,15 @@ private:
 	uint16_t _snapshotScanline;
 	SimpleLock _lock;
 
+	bool _overscanMode = false;
+	bool _useHighResOutput = false;
+	uint16_t *_ppuBuffer;
+
 	void DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer, EventViewerDisplayOptions &options);
 
 public:
 	EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, DmaController *dmaController);
+	~EventManager();
 
 	void AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId = -1);
 	void AddEvent(DebugEventType type);
