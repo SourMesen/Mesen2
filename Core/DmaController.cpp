@@ -6,7 +6,7 @@
 
 static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };
 static constexpr uint8_t _transferOffset[8][4] = {
-	{ 0, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 },
+	{ 0, 0, 0, 0 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 },
 	{ 0, 1, 2, 3 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 }
 };
 
@@ -51,16 +51,24 @@ void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool
 	}
 }
 
-void DmaController::RunSingleTransfer(DmaChannelConfig &channel)
+void DmaController::RunDma(DmaChannelConfig &channel)
 {
+	if(!channel.DmaActive) {
+		return;
+	}
+
+	//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
+	_memoryManager->IncrementMasterClockValue<8>();
+	ProcessPendingTransfers();
+
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
-	uint8_t transferByteCount = _transferByteCount[channel.TransferMode];
 
 	uint8_t i = 0;
 	do {
+		//Manual DMA transfers run to the end of the transfer when started
 		CopyDmaByte(
 			(channel.SrcBank << 16) | channel.SrcAddress,
-			0x2100 | (channel.DestAddress + transferOffsets[i]),
+			0x2100 | (channel.DestAddress + transferOffsets[i & 0x03]),
 			channel.InvertDirection
 		);
 
@@ -69,25 +77,17 @@ void DmaController::RunSingleTransfer(DmaChannelConfig &channel)
 		}
 
 		channel.TransferSize--;
-		transferByteCount--;
 		i++;
-	} while(channel.TransferSize > 0 && transferByteCount > 0 && !channel.InterruptedByHdma);
+		ProcessPendingTransfers();
+	} while(channel.TransferSize > 0 && channel.DmaActive);
+
+	channel.DmaActive = false;
 }
 
-void DmaController::RunDma(DmaChannelConfig &channel)
+bool DmaController::InitHdmaChannels()
 {
-	if(channel.InterruptedByHdma) {
-		return;
-	}
+	_hdmaInitPending = false;
 
-	do {
-		//Manual DMA transfers run to the end of the transfer when started
-		RunSingleTransfer(channel);
-	} while(channel.TransferSize > 0 && !channel.InterruptedByHdma);
-}
-
-void DmaController::InitHdmaChannels()
-{
 	for(int i = 0; i < 8; i++) {
 		//Reset internal flags on every frame, whether or not the channels are enabled
 		_channel[i].HdmaFinished = false;
@@ -96,11 +96,16 @@ void DmaController::InitHdmaChannels()
 
 	if(!_hdmaChannels) {
 		//No channels are enabled, no more processing needs to be done
-		return;
+		UpdateNeedToProcessFlag();
+		return false;
 	}
 
-	SyncStartDma();
-	
+	bool needSync = !HasActiveDmaChannel();
+	if(needSync) {
+		SyncStartDma();
+	}
+	_memoryManager->IncrementMasterClockValue<8>();
+
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
 		
@@ -110,7 +115,7 @@ void DmaController::InitHdmaChannels()
 		if(_hdmaChannels & (1 << i)) {
 			//"1. Copy AAddress into Address."
 			ch.HdmaTableAddress = ch.SrcAddress;
-			ch.InterruptedByHdma = true;
+			ch.DmaActive = false;
 
 			//"2. Load $43xA (Line Counter and Repeat) from the table. I believe $00 will terminate this channel immediately."
 			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
@@ -132,14 +137,19 @@ void DmaController::InitHdmaChannels()
 		}
 	}
 
-	SyncEndDma();
+	if(needSync) {
+		SyncEndDma();
+	}
+
+	UpdateNeedToProcessFlag();
+	return true;
 }
 
 void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 {
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
 	uint8_t transferByteCount = _transferByteCount[channel.TransferMode];
-	channel.InterruptedByHdma = true;
+	channel.DmaActive = false;
 
 	uint8_t i = 0;
 	if(channel.HdmaIndirectAddressing) {
@@ -150,9 +160,8 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 				channel.InvertDirection
 			);
 			channel.TransferSize++;
-			transferByteCount--;
 			i++;
-		} while(transferByteCount > 0);
+		} while(i < transferByteCount);
 	} else {
 		do {
 			CopyDmaByte(
@@ -161,9 +170,8 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 				channel.InvertDirection
 			);
 			channel.HdmaTableAddress++;
-			transferByteCount--;
 			i++;
-		} while(transferByteCount > 0);
+		} while(i < transferByteCount);
 	}
 }
 
@@ -172,41 +180,56 @@ void DmaController::SyncStartDma()
 	//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
 	_dmaStartClock = _memoryManager->GetMasterClock();
 	_memoryManager->IncrementMasterClockValue(8 - (_memoryManager->GetMasterClock() & 0x07));
-
-	//"and an extra 8 master cycles overhead for the whole thing"
-	//"Best guess at this point is that 2-4 of the "whole DMA overhead" is before the transfer and the rest after"
-	_memoryManager->IncrementMasterClockValue<2>();
 }
 
 void DmaController::SyncEndDma()
 {
-	//Last part of the 8 cycle overhead
-	_memoryManager->IncrementMasterClockValue<6>();
-
 	//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
 	uint8_t cpuSpeed = _memoryManager->GetCpuSpeed();
 	_memoryManager->IncrementMasterClockValue(cpuSpeed - ((_memoryManager->GetMasterClock() - _dmaStartClock) % cpuSpeed));
 }
 
-void DmaController::ProcessHdmaChannels(bool applyOverhead)
+bool DmaController::HasActiveDmaChannel()
 {
-	if(!_hdmaChannels) {
-		return;
+	for(int i = 0; i < 8; i++) {
+		if(_channel[i].DmaActive) {
+			return true;
+		}
 	}
-	
+	return false;
+}
+
+bool DmaController::ProcessHdmaChannels()
+{
+	_hdmaPending = false;
+
+	if(!_hdmaChannels) {
+		UpdateNeedToProcessFlag();
+		return false;
+	}
+
+	bool needSync = !HasActiveDmaChannel();
+	if(needSync) {
+		SyncStartDma();
+	}
+	_memoryManager->IncrementMasterClockValue<8>();
+
+	uint8_t originalActiveChannel = _activeChannel;
+
 	//Run all the DMA transfers for each channel first, before fetching data for the next scanline
 	bool needOverhead = true;
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
-		if((_hdmaChannels & (1 << i)) == 0 || ch.HdmaFinished) {
+		if((_hdmaChannels & (1 << i)) == 0) {
 			continue;
 		}
 
-		if(applyOverhead && needOverhead) {
-			SyncStartDma();
-			needOverhead = false;
-		}
+		ch.DmaActive = false;
 
+		if(ch.HdmaFinished) {
+			continue;
+		}
+		
 		//1. If DoTransfer is false, skip to step 3.
 		if(ch.DoTransfer) {
 			//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
@@ -268,76 +291,66 @@ void DmaController::ProcessHdmaChannels(bool applyOverhead)
 		}
 	}
 
-	if(applyOverhead && !needOverhead) {
+	if(needSync) {
 		//If we ran a HDMA transfer, sync
 		SyncEndDma();
 	}
+
+	_activeChannel = originalActiveChannel;
+	UpdateNeedToProcessFlag();
+
+	return true;
+}
+
+void DmaController::UpdateNeedToProcessFlag()
+{
+	//Slightly faster execution time by doing this rather than processing all 4 flags on each cycle
+	_needToProcess = _hdmaPending || _hdmaInitPending || _dmaStartDelay || _dmaPending;
 }
 
 void DmaController::BeginHdmaTransfer()
 {
 	_hdmaPending = true;
-
-	for(int i = 0; i < 8; i++) {
-		if(_hdmaChannels & (1 << i)) {
-			_channel[i].InterruptedByHdma = true;
-		}
-	}
+	UpdateNeedToProcessFlag();
 }
 
 void DmaController::BeginHdmaInit()
 {
-	_hdmaPending = true;
 	_hdmaInitPending = true;
+	UpdateNeedToProcessFlag();
 }
 
 bool DmaController::ProcessPendingTransfers()
 {
-	if(_inDma || _dmaStartDelay) {
+	if(!_needToProcess) {
+		return false;
+	}
+
+	if(_dmaStartDelay) {
 		_dmaStartDelay = false;
 		return false;
 	}
 
 	if(_hdmaPending) {
-		_inDma = true;
-		if(_hdmaInitPending) {
-			InitHdmaChannels();
-			_hdmaInitPending = false;
-		} else {
-			ProcessHdmaChannels(true);
-		}
-		_inDma = false;
-		_hdmaPending = false;
-		return true;
-	} else if(_requestedDmaChannels) {
-		_inDma = true;
+		return ProcessHdmaChannels();
+	} else if(_hdmaInitPending) {
+		return InitHdmaChannels();
+	} else if(_dmaPending) {
+		_dmaPending = false;
 
 		SyncStartDma();
-
+		_memoryManager->IncrementMasterClockValue<8>();
+		ProcessPendingTransfers();
+		
 		for(int i = 0; i < 8; i++) {
-			_channel[i].InterruptedByHdma = false;
-		}
-
-		for(int i = 0; i < 8; i++) {
-			if(_requestedDmaChannels & (1 << i)) {
-				//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
-				_memoryManager->IncrementMasterClockValue<8>();
+			if(_channel[i].DmaActive) {
 				_activeChannel = i;
-				RunDma(_channel[i]);
+				RunDma(_channel[i]);				
 			}
 		}
-
-		if(_hdmaPending) {
-			//If DMA was interrupted by a HDMA transfer, run it (but don't add the cycle alignment overhead at the end and the start)
-			ProcessHdmaChannels(false);
-			_hdmaPending = false;
-		}
-
+		
 		SyncEndDma();
-
-		_requestedDmaChannels = 0;
-
-		_inDma = false;
+		UpdateNeedToProcessFlag();
 
 		return true;
 	}
@@ -350,8 +363,14 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 	switch(addr) {
 		case 0x420B: {
 			//MDMAEN - DMA Enable
-			_requestedDmaChannels = value;
+			for(int i = 0; i < 8; i++) {
+				if(value & (1 << i)) {
+					_channel[i].DmaActive = true;
+				}
+			}
+			_dmaPending = true;
 			_dmaStartDelay = true;
+			UpdateNeedToProcessFlag();
 			break;
 		}
 
@@ -551,15 +570,14 @@ DmaChannelConfig DmaController::GetChannelConfig(uint8_t channel)
 
 void DmaController::Serialize(Serializer &s)
 {
-	uint8_t unused_nmiIrqDelayCounter = 0;
-	s.Stream(_hdmaPending, _hdmaChannels, unused_nmiIrqDelayCounter, _requestedDmaChannels, _inDma, _dmaStartClock, _hdmaInitPending, _dmaStartDelay);
+	s.Stream(_hdmaPending, _hdmaChannels, _dmaPending, _dmaStartClock, _hdmaInitPending, _dmaStartDelay, _needToProcess);
 	for(int i = 0; i < 8; i++) {
 		s.Stream(
 			_channel[i].Decrement, _channel[i].DestAddress, _channel[i].DoTransfer, _channel[i].FixedTransfer,
 			_channel[i].HdmaBank, _channel[i].HdmaFinished, _channel[i].HdmaIndirectAddressing,
-			_channel[i].HdmaLineCounterAndRepeat, _channel[i].HdmaTableAddress, _channel[i].InterruptedByHdma,
+			_channel[i].HdmaLineCounterAndRepeat, _channel[i].HdmaTableAddress,
 			_channel[i].InvertDirection, _channel[i].SrcAddress, _channel[i].SrcBank, _channel[i].TransferMode,
-			_channel[i].TransferSize, _channel[i].UnusedFlag
+			_channel[i].TransferSize, _channel[i].UnusedFlag, _channel[i].DmaActive
 		);
 	}
 }
