@@ -268,7 +268,7 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 				MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
 				MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
 			} else {
-				//For games < 2mb in size, put save RAM at 70-7D/F0-FF:0000-7FFF (e.g: Wanderers from Ys) 
+				//For games < 2mb in size, put save RAM at 70-7D/F0-FF:0000-FFFF (e.g: Wanderers from Ys) 
 				MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
 				MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x0F, 0, true);
 			}
@@ -300,7 +300,20 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
 {
 	string name = GetCartName();
-	if(_cartInfo.GameCode[0] == 'Z' && _cartInfo.GameCode[3] == 'J') {
+	if(GetCartName() == "DEZAEMON") {
+		//LOROM with mirrored SRAM?
+		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
+		MapBanks(mm, _prgRomHandlers, 0x80, 0xFF, 0x08, 0x0F, 0, true);
+
+		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
+		MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x08, 0x0F, 0, true);
+
+		//Mirrors
+		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x08, 0x0F, 0, true);
+		MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+
+		return true;
+	} else if(_cartInfo.GameCode[0] == 'Z' && _cartInfo.GameCode[3] == 'J') {
 		//BSC-1A5M-02, BSC-1A7M-01
 		//Games: Sound Novel Tsukuuru, RPG Tsukuuru, Derby Stallion 96
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 0, true);
@@ -329,7 +342,14 @@ string BaseCartridge::GetCartName()
 			break;
 		}
 	}
-	return string(_cartInfo.CartName, nameLength);
+	string name = string(_cartInfo.CartName, nameLength);
+
+	size_t lastNonSpace = name.find_last_not_of(' ');
+	if(lastNonSpace != string::npos) {
+		return name.substr(0, lastNonSpace + 1);
+	} else {
+		return name;
+	}
 }
 
 void BaseCartridge::DisplayCartInfo()
