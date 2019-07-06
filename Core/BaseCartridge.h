@@ -46,6 +46,7 @@ private:
 
 	bool MapSpecificCarts(MemoryManager &mm);
 	string GetCartName();
+	string GetGameCode();
 
 public:
 	virtual ~BaseCartridge();

@@ -300,6 +300,7 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
 {
 	string name = GetCartName();
+	string code = GetGameCode();
 	if(GetCartName() == "DEZAEMON") {
 		//LOROM with mirrored SRAM?
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
@@ -313,7 +314,7 @@ bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
 		MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
 
 		return true;
-	} else if(_cartInfo.GameCode[0] == 'Z' && _cartInfo.GameCode[3] == 'J') {
+	} else if(code == "ZDBJ" || code == "ZR2J" || code == "ZSNJ") {
 		//BSC-1A5M-02, BSC-1A7M-01
 		//Games: Sound Novel Tsukuuru, RPG Tsukuuru, Derby Stallion 96
 		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 0, true);
@@ -331,6 +332,16 @@ bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
 void BaseCartridge::Serialize(Serializer &s)
 {
 	s.StreamArray(_saveRam, _saveRamSize);
+}
+
+string BaseCartridge::GetGameCode()
+{
+	string code;
+	code += _cartInfo.GameCode[0];
+	code += _cartInfo.GameCode[1];
+	code += _cartInfo.GameCode[2];
+	code += _cartInfo.GameCode[3];
+	return code;
 }
 
 string BaseCartridge::GetCartName()
