@@ -188,6 +188,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x4205:
 		case 0x4206:
 			_aluMulDiv.Write(addr, value);
+			break;
 
 		case 0x4207: _horizontalTimer = (_horizontalTimer & 0x100) | value; break;
 		case 0x4208: _horizontalTimer = (_horizontalTimer & 0xFF) | ((value & 0x01) << 8); break;
