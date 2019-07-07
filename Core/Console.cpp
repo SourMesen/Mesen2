@@ -123,6 +123,9 @@ void Console::Run()
 				stats.DisplayStats(lastFrameTime);
 			}
 
+			_controlManager->UpdateInputState();
+			_internalRegisters->ProcessAutoJoypadRead();
+			
 			previousFrameCount = _ppu->GetFrameCount();
 		}
 	}
@@ -137,6 +140,9 @@ void Console::RunSingleFrame()
 	//Used by Libretro
 	uint32_t lastFrameNumber = _ppu->GetFrameCount();
 	_emulationThreadId = std::this_thread::get_id();
+
+	_controlManager->UpdateInputState();
+	_internalRegisters->ProcessAutoJoypadRead();
 
 	while(_ppu->GetFrameCount() == lastFrameNumber) {
 		_cpu->Exec();

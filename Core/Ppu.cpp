@@ -399,8 +399,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 
 			_frameCount++;
 			_console->GetSpc()->ProcessEndFrame();
-			_console->GetControlManager()->UpdateInputState();
-			_regs->ProcessAutoJoypadRead();
 			_regs->SetNmiFlag(true);
 			SendFrame();
 
