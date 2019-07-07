@@ -1,6 +1,34 @@
 #pragma once
 #include "stdafx.h"
 
+struct SpriteInfo
+{
+	uint8_t Index;
+	int16_t X;
+	uint8_t Y;
+	bool HorizontalMirror;
+	bool VerticalMirror;
+	uint8_t Priority;
+
+	uint8_t TileColumn;
+	uint8_t TileRow;
+	uint8_t Palette;
+	bool UseSecondTable;
+	uint8_t LargeSprite;
+};
+
+struct TileData
+{
+	uint16_t TilemapData;
+	uint16_t VScroll;
+	uint16_t ChrData[4];
+};
+
+struct LayerData
+{
+	TileData Tiles[33];
+};
+
 struct LayerConfig
 {
 	uint16_t TilemapAddress;

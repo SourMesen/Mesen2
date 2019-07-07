@@ -131,6 +131,244 @@ PpuState Ppu::GetState()
 	return state;
 }
 
+template<bool hiResMode>
+void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
+{
+	/* The current layer's options */
+	LayerConfig &config = _layerConfig[layerIndex];
+
+	/* Layer's tilemap start address */
+	uint16_t tilemapAddr = config.TilemapAddress >> 1;
+
+	uint16_t vScroll = config.VScroll;
+	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;	
+	if(_hOffset || _vOffset) {
+		uint16_t enableBit = layerIndex == 0 ? 0x2000 : 0x4000;
+		if(_bgMode == 4) {
+			if((_hOffset & 0x8000) == 0 && (_hOffset & enableBit)) {
+				hScroll = (hScroll & 0x07) | (_hOffset & 0x3F8);
+			}
+			if((_hOffset & 0x8000) != 0 && (_hOffset & enableBit)) {
+				vScroll = (_hOffset & 0x3FF);
+			}
+		} else {
+			if(_hOffset & enableBit) {
+				hScroll = (hScroll & 0x07) | (_hOffset & 0x3F8);
+			}
+			if(_vOffset & enableBit) {
+				vScroll = (_vOffset & 0x3FF);
+			}
+		}
+	}
+	if(hiResMode) {
+		hScroll >>= 1;
+	}
+
+	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+
+	/* The current row of tiles (e.g scanlines 16-23 is row 2) */
+	uint16_t row = (realY + vScroll) >> (config.LargeTiles ? 4 : 3);
+
+	/* Tilemap offset based on the current row & tilemap size options */
+	uint16_t addrVerticalScrollingOffset = config.DoubleHeight ? ((row & 0x20) << (config.DoubleWidth ? 6 : 5)) : 0;
+
+	/* The start address for tiles on this row */
+	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+
+	/* The current column index (in terms of 8x8 or 16x16 tiles) */
+	uint16_t column = columnIndex + (hScroll >> 3);
+	if(!hiResMode && config.LargeTiles) {
+		//For 16x16 tiles, need to return the same tile for 2 columns 8 pixel columns in a row
+		column >>= 1;
+	}
+
+	/* The tilemap address to read the tile data from */
+	uint16_t addr = (baseOffset + (column & 0x1F) + (config.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+
+	uint16_t tilemapData = _vram[addr] | (_vram[addr + 1] << 8);
+	_layerData[layerIndex].Tiles[columnIndex].TilemapData = tilemapData;
+	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
+}
+
+template<bool hiResMode, uint8_t bpp, bool secondTile>
+void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
+{
+	LayerConfig &config = _layerConfig[layerIndex];
+	TileData &tileData = _layerData[layerIndex].Tiles[column];
+	uint16_t tilemapData = tileData.TilemapData;
+
+	bool largeTileWidth = hiResMode || config.LargeTiles;
+
+	uint16_t chrAddr = config.ChrAddress;
+	bool vMirror = (tilemapData & 0x8000) != 0;
+	bool hMirror = (tilemapData & 0x4000) != 0;
+
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+
+	bool useSecondTile = secondTile;
+	if(!hiResMode && config.LargeTiles) {
+		//For 16x16 tiles, need to return the 2nd part of the tile every other column
+		useSecondTile = (((column << 3) + config.HScroll) & 0x08) == 0x08;
+	}
+
+	uint16_t tileIndex = tilemapData & 0x03FF;
+	if(largeTileWidth || config.LargeTiles) {
+		tileIndex = (
+			tileIndex +
+			(config.LargeTiles ? (((realY + tileData.VScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
+			(largeTileWidth ? (useSecondTile ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
+		) & 0x3FF;
+	}
+
+	uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
+	
+	uint8_t baseYOffset = (realY + tileData.VScroll) & 0x07;
+
+	uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
+	uint16_t pixelStart = tileStart + yOffset * 2 + (plane << 4);
+
+	uint16_t chrData = _vram[pixelStart] | (_vram[(uint16_t)(pixelStart + 1)] << 8);
+	_layerData[layerIndex].Tiles[column].ChrData[plane + (secondTile ? bpp / 2 : 0)] = chrData;
+}
+
+void Ppu::GetHorizontalOffsetByte(uint8_t columnIndex)
+{
+	uint16_t columnOffset = (((columnIndex << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
+	uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
+
+	uint16_t tileOffset = (columnOffset << 1) + (rowOffset << 6);
+	uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + tileOffset;
+
+	_hOffset = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
+}
+
+void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
+{
+	uint16_t columnOffset = (((columnIndex << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
+	uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
+
+	uint16_t tileOffset = (columnOffset << 1) + (rowOffset << 6);
+
+	//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
+	uint16_t vOffsetAddr = _layerConfig[2].TilemapAddress + ((tileOffset + 0x40) & (_layerConfig[2].DoubleHeight ? 0xFFF : 0x7FF));
+
+	_vOffset = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
+}
+
+void Ppu::FetchTileData()
+{
+	if(_fetchStartX == 0) {
+		_hOffset = 0;
+		_vOffset = 0;
+	}
+
+	if(_bgMode == 0) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<false>(3, x >> 3); break;
+				case 1: GetTilemapData<false>(2, x >> 3); break;
+				case 2: GetTilemapData<false>(1, x >> 3); break;
+				case 3: GetTilemapData<false>(0, x >> 3); break;
+
+				case 4: GetChrData<false, 2>(3, x >> 3, 0); break;
+				case 5: GetChrData<false, 2>(2, x >> 3, 0); break;
+				case 6: GetChrData<false, 2>(1, x >> 3, 0); break;
+				case 7: GetChrData<false, 2>(0, x >> 3, 0); break;
+			}
+		}
+	} else if(_bgMode == 1) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<false>(2, x >> 3); break;
+				case 1: GetTilemapData<false>(1, x >> 3); break;
+				case 2: GetTilemapData<false>(0, x >> 3); break;
+				case 3: GetChrData<false, 2>(2, x >> 3, 0); break;
+				case 4: GetChrData<false, 4>(1, x >> 3, 0); break;
+				case 5: GetChrData<false, 4>(1, x >> 3, 1); break;
+				case 6: GetChrData<false, 4>(0, x >> 3, 0); break;
+				case 7: GetChrData<false, 4>(0, x >> 3, 1); break;
+			}
+		}
+	} else if(_bgMode == 2) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<false>(1, x >> 3); break;
+				case 1: GetTilemapData<false>(0, x >> 3); break;
+
+				case 2: GetHorizontalOffsetByte(x >> 3); break;
+				case 3: GetVerticalOffsetByte(x >> 3); break;
+
+				case 4: GetChrData<false, 4>(1, x >> 3, 0); break;
+				case 5: GetChrData<false, 4>(1, x >> 3, 1); break;
+				case 6: GetChrData<false, 4>(0, x >> 3, 0); break;
+				case 7: GetChrData<false, 4>(0, x >> 3, 1); break;
+			}
+		}
+	} else if(_bgMode == 3) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<false>(1, x >> 3); break;
+				case 1: GetTilemapData<false>(0, x >> 3); break;
+
+				case 2: GetChrData<false, 4>(1, x >> 3, 0); break;
+				case 3: GetChrData<false, 4>(1, x >> 3, 1); break;
+
+				case 4: GetChrData<false, 8>(0, x >> 3, 0); break;
+				case 5: GetChrData<false, 8>(0, x >> 3, 1); break;
+				case 6: GetChrData<false, 8>(0, x >> 3, 2); break;
+				case 7: GetChrData<false, 8>(0, x >> 3, 3); break;
+			}
+		}
+	} else if(_bgMode == 4) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<false>(1, x >> 3); break;
+				case 1: GetTilemapData<false>(0, x >> 3); break;
+
+				case 2: GetHorizontalOffsetByte(x >> 3); break;
+
+				case 3: GetChrData<false, 2>(1, x >> 3, 0); break;
+
+				case 4: GetChrData<false, 8>(0, x >> 3, 0); break;
+				case 5: GetChrData<false, 8>(0, x >> 3, 1); break;
+				case 6: GetChrData<false, 8>(0, x >> 3, 2); break;
+				case 7: GetChrData<false, 8>(0, x >> 3, 3); break;
+			}
+		}
+	} else if(_bgMode == 5) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<true>(1, x >> 3); break;
+				case 1: GetTilemapData<true>(0, x >> 3); break;
+
+				case 2: GetChrData<true, 2>(1, x >> 3, 0); break;
+				case 3: GetChrData<true, 2, true>(1, x >> 3, 0); break;
+
+				case 4: GetChrData<true, 4>(0, x >> 3, 0); break;
+				case 5: GetChrData<true, 4>(0, x >> 3, 1); break;
+				case 6: GetChrData<true, 4, true>(0, x >> 3, 0); break;
+				case 7: GetChrData<true, 4, true>(0, x >> 3, 1); break;
+			}
+		}
+	} else if(_bgMode == 6) {
+		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+			switch(x & 0x07) {
+				case 0: GetTilemapData<true>(1, x >> 3); break;
+				case 1: GetTilemapData<true>(0, x >> 3); break;
+
+				case 2: GetHorizontalOffsetByte(x >> 3); break;
+				case 3: GetVerticalOffsetByte(x >> 3); break;
+					
+				case 4: GetChrData<true, 4>(0, x >> 3, 0); break;
+				case 5: GetChrData<true, 4>(0, x >> 3, 1); break;
+				case 6: GetChrData<true, 4, true>(0, x >> 3, 0); break;
+				case 7: GetChrData<true, 4, true>(0, x >> 3, 1); break;
+			}
+		}
+	}
+}
+
 bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 {
 	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
@@ -139,6 +377,9 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 		
 		_drawStartX = 0;
 		_drawEndX = 0;
+		_fetchStartX = 0;
+		_fetchEndX = 0;
+
 		_pixelsDrawn = 0;
 		_subPixelsDrawn = 0;
 		memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
@@ -465,6 +706,18 @@ void Ppu::RenderScanline()
 	if(_drawStartX > 255 || (_allowFrameSkip && (_frameCount & 0x03) != 0)) {
 		return;
 	}
+
+	_fetchEndX = std::min((_memoryManager->GetHClock() - 6*4) >> 2, 263);
+	if(_fetchStartX > _fetchEndX) {
+		return;
+	}
+	FetchTileData();
+	_fetchStartX = _fetchEndX + 1;
+
+	if(_memoryManager->GetHClock() < 22 * 4) {
+		return;
+	}
+
 	_drawEndX = std::min((_memoryManager->GetHClock() - 22*4) >> 2, 255);
 
 	uint8_t bgMode = _bgMode;
@@ -597,7 +850,7 @@ void Ppu::RenderSprites()
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemap()
 {
 	if(!IsRenderRequired<forMainScreen>(layerIndex)) {
@@ -621,39 +874,11 @@ void Ppu::RenderTilemap()
 	/* The current layer's options */
 	LayerConfig &config = _layerConfig[layerIndex];
 
-	/* Layer's tilemap start address */
-	uint16_t tilemapAddr = config.TilemapAddress >> 1;
-
-	/* Layer's CHR data start address */
-	uint16_t chrAddr = config.ChrAddress;
-
-	/* The current row of tiles (e.g scanlines 16-23 is row 2) */
-	uint16_t row = (realY + config.VScroll) >> (largeTileHeight ? 4 : 3);
-
-	/* The vertical offset to read in the tile we're processing */
-	uint8_t baseYOffset = (realY + config.VScroll) & 0x07;
-
-	/* Tilemap offset based on the current row & tilemap size options */
-	uint16_t addrVerticalScrollingOffset = config.DoubleHeight ? ((row & 0x20) << (config.DoubleWidth ? 6 : 5)) : 0;
-
-	/* The start address for tiles on this row */
-	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
-
-	uint16_t vScroll = config.VScroll;
 	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;
-
-	//"Offset per tile" mode (modes 2, 4 and 6 support this)
-	bool offsetPerTileMode = _bgMode == 2 || _bgMode == 4 || _bgMode == 6;
 
 	/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
 	uint16_t realX;
-
-	/* The current column index (in terms of 8x8 or 16x16 tiles) */
-	uint16_t column;
-
-	/* The tilemap address to read the tile data from */
-	uint16_t addr;
-
+	
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(hiResMode) {
 			realX = (x << 1) + (forMainScreen ? 1 : 0);
@@ -661,23 +886,27 @@ void Ppu::RenderTilemap()
 			realX = x;
 		}
 
-		if(offsetPerTileMode) {
-			ProcessOffsetMode<layerIndex, largeTileWidth, largeTileHeight, hiResMode>(x, realX, realY, hScroll, vScroll, addr);
-			
-			//Need to recalculate this because vScroll may change from one tile to another
-			baseYOffset = (realY + vScroll) & 0x07;
+		int lookupIndex;
+		int chrDataOffset;
+		if(hiResMode) {
+			lookupIndex = (x + (config.HScroll & 0x07)) >> 2;
+			chrDataOffset = lookupIndex & 0x01;
+			lookupIndex >>= 1;
 		} else {
-			column = (realX + hScroll) >> (largeTileWidth ? 4 : 3);
-			addr = (baseOffset + (column & 0x1F) + (config.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+			lookupIndex = (x + (config.HScroll & 0x07)) >> 3;
+			chrDataOffset = 0;
 		}
+
+		TileData &tileData =  _layerData[layerIndex].Tiles[lookupIndex];
+		uint16_t tilemapData = tileData.TilemapData;
 
 		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
 		if(forMainScreen) {
-			if((!applyMosaic && _rowPixelFlags[x]) || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+			if((!applyMosaic && _rowPixelFlags[x]) || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
 				continue;
 			}
 		} else {
-			if((!applyMosaic && _subScreenFilled[x]) || ((uint8_t)processHighPriority != ((_vram[addr + 1] & 0x20) >> 5))) {
+			if((!applyMosaic && _subScreenFilled[x]) || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
 				continue;
 			}
 		}
@@ -688,32 +917,17 @@ void Ppu::RenderTilemap()
 		}
 
 		//The pixel is empty, not clipped and not part of a mosaic pattern, process it
-		bool vMirror = (_vram[addr + 1] & 0x80) != 0;
-		bool hMirror = (_vram[addr + 1] & 0x40) != 0;
+		bool hMirror = (tilemapData & 0x4000) != 0;
 
-		uint16_t tileIndex = ((_vram[addr + 1] & 0x03) << 8) | _vram[addr];
-		if(largeTileWidth || largeTileHeight) {
-			tileIndex = (
-				tileIndex +
-				(largeTileHeight ? (((realY + vScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
-				(largeTileWidth ? (((realX + hScroll) & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
-			) & 0x3FF;
-		}
-
-		uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
-
-		uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
-		uint16_t pixelStart = tileStart + yOffset * 2;
-		
 		uint8_t xOffset = (realX + hScroll) & 0x07;
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 		
-		uint16_t color = GetTilePixelColor<bpp>(pixelStart, shift);
+		uint8_t color = GetTilePixelColor<bpp>(tileData.ChrData + (chrDataOffset ? bpp / 2 : 0), shift);
 
 		if(color > 0) {
 			uint16_t paletteColor;
 			if(bpp == 8 && directColorMode) {
-				uint8_t palette = (_vram[addr + 1] >> 2) & 0x07;
+				uint8_t palette = (tilemapData >> 10) & 0x07;
 				paletteColor = (
 					((((color & 0x07) << 1) | (palette & 0x01)) << 1) |
 					(((color & 0x38) | ((palette & 0x02) << 1)) << 4) |
@@ -721,7 +935,7 @@ void Ppu::RenderTilemap()
 				);
 			} else {
 				/* Ignore palette bits for 256-color layers */
-				uint8_t palette = bpp == 8 ? 0 : (_vram[addr + 1] >> 2) & 0x07;
+				uint8_t palette = bpp == 8 ? 0 : (tilemapData >> 10) & 0x07;
 				uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
 				paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 			}
@@ -756,61 +970,6 @@ void Ppu::RenderTilemap()
 	}
 }
 
-template<uint8_t layerIndex, bool largeTileWidth, bool largeTileHeight, bool hiResMode>
-void Ppu::ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t &hScroll, uint16_t &vScroll, uint16_t &addr)
-{
-	constexpr uint16_t enableBit = layerIndex == 0 ? 0x2000 : 0x4000;
-	LayerConfig &config = _layerConfig[layerIndex];
-	
-	hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;
-	vScroll = config.VScroll;
-
-	//TODO: Check+fix behavior with 16x16 tiles
-	//TODO: Test mode 4/6 behavior
-	int columnIndex = (realX + (hScroll & 0x07)) >> (hiResMode ? 4 : 3);
-	if(columnIndex > 0) {
-		//For all tiles after the first tile on the row, check if an active offset exists and use it
-		uint16_t columnOffset = ((((columnIndex - 1) << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
-		uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
-
-		uint16_t tileOffset = (columnOffset << 1) + (rowOffset << 6);
-		uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + tileOffset;
-
-		if(_bgMode == 4) {
-			uint16_t offsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
-
-			if((offsetValue & 0x8000) == 0 && (offsetValue & enableBit)) {
-				hScroll = (hScroll & 0x07) | (offsetValue & 0x3F8);
-			}
-			if((offsetValue & 0x8000) != 0 && (offsetValue & enableBit)) {
-				vScroll = (offsetValue & 0x3FF);
-			}
-		} else {
-			//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
-			uint16_t vOffsetAddr = _layerConfig[2].TilemapAddress + ((tileOffset + 0x40) & (_layerConfig[2].DoubleHeight ? 0xFFF : 0x7FF));
-
-			uint16_t hOffsetValue = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
-			uint16_t vOffsetValue = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
-
-			if(hOffsetValue & enableBit) {
-				hScroll = (hScroll & 0x07) | (hOffsetValue & 0x3F8);
-			}
-			if(vOffsetValue & enableBit) {
-				vScroll = (vOffsetValue & 0x3FF);
-			}
-		}
-	}
-
-	//Recalculate the tile's address based on the new scroll offsets
-	uint16_t tilemapAddr = config.TilemapAddress >> 1;
-	uint16_t offsetModeRow = (realY + vScroll) >> (largeTileHeight ? 4 : 3);
-	uint16_t offsetModeColumn = (realX + hScroll) >> (largeTileWidth ? 4 : 3);
-
-	uint16_t addrVerticalScrollingOffset = config.DoubleHeight ? ((offsetModeRow & 0x20) << (config.DoubleWidth ? 6 : 5)) : 0;
-	uint16_t offsetModeBaseAddress = tilemapAddr + addrVerticalScrollingOffset + ((offsetModeRow & 0x1F) << 5);
-	addr = (offsetModeBaseAddress + (offsetModeColumn & 0x1F) + (config.DoubleWidth ? ((offsetModeColumn & 0x20) << 5) : 0)) << 1;
-}
-
 template<bool forMainScreen>
 bool Ppu::IsRenderRequired(uint8_t layerIndex)
 {
@@ -826,6 +985,33 @@ bool Ppu::IsRenderRequired(uint8_t layerIndex)
 		}
 	}
 	return true;
+}
+
+template<uint8_t bpp>
+uint8_t Ppu::GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift)
+{
+	uint8_t color;
+	if(bpp == 2) {
+		color = (chrData[0] >> shift) & 0x01;
+		color |= (chrData[0] >> (7 + shift)) & 0x02;
+	} else if(bpp == 4) {
+		color = (chrData[0] >> shift) & 0x01;
+		color |= (chrData[0] >> (7 + shift)) & 0x02;
+		color |= ((chrData[1] >> shift) & 0x01) << 2;
+		color |= ((chrData[1] >> (7 + shift)) & 0x02) << 2;
+	} else if(bpp == 8) {
+		color = (chrData[0] >> shift) & 0x01;
+		color |= (chrData[0] >> (7 + shift)) & 0x02;
+		color |= ((chrData[1] >> shift) & 0x01) << 2;
+		color |= ((chrData[1] >> (7 + shift)) & 0x02) << 2;
+		color |= ((chrData[2] >> shift) & 0x01) << 4;
+		color |= ((chrData[2] >> (7 + shift)) & 0x02) << 4;
+		color |= ((chrData[3] >> shift) & 0x01) << 6;
+		color |= ((chrData[3] >> (7 + shift)) & 0x02) << 6;
+	} else {
+		throw std::runtime_error("unsupported bpp");
+	}
+	return color;
 }
 
 template<uint8_t bpp>
@@ -1809,35 +1995,45 @@ void Ppu::Serialize(Serializer &s)
 		);
 	}
 
+	for(int i = 0; i < 4; i++) {
+		for(int j = 0; j < 33; j++) {
+			s.Stream(
+				_layerData[i].Tiles[j].ChrData[0], _layerData[i].Tiles[j].ChrData[1], _layerData[i].Tiles[j].ChrData[2], _layerData[i].Tiles[j].ChrData[3],
+				_layerData[i].Tiles[j].TilemapData, _layerData[i].Tiles[j].VScroll
+			);
+		}
+	}
+	s.Stream(_hOffset, _vOffset, _fetchStartX, _fetchEndX);
+
 	s.StreamArray(_vram, Ppu::VideoRamSize);
 	s.StreamArray(_oamRam, Ppu::SpriteRamSize);
 	s.StreamArray(_cgram, Ppu::CgRamSize);
 }
 
 /* Everything below this point is used to select the proper arguments for templates */
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount, bool applyMosaic>
 void Ppu::RenderTilemap()
 {
 	if(_directColorMode) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, applyMosaic, true>();
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, activeWindowCount, applyMosaic, true>();
 	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, applyMosaic, false>();
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, activeWindowCount, applyMosaic, false>();
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount>
 void Ppu::RenderTilemap()
 {
 	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0 && (_mosaicSize > 1 || _bgMode == 5 || _bgMode == 6);
 
 	if(applyMosaic) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, true>();
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, activeWindowCount, true>();
 	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, activeWindowCount, false>();
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, activeWindowCount, false>();
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight>
+template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode>
 void Ppu::RenderTilemap()
 {
 	uint8_t activeWindowCount = 0;
@@ -1846,32 +2042,11 @@ void Ppu::RenderTilemap()
 	}
 
 	if(activeWindowCount == 0) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, 0>();
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, 0>();
 	} else if(activeWindowCount == 1) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, 1>();
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, 1>();
 	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, largeTileWidth, largeTileHeight, 2>();
-	}
-}
-
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode>
-void Ppu::RenderTilemap()
-{
-	bool largeTileWidth = _layerConfig[layerIndex].LargeTiles | hiResMode;
-	bool largeTileHeight = _layerConfig[layerIndex].LargeTiles;
-
-	if(largeTileWidth) {
-		if(largeTileHeight) {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, true, true>();
-		} else {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, true, false>();
-		}
-	} else {
-		if(largeTileHeight) {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, false, true>();
-		} else {
-			RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, false, false>();
-		}
+		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, 2>();
 	}
 }
 

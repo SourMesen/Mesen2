@@ -7,22 +7,6 @@ class Console;
 class InternalRegisters;
 class MemoryManager;
 
-struct SpriteInfo
-{
-	uint8_t Index;
-	int16_t X;
-	uint8_t Y;
-	bool HorizontalMirror;
-	bool VerticalMirror;
-	uint8_t Priority;
-
-	uint8_t TileColumn;
-	uint8_t TileRow;
-	uint8_t Palette;
-	bool UseSecondTable;
-	uint8_t LargeSprite;
-};
-
 class Ppu : public ISerializable
 {
 public:
@@ -37,6 +21,12 @@ private:
 	shared_ptr<Console> _console;
 	shared_ptr<InternalRegisters> _regs;
 	shared_ptr<MemoryManager> _memoryManager;
+
+	LayerData _layerData[4];
+	uint16_t _hOffset = 0;
+	uint16_t _vOffset = 0;
+	uint16_t _fetchStartX = 0;
+	uint16_t _fetchEndX = 0;
 
 	bool _forcedVblank = false;
 	uint8_t _screenBrightness = 0;
@@ -145,6 +135,16 @@ private:
 	template<uint8_t priority, bool forMainScreen>
 	void RenderSprites();
 
+	template<bool hiResMode>
+	void GetTilemapData(uint8_t layerIndex, uint8_t columnIndex);
+
+	template<bool hiResMode, uint8_t bpp, bool secondTile = false>
+	void GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane);
+
+	void GetHorizontalOffsetByte(uint8_t columnIndex);
+	void GetVerticalOffsetByte(uint8_t columnIndex);
+	void FetchTileData();
+
 	template<bool forMainScreen> void RenderMode0();
 	template<bool forMainScreen> void RenderMode1();
 	template<bool forMainScreen> void RenderMode2();
@@ -163,23 +163,20 @@ private:
 	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode>
 	__forceinline void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight>
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount>
 	__forceinline void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount>
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount, bool applyMosaic>
 	__forceinline void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic>
-	__forceinline void RenderTilemap();
-
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, bool largeTileWidth, bool largeTileHeight, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
+	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 	void RenderTilemap();
-
-	template<uint8_t layerIndex, bool largeTileWidth, bool largeTileHeight, bool hiResMode>
-	void ProcessOffsetMode(uint8_t x, uint16_t realX, uint16_t realY, uint16_t &hScroll, uint16_t &vScroll, uint16_t &addr);
 
 	template<bool forMainScreen>
 	__forceinline bool IsRenderRequired(uint8_t layerIndex);
+
+	template<uint8_t bpp>
+	uint8_t GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift);
 
 	template<uint8_t bpp>
 	__forceinline uint16_t GetTilePixelColor(const uint16_t pixelStart, const uint8_t shift);
