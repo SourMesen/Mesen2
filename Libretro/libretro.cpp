@@ -246,7 +246,7 @@ extern "C" {
 		
 		video.OverscanLeft = overscanHorizontal;
 		video.OverscanRight = overscanHorizontal;
-		video.OverscanTop = overscanVertical;
+		video.OverscanTop = std::max(0, overscanVertical - 1);
 		video.OverscanBottom = overscanVertical;
 
 		if(readVariable(MesenAspectRatio, var)) {
