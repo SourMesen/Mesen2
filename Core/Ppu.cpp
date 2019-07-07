@@ -1995,6 +1995,10 @@ void Ppu::Serialize(Serializer &s)
 		);
 	}
 
+	s.StreamArray(_vram, Ppu::VideoRamSize);
+	s.StreamArray(_oamRam, Ppu::SpriteRamSize);
+	s.StreamArray(_cgram, Ppu::CgRamSize);
+	
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 33; j++) {
 			s.Stream(
@@ -2004,10 +2008,6 @@ void Ppu::Serialize(Serializer &s)
 		}
 	}
 	s.Stream(_hOffset, _vOffset, _fetchStartX, _fetchEndX);
-
-	s.StreamArray(_vram, Ppu::VideoRamSize);
-	s.StreamArray(_oamRam, Ppu::SpriteRamSize);
-	s.StreamArray(_cgram, Ppu::CgRamSize);
 }
 
 /* Everything below this point is used to select the proper arguments for templates */
