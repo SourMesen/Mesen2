@@ -164,9 +164,18 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 		hScroll >>= 1;
 	}
 
-	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
-	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+	uint16_t scanline = _scanline;
+	if(_mosaicEnabled & (1 << layerIndex)) {
+		bool mosaicScanline = (scanline - _mosaicStartScanline) % _mosaicSize == 0;
+		if(!mosaicScanline) {
+			//Keep the "scanline" to what it was at the start of this mosaic block
+			scanline -= (scanline - _mosaicStartScanline) % _mosaicSize;
+		}
+	}
 
+	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
+	
 	/* The current row of tiles (e.g scanlines 16-23 is row 2) */
 	uint16_t row = (realY + vScroll) >> (config.LargeTiles ? 4 : 3);
 
@@ -204,7 +213,16 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 	bool vMirror = (tilemapData & 0x8000) != 0;
 	bool hMirror = (tilemapData & 0x4000) != 0;
 
-	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+	uint16_t scanline = _scanline;
+	if(_mosaicEnabled & (1 << layerIndex)) {
+		bool mosaicScanline = (scanline - _mosaicStartScanline) % _mosaicSize == 0;
+		if(!mosaicScanline) {
+			//Keep the "scanline" to what it was at the start of this mosaic block
+			scanline -= (scanline - _mosaicStartScanline) % _mosaicSize;
+		}
+	}
+
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
 
 	bool useSecondTile = secondTile;
 	if(!hiResMode && config.LargeTiles) {
@@ -861,14 +879,6 @@ void Ppu::RenderTilemap()
 	/* Keeps track of whether or not the pixel is allowed to participate in color math */
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
-	/* True when the entire scanline has to be replaced by a mosaic pattern */
-	bool mosaicScanline = applyMosaic && (realY - _mosaicStartScanline) % _mosaicSize != 0;
-	
-	if(applyMosaic && ((realY - _mosaicStartScanline) % _mosaicSize == 0)) {
-		//On each "first" line of the mosaic pattern, clear the entire buffer before processing the scanline
-		memset(_mosaicColor[layerIndex][processHighPriority], 0xFF, 256*2);
-	}
-
 	/* The current layer's options */
 	LayerConfig &config = _layerConfig[layerIndex];
 
@@ -898,22 +908,6 @@ void Ppu::RenderTilemap()
 		TileData &tileData =  _layerData[layerIndex].Tiles[lookupIndex];
 		uint16_t tilemapData = tileData.TilemapData;
 
-		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
-		if(forMainScreen) {
-			if((!applyMosaic && _rowPixelFlags[x]) || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
-				continue;
-			}
-		} else {
-			if((!applyMosaic && _subScreenFilled[x]) || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
-				continue;
-			}
-		}
-
-		if(!applyMosaic && activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
-			//This pixel was masked, skip it
-			continue;
-		}
-
 		//The pixel is empty, not clipped and not part of a mosaic pattern, process it
 		bool hMirror = (tilemapData & 0x4000) != 0;
 
@@ -921,6 +915,30 @@ void Ppu::RenderTilemap()
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 		
 		uint8_t color = GetTilePixelColor<bpp>(tileData.ChrData + (chrDataOffset ? bpp / 2 : 0), shift);
+
+		if(applyMosaic) {
+			if(x == 0 || (x % _mosaicSize == 0)) {
+				_mosaicColor[layerIndex] = color;
+			} else if(applyMosaic) {
+				color = _mosaicColor[layerIndex];
+			}
+		}
+
+		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
+		if(forMainScreen) {
+			if(_rowPixelFlags[x] || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
+				continue;
+			}
+		} else {
+			if(_subScreenFilled[x] || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
+				continue;
+			}
+		}
+
+		if(activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
+			//This pixel was masked, skip it
+			continue;
+		}
 
 		if(color > 0) {
 			uint16_t paletteColor;
@@ -939,28 +957,7 @@ void Ppu::RenderTilemap()
 			}
 
 			if(forMainScreen) {
-				if(applyMosaic) {
-					bool skipDraw = activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x);
-					if(!mosaicScanline && (x % _mosaicSize) == 0) {
-						//If this is the top-left pixel, save its color and use it
-						for(int i = 0; i < _mosaicSize && x+i < 256; i++) {
-							_mosaicColor[layerIndex][processHighPriority][x+i] = paletteColor;
-						}
-					} else {
-						//Otherwise, use the top-left pixel's color
-						paletteColor = _mosaicColor[layerIndex][processHighPriority][x];
-						if(paletteColor == 0xFFFF) {
-							continue;
-						}
-					}
-					
-					if(!skipDraw && !_rowPixelFlags[x]) {
-						//If this pixel isn't hidden by the window or already set, draw it
-						DrawMainPixel(x, paletteColor, pixelFlags);
-					}
-				} else {
-					DrawMainPixel(x, paletteColor, pixelFlags);
-				}
+				DrawMainPixel(x, paletteColor, pixelFlags);
 			} else {
 				DrawSubPixel(x, paletteColor);
 			}
