@@ -1090,11 +1090,17 @@ void Ppu::RenderTilemapMode7()
 
 	auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };
 
+	if(_drawStartX == 0) {
+		//Keep the same scroll offsets for the entire scanline
+		_mode7.HScrollLatch = _mode7.HScroll;
+		_mode7.VScrollLatch = _mode7.VScroll;
+	}
+
 	int32_t lutX[256];
 	int32_t lutY[256];
 
-	int32_t hScroll = ((int32_t)_mode7.HScroll << 19) >> 19;
-	int32_t vScroll = ((int32_t)_mode7.VScroll << 19) >> 19;
+	int32_t hScroll = ((int32_t)_mode7.HScrollLatch << 19) >> 19;
+	int32_t vScroll = ((int32_t)_mode7.VScrollLatch << 19) >> 19;
 	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
 	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
 	uint16_t realY = _mode7.VerticalMirroring ? (255 - (_scanline + 1)) : (_scanline + 1);

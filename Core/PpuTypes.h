@@ -61,6 +61,10 @@ struct Mode7Config
 	bool HorizontalMirroring;
 	bool VerticalMirroring;
 	bool ExtBgEnabled;
+
+	//Holds the scroll values at the start of a scanline for the entire scanline
+	int16_t HScrollLatch;
+	int16_t VScrollLatch;
 };
 
 struct PpuState
