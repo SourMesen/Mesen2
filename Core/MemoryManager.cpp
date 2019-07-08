@@ -43,8 +43,8 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	memset(_handlers, 0, sizeof(_handlers));
 	
 	memset(_hasEvent, 0, sizeof(_hasEvent));
+	_hasEvent[270*4] = true;
 	_hasEvent[276*4] = true;
-	_hasEvent[278*4] = true;
 	_hasEvent[285*4] = true;
 	_hasEvent[1360] = true;
 	_hasEvent[1364] = true;
@@ -197,20 +197,20 @@ void MemoryManager::Exec()
 		}
 
 		if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
-			if(_hClock == 276 * 4) {
-				_console->GetDmaController()->BeginHdmaTransfer();
-			} else if(_hClock == 278 * 4 && _ppu->GetScanline() != 0) {
-				_ppu->RenderScanline();
-			} else if(_hClock == 285 * 4) {
-				//Approximate timing (any earlier will break Mega Lo Mania)
+			if(_hClock == 270*4) {
+				//Approximate sprite evaluation timing
+				//In reality this is spread out during the scanline (most likely runs in parallel w/ tile fetches/rendering)
 				_ppu->EvaluateNextLineSprites();
+			} else if(_hClock == 276 * 4) {
+				_console->GetDmaController()->BeginHdmaTransfer();
+			} else if(_hClock == _hdmaInitPosition && _ppu->GetScanline() == 0) {
+				_console->GetDmaController()->BeginHdmaInit();
 			}
 		}
+
 		if(_hClock == _dramRefreshPosition) {
 			IncrementMasterClockValue<40>();
 			_cpu->IncreaseCycleCount<5>();
-		} else if(_hClock == _hdmaInitPosition && _ppu->GetScanline() == 0) {
-			_console->GetDmaController()->BeginHdmaInit();
 		}
 	} else if((_hClock & 0x03) == 0) {
 		_console->ProcessPpuCycle();

@@ -71,6 +71,9 @@ void Ppu::PowerOn()
 	memset(_oamRam, 0, Ppu::SpriteRamSize);
 	memset(_cgram, 0, Ppu::CgRamSize);
 
+	memset(_spriteTileIndexes, 0xFF, sizeof(_spriteTileIndexes));
+	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
+
 	_vramAddress = 0;
 	_vramIncrementValue = 1;
 	_vramAddressRemapping = 0;
@@ -276,6 +279,10 @@ void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
 
 void Ppu::FetchTileData()
 {
+	if(_forcedVblank) {
+		return;
+	}
+
 	if(_fetchStartX == 0) {
 		_hOffset = 0;
 		_vOffset = 0;
@@ -391,12 +398,21 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 {
 	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
 		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
+		if(_scanline < _vblankStart) {
+			RenderScanline();
+		}
+
 		_scanline++;
 		
 		_drawStartX = 0;
 		_drawEndX = 0;
 		_fetchStartX = 0;
 		_fetchEndX = 0;
+		_fetchSpriteStartX = 0;
+		_fetchSpriteEndX = 0;
+
+		memset(_spriteTileIndexes, 0xFF, sizeof(_spriteTileIndexes));
+		memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
 		_pixelsDrawn = 0;
 		_subPixelsDrawn = 0;
@@ -470,9 +486,6 @@ void Ppu::EvaluateNextLineSprites()
 		return;
 	}
 
-	memset(_spritePriority, 0xFF, sizeof(_spritePriority));
-	memset(_spritePixels, 0xFF, sizeof(_spritePixels));
-	memset(_spritePalette, 0, sizeof(_spritePalette));
 	_spriteCount = 0;
 	uint16_t screenY = _scanline;
 
@@ -551,43 +564,90 @@ void Ppu::EvaluateNextLineSprites()
 			rowOffset = yGap >> 3;
 		}
 
+		info.OffsetY = yOffset;
+
 		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
-		int prevColumnOffset = -1;
 
 		//Keep the last address the PPU used while rendering sprites (needed for Uniracers, which writes to OAM during rendering)
 		_oamRenderAddress = 0x200 + (info.Index >> 2);
 
-		for(int x = std::max<int16_t>(info.X, 0); x < info.X + width && x < 256; x++) {
-			uint8_t xOffset;
+		int colCount = width / 8;
+		for(int colIndex = 0; colIndex < colCount; colIndex++) {
+			spriteTileCount++;
+			if(spriteTileCount > 34) {
+				//Found 34 tiles' worth of sprites, can't display anything more.
+				_timeOver = true;
+				return;
+			}
+
 			int columnOffset;
 			if(info.HorizontalMirror) {
-				xOffset = (width - (x - info.X) - 1) & 0x07;
-				columnOffset = (width - (x - info.X) - 1) >> 3;
+				columnOffset = colCount - colIndex - 1;
 			} else {
-				xOffset = (x - info.X) & 0x07;
-				columnOffset = (x - info.X) >> 3;
+				columnOffset = colIndex;
 			}
 
-			if(prevColumnOffset != columnOffset) {
-				spriteTileCount++;
-				if(spriteTileCount > 34) {
-					_timeOver = true;
-					return;
-				}
-				prevColumnOffset = columnOffset;
-			}
+			uint8_t tileIndex = (row << 4) | ((info.TileColumn + columnOffset) & 0x0F);
+			_spriteTileIndexes[spriteTileCount - 1] = tileIndex;
+			_spriteIndexes[spriteTileCount - 1] = i;
+			_spriteXPos[spriteTileCount - 1] = info.X + (colIndex * 8);
+		}
+	}
+}
 
-			uint8_t column = (info.TileColumn + columnOffset) & 0x0F;
-			uint8_t tileIndex = (row << 4) | column;
+void Ppu::FetchSpriteData()
+{
+	//From H=272 to 339, fetch a single word of CHR data on every cycle (for up to 34 sprites)
+	if(_forcedVblank) {
+		return;
+	}
+
+	for(int x = _fetchSpriteStartX; x <= _fetchSpriteEndX; x++) {
+		uint8_t tileIndex = _spriteTileIndexes[x >> 1];
+		uint8_t spriteIndex = _spriteIndexes[x >> 1];
+		
+		if(spriteIndex < 33) {
+			//The timing for the fetches should be (mostly) accurate (H=272 to 339)
+			SpriteInfo &info = _sprites[_spriteIndexes[x >> 1]];
 			uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
+			uint16_t chrAddress = tileStart + info.OffsetY * 2 + ((x & 1) << 4);
 
-			uint16_t color = GetTilePixelColor<4>(tileStart + yOffset * 2, 7 - xOffset);
+			uint16_t chrData = _vram[chrAddress] | (_vram[(uint16_t)(chrAddress + 1)] << 8);
+			_spriteChrData[x] = chrData;
+		} else {
+			//Dummy fetches to VRAM when no sprite to load?
+			//This might be observable by reading from VMDATAxREAD?
+		}
+	}
 
-			if(color != 0) {
-				uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
-				_spritePixels[x] = paletteRamOffset;
-				_spritePriority[x] = info.Priority;
-				_spritePalette[x] = info.Palette;
+	if(_fetchSpriteEndX == 67) {
+		//Prerender sprite pixels for the next row
+		memset(_spritePriority, 0xFF, sizeof(_spritePriority));
+		memset(_spritePixels, 0xFF, sizeof(_spritePixels));
+		memset(_spritePalette, 0, sizeof(_spritePalette));
+
+		for(int i = 0; i <= 33; i++) {
+			uint8_t spriteIndex = _spriteIndexes[i];
+			if(spriteIndex >= 33) {
+				continue;
+			}
+
+			SpriteInfo &info = _sprites[spriteIndex];
+			int16_t xPos = _spriteXPos[i];
+			for(int x = 0; x < 8; x++) {
+				if(xPos + x < 0) {
+					continue;
+				}
+
+				uint8_t xOffset = info.HorizontalMirror ? ((7 - x) & 0x07) : x;
+				uint16_t color = GetTilePixelColor<4>(_spriteChrData+(i << 1), 7 - xOffset);
+
+				if(color != 0) {
+					uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
+					_spritePixels[xPos + x] = paletteRamOffset;
+					_spritePriority[xPos + x] = info.Priority;
+					_spritePalette[xPos + x] = info.Palette;
+				}
 			}
 		}
 	}
@@ -719,80 +779,93 @@ void Ppu::RenderMode7()
 
 void Ppu::RenderScanline()
 {
-	if(_drawStartX > 255 || (_allowFrameSkip && (_frameCount & 0x03) != 0)) {
+	if((_allowFrameSkip && (_frameCount & 0x03) != 0)) {
+		//Not rendering this frame, skip this entirely
 		return;
 	}
+	
+	int32_t hPos = GetCycle();
+	if(hPos <= 263 || _fetchEndX < 263) {
+		//Fetch tilemap and tile CHR data, as needed, between H=0 and H=263
+		_fetchEndX = std::min(hPos, 263);
+		if(_fetchStartX <= _fetchEndX) {
+			FetchTileData();
+		}
+		_fetchStartX = _fetchEndX + 1;
+	} 
 
-	_fetchEndX = std::min(_memoryManager->GetHClock() >> 2, 263);
-	if(_fetchStartX <= _fetchEndX) {
-		FetchTileData();
+	//Render the scanline
+	if(_drawStartX < 255 && hPos > 22 && _scanline > 0) {
+		_drawEndX = std::min(hPos - 22, 255);
+
+		uint8_t bgMode = _bgMode;
+		if(_forcedVblank) {
+			bgMode = 8;
+		}
+
+		switch(bgMode) {
+			case 0:
+				RenderMode0<true>();
+				RenderMode0<false>();
+				break;
+
+			case 1:
+				RenderMode1<true>();
+				RenderMode1<false>();
+				break;
+
+			case 2:
+				RenderMode2<true>();
+				RenderMode2<false>();
+				break;
+
+			case 3:
+				RenderMode3<true>();
+				RenderMode3<false>();
+				break;
+
+			case 4:
+				RenderMode4<true>();
+				RenderMode4<false>();
+				break;
+
+			case 5:
+				RenderMode5<true>();
+				RenderMode5<false>();
+				break;
+
+			case 6:
+				RenderMode6<true>();
+				RenderMode6<false>();
+				break;
+
+			case 7:
+				RenderMode7<true>();
+				RenderMode7<false>();
+				break;
+
+			case 8:
+				//Forced blank, output black
+				memset(_mainScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
+				memset(_subScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
+				break;
+		}
+
+		ApplyColorMath();
+		ApplyBrightness<true>();
+		ApplyHiResMode();
+
+		_drawStartX = _drawEndX + 1;
 	}
-	_fetchStartX = _fetchEndX + 1;
-
-	if(_memoryManager->GetHClock() < 22 * 4) {
-		return;
+	
+	if(hPos >= 272) {
+		//Fetch sprite CHR data, as needed, between H=272 and H=339
+		_fetchSpriteEndX = std::min(hPos - 272, 67);
+		if(_fetchSpriteStartX <= _fetchSpriteEndX) {
+			FetchSpriteData();
+		}
+		_fetchSpriteStartX = _fetchSpriteEndX + 1;
 	}
-
-	_drawEndX = std::min((_memoryManager->GetHClock() - 22*4) >> 2, 255);
-
-	uint8_t bgMode = _bgMode;
-	if(_forcedVblank) {
-		bgMode = 8;
-	}
-
-	switch(bgMode) {
-		case 0:
-			RenderMode0<true>();
-			RenderMode0<false>();
-			break;
-
-		case 1:
-			RenderMode1<true>();
-			RenderMode1<false>();
-			break;
-
-		case 2:
-			RenderMode2<true>();
-			RenderMode2<false>();
-			break;
-
-		case 3:
-			RenderMode3<true>();
-			RenderMode3<false>();
-			break;
-		
-		case 4:
-			RenderMode4<true>();
-			RenderMode4<false>();
-			break;
-
-		case 5:
-			RenderMode5<true>();
-			RenderMode5<false>();
-			break;
-
-		case 6:
-			RenderMode6<true>();
-			RenderMode6<false>();
-			break;
-
-		case 7:
-			RenderMode7<true>();
-			RenderMode7<false>();
-			break;
-
-		case 8: 
-			//Forced blank, output black
-			memset(_mainScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
-			memset(_subScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
-			break;
-	}
-
-	ApplyColorMath();
-	ApplyBrightness<true>();
-	ApplyHiResMode();
-
-	_drawStartX = _drawEndX + 1;
 }
 
 template<bool forMainScreen>
@@ -1008,33 +1081,6 @@ uint8_t Ppu::GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift)
 	return color;
 }
 
-template<uint8_t bpp>
-uint16_t Ppu::GetTilePixelColor(const uint16_t pixelStart, const uint8_t shift)
-{
-	uint16_t color;
-	if(bpp == 2) {
-		color = (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
-		color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
-	} else if(bpp == 4) {
-		color = (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
-		color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
-		color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
-		color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
-	} else if(bpp == 8) {
-		color = (((_vram[pixelStart + 0] >> shift) & 0x01) << 0);
-		color |= (((_vram[pixelStart + 1] >> shift) & 0x01) << 1);
-		color |= (((_vram[pixelStart + 16] >> shift) & 0x01) << 2);
-		color |= (((_vram[pixelStart + 17] >> shift) & 0x01) << 3);
-		color |= (((_vram[pixelStart + 32] >> shift) & 0x01) << 4);
-		color |= (((_vram[pixelStart + 33] >> shift) & 0x01) << 5);
-		color |= (((_vram[pixelStart + 48] >> shift) & 0x01) << 6);
-		color |= (((_vram[pixelStart + 49] >> shift) & 0x01) << 7);
-	} else {
-		throw std::runtime_error("unsupported bpp");
-	}
-	return color;
-}
-
 template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemapMode7()
 {
@@ -1051,7 +1097,7 @@ void Ppu::RenderTilemapMode7()
 	int32_t vScroll = ((int32_t)_mode7.VScroll << 19) >> 19;
 	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
 	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
-	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
+	uint16_t realY = _mode7.VerticalMirroring ? (255 - (_scanline + 1)) : (_scanline + 1);
 
 	lutX[0] = (
 		((_mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
@@ -1615,7 +1661,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline < _vblankStart && _scanline > 0 && _memoryManager->GetHClock() <= 278*4) {
+	if(_scanline < _vblankStart) {
 		RenderScanline();
 	}
 
@@ -2001,7 +2047,7 @@ void Ppu::Serialize(Serializer &s)
 			);
 		}
 	}
-	s.Stream(_hOffset, _vOffset, _fetchStartX, _fetchEndX);
+	s.Stream(_hOffset, _vOffset, _fetchStartX, _fetchEndX, _fetchSpriteStartX, _fetchSpriteEndX);
 }
 
 /* Everything below this point is used to select the proper arguments for templates */

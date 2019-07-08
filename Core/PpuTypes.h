@@ -15,6 +15,8 @@ struct SpriteInfo
 	uint8_t Palette;
 	bool UseSecondTable;
 	uint8_t LargeSprite;
+
+	uint8_t OffsetY;
 };
 
 struct TileData

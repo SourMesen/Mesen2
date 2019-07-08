@@ -22,11 +22,20 @@ private:
 	shared_ptr<InternalRegisters> _regs;
 	shared_ptr<MemoryManager> _memoryManager;
 
+	//Temporary data used for the tilemap/tile fetching
 	LayerData _layerData[4];
 	uint16_t _hOffset = 0;
 	uint16_t _vOffset = 0;
 	uint16_t _fetchStartX = 0;
 	uint16_t _fetchEndX = 0;
+
+	//Temporary data used by the sprite evaluation/fetching
+	uint16_t _fetchSpriteStartX = 0;
+	uint16_t _fetchSpriteEndX = 67;
+	uint8_t _spriteTileIndexes[34] = {};
+	uint8_t _spriteIndexes[34] = {};
+	uint16_t _spriteChrData[68] = {};
+	int16_t _spriteXPos[34] = {};
 
 	bool _forcedVblank = false;
 	uint8_t _screenBrightness = 0;
@@ -176,10 +185,7 @@ private:
 	__forceinline bool IsRenderRequired(uint8_t layerIndex);
 
 	template<uint8_t bpp>
-	uint8_t GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift);
-
-	template<uint8_t bpp>
-	__forceinline uint16_t GetTilePixelColor(const uint16_t pixelStart, const uint8_t shift);
+	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift);
 
 	template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
 	__forceinline void RenderTilemapMode7();
@@ -222,6 +228,7 @@ public:
 	void Reset();
 
 	void EvaluateNextLineSprites();
+	void FetchSpriteData();
 	void RenderScanline();
 
 	uint32_t GetFrameCount();
