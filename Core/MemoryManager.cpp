@@ -186,7 +186,7 @@ void MemoryManager::Exec()
 	_hClock += 2;
 
 	if(_hasEvent[_hClock]) {
-		if(_hClock >= 1260 && _ppu->ProcessEndOfScanline(_hClock)) {
+		if(_hClock >= 1360 && _ppu->ProcessEndOfScanline(_hClock)) {
 			_hClock = 0;
 			UpdateEvents();
 		}

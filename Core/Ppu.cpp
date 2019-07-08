@@ -723,11 +723,10 @@ void Ppu::RenderScanline()
 		return;
 	}
 
-	_fetchEndX = std::min((_memoryManager->GetHClock() - 6*4) >> 2, 263);
-	if(_fetchStartX > _fetchEndX) {
-		return;
+	_fetchEndX = std::min(_memoryManager->GetHClock() >> 2, 263);
+	if(_fetchStartX <= _fetchEndX) {
+		FetchTileData();
 	}
-	FetchTileData();
 	_fetchStartX = _fetchEndX + 1;
 
 	if(_memoryManager->GetHClock() < 22 * 4) {
@@ -1616,7 +1615,7 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline < _vblankStart && _scanline > 0 && _memoryManager->GetHClock() >= 22*4 && _memoryManager->GetHClock() <= 278*4) {
+	if(_scanline < _vblankStart && _scanline > 0 && _memoryManager->GetHClock() <= 278*4) {
 		RenderScanline();
 	}
 
