@@ -15,7 +15,6 @@ DmaController::DmaController(MemoryManager *memoryManager)
 	_memoryManager = memoryManager;
 	Reset();
 
-	//Power on values
 	for(int j = 0; j < 8; j++) {
 		for(int i = 0; i <= 0x0A; i++) {
 			Write(0x4300 | i | (j << 4), 0xFF);
@@ -25,8 +24,17 @@ DmaController::DmaController(MemoryManager *memoryManager)
 
 void DmaController::Reset()
 {
-	_dmaStartDelay = false;
 	_hdmaChannels = 0;
+
+	_hdmaPending = false;
+	_hdmaInitPending = false;
+	_dmaStartDelay = false;
+	_dmaPending = false;
+	_needToProcess = false;
+
+	for(int i = 0; i < 8; i++) {
+		_channel[i].DmaActive = false;
+	}
 }
 
 void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)

@@ -36,15 +36,24 @@ void Cpu::PowerOn()
 
 void Cpu::Reset()
 {
+	SetFlags(ProcFlags::IrqDisable | ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
+	ClearFlags(ProcFlags::Decimal);
 	_state.EmulationMode = true;
+
+	_state.DBR = 0;
+	_state.D = 0;
+	_state.K = 0;
+	_state.Y &= 0xFF;
+	_state.X &= 0xFF;
+
+	_state.PC = _memoryManager->PeekWord(Cpu::ResetVector);
+	SetSP(_state.SP);
+	
 	_state.NmiFlag = false;
 	_state.PrevNmiFlag = false;
+	_state.StopState = CpuStopState::Running;
 	_state.IrqSource = (uint8_t)IrqSource::None;
 	_state.PrevIrqSource = (uint8_t)IrqSource::None;
-	_state.StopState = CpuStopState::Running;
-	SetSP(_state.SP);
-	_state.K = 0;
-	_state.PC = _memoryManager->PeekWord(Cpu::ResetVector);
 }
 
 void Cpu::Exec()
