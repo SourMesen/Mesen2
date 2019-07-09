@@ -95,7 +95,7 @@ private:
 	bool _subScreenFilled[256] = {};
 	uint16_t _subScreenBuffer[256] = {};
 
-	uint8_t _mosaicColor[4] = {};
+	uint32_t _mosaicColor[4] = {};
 	uint8_t _mosaicSize = 0;
 	uint8_t _mosaicEnabled = 0;
 	uint16_t _mosaicStartScanline = 0;

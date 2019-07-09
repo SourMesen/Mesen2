@@ -988,11 +988,27 @@ void Ppu::RenderTilemap()
 		
 		uint8_t color = GetTilePixelColor<bpp>(tileData.ChrData + (chrDataOffset ? bpp / 2 : 0), shift);
 
+		uint16_t paletteColor;
+		if(bpp == 8 && directColorMode) {
+			uint8_t palette = (tilemapData >> 10) & 0x07;
+			paletteColor = (
+				((((color & 0x07) << 1) | (palette & 0x01)) << 1) |
+				(((color & 0x38) | ((palette & 0x02) << 1)) << 4) |
+				(((color & 0xC0) | ((palette & 0x04) << 3)) << 7)
+			);
+		} else {
+			/* Ignore palette bits for 256-color layers */
+			uint8_t palette = bpp == 8 ? 0 : (tilemapData >> 10) & 0x07;
+			uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
+			paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+		}
+
 		if(applyMosaic) {
-			if(x == 0 || (x % _mosaicSize == 0)) {
-				_mosaicColor[layerIndex] = color;
+			if(x % _mosaicSize == 0) {
+				_mosaicColor[layerIndex] = (paletteColor << 8) | color;
 			} else if(applyMosaic) {
-				color = _mosaicColor[layerIndex];
+				color = _mosaicColor[layerIndex] & 0xFF;
+				paletteColor = _mosaicColor[layerIndex] >> 8;
 			}
 		}
 
@@ -1013,21 +1029,6 @@ void Ppu::RenderTilemap()
 		}
 
 		if(color > 0) {
-			uint16_t paletteColor;
-			if(bpp == 8 && directColorMode) {
-				uint8_t palette = (tilemapData >> 10) & 0x07;
-				paletteColor = (
-					((((color & 0x07) << 1) | (palette & 0x01)) << 1) |
-					(((color & 0x38) | ((palette & 0x02) << 1)) << 4) |
-					(((color & 0xC0) | ((palette & 0x04) << 3)) << 7)
-				);
-			} else {
-				/* Ignore palette bits for 256-color layers */
-				uint8_t palette = bpp == 8 ? 0 : (tilemapData >> 10) & 0x07;
-				uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
-				paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
-			}
-
 			if(forMainScreen) {
 				DrawMainPixel(x, paletteColor, pixelFlags);
 			} else {
@@ -2070,7 +2071,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount>
 void Ppu::RenderTilemap()
 {
-	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0 && (_mosaicSize > 1 || _bgMode == 5 || _bgMode == 6);
+	bool applyMosaic = ((_mosaicEnabled >> layerIndex) & 0x01) != 0 && (_mosaicSize > 1 || _bgMode == 5 || _bgMode == 6);
 
 	if(applyMosaic) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, hiResMode, activeWindowCount, true>();
