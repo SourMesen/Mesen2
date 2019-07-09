@@ -363,6 +363,7 @@ namespace Mesen.GUI
 		public byte InternalSpeed;
 		public byte ExternalSpeed;
 		[MarshalAs(UnmanagedType.I1)] public bool TimersEnabled;
+		public CpuStopState StopState;
 
 		public byte DspReg;
 

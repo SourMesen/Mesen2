@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "SpcTimer.h"
+#include "CpuTypes.h"
 
 struct SpcState
 {
@@ -17,6 +18,7 @@ struct SpcState
 	uint8_t InternalSpeed;
 	uint8_t ExternalSpeed;
 	bool TimersEnabled;
+	CpuStopState StopState;
 
 	uint8_t DspReg;
 	uint8_t OutputReg[4];

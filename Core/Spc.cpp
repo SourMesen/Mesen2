@@ -26,6 +26,7 @@ Spc::Spc(shared_ptr<Console> console)
 	_state.RomEnabled = true;
 	_state.SP = 0xFF;
 	_state.PC = ReadWord(Spc::ResetVector);
+	_state.StopState = CpuStopState::Running;
 
 	_opCode = 0;
 	_opStep = SpcOpStep::ReadOpCode;
@@ -49,6 +50,8 @@ Spc::~Spc()
 
 void Spc::Reset()
 {
+	_state.StopState = CpuStopState::Running;
+
 	_state.Timer0.Reset();
 	_state.Timer1.Reset();
 	_state.Timer2.Reset();
@@ -279,6 +282,11 @@ void Spc::CpuWriteRegister(uint32_t addr, uint8_t value)
 
 void Spc::Run()
 {
+	if(_state.StopState != CpuStopState::Running) {
+		//STOP or SLEEP were executed - execution is stopped forever.
+		return;
+	}
+
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
 	while(_state.Cycle < targetCycle) {
 		if(_opStep == SpcOpStep::ReadOpCode) {

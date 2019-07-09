@@ -2105,9 +2105,13 @@ void Spc::NOP()
 void Spc::SLEEP()
 {
 	//WAI
+	_state.StopState = CpuStopState::WaitingForIrq;
+	EndOp();
 }
 
 void Spc::STOP()
 {
 	//STP
+	_state.StopState = CpuStopState::Stopped;
+	EndOp();
 }
