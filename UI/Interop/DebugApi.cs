@@ -331,6 +331,9 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool HorizontalMirroring;
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirroring;
 		[MarshalAs(UnmanagedType.I1)] public bool ExtBgEnabled;
+
+		public Int16 HScrollLatch;
+		public Int16 VScrollLatch;
 	}
 
 	public struct SpcTimer
