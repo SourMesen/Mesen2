@@ -1786,15 +1786,18 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_layerConfig[3].LargeTiles = (value & 0x80) != 0;
 			break;
 
-		case 0x2106:
+		case 0x2106: {
 			//MOSAIC - Screen Pixelation
 			_mosaicSize = ((value & 0xF0) >> 4) + 1;
-			_mosaicEnabled = value & 0x0F;
-			if(_mosaicEnabled) {
+			uint8_t mosaicEnabled = value & 0x0F;
+			if(!_mosaicEnabled && mosaicEnabled) {
 				//"If this register is set during the frame, the Åstarting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
+				//This is only done when mosaic is turned on from an off state (FF3 mosaic effect looks wrong otherwise)
 				_mosaicStartScanline = _scanline;
 			}
+			_mosaicEnabled = mosaicEnabled;
 			break;
+		}
 
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
 			//BG 1-4 Tilemap Address and Size (BG1SC, BG2SC, BG3SC, BG4SC)
@@ -2157,7 +2160,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, bool forMainScreen, bool processHighPriority>
 void Ppu::RenderTilemapMode7()
 {
-	bool applyMosaic = forMainScreen && ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
+	bool applyMosaic = ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
 
 	if(applyMosaic) {
 		RenderTilemapMode7<layerIndex, forMainScreen, processHighPriority, true>();
