@@ -26,16 +26,21 @@ private:
 	LayerData _layerData[4];
 	uint16_t _hOffset = 0;
 	uint16_t _vOffset = 0;
-	uint16_t _fetchStartX = 0;
-	uint16_t _fetchEndX = 0;
+	uint16_t _fetchBgStart = 0;
+	uint16_t _fetchBgEnd = 0;
 
 	//Temporary data used by the sprite evaluation/fetching
-	uint16_t _fetchSpriteStartX = 0;
-	uint16_t _fetchSpriteEndX = 67;
-	uint8_t _spriteTileIndexes[34] = {};
-	uint8_t _spriteIndexes[34] = {};
-	uint16_t _spriteChrData[68] = {};
-	int16_t _spriteXPos[34] = {};
+	SpriteInfo _currentSprite = {};
+	uint8_t _oamEvaluationIndex = 0;
+	uint8_t _oamTimeIndex = 0;
+	uint16_t _fetchSpriteStart = 0;
+	uint16_t _fetchSpriteEnd = 0;
+	uint16_t _spriteEvalStart = 0;
+	uint16_t _spriteEvalEnd = 0;
+	bool _spriteFetchingDone = false;
+	uint8_t _spriteIndexes[32] = {};
+	uint8_t _spriteCount = 0;
+	uint8_t _spriteTileCount = 0;
 
 	bool _forcedVblank = false;
 	uint8_t _screenBrightness = 0;
@@ -80,12 +85,6 @@ private:
 	uint16_t *_currentBuffer = nullptr;
 	bool _useHighResOutput = false;
 
-	SpriteInfo _sprites[33] = {};
-	uint8_t _spriteCount = 0;
-	uint8_t _spritePriority[256] = {};
-	uint8_t _spritePalette[256] = {};
-	uint16_t _spritePixels[256] = {};
-
 	uint16_t _pixelsDrawn = 0;
 	uint16_t _subPixelsDrawn = 0;
 
@@ -108,7 +107,6 @@ private:
 	uint16_t _oamRamAddress = 0;
 	bool _enableOamPriority = false;
 	
-	uint16_t _oamRenderAddress = 0;
 	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
 
@@ -140,6 +138,13 @@ private:
 
 	bool _allowFrameSkip = false;
 	uint8_t _configVisibleLayers = 0xFF;
+
+	uint8_t _spritePriority[256] = {};
+	uint8_t _spritePalette[256] = {};
+	uint8_t _spriteColors[256] = {};
+	uint8_t _spritePriorityCopy[256] = {};
+	uint8_t _spritePaletteCopy[256] = {};
+	uint8_t _spriteColorsCopy[256] = {};
 
 	template<uint8_t priority, bool forMainScreen>
 	void RenderSprites();
@@ -229,6 +234,9 @@ public:
 
 	void EvaluateNextLineSprites();
 	void FetchSpriteData();
+	void FetchSpritePosition(uint16_t oamAddress);
+	void FetchSpriteAttributes(uint16_t oamAddress);
+	void FetchSpriteTile(bool secondCycle);
 	void RenderScanline();
 
 	uint32_t GetFrameCount();
@@ -248,6 +256,9 @@ public:
 	uint8_t* GetSpriteRam();
 
 	void LatchLocationValues();
+	
+	void UpdateOamAddress();
+	uint16_t GetOamAddress();
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint32_t addr, uint8_t value);

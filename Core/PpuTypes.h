@@ -3,20 +3,32 @@
 
 struct SpriteInfo
 {
-	uint8_t Index;
 	int16_t X;
 	uint8_t Y;
+	uint8_t Index;
+	uint8_t Width;
+	uint8_t Height;
 	bool HorizontalMirror;
-	bool VerticalMirror;
 	uint8_t Priority;
 
-	uint8_t TileColumn;
-	uint8_t TileRow;
 	uint8_t Palette;
-	bool UseSecondTable;
-	uint8_t LargeSprite;
+	int8_t ColumnOffset;
 
-	uint8_t OffsetY;
+	int16_t DrawX;
+	uint16_t FetchAddress;
+	uint16_t ChrData[2];
+
+	bool IsVisible(uint16_t scanline)
+	{
+		if(X != -256 && (X + Width <= 0 || X > 255)) {
+			//Sprite is not visible (and must be ignored for time/range flag calculations)
+			//Sprites at X=-256 are always used when considering Time/Range flag calculations, but not actually drawn.
+			return false;
+		}
+
+		uint8_t endY = (Y + Height) & 0xFF;
+		return (scanline >= Y && scanline < endY) || (endY < Y && scanline < endY);
+	}
 };
 
 struct TileData

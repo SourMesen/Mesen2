@@ -71,7 +71,6 @@ void Ppu::PowerOn()
 	memset(_oamRam, 0, Ppu::SpriteRamSize);
 	memset(_cgram, 0, Ppu::CgRamSize);
 
-	memset(_spriteTileIndexes, 0xFF, sizeof(_spriteTileIndexes));
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
 	_vramAddress = 0;
@@ -283,13 +282,13 @@ void Ppu::FetchTileData()
 		return;
 	}
 
-	if(_fetchStartX == 0) {
+	if(_fetchBgStart == 0) {
 		_hOffset = 0;
 		_vOffset = 0;
 	}
 
 	if(_bgMode == 0) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(3, x >> 3); break;
 				case 1: GetTilemapData<false>(2, x >> 3); break;
@@ -303,7 +302,7 @@ void Ppu::FetchTileData()
 			}
 		}
 	} else if(_bgMode == 1) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(2, x >> 3); break;
 				case 1: GetTilemapData<false>(1, x >> 3); break;
@@ -316,7 +315,7 @@ void Ppu::FetchTileData()
 			}
 		}
 	} else if(_bgMode == 2) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(1, x >> 3); break;
 				case 1: GetTilemapData<false>(0, x >> 3); break;
@@ -331,7 +330,7 @@ void Ppu::FetchTileData()
 			}
 		}
 	} else if(_bgMode == 3) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(1, x >> 3); break;
 				case 1: GetTilemapData<false>(0, x >> 3); break;
@@ -346,7 +345,7 @@ void Ppu::FetchTileData()
 			}
 		}
 	} else if(_bgMode == 4) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(1, x >> 3); break;
 				case 1: GetTilemapData<false>(0, x >> 3); break;
@@ -362,7 +361,7 @@ void Ppu::FetchTileData()
 			}
 		}
 	} else if(_bgMode == 5) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<true>(1, x >> 3); break;
 				case 1: GetTilemapData<true>(0, x >> 3); break;
@@ -377,7 +376,7 @@ void Ppu::FetchTileData()
 			}
 		}
 	} else if(_bgMode == 6) {
-		for(int x = _fetchStartX; x <= _fetchEndX; x++) {
+		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<true>(1, x >> 3); break;
 				case 1: GetTilemapData<true>(0, x >> 3); break;
@@ -406,12 +405,18 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 		
 		_drawStartX = 0;
 		_drawEndX = 0;
-		_fetchStartX = 0;
-		_fetchEndX = 0;
-		_fetchSpriteStartX = 0;
-		_fetchSpriteEndX = 0;
+		_fetchBgStart = 0;
+		_fetchBgEnd = 0;
+		_fetchSpriteStart = 0;
+		_fetchSpriteEnd = 0;
+		_spriteEvalStart = 0;
+		_spriteEvalEnd = 0;
+		_spriteFetchingDone = false;
 
-		memset(_spriteTileIndexes, 0xFF, sizeof(_spriteTileIndexes));
+		memcpy(_spritePriority, _spritePriorityCopy, sizeof(_spritePriority));
+		memcpy(_spritePalette, _spritePaletteCopy, sizeof(_spritePalette));
+		memcpy(_spriteColors, _spriteColorsCopy, sizeof(_spriteColors));
+
 		memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
 		_pixelsDrawn = 0;
@@ -482,115 +487,30 @@ uint16_t Ppu::GetLastScanline()
 
 void Ppu::EvaluateNextLineSprites()
 {
+	if(_spriteEvalStart == 0) {
+		_spriteCount = 0;
+		_oamEvaluationIndex = _enableOamPriority ? ((_internalOamAddress & 0x1FC) >> 2) : 0;
+	}
+
 	if(_forcedVblank) {
 		return;
 	}
 
-	_spriteCount = 0;
-	uint16_t screenY = _scanline;
-
-	uint16_t baseAddr = _enableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
-	for(int i = 0; i < 512; i += 4) {
-		uint16_t addr = (baseAddr + i) & 0x1FF;
-		uint8_t y = _oamRam[addr + 1];
-
-		uint8_t highTableOffset = addr >> 4;
-		uint8_t shift = ((addr >> 2) & 0x03) << 1;
-		uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
-		uint8_t largeSprite = (highTableValue & 0x02) >> 1;
-		uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
-		if(_objInterlace) {
-			height /= 2;
-		}
-
-		uint8_t endY = (y + height) & 0xFF;
-
-		bool visible = (screenY >= y && screenY < endY) || (endY < y && screenY < endY);
-		if(!visible) {
-			//Not visible on this scanline
-			continue;
-		}
-
-		SpriteInfo &info = _sprites[_spriteCount];
-		info.LargeSprite = largeSprite;
-		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
-		uint16_t sign = (highTableValue & 0x01) << 8;
-		info.X = (int16_t)((sign | _oamRam[addr]) << 7) >> 7;
-		info.Y = y;
-
-		if(info.X != -256 && (info.X + width <= 0 || info.X > 255)) {
-			//Sprite is not visible (and must be ignored for time/range flag calculations)
-			//Sprites at X=-256 are always used when considering Time/Range flag calculations, but not actually drawn.
-			continue;
-		}
-
-		info.Index = i >> 2;
-		info.TileRow = (_oamRam[addr + 2] & 0xF0) >> 4;
-		info.TileColumn = _oamRam[addr + 2] & 0x0F;
-
-		uint8_t flags = _oamRam[addr + 3];
-		info.UseSecondTable = (flags & 0x01) != 0;
-		info.Palette = (flags >> 1) & 0x07;
-		info.Priority = (flags >> 4) & 0x03;
-		info.HorizontalMirror = (flags & 0x40) != 0;
-		info.VerticalMirror = (flags & 0x80) != 0;
-
-		if(_spriteCount < 32) {
-			_spriteCount++;
+	for(int i = _spriteEvalStart; i <= _spriteEvalEnd; i++) {
+		if(!(i & 0x01)) {
+			//First cycle, read X & Y and high oam byte
+			FetchSpritePosition(_oamEvaluationIndex << 2);
 		} else {
-			_rangeOver = true;
-			break;
-		}
-	}
-
-	uint16_t spriteTileCount = 0;
-	for(int i = (int16_t)_spriteCount - 1; i >= 0; i--) {
-		SpriteInfo &info = _sprites[i];
-		uint8_t height = _oamSizes[_oamMode][info.LargeSprite][1] << 3;
-		uint8_t width = _oamSizes[_oamMode][info.LargeSprite][0] << 3;
-
-		uint8_t yOffset;
-		int rowOffset;
-		int yGap = (screenY - info.Y);
-		if(_objInterlace) {
-			yGap <<= 1;
-			yGap |= _oddFrame;
-		}
-		if(info.VerticalMirror) {
-			yOffset = (height - 1 - yGap) & 0x07;
-			rowOffset = (height - 1 - yGap) >> 3;
-		} else {
-			yOffset = yGap & 0x07;
-			rowOffset = yGap >> 3;
-		}
-
-		info.OffsetY = yOffset;
-
-		uint8_t row = (info.TileRow + rowOffset) & 0x0F;
-
-		//Keep the last address the PPU used while rendering sprites (needed for Uniracers, which writes to OAM during rendering)
-		_oamRenderAddress = 0x200 + (info.Index >> 2);
-
-		int colCount = width / 8;
-		for(int colIndex = 0; colIndex < colCount; colIndex++) {
-			spriteTileCount++;
-			if(spriteTileCount > 34) {
-				//Found 34 tiles' worth of sprites, can't display anything more.
-				_timeOver = true;
-				return;
+			//Second cycle: Check if sprite is in range, if so, keep its index
+			if(_currentSprite.IsVisible(_scanline)) {
+				if(_spriteCount < 32) {
+					_spriteIndexes[_spriteCount] = _oamEvaluationIndex;
+					_spriteCount++;
+				} else {
+					_rangeOver = true;
+				}
 			}
-
-			int columnOffset;
-			if(info.HorizontalMirror) {
-				columnOffset = colCount - colIndex - 1;
-			} else {
-				columnOffset = colIndex;
-			}
-
-			uint8_t tileIndex = (row << 4) | ((info.TileColumn + columnOffset) & 0x0F);
-			_spriteTileIndexes[spriteTileCount - 1] = tileIndex;
-			_spriteIndexes[spriteTileCount - 1] = i;
-			_spriteXPos[spriteTileCount - 1] = info.X + (colIndex * 8);
+			_oamEvaluationIndex = (_oamEvaluationIndex + 1) & 0x7F;
 		}
 	}
 }
@@ -598,59 +518,152 @@ void Ppu::EvaluateNextLineSprites()
 void Ppu::FetchSpriteData()
 {
 	//From H=272 to 339, fetch a single word of CHR data on every cycle (for up to 34 sprites)
-	if(_forcedVblank) {
-		return;
+	if(_fetchSpriteStart == 0) {
+		memset(_spritePriorityCopy, 0xFF, sizeof(_spritePriorityCopy));
+
+		_spriteTileCount = 0;
+		_currentSprite.Index = 0xFF;
+
+		if(_spriteCount == 0) {
+			_spriteFetchingDone = true;
+			return;
+		}
+
+		_oamTimeIndex = _spriteIndexes[_spriteCount - 1];
 	}
 
-	for(int x = _fetchSpriteStartX; x <= _fetchSpriteEndX; x++) {
-		uint8_t tileIndex = _spriteTileIndexes[x >> 1];
-		uint8_t spriteIndex = _spriteIndexes[x >> 1];
-		
-		if(spriteIndex < 33) {
-			//The timing for the fetches should be (mostly) accurate (H=272 to 339)
-			SpriteInfo &info = _sprites[_spriteIndexes[x >> 1]];
-			uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (info.UseSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
-			uint16_t chrAddress = tileStart + info.OffsetY * 2 + ((x & 1) << 4);
+	for(int x = _fetchSpriteStart; x <= _fetchSpriteEnd; x++) {
+		if(x >= 2) {
+			//Fetch the tile using the OAM data loaded on the past 2 cycles, before overwriting it in FetchSpriteAttributes below
+			if(!_forcedVblank) {
+				FetchSpriteTile(x & 0x01);
+			}
 
-			uint16_t chrData = _vram[chrAddress] | (_vram[(uint16_t)(chrAddress + 1)] << 8);
-			_spriteChrData[x] = chrData;
-		} else {
-			//Dummy fetches to VRAM when no sprite to load?
-			//This might be observable by reading from VMDATAxREAD?
+			if((x & 1) && _spriteCount == 0 && _currentSprite.ColumnOffset == 0) {
+				//End this step
+				_spriteFetchingDone = true;
+				break;
+			}
+		}
+
+		if(_spriteCount > 0) {
+			if(x & 1) {
+				FetchSpriteAttributes((_oamTimeIndex << 2) | 0x02);
+				if(_spriteCount > 0) {
+					_oamTimeIndex = _spriteIndexes[_spriteCount - 1];
+				}
+			} else {
+				FetchSpritePosition(_oamTimeIndex << 2);
+			}
 		}
 	}
+}
 
-	if(_fetchSpriteEndX == 67) {
-		//Prerender sprite pixels for the next row
-		memset(_spritePriority, 0xFF, sizeof(_spritePriority));
-		memset(_spritePixels, 0xFF, sizeof(_spritePixels));
-		memset(_spritePalette, 0, sizeof(_spritePalette));
+void Ppu::FetchSpritePosition(uint16_t oamAddress)
+{
+	uint8_t highTableOffset = oamAddress >> 4;
+	uint8_t shift = ((oamAddress >> 1) & 0x06);
+	uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
+	uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 
-		for(int i = 0; i <= 33; i++) {
-			uint8_t spriteIndex = _spriteIndexes[i];
-			if(spriteIndex >= 33) {
+	uint16_t oamValue = _oamRam[oamAddress] | (_oamRam[oamAddress + 1] << 8);
+	uint16_t sign = (highTableValue & 0x01) << 8;
+
+	uint8_t spriteIndex = oamAddress >> 2;
+	if(spriteIndex != _currentSprite.Index) {
+		_currentSprite.Index = oamAddress >> 2;
+		_currentSprite.ColumnOffset = -1;
+	}
+	_currentSprite.X = (int16_t)((sign | (oamValue & 0xFF)) << 7) >> 7;
+	_currentSprite.Y = (oamValue >> 8);
+	_currentSprite.Width = _oamSizes[_oamMode][largeSprite][0] << 3;
+
+	uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
+	if(_objInterlace) {
+		height /= 2;
+	}
+	_currentSprite.Height = height;
+}
+
+void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
+{
+	_spriteTileCount++;
+	if(_spriteTileCount > 34) {
+		_timeOver = true;
+	}
+
+	uint8_t flags = _oamRam[oamAddress + 1];
+	bool useSecondTable = (flags & 0x01) != 0;
+	_currentSprite.Palette = (flags >> 1) & 0x07;
+	_currentSprite.Priority = (flags >> 4) & 0x03;
+	_currentSprite.HorizontalMirror = (flags & 0x40) != 0;
+
+	uint8_t columnCount = (_currentSprite.Width / 8);
+	if(_currentSprite.ColumnOffset == -1) {
+		_currentSprite.ColumnOffset = columnCount - 1;
+	} else {
+		_currentSprite.ColumnOffset--;
+	}
+
+	if(_currentSprite.ColumnOffset == 0) {
+		_spriteCount--;
+	}
+
+	_currentSprite.DrawX = _currentSprite.X + ((columnCount - _currentSprite.ColumnOffset - 1) << 3);
+	
+	uint8_t yOffset;
+	int rowOffset;
+	int yGap = (_scanline - _currentSprite.Y);
+	if(_objInterlace) {
+		yGap <<= 1;
+		yGap |= _oddFrame;
+	}
+
+	bool verticalMirror = (flags & 0x80) != 0;
+	if(verticalMirror) {
+		yOffset = (_currentSprite.Height - 1 - yGap) & 0x07;
+		rowOffset = (_currentSprite.Height - 1 - yGap) >> 3;
+	} else {
+		yOffset = yGap & 0x07;
+		rowOffset = yGap >> 3;
+	}
+
+	uint8_t tileRow = (_oamRam[oamAddress] & 0xF0) >> 4;
+	uint8_t tileColumn = _oamRam[oamAddress] & 0x0F;
+	uint8_t row = (tileRow + rowOffset) & 0x0F;
+	uint8_t columnOffset = _currentSprite.HorizontalMirror ? _currentSprite.ColumnOffset : (columnCount - _currentSprite.ColumnOffset - 1);
+	uint8_t tileIndex = (row << 4) | ((tileColumn + columnOffset) & 0x0F);
+	uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
+	_currentSprite.FetchAddress = tileStart + yOffset * 2;
+}
+
+void Ppu::FetchSpriteTile(bool secondCycle)
+{
+	//The timing for the fetches should be (mostly) accurate (H=272 to 339)
+	uint16_t chrData = _vram[_currentSprite.FetchAddress] | (_vram[(uint16_t)(_currentSprite.FetchAddress + 1)] << 8);
+	_currentSprite.ChrData[secondCycle] = chrData;
+
+	if(!secondCycle) {
+		_currentSprite.FetchAddress += 16;
+	} else {
+		int16_t xPos = _currentSprite.DrawX;
+		for(int x = 0; x < 8; x++) {
+			if(xPos + x < 0 || xPos + x > 255) {
 				continue;
 			}
 
-			SpriteInfo &info = _sprites[spriteIndex];
-			int16_t xPos = _spriteXPos[i];
-			for(int x = 0; x < 8; x++) {
-				if(xPos + x < 0) {
-					continue;
-				}
+			uint8_t xOffset = _currentSprite.HorizontalMirror ? ((7 - x) & 0x07) : x;
+			uint8_t color = GetTilePixelColor<4>(_currentSprite.ChrData, 7 - xOffset);
 
-				uint8_t xOffset = info.HorizontalMirror ? ((7 - x) & 0x07) : x;
-				uint16_t color = GetTilePixelColor<4>(_spriteChrData+(i << 1), 7 - xOffset);
-
-				if(color != 0) {
-					uint16_t paletteRamOffset = 256 + (((info.Palette << 4) + color) << 1);
-					_spritePixels[xPos + x] = paletteRamOffset;
-					_spritePriority[xPos + x] = info.Priority;
-					_spritePalette[xPos + x] = info.Palette;
-				}
+			if(color != 0) {
+				_spriteColorsCopy[xPos + x] = color;
+				_spritePriorityCopy[xPos + x] = _currentSprite.Priority;
+				_spritePaletteCopy[xPos + x] = _currentSprite.Palette;
 			}
 		}
 	}
+	//Dummy fetches to VRAM when no sprite to load?
+	//This might be observable by reading from VMDATAxREAD?
 }
 
 template<bool forMainScreen>
@@ -779,23 +792,28 @@ void Ppu::RenderMode7()
 
 void Ppu::RenderScanline()
 {
-	if((_allowFrameSkip && (_frameCount & 0x03) != 0)) {
-		//Not rendering this frame, skip this entirely
-		return;
-	}
-	
+	bool skipRender = _allowFrameSkip && (_frameCount & 0x03);
 	int32_t hPos = GetCycle();
-	if(hPos <= 263 || _fetchEndX < 263) {
+
+	if(hPos <= 255 || _spriteEvalEnd < 255) {
+		_spriteEvalEnd = std::min(hPos, 255);
+		if(_spriteEvalStart <= _spriteEvalEnd) {
+			EvaluateNextLineSprites();
+		}
+		_spriteEvalStart = _spriteEvalEnd + 1;
+	}
+
+	if(!skipRender && (hPos <= 263 || _fetchBgEnd < 263)) {
 		//Fetch tilemap and tile CHR data, as needed, between H=0 and H=263
-		_fetchEndX = std::min(hPos, 263);
-		if(_fetchStartX <= _fetchEndX) {
+		_fetchBgEnd = std::min(hPos, 263);
+		if(_fetchBgStart <= _fetchBgEnd) {
 			FetchTileData();
 		}
-		_fetchStartX = _fetchEndX + 1;
+		_fetchBgStart = _fetchBgEnd + 1;
 	} 
 
 	//Render the scanline
-	if(_drawStartX < 255 && hPos > 22 && _scanline > 0) {
+	if(!skipRender && _drawStartX < 255 && hPos > 22 && _scanline > 0) {
 		_drawEndX = std::min(hPos - 22, 255);
 
 		uint8_t bgMode = _bgMode;
@@ -858,13 +876,14 @@ void Ppu::RenderScanline()
 		_drawStartX = _drawEndX + 1;
 	}
 	
-	if(hPos >= 272) {
+	if(hPos >= 270 && !_spriteFetchingDone) {
+		//Fetch sprite data from OAM and calculated which CHR data needs to be loaded (between H=270 and H=337)
 		//Fetch sprite CHR data, as needed, between H=272 and H=339
-		_fetchSpriteEndX = std::min(hPos - 272, 67);
-		if(_fetchSpriteStartX <= _fetchSpriteEndX) {
+		_fetchSpriteEnd = std::min(hPos - 270, 69);
+		if(_fetchSpriteStart <= _fetchSpriteEnd) {
 			FetchSpriteData();
 		}
-		_fetchSpriteStartX = _fetchSpriteEndX + 1;
+		_fetchSpriteStart = _fetchSpriteEnd + 1;
 	}
 }
 
@@ -917,7 +936,7 @@ void Ppu::RenderSprites()
 					continue;
 				}
 
-				uint16_t paletteRamOffset = _spritePixels[x];
+				uint16_t paletteRamOffset = 256 + (((_spritePalette[x] << 4) + _spriteColors[x]) << 1);
 				_mainScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
@@ -930,7 +949,7 @@ void Ppu::RenderSprites()
 					continue;
 				}
 				
-				uint16_t paletteRamOffset = _spritePixels[x];
+				uint16_t paletteRamOffset = 256 + (((_spritePalette[x] << 4) + _spriteColors[x]) << 1);
 				_subScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
 				_subScreenFilled[x] = true;
 			}
@@ -1497,6 +1516,25 @@ void Ppu::LatchLocationValues()
 	_locationLatched = true;
 }
 
+void Ppu::UpdateOamAddress()
+{
+	_oamEvaluationIndex = _oamRamAddress >> 1;
+	_internalOamAddress = (_oamRamAddress << 1);
+}
+
+uint16_t Ppu::GetOamAddress()
+{
+	if(_forcedVblank || _scanline >= _vblankStart) {
+		return _internalOamAddress;
+	} else {
+		if(_memoryManager->GetHClock() <= 255 * 4) {
+			return _oamEvaluationIndex << 2;
+		} else {
+			return _oamTimeIndex << 2;
+		}
+	}
+}
+
 void Ppu::UpdateVramReadBuffer()
 {
 	uint16_t addr = GetVramAddress();
@@ -1542,15 +1580,16 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2138: {
 			//OAMDATAREAD - Data for OAM read
 			//When trying to read/write during rendering, the internal address used by the PPU's sprite rendering is used
-			uint16_t addr = (_forcedVblank || (_scanline >= _vblankStart)) ? _internalOamAddress : _oamRenderAddress;
+			uint16_t oamAddr = GetOamAddress();
 			uint8_t value;
-			if(addr < 512) {
-				value = _oamRam[addr];
-				_console->ProcessPpuRead(addr, value, SnesMemoryType::SpriteRam);
+			if(oamAddr < 512) {
+				value = _oamRam[oamAddr];
+				_console->ProcessPpuRead(oamAddr, value, SnesMemoryType::SpriteRam);
 			} else {
-				value = _oamRam[0x200 | (addr & 0x1F)];
-				_console->ProcessPpuRead(0x200 | (addr & 0x1F), value, SnesMemoryType::SpriteRam);
+				value = _oamRam[0x200 | (oamAddr & 0x1F)];
+				_console->ProcessPpuRead(0x200 | (oamAddr & 0x1F), value, SnesMemoryType::SpriteRam);
 			}
+			
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
 			_ppu1OpenBus = value;
 			return value;
@@ -1676,7 +1715,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2100:
 			if(_forcedVblank && _scanline == _vblankStart) {
 				//"writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur."
-				_internalOamAddress = (_oamRamAddress << 1);
+				UpdateOamAddress();
 			}
 
 			_forcedVblank = (value & 0x80) != 0;
@@ -1691,33 +1730,40 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2102:
 			_oamRamAddress = (_oamRamAddress & 0x100) | value;
-			_internalOamAddress = (_oamRamAddress << 1);
+			UpdateOamAddress();
 			break;
 
 		case 0x2103:
 			_oamRamAddress = (_oamRamAddress & 0xFF) | ((value & 0x01) << 8);
-			_internalOamAddress = (_oamRamAddress << 1);
+			UpdateOamAddress();
 			_enableOamPriority = (value & 0x80) != 0;
 			break;
 
 		case 0x2104: {
 			//When trying to read/write during rendering, the internal address used by the PPU's sprite rendering is used
 			//This is approximated by _oamRenderAddress (but is not cycle accurate) - needed for Uniracers
-			uint16_t addr = (_forcedVblank || (_scanline >= _vblankStart)) ? _internalOamAddress : _oamRenderAddress;
-
-			if(addr < 512) {
-				if(addr & 0x01) {
-					_console->ProcessPpuWrite(addr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
-					_oamRam[addr - 1] = _oamWriteBuffer;
+			uint16_t oamAddr = GetOamAddress();
+			
+			if(oamAddr < 512) {
+				if(oamAddr & 0x01) {
+					_console->ProcessPpuWrite(oamAddr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
+					_oamRam[oamAddr - 1] = _oamWriteBuffer;
 	
-					_console->ProcessPpuWrite(addr, value, SnesMemoryType::SpriteRam);
-					_oamRam[addr] = value;
+					_console->ProcessPpuWrite(oamAddr, value, SnesMemoryType::SpriteRam);
+					_oamRam[oamAddr] = value;
 				} else {
 					_oamWriteBuffer = value;
 				}
-			} else {
-				uint16_t address = 0x200 | (addr & 0x1F);
-				if((addr & 0x01) == 0) {
+			} 
+
+			if(!_forcedVblank && _scanline < _vblankStart) {
+				//During rendering the high table is also written to when writing to OAM
+				oamAddr = 0x200 | ((oamAddr & 0x1F0) >> 4);
+			}
+			
+			if(oamAddr >= 512) {
+				uint16_t address = 0x200 | (oamAddr & 0x1F);
+				if((oamAddr & 0x01) == 0) {
 					_oamWriteBuffer = value;
 				}
 				_console->ProcessPpuWrite(address, value, SnesMemoryType::SpriteRam);
@@ -2010,6 +2056,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 void Ppu::Serialize(Serializer &s)
 {
+	uint16_t unused_oamRenderAddress = 0;
 	s.Stream(
 		_forcedVblank, _screenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _bgMode,
 		_mode1Bg3Priority, _mainScreenLayers, _subScreenLayers, _vramAddress, _vramIncrementValue, _vramAddressRemapping,
@@ -2024,7 +2071,7 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, _oamRenderAddress, _oddFrame, _vblankStart
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStart
 	);
 
 	for(int i = 0; i < 4; i++) {
@@ -2054,7 +2101,7 @@ void Ppu::Serialize(Serializer &s)
 			);
 		}
 	}
-	s.Stream(_hOffset, _vOffset, _fetchStartX, _fetchEndX, _fetchSpriteStartX, _fetchSpriteEndX);
+	s.Stream(_hOffset, _vOffset, _fetchBgStart, _fetchBgEnd, _fetchSpriteStart, _fetchSpriteEnd);
 }
 
 /* Everything below this point is used to select the proper arguments for templates */
