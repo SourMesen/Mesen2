@@ -1,6 +1,7 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Integration;
 using Mesen.GUI.Debugger.Labels;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -101,7 +102,7 @@ namespace Mesen.GUI.Debugger.Workspace
 
 			if(ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
 				RomInfo romInfo = EmuApi.GetRomInfo();
-				string dbgPath = Path.Combine(Path.GetDirectoryName(romInfo.RomPath), romInfo.GetRomName() + ".dbg");
+				string dbgPath = Path.Combine(((ResourcePath)romInfo.RomPath).Folder, romInfo.GetRomName() + ".dbg");
 				if(File.Exists(dbgPath)) {
 					_symbolProvider = new DbgImporter();
 					_symbolProvider.Import(dbgPath, true);
