@@ -77,9 +77,10 @@ private:
 	uint8_t _ppu1OpenBus = 0;
 	uint8_t _ppu2OpenBus = 0;
 
-	uint16_t _cgramAddress = 0;
+	uint8_t _cgramAddress = 0;
 	uint8_t _cgramWriteBuffer = 0;
-	uint8_t _cgram[Ppu::CgRamSize] = {};
+	bool _cgramAddressLatch = false;
+	uint16_t _cgram[Ppu::CgRamSize >> 1] = {};
 
 	uint16_t *_outputBuffers[2] = {};
 	uint16_t *_currentBuffer = nullptr;

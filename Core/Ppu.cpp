@@ -671,16 +671,16 @@ void Ppu::RenderMode0()
 {
 	RenderSprites<3, forMainScreen>();
 	RenderTilemap<0, 2, true, forMainScreen>();
-	RenderTilemap<1, 2, true, forMainScreen, 64>();
+	RenderTilemap<1, 2, true, forMainScreen, 32>();
 	RenderSprites<2, forMainScreen>();
 	RenderTilemap<0, 2, false, forMainScreen>();
-	RenderTilemap<1, 2, false, forMainScreen, 64>();
+	RenderTilemap<1, 2, false, forMainScreen, 32>();
 	RenderSprites<1, forMainScreen>();
-	RenderTilemap<2, 2, true, forMainScreen, 128>();
-	RenderTilemap<3, 2, true, forMainScreen, 192>();
+	RenderTilemap<2, 2, true, forMainScreen, 64>();
+	RenderTilemap<3, 2, true, forMainScreen, 96>();
 	RenderSprites<0, forMainScreen>();
-	RenderTilemap<2, 2, false, forMainScreen, 128>();
-	RenderTilemap<3, 2, false, forMainScreen, 192>();
+	RenderTilemap<2, 2, false, forMainScreen, 64>();
+	RenderTilemap<3, 2, false, forMainScreen, 96>();
 	RenderBgColor<forMainScreen>();
 }
 
@@ -894,17 +894,16 @@ void Ppu::RenderBgColor()
 		return;
 	}
 
-	uint16_t bgColor = _cgram[0] | (_cgram[1] << 8);
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(forMainScreen) {
 			if(!_rowPixelFlags[x]) {
 				uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
-				_mainScreenBuffer[x] = bgColor;
+				_mainScreenBuffer[x] = _cgram[0];
 				_rowPixelFlags[x] = pixelFlags;
 			}
 		} else {
 			if(!_subScreenFilled[x]) {
-				_subScreenBuffer[x] = bgColor;
+				_subScreenBuffer[x] = _cgram[0];
 			}
 		}
 	}
@@ -936,8 +935,8 @@ void Ppu::RenderSprites()
 					continue;
 				}
 
-				uint16_t paletteRamOffset = 256 + (((_spritePalette[x] << 4) + _spriteColors[x]) << 1);
-				_mainScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
+				_mainScreenBuffer[x] = _cgram[paletteRamOffset];
 				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
 		}
@@ -949,8 +948,8 @@ void Ppu::RenderSprites()
 					continue;
 				}
 				
-				uint16_t paletteRamOffset = 256 + (((_spritePalette[x] << 4) + _spriteColors[x]) << 1);
-				_subScreenBuffer[x] = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
+				_subScreenBuffer[x] = _cgram[paletteRamOffset];
 				_subScreenFilled[x] = true;
 			}
 		}
@@ -1018,8 +1017,7 @@ void Ppu::RenderTilemap()
 		} else {
 			/* Ignore palette bits for 256-color layers */
 			uint8_t palette = bpp == 8 ? 0 : (tilemapData >> 10) & 0x07;
-			uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + color) * 2;
-			paletteColor = _cgram[paletteRamOffset] | (_cgram[paletteRamOffset + 1] << 8);
+			paletteColor = _cgram[basePaletteOffset + palette * (1 << bpp) + color];
 		}
 
 		if(applyMosaic) {
@@ -1207,7 +1205,7 @@ void Ppu::RenderTilemapMode7()
 			if(directColorMode) {
 				paletteColor = ((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7);
 			} else {
-				paletteColor = _cgram[colorIndex << 1] | (_cgram[(colorIndex << 1) + 1] << 8);
+				paletteColor = _cgram[colorIndex];
 			}
 			if(forMainScreen) {
 				DrawMainPixel(x, paletteColor, pixelFlags);
@@ -1491,12 +1489,12 @@ uint8_t* Ppu::GetVideoRam()
 
 uint8_t* Ppu::GetCgRam()
 {
-	return _cgram;
+	return (uint8_t*)_cgram;
 }
 
 uint8_t* Ppu::GetSpriteRam()
 {
-	return _oamRam;
+	return (uint8_t*)_oamRam;
 }
 
 bool Ppu::IsDoubleHeight()
@@ -1621,12 +1619,18 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x213B: {
 			//CGDATAREAD - CGRAM Data read
-			uint8_t value = _cgram[_cgramAddress];
-			if(_cgramAddress & 0x01) {
-				value = (value & 0x7F) | (_ppu2OpenBus & 0x80);
+			uint8_t value;
+			if(_cgramAddressLatch){
+				value = ((_cgram[_cgramAddress] >> 8) & 0x7F) | (_ppu2OpenBus & 0x80);
+				_cgramAddress++;
+				
+				_console->ProcessPpuRead((_cgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
+			} else {
+				value = (uint8_t)_cgram[_cgramAddress];
+				_console->ProcessPpuRead(_cgramAddress >> 1, value, SnesMemoryType::CGRam);
 			}
-			_console->ProcessPpuRead(_cgramAddress, value, SnesMemoryType::CGRam);
-			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
+			_cgramAddressLatch = !_cgramAddressLatch;
+			
 			_ppu2OpenBus = value;
 			return value;
 		}
@@ -1921,22 +1925,23 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2121:
 			//CGRAM Address(CGADD)
-			_cgramAddress = value * 2;
+			_cgramAddress = value;
+			_cgramAddressLatch = false;
 			break;
 
 		case 0x2122: 
 			//CGRAM Data write (CGDATA)
-			if(_cgramAddress & 0x01) {
+			if(_cgramAddressLatch) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
-				_console->ProcessPpuWrite(_cgramAddress - 1, _cgramWriteBuffer, SnesMemoryType::CGRam);
-				_cgram[_cgramAddress - 1] = _cgramWriteBuffer;
+				_console->ProcessPpuWrite(_cgramAddress >> 1, _cgramWriteBuffer, SnesMemoryType::CGRam);
+				_console->ProcessPpuWrite((_cgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
 
-				_console->ProcessPpuWrite(_cgramAddress, value & 0x7F, SnesMemoryType::CGRam);
-				_cgram[_cgramAddress] = value & 0x7F;
+				_cgram[_cgramAddress] = _cgramWriteBuffer | ((value & 0x7F) << 8);
+				_cgramAddress++;
 			} else {
 				_cgramWriteBuffer = value;
 			}
-			_cgramAddress = (_cgramAddress + 1) & (Ppu::CgRamSize - 1);
+			_cgramAddressLatch = !_cgramAddressLatch;
 			break;
 
 		case 0x2123:
@@ -2074,7 +2079,8 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStart
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStart,
+		_cgramAddressLatch, _cgramWriteBuffer
 	);
 
 	for(int i = 0; i < 4; i++) {
@@ -2093,8 +2099,8 @@ void Ppu::Serialize(Serializer &s)
 	}
 
 	s.StreamArray(_vram, Ppu::VideoRamSize);
-	s.StreamArray(_oamRam, Ppu::SpriteRamSize);
-	s.StreamArray(_cgram, Ppu::CgRamSize);
+	s.StreamArray(_oamRam, Ppu::SpriteRamSize >> 1);
+	s.StreamArray(_cgram, Ppu::CgRamSize >> 1);
 	
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 33; j++) {
