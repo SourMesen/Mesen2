@@ -168,11 +168,8 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 
 	uint16_t scanline = _scanline;
 	if(_mosaicEnabled & (1 << layerIndex)) {
-		bool mosaicScanline = (scanline - _mosaicStartScanline) % _mosaicSize == 0;
-		if(!mosaicScanline) {
-			//Keep the "scanline" to what it was at the start of this mosaic block
-			scanline -= (scanline - _mosaicStartScanline) % _mosaicSize;
-		}
+		//Keep the "scanline" to what it was at the start of this mosaic block
+		scanline -= _mosaicSize - _mosaicScanlineCounter;
 	}
 
 	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
@@ -217,11 +214,8 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 
 	uint16_t scanline = _scanline;
 	if(_mosaicEnabled & (1 << layerIndex)) {
-		bool mosaicScanline = (scanline - _mosaicStartScanline) % _mosaicSize == 0;
-		if(!mosaicScanline) {
-			//Keep the "scanline" to what it was at the start of this mosaic block
-			scanline -= (scanline - _mosaicStartScanline) % _mosaicSize;
-		}
+		//Keep the "scanline" to what it was at the start of this mosaic block
+		scanline -= _mosaicSize - _mosaicScanlineCounter;
 	}
 
 	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
@@ -402,6 +396,12 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 		}
 
 		_scanline++;
+		if(_mosaicScanlineCounter) {
+			_mosaicScanlineCounter--;
+			if(_mosaicEnabled && !_mosaicScanlineCounter) {
+				_mosaicScanlineCounter = _mosaicSize;
+			}
+		}
 		
 		_drawStartX = 0;
 		_drawEndX = 0;
@@ -459,9 +459,7 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 				_useHighResOutput = false;
 			}
 
-			if(_mosaicEnabled) {
-				_mosaicStartScanline = 1;
-			}
+			_mosaicScanlineCounter = _mosaicEnabled ? _mosaicSize + 1 : 0;
 		}
 		return true;
 	}
@@ -963,48 +961,41 @@ void Ppu::RenderTilemap()
 		return;
 	}
 
-	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
-	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
-
-	/* Keeps track of whether or not the pixel is allowed to participate in color math */
-	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
-
 	/* The current layer's options */
-	LayerConfig &config = _layerConfig[layerIndex];
+	uint16_t hScrollOriginal = _layerConfig[layerIndex].HScroll;
+	uint16_t hScroll = hiResMode ? (hScrollOriginal << 1) : hScrollOriginal;
 
-	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;
+	TileData* tileData  = _layerData[layerIndex].Tiles;
 
 	/* The current pixel x position (normally 0-255, but 0-511 in hi-res mode - even on subscreen, odd on main screen) */
-	uint16_t realX;
-	
+	uint8_t mosaicCounter = applyMosaic ? _mosaicSize - (_drawStartX % _mosaicSize) : 0;
+	uint8_t lookupIndex;
+	uint8_t chrDataOffset;
+
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(hiResMode) {
-			realX = (x << 1) + (forMainScreen ? 1 : 0);
-		} else {
-			realX = x;
-		}
-
-		int lookupIndex;
-		int chrDataOffset;
-		if(hiResMode) {
-			lookupIndex = (x + (config.HScroll & 0x07)) >> 2;
+			lookupIndex = (x + (hScrollOriginal & 0x07)) >> 2;
 			chrDataOffset = lookupIndex & 0x01;
 			lookupIndex >>= 1;
 		} else {
-			lookupIndex = (x + (config.HScroll & 0x07)) >> 3;
+			lookupIndex = (x + (hScrollOriginal & 0x07)) >> 3;
 			chrDataOffset = 0;
 		}
 
-		TileData &tileData =  _layerData[layerIndex].Tiles[lookupIndex];
-		uint16_t tilemapData = tileData.TilemapData;
+		uint16_t tilemapData = tileData[lookupIndex].TilemapData;
+		uint16_t* chrData = tileData[lookupIndex].ChrData;
 
-		//The pixel is empty, not clipped and not part of a mosaic pattern, process it
 		bool hMirror = (tilemapData & 0x4000) != 0;
 
-		uint8_t xOffset = (realX + hScroll) & 0x07;
+		uint8_t xOffset;
+		if(hiResMode) {
+			xOffset = ((x << 1) + forMainScreen + hScroll) & 0x07;
+		} else {
+			xOffset = (x + hScroll) & 0x07;
+		}
 		uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 		
-		uint8_t color = GetTilePixelColor<bpp>(tileData.ChrData + (chrDataOffset ? bpp / 2 : 0), shift);
+		uint8_t color = GetTilePixelColor<bpp>(chrData + (chrDataOffset ? bpp / 2 : 0), shift);
 
 		uint16_t paletteColor;
 		if(bpp == 8 && directColorMode) {
@@ -1021,35 +1012,27 @@ void Ppu::RenderTilemap()
 		}
 
 		if(applyMosaic) {
-			if(x % _mosaicSize == 0) {
+			if(mosaicCounter == _mosaicSize) {
+				mosaicCounter = 1;
 				_mosaicColor[layerIndex] = (paletteColor << 8) | color;
-			} else if(applyMosaic) {
+			} else {
+				mosaicCounter++;
 				color = _mosaicColor[layerIndex] & 0xFF;
 				paletteColor = _mosaicColor[layerIndex] >> 8;
 			}
 		}
 
-		//Skip pixels that were filled by previous layers (or that don't match the priority level currently being processed)
-		if(forMainScreen) {
-			if(_rowPixelFlags[x] || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
-				continue;
-			}
-		} else {
-			if(_subScreenFilled[x] || ((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13))) {
-				continue;
-			}
-		}
-
-		if(activeWindowCount && ProcessMaskWindow<layerIndex>(activeWindowCount, x)) {
-			//This pixel was masked, skip it
-			continue;
-		}
-
-		if(color > 0) {
+		if(color > 0 && (!activeWindowCount || !ProcessMaskWindow<layerIndex>(activeWindowCount, x))) {
 			if(forMainScreen) {
-				DrawMainPixel(x, paletteColor, pixelFlags);
+				if(!_rowPixelFlags[x] && ((uint8_t)processHighPriority == ((tilemapData & 0x2000) >> 13))) {
+					/* Keeps track of whether or not the pixel is allowed to participate in color math */
+					uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+					DrawMainPixel(x, paletteColor, pixelFlags);
+				}
 			} else {
-				DrawSubPixel(x, paletteColor);
+				if(!_subScreenFilled[x] && ((uint8_t)processHighPriority == ((tilemapData & 0x2000) >> 13))) {
+					DrawSubPixel(x, paletteColor);
+				}
 			}
 		}
 	}
@@ -1797,7 +1780,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			if(!_mosaicEnabled && mosaicEnabled) {
 				//"If this register is set during the frame, the Åstarting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
 				//This is only done when mosaic is turned on from an off state (FF3 mosaic effect looks wrong otherwise)
-				_mosaicStartScanline = _scanline;
+				_mosaicScanlineCounter = _mosaicSize;
 			}
 			_mosaicEnabled = mosaicEnabled;
 			break;
@@ -2069,7 +2052,7 @@ void Ppu::Serialize(Serializer &s)
 		_forcedVblank, _screenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _bgMode,
 		_mode1Bg3Priority, _mainScreenLayers, _subScreenLayers, _vramAddress, _vramIncrementValue, _vramAddressRemapping,
 		_vramAddrIncrementOnSecondReg, _vramReadBuffer, _ppu1OpenBus, _ppu2OpenBus, _cgramAddress, _mosaicSize, _mosaicEnabled,
-		_mosaicStartScanline, _oamMode, _oamBaseAddress, _oamAddressOffset, _oamRamAddress, _enableOamPriority,
+		_mosaicScanlineCounter, _oamMode, _oamBaseAddress, _oamAddressOffset, _oamRamAddress, _enableOamPriority,
 		_internalOamAddress, _oamWriteBuffer, _timeOver, _rangeOver, _hiResMode, _screenInterlace, _objInterlace,
 		_overscanMode, _directColorMode, _colorMathClipMode, _colorMathPreventMode, _colorMathAddSubscreen, _colorMathEnabled,
 		_colorMathSubstractMode, _colorMathHalveResult, _fixedColor, _hvScrollLatchValue, _hScrollLatchValue, 

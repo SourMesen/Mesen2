@@ -98,7 +98,7 @@ private:
 	uint32_t _mosaicColor[4] = {};
 	uint8_t _mosaicSize = 0;
 	uint8_t _mosaicEnabled = 0;
-	uint16_t _mosaicStartScanline = 0;
+	uint16_t _mosaicScanlineCounter = 0;
 
 	uint8_t _oamMode = 0;
 	uint16_t _oamBaseAddress = 0;
