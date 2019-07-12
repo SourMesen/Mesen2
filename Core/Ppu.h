@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "PpuTypes.h"
 #include "../Utilities/ISerializable.h"
+#include "../Utilities/Timer.h"
 
 class Console;
 class InternalRegisters;
@@ -137,7 +138,8 @@ private:
 	bool _verticalLocationToggle = false;
 	bool _locationLatched = false;
 
-	bool _allowFrameSkip = false;
+	Timer _frameSkipTimer;
+	bool _skipRender = false;
 	uint8_t _configVisibleLayers = 0xFF;
 
 	uint8_t _spritePriority[256] = {};

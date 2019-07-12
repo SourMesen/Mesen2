@@ -52,7 +52,7 @@ Ppu::~Ppu()
 
 void Ppu::PowerOn()
 {
-	_allowFrameSkip = false;
+	_skipRender = false;
 	_regs = _console->GetInternalRegisters();
 	_memoryManager = _console->GetMemoryManager();
 
@@ -189,7 +189,7 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 	}
 
 	/* The tilemap address to read the tile data from */
-	uint16_t addr = baseOffset + (column & 0x1F) + (((config.DoubleWidth << 5) & (column & 0x20)) << 5);
+	uint16_t addr = baseOffset + (column & 0x1F) + (config.DoubleWidth ? (column & 0x20) << 5 : 0);
 	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr];
 	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
 }
@@ -442,8 +442,8 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_timeOver = false;
 			_console->ProcessEvent(EventType::StartFrame);
 
-			_allowFrameSkip = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150);
-			if(!_allowFrameSkip || (_frameCount & 0x03) == 0) {
+			_skipRender = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150) && _frameSkipTimer.GetElapsedMS() < 10;
+			if(!_skipRender) {
 				//If we're not skipping this frame, reset the high resolution flag
 				_useHighResOutput = false;
 			}
@@ -779,7 +779,6 @@ void Ppu::RenderMode7()
 
 void Ppu::RenderScanline()
 {
-	bool skipRender = _allowFrameSkip && (_frameCount & 0x03);
 	int32_t hPos = GetCycle();
 
 	if(hPos <= 255 || _spriteEvalEnd < 255) {
@@ -790,7 +789,7 @@ void Ppu::RenderScanline()
 		_spriteEvalStart = _spriteEvalEnd + 1;
 	}
 
-	if(!skipRender && (hPos <= 263 || _fetchBgEnd < 263)) {
+	if(!_skipRender && (hPos <= 263 || _fetchBgEnd < 263)) {
 		//Fetch tilemap and tile CHR data, as needed, between H=0 and H=263
 		_fetchBgEnd = std::min(hPos, 263);
 		if(_fetchBgStart <= _fetchBgEnd) {
@@ -800,7 +799,7 @@ void Ppu::RenderScanline()
 	} 
 
 	//Render the scanline
-	if(!skipRender && _drawStartX < 255 && hPos > 22 && _scanline > 0) {
+	if(!_skipRender && _drawStartX < 255 && hPos > 22 && _scanline > 0) {
 		_drawEndX = std::min(hPos - 22, 255);
 
 		uint8_t bgMode = _bgMode;
@@ -1414,10 +1413,14 @@ void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 
 void Ppu::SendFrame()
 {
-	uint16_t width = _useHighResOutput ? 512 : 256;
-	uint16_t height = _useHighResOutput ? 478 : 239;
+	if(_skipRender) {
+		return;
+	}
 
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+
+	uint16_t width = _useHighResOutput ? 512 : 256;
+	uint16_t height = _useHighResOutput ? 478 : 239;
 
 	if(!_overscanMode) {
 		//Clear the top 7 and bottom 8 rows
@@ -1435,11 +1438,9 @@ void Ppu::SendFrame()
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
-
-		if(!_allowFrameSkip || (_frameCount & 0x03) == 0) {
-			_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-		}
+		_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 	}
+	_frameSkipTimer.Reset();
 #endif
 }
 
@@ -1466,7 +1467,7 @@ uint8_t* Ppu::GetCgRam()
 
 uint8_t* Ppu::GetSpriteRam()
 {
-	return _oamRam;
+	return (uint8_t*)_oamRam;
 }
 
 bool Ppu::IsDoubleHeight()
