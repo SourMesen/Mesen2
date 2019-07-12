@@ -192,6 +192,7 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 	uint16_t addr = baseOffset + (column & 0x1F) + (config.DoubleWidth ? (column & 0x20) << 5 : 0);
 	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr];
 	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
+	_layerData[layerIndex].HasPriorityTiles |= (_vram[addr] & 0x2000) >> 13;
 }
 
 template<bool hiResMode, uint8_t bpp, bool secondTile>
@@ -401,6 +402,9 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 		_spriteEvalStart = 0;
 		_spriteEvalEnd = 0;
 		_spriteFetchingDone = false;
+		for(int i = 0; i < 4; i++) {
+			_layerData[i].HasPriorityTiles = false;
+		}
 
 		memcpy(_spritePriority, _spritePriorityCopy, sizeof(_spritePriority));
 		memcpy(_spritePalette, _spritePaletteCopy, sizeof(_spritePalette));
@@ -945,10 +949,6 @@ void Ppu::RenderSprites()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset, bool hiResMode, uint8_t activeWindowCount, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemap()
 {
-	if(!IsRenderRequired<forMainScreen>(layerIndex)) {
-		return;
-	}
-
 	/* The current layer's options */
 	uint16_t hScrollOriginal = _layerConfig[layerIndex].HScroll;
 	uint16_t hScroll = hiResMode ? (hScrollOriginal << 1) : hScrollOriginal;
@@ -971,8 +971,11 @@ void Ppu::RenderTilemap()
 		}
 
 		uint16_t tilemapData = tileData[lookupIndex].TilemapData;
-		uint16_t* chrData = tileData[lookupIndex].ChrData;
+		if((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13)) {
+			continue;
+		}
 
+		uint16_t* chrData = tileData[lookupIndex].ChrData;
 		bool hMirror = (tilemapData & 0x4000) != 0;
 
 		uint8_t xOffset;
@@ -1012,13 +1015,13 @@ void Ppu::RenderTilemap()
 
 		if(color > 0 && (!activeWindowCount || !ProcessMaskWindow<layerIndex>(activeWindowCount, x))) {
 			if(forMainScreen) {
-				if(!_rowPixelFlags[x] && ((uint8_t)processHighPriority == ((tilemapData & 0x2000) >> 13))) {
+				if(!_rowPixelFlags[x]) {
 					/* Keeps track of whether or not the pixel is allowed to participate in color math */
 					uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 					DrawMainPixel(x, paletteColor, pixelFlags);
 				}
 			} else {
-				if(!_subScreenFilled[x] && ((uint8_t)processHighPriority == ((tilemapData & 0x2000) >> 13))) {
+				if(!_subScreenFilled[x]) {
 					DrawSubPixel(x, paletteColor);
 				}
 			}
@@ -2129,6 +2132,10 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, bool forMainScreen, uint16_t basePaletteOffset>
 void Ppu::RenderTilemap()
 {
+	if(!IsRenderRequired<forMainScreen>(layerIndex) || processHighPriority && !_layerData[layerIndex].HasPriorityTiles) {
+		return;
+	}
+
 	if(_bgMode == 5 || _bgMode == 6) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, forMainScreen, basePaletteOffset, true>();
 	} else {
