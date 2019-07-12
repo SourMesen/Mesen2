@@ -32,7 +32,7 @@ Ppu::Ppu(shared_ptr<Console> console)
 {
 	_console = console;
 
-	_vram = new uint8_t[Ppu::VideoRamSize];
+	_vram = new uint16_t[Ppu::VideoRamSize >> 1];
 	_console->GetSettings()->InitializeRam(_vram, Ppu::VideoRamSize);
 	_console->GetSettings()->InitializeRam(_cgram, Ppu::CgRamSize);
 	_console->GetSettings()->InitializeRam(_oamRam, Ppu::SpriteRamSize);
@@ -139,9 +139,6 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 	/* The current layer's options */
 	LayerConfig &config = _layerConfig[layerIndex];
 
-	/* Layer's tilemap start address */
-	uint16_t tilemapAddr = config.TilemapAddress >> 1;
-
 	uint16_t vScroll = config.VScroll;
 	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;	
 	if(_hOffset || _vOffset) {
@@ -182,7 +179,7 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 	uint16_t addrVerticalScrollingOffset = config.DoubleHeight ? ((row & 0x20) << (config.DoubleWidth ? 6 : 5)) : 0;
 
 	/* The start address for tiles on this row */
-	uint16_t baseOffset = tilemapAddr + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+	uint16_t baseOffset = config.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
 	/* The current column index (in terms of 8x8 or 16x16 tiles) */
 	uint16_t column = columnIndex + (hScroll >> 3);
@@ -192,10 +189,8 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 	}
 
 	/* The tilemap address to read the tile data from */
-	uint16_t addr = (baseOffset + (column & 0x1F) + (config.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
-
-	uint16_t tilemapData = _vram[addr] | (_vram[addr + 1] << 8);
-	_layerData[layerIndex].Tiles[columnIndex].TilemapData = tilemapData;
+	uint16_t addr = baseOffset + (column & 0x1F) + (((config.DoubleWidth << 5) & (column & 0x20)) << 5);
+	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr];
 	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
 }
 
@@ -208,12 +203,11 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 
 	bool largeTileWidth = hiResMode || config.LargeTiles;
 
-	uint16_t chrAddr = config.ChrAddress;
 	bool vMirror = (tilemapData & 0x8000) != 0;
 	bool hMirror = (tilemapData & 0x4000) != 0;
 
 	uint16_t scanline = _scanline;
-	if(_mosaicEnabled & (1 << layerIndex)) {
+	if(_mosaicEnabled && (_mosaicEnabled & (1 << layerIndex))) {
 		//Keep the "scanline" to what it was at the start of this mosaic block
 		scanline -= _mosaicSize - _mosaicScanlineCounter;
 	}
@@ -227,7 +221,7 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 	}
 
 	uint16_t tileIndex = tilemapData & 0x03FF;
-	if(largeTileWidth || config.LargeTiles) {
+	if(largeTileWidth) {
 		tileIndex = (
 			tileIndex +
 			(config.LargeTiles ? (((realY + tileData.VScroll) & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
@@ -235,15 +229,13 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 		) & 0x3FF;
 	}
 
-	uint16_t tileStart = chrAddr + tileIndex * 8 * bpp;
+	uint16_t tileStart = config.ChrAddress + tileIndex * 4 * bpp;
 	
 	uint8_t baseYOffset = (realY + tileData.VScroll) & 0x07;
 
 	uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
-	uint16_t pixelStart = tileStart + yOffset * 2 + (plane << 4);
-
-	uint16_t chrData = _vram[pixelStart] | (_vram[(uint16_t)(pixelStart + 1)] << 8);
-	_layerData[layerIndex].Tiles[column].ChrData[plane + (secondTile ? bpp / 2 : 0)] = chrData;
+	uint16_t pixelStart = tileStart + yOffset + (plane << 3);
+	tileData.ChrData[plane + (secondTile ? bpp / 2 : 0)] = _vram[pixelStart];
 }
 
 void Ppu::GetHorizontalOffsetByte(uint8_t columnIndex)
@@ -251,10 +243,7 @@ void Ppu::GetHorizontalOffsetByte(uint8_t columnIndex)
 	uint16_t columnOffset = (((columnIndex << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
 	uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
 
-	uint16_t tileOffset = (columnOffset << 1) + (rowOffset << 6);
-	uint16_t hOffsetAddr = _layerConfig[2].TilemapAddress + tileOffset;
-
-	_hOffset = _vram[hOffsetAddr] | (_vram[hOffsetAddr + 1] << 8);
+	_hOffset = _vram[_layerConfig[2].TilemapAddress + columnOffset + (rowOffset << 5)];
 }
 
 void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
@@ -262,12 +251,12 @@ void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
 	uint16_t columnOffset = (((columnIndex << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
 	uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
 
-	uint16_t tileOffset = (columnOffset << 1) + (rowOffset << 6);
+	uint16_t tileOffset = columnOffset + (rowOffset << 5);
 
 	//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
-	uint16_t vOffsetAddr = _layerConfig[2].TilemapAddress + ((tileOffset + 0x40) & (_layerConfig[2].DoubleHeight ? 0xFFF : 0x7FF));
+	uint16_t vOffsetAddr = _layerConfig[2].TilemapAddress + ((tileOffset + 0x20) & (_layerConfig[2].DoubleHeight ? 0x7FF : 0x3FF));
 
-	_vOffset = _vram[vOffsetAddr] | (_vram[vOffsetAddr + 1] << 8);
+	_vOffset = _vram[vOffsetAddr];
 }
 
 void Ppu::FetchTileData()
@@ -631,18 +620,18 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint8_t row = (tileRow + rowOffset) & 0x0F;
 	uint8_t columnOffset = _currentSprite.HorizontalMirror ? _currentSprite.ColumnOffset : (columnCount - _currentSprite.ColumnOffset - 1);
 	uint8_t tileIndex = (row << 4) | ((tileColumn + columnOffset) & 0x0F);
-	uint16_t tileStart = ((_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF) << 1;
-	_currentSprite.FetchAddress = tileStart + yOffset * 2;
+	uint16_t tileStart = (_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF;
+	_currentSprite.FetchAddress = tileStart + yOffset;
 }
 
 void Ppu::FetchSpriteTile(bool secondCycle)
 {
 	//The timing for the fetches should be (mostly) accurate (H=272 to 339)
-	uint16_t chrData = _vram[_currentSprite.FetchAddress] | (_vram[(uint16_t)(_currentSprite.FetchAddress + 1)] << 8);
+	uint16_t chrData = _vram[_currentSprite.FetchAddress];
 	_currentSprite.ChrData[secondCycle] = chrData;
 
 	if(!secondCycle) {
-		_currentSprite.FetchAddress += 16;
+		_currentSprite.FetchAddress += 8;
 	} else {
 		int16_t xPos = _currentSprite.DrawX;
 		for(int x = 0; x < 8; x++) {
@@ -1157,7 +1146,7 @@ void Ppu::RenderTilemapMode7()
 		if(!_mode7.LargeMap) {
 			yOffset &= 0x3FF;
 			xOffset &= 0x3FF;
-			tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1];
+			tileIndex = (uint8_t)_vram[((yOffset & ~0x07) << 4) | (xOffset >> 3)];
 		} else {
 			if(yOffset < 0 || yOffset > 0x3FF || xOffset < 0 || xOffset > 0x3FF) {
 				if(_mode7.FillWithTile0) {
@@ -1167,20 +1156,20 @@ void Ppu::RenderTilemapMode7()
 					continue;
 				}
 			} else {
-				tileIndex = _vram[(((yOffset & ~0x07) << 4) | (xOffset >> 3)) << 1];
+				tileIndex = (uint8_t)_vram[((yOffset & ~0x07) << 4) | (xOffset >> 3)];
 			}
 		}
 
 		uint16_t colorIndex;
 		if(layerIndex == 1) {
-			uint8_t color = _vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1];
+			uint8_t color = _vram[((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07))] >> 8;
 			if(((uint8_t)processHighPriority << 7) != (color & 0x80)) {
 				//Wrong priority, skip this pixel
 				continue;
 			}
 			colorIndex = (color & 0x7F);
 		} else {
-			colorIndex = (_vram[(((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07)) << 1) + 1]);
+			colorIndex = _vram[((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07))] >> 8;
 		}
 
 		if(colorIndex > 0) {
@@ -1467,7 +1456,7 @@ uint16_t* Ppu::GetScreenBuffer()
 
 uint8_t* Ppu::GetVideoRam()
 {
-	return _vram;
+	return (uint8_t*)_vram;
 }
 
 uint8_t* Ppu::GetCgRam()
@@ -1477,7 +1466,7 @@ uint8_t* Ppu::GetCgRam()
 
 uint8_t* Ppu::GetSpriteRam()
 {
-	return (uint8_t*)_oamRam;
+	return _oamRam;
 }
 
 bool Ppu::IsDoubleHeight()
@@ -1519,7 +1508,7 @@ uint16_t Ppu::GetOamAddress()
 void Ppu::UpdateVramReadBuffer()
 {
 	uint16_t addr = GetVramAddress();
-	_vramReadBuffer = _vram[addr << 1] | (_vram[(addr << 1) + 1] << 8);
+	_vramReadBuffer = _vram[addr];
 }
 
 uint16_t Ppu::GetVramAddress()
@@ -1788,15 +1777,15 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
 			//BG 1-4 Tilemap Address and Size (BG1SC, BG2SC, BG3SC, BG4SC)
-			_layerConfig[addr - 0x2107].TilemapAddress = (value & 0xFC) << 9;
+			_layerConfig[addr - 0x2107].TilemapAddress = (value & 0x7C) << 8;
 			_layerConfig[addr - 0x2107].DoubleWidth = (value & 0x01) != 0;
 			_layerConfig[addr - 0x2107].DoubleHeight = (value & 0x02) != 0;
 			break;
 
 		case 0x210B: case 0x210C:
 			//BG1+2 / BG3+4 Chr Address (BG12NBA / BG34NBA)
-			_layerConfig[(addr - 0x210B) * 2].ChrAddress = (value & 0x0F) << 13;
-			_layerConfig[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0xF0) << 9;
+			_layerConfig[(addr - 0x210B) * 2].ChrAddress = (value & 0x07) << 12;
+			_layerConfig[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0x70) << 8;
 			break;
 		
 		case 0x210D:
@@ -1857,7 +1846,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			if(_scanline >= _vblankStart || _forcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
-				_vram[GetVramAddress() << 1] = value;
+				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
 			}
 
 			//The VRAM address is incremented even outside of vblank/forced blank
@@ -1871,7 +1860,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			if(_scanline >= _vblankStart || _forcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
-				_vram[(GetVramAddress() << 1) + 1] = value;
+				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
 			}
 			
 			//The VRAM address is incremented even outside of vblank/forced blank
@@ -2081,8 +2070,8 @@ void Ppu::Serialize(Serializer &s)
 		);
 	}
 
-	s.StreamArray(_vram, Ppu::VideoRamSize);
-	s.StreamArray(_oamRam, Ppu::SpriteRamSize >> 1);
+	s.StreamArray(_vram, Ppu::VideoRamSize >> 1);
+	s.StreamArray(_oamRam, Ppu::SpriteRamSize);
 	s.StreamArray(_cgram, Ppu::CgRamSize >> 1);
 	
 	for(int i = 0; i < 4; i++) {

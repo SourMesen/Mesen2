@@ -268,7 +268,7 @@ namespace Mesen.GUI.Debugger
 
 				LayerConfig layer = _state.Ppu.Layers[_options.Layer];
 				int addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
-				int baseOffset = (layer.TilemapAddress >> 1) + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+				int baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 				int address = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
 				int value = _vram[address] | (_vram[address + 1] << 8);
 
@@ -285,8 +285,8 @@ namespace Mesen.GUI.Debugger
 				
 				//Tilemap
 				txtMapSize.Text = (layer.DoubleWidth ? "64" : "32") + "x" + (layer.DoubleHeight ? "64" : "32");
-				txtMapAddress.Text = layer.TilemapAddress.ToString("X4");
-				txtTilesetAddress.Text = layer.ChrAddress.ToString("X4");
+				txtMapAddress.Text = (layer.TilemapAddress << 1).ToString("X4");
+				txtTilesetAddress.Text = (layer.ChrAddress << 1).ToString("X4");
 				txtTileSize.Text = (IsLargeTileWidth ? "16" : "8") + "x" + (IsLargeTileHeight ? "16" : "8");
 				txtBitDepth.Text = _layerBpp[_state.Ppu.BgMode, _options.Layer].ToString();
 			}

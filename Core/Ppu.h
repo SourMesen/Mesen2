@@ -67,7 +67,7 @@ private:
 
 	Mode7Config _mode7 = {};
 	
-	uint8_t *_vram = nullptr;
+	uint16_t *_vram = nullptr;
 	uint16_t _vramAddress = 0;
 	uint8_t _vramIncrementValue = 0;
 	uint8_t _vramAddressRemapping = 0;

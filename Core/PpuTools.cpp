@@ -223,7 +223,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgr
 		int tileWidth = largeTileWidth ? 16 : 8;
 		for(int row = 0; row < (layer.DoubleHeight ? 64 : 32); row++) {
 			uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
-			uint16_t baseOffset = (layer.TilemapAddress >> 1) + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+			uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
 			for(int column = 0; column < (layer.DoubleWidth ? 64 : 32); column++) {
 				uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
@@ -241,7 +241,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgr
 							(largeTileWidth ? ((x & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
 						);
 
-						uint16_t tileStart = layer.ChrAddress + ((tileIndex + tileOffset) & 0x3FF) * 8 * bpp;
+						uint16_t tileStart = (layer.ChrAddress << 1) + ((tileIndex + tileOffset) & 0x3FF) * 8 * bpp;
 						uint16_t pixelStart = tileStart + yOffset * 2;
 
 						uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));

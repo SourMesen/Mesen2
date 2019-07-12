@@ -418,7 +418,7 @@ namespace Mesen.GUI.Debugger
 				ctrlImagePanel.ScrollTo(0);
 			} else {
 				int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
-				int scrollRow = (_state.Ppu.Layers[layer].ChrAddress / bytesPerRow) & 0xFFF8;
+				int scrollRow = ((_state.Ppu.Layers[layer].ChrAddress << 1) / bytesPerRow) & 0xFFF8;
 				_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
 				RefreshViewer();
 				ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
