@@ -3,6 +3,7 @@
 #include "Console.h"
 #include "MemoryManager.h"
 #include "SoundMixer.h"
+#include "EmuSettings.h"
 #include "SPC_DSP.h"
 #include "../Utilities/Serializer.h"
 
@@ -13,7 +14,7 @@ Spc::Spc(shared_ptr<Console> console)
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];
-	memset(_ram, 0, Spc::SpcRamSize);
+	_console->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
 
 	_dsp.reset(new SPC_DSP());
 	_dsp->init(_ram);
