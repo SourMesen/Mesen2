@@ -21,7 +21,7 @@ enum class RewindState
 class RewindManager : public INotificationListener, public IInputProvider, public IInputRecorder
 {
 private:
-	static constexpr int32_t BufferSize = 30; //Number of frames between each save state
+	static constexpr int32_t BufferSize = 60; //Number of frames between each save state
 
 	shared_ptr<Console> _console;
 	shared_ptr<EmuSettings> _settings;

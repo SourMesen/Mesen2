@@ -33,7 +33,7 @@ void RewindData::CompressState(string stateData, vector<uint8_t>& compressedStat
 {
 	unsigned long compressedSize = compressBound((unsigned long)stateData.size());
 	uint8_t* compressedData = new uint8_t[compressedSize];
-	compress(compressedData, &compressedSize, (unsigned char*)stateData.c_str(), (unsigned long)stateData.size());
+	compress2(compressedData, &compressedSize, (unsigned char*)stateData.c_str(), (unsigned long)stateData.size(), MZ_BEST_SPEED);
 	compressedState = vector<uint8_t>(compressedData, compressedData + compressedSize);
 	delete[] compressedData;
 }

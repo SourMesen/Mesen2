@@ -89,7 +89,7 @@ void RewindManager::ProcessNotification(ConsoleNotificationType type, void * par
 
 void RewindManager::AddHistoryBlock()
 {
-	uint32_t maxHistorySize = _settings->GetRewindBufferSize() * 120;	
+	uint32_t maxHistorySize = _settings->GetRewindBufferSize() * 60 * RewindManager::BufferSize / 60;
 	if(maxHistorySize > 0) {
 		while(_history.size() > maxHistorySize) {
 			_history.pop_front();

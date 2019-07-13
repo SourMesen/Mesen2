@@ -85,6 +85,11 @@
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
+			this.flowLayoutPanel6 = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblRewind = new System.Windows.Forms.Label();
+			this.nudRewindBufferSize = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblRewindMinutes = new System.Windows.Forms.Label();
+			this.lblAdvancedMisc = new System.Windows.Forms.Label();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -103,12 +108,14 @@
 			this.tableLayoutPanel9.SuspendLayout();
 			this.tpgAdvanced.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
+			this.flowLayoutPanel6.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 415);
 			this.baseConfigPanel.Size = new System.Drawing.Size(548, 29);
+			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tabMain
 			// 
@@ -745,6 +752,8 @@
 			// 
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Controls.Add(this.lblAdvancedMisc, 0, 9);
+			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel6, 0, 10);
 			this.tableLayoutPanel1.Controls.Add(this.chkDisplayTitleBarInfo, 0, 4);
 			this.tableLayoutPanel1.Controls.Add(this.chkShowGameTimer, 0, 7);
 			this.tableLayoutPanel1.Controls.Add(this.chkShowFrameCounter, 0, 6);
@@ -757,7 +766,7 @@
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 10;
+			this.tableLayoutPanel1.RowCount = 11;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -767,7 +776,9 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 383);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
@@ -872,6 +883,82 @@
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
 			// 
+			// flowLayoutPanel6
+			// 
+			this.flowLayoutPanel6.Controls.Add(this.lblRewind);
+			this.flowLayoutPanel6.Controls.Add(this.nudRewindBufferSize);
+			this.flowLayoutPanel6.Controls.Add(this.lblRewindMinutes);
+			this.flowLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Top;
+			this.flowLayoutPanel6.Location = new System.Drawing.Point(10, 224);
+			this.flowLayoutPanel6.Margin = new System.Windows.Forms.Padding(10, 3, 0, 0);
+			this.flowLayoutPanel6.Name = "flowLayoutPanel6";
+			this.flowLayoutPanel6.Size = new System.Drawing.Size(524, 23);
+			this.flowLayoutPanel6.TabIndex = 35;
+			// 
+			// lblRewind
+			// 
+			this.lblRewind.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblRewind.AutoSize = true;
+			this.lblRewind.Location = new System.Drawing.Point(3, 4);
+			this.lblRewind.Name = "lblRewind";
+			this.lblRewind.Size = new System.Drawing.Size(142, 13);
+			this.lblRewind.TabIndex = 3;
+			this.lblRewind.Text = "Keep rewind data for the last";
+			// 
+			// nudRewindBufferSize
+			// 
+			this.nudRewindBufferSize.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.nudRewindBufferSize.DecimalPlaces = 0;
+			this.nudRewindBufferSize.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudRewindBufferSize.Location = new System.Drawing.Point(148, 0);
+			this.nudRewindBufferSize.Margin = new System.Windows.Forms.Padding(0);
+			this.nudRewindBufferSize.Maximum = new decimal(new int[] {
+            900,
+            0,
+            0,
+            0});
+			this.nudRewindBufferSize.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudRewindBufferSize.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudRewindBufferSize.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudRewindBufferSize.Name = "nudRewindBufferSize";
+			this.nudRewindBufferSize.Size = new System.Drawing.Size(42, 21);
+			this.nudRewindBufferSize.TabIndex = 1;
+			this.nudRewindBufferSize.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+			// 
+			// lblRewindMinutes
+			// 
+			this.lblRewindMinutes.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblRewindMinutes.AutoSize = true;
+			this.lblRewindMinutes.Location = new System.Drawing.Point(193, 4);
+			this.lblRewindMinutes.Name = "lblRewindMinutes";
+			this.lblRewindMinutes.Size = new System.Drawing.Size(175, 13);
+			this.lblRewindMinutes.TabIndex = 2;
+			this.lblRewindMinutes.Text = "minutes (Memory Usage ≈5MB/min)";
+			// 
+			// lblAdvancedMisc
+			// 
+			this.lblAdvancedMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblAdvancedMisc.AutoSize = true;
+			this.lblAdvancedMisc.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.lblAdvancedMisc.Location = new System.Drawing.Point(0, 208);
+			this.lblAdvancedMisc.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.lblAdvancedMisc.Name = "lblAdvancedMisc";
+			this.lblAdvancedMisc.Size = new System.Drawing.Size(73, 13);
+			this.lblAdvancedMisc.TabIndex = 36;
+			this.lblAdvancedMisc.Text = "Misc. Settings";
+			// 
 			// frmPreferences
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -910,7 +997,10 @@
 			this.tpgAdvanced.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
+			this.flowLayoutPanel6.ResumeLayout(false);
+			this.flowLayoutPanel6.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -974,5 +1064,10 @@
 		private ctrlEmulatorShortcuts ctrlEmulatorShortcuts;
 		private System.Windows.Forms.CheckBox chkShowDebugInfo;
 		private System.Windows.Forms.CheckBox chkAutoHideMenu;
+		private System.Windows.Forms.Label lblAdvancedMisc;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel6;
+		private System.Windows.Forms.Label lblRewind;
+		private Controls.MesenNumericUpDown nudRewindBufferSize;
+		private System.Windows.Forms.Label lblRewindMinutes;
 	}
 }

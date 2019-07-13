@@ -18,15 +18,6 @@
 			<Control ID="mnuSelectDisk">Select Disk</Control>
 			<Control ID="mnuEjectDisk">Eject Disk</Control>
 			<Control ID="mnuGameConfig">Game Configuration</Control>
-			<Control ID="mnuInsertCoin1">Insert Coin (1)</Control>
-			<Control ID="mnuInsertCoin2">Insert Coin (2)</Control>
-			<Control ID="mnuInsertCoin3">Insert Coin (3 - DualSystem)</Control>
-			<Control ID="mnuInsertCoin4">Insert Coin (4 - DualSystem)</Control>
-			<Control ID="mnuInputBarcode">Input Barcode...</Control>
-			<Control ID="mnuTapeRecorder">Tape Recorder</Control>
-			<Control ID="mnuLoadTapeFile">Load from file...</Control>
-			<Control ID="mnuStartRecordTapeFile">Record to file...</Control>
-			<Control ID="mnuStopRecordTapeFile">Stop recording</Control>
 			<Control ID="mnuOptions">Options</Control>
 			<Control ID="mnuEmulationSpeed">Speed</Control>
 			<Control ID="mnuEmuSpeedNormal">Normal (100%)</Control>
@@ -163,31 +154,6 @@
 			<Control ID="btnReset">Reset to Defaults</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
-			<Control ID="trkDmcVol">DMC</Control>
-			<Control ID="trkNoiseVol">Noise</Control>
-			<Control ID="trkTriangleVol">Triangle</Control>
-			<Control ID="trkSquare2Vol">Square 2</Control>
-			<Control ID="trkSquare1Vol">Square 1</Control>
-			<Control ID="trkMaster">Master</Control>
-			<Control ID="trkFdsVol">FDS</Control>
-			<Control ID="trkMmc5Vol">MMC5</Control>
-			<Control ID="trkVrc6Vol">VRC6</Control>
-			<Control ID="trkVrc7Vol">VRC7</Control>
-			<Control ID="trkNamco163Vol">Namco</Control>
-			<Control ID="trkSunsoft5b">Sunsoft</Control>
-
-			<Control ID="tpgPanning">Panning</Control>
-			<Control ID="trkDmcPan">DMC</Control>
-			<Control ID="trkNoisePan">Noise</Control>
-			<Control ID="trkTrianglePan">Triangle</Control>
-			<Control ID="trkSquare2Pan">Square 2</Control>
-			<Control ID="trkSquare1Pan">Square 1</Control>
-			<Control ID="trkFdsPan">FDS</Control>
-			<Control ID="trkMmc5Pan">MMC5</Control>
-			<Control ID="trkVrc6Pan">VRC6</Control>
-			<Control ID="trkVrc7Pan">VRC7</Control>
-			<Control ID="trkNamcoPan">Namco</Control>
-			<Control ID="trkSunsoftPan">Sunsoft</Control>
 
 			<Control ID="tpgEqualizer">Equalizer</Control>
 			<Control ID="chkEnableEqualizer">Enable Equalizer</Control>
@@ -313,14 +279,7 @@
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
-			<Control ID="chkUseAlternativeMmc3Irq">Use alternative MMC3 IRQ behavior</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
-			<Control ID="chkEnableOamDecay">Enable OAM RAM decay</Control>
-			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>
-			<Control ID="chkDisableOamAddrBug">Disable PPU OAMADDR bug emulation</Control>
-			<Control ID="chkDisablePaletteRead">Disable PPU palette reads</Control>
-			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
-			<Control ID="chkUseNes101Hvc101Behavior">Use NES/HVC-101 (Top-loader / AV Famicom) behavior</Control>
 			<Control ID="chkMapperRandomPowerOnState">Randomize power-on state for mappers</Control>
 
 			<Control ID="lblRamPowerOnState">Default power on state for RAM:</Control>
@@ -396,17 +355,14 @@
 			<Control ID="chkMoviesOverride">Movies:</Control>
 
 			<Control ID="tpgAdvanced">Advanced</Control>
-			<Control ID="chkFdsAutoLoadDisk">Automatically insert disk 1 side A when starting FDS games</Control>
-			<Control ID="chkFdsFastForwardOnLoad">Automatically fast forward FDS games when disk or BIOS is loading</Control>
-			<Control ID="chkFdsAutoInsertDisk">Automatically switch disks for FDS games</Control>
-
 			<Control ID="chkShowFullPathInRecents">Show full file path in recent file list</Control>
 			<Control ID="chkShowFrameCounter">Show frame counter</Control>
 			<Control ID="chkShowGameTimer">Show game timer</Control>
 			<Control ID="chkShowVsConfigOnLoad">Show game configuration dialog when loading VS System games</Control>
 
+			<Control ID="lblAdvancedMisc">Miscellaneous Settings</Control>
 			<Control ID="lblRewind">Keep rewind data for the last</Control>
-			<Control ID="lblRewindMinutes">minutes (Memory Usage ≈1MB/min)</Control>
+			<Control ID="lblRewindMinutes">minutes (Memory Usage ≈5MB/min)</Control>
 
 			<Control ID="tpgShortcuts">Shortcut Keys</Control>
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
@@ -421,19 +377,6 @@
 			<Control ID="chkAutoSaveNotify">Notify when an automatic save state is saved</Control>
 			<Control ID="chkAllowMismatchingSaveStates">Allow save states to be loaded on modified ROMs (e.g IPS patches)</Control>
 
-			<Control ID="grpCloudSaves">Cloud Saves</Control>
-			<Control ID="lblGoogleDriveIntegration">Mesen can integrate with Google Drive to keep your save data in the cloud.  When Google Drive integration is enabled, your save data is easily accessible from any computer and is synced between computers.  Additionally, save data stored on Google Drive can be restored in the event it is erased from your computer.</Control>
-			<Control ID="lblIntegrationOK">Google Drive integration is active.</Control>
-			<Control ID="btnDisableIntegration">Disable Google Drive Integration</Control>
-			<Control ID="btnEnableIntegration">Enable Google Drive Integration</Control>
-			<Control ID="lblLastSync">Last Sync:</Control>
-			<Control ID="btnResync">Resync</Control>
-
-			<Control ID="lblVsDualSystem">VS. DualSystem Settings</Control>
-			<Control ID="lblVsDualPlayAudio">Play audio for:</Control>
-			<Control ID="lblVsDualShowVideo">Show video for:</Control>
-
-			<Control ID="lblFdsSettings">Famicom Disk System Settings</Control>
 			<Control ID="lblUiDisplaySettings">UI Display Settings</Control>
 			<Control ID="lblWindowSettings">Window Settings</Control>
 			<Control ID="chkDisableMouseResize">Do not allow the main window to be resized using the mouse</Control>
@@ -446,14 +389,6 @@
 			<Control ID="chkDisableOsd">Disable on-screen display (OSD)</Control>
 
 			<Control ID="chkAlwaysOnTop">Always display on top of other windows</Control>
-
-			<Control ID="tpgFdsNfs">FDS / VS / NSF</Control>
-			<Control ID="lblNsfSettings">NSF Settings</Control>
-			<Control ID="chkNsfAutoDetectSilence">Move to next track after</Control>
-			<Control ID="lblNsfMillisecondsOfSilence">milliseconds of silence</Control>
-			<Control ID="chkNsfMoveToNextTrackAfterTime">Limit track run time to</Control>
-			<Control ID="lblNsfSeconds">seconds</Control>
-			<Control ID="chkNsfEnableApuIrqs">Enable APU IRQs for NSF files</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -701,8 +636,6 @@
 			<Control ID="mnuKeyboard">Keyboard</Control>
 			<Control ID="mnuWasdLayout">WASD Layout</Control>
 			<Control ID="mnuArrowLayout">Arrow Keys Layout</Control>
-			<Control ID="mnuFceuxLayout">FCEUX Default</Control>
-			<Control ID="mnuNestopiaLayout">Nestopia Default</Control>
 			<Control ID="mnuXboxController">Xbox Controller</Control>
 			<Control ID="mnuXboxLayout1">Controller #1</Control>
 			<Control ID="mnuXboxLayout2">Controller #2</Control>
@@ -727,42 +660,8 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmExcitingBoxingConfig">
-		</Form>
-		<Form ID="frmFamilyBasicKeyboardConfig">
-		</Form>
-		<Form ID="frmJissenMahjongConfig">
-		</Form>
-		<Form ID="frmPartyTapConfig">
-		</Form>
-		<Form ID="frmPowerPadConfig">
-			<Control ID="chkUseSideA">Use side A</Control>
-		</Form>
-		<Form ID="frmSuborKeyboardConfig">
-		</Form>
-		<Form ID="frmPachinkoConfig">
-		</Form>
-		<Form ID="frmBandaiMicrophone">
-		</Form>
 	</Forms>
 	<UserControls>
-		<UserControl ID="ctrlExcitingBoxingConfig">
-			<Control ID="lblLeftHook">Left Hook</Control>
-			<Control ID="lblRightHook">Right Hook</Control>
-			<Control ID="lblLeftJab">Left Jab</Control>
-			<Control ID="lblRightJab">Right Jab</Control>
-			<Control ID="lblStraight">Straight</Control>
-			<Control ID="lblBody">Body</Control>
-			<Control ID="lblMoveLeft">Move Left</Control>
-			<Control ID="lblMoveRight">Move Right</Control>
-		</UserControl>
-		<UserControl ID="ctrlPachinkoConfig">
-			<Control ID="lblPress">Press</Control>
-			<Control ID="lblRelease">Release</Control>
-		</UserControl>
-		<UserControl ID="ctrlBandaiMicrophone">
-			<Control ID="lblMicrophone">Microphone</Control>
-		</UserControl>
 	</UserControls>
 	<Messages>
 		<Message ID="FilterAll">All Files (*.*)|*.*</Message>
@@ -833,10 +732,7 @@
 		<Message ID="EmptyState">&lt;empty&gt;</Message>
 		<Message ID="ErrorWhileCheckingUpdates">An error has occurred while trying to check for updates. Check your internet connection and try again.&#xA;&#xA;Error details:&#xA;{0}</Message>
 		<Message ID="AutoUpdateDisabledMessage">Automatic updates are not enabled on this build - please download the latest version of the code and recompile Mesen-S to get the latest updates.</Message>
-		<Message ID="FdsBiosNotFound">FDS bios not found. The bios is required to run FDS games.&#xA;&#xA;Select bios file now?</Message>
-		<Message ID="FdsDiskSide">Disk {0} Side {1}</Message>
 		<Message ID="FileNotFound">File not found: {0}</Message>
-		<Message ID="InvalidFdsBios">The selected bios file is invalid.</Message>
 
 		<Message ID="MesenUpToDate">You are running the latest version of Mesen-S.</Message>
 		<Message ID="PatchAndReset">Patch and reset the current game?</Message>
@@ -872,15 +768,6 @@
 		<Message ID="EmulatorShortcutMappings_PowerOff">Power Off</Message>
 		<Message ID="EmulatorShortcutMappings_Exit">Exit</Message>
 		<Message ID="EmulatorShortcutMappings_TakeScreenshot">Take Screenshot</Message>
-		<Message ID="EmulatorShortcutMappings_SwitchDiskSide">FDS - Switch Side</Message>
-		<Message ID="EmulatorShortcutMappings_InsertNextDisk">FDS - Insert Next Disk</Message>
-		<Message ID="EmulatorShortcutMappings_InsertCoin1">VS - Insert Coin 1</Message>
-		<Message ID="EmulatorShortcutMappings_InsertCoin2">VS - Insert Coin 2</Message>
-		<Message ID="EmulatorShortcutMappings_InsertCoin3">VS - Insert Coin 3 (DualSystem)</Message>
-		<Message ID="EmulatorShortcutMappings_InsertCoin4">VS - Insert Coin 4 (DualSystem)</Message>
-		<Message ID="EmulatorShortcutMappings_InputBarcode">Input Barcode</Message>
-		<Message ID="EmulatorShortcutMappings_VsServiceButton">VS - Service Button</Message>
-		<Message ID="EmulatorShortcutMappings_VsServiceButton2">VS - Service Button 2 (DualSystem)</Message>
 		<Message ID="EmulatorShortcutMappings_MoveToNextStateSlot">Select Next Save Slot</Message>
 		<Message ID="EmulatorShortcutMappings_MoveToPreviousStateSlot">Select Previous Save Slot</Message>
 		<Message ID="EmulatorShortcutMappings_SaveState">Save State</Message>
@@ -889,7 +776,6 @@
 		<Message ID="EmulatorShortcutMappings_ToggleAudio">Enable/Disable Audio</Message>
 		<Message ID="EmulatorShortcutMappings_RunSingleFrame">Run Single Frame</Message>
 
-		<Message ID="EmulatorShortcutMappings_EjectDisk">FDS - Eject Disk</Message>
 		<Message ID="EmulatorShortcutMappings_SetScale1x">Set Scale 1x</Message>
 		<Message ID="EmulatorShortcutMappings_SetScale2x">Set Scale 2x</Message>
 		<Message ID="EmulatorShortcutMappings_SetScale3x">Set Scale 3x</Message>
@@ -1006,32 +892,6 @@
 			<Value ID="Prescale6x">Prescale 6x</Value>
 			<Value ID="Prescale8x">Prescale 8x</Value>
 			<Value ID="Prescale10x">Prescale 10x</Value>
-		</Enum>
-		<Enum ID="VsDualOutputOption">
-			<Value ID="Both">Both</Value>
-			<Value ID="MasterOnly">Master Only</Value>
-			<Value ID="SlaveOnly">Slave Only</Value>
-		</Enum>
-		<Enum ID="ConsoleType">
-			<Value ID="Nes">NES</Value>
-			<Value ID="Famicom">Famicom</Value>
-		</Enum>
-		<Enum ID="VsInputType">
-			<Value ID="Default">Default</Value>
-			<Value ID="SwapControllers">Swap controllers</Value>
-			<Value ID="SwapAB">Swap A/B buttons</Value>
-		</Enum>
-		<Enum ID="PpuModel">
-			<Value ID="Ppu2C03">RP2C03</Value>
-			<Value ID="Ppu2C04A">RP2C04-0001</Value>
-			<Value ID="Ppu2C04B">RP2C04-0002</Value>
-			<Value ID="Ppu2C04C">RP2C04-0003</Value>
-			<Value ID="Ppu2C04D">RP2C04-0004</Value>
-			<Value ID="Ppu2C05A">RP2C05-01</Value>
-			<Value ID="Ppu2C05B">RP2C05-02</Value>
-			<Value ID="Ppu2C05C">RP2C05-03</Value>
-			<Value ID="Ppu2C05D">RP2C05-04</Value>
-			<Value ID="Ppu2C05E">RP2C05-05</Value>
 		</Enum>
 		<Enum ID="InputDisplayPosition">
 			<Value ID="TopLeft">Top Left</Value>

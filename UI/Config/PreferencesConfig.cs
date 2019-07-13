@@ -21,7 +21,7 @@ namespace Mesen.GUI.Config
 		public bool AssociateMsmFiles = false;
 		public bool AssociateMssFiles = false;
 
-		public UInt32 RewindBufferSize = 600;
+		public UInt32 RewindBufferSize = 30;
 
 		public bool AlwaysOnTop = false;
 		public bool AutoHideMenu = false;

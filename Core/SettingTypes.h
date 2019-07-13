@@ -272,7 +272,7 @@ struct PreferencesConfig
 	bool ShowDebugInfo = false;
 	bool DisableOsd = false;
 
-	uint32_t RewindBufferSize = 600;
+	uint32_t RewindBufferSize = 30;
 
 	const char* SaveFolderOverride = nullptr;
 	const char* SaveStateFolderOverride = nullptr;
