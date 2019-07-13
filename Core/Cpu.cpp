@@ -65,7 +65,7 @@ void Cpu::Exec()
 		case CpuStopState::Stopped:
 			//STP was executed, CPU no longer executes any code
 			#ifndef DUMMYCPU
-			_memoryManager->IncrementMasterClockValue<4>();
+			_memoryManager->IncMasterClock4();
 			#endif
 			return;
 
@@ -414,7 +414,7 @@ void Cpu::Idle()
 #ifndef DUMMYCPU
 	_memoryManager->SetCpuSpeed(6);
 	ProcessCpuCycle();
-	_memoryManager->IncrementMasterClockValue<6>();
+	_memoryManager->IncMasterClock6();
 #endif
 }
 

@@ -54,9 +54,12 @@ public:
 	void RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler* handler);
 
 	void GenerateMasterClockTable();
-	void IncrementMasterClock();
-	template<uint16_t value>
-	void IncrementMasterClockValue();
+
+	void IncMasterClock4();
+	void IncMasterClock6();
+	void IncMasterClock8();
+	void IncMasterClock40();
+	void IncMasterClockStartup();
 	void IncrementMasterClockValue(uint16_t value);
 
 	uint8_t Read(uint32_t addr, MemoryOperationType type);
@@ -85,13 +88,3 @@ public:
 
 	void Serialize(Serializer &s) override;
 };
-
-template<uint16_t value>
-void MemoryManager::IncrementMasterClockValue()
-{
-	uint16_t cyclesToRun = value;
-	while(cyclesToRun >= 2) {
-		cyclesToRun -= 2;
-		Exec();
-	}
-}

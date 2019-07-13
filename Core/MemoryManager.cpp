@@ -148,9 +148,40 @@ void MemoryManager::GenerateMasterClockTable()
 	}
 }
 
-void MemoryManager::IncrementMasterClock()
+void MemoryManager::IncMasterClock4()
 {
-	IncrementMasterClockValue(_cpuSpeed);
+	Exec();
+	Exec();
+}
+
+void MemoryManager::IncMasterClock6()
+{
+	Exec();
+	Exec();
+	Exec();
+}
+
+void MemoryManager::IncMasterClock8()
+{
+	Exec();
+	Exec();
+	Exec();
+	Exec();
+}
+
+void MemoryManager::IncMasterClock40()
+{
+	Exec(); Exec(); Exec(); Exec(); Exec();
+	Exec(); Exec(); Exec(); Exec(); Exec();
+	Exec(); Exec(); Exec(); Exec(); Exec();
+	Exec(); Exec(); Exec(); Exec(); Exec();
+}
+
+void MemoryManager::IncMasterClockStartup()
+{
+	for(int i = 0; i < 182 / 2; i++) {
+		Exec();
+	}
 }
 
 void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
@@ -204,7 +235,7 @@ void MemoryManager::Exec()
 		}
 
 		if(_hClock == _dramRefreshPosition) {
-			IncrementMasterClockValue<40>();
+			IncMasterClock40();
 			_cpu->IncreaseCycleCount<5>();
 		}
 	} else if((_hClock & 0x03) == 0) {
@@ -228,13 +259,13 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 	}
 	_console->ProcessCpuRead(addr, value, type);
 
-	IncrementMasterClockValue<4>();
+	IncMasterClock4();
 	return value;
 }
 
 uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 {
-	IncrementMasterClockValue<4>();
+	IncMasterClock4();
 
 	uint8_t value;
 	IMemoryHandler* handlers = _handlers[addr >> 12];
@@ -291,7 +322,7 @@ void MemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
 
 void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	IncrementMasterClock();
+	IncrementMasterClockValue(_cpuSpeed);
 
 	_console->ProcessCpuWrite(addr, value, type);
 	if(_handlers[addr >> 12]) {
@@ -303,7 +334,7 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 
 void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
-	IncrementMasterClockValue<4>();
+	IncMasterClock4();
 	_console->ProcessCpuWrite(addr, value, MemoryOperationType::DmaWrite);
 
 	IMemoryHandler* handlers = _handlers[addr >> 12];

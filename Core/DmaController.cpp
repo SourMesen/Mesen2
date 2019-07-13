@@ -45,7 +45,7 @@ void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool
 			_memoryManager->WriteDma(addressBusA, valToWrite, true);
 		} else {
 			//$2180->WRAM do cause a write to occur (but no read), but the value written is invalid
-			_memoryManager->IncrementMasterClockValue<4>();
+			_memoryManager->IncMasterClock4();
 			_memoryManager->WriteDma(addressBusA, 0xFF, true);
 		}
 	} else {
@@ -54,7 +54,7 @@ void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool
 			_memoryManager->WriteDma(addressBusB, valToWrite, false);
 		} else {
 			//WRAM->$2180 does not cause a write to occur
-			_memoryManager->IncrementMasterClockValue<8>();
+			_memoryManager->IncMasterClock8();
 		}
 	}
 }
@@ -66,7 +66,7 @@ void DmaController::RunDma(DmaChannelConfig &channel)
 	}
 
 	//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
-	_memoryManager->IncrementMasterClockValue<8>();
+	_memoryManager->IncMasterClock8();
 	ProcessPendingTransfers();
 
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
@@ -112,7 +112,7 @@ bool DmaController::InitHdmaChannels()
 	if(needSync) {
 		SyncStartDma();
 	}
-	_memoryManager->IncrementMasterClockValue<8>();
+	_memoryManager->IncMasterClock8();
 
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
@@ -127,7 +127,7 @@ bool DmaController::InitHdmaChannels()
 
 			//"2. Load $43xA (Line Counter and Repeat) from the table. I believe $00 will terminate this channel immediately."
 			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
-			_memoryManager->IncrementMasterClockValue<4>();
+			_memoryManager->IncMasterClock4();
 
 			ch.HdmaTableAddress++;
 			if(ch.HdmaLineCounterAndRepeat == 0) {
@@ -137,9 +137,9 @@ bool DmaController::InitHdmaChannels()
 			//3. Load Indirect Address, if necessary.
 			if(ch.HdmaIndirectAddressing) {
 				uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-				_memoryManager->IncrementMasterClockValue<4>();
+				_memoryManager->IncMasterClock4();
 				uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-				_memoryManager->IncrementMasterClockValue<4>();
+				_memoryManager->IncMasterClock4();
 				ch.TransferSize = (msb << 8) | lsb;
 			}
 		}
@@ -220,7 +220,7 @@ bool DmaController::ProcessHdmaChannels()
 	if(needSync) {
 		SyncStartDma();
 	}
-	_memoryManager->IncrementMasterClockValue<8>();
+	_memoryManager->IncMasterClock8();
 
 	uint8_t originalActiveChannel = _activeChannel;
 
@@ -262,7 +262,7 @@ bool DmaController::ProcessHdmaChannels()
 		//"a. Read the next byte from Address into $43xA (thus, into both Line Counter and Repeat)."
 		//This value is discarded if the line counter isn't 0
 		uint8_t newCounter = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
-		_memoryManager->IncrementMasterClockValue<4>();
+		_memoryManager->IncMasterClock4();
 
 		//5. If Line Counter is zero...
 		if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
@@ -275,15 +275,15 @@ bool DmaController::ProcessHdmaChannels()
 					//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
 					//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-					_memoryManager->IncrementMasterClockValue<4>();
+					_memoryManager->IncMasterClock4();
 					ch.TransferSize = (msb << 8);
 				} else {
 					//"If a new indirect address is required, 16 master cycles are taken to load it."
 					uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-					_memoryManager->IncrementMasterClockValue<4>();
+					_memoryManager->IncMasterClock4();
 					
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-					_memoryManager->IncrementMasterClockValue<4>();
+					_memoryManager->IncMasterClock4();
 
 					ch.TransferSize = (msb << 8) | lsb;
 				}				
@@ -347,7 +347,7 @@ bool DmaController::ProcessPendingTransfers()
 		_dmaPending = false;
 
 		SyncStartDma();
-		_memoryManager->IncrementMasterClockValue<8>();
+		_memoryManager->IncMasterClock8();
 		ProcessPendingTransfers();
 		
 		for(int i = 0; i < 8; i++) {
