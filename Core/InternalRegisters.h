@@ -10,7 +10,7 @@ class MemoryManager;
 class InternalRegisters final : public ISerializable
 {
 private:
-	shared_ptr<Console> _console;
+	Console* _console;
 	Ppu* _ppu;
 	MemoryManager* _memoryManager;
 
@@ -34,7 +34,7 @@ private:
 	uint16_t _controllerData[4];
 
 public:
-	InternalRegisters(shared_ptr<Console> console);
+	InternalRegisters(Console* console);
 
 	void Reset();
 

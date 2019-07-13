@@ -5,7 +5,7 @@
 #include "../Utilities/StringUtilities.h"
 #include "../Utilities/Serializer.h"
 
-BaseControlDevice::BaseControlDevice(shared_ptr<Console> console, uint8_t port, KeyMappingSet keyMappingSet)
+BaseControlDevice::BaseControlDevice(Console* console, uint8_t port, KeyMappingSet keyMappingSet)
 {
 	_console = console;
 	_port = port;

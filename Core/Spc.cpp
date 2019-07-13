@@ -7,10 +7,10 @@
 #include "SPC_DSP.h"
 #include "../Utilities/Serializer.h"
 
-Spc::Spc(shared_ptr<Console> console)
+Spc::Spc(Console* console)
 {
 	_console = console;
-	_memoryManager = console->GetMemoryManager();
+	_memoryManager = console->GetMemoryManager().get();
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];

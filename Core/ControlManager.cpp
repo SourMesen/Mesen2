@@ -13,7 +13,7 @@
 #include "EventType.h"
 #include "../Utilities/Serializer.h"
 
-ControlManager::ControlManager(shared_ptr<Console> console)
+ControlManager::ControlManager(Console* console)
 {
 	_console = console;
 	_inputConfigVersion = -1;
@@ -99,7 +99,7 @@ ControllerType ControlManager::GetControllerType(uint8_t port)
 	return _console->GetSettings()->GetInputConfig().Controllers[port].Type;
 }
 
-shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerType type, uint8_t port, shared_ptr<Console> console)
+shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerType type, uint8_t port, Console* console)
 {
 	shared_ptr<BaseControlDevice> device;
 	

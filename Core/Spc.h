@@ -26,8 +26,8 @@ private:
 	static constexpr int SampleBufferSize = 0x100000;
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
-	shared_ptr<Console> _console;
-	shared_ptr<MemoryManager> _memoryManager;
+	Console* _console;
+	MemoryManager* _memoryManager;
 	unique_ptr<SPC_DSP> _dsp;
 
 	double _clockRatio;
@@ -277,7 +277,7 @@ private:
 	void Exec();
 
 public:
-	Spc(shared_ptr<Console> console);
+	Spc(Console* console);
 	virtual ~Spc();
 
 	void Run();

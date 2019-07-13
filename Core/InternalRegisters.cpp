@@ -9,7 +9,7 @@
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
-InternalRegisters::InternalRegisters(shared_ptr<Console> console) : _aluMulDiv(console->GetCpu().get())
+InternalRegisters::InternalRegisters(Console* console) : _aluMulDiv(console->GetCpu().get())
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();

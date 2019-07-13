@@ -19,7 +19,7 @@ protected:
 public:
 	enum Buttons { ResetButton = 0, PowerButton = 1 };
 
-	SystemActionManager(shared_ptr<Console> console) : BaseControlDevice(console, BaseControlDevice::ConsoleInputPort)
+	SystemActionManager(Console* console) : BaseControlDevice(console, BaseControlDevice::ConsoleInputPort)
 	{
 	}
 
@@ -74,14 +74,13 @@ public:
 
 	void ProcessSystemActions()
 	{
-		shared_ptr<Console> console = _console;
-		if(console) {
+		if(_console) {
 			if(IsPressed(SystemActionManager::Buttons::ResetButton)) {
-				console->Reset();
-				console->GetControlManager()->UpdateInputState();
+				_console->Reset();
+				_console->GetControlManager()->UpdateInputState();
 			}
 			if(IsPressed(SystemActionManager::Buttons::PowerButton)) {
-				console->PowerCycle();
+				_console->PowerCycle();
 				//Calling PowerCycle() causes this object to be deleted - no code must be written below this line
 			}
 		}

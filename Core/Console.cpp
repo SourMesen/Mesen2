@@ -255,14 +255,14 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		UpdateRegion();
 
 		_memoryManager.reset(new MemoryManager());
-		_ppu.reset(new Ppu(shared_from_this()));
-		_controlManager.reset(new ControlManager(shared_from_this()));
+		_ppu.reset(new Ppu(this));
+		_controlManager.reset(new ControlManager(this));
 		_dmaController.reset(new DmaController(_memoryManager.get()));
-		_spc.reset(new Spc(shared_from_this()));
+		_spc.reset(new Spc(this));
 
 		_cpu.reset(new Cpu(this));
-		_internalRegisters.reset(new InternalRegisters(shared_from_this()));
-		_memoryManager->Initialize(shared_from_this());
+		_internalRegisters.reset(new InternalRegisters(this));
+		_memoryManager->Initialize(this);
 
 		if(_debugger) {
 			//Reset debugger if it was running before

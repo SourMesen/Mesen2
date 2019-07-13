@@ -19,9 +19,9 @@ private:
 	constexpr static int SpriteLayerIndex = 4;
 	constexpr static int ColorWindowIndex = 5;
 
-	shared_ptr<Console> _console;
-	shared_ptr<InternalRegisters> _regs;
-	shared_ptr<MemoryManager> _memoryManager;
+	Console* _console;
+	InternalRegisters* _regs;
+	MemoryManager* _memoryManager;
 
 	//Temporary data used for the tilemap/tile fetching
 	LayerData _layerData[4];
@@ -238,7 +238,7 @@ private:
 	uint16_t GetOamAddress();
 
 public:
-	Ppu(shared_ptr<Console> console);
+	Ppu(Console* console);
 	virtual ~Ppu();
 
 	void PowerOn();

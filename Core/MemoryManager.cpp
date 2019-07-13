@@ -14,15 +14,15 @@
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
-void MemoryManager::Initialize(shared_ptr<Console> console)
+void MemoryManager::Initialize(Console *console)
 {
 	_masterClock = 0;
 	_openBus = 0;
 	_cpuSpeed = 8;
 	_console = console;
 	_regs = console->GetInternalRegisters().get();
-	_cpu = console->GetCpu();
-	_ppu = console->GetPpu();
+	_cpu = console->GetCpu().get();
+	_ppu = console->GetPpu().get();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
 	_console->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
@@ -34,8 +34,8 @@ void MemoryManager::Initialize(shared_ptr<Console> console)
 	));
 	
 	_registerHandlerB.reset(new RegisterHandlerB(
-		_console.get(),
-		_ppu.get(),
+		_console,
+		_ppu,
 		console->GetSpc().get(),
 		_workRam
 	));

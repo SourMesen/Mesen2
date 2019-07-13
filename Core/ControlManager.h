@@ -25,7 +25,7 @@ private:
 	uint32_t _inputConfigVersion;
 
 protected:
-	shared_ptr<Console> _console;
+	Console* _console;
 	SimpleLock _deviceLock;
 	vector<shared_ptr<BaseControlDevice>> _controlDevices;
 	shared_ptr<SystemActionManager> _systemActionManager;
@@ -35,7 +35,7 @@ protected:
 	ControllerType GetControllerType(uint8_t port);
 
 public:
-	ControlManager(shared_ptr<Console> console);
+	ControlManager(Console* console);
 	virtual ~ControlManager();
 
 	void UpdateControlDevices();
@@ -56,7 +56,7 @@ public:
 	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);
 	vector<shared_ptr<BaseControlDevice>> GetControlDevices();
 	
-	static shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port, shared_ptr<Console> console);
+	static shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port, Console* console);
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);

@@ -40,7 +40,7 @@ protected:
 	}
 
 public:
-	SnesMouse(shared_ptr<Console> console, uint8_t port) : BaseControlDevice(console, port)
+	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console, port)
 	{
 	}
 

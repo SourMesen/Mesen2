@@ -28,7 +28,7 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 	{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
 };
 
-Ppu::Ppu(shared_ptr<Console> console)
+Ppu::Ppu(Console* console)
 {
 	_console = console;
 
@@ -53,8 +53,8 @@ Ppu::~Ppu()
 void Ppu::PowerOn()
 {
 	_skipRender = false;
-	_regs = _console->GetInternalRegisters();
-	_memoryManager = _console->GetMemoryManager();
+	_regs = _console->GetInternalRegisters().get();
+	_memoryManager = _console->GetMemoryManager().get();
 
 	_vblankStart = _overscanMode ? 240 : 225;
 	

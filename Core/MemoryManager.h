@@ -19,14 +19,14 @@ public:
 	constexpr static uint32_t WorkRamSize = 0x20000;
 
 private:
-	shared_ptr<Console> _console;
+	Console* _console;
 
 	shared_ptr<RegisterHandlerA> _registerHandlerA;
 	shared_ptr<RegisterHandlerB> _registerHandlerB;
 
 	InternalRegisters *_regs;
-	shared_ptr<Ppu> _ppu;
-	shared_ptr<Cpu> _cpu;
+	Ppu* _ppu;
+	Cpu* _cpu;
 
 	IMemoryHandler* _handlers[0x100 * 0x10];
 	vector<unique_ptr<RamHandler>> _workRamHandlers;
@@ -46,7 +46,7 @@ private:
 	void Exec();
 
 public:
-	void Initialize(shared_ptr<Console> console);
+	void Initialize(Console* console);
 	virtual ~MemoryManager();
 
 	void Reset();
