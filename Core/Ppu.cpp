@@ -456,7 +456,13 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_timeOver = false;
 			_console->ProcessEvent(EventType::StartFrame);
 
-			_skipRender = !_console->GetVideoRenderer()->IsRecording() && (_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150) && _frameSkipTimer.GetElapsedMS() < 10;
+			_skipRender = (
+				!_console->GetRewindManager()->IsRewinding() &&
+				!_console->GetVideoRenderer()->IsRecording() &&
+				(_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150) &&
+				_frameSkipTimer.GetElapsedMS() < 10
+			);
+
 			if(!_skipRender) {
 				//If we're not skipping this frame, reset the high resolution flag
 				_useHighResOutput = false;
@@ -1394,11 +1400,11 @@ void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 
 void Ppu::SendFrame()
 {
+	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+
 	if(_skipRender) {
 		return;
 	}
-
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	uint16_t width = _useHighResOutput ? 512 : 256;
 	uint16_t height = _useHighResOutput ? 478 : 239;
