@@ -1085,7 +1085,13 @@ void Ppu::RenderTilemapMode7()
 	int32_t vScroll = ((int32_t)_mode7.VScrollLatch << 19) >> 19;
 	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
 	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
-	uint16_t realY = _mode7.VerticalMirroring ? (255 - (_scanline + 1)) : (_scanline + 1);
+	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
+
+	if(applyMosaic) {
+		//Keep the "scanline" to what it was at the start of this mosaic block
+		realY -= _mosaicSize - _mosaicScanlineCounter;
+	}
+	uint8_t mosaicCounter = applyMosaic ? _mosaicSize - (_drawStartX % _mosaicSize) : 0;
 
 	int32_t xValue = (
 		((_mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
@@ -1154,6 +1160,16 @@ void Ppu::RenderTilemapMode7()
 			colorIndex = (color & 0x7F);
 		} else {
 			colorIndex = _vram[((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07))] >> 8;
+		}
+
+		if(applyMosaic) {
+			if(mosaicCounter == _mosaicSize) {
+				mosaicCounter = 1;
+				_mosaicColor[layerIndex] = colorIndex;
+			} else {
+				mosaicCounter++;
+				colorIndex = _mosaicColor[layerIndex];
+			}
 		}
 
 		if(colorIndex > 0) {
