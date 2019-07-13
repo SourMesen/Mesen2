@@ -870,6 +870,9 @@ void Ppu::RenderSprites()
 		return;
 	}
 
+	bool drawMain = (bool)(((_mainScreenLayers & _configVisibleLayers) >> Ppu::SpriteLayerIndex) & 0x01);
+	bool drawSub = (bool)(((_subScreenLayers & _configVisibleLayers) >> Ppu::SpriteLayerIndex) & 0x01);
+
 	uint8_t mainWindowCount = 0;
 	uint8_t subWindowCount = 0;
 	if(_windowMaskMain[Ppu::SpriteLayerIndex]) {
@@ -881,16 +884,18 @@ void Ppu::RenderSprites()
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(_spritePriority[x] == priority) {
-			if(!_rowPixelFlags[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(mainWindowCount, x)) {
+			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(mainWindowCount, x)) {
 				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
 				_mainScreenBuffer[x] = _cgram[paletteRamOffset];
-				_rowPixelFlags[x] |= PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
+				_rowPixelFlags[x] = PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
+				_pixelsDrawn++;
 			}
 
-			if(!_subScreenFilled[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(subWindowCount, x)) {
+			if(drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(subWindowCount, x)) {
 				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
 				_subScreenBuffer[x] = _cgram[paletteRamOffset];
 				_subScreenFilled[x] = true;
+				_subPixelsDrawn++;
 			}
 		}
 	}
