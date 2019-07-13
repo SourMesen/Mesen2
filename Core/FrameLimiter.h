@@ -14,6 +14,7 @@ public:
 	{
 		_delay = delay;
 		_targetTime = _delay;
+		_resetRunTimers = false;
 	}
 
 	void SetDelay(double delay)

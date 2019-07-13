@@ -12,6 +12,7 @@ namespace CartFlags
 {
 	enum CartFlags
 	{
+		None = 0,
 		LoRom = 1,
 		HiRom = 2,
 		FastRom = 4,
@@ -28,9 +29,9 @@ private:
 
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
-	SnesCartInformation _cartInfo;
+	SnesCartInformation _cartInfo = {};
 
-	CartFlags::CartFlags _flags;
+	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	string _romPath;
 	string _patchPath;
 

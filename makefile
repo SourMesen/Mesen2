@@ -110,7 +110,7 @@ testhelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o testhelper TestHelper/*.cpp InteropDLL/ConsoleWrapper.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	mv testhelper TestHelper/$(OBJFOLDER)
 
-pgohelper:
+pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	
 SevenZip/$(OBJFOLDER)/%.o: SevenZip/%.c

@@ -31,7 +31,7 @@ private:
 
 	uint8_t _ioPortOutput = 0;
 
-	uint16_t _controllerData[4];
+	uint16_t _controllerData[4] = {};
 
 public:
 	InternalRegisters(Console* console);

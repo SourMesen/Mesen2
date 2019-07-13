@@ -24,7 +24,7 @@ private:
 	MemoryManager* _memoryManager;
 
 	//Temporary data used for the tilemap/tile fetching
-	LayerData _layerData[4];
+	LayerData _layerData[4] = {};
 	uint16_t _hOffset = 0;
 	uint16_t _vOffset = 0;
 	uint16_t _fetchBgStart = 0;

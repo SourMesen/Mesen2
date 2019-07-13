@@ -33,9 +33,6 @@ Ppu::Ppu(Console* console)
 	_console = console;
 
 	_vram = new uint16_t[Ppu::VideoRamSize >> 1];
-	_console->GetSettings()->InitializeRam(_vram, Ppu::VideoRamSize);
-	_console->GetSettings()->InitializeRam(_cgram, Ppu::CgRamSize);
-	_console->GetSettings()->InitializeRam(_oamRam, Ppu::SpriteRamSize);
 
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];
@@ -67,9 +64,9 @@ void Ppu::PowerOn()
 
 	_cgramAddress = 0;
 
-	memset(_vram, 0, Ppu::VideoRamSize);
-	memset(_oamRam, 0, Ppu::SpriteRamSize);
-	memset(_cgram, 0, Ppu::CgRamSize);
+	_console->GetSettings()->InitializeRam(_vram, Ppu::VideoRamSize);
+	_console->GetSettings()->InitializeRam(_cgram, Ppu::CgRamSize);
+	_console->GetSettings()->InitializeRam(_oamRam, Ppu::SpriteRamSize);
 
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
@@ -462,7 +459,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 				(_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150) &&
 				_frameSkipTimer.GetElapsedMS() < 10
 			);
-
 			if(!_skipRender) {
 				//If we're not skipping this frame, reset the high resolution flag
 				_useHighResOutput = false;

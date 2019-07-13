@@ -73,6 +73,8 @@ void Console::Run()
 	if(!_cpu) {
 		return;
 	}
+	
+	auto emulationLock = _emulationLock.AcquireSafe();
 
 	DebugStats stats(this);
 	Timer lastFrameTimer;
@@ -160,7 +162,7 @@ void Console::Stop(bool sendNotification)
 		debugger->Run();
 	}
 
-	_runLock.WaitForRelease();
+	_emulationLock.WaitForRelease();
 
 	if(_cart) {
 		RomInfo romInfo = _cart->GetRomInfo();

@@ -32,12 +32,12 @@ private:
 	vector<unique_ptr<RamHandler>> _workRamHandlers;
 
 	uint8_t *_workRam;
-	uint64_t _masterClock;
+	uint64_t _masterClock = 0;
 	uint16_t _hClock = 0;
 	uint16_t _dramRefreshPosition = 0;
 	uint16_t _hdmaInitPosition = 0;
-	uint8_t _openBus;
-	uint8_t _cpuSpeed;
+	uint8_t _openBus = 0;
+	uint8_t _cpuSpeed = 8;
 
 	bool _hasEvent[1369];
 	uint8_t _masterClockTable[2][0x10000];
