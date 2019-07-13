@@ -163,15 +163,16 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 		hScroll >>= 1;
 	}
 
-	uint16_t scanline = _scanline;
-	if(_mosaicEnabled & (1 << layerIndex)) {
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+
+	if(_mosaicEnabled && (_mosaicEnabled & (1 << layerIndex))) {
 		//Keep the "scanline" to what it was at the start of this mosaic block
-		scanline -= _mosaicSize - _mosaicScanlineCounter;
+		realY -= _mosaicSize - _mosaicScanlineCounter;
+		if(IsDoubleHeight()) {
+			realY -= _mosaicSize - _mosaicScanlineCounter;
+		}
 	}
 
-	/* Current scanline (in interlaced mode, switches between even and odd rows every frame */
-	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
-	
 	/* The current row of tiles (e.g scanlines 16-23 is row 2) */
 	uint16_t row = (realY + vScroll) >> (config.LargeTiles ? 4 : 3);
 
@@ -207,13 +208,15 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 	bool vMirror = (tilemapData & 0x8000) != 0;
 	bool hMirror = (tilemapData & 0x4000) != 0;
 
-	uint16_t scanline = _scanline;
+	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
+
 	if(_mosaicEnabled && (_mosaicEnabled & (1 << layerIndex))) {
 		//Keep the "scanline" to what it was at the start of this mosaic block
-		scanline -= _mosaicSize - _mosaicScanlineCounter;
+		realY -= _mosaicSize - _mosaicScanlineCounter;
+		if(IsDoubleHeight()) {
+			realY -= _mosaicSize - _mosaicScanlineCounter + (_oddFrame ? 1 : 0);
+		}
 	}
-
-	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : scanline;
 
 	bool useSecondTile = secondTile;
 	if(!hiResMode && config.LargeTiles) {
@@ -956,20 +959,27 @@ void Ppu::RenderTilemap()
 			color = GetTilePixelColor<bpp>(chrData, shift);
 		}
 
+		uint8_t paletteIndex = (tilemapData >> 10) & 0x07;
+
 		if(applyMosaic) {
 			if(mosaicCounter == _mosaicSize) {
 				mosaicCounter = 1;
-				rgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>((tilemapData >> 10) & 0x07, color);
-				_mosaicColor[layerIndex] = (rgbColor << 8) | color;
+				if(hiResMode) {
+					color = hiresSubColor;
+				}
+				_mosaicColor[layerIndex] = (paletteIndex << 8) | color;
 			} else {
 				mosaicCounter++;
 				color = _mosaicColor[layerIndex] & 0xFF;
-				rgbColor = _mosaicColor[layerIndex] >> 8;
-			}
+				paletteIndex = _mosaicColor[layerIndex] >> 8;
+				if(hiResMode) {
+					hiresSubColor = color;
+				}
+			}			
 		}
 
 		if(color > 0) {
-			rgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>((tilemapData >> 10) & 0x07, color);
+			rgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>(paletteIndex, color);
 			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
 				/* Keeps track of whether or not the pixel is allowed to participate in color math */
 				DrawMainPixel(x, rgbColor, pixelFlags);
@@ -981,7 +991,7 @@ void Ppu::RenderTilemap()
 
 		if(hiResMode) {
 			if(hiresSubColor > 0 && drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
-				uint16_t hiresSubRgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>((tilemapData >> 10) & 0x07, hiresSubColor);
+				uint16_t hiresSubRgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>(paletteIndex, hiresSubColor);
 				DrawSubPixel(x, hiresSubRgbColor);
 			}
 		}
