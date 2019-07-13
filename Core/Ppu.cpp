@@ -1101,18 +1101,26 @@ void Ppu::RenderTilemapMode7()
 		(centerY << 8)
 	);
 
-	xValue += _mode7.Matrix[0] * _drawStartX;
-	yValue += _mode7.Matrix[2] * _drawStartX;
+	int16_t xStep = _mode7.Matrix[0];
+	int16_t yStep = _mode7.Matrix[2];
+	if(_mode7.HorizontalMirroring) {
+		//Calculate the value at the end of the scanline, and then start going backwards
+		xValue += xStep * _drawEndX;
+		yValue += yStep * _drawEndX;
+		xStep = -xStep;
+		yStep = -yStep;
+	}
+
+	xValue += xStep * _drawStartX;
+	yValue += yStep * _drawStartX;
 	
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
-		uint16_t realX = _mode7.HorizontalMirroring ? (255 - x) : x;
-
 		int32_t xOffset = xValue >> 8;
 		int32_t yOffset = yValue >> 8;
-		xValue += _mode7.Matrix[0];
-		yValue += _mode7.Matrix[2];
+		xValue += xStep;
+		yValue += yStep;
 		
 		if(_rowPixelFlags[x] && _subScreenFilled[x]) {
 			continue;
@@ -1156,11 +1164,11 @@ void Ppu::RenderTilemapMode7()
 				paletteColor = _cgram[colorIndex];
 			}
 			
-			if(drawMain && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
+			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
 				DrawMainPixel(x, paletteColor, pixelFlags);
 			} 
 
-			if(drawSub && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
+			if(drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
 				DrawSubPixel(x, paletteColor);
 			}
 		}
