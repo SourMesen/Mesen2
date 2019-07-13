@@ -915,6 +915,7 @@ void Ppu::RenderTilemap()
 	uint8_t lookupIndex;
 	uint8_t chrDataOffset;
 	uint8_t hiresSubColor;
+	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(hiResMode) {
@@ -966,7 +967,6 @@ void Ppu::RenderTilemap()
 			rgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>((tilemapData >> 10) & 0x07, color);
 			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
 				/* Keeps track of whether or not the pixel is allowed to participate in color math */
-				uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 				DrawMainPixel(x, rgbColor, pixelFlags);
 			}
 			if(!hiResMode && drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
@@ -1190,7 +1190,7 @@ void Ppu::ApplyColorMath()
 
 void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool isInsideWindow)
 {
-	uint8_t halfShift = _colorMathHalveResult ? 1 : 0;
+	uint8_t halfShift = (uint8_t)_colorMathHalveResult;
 
 	//Set color to black as needed based on clip mode
 	switch(_colorMathClipMode) {
@@ -1252,18 +1252,19 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 		otherPixel = _fixedColor;
 	}
 
+	constexpr unsigned int mask = 0x1F;
 	if(_colorMathSubstractMode) {
-		uint16_t r = std::max((pixelA & 0x001F) - (otherPixel & 0x001F), 0) >> halfShift;
-		uint16_t g = std::max(((pixelA >> 5) & 0x001F) - ((otherPixel >> 5) & 0x001F), 0) >> halfShift;
-		uint16_t b = std::max(((pixelA >> 10) & 0x001F) - ((otherPixel >> 10) & 0x001F), 0) >> halfShift;
+		uint16_t r = std::max((int)((pixelA & mask) - (otherPixel & mask)), 0) >> halfShift;
+		uint16_t g = std::max((int)(((pixelA >> 5U) & mask) - ((otherPixel >> 5U) & mask)), 0) >> halfShift;
+		uint16_t b = std::max((int)(((pixelA >> 10U) & mask) - ((otherPixel >> 10U) & mask)), 0) >> halfShift;
 
-		pixelA = r | (g << 5) | (b << 10);
+		pixelA = r | (g << 5U) | (b << 10U);
 	} else {
-		uint16_t r = std::min(((pixelA & 0x001F) + (otherPixel & 0x001F)) >> halfShift, 0x1F);
-		uint16_t g = std::min((((pixelA >> 5) & 0x001F) + ((otherPixel >> 5) & 0x001F)) >> halfShift, 0x1F);
-		uint16_t b = std::min((((pixelA >> 10) & 0x001F) + ((otherPixel >> 10) & 0x001F)) >> halfShift, 0x1F);
+		uint16_t r = std::min(((pixelA & mask) + (otherPixel & mask)) >> halfShift, mask);
+		uint16_t g = std::min((((pixelA >> 5U) & mask) + ((otherPixel >> 5U) & mask)) >> halfShift, mask);
+		uint16_t b = std::min((((pixelA >> 10U) & mask) + ((otherPixel >> 10U) & mask)) >> halfShift, mask);
 
-		pixelA = r | (g << 5) | (b << 10);
+		pixelA = r | (g << 5U) | (b << 10U);
 	}
 }
 
