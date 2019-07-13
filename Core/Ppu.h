@@ -228,6 +228,15 @@ private:
 	bool IsDoubleHeight();
 	bool IsDoubleWidth();
 
+	void EvaluateNextLineSprites();
+	void FetchSpriteData();
+	void FetchSpritePosition(uint16_t oamAddress);
+	void FetchSpriteAttributes(uint16_t oamAddress);
+	void FetchSpriteTile(bool secondCycle);
+
+	void UpdateOamAddress();
+	uint16_t GetOamAddress();
+
 public:
 	Ppu(shared_ptr<Console> console);
 	virtual ~Ppu();
@@ -235,11 +244,6 @@ public:
 	void PowerOn();
 	void Reset();
 
-	void EvaluateNextLineSprites();
-	void FetchSpriteData();
-	void FetchSpritePosition(uint16_t oamAddress);
-	void FetchSpriteAttributes(uint16_t oamAddress);
-	void FetchSpriteTile(bool secondCycle);
 	void RenderScanline();
 
 	uint32_t GetFrameCount();
@@ -260,9 +264,6 @@ public:
 
 	void LatchLocationValues();
 	
-	void UpdateOamAddress();
-	uint16_t GetOamAddress();
-
 	uint8_t Read(uint16_t addr);
 	void Write(uint32_t addr, uint8_t value);
 

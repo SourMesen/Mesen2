@@ -1064,46 +1064,43 @@ void Ppu::RenderTilemapMode7()
 		_mode7.VScrollLatch = _mode7.VScroll;
 	}
 
-	int32_t lutX[256];
-	int32_t lutY[256];
-
 	int32_t hScroll = ((int32_t)_mode7.HScrollLatch << 19) >> 19;
 	int32_t vScroll = ((int32_t)_mode7.VScrollLatch << 19) >> 19;
 	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
 	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
 	uint16_t realY = _mode7.VerticalMirroring ? (255 - (_scanline + 1)) : (_scanline + 1);
 
-	lutX[0] = (
+	int32_t xValue = (
 		((_mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
 		((_mode7.Matrix[1] * realY) & ~63) +
 		((_mode7.Matrix[1] * clip(vScroll - centerY)) & ~63) +
 		(centerX << 8)
 	);
 
-	lutY[0] = (
+	int32_t yValue = (
 		((_mode7.Matrix[2] * clip(hScroll - centerX)) & ~63) +
 		((_mode7.Matrix[3] * realY) & ~63) +
 		((_mode7.Matrix[3] * clip(vScroll - centerY)) & ~63) +
 		(centerY << 8)
 	);
 
-	for(int x = 1; x < 256; x++) {
-		lutX[x] = lutX[x - 1] + _mode7.Matrix[0];
-		lutY[x] = lutY[x - 1] + _mode7.Matrix[2];
-	}
+	xValue += _mode7.Matrix[0] * _drawStartX;
+	yValue += _mode7.Matrix[2] * _drawStartX;
 	
 	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		uint16_t realX = _mode7.HorizontalMirroring ? (255 - x) : x;
 
+		int32_t xOffset = xValue >> 8;
+		int32_t yOffset = yValue >> 8;
+		xValue += _mode7.Matrix[0];
+		yValue += _mode7.Matrix[2];
+		
 		if(_rowPixelFlags[x] && _subScreenFilled[x]) {
 			continue;
 		}
-
-		int32_t xOffset = (lutX[realX] >> 8);
-		int32_t yOffset = (lutY[realX] >> 8);
-
+		
 		uint8_t tileIndex;
 		if(!_mode7.LargeMap) {
 			yOffset &= 0x3FF;
