@@ -41,7 +41,7 @@ struct TileData
 struct LayerData
 {
 	TileData Tiles[33];
-	bool HasPriorityTiles;
+	uint8_t HasPriorityTiles;
 };
 
 struct LayerConfig

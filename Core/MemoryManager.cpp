@@ -156,12 +156,12 @@ void MemoryManager::IncrementMasterClock()
 void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 {
 	switch(cyclesToRun) {
-		case 12: cyclesToRun -= 2; Exec();
-		case 10: cyclesToRun -= 2; Exec();
-		case 8: cyclesToRun -= 2; Exec();
-		case 6: cyclesToRun -= 2; Exec();
-		case 4: cyclesToRun -= 2; Exec();
-		case 2: cyclesToRun -= 2; Exec();
+		case 12: Exec();
+		case 10: Exec();
+		case 8: Exec();
+		case 6: Exec();
+		case 4: Exec();
+		case 2: Exec();
 	}
 }
 
