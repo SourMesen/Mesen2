@@ -66,18 +66,12 @@ NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console)
 	MemoryManager* mm = console->GetMemoryManager().get();
 	if(console->GetCartridge()->GetCartFlags() & CartFlags::LoRom) {
 		dsp = new NecDsp(console, biosData, 0x4000);
-
-		for(int i = 0x30; i <= 0x3F; i++) {
-			mm->RegisterHandler((i << 16) | 0x8000, (i << 16) | 0xFFFF, dsp);
-			mm->RegisterHandler(((i + 0x80) << 16) | 0x8000, ((i + 0x80) << 16) | 0xFFFF, dsp);
-		}
+		mm->RegisterHandler(0x30, 0x3F, 0x8000, 0xFFFF, dsp);
+		mm->RegisterHandler(0xB0, 0xBF, 0x8000, 0xFFFF, dsp);
 	} else if(console->GetCartridge()->GetCartFlags() & CartFlags::HiRom) {
 		dsp = new NecDsp(console, biosData, 0x1000);
-
-		for(int i = 0; i <= 0x1F; i++) {
-			mm->RegisterHandler((i << 16) | 0x6000, (i << 16) | 0x7FFF, dsp);
-			mm->RegisterHandler(((i + 0x80) << 16) | 0x6000, ((i + 0x80) << 16) | 0x7FFF, dsp);
-		}
+		mm->RegisterHandler(0x00, 0x1F, 0x6000, 0x7FFF, dsp);
+		mm->RegisterHandler(0x80, 0x9F, 0x6000, 0x7FFF, dsp);
 	}
 	return dsp;
 }

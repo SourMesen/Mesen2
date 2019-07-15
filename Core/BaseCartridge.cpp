@@ -262,35 +262,6 @@ void BaseCartridge::SaveBattery()
 	}
 }
 
-void BaseCartridge::MapBanks(MemoryManager &mm, vector<unique_ptr<IMemoryHandler>> &handlers, uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, uint16_t pageIncrement, bool mirror, uint16_t startPageNumber)
-{
-	if(handlers.empty()) {
-		return;
-	}
-
-	while(startPageNumber >= handlers.size()) {
-		startPageNumber -= (uint32_t)handlers.size();
-	}
-
-	uint32_t pageNumber = startPageNumber;
-	for(uint32_t i = startBank; i <= endBank; i++) {
-		uint32_t baseAddress = i << 16;
-		pageNumber += pageIncrement;
-		for(uint32_t j = startPage; j <= endPage; j++) {
-			mm.RegisterHandler(baseAddress + (j * 0x1000), (baseAddress + (j * 0x1000)) | 0xFFF, handlers[pageNumber].get());
-			//MessageManager::Log("Map [$" + HexUtilities::ToHex(i) + ":" + HexUtilities::ToHex(j)[1] + "xxx] to page number " + HexUtilities::ToHex(pageNumber));
-			pageNumber++;
-			if(pageNumber >= handlers.size()) {
-				if(mirror) {
-					pageNumber = 0;
-				} else {
-					return;
-				}
-			}
-		}
-	}
-}
-
 void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 {
 	for(uint32_t i = 0; i < _prgRomSize; i += 0x1000) {
@@ -320,41 +291,41 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	}
 
 	if(_flags & CartFlags::LoRom) {
-		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
-		MapBanks(mm, _prgRomHandlers, 0x80, 0xFF, 0x08, 0x0F, 0, true);
+		mm.RegisterHandler(0x00, 0x7D, 0x8000, 0xFFFF, _prgRomHandlers);
+		mm.RegisterHandler(0x80, 0xFF, 0x8000, 0xFFFF, _prgRomHandlers);
 
 		if(_saveRamSize > 0) {
 			if(_prgRomSize >= 1024 * 1024 * 2) {
 				//For games >= 2mb in size, put ROM at 70-7D/F0-FF:0000-7FFF (e.g: Fire Emblem: Thracia 776) 
-				MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
-				MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+				mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
+				mm.RegisterHandler(0xF0, 0xFF, 0x0000, 0x7FFF, _saveRamHandlers);
 			} else {
 				//For games < 2mb in size, put save RAM at 70-7D/F0-FF:0000-FFFF (e.g: Wanderers from Ys) 
-				MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x0F, 0, true);
-				MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x0F, 0, true);
+				mm.RegisterHandler(0x70, 0x7D, 0x0000, 0xFFFF, _saveRamHandlers);
+				mm.RegisterHandler(0xF0, 0xFF, 0x0000, 0xFFFF, _saveRamHandlers);
 			}
 		}
 	} else if(_flags & CartFlags::HiRom) {
-		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true);
-		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true);
-		MapBanks(mm, _prgRomHandlers, 0x80, 0xBF, 0x08, 0x0F, 8, true);
-		MapBanks(mm, _prgRomHandlers, 0xC0, 0xFF, 0x00, 0x0F, 0, true);
+		mm.RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, _prgRomHandlers, 8);
+		mm.RegisterHandler(0x40, 0x7D, 0x0000, 0xFFFF, _prgRomHandlers, 0);
+		mm.RegisterHandler(0x80, 0xBF, 0x8000, 0xFFFF, _prgRomHandlers, 8);
+		mm.RegisterHandler(0xC0, 0xFF, 0x0000, 0xFFFF, _prgRomHandlers, 0);
 
-		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
+		mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
+		mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 	} else if(_flags & CartFlags::ExHiRom) {
 		//First half is at the end
-		MapBanks(mm, _prgRomHandlers, 0xC0, 0xFF, 0x00, 0x0F, 0, true);
-		MapBanks(mm, _prgRomHandlers, 0x80, 0xBF, 0x08, 0x0F, 8, true); //mirror
+		mm.RegisterHandler(0xC0, 0xFF, 0x0000, 0xFFFF, _prgRomHandlers, 0);
+		mm.RegisterHandler(0x80, 0xBF, 0x8000, 0xFFFF, _prgRomHandlers, 8); //mirror
 
 		//Last part of the ROM is at the start
-		MapBanks(mm, _prgRomHandlers, 0x40, 0x7D, 0x00, 0x0F, 0, true, 0x400);
-		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 8, true, 0x400); //mirror
+		mm.RegisterHandler(0x40, 0x7D, 0x0000, 0xFFFF, _prgRomHandlers, 0, 0x400);
+		mm.RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, _prgRomHandlers, 8, 0x400); //mirror
 
 		//Save RAM
-		MapBanks(mm, _saveRamHandlers, 0x20, 0x3F, 0x06, 0x07, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
+		mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
+		mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
+		mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 	}
 
 	InitCoprocessor(mm);
@@ -372,26 +343,26 @@ bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
 	string code = GetGameCode();
 	if(GetCartName() == "DEZAEMON") {
 		//LOROM with mirrored SRAM?
-		MapBanks(mm, _prgRomHandlers, 0x00, 0x7D, 0x08, 0x0F, 0, true);
-		MapBanks(mm, _prgRomHandlers, 0x80, 0xFF, 0x08, 0x0F, 0, true);
+		mm.RegisterHandler(0x00, 0x7D, 0x8000, 0xFFFF, _prgRomHandlers);
+		mm.RegisterHandler(0x80, 0xFF, 0x8000, 0xFFFF, _prgRomHandlers);
 
-		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x08, 0x0F, 0, true);
+		mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
+		mm.RegisterHandler(0xF0, 0xFF, 0x8000, 0xFFFF, _saveRamHandlers);
 
 		//Mirrors
-		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x08, 0x0F, 0, true);
-		MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+		mm.RegisterHandler(0x70, 0x7D, 0x8000, 0xFFFF, _saveRamHandlers);
+		mm.RegisterHandler(0xF0, 0xFF, 0x0000, 0x7FFF, _saveRamHandlers);
 
 		return true;
 	} else if(code == "ZDBJ" || code == "ZR2J" || code == "ZSNJ") {
 		//BSC-1A5M-02, BSC-1A7M-01
 		//Games: Sound Novel Tsukuuru, RPG Tsukuuru, Derby Stallion 96
-		MapBanks(mm, _prgRomHandlers, 0x00, 0x3F, 0x08, 0x0F, 0, true);
-		MapBanks(mm, _prgRomHandlers, 0x80, 0x9F, 0x08, 0x0F, 0, true, 0x200);
-		MapBanks(mm, _prgRomHandlers, 0xA0, 0xBF, 0x08, 0x0F, 0, true, 0x100);
+		mm.RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, _prgRomHandlers);
+		mm.RegisterHandler(0x80, 0x9F, 0x8000, 0xFFFF, _prgRomHandlers, 0, 0x200);
+		mm.RegisterHandler(0xA0, 0xBF, 0x8000, 0xFFFF, _prgRomHandlers, 0, 0x100);
 		if(_saveRamSize > 0) {
-			MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
-			MapBanks(mm, _saveRamHandlers, 0xF0, 0xFF, 0x00, 0x07, 0, true);
+			mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
+			mm.RegisterHandler(0xF0, 0xFF, 0x0000, 0x7FFF, _saveRamHandlers);
 		}
 		return true;
 	}

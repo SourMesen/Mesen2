@@ -51,26 +51,20 @@ void MemoryManager::Initialize(Console *console)
 
 	for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, MemoryManager::WorkRamSize, SnesMemoryType::WorkRam)));
-		RegisterHandler(0x7E0000 | i, 0x7E0000 | (i + 0xFFF), _workRamHandlers[_workRamHandlers.size() - 1].get());
 	}
 
-	for(int i = 0; i <= 0x3F; i++) {
-		RegisterHandler((i << 16) | 0x2000, (i << 16) | 0x2FFF, _registerHandlerB.get());
-		RegisterHandler(((i | 0x80) << 16) | 0x2000, ((i | 0x80) << 16) | 0x2FFF, _registerHandlerB.get());
+	RegisterHandler(0x7E, 0x7F, 0x0000, 0xFFFF, _workRamHandlers);
 
-		RegisterHandler((i << 16) | 0x4000, (i << 16) | 0x4FFF, _registerHandlerA.get());
-		RegisterHandler(((i | 0x80) << 16) | 0x4000, ((i | 0x80) << 16) | 0x4FFF, _registerHandlerA.get());
-	}
+	RegisterHandler(0x00, 0x3F, 0x2000, 0x2FFF, _registerHandlerB.get());
+	RegisterHandler(0x80, 0xBF, 0x2000, 0x2FFF, _registerHandlerB.get());
 
-	for(int i = 0; i <= 0x3F; i++) {
-		RegisterHandler((i << 16) | 0x0000, (i << 16) | 0x0FFF, _workRamHandlers[0].get());
-		RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
-	}
+	RegisterHandler(0x00, 0x3F, 0x4000, 0x4FFF, _registerHandlerA.get());
+	RegisterHandler(0x80, 0xBF, 0x4000, 0x4FFF, _registerHandlerA.get());
 
-	for(int i = 0x80; i <= 0xBF; i++) {
-		RegisterHandler((i << 16) | 0x0000, (i << 16) | 0x0FFF, _workRamHandlers[0].get());
-		RegisterHandler((i << 16) | 0x1000, (i << 16) | 0x1FFF, _workRamHandlers[1].get());
-	}
+	RegisterHandler(0x00, 0x3F, 0x0000, 0x0FFF, _workRamHandlers[0].get());
+	RegisterHandler(0x80, 0xBF, 0x0000, 0x0FFF, _workRamHandlers[0].get());
+	RegisterHandler(0x00, 0x3F, 0x1000, 0x1FFF, _workRamHandlers[1].get());
+	RegisterHandler(0x80, 0xBF, 0x1000, 0x1FFF, _workRamHandlers[1].get());
 
 	console->GetCartridge()->RegisterHandlers(*this);
 
@@ -90,18 +84,46 @@ void MemoryManager::Reset()
 	UpdateEvents();
 }
 
-void MemoryManager::RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler * handler)
+void MemoryManager::RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, vector<unique_ptr<IMemoryHandler>> &handlers, uint16_t pageIncrement, uint16_t startPageNumber)
 {
-	if((startAddr & 0xFFF) != 0 || (endAddr & 0xFFF) != 0xFFF) {
+	if(handlers.empty()) {
+		return;
+	}
+
+	while(startPageNumber >= handlers.size()) {
+		startPageNumber -= (uint32_t)handlers.size();
+	}
+
+	uint32_t pageNumber = startPageNumber;
+	for(uint32_t i = startBank; i <= endBank; i++) {
+		uint32_t baseAddress = i << 16;
+		pageNumber += pageIncrement;
+		for(uint32_t j = startPage; j <= endPage; j+=0x1000) {
+			_handlers[(i << 4) | (j >> 12)] = handlers[pageNumber].get();
+			//MessageManager::Log("Map [$" + HexUtilities::ToHex(i) + ":" + HexUtilities::ToHex(j)[1] + "xxx] to page number " + HexUtilities::ToHex(pageNumber));
+			pageNumber++;
+			if(pageNumber >= handlers.size()) {
+				pageNumber = 0;
+			}
+		}
+	}
+}
+
+
+void MemoryManager::RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startAddr, uint16_t endAddr, IMemoryHandler* handler)
+{
+	if((startAddr & 0xFFF) != 0 || (endAddr & 0xFFF) != 0xFFF || startBank > endBank || startAddr > endAddr) {
 		throw std::runtime_error("invalid start/end address");
 	}
 
-	for(uint32_t addr = startAddr; addr < endAddr; addr += 0x1000) {
-		/*if(_handlers[addr >> 12]) {
-			throw std::runtime_error("handler already set");
-		}*/
+	for(uint32_t bank = startBank; bank <= endBank; bank++) {
+		for(uint32_t addr = startAddr; addr < endAddr; addr += 0x1000) {
+			/*if(_handlers[addr >> 12]) {
+				throw std::runtime_error("handler already set");
+			}*/
 
-		_handlers[addr >> 12] = handler;
+			_handlers[(bank << 4) | (addr >> 12)] = handler;
+		}
 	}
 }
 

@@ -485,10 +485,14 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="AluMulDiv.cpp" />
-    <ClCompile Include="NecDspDisUtils.cpp" />
     <ClCompile Include="NecDsp.cpp">
       <Filter>SNES\Coprocessors</Filter>
+    </ClCompile>
+    <ClCompile Include="AluMulDiv.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="NecDspDisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

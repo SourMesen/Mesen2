@@ -29,7 +29,7 @@ private:
 	Cpu* _cpu;
 
 	IMemoryHandler* _handlers[0x100 * 0x10];
-	vector<unique_ptr<RamHandler>> _workRamHandlers;
+	vector<unique_ptr<IMemoryHandler>> _workRamHandlers;
 
 	uint8_t *_workRam;
 	uint64_t _masterClock = 0;
@@ -51,7 +51,8 @@ public:
 
 	void Reset();
 
-	void RegisterHandler(uint32_t startAddr, uint32_t endAddr, IMemoryHandler* handler);
+	void RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, vector<unique_ptr<IMemoryHandler>>& handlers, uint16_t pageIncrement = 0, uint16_t startPageNumber = 0);
+	void RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startAddr, uint16_t endAddr, IMemoryHandler* handler);
 
 	void GenerateMasterClockTable();
 
