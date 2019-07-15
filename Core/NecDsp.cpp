@@ -68,6 +68,10 @@ NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console)
 		dsp = new NecDsp(console, biosData, 0x4000);
 		mm->RegisterHandler(0x30, 0x3F, 0x8000, 0xFFFF, dsp);
 		mm->RegisterHandler(0xB0, 0xBF, 0x8000, 0xFFFF, dsp);
+
+		//For Super Bases Loaded 2
+		mm->RegisterHandler(0x60, 0x6F, 0x0000, 0x7FFF, dsp);
+		mm->RegisterHandler(0xE0, 0xEF, 0x0000, 0x7FFF, dsp);
 	} else if(console->GetCartridge()->GetCartFlags() & CartFlags::HiRom) {
 		dsp = new NecDsp(console, biosData, 0x1000);
 		mm->RegisterHandler(0x00, 0x1F, 0x6000, 0x7FFF, dsp);
