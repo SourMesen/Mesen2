@@ -30,6 +30,7 @@ private:
 	vector<DisassemblyInfo> _sramCache;
 	vector<DisassemblyInfo> _spcRamCache;
 	vector<DisassemblyInfo> _spcRomCache;
+	vector<DisassemblyInfo> _necDspRomCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
@@ -47,6 +48,9 @@ private:
 	uint32_t _spcRamSize;
 	uint8_t *_spcRom;
 	uint32_t _spcRomSize;
+	
+	uint8_t *_necDspProgramRom;
+	uint32_t _necDspProgramRomSize;
 
 	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
 

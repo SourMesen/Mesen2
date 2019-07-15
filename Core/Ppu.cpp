@@ -108,26 +108,32 @@ uint16_t Ppu::GetVblankStart()
 PpuState Ppu::GetState()
 {
 	PpuState state;
+	GetState(state, false);
+	return state;
+}
+
+void Ppu::GetState(PpuState &state, bool returnPartialState)
+{
 	state.Cycle = GetCycle();
 	state.Scanline = _scanline;
 	state.HClock = _memoryManager->GetHClock();
 	state.FrameCount = _frameCount;
-	state.OverscanMode = _overscanMode;
-	state.BgMode = _bgMode;
-	state.DirectColorMode = _directColorMode;
-	state.Mode7 = _mode7;
-	state.Layers[0] = _layerConfig[0];
-	state.Layers[1] = _layerConfig[1];
-	state.Layers[2] = _layerConfig[2];
-	state.Layers[3] = _layerConfig[3];
+	if(!returnPartialState) {
+		state.OverscanMode = _overscanMode;
+		state.BgMode = _bgMode;
+		state.DirectColorMode = _directColorMode;
+		state.Mode7 = _mode7;
+		state.Layers[0] = _layerConfig[0];
+		state.Layers[1] = _layerConfig[1];
+		state.Layers[2] = _layerConfig[2];
+		state.Layers[3] = _layerConfig[3];
 
-	state.OamMode = _oamMode;
-	state.OamBaseAddress = _oamBaseAddress;
-	state.OamAddressOffset = _oamAddressOffset;
-	state.EnableOamPriority = _enableOamPriority;
-	state.ObjInterlace = _objInterlace;
-
-	return state;
+		state.OamMode = _oamMode;
+		state.OamBaseAddress = _oamBaseAddress;
+		state.OamAddressOffset = _oamAddressOffset;
+		state.EnableOamPriority = _enableOamPriority;
+		state.ObjInterlace = _objInterlace;
+	}
 }
 
 template<bool hiResMode>

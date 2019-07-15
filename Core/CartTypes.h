@@ -31,3 +31,40 @@ struct RomInfo
 	VirtualFile RomFile;
 	VirtualFile PatchFile;
 };
+
+namespace CartFlags
+{
+	enum CartFlags
+	{
+		None = 0,
+		LoRom = 1,
+		HiRom = 2,
+		FastRom = 4,
+		ExLoRom = 8,
+		ExHiRom = 16,
+		CopierHeader = 32
+	};
+}
+
+enum class CoprocessorType
+{
+	None,
+	DSP1,
+	DSP1B,
+	DSP2,
+	DSP3,
+	DSP4,
+	GSU1,
+	GSU2,
+	MarioChip,
+	OBC1,
+	SA1,
+	DD1,
+	RTC,
+	Satellaview,
+	SPC7110,
+	ST010,
+	ST011,
+	ST018,
+	CX4
+};

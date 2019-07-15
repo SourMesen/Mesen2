@@ -123,6 +123,12 @@ string VirtualFile::GetSha1Hash()
 	return SHA1::GetHash(_data);
 }
 
+size_t VirtualFile::GetSize()
+{
+	LoadFile();
+	return _data.size();
+}
+
 bool VirtualFile::ReadFile(vector<uint8_t>& out)
 {
 	LoadFile();

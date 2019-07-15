@@ -169,7 +169,10 @@ namespace Mesen.GUI
 		CGRam,
 		SpcRam,
 		SpcRom,
-		Register
+		DspProgramRom,
+		DspDataRom,
+		DspDataRam,
+		Register,
 	}
 
 	public static class SnesMemoryTypeExtensions
@@ -381,12 +384,45 @@ namespace Mesen.GUI
 		public SpcTimer Timer2;
 	};
 
+	public struct NecDspAccFlags
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool Carry;
+		[MarshalAs(UnmanagedType.I1)] public bool Zero;
+		[MarshalAs(UnmanagedType.I1)] public bool Overflow0;
+		[MarshalAs(UnmanagedType.I1)] public bool Overflow1;
+		[MarshalAs(UnmanagedType.I1)] public bool Sign0;
+		[MarshalAs(UnmanagedType.I1)] public bool Sign1;
+	}
+
+	public struct NecDspState
+	{
+		public UInt16 A;
+		public NecDspAccFlags FlagsA;
+		public UInt16 B;
+		public NecDspAccFlags FlagsB;
+		public UInt16 TR;
+		public UInt16 TRB;
+		public UInt16 PC;
+		public UInt16 RP;
+		public UInt16 DP;
+		public UInt16 DR;
+		public UInt16 SR;
+		public UInt16 K;
+		public UInt16 L;
+		public UInt16 M;
+		public UInt16 N;
+		public UInt16 SerialOut;
+		public UInt16 SerialIn;
+		public byte SP;
+	}
+
 	public struct DebugState
 	{
 		public UInt64 MasterClock;
 		public CpuState Cpu;
 		public PpuState Ppu;
 		public SpcState Spc;
+		public NecDspState NecDsp;
 	}
 
 	public enum MemoryOperationType
@@ -530,6 +566,7 @@ namespace Mesen.GUI
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool LogCpu;
 		[MarshalAs(UnmanagedType.I1)] public bool LogSpc;
+		[MarshalAs(UnmanagedType.I1)] public bool LogNecDsp;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;

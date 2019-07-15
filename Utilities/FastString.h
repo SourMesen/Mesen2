@@ -25,6 +25,13 @@ public:
 		_pos += size;
 	}
 
+	void Delimiter(const char* str)
+	{
+		if(_pos > 0) {
+			Write(str, (uint16_t)strlen(str));
+		}
+	}
+
 	void Write(const char* str)
 	{
 		Write(str, (uint16_t)strlen(str));

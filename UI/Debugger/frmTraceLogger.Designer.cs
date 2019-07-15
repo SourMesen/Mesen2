@@ -90,6 +90,7 @@ namespace Mesen.GUI.Debugger
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.chkLogNecDsp = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpLogOptions.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -202,6 +203,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel2.Controls.Add(this.chkLogCpu, 1, 0);
 			this.tableLayoutPanel2.Controls.Add(this.chkLogSpc, 2, 0);
 			this.tableLayoutPanel2.Controls.Add(this.lblTarget, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this.chkLogNecDsp, 3, 0);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -809,6 +811,18 @@ namespace Mesen.GUI.Debugger
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
+			// chkLogNecDsp
+			// 
+			this.chkLogNecDsp.AutoSize = true;
+			this.chkLogNecDsp.Checked = true;
+			this.chkLogNecDsp.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogNecDsp.Location = new System.Drawing.Point(301, 3);
+			this.chkLogNecDsp.Name = "chkLogNecDsp";
+			this.chkLogNecDsp.Size = new System.Drawing.Size(57, 17);
+			this.chkLogNecDsp.TabIndex = 24;
+			this.chkLogNecDsp.Text = "DSP-n";
+			this.chkLogNecDsp.UseVisualStyleBackColor = true;
+			// 
 			// frmTraceLogger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -905,5 +919,6 @@ namespace Mesen.GUI.Debugger
 		private System.Windows.Forms.CheckBox chkLogSpc;
 		private System.Windows.Forms.Label lblTarget;
 		private System.Windows.Forms.Button btnClearLog;
+		private System.Windows.Forms.CheckBox chkLogNecDsp;
 	}
 }

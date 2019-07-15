@@ -47,6 +47,7 @@
     <ClInclude Include="AviRecorder.h" />
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
+    <ClInclude Include="BaseCoprocessor.h" />
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
     <ClInclude Include="BaseVideoFilter.h" />
@@ -78,6 +79,9 @@
     <ClInclude Include="LuaCallHelper.h" />
     <ClInclude Include="LuaScriptingContext.h" />
     <ClInclude Include="MemoryAccessCounter.h" />
+    <ClInclude Include="NecDsp.h" />
+    <ClInclude Include="NecDspDisUtils.h" />
+    <ClInclude Include="NecDspTypes.h" />
     <ClInclude Include="NtscFilter.h" />
     <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RegisterHandlerB.h" />
@@ -179,6 +183,8 @@
     <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="NecDsp.cpp" />
+    <ClCompile Include="NecDspDisUtils.cpp" />
     <ClCompile Include="NotificationManager.cpp" />
     <ClCompile Include="NtscFilter.cpp" />
     <ClCompile Include="Ppu.cpp" />

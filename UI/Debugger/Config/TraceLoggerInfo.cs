@@ -47,6 +47,7 @@ namespace Mesen.GUI.Config
 	{
 		public bool LogCpu;
 		public bool LogSpc;
+		public bool LogNecDsp;
 
 		public bool ShowByteCode;
 		public bool ShowRegisters;

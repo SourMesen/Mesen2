@@ -3,6 +3,7 @@
 #include "CpuTypes.h"
 #include "PpuTypes.h"
 #include "SpcTypes.h"
+#include "NecDspTypes.h"
 
 struct DebugState
 {
@@ -10,6 +11,7 @@ struct DebugState
 	CpuState Cpu;
 	PpuState Ppu;
 	SpcState Spc;
+	NecDspState Dsp;
 };
 
 enum class SnesMemoryType
@@ -24,6 +26,9 @@ enum class SnesMemoryType
 	CGRam,
 	SpcRam,
 	SpcRom,
+	DspProgramRom,
+	DspDataRom,
+	DspDataRam,
 	Register,
 };
 
@@ -242,6 +247,8 @@ enum class CpuType : uint8_t
 {
 	Cpu,
 	Spc,
+	NecDsp,
+	CpuTypeCount
 	//SuperFx,
 	//Sa1,
 };

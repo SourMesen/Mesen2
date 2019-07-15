@@ -76,7 +76,7 @@ int BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, Addres
 	CpuType cpuType = category == BreakpointCategory::Spc ? CpuType::Spc : CpuType::Cpu;
 
 	DebugState state;
-	_debugger->GetState(state);
+	_debugger->GetState(state, false);
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)category][(int)type];
 	for(size_t i = 0; i < breakpoints.size(); i++) {

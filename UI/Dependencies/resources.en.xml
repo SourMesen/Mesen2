@@ -951,6 +951,9 @@
 			<Value ID="CGRam">CG RAM (Palette)</Value>
 			<Value ID="SpcRam">SPC RAM</Value>
 			<Value ID="SpcRom">SPC ROM (IPL)</Value>
+			<Value ID="DspProgramRom">DSP-n - Program ROM</Value>
+			<Value ID="DspDataRom">DSP-n - Data ROM</Value>
+			<Value ID="DspDataRam">DSP-n - Data RAM</Value>
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="TileFormat">

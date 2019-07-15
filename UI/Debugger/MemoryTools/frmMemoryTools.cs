@@ -163,6 +163,13 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
 
+			if(DebugApi.GetMemorySize(SnesMemoryType.DspProgramRom) > 0) {
+				cboMemoryType.Items.Add("-");
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspProgramRom));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRom));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRam));
+			}
+
 			cboMemoryType.SelectedIndex = 0;
 			cboMemoryType.SetEnumValue(originalValue);
 			cboMemoryType.SelectedIndexChanged += this.cboMemoryType_SelectedIndexChanged;

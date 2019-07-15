@@ -16,6 +16,7 @@ struct TraceLoggerOptions
 {
 	bool LogCpu;
 	bool LogSpc;
+	bool LogNecDsp;
 
 	bool ShowExtraInfo;
 	bool IndentCode;
@@ -75,8 +76,9 @@ private:
 
 	vector<RowPart> _rowParts;
 	vector<RowPart> _spcRowParts;
+	vector<RowPart> _dspRowParts;
 
-	bool _logCpu[(int)CpuType::Spc + 1] = {};
+	bool _logCpu[(int)CpuType::CpuTypeCount] = {};
 
 	bool _pendingLog;
 	//CpuState _lastState;
@@ -108,12 +110,15 @@ private:
 	void GetTraceRow(string &output, DisassemblyInfo &disassemblyInfo, DebugState &state);
 	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string &output, NecDspState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 
 public:
 	TraceLogger(Debugger* debugger, shared_ptr<Console> console);
 	~TraceLogger();
+
+	__forceinline bool IsCpuLogged(CpuType type) { return _logCpu[(int)type]; }
 
 	void Log(DebugState &state, DisassemblyInfo &disassemblyInfo);
 	void Clear();

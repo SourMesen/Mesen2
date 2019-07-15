@@ -9,6 +9,7 @@ private:
 	static string _homeFolder;
 	static string _saveFolderOverride;
 	static string _saveStateFolderOverride;
+	static string _biosFolderOverride;
 	static string _screenshotFolderOverride;
 	static vector<string> _gameFolders;
 
@@ -22,6 +23,7 @@ public:
 	static vector<string> GetKnownGameFolders();
 
 	static string GetSaveFolder();
+	static string GetBiosFolder();
 	static string GetSaveStateFolder();
 	static string GetScreenshotFolder();
 	static string GetHdPackFolder();

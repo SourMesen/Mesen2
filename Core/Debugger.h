@@ -36,7 +36,7 @@ private:
 	shared_ptr<Ppu> _ppu;
 	shared_ptr<Spc> _spc;
 	shared_ptr<MemoryManager> _memoryManager;
-	shared_ptr<BaseCartridge> _baseCartridge;
+	shared_ptr<BaseCartridge> _cart;
 	
 	shared_ptr<EmuSettings> _settings;
 
@@ -95,6 +95,8 @@ public:
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuCycle();
 
+	void ProcessNecDspExec(uint32_t addr, uint32_t value);
+
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 
@@ -107,7 +109,7 @@ public:
 	void BreakRequest(bool release);
 	void SuspendDebugger(bool release);
 
-	void GetState(DebugState &state);
+	void GetState(DebugState &state, bool partialPpuState);
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress);

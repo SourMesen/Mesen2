@@ -5,6 +5,7 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "Spc.h"
+#include "NecDsp.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "EmuSettings.h"
@@ -35,6 +36,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
 	_spc = console->GetSpc();
+	_cart = console->GetCartridge();
 	_settings = console->GetSettings();
 	_memoryManager = console->GetMemoryManager();
 
@@ -42,8 +44,8 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
 	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
 
-	_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), _memoryManager.get()));
-	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, console->GetCartridge()));
+	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), _memoryManager.get()));
+	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, _cart));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, _spc.get(), _memoryManager.get()));
@@ -65,7 +67,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->LoadCdlFile(cdlFile);
 
 	RefreshCodeCache();
@@ -78,7 +80,7 @@ Debugger::~Debugger()
 
 void Debugger::Release()
 {
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_console->GetCartridge()->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->SaveCdlFile(cdlFile);
 
 	while(_executionStopped) {
@@ -112,7 +114,7 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		DebugState debugState;
-		GetState(debugState);
+		GetState(debugState, true);
 
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
 		_traceLogger->Log(debugState, disInfo);
@@ -225,7 +227,7 @@ void Debugger::ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType 
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
 		DebugState debugState;
-		GetState(debugState);
+		GetState(debugState, true);
 
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
 		_traceLogger->Log(debugState, disInfo);
@@ -312,6 +314,21 @@ void Debugger::ProcessPpuCycle()
 	}
 }
 
+void Debugger::ProcessNecDspExec(uint32_t addr, uint32_t value)
+{
+	if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
+		AddressInfo addressInfo { (int32_t)addr * 4, SnesMemoryType::DspProgramRom };
+
+		_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
+
+		DebugState debugState;
+		GetState(debugState, true);
+
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+		_traceLogger->Log(debugState, disInfo);
+	}
+}
+
 void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
 {
 	if(_suspendRequestCount) {
@@ -391,7 +408,7 @@ int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalRes
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read };
 	DebugState state;
-	GetState(state);
+	GetState(state, false);
 	if(useCache) {
 		return _watchExpEval[(int)cpuType]->Evaluate(expression, state, resultType, operationInfo);
 	} else {
@@ -532,12 +549,15 @@ void Debugger::SuspendDebugger(bool release)
 	}
 }
 
-void Debugger::GetState(DebugState &state)
+void Debugger::GetState(DebugState &state, bool partialPpuState)
 {
 	state.MasterClock = _memoryManager->GetMasterClock();
 	state.Cpu = _cpu->GetState();
-	state.Ppu = _ppu->GetState();
+	_ppu->GetState(state.Ppu, partialPpuState);
 	state.Spc = _spc->GetState();
+	if(_cart->GetDsp()) {
+		state.Dsp = _cart->GetDsp()->GetState();
+	}
 }
 
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
@@ -585,7 +605,7 @@ void Debugger::SetCdlData(uint8_t *cdlData, uint32_t length)
 void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
-	uint32_t prgRomSize = _console->GetCartridge()->DebugGetPrgRomSize();
+	uint32_t prgRomSize = _cart->DebugGetPrgRomSize();
 	AddressInfo addrInfo;
 	addrInfo.Type = SnesMemoryType::PrgRom;
 

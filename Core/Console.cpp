@@ -3,6 +3,7 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "Spc.h"
+#include "NecDsp.h"
 #include "InternalRegisters.h"
 #include "ControlManager.h"
 #include "MemoryManager.h"
@@ -96,6 +97,9 @@ void Console::Run()
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
+			if(_cart->GetCoprocessor()) {
+				_cart->GetCoprocessor()->Run();
+			}
 			_rewindManager->ProcessEndOfFrame();
 
 			WaitForLock();
@@ -247,7 +251,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_cart->SaveBattery();
 	}
 
-	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(_settings.get(), romFile, patchFile);
+	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
 		if(stopRom) {
 			Stop(false);
@@ -638,11 +642,21 @@ void Console::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 	}
 }
 
+void Console::ProcessNecDspExec(uint32_t addr, uint32_t value)
+{
+	if(_debugger) {
+		_debugger->ProcessNecDspExec(addr, value);
+	}
+}
+
 void Console::ProcessPpuCycle()
 {
 	if(_debugger) {
 		_debugger->ProcessPpuCycle();
 		_spc->Run();
+		if(_cart->GetCoprocessor()) {
+			_cart->GetCoprocessor()->Run();
+		}
 	}
 }
 

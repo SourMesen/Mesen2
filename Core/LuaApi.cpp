@@ -670,7 +670,7 @@ int LuaApi::GetState(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	DebugState state;
-	_debugger->GetState(state);
+	_debugger->GetState(state, true);
 
 	lua_newtable(lua);
 	lua_pushintvalue(masterClock, state.MasterClock);

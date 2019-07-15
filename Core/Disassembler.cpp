@@ -4,6 +4,7 @@
 #include "DisassemblyInfo.h"
 #include "Cpu.h"
 #include "Spc.h"
+#include "NecDsp.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
 #include "LabelManager.h"
@@ -39,11 +40,15 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_spcRom = console->GetSpc()->GetSpcRom();
 	_spcRomSize = Spc::SpcRomSize;
 
+	_necDspProgramRom = console->GetCartridge()->GetDsp() ? console->GetCartridge()->GetDsp()->DebugGetProgramRom() : nullptr;
+	_necDspProgramRomSize = console->GetCartridge()->GetDsp() ? console->GetCartridge()->GetDsp()->DebugGetProgramRomSize() : 0;
+
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_sramCache = vector<DisassemblyInfo>(_sramSize);
 	_wramCache = vector<DisassemblyInfo>(_wramSize);
 	_spcRamCache = vector<DisassemblyInfo>(_spcRamSize);
 	_spcRomCache = vector<DisassemblyInfo>(_spcRomSize);
+	_necDspRomCache = vector<DisassemblyInfo>(_necDspProgramRomSize);
 }
 
 void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache)
@@ -77,6 +82,12 @@ void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size
 			*source = _spcRom;
 			*cache = &_spcRomCache;
 			size = _spcRomSize;
+			break;
+
+		case SnesMemoryType::DspProgramRom:
+			*source = _necDspProgramRom;
+			*cache = &_necDspRomCache;
+			size = _necDspProgramRomSize;
 			break;
 
 		default:
@@ -310,6 +321,7 @@ DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info)
 		case SnesMemoryType::SaveRam: disassemblyInfo = _sramCache[info.Address]; break;
 		case SnesMemoryType::SpcRam: disassemblyInfo = _spcRamCache[info.Address]; break;
 		case SnesMemoryType::SpcRom: disassemblyInfo = _spcRomCache[info.Address]; break;
+		case SnesMemoryType::DspProgramRom: disassemblyInfo = _necDspRomCache[info.Address]; break;
 	}
 
 	if(disassemblyInfo.IsInitialized()) {

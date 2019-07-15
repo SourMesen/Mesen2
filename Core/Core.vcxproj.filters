@@ -290,6 +290,18 @@
     <ClInclude Include="AluMulDiv.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="NecDspDisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCoprocessor.h">
+      <Filter>SNES\Coprocessors</Filter>
+    </ClInclude>
+    <ClInclude Include="NecDsp.h">
+      <Filter>SNES\Coprocessors</Filter>
+    </ClInclude>
+    <ClInclude Include="NecDspTypes.h">
+      <Filter>SNES\Coprocessors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -474,6 +486,10 @@
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
     <ClCompile Include="AluMulDiv.cpp" />
+    <ClCompile Include="NecDspDisUtils.cpp" />
+    <ClCompile Include="NecDsp.cpp">
+      <Filter>SNES\Coprocessors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -508,6 +524,9 @@
     </Filter>
     <Filter Include="Debugger\Scripts">
       <UniqueIdentifier>{ca39cd9a-a95c-4b7a-b6d5-de41565dd8f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors">
+      <UniqueIdentifier>{6d4d05d5-3ad3-4087-9be0-3fd9e461c3e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

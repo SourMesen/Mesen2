@@ -4,8 +4,11 @@
 #include "RomHandler.h"
 #include "MemoryManager.h"
 #include "IMemoryHandler.h"
+#include "BaseCoprocessor.h"
 #include "MessageManager.h"
+#include "Console.h"
 #include "EmuSettings.h"
+#include "NecDsp.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -20,7 +23,7 @@ BaseCartridge::~BaseCartridge()
 	delete[] _saveRam;
 }
 
-shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(EmuSettings* settings, VirtualFile &romFile, VirtualFile &patchFile)
+shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, VirtualFile &romFile, VirtualFile &patchFile)
 {
 	if(romFile.IsValid()) {
 		shared_ptr<BaseCartridge> cart(new BaseCartridge());
@@ -38,7 +41,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(EmuSettings* settings, 
 			return nullptr;
 		}
 
-		cart->_settings = settings;
+		cart->_console = console;
 		cart->_romPath = romFile;
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
@@ -155,14 +158,64 @@ void BaseCartridge::Init()
 		flags |= CartFlags::FastRom;
 	}
 	_flags = (CartFlags::CartFlags)flags;
-	
+
+	_coprocessorType = GetCoprocessorType();
+
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
-	_settings->InitializeRam(_saveRam, _saveRamSize);
+	_console->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 
 	LoadBattery();
 
 	DisplayCartInfo();
+}
+
+CoprocessorType BaseCartridge::GetCoprocessorType()
+{
+	if((_cartInfo.RomType & 0x0F) >= 0x03) {
+		switch((_cartInfo.RomType & 0xF0) >> 4) {
+			case 0x00: return GetDspVersion(); break;
+			case 0x01: return CoprocessorType::GSU1; break; //Or mariochip1/gsu2
+			case 0x02: return CoprocessorType::OBC1; break;
+			case 0x03: return CoprocessorType::SA1; break;
+			case 0x04: return CoprocessorType::DD1; break;
+			case 0x05: return CoprocessorType::RTC; break;
+			case 0x0E: return CoprocessorType::Satellaview; break;
+			case 0x0F:
+				switch(_cartInfo.CartridgeType & 0x0F) {
+					case 0x00: return CoprocessorType::SPC7110; break;
+					case 0x01: return CoprocessorType::ST010; break; //or ST011
+					case 0x02: return CoprocessorType::ST018; break;
+					case 0x10: return CoprocessorType::CX4; break;
+				}
+				break;
+		}
+	}
+
+	return CoprocessorType::None;
+}
+
+CoprocessorType BaseCartridge::GetDspVersion()
+{
+	string cartName = GetCartName();
+	if(cartName == "DUNGEON MASTER") {
+		return CoprocessorType::DSP2;
+	} if(cartName == "PILOTWINGS") {
+		return CoprocessorType::DSP1;
+	} else if(cartName == "SD\xB6\xDE\xDD\xC0\xDE\xD1GX") {
+		//SD Gundam GX
+		return CoprocessorType::DSP3;
+	} else if(cartName == "PLANETS CHAMP TG3000" || cartName == "TOP GEAR 3000") {
+		return CoprocessorType::DSP4;
+	}
+	
+	//Default to DSP1B
+	return CoprocessorType::DSP1B;
+}
+
+void BaseCartridge::Reset()
+{
+	_coprocessor->Reset();
 }
 
 RomInfo BaseCartridge::GetRomInfo()
@@ -177,6 +230,11 @@ RomInfo BaseCartridge::GetRomInfo()
 string BaseCartridge::GetSha1Hash()
 {
 	return SHA1::GetHash(_prgRom, _prgRomSize);
+}
+
+CartFlags::CartFlags BaseCartridge::GetCartFlags()
+{
+	return _flags;
 }
 
 void BaseCartridge::LoadBattery()
@@ -298,6 +356,14 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		MapBanks(mm, _saveRamHandlers, 0x70, 0x7D, 0x00, 0x07, 0, true);
 		MapBanks(mm, _saveRamHandlers, 0xA0, 0xBF, 0x06, 0x07, 0, true);
 	}
+
+	InitCoprocessor(mm);
+}
+
+void BaseCartridge::InitCoprocessor(MemoryManager &mm)
+{
+	_coprocessor.reset(NecDsp::InitCoprocessor(_coprocessorType, _console));
+	_necDsp = dynamic_cast<NecDsp*>(_coprocessor.get());
 }
 
 bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
@@ -335,15 +401,26 @@ bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
 void BaseCartridge::Serialize(Serializer &s)
 {
 	s.StreamArray(_saveRam, _saveRamSize);
+	if(_coprocessor) {
+		s.Stream(_coprocessor.get());
+	}
 }
 
 string BaseCartridge::GetGameCode()
 {
 	string code;
-	code += _cartInfo.GameCode[0];
-	code += _cartInfo.GameCode[1];
-	code += _cartInfo.GameCode[2];
-	code += _cartInfo.GameCode[3];
+	if(_cartInfo.GameCode[0] >= ' ') {
+		code += _cartInfo.GameCode[0];
+	}
+	if(_cartInfo.GameCode[1] >= ' ') {
+		code += _cartInfo.GameCode[1];
+	}
+	if(_cartInfo.GameCode[2] >= ' ') {
+		code += _cartInfo.GameCode[2];
+	}
+	if(_cartInfo.GameCode[3] >= ' ') {
+		code += _cartInfo.GameCode[3];
+	}
 	return code;
 }
 
@@ -370,6 +447,10 @@ void BaseCartridge::DisplayCartInfo()
 {
 	MessageManager::Log("-----------------------------");
 	MessageManager::Log("Game: " + GetCartName());
+	string gameCode = GetGameCode();
+	if(!gameCode.empty()) {
+		MessageManager::Log("Game code: " + gameCode);
+	}
 	if(_flags & CartFlags::ExHiRom) {
 		MessageManager::Log("Type: ExHiROM");
 	} else if(_flags & CartFlags::ExLoRom) {
@@ -379,6 +460,30 @@ void BaseCartridge::DisplayCartInfo()
 	} else if(_flags & CartFlags::LoRom) {
 		MessageManager::Log("Type: LoROM");
 	}
+
+	string coProcMessage = "Coprocessor: ";
+	switch(_coprocessorType) {
+		case CoprocessorType::None: coProcMessage += "<none>"; break;
+		case CoprocessorType::CX4: coProcMessage += "CX4"; break;
+		case CoprocessorType::DD1: coProcMessage += "S-DD1"; break;
+		case CoprocessorType::DSP1: coProcMessage += "DSP1"; break;
+		case CoprocessorType::DSP1B: coProcMessage += "DSP1B"; break;
+		case CoprocessorType::DSP2: coProcMessage += "DSP2"; break;
+		case CoprocessorType::DSP3: coProcMessage += "DSP3"; break;
+		case CoprocessorType::DSP4: coProcMessage += "DSP4"; break;
+		case CoprocessorType::GSU1: coProcMessage += "Super FX (GSU1)"; break;
+		case CoprocessorType::GSU2: coProcMessage += "Super FX (GSU2)"; break;
+		case CoprocessorType::MarioChip: coProcMessage += "Super FX (Mario Chip 1)"; break;
+		case CoprocessorType::OBC1: coProcMessage += "OBC1"; break;
+		case CoprocessorType::RTC: coProcMessage += "RTC"; break;
+		case CoprocessorType::SA1: coProcMessage += "SA1"; break;
+		case CoprocessorType::Satellaview: coProcMessage += "Satellaview"; break;
+		case CoprocessorType::SPC7110: coProcMessage += "SPC7110"; break;
+		case CoprocessorType::ST010: coProcMessage += "ST010"; break;
+		case CoprocessorType::ST011: coProcMessage += "ST011"; break;
+		case CoprocessorType::ST018: coProcMessage += "ST018"; break;
+	}
+	MessageManager::Log(coProcMessage);
 
 	if(_flags & CartFlags::FastRom) {
 		MessageManager::Log("FastROM");
@@ -397,4 +502,14 @@ void BaseCartridge::DisplayCartInfo()
 		MessageManager::Log("SRAM size: " + std::to_string(_saveRamSize / 1024) + " KB");
 	}
 	MessageManager::Log("-----------------------------");
+}
+
+NecDsp* BaseCartridge::GetDsp()
+{
+	return _necDsp;
+}
+
+BaseCoprocessor * BaseCartridge::GetCoprocessor()
+{
+	return _coprocessor.get();
 }

@@ -4,34 +4,27 @@
 #include "CartTypes.h"
 #include "../Utilities/ISerializable.h"
 
+class BaseCoprocessor;
 class MemoryManager;
 class VirtualFile;
 class EmuSettings;
-
-namespace CartFlags
-{
-	enum CartFlags
-	{
-		None = 0,
-		LoRom = 1,
-		HiRom = 2,
-		FastRom = 4,
-		ExLoRom = 8,
-		ExHiRom = 16,
-		CopierHeader = 32
-	};
-}
+class NecDsp;
+class Console;
 
 class BaseCartridge : public ISerializable
 {
 private:
-	EmuSettings *_settings;
+	Console *_console;
 
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
 	SnesCartInformation _cartInfo = {};
 
+	unique_ptr<BaseCoprocessor> _coprocessor;
+	NecDsp *_necDsp = nullptr;
+
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
+	CoprocessorType _coprocessorType = CoprocessorType::None;
 	string _romPath;
 	string _patchPath;
 
@@ -48,21 +41,28 @@ private:
 	int32_t GetHeaderScore(uint32_t addr);
 	void DisplayCartInfo();
 
+	CoprocessorType GetCoprocessorType();
+	CoprocessorType GetDspVersion();
+
 	bool MapSpecificCarts(MemoryManager &mm);
+	void InitCoprocessor(MemoryManager &mm);
+
 	string GetCartName();
 	string GetGameCode();
 
 public:
 	virtual ~BaseCartridge();
 
-	static shared_ptr<BaseCartridge> CreateCartridge(EmuSettings* settings, VirtualFile &romFile, VirtualFile &patchFile);
+	static shared_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile, VirtualFile &patchFile);
 
 	void Init();
+	void Reset();
 
 	void SaveBattery();
 
 	RomInfo GetRomInfo();
 	string GetSha1Hash();
+	CartFlags::CartFlags GetCartFlags();
 
 	void RegisterHandlers(MemoryManager &mm);
 
@@ -70,6 +70,9 @@ public:
 	uint8_t* DebugGetSaveRam() { return _saveRam; }
 	uint32_t DebugGetPrgRomSize() { return _prgRomSize; }
 	uint32_t DebugGetSaveRamSize() { return _saveRamSize; }
+
+	NecDsp* GetDsp();
+	BaseCoprocessor* GetCoprocessor();
 
 	void Serialize(Serializer &s) override;
 };

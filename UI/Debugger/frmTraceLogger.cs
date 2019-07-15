@@ -47,6 +47,7 @@ namespace Mesen.GUI.Debugger
 
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogCpu), chkLogCpu);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogSpc), chkLogSpc);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogNecDsp), chkLogNecDsp);
 
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowByteCode), chkShowByteCode);
 			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowCpuCycles), chkShowCpuCycles);
@@ -141,6 +142,9 @@ namespace Mesen.GUI.Debugger
 
 			_entityBinder.UpdateObject();
 
+			//Disable logging when we close the trace logger
+			SetOptions(true);
+
 			ConfigManager.ApplyChanges();
 
 			if(_loggingEnabled) {
@@ -206,14 +210,15 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		private void SetOptions()
+		private void SetOptions(bool disableLogging = false)
 		{
 			_entityBinder.UpdateObject();
 			TraceLoggerOptions options = (TraceLoggerOptions)_entityBinder.Entity;
 
 			InteropTraceLoggerOptions interopOptions = new InteropTraceLoggerOptions();
-			interopOptions.LogCpu = options.LogCpu;
-			interopOptions.LogSpc = options.LogSpc;
+			interopOptions.LogCpu = !disableLogging && options.LogCpu;
+			interopOptions.LogSpc = !disableLogging && options.LogSpc;
+			interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
 			interopOptions.IndentCode = options.IndentCode;
 			interopOptions.ShowExtraInfo = options.ShowExtraInfo;
 			interopOptions.UseLabels = options.UseLabels;
@@ -542,8 +547,11 @@ namespace Mesen.GUI.Debugger
 
 	public class TraceLoggerStyleProvider : ctrlTextbox.ILineStyleProvider
 	{
-		private Color _spcColor = Color.FromArgb(030, 145, 030);
+		private Color _spcColor = Color.FromArgb(30, 145, 30);
 		private Color _spcBgColor = Color.FromArgb(230, 245, 230);
+		private Color _dspColor = Color.FromArgb(30, 30, 145);
+		private Color _dspBgColor = Color.FromArgb(230, 230, 245);
+
 		private List<int> _flags;
 
 		public TraceLoggerStyleProvider(List<int> lineFlags)
@@ -559,10 +567,17 @@ namespace Mesen.GUI.Debugger
 		public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
 		{
 			int count = _flags.Count - 1;
-			return new LineProperties() {
-				AddressColor = _flags[count - lineIndex] == 3 ? (Color?)_spcColor : null,
-				LineBgColor = _flags[count - lineIndex] == 3 ? (Color?)_spcBgColor : null
-			};
+			int cpuType = _flags[count - lineIndex];
+			if(cpuType == 3) {
+				//SPC
+				return new LineProperties() { AddressColor = _spcColor, LineBgColor = _spcBgColor };
+			} else if(cpuType == 4) {
+				//DSP
+				return new LineProperties() { AddressColor = _dspColor, LineBgColor = _dspBgColor };
+			} else {
+				//CPU
+				return new LineProperties() { AddressColor = null, LineBgColor = null };
+			}
 		}
 	}
 }

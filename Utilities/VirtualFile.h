@@ -31,6 +31,8 @@ public:
 	string GetFileName();
 	string GetSha1Hash();
 
+	size_t GetSize();
+
 	bool ReadFile(vector<uint8_t> &out);
 	bool ReadFile(std::stringstream &out);
 
