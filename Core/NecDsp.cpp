@@ -5,39 +5,88 @@
 #include "BaseCartridge.h"
 #include "CartTypes.h"
 #include "MessageManager.h"
+#include "EmuSettings.h"
+#include "RamHandler.h"
 #include "../Utilities/FolderUtilities.h"
 
-NecDsp::NecDsp(Console* console, vector<uint8_t> &biosRom, uint16_t registerMask)
+NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom)
 {
 	_console = console;
+	_type = type;
 	_memoryManager = console->GetMemoryManager().get();
-	_registerMask = registerMask;
+	
+	if(type == CoprocessorType::ST010 || type == CoprocessorType::ST011) {
+		if(type == CoprocessorType::ST010) {
+			_frequency = 11000000;
+		} else {
+			_frequency = 22000000;
+		}
+		_registerMask = 0x0001;
+		_ramSize = 0x800;
+		_stackSize = 8;
+		_memoryManager->RegisterHandler(0x60, 0x60, 0x0000, 0x0FFF, this);
+		_memoryManager->RegisterHandler(0xE0, 0xE0, 0x0000, 0x0FFF, this);
+		_memoryManager->RegisterHandler(0x68, 0x6F, 0x0000, 0x0FFF, this);
+		_memoryManager->RegisterHandler(0xE8, 0xEF, 0x0000, 0x0FFF, this);
+	} else {
+		_ramSize = 0x100;
+		_stackSize = 4;
+		_frequency = 7600000;
+		if(console->GetCartridge()->GetCartFlags() & CartFlags::LoRom) {
+			_registerMask = 0x4000;
+			_memoryManager->RegisterHandler(0x30, 0x3F, 0x8000, 0xFFFF, this);
+			_memoryManager->RegisterHandler(0xB0, 0xBF, 0x8000, 0xFFFF, this);
 
-	for(int i = 0; i < 2048; i++) {
-		_progRom[i] = biosRom[i*3] | (biosRom[i*3 + 1] << 8) | (biosRom[i*3 + 2] << 16);
+			//For Super Bases Loaded 2
+			_memoryManager->RegisterHandler(0x60, 0x6F, 0x0000, 0x7FFF, this);
+			_memoryManager->RegisterHandler(0xE0, 0xEF, 0x0000, 0x7FFF, this);
+		} else if(console->GetCartridge()->GetCartFlags() & CartFlags::HiRom) {
+			_registerMask = 0x1000;
+			_memoryManager->RegisterHandler(0x00, 0x1F, 0x6000, 0x7FFF, this);
+			_memoryManager->RegisterHandler(0x80, 0x9F, 0x6000, 0x7FFF, this);
+		}
 	}
-	for(int i = 0; i < 1024; i++) {
-		_dataRom[i] = biosRom[2048*3 + i*2] | (biosRom[2048*3 + i*2 + 1] << 8);
+
+	_progSize = (uint32_t)programRom.size() / 3;
+	_progRom = new uint32_t[_progSize];
+	_progMask = _progSize - 1;
+
+	_dataSize = (uint32_t)dataRom.size() / 2;
+	_dataRom = new uint16_t[_dataSize];
+	_dataMask = _dataSize - 1;
+
+	_ram = new uint16_t[_ramSize];
+	_ramMask = _ramSize - 1;
+
+	_stackMask = _stackSize - 1;
+
+	console->GetSettings()->InitializeRam(_ram, _ramSize * sizeof(uint16_t));
+	console->GetSettings()->InitializeRam(_stack, _stackSize * sizeof(uint16_t));
+
+	for(uint32_t i = 0; i < _progSize; i++) {
+		_progRom[i] = programRom[i * 3] | (programRom[i * 3 + 1] << 8) | (programRom[i * 3 + 2] << 16);
+	}
+	for(uint32_t i = 0; i < _dataSize; i++) {
+		_dataRom[i] = dataRom[i * 2] | (dataRom[i * 2 + 1] << 8);
 	}
 }
 
-bool NecDsp::LoadBios(string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &biosData)
+bool NecDsp::LoadBios(string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
 {
 	VirtualFile combinedBios(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), combinedFilename));
-	if(combinedBios.GetSize() == 0x2000) {
+	if(combinedBios.GetSize() == programSize+dataSize) {
+		vector<uint8_t> biosData;
 		combinedBios.ReadFile(biosData);
+		programRom.insert(programRom.end(), biosData.begin(), biosData.begin() + programSize);
+		dataRom.insert(dataRom.end(), biosData.begin() + programSize, biosData.end());
 		return true;
 	} else {
-		VirtualFile splitBiosA(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), splitFilenameProgram));
-		VirtualFile splitBiosB(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), splitFilenameData));
+		VirtualFile splitBiosProg(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), splitFilenameProgram));
+		VirtualFile splitBiosData(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), splitFilenameData));
 
-		if(splitBiosA.GetSize() == 0x1800 && splitBiosB.GetSize() == 0x800) {
-			splitBiosA.ReadFile(biosData);
-			
-			vector<uint8_t> splitData;
-			splitBiosB.ReadFile(splitData);
-			
-			biosData.insert(biosData.end(), splitData.begin(), splitData.end());
+		if(splitBiosProg.GetSize() == programSize && splitBiosData.GetSize() == dataSize) {
+			splitBiosProg.ReadFile(programRom);
+			splitBiosData.ReadFile(dataRom);
 			return true;
 		}
 	}
@@ -49,35 +98,23 @@ bool NecDsp::LoadBios(string combinedFilename, string splitFilenameProgram, stri
 NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console)
 {
 	bool biosLoaded = false;
-	vector<uint8_t> biosData;
+	vector<uint8_t> programRom;
+	vector<uint8_t> dataRom;
 	switch(type) {
-		case CoprocessorType::DSP1: biosLoaded = LoadBios("dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", biosData); break;
-		case CoprocessorType::DSP1B: biosLoaded = LoadBios("dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", biosData); break;
-		case CoprocessorType::DSP2: biosLoaded = LoadBios("dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", biosData); break;
-		case CoprocessorType::DSP3: biosLoaded = LoadBios("dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", biosData); break;
-		case CoprocessorType::DSP4: biosLoaded = LoadBios("dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", biosData); break;
+		case CoprocessorType::DSP1: biosLoaded = LoadBios("dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP1B: biosLoaded = LoadBios("dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP2: biosLoaded = LoadBios("dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP3: biosLoaded = LoadBios("dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP4: biosLoaded = LoadBios("dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom); break;
+		case CoprocessorType::ST010: biosLoaded = LoadBios("st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
+		case CoprocessorType::ST011: biosLoaded = LoadBios("st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
 	}
 
 	if(!biosLoaded) {
 		return nullptr;
 	}
 
-	NecDsp* dsp = nullptr;
-	MemoryManager* mm = console->GetMemoryManager().get();
-	if(console->GetCartridge()->GetCartFlags() & CartFlags::LoRom) {
-		dsp = new NecDsp(console, biosData, 0x4000);
-		mm->RegisterHandler(0x30, 0x3F, 0x8000, 0xFFFF, dsp);
-		mm->RegisterHandler(0xB0, 0xBF, 0x8000, 0xFFFF, dsp);
-
-		//For Super Bases Loaded 2
-		mm->RegisterHandler(0x60, 0x6F, 0x0000, 0x7FFF, dsp);
-		mm->RegisterHandler(0xE0, 0xEF, 0x0000, 0x7FFF, dsp);
-	} else if(console->GetCartridge()->GetCartFlags() & CartFlags::HiRom) {
-		dsp = new NecDsp(console, biosData, 0x1000);
-		mm->RegisterHandler(0x00, 0x1F, 0x6000, 0x7FFF, dsp);
-		mm->RegisterHandler(0x80, 0x9F, 0x6000, 0x7FFF, dsp);
-	}
-	return dsp;
+	return new NecDsp(type, console, programRom, dataRom);
 }
 
 void NecDsp::Reset()
@@ -86,18 +123,33 @@ void NecDsp::Reset()
 	_state = {};
 }
 
+void NecDsp::LoadBattery(string filePath)
+{
+	if(_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) {
+		VirtualFile saveFile(filePath);
+		saveFile.ReadFile((uint8_t*)_ram, _ramSize * sizeof(uint16_t));
+	}
+}
+
+void NecDsp::SaveBattery(string filePath)
+{
+	if(_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) {
+		ofstream saveFile(filePath, ios::binary);
+		saveFile.write((char*)_ram, _ramSize * sizeof(uint16_t));
+	}
+}
+
 void NecDsp::Run()
 {
-	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * ((double)NecDsp::DspClockRate / _console->GetMasterClockRate()));
+	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * (_frequency / _console->GetMasterClockRate()));
 
 	if(_inRqmLoop) {
 		_cycleCount = targetCycle;
-		_inRqmLoop = false;
 		return;
 	}
 
 	while(_cycleCount < targetCycle) {
-		_opCode = _progRom[_state.PC & 0x7FF];
+		_opCode = _progRom[_state.PC & _progMask];
 		_console->ProcessNecDspExec(_state.PC, _opCode);
 		_state.PC++;
 
@@ -120,11 +172,18 @@ void NecDsp::Run()
 uint8_t NecDsp::Read(uint32_t addr)
 {
 	Run();
-	_inRqmLoop = false;
-	if(addr & _registerMask) {
+
+	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x08000) {
+		//RAM
+		uint16_t value = _ram[(addr >> 1) & _ramMask];
+		return (addr & 0x01) ? (uint8_t)(value >> 8) : (uint8_t)value;
+	} else if(addr & _registerMask) {
+		//SR
 		return (_state.SR >> 8);
 	} else {
 		//DR
+		_inRqmLoop = false;
+
 		if(_state.SR & NecDspStatusFlags::DataRegControl) {
 			//8 bits
 			_state.SR &= ~NecDspStatusFlags::RequestForMaster;
@@ -146,11 +205,19 @@ uint8_t NecDsp::Read(uint32_t addr)
 void NecDsp::Write(uint32_t addr, uint8_t value)
 {
 	Run();
-	_inRqmLoop = false;
-	if(addr & _registerMask) {
-		//SR
-	} else {
+
+	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x08000) {
+		//RAM
+		uint16_t ramAddr = (addr >> 1) & _ramMask;
+		if(addr & 0x01) {
+			_ram[ramAddr] = (_ram[ramAddr] & 0xFF) | (value << 8);
+		} else {
+			_ram[ramAddr] = (_ram[ramAddr] & 0xFF00) | value;
+		}
+	} else if(!(addr & _registerMask)) {
 		//DR
+		_inRqmLoop = false;
+
 		if(_state.SR & NecDspStatusFlags::DataRegControl) {
 			//8 bits
 			_state.SR &= ~NecDspStatusFlags::RequestForMaster;
@@ -198,7 +265,7 @@ void NecDsp::RunApuOp(uint8_t aluOperation, uint16_t source)
 	uint8_t pSelect = (_opCode >> 20) & 0x03;
 	uint16_t p;
 	switch(pSelect) {
-		case 0: p = _ram[_state.DP & 0xFF]; break;
+		case 0: p = _ram[_state.DP & _ramMask]; break;
 		case 1: p = source; break;
 		case 2: p = _state.M; break;
 		case 3: p = _state.N; break;
@@ -317,7 +384,7 @@ void NecDsp::ExecOp()
 void NecDsp::ExecAndReturn()
 {
 	ExecOp();
-	_state.SP = (_state.SP - 1) & 0x03;
+	_state.SP = (_state.SP - 1) & _stackMask;
 	_state.PC = _stack[_state.SP];	
 }
 
@@ -377,13 +444,13 @@ void NecDsp::Jump()
 
 		case 0x140:
 			_stack[_state.SP] = _state.PC;
-			_state.SP = (_state.SP + 1) & 0x03;
+			_state.SP = (_state.SP + 1) & _stackMask;
 			_state.PC = target & ~0x2000;
 			break;
 
 		case 0x141:
 			_stack[_state.SP] = _state.PC;
-			_state.SP = (_state.SP + 1) & 0x03;
+			_state.SP = (_state.SP + 1) & _stackMask;
 			_state.PC = target | 0x2000;
 			break;
 	}
@@ -422,17 +489,17 @@ void NecDsp::Load(uint8_t dest, uint16_t value)
 
 		case 0x0B:
 			_state.K = value;
-			_state.L = _dataRom[_state.RP & 0x3FF];
+			_state.L = _dataRom[_state.RP & _dataMask];
 			break;
 
 		case 0x0C:
 			_state.L = value;
-			_state.K = _ram[(_state.DP | 0x40) & 0xFF];
+			_state.K = _ram[(_state.DP | 0x40) & _ramMask];
 			break;
 
 		case 0x0D: _state.L = value; break;
 		case 0x0E: _state.TRB = value; break;
-		case 0x0F: _ram[_state.DP & 0xFF] = value; break;
+		case 0x0F: _ram[_state.DP & _ramMask] = value; break;
 
 		default:
 			throw std::runtime_error("DSP-1: invalid destination");
@@ -448,7 +515,7 @@ uint16_t NecDsp::GetSourceValue(uint8_t source)
 		case 0x03: return _state.TR;
 		case 0x04: return _state.DP;
 		case 0x05: return _state.RP;
-		case 0x06: return _dataRom[_state.RP & 0x3FF];
+		case 0x06: return _dataRom[_state.RP & _dataMask];
 		case 0x07: return 0x8000 - _state.FlagsA.Sign1;
 
 		case 0x08:
@@ -461,7 +528,7 @@ uint16_t NecDsp::GetSourceValue(uint8_t source)
 		case 0x0C: return _state.SerialIn;
 		case 0x0D: return _state.K;
 		case 0x0E: return _state.L;
-		case 0x0F: return _ram[_state.DP & 0xFF];
+		case 0x0F: return _ram[_state.DP & _ramMask];
 	}
 	throw std::runtime_error("DSP-1: invalid source");
 }
@@ -483,17 +550,17 @@ uint8_t* NecDsp::DebugGetDataRam()
 
 uint32_t NecDsp::DebugGetProgramRomSize()
 {
-	return 2048 * 4;
+	return _progSize * sizeof(uint32_t);
 }
 
 uint32_t NecDsp::DebugGetDataRomSize()
 {
-	return 1024 * 2;
+	return _dataSize * sizeof(uint16_t);
 }
 
 uint32_t NecDsp::DebugGetDataRamSize()
 {
-	return 256 * 2;
+	return _ramSize * sizeof(uint16_t);
 }
 
 NecDspState NecDsp::GetState()
@@ -511,7 +578,7 @@ void NecDsp::Serialize(Serializer &s)
 	);
 
 	s.Stream(_opCode, _cycleCount, _inRqmLoop);
-	s.StreamArray<uint16_t>(_ram, 256);
-	s.StreamArray<uint16_t>(_stack, 4);
+	s.StreamArray<uint16_t>(_ram, _ramSize);
+	s.StreamArray<uint16_t>(_stack, _stackSize);
 }
 

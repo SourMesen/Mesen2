@@ -150,6 +150,16 @@ bool VirtualFile::ReadFile(std::stringstream & out)
 	return false;
 }
 
+bool VirtualFile::ReadFile(uint8_t* out, uint32_t expectedSize)
+{
+	LoadFile();
+	if(_data.size() == expectedSize) {
+		memcpy(out, _data.data(), _data.size());
+		return true;
+	}
+	return false;
+}
+
 bool VirtualFile::ApplyPatch(VirtualFile &patch)
 {
 	//Apply patch file

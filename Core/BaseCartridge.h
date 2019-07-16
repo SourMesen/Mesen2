@@ -40,6 +40,7 @@ private:
 	void DisplayCartInfo();
 
 	CoprocessorType GetCoprocessorType();
+	CoprocessorType GetSt01xVersion();
 	CoprocessorType GetDspVersion();
 
 	bool MapSpecificCarts(MemoryManager &mm);

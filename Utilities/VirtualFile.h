@@ -35,6 +35,7 @@ public:
 
 	bool ReadFile(vector<uint8_t> &out);
 	bool ReadFile(std::stringstream &out);
+	bool ReadFile(uint8_t* out, uint32_t expectedSize);
 
 	bool ApplyPatch(VirtualFile &patch);
 };

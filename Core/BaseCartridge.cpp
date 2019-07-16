@@ -165,8 +165,6 @@ void BaseCartridge::Init()
 	_saveRam = new uint8_t[_saveRamSize];
 	_console->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 
-	LoadBattery();
-
 	DisplayCartInfo();
 }
 
@@ -184,7 +182,7 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 			case 0x0F:
 				switch(_cartInfo.CartridgeType & 0x0F) {
 					case 0x00: return CoprocessorType::SPC7110; break;
-					case 0x01: return CoprocessorType::ST010; break; //or ST011
+					case 0x01: return GetSt01xVersion(); break;
 					case 0x02: return CoprocessorType::ST018; break;
 					case 0x10: return CoprocessorType::CX4; break;
 				}
@@ -193,6 +191,16 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 	}
 
 	return CoprocessorType::None;
+}
+
+CoprocessorType BaseCartridge::GetSt01xVersion()
+{
+	string cartName = GetCartName();
+	if(cartName == "2DAN MORITA SHOUGI") {
+		return CoprocessorType::ST011;
+	}
+
+	return CoprocessorType::ST010;
 }
 
 CoprocessorType BaseCartridge::GetDspVersion()
@@ -239,26 +247,23 @@ CartFlags::CartFlags BaseCartridge::GetCartFlags()
 
 void BaseCartridge::LoadBattery()
 {
+	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
 	if(_saveRamSize > 0) {
-		string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
 		VirtualFile saveFile(saveFilePath);
-		if(saveFile.IsValid()) {
-			vector<uint8_t> saveData;
-			saveFile.ReadFile(saveData);
-
-			if(saveData.size() == _saveRamSize) {
-				memcpy(_saveRam, saveData.data(), _saveRamSize);
-			}
-		}
+		saveFile.ReadFile(_saveRam, _saveRamSize);
+	} else if(_coprocessor) {
+		_coprocessor->LoadBattery(saveFilePath);
 	}
 }
 
 void BaseCartridge::SaveBattery()
 {
+	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
 	if(_saveRamSize > 0) {
-		string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
 		ofstream saveFile(saveFilePath, ios::binary);
 		saveFile.write((char*)_saveRam, _saveRamSize);
+	} else if(_coprocessor) {
+		_coprocessor->SaveBattery(saveFilePath);
 	}
 }
 
@@ -329,6 +334,8 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 	}
 
 	InitCoprocessor(mm);
+
+	LoadBattery();
 }
 
 void BaseCartridge::InitCoprocessor(MemoryManager &mm)

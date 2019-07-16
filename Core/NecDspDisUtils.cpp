@@ -69,7 +69,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		}
 	} else if(operationType == 2) {
 		//Jump
-		uint8_t bank = opCode & 0x03; //should be 8 bits?
+		uint8_t bank = opCode & 0x03;
 		uint16_t address = (opCode >> 2) & 0x7FF;
 		uint16_t target = (memoryAddr & 0x2000) | (bank << 11) | address;
 

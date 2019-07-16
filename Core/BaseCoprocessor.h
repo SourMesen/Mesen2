@@ -8,4 +8,7 @@ class BaseCoprocessor : public ISerializable, public IMemoryHandler
 public:
 	virtual void Run() = 0;
 	virtual void Reset() = 0;
+
+	virtual void LoadBattery(string filePath) { }
+	virtual void SaveBattery(string filePath) { }
 };
