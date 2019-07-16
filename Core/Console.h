@@ -69,6 +69,7 @@ private:
 	void WaitForPauseEnd();
 
 public:
+	Console();
 	~Console();
 
 	void Initialize();

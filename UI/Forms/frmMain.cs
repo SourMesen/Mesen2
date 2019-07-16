@@ -62,24 +62,30 @@ namespace Mesen.GUI.Forms
 			ConfigManager.Config.ApplyConfig();
 
 			_displayManager = new DisplayManager(this, ctrlRenderer, pnlRenderer, mnuMain, ctrlRecentGames);
-			_displayManager.UpdateViewerSize();
+			_displayManager.SetScaleBasedOnWindowSize();
 			_shortcuts = new ShortcutHandler(_displayManager);
 
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 			
-			SaveStateManager.InitializeStateMenu(mnuSaveState, true, _shortcuts);
-			SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
-
-			BindShortcuts();
-
-			ctrlRecentGames.Initialize();
-			ResizeRecentGames();
-
 			_commandLine.LoadGameFromCommandLine();
-			if(!EmuRunner.IsRunning()) {
-				ctrlRecentGames.Visible = true;
-			}
+
+			Task.Run(() => {
+				System.Threading.Thread.Sleep(25);
+				this.BeginInvoke((Action)(() => {
+					SaveStateManager.InitializeStateMenu(mnuSaveState, true, _shortcuts);
+					SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
+
+					BindShortcuts();
+
+					ResizeRecentGames();
+					ctrlRecentGames.Initialize();
+
+					if(!EmuRunner.IsRunning()) {
+						ctrlRecentGames.Visible = true;
+					}
+				}));
+			});
 
 			if(ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates) {
 				UpdateHelper.CheckForUpdates(true);

@@ -182,9 +182,10 @@ void SdlRenderer::Render()
 		SDL_Rect dest = {0, 0, (int)_screenWidth, (int)_screenHeight };
 		SDL_RenderCopy(_sdlRenderer, _sdlTexture, &source, &dest);
 
-		if(paused) {
-			DrawPauseScreen();
-		} else if(_console->GetVideoDecoder()->IsRunning()) {
+		if(_console->GetVideoDecoder()->IsRunning()) {
+			if(paused) {
+				DrawPauseScreen();
+			}
 			DrawCounters();
 		}
 

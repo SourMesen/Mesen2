@@ -569,11 +569,10 @@ void Renderer::Render()
 		//Draw screen
 		DrawScreen();
 
-		if(paused) {
-			DrawPauseScreen();
-		}
-
 		if(_console->IsRunning()) {
+			if(paused) {
+				DrawPauseScreen();
+			}
 			DrawCounters();
 		}
 

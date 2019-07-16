@@ -37,7 +37,6 @@ FrameInfo VideoDecoder::GetFrameInfo()
 ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 {
 	ScreenSize size;
-	OverscanDimensions overscan = ignoreScale ? _videoFilter->GetOverscan() : _console->GetSettings()->GetOverscan();
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	double aspectRatio = _console->GetSettings()->GetAspectRatio(_console->GetRegion());
 	double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoConfig().VideoScale);
@@ -48,6 +47,7 @@ ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 	size.Width = (int32_t)(frameInfo.Width * scale / divider);
 	size.Height = (int32_t)(frameInfo.Height * scale / divider);
 	if(aspectRatio != 0.0) {
+		OverscanDimensions overscan = _console->GetSettings()->GetOverscan();
 		uint32_t originalHeight = frameInfo.Height + (overscan.Top + overscan.Bottom) * divider;
 		uint32_t originalWidth = frameInfo.Width + (overscan.Left + overscan.Right) * divider;
 		size.Width = (uint32_t)(originalHeight * scale * aspectRatio * ((double)frameInfo.Width / originalWidth)) / divider;

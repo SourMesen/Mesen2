@@ -33,6 +33,11 @@
 #include "../Utilities/PlatformUtilities.h"
 #include "../Utilities/FolderUtilities.h"
 
+Console::Console()
+{
+	_settings.reset(new EmuSettings());
+}
+
 Console::~Console()
 {
 }
@@ -41,7 +46,6 @@ void Console::Initialize()
 {
 	_lockCounter = 0;
 
-	_settings.reset(new EmuSettings());
 	_notificationManager.reset(new NotificationManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));

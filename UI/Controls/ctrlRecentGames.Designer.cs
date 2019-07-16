@@ -29,7 +29,6 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this.tlpPreviousState = new Mesen.GUI.Controls.DBTableLayoutPanel();
-			this.pnlPreviousState = new System.Windows.Forms.Panel();
 			this.picPreviousState = new Mesen.GUI.Controls.GamePreviewBox();
 			this.lblGameName = new System.Windows.Forms.Label();
 			this.lblSaveDate = new System.Windows.Forms.Label();
@@ -37,7 +36,6 @@
 			this.picPrevGame = new System.Windows.Forms.PictureBox();
 			this.tmrInput = new System.Windows.Forms.Timer(this.components);
 			this.tlpPreviousState.SuspendLayout();
-			this.pnlPreviousState.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picPreviousState)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picNextGame)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPrevGame)).BeginInit();
@@ -50,7 +48,7 @@
 			this.tlpPreviousState.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tlpPreviousState.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tlpPreviousState.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tlpPreviousState.Controls.Add(this.pnlPreviousState, 1, 1);
+			this.tlpPreviousState.Controls.Add(this.picPreviousState, 1, 1);
 			this.tlpPreviousState.Controls.Add(this.lblGameName, 1, 2);
 			this.tlpPreviousState.Controls.Add(this.lblSaveDate, 1, 3);
 			this.tlpPreviousState.Controls.Add(this.picNextGame, 2, 1);
@@ -68,32 +66,21 @@
 			this.tlpPreviousState.Size = new System.Drawing.Size(272, 107);
 			this.tlpPreviousState.TabIndex = 9;
 			// 
-			// pnlPreviousState
-			// 
-			this.pnlPreviousState.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.pnlPreviousState.BackColor = System.Drawing.Color.Gray;
-			this.pnlPreviousState.Controls.Add(this.picPreviousState);
-			this.pnlPreviousState.Location = new System.Drawing.Point(113, 13);
-			this.pnlPreviousState.Name = "pnlPreviousState";
-			this.pnlPreviousState.Padding = new System.Windows.Forms.Padding(2);
-			this.pnlPreviousState.Size = new System.Drawing.Size(46, 46);
-			this.pnlPreviousState.TabIndex = 8;
-			// 
 			// picPreviousState
 			// 
+			this.picPreviousState.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.picPreviousState.BackColor = System.Drawing.Color.Black;
 			this.picPreviousState.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.picPreviousState.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-			this.picPreviousState.Location = new System.Drawing.Point(2, 2);
+			this.picPreviousState.Location = new System.Drawing.Point(115, 10);
 			this.picPreviousState.Margin = new System.Windows.Forms.Padding(0);
 			this.picPreviousState.Name = "picPreviousState";
 			this.picPreviousState.Size = new System.Drawing.Size(42, 42);
 			this.picPreviousState.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.picPreviousState.TabIndex = 7;
 			this.picPreviousState.TabStop = false;
+			this.picPreviousState.Visible = false;
 			this.picPreviousState.Click += new System.EventHandler(this.picPreviousState_Click);
-			this.picPreviousState.MouseEnter += new System.EventHandler(this.picPreviousState_MouseEnter);
-			this.picPreviousState.MouseLeave += new System.EventHandler(this.picPreviousState_MouseLeave);
 			// 
 			// lblGameName
 			// 
@@ -161,7 +148,6 @@
 			this.Size = new System.Drawing.Size(272, 107);
 			this.tlpPreviousState.ResumeLayout(false);
 			this.tlpPreviousState.PerformLayout();
-			this.pnlPreviousState.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.picPreviousState)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picNextGame)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPrevGame)).EndInit();
@@ -172,7 +158,6 @@
 		#endregion
 
 		private DBTableLayoutPanel tlpPreviousState;
-		private System.Windows.Forms.Panel pnlPreviousState;
 		private GamePreviewBox picPreviousState;
 		private System.Windows.Forms.Label lblGameName;
 		private System.Windows.Forms.Label lblSaveDate;

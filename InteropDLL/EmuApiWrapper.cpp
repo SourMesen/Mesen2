@@ -57,11 +57,12 @@ extern "C" {
 	DllExport void __stdcall InitDll()
 	{
 		_console.reset(new Console());
-		_console->Initialize();
 	}
 
 	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool noAudio, bool noVideo, bool noInput)
 	{
+		_console->Initialize();
+
 		FolderUtilities::SetHomeFolder(homeFolder);
 		_shortcutKeyHandler.reset(new ShortcutKeyHandler(_console));
 

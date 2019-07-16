@@ -139,7 +139,7 @@ namespace Mesen.GUI.Emulation
 			SetScale(scale, false);
 		}
 
-		private void SetScaleBasedOnWindowSize()
+		public void SetScaleBasedOnWindowSize()
 		{
 			SetScaleBasedOnDimensions(_panel.ClientSize);
 		}

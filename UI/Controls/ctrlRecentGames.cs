@@ -111,9 +111,6 @@ namespace Mesen.GUI.Controls
 				_recentGames.RemoveRange(5, _recentGames.Count - 5);
 			}
 
-			picPrevGame.Visible = _recentGames.Count > 1;
-			picNextGame.Visible = _recentGames.Count > 1;
-
 			if(_recentGames.Count == 0) {
 				this.Visible = false;
 				tmrInput.Enabled = false;
@@ -121,6 +118,10 @@ namespace Mesen.GUI.Controls
 				UpdateGameInfo();
 				tmrInput.Enabled = true;
 			}
+
+			picPreviousState.Visible = _recentGames.Count > 0;
+			picPrevGame.Visible = _recentGames.Count > 1;
+			picNextGame.Visible = _recentGames.Count > 1;
 		}
 
 		public void UpdateGameInfo()
@@ -144,8 +145,9 @@ namespace Mesen.GUI.Controls
 				}
 				UpdateSize();
 			}
+			picPreviousState.Visible = _recentGames.Count > 0;
 		}
-		
+
 		float _xFactor = 1;
 		float _yFactor = 1;
 		protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
@@ -167,7 +169,6 @@ namespace Mesen.GUI.Controls
 
 				Size newSize = new Size((int)(picPreviousState.Image.Width / ratio), (int)(picPreviousState.Image.Height / ratio));
 				picPreviousState.Size = newSize;
-				pnlPreviousState.Size = new Size(newSize.Width+4, newSize.Height+4);
 			}
 			tlpPreviousState.Visible = true;
 		}
@@ -187,17 +188,7 @@ namespace Mesen.GUI.Controls
 			}
 			base.OnResize(e);
 		}
-
-		private void picPreviousState_MouseEnter(object sender, EventArgs e)
-		{
-			pnlPreviousState.BackColor = Color.LightBlue;
-		}
-
-		private void picPreviousState_MouseLeave(object sender, EventArgs e)
-		{
-			pnlPreviousState.BackColor = Color.Gray;
-		}
-
+		
 		private void picPreviousState_Click(object sender, EventArgs e)
 		{
 			LoadSelectedGame();
@@ -281,6 +272,7 @@ namespace Mesen.GUI.Controls
 	public class GamePreviewBox : PictureBox
 	{
 		public System.Drawing.Drawing2D.InterpolationMode InterpolationMode { get; set; }
+		private bool _hovered = false;
 
 		public GamePreviewBox()
 		{
@@ -288,10 +280,28 @@ namespace Mesen.GUI.Controls
 			InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
 		}
 
+		protected override void OnMouseEnter(EventArgs e)
+		{
+			base.OnMouseEnter(e);
+			_hovered = true;
+			this.Invalidate();
+		}
+
+		protected override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			_hovered = false;
+			this.Invalidate();
+		}
+
 		protected override void OnPaint(PaintEventArgs pe)
 		{
-			pe.Graphics.InterpolationMode = InterpolationMode;
+			pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 			base.OnPaint(pe);
+
+			using(Pen pen = new Pen(_hovered ? Color.LightBlue : Color.Gray, 2)) {
+				pe.Graphics.DrawRectangle(pen, 1, 1, this.Width - 2, this.Height - 2);
+			}
 		}
 	}
 
