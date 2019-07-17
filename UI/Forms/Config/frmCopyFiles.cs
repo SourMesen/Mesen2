@@ -54,7 +54,7 @@ namespace Mesen.GUI.Forms.Config
 			}
 
 			foreach(string subdir in Directory.GetDirectories(source)) {
-				GetFilesToCopy(subdir, Path.Combine(target, Path.GetDirectoryName(subdir)), sourceFiles, targetFiles);
+				GetFilesToCopy(subdir, Path.Combine(target, Path.GetFileName(subdir)), sourceFiles, targetFiles);
 			}
 		}
 

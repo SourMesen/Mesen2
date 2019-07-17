@@ -14,6 +14,8 @@ namespace Mesen.GUI.Forms.Config
 {
 	public partial class frmPreferences : BaseConfigForm
 	{
+		public bool NeedRestart { get; private set; }
+
 		public frmPreferences()
 		{
 			InitializeComponent();
@@ -136,7 +138,15 @@ namespace Mesen.GUI.Forms.Config
 					string targetFolder = radStorageDocuments.Checked ? ConfigManager.DefaultDocumentsFolder : ConfigManager.DefaultPortableFolder;
 					if(MesenMsgBox.Show("CopyMesenDataPrompt", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, ConfigManager.HomeFolder, targetFolder) == DialogResult.OK) {
 						try {
-							FolderHelper.MigrateData(ConfigManager.HomeFolder, targetFolder, this);
+							//Update and save the config before migrating the data
+							UpdateObject();
+							OnApply();
+							ConfigManager.ApplyChanges();
+							ConfigManager.SaveConfig();
+
+							if(FolderHelper.MigrateData(ConfigManager.HomeFolder, targetFolder, this)) {
+								NeedRestart = true;
+							}
 						} catch(Exception ex) {
 							MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
 							e.Cancel = true;

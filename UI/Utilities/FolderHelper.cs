@@ -49,10 +49,10 @@ namespace Mesen.GUI.Utilities
 			File.Move(Path.Combine(source, "settings.xml"), Path.Combine(source, "settings.backup.xml"));
 
 			ConfigManager.InitHomeFolder();
+			ConfigManager.ApplyChanges();
 			ConfigManager.SaveConfig();
 
 			ConfigManager.RestartMesen(true);
-			Application.Exit();
 
 			return true;
 		}

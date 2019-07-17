@@ -329,8 +329,11 @@ namespace Mesen.GUI.Forms
 		{
 			using(frmPreferences frm = new frmPreferences()) {
 				frm.ShowDialog(sender, this);
+				ConfigManager.Config.Preferences.ApplyConfig();
+				if(frm.NeedRestart) {
+					this.Close();
+				}
 			}
-			ConfigManager.Config.Preferences.ApplyConfig();
 		}
 
 		protected override void OnDragDrop(DragEventArgs e)
