@@ -36,6 +36,11 @@
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDbgIntegrationSettings = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
+			this.codeDataLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuResetCdlLog = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuContinue = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreak = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,11 +127,6 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
-			this.codeDataLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuResetCdlLog = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -189,6 +189,41 @@
 			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(241, 22);
 			this.mnuDbgIntegrationSettings.Text = "CC65/CA65 Integration Settings";
 			this.mnuDbgIntegrationSettings.Click += new System.EventHandler(this.mnuDbgIntegrationSettings_Click);
+			// 
+			// toolStripMenuItem7
+			// 
+			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+			this.toolStripMenuItem7.Size = new System.Drawing.Size(168, 6);
+			// 
+			// codeDataLoggerToolStripMenuItem
+			// 
+			this.codeDataLoggerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuResetCdlLog});
+			this.codeDataLoggerToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
+			this.codeDataLoggerToolStripMenuItem.Name = "codeDataLoggerToolStripMenuItem";
+			this.codeDataLoggerToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+			this.codeDataLoggerToolStripMenuItem.Text = "Code/Data Logger";
+			// 
+			// mnuResetCdlLog
+			// 
+			this.mnuResetCdlLog.Image = global::Mesen.GUI.Properties.Resources.Refresh;
+			this.mnuResetCdlLog.Name = "mnuResetCdlLog";
+			this.mnuResetCdlLog.Size = new System.Drawing.Size(152, 22);
+			this.mnuResetCdlLog.Text = "Reset log";
+			this.mnuResetCdlLog.Click += new System.EventHandler(this.mnuResetCdlLog_Click);
+			// 
+			// toolStripMenuItem13
+			// 
+			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
+			this.toolStripMenuItem13.Size = new System.Drawing.Size(168, 6);
+			// 
+			// mnuExit
+			// 
+			this.mnuExit.Image = global::Mesen.GUI.Properties.Resources.Exit;
+			this.mnuExit.Name = "mnuExit";
+			this.mnuExit.Size = new System.Drawing.Size(171, 22);
+			this.mnuExit.Text = "Exit";
+			this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
 			// 
 			// debugToolStripMenuItem
 			// 
@@ -625,14 +660,12 @@
 			// 
 			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
 			this.toolStripMenuItem11.Size = new System.Drawing.Size(258, 6);
-			this.toolStripMenuItem11.Visible = false;
 			// 
 			// mnuBreakOnUnitRead
 			// 
 			this.mnuBreakOnUnitRead.Name = "mnuBreakOnUnitRead";
 			this.mnuBreakOnUnitRead.Size = new System.Drawing.Size(261, 22);
 			this.mnuBreakOnUnitRead.Text = "Break on uninitialized memory read";
-			this.mnuBreakOnUnitRead.Visible = false;
 			// 
 			// toolStripMenuItem10
 			// 
@@ -882,41 +915,6 @@
 			this.tsToolbar.Size = new System.Drawing.Size(832, 25);
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
-			// 
-			// toolStripMenuItem7
-			// 
-			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-			this.toolStripMenuItem7.Size = new System.Drawing.Size(168, 6);
-			// 
-			// mnuExit
-			// 
-			this.mnuExit.Image = global::Mesen.GUI.Properties.Resources.Exit;
-			this.mnuExit.Name = "mnuExit";
-			this.mnuExit.Size = new System.Drawing.Size(171, 22);
-			this.mnuExit.Text = "Exit";
-			this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
-			// 
-			// toolStripMenuItem13
-			// 
-			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-			this.toolStripMenuItem13.Size = new System.Drawing.Size(168, 6);
-			// 
-			// codeDataLoggerToolStripMenuItem
-			// 
-			this.codeDataLoggerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuResetCdlLog});
-			this.codeDataLoggerToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
-			this.codeDataLoggerToolStripMenuItem.Name = "codeDataLoggerToolStripMenuItem";
-			this.codeDataLoggerToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-			this.codeDataLoggerToolStripMenuItem.Text = "Code/Data Logger";
-			// 
-			// mnuResetCdlLog
-			// 
-			this.mnuResetCdlLog.Image = global::Mesen.GUI.Properties.Resources.Refresh;
-			this.mnuResetCdlLog.Name = "mnuResetCdlLog";
-			this.mnuResetCdlLog.Size = new System.Drawing.Size(152, 22);
-			this.mnuResetCdlLog.Text = "Reset log";
-			this.mnuResetCdlLog.Click += new System.EventHandler(this.mnuResetCdlLog_Click);
 			// 
 			// frmDebugger
 			// 

@@ -221,7 +221,8 @@ enum class BreakSource
 	BreakOnBrk = 3,
 	BreakOnCop = 4,
 	BreakOnWdm = 5,
-	BreakOnStp = 6
+	BreakOnStp = 6,
+	BreakOnUninitMemoryRead = 7
 };
 
 struct BreakEvent

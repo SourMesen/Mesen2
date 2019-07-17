@@ -67,6 +67,11 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
+	if(_cpu->GetState().PC == 0) {
+		//Enable breaking on uninit reads when debugger is opened at power on
+		_enableBreakOnUninitRead = true;
+	}
+
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
 	_codeDataLogger->LoadCdlFile(cdlFile);
 
@@ -90,6 +95,7 @@ void Debugger::Release()
 
 void Debugger::Reset()
 {
+	_enableBreakOnUninitRead = true;
 	_prevOpCode = 0xFF;
 	_spcPrevOpCode = 0xFF;
 }
@@ -167,7 +173,13 @@ void Debugger::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
-	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
+	if(_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock())) {
+		//Memory access was a read on an uninitialized memory address
+		if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+			breakSource = BreakSource::BreakOnUninitMemoryRead;
+			_cpuStepCount = 0;
+		}
+	}
 
 	if(_memoryManager->IsRegister(addr)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
