@@ -105,8 +105,7 @@ uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAd
 
 int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, CpuState &state)
 {
-	AddrMode addrMode = CpuDisUtils::OpMode[info.GetOpCode()];
-	if(addrMode != AddrMode::Rel && addrMode != AddrMode::RelLng && addrMode > AddrMode::ImmM && info.GetOpSize() < 4) {
+	if(HasEffectiveAddress(CpuDisUtils::OpMode[info.GetOpCode()])) {
 		DummyCpu cpu(console);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= info.GetFlags();
@@ -115,6 +114,48 @@ int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console
 		return cpu.GetLastOperand();
 	}
 	return -1;
+}
+
+bool CpuDisUtils::HasEffectiveAddress(AddrMode addrMode)
+{
+	switch(addrMode) {
+		case AddrMode::Acc:
+		case AddrMode::Imp:
+		case AddrMode::Stk:
+		case AddrMode::Sig8:
+		case AddrMode::Imm8:
+		case AddrMode::Rel:
+		case AddrMode::RelLng:
+		case AddrMode::Imm16:
+		case AddrMode::BlkMov:
+		case AddrMode::AbsLngJmp:
+		case AddrMode::AbsLng:
+		case AddrMode::ImmX:
+		case AddrMode::ImmM:
+		case AddrMode::AbsJmp:
+			return false;
+
+		case AddrMode::DirIdxIndX:
+		case AddrMode::DirIdxX:
+		case AddrMode::DirIdxY:
+		case AddrMode::DirIndIdxY:
+		case AddrMode::DirIndLngIdxY:
+		case AddrMode::DirIndLng:
+		case AddrMode::DirInd:
+		case AddrMode::Dir:
+		case AddrMode::StkRel:
+		case AddrMode::StkRelIndIdxY:
+		case AddrMode::Abs:
+		case AddrMode::AbsIdxXInd:
+		case AddrMode::AbsIdxX:
+		case AddrMode::AbsIdxY:
+		case AddrMode::AbsLngIdxX:
+		case AddrMode::AbsInd:
+		case AddrMode::AbsIndLng:
+			return true;
+	}
+
+	throw std::runtime_error("Invalid mode");
 }
 
 uint8_t CpuDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
