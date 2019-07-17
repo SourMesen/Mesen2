@@ -89,22 +89,13 @@ bool ShortcutKeyHandler::DetectKeyRelease(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::ProcessRunSingleFrame()
 {
-	//TODO
-	/*shared_ptr<EmuSettings> settings = _console->GetSettings();
+	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	if(!_runSingleFrameRepeatTimer) {
 		_runSingleFrameRepeatTimer.reset(new Timer());
 	}
 	_runSingleFrameRepeatTimer->Reset();
 
-	if(settings->CheckFlag(EmulationFlags::DebuggerWindowEnabled)) {
-		shared_ptr<Debugger> debugger = _console->GetDebugger(false);
-		if(debugger) {
-			debugger->BreakOnScanline(241);
-		}
-	} else {
-		_console->PauseOnNextFrame();
-		settings->ClearFlags(EmulationFlags::Paused);
-	}*/
+	_console->PauseOnNextFrame();
 }
 
 void ShortcutKeyHandler::CheckMappedKeys()

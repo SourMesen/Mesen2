@@ -36,6 +36,10 @@
 Console::Console()
 {
 	_settings.reset(new EmuSettings());
+	_paused = false;
+	_pauseOnNextFrame = false;
+	_stopFlag = false;
+	_lockCounter = 0;
 }
 
 Console::~Console()
@@ -107,6 +111,11 @@ void Console::Run()
 			_rewindManager->ProcessEndOfFrame();
 
 			WaitForLock();
+
+			if(_pauseOnNextFrame) {
+				_pauseOnNextFrame = false;
+				_paused = true;
+			}
 
 			if(_paused && !_stopFlag && !_debugger) {
 				WaitForPauseEnd();
@@ -364,6 +373,17 @@ double Console::GetFrameDelay()
 		frameDelay /= (emulationSpeed / 100.0);
 	}
 	return frameDelay;
+}
+
+void Console::PauseOnNextFrame()
+{
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->Step(240, StepType::SpecificScanline);
+	} else {
+		_pauseOnNextFrame = true;
+		_paused = false;
+	}
 }
 
 void Console::Pause()

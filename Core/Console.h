@@ -59,6 +59,7 @@ private:
 	SimpleLock _debuggerLock;
 	atomic<bool> _stopFlag;
 	atomic<bool> _paused;
+	atomic<bool> _pauseOnNextFrame;
 
 	ConsoleRegion _region;
 	uint32_t _masterClockRate;
@@ -82,6 +83,8 @@ public:
 	void Reset();
 	void PowerCycle();
 
+	void PauseOnNextFrame();
+	
 	void Pause();
 	void Resume();
 	bool IsPaused();
