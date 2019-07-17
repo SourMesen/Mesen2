@@ -454,6 +454,18 @@ namespace Mesen.GUI.Debugger
 			mnuHideData.Checked = mode == CodeDisplayMode.Hide;
 			mnuDisassembleData.Checked = mode == CodeDisplayMode.Disassemble;
 		}
+
+		private void mnuExit_Click(object sender, EventArgs e)
+		{
+			this.Close();
+		}
+
+		private void mnuResetCdlLog_Click(object sender, EventArgs e)
+		{
+			byte[] emptyCdlLog = new byte[DebugApi.GetMemorySize(SnesMemoryType.PrgRom)];
+			DebugApi.SetCdlData(emptyCdlLog, emptyCdlLog.Length);
+			RefreshDisassembly();
+		}
 	}
 
 	public enum CpuVector

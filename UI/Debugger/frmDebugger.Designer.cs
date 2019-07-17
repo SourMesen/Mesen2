@@ -122,6 +122,11 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
+			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
+			this.codeDataLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuResetCdlLog = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -159,7 +164,11 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importExportToolStripMenuItem});
+            this.importExportToolStripMenuItem,
+            this.toolStripMenuItem7,
+            this.codeDataLoggerToolStripMenuItem,
+            this.toolStripMenuItem13,
+            this.mnuExit});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "File";
@@ -170,7 +179,7 @@
             this.mnuDbgIntegrationSettings});
 			this.importExportToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.Import;
 			this.importExportToolStripMenuItem.Name = "importExportToolStripMenuItem";
-			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
 			this.importExportToolStripMenuItem.Text = "Import/Export";
 			// 
 			// mnuDbgIntegrationSettings
@@ -874,6 +883,41 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
+			// toolStripMenuItem7
+			// 
+			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+			this.toolStripMenuItem7.Size = new System.Drawing.Size(168, 6);
+			// 
+			// mnuExit
+			// 
+			this.mnuExit.Image = global::Mesen.GUI.Properties.Resources.Exit;
+			this.mnuExit.Name = "mnuExit";
+			this.mnuExit.Size = new System.Drawing.Size(171, 22);
+			this.mnuExit.Text = "Exit";
+			this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
+			// 
+			// toolStripMenuItem13
+			// 
+			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
+			this.toolStripMenuItem13.Size = new System.Drawing.Size(168, 6);
+			// 
+			// codeDataLoggerToolStripMenuItem
+			// 
+			this.codeDataLoggerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuResetCdlLog});
+			this.codeDataLoggerToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
+			this.codeDataLoggerToolStripMenuItem.Name = "codeDataLoggerToolStripMenuItem";
+			this.codeDataLoggerToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+			this.codeDataLoggerToolStripMenuItem.Text = "Code/Data Logger";
+			// 
+			// mnuResetCdlLog
+			// 
+			this.mnuResetCdlLog.Image = global::Mesen.GUI.Properties.Resources.Refresh;
+			this.mnuResetCdlLog.Name = "mnuResetCdlLog";
+			this.mnuResetCdlLog.Size = new System.Drawing.Size(152, 22);
+			this.mnuResetCdlLog.Text = "Reset log";
+			this.mnuResetCdlLog.Click += new System.EventHandler(this.mnuResetCdlLog_Click);
+			// 
 			// frmDebugger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -998,5 +1042,10 @@
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importExportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnuDbgIntegrationSettings;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
+		private System.Windows.Forms.ToolStripMenuItem codeDataLoggerToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mnuResetCdlLog;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
+		private System.Windows.Forms.ToolStripMenuItem mnuExit;
 	}
 }
