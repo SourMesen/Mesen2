@@ -49,6 +49,7 @@ public:
 		if(!_needReset) {
 			shared_ptr<Debugger> debugger = _console->GetDebugger(false);
 			if(debugger) {
+				debugger->SuspendDebugger(false);
 				debugger->Run();
 			}
 
@@ -63,6 +64,7 @@ public:
 		if(!_needPowerCycle) {
 			shared_ptr<Debugger> debugger = _console->GetDebugger(false);
 			if(debugger) {
+				debugger->SuspendDebugger(false);
 				debugger->Run();
 			}
 

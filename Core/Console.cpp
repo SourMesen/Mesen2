@@ -237,6 +237,10 @@ void Console::Reset()
 	_memoryManager->IncMasterClockStartup();
 	
 	Unlock();
+
+	if(debugger) {
+		debugger->SuspendDebugger(true);
+	}
 }
 
 void Console::PowerCycle()
