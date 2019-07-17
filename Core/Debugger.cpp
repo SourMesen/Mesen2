@@ -441,6 +441,12 @@ void Debugger::Run()
 
 void Debugger::Step(int32_t stepCount, StepType type)
 {
+	if((type == StepType::CpuStepOver || type == StepType::CpuStepOut || type == StepType::CpuStep) && _cpu->GetState().StopState == CpuStopState::Stopped) {
+		//If STP was called, the CPU isn't running anymore - use the PPU to break execution instead (useful for test roms that end with STP)
+		type = StepType::PpuStep;
+		stepCount = 1;
+	}
+
 	switch(type) {
 		case StepType::CpuStep:
 			_cpuStepCount = stepCount;
