@@ -101,7 +101,7 @@ extern "C" {
 			{ MesenOverscanVertical, "Vertical Overscan; None|8px|16px" },
 			{ MesenOverscanHorizontal, "Horizontal Overscan; None|8px|16px" },
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
-			{ MesenRamState, "Default power-on state for RAM; All 0s (Default)|All 1s|Random Values" },
+			{ MesenRamState, "Default power-on state for RAM; Random Values (Default)|All 0s|All 1s" },
 			{ NULL, NULL },
 		};
 
@@ -279,12 +279,12 @@ extern "C" {
 
 		if(readVariable(MesenRamState, var)) {
 			string value = string(var.value);
-			if(value == "All 0s (Default)") {
+			if(value == "Random Values (Default)") {
+				emulation.RamPowerOnState = RamState::Random;
+			} else if(value == "All 0s ") {
 				emulation.RamPowerOnState = RamState::AllZeros;
 			} else if(value == "All 1s") {
 				emulation.RamPowerOnState = RamState::AllOnes;
-			} else if(value == "Random Values") {
-				emulation.RamPowerOnState = RamState::Random;
 			}
 		}
 

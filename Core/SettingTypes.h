@@ -235,9 +235,9 @@ struct InputConfig
 
 enum class RamState
 {
-	AllZeros = 0,
-	AllOnes = 1,
-	Random = 2
+	Random = 0,
+	AllZeros = 1,
+	AllOnes = 2,
 };
 
 enum class ConsoleRegion
@@ -261,7 +261,7 @@ struct EmulationConfig
 	uint32_t PpuExtraScanlinesBeforeNmi = 0;
 	uint32_t PpuExtraScanlinesAfterNmi = 0;
 
-	RamState RamPowerOnState = RamState::AllZeros;
+	RamState RamPowerOnState = RamState::Random;
 };
 
 struct PreferencesConfig

@@ -912,9 +912,9 @@
 			<Value ID="Chinese">中文</Value>
 		</Enum>
 		<Enum ID="RamState">
-			<Value ID="AllZeros">All 0s (Default)</Value>
+			<Value ID="Random">Random Values (Default)</Value>
+			<Value ID="AllZeros">All 0s</Value>
 			<Value ID="AllOnes">All 1s</Value>
-			<Value ID="Random">Random Values</Value>
 		</Enum>
 		<Enum ID="CheatCurrentFilterType">
 			<Value ID="Smaller">Smaller than</Value>
