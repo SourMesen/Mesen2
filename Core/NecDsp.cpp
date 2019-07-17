@@ -173,8 +173,8 @@ uint8_t NecDsp::Read(uint32_t addr)
 {
 	Run();
 
-	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x08000) {
-		//RAM
+	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x080000) {
+		//RAM (Banks $68-$6F)
 		uint16_t value = _ram[(addr >> 1) & _ramMask];
 		return (addr & 0x01) ? (uint8_t)(value >> 8) : (uint8_t)value;
 	} else if(addr & _registerMask) {
@@ -206,8 +206,8 @@ void NecDsp::Write(uint32_t addr, uint8_t value)
 {
 	Run();
 
-	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x08000) {
-		//RAM
+	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x080000) {
+		//RAM (Banks $68-$6F)
 		uint16_t ramAddr = (addr >> 1) & _ramMask;
 		if(addr & 0x01) {
 			_ram[ramAddr] = (_ram[ramAddr] & 0xFF) | (value << 8);
