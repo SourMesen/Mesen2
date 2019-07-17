@@ -138,6 +138,16 @@ namespace Mesen.GUI.Debugger
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 
+		private bool IsDoubleWidthScreen
+		{
+			get { return _state.Ppu.HiResMode || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6; }
+		}
+
+		private bool IsDoubleHeightScreen
+		{
+			get { return _state.Ppu.ScreenInterlace || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6; }
+		}
+
 		private bool IsLargeTileWidth
 		{
 			get { return _state.Ppu.Layers[_options.Layer].LargeTiles || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6; }
@@ -225,14 +235,10 @@ namespace Mesen.GUI.Debugger
 
 			if(chkShowScrollOverlay.Checked) {
 				LayerConfig layer = _state.Ppu.Layers[_options.Layer];
-				bool largeTileWidth = layer.LargeTiles || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6;
-				bool largeTileHeight = layer.LargeTiles;
-
 				int hScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.HScroll : layer.HScroll;
 				int vScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.VScroll : layer.VScroll;
-
 				int height = _state.Ppu.OverscanMode ? 239 : 224;
-				ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, largeTileWidth ? 512 : 256, largeTileHeight ? height*2 : height);
+				ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, IsDoubleWidthScreen ? 512 : 256, IsDoubleHeightScreen ? height*2 : height);
 			} else {
 				ctrlImagePanel.Overlay = Rectangle.Empty;
 			}

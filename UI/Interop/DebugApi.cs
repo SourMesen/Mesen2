@@ -290,6 +290,8 @@ namespace Mesen.GUI
 
 		public byte BgMode;
 		[MarshalAs(UnmanagedType.I1)] public bool DirectColorMode;
+		[MarshalAs(UnmanagedType.I1)] public bool HiResMode;
+		[MarshalAs(UnmanagedType.I1)] public bool ScreenInterlace;
 
 		public Mode7Config Mode7;
 

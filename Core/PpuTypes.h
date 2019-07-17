@@ -90,6 +90,8 @@ struct PpuState
 
 	uint8_t BgMode;
 	bool DirectColorMode;
+	bool HiResMode;
+	bool ScreenInterlace;
 	Mode7Config Mode7;
 	LayerConfig Layers[4];
 

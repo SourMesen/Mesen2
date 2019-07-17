@@ -122,6 +122,8 @@ void Ppu::GetState(PpuState &state, bool returnPartialState)
 		state.OverscanMode = _overscanMode;
 		state.BgMode = _bgMode;
 		state.DirectColorMode = _directColorMode;
+		state.HiResMode = _hiResMode;
+		state.ScreenInterlace = _screenInterlace;
 		state.Mode7 = _mode7;
 		state.Layers[0] = _layerConfig[0];
 		state.Layers[1] = _layerConfig[1];
