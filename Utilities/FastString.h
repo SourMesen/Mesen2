@@ -7,11 +7,11 @@ private:
 	char _buffer[1000];
 	uint16_t _pos = 0;
 
-	void Write() {}
+	void WriteAll() {}
 
 public:
 	FastString() {}
-	FastString(const char* str, uint16_t size) { Write(str, size); }
+	FastString(const char* str, int size) { Write(str, size); }
 	FastString(string &str) { Write(str); }
 
 	void Write(char c)
@@ -19,7 +19,7 @@ public:
 		_buffer[_pos++] = c;
 	}
 
-	void Write(const char* str, uint16_t size)
+	void Write(const char* str, int size)
 	{
 		memcpy(_buffer + _pos, str, size);
 		_pos += size;
@@ -55,11 +55,16 @@ public:
 		return _buffer;
 	}
 
+	uint16_t GetSize()
+	{
+		return _pos;
+	}
+
 	template<typename T, typename... Args>
-	void Write(T first, Args... args)
+	void WriteAll(T first, Args... args)
 	{
 		Write(first);
-		Write(args...);
+		WriteAll(args...);
 	}
 
 	const char operator[](int idx)

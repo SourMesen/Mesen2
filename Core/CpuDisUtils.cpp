@@ -29,48 +29,48 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 			if(label.size()) {
 				operand.Write(label);
 			} else {
-				operand.Write('$', HexUtilities::ToHex24(opAddr));
+				operand.WriteAll('$', HexUtilities::ToHex24(opAddr));
 			}
 		} else if(opSize == 2) {
-			operand.Write('$', HexUtilities::ToHex((uint8_t)opAddr));
+			operand.WriteAll('$', HexUtilities::ToHex((uint8_t)opAddr));
 		} else if(opSize == 3) {
-			operand.Write('$', HexUtilities::ToHex((uint16_t)opAddr));
+			operand.WriteAll('$', HexUtilities::ToHex((uint16_t)opAddr));
 		}
 	}
 
 	switch(addrMode) {
 		case AddrMode::Abs: str.Write(operand); break;
 		case AddrMode::AbsJmp: str.Write(operand); break;
-		case AddrMode::AbsIdxXInd: str.Write('(', operand, ",X)"); break;
-		case AddrMode::AbsIdxX: str.Write(operand, ",X"); break;
-		case AddrMode::AbsIdxY: str.Write(operand, ",Y"); break;
-		case AddrMode::AbsInd:  str.Write('(', operand, ')'); break;
-		case AddrMode::AbsIndLng:  str.Write('[', operand, ']'); break;
-		case AddrMode::AbsLngIdxX: str.Write(operand, ",X"); break;
+		case AddrMode::AbsIdxXInd: str.WriteAll('(', operand, ",X)"); break;
+		case AddrMode::AbsIdxX: str.WriteAll(operand, ",X"); break;
+		case AddrMode::AbsIdxY: str.WriteAll(operand, ",Y"); break;
+		case AddrMode::AbsInd:  str.WriteAll('(', operand, ')'); break;
+		case AddrMode::AbsIndLng:  str.WriteAll('[', operand, ']'); break;
+		case AddrMode::AbsLngIdxX: str.WriteAll(operand, ",X"); break;
 		case AddrMode::AbsLng: str.Write(operand); break;
 		case AddrMode::AbsLngJmp: str.Write(operand); break;
 		case AddrMode::Acc: break;
-		case AddrMode::BlkMov: str.Write('$', operand[1], operand[2], " -> "); str.Write('$', operand[3], operand[4]); break;
-		case AddrMode::DirIdxIndX: str.Write('(', operand, ",X)"); break;
-		case AddrMode::DirIdxX: str.Write(operand, ",X"); break;
-		case AddrMode::DirIdxY: str.Write(operand, ",Y"); break;
-		case AddrMode::DirIndIdxY: str.Write("(", operand, "),Y"); break;
-		case AddrMode::DirIndLngIdxY: str.Write("[", operand, "],Y"); break;
-		case AddrMode::DirIndLng: str.Write("[", operand, "]"); break;
-		case AddrMode::DirInd: str.Write("(", operand, ")"); break;
+		case AddrMode::BlkMov: str.WriteAll('$', operand[1], operand[2], " -> "); str.WriteAll('$', operand[3], operand[4]); break;
+		case AddrMode::DirIdxIndX: str.WriteAll('(', operand, ",X)"); break;
+		case AddrMode::DirIdxX: str.WriteAll(operand, ",X"); break;
+		case AddrMode::DirIdxY: str.WriteAll(operand, ",Y"); break;
+		case AddrMode::DirIndIdxY: str.WriteAll("(", operand, "),Y"); break;
+		case AddrMode::DirIndLngIdxY: str.WriteAll("[", operand, "],Y"); break;
+		case AddrMode::DirIndLng: str.WriteAll("[", operand, "]"); break;
+		case AddrMode::DirInd: str.WriteAll("(", operand, ")"); break;
 		case AddrMode::Dir: str.Write(operand); break;
 
 		case AddrMode::Imm8: case AddrMode::Imm16: case AddrMode::ImmX: case AddrMode::ImmM:
-			str.Write('#', operand);
+			str.WriteAll('#', operand);
 			break;
 
-		case AddrMode::Sig8: str.Write('#', operand); break; //BRK/COP signature
+		case AddrMode::Sig8: str.WriteAll('#', operand); break; //BRK/COP signature
 		case AddrMode::Imp: break;
 		case AddrMode::RelLng: str.Write(operand); break;
 		case AddrMode::Rel: str.Write(operand); break;
 		case AddrMode::Stk: break;
-		case AddrMode::StkRel: str.Write(operand, ",S"); break;
-		case AddrMode::StkRelIndIdxY: str.Write('(', operand, ",S),Y"); break;
+		case AddrMode::StkRel: str.WriteAll(operand, ",S"); break;
+		case AddrMode::StkRelIndIdxY: str.WriteAll('(', operand, ",S),Y"); break;
 
 		default: throw std::runtime_error("invalid address mode");
 	}

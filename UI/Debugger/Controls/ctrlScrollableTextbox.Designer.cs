@@ -138,6 +138,7 @@
 			this.cboSearch.TabIndex = 4;
 			this.cboSearch.TextUpdate += new System.EventHandler(this.cboSearch_TextUpdate);
 			this.cboSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cboSearch_KeyDown);
+			this.cboSearch.Leave += new System.EventHandler(this.cboSearch_Leave);
 			// 
 			// hScrollBar
 			// 
@@ -149,14 +150,15 @@
 			// 
 			// ctrlTextbox
 			// 
+			this.ctrlTextbox.CodeHighlightingEnabled = true;
 			this.ctrlTextbox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlTextbox.HideSelection = false;
 			this.ctrlTextbox.HorizontalScrollWidth = 0;
 			this.ctrlTextbox.Location = new System.Drawing.Point(0, 0);
 			this.ctrlTextbox.Name = "ctrlTextbox";
-			this.ctrlTextbox.ShowCompactPrgAddresses = false;
-			this.ctrlTextbox.ShowByteCode = false;
 			this.ctrlTextbox.ShowAbsoluteAddreses = false;
+			this.ctrlTextbox.ShowByteCode = false;
+			this.ctrlTextbox.ShowCompactPrgAddresses = false;
 			this.ctrlTextbox.ShowLineNumbers = true;
 			this.ctrlTextbox.ShowMemoryValues = false;
 			this.ctrlTextbox.ShowSingleContentLineNotes = true;

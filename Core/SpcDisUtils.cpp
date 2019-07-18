@@ -92,7 +92,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		addrInfo.Address = addr;
 		string label = labelManager ? labelManager->GetLabel(addrInfo) : "";
 		if(label.empty()) {
-			str.Write('$', HexUtilities::ToHex(addr));
+			str.WriteAll('$', HexUtilities::ToHex(addr));
 		} else {
 			str.Write(label);
 		}
@@ -108,16 +108,16 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 			case 'a': getOperand((uint16_t)(byteCode[1] | (byteCode[2] << 8))); break;
 			
-			case 'd': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
-			case 'e': str.Write('$', HexUtilities::ToHex(byteCode[2])); break; //direct 2nd byte
+			case 'd': str.WriteAll('$', HexUtilities::ToHex(byteCode[1])); break;
+			case 'e': str.WriteAll('$', HexUtilities::ToHex(byteCode[2])); break; //direct 2nd byte
 
-			case 's': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
-			case 't': str.Write('$', HexUtilities::ToHex(byteCode[2])); break;
+			case 's': str.WriteAll('$', HexUtilities::ToHex(byteCode[1])); break;
+			case 't': str.WriteAll('$', HexUtilities::ToHex(byteCode[2])); break;
 
-			case 'i': str.Write('$', HexUtilities::ToHex(byteCode[1])); break;
+			case 'i': str.WriteAll('$', HexUtilities::ToHex(byteCode[1])); break;
 
 			case 'm': getOperand((uint16_t)((byteCode[1] | (byteCode[2] << 8)) & 0x1FFF)); break;
-			case 'b': str.Write('$', (char)('0' + (byteCode[2] >> 5))); break;
+			case 'b': str.WriteAll('$', (char)('0' + (byteCode[2] >> 5))); break;
 
 			default: str.Write(op[i]); break;
 		}

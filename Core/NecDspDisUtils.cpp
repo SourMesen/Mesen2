@@ -21,14 +21,14 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		uint8_t source = (opCode >> 4) & 0x0F;
 		uint8_t accSelect = (opCode >> 15) & 0x01;
 		if(aluOperation) {
-			str.Write(aluOperations[aluOperation], " ");
+			str.WriteAll(aluOperations[aluOperation], " ");
 
 			if(aluOperation <= 7) {
 				uint8_t pSelect = (opCode >> 20) & 0x03;
 
 				switch(pSelect) {
 					case 0: str.Write("RAM, "); break;
-					case 1: str.Write(sourceNames[source], ", "); break;
+					case 1: str.WriteAll(sourceNames[source], ", "); break;
 					case 2: str.Write("M, "); break;
 					case 3: str.Write("N, "); break;
 				}
@@ -41,7 +41,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		if(dest) {
 			str.Delimiter(" | ");
 			str.Write("MOV ");
-			str.Write(sourceNames[source], ", ");
+			str.WriteAll(sourceNames[source], ", ");
 			str.Write(destNames[dest]);
 		}
 		
@@ -54,7 +54,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		uint8_t dpHighModify = (opCode >> 9) & 0x0F;
 		if(dpHighModify) {
 			str.Delimiter(" | ");
-			str.Write("DPH:$", HexUtilities::ToHex(dpHighModify));
+			str.WriteAll("DPH:$", HexUtilities::ToHex(dpHighModify));
 		}
 
 		uint8_t rpDecrement = (opCode >> 8) & 0x01;
@@ -116,14 +116,14 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 			default: str.Write("<unknown jump>"); break;
 		}
 
-		str.Write(" $", HexUtilities::ToHex(target));
+		str.WriteAll(" $", HexUtilities::ToHex(target));
 	} else if(operationType == 3) {
 		//Load
 		uint16_t value = opCode >> 6;
 		uint8_t dest = opCode & 0x0F;
 
 		str.Write("LD ");
-		str.Write("$", HexUtilities::ToHex(value), ", ");
+		str.WriteAll("$", HexUtilities::ToHex(value), ", ");
 		str.Write(destNames[dest]);
 	}
 

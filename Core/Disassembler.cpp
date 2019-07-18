@@ -15,6 +15,7 @@
 #include "DebugBreakHelper.h"
 #include "BaseCartridge.h"
 #include "EmuSettings.h"
+#include "../Utilities/FastString.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/StringUtilities.h"
 
@@ -307,7 +308,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 
 	if(inUnknownBlock || inVerifiedBlock) {
 		int flags = LineFlags::BlockEnd | (inVerifiedBlock ? LineFlags::VerifiedData : 0) | (((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) ? LineFlags::ShowAsData : 0);
-		results.push_back(DisassemblyResult(addrInfo, maxAddr + 1, flags));
+		results.push_back(DisassemblyResult(addrInfo, maxAddr, flags));
 	}
 }
 
@@ -388,14 +389,16 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 		bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) != 0;
 		if(!isBlockStartEnd && result.Address.Address >= 0) {
 			if((data.Flags & LineFlags::ShowAsData)) {
-				string str = ".db";
-				int nextAddr = lineIndex < source.size() - 1 ? source[lineIndex+1].CpuAddress : (maxAddr + 1);
+				FastString str(".db", 3);
+				SnesMemoryType memType = isSpc ? SnesMemoryType::SpcMemory : SnesMemoryType::CpuMemory;
+				int nextAddr = lineIndex < source.size() - 2 ? source[lineIndex+1].CpuAddress : (maxAddr + 1);
 				for(int i = 0; i < 8 && result.CpuAddress+i < nextAddr; i++) {
-					str += " $" + HexUtilities::ToHex(_memoryDumper->GetMemoryValue(isSpc ? SnesMemoryType::SpcMemory : SnesMemoryType::CpuMemory, result.CpuAddress+i));
+					str.Write(" $", 2);
+					str.Write(HexUtilities::ToHexChar(_memoryDumper->GetMemoryValue(memType, result.CpuAddress + i)), 2);
 				}
 				data.Address = result.CpuAddress;
 				data.AbsoluteAddress = result.Address.Address;
-				memcpy(data.Text, str.c_str(), str.size());
+				memcpy(data.Text, str.ToString(), str.GetSize());
 			} else if((data.Flags & LineFlags::Comment) && result.CommentLine >= 0) {
 				string comment = ";" + StringUtilities::Split(_labelManager->GetComment(result.Address), '\n')[result.CommentLine];
 				data.Flags |= LineFlags::VerifiedCode;

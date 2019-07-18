@@ -17,6 +17,7 @@ namespace Mesen.GUI.Debugger.Controls
 	{
 		public event EventHandler ScrollPositionChanged;
 
+		private string _noMatchString = null;
 		private bool _showScrollbars = true;
 
 		public new event MouseEventHandler MouseUp
@@ -466,11 +467,22 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void cboSearch_TextUpdate(object sender, EventArgs e)
 		{
+			if(_noMatchString != null && this.cboSearch.Text.StartsWith(_noMatchString)) {
+				return;
+			}
+
 			if(!this.ctrlTextbox.Search(this.cboSearch.Text, false, true)) {
+				_noMatchString = this.cboSearch.Text;
 				this.cboSearch.BackColor = Color.Coral;
 			} else {
+				_noMatchString = null;
 				this.cboSearch.BackColor = Color.Empty;
 			}
+		}
+
+		private void cboSearch_Leave(object sender, EventArgs e)
+		{
+			_noMatchString = null;
 		}
 
 		private void cboSearch_KeyDown(object sender, KeyEventArgs e)

@@ -96,7 +96,7 @@ void DisassemblyInfo::GetByteCode(string &out)
 {
 	FastString str;
 	for(int i = 0; i < _opSize; i++) {
-		str.Write('$', HexUtilities::ToHex(_byteCode[i]));
+		str.WriteAll('$', HexUtilities::ToHex(_byteCode[i]));
 		if(i < _opSize - 1) {
 			str.Write(' ');
 		}
