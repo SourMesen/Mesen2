@@ -20,7 +20,7 @@ namespace Mesen.GUI.Debugger
 
 		private NotificationListener _notifListener;
 		private GetTilemapOptions _options;
-		private DebugState _state;
+		private PpuState _state;
 		private byte[] _cgram;
 		private byte[] _vram;
 		private byte[] _tilemapData;
@@ -65,8 +65,6 @@ namespace Mesen.GUI.Debugger
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 
 			_autoRefresh = config.AutoRefresh;
-
-			_options.BgMode = 0;
 
 			RefreshData();
 			RefreshViewer();
@@ -133,39 +131,39 @@ namespace Mesen.GUI.Debugger
 
 		private void RefreshData()
 		{
-			_state = DebugApi.GetState();
+			_state = DebugApi.GetState().Ppu;
 			_vram = DebugApi.GetMemoryState(SnesMemoryType.VideoRam);
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 
 		private bool IsDoubleWidthScreen
 		{
-			get { return _state.Ppu.HiResMode || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6; }
+			get { return _state.HiResMode || _state.BgMode == 5 || _state.BgMode == 6; }
 		}
 
 		private bool IsDoubleHeightScreen
 		{
-			get { return _state.Ppu.ScreenInterlace || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6; }
+			get { return _state.ScreenInterlace || _state.BgMode == 5 || _state.BgMode == 6; }
 		}
 
 		private bool IsLargeTileWidth
 		{
-			get { return _state.Ppu.Layers[_options.Layer].LargeTiles || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6; }
+			get { return _state.Layers[_options.Layer].LargeTiles || _state.BgMode == 5 || _state.BgMode == 6; }
 		}
 
 		private bool IsLargeTileHeight
 		{
-			get { return _state.Ppu.Layers[_options.Layer].LargeTiles; }
+			get { return _state.Layers[_options.Layer].LargeTiles; }
 		}
 
 		private int GetWidth()
 		{
-			if(_state.Ppu.BgMode == 7) {
+			if(_state.BgMode == 7) {
 				return 1024;
 			}
 
-			LayerConfig layer = _state.Ppu.Layers[_options.Layer];
-			bool largeTileWidth = layer.LargeTiles || _state.Ppu.BgMode == 5 || _state.Ppu.BgMode == 6;
+			LayerConfig layer = _state.Layers[_options.Layer];
+			bool largeTileWidth = layer.LargeTiles || _state.BgMode == 5 || _state.BgMode == 6;
 			bool largeTileHeight = layer.LargeTiles;
 
 			int width = 256;
@@ -180,11 +178,11 @@ namespace Mesen.GUI.Debugger
 
 		private int GetHeight()
 		{
-			if(_state.Ppu.BgMode == 7) {
+			if(_state.BgMode == 7) {
 				return 1024;
 			}
 
-			LayerConfig layer = _state.Ppu.Layers[_options.Layer];
+			LayerConfig layer = _state.Layers[_options.Layer];
 
 			int height = 256;
 			if(layer.DoubleHeight) {
@@ -198,11 +196,11 @@ namespace Mesen.GUI.Debugger
 
 		private void RefreshViewer()
 		{
-			if(_layerBpp[_state.Ppu.BgMode, _options.Layer] == 0) {
+			if(_layerBpp[_state.BgMode, _options.Layer] == 0) {
 				_options.Layer = 0;
 			}
 
-			DebugApi.GetTilemap(_options, _vram, _cgram, _tilemapData);
+			DebugApi.GetTilemap(_options, _state, _vram, _cgram, _tilemapData);
 
 			int mapWidth = GetWidth();
 			int mapHeight = GetHeight();
@@ -222,10 +220,10 @@ namespace Mesen.GUI.Debugger
 			btnLayer3.BackColor = _options.Layer == 2 ? SystemColors.GradientActiveCaption : Color.Empty;
 			btnLayer4.BackColor = _options.Layer == 3 ? SystemColors.GradientActiveCaption : Color.Empty;
 
-			btnLayer1.Enabled = _layerBpp[_state.Ppu.BgMode, 0] > 0;
-			btnLayer2.Enabled = _layerBpp[_state.Ppu.BgMode, 1] > 0;
-			btnLayer3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
-			btnLayer4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
+			btnLayer1.Enabled = _layerBpp[_state.BgMode, 0] > 0;
+			btnLayer2.Enabled = _layerBpp[_state.BgMode, 1] > 0;
+			btnLayer3.Enabled = _layerBpp[_state.BgMode, 2] > 0;
+			btnLayer4.Enabled = _layerBpp[_state.BgMode, 3] > 0;
 
 			ctrlImagePanel.ImageSize = new Size(GetWidth(), GetHeight());
 			ctrlImagePanel.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
@@ -234,10 +232,10 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? (IsLargeTileHeight ? 16 : 8): 0;
 
 			if(chkShowScrollOverlay.Checked) {
-				LayerConfig layer = _state.Ppu.Layers[_options.Layer];
-				int hScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.HScroll : layer.HScroll;
-				int vScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.VScroll : layer.VScroll;
-				int height = _state.Ppu.OverscanMode ? 239 : 224;
+				LayerConfig layer = _state.Layers[_options.Layer];
+				int hScroll = _state.BgMode == 7 ? (int)_state.Mode7.HScroll : layer.HScroll;
+				int vScroll = _state.BgMode == 7 ? (int)_state.Mode7.VScroll : layer.VScroll;
+				int height = _state.OverscanMode ? 239 : 224;
 				ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, IsDoubleWidthScreen ? 512 : 256, IsDoubleHeightScreen ? height*2 : height);
 			} else {
 				ctrlImagePanel.Overlay = Rectangle.Empty;
@@ -247,7 +245,7 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateFields()
 		{
-			if(_state.Ppu.BgMode == 7) {
+			if(_state.BgMode == 7) {
 				//Selected tile
 				txtMapNumber.Text = "0";
 				txtPosition.Text = _selectedColumn.ToString() + ", " + _selectedRow.ToString();
@@ -272,7 +270,7 @@ namespace Mesen.GUI.Debugger
 				int row = (IsLargeTileHeight ? _selectedRow / 2 : _selectedRow);
 				int column = (IsLargeTileWidth ? _selectedColumn / 2 : _selectedColumn);
 
-				LayerConfig layer = _state.Ppu.Layers[_options.Layer];
+				LayerConfig layer = _state.Layers[_options.Layer];
 				int addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 				int baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 				int address = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
@@ -294,7 +292,7 @@ namespace Mesen.GUI.Debugger
 				txtMapAddress.Text = (layer.TilemapAddress << 1).ToString("X4");
 				txtTilesetAddress.Text = (layer.ChrAddress << 1).ToString("X4");
 				txtTileSize.Text = (IsLargeTileWidth ? "16" : "8") + "x" + (IsLargeTileHeight ? "16" : "8");
-				txtBitDepth.Text = _layerBpp[_state.Ppu.BgMode, _options.Layer].ToString();
+				txtBitDepth.Text = _layerBpp[_state.BgMode, _options.Layer].ToString();
 			}
 		}
 

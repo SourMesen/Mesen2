@@ -164,19 +164,16 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 	}
 }
 
-void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgram, uint32_t* outBuffer)
+void PpuTools::GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vram, uint8_t* cgram, uint32_t* outBuffer)
 {
 	static constexpr uint8_t layerBpp[8][4] = {
 		{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 }
 	};
 
-	PpuState state = _ppu->GetState();
-	options.BgMode = state.BgMode;
-
-	bool directColor = state.DirectColorMode && (options.BgMode == 3 || options.BgMode == 4 || options.BgMode == 7);
+	bool directColor = state.DirectColorMode && (state.BgMode == 3 || state.BgMode == 4 || state.BgMode == 7);
 
 	uint16_t basePaletteOffset = 0;
-	if(options.BgMode == 0) {
+	if(state.BgMode == 0) {
 		basePaletteOffset = options.Layer * 64;
 	}
 
@@ -185,15 +182,15 @@ void PpuTools::GetTilemap(GetTilemapOptions options, uint8_t* vram, uint8_t* cgr
 	uint32_t bgColor = ToArgb((cgram[1] << 8) | cgram[0]);
 	std::fill(outBuffer, outBuffer + 1024*1024, bgColor);
 
-	uint8_t bpp = layerBpp[options.BgMode][options.Layer];
+	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
 	if(bpp == 0) {
 		return;
 	}
 
-	bool largeTileWidth = layer.LargeTiles || options.BgMode == 5 || options.BgMode == 6;
+	bool largeTileWidth = layer.LargeTiles || state.BgMode == 5 || state.BgMode == 6;
 	bool largeTileHeight = layer.LargeTiles;
 
-	if(options.BgMode == 7) {
+	if(state.BgMode == 7) {
 		for(int row = 0; row < 128; row++) {
 			for(int column = 0; column < 128; column++) {
 				uint32_t tileIndex = vram[row * 256 + column * 2];

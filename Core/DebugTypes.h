@@ -159,12 +159,7 @@ struct CodeLineData
 
 struct GetTilemapOptions
 {
-	uint8_t BgMode;
 	uint8_t Layer;
-
-	int8_t Bpp;
-	int32_t TilemapAddr;
-	int32_t ChrAddr;
 };
 
 enum class TileFormat

@@ -85,7 +85,7 @@ namespace Mesen.GUI
 			return buffer;
 		}
 
-		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, byte[] vram, byte[] cgram, [In, Out] byte[] buffer);
+		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, PpuState state, byte[] vram, byte[] cgram, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, byte[] cgram, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, byte[] cgram, [In, Out] byte[] buffer);
 
@@ -525,12 +525,7 @@ namespace Mesen.GUI
 
 	public struct GetTilemapOptions
 	{
-		public byte BgMode;
 		public byte Layer;
-
-		public byte Bpp;
-		public Int32 TilemapAddr;
-		public Int32 ChrAddr;
 	}
 
 	public struct GetTileViewOptions
