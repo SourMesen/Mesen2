@@ -59,12 +59,7 @@ private:
 	atomic<uint32_t> _breakRequestCount;
 	atomic<uint32_t> _suspendRequestCount;
 
-	atomic<int32_t> _cpuStepCount;
-	atomic<int32_t> _spcStepCount;
-	atomic<int32_t> _ppuStepCount;
-	atomic<int32_t> _cpuBreakAddress;
-	atomic<int32_t> _spcBreakAddress;
-	atomic<int32_t> _breakScanline;
+	unique_ptr<StepRequest> _step;
 	
 	bool _enableBreakOnUninitRead = false;
 

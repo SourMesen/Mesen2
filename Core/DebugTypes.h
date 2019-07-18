@@ -239,6 +239,16 @@ enum class StepType
 	SpecificScanline,
 };
 
+struct StepRequest
+{
+	int32_t CpuStepCount = -1;
+	int32_t SpcStepCount = -1;
+	int32_t PpuStepCount = -1;
+	int32_t CpuBreakAddress = -1;
+	int32_t SpcBreakAddress = -1;
+	int32_t BreakScanline = -1;
+};
+
 enum class CpuType : uint8_t
 {
 	Cpu,
