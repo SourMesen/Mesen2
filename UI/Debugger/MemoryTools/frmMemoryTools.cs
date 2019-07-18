@@ -30,8 +30,6 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnLoad(e);
 
-			this._selectedTab = this.tabMain.SelectedTab;
-
 			HexEditorInfo config = ConfigManager.Config.Debug.HexEditor;
 			_entityBinder.Entity = config;
 			_entityBinder.AddBinding(nameof(config.AutoRefresh), mnuAutoRefresh);
@@ -192,7 +190,6 @@ namespace Mesen.GUI.Debugger
 
 		public void ShowAddress(int address, SnesMemoryType memoryType)
 		{
-			tabMain.SelectedTab = tpgMemoryViewer;
 			cboMemoryType.SetEnumValue(memoryType);
 			ctrlHexViewer.GoToAddress(address);
 		}
@@ -324,12 +321,8 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			if(this.tabMain.SelectedTab == this.tpgAccessCounters) {
-				//TODO this.ctrlMemoryAccessCounters.RefreshData();
-			} else if(this.tabMain.SelectedTab == this.tpgMemoryViewer) {
-				this.UpdateByteColorProvider();
-				this.ctrlHexViewer.RefreshData(_memoryType);
-			}
+			this.UpdateByteColorProvider();
+			this.ctrlHexViewer.RefreshData(_memoryType);
 		}
 
 		private void mnuFind_Click(object sender, EventArgs e)
@@ -349,11 +342,7 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuGoTo_Click(object sender, EventArgs e)
 		{
-			if(_selectedTab == tpgMemoryViewer) {
-				this.ctrlHexViewer.GoToAddress();
-			} else if(_selectedTab == tpgAccessCounters) {
-				//TODO this.ctrlMemoryAccessCounters.GoToAddress();
-			}
+			this.ctrlHexViewer.GoToAddress();
 		}
 
 		private void mnuGoToAll_Click(object sender, EventArgs e)
@@ -430,7 +419,6 @@ namespace Mesen.GUI.Debugger
 
 		private void tabMain_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_selectedTab = this.tabMain.SelectedTab;
 			this.RefreshData();
 		}
 
