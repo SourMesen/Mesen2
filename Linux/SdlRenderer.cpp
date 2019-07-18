@@ -199,8 +199,8 @@ void SdlRenderer::Render()
 
 void SdlRenderer::DrawPauseScreen()
 {
-	DrawString(L"I", 15, 15, 106, 90, 205, 168);
-	DrawString(L"I", 23, 15, 106, 90, 205, 168);
+	DrawString(L"I", 15, 15, 255, 153, 0, 168);
+	DrawString(L"I", 23, 15, 255, 153, 0, 168);
 }
 
 void SdlRenderer::DrawString(std::wstring message, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t opacity)
