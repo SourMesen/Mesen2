@@ -168,10 +168,10 @@ namespace Mesen.GUI.Forms
 					}));
 					break;
 
-				case ConsoleNotificationType.MissingBios:
+				case ConsoleNotificationType.MissingFirmware:
 					this.Invoke((Action)(() => {
-						MissingBiosMessage msg = (MissingBiosMessage)Marshal.PtrToStructure(e.Parameter, typeof(MissingBiosMessage));
-						BiosHelper.RequestBiosFile(msg);
+						MissingFirmwareMessage msg = (MissingFirmwareMessage)Marshal.PtrToStructure(e.Parameter, typeof(MissingFirmwareMessage));
+						FirmwareHelper.RequestFirmwareFile(msg);
 					}));
 					break;
 			}

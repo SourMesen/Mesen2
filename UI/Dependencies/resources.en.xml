@@ -689,8 +689,8 @@
 		<Message ID="ClearHistory">Clear History</Message>
 		<Message ID="LastFolderUsed">Last Folder Used</Message>
 
-		<Message ID="BiosNotFound">This game requires a firmware file for the {0} chip.&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>
-		<Message ID="BiosMismatch">The selected file does not match the firmware required for this chip ({0}).&#xA;&#xA;Firmware SHA-256:&#xA;{1}&#xA;&#xA;Selected file's SHA-256:&#xA;{2}&#xA;&#xA;Would you like to use this file anyway?</Message>
+		<Message ID="FirmwareNotFound">This game requires a firmware file for the {0} chip.&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>
+		<Message ID="FirmwareMismatch">The selected file does not match the firmware required for this chip ({0}).&#xA;&#xA;Firmware SHA-256:&#xA;{1}&#xA;&#xA;Selected file's SHA-256:&#xA;{2}&#xA;&#xA;Would you like to use this file anyway?</Message>
 
 		<Message ID="MouseModeEnabled">Mouse mode enabled - press ESC or pause to release the cursor.</Message>
 		<Message ID="BandaiMicrophone">Bandai Microphone</Message>

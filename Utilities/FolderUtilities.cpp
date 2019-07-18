@@ -14,7 +14,7 @@ namespace fs = std::experimental::filesystem;
 string FolderUtilities::_homeFolder = "";
 string FolderUtilities::_saveFolderOverride = "";
 string FolderUtilities::_saveStateFolderOverride = "";
-string FolderUtilities::_biosFolderOverride = "";
+string FolderUtilities::_firmwareFolderOverride = "";
 string FolderUtilities::_screenshotFolderOverride = "";
 vector<string> FolderUtilities::_gameFolders = vector<string>();
 
@@ -75,13 +75,13 @@ string FolderUtilities::GetSaveFolder()
 	return folder;
 }
 
-string FolderUtilities::GetBiosFolder()
+string FolderUtilities::GetFirmwareFolder()
 {
 	string folder;
-	if(_biosFolderOverride.empty()) {
-		folder = CombinePath(GetHomeFolder(), "Bios");
+	if(_firmwareFolderOverride.empty()) {
+		folder = CombinePath(GetHomeFolder(), "Firmware");
 	} else {
-		folder = _biosFolderOverride;
+		folder = _firmwareFolderOverride;
 	}
 	CreateFolder(folder);
 	return folder;

@@ -178,10 +178,10 @@ namespace Mesen.GUI
 		CX4
 	}
 
-	public struct MissingBiosMessage
+	public struct MissingFirmwareMessage
 	{
 		public IntPtr Filename;
-		public CoprocessorType BiosType;
+		public CoprocessorType FirmwareType;
 		public UInt32 Size;
 	}
 }

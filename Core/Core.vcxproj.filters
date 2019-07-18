@@ -302,7 +302,7 @@
     <ClInclude Include="NecDspTypes.h">
       <Filter>SNES\Coprocessors</Filter>
     </ClInclude>
-    <ClInclude Include="BiosHelper.h">
+    <ClInclude Include="FirmwareHelper.h">
       <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>

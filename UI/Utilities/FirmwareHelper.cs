@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Utilities
 {
-	public static class BiosHelper
+	public static class FirmwareHelper
 	{
 		private static string GetFileHash(string filename)
 		{
@@ -44,20 +44,20 @@ namespace Mesen.GUI.Utilities
 			throw new Exception("Unexpected coprocessor type");
 		}
 
-		public static void RequestBiosFile(MissingBiosMessage msg)
+		public static void RequestFirmwareFile(MissingFirmwareMessage msg)
 		{
 			string filename = Utf8Marshaler.GetStringFromIntPtr(msg.Filename);
-			if(MesenMsgBox.Show("BiosNotFound", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, msg.BiosType.ToString(), filename, msg.Size.ToString()) == DialogResult.OK) {
+			if(MesenMsgBox.Show("FirmwareNotFound", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, msg.FirmwareType.ToString(), filename, msg.Size.ToString()) == DialogResult.OK) {
 				using(OpenFileDialog ofd = new OpenFileDialog()) {
 					ofd.SetFilter(ResourceHelper.GetMessage("FilterAll"));
 					if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
-						if(GetFileHash(ofd.FileName) != GetExpectedHash(msg.BiosType)) {
-							if(MesenMsgBox.Show("BiosMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, msg.BiosType.ToString(), GetFileHash(ofd.FileName), GetExpectedHash(msg.BiosType)) != DialogResult.OK) {
+						if(GetFileHash(ofd.FileName) != GetExpectedHash(msg.FirmwareType)) {
+							if(MesenMsgBox.Show("FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, msg.FirmwareType.ToString(), GetFileHash(ofd.FileName), GetExpectedHash(msg.FirmwareType)) != DialogResult.OK) {
 								//Files don't match and user cancelled the action
 								return;
 							}
 						}
-						File.Copy(ofd.FileName, Path.Combine(ConfigManager.BiosFolder, filename));
+						File.Copy(ofd.FileName, Path.Combine(ConfigManager.FirmwareFolder, filename));
 					}
 				}
 			}

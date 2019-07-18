@@ -211,7 +211,7 @@ namespace Mesen.GUI.Config
 		public static string WaveFolder { get { return GetFolder(DefaultWaveFolder, Config.Preferences.WaveFolder, Config.Preferences.OverrideWaveFolder); } }
 
 		public static string DebuggerFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Debugger"), null, false); } }
-		public static string BiosFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Bios"), null, false); } }
+		public static string FirmwareFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Firmware"), null, false); } }
 		public static string DownloadFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Downloads"), null, false); } }
 		public static string BackupFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Backups"), null, false); } }
 		public static string TestFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Tests"), null, false); } }
