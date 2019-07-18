@@ -28,6 +28,7 @@ namespace Mesen.GUI.Debugger
 
 			ctrlPaletteViewer.RefreshData();
 			ctrlPaletteViewer.RefreshViewer();
+			UpdateFields();
 		}
 
 		private void UpdateFields()
@@ -45,8 +46,8 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			base.OnFormClosed(e);
 			_notifListener?.Dispose();
+			base.OnFormClosed(e);
 		}
 
 		private void RefreshContent()

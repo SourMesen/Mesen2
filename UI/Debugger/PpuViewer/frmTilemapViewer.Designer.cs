@@ -70,6 +70,9 @@
 			this.ctrlImagePanel = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuView = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,9 +81,6 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.grpTileInfo.SuspendLayout();
@@ -144,7 +144,7 @@
 			this.ctrlScanlineCycleSelect.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.ctrlScanlineCycleSelect.Location = new System.Drawing.Point(0, 532);
 			this.ctrlScanlineCycleSelect.Name = "ctrlScanlineCycleSelect";
-			this.ctrlScanlineCycleSelect.Size = new System.Drawing.Size(668, 28);
+			this.ctrlScanlineCycleSelect.Size = new System.Drawing.Size(676, 28);
 			this.ctrlScanlineCycleSelect.TabIndex = 5;
 			// 
 			// tableLayoutPanel1
@@ -161,7 +161,7 @@
 			this.tableLayoutPanel1.RowCount = 2;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(668, 508);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 508);
 			this.tableLayoutPanel1.TabIndex = 7;
 			// 
 			// tableLayoutPanel2
@@ -173,7 +173,7 @@
 			this.tableLayoutPanel2.Controls.Add(this.grpTileInfo, 0, 3);
 			this.tableLayoutPanel2.Controls.Add(this.grpLayerInfo, 0, 2);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Right;
-			this.tableLayoutPanel2.Location = new System.Drawing.Point(522, 3);
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(526, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
 			this.tableLayoutPanel2.RowCount = 5;
 			this.tableLayoutPanel1.SetRowSpan(this.tableLayoutPanel2, 2);
@@ -182,7 +182,7 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(143, 502);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(147, 502);
 			this.tableLayoutPanel2.TabIndex = 7;
 			// 
 			// chkShowScrollOverlay
@@ -213,7 +213,7 @@
 			this.grpTileInfo.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpTileInfo.Location = new System.Drawing.Point(3, 203);
 			this.grpTileInfo.Name = "grpTileInfo";
-			this.grpTileInfo.Size = new System.Drawing.Size(137, 268);
+			this.grpTileInfo.Size = new System.Drawing.Size(141, 268);
 			this.grpTileInfo.TabIndex = 2;
 			this.grpTileInfo.TabStop = false;
 			this.grpTileInfo.Text = "Tile Information";
@@ -254,7 +254,7 @@
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(131, 249);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(135, 249);
 			this.tableLayoutPanel4.TabIndex = 0;
 			// 
 			// txtPalette
@@ -404,9 +404,10 @@
 			// grpLayerInfo
 			// 
 			this.grpLayerInfo.Controls.Add(this.tableLayoutPanel5);
+			this.grpLayerInfo.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpLayerInfo.Location = new System.Drawing.Point(3, 49);
 			this.grpLayerInfo.Name = "grpLayerInfo";
-			this.grpLayerInfo.Size = new System.Drawing.Size(137, 148);
+			this.grpLayerInfo.Size = new System.Drawing.Size(141, 148);
 			this.grpLayerInfo.TabIndex = 3;
 			this.grpLayerInfo.TabStop = false;
 			this.grpLayerInfo.Text = "Layer Information";
@@ -436,7 +437,7 @@
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel5.Size = new System.Drawing.Size(131, 129);
+			this.tableLayoutPanel5.Size = new System.Drawing.Size(135, 129);
 			this.tableLayoutPanel5.TabIndex = 0;
 			// 
 			// lblMapAddress
@@ -574,7 +575,7 @@
 			this.ctrlImagePanel.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.SelectionWrapPosition = 0;
-			this.ctrlImagePanel.Size = new System.Drawing.Size(513, 474);
+			this.ctrlImagePanel.Size = new System.Drawing.Size(517, 474);
 			this.ctrlImagePanel.TabIndex = 9;
 			this.ctrlImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ctrlImagePanel_MouseClick);
 			// 
@@ -585,7 +586,7 @@
             this.mnuView});
 			this.ctrlMesenMenuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.ctrlMesenMenuStrip1.Name = "ctrlMesenMenuStrip1";
-			this.ctrlMesenMenuStrip1.Size = new System.Drawing.Size(668, 24);
+			this.ctrlMesenMenuStrip1.Size = new System.Drawing.Size(676, 24);
 			this.ctrlMesenMenuStrip1.TabIndex = 8;
 			this.ctrlMesenMenuStrip1.Text = "ctrlMesenMenuStrip1";
 			// 
@@ -599,6 +600,25 @@
 			this.mnuFile.Name = "mnuFile";
 			this.mnuFile.Size = new System.Drawing.Size(37, 20);
 			this.mnuFile.Text = "File";
+			// 
+			// mnuCopyToClipboard
+			// 
+			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
+			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
+			this.mnuCopyToClipboard.Text = "Copy to clipboard";
+			// 
+			// mnuSaveAsPng
+			// 
+			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
+			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
+			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
+			this.mnuSaveAsPng.Text = "Save as PNG";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
 			// 
 			// mnuClose
 			// 
@@ -663,30 +683,11 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
-			// mnuSaveAsPng
-			// 
-			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
-			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
-			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
-			this.mnuSaveAsPng.Text = "Save as PNG";
-			// 
-			// toolStripMenuItem3
-			// 
-			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
-			// 
-			// mnuCopyToClipboard
-			// 
-			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
-			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
-			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
-			this.mnuCopyToClipboard.Text = "Copy to clipboard";
-			// 
 			// frmTilemapViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(668, 560);
+			this.ClientSize = new System.Drawing.Size(676, 560);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.ctrlScanlineCycleSelect);
 			this.Controls.Add(this.ctrlMesenMenuStrip1);

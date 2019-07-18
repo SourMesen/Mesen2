@@ -58,6 +58,9 @@
 			this.ctrlImagePanel = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuView = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,9 +69,6 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuSaveAsPng = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).BeginInit();
@@ -126,7 +126,7 @@
 			this.tableLayoutPanel2.Controls.Add(this.lblTileLayout, 0, 2);
 			this.tableLayoutPanel2.Controls.Add(this.cboLayout, 1, 2);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel2.Location = new System.Drawing.Point(540, 3);
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(534, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
 			this.tableLayoutPanel2.RowCount = 12;
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -141,7 +141,7 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(194, 516);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(200, 516);
 			this.tableLayoutPanel2.TabIndex = 7;
 			// 
 			// cboMemoryType
@@ -152,7 +152,7 @@
 			this.cboMemoryType.FormattingEnabled = true;
 			this.cboMemoryType.Location = new System.Drawing.Point(77, 3);
 			this.cboMemoryType.Name = "cboMemoryType";
-			this.cboMemoryType.Size = new System.Drawing.Size(114, 21);
+			this.cboMemoryType.Size = new System.Drawing.Size(120, 21);
 			this.cboMemoryType.TabIndex = 11;
 			// 
 			// nudBank
@@ -250,7 +250,7 @@
             "Mode 7 - Direct Color Mode"});
 			this.cboFormat.Location = new System.Drawing.Point(77, 30);
 			this.cboFormat.Name = "cboFormat";
-			this.cboFormat.Size = new System.Drawing.Size(114, 21);
+			this.cboFormat.Size = new System.Drawing.Size(120, 21);
 			this.cboFormat.TabIndex = 2;
 			// 
 			// nudColumns
@@ -362,7 +362,7 @@
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 1;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(120, 28);
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(126, 28);
 			this.tableLayoutPanel3.TabIndex = 14;
 			// 
 			// btnPresetBg1
@@ -414,7 +414,7 @@
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
 			this.tableLayoutPanel4.RowCount = 1;
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(120, 28);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(126, 28);
 			this.tableLayoutPanel4.TabIndex = 15;
 			// 
 			// btnPresetOam1
@@ -477,7 +477,7 @@
             "Mode 7 - Direct Color Mode"});
 			this.cboLayout.Location = new System.Drawing.Point(77, 57);
 			this.cboLayout.Name = "cboLayout";
-			this.cboLayout.Size = new System.Drawing.Size(114, 21);
+			this.cboLayout.Size = new System.Drawing.Size(120, 21);
 			this.cboLayout.TabIndex = 19;
 			// 
 			// ctrlImagePanel
@@ -493,7 +493,7 @@
 			this.ctrlImagePanel.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.SelectionWrapPosition = 0;
-			this.ctrlImagePanel.Size = new System.Drawing.Size(531, 516);
+			this.ctrlImagePanel.Size = new System.Drawing.Size(525, 516);
 			this.ctrlImagePanel.TabIndex = 8;
 			this.ctrlImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ctrlImagePanel_MouseClick);
 			// 
@@ -518,6 +518,25 @@
 			this.mnuFile.Name = "mnuFile";
 			this.mnuFile.Size = new System.Drawing.Size(37, 20);
 			this.mnuFile.Text = "File";
+			// 
+			// mnuCopyToClipboard
+			// 
+			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
+			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
+			this.mnuCopyToClipboard.Text = "Copy to clipboard";
+			// 
+			// mnuSaveAsPng
+			// 
+			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
+			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
+			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
+			this.mnuSaveAsPng.Text = "Save as PNG";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
 			// 
 			// mnuClose
 			// 
@@ -580,25 +599,6 @@
 			this.mnuZoomOut.Size = new System.Drawing.Size(141, 22);
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
-			// 
-			// mnuCopyToClipboard
-			// 
-			this.mnuCopyToClipboard.Image = global::Mesen.GUI.Properties.Resources.Copy;
-			this.mnuCopyToClipboard.Name = "mnuCopyToClipboard";
-			this.mnuCopyToClipboard.Size = new System.Drawing.Size(169, 22);
-			this.mnuCopyToClipboard.Text = "Copy to clipboard";
-			// 
-			// mnuSaveAsPng
-			// 
-			this.mnuSaveAsPng.Image = global::Mesen.GUI.Properties.Resources.Export;
-			this.mnuSaveAsPng.Name = "mnuSaveAsPng";
-			this.mnuSaveAsPng.Size = new System.Drawing.Size(169, 22);
-			this.mnuSaveAsPng.Text = "Save as PNG";
-			// 
-			// toolStripMenuItem3
-			// 
-			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(166, 6);
 			// 
 			// frmTileViewer
 			// 

@@ -46,13 +46,14 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			base.OnFormClosed(e);
 			_notifListener?.Dispose();
 
 			EventViewerConfig config = ConfigManager.Config.Debug.EventViewer;
 			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
 			config.ImageScale = ctrlPpuView.ImageScale;
+
+			base.OnFormClosed(e);
 		}
 
 		private void InitShortcuts()

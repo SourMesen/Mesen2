@@ -35,8 +35,6 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.txtX = new System.Windows.Forms.TextBox();
 			this.txtY = new System.Windows.Forms.TextBox();
-			this.label6 = new System.Windows.Forms.Label();
-			this.txtPC = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.txtP = new System.Windows.Forms.TextBox();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -48,9 +46,11 @@
 			this.chkPage = new System.Windows.Forms.CheckBox();
 			this.chkNegative = new System.Windows.Forms.CheckBox();
 			this.chkOverflow = new System.Windows.Forms.CheckBox();
-			this.txtS = new System.Windows.Forms.TextBox();
-			this.label5 = new System.Windows.Forms.Label();
 			this.txtStack = new System.Windows.Forms.TextBox();
+			this.label6 = new System.Windows.Forms.Label();
+			this.txtPC = new System.Windows.Forms.TextBox();
+			this.label5 = new System.Windows.Forms.Label();
+			this.txtS = new System.Windows.Forms.TextBox();
 			this.grpSpc.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -69,7 +69,7 @@
 			// 
 			// tableLayoutPanel1
 			// 
-			this.tableLayoutPanel1.ColumnCount = 10;
+			this.tableLayoutPanel1.ColumnCount = 11;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -80,6 +80,7 @@
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Controls.Add(this.label1, 2, 0);
 			this.tableLayoutPanel1.Controls.Add(this.lblA, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.txtA, 1, 0);
@@ -157,24 +158,6 @@
 			this.txtY.Name = "txtY";
 			this.txtY.Size = new System.Drawing.Size(25, 20);
 			this.txtY.TabIndex = 5;
-			// 
-			// label6
-			// 
-			this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(165, 6);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(24, 13);
-			this.label6.TabIndex = 12;
-			this.label6.Text = "PC:";
-			// 
-			// txtPC
-			// 
-			this.txtPC.Location = new System.Drawing.Point(195, 3);
-			this.txtPC.Name = "txtPC";
-			this.txtPC.Size = new System.Drawing.Size(40, 20);
-			this.txtPC.TabIndex = 13;
-			this.txtPC.Text = "DDDD";
 			// 
 			// label7
 			// 
@@ -303,23 +286,6 @@
 			this.chkOverflow.Text = "V";
 			this.chkOverflow.UseVisualStyleBackColor = true;
 			// 
-			// txtS
-			// 
-			this.txtS.Location = new System.Drawing.Point(264, 3);
-			this.txtS.Name = "txtS";
-			this.txtS.Size = new System.Drawing.Size(34, 20);
-			this.txtS.TabIndex = 11;
-			// 
-			// label5
-			// 
-			this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(241, 6);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(17, 13);
-			this.label5.TabIndex = 10;
-			this.label5.Text = "S:";
-			// 
 			// txtStack
 			// 
 			this.txtStack.BackColor = System.Drawing.SystemColors.Window;
@@ -333,6 +299,41 @@
 			this.txtStack.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.txtStack.Size = new System.Drawing.Size(92, 69);
 			this.txtStack.TabIndex = 23;
+			// 
+			// label6
+			// 
+			this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(165, 6);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(24, 13);
+			this.label6.TabIndex = 12;
+			this.label6.Text = "PC:";
+			// 
+			// txtPC
+			// 
+			this.txtPC.Location = new System.Drawing.Point(195, 3);
+			this.txtPC.Name = "txtPC";
+			this.txtPC.Size = new System.Drawing.Size(40, 20);
+			this.txtPC.TabIndex = 13;
+			this.txtPC.Text = "DDDD";
+			// 
+			// label5
+			// 
+			this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(241, 6);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(17, 13);
+			this.label5.TabIndex = 10;
+			this.label5.Text = "S:";
+			// 
+			// txtS
+			// 
+			this.txtS.Location = new System.Drawing.Point(264, 3);
+			this.txtS.Name = "txtS";
+			this.txtS.Size = new System.Drawing.Size(34, 20);
+			this.txtS.TabIndex = 11;
 			// 
 			// ctrlSpcStatus
 			// 

@@ -123,7 +123,6 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			base.OnFormClosed(e);
 			_notifListener?.Dispose();
 
 			TileViewerConfig config = ConfigManager.Config.Debug.TileViewer;
@@ -144,6 +143,7 @@ namespace Mesen.GUI.Debugger
 			config.SelectedPalette = ctrlPaletteViewer.SelectedPalette;
 
 			ConfigManager.ApplyChanges();
+			base.OnFormClosed(e);
 		}
 
 		private void RefreshContent()

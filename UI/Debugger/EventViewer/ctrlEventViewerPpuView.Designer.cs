@@ -98,9 +98,9 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.grpOptions.Controls.Add(this.tableLayoutPanel1);
 			this.grpOptions.Dock = System.Windows.Forms.DockStyle.Right;
-			this.grpOptions.Location = new System.Drawing.Point(686, 0);
+			this.grpOptions.Location = new System.Drawing.Point(669, 0);
 			this.grpOptions.Name = "grpOptions";
-			this.grpOptions.Size = new System.Drawing.Size(261, 529);
+			this.grpOptions.Size = new System.Drawing.Size(278, 529);
 			this.grpOptions.TabIndex = 2;
 			this.grpOptions.TabStop = false;
 			this.grpOptions.Text = "Show...";
@@ -155,7 +155,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(255, 510);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(272, 510);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// picNmi
@@ -447,9 +447,10 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.tableLayoutPanel1.SetColumnSpan(this.grpDmaFilters, 6);
 			this.grpDmaFilters.Controls.Add(this.tableLayoutPanel2);
+			this.grpDmaFilters.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpDmaFilters.Location = new System.Drawing.Point(3, 171);
 			this.grpDmaFilters.Name = "grpDmaFilters";
-			this.grpDmaFilters.Size = new System.Drawing.Size(249, 113);
+			this.grpDmaFilters.Size = new System.Drawing.Size(266, 336);
 			this.grpDmaFilters.TabIndex = 29;
 			this.grpDmaFilters.TabStop = false;
 			this.grpDmaFilters.Text = "DMA Filters";
@@ -467,7 +468,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel5, 1, 1);
 			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel6, 1, 2);
 			this.tableLayoutPanel2.Controls.Add(this.chkDmaChannel7, 1, 3);
-			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
 			this.tableLayoutPanel2.RowCount = 5;
@@ -476,7 +477,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(243, 94);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(260, 94);
 			this.tableLayoutPanel2.TabIndex = 0;
 			// 
 			// chkDmaChannel0
@@ -526,7 +527,7 @@ namespace Mesen.GUI.Debugger
 			// chkDmaChannel4
 			// 
 			this.chkDmaChannel4.AutoSize = true;
-			this.chkDmaChannel4.Location = new System.Drawing.Point(124, 3);
+			this.chkDmaChannel4.Location = new System.Drawing.Point(133, 3);
 			this.chkDmaChannel4.Name = "chkDmaChannel4";
 			this.chkDmaChannel4.Size = new System.Drawing.Size(74, 17);
 			this.chkDmaChannel4.TabIndex = 1;
@@ -537,7 +538,7 @@ namespace Mesen.GUI.Debugger
 			// chkDmaChannel5
 			// 
 			this.chkDmaChannel5.AutoSize = true;
-			this.chkDmaChannel5.Location = new System.Drawing.Point(124, 26);
+			this.chkDmaChannel5.Location = new System.Drawing.Point(133, 26);
 			this.chkDmaChannel5.Name = "chkDmaChannel5";
 			this.chkDmaChannel5.Size = new System.Drawing.Size(74, 17);
 			this.chkDmaChannel5.TabIndex = 3;
@@ -548,7 +549,7 @@ namespace Mesen.GUI.Debugger
 			// chkDmaChannel6
 			// 
 			this.chkDmaChannel6.AutoSize = true;
-			this.chkDmaChannel6.Location = new System.Drawing.Point(124, 49);
+			this.chkDmaChannel6.Location = new System.Drawing.Point(133, 49);
 			this.chkDmaChannel6.Name = "chkDmaChannel6";
 			this.chkDmaChannel6.Size = new System.Drawing.Size(74, 17);
 			this.chkDmaChannel6.TabIndex = 5;
@@ -559,7 +560,7 @@ namespace Mesen.GUI.Debugger
 			// chkDmaChannel7
 			// 
 			this.chkDmaChannel7.AutoSize = true;
-			this.chkDmaChannel7.Location = new System.Drawing.Point(124, 72);
+			this.chkDmaChannel7.Location = new System.Drawing.Point(133, 72);
 			this.chkDmaChannel7.Name = "chkDmaChannel7";
 			this.chkDmaChannel7.Size = new System.Drawing.Size(74, 17);
 			this.chkDmaChannel7.TabIndex = 7;
@@ -570,14 +571,17 @@ namespace Mesen.GUI.Debugger
 			// picViewer
 			// 
 			this.picViewer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.picViewer.GridSizeX = 0;
+			this.picViewer.GridSizeY = 0;
 			this.picViewer.Image = null;
 			this.picViewer.ImageScale = 1;
 			this.picViewer.ImageSize = new System.Drawing.Size(0, 0);
 			this.picViewer.Location = new System.Drawing.Point(0, 0);
 			this.picViewer.Name = "picViewer";
+			this.picViewer.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.picViewer.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.picViewer.SelectionWrapPosition = 0;
-			this.picViewer.Size = new System.Drawing.Size(686, 529);
+			this.picViewer.Size = new System.Drawing.Size(669, 529);
 			this.picViewer.TabIndex = 3;
 			this.picViewer.MouseLeave += new System.EventHandler(this.picPicture_MouseLeave);
 			this.picViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picPicture_MouseMove);

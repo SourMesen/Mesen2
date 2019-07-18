@@ -71,6 +71,18 @@ struct DebugEventInfo
 
 struct EventViewerDisplayOptions
 {
+	uint32_t IrqColor;
+	uint32_t NmiColor;
+	uint32_t BreakpointColor;
+	uint32_t PpuRegisterReadColor;
+	uint32_t PpuRegisterWriteColor;
+	uint32_t ApuRegisterReadColor;
+	uint32_t ApuRegisterWriteColor;
+	uint32_t CpuRegisterReadColor;
+	uint32_t CpuRegisterWriteColor;
+	uint32_t WorkRamRegisterReadColor;
+	uint32_t WorkRamRegisterWriteColor;
+
 	bool ShowPpuRegisterWrites;
 	bool ShowPpuRegisterReads;
 	bool ShowCpuRegisterWrites;
@@ -88,16 +100,4 @@ struct EventViewerDisplayOptions
 	bool ShowPreviousFrameEvents;
 
 	bool ShowDmaChannels[8];
-
-	uint32_t IrqColor;
-	uint32_t NmiColor;
-	uint32_t BreakpointColor;
-	uint32_t PpuRegisterReadColor;
-	uint32_t PpuRegisterWriteColor;
-	uint32_t ApuRegisterReadColor;
-	uint32_t ApuRegisterWriteColor;
-	uint32_t CpuRegisterReadColor;
-	uint32_t CpuRegisterWriteColor;
-	uint32_t WorkRamRegisterReadColor;
-	uint32_t WorkRamRegisterWriteColor;
 };

@@ -82,7 +82,6 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			base.OnFormClosed(e);
 			_notifListener?.Dispose();
 
 			SpriteViewerConfig config = ConfigManager.Config.Debug.SpriteViewer;
@@ -95,6 +94,7 @@ namespace Mesen.GUI.Debugger
 			config.ImageScale = ctrlImagePanel.ImageScale;
 			config.SplitterDistance = ctrlSplitContainer.SplitterDistance;
 			ConfigManager.ApplyChanges();
+			base.OnFormClosed(e);
 		}
 
 		private void RefreshContent()

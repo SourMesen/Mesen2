@@ -85,7 +85,6 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			base.OnFormClosed(e);
 			_notifListener?.Dispose();
 
 			TilemapViewerConfig config = ConfigManager.Config.Debug.TilemapViewer;
@@ -98,6 +97,7 @@ namespace Mesen.GUI.Debugger
 			config.RefreshCycle = ctrlScanlineCycleSelect.Cycle;
 			config.ImageScale = ctrlImagePanel.ImageScale;
 			ConfigManager.ApplyChanges();
+			base.OnFormClosed(e);
 		}
 
 		private void RefreshContent()

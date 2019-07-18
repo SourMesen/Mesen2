@@ -491,6 +491,18 @@ namespace Mesen.GUI
 
 	public struct EventViewerDisplayOptions
 	{
+		public UInt32 IrqColor;
+		public UInt32 NmiColor;
+		public UInt32 BreakpointColor;
+		public UInt32 PpuRegisterReadColor;
+		public UInt32 PpuRegisterWriteColor;
+		public UInt32 ApuRegisterReadColor;
+		public UInt32 ApuRegisterWriteColor;
+		public UInt32 CpuRegisterReadColor;
+		public UInt32 CpuRegisterWriteColor;
+		public UInt32 WorkRamRegisterReadColor;
+		public UInt32 WorkRamRegisterWriteColor;
+
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterWrites;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterReads;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowCpuRegisterWrites;
@@ -509,18 +521,6 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8, ArraySubType = UnmanagedType.I1)]
 		public bool[] ShowDmaChannels;
-
-		public UInt32 IrqColor;
-		public UInt32 NmiColor;
-		public UInt32 BreakpointColor;
-		public UInt32 PpuRegisterReadColor;
-		public UInt32 PpuRegisterWriteColor;
-		public UInt32 ApuRegisterReadColor;
-		public UInt32 ApuRegisterWriteColor;
-		public UInt32 CpuRegisterReadColor;
-		public UInt32 CpuRegisterWriteColor;
-		public UInt32 WorkRamRegisterReadColor;
-		public UInt32 WorkRamRegisterWriteColor;
 	}
 
 	public struct GetTilemapOptions
