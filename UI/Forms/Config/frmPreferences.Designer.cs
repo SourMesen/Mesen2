@@ -76,6 +76,11 @@
 			this.lblDataLocation = new System.Windows.Forms.Label();
 			this.tpgAdvanced = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.lblAdvancedMisc = new System.Windows.Forms.Label();
+			this.flowLayoutPanel6 = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblRewind = new System.Windows.Forms.Label();
+			this.nudRewindBufferSize = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblRewindMinutes = new System.Windows.Forms.Label();
 			this.chkDisplayTitleBarInfo = new System.Windows.Forms.CheckBox();
 			this.chkShowGameTimer = new System.Windows.Forms.CheckBox();
 			this.chkShowFrameCounter = new System.Windows.Forms.CheckBox();
@@ -85,11 +90,13 @@
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
-			this.flowLayoutPanel6 = new System.Windows.Forms.FlowLayoutPanel();
-			this.lblRewind = new System.Windows.Forms.Label();
-			this.nudRewindBufferSize = new Mesen.GUI.Controls.MesenNumericUpDown();
-			this.lblRewindMinutes = new System.Windows.Forms.Label();
-			this.lblAdvancedMisc = new System.Windows.Forms.Label();
+			this.lblPauseBackgroundSettings = new System.Windows.Forms.Label();
+			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblPauseIn = new System.Windows.Forms.Label();
+			this.chkPauseWhenInBackground = new System.Windows.Forms.CheckBox();
+			this.chkPauseInMenuAndConfig = new System.Windows.Forms.CheckBox();
+			this.chkPauseInDebugger = new System.Windows.Forms.CheckBox();
+			this.chkAllowBackgroundInput = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -109,6 +116,7 @@
 			this.tpgAdvanced.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.flowLayoutPanel6.SuspendLayout();
+			this.flowLayoutPanel8.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -145,18 +153,24 @@
 			// 
 			this.tlpMain.ColumnCount = 1;
 			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tlpMain.Controls.Add(this.chkAutoHideMenu, 0, 5);
+			this.tlpMain.Controls.Add(this.chkAllowBackgroundInput, 0, 5);
+			this.tlpMain.Controls.Add(this.flowLayoutPanel8, 0, 4);
+			this.tlpMain.Controls.Add(this.lblPauseBackgroundSettings, 0, 3);
+			this.tlpMain.Controls.Add(this.chkAutoHideMenu, 0, 8);
 			this.tlpMain.Controls.Add(this.chkSingleInstance, 0, 2);
 			this.tlpMain.Controls.Add(this.chkAutomaticallyCheckForUpdates, 0, 1);
 			this.tlpMain.Controls.Add(this.flowLayoutPanel2, 0, 0);
-			this.tlpMain.Controls.Add(this.lblMiscSettings, 0, 3);
-			this.tlpMain.Controls.Add(this.chkAutoLoadPatches, 0, 4);
-			this.tlpMain.Controls.Add(this.tableLayoutPanel5, 0, 7);
+			this.tlpMain.Controls.Add(this.lblMiscSettings, 0, 6);
+			this.tlpMain.Controls.Add(this.chkAutoLoadPatches, 0, 7);
+			this.tlpMain.Controls.Add(this.tableLayoutPanel5, 0, 10);
 			this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tlpMain.Location = new System.Drawing.Point(3, 3);
 			this.tlpMain.Name = "tlpMain";
-			this.tlpMain.RowCount = 8;
+			this.tlpMain.RowCount = 11;
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -170,7 +184,7 @@
 			// chkAutoHideMenu
 			// 
 			this.chkAutoHideMenu.AutoSize = true;
-			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 118);
+			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 186);
 			this.chkAutoHideMenu.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkAutoHideMenu.Name = "chkAutoHideMenu";
 			this.chkAutoHideMenu.Size = new System.Drawing.Size(158, 17);
@@ -233,7 +247,7 @@
 			this.lblMiscSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblMiscSettings.AutoSize = true;
 			this.lblMiscSettings.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblMiscSettings.Location = new System.Drawing.Point(0, 79);
+			this.lblMiscSettings.Location = new System.Drawing.Point(0, 147);
 			this.lblMiscSettings.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.lblMiscSettings.Name = "lblMiscSettings";
 			this.lblMiscSettings.Size = new System.Drawing.Size(73, 13);
@@ -243,7 +257,7 @@
 			// chkAutoLoadPatches
 			// 
 			this.chkAutoLoadPatches.AutoSize = true;
-			this.chkAutoLoadPatches.Location = new System.Drawing.Point(13, 95);
+			this.chkAutoLoadPatches.Location = new System.Drawing.Point(13, 163);
 			this.chkAutoLoadPatches.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkAutoLoadPatches.Name = "chkAutoLoadPatches";
 			this.chkAutoLoadPatches.Size = new System.Drawing.Size(198, 17);
@@ -296,7 +310,7 @@
 			this.tpgShortcuts.Location = new System.Drawing.Point(4, 22);
 			this.tpgShortcuts.Name = "tpgShortcuts";
 			this.tpgShortcuts.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgShortcuts.Size = new System.Drawing.Size(540, 389);
+			this.tpgShortcuts.Size = new System.Drawing.Size(540, 418);
 			this.tpgShortcuts.TabIndex = 7;
 			this.tpgShortcuts.Text = "Shortcut Keys";
 			this.tpgShortcuts.UseVisualStyleBackColor = true;
@@ -306,7 +320,7 @@
 			this.ctrlEmulatorShortcuts.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlEmulatorShortcuts.Location = new System.Drawing.Point(3, 3);
 			this.ctrlEmulatorShortcuts.Name = "ctrlEmulatorShortcuts";
-			this.ctrlEmulatorShortcuts.Size = new System.Drawing.Size(534, 383);
+			this.ctrlEmulatorShortcuts.Size = new System.Drawing.Size(534, 412);
 			this.ctrlEmulatorShortcuts.TabIndex = 0;
 			// 
 			// tpgFiles
@@ -315,7 +329,7 @@
 			this.tpgFiles.Location = new System.Drawing.Point(4, 22);
 			this.tpgFiles.Name = "tpgFiles";
 			this.tpgFiles.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgFiles.Size = new System.Drawing.Size(540, 389);
+			this.tpgFiles.Size = new System.Drawing.Size(540, 418);
 			this.tpgFiles.TabIndex = 2;
 			this.tpgFiles.Text = "Folders/Files";
 			this.tpgFiles.UseVisualStyleBackColor = true;
@@ -336,7 +350,7 @@
 			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel6.Size = new System.Drawing.Size(534, 383);
+			this.tableLayoutPanel6.Size = new System.Drawing.Size(534, 412);
 			this.tableLayoutPanel6.TabIndex = 13;
 			// 
 			// grpPathOverrides
@@ -743,7 +757,7 @@
 			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
 			this.tpgAdvanced.Name = "tpgAdvanced";
 			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgAdvanced.Size = new System.Drawing.Size(540, 389);
+			this.tpgAdvanced.Size = new System.Drawing.Size(540, 418);
 			this.tpgAdvanced.TabIndex = 1;
 			this.tpgAdvanced.Text = "Advanced";
 			this.tpgAdvanced.UseVisualStyleBackColor = true;
@@ -779,8 +793,84 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 383);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 412);
 			this.tableLayoutPanel1.TabIndex = 0;
+			// 
+			// lblAdvancedMisc
+			// 
+			this.lblAdvancedMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblAdvancedMisc.AutoSize = true;
+			this.lblAdvancedMisc.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.lblAdvancedMisc.Location = new System.Drawing.Point(0, 208);
+			this.lblAdvancedMisc.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.lblAdvancedMisc.Name = "lblAdvancedMisc";
+			this.lblAdvancedMisc.Size = new System.Drawing.Size(73, 13);
+			this.lblAdvancedMisc.TabIndex = 36;
+			this.lblAdvancedMisc.Text = "Misc. Settings";
+			// 
+			// flowLayoutPanel6
+			// 
+			this.flowLayoutPanel6.Controls.Add(this.lblRewind);
+			this.flowLayoutPanel6.Controls.Add(this.nudRewindBufferSize);
+			this.flowLayoutPanel6.Controls.Add(this.lblRewindMinutes);
+			this.flowLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Top;
+			this.flowLayoutPanel6.Location = new System.Drawing.Point(10, 224);
+			this.flowLayoutPanel6.Margin = new System.Windows.Forms.Padding(10, 3, 0, 0);
+			this.flowLayoutPanel6.Name = "flowLayoutPanel6";
+			this.flowLayoutPanel6.Size = new System.Drawing.Size(524, 23);
+			this.flowLayoutPanel6.TabIndex = 35;
+			// 
+			// lblRewind
+			// 
+			this.lblRewind.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblRewind.AutoSize = true;
+			this.lblRewind.Location = new System.Drawing.Point(3, 4);
+			this.lblRewind.Name = "lblRewind";
+			this.lblRewind.Size = new System.Drawing.Size(142, 13);
+			this.lblRewind.TabIndex = 3;
+			this.lblRewind.Text = "Keep rewind data for the last";
+			// 
+			// nudRewindBufferSize
+			// 
+			this.nudRewindBufferSize.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.nudRewindBufferSize.DecimalPlaces = 0;
+			this.nudRewindBufferSize.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudRewindBufferSize.Location = new System.Drawing.Point(148, 0);
+			this.nudRewindBufferSize.Margin = new System.Windows.Forms.Padding(0);
+			this.nudRewindBufferSize.Maximum = new decimal(new int[] {
+            900,
+            0,
+            0,
+            0});
+			this.nudRewindBufferSize.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudRewindBufferSize.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudRewindBufferSize.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudRewindBufferSize.Name = "nudRewindBufferSize";
+			this.nudRewindBufferSize.Size = new System.Drawing.Size(42, 21);
+			this.nudRewindBufferSize.TabIndex = 1;
+			this.nudRewindBufferSize.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+			// 
+			// lblRewindMinutes
+			// 
+			this.lblRewindMinutes.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblRewindMinutes.AutoSize = true;
+			this.lblRewindMinutes.Location = new System.Drawing.Point(193, 4);
+			this.lblRewindMinutes.Name = "lblRewindMinutes";
+			this.lblRewindMinutes.Size = new System.Drawing.Size(175, 13);
+			this.lblRewindMinutes.TabIndex = 2;
+			this.lblRewindMinutes.Text = "minutes (Memory Usage ≈5MB/min)";
 			// 
 			// chkDisplayTitleBarInfo
 			// 
@@ -883,81 +973,82 @@
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
 			// 
-			// flowLayoutPanel6
+			// lblPauseBackgroundSettings
 			// 
-			this.flowLayoutPanel6.Controls.Add(this.lblRewind);
-			this.flowLayoutPanel6.Controls.Add(this.nudRewindBufferSize);
-			this.flowLayoutPanel6.Controls.Add(this.lblRewindMinutes);
-			this.flowLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Top;
-			this.flowLayoutPanel6.Location = new System.Drawing.Point(10, 224);
-			this.flowLayoutPanel6.Margin = new System.Windows.Forms.Padding(10, 3, 0, 0);
-			this.flowLayoutPanel6.Name = "flowLayoutPanel6";
-			this.flowLayoutPanel6.Size = new System.Drawing.Size(524, 23);
-			this.flowLayoutPanel6.TabIndex = 35;
+			this.lblPauseBackgroundSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblPauseBackgroundSettings.AutoSize = true;
+			this.lblPauseBackgroundSettings.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.lblPauseBackgroundSettings.Location = new System.Drawing.Point(0, 79);
+			this.lblPauseBackgroundSettings.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.lblPauseBackgroundSettings.Name = "lblPauseBackgroundSettings";
+			this.lblPauseBackgroundSettings.Size = new System.Drawing.Size(141, 13);
+			this.lblPauseBackgroundSettings.TabIndex = 26;
+			this.lblPauseBackgroundSettings.Text = "Pause/Background Settings";
 			// 
-			// lblRewind
+			// flowLayoutPanel8
 			// 
-			this.lblRewind.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblRewind.AutoSize = true;
-			this.lblRewind.Location = new System.Drawing.Point(3, 4);
-			this.lblRewind.Name = "lblRewind";
-			this.lblRewind.Size = new System.Drawing.Size(142, 13);
-			this.lblRewind.TabIndex = 3;
-			this.lblRewind.Text = "Keep rewind data for the last";
+			this.flowLayoutPanel8.Controls.Add(this.lblPauseIn);
+			this.flowLayoutPanel8.Controls.Add(this.chkPauseWhenInBackground);
+			this.flowLayoutPanel8.Controls.Add(this.chkPauseInMenuAndConfig);
+			this.flowLayoutPanel8.Controls.Add(this.chkPauseInDebugger);
+			this.flowLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flowLayoutPanel8.Location = new System.Drawing.Point(7, 95);
+			this.flowLayoutPanel8.Margin = new System.Windows.Forms.Padding(7, 3, 0, 0);
+			this.flowLayoutPanel8.Name = "flowLayoutPanel8";
+			this.flowLayoutPanel8.Size = new System.Drawing.Size(527, 22);
+			this.flowLayoutPanel8.TabIndex = 29;
 			// 
-			// nudRewindBufferSize
+			// lblPauseIn
 			// 
-			this.nudRewindBufferSize.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.nudRewindBufferSize.DecimalPlaces = 0;
-			this.nudRewindBufferSize.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.nudRewindBufferSize.Location = new System.Drawing.Point(148, 0);
-			this.nudRewindBufferSize.Margin = new System.Windows.Forms.Padding(0);
-			this.nudRewindBufferSize.Maximum = new decimal(new int[] {
-            900,
-            0,
-            0,
-            0});
-			this.nudRewindBufferSize.MaximumSize = new System.Drawing.Size(10000, 20);
-			this.nudRewindBufferSize.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-			this.nudRewindBufferSize.MinimumSize = new System.Drawing.Size(0, 21);
-			this.nudRewindBufferSize.Name = "nudRewindBufferSize";
-			this.nudRewindBufferSize.Size = new System.Drawing.Size(42, 21);
-			this.nudRewindBufferSize.TabIndex = 1;
-			this.nudRewindBufferSize.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
+			this.lblPauseIn.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblPauseIn.AutoSize = true;
+			this.lblPauseIn.Location = new System.Drawing.Point(3, 4);
+			this.lblPauseIn.Margin = new System.Windows.Forms.Padding(3, 0, 3, 1);
+			this.lblPauseIn.Name = "lblPauseIn";
+			this.lblPauseIn.Size = new System.Drawing.Size(80, 13);
+			this.lblPauseIn.TabIndex = 0;
+			this.lblPauseIn.Text = "Pause when in:";
 			// 
-			// lblRewindMinutes
+			// chkPauseWhenInBackground
 			// 
-			this.lblRewindMinutes.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblRewindMinutes.AutoSize = true;
-			this.lblRewindMinutes.Location = new System.Drawing.Point(193, 4);
-			this.lblRewindMinutes.Name = "lblRewindMinutes";
-			this.lblRewindMinutes.Size = new System.Drawing.Size(175, 13);
-			this.lblRewindMinutes.TabIndex = 2;
-			this.lblRewindMinutes.Text = "minutes (Memory Usage ≈5MB/min)";
+			this.chkPauseWhenInBackground.AutoSize = true;
+			this.chkPauseWhenInBackground.Location = new System.Drawing.Point(89, 3);
+			this.chkPauseWhenInBackground.Name = "chkPauseWhenInBackground";
+			this.chkPauseWhenInBackground.Size = new System.Drawing.Size(84, 17);
+			this.chkPauseWhenInBackground.TabIndex = 13;
+			this.chkPauseWhenInBackground.Text = "Background";
+			this.chkPauseWhenInBackground.UseVisualStyleBackColor = true;
 			// 
-			// lblAdvancedMisc
+			// chkPauseInMenuAndConfig
 			// 
-			this.lblAdvancedMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblAdvancedMisc.AutoSize = true;
-			this.lblAdvancedMisc.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblAdvancedMisc.Location = new System.Drawing.Point(0, 208);
-			this.lblAdvancedMisc.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.lblAdvancedMisc.Name = "lblAdvancedMisc";
-			this.lblAdvancedMisc.Size = new System.Drawing.Size(73, 13);
-			this.lblAdvancedMisc.TabIndex = 36;
-			this.lblAdvancedMisc.Text = "Misc. Settings";
+			this.chkPauseInMenuAndConfig.AutoSize = true;
+			this.chkPauseInMenuAndConfig.Location = new System.Drawing.Point(179, 3);
+			this.chkPauseInMenuAndConfig.Name = "chkPauseInMenuAndConfig";
+			this.chkPauseInMenuAndConfig.Size = new System.Drawing.Size(142, 17);
+			this.chkPauseInMenuAndConfig.TabIndex = 16;
+			this.chkPauseInMenuAndConfig.Text = "Menu and config dialogs";
+			this.chkPauseInMenuAndConfig.UseVisualStyleBackColor = true;
+			// 
+			// chkPauseInDebugger
+			// 
+			this.chkPauseInDebugger.AutoSize = true;
+			this.chkPauseInDebugger.Location = new System.Drawing.Point(327, 3);
+			this.chkPauseInDebugger.Name = "chkPauseInDebugger";
+			this.chkPauseInDebugger.Size = new System.Drawing.Size(103, 17);
+			this.chkPauseInDebugger.TabIndex = 18;
+			this.chkPauseInDebugger.Text = "Debugging tools";
+			this.chkPauseInDebugger.UseVisualStyleBackColor = true;
+			// 
+			// chkAllowBackgroundInput
+			// 
+			this.chkAllowBackgroundInput.AutoSize = true;
+			this.chkAllowBackgroundInput.Location = new System.Drawing.Point(13, 120);
+			this.chkAllowBackgroundInput.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkAllowBackgroundInput.Name = "chkAllowBackgroundInput";
+			this.chkAllowBackgroundInput.Size = new System.Drawing.Size(177, 17);
+			this.chkAllowBackgroundInput.TabIndex = 30;
+			this.chkAllowBackgroundInput.Text = "Allow input when in background";
+			this.chkAllowBackgroundInput.UseVisualStyleBackColor = true;
 			// 
 			// frmPreferences
 			// 
@@ -999,6 +1090,8 @@
 			this.tableLayoutPanel1.PerformLayout();
 			this.flowLayoutPanel6.ResumeLayout(false);
 			this.flowLayoutPanel6.PerformLayout();
+			this.flowLayoutPanel8.ResumeLayout(false);
+			this.flowLayoutPanel8.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1069,5 +1162,12 @@
 		private System.Windows.Forms.Label lblRewind;
 		private Controls.MesenNumericUpDown nudRewindBufferSize;
 		private System.Windows.Forms.Label lblRewindMinutes;
+		private System.Windows.Forms.CheckBox chkAllowBackgroundInput;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel8;
+		private System.Windows.Forms.Label lblPauseIn;
+		private System.Windows.Forms.CheckBox chkPauseWhenInBackground;
+		private System.Windows.Forms.CheckBox chkPauseInMenuAndConfig;
+		private System.Windows.Forms.CheckBox chkPauseInDebugger;
+		private System.Windows.Forms.Label lblPauseBackgroundSettings;
 	}
 }

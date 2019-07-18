@@ -6,7 +6,9 @@ enum class EmulationFlags
 {
 	Turbo = 1,
 	Rewind = 2,
-	MaximumSpeed = 4
+	TurboOrRewind = 3,
+	MaximumSpeed = 4,
+	InBackground = 8
 };
 
 enum class ScaleFilterType
@@ -271,6 +273,7 @@ struct PreferencesConfig
 	bool ShowGameTimer = false;
 	bool ShowDebugInfo = false;
 	bool DisableOsd = false;
+	bool AllowBackgroundInput = false;
 
 	uint32_t RewindBufferSize = 30;
 

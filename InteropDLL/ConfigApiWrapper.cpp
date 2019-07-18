@@ -46,6 +46,11 @@ extern "C" {
 		return _returnString.c_str();
 	}
 
+	DllExport void __stdcall SetEmulationFlag(EmulationFlags flag, bool enabled)
+	{
+		_console->GetSettings()->SetFlagState(flag, enabled);
+	}
+
 	DllExport void __stdcall SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 	{
 		_console->GetSettings()->SetDebuggerFlag(flag, enabled);

@@ -25,6 +25,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetPreferences(InteropPreferencesConfig config);
 		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]ShortcutKeyInfo[] shortcuts, UInt32 count);
 
+		[DllImport(DllPath)] public static extern void SetEmulationFlag(EmulationFlags flag, bool enabled);
 		[DllImport(DllPath)] public static extern void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 
 		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern IntPtr GetAudioDevicesWrapper();
@@ -33,7 +34,15 @@ namespace Mesen.GUI
 			return new List<string>(Utf8Marshaler.PtrToStringUtf8(ConfigApi.GetAudioDevicesWrapper()).Split(new string[1] { "||" }, StringSplitOptions.RemoveEmptyEntries));
 		}
 	}
-	
+
+	public enum EmulationFlags : UInt32
+	{
+		Turbo = 1,
+		Rewind = 2,
+		MaximumSpeed = 4,
+		InBackground = 8,
+	}
+
 	public enum DebuggerFlags : UInt32
 	{
 		BreakOnBrk = 0x01,

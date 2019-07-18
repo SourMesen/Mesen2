@@ -3,6 +3,7 @@
 #include "IKeyManager.h"
 
 class Console;
+class EmuSettings;
 
 class KeyManager
 {
@@ -11,9 +12,11 @@ private:
 	static MousePosition _mousePosition;
 	static atomic<int16_t> _xMouseMovement;
 	static atomic<int16_t> _yMouseMovement;
+	static EmuSettings* _settings;
 
 public:
 	static void RegisterKeyManager(IKeyManager* keyManager);
+	static void SetSettings(EmuSettings* settings);
 
 	static void RefreshKeyState();
 	static bool IsKeyPressed(uint32_t keyCode);

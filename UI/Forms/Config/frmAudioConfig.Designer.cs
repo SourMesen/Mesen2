@@ -93,6 +93,7 @@
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 378);
 			this.baseConfigPanel.Size = new System.Drawing.Size(492, 29);
+			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tabControl1
 			// 
@@ -163,7 +164,6 @@
 			this.lblVolumeReductionSettings.Size = new System.Drawing.Size(94, 13);
 			this.lblVolumeReductionSettings.TabIndex = 24;
 			this.lblVolumeReductionSettings.Text = "Volume Reduction";
-			this.lblVolumeReductionSettings.Visible = false;
 			// 
 			// chkEnableAudio
 			// 
@@ -340,7 +340,6 @@
 			this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel8.Size = new System.Drawing.Size(453, 81);
 			this.tableLayoutPanel8.TabIndex = 25;
-			this.tableLayoutPanel8.Visible = false;
 			// 
 			// chkReduceSoundInBackground
 			// 
@@ -351,6 +350,7 @@
 			this.chkReduceSoundInBackground.TabIndex = 13;
 			this.chkReduceSoundInBackground.Text = "Reduce when in background";
 			this.chkReduceSoundInBackground.UseVisualStyleBackColor = true;
+			this.chkReduceSoundInBackground.CheckedChanged += new System.EventHandler(this.chkReduceVolume_CheckedChanged);
 			// 
 			// chkReduceSoundInFastForward
 			// 
@@ -361,6 +361,7 @@
 			this.chkReduceSoundInFastForward.TabIndex = 16;
 			this.chkReduceSoundInFastForward.Text = "Reduce when fast forwarding or rewinding";
 			this.chkReduceSoundInFastForward.UseVisualStyleBackColor = true;
+			this.chkReduceSoundInFastForward.CheckedChanged += new System.EventHandler(this.chkReduceVolume_CheckedChanged);
 			// 
 			// trkVolumeReduction
 			// 
@@ -388,6 +389,7 @@
 			this.chkMuteSoundInBackground.TabIndex = 18;
 			this.chkMuteSoundInBackground.Text = "Mute sound when in background";
 			this.chkMuteSoundInBackground.UseVisualStyleBackColor = true;
+			this.chkMuteSoundInBackground.CheckedChanged += new System.EventHandler(this.chkMuteWhenInBackground_CheckedChanged);
 			// 
 			// trkMaster
 			// 
@@ -937,6 +939,7 @@
 			this.tpgAdvanced.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 

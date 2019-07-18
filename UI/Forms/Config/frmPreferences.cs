@@ -33,6 +33,11 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(PreferencesConfig.SingleInstance), chkSingleInstance);
 			AddBinding(nameof(PreferencesConfig.AutoLoadPatches), chkAutoLoadPatches);
 
+			AddBinding(nameof(PreferencesConfig.PauseWhenInBackground), chkPauseWhenInBackground);
+			AddBinding(nameof(PreferencesConfig.PauseWhenInMenusAndConfig), chkPauseInMenuAndConfig);
+			AddBinding(nameof(PreferencesConfig.PauseWhenInDebuggingTools), chkPauseInDebugger);
+			AddBinding(nameof(PreferencesConfig.AllowBackgroundInput), chkAllowBackgroundInput);
+
 			AddBinding(nameof(PreferencesConfig.AssociateRomFiles), chkRomFormat);
 			AddBinding(nameof(PreferencesConfig.AssociateMsmFiles), chkMsmFormat);
 			AddBinding(nameof(PreferencesConfig.AssociateMssFiles), chkMssFormat);

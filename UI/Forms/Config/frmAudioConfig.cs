@@ -83,5 +83,21 @@ namespace Mesen.GUI.Forms.Config
 		{
 			tlpEqualizer.Enabled = chkEnableEqualizer.Checked;
 		}
+
+		private void chkMuteWhenInBackground_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateVolumeOptions();
+		}
+
+		private void chkReduceVolume_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateVolumeOptions();
+		}
+
+		private void UpdateVolumeOptions()
+		{
+			chkReduceSoundInBackground.Enabled = !chkMuteSoundInBackground.Checked;
+			trkVolumeReduction.Enabled = chkReduceSoundInFastForward.Checked || (chkReduceSoundInBackground.Checked && chkReduceSoundInBackground.Enabled);
+		}
 	}
 }

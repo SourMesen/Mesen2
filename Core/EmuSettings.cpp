@@ -270,3 +270,8 @@ void EmuSettings::InitializeRam(void* data, uint32_t length)
 			break;
 	}
 }
+
+bool EmuSettings::IsInputEnabled()
+{
+	return !CheckFlag(EmulationFlags::InBackground) || _preferences.AllowBackgroundInput;
+}

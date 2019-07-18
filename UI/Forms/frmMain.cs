@@ -15,6 +15,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -91,6 +92,7 @@ namespace Mesen.GUI.Forms
 				UpdateHelper.CheckForUpdates(true);
 			}
 
+			InBackgroundHelper.StartBackgroundTimer();
 			this.Resize += frmMain_Resize;
 		}
 
@@ -483,7 +485,7 @@ namespace Mesen.GUI.Forms
 			RecordApi.AviStop();
 		}
 
-		private void toolsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+		private void mnuTools_DropDownOpening(object sender, EventArgs e)
 		{
 			mnuVideoRecorder.Enabled = EmuRunner.IsRunning();
 			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
@@ -512,6 +514,19 @@ namespace Mesen.GUI.Forms
 			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
 			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
 			mnuWaveStop.Enabled = EmuRunner.IsRunning() && RecordApi.WaveIsRecording();
+		}
+
+		private void mnu_DropDownOpened(object sender, EventArgs e)
+		{
+			Interlocked.Increment(ref _inMenu);
+		}
+
+		private void mnu_DropDownClosed(object sender, EventArgs e)
+		{
+			Task.Run(() => {
+				Thread.Sleep(100);
+				Interlocked.Decrement(ref _inMenu);
+			});
 		}
 	}
 }

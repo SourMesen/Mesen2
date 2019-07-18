@@ -50,15 +50,26 @@ void SoundMixer::StopAudio(bool clearBuffer)
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 {
 	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
-		
+
 	if(cfg.EnableEqualizer) {
 		ProcessEqualizer(samples, sampleCount);
 	}
 
-	if(cfg.MasterVolume < 100) {
+	uint32_t masterVolume = cfg.MasterVolume;
+	if(_console->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
+		if(cfg.MuteSoundInBackground) {
+			masterVolume = 0;
+		} else if(cfg.ReduceSoundInBackground) {
+			masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
+		}
+	} else if(cfg.ReduceSoundInFastForward && _console->GetSettings()->CheckFlag(EmulationFlags::TurboOrRewind)) {
+		masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
+	}
+
+	if(masterVolume < 100) {
 		//Apply volume if not using the default value
 		for(uint32_t i = 0; i < sampleCount * 2; i++) {
-			samples[i] = (int32_t)samples[i] * (int32_t)cfg.MasterVolume / 100;
+			samples[i] = (int32_t)samples[i] * (int32_t)masterVolume / 100;
 		}
 	}
 

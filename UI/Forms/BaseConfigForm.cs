@@ -34,7 +34,7 @@ namespace Mesen.GUI.Forms
 			UpdateUI();
 		}
 
-		protected override bool IsConfigForm { get { return true; } }
+		public override bool IsConfigForm { get { return true; } }
 
 		protected void UpdateUI()
 		{

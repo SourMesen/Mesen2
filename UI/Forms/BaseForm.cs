@@ -21,61 +21,18 @@ namespace Mesen.GUI.Forms
 		private bool _iconSet = false;
 		protected int _inMenu = 0;
 		private ctrlTooltip ctrlTooltip;
-		private static Timer _tmrUpdateBackground;
-		//private static bool _needResume = false;
 
 		public BaseForm()
 		{
 			InitializeComponent();
 		}
 
-		protected virtual bool IsConfigForm { get { return false; } }
+		public virtual bool IsConfigForm { get { return false; } }
+		public bool InMenu { get { return _inMenu > 0; } }
 
 		public static ctrlTooltip GetPopupTooltip(Form form)
 		{
 			return (form as BaseForm).ctrlTooltip;
-		}
-
-		public static void StartBackgroundTimer()
-		{
-			_tmrUpdateBackground = new Timer();
-			_tmrUpdateBackground.Start();
-			_tmrUpdateBackground.Tick += tmrUpdateBackground_Tick;
-		}
-
-		public static void StopBackgroundTimer()
-		{
-			_tmrUpdateBackground?.Stop();
-		}
-
-		private static void tmrUpdateBackground_Tick(object sender, EventArgs e)
-		{
-			/*Form focusedForm = null;
-			foreach(Form form in Application.OpenForms) {
-				if(form.ContainsFocus) {
-					focusedForm = form;
-					break;
-				}
-			}
-
-			bool needPause = focusedForm == null && ConfigManager.Config.PreferenceInfo.PauseWhenInBackground;
-			if(focusedForm != null) {
-				needPause |= ConfigManager.Config.PreferenceInfo.PauseWhenInMenusAndConfig && focusedForm is BaseForm && (((BaseForm)focusedForm)._inMenu > 0 || ((BaseForm)focusedForm).IsConfigForm);
-				needPause |= ConfigManager.Config.PreferenceInfo.PauseWhenInMenusAndConfig && !(focusedForm is BaseInputForm) && !focusedForm.GetType().FullName.Contains("Debugger");
-				needPause |= ConfigManager.Config.PreferenceInfo.PauseWhenInDebuggingTools && focusedForm.GetType().FullName.Contains("Debugger");
-			}
-
-			if(needPause) {
-				if(!EmuApi.IsPaused(EmuApi.ConsoleId.Master)) {
-					_needResume = true;
-					EmuApi.Pause(EmuApi.ConsoleId.Master);
-				}
-			} else if(_needResume) {
-				EmuApi.Resume(EmuApi.ConsoleId.Master);
-				_needResume = false;
-			}
-
-			EmuApi.SetFlag(EmulationFlags.InBackground, focusedForm == null);*/
 		}
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

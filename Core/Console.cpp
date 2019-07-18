@@ -36,6 +36,8 @@
 Console::Console()
 {
 	_settings.reset(new EmuSettings());
+	KeyManager::SetSettings(_settings.get());
+
 	_paused = false;
 	_pauseOnNextFrame = false;
 	_stopFlag = false;

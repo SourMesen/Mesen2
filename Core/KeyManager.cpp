@@ -9,6 +9,7 @@ IKeyManager* KeyManager::_keyManager = nullptr;
 MousePosition KeyManager::_mousePosition = { 0, 0 };
 atomic<int16_t> KeyManager::_xMouseMovement;
 atomic<int16_t> KeyManager::_yMouseMovement;
+EmuSettings* KeyManager::_settings = nullptr;
 
 void KeyManager::RegisterKeyManager(IKeyManager* keyManager)
 {
@@ -24,10 +25,15 @@ void KeyManager::RefreshKeyState()
 	}
 }
 
+void KeyManager::SetSettings(EmuSettings *settings)
+{
+	_settings = settings;
+}
+
 bool KeyManager::IsKeyPressed(uint32_t keyCode)
 {
 	if(_keyManager != nullptr) {
-		return _keyManager->IsKeyPressed(keyCode);
+		return _settings->IsInputEnabled() && _keyManager->IsKeyPressed(keyCode);
 	}
 	return false;
 }
@@ -35,8 +41,7 @@ bool KeyManager::IsKeyPressed(uint32_t keyCode)
 bool KeyManager::IsMouseButtonPressed(MouseButton button)
 {
 	if(_keyManager != nullptr) {
-		//TODO return _settings->InputEnabled() && 
-		return _keyManager->IsMouseButtonPressed(button);
+		return _settings->IsInputEnabled() && _keyManager->IsMouseButtonPressed(button);
 	}
 	return false;
 }

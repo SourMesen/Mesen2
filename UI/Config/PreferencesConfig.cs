@@ -17,6 +17,11 @@ namespace Mesen.GUI.Config
 		public bool SingleInstance = true;
 		public bool AutoLoadPatches = true;
 
+		public bool PauseWhenInBackground = false;
+		public bool PauseWhenInMenusAndConfig = false;
+		public bool PauseWhenInDebuggingTools = false;
+		public bool AllowBackgroundInput = false;
+
 		public bool AssociateRomFiles = false;
 		public bool AssociateMsmFiles = false;
 		public bool AssociateMssFiles = false;
@@ -155,6 +160,7 @@ namespace Mesen.GUI.Config
 				ShowGameTimer = ShowGameTimer,
 				ShowDebugInfo = ShowDebugInfo,
 				DisableOsd = DisableOsd,
+				AllowBackgroundInput = AllowBackgroundInput,
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
@@ -170,6 +176,7 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ShowGameTimer;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowDebugInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOsd;
+		[MarshalAs(UnmanagedType.I1)] public bool AllowBackgroundInput;
 
 		public UInt32 RewindBufferSize;
 

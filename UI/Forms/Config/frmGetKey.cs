@@ -38,7 +38,7 @@ namespace Mesen.GUI.Forms.Config
 			InputApi.DisableAllKeys(true);
 		}
 
-		protected override bool IsConfigForm { get { return true; } }
+		public override bool IsConfigForm { get { return true; } }
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
