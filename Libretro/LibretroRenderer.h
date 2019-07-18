@@ -53,7 +53,6 @@ public:
 	void GetSystemAudioVideoInfo(retro_system_av_info &info, int32_t maxWidth = 0, int32_t maxHeight = 0)
 	{
 		AudioConfig audio = _console->GetSettings()->GetAudioConfig();
-		EmulationConfig emulation = _console->GetSettings()->GetEmulationConfig();
 		
 		info.timing.fps = _console->GetRegion() == ConsoleRegion::Ntsc ? 60.098811862348404716732985230828 : 50.006977968268290848936010226333;
 		info.timing.sample_rate = audio.SampleRate;

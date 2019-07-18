@@ -403,6 +403,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 									case EvalValues::RegPC: token = state.Spc.PC; break;
 								}
 								break;
+
+							case CpuType::NecDsp: throw std::runtime_error("Invalid CPU type");
 						}
 						break;
 				}

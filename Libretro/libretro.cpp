@@ -33,12 +33,12 @@ static std::unique_ptr<LibretroSoundManager> _soundManager;
 static std::unique_ptr<LibretroKeyManager> _keyManager;
 static std::unique_ptr<LibretroMessageManager> _messageManager;
 
-static constexpr char* MesenNtscFilter = "mesen-s_ntsc_filter";
-static constexpr char* MesenRegion = "mesen-s_region";
-static constexpr char* MesenAspectRatio = "mesen-s_aspect_ratio";
-static constexpr char* MesenOverscanVertical = "mesen-s_overscan_vertical";
-static constexpr char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
-static constexpr char* MesenRamState = "mesen-s_ramstate";
+static constexpr const char* MesenNtscFilter = "mesen-s_ntsc_filter";
+static constexpr const char* MesenRegion = "mesen-s_region";
+static constexpr const char* MesenAspectRatio = "mesen-s_aspect_ratio";
+static constexpr const char* MesenOverscanVertical = "mesen-s_overscan_vertical";
+static constexpr const char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
+static constexpr const char* MesenRamState = "mesen-s_ramstate";
 
 extern "C" {
 	void logMessage(retro_log_level level, const char* message)

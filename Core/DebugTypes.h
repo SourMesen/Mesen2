@@ -243,8 +243,7 @@ enum class CpuType : uint8_t
 {
 	Cpu,
 	Spc,
-	NecDsp,
-	CpuTypeCount
+	NecDsp
 	//SuperFx,
 	//Sa1,
 };

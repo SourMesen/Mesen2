@@ -86,6 +86,7 @@ NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console)
 		case CoprocessorType::DSP4: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom); break;
 		case CoprocessorType::ST010: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
 		case CoprocessorType::ST011: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
+		default: break;
 	}
 
 	if(!firmwareLoaded) {

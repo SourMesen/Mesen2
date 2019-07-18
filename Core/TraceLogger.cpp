@@ -464,7 +464,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 	}
 
 	bool enabled = false;
-	for(int i = 0; i < (int)CpuType::CpuTypeCount; i++) {
+	for(int i = 0; i < (int)CpuType::NecDsp + 1; i++) {
 		enabled |= _logCpu[i];
 	}
 

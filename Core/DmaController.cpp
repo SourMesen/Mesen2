@@ -225,7 +225,6 @@ bool DmaController::ProcessHdmaChannels()
 	uint8_t originalActiveChannel = _activeChannel;
 
 	//Run all the DMA transfers for each channel first, before fetching data for the next scanline
-	bool needOverhead = true;
 	for(int i = 0; i < 8; i++) {
 		DmaChannelConfig &ch = _channel[i];
 		if((_hdmaChannels & (1 << i)) == 0) {

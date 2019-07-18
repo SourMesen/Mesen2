@@ -96,7 +96,6 @@ void MemoryManager::RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t
 
 	uint32_t pageNumber = startPageNumber;
 	for(uint32_t i = startBank; i <= endBank; i++) {
-		uint32_t baseAddress = i << 16;
 		pageNumber += pageIncrement;
 		for(uint32_t j = startPage; j <= endPage; j+=0x1000) {
 			_handlers[(i << 4) | (j >> 12)] = handlers[pageNumber].get();

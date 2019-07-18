@@ -78,7 +78,7 @@ private:
 	vector<RowPart> _spcRowParts;
 	vector<RowPart> _dspRowParts;
 
-	bool _logCpu[(int)CpuType::CpuTypeCount] = {};
+	bool _logCpu[(int)CpuType::NecDsp + 1] = {};
 
 	bool _pendingLog;
 	//CpuState _lastState;

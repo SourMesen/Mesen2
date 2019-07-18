@@ -158,10 +158,11 @@ bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
 			}
 			return true;
 			
-		default:
 		case CpuType::Spc:
 		case CpuType::NecDsp: return false;
 	}
+
+	return false;
 }
 
 uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize)
