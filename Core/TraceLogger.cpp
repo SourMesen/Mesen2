@@ -22,6 +22,11 @@ TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 	_logCount = 0;
 	_logToFile = false;
 	_pendingLog = false;
+
+	_stateCache = new DebugState[TraceLogger::ExecutionLogSize];
+	_stateCacheCopy = new DebugState[TraceLogger::ExecutionLogSize];
+	_disassemblyCache = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
+	_disassemblyCacheCopy = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
 }
 
 TraceLogger::~TraceLogger()
@@ -458,8 +463,8 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 	{
 		auto lock = _lock.AcquireSafe();
 		lineCount = std::min(lineCount, _logCount);
-		memcpy(_stateCacheCopy, _stateCache, sizeof(_stateCacheCopy));
-		memcpy(_disassemblyCacheCopy, _disassemblyCache, sizeof(_disassemblyCacheCopy));
+		memcpy(_stateCacheCopy, _stateCache, sizeof(DebugState) * TraceLogger::ExecutionLogSize);
+		memcpy(_disassemblyCacheCopy, _disassemblyCache, sizeof(DisassemblyInfo) * TraceLogger::ExecutionLogSize);
 		startPos = (_currentPos > 0 ? _currentPos : TraceLogger::ExecutionLogSize) - 1;
 	}
 

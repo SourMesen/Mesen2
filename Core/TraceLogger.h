@@ -62,7 +62,7 @@ struct RowPart
 class TraceLogger
 {
 private:
-	static constexpr int ExecutionLogSize = 60000;
+	static constexpr int ExecutionLogSize = 30000;
 
 	//Must be static to be thread-safe when switching game
 	static string _executionTrace;
@@ -87,11 +87,11 @@ private:
 	bool _logToFile;
 	uint32_t _currentPos;
 	uint32_t _logCount;
-	DebugState _stateCache[ExecutionLogSize] = {};
-	DisassemblyInfo _disassemblyCache[ExecutionLogSize];
+	DebugState *_stateCache = nullptr;
+	DisassemblyInfo *_disassemblyCache = nullptr;
 
-	DebugState _stateCacheCopy[ExecutionLogSize] = {};
-	DisassemblyInfo _disassemblyCacheCopy[ExecutionLogSize];
+	DebugState *_stateCacheCopy = nullptr;
+	DisassemblyInfo *_disassemblyCacheCopy = nullptr;
 
 	SimpleLock _lock;
 
