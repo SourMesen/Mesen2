@@ -784,7 +784,6 @@
 			this.mnuSoundRecorder.Name = "mnuSoundRecorder";
 			this.mnuSoundRecorder.Size = new System.Drawing.Size(159, 22);
 			this.mnuSoundRecorder.Text = "Sound Recorder";
-			this.mnuSoundRecorder.DropDownOpening += new System.EventHandler(this.mnuSoundRecorder_DropDownOpening);
 			// 
 			// mnuWaveRecord
 			// 

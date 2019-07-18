@@ -185,6 +185,7 @@ namespace Mesen.GUI.Forms
 		private void BindShortcuts()
 		{
 			Func<bool> notClient = () => { return true; }; //TODO
+			Func<bool> running = () => { return EmuRunner.IsRunning(); };
 			Func<bool> runningNotClient = () => { return EmuRunner.IsRunning(); }; //TODO
 			Func<bool> runningNotClientNotMovie = () => { return EmuRunner.IsRunning(); }; //TODO
 
@@ -210,7 +211,7 @@ namespace Mesen.GUI.Forms
 
 			_shortcuts.BindShortcut(mnuFullscreen, EmulatorShortcut.ToggleFullscreen);
 
-			_shortcuts.BindShortcut(mnuTakeScreenshot, EmulatorShortcut.TakeScreenshot);
+			_shortcuts.BindShortcut(mnuTakeScreenshot, EmulatorShortcut.TakeScreenshot, running);
 
 			mnuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenDebugger));
 			mnuSpcDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpcDebugger));
@@ -277,6 +278,7 @@ namespace Mesen.GUI.Forms
 			mnuDebugger.Enabled = running;
 			mnuSpcDebugger.Enabled = running;
 			mnuTraceLogger.Enabled = running;
+			mnuScriptWindow.Enabled = running;
 			mnuMemoryTools.Enabled = running;
 			mnuTilemapViewer.Enabled = running;
 			mnuTileViewer.Enabled = running;
@@ -487,6 +489,10 @@ namespace Mesen.GUI.Forms
 
 		private void mnuTools_DropDownOpening(object sender, EventArgs e)
 		{
+			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
+			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
+			mnuWaveStop.Enabled = EmuRunner.IsRunning() && RecordApi.WaveIsRecording();
+
 			mnuVideoRecorder.Enabled = EmuRunner.IsRunning();
 			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
 			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
@@ -507,13 +513,6 @@ namespace Mesen.GUI.Forms
 		private void mnuWaveStop_Click(object sender, EventArgs e)
 		{
 			RecordApi.WaveStop();
-		}
-
-		private void mnuSoundRecorder_DropDownOpening(object sender, EventArgs e)
-		{
-			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
-			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
-			mnuWaveStop.Enabled = EmuRunner.IsRunning() && RecordApi.WaveIsRecording();
 		}
 
 		private void mnu_DropDownOpened(object sender, EventArgs e)
