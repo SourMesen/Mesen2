@@ -44,10 +44,6 @@
 			this.mnuMoveUp = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMoveDown = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuDecimalDisplay = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuHexDisplay = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuBinaryDisplay = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRowDisplayFormat = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRowBinary = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -63,6 +59,10 @@
 			this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRowClearFormat = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuDecimalDisplay = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuHexDisplay = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuBinaryDisplay = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuImport = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.txtEdit = new System.Windows.Forms.TextBox();
@@ -152,7 +152,7 @@
 			this.mnuViewInDisassembly.Image = global::Mesen.GUI.Properties.Resources.Debugger;
 			this.mnuViewInDisassembly.Name = "mnuViewInDisassembly";
 			this.mnuViewInDisassembly.Size = new System.Drawing.Size(193, 22);
-			this.mnuViewInDisassembly.Text = "View in disassembly";
+			this.mnuViewInDisassembly.Text = "View in Disassembly";
 			this.mnuViewInDisassembly.Click += new System.EventHandler(this.mnuViewInDisassembly_Click);
 			// 
 			// toolStripMenuItem4
@@ -180,34 +180,6 @@
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
 			this.toolStripMenuItem2.Size = new System.Drawing.Size(190, 6);
-			// 
-			// mnuDecimalDisplay
-			// 
-			this.mnuDecimalDisplay.Name = "mnuDecimalDisplay";
-			this.mnuDecimalDisplay.Size = new System.Drawing.Size(193, 22);
-			this.mnuDecimalDisplay.Text = "Decimal Display";
-			this.mnuDecimalDisplay.Click += new System.EventHandler(this.mnuDecimalDisplay_Click);
-			// 
-			// mnuHexDisplay
-			// 
-			this.mnuHexDisplay.Checked = true;
-			this.mnuHexDisplay.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.mnuHexDisplay.Name = "mnuHexDisplay";
-			this.mnuHexDisplay.Size = new System.Drawing.Size(193, 22);
-			this.mnuHexDisplay.Text = "Hexadecimal Display";
-			this.mnuHexDisplay.Click += new System.EventHandler(this.mnuHexDisplay_Click);
-			// 
-			// mnuBinaryDisplay
-			// 
-			this.mnuBinaryDisplay.Name = "mnuBinaryDisplay";
-			this.mnuBinaryDisplay.Size = new System.Drawing.Size(193, 22);
-			this.mnuBinaryDisplay.Text = "Binary Display";
-			this.mnuBinaryDisplay.Click += new System.EventHandler(this.mnuBinaryDisplay_Click);
-			// 
-			// toolStripMenuItem5
-			// 
-			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-			this.toolStripMenuItem5.Size = new System.Drawing.Size(190, 6);
 			// 
 			// mnuRowDisplayFormat
 			// 
@@ -317,6 +289,34 @@
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
 			this.toolStripMenuItem3.Size = new System.Drawing.Size(190, 6);
+			// 
+			// mnuDecimalDisplay
+			// 
+			this.mnuDecimalDisplay.Name = "mnuDecimalDisplay";
+			this.mnuDecimalDisplay.Size = new System.Drawing.Size(193, 22);
+			this.mnuDecimalDisplay.Text = "Decimal Display";
+			this.mnuDecimalDisplay.Click += new System.EventHandler(this.mnuDecimalDisplay_Click);
+			// 
+			// mnuHexDisplay
+			// 
+			this.mnuHexDisplay.Checked = true;
+			this.mnuHexDisplay.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mnuHexDisplay.Name = "mnuHexDisplay";
+			this.mnuHexDisplay.Size = new System.Drawing.Size(193, 22);
+			this.mnuHexDisplay.Text = "Hexadecimal Display";
+			this.mnuHexDisplay.Click += new System.EventHandler(this.mnuHexDisplay_Click);
+			// 
+			// mnuBinaryDisplay
+			// 
+			this.mnuBinaryDisplay.Name = "mnuBinaryDisplay";
+			this.mnuBinaryDisplay.Size = new System.Drawing.Size(193, 22);
+			this.mnuBinaryDisplay.Text = "Binary Display";
+			this.mnuBinaryDisplay.Click += new System.EventHandler(this.mnuBinaryDisplay_Click);
+			// 
+			// toolStripMenuItem5
+			// 
+			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+			this.toolStripMenuItem5.Size = new System.Drawing.Size(190, 6);
 			// 
 			// mnuImport
 			// 

@@ -12,6 +12,7 @@ using Mesen.GUI.Controls;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger
 {
@@ -24,7 +25,7 @@ namespace Mesen.GUI.Debugger
 
 		private int _previousMaxLength = -1;
 		private int _selectedAddress = -1;
-		//private CodeLabel _selectedLabel = null;
+		private CodeLabel _selectedLabel = null;
 		private List<WatchValueInfo> _previousValues = new List<WatchValueInfo>();
 
 		private bool _isEditing = false;
@@ -201,19 +202,17 @@ namespace Mesen.GUI.Debugger
 					if(address[0] >= '0' && address[0] <= '9' || address[0] == '$') {
 						//CPU Address
 						_selectedAddress = Int32.Parse(address[0] == '$' ? address.Substring(1) : address, address[0] == '$' ? NumberStyles.AllowHexSpecifier : NumberStyles.None);
-						//TODO
-						//_selectedLabel = null;
+						_selectedLabel = null;
 						mnuEditInMemoryViewer.Enabled = true;
 						mnuViewInDisassembly.Enabled = true;
 					} else {
 						//Label
 						_selectedAddress = -1;
-						//TODO
-						/*_selectedLabel = LabelManager.GetLabel(address);
+						_selectedLabel = LabelManager.GetLabel(address);
 						if(_selectedLabel != null) {
 							mnuEditInMemoryViewer.Enabled = true;
 							mnuViewInDisassembly.Enabled = true;
-						}*/
+						}
 					}
 				}
 
@@ -235,33 +234,31 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuViewInDisassembly_Click(object sender, EventArgs e)
 		{
-			//TODO
-			/*if(lstWatch.SelectedItems.Count != 1) {
+			if(lstWatch.SelectedItems.Count != 1) {
 				return;
 			}
 
 			if(_selectedAddress >= 0) {
-				DebugWindowManager.GetDebugger().ScrollToAddress(_selectedAddress);
+				DebugWindowManager.OpenDebugger(_cpuType).GoToAddress(_selectedAddress);
 			} else if(_selectedLabel != null) {
-				int relAddress = _selectedLabel.GetRelativeAddress();
-				if(relAddress >= 0) {
-					DebugWindowManager.GetDebugger().ScrollToAddress(relAddress);
+				AddressInfo relAddress = _selectedLabel.GetRelativeAddress();
+				if(relAddress.Address >= 0) {
+					DebugWindowManager.OpenDebugger(_cpuType).GoToAddress(relAddress.Address);
 				}
-			}*/
+			}
 		}
 
 		private void mnuEditInMemoryViewer_Click(object sender, EventArgs e)
 		{
-			//TODO
-			/*if(lstWatch.SelectedItems.Count != 1) {
+			if(lstWatch.SelectedItems.Count != 1) {
 				return;
 			}
 
 			if(_selectedAddress >= 0) {
-				DebugWindowManager.OpenMemoryViewer(_selectedAddress, DebugMemoryType.CpuMemory);
+				DebugWindowManager.OpenMemoryViewer(new AddressInfo() { Address = _selectedAddress, Type = _cpuType.ToMemoryType() });
 			} else if(_selectedLabel != null) {
-				DebugWindowManager.OpenMemoryViewer((int)_selectedLabel.Address, _selectedLabel.AddressType.ToMemoryType());
-			}*/
+				DebugWindowManager.OpenMemoryViewer(_selectedLabel.GetAbsoluteAddress());
+			}
 		}
 
 		private void StartEdit(string text, ListViewItem selectedItem = null)

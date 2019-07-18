@@ -32,7 +32,7 @@ namespace Mesen.GUI.Debugger
 		public string GetEffectiveAddressString(string format)
 		{
 			if(EffectiveAddress >= 0) {
-				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = _cpuType == CpuType.Spc ? SnesMemoryType.SpcMemory : SnesMemoryType.CpuMemory };
+				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = _cpuType.ToMemoryType() };
 				CodeLabel label = LabelManager.GetLabel(relAddress);
 				if(label != null) {
 					if(label.Length > 1) {

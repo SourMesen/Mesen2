@@ -34,7 +34,7 @@ namespace Mesen.GUI.Debugger
 			AddBinding(nameof(Breakpoint.BreakOnExec), chkExec);
 			AddBinding(nameof(Breakpoint.Condition), txtCondition);
 
-			_cpuType = breakpoint.MemoryType == SnesMemoryType.SpcMemory ? CpuType.Spc : CpuType.Cpu;
+			_cpuType = breakpoint.MemoryType.ToCpuType();
 
 			cboBreakpointType.Items.Clear();
 			if(_cpuType == CpuType.Cpu) {

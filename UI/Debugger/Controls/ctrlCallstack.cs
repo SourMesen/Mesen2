@@ -96,7 +96,7 @@ namespace Mesen.GUI.Debugger.Controls
 				return "[bottom of stack]";
 			}
 
-			CodeLabel label = relSubEntryAddr >= 0 ? LabelManager.GetLabel(new AddressInfo() { Address = relSubEntryAddr, Type = _cpuType == CpuType.Cpu ? SnesMemoryType.CpuMemory : SnesMemoryType.SpcMemory }) : null;
+			CodeLabel label = relSubEntryAddr >= 0 ? LabelManager.GetLabel(new AddressInfo() { Address = relSubEntryAddr, Type = _cpuType.ToMemoryType() }) : null;
 			if(label != null) {
 				return label.Label + " ($" + relSubEntryAddr.ToString(_format) + ")";
 			} else if(flags == StackFrameFlags.Nmi) {

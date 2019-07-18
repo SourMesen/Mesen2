@@ -613,6 +613,20 @@ namespace Mesen.GUI
 		Spc,
 	}
 
+	public static class CpuTypeExtensions
+	{
+		public static SnesMemoryType ToMemoryType(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Cpu: return SnesMemoryType.CpuMemory;
+				case CpuType.Spc: return SnesMemoryType.SpcMemory;
+
+				default:
+					throw new Exception("Invalid CPU type");
+			}
+		}
+	}
+
 	public enum StepType
 	{
 		CpuStep,
