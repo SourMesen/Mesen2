@@ -97,24 +97,38 @@ namespace Mesen.GUI.Forms
 			this.Resize += frmMain_Resize;
 		}
 
+		private bool _shuttingDown = false;
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
 
-			DebugApi.ResumeExecution();
-			DebugWindowManager.CloseAll();
-
-			EmuApi.Stop();
+			InBackgroundHelper.StopBackgroundTimer();
 
 			if(_notifListener != null) {
 				_notifListener.Dispose();
 				_notifListener = null;
 			}
 
+			if(!_shuttingDown && Program.IsMono) {
+				//This appears to prevent Mono from locking up when closing the form
+				DebugApi.ResumeExecution();
+				DebugWindowManager.CloseAll();
+
+				Task.Run(() => {
+					EmuApi.Stop();
+					_shuttingDown = true;
+					this.BeginInvoke((Action)(() => this.Close()));
+				});
+				e.Cancel = true;
+				return;
+			}
+
 			ConfigManager.Config.WindowLocation = this.WindowState == FormWindowState.Normal ? this.Location : this.RestoreBounds.Location;
 			ConfigManager.Config.WindowSize = this.WindowState == FormWindowState.Normal ? this.Size : this.RestoreBounds.Size;
 			ConfigManager.ApplyChanges();
+			ConfigManager.SaveConfig();
 
+			EmuApi.Stop();
 			EmuApi.Release();
 		}
 

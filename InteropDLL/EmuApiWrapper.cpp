@@ -153,9 +153,13 @@ extern "C" {
 		_console->Resume();
 	}
 
-	DllExport void __stdcall IsPaused()
+	DllExport bool __stdcall IsPaused()
 	{
-		_console->IsPaused();
+		shared_ptr<Console> console = _console;
+		if(console) {
+			return console->IsPaused();
+		}
+		return true;
 	}
 
 	DllExport void __stdcall Reset()
