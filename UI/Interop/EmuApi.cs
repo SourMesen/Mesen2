@@ -154,4 +154,34 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
 		public byte[] Checksum;
 	}
+
+	public enum CoprocessorType
+	{
+		None,
+		DSP1,
+		DSP1B,
+		DSP2,
+		DSP3,
+		DSP4,
+		GSU1,
+		GSU2,
+		MarioChip,
+		OBC1,
+		SA1,
+		DD1,
+		RTC,
+		Satellaview,
+		SPC7110,
+		ST010,
+		ST011,
+		ST018,
+		CX4
+	}
+
+	public struct MissingBiosMessage
+	{
+		public IntPtr Filename;
+		public CoprocessorType BiosType;
+		public UInt32 Size;
+	}
 }

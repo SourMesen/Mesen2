@@ -51,6 +51,7 @@
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
     <ClInclude Include="BaseVideoFilter.h" />
+    <ClInclude Include="BiosHelper.h" />
     <ClInclude Include="blargg_common.h" />
     <ClInclude Include="blargg_config.h" />
     <ClInclude Include="blargg_endian.h" />

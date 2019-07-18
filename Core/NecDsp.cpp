@@ -2,11 +2,13 @@
 #include "NecDsp.h"
 #include "MemoryManager.h"
 #include "Console.h"
+#include "NotificationManager.h"
 #include "BaseCartridge.h"
 #include "CartTypes.h"
 #include "MessageManager.h"
 #include "EmuSettings.h"
 #include "RamHandler.h"
+#include "BiosHelper.h"
 #include "../Utilities/FolderUtilities.h"
 
 NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom)
@@ -71,43 +73,19 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 	}
 }
 
-bool NecDsp::LoadBios(string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
-{
-	VirtualFile combinedBios(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), combinedFilename));
-	if(combinedBios.GetSize() == programSize+dataSize) {
-		vector<uint8_t> biosData;
-		combinedBios.ReadFile(biosData);
-		programRom.insert(programRom.end(), biosData.begin(), biosData.begin() + programSize);
-		dataRom.insert(dataRom.end(), biosData.begin() + programSize, biosData.end());
-		return true;
-	} else {
-		VirtualFile splitBiosProg(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), splitFilenameProgram));
-		VirtualFile splitBiosData(FolderUtilities::CombinePath(FolderUtilities::GetBiosFolder(), splitFilenameData));
-
-		if(splitBiosProg.GetSize() == programSize && splitBiosData.GetSize() == dataSize) {
-			splitBiosProg.ReadFile(programRom);
-			splitBiosData.ReadFile(dataRom);
-			return true;
-		}
-	}
-
-	MessageManager::DisplayMessage("Error", "Could not find BIOS file for DSP: " + combinedFilename);
-	return false;
-}
-
 NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console)
 {
 	bool biosLoaded = false;
 	vector<uint8_t> programRom;
 	vector<uint8_t> dataRom;
 	switch(type) {
-		case CoprocessorType::DSP1: biosLoaded = LoadBios("dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom); break;
-		case CoprocessorType::DSP1B: biosLoaded = LoadBios("dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom); break;
-		case CoprocessorType::DSP2: biosLoaded = LoadBios("dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom); break;
-		case CoprocessorType::DSP3: biosLoaded = LoadBios("dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom); break;
-		case CoprocessorType::DSP4: biosLoaded = LoadBios("dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom); break;
-		case CoprocessorType::ST010: biosLoaded = LoadBios("st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
-		case CoprocessorType::ST011: biosLoaded = LoadBios("st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
+		case CoprocessorType::DSP1: biosLoaded = BiosHelper::LoadDspBios(console, type, "dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP1B: biosLoaded = BiosHelper::LoadDspBios(console, type, "dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP2: biosLoaded = BiosHelper::LoadDspBios(console, type, "dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP3: biosLoaded = BiosHelper::LoadDspBios(console, type, "dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom); break;
+		case CoprocessorType::DSP4: biosLoaded = BiosHelper::LoadDspBios(console, type, "dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom); break;
+		case CoprocessorType::ST010: biosLoaded = BiosHelper::LoadDspBios(console, type, "st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
+		case CoprocessorType::ST011: biosLoaded = BiosHelper::LoadDspBios(console, type, "st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, 0xC000, 0x1000); break;
 	}
 
 	if(!biosLoaded) {

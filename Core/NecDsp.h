@@ -48,7 +48,7 @@ private:
 	void Load(uint8_t dest, uint16_t value);
 	uint16_t GetSourceValue(uint8_t source);
 
-	static bool LoadBios(string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, uint32_t programSize, uint32_t dataSize);
+	static bool LoadBios(Console *console, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, uint32_t programSize, uint32_t dataSize);
 	
 	NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
 

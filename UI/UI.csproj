@@ -812,6 +812,7 @@
     <Compile Include="RuntimeChecker.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="Utilities\ArchiveHelper.cs" />
+    <Compile Include="Utilities\BiosHelper.cs" />
     <Compile Include="Utilities\CommandLineHelper.cs" />
     <Compile Include="Utilities\FolderHelper.cs" />
     <Compile Include="Utilities\HexConverter.cs" />

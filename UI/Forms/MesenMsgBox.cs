@@ -15,20 +15,20 @@ namespace Mesen.GUI.Forms
 
 			if(resourceText.StartsWith("[[")) {
 				if(args != null && args.Length > 0) {
-					return MessageBox.Show(string.Format("Critical error (" + text + ") {0}", args), "Mesen", buttons, icon);
+					return MessageBox.Show(string.Format("Critical error (" + text + ") {0}", args), "Mesen-S", buttons, icon);
 				} else {
-					return MessageBox.Show(string.Format("Critical error (" + text + ")"), "Mesen", buttons, icon);
+					return MessageBox.Show(string.Format("Critical error (" + text + ")"), "Mesen-S", buttons, icon);
 				}
 			} else {
 				Form mainForm = Application.OpenForms.Count > 0 ? Application.OpenForms[0] : null;
 				if(mainForm?.InvokeRequired == true) {
 					DialogResult result = DialogResult.Cancel;
 					mainForm.Invoke((Action)(() => {
-						result = MessageBox.Show(mainForm, ResourceHelper.GetMessage(text, args), "Mesen", buttons, icon);
+						result = MessageBox.Show(mainForm, ResourceHelper.GetMessage(text, args), "Mesen-S", buttons, icon);
 					}));
 					return result;
 				} else {
-					return MessageBox.Show(ResourceHelper.GetMessage(text, args), "Mesen", buttons, icon);
+					return MessageBox.Show(ResourceHelper.GetMessage(text, args), "Mesen-S", buttons, icon);
 				}
 			}
 		}

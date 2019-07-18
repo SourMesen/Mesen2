@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -164,6 +165,13 @@ namespace Mesen.GUI.Forms
 				case ConsoleNotificationType.ExecuteShortcut:
 					this.BeginInvoke((Action)(() => {
 						_shortcuts.ExecuteShortcut((EmulatorShortcut)e.Parameter);
+					}));
+					break;
+
+				case ConsoleNotificationType.MissingBios:
+					this.Invoke((Action)(() => {
+						MissingBiosMessage msg = (MissingBiosMessage)Marshal.PtrToStructure(e.Parameter, typeof(MissingBiosMessage));
+						BiosHelper.RequestBiosFile(msg);
 					}));
 					break;
 			}

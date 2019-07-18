@@ -851,9 +851,9 @@ namespace Mesen.GUI.Debugger.Integration
 							message += Environment.NewLine + file;
 						}
 					}
-					MessageBox.Show(message, "Mesen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					MessageBox.Show(message, "Mesen-S", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				} else {
-					MessageBox.Show($"Import completed with {labelCount} labels imported.", "Mesen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show($"Import completed with {labelCount} labels imported.", "Mesen-S", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 		}

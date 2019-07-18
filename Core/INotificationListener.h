@@ -17,7 +17,8 @@ enum class ConsoleNotificationType
 	EmulationStopped = 11,
 	BeforeEmulationStop = 12,
 	ViewerRefresh = 13,
-	EventViewerRefresh = 14
+	EventViewerRefresh = 14,
+	MissingBios = 15
 };
 
 class INotificationListener
