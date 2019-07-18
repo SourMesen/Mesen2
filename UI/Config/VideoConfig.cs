@@ -24,6 +24,7 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer2 = false;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer3 = false;
 		[MarshalAs(UnmanagedType.I1)] public bool HideSprites = false;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping = false;
 
 		[MinMax(-1, 1.0)] public double Brightness = 0;
 		[MinMax(-1, 1.0)] public double Contrast = 0;

@@ -80,6 +80,7 @@ struct VideoConfig
 	bool HideBgLayer2 = false;
 	bool HideBgLayer3 = false;
 	bool HideSprites = false;
+	bool DisableFrameSkipping = false;
 
 	double Brightness = 0;
 	double Contrast = 0;

@@ -98,6 +98,7 @@
 			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
+			this.chkDisableFrameSkipping = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -1090,6 +1091,7 @@
 			// 
 			this.tableLayoutPanel2.ColumnCount = 1;
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Controls.Add(this.chkDisableFrameSkipping, 0, 5);
 			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer0, 0, 0);
 			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer1, 0, 1);
 			this.tableLayoutPanel2.Controls.Add(this.chkHideBgLayer2, 0, 2);
@@ -1098,7 +1100,8 @@
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 6;
+			this.tableLayoutPanel2.RowCount = 7;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1195,6 +1198,16 @@
 			this.mnuPresetMonochrome.Size = new System.Drawing.Size(147, 22);
 			this.mnuPresetMonochrome.Text = "Monochrome";
 			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
+			// 
+			// chkDisableFrameSkipping
+			// 
+			this.chkDisableFrameSkipping.Checked = false;
+			this.chkDisableFrameSkipping.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkDisableFrameSkipping.Location = new System.Drawing.Point(0, 120);
+			this.chkDisableFrameSkipping.Name = "chkDisableFrameSkipping";
+			this.chkDisableFrameSkipping.Size = new System.Drawing.Size(560, 24);
+			this.chkDisableFrameSkipping.TabIndex = 5;
+			this.chkDisableFrameSkipping.Text = "Disable frame skipping when fast-forwarding";
 			// 
 			// frmVideoConfig
 			// 
@@ -1322,5 +1335,6 @@
 		private Controls.ctrlRiskyOption chkHideBgLayer2;
 		private Controls.ctrlRiskyOption chkHideBgLayer3;
 		private Controls.ctrlRiskyOption chkHideSprites;
+		private Controls.ctrlRiskyOption chkDisableFrameSkipping;
 	}
 }

@@ -462,6 +462,7 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_console->ProcessEvent(EventType::StartFrame);
 
 			_skipRender = (
+				!_console->GetSettings()->GetVideoConfig().DisableFrameSkipping &&
 				!_console->GetRewindManager()->IsRewinding() &&
 				!_console->GetVideoRenderer()->IsRecording() &&
 				(_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150) &&

@@ -263,6 +263,7 @@
 			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
 			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
 			<Control ID="chkHideSprites">Hide sprites</Control>
+			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>

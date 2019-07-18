@@ -59,6 +59,7 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(VideoConfig.HideBgLayer2), chkHideBgLayer2);
 			AddBinding(nameof(VideoConfig.HideBgLayer3), chkHideBgLayer3);
 			AddBinding(nameof(VideoConfig.HideSprites), chkHideSprites);
+			AddBinding(nameof(VideoConfig.DisableFrameSkipping), chkDisableFrameSkipping);
 
 			UpdateOverscanImage(picOverscan, 0, 0, 0, 0);
 		}
