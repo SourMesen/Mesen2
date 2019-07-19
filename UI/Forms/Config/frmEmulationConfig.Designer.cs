@@ -27,6 +27,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmEmulationConfig));
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tpgGeneral = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
@@ -48,6 +49,16 @@
 			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblRamPowerOnState = new System.Windows.Forms.Label();
 			this.cboRamPowerOnState = new System.Windows.Forms.ComboBox();
+			this.tpgOverclocking = new System.Windows.Forms.TabPage();
+			this.picHint = new System.Windows.Forms.PictureBox();
+			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.lblOverclockHint = new System.Windows.Forms.Label();
+			this.grpPpuTiming = new System.Windows.Forms.GroupBox();
+			this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+			this.nudExtraScanlinesAfterNmi = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.nudExtraScanlinesBeforeNmi = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblExtraScanlinesBeforeNmi = new System.Windows.Forms.Label();
+			this.lblExtraScanlinesAfterNmi = new System.Windows.Forms.Label();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -56,6 +67,11 @@
 			this.flowLayoutPanel10.SuspendLayout();
 			this.tpgAdvanced.SuspendLayout();
 			this.flowLayoutPanel8.SuspendLayout();
+			this.tpgOverclocking.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picHint)).BeginInit();
+			this.tableLayoutPanel3.SuspendLayout();
+			this.grpPpuTiming.SuspendLayout();
+			this.tableLayoutPanel5.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -68,11 +84,12 @@
 			// 
 			this.tabMain.Controls.Add(this.tpgGeneral);
 			this.tabMain.Controls.Add(this.tpgAdvanced);
+			this.tabMain.Controls.Add(this.tpgOverclocking);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
-			this.tabMain.Size = new System.Drawing.Size(414, 319);
+			this.tabMain.Size = new System.Drawing.Size(414, 290);
 			this.tabMain.TabIndex = 2;
 			// 
 			// tpgGeneral
@@ -323,7 +340,7 @@
 			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
 			this.tpgAdvanced.Name = "tpgAdvanced";
 			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgAdvanced.Size = new System.Drawing.Size(406, 293);
+			this.tpgAdvanced.Size = new System.Drawing.Size(406, 264);
 			this.tpgAdvanced.TabIndex = 3;
 			this.tpgAdvanced.Text = "Advanced";
 			this.tpgAdvanced.UseVisualStyleBackColor = true;
@@ -336,7 +353,7 @@
 			this.flowLayoutPanel8.Location = new System.Drawing.Point(3, 3);
 			this.flowLayoutPanel8.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
 			this.flowLayoutPanel8.Name = "flowLayoutPanel8";
-			this.flowLayoutPanel8.Size = new System.Drawing.Size(400, 287);
+			this.flowLayoutPanel8.Size = new System.Drawing.Size(400, 258);
 			this.flowLayoutPanel8.TabIndex = 4;
 			// 
 			// lblRamPowerOnState
@@ -358,6 +375,173 @@
 			this.cboRamPowerOnState.Size = new System.Drawing.Size(176, 21);
 			this.cboRamPowerOnState.TabIndex = 1;
 			// 
+			// tpgOverclocking
+			// 
+			this.tpgOverclocking.Controls.Add(this.picHint);
+			this.tpgOverclocking.Controls.Add(this.tableLayoutPanel3);
+			this.tpgOverclocking.Location = new System.Drawing.Point(4, 22);
+			this.tpgOverclocking.Name = "tpgOverclocking";
+			this.tpgOverclocking.Size = new System.Drawing.Size(406, 264);
+			this.tpgOverclocking.TabIndex = 4;
+			this.tpgOverclocking.Text = "Overclocking";
+			this.tpgOverclocking.UseVisualStyleBackColor = true;
+			// 
+			// picHint
+			// 
+			this.picHint.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.picHint.BackgroundImage = global::Mesen.GUI.Properties.Resources.Help;
+			this.picHint.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.picHint.Location = new System.Drawing.Point(8, 20);
+			this.picHint.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+			this.picHint.Name = "picHint";
+			this.picHint.Size = new System.Drawing.Size(16, 16);
+			this.picHint.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.picHint.TabIndex = 8;
+			this.picHint.TabStop = false;
+			// 
+			// tableLayoutPanel3
+			// 
+			this.tableLayoutPanel3.ColumnCount = 1;
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel3.Controls.Add(this.lblOverclockHint, 0, 0);
+			this.tableLayoutPanel3.Controls.Add(this.grpPpuTiming, 0, 1);
+			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+			this.tableLayoutPanel3.RowCount = 3;
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(406, 264);
+			this.tableLayoutPanel3.TabIndex = 1;
+			// 
+			// lblOverclockHint
+			// 
+			this.lblOverclockHint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblOverclockHint.Location = new System.Drawing.Point(3, 0);
+			this.lblOverclockHint.Name = "lblOverclockHint";
+			this.lblOverclockHint.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
+			this.lblOverclockHint.Size = new System.Drawing.Size(400, 54);
+			this.lblOverclockHint.TabIndex = 1;
+			this.lblOverclockHint.Text = resources.GetString("lblOverclockHint.Text");
+			// 
+			// grpPpuTiming
+			// 
+			this.grpPpuTiming.Controls.Add(this.tableLayoutPanel5);
+			this.grpPpuTiming.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.grpPpuTiming.Location = new System.Drawing.Point(3, 57);
+			this.grpPpuTiming.Name = "grpPpuTiming";
+			this.grpPpuTiming.Size = new System.Drawing.Size(400, 71);
+			this.grpPpuTiming.TabIndex = 7;
+			this.grpPpuTiming.TabStop = false;
+			this.grpPpuTiming.Text = "PPU Vertical Blank Configuration";
+			// 
+			// tableLayoutPanel5
+			// 
+			this.tableLayoutPanel5.ColumnCount = 2;
+			this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel5.Controls.Add(this.nudExtraScanlinesAfterNmi, 1, 1);
+			this.tableLayoutPanel5.Controls.Add(this.nudExtraScanlinesBeforeNmi, 1, 0);
+			this.tableLayoutPanel5.Controls.Add(this.lblExtraScanlinesBeforeNmi, 0, 0);
+			this.tableLayoutPanel5.Controls.Add(this.lblExtraScanlinesAfterNmi, 0, 1);
+			this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 16);
+			this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+			this.tableLayoutPanel5.RowCount = 3;
+			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel5.Size = new System.Drawing.Size(394, 52);
+			this.tableLayoutPanel5.TabIndex = 0;
+			// 
+			// nudExtraScanlinesAfterNmi
+			// 
+			this.nudExtraScanlinesAfterNmi.DecimalPlaces = 0;
+			this.nudExtraScanlinesAfterNmi.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudExtraScanlinesAfterNmi.Location = new System.Drawing.Point(165, 30);
+			this.nudExtraScanlinesAfterNmi.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+			this.nudExtraScanlinesAfterNmi.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.nudExtraScanlinesAfterNmi.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudExtraScanlinesAfterNmi.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudExtraScanlinesAfterNmi.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudExtraScanlinesAfterNmi.Name = "nudExtraScanlinesAfterNmi";
+			this.nudExtraScanlinesAfterNmi.Size = new System.Drawing.Size(46, 21);
+			this.nudExtraScanlinesAfterNmi.TabIndex = 3;
+			this.nudExtraScanlinesAfterNmi.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			// 
+			// nudExtraScanlinesBeforeNmi
+			// 
+			this.nudExtraScanlinesBeforeNmi.DecimalPlaces = 0;
+			this.nudExtraScanlinesBeforeNmi.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudExtraScanlinesBeforeNmi.Location = new System.Drawing.Point(165, 3);
+			this.nudExtraScanlinesBeforeNmi.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+			this.nudExtraScanlinesBeforeNmi.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.nudExtraScanlinesBeforeNmi.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudExtraScanlinesBeforeNmi.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudExtraScanlinesBeforeNmi.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudExtraScanlinesBeforeNmi.Name = "nudExtraScanlinesBeforeNmi";
+			this.nudExtraScanlinesBeforeNmi.Size = new System.Drawing.Size(46, 21);
+			this.nudExtraScanlinesBeforeNmi.TabIndex = 2;
+			this.nudExtraScanlinesBeforeNmi.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			// 
+			// lblExtraScanlinesBeforeNmi
+			// 
+			this.lblExtraScanlinesBeforeNmi.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblExtraScanlinesBeforeNmi.AutoSize = true;
+			this.lblExtraScanlinesBeforeNmi.Location = new System.Drawing.Point(3, 7);
+			this.lblExtraScanlinesBeforeNmi.Name = "lblExtraScanlinesBeforeNmi";
+			this.lblExtraScanlinesBeforeNmi.Size = new System.Drawing.Size(159, 13);
+			this.lblExtraScanlinesBeforeNmi.TabIndex = 0;
+			this.lblExtraScanlinesBeforeNmi.Text = "Additional scanlines before NMI:";
+			// 
+			// lblExtraScanlinesAfterNmi
+			// 
+			this.lblExtraScanlinesAfterNmi.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblExtraScanlinesAfterNmi.AutoSize = true;
+			this.lblExtraScanlinesAfterNmi.Location = new System.Drawing.Point(3, 34);
+			this.lblExtraScanlinesAfterNmi.Name = "lblExtraScanlinesAfterNmi";
+			this.lblExtraScanlinesAfterNmi.Size = new System.Drawing.Size(150, 13);
+			this.lblExtraScanlinesAfterNmi.TabIndex = 1;
+			this.lblExtraScanlinesAfterNmi.Text = "Additional scanlines after NMI:";
+			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -370,8 +554,8 @@
 			this.Name = "frmEmulationConfig";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Emulation Config";
-			this.Controls.SetChildIndex(this.tabMain, 0);
 			this.Controls.SetChildIndex(this.baseConfigPanel, 0);
+			this.Controls.SetChildIndex(this.tabMain, 0);
 			this.tabMain.ResumeLayout(false);
 			this.tpgGeneral.ResumeLayout(false);
 			this.tpgGeneral.PerformLayout();
@@ -386,6 +570,13 @@
 			this.tpgAdvanced.ResumeLayout(false);
 			this.flowLayoutPanel8.ResumeLayout(false);
 			this.flowLayoutPanel8.PerformLayout();
+			this.tpgOverclocking.ResumeLayout(false);
+			this.tpgOverclocking.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picHint)).EndInit();
+			this.tableLayoutPanel3.ResumeLayout(false);
+			this.grpPpuTiming.ResumeLayout(false);
+			this.tableLayoutPanel5.ResumeLayout(false);
+			this.tableLayoutPanel5.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -414,5 +605,15 @@
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel8;
 		private System.Windows.Forms.Label lblRamPowerOnState;
 		private System.Windows.Forms.ComboBox cboRamPowerOnState;
+		private System.Windows.Forms.TabPage tpgOverclocking;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+		private System.Windows.Forms.Label lblOverclockHint;
+		private System.Windows.Forms.GroupBox grpPpuTiming;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+		private Controls.MesenNumericUpDown nudExtraScanlinesAfterNmi;
+		private Controls.MesenNumericUpDown nudExtraScanlinesBeforeNmi;
+		private System.Windows.Forms.Label lblExtraScanlinesBeforeNmi;
+		private System.Windows.Forms.Label lblExtraScanlinesAfterNmi;
+		private System.Windows.Forms.PictureBox picHint;
 	}
 }

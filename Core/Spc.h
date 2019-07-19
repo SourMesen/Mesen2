@@ -42,6 +42,8 @@ private:
 	SpcOpStep _opStep;
 	uint8_t _opSubStep;
 
+	bool _enabled;
+
 	SpcState _state;
 	uint8_t* _ram;
 	uint8_t _spcBios[64] {
@@ -279,6 +281,8 @@ private:
 public:
 	Spc(Console* console);
 	virtual ~Spc();
+
+	void SetSpcState(bool enabled);
 
 	void Run();
 	void Reset();

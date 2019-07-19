@@ -37,6 +37,7 @@ Spc::Spc(Console* console)
 	_tmp3 = 0;
 	_operandA = 0;
 	_operandB = 0;
+	_enabled = true;
 
 	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
 }
@@ -72,6 +73,21 @@ void Spc::Reset()
 
 	_dsp->soft_reset();
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
+}
+
+void Spc::SetSpcState(bool enabled)
+{
+	//Used by overclocking logic to disable SPC during the extra scanlines added to the PPU
+	if(_enabled != enabled) {
+		if(enabled) {
+			//When re-enabling, adjust the cycle counter to prevent running extra cycles
+			_state.Cycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
+		} else {
+			//Catch up SPC before disabling it
+			Run();
+		}
+		_enabled = enabled;
+	}
 }
 
 void Spc::Idle()
@@ -283,7 +299,7 @@ void Spc::CpuWriteRegister(uint32_t addr, uint8_t value)
 
 void Spc::Run()
 {
-	if(_state.StopState != CpuStopState::Running) {
+	if(!_enabled || _state.StopState != CpuStopState::Running) {
 		//STOP or SLEEP were executed - execution is stopped forever.
 		return;
 	}

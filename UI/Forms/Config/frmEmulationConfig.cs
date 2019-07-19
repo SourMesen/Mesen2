@@ -28,6 +28,9 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(EmulationConfig.Region), cboRegion);
 
 			AddBinding(nameof(EmulationConfig.RamPowerOnState), cboRamPowerOnState);
+
+			AddBinding(nameof(EmulationConfig.PpuExtraScanlinesBeforeNmi), nudExtraScanlinesBeforeNmi);
+			AddBinding(nameof(EmulationConfig.PpuExtraScanlinesAfterNmi), nudExtraScanlinesAfterNmi);
 		}
 
 		protected override void OnApply()

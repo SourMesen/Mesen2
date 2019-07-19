@@ -7,6 +7,8 @@
 class Console;
 class InternalRegisters;
 class MemoryManager;
+class Spc;
+class EmuSettings;
 
 class Ppu : public ISerializable
 {
@@ -22,6 +24,8 @@ private:
 	Console* _console;
 	InternalRegisters* _regs;
 	MemoryManager* _memoryManager;
+	Spc* _spc;
+	EmuSettings* _settings;
 
 	//Temporary data used for the tilemap/tile fetching
 	LayerData _layerData[4] = {};
@@ -49,7 +53,14 @@ private:
 
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
-	uint16_t _vblankStart;
+
+	uint16_t _vblankStartScanline;
+	uint16_t _vblankEndScanline;
+	uint16_t _baseVblankEndScanline;
+	uint16_t _adjustedVblankEndScanline;
+	uint16_t _nmiScanline;
+	bool _overclockEnabled;
+
 	uint8_t _oddFrame = 0;
 
 	uint16_t _drawStartX = 0;
@@ -247,14 +258,18 @@ public:
 	void RenderScanline();
 
 	uint32_t GetFrameCount();
+	uint16_t GetRealScanline();
 	uint16_t GetScanline();
 	uint16_t GetCycle();
+	uint16_t GetNmiScanline();
 	uint16_t GetVblankStart();
 
 	PpuState GetState();
 	void GetState(PpuState &state, bool returnPartialState);
 
 	bool ProcessEndOfScanline(uint16_t hClock);
+	void UpdateSpcState();
+	void UpdateNmiScanline();
 	uint16_t GetLastScanline();
 
 	bool IsHighResOutput();

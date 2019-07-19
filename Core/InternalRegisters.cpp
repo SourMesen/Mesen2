@@ -73,8 +73,8 @@ void InternalRegisters::ProcessIrqCounters()
 
 	bool irqLevel = (
 		(_enableHorizontalIrq || _enableVerticalIrq) &&
-		(!_enableHorizontalIrq || (_horizontalTimer <= 339 && (_ppu->GetCycle() == _horizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetScanline() || _horizontalTimer < 339))) &&
-		(!_enableVerticalIrq || _ppu->GetScanline() == _verticalTimer)
+		(!_enableHorizontalIrq || (_horizontalTimer <= 339 && (_ppu->GetCycle() == _horizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetRealScanline() || _horizontalTimer < 339))) &&
+		(!_enableVerticalIrq || _ppu->GetRealScanline() == _verticalTimer)
 	);
 
 	if(!_irqLevel && irqLevel) {
@@ -114,12 +114,12 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		case 0x4212: {
 			uint16_t hClock = _memoryManager->GetHClock();
 			uint16_t scanline = _ppu->GetScanline();
-			uint16_t vblankStart = _ppu->GetVblankStart();
+			uint16_t nmiScanline = _ppu->GetNmiScanline();
 			//TODO TIMING (set/clear timing)
 			return (
-				(scanline >= vblankStart ? 0x80 : 0) |
+				(scanline >= nmiScanline ? 0x80 : 0) |
 				((hClock >= 1*4 && hClock <= 274*4) ? 0 : 0x40) |
-				((_enableAutoJoypadRead && scanline >= vblankStart && scanline <= vblankStart + 2) ? 0x01 : 0) | //Auto joypad read in progress
+				((_enableAutoJoypadRead && scanline >= nmiScanline && scanline <= nmiScanline + 2) ? 0x01 : 0) | //Auto joypad read in progress
 				(_memoryManager->GetOpenBus() & 0x3E)
 			);
 		}
@@ -153,7 +153,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0x4200:
-			if((value & 0x30) == 0x20 && !_enableVerticalIrq && _ppu->GetScanline() == _verticalTimer) {
+			if((value & 0x30) == 0x20 && !_enableVerticalIrq && _ppu->GetRealScanline() == _verticalTimer) {
 				//When enabling vertical irqs, if the current scanline matches the target scanline, set the irq flag right away
 				_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
 			}

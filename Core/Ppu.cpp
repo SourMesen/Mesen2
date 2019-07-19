@@ -51,10 +51,10 @@ void Ppu::PowerOn()
 {
 	_skipRender = false;
 	_regs = _console->GetInternalRegisters().get();
+	_settings = _console->GetSettings().get();
+	_spc = _console->GetSpc().get();
 	_memoryManager = _console->GetMemoryManager().get();
 
-	_vblankStart = _overscanMode ? 240 : 225;
-	
 	_currentBuffer = _outputBuffers[0];
 
 	_layerConfig[0] = {};
@@ -64,9 +64,9 @@ void Ppu::PowerOn()
 
 	_cgramAddress = 0;
 
-	_console->GetSettings()->InitializeRam(_vram, Ppu::VideoRamSize);
-	_console->GetSettings()->InitializeRam(_cgram, Ppu::CgRamSize);
-	_console->GetSettings()->InitializeRam(_oamRam, Ppu::SpriteRamSize);
+	_settings->InitializeRam(_vram, Ppu::VideoRamSize);
+	_settings->InitializeRam(_cgram, Ppu::CgRamSize);
+	_settings->InitializeRam(_oamRam, Ppu::SpriteRamSize);
 
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
@@ -74,6 +74,8 @@ void Ppu::PowerOn()
 	_vramIncrementValue = 1;
 	_vramAddressRemapping = 0;
 	_vramAddrIncrementOnSecondReg = false;
+
+	UpdateNmiScanline();
 }
 
 void Ppu::Reset()
@@ -100,9 +102,14 @@ uint16_t Ppu::GetCycle()
 	return (hClock - ((hClock > 1292) << 1) - ((hClock > 1310) << 1)) >> 2;
 }
 
+uint16_t Ppu::GetNmiScanline()
+{
+	return _nmiScanline;
+}
+
 uint16_t Ppu::GetVblankStart()
 {
-	return _vblankStart;
+	return _vblankStartScanline;
 }
 
 PpuState Ppu::GetState()
@@ -389,70 +396,71 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 {
 	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
 		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
-		if(_scanline < _vblankStart) {
+		if(_scanline < _vblankStartScanline) {
 			RenderScanline();
+
+			if(_mosaicScanlineCounter) {
+				_mosaicScanlineCounter--;
+				if(_mosaicEnabled && !_mosaicScanlineCounter) {
+					_mosaicScanlineCounter = _mosaicSize;
+				}
+			}
+
+			_drawStartX = 0;
+			_drawEndX = 0;
+			_fetchBgStart = 0;
+			_fetchBgEnd = 0;
+			_fetchSpriteStart = 0;
+			_fetchSpriteEnd = 0;
+			_spriteEvalStart = 0;
+			_spriteEvalEnd = 0;
+			_spriteFetchingDone = false;
+			for(int i = 0; i < 4; i++) {
+				_layerData[i].HasPriorityTiles = false;
+			}
+
+			memset(_hasSpritePriority, 0, sizeof(_hasSpritePriority));
+			memcpy(_spritePriority, _spritePriorityCopy, sizeof(_spritePriority));
+			for(int i = 0; i < 255; i++) {
+				if(_spritePriority[i] < 4) {
+					_hasSpritePriority[_spritePriority[i]] = true;
+				}
+			}
+
+			memcpy(_spritePalette, _spritePaletteCopy, sizeof(_spritePalette));
+			memcpy(_spriteColors, _spriteColorsCopy, sizeof(_spriteColors));
+
+			memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
+
+			_pixelsDrawn = 0;
+			_subPixelsDrawn = 0;
+			memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
+			memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
 		}
 
 		_scanline++;
-		if(_mosaicScanlineCounter) {
-			_mosaicScanlineCounter--;
-			if(_mosaicEnabled && !_mosaicScanlineCounter) {
-				_mosaicScanlineCounter = _mosaicSize;
-			}
-		}
-		
-		_drawStartX = 0;
-		_drawEndX = 0;
-		_fetchBgStart = 0;
-		_fetchBgEnd = 0;
-		_fetchSpriteStart = 0;
-		_fetchSpriteEnd = 0;
-		_spriteEvalStart = 0;
-		_spriteEvalEnd = 0;
-		_spriteFetchingDone = false;
-		for(int i = 0; i < 4; i++) {
-			_layerData[i].HasPriorityTiles = false;
-		}
 
-		memset(_hasSpritePriority, 0, sizeof(_hasSpritePriority));
-		memcpy(_spritePriority, _spritePriorityCopy, sizeof(_spritePriority));
-		for(int i = 0; i < 255; i++) {
-			if(_spritePriority[i] < 4) {
-				_hasSpritePriority[_spritePriority[i]] = true;
-			}
-		}
-
-		memcpy(_spritePalette, _spritePaletteCopy, sizeof(_spritePalette));
-		memcpy(_spriteColors, _spriteColorsCopy, sizeof(_spriteColors));
-
-		memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
-
-		_pixelsDrawn = 0;
-		_subPixelsDrawn = 0;
-		memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
-		memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
-
-		if(_scanline == _vblankStart) {
+		if(_scanline == _nmiScanline) {
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
 				_internalOamAddress = (_oamRamAddress << 1);
 			}
 
-			VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+			VideoConfig cfg = _settings->GetVideoConfig();
 			_configVisibleLayers = (cfg.HideBgLayer0 ? 0 : 1) | (cfg.HideBgLayer1 ? 0 : 2) | (cfg.HideBgLayer2 ? 0 : 4) | (cfg.HideBgLayer3 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
 
 			_console->ProcessEvent(EventType::EndFrame);
 
 			_frameCount++;
-			_console->GetSpc()->ProcessEndFrame();
+			_spc->ProcessEndFrame();
 			_regs->SetNmiFlag(true);
 			SendFrame();
 
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}
-		} else if(_scanline >= GetLastScanline() + 1) {
+		} else if(_scanline >= _vblankEndScanline + 1) {
 			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
 			_oddFrame ^= 1;
 			_regs->SetNmiFlag(false);
@@ -462,10 +470,10 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_console->ProcessEvent(EventType::StartFrame);
 
 			_skipRender = (
-				!_console->GetSettings()->GetVideoConfig().DisableFrameSkipping &&
+				!_settings->GetVideoConfig().DisableFrameSkipping &&
 				!_console->GetRewindManager()->IsRewinding() &&
 				!_console->GetVideoRenderer()->IsRecording() &&
-				(_console->GetSettings()->GetEmulationSpeed() == 0 || _console->GetSettings()->GetEmulationSpeed() > 150) &&
+				(_settings->GetEmulationSpeed() == 0 || _settings->GetEmulationSpeed() > 150) &&
 				_frameSkipTimer.GetElapsedMS() < 10
 			);
 			if(!_skipRender) {
@@ -474,27 +482,87 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			}
 
 			_mosaicScanlineCounter = _mosaicEnabled ? _mosaicSize + 1 : 0;
+
+			//Update overclock timings once per frame
+			UpdateNmiScanline();
+
+			//Ensure the SPC is re-enabled for the next frame
+			_spc->SetSpcState(true);
 		}
+
+		UpdateSpcState();
 		return true;
 	}
 	return false;
 }
 
-uint16_t Ppu::GetLastScanline()
+void Ppu::UpdateSpcState()
 {
+	//When using overclocking, turn off the SPC during the extra scanlines
+	if(_overclockEnabled && _scanline > _vblankStartScanline) {
+		EmulationConfig cfg = _settings->GetEmulationConfig();
+		if(_scanline > _adjustedVblankEndScanline) {
+			//Disable APU for extra lines after NMI
+			_spc->SetSpcState(false);
+		} else if(_scanline >= _vblankStartScanline && _scanline < _nmiScanline) {
+			//Disable APU for extra lines before NMI
+			_spc->SetSpcState(false);
+		} else {
+			_spc->SetSpcState(true);
+		}
+	}
+}
+
+void Ppu::UpdateNmiScanline()
+{
+	EmulationConfig cfg = _settings->GetEmulationConfig();
 	if(_console->GetRegion() == ConsoleRegion::Ntsc) {
 		if(!_screenInterlace || _oddFrame) {
-			return 261;
+			_baseVblankEndScanline = 261;
 		} else {
-			return 262;
+			_baseVblankEndScanline = 262;
 		}
 	} else {
 		if(!_screenInterlace || _oddFrame) {
-			return 311;
+			_baseVblankEndScanline = 311;
 		} else {
-			return 312;
+			_baseVblankEndScanline = 312;
 		}
 	}
+
+	_overclockEnabled = cfg.PpuExtraScanlinesBeforeNmi > 0 || cfg.PpuExtraScanlinesAfterNmi > 0;
+
+	_adjustedVblankEndScanline = _baseVblankEndScanline + cfg.PpuExtraScanlinesBeforeNmi;
+	_vblankEndScanline = _baseVblankEndScanline + cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
+	_vblankStartScanline = _overscanMode ? 240 : 225;
+	_nmiScanline = _vblankStartScanline + cfg.PpuExtraScanlinesBeforeNmi;
+}
+
+uint16_t Ppu::GetRealScanline()
+{
+	if(!_overclockEnabled) {
+		return _scanline;
+	}
+
+	if(_scanline > _vblankStartScanline && _scanline <= _nmiScanline) {
+		//Pretend to be just before vblank until extra scanlines are over
+		return _vblankStartScanline - 1;
+	} else if(_scanline > _nmiScanline) {
+		if(_scanline > _adjustedVblankEndScanline) {
+			//Pretend to be at the end of vblank until extra scanlines are over
+			return _baseVblankEndScanline;
+		} else {
+			//Number the regular scanlines as they would normally be
+			return _scanline - _nmiScanline + _vblankStartScanline;
+		}
+	}
+
+	return _scanline;
+}
+
+uint16_t Ppu::GetLastScanline()
+{
+	return _baseVblankEndScanline;
 }
 
 void Ppu::EvaluateNextLineSprites()
@@ -1499,7 +1567,7 @@ bool Ppu::IsDoubleWidth()
 void Ppu::LatchLocationValues()
 {
 	_horizontalLocation = GetCycle();
-	_verticalLocation = _scanline;
+	_verticalLocation = GetRealScanline();
 	_locationLatched = true;
 }
 
@@ -1511,7 +1579,7 @@ void Ppu::UpdateOamAddress()
 
 uint16_t Ppu::GetOamAddress()
 {
-	if(_forcedVblank || _scanline >= _vblankStart) {
+	if(_forcedVblank || _scanline >= _vblankStartScanline) {
 		return _internalOamAddress;
 	} else {
 		if(_memoryManager->GetHClock() <= 255 * 4) {
@@ -1542,7 +1610,7 @@ uint16_t Ppu::GetVramAddress()
 
 uint8_t Ppu::Read(uint16_t addr)
 {
-	if(_scanline < _vblankStart) {
+	if(_scanline < _vblankStartScanline) {
 		RenderScanline();
 	}
 
@@ -1704,13 +1772,13 @@ uint8_t Ppu::Read(uint16_t addr)
 
 void Ppu::Write(uint32_t addr, uint8_t value)
 {
-	if(_scanline < _vblankStart) {
+	if(_scanline < _vblankStartScanline) {
 		RenderScanline();
 	}
 
 	switch(addr) {
 		case 0x2100:
-			if(_forcedVblank && _scanline == _vblankStart) {
+			if(_forcedVblank && _scanline == _nmiScanline) {
 				//"writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur."
 				UpdateOamAddress();
 			}
@@ -1753,7 +1821,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				}
 			} 
 
-			if(!_forcedVblank && _scanline < _vblankStart) {
+			if(!_forcedVblank && _scanline < _nmiScanline) {
 				//During rendering the high table is also written to when writing to OAM
 				oamAddr = 0x200 | ((oamAddr & 0x1F0) >> 4);
 			}
@@ -1864,7 +1932,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
-			if(_scanline >= _vblankStart || _forcedVblank) {
+			if(_scanline >= _nmiScanline || _forcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
@@ -1878,7 +1946,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
-			if(_scanline >= _vblankStart || _forcedVblank) {
+			if(_scanline >= _nmiScanline || _forcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
@@ -2044,9 +2112,9 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			_mode7.ExtBgEnabled = (value & 0x40) != 0;
 			_hiResMode = (value & 0x08) != 0;
 			_overscanMode = (value & 0x04) != 0;
-			_vblankStart = _overscanMode ? 240 : 225;
 			_objInterlace = (value & 0x02) != 0;
 			_screenInterlace = (value & 0x01) != 0;
+			UpdateNmiScanline();
 			break;
 
 		default:
@@ -2072,8 +2140,8 @@ void Ppu::Serialize(Serializer &s)
 		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStart,
-		_cgramAddressLatch, _cgramWriteBuffer
+		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStartScanline,
+		_cgramAddressLatch, _cgramWriteBuffer, _nmiScanline, _vblankEndScanline, _adjustedVblankEndScanline, _baseVblankEndScanline
 	);
 
 	for(int i = 0; i < 4; i++) {

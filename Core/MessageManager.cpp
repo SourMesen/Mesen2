@@ -13,6 +13,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "Patch", u8"Patch" },
 	{ "Movies", u8"Movies" },
 	{ "NetPlay", u8"Net Play" },
+	{ "Overclock", u8"Overclock" },
 	{ "Region", u8"Region" },
 	{ "SaveStates", u8"Save States" },
 	{ "ScreenshotSaved", u8"Screenshot Saved" },
@@ -51,6 +52,8 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "MovieRecordingTo", u8"Recording to: %1" },
 	{ "MovieSaved", u8"Movie saved to file: %1" },
 	{ "NetplayVersionMismatch", u8"%1 is not running the same version of Mesen and has been disconnected." },
+	{ "OverclockEnabled", u8"Overclocking enabled." },
+	{ "OverclockDisabled", u8"Overclocking disabled." },
 	{ "PrgSizeWarning", u8"PRG size is smaller than 32kb" },
 	{ "SaveStateEmpty", u8"Slot is empty." },
 	{ "SaveStateIncompatibleVersion", u8"Save state is incompatible with this version of Mesen." },
@@ -74,7 +77,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 std::list<string> MessageManager::_log;
 SimpleLock MessageManager::_logLock;
 SimpleLock MessageManager::_messageLock;
-bool MessageManager::_osdEnabled = false;
+bool MessageManager::_osdEnabled = true;
 IMessageManager* MessageManager::_messageManager = nullptr;
 
 void MessageManager::RegisterMessageManager(IMessageManager* messageManager)

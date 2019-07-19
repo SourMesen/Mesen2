@@ -142,7 +142,7 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 	int iMax = drawBackground ? 3 : 1;
 	int jMin = drawBackground ? -2 : 0;
 	int jMax = drawBackground ? 3 : 1;
-	uint32_t y = evt.Scanline * 2;
+	uint32_t y = std::min(evt.Scanline * 2, 262 * 2);
 	uint32_t x = evt.Cycle * 2;
 
 	for(int i = iMin; i <= iMax; i++) {
@@ -171,7 +171,7 @@ void EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 	memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), (_useHighResOutput ? (512 * 478) : (256*239)) * sizeof(uint16_t));
 
 	_snapshot = _debugEvents;
-	_snapshotScanline = scanline;
+	_snapshotScanline = _ppu->GetRealScanline();
 	if(options.ShowPreviousFrameEvents && scanline != 0) {
 		for(DebugEventInfo &evt : _prevDebugEvents) {
 			uint32_t evtKey = (evt.Scanline << 9) + evt.Cycle;

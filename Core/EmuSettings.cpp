@@ -78,7 +78,17 @@ uint32_t EmuSettings::GetInputConfigVersion()
 
 void EmuSettings::SetEmulationConfig(EmulationConfig config)
 {
+	bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0;
+	bool overclockEnabled = config.PpuExtraScanlinesAfterNmi > 0 || config.PpuExtraScanlinesBeforeNmi > 0;
 	_emulation = config;
+
+	if(prevOverclockEnabled != overclockEnabled) {
+		if(overclockEnabled) {
+			MessageManager::DisplayMessage("Overclock", "OverclockEnabled");
+		} else {
+			MessageManager::DisplayMessage("Overclock", "OverclockDisabled");
+		}
+	}
 }
 
 EmulationConfig EmuSettings::GetEmulationConfig()
