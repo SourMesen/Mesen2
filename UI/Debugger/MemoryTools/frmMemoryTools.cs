@@ -18,7 +18,6 @@ namespace Mesen.GUI.Debugger
 		private SnesMemoryType _memoryType = SnesMemoryType.CpuMemory;
 		private bool _updating = false;
 		private DateTime _lastUpdate = DateTime.MinValue;
-		private TabPage _selectedTab;
 		private bool _formClosed;
 
 		public frmMemoryTools()

@@ -74,13 +74,13 @@ namespace Mesen.GUI.Forms
 			
 			_commandLine.LoadGameFromCommandLine();
 
-			Task.Run(() => {
-				System.Threading.Thread.Sleep(25);
-				this.BeginInvoke((Action)(() => {
-					SaveStateManager.InitializeStateMenu(mnuSaveState, true, _shortcuts);
-					SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
+			SaveStateManager.InitializeStateMenu(mnuSaveState, true, _shortcuts);
+			SaveStateManager.InitializeStateMenu(mnuLoadState, false, _shortcuts);
+			BindShortcuts();
 
-					BindShortcuts();
+			Task.Run(() => {
+				Thread.Sleep(25);
+				this.BeginInvoke((Action)(() => {
 
 					ResizeRecentGames();
 					ctrlRecentGames.Initialize();
