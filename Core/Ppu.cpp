@@ -2141,7 +2141,8 @@ void Ppu::Serialize(Serializer &s)
 		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
 		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
 		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStartScanline,
-		_cgramAddressLatch, _cgramWriteBuffer, _nmiScanline, _vblankEndScanline, _adjustedVblankEndScanline, _baseVblankEndScanline
+		_cgramAddressLatch, _cgramWriteBuffer, _nmiScanline, _vblankEndScanline, _adjustedVblankEndScanline, _baseVblankEndScanline,
+		_overclockEnabled
 	);
 
 	for(int i = 0; i < 4; i++) {

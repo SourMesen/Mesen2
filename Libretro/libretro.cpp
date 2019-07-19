@@ -39,6 +39,8 @@ static constexpr const char* MesenAspectRatio = "mesen-s_aspect_ratio";
 static constexpr const char* MesenOverscanVertical = "mesen-s_overscan_vertical";
 static constexpr const char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
 static constexpr const char* MesenRamState = "mesen-s_ramstate";
+static constexpr const char* MesenOverclock = "mesen-s_overclock";
+static constexpr const char* MesenOverclockType = "mesen-s_overclock_type";
 
 extern "C" {
 	void logMessage(retro_log_level level, const char* message)
@@ -101,6 +103,8 @@ extern "C" {
 			{ MesenOverscanVertical, "Vertical Overscan; None|8px|16px" },
 			{ MesenOverscanHorizontal, "Horizontal Overscan; None|8px|16px" },
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
+			{ MesenOverclock, "Overclock; None|Low|Medium|High|Very High" },
+			{ MesenOverclockType, "Overclock Type; Before NMI|After NMI" },
 			{ MesenRamState, "Default power-on state for RAM; Random Values (Default)|All 0s|All 1s" },
 			{ NULL, NULL },
 		};
@@ -221,6 +225,38 @@ extern "C" {
 				video.NtscResolution = 0.2;
 				video.NtscSharpness = 0.2;
 				video.NtscMergeFields = false;
+			}
+		}
+
+		bool beforeNmi = true;
+		if(readVariable(MesenOverclockType, var)) {
+			string value = string(var.value);
+			if(value == "After NMI") {
+				beforeNmi = false;
+			}
+		}
+
+		if(readVariable(MesenOverclock, var)) {
+			string value = string(var.value);
+			int lineCount = 0;
+			if(value == "None") {
+				lineCount = 0;
+			} else if(value == "Low") {
+				lineCount = 100;
+			} else if(value == "Medium") {
+				lineCount = 250;
+			} else if(value == "High") {
+				lineCount = 500;
+			} else if(value == "Very High") {
+				lineCount = 1000;
+			}
+
+			if(beforeNmi) {
+				emulation.PpuExtraScanlinesBeforeNmi = lineCount;
+				emulation.PpuExtraScanlinesAfterNmi = 0;
+			} else {
+				emulation.PpuExtraScanlinesAfterNmi = lineCount;
+				emulation.PpuExtraScanlinesBeforeNmi = 0;
 			}
 		}
 

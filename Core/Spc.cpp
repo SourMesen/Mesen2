@@ -404,7 +404,7 @@ void Spc::Serialize(Serializer &s)
 		_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 	}
 
-	s.Stream(_operandA, _operandB, _tmp1, _tmp2, _tmp3, _opCode, _opStep, _opSubStep);
+	s.Stream(_operandA, _operandB, _tmp1, _tmp2, _tmp3, _opCode, _opStep, _opSubStep, _enabled);
 }
 
 uint8_t Spc::GetOpCode()
