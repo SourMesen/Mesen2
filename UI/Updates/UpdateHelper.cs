@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.GUI.Config;
+using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,24 @@ namespace Mesen.GUI.Updates
 {
 	public static class UpdateHelper
 	{
+		public static bool PerformUpgrade()
+		{
+			Version newVersion = EmuApi.GetMesenVersion();
+			Version oldVersion = new Version(ConfigManager.Config.Version);
+			if(oldVersion < newVersion) {
+				//Upgrade
+				if(oldVersion <= new Version("0.1.0")) {
+					ConfigManager.Config.Audio.MasterVolume = 100;
+				}
+
+				ConfigManager.Config.Version = EmuApi.GetMesenVersion().ToString();
+				ConfigManager.ApplyChanges();
+
+				return true;
+			}
+			return false;
+		}
+
 		public static void CheckForUpdates(bool silent)
 		{
 			Task.Run(() => {

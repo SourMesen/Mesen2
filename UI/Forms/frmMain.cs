@@ -57,6 +57,8 @@ namespace Mesen.GUI.Forms
 			base.OnShown(e);
 
 			EmuApi.InitDll();
+			bool showUpgradeMessage = UpdateHelper.PerformUpgrade();
+
 			ConfigManager.Config.Video.ApplyConfig();
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, Handle, ctrlRenderer.Handle, false, false, false);
 
@@ -88,6 +90,10 @@ namespace Mesen.GUI.Forms
 					}
 				}));
 			});
+
+			if(showUpgradeMessage) {
+				MesenMsgBox.Show("UpgradeSuccess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
 
 			if(ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates) {
 				UpdateHelper.CheckForUpdates(true);
