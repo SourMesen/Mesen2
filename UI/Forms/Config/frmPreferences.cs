@@ -51,6 +51,7 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(PreferencesConfig.ShowFrameCounter), chkShowFrameCounter);
 			AddBinding(nameof(PreferencesConfig.ShowGameTimer), chkShowGameTimer);
 			AddBinding(nameof(PreferencesConfig.ShowDebugInfo), chkShowDebugInfo);
+			AddBinding(nameof(PreferencesConfig.RewindBufferSize), nudRewindBufferSize);
 
 			AddBinding(nameof(PreferencesConfig.GameFolder), psGame);
 			AddBinding(nameof(PreferencesConfig.AviFolder), psAvi);
