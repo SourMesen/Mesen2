@@ -247,7 +247,7 @@ CartFlags::CartFlags BaseCartridge::GetCartFlags()
 
 void BaseCartridge::LoadBattery()
 {
-	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
+	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(((VirtualFile)_romPath).GetFileName(), false) + ".srm");
 	if(_saveRamSize > 0) {
 		VirtualFile saveFile(saveFilePath);
 		saveFile.ReadFile(_saveRam, _saveRamSize);
@@ -258,7 +258,7 @@ void BaseCartridge::LoadBattery()
 
 void BaseCartridge::SaveBattery()
 {
-	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(_romPath, false) + ".srm");
+	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(((VirtualFile)_romPath).GetFileName(), false) + ".srm");
 	if(_saveRamSize > 0) {
 		ofstream saveFile(saveFilePath, ios::binary);
 		saveFile.write((char*)_saveRam, _saveRamSize);
