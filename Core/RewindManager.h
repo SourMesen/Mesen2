@@ -18,6 +18,13 @@ enum class RewindState
 	Debugging = 4
 };
 
+struct VideoFrame
+{
+	vector<uint32_t> Data;
+	uint32_t Width;
+	uint32_t Height;
+};
+
 class RewindManager : public INotificationListener, public IInputProvider, public IInputRecorder
 {
 private:
@@ -35,8 +42,8 @@ private:
 	RewindState _rewindState;
 	int32_t _framesToFastForward;
 
-	std::deque<vector<uint32_t>> _videoHistory;
-	vector<vector<uint32_t>> _videoHistoryBuilder;
+	std::deque<VideoFrame> _videoHistory;
+	vector<VideoFrame> _videoHistoryBuilder;
 	std::deque<int16_t> _audioHistory;
 	vector<int16_t> _audioHistoryBuilder;
 

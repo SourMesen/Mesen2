@@ -226,7 +226,11 @@ void RewindManager::ProcessFrame(void * frameBuffer, uint32_t width, uint32_t he
 			return;
 		}
 
-		_videoHistoryBuilder.push_back(vector<uint32_t>((uint32_t*)frameBuffer, (uint32_t*)frameBuffer + width*height));
+		VideoFrame newFrame;
+		newFrame.Data = vector<uint32_t>((uint32_t*)frameBuffer, (uint32_t*)frameBuffer + width * height);
+		newFrame.Width = width;
+		newFrame.Height = height;
+		_videoHistoryBuilder.push_back(newFrame);
 
 		if(_videoHistoryBuilder.size() == (size_t)_historyBackup.front().FrameCount) {
 			for(int i = (int)_videoHistoryBuilder.size() - 1; i >= 0; i--) {
@@ -239,7 +243,8 @@ void RewindManager::ProcessFrame(void * frameBuffer, uint32_t width, uint32_t he
 			_rewindState = RewindState::Started;
 			_settings->ClearFlag(EmulationFlags::MaximumSpeed);
 			if(!_videoHistory.empty()) {
-				_console->GetVideoRenderer()->UpdateFrame(_videoHistory.back().data(), width, height);
+				VideoFrame &frameData = _videoHistory.back();
+				_console->GetVideoRenderer()->UpdateFrame(frameData.Data.data(), frameData.Width, frameData.Height);
 				_videoHistory.pop_back();
 			}
 		}
