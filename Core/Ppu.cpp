@@ -1422,7 +1422,7 @@ void Ppu::ApplyHiResMode()
 	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
 	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
 
-	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || IsDoubleHeight();
+	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || _screenInterlace;
 	if(_useHighResOutput != useHighResOutput) {
 		//Convert standard res picture to high resolution when the PPU starts drawing in high res mid frame
 		ConvertToHiRes();
@@ -1432,7 +1432,7 @@ void Ppu::ApplyHiResMode()
 	if(!_useHighResOutput) {
 		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 2);
 	} else {
-		uint32_t screenY = IsDoubleHeight() ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
+		uint32_t screenY = _screenInterlace ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 		uint32_t baseAddr = (screenY << 9);
 
 		if(IsDoubleWidth()) {
@@ -1448,7 +1448,7 @@ void Ppu::ApplyHiResMode()
 			}
 		}
 
-		if(!IsDoubleHeight()) {
+		if(!_screenInterlace) {
 			//Copy this line's content to the next line (between the current start & end bounds)
 			memcpy(
 				_currentBuffer + baseAddr + 512 + (_drawStartX << 1),
