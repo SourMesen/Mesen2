@@ -44,16 +44,16 @@ namespace Mesen.GUI.Debugger
 				int count = (int)nudCount.Value;
 				cfg.BreakInCount = (int)count;
 				if(radCpuInstructions.Checked) {
-					DebugApi.Step(count, _cpuType == CpuType.Cpu ? StepType.CpuStep : StepType.SpcStep);
+					DebugApi.Step(_cpuType, count, StepType.Step);
 					cfg.BreakInMetric = BreakInMetric.CpuInstructions;
 				} else if(radPpuCycles.Checked) {
-					DebugApi.Step(count, StepType.PpuStep);
+					DebugApi.Step(_cpuType, count, StepType.PpuStep);
 					cfg.BreakInMetric = BreakInMetric.PpuCycles;
 				} else if(radScanlines.Checked) {
-					DebugApi.Step(count * 341, StepType.PpuStep);
+					DebugApi.Step(_cpuType, count * 341, StepType.PpuStep);
 					cfg.BreakInMetric = BreakInMetric.Scanlines;
 				} else {
-					DebugApi.Step(count * 341 * 262, StepType.PpuStep);
+					DebugApi.Step(_cpuType, count * 341 * 262, StepType.PpuStep);
 					cfg.BreakInMetric = BreakInMetric.Frames;
 				}
 				ConfigManager.ApplyChanges();

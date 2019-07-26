@@ -76,7 +76,7 @@ void Serializer::RecursiveStream()
 void Serializer::StreamStartBlock()
 {
 	if(_inBlock) {
-		throw new std::runtime_error("Cannot start a new block before ending the last block");
+		throw std::runtime_error("Cannot start a new block before ending the last block");
 	}
 
 	if(!_saving) {

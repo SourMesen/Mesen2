@@ -375,9 +375,12 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 					_channel[i].DmaActive = true;
 				}
 			}
-			_dmaPending = true;
-			_dmaStartDelay = true;
-			UpdateNeedToProcessFlag();
+
+			if(value) {
+				_dmaPending = true;
+				_dmaStartDelay = true;
+				UpdateNeedToProcessFlag();
+			}
 			break;
 		}
 

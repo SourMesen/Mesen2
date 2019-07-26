@@ -48,6 +48,10 @@
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseCoprocessor.h" />
+    <ClInclude Include="Cpu.Shared.h" />
+    <ClInclude Include="CpuDebugger.h" />
+    <ClInclude Include="DebugUtilities.h" />
+    <ClInclude Include="MemoryMappings.h" />
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
     <ClInclude Include="BaseVideoFilter.h" />
@@ -66,6 +70,7 @@
     <ClInclude Include="ControlDeviceState.h" />
     <ClInclude Include="ControlManager.h" />
     <ClInclude Include="Cpu.h" />
+    <ClInclude Include="Cpu.Instructions.h" />
     <ClInclude Include="CpuDisUtils.h" />
     <ClInclude Include="DebugBreakHelper.h" />
     <ClInclude Include="DebugStats.h" />
@@ -122,6 +127,10 @@
     <ClInclude Include="RewindData.h" />
     <ClInclude Include="RewindManager.h" />
     <ClInclude Include="RomHandler.h" />
+    <ClInclude Include="Sa1.h" />
+    <ClInclude Include="Sa1Cpu.h" />
+    <ClInclude Include="Sa1Types.h" />
+    <ClInclude Include="Sa1VectorHandler.h" />
     <ClInclude Include="SaveStateManager.h" />
     <ClInclude Include="ScaleFilter.h" />
     <ClInclude Include="ScriptHost.h" />
@@ -134,6 +143,7 @@
     <ClInclude Include="SoundMixer.h" />
     <ClInclude Include="SoundResampler.h" />
     <ClInclude Include="Spc.h" />
+    <ClInclude Include="SpcDebugger.h" />
     <ClInclude Include="SpcDisUtils.h" />
     <ClInclude Include="SpcTimer.h" />
     <ClInclude Include="SpcTypes.h" />
@@ -162,7 +172,7 @@
     <ClCompile Include="ConsoleLock.cpp" />
     <ClCompile Include="ControlManager.cpp" />
     <ClCompile Include="Cpu.cpp" />
-    <ClCompile Include="Cpu.Instructions.cpp" />
+    <ClCompile Include="CpuDebugger.cpp" />
     <ClCompile Include="CpuDisUtils.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugHud.cpp" />
@@ -183,6 +193,7 @@
     <ClCompile Include="MemoryAccessCounter.cpp" />
     <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
+    <ClCompile Include="MemoryMappings.cpp" />
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="NecDsp.cpp" />
     <ClCompile Include="NecDspDisUtils.cpp" />
@@ -193,6 +204,8 @@
     <ClCompile Include="RegisterHandlerB.cpp" />
     <ClCompile Include="RewindData.cpp" />
     <ClCompile Include="RewindManager.cpp" />
+    <ClCompile Include="Sa1.cpp" />
+    <ClCompile Include="Sa1Cpu.cpp" />
     <ClCompile Include="SaveStateManager.cpp" />
     <ClCompile Include="ScaleFilter.cpp" />
     <ClCompile Include="ScriptHost.cpp" />
@@ -203,6 +216,7 @@
     <ClCompile Include="SoundResampler.cpp" />
     <ClCompile Include="Spc.cpp" />
     <ClCompile Include="Spc.Instructions.cpp" />
+    <ClCompile Include="SpcDebugger.cpp" />
     <ClCompile Include="SpcDisUtils.cpp" />
     <ClCompile Include="SPC_DSP.cpp" />
     <ClCompile Include="SPC_Filter.cpp" />

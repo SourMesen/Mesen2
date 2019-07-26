@@ -500,7 +500,6 @@ void Ppu::UpdateSpcState()
 {
 	//When using overclocking, turn off the SPC during the extra scanlines
 	if(_overclockEnabled && _scanline > _vblankStartScanline) {
-		EmulationConfig cfg = _settings->GetEmulationConfig();
 		if(_scanline > _adjustedVblankEndScanline) {
 			//Disable APU for extra lines after NMI
 			_spc->SetSpcState(false);
@@ -1743,7 +1742,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				(_locationLatched ? 0x40 : 0) |
 				(_ppu2OpenBus & 0x20) |
 				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
-				0x02 //PPU (5c78) chip version
+				0x03 //PPU (5c78) chip version
 			);
 
 			if(_regs->GetIoPortOutput() & 0x80) {
@@ -1758,7 +1757,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		}
 
 		default:
-			MessageManager::Log("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
+			LogDebug("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
 			break;
 	}
 	
@@ -1840,7 +1839,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2105:
 			if(_bgMode != (value & 0x07)) {
-				MessageManager::Log("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
+				LogDebug("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
 			}
 			_bgMode = value & 0x07;
 			_mode1Bg3Priority = (value & 0x08) != 0;
@@ -2118,7 +2117,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			break;
 
 		default:
-			MessageManager::Log("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			LogDebug("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
 	}
 }

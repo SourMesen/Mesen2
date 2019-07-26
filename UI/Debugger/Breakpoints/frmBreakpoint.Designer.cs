@@ -75,6 +75,7 @@
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 197);
 			this.baseConfigPanel.Size = new System.Drawing.Size(426, 29);
+			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tableLayoutPanel1
 			// 
@@ -521,6 +522,7 @@
 			this.tableLayoutPanel7.ResumeLayout(false);
 			this.tableLayoutPanel7.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+enum class CpuType : uint8_t; 
 enum class SnesMemoryType;
 struct AddressInfo;
 enum class BreakpointType;
@@ -16,14 +17,13 @@ public:
 	bool HasCondition();
 
 	uint32_t GetId();
+	CpuType GetCpuType();
 	bool IsEnabled();
 	bool IsMarked();
 	
-	BreakpointCategory GetBreakpointCategory();
-	static BreakpointCategory GetBreakpointCategory(SnesMemoryType memoryType);
-
 private:
 	uint32_t _id;
+	CpuType _cpuType;
 	SnesMemoryType _memoryType;
 	BreakpointTypeFlags _type;
 	int32_t _startAddr;

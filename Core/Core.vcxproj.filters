@@ -305,6 +305,34 @@
     <ClInclude Include="FirmwareHelper.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryMappings.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugUtilities.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Sa1.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sa1Cpu.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sa1Types.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sa1VectorHandler.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
+    <ClInclude Include="SpcDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
+    <ClInclude Include="CpuDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cpu.Instructions.h" />
+    <ClInclude Include="Cpu.Shared.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -325,9 +353,6 @@
     </ClCompile>
     <ClCompile Include="KeyManager.cpp">
       <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Cpu.Instructions.cpp">
-      <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="Ppu.cpp">
       <Filter>SNES</Filter>
@@ -497,6 +522,21 @@
     <ClCompile Include="NecDspDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
+    <ClCompile Include="MemoryMappings.cpp">
+      <Filter>SNES</Filter>
+    </ClCompile>
+    <ClCompile Include="Sa1.cpp">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClCompile>
+    <ClCompile Include="Sa1Cpu.cpp">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClCompile>
+    <ClCompile Include="SpcDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClCompile>
+    <ClCompile Include="CpuDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -534,6 +574,12 @@
     </Filter>
     <Filter Include="SNES\Coprocessors">
       <UniqueIdentifier>{6d4d05d5-3ad3-4087-9be0-3fd9e461c3e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\SA1">
+      <UniqueIdentifier>{32259dbd-3446-4aef-8bac-3e17d2cc5432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debugger\Debuggers">
+      <UniqueIdentifier>{799edb31-b81c-4842-a1e5-a81d5b28459a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

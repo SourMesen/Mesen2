@@ -443,6 +443,7 @@ enum class DebuggerFlags : uint32_t
 	ShowUnidentifiedData = 0x400,
 	DisassembleUnidentifiedData = 0x800,
 
+	Sa1DebuggerEnabled = 0x20000000,
 	SpcDebuggerEnabled = 0x40000000,
 	CpuDebuggerEnabled = 0x80000000
 };

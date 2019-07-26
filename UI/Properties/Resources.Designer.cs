@@ -923,6 +923,16 @@ namespace Mesen.GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Sa1Debugger {
+            get {
+                object obj = ResourceManager.GetObject("Sa1Debugger", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SaveFloppy {
             get {
                 object obj = ResourceManager.GetObject("SaveFloppy", resourceCulture);

@@ -67,9 +67,9 @@ namespace Mesen.GUI.Debugger
 			RefreshBreakpoints(bp);
 		}
 
-		public static Breakpoint GetMatchingBreakpoint(AddressInfo info)
+		public static Breakpoint GetMatchingBreakpoint(AddressInfo info, CpuType cpuType)
 		{
-			return Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type)).FirstOrDefault();
+			return Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
 		}
 
 		public static Breakpoint GetMatchingBreakpoint(UInt32 startAddress, UInt32 endAddress, SnesMemoryType memoryType)
@@ -81,9 +81,9 @@ namespace Mesen.GUI.Debugger
 				).FirstOrDefault();
 		}
 
-		public static bool EnableDisableBreakpoint(AddressInfo info)
+		public static bool EnableDisableBreakpoint(AddressInfo info, CpuType cpuType)
 		{
-			Breakpoint breakpoint = BreakpointManager.GetMatchingBreakpoint(info);
+			Breakpoint breakpoint = BreakpointManager.GetMatchingBreakpoint(info, cpuType);
 			if(breakpoint != null) {
 				breakpoint.SetEnabled(!breakpoint.Enabled);
 				return true;
@@ -91,17 +91,18 @@ namespace Mesen.GUI.Debugger
 			return false;
 		}
 
-		public static void ToggleBreakpoint(AddressInfo info)
+		public static void ToggleBreakpoint(AddressInfo info, CpuType cpuType)
 		{
 			if(info.Address < 0) {
 				return;
 			}
 
-			Breakpoint breakpoint = BreakpointManager.GetMatchingBreakpoint(info);
+			Breakpoint breakpoint = BreakpointManager.GetMatchingBreakpoint(info, cpuType);
 			if(breakpoint != null) {
 				BreakpointManager.RemoveBreakpoint(breakpoint);
 			} else {
 				breakpoint = new Breakpoint() {
+					CpuType = cpuType,
 					Enabled = true,
 					BreakOnExec = true,
 					Address = (UInt32)info.Address
@@ -121,7 +122,7 @@ namespace Mesen.GUI.Debugger
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
 			for(int i = 0; i < Breakpoints.Count; i++) {
-				if(_activeCpuTypes.Contains(Breakpoints[i].MemoryType.ToCpuType())) {
+				if(_activeCpuTypes.Contains(Breakpoints[i].CpuType)) {
 					breakpoints.Add(Breakpoints[i].ToInteropBreakpoint(i));
 				}
 			}

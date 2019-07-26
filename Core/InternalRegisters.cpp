@@ -144,7 +144,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		case 0x421F: return (uint8_t)(_controllerData[3] >> 8);
 		
 		default:
-			MessageManager::Log("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
+			LogDebug("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
 			return 0;
 	}
 }
@@ -199,7 +199,7 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x420D: _enableFastRom = (value & 0x01) != 0; break;
 
 		default:
-			MessageManager::Log("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			LogDebug("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
 	}
 }

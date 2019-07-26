@@ -20,7 +20,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void ReleaseDebugger();
 
 		[DllImport(DllPath)] public static extern void ResumeExecution();
-		[DllImport(DllPath)] public static extern void Step(Int32 instructionCount, StepType type = StepType.CpuStep);
+		[DllImport(DllPath)] public static extern void Step(CpuType cpuType, Int32 instructionCount, StepType type = StepType.Step);
 
 		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
@@ -161,6 +161,7 @@ namespace Mesen.GUI
 	{
 		CpuMemory,
 		SpcMemory,
+		Sa1Memory,
 		PrgRom,
 		WorkRam,
 		SaveRam,
@@ -172,6 +173,7 @@ namespace Mesen.GUI
 		DspProgramRom,
 		DspDataRom,
 		DspDataRam,
+		Sa1InternalRam,
 		Register,
 	}
 
@@ -199,6 +201,7 @@ namespace Mesen.GUI
 				case SnesMemoryType.Register:
 				case SnesMemoryType.SpcRam:
 				case SnesMemoryType.SpcRom:
+				case SnesMemoryType.Sa1InternalRam:
 					return true;
 			}
 
@@ -210,6 +213,7 @@ namespace Mesen.GUI
 			switch(memType) {
 				case SnesMemoryType.CpuMemory:
 				case SnesMemoryType.SpcMemory:
+				case SnesMemoryType.Sa1Memory:
 					return true;
 			}
 
@@ -425,6 +429,7 @@ namespace Mesen.GUI
 		public PpuState Ppu;
 		public SpcState Spc;
 		public NecDspState NecDsp;
+		public CpuState Sa1;
 	}
 
 	public enum MemoryOperationType
@@ -564,6 +569,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool LogCpu;
 		[MarshalAs(UnmanagedType.I1)] public bool LogSpc;
 		[MarshalAs(UnmanagedType.I1)] public bool LogNecDsp;
+		[MarshalAs(UnmanagedType.I1)] public bool LogSa1;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;
@@ -602,10 +608,12 @@ namespace Mesen.GUI
 		Irq = 2
 	}
 	
-	public enum CpuType
+	public enum CpuType : byte
 	{
 		Cpu,
 		Spc,
+		NecDsp,
+		Sa1,
 	}
 
 	public static class CpuTypeExtensions
@@ -615,6 +623,19 @@ namespace Mesen.GUI
 			switch(cpuType) {
 				case CpuType.Cpu: return SnesMemoryType.CpuMemory;
 				case CpuType.Spc: return SnesMemoryType.SpcMemory;
+				case CpuType.Sa1: return SnesMemoryType.Sa1Memory;
+
+				default:
+					throw new Exception("Invalid CPU type");
+			}
+		}
+
+		public static int GetAddressSize(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Cpu: return 6;
+				case CpuType.Spc: return 4;
+				case CpuType.Sa1: return 6;
 
 				default:
 					throw new Exception("Invalid CPU type");
@@ -624,12 +645,9 @@ namespace Mesen.GUI
 
 	public enum StepType
 	{
-		CpuStep,
-		CpuStepOut,
-		CpuStepOver,
-		SpcStep,
-		SpcStepOut,
-		SpcStepOver,
+		Step,
+		StepOut,
+		StepOver,
 		PpuStep,
 		SpecificScanline,
 	}

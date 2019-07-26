@@ -99,6 +99,7 @@ namespace Mesen.GUI
 	{
 		public IntPtr RomPath;
 		public IntPtr PatchPath;
+		public CoprocessorType CoprocessorType;
 		public SnesCartInformation Header;
 	}
 
@@ -106,6 +107,7 @@ namespace Mesen.GUI
 	{
 		public string RomPath;
 		public string PatchPath;
+		public CoprocessorType CoprocessorType;
 		public SnesCartInformation Header;
 
 		public RomInfo(InteropRomInfo romInfo)
@@ -113,6 +115,7 @@ namespace Mesen.GUI
 			RomPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.RomPath);
 			PatchPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.PatchPath);
 			Header = romInfo.Header;
+			CoprocessorType = romInfo.CoprocessorType;
 		}
 
 		public string GetRomName()

@@ -31,12 +31,14 @@ private:
 	vector<DisassemblyInfo> _spcRamCache;
 	vector<DisassemblyInfo> _spcRomCache;
 	vector<DisassemblyInfo> _necDspRomCache;
+	vector<DisassemblyInfo> _sa1InternalRamCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
 	vector<DisassemblyResult> _spcDisassembly;
+	vector<DisassemblyResult> _sa1Disassembly;
 
-	bool _needDisassemble[2] = { true, true };
+	bool _needDisassemble[(int)CpuType::Sa1+1] = { true, true, true, true };
 
 	uint8_t *_prgRom;
 	uint32_t _prgRomSize;
@@ -52,7 +54,12 @@ private:
 	uint8_t *_necDspProgramRom;
 	uint32_t _necDspProgramRomSize;
 
+	uint8_t *_sa1InternalRam;
+	uint32_t _sa1InternalRamSize;
+
 	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
+	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);
+	void SetDisassembleFlag(CpuType type);
 
 public:
 	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger);

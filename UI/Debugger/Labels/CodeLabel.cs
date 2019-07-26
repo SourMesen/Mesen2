@@ -38,6 +38,11 @@ namespace Mesen.GUI.Debugger.Labels
 			return sb.ToString();
 		}
 
+		public bool Matches(CpuType type)
+		{
+			return type == this.MemoryType.ToCpuType();
+		}
+
 		public AddressInfo GetAbsoluteAddress()
 		{
 			return new AddressInfo() { Address = (int)this.Address, Type = this.MemoryType };

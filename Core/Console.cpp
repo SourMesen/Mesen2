@@ -178,6 +178,7 @@ void Console::Stop(bool sendNotification)
 
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
+		debugger->SuspendDebugger(false);
 		debugger->Run();
 	}
 
@@ -385,7 +386,7 @@ void Console::PauseOnNextFrame()
 {
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
-		debugger->Step(240, StepType::SpecificScanline);
+		debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
 	} else {
 		_pauseOnNextFrame = true;
 		_paused = false;
@@ -396,7 +397,7 @@ void Console::Pause()
 {
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
-		debugger->Step(1);
+		debugger->Step(CpuType::Cpu, 1, StepType::Step);
 	} else {
 		_paused = true;
 	}
@@ -616,17 +617,19 @@ bool Console::IsRunning()
 	return _cpu != nullptr;
 }
 
-void Console::ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+template<CpuType type>
+void Console::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
 	if(_debugger) {
-		_debugger->ProcessCpuRead(addr, value, type);
+		_debugger->ProcessMemoryRead<type>(addr, value, opType);
 	}
 }
 
-void Console::ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
+template<CpuType type>
+void Console::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
 	if(_debugger) {
-		_debugger->ProcessCpuWrite(addr, value, type);
+		_debugger->ProcessMemoryWrite<type>(addr, value, opType);
 	}
 }
 
@@ -641,20 +644,6 @@ void Console::ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memor
 {
 	if(_debugger) {
 		_debugger->ProcessPpuWrite(addr, value, memoryType);
-	}
-}
-
-void Console::ProcessSpcRead(uint32_t addr, uint8_t value, MemoryOperationType type)
-{
-	if(_debugger) {
-		_debugger->ProcessSpcRead(addr, value, type);
-	}
-}
-
-void Console::ProcessSpcWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
-{
-	if(_debugger) {
-		_debugger->ProcessSpcWrite(addr, value, type);
 	}
 }
 
@@ -690,10 +679,11 @@ void Console::ProcessPpuCycle()
 	}
 }
 
+template<CpuType type>
 void Console::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	if(_debugger) {
-		_debugger->ProcessInterrupt(originalPc, currentPc, forNmi);
+		_debugger->ProcessInterrupt<type>(originalPc, currentPc, forNmi);
 	}
 }
 
@@ -703,3 +693,14 @@ void Console::ProcessEvent(EventType type)
 		_debugger->ProcessEvent(type);
 	}
 }
+
+template void Console::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+
+template void Console::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+
+template void Console::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Console::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

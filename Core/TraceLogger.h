@@ -10,6 +10,7 @@
 class Console;
 class Debugger;
 class LabelManager;
+class MemoryDumper;
 struct DebugState;
 
 struct TraceLoggerOptions
@@ -17,6 +18,7 @@ struct TraceLoggerOptions
 	bool LogCpu;
 	bool LogSpc;
 	bool LogNecDsp;
+	bool LogSa1;
 
 	bool ShowExtraInfo;
 	bool IndentCode;
@@ -71,14 +73,15 @@ private:
 	string _outputFilepath;
 	string _outputBuffer;
 	ofstream _outputFile;
-	shared_ptr<Console> _console;
-	shared_ptr<LabelManager> _labelManager;
+	Console* _console;
+	LabelManager* _labelManager;
+	MemoryDumper* _memoryDumper;
 
 	vector<RowPart> _rowParts;
 	vector<RowPart> _spcRowParts;
 	vector<RowPart> _dspRowParts;
 
-	bool _logCpu[(int)CpuType::NecDsp + 1] = {};
+	bool _logCpu[(int)CpuType::Sa1 + 1] = {};
 
 	bool _pendingLog;
 	//CpuState _lastState;
@@ -89,9 +92,11 @@ private:
 	uint32_t _logCount;
 	DebugState *_stateCache = nullptr;
 	DisassemblyInfo *_disassemblyCache = nullptr;
+	CpuType* _logCpuType = nullptr;
 
 	DebugState *_stateCacheCopy = nullptr;
 	DisassemblyInfo *_disassemblyCacheCopy = nullptr;
+	CpuType* _logCpuTypeCopy = nullptr;
 
 	SimpleLock _lock;
 
@@ -100,15 +105,15 @@ private:
 	void WriteByteCode(DisassemblyInfo &info, RowPart &rowPart, string &output);
 	void WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint8_t sp, uint32_t pc, string &output);
 	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType);
-	void WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output);
+	void WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType memType);
 	void WriteAlign(int originalSize, RowPart &rowPart, string &output);
-	void AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state);
+	void AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state);
 	//bool ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo);
 	
 	void ParseFormatString(vector<RowPart> &rowParts, string format);
 
-	void GetTraceRow(string &output, DisassemblyInfo &disassemblyInfo, DebugState &state);
-	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state);
+	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo, SnesMemoryType memType);
 	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, NecDspState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 
@@ -120,7 +125,7 @@ public:
 
 	__forceinline bool IsCpuLogged(CpuType type) { return _logCpu[(int)type]; }
 
-	void Log(DebugState &state, DisassemblyInfo &disassemblyInfo);
+	void Log(CpuType cpuType, DebugState &state, DisassemblyInfo &disassemblyInfo);
 	void Clear();
 	//void LogNonExec(OperationInfo& operationInfo);
 	void SetOptions(TraceLoggerOptions options);

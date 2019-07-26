@@ -102,6 +102,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_newtable(lua);
 	lua_pushintvalue(cpu, SnesMemoryType::CpuMemory);
 	lua_pushintvalue(spc, SnesMemoryType::SpcMemory);
+	lua_pushintvalue(sa1, SnesMemoryType::Sa1Memory);
 	lua_pushintvalue(cgram, SnesMemoryType::CGRam);
 	lua_pushintvalue(vram, SnesMemoryType::VideoRam);
 	lua_pushintvalue(oam, SnesMemoryType::SpriteRam);
@@ -110,6 +111,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(saveRam, SnesMemoryType::SaveRam);
 	lua_pushintvalue(cpuDebug, SnesMemoryType::CpuMemory | 0x100);
 	lua_pushintvalue(spcDebug, SnesMemoryType::SpcMemory | 0x100);
+	lua_pushintvalue(sa1Debug, SnesMemoryType::Sa1Memory | 0x100);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "memCallbackType");
@@ -152,8 +154,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "stepType");
 	lua_newtable(lua);
-	lua_pushintvalue(cpuInstructions, StepType::CpuStep);
-	lua_pushintvalue(spcInstructions, StepType::SpcStep);
+	lua_pushintvalue(cpuInstructions, StepType::Step);
 	lua_pushintvalue(ppuCycles, StepType::PpuStep);
 	lua_settable(lua, -3);
 
@@ -513,7 +514,7 @@ int LuaApi::Break(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
-	_debugger->Step(1);
+	_debugger->Step(CpuType::Cpu, 1, StepType::Step);
 	return l.ReturnCount();
 }
 
@@ -532,9 +533,9 @@ int LuaApi::Execute(lua_State *lua)
 	int count = l.ReadInteger();
 	checkparams();
 	errorCond(count <= 0, "count must be >= 1");
-	errorCond(type != StepType::CpuStep && type != StepType::SpcStep && type != StepType::PpuStep, "type is invalid");
+	errorCond(type != StepType::Step && type != StepType::PpuStep, "type is invalid");
 
-	_debugger->Step(count, type);
+	_debugger->Step(CpuType::Cpu, count, type);
 
 	return l.ReturnCount();
 }

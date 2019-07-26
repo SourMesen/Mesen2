@@ -62,7 +62,7 @@ namespace Mesen.GUI.Debugger
 				for(int i = 0; i < visibleByteCount; i++) {
 					int byteIndex = i + (int)firstByteIndex;
 					foreach(Breakpoint bp in breakpoints) {
-						if(bp.Enabled && bp.Matches((uint)byteIndex, _memoryType)) {
+						if(bp.Enabled && bp.Matches((uint)byteIndex, _memoryType, null)) {
 							_breakpointTypes[i] = bp.BreakOnExec ? BreakpointTypeFlags.Execute : (bp.BreakOnWrite ? BreakpointTypeFlags.Write : BreakpointTypeFlags.Read);
 							break;
 						}

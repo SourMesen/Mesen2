@@ -136,7 +136,7 @@ void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType
 		memcpy(cdlData, _cdlData + offset, length);
 	} else if(memoryType == SnesMemoryType::CpuMemory) {
 		for(uint32_t i = 0; i < length; i++) {
-			AddressInfo info = _memoryManager->GetAbsoluteAddress(offset + i);
+			AddressInfo info = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 			cdlData[i] = (info.Type == SnesMemoryType::PrgRom && info.Address >= 0) ? _cdlData[info.Address] : 0;
 		}
 	}

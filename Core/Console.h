@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "CartTypes.h"
+#include "DebugTypes.h"
 #include "ConsoleLock.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/SimpleLock.h"
@@ -127,16 +128,14 @@ public:
 	
 	bool IsRunning();
 
-	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
+	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
+	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	void ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
-	void ProcessSpcRead(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessSpcWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
 	void ProcessNecDspExec(uint32_t addr, uint32_t value);
 	void ProcessPpuCycle();
-	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 };

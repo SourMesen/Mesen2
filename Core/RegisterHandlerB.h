@@ -6,6 +6,7 @@
 class Console;
 class Ppu;
 class Spc;
+class Sa1;
 
 class RegisterHandlerB : public IMemoryHandler, public ISerializable
 {
@@ -13,6 +14,7 @@ private:
 	Console *_console;
 	Ppu *_ppu;
 	Spc *_spc;
+	Sa1 *_sa1;
 
 	uint8_t *_workRam;
 	uint32_t _wramPosition;

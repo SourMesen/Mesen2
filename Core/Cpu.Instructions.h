@@ -1,7 +1,3 @@
-#include "stdafx.h"
-#include "Cpu.h"
-#include "MemoryManager.h"
-
 /************************
 Add/substract operations
 *************************/
@@ -224,6 +220,7 @@ void Cpu::BranchRelative(bool branch)
 			Idle();
 		}
 		_state.PC = (uint16_t)(_state.PC + offset);
+		IdleTakeBranch();
 	}
 }
 
@@ -394,11 +391,13 @@ void Cpu::JML()
 {
 	_state.K = (_operand >> 16) & 0xFF;
 	_state.PC = (uint16_t)_operand;
+	IdleEndJump();
 }
 
 void Cpu::JMP()
 {
 	_state.PC = (uint16_t)_operand;
+	IdleEndJump();
 }
 
 void Cpu::JSL()
@@ -408,12 +407,14 @@ void Cpu::JSL()
 	PushWord(_state.PC - 1);
 	_state.K = (_operand >> 16) & 0xFF;
 	_state.PC = (uint16_t)_operand;
+	IdleEndJump();
 }
 
 void Cpu::JSR()
 {
 	PushWord(_state.PC - 1);
 	_state.PC = (uint16_t)_operand;
+	IdleEndJump();
 }
 
 void Cpu::RTI()
@@ -429,6 +430,7 @@ void Cpu::RTI()
 		_state.PC = PopWord();
 		_state.K = PopByte();
 	}
+	IdleEndJump();
 }
 
 void Cpu::RTL()
@@ -439,6 +441,7 @@ void Cpu::RTL()
 	_state.PC = PopWord();
 	_state.PC++;
 	_state.K = PopByte();
+	IdleEndJump();
 }
 
 void Cpu::RTS()
@@ -449,6 +452,7 @@ void Cpu::RTS()
 	_state.PC = PopWord();
 	Idle();
 	_state.PC++;
+	IdleEndJump();
 }
 
 /**********

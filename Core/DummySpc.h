@@ -38,7 +38,7 @@ DummySpc::~DummySpc()
 void DummySpc::Step()
 {
 	do {
-		Exec();
+		ProcessCycle();
 	} while(_opStep != SpcOpStep::ReadOpCode);
 }
 

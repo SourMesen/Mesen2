@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
+#include "MemoryMappings.h"
 #include "../Utilities/ISerializable.h"
 
 class IMemoryHandler;
@@ -8,6 +9,7 @@ class RegisterHandlerA;
 class RegisterHandlerB;
 class InternalRegisters;
 class RamHandler;
+class BaseCartridge;
 class Console;
 class Ppu;
 class Cpu;
@@ -27,8 +29,9 @@ private:
 	InternalRegisters *_regs;
 	Ppu* _ppu;
 	Cpu* _cpu;
+	BaseCartridge* _cart;
 
-	IMemoryHandler* _handlers[0x100 * 0x10];
+	MemoryMappings _mappings;
 	vector<unique_ptr<IMemoryHandler>> _workRamHandlers;
 
 	uint8_t *_workRam;
@@ -38,6 +41,7 @@ private:
 	uint16_t _hdmaInitPosition = 0;
 	uint8_t _openBus = 0;
 	uint8_t _cpuSpeed = 8;
+	SnesMemoryType _memTypeBusA = SnesMemoryType::PrgRom;
 
 	bool _hasEvent[1369];
 	uint8_t _masterClockTable[2][0x10000];
@@ -50,9 +54,6 @@ public:
 	virtual ~MemoryManager();
 
 	void Reset();
-
-	void RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, vector<unique_ptr<IMemoryHandler>>& handlers, uint16_t pageIncrement = 0, uint16_t startPageNumber = 0);
-	void RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startAddr, uint16_t endAddr, IMemoryHandler* handler);
 
 	void GenerateMasterClockTable();
 
@@ -78,13 +79,15 @@ public:
 	uint16_t GetHClock();
 	uint8_t* DebugGetWorkRam();
 
+	MemoryMappings* GetMemoryMappings();
+
 	uint8_t GetCpuSpeed(uint32_t addr);
 	uint8_t GetCpuSpeed();
 	void SetCpuSpeed(uint8_t speed);
+	SnesMemoryType GetMemoryTypeBusA();
 
 	bool IsRegister(uint32_t cpuAddress);
 	bool IsWorkRam(uint32_t cpuAddress);
-	AddressInfo GetAbsoluteAddress(uint32_t addr);
 	int GetRelativeAddress(AddressInfo &address, int32_t cpuAddress = -1);
 
 	void Serialize(Serializer &s) override;

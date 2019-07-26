@@ -15,7 +15,7 @@ namespace Mesen.GUI.Debugger.Controls
 	public partial class ctrlCpuStatus : BaseControl
 	{
 		private EntityBinder _cpuBinder = new EntityBinder();
-		private DebugState _lastState;
+		private CpuState _lastState;
 
 		public ctrlCpuStatus()
 		{
@@ -36,24 +36,24 @@ namespace Mesen.GUI.Debugger.Controls
 			_cpuBinder.AddBinding(nameof(CpuState.NmiFlag), chkNmi);
 		}
 
-		public void UpdateStatus(DebugState state)
+		public void UpdateStatus(CpuState state)
 		{
 			_lastState = state;
 
-			_cpuBinder.Entity = state.Cpu;
+			_cpuBinder.Entity = state;
 			_cpuBinder.UpdateUI();
 
-			txtPC.Text = ((state.Cpu.K << 16) | state.Cpu.PC).ToString("X6");
+			txtPC.Text = ((state.K << 16) | state.PC).ToString("X6");
 
 			UpdateCpuFlags();
 
-			chkIrq.Checked = state.Cpu.IrqSource != 0;
+			chkIrq.Checked = state.IrqSource != 0;
 			UpdateStack();
 		}
 
 		private void UpdateCpuFlags()
 		{
-			ProcFlags flags = _lastState.Cpu.PS;
+			ProcFlags flags = _lastState.PS;
 			chkIndex.Checked = flags.HasFlag(ProcFlags.IndexMode8);
 			chkCarry.Checked = flags.HasFlag(ProcFlags.Carry);
 			chkDecimal.Checked = flags.HasFlag(ProcFlags.Decimal);
@@ -67,7 +67,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private void UpdateStack()
 		{
 			StringBuilder sb = new StringBuilder();
-			for(UInt32 i = (uint)_lastState.Cpu.SP + 1; (i & 0xFF) != 0; i++) {
+			for(UInt32 i = (uint)_lastState.SP + 1; (i & 0xFF) != 0; i++) {
 				sb.Append("$");
 				sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, i).ToString("X2"));
 				sb.Append(", ");

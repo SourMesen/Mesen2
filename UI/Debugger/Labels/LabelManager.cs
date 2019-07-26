@@ -60,7 +60,12 @@ namespace Mesen.GUI.Debugger.Labels
 
 		public static List<CodeLabel> GetLabels(CpuType cpu)
 		{
-			return _labels.Where((lbl) => lbl.MemoryType.ToCpuType() == cpu).ToList<CodeLabel>();
+			if(cpu == CpuType.Sa1) {
+				//Share label list between SNES CPU and SA1
+				cpu = CpuType.Cpu;
+			}
+
+			return _labels.Where((lbl) => lbl.Matches(cpu)).ToList<CodeLabel>();
 		}
 
 		private static UInt64 GetKey(UInt32 address, SnesMemoryType SnesMemoryType)
@@ -72,6 +77,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.Register: return address | ((ulong)4 << 32);
 				case SnesMemoryType.SpcRam: return address | ((ulong)5 << 32);
 				case SnesMemoryType.SpcRom: return address | ((ulong)6 << 32);
+				case SnesMemoryType.Sa1InternalRam: return address | ((ulong)7 << 32);
 			}
 			throw new Exception("Invalid type");
 		}
@@ -121,7 +127,7 @@ namespace Mesen.GUI.Debugger.Labels
 
 			if(raiseEvent) {
 				OnLabelUpdated?.Invoke(null, null);
-				DebugApi.RefreshDisassembly(label.MemoryType.ToCpuType());
+				RefreshDisassembly(label);
 			}
 
 			return true;
@@ -148,7 +154,7 @@ namespace Mesen.GUI.Debugger.Labels
 
 			if(needEvent) {
 				OnLabelUpdated?.Invoke(null, null);
-				DebugApi.RefreshDisassembly(label.MemoryType.ToCpuType());
+				RefreshDisassembly(label);
 			}
 		}
 
@@ -165,6 +171,16 @@ namespace Mesen.GUI.Debugger.Labels
 				LabelManager.SetLabels(labelsToAdd, true);
 			}
 		}*/
+
+		private static void RefreshDisassembly(CodeLabel label)
+		{
+			if(label.MemoryType.ToCpuType() == CpuType.Spc) {
+				DebugApi.RefreshDisassembly(CpuType.Spc);
+			} else {
+				DebugApi.RefreshDisassembly(CpuType.Cpu);
+				DebugApi.RefreshDisassembly(CpuType.Sa1);
+			}
+		}
 
 		public static void RefreshLabels()
 		{

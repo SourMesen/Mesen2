@@ -248,9 +248,9 @@ namespace Mesen.GUI.Debugger.Controls
 
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 				if(absAddress.Address < 0) {
-					BreakpointManager.ToggleBreakpoint(relAddress);
+					BreakpointManager.ToggleBreakpoint(relAddress, _manager.CpuType);
 				} else {
-					BreakpointManager.ToggleBreakpoint(absAddress);
+					BreakpointManager.ToggleBreakpoint(absAddress, _manager.CpuType);
 				}
 			}
 		}
@@ -263,9 +263,9 @@ namespace Mesen.GUI.Debugger.Controls
 					Type = _manager.RelativeMemoryType
 				};
 
-				if(!BreakpointManager.EnableDisableBreakpoint(relAddress)) {
+				if(!BreakpointManager.EnableDisableBreakpoint(relAddress, _manager.CpuType)) {
 					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-					BreakpointManager.EnableDisableBreakpoint(absAddress);
+					BreakpointManager.EnableDisableBreakpoint(absAddress, _manager.CpuType);
 				}
 			}
 		}

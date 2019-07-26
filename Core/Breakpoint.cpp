@@ -4,7 +4,7 @@
 
 bool Breakpoint::Matches(uint32_t memoryAddr, AddressInfo &info)
 {
-	if(_memoryType <= SnesMemoryType::SpcMemory) {
+	if(_memoryType <= SnesMemoryType::Sa1Memory) {
 		if(_startAddr == -1) {
 			return true;
 		} else if(_endAddr == -1) {
@@ -50,36 +50,9 @@ uint32_t Breakpoint::GetId()
 	return _id;
 }
 
-BreakpointCategory Breakpoint::GetBreakpointCategory()
+CpuType Breakpoint::GetCpuType()
 {
-	return GetBreakpointCategory(_memoryType);
-}
-
-BreakpointCategory Breakpoint::GetBreakpointCategory(SnesMemoryType memoryType)
-{
-	switch(memoryType) {
-		case SnesMemoryType::CpuMemory:
-		case SnesMemoryType::PrgRom:
-		case SnesMemoryType::WorkRam:
-		case SnesMemoryType::SaveRam:
-			return BreakpointCategory::Cpu;
-
-		case SnesMemoryType::SpcRam:
-		case SnesMemoryType::SpcRom:
-		case SnesMemoryType::SpcMemory:
-			return BreakpointCategory::Spc;
-
-		case SnesMemoryType::VideoRam:
-			return BreakpointCategory::VideoRam;
-
-		case SnesMemoryType::SpriteRam:
-			return BreakpointCategory::Oam;
-
-		case SnesMemoryType::CGRam:
-			return BreakpointCategory::CgRam;
-
-		default:	throw std::runtime_error("invalid memory type");
-	}
+	return _cpuType;
 }
 
 bool Breakpoint::IsEnabled()

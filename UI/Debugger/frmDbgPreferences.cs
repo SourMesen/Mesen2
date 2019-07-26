@@ -43,14 +43,12 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInDisassembly)),
 
-				//GetMember(nameof(DebuggerShortcutsConfig.OpenApuViewer)),
 				//GetMember(nameof(DebuggerShortcutsConfig.OpenAssembler)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenDebugger)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenEventViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenMemoryTools)),
 				//GetMember(nameof(DebuggerShortcutsConfig.OpenProfiler)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenScriptWindow)),
-				//GetMember(nameof(DebuggerShortcutsConfig.OpenTextHooker)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenTraceLogger)),
 				//GetMember(nameof(DebuggerShortcutsConfig.OpenWatchWindow)),
 
@@ -58,6 +56,9 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.OpenTileViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenSpriteViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenPaletteViewer)),
+
+				GetMember(nameof(DebuggerShortcutsConfig.OpenSpcDebugger)),
+				GetMember(nameof(DebuggerShortcutsConfig.OpenSa1Debugger)),
 			};
 
 			ctrlDbgShortcutsMemoryViewer.Shortcuts = new FieldInfo[] {

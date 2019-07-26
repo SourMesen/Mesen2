@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "NecDsp.h"
 #include "MemoryManager.h"
+#include "MemoryMappings.h"
 #include "Console.h"
 #include "NotificationManager.h"
 #include "BaseCartridge.h"
@@ -16,6 +17,7 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 	_console = console;
 	_type = type;
 	_memoryManager = console->GetMemoryManager().get();
+	MemoryMappings *mm = _memoryManager->GetMemoryMappings();
 	
 	if(type == CoprocessorType::ST010 || type == CoprocessorType::ST011) {
 		if(type == CoprocessorType::ST010) {
@@ -26,26 +28,26 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 		_registerMask = 0x0001;
 		_ramSize = 0x800;
 		_stackSize = 8;
-		_memoryManager->RegisterHandler(0x60, 0x60, 0x0000, 0x0FFF, this);
-		_memoryManager->RegisterHandler(0xE0, 0xE0, 0x0000, 0x0FFF, this);
-		_memoryManager->RegisterHandler(0x68, 0x6F, 0x0000, 0x0FFF, this);
-		_memoryManager->RegisterHandler(0xE8, 0xEF, 0x0000, 0x0FFF, this);
+		mm->RegisterHandler(0x60, 0x60, 0x0000, 0x0FFF, this);
+		mm->RegisterHandler(0xE0, 0xE0, 0x0000, 0x0FFF, this);
+		mm->RegisterHandler(0x68, 0x6F, 0x0000, 0x0FFF, this);
+		mm->RegisterHandler(0xE8, 0xEF, 0x0000, 0x0FFF, this);
 	} else {
 		_ramSize = 0x100;
 		_stackSize = 4;
 		_frequency = 7600000;
 		if(console->GetCartridge()->GetCartFlags() & CartFlags::LoRom) {
 			_registerMask = 0x4000;
-			_memoryManager->RegisterHandler(0x30, 0x3F, 0x8000, 0xFFFF, this);
-			_memoryManager->RegisterHandler(0xB0, 0xBF, 0x8000, 0xFFFF, this);
+			mm->RegisterHandler(0x30, 0x3F, 0x8000, 0xFFFF, this);
+			mm->RegisterHandler(0xB0, 0xBF, 0x8000, 0xFFFF, this);
 
 			//For Super Bases Loaded 2
-			_memoryManager->RegisterHandler(0x60, 0x6F, 0x0000, 0x7FFF, this);
-			_memoryManager->RegisterHandler(0xE0, 0xEF, 0x0000, 0x7FFF, this);
+			mm->RegisterHandler(0x60, 0x6F, 0x0000, 0x7FFF, this);
+			mm->RegisterHandler(0xE0, 0xEF, 0x0000, 0x7FFF, this);
 		} else if(console->GetCartridge()->GetCartFlags() & CartFlags::HiRom) {
 			_registerMask = 0x1000;
-			_memoryManager->RegisterHandler(0x00, 0x1F, 0x6000, 0x7FFF, this);
-			_memoryManager->RegisterHandler(0x80, 0x9F, 0x6000, 0x7FFF, this);
+			mm->RegisterHandler(0x00, 0x1F, 0x6000, 0x7FFF, this);
+			mm->RegisterHandler(0x80, 0x9F, 0x6000, 0x7FFF, this);
 		}
 	}
 

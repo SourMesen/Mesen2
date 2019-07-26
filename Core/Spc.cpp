@@ -209,7 +209,7 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 	}
 
 #ifndef DUMMYSPC
-	_console->ProcessSpcRead(addr, value, type);
+	_console->ProcessMemoryRead<CpuType::Spc>(addr, value, type);
 #else 
 	LogRead(addr, value);
 #endif
@@ -227,7 +227,7 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 
 	//Writes always affect the underlying RAM
 	if(_state.WriteEnabled) {
-		_console->ProcessSpcWrite(addr, value, type);
+		_console->ProcessMemoryWrite<CpuType::Spc>(addr, value, type);
 		_ram[addr] = value;
 	}
 
@@ -306,13 +306,18 @@ void Spc::Run()
 
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
 	while(_state.Cycle < targetCycle) {
-		if(_opStep == SpcOpStep::ReadOpCode) {
-			_opCode = GetOpCode();
-			_opStep = SpcOpStep::Addressing;
-			_opSubStep = 0;
-		} else {
-			Exec();
-		}
+		ProcessCycle();
+	}
+}
+
+void Spc::ProcessCycle()
+{
+	if(_opStep == SpcOpStep::ReadOpCode) {
+		_opCode = GetOpCode();
+		_opStep = SpcOpStep::Addressing;
+		_opSubStep = 0;
+	} else {
+		Exec();
 	}
 }
 

@@ -81,5 +81,6 @@ enum class IrqSource
 {
 	None = 0,
 	Ppu = 1,
+	Coprocessor = 2
 };
 

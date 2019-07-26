@@ -25,27 +25,6 @@ struct SnesCartInformation
 	uint8_t Checksum[2];
 };
 
-struct RomInfo
-{
-	SnesCartInformation Header;
-	VirtualFile RomFile;
-	VirtualFile PatchFile;
-};
-
-namespace CartFlags
-{
-	enum CartFlags
-	{
-		None = 0,
-		LoRom = 1,
-		HiRom = 2,
-		FastRom = 4,
-		ExLoRom = 8,
-		ExHiRom = 16,
-		CopierHeader = 32
-	};
-}
-
 enum class CoprocessorType
 {
 	None,
@@ -68,3 +47,25 @@ enum class CoprocessorType
 	ST018,
 	CX4
 };
+
+struct RomInfo
+{
+	SnesCartInformation Header;
+	VirtualFile RomFile;
+	VirtualFile PatchFile;
+	CoprocessorType Coprocessor;
+};
+
+namespace CartFlags
+{
+	enum CartFlags
+	{
+		None = 0,
+		LoRom = 1,
+		HiRom = 2,
+		FastRom = 4,
+		ExLoRom = 8,
+		ExHiRom = 16,
+		CopierHeader = 32
+	};
+}

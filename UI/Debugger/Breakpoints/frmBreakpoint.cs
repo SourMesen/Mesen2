@@ -34,11 +34,11 @@ namespace Mesen.GUI.Debugger
 			AddBinding(nameof(Breakpoint.BreakOnExec), chkExec);
 			AddBinding(nameof(Breakpoint.Condition), txtCondition);
 
-			_cpuType = breakpoint.MemoryType.ToCpuType();
+			_cpuType = breakpoint.CpuType;
 
 			cboBreakpointType.Items.Clear();
-			if(_cpuType == CpuType.Cpu) {
-				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
+			if(_cpuType == CpuType.Cpu || _cpuType == CpuType.Sa1) {
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(_cpuType.ToMemoryType()));
 				cboBreakpointType.Items.Add("-");
 
 				if(DebugApi.GetMemorySize(SnesMemoryType.PrgRom) > 0) {
@@ -50,21 +50,26 @@ namespace Mesen.GUI.Debugger
 				if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
 				}
-
-				if(cboBreakpointType.Items.Count > 2) {
-					cboBreakpointType.Items.Add("-");
+				if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
 				}
 
-				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
-				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
-				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
+				if(_cpuType == CpuType.Cpu) {
+					if(cboBreakpointType.Items.Count > 2) {
+						cboBreakpointType.Items.Add("-");
+					}
+
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
+				}
 			} else if(_cpuType == CpuType.Spc) {
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
 				cboBreakpointType.Items.Add("-");
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRam));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRom));
 			}
-			
+
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");
 			this.toolTip.SetToolTip(this.picHelp, frmBreakpoint.GetConditionTooltip(false));
 		}

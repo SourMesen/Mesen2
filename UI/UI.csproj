@@ -245,7 +245,9 @@
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
+    <Compile Include="Debugger\Code\Sa1LineStyleProvider.cs" />
     <Compile Include="Debugger\Code\DbgCodeDataProvider.cs" />
+    <Compile Include="Debugger\Code\Sa1DisassemblyManager.cs" />
     <Compile Include="Debugger\Code\SpcLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\CodeDataProvider.cs" />
     <Compile Include="Debugger\Code\SpcDisassemblyManager.cs" />
@@ -820,6 +822,7 @@
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\Sa1Debugger.png" />
     <None Include="Dependencies\LuaScripts\DrawMode.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

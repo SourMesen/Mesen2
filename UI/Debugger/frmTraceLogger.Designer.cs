@@ -64,6 +64,7 @@ namespace Mesen.GUI.Debugger
 			this.chkLogCpu = new System.Windows.Forms.CheckBox();
 			this.chkLogSpc = new System.Windows.Forms.CheckBox();
 			this.lblTarget = new System.Windows.Forms.Label();
+			this.chkLogNecDsp = new System.Windows.Forms.CheckBox();
 			this.btnClearLog = new System.Windows.Forms.Button();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.grpExecutionLog = new System.Windows.Forms.GroupBox();
@@ -90,7 +91,8 @@ namespace Mesen.GUI.Debugger
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
-			this.chkLogNecDsp = new System.Windows.Forms.CheckBox();
+			this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkLogSa1 = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpLogOptions.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -103,6 +105,7 @@ namespace Mesen.GUI.Debugger
 			this.grpExecutionLog.SuspendLayout();
 			this.ctxMenu.SuspendLayout();
 			this.menuStrip1.SuspendLayout();
+			this.tableLayoutPanel6.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// tableLayoutPanel1
@@ -200,10 +203,8 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel2.Controls.Add(this.cboStatusFlagFormat, 5, 4);
 			this.tableLayoutPanel2.Controls.Add(this.chkUseWindowsEol, 3, 4);
 			this.tableLayoutPanel2.Controls.Add(this.chkExtendZeroPage, 4, 3);
-			this.tableLayoutPanel2.Controls.Add(this.chkLogCpu, 1, 0);
-			this.tableLayoutPanel2.Controls.Add(this.chkLogSpc, 2, 0);
 			this.tableLayoutPanel2.Controls.Add(this.lblTarget, 0, 0);
-			this.tableLayoutPanel2.Controls.Add(this.chkLogNecDsp, 3, 0);
+			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel6, 1, 0);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -235,7 +236,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel5.Controls.Add(this.lblFormat, 0, 0);
 			this.tableLayoutPanel5.Controls.Add(this.txtFormat, 2, 0);
 			this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 111);
+			this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 110);
 			this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel5.Name = "tableLayoutPanel5";
 			this.tableLayoutPanel5.RowCount = 1;
@@ -291,7 +292,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowMemoryValues.AutoSize = true;
 			this.chkShowMemoryValues.Checked = true;
 			this.chkShowMemoryValues.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkShowMemoryValues.Location = new System.Drawing.Point(301, 59);
+			this.chkShowMemoryValues.Location = new System.Drawing.Point(301, 58);
 			this.chkShowMemoryValues.Name = "chkShowMemoryValues";
 			this.chkShowMemoryValues.Size = new System.Drawing.Size(128, 17);
 			this.chkShowMemoryValues.TabIndex = 17;
@@ -304,7 +305,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowRegisters.AutoSize = true;
 			this.chkShowRegisters.Checked = true;
 			this.chkShowRegisters.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkShowRegisters.Location = new System.Drawing.Point(3, 36);
+			this.chkShowRegisters.Location = new System.Drawing.Point(3, 35);
 			this.chkShowRegisters.Name = "chkShowRegisters";
 			this.chkShowRegisters.Size = new System.Drawing.Size(70, 17);
 			this.chkShowRegisters.TabIndex = 2;
@@ -318,7 +319,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowByteCode.AutoSize = true;
 			this.chkShowByteCode.Checked = true;
 			this.chkShowByteCode.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkShowByteCode.Location = new System.Drawing.Point(3, 59);
+			this.chkShowByteCode.Location = new System.Drawing.Point(3, 58);
 			this.chkShowByteCode.Name = "chkShowByteCode";
 			this.chkShowByteCode.Size = new System.Drawing.Size(75, 17);
 			this.chkShowByteCode.TabIndex = 4;
@@ -329,7 +330,7 @@ namespace Mesen.GUI.Debugger
 			// chkShowCpuCycles
 			// 
 			this.chkShowCpuCycles.AutoSize = true;
-			this.chkShowCpuCycles.Location = new System.Drawing.Point(84, 36);
+			this.chkShowCpuCycles.Location = new System.Drawing.Point(84, 35);
 			this.chkShowCpuCycles.Name = "chkShowCpuCycles";
 			this.chkShowCpuCycles.Size = new System.Drawing.Size(82, 17);
 			this.chkShowCpuCycles.TabIndex = 3;
@@ -343,7 +344,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowPpuCycles.AutoSize = true;
 			this.chkShowPpuCycles.Checked = true;
 			this.chkShowPpuCycles.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkShowPpuCycles.Location = new System.Drawing.Point(203, 36);
+			this.chkShowPpuCycles.Location = new System.Drawing.Point(203, 35);
 			this.chkShowPpuCycles.Name = "chkShowPpuCycles";
 			this.chkShowPpuCycles.Size = new System.Drawing.Size(77, 17);
 			this.chkShowPpuCycles.TabIndex = 5;
@@ -357,7 +358,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowPpuScanline.AutoSize = true;
 			this.chkShowPpuScanline.Checked = true;
 			this.chkShowPpuScanline.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkShowPpuScanline.Location = new System.Drawing.Point(203, 59);
+			this.chkShowPpuScanline.Location = new System.Drawing.Point(203, 58);
 			this.chkShowPpuScanline.Name = "chkShowPpuScanline";
 			this.chkShowPpuScanline.Size = new System.Drawing.Size(92, 17);
 			this.chkShowPpuScanline.TabIndex = 6;
@@ -369,7 +370,7 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.chkShowFrameCount.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.chkShowFrameCount.AutoSize = true;
-			this.chkShowFrameCount.Location = new System.Drawing.Point(84, 59);
+			this.chkShowFrameCount.Location = new System.Drawing.Point(84, 58);
 			this.chkShowFrameCount.Name = "chkShowFrameCount";
 			this.chkShowFrameCount.Size = new System.Drawing.Size(86, 17);
 			this.chkShowFrameCount.TabIndex = 7;
@@ -382,7 +383,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowEffectiveAddresses.AutoSize = true;
 			this.chkShowEffectiveAddresses.Checked = true;
 			this.chkShowEffectiveAddresses.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkShowEffectiveAddresses.Location = new System.Drawing.Point(301, 36);
+			this.chkShowEffectiveAddresses.Location = new System.Drawing.Point(301, 35);
 			this.chkShowEffectiveAddresses.Name = "chkShowEffectiveAddresses";
 			this.chkShowEffectiveAddresses.Size = new System.Drawing.Size(150, 17);
 			this.chkShowEffectiveAddresses.TabIndex = 10;
@@ -403,7 +404,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel4.Controls.Add(this.lblCondition, 0, 0);
 			this.tableLayoutPanel4.Controls.Add(this.txtCondition, 1, 0);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 136);
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 135);
 			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
 			this.tableLayoutPanel4.RowCount = 1;
@@ -459,7 +460,7 @@ namespace Mesen.GUI.Debugger
 			this.chkShowExtraInfo.Checked = true;
 			this.chkShowExtraInfo.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.tableLayoutPanel2.SetColumnSpan(this.chkShowExtraInfo, 2);
-			this.chkShowExtraInfo.Location = new System.Drawing.Point(462, 36);
+			this.chkShowExtraInfo.Location = new System.Drawing.Point(462, 35);
 			this.chkShowExtraInfo.Name = "chkShowExtraInfo";
 			this.chkShowExtraInfo.Size = new System.Drawing.Size(204, 17);
 			this.chkShowExtraInfo.TabIndex = 9;
@@ -473,7 +474,7 @@ namespace Mesen.GUI.Debugger
 			this.chkIndentCode.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.chkIndentCode.AutoSize = true;
 			this.tableLayoutPanel2.SetColumnSpan(this.chkIndentCode, 2);
-			this.chkIndentCode.Location = new System.Drawing.Point(3, 84);
+			this.chkIndentCode.Location = new System.Drawing.Point(3, 83);
 			this.chkIndentCode.Name = "chkIndentCode";
 			this.chkIndentCode.Size = new System.Drawing.Size(194, 17);
 			this.chkIndentCode.TabIndex = 8;
@@ -486,7 +487,7 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.chkUseLabels.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.chkUseLabels.AutoSize = true;
-			this.chkUseLabels.Location = new System.Drawing.Point(203, 84);
+			this.chkUseLabels.Location = new System.Drawing.Point(203, 83);
 			this.chkUseLabels.Name = "chkUseLabels";
 			this.chkUseLabels.Size = new System.Drawing.Size(79, 17);
 			this.chkUseLabels.TabIndex = 11;
@@ -498,7 +499,7 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(462, 86);
+			this.label1.Location = new System.Drawing.Point(462, 85);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(98, 13);
 			this.label1.TabIndex = 12;
@@ -509,7 +510,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel2.SetColumnSpan(this.cboStatusFlagFormat, 2);
 			this.cboStatusFlagFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cboStatusFlagFormat.FormattingEnabled = true;
-			this.cboStatusFlagFormat.Location = new System.Drawing.Point(566, 82);
+			this.cboStatusFlagFormat.Location = new System.Drawing.Point(566, 81);
 			this.cboStatusFlagFormat.Name = "cboStatusFlagFormat";
 			this.cboStatusFlagFormat.Size = new System.Drawing.Size(121, 21);
 			this.cboStatusFlagFormat.TabIndex = 13;
@@ -519,7 +520,7 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.chkUseWindowsEol.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.chkUseWindowsEol.AutoSize = true;
-			this.chkUseWindowsEol.Location = new System.Drawing.Point(301, 84);
+			this.chkUseWindowsEol.Location = new System.Drawing.Point(301, 83);
 			this.chkUseWindowsEol.Name = "chkUseWindowsEol";
 			this.chkUseWindowsEol.Size = new System.Drawing.Size(155, 17);
 			this.chkUseWindowsEol.TabIndex = 19;
@@ -531,7 +532,7 @@ namespace Mesen.GUI.Debugger
 			this.chkExtendZeroPage.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.chkExtendZeroPage.AutoSize = true;
 			this.tableLayoutPanel2.SetColumnSpan(this.chkExtendZeroPage, 2);
-			this.chkExtendZeroPage.Location = new System.Drawing.Point(462, 59);
+			this.chkExtendZeroPage.Location = new System.Drawing.Point(462, 58);
 			this.chkExtendZeroPage.Name = "chkExtendZeroPage";
 			this.chkExtendZeroPage.Size = new System.Drawing.Size(205, 17);
 			this.chkExtendZeroPage.TabIndex = 20;
@@ -545,9 +546,9 @@ namespace Mesen.GUI.Debugger
 			this.chkLogCpu.AutoSize = true;
 			this.chkLogCpu.Checked = true;
 			this.chkLogCpu.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkLogCpu.Location = new System.Drawing.Point(84, 3);
+			this.chkLogCpu.Location = new System.Drawing.Point(3, 3);
 			this.chkLogCpu.Name = "chkLogCpu";
-			this.chkLogCpu.Size = new System.Drawing.Size(87, 17);
+			this.chkLogCpu.Size = new System.Drawing.Size(87, 16);
 			this.chkLogCpu.TabIndex = 21;
 			this.chkLogCpu.Text = "CPU (65816)";
 			this.chkLogCpu.UseVisualStyleBackColor = true;
@@ -558,9 +559,9 @@ namespace Mesen.GUI.Debugger
 			this.chkLogSpc.AutoSize = true;
 			this.chkLogSpc.Checked = true;
 			this.chkLogSpc.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkLogSpc.Location = new System.Drawing.Point(203, 3);
+			this.chkLogSpc.Location = new System.Drawing.Point(96, 3);
 			this.chkLogSpc.Name = "chkLogSpc";
-			this.chkLogSpc.Size = new System.Drawing.Size(47, 17);
+			this.chkLogSpc.Size = new System.Drawing.Size(47, 16);
 			this.chkLogSpc.TabIndex = 22;
 			this.chkLogSpc.Text = "SPC";
 			this.chkLogSpc.UseVisualStyleBackColor = true;
@@ -570,11 +571,23 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.lblTarget.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblTarget.AutoSize = true;
-			this.lblTarget.Location = new System.Drawing.Point(3, 5);
+			this.lblTarget.Location = new System.Drawing.Point(3, 4);
 			this.lblTarget.Name = "lblTarget";
 			this.lblTarget.Size = new System.Drawing.Size(46, 13);
 			this.lblTarget.TabIndex = 23;
 			this.lblTarget.Text = "Targets:";
+			// 
+			// chkLogNecDsp
+			// 
+			this.chkLogNecDsp.AutoSize = true;
+			this.chkLogNecDsp.Checked = true;
+			this.chkLogNecDsp.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogNecDsp.Location = new System.Drawing.Point(149, 3);
+			this.chkLogNecDsp.Name = "chkLogNecDsp";
+			this.chkLogNecDsp.Size = new System.Drawing.Size(57, 16);
+			this.chkLogNecDsp.TabIndex = 24;
+			this.chkLogNecDsp.Text = "DSP-n";
+			this.chkLogNecDsp.UseVisualStyleBackColor = true;
 			// 
 			// btnClearLog
 			// 
@@ -811,17 +824,39 @@ namespace Mesen.GUI.Debugger
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
-			// chkLogNecDsp
+			// tableLayoutPanel6
 			// 
-			this.chkLogNecDsp.AutoSize = true;
-			this.chkLogNecDsp.Checked = true;
-			this.chkLogNecDsp.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkLogNecDsp.Location = new System.Drawing.Point(301, 3);
-			this.chkLogNecDsp.Name = "chkLogNecDsp";
-			this.chkLogNecDsp.Size = new System.Drawing.Size(57, 17);
-			this.chkLogNecDsp.TabIndex = 24;
-			this.chkLogNecDsp.Text = "DSP-n";
-			this.chkLogNecDsp.UseVisualStyleBackColor = true;
+			this.tableLayoutPanel6.ColumnCount = 5;
+			this.tableLayoutPanel2.SetColumnSpan(this.tableLayoutPanel6, 5);
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel6.Controls.Add(this.chkLogSa1, 3, 0);
+			this.tableLayoutPanel6.Controls.Add(this.chkLogCpu, 0, 0);
+			this.tableLayoutPanel6.Controls.Add(this.chkLogSpc, 1, 0);
+			this.tableLayoutPanel6.Controls.Add(this.chkLogNecDsp, 2, 0);
+			this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel6.Location = new System.Drawing.Point(81, 0);
+			this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+			this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+			this.tableLayoutPanel6.RowCount = 1;
+			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel6.Size = new System.Drawing.Size(589, 22);
+			this.tableLayoutPanel6.TabIndex = 25;
+			// 
+			// chkLogSa1
+			// 
+			this.chkLogSa1.AutoSize = true;
+			this.chkLogSa1.Checked = true;
+			this.chkLogSa1.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogSa1.Location = new System.Drawing.Point(212, 3);
+			this.chkLogSa1.Name = "chkLogSa1";
+			this.chkLogSa1.Size = new System.Drawing.Size(49, 16);
+			this.chkLogSa1.TabIndex = 25;
+			this.chkLogSa1.Text = "SA-1";
+			this.chkLogSa1.UseVisualStyleBackColor = true;
 			// 
 			// frmTraceLogger
 			// 
@@ -852,6 +887,8 @@ namespace Mesen.GUI.Debugger
 			this.ctxMenu.ResumeLayout(false);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
+			this.tableLayoutPanel6.ResumeLayout(false);
+			this.tableLayoutPanel6.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -920,5 +957,7 @@ namespace Mesen.GUI.Debugger
 		private System.Windows.Forms.Label lblTarget;
 		private System.Windows.Forms.Button btnClearLog;
 		private System.Windows.Forms.CheckBox chkLogNecDsp;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+		private System.Windows.Forms.CheckBox chkLogSa1;
 	}
 }

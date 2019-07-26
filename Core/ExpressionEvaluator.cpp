@@ -8,6 +8,7 @@
 #include "MemoryDumper.h"
 #include "Disassembler.h"
 #include "LabelManager.h"
+#include "DebugUtilities.h"
 #include "../Utilities/HexUtilities.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };
@@ -381,6 +382,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 					default:
 						switch(_cpuType) {
 							case CpuType::Cpu:
+							case CpuType::Sa1:
 								switch(token) {
 									case EvalValues::RegA: token = state.Cpu.A; break;
 									case EvalValues::RegX: token = state.Cpu.X; break;
@@ -468,7 +470,7 @@ ExpressionEvaluator::ExpressionEvaluator(Debugger* debugger, CpuType cpuType)
 	_debugger = debugger;
 	_labelManager = debugger->GetLabelManager().get();
 	_cpuType = cpuType;
-	_cpuMemory = cpuType == CpuType::Cpu ? SnesMemoryType::CpuMemory : SnesMemoryType::SpcMemory;
+	_cpuMemory = DebugUtilities::GetCpuMemoryType(cpuType);
 }
 
 ExpressionData ExpressionEvaluator::GetRpnList(string expression, bool &success)

@@ -5,10 +5,11 @@
 #include "../Utilities/ISerializable.h"
 
 class BaseCoprocessor;
-class MemoryManager;
+class MemoryMappings;
 class VirtualFile;
 class EmuSettings;
 class NecDsp;
+class Sa1;
 class Console;
 
 class BaseCartridge : public ISerializable
@@ -22,6 +23,7 @@ private:
 
 	unique_ptr<BaseCoprocessor> _coprocessor;
 	NecDsp *_necDsp = nullptr;
+	Sa1 *_sa1 = nullptr;
 
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
@@ -43,8 +45,8 @@ private:
 	CoprocessorType GetSt01xVersion();
 	CoprocessorType GetDspVersion();
 
-	bool MapSpecificCarts(MemoryManager &mm);
-	void InitCoprocessor(MemoryManager &mm);
+	bool MapSpecificCarts(MemoryMappings &mm);
+	void InitCoprocessor();
 
 	string GetCartName();
 	string GetGameCode();
@@ -59,11 +61,13 @@ public:
 
 	void SaveBattery();
 
+	void Init(MemoryMappings &mm);
+
 	RomInfo GetRomInfo();
 	string GetSha1Hash();
 	CartFlags::CartFlags GetCartFlags();
 
-	void RegisterHandlers(MemoryManager &mm);
+	void RegisterHandlers(MemoryMappings &mm);
 
 	uint8_t* DebugGetPrgRom() { return _prgRom; }
 	uint8_t* DebugGetSaveRam() { return _saveRam; }
@@ -71,7 +75,11 @@ public:
 	uint32_t DebugGetSaveRamSize() { return _saveRamSize; }
 
 	NecDsp* GetDsp();
+	Sa1* GetSa1();
 	BaseCoprocessor* GetCoprocessor();
+
+	vector<unique_ptr<IMemoryHandler>>& GetPrgRomHandlers();
+	vector<unique_ptr<IMemoryHandler>>& GetSaveRamHandlers();
 
 	void Serialize(Serializer &s) override;
 };

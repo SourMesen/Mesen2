@@ -48,6 +48,7 @@ int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
 		case SnesMemoryType::Register: return absoluteAddr | ((uint64_t)4 << 32);
 		case SnesMemoryType::SpcRam: return absoluteAddr | ((uint64_t)5 << 32);
 		case SnesMemoryType::SpcRom: return absoluteAddr | ((uint64_t)6 << 32);
+		case SnesMemoryType::Sa1InternalRam: return absoluteAddr | ((uint64_t)7 << 32);
 		default: return -1;
 	}
 }
@@ -61,6 +62,7 @@ SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 		case ((uint64_t)4 << 32): return SnesMemoryType::Register; break;
 		case ((uint64_t)5 << 32): return SnesMemoryType::SpcRam; break;
 		case ((uint64_t)6 << 32): return SnesMemoryType::SpcRom; break;
+		case ((uint64_t)7 << 32): return SnesMemoryType::Sa1InternalRam; break;
 	}
 
 	throw std::runtime_error("Invalid label key");
@@ -68,7 +70,7 @@ SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 
 string LabelManager::GetLabel(AddressInfo address)
 {
-	if(address.Type <= SnesMemoryType::SpcMemory) {
+	if(address.Type <= SnesMemoryType::Sa1Memory) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 
@@ -101,7 +103,7 @@ string LabelManager::GetComment(AddressInfo absAddress)
 
 void LabelManager::GetLabelAndComment(AddressInfo address, string &label, string &comment)
 {
-	if(address.Type <= SnesMemoryType::SpcMemory) {
+	if(address.Type <= SnesMemoryType::Sa1Memory) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 
@@ -149,7 +151,7 @@ int32_t LabelManager::GetLabelRelativeAddress(string &label)
 
 bool LabelManager::HasLabelOrComment(AddressInfo address)
 {
-	if(address.Type <= SnesMemoryType::SpcMemory) {
+	if(address.Type <= SnesMemoryType::Sa1Memory) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 

@@ -35,7 +35,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/ConsoleLock.cpp \
                $(CORE_DIR)/ControlManager.cpp \
                $(CORE_DIR)/Cpu.cpp \
-               $(CORE_DIR)/Cpu.Instructions.cpp \
+               $(CORE_DIR)/CpuDebugger.cpp \
                $(CORE_DIR)/CpuDisUtils.cpp \
                $(CORE_DIR)/Debugger.cpp \
                $(CORE_DIR)/DebugHud.cpp \
@@ -53,6 +53,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/MemoryAccessCounter.cpp \
                $(CORE_DIR)/MemoryDumper.cpp \
                $(CORE_DIR)/MemoryManager.cpp \
+               $(CORE_DIR)/MemoryMappings.cpp \
                $(CORE_DIR)/MessageManager.cpp \
                $(CORE_DIR)/NecDsp.cpp \
                $(CORE_DIR)/NecDspDisUtils.cpp \
@@ -64,6 +65,8 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/RewindData.cpp \
                $(CORE_DIR)/RewindManager.cpp \
                $(CORE_DIR)/SaveStateManager.cpp \
+               $(CORE_DIR)/Sa1.cpp \
+               $(CORE_DIR)/Sa1Cpu.cpp \
                $(CORE_DIR)/ScaleFilter.cpp \
                $(CORE_DIR)/ScriptHost.cpp \
                $(CORE_DIR)/ScriptingContext.cpp \
@@ -73,6 +76,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/SoundResampler.cpp \
                $(CORE_DIR)/Spc.cpp \
                $(CORE_DIR)/Spc.Instructions.cpp \
+               $(CORE_DIR)/SpcDebugger.cpp \
                $(CORE_DIR)/SpcDisUtils.cpp \
                $(CORE_DIR)/SPC_DSP.cpp \
                $(CORE_DIR)/SPC_Filter.cpp \

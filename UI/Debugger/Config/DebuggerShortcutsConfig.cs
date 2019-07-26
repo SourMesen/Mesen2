@@ -75,6 +75,8 @@ namespace Mesen.GUI.Config
 		public XmlKeys OpenDebugger = Keys.Control | Keys.D;
 		[ShortcutName("Open SPC Debugger")]
 		public XmlKeys OpenSpcDebugger = Keys.Control | Keys.F;
+		[ShortcutName("Open SA-1 Debugger")]
+		public XmlKeys OpenSa1Debugger = Keys.None;
 		[ShortcutName("Open Event Viewer")]
 		public XmlKeys OpenEventViewer = Keys.Control | Keys.E;
 		[ShortcutName("Open Memory Tools")]

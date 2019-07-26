@@ -47,11 +47,15 @@ private:
 	uint32_t GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode = true);
 	
 	uint8_t GetOpCode();
+	
+	uint16_t GetResetVector();
 
 	void ProcessCpuCycle();
 
 	void Idle();
 	void IdleOrRead();
+	void IdleEndJump();
+	void IdleTakeBranch();
 	
 	uint8_t ReadOperandByte();
 	uint16_t ReadOperandWord();

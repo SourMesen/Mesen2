@@ -3,11 +3,14 @@
 #include "Console.h"
 #include "Ppu.h"
 #include "Spc.h"
+#include "BaseCartridge.h"
+#include "Sa1.h"
 #include "../Utilities/Serializer.h"
 
-RegisterHandlerB::RegisterHandlerB(Console * console, Ppu * ppu, Spc * spc, uint8_t * workRam)
+RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8_t * workRam)
 {
 	_console = console;
+	_sa1 = console->GetCartridge()->GetSa1();
 	_ppu = ppu;
 	_spc = spc;
 	_workRam = workRam;
@@ -25,6 +28,8 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 		_console->ProcessWorkRamRead(_wramPosition, value);
 		_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 		return value;
+	} else if(addr >= 0x2300 && addr <= 0x23FF && _console->GetCartridge()->GetSa1()) {
+		return _console->GetCartridge()->GetSa1()->CpuRegisterRead(addr);
 	} else {
 		return _ppu->Read(addr);
 	}
@@ -59,6 +64,8 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 			case 0x2182: _wramPosition = (_wramPosition & 0x100FF) | (value << 8); break;
 			case 0x2183: _wramPosition = (_wramPosition & 0xFFFF) | ((value & 0x01) << 16); break;
 		}
+	} else if(addr >= 0x2200 && addr <= 0x22FF && _console->GetCartridge()->GetSa1()) {
+		_console->GetCartridge()->GetSa1()->CpuRegisterWrite(addr, value);
 	} else {
 		_ppu->Write(addr, value);
 	}

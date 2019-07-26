@@ -12,12 +12,14 @@ struct DebugState
 	PpuState Ppu;
 	SpcState Spc;
 	NecDspState Dsp;
+	CpuState Sa1;
 };
 
 enum class SnesMemoryType
 {
 	CpuMemory,
 	SpcMemory,
+	Sa1Memory,
 	PrgRom,
 	WorkRam,
 	SaveRam,
@@ -29,6 +31,7 @@ enum class SnesMemoryType
 	DspProgramRom,
 	DspDataRom,
 	DspDataRam,
+	Sa1InternalRam,
 	Register,
 };
 
@@ -229,23 +232,18 @@ struct BreakEvent
 
 enum class StepType
 {
-	CpuStep,
-	CpuStepOut,
-	CpuStepOver,
-	SpcStep,
-	SpcStepOut,
-	SpcStepOver,
+	Step,
+	StepOut,
+	StepOver,
 	PpuStep,
 	SpecificScanline,
 };
 
 struct StepRequest
 {
-	int32_t CpuStepCount = -1;
-	int32_t SpcStepCount = -1;
+	int32_t StepCount = -1;
 	int32_t PpuStepCount = -1;
-	int32_t CpuBreakAddress = -1;
-	int32_t SpcBreakAddress = -1;
+	int32_t BreakAddress = -1;
 	int32_t BreakScanline = -1;
 };
 
@@ -253,7 +251,7 @@ enum class CpuType : uint8_t
 {
 	Cpu,
 	Spc,
-	NecDsp
+	NecDsp,
+	Sa1,
 	//SuperFx,
-	//Sa1,
 };

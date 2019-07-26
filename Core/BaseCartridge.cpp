@@ -2,13 +2,14 @@
 #include "BaseCartridge.h"
 #include "RamHandler.h"
 #include "RomHandler.h"
-#include "MemoryManager.h"
+#include "MemoryMappings.h"
 #include "IMemoryHandler.h"
 #include "BaseCoprocessor.h"
 #include "MessageManager.h"
 #include "Console.h"
 #include "EmuSettings.h"
 #include "NecDsp.h"
+#include "Sa1.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -232,6 +233,7 @@ RomInfo BaseCartridge::GetRomInfo()
 	info.Header = _cartInfo;
 	info.RomFile = static_cast<VirtualFile>(_romPath);
 	info.PatchFile = static_cast<VirtualFile>(_patchPath);
+	info.Coprocessor = _coprocessorType;
 	return info;
 }
 
@@ -267,14 +269,14 @@ void BaseCartridge::SaveBattery()
 	}
 }
 
-void BaseCartridge::RegisterHandlers(MemoryManager &mm)
+void BaseCartridge::Init(MemoryMappings &mm)
 {
 	for(uint32_t i = 0; i < _prgRomSize; i += 0x1000) {
 		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, _prgRomSize, SnesMemoryType::PrgRom)));
 	}
 
 	uint32_t power = (uint32_t)std::log2(_prgRomSize);
-	if(_prgRomSize > (1u << power)) {
+	if(_prgRomSize >(1u << power)) {
 		//If size isn't a power of 2, mirror the part above the nearest (lower) power of 2 until the size reaches the next power of 2.
 		uint32_t halfSize = 1 << power;
 		uint32_t fullSize = 1 << (power + 1);
@@ -291,6 +293,13 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, SnesMemoryType::SaveRam)));
 	}
 
+	RegisterHandlers(mm);
+	InitCoprocessor();
+	LoadBattery();
+}
+
+void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
+{
 	if(MapSpecificCarts(mm)) {
 		return;
 	}
@@ -332,19 +341,20 @@ void BaseCartridge::RegisterHandlers(MemoryManager &mm)
 		mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
 		mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 	}
-
-	InitCoprocessor(mm);
-
-	LoadBattery();
 }
 
-void BaseCartridge::InitCoprocessor(MemoryManager &mm)
+void BaseCartridge::InitCoprocessor()
 {
 	_coprocessor.reset(NecDsp::InitCoprocessor(_coprocessorType, _console));
 	_necDsp = dynamic_cast<NecDsp*>(_coprocessor.get());
+
+	if(_coprocessorType == CoprocessorType::SA1) {
+		_coprocessor.reset(new Sa1(_console));
+		_sa1 = dynamic_cast<Sa1*>(_coprocessor.get());
+	}
 }
 
-bool BaseCartridge::MapSpecificCarts(MemoryManager &mm)
+bool BaseCartridge::MapSpecificCarts(MemoryMappings &mm)
 {
 	string name = GetCartName();
 	string code = GetGameCode();
@@ -487,7 +497,22 @@ NecDsp* BaseCartridge::GetDsp()
 	return _necDsp;
 }
 
-BaseCoprocessor * BaseCartridge::GetCoprocessor()
+Sa1* BaseCartridge::GetSa1()
+{
+	return _sa1;
+}
+
+BaseCoprocessor* BaseCartridge::GetCoprocessor()
 {
 	return _coprocessor.get();
+}
+
+vector<unique_ptr<IMemoryHandler>>& BaseCartridge::GetPrgRomHandlers()
+{
+	return _prgRomHandlers;
+}
+
+vector<unique_ptr<IMemoryHandler>>& BaseCartridge::GetSaveRamHandlers()
+{
+	return _saveRamHandlers;
 }

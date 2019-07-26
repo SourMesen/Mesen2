@@ -16,8 +16,9 @@ string TraceLogger::_executionTrace = "";
 
 TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 {
-	_console = console;
-	_labelManager = debugger->GetLabelManager();
+	_console = console.get();
+	_labelManager = debugger->GetLabelManager().get();
+	_memoryDumper = debugger->GetMemoryDumper().get();
 	_currentPos = 0;
 	_logCount = 0;
 	_logToFile = false;
@@ -27,6 +28,8 @@ TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 	_stateCacheCopy = new DebugState[TraceLogger::ExecutionLogSize];
 	_disassemblyCache = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
 	_disassemblyCacheCopy = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
+	_logCpuType = new CpuType[TraceLogger::ExecutionLogSize];
+	_logCpuTypeCopy = new CpuType[TraceLogger::ExecutionLogSize];
 }
 
 TraceLogger::~TraceLogger()
@@ -60,6 +63,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	_logCpu[(int)CpuType::Cpu] = options.LogCpu;
 	_logCpu[(int)CpuType::Spc] = options.LogSpc;
 	_logCpu[(int)CpuType::NecDsp] = options.LogNecDsp;
+	_logCpu[(int)CpuType::Sa1] = options.LogSa1;
 
 	string condition = _options.Condition;
 	string format = _options.Format;
@@ -232,14 +236,14 @@ void TraceLogger::WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint
 		code = std::string(indentLevel, ' ');
 	}
 
-	LabelManager* labelManager = _options.UseLabels ? _labelManager.get() : nullptr;
+	LabelManager* labelManager = _options.UseLabels ? _labelManager : nullptr;
 	info.GetDisassembly(code, pc, labelManager);
 	WriteValue(output, code, rowPart);
 }
 
 void TraceLogger::WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType)
 {
-	int32_t effectiveAddress = info.GetEffectiveAddress(_console.get(), cpuState);
+	int32_t effectiveAddress = info.GetEffectiveAddress(_console, cpuState);
 	if(effectiveAddress >= 0) {
 		if(_options.UseLabels) {
 			AddressInfo addr { effectiveAddress, cpuMemoryType };
@@ -253,12 +257,12 @@ void TraceLogger::WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart,
 	}
 }
 
-void TraceLogger::WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output)
+void TraceLogger::WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType memType)
 {
-	int32_t address = info.GetEffectiveAddress(_console.get(), cpuState);
+	int32_t address = info.GetEffectiveAddress(_console, cpuState);
 	if(address >= 0) {
 		uint8_t valueSize;
-		uint16_t value = info.GetMemoryValue(address, _console->GetMemoryManager().get(), valueSize);
+		uint16_t value = info.GetMemoryValue(address, _memoryDumper, memType, valueSize);
 		if(rowPart.DisplayInHex) {
 			output += "= $";
 			if(valueSize == 2) {
@@ -279,7 +283,7 @@ void TraceLogger::WriteAlign(int originalSize, RowPart &rowPart, string &output)
 	}
 }
 
-void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo)
+void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo, SnesMemoryType memType)
 {
 	int originalSize = (int)output.size();
 	uint32_t pcAddress = (cpuState.K << 16) | cpuState.PC;
@@ -288,8 +292,8 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::Text: output += rowPart.Text; break;
 			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
 			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, (uint8_t)cpuState.SP, pcAddress, output); break;
-			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::CpuMemory); break;
-			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output); break;
+			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, memType); break;
+			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output, memType); break;
 			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
 
 			case RowDataType::PC: WriteValue(output, HexUtilities::ToHex24(pcAddress), rowPart); break;
@@ -320,7 +324,7 @@ void TraceLogger::GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuS
 			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
 			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, cpuState.SP, pcAddress, output); break;
 			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::SpcMemory); break;
-			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output); break;
+			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::SpcMemory); break;
 			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
 
 			case RowDataType::PC: WriteValue(output, HexUtilities::ToHex((uint16_t)pcAddress), rowPart); break;
@@ -399,17 +403,19 @@ bool TraceLogger::ConditionMatches(DebugState &state, DisassemblyInfo &disassemb
 }
 */
 
-void TraceLogger::GetTraceRow(string &output, DisassemblyInfo &disassemblyInfo, DebugState &state)
+void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state)
 {
-	switch(disassemblyInfo.GetCpuType()) {
-		case CpuType::Cpu: GetTraceRow(output, state.Cpu, state.Ppu, disassemblyInfo); break;
+	switch(cpuType) {
+		case CpuType::Cpu: GetTraceRow(output, state.Cpu, state.Ppu, disassemblyInfo, SnesMemoryType::CpuMemory); break;
 		case CpuType::Spc: GetTraceRow(output, state.Spc, state.Ppu, disassemblyInfo); break;
 		case CpuType::NecDsp: GetTraceRow(output, state.Dsp, state.Ppu, disassemblyInfo); break;
+		case CpuType::Sa1: GetTraceRow(output, state.Sa1, state.Ppu, disassemblyInfo, SnesMemoryType::Sa1Memory); break;
 	}
 }
 
-void TraceLogger::AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state)
+void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state)
 {
+	_logCpuType[_currentPos] = cpuType;
 	_disassemblyCache[_currentPos] = disassemblyInfo;
 	_stateCache[_currentPos] = state;
 	_pendingLog = false;
@@ -418,8 +424,8 @@ void TraceLogger::AddRow(DisassemblyInfo &disassemblyInfo, DebugState &state)
 		_logCount++;
 	}
 
-	if(_logToFile && _logCpu[(int)disassemblyInfo.GetCpuType()]) {
-		GetTraceRow(_outputBuffer, _disassemblyCache[_currentPos], _stateCache[_currentPos]);
+	if(_logToFile) {
+		GetTraceRow(_outputBuffer, cpuType, _disassemblyCache[_currentPos], _stateCache[_currentPos]);
 		if(_outputBuffer.size() > 32768) {
 			_outputFile << _outputBuffer;
 			_outputBuffer.clear();
@@ -439,13 +445,13 @@ void TraceLogger::LogNonExec(OperationInfo& operationInfo)
 	}
 }*/
 
-void TraceLogger::Log(DebugState &state, DisassemblyInfo &disassemblyInfo)
+void TraceLogger::Log(CpuType cpuType, DebugState &state, DisassemblyInfo &disassemblyInfo)
 {
-	if(_logCpu[(int)disassemblyInfo.GetCpuType()]) {
+	if(_logCpu[(int)cpuType]) {
 		//For the sake of performance, only log data for the CPUs we're actively displaying/logging
 		auto lock = _lock.AcquireSafe();
 		//if(ConditionMatches(state, disassemblyInfo, operationInfo)) {
-			AddRow(disassemblyInfo, state);
+			AddRow(cpuType, disassemblyInfo, state);
 		//}
 	}
 }
@@ -465,11 +471,12 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 		lineCount = std::min(lineCount, _logCount);
 		memcpy(_stateCacheCopy, _stateCache, sizeof(DebugState) * TraceLogger::ExecutionLogSize);
 		memcpy(_disassemblyCacheCopy, _disassemblyCache, sizeof(DisassemblyInfo) * TraceLogger::ExecutionLogSize);
+		memcpy(_logCpuTypeCopy, _logCpuType, sizeof(CpuType) * TraceLogger::ExecutionLogSize);
 		startPos = (_currentPos > 0 ? _currentPos : TraceLogger::ExecutionLogSize) - 1;
 	}
 
 	bool enabled = false;
-	for(int i = 0; i < (int)CpuType::NecDsp + 1; i++) {
+	for(int i = 0; i < (int)CpuType::Sa1 + 1; i++) {
 		enabled |= _logCpu[i];
 	}
 
@@ -485,7 +492,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				break;
 			}
 
-			CpuType cpuType = _disassemblyCacheCopy[index].GetCpuType();
+			CpuType cpuType = _logCpuTypeCopy[index];
 			if(!_logCpu[(int)cpuType]) {
 				//This line isn't for a CPU currently being logged
 				continue;
@@ -495,12 +502,13 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Cpu.K << 16) | _stateCacheCopy[index].Cpu.PC) + "\x1"; break;
 				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(_stateCacheCopy[index].Spc.PC) + "\x1"; break;
 				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(_stateCacheCopy[index].Dsp.PC) + "\x1"; break;
+				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Sa1.K << 16) | _stateCacheCopy[index].Sa1.PC) + "\x1"; break;
 			}
 
 			string byteCode;
 			_disassemblyCacheCopy[index].GetByteCode(byteCode);
 			_executionTrace += byteCode + "\x1";
-			GetTraceRow(_executionTrace, _disassemblyCacheCopy[index], _stateCacheCopy[index]);
+			GetTraceRow(_executionTrace, cpuType, _disassemblyCacheCopy[index], _stateCacheCopy[index]);
 
 			lineCount--;
 			if(lineCount == 0) {

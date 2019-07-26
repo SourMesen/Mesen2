@@ -42,6 +42,9 @@ namespace Mesen.GUI.Debugger
 				if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
 					cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
 				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
+					cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
+				}
 				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Register));
 			} else if(cpuType == CpuType.Spc) {
 				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRam));

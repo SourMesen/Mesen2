@@ -18,6 +18,7 @@ namespace Mesen.GUI.Debugger
 		public UInt32 Address = UInt32.MaxValue;
 		public UInt32 StartAddress;
 		public UInt32 EndAddress;
+		public CpuType CpuType;
 		public BreakpointAddressType AddressType = BreakpointAddressType.SingleAddress;
 		public string Condition = "";
 		
@@ -59,13 +60,10 @@ namespace Mesen.GUI.Debugger
 		public static bool IsTypeCpuBreakpoint(SnesMemoryType type)
 		{
 			return (
-				type == SnesMemoryType.CpuMemory ||
-				type == SnesMemoryType.SpcMemory ||
-				type == SnesMemoryType.SpcRom ||
-				type == SnesMemoryType.SpcRam ||
-				type == SnesMemoryType.WorkRam ||
-				type == SnesMemoryType.SaveRam ||
-				type == SnesMemoryType.PrgRom
+				type != SnesMemoryType.Register &&
+				type != SnesMemoryType.VideoRam &&
+				type != SnesMemoryType.CGRam &&
+				type != SnesMemoryType.SpriteRam
 			);
 		}
 
@@ -109,7 +107,8 @@ namespace Mesen.GUI.Debugger
 			switch(MemoryType) {
 				default:	throw new Exception("invalid type");
 				case SnesMemoryType.CpuMemory: type = "CPU"; break;
-				case SnesMemoryType.SpcMemory: type = "CPU"; break;
+				case SnesMemoryType.SpcMemory: type = "SPC"; break;
+				case SnesMemoryType.Sa1Memory: type = "SA1"; break;
 				
 				case SnesMemoryType.PrgRom: type = "PRG"; break;
 				case SnesMemoryType.WorkRam: type = "WRAM"; break;
@@ -120,6 +119,8 @@ namespace Mesen.GUI.Debugger
 
 				case SnesMemoryType.SpcRam: type = "RAM"; break;
 				case SnesMemoryType.SpcRom: type = "ROM"; break;
+
+				case SnesMemoryType.Sa1InternalRam: type = "IRAM"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}
@@ -173,14 +174,9 @@ namespace Mesen.GUI.Debugger
 			return -1;
 		}
 		
-		public bool Matches(CpuType type)
+		public bool Matches(UInt32 address, SnesMemoryType type, CpuType? cpuType)
 		{
-			return _memoryType.ToCpuType() == type;		
-		}
-
-		public bool Matches(UInt32 address, SnesMemoryType type)
-		{
-			if(IsTypeCpuBreakpoint(type) != this.IsCpuBreakpoint) {
+			if((cpuType.HasValue && cpuType.Value != this.CpuType) || IsTypeCpuBreakpoint(type) != this.IsCpuBreakpoint) {
 				return false;
 			}
 
@@ -197,6 +193,7 @@ namespace Mesen.GUI.Debugger
 		{
 			InteropBreakpoint bp = new InteropBreakpoint() {
 				Id = breakpointId,
+				CpuType = CpuType,
 				MemoryType = MemoryType,
 				Type = Type,
 				MarkEvent = MarkEvent,

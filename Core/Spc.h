@@ -276,6 +276,7 @@ private:
 	void IncCycleCount(int32_t addr);
 	void EndOp();
 	void EndAddr();
+	void ProcessCycle();
 	void Exec();
 
 public:

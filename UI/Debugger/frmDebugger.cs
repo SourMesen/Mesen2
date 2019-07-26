@@ -42,13 +42,27 @@ namespace Mesen.GUI.Debugger
 		{
 			base.OnLoad(e);
 
-			this.Text = _cpuType == CpuType.Cpu ? "CPU Debugger" : "SPC Debugger";
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
 			switch(_cpuType) {
-				case CpuType.Cpu: ctrlDisassemblyView.Initialize(new CpuDisassemblyManager(), new CpuLineStyleProvider()); break;
-				case CpuType.Spc: ctrlDisassemblyView.Initialize(new SpcDisassemblyManager(), new SpcLineStyleProvider()); break;
+				case CpuType.Cpu:
+					ctrlDisassemblyView.Initialize(new CpuDisassemblyManager(), new CpuLineStyleProvider());
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, true);
+					this.Text = "CPU Debugger";
+					break;
+
+				case CpuType.Spc:
+					ctrlDisassemblyView.Initialize(new SpcDisassemblyManager(), new SpcLineStyleProvider());
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.SpcDebuggerEnabled, true);
+					this.Text = "SPC Debugger";
+					break;
+
+				case CpuType.Sa1:
+					ctrlDisassemblyView.Initialize(new Sa1DisassemblyManager(), new Sa1LineStyleProvider());
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.Sa1DebuggerEnabled, true);
+					this.Text = "SA-1 Debugger";
+					break;
 			}
 
 			ctrlBreakpoints.CpuType = _cpuType;
@@ -60,9 +74,8 @@ namespace Mesen.GUI.Debugger
 
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 
-			ConfigApi.SetDebuggerFlag(_cpuType == CpuType.Cpu ? DebuggerFlags.CpuDebuggerEnabled : DebuggerFlags.SpcDebuggerEnabled, true);
 			BreakpointManager.AddCpuType(_cpuType);
-			DebugApi.Step(10000, StepType.CpuStep);
+			DebugApi.Step(_cpuType, 10000, StepType.Step);
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -77,7 +90,12 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.UpdateObject();
 			ConfigManager.ApplyChanges();
 
-			ConfigApi.SetDebuggerFlag(_cpuType == CpuType.Cpu ? DebuggerFlags.CpuDebuggerEnabled : DebuggerFlags.SpcDebuggerEnabled, false);
+			switch(_cpuType) {
+				case CpuType.Cpu: ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, false); break;
+				case CpuType.Spc: ConfigApi.SetDebuggerFlag(DebuggerFlags.SpcDebuggerEnabled, false); break;
+				case CpuType.Sa1: ConfigApi.SetDebuggerFlag(DebuggerFlags.Sa1DebuggerEnabled, false); break;
+			}
+
 			BreakpointManager.RemoveCpuType(_cpuType);
 
 			if(this._notifListener != null) {
@@ -92,7 +110,7 @@ namespace Mesen.GUI.Debugger
 				if(EmuApi.IsPaused()) {
 					DebugApi.ResumeExecution();
 				} else {
-					DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStep : StepType.SpcStep);
+					DebugApi.Step(_cpuType, 1, StepType.Step);
 				}
 				return true;
 			}
@@ -139,14 +157,14 @@ namespace Mesen.GUI.Debugger
 			mnuDecreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.DecreaseFontSize));
 			mnuResetFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.ResetFontSize));
 
-			mnuStepInto.Click += (s, e) => { DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStep : StepType.SpcStep); };
-			mnuStepOver.Click += (s, e) => { DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStepOver : StepType.SpcStepOver); };
-			mnuStepOut.Click += (s, e) => { DebugApi.Step(1, _cpuType == CpuType.Cpu ? StepType.CpuStepOut : StepType.SpcStepOut); };
-			mnuRunPpuCycle.Click += (s, e) => { DebugApi.Step(1, StepType.PpuStep); };
-			mnuRunScanline.Click += (s, e) => { DebugApi.Step(341, StepType.PpuStep); };
-			mnuRunOneFrame.Click += (s, e) => { DebugApi.Step(341*262, StepType.PpuStep); }; //TODO ntsc/pal
+			mnuStepInto.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.Step); };
+			mnuStepOver.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.StepOver); };
+			mnuStepOut.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.StepOut); };
+			mnuRunPpuCycle.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.PpuStep); };
+			mnuRunScanline.Click += (s, e) => { DebugApi.Step(_cpuType, 341, StepType.PpuStep); };
+			mnuRunOneFrame.Click += (s, e) => { DebugApi.Step(_cpuType, 341 * 262, StepType.PpuStep); }; //TODO ntsc/pal
 			mnuContinue.Click += (s, e) => { DebugApi.ResumeExecution(); };
-			mnuBreak.Click += (s, e) => { DebugApi.Step(1); };
+			mnuBreak.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.Step); };
 
 			mnuReset.Click += (s, e) => { EmuApi.Reset(); };
 			mnuPowerCycle.Click += (s, e) => { EmuApi.PowerCycle(); };
@@ -210,6 +228,7 @@ namespace Mesen.GUI.Debugger
 		{
 			DebugApi.RefreshDisassembly(CpuType.Cpu);
 			DebugApi.RefreshDisassembly(CpuType.Spc);
+			DebugApi.RefreshDisassembly(CpuType.Sa1);
 			ctrlDisassemblyView.UpdateCode();
 		}
 
@@ -282,7 +301,7 @@ namespace Mesen.GUI.Debugger
 		private void GoToAddress()
 		{
 			GoToAddress address = new GoToAddress();
-			using(frmGoToLine frm = new frmGoToLine(address, _cpuType == CpuType.Spc ? 4 : 6)) {
+			using(frmGoToLine frm = new frmGoToLine(address, _cpuType.GetAddressSize())) {
 				frm.StartPosition = FormStartPosition.CenterParent;
 				if(frm.ShowDialog(ctrlDisassemblyView) == DialogResult.OK) {
 					ctrlDisassemblyView.ScrollToAddress(address.Address);
@@ -293,8 +312,8 @@ namespace Mesen.GUI.Debugger
 		private int GetVectorAddress(CpuVector vector)
 		{
 			uint address = (uint)vector;
-			byte lsb = DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, address);
-			byte msb = DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, address + 1);
+			byte lsb = DebugApi.GetMemoryValue(_cpuType.ToMemoryType(), address);
+			byte msb = DebugApi.GetMemoryValue(_cpuType.ToMemoryType(), address + 1);
 			return (msb << 8) | lsb;
 		}
 
@@ -306,7 +325,9 @@ namespace Mesen.GUI.Debugger
 		private void UpdateDebugger(DebugState state, int? activeAddress)
 		{
 			if(_cpuType == CpuType.Cpu) {
-				ctrlCpuStatus.UpdateStatus(state);
+				ctrlCpuStatus.UpdateStatus(state.Cpu);
+			} else if(_cpuType == CpuType.Sa1) {
+				ctrlCpuStatus.UpdateStatus(state.Sa1);
 			} else {
 				ctrlCpuStatus.Visible = false;
 			}
@@ -328,7 +349,7 @@ namespace Mesen.GUI.Debugger
 		{
 			if(ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak) {
 				Breakpoint bp = BreakpointManager.GetBreakpointById(evt.BreakpointId);
-				if(bp?.MemoryType.ToCpuType() == _cpuType || evt.Source > BreakSource.PpuStep) {
+				if(bp?.CpuType == _cpuType || evt.Source > BreakSource.PpuStep) {
 					DebugWindowManager.BringToFront(this);
 				}
 			}
@@ -349,8 +370,18 @@ namespace Mesen.GUI.Debugger
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded: {
+					if(_cpuType == CpuType.Sa1) {
+						CoprocessorType coprocessor = EmuApi.GetRomInfo().CoprocessorType;
+						if(coprocessor != CoprocessorType.SA1) {
+							this.Invoke((MethodInvoker)(() => {
+								this.Close();
+							}));
+							return;
+						}
+					}
+
 					if(ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset) {
-						DebugApi.Step(1, StepType.PpuStep);
+						DebugApi.Step(_cpuType, 1, StepType.PpuStep);
 					}
 
 					DebugState state = DebugApi.GetState();
@@ -365,7 +396,7 @@ namespace Mesen.GUI.Debugger
 
 				case ConsoleNotificationType.GameReset:
 					if(ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset) {
-						DebugApi.Step(1, StepType.PpuStep);
+						DebugApi.Step(_cpuType, 1, StepType.PpuStep);
 					}
 					break;
 
@@ -378,7 +409,13 @@ namespace Mesen.GUI.Debugger
 				case ConsoleNotificationType.CodeBreak: {
 					BreakEvent evt = (BreakEvent)Marshal.PtrToStructure(e.Parameter, typeof(BreakEvent));
 					DebugState state = DebugApi.GetState();
-					int activeAddress = _cpuType == CpuType.Cpu ? (int)((state.Cpu.K << 16) | state.Cpu.PC) : (int)state.Spc.PC;
+					int activeAddress;
+					switch(_cpuType) {
+						case CpuType.Cpu: activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC); break;
+						case CpuType.Spc: activeAddress = (int)state.Spc.PC; break;
+						case CpuType.Sa1: activeAddress = (int)((state.Sa1.K << 16) | state.Sa1.PC); break;
+						default: throw new Exception("Unsupported cpu type");
+					}
 
 					this.BeginInvoke((MethodInvoker)(() => {
 						ProcessBreakEvent(evt, state, activeAddress);

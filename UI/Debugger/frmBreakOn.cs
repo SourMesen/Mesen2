@@ -33,7 +33,7 @@ namespace Mesen.GUI.Debugger
 			if(this.DialogResult == DialogResult.OK) {
 				int count = (int)nudCount.Value;
 				ConfigManager.Config.Debug.Debugger.BreakOnValue = count;
-				DebugApi.Step(count, StepType.SpecificScanline);
+				DebugApi.Step(CpuType.Cpu, count, StepType.SpecificScanline);
 				ConfigManager.ApplyChanges();
 			}
 		}

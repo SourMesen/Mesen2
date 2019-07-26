@@ -24,6 +24,8 @@ class EventManager;
 class CallstackManager;
 class LabelManager;
 class ScriptManager;
+class SpcDebugger;
+class CpuDebugger;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -39,6 +41,9 @@ private:
 	shared_ptr<BaseCartridge> _cart;
 	
 	shared_ptr<EmuSettings> _settings;
+	unique_ptr<SpcDebugger> _spcDebugger;
+	unique_ptr<CpuDebugger> _cpuDebugger;
+	unique_ptr<CpuDebugger> _sa1Debugger;
 
 	shared_ptr<ScriptManager> _scriptManager;
 	shared_ptr<TraceLogger> _traceLogger;
@@ -50,10 +55,8 @@ private:
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<LabelManager> _labelManager;
-	shared_ptr<CallstackManager> _callstackManager;
-	shared_ptr<CallstackManager> _spcCallstackManager;
 
-	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)CpuType::Spc + 1];
+	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)CpuType::Sa1 + 1];
 
 	atomic<bool> _executionStopped;
 	atomic<uint32_t> _breakRequestCount;
@@ -61,32 +64,24 @@ private:
 
 	unique_ptr<StepRequest> _step;
 	
-	bool _enableBreakOnUninitRead = false;
-
-	uint8_t _prevOpCode = 0xFF;
-	uint32_t _prevProgramCounter = 0;
-
-	uint8_t _spcPrevOpCode = 0xFF;
-	uint32_t _spcPrevProgramCounter = 0;
-
+	bool _waitForBreakResume = false;
+	
 	void Reset();
 	void SleepUntilResume(BreakSource source, MemoryOperationInfo *operation = nullptr, int breakpointId = -1);
-	void ProcessStepConditions(uint8_t opCode, uint32_t currentPc);
-	void ProcessBreakConditions(MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 
 public:
 	Debugger(shared_ptr<Console> console);
 	~Debugger();
 	void Release();
 
-	void ProcessCpuRead(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessCpuWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
+	template<CpuType type>
+	void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
+	
+	template<CpuType type>
+	void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
-
-	void ProcessSpcRead(uint16_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessSpcWrite(uint16_t addr, uint8_t value, MemoryOperationType type);
 
 	void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
@@ -94,17 +89,21 @@ public:
 
 	void ProcessNecDspExec(uint32_t addr, uint32_t value);
 
+	template<CpuType type>
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+
 	void ProcessEvent(EventType type);
 
 	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
 
 	void Run();
-	void Step(int32_t stepCount, StepType type = StepType::CpuStep);
+	void Step(CpuType cpuType, int32_t stepCount, StepType type);
 	bool IsExecutionStopped();
 
 	void BreakRequest(bool release);
 	void SuspendDebugger(bool release);
+
+	void ProcessBreakConditions(bool needBreak, CpuType cpuType, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 
 	void GetState(DebugState &state, bool partialPpuState);
 

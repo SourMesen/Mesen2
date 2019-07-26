@@ -1,13 +1,11 @@
 #pragma once
 #include "stdafx.h"
-#include <unordered_map>
 
 class Console;
-class MemoryManager;
+class MemoryDumper;
 class LabelManager;
 
-struct CpuState;
-enum class AddrMode : uint8_t;
+enum class SnesMemoryType;
 enum class CpuType : uint8_t;
 
 class DisassemblyInfo
@@ -33,7 +31,6 @@ public:
 	uint8_t GetOpCode();
 	uint8_t GetOpSize();
 	uint8_t GetFlags();
-	CpuType GetCpuType();
 	uint8_t* GetByteCode();
 
 	void GetByteCode(uint8_t copyBuffer[4]);
@@ -46,6 +43,6 @@ public:
 	bool UpdateCpuFlags(uint8_t & cpuFlags);
 
 	int32_t GetEffectiveAddress(Console *console, void *cpuState);
-	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryManager *memoryManager, uint8_t &valueSize);
+	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize);
 };
 

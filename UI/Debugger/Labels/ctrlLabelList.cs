@@ -133,6 +133,7 @@ namespace Mesen.GUI.Debugger.Controls
 						case SnesMemoryType.WorkRam: prefix = "WRAM: $"; break;
 						case SnesMemoryType.SpcRam: prefix = "RAM: $"; break;
 						case SnesMemoryType.SpcRom: prefix = "ROM: $"; break;
+						case SnesMemoryType.Sa1InternalRam: prefix = "IRAM: $"; break;
 						default: throw new Exception("Unsupported type");
 					}
 					int relAddress = label.GetRelativeAddress().Address;
@@ -237,7 +238,7 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			CodeLabel newLabel = new CodeLabel() {
 				Address = 0,
-				MemoryType = _cpuType == CpuType.Cpu ? SnesMemoryType.PrgRom : SnesMemoryType.SpcRam,
+				MemoryType = _cpuType == CpuType.Spc ? SnesMemoryType.SpcRam : SnesMemoryType.PrgRom,
 				Label = "",
 				Comment = ""
 			};
@@ -275,6 +276,7 @@ namespace Mesen.GUI.Debugger.Controls
 				CodeLabel label = GetSelectedLabel();
 				BreakpointManager.AddBreakpoint(new Breakpoint() {
 					//TODO LABELS, fix memory type for registers
+					CpuType = _cpuType,
 					MemoryType = label.MemoryType == SnesMemoryType.Register ? SnesMemoryType.CpuMemory : label.MemoryType,
 					BreakOnExec = true,
 					BreakOnRead = true,

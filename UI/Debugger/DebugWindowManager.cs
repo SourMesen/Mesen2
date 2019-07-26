@@ -28,6 +28,7 @@ namespace Mesen.GUI.Debugger
 				switch(window) {
 					case DebugWindow.Debugger: frm = new frmDebugger(CpuType.Cpu); frm.Icon = Properties.Resources.Debugger; break;
 					case DebugWindow.SpcDebugger: frm = new frmDebugger(CpuType.Spc); frm.Icon = Properties.Resources.SpcDebugger; break;
+					case DebugWindow.Sa1Debugger: frm = new frmDebugger(CpuType.Sa1); frm.Icon = Properties.Resources.Sa1Debugger; break;
 					case DebugWindow.TraceLogger: frm = new frmTraceLogger(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.MemoryTools: frm = new frmMemoryTools(); frm.Icon = Properties.Resources.CheatCode; break;
 					case DebugWindow.TileViewer: frm = new frmTileViewer(); frm.Icon = Properties.Resources.VerticalLayout; break;
@@ -77,7 +78,12 @@ namespace Mesen.GUI.Debugger
 
 		public static frmDebugger OpenDebugger(CpuType type)
 		{
-			return (frmDebugger)OpenDebugWindow(type == CpuType.Cpu ? DebugWindow.Debugger : DebugWindow.SpcDebugger);
+			switch(type) {
+				case CpuType.Cpu: return (frmDebugger)OpenDebugWindow(DebugWindow.Debugger);
+				case CpuType.Spc: return (frmDebugger)OpenDebugWindow(DebugWindow.SpcDebugger);
+				case CpuType.Sa1: return (frmDebugger)OpenDebugWindow(DebugWindow.Sa1Debugger);
+			}
+			throw new Exception("Invalid CPU type");			
 		}
 
 		public static frmMemoryTools GetMemoryViewer()
@@ -107,6 +113,7 @@ namespace Mesen.GUI.Debugger
 			switch(window) {
 				case DebugWindow.Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Cpu);
 				case DebugWindow.SpcDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Spc);
+				case DebugWindow.Sa1Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Sa1);
 				case DebugWindow.TraceLogger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmTraceLogger));
 				case DebugWindow.EventViewer: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmEventViewer));
 			}
@@ -145,6 +152,7 @@ namespace Mesen.GUI.Debugger
 	{
 		Debugger,
 		SpcDebugger,
+		Sa1Debugger,
 		MemoryTools,
 		TraceLogger,
 		TileViewer,

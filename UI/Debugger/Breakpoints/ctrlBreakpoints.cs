@@ -69,7 +69,7 @@ namespace Mesen.GUI.Debugger.Controls
 			lstBreakpoints.BeginUpdate();
 			ReadOnlyCollection<Breakpoint> breakpoints = BreakpointManager.Breakpoints;
 			for(int i = 0; i < breakpoints.Count; i++) {
-				if(!breakpoints[i].Matches(_cpuType)) {
+				if(breakpoints[i].CpuType != _cpuType) {
 					continue;
 				}
 
@@ -86,7 +86,7 @@ namespace Mesen.GUI.Debugger.Controls
 			lstBreakpoints.BeginUpdate();
 			lstBreakpoints.Items.Clear();
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
-				if(!breakpoint.Matches(_cpuType)) {
+				if(breakpoint.CpuType != _cpuType) {
 					continue;
 				}
 
@@ -131,7 +131,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void mnuAddBreakpoint_Click(object sender, EventArgs e)
 		{
-			Breakpoint breakpoint = new Breakpoint() { MemoryType = _cpuType.ToMemoryType() };
+			Breakpoint breakpoint = new Breakpoint() { MemoryType = _cpuType.ToMemoryType(), CpuType = _cpuType };
 			if(new frmBreakpoint(breakpoint).ShowDialog() == DialogResult.OK) {
 				BreakpointManager.AddBreakpoint(breakpoint);
 			}

@@ -6,6 +6,12 @@
 #include <unordered_map>
 #include "../Utilities/SimpleLock.h"
 
+#ifdef _DEBUG
+	#define LogDebug(msg) MessageManager::Log(msg);
+#else
+	#define LogDebug(msg) 
+#endif
+
 class MessageManager
 {
 private:

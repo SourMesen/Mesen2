@@ -30,7 +30,7 @@ namespace Mesen.GUI.Debugger.Controls
 		public void UpdateCallstack(CpuType cpuType)
 		{
 			_cpuType = cpuType;
-			_format = cpuType == CpuType.Cpu ? "X6" : "X4";
+			_format = "X" + cpuType.GetAddressSize().ToString();
 			List<StackInfo> stack = GetStackInfo();
 			this.UpdateList(stack);
 		}
@@ -40,10 +40,11 @@ namespace Mesen.GUI.Debugger.Controls
 			_stackFrames = DebugApi.GetCallstack(_cpuType);
 			DebugState state = DebugApi.GetState();
 
-			if(_cpuType == CpuType.Cpu) {
-				_programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;
-			} else {
-				_programCounter = (uint)state.Spc.PC;
+			switch(_cpuType) {
+				case CpuType.Cpu: _programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;  break;
+				case CpuType.Sa1: _programCounter = (uint)(state.Sa1.K << 16) | state.Sa1.PC;  break;
+				case CpuType.Spc: _programCounter = (uint)state.Spc.PC; break;
+				default: throw new Exception("Invalid cpu type");
 			}
 
 			int relDestinationAddr = -1;

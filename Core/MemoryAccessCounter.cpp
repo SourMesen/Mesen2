@@ -5,12 +5,15 @@
 #include "Debugger.h"
 #include "MemoryDumper.h"
 #include "Spc.h"
+#include "Sa1.h"
+#include "BaseCartridge.h"
 
-MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Spc* spc, MemoryManager* memoryManager)
+MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
 {
 	_debugger = debugger;
-	_memoryManager = memoryManager;
-	_spc = spc;
+	_memoryManager = console->GetMemoryManager().get();
+	_spc = console->GetSpc().get();
+	_sa1 = console->GetCartridge()->GetSa1();
 
 	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((SnesMemoryType)i);
@@ -105,7 +108,7 @@ void MemoryAccessCounter::GetAccessStamps(uint32_t offset, uint32_t length, Snes
 	switch(memoryType) {
 		case SnesMemoryType::CpuMemory:
 			for(uint32_t i = 0; i < length; i++) {
-				AddressInfo info = _memoryManager->GetAbsoluteAddress(offset + i);
+				AddressInfo info = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 				if(info.Address >= 0) {
 					stamps[i] = GetStampArray(operationType, info.Type)[info.Address];
 				}
@@ -115,6 +118,15 @@ void MemoryAccessCounter::GetAccessStamps(uint32_t offset, uint32_t length, Snes
 		case SnesMemoryType::SpcMemory:
 			for(uint32_t i = 0; i < length; i++) {
 				AddressInfo info = _spc->GetAbsoluteAddress(offset + i);
+				if(info.Address >= 0) {
+					stamps[i] = GetStampArray(operationType, info.Type)[info.Address];
+				}
+			}
+			break;
+
+		case SnesMemoryType::Sa1Memory:
+			for(uint32_t i = 0; i < length; i++) {
+				AddressInfo info = _sa1->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 				if(info.Address >= 0) {
 					stamps[i] = GetStampArray(operationType, info.Type)[info.Address];
 				}
@@ -132,7 +144,7 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 	switch(memoryType) {
 		case SnesMemoryType::CpuMemory:
 			for(uint32_t i = 0; i < length; i++) {
-				AddressInfo info = _memoryManager->GetAbsoluteAddress(offset + i);
+				AddressInfo info = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 				if(info.Address >= 0) {
 					counts[i] = GetCountArray(operationType, info.Type)[info.Address];
 				}
@@ -142,6 +154,15 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 		case SnesMemoryType::SpcMemory:
 			for(uint32_t i = 0; i < length; i++) {
 				AddressInfo info = _spc->GetAbsoluteAddress(offset + i);
+				if(info.Address >= 0) {
+					counts[i] = GetCountArray(operationType, info.Type)[info.Address];
+				}
+			}
+			break;
+
+		case SnesMemoryType::Sa1Memory:
+			for(uint32_t i = 0; i < length; i++) {
+				AddressInfo info = _sa1->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 				if(info.Address >= 0) {
 					counts[i] = GetCountArray(operationType, info.Type)[info.Address];
 				}
