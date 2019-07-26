@@ -53,13 +53,14 @@
             this.toolStripMenuItem1,
             this.mnuGoToLocation});
 			this.mnuBreakpoints.Name = "mnuBreakpoints";
-			this.mnuBreakpoints.Size = new System.Drawing.Size(150, 98);
+			this.mnuBreakpoints.Size = new System.Drawing.Size(153, 120);
+			this.mnuBreakpoints.Opening += new System.ComponentModel.CancelEventHandler(this.mnuBreakpoints_Opening);
 			// 
 			// mnuAddBreakpoint
 			// 
 			this.mnuAddBreakpoint.Image = global::Mesen.GUI.Properties.Resources.Add;
 			this.mnuAddBreakpoint.Name = "mnuAddBreakpoint";
-			this.mnuAddBreakpoint.Size = new System.Drawing.Size(149, 22);
+			this.mnuAddBreakpoint.Size = new System.Drawing.Size(152, 22);
 			this.mnuAddBreakpoint.Text = "Add...";
 			this.mnuAddBreakpoint.Click += new System.EventHandler(this.mnuAddBreakpoint_Click);
 			// 
@@ -67,7 +68,7 @@
 			// 
 			this.mnuEditBreakpoint.Image = global::Mesen.GUI.Properties.Resources.Edit;
 			this.mnuEditBreakpoint.Name = "mnuEditBreakpoint";
-			this.mnuEditBreakpoint.Size = new System.Drawing.Size(149, 22);
+			this.mnuEditBreakpoint.Size = new System.Drawing.Size(152, 22);
 			this.mnuEditBreakpoint.Text = "Edit";
 			this.mnuEditBreakpoint.Click += new System.EventHandler(this.mnuEditBreakpoint_Click);
 			// 
@@ -75,19 +76,19 @@
 			// 
 			this.mnuRemoveBreakpoint.Image = global::Mesen.GUI.Properties.Resources.Close;
 			this.mnuRemoveBreakpoint.Name = "mnuRemoveBreakpoint";
-			this.mnuRemoveBreakpoint.Size = new System.Drawing.Size(149, 22);
+			this.mnuRemoveBreakpoint.Size = new System.Drawing.Size(152, 22);
 			this.mnuRemoveBreakpoint.Text = "Remove";
 			this.mnuRemoveBreakpoint.Click += new System.EventHandler(this.mnuRemoveBreakpoint_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(146, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// mnuGoToLocation
 			// 
 			this.mnuGoToLocation.Name = "mnuGoToLocation";
-			this.mnuGoToLocation.Size = new System.Drawing.Size(149, 22);
+			this.mnuGoToLocation.Size = new System.Drawing.Size(152, 22);
 			this.mnuGoToLocation.Text = "Go to location";
 			this.mnuGoToLocation.Click += new System.EventHandler(this.mnuGoToLocation_Click);
 			// 

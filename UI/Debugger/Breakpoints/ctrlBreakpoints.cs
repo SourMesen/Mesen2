@@ -139,7 +139,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void mnuGoToLocation_Click(object sender, EventArgs e)
 		{
-			if(BreakpointNavigation != null) {
+			if(lstBreakpoints.SelectedItems.Count > 0 && BreakpointNavigation != null) {
 				Breakpoint bp = lstBreakpoints.SelectedItems[0].Tag as Breakpoint;
 				if(bp.IsCpuBreakpoint && bp.GetRelativeAddress() >= 0) {
 					BreakpointNavigation(bp);
@@ -156,19 +156,30 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void lstBreakpoints_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			UpdateMenuState();		
+		}
+
+		private void mnuBreakpoints_Opening(object sender, CancelEventArgs e)
+		{
+			UpdateMenuState();
+		}
+
+		private void UpdateMenuState()
+		{
 			mnuRemoveBreakpoint.Enabled = (lstBreakpoints.SelectedItems.Count > 0);
 			mnuEditBreakpoint.Enabled = (lstBreakpoints.SelectedItems.Count == 1);
 			if(lstBreakpoints.SelectedItems.Count == 1) {
 				Breakpoint bp = lstBreakpoints.SelectedItems[0].Tag as Breakpoint;
 				mnuGoToLocation.Enabled = bp.IsCpuBreakpoint && bp.GetRelativeAddress() >= 0;
+			} else {
+				mnuGoToLocation.Enabled = false;
 			}
-			
 		}
 		
 		private void lstBreakpoints_MouseDown(object sender, MouseEventArgs e)
 		{
 			ListViewHitTestInfo info = lstBreakpoints.HitTest(e.X, e.Y);
-			if(info != null && info.Item != null) {
+			if(info != null && info.Item != null && e.Button == MouseButtons.Left) {
 				int row = info.Item.Index;
 				int col = info.Item.SubItems.IndexOf(info.SubItem);
 
