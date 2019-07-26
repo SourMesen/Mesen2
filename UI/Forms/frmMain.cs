@@ -129,6 +129,9 @@ namespace Mesen.GUI.Forms
 				return;
 			}
 
+			DebugApi.ResumeExecution();
+			DebugWindowManager.CloseAll();
+
 			ConfigManager.Config.WindowLocation = this.WindowState == FormWindowState.Normal ? this.Location : this.RestoreBounds.Location;
 			ConfigManager.Config.WindowSize = this.WindowState == FormWindowState.Normal ? this.Size : this.RestoreBounds.Size;
 			ConfigManager.ApplyChanges();
