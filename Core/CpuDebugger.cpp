@@ -50,7 +50,7 @@ void CpuDebugger::Reset()
 	_prevOpCode = 0xFF;
 }
 
-void CpuDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type)
+void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = GetMemoryMappings().GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
@@ -143,7 +143,7 @@ void CpuDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
 
-void CpuDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
+void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = GetMemoryMappings().GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };

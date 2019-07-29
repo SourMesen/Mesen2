@@ -46,8 +46,8 @@ public:
 	CpuDebugger(Debugger* debugger, CpuType cpuType);
 
 	void Reset();
-	void ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void Run();
 	void Step(int32_t stepCount, StepType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
