@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Breakpoint.h"
 #include "DebugTypes.h"
+#include "DebugUtilities.h"
 
 class ExpressionEvaluator;
 class Debugger;
@@ -15,11 +16,11 @@ private:
 
 	Debugger *_debugger;
 	
-	vector<Breakpoint> _breakpoints[(int)CpuType::Sa1 + 1][BreakpointTypeCount];
-	vector<ExpressionData> _rpnList[(int)CpuType::Sa1 + 1][BreakpointTypeCount];
-	bool _hasBreakpoint[(int)CpuType::Sa1 + 1][BreakpointTypeCount] = {};
+	vector<Breakpoint> _breakpoints[(int)DebugUtilities::GetLastCpuType() + 1][BreakpointTypeCount];
+	vector<ExpressionData> _rpnList[(int)DebugUtilities::GetLastCpuType() + 1][BreakpointTypeCount];
+	bool _hasBreakpoint[(int)DebugUtilities::GetLastCpuType() + 1][BreakpointTypeCount] = {};
 
-	unique_ptr<ExpressionEvaluator> _bpExpEval[(int)CpuType::Sa1 + 1];
+	unique_ptr<ExpressionEvaluator> _bpExpEval[(int)DebugUtilities::GetLastCpuType() + 1];
 
 	BreakpointType GetBreakpointType(MemoryOperationType type);
 

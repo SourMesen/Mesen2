@@ -948,6 +948,7 @@
 			<Value ID="CpuMemory">CPU Memory</Value>
 			<Value ID="SpcMemory">SPC Memory</Value>
 			<Value ID="Sa1Memory">SA-1 Memory</Value>
+			<Value ID="GsuMemory">GSU Memory</Value>
 			<Value ID="PrgRom">PRG ROM</Value>
 			<Value ID="WorkRam">Work RAM</Value>
 			<Value ID="SaveRam">Save RAM</Value>
@@ -956,10 +957,11 @@
 			<Value ID="CGRam">CG RAM (Palette)</Value>
 			<Value ID="SpcRam">SPC RAM</Value>
 			<Value ID="SpcRom">SPC ROM (IPL)</Value>
-			<Value ID="DspProgramRom">DSP-n - Program ROM</Value>
-			<Value ID="DspDataRom">DSP-n - Data ROM</Value>
-			<Value ID="DspDataRam">DSP-n - Data RAM</Value>
+			<Value ID="DspProgramRom">DSP-n Program ROM</Value>
+			<Value ID="DspDataRom">DSP-n Data ROM</Value>
+			<Value ID="DspDataRam">DSP-n Data RAM</Value>
 			<Value ID="Sa1InternalRam">SA-1 IRAM</Value>
+			<Value ID="GsuWorkRam">GSU Work RAM</Value>
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="TileFormat">

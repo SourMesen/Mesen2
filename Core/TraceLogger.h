@@ -19,6 +19,7 @@ struct TraceLoggerOptions
 	bool LogSpc;
 	bool LogNecDsp;
 	bool LogSa1;
+	bool LogGsu;
 
 	bool ShowExtraInfo;
 	bool IndentCode;
@@ -80,8 +81,9 @@ private:
 	vector<RowPart> _rowParts;
 	vector<RowPart> _spcRowParts;
 	vector<RowPart> _dspRowParts;
+	vector<RowPart> _gsuRowParts;
 
-	bool _logCpu[(int)CpuType::Sa1 + 1] = {};
+	bool _logCpu[(int)CpuType::Gsu + 1] = {};
 
 	bool _pendingLog;
 	//CpuState _lastState;
@@ -116,6 +118,7 @@ private:
 	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo, SnesMemoryType memType);
 	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, NecDspState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string &output, GsuState &gsuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 

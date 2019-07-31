@@ -109,6 +109,7 @@ namespace Mesen.GUI.Debugger
 				case SnesMemoryType.CpuMemory: type = "CPU"; break;
 				case SnesMemoryType.SpcMemory: type = "SPC"; break;
 				case SnesMemoryType.Sa1Memory: type = "SA1"; break;
+				case SnesMemoryType.GsuMemory: type = "GSU"; break;
 				
 				case SnesMemoryType.PrgRom: type = "PRG"; break;
 				case SnesMemoryType.WorkRam: type = "WRAM"; break;
@@ -121,6 +122,7 @@ namespace Mesen.GUI.Debugger
 				case SnesMemoryType.SpcRom: type = "ROM"; break;
 
 				case SnesMemoryType.Sa1InternalRam: type = "IRAM"; break;
+				case SnesMemoryType.GsuWorkRam: type = "GWRAM"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}

@@ -17,6 +17,7 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 	_console = console;
 	_type = type;
 	_memoryManager = console->GetMemoryManager().get();
+	_memoryType = SnesMemoryType::Register;
 	MemoryMappings *mm = _memoryManager->GetMemoryMappings();
 	
 	if(type == CoprocessorType::ST010 || type == CoprocessorType::ST011) {
@@ -219,6 +220,7 @@ void NecDsp::Write(uint32_t addr, uint8_t value)
 
 uint8_t NecDsp::Peek(uint32_t addr)
 {
+	//Avoid side effects for now
 	return 0;
 }
 
@@ -229,7 +231,7 @@ void NecDsp::PeekBlock(uint8_t *output)
 
 AddressInfo NecDsp::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::CpuMemory };
+	return { -1, SnesMemoryType::Register };
 }
 
 void NecDsp::RunApuOp(uint8_t aluOperation, uint16_t source)

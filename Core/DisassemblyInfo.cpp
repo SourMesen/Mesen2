@@ -5,6 +5,7 @@
 #include "MemoryDumper.h"
 #include "CpuDisUtils.h"
 #include "SpcDisUtils.h"
+#include "GsuDisUtils.h"
 #include "NecDspDisUtils.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
@@ -21,7 +22,7 @@ DisassemblyInfo::DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags, CpuType t
 void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags, CpuType type)
 {
 	_cpuType = type;
-	_flags = cpuFlags & (ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
+	_flags = cpuFlags;
 	_opSize = GetOpSize(opPointer[0], _flags, _cpuType);
 	memcpy(_byteCode, opPointer, _opSize);
 
@@ -35,7 +36,7 @@ bool DisassemblyInfo::IsInitialized()
 
 bool DisassemblyInfo::IsValid(uint8_t cpuFlags)
 {
-	return _flags == (cpuFlags & (ProcFlags::MemoryMode8 | ProcFlags::IndexMode8));
+	return _flags == cpuFlags;
 }
 
 void DisassemblyInfo::Reset()
@@ -53,6 +54,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 
 		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
 		case CpuType::NecDsp: NecDspDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
+		case CpuType::Gsu: GsuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
 	}
 }
 
@@ -64,9 +66,16 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState)
 			return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
 
 		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, console, *(SpcState*)cpuState);
+		
+		case CpuType::Gsu:
 		case CpuType::NecDsp: return -1;
 	}
 	return -1;
+}
+
+CpuType DisassemblyInfo::GetCpuType()
+{
+	return _cpuType;
 }
 
 uint8_t DisassemblyInfo::GetOpCode()
@@ -114,6 +123,17 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 			return CpuDisUtils::GetOpSize(opCode, flags);
 
 		case CpuType::Spc: return SpcDisUtils::GetOpSize(opCode);
+		
+		case CpuType::Gsu: 
+			if(opCode >= 0x05 && opCode <= 0x0F) {
+				return 2;
+			} else if(opCode >= 0xA0 && opCode <= 0xAF) {
+				return 2;
+			} else if(opCode >= 0xF0 && opCode <= 0xFF) {
+				return 3;
+			}
+			return 1;
+
 		case CpuType::NecDsp: return 4;
 	}
 	return 0;
@@ -127,6 +147,8 @@ bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
 			return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
 
 		case CpuType::Spc: return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
+		
+		case CpuType::Gsu:
 		case CpuType::NecDsp: return false;
 	}
 	return false;
@@ -141,6 +163,8 @@ bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
 			return opCode == 0x60 || opCode == 0x6B || opCode == 0x40;
 
 		case CpuType::Spc: return opCode == 0x6F || opCode == 0x7F;
+		
+		case CpuType::Gsu:
 		case CpuType::NecDsp: return false;
 	}
 	
@@ -170,6 +194,7 @@ bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
 			}
 			return true;
 			
+		case CpuType::Gsu:
 		case CpuType::Spc:
 		case CpuType::NecDsp: return false;
 	}

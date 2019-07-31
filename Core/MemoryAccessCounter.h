@@ -7,6 +7,7 @@ class MemoryManager;
 class Spc;
 class Console;
 class Sa1;
+class Gsu;
 
 class MemoryAccessCounter
 {
@@ -25,6 +26,7 @@ private:
 	MemoryManager* _memoryManager;
 	Spc* _spc;
 	Sa1* _sa1;
+	Gsu* _gsu;
 
 	vector<uint32_t>& GetCountArray(MemoryOperationType operationType, SnesMemoryType memType);
 	vector<uint64_t>& GetStampArray(MemoryOperationType operationType, SnesMemoryType memType);

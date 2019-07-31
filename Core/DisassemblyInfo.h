@@ -28,6 +28,7 @@ public:
 
 	void GetDisassembly(string &out, uint32_t memoryAddr, LabelManager *labelManager);
 	
+	CpuType GetCpuType();
 	uint8_t GetOpCode();
 	uint8_t GetOpSize();
 	uint8_t GetFlags();

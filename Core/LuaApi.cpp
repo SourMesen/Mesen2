@@ -103,6 +103,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(cpu, SnesMemoryType::CpuMemory);
 	lua_pushintvalue(spc, SnesMemoryType::SpcMemory);
 	lua_pushintvalue(sa1, SnesMemoryType::Sa1Memory);
+	lua_pushintvalue(gsu, SnesMemoryType::GsuMemory);
 	lua_pushintvalue(cgram, SnesMemoryType::CGRam);
 	lua_pushintvalue(vram, SnesMemoryType::VideoRam);
 	lua_pushintvalue(oam, SnesMemoryType::SpriteRam);
@@ -112,6 +113,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(cpuDebug, SnesMemoryType::CpuMemory | 0x100);
 	lua_pushintvalue(spcDebug, SnesMemoryType::SpcMemory | 0x100);
 	lua_pushintvalue(sa1Debug, SnesMemoryType::Sa1Memory | 0x100);
+	lua_pushintvalue(gsuDebug, SnesMemoryType::GsuMemory | 0x100);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "memCallbackType");

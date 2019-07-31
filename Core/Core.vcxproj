@@ -51,6 +51,12 @@
     <ClInclude Include="Cpu.Shared.h" />
     <ClInclude Include="CpuDebugger.h" />
     <ClInclude Include="DebugUtilities.h" />
+    <ClInclude Include="Gsu.h" />
+    <ClInclude Include="GsuDebugger.h" />
+    <ClInclude Include="GsuDisUtils.h" />
+    <ClInclude Include="GsuRamHandler.h" />
+    <ClInclude Include="GsuRomHandler.h" />
+    <ClInclude Include="GsuTypes.h" />
     <ClInclude Include="MemoryMappings.h" />
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />
@@ -184,6 +190,10 @@
     <ClCompile Include="EmuSettings.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="ExpressionEvaluator.cpp" />
+    <ClCompile Include="Gsu.cpp" />
+    <ClCompile Include="Gsu.Instructions.cpp" />
+    <ClCompile Include="GsuDebugger.cpp" />
+    <ClCompile Include="GsuDisUtils.cpp" />
     <ClCompile Include="InternalRegisters.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="LabelManager.cpp" />

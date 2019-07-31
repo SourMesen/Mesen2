@@ -47,6 +47,7 @@ private:
 	uint8_t _masterClockTable[2][0x10000];
 
 	void UpdateEvents();
+	__forceinline void SyncCoprocessors();
 	void Exec();
 
 public:

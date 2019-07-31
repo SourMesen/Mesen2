@@ -16,6 +16,7 @@ Sa1::Sa1(Console* console)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
+	_memoryType = SnesMemoryType::Register;
 	_lastAccessMemType = SnesMemoryType::PrgRom;
 	_openBus = 0;
 	_cart = _console->GetCartridge().get();
@@ -405,11 +406,14 @@ uint8_t Sa1::Read(uint32_t addr)
 
 uint8_t Sa1::Peek(uint32_t addr)
 {
-	return 0;
+	return Sa1RegisterRead(addr);
 }
 
 void Sa1::PeekBlock(uint8_t *output)
 {
+	for(int i = 0; i < 0x1000; i++) {
+		output[i] = Sa1RegisterRead(i);
+	}
 }
 
 void Sa1::Write(uint32_t addr, uint8_t value)

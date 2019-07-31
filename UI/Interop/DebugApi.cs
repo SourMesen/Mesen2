@@ -162,6 +162,7 @@ namespace Mesen.GUI
 		CpuMemory,
 		SpcMemory,
 		Sa1Memory,
+		GsuMemory,
 		PrgRom,
 		WorkRam,
 		SaveRam,
@@ -174,6 +175,7 @@ namespace Mesen.GUI
 		DspDataRom,
 		DspDataRam,
 		Sa1InternalRam,
+		GsuWorkRam,
 		Register,
 	}
 
@@ -422,6 +424,85 @@ namespace Mesen.GUI
 		public byte SP;
 	}
 
+	public struct GsuFlags
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool Zero;
+		[MarshalAs(UnmanagedType.I1)] public bool Carry;
+		[MarshalAs(UnmanagedType.I1)] public bool Sign;
+		[MarshalAs(UnmanagedType.I1)] public bool Overflow;
+		[MarshalAs(UnmanagedType.I1)] public bool Running;
+		[MarshalAs(UnmanagedType.I1)] public bool RomReadPending;
+		[MarshalAs(UnmanagedType.I1)] public bool Alt1;
+		[MarshalAs(UnmanagedType.I1)] public bool Alt2;
+		[MarshalAs(UnmanagedType.I1)] public bool ImmLow;
+		[MarshalAs(UnmanagedType.I1)] public bool ImmHigh;
+		[MarshalAs(UnmanagedType.I1)] public bool Prefix;
+		[MarshalAs(UnmanagedType.I1)] public bool Irq;
+	};
+
+	public struct GsuPixelCache
+	{
+		public byte X;
+		public byte Y;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+		public byte[] Pixels;
+		public byte ValidBits;
+	};
+
+	public struct GsuState
+	{
+		public UInt64 CycleCount;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+		public UInt16[] R;
+
+		public GsuFlags SFR;
+
+		public byte RegisterLatch;
+
+		public byte ProgramBank;
+		public byte RomBank;
+		public byte RamBank;
+
+		[MarshalAs(UnmanagedType.I1)] public bool IrqDisabled;
+		[MarshalAs(UnmanagedType.I1)] public bool HighSpeedMode;
+		[MarshalAs(UnmanagedType.I1)] public bool ClockSelect;
+		[MarshalAs(UnmanagedType.I1)] public bool BackupRamEnabled;
+		public byte ScreenBase;
+
+		public byte ColorGradient;
+		public byte PlotBpp;
+		public byte ScreenHeight;
+		[MarshalAs(UnmanagedType.I1)] public bool GsuRamAccess;
+		[MarshalAs(UnmanagedType.I1)] public bool GsuRomAccess;
+
+		public UInt16 CacheBase;
+
+		[MarshalAs(UnmanagedType.I1)] public bool PlotTransparent;
+		[MarshalAs(UnmanagedType.I1)] public bool PlotDither;
+		[MarshalAs(UnmanagedType.I1)] public bool ColorHighNibble;
+		[MarshalAs(UnmanagedType.I1)] public bool ColorFreezeHigh;
+		[MarshalAs(UnmanagedType.I1)] public bool ObjMode;
+
+		public byte ColorReg;
+		public byte SrcReg;
+		public byte DestReg;
+
+		public byte RomReadBuffer;
+		public byte RomDelay;
+
+		public byte ProgramReadBuffer;
+
+		public UInt16 RamWriteAddress;
+		public byte RamWriteValue;
+		public byte RamDelay;
+
+		public UInt16 RamAddress;
+
+		public GsuPixelCache PrimaryCache;
+		public GsuPixelCache SecondaryCache;
+	};
+
 	public struct DebugState
 	{
 		public UInt64 MasterClock;
@@ -430,6 +511,7 @@ namespace Mesen.GUI
 		public SpcState Spc;
 		public NecDspState NecDsp;
 		public CpuState Sa1;
+		public GsuState Gsu;
 	}
 
 	public enum MemoryOperationType
@@ -570,6 +652,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool LogSpc;
 		[MarshalAs(UnmanagedType.I1)] public bool LogNecDsp;
 		[MarshalAs(UnmanagedType.I1)] public bool LogSa1;
+		[MarshalAs(UnmanagedType.I1)] public bool LogGsu;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;
@@ -614,6 +697,7 @@ namespace Mesen.GUI
 		Spc,
 		NecDsp,
 		Sa1,
+		Gsu
 	}
 
 	public static class CpuTypeExtensions
@@ -624,6 +708,7 @@ namespace Mesen.GUI
 				case CpuType.Cpu: return SnesMemoryType.CpuMemory;
 				case CpuType.Spc: return SnesMemoryType.SpcMemory;
 				case CpuType.Sa1: return SnesMemoryType.Sa1Memory;
+				case CpuType.Gsu: return SnesMemoryType.GsuMemory;
 
 				default:
 					throw new Exception("Invalid CPU type");
@@ -636,6 +721,7 @@ namespace Mesen.GUI
 				case CpuType.Cpu: return 6;
 				case CpuType.Spc: return 4;
 				case CpuType.Sa1: return 6;
+				case CpuType.Gsu: return 6;
 
 				default:
 					throw new Exception("Invalid CPU type");

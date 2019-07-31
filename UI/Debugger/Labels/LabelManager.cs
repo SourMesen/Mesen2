@@ -68,9 +68,9 @@ namespace Mesen.GUI.Debugger.Labels
 			return _labels.Where((lbl) => lbl.Matches(cpu)).ToList<CodeLabel>();
 		}
 
-		private static UInt64 GetKey(UInt32 address, SnesMemoryType SnesMemoryType)
+		private static UInt64 GetKey(UInt32 address, SnesMemoryType memType)
 		{
-			switch(SnesMemoryType) {
+			switch(memType) {
 				case SnesMemoryType.PrgRom: return address | ((ulong)1 << 32);
 				case SnesMemoryType.WorkRam: return address | ((ulong)2 << 32);
 				case SnesMemoryType.SaveRam: return address | ((ulong)3 << 32);
@@ -78,6 +78,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.SpcRam: return address | ((ulong)5 << 32);
 				case SnesMemoryType.SpcRom: return address | ((ulong)6 << 32);
 				case SnesMemoryType.Sa1InternalRam: return address | ((ulong)7 << 32);
+				case SnesMemoryType.GsuWorkRam: return address | ((ulong)8 << 32);
 			}
 			throw new Exception("Invalid type");
 		}

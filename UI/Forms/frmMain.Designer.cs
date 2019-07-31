@@ -123,8 +123,7 @@
 			this.mnuTakeScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDebug = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuSpcDebugger = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuSa1Debugger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuScriptWindow = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,7 +133,9 @@
 			this.mnuSpriteViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPaletteViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSpcDebugger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSa1Debugger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGsuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuCheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripSeparator();
@@ -868,7 +869,8 @@
             this.mnuPaletteViewer,
             this.toolStripMenuItem22,
             this.mnuSpcDebugger,
-            this.mnuSa1Debugger});
+            this.mnuSa1Debugger,
+            this.mnuGsuDebugger});
 			this.mnuDebug.Name = "mnuDebug";
 			this.mnuDebug.Size = new System.Drawing.Size(54, 20);
 			this.mnuDebug.Text = "Debug";
@@ -882,19 +884,12 @@
 			this.mnuDebugger.Size = new System.Drawing.Size(155, 22);
 			this.mnuDebugger.Text = "Debugger";
 			// 
-			// mnuSpcDebugger
+			// mnuEventViewer
 			// 
-			this.mnuSpcDebugger.Image = global::Mesen.GUI.Properties.Resources.SpcDebugger;
-			this.mnuSpcDebugger.Name = "mnuSpcDebugger";
-			this.mnuSpcDebugger.Size = new System.Drawing.Size(155, 22);
-			this.mnuSpcDebugger.Text = "SPC Debugger";
-			// 
-			// mnuSa1Debugger
-			// 
-			this.mnuSa1Debugger.Image = global::Mesen.GUI.Properties.Resources.Sa1Debugger;
-			this.mnuSa1Debugger.Name = "mnuSa1Debugger";
-			this.mnuSa1Debugger.Size = new System.Drawing.Size(155, 22);
-			this.mnuSa1Debugger.Text = "SA-1 Debugger";
+			this.mnuEventViewer.Image = global::Mesen.GUI.Properties.Resources.NesEventViewer;
+			this.mnuEventViewer.Name = "mnuEventViewer";
+			this.mnuEventViewer.Size = new System.Drawing.Size(155, 22);
+			this.mnuEventViewer.Text = "Event Viewer";
 			// 
 			// mnuMemoryTools
 			// 
@@ -955,12 +950,26 @@
 			this.toolStripMenuItem22.Name = "toolStripMenuItem22";
 			this.toolStripMenuItem22.Size = new System.Drawing.Size(152, 6);
 			// 
-			// mnuEventViewer
+			// mnuSpcDebugger
 			// 
-			this.mnuEventViewer.Image = global::Mesen.GUI.Properties.Resources.NesEventViewer;
-			this.mnuEventViewer.Name = "mnuEventViewer";
-			this.mnuEventViewer.Size = new System.Drawing.Size(155, 22);
-			this.mnuEventViewer.Text = "Event Viewer";
+			this.mnuSpcDebugger.Image = global::Mesen.GUI.Properties.Resources.SpcDebugger;
+			this.mnuSpcDebugger.Name = "mnuSpcDebugger";
+			this.mnuSpcDebugger.Size = new System.Drawing.Size(155, 22);
+			this.mnuSpcDebugger.Text = "SPC Debugger";
+			// 
+			// mnuSa1Debugger
+			// 
+			this.mnuSa1Debugger.Image = global::Mesen.GUI.Properties.Resources.Sa1Debugger;
+			this.mnuSa1Debugger.Name = "mnuSa1Debugger";
+			this.mnuSa1Debugger.Size = new System.Drawing.Size(155, 22);
+			this.mnuSa1Debugger.Text = "SA-1 Debugger";
+			// 
+			// mnuGsuDebugger
+			// 
+			this.mnuGsuDebugger.Image = global::Mesen.GUI.Properties.Resources.GsuDebugger;
+			this.mnuGsuDebugger.Name = "mnuGsuDebugger";
+			this.mnuGsuDebugger.Size = new System.Drawing.Size(155, 22);
+			this.mnuGsuDebugger.Text = "GSU Debugger";
 			// 
 			// mnuHelp
 			// 
@@ -1171,5 +1180,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuSpriteViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuScriptWindow;
 		private System.Windows.Forms.ToolStripMenuItem mnuSa1Debugger;
+		private System.Windows.Forms.ToolStripMenuItem mnuGsuDebugger;
 	}
 }

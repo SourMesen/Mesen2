@@ -41,6 +41,7 @@ static constexpr const char* MesenOverscanHorizontal = "mesen-s_overscan_horizon
 static constexpr const char* MesenRamState = "mesen-s_ramstate";
 static constexpr const char* MesenOverclock = "mesen-s_overclock";
 static constexpr const char* MesenOverclockType = "mesen-s_overclock_type";
+static constexpr const char* MesenSuperFxOverclock = "mesen-s_superfx_overclock";
 
 extern "C" {
 	void logMessage(retro_log_level level, const char* message)
@@ -105,6 +106,7 @@ extern "C" {
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
 			{ MesenOverclock, "Overclock; None|Low|Medium|High|Very High" },
 			{ MesenOverclockType, "Overclock Type; Before NMI|After NMI" },
+			{ MesenSuperFxOverclock, "Super FX Clock Speed; 100%|200%|300%|400%|500%|1000%" },
 			{ MesenRamState, "Default power-on state for RAM; Random Values (Default)|All 0s|All 1s" },
 			{ NULL, NULL },
 		};
@@ -257,6 +259,24 @@ extern "C" {
 			} else {
 				emulation.PpuExtraScanlinesAfterNmi = lineCount;
 				emulation.PpuExtraScanlinesBeforeNmi = 0;
+			}
+		}
+
+		emulation.GsuClockSpeed = 100;
+		if(readVariable(MesenSuperFxOverclock, var)) {
+			string value = string(var.value);
+			if(value == "100%") {
+				emulation.GsuClockSpeed = 100;
+			} else if(value == "200%") {
+				emulation.GsuClockSpeed = 200;
+			} else if(value == "300%") {
+				emulation.GsuClockSpeed = 300;
+			} else if(value == "400%") {
+				emulation.GsuClockSpeed = 400;
+			} else if(value == "500%") {
+				emulation.GsuClockSpeed = 500;
+			} else if(value == "1000%") {
+				emulation.GsuClockSpeed = 1000;
 			}
 		}
 

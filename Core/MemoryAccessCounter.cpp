@@ -6,6 +6,7 @@
 #include "MemoryDumper.h"
 #include "Spc.h"
 #include "Sa1.h"
+#include "Gsu.h"
 #include "BaseCartridge.h"
 
 MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
@@ -14,6 +15,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
 	_memoryManager = console->GetMemoryManager().get();
 	_spc = console->GetSpc().get();
 	_sa1 = console->GetCartridge()->GetSa1();
+	_gsu = console->GetCartridge()->GetGsu();
 
 	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((SnesMemoryType)i);
@@ -133,6 +135,15 @@ void MemoryAccessCounter::GetAccessStamps(uint32_t offset, uint32_t length, Snes
 			}
 			break;
 
+		case SnesMemoryType::GsuMemory:
+			for(uint32_t i = 0; i < length; i++) {
+				AddressInfo info = _gsu->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
+				if(info.Address >= 0) {
+					stamps[i] = GetStampArray(operationType, info.Type)[info.Address];
+				}
+			}
+			break;
+
 		default:
 			memcpy(stamps, GetStampArray(operationType, memoryType).data() + offset, length * sizeof(uint64_t));
 			break;
@@ -163,6 +174,15 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 		case SnesMemoryType::Sa1Memory:
 			for(uint32_t i = 0; i < length; i++) {
 				AddressInfo info = _sa1->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
+				if(info.Address >= 0) {
+					counts[i] = GetCountArray(operationType, info.Type)[info.Address];
+				}
+			}
+			break;
+
+		case SnesMemoryType::GsuMemory:
+			for(uint32_t i = 0; i < length; i++) {
+				AddressInfo info = _gsu->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 				if(info.Address >= 0) {
 					counts[i] = GetCountArray(operationType, info.Type)[info.Address];
 				}

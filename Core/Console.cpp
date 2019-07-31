@@ -107,9 +107,11 @@ void Console::Run()
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
+			_cart->RunCoprocessors();
 			if(_cart->GetCoprocessor()) {
-				_cart->GetCoprocessor()->Run();
+				_cart->GetCoprocessor()->ProcessEndOfFrame();
 			}
+
 			_rewindManager->ProcessEndOfFrame();
 
 			WaitForLock();
@@ -167,6 +169,11 @@ void Console::RunSingleFrame()
 
 	while(_ppu->GetFrameCount() == lastFrameNumber) {
 		_cpu->Exec();
+	}
+
+	_cart->RunCoprocessors();
+	if(_cart->GetCoprocessor()) {
+		_cart->GetCoprocessor()->ProcessEndOfFrame();
 	}
 
 	_controlManager->UpdateControlDevices();
@@ -231,7 +238,7 @@ void Console::Reset()
 	_spc->Reset();
 	_ppu->Reset();
 	_cpu->Reset();
-	//_cart->Reset();
+	_cart->Reset();
 	//_controlManager->Reset();
 
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
@@ -673,9 +680,7 @@ void Console::ProcessPpuCycle()
 	if(_debugger) {
 		_debugger->ProcessPpuCycle();
 		_spc->Run();
-		if(_cart->GetCoprocessor()) {
-			_cart->GetCoprocessor()->Run();
-		}
+		_cart->RunCoprocessors();
 	}
 }
 
@@ -697,10 +702,12 @@ void Console::ProcessEvent(EventType type)
 template void Console::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Console::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Console::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Console::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

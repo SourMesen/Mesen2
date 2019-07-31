@@ -63,6 +63,18 @@ namespace Mesen.GUI.Debugger
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.Sa1DebuggerEnabled, true);
 					this.Text = "SA-1 Debugger";
 					break;
+
+				case CpuType.Gsu:
+					ctrlDisassemblyView.Initialize(new GsuDisassemblyManager(), new GsuLineStyleProvider());
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.GsuDebuggerEnabled, true);
+					this.Text = "GSU Debugger";
+					ctrlCallstack.Visible = false;
+					ctrlLabelList.Visible = false;
+					mnuStepOver.Visible = false;
+					mnuStepOut.Visible = false;
+					mnuStepInto.Text = "Step";
+					tlpBottomPanel.ColumnCount = 2;
+					break;
 			}
 
 			ctrlBreakpoints.CpuType = _cpuType;
@@ -94,6 +106,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Cpu: ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, false); break;
 				case CpuType.Spc: ConfigApi.SetDebuggerFlag(DebuggerFlags.SpcDebuggerEnabled, false); break;
 				case CpuType.Sa1: ConfigApi.SetDebuggerFlag(DebuggerFlags.Sa1DebuggerEnabled, false); break;
+				case CpuType.Gsu: ConfigApi.SetDebuggerFlag(DebuggerFlags.GsuDebuggerEnabled, false); break;
 			}
 
 			BreakpointManager.RemoveCpuType(_cpuType);
@@ -248,9 +261,15 @@ namespace Mesen.GUI.Debugger
 
 		private void InitToolbar()
 		{
+			tsToolbar.AddItemsToToolbar(mnuContinue, mnuBreak, null);
+
+			if(_cpuType != CpuType.Gsu) {
+				tsToolbar.AddItemsToToolbar(mnuStepInto, mnuStepOver, mnuStepOut, null);
+			} else {
+				tsToolbar.AddItemsToToolbar(mnuStepInto, null);
+			}
+
 			tsToolbar.AddItemsToToolbar(
-				mnuContinue, mnuBreak, null,
-				mnuStepInto, mnuStepOver, mnuStepOut, null,
 				mnuRunPpuCycle, mnuRunScanline, mnuRunOneFrame, null,
 				mnuToggleBreakpoint, mnuEnableDisableBreakpoint, null,
 				mnuBreakIn, null, mnuBreakOn
@@ -338,11 +357,20 @@ namespace Mesen.GUI.Debugger
 				ctrlSpcStatus.Visible = false;
 			}
 
+			if(_cpuType == CpuType.Gsu) {
+				ctrlGsuStatus.UpdateStatus(state.Gsu);
+			} else {
+				ctrlGsuStatus.Visible = false;
+			}
+
 			ctrlPpuStatus.UpdateStatus(state);
 			ctrlDisassemblyView.UpdateCode();
 			ctrlDisassemblyView.SetActiveAddress(activeAddress);
 			ctrlWatch.UpdateWatch(true);
-			ctrlCallstack.UpdateCallstack(_cpuType);
+
+			if(_cpuType != CpuType.Gsu) {
+				ctrlCallstack.UpdateCallstack(_cpuType);
+			}
 		}
 
 		void ProcessBreakEvent(BreakEvent evt, DebugState state, int activeAddress)
@@ -414,6 +442,7 @@ namespace Mesen.GUI.Debugger
 						case CpuType.Cpu: activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC); break;
 						case CpuType.Spc: activeAddress = (int)state.Spc.PC; break;
 						case CpuType.Sa1: activeAddress = (int)((state.Sa1.K << 16) | state.Sa1.PC); break;
+						case CpuType.Gsu: activeAddress = (int)((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]); break;
 						default: throw new Exception("Unsupported cpu type");
 					}
 

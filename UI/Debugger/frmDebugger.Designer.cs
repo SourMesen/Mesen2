@@ -116,9 +116,10 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.ctrlLabelList = new Mesen.GUI.Debugger.Controls.ctrlLabelList();
 			this.ctrlPpuStatus = new Mesen.GUI.Debugger.Controls.ctrlPpuStatus();
+			this.ctrlGsuStatus = new Mesen.GUI.Debugger.Controls.ctrlGsuStatus();
 			this.ctrlSpcStatus = new Mesen.GUI.Debugger.Controls.ctrlSpcStatus();
 			this.ctrlCpuStatus = new Mesen.GUI.Debugger.Controls.ctrlCpuStatus();
-			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.tlpBottomPanel = new System.Windows.Forms.TableLayoutPanel();
 			this.grpWatch = new System.Windows.Forms.GroupBox();
 			this.picWatchHelp = new System.Windows.Forms.PictureBox();
 			this.ctrlWatch = new Mesen.GUI.Debugger.ctrlWatch();
@@ -133,7 +134,7 @@
 			this.ctrlSplitContainer.Panel2.SuspendLayout();
 			this.ctrlSplitContainer.SuspendLayout();
 			this.panel1.SuspendLayout();
-			this.tableLayoutPanel1.SuspendLayout();
+			this.tlpBottomPanel.SuspendLayout();
 			this.grpWatch.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).BeginInit();
 			this.grpBreakpoints.SuspendLayout();
@@ -208,7 +209,7 @@
 			// 
 			this.mnuResetCdlLog.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuResetCdlLog.Name = "mnuResetCdlLog";
-			this.mnuResetCdlLog.Size = new System.Drawing.Size(152, 22);
+			this.mnuResetCdlLog.Size = new System.Drawing.Size(122, 22);
 			this.mnuResetCdlLog.Text = "Reset log";
 			this.mnuResetCdlLog.Click += new System.EventHandler(this.mnuResetCdlLog_Click);
 			// 
@@ -766,7 +767,7 @@
 			// 
 			// ctrlSplitContainer.Panel2
 			// 
-			this.ctrlSplitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
+			this.ctrlSplitContainer.Panel2.Controls.Add(this.tlpBottomPanel);
 			this.ctrlSplitContainer.Panel2MinSize = 100;
 			this.ctrlSplitContainer.Size = new System.Drawing.Size(832, 595);
 			this.ctrlSplitContainer.SplitterDistance = 433;
@@ -776,6 +777,7 @@
 			// 
 			this.panel1.Controls.Add(this.ctrlLabelList);
 			this.panel1.Controls.Add(this.ctrlPpuStatus);
+			this.panel1.Controls.Add(this.ctrlGsuStatus);
 			this.panel1.Controls.Add(this.ctrlSpcStatus);
 			this.panel1.Controls.Add(this.ctrlCpuStatus);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -788,19 +790,28 @@
 			// 
 			this.ctrlLabelList.CpuType = Mesen.GUI.CpuType.Cpu;
 			this.ctrlLabelList.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ctrlLabelList.Location = new System.Drawing.Point(0, 315);
+			this.ctrlLabelList.Location = new System.Drawing.Point(0, 551);
 			this.ctrlLabelList.Name = "ctrlLabelList";
-			this.ctrlLabelList.Size = new System.Drawing.Size(348, 118);
+			this.ctrlLabelList.Size = new System.Drawing.Size(348, 0);
 			this.ctrlLabelList.TabIndex = 4;
 			// 
 			// ctrlPpuStatus
 			// 
 			this.ctrlPpuStatus.Dock = System.Windows.Forms.DockStyle.Top;
-			this.ctrlPpuStatus.Location = new System.Drawing.Point(0, 268);
+			this.ctrlPpuStatus.Location = new System.Drawing.Point(0, 504);
 			this.ctrlPpuStatus.Name = "ctrlPpuStatus";
 			this.ctrlPpuStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.ctrlPpuStatus.Size = new System.Drawing.Size(348, 47);
 			this.ctrlPpuStatus.TabIndex = 3;
+			// 
+			// ctrlGsuStatus
+			// 
+			this.ctrlGsuStatus.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ctrlGsuStatus.Location = new System.Drawing.Point(0, 268);
+			this.ctrlGsuStatus.Name = "ctrlGsuStatus";
+			this.ctrlGsuStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+			this.ctrlGsuStatus.Size = new System.Drawing.Size(348, 236);
+			this.ctrlGsuStatus.TabIndex = 5;
 			// 
 			// ctrlSpcStatus
 			// 
@@ -820,22 +831,22 @@
 			this.ctrlCpuStatus.Size = new System.Drawing.Size(348, 148);
 			this.ctrlCpuStatus.TabIndex = 1;
 			// 
-			// tableLayoutPanel1
+			// tlpBottomPanel
 			// 
-			this.tableLayoutPanel1.ColumnCount = 3;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableLayoutPanel1.Controls.Add(this.grpWatch, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.grpBreakpoints, 1, 0);
-			this.tableLayoutPanel1.Controls.Add(this.grpCallstack, 2, 0);
-			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 1;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(832, 158);
-			this.tableLayoutPanel1.TabIndex = 0;
+			this.tlpBottomPanel.ColumnCount = 3;
+			this.tlpBottomPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tlpBottomPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tlpBottomPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tlpBottomPanel.Controls.Add(this.grpWatch, 0, 0);
+			this.tlpBottomPanel.Controls.Add(this.grpBreakpoints, 1, 0);
+			this.tlpBottomPanel.Controls.Add(this.grpCallstack, 2, 0);
+			this.tlpBottomPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tlpBottomPanel.Location = new System.Drawing.Point(0, 0);
+			this.tlpBottomPanel.Name = "tlpBottomPanel";
+			this.tlpBottomPanel.RowCount = 1;
+			this.tlpBottomPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tlpBottomPanel.Size = new System.Drawing.Size(832, 158);
+			this.tlpBottomPanel.TabIndex = 0;
 			// 
 			// grpWatch
 			// 
@@ -937,7 +948,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).EndInit();
 			this.ctrlSplitContainer.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
-			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tlpBottomPanel.ResumeLayout(false);
 			this.grpWatch.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.picWatchHelp)).EndInit();
 			this.grpBreakpoints.ResumeLayout(false);
@@ -973,7 +984,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakIn;
 		private System.Windows.Forms.ToolStripMenuItem mnuBreakOn;
 		private GUI.Controls.ctrlSplitContainer ctrlSplitContainer;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private System.Windows.Forms.TableLayoutPanel tlpBottomPanel;
 		private ctrlWatch ctrlWatch;
 		private System.Windows.Forms.GroupBox grpWatch;
 		private System.Windows.Forms.GroupBox grpBreakpoints;
@@ -1045,5 +1056,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuResetCdlLog;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
 		private System.Windows.Forms.ToolStripMenuItem mnuExit;
+		private Controls.ctrlGsuStatus ctrlGsuStatus;
 	}
 }

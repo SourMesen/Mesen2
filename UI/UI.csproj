@@ -248,6 +248,8 @@
     <Compile Include="Debugger\Code\Sa1LineStyleProvider.cs" />
     <Compile Include="Debugger\Code\DbgCodeDataProvider.cs" />
     <Compile Include="Debugger\Code\Sa1DisassemblyManager.cs" />
+    <Compile Include="Debugger\Code\GsuDisassemblyManager.cs" />
+    <Compile Include="Debugger\Code\GsuLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\SpcLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\CodeDataProvider.cs" />
     <Compile Include="Debugger\Code\SpcDisassemblyManager.cs" />
@@ -268,6 +270,12 @@
     </Compile>
     <Compile Include="Debugger\Controls\ctrlPpuStatus.Designer.cs">
       <DependentUpon>ctrlPpuStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlGsuStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlGsuStatus.Designer.cs">
+      <DependentUpon>ctrlGsuStatus.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlSpcStatus.cs">
       <SubType>UserControl</SubType>
@@ -822,6 +830,7 @@
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\GsuDebugger.png" />
     <None Include="Resources\Sa1Debugger.png" />
     <None Include="Dependencies\LuaScripts\DrawMode.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -873,6 +882,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlPpuStatus.resx">
       <DependentUpon>ctrlPpuStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlGsuStatus.resx">
+      <DependentUpon>ctrlGsuStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlSpcStatus.resx">
       <DependentUpon>ctrlSpcStatus.cs</DependentUpon>

@@ -10,6 +10,7 @@
 #include "EmuSettings.h"
 #include "NecDsp.h"
 #include "Sa1.h"
+#include "Gsu.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -162,6 +163,15 @@ void BaseCartridge::Init()
 
 	_coprocessorType = GetCoprocessorType();
 
+	if(_coprocessorType != CoprocessorType::None && _cartInfo.ExpansionRamSize > 0 && _cartInfo.ExpansionRamSize <= 7) {
+		_coprocessorRamSize = _cartInfo.ExpansionRamSize > 0 ? 1024 * (1 << _cartInfo.ExpansionRamSize) : 0;
+	}
+
+	if(_coprocessorType == CoprocessorType::GSU && _coprocessorRamSize == 0) {
+		//Use a min of 64kb by default for GSU games
+		_coprocessorRamSize = 0x10000;
+	}
+
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
 	_console->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
@@ -174,7 +184,7 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 	if((_cartInfo.RomType & 0x0F) >= 0x03) {
 		switch((_cartInfo.RomType & 0xF0) >> 4) {
 			case 0x00: return GetDspVersion(); break;
-			case 0x01: return CoprocessorType::GSU1; break; //Or mariochip1/gsu2
+			case 0x01: return CoprocessorType::GSU; break;
 			case 0x02: return CoprocessorType::OBC1; break;
 			case 0x03: return CoprocessorType::SA1; break;
 			case 0x04: return CoprocessorType::DD1; break;
@@ -224,7 +234,9 @@ CoprocessorType BaseCartridge::GetDspVersion()
 
 void BaseCartridge::Reset()
 {
-	_coprocessor->Reset();
+	if(_coprocessor) {
+		_coprocessor->Reset();
+	}
 }
 
 RomInfo BaseCartridge::GetRomInfo()
@@ -300,7 +312,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 
 void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 {
-	if(MapSpecificCarts(mm)) {
+	if(_coprocessorType == CoprocessorType::GSU || MapSpecificCarts(mm)) {
 		return;
 	}
 
@@ -351,6 +363,9 @@ void BaseCartridge::InitCoprocessor()
 	if(_coprocessorType == CoprocessorType::SA1) {
 		_coprocessor.reset(new Sa1(_console));
 		_sa1 = dynamic_cast<Sa1*>(_coprocessor.get());
+	} else if(_coprocessorType == CoprocessorType::GSU) {
+		_coprocessor.reset(new Gsu(_console, _coprocessorRamSize));
+		_gsu = dynamic_cast<Gsu*>(_coprocessor.get());
 	}
 }
 
@@ -459,9 +474,7 @@ void BaseCartridge::DisplayCartInfo()
 		case CoprocessorType::DSP2: coProcMessage += "DSP2"; break;
 		case CoprocessorType::DSP3: coProcMessage += "DSP3"; break;
 		case CoprocessorType::DSP4: coProcMessage += "DSP4"; break;
-		case CoprocessorType::GSU1: coProcMessage += "Super FX (GSU1)"; break;
-		case CoprocessorType::GSU2: coProcMessage += "Super FX (GSU2)"; break;
-		case CoprocessorType::MarioChip: coProcMessage += "Super FX (Mario Chip 1)"; break;
+		case CoprocessorType::GSU: coProcMessage += "Super FX (GSU1/2)"; break;
 		case CoprocessorType::OBC1: coProcMessage += "OBC1"; break;
 		case CoprocessorType::RTC: coProcMessage += "RTC"; break;
 		case CoprocessorType::SA1: coProcMessage += "SA1"; break;
@@ -489,6 +502,9 @@ void BaseCartridge::DisplayCartInfo()
 	if(_saveRamSize > 0) {
 		MessageManager::Log("SRAM size: " + std::to_string(_saveRamSize / 1024) + " KB");
 	}
+	if(_coprocessorRamSize > 0) {
+		MessageManager::Log("Coprocessor RAM size: " + std::to_string(_coprocessorRamSize / 1024) + " KB");
+	}
 	MessageManager::Log("-----------------------------");
 }
 
@@ -500,6 +516,19 @@ NecDsp* BaseCartridge::GetDsp()
 Sa1* BaseCartridge::GetSa1()
 {
 	return _sa1;
+}
+
+Gsu* BaseCartridge::GetGsu()
+{
+	return _gsu;
+}
+
+void BaseCartridge::RunCoprocessors()
+{
+	//These coprocessors are run at the end of the frame, or as needed
+	if(_necDsp) {
+		_necDsp->Run();
+	}
 }
 
 BaseCoprocessor* BaseCartridge::GetCoprocessor()

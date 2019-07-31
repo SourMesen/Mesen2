@@ -59,6 +59,7 @@ namespace Mesen.GUI.Debugger
 
 				GetMember(nameof(DebuggerShortcutsConfig.OpenSpcDebugger)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenSa1Debugger)),
+				GetMember(nameof(DebuggerShortcutsConfig.OpenGsuDebugger)),
 			};
 
 			ctrlDbgShortcutsMemoryViewer.Shortcuts = new FieldInfo[] {

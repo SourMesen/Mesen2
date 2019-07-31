@@ -6,9 +6,11 @@
 #include "Ppu.h"
 #include "Spc.h"
 #include "Sa1.h"
+#include "Gsu.h"
 #include "NecDsp.h"
 #include "CpuDebugger.h"
 #include "SpcDebugger.h"
+#include "GsuDebugger.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "EmuSettings.h"
@@ -48,6 +50,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
 	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
 	_watchExpEval[(int)CpuType::Sa1].reset(new ExpressionEvaluator(this, CpuType::Sa1));
+	_watchExpEval[(int)CpuType::Gsu].reset(new ExpressionEvaluator(this, CpuType::Gsu));
 
 	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), _memoryManager.get()));
 	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, _cart));
@@ -63,6 +66,8 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_spcDebugger.reset(new SpcDebugger(this));
 	if(_cart->GetSa1()) {
 		_sa1Debugger.reset(new CpuDebugger(this, CpuType::Sa1));
+	} else if(_cart->GetGsu()) {
+		_gsuDebugger.reset(new GsuDebugger(this));
 	}
 
 	_step.reset(new StepRequest());
@@ -106,8 +111,9 @@ void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationTy
 {
 	switch(type) {
 		case CpuType::Cpu: _cpuDebugger->ProcessRead(addr, value, opType); break;
-		case CpuType::Sa1: _sa1Debugger->ProcessRead(addr, value, opType); break;
 		case CpuType::Spc: _spcDebugger->ProcessRead(addr, value, opType); break;
+		case CpuType::Sa1: _sa1Debugger->ProcessRead(addr, value, opType); break;
+		case CpuType::Gsu: _gsuDebugger->ProcessRead(addr, value, opType); break;
 	}
 }
 
@@ -116,8 +122,9 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 {
 	switch(type) {
 		case CpuType::Cpu: _cpuDebugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::Sa1: _sa1Debugger->ProcessWrite(addr, value, opType); break;
 		case CpuType::Spc: _spcDebugger->ProcessWrite(addr, value, opType); break;
+		case CpuType::Sa1: _sa1Debugger->ProcessWrite(addr, value, opType); break;
+		case CpuType::Gsu: _gsuDebugger->ProcessWrite(addr, value, opType); break;
 	}
 }
 
@@ -200,6 +207,8 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	_disassembler->Disassemble(CpuType::Spc);
 	if(_cart->GetSa1()) {
 		_disassembler->Disassemble(CpuType::Sa1);
+	} else if(_cart->GetGsu()) {
+		_disassembler->Disassemble(CpuType::Gsu);
 	}
 
 	_executionStopped = true;
@@ -283,6 +292,9 @@ void Debugger::Run()
 	if(_sa1Debugger) {
 		_sa1Debugger->Run();
 	}
+	if(_gsuDebugger) {
+		_gsuDebugger->Run();
+	}
 	_waitForBreakResume = false;
 }
 
@@ -295,6 +307,9 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 	if(_sa1Debugger) {
 		_sa1Debugger->Run();
 	}
+	if(_gsuDebugger) {
+		_gsuDebugger->Run();
+	}
 
 	switch(type) {
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
@@ -305,6 +320,7 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 				case CpuType::Cpu: _cpuDebugger->Step(stepCount, type); break;
 				case CpuType::Spc: _spcDebugger->Step(stepCount, type); break;
 				case CpuType::Sa1: _sa1Debugger->Step(stepCount, type); break;
+				case CpuType::Gsu: _gsuDebugger->Step(stepCount, type); break;
 				case CpuType::NecDsp: throw std::runtime_error("Step(): Unsupported CPU type.");
 			}
 			break;
@@ -349,6 +365,9 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	if(_cart->GetSa1()) {
 		state.Sa1 = _cart->GetSa1()->GetCpuState();
 	}
+	if(_cart->GetGsu()) {
+		state.Gsu = _cart->GetGsu()->GetState();
+	}
 }
 
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
@@ -363,6 +382,8 @@ AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 		return _spc->GetAbsoluteAddress(relAddress.Address);
 	} else if(relAddress.Type == SnesMemoryType::Sa1Memory) {
 		return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::GsuMemory) {
+		return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
 	}
 
 	throw std::runtime_error("Unsupported address type");
@@ -468,6 +489,8 @@ shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 		case CpuType::Cpu: return _cpuDebugger->GetCallstackManager();
 		case CpuType::Spc: return _spcDebugger->GetCallstackManager();
 		case CpuType::Sa1: return _sa1Debugger->GetCallstackManager();
+		
+		case CpuType::Gsu:
 		case CpuType::NecDsp: break;
 	}
 	throw std::runtime_error("GetCallstackManager() - Unsupported CPU type");
@@ -481,10 +504,12 @@ shared_ptr<Console> Debugger::GetConsole()
 template void Debugger::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Debugger::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Debugger::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

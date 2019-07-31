@@ -329,9 +329,29 @@
     <ClInclude Include="CpuDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
-    <ClInclude Include="Cpu.Instructions.h" />
     <ClInclude Include="Cpu.Shared.h">
       <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="GsuTypes.h">
+      <Filter>SNES\Coprocessors\GSU</Filter>
+    </ClInclude>
+    <ClInclude Include="Gsu.h">
+      <Filter>SNES\Coprocessors\GSU</Filter>
+    </ClInclude>
+    <ClInclude Include="GsuDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
+    <ClInclude Include="GsuDisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
+    <ClInclude Include="Cpu.Instructions.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="GsuRomHandler.h">
+      <Filter>SNES\Coprocessors\GSU</Filter>
+    </ClInclude>
+    <ClInclude Include="GsuRamHandler.h">
+      <Filter>SNES\Coprocessors\GSU</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -537,6 +557,18 @@
     <ClCompile Include="CpuDebugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
+    <ClCompile Include="Gsu.cpp">
+      <Filter>SNES\Coprocessors\GSU</Filter>
+    </ClCompile>
+    <ClCompile Include="Gsu.Instructions.cpp">
+      <Filter>SNES\Coprocessors\GSU</Filter>
+    </ClCompile>
+    <ClCompile Include="GsuDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClCompile>
+    <ClCompile Include="GsuDisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -580,6 +612,9 @@
     </Filter>
     <Filter Include="Debugger\Debuggers">
       <UniqueIdentifier>{799edb31-b81c-4842-a1e5-a81d5b28459a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\GSU">
+      <UniqueIdentifier>{5bda57b5-9204-46f4-85f5-3b550c589a18}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

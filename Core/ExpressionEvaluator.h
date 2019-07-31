@@ -67,6 +67,29 @@ enum EvalValues : int64_t
 	IsRead = 20000000116,
 	PreviousOpPC = 20000000117,
 
+	R0 = 20000000120,
+	R1 = 20000000121,
+	R2 = 20000000122,
+	R3 = 20000000123,
+	R4 = 20000000124,
+	R5 = 20000000125,
+	R6 = 20000000126,
+	R7 = 20000000127,
+	R8 = 20000000128,
+	R9 = 20000000129,
+	R10 = 20000000130,
+	R11 = 20000000131,
+	R12 = 20000000132,
+	R13 = 20000000133,
+	R14 = 20000000134,
+	R15 = 20000000135,
+	SrcReg = 20000000137,
+	DstReg = 20000000138,
+	SFR = 20000000139,
+	PBR = 20000000140,
+	RomBR = 20000000141,
+	RamBR = 20000000142,
+
 	FirstLabelIndex = 20000002000,
 };
 
@@ -116,6 +139,9 @@ private:
 	bool IsOperator(string token, int &precedence, bool unaryOperator);
 	EvalOperators GetOperator(string token, bool unaryOperator);
 	bool CheckSpecialTokens(string expression, size_t &pos, string &output, ExpressionData &data);
+	int64_t ProcessCpuSpcTokens(string token);
+	int64_t ProcessSharedTokens(string token);
+	int64_t ProcessGsuTokens(string token);
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);

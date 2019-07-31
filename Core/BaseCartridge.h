@@ -10,6 +10,7 @@ class VirtualFile;
 class EmuSettings;
 class NecDsp;
 class Sa1;
+class Gsu;
 class Console;
 
 class BaseCartridge : public ISerializable
@@ -24,6 +25,7 @@ private:
 	unique_ptr<BaseCoprocessor> _coprocessor;
 	NecDsp *_necDsp = nullptr;
 	Sa1 *_sa1 = nullptr;
+	Gsu *_gsu = nullptr;
 
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
@@ -35,6 +37,7 @@ private:
 	
 	uint32_t _prgRomSize = 0;
 	uint32_t _saveRamSize = 0;
+	uint32_t _coprocessorRamSize = 0;
 
 	void LoadBattery();
 
@@ -76,6 +79,10 @@ public:
 
 	NecDsp* GetDsp();
 	Sa1* GetSa1();
+	Gsu* GetGsu();
+
+	void RunCoprocessors();
+
 	BaseCoprocessor* GetCoprocessor();
 
 	vector<unique_ptr<IMemoryHandler>>& GetPrgRomHandlers();

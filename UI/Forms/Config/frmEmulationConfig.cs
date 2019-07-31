@@ -31,12 +31,18 @@ namespace Mesen.GUI.Forms.Config
 
 			AddBinding(nameof(EmulationConfig.PpuExtraScanlinesBeforeNmi), nudExtraScanlinesBeforeNmi);
 			AddBinding(nameof(EmulationConfig.PpuExtraScanlinesAfterNmi), nudExtraScanlinesAfterNmi);
+			AddBinding(nameof(EmulationConfig.GsuClockSpeed), nudGsuClockSpeed);
 		}
 
 		protected override void OnApply()
 		{
 			ConfigManager.Config.Emulation = (EmulationConfig)this.Entity;
 			ConfigManager.ApplyChanges();
+		}
+
+		private void nudGsuClockSpeed_Leave(object sender, EventArgs e)
+		{
+			nudGsuClockSpeed.Value = Math.Ceiling(nudGsuClockSpeed.Value / 100) * 100;
 		}
 	}
 }

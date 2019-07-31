@@ -59,6 +59,9 @@
 			this.nudExtraScanlinesBeforeNmi = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblExtraScanlinesBeforeNmi = new System.Windows.Forms.Label();
 			this.lblExtraScanlinesAfterNmi = new System.Windows.Forms.Label();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.nudGsuClockSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblGsuClockSpeed = new System.Windows.Forms.Label();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -72,6 +75,7 @@
 			this.tableLayoutPanel3.SuspendLayout();
 			this.grpPpuTiming.SuspendLayout();
 			this.tableLayoutPanel5.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -405,18 +409,15 @@
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel3.Controls.Add(this.lblOverclockHint, 0, 0);
 			this.tableLayoutPanel3.Controls.Add(this.grpPpuTiming, 0, 1);
+			this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel1, 0, 2);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-			this.tableLayoutPanel3.RowCount = 3;
+			this.tableLayoutPanel3.RowCount = 4;
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(406, 264);
 			this.tableLayoutPanel3.TabIndex = 1;
 			// 
@@ -542,6 +543,64 @@
 			this.lblExtraScanlinesAfterNmi.TabIndex = 1;
 			this.lblExtraScanlinesAfterNmi.Text = "Additional scanlines after NMI:";
 			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Controls.Add(this.nudGsuClockSpeed, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.lblGsuClockSpeed, 0, 0);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 131);
+			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 1;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(406, 25);
+			this.tableLayoutPanel1.TabIndex = 8;
+			// 
+			// nudGsuClockSpeed
+			// 
+			this.nudGsuClockSpeed.DecimalPlaces = 0;
+			this.nudGsuClockSpeed.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudGsuClockSpeed.Location = new System.Drawing.Point(138, 3);
+			this.nudGsuClockSpeed.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+			this.nudGsuClockSpeed.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.nudGsuClockSpeed.MaximumSize = new System.Drawing.Size(10000, 20);
+			this.nudGsuClockSpeed.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudGsuClockSpeed.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudGsuClockSpeed.Name = "nudGsuClockSpeed";
+			this.nudGsuClockSpeed.Size = new System.Drawing.Size(46, 21);
+			this.nudGsuClockSpeed.TabIndex = 4;
+			this.nudGsuClockSpeed.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudGsuClockSpeed.Leave += new System.EventHandler(this.nudGsuClockSpeed_Leave);
+			// 
+			// lblGsuClockSpeed
+			// 
+			this.lblGsuClockSpeed.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblGsuClockSpeed.AutoSize = true;
+			this.lblGsuClockSpeed.Location = new System.Drawing.Point(3, 6);
+			this.lblGsuClockSpeed.Name = "lblGsuClockSpeed";
+			this.lblGsuClockSpeed.Size = new System.Drawing.Size(132, 13);
+			this.lblGsuClockSpeed.TabIndex = 0;
+			this.lblGsuClockSpeed.Text = "Super FX clock speed (%):";
+			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -577,6 +636,8 @@
 			this.grpPpuTiming.ResumeLayout(false);
 			this.tableLayoutPanel5.ResumeLayout(false);
 			this.tableLayoutPanel5.PerformLayout();
+			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -615,5 +676,8 @@
 		private System.Windows.Forms.Label lblExtraScanlinesBeforeNmi;
 		private System.Windows.Forms.Label lblExtraScanlinesAfterNmi;
 		private System.Windows.Forms.PictureBox picHint;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private Controls.MesenNumericUpDown nudGsuClockSpeed;
+		private System.Windows.Forms.Label lblGsuClockSpeed;
 	}
 }

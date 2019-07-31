@@ -6,6 +6,7 @@
 #include "Spc.h"
 #include "NecDsp.h"
 #include "Sa1.h"
+#include "Gsu.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
 #include "LabelManager.h"
@@ -49,6 +50,9 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_sa1InternalRam = console->GetCartridge()->GetSa1() ? console->GetCartridge()->GetSa1()->DebugGetInternalRam() : nullptr;
 	_sa1InternalRamSize = console->GetCartridge()->GetSa1() ? console->GetCartridge()->GetSa1()->DebugGetInternalRamSize() : 0;
 
+	_gsuWorkRam = console->GetCartridge()->GetGsu() ? console->GetCartridge()->GetGsu()->DebugGetWorkRam() : nullptr;
+	_gsuWorkRamSize = console->GetCartridge()->GetGsu() ? console->GetCartridge()->GetGsu()->DebugGetWorkRamSize() : 0;
+
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_sramCache = vector<DisassemblyInfo>(_sramSize);
 	_wramCache = vector<DisassemblyInfo>(_wramSize);
@@ -56,6 +60,11 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_spcRomCache = vector<DisassemblyInfo>(_spcRomSize);
 	_necDspRomCache = vector<DisassemblyInfo>(_necDspProgramRomSize);
 	_sa1InternalRamCache = vector<DisassemblyInfo>(_sa1InternalRamSize);
+	_gsuWorkRamCache = vector<DisassemblyInfo>(_gsuWorkRamSize);
+
+	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
+		_needDisassemble[i] = true;
+	}
 }
 
 void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache)
@@ -103,6 +112,12 @@ void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size
 			size = _sa1InternalRamSize;
 			break;
 
+		case SnesMemoryType::GsuWorkRam:
+			*source = _gsuWorkRam;
+			*cache = &_gsuWorkRamCache;
+			size = _gsuWorkRamSize;
+			break;
+
 		default:
 			throw std::runtime_error("Disassembler::GetSource() invalid memory type");
 	}
@@ -114,6 +129,7 @@ vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
 		case CpuType::Cpu: return _disassembly;
 		case CpuType::Spc: return _spcDisassembly;
 		case CpuType::Sa1: return _sa1Disassembly;
+		case CpuType::Gsu: return _gsuDisassembly;
 		case CpuType::NecDsp: break;
 	}
 	throw std::runtime_error("Disassembly::GetDisassemblyList(): Invalid cpu type");
@@ -156,9 +172,10 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 
 void Disassembler::SetDisassembleFlag(CpuType type)
 {
-	if(type == CpuType::Cpu || type == CpuType::Sa1) {
+	if(type == CpuType::Cpu || type == CpuType::Sa1 || type == CpuType::Gsu) {
 		_needDisassemble[(int)CpuType::Cpu] = true;
 		_needDisassemble[(int)CpuType::Sa1] = true;
+		_needDisassemble[(int)CpuType::Gsu] = true;
 	} else if(type == CpuType::Spc) {
 		_needDisassemble[(int)CpuType::Spc] = true;
 	} else {
@@ -171,6 +188,7 @@ void Disassembler::ResetPrgCache()
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_needDisassemble[(int)CpuType::Cpu] = true;
 	_needDisassemble[(int)CpuType::Sa1] = true;
+	_needDisassemble[(int)CpuType::Gsu] = true;
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
@@ -208,7 +226,28 @@ void Disassembler::Disassemble(CpuType cpuType)
 	auto lock = _disassemblyLock.AcquireSafe(); 
 	
 	bool isSpc = cpuType == CpuType::Spc;
-	MemoryMappings *mappings = cpuType == CpuType::Sa1 ? _console->GetCartridge()->GetSa1()->GetMemoryMappings() : _memoryManager->GetMemoryMappings();
+	MemoryMappings *mappings = nullptr;
+	switch(cpuType) {
+		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
+
+		case CpuType::Sa1:
+			if(!_console->GetCartridge()->GetSa1()) {
+				return;
+			}
+			mappings = _console->GetCartridge()->GetSa1()->GetMemoryMappings(); 
+			break;
+
+		case CpuType::Gsu:
+			if(!_console->GetCartridge()->GetGsu()) {
+				return;
+			}
+			mappings = _console->GetCartridge()->GetGsu()->GetMemoryMappings();
+			break;
+
+		case CpuType::Spc: mappings = nullptr; break;
+		default: throw std::runtime_error("Disassemble(): Invalid cpu type");
+	}
+
 	vector<DisassemblyResult> &results = GetDisassemblyList(cpuType);
 	int32_t maxAddr = isSpc ? 0xFFFF : 0xFFFFFF;
 	results.clear();
@@ -462,11 +501,12 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				vector<DisassemblyInfo> *cache;
 				GetSource(result.Address, &source, sourceLength, &cache);
 				DisassemblyInfo disInfo = (*cache)[result.Address.Address];
+				CpuType lineCpuType = disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
 
 				data.Address = result.CpuAddress;
 				data.AbsoluteAddress = result.Address.Address;
 
-				switch(type) {
+				switch(lineCpuType) {
 					case CpuType::Cpu:
 					case CpuType::Sa1: {
 						CpuState state = _console->GetCpu()->GetState();
@@ -508,6 +548,19 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						} else {
 							data.ValueSize = 0;
 						}
+						break;
+					}
+
+					case CpuType::Gsu: {
+						if(!disInfo.IsInitialized()) {
+							disInfo = DisassemblyInfo(source + result.Address.Address, 0, CpuType::Gsu);
+						} else {
+							data.Flags |= LineFlags::VerifiedCode;
+						}
+
+						data.OpSize = disInfo.GetOpSize();
+						data.EffectiveAddress = -1;
+						data.ValueSize = 0;
 						break;
 					}
 

@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "Breakpoint.h"
 #include "DebugTypes.h"
+#include "DebugUtilities.h"
 
 bool Breakpoint::Matches(uint32_t memoryAddr, AddressInfo &info)
 {
-	if(_memoryType <= SnesMemoryType::Sa1Memory) {
+	if(_memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
 		if(_startAddr == -1) {
 			return true;
 		} else if(_endAddr == -1) {

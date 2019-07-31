@@ -68,7 +68,7 @@ public:
 	void Write(uint32_t addr, uint8_t value) override;
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;
 	
-	void Run() override;
+	void Run();
 	void Reset() override;
 
 	SnesMemoryType GetSa1MemoryType();

@@ -48,15 +48,13 @@ private:
 	void Load(uint8_t dest, uint16_t value);
 	uint16_t GetSourceValue(uint8_t source);
 
-	static bool LoadFirmware(Console *console, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, uint32_t programSize, uint32_t dataSize);
-	
 	NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
 
 public:
 	static NecDsp* InitCoprocessor(CoprocessorType type, Console* console);
 
 	void Reset() override;
-	void Run() override;
+	void Run();
 
 	void LoadBattery(string filePath) override;
 	void SaveBattery(string filePath) override;

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "DisassemblyInfo.h"
 #include "DebugTypes.h"
+#include "DebugUtilities.h"
 #include "../Utilities/SimpleLock.h"
 
 class MemoryManager;
@@ -32,13 +33,15 @@ private:
 	vector<DisassemblyInfo> _spcRomCache;
 	vector<DisassemblyInfo> _necDspRomCache;
 	vector<DisassemblyInfo> _sa1InternalRamCache;
+	vector<DisassemblyInfo> _gsuWorkRamCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
 	vector<DisassemblyResult> _spcDisassembly;
 	vector<DisassemblyResult> _sa1Disassembly;
+	vector<DisassemblyResult> _gsuDisassembly;
 
-	bool _needDisassemble[(int)CpuType::Sa1+1] = { true, true, true, true };
+	bool _needDisassemble[(int)DebugUtilities::GetLastCpuType()+1];
 
 	uint8_t *_prgRom;
 	uint32_t _prgRomSize;
@@ -56,6 +59,9 @@ private:
 
 	uint8_t *_sa1InternalRam;
 	uint32_t _sa1InternalRamSize;
+
+	uint8_t *_gsuWorkRam;
+	uint32_t _gsuWorkRamSize;
 
 	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);

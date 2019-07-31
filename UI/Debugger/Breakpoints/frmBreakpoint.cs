@@ -37,14 +37,14 @@ namespace Mesen.GUI.Debugger
 			_cpuType = breakpoint.CpuType;
 
 			cboBreakpointType.Items.Clear();
-			if(_cpuType == CpuType.Cpu || _cpuType == CpuType.Sa1) {
+			if(_cpuType == CpuType.Cpu || _cpuType == CpuType.Sa1 || _cpuType == CpuType.Gsu) {
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(_cpuType.ToMemoryType()));
 				cboBreakpointType.Items.Add("-");
 
 				if(DebugApi.GetMemorySize(SnesMemoryType.PrgRom) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 				}
-				if(DebugApi.GetMemorySize(SnesMemoryType.WorkRam) > 0) {
+				if(_cpuType == CpuType.Cpu && DebugApi.GetMemorySize(SnesMemoryType.WorkRam) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
 				}
 				if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
@@ -52,6 +52,9 @@ namespace Mesen.GUI.Debugger
 				}
 				if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
+				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
 				}
 
 				if(_cpuType == CpuType.Cpu) {

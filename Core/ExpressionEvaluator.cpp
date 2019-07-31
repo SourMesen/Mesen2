@@ -71,60 +71,139 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 		}
 	} while(pos < len);
 
-	if(token == "a") {
-		output += std::to_string((int64_t)EvalValues::RegA);
-	} else if(token == "x") {
-		output += std::to_string((int64_t)EvalValues::RegX);
-	} else if(token == "y") {
-		output += std::to_string((int64_t)EvalValues::RegY);
-	} else if(token == "ps") {
-		output += std::to_string((int64_t)EvalValues::RegPS);
-	} else if(token == "sp") {
-		output += std::to_string((int64_t)EvalValues::RegSP);
-	} else if(token == "pc") {
-		output += std::to_string((int64_t)EvalValues::RegPC);
-	} else if(token == "oppc") {
-		output += std::to_string((int64_t)EvalValues::RegOpPC);
-	} else if(token == "previousoppc") {
-		output += std::to_string((int64_t)EvalValues::PreviousOpPC);
-	} else if(token == "frame") {
-		output += std::to_string((int64_t)EvalValues::PpuFrameCount);
-	} else if(token == "cycle") {
-		output += std::to_string((int64_t)EvalValues::PpuCycle);
-	} else if(token == "scanline") {
-		output += std::to_string((int64_t)EvalValues::PpuScanline);
-	} else if(token == "irq") {
-		output += std::to_string((int64_t)EvalValues::Irq);
-	} else if(token == "nmi") {
-		output += std::to_string((int64_t)EvalValues::Nmi);
-	} else if(token == "value") {
-		output += std::to_string((int64_t)EvalValues::Value);
-	} else if(token == "address") {
-		output += std::to_string((int64_t)EvalValues::Address);
-	} else if(token == "romaddress") {
-		output += std::to_string((int64_t)EvalValues::AbsoluteAddress);
-	} else if(token == "iswrite") {
-		output += std::to_string((int64_t)EvalValues::IsWrite);
-	} else if(token == "isread") {
-		output += std::to_string((int64_t)EvalValues::IsRead);
-	} else {
-		string originalExpression = expression.substr(initialPos, pos - initialPos);
-		bool validLabel = _labelManager->ContainsLabel(originalExpression);
-		if(!validLabel) {
-			//Check if a multi-byte label exists for this name
-			string label = originalExpression + "+0";
-			validLabel = _labelManager->ContainsLabel(label);
+	if(_cpuType == CpuType::Gsu) {
+		int64_t gsuToken = ProcessGsuTokens(token);
+		if(gsuToken != -1) {
+			output += std::to_string(gsuToken);
+			return true;
 		}
-
-		if(validLabel) {
-			data.Labels.push_back(originalExpression);
-			output += std::to_string(EvalValues::FirstLabelIndex + data.Labels.size() - 1);
-		} else {
-			return false;
+	} else {
+		int64_t cpuToken = ProcessCpuSpcTokens(token);
+		if(cpuToken != -1) {
+			output += std::to_string(cpuToken);
+			return true;
 		}
 	}
 
-	return true;
+	int64_t sharedToken = ProcessSharedTokens(token);
+	if(sharedToken != -1) {
+		output += std::to_string(sharedToken);
+		return true;
+	}
+
+	string originalExpression = expression.substr(initialPos, pos - initialPos);
+	bool validLabel = _labelManager->ContainsLabel(originalExpression);
+	if(!validLabel) {
+		//Check if a multi-byte label exists for this name
+		string label = originalExpression + "+0";
+		validLabel = _labelManager->ContainsLabel(label);
+	}
+
+	if(validLabel) {
+		data.Labels.push_back(originalExpression);
+		output += std::to_string(EvalValues::FirstLabelIndex + data.Labels.size() - 1);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+int64_t ExpressionEvaluator::ProcessCpuSpcTokens(string token)
+{
+	if(token == "a") {
+		return EvalValues::RegA;
+	} else if(token == "x") {
+		return EvalValues::RegX;
+	} else if(token == "y") {
+		return EvalValues::RegY;
+	} else if(token == "ps") {
+		return EvalValues::RegPS;
+	} else if(token == "sp") {
+		return EvalValues::RegSP;
+	} else if(token == "pc") {
+		return EvalValues::RegPC;
+	} else if(token == "oppc") {
+		return EvalValues::RegOpPC;
+	} else if(token == "previousoppc") {
+		return EvalValues::PreviousOpPC;
+	} else if(token == "irq") {
+		return EvalValues::Irq;
+	} else if(token == "nmi") {
+		return EvalValues::Nmi;
+	}
+	return -1;
+}
+
+int64_t ExpressionEvaluator::ProcessSharedTokens(string token) 
+{
+	if(token == "frame") {
+		return EvalValues::PpuFrameCount;
+	} else if(token == "cycle") {
+		return EvalValues::PpuCycle;
+	} else if(token == "scanline") {
+		return EvalValues::PpuScanline;
+	} else if(token == "value") {
+		return EvalValues::Value;
+	} else if(token == "address") {
+		return EvalValues::Address;
+	} else if(token == "romaddress") {
+		return EvalValues::AbsoluteAddress;
+	} else if(token == "iswrite") {
+		return EvalValues::IsWrite;
+	} else if(token == "isread") {
+		return EvalValues::IsRead;
+	}
+	return -1;
+}
+
+int64_t ExpressionEvaluator::ProcessGsuTokens(string token)
+{
+	if(token == "r0") {
+		return EvalValues::R0;
+	} else if(token == "r1") {
+		return EvalValues::R1;
+	} else if(token == "r2") {
+		return EvalValues::R2;
+	} else if(token == "r3") {
+		return EvalValues::R3;
+	} else if(token == "r4") {
+		return EvalValues::R4;
+	} else if(token == "r5") {
+		return EvalValues::R5;
+	} else if(token == "r6") {
+		return EvalValues::R6;
+	} else if(token == "r7") {
+		return EvalValues::R7;
+	} else if(token == "r8") {
+		return EvalValues::R8;
+	} else if(token == "r9") {
+		return EvalValues::R9;
+	} else if(token == "r10") {
+		return EvalValues::R10;
+	} else if(token == "r11") {
+		return EvalValues::R11;
+	} else if(token == "r12") {
+		return EvalValues::R12;
+	} else if(token == "r13") {
+		return EvalValues::R13;
+	} else if(token == "r14") {
+		return EvalValues::R14;
+	} else if(token == "r15") {
+		return EvalValues::R15;
+	} else if(token == "srcreg") {
+		return EvalValues::SrcReg;
+	} else if(token == "dstreg") {
+		return EvalValues::DstReg;
+	} else if(token == "sfr") {
+		return EvalValues::SFR;
+	} else if(token == "pbr") {
+		return EvalValues::PBR;
+	} else if(token == "rombr") {
+		return EvalValues::RomBR;
+	} else if(token == "rambr") {
+		return EvalValues::RamBR;
+	}
+	return -1;
 }
 
 string ExpressionEvaluator::GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success)
@@ -403,6 +482,35 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 									case EvalValues::RegSP: token = state.Spc.SP; break;
 									case EvalValues::RegPS: token = state.Spc.PS; break;
 									case EvalValues::RegPC: token = state.Spc.PC; break;
+								}
+								break;
+
+							case CpuType::Gsu:
+								switch(token) {
+									case EvalValues::R0: token = state.Gsu.R[0]; break;
+									case EvalValues::R1: token = state.Gsu.R[1]; break;
+									case EvalValues::R2: token = state.Gsu.R[2]; break;
+									case EvalValues::R3: token = state.Gsu.R[3]; break;
+									case EvalValues::R4: token = state.Gsu.R[4]; break;
+									case EvalValues::R5: token = state.Gsu.R[5]; break;
+									case EvalValues::R6: token = state.Gsu.R[6]; break;
+									case EvalValues::R7: token = state.Gsu.R[7]; break;
+									case EvalValues::R8: token = state.Gsu.R[8]; break;
+									case EvalValues::R9: token = state.Gsu.R[9]; break;
+									case EvalValues::R10: token = state.Gsu.R[10]; break;
+									case EvalValues::R11: token = state.Gsu.R[11]; break;
+									case EvalValues::R12: token = state.Gsu.R[12]; break;
+									case EvalValues::R13: token = state.Gsu.R[13]; break;
+									case EvalValues::R14: token = state.Gsu.R[14]; break;
+									case EvalValues::R15: token = state.Gsu.R[15]; break;
+
+									case EvalValues::SrcReg: token = state.Gsu.SrcReg; break;
+									case EvalValues::DstReg: token = state.Gsu.DestReg; break;
+									
+									case EvalValues::SFR: token = (state.Gsu.SFR.GetFlagsHigh() << 8) | state.Gsu.SFR.GetFlagsLow(); break;
+									case EvalValues::PBR: token = state.Gsu.ProgramBank; break;
+									case EvalValues::RomBR: token = state.Gsu.ProgramBank; break;
+									case EvalValues::RamBR: token = state.Gsu.ProgramBank; break;
 								}
 								break;
 

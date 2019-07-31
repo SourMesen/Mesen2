@@ -3,6 +3,7 @@
 #include "DebugTypes.h"
 #include "Debugger.h"
 #include "Breakpoint.h"
+#include "DebugUtilities.h"
 #include "ExpressionEvaluator.h"
 
 BreakpointManager::BreakpointManager(Debugger *debugger)
@@ -12,7 +13,7 @@ BreakpointManager::BreakpointManager(Debugger *debugger)
 
 void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 {
-	for(int j = 0; j < (int)CpuType::Sa1 + 1; j++) {
+	for(int j = 0; j <= (int)DebugUtilities::GetLastCpuType(); j++) {
 		for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
 			_breakpoints[j][i].clear();
 			_rpnList[j][i].clear();
@@ -22,6 +23,8 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 
 	_bpExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(_debugger, CpuType::Cpu));
 	_bpExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(_debugger, CpuType::Spc));
+	_bpExpEval[(int)CpuType::Sa1].reset(new ExpressionEvaluator(_debugger, CpuType::Sa1));
+	_bpExpEval[(int)CpuType::Gsu].reset(new ExpressionEvaluator(_debugger, CpuType::Gsu));
 
 	for(uint32_t j = 0; j < count; j++) {
 		Breakpoint &bp = breakpoints[j];

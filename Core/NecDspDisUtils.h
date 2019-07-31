@@ -2,9 +2,7 @@
 #include "stdafx.h"
 
 class DisassemblyInfo;
-class Console;
 class LabelManager;
-struct NecDspState;
 
 class NecDspDisUtils
 {

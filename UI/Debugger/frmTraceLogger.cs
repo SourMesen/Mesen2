@@ -49,6 +49,7 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogSpc), chkLogSpc);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogNecDsp), chkLogNecDsp);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogSa1), chkLogSa1);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogGsu), chkLogGsu);
 
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowByteCode), chkShowByteCode);
 			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowCpuCycles), chkShowCpuCycles);
@@ -221,6 +222,7 @@ namespace Mesen.GUI.Debugger
 			interopOptions.LogSpc = !disableLogging && options.LogSpc;
 			interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
 			interopOptions.LogSa1 = !disableLogging && options.LogSa1;
+			interopOptions.LogGsu = !disableLogging && options.LogGsu;
 			interopOptions.IndentCode = options.IndentCode;
 			interopOptions.ShowExtraInfo = options.ShowExtraInfo;
 			interopOptions.UseLabels = options.UseLabels;

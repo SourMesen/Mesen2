@@ -26,6 +26,7 @@ class LabelManager;
 class ScriptManager;
 class SpcDebugger;
 class CpuDebugger;
+class GsuDebugger;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -44,6 +45,7 @@ private:
 	unique_ptr<SpcDebugger> _spcDebugger;
 	unique_ptr<CpuDebugger> _cpuDebugger;
 	unique_ptr<CpuDebugger> _sa1Debugger;
+	unique_ptr<GsuDebugger> _gsuDebugger;
 
 	shared_ptr<ScriptManager> _scriptManager;
 	shared_ptr<TraceLogger> _traceLogger;
@@ -56,7 +58,7 @@ private:
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<LabelManager> _labelManager;
 
-	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)CpuType::Sa1 + 1];
+	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)CpuType::Gsu + 1];
 
 	atomic<bool> _executionStopped;
 	atomic<uint32_t> _breakRequestCount;

@@ -266,6 +266,10 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.Items.Add("-");
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
+			if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
+				cboMemoryType.Items.Add("-");
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
+			}
 
 			cboMemoryType.SelectedIndex = 0;
 			cboMemoryType.EndUpdate();

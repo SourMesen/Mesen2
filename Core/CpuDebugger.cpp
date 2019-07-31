@@ -66,7 +66,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				}
 				_codeDataLogger->SetFlags(addressInfo.Address, flags);
 			}
-			_disassembler->BuildCache(addressInfo, state.PS, _cpuType);
+			_disassembler->BuildCache(addressInfo, state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8), _cpuType);
 		}
 
 		DebugState debugState;

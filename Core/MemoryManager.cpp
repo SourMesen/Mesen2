@@ -11,6 +11,8 @@
 #include "MessageManager.h"
 #include "DebugTypes.h"
 #include "EmuSettings.h"
+#include "Sa1.h"
+#include "Gsu.h"
 #include "BaseCoprocessor.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
@@ -189,6 +191,17 @@ void MemoryManager::UpdateEvents()
 	_hasEvent[_dramRefreshPosition] = true;
 }
 
+void MemoryManager::SyncCoprocessors()
+{
+	if(_cart->GetCoprocessor()) {
+		if(_cart->GetGsu()) {
+			_cart->GetGsu()->Run();
+		} else if(_cart->GetSa1()) {
+			_cart->GetSa1()->Run();
+		}
+	}
+}
+
 void MemoryManager::Exec()
 {
 	_masterClock += 2;
@@ -222,9 +235,7 @@ void MemoryManager::Exec()
 		_regs->ProcessIrqCounters();
 	}
 
-	if(_cart->GetCoprocessor()) {
-		_cart->GetCoprocessor()->Run();
-	}
+	SyncCoprocessors();
 }
 
 uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
