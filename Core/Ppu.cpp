@@ -1572,7 +1572,6 @@ void Ppu::LatchLocationValues()
 
 void Ppu::UpdateOamAddress()
 {
-	_oamEvaluationIndex = _oamRamAddress >> 1;
 	_internalOamAddress = (_oamRamAddress << 1);
 }
 
