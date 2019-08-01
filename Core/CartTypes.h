@@ -36,7 +36,7 @@ enum class CoprocessorType
 	GSU,
 	OBC1,
 	SA1,
-	DD1,
+	SDD1,
 	RTC,
 	Satellaview,
 	SPC7110,

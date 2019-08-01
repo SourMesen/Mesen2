@@ -353,6 +353,18 @@
     <ClInclude Include="GsuRamHandler.h">
       <Filter>SNES\Coprocessors\GSU</Filter>
     </ClInclude>
+    <ClInclude Include="Sdd1.h">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sdd1Mmc.h">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sdd1Types.h">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sdd1Decomp.h">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -569,6 +581,15 @@
     <ClCompile Include="GsuDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
+    <ClCompile Include="Sdd1.cpp">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClCompile>
+    <ClCompile Include="Sdd1Mmc.cpp">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClCompile>
+    <ClCompile Include="Sdd1Decomp.cpp">
+      <Filter>SNES\Coprocessors\SDD1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -615,6 +636,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\GSU">
       <UniqueIdentifier>{5bda57b5-9204-46f4-85f5-3b550c589a18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\SDD1">
+      <UniqueIdentifier>{991e1865-b4f2-4066-8b10-d7458e636e6e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

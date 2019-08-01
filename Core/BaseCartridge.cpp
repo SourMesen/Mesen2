@@ -11,6 +11,7 @@
 #include "NecDsp.h"
 #include "Sa1.h"
 #include "Gsu.h"
+#include "Sdd1.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -187,7 +188,7 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 			case 0x01: return CoprocessorType::GSU; break;
 			case 0x02: return CoprocessorType::OBC1; break;
 			case 0x03: return CoprocessorType::SA1; break;
-			case 0x04: return CoprocessorType::DD1; break;
+			case 0x04: return CoprocessorType::SDD1; break;
 			case 0x05: return CoprocessorType::RTC; break;
 			case 0x0E: return CoprocessorType::Satellaview; break;
 			case 0x0F:
@@ -312,7 +313,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 
 void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 {
-	if(_coprocessorType == CoprocessorType::GSU || MapSpecificCarts(mm)) {
+	if(MapSpecificCarts(mm) || _coprocessorType == CoprocessorType::GSU || _coprocessorType == CoprocessorType::SDD1) {
 		return;
 	}
 
@@ -366,6 +367,8 @@ void BaseCartridge::InitCoprocessor()
 	} else if(_coprocessorType == CoprocessorType::GSU) {
 		_coprocessor.reset(new Gsu(_console, _coprocessorRamSize));
 		_gsu = dynamic_cast<Gsu*>(_coprocessor.get());
+	} else if(_coprocessorType == CoprocessorType::SDD1) {
+		_coprocessor.reset(new Sdd1(_console));
 	}
 }
 
@@ -468,7 +471,7 @@ void BaseCartridge::DisplayCartInfo()
 	switch(_coprocessorType) {
 		case CoprocessorType::None: coProcMessage += "<none>"; break;
 		case CoprocessorType::CX4: coProcMessage += "CX4"; break;
-		case CoprocessorType::DD1: coProcMessage += "S-DD1"; break;
+		case CoprocessorType::SDD1: coProcMessage += "S-DD1"; break;
 		case CoprocessorType::DSP1: coProcMessage += "DSP1"; break;
 		case CoprocessorType::DSP1B: coProcMessage += "DSP1B"; break;
 		case CoprocessorType::DSP2: coProcMessage += "DSP2"; break;

@@ -145,7 +145,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		
 		default:
 			LogDebug("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
-			return 0;
+			return _memoryManager->GetOpenBus();
 	}
 }
 

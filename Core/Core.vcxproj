@@ -142,6 +142,10 @@
     <ClInclude Include="ScriptHost.h" />
     <ClInclude Include="ScriptingContext.h" />
     <ClInclude Include="ScriptManager.h" />
+    <ClInclude Include="Sdd1.h" />
+    <ClInclude Include="Sdd1Decomp.h" />
+    <ClInclude Include="Sdd1Mmc.h" />
+    <ClInclude Include="Sdd1Types.h" />
     <ClInclude Include="SettingTypes.h" />
     <ClInclude Include="ShortcutKeyHandler.h" />
     <ClInclude Include="SnesController.h" />
@@ -221,6 +225,9 @@
     <ClCompile Include="ScriptHost.cpp" />
     <ClCompile Include="ScriptingContext.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
+    <ClCompile Include="Sdd1.cpp" />
+    <ClCompile Include="Sdd1Decomp.cpp" />
+    <ClCompile Include="Sdd1Mmc.cpp" />
     <ClCompile Include="ShortcutKeyHandler.cpp" />
     <ClCompile Include="SoundMixer.cpp" />
     <ClCompile Include="SoundResampler.cpp" />
