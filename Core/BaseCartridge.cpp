@@ -162,6 +162,7 @@ void BaseCartridge::Init()
 	}
 	_flags = (CartFlags::CartFlags)flags;
 
+	_hasBattery = (_cartInfo.RomType & 0x0F) == 0x02 || (_cartInfo.RomType & 0x0F) == 0x05 || (_cartInfo.RomType & 0x0F) == 0x06 || (_cartInfo.RomType & 0x0F) == 0x09 || (_cartInfo.RomType & 0x0F) == 0x0A;
 	_coprocessorType = GetCoprocessorType();
 
 	if(_coprocessorType != CoprocessorType::None && _cartInfo.ExpansionRamSize > 0 && _cartInfo.ExpansionRamSize <= 7) {
@@ -193,9 +194,9 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 			case 0x0E: return CoprocessorType::Satellaview; break;
 			case 0x0F:
 				switch(_cartInfo.CartridgeType & 0x0F) {
-					case 0x00: return CoprocessorType::SPC7110; break;
-					case 0x01: return GetSt01xVersion(); break;
-					case 0x02: return CoprocessorType::ST018; break;
+					case 0x00: return CoprocessorType::SPC7110; _hasBattery = true; break;
+					case 0x01: return GetSt01xVersion(); _hasBattery = true; break;
+					case 0x02: return CoprocessorType::ST018; _hasBattery = true; break;
 					case 0x10: return CoprocessorType::CX4; break;
 				}
 				break;
@@ -266,7 +267,7 @@ void BaseCartridge::LoadBattery()
 	if(_saveRamSize > 0) {
 		VirtualFile saveFile(saveFilePath);
 		saveFile.ReadFile(_saveRam, _saveRamSize);
-	} else if(_coprocessor) {
+	} else if(_coprocessor && _hasBattery) {
 		_coprocessor->LoadBattery(saveFilePath);
 	}
 }
@@ -277,7 +278,7 @@ void BaseCartridge::SaveBattery()
 	if(_saveRamSize > 0) {
 		ofstream saveFile(saveFilePath, ios::binary);
 		saveFile.write((char*)_saveRam, _saveRamSize);
-	} else if(_coprocessor) {
+	} else if(_coprocessor && _hasBattery) {
 		_coprocessor->SaveBattery(saveFilePath);
 	}
 }
@@ -467,27 +468,29 @@ void BaseCartridge::DisplayCartInfo()
 		MessageManager::Log("Type: LoROM");
 	}
 
-	string coProcMessage = "Coprocessor: ";
-	switch(_coprocessorType) {
-		case CoprocessorType::None: coProcMessage += "<none>"; break;
-		case CoprocessorType::CX4: coProcMessage += "CX4"; break;
-		case CoprocessorType::SDD1: coProcMessage += "S-DD1"; break;
-		case CoprocessorType::DSP1: coProcMessage += "DSP1"; break;
-		case CoprocessorType::DSP1B: coProcMessage += "DSP1B"; break;
-		case CoprocessorType::DSP2: coProcMessage += "DSP2"; break;
-		case CoprocessorType::DSP3: coProcMessage += "DSP3"; break;
-		case CoprocessorType::DSP4: coProcMessage += "DSP4"; break;
-		case CoprocessorType::GSU: coProcMessage += "Super FX (GSU1/2)"; break;
-		case CoprocessorType::OBC1: coProcMessage += "OBC1"; break;
-		case CoprocessorType::RTC: coProcMessage += "RTC"; break;
-		case CoprocessorType::SA1: coProcMessage += "SA1"; break;
-		case CoprocessorType::Satellaview: coProcMessage += "Satellaview"; break;
-		case CoprocessorType::SPC7110: coProcMessage += "SPC7110"; break;
-		case CoprocessorType::ST010: coProcMessage += "ST010"; break;
-		case CoprocessorType::ST011: coProcMessage += "ST011"; break;
-		case CoprocessorType::ST018: coProcMessage += "ST018"; break;
+	if(_coprocessorType != CoprocessorType::None) {
+		string coProcMessage = "Coprocessor: ";
+		switch(_coprocessorType) {
+			case CoprocessorType::None: coProcMessage += "<none>"; break;
+			case CoprocessorType::CX4: coProcMessage += "CX4"; break;
+			case CoprocessorType::SDD1: coProcMessage += "S-DD1"; break;
+			case CoprocessorType::DSP1: coProcMessage += "DSP1"; break;
+			case CoprocessorType::DSP1B: coProcMessage += "DSP1B"; break;
+			case CoprocessorType::DSP2: coProcMessage += "DSP2"; break;
+			case CoprocessorType::DSP3: coProcMessage += "DSP3"; break;
+			case CoprocessorType::DSP4: coProcMessage += "DSP4"; break;
+			case CoprocessorType::GSU: coProcMessage += "Super FX (GSU1/2)"; break;
+			case CoprocessorType::OBC1: coProcMessage += "OBC1"; break;
+			case CoprocessorType::RTC: coProcMessage += "RTC"; break;
+			case CoprocessorType::SA1: coProcMessage += "SA1"; break;
+			case CoprocessorType::Satellaview: coProcMessage += "Satellaview"; break;
+			case CoprocessorType::SPC7110: coProcMessage += "SPC7110"; break;
+			case CoprocessorType::ST010: coProcMessage += "ST010"; break;
+			case CoprocessorType::ST011: coProcMessage += "ST011"; break;
+			case CoprocessorType::ST018: coProcMessage += "ST018"; break;
+		}
+		MessageManager::Log(coProcMessage);
 	}
-	MessageManager::Log(coProcMessage);
 
 	if(_flags & CartFlags::FastRom) {
 		MessageManager::Log("FastROM");
@@ -503,10 +506,10 @@ void BaseCartridge::DisplayCartInfo()
 	MessageManager::Log("File size: " + std::to_string(_prgRomSize / 1024) + " KB");
 	MessageManager::Log("ROM size: " + std::to_string((0x400 << _cartInfo.RomSize) / 1024) + " KB");
 	if(_saveRamSize > 0) {
-		MessageManager::Log("SRAM size: " + std::to_string(_saveRamSize / 1024) + " KB");
+		MessageManager::Log("SRAM size: " + std::to_string(_saveRamSize / 1024) + " KB" + (_hasBattery ? " (with battery)" : ""));
 	}
 	if(_coprocessorRamSize > 0) {
-		MessageManager::Log("Coprocessor RAM size: " + std::to_string(_coprocessorRamSize / 1024) + " KB");
+		MessageManager::Log("Coprocessor RAM size: " + std::to_string(_coprocessorRamSize / 1024) + " KB" + (_hasBattery ? " (with battery)" : ""));
 	}
 	MessageManager::Log("-----------------------------");
 }
