@@ -124,7 +124,7 @@ void SDD1_GCD::getRunCount(uint8_t code_num, uint8_t *MPScount, bool *LPSind)
 ///////////////////////////////////////////////////////
 
 SDD1_BG::SDD1_BG(SDD1_GCD *associatedGCD, uint8_t code) :
-	GCD(associatedGCD), code_num(code)
+	code_num(code), GCD(associatedGCD)
 {
 
 }
@@ -242,7 +242,6 @@ void SDD1_PEM::prepareDecomp(void)
 
 uint8_t SDD1_PEM::getBit(uint8_t context)
 {
-
 	bool endOfRun;
 	uint8_t bit;
 
@@ -253,15 +252,16 @@ uint8_t SDD1_PEM::getBit(uint8_t context)
 
 	bit = (BG[pState->code_num])->getBit(&endOfRun);
 
-	if(endOfRun)
+	if(endOfRun) {
 		if(bit) {
 			if(!(currStatus & 0xfe)) (pContInfo->MPS) ^= 0x01;
 			(pContInfo->status) = pState->nextIfLPS;
-		} else
+		} else {
 			(pContInfo->status) = pState->nextIfMPS;
+		}
+	}
 
-		return bit ^ currentMPS;
-
+	return bit ^ currentMPS;
 }
 
 //////////////////////////////////////////////////////////////
