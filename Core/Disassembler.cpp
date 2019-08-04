@@ -252,7 +252,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 			byteCounter = 0;
 
 			if(addrInfo.Type == SnesMemoryType::PrgRom && _cdl->IsSubEntryPoint(addrInfo.Address)) {
-				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
+				results.push_back(DisassemblyResult(-1, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 
 			if(_labelManager->GetLabelAndComment(addrInfo, labelInfo)) {
