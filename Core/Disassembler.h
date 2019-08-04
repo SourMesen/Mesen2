@@ -72,7 +72,7 @@ private:
 	uint8_t *_gsuWorkRam;
 	uint32_t _gsuWorkRamSize;
 
-	DisassemblerSource Disassembler::GetSource(SnesMemoryType type);
+	DisassemblerSource GetSource(SnesMemoryType type);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);
 	void SetDisassembleFlag(CpuType type);
 
