@@ -160,55 +160,26 @@ bool CpuDisUtils::HasEffectiveAddress(AddrMode addrMode)
 
 uint8_t CpuDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
 {
-	switch(addrMode) {
-		case AddrMode::Acc:
-		case AddrMode::Imp:
-		case AddrMode::Stk:
-			return 1;
-
-		case AddrMode::DirIdxIndX:
-		case AddrMode::DirIdxX:
-		case AddrMode::DirIdxY:
-		case AddrMode::DirIndIdxY:
-		case AddrMode::DirIndLngIdxY:
-		case AddrMode::DirIndLng:
-		case AddrMode::DirInd:
-		case AddrMode::Dir:
-		case AddrMode::Sig8:
-		case AddrMode::Imm8:
-		case AddrMode::Rel:
-		case AddrMode::StkRel:
-		case AddrMode::StkRelIndIdxY:
-			return 2;
-
-		case AddrMode::Abs:
-		case AddrMode::AbsIdxXInd:
-		case AddrMode::AbsIdxX:
-		case AddrMode::AbsIdxY:
-		case AddrMode::AbsInd:
-		case AddrMode::AbsIndLng:
-		case AddrMode::AbsJmp:
-		case AddrMode::BlkMov:
-		case AddrMode::Imm16:
-		case AddrMode::RelLng:
-			return 3;
-
-		case AddrMode::AbsLngJmp:
-		case AddrMode::AbsLngIdxX:
-		case AddrMode::AbsLng:
-			return 4;
-
-		case AddrMode::ImmX: return (flags & ProcFlags::IndexMode8) ? 2 : 3;
-		case AddrMode::ImmM: return (flags & ProcFlags::MemoryMode8) ? 2 : 3;
+	if(addrMode == AddrMode::ImmX) {
+		return (flags & ProcFlags::IndexMode8) ? 2 : 3;
+	} else if(addrMode == AddrMode::ImmM) {
+		return (flags & ProcFlags::MemoryMode8) ? 2 : 3;
 	}
 
-	throw std::runtime_error("Invalid mode");
+	return CpuDisUtils::OpSize[(int)addrMode];
 }
 
 uint8_t CpuDisUtils::GetOpSize(uint8_t opCode, uint8_t flags)
 {
 	return GetOpSize(CpuDisUtils::OpMode[opCode], flags);
 }
+
+uint8_t CpuDisUtils::OpSize[0x1F] = {
+	2, 2, 3, 0, 0, 3, 3, 3, 3, 3,
+	3, 4, 4, 3, 4, 1, 3, 2, 2, 2,
+	2, 2, 2, 2, 2, 1, 3, 2, 1, 2,
+	2
+};
 
 string CpuDisUtils::OpName[256] = {
 	//0    1      2      3      4      5      6      7      8      9      A      B      C      D      E      F

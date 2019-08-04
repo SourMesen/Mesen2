@@ -15,6 +15,13 @@ class MemoryDumper;
 struct CpuState;
 enum class CpuType : uint8_t;
 
+struct DisassemblerSource
+{
+	uint8_t *Data;
+	vector<DisassemblyInfo> *Cache;
+	uint32_t Size;
+};
+
 class Disassembler
 {
 private:
@@ -41,6 +48,8 @@ private:
 	vector<DisassemblyResult> _sa1Disassembly;
 	vector<DisassemblyResult> _gsuDisassembly;
 
+	DisassemblerSource _sources[(int)SnesMemoryType::Register];
+
 	bool _needDisassemble[(int)DebugUtilities::GetLastCpuType()+1];
 
 	uint8_t *_prgRom;
@@ -63,7 +72,7 @@ private:
 	uint8_t *_gsuWorkRam;
 	uint32_t _gsuWorkRamSize;
 
-	void GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache);
+	DisassemblerSource Disassembler::GetSource(SnesMemoryType type);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);
 	void SetDisassembleFlag(CpuType type);
 

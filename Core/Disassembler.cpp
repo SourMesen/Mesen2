@@ -65,62 +65,24 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
 		_needDisassemble[i] = true;
 	}
+
+	_sources[(int)SnesMemoryType::PrgRom] = { _prgRom, &_prgCache, _prgRomSize };
+	_sources[(int)SnesMemoryType::WorkRam] = { _wram, &_wramCache, MemoryManager::WorkRamSize };
+	_sources[(int)SnesMemoryType::SaveRam] = { _sram, &_sramCache, _sramSize };
+	_sources[(int)SnesMemoryType::SpcRam] = { _spcRam, &_spcRamCache, _spcRamSize };
+	_sources[(int)SnesMemoryType::SpcRom] = { _spcRom, &_spcRomCache, _spcRomSize };
+	_sources[(int)SnesMemoryType::DspProgramRom] = { _necDspProgramRom, &_necDspRomCache, _necDspProgramRomSize };
+	_sources[(int)SnesMemoryType::Sa1InternalRam] = { _sa1InternalRam, &_sa1InternalRamCache, _sa1InternalRamSize };
+	_sources[(int)SnesMemoryType::GsuWorkRam] = { _gsuWorkRam, &_gsuWorkRamCache, _gsuWorkRamSize };
 }
 
-void Disassembler::GetSource(AddressInfo &info, uint8_t **source, uint32_t &size, vector<DisassemblyInfo> **cache)
+DisassemblerSource Disassembler::GetSource(SnesMemoryType type)
 {
-	switch(info.Type) {
-		case SnesMemoryType::PrgRom:
-			*source = _prgRom;
-			*cache = &_prgCache;
-			size = _prgRomSize;
-			break;
-
-		case SnesMemoryType::WorkRam:
-			*source = _wram;
-			*cache = &_wramCache;
-			size = MemoryManager::WorkRamSize;
-			break;
-
-		case SnesMemoryType::SaveRam:
-			*source = _sram;
-			*cache = &_sramCache;
-			size = _sramSize;
-			break;
-		
-		case SnesMemoryType::SpcRam:
-			*source = _spcRam;
-			*cache = &_spcRamCache;
-			size = _spcRamSize;
-			break;
-
-		case SnesMemoryType::SpcRom:
-			*source = _spcRom;
-			*cache = &_spcRomCache;
-			size = _spcRomSize;
-			break;
-
-		case SnesMemoryType::DspProgramRom:
-			*source = _necDspProgramRom;
-			*cache = &_necDspRomCache;
-			size = _necDspProgramRomSize;
-			break;
-
-		case SnesMemoryType::Sa1InternalRam:
-			*source = _sa1InternalRam;
-			*cache = &_sa1InternalRamCache;
-			size = _sa1InternalRamSize;
-			break;
-
-		case SnesMemoryType::GsuWorkRam:
-			*source = _gsuWorkRam;
-			*cache = &_gsuWorkRamCache;
-			size = _gsuWorkRamSize;
-			break;
-
-		default:
-			throw std::runtime_error("Disassembler::GetSource() invalid memory type");
+	if(_sources[(int)type].Data == nullptr) {
+		throw std::runtime_error("Disassembler::GetSource() invalid memory type");
 	}
+
+	return _sources[(int)type];
 }
 
 vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
@@ -138,18 +100,15 @@ vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
 
 uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type)
 {
-	uint8_t *source;
-	uint32_t sourceLength;
-	vector<DisassemblyInfo> *cache;
-	GetSource(addrInfo, &source, sourceLength, &cache);
+	DisassemblerSource src = GetSource(addrInfo.Type);
 
 	bool needDisassemble = false;
 	int returnSize = 0;
 	int32_t address = addrInfo.Address;
-	while(address >= 0 && address < (int32_t)cache->size()) {
-		DisassemblyInfo &disInfo = (*cache)[address];
+	while(address >= 0 && address < (int32_t)src.Cache->size()) {
+		DisassemblyInfo &disInfo = (*src.Cache)[address];
 		if(!disInfo.IsInitialized() || !disInfo.IsValid(cpuFlags)) {
-			disInfo.Initialize(source+address, cpuFlags, type);
+			disInfo.Initialize(src.Data+address, cpuFlags, type);
 			needDisassemble = true;
 			returnSize += disInfo.GetOpSize();
 		} else {
@@ -192,17 +151,14 @@ void Disassembler::ResetPrgCache()
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
 {
-	uint8_t *source;
-	uint32_t sourceLength;
-	vector<DisassemblyInfo> *cache;
-	GetSource(addrInfo, &source, sourceLength, &cache);
+	DisassemblerSource src = GetSource(addrInfo.Type);
 	bool needDisassemble = false;
 
 	if(addrInfo.Address >= 0) {
 		for(int i = 0; i < 4; i++) {
 			if(addrInfo.Address >= i) {
-				if((*cache)[addrInfo.Address - i].IsInitialized()) {
-					(*cache)[addrInfo.Address - i].Reset();
+				if((*src.Cache)[addrInfo.Address - i].IsInitialized()) {
+					(*src.Cache)[addrInfo.Address - i].Reset();
 					needDisassemble = true;
 				}
 			}
@@ -251,10 +207,6 @@ void Disassembler::Disassemble(CpuType cpuType)
 	int32_t maxAddr = isSpc ? 0xFFFF : 0xFFFFFF;
 	results.clear();
 
-	uint8_t *source;
-	uint32_t sourceLength;
-	vector<DisassemblyInfo> *cache;
-
 	bool disUnident = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
 	bool disData = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
 	bool showUnident = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
@@ -262,11 +214,9 @@ void Disassembler::Disassemble(CpuType cpuType)
 
 	bool inUnknownBlock = false;
 	bool inVerifiedBlock = false;
-
+	LabelInfo labelInfo;
 	AddressInfo addrInfo = {};
 	AddressInfo prevAddrInfo = {};
-	string label;
-	string comment;
 	int byteCounter = 0;
 	for(int32_t i = 0; i <= maxAddr; i++) {
 		prevAddrInfo = addrInfo;
@@ -276,12 +226,12 @@ void Disassembler::Disassemble(CpuType cpuType)
 			continue;
 		}
 
-		GetSource(addrInfo, &source, sourceLength, &cache);
+		DisassemblerSource src = GetSource(addrInfo.Type);
 
-		DisassemblyInfo disassemblyInfo = (*cache)[addrInfo.Address];
+		DisassemblyInfo disassemblyInfo = (*src.Cache)[addrInfo.Address];
 		
 		uint8_t opSize = 0;
-		uint8_t opCode = (source + addrInfo.Address)[0];
+		uint8_t opCode = (src.Data + addrInfo.Address)[0];
 
 		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsCode(addrInfo.Address) : false;
 		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsData(addrInfo.Address) : false;
@@ -305,26 +255,28 @@ void Disassembler::Disassemble(CpuType cpuType)
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 
-			_labelManager->GetLabelAndComment(addrInfo, label, comment);
-
-			bool hasMultipleComment = comment.find_first_of('\n') != string::npos;
-			if(hasMultipleComment) {
-				int16_t lineCount = 0;
-				for(char c : comment) {
-					if(c == '\n') {
-						results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Comment, lineCount));
-						lineCount++;
+			if(_labelManager->GetLabelAndComment(addrInfo, labelInfo)) {
+				bool hasMultipleComment = labelInfo.Comment.find_first_of('\n') != string::npos;
+				if(hasMultipleComment) {
+					int16_t lineCount = 0;
+					for(char c : labelInfo.Comment) {
+						if(c == '\n') {
+							results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Comment, lineCount));
+							lineCount++;
+						}
 					}
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Comment, lineCount));
 				}
-				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Comment, lineCount));
-			} 
-			
-			if(label.size()) {
-				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Label));
-			}
 
-			if(!hasMultipleComment && comment.size()) {
-				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Comment));
+				if(labelInfo.Label.size()) {
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Label));
+				}
+
+				if(!hasMultipleComment && labelInfo.Comment.size()) {
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Comment));
+				} else {
+					results.push_back(DisassemblyResult(addrInfo, i));
+				}
 			} else {
 				results.push_back(DisassemblyResult(addrInfo, i));
 			}
@@ -332,8 +284,8 @@ void Disassembler::Disassemble(CpuType cpuType)
 			//Move to the end of the instruction (but realign disassembly if another valid instruction is found)
 			//This can sometimes happen if the 2nd byte of BRK/COP is reused as the first byte of the next instruction
 			//Also required when disassembling unvalidated data as code (to realign once we find verified code)
-			for(int j = 1, max = (int)(*cache).size(); j < opSize && addrInfo.Address + j < max; j++) {
-				if((*cache)[addrInfo.Address + j].IsInitialized()) {
+			for(int j = 1, max = (int)(*src.Cache).size(); j < opSize && addrInfo.Address + j < max; j++) {
+				if((*src.Cache)[addrInfo.Address + j].IsInitialized()) {
 					break;
 				}
 				i++;
@@ -492,11 +444,8 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				data.Flags |= LineFlags::VerifiedCode;
 				memcpy(data.Text, label.c_str(), std::min<int>((int)label.size(), 1000));
 			} else {
-				uint8_t *source;
-				uint32_t sourceLength;
-				vector<DisassemblyInfo> *cache;
-				GetSource(result.Address, &source, sourceLength, &cache);
-				DisassemblyInfo disInfo = (*cache)[result.Address.Address];
+				DisassemblerSource src = GetSource(result.Address.Type);
+				DisassemblyInfo disInfo = (*src.Cache)[result.Address.Address];
 				CpuType lineCpuType = disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
 
 				data.Address = result.CpuAddress;
@@ -510,7 +459,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						state.K = (result.CpuAddress >> 16);
 
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(source + result.Address.Address, state.PS, CpuType::Cpu);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, CpuType::Cpu);
 						} else {
 							data.Flags |= LineFlags::VerifiedCode;
 						}
@@ -531,7 +480,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						state.PC = (uint16_t)result.CpuAddress;
 
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(source + result.Address.Address, 0, CpuType::Spc);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Spc);
 						} else {
 							data.Flags |= LineFlags::VerifiedCode;
 						}
@@ -549,7 +498,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 
 					case CpuType::Gsu: {
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(source + result.Address.Address, 0, CpuType::Gsu);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gsu);
 						} else {
 							data.Flags |= LineFlags::VerifiedCode;
 						}

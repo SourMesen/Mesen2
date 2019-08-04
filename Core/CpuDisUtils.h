@@ -11,6 +11,7 @@ class CpuDisUtils
 {
 private:
 	static string OpName[256];
+	static uint8_t OpSize[0x1F];
 	static AddrMode OpMode[256];
 	static uint32_t GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAddr);
 	static uint8_t GetOpSize(AddrMode addrMode, uint8_t flags);

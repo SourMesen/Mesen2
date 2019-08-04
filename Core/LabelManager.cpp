@@ -10,7 +10,6 @@ LabelManager::LabelManager(Debugger *debugger)
 
 void LabelManager::ClearLabels()
 {
-	_codeComments.clear();
 	_codeLabels.clear();
 	_codeLabelReverseLookup.clear();
 }
@@ -21,22 +20,22 @@ void LabelManager::SetLabel(uint32_t address, SnesMemoryType memType, string lab
 
 	auto existingLabel = _codeLabels.find(key);
 	if(existingLabel != _codeLabels.end()) {
-		_codeLabelReverseLookup.erase(existingLabel->second);
+		_codeLabelReverseLookup.erase(existingLabel->second.Label);
 	}
 
 	_codeLabels.erase(key);
-	if(!label.empty()) {
+	if(!label.empty() || !comment.empty()) {
 		if(label.size() > 400) {
 			//Restrict labels to 400 bytes
 			label = label.substr(0, 400);
 		}
-		_codeLabels.emplace(key, label);
-		_codeLabelReverseLookup.emplace(label, key);
-	}
 
-	_codeComments.erase(key);
-	if(!comment.empty()) {
-		_codeComments.emplace(key, comment);
+		LabelInfo labelInfo;
+		labelInfo.Label = label;
+		labelInfo.Comment = comment;
+
+		_codeLabels.emplace(key, labelInfo);
+		_codeLabelReverseLookup.emplace(label, key);
 	}
 }
 
@@ -82,7 +81,7 @@ string LabelManager::GetLabel(AddressInfo address)
 		if(key >= 0) {
 			auto result = _codeLabels.find(key);
 			if(result != _codeLabels.end()) {
-				return result->second;
+				return result->second.Label;
 			}
 		}
 	}
@@ -95,16 +94,16 @@ string LabelManager::GetComment(AddressInfo absAddress)
 	uint64_t key = GetLabelKey(absAddress.Address, absAddress.Type);
 
 	if(key >= 0) {
-		auto result = _codeComments.find(key);
-		if(result != _codeComments.end()) {
-			return result->second;
+		auto result = _codeLabels.find(key);
+		if(result != _codeLabels.end()) {
+			return result->second.Comment;
 		}
 	}
 
 	return "";
 }
 
-void LabelManager::GetLabelAndComment(AddressInfo address, string &label, string &comment)
+bool LabelManager::GetLabelAndComment(AddressInfo address, LabelInfo &labelInfo)
 {
 	if(address.Type <= DebugUtilities::GetLastCpuMemoryType()) {
 		address = _debugger->GetAbsoluteAddress(address);
@@ -116,22 +115,12 @@ void LabelManager::GetLabelAndComment(AddressInfo address, string &label, string
 		if(key >= 0) {
 			auto result = _codeLabels.find(key);
 			if(result != _codeLabels.end()) {
-				label = result->second;
-			} else {
-				label.clear();
-			}
-
-			auto commentResult = _codeComments.find(key);
-			if(commentResult != _codeComments.end()) {
-				comment = commentResult->second;
-			} else {
-				comment.clear();
+				labelInfo = result->second;
+				return true;
 			}
 		}
-	} else {
-		label.clear();
-		comment.clear();
 	}
+	return false;
 }
 
 bool LabelManager::ContainsLabel(string &label)
@@ -161,9 +150,7 @@ bool LabelManager::HasLabelOrComment(AddressInfo address)
 	if(address.Address >= 0) {
 		uint64_t key = GetLabelKey(address.Address, address.Type);
 		if(key >= 0) {
-			return
-				_codeLabels.find(key) != _codeLabels.end() ||
-				_codeComments.find(key) != _codeComments.end();
+			return _codeLabels.find(key) != _codeLabels.end();
 		}
 	}
 	return false;

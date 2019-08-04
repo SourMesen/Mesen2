@@ -16,11 +16,16 @@ public:
 	}
 };
 
+struct LabelInfo
+{
+	string Label;
+	string Comment;
+};
+
 class LabelManager
 {
 private:
-	unordered_map<uint64_t, string, AddressHasher> _codeLabels;
-	unordered_map<uint64_t, string, AddressHasher> _codeComments;
+	unordered_map<uint64_t, LabelInfo, AddressHasher> _codeLabels;
 	unordered_map<string, uint64_t> _codeLabelReverseLookup;
 
 	Debugger *_debugger;
@@ -38,7 +43,7 @@ public:
 
 	string GetLabel(AddressInfo address);
 	string GetComment(AddressInfo absAddress);
-	void GetLabelAndComment(AddressInfo address, string &label, string &comment);
+	bool GetLabelAndComment(AddressInfo address, LabelInfo &label);
 
 	bool ContainsLabel(string &label);
 
