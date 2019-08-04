@@ -365,6 +365,15 @@
     <ClInclude Include="Sdd1Decomp.h">
       <Filter>SNES\Coprocessors\SDD1</Filter>
     </ClInclude>
+    <ClInclude Include="Cx4.h">
+      <Filter>SNES\Coprocessors\CX4</Filter>
+    </ClInclude>
+    <ClInclude Include="Cx4Types.h">
+      <Filter>SNES\Coprocessors\CX4</Filter>
+    </ClInclude>
+    <ClInclude Include="Cx4DisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -590,6 +599,15 @@
     <ClCompile Include="Sdd1Decomp.cpp">
       <Filter>SNES\Coprocessors\SDD1</Filter>
     </ClCompile>
+    <ClCompile Include="Cx4.cpp">
+      <Filter>SNES\Coprocessors\CX4</Filter>
+    </ClCompile>
+    <ClCompile Include="Cx4.Instructions.cpp">
+      <Filter>SNES\Coprocessors\CX4</Filter>
+    </ClCompile>
+    <ClCompile Include="Cx4DisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -639,6 +657,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\SDD1">
       <UniqueIdentifier>{991e1865-b4f2-4066-8b10-d7458e636e6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\CX4">
+      <UniqueIdentifier>{4bf65a17-58bf-4833-a4af-38ddc285f99d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

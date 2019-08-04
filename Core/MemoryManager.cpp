@@ -13,6 +13,7 @@
 #include "EmuSettings.h"
 #include "Sa1.h"
 #include "Gsu.h"
+#include "Cx4.h"
 #include "BaseCoprocessor.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
@@ -198,6 +199,8 @@ void MemoryManager::SyncCoprocessors()
 			_cart->GetGsu()->Run();
 		} else if(_cart->GetSa1()) {
 			_cart->GetSa1()->Run();
+		} else if(_cart->GetCx4()) {
+			_cart->GetCx4()->Run();
 		}
 	}
 }

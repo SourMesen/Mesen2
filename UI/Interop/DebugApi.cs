@@ -176,6 +176,7 @@ namespace Mesen.GUI
 		DspDataRam,
 		Sa1InternalRam,
 		GsuWorkRam,
+		Cx4DataRam,
 		Register,
 	}
 
@@ -653,6 +654,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool LogNecDsp;
 		[MarshalAs(UnmanagedType.I1)] public bool LogSa1;
 		[MarshalAs(UnmanagedType.I1)] public bool LogGsu;
+		[MarshalAs(UnmanagedType.I1)] public bool LogCx4;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;

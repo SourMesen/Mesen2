@@ -962,6 +962,7 @@
 			<Value ID="DspDataRam">DSP-n Data RAM</Value>
 			<Value ID="Sa1InternalRam">SA-1 IRAM</Value>
 			<Value ID="GsuWorkRam">GSU Work RAM</Value>
+			<Value ID="Cx4DataRam">CX4 Data RAM</Value>
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="TileFormat">

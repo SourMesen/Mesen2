@@ -50,6 +50,7 @@ namespace Mesen.GUI.Config
 		public bool LogNecDsp;
 		public bool LogSa1;
 		public bool LogGsu;
+		public bool LogCx4;
 
 		public bool ShowByteCode;
 		public bool ShowRegisters;

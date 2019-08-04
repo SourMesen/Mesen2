@@ -5,6 +5,7 @@
 #include "Spc.h"
 #include "NecDsp.h"
 #include "Sa1.h"
+#include "Cx4.h"
 #include "Gsu.h"
 #include "MemoryDumper.h"
 #include "BaseCartridge.h"
@@ -47,8 +48,8 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 		case SnesMemoryType::DspDataRam: memcpy(_cartridge->GetDsp()->DebugGetDataRam(), buffer, length); break;
 
 		case SnesMemoryType::Sa1InternalRam: memcpy(_cartridge->GetSa1()->DebugGetInternalRam(), buffer, length); break;
-		
 		case SnesMemoryType::GsuWorkRam:  memcpy(_cartridge->GetGsu()->DebugGetWorkRam(), buffer, length); break;
+		case SnesMemoryType::Cx4DataRam:  memcpy(_cartridge->GetCx4()->DebugGetDataRam(), buffer, length); break;
 	}
 }
 
@@ -75,8 +76,8 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::DspDataRam: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetDataRamSize() : 0;
 		
 		case SnesMemoryType::Sa1InternalRam: return _cartridge->GetSa1() ? _cartridge->GetSa1()->DebugGetInternalRamSize() : 0;;
-		
 		case SnesMemoryType::GsuWorkRam: return _cartridge->GetGsu() ? _cartridge->GetGsu()->DebugGetWorkRamSize() : 0;;
+		case SnesMemoryType::Cx4DataRam: return _cartridge->GetCx4() ? _cartridge->GetCx4()->DebugGetDataRamSize() : 0;;
 	}
 }
 
@@ -123,8 +124,8 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 		case SnesMemoryType::DspDataRam: memcpy(buffer, _cartridge->GetDsp()->DebugGetDataRam(), _cartridge->GetDsp()->DebugGetDataRamSize()); break;
 
 		case SnesMemoryType::Sa1InternalRam: memcpy(buffer, _cartridge->GetSa1()->DebugGetInternalRam(), _cartridge->GetSa1()->DebugGetInternalRamSize()); break;
-
 		case SnesMemoryType::GsuWorkRam: memcpy(buffer, _cartridge->GetGsu()->DebugGetWorkRam(), _cartridge->GetGsu()->DebugGetWorkRamSize()); break;
+		case SnesMemoryType::Cx4DataRam: memcpy(buffer, _cartridge->GetCx4()->DebugGetDataRam(), _cartridge->GetCx4()->DebugGetDataRamSize()); break;
 	}
 }
 
@@ -165,8 +166,8 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::DspDataRam: _cartridge->GetDsp()->DebugGetDataRam()[address] = value;
 
 		case SnesMemoryType::Sa1InternalRam: _cartridge->GetSa1()->DebugGetInternalRam()[address] = value;
-
 		case SnesMemoryType::GsuWorkRam: _cartridge->GetGsu()->DebugGetWorkRam()[address] = value;
+		case SnesMemoryType::Cx4DataRam: _cartridge->GetCx4()->DebugGetDataRam()[address] = value;
 	}
 }
 
@@ -199,8 +200,8 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 		case SnesMemoryType::DspDataRam: return _cartridge->GetDsp()->DebugGetDataRam()[address];
 
 		case SnesMemoryType::Sa1InternalRam: return _cartridge->GetSa1()->DebugGetInternalRam()[address];
-		
 		case SnesMemoryType::GsuWorkRam: return _cartridge->GetGsu()->DebugGetWorkRam()[address];
+		case SnesMemoryType::Cx4DataRam: return _cartridge->GetCx4()->DebugGetDataRam()[address];
 	}
 }
 

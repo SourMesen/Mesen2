@@ -7,6 +7,7 @@
 #include "Spc.h"
 #include "Sa1.h"
 #include "Gsu.h"
+#include "Cx4.h"
 #include "NecDsp.h"
 #include "CpuDebugger.h"
 #include "SpcDebugger.h"
@@ -196,6 +197,24 @@ void Debugger::ProcessNecDspExec(uint32_t addr, uint32_t value)
 	}
 }
 
+void Debugger::ProcessCx4Exec()
+{
+	if(_traceLogger->IsCpuLogged(CpuType::Cx4)) {
+		DebugState debugState;
+		GetState(debugState, true);
+
+		uint32_t addr = (debugState.Cx4.Cache.Address[debugState.Cx4.Cache.Page] + (debugState.Cx4.PC * 2)) & 0xFFFFFF;
+		AddressInfo addressInfo = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(addr);
+
+		if(addressInfo.Address >= 0) {
+			_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
+
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+			_traceLogger->Log(CpuType::Cx4, debugState, disInfo);
+		}
+	}
+}
+
 void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
 {
 	if(_suspendRequestCount) {
@@ -321,7 +340,10 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 				case CpuType::Spc: _spcDebugger->Step(stepCount, type); break;
 				case CpuType::Sa1: _sa1Debugger->Step(stepCount, type); break;
 				case CpuType::Gsu: _gsuDebugger->Step(stepCount, type); break;
-				case CpuType::NecDsp: throw std::runtime_error("Step(): Unsupported CPU type.");
+				
+				case CpuType::NecDsp: 
+				case CpuType::Cx4: 
+					throw std::runtime_error("Step(): Unsupported CPU type.");
 			}
 			break;
 	}
@@ -367,6 +389,9 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	}
 	if(_cart->GetGsu()) {
 		state.Gsu = _cart->GetGsu()->GetState();
+	}
+	if(_cart->GetCx4()) {
+		state.Cx4 = _cart->GetCx4()->GetState();
 	}
 }
 
@@ -491,7 +516,9 @@ shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 		case CpuType::Sa1: return _sa1Debugger->GetCallstackManager();
 		
 		case CpuType::Gsu:
-		case CpuType::NecDsp: break;
+		case CpuType::NecDsp:
+		case CpuType::Cx4:
+			break;
 	}
 	throw std::runtime_error("GetCallstackManager() - Unsupported CPU type");
 }

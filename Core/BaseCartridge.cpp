@@ -12,6 +12,7 @@
 #include "Sa1.h"
 #include "Gsu.h"
 #include "Sdd1.h"
+#include "Cx4.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -193,7 +194,7 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 			case 0x05: return CoprocessorType::RTC; break;
 			case 0x0E: return CoprocessorType::Satellaview; break;
 			case 0x0F:
-				switch(_cartInfo.CartridgeType & 0x0F) {
+				switch(_cartInfo.CartridgeType) {
 					case 0x00: return CoprocessorType::SPC7110; _hasBattery = true; break;
 					case 0x01: return GetSt01xVersion(); _hasBattery = true; break;
 					case 0x02: return CoprocessorType::ST018; _hasBattery = true; break;
@@ -314,7 +315,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 
 void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 {
-	if(MapSpecificCarts(mm) || _coprocessorType == CoprocessorType::GSU || _coprocessorType == CoprocessorType::SDD1) {
+	if(MapSpecificCarts(mm) || _coprocessorType == CoprocessorType::GSU || _coprocessorType == CoprocessorType::SDD1 || _coprocessorType == CoprocessorType::CX4) {
 		return;
 	}
 
@@ -370,6 +371,9 @@ void BaseCartridge::InitCoprocessor()
 		_gsu = dynamic_cast<Gsu*>(_coprocessor.get());
 	} else if(_coprocessorType == CoprocessorType::SDD1) {
 		_coprocessor.reset(new Sdd1(_console));
+	} else if(_coprocessorType == CoprocessorType::CX4) {
+		_coprocessor.reset(new Cx4(_console));
+		_cx4 = dynamic_cast<Cx4*>(_coprocessor.get());
 	}
 }
 
@@ -522,6 +526,11 @@ NecDsp* BaseCartridge::GetDsp()
 Sa1* BaseCartridge::GetSa1()
 {
 	return _sa1;
+}
+
+Cx4* BaseCartridge::GetCx4()
+{
+	return _cx4;
 }
 
 Gsu* BaseCartridge::GetGsu()

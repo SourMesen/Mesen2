@@ -66,6 +66,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	_logCpu[(int)CpuType::NecDsp] = options.LogNecDsp;
 	_logCpu[(int)CpuType::Sa1] = options.LogSa1;
 	_logCpu[(int)CpuType::Gsu] = options.LogGsu;
+	_logCpu[(int)CpuType::Cx4] = options.LogCx4;
 
 	string condition = _options.Condition;
 	string format = _options.Format;
@@ -84,6 +85,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	ParseFormatString(_spcRowParts, "[PC,4h]   [ByteCode,11h] [Disassembly][EffectiveAddress] [MemoryValue,h][Align,48] A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] P:[P,8] H:[Cycle,3] V:[Scanline,3]");
 	ParseFormatString(_dspRowParts, "[PC,4h]   [ByteCode,11h] [Disassembly] [Align,65] [A,2h] S:[SP,2h] H:[Cycle,3] V:[Scanline,3]");
 	ParseFormatString(_gsuRowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,50] SRC:[X,2] DST:[Y,2] R0:[A,2h] H:[Cycle,3] V:[Scanline,3]");
+	ParseFormatString(_cx4RowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,45] [A,2h] H:[Cycle,3] V:[Scanline,3]");
 }
 
 void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)
@@ -418,6 +420,44 @@ void TraceLogger::GetTraceRow(string &output, GsuState &gsuState, PpuState &ppuS
 	output += _options.UseWindowsEol ? "\r\n" : "\n";
 }
 
+
+void TraceLogger::GetTraceRow(string &output, Cx4State &cx4State, PpuState &ppuState, DisassemblyInfo &disassemblyInfo)
+{
+	int originalSize = (int)output.size();
+	uint32_t pcAddress = (cx4State.Cache.Address[cx4State.Cache.Page] + (cx4State.PC * 2)) & 0xFFFFFF;
+	for(RowPart& rowPart : _cx4RowParts) {
+		switch(rowPart.DataType) {
+			case RowDataType::Text: output += rowPart.Text; break;
+			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
+			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, 0, pcAddress, output); break;
+			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
+
+			case RowDataType::PC: WriteValue(output, HexUtilities::ToHex24(pcAddress), rowPart); break;
+			case RowDataType::A:
+				output += " A:" + HexUtilities::ToHex24(cx4State.A);
+				output += string(" ") + (cx4State.Carry ? "C" : "c") + (cx4State.Zero ? "Z" : "z") + (cx4State.Overflow ? "V" : "v") + (cx4State.Negative ? "N" : "n");
+
+				output += " PC:" + HexUtilities::ToHex(cx4State.PC);
+				output += " MAR:" + HexUtilities::ToHex24(cx4State.MemoryAddressReg);
+				output += " MDR:" + HexUtilities::ToHex24(cx4State.MemoryDataReg);
+				output += " DPR:" + HexUtilities::ToHex24(cx4State.DataPointerReg);
+				output += " ML:" + HexUtilities::ToHex24((uint32_t)cx4State.Mult & 0xFFFFFF);
+				output += " MH:" + HexUtilities::ToHex24((uint32_t)(cx4State.Mult >> 24) & 0xFFFFFF);
+				for(int i = 0; i < 16; i++) {
+					output += " R" + std::to_string(i) + ":" + HexUtilities::ToHex24(cx4State.Regs[i]);
+				}
+				break;
+
+			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
+			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
+			case RowDataType::HClock: WriteValue(output, ppuState.HClock, rowPart); break;
+			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
+			default: break;
+		}
+	}
+	output += _options.UseWindowsEol ? "\r\n" : "\n";
+}
+
 /*
 bool TraceLogger::ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo)
 {
@@ -445,6 +485,7 @@ void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &
 		case CpuType::NecDsp: GetTraceRow(output, state.Dsp, state.Ppu, disassemblyInfo); break;
 		case CpuType::Sa1: GetTraceRow(output, state.Sa1, state.Ppu, disassemblyInfo, SnesMemoryType::Sa1Memory); break;
 		case CpuType::Gsu: GetTraceRow(output, state.Gsu, state.Ppu, disassemblyInfo); break;
+		case CpuType::Cx4: GetTraceRow(output, state.Cx4, state.Ppu, disassemblyInfo); break;
 	}
 }
 
@@ -533,12 +574,14 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				continue;
 			}
 
+			DebugState &state = _stateCacheCopy[index];
 			switch(cpuType) {
-				case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Cpu.K << 16) | _stateCacheCopy[index].Cpu.PC) + "\x1"; break;
-				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(_stateCacheCopy[index].Spc.PC) + "\x1"; break;
-				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(_stateCacheCopy[index].Dsp.PC) + "\x1"; break;
-				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Sa1.K << 16) | _stateCacheCopy[index].Sa1.PC) + "\x1"; break;
-				case CpuType::Gsu: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((_stateCacheCopy[index].Gsu.ProgramBank << 16) | _stateCacheCopy[index].Gsu.R[15]) + "\x1"; break;
+				case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((state.Cpu.K << 16) | state.Cpu.PC) + "\x1"; break;
+				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(state.Spc.PC) + "\x1"; break;
+				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(state.Dsp.PC) + "\x1"; break;
+				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Sa1.K << 16) | state.Sa1.PC) + "\x1"; break;
+				case CpuType::Gsu: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]) + "\x1"; break;
+				case CpuType::Cx4: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF) + "\x1"; break;
 			}
 
 			string byteCode;

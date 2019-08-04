@@ -11,6 +11,7 @@ class EmuSettings;
 class NecDsp;
 class Sa1;
 class Gsu;
+class Cx4;
 class Console;
 
 class BaseCartridge : public ISerializable
@@ -26,6 +27,7 @@ private:
 	NecDsp *_necDsp = nullptr;
 	Sa1 *_sa1 = nullptr;
 	Gsu *_gsu = nullptr;
+	Cx4 *_cx4 = nullptr;
 
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
@@ -81,6 +83,7 @@ public:
 	NecDsp* GetDsp();
 	Sa1* GetSa1();
 	Gsu* GetGsu();
+	Cx4* GetCx4();
 
 	void RunCoprocessors();
 

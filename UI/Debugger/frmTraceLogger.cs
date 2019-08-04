@@ -25,6 +25,7 @@ namespace Mesen.GUI.Debugger
 		private UInt64 _previousCycleCount;
 		private volatile bool _refreshRunning;
 		private bool _initialized;
+		private NotificationListener _notifListener;
 
 		public frmTraceLogger()
 		{
@@ -50,6 +51,7 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogNecDsp), chkLogNecDsp);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogSa1), chkLogSa1);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogGsu), chkLogGsu);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogCx4), chkLogCx4);
 
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowByteCode), chkShowByteCode);
 			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowCpuCycles), chkShowCpuCycles);
@@ -94,6 +96,9 @@ namespace Mesen.GUI.Debugger
 				"[Align,50]: Align is a special tag that is useful when trying to align some content. [Align,50] will make the next tag start on column 50."
 			);
 
+			_notifListener = new NotificationListener();
+			_notifListener.OnNotification += OnNotificationReceived;
+
 			this._initialized = true;
 		}
 
@@ -124,6 +129,8 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
+			_notifListener?.Dispose();
+
 			tmrUpdateLog.Stop();
 			while(_refreshRunning) {
 				System.Threading.Thread.Sleep(50);
@@ -151,6 +158,16 @@ namespace Mesen.GUI.Debugger
 
 			if(_loggingEnabled) {
 				DebugApi.StopTraceLogger();
+			}
+		}
+
+		private void OnNotificationReceived(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					//Configuration is lost when debugger is restarted (when switching game or power cycling)
+					this.Invoke((Action)(() => SetOptions()));
+					break;
 			}
 		}
 
@@ -223,6 +240,7 @@ namespace Mesen.GUI.Debugger
 			interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
 			interopOptions.LogSa1 = !disableLogging && options.LogSa1;
 			interopOptions.LogGsu = !disableLogging && options.LogGsu;
+			interopOptions.LogCx4 = !disableLogging && options.LogCx4;
 			interopOptions.IndentCode = options.IndentCode;
 			interopOptions.ShowExtraInfo = options.ShowExtraInfo;
 			interopOptions.UseLabels = options.UseLabels;

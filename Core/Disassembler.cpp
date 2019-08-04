@@ -131,6 +131,7 @@ vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
 		case CpuType::Sa1: return _sa1Disassembly;
 		case CpuType::Gsu: return _gsuDisassembly;
 		case CpuType::NecDsp: break;
+		case CpuType::Cx4: break;
 	}
 	throw std::runtime_error("Disassembly::GetDisassemblyList(): Invalid cpu type");
 }
@@ -178,8 +179,6 @@ void Disassembler::SetDisassembleFlag(CpuType type)
 		_needDisassemble[(int)CpuType::Gsu] = true;
 	} else if(type == CpuType::Spc) {
 		_needDisassemble[(int)CpuType::Spc] = true;
-	} else {
-		throw std::runtime_error("Invalid cpu type");
 	}
 }
 
@@ -564,6 +563,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						break;
 					}
 
+					case CpuType::Cx4:
 					case CpuType::NecDsp:
 						throw std::runtime_error("GetLineData - CPU type not supported");
 				}

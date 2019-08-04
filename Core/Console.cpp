@@ -675,6 +675,13 @@ void Console::ProcessNecDspExec(uint32_t addr, uint32_t value)
 	}
 }
 
+void Console::ProcessCx4Exec()
+{
+	if(_debugger) {
+		_debugger->ProcessCx4Exec();
+	}
+}
+
 void Console::ProcessPpuCycle()
 {
 	if(_debugger) {

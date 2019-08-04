@@ -7,6 +7,7 @@
 #include "SpcDisUtils.h"
 #include "GsuDisUtils.h"
 #include "NecDspDisUtils.h"
+#include "Cx4DisUtils.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
@@ -55,6 +56,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
 		case CpuType::NecDsp: NecDspDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
 		case CpuType::Gsu: GsuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
+		case CpuType::Cx4: Cx4DisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
 	}
 }
 
@@ -68,7 +70,9 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState)
 		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, console, *(SpcState*)cpuState);
 		
 		case CpuType::Gsu:
-		case CpuType::NecDsp: return -1;
+		case CpuType::Cx4:
+		case CpuType::NecDsp:
+			return -1;
 	}
 	return -1;
 }
@@ -135,6 +139,7 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 			return 1;
 
 		case CpuType::NecDsp: return 4;
+		case CpuType::Cx4: return 2;
 	}
 	return 0;
 }
@@ -149,7 +154,9 @@ bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
 		case CpuType::Spc: return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
 		
 		case CpuType::Gsu:
-		case CpuType::NecDsp: return false;
+		case CpuType::NecDsp:
+		case CpuType::Cx4:
+			return false;
 	}
 	return false;
 }
@@ -165,7 +172,9 @@ bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
 		case CpuType::Spc: return opCode == 0x6F || opCode == 0x7F;
 		
 		case CpuType::Gsu:
-		case CpuType::NecDsp: return false;
+		case CpuType::NecDsp:
+		case CpuType::Cx4:
+			return false;
 	}
 	
 	return false;
@@ -196,7 +205,9 @@ bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
 			
 		case CpuType::Gsu:
 		case CpuType::Spc:
-		case CpuType::NecDsp: return false;
+		case CpuType::NecDsp:
+		case CpuType::Cx4:
+			return false;
 	}
 
 	return false;

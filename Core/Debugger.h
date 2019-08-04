@@ -3,6 +3,7 @@
 #include "CpuTypes.h"
 #include "PpuTypes.h"
 #include "DebugTypes.h"
+#include "DebugUtilities.h"
 
 class Console;
 class Cpu;
@@ -58,7 +59,7 @@ private:
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<LabelManager> _labelManager;
 
-	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)CpuType::Gsu + 1];
+	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)DebugUtilities::GetLastCpuType() + 1];
 
 	atomic<bool> _executionStopped;
 	atomic<uint32_t> _breakRequestCount;
@@ -90,6 +91,7 @@ public:
 	void ProcessPpuCycle();
 
 	void ProcessNecDspExec(uint32_t addr, uint32_t value);
+	void ProcessCx4Exec();
 
 	template<CpuType type>
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);

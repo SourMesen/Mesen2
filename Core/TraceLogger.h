@@ -5,6 +5,7 @@
 #include "SpcTypes.h"
 #include "DebugTypes.h"
 #include "DisassemblyInfo.h"
+#include "DebugUtilities.h"
 #include "../Utilities/SimpleLock.h"
 
 class Console;
@@ -20,6 +21,7 @@ struct TraceLoggerOptions
 	bool LogNecDsp;
 	bool LogSa1;
 	bool LogGsu;
+	bool LogCx4;
 
 	bool ShowExtraInfo;
 	bool IndentCode;
@@ -82,8 +84,9 @@ private:
 	vector<RowPart> _spcRowParts;
 	vector<RowPart> _dspRowParts;
 	vector<RowPart> _gsuRowParts;
+	vector<RowPart> _cx4RowParts;
 
-	bool _logCpu[(int)CpuType::Gsu + 1] = {};
+	bool _logCpu[(int)DebugUtilities::GetLastCpuType() + 1] = {};
 
 	bool _pendingLog;
 	//CpuState _lastState;
@@ -119,6 +122,7 @@ private:
 	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, NecDspState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, GsuState &gsuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string &output, Cx4State &cx4State, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 

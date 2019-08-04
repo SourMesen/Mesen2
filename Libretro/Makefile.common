@@ -37,6 +37,9 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/Cpu.cpp \
                $(CORE_DIR)/CpuDebugger.cpp \
                $(CORE_DIR)/CpuDisUtils.cpp \
+               $(CORE_DIR)/Cx4.cpp \
+               $(CORE_DIR)/Cx4.Instructions.cpp \
+               $(CORE_DIR)/Cx4DisUtils.cpp \
                $(CORE_DIR)/Debugger.cpp \
                $(CORE_DIR)/DebugHud.cpp \
                $(CORE_DIR)/DebugStats.cpp \

@@ -12,6 +12,8 @@ public:
 			case CpuType::Spc: return SnesMemoryType::SpcMemory;
 			case CpuType::Sa1: return SnesMemoryType::Sa1Memory;
 			case CpuType::Gsu: return SnesMemoryType::GsuMemory;
+			
+			case CpuType::Cx4: break;
 			case CpuType::NecDsp: break;
 		}
 
@@ -25,6 +27,6 @@ public:
 
 	static constexpr CpuType GetLastCpuType()
 	{
-		return CpuType::Gsu;
+		return CpuType::Cx4;
 	}
 };

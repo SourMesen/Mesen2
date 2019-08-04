@@ -50,6 +50,9 @@
     <ClInclude Include="BaseCoprocessor.h" />
     <ClInclude Include="Cpu.Shared.h" />
     <ClInclude Include="CpuDebugger.h" />
+    <ClInclude Include="Cx4.h" />
+    <ClInclude Include="Cx4DisUtils.h" />
+    <ClInclude Include="Cx4Types.h" />
     <ClInclude Include="DebugUtilities.h" />
     <ClInclude Include="Gsu.h" />
     <ClInclude Include="GsuDebugger.h" />
@@ -184,6 +187,9 @@
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="CpuDebugger.cpp" />
     <ClCompile Include="CpuDisUtils.cpp" />
+    <ClCompile Include="Cx4.cpp" />
+    <ClCompile Include="Cx4.Instructions.cpp" />
+    <ClCompile Include="Cx4DisUtils.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugHud.cpp" />
     <ClCompile Include="DebugStats.cpp" />

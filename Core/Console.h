@@ -135,6 +135,7 @@ public:
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
 	void ProcessNecDspExec(uint32_t addr, uint32_t value);
+	void ProcessCx4Exec();
 	void ProcessPpuCycle();
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
