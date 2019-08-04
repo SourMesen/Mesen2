@@ -296,12 +296,6 @@
     <ClInclude Include="BaseCoprocessor.h">
       <Filter>SNES\Coprocessors</Filter>
     </ClInclude>
-    <ClInclude Include="NecDsp.h">
-      <Filter>SNES\Coprocessors</Filter>
-    </ClInclude>
-    <ClInclude Include="NecDspTypes.h">
-      <Filter>SNES\Coprocessors</Filter>
-    </ClInclude>
     <ClInclude Include="FirmwareHelper.h">
       <Filter>Misc</Filter>
     </ClInclude>
@@ -373,6 +367,15 @@
     </ClInclude>
     <ClInclude Include="Cx4DisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
+    <ClInclude Include="NecDsp.h">
+      <Filter>SNES\Coprocessors\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="NecDspTypes.h">
+      <Filter>SNES\Coprocessors\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="Obc1.h">
+      <Filter>SNES\Coprocessors\OBC1</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -554,9 +557,6 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="NecDsp.cpp">
-      <Filter>SNES\Coprocessors</Filter>
-    </ClCompile>
     <ClCompile Include="AluMulDiv.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
@@ -607,6 +607,12 @@
     </ClCompile>
     <ClCompile Include="Cx4DisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="NecDsp.cpp">
+      <Filter>SNES\Coprocessors\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="Obc1.cpp">
+      <Filter>SNES\Coprocessors\OBC1</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -660,6 +666,12 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\CX4">
       <UniqueIdentifier>{4bf65a17-58bf-4833-a4af-38ddc285f99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\DSP">
+      <UniqueIdentifier>{abf0076b-2ce5-4aac-b6cb-be48829c7489}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\OBC1">
+      <UniqueIdentifier>{244dec9a-54e9-478d-91a2-ab3ab5f6db1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

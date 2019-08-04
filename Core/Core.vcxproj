@@ -98,6 +98,7 @@
     <ClInclude Include="NecDspDisUtils.h" />
     <ClInclude Include="NecDspTypes.h" />
     <ClInclude Include="NtscFilter.h" />
+    <ClInclude Include="Obc1.h" />
     <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RegisterHandlerB.h" />
     <ClInclude Include="CpuTypes.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="NecDspDisUtils.cpp" />
     <ClCompile Include="NotificationManager.cpp" />
     <ClCompile Include="NtscFilter.cpp" />
+    <ClCompile Include="Obc1.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
     <ClCompile Include="RegisterHandlerB.cpp" />

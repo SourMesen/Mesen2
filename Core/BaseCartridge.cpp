@@ -13,6 +13,7 @@
 #include "Gsu.h"
 #include "Sdd1.h"
 #include "Cx4.h"
+#include "Obc1.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -374,6 +375,8 @@ void BaseCartridge::InitCoprocessor()
 	} else if(_coprocessorType == CoprocessorType::CX4) {
 		_coprocessor.reset(new Cx4(_console));
 		_cx4 = dynamic_cast<Cx4*>(_coprocessor.get());
+	} else if(_coprocessorType == CoprocessorType::OBC1) {
+		_coprocessor.reset(new Obc1(_console, _saveRam, _saveRamSize));
 	}
 }
 
