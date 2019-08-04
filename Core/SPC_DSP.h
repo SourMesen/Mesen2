@@ -166,7 +166,7 @@ private:
 		int t_echo_enabled;
 		
 		// internal state that is recalculated every sample
-		int t_dir_addr;
+		uint16_t t_dir_addr;
 		int t_pitch;
 		int t_output;
 		int t_looped;
