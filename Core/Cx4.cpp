@@ -88,11 +88,14 @@ void Cx4::Run()
 		} else {
 			_console->ProcessCx4Exec();
 			uint16_t opCode = _prgRam[_state.Cache.Page][_state.PC++];
-			Exec(opCode);
-
+			
 			if(_state.PC == 0) {
+				//If execution reached the end of the page, start loading the next page
+				//This must be done BEFORE running the instruction (otherwise a jump/branch to address 0 will trigger this)
 				SwitchCachePage();
 			}
+
+			Exec(opCode);
 		}
 	}
 }

@@ -15,8 +15,8 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	auto writeSrc = [&str, param2]() -> void {
 		switch(param2 & 0x7F) {
 			case 0x00: str.Write("A"); break;
-			case 0x01: str.Write("MULTL"); break;
-			case 0x02: str.Write("MULTH"); break;
+			case 0x01: str.Write("MULTH"); break;
+			case 0x02: str.Write("MULTL"); break;
 			case 0x03: str.Write("MDR"); break;
 			case 0x08: str.Write("ROM"); break;
 			case 0x0C: str.Write("RAM"); break;
@@ -205,7 +205,7 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case 0xE8: str.WriteAll("WRRAM A, RAM:", '0' + param1); break;
 		case 0xEC: str.WriteAll("WRRAM DPR+#$", HexUtilities::ToHex(param2), ", RAM:", '0' + param1); break;
 
-		case 0xF0: str.WriteAll("SWAP A, R", std::to_string(param2)); break;
+		case 0xF0: str.WriteAll("SWAP A, R", std::to_string(param2 & 0x0F)); break;
 		case 0xF4: str.Write("???"); break;
 		case 0xF8: str.Write("???"); break;
 		case 0xFC: str.Write("STOP"); break;
