@@ -282,14 +282,12 @@ void Disassembler::Disassemble(CpuType cpuType)
 		
 		uint8_t opSize = 0;
 		uint8_t opCode = (source + addrInfo.Address)[0];
-		bool needRealign = true;
 
 		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsCode(addrInfo.Address) : false;
 		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsData(addrInfo.Address) : false;
 
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
-			needRealign = false;
 		} else if((isData && disData) || (!isData && !isCode && disUnident)) {
 			opSize = DisassemblyInfo::GetOpSize(opCode, 0, cpuType);
 		}
@@ -331,15 +329,14 @@ void Disassembler::Disassemble(CpuType cpuType)
 				results.push_back(DisassemblyResult(addrInfo, i));
 			}
 
-			if(needRealign) {
-				for(int j = 1, max = (int)(*cache).size(); j < opSize && addrInfo.Address + j < max; j++) {
-					if((*cache)[addrInfo.Address + j].IsInitialized()) {
-						break;
-					}
-					i++;
+			//Move to the end of the instruction (but realign disassembly if another valid instruction is found)
+			//This can sometimes happen if the 2nd byte of BRK/COP is reused as the first byte of the next instruction
+			//Also required when disassembling unvalidated data as code (to realign once we find verified code)
+			for(int j = 1, max = (int)(*cache).size(); j < opSize && addrInfo.Address + j < max; j++) {
+				if((*cache)[addrInfo.Address + j].IsInitialized()) {
+					break;
 				}
-			} else {
-				i += opSize - 1;
+				i++;
 			}
 
 			if(DisassemblyInfo::IsReturnInstruction(opCode, cpuType)) {
