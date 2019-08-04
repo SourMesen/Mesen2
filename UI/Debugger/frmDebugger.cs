@@ -1,6 +1,7 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Debugger.Code;
 using Mesen.GUI.Debugger.Controls;
+using Mesen.GUI.Debugger.Labels;
 using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Forms;
 using System;
@@ -415,6 +416,7 @@ namespace Mesen.GUI.Debugger
 					DebugState state = DebugApi.GetState();
 					this.BeginInvoke((MethodInvoker)(() => {
 						DebugWorkspaceManager.ImportDbgFile();
+						LabelManager.RefreshLabels();
 						DebugApi.RefreshDisassembly(_cpuType);
 						UpdateDebugger(state, null);
 						BreakpointManager.SetBreakpoints();
