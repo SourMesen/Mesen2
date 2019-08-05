@@ -74,6 +74,8 @@ public:
 		uint8_t output = 0;
 
 		if(IsCurrentPort(addr)) {
+			StrobeProcessRead();
+
 			if(_port >= 2) {
 				output = (_stateBuffer & 0x01) << 1;  //P3/P4 are reported in bit 2
 			} else {
@@ -83,8 +85,6 @@ public:
 
 			//"All subsequent reads will return D=1 on an authentic controller but may return D=0 on third party controllers."
 			_stateBuffer |= 0x8000;
-
-			StrobeProcessRead();
 		}
 
 		return output;

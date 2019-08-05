@@ -53,6 +53,7 @@ public:
 	{
 		uint8_t output = 0;
 		if((addr == 0x4016 && (_port & 0x01) == 0) || (addr == 0x4017 && (_port & 0x01) == 1)) {
+			StrobeProcessRead();
 			if(_strobe) {
 				_sensitivity = (_sensitivity + 1) % 3;
 			}
@@ -62,7 +63,6 @@ public:
 				output <<= 1;
 			}
 			_stateBuffer <<= 1;
-			StrobeProcessRead();
 		}
 		return output;
 	}
