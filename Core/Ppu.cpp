@@ -656,7 +656,7 @@ void Ppu::FetchSpritePosition(uint16_t oamAddress)
 	if(spriteIndex != _currentSprite.Index) {
 		_currentSprite.Index = oamAddress >> 2;
 		_currentSprite.ColumnOffset = (_currentSprite.Width / 8);
-		if(_currentSprite.X <= -8) {
+		if(_currentSprite.X <= -8 && _currentSprite.X != -256) {
 			//Skip the first tiles of the sprite (because the tiles are hidden to the left of the screen)
 			_currentSprite.ColumnOffset += _currentSprite.X / 8;
 		}
@@ -684,8 +684,9 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 
 	_currentSprite.ColumnOffset--;
 	
+	int16_t x = _currentSprite.X == -256 ? 0 : _currentSprite.X;
 	uint8_t columnCount = (_currentSprite.Width / 8);
-	_currentSprite.DrawX = _currentSprite.X + ((columnCount - _currentSprite.ColumnOffset - 1) << 3);
+	_currentSprite.DrawX = x + ((columnCount - _currentSprite.ColumnOffset - 1) << 3);
 	
 	uint8_t yOffset;
 	int rowOffset;
@@ -728,6 +729,10 @@ void Ppu::FetchSpriteTile(bool secondCycle)
 	if(!secondCycle) {
 		_currentSprite.FetchAddress += 8;
 	} else {
+		if(_currentSprite.X == -256) {
+			return;
+		}
+
 		int16_t xPos = _currentSprite.DrawX;
 		for(int x = 0; x < 8; x++) {
 			if(xPos + x < 0 || xPos + x > 255) {
