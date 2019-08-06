@@ -649,13 +649,18 @@ void Ppu::FetchSpritePosition(uint16_t oamAddress)
 	uint16_t sign = (highTableValue & 0x01) << 8;
 
 	uint8_t spriteIndex = oamAddress >> 2;
-	if(spriteIndex != _currentSprite.Index) {
-		_currentSprite.Index = oamAddress >> 2;
-		_currentSprite.ColumnOffset = -1;
-	}
 	_currentSprite.X = (int16_t)((sign | (oamValue & 0xFF)) << 7) >> 7;
 	_currentSprite.Y = (oamValue >> 8);
 	_currentSprite.Width = _oamSizes[_oamMode][largeSprite][0] << 3;
+	
+	if(spriteIndex != _currentSprite.Index) {
+		_currentSprite.Index = oamAddress >> 2;
+		_currentSprite.ColumnOffset = (_currentSprite.Width / 8);
+		if(_currentSprite.X <= -8) {
+			//Skip the first tiles of the sprite (because the tiles are hidden to the left of the screen)
+			_currentSprite.ColumnOffset += _currentSprite.X / 8;
+		}
+	}
 
 	uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
 	if(_objInterlace) {
@@ -677,17 +682,9 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	_currentSprite.Priority = (flags >> 4) & 0x03;
 	_currentSprite.HorizontalMirror = (flags & 0x40) != 0;
 
+	_currentSprite.ColumnOffset--;
+	
 	uint8_t columnCount = (_currentSprite.Width / 8);
-	if(_currentSprite.ColumnOffset == -1) {
-		_currentSprite.ColumnOffset = columnCount - 1;
-	} else {
-		_currentSprite.ColumnOffset--;
-	}
-
-	if(_currentSprite.ColumnOffset == 0) {
-		_spriteCount--;
-	}
-
 	_currentSprite.DrawX = _currentSprite.X + ((columnCount - _currentSprite.ColumnOffset - 1) << 3);
 	
 	uint8_t yOffset;
@@ -714,6 +711,12 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint8_t tileIndex = (row << 4) | ((tileColumn + columnOffset) & 0x0F);
 	uint16_t tileStart = (_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF;
 	_currentSprite.FetchAddress = tileStart + yOffset;
+
+	if(_currentSprite.ColumnOffset == 0 || _currentSprite.DrawX + 8 >= 256) {
+		//Last tile of the sprite, or skip the remaining tiles (because the tiles are hidden to the right of the screen)
+		_spriteCount--;
+		_currentSprite.ColumnOffset = 0;
+	}
 }
 
 void Ppu::FetchSpriteTile(bool secondCycle)
