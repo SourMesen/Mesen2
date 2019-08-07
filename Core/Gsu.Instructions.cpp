@@ -580,6 +580,7 @@ void Gsu::PlotRpix()
 		uint8_t value = ReadPixel((uint8_t)_state.R[1], (uint8_t)_state.R[2]);
 		_state.SFR.Zero = (value == 0);
 		_state.SFR.Sign = (value & 0x8000);
+		WriteDestReg(value);
 	} else {
 		//PLOT
 		DrawPixel((uint8_t)_state.R[1], (uint8_t)_state.R[2]);
