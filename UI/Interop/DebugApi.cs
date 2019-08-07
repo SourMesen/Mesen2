@@ -195,6 +195,18 @@ namespace Mesen.GUI
 			}
 		}
 
+		public static bool IsRelativeMemory(this SnesMemoryType memType)
+		{
+			switch(memType) {
+				case SnesMemoryType.CpuMemory:
+				case SnesMemoryType.SpcMemory:
+				case SnesMemoryType.Sa1Memory:
+				case SnesMemoryType.GsuMemory:
+					return true;
+			}
+			return false;
+		}
+
 		public static bool SupportsLabels(this SnesMemoryType memType)
 		{
 			switch(memType) {
@@ -217,6 +229,7 @@ namespace Mesen.GUI
 				case SnesMemoryType.CpuMemory:
 				case SnesMemoryType.SpcMemory:
 				case SnesMemoryType.Sa1Memory:
+				case SnesMemoryType.GsuMemory:
 					return true;
 			}
 

@@ -79,7 +79,7 @@ namespace Mesen.GUI.Debugger
 			BreakpointManager.RefreshBreakpoints(this);
 		}
 
-		public bool IsAbsoluteAddress { get { return MemoryType != SnesMemoryType.CpuMemory && MemoryType != SnesMemoryType.SpcMemory; } }
+		public bool IsAbsoluteAddress { get { return !MemoryType.IsRelativeMemory(); } }
 		public bool IsCpuBreakpoint { get { return this._isCpuBreakpoint; } }
 
 		private BreakpointTypeFlags Type
