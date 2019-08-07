@@ -684,10 +684,6 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 
 	_currentSprite.ColumnOffset--;
 	
-	int16_t x = _currentSprite.X == -256 ? 0 : _currentSprite.X;
-	uint8_t columnCount = (_currentSprite.Width / 8);
-	_currentSprite.DrawX = x + ((columnCount - _currentSprite.ColumnOffset - 1) << 3);
-	
 	uint8_t yOffset;
 	int rowOffset;
 	int yGap = (_scanline - _currentSprite.Y);
@@ -705,6 +701,7 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 		rowOffset = yGap >> 3;
 	}
 
+	uint8_t columnCount = (_currentSprite.Width / 8);
 	uint8_t tileRow = (_oamRam[oamAddress] & 0xF0) >> 4;
 	uint8_t tileColumn = _oamRam[oamAddress] & 0x0F;
 	uint8_t row = (tileRow + rowOffset) & 0x0F;
@@ -713,7 +710,11 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint16_t tileStart = (_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF;
 	_currentSprite.FetchAddress = tileStart + yOffset;
 
-	if(_currentSprite.ColumnOffset == 0 || _currentSprite.DrawX + 8 >= 256) {
+	int16_t x = _currentSprite.X == -256 ? 0 : _currentSprite.X;
+	int16_t endTileX = x + ((columnCount - _currentSprite.ColumnOffset - 1) << 3) + 8;
+	_currentSprite.DrawX = _currentSprite.X + ((columnCount - _currentSprite.ColumnOffset - 1) << 3);
+
+	if(_currentSprite.ColumnOffset == 0 || endTileX >= 256) {
 		//Last tile of the sprite, or skip the remaining tiles (because the tiles are hidden to the right of the screen)
 		_spriteCount--;
 		_currentSprite.ColumnOffset = 0;
@@ -729,10 +730,6 @@ void Ppu::FetchSpriteTile(bool secondCycle)
 	if(!secondCycle) {
 		_currentSprite.FetchAddress += 8;
 	} else {
-		if(_currentSprite.X == -256) {
-			return;
-		}
-
 		int16_t xPos = _currentSprite.DrawX;
 		for(int x = 0; x < 8; x++) {
 			if(xPos + x < 0 || xPos + x > 255) {
@@ -749,8 +746,6 @@ void Ppu::FetchSpriteTile(bool secondCycle)
 			}
 		}
 	}
-	//Dummy fetches to VRAM when no sprite to load?
-	//This might be observable by reading from VMDATAxREAD?
 }
 
 void Ppu::RenderMode0()
