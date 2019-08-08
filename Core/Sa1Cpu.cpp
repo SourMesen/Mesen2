@@ -127,3 +127,8 @@ uint16_t Sa1Cpu::GetResetVector()
 {
 	return _sa1->ReadSa1(Sa1Cpu::ResetVector) | (_sa1->ReadSa1(Sa1Cpu::ResetVector+1) << 8);
 }
+
+void Sa1Cpu::IncreaseCycleCount(uint64_t cycleCount)
+{
+	_state.CycleCount += cycleCount;
+}

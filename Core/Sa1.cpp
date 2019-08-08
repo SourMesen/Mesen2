@@ -197,7 +197,9 @@ void Sa1::CpuRegisterWrite(uint16_t addr, uint8_t value)
 		case 0x2200: 
 			//CCNT (SA-1 CPU Control)
 			if(!(value & 0x20) && _state.Sa1Reset) {
+				//Reset the CPU, and sync cycle count
 				_cpu->Reset();
+				_cpu->IncreaseCycleCount(_memoryManager->GetMasterClock() / 2);
 			}
 
 			_state.Sa1MessageReceived = value & 0x0F;

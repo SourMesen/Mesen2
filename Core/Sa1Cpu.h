@@ -325,6 +325,8 @@ public:
 	bool CheckIrqSource(IrqSource source);
 	void ClearIrqSource(IrqSource source);
 
+	void IncreaseCycleCount(uint64_t cycleCount);
+
 	// Inherited via ISerializable
 	void Serialize(Serializer &s) override;
 };
