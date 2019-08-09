@@ -17,13 +17,15 @@
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/HexUtilities.h"
 
+#define DEVICE_NONE               RETRO_DEVICE_NONE
 #define DEVICE_AUTO               RETRO_DEVICE_JOYPAD
 #define DEVICE_GAMEPAD            RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 0)
+#define DEVICE_MULTITAP           RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 1)
 #define DEVICE_SNESMOUSE          RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_MOUSE, 2)
 
 static retro_log_printf_t logCallback = nullptr;
 static retro_environment_t retroEnv = nullptr;
-static unsigned _inputDevices[5] = { DEVICE_GAMEPAD, DEVICE_GAMEPAD, DEVICE_AUTO, DEVICE_AUTO, DEVICE_AUTO };
+static unsigned _inputDevices[5] = { DEVICE_GAMEPAD, DEVICE_GAMEPAD, DEVICE_NONE, DEVICE_NONE, DEVICE_NONE };
 static string _mesenVersion = "";
 static int32_t _saveStateSize = -1;
 
@@ -112,22 +114,41 @@ extern "C" {
 		};
 
 		static constexpr struct retro_controller_description pads1[] = {
-			//{ "Auto", DEVICE_AUTO },
+			{ "None", DEVICE_NONE },
 			{ "SNES Controller", DEVICE_GAMEPAD },
 			{ "SNES Mouse", DEVICE_SNESMOUSE },
 			{ NULL, 0 },
 		};
 
 		static constexpr struct retro_controller_description pads2[] = {
-			//{ "Auto", DEVICE_AUTO },
+			{ "None", DEVICE_NONE },
 			{ "SNES Controller", DEVICE_GAMEPAD },
 			{ "SNES Mouse", DEVICE_SNESMOUSE },
+			{ "Multitap", DEVICE_MULTITAP },
+			{ NULL, 0 },
+		};
+
+		static constexpr struct retro_controller_description pads3[] = {
+			{ "SNES Controller", DEVICE_GAMEPAD },
 			{ NULL, 0 },
 		};
 		
+		static constexpr struct retro_controller_description pads4[] = {
+			{ "SNES Controller", DEVICE_GAMEPAD },
+			{ NULL, 0 },
+		};
+
+		static constexpr struct retro_controller_description pads5[] = {
+			{ "SNES Controller", DEVICE_GAMEPAD },
+			{ NULL, 0 },
+		};
+
 		static constexpr struct retro_controller_info ports[] = {
-			{ pads1, 2 },
-			{ pads2, 2 },
+			{ pads1, 3 },
+			{ pads2, 4 },
+			{ pads3, 1 },
+			{ pads4, 1 },
+			{ pads5, 1 },
 			{ 0 },
 		};
 
@@ -445,7 +466,7 @@ extern "C" {
 		auto setupPlayerButtons = [addDesc](int port) {
 			unsigned device = _inputDevices[port];
 			if(device == DEVICE_AUTO) {
-				if(port <= 3) {
+				if(port <= 4) {
 					switch(_console->GetSettings()->GetInputConfig().Controllers[port].Type) {
 						case ControllerType::SnesController: device = DEVICE_GAMEPAD; break;
 						case ControllerType::SnesMouse: device = DEVICE_SNESMOUSE; break;
@@ -470,6 +491,11 @@ extern "C" {
 
 		setupPlayerButtons(0);
 		setupPlayerButtons(1);
+		if(_console->GetSettings()->GetInputConfig().Controllers[1].Type == ControllerType::Multitap) {
+			setupPlayerButtons(2);
+			setupPlayerButtons(3);
+			setupPlayerButtons(4);
+		}
 
 		retro_input_descriptor end = { 0 };
 		desc.push_back(end);
@@ -485,10 +511,12 @@ extern "C" {
 			switch(_inputDevices[port]) {
 				case RETRO_DEVICE_NONE: type = ControllerType::None; break;
 				case DEVICE_GAMEPAD: type = ControllerType::SnesController; break;
+				case DEVICE_MULTITAP: type = ControllerType::Multitap; break;
 				case DEVICE_SNESMOUSE: type = ControllerType::SnesMouse; break;
 			}
 			input.Controllers[port].Type = type;
 		}
+
 		_console->GetSettings()->SetInputConfig(input);
 	}
 	
@@ -498,7 +526,7 @@ extern "C" {
 
 	RETRO_API void retro_set_controller_port_device(unsigned port, unsigned device)
 	{
-		if(port < 2 && _inputDevices[port] != device) {
+		if(port < 5 && _inputDevices[port] != device) {
 			_inputDevices[port] = device;
 			update_core_controllers();
 			update_input_descriptors();

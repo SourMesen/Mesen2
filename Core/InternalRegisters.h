@@ -34,7 +34,8 @@ private:
 	uint16_t _controllerData[4] = {};
 
 public:
-	InternalRegisters(Console* console);
+	InternalRegisters();
+	void Initialize(Console* console);
 
 	void Reset();
 

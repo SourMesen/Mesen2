@@ -9,8 +9,13 @@
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
-InternalRegisters::InternalRegisters(Console* console) : _aluMulDiv(console->GetCpu().get())
+InternalRegisters::InternalRegisters()
 {
+}
+
+void InternalRegisters::Initialize(Console* console)
+{
+	_aluMulDiv.Initialize(console->GetCpu().get());
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_ppu = _console->GetPpu().get();

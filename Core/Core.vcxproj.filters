@@ -380,6 +380,9 @@
     <ClInclude Include="CpuBwRamHandler.h">
       <Filter>SNES\Coprocessors\SA1</Filter>
     </ClInclude>
+    <ClInclude Include="Multitap.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

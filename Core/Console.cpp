@@ -287,6 +287,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_cart = cart;
 		UpdateRegion();
 
+		_internalRegisters.reset(new InternalRegisters());
 		_memoryManager.reset(new MemoryManager());
 		_ppu.reset(new Ppu(this));
 		_controlManager.reset(new ControlManager(this));
@@ -294,8 +295,8 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_spc.reset(new Spc(this));
 
 		_cpu.reset(new Cpu(this));
-		_internalRegisters.reset(new InternalRegisters(this));
 		_memoryManager->Initialize(this);
+		_internalRegisters->Initialize(this);
 
 		if(_debugger) {
 			//Reset debugger if it was running before

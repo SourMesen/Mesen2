@@ -95,6 +95,7 @@
     <ClInclude Include="LuaCallHelper.h" />
     <ClInclude Include="LuaScriptingContext.h" />
     <ClInclude Include="MemoryAccessCounter.h" />
+    <ClInclude Include="Multitap.h" />
     <ClInclude Include="NecDsp.h" />
     <ClInclude Include="NecDspDisUtils.h" />
     <ClInclude Include="NecDspTypes.h" />

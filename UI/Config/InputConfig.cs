@@ -123,6 +123,7 @@ namespace Mesen.GUI.Config
 		None = 0,
 		SnesController = 1,
 		SnesMouse = 2,
-		SuperScope = 3
+		SuperScope = 3,
+		Multitap = 4
 	}
 }

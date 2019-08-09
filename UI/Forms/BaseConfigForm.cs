@@ -117,14 +117,14 @@ namespace Mesen.GUI.Forms
 			_binder.AddBinding(fieldName, bindedField, format);
 		}
 
-		public static void InitializeComboBox(ComboBox combo, Type enumType, Enum[] hiddenValues = null)
+		public static void InitializeComboBox(ComboBox combo, Type enumType, params Enum[] hiddenValues)
 		{
 			Enum selectedValue = combo.GetEnumValue(enumType);
 
 			combo.DropDownStyle = ComboBoxStyle.DropDownList;
 			combo.Items.Clear();
 			foreach(Enum value in Enum.GetValues(enumType)) {
-				if(hiddenValues == null || Array.IndexOf(hiddenValues, value) < 0) {
+				if(hiddenValues.Length == 0 || Array.IndexOf(hiddenValues, value) < 0) {
 					combo.Items.Add(ResourceHelper.GetEnumText(value));
 				}
 			}

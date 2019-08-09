@@ -23,21 +23,23 @@ namespace Mesen.GUI.Forms.Config
 			InputConfig cfg = ConfigManager.Config.Input.Clone();
 			Entity = cfg;
 
-			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer1, typeof(ControllerType));
-			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer2, typeof(ControllerType));
-			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer3, typeof(ControllerType));
-			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer4, typeof(ControllerType));
-			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer5, typeof(ControllerType));
+			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer1, typeof(ControllerType), ControllerType.SuperScope);
+			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer2, typeof(ControllerType), ControllerType.SuperScope);
 
-			//Remove super scope for now
-			cboPlayer1.Items.RemoveAt(3);
-			cboPlayer2.Items.RemoveAt(3);
+			BaseConfigForm.InitializeComboBox((ComboBox)cboMultitap1, typeof(ControllerType), ControllerType.None, ControllerType.Multitap, ControllerType.SnesMouse, ControllerType.SuperScope);
+			BaseConfigForm.InitializeComboBox((ComboBox)cboMultitap2, typeof(ControllerType), ControllerType.None, ControllerType.Multitap, ControllerType.SnesMouse, ControllerType.SuperScope);
+			BaseConfigForm.InitializeComboBox((ComboBox)cboMultitap3, typeof(ControllerType), ControllerType.None, ControllerType.Multitap, ControllerType.SnesMouse, ControllerType.SuperScope);
+			BaseConfigForm.InitializeComboBox((ComboBox)cboMultitap4, typeof(ControllerType), ControllerType.None, ControllerType.Multitap, ControllerType.SnesMouse, ControllerType.SuperScope);
 
 			cboPlayer1.SetEnumValue(cfg.Controllers[0].Type);
 			cboPlayer2.SetEnumValue(cfg.Controllers[1].Type);
-			cboPlayer3.SetEnumValue(cfg.Controllers[2].Type);
-			cboPlayer4.SetEnumValue(cfg.Controllers[3].Type);
-			cboPlayer5.SetEnumValue(cfg.Controllers[4].Type);
+
+			cboMultitap1.SetEnumValue(ControllerType.SnesController);
+			cboMultitap2.SetEnumValue(ControllerType.SnesController);
+			cboMultitap3.SetEnumValue(ControllerType.SnesController);
+			cboMultitap4.SetEnumValue(ControllerType.SnesController);
+
+			UpdateUiSections();
 		}
 
 		protected override void OnApply()
@@ -46,18 +48,34 @@ namespace Mesen.GUI.Forms.Config
 
 			ConfigManager.Config.Input.Controllers[0].Type = cboPlayer1.GetEnumValue<ControllerType>();
 			ConfigManager.Config.Input.Controllers[1].Type = cboPlayer2.GetEnumValue<ControllerType>();
-			ConfigManager.Config.Input.Controllers[2].Type = cboPlayer3.GetEnumValue<ControllerType>();
-			ConfigManager.Config.Input.Controllers[3].Type = cboPlayer4.GetEnumValue<ControllerType>();
-			ConfigManager.Config.Input.Controllers[4].Type = cboPlayer5.GetEnumValue<ControllerType>();
+
+			ConfigManager.Config.Input.Controllers[2].Type = ControllerType.SnesController;
+			ConfigManager.Config.Input.Controllers[3].Type = ControllerType.SnesController;
+			ConfigManager.Config.Input.Controllers[4].Type = ControllerType.SnesController;
 
 			ConfigManager.ApplyChanges();
 		}
 
-		protected override bool ValidateInput()
+		private int MultitapPort
+		{
+			get
+			{
+				if(cboPlayer1.GetEnumValue<ControllerType>() == ControllerType.Multitap) {
+					return 0;
+				} else if(cboPlayer2.GetEnumValue<ControllerType>() == ControllerType.Multitap) {
+					return 1;
+				}
+				return -1;
+			}
+		}
+
+		private void UpdateUiSections()
 		{
 			btnSetupP1.Enabled = cboPlayer1.GetEnumValue<ControllerType>() == ControllerType.SnesController;
 			btnSetupP2.Enabled = cboPlayer2.GetEnumValue<ControllerType>() == ControllerType.SnesController;
-			return base.ValidateInput();
+
+			grpMultitap.Visible = this.MultitapPort >= 0;
+			lblMultitap1.Text = ResourceHelper.GetMessage("PlayerNumber", (this.MultitapPort + 1).ToString()) + ":";
 		}
 
 		private void btnSetup_Click(object sender, EventArgs e)
@@ -73,17 +91,21 @@ namespace Mesen.GUI.Forms.Config
 				type = cboPlayer2.GetEnumValue<ControllerType>();
 				selectedText = cboPlayer2.SelectedItem.ToString();
 				index = 1;
-			} else if(sender == btnSetupP3) {
-				type = cboPlayer3.GetEnumValue<ControllerType>();
-				selectedText = cboPlayer3.SelectedItem.ToString();
+			} else if(sender == btnSetupMultitap1) {
+				type = ControllerType.SnesController;
+				selectedText = cboMultitap1.SelectedItem.ToString();
+				index = this.MultitapPort;
+			} else if(sender == btnSetupMultitap2) {
+				type = ControllerType.SnesController;
+				selectedText = cboMultitap2.SelectedItem.ToString();
 				index = 2;
-			} else if(sender == btnSetupP4) {
-				type = cboPlayer4.GetEnumValue<ControllerType>();
-				selectedText = cboPlayer4.SelectedItem.ToString();
+			} else if(sender == btnSetupMultitap3) {
+				type = ControllerType.SnesController;
+				selectedText = cboMultitap3.SelectedItem.ToString();
 				index = 3;
-			} else if(sender == btnSetupP5) {
-				type = cboPlayer4.GetEnumValue<ControllerType>();
-				selectedText = cboPlayer5.SelectedItem.ToString();
+			} else if(sender == btnSetupMultitap4) {
+				type = ControllerType.SnesController;
+				selectedText = cboMultitap4.SelectedItem.ToString();
 				index = 4;
 			}
 
@@ -140,6 +162,24 @@ namespace Mesen.GUI.Forms.Config
 				cfg.Controllers[port] = frm.Config;
 			}
 			frm.Dispose();
+		}
+		
+		private void cboPlayer1_SelectionChangeCommitted(object sender, EventArgs e)
+		{
+			//Prevent 2 multitaps from being connected at once, for now
+			if(cboPlayer2.GetEnumValue<ControllerType>() == ControllerType.Multitap && cboPlayer1.GetEnumValue<ControllerType>() == ControllerType.Multitap) {
+				cboPlayer2.SetEnumValue(ControllerType.SnesController);
+			}
+			UpdateUiSections();
+		}
+
+		private void cboPlayer2_SelectionChangeCommitted(object sender, EventArgs e)
+		{
+			//Prevent 2 multitaps from being connected at once, for now
+			if(cboPlayer2.GetEnumValue<ControllerType>() == ControllerType.Multitap && cboPlayer1.GetEnumValue<ControllerType>() == ControllerType.Multitap) {
+				cboPlayer1.SetEnumValue(ControllerType.SnesController);
+			}
+			UpdateUiSections();
 		}
 	}
 }

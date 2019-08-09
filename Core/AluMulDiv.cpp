@@ -3,7 +3,7 @@
 #include "Cpu.h"
 #include "../Utilities/Serializer.h"
 
-AluMulDiv::AluMulDiv(Cpu* cpu)
+void AluMulDiv::Initialize(Cpu* cpu)
 {
 	_cpu = cpu;
 }

@@ -149,7 +149,8 @@ enum class ControllerType
 	None = 0,
 	SnesController = 1,
 	SnesMouse = 2,
-	SuperScope = 3
+	SuperScope = 3,
+	Multitap = 4
 };
 
 struct KeyMapping
@@ -231,7 +232,7 @@ struct ControllerConfig
 
 struct InputConfig
 {
-	ControllerConfig Controllers[4];
+	ControllerConfig Controllers[5];
 	uint32_t ControllerDeadzoneSize = 2;
 	uint32_t MouseSensitivity = 1;
 };

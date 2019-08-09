@@ -24,7 +24,7 @@ private:
 	uint8_t _divCounter = 0;
 	
 public:
-	AluMulDiv(Cpu *cpu);
+	void Initialize(Cpu* cpu);
 	
 	void Run(bool isRead);
 
