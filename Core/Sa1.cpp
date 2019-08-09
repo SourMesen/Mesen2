@@ -58,7 +58,7 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 		case 0x2209: 
 			//SCNT (SNES CPU Control)
 			_state.CpuMessageReceived = value & 0x0F;
-			_state.UseCpuNmiVector = (value & 0x20) != 0;
+			_state.UseCpuNmiVector = (value & 0x10) != 0;
 			_state.UseCpuIrqVector = (value & 0x40) != 0;
 			_state.CpuIrqRequested = (value & 0x80) != 0;
 
