@@ -48,6 +48,7 @@
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseCoprocessor.h" />
+    <ClInclude Include="BatteryManager.h" />
     <ClInclude Include="Cpu.Shared.h" />
     <ClInclude Include="CpuBwRamHandler.h" />
     <ClInclude Include="CpuDebugger.h" />
@@ -95,7 +96,11 @@
     <ClInclude Include="LuaCallHelper.h" />
     <ClInclude Include="LuaScriptingContext.h" />
     <ClInclude Include="MemoryAccessCounter.h" />
+    <ClInclude Include="MovieTypes.h" />
     <ClInclude Include="Multitap.h" />
+    <ClInclude Include="MesenMovie.h" />
+    <ClInclude Include="MovieManager.h" />
+    <ClInclude Include="MovieRecorder.h" />
     <ClInclude Include="NecDsp.h" />
     <ClInclude Include="NecDspDisUtils.h" />
     <ClInclude Include="NecDspTypes.h" />
@@ -180,6 +185,7 @@
     <ClCompile Include="BaseRenderer.cpp" />
     <ClCompile Include="BaseSoundManager.cpp" />
     <ClCompile Include="BaseVideoFilter.cpp" />
+    <ClCompile Include="BatteryManager.cpp" />
     <ClCompile Include="Breakpoint.cpp" />
     <ClCompile Include="BreakpointManager.cpp" />
     <ClCompile Include="CallstackManager.cpp" />
@@ -217,7 +223,10 @@
     <ClCompile Include="MemoryDumper.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="MemoryMappings.cpp" />
+    <ClCompile Include="MesenMovie.cpp" />
     <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="MovieManager.cpp" />
+    <ClCompile Include="MovieRecorder.cpp" />
     <ClCompile Include="NecDsp.cpp" />
     <ClCompile Include="NecDspDisUtils.cpp" />
     <ClCompile Include="NotificationManager.cpp" />

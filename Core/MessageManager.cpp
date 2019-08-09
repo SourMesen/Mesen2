@@ -33,6 +33,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "CouldNotConnect", u8"Could not connect to the server." },
 	{ "CouldNotInitializeAudioSystem", u8"Could not initialize audio system" },
 	{ "CouldNotFindRom", u8"Could not find matching game ROM." },
+	{ "CouldNotWriteToFile", u8"Could not write to file: %1" },
 	{ "CouldNotLoadFile", u8"Could not load file: %1" },
 	{ "EmulationMaximumSpeed", u8"Maximum speed" },
 	{ "EmulationSpeedPercent", u8"%1%" },

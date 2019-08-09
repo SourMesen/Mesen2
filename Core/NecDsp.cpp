@@ -9,6 +9,7 @@
 #include "MessageManager.h"
 #include "EmuSettings.h"
 #include "RamHandler.h"
+#include "BatteryManager.h"
 #include "FirmwareHelper.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -105,19 +106,17 @@ void NecDsp::Reset()
 	_state = {};
 }
 
-void NecDsp::LoadBattery(string filePath)
+void NecDsp::LoadBattery()
 {
 	if(_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) {
-		VirtualFile saveFile(filePath);
-		saveFile.ReadFile((uint8_t*)_ram, _ramSize * sizeof(uint16_t));
+		_console->GetBatteryManager()->LoadBattery(".srm", (uint8_t*)_ram, _ramSize * sizeof(uint16_t));
 	}
 }
 
-void NecDsp::SaveBattery(string filePath)
+void NecDsp::SaveBattery()
 {
 	if(_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) {
-		ofstream saveFile(filePath, ios::binary);
-		saveFile.write((char*)_ram, _ramSize * sizeof(uint16_t));
+		_console->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_ram, _ramSize * sizeof(uint16_t));
 	}
 }
 

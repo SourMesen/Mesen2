@@ -517,6 +517,22 @@ namespace Mesen.GUI.Forms
 			mnuRegionPal.Checked = ConfigManager.Config.Emulation.Region == ConsoleRegion.Pal;
 		}
 
+		private void mnuTools_DropDownOpening(object sender, EventArgs e)
+		{
+			mnuMovies.Enabled = EmuRunner.IsRunning();
+			mnuPlayMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording();
+			mnuRecordMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording();
+			mnuStopMovie.Enabled = EmuRunner.IsRunning() && (RecordApi.MoviePlaying() || RecordApi.MovieRecording());
+
+			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
+			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
+			mnuWaveStop.Enabled = EmuRunner.IsRunning() && RecordApi.WaveIsRecording();
+
+			mnuVideoRecorder.Enabled = EmuRunner.IsRunning();
+			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
+			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
+		}
+
 		private void mnuAviRecord_Click(object sender, EventArgs e)
 		{
 			using(frmRecordAvi frm = new frmRecordAvi()) {
@@ -529,17 +545,6 @@ namespace Mesen.GUI.Forms
 		private void mnuAviStop_Click(object sender, EventArgs e)
 		{
 			RecordApi.AviStop();
-		}
-
-		private void mnuTools_DropDownOpening(object sender, EventArgs e)
-		{
-			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
-			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
-			mnuWaveStop.Enabled = EmuRunner.IsRunning() && RecordApi.WaveIsRecording();
-
-			mnuVideoRecorder.Enabled = EmuRunner.IsRunning();
-			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
-			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
 		}
 
 		private void mnuWaveRecord_Click(object sender, EventArgs e)
@@ -557,6 +562,29 @@ namespace Mesen.GUI.Forms
 		private void mnuWaveStop_Click(object sender, EventArgs e)
 		{
 			RecordApi.WaveStop();
+		}
+
+		private void mnuPlayMovie_Click(object sender, EventArgs e)
+		{
+			using(OpenFileDialog ofd = new OpenFileDialog()) {
+				ofd.SetFilter(ResourceHelper.GetMessage("FilterMovie"));
+				ofd.InitialDirectory = ConfigManager.MovieFolder;
+				if(ofd.ShowDialog(this) == DialogResult.OK) {
+					RecordApi.MoviePlay(ofd.FileName);
+				}
+			}
+		}
+
+		private void mnuStopMovie_Click(object sender, EventArgs e)
+		{
+			RecordApi.MovieStop();
+		}
+
+		private void mnuRecordMovie_Click(object sender, EventArgs e)
+		{
+			using(frmRecordMovie frm = new frmRecordMovie()) {
+				frm.ShowDialog(mnuMovies, this);
+			}
 		}
 
 		private void mnu_DropDownOpened(object sender, EventArgs e)

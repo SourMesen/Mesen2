@@ -672,7 +672,7 @@
 	<Messages>
 		<Message ID="FilterAll">All Files (*.*)|*.*</Message>
 		<Message ID="FilterZipFiles">Zip files (*.zip)|*.zip</Message>
-		<Message ID="FilterMovie">Movie files (*.mmo)|*.mmo|All Files (*.*)|*.*</Message>
+		<Message ID="FilterMovie">Movie files (*.msm)|*.msm|All Files (*.*)|*.*</Message>
 		<Message ID="FilterWave">Wave files (*.wav)|*.wav|All Files (*.*)|*.*</Message>
 		<Message ID="FilterAvi">Avi files (*.avi)|*.avi|All Files (*.*)|*.*</Message>
 		<Message ID="FilterPalette">Palette Files (*.pal)|*.pal|All Files (*.*)|*.*</Message>
@@ -704,7 +704,7 @@
 
 		<Message ID="HelpFullscreen">/fullscreen - Start Mesen-S in fullscreen mode</Message>
 		<Message ID="HelpDoNotSaveSettings">/DoNotSaveSettings - Prevent settings from being saved to the disk (useful to prevent command line options from becoming the default settings)</Message>
-		<Message ID="HelpRecordMovie">/RecordMovie="filename.mmo" - Start recording a movie after the specified game is loaded.</Message>
+		<Message ID="HelpRecordMovie">/RecordMovie="filename.msm" - Start recording a movie after the specified game is loaded.</Message>
 		<Message ID="HelpLoadLastSession">/LoadLastSession - Resumes the game in the state it was left in when it was last played.</Message>
 
 		<Message ID="Resume">Resume</Message>

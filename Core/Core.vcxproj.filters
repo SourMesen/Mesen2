@@ -152,9 +152,6 @@
     <ClInclude Include="ControlManager.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="FrameLimiter.h">
-      <Filter>SNES</Filter>
-    </ClInclude>
     <ClInclude Include="CodeDataLogger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
@@ -382,6 +379,24 @@
     </ClInclude>
     <ClInclude Include="Multitap.h">
       <Filter>SNES\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MesenMovie.h">
+      <Filter>Movies</Filter>
+    </ClInclude>
+    <ClInclude Include="MovieManager.h">
+      <Filter>Movies</Filter>
+    </ClInclude>
+    <ClInclude Include="MovieRecorder.h">
+      <Filter>Movies</Filter>
+    </ClInclude>
+    <ClInclude Include="MovieTypes.h">
+      <Filter>Movies</Filter>
+    </ClInclude>
+    <ClInclude Include="BatteryManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameLimiter.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -620,6 +635,18 @@
     <ClCompile Include="Obc1.cpp">
       <Filter>SNES\Coprocessors\OBC1</Filter>
     </ClCompile>
+    <ClCompile Include="MesenMovie.cpp">
+      <Filter>Movies</Filter>
+    </ClCompile>
+    <ClCompile Include="MovieRecorder.cpp">
+      <Filter>Movies</Filter>
+    </ClCompile>
+    <ClCompile Include="MovieManager.cpp">
+      <Filter>Movies</Filter>
+    </ClCompile>
+    <ClCompile Include="BatteryManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -678,6 +705,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\OBC1">
       <UniqueIdentifier>{244dec9a-54e9-478d-91a2-ab3ab5f6db1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Movies">
+      <UniqueIdentifier>{e6a0a09a-5e38-4a63-83bf-095f297b7633}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

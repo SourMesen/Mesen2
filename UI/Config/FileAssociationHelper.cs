@@ -77,8 +77,8 @@ namespace Mesen.GUI.Config
 			CreateMimeType("x-mesen-nes", "smc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
 			CreateMimeType("x-mesen-nes", "swc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
 			CreateMimeType("x-mesen-nes", "fig", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen-mst", "mst", "Mesen-S Save State", mimeTypes, cfg.AssociateMssFiles);
-			CreateMimeType("x-mesen-mmo", "mmo", "Mesen-S Movie File", mimeTypes, cfg.AssociateMsmFiles);
+			CreateMimeType("x-mesen-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateMssFiles);
+			CreateMimeType("x-mesen-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMsmFiles);
 
 			//Icon used for shortcuts
 			//TOOD

@@ -56,8 +56,8 @@ public:
 	void Reset() override;
 	void Run();
 
-	void LoadBattery(string filePath) override;
-	void SaveBattery(string filePath) override;
+	void LoadBattery() override;
+	void SaveBattery() override;
 	
 	uint8_t Read(uint32_t addr) override;
 	void Write(uint32_t addr, uint8_t value) override;

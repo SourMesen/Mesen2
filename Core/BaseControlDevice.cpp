@@ -103,10 +103,13 @@ void BaseControlDevice::SetTextState(string textState)
 
 		int i = 0;
 		for(char c : textState) {
-			if(c != '.') {
-				SetBit(i);
+			if(c != ':') {
+				//Ignore colons (used by multitap to separate inputs)
+				if(c != '.') {
+					SetBit(i);
+				}
+				i++;
 			}
-			i++;
 		}
 	}
 }
@@ -125,8 +128,15 @@ string BaseControlDevice::GetTextState()
 			output += std::to_string(pos.X) + " " + std::to_string(pos.Y) + " ";
 		}
 
+		int keyNumber = 0;
 		for(size_t i = 0; i < keyNames.size(); i++) {
-			output += IsPressed((uint8_t)i) ? keyNames[i] : '.';
+			if(keyNames[i] != ':') {
+				//Ignore colons in string (used by multitap to split controllers)
+				output += IsPressed((uint8_t)keyNumber) ? keyNames[i] : '.';
+				keyNumber++;
+			} else {
+				output += ':';
+			}
 		}
 
 		return output;

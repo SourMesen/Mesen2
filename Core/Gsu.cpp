@@ -9,6 +9,7 @@
 #include "GsuRamHandler.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
+#include "BatteryManager.h"
 #include "../Utilities/HexUtilities.h"
 
 Gsu::Gsu(Console *console, uint32_t gsuRamSize)
@@ -616,16 +617,14 @@ void Gsu::Serialize(Serializer &s)
 	s.StreamArray(_gsuRam, _gsuRamSize);
 }
 
-void Gsu::LoadBattery(string filePath)
+void Gsu::LoadBattery()
 {
-	VirtualFile saveFile(filePath);
-	saveFile.ReadFile((uint8_t*)_gsuRam, _gsuRamSize);
+	_console->GetBatteryManager()->LoadBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
 }
 
-void Gsu::SaveBattery(string filePath)
+void Gsu::SaveBattery()
 {
-	ofstream saveFile(filePath, ios::binary);
-	saveFile.write((char*)_gsuRam, _gsuRamSize);
+	_console->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
 }
 
 GsuState Gsu::GetState()

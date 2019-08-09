@@ -52,8 +52,8 @@ namespace Mesen.GUI.Utilities
 					} else if(!Path.IsPathRooted(moviePath)) {
 						moviePath = Path.Combine(Program.OriginalFolder, moviePath);
 					}
-					if(!moviePath.ToLower().EndsWith(".mmo")) {
-						moviePath += ".mmo";
+					if(!moviePath.ToLower().EndsWith(".msm")) {
+						moviePath += ".msm";
 					}
 					_movieToRecord = moviePath;
 					break;

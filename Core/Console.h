@@ -23,6 +23,7 @@ class NotificationManager;
 class EmuSettings;
 class SaveStateManager;
 class RewindManager;
+class BatteryManager;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -43,6 +44,7 @@ private:
 	shared_ptr<Debugger> _debugger;
 
 	shared_ptr<NotificationManager> _notificationManager;
+	shared_ptr<BatteryManager> _batteryManager;
 	shared_ptr<SoundMixer> _soundMixer;
 	shared_ptr<VideoRenderer> _videoRenderer;
 	shared_ptr<VideoDecoder> _videoDecoder;
@@ -110,6 +112,7 @@ public:
 	shared_ptr<SaveStateManager> GetSaveStateManager();
 	shared_ptr<RewindManager> GetRewindManager();
 	shared_ptr<DebugHud> GetDebugHud();
+	shared_ptr<BatteryManager> GetBatteryManager();
 
 	shared_ptr<Cpu> GetCpu();
 	shared_ptr<Ppu> GetPpu();

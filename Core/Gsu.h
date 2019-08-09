@@ -151,8 +151,8 @@ public:
 	uint8_t ReadGsu(uint32_t addr, MemoryOperationType opType);
 	void WriteGsu(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
-	void LoadBattery(string filePath) override;
-	void SaveBattery(string filePath) override;
+	void LoadBattery() override;
+	void SaveBattery() override;
 	
 	void Run();
 	void Reset() override;

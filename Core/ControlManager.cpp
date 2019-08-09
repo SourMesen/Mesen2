@@ -126,7 +126,7 @@ void ControlManager::UpdateControlDevices()
 		auto lock = _deviceLock.AcquireSafe();
 		_controlDevices.clear();
 		RegisterControlDevice(_systemActionManager);
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < 2; i++) {
 			shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i, _console);
 			if(device) {
 				RegisterControlDevice(device);
@@ -207,7 +207,7 @@ void ControlManager::Write(uint16_t addr, uint8_t value)
 void ControlManager::Serialize(Serializer &s)
 {
 	InputConfig cfg = _console->GetSettings()->GetInputConfig();
-	s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type);
+	s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type, cfg.Controllers[4].Type);
 	if(!s.IsSaving()) {
 		_console->GetSettings()->SetInputConfig(cfg);
 		UpdateControlDevices();

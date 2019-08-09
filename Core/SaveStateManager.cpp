@@ -8,6 +8,7 @@
 #include "EmuSettings.h"
 #include "VideoDecoder.h"
 #include "BaseCartridge.h"
+#include "MovieManager.h"
 
 SaveStateManager::SaveStateManager(shared_ptr<Console> console)
 {
@@ -148,7 +149,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 
 		//Stop any movie that might have been playing/recording if a state is loaded
 		//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
-		//TODO MovieManager::Stop();
+		MovieManager::Stop();
 
 		_console->Deserialize(stream, fileFormatVersion);
 

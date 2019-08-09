@@ -30,6 +30,13 @@
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tpgGeneral = new System.Windows.Forms.TabPage();
 			this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
+			this.chkAllowBackgroundInput = new System.Windows.Forms.CheckBox();
+			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblPauseIn = new System.Windows.Forms.Label();
+			this.chkPauseWhenInBackground = new System.Windows.Forms.CheckBox();
+			this.chkPauseInMenuAndConfig = new System.Windows.Forms.CheckBox();
+			this.chkPauseInDebugger = new System.Windows.Forms.CheckBox();
+			this.lblPauseBackgroundSettings = new System.Windows.Forms.Label();
 			this.chkAutoHideMenu = new System.Windows.Forms.CheckBox();
 			this.chkSingleInstance = new System.Windows.Forms.CheckBox();
 			this.chkAutomaticallyCheckForUpdates = new System.Windows.Forms.CheckBox();
@@ -90,16 +97,11 @@
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
-			this.lblPauseBackgroundSettings = new System.Windows.Forms.Label();
-			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
-			this.lblPauseIn = new System.Windows.Forms.Label();
-			this.chkPauseWhenInBackground = new System.Windows.Forms.CheckBox();
-			this.chkPauseInMenuAndConfig = new System.Windows.Forms.CheckBox();
-			this.chkPauseInDebugger = new System.Windows.Forms.CheckBox();
-			this.chkAllowBackgroundInput = new System.Windows.Forms.CheckBox();
+			this.chkPauseOnMovieEnd = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
+			this.flowLayoutPanel8.SuspendLayout();
 			this.flowLayoutPanel2.SuspendLayout();
 			this.tableLayoutPanel5.SuspendLayout();
 			this.tpgShortcuts.SuspendLayout();
@@ -116,7 +118,6 @@
 			this.tpgAdvanced.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.flowLayoutPanel6.SuspendLayout();
-			this.flowLayoutPanel8.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -153,24 +154,26 @@
 			// 
 			this.tlpMain.ColumnCount = 1;
 			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tlpMain.Controls.Add(this.chkPauseOnMovieEnd, 0, 6);
 			this.tlpMain.Controls.Add(this.chkAllowBackgroundInput, 0, 5);
 			this.tlpMain.Controls.Add(this.flowLayoutPanel8, 0, 4);
 			this.tlpMain.Controls.Add(this.lblPauseBackgroundSettings, 0, 3);
-			this.tlpMain.Controls.Add(this.chkAutoHideMenu, 0, 8);
+			this.tlpMain.Controls.Add(this.chkAutoHideMenu, 0, 9);
 			this.tlpMain.Controls.Add(this.chkSingleInstance, 0, 2);
 			this.tlpMain.Controls.Add(this.chkAutomaticallyCheckForUpdates, 0, 1);
 			this.tlpMain.Controls.Add(this.flowLayoutPanel2, 0, 0);
-			this.tlpMain.Controls.Add(this.lblMiscSettings, 0, 6);
-			this.tlpMain.Controls.Add(this.chkAutoLoadPatches, 0, 7);
-			this.tlpMain.Controls.Add(this.tableLayoutPanel5, 0, 10);
+			this.tlpMain.Controls.Add(this.lblMiscSettings, 0, 7);
+			this.tlpMain.Controls.Add(this.chkAutoLoadPatches, 0, 8);
+			this.tlpMain.Controls.Add(this.tableLayoutPanel5, 0, 11);
 			this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tlpMain.Location = new System.Drawing.Point(3, 3);
 			this.tlpMain.Name = "tlpMain";
-			this.tlpMain.RowCount = 11;
+			this.tlpMain.RowCount = 12;
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -181,10 +184,87 @@
 			this.tlpMain.Size = new System.Drawing.Size(534, 383);
 			this.tlpMain.TabIndex = 1;
 			// 
+			// chkAllowBackgroundInput
+			// 
+			this.chkAllowBackgroundInput.AutoSize = true;
+			this.chkAllowBackgroundInput.Location = new System.Drawing.Point(13, 120);
+			this.chkAllowBackgroundInput.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkAllowBackgroundInput.Name = "chkAllowBackgroundInput";
+			this.chkAllowBackgroundInput.Size = new System.Drawing.Size(177, 17);
+			this.chkAllowBackgroundInput.TabIndex = 30;
+			this.chkAllowBackgroundInput.Text = "Allow input when in background";
+			this.chkAllowBackgroundInput.UseVisualStyleBackColor = true;
+			// 
+			// flowLayoutPanel8
+			// 
+			this.flowLayoutPanel8.Controls.Add(this.lblPauseIn);
+			this.flowLayoutPanel8.Controls.Add(this.chkPauseWhenInBackground);
+			this.flowLayoutPanel8.Controls.Add(this.chkPauseInMenuAndConfig);
+			this.flowLayoutPanel8.Controls.Add(this.chkPauseInDebugger);
+			this.flowLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flowLayoutPanel8.Location = new System.Drawing.Point(7, 95);
+			this.flowLayoutPanel8.Margin = new System.Windows.Forms.Padding(7, 3, 0, 0);
+			this.flowLayoutPanel8.Name = "flowLayoutPanel8";
+			this.flowLayoutPanel8.Size = new System.Drawing.Size(527, 22);
+			this.flowLayoutPanel8.TabIndex = 29;
+			// 
+			// lblPauseIn
+			// 
+			this.lblPauseIn.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblPauseIn.AutoSize = true;
+			this.lblPauseIn.Location = new System.Drawing.Point(3, 4);
+			this.lblPauseIn.Margin = new System.Windows.Forms.Padding(3, 0, 3, 1);
+			this.lblPauseIn.Name = "lblPauseIn";
+			this.lblPauseIn.Size = new System.Drawing.Size(80, 13);
+			this.lblPauseIn.TabIndex = 0;
+			this.lblPauseIn.Text = "Pause when in:";
+			// 
+			// chkPauseWhenInBackground
+			// 
+			this.chkPauseWhenInBackground.AutoSize = true;
+			this.chkPauseWhenInBackground.Location = new System.Drawing.Point(89, 3);
+			this.chkPauseWhenInBackground.Name = "chkPauseWhenInBackground";
+			this.chkPauseWhenInBackground.Size = new System.Drawing.Size(84, 17);
+			this.chkPauseWhenInBackground.TabIndex = 13;
+			this.chkPauseWhenInBackground.Text = "Background";
+			this.chkPauseWhenInBackground.UseVisualStyleBackColor = true;
+			// 
+			// chkPauseInMenuAndConfig
+			// 
+			this.chkPauseInMenuAndConfig.AutoSize = true;
+			this.chkPauseInMenuAndConfig.Location = new System.Drawing.Point(179, 3);
+			this.chkPauseInMenuAndConfig.Name = "chkPauseInMenuAndConfig";
+			this.chkPauseInMenuAndConfig.Size = new System.Drawing.Size(142, 17);
+			this.chkPauseInMenuAndConfig.TabIndex = 16;
+			this.chkPauseInMenuAndConfig.Text = "Menu and config dialogs";
+			this.chkPauseInMenuAndConfig.UseVisualStyleBackColor = true;
+			// 
+			// chkPauseInDebugger
+			// 
+			this.chkPauseInDebugger.AutoSize = true;
+			this.chkPauseInDebugger.Location = new System.Drawing.Point(327, 3);
+			this.chkPauseInDebugger.Name = "chkPauseInDebugger";
+			this.chkPauseInDebugger.Size = new System.Drawing.Size(103, 17);
+			this.chkPauseInDebugger.TabIndex = 18;
+			this.chkPauseInDebugger.Text = "Debugging tools";
+			this.chkPauseInDebugger.UseVisualStyleBackColor = true;
+			// 
+			// lblPauseBackgroundSettings
+			// 
+			this.lblPauseBackgroundSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblPauseBackgroundSettings.AutoSize = true;
+			this.lblPauseBackgroundSettings.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.lblPauseBackgroundSettings.Location = new System.Drawing.Point(0, 79);
+			this.lblPauseBackgroundSettings.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.lblPauseBackgroundSettings.Name = "lblPauseBackgroundSettings";
+			this.lblPauseBackgroundSettings.Size = new System.Drawing.Size(141, 13);
+			this.lblPauseBackgroundSettings.TabIndex = 26;
+			this.lblPauseBackgroundSettings.Text = "Pause/Background Settings";
+			// 
 			// chkAutoHideMenu
 			// 
 			this.chkAutoHideMenu.AutoSize = true;
-			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 186);
+			this.chkAutoHideMenu.Location = new System.Drawing.Point(13, 209);
 			this.chkAutoHideMenu.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkAutoHideMenu.Name = "chkAutoHideMenu";
 			this.chkAutoHideMenu.Size = new System.Drawing.Size(158, 17);
@@ -247,7 +327,7 @@
 			this.lblMiscSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblMiscSettings.AutoSize = true;
 			this.lblMiscSettings.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblMiscSettings.Location = new System.Drawing.Point(0, 147);
+			this.lblMiscSettings.Location = new System.Drawing.Point(0, 170);
 			this.lblMiscSettings.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.lblMiscSettings.Name = "lblMiscSettings";
 			this.lblMiscSettings.Size = new System.Drawing.Size(73, 13);
@@ -257,7 +337,7 @@
 			// chkAutoLoadPatches
 			// 
 			this.chkAutoLoadPatches.AutoSize = true;
-			this.chkAutoLoadPatches.Location = new System.Drawing.Point(13, 163);
+			this.chkAutoLoadPatches.Location = new System.Drawing.Point(13, 186);
 			this.chkAutoLoadPatches.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkAutoLoadPatches.Name = "chkAutoLoadPatches";
 			this.chkAutoLoadPatches.Size = new System.Drawing.Size(198, 17);
@@ -310,7 +390,7 @@
 			this.tpgShortcuts.Location = new System.Drawing.Point(4, 22);
 			this.tpgShortcuts.Name = "tpgShortcuts";
 			this.tpgShortcuts.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgShortcuts.Size = new System.Drawing.Size(540, 418);
+			this.tpgShortcuts.Size = new System.Drawing.Size(540, 389);
 			this.tpgShortcuts.TabIndex = 7;
 			this.tpgShortcuts.Text = "Shortcut Keys";
 			this.tpgShortcuts.UseVisualStyleBackColor = true;
@@ -320,7 +400,7 @@
 			this.ctrlEmulatorShortcuts.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlEmulatorShortcuts.Location = new System.Drawing.Point(3, 3);
 			this.ctrlEmulatorShortcuts.Name = "ctrlEmulatorShortcuts";
-			this.ctrlEmulatorShortcuts.Size = new System.Drawing.Size(534, 412);
+			this.ctrlEmulatorShortcuts.Size = new System.Drawing.Size(534, 383);
 			this.ctrlEmulatorShortcuts.TabIndex = 0;
 			// 
 			// tpgFiles
@@ -329,7 +409,7 @@
 			this.tpgFiles.Location = new System.Drawing.Point(4, 22);
 			this.tpgFiles.Name = "tpgFiles";
 			this.tpgFiles.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgFiles.Size = new System.Drawing.Size(540, 418);
+			this.tpgFiles.Size = new System.Drawing.Size(540, 389);
 			this.tpgFiles.TabIndex = 2;
 			this.tpgFiles.Text = "Folders/Files";
 			this.tpgFiles.UseVisualStyleBackColor = true;
@@ -350,7 +430,7 @@
 			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel6.Size = new System.Drawing.Size(534, 412);
+			this.tableLayoutPanel6.Size = new System.Drawing.Size(534, 383);
 			this.tableLayoutPanel6.TabIndex = 13;
 			// 
 			// grpPathOverrides
@@ -757,7 +837,7 @@
 			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
 			this.tpgAdvanced.Name = "tpgAdvanced";
 			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgAdvanced.Size = new System.Drawing.Size(540, 418);
+			this.tpgAdvanced.Size = new System.Drawing.Size(540, 389);
 			this.tpgAdvanced.TabIndex = 1;
 			this.tpgAdvanced.Text = "Advanced";
 			this.tpgAdvanced.UseVisualStyleBackColor = true;
@@ -793,7 +873,7 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 412);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 383);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// lblAdvancedMisc
@@ -973,82 +1053,16 @@
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
 			// 
-			// lblPauseBackgroundSettings
+			// chkPauseOnMovieEnd
 			// 
-			this.lblPauseBackgroundSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.lblPauseBackgroundSettings.AutoSize = true;
-			this.lblPauseBackgroundSettings.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblPauseBackgroundSettings.Location = new System.Drawing.Point(0, 79);
-			this.lblPauseBackgroundSettings.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.lblPauseBackgroundSettings.Name = "lblPauseBackgroundSettings";
-			this.lblPauseBackgroundSettings.Size = new System.Drawing.Size(141, 13);
-			this.lblPauseBackgroundSettings.TabIndex = 26;
-			this.lblPauseBackgroundSettings.Text = "Pause/Background Settings";
-			// 
-			// flowLayoutPanel8
-			// 
-			this.flowLayoutPanel8.Controls.Add(this.lblPauseIn);
-			this.flowLayoutPanel8.Controls.Add(this.chkPauseWhenInBackground);
-			this.flowLayoutPanel8.Controls.Add(this.chkPauseInMenuAndConfig);
-			this.flowLayoutPanel8.Controls.Add(this.chkPauseInDebugger);
-			this.flowLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.flowLayoutPanel8.Location = new System.Drawing.Point(7, 95);
-			this.flowLayoutPanel8.Margin = new System.Windows.Forms.Padding(7, 3, 0, 0);
-			this.flowLayoutPanel8.Name = "flowLayoutPanel8";
-			this.flowLayoutPanel8.Size = new System.Drawing.Size(527, 22);
-			this.flowLayoutPanel8.TabIndex = 29;
-			// 
-			// lblPauseIn
-			// 
-			this.lblPauseIn.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblPauseIn.AutoSize = true;
-			this.lblPauseIn.Location = new System.Drawing.Point(3, 4);
-			this.lblPauseIn.Margin = new System.Windows.Forms.Padding(3, 0, 3, 1);
-			this.lblPauseIn.Name = "lblPauseIn";
-			this.lblPauseIn.Size = new System.Drawing.Size(80, 13);
-			this.lblPauseIn.TabIndex = 0;
-			this.lblPauseIn.Text = "Pause when in:";
-			// 
-			// chkPauseWhenInBackground
-			// 
-			this.chkPauseWhenInBackground.AutoSize = true;
-			this.chkPauseWhenInBackground.Location = new System.Drawing.Point(89, 3);
-			this.chkPauseWhenInBackground.Name = "chkPauseWhenInBackground";
-			this.chkPauseWhenInBackground.Size = new System.Drawing.Size(84, 17);
-			this.chkPauseWhenInBackground.TabIndex = 13;
-			this.chkPauseWhenInBackground.Text = "Background";
-			this.chkPauseWhenInBackground.UseVisualStyleBackColor = true;
-			// 
-			// chkPauseInMenuAndConfig
-			// 
-			this.chkPauseInMenuAndConfig.AutoSize = true;
-			this.chkPauseInMenuAndConfig.Location = new System.Drawing.Point(179, 3);
-			this.chkPauseInMenuAndConfig.Name = "chkPauseInMenuAndConfig";
-			this.chkPauseInMenuAndConfig.Size = new System.Drawing.Size(142, 17);
-			this.chkPauseInMenuAndConfig.TabIndex = 16;
-			this.chkPauseInMenuAndConfig.Text = "Menu and config dialogs";
-			this.chkPauseInMenuAndConfig.UseVisualStyleBackColor = true;
-			// 
-			// chkPauseInDebugger
-			// 
-			this.chkPauseInDebugger.AutoSize = true;
-			this.chkPauseInDebugger.Location = new System.Drawing.Point(327, 3);
-			this.chkPauseInDebugger.Name = "chkPauseInDebugger";
-			this.chkPauseInDebugger.Size = new System.Drawing.Size(103, 17);
-			this.chkPauseInDebugger.TabIndex = 18;
-			this.chkPauseInDebugger.Text = "Debugging tools";
-			this.chkPauseInDebugger.UseVisualStyleBackColor = true;
-			// 
-			// chkAllowBackgroundInput
-			// 
-			this.chkAllowBackgroundInput.AutoSize = true;
-			this.chkAllowBackgroundInput.Location = new System.Drawing.Point(13, 120);
-			this.chkAllowBackgroundInput.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
-			this.chkAllowBackgroundInput.Name = "chkAllowBackgroundInput";
-			this.chkAllowBackgroundInput.Size = new System.Drawing.Size(177, 17);
-			this.chkAllowBackgroundInput.TabIndex = 30;
-			this.chkAllowBackgroundInput.Text = "Allow input when in background";
-			this.chkAllowBackgroundInput.UseVisualStyleBackColor = true;
+			this.chkPauseOnMovieEnd.AutoSize = true;
+			this.chkPauseOnMovieEnd.Location = new System.Drawing.Point(13, 143);
+			this.chkPauseOnMovieEnd.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkPauseOnMovieEnd.Name = "chkPauseOnMovieEnd";
+			this.chkPauseOnMovieEnd.Size = new System.Drawing.Size(199, 17);
+			this.chkPauseOnMovieEnd.TabIndex = 31;
+			this.chkPauseOnMovieEnd.Text = "Pause when a movie finishes playing";
+			this.chkPauseOnMovieEnd.UseVisualStyleBackColor = true;
 			// 
 			// frmPreferences
 			// 
@@ -1065,6 +1079,8 @@
 			this.tpgGeneral.ResumeLayout(false);
 			this.tlpMain.ResumeLayout(false);
 			this.tlpMain.PerformLayout();
+			this.flowLayoutPanel8.ResumeLayout(false);
+			this.flowLayoutPanel8.PerformLayout();
 			this.flowLayoutPanel2.ResumeLayout(false);
 			this.flowLayoutPanel2.PerformLayout();
 			this.tableLayoutPanel5.ResumeLayout(false);
@@ -1090,8 +1106,6 @@
 			this.tableLayoutPanel1.PerformLayout();
 			this.flowLayoutPanel6.ResumeLayout(false);
 			this.flowLayoutPanel6.PerformLayout();
-			this.flowLayoutPanel8.ResumeLayout(false);
-			this.flowLayoutPanel8.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1169,5 +1183,6 @@
 		private System.Windows.Forms.CheckBox chkPauseInMenuAndConfig;
 		private System.Windows.Forms.CheckBox chkPauseInDebugger;
 		private System.Windows.Forms.Label lblPauseBackgroundSettings;
+		private System.Windows.Forms.CheckBox chkPauseOnMovieEnd;
 	}
 }

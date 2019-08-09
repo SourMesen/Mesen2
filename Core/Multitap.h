@@ -17,8 +17,8 @@ private:
 protected:
 	string GetKeyNames() override
 	{
-		//Repeat key names 4x to 
-		return string("ABXYLRSTUDLR") + "ABXYLRSTUDLR" + "ABXYLRSTUDLR" + "ABXYLRSTUDLR";
+		//Repeat key names 4x, once for each controller
+		return "ABXYLRSTUDLR:ABXYLRSTUDLR:ABXYLRSTUDLR:ABXYLRSTUDLR";
 	}
 
 	void InternalSetStateFromInput() override
@@ -88,7 +88,8 @@ public:
 
 	uint8_t ReadRam(uint16_t addr) override
 	{
-		uint8_t portSelect = (_internalRegs->GetIoPortOutput() & 0x80) ? 0 : 2;
+		uint8_t selectBit = 0x80 >> ((_port == 0) ? 1 : 0);
+		uint8_t portSelect = (_internalRegs->GetIoPortOutput() & selectBit) ? 0 : 2;
 		uint8_t output = 0;
 
 		if(IsCurrentPort(addr)) {

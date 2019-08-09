@@ -8,6 +8,7 @@
 #include "RewindManager.h"
 #include "NotificationManager.h"
 #include "SaveStateManager.h"
+#include "MovieManager.h"
 
 ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Console> console)
 {
@@ -102,8 +103,8 @@ void ShortcutKeyHandler::CheckMappedKeys()
 {
 	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	bool isNetplayClient = false; //TODO GameClient::Connected();
-	//bool isMovieActive = false; //TODO MovieManager::Playing() || MovieManager::Recording();
-	bool isMovieRecording = false; //TODO MovieManager::Recording();
+	//bool isMovieActive = MovieManager::Playing() || MovieManager::Recording();
+	bool isMovieRecording = MovieManager::Recording();
 
 	//Let the UI handle these shortcuts
 	for(uint64_t i = (uint64_t)EmulatorShortcut::TakeScreenshot; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {

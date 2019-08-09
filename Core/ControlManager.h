@@ -20,7 +20,6 @@ private:
 	vector<IInputRecorder*> _inputRecorders;
 	vector<IInputProvider*> _inputProviders;
 	
-	//TODO: Static so that power cycle does not reset its value
 	uint32_t _pollCounter;
 	uint32_t _inputConfigVersion;
 

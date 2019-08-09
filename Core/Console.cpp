@@ -27,6 +27,8 @@
 #include "CartTypes.h"
 #include "RewindManager.h"
 #include "ConsoleLock.h"
+#include "MovieManager.h"
+#include "BatteryManager.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
@@ -53,6 +55,7 @@ void Console::Initialize()
 	_lockCounter = 0;
 
 	_notificationManager.reset(new NotificationManager());
+	_batteryManager.reset(new BatteryManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
 	_saveStateManager.reset(new SaveStateManager(shared_from_this()));
@@ -152,6 +155,8 @@ void Console::Run()
 			previousFrameCount = _ppu->GetFrameCount();
 		}
 	}
+
+	MovieManager::Stop();
 
 	_emulationThreadId = thread::id();
 
@@ -285,6 +290,8 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		}
 		
 		_cart = cart;
+		_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
+
 		UpdateRegion();
 
 		_internalRegisters.reset(new InternalRegisters());
@@ -548,6 +555,11 @@ shared_ptr<RewindManager> Console::GetRewindManager()
 shared_ptr<DebugHud> Console::GetDebugHud()
 {
 	return _debugHud;
+}
+
+shared_ptr<BatteryManager> Console::GetBatteryManager()
+{
+	return _batteryManager;
 }
 
 shared_ptr<Cpu> Console::GetCpu()

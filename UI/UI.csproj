@@ -217,6 +217,7 @@
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Config\InputConfig.cs" />
     <Compile Include="Config\FileAssociationHelper.cs" />
+    <Compile Include="Config\MovieRecordConfig.cs" />
     <Compile Include="Config\PreferencesConfig.cs" />
     <Compile Include="Config\Shortcuts\EmulatorShortcut.cs" />
     <Compile Include="Config\Shortcuts\KeyCombination.cs" />
@@ -767,6 +768,12 @@
     <Compile Include="Forms\frmFullscreenRenderer.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Config\frmRecordMovie.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmRecordMovie.Designer.cs">
+      <DependentUpon>frmRecordMovie.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Tools\frmLogWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1047,6 +1054,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmConfigWizard.resx">
       <DependentUpon>frmConfigWizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmRecordMovie.resx">
+      <DependentUpon>frmRecordMovie.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Tools\frmLogWindow.resx">
       <DependentUpon>frmLogWindow.cs</DependentUpon>

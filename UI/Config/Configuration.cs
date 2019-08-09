@@ -23,6 +23,7 @@ namespace Mesen.GUI.Config
 		public DebugInfo Debug;
 		public RecentItems RecentFiles;
 		public AviRecordConfig AviRecord;
+		public MovieRecordConfig MovieRecord;
 		public Point WindowLocation;
 		public Size WindowSize;
 		public bool NeedInputReinit = true;
@@ -38,6 +39,7 @@ namespace Mesen.GUI.Config
 			Emulation = new EmulationConfig();
 			Preferences = new PreferencesConfig();
 			AviRecord = new AviRecordConfig();
+			MovieRecord = new MovieRecordConfig();
 		}
 
 		~Configuration()

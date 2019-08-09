@@ -9,6 +9,6 @@ public:
 	virtual void Reset() = 0;
 	
 	virtual void ProcessEndOfFrame() { }
-	virtual void LoadBattery(string filePath) { }
-	virtual void SaveBattery(string filePath) { }
+	virtual void LoadBattery() { }
+	virtual void SaveBattery() { }
 };

@@ -144,6 +144,11 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
+			this.mnuMovies = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuPlayMovie = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRecordMovie = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuStopMovie = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem25 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -764,6 +769,8 @@
 			// mnuTools
 			// 
 			this.mnuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuMovies,
+            this.toolStripMenuItem25,
             this.mnuSoundRecorder,
             this.mnuVideoRecorder,
             this.toolStripMenuItem11,
@@ -1039,6 +1046,46 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
+			// mnuMovies
+			// 
+			this.mnuMovies.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuPlayMovie,
+            this.mnuRecordMovie,
+            this.mnuStopMovie});
+			this.mnuMovies.Image = global::Mesen.GUI.Properties.Resources.Movie;
+			this.mnuMovies.Name = "mnuMovies";
+			this.mnuMovies.Size = new System.Drawing.Size(159, 22);
+			this.mnuMovies.Text = "Movies";
+			// 
+			// mnuPlayMovie
+			// 
+			this.mnuPlayMovie.Image = global::Mesen.GUI.Properties.Resources.MediaPlay;
+			this.mnuPlayMovie.Name = "mnuPlayMovie";
+			this.mnuPlayMovie.Size = new System.Drawing.Size(152, 22);
+			this.mnuPlayMovie.Text = "Play...";
+			this.mnuPlayMovie.Click += new System.EventHandler(this.mnuPlayMovie_Click);
+			// 
+			// mnuRecordMovie
+			// 
+			this.mnuRecordMovie.Image = global::Mesen.GUI.Properties.Resources.Record;
+			this.mnuRecordMovie.Name = "mnuRecordMovie";
+			this.mnuRecordMovie.Size = new System.Drawing.Size(152, 22);
+			this.mnuRecordMovie.Text = "Record...";
+			this.mnuRecordMovie.Click += new System.EventHandler(this.mnuRecordMovie_Click);
+			// 
+			// mnuStopMovie
+			// 
+			this.mnuStopMovie.Image = global::Mesen.GUI.Properties.Resources.MediaStop;
+			this.mnuStopMovie.Name = "mnuStopMovie";
+			this.mnuStopMovie.Size = new System.Drawing.Size(152, 22);
+			this.mnuStopMovie.Text = "Stop";
+			this.mnuStopMovie.Click += new System.EventHandler(this.mnuStopMovie_Click);
+			// 
+			// toolStripMenuItem25
+			// 
+			this.toolStripMenuItem25.Name = "toolStripMenuItem25";
+			this.toolStripMenuItem25.Size = new System.Drawing.Size(156, 6);
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -1181,5 +1228,10 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuScriptWindow;
 		private System.Windows.Forms.ToolStripMenuItem mnuSa1Debugger;
 		private System.Windows.Forms.ToolStripMenuItem mnuGsuDebugger;
+		private System.Windows.Forms.ToolStripMenuItem mnuMovies;
+		private System.Windows.Forms.ToolStripMenuItem mnuPlayMovie;
+		private System.Windows.Forms.ToolStripMenuItem mnuRecordMovie;
+		private System.Windows.Forms.ToolStripMenuItem mnuStopMovie;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem25;
 	}
 }

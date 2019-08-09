@@ -21,6 +21,7 @@ namespace Mesen.GUI.Config
 		public bool PauseWhenInMenusAndConfig = false;
 		public bool PauseWhenInDebuggingTools = false;
 		public bool AllowBackgroundInput = false;
+		public bool PauseOnMovieEnd = true;
 
 		public bool AssociateRomFiles = false;
 		public bool AssociateMsmFiles = false;
@@ -85,12 +86,6 @@ namespace Mesen.GUI.Config
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFps, new KeyCombination() { Key1 = InputApi.GetKeyCode("F10") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFullscreen, new KeyCombination() { Key1 = InputApi.GetKeyCode("F11") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.TakeScreenshot, new KeyCombination() { Key1 = InputApi.GetKeyCode("F12") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer0, new KeyCombination() { Key1 = InputApi.GetKeyCode("1") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer1, new KeyCombination() { Key1 = InputApi.GetKeyCode("2") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer2, new KeyCombination() { Key1 = InputApi.GetKeyCode("3") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleBgLayer3, new KeyCombination() { Key1 = InputApi.GetKeyCode("4") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleSprites, new KeyCombination() { Key1 = InputApi.GetKeyCode("5") }));
 
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.Reset, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("R") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.PowerCycle, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("T") }));
@@ -161,6 +156,7 @@ namespace Mesen.GUI.Config
 				ShowDebugInfo = ShowDebugInfo,
 				DisableOsd = DisableOsd,
 				AllowBackgroundInput = AllowBackgroundInput,
+				PauseOnMovieEnd = PauseOnMovieEnd,
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
@@ -177,6 +173,7 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ShowDebugInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOsd;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowBackgroundInput;
+		[MarshalAs(UnmanagedType.I1)] public bool PauseOnMovieEnd;
 
 		public UInt32 RewindBufferSize;
 

@@ -144,6 +144,7 @@ struct AudioConfig
 	double Band20Gain = 0;
 };
 
+//Update ControllerTypeNames when changing this
 enum class ControllerType
 {
 	None = 0,
@@ -277,6 +278,7 @@ struct PreferencesConfig
 	bool ShowDebugInfo = false;
 	bool DisableOsd = false;
 	bool AllowBackgroundInput = false;
+	bool PauseOnMovieEnd = false;
 
 	uint32_t RewindBufferSize = 30;
 

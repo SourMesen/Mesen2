@@ -8,6 +8,7 @@
 #include "MessageManager.h"
 #include "Console.h"
 #include "EmuSettings.h"
+#include "BatteryManager.h"
 #include "NecDsp.h"
 #include "Sa1.h"
 #include "Gsu.h"
@@ -265,23 +266,19 @@ CartFlags::CartFlags BaseCartridge::GetCartFlags()
 
 void BaseCartridge::LoadBattery()
 {
-	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(((VirtualFile)_romPath).GetFileName(), false) + ".srm");
 	if(_saveRamSize > 0) {
-		VirtualFile saveFile(saveFilePath);
-		saveFile.ReadFile(_saveRam, _saveRamSize);
+		_console->GetBatteryManager()->LoadBattery(".srm", _saveRam, _saveRamSize);
 	} else if(_coprocessor && _hasBattery) {
-		_coprocessor->LoadBattery(saveFilePath);
+		_coprocessor->LoadBattery();
 	}
 }
 
 void BaseCartridge::SaveBattery()
 {
-	string saveFilePath = FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), FolderUtilities::GetFilename(((VirtualFile)_romPath).GetFileName(), false) + ".srm");
 	if(_saveRamSize > 0) {
-		ofstream saveFile(saveFilePath, ios::binary);
-		saveFile.write((char*)_saveRam, _saveRamSize);
+		_console->GetBatteryManager()->SaveBattery(".srm", _saveRam, _saveRamSize);
 	} else if(_coprocessor && _hasBattery) {
-		_coprocessor->SaveBattery(saveFilePath);
+		_coprocessor->SaveBattery();
 	}
 }
 
