@@ -52,6 +52,11 @@ struct Sa1State
 
 	bool CharConvIrqFlag;
 	bool CharConvIrqEnabled;
+	bool CharConvDmaActive;
+	uint8_t CharConvBpp;
+	uint8_t CharConvFormat;
+	uint8_t CharConvWidth;
+	uint8_t CharConvCounter;
 
 	uint8_t CpuBwBank;
 	bool CpuBwWriteEnabled;

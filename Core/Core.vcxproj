@@ -49,6 +49,7 @@
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseCoprocessor.h" />
     <ClInclude Include="Cpu.Shared.h" />
+    <ClInclude Include="CpuBwRamHandler.h" />
     <ClInclude Include="CpuDebugger.h" />
     <ClInclude Include="Cx4.h" />
     <ClInclude Include="Cx4DisUtils.h" />

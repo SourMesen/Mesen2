@@ -9,6 +9,7 @@
 #include "BaseCartridge.h"
 #include "RamHandler.h"
 #include "Sa1VectorHandler.h"
+#include "CpuBwRamHandler.h"
 #include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
 
@@ -40,7 +41,10 @@ Sa1::Sa1(Console* console)
 	_mappings.RegisterHandler(0x80, 0xBF, 0x0000, 0x0FFF, _iRamHandler.get());
 
 	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cart->GetSaveRamHandlers();
-	cpuMappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, saveRamHandlers);
+	for(unique_ptr<IMemoryHandler> &handler : saveRamHandlers) {
+		_cpuBwRamHandlers.push_back(unique_ptr<IMemoryHandler>(new CpuBwRamHandler(handler.get(), &_state, this)));
+	}
+	cpuMappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, _cpuBwRamHandlers);
 	_mappings.RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, saveRamHandlers);
 
 	_cpu.reset(new Sa1Cpu(this, _console));
@@ -131,6 +135,9 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 			_state.DmaCharConv = (value & 0x20) != 0;
 			_state.DmaPriority = (value & 0x40) != 0;
 			_state.DmaEnabled = (value & 0x80) != 0;
+			if(!_state.DmaEnabled) {
+				_state.CharConvCounter = 0;
+			}
 			break;
 		
 		case 0x2231: case 0x2232: case 0x2233: case 0x2234: case 0x2235: case 0x2236: case 0x2237:
@@ -146,8 +153,8 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 		case 0x2244: case 0x2245: case 0x2246: case 0x2247:
 			//BRF (Bitmap register file)
 			_state.BitmapRegister1[addr & 0x07] = value;
-			if(!value) {
-				LogDebug("Bitmap register");
+			if(addr == 0x2247 && _state.DmaEnabled && _state.DmaCharConv && !_state.DmaCharConvAuto) {
+				RunCharConvertType2();
 			}
 			break;
 
@@ -155,6 +162,9 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 		case 0x224C: case 0x224D: case 0x224E: case 0x224F:
 			//BRF (Bitmap register file)
 			_state.BitmapRegister2[addr & 0x07] = value;
+			if(addr == 0x224F && _state.DmaEnabled && _state.DmaCharConv && !_state.DmaCharConvAuto) {
+				RunCharConvertType2();
+			}
 			break; 
 
 		case 0x2250: 
@@ -269,7 +279,18 @@ void Sa1::WriteSharedRegisters(uint16_t addr, uint8_t value)
 	switch(addr) {
 		case 0x2231:
 			//CDMA (Character conversion DMA parameters) (Shared with SNES CPU)
-			LogDebug("CDMA");
+			_state.CharConvFormat = std::min(value & 0x03, 2);
+			switch(_state.CharConvFormat) {
+				case 0: _state.CharConvBpp = 8; break;
+				case 1: _state.CharConvBpp = 4; break;
+				case 2: _state.CharConvBpp = 2; break;
+			}
+			_state.CharConvWidth = std::min((value & 0x1C) >> 2, 5);
+
+			if(value & 0x80) {
+				//End of character conversion type 1
+				_state.CharConvDmaActive = false;
+			}
 			break;
 
 		case 0x2232: _state.DmaSrcAddr = (_state.DmaSrcAddr & 0xFFFF00) | value; break; //SDA (DMA source start address - Low) (Shared with SNES CPU)
@@ -282,6 +303,10 @@ void Sa1::WriteSharedRegisters(uint16_t addr, uint8_t value)
 			_state.DmaDestAddr = (_state.DmaDestAddr & 0xFF00FF) | (value << 8);
 			if(_state.DmaEnabled && !_state.DmaCharConv && _state.DmaDestDevice == Sa1DmaDestDevice::InternalRam) {
 				_state.DmaRunning = true;
+			} else if(_state.DmaCharConv && _state.DmaCharConvAuto) {
+				_state.CharConvDmaActive = true;
+				_state.CharConvIrqFlag = true;
+				ProcessInterrupts();
 			}
 			break; 
 
@@ -601,6 +626,75 @@ void Sa1::CalculateMathOpResult()
 	}
 }
 
+uint8_t Sa1::ReadCharConvertType1(uint32_t addr)
+{
+	uint8_t mask = (_state.CharConvBpp * 8) - 1;
+	
+	if((addr & mask) == 0) {
+		//Trying to read the first byte of a new tile, convert it and write its contents to IRAM
+		uint8_t* bwRam = _cart->DebugGetSaveRam();
+		uint32_t bwRamMask = _cart->DebugGetSaveRamSize() - 1;
+
+		uint8_t tilesPerLine = (1 << _state.CharConvWidth);
+		uint32_t bytesPerLine = (tilesPerLine * 8) >> _state.CharConvFormat;
+		uint32_t tileNumber = ((addr - _state.DmaSrcAddr) & bwRamMask) >> (6 - _state.CharConvFormat);
+		uint8_t tileX = tileNumber & (tilesPerLine - 1);
+		uint32_t tileY = (tileNumber >> _state.CharConvWidth);
+		uint32_t srcAddr = _state.DmaSrcAddr + tileY * 8 * bytesPerLine + tileX * _state.CharConvBpp;
+
+		for(int y = 0; y < 8; y++) {
+			//For each row, get the original pixels (in a packed format, 4 pixels per byte in 2bpp, 2 pixels per byte in 4bpp, etc.)
+			uint64_t data = 0;
+			for(int i = 0; i < _state.CharConvBpp; i++) {
+				data |= (uint64_t)bwRam[(srcAddr + i) & bwRamMask] << (i * 8);
+			}
+			srcAddr += bytesPerLine;
+
+			uint8_t result[8] = {};
+			for(int x = 0; x < 8; x++) {
+				//For each column (pixels in the tile), convert to VRAM format
+				for(int i = 0; i < _state.CharConvBpp; i++) {
+					result[i] |= (data & 0x01) << (7 - x);
+					data >>= 1;
+				}
+			}
+
+			//Copy all converted bytes to IRAM (in PPU VRAM format)
+			for(int i = 0; i < _state.CharConvBpp; i++) {
+				uint8_t offset = (y << 1) + ((i >> 1) << 4) + (i & 0x01);
+				_iRam[(_state.DmaDestAddr + offset) & 0x7FF] = result[i];
+			}
+		}
+	}
+
+	return _iRam[(_state.DmaDestAddr + (addr & mask)) & 0x7FF];
+}
+
+void Sa1::RunCharConvertType2()
+{
+	uint8_t* bmpRegs = (_state.CharConvCounter & 0x01) ? _state.BitmapRegister2 : _state.BitmapRegister1;
+
+	uint16_t dest = _state.DmaDestAddr & 0x7FF;
+	dest &= ~((_state.CharConvBpp << 4) - 1); //ignore lower 5-7 bits of the address based on BPP
+	dest += (_state.CharConvCounter & 0x07) * 2; //first 2 bit planes are together, each tile starts 2 bytes later
+	dest += (_state.CharConvCounter & 0x08) * _state.CharConvBpp; //number of bytes per tile row
+
+	//Convert 1 pixel per byte format (no matter BPP) to VRAM format
+	for(int i = 0; i < _state.CharConvBpp; i++) {
+		//For each bitplane, grab the matching bit for all 8 pixels and convert to VRAM format
+		uint8_t value = 0;
+		for(int j = 0; j < 8; j++) {
+			value |= ((bmpRegs[j] >> i) & 0x01) << (7 - j);
+		}
+
+		//Write the converted VRAM-format byte to IRAM
+		uint8_t offset = ((i >> 1) << 4) + (i & 0x01);
+		_iRam[dest + offset] = value;
+	}
+
+	_state.CharConvCounter = (_state.CharConvCounter + 1) & 0x0F;
+}
+
 void Sa1::Reset()
 {
 	_state = {};
@@ -665,7 +759,8 @@ void Sa1::Serialize(Serializer &s)
 		_state.BitmapRegister1[0], _state.BitmapRegister1[1], _state.BitmapRegister1[2], _state.BitmapRegister1[3],
 		_state.BitmapRegister1[4], _state.BitmapRegister1[5], _state.BitmapRegister1[6], _state.BitmapRegister1[7],
 		_state.BitmapRegister2[0], _state.BitmapRegister2[1], _state.BitmapRegister2[2], _state.BitmapRegister2[3],
-		_state.BitmapRegister2[4], _state.BitmapRegister2[5], _state.BitmapRegister2[6], _state.BitmapRegister2[7]
+		_state.BitmapRegister2[4], _state.BitmapRegister2[5], _state.BitmapRegister2[6], _state.BitmapRegister2[7],
+		_state.CharConvDmaActive, _state.CharConvBpp, _state.CharConvFormat, _state.CharConvWidth, _state.CharConvCounter
 	);
 
 	s.Stream(_lastAccessMemType, _openBus);

@@ -377,6 +377,9 @@
     <ClInclude Include="Obc1.h">
       <Filter>SNES\Coprocessors\OBC1</Filter>
     </ClInclude>
+    <ClInclude Include="CpuBwRamHandler.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

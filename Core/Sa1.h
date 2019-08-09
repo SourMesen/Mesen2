@@ -30,6 +30,8 @@ private:
 	unique_ptr<IMemoryHandler> _iRamHandler;
 	unique_ptr<IMemoryHandler> _sa1VectorHandler;
 	unique_ptr<IMemoryHandler> _cpuVectorHandler;
+	
+	vector<unique_ptr<IMemoryHandler>> _cpuBwRamHandlers;
 
 	MemoryMappings _mappings;
 	
@@ -39,6 +41,7 @@ private:
 	void UpdateSaveRamMappings();
 
 	void CalculateMathOpResult();
+	void RunCharConvertType2();
 	
 	void ProcessInterrupts();
 	void RunDma();
@@ -59,6 +62,8 @@ public:
 
 	void CpuRegisterWrite(uint16_t addr, uint8_t value);
 	uint8_t CpuRegisterRead(uint16_t addr);
+
+	uint8_t ReadCharConvertType1(uint32_t addr);
 
 	// Inherited via BaseCoprocessor
 	void Serialize(Serializer & s) override;
