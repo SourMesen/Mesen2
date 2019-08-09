@@ -10,6 +10,10 @@ class Sa1Cpu;
 class MemoryManager;
 class BaseCartridge;
 
+//TODO: Implement write protection flags
+//TODO: Bitmap projection at $6000
+//TODO: Timers
+
 class Sa1 : public BaseCoprocessor
 {
 private:
@@ -40,6 +44,7 @@ private:
 	void UpdateVectorMappings();
 	void UpdateSaveRamMappings();
 
+	void IncVarLenPosition();
 	void CalculateMathOpResult();
 	void RunCharConvertType2();
 	

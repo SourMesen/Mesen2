@@ -99,9 +99,10 @@ struct Sa1State
 	uint64_t MathOpResult;
 	uint8_t MathOverflow;
 
-	bool VariableLengthAutoIncrement;
-	uint8_t VariableLength;
-	uint32_t VariableLengthAddress;
+	bool VarLenAutoInc;
+	uint8_t VarLenBitCount;
+	uint32_t VarLenAddress;
+	uint8_t VarLenCurrentBit;
 
 	uint8_t Banks[4];
 };

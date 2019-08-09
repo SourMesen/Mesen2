@@ -188,16 +188,21 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 		
 		case 0x2258: 
 			//VBD (Variable length bit processing)
-			_state.VariableLengthAutoIncrement = (value & 0x80) != 0;
-			_state.VariableLength = value & 0x0F;
-			if(value) {
-				LogDebug("Variable length");
+			_state.VarLenAutoInc = (value & 0x80) != 0;
+			_state.VarLenBitCount = value == 0 ? 16 : (value & 0x0F);
+
+			if(!_state.VarLenAutoInc) {
+				IncVarLenPosition();
 			}
 			break;
 
-		case 0x2259: _state.VariableLengthAddress = (_state.VariableLengthAddress & 0xFFFF00) | value; break; //VDA (Variable length data address - Low)
-		case 0x225A: _state.VariableLengthAddress = (_state.VariableLengthAddress & 0xFF00FF) | (value << 8); break; //VDA (Variable length data address - Mid)
-		case 0x225B: _state.VariableLengthAddress = (_state.VariableLengthAddress & 0x00FFFF) | (value << 16); break; //VDA (Variable length data address - High)		
+		case 0x2259: _state.VarLenAddress = (_state.VarLenAddress & 0xFFFF00) | value; break; //VDA (Variable length data address - Low)
+		case 0x225A: _state.VarLenAddress = (_state.VarLenAddress & 0xFF00FF) | (value << 8); break; //VDA (Variable length data address - Mid)
+		case 0x225B: 
+			//VDA (Variable length data address - High)
+			_state.VarLenAddress = (_state.VarLenAddress & 0x00FFFF) | (value << 16); 
+			_state.VarLenCurrentBit = 0;
+			break;
 	}
 }
 
@@ -347,8 +352,21 @@ uint8_t Sa1::Sa1RegisterRead(uint16_t addr)
 
 		case 0x230B: return _state.MathOverflow; break; //OF (Arithmetic overflow flag)
 
-		case 0x230C: break; //VDP (Variable length data port - Low)
-		case 0x230D: break; //VDP (Variable length data port - High)
+		case 0x230C: {
+			//VDP (Variable length data port - Low)
+			uint32_t data = ReadSa1(_state.VarLenAddress) | (ReadSa1(_state.VarLenAddress + 1) << 8) | (ReadSa1(_state.VarLenAddress + 2) << 16);
+			return data >> _state.VarLenCurrentBit;
+		}
+
+		case 0x230D: {
+			//VDP (Variable length data port - High)
+			uint32_t data = ReadSa1(_state.VarLenAddress) | (ReadSa1(_state.VarLenAddress + 1) << 8) | (ReadSa1(_state.VarLenAddress + 2) << 16);
+			uint8_t value = data >> (_state.VarLenCurrentBit + 8);
+			if(_state.VarLenAutoInc) {
+				IncVarLenPosition();
+			}
+			return value;
+		}
 	}
 
 	LogDebug("[Debug] Read SA1 - missing register: $" + HexUtilities::ToHex(addr));
@@ -588,6 +606,13 @@ void Sa1::UpdateSaveRamMappings()
 	}
 }
 
+void Sa1::IncVarLenPosition()
+{
+	_state.VarLenCurrentBit += _state.VarLenBitCount;
+	_state.VarLenAddress += _state.VarLenCurrentBit >> 3;
+	_state.VarLenCurrentBit &= 0x07;
+}
+
 void Sa1::CalculateMathOpResult()
 {
 	if((int)_state.MathOp & (int)Sa1MathOp::Sum) {
@@ -754,13 +779,14 @@ void Sa1::Serialize(Serializer &s)
 		_state.CpuIRamWriteProtect, _state.Sa1IRamWriteProtect, _state.DmaSrcAddr, _state.DmaDestAddr, _state.DmaSize, _state.DmaEnabled, _state.DmaPriority,
 		_state.DmaCharConv, _state.DmaCharConvAuto, _state.DmaDestDevice, _state.DmaSrcDevice, _state.DmaRunning, _state.DmaIrqFlag, _state.HorizontalTimerEnabled,
 		_state.VerticalTimerEnabled, _state.UseLinearTimer, _state.HTimer, _state.VTimer, _state.LinearTimerValue, _state.MathOp, _state.MultiplicandDividend,
-		_state.MultiplierDivisor, _state.MathOpResult, _state.MathOverflow, _state.VariableLengthAutoIncrement, _state.VariableLength, _state.VariableLengthAddress,
+		_state.MultiplierDivisor, _state.MathOpResult, _state.MathOverflow, _state.VarLenAutoInc, _state.VarLenBitCount, _state.VarLenAddress,
 		_state.Banks[0], _state.Banks[1], _state.Banks[2], _state.Banks[3],
 		_state.BitmapRegister1[0], _state.BitmapRegister1[1], _state.BitmapRegister1[2], _state.BitmapRegister1[3],
 		_state.BitmapRegister1[4], _state.BitmapRegister1[5], _state.BitmapRegister1[6], _state.BitmapRegister1[7],
 		_state.BitmapRegister2[0], _state.BitmapRegister2[1], _state.BitmapRegister2[2], _state.BitmapRegister2[3],
 		_state.BitmapRegister2[4], _state.BitmapRegister2[5], _state.BitmapRegister2[6], _state.BitmapRegister2[7],
-		_state.CharConvDmaActive, _state.CharConvBpp, _state.CharConvFormat, _state.CharConvWidth, _state.CharConvCounter
+		_state.CharConvDmaActive, _state.CharConvBpp, _state.CharConvFormat, _state.CharConvWidth, _state.CharConvCounter,
+		_state.VarLenCurrentBit
 	);
 
 	s.Stream(_lastAccessMemType, _openBus);
