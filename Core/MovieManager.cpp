@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <algorithm>
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/ZipReader.h"

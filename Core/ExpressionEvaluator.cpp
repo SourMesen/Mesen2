@@ -514,7 +514,9 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 								}
 								break;
 
-							case CpuType::NecDsp: throw std::runtime_error("Invalid CPU type");
+							case CpuType::NecDsp:
+							case CpuType::Cx4:
+								throw std::runtime_error("Invalid CPU type");
 						}
 						break;
 				}

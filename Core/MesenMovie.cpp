@@ -248,7 +248,7 @@ uint32_t MesenMovie::LoadInt(std::unordered_map<string, string> &settings, strin
 	if(result != settings.end()) {
 		try {
 			return (uint32_t)std::stoul(result->second);
-		} catch(std::exception ex) {
+		} catch(std::exception&) {
 			MessageManager::Log("[Movies] Invalid value for tag: " + name);
 			return defaultValue;
 		}

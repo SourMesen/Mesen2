@@ -90,13 +90,7 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		}
 		str.WriteAll('$', HexUtilities::ToHex(param2));
 	};
-
-	auto writeSrcShiftedA = [&str, &writeSrc, &writeShiftedA]() -> void {
-		writeShiftedA();
-		str.Write(", ");
-		writeSrc();
-	};
-
+	
 	switch(op) {
 		case 0x00: str.Write("NOP"); break;
 		case 0x04: str.Write("???"); break;

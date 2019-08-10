@@ -237,6 +237,7 @@ void Cx4::Skip(uint8_t flagToCheck, uint8_t skipIfSet)
 {
 	bool skip;
 	switch(flagToCheck) {
+		default:
 		case 0: skip = _state.Overflow == (skipIfSet & 0x01); break;
 		case 1: skip = _state.Carry == (skipIfSet & 0x01); break;
 		case 2: skip = _state.Zero == (skipIfSet & 0x01); break;
