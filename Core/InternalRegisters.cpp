@@ -69,25 +69,6 @@ void InternalRegisters::ProcessAutoJoypadRead()
 	}
 }
 
-void InternalRegisters::ProcessIrqCounters()
-{
-	if(_needIrq) {
-		_needIrq = false;
-		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
-	}
-
-	bool irqLevel = (
-		(_enableHorizontalIrq || _enableVerticalIrq) &&
-		(!_enableHorizontalIrq || (_horizontalTimer <= 339 && (_ppu->GetCycle() == _horizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetRealScanline() || _horizontalTimer < 339))) &&
-		(!_enableVerticalIrq || _ppu->GetRealScanline() == _verticalTimer)
-	);
-
-	if(!_irqLevel && irqLevel) {
-		_needIrq = true;
-	}
-	_irqLevel = irqLevel;
-}
-
 uint8_t InternalRegisters::GetIoPortOutput()
 {
 	return _ioPortOutput;

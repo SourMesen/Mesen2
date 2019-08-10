@@ -244,7 +244,7 @@ private:
 
 	void EvaluateNextLineSprites();
 	void FetchSpriteData();
-	void FetchSpritePosition(uint16_t oamAddress);
+	__forceinline void FetchSpritePosition(uint16_t oamAddress);
 	void FetchSpriteAttributes(uint16_t oamAddress);
 	void FetchSpriteTile(bool secondCycle);
 

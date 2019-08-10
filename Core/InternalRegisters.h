@@ -1,10 +1,11 @@
 #pragma once
 #include "stdafx.h"
 #include "AluMulDiv.h"
+#include "Console.h"
+#include "Cpu.h"
+#include "Ppu.h"
 #include "../Utilities/ISerializable.h"
 
-class Console;
-class Ppu;
 class MemoryManager;
 
 class InternalRegisters final : public ISerializable
@@ -40,7 +41,9 @@ public:
 	void Reset();
 
 	void ProcessAutoJoypadRead();
-	void ProcessIrqCounters();
+
+	__forceinline void ProcessIrqCounters();
+
 	uint8_t GetIoPortOutput();
 	void SetNmiFlag(bool nmiFlag);
 
@@ -56,3 +59,22 @@ public:
 
 	void Serialize(Serializer &s) override;
 };
+
+void InternalRegisters::ProcessIrqCounters()
+{
+	if(_needIrq) {
+		_needIrq = false;
+		_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
+	}
+
+	bool irqLevel = (
+		(_enableHorizontalIrq || _enableVerticalIrq) &&
+		(!_enableHorizontalIrq || (_horizontalTimer <= 339 && (_ppu->GetCycle() == _horizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetRealScanline() || _horizontalTimer < 339))) &&
+		(!_enableVerticalIrq || _ppu->GetRealScanline() == _verticalTimer)
+	);
+
+	if(!_irqLevel && irqLevel) {
+		_needIrq = true;
+	}
+	_irqLevel = irqLevel;
+}
