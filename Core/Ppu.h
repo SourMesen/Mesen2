@@ -149,6 +149,9 @@ private:
 	uint16_t _verticalLocation = 0;
 	bool _verticalLocationToggle = false;
 	bool _locationLatched = false;
+	bool _latchRequest = false;
+	uint16_t _latchRequestX = 0;
+	uint16_t _latchRequestY = 0;
 
 	Timer _frameSkipTimer;
 	bool _skipRender = false;
@@ -278,6 +281,8 @@ public:
 	uint8_t* GetCgRam();
 	uint8_t* GetSpriteRam();
 
+	void SetLocationLatchRequest(uint16_t x, uint16_t y);
+	void ProcessLocationLatchRequest();
 	void LatchLocationValues();
 	
 	uint8_t Read(uint16_t addr);

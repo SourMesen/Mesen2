@@ -441,6 +441,9 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 		_scanline++;
 
 		if(_scanline == _nmiScanline) {
+			ProcessLocationLatchRequest();
+			_latchRequest = false;
+
 			//Reset OAM address at the start of vblank?
 			if(!_forcedVblank) {
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
@@ -1566,6 +1569,29 @@ bool Ppu::IsDoubleWidth()
 	return _hiResMode || _bgMode == 5 || _bgMode == 6;
 }
 
+void Ppu::SetLocationLatchRequest(uint16_t x, uint16_t y)
+{
+	//Used by super scope
+	_latchRequest = true;
+	_latchRequestX = x;
+	_latchRequestY = y;
+}
+
+void Ppu::ProcessLocationLatchRequest()
+{
+	//Used by super scope
+	if(_latchRequest) {
+		uint16_t cycle = GetCycle();
+		uint16_t scanline = GetRealScanline();
+		if(scanline > _latchRequestY || (_latchRequestY == scanline && cycle >= _latchRequestX)) {
+			_latchRequest = false;
+			_horizontalLocation = _latchRequestX;
+			_verticalLocation = _latchRequestY;
+			_locationLatched = true;
+		}
+	}
+}
+
 void Ppu::LatchLocationValues()
 {
 	_horizontalLocation = GetCycle();
@@ -1699,6 +1725,8 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x213C: {
 			//OPHCT - Horizontal Scanline Location
+			ProcessLocationLatchRequest();
+
 			uint8_t value;
 			if(_horizontalLocToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
@@ -1713,6 +1741,8 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x213D: {
 			//OPVCT - Vertical Scanline Location
+			ProcessLocationLatchRequest();
+
 			uint8_t value;
 			if(_verticalLocationToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
@@ -1739,6 +1769,8 @@ uint8_t Ppu::Read(uint16_t addr)
 
 		case 0x213F: {
 			//STAT78 - PPU Status Flag and Version
+			ProcessLocationLatchRequest();
+
 			uint8_t value = (
 				(_oddFrame ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |

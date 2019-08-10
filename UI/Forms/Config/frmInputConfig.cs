@@ -24,7 +24,7 @@ namespace Mesen.GUI.Forms.Config
 			Entity = cfg;
 
 			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer1, typeof(ControllerType), ControllerType.SuperScope);
-			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer2, typeof(ControllerType), ControllerType.SuperScope);
+			BaseConfigForm.InitializeComboBox((ComboBox)cboPlayer2, typeof(ControllerType));
 
 			BaseConfigForm.InitializeComboBox((ComboBox)cboMultitap1, typeof(ControllerType), ControllerType.None, ControllerType.Multitap, ControllerType.SnesMouse, ControllerType.SuperScope);
 			BaseConfigForm.InitializeComboBox((ComboBox)cboMultitap2, typeof(ControllerType), ControllerType.None, ControllerType.Multitap, ControllerType.SnesMouse, ControllerType.SuperScope);

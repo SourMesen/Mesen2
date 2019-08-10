@@ -98,7 +98,7 @@ namespace Mesen.GUI.Emulation
 
 		public static bool NeedMouseIcon
 		{
-			get { return false; }
+			get { return IsLightGun; }
 		}
 
 		public static void OnMouseMove(Control ctrl)

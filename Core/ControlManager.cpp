@@ -11,6 +11,7 @@
 #include "SnesController.h"
 #include "SnesMouse.h"
 #include "Multitap.h"
+#include "SuperScope.h"
 #include "EventType.h"
 #include "../Utilities/Serializer.h"
 
@@ -110,7 +111,7 @@ shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerT
 		case ControllerType::None: break;
 		case ControllerType::SnesController: device.reset(new SnesController(console, port, cfg.Controllers[port].Keys)); break;
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(console, port)); break;
-		case ControllerType::SuperScope: break;
+		case ControllerType::SuperScope: device.reset(new SuperScope(console, port, cfg.Controllers[port].Keys)); break;
 		case ControllerType::Multitap: device.reset(new Multitap(console, port, cfg.Controllers[port].Keys, cfg.Controllers[2].Keys, cfg.Controllers[3].Keys, cfg.Controllers[4].Keys)); break;
 	}
 	

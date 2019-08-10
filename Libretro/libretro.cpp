@@ -21,6 +21,7 @@
 #define DEVICE_AUTO               RETRO_DEVICE_JOYPAD
 #define DEVICE_GAMEPAD            RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 0)
 #define DEVICE_MULTITAP           RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 1)
+#define DEVICE_SUPERSCOPE         RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_POINTER, 0)
 #define DEVICE_SNESMOUSE          RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_MOUSE, 2)
 
 static retro_log_printf_t logCallback = nullptr;
@@ -124,6 +125,7 @@ extern "C" {
 			{ "None", DEVICE_NONE },
 			{ "SNES Controller", DEVICE_GAMEPAD },
 			{ "SNES Mouse", DEVICE_SNESMOUSE },
+			{ "Super Scope", DEVICE_SUPERSCOPE },
 			{ "Multitap", DEVICE_MULTITAP },
 			{ NULL, 0 },
 		};
@@ -145,7 +147,7 @@ extern "C" {
 
 		static constexpr struct retro_controller_info ports[] = {
 			{ pads1, 3 },
-			{ pads2, 4 },
+			{ pads2, 5 },
 			{ pads3, 1 },
 			{ pads4, 1 },
 			{ pads5, 1 },
@@ -468,7 +470,10 @@ extern "C" {
 			if(device == DEVICE_AUTO) {
 				if(port <= 4) {
 					switch(_console->GetSettings()->GetInputConfig().Controllers[port].Type) {
+						case ControllerType::Multitap:
 						case ControllerType::SnesController: device = DEVICE_GAMEPAD; break;
+
+						case ControllerType::SuperScope: device = DEVICE_SUPERSCOPE; break;
 						case ControllerType::SnesMouse: device = DEVICE_SNESMOUSE; break;
 						default: return;
 					}
@@ -513,6 +518,7 @@ extern "C" {
 				case DEVICE_GAMEPAD: type = ControllerType::SnesController; break;
 				case DEVICE_MULTITAP: type = ControllerType::Multitap; break;
 				case DEVICE_SNESMOUSE: type = ControllerType::SnesMouse; break;
+				case DEVICE_SUPERSCOPE: type = ControllerType::SuperScope; break;
 			}
 			input.Controllers[port].Type = type;
 		}

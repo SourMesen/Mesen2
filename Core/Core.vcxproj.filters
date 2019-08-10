@@ -398,6 +398,9 @@
     <ClInclude Include="FrameLimiter.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="SuperScope.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
