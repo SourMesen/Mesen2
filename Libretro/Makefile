@@ -1,5 +1,5 @@
 STATIC_LINKING := 0
-AR             := ar
+AR             ?= ar
 
 SPACE :=
 SPACE := $(SPACE) $(SPACE)
@@ -234,8 +234,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
   LDFLAGS += -DLL
   LIBM :=
 else
-   CC = gcc
-   CXX = g++
+   CC ?= gcc
+   CXX ?= g++
    TARGET := $(TARGET_NAME)_libretro.dll
    SHARED := -shared -s -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
 endif
