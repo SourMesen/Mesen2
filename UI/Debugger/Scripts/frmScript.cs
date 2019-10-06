@@ -98,11 +98,7 @@ namespace Mesen.GUI.Debugger
 				LoadBuiltInScript("Example.lua");
 			}
 
-			if(!cfg.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = cfg.WindowSize;
-				this.Location = cfg.WindowLocation;
-			}
+			RestoreLocation(cfg.WindowLocation, cfg.WindowSize);
 			mnuSaveBeforeRun.Checked = cfg.SaveScriptBeforeRun;
 
 			if(cfg.CodeWindowHeight >= ctrlSplit.Panel1MinSize) {

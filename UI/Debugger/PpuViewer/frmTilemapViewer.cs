@@ -49,11 +49,7 @@ namespace Mesen.GUI.Debugger
 			InitShortcuts();
 
 			TilemapViewerConfig config = ConfigManager.Config.Debug.TilemapViewer;
-			if(!config.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = config.WindowSize;
-				this.Location = config.WindowLocation;
-			}
+			RestoreLocation(config.WindowLocation, config.WindowSize);
 
 			mnuAutoRefresh.Checked = config.AutoRefresh;
 			chkShowTileGrid.Checked = config.ShowTileGrid;

@@ -33,11 +33,7 @@ namespace Mesen.GUI.Debugger
 				InitShortcuts();
 
 				EventViewerConfig config = ConfigManager.Config.Debug.EventViewer;
-				if(!config.WindowSize.IsEmpty) {
-					this.StartPosition = FormStartPosition.Manual;
-					this.Size = config.WindowSize;
-					this.Location = config.WindowLocation;
-				}
+				RestoreLocation(config.WindowLocation, config.WindowSize);
 
 				mnuRefreshOnBreakPause.Checked = ConfigManager.Config.Debug.EventViewer.RefreshOnBreakPause;
 				ctrlPpuView.ImageScale = config.ImageScale;

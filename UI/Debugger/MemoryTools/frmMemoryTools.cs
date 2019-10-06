@@ -82,11 +82,7 @@ namespace Mesen.GUI.Debugger
 			this.mnuShowCharacters.CheckedChanged += this.mnuShowCharacters_CheckedChanged;
 			this.mnuIgnoreRedundantWrites.CheckedChanged += mnuIgnoreRedundantWrites_CheckedChanged;
 
-			if(!config.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = config.WindowSize;
-				this.Location = config.WindowLocation;
-			}
+			RestoreLocation(config.WindowLocation, config.WindowSize);
 
 			this.InitShortcuts();
 		}

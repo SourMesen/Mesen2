@@ -32,11 +32,7 @@ namespace Mesen.GUI.Debugger
 			InitializeComponent();
 
 			TraceLoggerInfo config = ConfigManager.Config.Debug.TraceLogger;
-			if(!config.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = config.WindowSize;
-				this.Location = config.WindowLocation;
-			}
+			RestoreLocation(config.WindowLocation, config.WindowSize);
 
 			txtTraceLog.BaseFont = new Font(config.FontFamily, config.FontSize, config.FontStyle);
 			txtTraceLog.TextZoom = config.TextZoom;

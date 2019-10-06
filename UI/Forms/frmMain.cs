@@ -44,12 +44,7 @@ namespace Mesen.GUI.Forms
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-
-			if(!ConfigManager.Config.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Location = ConfigManager.Config.WindowLocation;
-				this.Size = ConfigManager.Config.WindowSize;
-			}
+			RestoreLocation(ConfigManager.Config.WindowLocation, ConfigManager.Config.WindowSize);
 		}
 
 		protected override void OnShown(EventArgs e)

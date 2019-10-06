@@ -291,11 +291,7 @@ namespace Mesen.GUI.Debugger
 			ctrlDisassemblyView.CodeViewer.BaseFont = font;
 			ctrlDisassemblyView.CodeViewer.TextZoom = cfg.TextZoom;
 
-			if(!cfg.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = cfg.WindowSize;
-				this.Location = cfg.WindowLocation;
-			}
+			RestoreLocation(cfg.WindowLocation, cfg.WindowSize);
 
 			if(cfg.SplitterDistance.HasValue) {
 				ctrlSplitContainer.SplitterDistance = cfg.SplitterDistance.Value;

@@ -49,11 +49,7 @@ namespace Mesen.GUI.Debugger
 			InitShortcuts();
 
 			SpriteViewerConfig config = ConfigManager.Config.Debug.SpriteViewer;
-			if(!config.WindowSize.IsEmpty) {
-				this.StartPosition = FormStartPosition.Manual;
-				this.Size = config.WindowSize;
-				this.Location = config.WindowLocation;
-			}
+			RestoreLocation(config.WindowLocation, config.WindowSize);
 
 			_refreshManager = new WindowRefreshManager(this);
 			_refreshManager.AutoRefresh = config.AutoRefresh;

@@ -160,7 +160,24 @@ namespace Mesen.GUI.Forms
 					base.AutoScaleMode = value;
 				}
 			}
-		}		
+		}
+
+		protected void RestoreLocation(Point location, Size size)
+		{
+			if(size.IsEmpty) {
+				return;
+			}
+
+			this.StartPosition = FormStartPosition.Manual;
+
+			if(!Screen.AllScreens.Any((screen) => screen.Bounds.Contains(location))) {
+				//If no screen contains the top left corner of the form, reset it to the primary screen
+				this.Location = Screen.PrimaryScreen.Bounds.Location;
+			} else {
+				this.Location = location;
+			}
+			this.Size = size;
+		}
 
 		private void InitializeComponent()
 		{
