@@ -19,7 +19,7 @@ private:
 	static void ExecutionCountHook(lua_State* lua, lua_Debug* ar);
 
 protected:
-	void InternalCallMemoryCallback(uint16_t addr, uint8_t &value, CallbackType type) override;
+	void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type) override;
 	int InternalCallEventCallback(EventType type) override;
 
 public:

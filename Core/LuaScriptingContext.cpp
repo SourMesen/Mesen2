@@ -106,7 +106,7 @@ void LuaScriptingContext::UnregisterEventCallback(EventType type, int reference)
 	luaL_unref(_lua, LUA_REGISTRYINDEX, reference);
 }
 
-void LuaScriptingContext::InternalCallMemoryCallback(uint16_t addr, uint8_t &value, CallbackType type)
+void LuaScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type)
 {
 	if(_callbacks[(int)type].empty()) {
 		return;

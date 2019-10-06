@@ -46,7 +46,7 @@ protected:
 	vector<MemoryCallback> _callbacks[3];
 	vector<int> _eventCallbacks[(int)EventType::EventTypeSize];
 
-	virtual void InternalCallMemoryCallback(uint16_t addr, uint8_t &value, CallbackType type) = 0;
+	virtual void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type) = 0;
 	virtual int InternalCallEventCallback(EventType type) = 0;
 
 public:
