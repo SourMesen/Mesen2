@@ -67,6 +67,9 @@ namespace Mesen.GUI.Debugger
 			cboFormat.SetEnumValue(config.Format);
 			cboLayout.SetEnumValue(config.Layout);
 			nudColumns.Value = config.ColumnCount;
+			int maxBank = GetMaxBankNumber();
+			config.Bank = Math.Min(maxBank, config.Bank);
+
 			nudBank.Value = config.Bank;
 			nudOffset.Value = config.Offset;
 			mnuAutoRefresh.Checked = config.AutoRefresh;
@@ -106,6 +109,11 @@ namespace Mesen.GUI.Debugger
 			btnPresetBg4.Click += (s, e) => GoToBgLayer(3);
 			btnPresetOam1.Click += (s, e) => GoToOamPreset(0);
 			btnPresetOam2.Click += (s, e) => GoToOamPreset(1);
+		}
+
+		private int GetMaxBankNumber()
+		{
+			return Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
 		}
 
 		private void InitShortcuts()
@@ -302,7 +310,7 @@ namespace Mesen.GUI.Debugger
 				nudOffset.Value = 0;
 			}
 
-			nudBank.Maximum = Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
+			nudBank.Maximum = GetMaxBankNumber();
 		}
 
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
