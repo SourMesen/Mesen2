@@ -9,5 +9,7 @@ enum class EventType
 	Reset,
 	ScriptEnded,
 	InputPolled,
+	StateLoaded,
+	StateSaved,
 	EventTypeSize
 };

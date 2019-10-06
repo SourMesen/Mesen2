@@ -102,6 +102,8 @@ void MemoryAccessCounter::ResetCounts()
 		memset(_readStamps[i].data(), 0, _readStamps[i].size() * sizeof(uint64_t));
 		memset(_writeStamps[i].data(), 0, _writeStamps[i].size() * sizeof(uint64_t));
 		memset(_execStamps[i].data(), 0, _execStamps[i].size() * sizeof(uint64_t));
+
+		memset(_uninitReads[i].data(), 0, _uninitReads[i].size() * sizeof(uint8_t));
 	}
 }
 

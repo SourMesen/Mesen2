@@ -20,7 +20,7 @@ private:
 	vector<uint64_t> _writeStamps[(int)SnesMemoryType::Register];
 	vector<uint64_t> _execStamps[(int)SnesMemoryType::Register];
 
-	vector<bool> _uninitReads[(int)SnesMemoryType::Register];
+	vector<uint8_t> _uninitReads[(int)SnesMemoryType::Register];
 
 	Debugger* _debugger;
 	MemoryManager* _memoryManager;

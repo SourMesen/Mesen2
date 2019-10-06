@@ -100,6 +100,7 @@ void Debugger::Release()
 
 void Debugger::Reset()
 {
+	_memoryAccessCounter->ResetCounts();
 	_cpuDebugger->Reset();
 	_spcDebugger->Reset();
 	if(_sa1Debugger) {
@@ -286,6 +287,10 @@ void Debugger::ProcessEvent(EventType type)
 
 		case EventType::Reset:
 			Reset();
+			break;
+
+		case EventType::StateLoaded:
+			_memoryAccessCounter->ResetCounts();
 			break;
 	}
 }

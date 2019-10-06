@@ -147,10 +147,10 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(endFrame, EventType::EndFrame);
 	lua_pushintvalue(inputPolled, EventType::InputPolled);
 	lua_pushintvalue(scriptEnded, EventType::ScriptEnded);
-	//TODO
-	/*lua_pushintvalue(codeBreak, EventType::CodeBreak);
 	lua_pushintvalue(stateLoaded, EventType::StateLoaded);
 	lua_pushintvalue(stateSaved, EventType::StateSaved);
+	//TODO
+	/*lua_pushintvalue(codeBreak, EventType::CodeBreak);
 	*/
 	lua_settable(lua, -3);
 

@@ -9,6 +9,8 @@
 #include "VideoDecoder.h"
 #include "BaseCartridge.h"
 #include "MovieManager.h"
+#include "EventType.h"
+#include "Debugger.h"
 
 SaveStateManager::SaveStateManager(shared_ptr<Console> console)
 {
@@ -87,15 +89,15 @@ bool SaveStateManager::SaveState(string filepath)
 	ofstream file(filepath, ios::out | ios::binary);
 
 	if(file) {
-		auto lock = _console->AcquireLock();
+		_console->Lock();
 		SaveState(file);
+		_console->Unlock();
 		file.close();
 
-		//TODO LUA
-		/*shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+		shared_ptr<Debugger> debugger = _console->GetDebugger(false);
 		if(debugger) {
 			debugger->ProcessEvent(EventType::StateSaved);
-		}*/
+		}
 		return true;
 	}
 	return false;
@@ -165,17 +167,17 @@ bool SaveStateManager::LoadState(string filepath, bool hashCheckRequired)
 	bool result = false;
 
 	if(file.good()) {
-		auto lock = _console->AcquireLock();
-		if(LoadState(file, hashCheckRequired)) {
-			result = true;
-		}
+		_console->Lock();
+		result = LoadState(file, hashCheckRequired);
+		_console->Unlock();
 		file.close();
 
-		//TODO LUA
-		/*shared_ptr<Debugger> debugger = _console->GetDebugger(false);
-		if(debugger) {
-			debugger->ProcessEvent(EventType::StateLoaded);
-		}*/
+		if(result) {
+			shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+			if(debugger) {
+				debugger->ProcessEvent(EventType::StateLoaded);
+			}
+		}
 	} else {
 		MessageManager::DisplayMessage("SaveStates", "SaveStateEmpty");
 	}
