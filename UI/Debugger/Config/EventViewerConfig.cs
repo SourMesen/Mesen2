@@ -16,6 +16,9 @@ namespace Mesen.GUI.Config
 		public int ImageScale = 1;
 		public bool RefreshOnBreakPause = true;
 
+		public bool AutoRefresh = true;
+		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Normal;
+
 		public bool ShowPpuRegisterWrites = true;
 		public bool ShowPpuRegisterReads = true;
 		public bool ShowCpuRegisterWrites = true;

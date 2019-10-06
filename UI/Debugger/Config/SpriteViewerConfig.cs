@@ -26,6 +26,8 @@ namespace Mesen.GUI.Config
 		public int RefreshScanline = 240;
 		public int RefreshCycle = 0;
 
+		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Low;
+
 		public SpriteViewerConfig()
 		{
 		}

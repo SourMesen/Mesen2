@@ -23,6 +23,8 @@ namespace Mesen.GUI.Config
 		public bool ShowScrollOverlay = false;
 		public bool ShowTileGrid = false;
 
+		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Low;
+
 		public bool AutoRefresh = true;
 		public int RefreshScanline = 240;
 		public int RefreshCycle = 0;

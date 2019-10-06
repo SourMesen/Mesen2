@@ -339,6 +339,7 @@
       <DependentUpon>frmSpriteViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\SpriteInfo.cs" />
+    <Compile Include="Debugger\PpuViewer\WindowRefreshManager.cs" />
     <Compile Include="Debugger\Scripts\FastColoredTextBox\AutocompleteItem.cs" />
     <Compile Include="Debugger\Scripts\FastColoredTextBox\AutocompleteMenu.cs">
       <SubType>UserControl</SubType>

@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,10 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmTilemapViewer : BaseForm
+	public partial class frmTilemapViewer : BaseForm, IRefresh
 	{
 		private int[,] _layerBpp = new int[8, 4] { { 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 } };
 
-		private NotificationListener _notifListener;
 		private GetTilemapOptions _options;
 		private PpuState _state;
 		private byte[] _cgram;
@@ -28,7 +28,7 @@ namespace Mesen.GUI.Debugger
 		private int _selectedRow = 0;
 		private int _selectedColumn = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
-		private bool _autoRefresh = false;
+		private WindowRefreshManager _refreshManager;
 
 		public frmTilemapViewer()
 		{
@@ -41,9 +41,6 @@ namespace Mesen.GUI.Debugger
 			if(DesignMode) {
 				return;
 			}
-
-			_notifListener = new NotificationListener();
-			_notifListener.OnNotification += OnNotificationReceived;
 
 			_tilemapData = new byte[1024 * 1024 * 4];
 			_tilemapImage = new Bitmap(1024, 1024, PixelFormat.Format32bppPArgb);
@@ -64,7 +61,14 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.ImageScale = config.ImageScale;
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 
-			_autoRefresh = config.AutoRefresh;
+			_refreshManager = new WindowRefreshManager(this);
+			_refreshManager.AutoRefresh = config.AutoRefresh;
+			_refreshManager.AutoRefreshSpeed = config.AutoRefreshSpeed;
+
+			mnuAutoRefreshLow.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Low;
+			mnuAutoRefreshNormal.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Normal;
+			mnuAutoRefreshHigh.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.High;
+			mnuAutoRefreshSpeed.DropDownOpening += (s, evt) => UpdateRefreshSpeedMenu();
 
 			RefreshData();
 			RefreshViewer();
@@ -85,12 +89,13 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			_notifListener?.Dispose();
+			_refreshManager?.Dispose();
 
 			TilemapViewerConfig config = ConfigManager.Config.Debug.TilemapViewer;
 			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
 			config.AutoRefresh = mnuAutoRefresh.Checked;
+			config.AutoRefreshSpeed = _refreshManager.AutoRefreshSpeed;
 			config.ShowTileGrid = chkShowTileGrid.Checked;
 			config.ShowScrollOverlay = chkShowScrollOverlay.Checked;
 			config.RefreshScanline = ctrlScanlineCycleSelect.Scanline;
@@ -100,36 +105,7 @@ namespace Mesen.GUI.Debugger
 			base.OnFormClosed(e);
 		}
 
-		private void RefreshContent()
-		{
-			_lastUpdate = DateTime.Now;
-			RefreshData();
-			this.BeginInvoke((Action)(() => {
-				this.RefreshViewer();
-			}));
-		}
-
-		private void OnNotificationReceived(NotificationEventArgs e)
-		{
-			switch(e.NotificationType) {
-				case ConsoleNotificationType.CodeBreak:
-					RefreshContent();
-					break;
-
-				case ConsoleNotificationType.ViewerRefresh:
-					if(_autoRefresh && e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId && (DateTime.Now - _lastUpdate).Milliseconds > 10) {
-						RefreshContent();
-					}
-					break;
-
-				case ConsoleNotificationType.GameLoaded:
-					//Configuration is lost when debugger is restarted (when switching game or power cycling)
-					ctrlScanlineCycleSelect.RefreshSettings();
-					break;
-			}
-		}
-
-		private void RefreshData()
+		public void RefreshData()
 		{
 			_state = DebugApi.GetState().Ppu;
 			_vram = DebugApi.GetMemoryState(SnesMemoryType.VideoRam);
@@ -154,6 +130,11 @@ namespace Mesen.GUI.Debugger
 		private bool IsLargeTileHeight
 		{
 			get { return _state.Layers[_options.Layer].LargeTiles; }
+		}
+
+		public ctrlScanlineCycleSelect ScanlineCycleSelect
+		{
+			get { return this.ctrlScanlineCycleSelect; }
 		}
 
 		private int GetWidth()
@@ -194,7 +175,7 @@ namespace Mesen.GUI.Debugger
 			return height;
 		}
 
-		private void RefreshViewer()
+		public void RefreshViewer()
 		{
 			if(_layerBpp[_state.BgMode, _options.Layer] == 0) {
 				_options.Layer = 0;
@@ -240,6 +221,7 @@ namespace Mesen.GUI.Debugger
 			} else {
 				ctrlImagePanel.Overlay = Rectangle.Empty;
 			}
+			ctrlImagePanel.Refresh();
 			UpdateFields();
 		}
 
@@ -368,7 +350,14 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuAutoRefresh_CheckedChanged(object sender, EventArgs e)
 		{
-			_autoRefresh = mnuAutoRefresh.Checked;
+			_refreshManager.AutoRefresh = mnuAutoRefresh.Checked;
+		}
+
+		private void UpdateRefreshSpeedMenu()
+		{
+			mnuAutoRefreshLow.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Low;
+			mnuAutoRefreshNormal.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Normal;
+			mnuAutoRefreshHigh.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.High;
 		}
 	}
 }

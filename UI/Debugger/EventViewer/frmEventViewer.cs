@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmEventViewer : BaseForm
+	public partial class frmEventViewer : BaseForm, IRefresh
 	{
 		private NotificationListener _notifListener;
-		private DateTime _lastUpdate = DateTime.MinValue;
+		private WindowRefreshManager _refreshManager;
+
+		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return null; } }
 
 		public frmEventViewer()
 		{
@@ -41,17 +44,28 @@ namespace Mesen.GUI.Debugger
 
 				_notifListener = new NotificationListener();
 				_notifListener.OnNotification += OnNotificationReceived;
+
+				_refreshManager = new WindowRefreshManager(this);
+				_refreshManager.AutoRefresh = config.AutoRefresh;
+				_refreshManager.AutoRefreshSpeed = config.AutoRefreshSpeed;
+				mnuAutoRefreshLow.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Low;
+				mnuAutoRefreshNormal.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Normal;
+				mnuAutoRefreshHigh.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.High;
+				mnuAutoRefreshSpeed.DropDownOpening += (s, evt) => UpdateRefreshSpeedMenu();
 			}
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
 			_notifListener?.Dispose();
+			_refreshManager?.Dispose();
 
 			EventViewerConfig config = ConfigManager.Config.Debug.EventViewer;
 			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
 			config.ImageScale = ctrlPpuView.ImageScale;
+			config.AutoRefresh = _refreshManager.AutoRefresh;
+			config.AutoRefreshSpeed = _refreshManager.AutoRefreshSpeed;
 
 			base.OnFormClosed(e);
 		}
@@ -66,22 +80,21 @@ namespace Mesen.GUI.Debugger
 			mnuClose.Click += (s, e) => this.Close();
 		}
 
+		public void RefreshData()
+		{
+			ctrlPpuView.RefreshData();
+		}
+
+		public void RefreshViewer()
+		{
+			ctrlPpuView.RefreshViewer();
+		}
+
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
 					if(ConfigManager.Config.Debug.EventViewer.RefreshOnBreakPause) {
-						ctrlPpuView.RefreshData();
-						this.BeginInvoke((Action)(() => {
-							ctrlPpuView.RefreshViewer();
-						}));
-					}
-					break;
-
-				case ConsoleNotificationType.EventViewerRefresh:
-					if((DateTime.Now - _lastUpdate).Milliseconds > 10) {
-						_lastUpdate = DateTime.Now;
-
 						ctrlPpuView.RefreshData();
 						this.BeginInvoke((Action)(() => {
 							ctrlPpuView.RefreshViewer();
@@ -95,6 +108,19 @@ namespace Mesen.GUI.Debugger
 		{
 			ConfigManager.Config.Debug.EventViewer.RefreshOnBreakPause = mnuRefreshOnBreakPause.Checked;
 			ConfigManager.ApplyChanges();
+		}
+
+		private void mnuRefresh_Click(object sender, EventArgs e)
+		{
+			RefreshData();
+			RefreshViewer();
+		}
+
+		private void UpdateRefreshSpeedMenu()
+		{
+			mnuAutoRefreshLow.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Low;
+			mnuAutoRefreshNormal.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Normal;
+			mnuAutoRefreshHigh.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.High;
 		}
 	}
 }

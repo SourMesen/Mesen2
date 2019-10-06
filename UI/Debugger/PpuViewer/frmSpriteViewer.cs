@@ -1,4 +1,5 @@
 ﻿using Mesen.GUI.Config;
+using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Debugger.PpuViewer;
 using Mesen.GUI.Forms;
 using System;
@@ -15,18 +16,18 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmSpriteViewer : BaseForm
+	public partial class frmSpriteViewer : BaseForm, IRefresh
 	{
-		private NotificationListener _notifListener;
 		private PpuState _state;
 		private byte[] _vram;
 		private byte[] _cgram;
 		private byte[] _oamRam;
 		private byte[] _previewData;
 		private Bitmap _previewImage;
-		private DateTime _lastUpdate = DateTime.MinValue;
-		private bool _autoRefresh = true;
 		private GetSpritePreviewOptions _options = new GetSpritePreviewOptions();
+		private WindowRefreshManager _refreshManager;
+
+		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return this.ctrlScanlineCycleSelect; } }
 
 		public frmSpriteViewer()
 		{
@@ -39,9 +40,6 @@ namespace Mesen.GUI.Debugger
 			if(DesignMode) {
 				return;
 			}
-
-			_notifListener = new NotificationListener();
-			_notifListener.OnNotification += OnNotificationReceived;
 
 			_previewData = new byte[256 * 240 * 4];
 			_previewImage = new Bitmap(256, 240, PixelFormat.Format32bppPArgb);
@@ -56,6 +54,14 @@ namespace Mesen.GUI.Debugger
 				this.Size = config.WindowSize;
 				this.Location = config.WindowLocation;
 			}
+
+			_refreshManager = new WindowRefreshManager(this);
+			_refreshManager.AutoRefresh = config.AutoRefresh;
+			_refreshManager.AutoRefreshSpeed = config.AutoRefreshSpeed;
+			mnuAutoRefreshLow.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Low;
+			mnuAutoRefreshNormal.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Normal;
+			mnuAutoRefreshHigh.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.High;
+			mnuAutoRefreshSpeed.DropDownOpening += (s, evt) => UpdateRefreshSpeedMenu();
 
 			mnuAutoRefresh.Checked = config.AutoRefresh;
 			ctrlImagePanel.ImageScale = config.ImageScale;
@@ -82,12 +88,13 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			_notifListener?.Dispose();
+			_refreshManager?.Dispose();
 
 			SpriteViewerConfig config = ConfigManager.Config.Debug.SpriteViewer;
 			config.WindowSize = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Size : this.Size;
 			config.WindowLocation = this.WindowState != FormWindowState.Normal ? this.RestoreBounds.Location : this.Location;
 			config.AutoRefresh = mnuAutoRefresh.Checked;
+			config.AutoRefreshSpeed = _refreshManager.AutoRefreshSpeed;
 			config.HideOffscreenSprites = ctrlSpriteList.HideOffscreenSprites;
 			config.RefreshScanline = ctrlScanlineCycleSelect.Scanline;
 			config.RefreshCycle = ctrlScanlineCycleSelect.Cycle;
@@ -97,36 +104,7 @@ namespace Mesen.GUI.Debugger
 			base.OnFormClosed(e);
 		}
 
-		private void RefreshContent()
-		{
-			_lastUpdate = DateTime.Now;
-			RefreshData();
-			this.BeginInvoke((Action)(() => {
-				this.RefreshViewer();
-			}));
-		}
-
-		private void OnNotificationReceived(NotificationEventArgs e)
-		{
-			switch(e.NotificationType) {
-				case ConsoleNotificationType.CodeBreak:
-					RefreshContent();
-					break;
-
-				case ConsoleNotificationType.ViewerRefresh:
-					if(_autoRefresh && e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId && (DateTime.Now - _lastUpdate).Milliseconds > 10) {
-						RefreshContent();
-					}
-					break;
-
-				case ConsoleNotificationType.GameLoaded:
-					//Configuration is lost when debugger is restarted (when switching game or power cycling)
-					ctrlScanlineCycleSelect.RefreshSettings();
-					break;
-			}
-		}
-
-		private void RefreshData()
+		public void RefreshData()
 		{
 			_state = DebugApi.GetState().Ppu;
 			_vram = DebugApi.GetMemoryState(SnesMemoryType.VideoRam);
@@ -134,7 +112,7 @@ namespace Mesen.GUI.Debugger
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 		
-		private void RefreshViewer()
+		public void RefreshViewer()
 		{
 			ctrlSpriteList.SetData(_oamRam, _state.OamMode);
 
@@ -152,6 +130,8 @@ namespace Mesen.GUI.Debugger
 			} else {
 				ctrlImagePanel.Selection = Rectangle.Empty;
 			}
+
+			ctrlImagePanel.Refresh();
 		}
 
 		private void mnuRefresh_Click(object sender, EventArgs e)
@@ -212,7 +192,7 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuAutoRefresh_CheckedChanged(object sender, EventArgs e)
 		{
-			_autoRefresh = mnuAutoRefresh.Checked;
+			_refreshManager.AutoRefresh = mnuAutoRefresh.Checked;
 		}
 
 		private void ctrlSpriteList_SpriteSelected(SpriteInfo sprite)
@@ -223,6 +203,13 @@ namespace Mesen.GUI.Debugger
 
 			SelectSprite(sprite);
 			RefreshViewer();
+		}
+
+		private void UpdateRefreshSpeedMenu()
+		{
+			mnuAutoRefreshLow.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Low;
+			mnuAutoRefreshNormal.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Normal;
+			mnuAutoRefreshHigh.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.High;
 		}
 	}
 }

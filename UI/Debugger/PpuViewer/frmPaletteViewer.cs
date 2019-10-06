@@ -1,13 +1,15 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.GUI.Debugger.Controls;
+using Mesen.GUI.Forms;
 using System;
 using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmPaletteViewer : BaseForm
+	public partial class frmPaletteViewer : BaseForm, IRefresh
 	{
-		private NotificationListener _notifListener;
-		private DateTime _lastUpdate = DateTime.MinValue;
+		private WindowRefreshManager _refreshManager;
+
+		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return this.ctrlScanlineCycleSelect; } }
 
 		public frmPaletteViewer()
 		{
@@ -21,9 +23,8 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			_notifListener = new NotificationListener();
-			_notifListener.OnNotification += OnNotificationReceived;
-
+			_refreshManager = new WindowRefreshManager(this);
+			_refreshManager.AutoRefresh = true;
 			ctrlScanlineCycleSelect.Initialize(241, 0);
 
 			ctrlPaletteViewer.RefreshData();
@@ -46,38 +47,19 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
-			_notifListener?.Dispose();
+			_refreshManager?.Dispose();
 			base.OnFormClosed(e);
 		}
 
-		private void RefreshContent()
+		public void RefreshData()
 		{
-			_lastUpdate = DateTime.Now;
 			ctrlPaletteViewer.RefreshData();
-			this.BeginInvoke((Action)(() => {
-				ctrlPaletteViewer.RefreshViewer();
-				UpdateFields();
-			}));
 		}
 
-		private void OnNotificationReceived(NotificationEventArgs e)
+		public void RefreshViewer()
 		{
-			switch(e.NotificationType) {
-				case ConsoleNotificationType.CodeBreak:
-					RefreshContent();
-					break;
-
-				case ConsoleNotificationType.ViewerRefresh:
-					if(e.Parameter.ToInt32() == ctrlScanlineCycleSelect.ViewerId && (DateTime.Now - _lastUpdate).Milliseconds > 10) {
-						RefreshContent();
-					}
-					break;
-
-				case ConsoleNotificationType.GameLoaded:
-					//Configuration is lost when debugger is restarted (when switching game or power cycling)
-					ctrlScanlineCycleSelect.RefreshSettings();
-					break;
-			}
+			ctrlPaletteViewer.RefreshViewer();
+			UpdateFields();
 		}
 
 		private void ctrlPaletteViewer_SelectionChanged()

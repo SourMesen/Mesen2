@@ -31,6 +31,7 @@ namespace Mesen.GUI.Config
 		public int SelectedPalette = 0;
 
 		public bool AutoRefresh = true;
+		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Low;
 		public int RefreshScanline = 240;
 		public int RefreshCycle = 0;
 
