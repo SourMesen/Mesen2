@@ -26,10 +26,10 @@
 
 #ifndef __MINGW32__
 	#ifdef __clang__
-		#define __forceinline __attribute__((always_inline))
+		#define __forceinline __attribute__((always_inline)) inline
 	#else
 		#ifdef __GNUC__
-			#define __forceinline 
+			#define __forceinline __attribute__((always_inline)) inline
 		#endif
 	#endif
 #endif
