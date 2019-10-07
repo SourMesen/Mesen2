@@ -465,12 +465,22 @@ ConsoleLock Console::AcquireLock()
 
 void Console::Lock()
 {
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->SuspendDebugger(false);
+	}
+
 	_lockCounter++;
 	_runLock.Acquire();
 }
 
 void Console::Unlock()
 {
+	shared_ptr<Debugger> debugger = _debugger;
+	if(debugger) {
+		debugger->SuspendDebugger(true);
+	}
+
 	_runLock.Release();
 	_lockCounter--;
 }
@@ -619,7 +629,15 @@ shared_ptr<Debugger> Console::GetDebugger(bool autoStart)
 
 void Console::StopDebugger()
 {
+	//Pause/unpause the regular emulation thread based on the debugger's pause state
+	_paused = IsPaused();
+
+	shared_ptr<Debugger> debugger = _debugger;
+	debugger->SuspendDebugger(false);
+	Lock();
 	_debugger.reset();
+
+	Unlock();
 }
 
 bool Console::IsDebugging()

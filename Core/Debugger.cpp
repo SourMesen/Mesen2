@@ -81,6 +81,10 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_codeDataLogger->LoadCdlFile(cdlFile);
 
 	RefreshCodeCache();
+
+	if(_console->IsPaused()) {
+		Step(CpuType::Cpu, 1, StepType::Step);
+	}
 }
 
 Debugger::~Debugger()
@@ -374,7 +378,13 @@ void Debugger::BreakRequest(bool release)
 void Debugger::SuspendDebugger(bool release)
 {
 	if(release) {
-		_suspendRequestCount--;
+		if(_suspendRequestCount > 0) {
+			_suspendRequestCount--;
+		} else {
+		#ifdef _DEBUG
+			throw std::runtime_error("unexpected debugger suspend::release call");
+		#endif
+		}
 	} else {
 		_suspendRequestCount++;
 	}
