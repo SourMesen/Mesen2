@@ -41,6 +41,7 @@
 			<Control ID="mnuNoneFilter">None</Control>
 			<Control ID="mnuNtscFilter">NTSC 2x (blargg)</Control>
 			<Control ID="mnuBilinearInterpolation">Use Bilinear Interpolation</Control>
+			<Control ID="mnuBlendHighResolutionModes">Blend High Resolution Modes</Control>
 			<Control ID="mnuAudioConfig">Audio</Control>
 			<Control ID="mnuInput">Input</Control>
 			<Control ID="mnuRegion">Region</Control>
@@ -209,6 +210,7 @@
 			<Control ID="lblDisplayRatio">Aspect Ratio:</Control>
 			<Control ID="lblCustomRatio">Custom Ratio: </Control>
 			<Control ID="chkBilinearInterpolation">Use bilinear interpolation when scaling</Control>
+			<Control ID="chkBlendHighResolutionModes">Blend high resolution modes</Control>
 			<Control ID="chkFullscreenForceIntegerScale">Use integer scale values when entering fullscreen mode</Control>
 			<Control ID="chkShowFps">Show FPS</Control>
 			<Control ID="chkUseHdPacks">Use HDNes HD packs</Control>

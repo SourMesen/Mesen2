@@ -60,6 +60,11 @@ bool BaseVideoFilter::IsOddFrame()
 	return _isOddFrame;
 }
 
+uint32_t BaseVideoFilter::GetBufferSize()
+{
+	return _bufferSize * sizeof(uint32_t);
+}
+
 void BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
 {
 	_frameLock.Acquire();

@@ -281,6 +281,7 @@ namespace Mesen.GUI.Forms
 			mnuXBRZ6xFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.xBRZ6x); };
 
 			mnuBilinearInterpolation.Click += (s, e) => { _shortcuts.ToggleBilinearInterpolation(); };
+			mnuBlendHighResolutionModes.Click += (s, e) => { _shortcuts.ToggleBlendHighResolutionModes(); };
 
 			mnuRegionAuto.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Auto); };
 			mnuRegionNtsc.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Ntsc); };
@@ -467,6 +468,7 @@ namespace Mesen.GUI.Forms
 			mnuPrescale10xFilter.Checked = (filterType == VideoFilterType.Prescale10x);
 
 			mnuBilinearInterpolation.Checked = ConfigManager.Config.Video.UseBilinearInterpolation;
+			mnuBlendHighResolutionModes.Checked = ConfigManager.Config.Video.BlendHighResolutionModes;
 		}
 
 		private void mnuVideoScale_DropDownOpening(object sender, EventArgs e)

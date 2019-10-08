@@ -23,6 +23,7 @@ protected:
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer) = 0;
 	virtual void OnBeforeApplyFilter();
 	bool IsOddFrame();
+	uint32_t GetBufferSize();
 	uint32_t ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity);
 
 public:

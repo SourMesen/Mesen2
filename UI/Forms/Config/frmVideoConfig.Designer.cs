@@ -88,6 +88,7 @@
 			this.lblLeft = new System.Windows.Forms.Label();
 			this.tpgAdvanced = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkDisableFrameSkipping = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.chkHideBgLayer0 = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.chkHideBgLayer1 = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.chkHideBgLayer2 = new Mesen.GUI.Controls.ctrlRiskyOption();
@@ -98,7 +99,7 @@
 			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
-			this.chkDisableFrameSkipping = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkBlendHighResolutionModes = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -127,7 +128,7 @@
 			// 
 			// baseConfigPanel
 			// 
-			this.baseConfigPanel.Location = new System.Drawing.Point(0, 408);
+			this.baseConfigPanel.Location = new System.Drawing.Point(0, 427);
 			this.baseConfigPanel.Size = new System.Drawing.Size(574, 29);
 			this.baseConfigPanel.TabIndex = 4;
 			// 
@@ -141,7 +142,7 @@
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
-			this.tabMain.Size = new System.Drawing.Size(574, 408);
+			this.tabMain.Size = new System.Drawing.Size(574, 427);
 			this.tabMain.TabIndex = 2;
 			// 
 			// tpgGeneral
@@ -150,7 +151,7 @@
 			this.tpgGeneral.Location = new System.Drawing.Point(4, 22);
 			this.tpgGeneral.Name = "tpgGeneral";
 			this.tpgGeneral.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgGeneral.Size = new System.Drawing.Size(566, 382);
+			this.tpgGeneral.Size = new System.Drawing.Size(566, 401);
 			this.tpgGeneral.TabIndex = 5;
 			this.tpgGeneral.Text = "General";
 			this.tpgGeneral.UseVisualStyleBackColor = true;
@@ -183,7 +184,7 @@
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpMain.Size = new System.Drawing.Size(560, 376);
+			this.tlpMain.Size = new System.Drawing.Size(560, 395);
 			this.tlpMain.TabIndex = 1;
 			// 
 			// chkUseExclusiveFullscreen
@@ -402,7 +403,7 @@
 			this.tpgPicture.Location = new System.Drawing.Point(4, 22);
 			this.tpgPicture.Name = "tpgPicture";
 			this.tpgPicture.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgPicture.Size = new System.Drawing.Size(566, 382);
+			this.tpgPicture.Size = new System.Drawing.Size(566, 401);
 			this.tpgPicture.TabIndex = 4;
 			this.tpgPicture.Text = "Picture";
 			this.tpgPicture.UseVisualStyleBackColor = true;
@@ -426,7 +427,7 @@
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel5.Size = new System.Drawing.Size(560, 376);
+			this.tableLayoutPanel5.Size = new System.Drawing.Size(560, 395);
 			this.tableLayoutPanel5.TabIndex = 5;
 			// 
 			// tableLayoutPanel7
@@ -437,12 +438,12 @@
 			this.tableLayoutPanel7.Controls.Add(this.btnSelectPreset, 1, 0);
 			this.tableLayoutPanel7.Controls.Add(this.btnResetPictureSettings, 0, 0);
 			this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 341);
+			this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 365);
 			this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel7.Name = "tableLayoutPanel7";
 			this.tableLayoutPanel7.RowCount = 1;
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel7.Size = new System.Drawing.Size(280, 35);
+			this.tableLayoutPanel7.Size = new System.Drawing.Size(280, 30);
 			this.tableLayoutPanel7.TabIndex = 3;
 			// 
 			// btnSelectPreset
@@ -451,7 +452,7 @@
 			this.btnSelectPreset.AutoSize = true;
 			this.btnSelectPreset.Image = global::Mesen.GUI.Properties.Resources.DownArrow;
 			this.btnSelectPreset.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.btnSelectPreset.Location = new System.Drawing.Point(178, 9);
+			this.btnSelectPreset.Location = new System.Drawing.Point(178, 4);
 			this.btnSelectPreset.Name = "btnSelectPreset";
 			this.btnSelectPreset.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.btnSelectPreset.Size = new System.Drawing.Size(99, 23);
@@ -465,7 +466,7 @@
 			// 
 			this.btnResetPictureSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnResetPictureSettings.AutoSize = true;
-			this.btnResetPictureSettings.Location = new System.Drawing.Point(3, 9);
+			this.btnResetPictureSettings.Location = new System.Drawing.Point(3, 4);
 			this.btnResetPictureSettings.Name = "btnResetPictureSettings";
 			this.btnResetPictureSettings.Size = new System.Drawing.Size(45, 23);
 			this.btnResetPictureSettings.TabIndex = 3;
@@ -481,7 +482,7 @@
 			this.grpNtscFilter.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
 			this.grpNtscFilter.Name = "grpNtscFilter";
 			this.tableLayoutPanel5.SetRowSpan(this.grpNtscFilter, 3);
-			this.grpNtscFilter.Size = new System.Drawing.Size(278, 349);
+			this.grpNtscFilter.Size = new System.Drawing.Size(278, 368);
 			this.grpNtscFilter.TabIndex = 4;
 			this.grpNtscFilter.TabStop = false;
 			this.grpNtscFilter.Text = "NTSC Filter";
@@ -510,7 +511,7 @@
 			this.tlpNtscFilter.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpNtscFilter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tlpNtscFilter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpNtscFilter.Size = new System.Drawing.Size(272, 330);
+			this.tlpNtscFilter.Size = new System.Drawing.Size(272, 349);
 			this.tlpNtscFilter.TabIndex = 5;
 			// 
 			// chkMergeFields
@@ -616,12 +617,11 @@
 			// grpCommon
 			// 
 			this.grpCommon.Controls.Add(this.tableLayoutPanel4);
-			this.grpCommon.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpCommon.Location = new System.Drawing.Point(0, 27);
 			this.grpCommon.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
 			this.grpCommon.Name = "grpCommon";
 			this.grpCommon.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-			this.grpCommon.Size = new System.Drawing.Size(278, 242);
+			this.grpCommon.Size = new System.Drawing.Size(278, 266);
 			this.grpCommon.TabIndex = 3;
 			this.grpCommon.TabStop = false;
 			this.grpCommon.Text = "Common Settings";
@@ -630,7 +630,7 @@
 			// 
 			this.tableLayoutPanel4.ColumnCount = 1;
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel4.Controls.Add(this.chkBlendHighResolutionModes, 0, 5);
 			this.tableLayoutPanel4.Controls.Add(this.chkBilinearInterpolation, 0, 4);
 			this.tableLayoutPanel4.Controls.Add(this.trkBrightness, 0, 0);
 			this.tableLayoutPanel4.Controls.Add(this.trkContrast, 0, 1);
@@ -640,13 +640,15 @@
 			this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 15);
 			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-			this.tableLayoutPanel4.RowCount = 5;
+			this.tableLayoutPanel4.RowCount = 7;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(272, 225);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(272, 249);
 			this.tableLayoutPanel4.TabIndex = 4;
 			// 
 			// chkBilinearInterpolation
@@ -724,7 +726,7 @@
 			// 
 			this.grpScanlines.Controls.Add(this.trkScanlines);
 			this.grpScanlines.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpScanlines.Location = new System.Drawing.Point(0, 269);
+			this.grpScanlines.Location = new System.Drawing.Point(0, 293);
 			this.grpScanlines.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
 			this.grpScanlines.Name = "grpScanlines";
 			this.grpScanlines.Size = new System.Drawing.Size(278, 72);
@@ -794,7 +796,7 @@
 			this.tpgOverscan.Location = new System.Drawing.Point(4, 22);
 			this.tpgOverscan.Name = "tpgOverscan";
 			this.tpgOverscan.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgOverscan.Size = new System.Drawing.Size(566, 382);
+			this.tpgOverscan.Size = new System.Drawing.Size(566, 397);
 			this.tpgOverscan.TabIndex = 6;
 			this.tpgOverscan.Text = "Overscan";
 			this.tpgOverscan.UseVisualStyleBackColor = true;
@@ -818,14 +820,14 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 246F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(560, 376);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(560, 391);
 			this.tableLayoutPanel1.TabIndex = 1;
 			// 
 			// picOverscan
 			// 
 			this.picOverscan.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picOverscan.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.picOverscan.Location = new System.Drawing.Point(152, 68);
+			this.picOverscan.Location = new System.Drawing.Point(152, 75);
 			this.picOverscan.Name = "picOverscan";
 			this.picOverscan.Size = new System.Drawing.Size(256, 240);
 			this.picOverscan.TabIndex = 1;
@@ -844,7 +846,7 @@
 			this.tableLayoutPanel11.RowCount = 2;
 			this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel11.Size = new System.Drawing.Size(262, 65);
+			this.tableLayoutPanel11.Size = new System.Drawing.Size(262, 72);
 			this.tableLayoutPanel11.TabIndex = 4;
 			// 
 			// nudOverscanTop
@@ -856,7 +858,7 @@
             0,
             0,
             0});
-			this.nudOverscanTop.Location = new System.Drawing.Point(110, 44);
+			this.nudOverscanTop.Location = new System.Drawing.Point(110, 51);
 			this.nudOverscanTop.Margin = new System.Windows.Forms.Padding(0);
 			this.nudOverscanTop.Maximum = new decimal(new int[] {
             100,
@@ -884,7 +886,7 @@
 			// 
 			this.lblTop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.lblTop.AutoSize = true;
-			this.lblTop.Location = new System.Drawing.Point(118, 31);
+			this.lblTop.Location = new System.Drawing.Point(118, 38);
 			this.lblTop.Name = "lblTop";
 			this.lblTop.Size = new System.Drawing.Size(26, 13);
 			this.lblTop.TabIndex = 0;
@@ -897,7 +899,7 @@
 			this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel12.Controls.Add(this.nudOverscanBottom, 0, 1);
 			this.tableLayoutPanel12.Controls.Add(this.lblBottom, 0, 0);
-			this.tableLayoutPanel12.Location = new System.Drawing.Point(149, 311);
+			this.tableLayoutPanel12.Location = new System.Drawing.Point(149, 318);
 			this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel12.Name = "tableLayoutPanel12";
 			this.tableLayoutPanel12.RowCount = 2;
@@ -958,7 +960,7 @@
 			this.tableLayoutPanel13.Controls.Add(this.nudOverscanRight, 0, 2);
 			this.tableLayoutPanel13.Controls.Add(this.lblRight, 0, 1);
 			this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel13.Location = new System.Drawing.Point(411, 65);
+			this.tableLayoutPanel13.Location = new System.Drawing.Point(411, 72);
 			this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel13.Name = "tableLayoutPanel13";
 			this.tableLayoutPanel13.RowCount = 4;
@@ -1021,7 +1023,7 @@
 			this.tableLayoutPanel14.Controls.Add(this.nudOverscanLeft, 1, 2);
 			this.tableLayoutPanel14.Controls.Add(this.lblLeft, 1, 1);
 			this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel14.Location = new System.Drawing.Point(0, 65);
+			this.tableLayoutPanel14.Location = new System.Drawing.Point(0, 72);
 			this.tableLayoutPanel14.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel14.Name = "tableLayoutPanel14";
 			this.tableLayoutPanel14.RowCount = 4;
@@ -1082,7 +1084,7 @@
 			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
 			this.tpgAdvanced.Name = "tpgAdvanced";
 			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgAdvanced.Size = new System.Drawing.Size(566, 382);
+			this.tpgAdvanced.Size = new System.Drawing.Size(566, 397);
 			this.tpgAdvanced.TabIndex = 7;
 			this.tpgAdvanced.Text = "Advanced";
 			this.tpgAdvanced.UseVisualStyleBackColor = true;
@@ -1108,8 +1110,18 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(560, 376);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(560, 391);
 			this.tableLayoutPanel2.TabIndex = 0;
+			// 
+			// chkDisableFrameSkipping
+			// 
+			this.chkDisableFrameSkipping.Checked = false;
+			this.chkDisableFrameSkipping.Dock = System.Windows.Forms.DockStyle.Top;
+			this.chkDisableFrameSkipping.Location = new System.Drawing.Point(0, 120);
+			this.chkDisableFrameSkipping.Name = "chkDisableFrameSkipping";
+			this.chkDisableFrameSkipping.Size = new System.Drawing.Size(560, 24);
+			this.chkDisableFrameSkipping.TabIndex = 5;
+			this.chkDisableFrameSkipping.Text = "Disable frame skipping when fast-forwarding";
 			// 
 			// chkHideBgLayer0
 			// 
@@ -1199,21 +1211,22 @@
 			this.mnuPresetMonochrome.Text = "Monochrome";
 			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
 			// 
-			// chkDisableFrameSkipping
+			// chkBlendHighResolutionModes
 			// 
-			this.chkDisableFrameSkipping.Checked = false;
-			this.chkDisableFrameSkipping.Dock = System.Windows.Forms.DockStyle.Top;
-			this.chkDisableFrameSkipping.Location = new System.Drawing.Point(0, 120);
-			this.chkDisableFrameSkipping.Name = "chkDisableFrameSkipping";
-			this.chkDisableFrameSkipping.Size = new System.Drawing.Size(560, 24);
-			this.chkDisableFrameSkipping.TabIndex = 5;
-			this.chkDisableFrameSkipping.Text = "Disable frame skipping when fast-forwarding";
+			this.chkBlendHighResolutionModes.AutoSize = true;
+			this.tableLayoutPanel4.SetColumnSpan(this.chkBlendHighResolutionModes, 2);
+			this.chkBlendHighResolutionModes.Location = new System.Drawing.Point(3, 226);
+			this.chkBlendHighResolutionModes.Name = "chkBlendHighResolutionModes";
+			this.chkBlendHighResolutionModes.Size = new System.Drawing.Size(158, 17);
+			this.chkBlendHighResolutionModes.TabIndex = 29;
+			this.chkBlendHighResolutionModes.Text = "Blend high resolution modes";
+			this.chkBlendHighResolutionModes.UseVisualStyleBackColor = true;
 			// 
 			// frmVideoConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(574, 437);
+			this.ClientSize = new System.Drawing.Size(574, 456);
 			this.Controls.Add(this.tabMain);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
@@ -1336,5 +1349,6 @@
 		private Controls.ctrlRiskyOption chkHideBgLayer3;
 		private Controls.ctrlRiskyOption chkHideSprites;
 		private Controls.ctrlRiskyOption chkDisableFrameSkipping;
+		private System.Windows.Forms.CheckBox chkBlendHighResolutionModes;
 	}
 }

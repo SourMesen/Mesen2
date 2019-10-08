@@ -67,6 +67,7 @@ void DefaultVideoFilter::OnBeforeApplyFilter()
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
 		InitLookupTable();
 	}
+	_videoConfig = config;
 }
 
 uint8_t DefaultVideoFilter::To8Bit(uint8_t color)
@@ -116,6 +117,24 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 			}
 		}
 	}
+
+	if(_baseFrameInfo.Width == 512 && _videoConfig.BlendHighResolutionModes) {
+		//Very basic blend effect for high resolution modes
+		for(uint32_t i = 0; i < frameInfo.Height; i+=2) {
+			for(uint32_t j = 0; j < frameInfo.Width; j+=2) {
+				uint32_t &pixel1 = out[i*frameInfo.Width + j];
+				uint32_t &pixel2 = out[i*frameInfo.Width + j + 1];
+				uint32_t &pixel3 = out[(i+1)*frameInfo.Width + j];
+				uint32_t &pixel4 = out[(i+1)*frameInfo.Width + j + 1];
+				pixel1 = pixel2 = pixel3 = pixel4 = BlendPixels(BlendPixels(BlendPixels(pixel1, pixel2), pixel3), pixel4);
+			}
+		}
+	}
+}
+
+uint32_t DefaultVideoFilter::BlendPixels(uint32_t a, uint32_t b)
+{
+	return ((((a) ^ (b)) & 0xfffefefeL) >> 1) + ((a) & (b));
 }
 
 void DefaultVideoFilter::RgbToYiq(double r, double g, double b, double &y, double &i, double &q)

@@ -16,6 +16,7 @@ namespace Mesen.GUI.Config
 		public VideoAspectRatio AspectRatio = VideoAspectRatio.NoStretching;
 
 		[MarshalAs(UnmanagedType.I1)] public bool UseBilinearInterpolation = false;
+		[MarshalAs(UnmanagedType.I1)] public bool BlendHighResolutionModes = false;
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalSync = false;
 		[MarshalAs(UnmanagedType.I1)] public bool IntegerFpsMode = false;
 

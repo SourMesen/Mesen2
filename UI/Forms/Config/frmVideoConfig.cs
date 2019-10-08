@@ -24,6 +24,7 @@ namespace Mesen.GUI.Forms.Config
 			Entity = ConfigManager.Config.Video.Clone();
 
 			AddBinding(nameof(VideoConfig.UseBilinearInterpolation), chkBilinearInterpolation);
+			AddBinding(nameof(VideoConfig.BlendHighResolutionModes), chkBlendHighResolutionModes);
 			AddBinding(nameof(VideoConfig.VerticalSync), chkVerticalSync);
 			AddBinding(nameof(VideoConfig.IntegerFpsMode), chkIntegerFpsMode);
 			AddBinding(nameof(VideoConfig.FullscreenForceIntegerScale), chkFullscreenForceIntegerScale);

@@ -168,46 +168,46 @@ namespace Mesen.GUI.Emulation
 			ConfigManager.ApplyChanges();
 		}
 
-		public void ToggleBilinearInterpolation()
+		private void InvertConfigFlag(ref bool flag)
 		{
-			ConfigManager.Config.Video.UseBilinearInterpolation = !ConfigManager.Config.Video.UseBilinearInterpolation;
-			ConfigManager.Config.Video.ApplyConfig();
+			flag = !flag;
+			ConfigManager.Config.ApplyConfig();
 			ConfigManager.ApplyChanges();
 		}
-		
+
+		public void ToggleBilinearInterpolation()
+		{
+			InvertConfigFlag(ref ConfigManager.Config.Video.UseBilinearInterpolation);
+		}
+
+		public void ToggleBlendHighResolutionModes()
+		{
+			InvertConfigFlag(ref ConfigManager.Config.Video.BlendHighResolutionModes);
+		}
+
 		private void ToggleBgLayer0()
 		{
-			ConfigManager.Config.Video.HideBgLayer0 = !ConfigManager.Config.Video.HideBgLayer0;
-			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer0);
 		}
 
 		private void ToggleBgLayer1()
 		{
-			ConfigManager.Config.Video.HideBgLayer1 = !ConfigManager.Config.Video.HideBgLayer1;
-			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer1);
 		}
 
 		private void ToggleBgLayer2()
 		{
-			ConfigManager.Config.Video.HideBgLayer2 = !ConfigManager.Config.Video.HideBgLayer2;
-			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer2);
 		}
 
 		private void ToggleBgLayer3()
 		{
-			ConfigManager.Config.Video.HideBgLayer3 = !ConfigManager.Config.Video.HideBgLayer3;
-			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer3);
 		}
 
 		private void ToggleSprites()
 		{
-			ConfigManager.Config.Video.HideSprites = !ConfigManager.Config.Video.HideSprites;
-			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Video.HideSprites);
 		}
 
 		private void SetEmulationSpeed(uint emulationSpeed)
@@ -264,51 +264,37 @@ namespace Mesen.GUI.Emulation
 
 		private void ToggleOsd()
 		{
-			ConfigManager.Config.Preferences.DisableOsd = !ConfigManager.Config.Preferences.DisableOsd;
-			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Preferences.DisableOsd);
 		}
 
 		private void ToggleFps()
 		{
-			ConfigManager.Config.Preferences.ShowFps = !ConfigManager.Config.Preferences.ShowFps;
-			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Preferences.ShowFps);
 		}
 
 		private void ToggleAudio()
 		{
-			ConfigManager.Config.Audio.EnableAudio = !ConfigManager.Config.Audio.EnableAudio;
-			ConfigManager.Config.Audio.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Audio.EnableAudio);
 		}
 
 		private void ToggleFrameCounter()
 		{
-			ConfigManager.Config.Preferences.ShowFrameCounter = !ConfigManager.Config.Preferences.ShowFrameCounter;
-			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Preferences.ShowFrameCounter);
 		}
 		
 		private void ToggleGameTimer()
 		{
-			ConfigManager.Config.Preferences.ShowGameTimer = !ConfigManager.Config.Preferences.ShowGameTimer;
-			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Preferences.ShowGameTimer);
 		}
 
 		private void ToggleAlwaysOnTop()
 		{
-			ConfigManager.Config.Preferences.AlwaysOnTop = !ConfigManager.Config.Preferences.AlwaysOnTop;
-			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Preferences.AlwaysOnTop);
 		}
 
 		private void ToggleDebugInfo()
 		{
-			ConfigManager.Config.Preferences.ShowDebugInfo = !ConfigManager.Config.Preferences.ShowDebugInfo;
-			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			InvertConfigFlag(ref ConfigManager.Config.Preferences.ShowDebugInfo);
 		}
 
 		private void TogglePause()

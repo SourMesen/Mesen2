@@ -17,6 +17,7 @@ private:
 	void RgbToYiq(double r, double g, double b, double &y, double &i, double &q);
 	void YiqToRgb(double y, double i, double q, double &r, double &g, double &b);
 	__forceinline static uint8_t To8Bit(uint8_t color);
+	__forceinline static uint32_t BlendPixels(uint32_t a, uint32_t b);
 
 protected:
 	void OnBeforeApplyFilter();
