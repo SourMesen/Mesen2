@@ -399,6 +399,10 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 		if(_scanline < _vblankStartScanline) {
 			RenderScanline();
 
+			if(_scanline == 0) {
+				_mosaicScanlineCounter = _mosaicEnabled ? _mosaicSize + 1 : 0;
+			}
+			
 			if(_mosaicScanlineCounter) {
 				_mosaicScanlineCounter--;
 				if(_mosaicEnabled && !_mosaicScanlineCounter) {
@@ -483,8 +487,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 				//If we're not skipping this frame, reset the high resolution flag
 				_useHighResOutput = false;
 			}
-
-			_mosaicScanlineCounter = _mosaicEnabled ? _mosaicSize + 1 : 0;
 
 			//Update overclock timings once per frame
 			UpdateNmiScanline();
@@ -1887,13 +1889,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2106: {
 			//MOSAIC - Screen Pixelation
 			_mosaicSize = ((value & 0xF0) >> 4) + 1;
-			uint8_t mosaicEnabled = value & 0x0F;
-			if(!_mosaicEnabled && mosaicEnabled) {
-				//"If this register is set during the frame, the Åstarting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
-				//This is only done when mosaic is turned on from an off state (FF3 mosaic effect looks wrong otherwise)
-				_mosaicScanlineCounter = _mosaicSize;
-			}
-			_mosaicEnabled = mosaicEnabled;
+			_mosaicEnabled = value & 0x0F;
 			break;
 		}
 
