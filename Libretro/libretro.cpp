@@ -39,6 +39,7 @@ static std::unique_ptr<LibretroMessageManager> _messageManager;
 static constexpr const char* MesenNtscFilter = "mesen-s_ntsc_filter";
 static constexpr const char* MesenRegion = "mesen-s_region";
 static constexpr const char* MesenAspectRatio = "mesen-s_aspect_ratio";
+static constexpr const char* MesenBlendHighRes = "mesen-s_blend_high_res";
 static constexpr const char* MesenOverscanVertical = "mesen-s_overscan_vertical";
 static constexpr const char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
 static constexpr const char* MesenRamState = "mesen-s_ramstate";
@@ -107,6 +108,7 @@ extern "C" {
 			{ MesenOverscanVertical, "Vertical Overscan; None|8px|16px" },
 			{ MesenOverscanHorizontal, "Horizontal Overscan; None|8px|16px" },
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
+			{ MesenBlendHighRes, "Blend Hi-Res Modes; disabled|enabled" },
 			{ MesenOverclock, "Overclock; None|Low|Medium|High|Very High" },
 			{ MesenOverclockType, "Overclock Type; Before NMI|After NMI" },
 			{ MesenSuperFxOverclock, "Super FX Clock Speed; 100%|200%|300%|400%|500%|1000%" },
@@ -365,6 +367,11 @@ extern "C" {
 			} else if(value == "All 1s") {
 				emulation.RamPowerOnState = RamState::AllOnes;
 			}
+		}
+
+		if(readVariable(MesenBlendHighRes, var)) {
+			string value = string(var.value);
+			video.BlendHighResolutionModes = (value == "enabled");
 		}
 
 		auto getKeyCode = [=](int port, int retroKey) {
