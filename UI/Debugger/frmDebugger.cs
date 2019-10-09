@@ -409,13 +409,14 @@ namespace Mesen.GUI.Debugger
 						DebugApi.Step(_cpuType, 1, StepType.PpuStep);
 					}
 
+					BreakpointManager.SetBreakpoints();
+
 					DebugState state = DebugApi.GetState();
 					this.BeginInvoke((MethodInvoker)(() => {
 						DebugWorkspaceManager.ImportDbgFile();
 						LabelManager.RefreshLabels();
 						DebugApi.RefreshDisassembly(_cpuType);
 						UpdateDebugger(state, null);
-						BreakpointManager.SetBreakpoints();
 					}));
 					break;
 				}
