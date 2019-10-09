@@ -26,6 +26,7 @@ namespace Mesen.GUI.Debugger
 		private volatile bool _refreshRunning;
 		private bool _initialized;
 		private NotificationListener _notifListener;
+		private InteropTraceLoggerOptions _interopOptions;
 
 		public frmTraceLogger()
 		{
@@ -162,7 +163,7 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
 					//Configuration is lost when debugger is restarted (when switching game or power cycling)
-					this.Invoke((Action)(() => SetOptions()));
+					SetCoreOptions();
 					break;
 			}
 		}
@@ -230,26 +231,31 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.UpdateObject();
 			TraceLoggerOptions options = (TraceLoggerOptions)_entityBinder.Entity;
 
-			InteropTraceLoggerOptions interopOptions = new InteropTraceLoggerOptions();
-			interopOptions.LogCpu = !disableLogging && options.LogCpu;
-			interopOptions.LogSpc = !disableLogging && options.LogSpc;
-			interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
-			interopOptions.LogSa1 = !disableLogging && options.LogSa1;
-			interopOptions.LogGsu = !disableLogging && options.LogGsu;
-			interopOptions.LogCx4 = !disableLogging && options.LogCx4;
-			interopOptions.IndentCode = options.IndentCode;
-			interopOptions.ShowExtraInfo = options.ShowExtraInfo;
-			interopOptions.UseLabels = options.UseLabels;
-			interopOptions.UseWindowsEol = options.UseWindowsEol;
-			interopOptions.ExtendZeroPage = options.ExtendZeroPage;
+			_interopOptions = new InteropTraceLoggerOptions();
+			_interopOptions.LogCpu = !disableLogging && options.LogCpu;
+			_interopOptions.LogSpc = !disableLogging && options.LogSpc;
+			_interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
+			_interopOptions.LogSa1 = !disableLogging && options.LogSa1;
+			_interopOptions.LogGsu = !disableLogging && options.LogGsu;
+			_interopOptions.LogCx4 = !disableLogging && options.LogCx4;
+			_interopOptions.IndentCode = options.IndentCode;
+			_interopOptions.ShowExtraInfo = options.ShowExtraInfo;
+			_interopOptions.UseLabels = options.UseLabels;
+			_interopOptions.UseWindowsEol = options.UseWindowsEol;
+			_interopOptions.ExtendZeroPage = options.ExtendZeroPage;
 
-			interopOptions.Condition = Encoding.UTF8.GetBytes(txtCondition.Text);
-			Array.Resize(ref interopOptions.Condition, 1000);
+			_interopOptions.Condition = Encoding.UTF8.GetBytes(txtCondition.Text);
+			Array.Resize(ref _interopOptions.Condition, 1000);
 
-			interopOptions.Format = Encoding.UTF8.GetBytes(txtFormat.Text.Replace("\t", "\\t"));
-			Array.Resize(ref interopOptions.Format, 1000);
+			_interopOptions.Format = Encoding.UTF8.GetBytes(txtFormat.Text.Replace("\t", "\\t"));
+			Array.Resize(ref _interopOptions.Format, 1000);
 
-			DebugApi.SetTraceOptions(interopOptions);
+			DebugApi.SetTraceOptions(_interopOptions);
+		}
+
+		private void SetCoreOptions()
+		{
+			DebugApi.SetTraceOptions(_interopOptions);
 		}
 
 		private void btnStartLogging_Click(object sender, EventArgs e)
