@@ -334,6 +334,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		return true;
 	}
 
+	MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
 	return false;
 }
 

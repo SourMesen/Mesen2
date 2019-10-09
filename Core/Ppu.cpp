@@ -401,6 +401,10 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 
 			if(_scanline == 0) {
 				_mosaicScanlineCounter = _mosaicEnabled ? _mosaicSize + 1 : 0;
+				if(!_skipRender) {
+					//If we're not skipping this frame, reset the high resolution flag
+					_useHighResOutput = false;
+				}
 			}
 			
 			if(_mosaicScanlineCounter) {
@@ -483,10 +487,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 				(_settings->GetEmulationSpeed() == 0 || _settings->GetEmulationSpeed() > 150) &&
 				_frameSkipTimer.GetElapsedMS() < 10
 			);
-			if(!_skipRender) {
-				//If we're not skipping this frame, reset the high resolution flag
-				_useHighResOutput = false;
-			}
 
 			//Update overclock timings once per frame
 			UpdateNmiScanline();
@@ -562,6 +562,11 @@ uint16_t Ppu::GetRealScanline()
 	}
 
 	return _scanline;
+}
+
+uint16_t Ppu::GetVblankEndScanline()
+{
+	return _vblankEndScanline;
 }
 
 uint16_t Ppu::GetLastScanline()

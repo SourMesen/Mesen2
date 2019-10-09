@@ -108,12 +108,12 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
-		[DllImport(DllPath)] public static extern void TakeEventSnapshot(EventViewerDisplayOptions options);		
+		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(EventViewerDisplayOptions options);		
 
 		[DllImport(DllPath, EntryPoint = "GetEventViewerOutput")] private static extern void GetEventViewerOutputWrapper([In, Out]byte[] buffer, EventViewerDisplayOptions options);
-		public static byte[] GetEventViewerOutput(EventViewerDisplayOptions options)
+		public static byte[] GetEventViewerOutput(UInt32 scanlineCount, EventViewerDisplayOptions options)
 		{
-			byte[] buffer = new byte[340*2 * 262*2 * 4];
+			byte[] buffer = new byte[340*2 * scanlineCount*2 * 4];
 			DebugApi.GetEventViewerOutputWrapper(buffer, options);
 			return buffer;
 		}

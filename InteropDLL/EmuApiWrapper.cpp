@@ -106,7 +106,7 @@ extern "C" {
 		}
 	}
 
-	DllExport void __stdcall LoadRom(char* filename, char* patchFile) { _console->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile()); }
+	DllExport bool __stdcall LoadRom(char* filename, char* patchFile) { return _console->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile()); }
 	//DllExport void __stdcall AddKnownGameFolder(char* folder) { FolderUtilities::AddKnownGameFolder(folder); }
 
 	DllExport void __stdcall GetRomInfo(InteropRomInfo &info)

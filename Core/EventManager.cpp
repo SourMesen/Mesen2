@@ -142,13 +142,13 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 	int iMax = drawBackground ? 3 : 1;
 	int jMin = drawBackground ? -2 : 0;
 	int jMax = drawBackground ? 3 : 1;
-	uint32_t y = std::min(evt.Scanline * 2, 262 * 2);
+	uint32_t y = std::min<uint32_t>(evt.Scanline * 2, _scanlineCount * 2);
 	uint32_t x = evt.Cycle * 2;
 
 	for(int i = iMin; i <= iMax; i++) {
 		for(int j = jMin; j <= jMax; j++) {
 			int32_t pos = (y + i) * 340 * 2 + x + j;
-			if(pos < 0 || pos > 340 * 2 * 262 * 2) {
+			if(pos < 0 || pos >= 340 * 2 * _scanlineCount * 2) {
 				continue;
 			}
 			buffer[pos] = color;
@@ -156,7 +156,7 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 	}
 }
 
-void EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
+uint32_t EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
@@ -180,6 +180,9 @@ void EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 			}
 		}
 	}
+
+	_scanlineCount = _ppu->GetVblankEndScanline() + 1;
+	return _scanlineCount;
 }
 
 void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions options)
@@ -187,7 +190,7 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	auto lock = _lock.AcquireSafe();
 	_sentEvents.clear();
 
-	for(int i = 0; i < 340 * 2 * 262 * 2; i++) {
+	for(int i = 0; i < 340 * 2 * _scanlineCount * 2; i++) {
 		buffer[i] = 0xFF555555;
 	}
 

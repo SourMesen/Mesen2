@@ -46,7 +46,7 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void TakeScreenshot();
 
-		[DllImport(DllPath)] public static extern void LoadRom(
+		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool LoadRom(
 			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath,
 			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string patchFile = ""
 		);

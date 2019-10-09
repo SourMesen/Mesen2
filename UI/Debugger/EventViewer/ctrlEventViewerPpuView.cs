@@ -19,7 +19,6 @@ namespace Mesen.GUI.Debugger
 	public partial class ctrlEventViewerPpuView : BaseControl
 	{
 		private int _baseWidth = 340 * 2;
-		private int _baseHeight = 262 * 2;
 
 		private EntityBinder _entityBinder = new EntityBinder();
 		private Point _lastPos = new Point(-1, -1);
@@ -29,6 +28,7 @@ namespace Mesen.GUI.Debugger
 		private Bitmap _displayBitmap = null;
 		private byte[] _pictureData = null;
 		private Font _overlayFont;
+		private UInt32 _scanlineCount = 262;
 
 		public int ImageScale { get { return picViewer.ImageScale; } set { picViewer.ImageScale = value; } }
 
@@ -105,16 +105,16 @@ namespace Mesen.GUI.Debugger
 			}));
 
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			DebugApi.TakeEventSnapshot(options);
+			_scanlineCount = DebugApi.TakeEventSnapshot(options);
 		}
 		
 		public void RefreshViewer()
 		{
 			_entityBinder.UpdateObject();
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			_pictureData = DebugApi.GetEventViewerOutput(options);
+			_pictureData = DebugApi.GetEventViewerOutput(_scanlineCount, options);
 
-			int picHeight = _baseHeight;
+			int picHeight = (int)_scanlineCount*2;
 			if(_screenBitmap == null || _screenBitmap.Height != picHeight) {
 				_screenBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
 				_overlayBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
@@ -123,7 +123,7 @@ namespace Mesen.GUI.Debugger
 
 			GCHandle handle = GCHandle.Alloc(this._pictureData, GCHandleType.Pinned);
 			try {
-				Bitmap source = new Bitmap(_baseWidth, _baseHeight, _baseWidth*4, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(_baseWidth, (int)_scanlineCount*2, _baseWidth*4, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				using(Graphics g = Graphics.FromImage(_screenBitmap)) {
 					g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 					g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
@@ -164,7 +164,7 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
-			picViewer.ImageSize = new Size(_baseWidth, _baseHeight);
+			picViewer.ImageSize = new Size(_baseWidth, (int)_scanlineCount*2);
 			picViewer.Image = _displayBitmap;
 			_needUpdate = false;
 		}

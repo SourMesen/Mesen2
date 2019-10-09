@@ -262,6 +262,7 @@ public:
 
 	uint32_t GetFrameCount();
 	uint16_t GetRealScanline();
+	uint16_t GetVblankEndScanline();
 	uint16_t GetScanline();
 	uint16_t GetCycle();
 	uint16_t GetNmiScanline();
