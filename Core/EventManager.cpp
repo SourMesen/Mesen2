@@ -148,7 +148,7 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 	for(int i = iMin; i <= iMax; i++) {
 		for(int j = jMin; j <= jMax; j++) {
 			int32_t pos = (y + i) * 340 * 2 + x + j;
-			if(pos < 0 || pos >= 340 * 2 * _scanlineCount * 2) {
+			if(pos < 0 || pos >= 340 * 2 * (int)_scanlineCount * 2) {
 				continue;
 			}
 			buffer[pos] = color;
@@ -190,7 +190,7 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	auto lock = _lock.AcquireSafe();
 	_sentEvents.clear();
 
-	for(int i = 0; i < 340 * 2 * _scanlineCount * 2; i++) {
+	for(int i = 0; i < 340 * 2 * (int)_scanlineCount * 2; i++) {
 		buffer[i] = 0xFF555555;
 	}
 

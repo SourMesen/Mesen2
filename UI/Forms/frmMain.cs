@@ -251,6 +251,7 @@ namespace Mesen.GUI.Forms
 			mnuPaletteViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenPaletteViewer));
 			mnuTraceLogger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTraceLogger));
 			mnuScriptWindow.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenScriptWindow));
+			mnuRegisterViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenRegisterViewer));
 
 			mnuNoneFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.None); };
 			mnuNtscFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.NTSC); };
@@ -299,6 +300,7 @@ namespace Mesen.GUI.Forms
 			mnuPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer); };
 			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer); };
 			mnuScriptWindow.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.ScriptWindow); };
+			mnuRegisterViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.RegisterViewer); };
 
 			UpdateDebuggerMenu();
 		}
@@ -316,7 +318,6 @@ namespace Mesen.GUI.Forms
 			mnuGsuDebugger.Enabled = coprocessor == CoprocessorType.GSU;
 			mnuGsuDebugger.Visible = coprocessor == CoprocessorType.GSU;
 
-
 			mnuTraceLogger.Enabled = running;
 			mnuScriptWindow.Enabled = running;
 			mnuMemoryTools.Enabled = running;
@@ -325,6 +326,7 @@ namespace Mesen.GUI.Forms
 			mnuSpriteViewer.Enabled = running;
 			mnuPaletteViewer.Enabled = running;
 			mnuEventViewer.Enabled = running;
+			mnuRegisterViewer.Enabled = running;
 		}
 		
 		private void ResizeRecentGames()

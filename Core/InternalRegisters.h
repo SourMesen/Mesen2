@@ -4,6 +4,7 @@
 #include "Console.h"
 #include "Cpu.h"
 #include "Ppu.h"
+#include "InternalRegisterTypes.h"
 #include "../Utilities/ISerializable.h"
 
 class MemoryManager;
@@ -17,22 +18,10 @@ private:
 
 	AluMulDiv _aluMulDiv;
 
-	bool _enableAutoJoypadRead = false;
-	bool _enableFastRom = false;
-	
+	InternalRegisterState _state;
 	bool _nmiFlag = false;
-	bool _enableNmi = false;
-	
-	bool _enableHorizontalIrq = false;
-	bool _enableVerticalIrq = false;
-	uint16_t _horizontalTimer = 0x1FF;
-	uint16_t _verticalTimer = 0x1FF;
 	bool _irqLevel = false;
 	bool _needIrq = false;
-
-	uint8_t _ioPortOutput = 0;
-
-	uint16_t _controllerData[4] = {};
 
 public:
 	InternalRegisters();
@@ -47,15 +36,19 @@ public:
 	uint8_t GetIoPortOutput();
 	void SetNmiFlag(bool nmiFlag);
 
-	bool IsVerticalIrqEnabled() { return _enableVerticalIrq; }
-	bool IsHorizontalIrqEnabled() { return _enableHorizontalIrq; }
-	bool IsNmiEnabled() { return _enableNmi; }
-	bool IsFastRomEnabled() { return _enableFastRom; }
-	uint16_t GetHorizontalTimer() { return _horizontalTimer; }
-	uint16_t GetVerticalTimer() { return _verticalTimer; }
+	bool IsVerticalIrqEnabled() { return _state.EnableVerticalIrq; }
+	bool IsHorizontalIrqEnabled() { return _state.EnableHorizontalIrq; }
+	bool IsNmiEnabled() { return _state.EnableNmi; }
+	bool IsFastRomEnabled() { return _state.EnableFastRom; }
+	uint16_t GetHorizontalTimer() { return _state.HorizontalTimer; }
+	uint16_t GetVerticalTimer() { return _state.VerticalTimer; }
 	
+	uint8_t Peek(uint16_t addr);
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	InternalRegisterState GetState();
+	AluState GetAluState();
 
 	void Serialize(Serializer &s) override;
 };
@@ -68,9 +61,9 @@ void InternalRegisters::ProcessIrqCounters()
 	}
 
 	bool irqLevel = (
-		(_enableHorizontalIrq || _enableVerticalIrq) &&
-		(!_enableHorizontalIrq || (_horizontalTimer <= 339 && (_ppu->GetCycle() == _horizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetRealScanline() || _horizontalTimer < 339))) &&
-		(!_enableVerticalIrq || _ppu->GetRealScanline() == _verticalTimer)
+		(_state.EnableHorizontalIrq || _state.EnableVerticalIrq) &&
+		(!_state.EnableHorizontalIrq || (_state.HorizontalTimer <= 339 && (_ppu->GetCycle() == _state.HorizontalTimer) && (_ppu->GetLastScanline() != _ppu->GetRealScanline() || _state.HorizontalTimer < 339))) &&
+		(!_state.EnableVerticalIrq || _ppu->GetRealScanline() == _state.VerticalTimer)
 	);
 
 	if(!_irqLevel && irqLevel) {

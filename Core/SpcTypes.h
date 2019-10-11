@@ -18,6 +18,7 @@ struct SpcState
 	uint8_t InternalSpeed;
 	uint8_t ExternalSpeed;
 	bool TimersEnabled;
+	bool TimersDisabled;
 	CpuStopState StopState;
 
 	uint8_t DspReg;

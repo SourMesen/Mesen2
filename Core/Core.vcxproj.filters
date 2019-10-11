@@ -401,6 +401,12 @@
     <ClInclude Include="SuperScope.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
+    <ClInclude Include="InternalRegisterTypes.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
+    <ClInclude Include="DmaControllerTypes.h">
+      <Filter>SNES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

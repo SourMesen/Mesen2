@@ -150,6 +150,7 @@
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
 			this.mnuBilinearInterpolation = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRegisterViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -909,8 +910,9 @@
             this.mnuDebugger,
             this.mnuEventViewer,
             this.mnuMemoryTools,
-            this.mnuTraceLogger,
+            this.mnuRegisterViewer,
             this.mnuScriptWindow,
+            this.mnuTraceLogger,
             this.toolStripMenuItem12,
             this.mnuTilemapViewer,
             this.mnuTileViewer,
@@ -1095,6 +1097,13 @@
 			this.mnuBilinearInterpolation.Size = new System.Drawing.Size(231, 22);
 			this.mnuBilinearInterpolation.Text = "Use Bilinear Interpolation";
 			// 
+			// mnuRegisterViewer
+			// 
+			this.mnuRegisterViewer.Image = global::Mesen.GUI.Properties.Resources.RegisterIcon;
+			this.mnuRegisterViewer.Name = "mnuRegisterViewer";
+			this.mnuRegisterViewer.Size = new System.Drawing.Size(155, 22);
+			this.mnuRegisterViewer.Text = "Register Viewer";
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -1243,5 +1252,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuStopMovie;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem25;
 		private System.Windows.Forms.ToolStripMenuItem mnuBilinearInterpolation;
+		private System.Windows.Forms.ToolStripMenuItem mnuRegisterViewer;
 	}
 }

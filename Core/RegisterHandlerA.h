@@ -35,8 +35,14 @@ public:
 
 	uint8_t Peek(uint32_t addr) override
 	{
-		//Avoid side effects for now
-		return 0;
+		if(addr == 0x4016 || addr == 0x4017) {
+			//Avoid side effects for now
+			return 0;
+		} else if(addr >= 0x4300) {
+			return _dmaController->Read(addr);
+		} else {
+			return _regs->Peek(addr);
+		}
 	}
 
 	void PeekBlock(uint8_t *output) override

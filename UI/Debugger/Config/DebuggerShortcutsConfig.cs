@@ -69,8 +69,6 @@ namespace Mesen.GUI.Config
 
 		[ShortcutName("Open APU Viewer")]
 		public XmlKeys OpenApuViewer = Keys.Control | Keys.U;
-		[ShortcutName("Open Assembler")]
-		public XmlKeys OpenAssembler = Keys.Control | Keys.K;
 		[ShortcutName("Open Debugger")]
 		public XmlKeys OpenDebugger = Keys.Control | Keys.D;
 		[ShortcutName("Open SPC Debugger")]
@@ -89,6 +87,8 @@ namespace Mesen.GUI.Config
 		public XmlKeys OpenScriptWindow = Keys.Control | Keys.N;
 		[ShortcutName("Open Trace Logger")]
 		public XmlKeys OpenTraceLogger = Keys.Control | Keys.J;
+		[ShortcutName("Open Register Viewer")]
+		public XmlKeys OpenRegisterViewer = Keys.Control | Keys.K;
 		[ShortcutName("Open Text Hooker")]
 		public XmlKeys OpenTextHooker = Keys.Control | Keys.H;
 		[ShortcutName("Open Watch Window")]

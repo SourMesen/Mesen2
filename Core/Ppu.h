@@ -48,9 +48,6 @@ private:
 	uint8_t _spriteTileCount = 0;
 	bool _hasSpritePriority[4] = {};
 
-	bool _forcedVblank = false;
-	uint8_t _screenBrightness = 0;
-
 	uint16_t _scanline = 0;
 	uint32_t _frameCount = 0;
 
@@ -63,37 +60,14 @@ private:
 
 	uint8_t _oddFrame = 0;
 
+	PpuState _state;
+
 	uint16_t _drawStartX = 0;
 	uint16_t _drawEndX = 0;
 	
-	uint8_t _bgMode = 0;
-	bool _mode1Bg3Priority = false;
-	
-	uint8_t _mainScreenLayers = 0;
-	uint8_t _subScreenLayers = 0;
-	LayerConfig _layerConfig[4] = {};
-
-	WindowConfig _window[2] = {};
-	WindowMaskLogic _maskLogic[6] = {};
-	bool _windowMaskMain[5] = {};
-	bool _windowMaskSub[5] = {};
-
-	Mode7Config _mode7 = {};
-	
 	uint16_t *_vram = nullptr;
-	uint16_t _vramAddress = 0;
-	uint8_t _vramIncrementValue = 0;
-	uint8_t _vramAddressRemapping = 0;
-	bool _vramAddrIncrementOnSecondReg = 0;
-	uint16_t _vramReadBuffer = 0;
-	
-	uint8_t _ppu1OpenBus = 0;
-	uint8_t _ppu2OpenBus = 0;
-
-	uint8_t _cgramAddress = 0;
-	uint8_t _cgramWriteBuffer = 0;
-	bool _cgramAddressLatch = false;
 	uint16_t _cgram[Ppu::CgRamSize >> 1] = {};
+	uint8_t _oamRam[Ppu::SpriteRamSize] = {};
 
 	uint16_t *_outputBuffers[2] = {};
 	uint16_t *_currentBuffer = nullptr;
@@ -109,37 +83,13 @@ private:
 	uint16_t _subScreenBuffer[256] = {};
 
 	uint32_t _mosaicColor[4] = {};
-	uint8_t _mosaicSize = 0;
-	uint8_t _mosaicEnabled = 0;
 	uint16_t _mosaicScanlineCounter = 0;
-
-	uint8_t _oamMode = 0;
-	uint16_t _oamBaseAddress = 0;
-	uint16_t _oamAddressOffset = 0;
-
-	uint8_t _oamRam[Ppu::SpriteRamSize] = {};
-	uint16_t _oamRamAddress = 0;
-	bool _enableOamPriority = false;
 	
 	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
 
 	bool _timeOver = false;
 	bool _rangeOver = false;
-
-	bool _hiResMode = false;
-	bool _screenInterlace = false;
-	bool _objInterlace = false;
-	bool _overscanMode = false;
-	bool _directColorMode = false;
-
-	ColorWindowMode _colorMathClipMode = ColorWindowMode::Never;
-	ColorWindowMode _colorMathPreventMode = ColorWindowMode::Never;
-	bool _colorMathAddSubscreen = false;
-	uint8_t _colorMathEnabled = 0;
-	bool _colorMathSubstractMode = false;
-	bool _colorMathHalveResult = false;
-	uint16_t _fixedColor = 0;
 
 	uint8_t _hvScrollLatchValue = 0;
 	uint8_t _hScrollLatchValue = 0;

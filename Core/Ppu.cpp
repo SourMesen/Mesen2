@@ -57,12 +57,12 @@ void Ppu::PowerOn()
 
 	_currentBuffer = _outputBuffers[0];
 
-	_layerConfig[0] = {};
-	_layerConfig[1] = {};
-	_layerConfig[2] = {};
-	_layerConfig[3] = {};
+	_state.Layers[0] = {};
+	_state.Layers[1] = {};
+	_state.Layers[2] = {};
+	_state.Layers[3] = {};
 
-	_cgramAddress = 0;
+	_state.CgramAddress = 0;
 
 	_settings->InitializeRam(_vram, Ppu::VideoRamSize);
 	_settings->InitializeRam(_cgram, Ppu::CgRamSize);
@@ -70,10 +70,10 @@ void Ppu::PowerOn()
 
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
-	_vramAddress = 0;
-	_vramIncrementValue = 1;
-	_vramAddressRemapping = 0;
-	_vramAddrIncrementOnSecondReg = false;
+	_state.VramAddress = 0;
+	_state.VramIncrementValue = 1;
+	_state.VramAddressRemapping = 0;
+	_state.VramAddrIncrementOnSecondReg = false;
 
 	UpdateNmiScanline();
 }
@@ -81,7 +81,7 @@ void Ppu::PowerOn()
 void Ppu::Reset()
 {
 	_scanline = 0;
-	_forcedVblank = true;
+	_state.ForcedVblank = true;
 	_oddFrame = 0;
 }
 
@@ -121,41 +121,26 @@ PpuState Ppu::GetState()
 
 void Ppu::GetState(PpuState &state, bool returnPartialState)
 {
+	if(!returnPartialState) {
+		state = _state;
+	}
 	state.Cycle = GetCycle();
 	state.Scanline = _scanline;
 	state.HClock = _memoryManager->GetHClock();
 	state.FrameCount = _frameCount;
-	if(!returnPartialState) {
-		state.OverscanMode = _overscanMode;
-		state.BgMode = _bgMode;
-		state.DirectColorMode = _directColorMode;
-		state.HiResMode = _hiResMode;
-		state.ScreenInterlace = _screenInterlace;
-		state.Mode7 = _mode7;
-		state.Layers[0] = _layerConfig[0];
-		state.Layers[1] = _layerConfig[1];
-		state.Layers[2] = _layerConfig[2];
-		state.Layers[3] = _layerConfig[3];
-
-		state.OamMode = _oamMode;
-		state.OamBaseAddress = _oamBaseAddress;
-		state.OamAddressOffset = _oamAddressOffset;
-		state.EnableOamPriority = _enableOamPriority;
-		state.ObjInterlace = _objInterlace;
-	}
 }
 
 template<bool hiResMode>
 void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 {
 	/* The current layer's options */
-	LayerConfig &config = _layerConfig[layerIndex];
+	LayerConfig &config = _state.Layers[layerIndex];
 
 	uint16_t vScroll = config.VScroll;
 	uint16_t hScroll = hiResMode ? (config.HScroll << 1) : config.HScroll;	
 	if(_hOffset || _vOffset) {
 		uint16_t enableBit = layerIndex == 0 ? 0x2000 : 0x4000;
-		if(_bgMode == 4) {
+		if(_state.BgMode == 4) {
 			if((_hOffset & 0x8000) == 0 && (_hOffset & enableBit)) {
 				hScroll = (hScroll & 0x07) | (_hOffset & 0x3F8);
 			}
@@ -177,11 +162,11 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 
 	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
-	if(_mosaicEnabled && (_mosaicEnabled & (1 << layerIndex))) {
+	if(_state.MosaicEnabled && (_state.MosaicEnabled & (1 << layerIndex))) {
 		//Keep the "scanline" to what it was at the start of this mosaic block
-		realY -= _mosaicSize - _mosaicScanlineCounter;
+		realY -= _state.MosaicSize - _mosaicScanlineCounter;
 		if(IsDoubleHeight()) {
-			realY -= _mosaicSize - _mosaicScanlineCounter;
+			realY -= _state.MosaicSize - _mosaicScanlineCounter;
 		}
 	}
 
@@ -211,7 +196,7 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 template<bool hiResMode, uint8_t bpp, bool secondTile>
 void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 {
-	LayerConfig &config = _layerConfig[layerIndex];
+	LayerConfig &config = _state.Layers[layerIndex];
 	TileData &tileData = _layerData[layerIndex].Tiles[column];
 	uint16_t tilemapData = tileData.TilemapData;
 
@@ -222,11 +207,11 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 
 	uint16_t realY = IsDoubleHeight() ? (_oddFrame ? ((_scanline << 1) + 1) : (_scanline << 1)) : _scanline;
 
-	if(_mosaicEnabled && (_mosaicEnabled & (1 << layerIndex))) {
+	if(_state.MosaicEnabled && (_state.MosaicEnabled & (1 << layerIndex))) {
 		//Keep the "scanline" to what it was at the start of this mosaic block
-		realY -= _mosaicSize - _mosaicScanlineCounter;
+		realY -= _state.MosaicSize - _mosaicScanlineCounter;
 		if(IsDoubleHeight()) {
-			realY -= _mosaicSize - _mosaicScanlineCounter + (_oddFrame ? 1 : 0);
+			realY -= _state.MosaicSize - _mosaicScanlineCounter + (_oddFrame ? 1 : 0);
 		}
 	}
 
@@ -256,28 +241,28 @@ void Ppu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 
 void Ppu::GetHorizontalOffsetByte(uint8_t columnIndex)
 {
-	uint16_t columnOffset = (((columnIndex << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
-	uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
+	uint16_t columnOffset = (((columnIndex << 3) + (_state.Layers[2].HScroll & ~0x07)) >> 3) & (_state.Layers[2].DoubleWidth ? 0x3F : 0x1F);
+	uint16_t rowOffset = (_state.Layers[2].VScroll >> 3) & (_state.Layers[2].DoubleHeight ? 0x3F : 0x1F);
 
-	_hOffset = _vram[_layerConfig[2].TilemapAddress + columnOffset + (rowOffset << 5)];
+	_hOffset = _vram[_state.Layers[2].TilemapAddress + columnOffset + (rowOffset << 5)];
 }
 
 void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
 {
-	uint16_t columnOffset = (((columnIndex << 3) + (_layerConfig[2].HScroll & ~0x07)) >> 3) & (_layerConfig[2].DoubleWidth ? 0x3F : 0x1F);
-	uint16_t rowOffset = (_layerConfig[2].VScroll >> 3) & (_layerConfig[2].DoubleHeight ? 0x3F : 0x1F);
+	uint16_t columnOffset = (((columnIndex << 3) + (_state.Layers[2].HScroll & ~0x07)) >> 3) & (_state.Layers[2].DoubleWidth ? 0x3F : 0x1F);
+	uint16_t rowOffset = (_state.Layers[2].VScroll >> 3) & (_state.Layers[2].DoubleHeight ? 0x3F : 0x1F);
 
 	uint16_t tileOffset = columnOffset + (rowOffset << 5);
 
 	//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
-	uint16_t vOffsetAddr = _layerConfig[2].TilemapAddress + ((tileOffset + 0x20) & (_layerConfig[2].DoubleHeight ? 0x7FF : 0x3FF));
+	uint16_t vOffsetAddr = _state.Layers[2].TilemapAddress + ((tileOffset + 0x20) & (_state.Layers[2].DoubleHeight ? 0x7FF : 0x3FF));
 
 	_vOffset = _vram[vOffsetAddr];
 }
 
 void Ppu::FetchTileData()
 {
-	if(_forcedVblank) {
+	if(_state.ForcedVblank) {
 		return;
 	}
 
@@ -286,7 +271,7 @@ void Ppu::FetchTileData()
 		_vOffset = 0;
 	}
 
-	if(_bgMode == 0) {
+	if(_state.BgMode == 0) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(3, x >> 3); break;
@@ -300,7 +285,7 @@ void Ppu::FetchTileData()
 				case 7: GetChrData<false, 2>(0, x >> 3, 0); break;
 			}
 		}
-	} else if(_bgMode == 1) {
+	} else if(_state.BgMode == 1) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(2, x >> 3); break;
@@ -313,7 +298,7 @@ void Ppu::FetchTileData()
 				case 7: GetChrData<false, 4>(0, x >> 3, 1); break;
 			}
 		}
-	} else if(_bgMode == 2) {
+	} else if(_state.BgMode == 2) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(1, x >> 3); break;
@@ -328,7 +313,7 @@ void Ppu::FetchTileData()
 				case 7: GetChrData<false, 4>(0, x >> 3, 1); break;
 			}
 		}
-	} else if(_bgMode == 3) {
+	} else if(_state.BgMode == 3) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(1, x >> 3); break;
@@ -343,7 +328,7 @@ void Ppu::FetchTileData()
 				case 7: GetChrData<false, 8>(0, x >> 3, 3); break;
 			}
 		}
-	} else if(_bgMode == 4) {
+	} else if(_state.BgMode == 4) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<false>(1, x >> 3); break;
@@ -359,7 +344,7 @@ void Ppu::FetchTileData()
 				case 7: GetChrData<false, 8>(0, x >> 3, 3); break;
 			}
 		}
-	} else if(_bgMode == 5) {
+	} else if(_state.BgMode == 5) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<true>(1, x >> 3); break;
@@ -374,7 +359,7 @@ void Ppu::FetchTileData()
 				case 7: GetChrData<true, 4, true>(0, x >> 3, 1); break;
 			}
 		}
-	} else if(_bgMode == 6) {
+	} else if(_state.BgMode == 6) {
 		for(int x = _fetchBgStart; x <= _fetchBgEnd; x++) {
 			switch(x & 0x07) {
 				case 0: GetTilemapData<true>(1, x >> 3); break;
@@ -394,13 +379,13 @@ void Ppu::FetchTileData()
 
 bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 {
-	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_screenInterlace)) {
+	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_state.ScreenInterlace)) {
 		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
 		if(_scanline < _vblankStartScanline) {
 			RenderScanline();
 
 			if(_scanline == 0) {
-				_mosaicScanlineCounter = _mosaicEnabled ? _mosaicSize + 1 : 0;
+				_mosaicScanlineCounter = _state.MosaicEnabled ? _state.MosaicSize + 1 : 0;
 				if(!_skipRender) {
 					//If we're not skipping this frame, reset the high resolution flag
 					_useHighResOutput = false;
@@ -409,8 +394,8 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			
 			if(_mosaicScanlineCounter) {
 				_mosaicScanlineCounter--;
-				if(_mosaicEnabled && !_mosaicScanlineCounter) {
-					_mosaicScanlineCounter = _mosaicSize;
+				if(_state.MosaicEnabled && !_mosaicScanlineCounter) {
+					_mosaicScanlineCounter = _state.MosaicSize;
 				}
 			}
 
@@ -453,9 +438,9 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_latchRequest = false;
 
 			//Reset OAM address at the start of vblank?
-			if(!_forcedVblank) {
+			if(!_state.ForcedVblank) {
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
-				_internalOamAddress = (_oamRamAddress << 1);
+				_internalOamAddress = (_state.OamRamAddress << 1);
 			}
 
 			VideoConfig cfg = _settings->GetVideoConfig();
@@ -521,13 +506,13 @@ void Ppu::UpdateNmiScanline()
 {
 	EmulationConfig cfg = _settings->GetEmulationConfig();
 	if(_console->GetRegion() == ConsoleRegion::Ntsc) {
-		if(!_screenInterlace || _oddFrame) {
+		if(!_state.ScreenInterlace || _oddFrame) {
 			_baseVblankEndScanline = 261;
 		} else {
 			_baseVblankEndScanline = 262;
 		}
 	} else {
-		if(!_screenInterlace || _oddFrame) {
+		if(!_state.ScreenInterlace || _oddFrame) {
 			_baseVblankEndScanline = 311;
 		} else {
 			_baseVblankEndScanline = 312;
@@ -538,7 +523,7 @@ void Ppu::UpdateNmiScanline()
 
 	_adjustedVblankEndScanline = _baseVblankEndScanline + cfg.PpuExtraScanlinesBeforeNmi;
 	_vblankEndScanline = _baseVblankEndScanline + cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
-	_vblankStartScanline = _overscanMode ? 240 : 225;
+	_vblankStartScanline = _state.OverscanMode ? 240 : 225;
 	_nmiScanline = _vblankStartScanline + cfg.PpuExtraScanlinesBeforeNmi;
 }
 
@@ -578,10 +563,10 @@ void Ppu::EvaluateNextLineSprites()
 {
 	if(_spriteEvalStart == 0) {
 		_spriteCount = 0;
-		_oamEvaluationIndex = _enableOamPriority ? ((_internalOamAddress & 0x1FC) >> 2) : 0;
+		_oamEvaluationIndex = _state.EnableOamPriority ? ((_internalOamAddress & 0x1FC) >> 2) : 0;
 	}
 
-	if(_forcedVblank) {
+	if(_state.ForcedVblank) {
 		return;
 	}
 
@@ -624,7 +609,7 @@ void Ppu::FetchSpriteData()
 	for(int x = _fetchSpriteStart; x <= _fetchSpriteEnd; x++) {
 		if(x >= 2) {
 			//Fetch the tile using the OAM data loaded on the past 2 cycles, before overwriting it in FetchSpriteAttributes below
-			if(!_forcedVblank) {
+			if(!_state.ForcedVblank) {
 				FetchSpriteTile(x & 0x01);
 			}
 
@@ -661,7 +646,7 @@ void Ppu::FetchSpritePosition(uint16_t oamAddress)
 	uint8_t spriteIndex = oamAddress >> 2;
 	_currentSprite.X = (int16_t)((sign | (oamValue & 0xFF)) << 7) >> 7;
 	_currentSprite.Y = (oamValue >> 8);
-	_currentSprite.Width = _oamSizes[_oamMode][largeSprite][0] << 3;
+	_currentSprite.Width = _oamSizes[_state.OamMode][largeSprite][0] << 3;
 	
 	if(spriteIndex != _currentSprite.Index) {
 		_currentSprite.Index = oamAddress >> 2;
@@ -672,8 +657,8 @@ void Ppu::FetchSpritePosition(uint16_t oamAddress)
 		}
 	}
 
-	uint8_t height = _oamSizes[_oamMode][largeSprite][1] << 3;
-	if(_objInterlace) {
+	uint8_t height = _oamSizes[_state.OamMode][largeSprite][1] << 3;
+	if(_state.ObjInterlace) {
 		height /= 2;
 	}
 	_currentSprite.Height = height;
@@ -697,7 +682,7 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint8_t yOffset;
 	int rowOffset;
 	int yGap = (_scanline - _currentSprite.Y);
-	if(_objInterlace) {
+	if(_state.ObjInterlace) {
 		yGap <<= 1;
 		yGap |= _oddFrame;
 	}
@@ -717,7 +702,7 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint8_t row = (tileRow + rowOffset) & 0x0F;
 	uint8_t columnOffset = _currentSprite.HorizontalMirror ? _currentSprite.ColumnOffset : (columnCount - _currentSprite.ColumnOffset - 1);
 	uint8_t tileIndex = (row << 4) | ((tileColumn + columnOffset) & 0x0F);
-	uint16_t tileStart = (_oamBaseAddress + (tileIndex << 4) + (useSecondTable ? _oamAddressOffset : 0)) & 0x7FFF;
+	uint16_t tileStart = (_state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? _state.OamAddressOffset : 0)) & 0x7FFF;
 	_currentSprite.FetchAddress = tileStart + yOffset;
 
 	int16_t x = _currentSprite.X == -256 ? 0 : _currentSprite.X;
@@ -777,7 +762,7 @@ void Ppu::RenderMode0()
 
 void Ppu::RenderMode1()
 {
-	if(_mode1Bg3Priority) {
+	if(_state.Mode1Bg3Priority) {
 		RenderTilemap<2, 2, true>();
 	}
 	RenderSprites<3>();
@@ -787,7 +772,7 @@ void Ppu::RenderMode1()
 	RenderTilemap<0, 4, false>();
 	RenderTilemap<1, 4, false>();
 	RenderSprites<1>();
-	if(!_mode1Bg3Priority) {
+	if(!_state.Mode1Bg3Priority) {
 		RenderTilemap<2, 2, true>();
 	}
 	RenderSprites<0>();
@@ -862,13 +847,13 @@ void Ppu::RenderMode7()
 {
 	RenderSprites<3>();
 	RenderSprites<2>();
-	if(_mode7.ExtBgEnabled) {
+	if(_state.ExtBgEnabled) {
 		RenderTilemapMode7<1, true>();
 	}
 	RenderSprites<1>();
 	RenderTilemapMode7<0, false>();
 	RenderSprites<0>();
-	if(_mode7.ExtBgEnabled) {
+	if(_state.ExtBgEnabled) {
 		RenderTilemapMode7<1, false>();
 	}
 	RenderBgColor();
@@ -899,8 +884,8 @@ void Ppu::RenderScanline()
 	if(!_skipRender && _drawStartX < 255 && hPos > 22 && _scanline > 0) {
 		_drawEndX = std::min(hPos - 22, 255);
 
-		uint8_t bgMode = _bgMode;
-		if(_forcedVblank) {
+		uint8_t bgMode = _state.BgMode;
+		if(_state.ForcedVblank) {
 			bgMode = 8;
 		}
 
@@ -947,7 +932,7 @@ void Ppu::RenderBgColor()
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(!_rowPixelFlags[x]) {
-			uint8_t pixelFlags = PixelFlags::Filled | ((_colorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
+			uint8_t pixelFlags = PixelFlags::Filled | ((_state.ColorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
 			_mainScreenBuffer[x] = _cgram[0];
 			_rowPixelFlags[x] = pixelFlags;
 		}
@@ -964,16 +949,16 @@ void Ppu::RenderSprites()
 		return;
 	}
 
-	bool drawMain = (bool)(((_mainScreenLayers & _configVisibleLayers) >> Ppu::SpriteLayerIndex) & 0x01);
-	bool drawSub = (bool)(((_subScreenLayers & _configVisibleLayers) >> Ppu::SpriteLayerIndex) & 0x01);
+	bool drawMain = (bool)(((_state.MainScreenLayers & _configVisibleLayers) >> Ppu::SpriteLayerIndex) & 0x01);
+	bool drawSub = (bool)(((_state.SubScreenLayers & _configVisibleLayers) >> Ppu::SpriteLayerIndex) & 0x01);
 
 	uint8_t mainWindowCount = 0;
 	uint8_t subWindowCount = 0;
-	if(_windowMaskMain[Ppu::SpriteLayerIndex]) {
-		mainWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
+	if(_state.WindowMaskMain[Ppu::SpriteLayerIndex]) {
+		mainWindowCount = (uint8_t)_state.Window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_state.Window[1].ActiveLayers[Ppu::SpriteLayerIndex];
 	}
-	if(_windowMaskSub[Ppu::SpriteLayerIndex]) {
-		subWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::SpriteLayerIndex];
+	if(_state.WindowMaskSub[Ppu::SpriteLayerIndex]) {
+		subWindowCount = (uint8_t)_state.Window[0].ActiveLayers[Ppu::SpriteLayerIndex] + (uint8_t)_state.Window[1].ActiveLayers[Ppu::SpriteLayerIndex];
 	}
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
@@ -981,7 +966,7 @@ void Ppu::RenderSprites()
 			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(mainWindowCount, x)) {
 				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
 				_mainScreenBuffer[x] = _cgram[paletteRamOffset];
-				_rowPixelFlags[x] = PixelFlags::Filled | (((_colorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
+				_rowPixelFlags[x] = PixelFlags::Filled | (((_state.ColorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 				_pixelsDrawn++;
 			}
 
@@ -998,23 +983,23 @@ void Ppu::RenderSprites()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemap()
 {
-	bool drawMain = (bool)(((_mainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
-	bool drawSub = (bool)(((_subScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
+	bool drawMain = (bool)(((_state.MainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
+	bool drawSub = (bool)(((_state.SubScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
 
-	uint8_t mainWindowCount = _windowMaskMain[layerIndex] ? (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex] : 0;
-	uint8_t subWindowCount = _windowMaskSub[layerIndex] ? (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex] : 0;
+	uint8_t mainWindowCount = _state.WindowMaskMain[layerIndex] ? (uint8_t)_state.Window[0].ActiveLayers[layerIndex] + (uint8_t)_state.Window[1].ActiveLayers[layerIndex] : 0;
+	uint8_t subWindowCount = _state.WindowMaskSub[layerIndex] ? (uint8_t)_state.Window[0].ActiveLayers[layerIndex] + (uint8_t)_state.Window[1].ActiveLayers[layerIndex] : 0;
 
-	uint16_t hScrollOriginal = _layerConfig[layerIndex].HScroll;
+	uint16_t hScrollOriginal = _state.Layers[layerIndex].HScroll;
 	uint16_t hScroll = hiResMode ? (hScrollOriginal << 1) : hScrollOriginal;
 
 	TileData* tileData  = _layerData[layerIndex].Tiles;
 
-	uint8_t mosaicCounter = applyMosaic ? _mosaicSize - (_drawStartX % _mosaicSize) : 0;
+	uint8_t mosaicCounter = applyMosaic ? _state.MosaicSize - (_drawStartX % _state.MosaicSize) : 0;
 
 	uint8_t lookupIndex;
 	uint8_t chrDataOffset;
 	uint8_t hiresSubColor;
-	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+	uint8_t pixelFlags = PixelFlags::Filled | (((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(hiResMode) {
@@ -1053,7 +1038,7 @@ void Ppu::RenderTilemap()
 		uint8_t paletteIndex = (tilemapData >> 10) & 0x07;
 
 		if(applyMosaic) {
-			if(mosaicCounter == _mosaicSize) {
+			if(mosaicCounter == _state.MosaicSize) {
 				mosaicCounter = 1;
 				if(hiResMode) {
 					color = hiresSubColor;
@@ -1112,10 +1097,10 @@ bool Ppu::IsRenderRequired(uint8_t layerIndex)
 		return false;
 	}
 
-	if(((_mainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) {
+	if(((_state.MainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) {
 		return true;
 	}
-	if(((_subScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) {
+	if(((_state.SubScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) {
 		return true;
 	}
 
@@ -1156,49 +1141,49 @@ void Ppu::RenderTilemapMode7()
 		return;
 	}
 
-	uint8_t mainWindowCount = _windowMaskMain[layerIndex] ? (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex] : 0;
-	uint8_t subWindowCount = _windowMaskSub[layerIndex] ? (uint8_t)_window[0].ActiveLayers[layerIndex] + (uint8_t)_window[1].ActiveLayers[layerIndex] : 0;
+	uint8_t mainWindowCount = _state.WindowMaskMain[layerIndex] ? (uint8_t)_state.Window[0].ActiveLayers[layerIndex] + (uint8_t)_state.Window[1].ActiveLayers[layerIndex] : 0;
+	uint8_t subWindowCount = _state.WindowMaskSub[layerIndex] ? (uint8_t)_state.Window[0].ActiveLayers[layerIndex] + (uint8_t)_state.Window[1].ActiveLayers[layerIndex] : 0;
 	
-	bool drawMain = (bool)(((_mainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
-	bool drawSub = (bool)(((_subScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
+	bool drawMain = (bool)(((_state.MainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
+	bool drawSub = (bool)(((_state.SubScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
 
 	auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };
 
 	if(_drawStartX == 0) {
 		//Keep the same scroll offsets for the entire scanline
-		_mode7.HScrollLatch = _mode7.HScroll;
-		_mode7.VScrollLatch = _mode7.VScroll;
+		_state.Mode7.HScrollLatch = _state.Mode7.HScroll;
+		_state.Mode7.VScrollLatch = _state.Mode7.VScroll;
 	}
 
-	int32_t hScroll = ((int32_t)_mode7.HScrollLatch << 19) >> 19;
-	int32_t vScroll = ((int32_t)_mode7.VScrollLatch << 19) >> 19;
-	int32_t centerX = ((int32_t)_mode7.CenterX << 19) >> 19;
-	int32_t centerY = ((int32_t)_mode7.CenterY << 19) >> 19;
-	uint16_t realY = _mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
+	int32_t hScroll = ((int32_t)_state.Mode7.HScrollLatch << 19) >> 19;
+	int32_t vScroll = ((int32_t)_state.Mode7.VScrollLatch << 19) >> 19;
+	int32_t centerX = ((int32_t)_state.Mode7.CenterX << 19) >> 19;
+	int32_t centerY = ((int32_t)_state.Mode7.CenterY << 19) >> 19;
+	uint16_t realY = _state.Mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
 
 	if(applyMosaic) {
 		//Keep the "scanline" to what it was at the start of this mosaic block
-		realY -= _mosaicSize - _mosaicScanlineCounter;
+		realY -= _state.MosaicSize - _mosaicScanlineCounter;
 	}
-	uint8_t mosaicCounter = applyMosaic ? _mosaicSize - (_drawStartX % _mosaicSize) : 0;
+	uint8_t mosaicCounter = applyMosaic ? _state.MosaicSize - (_drawStartX % _state.MosaicSize) : 0;
 
 	int32_t xValue = (
-		((_mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
-		((_mode7.Matrix[1] * realY) & ~63) +
-		((_mode7.Matrix[1] * clip(vScroll - centerY)) & ~63) +
+		((_state.Mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
+		((_state.Mode7.Matrix[1] * realY) & ~63) +
+		((_state.Mode7.Matrix[1] * clip(vScroll - centerY)) & ~63) +
 		(centerX << 8)
 	);
 
 	int32_t yValue = (
-		((_mode7.Matrix[2] * clip(hScroll - centerX)) & ~63) +
-		((_mode7.Matrix[3] * realY) & ~63) +
-		((_mode7.Matrix[3] * clip(vScroll - centerY)) & ~63) +
+		((_state.Mode7.Matrix[2] * clip(hScroll - centerX)) & ~63) +
+		((_state.Mode7.Matrix[3] * realY) & ~63) +
+		((_state.Mode7.Matrix[3] * clip(vScroll - centerY)) & ~63) +
 		(centerY << 8)
 	);
 
-	int16_t xStep = _mode7.Matrix[0];
-	int16_t yStep = _mode7.Matrix[2];
-	if(_mode7.HorizontalMirroring) {
+	int16_t xStep = _state.Mode7.Matrix[0];
+	int16_t yStep = _state.Mode7.Matrix[2];
+	if(_state.Mode7.HorizontalMirroring) {
 		//Calculate the value at the end of the scanline, and then start going backwards
 		xValue += xStep * _drawEndX;
 		yValue += yStep * _drawEndX;
@@ -1209,7 +1194,7 @@ void Ppu::RenderTilemapMode7()
 	xValue += xStep * _drawStartX;
 	yValue += yStep * _drawStartX;
 	
-	uint8_t pixelFlags = PixelFlags::Filled | (((_colorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+	uint8_t pixelFlags = PixelFlags::Filled | (((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		int32_t xOffset = xValue >> 8;
@@ -1222,13 +1207,13 @@ void Ppu::RenderTilemapMode7()
 		}
 		
 		uint8_t tileIndex;
-		if(!_mode7.LargeMap) {
+		if(!_state.Mode7.LargeMap) {
 			yOffset &= 0x3FF;
 			xOffset &= 0x3FF;
 			tileIndex = (uint8_t)_vram[((yOffset & ~0x07) << 4) | (xOffset >> 3)];
 		} else {
 			if(yOffset < 0 || yOffset > 0x3FF || xOffset < 0 || xOffset > 0x3FF) {
-				if(_mode7.FillWithTile0) {
+				if(_state.Mode7.FillWithTile0) {
 					tileIndex = 0;
 				} else {
 					//Draw nothing for this pixel, we're outside the map
@@ -1252,7 +1237,7 @@ void Ppu::RenderTilemapMode7()
 		}
 
 		if(applyMosaic) {
-			if(mosaicCounter == _mosaicSize) {
+			if(mosaicCounter == _state.MosaicSize) {
 				mosaicCounter = 1;
 				_mosaicColor[layerIndex] = colorIndex;
 			} else {
@@ -1296,8 +1281,8 @@ void Ppu::DrawSubPixel(uint8_t x, uint16_t color)
 
 void Ppu::ApplyColorMath()
 {
-	uint8_t activeWindowCount = (uint8_t)_window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_window[1].ActiveLayers[Ppu::ColorWindowIndex];
-	bool hiResMode = _hiResMode || _bgMode == 5 || _bgMode == 6;
+	uint8_t activeWindowCount = (uint8_t)_state.Window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_state.Window[1].ActiveLayers[Ppu::ColorWindowIndex];
+	bool hiResMode = _state.HiResMode || _state.BgMode == 5 || _state.BgMode == 6;
 	uint16_t prevMainPixel = 0;
 	int prevX = _drawStartX > 0 ? _drawStartX - 1 : 0;
 
@@ -1317,10 +1302,10 @@ void Ppu::ApplyColorMath()
 
 void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool isInsideWindow)
 {
-	uint8_t halfShift = (uint8_t)_colorMathHalveResult;
+	uint8_t halfShift = (uint8_t)_state.ColorMathHalveResult;
 
 	//Set color to black as needed based on clip mode
-	switch(_colorMathClipMode) {
+	switch(_state.ColorMathClipMode) {
 		default:
 		case ColorWindowMode::Never: break;
 
@@ -1347,7 +1332,7 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 	}
 
 	//Prevent color math as needed based on mode
-	switch(_colorMathPreventMode) {
+	switch(_state.ColorMathPreventMode) {
 		default:
 		case ColorWindowMode::Never: break;
 
@@ -1367,20 +1352,20 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 	}
 
 	uint16_t otherPixel;
-	if(_colorMathAddSubscreen) {
+	if(_state.ColorMathAddSubscreen) {
 		if(_subScreenFilled[x]) {
 			otherPixel = pixelB;
 		} else {
 			//there's nothing in the subscreen at this pixel, use the fixed color and disable halve operation
-			otherPixel = _fixedColor;
+			otherPixel = _state.FixedColor;
 			halfShift = 0;
 		}
 	} else {
-		otherPixel = _fixedColor;
+		otherPixel = _state.FixedColor;
 	}
 
 	constexpr unsigned int mask = 0x1F;
-	if(_colorMathSubstractMode) {
+	if(_state.ColorMathSubstractMode) {
 		uint16_t r = std::max((int)((pixelA & mask) - (otherPixel & mask)), 0) >> halfShift;
 		uint16_t g = std::max((int)(((pixelA >> 5U) & mask) - ((otherPixel >> 5U) & mask)), 0) >> halfShift;
 		uint16_t b = std::max((int)(((pixelA >> 10U) & mask) - ((otherPixel >> 10U) & mask)), 0) >> halfShift;
@@ -1398,12 +1383,12 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 template<bool forMainScreen>
 void Ppu::ApplyBrightness()
 {
-	if(_screenBrightness != 15) {
+	if(_state.ScreenBrightness != 15) {
 		for(int x = _drawStartX; x <= _drawEndX; x++) {
 			uint16_t &pixel = (forMainScreen ? _mainScreenBuffer : _subScreenBuffer)[x];
-			uint16_t r = (pixel & 0x1F) * _screenBrightness / 15;
-			uint16_t g = ((pixel >> 5) & 0x1F) * _screenBrightness / 15;
-			uint16_t b = ((pixel >> 10) & 0x1F) * _screenBrightness / 15;
+			uint16_t r = (pixel & 0x1F) * _state.ScreenBrightness / 15;
+			uint16_t g = ((pixel >> 5) & 0x1F) * _state.ScreenBrightness / 15;
+			uint16_t b = ((pixel >> 10) & 0x1F) * _state.ScreenBrightness / 15;
 			pixel = r | (g << 5) | (b << 10);
 		}
 	}
@@ -1411,7 +1396,7 @@ void Ppu::ApplyBrightness()
 
 void Ppu::ConvertToHiRes()
 {
-	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
+	uint16_t scanline = _state.OverscanMode ? (_scanline - 1) : (_scanline + 6);
 
 	if(_drawStartX > 0) {
 		for(int x = 0; x < _drawStartX; x++) {
@@ -1433,9 +1418,9 @@ void Ppu::ConvertToHiRes()
 void Ppu::ApplyHiResMode()
 {
 	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
-	uint16_t scanline = _overscanMode ? (_scanline - 1) : (_scanline + 6);
+	uint16_t scanline = _state.OverscanMode ? (_scanline - 1) : (_scanline + 6);
 
-	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || _screenInterlace;
+	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || _state.ScreenInterlace;
 	if(_useHighResOutput != useHighResOutput) {
 		//Convert standard res picture to high resolution when the PPU starts drawing in high res mid frame
 		ConvertToHiRes();
@@ -1445,7 +1430,7 @@ void Ppu::ApplyHiResMode()
 	if(!_useHighResOutput) {
 		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 2);
 	} else {
-		uint32_t screenY = _screenInterlace ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
+		uint32_t screenY = _state.ScreenInterlace ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 		uint32_t baseAddr = (screenY << 9);
 
 		if(IsDoubleWidth()) {
@@ -1461,7 +1446,7 @@ void Ppu::ApplyHiResMode()
 			}
 		}
 
-		if(!_screenInterlace) {
+		if(!_state.ScreenInterlace) {
 			//Copy this line's content to the next line (between the current start & end bounds)
 			memcpy(
 				_currentBuffer + baseAddr + 512 + (_drawStartX << 1),
@@ -1477,18 +1462,18 @@ bool Ppu::ProcessMaskWindow(uint8_t activeWindowCount, int x)
 {
 	switch(activeWindowCount) {
 		case 1: 
-			if(_window[0].ActiveLayers[layerIndex]) {
-				return _window[0].PixelNeedsMasking<layerIndex>(x);
+			if(_state.Window[0].ActiveLayers[layerIndex]) {
+				return _state.Window[0].PixelNeedsMasking<layerIndex>(x);
 			}
-			return _window[1].PixelNeedsMasking<layerIndex>(x);
+			return _state.Window[1].PixelNeedsMasking<layerIndex>(x);
 
 		case 2:
-			switch(_maskLogic[layerIndex]) {
+			switch(_state.MaskLogic[layerIndex]) {
 				default:
-				case WindowMaskLogic::Or: return _window[0].PixelNeedsMasking<layerIndex>(x) | _window[1].PixelNeedsMasking<layerIndex>(x);
-				case WindowMaskLogic::And: return _window[0].PixelNeedsMasking<layerIndex>(x) & _window[1].PixelNeedsMasking<layerIndex>(x);
-				case WindowMaskLogic::Xor: return _window[0].PixelNeedsMasking<layerIndex>(x) ^ _window[1].PixelNeedsMasking<layerIndex>(x);
-				case WindowMaskLogic::Xnor: return !(_window[0].PixelNeedsMasking<layerIndex>(x) ^ _window[1].PixelNeedsMasking<layerIndex>(x));
+				case WindowMaskLogic::Or: return _state.Window[0].PixelNeedsMasking<layerIndex>(x) | _state.Window[1].PixelNeedsMasking<layerIndex>(x);
+				case WindowMaskLogic::And: return _state.Window[0].PixelNeedsMasking<layerIndex>(x) & _state.Window[1].PixelNeedsMasking<layerIndex>(x);
+				case WindowMaskLogic::Xor: return _state.Window[0].PixelNeedsMasking<layerIndex>(x) ^ _state.Window[1].PixelNeedsMasking<layerIndex>(x);
+				case WindowMaskLogic::Xnor: return !(_state.Window[0].PixelNeedsMasking<layerIndex>(x) ^ _state.Window[1].PixelNeedsMasking<layerIndex>(x));
 			}
 	}
 	return false;
@@ -1496,15 +1481,15 @@ bool Ppu::ProcessMaskWindow(uint8_t activeWindowCount, int x)
 
 void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 {
-	_window[0].ActiveLayers[0 + offset] = (value & 0x02) != 0;
-	_window[0].ActiveLayers[1 + offset] = (value & 0x20) != 0;
-	_window[0].InvertedLayers[0 + offset] = (value & 0x01) != 0;
-	_window[0].InvertedLayers[1 + offset] = (value & 0x10) != 0;
+	_state.Window[0].ActiveLayers[0 + offset] = (value & 0x02) != 0;
+	_state.Window[0].ActiveLayers[1 + offset] = (value & 0x20) != 0;
+	_state.Window[0].InvertedLayers[0 + offset] = (value & 0x01) != 0;
+	_state.Window[0].InvertedLayers[1 + offset] = (value & 0x10) != 0;
 
-	_window[1].ActiveLayers[0 + offset] = (value & 0x08) != 0;
-	_window[1].ActiveLayers[1 + offset] = (value & 0x80) != 0;
-	_window[1].InvertedLayers[0 + offset] = (value & 0x04) != 0;
-	_window[1].InvertedLayers[1 + offset] = (value & 0x40) != 0;
+	_state.Window[1].ActiveLayers[0 + offset] = (value & 0x08) != 0;
+	_state.Window[1].ActiveLayers[1 + offset] = (value & 0x80) != 0;
+	_state.Window[1].InvertedLayers[0 + offset] = (value & 0x04) != 0;
+	_state.Window[1].InvertedLayers[1 + offset] = (value & 0x40) != 0;
 }
 
 void Ppu::SendFrame()
@@ -1518,7 +1503,7 @@ void Ppu::SendFrame()
 	uint16_t width = _useHighResOutput ? 512 : 256;
 	uint16_t height = _useHighResOutput ? 478 : 239;
 
-	if(!_overscanMode) {
+	if(!_state.OverscanMode) {
 		//Clear the top 7 and bottom 8 rows
 		int top = (_useHighResOutput ? 14 : 7);
 		int bottom = (_useHighResOutput ? 16 : 8);
@@ -1530,7 +1515,7 @@ void Ppu::SendFrame()
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 #else
-	if(isRewinding || _screenInterlace) {
+	if(isRewinding || _state.ScreenInterlace) {
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
@@ -1568,12 +1553,12 @@ uint8_t* Ppu::GetSpriteRam()
 
 bool Ppu::IsDoubleHeight()
 {
-	return _screenInterlace && (_bgMode == 5 || _bgMode == 6);
+	return _state.ScreenInterlace && (_state.BgMode == 5 || _state.BgMode == 6);
 }
 
 bool Ppu::IsDoubleWidth()
 {
-	return _hiResMode || _bgMode == 5 || _bgMode == 6;
+	return _state.HiResMode || _state.BgMode == 5 || _state.BgMode == 6;
 }
 
 void Ppu::SetLocationLatchRequest(uint16_t x, uint16_t y)
@@ -1608,12 +1593,12 @@ void Ppu::LatchLocationValues()
 
 void Ppu::UpdateOamAddress()
 {
-	_internalOamAddress = (_oamRamAddress << 1);
+	_internalOamAddress = (_state.OamRamAddress << 1);
 }
 
 uint16_t Ppu::GetOamAddress()
 {
-	if(_forcedVblank || _scanline >= _vblankStartScanline) {
+	if(_state.ForcedVblank || _scanline >= _vblankStartScanline) {
 		return _internalOamAddress;
 	} else {
 		if(_memoryManager->GetHClock() <= 255 * 4) {
@@ -1627,13 +1612,13 @@ uint16_t Ppu::GetOamAddress()
 void Ppu::UpdateVramReadBuffer()
 {
 	uint16_t addr = GetVramAddress();
-	_vramReadBuffer = _vram[addr];
+	_state.VramReadBuffer = _vram[addr];
 }
 
 uint16_t Ppu::GetVramAddress()
 {
-	uint16_t addr = _vramAddress;
-	switch(_vramAddressRemapping) {
+	uint16_t addr = _state.VramAddress;
+	switch(_state.VramAddressRemapping) {
 		default:
 		case 0: return addr;
 		case 1: return (addr & 0xFF00) | ((addr & 0xE0) >> 5) | ((addr & 0x1F) << 3);
@@ -1650,16 +1635,16 @@ uint8_t Ppu::Read(uint16_t addr)
 
 	switch(addr) {
 		case 0x2134:
-			_ppu1OpenBus = ((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) & 0xFF;
-			return _ppu1OpenBus;
+			_state.Ppu1OpenBus = ((int16_t)_state.Mode7.Matrix[0] * ((int16_t)_state.Mode7.Matrix[1] >> 8)) & 0xFF;
+			return _state.Ppu1OpenBus;
 
 		case 0x2135:
-			_ppu1OpenBus = (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 8) & 0xFF;
-			return _ppu1OpenBus;
+			_state.Ppu1OpenBus = (((int16_t)_state.Mode7.Matrix[0] * ((int16_t)_state.Mode7.Matrix[1] >> 8)) >> 8) & 0xFF;
+			return _state.Ppu1OpenBus;
 
 		case 0x2136:
-			_ppu1OpenBus = (((int16_t)_mode7.Matrix[0] * ((int16_t)_mode7.Matrix[1] >> 8)) >> 16) & 0xFF;
-			return _ppu1OpenBus;
+			_state.Ppu1OpenBus = (((int16_t)_state.Mode7.Matrix[0] * ((int16_t)_state.Mode7.Matrix[1] >> 8)) >> 16) & 0xFF;
+			return _state.Ppu1OpenBus;
 
 		case 0x2137:
 			//SLHV - Software Latch for H/V Counter
@@ -1684,49 +1669,49 @@ uint8_t Ppu::Read(uint16_t addr)
 			}
 			
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
-			_ppu1OpenBus = value;
+			_state.Ppu1OpenBus = value;
 			return value;
 		}
 
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
-			uint8_t returnValue = (uint8_t)_vramReadBuffer;
+			uint8_t returnValue = (uint8_t)_state.VramReadBuffer;
 			_console->ProcessPpuRead(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
-			if(!_vramAddrIncrementOnSecondReg) {
+			if(!_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
-				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
 			}
-			_ppu1OpenBus = returnValue;
+			_state.Ppu1OpenBus = returnValue;
 			return returnValue;
 		}
 
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
-			uint8_t returnValue = (uint8_t)(_vramReadBuffer >> 8);
+			uint8_t returnValue = (uint8_t)(_state.VramReadBuffer >> 8);
 			_console->ProcessPpuRead(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
-			if(_vramAddrIncrementOnSecondReg) {
+			if(_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
-				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
 			}
-			_ppu1OpenBus = returnValue;
+			_state.Ppu1OpenBus = returnValue;
 			return returnValue;
 		}
 
 		case 0x213B: {
 			//CGDATAREAD - CGRAM Data read
 			uint8_t value;
-			if(_cgramAddressLatch){
-				value = ((_cgram[_cgramAddress] >> 8) & 0x7F) | (_ppu2OpenBus & 0x80);
-				_cgramAddress++;
+			if(_state.CgramAddressLatch){
+				value = ((_cgram[_state.CgramAddress] >> 8) & 0x7F) | (_state.Ppu2OpenBus & 0x80);
+				_state.CgramAddress++;
 				
-				_console->ProcessPpuRead((_cgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
+				_console->ProcessPpuRead((_state.CgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
 			} else {
-				value = (uint8_t)_cgram[_cgramAddress];
-				_console->ProcessPpuRead(_cgramAddress >> 1, value, SnesMemoryType::CGRam);
+				value = (uint8_t)_cgram[_state.CgramAddress];
+				_console->ProcessPpuRead(_state.CgramAddress >> 1, value, SnesMemoryType::CGRam);
 			}
-			_cgramAddressLatch = !_cgramAddressLatch;
+			_state.CgramAddressLatch = !_state.CgramAddressLatch;
 			
-			_ppu2OpenBus = value;
+			_state.Ppu2OpenBus = value;
 			return value;
 		}
 
@@ -1737,11 +1722,11 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(_horizontalLocToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
-				value = ((_horizontalLocation & 0x100) >> 8) | (_ppu2OpenBus & 0xFE);
+				value = ((_horizontalLocation & 0x100) >> 8) | (_state.Ppu2OpenBus & 0xFE);
 			} else {
 				value = _horizontalLocation & 0xFF;
 			}
-			_ppu2OpenBus = value;
+			_state.Ppu2OpenBus = value;
 			_horizontalLocToggle = !_horizontalLocToggle;
 			return value;
 		}
@@ -1753,11 +1738,11 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(_verticalLocationToggle) {
 				//"Note that the value read is only 9 bits: bits 1-7 of the high byte are PPU2 Open Bus."
-				value = ((_verticalLocation & 0x100) >> 8) | (_ppu2OpenBus & 0xFE);
+				value = ((_verticalLocation & 0x100) >> 8) | (_state.Ppu2OpenBus & 0xFE);
 			} else {
 				value = _verticalLocation & 0xFF;
 			}
-			_ppu2OpenBus = value;
+			_state.Ppu2OpenBus = value;
 			_verticalLocationToggle = !_verticalLocationToggle;
 			return value;
 		}
@@ -1767,10 +1752,10 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value = (
 				(_timeOver ? 0x80 : 0) |
 				(_rangeOver ? 0x40 : 0) |
-				(_ppu1OpenBus & 0x10) |
+				(_state.Ppu1OpenBus & 0x10) |
 				0x01 //PPU (5c77) chip version
 			);
-			_ppu1OpenBus = value;
+			_state.Ppu1OpenBus = value;
 			return value;
 		}
 
@@ -1781,7 +1766,7 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value = (
 				(_oddFrame ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |
-				(_ppu2OpenBus & 0x20) |
+				(_state.Ppu2OpenBus & 0x20) |
 				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
 				0x03 //PPU (5c78) chip version
 			);
@@ -1793,7 +1778,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				_horizontalLocToggle = false;
 				_verticalLocationToggle = false;
 			}
-			_ppu2OpenBus = value;
+			_state.Ppu2OpenBus = value;
 			return value;
 		}
 
@@ -1805,7 +1790,7 @@ uint8_t Ppu::Read(uint16_t addr)
 	uint16_t reg = addr & 0x210F;
 	if((reg >= 0x2104 && reg <= 0x2106) || (reg >= 0x2108 && reg <= 0x210A)) {
 		//Registers matching $21x4-6 or $21x8-A (where x is 0-2) return the last value read from any of the PPU1 registers $2134-6, $2138-A, or $213E.
-		return _ppu1OpenBus;
+		return _state.Ppu1OpenBus;
 	}
 	return _console->GetMemoryManager()->GetOpenBus();
 }
@@ -1818,30 +1803,30 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 	switch(addr) {
 		case 0x2100:
-			if(_forcedVblank && _scanline == _nmiScanline) {
+			if(_state.ForcedVblank && _scanline == _nmiScanline) {
 				//"writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur."
 				UpdateOamAddress();
 			}
 
-			_forcedVblank = (value & 0x80) != 0;
-			_screenBrightness = value & 0x0F;
+			_state.ForcedVblank = (value & 0x80) != 0;
+			_state.ScreenBrightness = value & 0x0F;
 			break;
 
 		case 0x2101:
-			_oamMode = (value & 0xE0) >> 5;
-			_oamBaseAddress = (value & 0x07) << 13;
-			_oamAddressOffset = (((value & 0x18) >> 3) + 1) << 12;
+			_state.OamMode = (value & 0xE0) >> 5;
+			_state.OamBaseAddress = (value & 0x07) << 13;
+			_state.OamAddressOffset = (((value & 0x18) >> 3) + 1) << 12;
 			break;
 
 		case 0x2102:
-			_oamRamAddress = (_oamRamAddress & 0x100) | value;
+			_state.OamRamAddress = (_state.OamRamAddress & 0x100) | value;
 			UpdateOamAddress();
 			break;
 
 		case 0x2103:
-			_oamRamAddress = (_oamRamAddress & 0xFF) | ((value & 0x01) << 8);
+			_state.OamRamAddress = (_state.OamRamAddress & 0xFF) | ((value & 0x01) << 8);
 			UpdateOamAddress();
-			_enableOamPriority = (value & 0x80) != 0;
+			_state.EnableOamPriority = (value & 0x80) != 0;
 			break;
 
 		case 0x2104: {
@@ -1861,7 +1846,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				}
 			} 
 
-			if(!_forcedVblank && _scanline < _nmiScanline) {
+			if(!_state.ForcedVblank && _scanline < _nmiScanline) {
 				//During rendering the high table is also written to when writing to OAM
 				oamAddr = 0x200 | ((oamAddr & 0x1F0) >> 4);
 			}
@@ -1879,48 +1864,48 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		}
 
 		case 0x2105:
-			if(_bgMode != (value & 0x07)) {
+			if(_state.BgMode != (value & 0x07)) {
 				LogDebug("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
 			}
-			_bgMode = value & 0x07;
-			_mode1Bg3Priority = (value & 0x08) != 0;
+			_state.BgMode = value & 0x07;
+			_state.Mode1Bg3Priority = (value & 0x08) != 0;
 
-			_layerConfig[0].LargeTiles = (value & 0x10) != 0;
-			_layerConfig[1].LargeTiles = (value & 0x20) != 0;
-			_layerConfig[2].LargeTiles = (value & 0x40) != 0;
-			_layerConfig[3].LargeTiles = (value & 0x80) != 0;
+			_state.Layers[0].LargeTiles = (value & 0x10) != 0;
+			_state.Layers[1].LargeTiles = (value & 0x20) != 0;
+			_state.Layers[2].LargeTiles = (value & 0x40) != 0;
+			_state.Layers[3].LargeTiles = (value & 0x80) != 0;
 			break;
 
 		case 0x2106: {
 			//MOSAIC - Screen Pixelation
-			_mosaicSize = ((value & 0xF0) >> 4) + 1;
-			_mosaicEnabled = value & 0x0F;
+			_state.MosaicSize = ((value & 0xF0) >> 4) + 1;
+			_state.MosaicEnabled = value & 0x0F;
 			break;
 		}
 
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
 			//BG 1-4 Tilemap Address and Size (BG1SC, BG2SC, BG3SC, BG4SC)
-			_layerConfig[addr - 0x2107].TilemapAddress = (value & 0x7C) << 8;
-			_layerConfig[addr - 0x2107].DoubleWidth = (value & 0x01) != 0;
-			_layerConfig[addr - 0x2107].DoubleHeight = (value & 0x02) != 0;
+			_state.Layers[addr - 0x2107].TilemapAddress = (value & 0x7C) << 8;
+			_state.Layers[addr - 0x2107].DoubleWidth = (value & 0x01) != 0;
+			_state.Layers[addr - 0x2107].DoubleHeight = (value & 0x02) != 0;
 			break;
 
 		case 0x210B: case 0x210C:
 			//BG1+2 / BG3+4 Chr Address (BG12NBA / BG34NBA)
-			_layerConfig[(addr - 0x210B) * 2].ChrAddress = (value & 0x07) << 12;
-			_layerConfig[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0x70) << 8;
+			_state.Layers[(addr - 0x210B) * 2].ChrAddress = (value & 0x07) << 12;
+			_state.Layers[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0x70) << 8;
 			break;
 		
 		case 0x210D:
 			//M7HOFS - Mode 7 BG Horizontal Scroll
 			//BG1HOFS - BG1 Horizontal Scroll
-			_mode7.HScroll = ((value << 8) | (_mode7.ValueLatch)) & 0x1FFF;
-			_mode7.ValueLatch = value;
+			_state.Mode7.HScroll = ((value << 8) | (_state.Mode7.ValueLatch)) & 0x1FFF;
+			_state.Mode7.ValueLatch = value;
 			//no break, keep executing to set the matching BG1 HScroll register, too
 
 		case 0x210F: case 0x2111: case 0x2113:
 			//BGXHOFS - BG1/2/3/4 Horizontal Scroll
-			_layerConfig[(addr - 0x210D) >> 1].HScroll = ((value << 8) | (_hvScrollLatchValue & ~0x07) | (_hScrollLatchValue & 0x07)) & 0x3FF;
+			_state.Layers[(addr - 0x210D) >> 1].HScroll = ((value << 8) | (_hvScrollLatchValue & ~0x07) | (_hScrollLatchValue & 0x07)) & 0x3FF;
 			_hvScrollLatchValue = value;
 			_hScrollLatchValue = value;
 			break;
@@ -1928,115 +1913,115 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x210E:
 			//M7VOFS - Mode 7 BG Vertical Scroll
 			//BG1VOFS - BG1 Vertical Scroll
-			_mode7.VScroll = ((value << 8) | (_mode7.ValueLatch)) & 0x1FFF;
-			_mode7.ValueLatch = value;
+			_state.Mode7.VScroll = ((value << 8) | (_state.Mode7.ValueLatch)) & 0x1FFF;
+			_state.Mode7.ValueLatch = value;
 			//no break, keep executing to set the matching BG1 HScroll register, too
 
 		case 0x2110: case 0x2112: case 0x2114:
 			//BGXVOFS - BG1/2/3/4 Vertical Scroll
-			_layerConfig[(addr - 0x210E) >> 1].VScroll = ((value << 8) | _hvScrollLatchValue) & 0x3FF;
+			_state.Layers[(addr - 0x210E) >> 1].VScroll = ((value << 8) | _hvScrollLatchValue) & 0x3FF;
 			_hvScrollLatchValue = value;
 			break;
 
 		case 0x2115:
 			//VMAIN - Video Port Control
 			switch(value & 0x03) {
-				case 0: _vramIncrementValue = 1; break;
-				case 1: _vramIncrementValue = 32; break;
+				case 0: _state.VramIncrementValue = 1; break;
+				case 1: _state.VramIncrementValue = 32; break;
 				
 				case 2: 
-				case 3: _vramIncrementValue = 128; break;
+				case 3: _state.VramIncrementValue = 128; break;
 			}
 
-			_vramAddressRemapping = (value & 0x0C) >> 2;
-			_vramAddrIncrementOnSecondReg = (value & 0x80) != 0;
+			_state.VramAddressRemapping = (value & 0x0C) >> 2;
+			_state.VramAddrIncrementOnSecondReg = (value & 0x80) != 0;
 			break;
 
 		case 0x2116:
 			//VMADDL - VRAM Address low byte
-			_vramAddress = (_vramAddress & 0x7F00) | value;
+			_state.VramAddress = (_state.VramAddress & 0x7F00) | value;
 			UpdateVramReadBuffer();
 			break;
 
 		case 0x2117:
 			//VMADDH - VRAM Address high byte
-			_vramAddress = (_vramAddress & 0x00FF) | ((value & 0x7F) << 8);
+			_state.VramAddress = (_state.VramAddress & 0x00FF) | ((value & 0x7F) << 8);
 			UpdateVramReadBuffer();
 			break;
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
-			if(_scanline >= _nmiScanline || _forcedVblank) {
+			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
 			}
 
 			//The VRAM address is incremented even outside of vblank/forced blank
-			if(!_vramAddrIncrementOnSecondReg) {
-				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
+			if(!_state.VramAddrIncrementOnSecondReg) {
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
 			}
 			break;
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
-			if(_scanline >= _nmiScanline || _forcedVblank) {
+			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
 			}
 			
 			//The VRAM address is incremented even outside of vblank/forced blank
-			if(_vramAddrIncrementOnSecondReg) {
-				_vramAddress = (_vramAddress + _vramIncrementValue) & 0x7FFF;
+			if(_state.VramAddrIncrementOnSecondReg) {
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
 			}
 			break;
 
 		case 0x211A:
 			//M7SEL - Mode 7 Settings
-			_mode7.LargeMap = (value & 0x80) != 0;
-			_mode7.FillWithTile0 = (value & 0x40) != 0;
-			_mode7.HorizontalMirroring = (value & 0x01) != 0;
-			_mode7.VerticalMirroring = (value & 0x02) != 0;
+			_state.Mode7.LargeMap = (value & 0x80) != 0;
+			_state.Mode7.FillWithTile0 = (value & 0x40) != 0;
+			_state.Mode7.HorizontalMirroring = (value & 0x01) != 0;
+			_state.Mode7.VerticalMirroring = (value & 0x02) != 0;
 			break;
 
 		case 0x211B: case 0x211C: case 0x211D: case 0x211E:
 			//M7A/B/C/D - Mode 7 Matrix A/B/C/D (A/B are also used with $2134/6)
-			_mode7.Matrix[addr - 0x211B] = (value << 8) | _mode7.ValueLatch;
-			_mode7.ValueLatch = value;
+			_state.Mode7.Matrix[addr - 0x211B] = (value << 8) | _state.Mode7.ValueLatch;
+			_state.Mode7.ValueLatch = value;
 			break;
 		
 		case 0x211F:
 			//M7X - Mode 7 Center X
-			_mode7.CenterX = ((value << 8) | _mode7.ValueLatch);
-			_mode7.ValueLatch = value;
+			_state.Mode7.CenterX = ((value << 8) | _state.Mode7.ValueLatch);
+			_state.Mode7.ValueLatch = value;
 			break;
 
 		case 0x2120:
 			//M7Y - Mode 7 Center Y
-			_mode7.CenterY = ((value << 8) | _mode7.ValueLatch);
-			_mode7.ValueLatch = value;
+			_state.Mode7.CenterY = ((value << 8) | _state.Mode7.ValueLatch);
+			_state.Mode7.ValueLatch = value;
 			break;
 
 		case 0x2121:
 			//CGRAM Address(CGADD)
-			_cgramAddress = value;
-			_cgramAddressLatch = false;
+			_state.CgramAddress = value;
+			_state.CgramAddressLatch = false;
 			break;
 
 		case 0x2122: 
 			//CGRAM Data write (CGDATA)
-			if(_cgramAddressLatch) {
+			if(_state.CgramAddressLatch) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
-				_console->ProcessPpuWrite(_cgramAddress >> 1, _cgramWriteBuffer, SnesMemoryType::CGRam);
-				_console->ProcessPpuWrite((_cgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
+				_console->ProcessPpuWrite(_state.CgramAddress >> 1, _state.CgramWriteBuffer, SnesMemoryType::CGRam);
+				_console->ProcessPpuWrite((_state.CgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
 
-				_cgram[_cgramAddress] = _cgramWriteBuffer | ((value & 0x7F) << 8);
-				_cgramAddress++;
+				_cgram[_state.CgramAddress] = _state.CgramWriteBuffer | ((value & 0x7F) << 8);
+				_state.CgramAddress++;
 			} else {
-				_cgramWriteBuffer = value;
+				_state.CgramWriteBuffer = value;
 			}
-			_cgramAddressLatch = !_cgramAddressLatch;
+			_state.CgramAddressLatch = !_state.CgramAddressLatch;
 			break;
 
 		case 0x2123:
@@ -2056,98 +2041,98 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2126:
 			//WH0 - Window 1 Left Position
-			_window[0].Left = value;
+			_state.Window[0].Left = value;
 			break;
 		
 		case 0x2127:
 			//WH1 - Window 1 Right Position
-			_window[0].Right = value;
+			_state.Window[0].Right = value;
 			break;
 
 		case 0x2128:
 			//WH2 - Window 2 Left Position
-			_window[1].Left = value;
+			_state.Window[1].Left = value;
 			break;
 
 		case 0x2129:
 			//WH3 - Window 2 Right Position
-			_window[1].Right = value;
+			_state.Window[1].Right = value;
 			break;
 
 		case 0x212A:
 			//WBGLOG - Window mask logic for BG
-			_maskLogic[0] = (WindowMaskLogic)(value & 0x03);
-			_maskLogic[1] = (WindowMaskLogic)((value >> 2) & 0x03);
-			_maskLogic[2] = (WindowMaskLogic)((value >> 4) & 0x03);
-			_maskLogic[3] = (WindowMaskLogic)((value >> 6) & 0x03);
+			_state.MaskLogic[0] = (WindowMaskLogic)(value & 0x03);
+			_state.MaskLogic[1] = (WindowMaskLogic)((value >> 2) & 0x03);
+			_state.MaskLogic[2] = (WindowMaskLogic)((value >> 4) & 0x03);
+			_state.MaskLogic[3] = (WindowMaskLogic)((value >> 6) & 0x03);
 			break;
 
 		case 0x212B:
 			//WOBJLOG - Window mask logic for OBJs and Color Window
-			_maskLogic[4] = (WindowMaskLogic)((value >> 0) & 0x03);
-			_maskLogic[5] = (WindowMaskLogic)((value >> 2) & 0x03);
+			_state.MaskLogic[4] = (WindowMaskLogic)((value >> 0) & 0x03);
+			_state.MaskLogic[5] = (WindowMaskLogic)((value >> 2) & 0x03);
 			break;
 
 		case 0x212C:
 			//TM - Main Screen Designation
-			_mainScreenLayers = value & 0x1F;
+			_state.MainScreenLayers = value & 0x1F;
 			break;
 
 		case 0x212D:
 			//TS - Subscreen Designation
-			_subScreenLayers = value & 0x1F;
+			_state.SubScreenLayers = value & 0x1F;
 			break;
 
 		case 0x212E:
 			//TMW - Window Mask Designation for the Main Screen
 			for(int i = 0; i < 5; i++) {
-				_windowMaskMain[i] = ((value >> i) & 0x01) != 0;
+				_state.WindowMaskMain[i] = ((value >> i) & 0x01) != 0;
 			}
 			break;
 
 		case 0x212F:
 			//TSW - Window Mask Designation for the Subscreen
 			for(int i = 0; i < 5; i++) {
-				_windowMaskSub[i] = ((value >> i) & 0x01) != 0;
+				_state.WindowMaskSub[i] = ((value >> i) & 0x01) != 0;
 			}
 			break;
 		
 		case 0x2130:
 			//CGWSEL - Color Addition Select
-			_colorMathClipMode = (ColorWindowMode)((value >> 6) & 0x03);
-			_colorMathPreventMode = (ColorWindowMode)((value >> 4) & 0x03);
-			_colorMathAddSubscreen = (value & 0x02) != 0;
-			_directColorMode = (value & 0x01) != 0;
+			_state.ColorMathClipMode = (ColorWindowMode)((value >> 6) & 0x03);
+			_state.ColorMathPreventMode = (ColorWindowMode)((value >> 4) & 0x03);
+			_state.ColorMathAddSubscreen = (value & 0x02) != 0;
+			_state.DirectColorMode = (value & 0x01) != 0;
 			break;
 
 		case 0x2131:
 			//CGADSUB - Color math designation
-			_colorMathEnabled = value & 0x3F;
-			_colorMathSubstractMode = (value & 0x80) != 0;
-			_colorMathHalveResult = (value & 0x40) != 0;
+			_state.ColorMathEnabled = value & 0x3F;
+			_state.ColorMathSubstractMode = (value & 0x80) != 0;
+			_state.ColorMathHalveResult = (value & 0x40) != 0;
 			break;
 
 		case 0x2132: 
 			//COLDATA - Fixed Color Data
 			if(value & 0x80) { //B
-				_fixedColor = (_fixedColor & ~0x7C00) | ((value & 0x1F) << 10);
+				_state.FixedColor = (_state.FixedColor & ~0x7C00) | ((value & 0x1F) << 10);
 			}
 			if(value & 0x40) { //G
-				_fixedColor = (_fixedColor & ~0x3E0) | ((value & 0x1F) << 5);
+				_state.FixedColor = (_state.FixedColor & ~0x3E0) | ((value & 0x1F) << 5);
 			}
 			if(value & 0x20) { //R
-				_fixedColor = (_fixedColor & ~0x1F) | (value & 0x1F);
+				_state.FixedColor = (_state.FixedColor & ~0x1F) | (value & 0x1F);
 			}
 			break;
 
 		case 0x2133:
 			//SETINI - Screen Mode/Video Select
 			//_externalSync = (value & 0x80) != 0;  //NOT USED
-			_mode7.ExtBgEnabled = (value & 0x40) != 0;
-			_hiResMode = (value & 0x08) != 0;
-			_overscanMode = (value & 0x04) != 0;
-			_objInterlace = (value & 0x02) != 0;
-			_screenInterlace = (value & 0x01) != 0;
+			_state.ExtBgEnabled = (value & 0x40) != 0;
+			_state.HiResMode = (value & 0x08) != 0;
+			_state.OverscanMode = (value & 0x04) != 0;
+			_state.ObjInterlace = (value & 0x02) != 0;
+			_state.ScreenInterlace = (value & 0x01) != 0;
 			UpdateNmiScanline();
 			break;
 
@@ -2161,36 +2146,36 @@ void Ppu::Serialize(Serializer &s)
 {
 	uint16_t unused_oamRenderAddress = 0;
 	s.Stream(
-		_forcedVblank, _screenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _bgMode,
-		_mode1Bg3Priority, _mainScreenLayers, _subScreenLayers, _vramAddress, _vramIncrementValue, _vramAddressRemapping,
-		_vramAddrIncrementOnSecondReg, _vramReadBuffer, _ppu1OpenBus, _ppu2OpenBus, _cgramAddress, _mosaicSize, _mosaicEnabled,
-		_mosaicScanlineCounter, _oamMode, _oamBaseAddress, _oamAddressOffset, _oamRamAddress, _enableOamPriority,
-		_internalOamAddress, _oamWriteBuffer, _timeOver, _rangeOver, _hiResMode, _screenInterlace, _objInterlace,
-		_overscanMode, _directColorMode, _colorMathClipMode, _colorMathPreventMode, _colorMathAddSubscreen, _colorMathEnabled,
-		_colorMathSubstractMode, _colorMathHalveResult, _fixedColor, _hvScrollLatchValue, _hScrollLatchValue, 
+		_state.ForcedVblank, _state.ScreenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _state.BgMode,
+		_state.Mode1Bg3Priority, _state.MainScreenLayers, _state.SubScreenLayers, _state.VramAddress, _state.VramIncrementValue, _state.VramAddressRemapping,
+		_state.VramAddrIncrementOnSecondReg, _state.VramReadBuffer, _state.Ppu1OpenBus, _state.Ppu2OpenBus, _state.CgramAddress, _state.MosaicSize, _state.MosaicEnabled,
+		_mosaicScanlineCounter, _state.OamMode, _state.OamBaseAddress, _state.OamAddressOffset, _state.OamRamAddress, _state.EnableOamPriority,
+		_internalOamAddress, _oamWriteBuffer, _timeOver, _rangeOver, _state.HiResMode, _state.ScreenInterlace, _state.ObjInterlace,
+		_state.OverscanMode, _state.DirectColorMode, _state.ColorMathClipMode, _state.ColorMathPreventMode, _state.ColorMathAddSubscreen, _state.ColorMathEnabled,
+		_state.ColorMathSubstractMode, _state.ColorMathHalveResult, _state.FixedColor, _hvScrollLatchValue, _hScrollLatchValue, 
 		_horizontalLocation, _horizontalLocToggle, _verticalLocation, _verticalLocationToggle, _locationLatched,
-		_maskLogic[0], _maskLogic[1], _maskLogic[2], _maskLogic[3], _maskLogic[4], _maskLogic[5],
-		_windowMaskMain[0], _windowMaskMain[1], _windowMaskMain[2], _windowMaskMain[3], _windowMaskMain[4],
-		_windowMaskSub[0], _windowMaskSub[1], _windowMaskSub[2], _windowMaskSub[3], _windowMaskSub[4],
-		_mode7.CenterX, _mode7.CenterY, _mode7.ExtBgEnabled, _mode7.FillWithTile0, _mode7.HorizontalMirroring,
-		_mode7.HScroll, _mode7.LargeMap, _mode7.Matrix[0], _mode7.Matrix[1], _mode7.Matrix[2], _mode7.Matrix[3],
-		_mode7.ValueLatch, _mode7.VerticalMirroring, _mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStartScanline,
-		_cgramAddressLatch, _cgramWriteBuffer, _nmiScanline, _vblankEndScanline, _adjustedVblankEndScanline, _baseVblankEndScanline,
+		_state.MaskLogic[0], _state.MaskLogic[1], _state.MaskLogic[2], _state.MaskLogic[3], _state.MaskLogic[4], _state.MaskLogic[5],
+		_state.WindowMaskMain[0], _state.WindowMaskMain[1], _state.WindowMaskMain[2], _state.WindowMaskMain[3], _state.WindowMaskMain[4],
+		_state.WindowMaskSub[0], _state.WindowMaskSub[1], _state.WindowMaskSub[2], _state.WindowMaskSub[3], _state.WindowMaskSub[4],
+		_state.Mode7.CenterX, _state.Mode7.CenterY, _state.ExtBgEnabled, _state.Mode7.FillWithTile0, _state.Mode7.HorizontalMirroring,
+		_state.Mode7.HScroll, _state.Mode7.LargeMap, _state.Mode7.Matrix[0], _state.Mode7.Matrix[1], _state.Mode7.Matrix[2], _state.Mode7.Matrix[3],
+		_state.Mode7.ValueLatch, _state.Mode7.VerticalMirroring, _state.Mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStartScanline,
+		_state.CgramAddressLatch, _state.CgramWriteBuffer, _nmiScanline, _vblankEndScanline, _adjustedVblankEndScanline, _baseVblankEndScanline,
 		_overclockEnabled
 	);
 
 	for(int i = 0; i < 4; i++) {
 		s.Stream(
-			_layerConfig[i].ChrAddress, _layerConfig[i].DoubleHeight, _layerConfig[i].DoubleWidth, _layerConfig[i].HScroll,
-			_layerConfig[i].LargeTiles, _layerConfig[i].TilemapAddress, _layerConfig[i].VScroll
+			_state.Layers[i].ChrAddress, _state.Layers[i].DoubleHeight, _state.Layers[i].DoubleWidth, _state.Layers[i].HScroll,
+			_state.Layers[i].LargeTiles, _state.Layers[i].TilemapAddress, _state.Layers[i].VScroll
 		);
 	}
 
 	for(int i = 0; i < 2; i++) {
 		s.Stream(
-			_window[i].ActiveLayers[0], _window[i].ActiveLayers[1], _window[i].ActiveLayers[2], _window[i].ActiveLayers[3], _window[i].ActiveLayers[4], _window[i].ActiveLayers[5],
-			_window[i].InvertedLayers[0], _window[i].InvertedLayers[1], _window[i].InvertedLayers[2], _window[i].InvertedLayers[3], _window[i].InvertedLayers[4], _window[i].InvertedLayers[5],
-			_window[i].Left, _window[i].Right
+			_state.Window[i].ActiveLayers[0], _state.Window[i].ActiveLayers[1], _state.Window[i].ActiveLayers[2], _state.Window[i].ActiveLayers[3], _state.Window[i].ActiveLayers[4], _state.Window[i].ActiveLayers[5],
+			_state.Window[i].InvertedLayers[0], _state.Window[i].InvertedLayers[1], _state.Window[i].InvertedLayers[2], _state.Window[i].InvertedLayers[3], _state.Window[i].InvertedLayers[4], _state.Window[i].InvertedLayers[5],
+			_state.Window[i].Left, _state.Window[i].Right
 		);
 	}
 
@@ -2213,7 +2198,7 @@ void Ppu::Serialize(Serializer &s)
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic>
 void Ppu::RenderTilemap()
 {
-	if(_directColorMode) {
+	if(_state.DirectColorMode) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, applyMosaic, true>();
 	} else {
 		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, applyMosaic, false>();
@@ -2223,7 +2208,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode>
 void Ppu::RenderTilemap()
 {
-	bool applyMosaic = ((_mosaicEnabled >> layerIndex) & 0x01) != 0 && (_mosaicSize > 1 || _bgMode == 5 || _bgMode == 6);
+	bool applyMosaic = ((_state.MosaicEnabled >> layerIndex) & 0x01) != 0 && (_state.MosaicSize > 1 || _state.BgMode == 5 || _state.BgMode == 6);
 
 	if(applyMosaic) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, true>();
@@ -2239,7 +2224,7 @@ void Ppu::RenderTilemap()
 		return;
 	}
 
-	if(_bgMode == 5 || _bgMode == 6) {
+	if(_state.BgMode == 5 || _state.BgMode == 6) {
 		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, true>();
 	} else {
 		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, false>();
@@ -2249,7 +2234,7 @@ void Ppu::RenderTilemap()
 template<uint8_t layerIndex, bool processHighPriority>
 void Ppu::RenderTilemapMode7()
 {
-	bool applyMosaic = ((_mosaicEnabled >> layerIndex) & 0x01) != 0;
+	bool applyMosaic = ((_state.MosaicEnabled >> layerIndex) & 0x01) != 0;
 
 	if(applyMosaic) {
 		RenderTilemapMode7<layerIndex, processHighPriority, true>();
@@ -2261,7 +2246,7 @@ void Ppu::RenderTilemapMode7()
 template<uint8_t layerIndex, bool processHighPriority, bool applyMosaic>
 void Ppu::RenderTilemapMode7()
 {
-	if(_directColorMode) {
+	if(_state.DirectColorMode) {
 		RenderTilemapMode7<layerIndex, processHighPriority, applyMosaic, true>();
 	} else {
 		RenderTilemapMode7<layerIndex, processHighPriority, applyMosaic, false>();

@@ -23,6 +23,7 @@ namespace Mesen.GUI.Config
 		public DebuggerInfo Debugger = new DebuggerInfo();
 		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
 		public TileViewerConfig TileViewer = new TileViewerConfig();
+		public RegisterViewerConfig RegisterViewer = new RegisterViewerConfig();
 		public SpriteViewerConfig SpriteViewer = new SpriteViewerConfig();
 		public DbgIntegrationConfig DbgIntegration = new DbgIntegrationConfig();
 		public ScriptWindowConfig ScriptWindow = new ScriptWindowConfig();

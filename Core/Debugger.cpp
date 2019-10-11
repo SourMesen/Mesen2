@@ -34,6 +34,8 @@
 #include "ScriptManager.h"
 #include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
+#include "InternalRegisters.h"
+#include "AluMulDiv.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -46,6 +48,8 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_cart = console->GetCartridge();
 	_settings = console->GetSettings();
 	_memoryManager = console->GetMemoryManager();
+	_dmaController = console->GetDmaController();
+	_internalRegs = console->GetInternalRegisters();
 
 	_labelManager.reset(new LabelManager(this));
 	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
@@ -396,6 +400,13 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	state.Cpu = _cpu->GetState();
 	_ppu->GetState(state.Ppu, partialPpuState);
 	state.Spc = _spc->GetState();
+
+	for(int i = 0; i < 8; i++) {
+		state.DmaChannels[i] = _dmaController->GetChannelConfig(i);
+	}
+	state.InternalRegs = _internalRegs->GetState();
+	state.Alu = _internalRegs->GetAluState();
+
 	if(_cart->GetDsp()) {
 		state.Dsp = _cart->GetDsp()->GetState();
 	}

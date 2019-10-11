@@ -1,11 +1,16 @@
 #include "stdafx.h"
 #include "AluMulDiv.h"
 #include "Cpu.h"
+#include "InternalRegisterTypes.h"
 #include "../Utilities/Serializer.h"
 
 void AluMulDiv::Initialize(Cpu* cpu)
 {
 	_cpu = cpu;
+
+	_state = {};
+	_state.MultOperand1 = 0xFF;
+	_state.Dividend = 0xFFFF;
 }
 
 void AluMulDiv::Run(bool isRead)
@@ -27,22 +32,22 @@ void AluMulDiv::Run(bool isRead)
 			if(_multCounter > 0) {
 				_multCounter--;
 
-				if(_divResult & 0x01) {
-					_multOrRemainderResult += _shift;
+				if(_state.DivResult & 0x01) {
+					_state.MultOrRemainderResult += _shift;
 				}
 
 				_shift <<= 1;
-				_divResult >>= 1;
+				_state.DivResult >>= 1;
 			}
 
 			if(_divCounter > 0) {
 				_divCounter--;
 				_shift >>= 1;
-				_divResult <<= 1;
+				_state.DivResult <<= 1;
 
-				if(_multOrRemainderResult >= _shift) {
-					_multOrRemainderResult -= _shift;
-					_divResult |= 1;
+				if(_state.MultOrRemainderResult >= _shift) {
+					_state.MultOrRemainderResult -= _shift;
+					_state.DivResult |= 1;
 				}
 			}
 		}
@@ -56,11 +61,11 @@ uint8_t AluMulDiv::Read(uint16_t addr)
 	Run(true);
 
 	switch(addr) {
-		case 0x4214: return (uint8_t)_divResult;
-		case 0x4215: return (uint8_t)(_divResult >> 8);
+		case 0x4214: return (uint8_t)_state.DivResult;
+		case 0x4215: return (uint8_t)(_state.DivResult >> 8);
 
-		case 0x4216: return (uint8_t)_multOrRemainderResult;
-		case 0x4217: return (uint8_t)(_multOrRemainderResult >> 8);
+		case 0x4216: return (uint8_t)_state.MultOrRemainderResult;
+		case 0x4217: return (uint8_t)(_state.MultOrRemainderResult >> 8);
 	}
 
 	throw std::runtime_error("ALU: invalid address");
@@ -71,27 +76,27 @@ void AluMulDiv::Write(uint16_t addr, uint8_t value)
 	Run(false);
 
 	switch(addr) {
-		case 0x4202: _multOperand1 = value; break;
+		case 0x4202: _state.MultOperand1 = value; break;
 		case 0x4203:
-			_multOrRemainderResult = 0;
+			_state.MultOrRemainderResult = 0;
 			if(!_divCounter && !_multCounter) {
 				_multCounter = 8;
 
-				_multOperand2 = value;
-				_divResult = (value << 8) | _multOperand1;
+				_state.MultOperand2 = value;
+				_state.DivResult = (value << 8) | _state.MultOperand1;
 				_shift = value;
 			}
 			break;
 
-		case 0x4204: _dividend = (_dividend & 0xFF00) | value; break;
-		case 0x4205: _dividend = (_dividend & 0xFF) | (value << 8); break;
+		case 0x4204: _state.Dividend = (_state.Dividend & 0xFF00) | value; break;
+		case 0x4205: _state.Dividend = (_state.Dividend & 0xFF) | (value << 8); break;
 		
 		case 0x4206:
-			_multOrRemainderResult = _dividend;
+			_state.MultOrRemainderResult = _state.Dividend;
 
 			if(!_divCounter && !_multCounter) {
 				_divCounter = 16;
-				_divisor = value;
+				_state.Divisor = value;
 				_shift = (value << 16);
 			}
 			break;
@@ -100,10 +105,15 @@ void AluMulDiv::Write(uint16_t addr, uint8_t value)
 	}
 }
 
+AluState AluMulDiv::GetState()
+{
+	return _state;
+}
+
 void AluMulDiv::Serialize(Serializer &s)
 {
 	s.Stream(
-		_multOperand1, _multOperand2, _multOrRemainderResult, _dividend, _divisor, _divResult,
+		_state.MultOperand1, _state.MultOperand2, _state.MultOrRemainderResult, _state.Dividend, _state.Divisor, _state.DivResult,
 		_divCounter, _multCounter, _shift, _prevCpuCycle
 	);
 }

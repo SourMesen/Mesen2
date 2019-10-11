@@ -89,7 +89,7 @@ extern "C"
 	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount, bool getPreviousFrameData) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount, getPreviousFrameData); }
 	DllExport uint32_t __stdcall GetDebugEventCount(bool getPreviousFrameData) { return GetDebugger()->GetEventManager()->GetEventCount(getPreviousFrameData); }
 	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, options); }
-	DllExport DebugEventInfo __stdcall GetEventViewerEvent(uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->GetEvent(scanline, cycle, options); }
+	DllExport void __stdcall GetEventViewerEvent(DebugEventInfo *evtInfo, uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { *evtInfo = GetDebugger()->GetEventManager()->GetEvent(scanline, cycle, options); }
 	DllExport uint32_t __stdcall TakeEventSnapshot(EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->TakeEventSnapshot(options); }
 
 	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return GetDebugger()->GetScriptManager()->LoadScript(name, content, scriptId); }

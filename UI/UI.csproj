@@ -261,6 +261,7 @@
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
     <Compile Include="Debugger\Config\ScriptWindowConfig.cs" />
     <Compile Include="Debugger\Config\SpriteViewerConfig.cs" />
+    <Compile Include="Debugger\Config\RegisterViewerConfig.cs" />
     <Compile Include="Debugger\Config\TileViewerConfig.cs" />
     <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
     <Compile Include="Debugger\Controls\ctrlPanel.cs">
@@ -326,6 +327,12 @@
     <Compile Include="Debugger\PpuViewer\ctrlImageViewer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlPropertyList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\ctrlPropertyList.Designer.cs">
+      <DependentUpon>ctrlPropertyList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\PpuViewer\ctrlSpriteList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -337,6 +344,12 @@
     </Compile>
     <Compile Include="Debugger\PpuViewer\frmSpriteViewer.Designer.cs">
       <DependentUpon>frmSpriteViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmRegisterViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\PpuViewer\frmRegisterViewer.Designer.cs">
+      <DependentUpon>frmRegisterViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\PpuViewer\SpriteInfo.cs" />
     <Compile Include="Debugger\PpuViewer\WindowRefreshManager.cs" />
@@ -799,6 +812,7 @@
     <Compile Include="Forms\Tools\frmRecordAvi.Designer.cs">
       <DependentUpon>frmRecordAvi.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interop\DebugState.cs" />
     <Compile Include="Interop\RecordApi.cs" />
     <Compile Include="Updates\frmDownloadProgress.cs">
       <SubType>Form</SubType>
@@ -960,6 +974,9 @@
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlImagePanel.resx">
       <DependentUpon>ctrlImagePanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\ctrlPropertyList.resx">
+      <DependentUpon>ctrlPropertyList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\ctrlScanlineCycleSelect.resx">
       <DependentUpon>ctrlScanlineCycleSelect.cs</DependentUpon>
     </EmbeddedResource>
@@ -971,6 +988,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmSpriteViewer.resx">
       <DependentUpon>frmSpriteViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\PpuViewer\frmRegisterViewer.resx">
+      <DependentUpon>frmRegisterViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\PpuViewer\frmTileViewer.resx">
       <DependentUpon>frmTileViewer.cs</DependentUpon>

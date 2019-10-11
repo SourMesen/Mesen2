@@ -11,6 +11,8 @@ class Ppu;
 class Spc;
 class BaseCartridge;
 class MemoryManager;
+class InternalRegisters;
+class DmaController;
 class EmuSettings;
 
 class TraceLogger;
@@ -41,6 +43,8 @@ private:
 	shared_ptr<Spc> _spc;
 	shared_ptr<MemoryManager> _memoryManager;
 	shared_ptr<BaseCartridge> _cart;
+	shared_ptr<InternalRegisters> _internalRegs;
+	shared_ptr<DmaController> _dmaController;
 	
 	shared_ptr<EmuSettings> _settings;
 	unique_ptr<SpcDebugger> _spcDebugger;

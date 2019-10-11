@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DmaController.h"
+#include "DmaControllerTypes.h"
 #include "MemoryManager.h"
 #include "MessageManager.h"
 #include "../Utilities/Serializer.h"
@@ -240,7 +241,7 @@ bool DmaController::ProcessHdmaChannels()
 		//1. If DoTransfer is false, skip to step 3.
 		if(ch.DoTransfer) {
 			//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
-			_activeChannel = i;
+			_activeChannel = DmaController::HdmaChannelFlag | i;
 			RunHdmaTransfer(ch);
 		}
 	}

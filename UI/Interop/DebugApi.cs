@@ -107,7 +107,7 @@ namespace Mesen.GUI
 			return debugEvents;
 		}
 
-		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
+		[DllImport(DllPath)] public static extern void GetEventViewerEvent(ref DebugEventInfo evtInfo, UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
 		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(EventViewerDisplayOptions options);		
 
 		[DllImport(DllPath, EntryPoint = "GetEventViewerOutput")] private static extern void GetEventViewerOutputWrapper([In, Out]byte[] buffer, EventViewerDisplayOptions options);
@@ -243,291 +243,6 @@ namespace Mesen.GUI
 		public SnesMemoryType Type;
 	}
 
-	public enum CpuStopState : byte
-	{
-		Running = 0,
-		Stopped = 1,
-		WaitingForIrq = 2
-	}
-
-	[Flags]
-	public enum ProcFlags : byte
-	{
-		Carry = 0x01,
-		Zero = 0x02,
-		IrqDisable = 0x04,
-		Decimal = 0x08,
-		IndexMode8 = 0x10,
-		MemoryMode8 = 0x20,
-		Overflow = 0x40,
-		Negative = 0x80
-	}
-
-	[Flags]
-	public enum SpcFlags : byte
-	{
-		Carry = 0x01,
-		Zero = 0x02,
-		IrqEnable = 0x04,
-		HalfCarry = 0x08,
-		Break = 0x10,
-		DirectPage = 0x20,
-		Overflow = 0x40,
-		Negative = 0x80
-	};
-
-	public struct CpuState
-	{
-		public UInt64 CycleCount;
-
-		public UInt16 A;
-		public UInt16 X;
-		public UInt16 Y;
-
-		public UInt16 SP;
-		public UInt16 D;
-		public UInt16 PC;
-
-		public byte K;
-		public byte DBR;
-		public ProcFlags PS;
-		[MarshalAs(UnmanagedType.I1)] public bool EmulationMode;
-
-		[MarshalAs(UnmanagedType.I1)] public bool NmiFlag;
-		[MarshalAs(UnmanagedType.I1)] public bool PrevNmiFlag;
-		public byte IrqSource;
-		public byte PrevIrqSource;
-		public CpuStopState StopState;
-	};
-
-	public struct PpuState
-	{
-		public UInt16 Cycle;
-		public UInt16 Scanline;
-		public UInt16 HClock;
-		public UInt32 FrameCount;
-		[MarshalAs(UnmanagedType.I1)] public bool OverscanMode;
-
-		public byte BgMode;
-		[MarshalAs(UnmanagedType.I1)] public bool DirectColorMode;
-		[MarshalAs(UnmanagedType.I1)] public bool HiResMode;
-		[MarshalAs(UnmanagedType.I1)] public bool ScreenInterlace;
-
-		public Mode7Config Mode7;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-		public LayerConfig[] Layers;
-
-		public byte OamMode;
-		public UInt16 OamBaseAddress;
-		public UInt16 OamAddressOffset;
-		[MarshalAs(UnmanagedType.I1)] public bool EnableOamPriority;
-		[MarshalAs(UnmanagedType.I1)] public bool ObjInterlace;
-	};
-
-	public struct LayerConfig
-	{
-		public UInt16 TilemapAddress;
-		public UInt16 ChrAddress;
-
-		public UInt16 HScroll;
-		public UInt16 VScroll;
-
-		[MarshalAs(UnmanagedType.I1)] public bool DoubleWidth;
-		[MarshalAs(UnmanagedType.I1)] public bool DoubleHeight;
-
-		[MarshalAs(UnmanagedType.I1)] public bool LargeTiles;
-	}
-
-	public struct Mode7Config
-	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-		public Int16[] Matrix;
-
-		public Int16 HScroll;
-		public Int16 VScroll;
-		public Int16 CenterX;
-		public Int16 CenterY;
-
-		public Byte ValueLatch;
-
-		[MarshalAs(UnmanagedType.I1)] public bool LargeMap;
-		[MarshalAs(UnmanagedType.I1)] public bool FillWithTile0;
-		[MarshalAs(UnmanagedType.I1)] public bool HorizontalMirroring;
-		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirroring;
-		[MarshalAs(UnmanagedType.I1)] public bool ExtBgEnabled;
-
-		public Int16 HScrollLatch;
-		public Int16 VScrollLatch;
-	}
-
-	public struct SpcTimer
-	{
-		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
-		[MarshalAs(UnmanagedType.I1)] public bool TimersEnabled;
-		public byte Output;
-		public byte Stage0;
-		public byte Stage1;
-		public byte PrevStage1;
-		public byte Stage2;
-		public byte Target;
-	}
-
-	public struct SpcState
-	{
-		public UInt64 Cycle;
-		public UInt16 PC;
-		public byte A;
-		public byte X;
-		public byte Y;
-		public byte SP;
-		public SpcFlags PS;
-
-		[MarshalAs(UnmanagedType.I1)] public bool WriteEnabled;
-		[MarshalAs(UnmanagedType.I1)] public bool RomEnabled;
-		public byte InternalSpeed;
-		public byte ExternalSpeed;
-		[MarshalAs(UnmanagedType.I1)] public bool TimersEnabled;
-		public CpuStopState StopState;
-
-		public byte DspReg;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-		public byte[] OutputReg;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		public byte[] RamReg;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-		public byte[] CpuRegs;
-
-		public SpcTimer Timer0;
-		public SpcTimer Timer1;
-		public SpcTimer Timer2;
-	};
-
-	public struct NecDspAccFlags
-	{
-		[MarshalAs(UnmanagedType.I1)] public bool Carry;
-		[MarshalAs(UnmanagedType.I1)] public bool Zero;
-		[MarshalAs(UnmanagedType.I1)] public bool Overflow0;
-		[MarshalAs(UnmanagedType.I1)] public bool Overflow1;
-		[MarshalAs(UnmanagedType.I1)] public bool Sign0;
-		[MarshalAs(UnmanagedType.I1)] public bool Sign1;
-	}
-
-	public struct NecDspState
-	{
-		public UInt16 A;
-		public NecDspAccFlags FlagsA;
-		public UInt16 B;
-		public NecDspAccFlags FlagsB;
-		public UInt16 TR;
-		public UInt16 TRB;
-		public UInt16 PC;
-		public UInt16 RP;
-		public UInt16 DP;
-		public UInt16 DR;
-		public UInt16 SR;
-		public UInt16 K;
-		public UInt16 L;
-		public UInt16 M;
-		public UInt16 N;
-		public UInt16 SerialOut;
-		public UInt16 SerialIn;
-		public byte SP;
-	}
-
-	public struct GsuFlags
-	{
-		[MarshalAs(UnmanagedType.I1)] public bool Zero;
-		[MarshalAs(UnmanagedType.I1)] public bool Carry;
-		[MarshalAs(UnmanagedType.I1)] public bool Sign;
-		[MarshalAs(UnmanagedType.I1)] public bool Overflow;
-		[MarshalAs(UnmanagedType.I1)] public bool Running;
-		[MarshalAs(UnmanagedType.I1)] public bool RomReadPending;
-		[MarshalAs(UnmanagedType.I1)] public bool Alt1;
-		[MarshalAs(UnmanagedType.I1)] public bool Alt2;
-		[MarshalAs(UnmanagedType.I1)] public bool ImmLow;
-		[MarshalAs(UnmanagedType.I1)] public bool ImmHigh;
-		[MarshalAs(UnmanagedType.I1)] public bool Prefix;
-		[MarshalAs(UnmanagedType.I1)] public bool Irq;
-	};
-
-	public struct GsuPixelCache
-	{
-		public byte X;
-		public byte Y;
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-		public byte[] Pixels;
-		public byte ValidBits;
-	};
-
-	public struct GsuState
-	{
-		public UInt64 CycleCount;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-		public UInt16[] R;
-
-		public GsuFlags SFR;
-
-		public byte RegisterLatch;
-
-		public byte ProgramBank;
-		public byte RomBank;
-		public byte RamBank;
-
-		[MarshalAs(UnmanagedType.I1)] public bool IrqDisabled;
-		[MarshalAs(UnmanagedType.I1)] public bool HighSpeedMode;
-		[MarshalAs(UnmanagedType.I1)] public bool ClockSelect;
-		[MarshalAs(UnmanagedType.I1)] public bool BackupRamEnabled;
-		public byte ScreenBase;
-
-		public byte ColorGradient;
-		public byte PlotBpp;
-		public byte ScreenHeight;
-		[MarshalAs(UnmanagedType.I1)] public bool GsuRamAccess;
-		[MarshalAs(UnmanagedType.I1)] public bool GsuRomAccess;
-
-		public UInt16 CacheBase;
-
-		[MarshalAs(UnmanagedType.I1)] public bool PlotTransparent;
-		[MarshalAs(UnmanagedType.I1)] public bool PlotDither;
-		[MarshalAs(UnmanagedType.I1)] public bool ColorHighNibble;
-		[MarshalAs(UnmanagedType.I1)] public bool ColorFreezeHigh;
-		[MarshalAs(UnmanagedType.I1)] public bool ObjMode;
-
-		public byte ColorReg;
-		public byte SrcReg;
-		public byte DestReg;
-
-		public byte RomReadBuffer;
-		public byte RomDelay;
-
-		public byte ProgramReadBuffer;
-
-		public UInt16 RamWriteAddress;
-		public byte RamWriteValue;
-		public byte RamDelay;
-
-		public UInt16 RamAddress;
-
-		public GsuPixelCache PrimaryCache;
-		public GsuPixelCache SecondaryCache;
-	};
-
-	public struct DebugState
-	{
-		public UInt64 MasterClock;
-		public CpuState Cpu;
-		public PpuState Ppu;
-		public SpcState Spc;
-		public NecDspState NecDsp;
-		public CpuState Sa1;
-		public GsuState Gsu;
-	}
-
 	public enum MemoryOperationType
 	{
 		Read = 0,
@@ -556,10 +271,13 @@ namespace Mesen.GUI
 
 	public struct DmaChannelConfig
 	{
-		public byte InvertDirection;
-		public byte Decrement;
-		public byte FixedTransfer;
-		public byte HdmaIndirectAddressing;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaActive;
+
+		[MarshalAs(UnmanagedType.I1)] public bool InvertDirection;
+		[MarshalAs(UnmanagedType.I1)] public bool Decrement;
+		[MarshalAs(UnmanagedType.I1)] public bool FixedTransfer;
+		[MarshalAs(UnmanagedType.I1)] public bool HdmaIndirectAddressing;
+
 		public byte TransferMode;
 
 		public UInt16 SrcAddress;
@@ -571,11 +289,10 @@ namespace Mesen.GUI
 		public UInt16 HdmaTableAddress;
 		public byte HdmaBank;
 		public byte HdmaLineCounterAndRepeat;
-		public byte DoTransfer;
-		public byte HdmaFinished;
 
-		public byte InterruptedByHdma;
-		public byte UnusedFlag;
+		[MarshalAs(UnmanagedType.I1)] public bool DoTransfer;
+		[MarshalAs(UnmanagedType.I1)] public bool HdmaFinished;
+		[MarshalAs(UnmanagedType.I1)] public bool UnusedFlag;
 	}
 
 	public struct DebugEventInfo

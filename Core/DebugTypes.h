@@ -6,6 +6,8 @@
 #include "NecDspTypes.h"
 #include "GsuTypes.h"
 #include "Cx4Types.h"
+#include "InternalRegisterTypes.h"
+#include "DmaControllerTypes.h"
 
 struct DebugState
 {
@@ -17,6 +19,10 @@ struct DebugState
 	CpuState Sa1;
 	GsuState Gsu;
 	Cx4State Cx4;
+
+	DmaChannelConfig DmaChannels[8];
+	InternalRegisterState InternalRegs;
+	AluState Alu;
 };
 
 enum class SnesMemoryType

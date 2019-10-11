@@ -56,12 +56,14 @@
     <ClInclude Include="Cx4DisUtils.h" />
     <ClInclude Include="Cx4Types.h" />
     <ClInclude Include="DebugUtilities.h" />
+    <ClInclude Include="DmaControllerTypes.h" />
     <ClInclude Include="Gsu.h" />
     <ClInclude Include="GsuDebugger.h" />
     <ClInclude Include="GsuDisUtils.h" />
     <ClInclude Include="GsuRamHandler.h" />
     <ClInclude Include="GsuRomHandler.h" />
     <ClInclude Include="GsuTypes.h" />
+    <ClInclude Include="InternalRegisterTypes.h" />
     <ClInclude Include="MemoryMappings.h" />
     <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="BaseSoundManager.h" />

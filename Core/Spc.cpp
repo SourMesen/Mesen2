@@ -236,12 +236,14 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 			if(!CheckFlag(SpcFlags::DirectPage)) {
 				_state.InternalSpeed = (value >> 6) & 0x03;
 				_state.ExternalSpeed = (value >> 4) & 0x03;
-				_state.TimersEnabled = (value & 0x09) == 0x08;
+				_state.TimersEnabled = (value & 0x08) != 0;
+				_state.TimersDisabled = (value & 0x01) != 0;
 				_state.WriteEnabled = value & 0x02;
 
-				_state.Timer0.SetGlobalEnabled(_state.TimersEnabled);
-				_state.Timer1.SetGlobalEnabled(_state.TimersEnabled);
-				_state.Timer2.SetGlobalEnabled(_state.TimersEnabled);
+				bool timersEnabled = _state.TimersEnabled && !_state.TimersDisabled;
+				_state.Timer0.SetGlobalEnabled(timersEnabled);
+				_state.Timer1.SetGlobalEnabled(timersEnabled);
+				_state.Timer2.SetGlobalEnabled(timersEnabled);
 			}
 			break;
 
@@ -409,7 +411,7 @@ void Spc::Serialize(Serializer &s)
 		_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 	}
 
-	s.Stream(_operandA, _operandB, _tmp1, _tmp2, _tmp3, _opCode, _opStep, _opSubStep, _enabled);
+	s.Stream(_operandA, _operandB, _tmp1, _tmp2, _tmp3, _opCode, _opStep, _opSubStep, _enabled, _state.TimersDisabled);
 }
 
 uint8_t Spc::GetOpCode()

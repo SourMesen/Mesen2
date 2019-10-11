@@ -18,6 +18,8 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class ctrlEventViewerPpuView : BaseControl
 	{
+		private const int HdmaChannelFlag = 0x80;
+
 		private int _baseWidth = 340 * 2;
 
 		private EntityBinder _entityBinder = new EntityBinder();
@@ -215,7 +217,8 @@ namespace Mesen.GUI.Debugger
 			}
 
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			DebugEventInfo evt = DebugApi.GetEventViewerEvent((UInt16)pos.Y, (UInt16)pos.X, options);
+			DebugEventInfo evt = new DebugEventInfo();
+			DebugApi.GetEventViewerEvent(ref evt, (UInt16)pos.Y, (UInt16)pos.X, options);
 			if(evt.ProgramCounter == 0xFFFFFFFF) {
 				ResetTooltip();
 				UpdateOverlay(e.Location);
@@ -245,12 +248,14 @@ namespace Mesen.GUI.Debugger
 
 					if(isDma) {
 						bool indirectHdma = false;
-						values["Channel"] = evt.DmaChannel.ToString();
-						if(evt.DmaChannelInfo.InterruptedByHdma != 0) {
-							indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing != 0;
+						values["Channel"] = (evt.DmaChannel & 0x07).ToString();
+
+						if((evt.DmaChannel & ctrlEventViewerPpuView.HdmaChannelFlag) != 0) {
+							indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
 							values["Channel"] += indirectHdma ? " (Indirect HDMA)" : " (HDMA)";
 							values["Line Counter"] = "$" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2");
 						}
+
 						values["Mode"] = evt.DmaChannelInfo.TransferMode.ToString();
 
 						int aBusAddress;
@@ -260,7 +265,7 @@ namespace Mesen.GUI.Debugger
 							aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
 						}
 
-						if(evt.DmaChannelInfo.InvertDirection == 0) {
+						if(!evt.DmaChannelInfo.InvertDirection) {
 							values["Transfer"] = "$" + aBusAddress.ToString("X4") + " -> $" + evt.DmaChannelInfo.DestAddress.ToString("X2");
 						} else {
 							values["Transfer"] = "$" + aBusAddress.ToString("X4") + " <- $" + evt.DmaChannelInfo.DestAddress.ToString("X2");
