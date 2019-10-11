@@ -12,6 +12,18 @@ namespace Mesen.GUI.Utilities
 {
 	public static class FolderHelper
 	{
+		public static bool IsRomFile(string path)
+		{
+			string ext = Path.GetExtension(path).ToLower();
+			return ext == ".sfc" || ext == ".swc" || ext == ".fig" || ext == ".swc";
+		}
+
+		public static bool IsArchiveFile(string path)
+		{
+			string ext = Path.GetExtension(path).ToLower();
+			return ext == ".7z" || ext == ".zip";
+		}
+
 		public static bool CheckFolderPermissions(string folder, bool checkWritePermission = true)
 		{
 			if(!Directory.Exists(folder)) {

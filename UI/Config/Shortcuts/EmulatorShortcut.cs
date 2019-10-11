@@ -82,6 +82,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		LoadStateSlotAuto,
 		LoadStateFromFile,
 
-		OpenFile
+		OpenFile,
+		LoadRandomGame,
 	}
 }

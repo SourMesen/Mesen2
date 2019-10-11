@@ -77,7 +77,8 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.DecreaseSpeed,
 
 				EmulatorShortcut.OpenFile,
-								
+				EmulatorShortcut.LoadRandomGame,
+
 				EmulatorShortcut.MoveToNextStateSlot,
 				EmulatorShortcut.MoveToPreviousStateSlot,
 				EmulatorShortcut.SaveState,

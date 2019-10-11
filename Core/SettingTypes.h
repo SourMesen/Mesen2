@@ -387,6 +387,7 @@ enum class EmulatorShortcut
 	LoadStateFromFile,
 
 	OpenFile,
+	LoadRandomGame,
 	ShortcutCount
 };
 

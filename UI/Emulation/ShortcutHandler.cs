@@ -1,6 +1,7 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,6 +90,8 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.OpenFile: OpenFile(); break;
 				case EmulatorShortcut.IncreaseSpeed: IncreaseEmulationSpeed(); break;
 				case EmulatorShortcut.DecreaseSpeed: DecreaseEmulationSpeed(); break;
+
+				case EmulatorShortcut.LoadRandomGame: RandomGameHelper.LoadRandomGame(); break;
 
 				case EmulatorShortcut.SetScale1x: _displayManager.SetScale(1, true); break;
 				case EmulatorShortcut.SetScale2x: _displayManager.SetScale(2, true); break;

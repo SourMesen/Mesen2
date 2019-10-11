@@ -851,6 +851,7 @@
     <Compile Include="Utilities\InBackgroundHelper.cs" />
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
+    <Compile Include="Utilities\RandomGameHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
     <None Include="Resources\GsuDebugger.png" />
     <None Include="Resources\Sa1Debugger.png" />

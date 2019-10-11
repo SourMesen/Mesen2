@@ -238,6 +238,7 @@ namespace Mesen.GUI.Forms
 			_shortcuts.BindShortcut(mnuFullscreen, EmulatorShortcut.ToggleFullscreen);
 
 			_shortcuts.BindShortcut(mnuTakeScreenshot, EmulatorShortcut.TakeScreenshot, running);
+			_shortcuts.BindShortcut(mnuRandomGame, EmulatorShortcut.LoadRandomGame);
 
 			mnuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenDebugger));
 			mnuSpcDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpcDebugger));
