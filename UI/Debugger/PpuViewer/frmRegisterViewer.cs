@@ -202,17 +202,17 @@ namespace Mesen.GUI.Debugger
 					new RegEntry("$F7", "Port 3 (CPU read)", spc.OutputReg[3], Format.X8),
 					new RegEntry("$F7", "Port 3 (SPC read)", spc.CpuRegs[3], Format.X8),
 
+					new RegEntry("$F8 - $F9", "RAM Registers", null),
 					new RegEntry("$F8", "RAM Reg 0", spc.RamReg[0], Format.X8),
 					new RegEntry("$F9", "RAM Reg 1", spc.RamReg[1], Format.X8),
-
-
+					
 					new RegEntry("$FA - $FF", "Timers", null),
 					new RegEntry("$FA", "Timer 0 Divider", spc.Timer0.Target, Format.X8),
 					new RegEntry("$FA", "Timer 0 Frequency", GetTimerFrequency(8000, spc.Timer0.Target)),
 					new RegEntry("$FB", "Timer 1 Divider", spc.Timer1.Target, Format.X8),
-					new RegEntry("$FA", "Timer 1 Frequency", GetTimerFrequency(8000, spc.Timer1.Target)),
+					new RegEntry("$FB", "Timer 1 Frequency", GetTimerFrequency(8000, spc.Timer1.Target)),
 					new RegEntry("$FC", "Timer 2 Divider", spc.Timer2.Target, Format.X8),
-					new RegEntry("$FA", "Timer 2 Frequency", GetTimerFrequency(64000, spc.Timer2.Target)),
+					new RegEntry("$FC", "Timer 2 Frequency", GetTimerFrequency(64000, spc.Timer2.Target)),
 
 					new RegEntry("$FD", "Timer 0 Output", spc.Timer0.Output, Format.X8),
 					new RegEntry("$FE", "Timer 1 Output", spc.Timer1.Output, Format.X8),
