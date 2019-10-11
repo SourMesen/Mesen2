@@ -33,9 +33,9 @@ namespace Mesen.GUI.Emulation
 
 			_actionEnabledFuncs[shortcut] = isActionEnabled;
 
-			PreferencesConfig cfg = ConfigManager.Config.Preferences;
 			if(item.OwnerItem is ToolStripMenuItem) {
 				Action updateShortcut = () => {
+					PreferencesConfig cfg = ConfigManager.Config.Preferences;
 					int keyIndex = cfg.ShortcutKeys1.FindIndex((ShortcutKeyInfo shortcutInfo) => shortcutInfo.Shortcut == shortcut);
 					if(keyIndex >= 0) {
 						item.ShortcutKeyDisplayString = cfg.ShortcutKeys1[keyIndex].KeyCombination.ToString();
