@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,8 +44,23 @@ namespace Mesen.GUI.Config
 				tsmi.Click += (object sender, EventArgs args) => {
 					EmuRunner.LoadRom(recentItem.RomFile, recentItem.PatchFile);
 				};
+
+				//Display shortened folder path as the "shortcut"				
+				tsmi.ShortcutKeyDisplayString = "(" + recentItem.GetShortenedFolder() + ")";
+				
 				menuItems.Add(tsmi);
 			}
+
+			menuItems.Add(new ToolStripSeparator());
+
+			ToolStripMenuItem clearHistory = new ToolStripMenuItem();
+			clearHistory.Text = ResourceHelper.GetMessage("ClearHistory");
+			clearHistory.Image = Resources.Close;
+			clearHistory.Click += (object sender, EventArgs args) => {
+				ConfigManager.Config.RecentFiles.Items.Clear();
+			};
+			menuItems.Add(clearHistory);
+			
 			return menuItems;
 		}
 	}
@@ -62,6 +78,16 @@ namespace Mesen.GUI.Config
 				text += " [" + Path.GetFileName(PatchFile.Value) + "]";
 			}
 			return text;
+		}
+
+		public string GetShortenedFolder()
+		{
+			string[] folderParts = RomFile.Folder.Split(new char[2] { '\\', '/' });
+			if(folderParts.Length > 4) {
+				return folderParts[0] + Path.DirectorySeparatorChar + folderParts[1] + Path.DirectorySeparatorChar + folderParts[2] + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + folderParts[folderParts.Length - 1];
+			} else {
+				return RomFile.Folder;
+			}
 		}
 	}
 }
