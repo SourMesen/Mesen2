@@ -376,6 +376,7 @@ namespace Mesen.GUI.Forms
 			using(frmPreferences frm = new frmPreferences()) {
 				frm.ShowDialog(sender, this);
 				ConfigManager.Config.Preferences.ApplyConfig();
+				ctrlRecentGames.Visible = !EmuRunner.IsRunning();
 				if(frm.NeedRestart) {
 					this.Close();
 				}

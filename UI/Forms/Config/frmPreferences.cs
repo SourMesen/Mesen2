@@ -48,6 +48,7 @@ namespace Mesen.GUI.Forms.Config
 
 			AddBinding(nameof(PreferencesConfig.ShowTitleBarInfo), chkDisplayTitleBarInfo);
 			AddBinding(nameof(PreferencesConfig.DisableOsd), chkDisableOsd);
+			AddBinding(nameof(PreferencesConfig.DisableGameSelectionScreen), chkDisableGameSelectionScreen);
 			AddBinding(nameof(PreferencesConfig.ShowFps), chkShowFps);
 			AddBinding(nameof(PreferencesConfig.ShowFrameCounter), chkShowFrameCounter);
 			AddBinding(nameof(PreferencesConfig.ShowGameTimer), chkShowGameTimer);

@@ -30,6 +30,7 @@
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tpgGeneral = new System.Windows.Forms.TabPage();
 			this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
+			this.chkPauseOnMovieEnd = new System.Windows.Forms.CheckBox();
 			this.chkAllowBackgroundInput = new System.Windows.Forms.CheckBox();
 			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblPauseIn = new System.Windows.Forms.Label();
@@ -97,7 +98,7 @@
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
-			this.chkPauseOnMovieEnd = new System.Windows.Forms.CheckBox();
+			this.chkDisableGameSelectionScreen = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -183,6 +184,17 @@
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.Size = new System.Drawing.Size(534, 383);
 			this.tlpMain.TabIndex = 1;
+			// 
+			// chkPauseOnMovieEnd
+			// 
+			this.chkPauseOnMovieEnd.AutoSize = true;
+			this.chkPauseOnMovieEnd.Location = new System.Drawing.Point(13, 143);
+			this.chkPauseOnMovieEnd.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkPauseOnMovieEnd.Name = "chkPauseOnMovieEnd";
+			this.chkPauseOnMovieEnd.Size = new System.Drawing.Size(199, 17);
+			this.chkPauseOnMovieEnd.TabIndex = 31;
+			this.chkPauseOnMovieEnd.Text = "Pause when a movie finishes playing";
+			this.chkPauseOnMovieEnd.UseVisualStyleBackColor = true;
 			// 
 			// chkAllowBackgroundInput
 			// 
@@ -846,24 +858,26 @@
 			// 
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.lblAdvancedMisc, 0, 9);
-			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel6, 0, 10);
-			this.tableLayoutPanel1.Controls.Add(this.chkDisplayTitleBarInfo, 0, 4);
-			this.tableLayoutPanel1.Controls.Add(this.chkShowGameTimer, 0, 7);
-			this.tableLayoutPanel1.Controls.Add(this.chkShowFrameCounter, 0, 6);
+			this.tableLayoutPanel1.Controls.Add(this.chkDisableGameSelectionScreen, 0, 4);
+			this.tableLayoutPanel1.Controls.Add(this.lblAdvancedMisc, 0, 10);
+			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel6, 0, 11);
+			this.tableLayoutPanel1.Controls.Add(this.chkDisplayTitleBarInfo, 0, 5);
+			this.tableLayoutPanel1.Controls.Add(this.chkShowGameTimer, 0, 8);
+			this.tableLayoutPanel1.Controls.Add(this.chkShowFrameCounter, 0, 7);
 			this.tableLayoutPanel1.Controls.Add(this.chkDisableOsd, 0, 3);
 			this.tableLayoutPanel1.Controls.Add(this.lblUiDisplaySettings, 0, 2);
 			this.tableLayoutPanel1.Controls.Add(this.lblWindowSettings, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.chkAlwaysOnTop, 0, 1);
-			this.tableLayoutPanel1.Controls.Add(this.chkShowFps, 0, 5);
-			this.tableLayoutPanel1.Controls.Add(this.chkShowDebugInfo, 0, 8);
+			this.tableLayoutPanel1.Controls.Add(this.chkShowFps, 0, 6);
+			this.tableLayoutPanel1.Controls.Add(this.chkShowDebugInfo, 0, 9);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 11;
+			this.tableLayoutPanel1.RowCount = 12;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -872,7 +886,6 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 383);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
@@ -881,7 +894,7 @@
 			this.lblAdvancedMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblAdvancedMisc.AutoSize = true;
 			this.lblAdvancedMisc.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblAdvancedMisc.Location = new System.Drawing.Point(0, 208);
+			this.lblAdvancedMisc.Location = new System.Drawing.Point(0, 231);
 			this.lblAdvancedMisc.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.lblAdvancedMisc.Name = "lblAdvancedMisc";
 			this.lblAdvancedMisc.Size = new System.Drawing.Size(73, 13);
@@ -894,7 +907,7 @@
 			this.flowLayoutPanel6.Controls.Add(this.nudRewindBufferSize);
 			this.flowLayoutPanel6.Controls.Add(this.lblRewindMinutes);
 			this.flowLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Top;
-			this.flowLayoutPanel6.Location = new System.Drawing.Point(10, 224);
+			this.flowLayoutPanel6.Location = new System.Drawing.Point(10, 247);
 			this.flowLayoutPanel6.Margin = new System.Windows.Forms.Padding(10, 3, 0, 0);
 			this.flowLayoutPanel6.Name = "flowLayoutPanel6";
 			this.flowLayoutPanel6.Size = new System.Drawing.Size(524, 23);
@@ -955,7 +968,7 @@
 			// chkDisplayTitleBarInfo
 			// 
 			this.chkDisplayTitleBarInfo.AutoSize = true;
-			this.chkDisplayTitleBarInfo.Location = new System.Drawing.Point(13, 89);
+			this.chkDisplayTitleBarInfo.Location = new System.Drawing.Point(13, 112);
 			this.chkDisplayTitleBarInfo.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkDisplayTitleBarInfo.Name = "chkDisplayTitleBarInfo";
 			this.chkDisplayTitleBarInfo.Size = new System.Drawing.Size(210, 17);
@@ -966,7 +979,7 @@
 			// chkShowGameTimer
 			// 
 			this.chkShowGameTimer.AutoSize = true;
-			this.chkShowGameTimer.Location = new System.Drawing.Point(13, 158);
+			this.chkShowGameTimer.Location = new System.Drawing.Point(13, 181);
 			this.chkShowGameTimer.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkShowGameTimer.Name = "chkShowGameTimer";
 			this.chkShowGameTimer.Size = new System.Drawing.Size(107, 17);
@@ -977,7 +990,7 @@
 			// chkShowFrameCounter
 			// 
 			this.chkShowFrameCounter.AutoSize = true;
-			this.chkShowFrameCounter.Location = new System.Drawing.Point(13, 135);
+			this.chkShowFrameCounter.Location = new System.Drawing.Point(13, 158);
 			this.chkShowFrameCounter.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkShowFrameCounter.Name = "chkShowFrameCounter";
 			this.chkShowFrameCounter.Size = new System.Drawing.Size(121, 17);
@@ -1034,7 +1047,7 @@
 			// chkShowFps
 			// 
 			this.chkShowFps.AutoSize = true;
-			this.chkShowFps.Location = new System.Drawing.Point(13, 112);
+			this.chkShowFps.Location = new System.Drawing.Point(13, 135);
 			this.chkShowFps.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkShowFps.Name = "chkShowFps";
 			this.chkShowFps.Size = new System.Drawing.Size(76, 17);
@@ -1045,7 +1058,7 @@
 			// chkShowDebugInfo
 			// 
 			this.chkShowDebugInfo.AutoSize = true;
-			this.chkShowDebugInfo.Location = new System.Drawing.Point(13, 181);
+			this.chkShowDebugInfo.Location = new System.Drawing.Point(13, 204);
 			this.chkShowDebugInfo.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
 			this.chkShowDebugInfo.Name = "chkShowDebugInfo";
 			this.chkShowDebugInfo.Size = new System.Drawing.Size(140, 17);
@@ -1053,16 +1066,16 @@
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
 			// 
-			// chkPauseOnMovieEnd
+			// chkDisableGameSelectionScreen
 			// 
-			this.chkPauseOnMovieEnd.AutoSize = true;
-			this.chkPauseOnMovieEnd.Location = new System.Drawing.Point(13, 143);
-			this.chkPauseOnMovieEnd.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
-			this.chkPauseOnMovieEnd.Name = "chkPauseOnMovieEnd";
-			this.chkPauseOnMovieEnd.Size = new System.Drawing.Size(199, 17);
-			this.chkPauseOnMovieEnd.TabIndex = 31;
-			this.chkPauseOnMovieEnd.Text = "Pause when a movie finishes playing";
-			this.chkPauseOnMovieEnd.UseVisualStyleBackColor = true;
+			this.chkDisableGameSelectionScreen.AutoSize = true;
+			this.chkDisableGameSelectionScreen.Location = new System.Drawing.Point(13, 89);
+			this.chkDisableGameSelectionScreen.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkDisableGameSelectionScreen.Name = "chkDisableGameSelectionScreen";
+			this.chkDisableGameSelectionScreen.Size = new System.Drawing.Size(170, 17);
+			this.chkDisableGameSelectionScreen.TabIndex = 37;
+			this.chkDisableGameSelectionScreen.Text = "Disable game selection screen";
+			this.chkDisableGameSelectionScreen.UseVisualStyleBackColor = true;
 			// 
 			// frmPreferences
 			// 
@@ -1184,5 +1197,6 @@
 		private System.Windows.Forms.CheckBox chkPauseInDebugger;
 		private System.Windows.Forms.Label lblPauseBackgroundSettings;
 		private System.Windows.Forms.CheckBox chkPauseOnMovieEnd;
+		private System.Windows.Forms.CheckBox chkDisableGameSelectionScreen;
 	}
 }

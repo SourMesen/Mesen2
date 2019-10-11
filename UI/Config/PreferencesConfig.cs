@@ -38,6 +38,7 @@ namespace Mesen.GUI.Config
 		public bool ShowTitleBarInfo = false;
 		public bool ShowDebugInfo = false;
 		public bool DisableOsd = false;
+		public bool DisableGameSelectionScreen = false;
 
 		public List<ShortcutKeyInfo> ShortcutKeys1;
 		public List<ShortcutKeyInfo> ShortcutKeys2;
@@ -157,6 +158,7 @@ namespace Mesen.GUI.Config
 				DisableOsd = DisableOsd,
 				AllowBackgroundInput = AllowBackgroundInput,
 				PauseOnMovieEnd = PauseOnMovieEnd,
+				DisableGameSelectionScreen = DisableGameSelectionScreen,
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
@@ -174,7 +176,8 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOsd;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowBackgroundInput;
 		[MarshalAs(UnmanagedType.I1)] public bool PauseOnMovieEnd;
-
+		[MarshalAs(UnmanagedType.I1)] public bool DisableGameSelectionScreen;
+		
 		public UInt32 RewindBufferSize;
 
 		public string SaveFolderOverride;

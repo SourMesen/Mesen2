@@ -59,7 +59,7 @@ namespace Mesen.GUI.Controls
 			get { return base.Visible; }
 			set
 			{
-				if(value && ((_initialized && _recentGames.Count == 0) /* TODO || ConfigManager.Config.Preferences.DisableGameSelectionScreen*/)) {
+				if(value && ((_initialized && _recentGames.Count == 0) || ConfigManager.Config.Preferences.DisableGameSelectionScreen)) {
 					value = false;
 				}
 
