@@ -9,6 +9,8 @@ class Spc;
 class CallstackManager;
 class MemoryAccessCounter;
 class MemoryManager;
+class BreakpointManager;
+class EmuSettings;
 
 class SpcDebugger
 {
@@ -18,8 +20,10 @@ class SpcDebugger
 	MemoryAccessCounter* _memoryAccessCounter;
 	MemoryManager* _memoryManager;
 	Spc* _spc;
-	
+	EmuSettings* _settings;
+
 	shared_ptr<CallstackManager> _callstackManager;
+	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 
 	uint8_t _prevOpCode = 0xFF;
@@ -35,4 +39,5 @@ public:
 	void Run();
 	void Step(int32_t stepCount, StepType type);
 	shared_ptr<CallstackManager> GetCallstackManager();
+	BreakpointManager* GetBreakpointManager();
 };

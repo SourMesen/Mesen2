@@ -34,6 +34,7 @@ endif
 
 GCCOPTIONS=-fPIC -Wall --std=c++14 -O3 $(MESENFLAGS)
 CCOPTIONS=-fPIC -Wall -O3 $(MESENFLAGS)
+LINKOPTIONS=
 
 ifeq ($(MESENPLATFORM),x86)
 	MESENPLATFORM=x86
@@ -59,6 +60,10 @@ endif
 ifeq ($(PGO),optimize)
 	CCOPTIONS += ${PROFILE_USE_FLAG}
 	GCCOPTIONS += ${PROFILE_USE_FLAG}
+endif
+
+ifeq ($(STATICLINK),true)
+	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
@@ -139,14 +144,14 @@ InteropDLL/$(OBJFOLDER)/%.o: InteropDLL/%.cpp
 InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CPPC) $(GCCOPTIONS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 	
 Libretro/$(OBJFOLDER)/$(LIBRETROLIB): $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) Libretro/libretro.cpp
 	mkdir -p bin
 	mkdir -p Libretro/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) -pthread
+	$(CPPC) $(GCCOPTIONS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) -pthread
 	cp $(LIBRETROLIB) bin/pgohelperlib.so
 	mv $(LIBRETROLIB) Libretro/$(OBJFOLDER) 
 

@@ -14,6 +14,7 @@ class EmuSettings;
 class ScriptManager;
 class EventManager;
 class MemoryMappings;
+class BreakpointManager;
 class Sa1;
 
 class CpuDebugger
@@ -31,6 +32,7 @@ class CpuDebugger
 	Sa1* _sa1;
 
 	shared_ptr<CallstackManager> _callstackManager;
+	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 
 	CpuType _cpuType;
@@ -52,4 +54,5 @@ public:
 	void Step(int32_t stepCount, StepType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	shared_ptr<CallstackManager> GetCallstackManager();
+	BreakpointManager* GetBreakpointManager();
 };

@@ -718,8 +718,6 @@ void Console::ProcessPpuCycle()
 {
 	if(_debugger) {
 		_debugger->ProcessPpuCycle();
-		_spc->Run();
-		_cart->RunCoprocessors();
 	}
 }
 

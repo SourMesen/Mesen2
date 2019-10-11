@@ -6,25 +6,23 @@
 #include "DebugUtilities.h"
 #include "ExpressionEvaluator.h"
 
-BreakpointManager::BreakpointManager(Debugger *debugger)
+BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType)
 {
 	_debugger = debugger;
+	_cpuType = cpuType;
+	_hasBreakpoint = false;
 }
 
 void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 {
-	for(int j = 0; j <= (int)DebugUtilities::GetLastCpuType(); j++) {
-		for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
-			_breakpoints[j][i].clear();
-			_rpnList[j][i].clear();
-			_hasBreakpoint[j][i] = false;
-		}
+	_hasBreakpoint = false;
+	for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
+		_breakpoints[i].clear();
+		_rpnList[i].clear();
+		_hasBreakpointType[i] = false;
 	}
 
-	_bpExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(_debugger, CpuType::Cpu));
-	_bpExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(_debugger, CpuType::Spc));
-	_bpExpEval[(int)CpuType::Sa1].reset(new ExpressionEvaluator(_debugger, CpuType::Sa1));
-	_bpExpEval[(int)CpuType::Gsu].reset(new ExpressionEvaluator(_debugger, CpuType::Gsu));
+	_bpExpEval.reset(new ExpressionEvaluator(_debugger, _cpuType));
 
 	for(uint32_t j = 0; j < count; j++) {
 		Breakpoint &bp = breakpoints[j];
@@ -32,17 +30,22 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 			BreakpointType bpType = (BreakpointType)i;
 			if((bp.IsMarked() || bp.IsEnabled()) && bp.HasBreakpointType(bpType)) {
 				CpuType cpuType = bp.GetCpuType();
-				_breakpoints[(int)cpuType][i].push_back(bp);
+				if(_cpuType != cpuType) {
+					continue;
+				}
+
+				_breakpoints[i].push_back(bp);
 
 				if(bp.HasCondition()) {
 					bool success = true;
-					ExpressionData data = _bpExpEval[(int)cpuType]->GetRpnList(bp.GetCondition(), success);
-					_rpnList[(int)cpuType][i].push_back(success ? data : ExpressionData());
+					ExpressionData data = _bpExpEval->GetRpnList(bp.GetCondition(), success);
+					_rpnList[i].push_back(success ? data : ExpressionData());
 				} else {
-					_rpnList[(int)cpuType][i].push_back(ExpressionData());
+					_rpnList[i].push_back(ExpressionData());
 				}
 				
-				_hasBreakpoint[(int)cpuType][i] = true;
+				_hasBreakpoint = true;
+				_hasBreakpointType[i] = true;
 			}
 		}
 	}
@@ -66,21 +69,21 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 	}
 }
 
-int BreakpointManager::CheckBreakpoint(CpuType cpuType, MemoryOperationInfo operationInfo, AddressInfo &address)
+int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
 {
 	BreakpointType type = GetBreakpointType(operationInfo.Type);
 
-	if(!_hasBreakpoint[(int)cpuType][(int)type]) {
+	if(!_hasBreakpointType[(int)type]) {
 		return -1;
 	}
 
 	DebugState state;
 	_debugger->GetState(state, false);
 	EvalResultType resultType;
-	vector<Breakpoint> &breakpoints = _breakpoints[(int)cpuType][(int)type];
+	vector<Breakpoint> &breakpoints = _breakpoints[(int)type];
 	for(size_t i = 0; i < breakpoints.size(); i++) {
 		if(breakpoints[i].Matches(operationInfo.Address, address)) {
-			if(!breakpoints[i].HasCondition() || _bpExpEval[(int)cpuType]->Evaluate(_rpnList[(int)cpuType][(int)type][i], state, resultType, operationInfo)) {
+			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)type][i], state, resultType, operationInfo)) {
 				return breakpoints[i].GetId();
 			}
 		}

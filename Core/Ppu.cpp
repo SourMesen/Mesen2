@@ -99,7 +99,13 @@ uint16_t Ppu::GetCycle()
 {
 	//"normally dots 323 and 327 are 6 master cycles instead of 4."
 	uint16_t hClock = _memoryManager->GetHClock();
-	return (hClock - ((hClock > 1292) << 1) - ((hClock > 1310) << 1)) >> 2;
+	if(hClock <= 1292) {
+		return hClock >> 2;
+	} else if(hClock <= 1310) {
+		return (hClock >> 2) + 1;
+	} else {
+		return (hClock >> 2) + 2;
+	}
 }
 
 uint16_t Ppu::GetNmiScanline()

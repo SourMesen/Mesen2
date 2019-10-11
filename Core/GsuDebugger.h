@@ -8,6 +8,8 @@ class TraceLogger;
 class Gsu;
 class MemoryAccessCounter;
 class MemoryManager;
+class BreakpointManager;
+class EmuSettings;
 
 class GsuDebugger
 {
@@ -17,7 +19,9 @@ class GsuDebugger
 	MemoryAccessCounter* _memoryAccessCounter;
 	MemoryManager* _memoryManager;
 	Gsu* _gsu;
+	EmuSettings* _settings;
 
+	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 
 	uint8_t _prevOpCode = 0xFF;
@@ -32,4 +36,6 @@ public:
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void Run();
 	void Step(int32_t stepCount, StepType type);
+
+	BreakpointManager* GetBreakpointManager();
 };

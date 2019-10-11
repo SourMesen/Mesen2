@@ -30,6 +30,7 @@ class ScriptManager;
 class SpcDebugger;
 class CpuDebugger;
 class GsuDebugger;
+class Breakpoint;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -58,7 +59,6 @@ private:
 	shared_ptr<MemoryAccessCounter> _memoryAccessCounter;
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 	shared_ptr<Disassembler> _disassembler;
-	shared_ptr<BreakpointManager> _breakpointManager;
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<LabelManager> _labelManager;
@@ -111,7 +111,7 @@ public:
 	void BreakRequest(bool release);
 	void SuspendDebugger(bool release);
 
-	void ProcessBreakConditions(bool needBreak, CpuType cpuType, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
+	void ProcessBreakConditions(bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 
 	void GetState(DebugState &state, bool partialPpuState);
 
@@ -121,12 +121,13 @@ public:
 	void SetCdlData(uint8_t * cdlData, uint32_t length);
 	void RefreshCodeCache();
 
+	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
+
 	shared_ptr<TraceLogger> GetTraceLogger();
 	shared_ptr<MemoryDumper> GetMemoryDumper();
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();
 	shared_ptr<CodeDataLogger> GetCodeDataLogger();
 	shared_ptr<Disassembler> GetDisassembler();
-	shared_ptr<BreakpointManager> GetBreakpointManager();
 	shared_ptr<PpuTools> GetPpuTools();
 	shared_ptr<EventManager> GetEventManager();
 	shared_ptr<LabelManager> GetLabelManager();

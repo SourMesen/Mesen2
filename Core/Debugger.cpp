@@ -62,7 +62,6 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
-	_breakpointManager.reset(new BreakpointManager(this));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _console->GetDmaController().get()));
 	_scriptManager.reset(new ScriptManager(this));
@@ -143,7 +142,7 @@ void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
 	//TODO Make this more flexible/accurate
 	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Read };
-	ProcessBreakConditions(false, CpuType::Cpu, operation, addressInfo);
+	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 }
 
 void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
@@ -151,14 +150,14 @@ void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
 	//TODO Make this more flexible/accurate
 	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Write };
-	ProcessBreakConditions(false, CpuType::Cpu, operation, addressInfo);
+	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 }
 
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
-	ProcessBreakConditions(false, CpuType::Cpu, operation, addressInfo);
+	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Read, _memoryManager->GetMasterClock());
 }
@@ -167,7 +166,7 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 {
 	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
-	ProcessBreakConditions(false, CpuType::Cpu, operation, addressInfo);
+	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Write, _memoryManager->GetMasterClock());
 }
@@ -188,6 +187,13 @@ void Debugger::ProcessPpuCycle()
 	if(cycle == 0 && scanline == _step->BreakScanline) {
 		_step->BreakScanline = -1;
 		SleepUntilResume(BreakSource::PpuStep);
+	}
+
+	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
+	if(_traceLogger->IsCpuLogged(CpuType::Spc) || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
+		_spc->Run();
+	} else if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
+		_cart->RunCoprocessors();
 	}
 }
 
@@ -260,12 +266,12 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	_executionStopped = false;
 }
 
-void Debugger::ProcessBreakConditions(bool needBreak, CpuType cpuType, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
+void Debugger::ProcessBreakConditions(bool needBreak, BreakpointManager* bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
 {
 	if(needBreak || _breakRequestCount) {
 		SleepUntilResume(source);
 	} else {
-		int breakpointId = _breakpointManager->CheckBreakpoint(cpuType, operation, addressInfo);
+		int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo);
 		if(breakpointId >= 0) {
 			SleepUntilResume(BreakSource::Breakpoint, &operation, breakpointId);
 		}
@@ -401,11 +407,13 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	_ppu->GetState(state.Ppu, partialPpuState);
 	state.Spc = _spc->GetState();
 
-	for(int i = 0; i < 8; i++) {
-		state.DmaChannels[i] = _dmaController->GetChannelConfig(i);
+	if(!partialPpuState) {
+		for(int i = 0; i < 8; i++) {
+			state.DmaChannels[i] = _dmaController->GetChannelConfig(i);
+		}
+		state.InternalRegs = _internalRegs->GetState();
+		state.Alu = _internalRegs->GetAluState();
 	}
-	state.InternalRegs = _internalRegs->GetState();
-	state.Alu = _internalRegs->GetAluState();
 
 	if(_cart->GetDsp()) {
 		state.Dsp = _cart->GetDsp()->GetState();
@@ -484,6 +492,18 @@ void Debugger::RefreshCodeCache()
 	}
 }
 
+void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
+{
+	_cpuDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	_spcDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	if(_gsuDebugger) {
+		_gsuDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	}
+	if(_sa1Debugger) {
+		_sa1Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	}
+}
+
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()
 {
 	return _traceLogger;
@@ -507,11 +527,6 @@ shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger()
 shared_ptr<Disassembler> Debugger::GetDisassembler()
 {
 	return _disassembler;
-}
-
-shared_ptr<BreakpointManager> Debugger::GetBreakpointManager()
-{
-	return _breakpointManager;
 }
 
 shared_ptr<PpuTools> Debugger::GetPpuTools()

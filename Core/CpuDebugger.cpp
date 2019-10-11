@@ -8,6 +8,7 @@
 #include "Sa1.h"
 #include "TraceLogger.h"
 #include "CallstackManager.h"
+#include "BreakpointManager.h"
 #include "MemoryManager.h"
 #include "CodeDataLogger.h"
 #include "EmuSettings.h"
@@ -18,6 +19,7 @@
 #include "BaseCartridge.h"
 #include "Console.h"
 #include "MemoryAccessCounter.h"
+#include "ExpressionEvaluator.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {
@@ -36,6 +38,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 
 	_callstackManager.reset(new CallstackManager(debugger));
+	_breakpointManager.reset(new BreakpointManager(debugger, cpuType));
 	_step.reset(new StepRequest());
 
 	if(GetState().PC == 0) {
@@ -58,6 +61,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		bool needDisassemble = _traceLogger->IsCpuLogged(_cpuType) || _settings->CheckDebuggerFlag(_cpuType == CpuType::Cpu ? DebuggerFlags::CpuDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled);
 		if(addressInfo.Address >= 0) {
 			if(addressInfo.Type == SnesMemoryType::PrgRom) {
 				uint8_t flags = CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
@@ -66,14 +70,18 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				}
 				_codeDataLogger->SetFlags(addressInfo.Address, flags);
 			}
-			_disassembler->BuildCache(addressInfo, state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8), _cpuType);
+			if(needDisassemble) {
+				_disassembler->BuildCache(addressInfo, state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8), _cpuType);
+			}
 		}
 
-		DebugState debugState;
-		_debugger->GetState(debugState, true);
+		if(_traceLogger->IsCpuLogged(_cpuType)) {
+			DebugState debugState;
+			_debugger->GetState(debugState, true);
 
-		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
-		_traceLogger->Log(_cpuType, debugState, disInfo);
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+			_traceLogger->Log(_cpuType, debugState, disInfo);
+		}
 
 		uint32_t pc = (state.K << 16) | state.PC;
 		if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
@@ -138,7 +146,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, _cpuType, operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 
 	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
@@ -157,7 +165,7 @@ void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 
 	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
 
-	_debugger->ProcessBreakConditions(false, _cpuType, operation, addressInfo);
+	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 
 	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
@@ -227,4 +235,9 @@ bool CpuDebugger::IsRegister(uint32_t addr)
 shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()
 {
 	return _callstackManager;
+}
+
+BreakpointManager* CpuDebugger::GetBreakpointManager()
+{
+	return _breakpointManager.get();
 }
