@@ -445,56 +445,25 @@
 		<Form ID="frmCheatList" Title="Cheats">
 			<Control ID="tabCheats">Cheats</Control>
 			<Control ID="btnAddCheat">Add Cheat</Control>
-			<Control ID="btnDelete">Delete</Control>
-			<Control ID="btnDeleteCheat">Delete selected cheats</Control>
-			<Control ID="btnDeleteGameCheats">Delete all cheats for selected game</Control>
+			<Control ID="btnDeleteCheat">Delete</Control>
 			<Control ID="mnuAddCheat">Add cheat...</Control>
-			<Control ID="mnuDeleteGameCheats">Delete</Control>
 			<Control ID="mnuDeleteCheat">Delete</Control>
-			<Control ID="colGameName">Game</Control>
 			<Control ID="colCheatName">Cheat Name</Control>
 			<Control ID="colCode">Code</Control>
-			<Control ID="btnImport">Import</Control>
-			<Control ID="btnImportCheatDB">From Cheat Database</Control>
-			<Control ID="btnImportFromFile">From File (XML, CHT)</Control>
-			<Control ID="btnExport">Export</Control>
-			<Control ID="btnExportAllCheats">All Cheats</Control>
-			<Control ID="btnExportGame">Selected Game</Control>
-			<Control ID="mnuExportGame">Export</Control>
-			<Control ID="btnExportSelectedCheats">Selected Cheats</Control>
-			<Control ID="mnuExportSelectedCheats">Export</Control>
 			<Control ID="chkDisableCheats">Disable all cheats</Control>
-
-			<Control ID="tpgCheatFinder">Cheat Finder</Control>
-			<Control ID="grpFilters">Filters</Control>
-			<Control ID="btnReset">Reset</Control>
-			<Control ID="btnUndo">Undo</Control>
-			<Control ID="lblCurrentValue">Current value is</Control>
-			<Control ID="lblPreviousValue">Previous value was</Control>
-			<Control ID="btnAddCurrentFilter">Add Filter</Control>
-			<Control ID="btnAddPrevFilter">Add Filter</Control>
-			<Control ID="btnCreateCheat">Create Cheat</Control>
-			<Control ID="mnuCreateCheat">Create Cheat</Control>
-			<Control ID="lblAtAddress">at</Control>
-			<Control ID="chkPauseGameWhileWindowActive">Automatically pause game when this window is active</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="frmCheat" Title="Edit Cheat">
-			<Control ID="label2">Game:</Control>
-			<Control ID="label1">Cheat Name:</Control>
-			<Control ID="grpCode">Code</Control>
-			<Control ID="radCustom">Custom:</Control>
-			<Control ID="radGameGenie">Game Genie:</Control>
-			<Control ID="radProActionRocky">Pro Action Rocky:</Control>
-			<Control ID="lblAddress">Address:</Control>
-			<Control ID="lblNewValue">New Value:</Control>
-			<Control ID="radRelativeAddress">Memory</Control>
-			<Control ID="radAbsoluteAddress">Game Code</Control>
-			<Control ID="chkCompareValue">Compare Value</Control>
-			<Control ID="btnBrowse">Browse...</Control>
+			<Control ID="lblDescription">Description:</Control>
+			<Control ID="grpCode">Codes</Control>
+			<Control ID="radGameGenie">Game Genie (e.g: A1B2-C3D4)</Control>
+			<Control ID="radProActionReplay">Pro Action Replay (e.g: AAAAAAVV)</Control>
 			<Control ID="chkEnabled">Cheat Enabled</Control>
+			<Control ID="lblHint">To enter multiple codes, enter 1 code per line.</Control>
+			<Control ID="lblInvalidCodes">Some codes do not match the selected format.</Control>
+			
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>

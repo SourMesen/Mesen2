@@ -24,6 +24,7 @@ class EmuSettings;
 class SaveStateManager;
 class RewindManager;
 class BatteryManager;
+class CheatManager;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -52,6 +53,7 @@ private:
 	shared_ptr<EmuSettings> _settings;
 	shared_ptr<SaveStateManager> _saveStateManager;
 	shared_ptr<RewindManager> _rewindManager;
+	shared_ptr<CheatManager> _cheatManager;
 	
 	thread::id _emulationThreadId;
 	
@@ -113,6 +115,7 @@ public:
 	shared_ptr<RewindManager> GetRewindManager();
 	shared_ptr<DebugHud> GetDebugHud();
 	shared_ptr<BatteryManager> GetBatteryManager();
+	shared_ptr<CheatManager> GetCheatManager();
 
 	shared_ptr<Cpu> GetCpu();
 	shared_ptr<Ppu> GetPpu();

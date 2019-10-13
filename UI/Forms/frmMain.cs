@@ -140,6 +140,8 @@ namespace Mesen.GUI.Forms
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
+					CheatCodes.ApplyCheats();
+
 					this.BeginInvoke((Action)(() => {
 						UpdateDebuggerMenu();
 						ctrlRecentGames.Visible = false;
@@ -239,7 +241,7 @@ namespace Mesen.GUI.Forms
 
 			_shortcuts.BindShortcut(mnuTakeScreenshot, EmulatorShortcut.TakeScreenshot, running);
 			_shortcuts.BindShortcut(mnuRandomGame, EmulatorShortcut.LoadRandomGame);
-
+			
 			mnuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenDebugger));
 			mnuSpcDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpcDebugger));
 			mnuSa1Debugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSa1Debugger));
@@ -289,6 +291,8 @@ namespace Mesen.GUI.Forms
 			mnuRegionNtsc.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Ntsc); };
 			mnuRegionPal.Click += (s, e) => { _shortcuts.SetRegion(ConsoleRegion.Pal); };
 
+			mnuCheats.Click += (s, e) => { frmCheatList.ShowWindow(); };
+
 			mnuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger); };
 			mnuSpcDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpcDebugger); };
 			mnuSa1Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Sa1Debugger); };
@@ -328,6 +332,8 @@ namespace Mesen.GUI.Forms
 			mnuPaletteViewer.Enabled = running;
 			mnuEventViewer.Enabled = running;
 			mnuRegisterViewer.Enabled = running;
+
+			mnuCheats.Enabled = running;
 		}
 		
 		private void ResizeRecentGames()

@@ -86,6 +86,9 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SaveStateFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath);
 		[DllImport(DllPath)] public static extern void LoadStateFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath);
 		[DllImport(DllPath)] public static extern Int64 GetStateInfo(UInt32 stateIndex);
+
+		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
+		[DllImport(DllPath)] public static extern void ClearCheats();
 	}
 
 	public struct ScreenSize

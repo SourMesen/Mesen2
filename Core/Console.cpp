@@ -29,6 +29,7 @@
 #include "ConsoleLock.h"
 #include "MovieManager.h"
 #include "BatteryManager.h"
+#include "CheatManager.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
@@ -61,6 +62,7 @@ void Console::Initialize()
 	_saveStateManager.reset(new SaveStateManager(shared_from_this()));
 	_soundMixer.reset(new SoundMixer(this));
 	_debugHud.reset(new DebugHud());
+	_cheatManager.reset(new CheatManager(this));
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
@@ -285,6 +287,8 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
+		_cheatManager->ClearCheats(false);
+
 		if(stopRom) {
 			Stop(false);
 		}
@@ -571,6 +575,11 @@ shared_ptr<DebugHud> Console::GetDebugHud()
 shared_ptr<BatteryManager> Console::GetBatteryManager()
 {
 	return _batteryManager;
+}
+
+shared_ptr<CheatManager> Console::GetCheatManager()
+{
+	return _cheatManager;
 }
 
 shared_ptr<Cpu> Console::GetCpu()

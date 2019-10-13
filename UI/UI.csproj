@@ -215,8 +215,10 @@
     <Compile Include="Config\ConfigAttributes.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\ConfigManager.cs" />
+    <Compile Include="Config\CheatCodes.cs" />
     <Compile Include="Config\InputConfig.cs" />
     <Compile Include="Config\FileAssociationHelper.cs" />
+    <Compile Include="Config\CheatWindowConfig.cs" />
     <Compile Include="Config\MovieRecordConfig.cs" />
     <Compile Include="Config\PreferencesConfig.cs" />
     <Compile Include="Config\Shortcuts\EmulatorShortcut.cs" />
@@ -788,6 +790,18 @@
     <Compile Include="Forms\Config\frmRecordMovie.Designer.cs">
       <DependentUpon>frmRecordMovie.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Tools\frmCheat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Tools\frmCheat.Designer.cs">
+      <DependentUpon>frmCheat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Tools\frmCheatList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Tools\frmCheatList.Designer.cs">
+      <DependentUpon>frmCheatList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Tools\frmLogWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1079,6 +1093,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmRecordMovie.resx">
       <DependentUpon>frmRecordMovie.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Tools\frmCheat.resx">
+      <DependentUpon>frmCheat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Tools\frmCheatList.resx">
+      <DependentUpon>frmCheatList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Tools\frmLogWindow.resx">
       <DependentUpon>frmLogWindow.cs</DependentUpon>

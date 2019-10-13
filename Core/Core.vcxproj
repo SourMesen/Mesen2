@@ -49,6 +49,7 @@
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseCoprocessor.h" />
     <ClInclude Include="BatteryManager.h" />
+    <ClInclude Include="CheatManager.h" />
     <ClInclude Include="Cpu.Shared.h" />
     <ClInclude Include="CpuBwRamHandler.h" />
     <ClInclude Include="CpuDebugger.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="Breakpoint.cpp" />
     <ClCompile Include="BreakpointManager.cpp" />
     <ClCompile Include="CallstackManager.cpp" />
+    <ClCompile Include="CheatManager.cpp" />
     <ClCompile Include="CodeDataLogger.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="ConsoleLock.cpp" />

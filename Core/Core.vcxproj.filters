@@ -407,6 +407,9 @@
     <ClInclude Include="DmaControllerTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
+    <ClInclude Include="CheatManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -654,6 +657,9 @@
       <Filter>Movies</Filter>
     </ClCompile>
     <ClCompile Include="BatteryManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="CheatManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>

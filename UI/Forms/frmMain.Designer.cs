@@ -126,6 +126,7 @@
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuLogWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuRandomGame = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTakeScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDebug = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
@@ -151,7 +152,7 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
-			this.mnuRandomGame = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCheats = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -780,6 +781,7 @@
 			// mnuTools
 			// 
 			this.mnuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCheats,
             this.mnuMovies,
             this.toolStripMenuItem25,
             this.mnuSoundRecorder,
@@ -905,6 +907,13 @@
 			// 
 			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
 			this.toolStripMenuItem7.Size = new System.Drawing.Size(179, 6);
+			// 
+			// mnuRandomGame
+			// 
+			this.mnuRandomGame.Image = global::Mesen.GUI.Properties.Resources.Dice;
+			this.mnuRandomGame.Name = "mnuRandomGame";
+			this.mnuRandomGame.Size = new System.Drawing.Size(182, 22);
+			this.mnuRandomGame.Text = "Load Random Game";
 			// 
 			// mnuTakeScreenshot
 			// 
@@ -1106,12 +1115,12 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
-			// mnuRandomGame
+			// mnuCheats
 			// 
-			this.mnuRandomGame.Image = global::Mesen.GUI.Properties.Resources.Dice;
-			this.mnuRandomGame.Name = "mnuRandomGame";
-			this.mnuRandomGame.Size = new System.Drawing.Size(182, 22);
-			this.mnuRandomGame.Text = "Load Random Game";
+			this.mnuCheats.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
+			this.mnuCheats.Name = "mnuCheats";
+			this.mnuCheats.Size = new System.Drawing.Size(182, 22);
+			this.mnuCheats.Text = "Cheats";
 			// 
 			// frmMain
 			// 
@@ -1263,5 +1272,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuBilinearInterpolation;
 		private System.Windows.Forms.ToolStripMenuItem mnuRegisterViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuRandomGame;
+		private System.Windows.Forms.ToolStripMenuItem mnuCheats;
 	}
 }

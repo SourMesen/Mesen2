@@ -24,6 +24,7 @@ namespace Mesen.GUI.Config
 		public RecentItems RecentFiles;
 		public AviRecordConfig AviRecord;
 		public MovieRecordConfig MovieRecord;
+		public CheatWindowConfig Cheats;
 		public Point WindowLocation;
 		public Size WindowSize;
 		public bool NeedInputReinit = true;
@@ -40,6 +41,7 @@ namespace Mesen.GUI.Config
 			Preferences = new PreferencesConfig();
 			AviRecord = new AviRecordConfig();
 			MovieRecord = new MovieRecordConfig();
+			Cheats = new CheatWindowConfig();
 		}
 
 		~Configuration()

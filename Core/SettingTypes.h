@@ -354,6 +354,7 @@ enum class EmulatorShortcut
 	ToggleOsd,
 	ToggleAlwaysOnTop,
 	ToggleDebugInfo,
+	ToggleCheats,
 
 	ToggleBgLayer0,
 	ToggleBgLayer1,

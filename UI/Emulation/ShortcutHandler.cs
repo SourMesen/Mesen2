@@ -84,6 +84,7 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.ToggleOsd: ToggleOsd(); break;
 				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
 				case EmulatorShortcut.ToggleDebugInfo: ToggleDebugInfo(); break;
+				case EmulatorShortcut.ToggleCheats: ToggleCheats(); break;
 				case EmulatorShortcut.MaxSpeed: ToggleMaxSpeed(); break;
 				case EmulatorShortcut.ToggleFullscreen: _displayManager.ToggleFullscreen(); restoreFullscreen = false; break;
 
@@ -263,6 +264,12 @@ namespace Mesen.GUI.Emulation
 			} else {
 				SetEmulationSpeed(0);
 			}
+		}
+
+		private void ToggleCheats()
+		{
+			InvertConfigFlag(ref ConfigManager.Config.Cheats.DisableAllCheats);
+			CheatCodes.ApplyCheats();
 		}
 
 		private void ToggleOsd()

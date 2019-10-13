@@ -50,6 +50,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		ToggleOsd,
 		ToggleAlwaysOnTop,
 		ToggleDebugInfo,
+		ToggleCheats,
 
 		ToggleBgLayer0,
 		ToggleBgLayer1,

@@ -13,6 +13,7 @@ class BaseCartridge;
 class Console;
 class Ppu;
 class Cpu;
+class CheatManager;
 enum class MemoryOperationType;
 
 class MemoryManager : public ISerializable
@@ -30,6 +31,7 @@ private:
 	Ppu* _ppu;
 	Cpu* _cpu;
 	BaseCartridge* _cart;
+	CheatManager* _cheatManager;
 
 	MemoryMappings _mappings;
 	vector<unique_ptr<IMemoryHandler>> _workRamHandlers;

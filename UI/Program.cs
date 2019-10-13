@@ -49,6 +49,7 @@ namespace Mesen.GUI
 					//Cache deserializers in another thread
 					new XmlSerializer(typeof(Configuration));
 					new XmlSerializer(typeof(DebugWorkspace));
+					new XmlSerializer(typeof(CheatCodes));
 				});
 
 				if(Type.GetType("Mono.Runtime") != null) {

@@ -15,6 +15,7 @@
 #include "Gsu.h"
 #include "Cx4.h"
 #include "BaseCoprocessor.h"
+#include "CheatManager.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
@@ -28,6 +29,7 @@ void MemoryManager::Initialize(Console *console)
 	_cpu = console->GetCpu().get();
 	_ppu = console->GetPpu().get();
 	_cart = console->GetCartridge().get();
+	_cheatManager = console->GetCheatManager().get();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
 	_console->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
@@ -256,6 +258,7 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 		value = _openBus;
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
+	_cheatManager->ApplyCheat(addr, value);
 	_console->ProcessMemoryRead<CpuType::Cpu>(addr, value, type);
 
 	IncMasterClock4();
@@ -292,6 +295,7 @@ uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 		value = _openBus;
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
+	_cheatManager->ApplyCheat(addr, value);
 	_console->ProcessMemoryRead<CpuType::Cpu>(addr, value, MemoryOperationType::DmaRead);
 	return value;
 }

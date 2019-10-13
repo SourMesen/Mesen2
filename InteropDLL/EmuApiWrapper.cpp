@@ -10,6 +10,7 @@
 #include "../Core/INotificationListener.h"
 #include "../Core/KeyManager.h"
 #include "../Core/ShortcutKeyHandler.h"
+#include "../Core/CheatManager.h"
 #include "../Utilities/ArchiveReader.h"
 #include "../Utilities/FolderUtilities.h"
 #include "InteropNotificationListeners.h"
@@ -213,6 +214,9 @@ extern "C" {
 	{
 		return _console->GetVideoDecoder()->GetScreenSize(ignoreScale);
 	}
+	
+	DllExport void __stdcall ClearCheats() { _console->GetCheatManager()->ClearCheats(); }
+	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _console->GetCheatManager()->SetCheats(codes, length); }
 
 	DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
 

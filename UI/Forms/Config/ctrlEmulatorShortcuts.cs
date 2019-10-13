@@ -65,6 +65,7 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.ToggleOsd,
 				EmulatorShortcut.ToggleAlwaysOnTop,
 				EmulatorShortcut.ToggleAudio,
+				EmulatorShortcut.ToggleCheats,
 
 				EmulatorShortcut.ToggleBgLayer0,
 				EmulatorShortcut.ToggleBgLayer1,
