@@ -15,6 +15,7 @@
 #include "RewindData.h"
 #include "MovieTypes.h"
 #include "BatteryManager.h"
+#include "CheatManager.h"
 
 MovieRecorder::MovieRecorder(shared_ptr<Console> console)
 {
@@ -110,7 +111,11 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 		case RamState::AllZeros: WriteString(out, MovieKeys::RamPowerOnState, "AllZeros"); break;
 		case RamState::AllOnes: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break;
 		case RamState::Random: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break; //TODO: Random memory isn't supported for movies yet
-	}	
+	}
+
+	for(CheatCode &code : _console->GetCheatManager()->GetCheats()) {
+		out << "Cheat " << HexUtilities::ToHex24(code.Address) << " " << HexUtilities::ToHex(code.Value) << "\n";
+	}
 }
 
 void MovieRecorder::WriteString(stringstream &out, string name, string value)

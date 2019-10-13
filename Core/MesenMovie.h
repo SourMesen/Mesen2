@@ -8,6 +8,7 @@
 
 class ZipReader;
 class Console;
+struct CheatCode;
 
 class MesenMovie : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
 {
@@ -21,6 +22,7 @@ private:
 	uint32_t _lastPollCounter = 0;
 	vector<vector<string>> _inputData;
 	vector<string> _cheats;
+	vector<CheatCode> _originalCheats;
 	std::unordered_map<string, string> _settings;
 	string _filename;
 
@@ -33,6 +35,9 @@ private:
 	uint32_t LoadInt(std::unordered_map<string, string> &settings, string name, uint32_t defaultValue = 0);
 	bool LoadBool(std::unordered_map<string, string> &settings, string name);
 	string LoadString(std::unordered_map<string, string> &settings, string name);
+
+	void LoadCheats();
+	bool LoadCheat(string cheatData, CheatCode &code);
 
 public:
 	MesenMovie(shared_ptr<Console> console);

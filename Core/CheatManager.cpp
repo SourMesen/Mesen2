@@ -8,30 +8,40 @@ CheatManager::CheatManager(Console* console)
 	_console = console;
 }
 
-void CheatManager::AddCheat(uint32_t addr, uint8_t value)
+void CheatManager::AddCheat(CheatCode code)
 {
-	_cheats.push_back({ addr, value });
+	_cheats.push_back(code);
 	_hasCheats = true;
-	_bankHasCheats[addr >> 16] = true;
+	_bankHasCheats[code.Address >> 16] = true;
 }
 
-void CheatManager::SetCheats(uint32_t codes[], uint32_t length)
+void CheatManager::SetCheats(vector<CheatCode> codes)
 {
 	auto lock = _console->AcquireLock();
 
 	bool hasCheats = !_cheats.empty();
 	ClearCheats(false);
-	for(uint32_t i = 0; i < length; i++) {
-		AddCheat(codes[i] >> 8, codes[i] & 0xFF);
+	for(CheatCode &code : codes) {
+		AddCheat(code);
 	}
 
-	if(length > 1) {
-		MessageManager::DisplayMessage("Cheats", "CheatsApplied", std::to_string(length));
-	} else if(length == 1) {
+	if(codes.size() > 1) {
+		MessageManager::DisplayMessage("Cheats", "CheatsApplied", std::to_string(codes.size()));
+	} else if(codes.size() == 1) {
 		MessageManager::DisplayMessage("Cheats", "CheatApplied");
 	} else if(hasCheats) {
 		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
 	}
+}
+
+void CheatManager::SetCheats(uint32_t codes[], uint32_t length)
+{
+	vector<CheatCode> cheats;
+	cheats.reserve(length);
+	for(uint32_t i = 0; i < length; i++) {
+		cheats.push_back({ codes[i] >> 8, codes[i] & 0xFF });
+	}
+	SetCheats(cheats);
 }
 
 void CheatManager::ClearCheats(bool showMessage)
@@ -45,4 +55,9 @@ void CheatManager::ClearCheats(bool showMessage)
 	_cheats.clear();
 	_hasCheats = false;
 	memset(_bankHasCheats, 0, sizeof(_bankHasCheats));
+}
+
+vector<CheatCode> CheatManager::GetCheats()
+{
+	return _cheats;
 }

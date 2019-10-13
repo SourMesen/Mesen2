@@ -17,13 +17,16 @@ private:
 	bool _bankHasCheats[0x100] = {};
 	vector<CheatCode> _cheats;
 
-	void AddCheat(uint32_t addr, uint8_t value);
+	void AddCheat(CheatCode code);
 
 public:
 	CheatManager(Console* console);
 
+	void SetCheats(vector<CheatCode> codes);
 	void SetCheats(uint32_t codes[], uint32_t length);
 	void ClearCheats(bool showMessage = true);
+
+	vector<CheatCode> GetCheats();
 
 	__forceinline void ApplyCheat(uint32_t addr, uint8_t &value);
 };

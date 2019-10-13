@@ -31,6 +31,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/Breakpoint.cpp \
                $(CORE_DIR)/BreakpointManager.cpp \
                $(CORE_DIR)/CallstackManager.cpp \
+               $(CORE_DIR)/CheatManager.cpp \
                $(CORE_DIR)/CodeDataLogger.cpp \
                $(CORE_DIR)/Console.cpp \
                $(CORE_DIR)/ConsoleLock.cpp \

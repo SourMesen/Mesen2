@@ -14,6 +14,7 @@
 #include "MovieManager.h"
 #include "NotificationManager.h"
 #include "BatteryManager.h"
+#include "CheatManager.h"
 
 MesenMovie::MesenMovie(shared_ptr<Console> console)
 {
@@ -33,6 +34,8 @@ void MesenMovie::Stop()
 		if(_console->GetSettings()->GetPreferences().PauseOnMovieEnd) {
 			_console->Pause();
 		}
+
+		_console->GetCheatManager()->SetCheats(_originalCheats);
 
 		_playing = false;
 	}
@@ -136,7 +139,9 @@ bool MesenMovie::Play(VirtualFile &file)
 		return false;
 	}*/
 
+	_originalCheats = _console->GetCheatManager()->GetCheats();
 	_console->PowerCycle();
+	LoadCheats();	
 
 	stringstream saveStateData;
 	if(_reader->GetStream("SaveState.mss", saveStateData)) {
@@ -282,4 +287,30 @@ string MesenMovie::LoadString(std::unordered_map<string, string> &settings, stri
 	} else {
 		return "";
 	}
+}
+
+void MesenMovie::LoadCheats()
+{
+	vector<CheatCode> cheats;
+	for(string cheatData : _cheats) {
+		CheatCode code;
+		if(LoadCheat(cheatData, code)) {
+			cheats.push_back(code);
+		}
+	}
+	_console->GetCheatManager()->SetCheats(cheats);
+}
+
+bool MesenMovie::LoadCheat(string cheatData, CheatCode &code)
+{
+	vector<string> data = StringUtilities::Split(cheatData, ' ');
+
+	if(data.size() == 2) {
+		code.Address = HexUtilities::FromHex(data[0]);
+		code.Value = HexUtilities::FromHex(data[1]);
+		return true;
+	} else {
+		MessageManager::Log("[Movie] Invalid cheat definition: " + cheatData);
+	}
+	return false;
 }
