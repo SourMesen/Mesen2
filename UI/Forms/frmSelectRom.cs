@@ -91,7 +91,7 @@ namespace Mesen.GUI.Forms
 
 			if(archiveRomList.Count > 1) {
 				using(frmSelectRom frm = new frmSelectRom(archiveRomList)) {
-					if(frm.ShowDialog(null, Application.OpenForms[0]) == DialogResult.OK) {
+					if(frm.ShowDialog(null, frmMain.Instance) == DialogResult.OK) {
 						ArchiveRomEntry entry = frm.lstRoms.SelectedItem as ArchiveRomEntry;
 						resource.InnerFile = entry.Filename;
 						if(!entry.IsUtf8) {

@@ -47,10 +47,10 @@ namespace Mesen.GUI.Updates
 						string donateText = xmlDoc.SelectSingleNode("VersionInfo/DonateText")?.InnerText;
 
 						if(latestVersion > currentVersion) {
-							Application.OpenForms[0].BeginInvoke((MethodInvoker)(() => {
+							frmMain.Instance.BeginInvoke((MethodInvoker)(() => {
 								using(frmUpdatePrompt frmUpdate = new frmUpdatePrompt(currentVersion, latestVersion, changeLog, fileHash, donateText)) {
-									if(frmUpdate.ShowDialog(null, Application.OpenForms[0]) == DialogResult.OK) {
-										Application.Exit();
+									if(frmUpdate.ShowDialog(null, frmMain.Instance) == DialogResult.OK) {
+										frmMain.Instance.Close();
 									}
 								}
 							}));

@@ -91,7 +91,7 @@ namespace Mesen.GUI.Emulation
 				using(OpenFileDialog ofd = new OpenFileDialog()) {
 					ofd.InitialDirectory = ConfigManager.SaveStateFolder;
 					ofd.SetFilter(ResourceHelper.GetMessage("FilterSavestate"));
-					if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
+					if(ofd.ShowDialog(frmMain.Instance) == DialogResult.OK) {
 						EmuApi.LoadStateFile(ofd.FileName);
 					}
 				}
@@ -105,7 +105,7 @@ namespace Mesen.GUI.Emulation
 					sfd.InitialDirectory = ConfigManager.SaveStateFolder;
 					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".mss";
 					sfd.SetFilter(ResourceHelper.GetMessage("FilterSavestate"));
-					if(sfd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
+					if(sfd.ShowDialog(frmMain.Instance) == DialogResult.OK) {
 						EmuApi.SaveStateFile(sfd.FileName);
 					}
 				}

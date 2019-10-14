@@ -20,7 +20,7 @@ namespace Mesen.GUI.Forms
 					return MessageBox.Show(string.Format("Critical error (" + text + ")"), "Mesen-S", buttons, icon);
 				}
 			} else {
-				Form mainForm = Application.OpenForms.Count > 0 ? Application.OpenForms[0] : null;
+				Form mainForm = frmMain.Instance;
 				if(mainForm?.InvokeRequired == true) {
 					DialogResult result = DialogResult.Cancel;
 					mainForm.Invoke((Action)(() => {

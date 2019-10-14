@@ -138,7 +138,7 @@ namespace Mesen.GUI.Config
 				FileAssociationHelper.UpdateFileAssociation("mss", this.AssociateMssFiles);
 			}
 
-			Application.OpenForms[0].TopMost = AlwaysOnTop;
+			frmMain.Instance.TopMost = AlwaysOnTop;
 
 			ShortcutKeyInfo[] shortcutKeys = new ShortcutKeyInfo[ShortcutKeys1.Count + ShortcutKeys2.Count];
 			int i = 0;

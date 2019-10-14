@@ -229,7 +229,7 @@ namespace Mesen.GUI.Controls
 		private void tmrInput_Tick(object sender, EventArgs e)
 		{
 			//Use player 1's controls to navigate the recent game selection screen
-			if(Application.OpenForms.Count > 0 && Application.OpenForms[0].ContainsFocus && !EmuRunner.IsRunning()) {
+			if(frmMain.Instance?.ContainsFocus == true && !EmuRunner.IsRunning()) {
 				List<uint> keyCodes = InputApi.GetPressedKeys();
 				uint keyCode = keyCodes.Count > 0 ? keyCodes[0] : 0;
 				if(keyCode > 0) {

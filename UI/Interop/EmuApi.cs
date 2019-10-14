@@ -25,7 +25,7 @@ namespace Mesen.GUI
 			UInt32 revision = version & 0xFF;
 			UInt32 minor = (version >> 8) & 0xFF;
 			UInt32 major = (version >> 16) & 0xFFFF;
-			return new Version((int)major, (int)minor, (int)revision, 0);
+			return new Version((int)major, (int)minor, (int)revision);
 		}
 
 		[DllImport(DllPath)] public static extern IntPtr RegisterNotificationCallback(NotificationListener.NotificationCallback callback);

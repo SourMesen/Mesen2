@@ -29,8 +29,12 @@ namespace Mesen.GUI.Forms
 		private DisplayManager _displayManager;
 		private CommandLineHelper _commandLine;
 
+		public static frmMain Instance { get; private set; }
+
 		public frmMain(string[] args)
 		{
+			frmMain.Instance = this;
+
 			InitializeComponent();
 			if(DesignMode) {
 				return;

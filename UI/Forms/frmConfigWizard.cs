@@ -145,7 +145,7 @@ namespace Mesen.GUI.Forms
 
 		private void lblCancel_Click(object sender, EventArgs e)
 		{
-			Application.Exit();
+			Close();
 		}
 
 		private void radStoragePortable_CheckedChanged(object sender, EventArgs e)

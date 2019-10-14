@@ -33,7 +33,7 @@ namespace Mesen.GUI.Forms
 			frmCheatList frm = new frmCheatList();
 			_instance = frm;
 			frm.Closed += (s, e) => { _instance = null; };
-			frm.Show(null, Application.OpenForms[0]);
+			frm.Show(null, frmMain.Instance);
 		}
 		
 		protected override void OnLoad(EventArgs e)

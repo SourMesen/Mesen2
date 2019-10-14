@@ -106,7 +106,7 @@ namespace Mesen.GUI.Emulation
 			if(_mouseCaptured && AllowMouseCapture) {
 				HideMouse();
 				_tmrHideMouse.Stop();
-				Form frm = Application.OpenForms[0];
+				Form frm = frmMain.Instance;
 				Point centerPos = frm.PointToScreen(new Point(frm.Width / 2, frm.Height / 2));
 				Point diff = new Point(Cursor.Position.X - centerPos.X, Cursor.Position.Y - centerPos.Y);
 				if(diff.X != 0 || diff.Y != 0) {
@@ -185,7 +185,7 @@ namespace Mesen.GUI.Emulation
 				}
 				_mouseCaptured = true;
 				HideMouse();
-				Form frm = Application.OpenForms[0];
+				Form frm = frmMain.Instance;
 				Point centerPos = frm.PointToScreen(new Point(frm.Width / 2, frm.Height / 2));
 				Cursor.Position = centerPos;
 			}

@@ -75,7 +75,7 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.Reset: EmuApi.Reset(); break;
 				case EmulatorShortcut.PowerCycle: EmuApi.PowerCycle(); break;
 				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); restoreFullscreen = false; break;
-				case EmulatorShortcut.Exit: Application.OpenForms[0].Close(); restoreFullscreen = false; break;
+				case EmulatorShortcut.Exit: frmMain.Instance.Close(); restoreFullscreen = false; break;
 
 				case EmulatorShortcut.ToggleAudio: ToggleAudio(); break;
 				case EmulatorShortcut.ToggleFps: ToggleFps(); break;
@@ -152,7 +152,7 @@ namespace Mesen.GUI.Emulation
 					ofd.InitialDirectory = ConfigManager.Config.RecentFiles.Items[0].RomFile.Folder;
 				}
 
-				if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
+				if(ofd.ShowDialog(frmMain.Instance) == DialogResult.OK) {
 					EmuRunner.LoadFile(ofd.FileName);
 				}
 			}

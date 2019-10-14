@@ -64,7 +64,7 @@ namespace Mesen.GUI.Emulation
 								ofd.InitialDirectory = ConfigManager.Config.RecentFiles.Items[0].RomFile.Folder;
 							}
 
-							if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
+							if(ofd.ShowDialog(frmMain.Instance) == DialogResult.OK) {
 								LoadRom(ofd.FileName, patchFile);
 							}
 						}

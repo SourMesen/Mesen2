@@ -19,6 +19,18 @@ namespace MesenUpdater
 				string backupDestFile = args[2];
 				bool isAdmin = args.Length > 3 && args[3] == "admin";
 
+				//Wait a bit for the application to shut down before trying to kill it
+				System.Threading.Thread.Sleep(1000);
+				try {
+					foreach(Process process in Process.GetProcessesByName("Mesen-S")) {
+						try {
+							if(process.MainModule.FileName == destFile) {
+								process.Kill();
+							}
+						} catch { }
+					}
+				} catch { }
+
 				int retryCount = 0;
 				while(retryCount < 10) {
 					try {

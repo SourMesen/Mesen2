@@ -62,27 +62,28 @@ namespace Mesen.GUI.Updates
 			this.Close();
 #else
 			string destFilePath = System.Reflection.Assembly.GetEntryAssembly().Location;
-			string srcFilePath = Path.Combine(ConfigManager.DownloadFolder, "Mesen." + lblLatestVersionString.Text + ".exe");
-			string backupFilePath = Path.Combine(ConfigManager.BackupFolder, "Mesen." + lblCurrentVersionString.Text + ".exe");
+			string srcFilePath = Path.Combine(ConfigManager.DownloadFolder, "Mesen-S." + lblLatestVersionString.Text + ".exe");
+			string backupFilePath = Path.Combine(ConfigManager.BackupFolder, "Mesen-S." + lblCurrentVersionString.Text + ".exe");
 			string updateHelper = Path.Combine(ConfigManager.HomeFolder, "Resources", "MesenUpdater.exe");
 
 			if(!File.Exists(updateHelper)) {
 				MesenMsgBox.Show("UpdaterNotFound", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				DialogResult = DialogResult.Cancel;
 			} else if(!string.IsNullOrWhiteSpace(srcFilePath)) {
-				frmDownloadProgress frmDownload = new frmDownloadProgress("https://www.mesen.ca/snes/Services/GetLatestVersion.php?a=download&p=win&v=" + EmuApi.GetMesenVersion().ToString(3), srcFilePath);
-				if(frmDownload.ShowDialog() == DialogResult.OK) {
-					FileInfo fileInfo = new FileInfo(srcFilePath);
-					if(fileInfo.Length > 0 && ResourceExtractor.GetSha1Hash(File.ReadAllBytes(srcFilePath)) == _fileHash) {
-						if(Program.IsMono) {
-							Process.Start("mono", string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", updateHelper, srcFilePath, destFilePath, backupFilePath));
+				using(frmDownloadProgress frmDownload = new frmDownloadProgress("https://www.mesen.ca/snes/Services/GetLatestVersion.php?a=download&p=win&v=" + EmuApi.GetMesenVersion().ToString(3), srcFilePath)) {
+					if(frmDownload.ShowDialog() == DialogResult.OK) {
+						FileInfo fileInfo = new FileInfo(srcFilePath);
+						if(fileInfo.Length > 0 && ResourceExtractor.GetSha1Hash(File.ReadAllBytes(srcFilePath)) == _fileHash) {
+							if(Program.IsMono) {
+								Process.Start("mono", string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", updateHelper, srcFilePath, destFilePath, backupFilePath));
+							} else {
+								Process.Start(updateHelper, string.Format("\"{0}\" \"{1}\" \"{2}\"", srcFilePath, destFilePath, backupFilePath));
+							}
 						} else {
-							Process.Start(updateHelper, string.Format("\"{0}\" \"{1}\" \"{2}\"", srcFilePath, destFilePath, backupFilePath));
+							//Download failed, mismatching hashes
+							MesenMsgBox.Show("UpdateDownloadFailed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							DialogResult = DialogResult.Cancel;
 						}
-					} else {
-						//Download failed, mismatching hashes
-						MesenMsgBox.Show("UpdateDownloadFailed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-						DialogResult = DialogResult.Cancel;
 					}
 				}
 			}

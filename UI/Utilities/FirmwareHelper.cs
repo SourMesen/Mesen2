@@ -50,7 +50,7 @@ namespace Mesen.GUI.Utilities
 			if(MesenMsgBox.Show("FirmwareNotFound", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, msg.FirmwareType.ToString(), filename, msg.Size.ToString()) == DialogResult.OK) {
 				using(OpenFileDialog ofd = new OpenFileDialog()) {
 					ofd.SetFilter(ResourceHelper.GetMessage("FilterAll"));
-					if(ofd.ShowDialog(Application.OpenForms[0]) == DialogResult.OK) {
+					if(ofd.ShowDialog(frmMain.Instance) == DialogResult.OK) {
 						if(GetFileHash(ofd.FileName) != GetExpectedHash(msg.FirmwareType)) {
 							if(MesenMsgBox.Show("FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, msg.FirmwareType.ToString(), GetFileHash(ofd.FileName), GetExpectedHash(msg.FirmwareType)) != DialogResult.OK) {
 								//Files don't match and user cancelled the action
