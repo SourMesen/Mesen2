@@ -299,6 +299,8 @@ endif
 CFLAGS   += -D LIBRETRO $(fpic)
 CXXFLAGS += -D LIBRETRO $(fpic) -std=c++14
 
+ALTTARGET := $(subst mesen-s,mesens,$(TARGET))
+
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
@@ -312,6 +314,7 @@ endif
 else
 	$(LD) $(fpic) $(SHARED) $(INCLUDES) $(LINKOUT)$@ $(OBJECTS) $(LDFLAGS)
 endif
+	cp ./$(TARGET) ./$(ALTTARGET)
 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.c
