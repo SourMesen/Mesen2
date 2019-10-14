@@ -43,6 +43,7 @@ struct InteropRomInfo
 	const char* PatchPath;
 	CoprocessorType Coprocessor;
 	SnesCartInformation Header;
+	char Sha1[40];
 };
 
 string _romPath;
@@ -113,8 +114,10 @@ extern "C" {
 	DllExport void __stdcall GetRomInfo(InteropRomInfo &info)
 	{
 		RomInfo romInfo = {};
+		string sha1;
 		if(_console->GetCartridge()) {
 			romInfo = _console->GetCartridge()->GetRomInfo();
+			sha1 = _console->GetCartridge()->GetSha1Hash();
 		}
 
 		_romPath = romInfo.RomFile;
@@ -124,6 +127,8 @@ extern "C" {
 		info.RomPath = _romPath.c_str();
 		info.PatchPath = _patchPath.c_str();
 		info.Coprocessor = romInfo.Coprocessor;
+
+		memcpy(info.Sha1, sha1.c_str(), sha1.size());
 	}
 	
 	DllExport void __stdcall TakeScreenshot() { _console->GetVideoDecoder()->TakeScreenshot(); }

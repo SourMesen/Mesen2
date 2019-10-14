@@ -437,9 +437,9 @@
 			<Control ID="btnImport">Import</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmCheatImportFromDb" Title="Select Game...">
+		<Form ID="frmCheatDbList" Title="Select Game...">
 			<Control ID="lblSearch">Search:</Control>
-			<Control ID="btnOK">Import</Control>
+			<Control ID="btnOK">Import Cheats</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="frmCheatList" Title="Cheats">
@@ -701,7 +701,7 @@
 		<Message ID="InvalidPaths">The following path overrides are invalid:&#xA;&#xA;{0}&#xA;&#xA;Please use valid and writable folders and try again.</Message>
 		<Message ID="CopyMesenDataPrompt">All files will be copied from:&#xA;&#xA;{0}&#xA;to&#xA;{1}&#xA;&#xA;Once the copy is completed, Mesen-S will restart.&#xA;Continue?</Message>
 
-		<Message ID="CheatsFound">{0} games and {1} cheats in database</Message>
+		<Message ID="CheatsFound">{0} games in database</Message>
 		<Message ID="CheatsImported">{0} cheats imported for {1}.</Message>
 
 		<Message ID="NsfNextTrack">Next Track (Hold to fast forward)</Message>

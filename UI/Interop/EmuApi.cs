@@ -104,6 +104,9 @@ namespace Mesen.GUI
 		public IntPtr PatchPath;
 		public CoprocessorType CoprocessorType;
 		public SnesCartInformation Header;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
+		public byte[] Sha1;
 	}
 
 	public struct RomInfo
@@ -112,6 +115,7 @@ namespace Mesen.GUI
 		public string PatchPath;
 		public CoprocessorType CoprocessorType;
 		public SnesCartInformation Header;
+		public string Sha1;
 
 		public RomInfo(InteropRomInfo romInfo)
 		{
@@ -119,6 +123,7 @@ namespace Mesen.GUI
 			PatchPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.PatchPath);
 			Header = romInfo.Header;
 			CoprocessorType = romInfo.CoprocessorType;
+			Sha1 = Encoding.UTF8.GetString(romInfo.Sha1);
 		}
 
 		public string GetRomName()

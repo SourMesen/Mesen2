@@ -33,6 +33,7 @@ namespace Mesen.GUI.Forms
 			this.tabCheats = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.lstCheats = new Mesen.GUI.Controls.MyListView();
+			this.colEnabled = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colCheatName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colCodes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.contextMenuCheats = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -45,7 +46,7 @@ namespace Mesen.GUI.Forms
 			this.btnDeleteCheat = new System.Windows.Forms.ToolStripButton();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.chkDisableCheats = new System.Windows.Forms.CheckBox();
-			this.colEnabled = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.btnImportFromDb = new System.Windows.Forms.ToolStripButton();
 			this.baseConfigPanel.SuspendLayout();
 			this.tabMain.SuspendLayout();
 			this.tabCheats.SuspendLayout();
@@ -123,6 +124,11 @@ namespace Mesen.GUI.Forms
 			this.lstCheats.SelectedIndexChanged += new System.EventHandler(this.lstCheats_SelectedIndexChanged);
 			this.lstCheats.DoubleClick += new System.EventHandler(this.lstCheats_DoubleClick);
 			// 
+			// colEnabled
+			// 
+			this.colEnabled.Text = "";
+			this.colEnabled.Width = 21;
+			// 
 			// colCheatName
 			// 
 			this.colCheatName.Name = "colCheatName";
@@ -177,7 +183,8 @@ namespace Mesen.GUI.Forms
 			this.tsCheatActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAddCheat,
             this.btnEditCheat,
-            this.btnDeleteCheat});
+            this.btnDeleteCheat,
+            this.btnImportFromDb});
 			this.tsCheatActions.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
 			this.tsCheatActions.Location = new System.Drawing.Point(0, 0);
 			this.tsCheatActions.Name = "tsCheatActions";
@@ -237,10 +244,14 @@ namespace Mesen.GUI.Forms
 			this.chkDisableCheats.UseVisualStyleBackColor = true;
 			this.chkDisableCheats.CheckedChanged += new System.EventHandler(this.chkDisableCheats_CheckedChanged);
 			// 
-			// colEnabled
+			// btnImportFromDb
 			// 
-			this.colEnabled.Text = "";
-			this.colEnabled.Width = 21;
+			this.btnImportFromDb.Image = global::Mesen.GUI.Properties.Resources.Find;
+			this.btnImportFromDb.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btnImportFromDb.Name = "btnImportFromDb";
+			this.btnImportFromDb.Size = new System.Drawing.Size(109, 20);
+			this.btnImportFromDb.Text = "Cheat Database";
+			this.btnImportFromDb.Click += new System.EventHandler(this.btnImportFromDb_Click);
 			// 
 			// frmCheatList
 			// 
@@ -289,5 +300,6 @@ namespace Mesen.GUI.Forms
 		private System.Windows.Forms.ToolStripButton btnEditCheat;
 		private System.Windows.Forms.ToolStripButton btnDeleteCheat;
 		private System.Windows.Forms.ColumnHeader colEnabled;
+		private System.Windows.Forms.ToolStripButton btnImportFromDb;
 	}
 }

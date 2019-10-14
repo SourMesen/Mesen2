@@ -137,6 +137,7 @@ namespace Mesen.GUI.Forms
 			lstCheats.EndUpdate();
 
 			ResizeColumns();
+			UpdateMenuItems();
 		}
 
 		private void mnuAddCheat_Click(object sender, EventArgs e)
@@ -223,6 +224,38 @@ namespace Mesen.GUI.Forms
 		private void mnuEditCheat_Click(object sender, EventArgs e)
 		{
 			EditCheat();
+		}
+
+		private void btnImportFromDb_Click(object sender, EventArgs e)
+		{
+			using(frmCheatDbList frm = new frmCheatDbList()) {
+				if(frm.ShowDialog(btnImportFromDb, this) == DialogResult.OK) {
+					List<CheatCode> importedCheats = new List<CheatCode>();
+					Dictionary<string, CheatCode> existingCheats = new Dictionary<string, CheatCode>();
+					foreach(CheatCode cheat in _cheats) {
+						existingCheats[cheat.Description] = cheat;
+					}
+
+					foreach(CheatDbCheatEntry dbCheat in frm.ImportedCheats) {
+						CheatCode cheat = new CheatCode();
+						cheat.Description = dbCheat.Description;
+						cheat.Enabled = false;
+						cheat.Format = CheatFormat.ProActionReplay;
+						foreach(string code in dbCheat.Codes) {
+							cheat.Codes += code + Environment.NewLine;
+							if(code.Contains('-')) {
+								cheat.Format = CheatFormat.GameGenie;
+							}
+						}
+
+						if(!existingCheats.ContainsKey(cheat.Description) || existingCheats[cheat.Description].Codes != cheat.Codes) {
+							//Only import cheats that don't already exist in the list
+							importedCheats.Add(cheat);
+						}
+					}
+					AddCheats(importedCheats);
+				}
+			}
 		}
 	}
 }

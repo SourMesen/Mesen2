@@ -50,6 +50,7 @@ namespace Mesen.GUI
 					new XmlSerializer(typeof(Configuration));
 					new XmlSerializer(typeof(DebugWorkspace));
 					new XmlSerializer(typeof(CheatCodes));
+					new XmlSerializer(typeof(CheatDatabase));					
 				});
 
 				if(Type.GetType("Mono.Runtime") != null) {
