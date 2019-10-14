@@ -136,7 +136,7 @@ namespace Mesen.GUI.Config
 		None = 0,
 		Xbox = 1,
 		Ps4 = 2,
-		WasdKeys = 3,
-		ArrowKeys = 4
+		WasdKeys = 4,
+		ArrowKeys = 8
 	}
 }
