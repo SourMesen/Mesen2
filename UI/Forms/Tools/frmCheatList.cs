@@ -61,6 +61,10 @@ namespace Mesen.GUI.Forms
 		private void OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.BeforeGameUnload:
+					(new CheatCodes() { Cheats = _cheats }).Save();
+					break;
+
 				case ConsoleNotificationType.GameLoaded:
 					this.BeginInvoke((Action)(() => {
 						InitCheatList();
@@ -69,6 +73,8 @@ namespace Mesen.GUI.Forms
 
 				case ConsoleNotificationType.BeforeEmulationStop:
 					this.Invoke((Action)(() => {
+						//Close and save saves
+						DialogResult = DialogResult.OK;
 						Close();
 					}));
 					break;

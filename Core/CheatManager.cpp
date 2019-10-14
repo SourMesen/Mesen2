@@ -39,7 +39,10 @@ void CheatManager::SetCheats(uint32_t codes[], uint32_t length)
 	vector<CheatCode> cheats;
 	cheats.reserve(length);
 	for(uint32_t i = 0; i < length; i++) {
-		cheats.push_back({ codes[i] >> 8, codes[i] & 0xFF });
+		CheatCode code;
+		code.Address = codes[i] >> 8;
+		code.Value = codes[i] & 0xFF;
+		cheats.push_back(code);
 	}
 	SetCheats(cheats);
 }

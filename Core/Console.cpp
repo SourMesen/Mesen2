@@ -203,6 +203,8 @@ void Console::Stop(bool sendNotification)
 		_saveStateManager->SaveRecentGame(romInfo.RomFile.GetFileName(), romInfo.RomFile, romInfo.PatchFile);
 	}
 
+	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameUnload);
+
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
 	}

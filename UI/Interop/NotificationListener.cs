@@ -62,6 +62,7 @@ namespace Mesen.GUI
 		BeforeEmulationStop = 12,
 		ViewerRefresh = 13,
 		EventViewerRefresh = 14,
-		MissingFirmware = 15
+		MissingFirmware = 15,
+		BeforeGameUnload = 16,
 	}
 }
