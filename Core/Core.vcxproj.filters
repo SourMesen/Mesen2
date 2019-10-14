@@ -662,6 +662,9 @@
     <ClCompile Include="CheatManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="SnesController.cpp">
+      <Filter>SNES\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

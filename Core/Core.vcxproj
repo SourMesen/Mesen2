@@ -253,6 +253,7 @@
     <ClCompile Include="Sdd1Decomp.cpp" />
     <ClCompile Include="Sdd1Mmc.cpp" />
     <ClCompile Include="ShortcutKeyHandler.cpp" />
+    <ClCompile Include="SnesController.cpp" />
     <ClCompile Include="SoundMixer.cpp" />
     <ClCompile Include="SoundResampler.cpp" />
     <ClCompile Include="Spc.cpp" />

@@ -12,6 +12,8 @@ namespace Mesen.GUI.Forms.Config
 {
 	public class BaseInputConfigControl : BaseControl
 	{
+		private ToolTip _toolTip = new System.Windows.Forms.ToolTip();
+
 		public event EventHandler Change;
 		protected HashSet<Button> _buttons = new HashSet<Button>();
 
@@ -24,6 +26,10 @@ namespace Mesen.GUI.Forms.Config
 
 		public BaseInputConfigControl()
 		{
+			_toolTip.AutomaticDelay = 0;
+			_toolTip.AutoPopDelay = 32700;
+			_toolTip.InitialDelay = 1000;
+			_toolTip.ReshowDelay = 10;
 		}
 
 		public virtual void Initialize(KeyMapping mappings) { }
@@ -34,9 +40,11 @@ namespace Mesen.GUI.Forms.Config
 			if(!_buttons.Contains(btn)) {
 				_buttons.Add(btn);
 				btn.Click += btnMapping_Click;
+				btn.MouseUp += btnMapping_MouseUp;
 				btn.AutoEllipsis = true;
 			}
 			btn.Text = InputApi.GetKeyName(scanCode);
+			_toolTip.SetToolTip(btn, btn.Text);
 			btn.Tag = scanCode;
 		}
 
@@ -72,6 +80,18 @@ namespace Mesen.GUI.Forms.Config
 				frm.ShowDialog();
 				((Button)sender).Text = frm.ShortcutKey.ToString();
 				((Button)sender).Tag = frm.ShortcutKey.Key1;
+				_toolTip.SetToolTip((Button)sender, ((Button)sender).Text);
+			}
+			this.OnChange();
+		}
+
+		protected void btnMapping_MouseUp(object sender, MouseEventArgs e)
+		{
+			if(e.Button == MouseButtons.Right) {
+				//Clear shortcut on right-click
+				((Button)sender).Text = "";
+				((Button)sender).Tag = 0U;
+				_toolTip.SetToolTip((Button)sender, ((Button)sender).Text);
 			}
 			this.OnChange();
 		}

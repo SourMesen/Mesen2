@@ -24,7 +24,7 @@ namespace Mesen.GUI.Forms.Config
 				_portNumber = portNumber;
 				SetMainTab(this.tabMain);
 
-				//AddBinding("TurboSpeed", trkTurboSpeed);
+				trkTurboSpeed.Value = (int)cfg.Keys.TurboSpeed;
 
 				ctrlController0.Initialize(cfg.Keys.Mapping1);
 				ctrlController1.Initialize(cfg.Keys.Mapping2);
@@ -42,7 +42,13 @@ namespace Mesen.GUI.Forms.Config
 				this.Text += ": " + ResourceHelper.GetMessage("PlayerNumber", (portNumber + 1).ToString());
 			}
 		}
-		
+
+		protected override void UpdateConfig()
+		{
+			base.UpdateConfig();
+			_config.Keys.TurboSpeed = (UInt32)trkTurboSpeed.Value;
+		}
+
 		private void btnClear_Click(object sender, EventArgs e)
 		{
 			ClearCurrentTab();

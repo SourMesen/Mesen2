@@ -34,15 +34,15 @@ namespace Mesen.GUI.Forms.Config
 		
 		public void UpdateBackground()
 		{
-			float xFactor = picBackground.Width / 585f;
-			float yFactor = picBackground.Height / 253f;
+			float xFactor = picBackground.Width / 614f;
+			float yFactor = picBackground.Height / 279f;
 			Bitmap bitmap = new Bitmap(picBackground.Width, picBackground.Height, PixelFormat.Format32bppPArgb);
 			using(Graphics g = Graphics.FromImage(bitmap)) {
 				g.ScaleTransform(xFactor, yFactor);
 				using(Pen pen = new Pen(Color.LightGray, 2f)) {
-					g.DrawRectangle(pen, 1, 1, 585 - 4, 253 - 4);
-					g.DrawEllipse(pen, 15, 55, 170, 170);
-					g.FillEllipse(Brushes.WhiteSmoke, 370, 35, 210, 210);
+					g.DrawRectangle(pen, 1, 1, 614 - 2, 279 - 2);
+					g.DrawEllipse(pen, 15, 70, 170, 170);
+					g.FillEllipse(Brushes.WhiteSmoke, 375, 48, 225, 225);
 				}
 			}
 			picBackground.Image = bitmap;
@@ -63,6 +63,13 @@ namespace Mesen.GUI.Forms.Config
 			InitButton(btnL, mappings.L);
 			InitButton(btnR, mappings.R);
 
+			InitButton(btnTurboR, mappings.TurboR);
+			InitButton(btnTurboL, mappings.TurboL);
+			InitButton(btnTurboA, mappings.TurboA);
+			InitButton(btnTurboB, mappings.TurboB);
+			InitButton(btnTurboX, mappings.TurboX);
+			InitButton(btnTurboY, mappings.TurboY);
+
 			this.OnChange();
 		}
 	
@@ -80,6 +87,13 @@ namespace Mesen.GUI.Forms.Config
 			mappings.Y = (UInt32)btnY.Tag;
 			mappings.L = (UInt32)btnL.Tag;
 			mappings.R = (UInt32)btnR.Tag;
+
+			mappings.TurboA = (UInt32)btnTurboA.Tag;
+			mappings.TurboB = (UInt32)btnTurboB.Tag;
+			mappings.TurboX = (UInt32)btnTurboX.Tag;
+			mappings.TurboY = (UInt32)btnTurboY.Tag;
+			mappings.TurboL = (UInt32)btnTurboL.Tag;
+			mappings.TurboR = (UInt32)btnTurboR.Tag;
 		}
 	}
 }

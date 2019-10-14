@@ -29,6 +29,10 @@ namespace Mesen.GUI.Forms.Config
 			}
 		}
 
+		public BaseInputConfigForm()
+		{
+		}
+
 		public BaseInputConfigForm(ControllerConfig cfg)
 		{
 			_config = cfg;

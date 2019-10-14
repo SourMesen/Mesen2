@@ -88,6 +88,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/Sdd1.cpp \
                $(CORE_DIR)/Sdd1Mmc.cpp \
                $(CORE_DIR)/ShortcutKeyHandler.cpp \
+               $(CORE_DIR)/SnesController.cpp \
                $(CORE_DIR)/SoundMixer.cpp \
                $(CORE_DIR)/SoundResampler.cpp \
                $(CORE_DIR)/Spc.cpp \
