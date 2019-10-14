@@ -453,4 +453,5 @@ void MemoryManager::Serialize(Serializer &s)
 	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition, _hdmaInitPosition);
 	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
 	s.StreamArray(_hasEvent, sizeof(_hasEvent));
+	s.Stream(_registerHandlerB.get());
 }
