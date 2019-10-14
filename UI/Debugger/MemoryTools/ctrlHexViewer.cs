@@ -442,7 +442,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private void UpdateLocationLabel()
 		{
 			if(ctrlHexBox.SelectionLength > 0) {
-				this.lblLocation.Text = $"Selection: ${ctrlHexBox.SelectionStart.ToString("X4")} - ${(ctrlHexBox.SelectionStart + ctrlHexBox.SelectionLength - 1).ToString("X4")} ({ctrlHexBox.SelectionLength} bytes)";
+				this.lblLocation.Text = $"Selection: ${ctrlHexBox.SelectionStart.ToString("X4")} - ${(ctrlHexBox.SelectionStart + ctrlHexBox.SelectionLength - 1).ToString("X4")}, {ctrlHexBox.SelectionLength} bytes (${ctrlHexBox.SelectionLength.ToString("X2")})";
 			} else {
 				this.lblLocation.Text = $"Location: ${ctrlHexBox.SelectionStart.ToString("X4")}";
 			}
