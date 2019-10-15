@@ -72,6 +72,7 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.ToggleBgLayer2,
 				EmulatorShortcut.ToggleBgLayer3,
 				EmulatorShortcut.ToggleSprites,
+				EmulatorShortcut.EnableAllLayers,
 
 				EmulatorShortcut.MaxSpeed,
 				EmulatorShortcut.IncreaseSpeed,

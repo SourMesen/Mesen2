@@ -657,6 +657,12 @@
 		<Message ID="LoadFromFile">Load from file...</Message>
 		<Message ID="SaveToFile">Save to file...</Message>
 
+		<Message ID="BgLayerDisabled">BG{0} layer disabled.</Message>
+		<Message ID="BgLayerEnabled">BG{0} layer enabled.</Message>
+		<Message ID="SpriteLayerDisabled">Sprite layer disabled.</Message>
+		<Message ID="SpriteLayerEnabled">Sprite layer enabled.</Message>
+		<Message ID="AllLayersEnabled">All layers enabled.</Message>
+		
 		<Message ID="MovieSegment">Segment #{0}</Message>
 		<Message ID="MovieExportEntireSegment">Export entire segment</Message>
 		<Message ID="MovieExportSpecificRange">Export specific range...</Message>
@@ -779,6 +785,7 @@
 		<Message ID="EmulatorShortcutMappings_ToggleBgLayer2">Toggle BG Layer 2</Message>
 		<Message ID="EmulatorShortcutMappings_ToggleBgLayer3">Toggle BG Layer 3</Message>
 		<Message ID="EmulatorShortcutMappings_ToggleSprites">Toggle Sprites</Message>
+		<Message ID="EmulatorShortcutMappings_EnableAllLayers">Enable All Layers</Message>
 
 		<Message ID="EmulatorShortcutMappings_MaxSpeed">Toggle Maximum Speed</Message>
 		<Message ID="EmulatorShortcutMappings_LoadRandomGame">Load Random Game</Message>

@@ -106,6 +106,7 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.ToggleBgLayer2: ToggleBgLayer2(); break;
 				case EmulatorShortcut.ToggleBgLayer3: ToggleBgLayer3(); break;
 				case EmulatorShortcut.ToggleSprites: ToggleSprites(); break;
+				case EmulatorShortcut.EnableAllLayers: EnableAllLayers(); break;
 
 				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
 
@@ -192,26 +193,44 @@ namespace Mesen.GUI.Emulation
 		private void ToggleBgLayer0()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer0);
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer0 ? "BgLayerDisabled" : "BgLayerEnabled", "1"));
 		}
 
 		private void ToggleBgLayer1()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer1);
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer1 ? "BgLayerDisabled" : "BgLayerEnabled", "2"));
 		}
 
 		private void ToggleBgLayer2()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer2);
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer2 ? "BgLayerDisabled" : "BgLayerEnabled", "3"));
 		}
 
 		private void ToggleBgLayer3()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer3);
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer3 ? "BgLayerDisabled" : "BgLayerEnabled", "4"));
 		}
 
 		private void ToggleSprites()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideSprites);
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer0 ? "SpriteLayerDisabled" : "SpriteLayerEnabled"));
+		}
+		
+		private void EnableAllLayers()
+		{
+			ConfigManager.Config.Video.HideBgLayer0 = false;
+			ConfigManager.Config.Video.HideBgLayer1 = false;
+			ConfigManager.Config.Video.HideBgLayer2 = false;
+			ConfigManager.Config.Video.HideBgLayer3 = false;
+			ConfigManager.Config.Video.HideSprites = false;
+			ConfigManager.Config.ApplyConfig();
+			ConfigManager.ApplyChanges();
+
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
 		}
 
 		private void SetEmulationSpeed(uint emulationSpeed)

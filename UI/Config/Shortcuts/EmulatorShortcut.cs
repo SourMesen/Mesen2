@@ -57,6 +57,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		ToggleBgLayer2,
 		ToggleBgLayer3,
 		ToggleSprites,
+		EnableAllLayers,
 
 		SaveStateSlot1,
 		SaveStateSlot2,
