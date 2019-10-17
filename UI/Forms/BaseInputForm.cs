@@ -30,7 +30,15 @@ namespace Mesen.GUI.Forms
 				CursorManager.ReleaseMouse();
 			}
 
-			return base.ProcessCmdKey(ref msg, keyData);
+			bool result = base.ProcessCmdKey(ref msg, keyData);
+
+			if(keyData == Keys.F10 || keyData == (Keys.F10 | Keys.Shift)) {
+				//Prevent default Windows behavior on F10 / Shift+F10 presses, which causes issues
+				//such as the Shift key not being processed as being released, etc.
+				return true;
+			}
+
+			return result;
 		}
 
 		bool IMessageFilter.PreFilterMessage(ref Message m)

@@ -39,13 +39,6 @@ namespace Mesen.GUI.Forms
 		{
 			bool processed = false;
 			OnProcessCmdKey?.Invoke(keyData, ref processed);
-
-			if(keyData == Keys.F10 || keyData == (Keys.F10 | Keys.Shift)) {
-				//Prevent default Windows behavior on F10 / Shift+F10 presses, which causes issues
-				//such as the Shift key not being processed as being released, etc.
-				return true;
-			}
-
 			return processed || base.ProcessCmdKey(ref msg, keyData);
 		}
 
