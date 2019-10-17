@@ -268,7 +268,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 
 void Debugger::ProcessBreakConditions(bool needBreak, BreakpointManager* bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
 {
-	if(needBreak || _breakRequestCount) {
+	if(needBreak || _breakRequestCount || _waitForBreakResume) {
 		SleepUntilResume(source);
 	} else {
 		int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo);
