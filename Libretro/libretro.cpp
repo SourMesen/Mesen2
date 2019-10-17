@@ -13,6 +13,7 @@
 #include "../Core/VideoRenderer.h"
 #include "../Core/EmuSettings.h"
 #include "../Core/SaveStateManager.h"
+#include "../Core/CheatManager.h"
 #include "../Utilities/snes_ntsc.h"
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/HexUtilities.h"
@@ -71,7 +72,8 @@ extern "C" {
 
 		_console.reset(new Console());
 		_console->Initialize();
-
+		KeyManager::SetSettings(_console->GetSettings().get());
+		
 		_renderer.reset(new LibretroRenderer(_console, retroEnv));
 		_soundManager.reset(new LibretroSoundManager(_console));
 		_keyManager.reset(new LibretroKeyManager(_console));
@@ -457,10 +459,14 @@ extern "C" {
 
 	RETRO_API void retro_cheat_reset()
 	{
+		_console->GetCheatManager()->ClearCheats();
 	}
 
 	RETRO_API void retro_cheat_set(unsigned index, bool enabled, const char *codeStr)
 	{
+		if(codeStr) {
+			_console->GetCheatManager()->AddStringCheat(codeStr);
+		}
 	}
 
 	void update_input_descriptors()

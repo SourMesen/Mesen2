@@ -2,6 +2,7 @@
 #include "CheatManager.h"
 #include "MessageManager.h"
 #include "Console.h"
+#include "../Utilities/HexUtilities.h"
 
 CheatManager::CheatManager(Console* console)
 {
@@ -58,6 +59,58 @@ void CheatManager::ClearCheats(bool showMessage)
 	_cheats.clear();
 	_hasCheats = false;
 	memset(_bankHasCheats, 0, sizeof(_bankHasCheats));
+}
+
+void CheatManager::AddStringCheat(string code)
+{
+	static string _convertTable = "DF4709156BC8A23E";
+	
+	auto lock = _console->AcquireLock();
+	
+	std::transform(code.begin(), code.end(), code.begin(), ::toupper);
+
+	if(code.size() == 9 && code[4] == '-') {
+		uint32_t rawValue = 0;
+		for(int i = 0; i < code.size(); i++) {
+			if(code[i] != '-') {
+				rawValue <<= 4;
+				size_t pos = _convertTable.find_first_of(code[i]);
+				if(pos == string::npos) {
+					//Invalid code
+					return;
+				}
+				rawValue |= (uint32_t)pos;
+			}
+		}
+
+		CheatCode cheat;
+		cheat.Address = (
+			((rawValue & 0x3C00) << 10) |
+			((rawValue & 0x3C) << 14) |
+			((rawValue & 0xF00000) >> 8) |
+			((rawValue & 0x03) << 10) |
+			((rawValue & 0xC000) >> 6) |
+			((rawValue & 0xF0000) >> 12) |
+			((rawValue & 0x3C0) >> 6)
+		);
+
+		cheat.Value = rawValue >> 24;
+
+		AddCheat(cheat);
+	} else if(code.size() == 8) {
+		for(int i = 0; i < code.size(); i++) {
+			if((code[i] < 'A' || code[i] > 'F') && (code[i] < '0' && code[i] > '9')) {
+				//Invalid code
+				return;
+			}
+		}
+
+		uint32_t rawValue = HexUtilities::FromHex(code);
+		CheatCode cheat;
+		cheat.Address = rawValue >> 8;
+		cheat.Value = rawValue & 0xFF;
+		AddCheat(cheat);
+	}
 }
 
 vector<CheatCode> CheatManager::GetCheats()
