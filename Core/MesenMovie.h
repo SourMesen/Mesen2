@@ -25,6 +25,7 @@ private:
 	vector<CheatCode> _originalCheats;
 	std::unordered_map<string, string> _settings;
 	string _filename;
+	bool _forTest;
 
 private:
 	void ParseSettings(stringstream &data);
@@ -40,7 +41,7 @@ private:
 	bool LoadCheat(string cheatData, CheatCode &code);
 
 public:
-	MesenMovie(shared_ptr<Console> console);
+	MesenMovie(shared_ptr<Console> console, bool silent);
 	virtual ~MesenMovie();
 
 	bool Play(VirtualFile &file) override;

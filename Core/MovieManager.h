@@ -18,13 +18,16 @@ public:
 class MovieManager
 {
 private:
-	static shared_ptr<IMovie> _player;
-	static shared_ptr<MovieRecorder> _recorder;
+	shared_ptr<Console> _console;
+	shared_ptr<IMovie> _player;
+	shared_ptr<MovieRecorder> _recorder;
 
 public:
-	static void Record(RecordMovieOptions options, shared_ptr<Console> console);
-	static void Play(VirtualFile file, shared_ptr<Console> console);
-	static void Stop();
-	static bool Playing();
-	static bool Recording();
+	MovieManager(shared_ptr<Console> console);
+
+	void Record(RecordMovieOptions options);
+	void Play(VirtualFile file, bool silent = false);
+	void Stop();
+	bool Playing();
+	bool Recording();
 };

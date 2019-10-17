@@ -79,7 +79,6 @@ public:
 		if(_console) {
 			if(IsPressed(SystemActionManager::Buttons::ResetButton)) {
 				_console->Reset();
-				_console->GetControlManager()->UpdateInputState();
 			}
 			if(IsPressed(SystemActionManager::Buttons::PowerButton)) {
 				_console->PowerCycle();

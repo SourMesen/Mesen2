@@ -110,6 +110,7 @@
     <ClInclude Include="NtscFilter.h" />
     <ClInclude Include="Obc1.h" />
     <ClInclude Include="PpuTools.h" />
+    <ClInclude Include="RecordedRomTest.h" />
     <ClInclude Include="RegisterHandlerB.h" />
     <ClInclude Include="CpuTypes.h" />
     <ClInclude Include="Debugger.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="Obc1.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
+    <ClCompile Include="RecordedRomTest.cpp" />
     <ClCompile Include="RegisterHandlerB.cpp" />
     <ClCompile Include="RewindData.cpp" />
     <ClCompile Include="RewindManager.cpp" />

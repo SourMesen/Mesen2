@@ -143,7 +143,7 @@ void ControlManager::UpdateInputState()
 
 	auto lock = _deviceLock.AcquireSafe();
 
-	string log = "";
+	//string log = "F: " + std::to_string(_console->GetPpu()->GetFrameCount()) + " C:" + std::to_string(_pollCounter) + " ";
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		device->ClearState();
 

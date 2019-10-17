@@ -30,6 +30,7 @@
 #include "MovieManager.h"
 #include "BatteryManager.h"
 #include "CheatManager.h"
+#include "MovieManager.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
@@ -39,7 +40,6 @@
 Console::Console()
 {
 	_settings.reset(new EmuSettings());
-	KeyManager::SetSettings(_settings.get());
 
 	_paused = false;
 	_pauseOnNextFrame = false;
@@ -63,6 +63,7 @@ void Console::Initialize()
 	_soundMixer.reset(new SoundMixer(this));
 	_debugHud.reset(new DebugHud());
 	_cheatManager.reset(new CheatManager(this));
+	_movieManager.reset(new MovieManager(shared_from_this()));
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
@@ -82,6 +83,8 @@ void Console::Release()
 	_saveStateManager.reset();
 	_soundMixer.reset();
 	_settings.reset();
+	_cheatManager.reset();
+	_movieManager.reset();
 }
 
 void Console::Run()
@@ -106,6 +109,7 @@ void Console::Run()
 	_emulationThreadId = std::this_thread::get_id();
 
 	_memoryManager->IncMasterClockStartup();
+	_controlManager->UpdateInputState();
 
 	auto lock = _runLock.AcquireSafe();
 	while(!_stopFlag) {
@@ -136,8 +140,6 @@ void Console::Run()
 			frameLimiter.ProcessFrame();
 			frameLimiter.WaitForNextFrame();
 
-			_controlManager->UpdateControlDevices();
-
 			double newFrameDelay = GetFrameDelay();
 			if(newFrameDelay != frameDelay) {
 				frameDelay = newFrameDelay;
@@ -152,13 +154,14 @@ void Console::Run()
 			}
 
 			_controlManager->UpdateInputState();
+			_controlManager->UpdateControlDevices();
 			_internalRegisters->ProcessAutoJoypadRead();
 			
 			previousFrameCount = _ppu->GetFrameCount();
 		}
 	}
 
-	MovieManager::Stop();
+	_movieManager->Stop();
 
 	_emulationThreadId = thread::id();
 
@@ -254,7 +257,7 @@ void Console::Reset()
 	ProcessEvent(EventType::Reset);
 
 	_memoryManager->IncMasterClockStartup();
-	
+
 	Unlock();
 
 	if(debugger) {
@@ -582,6 +585,11 @@ shared_ptr<BatteryManager> Console::GetBatteryManager()
 shared_ptr<CheatManager> Console::GetCheatManager()
 {
 	return _cheatManager;
+}
+
+shared_ptr<MovieManager> Console::GetMovieManager()
+{
+	return _movieManager;
 }
 
 shared_ptr<Cpu> Console::GetCpu()

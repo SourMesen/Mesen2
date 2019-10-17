@@ -104,7 +104,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	bool isNetplayClient = false; //TODO GameClient::Connected();
 	//bool isMovieActive = MovieManager::Playing() || MovieManager::Recording();
-	bool isMovieRecording = MovieManager::Recording();
+	bool isMovieRecording = _console->GetMovieManager()->Recording();
 
 	//Let the UI handle these shortcuts
 	for(uint64_t i = (uint64_t)EmulatorShortcut::TakeScreenshot; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {

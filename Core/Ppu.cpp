@@ -1500,12 +1500,6 @@ void Ppu::ProcessWindowMaskSettings(uint8_t value, uint8_t offset)
 
 void Ppu::SendFrame()
 {
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
-
-	if(_skipRender) {
-		return;
-	}
-
 	uint16_t width = _useHighResOutput ? 512 : 256;
 	uint16_t height = _useHighResOutput ? 478 : 239;
 
@@ -1515,6 +1509,12 @@ void Ppu::SendFrame()
 		int bottom = (_useHighResOutput ? 16 : 8);
 		memset(_currentBuffer, 0, width * top * sizeof(uint16_t));
 		memset(_currentBuffer + width * (height - bottom), 0, width * bottom * sizeof(uint16_t));
+	}
+
+	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+
+	if(_skipRender) {
+		return;
 	}
 
 	bool isRewinding = _console->GetRewindManager()->IsRewinding();

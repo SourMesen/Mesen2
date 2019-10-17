@@ -17,13 +17,13 @@ extern "C"
 	DllExport void __stdcall WaveStop() { _console->GetSoundMixer()->StopRecording(); }
 	DllExport bool __stdcall WaveIsRecording() { return _console->GetSoundMixer()->IsRecording(); }
 
-	DllExport void __stdcall MoviePlay(char* filename) { MovieManager::Play(string(filename), _console); }
-	DllExport void __stdcall MovieStop() { MovieManager::Stop(); }
-	DllExport bool __stdcall MoviePlaying() { return MovieManager::Playing(); }
-	DllExport bool __stdcall MovieRecording() { return MovieManager::Recording(); }
+	DllExport void __stdcall MoviePlay(char* filename) { _console->GetMovieManager()->Play(string(filename)); }
+	DllExport void __stdcall MovieStop() { _console->GetMovieManager()->Stop(); }
+	DllExport bool __stdcall MoviePlaying() { return _console->GetMovieManager()->Playing(); }
+	DllExport bool __stdcall MovieRecording() { return _console->GetMovieManager()->Recording(); }
 	DllExport void __stdcall MovieRecord(RecordMovieOptions *options)
 	{
 		RecordMovieOptions opt = *options;
-		MovieManager::Record(opt, _console);
+		_console->GetMovieManager()->Record(opt);
 	}
 }

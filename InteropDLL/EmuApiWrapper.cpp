@@ -60,6 +60,7 @@ extern "C" {
 	DllExport void __stdcall InitDll()
 	{
 		_console.reset(new Console());
+		KeyManager::SetSettings(_console->GetSettings().get());
 	}
 
 	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool noAudio, bool noVideo, bool noInput)
@@ -240,6 +241,7 @@ extern "C" {
 			std::cout << "Running: " << testRoms[i] << std::endl;
 
 			_console.reset(new Console());
+			KeyManager::SetSettings(_console->GetSettings().get());
 			_console->Initialize();
 			_console->LoadRom((VirtualFile)testRoms[i], VirtualFile());
 

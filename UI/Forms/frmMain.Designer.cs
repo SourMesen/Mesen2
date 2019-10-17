@@ -112,6 +112,7 @@
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTools = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCheats = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMovies = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPlayMovie = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRecordMovie = new System.Windows.Forms.ToolStripMenuItem();
@@ -124,6 +125,11 @@
 			this.mnuAviRecord = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAviStop = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuTests = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuTestRun = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuTestRecord = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuTestStop = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuRunAllTests = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuLogWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRandomGame = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,7 +158,6 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
-			this.mnuCheats = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -787,6 +792,7 @@
             this.mnuSoundRecorder,
             this.mnuVideoRecorder,
             this.toolStripMenuItem11,
+            this.mnuTests,
             this.mnuLogWindow,
             this.toolStripMenuItem7,
             this.mnuRandomGame,
@@ -797,6 +803,13 @@
 			this.mnuTools.DropDownClosed += new System.EventHandler(this.mnu_DropDownClosed);
 			this.mnuTools.DropDownOpening += new System.EventHandler(this.mnuTools_DropDownOpening);
 			this.mnuTools.DropDownOpened += new System.EventHandler(this.mnu_DropDownOpened);
+			// 
+			// mnuCheats
+			// 
+			this.mnuCheats.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
+			this.mnuCheats.Name = "mnuCheats";
+			this.mnuCheats.Size = new System.Drawing.Size(182, 22);
+			this.mnuCheats.Text = "Cheats";
 			// 
 			// mnuMovies
 			// 
@@ -813,7 +826,7 @@
 			// 
 			this.mnuPlayMovie.Image = global::Mesen.GUI.Properties.Resources.MediaPlay;
 			this.mnuPlayMovie.Name = "mnuPlayMovie";
-			this.mnuPlayMovie.Size = new System.Drawing.Size(152, 22);
+			this.mnuPlayMovie.Size = new System.Drawing.Size(120, 22);
 			this.mnuPlayMovie.Text = "Play...";
 			this.mnuPlayMovie.Click += new System.EventHandler(this.mnuPlayMovie_Click);
 			// 
@@ -821,7 +834,7 @@
 			// 
 			this.mnuRecordMovie.Image = global::Mesen.GUI.Properties.Resources.Record;
 			this.mnuRecordMovie.Name = "mnuRecordMovie";
-			this.mnuRecordMovie.Size = new System.Drawing.Size(152, 22);
+			this.mnuRecordMovie.Size = new System.Drawing.Size(120, 22);
 			this.mnuRecordMovie.Text = "Record...";
 			this.mnuRecordMovie.Click += new System.EventHandler(this.mnuRecordMovie_Click);
 			// 
@@ -829,7 +842,7 @@
 			// 
 			this.mnuStopMovie.Image = global::Mesen.GUI.Properties.Resources.MediaStop;
 			this.mnuStopMovie.Name = "mnuStopMovie";
-			this.mnuStopMovie.Size = new System.Drawing.Size(152, 22);
+			this.mnuStopMovie.Size = new System.Drawing.Size(120, 22);
 			this.mnuStopMovie.Text = "Stop";
 			this.mnuStopMovie.Click += new System.EventHandler(this.mnuStopMovie_Click);
 			// 
@@ -894,6 +907,41 @@
 			// 
 			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
 			this.toolStripMenuItem11.Size = new System.Drawing.Size(179, 6);
+			// 
+			// mnuTests
+			// 
+			this.mnuTests.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuTestRun,
+            this.mnuTestRecord,
+            this.mnuTestStop,
+            this.mnuRunAllTests});
+			this.mnuTests.Name = "mnuTests";
+			this.mnuTests.Size = new System.Drawing.Size(182, 22);
+			this.mnuTests.Text = "Tests";
+			// 
+			// mnuTestRun
+			// 
+			this.mnuTestRun.Name = "mnuTestRun";
+			this.mnuTestRun.Size = new System.Drawing.Size(152, 22);
+			this.mnuTestRun.Text = "Run...";
+			// 
+			// mnuTestRecord
+			// 
+			this.mnuTestRecord.Name = "mnuTestRecord";
+			this.mnuTestRecord.Size = new System.Drawing.Size(152, 22);
+			this.mnuTestRecord.Text = "Record...";
+			// 
+			// mnuTestStop
+			// 
+			this.mnuTestStop.Name = "mnuTestStop";
+			this.mnuTestStop.Size = new System.Drawing.Size(152, 22);
+			this.mnuTestStop.Text = "Stop recording";
+			// 
+			// mnuRunAllTests
+			// 
+			this.mnuRunAllTests.Name = "mnuRunAllTests";
+			this.mnuRunAllTests.Size = new System.Drawing.Size(152, 22);
+			this.mnuRunAllTests.Text = "Run all tests";
 			// 
 			// mnuLogWindow
 			// 
@@ -1115,13 +1163,6 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
-			// mnuCheats
-			// 
-			this.mnuCheats.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
-			this.mnuCheats.Name = "mnuCheats";
-			this.mnuCheats.Size = new System.Drawing.Size(182, 22);
-			this.mnuCheats.Text = "Cheats";
-			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -1273,5 +1314,10 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuRegisterViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuRandomGame;
 		private System.Windows.Forms.ToolStripMenuItem mnuCheats;
+		private System.Windows.Forms.ToolStripMenuItem mnuTests;
+		private System.Windows.Forms.ToolStripMenuItem mnuTestRun;
+		private System.Windows.Forms.ToolStripMenuItem mnuTestRecord;
+		private System.Windows.Forms.ToolStripMenuItem mnuTestStop;
+		private System.Windows.Forms.ToolStripMenuItem mnuRunAllTests;
 	}
 }

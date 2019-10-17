@@ -16,9 +16,10 @@
 #include "BatteryManager.h"
 #include "CheatManager.h"
 
-MesenMovie::MesenMovie(shared_ptr<Console> console)
+MesenMovie::MesenMovie(shared_ptr<Console> console, bool forTest)
 {
 	_console = console;
+	_forTest = forTest;
 }
 
 MesenMovie::~MesenMovie()
@@ -29,7 +30,9 @@ MesenMovie::~MesenMovie()
 void MesenMovie::Stop()
 {
 	if(_playing) {
-		MessageManager::DisplayMessage("Movies", "MovieEnded");
+		if(!_forTest) {
+			MessageManager::DisplayMessage("Movies", "MovieEnded");
+		}
 
 		if(_console->GetSettings()->GetPreferences().PauseOnMovieEnd) {
 			_console->Pause();
@@ -56,7 +59,7 @@ bool MesenMovie::SetInput(BaseControlDevice *device)
 			_deviceIndex = 0;
 		}
 	} else {
-		MovieManager::Stop();
+		_console->GetMovieManager()->Stop();
 	}
 	return true;
 }
@@ -73,11 +76,11 @@ vector<uint8_t> MesenMovie::LoadBattery(string extension)
 	return batteryData;
 }
 
-void MesenMovie::ProcessNotification(ConsoleNotificationType type, void * parameter)
+void MesenMovie::ProcessNotification(ConsoleNotificationType type, void* parameter)
 {
 	if(type == ConsoleNotificationType::GameLoaded) {
 		_console->GetControlManager()->RegisterInputProvider(this);
-		_console->GetControlManager()->SetPollCounter(_lastPollCounter + 1);
+		_console->GetControlManager()->SetPollCounter(_lastPollCounter);
 	}
 }
 
@@ -140,7 +143,14 @@ bool MesenMovie::Play(VirtualFile &file)
 	}*/
 
 	_originalCheats = _console->GetCheatManager()->GetCheats();
-	_console->PowerCycle();
+
+	controlManager->UpdateControlDevices();
+	if(!_forTest) {
+		_console->PowerCycle();
+	} else {
+		controlManager->RegisterInputProvider(this);
+	}
+
 	LoadCheats();	
 
 	stringstream saveStateData;
@@ -239,7 +249,9 @@ void MesenMovie::ApplySettings()
 	inputConfig.Controllers[4].Type = FromString(LoadString(_settings, MovieKeys::Controller5), ControllerTypeNames, ControllerType::None);
 
 	emuConfig.Region = FromString(LoadString(_settings, MovieKeys::Region), ConsoleRegionNames, ConsoleRegion::Ntsc);
-	emuConfig.RamPowerOnState = FromString(LoadString(_settings, MovieKeys::RamPowerOnState), RamStateNames, RamState::AllOnes);
+	if(!_forTest) {
+		emuConfig.RamPowerOnState = FromString(LoadString(_settings, MovieKeys::RamPowerOnState), RamStateNames, RamState::AllOnes);
+	}
 	emuConfig.PpuExtraScanlinesAfterNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesAfterNmi);
 	emuConfig.PpuExtraScanlinesBeforeNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesBeforeNmi);
 

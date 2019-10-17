@@ -151,7 +151,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 
 		//Stop any movie that might have been playing/recording if a state is loaded
 		//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
-		MovieManager::Stop();
+		_console->GetMovieManager()->Stop();
 
 		_console->Deserialize(stream, fileFormatVersion);
 

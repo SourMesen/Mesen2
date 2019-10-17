@@ -266,7 +266,7 @@ struct EmulationConfig
 
 	uint32_t PpuExtraScanlinesBeforeNmi = 0;
 	uint32_t PpuExtraScanlinesAfterNmi = 0;
-	uint32_t GsuClockSpeed = 0;
+	uint32_t GsuClockSpeed = 100;
 
 	RamState RamPowerOnState = RamState::Random;
 };

@@ -4,6 +4,7 @@ using Mesen.GUI.Debugger;
 using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms.Config;
+using Mesen.GUI.Interop;
 using Mesen.GUI.Updates;
 using Mesen.GUI.Utilities;
 using System;
@@ -54,6 +55,10 @@ namespace Mesen.GUI.Forms
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
+			
+#if HIDETESTMENU
+			mnuTests.Visible = false;
+#endif
 
 			EmuApi.InitDll();
 			bool showUpgradeMessage = UpdateHelper.PerformUpgrade();
@@ -211,6 +216,17 @@ namespace Mesen.GUI.Forms
 					mnuMain.Focus();
 				}
 			}
+
+#if !HIDETESTMENU
+			if(keyData == Keys.Pause && EmuRunner.IsRunning()) {
+				if(TestApi.RomTestRecording()) {
+					TestApi.RomTestStop();
+				} else {
+					TestApi.RomTestRecord(ConfigManager.TestFolder + "\\" + EmuApi.GetRomInfo().GetRomName() + ".mtp", true);
+				}
+			}
+#endif
+
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
@@ -310,6 +326,11 @@ namespace Mesen.GUI.Forms
 			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer); };
 			mnuScriptWindow.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.ScriptWindow); };
 			mnuRegisterViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.RegisterViewer); };
+
+			mnuTestRun.Click += (s, e) => { RomTestHelper.RunTest(); };
+			mnuTestRecord.Click += (s, e) => { RomTestHelper.RecordTest(); };
+			mnuTestStop.Click += (s, e) => { RomTestHelper.StopRecording(); };
+			mnuRunAllTests.Click += (s, e) => { RomTestHelper.RunAllTests(); };
 
 			UpdateDebuggerMenu();
 		}
