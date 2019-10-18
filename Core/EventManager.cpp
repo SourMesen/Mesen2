@@ -168,7 +168,16 @@ uint32_t EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 
 	_overscanMode = _ppu->GetState().OverscanMode;
 	_useHighResOutput = _ppu->IsHighResOutput();
-	memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), (_useHighResOutput ? (512 * 478) : (256*239)) * sizeof(uint16_t));
+
+	if(scanline >= _ppu->GetNmiScanline() || scanline == 0) {
+		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), (_useHighResOutput ? (512 * 478) : (256*239)) * sizeof(uint16_t));
+	} else {
+		uint16_t adjustedScanline = scanline + (_overscanMode ? 0 : 7);
+		uint32_t size = _useHighResOutput ? (512 * 478) : (256 * 239);
+		uint32_t offset = _useHighResOutput ? (512 * adjustedScanline * 2) : (256 * adjustedScanline);
+		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), offset * sizeof(uint16_t));
+		memcpy(_ppuBuffer+offset, _ppu->GetPreviousScreenBuffer()+offset, (size - offset) * sizeof(uint16_t));
+	}
 
 	_snapshot = _debugEvents;
 	_snapshotScanline = _ppu->GetRealScanline();

@@ -228,6 +228,7 @@ public:
 
 	bool IsHighResOutput();
 	uint16_t* GetScreenBuffer();
+	uint16_t* GetPreviousScreenBuffer();
 	uint8_t* GetVideoRam();
 	uint8_t* GetCgRam();
 	uint8_t* GetSpriteRam();

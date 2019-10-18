@@ -391,6 +391,7 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			RenderScanline();
 
 			if(_scanline == 0) {
+				_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 				_mosaicScanlineCounter = _state.MosaicEnabled ? _state.MosaicSize + 1 : 0;
 				if(!_skipRender) {
 					//If we're not skipping this frame, reset the high resolution flag
@@ -1525,7 +1526,6 @@ void Ppu::SendFrame()
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
-		_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 	}
 	_frameSkipTimer.Reset();
 #endif
@@ -1540,6 +1540,11 @@ bool Ppu::IsHighResOutput()
 uint16_t* Ppu::GetScreenBuffer()
 {
 	return _currentBuffer;
+}
+
+uint16_t* Ppu::GetPreviousScreenBuffer()
+{
+	return _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 }
 
 uint8_t* Ppu::GetVideoRam()
