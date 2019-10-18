@@ -16,6 +16,14 @@ namespace Mesen.GUI.Config
 		[MinMax(0, 4)] public UInt32 ControllerDeadzoneSize = 2;
 		[MinMax(0, 3)] public UInt32 MouseSensitivity = 1;
 
+		public InputDisplayPosition DisplayInputPosition = InputDisplayPosition.BottomRight;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort1 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort2 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort3 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort4 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort5 = false;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputHorizontally = true;
+
 		public InputConfig()
 		{
 		}
@@ -125,5 +133,13 @@ namespace Mesen.GUI.Config
 		SnesMouse = 2,
 		SuperScope = 3,
 		Multitap = 4
+	}
+
+	public enum InputDisplayPosition
+	{
+		TopLeft = 0,
+		TopRight = 1,
+		BottomLeft = 2,
+		BottomRight = 3
 	}
 }

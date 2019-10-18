@@ -413,6 +413,9 @@
     <ClInclude Include="RecordedRomTest.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="InputHud.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -670,6 +673,9 @@
     </ClCompile>
     <ClCompile Include="RecordedRomTest.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHud.cpp">
+      <Filter>SNES\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -74,6 +74,7 @@ public:
 	void SetRawState(ControlDeviceState state);
 	ControlDeviceState GetRawState();
 
+	virtual ControllerType GetControllerType() = 0;
 	virtual uint8_t ReadRam(uint16_t addr) = 0;
 	virtual void WriteRam(uint16_t addr, uint8_t value) = 0;
 	

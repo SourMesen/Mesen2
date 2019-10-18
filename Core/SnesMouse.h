@@ -16,8 +16,6 @@ private:
 protected:
 	bool HasCoordinates() override { return true; }
 
-	enum Buttons { Left = 0, Right };
-
 	void Serialize(Serializer &s) override
 	{
 		BaseControlDevice::Serialize(s);
@@ -40,8 +38,15 @@ protected:
 	}
 
 public:
+	enum Buttons { Left = 0, Right };
+
 	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console, port)
 	{
+	}
+
+	ControllerType GetControllerType() override
+	{
+		return ControllerType::SnesMouse;
 	}
 
 	void WriteRam(uint16_t addr, uint8_t value) override

@@ -86,6 +86,11 @@ public:
 		_internalRegs = console->GetInternalRegisters().get();
 	}
 
+	ControllerType GetControllerType() override
+	{
+		return ControllerType::Multitap;
+	}
+
 	uint8_t ReadRam(uint16_t addr) override
 	{
 		uint8_t selectBit = 0x80 >> ((_port == 0) ? 1 : 0);

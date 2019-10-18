@@ -8,7 +8,7 @@ class BaseVideoFilter;
 class ScaleFilter;
 //class RotateFilter;
 class IRenderingDevice;
-//class VideoHud;
+class InputHud;
 class Console;
 
 class VideoDecoder
@@ -20,7 +20,7 @@ private:
 	uint32_t _frameNumber = 0;
 
 	unique_ptr<thread> _decodeThread;
-	//unique_ptr<VideoHud> _hud;
+	unique_ptr<InputHud> _inputHud;
 
 	AutoResetEvent _waitForFrame;
 	

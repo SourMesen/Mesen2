@@ -55,6 +55,26 @@
 			this.lblMultitap3 = new System.Windows.Forms.Label();
 			this.lblMultitap2 = new System.Windows.Forms.Label();
 			this.lblMultitap1 = new System.Windows.Forms.Label();
+			this.tpgAdvanced = new System.Windows.Forms.TabPage();
+			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.grpDisplayInput = new System.Windows.Forms.GroupBox();
+			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+			this.chkDisplayPort1 = new System.Windows.Forms.CheckBox();
+			this.chkDisplayPort2 = new System.Windows.Forms.CheckBox();
+			this.chkDisplayPort3 = new System.Windows.Forms.CheckBox();
+			this.chkDisplayPort4 = new System.Windows.Forms.CheckBox();
+			this.chkDisplayInputHorizontally = new System.Windows.Forms.CheckBox();
+			this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblDisplayPosition = new System.Windows.Forms.Label();
+			this.cboDisplayInputPosition = new System.Windows.Forms.ComboBox();
+			this.chkHideMousePointerForZapper = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+			this.lblDeadzone = new System.Windows.Forms.Label();
+			this.trkControllerDeadzoneSize = new System.Windows.Forms.TrackBar();
+			this.lblSmall = new System.Windows.Forms.Label();
+			this.lblLarge = new System.Windows.Forms.Label();
+			this.chkDisplayPort5 = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgControllers.SuspendLayout();
 			this.tlpControllers.SuspendLayout();
@@ -63,6 +83,14 @@
 			((System.ComponentModel.ISupportInitialize)(this.picWarning)).BeginInit();
 			this.grpMultitap.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
+			this.tpgAdvanced.SuspendLayout();
+			this.tableLayoutPanel3.SuspendLayout();
+			this.grpDisplayInput.SuspendLayout();
+			this.tableLayoutPanel4.SuspendLayout();
+			this.flowLayoutPanel2.SuspendLayout();
+			this.flowLayoutPanel3.SuspendLayout();
+			this.tableLayoutPanel5.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trkControllerDeadzoneSize)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -74,6 +102,7 @@
 			// tabMain
 			// 
 			this.tabMain.Controls.Add(this.tpgControllers);
+			this.tabMain.Controls.Add(this.tpgAdvanced);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
@@ -403,6 +432,242 @@
 			this.lblMultitap1.TabIndex = 2;
 			this.lblMultitap1.Text = "Player 2:";
 			// 
+			// tpgAdvanced
+			// 
+			this.tpgAdvanced.Controls.Add(this.tableLayoutPanel3);
+			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
+			this.tpgAdvanced.Name = "tpgAdvanced";
+			this.tpgAdvanced.Size = new System.Drawing.Size(374, 260);
+			this.tpgAdvanced.TabIndex = 4;
+			this.tpgAdvanced.Text = "Advanced";
+			this.tpgAdvanced.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel3
+			// 
+			this.tableLayoutPanel3.ColumnCount = 1;
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel3.Controls.Add(this.grpDisplayInput, 0, 0);
+			this.tableLayoutPanel3.Controls.Add(this.chkHideMousePointerForZapper, 0, 2);
+			this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel5, 0, 1);
+			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+			this.tableLayoutPanel3.RowCount = 4;
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(374, 260);
+			this.tableLayoutPanel3.TabIndex = 1;
+			// 
+			// grpDisplayInput
+			// 
+			this.grpDisplayInput.Controls.Add(this.tableLayoutPanel4);
+			this.grpDisplayInput.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.grpDisplayInput.Location = new System.Drawing.Point(3, 3);
+			this.grpDisplayInput.Name = "grpDisplayInput";
+			this.grpDisplayInput.Size = new System.Drawing.Size(368, 90);
+			this.grpDisplayInput.TabIndex = 0;
+			this.grpDisplayInput.TabStop = false;
+			this.grpDisplayInput.Text = "Display Controller Input";
+			// 
+			// tableLayoutPanel4
+			// 
+			this.tableLayoutPanel4.ColumnCount = 1;
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel2, 0, 0);
+			this.tableLayoutPanel4.Controls.Add(this.chkDisplayInputHorizontally, 0, 2);
+			this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel3, 0, 1);
+			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
+			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+			this.tableLayoutPanel4.RowCount = 4;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(362, 71);
+			this.tableLayoutPanel4.TabIndex = 0;
+			// 
+			// flowLayoutPanel2
+			// 
+			this.flowLayoutPanel2.Controls.Add(this.chkDisplayPort1);
+			this.flowLayoutPanel2.Controls.Add(this.chkDisplayPort2);
+			this.flowLayoutPanel2.Controls.Add(this.chkDisplayPort3);
+			this.flowLayoutPanel2.Controls.Add(this.chkDisplayPort4);
+			this.flowLayoutPanel2.Controls.Add(this.chkDisplayPort5);
+			this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+			this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
+			this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+			this.flowLayoutPanel2.Size = new System.Drawing.Size(362, 24);
+			this.flowLayoutPanel2.TabIndex = 0;
+			// 
+			// chkDisplayPort1
+			// 
+			this.chkDisplayPort1.AutoSize = true;
+			this.chkDisplayPort1.Location = new System.Drawing.Point(3, 3);
+			this.chkDisplayPort1.Name = "chkDisplayPort1";
+			this.chkDisplayPort1.Size = new System.Drawing.Size(54, 17);
+			this.chkDisplayPort1.TabIndex = 0;
+			this.chkDisplayPort1.Text = "Port 1";
+			this.chkDisplayPort1.UseVisualStyleBackColor = true;
+			// 
+			// chkDisplayPort2
+			// 
+			this.chkDisplayPort2.AutoSize = true;
+			this.chkDisplayPort2.Location = new System.Drawing.Point(63, 3);
+			this.chkDisplayPort2.Name = "chkDisplayPort2";
+			this.chkDisplayPort2.Size = new System.Drawing.Size(54, 17);
+			this.chkDisplayPort2.TabIndex = 1;
+			this.chkDisplayPort2.Text = "Port 2";
+			this.chkDisplayPort2.UseVisualStyleBackColor = true;
+			// 
+			// chkDisplayPort3
+			// 
+			this.chkDisplayPort3.AutoSize = true;
+			this.chkDisplayPort3.Location = new System.Drawing.Point(123, 3);
+			this.chkDisplayPort3.Name = "chkDisplayPort3";
+			this.chkDisplayPort3.Size = new System.Drawing.Size(54, 17);
+			this.chkDisplayPort3.TabIndex = 2;
+			this.chkDisplayPort3.Text = "Port 3";
+			this.chkDisplayPort3.UseVisualStyleBackColor = true;
+			// 
+			// chkDisplayPort4
+			// 
+			this.chkDisplayPort4.AutoSize = true;
+			this.chkDisplayPort4.Location = new System.Drawing.Point(183, 3);
+			this.chkDisplayPort4.Name = "chkDisplayPort4";
+			this.chkDisplayPort4.Size = new System.Drawing.Size(54, 17);
+			this.chkDisplayPort4.TabIndex = 3;
+			this.chkDisplayPort4.Text = "Port 4";
+			this.chkDisplayPort4.UseVisualStyleBackColor = true;
+			// 
+			// chkDisplayInputHorizontally
+			// 
+			this.chkDisplayInputHorizontally.AutoSize = true;
+			this.chkDisplayInputHorizontally.Location = new System.Drawing.Point(3, 54);
+			this.chkDisplayInputHorizontally.Name = "chkDisplayInputHorizontally";
+			this.chkDisplayInputHorizontally.Size = new System.Drawing.Size(115, 17);
+			this.chkDisplayInputHorizontally.TabIndex = 1;
+			this.chkDisplayInputHorizontally.Text = "Display horizontally";
+			this.chkDisplayInputHorizontally.UseVisualStyleBackColor = true;
+			// 
+			// flowLayoutPanel3
+			// 
+			this.flowLayoutPanel3.Controls.Add(this.lblDisplayPosition);
+			this.flowLayoutPanel3.Controls.Add(this.cboDisplayInputPosition);
+			this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flowLayoutPanel3.Location = new System.Drawing.Point(0, 24);
+			this.flowLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
+			this.flowLayoutPanel3.Name = "flowLayoutPanel3";
+			this.flowLayoutPanel3.Size = new System.Drawing.Size(362, 27);
+			this.flowLayoutPanel3.TabIndex = 2;
+			// 
+			// lblDisplayPosition
+			// 
+			this.lblDisplayPosition.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblDisplayPosition.AutoSize = true;
+			this.lblDisplayPosition.Location = new System.Drawing.Point(3, 7);
+			this.lblDisplayPosition.Name = "lblDisplayPosition";
+			this.lblDisplayPosition.Size = new System.Drawing.Size(84, 13);
+			this.lblDisplayPosition.TabIndex = 0;
+			this.lblDisplayPosition.Text = "Display Position:";
+			// 
+			// cboDisplayInputPosition
+			// 
+			this.cboDisplayInputPosition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboDisplayInputPosition.FormattingEnabled = true;
+			this.cboDisplayInputPosition.Location = new System.Drawing.Point(93, 3);
+			this.cboDisplayInputPosition.Name = "cboDisplayInputPosition";
+			this.cboDisplayInputPosition.Size = new System.Drawing.Size(121, 21);
+			this.cboDisplayInputPosition.TabIndex = 1;
+			// 
+			// chkHideMousePointerForZapper
+			// 
+			this.chkHideMousePointerForZapper.Checked = false;
+			this.chkHideMousePointerForZapper.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.chkHideMousePointerForZapper.Location = new System.Drawing.Point(0, 151);
+			this.chkHideMousePointerForZapper.Name = "chkHideMousePointerForZapper";
+			this.chkHideMousePointerForZapper.Size = new System.Drawing.Size(374, 23);
+			this.chkHideMousePointerForZapper.TabIndex = 2;
+			this.chkHideMousePointerForZapper.Text = "Hide mouse pointer when using zapper";
+			this.chkHideMousePointerForZapper.Visible = false;
+			// 
+			// tableLayoutPanel5
+			// 
+			this.tableLayoutPanel5.ColumnCount = 4;
+			this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel5.Controls.Add(this.lblDeadzone, 0, 0);
+			this.tableLayoutPanel5.Controls.Add(this.trkControllerDeadzoneSize, 1, 0);
+			this.tableLayoutPanel5.Controls.Add(this.lblSmall, 1, 1);
+			this.tableLayoutPanel5.Controls.Add(this.lblLarge, 2, 1);
+			this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 96);
+			this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+			this.tableLayoutPanel5.RowCount = 2;
+			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel5.Size = new System.Drawing.Size(356, 55);
+			this.tableLayoutPanel5.TabIndex = 3;
+			this.tableLayoutPanel5.Visible = false;
+			// 
+			// lblDeadzone
+			// 
+			this.lblDeadzone.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblDeadzone.AutoSize = true;
+			this.lblDeadzone.Location = new System.Drawing.Point(3, 11);
+			this.lblDeadzone.Name = "lblDeadzone";
+			this.lblDeadzone.Size = new System.Drawing.Size(146, 13);
+			this.lblDeadzone.TabIndex = 0;
+			this.lblDeadzone.Text = "Controller axis deadzone size:";
+			// 
+			// trkControllerDeadzoneSize
+			// 
+			this.trkControllerDeadzoneSize.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this.tableLayoutPanel5.SetColumnSpan(this.trkControllerDeadzoneSize, 2);
+			this.trkControllerDeadzoneSize.LargeChange = 1;
+			this.trkControllerDeadzoneSize.Location = new System.Drawing.Point(155, 3);
+			this.trkControllerDeadzoneSize.Maximum = 4;
+			this.trkControllerDeadzoneSize.MaximumSize = new System.Drawing.Size(106, 29);
+			this.trkControllerDeadzoneSize.MinimumSize = new System.Drawing.Size(106, 29);
+			this.trkControllerDeadzoneSize.Name = "trkControllerDeadzoneSize";
+			this.trkControllerDeadzoneSize.Size = new System.Drawing.Size(106, 29);
+			this.trkControllerDeadzoneSize.TabIndex = 1;
+			// 
+			// lblSmall
+			// 
+			this.lblSmall.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblSmall.AutoSize = true;
+			this.lblSmall.Location = new System.Drawing.Point(155, 38);
+			this.lblSmall.Name = "lblSmall";
+			this.lblSmall.Size = new System.Drawing.Size(32, 13);
+			this.lblSmall.TabIndex = 2;
+			this.lblSmall.Text = "Small";
+			// 
+			// lblLarge
+			// 
+			this.lblLarge.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.lblLarge.AutoSize = true;
+			this.lblLarge.Location = new System.Drawing.Point(227, 38);
+			this.lblLarge.Name = "lblLarge";
+			this.lblLarge.Size = new System.Drawing.Size(34, 13);
+			this.lblLarge.TabIndex = 3;
+			this.lblLarge.Text = "Large";
+			// 
+			// chkDisplayPort5
+			// 
+			this.chkDisplayPort5.AutoSize = true;
+			this.chkDisplayPort5.Location = new System.Drawing.Point(243, 3);
+			this.chkDisplayPort5.Name = "chkDisplayPort5";
+			this.chkDisplayPort5.Size = new System.Drawing.Size(54, 17);
+			this.chkDisplayPort5.TabIndex = 4;
+			this.chkDisplayPort5.Text = "Port 5";
+			this.chkDisplayPort5.UseVisualStyleBackColor = true;
+			// 
 			// frmInputConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -428,6 +693,18 @@
 			this.grpMultitap.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel2.PerformLayout();
+			this.tpgAdvanced.ResumeLayout(false);
+			this.tableLayoutPanel3.ResumeLayout(false);
+			this.grpDisplayInput.ResumeLayout(false);
+			this.tableLayoutPanel4.ResumeLayout(false);
+			this.tableLayoutPanel4.PerformLayout();
+			this.flowLayoutPanel2.ResumeLayout(false);
+			this.flowLayoutPanel2.PerformLayout();
+			this.flowLayoutPanel3.ResumeLayout(false);
+			this.flowLayoutPanel3.PerformLayout();
+			this.tableLayoutPanel5.ResumeLayout(false);
+			this.tableLayoutPanel5.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trkControllerDeadzoneSize)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -462,5 +739,25 @@
 		private System.Windows.Forms.Button btnSetupMultitap4;
 		private System.Windows.Forms.GroupBox grpMultitap;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+		private System.Windows.Forms.TabPage tpgAdvanced;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+		private System.Windows.Forms.GroupBox grpDisplayInput;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+		private System.Windows.Forms.CheckBox chkDisplayPort1;
+		private System.Windows.Forms.CheckBox chkDisplayPort2;
+		private System.Windows.Forms.CheckBox chkDisplayPort3;
+		private System.Windows.Forms.CheckBox chkDisplayPort4;
+		private System.Windows.Forms.CheckBox chkDisplayPort5;
+		private System.Windows.Forms.CheckBox chkDisplayInputHorizontally;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+		private System.Windows.Forms.Label lblDisplayPosition;
+		private System.Windows.Forms.ComboBox cboDisplayInputPosition;
+		private Controls.ctrlRiskyOption chkHideMousePointerForZapper;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+		private System.Windows.Forms.Label lblDeadzone;
+		private System.Windows.Forms.TrackBar trkControllerDeadzoneSize;
+		private System.Windows.Forms.Label lblSmall;
+		private System.Windows.Forms.Label lblLarge;
 	}
 }

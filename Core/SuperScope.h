@@ -98,6 +98,11 @@ public:
 		_ppu = console->GetPpu().get();
 	}
 
+	ControllerType GetControllerType() override
+	{
+		return ControllerType::SuperScope;
+	}
+
 	uint8_t ReadRam(uint16_t addr) override
 	{
 		uint8_t output = 0;

@@ -232,11 +232,23 @@ struct ControllerConfig
 	ControllerType Type = ControllerType::SnesController;
 };
 
+enum class InputDisplayPosition
+{
+	TopLeft = 0,
+	TopRight = 1,
+	BottomLeft = 2,
+	BottomRight = 3
+};
+
 struct InputConfig
 {
 	ControllerConfig Controllers[5];
 	uint32_t ControllerDeadzoneSize = 2;
 	uint32_t MouseSensitivity = 1;
+
+	InputDisplayPosition DisplayInputPosition = InputDisplayPosition::TopLeft;
+	bool DisplayInputPort[5] = { false, false, false, false, false};
+	bool DisplayInputHorizontally = true;
 };
 
 enum class RamState

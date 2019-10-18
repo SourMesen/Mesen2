@@ -73,6 +73,11 @@ void SnesController::RefreshStateBuffer()
 	_stateBuffer = (uint32_t)ToByte();
 }
 
+ControllerType SnesController::GetControllerType()
+{
+	return ControllerType::SnesController;
+}
+
 uint8_t SnesController::ReadRam(uint16_t addr)
 {
 	uint8_t output = 0;

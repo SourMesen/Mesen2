@@ -23,6 +23,11 @@ public:
 	{
 	}
 
+	ControllerType GetControllerType() override
+	{
+		return ControllerType::None;
+	}
+
 	uint8_t ReadRam(uint16_t addr) override
 	{
 		return 0;

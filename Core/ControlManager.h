@@ -10,7 +10,7 @@ class IInputRecorder;
 class IInputProvider;
 class Console;
 class SystemActionManager;
-struct ControlDeviceState;
+struct ControllerData;
 enum class ControllerType;
 enum class ExpansionPortDevice;
 
@@ -49,7 +49,7 @@ public:
 	void RegisterInputRecorder(IInputRecorder* recorder);
 	void UnregisterInputRecorder(IInputRecorder* recorder);
 
-	vector<ControlDeviceState> GetPortStates();
+	vector<ControllerData> GetPortStates();
 
 	shared_ptr<SystemActionManager> GetSystemActionManager();
 	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);

@@ -64,6 +64,7 @@
     <ClInclude Include="GsuRamHandler.h" />
     <ClInclude Include="GsuRomHandler.h" />
     <ClInclude Include="GsuTypes.h" />
+    <ClInclude Include="InputHud.h" />
     <ClInclude Include="InternalRegisterTypes.h" />
     <ClInclude Include="MemoryMappings.h" />
     <ClInclude Include="BaseRenderer.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="Gsu.Instructions.cpp" />
     <ClCompile Include="GsuDebugger.cpp" />
     <ClCompile Include="GsuDisUtils.cpp" />
+    <ClCompile Include="InputHud.cpp" />
     <ClCompile Include="InternalRegisters.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="LabelManager.cpp" />

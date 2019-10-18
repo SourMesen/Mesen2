@@ -12,6 +12,7 @@
 #include "ScaleFilter.h"
 #include "Ppu.h"
 #include "DebugHud.h"
+#include "InputHud.h"
 
 VideoDecoder::VideoDecoder(shared_ptr<Console> console)
 {
@@ -22,6 +23,7 @@ VideoDecoder::VideoDecoder(shared_ptr<Console> console)
 	_lastFrameInfo = _baseFrameInfo;
 	UpdateVideoFilter();
 	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
+	_inputHud.reset(new InputHud(console.get()));
 }
 
 VideoDecoder::~VideoDecoder()
@@ -98,6 +100,8 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
+	
+	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
 	_console->GetDebugHud()->Draw(outputBuffer, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
 
 	/*

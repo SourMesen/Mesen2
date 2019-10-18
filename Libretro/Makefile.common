@@ -56,6 +56,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/Gsu.Instructions.cpp \
                $(CORE_DIR)/GsuDisUtils.cpp \
                $(CORE_DIR)/GsuDebugger.cpp \
+               $(CORE_DIR)/InputHud.cpp \
                $(CORE_DIR)/InternalRegisters.cpp \
                $(CORE_DIR)/KeyManager.cpp \
                $(CORE_DIR)/LabelManager.cpp \

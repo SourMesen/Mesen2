@@ -39,6 +39,14 @@ namespace Mesen.GUI.Forms.Config
 			cboMultitap3.SetEnumValue(ControllerType.SnesController);
 			cboMultitap4.SetEnumValue(ControllerType.SnesController);
 
+			AddBinding(nameof(InputConfig.DisplayInputPort1), chkDisplayPort1);
+			AddBinding(nameof(InputConfig.DisplayInputPort2), chkDisplayPort2);
+			AddBinding(nameof(InputConfig.DisplayInputPort3), chkDisplayPort3);
+			AddBinding(nameof(InputConfig.DisplayInputPort4), chkDisplayPort4);
+			AddBinding(nameof(InputConfig.DisplayInputPort5), chkDisplayPort5);
+			AddBinding(nameof(InputConfig.DisplayInputPosition), cboDisplayInputPosition);
+			AddBinding(nameof(InputConfig.DisplayInputHorizontally), chkDisplayInputHorizontally);
+
 			UpdateUiSections();
 		}
 

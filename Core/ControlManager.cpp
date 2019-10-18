@@ -54,17 +54,17 @@ void ControlManager::UnregisterInputRecorder(IInputRecorder* provider)
 	vec.erase(std::remove(vec.begin(), vec.end(), provider), vec.end());
 }
 
-vector<ControlDeviceState> ControlManager::GetPortStates()
+vector<ControllerData> ControlManager::GetPortStates()
 {
 	auto lock = _deviceLock.AcquireSafe();
 
-	vector<ControlDeviceState> states;
-	for(int i = 0; i < 4; i++) {
+	vector<ControllerData> states;
+	for(int i = 0; i < 2; i++) {
 		shared_ptr<BaseControlDevice> device = GetControlDevice(i);
 		if(device) {
-			states.push_back(device->GetRawState());
+			states.push_back({ device->GetControllerType(), device->GetRawState() });
 		} else {
-			states.push_back(ControlDeviceState());
+			states.push_back({ ControllerType::None, ControlDeviceState()});
 		}
 	}
 	return states;
