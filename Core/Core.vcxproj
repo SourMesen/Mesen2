@@ -235,6 +235,7 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="MovieManager.cpp" />
     <ClCompile Include="MovieRecorder.cpp" />
+    <ClCompile Include="Multitap.cpp" />
     <ClCompile Include="NecDsp.cpp" />
     <ClCompile Include="NecDspDisUtils.cpp" />
     <ClCompile Include="NotificationManager.cpp" />

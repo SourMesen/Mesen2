@@ -677,6 +677,9 @@
     <ClCompile Include="InputHud.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Multitap.cpp">
+      <Filter>SNES\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
