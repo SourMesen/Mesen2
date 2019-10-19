@@ -285,3 +285,15 @@ bool EmuSettings::IsInputEnabled()
 {
 	return !CheckFlag(EmulationFlags::InBackground) || _preferences.AllowBackgroundInput;
 }
+
+double EmuSettings::GetControllerDeadzoneRatio()
+{
+	switch(_input.ControllerDeadzoneSize) {
+		case 0: return 0.5;
+		case 1: return 0.75;
+		case 2: return 1;
+		case 3: return 1.25;
+		case 4: return 1.5;
+	}
+	return 1;
+}

@@ -46,6 +46,7 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(InputConfig.DisplayInputPort5), chkDisplayPort5);
 			AddBinding(nameof(InputConfig.DisplayInputPosition), cboDisplayInputPosition);
 			AddBinding(nameof(InputConfig.DisplayInputHorizontally), chkDisplayInputHorizontally);
+			AddBinding(nameof(InputConfig.ControllerDeadzoneSize), trkControllerDeadzoneSize);
 
 			UpdateUiSections();
 		}

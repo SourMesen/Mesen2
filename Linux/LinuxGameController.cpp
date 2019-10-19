@@ -122,7 +122,7 @@ void LinuxGameController::Calibrate()
 
 bool LinuxGameController::CheckAxis(unsigned int code, bool forPositive)
 {
-	double deadZoneRatio = 1; //TODO _console->GetSettings()->GetControllerDeadzoneRatio();
+	double deadZoneRatio = _console->GetSettings()->GetControllerDeadzoneRatio();
 	int deadZoneNegative = (_axisDefaultValue[code] - libevdev_get_abs_minimum(_device, code)) * 0.400 * deadZoneRatio;
 	int deadZonePositive = (libevdev_get_abs_maximum(_device, code) - _axisDefaultValue[code]) * 0.400 * deadZoneRatio;
 	

@@ -187,10 +187,9 @@ void ShortcutKeyHandler::CheckMappedKeys()
 
 void ShortcutKeyHandler::ProcessKeys()
 {
-	//TODO
-	/*if(!_console->GetSettings()->IsInputEnabled()) {
+	if(!_console->GetSettings()->IsInputEnabled()) {
 		return;
-	}*/
+	}
 
 	auto lock = _lock.AcquireSafe();
 	KeyManager::RefreshKeyState();

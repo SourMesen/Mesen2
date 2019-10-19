@@ -64,6 +64,7 @@
 			this.chkDisplayPort2 = new System.Windows.Forms.CheckBox();
 			this.chkDisplayPort3 = new System.Windows.Forms.CheckBox();
 			this.chkDisplayPort4 = new System.Windows.Forms.CheckBox();
+			this.chkDisplayPort5 = new System.Windows.Forms.CheckBox();
 			this.chkDisplayInputHorizontally = new System.Windows.Forms.CheckBox();
 			this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblDisplayPosition = new System.Windows.Forms.Label();
@@ -74,7 +75,6 @@
 			this.trkControllerDeadzoneSize = new System.Windows.Forms.TrackBar();
 			this.lblSmall = new System.Windows.Forms.Label();
 			this.lblLarge = new System.Windows.Forms.Label();
-			this.chkDisplayPort5 = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgControllers.SuspendLayout();
 			this.tlpControllers.SuspendLayout();
@@ -543,6 +543,16 @@
 			this.chkDisplayPort4.Text = "Port 4";
 			this.chkDisplayPort4.UseVisualStyleBackColor = true;
 			// 
+			// chkDisplayPort5
+			// 
+			this.chkDisplayPort5.AutoSize = true;
+			this.chkDisplayPort5.Location = new System.Drawing.Point(243, 3);
+			this.chkDisplayPort5.Name = "chkDisplayPort5";
+			this.chkDisplayPort5.Size = new System.Drawing.Size(54, 17);
+			this.chkDisplayPort5.TabIndex = 4;
+			this.chkDisplayPort5.Text = "Port 5";
+			this.chkDisplayPort5.UseVisualStyleBackColor = true;
+			// 
 			// chkDisplayInputHorizontally
 			// 
 			this.chkDisplayInputHorizontally.AutoSize = true;
@@ -613,7 +623,6 @@
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel5.Size = new System.Drawing.Size(356, 55);
 			this.tableLayoutPanel5.TabIndex = 3;
-			this.tableLayoutPanel5.Visible = false;
 			// 
 			// lblDeadzone
 			// 
@@ -657,16 +666,6 @@
 			this.lblLarge.Size = new System.Drawing.Size(34, 13);
 			this.lblLarge.TabIndex = 3;
 			this.lblLarge.Text = "Large";
-			// 
-			// chkDisplayPort5
-			// 
-			this.chkDisplayPort5.AutoSize = true;
-			this.chkDisplayPort5.Location = new System.Drawing.Point(243, 3);
-			this.chkDisplayPort5.Name = "chkDisplayPort5";
-			this.chkDisplayPort5.Size = new System.Drawing.Size(54, 17);
-			this.chkDisplayPort5.TabIndex = 4;
-			this.chkDisplayPort5.Text = "Port 5";
-			this.chkDisplayPort5.UseVisualStyleBackColor = true;
 			// 
 			// frmInputConfig
 			// 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "XInputManager.h"
 #include "../Core/Console.h"
+#include "../Core/EmuSettings.h"
 
 XInputManager::XInputManager(shared_ptr<Console> console)
 {
@@ -56,8 +57,7 @@ bool XInputManager::IsPressed(uint8_t gamepadPort, uint8_t button)
 			WORD xinputButton = 1 << (button - 1);
 			return (_gamePadStates[gamepadPort]->Gamepad.wButtons & xinputButton) != 0;
 		} else {
-			//TODO
-			double ratio = 1; //_console->GetSettings()->GetControllerDeadzoneRatio() * 2;
+			double ratio = _console->GetSettings()->GetControllerDeadzoneRatio() * 2;
 
 			switch(button) {
 				case 17: return gamepad.bLeftTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * ratio);
