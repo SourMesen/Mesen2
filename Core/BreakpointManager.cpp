@@ -5,12 +5,14 @@
 #include "Breakpoint.h"
 #include "DebugUtilities.h"
 #include "ExpressionEvaluator.h"
+#include "EventManager.h"
 
 BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType)
 {
 	_debugger = debugger;
 	_cpuType = cpuType;
 	_hasBreakpoint = false;
+	_eventManager = debugger->GetEventManager().get();
 }
 
 void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
@@ -84,7 +86,12 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 	for(size_t i = 0; i < breakpoints.size(); i++) {
 		if(breakpoints[i].Matches(operationInfo.Address, address)) {
 			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)type][i], state, resultType, operationInfo)) {
-				return breakpoints[i].GetId();
+				if(breakpoints[i].IsMarked()) {
+					_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
+				}
+				if(breakpoints[i].IsEnabled()) {
+					return breakpoints[i].GetId();
+				}
 			}
 		}
 	}

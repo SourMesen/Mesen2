@@ -6,6 +6,7 @@
 
 class ExpressionEvaluator;
 class Debugger;
+class EventManager;
 struct ExpressionData;
 enum class MemoryOperationType;
 
@@ -16,6 +17,7 @@ private:
 
 	Debugger *_debugger;
 	CpuType _cpuType;
+	EventManager *_eventManager;
 	
 	vector<Breakpoint> _breakpoints[BreakpointTypeCount];
 	vector<ExpressionData> _rpnList[BreakpointTypeCount];

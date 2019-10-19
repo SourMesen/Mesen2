@@ -412,7 +412,6 @@ namespace Mesen.GUI.Debugger
 			// 
 			this.chkShowMarkedBreakpoints.AutoSize = true;
 			this.tableLayoutPanel1.SetColumnSpan(this.chkShowMarkedBreakpoints, 2);
-			this.chkShowMarkedBreakpoints.Enabled = false;
 			this.chkShowMarkedBreakpoints.Location = new System.Drawing.Point(3, 118);
 			this.chkShowMarkedBreakpoints.Name = "chkShowMarkedBreakpoints";
 			this.chkShowMarkedBreakpoints.Size = new System.Drawing.Size(121, 17);

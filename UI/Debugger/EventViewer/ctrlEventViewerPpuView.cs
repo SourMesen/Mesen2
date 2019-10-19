@@ -13,6 +13,7 @@ using Mesen.GUI.Forms;
 using Mesen.GUI.Config;
 using System.Drawing.Imaging;
 using Mesen.GUI.Debugger.Labels;
+using System.Collections.ObjectModel;
 
 namespace Mesen.GUI.Debugger
 {
@@ -274,16 +275,16 @@ namespace Mesen.GUI.Debugger
 					break;
 
 				case DebugEventType.Breakpoint:
-					//TODO
-					/*ReadOnlyCollection<Breakpoint> breakpoints = BreakpointManager.Breakpoints;
-					if(debugEvent.BreakpointId >= 0 && debugEvent.BreakpointId < breakpoints.Count) {
-						Breakpoint bp = breakpoints[debugEvent.BreakpointId];
+					ReadOnlyCollection<Breakpoint> breakpoints = BreakpointManager.Breakpoints;
+					if(evt.BreakpointId >= 0 && evt.BreakpointId < breakpoints.Count) {
+						Breakpoint bp = breakpoints[evt.BreakpointId];
+						values["CPU Type"] = ResourceHelper.GetEnumText(bp.CpuType);
 						values["BP Type"] = bp.ToReadableType();
 						values["BP Addresses"] = bp.GetAddressString(true);
 						if(bp.Condition.Length > 0) {
 							values["BP Condition"] = bp.Condition;
 						}
-					}*/
+					}
 					break;
 			}
 

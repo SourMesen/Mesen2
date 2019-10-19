@@ -46,7 +46,7 @@ namespace Mesen.GUI.Config
 		
 		public XmlColor IrqColor = ColorTranslator.FromHtml("#FFADAC");
 		public XmlColor NmiColor = ColorTranslator.FromHtml("#FFADAC");
-		public XmlColor BreakpointColor = ColorTranslator.FromHtml("#FFADAC");
+		public XmlColor BreakpointColor = ColorTranslator.FromHtml("#AFFFAF");
 		public XmlColor PpuRegisterReadColor = ColorTranslator.FromHtml("#007597");
 		public XmlColor PpuRegisterWriteColor = ColorTranslator.FromHtml("#C92929");
 		public XmlColor ApuRegisterReadColor = ColorTranslator.FromHtml("#F9FEAC");
