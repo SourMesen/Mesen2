@@ -4,6 +4,7 @@
 #include "MemoryManager.h"
 #include "SoundMixer.h"
 #include "EmuSettings.h"
+#include "SpcFileData.h"
 #include "SPC_DSP.h"
 #include "../Utilities/Serializer.h"
 
@@ -490,4 +491,37 @@ uint8_t Spc::Pop()
 uint16_t Spc::GetDirectAddress(uint8_t offset)
 {
 	return (CheckFlag(SpcFlags::DirectPage) ? 0x100 : 0) + offset;
+}
+
+void Spc::LoadSpcFile(SpcFileData* data)
+{
+	memcpy(_ram, data->SpcRam, Spc::SpcRamSize);
+
+	_dsp->load(data->DspRegs);
+
+	_state.PC = data->PC;
+	_state.A = data->A;
+	_state.X = data->X;
+	_state.Y = data->Y;
+	_state.PS = data->PS;
+	_state.SP = data->SP;
+
+	Write(0xF1, data->ControlReg);
+	_state.DspReg = data->DspRegSelect;
+
+	_state.CpuRegs[0] = data->CpuRegs[0];
+	_state.CpuRegs[1] = data->CpuRegs[1];
+	_state.CpuRegs[2] = data->CpuRegs[2];
+	_state.CpuRegs[3] = data->CpuRegs[3];
+	
+	_state.RamReg[0] = data->RamRegs[0];
+	_state.RamReg[1] = data->RamRegs[1];
+
+	_state.Timer0.SetTarget(data->TimerTarget[0]);
+	_state.Timer1.SetTarget(data->TimerTarget[1]);
+	_state.Timer2.SetTarget(data->TimerTarget[2]);
+
+	_state.Timer0.SetOutput(data->TimerOutput[0]);
+	_state.Timer1.SetOutput(data->TimerOutput[0]);
+	_state.Timer2.SetOutput(data->TimerOutput[0]);
 }

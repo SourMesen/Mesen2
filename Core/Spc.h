@@ -13,6 +13,7 @@
 
 class Console;
 class MemoryManager;
+class SpcFileData;
 class SPC_DSP;
 struct AddressInfo;
 
@@ -302,6 +303,8 @@ public:
 
 	uint8_t* GetSpcRam();
 	uint8_t* GetSpcRom();
+
+	void LoadSpcFile(SpcFileData* spcData);
 
 	void Serialize(Serializer &s) override;
 

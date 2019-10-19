@@ -49,6 +49,10 @@ Ppu::~Ppu()
 
 void Ppu::PowerOn()
 {
+	//Boot up PPU in deterministic state (for now, need to randomize this)
+	_state = {};
+	_state.ForcedVblank = true;
+
 	_skipRender = false;
 	_regs = _console->GetInternalRegisters().get();
 	_settings = _console->GetSettings().get();
@@ -1514,10 +1518,6 @@ void Ppu::SendFrame()
 
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	if(_skipRender) {
-		return;
-	}
-
 	bool isRewinding = _console->GetRewindManager()->IsRewinding();
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
@@ -1527,7 +1527,10 @@ void Ppu::SendFrame()
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
 	}
-	_frameSkipTimer.Reset();
+
+	if(!_skipRender) {
+		_frameSkipTimer.Reset();
+	}
 #endif
 }
 

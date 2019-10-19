@@ -26,6 +26,7 @@ class RewindManager;
 class BatteryManager;
 class CheatManager;
 class MovieManager;
+class SpcHud;
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -56,6 +57,7 @@ private:
 	shared_ptr<RewindManager> _rewindManager;
 	shared_ptr<CheatManager> _cheatManager;
 	shared_ptr<MovieManager> _movieManager;
+	shared_ptr<SpcHud> _spcHud;
 
 	thread::id _emulationThreadId;
 	

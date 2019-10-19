@@ -31,6 +31,7 @@
 #include "BatteryManager.h"
 #include "CheatManager.h"
 #include "MovieManager.h"
+#include "SpcHud.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
@@ -228,7 +229,7 @@ void Console::Stop(bool sendNotification)
 	_memoryManager.reset();
 	_dmaController.reset();
 
-	_soundMixer->StopAudio();
+	_soundMixer->StopAudio(true);
 
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::EmulationStopped);
@@ -255,6 +256,13 @@ void Console::Reset()
 
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
 	ProcessEvent(EventType::Reset);
+
+	if(_cart->GetSpcData()) {
+		_spc->LoadSpcFile(_cart->GetSpcData());
+		_spcHud.reset(new SpcHud(this, _cart->GetSpcData()));
+	} else {
+		_spcHud.reset();
+	}
 
 	_memoryManager->IncMasterClockStartup();
 
@@ -309,6 +317,13 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_controlManager.reset(new ControlManager(this));
 		_dmaController.reset(new DmaController(_memoryManager.get()));
 		_spc.reset(new Spc(this));
+
+		if(_cart->GetSpcData()) {
+			_spc->LoadSpcFile(_cart->GetSpcData());
+			_spcHud.reset(new SpcHud(this, _cart->GetSpcData()));
+		} else {
+			_spcHud.reset();
+		}
 
 		_cpu.reset(new Cpu(this));
 		_memoryManager->Initialize(this);
@@ -750,6 +765,10 @@ void Console::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool for
 
 void Console::ProcessEvent(EventType type)
 {
+	if(type == EventType::EndFrame && _spcHud) {
+		_spcHud->Draw(_ppu->GetFrameCount());
+	}
+
 	if(_debugger) {
 		_debugger->ProcessEvent(type);
 	}

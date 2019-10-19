@@ -416,6 +416,12 @@
     <ClInclude Include="InputHud.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
+    <ClInclude Include="SpcHud.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="SpcFileData.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -679,6 +685,9 @@
     </ClCompile>
     <ClCompile Include="Multitap.cpp">
       <Filter>SNES\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SpcHud.cpp">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

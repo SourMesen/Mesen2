@@ -71,6 +71,7 @@
 			this.chkMoviesOverride = new System.Windows.Forms.CheckBox();
 			this.grpFileAssociations = new System.Windows.Forms.GroupBox();
 			this.tlpFileFormat = new System.Windows.Forms.TableLayoutPanel();
+			this.chkSpcFormat = new System.Windows.Forms.CheckBox();
 			this.chkRomFormat = new System.Windows.Forms.CheckBox();
 			this.chkMssFormat = new System.Windows.Forms.CheckBox();
 			this.chkMsmFormat = new System.Windows.Forms.CheckBox();
@@ -84,6 +85,7 @@
 			this.lblDataLocation = new System.Windows.Forms.Label();
 			this.tpgAdvanced = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkDisableGameSelectionScreen = new System.Windows.Forms.CheckBox();
 			this.lblAdvancedMisc = new System.Windows.Forms.Label();
 			this.flowLayoutPanel6 = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblRewind = new System.Windows.Forms.Label();
@@ -98,7 +100,6 @@
 			this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
 			this.chkShowFps = new System.Windows.Forms.CheckBox();
 			this.chkShowDebugInfo = new System.Windows.Forms.CheckBox();
-			this.chkDisableGameSelectionScreen = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -686,6 +687,7 @@
 			this.tlpFileFormat.ColumnCount = 2;
 			this.tlpFileFormat.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tlpFileFormat.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tlpFileFormat.Controls.Add(this.chkSpcFormat, 0, 1);
 			this.tlpFileFormat.Controls.Add(this.chkRomFormat, 0, 0);
 			this.tlpFileFormat.Controls.Add(this.chkMssFormat, 1, 0);
 			this.tlpFileFormat.Controls.Add(this.chkMsmFormat, 1, 1);
@@ -700,6 +702,16 @@
 			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tlpFileFormat.Size = new System.Drawing.Size(522, 46);
 			this.tlpFileFormat.TabIndex = 0;
+			// 
+			// chkSpcFormat
+			// 
+			this.chkSpcFormat.AutoSize = true;
+			this.chkSpcFormat.Location = new System.Drawing.Point(3, 26);
+			this.chkSpcFormat.Name = "chkSpcFormat";
+			this.chkSpcFormat.Size = new System.Drawing.Size(143, 17);
+			this.chkSpcFormat.TabIndex = 16;
+			this.chkSpcFormat.Text = ".SPC (Sound/music files)";
+			this.chkSpcFormat.UseVisualStyleBackColor = true;
 			// 
 			// chkRomFormat
 			// 
@@ -889,6 +901,17 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(534, 383);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
+			// chkDisableGameSelectionScreen
+			// 
+			this.chkDisableGameSelectionScreen.AutoSize = true;
+			this.chkDisableGameSelectionScreen.Location = new System.Drawing.Point(13, 89);
+			this.chkDisableGameSelectionScreen.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+			this.chkDisableGameSelectionScreen.Name = "chkDisableGameSelectionScreen";
+			this.chkDisableGameSelectionScreen.Size = new System.Drawing.Size(170, 17);
+			this.chkDisableGameSelectionScreen.TabIndex = 37;
+			this.chkDisableGameSelectionScreen.Text = "Disable game selection screen";
+			this.chkDisableGameSelectionScreen.UseVisualStyleBackColor = true;
+			// 
 			// lblAdvancedMisc
 			// 
 			this.lblAdvancedMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1066,17 +1089,6 @@
 			this.chkShowDebugInfo.Text = "Show debug information";
 			this.chkShowDebugInfo.UseVisualStyleBackColor = true;
 			// 
-			// chkDisableGameSelectionScreen
-			// 
-			this.chkDisableGameSelectionScreen.AutoSize = true;
-			this.chkDisableGameSelectionScreen.Location = new System.Drawing.Point(13, 89);
-			this.chkDisableGameSelectionScreen.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
-			this.chkDisableGameSelectionScreen.Name = "chkDisableGameSelectionScreen";
-			this.chkDisableGameSelectionScreen.Size = new System.Drawing.Size(170, 17);
-			this.chkDisableGameSelectionScreen.TabIndex = 37;
-			this.chkDisableGameSelectionScreen.Text = "Disable game selection screen";
-			this.chkDisableGameSelectionScreen.UseVisualStyleBackColor = true;
-			// 
 			// frmPreferences
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1198,5 +1210,6 @@
 		private System.Windows.Forms.Label lblPauseBackgroundSettings;
 		private System.Windows.Forms.CheckBox chkPauseOnMovieEnd;
 		private System.Windows.Forms.CheckBox chkDisableGameSelectionScreen;
+		private System.Windows.Forms.CheckBox chkSpcFormat;
 	}
 }

@@ -66,6 +66,9 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 		masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 	}
 
+	_leftSample = samples[0];
+	_rightSample = samples[1];
+
 	if(masterVolume < 100) {
 		//Apply volume if not using the default value
 		for(uint32_t i = 0; i < sampleCount * 2; i++) {
@@ -139,4 +142,10 @@ void SoundMixer::StopRecording()
 bool SoundMixer::IsRecording()
 {
 	return _waveRecorder.get() != nullptr;
+}
+
+void SoundMixer::GetLastSamples(int16_t &left, int16_t &right)
+{
+	left = _leftSample;
+	right = _rightSample;
 }

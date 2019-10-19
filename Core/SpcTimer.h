@@ -85,6 +85,12 @@ public:
 		return value;
 	}
 
+	void SetOutput(uint8_t value)
+	{
+		//Used when loading SPC files
+		_output = value;
+	}
+
 	void Serialize(Serializer &s)
 	{
 		s.Stream(_stage0, _stage1, _stage2, _output, _target, _enabled, _timersEnabled, _prevStage1);

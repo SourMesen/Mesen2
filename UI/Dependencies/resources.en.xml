@@ -345,6 +345,7 @@
 			<Control ID="tpgFiles">Folders/Files</Control>
 			<Control ID="grpFileAssociations">File Associations</Control>
 			<Control ID="chkRomFormat">.SFC, .SMC, .SWC, .FIG (Roms)</Control>
+			<Control ID="chkSpcFormat">.SPC (Sound/music files)</Control>
 			<Control ID="chkMsmFormat">.MMO (Movie)</Control>
 			<Control ID="chkMssFormat">.MST (Save State)</Control>
 

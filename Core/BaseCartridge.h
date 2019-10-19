@@ -13,6 +13,7 @@ class Sa1;
 class Gsu;
 class Cx4;
 class Console;
+class SpcFileData;
 
 class BaseCartridge : public ISerializable
 {
@@ -41,6 +42,8 @@ private:
 	uint32_t _prgRomSize = 0;
 	uint32_t _saveRamSize = 0;
 	uint32_t _coprocessorRamSize = 0;
+	
+	shared_ptr<SpcFileData> _spcData;
 
 	void LoadBattery();
 
@@ -52,6 +55,9 @@ private:
 	CoprocessorType GetDspVersion();
 
 	bool MapSpecificCarts(MemoryMappings &mm);
+	
+	void LoadRom();
+	void LoadSpc();
 	void InitCoprocessor();
 
 	string GetCartName();
@@ -62,7 +68,6 @@ public:
 
 	static shared_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile, VirtualFile &patchFile);
 
-	void Init();
 	void Reset();
 
 	void SaveBattery();
@@ -91,6 +96,8 @@ public:
 
 	vector<unique_ptr<IMemoryHandler>>& GetPrgRomHandlers();
 	vector<unique_ptr<IMemoryHandler>>& GetSaveRamHandlers();
+
+	SpcFileData* GetSpcData();
 
 	void Serialize(Serializer &s) override;
 };

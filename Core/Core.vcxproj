@@ -171,6 +171,8 @@
     <ClInclude Include="Spc.h" />
     <ClInclude Include="SpcDebugger.h" />
     <ClInclude Include="SpcDisUtils.h" />
+    <ClInclude Include="SpcHud.h" />
+    <ClInclude Include="SpcFileData.h" />
     <ClInclude Include="SpcTimer.h" />
     <ClInclude Include="SpcTypes.h" />
     <ClInclude Include="SPC_DSP.h" />
@@ -265,6 +267,7 @@
     <ClCompile Include="Spc.Instructions.cpp" />
     <ClCompile Include="SpcDebugger.cpp" />
     <ClCompile Include="SpcDisUtils.cpp" />
+    <ClCompile Include="SpcHud.cpp" />
     <ClCompile Include="SPC_DSP.cpp" />
     <ClCompile Include="SPC_Filter.cpp" />
     <ClCompile Include="stdafx.cpp">

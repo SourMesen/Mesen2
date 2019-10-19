@@ -73,12 +73,13 @@ namespace Mesen.GUI.Config
 			}
 
 			List<string> mimeTypes = new List<string>();
-			CreateMimeType("x-mesen-nes", "sfc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen-nes", "smc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen-nes", "swc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen-nes", "fig", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateMssFiles);
-			CreateMimeType("x-mesen-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMsmFiles);
+			CreateMimeType("x-mesen_s-sfc", "sfc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
+			CreateMimeType("x-mesen_s-smc", "smc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
+			CreateMimeType("x-mesen_s-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
+			CreateMimeType("x-mesen_s-fig", "fig", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
+			CreateMimeType("x-mesen_s-spc", "spc", "SPC Sound File", mimeTypes, cfg.AssociateSpcFiles);
+			CreateMimeType("x-mesen_s-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateMssFiles);
+			CreateMimeType("x-mesen_s-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMsmFiles);
 
 			//Icon used for shortcuts
 			//TOOD

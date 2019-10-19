@@ -97,6 +97,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/Spc.Instructions.cpp \
                $(CORE_DIR)/SpcDebugger.cpp \
                $(CORE_DIR)/SpcDisUtils.cpp \
+               $(CORE_DIR)/SpcHud.cpp \
                $(CORE_DIR)/SPC_DSP.cpp \
                $(CORE_DIR)/SPC_Filter.cpp \
                $(CORE_DIR)/stdafx.cpp \

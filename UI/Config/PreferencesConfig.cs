@@ -24,6 +24,7 @@ namespace Mesen.GUI.Config
 		public bool PauseOnMovieEnd = true;
 
 		public bool AssociateRomFiles = false;
+		public bool AssociateSpcFiles = false;
 		public bool AssociateMsmFiles = false;
 		public bool AssociateMssFiles = false;
 
@@ -136,6 +137,7 @@ namespace Mesen.GUI.Config
 				FileAssociationHelper.UpdateFileAssociation("fig", this.AssociateRomFiles);
 				FileAssociationHelper.UpdateFileAssociation("msm", this.AssociateMsmFiles);
 				FileAssociationHelper.UpdateFileAssociation("mss", this.AssociateMssFiles);
+				FileAssociationHelper.UpdateFileAssociation("spc", this.AssociateSpcFiles);
 			}
 
 			frmMain.Instance.TopMost = AlwaysOnTop;

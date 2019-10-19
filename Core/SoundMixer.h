@@ -17,6 +17,9 @@ private:
 	shared_ptr<WaveRecorder> _waveRecorder;
 	int16_t *_sampleBuffer = nullptr;
 
+	int16_t _leftSample = 0;
+	int16_t _rightSample = 0;
+
 	void ProcessEqualizer(int16_t *samples, uint32_t sampleCount);
 
 public:
@@ -33,4 +36,5 @@ public:
 	void StartRecording(string filepath);
 	void StopRecording();
 	bool IsRecording();
+	void GetLastSamples(int16_t &left, int16_t &right);
 };

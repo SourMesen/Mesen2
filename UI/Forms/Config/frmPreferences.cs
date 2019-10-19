@@ -42,6 +42,7 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(PreferencesConfig.AssociateRomFiles), chkRomFormat);
 			AddBinding(nameof(PreferencesConfig.AssociateMsmFiles), chkMsmFormat);
 			AddBinding(nameof(PreferencesConfig.AssociateMssFiles), chkMssFormat);
+			AddBinding(nameof(PreferencesConfig.AssociateSpcFiles), chkSpcFormat);
 
 			AddBinding(nameof(PreferencesConfig.AlwaysOnTop), chkAlwaysOnTop);
 			AddBinding(nameof(PreferencesConfig.AutoHideMenu), chkAutoHideMenu);

@@ -15,6 +15,7 @@
 #include "Sdd1.h"
 #include "Cx4.h"
 #include "Obc1.h"
+#include "SpcFileData.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -52,7 +53,12 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 		cart->_prgRomSize = (uint32_t)romData.size();
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
 		memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
-		cart->Init();
+
+		if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data v0.30", 33) == 0) {
+			cart->LoadSpc();
+		} else {
+			cart->LoadRom();
+		}
 
 		return cart;
 	} else {
@@ -115,7 +121,7 @@ int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 	return std::max<int32_t>(0, score);
 }
 
-void BaseCartridge::Init()
+void BaseCartridge::LoadRom()
 {
 	//Find the best potential header among lorom/hirom + headerless/headered combinations
 	vector<uint32_t> baseAddresses = { 0, 0x200, 0x8000, 0x8200, 0x408000, 0x408200 };
@@ -409,6 +415,26 @@ bool BaseCartridge::MapSpecificCarts(MemoryMappings &mm)
 	return false;
 }
 
+void BaseCartridge::LoadSpc()
+{
+	_spcData.reset(new SpcFileData(_prgRom));
+	
+	//Setup a fake LOROM rom that runs STP right away to disable the main CPU
+	_flags = CartFlags::LoRom;
+
+	delete[] _prgRom;
+	_prgRom = new uint8_t[0x8000];
+	_prgRomSize = 0x8000;
+	memset(_prgRom, 0, 0x8000);
+	
+	//Set reset vector to $8000
+	_prgRom[0x7FFC] = 0x00;
+	_prgRom[0x7FFD] = 0x80;
+
+	//STP instruction at $8000
+	_prgRom[0] = 0xDB;
+}
+
 void BaseCartridge::Serialize(Serializer &s)
 {
 	s.StreamArray(_saveRam, _saveRamSize);
@@ -457,6 +483,7 @@ string BaseCartridge::GetCartName()
 void BaseCartridge::DisplayCartInfo()
 {
 	MessageManager::Log("-----------------------------");
+	MessageManager::Log("File: " + VirtualFile(_romPath).GetFileName());
 	MessageManager::Log("Game: " + GetCartName());
 	string gameCode = GetGameCode();
 	if(!gameCode.empty()) {
@@ -559,4 +586,9 @@ vector<unique_ptr<IMemoryHandler>>& BaseCartridge::GetPrgRomHandlers()
 vector<unique_ptr<IMemoryHandler>>& BaseCartridge::GetSaveRamHandlers()
 {
 	return _saveRamHandlers;
+}
+
+SpcFileData* BaseCartridge::GetSpcData()
+{
+	return _spcData.get();
 }
