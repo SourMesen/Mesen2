@@ -21,6 +21,7 @@
 #include <atomic>
 #include <thread>
 #include <deque>
+#include <algorithm>
 
 #include "../Utilities/UTF8Util.h"
 

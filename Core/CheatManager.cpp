@@ -71,7 +71,7 @@ void CheatManager::AddStringCheat(string code)
 
 	if(code.size() == 9 && code[4] == '-') {
 		uint32_t rawValue = 0;
-		for(int i = 0; i < code.size(); i++) {
+		for(int i = 0; i < (int)code.size(); i++) {
 			if(code[i] != '-') {
 				rawValue <<= 4;
 				size_t pos = _convertTable.find_first_of(code[i]);
@@ -98,7 +98,7 @@ void CheatManager::AddStringCheat(string code)
 
 		AddCheat(cheat);
 	} else if(code.size() == 8) {
-		for(int i = 0; i < code.size(); i++) {
+		for(int i = 0; i < (int)code.size(); i++) {
 			if((code[i] < 'A' || code[i] > 'F') && (code[i] < '0' && code[i] > '9')) {
 				//Invalid code
 				return;

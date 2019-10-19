@@ -121,7 +121,7 @@ void InputHud::DrawControllers(OverscanDimensions overscan, int frameNumber)
 			break;
 	}
 
-	for(int i = 0; i < controllerData.size(); i++) {
+	for(int i = 0; i < (int)controllerData.size(); i++) {
 		if(controllerData[i].Type == ControllerType::SnesController) {
 			if(cfg.DisplayInputPort[i]) {
 				DrawController(i, controllerData[i].State, xStart, yStart, frameNumber);

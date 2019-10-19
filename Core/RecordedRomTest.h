@@ -32,7 +32,7 @@ private:
 
 private:
 	void Reset();
-	__declspec(noinline) void ValidateFrame();
+	void ValidateFrame();
 	void SaveFrame();
 	void Save();
 
