@@ -54,8 +54,13 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 		cart->_prgRom = new uint8_t[cart->_prgRomSize];
 		memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
 
-		if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data v0.30", 33) == 0) {
-			cart->LoadSpc();
+		if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data", 27) == 0) {
+			if(cart->_prgRomSize >= 0x10200) {
+				//SPC files must be 0x10200 bytes long at minimum
+				cart->LoadSpc();
+			} else {
+				return nullptr;
+			}
 		} else {
 			cart->LoadRom();
 		}
