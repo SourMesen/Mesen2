@@ -226,6 +226,9 @@
     <Compile Include="Config\Shortcuts\ShortcutKeyInfo.cs" />
     <Compile Include="Config\EmulationConfig.cs" />
     <Compile Include="Config\VideoConfig.cs" />
+    <Compile Include="Controls\ctrlLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ctrlRecentGames.cs">
       <SubType>UserControl</SubType>
     </Compile>
