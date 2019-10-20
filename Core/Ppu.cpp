@@ -106,9 +106,9 @@ uint16_t Ppu::GetCycle()
 	if(hClock <= 1292) {
 		return hClock >> 2;
 	} else if(hClock <= 1310) {
-		return (hClock >> 2) + 1;
+		return (hClock - 2) >> 2;
 	} else {
-		return (hClock >> 2) + 2;
+		return (hClock - 4) >> 2;
 	}
 }
 
