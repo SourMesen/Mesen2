@@ -397,7 +397,9 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			if(_scanline == 0) {
 				_mosaicScanlineCounter = _state.MosaicEnabled ? _state.MosaicSize + 1 : 0;
 				if(!_skipRender) {
-					_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+					if(!_state.ScreenInterlace) {
+						_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+					}
 					
 					//If we're not skipping this frame, reset the high resolution flag
 					_useHighResOutput = false;

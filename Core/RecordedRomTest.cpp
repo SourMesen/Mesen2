@@ -82,9 +82,6 @@ void RecordedRomTest::ValidateFrame()
 	
 	if(_currentCount == 0 && _repetitionCount.empty()) {
 		//End of test
-		if(memcmp(_screenshotHashes.front(), md5Hash, 16) == 0) {
-			_badFrameCount = 0;
-		}
 		_runningTest = false;
 		_signal.Signal();
 	}
