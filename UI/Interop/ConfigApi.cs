@@ -28,6 +28,8 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetEmulationFlag(EmulationFlags flag, bool enabled);
 		[DllImport(DllPath)] public static extern void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 
+		[DllImport(DllPath)] public static extern ControllerType GetControllerType(int player);
+
 		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern IntPtr GetAudioDevicesWrapper();
 		public static List<string> GetAudioDevices()
 		{

@@ -86,8 +86,8 @@ namespace Mesen.GUI.Emulation
 		{
 			get
 			{
-				for(int i = 0; i < 4; i++) {
-					switch(ConfigManager.Config.Input.Controllers[i].Type) {
+				for(int i = 0; i < 2; i++) {
+					switch(ConfigApi.GetControllerType(i)) {
 						case ControllerType.SuperScope:
 							return true;
 					}
@@ -161,8 +161,8 @@ namespace Mesen.GUI.Emulation
 					return false;
 				}*/
 
-				for(int i = 0; i < 4; i++) {
-					switch(ConfigManager.Config.Input.Controllers[i].Type) {
+				for(int i = 0; i < 2; i++) {
+					switch(ConfigApi.GetControllerType(i)) {
 						case ControllerType.SnesMouse:
 							return true;
 					}

@@ -4,6 +4,7 @@ using Mesen.GUI.Debugger;
 using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Emulation;
 using Mesen.GUI.Forms.Config;
+using Mesen.GUI.Forms.NetPlay;
 using Mesen.GUI.Interop;
 using Mesen.GUI.Updates;
 using Mesen.GUI.Utilities;
@@ -65,6 +66,13 @@ namespace Mesen.GUI.Forms
 
 			ConfigManager.Config.Video.ApplyConfig();
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, Handle, ctrlRenderer.Handle, false, false, false);
+
+			if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
+				EmuApi.AddKnownGameFolder(ConfigManager.Config.Preferences.GameFolder);
+			}
+			foreach(RecentItem recentItem in ConfigManager.Config.RecentFiles.Items) {
+				EmuApi.AddKnownGameFolder(recentItem.RomFile.Folder);
+			}
 
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
@@ -152,6 +160,10 @@ namespace Mesen.GUI.Forms
 					CheatCodes.ApplyCheats();
 
 					this.BeginInvoke((Action)(() => {
+						if(!EmuRunner.IsRunning()) {
+							EmuRunner.StartEmulation();
+						}
+
 						UpdateDebuggerMenu();
 						ctrlRecentGames.Visible = false;
 						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
@@ -313,6 +325,15 @@ namespace Mesen.GUI.Forms
 
 			mnuCheats.Click += (s, e) => { frmCheatList.ShowWindow(); };
 
+			mnuOptions.DropDownOpening += (s, e) => {
+				bool isConnected = NetplayApi.IsConnected();
+				mnuRegion.Enabled = !isConnected;
+				mnuInputConfig.Enabled = !isConnected;
+				mnuEmulationConfig.Enabled = !isConnected;
+			};
+			
+			InitNetPlayMenus();
+
 			mnuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger); };
 			mnuSpcDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpcDebugger); };
 			mnuSa1Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Sa1Debugger); };
@@ -333,6 +354,60 @@ namespace Mesen.GUI.Forms
 			mnuRunAllTests.Click += (s, e) => { RomTestHelper.RunAllTests(); };
 
 			UpdateDebuggerMenu();
+		}
+
+		private void InitNetPlayMenus()
+		{
+			mnuConnect.Click += (s, e) => { NetPlayHelper.Connect(); };
+			mnuStartServer.Click += (s, e) => { NetPlayHelper.ToggleServer(); };
+			mnuProfile.Click += (s, e) => { using(frmPlayerProfile frm = new frmPlayerProfile()) { frm.ShowDialog(); } };
+			mnuNetPlayPlayer1.Click += (s, e) => { NetplayApi.NetPlaySelectController(0); };
+			mnuNetPlayPlayer2.Click += (s, e) => { NetplayApi.NetPlaySelectController(1); };
+			mnuNetPlayPlayer3.Click += (s, e) => { NetplayApi.NetPlaySelectController(2); };
+			mnuNetPlayPlayer4.Click += (s, e) => { NetplayApi.NetPlaySelectController(3); };
+			mnuNetPlayPlayer5.Click += (s, e) => { NetplayApi.NetPlaySelectController(4); };
+			mnuNetPlaySpectator.Click += (s, e) => { NetplayApi.NetPlaySelectController(0xFF); };
+
+			mnuNetPlay.DropDownOpening += (s, e) => {
+				bool isClient = NetplayApi.IsConnected();
+				bool isServer = NetplayApi.IsServerRunning();
+				mnuConnect.Text = ResourceHelper.GetMessage(isClient ? "Disconnect" : "ConnectToServer");
+				mnuConnect.Enabled = !isServer;
+				mnuStartServer.Text = ResourceHelper.GetMessage(isServer ? "StopServer" : "StartServer");
+				mnuStartServer.Enabled = !isClient;
+				mnuNetPlaySelectController.Enabled = isClient || isServer;
+			};
+
+			mnuNetPlaySelectController.DropDownOpening += (s, e) => {
+				int availableControllers = NetplayApi.NetPlayGetAvailableControllers();
+				int currentControllerPort = NetplayApi.NetPlayGetControllerPort();
+				mnuNetPlayPlayer1.Enabled = (availableControllers & 0x01) == 0x01;
+				mnuNetPlayPlayer2.Enabled = (availableControllers & 0x02) == 0x02;
+				mnuNetPlayPlayer3.Enabled = (availableControllers & 0x04) == 0x04;
+				mnuNetPlayPlayer4.Enabled = (availableControllers & 0x08) == 0x08;
+				mnuNetPlayPlayer5.Enabled = (availableControllers & 0x10) == 0x10;
+
+				Func<int, string> getControllerName = (int port) => {
+					ControllerType type = ConfigApi.GetControllerType(port);
+					if(type == ControllerType.Multitap) {
+						type = ControllerType.SnesController;
+					}
+					return ResourceHelper.GetEnumText(type);
+				};
+
+				mnuNetPlayPlayer1.Text = ResourceHelper.GetMessage("PlayerNumber", "1") + " (" + getControllerName(0) + ")";
+				mnuNetPlayPlayer2.Text = ResourceHelper.GetMessage("PlayerNumber", "2") + " (" + getControllerName(1) + ")";
+				mnuNetPlayPlayer3.Text = ResourceHelper.GetMessage("PlayerNumber", "3") + " (" + getControllerName(2) + ")";
+				mnuNetPlayPlayer4.Text = ResourceHelper.GetMessage("PlayerNumber", "4") + " (" + getControllerName(3) + ")";
+				mnuNetPlayPlayer5.Text = ResourceHelper.GetMessage("PlayerNumber", "5") + " (" + getControllerName(4) + ")";
+
+				mnuNetPlayPlayer1.Checked = (currentControllerPort == 0);
+				mnuNetPlayPlayer2.Checked = (currentControllerPort == 1);
+				mnuNetPlayPlayer3.Checked = (currentControllerPort == 2);
+				mnuNetPlayPlayer4.Checked = (currentControllerPort == 3);
+				mnuNetPlayPlayer5.Checked = (currentControllerPort == 4);
+				mnuNetPlaySpectator.Checked = (currentControllerPort == 0xFF);
+			};
 		}
 
 		private void UpdateDebuggerMenu()
@@ -357,8 +432,6 @@ namespace Mesen.GUI.Forms
 			mnuPaletteViewer.Enabled = running;
 			mnuEventViewer.Enabled = running;
 			mnuRegisterViewer.Enabled = running;
-
-			mnuCheats.Enabled = running;
 		}
 		
 		private void ResizeRecentGames()
@@ -471,6 +544,8 @@ namespace Mesen.GUI.Forms
 
 		private void mnuFile_DropDownOpening(object sender, EventArgs e)
 		{
+			mnuLoadState.Enabled = !NetplayApi.IsConnected();
+
 			mnuRecentFiles.DropDownItems.Clear();
 			mnuRecentFiles.DropDownItems.AddRange(ConfigManager.Config.RecentFiles.GetMenuItems().ToArray());
 			mnuRecentFiles.Enabled = ConfigManager.Config.RecentFiles.Items.Count > 0;
@@ -551,8 +626,9 @@ namespace Mesen.GUI.Forms
 
 		private void mnuTools_DropDownOpening(object sender, EventArgs e)
 		{
+			bool isClient = NetplayApi.IsConnected();
 			mnuMovies.Enabled = EmuRunner.IsRunning();
-			mnuPlayMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording();
+			mnuPlayMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording() && !isClient;
 			mnuRecordMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording();
 			mnuStopMovie.Enabled = EmuRunner.IsRunning() && (RecordApi.MoviePlaying() || RecordApi.MovieRecording());
 
@@ -563,6 +639,8 @@ namespace Mesen.GUI.Forms
 			mnuVideoRecorder.Enabled = EmuRunner.IsRunning();
 			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
 			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
+
+			mnuCheats.Enabled = EmuRunner.IsRunning() && !isClient;
 		}
 
 		private void mnuAviRecord_Click(object sender, EventArgs e)

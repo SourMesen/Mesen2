@@ -11,6 +11,8 @@
 #include "../Core/KeyManager.h"
 #include "../Core/ShortcutKeyHandler.h"
 #include "../Core/CheatManager.h"
+#include "../Core/GameClient.h"
+#include "../Core/GameServer.h"
 #include "../Utilities/ArchiveReader.h"
 #include "../Utilities/FolderUtilities.h"
 #include "InteropNotificationListeners.h"
@@ -109,8 +111,13 @@ extern "C" {
 		}
 	}
 
-	DllExport bool __stdcall LoadRom(char* filename, char* patchFile) { return _console->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile()); }
-	//DllExport void __stdcall AddKnownGameFolder(char* folder) { FolderUtilities::AddKnownGameFolder(folder); }
+	DllExport bool __stdcall LoadRom(char* filename, char* patchFile)
+	{
+		GameClient::Disconnect();
+		return _console->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile());
+	}
+
+	DllExport void __stdcall AddKnownGameFolder(char* folder) { FolderUtilities::AddKnownGameFolder(folder); }
 
 	DllExport void __stdcall GetRomInfo(InteropRomInfo &info)
 	{
@@ -153,17 +160,22 @@ extern "C" {
 
 	DllExport void __stdcall Stop()
 	{
+		GameClient::Disconnect();
 		_console->Stop(true);
 	}
 
 	DllExport void __stdcall Pause()
 	{
-		_console->Pause();
+		if(!GameClient::Connected()) {
+			_console->Pause();
+		}
 	}
 
 	DllExport void __stdcall Resume()
 	{
-		_console->Resume();
+		if(!GameClient::Connected()) {
+			_console->Resume();
+		}
 	}
 
 	DllExport bool __stdcall IsPaused()
@@ -177,16 +189,23 @@ extern "C" {
 
 	DllExport void __stdcall Reset()
 	{
-		_console->GetControlManager()->GetSystemActionManager()->Reset();
+		if(!GameClient::Connected()) {
+			_console->GetControlManager()->GetSystemActionManager()->Reset();
+		}
 	}
 
 	DllExport void __stdcall PowerCycle()
 	{
-		_console->GetControlManager()->GetSystemActionManager()->PowerCycle();
+		if(!GameClient::Connected()) {
+			_console->GetControlManager()->GetSystemActionManager()->PowerCycle();
+		}
 	}
 
 	DllExport void __stdcall Release()
 	{
+		GameClient::Disconnect();
+		GameServer::StopServer();
+
 		_shortcutKeyHandler.reset();
 		
 		_console->Stop(true);

@@ -36,13 +36,8 @@ using namespace std;
 	#define ioctlsocket ioctl
 #endif
 
-#define BUFFER_SIZE 200000
-
 Socket::Socket()
 {
-	_sendBuffer = new char[BUFFER_SIZE];
-	_bufferPosition = 0;
-
 	#ifdef _WIN32	
 		WSADATA wsaDat;
 		if(WSAStartup(MAKEWORD(2, 2), &wsaDat) != 0) {
@@ -71,9 +66,6 @@ Socket::Socket(uintptr_t socket)
 	} else {
 		SetSocketOptions();
 	}
-
-	_sendBuffer = new char[BUFFER_SIZE];
-	_bufferPosition = 0;
 }
 
 Socket::~Socket()
@@ -91,8 +83,6 @@ Socket::~Socket()
 			WSACleanup();
 		}
 	#endif
-
-	delete[] _sendBuffer;
 }
 
 void Socket::SetSocketOptions()
@@ -254,22 +244,6 @@ int Socket::Send(char *buf, int len, int flags)
 	} while(WouldBlock(nError) && len > 0);
 		
 	return returnVal;
-}
-
-void Socket::BufferedSend(char *buf, int len)
-{
-	if(_bufferPosition+len < BUFFER_SIZE) {
-		memcpy(_sendBuffer+_bufferPosition, buf, len);
-		_bufferPosition += len;
-	} else {
-		std::cout << "prevented buffer overflow";
-	}
-}
-
-void Socket::SendBuffer()
-{
-	Send(_sendBuffer, _bufferPosition, 0);
-	_bufferPosition = 0;
 }
 
 int Socket::Recv(char *buf, int len, int flags)

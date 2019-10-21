@@ -64,5 +64,6 @@ namespace Mesen.GUI
 		EventViewerRefresh = 14,
 		MissingFirmware = 15,
 		BeforeGameUnload = 16,
+		CheatsChanged = 17,
 	}
 }

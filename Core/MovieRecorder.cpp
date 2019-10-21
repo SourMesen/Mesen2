@@ -16,6 +16,7 @@
 #include "MovieTypes.h"
 #include "BatteryManager.h"
 #include "CheatManager.h"
+#include "BaseCartridge.h"
 
 MovieRecorder::MovieRecorder(shared_ptr<Console> console)
 {
@@ -79,7 +80,7 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 
 	VirtualFile romFile = _console->GetRomInfo().RomFile;
 	WriteString(out, MovieKeys::GameFile, romFile.GetFileName());
-	WriteString(out, MovieKeys::Sha1, romFile.GetSha1Hash());
+	WriteString(out, MovieKeys::Sha1, _console->GetCartridge()->GetSha1Hash());
 
 	VirtualFile patchFile = _console->GetRomInfo().PatchFile;
 	if(patchFile.IsValid()) {
@@ -106,6 +107,7 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 
 	WriteInt(out, MovieKeys::ExtraScanlinesBeforeNmi, emuConfig.PpuExtraScanlinesBeforeNmi);
 	WriteInt(out, MovieKeys::ExtraScanlinesAfterNmi, emuConfig.PpuExtraScanlinesAfterNmi);
+	WriteInt(out, MovieKeys::GsuClockSpeed, emuConfig.GsuClockSpeed);
 	
 	switch(emuConfig.RamPowerOnState) {
 		case RamState::AllZeros: WriteString(out, MovieKeys::RamPowerOnState, "AllZeros"); break;

@@ -52,6 +52,11 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/EmuSettings.cpp \
                $(CORE_DIR)/EventManager.cpp \
                $(CORE_DIR)/ExpressionEvaluator.cpp \
+               $(CORE_DIR)/GameClient.cpp \
+               $(CORE_DIR)/GameClientConnection.cpp \
+               $(CORE_DIR)/GameConnection.cpp \
+               $(CORE_DIR)/GameServer.cpp \
+               $(CORE_DIR)/GameServerConnection.cpp \
                $(CORE_DIR)/Gsu.cpp \
                $(CORE_DIR)/Gsu.Instructions.cpp \
                $(CORE_DIR)/GsuDisUtils.cpp \

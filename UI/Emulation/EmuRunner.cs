@@ -36,7 +36,6 @@ namespace Mesen.GUI.Emulation
 			_romPath = romPath;
 			if(EmuApi.LoadRom(romPath, patchPath)) {
 				ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
-				StartEmulation();
 			}
 		}
 
@@ -109,7 +108,7 @@ namespace Mesen.GUI.Emulation
 			}
 		}
 
-		private static void StartEmulation()
+		public static void StartEmulation()
 		{
 			_emuThread = new Thread(() => {
 				EmuApi.Run();

@@ -62,9 +62,8 @@
 			<Control ID="mnuNetPlayPlayer2">Player 2</Control>
 			<Control ID="mnuNetPlayPlayer3">Player 3</Control>
 			<Control ID="mnuNetPlayPlayer4">Player 4</Control>
-			<Control ID="mnuNetPlayPlayer5">Expansion Device</Control>
+			<Control ID="mnuNetPlayPlayer5">Player 5</Control>
 			<Control ID="mnuNetPlaySpectator">Spectator</Control>
-			<Control ID="mnuFindServer">Find Public Server...</Control>
 			<Control ID="mnuProfile">Configure Profile</Control>
 			<Control ID="mnuMovies">Movies</Control>
 			<Control ID="mnuPlayMovie">Play...</Control>
@@ -404,10 +403,7 @@
 		</Form>
 		<Form ID="frmServerConfig" Title="Server Configuration">
 			<Control ID="lblPort">Port:</Control>
-			<Control ID="chkPublicServer">Public server</Control>
 			<Control ID="lblServerName">Server name:</Control>
-			<Control ID="chkSpectator">Allow spectators</Control>
-			<Control ID="lblMaxPlayers">Max. number of players:</Control>
 			<Control ID="lblPassword">Password:</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -416,7 +412,6 @@
 			<Control ID="lblHost">Host:</Control>
 			<Control ID="lblPort">Port:</Control>
 			<Control ID="lblPassword">Password:</Control>
-			<Control ID="chkSpectator">Join as spectator</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>

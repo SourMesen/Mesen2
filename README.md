@@ -19,9 +19,10 @@ Linux: [![Build status](https://ci.appveyor.com/api/projects/status/arkaatgy94f2
 
 The following should be added over time (in no particular order):
 
-* Netplay  
 * Additions/improvements in the debugging tools
-* Support for the SPC7110 chip
+* SPC7110 support
+* MSU-1 support
+* Satellaview/BS-X support
 
 ## Compiling
 

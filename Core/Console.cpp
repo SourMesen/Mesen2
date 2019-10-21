@@ -40,7 +40,7 @@
 
 Console::Console()
 {
-	_settings.reset(new EmuSettings());
+	_settings.reset(new EmuSettings(this));
 
 	_paused = false;
 	_pauseOnNextFrame = false;
@@ -340,14 +340,14 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_ppu->PowerOn();
 		_cpu->PowerOn();
 
-		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
-
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);
 
 		_controlManager->UpdateControlDevices();
 				
 		UpdateRegion();
+
+		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
 
 		_paused = false;
 

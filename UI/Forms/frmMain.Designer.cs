@@ -158,6 +158,19 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
+			this.mnuNetPlay = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuStartServer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuConnect = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuNetPlaySelectController = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuNetPlayPlayer1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuNetPlayPlayer2 = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuNetPlayPlayer3 = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuNetPlayPlayer4 = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuNetPlayPlayer5 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuNetPlaySpectator = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuProfile = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -788,6 +801,7 @@
 			this.mnuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuCheats,
             this.mnuMovies,
+            this.mnuNetPlay,
             this.toolStripMenuItem25,
             this.mnuSoundRecorder,
             this.mnuVideoRecorder,
@@ -826,7 +840,7 @@
 			// 
 			this.mnuPlayMovie.Image = global::Mesen.GUI.Properties.Resources.MediaPlay;
 			this.mnuPlayMovie.Name = "mnuPlayMovie";
-			this.mnuPlayMovie.Size = new System.Drawing.Size(120, 22);
+			this.mnuPlayMovie.Size = new System.Drawing.Size(152, 22);
 			this.mnuPlayMovie.Text = "Play...";
 			this.mnuPlayMovie.Click += new System.EventHandler(this.mnuPlayMovie_Click);
 			// 
@@ -834,7 +848,7 @@
 			// 
 			this.mnuRecordMovie.Image = global::Mesen.GUI.Properties.Resources.Record;
 			this.mnuRecordMovie.Name = "mnuRecordMovie";
-			this.mnuRecordMovie.Size = new System.Drawing.Size(120, 22);
+			this.mnuRecordMovie.Size = new System.Drawing.Size(152, 22);
 			this.mnuRecordMovie.Text = "Record...";
 			this.mnuRecordMovie.Click += new System.EventHandler(this.mnuRecordMovie_Click);
 			// 
@@ -842,7 +856,7 @@
 			// 
 			this.mnuStopMovie.Image = global::Mesen.GUI.Properties.Resources.MediaStop;
 			this.mnuStopMovie.Name = "mnuStopMovie";
-			this.mnuStopMovie.Size = new System.Drawing.Size(120, 22);
+			this.mnuStopMovie.Size = new System.Drawing.Size(152, 22);
 			this.mnuStopMovie.Text = "Stop";
 			this.mnuStopMovie.Click += new System.EventHandler(this.mnuStopMovie_Click);
 			// 
@@ -1163,6 +1177,97 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
+			// mnuNetPlay
+			// 
+			this.mnuNetPlay.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuStartServer,
+            this.mnuConnect,
+            this.mnuNetPlaySelectController,
+            this.toolStripSeparator2,
+            this.mnuProfile});
+			this.mnuNetPlay.Image = global::Mesen.GUI.Properties.Resources.Network;
+			this.mnuNetPlay.Name = "mnuNetPlay";
+			this.mnuNetPlay.Size = new System.Drawing.Size(182, 22);
+			this.mnuNetPlay.Text = "Net Play";
+			// 
+			// mnuStartServer
+			// 
+			this.mnuStartServer.Name = "mnuStartServer";
+			this.mnuStartServer.Size = new System.Drawing.Size(168, 22);
+			this.mnuStartServer.Text = "Start Server";
+			// 
+			// mnuConnect
+			// 
+			this.mnuConnect.Name = "mnuConnect";
+			this.mnuConnect.Size = new System.Drawing.Size(168, 22);
+			this.mnuConnect.Text = "Connect to Server";
+			// 
+			// mnuNetPlaySelectController
+			// 
+			this.mnuNetPlaySelectController.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuNetPlayPlayer1,
+            this.mnuNetPlayPlayer2,
+            this.mnuNetPlayPlayer3,
+            this.mnuNetPlayPlayer4,
+            this.mnuNetPlayPlayer5,
+            this.toolStripSeparator1,
+            this.mnuNetPlaySpectator});
+			this.mnuNetPlaySelectController.Name = "mnuNetPlaySelectController";
+			this.mnuNetPlaySelectController.Size = new System.Drawing.Size(168, 22);
+			this.mnuNetPlaySelectController.Text = "Select Controller";
+			// 
+			// mnuNetPlayPlayer1
+			// 
+			this.mnuNetPlayPlayer1.Name = "mnuNetPlayPlayer1";
+			this.mnuNetPlayPlayer1.Size = new System.Drawing.Size(152, 22);
+			this.mnuNetPlayPlayer1.Text = "Player 1";
+			// 
+			// mnuNetPlayPlayer2
+			// 
+			this.mnuNetPlayPlayer2.Name = "mnuNetPlayPlayer2";
+			this.mnuNetPlayPlayer2.Size = new System.Drawing.Size(152, 22);
+			this.mnuNetPlayPlayer2.Text = "Player 2";
+			// 
+			// mnuNetPlayPlayer3
+			// 
+			this.mnuNetPlayPlayer3.Name = "mnuNetPlayPlayer3";
+			this.mnuNetPlayPlayer3.Size = new System.Drawing.Size(152, 22);
+			this.mnuNetPlayPlayer3.Text = "Player 3";
+			// 
+			// mnuNetPlayPlayer4
+			// 
+			this.mnuNetPlayPlayer4.Name = "mnuNetPlayPlayer4";
+			this.mnuNetPlayPlayer4.Size = new System.Drawing.Size(152, 22);
+			this.mnuNetPlayPlayer4.Text = "Player 4";
+			// 
+			// mnuNetPlayPlayer5
+			// 
+			this.mnuNetPlayPlayer5.Name = "mnuNetPlayPlayer5";
+			this.mnuNetPlayPlayer5.Size = new System.Drawing.Size(152, 22);
+			this.mnuNetPlayPlayer5.Text = "Player 5";
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			// 
+			// mnuNetPlaySpectator
+			// 
+			this.mnuNetPlaySpectator.Name = "mnuNetPlaySpectator";
+			this.mnuNetPlaySpectator.Size = new System.Drawing.Size(152, 22);
+			this.mnuNetPlaySpectator.Text = "Spectator";
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(165, 6);
+			// 
+			// mnuProfile
+			// 
+			this.mnuProfile.Name = "mnuProfile";
+			this.mnuProfile.Size = new System.Drawing.Size(168, 22);
+			this.mnuProfile.Text = "Configure Profile";
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -1319,5 +1424,18 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuTestRecord;
 		private System.Windows.Forms.ToolStripMenuItem mnuTestStop;
 		private System.Windows.Forms.ToolStripMenuItem mnuRunAllTests;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlay;
+		private System.Windows.Forms.ToolStripMenuItem mnuStartServer;
+		private System.Windows.Forms.ToolStripMenuItem mnuConnect;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlaySelectController;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlayPlayer1;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlayPlayer2;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlayPlayer3;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlayPlayer4;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlayPlayer5;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem mnuNetPlaySpectator;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem mnuProfile;
 	}
 }

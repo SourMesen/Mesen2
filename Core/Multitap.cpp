@@ -2,6 +2,7 @@
 #include "Multitap.h"
 #include "InternalRegisters.h"
 #include "Ppu.h"
+#include "SnesController.h"
 
 string Multitap::GetKeyNames()
 {
@@ -39,6 +40,23 @@ void Multitap::InternalSetStateFromInput()
 			}
 		}
 	}
+}
+
+void Multitap::UpdateControllerState(uint8_t controllerNumber, SnesController &controller)
+{
+	int offset = Multitap::ButtonCount * controllerNumber;
+	SetBitValue(Buttons::A + offset, controller.IsPressed(Buttons::A));
+	SetBitValue(Buttons::B + offset, controller.IsPressed(Buttons::B));
+	SetBitValue(Buttons::X + offset, controller.IsPressed(Buttons::X));
+	SetBitValue(Buttons::Y + offset, controller.IsPressed(Buttons::Y));
+	SetBitValue(Buttons::L + offset, controller.IsPressed(Buttons::L));
+	SetBitValue(Buttons::R + offset, controller.IsPressed(Buttons::R));
+	SetBitValue(Buttons::Start + offset, controller.IsPressed(Buttons::Start));
+	SetBitValue(Buttons::Select + offset, controller.IsPressed(Buttons::Select));
+	SetBitValue(Buttons::Up + offset, controller.IsPressed(Buttons::Up));
+	SetBitValue(Buttons::Down + offset, controller.IsPressed(Buttons::Down));
+	SetBitValue(Buttons::Left + offset, controller.IsPressed(Buttons::Left));
+	SetBitValue(Buttons::Right + offset, controller.IsPressed(Buttons::Right));
 }
 
 uint16_t Multitap::ToByte(uint8_t port)
@@ -93,6 +111,13 @@ Multitap::Multitap(Console * console, uint8_t port, KeyMappingSet keyMappings1, 
 ControllerType Multitap::GetControllerType()
 {
 	return ControllerType::Multitap;
+}
+
+void Multitap::SetControllerState(uint8_t controllerNumber, ControlDeviceState state)
+{
+	SnesController controller(_console, 0, KeyMappingSet());
+	controller.SetRawState(state);
+	UpdateControllerState(controllerNumber, controller);
 }
 
 uint8_t Multitap::ReadRam(uint16_t addr)

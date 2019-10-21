@@ -457,6 +457,7 @@
     <ClCompile Include="EmuApiWrapper.cpp" />
     <ClCompile Include="DebugApiWrapper.cpp" />
     <ClCompile Include="InputApiWrapper.cpp" />
+    <ClCompile Include="NetplayApiWrapper.cpp" />
     <ClCompile Include="RecordApiWrapper.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -9,6 +9,7 @@
 #include "NotificationManager.h"
 #include "SaveStateManager.h"
 #include "MovieManager.h"
+#include "GameClient.h"
 
 ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Console> console)
 {
@@ -102,8 +103,8 @@ void ShortcutKeyHandler::ProcessRunSingleFrame()
 void ShortcutKeyHandler::CheckMappedKeys()
 {
 	shared_ptr<EmuSettings> settings = _console->GetSettings();
-	bool isNetplayClient = false; //TODO GameClient::Connected();
-	//bool isMovieActive = MovieManager::Playing() || MovieManager::Recording();
+	bool isNetplayClient = GameClient::Connected();
+	bool isMovieActive = _console->GetMovieManager()->Playing() || _console->GetMovieManager()->Recording();
 	bool isMovieRecording = _console->GetMovieManager()->Recording();
 
 	//Let the UI handle these shortcuts
@@ -140,13 +141,13 @@ void ShortcutKeyHandler::CheckMappedKeys()
 		_console->GetSaveStateManager()->SaveState();
 	}
 
-	if(DetectKeyPress(EmulatorShortcut::LoadState) && !isNetplayClient) {
+	if(DetectKeyPress(EmulatorShortcut::LoadState)) {
 		_console->GetSaveStateManager()->LoadState();
 	}
 
-	/*if(DetectKeyPress(EmulatorShortcut::ToggleCheats) && !isNetplayClient && !isMovieActive) {
+	if(DetectKeyPress(EmulatorShortcut::ToggleCheats) && !isNetplayClient && !isMovieActive) {
 		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, (void*)EmulatorShortcut::ToggleCheats);
-	}*/
+	}
 
 	if(DetectKeyPress(EmulatorShortcut::ToggleAudio)) {
 		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, (void*)EmulatorShortcut::ToggleAudio);

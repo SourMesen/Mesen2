@@ -12,8 +12,6 @@ private:
 	
 	uintptr_t _socket = ~0;
 	bool _connectionError = false;
-	char* _sendBuffer;
-	int _bufferPosition;
 	int32_t _UPnPPort = -1;
 #endif
 

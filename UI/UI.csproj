@@ -225,6 +225,7 @@
     <Compile Include="Config\Shortcuts\KeyCombination.cs" />
     <Compile Include="Config\Shortcuts\ShortcutKeyInfo.cs" />
     <Compile Include="Config\EmulationConfig.cs" />
+    <Compile Include="Config\NetplayConfig.cs" />
     <Compile Include="Config\VideoConfig.cs" />
     <Compile Include="Controls\ctrlLinkLabel.cs">
       <SubType>Component</SubType>
@@ -793,6 +794,24 @@
     <Compile Include="Forms\Config\frmRecordMovie.Designer.cs">
       <DependentUpon>frmRecordMovie.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NetPlay\frmClientConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\frmClientConfig.Designer.cs">
+      <DependentUpon>frmClientConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetPlay\frmPlayerProfile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\frmPlayerProfile.Designer.cs">
+      <DependentUpon>frmPlayerProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetPlay\frmServerConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\frmServerConfig.Designer.cs">
+      <DependentUpon>frmServerConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Tools\CheatDatabase.cs" />
     <Compile Include="Forms\Tools\frmCheat.cs">
       <SubType>Form</SubType>
@@ -837,6 +856,7 @@
       <DependentUpon>frmRecordAvi.cs</DependentUpon>
     </Compile>
     <Compile Include="Interop\DebugState.cs" />
+    <Compile Include="Interop\NetplayApi.cs" />
     <Compile Include="Interop\RecordApi.cs" />
     <Compile Include="Interop\TestApi.cs" />
     <Compile Include="Updates\frmDownloadProgress.cs">
@@ -876,6 +896,7 @@
     <Compile Include="Utilities\InBackgroundHelper.cs" />
     <Compile Include="Utilities\Md5Helper.cs" />
     <Compile Include="Updates\UpdateHelper.cs" />
+    <Compile Include="Utilities\NetPlayHelper.cs" />
     <Compile Include="Utilities\RandomGameHelper.cs" />
     <Compile Include="Utilities\RomTestHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
@@ -1105,6 +1126,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmRecordMovie.resx">
       <DependentUpon>frmRecordMovie.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\frmClientConfig.resx">
+      <DependentUpon>frmClientConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\frmPlayerProfile.resx">
+      <DependentUpon>frmPlayerProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\frmServerConfig.resx">
+      <DependentUpon>frmServerConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Tools\frmCheat.resx">
       <DependentUpon>frmCheat.cs</DependentUpon>

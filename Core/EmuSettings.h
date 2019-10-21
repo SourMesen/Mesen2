@@ -2,9 +2,13 @@
 #include "stdafx.h"
 #include "SettingTypes.h"
 
+class Console;
+
 class EmuSettings
 {
 private:
+	Console* _console;
+
 	VideoConfig _video;
 	AudioConfig _audio;
 	InputConfig _input;
@@ -30,7 +34,7 @@ private:
 	void SetShortcutKey(EmulatorShortcut shortcut, KeyCombination keyCombination, int keySetIndex);
 
 public:
-	EmuSettings();
+	EmuSettings(Console* console);
 
 	uint32_t GetVersion();
 	string GetVersionString();

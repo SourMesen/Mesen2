@@ -422,6 +422,60 @@
     <ClInclude Include="SpcFileData.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="GameClient.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameClientConnection.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameConnection.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameServerConnection.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerInformationMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveStateMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerListMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="HandShakeMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInformationMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="ForceDisconnectMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectControllerMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="MovieDataMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDataMessage.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageType.h">
+      <Filter>Netplay\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientConnectionData.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameServer.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
+    <ClInclude Include="RomFinder.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -689,6 +743,21 @@
     <ClCompile Include="SpcHud.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="GameClient.cpp">
+      <Filter>Netplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameClientConnection.cpp">
+      <Filter>Netplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameConnection.cpp">
+      <Filter>Netplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameServerConnection.cpp">
+      <Filter>Netplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameServer.cpp">
+      <Filter>Netplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -750,6 +819,12 @@
     </Filter>
     <Filter Include="Movies">
       <UniqueIdentifier>{e6a0a09a-5e38-4a63-83bf-095f297b7633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Netplay">
+      <UniqueIdentifier>{d825d20e-0fac-4667-afbc-da08f15df645}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Netplay\Messages">
+      <UniqueIdentifier>{c58f689e-a6af-4b9c-bb77-0be9d2b1142c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

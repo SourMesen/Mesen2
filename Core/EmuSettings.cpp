@@ -3,10 +3,13 @@
 #include "EmuSettings.h"
 #include "KeyManager.h"
 #include "MessageManager.h"
+#include "Console.h"
+#include "NotificationManager.h"
 #include "../Utilities/FolderUtilities.h"
 
-EmuSettings::EmuSettings()
+EmuSettings::EmuSettings(Console* console)
 {
+	_console = console;
 	_flags = 0;
 	_debuggerFlags = 0;
 	_inputConfigVersion = 0;
@@ -62,8 +65,18 @@ AudioConfig EmuSettings::GetAudioConfig()
 
 void EmuSettings::SetInputConfig(InputConfig config)
 {
+	bool controllersChanged = false;
+	for(int i = 0; i < 5; i++) {
+		controllersChanged |= _input.Controllers[i].Type != config.Controllers[i].Type;
+	}
+
 	_input = config;
 	_inputConfigVersion++;
+
+	if(controllersChanged) {
+		//Used by net play
+		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
+	}
 }
 
 InputConfig EmuSettings::GetInputConfig()
@@ -78,8 +91,8 @@ uint32_t EmuSettings::GetInputConfigVersion()
 
 void EmuSettings::SetEmulationConfig(EmulationConfig config)
 {
-	bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0;
-	bool overclockEnabled = config.PpuExtraScanlinesAfterNmi > 0 || config.PpuExtraScanlinesBeforeNmi > 0;
+	bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0 || _emulation.GsuClockSpeed > 100;
+	bool overclockEnabled = config.PpuExtraScanlinesAfterNmi > 0 || config.PpuExtraScanlinesBeforeNmi > 0 || config.GsuClockSpeed > 100;
 	_emulation = config;
 
 	if(prevOverclockEnabled != overclockEnabled) {
@@ -88,6 +101,9 @@ void EmuSettings::SetEmulationConfig(EmulationConfig config)
 		} else {
 			MessageManager::DisplayMessage("Overclock", "OverclockDisabled");
 		}
+
+		//Used by net play
+		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
 	}
 }
 

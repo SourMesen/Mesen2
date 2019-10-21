@@ -40,6 +40,11 @@ extern "C" {
 		_console->GetSettings()->SetShortcutKeys(shortcutList);
 	}
 
+	DllExport ControllerType __stdcall GetControllerType(int player)
+	{
+		return _console->GetSettings()->GetInputConfig().Controllers[player].Type;
+	}
+
 	DllExport const char* __stdcall GetAudioDevices()
 	{
 		_returnString = _soundManager ? _soundManager->GetAvailableDevices() : "";

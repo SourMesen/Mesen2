@@ -2,6 +2,7 @@
 #include "CheatManager.h"
 #include "MessageManager.h"
 #include "Console.h"
+#include "NotificationManager.h"
 #include "../Utilities/HexUtilities.h"
 
 CheatManager::CheatManager(Console* console)
@@ -33,6 +34,8 @@ void CheatManager::SetCheats(vector<CheatCode> codes)
 	} else if(hasCheats) {
 		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
 	}
+
+	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CheatsChanged);
 }
 
 void CheatManager::SetCheats(uint32_t codes[], uint32_t length)
@@ -52,13 +55,18 @@ void CheatManager::ClearCheats(bool showMessage)
 {
 	auto lock = _console->AcquireLock();
 
-	if(showMessage && !_cheats.empty()) {
-		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
-	}
+	bool hadCheats = !_cheats.empty();
 
 	_cheats.clear();
 	_hasCheats = false;
 	memset(_bankHasCheats, 0, sizeof(_bankHasCheats));
+
+	if(showMessage && hadCheats) {
+		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
+
+		//Used by net play
+		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CheatsChanged);
+	}
 }
 
 void CheatManager::AddStringCheat(string code)

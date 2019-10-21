@@ -25,6 +25,7 @@ namespace Mesen.GUI.Config
 		public AviRecordConfig AviRecord;
 		public MovieRecordConfig MovieRecord;
 		public CheatWindowConfig Cheats;
+		public NetplayConfig Netplay;
 		public Point WindowLocation;
 		public Size WindowSize;
 		public bool NeedInputReinit = true;
@@ -42,6 +43,7 @@ namespace Mesen.GUI.Config
 			AviRecord = new AviRecordConfig();
 			MovieRecord = new MovieRecordConfig();
 			Cheats = new CheatWindowConfig();
+			Netplay = new NetplayConfig();
 		}
 
 		~Configuration()

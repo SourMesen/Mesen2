@@ -146,18 +146,14 @@ void ControlManager::UpdateInputState()
 	//string log = "F: " + std::to_string(_console->GetPpu()->GetFrameCount()) + " C:" + std::to_string(_pollCounter) + " ";
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		device->ClearState();
+		device->SetStateFromInput();
 
 		bool inputSet = false;
 		for(size_t i = 0; i < _inputProviders.size(); i++) {
 			IInputProvider* provider = _inputProviders[i];
 			if(provider->SetInput(device.get())) {
-				inputSet = true;
 				break;
 			}
-		}
-
-		if(!inputSet) {
-			device->SetStateFromInput();
 		}
 
 		device->OnAfterSetState();

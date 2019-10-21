@@ -254,6 +254,7 @@ void MesenMovie::ApplySettings()
 	}
 	emuConfig.PpuExtraScanlinesAfterNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesAfterNmi);
 	emuConfig.PpuExtraScanlinesBeforeNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesBeforeNmi);
+	emuConfig.GsuClockSpeed = LoadInt(_settings, MovieKeys::GsuClockSpeed, 100);
 
 	settings->SetEmulationConfig(emuConfig);
 	settings->SetInputConfig(inputConfig);

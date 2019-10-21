@@ -57,4 +57,5 @@ namespace MovieKeys
 	constexpr const char* ExtraScanlinesAfterNmi = "ExtraScanlinesAfterNmi";
 	constexpr const char* RamPowerOnState = "RamPowerOnState";
 	constexpr const char* InputPollScanline = "InputPollScanline";
+	constexpr const char* GsuClockSpeed = "GsuClockSpeed";
 };
