@@ -153,9 +153,9 @@ extern "C" {
 		return _returnString.c_str();
 	}
 
-	DllExport void __stdcall Run()
+	DllExport bool __stdcall IsRunning()
 	{
-		_console->Run();
+		return _console->IsRunning();
 	}
 
 	DllExport void __stdcall Stop()

@@ -160,10 +160,6 @@ namespace Mesen.GUI.Forms
 					CheatCodes.ApplyCheats();
 
 					this.BeginInvoke((Action)(() => {
-						if(!EmuRunner.IsRunning()) {
-							EmuRunner.StartEmulation();
-						}
-
 						UpdateDebuggerMenu();
 						ctrlRecentGames.Visible = false;
 						SaveStateManager.UpdateStateMenu(mnuLoadState, false);

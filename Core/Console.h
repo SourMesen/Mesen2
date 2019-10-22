@@ -35,6 +35,8 @@ enum class ConsoleRegion;
 class Console : public std::enable_shared_from_this<Console>
 {
 private:
+	unique_ptr<thread> _emuThread;
+
 	shared_ptr<Cpu> _cpu;
 	shared_ptr<Ppu> _ppu;
 	shared_ptr<Spc> _spc;

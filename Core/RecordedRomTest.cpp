@@ -203,6 +203,7 @@ int32_t RecordedRomTest::Run(string filename)
 		emuCfg.RamPowerOnState = RamState::AllZeros;
 		_console->GetSettings()->SetEmulationConfig(emuCfg);
 
+		_console->Lock();
 		//Start playing movie
 		if(_console->LoadRom(testRom, VirtualFile(""))) {
 			settings->SetFlag(EmulationFlags::MaximumSpeed);
@@ -211,16 +212,13 @@ int32_t RecordedRomTest::Run(string filename)
 			_ppu = _console->GetPpu().get();
 			
 			_runningTest = true;
-			_runThread = std::thread([=]() {
-				_console->Run();
-			});
+			_console->Unlock();
 			_signal.Wait();
 			_console->Stop(false);
-			//_console->Release();
-			_runThread.join();
 			_runningTest = false;
 		} else {
 			//Something went wrong when loading the rom
+			_console->Unlock();
 			return -2;
 		}
 

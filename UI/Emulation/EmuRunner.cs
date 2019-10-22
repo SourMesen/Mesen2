@@ -13,9 +13,6 @@ namespace Mesen.GUI.Emulation
 {
 	public static class EmuRunner
 	{
-		private static Thread _emuThread = null;
-		private static ResourcePath? _romPath = null;
-
 		public static void LoadRom(ResourcePath romPath, ResourcePath? patchPath = null)
 		{
 			if(!frmSelectRom.SelectRom(ref romPath)) {
@@ -32,8 +29,7 @@ namespace Mesen.GUI.Emulation
 					}
 				}
 			}
-
-			_romPath = romPath;
+			
 			if(EmuApi.LoadRom(romPath, patchPath)) {
 				ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
 			}
@@ -54,7 +50,7 @@ namespace Mesen.GUI.Emulation
 				//There is a single rom in the same folder as the IPS/BPS patch, use it automatically
 				LoadRom(romsInFolder[0], patchFile);
 			} else {
-				if(!IsRunning() || !_romPath.HasValue) {
+				if(!IsRunning()) {
 					//Prompt the user for a rom to load
 					if(MesenMsgBox.Show("SelectRomIps", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
 						using(OpenFileDialog ofd = new OpenFileDialog()) {
@@ -70,7 +66,7 @@ namespace Mesen.GUI.Emulation
 					}
 				} else if(MesenMsgBox.Show("PatchAndReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
 					//Confirm that the user wants to patch the current rom and reset
-					LoadRom(_romPath.Value, patchFile);
+					LoadRom(EmuApi.GetRomInfo().RomPath, patchFile);
 				}
 			}
 		}
@@ -78,7 +74,6 @@ namespace Mesen.GUI.Emulation
 		public static void LoadRecentGame(string recentGameArchivePath)
 		{
 			EmuApi.LoadRecentGame(recentGameArchivePath, false /* TODO , ConfigManager.Config.Preferences.GameSelectionScreenResetGame */);
-			StartEmulation();
 		}
 
 		private static bool IsPatchFile(string filename)
@@ -107,19 +102,10 @@ namespace Mesen.GUI.Emulation
 				}
 			}
 		}
-
-		public static void StartEmulation()
-		{
-			_emuThread = new Thread(() => {
-				EmuApi.Run();
-				_emuThread = null;
-			});
-			_emuThread.Start();
-		}
-
+		
 		public static bool IsRunning()
 		{
-			return _emuThread != null;
+			return EmuApi.IsRunning();
 		}
 	}
 }

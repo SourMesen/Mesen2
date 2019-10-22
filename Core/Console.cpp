@@ -95,6 +95,7 @@ void Console::Run()
 	}
 	
 	auto emulationLock = _emulationLock.AcquireSafe();
+	auto lock = _runLock.AcquireSafe();
 
 	DebugStats stats(this);
 	Timer lastFrameTimer;
@@ -112,7 +113,6 @@ void Console::Run()
 	_memoryManager->IncMasterClockStartup();
 	_controlManager->UpdateInputState();
 
-	auto lock = _runLock.AcquireSafe();
 	while(!_stopFlag) {
 		_cpu->Exec();
 
@@ -201,6 +201,11 @@ void Console::Stop(bool sendNotification)
 	}
 
 	_emulationLock.WaitForRelease();
+
+	if(_emuThread) {
+		_emuThread->join();
+		_emuThread.release();
+	}
 
 	if(_cart && !_settings->GetPreferences().DisableGameSelectionScreen) {
 		RomInfo romInfo = _cart->GetRomInfo();
@@ -300,11 +305,11 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
-		_cheatManager->ClearCheats(false);
-
 		if(stopRom) {
 			Stop(false);
 		}
+
+		_cheatManager->ClearCheats(false);
 		
 		_cart = cart;
 		_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
@@ -354,6 +359,12 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
 		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
 		MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
+
+		if(stopRom) {
+			#ifndef LIBRETRO
+			_emuThread.reset(new thread(&Console::Run, this));
+			#endif
+		}
 
 		return true;
 	}
