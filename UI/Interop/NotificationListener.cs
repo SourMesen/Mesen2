@@ -52,7 +52,6 @@ namespace Mesen.GUI
 		GameReset = 2,
 		GamePaused = 3,
 		GameResumed = 4,
-		GameStopped = 5,
 		CodeBreak = 6,
 		PpuFrameDone = 7,
 		ResolutionChanged = 8,

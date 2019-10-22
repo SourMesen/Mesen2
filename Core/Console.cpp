@@ -194,6 +194,8 @@ void Console::Stop(bool sendNotification)
 {
 	_stopFlag = true;
 
+	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameUnload);
+
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
 		debugger->SuspendDebugger(false);
@@ -211,8 +213,6 @@ void Console::Stop(bool sendNotification)
 		RomInfo romInfo = _cart->GetRomInfo();
 		_saveStateManager->SaveRecentGame(romInfo.RomFile.GetFileName(), romInfo.RomFile, romInfo.PatchFile);
 	}
-
-	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameUnload);
 
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);

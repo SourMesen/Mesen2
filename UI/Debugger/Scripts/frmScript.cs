@@ -143,11 +143,14 @@ namespace Mesen.GUI.Debugger
 
 		private void _notifListener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType == ConsoleNotificationType.GameStopped) {
-				this._scriptId = -1;
-				this.BeginInvoke((Action)(() => {
-					lblScriptActive.Visible = false;
-				}));
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.BeforeGameUnload:
+				case ConsoleNotificationType.GameLoaded:
+					this._scriptId = -1;
+					this.BeginInvoke((Action)(() => {
+						lblScriptActive.Visible = false;
+					}));
+					break;
 			}
 		}
 
