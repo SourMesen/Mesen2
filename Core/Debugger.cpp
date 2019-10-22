@@ -339,35 +339,41 @@ void Debugger::Run()
 void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 {
 	StepRequest step;
-
-	_cpuDebugger->Run();
-	_spcDebugger->Run();
-	if(_sa1Debugger) {
-		_sa1Debugger->Run();
-	}
-	if(_gsuDebugger) {
-		_gsuDebugger->Run();
-	}
+	IDebugger *debugger = nullptr;
 
 	switch(type) {
-		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
-		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
-
-		default:
+		case StepType::PpuStep: step.PpuStepCount = stepCount; _step.reset(new StepRequest(step)); break;
+		case StepType::SpecificScanline: step.BreakScanline = stepCount; _step.reset(new StepRequest(step)); break;
+		default: 
 			switch(cpuType) {
-				case CpuType::Cpu: _cpuDebugger->Step(stepCount, type); break;
-				case CpuType::Spc: _spcDebugger->Step(stepCount, type); break;
-				case CpuType::Sa1: _sa1Debugger->Step(stepCount, type); break;
-				case CpuType::Gsu: _gsuDebugger->Step(stepCount, type); break;
-				
-				case CpuType::NecDsp: 
-				case CpuType::Cx4: 
+				case CpuType::Cpu: debugger = _cpuDebugger.get(); break;
+				case CpuType::Spc: debugger = _spcDebugger.get(); break;
+				case CpuType::Sa1: debugger = _sa1Debugger.get(); break;
+				case CpuType::Gsu: debugger = _gsuDebugger.get(); break;
+				case CpuType::NecDsp:
+				case CpuType::Cx4:
 					throw std::runtime_error("Step(): Unsupported CPU type.");
 			}
+			debugger->Step(stepCount, type); 
 			break;
 	}
 
-	_step.reset(new StepRequest(step));
+	if(!debugger) {
+		_step.reset(new StepRequest(step));
+	}
+	if(debugger != _cpuDebugger.get()) {
+		_cpuDebugger->Run();
+	}
+	if(debugger != _spcDebugger.get()) {
+		_spcDebugger->Run();
+	}
+	if(_sa1Debugger && debugger != _sa1Debugger.get()) {
+		_sa1Debugger->Run();
+	}
+	if(_gsuDebugger && debugger != _gsuDebugger.get()) {
+		_gsuDebugger->Run();
+	}
+
 	_waitForBreakResume = false;
 }
 

@@ -73,6 +73,7 @@
     <ClInclude Include="GsuRomHandler.h" />
     <ClInclude Include="GsuTypes.h" />
     <ClInclude Include="HandShakeMessage.h" />
+    <ClInclude Include="IDebugger.h" />
     <ClInclude Include="InputDataMessage.h" />
     <ClInclude Include="InputHud.h" />
     <ClInclude Include="InternalRegisterTypes.h" />

@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
+#include "IDebugger.h"
 
 class Disassembler;
 class Debugger;
@@ -11,7 +12,7 @@ class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
-class GsuDebugger
+class GsuDebugger : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;

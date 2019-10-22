@@ -476,6 +476,9 @@
     <ClInclude Include="RomFinder.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="IDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
