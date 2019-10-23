@@ -3,10 +3,11 @@
 #include "IMemoryHandler.h"
 #include "Sdd1Types.h"
 #include "Sdd1Decomp.h"
+#include "../Utilities/ISerializable.h"
 
 class BaseCartridge;
 
-class Sdd1Mmc : public IMemoryHandler
+class Sdd1Mmc : public IMemoryHandler, public ISerializable
 {
 private:
 	Sdd1State* _state;
@@ -27,4 +28,6 @@ public:
 	virtual void PeekBlock(uint8_t * output) override;
 	virtual void Write(uint32_t addr, uint8_t value) override;
 	virtual AddressInfo GetAbsoluteAddress(uint32_t address) override;
+
+	void Serialize(Serializer &s) override;
 };

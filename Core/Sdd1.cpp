@@ -101,6 +101,7 @@ void Sdd1::Serialize(Serializer &s)
 	s.StreamArray(_state.DmaAddress, 8);
 	s.StreamArray(_state.DmaLength, 8);
 	s.StreamArray(_state.SelectedBanks, 4);
+	s.Stream(_sdd1Mmc.get());
 }
 
 uint8_t Sdd1::Peek(uint32_t addr)

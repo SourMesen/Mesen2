@@ -82,3 +82,8 @@ AddressInfo Sdd1Mmc::GetAbsoluteAddress(uint32_t address)
 {
 	return GetHandler(address)->GetAbsoluteAddress(address);
 }
+
+void Sdd1Mmc::Serialize(Serializer &s)
+{
+	s.Stream(&_decompressor);
+}

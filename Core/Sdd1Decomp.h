@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "../Utilities/ISerializable.h"
 
 /************************************************************************
 
@@ -33,7 +34,7 @@ understood.
 
 class Sdd1Mmc;
 
-class SDD1_IM
+class SDD1_IM : public ISerializable
 {  //Input Manager
 	Sdd1Mmc* _sdd1Mmc;
 public:
@@ -41,10 +42,11 @@ public:
 	void prepareDecomp(Sdd1Mmc *mmc, uint32_t readAddr);
 	uint8_t getCodeword(const uint8_t code_len);
 
+	void Serialize(Serializer &s) override;
+
 private:
 	uint32_t _readAddr;
 	uint8_t bit_count;
-
 };
 
 ////////////////////////////////////////////////////
@@ -56,7 +58,7 @@ class SDD1_GCD
 public:
 	SDD1_GCD(SDD1_IM *associatedIM);
 	void getRunCount(uint8_t code_num, uint8_t *MPScount, bool *LPSind);
-
+	
 private:
 	SDD1_IM * const IM;
 
@@ -65,13 +67,15 @@ private:
 //////////////////////////////////////////////////////
 
 
-class SDD1_BG
+class SDD1_BG : public ISerializable
 {  // Bits Generator
 
 public:
 	SDD1_BG(SDD1_GCD *associatedGCD, uint8_t code);
 	void prepareDecomp(void);
 	uint8_t getBit(bool *endOfRun);
+	
+	void Serialize(Serializer &s) override;
 
 private:
 	const uint8_t code_num;
@@ -84,7 +88,7 @@ private:
 ////////////////////////////////////////////////
 
 
-class SDD1_PEM
+class SDD1_PEM : public ISerializable
 {  //Probability Estimation Module
 
 public:
@@ -94,6 +98,8 @@ public:
 		SDD1_BG *associatedBG6, SDD1_BG *associatedBG7);
 	void prepareDecomp(void);
 	uint8_t getBit(uint8_t context);
+	
+	void Serialize(Serializer &s) override;
 
 private:
 	struct state
@@ -115,13 +121,15 @@ private:
 ///////////////////////////////////////////////////
 
 
-class SDD1_CM
+class SDD1_CM : public ISerializable
 {  //Context Model
 
 public:
 	SDD1_CM(SDD1_PEM *associatedPEM);
 	void prepareDecomp(uint8_t firstByte);
 	uint8_t getBit(void);
+	
+	void Serialize(Serializer &s) override;
 
 private:
 	uint8_t bitplanesInfo;
@@ -136,13 +144,15 @@ private:
 ///////////////////////////////////////////////////
 
 
-class SDD1_OL
+class SDD1_OL : public ISerializable
 {  //Output Logic
 
 public:
 	SDD1_OL(SDD1_CM *associatedCM);
 	void prepareDecomp(uint8_t firstByte);
 	uint8_t decompressByte();
+	
+	void Serialize(Serializer &s) override;
 
 private:
 	uint8_t bitplanesInfo;
@@ -151,12 +161,14 @@ private:
 
 };
 
-class Sdd1Decomp
+class Sdd1Decomp : public ISerializable
 {
 public:
 	Sdd1Decomp();
 	void Init(Sdd1Mmc *mmc, uint32_t readAddr);
 	uint8_t GetDecompressedByte();
+
+	void Serialize(Serializer &s) override;
 
 private:
 	SDD1_IM IM;

@@ -64,6 +64,11 @@ uint8_t SDD1_IM::getCodeword(uint8_t code_len)
 	return codeword;
 }
 
+void SDD1_IM::Serialize(Serializer &s)
+{
+	s.Stream(_readAddr, bit_count);
+}
+
 SDD1_GCD::SDD1_GCD(SDD1_IM *associatedIM) :
 	IM(associatedIM)
 {
@@ -165,6 +170,11 @@ uint8_t SDD1_BG::getBit(bool *endOfRun)
 
 }
 
+void SDD1_BG::Serialize(Serializer &s)
+{
+	s.Stream(MPScount, LPSind);
+}
+
 /////////////////////////////////////////////////
 
 
@@ -264,6 +274,13 @@ uint8_t SDD1_PEM::getBit(uint8_t context)
 	return bit ^ currentMPS;
 }
 
+void SDD1_PEM::Serialize(Serializer &s)
+{
+	for(int i = 0; i < 32; i++) {
+		s.Stream(contextInfo[i].status, contextInfo[i].MPS);
+	}
+}
+
 //////////////////////////////////////////////////////////////
 
 
@@ -347,6 +364,12 @@ uint8_t SDD1_CM::getBit(void)
 
 }
 
+void SDD1_CM::Serialize(Serializer &s)
+{
+	s.Stream(bitplanesInfo, contextBitsInfo, bit_number, currBitplane);
+	s.StreamArray(prevBitplaneBits, 8);
+}
+
 //////////////////////////////////////////////////
 
 
@@ -412,6 +435,12 @@ uint8_t SDD1_OL::decompressByte()
 	throw std::runtime_error("SDD1_OL::decompressByte: Unexpected value");
 }
 
+void SDD1_OL::Serialize(Serializer &s)
+{
+	s.Stream(bitplanesInfo);
+	s.StreamArray(_regs, 3);
+}
+
 void Sdd1Decomp::Init(Sdd1Mmc *mmc, uint32_t readAddr)
 {
 	uint8_t firstByte = mmc->ReadRom(readAddr);
@@ -432,6 +461,22 @@ void Sdd1Decomp::Init(Sdd1Mmc *mmc, uint32_t readAddr)
 uint8_t Sdd1Decomp::GetDecompressedByte()
 {
 	return OL.decompressByte();
+}
+
+void Sdd1Decomp::Serialize(Serializer &s)
+{
+	s.Stream(&IM);
+	s.Stream(&BG0);
+	s.Stream(&BG1);
+	s.Stream(&BG2);
+	s.Stream(&BG3);
+	s.Stream(&BG4);
+	s.Stream(&BG5);
+	s.Stream(&BG6);
+	s.Stream(&BG7);
+	s.Stream(&PEM);
+	s.Stream(&CM);
+	s.Stream(&OL);
 }
 
 Sdd1Decomp::Sdd1Decomp() :
