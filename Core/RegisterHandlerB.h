@@ -7,11 +7,13 @@ class Console;
 class Ppu;
 class Spc;
 class Sa1;
+class CheatManager;
 
 class RegisterHandlerB : public IMemoryHandler, public ISerializable
 {
 private:
 	Console *_console;
+	CheatManager *_cheatManager;
 	Ppu *_ppu;
 	Spc *_spc;
 	Sa1 *_sa1;

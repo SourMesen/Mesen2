@@ -15,6 +15,18 @@ void CheatManager::AddCheat(CheatCode code)
 	_cheats.push_back(code);
 	_hasCheats = true;
 	_bankHasCheats[code.Address >> 16] = true;
+
+	if(code.Address >= 0x7E0000 && code.Address < 0x7E2000) {
+		//Mirror codes for the first 2kb of workram across all workram mirrors
+		CheatCode mirror;
+		mirror.Value = code.Value;
+		for(int i = 0; i < 0x3F; i++) {
+			mirror.Address = (i << 16) | (code.Address & 0xFFFF);
+			AddCheat(mirror);
+			mirror.Address |= 0x800000;
+			AddCheat(mirror);
+		}
+	}
 }
 
 void CheatManager::SetCheats(vector<CheatCode> codes)
@@ -107,7 +119,7 @@ void CheatManager::AddStringCheat(string code)
 		AddCheat(cheat);
 	} else if(code.size() == 8) {
 		for(int i = 0; i < (int)code.size(); i++) {
-			if((code[i] < 'A' || code[i] > 'F') && (code[i] < '0' && code[i] > '9')) {
+			if((code[i] < 'A' || code[i] > 'F') && (code[i] < '0' || code[i] > '9')) {
 				//Invalid code
 				return;
 			}

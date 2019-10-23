@@ -5,11 +5,13 @@
 #include "Spc.h"
 #include "BaseCartridge.h"
 #include "Sa1.h"
+#include "CheatManager.h"
 #include "../Utilities/Serializer.h"
 
 RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8_t * workRam)
 {
 	_console = console;
+	_cheatManager = console->GetCheatManager().get();
 	_sa1 = console->GetCartridge()->GetSa1();
 	_ppu = ppu;
 	_spc = spc;
@@ -26,6 +28,7 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 	} else if(addr == 0x2180) {
 		uint8_t value = _workRam[_wramPosition];
 		_console->ProcessWorkRamRead(_wramPosition, value);
+		_console->GetCheatManager()->ApplyCheat(0x7E0000 | _wramPosition, value);
 		_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 		return value;
 	} else if(addr >= 0x2300 && addr <= 0x23FF && _console->GetCartridge()->GetSa1()) {
