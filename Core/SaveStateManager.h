@@ -14,7 +14,7 @@ private:
 	string GetStateFilepath(int stateIndex);	
 
 public:
-	static constexpr uint32_t FileFormatVersion = 5;
+	static constexpr uint32_t FileFormatVersion = 6;
 
 	SaveStateManager(shared_ptr<Console> console);
 

@@ -25,32 +25,27 @@ struct ValueInfo
 	T DefaultValue;
 };
 
-template<typename T>
-struct EmptyInfo
+struct BlockData
 {
-	T Empty;
+	vector<uint8_t> Data;
+	uint32_t Position;
 };
 
 class Serializer
 {
 private:
-	uint8_t* _stream = nullptr;
-	uint32_t _position = 0;
-	uint32_t _streamSize = 0;
+	vector<BlockData> _blocks;
+	
+	BlockData _block;
+
 	uint32_t _version = 0;
-
-	bool _inBlock = false;
-	uint8_t* _blockBuffer = nullptr;
-	uint32_t _blockSize = 0;
-	uint32_t _blockPosition = 0;
-
 	bool _saving = false;
 
 private:
 	void EnsureCapacity(uint32_t typeSize);
 
 	template<typename T> void StreamElement(T &value, T defaultValue = T());
-	template<typename T> void InternalStream(EmptyInfo<T> &info);
+	
 	template<typename T> void InternalStream(ArrayInfo<T> &info);
 	template<typename T> void InternalStream(VectorInfo<T> &info);
 	template<typename T> void InternalStream(ValueInfo<T> &info);
@@ -65,7 +60,6 @@ private:
 public:
 	Serializer(uint32_t version);
 	Serializer(istream &file, uint32_t version);
-	~Serializer();
 
 	uint32_t GetVersion() { return _version; }
 	bool IsSaving() { return _saving; }
@@ -74,7 +68,7 @@ public:
 	template<typename T> void StreamArray(T *array, uint32_t size);
 	template<typename T> void StreamVector(vector<T> &list);
 
-	void Save(ostream &file);
+	void Save(ostream &file, int compressionLevel = 1);
 
 	void Stream(ISerializable &obj);
 	void Stream(ISerializable *obj);
@@ -91,63 +85,40 @@ void Serializer::StreamElement(T &value, T defaultValue)
 		int typeSize = sizeof(T);
 
 		EnsureCapacity(typeSize);
-
 		for(int i = 0; i < typeSize; i++) {
-			if(_inBlock) {
-				_blockBuffer[_blockPosition++] = bytes[i];
-			} else {
-				_stream[_position++] = bytes[i];
-			}
+			_block.Data[_block.Position++] = bytes[i];
 		}
 	} else {
-		if(_inBlock) {
-			if(_blockPosition + sizeof(T) <= _blockSize) {
-				memcpy(&value, _blockBuffer + _blockPosition, sizeof(T));
-				_blockPosition += sizeof(T);
-			} else {
-				value = defaultValue;
-				_blockPosition = _blockSize;
-			}
+		if(_block.Position + sizeof(T) <= _block.Data.size()) {
+			memcpy(&value, _block.Data.data() + _block.Position, sizeof(T));
+			_block.Position += sizeof(T);
 		} else {
-			if(_position + sizeof(T) <= _streamSize) {
-				memcpy(&value, _stream + _position, sizeof(T));
-				_position += sizeof(T);
-			} else {
-				value = defaultValue;
-				_position = _streamSize;
-			}
+			value = defaultValue;
+			_block.Position = (uint32_t)_block.Data.size();
 		}
-	}
-}
-
-template<typename T>
-void Serializer::InternalStream(EmptyInfo<T> &info)
-{
-	if(_inBlock) {
-		_blockPosition += sizeof(T);
-	} else {
-		_position += sizeof(T);
 	}
 }
 
 template<typename T>
 void Serializer::InternalStream(ArrayInfo<T> &info)
 {
-	T* pointer = info.Array;
-
 	uint32_t count = info.ElementCount;
 	StreamElement<uint32_t>(count);
 
 	if(!_saving) {
 		//Reset array to 0 before loading from file
-		memset(info.Array, 0, sizeof(T) * info.ElementCount);
+		memset(info.Array, 0, info.ElementCount * sizeof(T));
 	}
 
 	//Load the number of elements requested, or the maximum possible (based on what is present in the save state)
-	for(uint32_t i = 0; i < info.ElementCount && i < count; i++) {
-		StreamElement<T>(*pointer);
-		pointer++;
+	EnsureCapacity(info.ElementCount * sizeof(T));
+
+	if(_saving) {
+		memcpy(_block.Data.data() + _block.Position, info.Array, info.ElementCount * sizeof(T));
+	} else {
+		memcpy(info.Array, _block.Data.data() + _block.Position, info.ElementCount * sizeof(T));
 	}
+	_block.Position += info.ElementCount * sizeof(T);
 }
 
 template<typename T>
