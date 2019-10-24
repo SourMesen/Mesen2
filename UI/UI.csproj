@@ -230,6 +230,12 @@
     <Compile Include="Controls\ctrlLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ctrlRecentGame.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ctrlRecentGame.Designer.cs">
+      <DependentUpon>ctrlRecentGame.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ctrlRecentGames.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -919,6 +925,9 @@
     <None Include="app.manifest" />
     <EmbeddedResource Include="Controls\ctrlPathSelection.resx">
       <DependentUpon>ctrlPathSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ctrlRecentGame.resx">
+      <DependentUpon>ctrlRecentGame.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ctrlRecentGames.resx">
       <DependentUpon>ctrlRecentGames.cs</DependentUpon>
