@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -126,19 +127,20 @@ namespace Mesen.GUI.Forms
 		private void UpdateCheatList()
 		{
 			lstCheats.BeginUpdate();
-			lstCheats.Sorting = SortOrder.None;
 			lstCheats.Items.Clear();
 			lstCheats.ItemChecked -= lstCheats_ItemChecked;
+			lstCheats.ListViewItemSorter = null;
 
 			foreach(CheatCode cheat in _cheats) {
-				ListViewItem item = lstCheats.Items.Add("");
+				ListViewItem item = new ListViewItem("");
 				item.SubItems.Add(string.IsNullOrWhiteSpace(cheat.Description) ? "[n/a]" : cheat.Description);
 				item.SubItems.Add(cheat.ToString());
 				item.Tag = cheat;
 				item.Checked = cheat.Enabled;
+				lstCheats.Items.Add(item);
 			}
 
-			lstCheats.Sorting = SortOrder.Ascending;
+			lstCheats.ListViewItemSorter = new CheatSorter();
 			lstCheats.ItemChecked += lstCheats_ItemChecked;
 			lstCheats.EndUpdate();
 
@@ -262,6 +264,19 @@ namespace Mesen.GUI.Forms
 					AddCheats(importedCheats);
 				}
 			}
+		}
+	}
+
+	public class CheatSorter : IComparer
+	{
+		public int Compare(object a, object b)
+		{
+			if(a as ListViewItem != null && b as ListViewItem != null) {
+				//Sort by cheat name
+				return string.Compare(((ListViewItem)a).SubItems[1].Text, ((ListViewItem)b).SubItems[1].Text, true);
+			}
+
+			return 0;
 		}
 	}
 }
