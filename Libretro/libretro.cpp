@@ -440,7 +440,7 @@ extern "C" {
 	RETRO_API bool retro_serialize(void *data, size_t size)
 	{
 		std::stringstream ss;
-		_console->Serialize(ss);
+		_console->GetSaveStateManager()->SaveState(ss);
 		
 		string saveStateData = ss.str();
 		memset(data, 0, size);
@@ -453,8 +453,7 @@ extern "C" {
 	{
 		std::stringstream ss;
 		ss.write((const char*)data, size);
-		_console->Deserialize(ss, SaveStateManager::FileFormatVersion);
-		return true;
+		return _console->GetSaveStateManager()->LoadState(ss);
 	}
 
 	RETRO_API void retro_cheat_reset()
