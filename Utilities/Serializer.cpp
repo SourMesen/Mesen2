@@ -31,7 +31,7 @@ Serializer::Serializer(istream &file, uint32_t version)
 
 	_block.Data = vector<uint8_t>(decompressedSize, 0);
 
-	unsigned long decompSize;
+	unsigned long decompSize = decompressedSize;
 	uncompress(_block.Data.data(), &decompSize, compressedData.data(), (unsigned long)compressedData.size());
 }
 
@@ -39,6 +39,10 @@ void Serializer::EnsureCapacity(uint32_t typeSize)
 {
 	//Make sure the current block/stream is large enough to fit the next write
 	uint32_t oldSize = (uint32_t)_block.Data.size();
+	if(oldSize == 0) {
+		oldSize = typeSize * 2;
+	}
+
 	uint32_t sizeRequired = _block.Position + typeSize;
 	
 	uint32_t newSize = oldSize;
@@ -92,8 +96,9 @@ void Serializer::Save(ostream& file, int compressionLevel)
 	uint8_t* compressedData = new uint8_t[compressedSize];
 	compress2(compressedData, &compressedSize, (unsigned char*)_block.Data.data(), (unsigned long)_block.Position, compressionLevel);
 
-	file.write((char*)&_block.Position, sizeof(_block.Position));
-	file.write((char*)&compressedSize, sizeof(compressedSize));
+	uint32_t size = (uint32_t)compressedSize;
+	file.write((char*)&_block.Position, sizeof(uint32_t));
+	file.write((char*)&size, sizeof(uint32_t));
 	file.write((char*)compressedData, compressedSize);
 	delete[] compressedData;
 }
@@ -122,4 +127,18 @@ void Serializer::Stream(ISerializable *obj)
 	StreamStartBlock();
 	obj->Serialize(*this);
 	StreamEndBlock();
+}
+
+void Serializer::InternalStream(string &str)
+{
+	if(_saving) {
+		vector<uint8_t> stringData;
+		stringData.resize(str.size());
+		memcpy(stringData.data(), str.data(), str.size());
+		StreamVector(stringData);
+	} else {
+		vector<uint8_t> stringData;
+		StreamVector(stringData);
+		str = string(stringData.begin(), stringData.end());
+	}
 }
