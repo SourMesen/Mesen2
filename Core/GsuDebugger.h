@@ -12,7 +12,7 @@ class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
-class GsuDebugger : public IDebugger
+class GsuDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;

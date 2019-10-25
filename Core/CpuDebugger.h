@@ -18,7 +18,7 @@ class MemoryMappings;
 class BreakpointManager;
 class Sa1;
 
-class CpuDebugger : public IDebugger
+class CpuDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;

@@ -13,7 +13,7 @@ class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
-class SpcDebugger : public IDebugger
+class SpcDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;

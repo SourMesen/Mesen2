@@ -148,7 +148,6 @@ void ControlManager::UpdateInputState()
 		device->ClearState();
 		device->SetStateFromInput();
 
-		bool inputSet = false;
 		for(size_t i = 0; i < _inputProviders.size(); i++) {
 			IInputProvider* provider = _inputProviders[i];
 			if(provider->SetInput(device.get())) {
