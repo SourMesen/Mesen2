@@ -10,9 +10,7 @@ class SaveStateMessage : public NetMessage
 {
 private:
 	vector<CheatCode> _activeCheats;
-
-	uint8_t* _stateData = nullptr;
-	uint32_t _dataSize = 0;
+	vector<uint8_t> _stateData;
 	
 	ControllerType _controllerTypes[5];
 	ConsoleRegion _region;
@@ -20,28 +18,13 @@ private:
 	uint32_t _ppuExtraScanlinesBeforeNmi;
 	uint32_t _gsuClockSpeed;
 
-	CheatCode* _cheats = nullptr;
-	uint32_t _cheatArraySize = 0;
-
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		StreamArray((void**)&_stateData, _dataSize);
-		
-		Stream(_region);
-		Stream(_ppuExtraScanlinesAfterNmi);
-		Stream(_ppuExtraScanlinesBeforeNmi);
-		Stream(_gsuClockSpeed);
-		StreamArray(_controllerTypes, sizeof(ControllerType) * 5);
-
-		if(_sending) {
-			_cheats = _activeCheats.size() > 0 ? &_activeCheats[0] : nullptr;
-			_cheatArraySize = (uint32_t)_activeCheats.size() * sizeof(CheatCode);
-			StreamArray((void**)&_cheats, _cheatArraySize);
-			delete[] _stateData;
-		} else {
-			StreamArray((void**)&_cheats, _cheatArraySize);
-		}
+		s.StreamVector(_stateData);
+		s.Stream(_region, _ppuExtraScanlinesAfterNmi, _ppuExtraScanlinesBeforeNmi, _gsuClockSpeed);
+		s.StreamArray(_controllerTypes, 5);
+		s.StreamVector(_activeCheats);
 	}
 
 public:
@@ -68,22 +51,18 @@ public:
 
 		console->Unlock();
 
-		_dataSize = (uint32_t)state.tellp();
-		_stateData = new uint8_t[_dataSize];
-		state.read((char*)_stateData, _dataSize);
+		uint32_t dataSize = (uint32_t)state.tellp();
+		_stateData.resize(dataSize);
+		state.read((char*)_stateData.data(), dataSize);
 	}
 	
 	void LoadState(shared_ptr<Console> console)
 	{
 		std::stringstream ss;
-		ss.write((char*)_stateData, _dataSize);
+		ss.write((char*)_stateData.data(), _stateData.size());
 		console->Deserialize(ss, SaveStateManager::FileFormatVersion);
 
-		vector<CheatCode> cheats;
-		for(uint32_t i = 0; i < _cheatArraySize / sizeof(CheatCode); i++) {
-			cheats.push_back(((CheatCode*)_cheats)[i]);
-		}
-		console->GetCheatManager()->SetCheats(cheats);
+		console->GetCheatManager()->SetCheats(_activeCheats);
 
 		EmulationConfig emuCfg = console->GetSettings()->GetEmulationConfig();
 		emuCfg.Region = _region;

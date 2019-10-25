@@ -9,20 +9,14 @@ private:
 	static constexpr int CurrentVersion = 100; //Use 100+ to distinguish from Mesen
 	uint32_t _emuVersion = 0;
 	uint32_t _protocolVersion = CurrentVersion;
-	char* _playerName = nullptr;
-	uint32_t _playerNameLength = 0;
-	char* _hashedPassword = nullptr;
-	uint32_t _hashedPasswordLength = 0;
+	string _playerName;
+	string _hashedPassword;
 	bool _spectator = false;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		Stream<uint32_t>(_emuVersion);
-		Stream<uint32_t>(_protocolVersion);
-		StreamArray((void**)&_playerName, _playerNameLength);
-		StreamArray((void**)&_hashedPassword, _hashedPasswordLength);
-		Stream<bool>(_spectator);
+		s.Stream(_emuVersion, _protocolVersion, _playerName, _hashedPassword, _spectator);
 	}
 
 public:
@@ -32,14 +26,14 @@ public:
 	{
 		_emuVersion = emuVersion;
 		_protocolVersion = HandShakeMessage::CurrentVersion;
-		CopyString(&_playerName, _playerNameLength, playerName);
-		CopyString(&_hashedPassword, _hashedPasswordLength, hashedPassword);
+		_playerName = playerName;
+		_hashedPassword = hashedPassword;
 		_spectator = spectator;
 	}
 
 	string GetPlayerName()
 	{
-		return string(_playerName);
+		return _playerName;
 	}
 
 	bool IsValid(uint32_t emuVersion)

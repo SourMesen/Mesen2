@@ -1,115 +1,36 @@
 #pragma once
 #include "stdafx.h"
 #include "MessageType.h"
+#include "SaveStateManager.h"
 #include "../Utilities/Socket.h"
+#include "../Utilities/Serializer.h"
 
 class NetMessage
 {
 protected:
 	MessageType _type;
-	bool _sending;
-	vector<uint8_t> _buffer;
-	uint32_t _position = 0;
-	vector<uint8_t*> _arraysToRelease;
-	vector<char*> _stringsToRelease;
-
-	template<typename T>
-	void Stream(T &value)
-	{
-		if(_sending) {
-			uint8_t* bytes = (uint8_t*)&value;
-			int typeSize = sizeof(T);
-			for(int i = 0; i < typeSize; i++) {
-				_buffer.push_back(bytes[i]);
-			}
-		} else {
-			memcpy(&value, _buffer.data()+_position, sizeof(T));
-			_position += sizeof(T);
-		}
-	}
-
-	void StreamArray(void* value, uint32_t length)
-	{
-		void* pointer = value;
-		uint32_t len = length;
-		StreamArray(&pointer, len);
-	}
-
-	void StreamArray(void** value, uint32_t &length)
-	{
-		if(_sending) {
-			Stream<uint32_t>(length);
-			uint8_t* bytes = (uint8_t*)(*value);
-			for(uint32_t i = 0, len = length; i < len; i++) {
-				_buffer.push_back(bytes[i]);
-				_position++;
-			}
-		} else {
-			Stream<uint32_t>(length);
-			if(*value == nullptr) {
-				*value = (void*)new uint8_t[length];
-				_arraysToRelease.push_back((uint8_t*)*value);
-			}
-			uint8_t* bytes = (uint8_t*)(*value);
-			for(uint32_t i = 0, len = length; i < len; i++) {
-				bytes[i] = _buffer[_position];
-				_position++;
-			}
-		}
-	}
-
-	void StreamArray(vector<uint8_t> &data)
-	{
-		uint32_t length = (uint32_t)data.size();
-		Stream<uint32_t>(length);
-		if(_sending) {
-			uint8_t* bytes = (uint8_t*)data.data();
-			for(uint32_t i = 0, len = length; i < len; i++) {
-				_buffer.push_back(bytes[i]);
-				_position++;
-			}
-		} else {
-			data.resize(length, 0);
-			uint8_t* bytes = (uint8_t*)data.data();
-			for(uint32_t i = 0, len = length; i < len; i++) {
-				bytes[i] = _buffer[_position];
-				_position++;
-			}
-		}
-	}
-
-	void StreamState()
-	{
-		Stream<MessageType>(_type);
-		ProtectedStreamState();
-	}
+	stringstream _receivedData;
 
 	NetMessage(MessageType type)
 	{
 		_type = type;
-		_sending = true;
 	}
 
 	NetMessage(void* buffer, uint32_t length)
 	{
-		_buffer.assign((uint8_t*)buffer, (uint8_t*)buffer + length);
-		_sending = false;
+		_type = (MessageType)((uint8_t*)buffer)[0];
+		_receivedData.write((char*)buffer + 1, length - 1);
 	}
 
 public:
 	virtual ~NetMessage() 
 	{	
-		for(uint8_t *arrayPtr: _arraysToRelease) {
-			delete[] arrayPtr;
-		}
-		for(char *stringPtr: _stringsToRelease) {
-			delete[] stringPtr;
-		}
 	}
 
 	void Initialize()
 	{
-		StreamState();
+		Serializer s(_receivedData, SaveStateManager::FileFormatVersion);
+		Serialize(s);
 	}
 
 	MessageType GetType()
@@ -119,21 +40,18 @@ public:
 
 	void Send(Socket &socket)
 	{
-		StreamState();
-		uint32_t messageLength = (uint32_t)_buffer.size();
+		Serializer s(SaveStateManager::FileFormatVersion);
+		Serialize(s);
 
-		_buffer.insert(_buffer.begin(), (char*)&messageLength, (char*)&messageLength + sizeof(messageLength));
-		socket.Send((char*)_buffer.data(), (int)_buffer.size(), 0);
-	}
+		stringstream out;
+		s.Save(out);
 
-	void CopyString(char** dest, uint32_t &length, string src)
-	{
-		length = (uint32_t)(src.length() + 1);
-		*dest = new char[length];
-		memcpy(*dest, src.c_str(), length);
-		_stringsToRelease.push_back(*dest);
+		string data = out.str();
+		uint32_t messageLength = (uint32_t)data.size() + 1;
+		data = string((char*)&messageLength, 4) + (char)_type + data;
+		socket.Send((char*)data.c_str(), (int)data.size(), 0);
 	}
 
 protected:
-	virtual void ProtectedStreamState() = 0;
+	virtual void Serialize(Serializer &s) = 0;
 };

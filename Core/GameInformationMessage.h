@@ -7,19 +7,15 @@
 class GameInformationMessage : public NetMessage
 {
 private:
-	char* _romFilename = nullptr;
-	uint32_t _romFilenameLength = 0;
-	char _sha1Hash[40];
+	string _romFilename;
+	string _sha1Hash;
 	uint8_t _controllerPort = 0;
 	bool _paused = false;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		StreamArray((void**)&_romFilename, _romFilenameLength);
-		StreamArray((void**)&_sha1Hash, 40);
-		Stream<uint8_t>(_controllerPort);
-		Stream<bool>(_paused);
+		s.Stream(_romFilename, _sha1Hash, _controllerPort, _paused);
 	}
 
 public:
@@ -27,8 +23,8 @@ public:
 
 	GameInformationMessage(string filepath, string sha1Hash, uint8_t port, bool paused) : NetMessage(MessageType::GameInformation)
 	{
-		CopyString(&_romFilename, _romFilenameLength, FolderUtilities::GetFilename(filepath, true));
-		memcpy(_sha1Hash, sha1Hash.c_str(), 40);
+		_romFilename = FolderUtilities::GetFilename(filepath, true);
+		_sha1Hash = sha1Hash;
 		_controllerPort = port;
 		_paused = paused;
 	}
@@ -45,7 +41,7 @@ public:
 
 	string GetSha1Hash()
 	{
-		return string(_sha1Hash, _sha1Hash+40);
+		return _sha1Hash;
 	}
 
 	bool IsPaused()

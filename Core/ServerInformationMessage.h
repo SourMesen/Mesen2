@@ -5,24 +5,23 @@
 class ServerInformationMessage : public NetMessage
 {
 private:
-	char* _hashSalt = nullptr;
-	uint32_t _hashSaltLength = 0;
+	string _hashSalt;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		StreamArray((void**)&_hashSalt, _hashSaltLength);
+		s.Stream(_hashSalt);
 	}
 
 public:
 	ServerInformationMessage(void* buffer, uint32_t length) : NetMessage(buffer, length) {}
 	ServerInformationMessage(string hashSalt) : NetMessage(MessageType::ServerInformation)
 	{
-		CopyString(&_hashSalt, _hashSaltLength, hashSalt);
+		_hashSalt = hashSalt;
 	}
 
 	string GetHashSalt()
 	{
-		return string(_hashSalt);
+		return _hashSalt;
 	}
 };

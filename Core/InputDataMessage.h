@@ -9,9 +9,9 @@ private:
 	ControlDeviceState _inputState;
 
 protected:	
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		StreamArray(_inputState.State);
+		s.StreamVector(_inputState.State);
 	}
 
 public:

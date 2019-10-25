@@ -10,10 +10,10 @@ private:
 	ControlDeviceState _inputState;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		Stream<uint8_t>(_portNumber);
-		StreamArray(_inputState.State);
+		s.Stream(_portNumber);
+		s.StreamVector(_inputState.State);
 	}
 
 public:

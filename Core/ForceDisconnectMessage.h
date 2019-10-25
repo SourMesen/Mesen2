@@ -8,13 +8,12 @@
 class ForceDisconnectMessage : public NetMessage
 {
 private:
-	char* _disconnectMessage = nullptr;
-	uint32_t _messageLength = 0;
+	string _disconnectMessage;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		StreamArray((void**)&_disconnectMessage, _messageLength);
+		s.Stream(_disconnectMessage);
 	}
 
 public:
@@ -22,7 +21,7 @@ public:
 
 	ForceDisconnectMessage(string message) : NetMessage(MessageType::ForceDisconnect)
 	{
-		CopyString(&_disconnectMessage, _messageLength, message);
+		_disconnectMessage = message;
 	}
 
 	string GetMessage()

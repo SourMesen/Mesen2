@@ -8,9 +8,9 @@ private:
 	uint8_t _portNumber;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		Stream<uint8_t>(_portNumber);
+		s.Stream(_portNumber);
 	}
 
 public:

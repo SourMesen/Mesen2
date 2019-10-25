@@ -8,42 +8,21 @@ private:
 	vector<PlayerInfo> _playerList;
 
 protected:
-	virtual void ProtectedStreamState()
+	void Serialize(Serializer &s) override
 	{
-		constexpr uint32_t PlayerNameMaxLength = 50;
-
-		uint32_t nameLength = PlayerNameMaxLength + 1;
-		char playerName[PlayerNameMaxLength + 1];
-		uint8_t playerPort = 0;
-		bool isHost = false;
-
-		if(_sending) {
+		if(s.IsSaving()) {
 			uint32_t playerCount = (uint32_t)_playerList.size();
-			Stream<uint32_t>(playerCount);
+			s.Stream(playerCount);
 			for(uint32_t i = 0; i < playerCount; i++) {
-				memset(playerName, 0, nameLength);
-				memcpy(playerName, _playerList[i].Name.c_str(), std::min((uint32_t)_playerList[i].Name.size(), PlayerNameMaxLength));
-				playerPort = _playerList[i].ControllerPort;
-
-				StreamArray(playerName, nameLength);
-				Stream<uint8_t>(playerPort);
-				Stream<bool>(isHost);
+				s.Stream(_playerList[i].Name, _playerList[i].ControllerPort, _playerList[i].IsHost);
 			}
 		} else {
 			uint32_t playerCount;
-			Stream<uint32_t>(playerCount);
+			s.Stream(playerCount);
 			
 			for(uint32_t i = 0; i < playerCount; i++) {
-				memset(playerName, 0, nameLength);
-				StreamArray(playerName, nameLength);
-				Stream<uint8_t>(playerPort);
-				Stream<bool>(isHost);
-
 				PlayerInfo playerInfo;
-				playerInfo.Name = playerName;
-				playerInfo.ControllerPort = playerPort;
-				playerInfo.IsHost = isHost;
-
+				s.Stream(playerInfo.Name, playerInfo.ControllerPort, playerInfo.IsHost);
 				_playerList.push_back(playerInfo);
 			}
 		}

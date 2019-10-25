@@ -50,6 +50,7 @@ private:
 	template<typename T> void InternalStream(VectorInfo<T> &info);
 	template<typename T> void InternalStream(ValueInfo<T> &info);
 	template<typename T> void InternalStream(T &value);
+	template<> void InternalStream(string &str);
 	void RecursiveStream();
 
 	template<typename T, typename... T2> void RecursiveStream(T &value, T2&... args);
@@ -149,6 +150,21 @@ template<typename T>
 void Serializer::InternalStream(ValueInfo<T> &info)
 {
 	StreamElement<T>(*info.Value, info.DefaultValue);
+}
+
+template<>
+void Serializer::InternalStream(string &str)
+{
+	if(_saving) {
+		vector<uint8_t> stringData;
+		stringData.resize(str.size());
+		memcpy(stringData.data(), str.data(), str.size());
+		StreamVector(stringData);
+	} else {
+		vector<uint8_t> stringData;
+		StreamVector(stringData);
+		str = string(stringData.begin(), stringData.end());
+	}
 }
 
 template<typename T>

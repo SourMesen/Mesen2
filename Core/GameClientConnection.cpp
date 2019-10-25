@@ -167,8 +167,8 @@ void GameClientConnection::PushControllerState(uint8_t port, ControlDeviceState 
 void GameClientConnection::DisableControllers()
 {
 	//Used to prevent deadlocks when client is trying to fill its buffer while the host changes the current game/settings/etc. (i.e situations where we need to call Console::Pause())
-	ClearInputData();
 	_enableControllers = false;
+	ClearInputData();
 	for(int i = 0; i < BaseControlDevice::PortCount; i++) {
 		_waitForInput[i].Signal();
 	}
@@ -192,6 +192,10 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 		}
 
 		LockHandler lock = _writeLock.AcquireSafe();
+		if(_shutdown || !_enableControllers || _inputSize[port] == 0) {
+			return true;
+		}
+
 		ControlDeviceState state = _inputData[port].front();
 		_inputData[port].pop_front();
 		_inputSize[port]--;
