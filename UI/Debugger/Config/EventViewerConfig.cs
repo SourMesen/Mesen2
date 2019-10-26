@@ -83,15 +83,15 @@ namespace Mesen.GUI.Config
 				WorkRamRegisterReadColor = (uint)this.WorkRamRegisterReadColor.Color.ToArgb(),
 				WorkRamRegisterWriteColor = (uint)this.WorkRamRegisterWriteColor.Color.ToArgb(),
 
-				ShowDmaChannels = new bool[8] {
-					this.ShowDmaChannel0,
-					this.ShowDmaChannel1,
-					this.ShowDmaChannel2,
-					this.ShowDmaChannel3,
-					this.ShowDmaChannel4,
-					this.ShowDmaChannel5,
-					this.ShowDmaChannel6,
-					this.ShowDmaChannel7
+				ShowDmaChannels = new byte[8] {
+					(byte)(this.ShowDmaChannel0 ? 1 : 0),
+					(byte)(this.ShowDmaChannel1 ? 1 : 0),
+					(byte)(this.ShowDmaChannel2 ? 1 : 0),
+					(byte)(this.ShowDmaChannel3 ? 1 : 0),
+					(byte)(this.ShowDmaChannel4 ? 1 : 0),
+					(byte)(this.ShowDmaChannel5 ? 1 : 0),
+					(byte)(this.ShowDmaChannel6 ? 1 : 0),
+					(byte)(this.ShowDmaChannel7 ? 1 : 0)
 				}
 			};
 		}

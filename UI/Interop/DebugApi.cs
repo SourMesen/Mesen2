@@ -337,8 +337,8 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool ShowMarkedBreakpoints;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8, ArraySubType = UnmanagedType.I1)]
-		public bool[] ShowDmaChannels;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+		public byte[] ShowDmaChannels;
 	}
 
 	public struct GetTilemapOptions

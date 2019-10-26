@@ -95,11 +95,11 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
 		public WindowMaskLogic[] MaskLogic;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5, ArraySubType = UnmanagedType.I1)]
-		public bool[] WindowMaskMain;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public byte[] WindowMaskMain;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5, ArraySubType = UnmanagedType.I1)]
-		public bool[] WindowMaskSub;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public byte[] WindowMaskSub;
 
 		public UInt16 VramAddress;
 		public byte VramIncrementValue;
@@ -157,11 +157,11 @@ namespace Mesen.GUI
 
 	public struct WindowConfig
 	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6, ArraySubType = UnmanagedType.I1)]
-		public bool[] ActiveLayers;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+		public byte[] ActiveLayers;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6, ArraySubType = UnmanagedType.I1)]
-		public bool[] InvertedLayers;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+		public byte[] InvertedLayers;
 
 		public Byte Left;
 		public Byte Right;
@@ -381,8 +381,8 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
 		public byte Page;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.I1)]
-		public bool[] Lock;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public byte[] Lock;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
 		public UInt32[] Address;
