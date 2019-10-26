@@ -264,16 +264,13 @@ extern "C" {
 			_console->Initialize();
 			_console->LoadRom((VirtualFile)testRoms[i], VirtualFile());
 
-			thread testThread([=] {
-				if(enableDebugger) {
-					//turn on debugger to profile the debugger's code too
-					_console->GetDebugger();
-				}
-				_console->Run();
-			});
+			if(enableDebugger) {
+				//turn on debugger to profile the debugger's code too
+				_console->GetDebugger();
+			}
+				
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
 			_console->Stop(false);
-			testThread.join();
 			_console->Release();
 		}
 	}

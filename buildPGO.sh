@@ -13,7 +13,7 @@
 #
 #  Note: While GCC runs through this script just fine, the runtime performance is pretty terrible (something must be wrong with the way this is built)
 #
-# This will produce the following binary: bin/x64/Release/Mesen.exe
+# This will produce the following binary: bin/x64/Release/Mesen-S.exe
 if [ "$MESENPLATFORM" = x86 ]; then
 	PLAT="x86"
 else
@@ -27,13 +27,12 @@ else
 fi
 
 OBJ="PGOHelper/obj.${PLAT}/"
-FLAGS="LTO=true MESENPLATFORM=${PLAT}"
+FLAGS="LTO=true STATICLINK=true MESENPLATFORM=${PLAT}"
 
 eval ${FLAGS} make clean
 
 #create instrumented binary
-eval ${FLAGS} PGO=profile make ${TARG} -j 16
-eval ${FLAGS} PGO=profile make pgohelper -B
+eval ${FLAGS} PGO=profile make pgohelper -B -j 16
 eval cp bin/pgohelperlib.so ${OBJ}
 
 #run the instrumented binary
