@@ -216,19 +216,21 @@ namespace Mesen.GUI.Controls
 		private void GoToPreviousPage()
 		{
 			if(_currentIndex < _elementsPerPage) {
-				_currentIndex = _recentGames.Count - _elementsPerPage;
+				_currentIndex = _recentGames.Count - 1;
 			} else {
 				_currentIndex -= _elementsPerPage;
 			}
 			UpdateGameInfo();
 		}
 
+		private bool IsOnLastPage { get { return (_currentIndex / _elementsPerPage) == ((_recentGames.Count - 1) / _elementsPerPage); } }
+
 		private void GoToNextPage()
 		{
 			if(_currentIndex + _elementsPerPage < _recentGames.Count) {
 				_currentIndex += _elementsPerPage;
 			} else {
-				_currentIndex = 0;
+				_currentIndex = IsOnLastPage ? 0 : (_recentGames.Count - 1);
 			}
 			UpdateGameInfo();
 		}
@@ -267,13 +269,13 @@ namespace Mesen.GUI.Controls
 								if(_currentIndex + _elementsPerRow < _recentGames.Count) {
 									_currentIndex += _elementsPerRow;
 								} else {
-									_currentIndex = 0;
+									_currentIndex = IsOnLastPage ? 0 : (_recentGames.Count - 1);
 								}
 								UpdateGameInfo();
 							} else if(mapping.Up == keyCode) {
 								_waitForRelease = true;
 								if(_currentIndex < _elementsPerRow) {
-									_currentIndex = _recentGames.Count - _elementsPerRow;
+									_currentIndex = _recentGames.Count - 1;
 								} else {
 									_currentIndex -= _elementsPerRow;
 								}
@@ -281,7 +283,7 @@ namespace Mesen.GUI.Controls
 							} else if(mapping.L == keyCode) {
 								_waitForRelease = true;
 								if(_currentIndex < _elementsPerPage) {
-									_currentIndex = _recentGames.Count - _elementsPerPage;
+									_currentIndex = _recentGames.Count - 1;
 								} else {
 									_currentIndex -= _elementsPerPage;
 								}
@@ -291,7 +293,7 @@ namespace Mesen.GUI.Controls
 								if(_currentIndex + _elementsPerPage < _recentGames.Count) {
 									_currentIndex += _elementsPerPage;
 								} else {
-									_currentIndex = 0; ;
+									_currentIndex = IsOnLastPage ? 0 : (_recentGames.Count - 1);
 								}
 								UpdateGameInfo();
 							} else if(mapping.A == keyCode || mapping.B == keyCode || mapping.X == keyCode || mapping.Y == keyCode || mapping.Select == keyCode || mapping.Start == keyCode) {

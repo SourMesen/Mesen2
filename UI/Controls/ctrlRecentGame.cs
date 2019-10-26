@@ -28,6 +28,7 @@ namespace Mesen.GUI.Controls
 			set
 			{
 				if(value == null) {
+					_recentGame = null;
 					picPreviousState.Visible = false;
 					lblGameName.Visible = false;
 					lblSaveDate.Visible = false;
