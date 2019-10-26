@@ -27,19 +27,18 @@ namespace Mesen.GUI.Controls
 			get { return _recentGame; }
 			set
 			{
+				if(value == null) {
+					picPreviousState.Visible = false;
+					lblGameName.Visible = false;
+					lblSaveDate.Visible = false;
+					return;
+				}
+
 				if(_recentGame == value) {
 					return;
 				}
 
 				_recentGame = value;
-
-				lblSaveDate.Visible = false;
-
-				if(value == null) {
-					picPreviousState.Visible = false;
-					lblGameName.Visible = false;
-					return;
-				}
 
 				lblGameName.Text = Path.GetFileNameWithoutExtension(_recentGame.RomName);
 				lblSaveDate.Text = _recentGame.Timestamp.ToString();

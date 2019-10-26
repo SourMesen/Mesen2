@@ -83,8 +83,11 @@ namespace Mesen.GUI.Controls
 			tlpGrid.Controls.Clear();
 			for(int j = 0; j < _elementsPerRow; j++) {
 				tlpGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / _elementsPerRow));
+				tlpGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / _elementsPerRow));
+			}
+
+			for(int j = 0; j < _elementsPerRow; j++) {
 				for(int i = 0; i < _elementsPerRow; i++) {
-					tlpGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / _elementsPerRow));
 					ctrlRecentGame ctrl = new ctrlRecentGame();
 					ctrl.Dock = DockStyle.Fill;
 					ctrl.Margin = new Padding(2);
