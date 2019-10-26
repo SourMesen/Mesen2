@@ -1442,7 +1442,7 @@ void Ppu::ApplyHiResMode()
 	}
 
 	if(!_useHighResOutput) {
-		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 2);
+		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 1);
 	} else {
 		uint32_t screenY = _state.ScreenInterlace ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 		uint32_t baseAddr = (screenY << 9);
