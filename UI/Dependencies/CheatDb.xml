@@ -1287,7 +1287,7 @@
     <cheat description="Each $ worth 25">
       <code>49C9-476D</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DDAF-476F</code>
       <code>DDA0-4DD4</code>
     </cheat>
@@ -1552,7 +1552,7 @@
     <cheat description="Infinite continues">
       <code>C2E3-47C6</code>
     </cheat>
-    <cheat description="Jump in mid-air (no death from falling into pits)">
+    <cheat description="Multi-jump (no death from falling into pits)">
       <code>6DB0-15E7</code>
     </cheat>
     <cheat description="Don't lose ammo when you die">
@@ -1648,7 +1648,7 @@
     <cheat description="Infinite continues">
       <code>C26E-3724</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>E861-37AB</code>
       <code>EE65-3DDB</code>
       <code>BE65-3D6B</code>
@@ -2767,7 +2767,7 @@
     <cheat description="Always Magic Chicken">
       <code>7E008E04</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6DC3-1F65</code>
     </cheat>
     <cheat description="Moon jump (disable to drop back down)">
@@ -2801,7 +2801,7 @@
       <code>7E05EE09</code>
       <code>7E05EF09</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6D81-670D</code>
       <code>6D8D-AF6D</code>
     </cheat>
@@ -4190,7 +4190,7 @@
       <code>6DE1-1F04</code>
       <code>9DE1-1F64</code>
     </cheat>
-    <cheat description="Jump in mid-air (can't throw bombs in the air)">
+    <cheat description="Multi-jump (can't throw bombs in the air)">
       <code>3C87-1DD4</code>
       <code>D387-1704</code>
       <code>8187-1764</code>
@@ -5956,7 +5956,7 @@
     <cheat description="Numbered t-shirts worth one more">
       <code>766C-1766</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DD61-447C</code>
     </cheat>
     <cheat description="Bogus jump">
@@ -6383,7 +6383,7 @@
       <code>BBA4-44D7</code>
     </cheat>
   </game>
-  <game name="Chavez (USA)" sha1="4C69E6157AD928F6086BA3E10BA462B61A331BAF">
+  <game name="Chavez (USA)" sha1="856C5C858B278E97DF7B41828FBD757D7E0C0321">
     <cheat description="Infinite time">
       <code>7E1F9315</code>
     </cheat>
@@ -6427,7 +6427,7 @@
     <cheat description="Invincibility (blinking) (you may freeze if you get the guitar and fall in water)">
       <code>3C60-04D9</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DD6F-DF61</code>
       <code>C261-DFA1</code>
       <code>C268-D7D1</code>
@@ -6585,7 +6585,7 @@
       <code>DDAC-040D</code>
       <code>DDAE-076D</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>76C9-A7DD</code>
       <code>6DC2-DDD4</code>
       <code>F2CE-D464</code>
@@ -7393,7 +7393,7 @@
     <cheat description="More invincibility time">
       <code>EE89-DF69</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DDBC-6DA4</code>
       <code>DDBC-67D4</code>
       <code>DDBB-6764</code>
@@ -7472,6 +7472,11 @@
     </cheat>
     <cheat description="Start with 1 Nickel">
       <code>3187-64DD</code>
+    </cheat>
+  </game>
+  <game name="Cosmo Gang - The Puzzle (Japan)" sha1="C39694EF87C65DE4692628B8F2F117D1E52D2041">
+    <cheat description="Clear level automatically">
+      <code>DD2B-A4A1</code>
     </cheat>
   </game>
   <game name="Cosmo Gang - The Video (Japan)" sha1="53E13618BA3056B2762E0E5B387CD9583451389F">
@@ -7649,6 +7654,12 @@
     </cheat>
     <cheat description="Never overheat">
       <code>C2B5-3D66</code>
+    </cheat>
+    <cheat description="Hit anywhere (disable for bosses)">
+      <code>C9B1-C7AB</code>
+      <code>DD66-4D0B</code>
+      <code>DD66-440B</code>
+      <code>DD6B-4FDB</code>
     </cheat>
     <cheat description="Infinite credits">
       <code>C234-4FDD</code>
@@ -8594,7 +8605,7 @@
     <cheat description="Infinite lives">
       <code>C9CB-44AF</code>
     </cheat>
-    <cheat description="Jump in mid-air (slow descent)">
+    <cheat description="Multi-jump (slow descent)">
       <code>CBCD-4DA4</code>
     </cheat>
   </game>
@@ -8965,7 +8976,7 @@
       <code>6DAE-6469</code>
       <code>F9AE-64A9</code>
     </cheat>
-    <cheat description="Jump in mid-air (while falling)">
+    <cheat description="Multi-jump (while falling)">
       <code>6DBF-A7FA</code>
       <code>6DBF-A79A</code>
       <code>0AB4-ADFA</code>
@@ -9813,6 +9824,25 @@
     </cheat>
   </game>
   <game name="Doom Troopers - Mutant Chronicles (USA)" sha1="91C77B182FEA60339260A58F38A27595E6DD6089">
+    <cheat description="Invincibility">
+      <code>7E0C9901</code>
+    </cheat>
+    <cheat description="Infinite health">
+      <code>7E0C3164</code>
+    </cheat>
+    <cheat description="Infinite lives">
+      <code>7E0CB303</code>
+      <code>7E010203</code>
+    </cheat>
+    <cheat description="Infinite ammo">
+      <code>7E00E663</code>
+    </cheat>
+    <cheat description="Infinite special weapon ammo">
+      <code>7E00EA0A</code>
+    </cheat>
+    <cheat description="Die to complete level (don't use with infinite lives code)">
+      <code>7E010201</code>
+    </cheat>
     <cheat description="Infinite health">
       <code>6EDE-955D</code>
       <code>C3DE-958D</code>
@@ -10314,6 +10344,9 @@
     </cheat>
     <cheat description="Enemies start with 100 HP">
       <code>CE2C-540D</code>
+    </cheat>
+    <cheat description="Walk through walls (overworld and towns)">
+      <code>DD4F-54DC</code>
     </cheat>
   </game>
   <game name="Dungeon Master (USA)" sha1="E65AE62EC9A1C48A3512DB66F929C7B0055AE2C3">
@@ -11568,7 +11601,7 @@
     <cheat description="Infinite Super Barks">
       <code>C2AE-CD69</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>43AC-3D61</code>
       <code>A2AC-3DA1</code>
       <code>DDAB-3701</code>
@@ -14712,7 +14745,7 @@
     <cheat description="Hit anywhere Knife/Dual Knives">
       <code>408F-DD60</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6D69-0761</code>
     </cheat>
     <cheat description="Full weapon power for Dagger on pick-up">
@@ -15503,7 +15536,7 @@
     <cheat description="Infinite Bullets">
       <code>C9FB-8FA9</code>
     </cheat>
-    <cheat description="Jump in mid-air (while falling)">
+    <cheat description="Multi-jump (while falling)">
       <code>1AD7-EFD9</code>
       <code>F5D7-EF09</code>
       <code>6DD7-EF69</code>
@@ -15591,7 +15624,7 @@
     <cheat description="One hit kills">
       <code>DD0D-770D</code>
     </cheat>
-    <cheat description="Jump in mid-air (disables somersault)">
+    <cheat description="Multi-jump (disables somersault)">
       <code>C295-5FD4</code>
       <code>A995-5F04</code>
       <code>DD95-54D4</code>
@@ -15801,7 +15834,7 @@
     <cheat description="Infinite Baseballs, Slingshot and Rifle ammo">
       <code>DD2A-A76F</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DCA1-ADD4</code>
       <code>FDA1-AD04</code>
     </cheat>
@@ -15948,7 +15981,7 @@
     <cheat description="Infinite lives">
       <code>C264-D464</code>
     </cheat>
-    <cheat description="Jump in mid-air (disables pause)">
+    <cheat description="Multi-jump (disables pause)">
       <code>7E6C-07DD</code>
       <code>6E6C-070D</code>
       <code>186C-07AD</code>
@@ -16005,7 +16038,7 @@
       <code>C9C4-4683</code>
       <code>C26F-468A</code>
     </cheat>
-    <cheat description="Jump in mid-air (disables pause)">
+    <cheat description="Multi-jump (disables pause)">
       <code>C9BC-3673</code>
       <code>C9C4-4683</code>
       <code>C26F-468A</code>
@@ -16031,7 +16064,7 @@
     <cheat description="Infinite time (alt)">
       <code>7E1F1459</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DDC1-A4A4</code>
       <code>0AC5-ADA4</code>
       <code>45C5-AFD4</code>
@@ -16152,6 +16185,17 @@
     </cheat>
     <cheat description="Moon-jump">
       <code>DD6B-34D4</code>
+    </cheat>
+  </game>
+  <game name="Hyper Iria (Japan)" sha1="D725C456869198F95DC254D7377EBEA78DD4274E">
+    <cheat description="Invincibility">
+      <code>6D7E-7DA4</code>
+    </cheat>
+    <cheat description="Hit anywhere (must enable invincibility code)">
+      <code>6DD6-5DD7</code>
+      <code>DDD2-57D7</code>
+      <code>6DD3-7DA7</code>
+      <code>6DDC-5DD7</code>
     </cheat>
   </game>
   <game name="HyperZone (USA)" sha1="2D9C6CE1613B2180CE6A3CD4603E1ECF10F2BAC6">
@@ -16669,7 +16713,7 @@
     <cheat description="Infinite lightning once obtained">
       <code>7E0490C7</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>CB6C-1DFB</code>
       <code>346C-1D9B</code>
       <code>196C-1D2B</code>
@@ -16764,7 +16808,7 @@
     <cheat description="Get items from anywhere">
       <code>6DBF-17CB</code>
     </cheat>
-    <cheat description="Jump in mid-air (While falling. Can attack continually in the air.)">
+    <cheat description="Multi-jump (While falling. Can attack continually in the air.)">
       <code>4DB5-4716</code>
       <code>A3B5-47C6</code>
       <code>66B5-4736</code>
@@ -17397,7 +17441,7 @@
     <cheat description="Infinite time">
       <code>C2AD-4D6F</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>0CB1-C765</code>
       <code>0DB5-CDD5</code>
       <code>2DB5-CD05</code>
@@ -17511,7 +17555,7 @@
       <code>C9E5-DDDD</code>
       <code>DDC4-076D</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>4C20-6DD4</code>
       <code>0D20-6D64</code>
       <code>2D20-6DA4</code>
@@ -17583,7 +17627,7 @@
       <code>DD34-3DA7</code>
       <code>DD66-C7AC</code>
     </cheat>
-    <cheat description="Jump in mid-air (unable to attack while in the air)">
+    <cheat description="Multi-jump (unable to attack while in the air)">
       <code>1DCF-C4D7</code>
       <code>FDCF-C7A7</code>
       <code>6DC4-CDA7</code>
@@ -17932,7 +17976,7 @@
     <cheat description="Hearts from big jungle fruit restore all energy">
       <code>DDCF-3F6D</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6DC6-3DA4</code>
     </cheat>
     <cheat description="Multi-jump">
@@ -19535,7 +19579,7 @@
       <code>F461-DD86</code>
     </cheat>
   </game>
-  <game name="King of Dragons, The (USA)" sha1="792355FB2CE50496B84760E3833662CA1C63CFC5">
+  <game name="King of Dragons (USA)" sha1="792355FB2CE50496B84760E3833662CA1C63CFC5">
     <cheat description="Invincibility - both players">
       <code>ED76-E4AF</code>
     </cheat>
@@ -21949,7 +21993,7 @@
       <code>7E0D2899</code>
       <code>7E0D2909</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6DB8-DF6F</code>
     </cheat>
     <cheat description="More bullets in magazine">
@@ -22150,7 +22194,7 @@
     <cheat description="Infinite bombs">
       <code>7E05A309</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DDB8-3FD9</code>
       <code>DDB9-4DD1</code>
     </cheat>
@@ -25562,7 +25606,7 @@
       <code>EE24-1704</code>
     </cheat>
   </game>
-  <game name="Marvel Super Heroes - War of the Gems (USA)" sha1="A5F38340C110D96B9D9622CA1FB1DE81936C5EF4">
+  <game name="Marvel Super Heroes in War of the Gems (USA)" sha1="DF1BC952AC6B947A9CC55E21225E0A87647D1CB9">
     <cheat description="Invincibility - Boston Aquarium">
       <code>7E042D03</code>
       <code>7E042F00</code>
@@ -25649,15 +25693,6 @@
     </cheat>
     <cheat description="Always have 9 Small energy Tanks">
       <code>7FFF1B09</code>
-    </cheat>
-  </game>
-  <game name="Marvel Super Heroes in War of the Gems (USA)" sha1="DF1BC952AC6B947A9CC55E21225E0A87647D1CB9">
-    <cheat description="">
-      <code>80D730A9</code>
-      <code>80D73100</code>
-      <code>80D73200</code>
-      <code>80D73380</code>
-      <code>80D73405</code>
     </cheat>
   </game>
   <game name="Mary Shelley's Frankenstein (USA)" sha1="521249ED57C74DC85349AA5E2AFCA587443A7CEF">
@@ -26034,7 +26069,7 @@
     <cheat description="Infinite Wild Coil">
       <code>7E0B93FF</code>
     </cheat>
-    <cheat description="One hit kills">
+    <cheat description="One hit kill">
       <code>40DE-7FD2</code>
     </cheat>
     <cheat description="Hit anywhere">
@@ -27991,7 +28026,7 @@
     <cheat description="Infinite Web magic">
       <code>7E103133</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6DC7-DD64</code>
     </cheat>
   </game>
@@ -29681,7 +29716,7 @@
     </cheat>
   </game>
   <game name="Nightmare Busters (Europe) (Proto)" sha1="89C312D7992F1C1FE757E126DD3C3B751D18A8E3">
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DDE6-1490</code>
       <code>BBEA-1FF0</code>
     </cheat>
@@ -31057,7 +31092,7 @@
       <code>FFA7-A704</code>
     </cheat>
   </game>
-  <game name="Phalanx - The Enforce Fighter A-144 (USA)" sha1="3E4B0D0D7543F485D1B9A98D21889049C0C0E9A0">
+  <game name="Phalanx - The Enforce Fighter A-144 (USA)" sha1="67CDB495F4A6B53AB79965A6AF6DBBD9990D1060">
     <cheat description="Infinite health">
       <code>3C21-AD0F</code>
     </cheat>
@@ -31377,7 +31412,7 @@
       <code>CBAF-3F0F</code>
       <code>5EAF-3F6F</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DD32-4DA7</code>
     </cheat>
     <cheat description="1/2 health after 1st hit (1st life only)">
@@ -31623,6 +31658,14 @@
   <game name="Pop'n TwinBee - Rainbow Bell Adventures (Europe)" sha1="DBD488549295F65C811542D6F8E4E9EC30D4AB22">
     <cheat description="Infinite health">
       <code>7E02EC64</code>
+    </cheat>
+  </game>
+  <game name="Popful Mail (Japan)" sha1="D3718D8CF62C74389ABA5005C9F59D4E626CD0C6">
+    <cheat description="Hit anywhere">
+      <code>6DCB-0FD7</code>
+      <code>DDC7-6D04</code>
+      <code>6DC0-07D7</code>
+      <code>48C0-0707</code>
     </cheat>
   </game>
   <game name="Populous (USA)" sha1="1805751A52A26822198B642C7E66681FFECC27DC">
@@ -33468,6 +33511,13 @@
     <cheat description="Infinite CDs - P1">
       <code>7E0088FF</code>
     </cheat>
+    <cheat description="Hit anywhere (allow items to disappear first)">
+      <code>6DC9-C46D</code>
+      <code>77C9-C4AD</code>
+      <code>6DCE-1F0D</code>
+      <code>6DCC-CDAD</code>
+      <code>DDCB-C76D</code>
+    </cheat>
   </game>
   <game name="Rex Ronan - Experimental Surgeon (USA) (En,Es)" sha1="0CF2A7F472CA59C266BABDABA2E7583685EA3D32">
     <cheat description="Infinite health">
@@ -33988,7 +34038,7 @@
       <code>88EF2132</code>
     </cheat>
   </game>
-  <game name="Rock n' Roll Racing (USA)" sha1="66D864DD07F8EAE86CF4E1F60F176B405A2DDBE9">
+  <game name="Rock N' Roll Racing (USA)" sha1="66D864DD07F8EAE86CF4E1F60F176B405A2DDBE9">
     <cheat description="Infinite forward weapons">
       <code>C2BF-476F</code>
     </cheat>
@@ -34280,7 +34330,7 @@
     <cheat description="Invincibility">
       <code>7E005472</code>
     </cheat>
-    <cheat description="Jump in mid-air (while falling)">
+    <cheat description="Multi-jump (while falling)">
       <code>4463-4DA9</code>
       <code>1963-4FD9</code>
       <code>6463-4F09</code>
@@ -35137,8 +35187,6 @@
       <code>6EB8-1DDF</code>
       <code>53B8-1DAF</code>
     </cheat>
-    <cheat description="">
-    </cheat>
     <cheat description="Set karma to 10 (if karma is less than 32)">
       <code>9DBC-17AF</code>
       <code>FFB8-1D0F</code>
@@ -35320,7 +35368,20 @@
       <code>10B8-4DA4</code>
     </cheat>
   </game>
-  <game name="Shaq Fu (USA)" sha1="5727214955566C22DC945823A04DC674AB69218D">
+  <game name="Shaq-Fu (USA)" sha1="F7AFC24BA47086E29E54B6D819542DC058B534F8">
+    <cheat description="Invincibility - P1">
+      <code>3D86-87AD</code>
+      <code>0D8B-8DDD</code>
+      <code>4D8B-8D0D</code>
+      <code>2D8B-8D6D</code>
+    </cheat>
+    <cheat description="Hit anywhere - P1">
+      <code>3D85-84AD</code>
+      <code>0D85-87DD</code>
+      <code>4D85-870D</code>
+      <code>FA86-8D0D</code>
+      <code>DD86-8D6D</code>
+    </cheat>
     <cheat description="Infinite continues - Duel Mode">
       <code>C269-EF0D</code>
     </cheat>
@@ -35504,7 +35565,7 @@
       <code>C2A1-340F</code>
     </cheat>
   </game>
-  <game name="SimAnt (USA)" sha1="27672B67EE5F3BEB52AE236DE7D39BE2509D9996">
+  <game name="SimAnt (USA)" sha1="B0F4468C99A010AFF44AE165893CCA5E4C242771">
     <cheat description="Always have maximum energy">
       <code>D88-0D0A</code>
     </cheat>
@@ -36621,7 +36682,7 @@
       <code>C96A-C79D</code>
       <code>DD34-3F0D</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>4D2F-3FA8</code>
       <code>B12F-34D8</code>
       <code>232F-3408</code>
@@ -36632,6 +36693,95 @@
     </cheat>
   </game>
   <game name="Todd McFarlane's Spawn - The Video Game (USA)" sha1="F3D8B7FF4127899131FC9253BE8B30F7A8BAB717">
+    <cheat description="Invincibility">
+      <code>1DD6-77F9</code>
+      <code>1D1F-5461</code>
+      <code>1D4C-5490</code>
+      <code>1D49-ED20</code>
+      <code>18D0-5D90</code>
+    </cheat>
+    <cheat description="Invincibility (alt)">
+      <code>7E1F561F</code>
+    </cheat>
+    <cheat description="Invincibility after one hit (invisible)">
+      <code>C203-84D1</code>
+    </cheat>
+    <cheat description="Almost invincible (blinking)">
+      <code>3C03-8F61</code>
+    </cheat>
+    <cheat description="Infinite health">
+      <code>C208-87D1</code>
+    </cheat>
+    <cheat description="Infinite health (alt)">
+      <code>7E1F0063</code>
+    </cheat>
+    <cheat description="Infinite special moves">
+      <code>C27D-8701</code>
+    </cheat>
+    <cheat description="Hit anywhere">
+      <code>40F8-84B0</code>
+    </cheat>
+    <cheat description="Hold jump to fly">
+      <code>41F7-5DA5</code>
+      <code>DDD1-7D01</code>
+      <code>88F2-8F65</code>
+    </cheat>
+    <cheat description="Don't blink after getting hit">
+      <code>FDDB-5FB9</code>
+    </cheat>
+    <cheat description="Falling doesn't use life points">
+      <code>C2F4-7FD1</code>
+    </cheat>
+    <cheat description="Special moves don't use life points">
+      <code>C27D-8701</code>
+    </cheat>
+    <cheat description="Some bullets do 2x damage">
+      <code>D6D7-8F20</code>
+    </cheat>
+    <cheat description="Some bullets do no damage">
+      <code>DDD7-8F20</code>
+    </cheat>
+    <cheat description="Some bullets kill you">
+      <code>EED7-8F20</code>
+    </cheat>
+    <cheat description="Some enemy punches electrocute you">
+      <code>DB78-84B0</code>
+    </cheat>
+    <cheat description="Some enemy punches do no damage">
+      <code>DD78-84B0</code>
+    </cheat>
+    <cheat description="Some enemy punches kill you">
+      <code>EE78-84B0</code>
+    </cheat>
+    <cheat description="Guys with pipes do 2x damage">
+      <code>DBB0-EFA3</code>
+      <code>DBCF-8763</code>
+    </cheat>
+    <cheat description="Guys with pipes do no damage">
+      <code>DDB0-EFA3</code>
+      <code>DDCF-8763</code>
+    </cheat>
+    <cheat description="Guys with pipes kill">
+      <code>EEB0-EFA3</code>
+      <code>EECF-8763</code>
+    </cheat>
+    <cheat description="Flaming bottles do 2x damage">
+      <code>DB4B-7DF1</code>
+      <code>DB43-E4F9</code>
+    </cheat>
+    <cheat description="Flaming bottles do no damage">
+      <code>DD4B-7DF1</code>
+      <code>DD43-E4F9</code>
+    </cheat>
+    <cheat description="Start with 1/4 health">
+      <code>FDB0-E4DB</code>
+    </cheat>
+    <cheat description="Start with 1/2 health">
+      <code>4CB0-E4DB</code>
+    </cheat>
+    <cheat description="Start with 3/4 health">
+      <code>73B0-E4DB</code>
+    </cheat>
     <cheat description="Invincibility">
       <code>1DD6-77F9</code>
       <code>1D1F-5461</code>
@@ -38274,7 +38424,7 @@
     <cheat description="Small potions don't restore health">
       <code>C2B4-7D8E</code>
     </cheat>
-    <cheat description="Jump in mid-air (disables swimming)">
+    <cheat description="Multi-jump (disables swimming)">
       <code>E8F4-740B</code>
       <code>EDF4-776B</code>
       <code>DDF7-7FAB</code>
@@ -39301,7 +39451,7 @@
     <cheat description="Have Triple Shot">
       <code>7E009002</code>
     </cheat>
-    <cheat description="Jump in mid-air (enables invincibility, can jump through walls and fall in pits)">
+    <cheat description="Multi-jump (enables invincibility, can jump through walls and fall in pits)">
       <code>462B-6D04</code>
       <code>DC2B-6D64</code>
       <code>BD2B-6DA4</code>
@@ -39431,7 +39581,7 @@
       <code>7E001C20</code>
     </cheat>
   </game>
-  <game name="Super Ghouls'n Ghosts (USA)" sha1="F12280B13EEA88CA03D700B75CF3C13A0E13F3BC">
+  <game name="Super Ghouls 'N Ghosts (USA)" sha1="F12280B13EEA88CA03D700B75CF3C13A0E13F3BC">
     <cheat description="Invincibility (disable at end of first two stages of level 3, so you can trigger the hidden end of stage marker)">
       <code>D4D5-B286</code>
     </cheat>
@@ -39472,6 +39622,11 @@
     </cheat>
     <cheat description="Infinite continues">
       <code>DDB6-67FF</code>
+    </cheat>
+    <cheat description="Hit anywhere">
+      <code>1DEF-0708</code>
+      <code>C2E5-D708</code>
+      <code>C2EA-A40C</code>
     </cheat>
     <cheat description="Very few Zombies appear">
       <code>C9BB-A460</code>
@@ -39857,6 +40012,9 @@
     </cheat>
     <cheat description="SMB3 - After getting star, invincible until end of level (may have to disable to jump)">
       <code>C23B-680D</code>
+    </cheat>
+    <cheat description="SMB3 - Disable auto-scroll">
+      <code>6DA2-A80E</code>
     </cheat>
     <cheat description="SMB3 - 1 life after continue">
       <code>DFBB-DBAF</code>
@@ -43146,7 +43304,7 @@
       <code>DD28-A7A5</code>
     </cheat>
   </game>
-  <game name="Super Tetris 2 + Bombliss (Japan)" sha1="5FA25D027940907B769578D7BF85A9D5BA94911A">
+  <game name="Super Tetris 2 + Bombliss (Japan)" sha1="3AC3C616DFE4D36496303B38275D15D7ACEB8572">
     <cheat description="Drop pieces on left side of the board to clear that line">
       <code>DFB4-64D7</code>
     </cheat>
@@ -43531,6 +43689,13 @@
     </cheat>
     <cheat description="World 5 - Dark Kat always enabled">
       <code>D932-7F67</code>
+    </cheat>
+  </game>
+  <game name="Sword Maniac (Japan)" sha1="45D5DE600129E1B13A4C1779122C8604FA92E7C7">
+    <cheat description="Infinite HP">
+      <code>29C7-C06D</code>
+      <code>C245-7D4D</code>
+      <code>DDC7-C0AD</code>
     </cheat>
   </game>
   <game name="Syndicate (USA)" sha1="591527865E2B90521E36D460148F7482BC94B6A0">
@@ -45461,7 +45626,7 @@
     <cheat description="Infinite lives">
       <code>CEB9-3914</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>DDB1-C1CD</code>
     </cheat>
     <cheat description="Start with 5 more lives than usual">
@@ -45598,6 +45763,11 @@
       <code>6DA1-179D</code>
       <code>6DA8-449D</code>
       <code>DDAF-1DFD</code>
+    </cheat>
+  </game>
+  <game name="Trinea (Japan)" sha1="BA4866A599C9DC380C11F0CB3C1F8E0374D35DFF">
+    <cheat description="Infinite health">
+      <code>4FDC-5700</code>
     </cheat>
   </game>
   <game name="Troddlers (USA)" sha1="59A850462151F420E9B4B72284B481FE248A8EFA">
@@ -47496,10 +47666,10 @@
     <cheat description="Immune to most bullets">
       <code>4A31-6DFD</code>
     </cheat>
-    <cheat description="Jump in mid-air">
+    <cheat description="Multi-jump">
       <code>6DB8-6F67</code>
     </cheat>
-    <cheat description="Jump in mid-air for all characters">
+    <cheat description="Multi-jump for all characters">
       <code>6DB8-6F67</code>
       <code>6DC6-A7A7</code>
       <code>6DAA-D40D</code>
