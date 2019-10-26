@@ -41,8 +41,6 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnLoad(EventArgs e)
 		{
-			base.OnLoad(e);
-
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
@@ -89,6 +87,8 @@ namespace Mesen.GUI.Debugger
 
 			BreakpointManager.AddCpuType(_cpuType);
 			DebugApi.Step(_cpuType, 10000, StepType.Step);
+
+			base.OnLoad(e);
 		}
 
 		protected override void OnClosing(CancelEventArgs e)

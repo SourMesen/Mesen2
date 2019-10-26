@@ -25,6 +25,7 @@ namespace Mesen.GUI.Forms
 		public BaseForm()
 		{
 			InitializeComponent();
+			MonoThemeHelper.InitTheme(Color.White);
 		}
 
 		public virtual bool IsConfigForm { get { return false; } }
@@ -87,6 +88,8 @@ namespace Mesen.GUI.Forms
 					base.Icon = Properties.Resources.MesenIcon;
 				}
 			}
+
+			MonoThemeHelper.FixMonoColors(this);
 
 			int tabIndex = 0;
 			InitializeTabIndexes(this, ref tabIndex);

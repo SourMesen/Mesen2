@@ -800,6 +800,8 @@
     <Compile Include="Forms\Config\frmRecordMovie.Designer.cs">
       <DependentUpon>frmRecordMovie.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MonoThemeHelper.cs" />
+    <Compile Include="Forms\MonoToolStripHelper.cs" />
     <Compile Include="Forms\NetPlay\frmClientConfig.cs">
       <SubType>Form</SubType>
     </Compile>
