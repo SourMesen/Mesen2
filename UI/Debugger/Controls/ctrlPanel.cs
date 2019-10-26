@@ -42,6 +42,12 @@ namespace Mesen.GUI.Debugger.Controls
 				this.VerticalScroll.Value = vert;
 				this.VerticalScroll.Value = vert;
 			} else {
+				if(Program.IsMono) {
+					//Patch for Mono to prevent a scrolling bug when zooming out.
+					//Breaks the zoom in/out logic to keep the current scroll position when zooming, but that's better than the original bug.
+					this.HorizontalScroll.Value = 0;
+					this.VerticalScroll.Value = 0;
+				}
 				this.OnZoom?.Invoke(e.Delta > 0 ? 1 : -1);
 			}
 		}
