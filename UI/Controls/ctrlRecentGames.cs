@@ -49,8 +49,8 @@ namespace Mesen.GUI.Controls
 			}
 
 			DoubleBuffered = true;
-
 			picPrevGame.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+			MonoThemeHelper.ExcludeFromTheme(this);
 		}
 
 		private void InitGrid()

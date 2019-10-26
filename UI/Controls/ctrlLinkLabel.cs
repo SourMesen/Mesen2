@@ -11,6 +11,7 @@ namespace Mesen.GUI.Controls
 
 		public ctrlLinkLabel()
 		{
+			MonoThemeHelper.ExcludeFromTheme(this);
 		}
 
 		public string Link

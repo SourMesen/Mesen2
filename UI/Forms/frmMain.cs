@@ -45,6 +45,7 @@ namespace Mesen.GUI.Forms
 			_commandLine = new CommandLineHelper(args);
 
 			ResourceHelper.LoadResources(Language.English);
+			MonoThemeHelper.ExcludeFromTheme(pnlRenderer);
 		}
 
 		protected override void OnLoad(EventArgs e)
