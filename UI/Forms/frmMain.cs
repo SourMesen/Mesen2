@@ -432,7 +432,7 @@ namespace Mesen.GUI.Forms
 		
 		private void ResizeRecentGames()
 		{
-			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - 5;
+			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - 25;
 		}
 
 		private void frmMain_Resize(object sender, EventArgs e)
