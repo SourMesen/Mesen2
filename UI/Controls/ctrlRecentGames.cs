@@ -153,7 +153,7 @@ namespace Mesen.GUI.Controls
 
 			_recentGames = _recentGames.OrderBy((info) => info.Timestamp).Reverse().ToList();
 
-			if(_recentGames.Count > 20) {
+			if(_recentGames.Count > 36) {
 				_recentGames.RemoveRange(36, _recentGames.Count - 36);
 			}
 
