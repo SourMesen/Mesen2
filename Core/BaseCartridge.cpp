@@ -188,6 +188,8 @@ void BaseCartridge::LoadRom()
 		_coprocessorRamSize = 0x10000;
 	}
 
+	LoadEmbeddedFirmware();
+
 	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
 	_console->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
@@ -367,9 +369,26 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 	}
 }
 
+void BaseCartridge::LoadEmbeddedFirmware()
+{
+	//Attempt to detect/load the firmware from the end of the rom file, if it exists
+	if((_coprocessorType >= CoprocessorType::DSP1 && _coprocessorType <= CoprocessorType::DSP4) || (_coprocessorType >= CoprocessorType::ST010 && _coprocessorType <= CoprocessorType::ST011)) {
+		uint32_t firmwareSize = 0;
+		if((_prgRomSize & 0x7FFF) == 0x2000) {
+			firmwareSize = 0x2000;
+		} else if((_prgRomSize & 0xFFFF) == 0xD000) {
+			firmwareSize = 0xD000;
+		}
+
+		_embeddedFirmware.resize(firmwareSize);
+		memcpy(_embeddedFirmware.data(), _prgRom + (_prgRomSize - firmwareSize), firmwareSize);
+		_prgRomSize -= firmwareSize;
+	}
+}
+
 void BaseCartridge::InitCoprocessor()
 {
-	_coprocessor.reset(NecDsp::InitCoprocessor(_coprocessorType, _console));
+	_coprocessor.reset(NecDsp::InitCoprocessor(_coprocessorType, _console, _embeddedFirmware));
 	_necDsp = dynamic_cast<NecDsp*>(_coprocessor.get());
 
 	if(_coprocessorType == CoprocessorType::SA1) {

@@ -51,7 +51,7 @@ private:
 	NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
 
 public:
-	static NecDsp* InitCoprocessor(CoprocessorType type, Console* console);
+	static NecDsp* InitCoprocessor(CoprocessorType type, Console* console, vector<uint8_t> &embeddedFirmware);
 
 	void Reset() override;
 	void Run();

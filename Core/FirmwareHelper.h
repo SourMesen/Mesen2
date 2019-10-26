@@ -36,9 +36,13 @@ private:
 		return false;
 	}
 public:
-	static bool LoadDspFirmware(Console *console, CoprocessorType coprocessorType, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
+	static bool LoadDspFirmware(Console *console, CoprocessorType coprocessorType, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
 	{
-		if(AttemptLoadDspFirmware(combinedFilename, splitFilenameProgram, splitFilenameData, programRom, dataRom, programSize, dataSize)) {
+		if(embeddedFirware.size() == programSize + dataSize) {
+			programRom.insert(programRom.end(), embeddedFirware.begin(), embeddedFirware.begin() + programSize);
+			dataRom.insert(dataRom.end(), embeddedFirware.begin() + programSize, embeddedFirware.end());
+			return true;
+		} else if(AttemptLoadDspFirmware(combinedFilename, splitFilenameProgram, splitFilenameData, programRom, dataRom, programSize, dataSize)) {
 			return true;
 		}
 

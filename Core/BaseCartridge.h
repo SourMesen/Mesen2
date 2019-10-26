@@ -44,6 +44,7 @@ private:
 	uint32_t _coprocessorRamSize = 0;
 	
 	shared_ptr<SpcFileData> _spcData;
+	vector<uint8_t> _embeddedFirmware;
 
 	void LoadBattery();
 
@@ -59,6 +60,7 @@ private:
 	void LoadRom();
 	void LoadSpc();
 	void InitCoprocessor();
+	void LoadEmbeddedFirmware();
 
 	string GetCartName();
 	string GetGameCode();
