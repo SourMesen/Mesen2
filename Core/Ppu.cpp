@@ -895,7 +895,7 @@ void Ppu::RenderScanline()
 	} 
 
 	//Render the scanline
-	if(!_skipRender && _drawStartX < 255 && hPos > 22 && _scanline > 0) {
+	if(!_skipRender && _drawStartX <= 255 && hPos > 22 && _scanline > 0) {
 		_drawEndX = std::min(hPos - 22, 255);
 
 		uint8_t bgMode = _state.BgMode;
