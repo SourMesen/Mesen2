@@ -89,7 +89,7 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 				} else {
 					ResetNesBuffers();
 					ReleaseRenderTargetView();
-					_pSwapChain->ResizeBuffers(1, _realScreenWidth, _realScreenHeight, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+					_pSwapChain->ResizeBuffers(1, _realScreenWidth, _realScreenHeight, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, 0);
 					CreateRenderTargetView();
 					CreateNesBuffers();
 				}
@@ -273,7 +273,7 @@ HRESULT Renderer::InitDevice()
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = _realScreenWidth;
 	sd.BufferDesc.Height = _realScreenHeight;
-	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 	sd.BufferDesc.RefreshRate.Numerator = _console->GetSettings()->GetVideoConfig().ExclusiveFullscreenRefreshRate;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -430,7 +430,7 @@ ID3D11Texture2D* Renderer::CreateTexture(uint32_t width, uint32_t height)
 	desc.ArraySize = 1;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 	desc.MipLevels = 1;
 	desc.MiscFlags = 0;
 	desc.SampleDesc.Count = 1;
