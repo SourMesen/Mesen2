@@ -129,10 +129,10 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	_previousScreenSize = screenSize;
 	_lastFrameInfo = frameInfo;
 
-	_frameChanged = false;
-	
 	//Rewind manager will take care of sending the correct frame to the video renderer
 	_console->GetRewindManager()->SendFrame(outputBuffer, frameInfo.Width, frameInfo.Height, forRewind);
+
+	_frameChanged = false;
 }
 
 void VideoDecoder::DecodeThread()
@@ -158,6 +158,15 @@ uint32_t VideoDecoder::GetFrameCount()
 
 void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool forRewind)
 {
+	if(_frameChanged) {
+		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
+		while(_frameChanged) {
+			//Spin until decode is done
+		}
+		//At this point, we are sure that the decode thread is no longer busy
+	}
+	
+	_frameChanged = true;
 	_baseFrameInfo.Width = width;
 	_baseFrameInfo.Height = height;
 	_frameNumber = frameNumber;
