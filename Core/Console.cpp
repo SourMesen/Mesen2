@@ -31,6 +31,7 @@
 #include "BatteryManager.h"
 #include "CheatManager.h"
 #include "MovieManager.h"
+#include "SystemActionManager.h"
 #include "SpcHud.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
@@ -96,14 +97,9 @@ void Console::Run()
 	
 	auto emulationLock = _emulationLock.AcquireSafe();
 	auto lock = _runLock.AcquireSafe();
-
-	DebugStats stats(this);
-	Timer lastFrameTimer;
-	_stopFlag = false;
 	uint32_t previousFrameCount = 0;
-	
-	double frameDelay = GetFrameDelay();
-	FrameLimiter frameLimiter(frameDelay);
+
+	_stopFlag = false;
 
 	PlatformUtilities::EnableHighResolutionTimer();
 
@@ -113,15 +109,15 @@ void Console::Run()
 	_memoryManager->IncMasterClockStartup();
 	_controlManager->UpdateInputState();
 
+	_frameDelay = GetFrameDelay();
+	_stats.reset(new DebugStats());
+	_frameLimiter.reset(new FrameLimiter(_frameDelay));
+	_lastFrameTimer.Reset();
+
 	while(!_stopFlag) {
 		_cpu->Exec();
 
 		if(previousFrameCount != _ppu->GetFrameCount()) {
-			_cart->RunCoprocessors();
-			if(_cart->GetCoprocessor()) {
-				_cart->GetCoprocessor()->ProcessEndOfFrame();
-			}
-
 			_rewindManager->ProcessEndOfFrame();
 
 			WaitForLock();
@@ -133,32 +129,14 @@ void Console::Run()
 
 			if(_paused && !_stopFlag && !_debugger) {
 				WaitForPauseEnd();
-				if(_stopFlag) {
-					break;
-				}
 			}
-
-			frameLimiter.ProcessFrame();
-			frameLimiter.WaitForNextFrame();
-
-			double newFrameDelay = GetFrameDelay();
-			if(newFrameDelay != frameDelay) {
-				frameDelay = newFrameDelay;
-				frameLimiter.SetDelay(frameDelay);
-			}
-			
-			PreferencesConfig cfg = _settings->GetPreferences();
-			if(cfg.ShowDebugInfo) {
-				double lastFrameTime = lastFrameTimer.GetElapsedMS();
-				lastFrameTimer.Reset();
-				stats.DisplayStats(lastFrameTime);
-			}
-
-			_controlManager->UpdateInputState();
-			_controlManager->UpdateControlDevices();
-			_internalRegisters->ProcessAutoJoypadRead();
-			
 			previousFrameCount = _ppu->GetFrameCount();
+
+			if(_controlManager->GetSystemActionManager()->IsResetPressed()) {
+				Reset();
+			} else if(_controlManager->GetSystemActionManager()->IsPowerCyclePressed()) {
+				PowerCycle();
+			}
 		}
 	}
 
@@ -167,6 +145,36 @@ void Console::Run()
 	_emulationThreadId = thread::id();
 
 	PlatformUtilities::RestoreTimerResolution();
+}
+
+void Console::ProcessEndOfFrame()
+{
+#ifndef LIBRETRO
+	_cart->RunCoprocessors();
+	if(_cart->GetCoprocessor()) {
+		_cart->GetCoprocessor()->ProcessEndOfFrame();
+	}
+
+	_frameLimiter->ProcessFrame();
+	_frameLimiter->WaitForNextFrame();
+
+	double newFrameDelay = GetFrameDelay();
+	if(newFrameDelay != _frameDelay) {
+		_frameDelay = newFrameDelay;
+		_frameLimiter->SetDelay(_frameDelay);
+	}
+
+	PreferencesConfig cfg = _settings->GetPreferences();
+	if(cfg.ShowDebugInfo) {
+		double lastFrameTime = _lastFrameTimer.GetElapsedMS();
+		_lastFrameTimer.Reset();
+		_stats->DisplayStats(this, lastFrameTime);
+	}
+
+	_controlManager->UpdateInputState();
+	_controlManager->UpdateControlDevices();
+	_internalRegisters->ProcessAutoJoypadRead();
+#endif
 }
 
 void Console::RunSingleFrame()

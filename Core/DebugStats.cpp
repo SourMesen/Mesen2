@@ -7,21 +7,16 @@
 #include "DebugHud.h"
 #include "IAudioDevice.h"
 
-DebugStats::DebugStats(Console * console)
+void DebugStats::DisplayStats(Console *console, double lastFrameTime)
 {
-	_console = console;
-}
-
-void DebugStats::DisplayStats(double lastFrameTime)
-{
-	AudioStatistics stats = _console->GetSoundMixer()->GetStatistics();
-	AudioConfig audioCfg = _console->GetSettings()->GetAudioConfig();
-	shared_ptr<DebugHud> hud = _console->GetDebugHud();
+	AudioStatistics stats = console->GetSoundMixer()->GetStatistics();
+	AudioConfig audioCfg = console->GetSettings()->GetAudioConfig();
+	shared_ptr<DebugHud> hud = console->GetDebugHud();
 
 	_frameDurations[_frameDurationIndex] = lastFrameTime;
 	_frameDurationIndex = (_frameDurationIndex + 1) % 60;
 
-	int startFrame = _console->GetPpu()->GetFrameCount();
+	int startFrame = console->GetPpu()->GetFrameCount();
 
 	hud->DrawRectangle(8, 8, 115, 49, 0x40000000, true, 1, startFrame);
 	hud->DrawRectangle(8, 8, 115, 49, 0xFFFFFF, false, 1, startFrame);
@@ -36,7 +31,7 @@ void DebugStats::DisplayStats(double lastFrameTime)
 
 	hud->DrawString(10, 30, "Underruns: " + std::to_string(stats.BufferUnderrunEventCount), 0xFFFFFF, 0xFF000000, 1, startFrame);
 	hud->DrawString(10, 39, "Buffer Size: " + std::to_string(stats.BufferSize / 1024) + "kb", 0xFFFFFF, 0xFF000000, 1, startFrame);
-	hud->DrawString(10, 48, "Rate: " + std::to_string((uint32_t)(audioCfg.SampleRate *  _console->GetSoundMixer()->GetRateAdjustment())) + "Hz", 0xFFFFFF, 0xFF000000, 1, startFrame);
+	hud->DrawString(10, 48, "Rate: " + std::to_string((uint32_t)(audioCfg.SampleRate *  console->GetSoundMixer()->GetRateAdjustment())) + "Hz", 0xFFFFFF, 0xFF000000, 1, startFrame);
 
 	hud->DrawRectangle(132, 8, 115, 49, 0x40000000, true, 1, startFrame);
 	hud->DrawRectangle(132, 8, 115, 49, 0xFFFFFF, false, 1, startFrame);
@@ -55,7 +50,7 @@ void DebugStats::DisplayStats(double lastFrameTime)
 	ss << "Last Frame: " << std::fixed << std::setprecision(2) << lastFrameTime << " ms";
 	hud->DrawString(134, 30, ss.str(), 0xFFFFFF, 0xFF000000, 1, startFrame);
 
-	if(_console->GetPpu()->GetFrameCount() > 60) {
+	if(console->GetPpu()->GetFrameCount() > 60) {
 		_lastFrameMin = std::min(lastFrameTime, _lastFrameMin);
 		_lastFrameMax = std::max(lastFrameTime, _lastFrameMax);
 	} else {

@@ -79,16 +79,13 @@ public:
 		return false;
 	}
 
-	void ProcessSystemActions()
+	bool IsResetPressed()
 	{
-		if(_console) {
-			if(IsPressed(SystemActionManager::Buttons::ResetButton)) {
-				_console->Reset();
-			}
-			if(IsPressed(SystemActionManager::Buttons::PowerButton)) {
-				_console->PowerCycle();
-				//Calling PowerCycle() causes this object to be deleted - no code must be written below this line
-			}
-		}
+		return IsPressed(SystemActionManager::Buttons::ResetButton);
+	}
+
+	bool IsPowerCyclePressed()
+	{
+		return IsPressed(SystemActionManager::Buttons::PowerButton);
 	}
 };

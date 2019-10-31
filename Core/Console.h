@@ -3,6 +3,7 @@
 #include "CartTypes.h"
 #include "DebugTypes.h"
 #include "ConsoleLock.h"
+#include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/SimpleLock.h"
 
@@ -27,6 +28,9 @@ class BatteryManager;
 class CheatManager;
 class MovieManager;
 class SpcHud;
+class FrameLimiter;
+class DebugStats;
+
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
@@ -75,6 +79,11 @@ private:
 	ConsoleRegion _region;
 	uint32_t _masterClockRate;
 
+	unique_ptr<DebugStats> _stats;
+	unique_ptr<FrameLimiter> _frameLimiter;
+	Timer _lastFrameTimer;
+	double _frameDelay = 0;
+
 	double GetFrameDelay();
 	void UpdateRegion();
 	void WaitForLock();
@@ -90,6 +99,8 @@ public:
 	void Run();
 	void RunSingleFrame();
 	void Stop(bool sendNotification);
+
+	void ProcessEndOfFrame();
 
 	void Reset();
 	void PowerCycle();

@@ -467,6 +467,8 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_regs->SetNmiFlag(true);
 			SendFrame();
 
+			_console->ProcessEndOfFrame();
+
 			if(_regs->IsNmiEnabled()) {
 				_console->GetCpu()->SetNmiFlag();
 			}

@@ -70,9 +70,9 @@ vector<ControllerData> ControlManager::GetPortStates()
 	return states;
 }
 
-shared_ptr<SystemActionManager> ControlManager::GetSystemActionManager()
+SystemActionManager* ControlManager::GetSystemActionManager()
 {
-	return _systemActionManager;
+	return _systemActionManager.get();
 }
 
 shared_ptr<BaseControlDevice> ControlManager::GetControlDevice(uint8_t port)
@@ -134,7 +134,6 @@ void ControlManager::UpdateControlDevices()
 			}
 		}
 	}
-	_systemActionManager->ProcessSystemActions();
 }
 
 void ControlManager::UpdateInputState()

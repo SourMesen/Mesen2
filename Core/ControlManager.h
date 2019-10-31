@@ -51,7 +51,7 @@ public:
 
 	vector<ControllerData> GetPortStates();
 
-	shared_ptr<SystemActionManager> GetSystemActionManager();
+	SystemActionManager* GetSystemActionManager();
 	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);
 	vector<shared_ptr<BaseControlDevice>> GetControlDevices();
 	
