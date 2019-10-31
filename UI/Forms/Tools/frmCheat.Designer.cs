@@ -35,15 +35,15 @@
 			this.tlpInvalidCodes = new System.Windows.Forms.TableLayoutPanel();
 			this.pictureBox2 = new System.Windows.Forms.PictureBox();
 			this.lblInvalidCodes = new System.Windows.Forms.Label();
-			this.radGameGenie = new System.Windows.Forms.RadioButton();
-			this.radProActionReplay = new System.Windows.Forms.RadioButton();
 			this.txtCodes = new System.Windows.Forms.TextBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.picHint = new System.Windows.Forms.PictureBox();
 			this.lblHint = new System.Windows.Forms.Label();
 			this.txtRawCodes = new System.Windows.Forms.TextBox();
-			this.chkEnabled = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.radProActionReplay = new System.Windows.Forms.RadioButton();
+			this.radGameGenie = new System.Windows.Forms.RadioButton();
+			this.chkEnabled = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.grpCode.SuspendLayout();
 			this.tlpAdd.SuspendLayout();
@@ -62,10 +62,10 @@
 			// 
 			// tableLayoutPanel2
 			// 
-			this.tableLayoutPanel2.ColumnCount = 3;
+			this.tableLayoutPanel2.ColumnCount = 2;
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel2.Controls.Add(this.lblDescription, 0, 0);
 			this.tableLayoutPanel2.Controls.Add(this.txtCheatName, 1, 0);
 			this.tableLayoutPanel2.Controls.Add(this.grpCode, 0, 2);
@@ -77,7 +77,6 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel2.Size = new System.Drawing.Size(410, 262);
 			this.tableLayoutPanel2.TabIndex = 4;
 			// 
@@ -93,7 +92,6 @@
 			// 
 			// txtCheatName
 			// 
-			this.tableLayoutPanel2.SetColumnSpan(this.txtCheatName, 2);
 			this.txtCheatName.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtCheatName.Location = new System.Drawing.Point(72, 3);
 			this.txtCheatName.MaxLength = 255;
@@ -103,7 +101,7 @@
 			// 
 			// grpCode
 			// 
-			this.tableLayoutPanel2.SetColumnSpan(this.grpCode, 3);
+			this.tableLayoutPanel2.SetColumnSpan(this.grpCode, 2);
 			this.grpCode.Controls.Add(this.tlpAdd);
 			this.grpCode.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpCode.Location = new System.Drawing.Point(3, 52);
@@ -174,30 +172,6 @@
 			this.lblInvalidCodes.TabIndex = 4;
 			this.lblInvalidCodes.Text = "Some codes do not match the selected format.";
 			// 
-			// radGameGenie
-			// 
-			this.radGameGenie.AutoSize = true;
-			this.radGameGenie.Checked = true;
-			this.radGameGenie.Location = new System.Drawing.Point(3, 3);
-			this.radGameGenie.Name = "radGameGenie";
-			this.radGameGenie.Size = new System.Drawing.Size(144, 17);
-			this.radGameGenie.TabIndex = 2;
-			this.radGameGenie.TabStop = true;
-			this.radGameGenie.Text = "Game Genie (0000-0000)";
-			this.radGameGenie.UseVisualStyleBackColor = true;
-			this.radGameGenie.CheckedChanged += new System.EventHandler(this.radFormat_CheckedChanged);
-			// 
-			// radProActionReplay
-			// 
-			this.radProActionReplay.AutoSize = true;
-			this.radProActionReplay.Location = new System.Drawing.Point(153, 3);
-			this.radProActionReplay.Name = "radProActionReplay";
-			this.radProActionReplay.Size = new System.Drawing.Size(175, 17);
-			this.radProActionReplay.TabIndex = 2;
-			this.radProActionReplay.Text = "Pro Action Replay (AAAAAAVV)";
-			this.radProActionReplay.UseVisualStyleBackColor = true;
-			this.radProActionReplay.CheckedChanged += new System.EventHandler(this.radFormat_CheckedChanged);
-			// 
 			// txtCodes
 			// 
 			this.txtCodes.AcceptsReturn = true;
@@ -261,17 +235,6 @@
 			this.txtRawCodes.Size = new System.Drawing.Size(193, 119);
 			this.txtRawCodes.TabIndex = 8;
 			// 
-			// chkEnabled
-			// 
-			this.chkEnabled.AutoSize = true;
-			this.tableLayoutPanel2.SetColumnSpan(this.chkEnabled, 2);
-			this.chkEnabled.Location = new System.Drawing.Point(3, 29);
-			this.chkEnabled.Name = "chkEnabled";
-			this.chkEnabled.Size = new System.Drawing.Size(96, 17);
-			this.chkEnabled.TabIndex = 6;
-			this.chkEnabled.Text = "Cheat Enabled";
-			this.chkEnabled.UseVisualStyleBackColor = true;
-			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.ColumnCount = 3;
@@ -283,12 +246,47 @@
 			this.tableLayoutPanel3.Controls.Add(this.radGameGenie, 0, 0);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 1;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(398, 23);
 			this.tableLayoutPanel3.TabIndex = 9;
+			// 
+			// radProActionReplay
+			// 
+			this.radProActionReplay.AutoSize = true;
+			this.radProActionReplay.Location = new System.Drawing.Point(153, 3);
+			this.radProActionReplay.Name = "radProActionReplay";
+			this.radProActionReplay.Size = new System.Drawing.Size(175, 17);
+			this.radProActionReplay.TabIndex = 2;
+			this.radProActionReplay.Text = "Pro Action Replay (AAAAAAVV)";
+			this.radProActionReplay.UseVisualStyleBackColor = true;
+			this.radProActionReplay.CheckedChanged += new System.EventHandler(this.radFormat_CheckedChanged);
+			// 
+			// radGameGenie
+			// 
+			this.radGameGenie.AutoSize = true;
+			this.radGameGenie.Checked = true;
+			this.radGameGenie.Location = new System.Drawing.Point(3, 3);
+			this.radGameGenie.Name = "radGameGenie";
+			this.radGameGenie.Size = new System.Drawing.Size(144, 17);
+			this.radGameGenie.TabIndex = 2;
+			this.radGameGenie.TabStop = true;
+			this.radGameGenie.Text = "Game Genie (0000-0000)";
+			this.radGameGenie.UseVisualStyleBackColor = true;
+			this.radGameGenie.CheckedChanged += new System.EventHandler(this.radFormat_CheckedChanged);
+			// 
+			// chkEnabled
+			// 
+			this.chkEnabled.AutoSize = true;
+			this.tableLayoutPanel2.SetColumnSpan(this.chkEnabled, 2);
+			this.chkEnabled.Location = new System.Drawing.Point(3, 29);
+			this.chkEnabled.Name = "chkEnabled";
+			this.chkEnabled.Size = new System.Drawing.Size(96, 17);
+			this.chkEnabled.TabIndex = 6;
+			this.chkEnabled.Text = "Cheat Enabled";
+			this.chkEnabled.UseVisualStyleBackColor = true;
 			// 
 			// frmCheat
 			// 
