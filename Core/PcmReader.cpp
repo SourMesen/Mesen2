@@ -9,7 +9,7 @@ PcmReader::PcmReader()
 	_prevLeft = 0;
 	_prevRight = 0;
 	_loopOffset = 8;
-	_sampleRate = 48000;
+	_sampleRate = 0;
 	_blipLeft = blip_new(10000);
 	_blipRight = blip_new(10000);
 	_outputBuffer = new int16_t[20000];

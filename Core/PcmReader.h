@@ -25,7 +25,7 @@ private:
 	blip_t* _blipLeft;
 	blip_t* _blipRight;
 
-	uint32_t _sampleRate = 0;
+	uint32_t _sampleRate;
 
 	void LoadSamples(uint32_t samplesToLoad);
 	void ReadSample(int16_t &left, int16_t &right);
