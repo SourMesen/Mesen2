@@ -41,21 +41,27 @@ void DefaultVideoFilter::InitLookupTable()
 
 	double y, i, q;
 	for(int rgb555 = 0; rgb555 < 0x8000; rgb555++) {
-		double redChannel = To8Bit(rgb555 & 0x1F) / 255.0;
-		double greenChannel = To8Bit((rgb555 >> 5) & 0x1F) / 255.0;
-		double blueChannel = To8Bit(rgb555 >> 10) / 255.0;
+		if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
+			double redChannel = To8Bit(rgb555 & 0x1F) / 255.0;
+			double greenChannel = To8Bit((rgb555 >> 5) & 0x1F) / 255.0;
+			double blueChannel = To8Bit(rgb555 >> 10) / 255.0;
 
-		//Apply brightness, contrast, hue & saturation
-		RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
-		y *= config.Contrast * 0.5f + 1;
-		y += config.Brightness * 0.5f;
-		YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
+			//Apply brightness, contrast, hue & saturation
+			RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
+			y *= config.Contrast * 0.5f + 1;
+			y += config.Brightness * 0.5f;
+			YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
 
-		int r = std::min(255, (int)(redChannel * 255));
-		int g = std::min(255, (int)(greenChannel * 255));
-		int b = std::min(255, (int)(blueChannel * 255));
-
-		_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
+			int r = std::min(255, (int)(redChannel * 255));
+			int g = std::min(255, (int)(greenChannel * 255));
+			int b = std::min(255, (int)(blueChannel * 255));
+			_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
+		} else {
+			uint8_t r = To8Bit(rgb555 & 0x1F);
+			uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
+			uint8_t b = To8Bit((rgb555 >> 10) & 0x1F);
+			_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
+		}
 	}
 
 	_videoConfig = config;
