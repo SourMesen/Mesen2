@@ -114,6 +114,7 @@
     <ClInclude Include="MessageType.h" />
     <ClInclude Include="MovieDataMessage.h" />
     <ClInclude Include="MovieTypes.h" />
+    <ClInclude Include="Msu1.h" />
     <ClInclude Include="Multitap.h" />
     <ClInclude Include="MesenMovie.h" />
     <ClInclude Include="MovieManager.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NtscFilter.h" />
     <ClInclude Include="Obc1.h" />
+    <ClInclude Include="PcmReader.h" />
     <ClInclude Include="PlayerListMessage.h" />
     <ClInclude Include="PpuTools.h" />
     <ClInclude Include="RecordedRomTest.h" />
@@ -261,12 +263,14 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="MovieManager.cpp" />
     <ClCompile Include="MovieRecorder.cpp" />
+    <ClCompile Include="Msu1.cpp" />
     <ClCompile Include="Multitap.cpp" />
     <ClCompile Include="NecDsp.cpp" />
     <ClCompile Include="NecDspDisUtils.cpp" />
     <ClCompile Include="NotificationManager.cpp" />
     <ClCompile Include="NtscFilter.cpp" />
     <ClCompile Include="Obc1.cpp" />
+    <ClCompile Include="PcmReader.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
     <ClCompile Include="RecordedRomTest.cpp" />

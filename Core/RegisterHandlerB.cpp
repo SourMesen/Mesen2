@@ -5,6 +5,7 @@
 #include "Spc.h"
 #include "BaseCartridge.h"
 #include "Sa1.h"
+#include "Msu1.h"
 #include "CheatManager.h"
 #include "../Utilities/Serializer.h"
 
@@ -15,6 +16,7 @@ RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8
 	_sa1 = console->GetCartridge()->GetSa1();
 	_ppu = ppu;
 	_spc = spc;
+	_msu1 = console->GetMsu1().get();
 	_workRam = workRam;
 	_wramPosition = 0;
 	_memoryType = SnesMemoryType::Register;
@@ -33,6 +35,8 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 		return value;
 	} else if(addr >= 0x2300 && addr <= 0x23FF && _console->GetCartridge()->GetSa1()) {
 		return _console->GetCartridge()->GetSa1()->CpuRegisterRead(addr);
+	} else if(_msu1 && addr <= 0x2007) {
+		return _msu1->Read(addr);
 	} else {
 		return _ppu->Read(addr);
 	}
@@ -69,6 +73,8 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 		}
 	} else if(addr >= 0x2200 && addr <= 0x22FF && _console->GetCartridge()->GetSa1()) {
 		_console->GetCartridge()->GetSa1()->CpuRegisterWrite(addr, value);
+	} else if(_msu1 && addr <= 0x2007) {
+		return _msu1->Write(addr, value);
 	} else {
 		_ppu->Write(addr, value);
 	}

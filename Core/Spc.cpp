@@ -342,6 +342,11 @@ SpcState Spc::GetState()
 	return _state;
 }
 
+bool Spc::IsMuted()
+{
+	return _dsp->isMuted();
+}
+
 AddressInfo Spc::GetAbsoluteAddress(uint16_t addr)
 {
 	if(addr < 0xFFC0 || !_state.RomEnabled) {

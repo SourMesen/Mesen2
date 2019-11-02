@@ -7,6 +7,7 @@ class Console;
 class Ppu;
 class Spc;
 class Sa1;
+class Msu1;
 class CheatManager;
 
 class RegisterHandlerB : public IMemoryHandler, public ISerializable
@@ -17,6 +18,7 @@ private:
 	Ppu *_ppu;
 	Spc *_spc;
 	Sa1 *_sa1;
+	Msu1 *_msu1;
 
 	uint8_t *_workRam;
 	uint32_t _wramPosition;

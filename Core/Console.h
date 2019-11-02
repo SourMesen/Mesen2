@@ -30,6 +30,7 @@ class MovieManager;
 class SpcHud;
 class FrameLimiter;
 class DebugStats;
+class Msu1;
 
 enum class MemoryOperationType;
 enum class SnesMemoryType;
@@ -49,6 +50,8 @@ private:
 	shared_ptr<InternalRegisters> _internalRegisters;
 	shared_ptr<ControlManager> _controlManager;
 	shared_ptr<DmaController> _dmaController;
+	
+	shared_ptr<Msu1> _msu1;
 
 	shared_ptr<Debugger> _debugger;
 
@@ -143,6 +146,7 @@ public:
 	shared_ptr<InternalRegisters> GetInternalRegisters();
 	shared_ptr<ControlManager> GetControlManager();
 	shared_ptr<DmaController> GetDmaController();
+	shared_ptr<Msu1> GetMsu1();
 
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
 	void StopDebugger();

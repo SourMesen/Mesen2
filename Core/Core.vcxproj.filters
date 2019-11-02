@@ -479,6 +479,12 @@
     <ClInclude Include="IDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
+    <ClInclude Include="Msu1.h">
+      <Filter>SNES\Coprocessors\MSU1</Filter>
+    </ClInclude>
+    <ClInclude Include="PcmReader.h">
+      <Filter>SNES\Coprocessors\MSU1</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -761,6 +767,12 @@
     <ClCompile Include="GameServer.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
+    <ClCompile Include="PcmReader.cpp">
+      <Filter>SNES\Coprocessors\MSU1</Filter>
+    </ClCompile>
+    <ClCompile Include="Msu1.cpp">
+      <Filter>SNES\Coprocessors\MSU1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -828,6 +840,9 @@
     </Filter>
     <Filter Include="Netplay\Messages">
       <UniqueIdentifier>{c58f689e-a6af-4b9c-bb77-0be9d2b1142c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\MSU1">
+      <UniqueIdentifier>{9fb8db1f-a7b5-4570-99ca-bbc15d262632}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

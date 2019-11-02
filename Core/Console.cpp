@@ -33,6 +33,7 @@
 #include "MovieManager.h"
 #include "SystemActionManager.h"
 #include "SpcHud.h"
+#include "Msu1.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
@@ -241,6 +242,7 @@ void Console::Stop(bool sendNotification)
 	_controlManager.reset();
 	_memoryManager.reset();
 	_dmaController.reset();
+	_msu1.reset();
 
 	_soundMixer->StopAudio(true);
 
@@ -330,6 +332,8 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_controlManager.reset(new ControlManager(this));
 		_dmaController.reset(new DmaController(_memoryManager.get()));
 		_spc.reset(new Spc(this));
+
+		_msu1.reset(Msu1::Init(romFile, _spc.get()));
 
 		if(_cart->GetSpcData()) {
 			_spc->LoadSpcFile(_cart->GetSpcData());
@@ -553,6 +557,9 @@ void Console::Serialize(ostream &out)
 	serializer.Stream(_cart.get());
 	serializer.Stream(_controlManager.get());
 	serializer.Stream(_spc.get());
+	if(_msu1) {
+		serializer.Stream(_msu1.get());
+	}
 	serializer.Save(out);
 }
 
@@ -567,7 +574,9 @@ void Console::Deserialize(istream &in, uint32_t fileFormatVersion)
 	serializer.Stream(_cart.get());
 	serializer.Stream(_controlManager.get());
 	serializer.Stream(_spc.get());
-
+	if(_msu1) {
+		serializer.Stream(_msu1.get());
+	}
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 }
 
@@ -664,6 +673,11 @@ shared_ptr<ControlManager> Console::GetControlManager()
 shared_ptr<DmaController> Console::GetDmaController()
 {
 	return _dmaController;
+}
+
+shared_ptr<Msu1> Console::GetMsu1()
+{
+	return _msu1;
 }
 
 shared_ptr<Debugger> Console::GetDebugger(bool autoStart)

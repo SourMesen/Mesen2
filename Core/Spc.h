@@ -298,6 +298,7 @@ public:
 	void ProcessEndFrame();
 
 	SpcState GetState();
+	bool IsMuted();
 	AddressInfo GetAbsoluteAddress(uint16_t addr);
 	int GetRelativeAddress(AddressInfo & absAddress);
 

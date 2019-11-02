@@ -6,6 +6,7 @@
 #include "RewindManager.h"
 #include "VideoRenderer.h"
 #include "WaveRecorder.h"
+#include "Msu1.h"
 #include "../Utilities/Equalizer.h"
 #include "../Utilities/blip_buf.h"
 
@@ -69,25 +70,30 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 	_leftSample = samples[0];
 	_rightSample = samples[1];
 
+	int16_t *out = nullptr;
+	uint32_t count = 0;
+	if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
+		out = samples;
+		count = sampleCount;
+	} else {
+		count = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
+		out = _sampleBuffer;
+	}
+
+	shared_ptr<Msu1> msu1 = _console->GetMsu1();
+	if(msu1) {
+		msu1->MixAudio(out, count, cfg.SampleRate);
+	}
+	
 	if(masterVolume < 100) {
 		//Apply volume if not using the default value
-		for(uint32_t i = 0; i < sampleCount * 2; i++) {
-			samples[i] = (int32_t)samples[i] * (int32_t)masterVolume / 100;
+		for(uint32_t i = 0; i < count * 2; i++) {
+			out[i] = (int32_t)out[i] * (int32_t)masterVolume / 100;
 		}
 	}
 
 	shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
-	if(rewindManager && rewindManager->SendAudio(samples, (uint32_t)sampleCount)) {
-		int16_t *out = nullptr;
-		uint32_t count = 0;
-		if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
-			out = samples;
-			count = sampleCount;
-		} else {
-			count = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
-			out = _sampleBuffer;
-		}
-
+	if(rewindManager && rewindManager->SendAudio(out, count)) {
 		bool isRecording = _waveRecorder || _console->GetVideoRenderer()->IsRecording();
 		if(isRecording) {
 			if(_waveRecorder) {

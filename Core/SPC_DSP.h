@@ -44,7 +44,7 @@ public:
 	// a pair of samples is be generated.
 	void run();
 	
-	void setEchoWriteEnabled(bool enabled);
+	bool isMuted() { return (m.regs[r_flg] & 0x40) != 0; }
 
 // Sound control
 
