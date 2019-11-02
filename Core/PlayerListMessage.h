@@ -17,7 +17,7 @@ protected:
 				s.Stream(_playerList[i].Name, _playerList[i].ControllerPort, _playerList[i].IsHost);
 			}
 		} else {
-			uint32_t playerCount;
+			uint32_t playerCount = 0;
 			s.Stream(playerCount);
 			
 			for(uint32_t i = 0; i < playerCount; i++) {
