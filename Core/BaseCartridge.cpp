@@ -190,7 +190,8 @@ void BaseCartridge::LoadRom()
 
 	LoadEmbeddedFirmware();
 
-	_saveRamSize = _cartInfo.SramSize > 0 ? 1024 * (1 << _cartInfo.SramSize) : 0;
+	uint8_t rawSramSize = std::min(_cartInfo.SramSize & 0x0F, 8);
+	_saveRamSize = rawSramSize > 0 ? 1024 * (1 << rawSramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
 	_console->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 
