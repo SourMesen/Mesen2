@@ -72,6 +72,7 @@ private:
 	uint16_t *_outputBuffers[2] = {};
 	uint16_t *_currentBuffer = nullptr;
 	bool _useHighResOutput = false;
+	bool _interlacedFrame = false;
 
 	uint16_t _pixelsDrawn = 0;
 	uint16_t _subPixelsDrawn = 0;

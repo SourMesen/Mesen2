@@ -397,12 +397,13 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			if(_scanline == 0) {
 				_mosaicScanlineCounter = _state.MosaicEnabled ? _state.MosaicSize + 1 : 0;
 				if(!_skipRender) {
-					if(!_state.ScreenInterlace) {
+					if(!_interlacedFrame) {
 						_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 					}
 					
 					//If we're not skipping this frame, reset the high resolution flag
 					_useHighResOutput = false;
+					_interlacedFrame = false;
 				}
 			}
 			
@@ -1446,6 +1447,7 @@ void Ppu::ApplyHiResMode()
 	if(!_useHighResOutput) {
 		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 1);
 	} else {
+		_interlacedFrame |= _state.ScreenInterlace;
 		uint32_t screenY = _state.ScreenInterlace ? (_oddFrame ? ((scanline << 1) + 1) : (scanline << 1)) : (scanline << 1);
 		uint32_t baseAddr = (screenY << 9);
 
@@ -1527,7 +1529,7 @@ void Ppu::SendFrame()
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 #else
-	if(isRewinding || _state.ScreenInterlace) {
+	if(isRewinding || _interlacedFrame) {
 		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
