@@ -58,7 +58,13 @@ void Spc::Reset()
 	_state.Timer0.Reset();
 	_state.Timer1.Reset();
 	_state.Timer2.Reset();
-	
+
+	//Resetting appears to reset the values the main CPU can read (not doing this causes a freeze in Kaite Tsukette Asoberu Dezaemon)
+	_state.OutputReg[0] = 0;
+	_state.OutputReg[1] = 0;
+	_state.OutputReg[2] = 0;
+	_state.OutputReg[3] = 0;
+
 	_state.RomEnabled = true;
 	_state.Cycle = 0;
 	_state.PC = ReadWord(Spc::ResetVector);
