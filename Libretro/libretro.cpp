@@ -364,7 +364,7 @@ extern "C" {
 			string value = string(var.value);
 			if(value == "Random Values (Default)") {
 				emulation.RamPowerOnState = RamState::Random;
-			} else if(value == "All 0s ") {
+			} else if(value == "All 0s") {
 				emulation.RamPowerOnState = RamState::AllZeros;
 			} else if(value == "All 1s") {
 				emulation.RamPowerOnState = RamState::AllOnes;
