@@ -187,11 +187,29 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			_aluMulDiv.Write(addr, value);
 			break;
 
-		case 0x4207: _state.HorizontalTimer = (_state.HorizontalTimer & 0x100) | value; break;
-		case 0x4208: _state.HorizontalTimer = (_state.HorizontalTimer & 0xFF) | ((value & 0x01) << 8); break;
+		case 0x4207: 
+			_state.HorizontalTimer = (_state.HorizontalTimer & 0x100) | value; 
+			ProcessIrqCounters();
+			break;
 
-		case 0x4209: _state.VerticalTimer = (_state.VerticalTimer & 0x100) | value; break;
-		case 0x420A: _state.VerticalTimer = (_state.VerticalTimer & 0xFF) | ((value & 0x01) << 8); break;
+		case 0x4208: 
+			_state.HorizontalTimer = (_state.HorizontalTimer & 0xFF) | ((value & 0x01) << 8); 
+			ProcessIrqCounters();
+			break;
+
+		case 0x4209: 
+			_state.VerticalTimer = (_state.VerticalTimer & 0x100) | value; 
+
+			//Calling this here fixes flashing issue in "Shin Nihon Pro Wrestling Kounin - '95 Tokyo Dome Battle 7"
+			//The write to change from scanline 16 to 17 occurs between both ProcessIrqCounter calls, which causes the IRQ
+			//line to always be high (since the previous check is on scanline 16, and the next check on scanline 17)
+			ProcessIrqCounters();
+			break;
+
+		case 0x420A: 
+			_state.VerticalTimer = (_state.VerticalTimer & 0xFF) | ((value & 0x01) << 8);
+			ProcessIrqCounters();
+			break;
 
 		case 0x420D: _state.EnableFastRom = (value & 0x01) != 0; break;
 
