@@ -157,7 +157,12 @@ void Console::ProcessEndOfFrame()
 	}
 
 	_frameLimiter->ProcessFrame();
-	_frameLimiter->WaitForNextFrame();
+	while(_frameLimiter->WaitForNextFrame()) {
+		if(_stopFlag || _frameDelay != GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {
+			//Need to process another event, stop sleeping
+			break;
+		}
+	}
 
 	double newFrameDelay = GetFrameDelay();
 	if(newFrameDelay != _frameDelay) {

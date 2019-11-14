@@ -39,8 +39,15 @@ public:
 		_targetTime += _delay;
 	}
 
-	void WaitForNextFrame()
+	bool WaitForNextFrame()
 	{
+		if(_targetTime - _clockTimer.GetElapsedMS() > 50) {
+			//When sleeping for a long time (e.g <= 25% speed), sleep in small chunks and check to see if we need to stop sleeping between each sleep call
+			_clockTimer.WaitUntil(_clockTimer.GetElapsedMS() + 40);
+			return true;
+		}
+
 		_clockTimer.WaitUntil(_targetTime);
+		return false;
 	}
 };
