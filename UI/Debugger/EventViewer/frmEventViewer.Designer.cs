@@ -33,12 +33,12 @@
 			this.mnuClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuView = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefreshSpeed = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefreshLow = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefreshNormal = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefreshHigh = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRefreshOnBreakPause = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,20 +104,6 @@
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(195, 6);
-			// 
-			// mnuAutoRefresh
-			// 
-			this.mnuAutoRefresh.Checked = true;
-			this.mnuAutoRefresh.CheckOnClick = true;
-			this.mnuAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.mnuAutoRefresh.Name = "mnuAutoRefresh";
-			this.mnuAutoRefresh.Size = new System.Drawing.Size(198, 22);
-			this.mnuAutoRefresh.Text = "Auto-refresh";
-			// 
 			// mnuAutoRefreshSpeed
 			// 
 			this.mnuAutoRefreshSpeed.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -146,6 +132,21 @@
 			this.mnuAutoRefreshHigh.Name = "mnuAutoRefreshHigh";
 			this.mnuAutoRefreshHigh.Size = new System.Drawing.Size(159, 22);
 			this.mnuAutoRefreshHigh.Text = "High (60 FPS)";
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(195, 6);
+			// 
+			// mnuAutoRefresh
+			// 
+			this.mnuAutoRefresh.Checked = true;
+			this.mnuAutoRefresh.CheckOnClick = true;
+			this.mnuAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mnuAutoRefresh.Name = "mnuAutoRefresh";
+			this.mnuAutoRefresh.Size = new System.Drawing.Size(198, 22);
+			this.mnuAutoRefresh.Text = "Auto-refresh";
+			this.mnuAutoRefresh.CheckedChanged += new System.EventHandler(this.mnuAutoRefresh_CheckedChanged);
 			// 
 			// mnuRefreshOnBreakPause
 			// 

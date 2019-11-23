@@ -62,7 +62,7 @@ namespace Mesen.GUI.Debugger
 					break;
 
 				case ConsoleNotificationType.EventViewerRefresh:
-					if(_window.ScanlineCycleSelect == null && (_timer.ElapsedTicks - _lastUpdate) > _minDelay) {
+					if(_window.ScanlineCycleSelect == null && this.AutoRefresh && (_timer.ElapsedTicks - _lastUpdate) > _minDelay) {
 						RefreshContent();
 					}
 					break;

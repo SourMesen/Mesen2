@@ -44,6 +44,7 @@ namespace Mesen.GUI.Debugger
 				_refreshManager = new WindowRefreshManager(this);
 				_refreshManager.AutoRefresh = config.AutoRefresh;
 				_refreshManager.AutoRefreshSpeed = config.AutoRefreshSpeed;
+				mnuAutoRefresh.Checked = config.AutoRefresh;
 				mnuAutoRefreshLow.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Low;
 				mnuAutoRefreshNormal.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Normal;
 				mnuAutoRefreshHigh.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.High;
@@ -68,6 +69,7 @@ namespace Mesen.GUI.Debugger
 
 		private void InitShortcuts()
 		{
+			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
 			mnuZoomIn.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomIn));
 			mnuZoomOut.InitShortcut(this, nameof(DebuggerShortcutsConfig.ZoomOut));
 
@@ -110,6 +112,11 @@ namespace Mesen.GUI.Debugger
 		{
 			RefreshData();
 			RefreshViewer();
+		}
+		
+		private void mnuAutoRefresh_CheckedChanged(object sender, EventArgs e)
+		{
+			_refreshManager.AutoRefresh = mnuAutoRefresh.Checked;
 		}
 
 		private void UpdateRefreshSpeedMenu()
