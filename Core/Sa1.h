@@ -82,6 +82,7 @@ public:
 	void Reset() override;
 
 	SnesMemoryType GetSa1MemoryType();
+	bool IsSnesCpuFastRomSpeed();
 	SnesMemoryType GetSnesCpuMemoryType();
 
 	uint8_t* DebugGetInternalRam();

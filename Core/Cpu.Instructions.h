@@ -198,6 +198,7 @@ void Cpu::BRA()
 void Cpu::BRL()
 {
 	_state.PC = (uint16_t)(_state.PC + (int16_t)_operand);
+	IdleTakeBranch();
 }
 
 void Cpu::BVC()

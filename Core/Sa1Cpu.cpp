@@ -6,6 +6,7 @@
 #include "MemoryManager.h"
 #include "EventType.h"
 #include "Sa1.h"
+#include "MemoryMappings.h"
 
 #define Cpu Sa1Cpu
 #include "Cpu.Instructions.h"
@@ -60,15 +61,19 @@ void Sa1Cpu::Exec()
 
 void Sa1Cpu::Idle()
 {
-	ProcessCpuCycle(0);
+	//Do not apply any delay to internal cycles: "internal SA-1 cycles are still 10.74 MHz."
+	_state.CycleCount++;
+	_state.PrevNmiFlag = _state.NmiFlag;
+	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
 }
 
 void Sa1Cpu::IdleEndJump()
 {
-	if(_sa1->GetSa1MemoryType() == SnesMemoryType::PrgRom) {
+	IMemoryHandler* handler = _sa1->GetMemoryMappings()->GetHandler(_state.PC);
+	if(handler && handler->GetMemoryType() == SnesMemoryType::PrgRom) {
 		//Jumps/returns in PRG ROM take an extra cycle
 		_state.CycleCount++;
-		if(IsAccessConflict()) {
+		if(_sa1->GetSnesCpuMemoryType() == SnesMemoryType::PrgRom) {
 			//Add an extra wait cycle if a conflict occurs at the same time
 			_state.CycleCount++;
 		}
@@ -77,9 +82,12 @@ void Sa1Cpu::IdleEndJump()
 
 void Sa1Cpu::IdleTakeBranch()
 {
-	if(_sa1->GetSa1MemoryType() == SnesMemoryType::PrgRom && (_state.PC & 0x01)) {
-		//Branches to an odd address take an extra cycle
-		_state.CycleCount++;
+	if(_state.PC & 0x01) {
+		IMemoryHandler* handler = _sa1->GetMemoryMappings()->GetHandler(_state.PC);
+		if(handler && handler->GetMemoryType() == SnesMemoryType::PrgRom) {
+			//Branches to an odd address take an extra cycle
+			_state.CycleCount++;
+		}
 	}
 }
 
@@ -101,8 +109,8 @@ void Sa1Cpu::ProcessCpuCycle(uint32_t addr)
 	} else if(IsAccessConflict()) {
 		//Add a wait cycle when a conflict occurs between both CPUs
 		_state.CycleCount++;
-		if(_sa1->GetSa1MemoryType() == SnesMemoryType::Sa1InternalRam) {
-			//If it's an IRAM access, add another wait cycle
+		if(_sa1->GetSa1MemoryType() == SnesMemoryType::Sa1InternalRam && _sa1->IsSnesCpuFastRomSpeed()) {
+			//If it's an IRAM access during FastROM access (speed = 6), add another wait cycle
 			_state.CycleCount++;
 		}
 	}

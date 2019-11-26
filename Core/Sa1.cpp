@@ -742,6 +742,12 @@ SnesMemoryType Sa1::GetSa1MemoryType()
 	return _lastAccessMemType;
 }
 
+bool Sa1::IsSnesCpuFastRomSpeed()
+{
+	//TODO: Does DMA always count as SlowROM speed regardless of the CPU's speed when DMA began?
+	return _memoryManager->GetCpuSpeed() == 6;
+}
+
 SnesMemoryType Sa1::GetSnesCpuMemoryType()
 {
 	return _memoryManager->GetMemoryTypeBusA();
