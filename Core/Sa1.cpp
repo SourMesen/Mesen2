@@ -397,7 +397,7 @@ uint8_t Sa1::CpuRegisterRead(uint16_t addr)
 
 void Sa1::ProcessInterrupts()
 {
-	if((_state.Sa1IrqRequested && _state.Sa1IrqEnabled) || (_state.DmaIrqFlag && _state.DmaIrqEnabled) || (_state.CharConvIrqFlag && _state.CharConvIrqEnabled)) {
+	if((_state.Sa1IrqRequested && _state.Sa1IrqEnabled) || (_state.DmaIrqFlag && _state.DmaIrqEnabled)) {
 		_cpu->SetIrqSource(IrqSource::Coprocessor);
 	} else {
 		_cpu->ClearIrqSource(IrqSource::Coprocessor);
@@ -409,7 +409,7 @@ void Sa1::ProcessInterrupts()
 		//...?
 	}
 
-	if(_state.CpuIrqRequested && _state.CpuIrqEnabled) {
+	if((_state.CpuIrqRequested && _state.CpuIrqEnabled) || (_state.CharConvIrqFlag && _state.CharConvIrqEnabled)) {
 		_snesCpu->SetIrqSource(IrqSource::Coprocessor);
 	} else {
 		_snesCpu->ClearIrqSource(IrqSource::Coprocessor);
