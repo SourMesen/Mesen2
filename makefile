@@ -94,12 +94,12 @@ all: ui
 ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
-	cd UpdateHelper && msbuild /property:Configuration="Release" /property:Platform="AnyCPU"
+	cd UpdateHelper && xbuild /property:Configuration="Release" /property:Platform="AnyCPU"
 	cp "bin/Any CPU/Release/MesenUpdater.exe" $(RELEASEFOLDER)/Dependencies/
 	cp -r UI/Dependencies/* $(RELEASEFOLDER)/Dependencies/
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(RELEASEFOLDER)/Dependencies/$(SHAREDLIB)	
 	cd $(RELEASEFOLDER)/Dependencies && zip -r ../Dependencies.zip *	
-	cd UI && msbuild /property:Configuration="Release" /property:Platform="$(MESENPLATFORM)" /property:PreBuildEvent="" '/property:DefineConstants="HIDETESTMENU;DISABLEAUTOUPDATE"' /property:CodeAnalysisRuleSet=""
+	cd GUI.NET && xbuild /property:Configuration="Release" /property:Platform="$(MESENPLATFORM)" /property:PreBuildEvent="" /property:DefineConstants="HIDETESTMENU,DISABLEAUTOUPDATE"
 
 libretro: Libretro/$(OBJFOLDER)/$(LIBRETROLIB)
 	mkdir -p bin
