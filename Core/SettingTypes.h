@@ -334,7 +334,7 @@ enum class EmulatorShortcut
 	SaveState,
 	LoadState,
 
-	ToggleAudio,
+	ToggleCheats,
 	ToggleFastForward,
 	ToggleRewind,
 
@@ -366,7 +366,7 @@ enum class EmulatorShortcut
 	ToggleOsd,
 	ToggleAlwaysOnTop,
 	ToggleDebugInfo,
-	ToggleCheats,
+	ToggleAudio,
 
 	ToggleBgLayer0,
 	ToggleBgLayer1,

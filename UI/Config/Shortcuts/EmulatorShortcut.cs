@@ -18,7 +18,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		SaveState,
 		LoadState,
 
-		ToggleAudio,
+		ToggleCheats,
 		ToggleFastForward,
 		ToggleRewind,
 
@@ -50,7 +50,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		ToggleOsd,
 		ToggleAlwaysOnTop,
 		ToggleDebugInfo,
-		ToggleCheats,
+		ToggleAudio,
 
 		ToggleBgLayer0,
 		ToggleBgLayer1,
