@@ -16,6 +16,7 @@ private:
 	bool _hasCheats = false;
 	bool _bankHasCheats[0x100] = {};
 	vector<CheatCode> _cheats;
+	unordered_map<uint32_t, CheatCode> _cheatsByAddress;
 	
 	void AddCheat(CheatCode code);
 
@@ -36,11 +37,9 @@ public:
 __forceinline void CheatManager::ApplyCheat(uint32_t addr, uint8_t &value)
 {
 	if(_hasCheats && _bankHasCheats[addr >> 16]) {
-		for(CheatCode &cheat : _cheats) {
-			if(cheat.Address == addr) {
-				value = cheat.Value;
-				break;
-			}
+		auto result = _cheatsByAddress.find(addr);
+		if(result != _cheatsByAddress.end()) {
+			value = result->second.Value;
 		}
 	}
 }

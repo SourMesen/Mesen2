@@ -13,6 +13,7 @@ CheatManager::CheatManager(Console* console)
 void CheatManager::AddCheat(CheatCode code)
 {
 	_cheats.push_back(code);
+	_cheatsByAddress.emplace(code.Address, code);
 	_hasCheats = true;
 	_bankHasCheats[code.Address >> 16] = true;
 
@@ -70,6 +71,7 @@ void CheatManager::ClearCheats(bool showMessage)
 	bool hadCheats = !_cheats.empty();
 
 	_cheats.clear();
+	_cheatsByAddress.clear();
 	_hasCheats = false;
 	memset(_bankHasCheats, 0, sizeof(_bankHasCheats));
 
