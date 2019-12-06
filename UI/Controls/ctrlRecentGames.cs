@@ -126,8 +126,6 @@ namespace Mesen.GUI.Controls
 
 		public void Initialize()
 		{
-			InitGrid();
-
 			_initialized = true;
 			_recentGames = new List<RecentGameInfo>();
 			_currentIndex = 0;
@@ -156,6 +154,8 @@ namespace Mesen.GUI.Controls
 			if(_recentGames.Count > 36) {
 				_recentGames.RemoveRange(36, _recentGames.Count - 36);
 			}
+
+			InitGrid();
 
 			if(_recentGames.Count == 0) {
 				this.Visible = false;

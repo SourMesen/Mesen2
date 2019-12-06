@@ -44,6 +44,10 @@ namespace Mesen.GUI.Controls
 				lblGameName.Text = Path.GetFileNameWithoutExtension(_recentGame.RomName);
 				lblSaveDate.Text = _recentGame.Timestamp.ToString();
 
+				lblGameName.Visible = true;
+				lblSaveDate.Visible = true;
+				picPreviousState.Visible = true;
+
 				Task.Run(() => {
 					Image img = null;
 					try {
@@ -55,12 +59,11 @@ namespace Mesen.GUI.Controls
 							}
 						}
 					} catch { }
-					picPreviousState.Image = img;
-				});
 
-				lblGameName.Visible = true;
-				lblSaveDate.Visible = true;
-				picPreviousState.Visible = true;
+					this.BeginInvoke((Action)(() => {
+						picPreviousState.Image = img;
+					}));
+				});
 			}
 		}
 
