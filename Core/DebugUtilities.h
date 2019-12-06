@@ -25,6 +25,19 @@ public:
 		return SnesMemoryType::GsuMemory;
 	}
 
+	static bool IsPpuMemory(SnesMemoryType memType)
+	{
+		switch(memType) {
+			case SnesMemoryType::VideoRam:
+			case SnesMemoryType::SpriteRam:
+			case SnesMemoryType::CGRam:
+				return true;
+
+			default: 
+				return false;
+		}
+	}
+
 	static constexpr CpuType GetLastCpuType()
 	{
 		return CpuType::Cx4;

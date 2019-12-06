@@ -5,7 +5,7 @@
 
 bool Breakpoint::Matches(uint32_t memoryAddr, AddressInfo &info)
 {
-	if(_memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(_memoryType <= DebugUtilities::GetLastCpuMemoryType() && !DebugUtilities::IsPpuMemory(info.Type)) {
 		if(_startAddr == -1) {
 			return true;
 		} else if(_endAddr == -1) {
