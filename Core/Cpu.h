@@ -50,6 +50,7 @@ private:
 	
 	uint16_t GetResetVector();
 
+	void UpdateIrqNmiFlags();
 	void ProcessCpuCycle();
 
 	void Idle();
@@ -326,7 +327,9 @@ public:
 	template<uint64_t value>
 	void IncreaseCycleCount();
 
-	void SetNmiFlag();
+	void SetNmiFlag(bool nmiFlag);
+	void DetectNmiSignalEdge();
+
 	void SetIrqSource(IrqSource source);
 	bool CheckIrqSource(IrqSource source);
 	void ClearIrqSource(IrqSource source);

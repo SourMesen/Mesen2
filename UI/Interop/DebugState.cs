@@ -63,6 +63,11 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.I1)] public bool NmiFlag;
 		[MarshalAs(UnmanagedType.I1)] public bool PrevNmiFlag;
+
+		[MarshalAs(UnmanagedType.I1)] public bool IrqLock;
+		[MarshalAs(UnmanagedType.I1)] public bool PrevNeedNmi;
+		[MarshalAs(UnmanagedType.I1)] public bool NeedNmi;
+
 		public byte IrqSource;
 		public byte PrevIrqSource;
 		public CpuStopState StopState;

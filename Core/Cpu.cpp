@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../Utilities/Serializer.h"
 #include "CpuTypes.h"
 #include "Cpu.h"
@@ -35,10 +35,8 @@ void Cpu::Exec()
 
 		case CpuStopState::WaitingForIrq:
 			//WAI
-			if(!_state.IrqSource && !_state.NmiFlag) {
-				Idle();
-			} else {
-				Idle();
+			Idle();
+			if(_state.IrqSource || _state.NeedNmi) {
 				Idle();
 				_state.StopState = CpuStopState::Running;
 			}
@@ -47,11 +45,11 @@ void Cpu::Exec()
 
 #ifndef DUMMYCPU
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
-	if(_state.PrevNmiFlag) {
+	if(_state.PrevNeedNmi) {
+		_state.NeedNmi = false;
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector, true);
 		_console->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), true);
-		_state.NmiFlag = false;
 	} else if(_state.PrevIrqSource) {
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector, true);
@@ -66,6 +64,7 @@ void Cpu::Idle()
 	_memoryManager->SetCpuSpeed(6);
 	ProcessCpuCycle();
 	_memoryManager->IncMasterClock6();
+	UpdateIrqNmiFlags();
 #endif
 }
 
@@ -82,17 +81,8 @@ void Cpu::IdleTakeBranch()
 void Cpu::ProcessCpuCycle()
 {
 	_state.CycleCount++;
-
-	bool irqLock = false;
-	if(_dmaController->ProcessPendingTransfers()) {
-		//If we just finished processing a DMA transfer, ignore the NMI/IRQ flags for this cycle
-		irqLock = true;
-	}
-
-	if(!irqLock) {
-		_state.PrevNmiFlag = _state.NmiFlag;
-		_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
-	}
+	DetectNmiSignalEdge();
+	_state.IrqLock = _dmaController->ProcessPendingTransfers();
 }
 
 uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
@@ -104,7 +94,9 @@ uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 #else
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	ProcessCpuCycle();
-	return _memoryManager->Read(addr, type);
+	uint8_t value = _memoryManager->Read(addr, type);
+	UpdateIrqNmiFlags();
+	return value;
 #endif
 }
 
@@ -116,6 +108,7 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	ProcessCpuCycle();
 	_memoryManager->Write(addr, value, type);
+	UpdateIrqNmiFlags();
 #endif
 }
 

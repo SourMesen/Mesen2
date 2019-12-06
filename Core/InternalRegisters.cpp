@@ -16,7 +16,8 @@ InternalRegisters::InternalRegisters()
 
 void InternalRegisters::Initialize(Console* console)
 {
-	_aluMulDiv.Initialize(console->GetCpu().get());
+	_cpu = console->GetCpu().get();
+	_aluMulDiv.Initialize(_cpu);
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_ppu = _console->GetPpu().get();
@@ -79,13 +80,14 @@ uint8_t InternalRegisters::GetIoPortOutput()
 void InternalRegisters::SetNmiFlag(bool nmiFlag)
 {
 	_nmiFlag = nmiFlag;
+	_cpu->SetNmiFlag(_state.EnableNmi && _nmiFlag);
 }
 
 uint8_t InternalRegisters::Peek(uint16_t addr)
 {
 	switch(addr) {
 		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02;
-		case 0x4211: return (_console->GetCpu()->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
+		case 0x4211: return (_cpu->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
 		default: return Read(addr);
 	}
 }
@@ -98,13 +100,13 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 				(_nmiFlag ? 0x80 : 0) |
 				0x02; //CPU revision
 
-			_nmiFlag = false;
+			SetNmiFlag(false);
 			return value | (_memoryManager->GetOpenBus() & 0x70);
 		}
 
 		case 0x4211: {
-			uint8_t value = (_console->GetCpu()->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
-			_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
+			uint8_t value = (_cpu->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
+			_cpu->ClearIrqSource(IrqSource::Ppu);
 			return value | (_memoryManager->GetOpenBus() & 0x7F);
 		}
 
@@ -152,20 +154,18 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 		case 0x4200:
 			if((value & 0x30) == 0x20 && !_state.EnableVerticalIrq && _ppu->GetRealScanline() == _state.VerticalTimer) {
 				//When enabling vertical irqs, if the current scanline matches the target scanline, set the irq flag right away
-				_console->GetCpu()->SetIrqSource(IrqSource::Ppu);
-			}
-
-			if((value & 0x80) && !_state.EnableNmi && _nmiFlag) {
-				_console->GetCpu()->SetNmiFlag();
+				_cpu->SetIrqSource(IrqSource::Ppu);
 			}
 
 			_state.EnableNmi = (value & 0x80) != 0;
+			SetNmiFlag(_nmiFlag);
+
 			_state.EnableVerticalIrq = (value & 0x20) != 0;
 			_state.EnableHorizontalIrq = (value & 0x10) != 0;
 
 			if(!_state.EnableHorizontalIrq && !_state.EnableVerticalIrq) {
 				//TODO VERIFY
-				_console->GetCpu()->ClearIrqSource(IrqSource::Ppu);
+				_cpu->ClearIrqSource(IrqSource::Ppu);
 			}
 			
 			_state.EnableAutoJoypadRead = (value & 0x01) != 0;

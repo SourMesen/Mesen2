@@ -36,10 +36,8 @@ void Sa1Cpu::Exec()
 
 		case CpuStopState::WaitingForIrq:
 			//WAI
-			if(!_state.IrqSource && !_state.NmiFlag) {
-				Idle();
-			} else {
-				Idle();
+			Idle();
+			if(_state.IrqSource || _state.NeedNmi) {
 				Idle();
 				_state.StopState = CpuStopState::Running;
 			}
@@ -47,11 +45,11 @@ void Sa1Cpu::Exec()
 	}
 
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
-	if(_state.PrevNmiFlag) {
+	if(_state.PrevNeedNmi) {
+		_state.NeedNmi = false;
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Sa1Cpu::LegacyNmiVector : Sa1Cpu::NmiVector, true);
 		_console->ProcessInterrupt<CpuType::Sa1>(originalPc, GetProgramAddress(_state.PC), true);
-		_state.NmiFlag = false;
 	} else if(_state.PrevIrqSource) {
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Sa1Cpu::LegacyIrqVector : Sa1Cpu::IrqVector, true);
@@ -63,8 +61,8 @@ void Sa1Cpu::Idle()
 {
 	//Do not apply any delay to internal cycles: "internal SA-1 cycles are still 10.74 MHz."
 	_state.CycleCount++;
-	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	DetectNmiSignalEdge();
+	UpdateIrqNmiFlags();
 }
 
 void Sa1Cpu::IdleEndJump()
@@ -115,8 +113,8 @@ void Sa1Cpu::ProcessCpuCycle(uint32_t addr)
 		}
 	}
 
-	_state.PrevNmiFlag = _state.NmiFlag;
-	_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	DetectNmiSignalEdge();
+	UpdateIrqNmiFlags();
 }
 
 uint8_t Sa1Cpu::Read(uint32_t addr, MemoryOperationType type)

@@ -119,9 +119,11 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 
 		case 0x2225: 
 			//BMAP (SA-1 BW-RAM Address Mapping)
-			_state.Sa1BwBank = value & 0x7F;
-			_state.Sa1BwMode = (value & 0x80);
-			UpdateSaveRamMappings();
+			if(_state.Sa1BwBank != (value & 0x7F) || _state.Sa1BwMode != (value & 0x80)) {
+				_state.Sa1BwBank = value & 0x7F;
+				_state.Sa1BwMode = (value & 0x80);
+				UpdateSaveRamMappings();
+			}
 			break;
 			
 		case 0x2227: _state.Sa1BwWriteEnabled = (value & 0x80) != 0; break; //CBWE (SA-1 CPU BW-RAM Write Enable)
@@ -403,11 +405,7 @@ void Sa1::ProcessInterrupts()
 		_cpu->ClearIrqSource(IrqSource::Coprocessor);
 	}
 
-	if(_state.Sa1NmiRequested && _state.Sa1NmiEnabled) {
-		_cpu->SetNmiFlag();
-	} else {
-		//...?
-	}
+	_cpu->SetNmiFlag(_state.Sa1NmiRequested && _state.Sa1NmiEnabled);
 
 	if((_state.CpuIrqRequested && _state.CpuIrqEnabled) || (_state.CharConvIrqFlag && _state.CharConvIrqEnabled)) {
 		_snesCpu->SetIrqSource(IrqSource::Coprocessor);
@@ -598,11 +596,11 @@ void Sa1::UpdateSaveRamMappings()
 	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cart->GetSaveRamHandlers();
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
 	for(int i = 0; i < 0x3F; i++) {
-		_mappings.RegisterHandler(i, i, 0x6000, 0x7FFF, saveRamHandlers, 0, _state.Sa1BwBank * 2);
-		_mappings.RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, saveRamHandlers, 0, _state.Sa1BwBank * 2);
+		_mappings.RegisterHandler(i, i, 0x6000, 0x7FFF, saveRamHandlers, 0, (_state.Sa1BwBank & ((_cpuBwRamHandlers.size() / 2) - 1)) * 2);
+		_mappings.RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, saveRamHandlers, 0, (_state.Sa1BwBank & ((_cpuBwRamHandlers.size() / 2) - 1)) * 2);
 
-		cpuMappings->RegisterHandler(i, i, 0x6000, 0x7FFF, saveRamHandlers, 0, _state.CpuBwBank * 2);
-		cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, saveRamHandlers, 0, _state.CpuBwBank * 2);
+		cpuMappings->RegisterHandler(i, i, 0x6000, 0x7FFF, saveRamHandlers, 0, (_state.CpuBwBank & ((_cpuBwRamHandlers.size() / 2) - 1)) * 2);
+		cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, saveRamHandlers, 0, (_state.CpuBwBank & ((_cpuBwRamHandlers.size() / 2) - 1)) * 2);
 	}
 }
 

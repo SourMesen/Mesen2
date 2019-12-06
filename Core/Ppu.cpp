@@ -469,10 +469,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			SendFrame();
 
 			_console->ProcessEndOfFrame();
-
-			if(_regs->IsNmiEnabled()) {
-				_console->GetCpu()->SetNmiFlag();
-			}
 		} else if(_scanline >= _vblankEndScanline + 1) {
 			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
 			_oddFrame ^= 1;

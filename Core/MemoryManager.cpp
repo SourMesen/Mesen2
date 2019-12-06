@@ -267,6 +267,7 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 
 uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 {
+	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
 
 	uint8_t value;
@@ -331,6 +332,7 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 
 void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
+	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
 	_console->ProcessMemoryWrite<CpuType::Cpu>(addr, value, MemoryOperationType::DmaWrite);
 

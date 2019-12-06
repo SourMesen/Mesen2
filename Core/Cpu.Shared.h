@@ -1,4 +1,4 @@
-void Cpu::PowerOn()
+﻿void Cpu::PowerOn()
 {
 	_state = {};
 	_state.PC = GetResetVector();
@@ -309,9 +309,31 @@ uint64_t Cpu::GetCycleCount()
 	return _state.CycleCount;
 }
 
-void Cpu::SetNmiFlag()
+void Cpu::SetNmiFlag(bool nmiFlag)
 {
-	_state.NmiFlag = true;
+	_state.NmiFlag = nmiFlag;
+}
+
+void Cpu::DetectNmiSignalEdge()
+{
+	//"This edge detector polls the status of the NMI line during φ2 of each CPU cycle (i.e., during the 
+	//second half of each cycle) and raises an internal signal if the input goes from being high during 
+	//one cycle to being low during the next"
+	if(!_state.PrevNmiFlag && _state.NmiFlag) {
+		_state.NeedNmi = true;
+	}
+	_state.PrevNmiFlag = _state.NmiFlag;
+}
+
+void Cpu::UpdateIrqNmiFlags()
+{
+	if(!_state.IrqLock) {
+		//"The internal signal goes high during φ1 of the cycle that follows the one where the edge is detected,
+		//and stays high until the NMI has been handled. "
+		_state.PrevNeedNmi = _state.NeedNmi;
+		_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+	}
+	_state.IrqLock = false;
 }
 
 void Cpu::SetIrqSource(IrqSource source)
@@ -563,6 +585,6 @@ void Cpu::Serialize(Serializer &s)
 	s.Stream(
 		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.IrqSource, _state.K,
 		_state.NmiFlag, _state.PC, _state.PrevIrqSource, _state.PrevNmiFlag, _state.PS, _state.SP, _state.StopState,
-		_state.X, _state.Y
+		_state.X, _state.Y, _state.IrqLock, _state.NeedNmi, _state.PrevNeedNmi
 	);
 }

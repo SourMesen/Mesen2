@@ -41,6 +41,11 @@ struct CpuState
 	/* Misc internal state */
 	bool NmiFlag;
 	bool PrevNmiFlag;
+
+	bool IrqLock;
+	bool PrevNeedNmi;
+	bool NeedNmi;
+
 	uint8_t IrqSource;
 	uint8_t PrevIrqSource;
 	CpuStopState StopState;

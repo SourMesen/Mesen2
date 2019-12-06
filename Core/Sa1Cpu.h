@@ -49,6 +49,9 @@ private:
 	void IdleEndJump();
 	void IdleTakeBranch();
 
+	void DetectNmiSignalEdge();
+	void UpdateIrqNmiFlags();
+
 	bool IsAccessConflict();
 
 	uint8_t ReadOperandByte();
@@ -320,7 +323,7 @@ public:
 	template<uint64_t value>
 	void IncreaseCycleCount();
 
-	void SetNmiFlag();
+	void SetNmiFlag(bool nmiFlag);
 	void SetIrqSource(IrqSource source);
 	bool CheckIrqSource(IrqSource source);
 	void ClearIrqSource(IrqSource source);
