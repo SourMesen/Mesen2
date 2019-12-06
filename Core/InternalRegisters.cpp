@@ -39,6 +39,7 @@ void InternalRegisters::Reset()
 	_nmiFlag = false;
 	_irqLevel = false;
 	_needIrq = false;
+	_irqFlag = false;
 }
 
 void InternalRegisters::ProcessAutoJoypadRead()
@@ -83,11 +84,21 @@ void InternalRegisters::SetNmiFlag(bool nmiFlag)
 	_cpu->SetNmiFlag(_state.EnableNmi && _nmiFlag);
 }
 
+void InternalRegisters::SetIrqFlag(bool irqFlag)
+{
+	_irqFlag = irqFlag && (_state.EnableHorizontalIrq || _state.EnableVerticalIrq);
+	if(_irqFlag) {
+		_cpu->SetIrqSource(IrqSource::Ppu);
+	} else {
+		_cpu->ClearIrqSource(IrqSource::Ppu);
+	}
+}
+
 uint8_t InternalRegisters::Peek(uint16_t addr)
 {
 	switch(addr) {
 		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02;
-		case 0x4211: return (_cpu->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
+		case 0x4211: return (_irqFlag ? 0x80 : 0);
 		default: return Read(addr);
 	}
 }
@@ -105,8 +116,8 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		}
 
 		case 0x4211: {
-			uint8_t value = (_cpu->CheckIrqSource(IrqSource::Ppu) ? 0x80 : 0);
-			_cpu->ClearIrqSource(IrqSource::Ppu);
+			uint8_t value = (_irqFlag ? 0x80 : 0);
+			SetIrqFlag(false);
 			return value | (_memoryManager->GetOpenBus() & 0x7F);
 		}
 
@@ -152,23 +163,13 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0x4200:
-			if((value & 0x30) == 0x20 && !_state.EnableVerticalIrq && _ppu->GetRealScanline() == _state.VerticalTimer) {
-				//When enabling vertical irqs, if the current scanline matches the target scanline, set the irq flag right away
-				_cpu->SetIrqSource(IrqSource::Ppu);
-			}
-
 			_state.EnableNmi = (value & 0x80) != 0;
-			SetNmiFlag(_nmiFlag);
-
 			_state.EnableVerticalIrq = (value & 0x20) != 0;
 			_state.EnableHorizontalIrq = (value & 0x10) != 0;
-
-			if(!_state.EnableHorizontalIrq && !_state.EnableVerticalIrq) {
-				//TODO VERIFY
-				_cpu->ClearIrqSource(IrqSource::Ppu);
-			}
-			
 			_state.EnableAutoJoypadRead = (value & 0x01) != 0;
+			
+			SetNmiFlag(_nmiFlag);
+			SetIrqFlag(_irqFlag);
 			break;
 
 		case 0x4201:
@@ -234,7 +235,7 @@ void InternalRegisters::Serialize(Serializer &s)
 	s.Stream(
 		_state.EnableFastRom, _nmiFlag, _state.EnableNmi, _state.EnableHorizontalIrq, _state.EnableVerticalIrq, _state.HorizontalTimer,
 		_state.VerticalTimer, _state.IoPortOutput, _state.ControllerData[0], _state.ControllerData[1], _state.ControllerData[2], _state.ControllerData[3],
-		_irqLevel, _needIrq, _state.EnableAutoJoypadRead
+		_irqLevel, _needIrq, _state.EnableAutoJoypadRead, _irqFlag
 	);
 
 	s.Stream(&_aluMulDiv);

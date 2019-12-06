@@ -23,6 +23,9 @@ private:
 	bool _nmiFlag = false;
 	bool _irqLevel = false;
 	bool _needIrq = false;
+	bool _irqFlag = false;
+	
+	void SetIrqFlag(bool irqFlag);
 
 public:
 	InternalRegisters();
@@ -58,7 +61,7 @@ void InternalRegisters::ProcessIrqCounters()
 {
 	if(_needIrq) {
 		_needIrq = false;
-		_cpu->SetIrqSource(IrqSource::Ppu);
+		SetIrqFlag(true);
 	}
 
 	bool irqLevel = (
