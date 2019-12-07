@@ -217,7 +217,7 @@ namespace Mesen.GUI.Emulation
 		private void ToggleSprites()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideSprites);
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer0 ? "SpriteLayerDisabled" : "SpriteLayerEnabled"));
+			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideSprites ? "SpriteLayerDisabled" : "SpriteLayerEnabled"));
 		}
 		
 		private void EnableAllLayers()
