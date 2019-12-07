@@ -31,16 +31,10 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.cboMemoryType = new Mesen.GUI.Debugger.Controls.ComboBoxWithSeparator();
-			this.nudBank = new Mesen.GUI.Controls.MesenNumericUpDown();
-			this.lblBank = new System.Windows.Forms.Label();
 			this.lblSource = new System.Windows.Forms.Label();
-			this.lblColumns = new System.Windows.Forms.Label();
 			this.chkShowTileGrid = new System.Windows.Forms.CheckBox();
 			this.lblBpp = new System.Windows.Forms.Label();
 			this.cboFormat = new System.Windows.Forms.ComboBox();
-			this.nudColumns = new Mesen.GUI.Controls.MesenNumericUpDown();
-			this.lblOffset = new System.Windows.Forms.Label();
-			this.nudOffset = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.ctrlPaletteViewer = new Mesen.GUI.Debugger.ctrlPaletteViewer();
 			this.lblPresets = new System.Windows.Forms.Label();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -55,6 +49,12 @@
 			this.txtTileAddress = new System.Windows.Forms.TextBox();
 			this.lblTileLayout = new System.Windows.Forms.Label();
 			this.cboLayout = new System.Windows.Forms.ComboBox();
+			this.lblAddress = new System.Windows.Forms.Label();
+			this.nudAddress = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.lblColumns = new System.Windows.Forms.Label();
+			this.lblSize = new System.Windows.Forms.Label();
+			this.nudColumns = new Mesen.GUI.Controls.MesenNumericUpDown();
+			this.nudSize = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.ctrlImagePanel = new Mesen.GUI.Debugger.PpuViewer.ctrlImagePanel();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,15 +64,15 @@
 			this.mnuClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuView = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshSpeed = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshLow = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshNormal = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshHigh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshSpeed = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshLow = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshNormal = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshHigh = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).BeginInit();
@@ -111,16 +111,10 @@
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.Controls.Add(this.cboMemoryType, 1, 0);
-			this.tableLayoutPanel2.Controls.Add(this.nudBank, 1, 4);
-			this.tableLayoutPanel2.Controls.Add(this.lblBank, 0, 4);
 			this.tableLayoutPanel2.Controls.Add(this.lblSource, 0, 0);
-			this.tableLayoutPanel2.Controls.Add(this.lblColumns, 0, 3);
 			this.tableLayoutPanel2.Controls.Add(this.chkShowTileGrid, 0, 6);
 			this.tableLayoutPanel2.Controls.Add(this.lblBpp, 0, 1);
 			this.tableLayoutPanel2.Controls.Add(this.cboFormat, 1, 1);
-			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 3);
-			this.tableLayoutPanel2.Controls.Add(this.lblOffset, 0, 5);
-			this.tableLayoutPanel2.Controls.Add(this.nudOffset, 1, 5);
 			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 9);
 			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 7);
 			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 7);
@@ -129,6 +123,12 @@
 			this.tableLayoutPanel2.Controls.Add(this.txtTileAddress, 1, 10);
 			this.tableLayoutPanel2.Controls.Add(this.lblTileLayout, 0, 2);
 			this.tableLayoutPanel2.Controls.Add(this.cboLayout, 1, 2);
+			this.tableLayoutPanel2.Controls.Add(this.lblAddress, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.nudAddress, 1, 3);
+			this.tableLayoutPanel2.Controls.Add(this.lblColumns, 0, 5);
+			this.tableLayoutPanel2.Controls.Add(this.lblSize, 0, 4);
+			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 5);
+			this.tableLayoutPanel2.Controls.Add(this.nudSize, 1, 4);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(534, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -159,46 +159,6 @@
 			this.cboMemoryType.Size = new System.Drawing.Size(120, 21);
 			this.cboMemoryType.TabIndex = 11;
 			// 
-			// nudBank
-			// 
-			this.nudBank.DecimalPlaces = 0;
-			this.nudBank.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.nudBank.Location = new System.Drawing.Point(77, 111);
-			this.nudBank.Maximum = new decimal(new int[] {
-            63,
-            0,
-            0,
-            0});
-			this.nudBank.MaximumSize = new System.Drawing.Size(10000, 21);
-			this.nudBank.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-			this.nudBank.MinimumSize = new System.Drawing.Size(0, 21);
-			this.nudBank.Name = "nudBank";
-			this.nudBank.Size = new System.Drawing.Size(43, 21);
-			this.nudBank.TabIndex = 10;
-			this.nudBank.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-			// 
-			// lblBank
-			// 
-			this.lblBank.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblBank.AutoSize = true;
-			this.lblBank.Location = new System.Drawing.Point(3, 115);
-			this.lblBank.Name = "lblBank";
-			this.lblBank.Size = new System.Drawing.Size(35, 13);
-			this.lblBank.TabIndex = 9;
-			this.lblBank.Text = "Bank:";
-			// 
 			// lblSource
 			// 
 			this.lblSource.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -208,16 +168,6 @@
 			this.lblSource.Size = new System.Drawing.Size(44, 13);
 			this.lblSource.TabIndex = 7;
 			this.lblSource.Text = "Source:";
-			// 
-			// lblColumns
-			// 
-			this.lblColumns.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblColumns.AutoSize = true;
-			this.lblColumns.Location = new System.Drawing.Point(3, 88);
-			this.lblColumns.Name = "lblColumns";
-			this.lblColumns.Size = new System.Drawing.Size(50, 13);
-			this.lblColumns.TabIndex = 3;
-			this.lblColumns.Text = "Columns:";
 			// 
 			// chkShowTileGrid
 			// 
@@ -256,76 +206,6 @@
 			this.cboFormat.Name = "cboFormat";
 			this.cboFormat.Size = new System.Drawing.Size(120, 21);
 			this.cboFormat.TabIndex = 2;
-			// 
-			// nudColumns
-			// 
-			this.nudColumns.DecimalPlaces = 0;
-			this.nudColumns.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.nudColumns.Location = new System.Drawing.Point(77, 84);
-			this.nudColumns.Maximum = new decimal(new int[] {
-            64,
-            0,
-            0,
-            0});
-			this.nudColumns.MaximumSize = new System.Drawing.Size(10000, 21);
-			this.nudColumns.Minimum = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-			this.nudColumns.MinimumSize = new System.Drawing.Size(0, 21);
-			this.nudColumns.Name = "nudColumns";
-			this.nudColumns.Size = new System.Drawing.Size(43, 21);
-			this.nudColumns.TabIndex = 4;
-			this.nudColumns.Value = new decimal(new int[] {
-            32,
-            0,
-            0,
-            0});
-			// 
-			// lblOffset
-			// 
-			this.lblOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblOffset.AutoSize = true;
-			this.lblOffset.Location = new System.Drawing.Point(3, 142);
-			this.lblOffset.Name = "lblOffset";
-			this.lblOffset.Size = new System.Drawing.Size(38, 13);
-			this.lblOffset.TabIndex = 5;
-			this.lblOffset.Text = "Offset:";
-			// 
-			// nudOffset
-			// 
-			this.nudOffset.DecimalPlaces = 0;
-			this.nudOffset.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.nudOffset.Location = new System.Drawing.Point(77, 138);
-			this.nudOffset.Maximum = new decimal(new int[] {
-            63,
-            0,
-            0,
-            0});
-			this.nudOffset.MaximumSize = new System.Drawing.Size(10000, 21);
-			this.nudOffset.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-			this.nudOffset.MinimumSize = new System.Drawing.Size(0, 21);
-			this.nudOffset.Name = "nudOffset";
-			this.nudOffset.Size = new System.Drawing.Size(43, 21);
-			this.nudOffset.TabIndex = 6;
-			this.nudOffset.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
 			// 
 			// ctrlPaletteViewer
 			// 
@@ -484,6 +364,129 @@
 			this.cboLayout.Size = new System.Drawing.Size(120, 21);
 			this.cboLayout.TabIndex = 19;
 			// 
+			// lblAddress
+			// 
+			this.lblAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblAddress.AutoSize = true;
+			this.lblAddress.Location = new System.Drawing.Point(3, 88);
+			this.lblAddress.Name = "lblAddress";
+			this.lblAddress.Size = new System.Drawing.Size(48, 13);
+			this.lblAddress.TabIndex = 9;
+			this.lblAddress.Text = "Address:";
+			// 
+			// nudAddress
+			// 
+			this.nudAddress.DecimalPlaces = 0;
+			this.nudAddress.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudAddress.IsHex = true;
+			this.nudAddress.Location = new System.Drawing.Point(77, 84);
+			this.nudAddress.Maximum = new decimal(new int[] {
+            65536,
+            0,
+            0,
+            0});
+			this.nudAddress.MaximumSize = new System.Drawing.Size(10000, 21);
+			this.nudAddress.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudAddress.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudAddress.Name = "nudAddress";
+			this.nudAddress.Size = new System.Drawing.Size(60, 21);
+			this.nudAddress.TabIndex = 10;
+			this.nudAddress.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			// 
+			// lblColumns
+			// 
+			this.lblColumns.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblColumns.AutoSize = true;
+			this.lblColumns.Location = new System.Drawing.Point(3, 142);
+			this.lblColumns.Name = "lblColumns";
+			this.lblColumns.Size = new System.Drawing.Size(50, 13);
+			this.lblColumns.TabIndex = 3;
+			this.lblColumns.Text = "Columns:";
+			// 
+			// lblSize
+			// 
+			this.lblSize.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblSize.AutoSize = true;
+			this.lblSize.Location = new System.Drawing.Point(3, 115);
+			this.lblSize.Name = "lblSize";
+			this.lblSize.Size = new System.Drawing.Size(64, 13);
+			this.lblSize.TabIndex = 5;
+			this.lblSize.Text = "Size (bytes):";
+			// 
+			// nudColumns
+			// 
+			this.nudColumns.DecimalPlaces = 0;
+			this.nudColumns.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudColumns.IsHex = false;
+			this.nudColumns.Location = new System.Drawing.Point(77, 138);
+			this.nudColumns.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+			this.nudColumns.MaximumSize = new System.Drawing.Size(10000, 21);
+			this.nudColumns.Minimum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+			this.nudColumns.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudColumns.Name = "nudColumns";
+			this.nudColumns.Size = new System.Drawing.Size(43, 21);
+			this.nudColumns.TabIndex = 4;
+			this.nudColumns.Value = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+			// 
+			// nudSize
+			// 
+			this.nudSize.DecimalPlaces = 0;
+			this.nudSize.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.nudSize.IsHex = true;
+			this.nudSize.Location = new System.Drawing.Point(77, 111);
+			this.nudSize.Maximum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudSize.MaximumSize = new System.Drawing.Size(10000, 21);
+			this.nudSize.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			this.nudSize.MinimumSize = new System.Drawing.Size(0, 21);
+			this.nudSize.Name = "nudSize";
+			this.nudSize.Size = new System.Drawing.Size(60, 21);
+			this.nudSize.TabIndex = 6;
+			this.nudSize.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			// 
 			// ctrlImagePanel
 			// 
 			this.ctrlImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -573,6 +576,35 @@
 			this.mnuAutoRefresh.Size = new System.Drawing.Size(176, 22);
 			this.mnuAutoRefresh.Text = "Auto-refresh";
 			// 
+			// mnuAutoRefreshSpeed
+			// 
+			this.mnuAutoRefreshSpeed.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuAutoRefreshLow,
+            this.mnuAutoRefreshNormal,
+            this.mnuAutoRefreshHigh});
+			this.mnuAutoRefreshSpeed.Image = global::Mesen.GUI.Properties.Resources.Speed;
+			this.mnuAutoRefreshSpeed.Name = "mnuAutoRefreshSpeed";
+			this.mnuAutoRefreshSpeed.Size = new System.Drawing.Size(176, 22);
+			this.mnuAutoRefreshSpeed.Text = "Auto-refresh Speed";
+			// 
+			// mnuAutoRefreshLow
+			// 
+			this.mnuAutoRefreshLow.Name = "mnuAutoRefreshLow";
+			this.mnuAutoRefreshLow.Size = new System.Drawing.Size(159, 22);
+			this.mnuAutoRefreshLow.Text = "Low (15 FPS)";
+			// 
+			// mnuAutoRefreshNormal
+			// 
+			this.mnuAutoRefreshNormal.Name = "mnuAutoRefreshNormal";
+			this.mnuAutoRefreshNormal.Size = new System.Drawing.Size(159, 22);
+			this.mnuAutoRefreshNormal.Text = "Normal (30 FPS)";
+			// 
+			// mnuAutoRefreshHigh
+			// 
+			this.mnuAutoRefreshHigh.Name = "mnuAutoRefreshHigh";
+			this.mnuAutoRefreshHigh.Size = new System.Drawing.Size(159, 22);
+			this.mnuAutoRefreshHigh.Text = "High (60 FPS)";
+			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
@@ -605,35 +637,6 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
-			// mnuAutoRefreshSpeed
-			// 
-			this.mnuAutoRefreshSpeed.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuAutoRefreshLow,
-            this.mnuAutoRefreshNormal,
-            this.mnuAutoRefreshHigh});
-			this.mnuAutoRefreshSpeed.Image = global::Mesen.GUI.Properties.Resources.Speed;
-			this.mnuAutoRefreshSpeed.Name = "mnuAutoRefreshSpeed";
-			this.mnuAutoRefreshSpeed.Size = new System.Drawing.Size(176, 22);
-			this.mnuAutoRefreshSpeed.Text = "Auto-refresh Speed";
-			// 
-			// mnuAutoRefreshLow
-			// 
-			this.mnuAutoRefreshLow.Name = "mnuAutoRefreshLow";
-			this.mnuAutoRefreshLow.Size = new System.Drawing.Size(159, 22);
-			this.mnuAutoRefreshLow.Text = "Low (15 FPS)";
-			// 
-			// mnuAutoRefreshNormal
-			// 
-			this.mnuAutoRefreshNormal.Name = "mnuAutoRefreshNormal";
-			this.mnuAutoRefreshNormal.Size = new System.Drawing.Size(159, 22);
-			this.mnuAutoRefreshNormal.Text = "Normal (30 FPS)";
-			// 
-			// mnuAutoRefreshHigh
-			// 
-			this.mnuAutoRefreshHigh.Name = "mnuAutoRefreshHigh";
-			this.mnuAutoRefreshHigh.Size = new System.Drawing.Size(159, 22);
-			this.mnuAutoRefreshHigh.Text = "High (60 FPS)";
-			// 
 			// frmTileViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -665,15 +668,15 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 		private System.Windows.Forms.CheckBox chkShowTileGrid;
-		private GUI.Controls.MesenNumericUpDown nudBank;
-		private System.Windows.Forms.Label lblBank;
+		private GUI.Controls.MesenNumericUpDown nudAddress;
+		private System.Windows.Forms.Label lblAddress;
 		private System.Windows.Forms.Label lblSource;
 		private System.Windows.Forms.Label lblColumns;
 		private System.Windows.Forms.Label lblBpp;
 		private System.Windows.Forms.ComboBox cboFormat;
 		private GUI.Controls.MesenNumericUpDown nudColumns;
-		private System.Windows.Forms.Label lblOffset;
-		private GUI.Controls.MesenNumericUpDown nudOffset;
+		private System.Windows.Forms.Label lblSize;
+		private GUI.Controls.MesenNumericUpDown nudSize;
 		private Controls.ComboBoxWithSeparator cboMemoryType;
 		private ctrlPaletteViewer ctrlPaletteViewer;
 		private PpuViewer.ctrlImagePanel ctrlImagePanel;

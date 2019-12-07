@@ -352,6 +352,7 @@ namespace Mesen.GUI
 		public TileLayout Layout;
 		public Int32 Width;
 		public Int32 Palette;
+		public Int32 PageSize;
 	}
 
 	public struct GetSpritePreviewOptions

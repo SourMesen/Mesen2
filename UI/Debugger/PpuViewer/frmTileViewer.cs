@@ -25,7 +25,7 @@ namespace Mesen.GUI.Debugger
 		private byte[] _tileSource;
 		private Bitmap _tileImage;
 		private SnesMemoryType _memoryType = SnesMemoryType.VideoRam;
-		private int _addressOffset = 0;
+		private int _address = 0;
 		private DebugState _state;
 		private int _selectedTile = 0;
 		private WindowRefreshManager _refreshManager;
@@ -44,7 +44,7 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			_tileData = new byte[512 * 512 * 4];
+			_tileData = new byte[0x400000];
 			_tileImage = new Bitmap(512, 512, PixelFormat.Format32bppPArgb);
 			ctrlImagePanel.Image = _tileImage;
 
@@ -61,23 +61,31 @@ namespace Mesen.GUI.Debugger
 			cboFormat.SetEnumValue(config.Format);
 			cboLayout.SetEnumValue(config.Layout);
 			nudColumns.Value = config.ColumnCount;
-			int maxBank = GetMaxBankNumber();
-			config.Bank = Math.Min(maxBank, config.Bank);
 
-			nudBank.Value = config.Bank;
-			nudOffset.Value = config.Offset;
+			int memSize = DebugApi.GetMemorySize(_memoryType);
+			config.Address = Math.Min(memSize - config.PageSize, config.Address);
+
+			UpdateMemoryType(config.Source);
+			nudAddress.Value = config.Address;
+			nudSize.Value = config.PageSize;
 			mnuAutoRefresh.Checked = config.AutoRefresh;
 			chkShowTileGrid.Checked = config.ShowTileGrid;
 			ctrlImagePanel.ImageScale = config.ImageScale;
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
 			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
 
-			UpdateMemoryType(config.Source);
-			_addressOffset = config.Bank * 0x10000 + config.Offset;
+			nudSize.Increment = 0x1000;
+			nudSize.Minimum = 0x1000;
+			nudSize.Maximum = Math.Min(memSize, 0x40000);
+			nudAddress.Increment = nudSize.Value;
+			nudAddress.Maximum = memSize - nudSize.Value;
+
+			_address = config.Address;
 			_options.Format = config.Format;
 			_options.Layout = config.Layout;
 			_options.Palette = config.SelectedPalette;
 			_options.Width = config.ColumnCount;
+			_options.PageSize = config.PageSize;
 			ctrlImagePanel.GridSizeX = config.ShowTileGrid ? 8 : 0;
 			ctrlImagePanel.GridSizeY = config.ShowTileGrid ? 8 : 0;
 
@@ -93,12 +101,12 @@ namespace Mesen.GUI.Debugger
 			RefreshViewer();
 
 			cboMemoryType.SelectedIndexChanged += cboMemoryType_SelectedIndexChanged;
-			nudBank.ValueChanged += nudBank_ValueChanged;
+			nudAddress.ValueChanged += nudAddress_ValueChanged;
 			chkShowTileGrid.Click += chkShowTileGrid_Click;
 			cboFormat.SelectedIndexChanged += cboFormat_SelectedIndexChanged;
 			cboLayout.SelectedIndexChanged += cboLayout_SelectedIndexChanged;
 			nudColumns.ValueChanged += nudColumns_ValueChanged;
-			nudOffset.ValueChanged += nudOffset_ValueChanged;
+			nudSize.ValueChanged += nudSize_ValueChanged;
 			ctrlPaletteViewer.SelectionChanged += ctrlPaletteViewer_SelectionChanged;
 			mnuAutoRefresh.CheckedChanged += mnuAutoRefresh_CheckedChanged;
 
@@ -111,12 +119,7 @@ namespace Mesen.GUI.Debugger
 			btnPresetOam1.Click += (s, e) => GoToOamPreset(0);
 			btnPresetOam2.Click += (s, e) => GoToOamPreset(1);
 		}
-
-		private int GetMaxBankNumber()
-		{
-			return Math.Max(1, (DebugApi.GetMemorySize(_memoryType) / 0x10000) - 1);
-		}
-
+		
 		private void InitShortcuts()
 		{
 			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
@@ -148,8 +151,8 @@ namespace Mesen.GUI.Debugger
 			config.Format = cboFormat.GetEnumValue<TileFormat>();
 			config.Layout = cboLayout.GetEnumValue<TileLayout>();
 			config.ColumnCount = (int)nudColumns.Value;
-			config.Bank = (int)nudBank.Value;
-			config.Offset = (int)nudOffset.Value;
+			config.Address = (int)nudAddress.Value;
+			config.PageSize = (int)nudSize.Value;
 			config.SelectedPalette = ctrlPaletteViewer.SelectedPalette;
 
 			ConfigManager.ApplyChanges();
@@ -176,9 +179,10 @@ namespace Mesen.GUI.Debugger
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 
 			byte[] source = DebugApi.GetMemoryState(_memoryType);
-			int size = Math.Min(source.Length - _addressOffset, 0x10000);
-			_tileSource = new byte[0x10000];
-			Array.Copy(source, _addressOffset, _tileSource, 0, size);
+
+			int size = Math.Min(source.Length - _address, _options.PageSize);
+			_tileSource = new byte[0x40000];
+			Array.Copy(source, _address, _tileSource, 0, size);
 			
 			ctrlPaletteViewer.RefreshData();
 		}
@@ -191,10 +195,9 @@ namespace Mesen.GUI.Debugger
 
 			DebugApi.GetTileView(_options, _tileSource, _tileSource.Length, _cgram, _tileData);
 
-			int tileCount = 0x10000 / GetBytesPerTile();
-
+			int tileCount = Math.Max(1, _options.PageSize / GetBytesPerTile());
 			int mapWidth = _options.Width * 8;
-			int mapHeight = tileCount / _options.Width * 8;
+			int mapHeight = (int)Math.Ceiling((double)tileCount / _options.Width) * 8;
 
 			if(_tileImage.Width != mapWidth || _tileImage.Height != mapHeight) {
 				_tileImage = new Bitmap(mapWidth, mapHeight, PixelFormat.Format32bppPArgb);
@@ -216,7 +219,7 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.Selection = new Rectangle(selectedColumn * 8, selectedRow * 8, 8, 8);
 
 			//TODO: Properly update tile address based on the selected tile layout
-			txtTileAddress.Text = (_selectedTile * GetBytesPerTile() + _addressOffset).ToString("X4");
+			txtTileAddress.Text = (_selectedTile * GetBytesPerTile() + _address).ToString("X4");
 
 			btnPresetBg1.Enabled = _layerBpp[_state.Ppu.BgMode, 0] > 0;
 			btnPresetBg2.Enabled = _layerBpp[_state.Ppu.BgMode, 1] > 0;
@@ -231,9 +234,9 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateMapSize()
 		{
-			int tileCount = 0x10000 / GetBytesPerTile();
+			int tileCount = Math.Max(1, _options.PageSize / GetBytesPerTile());
 			int mapWidth = _options.Width * 8;
-			int mapHeight = tileCount / _options.Width * 8;
+			int mapHeight = (int)Math.Ceiling((double)tileCount / _options.Width) * 8;
 
 			ctrlImagePanel.ImageSize = new Size(mapWidth, mapHeight);
 		}
@@ -245,11 +248,18 @@ namespace Mesen.GUI.Debugger
 
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
 			cboMemoryType.Items.Add("-");
+			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
+			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
 			if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
 				cboMemoryType.Items.Add("-");
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
+			}
+			if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
+				cboMemoryType.Items.Add("-");
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1Memory));
 			}
 
 			cboMemoryType.SelectedIndex = 0;
@@ -273,17 +283,9 @@ namespace Mesen.GUI.Debugger
 		{
 			_memoryType = cboMemoryType.GetEnumValue<SnesMemoryType>();
 
-			bool isVram = _memoryType == SnesMemoryType.VideoRam;
-			nudOffset.Visible = !isVram;
-			nudBank.Visible = !isVram;
-			lblOffset.Visible = !isVram;
-			lblBank.Visible = !isVram;
-			if(isVram) {
-				nudBank.Value = 0;
-				nudOffset.Value = 0;
-			}
-
-			nudBank.Maximum = GetMaxBankNumber();
+			int memSize = DebugApi.GetMemorySize(_memoryType);
+			nudSize.Maximum = Math.Min(0x40000, memSize);
+			nudAddress.Maximum = memSize - nudSize.Value;
 		}
 
 		private void chkShowTileGrid_Click(object sender, EventArgs e)
@@ -335,16 +337,20 @@ namespace Mesen.GUI.Debugger
 			RefreshViewer();
 		}
 
-		private void nudBank_ValueChanged(object sender, EventArgs e)
+		private void nudAddress_ValueChanged(object sender, EventArgs e)
 		{
-			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			_address = (int)nudAddress.Value;
 			RefreshData();
 			RefreshViewer();
 		}
 
-		private void nudOffset_ValueChanged(object sender, EventArgs e)
+		private void nudSize_ValueChanged(object sender, EventArgs e)
 		{
-			_addressOffset = (int)(nudBank.Value * 0x10000 + nudOffset.Value);
+			_options.PageSize = (int)nudSize.Value;
+
+			int memSize = DebugApi.GetMemorySize(_memoryType);
+			nudAddress.Increment = nudSize.Value;
+			nudAddress.Maximum = memSize - nudSize.Value;
 			RefreshData();
 			RefreshViewer();
 		}

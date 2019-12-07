@@ -26,8 +26,8 @@ namespace Mesen.GUI.Config
 		public TileFormat Format = TileFormat.Bpp4;
 		public TileLayout Layout = TileLayout.Normal;
 		public int ColumnCount = 16;
-		public int Bank = 0;
-		public int Offset = 0;
+		public int Address = 0;
+		public int PageSize = 0x10000;
 		public int SelectedPalette = 0;
 
 		public bool AutoRefresh = true;

@@ -449,13 +449,18 @@ uint8_t Sa1::Read(uint32_t addr)
 
 uint8_t Sa1::Peek(uint32_t addr)
 {
-	return Sa1RegisterRead(addr);
+	IMemoryHandler *handler = _mappings.GetHandler(addr);
+	if(handler) {
+		return handler->Read(addr);
+	}
+	//Open bus
+	return addr >> 16;
 }
 
 void Sa1::PeekBlock(uint8_t *output)
 {
 	for(int i = 0; i < 0x1000; i++) {
-		output[i] = Sa1RegisterRead(i);
+		output[i] = Peek(i);
 	}
 }
 

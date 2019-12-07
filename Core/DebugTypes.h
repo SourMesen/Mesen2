@@ -201,6 +201,7 @@ struct GetTileViewOptions
 	TileLayout Layout;
 	int32_t Width;
 	int32_t Palette;
+	int32_t PageSize;
 };
 
 struct GetSpritePreviewOptions

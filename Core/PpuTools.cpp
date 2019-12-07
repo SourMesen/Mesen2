@@ -76,41 +76,32 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t 
 
 void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer)
 {
+	constexpr uint32_t inputSize = 0x40000;
+	constexpr uint32_t outputSize = 0x400000;
+	constexpr uint32_t ramMask = inputSize - 1;
+
 	uint8_t* ram = source;
-	uint32_t ramMask = srcSize - 1;
 	uint8_t bpp;
 
 	bool directColor = false;
 	switch(options.Format) {
 		case TileFormat::Bpp2: bpp = 2; break;
 		case TileFormat::Bpp4: bpp = 4; break;
-
-		case TileFormat::DirectColor:
-			directColor = true;
-			bpp = 8;
-			break;
-
-		case TileFormat::Mode7:
-			bpp = 16;
-			break;
-
-		case TileFormat::Mode7DirectColor:
-			directColor = true;
-			bpp = 16;
-			break;
-
+		case TileFormat::DirectColor: directColor = true; bpp = 8; break;
+		case TileFormat::Mode7: bpp = 16; break;
+		case TileFormat::Mode7DirectColor: directColor = true; bpp = 16; break;
 		default: bpp = 8; break;
 	}
 
 	int bytesPerTile = 64 * bpp / 8;
-	int tileCount = 0x10000 / bytesPerTile;
+	int tileCount = options.PageSize / bytesPerTile;
 	
 	uint16_t bgColor = (cgram[1] << 8) | cgram[0];
-	for(int i = 0; i < 512 * 512; i++) {
+	for(int i = 0; i < outputSize / sizeof(uint32_t); i++) {
 		outBuffer[i] = ToArgb(bgColor);
 	}
 
-	int rowCount = tileCount / options.Width;
+	int rowCount = (int)std::ceil((double)tileCount / options.Width);
 
 	for(int row = 0; row < rowCount; row++) {
 		uint32_t baseOffset = row * bytesPerTile * options.Width;

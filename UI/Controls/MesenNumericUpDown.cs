@@ -93,20 +93,26 @@ namespace Mesen.GUI.Controls
 		private void txtValue_TextChanged(object sender, EventArgs e)
 		{
 			decimal val;
+			int hexVal;
 			if(string.IsNullOrWhiteSpace(txtValue.Text)) {
 				SetValue(0, false);
-			} else if(decimal.TryParse(txtValue.Text, out val)) {
+			} else if(!IsHex && decimal.TryParse(txtValue.Text, out val)) {
 				SetValue(val, false);
+			} else if(IsHex && int.TryParse(txtValue.Text, System.Globalization.NumberStyles.HexNumber, null, out hexVal)) {
+				SetValue(hexVal, false);
 			}
 		}
 
 		private void txtValue_Validated(object sender, EventArgs e)
 		{
 			decimal val;
+			int hexVal;
 			if(string.IsNullOrWhiteSpace(txtValue.Text)) {
 				SetValue(0, true);
-			} else if(decimal.TryParse(txtValue.Text, out val)) {
+			} else if(!IsHex && decimal.TryParse(txtValue.Text, out val)) {
 				SetValue(val, true);
+			} else if(IsHex && int.TryParse(txtValue.Text, System.Globalization.NumberStyles.HexNumber, null, out hexVal)) {
+				SetValue(hexVal, true);
 			} else {
 				SetValue(this.Value, true);
 			}
@@ -129,7 +135,11 @@ namespace Mesen.GUI.Controls
 			}
 			if(updateText) {
 				txtValue.TextChanged -= txtValue_TextChanged;
-				txtValue.Text = _value.ToString("0" + (this.DecimalPlaces > 0 ? "." : "") + new string('0', this.DecimalPlaces));
+				if(IsHex) {
+					txtValue.Text = ((int)_value).ToString("X");
+				} else {
+					txtValue.Text = _value.ToString("0" + (this.DecimalPlaces > 0 ? "." : "") + new string('0', this.DecimalPlaces));
+				}
 				txtValue.TextChanged += txtValue_TextChanged;
 			}
 		}
@@ -143,6 +153,8 @@ namespace Mesen.GUI.Controls
 				SetValue(value, true);
 			}
 		}
+
+		public bool IsHex { get; set; } = false;
 
 		public new string Text
 		{
@@ -197,6 +209,11 @@ namespace Mesen.GUI.Controls
 				e.KeyCode == Keys.Right || e.KeyCode == Keys.Home || 
 				e.KeyCode == Keys.End || e.KeyCode == Keys.Back)
 			) {
+				if(IsHex && e.KeyCode >= Keys.A && e.KeyCode <= Keys.F) {
+					//Allow A-F when in hex mode
+					return;
+				}
+
 				e.SuppressKeyPress = true;
 			}
 		}
