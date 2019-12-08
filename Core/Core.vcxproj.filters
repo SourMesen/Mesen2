@@ -485,6 +485,12 @@
     <ClInclude Include="PcmReader.h">
       <Filter>SNES\Coprocessors\MSU1</Filter>
     </ClInclude>
+    <ClInclude Include="Sa1IRamHandler.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
+    <ClInclude Include="Sa1BwRamHandler.h">
+      <Filter>SNES\Coprocessors\SA1</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

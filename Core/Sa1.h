@@ -11,7 +11,6 @@ class MemoryManager;
 class BaseCartridge;
 
 //TODO: Implement write protection flags
-//TODO: Bitmap projection at $6000
 //TODO: Timers
 
 class Sa1 : public BaseCoprocessor
@@ -32,6 +31,7 @@ private:
 	uint8_t _openBus;
 
 	unique_ptr<IMemoryHandler> _iRamHandler;
+	unique_ptr<IMemoryHandler> _bwRamHandler;
 	unique_ptr<IMemoryHandler> _sa1VectorHandler;
 	unique_ptr<IMemoryHandler> _cpuVectorHandler;
 	

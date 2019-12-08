@@ -168,7 +168,9 @@
     <ClInclude Include="RomFinder.h" />
     <ClInclude Include="RomHandler.h" />
     <ClInclude Include="Sa1.h" />
+    <ClInclude Include="Sa1BwRamHandler.h" />
     <ClInclude Include="Sa1Cpu.h" />
+    <ClInclude Include="Sa1IRamHandler.h" />
     <ClInclude Include="Sa1Types.h" />
     <ClInclude Include="Sa1VectorHandler.h" />
     <ClInclude Include="SaveStateManager.h" />
