@@ -404,32 +404,46 @@ namespace Mesen.GUI.Debugger
 			cboFormat.SetEnumValue(format);
 
 			if(_state.Ppu.BgMode == 7) {
+				nudAddress.Value = 0;
 				_selectedTile = 0;
 				RefreshViewer();
 				ctrlImagePanel.ScrollTo(0);
 			} else {
-				int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
-				int scrollRow = ((_state.Ppu.Layers[layer].ChrAddress << 1) / bytesPerRow) & 0xFFF8;
-				_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+				if(nudAddress.Maximum < _state.Ppu.Layers[layer].ChrAddress) {
+					int gap = _state.Ppu.Layers[layer].ChrAddress - (int)nudAddress.Value;
+					int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+					int scrollRow = (gap / bytesPerRow) & ~0x7;
+					_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+				} else {
+					_selectedTile = 0;
+				}
+				nudAddress.Value = _state.Ppu.Layers[layer].ChrAddress;
 				RefreshViewer();
-				ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
-			}			
+				ctrlImagePanel.ScrollTo(0);
+			}
 		}
 
 		private void GoToOamPreset(int layer)
 		{
-			int bpp = _layerBpp[_state.Ppu.BgMode, layer];
-			TileFormat format = TileFormat.Bpp4;
 			int address = _state.Ppu.OamBaseAddress + (layer == 1 ? _state.Ppu.OamAddressOffset : 0);
+			address *= 2;
 
 			cboMemoryType.SetEnumValue(SnesMemoryType.VideoRam);
-			cboFormat.SetEnumValue(format);
+			cboFormat.SetEnumValue(TileFormat.Bpp4);
 
-			int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
-			int scrollRow = (address * 2 / bytesPerRow) & 0xFFF8;
-			_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
-			RefreshViewer();
-			ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
+			if(nudAddress.Maximum < address) {
+				int gap = address - (int)nudAddress.Value;
+				int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+				int scrollRow = (gap / bytesPerRow) & ~0x7;
+				_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+			} else {
+				_selectedTile = 0;
+			}
+			if(ctrlPaletteViewer.SelectedPalette < 8) {
+				ctrlPaletteViewer.SelectedPalette = 8;
+			}
+			nudAddress.Value = address * 2;
+			ctrlImagePanel.ScrollTo(0);
 		}
 
 		private void ctrlImagePanel_MouseClick(object sender, MouseEventArgs e)
