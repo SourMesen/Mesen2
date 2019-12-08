@@ -78,7 +78,7 @@ void MemoryMappings::PeekBlock(uint32_t addr, uint8_t *dest)
 {
 	IMemoryHandler* handler = GetHandler(addr);
 	if(handler) {
-		handler->PeekBlock(dest);
+		handler->PeekBlock(addr & ~0xFFF, dest);
 	} else {
 		memset(dest, 0, 0x1000);
 	}

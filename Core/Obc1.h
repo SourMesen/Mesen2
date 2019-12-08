@@ -28,6 +28,6 @@ public:
 	void Serialize(Serializer & s) override;
 	
 	uint8_t Peek(uint32_t addr) override;
-	void PeekBlock(uint8_t * output) override;
+	void PeekBlock(uint32_t addr, uint8_t * output) override;
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;
 };

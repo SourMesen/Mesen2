@@ -223,7 +223,7 @@ uint8_t NecDsp::Peek(uint32_t addr)
 	return 0;
 }
 
-void NecDsp::PeekBlock(uint8_t *output)
+void NecDsp::PeekBlock(uint32_t addr, uint8_t *output)
 {
 	memset(output, 0, 0x1000);
 }

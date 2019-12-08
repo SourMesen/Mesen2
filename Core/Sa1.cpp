@@ -467,11 +467,9 @@ uint8_t Sa1::Peek(uint32_t addr)
 	return 0;
 }
 
-void Sa1::PeekBlock(uint8_t *output)
+void Sa1::PeekBlock(uint32_t addr, uint8_t *output)
 {
-	for(int i = 0; i < 0x1000; i++) {
-		output[i] = Peek(i);
-	}
+	memset(output, 0, 0x1000);
 }
 
 void Sa1::Write(uint32_t addr, uint8_t value)

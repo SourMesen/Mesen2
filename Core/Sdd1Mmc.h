@@ -25,7 +25,7 @@ public:
 	// Inherited via IMemoryHandler
 	virtual uint8_t Read(uint32_t addr) override;
 	virtual uint8_t Peek(uint32_t addr) override;
-	virtual void PeekBlock(uint8_t * output) override;
+	virtual void PeekBlock(uint32_t addr, uint8_t * output) override;
 	virtual void Write(uint32_t addr, uint8_t value) override;
 	virtual AddressInfo GetAbsoluteAddress(uint32_t address) override;
 

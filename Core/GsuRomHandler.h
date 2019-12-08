@@ -43,7 +43,7 @@ public:
 		return Read(addr);
 	}
 
-	void PeekBlock(uint8_t *output) override
+	void PeekBlock(uint32_t addr, uint8_t *output) override
 	{
 		for(int i = 0; i < 0x1000; i++) {
 			output[i] = Read(i);

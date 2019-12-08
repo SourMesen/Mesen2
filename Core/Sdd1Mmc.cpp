@@ -68,7 +68,7 @@ uint8_t Sdd1Mmc::Peek(uint32_t addr)
 	return 0;
 }
 
-void Sdd1Mmc::PeekBlock(uint8_t *output)
+void Sdd1Mmc::PeekBlock(uint32_t addr, uint8_t *output)
 {
 	memset(output, 0, 0x1000);
 }

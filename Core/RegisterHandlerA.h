@@ -45,7 +45,7 @@ public:
 		}
 	}
 
-	void PeekBlock(uint8_t *output) override
+	void PeekBlock(uint32_t addr, uint8_t *output) override
 	{
 		//Avoid side effects for now
 		memset(output, 0, 0x1000);

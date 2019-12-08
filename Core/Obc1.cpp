@@ -87,7 +87,7 @@ uint8_t Obc1::Peek(uint32_t addr)
 	return 0;
 }
 
-void Obc1::PeekBlock(uint8_t *output)
+void Obc1::PeekBlock(uint32_t addr, uint8_t *output)
 {
 	memset(output, 0, 0x1000);
 }

@@ -20,15 +20,7 @@ private:
 		return ((_state->Sa1BwBank * 0x2000) | (addr & 0x1FFF));
 	}
 
-public:
-	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state)
-	{
-		_ram = bwRam;
-		_mask = bwRamSize - 1;
-		_state = state;
-	}
-
-	uint8_t Read(uint32_t addr) override
+	__forceinline uint8_t InternalRead(uint32_t addr)
 	{
 		if((addr & 0x600000) == 0x600000) {
 			return ReadBitmapMode(addr - 0x600000);
@@ -44,15 +36,28 @@ public:
 		}
 	}
 
-	uint8_t Peek(uint32_t addr) override
+public:
+	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state)
 	{
-		return Read(addr);
+		_ram = bwRam;
+		_mask = bwRamSize - 1;
+		_state = state;
 	}
 
-	void PeekBlock(uint8_t *output) override
+	uint8_t Read(uint32_t addr) override
+	{
+		return InternalRead(addr);
+	}
+
+	uint8_t Peek(uint32_t addr) override
+	{
+		return InternalRead(addr);
+	}
+
+	void PeekBlock(uint32_t addr, uint8_t *output) override
 	{
 		for(int i = 0; i < 0x1000; i++) {
-			output[i] = Read(i);
+			output[i] = InternalRead(addr + i);
 		}
 	}
 
@@ -96,9 +101,9 @@ public:
 	{
 		AddressInfo info;
 		if((addr & 0x600000) == 0x600000) {
-			info.Address = addr - 0x600000;
+			info.Address = ((addr - 0x600000) >> (_state->BwRam2BppMode ? 2 : 1)) & _mask;
 		} else {
-			addr = GetBwRamAddress(addr);
+			addr = GetBwRamAddress(addr) & _mask;
 		}
 		info.Type = SnesMemoryType::SaveRam;
 		return info;

@@ -583,7 +583,7 @@ uint8_t Gsu::Peek(uint32_t addr)
 	return 0;
 }
 
-void Gsu::PeekBlock(uint8_t *output)
+void Gsu::PeekBlock(uint32_t addr, uint8_t *output)
 {
 	memset(output, 0, 0x1000);
 }

@@ -445,7 +445,7 @@ uint8_t Cx4::Peek(uint32_t addr)
 	return 0;
 }
 
-void Cx4::PeekBlock(uint8_t* output)
+void Cx4::PeekBlock(uint32_t addr, uint8_t* output)
 {
 	memset(output, 0, 0x1000);
 }
