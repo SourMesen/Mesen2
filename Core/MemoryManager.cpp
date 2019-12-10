@@ -273,7 +273,7 @@ uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 	uint8_t value;
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
-		if(forBusA && addr >= 0x2100 && addr <= 0x21FF && handler == _registerHandlerB.get()) {
+		if(forBusA && handler == _registerHandlerB.get() && (addr & 0xFF00) == 0x2100) {
 			//Trying to read from bus B using bus A returns open bus
 			value = _openBus;
 		} else if(handler == _registerHandlerA.get()) {
@@ -338,7 +338,7 @@ void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
-		if(forBusA && handler == _registerHandlerB.get()) {
+		if(forBusA && handler == _registerHandlerB.get() && (addr & 0xFF00) == 0x2100) {
 			//Trying to write to bus B using bus A does nothing
 		} else if(handler == _registerHandlerA.get()) {
 			uint16_t regAddr = addr & 0xFFFF;
