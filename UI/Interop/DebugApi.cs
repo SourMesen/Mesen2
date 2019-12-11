@@ -91,14 +91,14 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
 
-		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount([MarshalAs(UnmanagedType.I1)]bool getPreviousFrameData);
-		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper([In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount, [MarshalAs(UnmanagedType.I1)]bool getPreviousFrameData);
-		public static DebugEventInfo[] GetDebugEvents(bool getPreviousFrameData)
+		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(EventViewerDisplayOptions options);
+		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper([In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount);
+		public static DebugEventInfo[] GetDebugEvents(EventViewerDisplayOptions options)
 		{
-			UInt32 maxEventCount = GetDebugEventCount(getPreviousFrameData);
+			UInt32 maxEventCount = GetDebugEventCount(options);
 			DebugEventInfo[] debugEvents = new DebugEventInfo[maxEventCount];
 
-			DebugApi.GetDebugEventsWrapper(debugEvents, ref maxEventCount, getPreviousFrameData);
+			DebugApi.GetDebugEventsWrapper(debugEvents, ref maxEventCount);
 			if(maxEventCount < debugEvents.Length) {
 				//Remove the excess from the array if needed
 				Array.Resize(ref debugEvents, (int)maxEventCount);
@@ -302,7 +302,7 @@ namespace Mesen.GUI
 		public UInt32 ProgramCounter;
 		public UInt16 Scanline;
 		public UInt16 Cycle;
-		public UInt16 BreakpointId;
+		public Int16 BreakpointId;
 		public byte DmaChannel;
 		public DmaChannelConfig DmaChannelInfo;
 	};

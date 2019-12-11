@@ -297,6 +297,18 @@
     <Compile Include="Debugger\Controls\ctrlSpcStatus.Designer.cs">
       <DependentUpon>ctrlSpcStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerFilters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerFilters.Designer.cs">
+      <DependentUpon>ctrlEventViewerFilters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\EventViewer\ctrlEventViewerListView.Designer.cs">
+      <DependentUpon>ctrlEventViewerListView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\frmBreakIn.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -978,6 +990,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlDisassemblyView.resx">
       <DependentUpon>ctrlDisassemblyView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\EventViewer\ctrlEventViewerFilters.resx">
+      <DependentUpon>ctrlEventViewerFilters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\EventViewer\ctrlEventViewerListView.resx">
+      <DependentUpon>ctrlEventViewerListView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmBreakIn.resx">
       <DependentUpon>frmBreakIn.cs</DependentUpon>

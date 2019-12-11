@@ -19,11 +19,10 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class ctrlEventViewerPpuView : BaseControl
 	{
-		private const int HdmaChannelFlag = 0x80;
+		public const int HdmaChannelFlag = 0x40;
 
 		private int _baseWidth = 340 * 2;
 
-		private EntityBinder _entityBinder = new EntityBinder();
 		private Point _lastPos = new Point(-1, -1);
 		private bool _needUpdate = false;
 		private Bitmap _screenBitmap = null;
@@ -31,8 +30,8 @@ namespace Mesen.GUI.Debugger
 		private Bitmap _displayBitmap = null;
 		private byte[] _pictureData = null;
 		private Font _overlayFont;
-		private UInt32 _scanlineCount = 262;
 
+		public UInt32 ScanlineCount { get; set; } = 262;
 		public int ImageScale { get { return picViewer.ImageScale; } set { picViewer.ImageScale = value; } }
 
 		public ctrlEventViewerPpuView()
@@ -47,77 +46,15 @@ namespace Mesen.GUI.Debugger
 			if(!IsDesignMode) {
 				tmrOverlay.Start();
 				_overlayFont = new Font(BaseControl.MonospaceFontFamily, 10);
-
-				_entityBinder.Entity = ConfigManager.Config.Debug.EventViewer;
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ApuRegisterReadColor), picApuReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ApuRegisterWriteColor), picApuWrites);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.CpuRegisterReadColor), picCpuReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.CpuRegisterWriteColor), picCpuWrites);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.IrqColor), picIrq);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.BreakpointColor), picMarkedBreakpoints);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.NmiColor), picNmi);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterReadColor), picPpuReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteColor), picPpuWrites);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.WorkRamRegisterReadColor), picWramReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.WorkRamRegisterWriteColor), picWramWrites);
-
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowApuRegisterReads), chkShowApuRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowApuRegisterWrites), chkShowApuRegisterWrites);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowCpuRegisterReads), chkShowCpuRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowCpuRegisterWrites), chkShowCpuRegisterWrites);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowIrq), chkShowIrq);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowMarkedBreakpoints), chkShowMarkedBreakpoints);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowNmi), chkShowNmi);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterReads), chkShowPpuRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterWrites), chkShowPpuRegisterWrites);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterReads), chkShowWorkRamRegisterReads);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterWrites), chkShowWorkRamRegisterWrites);
-
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel0), chkDmaChannel0);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel1), chkDmaChannel1);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel2), chkDmaChannel2);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel3), chkDmaChannel3);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel4), chkDmaChannel4);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel5), chkDmaChannel5);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel6), chkDmaChannel6);
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowDmaChannel7), chkDmaChannel7);
-
-				_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPreviousFrameEvents), chkShowPreviousFrameEvents);
-
-				_entityBinder.UpdateUI();
-
-				RefreshData();
-				RefreshViewer();
 			}
-		}
-
-		protected override void OnHandleDestroyed(EventArgs e)
-		{
-			if(!IsDesignMode) {
-				_entityBinder.UpdateObject();
-				ConfigManager.ApplyChanges();
-			}
-
-			base.OnHandleDestroyed(e);
-		}
-
-		public void RefreshData()
-		{
-			this.BeginInvoke((Action)(() => {
-				_entityBinder.UpdateObject();
-			}));
-
-			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			_scanlineCount = DebugApi.TakeEventSnapshot(options);
 		}
 		
 		public void RefreshViewer()
 		{
-			_entityBinder.UpdateObject();
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			_pictureData = DebugApi.GetEventViewerOutput(_scanlineCount, options);
+			_pictureData = DebugApi.GetEventViewerOutput(ScanlineCount, options);
 
-			int picHeight = (int)_scanlineCount*2;
+			int picHeight = (int)ScanlineCount*2;
 			if(_screenBitmap == null || _screenBitmap.Height != picHeight) {
 				_screenBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
 				_overlayBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
@@ -126,7 +63,7 @@ namespace Mesen.GUI.Debugger
 
 			GCHandle handle = GCHandle.Alloc(this._pictureData, GCHandleType.Pinned);
 			try {
-				Bitmap source = new Bitmap(_baseWidth, (int)_scanlineCount*2, _baseWidth*4, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
+				Bitmap source = new Bitmap(_baseWidth, (int)ScanlineCount*2, _baseWidth*4, PixelFormat.Format32bppPArgb, handle.AddrOfPinnedObject());
 				using(Graphics g = Graphics.FromImage(_screenBitmap)) {
 					g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 					g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
@@ -167,7 +104,7 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
-			picViewer.ImageSize = new Size(_baseWidth, (int)_scanlineCount*2);
+			picViewer.ImageSize = new Size(_baseWidth, (int)ScanlineCount*2);
 			picViewer.Image = _displayBitmap;
 			_needUpdate = false;
 		}
@@ -309,11 +246,6 @@ namespace Mesen.GUI.Debugger
 		private void tmrOverlay_Tick(object sender, EventArgs e)
 		{
 			UpdateDisplay(false);
-		}
-		
-		private void chkOption_Click(object sender, EventArgs e)
-		{
-			RefreshViewer();
 		}
 
 		public void ZoomIn()

@@ -9,7 +9,7 @@ class MemoryManager;
 class DmaController final : public ISerializable
 {
 private:
-	static constexpr uint8_t HdmaChannelFlag = 0x80;
+	static constexpr uint8_t HdmaChannelFlag = 0x40;
 
 	bool _needToProcess = false;
 	bool _hdmaPending = false;

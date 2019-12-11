@@ -49,6 +49,8 @@ namespace Mesen.GUI.Debugger
 				mnuAutoRefreshNormal.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.Normal;
 				mnuAutoRefreshHigh.Click += (s, evt) => _refreshManager.AutoRefreshSpeed = RefreshSpeed.High;
 				mnuAutoRefreshSpeed.DropDownOpening += (s, evt) => UpdateRefreshSpeedMenu();
+
+				ctrlFilters.Init();
 			}
 		}
 
@@ -80,12 +82,17 @@ namespace Mesen.GUI.Debugger
 
 		public void RefreshData()
 		{
-			ctrlPpuView.RefreshData();
+			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
+			ctrlPpuView.ScanlineCount = DebugApi.TakeEventSnapshot(options);
 		}
 
 		public void RefreshViewer()
 		{
-			ctrlPpuView.RefreshViewer();
+			if(tabMain.SelectedTab == tpgPpuView) {
+				ctrlPpuView.RefreshViewer();
+			} else {
+				ctrlListView.RefreshViewer();
+			}
 		}
 
 		private void OnNotificationReceived(NotificationEventArgs e)
@@ -93,9 +100,9 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
 					if(ConfigManager.Config.Debug.EventViewer.RefreshOnBreakPause) {
-						ctrlPpuView.RefreshData();
+						RefreshData();
 						this.BeginInvoke((Action)(() => {
-							ctrlPpuView.RefreshViewer();
+							RefreshViewer();
 						}));
 					}
 					break;
@@ -124,6 +131,16 @@ namespace Mesen.GUI.Debugger
 			mnuAutoRefreshLow.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Low;
 			mnuAutoRefreshNormal.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Normal;
 			mnuAutoRefreshHigh.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.High;
+		}
+
+		private void ctrlFilters_OptionsChanged(object sender, EventArgs e)
+		{
+			RefreshViewer();
+		}
+
+		private void tabMain_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			RefreshViewer();
 		}
 	}
 }

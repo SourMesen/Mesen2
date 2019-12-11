@@ -12,6 +12,7 @@ namespace Mesen.GUI.Debugger
 		public ctrlColorPicker() : base()
 		{
 			this.BorderStyle = BorderStyle.FixedSingle;
+			this.Cursor = Cursors.Hand;
 		}
 
 		protected override void OnClick(EventArgs e)
