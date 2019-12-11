@@ -35,7 +35,14 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.AddBinding(nameof(EventViewerConfig.BreakpointColor), picMarkedBreakpoints);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.NmiColor), picNmi);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterReadColor), picPpuReads);
-			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteColor), picPpuWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteVramColor), picPpuVramWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteCgramColor), picPpuCgramWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteOamColor), picPpuOamWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteMode7Color), picPpuMode7Writes);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteBgOptionColor), picPpuBgOptionWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteBgScrollColor), picPpuBgScrollWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteWindowColor), picPpuWindowWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.PpuRegisterWriteOtherColor), picPpuOtherWrites);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.WorkRamRegisterReadColor), picWramReads);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.WorkRamRegisterWriteColor), picWramWrites);
 
@@ -47,7 +54,14 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowMarkedBreakpoints), chkShowMarkedBreakpoints);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowNmi), chkShowNmi);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterReads), chkShowPpuRegisterReads);
-			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterWrites), chkShowPpuRegisterWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterVramWrites), chkVramWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterCgramWrites), chkCgramWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterOamWrites), chkOamWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterMode7Writes), chkMode7Writes);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterBgOptionWrites), chkShowPpuBgOptionWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterBgScrollWrites), chkBgScroll);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterWindowWrites), chkWindowWrites);
+			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowPpuRegisterOtherWrites), chkOtherWrites);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterReads), chkShowWorkRamRegisterReads);
 			_entityBinder.AddBinding(nameof(EventViewerConfig.ShowWorkRamRegisterWrites), chkShowWorkRamRegisterWrites);
 
@@ -79,6 +93,14 @@ namespace Mesen.GUI.Debugger
 		{
 			_entityBinder.UpdateObject();
 			this.OptionsChanged?.Invoke(this, e);
+		}
+
+		private void picColor_BackColorChanged(object sender, EventArgs e)
+		{
+			if(!_entityBinder.Updating) {
+				_entityBinder.UpdateObject();
+				this.OptionsChanged?.Invoke(this, e);
+			}
 		}
 	}
 }

@@ -130,7 +130,27 @@ void EventManager::FilterEvents(EventViewerDisplayOptions &options)
 
 				uint16_t reg = evt.Operation.Address & 0xFFFF;
 				if(reg <= 0x213F) {
-					showEvent = isWrite ? options.ShowPpuRegisterWrites : options.ShowPpuRegisterReads;
+					if(isWrite) {
+						if(reg >= 0x2101 && reg <= 0x2104) {
+							showEvent = options.ShowPpuRegisterOamWrites;
+						} else if(reg >= 0x2105 && reg <= 0x210C) {
+							showEvent = options.ShowPpuRegisterBgOptionWrites;
+						} else if(reg >= 0x210D && reg <= 0x2114) {
+							showEvent = options.ShowPpuRegisterBgScrollWrites;
+						} else if(reg >= 0x2115 && reg <= 0x2119) {
+							showEvent = options.ShowPpuRegisterVramWrites;
+						} else if(reg >= 0x211A && reg <= 0x2120) {
+							showEvent = options.ShowPpuRegisterMode7Writes;
+						} else if(reg >= 0x2121 && reg <= 0x2122) {
+							showEvent = options.ShowPpuRegisterCgramWrites;
+						} else if(reg >= 0x2123 && reg <= 0x212B) {
+							showEvent = options.ShowPpuRegisterWindowWrites;
+						} else {
+							showEvent = options.ShowPpuRegisterOtherWrites;
+						}
+					} else {
+						showEvent = options.ShowPpuRegisterReads;
+					}
 				} else if(reg <= 0x217F) {
 					showEvent = isWrite ? options.ShowApuRegisterWrites : options.ShowApuRegisterReads;
 				} else if(reg <= 0x2183) {
@@ -158,7 +178,27 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 		case DebugEventType::Register:
 			uint16_t reg = evt.Operation.Address & 0xFFFF;
 			if(reg <= 0x213F) {
-				color = isWrite ? options.PpuRegisterWriteColor : options.PpuRegisterReadColor;
+				if(isWrite) {
+					if(reg >= 0x2101 && reg <= 0x2104) {
+						color = options.PpuRegisterWriteOamColor;
+					} else if(reg >= 0x2105 && reg <= 0x210C) {
+						color = options.PpuRegisterWriteBgOptionColor;
+					} else if(reg >= 0x210D && reg <= 0x2114) {
+						color = options.PpuRegisterWriteBgScrollColor;
+					} else if(reg >= 0x2115 && reg <= 0x2119) {
+						color = options.PpuRegisterWriteVramColor;
+					} else if(reg >= 0x211A && reg <= 0x2120) {
+						color = options.PpuRegisterWriteMode7Color;
+					} else if(reg >= 0x2121 && reg <= 0x2122) {
+						color = options.PpuRegisterWriteCgramColor;
+					} else if(reg >= 0x2123 && reg <= 0x212B) {
+						color = options.PpuRegisterWriteWindowColor;
+					} else {
+						color = options.PpuRegisterWriteOtherColor;
+					}
+				} else {
+					color = options.PpuRegisterReadColor;
+				}
 			} else if(reg <= 0x217F) {
 				color = isWrite ? options.ApuRegisterWriteColor : options.ApuRegisterReadColor;
 			} else if(reg <= 0x2183) {

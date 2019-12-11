@@ -77,8 +77,17 @@ struct EventViewerDisplayOptions
 	uint32_t IrqColor;
 	uint32_t NmiColor;
 	uint32_t BreakpointColor;
+	
 	uint32_t PpuRegisterReadColor;
-	uint32_t PpuRegisterWriteColor;
+	uint32_t PpuRegisterWriteCgramColor;
+	uint32_t PpuRegisterWriteVramColor;
+	uint32_t PpuRegisterWriteOamColor;
+	uint32_t PpuRegisterWriteMode7Color;
+	uint32_t PpuRegisterWriteBgOptionColor;
+	uint32_t PpuRegisterWriteBgScrollColor;
+	uint32_t PpuRegisterWriteWindowColor;
+	uint32_t PpuRegisterWriteOtherColor;
+
 	uint32_t ApuRegisterReadColor;
 	uint32_t ApuRegisterWriteColor;
 	uint32_t CpuRegisterReadColor;
@@ -86,7 +95,15 @@ struct EventViewerDisplayOptions
 	uint32_t WorkRamRegisterReadColor;
 	uint32_t WorkRamRegisterWriteColor;
 
-	bool ShowPpuRegisterWrites;
+	bool ShowPpuRegisterCgramWrites;
+	bool ShowPpuRegisterVramWrites;
+	bool ShowPpuRegisterOamWrites;
+	bool ShowPpuRegisterMode7Writes;
+	bool ShowPpuRegisterBgOptionWrites;
+	bool ShowPpuRegisterBgScrollWrites;
+	bool ShowPpuRegisterWindowWrites;
+	bool ShowPpuRegisterOtherWrites;
+
 	bool ShowPpuRegisterReads;
 	bool ShowCpuRegisterWrites;
 	bool ShowCpuRegisterReads;

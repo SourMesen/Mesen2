@@ -62,7 +62,7 @@
 			this.ctrlPpuView.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlPpuView.Name = "ctrlPpuView";
 			this.ctrlPpuView.ScanlineCount = ((uint)(262u));
-			this.ctrlPpuView.Size = new System.Drawing.Size(675, 541);
+			this.ctrlPpuView.Size = new System.Drawing.Size(661, 541);
 			this.ctrlPpuView.TabIndex = 0;
 			// 
 			// mnuMain
@@ -192,7 +192,7 @@
 			this.tabMain.Margin = new System.Windows.Forms.Padding(0);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
-			this.tabMain.Size = new System.Drawing.Size(683, 567);
+			this.tabMain.Size = new System.Drawing.Size(669, 567);
 			this.tabMain.TabIndex = 11;
 			this.tabMain.SelectedIndexChanged += new System.EventHandler(this.tabMain_SelectedIndexChanged);
 			// 
@@ -202,7 +202,7 @@
 			this.tpgPpuView.Location = new System.Drawing.Point(4, 22);
 			this.tpgPpuView.Margin = new System.Windows.Forms.Padding(0);
 			this.tpgPpuView.Name = "tpgPpuView";
-			this.tpgPpuView.Size = new System.Drawing.Size(675, 541);
+			this.tpgPpuView.Size = new System.Drawing.Size(661, 541);
 			this.tpgPpuView.TabIndex = 0;
 			this.tpgPpuView.Text = "PPU View";
 			this.tpgPpuView.UseVisualStyleBackColor = true;
@@ -213,7 +213,7 @@
 			this.tpgListView.Location = new System.Drawing.Point(4, 22);
 			this.tpgListView.Margin = new System.Windows.Forms.Padding(0);
 			this.tpgListView.Name = "tpgListView";
-			this.tpgListView.Size = new System.Drawing.Size(678, 541);
+			this.tpgListView.Size = new System.Drawing.Size(675, 541);
 			this.tpgListView.TabIndex = 1;
 			this.tpgListView.Text = "List View";
 			this.tpgListView.UseVisualStyleBackColor = true;
@@ -224,16 +224,16 @@
 			this.ctrlListView.Location = new System.Drawing.Point(0, 0);
 			this.ctrlListView.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlListView.Name = "ctrlListView";
-			this.ctrlListView.Size = new System.Drawing.Size(678, 541);
+			this.ctrlListView.Size = new System.Drawing.Size(675, 541);
 			this.ctrlListView.TabIndex = 2;
 			// 
 			// ctrlFilters
 			// 
 			this.ctrlFilters.Dock = System.Windows.Forms.DockStyle.Right;
-			this.ctrlFilters.Location = new System.Drawing.Point(683, 24);
+			this.ctrlFilters.Location = new System.Drawing.Point(669, 24);
 			this.ctrlFilters.Name = "ctrlFilters";
 			this.ctrlFilters.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.ctrlFilters.Size = new System.Drawing.Size(263, 567);
+			this.ctrlFilters.Size = new System.Drawing.Size(277, 567);
 			this.ctrlFilters.TabIndex = 12;
 			this.ctrlFilters.OptionsChanged += new System.EventHandler(this.ctrlFilters_OptionsChanged);
 			// 
