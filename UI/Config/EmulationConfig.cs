@@ -16,8 +16,7 @@ namespace Mesen.GUI.Config
 
 		public ConsoleRegion Region = ConsoleRegion.Auto;
 
-		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput = false;
-		[MarshalAs(UnmanagedType.I1)] public bool EnableMapperRandomPowerOnState = false;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState = false;
 
 		[MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi = 0;
 		[MinMax(0, 1000)] public UInt32 PpuExtraScanlinesAfterNmi = 0;

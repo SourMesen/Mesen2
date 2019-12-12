@@ -13,6 +13,9 @@ EmuSettings::EmuSettings(Console* console)
 	_flags = 0;
 	_debuggerFlags = 0;
 	_inputConfigVersion = 0;
+
+	std::random_device rd;
+	_mt = std::mt19937(rd());
 }
 
 uint32_t EmuSettings::GetVersion()
@@ -287,14 +290,23 @@ void EmuSettings::InitializeRam(void* data, uint32_t length)
 		case RamState::AllZeros: memset(data, 0, length); break;
 		case RamState::AllOnes: memset(data, 0xFF, length); break;
 		case RamState::Random:
-			std::random_device rd;
-			std::mt19937 mt(rd());
 			std::uniform_int_distribution<> dist(0, 255);
 			for(uint32_t i = 0; i < length; i++) {
-				((uint8_t*)data)[i] = dist(mt);
+				((uint8_t*)data)[i] = dist(_mt);
 			}
 			break;
 	}
+}
+
+int EmuSettings::GetRandomValue(int maxValue)
+{
+	std::uniform_int_distribution<> dist(0, maxValue);
+	return dist(_mt);
+}
+
+bool EmuSettings::GetRandomBool()
+{ 
+	return GetRandomValue(1) == 1; 
 }
 
 bool EmuSettings::IsInputEnabled()

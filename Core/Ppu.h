@@ -201,6 +201,8 @@ private:
 
 	void UpdateOamAddress();
 	uint16_t GetOamAddress();
+	
+	void RandomizeState();
 
 public:
 	Ppu(Console* console);

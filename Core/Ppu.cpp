@@ -49,10 +49,6 @@ Ppu::~Ppu()
 
 void Ppu::PowerOn()
 {
-	//Boot up PPU in deterministic state (for now, need to randomize this)
-	_state = {};
-	_state.ForcedVblank = true;
-
 	_skipRender = false;
 	_regs = _console->GetInternalRegisters().get();
 	_settings = _console->GetSettings().get();
@@ -60,25 +56,20 @@ void Ppu::PowerOn()
 	_memoryManager = _console->GetMemoryManager().get();
 
 	_currentBuffer = _outputBuffers[0];
-
-	_state.Layers[0] = {};
-	_state.Layers[1] = {};
-	_state.Layers[2] = {};
-	_state.Layers[3] = {};
-
-	_state.CgramAddress = 0;
+	
+	_state = {};
+	_state.ForcedVblank = true;
+	_state.VramIncrementValue = 1;
+	if(_settings->GetEmulationConfig().EnableRandomPowerOnState) {
+		RandomizeState();
+	}
 
 	_settings->InitializeRam(_vram, Ppu::VideoRamSize);
 	_settings->InitializeRam(_cgram, Ppu::CgRamSize);
 	_settings->InitializeRam(_oamRam, Ppu::SpriteRamSize);
 
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
-
-	_state.VramAddress = 0;
-	_state.VramIncrementValue = 1;
-	_state.VramAddressRemapping = 0;
-	_state.VramAddrIncrementOnSecondReg = false;
-
+	
 	UpdateNmiScanline();
 }
 
@@ -2209,6 +2200,101 @@ void Ppu::Serialize(Serializer &s)
 		}
 	}
 	s.Stream(_hOffset, _vOffset, _fetchBgStart, _fetchBgEnd, _fetchSpriteStart, _fetchSpriteEnd);
+}
+
+void Ppu::RandomizeState()
+{
+	_state.ScreenBrightness = _settings->GetRandomValue(0x0F);
+	_state.Mode7.CenterX = _settings->GetRandomValue(0xFFFF);
+	_state.Mode7.CenterY = _settings->GetRandomValue(0xFFFF);
+	_state.Mode7.FillWithTile0 = _settings->GetRandomBool();
+	_state.Mode7.HorizontalMirroring = _settings->GetRandomBool();
+	_state.Mode7.HScroll = _settings->GetRandomValue(0x1FFF);
+	_state.Mode7.HScrollLatch = _settings->GetRandomValue(0x1FFF);
+	_state.Mode7.LargeMap = _settings->GetRandomBool();
+	_state.Mode7.Matrix[0] = _settings->GetRandomValue(0xFFFF);
+	_state.Mode7.Matrix[1] = _settings->GetRandomValue(0xFFFF);
+	_state.Mode7.Matrix[2] = _settings->GetRandomValue(0xFFFF);
+	_state.Mode7.Matrix[3] = _settings->GetRandomValue(0xFFFF);
+	_state.Mode7.ValueLatch = _settings->GetRandomValue(0xFF);
+	_state.Mode7.VerticalMirroring = _settings->GetRandomBool();
+	_state.Mode7.VScroll = _settings->GetRandomValue(0x1FFF);
+	_state.Mode7.VScrollLatch = _settings->GetRandomValue(0x1FFF);
+
+	_state.BgMode = _settings->GetRandomValue(7);
+	_state.Mode1Bg3Priority = _settings->GetRandomBool();
+	_state.MainScreenLayers = _settings->GetRandomValue(0x1F);
+	_state.SubScreenLayers = _settings->GetRandomValue(0x1F);
+
+	for(int i = 0; i < 4; i++) {
+		_state.Layers[i].TilemapAddress = _settings->GetRandomValue(0x1F) << 10;
+		_state.Layers[i].ChrAddress = _settings->GetRandomValue(0x07) << 12;
+		_state.Layers[i].HScroll = _settings->GetRandomValue(0x1FFF);
+		_state.Layers[i].VScroll = _settings->GetRandomValue(0x1FFF);
+		_state.Layers[i].DoubleWidth = _settings->GetRandomBool();
+		_state.Layers[i].DoubleHeight = _settings->GetRandomBool();
+		_state.Layers[i].LargeTiles = _settings->GetRandomBool();
+	}
+
+	for(int i = 0; i < 2; i++) {
+		_state.Window[i].Left = _settings->GetRandomValue(0xFF);
+		_state.Window[i].Right = _settings->GetRandomValue(0xFF);
+		for(int j = 0; j < 6; j++) {
+			_state.Window[i].ActiveLayers[j] = _settings->GetRandomBool();
+			_state.Window[i].InvertedLayers[j] = _settings->GetRandomBool();
+		}
+	}
+
+	for(int i = 0; i < 6; i++) {
+		_state.MaskLogic[i] = (WindowMaskLogic)_settings->GetRandomValue(3);
+	}
+
+	for(int i = 0; i < 5; i++) {
+		_state.WindowMaskMain[i] = _settings->GetRandomBool();
+		_state.WindowMaskSub[i] = _settings->GetRandomBool();
+	}
+
+	_state.VramAddress = _settings->GetRandomValue(0x7FFF);
+	switch(_settings->GetRandomValue(0x03)) {
+		case 0: _state.VramIncrementValue = 1; break;
+		case 1: _state.VramIncrementValue = 32; break;
+		case 2: case 3: _state.VramIncrementValue = 128; break;
+	}
+
+	_state.VramAddressRemapping = _settings->GetRandomValue(0x03);
+	_state.VramAddrIncrementOnSecondReg = _settings->GetRandomBool();
+	_state.VramReadBuffer = _settings->GetRandomValue(0xFFFF);
+
+	_state.Ppu1OpenBus = _settings->GetRandomValue(0xFF);
+	_state.Ppu2OpenBus = _settings->GetRandomValue(0xFF);
+
+	_state.CgramAddress = _settings->GetRandomValue(0xFF);
+	_state.CgramWriteBuffer = _settings->GetRandomValue(0xFF);
+	_state.CgramAddressLatch = _settings->GetRandomBool();
+
+	_state.MosaicSize = _settings->GetRandomValue(0x0F) + 1;
+	_state.MosaicEnabled = _settings->GetRandomValue(0x0F);
+
+	_state.OamRamAddress = _settings->GetRandomValue(0x1FF);
+	_state.OamMode = _settings->GetRandomValue(0x07);
+	_state.OamBaseAddress = _settings->GetRandomValue(0x07) << 13;
+	_state.OamAddressOffset = (_settings->GetRandomValue(0x03) + 1) << 12;
+	_state.EnableOamPriority = _settings->GetRandomBool();
+
+	_state.ExtBgEnabled = _settings->GetRandomBool();
+	_state.HiResMode = _settings->GetRandomBool();
+	_state.ScreenInterlace = _settings->GetRandomBool();
+	_state.ObjInterlace = _settings->GetRandomBool();
+	_state.OverscanMode = _settings->GetRandomBool();
+	_state.DirectColorMode = _settings->GetRandomBool();
+
+	_state.ColorMathClipMode = (ColorWindowMode)_settings->GetRandomValue(3);
+	_state.ColorMathPreventMode = (ColorWindowMode)_settings->GetRandomValue(3);
+	_state.ColorMathAddSubscreen = _settings->GetRandomBool();
+	_state.ColorMathEnabled = _settings->GetRandomValue(0x3F);
+	_state.ColorMathSubstractMode = _settings->GetRandomBool();
+	_state.ColorMathHalveResult = _settings->GetRandomBool();
+	_state.FixedColor = _settings->GetRandomValue(0x7FFF);
 }
 
 /* Everything below this point is used to select the proper arguments for templates */

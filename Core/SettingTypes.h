@@ -273,7 +273,6 @@ struct EmulationConfig
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
 
-	bool AllowInvalidInput = false;
 	bool EnableRandomPowerOnState = false;
 
 	uint32_t PpuExtraScanlinesBeforeNmi = 0;

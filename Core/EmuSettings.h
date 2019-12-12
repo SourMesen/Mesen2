@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "SettingTypes.h"
+#include <random>
 
 class Console;
 
@@ -8,6 +9,7 @@ class EmuSettings
 {
 private:
 	Console* _console;
+	std::mt19937 _mt;
 
 	VideoConfig _video;
 	AudioConfig _audio;
@@ -71,6 +73,9 @@ public:
 
 	void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 	bool CheckDebuggerFlag(DebuggerFlags flags);
+	
+	int GetRandomValue(int maxValue);
+	bool GetRandomBool();
 	void InitializeRam(void* data, uint32_t length);
 
 	bool IsInputEnabled();
