@@ -318,6 +318,8 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 		_cart->SaveBattery();
 	}
 
+	bool result = false;
+	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
 		if(stopRom) {
@@ -382,12 +384,13 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 			_emuThread.reset(new thread(&Console::Run, this));
 			#endif
 		}
-
-		return true;
+		result = true;
+	} else {
+		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
 	}
 
-	MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
-	return false;
+	_settings->SetEmulationConfig(orgConfig);
+	return result;
 }
 
 RomInfo Console::GetRomInfo()

@@ -190,6 +190,8 @@ void BaseCartridge::LoadRom()
 
 	LoadEmbeddedFirmware();
 
+	ApplyConfigOverrides();
+
 	uint8_t rawSramSize = std::min(_cartInfo.SramSize & 0x0F, 8);
 	_saveRamSize = rawSramSize > 0 ? 1024 * (1 << rawSramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
@@ -438,6 +440,17 @@ bool BaseCartridge::MapSpecificCarts(MemoryMappings &mm)
 		return true;
 	}
 	return false;
+}
+
+void BaseCartridge::ApplyConfigOverrides()
+{
+	string name = GetCartName();
+	if(name == "POWERDRIVE" || name == "DEATH BRADE" || name == "RPG SAILORMOON") {
+		//These games work better when ram is initialized to $FF
+		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		cfg.RamPowerOnState = RamState::AllOnes;
+		_console->GetSettings()->SetEmulationConfig(cfg);
+	}
 }
 
 void BaseCartridge::LoadSpc()

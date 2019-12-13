@@ -56,6 +56,7 @@ private:
 	CoprocessorType GetDspVersion();
 
 	bool MapSpecificCarts(MemoryMappings &mm);
+	void ApplyConfigOverrides();
 	
 	void LoadRom();
 	void LoadSpc();
