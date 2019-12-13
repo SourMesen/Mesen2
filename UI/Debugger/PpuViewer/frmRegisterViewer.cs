@@ -110,8 +110,8 @@ namespace Mesen.GUI.Debugger
 				ctrlPropertyCpu.UpdateState(new List<RegEntry>() {
 					new RegEntry("$4200 - $4201", "IRQ/NMI/Autopoll Enabled", null),
 					new RegEntry("$4200.7", "NMI Enabled", regs.EnableNmi),
-					new RegEntry("$4200.5", "H IRQ Enabled", regs.EnableHorizontalIrq),
-					new RegEntry("$4200.4", "V IRQ Enabled", regs.EnableVerticalIrq),
+					new RegEntry("$4200.5", "V IRQ Enabled", regs.EnableHorizontalIrq),
+					new RegEntry("$4200.4", "H IRQ Enabled", regs.EnableVerticalIrq),
 					new RegEntry("$4200.1", "Auto Joypad Poll", regs.EnableAutoJoypadRead),
 
 					new RegEntry("$4201", "IO Port", regs.IoPortOutput, Format.X8),
