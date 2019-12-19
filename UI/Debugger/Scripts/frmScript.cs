@@ -492,8 +492,8 @@ namespace Mesen.GUI.Debugger
 
 		static readonly List<List<string>> _availableFunctions = new List<List<string>>() {
 			new List<string> {"enum", "emu", "", "", "", "", "" },
-			new List<string> {"func","emu.addEventCallback","emu.addEventCallback(function, type)","function - A Lua function.\ntype - *Enum* See eventCallbackType.","Returns an integer value that can be used to remove the callback by calling removeEventCallback.","Registers a callback function to be called whenever the specified event occurs.",},
-			new List<string> {"func","emu.removeEventCallback","emu.removeEventCallback(reference, type)","reference - The value returned by the call to addEventCallback.\ntype - *Enum* See eventCallbackType.","","Removes a previously registered callback function.",},
+			new List<string> {"func","emu.addEventCallback","emu.addEventCallback(function, type)","function - A Lua function.\ntype - *Enum* See eventType.","Returns an integer value that can be used to remove the callback by calling removeEventCallback.","Registers a callback function to be called whenever the specified event occurs.",},
+			new List<string> {"func","emu.removeEventCallback","emu.removeEventCallback(reference, type)","reference - The value returned by the call to addEventCallback.\ntype - *Enum* See eventType.","","Removes a previously registered callback function.",},
 			new List<string> {"func","emu.addMemoryCallback","emu.addMemoryCallback(function, type, startAddress, endAddress)","function - A Lua function.\ntype - *Enum* See memCallbackType\nstartAddress - *Integer* Start of the CPU memory address range to register the callback on.\nendAddress - (optional) *Integer* End of the CPU memory address range to register the callback on.","Returns an integer value that can be used to remove the callback by callingremoveMemoryCallback.","Registers a callback function to be called whenever the specified event occurs."},
 			new List<string> {"func","emu.removeMemoryCallback","emu.removeMemoryCallback(reference, type, startAddress, endAddress)","reference - The value returned by the call to addMemoryCallback.\ntype - *Enum* See memCallbackType.\nstartAddress - *Integer* Start of the CPU memory address range to unregister the callback from.\nendAddress - (optional) *Integer* End of the CPU memory address range to unregister the callback from.","","Removes a previously registered callback function."},
 			new List<string> {"func","emu.read","emu.read(address, type, signed)","address - *Integer* The address/offset to read from.\ntype - *Enum* The type of memory to read from. See memType.\nsigned - (optional) *Boolean* If true, the value returned will be interpreted as a signed value.","An 8-bit (read) or 16-bit (readWord) value.","Reads a value from the specified memory type.\n\nWhen calling read / readWord with the memType.cpu or memType.ppu memory types, emulation side-effects may occur.\nTo avoid triggering side-effects, use the memType.cpuDebug or memType.ppuDebug types, which will not cause side-effects."},
@@ -521,10 +521,10 @@ namespace Mesen.GUI.Debugger
 			new List<string> {"func","emu.getScreenBuffer","emu.getScreenBuffer()","", "*Array* 32-bit integers in ARGB format", "Returns an array of ARGB values for the entire screen (256px by 240px) - can be used with emu.setScreenBuffer() to alter the frame."},
 			new List<string> {"func","emu.setScreenBuffer","emu.setScreenBuffer(screenBuffer)", "screenBuffer - *Array* An array of 32-bit integers in ARGB format", "","Replaces the current frame with the contents of the specified array."},
 
-			/*new List<string> {"func","emu.getAccessCounters","emu.getAccessCounters(counterMemType, counterOpType)", "counterMemType - *Enum* A value from the emu.counterMemType enum\ncounterOpType - *Enum* A value from the emu.counterOpType enum", "*Array* 32-bit integers", "Returns an array of access counters for the specified memory and operation types."},
+			new List<string> {"func","emu.getAccessCounters","emu.getAccessCounters(counterMemType, counterOpType)", "counterMemType - *Enum* A value from the emu.counterMemType enum\ncounterOpType - *Enum* A value from the emu.counterOpType enum", "*Array* 32-bit integers", "Returns an array of access counters for the specified memory and operation types."},
 			new List<string> {"func","emu.resetAccessCounters","emu.resetAccessCounters()", "", "", "Resets all access counters."},
 
-			new List<string> {"func", "emu.getPrgRomOffset", "emu.getPrgRomOffset(address)", "address - *Integer* A CPU address (Valid range: $0000-$FFFF)", "*Integer* The corresponding byte offset in PRG ROM", "Returns an integer representing the byte offset of the specified CPU address in PRG ROM based on the mapper's current configuration.\nReturns -1 when the specified address is not mapped to PRG ROM."},
+			/*new List<string> {"func", "emu.getPrgRomOffset", "emu.getPrgRomOffset(address)", "address - *Integer* A CPU address (Valid range: $0000-$FFFF)", "*Integer* The corresponding byte offset in PRG ROM", "Returns an integer representing the byte offset of the specified CPU address in PRG ROM based on the mapper's current configuration.\nReturns -1 when the specified address is not mapped to PRG ROM."},
 			new List<string> {"func", "emu.getChrRomOffset", "emu.getChrRomOffset(address)", "address - *Integer* A PPU address (Valid range: $0000-$3FFF)", "*Integer* The corresponding byte offset in CHR ROM", "Returns an integer representing the byte offset of the specified PPU address in CHR ROM based on the mapper's current configuration.\nReturns -1 when the specified address is not mapped to CHR ROM."},
 
 			new List<string> {"func","emu.saveSavestate","emu.saveSavestate()","","*String* A string containing a binary blob representing the emulation's current state.","Creates a savestate and returns it as a binary string. (The savestate is not saved on disk)\n Note: this can only be called from within a “startFrame” event callback or “cpuExec” memory callback."},
@@ -548,8 +548,8 @@ namespace Mesen.GUI.Debugger
 			new List<string> {"enum","emu.eventType.reset","Triggered when a soft reset occurs","","",""},
 			new List<string> {"enum","emu.eventType.nmi","Triggered when an nmi occurs","","",""},
 			new List<string> {"enum","emu.eventType.irq","Triggered when an irq occurs","","",""},
-			new List<string> {"enum","emu.eventType.startFrame","Triggered at the start of a frame (cycle 0, scanline -1)","","",""},
-			new List<string> {"enum","emu.eventType.endFrame","Triggered at the end of a frame (cycle 0, scanline 241)","","",""},
+			new List<string> {"enum","emu.eventType.startFrame","Triggered at the start of a frame (cycle 0, scanline 0)","","",""},
+			new List<string> {"enum","emu.eventType.endFrame","Triggered at the end of a frame (cycle 0 on the NMI scanline)","","",""},
 			//new List<string> {"enum","emu.eventType.codeBreak","Triggered when code execution breaks (e.g due to a breakpoint, etc.)","","",""},
 			new List<string> {"enum","emu.eventType.stateLoaded","Triggered when a user manually loads a savestate","","",""},
 			new List<string> {"enum","emu.eventType.stateSaved","Triggered when a user manually saves a savestate","","",""},
@@ -573,7 +573,7 @@ namespace Mesen.GUI.Debugger
 			new List<string> {"enum","emu.memType.workRam","Work RAM - Max: $1FFFF","","",""},
 			new List<string> {"enum","emu.memType.saveRam","Save RAM - Range varies by game","","",""},
 			new List<string> {"enum","emu.memType.cpuDebug","CPU memory - Max: $FFFFFF","","","Same as \"memType.cpu\" but does NOT cause any side-effects."},
-			new List<string> {"enum","emu.memType.spcDebug", "SPC memory - Max: $FFFF", "","","Same as \"memType.ppu\" but does NOT cause any side-effects."},
+			new List<string> {"enum","emu.memType.spcDebug", "SPC memory - Max: $FFFF", "","","Same as \"memType.spc\" but does NOT cause any side-effects."},
 			new List<string> {"enum","emu.counterMemType","emu.counterMemType.[value]","","","Values:\nprgRom,\nworkRam,\nsaveRam\n\nUsed by getAccessCounters calls."},
 			new List<string> {"enum","emu.counterMemType.prgRom","Returns access counter data for PRG ROM","","",""},
 			new List<string> {"enum","emu.counterMemType.workRam", "Returns access counter data for Work RAM", "","",""},
