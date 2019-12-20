@@ -46,8 +46,10 @@
 			this.lblRewindSpeedHint = new System.Windows.Forms.Label();
 			this.cboRegion = new System.Windows.Forms.ComboBox();
 			this.tpgAdvanced = new System.Windows.Forms.TabPage();
-			this.lblRamPowerOnState = new System.Windows.Forms.Label();
+			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkEnableRandomPowerOnState = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.cboRamPowerOnState = new System.Windows.Forms.ComboBox();
+			this.lblRamPowerOnState = new System.Windows.Forms.Label();
 			this.tpgOverclocking = new System.Windows.Forms.TabPage();
 			this.picHint = new System.Windows.Forms.PictureBox();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -61,8 +63,7 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.nudGsuClockSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblGsuClockSpeed = new System.Windows.Forms.Label();
-			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-			this.chkEnableRandomPowerOnState = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkEnableStrictBoardMappings = new Mesen.GUI.Controls.ctrlRiskyOption();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -70,13 +71,13 @@
 			this.flowLayoutPanel6.SuspendLayout();
 			this.flowLayoutPanel10.SuspendLayout();
 			this.tpgAdvanced.SuspendLayout();
+			this.tableLayoutPanel2.SuspendLayout();
 			this.tpgOverclocking.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picHint)).BeginInit();
 			this.tableLayoutPanel3.SuspendLayout();
 			this.grpPpuTiming.SuspendLayout();
 			this.tableLayoutPanel5.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
-			this.tableLayoutPanel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -353,15 +354,35 @@
 			this.tpgAdvanced.Text = "Advanced";
 			this.tpgAdvanced.UseVisualStyleBackColor = true;
 			// 
-			// lblRamPowerOnState
+			// tableLayoutPanel2
 			// 
-			this.lblRamPowerOnState.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblRamPowerOnState.AutoSize = true;
-			this.lblRamPowerOnState.Location = new System.Drawing.Point(3, 7);
-			this.lblRamPowerOnState.Name = "lblRamPowerOnState";
-			this.lblRamPowerOnState.Size = new System.Drawing.Size(159, 13);
-			this.lblRamPowerOnState.TabIndex = 0;
-			this.lblRamPowerOnState.Text = "Default power on state for RAM:";
+			this.tableLayoutPanel2.ColumnCount = 2;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Controls.Add(this.chkEnableRandomPowerOnState, 0, 1);
+			this.tableLayoutPanel2.Controls.Add(this.cboRamPowerOnState, 1, 0);
+			this.tableLayoutPanel2.Controls.Add(this.lblRamPowerOnState, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this.chkEnableStrictBoardMappings, 0, 2);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+			this.tableLayoutPanel2.RowCount = 4;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(400, 258);
+			this.tableLayoutPanel2.TabIndex = 5;
+			// 
+			// chkEnableRandomPowerOnState
+			// 
+			this.chkEnableRandomPowerOnState.Checked = false;
+			this.tableLayoutPanel2.SetColumnSpan(this.chkEnableRandomPowerOnState, 2);
+			this.chkEnableRandomPowerOnState.Location = new System.Drawing.Point(0, 27);
+			this.chkEnableRandomPowerOnState.Name = "chkEnableRandomPowerOnState";
+			this.chkEnableRandomPowerOnState.Size = new System.Drawing.Size(273, 24);
+			this.chkEnableRandomPowerOnState.TabIndex = 6;
+			this.chkEnableRandomPowerOnState.Text = "Randomize power-on state";
 			// 
 			// cboRamPowerOnState
 			// 
@@ -371,6 +392,16 @@
 			this.cboRamPowerOnState.Name = "cboRamPowerOnState";
 			this.cboRamPowerOnState.Size = new System.Drawing.Size(176, 21);
 			this.cboRamPowerOnState.TabIndex = 1;
+			// 
+			// lblRamPowerOnState
+			// 
+			this.lblRamPowerOnState.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblRamPowerOnState.AutoSize = true;
+			this.lblRamPowerOnState.Location = new System.Drawing.Point(3, 7);
+			this.lblRamPowerOnState.Name = "lblRamPowerOnState";
+			this.lblRamPowerOnState.Size = new System.Drawing.Size(159, 13);
+			this.lblRamPowerOnState.TabIndex = 0;
+			this.lblRamPowerOnState.Text = "Default power on state for RAM:";
 			// 
 			// tpgOverclocking
 			// 
@@ -597,32 +628,15 @@
 			this.lblGsuClockSpeed.TabIndex = 0;
 			this.lblGsuClockSpeed.Text = "Super FX clock speed (%):";
 			// 
-			// tableLayoutPanel2
+			// chkEnableStrictBoardMappings
 			// 
-			this.tableLayoutPanel2.ColumnCount = 2;
-			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Controls.Add(this.chkEnableRandomPowerOnState, 0, 1);
-			this.tableLayoutPanel2.Controls.Add(this.cboRamPowerOnState, 1, 0);
-			this.tableLayoutPanel2.Controls.Add(this.lblRamPowerOnState, 0, 0);
-			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
-			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 2;
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(400, 258);
-			this.tableLayoutPanel2.TabIndex = 5;
-			// 
-			// chkEnableRandomPowerOnState
-			// 
-			this.chkEnableRandomPowerOnState.Checked = false;
-			this.tableLayoutPanel2.SetColumnSpan(this.chkEnableRandomPowerOnState, 2);
-			this.chkEnableRandomPowerOnState.Location = new System.Drawing.Point(0, 27);
-			this.chkEnableRandomPowerOnState.Name = "chkEnableRandomPowerOnState";
-			this.chkEnableRandomPowerOnState.Size = new System.Drawing.Size(273, 24);
-			this.chkEnableRandomPowerOnState.TabIndex = 6;
-			this.chkEnableRandomPowerOnState.Text = "Randomize power-on state";
+			this.chkEnableStrictBoardMappings.Checked = false;
+			this.tableLayoutPanel2.SetColumnSpan(this.chkEnableStrictBoardMappings, 2);
+			this.chkEnableStrictBoardMappings.Location = new System.Drawing.Point(0, 51);
+			this.chkEnableStrictBoardMappings.Name = "chkEnableStrictBoardMappings";
+			this.chkEnableStrictBoardMappings.Size = new System.Drawing.Size(400, 24);
+			this.chkEnableStrictBoardMappings.TabIndex = 7;
+			this.chkEnableStrictBoardMappings.Text = "Use strict board mappings (breaks some romhacks)";
 			// 
 			// frmEmulationConfig
 			// 
@@ -650,6 +664,8 @@
 			this.flowLayoutPanel10.ResumeLayout(false);
 			this.flowLayoutPanel10.PerformLayout();
 			this.tpgAdvanced.ResumeLayout(false);
+			this.tableLayoutPanel2.ResumeLayout(false);
+			this.tableLayoutPanel2.PerformLayout();
 			this.tpgOverclocking.ResumeLayout(false);
 			this.tpgOverclocking.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picHint)).EndInit();
@@ -659,8 +675,6 @@
 			this.tableLayoutPanel5.PerformLayout();
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
-			this.tableLayoutPanel2.ResumeLayout(false);
-			this.tableLayoutPanel2.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -703,5 +717,6 @@
 		private System.Windows.Forms.Label lblGsuClockSpeed;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 		private Controls.ctrlRiskyOption chkEnableRandomPowerOnState;
+		private Controls.ctrlRiskyOption chkEnableStrictBoardMappings;
 	}
 }
