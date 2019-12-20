@@ -6,7 +6,7 @@
 class LibretroSoundManager : public IAudioDevice
 {
 private:
-	retro_audio_sample_t _sendAudioSample = nullptr;
+	retro_audio_sample_batch_t _sendAudioSample = nullptr;
 	bool _skipMode = false;
 	shared_ptr<Console> _console;
 
@@ -26,13 +26,13 @@ public:
 	virtual void PlayBuffer(int16_t *soundBuffer, uint32_t sampleCount, uint32_t sampleRate, bool isStereo) override
 	{
 		if(!_skipMode && _sendAudioSample) {
-			for(uint32_t i = 0; i < sampleCount; i++) {
-				_sendAudioSample(soundBuffer[i*2], soundBuffer[i*2+1]);
+			for(uint32_t total = 0; total < sampleCount; ) {
+				total += _sendAudioSample(soundBuffer + total*2, sampleCount - total);
 			}
 		}
 	}
 
-	void SetSendAudioSample(retro_audio_sample_t sendAudioSample)
+	void SetSendAudioSample(retro_audio_sample_batch_t sendAudioSample)
 	{
 		_sendAudioSample = sendAudioSample;
 	}
