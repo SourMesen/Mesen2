@@ -9,7 +9,7 @@ If you want to support this project, please consider making a donation:
 
 Development builds of the latest commit are available from Appveyor. For release builds, see the **Releases** tab on GitHub.
 
-**Warning:** These are development builds and may be ***unstable***. Using them may also increase the chances of your settings being corrupted, or having issues when upgrading to the next official release. Additionally, these builds are currently not optimized via PGO and will typically run 20-30% slower than the official release builds.
+**Warning:** These are development builds and may be ***unstable***. Using them may also increase the chances of your settings being corrupted, or having issues when upgrading to the next official release. Additionally, these builds are currently not optimized via PGO and will typically run a bit slower than the official release builds.
 
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/cjk97u1yvwnae83x/branch/master?svg=true)](https://ci.appveyor.com/project/Sour/mesen-s/build/artifacts)
 
@@ -21,7 +21,6 @@ The following should be added over time (in no particular order):
 
 * Additions/improvements in the debugging tools
 * SPC7110 support
-* MSU-1 support
 * Satellaview/BS-X support
 
 ## Compiling

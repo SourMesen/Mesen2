@@ -2,8 +2,9 @@
 
 //TODO: Use non-experimental namespace (once it is officially supported by VC & GCC)
 #ifndef LIBRETRO
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <filesystem>
+namespace fs = std::filesystem;
 #endif
 
 #include <unordered_set>

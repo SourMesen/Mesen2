@@ -1,10 +1,11 @@
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <unordered_set>
-#include <experimental/filesystem>
+#include <filesystem>
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 using std::string;
 using std::vector;
 
