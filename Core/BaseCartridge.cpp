@@ -450,6 +450,11 @@ void BaseCartridge::ApplyConfigOverrides()
 		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
 		cfg.RamPowerOnState = RamState::AllOnes;
 		_console->GetSettings()->SetEmulationConfig(cfg);
+	} else if(name == "SUPER KEIBA 2") {
+		//Super Keiba 2 behaves incorrectly if save ram is filled with 0s
+		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		cfg.RamPowerOnState = RamState::Random;
+		_console->GetSettings()->SetEmulationConfig(cfg);
 	}
 }
 
