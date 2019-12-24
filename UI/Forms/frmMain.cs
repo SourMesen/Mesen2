@@ -181,6 +181,13 @@ namespace Mesen.GUI.Forms
 					}));
 					break;
 
+				case ConsoleNotificationType.GameResumed:
+					this.BeginInvoke((Action)(() => {
+						//Ensure mouse is hidden when game is resumed
+						CursorManager.OnMouseMove(ctrlRenderer);
+					}));
+					break;
+
 				case ConsoleNotificationType.EmulationStopped:
 					this.BeginInvoke((Action)(() => {
 						this.Text = "Mesen-S";
