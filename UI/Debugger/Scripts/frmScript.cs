@@ -26,6 +26,7 @@ namespace Mesen.GUI.Debugger
 		private DateTime _lastTimestamp = DateTime.MinValue;
 		private AutocompleteMenu _popupMenu;
 		private string _originalText = "";
+		private string _builtInScriptName = null;
 
 		public frmScript()
 		{
@@ -220,6 +221,7 @@ namespace Mesen.GUI.Debugger
 			this.Text = $"{name} - Script Window";
 			txtScriptContent.Text = ResourceExtractor.ReadZippedResource(name);
 			_originalText = txtScriptContent.Text;
+			_builtInScriptName = name;
 			txtScriptContent.ClearUndo();
 		}
 
@@ -267,6 +269,8 @@ namespace Mesen.GUI.Debugger
 			{
 				if(_filePath != null) {
 					return Path.GetFileName(_filePath);
+				} else if(_builtInScriptName != null) {
+					return _builtInScriptName;
 				} else {
 					return "unnamed.lua";
 				}
@@ -321,6 +325,7 @@ namespace Mesen.GUI.Debugger
 					ConfigManager.Config.Debug.ScriptWindow.AddRecentScript(sfd.FileName);
 					UpdateRecentScripts();
 					_originalText = txtScriptContent.Text;
+					_builtInScriptName = null;
 					return true;
 				}
 			}
