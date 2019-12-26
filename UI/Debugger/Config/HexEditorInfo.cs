@@ -17,8 +17,8 @@ namespace Mesen.GUI.Config
 	public class HexEditorInfo
 	{
 		public bool HighDensityTextMode = false;
-		public bool EnablePerByteNavigation = false;
-		public bool ByteEditingMode = false;
+		public bool EnablePerByteNavigation = true;
+		public bool ByteEditingMode = true;
 		public bool AutoRefresh = true;
 		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Normal;
 		public bool IgnoreRedundantWrites = false;
@@ -42,11 +42,8 @@ namespace Mesen.GUI.Config
 		public bool HideExecutedBytes = false;
 		public bool HighlightBreakpoints = false;
 		public bool HighlightLabelledBytes = false;
-		public bool HighlightChrDrawnBytes = false;
-		public bool HighlightChrReadBytes = false;
 		public bool HighlightCodeBytes = false;
 		public bool HighlightDataBytes = false;
-		public bool HighlightDmcDataBytes = false;
 
 		public XmlColor ReadColor = Color.Blue;
 		public XmlColor WriteColor = Color.Red;

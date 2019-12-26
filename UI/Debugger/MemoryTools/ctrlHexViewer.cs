@@ -523,7 +523,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 			Breakpoint bp = BreakpointManager.GetMatchingBreakpoint(startAddress, endAddress, _memoryType);
 			if(bp == null) {
-				bp = new Breakpoint() { Address = startAddress, MemoryType = _memoryType, StartAddress = startAddress, EndAddress = endAddress, AddressType = addressType, BreakOnWrite = true, BreakOnRead = true };
+				bp = new Breakpoint() { Address = startAddress, MemoryType = _memoryType, CpuType = _memoryType.ToCpuType(), StartAddress = startAddress, EndAddress = endAddress, AddressType = addressType, BreakOnWrite = true, BreakOnRead = true };
 				if(bp.IsCpuBreakpoint) {
 					bp.BreakOnExec = true;
 				}

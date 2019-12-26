@@ -190,6 +190,19 @@ namespace Mesen.GUI
 				case SnesMemoryType.SpcRom:
 					return CpuType.Spc;
 
+				case SnesMemoryType.GsuMemory:
+				case SnesMemoryType.GsuWorkRam:
+					return CpuType.Gsu;
+
+				case SnesMemoryType.Sa1InternalRam:
+				case SnesMemoryType.Sa1Memory:
+					return CpuType.Sa1;
+
+				case SnesMemoryType.DspDataRam:
+				case SnesMemoryType.DspDataRom:
+				case SnesMemoryType.DspProgramRom:
+					return CpuType.NecDsp;
+
 				default:
 					return CpuType.Cpu;
 			}
