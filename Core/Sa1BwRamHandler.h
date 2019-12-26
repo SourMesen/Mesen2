@@ -103,7 +103,7 @@ public:
 		if((addr & 0x600000) == 0x600000) {
 			info.Address = ((addr - 0x600000) >> (_state->BwRam2BppMode ? 2 : 1)) & _mask;
 		} else {
-			addr = GetBwRamAddress(addr) & _mask;
+			info.Address = GetBwRamAddress(addr) & _mask;
 		}
 		info.Type = SnesMemoryType::SaveRam;
 		return info;
