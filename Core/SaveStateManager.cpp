@@ -39,6 +39,12 @@ uint64_t SaveStateManager::GetStateInfo(int stateIndex)
 	return 0;
 }
 
+void SaveStateManager::SelectSaveSlot(int slotIndex)
+{
+	_lastIndex = slotIndex;
+	MessageManager::DisplayMessage("SaveStates", "SaveStateSlotSelected", std::to_string(_lastIndex));
+}
+
 void SaveStateManager::MoveToNextSlot()
 {
 	_lastIndex = (_lastIndex % MaxIndex) + 1;

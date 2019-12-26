@@ -129,6 +129,12 @@ void ShortcutKeyHandler::CheckMappedKeys()
 		}
 	}
 
+	for(int i = 0; i < 10; i++) {
+		if(DetectKeyPress((EmulatorShortcut)((int)EmulatorShortcut::SelectSaveSlot1 + i))) {
+			_console->GetSaveStateManager()->SelectSaveSlot(i + 1);
+		}
+	}
+
 	if(DetectKeyPress(EmulatorShortcut::MoveToNextStateSlot)) {
 		_console->GetSaveStateManager()->MoveToNextSlot();
 	}

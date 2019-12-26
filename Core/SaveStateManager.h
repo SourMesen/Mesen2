@@ -35,6 +35,7 @@ public:
 	void SaveRecentGame(string romName, string romPath, string patchPath);
 	void LoadRecentGame(string filename, bool resetGame);
 
+	void SelectSaveSlot(int slotIndex);
 	void MoveToNextSlot();
 	void MoveToPreviousSlot();
 };

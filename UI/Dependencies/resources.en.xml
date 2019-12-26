@@ -811,15 +811,19 @@
 		<Message ID="EmulatorShortcutMappings_LoadStateSlotAuto">Load State - Auto Save Slot</Message>
 		<Message ID="EmulatorShortcutMappings_LoadStateFromFile">Load State from File</Message>
 		<Message ID="EmulatorShortcutMappings_LoadLastSession">Load Last Session</Message>
+
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot1">Select Save Slot 1</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot2">Select Save Slot 2</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot3">Select Save Slot 3</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot4">Select Save Slot 4</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot5">Select Save Slot 5</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot6">Select Save Slot 6</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot7">Select Save Slot 7</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot8">Select Save Slot 8</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot9">Select Save Slot 9</Message>
+		<Message ID="EmulatorShortcutMappings_SelectSaveSlot10">Select Save Slot 10</Message>
+
 		<Message ID="EmulatorShortcutMappings_OpenFile">Open File</Message>
-		<Message ID="EmulatorShortcutMappings_OpenDebugger">Open Debugger</Message>
-		<Message ID="EmulatorShortcutMappings_OpenAssembler">Open Assembler</Message>
-		<Message ID="EmulatorShortcutMappings_OpenPpuViewer">Open PPU Viewer</Message>
-		<Message ID="EmulatorShortcutMappings_OpenMemoryTools">Open Memory Tools</Message>
-		<Message ID="EmulatorShortcutMappings_OpenScriptWindow">Open Script Window</Message>
-		<Message ID="EmulatorShortcutMappings_OpenTraceLogger">Open Trace Logger</Message>
-		<Message ID="EmulatorShortcutMappings_OpenApuViewer">Open APU Viewer</Message>
-		<Message ID="EmulatorShortcutMappings_OpenEventViewer">Open Event Viewer</Message>
 	</Messages>
 	<Enums>
 		<Enum ID="ControllerType">
