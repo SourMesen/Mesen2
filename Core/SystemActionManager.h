@@ -41,11 +41,9 @@ public:
 	{
 		if(_needReset) {
 			SetBit(SystemActionManager::Buttons::ResetButton);
-			_needReset = false;
 		}
 		if(_needPowerCycle) {
 			SetBit(SystemActionManager::Buttons::PowerButton);
-			_needPowerCycle = false;
 		}
 	}
 
@@ -81,11 +79,13 @@ public:
 
 	bool IsResetPressed()
 	{
+		_needReset = false;
 		return IsPressed(SystemActionManager::Buttons::ResetButton);
 	}
 
 	bool IsPowerCyclePressed()
 	{
+		_needPowerCycle = false;
 		return IsPressed(SystemActionManager::Buttons::PowerButton);
 	}
 };

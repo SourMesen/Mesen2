@@ -158,6 +158,10 @@ uint32_t VideoDecoder::GetFrameCount()
 
 void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool forRewind)
 {
+	if(_console->IsRunAheadFrame()) {
+		return;
+	}
+
 	if(_frameChanged) {
 		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
 		while(_frameChanged) {
@@ -177,6 +181,10 @@ void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, ui
 
 void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber)
 {
+	if(_console->IsRunAheadFrame()) {
+		return;
+	}
+
 	if(_frameChanged) {
 		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
 		while(_frameChanged) {

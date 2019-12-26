@@ -34,9 +34,8 @@ struct BlockData
 class Serializer
 {
 private:
-	vector<BlockData> _blocks;
-	
-	BlockData _block;
+	vector<unique_ptr<BlockData>> _blocks;	
+	unique_ptr<BlockData> _block;
 
 	uint32_t _version = 0;
 	bool _saving = false;
@@ -60,7 +59,7 @@ private:
 
 public:
 	Serializer(uint32_t version);
-	Serializer(istream &file, uint32_t version);
+	Serializer(istream &file, uint32_t version, bool compressed = true);
 
 	uint32_t GetVersion() { return _version; }
 	bool IsSaving() { return _saving; }
@@ -87,15 +86,15 @@ void Serializer::StreamElement(T &value, T defaultValue)
 
 		EnsureCapacity(typeSize);
 		for(int i = 0; i < typeSize; i++) {
-			_block.Data[_block.Position++] = bytes[i];
+			_block->Data[_block->Position++] = bytes[i];
 		}
 	} else {
-		if(_block.Position + sizeof(T) <= _block.Data.size()) {
-			memcpy(&value, _block.Data.data() + _block.Position, sizeof(T));
-			_block.Position += sizeof(T);
+		if(_block->Position + sizeof(T) <= _block->Data.size()) {
+			memcpy(&value, _block->Data.data() + _block->Position, sizeof(T));
+			_block->Position += sizeof(T);
 		} else {
 			value = defaultValue;
-			_block.Position = (uint32_t)_block.Data.size();
+			_block->Position = (uint32_t)_block->Data.size();
 		}
 	}
 }
@@ -115,11 +114,11 @@ void Serializer::InternalStream(ArrayInfo<T> &info)
 	EnsureCapacity(info.ElementCount * sizeof(T));
 
 	if(_saving) {
-		memcpy(_block.Data.data() + _block.Position, info.Array, info.ElementCount * sizeof(T));
+		memcpy(_block->Data.data() + _block->Position, info.Array, info.ElementCount * sizeof(T));
 	} else {
-		memcpy(info.Array, _block.Data.data() + _block.Position, info.ElementCount * sizeof(T));
+		memcpy(info.Array, _block->Data.data() + _block->Position, info.ElementCount * sizeof(T));
 	}
-	_block.Position += info.ElementCount * sizeof(T);
+	_block->Position += info.ElementCount * sizeof(T);
 }
 
 template<typename T>

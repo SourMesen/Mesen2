@@ -163,8 +163,10 @@ void ControlManager::UpdateInputState()
 		debugger->ProcessEvent(EventType::InputPolled);
 	}
 
-	for(IInputRecorder* recorder : _inputRecorders) {
-		recorder->RecordInput(_controlDevices);
+	if(!_console->IsRunAheadFrame()) {
+		for(IInputRecorder* recorder : _inputRecorders) {
+			recorder->RecordInput(_controlDevices);
+		}
 	}
 
 	//MessageManager::Log(log);

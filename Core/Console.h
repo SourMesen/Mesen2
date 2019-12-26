@@ -82,6 +82,8 @@ private:
 	ConsoleRegion _region;
 	uint32_t _masterClockRate;
 
+	atomic<bool> _isRunAheadFrame;
+
 	unique_ptr<DebugStats> _stats;
 	unique_ptr<FrameLimiter> _frameLimiter;
 	Timer _lastFrameTimer;
@@ -92,12 +94,17 @@ private:
 	void WaitForLock();
 	void WaitForPauseEnd();
 
+	void RunFrame();
+	bool ProcessSystemActions();
+	void RunFrameWithRunAhead();
+
 public:
 	Console();
 	~Console();
 
 	void Initialize();
 	void Release();
+
 
 	void Run();
 	void RunSingleFrame();
@@ -123,8 +130,8 @@ public:
 	void Lock();
 	void Unlock();
 
-	void Serialize(ostream &out);
-	void Deserialize(istream &in, uint32_t fileFormatVersion);
+	void Serialize(ostream &out, int compressionLevel = 1);
+	void Deserialize(istream &in, uint32_t fileFormatVersion, bool compressed = true);
 
 	shared_ptr<SoundMixer> GetSoundMixer();
 	shared_ptr<VideoRenderer> GetVideoRenderer();
@@ -155,6 +162,8 @@ public:
 	thread::id GetEmulationThreadId();
 	
 	bool IsRunning();
+	bool IsInputRecordingEnabled();
+	bool IsRunAheadFrame();
 
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);

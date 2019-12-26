@@ -273,6 +273,8 @@ struct EmulationConfig
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
 
+	uint32_t RunAheadFrames = 0;
+
 	bool EnableRandomPowerOnState = false;
 	bool EnableStrictBoardMappings = false;
 

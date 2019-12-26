@@ -93,7 +93,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 	}
 
 	shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
-	if(rewindManager && rewindManager->SendAudio(out, count)) {
+	if(!_console->IsRunAheadFrame() && rewindManager && rewindManager->SendAudio(out, count)) {
 		bool isRecording = _waveRecorder || _console->GetVideoRenderer()->IsRecording();
 		if(isRecording) {
 			if(_waveRecorder) {

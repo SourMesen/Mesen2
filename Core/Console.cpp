@@ -90,6 +90,14 @@ void Console::Release()
 	_movieManager.reset();
 }
 
+void Console::RunFrame()
+{
+	uint32_t frameCount = _ppu->GetFrameCount();
+	while(frameCount == _ppu->GetFrameCount()) {
+		_cpu->Exec();
+	}
+}
+
 void Console::Run()
 {
 	if(!_cpu) {
@@ -98,9 +106,9 @@ void Console::Run()
 	
 	auto emulationLock = _emulationLock.AcquireSafe();
 	auto lock = _runLock.AcquireSafe();
-	uint32_t previousFrameCount = 0;
 
 	_stopFlag = false;
+	_isRunAheadFrame = false;
 
 	PlatformUtilities::EnableHighResolutionTimer();
 
@@ -116,29 +124,25 @@ void Console::Run()
 	_lastFrameTimer.Reset();
 
 	while(!_stopFlag) {
-		_cpu->Exec();
-
-		if(previousFrameCount != _ppu->GetFrameCount()) {
+		bool useRunAhead = _settings->GetEmulationConfig().RunAheadFrames > 0 && !_debugger && !_rewindManager->IsRewinding() && _settings->GetEmulationSpeed() > 0 && _settings->GetEmulationSpeed() <= 100;
+		if(useRunAhead) {
+			RunFrameWithRunAhead();
+		} else {
+			RunFrame();
 			_rewindManager->ProcessEndOfFrame();
-
-			WaitForLock();
-
-			if(_pauseOnNextFrame) {
-				_pauseOnNextFrame = false;
-				_paused = true;
-			}
-
-			if(_paused && !_stopFlag && !_debugger) {
-				WaitForPauseEnd();
-			}
-			previousFrameCount = _ppu->GetFrameCount();
-
-			if(_controlManager->GetSystemActionManager()->IsResetPressed()) {
-				Reset();
-			} else if(_controlManager->GetSystemActionManager()->IsPowerCyclePressed()) {
-				PowerCycle();
-			}
+			ProcessSystemActions();
 		}
+
+		WaitForLock();
+
+		if(_pauseOnNextFrame) {
+			_pauseOnNextFrame = false;
+			_paused = true;
+		}
+
+		if(_paused && !_stopFlag && !_debugger) {
+			WaitForPauseEnd();
+		}		
 	}
 
 	_movieManager->Stop();
@@ -146,6 +150,48 @@ void Console::Run()
 	_emulationThreadId = thread::id();
 
 	PlatformUtilities::RestoreTimerResolution();
+}
+
+bool Console::ProcessSystemActions()
+{
+	if(_controlManager->GetSystemActionManager()->IsResetPressed()) {
+		Reset();
+		return true;
+	} else if(_controlManager->GetSystemActionManager()->IsPowerCyclePressed()) {
+		PowerCycle();
+		return true;
+	}
+	return false;
+}
+
+void Console::RunFrameWithRunAhead()
+{
+	stringstream runAheadState;
+	uint32_t frameCount = _settings->GetEmulationConfig().RunAheadFrames;
+
+	//Run a single frame and save the state (no audio/video)
+	_isRunAheadFrame = true;
+	RunFrame();
+	Serialize(runAheadState, 0);
+
+	while(frameCount > 1) {
+		//Run extra frames if the requested run ahead frame count is higher than 1
+		frameCount--;
+		RunFrame();
+	}
+	_isRunAheadFrame = false;
+
+	//Run one frame normally (with audio/video output)
+	RunFrame();
+	_rewindManager->ProcessEndOfFrame();
+	
+	bool wasReset = ProcessSystemActions();
+	if(!wasReset) {
+		//Load the state we saved earlier
+		_isRunAheadFrame = true;
+		Deserialize(runAheadState, SaveStateManager::FileFormatVersion, false);
+		_isRunAheadFrame = false;
+	}
 }
 
 void Console::ProcessEndOfFrame()
@@ -156,25 +202,27 @@ void Console::ProcessEndOfFrame()
 		_cart->GetCoprocessor()->ProcessEndOfFrame();
 	}
 
-	_frameLimiter->ProcessFrame();
-	while(_frameLimiter->WaitForNextFrame()) {
-		if(_stopFlag || _frameDelay != GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {
-			//Need to process another event, stop sleeping
-			break;
+	if(!_isRunAheadFrame) {
+		_frameLimiter->ProcessFrame();
+		while(_frameLimiter->WaitForNextFrame()) {
+			if(_stopFlag || _frameDelay != GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {
+				//Need to process another event, stop sleeping
+				break;
+			}
 		}
-	}
 
-	double newFrameDelay = GetFrameDelay();
-	if(newFrameDelay != _frameDelay) {
-		_frameDelay = newFrameDelay;
-		_frameLimiter->SetDelay(_frameDelay);
-	}
+		double newFrameDelay = GetFrameDelay();
+		if(newFrameDelay != _frameDelay) {
+			_frameDelay = newFrameDelay;
+			_frameLimiter->SetDelay(_frameDelay);
+		}
 
-	PreferencesConfig cfg = _settings->GetPreferences();
-	if(cfg.ShowDebugInfo) {
-		double lastFrameTime = _lastFrameTimer.GetElapsedMS();
-		_lastFrameTimer.Reset();
-		_stats->DisplayStats(this, lastFrameTime);
+		PreferencesConfig cfg = _settings->GetPreferences();
+		if(cfg.ShowDebugInfo) {
+			double lastFrameTime = _lastFrameTimer.GetElapsedMS();
+			_lastFrameTimer.Reset();
+			_stats->DisplayStats(this, lastFrameTime);
+		}
 	}
 
 	_controlManager->UpdateInputState();
@@ -554,7 +602,7 @@ void Console::WaitForLock()
 	}
 }
 
-void Console::Serialize(ostream &out)
+void Console::Serialize(ostream &out, int compressionLevel)
 {
 	Serializer serializer(SaveStateManager::FileFormatVersion);
 	serializer.Stream(_cpu.get());
@@ -568,12 +616,12 @@ void Console::Serialize(ostream &out)
 	if(_msu1) {
 		serializer.Stream(_msu1.get());
 	}
-	serializer.Save(out);
+	serializer.Save(out, compressionLevel);
 }
 
-void Console::Deserialize(istream &in, uint32_t fileFormatVersion)
+void Console::Deserialize(istream &in, uint32_t fileFormatVersion, bool compressed)
 {
-	Serializer serializer(in, fileFormatVersion);
+	Serializer serializer(in, fileFormatVersion, compressed);
 	serializer.Stream(_cpu.get());
 	serializer.Stream(_memoryManager.get());
 	serializer.Stream(_ppu.get());
@@ -729,6 +777,11 @@ thread::id Console::GetEmulationThreadId()
 bool Console::IsRunning()
 {
 	return _cpu != nullptr;
+}
+
+bool Console::IsRunAheadFrame()
+{
+	return _isRunAheadFrame;
 }
 
 template<CpuType type>

@@ -282,7 +282,9 @@
 			<Control ID="lblTurboSpeed">Fast Forward Speed:</Control>
 			<Control ID="lblRewindSpeedHint">%  (0 = Maximum speed)</Control>
 			<Control ID="lblRewindSpeed">Rewind Speed:</Control>
-
+			<Control ID="lblRunAhead">Run Ahead:</Control>
+			<Control ID="lblRunAheadFrames">frames (reduces input lag, increases CPU usage)</Control>
+			
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
