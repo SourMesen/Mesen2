@@ -51,6 +51,9 @@ namespace Mesen.GUI.Debugger
 				mnuAutoRefreshSpeed.DropDownOpening += (s, evt) => UpdateRefreshSpeedMenu();
 
 				ctrlFilters.Init();
+
+				RefreshData();
+				RefreshViewer();
 			}
 		}
 
