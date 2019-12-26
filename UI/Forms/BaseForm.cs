@@ -75,8 +75,12 @@ namespace Mesen.GUI.Forms
 					menuItem = menuItem.OwnerItem;
 				}
 				this.Icon = menuItem.Image;
+				return base.ShowDialog(owner);
+			} else if(sender is IWin32Window) {
+				return base.ShowDialog(sender as IWin32Window);
+			} else {
+				return base.ShowDialog();
 			}
-			return base.ShowDialog(owner);
 		}
 
 		protected override void OnLoad(EventArgs e)

@@ -45,8 +45,8 @@
 			this.lblMesenVersion = new System.Windows.Forms.Label();
 			this.grpAcknowledgements = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.label4 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			this.lblEmulation = new System.Windows.Forms.Label();
+			this.lblAudio = new System.Windows.Forms.Label();
 			this.lblGeneral = new System.Windows.Forms.Label();
 			this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
 			this.ctrlLinkLabel1 = new Mesen.GUI.Controls.ctrlLinkLabel();
@@ -56,7 +56,7 @@
 			this.ctrlLinkLabel5 = new Mesen.GUI.Controls.ctrlLinkLabel();
 			this.ctrlLinkLabel6 = new Mesen.GUI.Controls.ctrlLinkLabel();
 			this.ctrlLinkLabel7 = new Mesen.GUI.Controls.ctrlLinkLabel();
-			this.label1 = new System.Windows.Forms.Label();
+			this.lblVideo = new System.Windows.Forms.Label();
 			this.flowLayoutPanel5 = new System.Windows.Forms.FlowLayoutPanel();
 			this.ctrlLinkLabel9 = new Mesen.GUI.Controls.ctrlLinkLabel();
 			this.ctrlLinkLabel10 = new Mesen.GUI.Controls.ctrlLinkLabel();
@@ -64,14 +64,14 @@
 			this.ctrlLinkLabel12 = new Mesen.GUI.Controls.ctrlLinkLabel();
 			this.flowLayoutPanel6 = new System.Windows.Forms.FlowLayoutPanel();
 			this.ctrlLinkLabel13 = new Mesen.GUI.Controls.ctrlLinkLabel();
-			this.label3 = new System.Windows.Forms.Label();
+			this.lblUsedSoftware = new System.Windows.Forms.Label();
 			this.flowLayoutPanel7 = new System.Windows.Forms.FlowLayoutPanel();
 			this.ctrlLinkLabel14 = new Mesen.GUI.Controls.ctrlLinkLabel();
 			this.ctrlLinkLabel8 = new Mesen.GUI.Controls.ctrlLinkLabel();
 			this.ctrlLinkLabel15 = new Mesen.GUI.Controls.ctrlLinkLabel();
-			this.label5 = new System.Windows.Forms.Label();
-			this.label6 = new System.Windows.Forms.Label();
-			this.label7 = new System.Windows.Forms.Label();
+			this.lblCheats = new System.Windows.Forms.Label();
+			this.lblCheatDatabase = new System.Windows.Forms.Label();
+			this.lblSpecialThanks = new System.Windows.Forms.Label();
 			this.tableLayoutPanel.SuspendLayout();
 			this.flowLayoutPanel3.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
@@ -308,18 +308,18 @@
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.label4, 0, 4);
-			this.tableLayoutPanel1.Controls.Add(this.label2, 0, 3);
+			this.tableLayoutPanel1.Controls.Add(this.lblEmulation, 0, 4);
+			this.tableLayoutPanel1.Controls.Add(this.lblAudio, 0, 3);
 			this.tableLayoutPanel1.Controls.Add(this.lblGeneral, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel4, 1, 1);
-			this.tableLayoutPanel1.Controls.Add(this.label1, 0, 2);
+			this.tableLayoutPanel1.Controls.Add(this.lblVideo, 0, 2);
 			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel5, 1, 2);
 			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel6, 1, 3);
-			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.lblUsedSoftware, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel7, 1, 4);
-			this.tableLayoutPanel1.Controls.Add(this.label5, 0, 5);
-			this.tableLayoutPanel1.Controls.Add(this.label6, 1, 5);
-			this.tableLayoutPanel1.Controls.Add(this.label7, 0, 6);
+			this.tableLayoutPanel1.Controls.Add(this.lblCheats, 0, 5);
+			this.tableLayoutPanel1.Controls.Add(this.lblCheatDatabase, 1, 5);
+			this.tableLayoutPanel1.Controls.Add(this.lblSpecialThanks, 0, 6);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -335,24 +335,24 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(325, 170);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
-			// label4
+			// lblEmulation
 			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(3, 85);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(56, 13);
-			this.label4.TabIndex = 8;
-			this.label4.Text = "Emulation:";
+			this.lblEmulation.AutoSize = true;
+			this.lblEmulation.Location = new System.Drawing.Point(3, 85);
+			this.lblEmulation.Name = "lblEmulation";
+			this.lblEmulation.Size = new System.Drawing.Size(56, 13);
+			this.lblEmulation.TabIndex = 8;
+			this.lblEmulation.Text = "Emulation:";
 			// 
-			// label2
+			// lblAudio
 			// 
-			this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(3, 69);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(37, 13);
-			this.label2.TabIndex = 5;
-			this.label2.Text = "Audio:";
+			this.lblAudio.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblAudio.AutoSize = true;
+			this.lblAudio.Location = new System.Drawing.Point(3, 69);
+			this.lblAudio.Name = "lblAudio";
+			this.lblAudio.Size = new System.Drawing.Size(37, 13);
+			this.lblAudio.TabIndex = 5;
+			this.lblAudio.Text = "Audio:";
 			// 
 			// lblGeneral
 			// 
@@ -469,15 +469,15 @@
 			this.ctrlLinkLabel7.TabIndex = 6;
 			this.ctrlLinkLabel7.Text = "FastColoredTextBox";
 			// 
-			// label1
+			// lblVideo
 			// 
-			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(3, 51);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(37, 13);
-			this.label1.TabIndex = 3;
-			this.label1.Text = "Video:";
+			this.lblVideo.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblVideo.AutoSize = true;
+			this.lblVideo.Location = new System.Drawing.Point(3, 51);
+			this.lblVideo.Name = "lblVideo";
+			this.lblVideo.Size = new System.Drawing.Size(37, 13);
+			this.lblVideo.TabIndex = 3;
+			this.lblVideo.Text = "Video:";
 			// 
 			// flowLayoutPanel5
 			// 
@@ -567,16 +567,16 @@
 			this.ctrlLinkLabel13.TabIndex = 8;
 			this.ctrlLinkLabel13.Text = "blip_buf (blargg)";
 			// 
-			// label3
+			// lblUsedSoftware
 			// 
-			this.label3.AutoSize = true;
-			this.tableLayoutPanel1.SetColumnSpan(this.label3, 2);
-			this.label3.Location = new System.Drawing.Point(3, 0);
-			this.label3.Name = "label3";
-			this.label3.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-			this.label3.Size = new System.Drawing.Size(198, 18);
-			this.label3.TabIndex = 7;
-			this.label3.Text = "This software uses the following libraries:";
+			this.lblUsedSoftware.AutoSize = true;
+			this.tableLayoutPanel1.SetColumnSpan(this.lblUsedSoftware, 2);
+			this.lblUsedSoftware.Location = new System.Drawing.Point(3, 0);
+			this.lblUsedSoftware.Name = "lblUsedSoftware";
+			this.lblUsedSoftware.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+			this.lblUsedSoftware.Size = new System.Drawing.Size(198, 18);
+			this.lblUsedSoftware.TabIndex = 7;
+			this.lblUsedSoftware.Text = "This software uses the following libraries:";
 			// 
 			// flowLayoutPanel7
 			// 
@@ -625,36 +625,36 @@
 			this.ctrlLinkLabel15.TabIndex = 10;
 			this.ctrlLinkLabel15.Text = "SDD-1 Decompression (Andreas Naive)";
 			// 
-			// label5
+			// lblCheats
 			// 
-			this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(3, 116);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(43, 13);
-			this.label5.TabIndex = 10;
-			this.label5.Text = "Cheats:";
+			this.lblCheats.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblCheats.AutoSize = true;
+			this.lblCheats.Location = new System.Drawing.Point(3, 116);
+			this.lblCheats.Name = "lblCheats";
+			this.lblCheats.Size = new System.Drawing.Size(43, 13);
+			this.lblCheats.TabIndex = 10;
+			this.lblCheats.Text = "Cheats:";
 			// 
-			// label6
+			// lblCheatDatabase
 			// 
-			this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(65, 116);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(142, 13);
-			this.label6.TabIndex = 11;
-			this.label6.Text = "Mighty Mo (Cheat Database)";
+			this.lblCheatDatabase.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblCheatDatabase.AutoSize = true;
+			this.lblCheatDatabase.Location = new System.Drawing.Point(65, 116);
+			this.lblCheatDatabase.Name = "lblCheatDatabase";
+			this.lblCheatDatabase.Size = new System.Drawing.Size(142, 13);
+			this.lblCheatDatabase.TabIndex = 11;
+			this.lblCheatDatabase.Text = "Mighty Mo (Cheat Database)";
 			// 
-			// label7
+			// lblSpecialThanks
 			// 
-			this.label7.AutoSize = true;
-			this.tableLayoutPanel1.SetColumnSpan(this.label7, 2);
-			this.label7.Location = new System.Drawing.Point(3, 139);
-			this.label7.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(298, 26);
-			this.label7.TabIndex = 12;
-			this.label7.Text = "And thank you to everybody who has contributed in any way! (donations, bug report" +
+			this.lblSpecialThanks.AutoSize = true;
+			this.tableLayoutPanel1.SetColumnSpan(this.lblSpecialThanks, 2);
+			this.lblSpecialThanks.Location = new System.Drawing.Point(3, 139);
+			this.lblSpecialThanks.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
+			this.lblSpecialThanks.Name = "lblSpecialThanks";
+			this.lblSpecialThanks.Size = new System.Drawing.Size(298, 26);
+			this.lblSpecialThanks.TabIndex = 12;
+			this.lblSpecialThanks.Text = "And thank you to everybody who has contributed in any way! (donations, bug report" +
     "s, testing, sharing information, etc.)";
 			// 
 			// frmAbout
@@ -724,9 +724,9 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.Label lblGeneral;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel4;
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label lblVideo;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel5;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label lblAudio;
 		private Controls.ctrlLinkLabel ctrlLinkLabel1;
 		private Controls.ctrlLinkLabel ctrlLinkLabel2;
 		private Controls.ctrlLinkLabel ctrlLinkLabel3;
@@ -741,13 +741,13 @@
 		private Controls.ctrlLinkLabel ctrlLinkLabel12;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel6;
 		private Controls.ctrlLinkLabel ctrlLinkLabel13;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label lblEmulation;
+		private System.Windows.Forms.Label lblUsedSoftware;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel7;
 		private Controls.ctrlLinkLabel ctrlLinkLabel14;
 		private Controls.ctrlLinkLabel ctrlLinkLabel15;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Label lblCheats;
+		private System.Windows.Forms.Label lblCheatDatabase;
+		private System.Windows.Forms.Label lblSpecialThanks;
 	}
 }
