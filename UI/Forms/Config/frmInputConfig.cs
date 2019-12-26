@@ -20,6 +20,10 @@ namespace Mesen.GUI.Forms.Config
 				return;
 			}
 
+			Task.Run(() => {
+				InputApi.UpdateInputDevices();
+			});
+
 			InputConfig cfg = ConfigManager.Config.Input.Clone();
 			Entity = cfg;
 

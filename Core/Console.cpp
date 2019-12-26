@@ -371,6 +371,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
 		if(stopRom) {
+			KeyManager::UpdateDevices();
 			Stop(false);
 		}
 
