@@ -7101,6 +7101,9 @@
     <cheat description="Infinite lives">
       <code>3C8B-1D69</code>
     </cheat>
+    <cheat description="Infinite time to continue">
+      <code>7E05EB09</code>
+    </cheat>
     <cheat description="Hit anywhere">
       <code>DD8F-CF60</code>
     </cheat>
@@ -10347,6 +10350,38 @@
     </cheat>
     <cheat description="Walk through walls (overworld and towns)">
       <code>DD4F-54DC</code>
+    </cheat>
+  </game>
+  <game name="Duel, The - Test Drive II (USA)" sha1="038BAC2A85D323C6E1950344D6BBC86C6173E293">
+    <cheat description="Infinite cars left">
+      <code>7E1C8609</code>
+    </cheat>
+    <cheat description="Auto accelerate at maximum speed (turn off until the race has started and when you get to the gas station)">
+      <code>7E11CEFF</code>
+    </cheat>
+    <cheat description="Play as Ferrari F-40">
+      <code>7E1C7800</code>
+    </cheat>
+    <cheat description="Play as Porsche 959">
+      <code>7E1C7801</code>
+    </cheat>
+    <cheat description="Play as Lamborghini Diablo">
+      <code>7E1C7802</code>
+    </cheat>
+    <cheat description="Play as FROZE">
+      <code>7E1C7803</code>
+    </cheat>
+    <cheat description="Opponent plays as Ferrari F-40">
+      <code>7E1C7A00</code>
+    </cheat>
+    <cheat description="Opponent plays as Porsche 959">
+      <code>7E1C7A01</code>
+    </cheat>
+    <cheat description="Opponent plays as Lamborghini Diablo">
+      <code>7E1C7A02</code>
+    </cheat>
+    <cheat description="Opponent plays as FROZE">
+      <code>7E1C7A03</code>
     </cheat>
   </game>
   <game name="Dungeon Master (USA)" sha1="E65AE62EC9A1C48A3512DB66F929C7B0055AE2C3">
@@ -29740,6 +29775,9 @@
     <cheat description="(NG) Infinite time">
       <code>DD81-1F97</code>
     </cheat>
+    <cheat description="(NG) No enemies, bosses cannot move">
+      <code>B3C1-C7FD</code>
+    </cheat>
     <cheat description="(NG) Start with very little time">
       <code>B1C8-3DF8</code>
     </cheat>
@@ -37510,6 +37548,11 @@
       <code>C281-D467</code>
     </cheat>
   </game>
+  <game name="Street Combat (USA)" sha1="BDB67F6FBF3CFF1BC8E118EAD0F3F5894DB9EDF6">
+    <cheat description="99 credits in options menu">
+      <code>7E04DB99</code>
+    </cheat>
+  </game>
   <game name="Street Fighter Alpha 2 (USA)" sha1="F4EDE150B5281F7F5D7E3188C6D9163C2BC66475">
     <cheat description="Invincibility (except throws and Akuma's special moves)">
       <code>3CC6-5DDD</code>
@@ -41315,6 +41358,31 @@
       <code>6DC8-4CDF</code>
       <code>6DCC-4BDF</code>
     </cheat>
+    <cheat description="Enemies always drop Small Missile">
+      <code>CB38-C498</code>
+      <code>D438-C4B8</code>
+      <code>DD38-C428</code>
+    </cheat>
+    <cheat description="Enemies always drop Large Missile">
+      <code>CB38-C498</code>
+      <code>D038-C4B8</code>
+      <code>DD38-C428</code>
+    </cheat>
+    <cheat description="Enemies always drop Power Bomb">
+      <code>CB38-C498</code>
+      <code>D138-C4B8</code>
+      <code>DD38-C428</code>
+    </cheat>
+    <cheat description="Enemies always drop Missile">
+      <code>CB38-C498</code>
+      <code>D638-C4B8</code>
+      <code>DD38-C428</code>
+    </cheat>
+    <cheat description="Enemies always drop Super Missile">
+      <code>CB38-C498</code>
+      <code>DC38-C4B8</code>
+      <code>DD38-C428</code>
+    </cheat>
     <cheat description="Kill most enemies on contact (prevents bomb-bouncing)">
       <code>7E0A6E0F</code>
     </cheat>
@@ -41378,6 +41446,18 @@
     <cheat description="Full movement in Maridia sand (alt)">
       <code>84B51880</code>
       <code>90981D00</code>
+    </cheat>
+    <cheat description="Lava, acid and water are completely gone">
+      <code>D7CA-3D31</code>
+      <code>B2CE-3F11</code>
+    </cheat>
+    <cheat description="Lava, acid and extreme heat don't affect Samus">
+      <code>DC34-C5D4</code>
+    </cheat>
+    <cheat description="Lava, acid and water are completely gone">
+      <code>C26E-41DD</code>
+      <code>1A39-4007</code>
+      <code>62B1-49A7</code>
     </cheat>
     <cheat description="Multi-jump (when using button A)">
       <code>C933-C9A7</code>
