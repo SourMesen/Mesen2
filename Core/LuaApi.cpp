@@ -698,7 +698,7 @@ int LuaApi::GetState(lua_State *lua)
 	lua_pushintvalue(cycle, state.Ppu.Cycle);
 	lua_pushintvalue(frameCount, state.Ppu.FrameCount);
 	lua_pushintvalue(scanline, state.Ppu.Scanline);
-	lua_pushintvalue(scanline, state.Ppu.HClock);
+	lua_pushintvalue(hClock, state.Ppu.HClock);
 	lua_endtable(); //end ppu
 
 	lua_starttable("spc");
