@@ -35,14 +35,16 @@ private:
 	bool _useBilinearInterpolation = false;
 
 	static SimpleLock _frameLock;
-	static SimpleLock _reinitLock;
-	uint32_t* _frameBuffer;
+	uint32_t* _frameBuffer = nullptr;
 
 	const uint32_t _bytesPerPixel = 4;
 	uint32_t _screenBufferSize = 0;
 
 	bool _frameChanged = true;
 	uint32_t _noUpdateCount = 0;
+
+	uint32_t _requiredHeight = 0;
+	uint32_t _requiredWidth = 0;
 
 	uint32_t _nesFrameHeight = 0;
 	uint32_t _nesFrameWidth = 0;

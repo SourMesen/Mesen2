@@ -6,13 +6,18 @@
 #include "../Core/EmuSettings.h"
 #include "../Core/MessageManager.h"
 
-SimpleLock SdlRenderer::_reinitLock;
 SimpleLock SdlRenderer::_frameLock;
 
 SdlRenderer::SdlRenderer(shared_ptr<Console> console, void* windowHandle, bool registerAsMessageManager) : BaseRenderer(console, registerAsMessageManager), _windowHandle(windowHandle)
 {
 	_frameBuffer = nullptr;
-	SetScreenSize(512,480);
+	_requiredWidth = 256;
+	_requiredHeight = 240;
+	
+	shared_ptr<VideoRenderer> videoRenderer = _console->GetVideoRenderer();
+	if(videoRenderer) {
+		_console->GetVideoRenderer()->RegisterRenderingDevice(this);
+	}
 }
 
 SdlRenderer::~SdlRenderer()
@@ -22,6 +27,8 @@ SdlRenderer::~SdlRenderer()
 		videoRenderer->UnregisterRenderingDevice(this);
 	}
 	Cleanup();
+	Cleanup();
+	delete[] _frameBuffer;	
 }
 
 void SdlRenderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight)
@@ -70,7 +77,8 @@ bool SdlRenderer::Init()
 
 	_sdlTexture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, _nesFrameWidth, _nesFrameHeight);
 	if(!_sdlTexture) {
-		log("[SDL] Failed to create texture.");
+		string msg = "[SDL] Failed to create texture: " + std::to_string(_nesFrameWidth) + "x" + std::to_string(_nesFrameHeight);
+		log(msg.c_str());
 		return false;
 	}
 
@@ -78,9 +86,6 @@ bool SdlRenderer::Init()
 	_largeFont.reset(new SpriteFont(_sdlRenderer, "Resources/Font.64.spritefont"));
 
 	SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
-
-	_frameBuffer = new uint32_t[_nesFrameHeight*_nesFrameWidth];
-	memset(_frameBuffer, 0, _nesFrameHeight*_nesFrameWidth*_bytesPerPixel);
 
 	return true;
 }
@@ -94,10 +99,6 @@ void SdlRenderer::Cleanup()
 	if(_sdlRenderer) {
 		SDL_DestroyRenderer(_sdlRenderer);
 		_sdlRenderer = nullptr;
-	}
-	if(_frameBuffer) {
-		delete[] _frameBuffer; 
-		_frameBuffer = nullptr;
 	}
 }
 
@@ -117,8 +118,6 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 	
 	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
 	if(_screenHeight != (uint32_t)screenSize.Height || _screenWidth != (uint32_t)screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _useBilinearInterpolation != cfg.UseBilinearInterpolation || _vsyncEnabled != cfg.VerticalSync) {
-		_reinitLock.Acquire();
-
 		_vsyncEnabled = cfg.VerticalSync;
 		_useBilinearInterpolation = cfg.UseBilinearInterpolation;
 
@@ -133,14 +132,21 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 		_screenBufferSize = _screenHeight*_screenWidth;
 
 		Reset();
-		_reinitLock.Release();
 	}	
 }
 
 void SdlRenderer::UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height)
 {
-	SetScreenSize(width, height);
 	_frameLock.Acquire();
+	if(_frameBuffer == nullptr || _requiredWidth != width || _requiredHeight != height) {
+		_requiredWidth = width;
+		_requiredHeight = height;
+		
+		delete[] _frameBuffer;
+		_frameBuffer = new uint32_t[width*height];
+		memset(_frameBuffer, 0, width*height*4);	
+	}
+	
 	memcpy(_frameBuffer, frameBuffer, width*height*_bytesPerPixel);
 	_frameChanged = true;	
 	_frameLock.Release();
@@ -148,6 +154,8 @@ void SdlRenderer::UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height
 
 void SdlRenderer::Render()
 {
+	SetScreenSize(_requiredWidth, _requiredHeight);
+	
 	if(!_sdlRenderer || !_sdlTexture) {
 		return;
 	}
@@ -155,8 +163,6 @@ void SdlRenderer::Render()
 	bool paused = _console->IsPaused() && _console->IsRunning();
 
 	if(_noUpdateCount > 10 || _frameChanged || paused || IsMessageShown()) {	
-		auto lock = _reinitLock.AcquireSafe();
-
 		SDL_RenderClear(_sdlRenderer);
 
 		uint8_t *textureBuffer;
@@ -164,11 +170,13 @@ void SdlRenderer::Render()
 		SDL_LockTexture(_sdlTexture, nullptr, (void**)&textureBuffer, &rowPitch);
 		{
 			auto frameLock = _frameLock.AcquireSafe();
-			uint32_t* ppuFrameBuffer = _frameBuffer;
-			for(uint32_t i = 0, iMax = _nesFrameHeight; i < iMax; i++) {
-				memcpy(textureBuffer, ppuFrameBuffer, _nesFrameWidth*_bytesPerPixel);
-				ppuFrameBuffer += _nesFrameWidth;
-				textureBuffer += rowPitch;
+			if(_frameBuffer && _nesFrameWidth == _requiredWidth && _nesFrameHeight == _requiredHeight) {
+				uint32_t* ppuFrameBuffer = _frameBuffer;
+				for(uint32_t i = 0, iMax = _nesFrameHeight; i < iMax; i++) {
+					memcpy(textureBuffer, ppuFrameBuffer, _nesFrameWidth*_bytesPerPixel);
+					ppuFrameBuffer += _nesFrameWidth;
+					textureBuffer += rowPitch;
+				}
 			}
 		}
 		SDL_UnlockTexture(_sdlTexture);
