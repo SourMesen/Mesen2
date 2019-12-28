@@ -63,6 +63,19 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(VideoConfig.DisableFrameSkipping), chkDisableFrameSkipping);
 
 			UpdateOverscanImage(picOverscan, 0, 0, 0, 0);
+
+			if(Program.IsMono) {
+				//Not available in the linux build (for now)
+				chkUseExclusiveFullscreen.Visible = false;
+			} else {
+				cboFullscreenResolution.Items.Insert(0, ResourceHelper.GetMessage("DefaultResolution"));
+				string res = ConfigManager.Config.Video.FullscreenResWidth.ToString() + "x" + ConfigManager.Config.Video.FullscreenResHeight;
+				if(cboFullscreenResolution.Items.Contains(res)) {
+					cboFullscreenResolution.SelectedItem = res;
+				} else {
+					cboFullscreenResolution.SelectedIndex = 0;
+				}
+			}
 		}
 
 		protected override bool ValidateInput()
@@ -80,6 +93,23 @@ namespace Mesen.GUI.Forms.Config
 
 		protected override void OnApply()
 		{
+			VideoConfig cfg = (VideoConfig)this.Entity;
+			if(cboFullscreenResolution.SelectedIndex > 0) {
+				string resolution = cboFullscreenResolution.SelectedItem.ToString();
+				if(!string.IsNullOrWhiteSpace(resolution)) {
+					string[] resData = resolution.Split('x');
+					uint width;
+					uint height;
+					if(uint.TryParse(resData[0], out width) && uint.TryParse(resData[1], out height)) {
+						cfg.FullscreenResWidth = width;
+						cfg.FullscreenResHeight = height;
+					}
+				}
+			} else {
+				cfg.FullscreenResWidth = 0;
+				cfg.FullscreenResHeight = 0;
+			}
+
 			ConfigManager.Config.Video = (VideoConfig)this.Entity;
 			ConfigManager.ApplyChanges();
 		}
@@ -162,6 +192,7 @@ namespace Mesen.GUI.Forms.Config
 		private void chkUseExclusiveFullscreen_CheckedChanged(object sender, EventArgs e)
 		{
 			flpRefreshRate.Visible = chkUseExclusiveFullscreen.Checked;
+			flpResolution.Visible = chkUseExclusiveFullscreen.Checked;
 		}
 	}
 }

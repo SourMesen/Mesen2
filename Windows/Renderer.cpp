@@ -70,6 +70,17 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 			if(_fullscreen) {
 				_realScreenHeight = _monitorHeight;
 				_realScreenWidth = _monitorWidth;
+
+				//Ensure the screen width/height is smaller or equal to the fullscreen resolution, no matter the requested scale
+				if(_monitorHeight < _screenHeight || _monitorWidth < _screenWidth) {
+					double scale = (double)screenSize.Width / (double)screenSize.Height;
+					_screenHeight = _monitorHeight;
+					_screenWidth = (uint32_t)(scale * _screenHeight);
+					if(_monitorWidth < _screenWidth) {
+						_screenWidth = _monitorWidth;
+						_screenHeight = (uint32_t)(_screenWidth / scale);
+					}
+				}
 			} else {
 				_realScreenHeight = screenSize.Height;
 				_realScreenWidth = screenSize.Width;

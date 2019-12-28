@@ -702,6 +702,7 @@
 		<Message ID="ExpansionDevice">Expansion Device</Message>
 
 		<Message ID="PressToExitFullscreen">Press {0} to exit fullscreen</Message>
+		<Message ID="DefaultResolution">Default</Message>
 
 		<Message ID="RomsFound">{0} roms found</Message>
 

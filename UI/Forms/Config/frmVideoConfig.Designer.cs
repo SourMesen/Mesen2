@@ -61,6 +61,7 @@
 			this.trkSharpness = new Mesen.GUI.Controls.ctrlHorizontalTrackbar();
 			this.grpCommon = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.chkBlendHighResolutionModes = new System.Windows.Forms.CheckBox();
 			this.chkBilinearInterpolation = new System.Windows.Forms.CheckBox();
 			this.trkBrightness = new Mesen.GUI.Controls.ctrlHorizontalTrackbar();
 			this.trkContrast = new Mesen.GUI.Controls.ctrlHorizontalTrackbar();
@@ -99,7 +100,9 @@
 			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
-			this.chkBlendHighResolutionModes = new System.Windows.Forms.CheckBox();
+			this.flpResolution = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblFullscreenResolution = new System.Windows.Forms.Label();
+			this.cboFullscreenResolution = new System.Windows.Forms.ComboBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
@@ -124,6 +127,7 @@
 			this.tpgAdvanced.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.ctxPicturePresets.SuspendLayout();
+			this.flpResolution.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -161,20 +165,22 @@
 			this.tlpMain.ColumnCount = 2;
 			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tlpMain.Controls.Add(this.flpResolution, 0, 5);
 			this.tlpMain.Controls.Add(this.chkUseExclusiveFullscreen, 0, 4);
 			this.tlpMain.Controls.Add(this.lblVideoScale, 0, 0);
 			this.tlpMain.Controls.Add(this.chkVerticalSync, 0, 3);
 			this.tlpMain.Controls.Add(this.lblDisplayRatio, 0, 1);
 			this.tlpMain.Controls.Add(this.nudScale, 1, 0);
 			this.tlpMain.Controls.Add(this.flowLayoutPanel6, 1, 1);
-			this.tlpMain.Controls.Add(this.chkFullscreenForceIntegerScale, 0, 6);
+			this.tlpMain.Controls.Add(this.chkFullscreenForceIntegerScale, 0, 7);
 			this.tlpMain.Controls.Add(this.chkIntegerFpsMode, 0, 2);
-			this.tlpMain.Controls.Add(this.flpRefreshRate, 0, 5);
+			this.tlpMain.Controls.Add(this.flpRefreshRate, 0, 6);
 			this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tlpMain.Location = new System.Drawing.Point(3, 3);
 			this.tlpMain.Margin = new System.Windows.Forms.Padding(0);
 			this.tlpMain.Name = "tlpMain";
-			this.tlpMain.RowCount = 8;
+			this.tlpMain.RowCount = 9;
+			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -183,7 +189,6 @@
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tlpMain.Size = new System.Drawing.Size(560, 395);
 			this.tlpMain.TabIndex = 1;
 			// 
@@ -240,6 +245,7 @@
             0,
             0,
             0});
+			this.nudScale.IsHex = false;
 			this.nudScale.Location = new System.Drawing.Point(77, 0);
 			this.nudScale.Margin = new System.Windows.Forms.Padding(0);
 			this.nudScale.Maximum = new decimal(new int[] {
@@ -310,6 +316,7 @@
             0,
             0,
             65536});
+			this.nudCustomRatio.IsHex = false;
 			this.nudCustomRatio.Location = new System.Drawing.Point(285, 3);
 			this.nudCustomRatio.Margin = new System.Windows.Forms.Padding(0);
 			this.nudCustomRatio.Maximum = new decimal(new int[] {
@@ -339,7 +346,7 @@
 			this.chkFullscreenForceIntegerScale.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.chkFullscreenForceIntegerScale.AutoSize = true;
 			this.tlpMain.SetColumnSpan(this.chkFullscreenForceIntegerScale, 2);
-			this.chkFullscreenForceIntegerScale.Location = new System.Drawing.Point(3, 146);
+			this.chkFullscreenForceIntegerScale.Location = new System.Drawing.Point(3, 173);
 			this.chkFullscreenForceIntegerScale.Name = "chkFullscreenForceIntegerScale";
 			this.chkFullscreenForceIntegerScale.Size = new System.Drawing.Size(289, 17);
 			this.chkFullscreenForceIntegerScale.TabIndex = 23;
@@ -364,7 +371,7 @@
 			this.flpRefreshRate.Controls.Add(this.lblRequestedRefreshRate);
 			this.flpRefreshRate.Controls.Add(this.cboRefreshRate);
 			this.flpRefreshRate.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.flpRefreshRate.Location = new System.Drawing.Point(30, 116);
+			this.flpRefreshRate.Location = new System.Drawing.Point(30, 143);
 			this.flpRefreshRate.Margin = new System.Windows.Forms.Padding(30, 0, 0, 0);
 			this.flpRefreshRate.Name = "flpRefreshRate";
 			this.flpRefreshRate.Size = new System.Drawing.Size(530, 27);
@@ -651,6 +658,17 @@
 			this.tableLayoutPanel4.Size = new System.Drawing.Size(272, 249);
 			this.tableLayoutPanel4.TabIndex = 4;
 			// 
+			// chkBlendHighResolutionModes
+			// 
+			this.chkBlendHighResolutionModes.AutoSize = true;
+			this.tableLayoutPanel4.SetColumnSpan(this.chkBlendHighResolutionModes, 2);
+			this.chkBlendHighResolutionModes.Location = new System.Drawing.Point(3, 226);
+			this.chkBlendHighResolutionModes.Name = "chkBlendHighResolutionModes";
+			this.chkBlendHighResolutionModes.Size = new System.Drawing.Size(158, 17);
+			this.chkBlendHighResolutionModes.TabIndex = 29;
+			this.chkBlendHighResolutionModes.Text = "Blend high resolution modes";
+			this.chkBlendHighResolutionModes.UseVisualStyleBackColor = true;
+			// 
 			// chkBilinearInterpolation
 			// 
 			this.chkBilinearInterpolation.AutoSize = true;
@@ -796,7 +814,7 @@
 			this.tpgOverscan.Location = new System.Drawing.Point(4, 22);
 			this.tpgOverscan.Name = "tpgOverscan";
 			this.tpgOverscan.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgOverscan.Size = new System.Drawing.Size(566, 397);
+			this.tpgOverscan.Size = new System.Drawing.Size(566, 401);
 			this.tpgOverscan.TabIndex = 6;
 			this.tpgOverscan.Text = "Overscan";
 			this.tpgOverscan.UseVisualStyleBackColor = true;
@@ -820,14 +838,14 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 246F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(560, 391);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(560, 395);
 			this.tableLayoutPanel1.TabIndex = 1;
 			// 
 			// picOverscan
 			// 
 			this.picOverscan.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picOverscan.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.picOverscan.Location = new System.Drawing.Point(152, 75);
+			this.picOverscan.Location = new System.Drawing.Point(152, 77);
 			this.picOverscan.Name = "picOverscan";
 			this.picOverscan.Size = new System.Drawing.Size(256, 240);
 			this.picOverscan.TabIndex = 1;
@@ -846,7 +864,7 @@
 			this.tableLayoutPanel11.RowCount = 2;
 			this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel11.Size = new System.Drawing.Size(262, 72);
+			this.tableLayoutPanel11.Size = new System.Drawing.Size(262, 74);
 			this.tableLayoutPanel11.TabIndex = 4;
 			// 
 			// nudOverscanTop
@@ -858,7 +876,8 @@
             0,
             0,
             0});
-			this.nudOverscanTop.Location = new System.Drawing.Point(110, 51);
+			this.nudOverscanTop.IsHex = false;
+			this.nudOverscanTop.Location = new System.Drawing.Point(110, 53);
 			this.nudOverscanTop.Margin = new System.Windows.Forms.Padding(0);
 			this.nudOverscanTop.Maximum = new decimal(new int[] {
             100,
@@ -886,7 +905,7 @@
 			// 
 			this.lblTop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.lblTop.AutoSize = true;
-			this.lblTop.Location = new System.Drawing.Point(118, 38);
+			this.lblTop.Location = new System.Drawing.Point(118, 40);
 			this.lblTop.Name = "lblTop";
 			this.lblTop.Size = new System.Drawing.Size(26, 13);
 			this.lblTop.TabIndex = 0;
@@ -899,7 +918,7 @@
 			this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel12.Controls.Add(this.nudOverscanBottom, 0, 1);
 			this.tableLayoutPanel12.Controls.Add(this.lblBottom, 0, 0);
-			this.tableLayoutPanel12.Location = new System.Drawing.Point(149, 318);
+			this.tableLayoutPanel12.Location = new System.Drawing.Point(149, 320);
 			this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel12.Name = "tableLayoutPanel12";
 			this.tableLayoutPanel12.RowCount = 2;
@@ -917,6 +936,7 @@
             0,
             0,
             0});
+			this.nudOverscanBottom.IsHex = false;
 			this.nudOverscanBottom.Location = new System.Drawing.Point(110, 13);
 			this.nudOverscanBottom.Margin = new System.Windows.Forms.Padding(0);
 			this.nudOverscanBottom.Maximum = new decimal(new int[] {
@@ -960,7 +980,7 @@
 			this.tableLayoutPanel13.Controls.Add(this.nudOverscanRight, 0, 2);
 			this.tableLayoutPanel13.Controls.Add(this.lblRight, 0, 1);
 			this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel13.Location = new System.Drawing.Point(411, 72);
+			this.tableLayoutPanel13.Location = new System.Drawing.Point(411, 74);
 			this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel13.Name = "tableLayoutPanel13";
 			this.tableLayoutPanel13.RowCount = 4;
@@ -980,6 +1000,7 @@
             0,
             0,
             0});
+			this.nudOverscanRight.IsHex = false;
 			this.nudOverscanRight.Location = new System.Drawing.Point(0, 119);
 			this.nudOverscanRight.Margin = new System.Windows.Forms.Padding(0);
 			this.nudOverscanRight.Maximum = new decimal(new int[] {
@@ -1023,7 +1044,7 @@
 			this.tableLayoutPanel14.Controls.Add(this.nudOverscanLeft, 1, 2);
 			this.tableLayoutPanel14.Controls.Add(this.lblLeft, 1, 1);
 			this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel14.Location = new System.Drawing.Point(0, 72);
+			this.tableLayoutPanel14.Location = new System.Drawing.Point(0, 74);
 			this.tableLayoutPanel14.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel14.Name = "tableLayoutPanel14";
 			this.tableLayoutPanel14.RowCount = 4;
@@ -1043,6 +1064,7 @@
             0,
             0,
             0});
+			this.nudOverscanLeft.IsHex = false;
 			this.nudOverscanLeft.Location = new System.Drawing.Point(108, 119);
 			this.nudOverscanLeft.Margin = new System.Windows.Forms.Padding(0);
 			this.nudOverscanLeft.Maximum = new decimal(new int[] {
@@ -1084,7 +1106,7 @@
 			this.tpgAdvanced.Location = new System.Drawing.Point(4, 22);
 			this.tpgAdvanced.Name = "tpgAdvanced";
 			this.tpgAdvanced.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgAdvanced.Size = new System.Drawing.Size(566, 397);
+			this.tpgAdvanced.Size = new System.Drawing.Size(566, 401);
 			this.tpgAdvanced.TabIndex = 7;
 			this.tpgAdvanced.Text = "Advanced";
 			this.tpgAdvanced.UseVisualStyleBackColor = true;
@@ -1110,7 +1132,7 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(560, 391);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(560, 395);
 			this.tableLayoutPanel2.TabIndex = 0;
 			// 
 			// chkDisableFrameSkipping
@@ -1211,16 +1233,59 @@
 			this.mnuPresetMonochrome.Text = "Monochrome";
 			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
 			// 
-			// chkBlendHighResolutionModes
+			// flpResolution
 			// 
-			this.chkBlendHighResolutionModes.AutoSize = true;
-			this.tableLayoutPanel4.SetColumnSpan(this.chkBlendHighResolutionModes, 2);
-			this.chkBlendHighResolutionModes.Location = new System.Drawing.Point(3, 226);
-			this.chkBlendHighResolutionModes.Name = "chkBlendHighResolutionModes";
-			this.chkBlendHighResolutionModes.Size = new System.Drawing.Size(158, 17);
-			this.chkBlendHighResolutionModes.TabIndex = 29;
-			this.chkBlendHighResolutionModes.Text = "Blend high resolution modes";
-			this.chkBlendHighResolutionModes.UseVisualStyleBackColor = true;
+			this.tlpMain.SetColumnSpan(this.flpResolution, 2);
+			this.flpResolution.Controls.Add(this.lblFullscreenResolution);
+			this.flpResolution.Controls.Add(this.cboFullscreenResolution);
+			this.flpResolution.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flpResolution.Location = new System.Drawing.Point(30, 116);
+			this.flpResolution.Margin = new System.Windows.Forms.Padding(30, 0, 0, 0);
+			this.flpResolution.Name = "flpResolution";
+			this.flpResolution.Size = new System.Drawing.Size(530, 27);
+			this.flpResolution.TabIndex = 28;
+			this.flpResolution.Visible = false;
+			// 
+			// lblFullscreenResolution
+			// 
+			this.lblFullscreenResolution.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.lblFullscreenResolution.AutoSize = true;
+			this.lblFullscreenResolution.Location = new System.Drawing.Point(3, 7);
+			this.lblFullscreenResolution.Name = "lblFullscreenResolution";
+			this.lblFullscreenResolution.Size = new System.Drawing.Size(111, 13);
+			this.lblFullscreenResolution.TabIndex = 17;
+			this.lblFullscreenResolution.Text = "Fullscreen Resolution:";
+			// 
+			// cboFullscreenResolution
+			// 
+			this.cboFullscreenResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboFullscreenResolution.FormattingEnabled = true;
+			this.cboFullscreenResolution.Items.AddRange(new object[] {
+            "3840x2160",
+            "2560x1440",
+            "2160x1200",
+            "1920x1440",
+            "1920x1200",
+            "1920x1080",
+            "1680x1050",
+            "1600x1200",
+            "1600x1024",
+            "1600x900",
+            "1366x768",
+            "1360x768",
+            "1280x1024",
+            "1280x960",
+            "1280x800",
+            "1280x768",
+            "1280x720",
+            "1152x864",
+            "1024x768",
+            "800x600",
+            "640x480"});
+			this.cboFullscreenResolution.Location = new System.Drawing.Point(120, 3);
+			this.cboFullscreenResolution.Name = "cboFullscreenResolution";
+			this.cboFullscreenResolution.Size = new System.Drawing.Size(85, 21);
+			this.cboFullscreenResolution.TabIndex = 25;
 			// 
 			// frmVideoConfig
 			// 
@@ -1271,6 +1336,8 @@
 			this.tpgAdvanced.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.ctxPicturePresets.ResumeLayout(false);
+			this.flpResolution.ResumeLayout(false);
+			this.flpResolution.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1350,5 +1417,8 @@
 		private Controls.ctrlRiskyOption chkHideSprites;
 		private Controls.ctrlRiskyOption chkDisableFrameSkipping;
 		private System.Windows.Forms.CheckBox chkBlendHighResolutionModes;
-	}
+	  private System.Windows.Forms.FlowLayoutPanel flpResolution;
+	  private System.Windows.Forms.Label lblFullscreenResolution;
+	  private System.Windows.Forms.ComboBox cboFullscreenResolution;
+   }
 }

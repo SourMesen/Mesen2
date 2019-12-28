@@ -105,6 +105,8 @@ struct VideoConfig
 	bool FullscreenForceIntegerScale = false;
 	bool UseExclusiveFullscreen = false;
 	uint32_t ExclusiveFullscreenRefreshRate = 60;
+	uint32_t FullscreenResWidth = 0;
+	uint32_t FullscreenResHeight = 0;
 };
 
 struct AudioConfig

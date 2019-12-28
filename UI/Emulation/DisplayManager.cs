@@ -107,6 +107,9 @@ namespace Mesen.GUI.Emulation
 
 		public void UpdateViewerSize()
 		{
+			if(_frmFullscreenRenderer != null) {
+				return;
+			}
 			if(HideMenuStrip) {
 				_menu.Visible = false;
 			}
@@ -142,11 +145,6 @@ namespace Mesen.GUI.Emulation
 		public void SetScaleBasedOnWindowSize()
 		{
 			SetScaleBasedOnDimensions(_panel.ClientSize);
-		}
-
-		private void SetScaleBasedOnScreenSize()
-		{
-			SetScaleBasedOnDimensions(Screen.FromControl(_frm).Bounds.Size);
 		}
 
 		public void SetScale(double scale, bool resizeForm)
@@ -223,27 +221,44 @@ namespace Mesen.GUI.Emulation
 			_fullscreenMode = false;
 		}
 
+		private Size GetFullscreenResolution()
+		{
+			if(ConfigManager.Config.Video.FullscreenResWidth > 0 && ConfigManager.Config.Video.FullscreenResHeight > 0) {
+				return new Size((int)ConfigManager.Config.Video.FullscreenResWidth, (int)ConfigManager.Config.Video.FullscreenResHeight);
+			}
+			return Screen.FromControl(_frm).Bounds.Size;
+		}
+
 		private void StartExclusiveFullscreenMode()
 		{
-			Size screenSize = Screen.FromControl(_frm).Bounds.Size;
+			Size screenSize = GetFullscreenResolution();
+			Size originalWindowSize = _frm.Size;
+			double originalScale = ConfigManager.Config.Video.VideoScale;
+			_frm.Resize -= frmMain_Resize;
+
 			_frmFullscreenRenderer = new frmFullscreenRenderer();
 			_frmFullscreenRenderer.Shown += (object sender, EventArgs e) => {
 				_renderer.Visible = false;
-				SetScaleBasedOnScreenSize();
+				SetScaleBasedOnDimensions(screenSize);
 				EmuApi.SetFullscreenMode(true, _frmFullscreenRenderer.Handle, (UInt32)screenSize.Width, (UInt32)screenSize.Height);
 			};
 			_frmFullscreenRenderer.FormClosing += (object sender, FormClosingEventArgs e) => {
 				EmuApi.SetFullscreenMode(false, _renderer.Handle, (UInt32)screenSize.Width, (UInt32)screenSize.Height);
+				_frm.Resize += frmMain_Resize;
 				_frmFullscreenRenderer = null;
 				_renderer.Visible = true;
 				_fullscreenMode = false;
 				frmMain_Resize(null, EventArgs.Empty);
+
+				SetScale(originalScale, false);
+				_frm.Size = originalWindowSize;
 			};
 
 			Screen currentScreen = Screen.FromHandle(_frm.Handle);
 			_frmFullscreenRenderer.StartPosition = FormStartPosition.Manual;
 			_frmFullscreenRenderer.Top = currentScreen.Bounds.Top;
 			_frmFullscreenRenderer.Left = currentScreen.Bounds.Left;
+			_frmFullscreenRenderer.Size = screenSize;
 			_frmFullscreenRenderer.Show();
 		}
 	}

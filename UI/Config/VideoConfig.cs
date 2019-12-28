@@ -49,6 +49,8 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale = false;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen = false;
 		public UInt32 ExclusiveFullscreenRefreshRate = 60;
+		public UInt32 FullscreenResWidth = 0;
+		public UInt32 FullscreenResHeight = 0;
 
 		public void ApplyConfig()
 		{
