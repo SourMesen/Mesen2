@@ -465,16 +465,7 @@ ConsoleRegion Console::GetRegion()
 void Console::UpdateRegion()
 {
 	switch(_settings->GetEmulationConfig().Region) {
-		case ConsoleRegion::Auto:
-		{
-			uint8_t destCode = _cart->GetRomInfo().Header.DestinationCode;
-			if((destCode >= 0x02 && destCode <= 0x0C) || destCode == 0x11) {
-				_region = ConsoleRegion::Pal;
-			} else {
-				_region = ConsoleRegion::Ntsc;
-			}
-			break;
-		}
+		case ConsoleRegion::Auto: _region = _cart->GetRegion(); break;
 
 		default:
 		case ConsoleRegion::Ntsc: _region = ConsoleRegion::Ntsc; break;

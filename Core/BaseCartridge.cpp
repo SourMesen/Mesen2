@@ -8,6 +8,7 @@
 #include "MessageManager.h"
 #include "Console.h"
 #include "EmuSettings.h"
+#include "SettingTypes.h"
 #include "BatteryManager.h"
 #include "NecDsp.h"
 #include "Sa1.h"
@@ -521,6 +522,15 @@ string BaseCartridge::GetCartName()
 	} else {
 		return name;
 	}
+}
+
+ConsoleRegion BaseCartridge::GetRegion()
+{
+	uint8_t destCode = _cartInfo.DestinationCode;
+	if((destCode >= 0x02 && destCode <= 0x0C) || destCode == 0x11 || destCode == 0x12) {
+		return ConsoleRegion::Pal;
+	}
+	return ConsoleRegion::Ntsc;
 }
 
 void BaseCartridge::DisplayCartInfo()

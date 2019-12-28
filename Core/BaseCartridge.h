@@ -14,6 +14,7 @@ class Gsu;
 class Cx4;
 class Console;
 class SpcFileData;
+enum class ConsoleRegion;
 
 class BaseCartridge : public ISerializable
 {
@@ -78,6 +79,7 @@ public:
 	void Init(MemoryMappings &mm);
 
 	RomInfo GetRomInfo();
+	ConsoleRegion GetRegion();
 	string GetSha1Hash();
 	CartFlags::CartFlags GetCartFlags();
 
