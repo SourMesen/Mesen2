@@ -83,3 +83,11 @@ void MemoryMappings::PeekBlock(uint32_t addr, uint8_t *dest)
 		memset(dest, 0, 0x1000);
 	}
 }
+
+void MemoryMappings::DebugWrite(uint32_t addr, uint8_t value)
+{
+	IMemoryHandler* handler = GetHandler(addr);
+	if(handler) {
+		handler->Write(addr, value);
+	}
+}

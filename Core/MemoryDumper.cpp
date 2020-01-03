@@ -145,11 +145,10 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 	switch(memoryType) {
 		default: break;
 
-		//TODO: Avoid side effects
-		case SnesMemoryType::CpuMemory: _memoryManager->Write(address, value, MemoryOperationType::Write); break;
+		case SnesMemoryType::CpuMemory: _memoryManager->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::SpcMemory: _spc->DebugWrite(address, value); break;
-		case SnesMemoryType::Sa1Memory: _cartridge->GetSa1()->WriteSa1(address, value, MemoryOperationType::Write); break;
-		case SnesMemoryType::GsuMemory: _cartridge->GetGsu()->WriteGsu(address, value, MemoryOperationType::Write); break;
+		case SnesMemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
+		case SnesMemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 
 		case SnesMemoryType::PrgRom: _cartridge->DebugGetPrgRom()[address] = value; break;
 		case SnesMemoryType::WorkRam: _memoryManager->DebugGetWorkRam()[address] = value; break;
