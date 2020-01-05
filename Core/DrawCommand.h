@@ -66,7 +66,7 @@ protected:
 public:
 	DrawCommand(int startFrame, int frameCount, bool useIntegerScaling = false)
 	{ 
-		_frameCount = frameCount > 0 ? frameCount : 1;
+		_frameCount = frameCount > 0 ? frameCount : -1;
 		_startFrame = startFrame;
 		_useIntegerScaling = useIntegerScaling;
 	}
@@ -92,6 +92,6 @@ public:
 
 	bool Expired()
 	{
-		return _frameCount <= 0;
+		return _frameCount == 0;
 	}
 };
