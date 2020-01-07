@@ -107,11 +107,17 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 {
 	switch(addr) {
 		case 0x4210: {
-			uint8_t value = 
-				(_nmiFlag ? 0x80 : 0) |
-				0x02; //CPU revision
+			constexpr uint8_t cpuRevision = 0x02;
+			
+			uint8_t value = (_nmiFlag ? 0x80 : 0) | cpuRevision;
 
-			SetNmiFlag(false);
+			//Reading $4210 on any cycle turns the NMI signal off (except presumably on the first PPU cycle (first 4 master clocks) of the NMI scanline.)
+			//i.e: reading $4210 at the same it gets set will return it as set, and will keep it set.
+			//Without this, Terranigma has corrupted sprites on some frames.
+			if(_memoryManager->GetHClock() >= 4 || _ppu->GetScanline() != _ppu->GetNmiScanline()) {
+				SetNmiFlag(false);
+			}
+
 			return value | (_memoryManager->GetOpenBus() & 0x70);
 		}
 
