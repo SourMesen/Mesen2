@@ -191,7 +191,6 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 	uint16_t addr = baseOffset + (column & 0x1F) + (config.DoubleWidth ? (column & 0x20) << 5 : 0);
 	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr];
 	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
-	_layerData[layerIndex].HasPriorityTiles |= (_vram[addr] & 0x2000) >> 13;
 }
 
 template<bool hiResMode, uint8_t bpp, bool secondTile>
@@ -414,9 +413,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_spriteEvalStart = 0;
 			_spriteEvalEnd = 0;
 			_spriteFetchingDone = false;
-			for(int i = 0; i < 4; i++) {
-				_layerData[i].HasPriorityTiles = false;
-			}
 
 			memset(_hasSpritePriority, 0, sizeof(_hasSpritePriority));
 			memcpy(_spritePriority, _spritePriorityCopy, sizeof(_spritePriority));
@@ -431,10 +427,8 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 
 			memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 
-			_pixelsDrawn = 0;
-			_subPixelsDrawn = 0;
-			memset(_rowPixelFlags, 0, sizeof(_rowPixelFlags));
-			memset(_subScreenFilled, 0, sizeof(_subScreenFilled));
+			memset(_mainScreenFlags, 0, sizeof(_mainScreenFlags));
+			memset(_subScreenPriority, 0, sizeof(_subScreenPriority));
 		}
 
 		_scanline++;
@@ -753,118 +747,82 @@ void Ppu::FetchSpriteTile(bool secondCycle)
 
 void Ppu::RenderMode0()
 {
-	RenderSprites<3>();
-	RenderTilemap<0, 2, true>();
-	RenderTilemap<1, 2, true, 32>();
-	RenderSprites<2>();
-	RenderTilemap<0, 2, false>();
-	RenderTilemap<1, 2, false, 32>();
-	RenderSprites<1>();
-	RenderTilemap<2, 2, true, 64>();
-	RenderTilemap<3, 2, true, 96>();
-	RenderSprites<0>();
-	RenderTilemap<2, 2, false, 64>();
-	RenderTilemap<3, 2, false, 96>();
-	RenderBgColor();
+	constexpr uint8_t spritePriorities[4] = { 3, 6, 9, 12 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 2, 8, 11, 0>();
+	RenderTilemap<1, 2, 7, 10, 32>();
+	RenderTilemap<2, 2, 2, 5, 64>();
+	RenderTilemap<3, 2, 1, 4, 96>();
 }
 
 void Ppu::RenderMode1()
 {
-	if(_state.Mode1Bg3Priority) {
-		RenderTilemap<2, 2, true>();
-	}
-	RenderSprites<3>();
-	RenderTilemap<0, 4, true>();
-	RenderTilemap<1, 4, true>();
-	RenderSprites<2>();
-	RenderTilemap<0, 4, false>();
-	RenderTilemap<1, 4, false>();
-	RenderSprites<1>();
+	constexpr uint8_t spritePriorities[4] = { 2, 4, 7, 10 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 4, 6, 9>();
+	RenderTilemap<1, 4, 5, 8>();
 	if(!_state.Mode1Bg3Priority) {
-		RenderTilemap<2, 2, true>();
+		RenderTilemap<2, 2, 1, 3>();
+	} else {
+		RenderTilemap<2, 2, 1, 11>();
 	}
-	RenderSprites<0>();
-	RenderTilemap<2, 2, false>();
-	RenderBgColor();
 }
 
 void Ppu::RenderMode2()
 {
-	RenderSprites<3>();
-	RenderTilemap<0, 4, true>();
-	RenderSprites<2>();
-	RenderTilemap<1, 4, true>();
-	RenderSprites<1>();
-	RenderTilemap<0, 4, false>();
-	RenderSprites<0>();
-	RenderTilemap<1, 4, false>();
-	RenderBgColor();
+	constexpr uint8_t spritePriorities[4] = { 2, 4, 6, 8 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 4, 3, 7>();
+	RenderTilemap<1, 4, 1, 5>();
 }
 
 void Ppu::RenderMode3()
 {
-	RenderSprites<3>();
-	RenderTilemap<0, 8, true>();
-	RenderSprites<2>();
-	RenderTilemap<1, 4, true>();
-	RenderSprites<1>();
-	RenderTilemap<0, 8, false>();
-	RenderSprites<0>();
-	RenderTilemap<1, 4, false>();
-	RenderBgColor();
+	constexpr uint8_t spritePriorities[4] = { 2, 4, 6, 8 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 8, 3, 7>();
+	RenderTilemap<1, 4, 1, 5>();
 }
 
 void Ppu::RenderMode4()
 {
-	RenderSprites<3>();
-	RenderTilemap<0, 8, true>();
-	RenderSprites<2>();
-	RenderTilemap<1, 2, true>();
-	RenderSprites<1>();
-	RenderTilemap<0, 8, false>();
-	RenderSprites<0>();
-	RenderTilemap<1, 2, false>();
-	RenderBgColor();
+	constexpr uint8_t spritePriorities[4] = { 2, 4, 6, 8 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 8, 3, 7>();
+	RenderTilemap<1, 2, 1, 5>();
 }
 
 void Ppu::RenderMode5()
 {
-	RenderSprites<3>();
-	RenderTilemap<0, 4, true>();
-	RenderSprites<2>();
-	RenderTilemap<1, 2, true>();
-	RenderSprites<1>();
-	RenderTilemap<0, 4, false>();
-	RenderSprites<0>();
-	RenderTilemap<1, 2, false>();
-	RenderBgColor();
+	constexpr uint8_t spritePriorities[4] = { 2, 4, 6, 8 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 4, 3, 7>();
+	RenderTilemap<1, 2, 1, 5>();
 }
 
 void Ppu::RenderMode6()
 {
-	RenderSprites<3>();
-	RenderTilemap<0, 4, true>();
-	RenderSprites<2>();
-	RenderSprites<1>();
-	RenderTilemap<0, 4, false>();
-	RenderSprites<0>();
-	RenderBgColor();
+	constexpr uint8_t spritePriorities[4] = { 2, 3, 4, 6 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemap<0, 4, 1, 5>();
 }
 
 void Ppu::RenderMode7()
 {
-	RenderSprites<3>();
-	RenderSprites<2>();
+	constexpr uint8_t spritePriorities[4] = { 2, 4, 6, 7 };
+	RenderSprites(spritePriorities);
+
+	RenderTilemapMode7<0, 3, 3>();
 	if(_state.ExtBgEnabled) {
-		RenderTilemapMode7<1, true>();
+		RenderTilemapMode7<1, 1, 5>();
 	}
-	RenderSprites<1>();
-	RenderTilemapMode7<0, false>();
-	RenderSprites<0>();
-	if(_state.ExtBgEnabled) {
-		RenderTilemapMode7<1, false>();
-	}
-	RenderBgColor();
 }
 
 void Ppu::RenderScanline()
@@ -892,26 +850,22 @@ void Ppu::RenderScanline()
 	if(!_skipRender && _drawStartX <= 255 && hPos > 22 && _scanline > 0) {
 		_drawEndX = std::min(hPos - 22, 255);
 
-		uint8_t bgMode = _state.BgMode;
 		if(_state.ForcedVblank) {
-			bgMode = 8;
-		}
-
-		switch(bgMode) {
-			case 0: RenderMode0(); break;
-			case 1: RenderMode1(); break;
-			case 2: RenderMode2(); break;
-			case 3: RenderMode3(); break;
-			case 4: RenderMode4(); break;
-			case 5: RenderMode5(); break;
-			case 6: RenderMode6(); break;
-			case 7: RenderMode7(); break;
-
-			case 8:
-				//Forced blank, output black
-				memset(_mainScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
-				memset(_subScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
-				break;
+			//Forced blank, output black
+			memset(_mainScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
+			memset(_subScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
+		} else {
+			switch(_state.BgMode) {
+				case 0: RenderMode0(); break;
+				case 1: RenderMode1(); break;
+				case 2: RenderMode2(); break;
+				case 3: RenderMode3(); break;
+				case 4: RenderMode4(); break;
+				case 5: RenderMode5(); break;
+				case 6: RenderMode6(); break;
+				case 7: RenderMode7(); break;
+			}
+			RenderBgColor();
 		}
 
 		ApplyColorMath();
@@ -934,26 +888,21 @@ void Ppu::RenderScanline()
 
 void Ppu::RenderBgColor()
 {
-	if(_pixelsDrawn == 256 && _subPixelsDrawn == 256) {
-		return;
-	}
-
+	uint8_t pixelFlags = (_state.ColorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0;
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
-		if(!_rowPixelFlags[x]) {
-			uint8_t pixelFlags = PixelFlags::Filled | ((_state.ColorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0);
+		if((_mainScreenFlags[x] & 0x0F) == 0) {
 			_mainScreenBuffer[x] = _cgram[0];
-			_rowPixelFlags[x] = pixelFlags;
+			_mainScreenFlags[x] = pixelFlags;
 		}
-		if(!_subScreenFilled[x]) {
+		if(_subScreenPriority[x] == 0) {
 			_subScreenBuffer[x] = _cgram[0];
 		}
 	}
 }
 
-template<uint8_t priority>
-void Ppu::RenderSprites()
+void Ppu::RenderSprites(const uint8_t priority[4])
 {
-	if(!_hasSpritePriority[priority] || !IsRenderRequired(Ppu::SpriteLayerIndex)) {
+	if(!IsRenderRequired(Ppu::SpriteLayerIndex)) {
 		return;
 	}
 
@@ -970,25 +919,24 @@ void Ppu::RenderSprites()
 	}
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
-		if(_spritePriority[x] == priority) {
-			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(mainWindowCount, x)) {
+		if(_spritePriority[x] <= 3) {
+			uint8_t spritePrio = priority[_spritePriority[x]];
+			if(drawMain && ((_mainScreenFlags[x] & 0x0F) < spritePrio) && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(mainWindowCount, x)) {
 				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
 				_mainScreenBuffer[x] = _cgram[paletteRamOffset];
-				_rowPixelFlags[x] = PixelFlags::Filled | (((_state.ColorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
-				_pixelsDrawn++;
+				_mainScreenFlags[x] = spritePrio | (((_state.ColorMathEnabled & 0x10) && _spritePalette[x] > 3) ? PixelFlags::AllowColorMath : 0);
 			}
 
-			if(drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(subWindowCount, x)) {
+			if(drawSub && (_subScreenPriority[x] < spritePrio) && !ProcessMaskWindow<Ppu::SpriteLayerIndex>(subWindowCount, x)) {
 				uint16_t paletteRamOffset = 128 + (_spritePalette[x] << 4) + _spriteColors[x];
 				_subScreenBuffer[x] = _cgram[paletteRamOffset];
-				_subScreenFilled[x] = true;
-				_subPixelsDrawn++;
+				_subScreenPriority[x] = spritePrio;
 			}
 		}
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic, bool directColorMode>
+template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemap()
 {
 	bool drawMain = (bool)(((_state.MainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01);
@@ -1007,7 +955,7 @@ void Ppu::RenderTilemap()
 	uint8_t lookupIndex;
 	uint8_t chrDataOffset;
 	uint8_t hiresSubColor;
-	uint8_t pixelFlags = PixelFlags::Filled | (((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+	uint8_t pixelFlags = (((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if(hiResMode) {
@@ -1019,16 +967,10 @@ void Ppu::RenderTilemap()
 		}
 
 		uint16_t tilemapData = tileData[lookupIndex].TilemapData;
-		if((uint8_t)processHighPriority != ((tilemapData & 0x2000) >> 13)) {
-			continue;
-		}
-
 		uint16_t* chrData = tileData[lookupIndex].ChrData;
 		bool hMirror = (tilemapData & 0x4000) != 0;
 
 		uint8_t color;
-		uint16_t rgbColor;
-
 		if(hiResMode) {
 			uint8_t xOffset = ((x << 1) + 1 + hScroll) & 0x07;
 			uint8_t shift = hMirror ? xOffset : (7 - xOffset);
@@ -1044,6 +986,7 @@ void Ppu::RenderTilemap()
 		}
 
 		uint8_t paletteIndex = (tilemapData >> 10) & 0x07;
+		uint8_t priority = (tilemapData & 0x2000) ? highPriority : normalPriority;
 
 		if(applyMosaic) {
 			if(mosaicCounter == _state.MosaicSize) {
@@ -1052,10 +995,12 @@ void Ppu::RenderTilemap()
 					color = hiresSubColor;
 				}
 				_mosaicColor[layerIndex] = (paletteIndex << 8) | color;
+				_mosaicPriority[layerIndex] = priority;
 			} else {
 				mosaicCounter++;
 				color = _mosaicColor[layerIndex] & 0xFF;
 				paletteIndex = _mosaicColor[layerIndex] >> 8;
+				priority = _mosaicPriority[layerIndex];
 				if(hiResMode) {
 					hiresSubColor = color;
 				}
@@ -1063,20 +1008,19 @@ void Ppu::RenderTilemap()
 		}
 
 		if(color > 0) {
-			rgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>(paletteIndex, color);
-			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
-				/* Keeps track of whether or not the pixel is allowed to participate in color math */
-				DrawMainPixel(x, rgbColor, pixelFlags);
+			uint16_t rgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>(paletteIndex, color);
+			if(drawMain && (_mainScreenFlags[x] & 0x0F) < priority && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
+				DrawMainPixel(x, rgbColor, priority | pixelFlags);
 			}
-			if(!hiResMode && drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
-				DrawSubPixel(x, rgbColor);
+			if(!hiResMode && drawSub && _subScreenPriority[x] < priority && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
+				DrawSubPixel(x, rgbColor, priority);
 			}
 		}
 
 		if(hiResMode) {
-			if(hiresSubColor > 0 && drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
+			if(hiresSubColor > 0 && drawSub && _subScreenPriority[x] < priority && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
 				uint16_t hiresSubRgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>(paletteIndex, hiresSubColor);
-				DrawSubPixel(x, hiresSubRgbColor);
+				DrawSubPixel(x, hiresSubRgbColor, priority);
 			}
 		}
 	}
@@ -1101,10 +1045,6 @@ uint16_t Ppu::GetRgbColor(uint8_t paletteIndex, uint8_t colorIndex)
 
 bool Ppu::IsRenderRequired(uint8_t layerIndex)
 {
-	if(_pixelsDrawn == 256 && _subPixelsDrawn == 256) {
-		return false;
-	}
-
 	if(((_state.MainScreenLayers & _configVisibleLayers) >> layerIndex) & 0x01) {
 		return true;
 	}
@@ -1142,13 +1082,9 @@ uint8_t Ppu::GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift)
 	return color;
 }
 
-template<uint8_t layerIndex, bool processHighPriority, bool applyMosaic, bool directColorMode>
+template<uint8_t layerIndex, uint8_t normalPriority, uint8_t highPriority, bool applyMosaic, bool directColorMode>
 void Ppu::RenderTilemapMode7()
 {
-	if(!IsRenderRequired(layerIndex)) {
-		return;
-	}
-
 	uint8_t mainWindowCount = _state.WindowMaskMain[layerIndex] ? (uint8_t)_state.Window[0].ActiveLayers[layerIndex] + (uint8_t)_state.Window[1].ActiveLayers[layerIndex] : 0;
 	uint8_t subWindowCount = _state.WindowMaskSub[layerIndex] ? (uint8_t)_state.Window[0].ActiveLayers[layerIndex] + (uint8_t)_state.Window[1].ActiveLayers[layerIndex] : 0;
 	
@@ -1202,18 +1138,14 @@ void Ppu::RenderTilemapMode7()
 	xValue += xStep * _drawStartX;
 	yValue += yStep * _drawStartX;
 	
-	uint8_t pixelFlags = PixelFlags::Filled | (((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
+	uint8_t pixelFlags = ((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0;
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		int32_t xOffset = xValue >> 8;
 		int32_t yOffset = yValue >> 8;
 		xValue += xStep;
 		yValue += yStep;
-		
-		if(_rowPixelFlags[x] && _subScreenFilled[x]) {
-			continue;
-		}
-		
+
 		uint8_t tileIndex;
 		if(!_state.Mode7.LargeMap) {
 			yOffset &= 0x3FF;
@@ -1233,14 +1165,13 @@ void Ppu::RenderTilemapMode7()
 		}
 
 		uint16_t colorIndex;
+		uint8_t priority;
 		if(layerIndex == 1) {
 			uint8_t color = _vram[((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07))] >> 8;
-			if(((uint8_t)processHighPriority << 7) != (color & 0x80)) {
-				//Wrong priority, skip this pixel
-				continue;
-			}
+			priority = (color & 0x80) ? highPriority : normalPriority;
 			colorIndex = (color & 0x7F);
 		} else {
+			priority = normalPriority;
 			colorIndex = _vram[((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07))] >> 8;
 		}
 
@@ -1248,9 +1179,11 @@ void Ppu::RenderTilemapMode7()
 			if(mosaicCounter == _state.MosaicSize) {
 				mosaicCounter = 1;
 				_mosaicColor[layerIndex] = colorIndex;
+				_mosaicPriority[layerIndex] = priority;
 			} else {
 				mosaicCounter++;
 				colorIndex = _mosaicColor[layerIndex];
+				priority = _mosaicPriority[layerIndex];
 			}
 		}
 
@@ -1262,12 +1195,12 @@ void Ppu::RenderTilemapMode7()
 				paletteColor = _cgram[colorIndex];
 			}
 			
-			if(drawMain && !_rowPixelFlags[x] && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
-				DrawMainPixel(x, paletteColor, pixelFlags);
+			if(drawMain && (_mainScreenFlags[x] & 0x0F) < priority && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
+				DrawMainPixel(x, paletteColor, priority | pixelFlags);
 			} 
 
-			if(drawSub && !_subScreenFilled[x] && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
-				DrawSubPixel(x, paletteColor);
+			if(drawSub && _subScreenPriority[x] < priority && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
+				DrawSubPixel(x, paletteColor, priority);
 			}
 		}
 	}
@@ -1276,15 +1209,13 @@ void Ppu::RenderTilemapMode7()
 void Ppu::DrawMainPixel(uint8_t x, uint16_t color, uint8_t flags)
 {
 	_mainScreenBuffer[x] = color;
-	_rowPixelFlags[x] = flags;
-	_pixelsDrawn++;
+	_mainScreenFlags[x] = flags;
 }
 
-void Ppu::DrawSubPixel(uint8_t x, uint16_t color)
+void Ppu::DrawSubPixel(uint8_t x, uint16_t color, uint8_t priority)
 {
 	_subScreenBuffer[x] = color;
-	_subScreenFilled[x] = true;
-	_subPixelsDrawn++;
+	_subScreenPriority[x] = priority;
 }
 
 void Ppu::ApplyColorMath()
@@ -1334,7 +1265,7 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 		case ColorWindowMode::Always: pixelA = 0; break;
 	}
 
-	if(!(_rowPixelFlags[x] & PixelFlags::AllowColorMath)) {
+	if(!(_mainScreenFlags[x] & PixelFlags::AllowColorMath)) {
 		//Color math doesn't apply to this pixel
 		return;
 	}
@@ -1361,7 +1292,7 @@ void Ppu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool i
 
 	uint16_t otherPixel;
 	if(_state.ColorMathAddSubscreen) {
-		if(_subScreenFilled[x]) {
+		if(_subScreenPriority[x] > 0) {
 			otherPixel = pixelB;
 		} else {
 			//there's nothing in the subscreen at this pixel, use the fixed color and disable halve operation
@@ -2302,60 +2233,64 @@ void Ppu::RandomizeState()
 }
 
 /* Everything below this point is used to select the proper arguments for templates */
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic>
+template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic>
 void Ppu::RenderTilemap()
 {
 	if(_state.DirectColorMode) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, applyMosaic, true>();
+		RenderTilemap<layerIndex, bpp, normalPriority, highPriority, basePaletteOffset, hiResMode, applyMosaic, true>();
 	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, applyMosaic, false>();
+		RenderTilemap<layerIndex, bpp, normalPriority, highPriority, basePaletteOffset, hiResMode, applyMosaic, false>();
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode>
+template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset, bool hiResMode>
 void Ppu::RenderTilemap()
 {
 	bool applyMosaic = ((_state.MosaicEnabled >> layerIndex) & 0x01) != 0 && (_state.MosaicSize > 1 || _state.BgMode == 5 || _state.BgMode == 6);
 
 	if(applyMosaic) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, true>();
+		RenderTilemap<layerIndex, bpp, normalPriority, highPriority, basePaletteOffset, hiResMode, true>();
 	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, hiResMode, false>();
+		RenderTilemap<layerIndex, bpp, normalPriority, highPriority, basePaletteOffset, hiResMode, false>();
 	}
 }
 
-template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset>
+template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset>
 void Ppu::RenderTilemap()
 {
-	if(!IsRenderRequired(layerIndex) || (processHighPriority && !_layerData[layerIndex].HasPriorityTiles)) {
+	if(!IsRenderRequired(layerIndex)) {
 		return;
 	}
 
 	if(_state.BgMode == 5 || _state.BgMode == 6) {
-		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, true>();
+		RenderTilemap<layerIndex, bpp, normalPriority, highPriority, basePaletteOffset, true>();
 	} else {
-		RenderTilemap<layerIndex, bpp, processHighPriority, basePaletteOffset, false>();
+		RenderTilemap<layerIndex, bpp, normalPriority, highPriority, basePaletteOffset, false>();
 	}
 }
 
-template<uint8_t layerIndex, bool processHighPriority>
+template<uint8_t layerIndex, uint8_t normalPriority, uint8_t highPriority>
 void Ppu::RenderTilemapMode7()
 {
+	if(!IsRenderRequired(layerIndex)) {
+		return;
+	}
+
 	bool applyMosaic = ((_state.MosaicEnabled >> layerIndex) & 0x01) != 0;
 
 	if(applyMosaic) {
-		RenderTilemapMode7<layerIndex, processHighPriority, true>();
+		RenderTilemapMode7<layerIndex, normalPriority, highPriority, true>();
 	} else {
-		RenderTilemapMode7<layerIndex, processHighPriority, false>();
+		RenderTilemapMode7<layerIndex, normalPriority, highPriority, false>();
 	}
 }
 
-template<uint8_t layerIndex, bool processHighPriority, bool applyMosaic>
+template<uint8_t layerIndex, uint8_t normalPriority, uint8_t highPriority, bool applyMosaic>
 void Ppu::RenderTilemapMode7()
 {
 	if(_state.DirectColorMode) {
-		RenderTilemapMode7<layerIndex, processHighPriority, applyMosaic, true>();
+		RenderTilemapMode7<layerIndex, normalPriority, highPriority, applyMosaic, true>();
 	} else {
-		RenderTilemapMode7<layerIndex, processHighPriority, applyMosaic, false>();
+		RenderTilemapMode7<layerIndex, normalPriority, highPriority, applyMosaic, false>();
 	}
 }

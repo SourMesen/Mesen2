@@ -57,7 +57,6 @@ struct TileData
 struct LayerData
 {
 	TileData Tiles[33];
-	uint8_t HasPriorityTiles;
 };
 
 struct LayerConfig
@@ -187,6 +186,5 @@ struct PpuState
 
 enum PixelFlags
 {
-	Filled = 0x01,
-	AllowColorMath = 0x02,
+	AllowColorMath = 0x80,
 };

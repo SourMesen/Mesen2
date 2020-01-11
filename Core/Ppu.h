@@ -74,16 +74,14 @@ private:
 	bool _useHighResOutput = false;
 	bool _interlacedFrame = false;
 
-	uint16_t _pixelsDrawn = 0;
-	uint16_t _subPixelsDrawn = 0;
-
-	uint8_t _rowPixelFlags[256] = {};
+	uint8_t _mainScreenFlags[256] = {};
 	uint16_t _mainScreenBuffer[256] = {};
 
-	bool _subScreenFilled[256] = {};
+	uint8_t _subScreenPriority[256] = {};
 	uint16_t _subScreenBuffer[256] = {};
 
 	uint32_t _mosaicColor[4] = {};
+	uint32_t _mosaicPriority[4] = {};
 	uint16_t _mosaicScanlineCounter = 0;
 	
 	uint16_t _internalOamAddress = 0;
@@ -115,8 +113,7 @@ private:
 	uint8_t _spritePaletteCopy[256] = {};
 	uint8_t _spriteColorsCopy[256] = {};
 
-	template<uint8_t priority>
-	void RenderSprites();
+	void RenderSprites(const uint8_t priorities[4]);
 
 	template<bool hiResMode>
 	void GetTilemapData(uint8_t layerIndex, uint8_t columnIndex);
@@ -139,16 +136,16 @@ private:
 
 	void RenderBgColor();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset = 0>
+	template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset = 0>
 	__forceinline void RenderTilemap();
 	
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode>
+	template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset, bool hiResMode>
 	__forceinline void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic>
+	template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic>
 	__forceinline void RenderTilemap();
 
-	template<uint8_t layerIndex, uint8_t bpp, bool processHighPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic, bool directColorMode>
+	template<uint8_t layerIndex, uint8_t bpp, uint8_t normalPriority, uint8_t highPriority, uint16_t basePaletteOffset, bool hiResMode, bool applyMosaic, bool directColorMode>
 	void RenderTilemap();
 
 	template<uint8_t bpp, bool directColorMode, uint8_t basePaletteOffset>
@@ -159,17 +156,17 @@ private:
 	template<uint8_t bpp>
 	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift);
 
-	template<uint8_t layerIndex, bool processHighPriority>
+	template<uint8_t layerIndex, uint8_t normalPriority, uint8_t highPriority>
 	__forceinline void RenderTilemapMode7();
 
-	template<uint8_t layerIndex, bool processHighPriority, bool applyMosaic>
+	template<uint8_t layerIndex, uint8_t normalPriority, uint8_t highPriority, bool applyMosaic>
 	__forceinline void RenderTilemapMode7();
 
-	template<uint8_t layerIndex, bool processHighPriority, bool applyMosaic, bool directColorMode>
+	template<uint8_t layerIndex, uint8_t normalPriority, uint8_t highPriority, bool applyMosaic, bool directColorMode>
 	void RenderTilemapMode7();
 
 	__forceinline void DrawMainPixel(uint8_t x, uint16_t color, uint8_t flags);
-	__forceinline void DrawSubPixel(uint8_t x, uint16_t color);
+	__forceinline void DrawSubPixel(uint8_t x, uint16_t color, uint8_t priority);
 
 	void ApplyColorMath();
 	void ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bool isInsideWindow);
