@@ -1822,7 +1822,14 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 		case 0x2106: {
 			//MOSAIC - Screen Pixelation
 			_state.MosaicSize = ((value & 0xF0) >> 4) + 1;
-			_state.MosaicEnabled = value & 0x0F;
+			uint8_t mosaicEnabled = value & 0x0F;
+			if(!_state.MosaicEnabled && mosaicEnabled) {
+				//"If this register is set during the frame, the Åstarting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
+				//This is only done when mosaic is turned on from an off state (FF6 mosaic effect looks wrong otherwise)
+				//FF6's mosaic effect is broken on some screens without this.
+				_mosaicScanlineCounter = _state.MosaicSize + 1;
+			}
+			_state.MosaicEnabled = mosaicEnabled;
 			break;
 		}
 
