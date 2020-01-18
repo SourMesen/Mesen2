@@ -4,15 +4,17 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "DmaController.h"
+#include "MemoryManager.h"
 #include "Debugger.h"
 #include "DebugBreakHelper.h"
 #include "DefaultVideoFilter.h"
 
-EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, DmaController *dmaController)
+EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController)
 {
 	_debugger = debugger;
 	_cpu = cpu;
 	_ppu = ppu;
+	_memoryManager = memoryManager;
 	_dmaController = dmaController;
 
 	_ppuBuffer = new uint16_t[512 * 478];
@@ -30,7 +32,7 @@ void EventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operation,
 	evt.Type = type;
 	evt.Operation = operation;
 	evt.Scanline = _ppu->GetScanline();
-	evt.Cycle = _ppu->GetCycle();
+	evt.Cycle = _memoryManager->GetHClock();
 	evt.BreakpointId = breakpointId;
 
 	if(operation.Type == MemoryOperationType::DmaRead || operation.Type == MemoryOperationType::DmaWrite) {
@@ -51,7 +53,7 @@ void EventManager::AddEvent(DebugEventType type)
 	DebugEventInfo evt = {};
 	evt.Type = type;
 	evt.Scanline = _ppu->GetScanline();
-	evt.Cycle = _ppu->GetCycle();
+	evt.Cycle = _memoryManager->GetHClock();
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
 	
@@ -104,9 +106,9 @@ void EventManager::FilterEvents(EventViewerDisplayOptions &options)
 
 	vector<DebugEventInfo> events = _snapshot;
 	if(options.ShowPreviousFrameEvents && _snapshotScanline != 0) {
-		uint32_t key = (_snapshotScanline << 9) + _snapshotCycle;
+		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
 		for(DebugEventInfo &evt : _prevDebugEvents) {
-			uint32_t evtKey = (evt.Scanline << 9) + evt.Cycle;
+			uint32_t evtKey = (evt.Scanline << 16) + evt.Cycle;
 			if(evtKey > key) {
 				events.push_back(evt);
 			}
@@ -220,12 +222,12 @@ void EventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t 
 	int jMin = drawBackground ? -2 : 0;
 	int jMax = drawBackground ? 3 : 1;
 	uint32_t y = std::min<uint32_t>(evt.Scanline * 2, _scanlineCount * 2);
-	uint32_t x = evt.Cycle * 2;
+	uint32_t x = evt.Cycle / 2;
 
 	for(int i = iMin; i <= iMax; i++) {
 		for(int j = jMin; j <= jMax; j++) {
-			int32_t pos = (y + i) * 340 * 2 + x + j;
-			if(pos < 0 || pos >= 340 * 2 * (int)_scanlineCount * 2) {
+			int32_t pos = (y + i) * EventManager::ScanlineWidth + x + j;
+			if(pos < 0 || pos >= EventManager::ScanlineWidth * (int)_scanlineCount * 2) {
 				continue;
 			}
 			buffer[pos] = color;
@@ -239,9 +241,8 @@ uint32_t EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 	auto lock = _lock.AcquireSafe();
 	_snapshot.clear();
 
-	uint16_t cycle = _ppu->GetCycle();
+	uint16_t cycle = _memoryManager->GetHClock();
 	uint16_t scanline = _ppu->GetScanline();
-	uint32_t key = (scanline << 9) + cycle;
 
 	_overscanMode = _ppu->GetState().OverscanMode;
 	_useHighResOutput = _ppu->IsHighResOutput();
@@ -267,7 +268,7 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 {
 	auto lock = _lock.AcquireSafe();
 
-	for(int i = 0; i < 340 * 2 * (int)_scanlineCount * 2; i++) {
+	for(int i = 0; i < EventManager::ScanlineWidth * (int)_scanlineCount * 2; i++) {
 		buffer[i] = 0xFF555555;
 	}
 
@@ -277,20 +278,20 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions 
 	for(uint32_t y = 0, len = _overscanMode ? 239*2 : 224*2; y < len; y++) {
 		for(uint32_t x = 0; x < 512; x++) {
 			int srcOffset = _useHighResOutput ? ((y << 9) | x) : (((y >> 1) << 8) | (x >> 1));
-			buffer[(y + 2)*340*2 + x + 22*2] = DefaultVideoFilter::ToArgb(src[srcOffset]);
+			buffer[(y + 2)*EventManager::ScanlineWidth + x + 22*2] = DefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
 	}
 
 	constexpr uint32_t nmiColor = 0xFF55FFFF;
 	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
-	int nmiScanline = (_overscanMode ? 240 : 225) * 2 * 340 * 2;
-	uint32_t scanlineOffset = _snapshotScanline * 2 * 340 * 2;
-	for(int i = 0; i < 340 * 2; i++) {
+	int nmiScanline = (_overscanMode ? 240 : 225) * 2 * EventManager::ScanlineWidth;
+	uint32_t scanlineOffset = _snapshotScanline * 2 * EventManager::ScanlineWidth;
+	for(int i = 0; i < EventManager::ScanlineWidth; i++) {
 		buffer[nmiScanline + i] = nmiColor;
-		buffer[nmiScanline + 340 * 2 + i] = nmiColor;
+		buffer[nmiScanline + EventManager::ScanlineWidth + i] = nmiColor;
 		if(_snapshotScanline != 0) {
 			buffer[scanlineOffset + i] = currentScanlineColor;
-			buffer[scanlineOffset + 340 * 2 + i] = currentScanlineColor;
+			buffer[scanlineOffset + EventManager::ScanlineWidth + i] = currentScanlineColor;
 		}
 	}
 

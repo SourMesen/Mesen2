@@ -11,12 +11,16 @@ class Cpu;
 class Ppu;
 class Debugger;
 class DmaController;
+class MemoryManager;
 
 class EventManager
 {
 private:
+	static constexpr int ScanlineWidth = 1364 / 2;
+
 	Cpu * _cpu;
 	Ppu *_ppu;
+	MemoryManager* _memoryManager;
 	DmaController *_dmaController;
 	Debugger *_debugger;
 	vector<DebugEventInfo> _debugEvents;
@@ -37,7 +41,7 @@ private:
 	void FilterEvents(EventViewerDisplayOptions &options);
 
 public:
-	EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, DmaController *dmaController);
+	EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController);
 	~EventManager();
 
 	void AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId = -1);

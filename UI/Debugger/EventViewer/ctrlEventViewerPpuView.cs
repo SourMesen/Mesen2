@@ -21,7 +21,7 @@ namespace Mesen.GUI.Debugger
 	{
 		public const int HdmaChannelFlag = 0x40;
 
-		private int _baseWidth = 340 * 2;
+		private int _baseWidth = 1364 / 2;
 
 		private Point _lastPos = new Point(-1, -1);
 		private bool _needUpdate = false;
@@ -30,6 +30,7 @@ namespace Mesen.GUI.Debugger
 		private Bitmap _displayBitmap = null;
 		private byte[] _pictureData = null;
 		private Font _overlayFont;
+		private Font _smallOverlayFont;
 
 		public UInt32 ScanlineCount { get; set; } = 262;
 		public int ImageScale { get { return picViewer.ImageScale; } set { picViewer.ImageScale = value; } }
@@ -46,6 +47,7 @@ namespace Mesen.GUI.Debugger
 			if(!IsDesignMode) {
 				tmrOverlay.Start();
 				_overlayFont = new Font(BaseControl.MonospaceFontFamily, 10);
+				_smallOverlayFont = new Font(BaseControl.MonospaceFontFamily, 8);
 			}
 		}
 		
@@ -93,14 +95,17 @@ namespace Mesen.GUI.Debugger
 					int x = _lastPos.X + 5;
 					int y = _lastPos.Y - (int)size.Height / 2 - 5;
 					
-					if(x*2 - picViewer.ScrollOffsets.X / picViewer.ImageScale + size.Width > (picViewer.Width / picViewer.ImageScale) - 5) {
-						x -= (int)size.Width / 2 + 10;
+					if(x/2 - picViewer.ScrollOffsets.X / picViewer.ImageScale + size.Width > (picViewer.Width / picViewer.ImageScale) - 5) {
+						x -= (int)size.Width * 2 + 10;
 					}
 					if(y*2 - picViewer.ScrollOffsets.Y / picViewer.ImageScale < size.Height + 5) {
 						y = _lastPos.Y + 5;
 					}
 
-					g.DrawOutlinedString(location, _overlayFont, Brushes.Black, Brushes.White, x*2, y*2);
+					g.DrawOutlinedString(location, _overlayFont, Brushes.Black, Brushes.White, x/2, y*2);
+
+					location = GetCycle(_lastPos.X).ToString();
+					g.DrawOutlinedString(location, _smallOverlayFont, Brushes.Black, Brushes.White, x/2, y*2 + (int)size.Height - 5);
 				}
 			}
 
@@ -111,7 +116,7 @@ namespace Mesen.GUI.Debugger
 
 		private void UpdateOverlay(Point p)
 		{
-			Point pos = GetCycleScanline(p);
+			Point pos = GetHClockAndScanline(p);
 
 			if(_lastPos == pos) {
 				//Same x,y location, no need to update
@@ -121,7 +126,7 @@ namespace Mesen.GUI.Debugger
 			using(Graphics g = Graphics.FromImage(_overlayBitmap)) {
 				g.Clear(Color.Transparent);
 				using(Pen bg = new Pen(Color.FromArgb(128, Color.LightGray))) {
-					g.DrawRectangle(bg, pos.X * 2 - 1, 0, 3, _overlayBitmap.Height);
+					g.DrawRectangle(bg, pos.X / 2 - 1, 0, 3, _overlayBitmap.Height);
 					g.DrawRectangle(bg, 0, pos.Y * 2 - 1, _overlayBitmap.Width, 3);
 				}
 			}
@@ -139,17 +144,28 @@ namespace Mesen.GUI.Debugger
 			_lastPos = new Point(-1, -1);
 		}
 
-		private Point GetCycleScanline(Point location)
+		private Point GetHClockAndScanline(Point location)
 		{
 			return new Point(
-				((location.X & ~0x01) / this.ImageScale) / 2,
+				(location.X / this.ImageScale) * 2,
 				((location.Y & ~0x01) / this.ImageScale) / 2
 			);
 		}
 
+		private int GetCycle(int hClock)
+		{
+			if(hClock <= 1292) {
+				return hClock >> 2;
+			} else if(hClock <= 1310) {
+				return (hClock - 2) >> 2;
+			} else {
+				return (hClock - 4) >> 2;
+			}
+		}
+
 		private void picPicture_MouseMove(object sender, MouseEventArgs e)
 		{
-			Point pos = GetCycleScanline(e.Location);
+			Point pos = GetHClockAndScanline(e.Location);
 			if(_lastPos == pos) {
 				return;
 			}
@@ -166,7 +182,7 @@ namespace Mesen.GUI.Debugger
 			Dictionary<string, string> values = new Dictionary<string, string>() {
 				{ "Type", ResourceHelper.GetEnumText(evt.Type) },
 				{ "Scanline", evt.Scanline.ToString() },
-				{ "Cycle", evt.Cycle.ToString() },
+				{ "H-Clock", evt.Cycle.ToString() + " (" + GetCycle(evt.Cycle) + ")" },
 				{ "PC", "$" + evt.ProgramCounter.ToString("X6") },
 			};
 
@@ -225,7 +241,7 @@ namespace Mesen.GUI.Debugger
 					break;
 			}
 
-			UpdateOverlay(new Point((int)(evt.Cycle * 2 * this.ImageScale), (int)(evt.Scanline * 2 * this.ImageScale)));
+			UpdateOverlay(new Point((int)(evt.Cycle / 2 * this.ImageScale), (int)(evt.Scanline * 2 * this.ImageScale)));
 
 			Form parentForm = this.FindForm();
 			Point location = parentForm.PointToClient(this.PointToScreen(new Point(e.Location.X - picViewer.ScrollOffsets.X, e.Location.Y - picViewer.ScrollOffsets.Y)));

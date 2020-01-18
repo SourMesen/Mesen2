@@ -63,7 +63,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
-	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _console->GetDmaController().get()));
+	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _memoryManager.get(), _console->GetDmaController().get()));
 	_scriptManager.reset(new ScriptManager(this));
 
 	_cpuDebugger.reset(new CpuDebugger(this, CpuType::Cpu));
