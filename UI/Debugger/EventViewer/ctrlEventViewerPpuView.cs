@@ -244,7 +244,7 @@ namespace Mesen.GUI.Debugger
 			UpdateOverlay(new Point((int)(evt.Cycle / 2 * this.ImageScale), (int)(evt.Scanline * 2 * this.ImageScale)));
 
 			Form parentForm = this.FindForm();
-			Point location = parentForm.PointToClient(this.PointToScreen(new Point(e.Location.X - picViewer.ScrollOffsets.X, e.Location.Y - picViewer.ScrollOffsets.Y)));
+			Point location = parentForm.PointToClient(Control.MousePosition);
 			BaseForm.GetPopupTooltip(parentForm).SetTooltip(location, values);
 		}
 
