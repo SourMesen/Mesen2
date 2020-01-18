@@ -163,19 +163,44 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		private void picPicture_MouseMove(object sender, MouseEventArgs e)
+		private DebugEventInfo? GetEventAtPosition(Point location)
 		{
-			Point pos = GetHClockAndScanline(e.Location);
-			if(_lastPos == pos) {
-				return;
-			}
+			Point pos = GetHClockAndScanline(location);
 
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
 			DebugEventInfo evt = new DebugEventInfo();
 			DebugApi.GetEventViewerEvent(ref evt, (UInt16)pos.Y, (UInt16)pos.X, options);
 			if(evt.ProgramCounter == 0xFFFFFFFF) {
+				int[] xOffsets = new int[] { 0, 2, -2, 4, -4, 6 };
+				int[] yOffsets = new int[] { 0, -1, 1 };
+
+				//Check for other events near the current mouse position
+				for(int j = 0; j < yOffsets.Length; j++) {
+					for(int i = 0; i < xOffsets.Length; i++) {
+						DebugApi.GetEventViewerEvent(ref evt, (UInt16)(pos.Y + yOffsets[j]), (UInt16)(pos.X + xOffsets[i]), options);
+						if(evt.ProgramCounter != 0xFFFFFFFF) {
+							return evt;
+						}
+					}
+				}
+				return null;
+			} else {
+				return evt;
+			}
+		}
+
+		private void picPicture_MouseMove(object sender, MouseEventArgs e)
+		{
+			DebugEventInfo? result = GetEventAtPosition(e.Location);
+			if(result == null) {
 				ResetTooltip();
 				UpdateOverlay(e.Location);
+				return;
+			}
+
+			DebugEventInfo evt = result.Value;
+			Point newPos = new Point(evt.Cycle, evt.Scanline);
+			if(_lastPos == newPos) {
 				return;
 			}
 
