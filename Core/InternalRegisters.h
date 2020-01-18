@@ -22,7 +22,7 @@ private:
 	InternalRegisterState _state;
 	bool _nmiFlag = false;
 	bool _irqLevel = false;
-	bool _needIrq = false;
+	uint8_t _needIrq = 0;
 	bool _irqFlag = false;
 	
 	void SetIrqFlag(bool irqFlag);
@@ -59,9 +59,11 @@ public:
 
 void InternalRegisters::ProcessIrqCounters()
 {
-	if(_needIrq) {
-		_needIrq = false;
-		SetIrqFlag(true);
+	if(_needIrq > 0) {
+		_needIrq--;
+		if(_needIrq == 0) {
+			SetIrqFlag(true);
+		}
 	}
 
 	bool irqLevel = (
@@ -71,7 +73,8 @@ void InternalRegisters::ProcessIrqCounters()
 	);
 
 	if(!_irqLevel && irqLevel) {
-		_needIrq = true;
+		//Trigger IRQ signal 16 master clocks later
+		_needIrq = 4;
 	}
 	_irqLevel = irqLevel;
 }

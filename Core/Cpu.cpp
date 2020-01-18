@@ -38,6 +38,7 @@ void Cpu::Exec()
 			Idle();
 			if(_state.IrqSource || _state.NeedNmi) {
 				Idle();
+				Idle();
 				_state.StopState = CpuStopState::Running;
 			}
 			break;

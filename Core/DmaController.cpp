@@ -318,8 +318,10 @@ void DmaController::UpdateNeedToProcessFlag()
 
 void DmaController::BeginHdmaTransfer()
 {
-	_hdmaPending = true;
-	UpdateNeedToProcessFlag();
+	if(_hdmaChannels) {
+		_hdmaPending = true;
+		UpdateNeedToProcessFlag();
+	}
 }
 
 void DmaController::BeginHdmaInit()
