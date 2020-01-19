@@ -57,11 +57,12 @@ vector<string> FolderUtilities::GetKnownGameFolders()
 	return _gameFolders;
 }
 
-void FolderUtilities::SetFolderOverrides(string saveFolder, string saveStateFolder, string screenshotFolder)
+void FolderUtilities::SetFolderOverrides(string saveFolder, string saveStateFolder, string screenshotFolder, string firmwareFolder)
 {
 	_saveFolderOverride = saveFolder;
 	_saveStateFolderOverride = saveStateFolder;
 	_screenshotFolderOverride = screenshotFolder;
+	_firmwareFolderOverride = firmwareFolder;
 }
 
 string FolderUtilities::GetSaveFolder()

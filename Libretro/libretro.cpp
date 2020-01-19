@@ -572,7 +572,7 @@ extern "C" {
 		//Expect the following structure:
 		// /saves/*.sav
 		FolderUtilities::SetHomeFolder(systemFolder);
-		FolderUtilities::SetFolderOverrides(saveFolder, "", "");
+		FolderUtilities::SetFolderOverrides(saveFolder, "", "", systemFolder);
 
 		update_settings();
 

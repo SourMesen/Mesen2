@@ -17,7 +17,7 @@ public:
 	static void SetHomeFolder(string homeFolder);
 	static string GetHomeFolder();
 
-	static void SetFolderOverrides(string saveFolder, string saveStateFolder, string screenshotFolder);
+	static void SetFolderOverrides(string saveFolder, string saveStateFolder, string screenshotFolder, string firmwareFolder);
 
 	static void AddKnownGameFolder(string gameFolder);
 	static vector<string> GetKnownGameFolders();

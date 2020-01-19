@@ -126,7 +126,8 @@ void EmuSettings::SetPreferences(PreferencesConfig config)
 	FolderUtilities::SetFolderOverrides(
 		_saveFolder,
 		_saveStateFolder,
-		_screenshotFolder
+		_screenshotFolder,
+		""
 	);
 
 	_preferences = config;
