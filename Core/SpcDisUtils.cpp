@@ -7,7 +7,9 @@
 #include "../Utilities/FastString.h"
 #include "../Utilities/HexUtilities.h"
 
-/*constexpr const char* _opTemplate[256] = {
+bool SpcDisUtils::UseAltSpcOpNames = false;
+
+constexpr const char* _altOpTemplate[256] = {
 	"NOP",	"TCALL 0",	"SET1 d.0",	"BBS d.0, q",	"OR A, d",		"OR A, !a",		"OR A, (X)",	"OR A, [d+X]",		"OR A, #i",		"OR t, s",		"OR1 C, m.b",	"ASL d",			"ASL !a",	"PUSH PSW",	"TSET1 !a",		"BRK",
 	"BPL r",	"TCALL 1",	"CLR1 d.0",	"BBC d.0, q",	"OR A, d+X",	"OR A, !a+X",	"OR A, !a+Y",	"OR A, [d]+Y",		"OR e, #i",		"OR (X), (Y)",	"DECW d",		"ASL d+X",		"ASL A",		"DEC X",		"CMP X, !a",	"JMP [!a+X]",
 	"CLRP",	"TCALL 2",	"SET1 d.1",	"BBS d.1, q",	"AND A, d",		"AND A, !a",	"AND A, (X)",	"AND A, [d+X]",	"AND A, #i",	"AND t, s",		"OR1 C, /m.b",	"ROL d",			"ROL !a",	"PUSH A",	"CBNE d, q",	"BRA r",
@@ -24,7 +26,7 @@
 	"BNE r",	"TCALL 13",	"CLR1 d.6",	"BBC d.6, q",	"MOV d+X, A",	"MOV !a+X, A",	"MOV !a+Y, A",	"MOV [d]+Y, A",	"MOV e, X",		"MOV d+Y, X",	"MOVW d, YA",	"MOV d+X, Y",	"DEC Y",		"MOV A, Y",	"CBNE d+X, q",	"DAA A",
 	"CLRV",	"TCALL 14",	"SET1 d.7",	"BBS d.7, q",	"MOV A, d",		"MOV A, !a",	"MOV A, (X)",	"MOV A, [d+X]",	"MOV A, #i",	"MOV X, !a",	"NOT1 m.b",		"MOV Y, d",		"MOV Y, !a","NOTC",		"POP Y",			"SLEEP",
 	"BEQ r",	"TCALL 15",	"CLR1 d.7",	"BBC d.7, q",	"MOV A, d+X",	"MOV A, !a+X",	"MOV A, !a+Y",	"MOV A, [d]+Y",	"MOV X, d",		"MOV X, d+Y",	"MOV t, s",		"MOV Y, d+X",	"INC Y",		"MOV Y, A",	"DBNZ Y, q",	"STOP"
-};*/
+};
 
 constexpr const char* _opTemplate[256] = {
 	"NOP",	"JST0",	"SET1 d.0",	"BBS d.0, q",	"ORA d",		"ORA a",		"ORA (X)",	"ORA [d,X]",	"ORA #i",		"OR t, s",		"ORC m.b",		"ASL d",		"ASL a",	"PHP",	"SET1 a",		"BRK",
@@ -42,7 +44,7 @@ constexpr const char* _opTemplate[256] = {
 	"SEI",	"JSTC",	"SET1 d.6",	"BBS d.6, q",	"STA d",		"STA a",		"STA (X)",	"STA [d,X]",	"CPX #i",		"STX a",			"STC m.b",		"STY d",		"STY a",	"LDX #i","PLX",			"MUL YA",
 	"BNE r",	"JSTD",	"CLR1 d.6",	"BBC d.6, q",	"STA d,X",	"STA a,X",	"STA a,Y",	"STA [d],Y",	"STX d",			"STX d,Y",		"STW d",			"STY d,X",	"DEY",	"TYA",	"CBNE d,X, q",	"DAA A",
 	"CLV",	"JSTE",	"SET1 d.7",	"BBS d.7, q",	"LDA d",		"LDA a",		"LDA (X)",	"LDA [d,X]",	"LDA #i",		"LDX a",			"NOT m.b",		"LDY d",		"LDY a",	"NOTC",	"PLY",			"WAI",
-	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7, q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",			"LDX d,Y",		"MOV t,s",		"LDY d,X",	"INC Y",	"TAY",	"DBNZ Y, r",	"HLT"
+	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7, q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",			"LDX d,Y",		"MOV t,s",		"LDY d,X",	"INC Y",	"TAY",	"DBNZ Y, r",	"STP"
 };
 
 constexpr const uint8_t _opSize[256] = {
@@ -99,7 +101,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	};
 
 	uint8_t* byteCode = info.GetByteCode();
-	const char* op = _opTemplate[byteCode[0]];
+	const char* op = SpcDisUtils::UseAltSpcOpNames ? _altOpTemplate[byteCode[0]] : _opTemplate[byteCode[0]];
 	int i = 0;
 	while(op[i]) {
 		switch(op[i]) {

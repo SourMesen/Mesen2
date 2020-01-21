@@ -44,6 +44,8 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 	MemoryOperationInfo operation { addr, value, type };
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		BreakSource breakSource = BreakSource::Unspecified;
+
 		SpcState spcState = _spc->GetState();
 
 		if(_traceLogger->IsCpuLogged(CpuType::Spc) || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
@@ -78,6 +80,17 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 
 		if(_step->StepCount > 0) {
 			_step->StepCount--;
+		}
+
+		if(_settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
+			//Break on BRK/STP
+			if(value == 0x0F && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+				breakSource = BreakSource::BreakOnBrk;
+				_step->StepCount = 0;
+			} else if(value == 0xFF && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
+				breakSource = BreakSource::BreakOnStp;
+				_step->StepCount = 0;
+			}
 		}
 	}
 

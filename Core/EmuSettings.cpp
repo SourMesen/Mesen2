@@ -4,6 +4,7 @@
 #include "KeyManager.h"
 #include "MessageManager.h"
 #include "Console.h"
+#include "SpcDisUtils.h"
 #include "NotificationManager.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -276,6 +277,10 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 		if((_debuggerFlags & (int)flag) != 0) {
 			_debuggerFlags &= ~(int)flag;
 		}
+	}
+
+	if(flag == DebuggerFlags::UseAltSpcOpNames) {
+		SpcDisUtils::UseAltSpcOpNames = enabled;
 	}
 }
 

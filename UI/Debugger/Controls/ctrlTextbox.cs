@@ -442,7 +442,7 @@ namespace Mesen.GUI.Debugger.Controls
 			return false;
 		}
 
-		char[] _wordDelimiters = new char[] { ' ', ',', '|', ';', '(', ')', '.', '-', ':', '<', '>', '#', '*', '/', '&', '[', ']', '~', '%' };
+		char[] _wordDelimiters = new char[] { ' ', ',', '|', ';', '(', ')', '.', '-', ':', '<', '>', '#', '*', '/', '&', '[', ']', '~', '%', '!' };
 		public string GetWordUnderLocation(Point position)
 		{
 			int charIndex; 

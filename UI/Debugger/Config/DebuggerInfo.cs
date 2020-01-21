@@ -33,6 +33,8 @@ namespace Mesen.GUI.Config
 		public CodeDisplayMode UnidentifiedBlockDisplay = CodeDisplayMode.Hide;
 		public CodeDisplayMode VerifiedDataDisplay = CodeDisplayMode.Hide;
 
+		public bool UseAltSpcOpNames = false;
+
 		public int BreakOnValue = 0;
 		public int BreakInCount = 1;
 		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
@@ -75,6 +77,8 @@ namespace Mesen.GUI.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Show);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Disassemble);
+
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseAltSpcOpNames, UseAltSpcOpNames);
 		}
 	}
 	

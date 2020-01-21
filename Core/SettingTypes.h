@@ -477,6 +477,8 @@ enum class DebuggerFlags : uint32_t
 	
 	ShowUnidentifiedData = 0x400,
 	DisassembleUnidentifiedData = 0x800,
+	
+	UseAltSpcOpNames = 0x1000,
 
 	GsuDebuggerEnabled = 0x10000000,
 	Sa1DebuggerEnabled = 0x20000000,

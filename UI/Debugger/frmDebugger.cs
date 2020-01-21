@@ -44,6 +44,8 @@ namespace Mesen.GUI.Debugger
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
+			mnuUseAltSpcOpNames.Visible = false;
+
 			switch(_cpuType) {
 				case CpuType.Cpu:
 					ctrlDisassemblyView.Initialize(new CpuDisassemblyManager(), new CpuLineStyleProvider());
@@ -54,6 +56,11 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Spc:
 					ctrlDisassemblyView.Initialize(new SpcDisassemblyManager(), new SpcLineStyleProvider());
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.SpcDebuggerEnabled, true);
+					mnuBreakOnWdm.Visible = false;
+					mnuBreakOnCop.Visible = false;
+					mnuBreakOnUnitRead.Visible = false;
+					sepBreakOnUnitRead.Visible = false;
+					mnuUseAltSpcOpNames.Visible = true;
 					this.Text = "SPC Debugger";
 					break;
 
@@ -73,6 +80,13 @@ namespace Mesen.GUI.Debugger
 					mnuStepOut.Visible = false;
 					mnuStepInto.Text = "Step";
 					tlpBottomPanel.ColumnCount = 2;
+					
+					mnuBreakOnWdm.Visible = false;
+					mnuBreakOnCop.Visible = false;
+					mnuBreakOnStp.Visible = false;
+					mnuBreakOnBrk.Visible = false;
+					sepBreakOnUnitRead.Visible = false;
+					mnuBreakOnUnitRead.Visible = false;
 					break;
 			}
 
@@ -282,8 +296,14 @@ namespace Mesen.GUI.Debugger
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			_entityBinder.Entity = cfg;
 			_entityBinder.AddBinding(nameof(cfg.ShowByteCode), mnuShowByteCode);
+			_entityBinder.AddBinding(nameof(cfg.UseAltSpcOpNames), mnuUseAltSpcOpNames);
 
 			mnuShowByteCode.CheckedChanged += (s, e) => { ctrlDisassemblyView.CodeViewer.ShowContentNotes = mnuShowByteCode.Checked; };
+			mnuUseAltSpcOpNames.CheckedChanged += (s, e) => {
+				_entityBinder.UpdateObject();
+				cfg.ApplyConfig();
+				RefreshDisassembly();
+			};
 
 			_entityBinder.UpdateUI();
 
