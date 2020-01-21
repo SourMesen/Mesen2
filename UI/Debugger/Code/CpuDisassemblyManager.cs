@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Mesen.GUI.Debugger.Integration.DbgImporter;
 
 namespace Mesen.GUI.Debugger.Code
 {
 	public class CpuDisassemblyManager : IDisassemblyManager
 	{
 		protected ICodeDataProvider _provider;
-		private DbgImporter _symbolProvider;
+		private ISymbolProvider _symbolProvider;
 
 		public ICodeDataProvider Provider { get { return this._provider; } }
 
@@ -23,13 +22,13 @@ namespace Mesen.GUI.Debugger.Code
 		public virtual int ByteCodeSize { get { return 4; } }
 		public virtual bool AllowSourceView { get { return true; } }
 
-		public virtual void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file)
+		public virtual void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file)
 		{
 			_symbolProvider = symbolProvider;
 			if(file == null) {
 				this._provider = new CodeDataProvider(CpuType.Cpu);
 			} else {
-				this._provider = new DbgCodeDataProvider(CpuType.Cpu, symbolProvider, file);
+				this._provider = new SymbolCodeDataProvider(CpuType.Cpu, symbolProvider, file);
 			}
 		}
 
@@ -60,7 +59,7 @@ namespace Mesen.GUI.Debugger.Code
 				word = word.Substring(0, arraySeparatorIndex);
 			}
 
-			if(_provider is DbgCodeDataProvider && _symbolProvider != null) {
+			if(_provider is SymbolCodeDataProvider && _symbolProvider != null) {
 				int rangeStart, rangeEnd;
 				GetSymbolByteRange(lineIndex, out rangeStart, out rangeEnd);
 				location.Symbol = _symbolProvider.GetSymbol(word, rangeStart, rangeEnd);

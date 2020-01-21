@@ -16,7 +16,7 @@ namespace Mesen.GUI.Debugger.Code
 		public override int ByteCodeSize { get { return 3; } }
 		public override bool AllowSourceView { get { return false; } }
 
-		public override void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file)
+		public override void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file)
 		{
 			this._provider = new CodeDataProvider(CpuType.Spc);
 		}

@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Debugger.Code
 {
-	public class DbgCodeDataProvider : ICodeDataProvider
+	public class SymbolCodeDataProvider : ICodeDataProvider
 	{
 		//private byte[] _prgRom;
 		private int _lineCount;
-		private DbgImporter.FileInfo _file;
+		private SourceFileInfo _file;
 		private CpuType _type;
 		private bool _isC;
-		private DbgImporter _symbolProvider;
+		private ISymbolProvider _symbolProvider;
 
-		public DbgCodeDataProvider(CpuType type, DbgImporter symbolProvider, DbgImporter.FileInfo file)
+		public SymbolCodeDataProvider(CpuType type, ISymbolProvider symbolProvider, SourceFileInfo file)
 		{
 			//_prgRom = DebugApi.GetMemoryState(SnesMemoryType.PrgRom);
 			_type = type;
@@ -31,7 +31,7 @@ namespace Mesen.GUI.Debugger.Code
 
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
-			int prgAddress = _symbolProvider.GetPrgAddress(_file.ID, lineIndex);
+			int prgAddress = _symbolProvider.GetPrgAddress(_file, lineIndex);
 
 			CodeLineData data = new CodeLineData(_type) {
 				Address = GetLineAddress(lineIndex),
@@ -75,7 +75,7 @@ namespace Mesen.GUI.Debugger.Code
 		public int GetLineAddress(int lineIndex)
 		{
 			AddressInfo absAddress = new AddressInfo() {
-				Address = _symbolProvider.GetPrgAddress(_file.ID, lineIndex),
+				Address = _symbolProvider.GetPrgAddress(_file, lineIndex),
 				Type = SnesMemoryType.PrgRom
 			};
 			return DebugApi.GetRelativeAddress(absAddress).Address;
@@ -90,7 +90,7 @@ namespace Mesen.GUI.Debugger.Code
 		{
 			int absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)cpuAddress, Type = SnesMemoryType.CpuMemory }).Address;
 			for(int i = 0; i < _lineCount; i++) {
-				if(_symbolProvider.GetPrgAddress(_file.ID, i) == absAddress) {
+				if(_symbolProvider.GetPrgAddress(_file, i) == absAddress) {
 					return i;
 				}
 			}

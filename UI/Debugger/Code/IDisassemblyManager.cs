@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Mesen.GUI.Debugger.Integration.DbgImporter;
 
 namespace Mesen.GUI.Debugger.Code
 {
@@ -20,7 +19,7 @@ namespace Mesen.GUI.Debugger.Code
 		int ByteCodeSize { get; }
 		bool AllowSourceView { get; }
 
-		void RefreshCode(DbgImporter symbolProvider, DbgImporter.FileInfo file);
+		void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file);
 
 		Dictionary<string, string> GetTooltipData(string word, int lineIndex);
 		LocationInfo GetLocationInfo(string lastWord, int lineIndex);
@@ -30,7 +29,7 @@ namespace Mesen.GUI.Debugger.Code
 	{
 		public int Address;
 		public CodeLabel Label;
-		public SymbolInfo Symbol;
+		public SourceSymbol Symbol;
 
 		public int? ArrayIndex = null;
 	}

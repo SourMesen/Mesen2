@@ -13,7 +13,6 @@ using Mesen.GUI.Debugger.Code;
 using Mesen.GUI.Debugger.Labels;
 using Mesen.GUI.Debugger.Integration;
 using Mesen.GUI.Debugger.Workspace;
-using static Mesen.GUI.Debugger.Integration.DbgImporter;
 using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Debugger.Controls
@@ -22,7 +21,7 @@ namespace Mesen.GUI.Debugger.Controls
 	{
 		private BaseStyleProvider _styleProvider;
 		private IDisassemblyManager _manager;
-		private DbgImporter _symbolProvider;
+		private ISymbolProvider _symbolProvider;
 		private bool _inSourceView = false;
 
 		public ctrlDisassemblyView()
@@ -47,7 +46,7 @@ namespace Mesen.GUI.Debugger.Controls
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
 		}
 
-		private void DebugWorkspaceManager_SymbolProviderChanged(DbgImporter symbolProvider)
+		private void DebugWorkspaceManager_SymbolProviderChanged(ISymbolProvider symbolProvider)
 		{
 			_symbolProvider = symbolProvider;
 
@@ -84,7 +83,7 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.AddressSize = manager.AddressSize;
 
 			UpdateSourceFileDropdown();
-			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as DbgImporter.FileInfo : null);
+			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as SourceFileInfo : null);
 		}
 
 		private void UpdateSourceFileDropdown()
@@ -100,7 +99,7 @@ namespace Mesen.GUI.Debugger.Controls
 				cboSourceFile.Items.Clear();
 				cboSourceFile.Sorted = false;
 				if(_symbolProvider != null) {
-					foreach(DbgImporter.FileInfo file in _symbolProvider.Files.Values) {
+					foreach(SourceFileInfo file in _symbolProvider.SourceFiles) {
 						if(file.Data != null && file.Data.Length > 0 && !file.Name.ToLower().EndsWith(".chr")) {
 							cboSourceFile.Items.Add(file);
 						}
@@ -158,16 +157,16 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.Invalidate();
 		}
 
-		public void ScrollToSymbol(SymbolInfo symbol)
+		public void ScrollToSymbol(SourceSymbol symbol)
 		{
 			if(!_inSourceView) {
 				ToggleView();
 			}
 
-			ReferenceInfo definition = _symbolProvider?.GetSymbolDefinition(symbol);
+			SourceCodeLocation definition = _symbolProvider?.GetSymbolDefinition(symbol);
 			if(definition != null) {
-				foreach(DbgImporter.FileInfo fileInfo in cboSourceFile.Items) {
-					if(fileInfo.Name == definition.FileName) {
+				foreach(SourceFileInfo fileInfo in cboSourceFile.Items) {
+					if(fileInfo == definition.File) {
 						cboSourceFile.SelectedItem = fileInfo;
 						ctrlCode.ScrollToLineIndex(definition.LineNumber);
 						return;
@@ -181,10 +180,10 @@ namespace Mesen.GUI.Debugger.Controls
 			if(_inSourceView) {
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)address, Type = SnesMemoryType.CpuMemory });
 				if(absAddress.Address >= 0 && absAddress.Type == SnesMemoryType.PrgRom) {
-					LineInfo line = _symbolProvider?.GetSourceCodeLineInfo(absAddress.Address);
+					SourceCodeLocation line = _symbolProvider?.GetSourceCodeLineInfo(absAddress.Address);
 					if(line != null) {
-						foreach(DbgImporter.FileInfo fileInfo in cboSourceFile.Items) {
-							if(fileInfo.ID == line.FileID) {
+						foreach(SourceFileInfo fileInfo in cboSourceFile.Items) {
+							if(line.File == fileInfo) {
 								cboSourceFile.SelectedItem = fileInfo;
 								ctrlCode.ScrollToLineIndex(line.LineNumber);
 								return;
@@ -209,7 +208,7 @@ namespace Mesen.GUI.Debugger.Controls
 				scrollOffset++;
 			} while(centerLineAddress < 0 && centerLineIndex > 0);
 
-			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as DbgImporter.FileInfo : null);
+			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as SourceFileInfo : null);
 			ctrlCode.DataProvider = _manager.Provider;
 
 			if(centerLineAddress >= 0) {

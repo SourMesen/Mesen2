@@ -13,10 +13,10 @@ namespace Mesen.GUI.Debugger.Workspace
 {
 	public class DebugWorkspaceManager
 	{
-		public delegate void SymbolProviderChangedHandler(DbgImporter symbolProvider);
+		public delegate void SymbolProviderChangedHandler(ISymbolProvider symbolProvider);
 		public static event SymbolProviderChangedHandler SymbolProviderChanged;
 		private static DebugWorkspace _workspace;
-		private static DbgImporter _symbolProvider;
+		private static ISymbolProvider _symbolProvider;
 		private static string _romName;
 		private static object _lock = new object();
 
@@ -113,7 +113,7 @@ namespace Mesen.GUI.Debugger.Workspace
 				string dbgPath = Path.Combine(((ResourcePath)romInfo.RomPath).Folder, romInfo.GetRomName() + ".dbg");
 				if(File.Exists(dbgPath)) {
 					_symbolProvider = new DbgImporter();
-					_symbolProvider.Import(dbgPath, true);
+					(_symbolProvider as DbgImporter).Import(dbgPath, true);
 					SymbolProviderChanged?.Invoke(_symbolProvider);
 					LabelManager.RefreshLabels();
 				}
@@ -122,7 +122,7 @@ namespace Mesen.GUI.Debugger.Workspace
 			SymbolProviderChanged?.Invoke(_symbolProvider);
 		}
 
-		public static DbgImporter GetSymbolProvider()
+		public static ISymbolProvider GetSymbolProvider()
 		{
 			return _symbolProvider;
 		}

@@ -14,7 +14,7 @@ using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Debugger.Integration
 {
-	public class DbgImporter
+	public class DbgImporter : ISymbolProvider
 	{
 		private int _headerSize = 0;
 
@@ -25,6 +25,9 @@ namespace Mesen.GUI.Debugger.Integration
 		private Dictionary<int, ScopeInfo> _scopes = new Dictionary<int, ScopeInfo>();
 		private Dictionary<int, SymbolInfo> _symbols = new Dictionary<int, SymbolInfo>();
 		private Dictionary<int, CSymbolInfo> _cSymbols = new Dictionary<int, CSymbolInfo>();
+		
+		private List<SourceSymbol> _sourceSymbols = new List<SourceSymbol>();
+		private List<SourceFileInfo> _sourceFiles = new List<SourceFileInfo>();
 
 		private HashSet<int> _usedFileIds = new HashSet<int>();
 		private HashSet<string> _usedLabels = new HashSet<string>();
@@ -51,18 +54,23 @@ namespace Mesen.GUI.Debugger.Integration
 		private static Regex _cFirstLineRegex = new Regex("(.*)", RegexOptions.Compiled);
 		private static Regex _cPreviousLinesRegex = new Regex("^\\s*//(.*)", RegexOptions.Compiled);
 
-		private Dictionary<int, LineInfo> _linesByPrgAddress = new Dictionary<int, LineInfo>();
+		private Dictionary<int, SourceCodeLocation> _linesByPrgAddress = new Dictionary<int, SourceCodeLocation>();
 		private Dictionary<int, LineInfo[]> _linesByFile = new Dictionary<int, LineInfo[]>();
 		private Dictionary<string, int> _prgAddressByLine = new Dictionary<string, int>();
 
 		private Dictionary<int, ScopeInfo> _scopesBySymbol = new Dictionary<int, ScopeInfo>();
 
-		public Dictionary<int, FileInfo> Files { get { return _files; } }
+		public DateTime SymbolFileStamp { get; private set; }
+		public string SymbolPath { get; private set; }
 
-		public DateTime DbgFileStamp { get; private set; }
-		public string DbgPath { get; private set; }
+		public List<SourceFileInfo> SourceFiles { get { return _sourceFiles; } }
 
-		public int GetPrgAddress(int fileID, int lineIndex)
+		public int GetPrgAddress(SourceFileInfo file, int lineIndex)
+		{
+			return GetPrgAddress((file.InternalFile as FileInfo).ID, lineIndex);
+		}
+
+		private int GetPrgAddress(int fileID, int lineIndex)
 		{
 			int prgAddress;
 			if(_prgAddressByLine.TryGetValue(fileID.ToString() + "_" + lineIndex.ToString(), out prgAddress)) {
@@ -82,9 +90,9 @@ namespace Mesen.GUI.Debugger.Integration
 			return -1;
 		}
 
-		public LineInfo GetSourceCodeLineInfo(int prgRomAddress)
+		public SourceCodeLocation GetSourceCodeLineInfo(int prgRomAddress)
 		{
-			LineInfo line;
+			SourceCodeLocation line;
 			if(_linesByPrgAddress.TryGetValue(prgRomAddress, out line)) {
 				return line;
 			}
@@ -95,14 +103,14 @@ namespace Mesen.GUI.Debugger.Integration
 		{
 			if(prgRomAddress >= 0) {
 				try {
-					LineInfo line;
+					SourceCodeLocation line;
 					if(_linesByPrgAddress.TryGetValue(prgRomAddress, out line)) {
 						string output = "";
-						FileInfo file = _files[line.FileID];
+						SourceFileInfo file = line.File;
 						if(file.Data == null) {
 							return string.Empty;
 						}
-						
+
 						output += file.Data[line.LineNumber];
 						return output;
 					}
@@ -111,7 +119,7 @@ namespace Mesen.GUI.Debugger.Integration
 			return null;
 		}
 
-		private ReferenceInfo GetReferenceInfo(int referenceId)
+		private SourceCodeLocation GetReferenceInfo(int referenceId)
 		{
 			FileInfo file;
 			LineInfo line;
@@ -121,20 +129,19 @@ namespace Mesen.GUI.Debugger.Integration
 					lineContent = file.Data[line.LineNumber];
 				}
 
-				return new ReferenceInfo() {
-					FileName = _files[line.FileID].Name,
-					LineNumber = line.LineNumber,
-					LineContent = lineContent
+				return new SourceCodeLocation() {
+					File = _files[line.FileID].SourceFile,
+					LineNumber = line.LineNumber
 				};
 			}
 
 			return null;
 		}
 
-		public ReferenceInfo GetSymbolDefinition(SymbolInfo symbol)
+		public SourceCodeLocation GetSymbolDefinition(SourceSymbol symbol)
 		{
-			foreach(int definition in symbol.Definitions) {
-				ReferenceInfo refInfo = GetReferenceInfo(definition);
+			foreach(int definition in (symbol.InternalSymbol as SymbolInfo).Definitions) {
+				SourceCodeLocation refInfo = GetReferenceInfo(definition);
 
 				if(refInfo != null) {
 					return refInfo;
@@ -143,12 +150,12 @@ namespace Mesen.GUI.Debugger.Integration
 
 			return null;
 		}
-		
-		public List<ReferenceInfo> GetSymbolReferences(SymbolInfo symbol)
+
+		private List<SourceCodeLocation> GetSymbolReferences(SymbolInfo symbol)
 		{
-			List<ReferenceInfo> references = new List<ReferenceInfo>();
+			List<SourceCodeLocation> references = new List<SourceCodeLocation>();
 			foreach(int reference in symbol.References) {
-				ReferenceInfo refInfo = GetReferenceInfo(reference);
+				SourceCodeLocation refInfo = GetReferenceInfo(reference);
 				if(refInfo != null) {
 					references.Add(refInfo);
 				}
@@ -212,19 +219,19 @@ namespace Mesen.GUI.Debugger.Integration
 			return null;
 		}
 
-		internal List<SymbolInfo> GetSymbols()
+		private List<SymbolInfo> GetSymbols()
 		{
 			return _symbols.Values.ToList();
 		}
 
-		internal SymbolInfo GetSymbol(string word, int prgStartAddress, int prgEndAddress)
+		public SourceSymbol GetSymbol(string word, int prgStartAddress, int prgEndAddress)
 		{
 			try {
 				foreach(CSymbolInfo symbol in _cSymbols.Values) {
 					if(symbol.Name == word && symbol.SymbolID.HasValue) {
 						SymbolInfo matchingSymbol = GetMatchingSymbol(_symbols[symbol.SymbolID.Value], prgStartAddress, prgEndAddress);
 						if(matchingSymbol != null) {
-							return matchingSymbol;
+							return matchingSymbol.SourceSymbol;
 						}
 					}
 				}
@@ -233,7 +240,7 @@ namespace Mesen.GUI.Debugger.Integration
 					if(symbol.Name == word) {
 						SymbolInfo matchingSymbol = GetMatchingSymbol(symbol, prgStartAddress, prgEndAddress);
 						if(matchingSymbol != null) {
-							return matchingSymbol;
+							return matchingSymbol.SourceSymbol;
 						}
 					}
 				}
@@ -242,7 +249,12 @@ namespace Mesen.GUI.Debugger.Integration
 			return null;
 		}
 
-		public AddressInfo? GetSymbolAddressInfo(SymbolInfo symbol)
+		public AddressInfo? GetSymbolAddressInfo(SourceSymbol symbol)
+		{
+			return GetSymbolAddressInfo(symbol.InternalSymbol as SymbolInfo);
+		}
+
+		private AddressInfo? GetSymbolAddressInfo(SymbolInfo symbol)
 		{
 			if(symbol.SegmentID == null || symbol.Address == null) {
 				return null;
@@ -313,6 +325,9 @@ namespace Mesen.GUI.Debugger.Integration
 					IsAssembly = isAsm
 				};
 
+				file.SourceFile = new SourceFileInfo() { Name = file.Name, InternalFile = file };
+				_sourceFiles.Add(file.SourceFile);
+
 				_files.Add(file.ID, file);
 				return true;
 			} else if(row.StartsWith("file")) {
@@ -333,6 +348,11 @@ namespace Mesen.GUI.Debugger.Integration
 					Type = match.Groups[5].Success ? (LineType)Int32.Parse(match.Groups[5].Value) : LineType.Assembly,
 				};
 
+				line.Location = new SourceCodeLocation() {
+					File = _files[line.FileID].SourceFile,
+					LineNumber = line.LineNumber
+				};
+
 				if(line.LineNumber < 0) {
 					line.LineNumber = 0;
 				}
@@ -347,7 +367,7 @@ namespace Mesen.GUI.Debugger.Integration
 				} else {
 					line.SpanIDs = new List<int>();
 				}
-				
+
 				_usedFileIds.Add(line.FileID);
 				_lines.Add(line.ID, line);
 				return true;
@@ -378,7 +398,7 @@ namespace Mesen.GUI.Debugger.Integration
 
 			return false;
 		}
-		
+
 		private bool LoadCSymbols(string row)
 		{
 			Match match = _cSymbolRegex.Match(row);
@@ -448,6 +468,8 @@ namespace Mesen.GUI.Debugger.Integration
 					symbol.References = new List<int>();
 				}
 
+				symbol.SourceSymbol = new SourceSymbol() { Name = symbol.Name, InternalSymbol = symbol, Address = symbol.Address };
+
 				_symbols.Add(symbol.ID, symbol);
 				return true;
 			} else if(row.StartsWith("sym")) {
@@ -457,7 +479,7 @@ namespace Mesen.GUI.Debugger.Integration
 			return false;
 		}
 
-		public int GetSymbolSize(SymbolInfo symbol)
+		private int GetSymbolSize(SymbolInfo symbol)
 		{
 			if(symbol.SegmentID != null && _segments.ContainsKey(symbol.SegmentID.Value)) {
 				SegmentInfo segment = _segments[symbol.SegmentID.Value];
@@ -674,6 +696,7 @@ namespace Mesen.GUI.Debugger.Integration
 
 						if(File.Exists(sourceFile)) {
 							file.Data = File.ReadAllLines(sourceFile);
+							file.SourceFile.Data = file.Data;
 						}
 
 						LineInfo[] fileInfos = new LineInfo[maxLineCountByFile[file.ID] + 1];
@@ -710,7 +733,7 @@ namespace Mesen.GUI.Debugger.Integration
 							cdlFile[prgAddress + i] = (byte)CdlFlags.Data;
 						} else if(cdlFile[prgAddress + i] == 0) {
 							//Mark bytes as tentative data, until we know that the bytes are actually code
-							cdlFile[prgAddress + i] = 0x04; 
+							cdlFile[prgAddress + i] = 0x04;
 						}
 					}
 				}
@@ -761,11 +784,11 @@ namespace Mesen.GUI.Debugger.Integration
 
 		public void Import(string path, bool silent = false)
 		{
-			DbgFileStamp = File.GetLastWriteTime(path);
+			SymbolFileStamp = File.GetLastWriteTime(path);
 			string[] fileRows = File.ReadAllLines(path);
 
 			string basePath = Path.GetDirectoryName(path);
-			DbgPath = basePath;
+			SymbolPath = basePath;
 			foreach(string row in fileRows) {
 				try {
 					if(LoadLines(row) || LoadSpans(row) || LoadSymbols(row) || LoadCSymbols(row) || LoadScopes(row) || LoadFiles(row, basePath) || LoadSegments(row)) {
@@ -789,13 +812,13 @@ namespace Mesen.GUI.Debugger.Integration
 							for(int i = 0; i < span.Size; i++) {
 								int prgAddress = segment.FileOffset - _headerSize + span.Offset + i;
 
-								LineInfo existingLine;
+								/*SourceCodeLocation existingLine;
 								if(_linesByPrgAddress.TryGetValue(prgAddress, out existingLine) && existingLine.Type == LineType.External) {
 									//Give priority to lines that come from C files
 									continue;
-								}
+								}*/
 
-								_linesByPrgAddress[prgAddress] = line;
+								_linesByPrgAddress[prgAddress] = line.Location;
 								if(i == 0 && spanID == line.SpanIDs[0]) {
 									//Mark the first byte of the first span representing this line as the PRG address for this line of code
 									FileInfo file = _files[line.FileID];
@@ -837,7 +860,7 @@ namespace Mesen.GUI.Debugger.Integration
 				DebugWorkspaceManager.ResetLabels();
 			}
 			LabelManager.SetLabels(labels, true);
-			
+
 			if(!silent) {
 				if(_errorCount > 0) {
 					_errorCount -= _filesNotFound.Count;
@@ -868,26 +891,16 @@ namespace Mesen.GUI.Debugger.Integration
 			public bool IsSpc;
 		}
 
-		public class FileInfo
+		private class FileInfo
 		{
 			public int ID;
 			public string Name;
 			public string[] Data;
 			public bool IsAssembly;
-
-			public override string ToString()
-			{
-				string folderName = Path.GetDirectoryName(Name);
-				string fileName = Path.GetFileName(Name);
-				if(string.IsNullOrWhiteSpace(folderName)) {
-					return fileName;
-				} else {
-					return $"{fileName} ({folderName})";
-				}
-			}
+			public SourceFileInfo SourceFile;
 		}
 
-		public class LineInfo
+		private class LineInfo
 		{
 			public int ID;
 			public int FileID;
@@ -895,11 +908,13 @@ namespace Mesen.GUI.Debugger.Integration
 			public LineType Type;
 
 			public int LineNumber;
+
+			public SourceCodeLocation Location;
 		}
 
-		public enum LineType
+		private enum LineType
 		{
-			Assembly = 0, 
+			Assembly = 0,
 			External = 1, //i.e C source file
 			Macro = 2
 		}
@@ -913,7 +928,7 @@ namespace Mesen.GUI.Debugger.Integration
 			public bool IsData;
 		}
 
-		public class SymbolInfo
+		private class SymbolInfo
 		{
 			public int ID;
 			public string Name;
@@ -923,27 +938,22 @@ namespace Mesen.GUI.Debugger.Integration
 			public int? Size;
 			public List<int> References;
 			public List<int> Definitions;
+
+			public SourceSymbol SourceSymbol;
 		}
 
-		public class ScopeInfo
+		private class ScopeInfo
 		{
 			public int ID;
 			public string Name;
 			public int? SymbolID;
 		}
 
-		public class CSymbolInfo
+		private class CSymbolInfo
 		{
 			public int ID;
 			public string Name;
 			public int? SymbolID;
-		}
-
-		public class ReferenceInfo
-		{
-			public string FileName;
-			public int LineNumber;
-			public string LineContent;
 		}
 	}
 }

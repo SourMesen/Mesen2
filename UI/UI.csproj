@@ -259,7 +259,7 @@
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
     <Compile Include="Debugger\Code\Sa1LineStyleProvider.cs" />
-    <Compile Include="Debugger\Code\DbgCodeDataProvider.cs" />
+    <Compile Include="Debugger\Code\SymbolCodeDataProvider.cs" />
     <Compile Include="Debugger\Code\Sa1DisassemblyManager.cs" />
     <Compile Include="Debugger\Code\GsuDisassemblyManager.cs" />
     <Compile Include="Debugger\Code\GsuLineStyleProvider.cs" />
@@ -328,6 +328,7 @@
     <Compile Include="Debugger\Integration\frmIntegrationSettings.Designer.cs">
       <DependentUpon>frmIntegrationSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\Integration\ISymbolProvider.cs" />
     <Compile Include="Debugger\Labels\CodeLabel.cs" />
     <Compile Include="Debugger\Labels\ctrlLabelList.cs">
       <SubType>UserControl</SubType>
