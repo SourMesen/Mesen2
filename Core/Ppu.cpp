@@ -2075,16 +2075,25 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			}
 			break;
 
-		case 0x2133:
+		case 0x2133: {
 			//SETINI - Screen Mode/Video Select
 			//_externalSync = (value & 0x80) != 0;  //NOT USED
 			_state.ExtBgEnabled = (value & 0x40) != 0;
 			_state.HiResMode = (value & 0x08) != 0;
 			_state.OverscanMode = (value & 0x04) != 0;
 			_state.ObjInterlace = (value & 0x02) != 0;
-			_state.ScreenInterlace = (value & 0x01) != 0;
+
+			bool interlace = (value & 0x01) != 0;
+			if(_state.ScreenInterlace != interlace) {
+				_state.ScreenInterlace = interlace;
+				if(_scanline >= _vblankStartScanline && interlace) {
+					//Clear buffer when turning on interlace mode during vblank
+					memset(GetPreviousScreenBuffer(), 0, 512 * 478 * sizeof(uint16_t));
+				}
+			}
 			UpdateNmiScanline();
 			break;
+		}
 
 		default:
 			LogDebug("[Debug] Unimplemented register write: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
