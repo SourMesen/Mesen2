@@ -45,7 +45,7 @@ namespace Mesen.GUI.Debugger.Integration
 		private static Regex _lineRegex = new Regex("^line\tid=([0-9]+),.*file=([0-9]+),.*line=([0-9]+)(,.*type=([0-9]+)){0,1}(,.*span=([0-9+]+)){0,1}", RegexOptions.Compiled);
 		private static Regex _fileRegex = new Regex("^file\tid=([0-9]+),.*name=\"([^\"]+)\"", RegexOptions.Compiled);
 		private static Regex _spanRegex = new Regex("^span\tid=([0-9]+),.*seg=([0-9]+),.*start=([0-9]+),.*size=([0-9]+)(,.*type=([0-9]+)){0,1}", RegexOptions.Compiled);
-		private static Regex _scopeRegex = new Regex("^scope\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*sym=([0-9+]+)){0,1}", RegexOptions.Compiled);
+		private static Regex _scopeRegex = new Regex("^scope\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*sym=([0-9+]+)){0,1}(,.*span=([0-9+]+)){0,1}", RegexOptions.Compiled);
 		private static Regex _symbolRegex = new Regex("^sym\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*size=([0-9]+)){0,1}(,.*def=([0-9+]+)){0,1}(,.*ref=([0-9+]+)){0,1}(,.*val=0x([0-9a-fA-F]+)){0,1}(,.*seg=([0-9]+)){0,1}(,.*exp=([0-9]+)){0,1}", RegexOptions.Compiled);
 		private static Regex _cSymbolRegex = new Regex("^csym\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*sym=([0-9+]+)){0,1}", RegexOptions.Compiled);
 
@@ -57,6 +57,7 @@ namespace Mesen.GUI.Debugger.Integration
 		private Dictionary<int, SourceCodeLocation> _linesByPrgAddress = new Dictionary<int, SourceCodeLocation>();
 		private Dictionary<int, LineInfo[]> _linesByFile = new Dictionary<int, LineInfo[]>();
 		private Dictionary<string, int> _prgAddressByLine = new Dictionary<string, int>();
+		private HashSet<int> _scopeSpans = new HashSet<int>();
 
 		private Dictionary<int, ScopeInfo> _scopesBySymbol = new Dictionary<int, ScopeInfo>();
 
@@ -428,6 +429,13 @@ namespace Mesen.GUI.Debugger.Integration
 					SymbolID = match.Groups[4].Success ? (int?)Int32.Parse(match.Groups[4].Value) : null,
 				};
 
+				if(match.Groups[6].Success) {
+					scope.Spans = match.Groups[6].Value.Split('+').Select(o => Int32.Parse(o)).ToList();
+					scope.Spans.ForEach(id => _scopeSpans.Add(id));
+				} else {
+					scope.Spans = new List<int>();
+				}
+
 				if(scope.SymbolID.HasValue) {
 					_scopesBySymbol[scope.SymbolID.Value] = scope;
 				}
@@ -726,6 +734,11 @@ namespace Mesen.GUI.Debugger.Integration
 
 			//Mark data/code regions
 			foreach(SpanInfo span in _spans.Values) {
+				if(_scopeSpans.Contains(span.ID)) {
+					//Skip any span used by a scope, they don't correspond to an actual line of code
+					continue;
+				}
+
 				int prgAddress = GetPrgAddress(span);
 				if(prgAddress >= 0 && prgAddress < prgSize) {
 					for(int i = 0; i < span.Size; i++) {
@@ -974,6 +987,7 @@ namespace Mesen.GUI.Debugger.Integration
 			public int ID;
 			public string Name;
 			public int? SymbolID;
+			public List<int> Spans;
 		}
 
 		private class CSymbolInfo
