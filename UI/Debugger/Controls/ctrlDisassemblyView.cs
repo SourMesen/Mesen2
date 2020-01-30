@@ -139,8 +139,12 @@ namespace Mesen.GUI.Debugger.Controls
 		public void ToggleView()
 		{
 			_inSourceView = !_inSourceView;
+			int prgAddress = ctrlCode.CurrentLine;
 			UpdateSourceFileDropdown();
 			UpdateCode();
+			if(prgAddress >= 0) {
+				ScrollToAddress((uint)prgAddress);
+			}
 		}
 
 		public void SetActiveAddress(int? address)
