@@ -109,6 +109,11 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 		DisassemblyInfo &disInfo = (*src.Cache)[address];
 		if(!disInfo.IsInitialized() || !disInfo.IsValid(cpuFlags)) {
 			disInfo.Initialize(src.Data+address, cpuFlags, type);
+			for(int i = 1; i < disInfo.GetOpSize(); i++) {
+				//Clear any instructions that start in the middle of the once
+				//(can happen when resizing an instruction after X/M updates)
+				(*src.Cache)[address + i] = DisassemblyInfo();
+			}
 			needDisassemble = true;
 			returnSize += disInfo.GetOpSize();
 		} else {
