@@ -51,5 +51,6 @@ namespace Mesen.GUI.Debugger.Integration
 	{
 		public SourceFileInfo File;
 		public int LineNumber;
+		public object InternalLine;
 	}
 }

@@ -350,7 +350,8 @@ namespace Mesen.GUI.Debugger.Integration
 
 				line.Location = new SourceCodeLocation() {
 					File = _files[line.FileID].SourceFile,
-					LineNumber = line.LineNumber
+					LineNumber = line.LineNumber,
+					InternalLine = line
 				};
 
 				if(line.LineNumber < 0) {
@@ -838,11 +839,11 @@ namespace Mesen.GUI.Debugger.Integration
 							for(int i = 0; i < span.Size; i++) {
 								int prgAddress = segment.FileOffset - _headerSize + span.Offset + i;
 
-								/*SourceCodeLocation existingLine;
-								if(_linesByPrgAddress.TryGetValue(prgAddress, out existingLine) && existingLine.Type == LineType.External) {
+								SourceCodeLocation existingLine;
+								if(_linesByPrgAddress.TryGetValue(prgAddress, out existingLine) && (existingLine.InternalLine as LineInfo).Type == LineType.External) {
 									//Give priority to lines that come from C files
 									continue;
-								}*/
+								}
 
 								_linesByPrgAddress[prgAddress] = line.Location;
 								if(i == 0 && spanID == line.SpanIDs[0]) {
