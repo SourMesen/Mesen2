@@ -721,6 +721,7 @@ namespace Mesen.GUI.Debugger.Integration
 			}
 
 			byte[] cdlFile = new byte[prgSize];
+			byte[] prgRomContent = DebugApi.GetMemoryState(SnesMemoryType.PrgRom);
 
 			//Mark data/code regions
 			foreach(SpanInfo span in _spans.Values) {
@@ -729,6 +730,17 @@ namespace Mesen.GUI.Debugger.Integration
 					for(int i = 0; i < span.Size; i++) {
 						if(cdlFile[prgAddress + i] != (byte)CdlFlags.Data && !span.IsData && span.Size <= 4) {
 							cdlFile[prgAddress + i] = (byte)CdlFlags.Code;
+
+							byte opCode = prgRomContent[prgAddress];
+							if(span.Size == 2) {
+								if(IsVarWidthMemoryInstruction(opCode)) {
+									//8-bit immediate memory operation, set M flag
+									cdlFile[prgAddress + i] |= (byte)CdlFlags.MemoryMode8;
+								} else if(IsVarWidthIndexInstruction(opCode)) {
+									//8-bit immediate index operation, set X flag
+									cdlFile[prgAddress + i] |= (byte)CdlFlags.IndexMode8;
+								}
+							}
 						} else if(span.IsData) {
 							cdlFile[prgAddress + i] = (byte)CdlFlags.Data;
 						} else if(cdlFile[prgAddress + i] == 0) {
@@ -746,7 +758,6 @@ namespace Mesen.GUI.Debugger.Integration
 			}
 
 			//Find/identify functions and jump targets
-			byte[] prgRomContent = DebugApi.GetMemoryState(SnesMemoryType.PrgRom);
 			foreach(SymbolInfo symbol in _symbols.Values) {
 				LineInfo line;
 				if(!symbol.SegmentID.HasValue) {
@@ -757,11 +768,11 @@ namespace Mesen.GUI.Debugger.Integration
 				foreach(int reference in symbol.References) {
 					if(_lines.TryGetValue(reference, out line) && line.SpanIDs.Count > 0) {
 						SpanInfo span;
-						if(_spans.TryGetValue(line.SpanIDs[0], out span) && !span.IsData && span.Size <= 3) {
+						if(_spans.TryGetValue(line.SpanIDs[0], out span) && !span.IsData && span.Size <= 4) {
 							int referencePrgAddr = GetPrgAddress(span);
 							if(referencePrgAddr >= 0 && referencePrgAddr < prgRomContent.Length) {
 								byte opCode = prgRomContent[referencePrgAddr];
-								if(opCode == 0x20 || opCode == 0x10 || opCode == 0x30 || opCode == 0x50 || opCode == 0x70 || opCode == 0x80 || opCode == 0x90 || opCode == 0xB0 || opCode == 0xD0 || opCode == 0xF0 || opCode == 0x4C || opCode == 0x20 || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C) {
+								if(IsBranchInstruction(opCode)) {
 									//This symbol is used with a JSR/jump instruction, so it's either a function or jump target
 									bool isJsr = opCode == 0x20 || opCode == 0x22; //JSR/JSL
 									SpanInfo definitionSpan = GetSymbolDefinitionSpan(symbol);
@@ -780,6 +791,21 @@ namespace Mesen.GUI.Debugger.Integration
 			}
 
 			DebugApi.SetCdlData(cdlFile, cdlFile.Length);
+		}
+
+		private bool IsBranchInstruction(byte opCode)
+		{
+			return opCode == 0x20 || opCode == 0x10 || opCode == 0x30 || opCode == 0x50 || opCode == 0x70 || opCode == 0x80 || opCode == 0x90 || opCode == 0xB0 || opCode == 0xD0 || opCode == 0xF0 || opCode == 0x4C || opCode == 0x20 || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C;
+		}
+
+		private bool IsVarWidthIndexInstruction(byte opCode)
+		{
+			return opCode == 0xA0 || opCode == 0xA2 || opCode == 0xC0 || opCode == 0xE0;
+		}
+
+		private bool IsVarWidthMemoryInstruction(byte opCode)
+		{
+			return opCode == 0x09 || opCode == 0x29 || opCode == 0x49 || opCode == 0x69 || opCode == 0x89 || opCode == 0xA9 || opCode == 0xC9 || opCode == 0xE9;
 		}
 
 		public void Import(string path, bool silent = false)
