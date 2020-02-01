@@ -207,7 +207,7 @@ namespace Mesen.GUI.Forms.Config
 						CheckConflicts();
 					} else if(e.Button == MouseButtons.Left) {
 						using(frmGetKey frm = new frmGetKey(false)) {
-							frm.ShowDialog();
+							((Form)frm).ShowDialog(this);
 							button.Value = frm.ShortcutKey.ToString();
 							button.Tag = frm.ShortcutKey;
 

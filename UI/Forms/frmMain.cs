@@ -364,7 +364,7 @@ namespace Mesen.GUI.Forms
 		{
 			mnuConnect.Click += (s, e) => { NetPlayHelper.Connect(); };
 			mnuStartServer.Click += (s, e) => { NetPlayHelper.ToggleServer(); };
-			mnuProfile.Click += (s, e) => { using(frmPlayerProfile frm = new frmPlayerProfile()) { frm.ShowDialog(); } };
+			mnuProfile.Click += (s, e) => { using(frmPlayerProfile frm = new frmPlayerProfile()) { frm.ShowDialog(mnuProfile, this); } };
 			mnuNetPlayPlayer1.Click += (s, e) => { NetplayApi.NetPlaySelectController(0); };
 			mnuNetPlayPlayer2.Click += (s, e) => { NetplayApi.NetPlaySelectController(1); };
 			mnuNetPlayPlayer3.Click += (s, e) => { NetplayApi.NetPlaySelectController(2); };

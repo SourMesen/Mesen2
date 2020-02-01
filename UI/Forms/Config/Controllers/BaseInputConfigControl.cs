@@ -77,7 +77,7 @@ namespace Mesen.GUI.Forms.Config
 		protected void btnMapping_Click(object sender, EventArgs e)
 		{
 			using(frmGetKey frm = new frmGetKey(true)) {
-				frm.ShowDialog();
+				((Form)frm).ShowDialog(this);
 				((Button)sender).Text = frm.ShortcutKey.ToString();
 				((Button)sender).Tag = frm.ShortcutKey.Key1;
 				_toolTip.SetToolTip((Button)sender, ((Button)sender).Text);
