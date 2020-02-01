@@ -304,7 +304,6 @@ ALTTARGET := $(subst mesen-s,mesens,$(TARGET))
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
 ifneq (,$(findstring msvc,$(platform)))
 	$(LD) $(LINKOUT)$@ $(OBJECTS)
@@ -315,7 +314,6 @@ else
 	$(LD) $(fpic) $(SHARED) $(INCLUDES) $(LINKOUT)$@ $(OBJECTS) $(LDFLAGS)
 endif
 	cp ./$(TARGET) ./$(ALTTARGET)
-	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(fpic) -c $< $(OBJOUT)$@
