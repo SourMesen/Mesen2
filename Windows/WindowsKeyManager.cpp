@@ -331,7 +331,7 @@ vector<uint32_t> WindowsKeyManager::GetPressedKeys()
 
 	_directInput->RefreshState();
 	for(int i = _directInput->GetJoystickCount() - 1; i >= 0; i--) {
-		for(int j = 0; j < 0x29; j++) {
+		for(int j = 0; j < 16+128; j++) {
 			if(_directInput->IsPressed(i, j)) {
 				result.push_back(0x11000 + i * 0x100 + j);
 			}
