@@ -475,6 +475,15 @@ void Console::UpdateRegion()
 	_masterClockRate = _region == ConsoleRegion::Pal ? 21281370 : 21477270;
 }
 
+double Console::GetFps()
+{
+	if(_region == ConsoleRegion::Ntsc) {
+		return _settings->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.098812;
+	} else {
+		return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.006978;
+	}
+}
+
 double Console::GetFrameDelay()
 {
 	uint32_t emulationSpeed = _settings->GetEmulationSpeed();

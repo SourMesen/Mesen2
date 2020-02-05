@@ -420,6 +420,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ArchiveReader.h" />
+    <ClInclude Include="AviRecorder.h" />
     <ClInclude Include="AviWriter.h" />
     <ClInclude Include="Base64.h" />
     <ClInclude Include="blip_buf.h" />
@@ -429,11 +430,14 @@
     <ClInclude Include="Equalizer.h" />
     <ClInclude Include="FastString.h" />
     <ClInclude Include="FolderUtilities.h" />
+    <ClInclude Include="gif.h" />
+    <ClInclude Include="GifRecorder.h" />
     <ClInclude Include="HexUtilities.h" />
     <ClInclude Include="HQX\common.h" />
     <ClInclude Include="HQX\hqx.h" />
     <ClInclude Include="IpsPatcher.h" />
     <ClInclude Include="ISerializable.h" />
+    <ClInclude Include="IVideoRecorder.h" />
     <ClInclude Include="KreedSaiEagle\SaiEagle.h" />
     <ClInclude Include="LowPassFilter.h" />
     <ClInclude Include="md5.h" />
@@ -472,6 +476,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArchiveReader.cpp" />
+    <ClCompile Include="AviRecorder.cpp" />
     <ClCompile Include="AviWriter.cpp" />
     <ClCompile Include="blip_buf.cpp" />
     <ClCompile Include="BpsPatcher.cpp" />
@@ -479,6 +484,7 @@
     <ClCompile Include="CRC32.cpp" />
     <ClCompile Include="Equalizer.cpp" />
     <ClCompile Include="FolderUtilities.cpp" />
+    <ClCompile Include="GifRecorder.cpp" />
     <ClCompile Include="HexUtilities.cpp" />
     <ClCompile Include="HQX\hq2x.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

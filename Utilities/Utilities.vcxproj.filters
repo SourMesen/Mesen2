@@ -187,6 +187,18 @@
     <ClInclude Include="ISerializable.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="AviRecorder.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="gif.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="GifRecorder.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
+    <ClInclude Include="IVideoRecorder.h">
+      <Filter>Avi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">
@@ -314,6 +326,12 @@
     </ClCompile>
     <ClCompile Include="Serializer.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="AviRecorder.cpp">
+      <Filter>Avi</Filter>
+    </ClCompile>
+    <ClCompile Include="GifRecorder.cpp">
+      <Filter>Avi</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

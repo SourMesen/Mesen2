@@ -162,8 +162,9 @@ public:
 	thread::id GetEmulationThreadId();
 	
 	bool IsRunning();
-	bool IsInputRecordingEnabled();
 	bool IsRunAheadFrame();
+	
+	double GetFps();
 
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);

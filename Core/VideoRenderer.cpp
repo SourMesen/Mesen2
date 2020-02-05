@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "IRenderingDevice.h"
 #include "VideoRenderer.h"
-#include "AviRecorder.h"
 #include "VideoDecoder.h"
 #include "Console.h"
 #include "EmuSettings.h"
+#include "MessageManager.h"
+#include "../Utilities/IVideoRecorder.h"
+#include "../Utilities/AviRecorder.h"
+#include "../Utilities/GifRecorder.h"
 
 VideoRenderer::VideoRenderer(shared_ptr<Console> console)
 {
@@ -57,14 +60,14 @@ void VideoRenderer::RenderThread()
 	}
 }
 
-void VideoRenderer::UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height)
+void VideoRenderer::UpdateFrame(void* frameBuffer, uint32_t width, uint32_t height)
 {
-	shared_ptr<AviRecorder> aviRecorder = _aviRecorder;
-	if(aviRecorder) {
-		aviRecorder->AddFrame(frameBuffer, width, height);
+	shared_ptr<IVideoRecorder> recorder = _recorder;
+	if(recorder) {
+		recorder->AddFrame(frameBuffer, width, height, _console->GetFps());
 	}
-	
-	if(_renderer) {		
+
+	if(_renderer) {
 		_renderer->UpdateFrame(frameBuffer, width, height);
 		_waitForRender.Signal();
 	}
@@ -86,28 +89,40 @@ void VideoRenderer::UnregisterRenderingDevice(IRenderingDevice *renderer)
 
 void VideoRenderer::StartRecording(string filename, VideoCodec codec, uint32_t compressionLevel)
 {
-	shared_ptr<AviRecorder> recorder(new AviRecorder(_console));
-
 	FrameInfo frameInfo = _console->GetVideoDecoder()->GetFrameInfo();
-	if(recorder->StartRecording(filename, codec, frameInfo.Width, frameInfo.Height, 4, _console->GetSettings()->GetAudioConfig().SampleRate, compressionLevel)) {
-		_aviRecorder = recorder;
+
+	shared_ptr<IVideoRecorder> recorder;
+	if(codec == VideoCodec::GIF) {
+		recorder.reset(new GifRecorder());
+	} else {
+		recorder.reset(new AviRecorder(codec, compressionLevel));
+	}
+
+	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _console->GetSettings()->GetAudioConfig().SampleRate, _console->GetFps())) {
+		_recorder = recorder;
+		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStarted", filename);
 	}
 }
 
 void VideoRenderer::AddRecordingSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate)
 {
-	shared_ptr<AviRecorder> aviRecorder = _aviRecorder;
-	if(aviRecorder) {
-		aviRecorder->AddSound(soundBuffer, sampleCount, sampleRate);
+	shared_ptr<IVideoRecorder> recorder = _recorder;
+	if(recorder) {
+		recorder->AddSound(soundBuffer, sampleCount, sampleRate);
 	}
 }
 
 void VideoRenderer::StopRecording()
 {
-	_aviRecorder.reset();
+	shared_ptr<IVideoRecorder> recorder = _recorder;
+	if(recorder) {
+		recorder->StopRecording();
+		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStopped", recorder->GetOutputFile());
+	}
+	_recorder.reset();
 }
 
 bool VideoRenderer::IsRecording()
 {
-	return _aviRecorder != nullptr && _aviRecorder->IsRecording();
+	return _recorder != nullptr && _recorder->IsRecording();
 }

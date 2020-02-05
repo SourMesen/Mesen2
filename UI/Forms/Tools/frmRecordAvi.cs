@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,22 +37,33 @@ namespace Mesen.GUI.Forms
 			this.Filename = txtFilename.Text;
 		}
 
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+
+			VideoCodec codec = cboVideoCodec.GetEnumValue<VideoCodec>();
+			string defaultFile = Path.Combine(ConfigManager.AviFolder, EmuApi.GetRomInfo().GetRomName() + (codec == VideoCodec.GIF ? ".gif" : ".avi"));
+			txtFilename.Text = defaultFile;
+		}
+
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			using(SaveFileDialog sfd = new SaveFileDialog()) {
-				sfd.SetFilter(ResourceHelper.GetMessage("FilterAvi"));
-				sfd.InitialDirectory = ConfigManager.AviFolder;
-				sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".avi";
-				if(sfd.ShowDialog() == DialogResult.OK) {
-					txtFilename.Text = sfd.FileName;
-				}
+			SaveFileDialog sfd = new SaveFileDialog();
+			VideoCodec codec = cboVideoCodec.GetEnumValue<VideoCodec>();
+			sfd.SetFilter(ResourceHelper.GetMessage(codec == VideoCodec.GIF ? "FilterGif" : "FilterAvi"));
+			sfd.InitialDirectory = ConfigManager.AviFolder;
+			sfd.FileName = EmuApi.GetRomInfo().GetRomName() + (codec == VideoCodec.GIF ? ".gif" : ".avi");
+			if(sfd.ShowDialog() == DialogResult.OK) {
+				txtFilename.Text = sfd.FileName;
 			}
 		}
 
 		private void cboVideoCodec_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			lblCompressionLevel.Visible = cboVideoCodec.SelectedIndex > 0;
-			tlpCompressionLevel.Visible = cboVideoCodec.SelectedIndex > 0;
+			VideoCodec codec = cboVideoCodec.GetEnumValue<VideoCodec>();
+			bool hasCompressionLevel = (codec == VideoCodec.CSCD || codec == VideoCodec.ZMBV);
+			lblCompressionLevel.Visible = hasCompressionLevel;
+			tlpCompressionLevel.Visible = hasCompressionLevel;
 		}
 	}
 }

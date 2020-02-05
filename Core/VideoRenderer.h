@@ -6,7 +6,7 @@
 class IRenderingDevice;
 class Console;
 
-class AviRecorder;
+class IVideoRecorder;
 enum class VideoCodec;
 
 class VideoRenderer
@@ -19,7 +19,7 @@ private:
 	IRenderingDevice* _renderer = nullptr;
 	atomic<bool> _stopFlag;
 
-	shared_ptr<AviRecorder> _aviRecorder;
+	shared_ptr<IVideoRecorder> _recorder;
 
 	void RenderThread();
 

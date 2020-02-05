@@ -224,9 +224,6 @@
     <ClInclude Include="RewindManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="AviRecorder.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include="WaveRecorder.h">
       <Filter>Misc</Filter>
     </ClInclude>
@@ -618,9 +615,6 @@
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="RewindManager.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="AviRecorder.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="WaveRecorder.cpp">
