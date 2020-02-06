@@ -27,18 +27,6 @@ string SaveStateManager::GetStateFilepath(int stateIndex)
 	return FolderUtilities::CombinePath(folder, filename);
 }
 
-uint64_t SaveStateManager::GetStateInfo(int stateIndex)
-{
-	string filepath = SaveStateManager::GetStateFilepath(stateIndex);
-	ifstream file(filepath, ios::in | ios::binary);
-
-	if(file) {
-		file.close();
-		return FolderUtilities::GetFileModificationTime(filepath);
-	}
-	return 0;
-}
-
 void SaveStateManager::SelectSaveSlot(int slotIndex)
 {
 	_lastIndex = slotIndex;

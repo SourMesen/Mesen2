@@ -4,6 +4,7 @@ using Mesen.GUI.Forms;
 using Mesen.GUI.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,15 +19,15 @@ namespace Mesen.GUI.Emulation
 		public static void UpdateStateMenu(ToolStripMenuItem menu, bool forSave)
 		{
 			for(uint i = 1; i <= NumberOfSaveSlots + (forSave ? 0 : 1); i++) {
-				Int64 fileTime = EmuApi.GetStateInfo(i);
+				string statePath = Path.Combine(ConfigManager.SaveStateFolder, EmuApi.GetRomInfo().GetRomName() + "_" + i + ".mss");
 				string label;
 				bool isAutoSaveSlot = i == NumberOfSaveSlots + 1;
 				string slotName = isAutoSaveSlot ? "Auto" : i.ToString();
 
-				if(fileTime == 0) {
+				if(!File.Exists(statePath)) {
 					label = slotName + ". " + ResourceHelper.GetMessage("EmptyState");
 				} else {
-					DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(fileTime).ToLocalTime();
+					DateTime dateTime = new FileInfo(statePath).LastWriteTime;
 					label = slotName + ". " + dateTime.ToShortDateString() + " " + dateTime.ToShortTimeString();
 				}
 

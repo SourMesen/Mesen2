@@ -18,8 +18,6 @@ public:
 
 	SaveStateManager(shared_ptr<Console> console);
 
-	uint64_t GetStateInfo(int stateIndex);
-
 	void SaveState();
 	bool LoadState();
 

@@ -38,7 +38,5 @@ public:
 
 	static void CreateFolder(string folder);
 
-	static int64_t GetFileModificationTime(string filepath);
-
 	static string CombinePath(string folder, string filename);
 };

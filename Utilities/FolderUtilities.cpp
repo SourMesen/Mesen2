@@ -224,11 +224,6 @@ string FolderUtilities::CombinePath(string folder, string filename)
 	}
 }
 
-int64_t FolderUtilities::GetFileModificationTime(string filepath)
-{
-	std::error_code errorCode;
-	return fs::last_write_time(fs::u8path(filepath), errorCode).time_since_epoch() / std::chrono::seconds(1);
-}
 #else
 
 //Libretro: Avoid using filesystem API.
@@ -277,8 +272,4 @@ string FolderUtilities::CombinePath(string folder, string filename)
 	return folder + filename;
 }
 
-int64_t FolderUtilities::GetFileModificationTime(string filepath)
-{
-	return 0;
-}
 #endif

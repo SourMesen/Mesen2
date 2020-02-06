@@ -249,7 +249,6 @@ extern "C" {
 	DllExport void __stdcall LoadState(uint32_t stateIndex) { _console->GetSaveStateManager()->LoadState(stateIndex); }
 	DllExport void __stdcall SaveStateFile(char* filepath) { _console->GetSaveStateManager()->SaveState(filepath); }
 	DllExport void __stdcall LoadStateFile(char* filepath) { _console->GetSaveStateManager()->LoadState(filepath); }
-	DllExport int64_t  __stdcall GetStateInfo(uint32_t stateIndex) { return _console->GetSaveStateManager()->GetStateInfo(stateIndex); }
 	DllExport void __stdcall LoadRecentGame(char* filepath, bool resetGame) { _console->GetSaveStateManager()->LoadRecentGame(filepath, resetGame); }
 
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
