@@ -9,37 +9,36 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Mesen.GUI.Config;
-using System.Drawing.Text;
-using System.IO.Compression;
 using Mesen.GUI.Forms;
 using Mesen.GUI.Controls;
-using Mesen.GUI.Emulation;
 
 namespace Mesen.GUI.Controls
 {
 	public partial class ctrlRecentGames : BaseControl
 	{
-		private int _elementsPerRow = 0;
+		private int _columnCount = 0;
+		private int _rowCount = 0;
 		private int _elementsPerPage = 0;
 
+		private bool _needResume = false;
+		private int _currentIndex = 0;
+		private List<RecentGameInfo> _recentGames = new List<RecentGameInfo>();
+		private List<ctrlRecentGame> _controls = new List<ctrlRecentGame>();
+
 		public delegate void RecentGameLoadedHandler(RecentGameInfo gameInfo);
+		public event RecentGameLoadedHandler OnRecentGameLoaded;
 
 		public new event MouseEventHandler MouseMove
 		{
-			add { this.tlpPreviousState.MouseMove += value; }
-			remove { this.tlpPreviousState.MouseMove -= value; }
+			add { this.tlpPreviousState.MouseMove += value; this.tlpTitle.MouseMove += value; }
+			remove { this.tlpPreviousState.MouseMove -= value; this.tlpTitle.MouseMove -= value; }
 		}
 
 		public new event EventHandler DoubleClick
 		{
-			add { this.tlpPreviousState.DoubleClick += value; }
-			remove { this.tlpPreviousState.DoubleClick -= value; }
+			add { this.tlpPreviousState.DoubleClick += value; this.tlpTitle.DoubleClick += value; }
+			remove { this.tlpPreviousState.DoubleClick -= value; this.tlpTitle.DoubleClick -= value; }
 		}
-
-		private bool _initialized = false;
-		private int _currentIndex = 0;
-		private List<RecentGameInfo> _recentGames = new List<RecentGameInfo>();
-		private List<ctrlRecentGame> _controls = new List<ctrlRecentGame>();
 
 		public ctrlRecentGames()
 		{
@@ -50,95 +49,124 @@ namespace Mesen.GUI.Controls
 
 			DoubleBuffered = true;
 			picPrevGame.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-			MonoThemeHelper.ExcludeFromTheme(this);
 		}
 
 		private void InitGrid()
 		{
-			int elementsPerRow = 1;
+			int columnCount = 1;
 			if(ClientSize.Width > 850 && ClientSize.Height > 850) {
-				elementsPerRow = 3;
+				columnCount = 3;
 			} else if(ClientSize.Width > 450 && ClientSize.Height > 450) {
-				elementsPerRow = 2;
+				columnCount = 2;
 			}
 
 			if(_recentGames.Count <= 1) {
-				elementsPerRow = 1;
+				columnCount = 1;
 			} else if(_recentGames.Count <= 4) {
-				elementsPerRow = Math.Min(2, elementsPerRow);
+				columnCount = Math.Min(2, columnCount);
 			}
 
-			if(_elementsPerRow == elementsPerRow) {
+			int elementsPerPage = columnCount * columnCount;
+			int rowCount = columnCount;
+
+			if(Mode != GameScreenMode.RecentGames) {
+				elementsPerPage = 12;
+				columnCount = 4;
+				rowCount = 3;
+			}
+
+			if(_columnCount == columnCount && _elementsPerPage == elementsPerPage && _rowCount == rowCount) {
 				return;
 			}
 
-			_elementsPerRow = elementsPerRow;
-			_elementsPerPage = elementsPerRow * elementsPerRow;
+			_columnCount = columnCount;
+			_rowCount = rowCount;
+			_elementsPerPage = elementsPerPage;
 
 			_controls = new List<ctrlRecentGame>();
-			tlpGrid.ColumnCount = _elementsPerRow;
-			tlpGrid.RowCount = _elementsPerRow;
+			tlpGrid.SuspendLayout();
+			tlpGrid.ColumnCount = _columnCount;
+			tlpGrid.RowCount = _rowCount;
 			tlpGrid.ColumnStyles.Clear();
 			tlpGrid.RowStyles.Clear();
 			tlpGrid.Controls.Clear();
-			for(int j = 0; j < _elementsPerRow; j++) {
-				tlpGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / _elementsPerRow));
-				tlpGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / _elementsPerRow));
+			for(int j = 0; j < _columnCount; j++) {
+				tlpGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / _columnCount));
+				tlpGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / _columnCount));
 			}
 
-			for(int j = 0; j < _elementsPerRow; j++) {
-				for(int i = 0; i < _elementsPerRow; i++) {
+			for(int j = 0; j < _rowCount; j++) {
+				for(int i = 0; i < _columnCount; i++) {
 					ctrlRecentGame ctrl = new ctrlRecentGame();
+					ctrl.OnRecentGameLoaded += RecentGameLoaded;
 					ctrl.Dock = DockStyle.Fill;
 					ctrl.Margin = new Padding(2);
 					tlpGrid.Controls.Add(ctrl, i, j);
 					_controls.Add(ctrl);
 				}
 			}
+			tlpGrid.ResumeLayout();
 			UpdateGameInfo();
+
 			picPrevGame.Visible = _recentGames.Count > _elementsPerPage;
 			picNextGame.Visible = _recentGames.Count > _elementsPerPage;
 		}
 
-		public new bool Visible
-		{
-			get { return base.Visible; }
-			set
-			{
-				if(value && ((_initialized && _recentGames.Count == 0) || ConfigManager.Config.Preferences.DisableGameSelectionScreen)) {
-					value = false;
-				}
-
-				if(value != base.Visible) {
-					if(value && !_initialized) {
-						//We just re-enabled the screen, initialize it
-						Initialize();
-					}
-					InitGrid();
-					base.Visible = value;
-					tmrInput.Enabled = value;
-				}
-			}
-		}
-				
 		public int GameCount
 		{
 			get { return _recentGames.Count; }
 		}
 
-		public void Initialize()
+		public GameScreenMode Mode { get; private set; } = GameScreenMode.RecentGames;
+
+		private bool Pause()
 		{
-			_initialized = true;
+			if(!EmuApi.IsPaused()) {
+				EmuApi.Pause();
+				return true;
+			}
+			return false;
+		}
+
+		public void ShowScreen(GameScreenMode mode)
+		{
+			if(mode == GameScreenMode.RecentGames && ConfigManager.Config.Preferences.DisableGameSelectionScreen) {
+				this.Visible = false;
+				return;
+			} else if(mode != GameScreenMode.RecentGames && Mode == mode && this.Visible) {
+				this.Visible = false;
+				if(_needResume) {
+					EmuApi.Resume();
+				}
+				return;
+			}
+
+			Mode = mode;
 			_recentGames = new List<RecentGameInfo>();
 			_currentIndex = 0;
 
-			List<string> files = Directory.GetFiles(ConfigManager.RecentGamesFolder, "*.rgd").OrderByDescending((file) => new FileInfo(file).LastWriteTime).ToList();
-			for(int i = 0; i < files.Count && _recentGames.Count < 36; i++) {
-				try {
-					RecentGameInfo info = new RecentGameInfo();
-					info.FileName = files[i];
-					_recentGames.Add(info);
-				} catch { }
+			if(mode == GameScreenMode.RecentGames) {
+				_needResume = false;
+				tlpTitle.Visible = false;
+				List<string> files = Directory.GetFiles(ConfigManager.RecentGamesFolder, "*.rgd").OrderByDescending((file) => new FileInfo(file).LastWriteTime).ToList();
+				for(int i = 0; i < files.Count && _recentGames.Count < 36; i++) {
+					_recentGames.Add(new RecentGameInfo() { FileName = files[i] });
+				}
+			} else {
+				if(!this.Visible) {
+					_needResume = Pause();
+				}
+
+				lblScreenTitle.Text = mode == GameScreenMode.LoadState ? ResourceHelper.GetMessage("LoadStateDialog") : ResourceHelper.GetMessage("SaveStateDialog");
+				tlpTitle.Visible = true;
+
+				string romName = EmuApi.GetRomInfo().GetRomName();
+				for(int i = 0; i < (mode == GameScreenMode.LoadState ? 11 : 10); i++) {
+					_recentGames.Add(new RecentGameInfo() { FileName = Path.Combine(ConfigManager.SaveStateFolder, romName + "_" + (i + 1) + ".mss"), Name = i == 10 ? ResourceHelper.GetMessage("AutoSave") : ResourceHelper.GetMessage("SlotNumber", i+1), SaveSlot = (uint)i+1 });
+				}
+				if(mode == GameScreenMode.LoadState) {
+					_recentGames.Add(new RecentGameInfo() { FileName = Path.Combine(ConfigManager.RecentGamesFolder, romName + ".rgd"), Name = ResourceHelper.GetMessage("LastSession") });
+				}
 			}
 
 			InitGrid();
@@ -153,6 +181,7 @@ namespace Mesen.GUI.Controls
 
 			picPrevGame.Visible = _recentGames.Count > _elementsPerPage;
 			picNextGame.Visible = _recentGames.Count > _elementsPerPage;
+			this.Visible = true;
 		}
 
 		public void UpdateGameInfo()
@@ -161,18 +190,10 @@ namespace Mesen.GUI.Controls
 			int pageStart = _currentIndex / _elementsPerPage * _elementsPerPage;
 
 			for(int i = 0; i < _elementsPerPage; i++) {
-				_controls[i].RecentGame = count > pageStart + i ? _recentGames[pageStart+i] : null;
+				_controls[i].Mode = Mode;
+				_controls[i].RecentGame = count > pageStart + i ? _recentGames[pageStart + i] : null;
 				_controls[i].Highlight = (_currentIndex % _elementsPerPage) == i;
 			}
-		}
-
-		float _xFactor = 1;
-		float _yFactor = 1;
-		protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
-		{
-			_xFactor = factor.Width;
-			_yFactor = factor.Height;
-			base.ScaleControl(factor, specified);
 		}
 
 		protected override void OnResize(EventArgs e)
@@ -185,7 +206,9 @@ namespace Mesen.GUI.Controls
 				picPrevGame.Dock = DockStyle.Fill;
 			}
 
-			InitGrid();
+			if(this._columnCount > 0) {
+				InitGrid();
+			}
 			base.OnResize(e);
 		}
 
@@ -221,11 +244,26 @@ namespace Mesen.GUI.Controls
 			UpdateGameInfo();
 		}
 
+		private void RecentGameLoaded(RecentGameInfo gameInfo)
+		{
+			if(this.Mode == GameScreenMode.RecentGames) {
+				OnRecentGameLoaded?.Invoke(gameInfo);
+			}
+			if(this._needResume) {
+				EmuApi.Resume();
+			}
+			this.Visible = false;
+		}
+
 		private bool _waitForRelease = false;
 		private void tmrInput_Tick(object sender, EventArgs e)
 		{
 			//Use player 1's controls to navigate the recent game selection screen
-			if(frmMain.Instance?.ContainsFocus == true && !EmuRunner.IsRunning()) {
+			if(Application.OpenForms.Count > 0 && Application.OpenForms[0].ContainsFocus && this.Visible) {
+				if(Mode != GameScreenMode.RecentGames && !EmuApi.IsPaused()) {
+					this.Visible = false;
+					return;
+				}
 				List<uint> keyCodes = InputApi.GetPressedKeys();
 				uint keyCode = keyCodes.Count > 0 ? keyCodes[0] : 0;
 				if(keyCode > 0) {
@@ -252,39 +290,23 @@ namespace Mesen.GUI.Controls
 								UpdateGameInfo();
 							} else if(mapping.Down == keyCode) {
 								_waitForRelease = true;
-								if(_currentIndex + _elementsPerRow < _recentGames.Count) {
-									_currentIndex += _elementsPerRow;
+								if(_currentIndex + _columnCount < _recentGames.Count) {
+									_currentIndex += _columnCount;
 								} else {
-									_currentIndex = IsOnLastPage ? 0 : (_recentGames.Count - 1);
+									_currentIndex = Math.Min(_currentIndex % _columnCount, _recentGames.Count - 1);
 								}
 								UpdateGameInfo();
 							} else if(mapping.Up == keyCode) {
 								_waitForRelease = true;
-								if(_currentIndex < _elementsPerRow) {
-									_currentIndex = _recentGames.Count - 1;
+								if(_currentIndex < _columnCount) {
+									_currentIndex = _recentGames.Count - (_columnCount - (_currentIndex % _columnCount));
 								} else {
-									_currentIndex -= _elementsPerRow;
+									_currentIndex -= _columnCount;
 								}
 								UpdateGameInfo();
-							} else if(mapping.L == keyCode) {
+							} else if(mapping.A == keyCode || mapping.B == keyCode || mapping.Select == keyCode || mapping.Start == keyCode) {
 								_waitForRelease = true;
-								if(_currentIndex < _elementsPerPage) {
-									_currentIndex = _recentGames.Count - 1;
-								} else {
-									_currentIndex -= _elementsPerPage;
-								}
-								UpdateGameInfo();
-							} else if(mapping.R == keyCode) {
-								_waitForRelease = true;
-								if(_currentIndex + _elementsPerPage < _recentGames.Count) {
-									_currentIndex += _elementsPerPage;
-								} else {
-									_currentIndex = IsOnLastPage ? 0 : (_recentGames.Count - 1);
-								}
-								UpdateGameInfo();
-							} else if(mapping.A == keyCode || mapping.B == keyCode || mapping.X == keyCode || mapping.Y == keyCode || mapping.Select == keyCode || mapping.Start == keyCode) {
-								_waitForRelease = true;
-								EmuRunner.LoadRecentGame(_recentGames[_currentIndex].FileName);
+								_controls[_currentIndex % _elementsPerPage].ProcessClick();
 							}
 						}
 					}
@@ -292,6 +314,14 @@ namespace Mesen.GUI.Controls
 					_waitForRelease = false;
 				}
 			}
+		}
+
+		private void picClose_Click(object sender, EventArgs e)
+		{
+			if(_needResume) {
+				EmuApi.Resume();
+			}
+			this.Visible = false;
 		}
 	}
 
@@ -303,55 +333,18 @@ namespace Mesen.GUI.Controls
 		}
 	}
 
-	public class GamePreviewBox : PictureBox
-	{
-		public System.Drawing.Drawing2D.InterpolationMode InterpolationMode { get; set; }
-		private bool _hovered = false;
-		private bool _highlight = false;
-
-		public GamePreviewBox()
-		{
-			DoubleBuffered = true;
-			InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
-		}
-
-		public bool Highlight
-		{
-			get { return _highlight; }
-			set
-			{
-				_highlight = value;
-				this.Invalidate();
-			}
-		}
-
-		protected override void OnMouseEnter(EventArgs e)
-		{
-			base.OnMouseEnter(e);
-			_hovered = true;
-			this.Invalidate();
-		}
-
-		protected override void OnMouseLeave(EventArgs e)
-		{
-			base.OnMouseLeave(e);
-			_hovered = false;
-			this.Invalidate();
-		}
-
-		protected override void OnPaint(PaintEventArgs pe)
-		{
-			pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			base.OnPaint(pe);
-
-			using(Pen pen = new Pen(_hovered ? Color.LightBlue : (_highlight ? Color.Orange : Color.Gray), 2)) {
-				pe.Graphics.DrawRectangle(pen, 1, 1, this.Width - 2, this.Height - 2);
-			}
-		}
-	}
-
 	public class RecentGameInfo
 	{
 		public string FileName { get; set; }
+		public string Name { get; set; }
+		public uint SaveSlot { get; set; }
+		public ResourcePath RomPath { get; set; }
+	}
+
+	public enum GameScreenMode
+	{
+		RecentGames,
+		LoadState,
+		SaveState
 	}
 }

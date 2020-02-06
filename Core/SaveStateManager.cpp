@@ -2,6 +2,7 @@
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/ZipWriter.h"
 #include "../Utilities/ZipReader.h"
+#include "../Utilities/PNGHelper.h"
 #include "SaveStateManager.h"
 #include "MessageManager.h"
 #include "Console.h"
@@ -12,6 +13,8 @@
 #include "EventType.h"
 #include "Debugger.h"
 #include "GameClient.h"
+#include "Ppu.h"
+#include "DefaultVideoFilter.h"
 
 SaveStateManager::SaveStateManager(shared_ptr<Console> console)
 {
@@ -66,6 +69,10 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	string sha1Hash = _console->GetCartridge()->GetSha1Hash();
 	stream.write(sha1Hash.c_str(), sha1Hash.size());
 
+	#ifndef LIBRETRO
+	SaveScreenshotData(stream);
+	#endif
+
 	RomInfo romInfo = _console->GetCartridge()->GetRomInfo();
 	string romName = FolderUtilities::GetFilename(romInfo.RomFile.GetFileName(), true);
 	uint32_t nameLength = (uint32_t)romName.size();
@@ -108,6 +115,43 @@ void SaveStateManager::SaveState(int stateIndex, bool displayMessage)
 	}
 }
 
+void SaveStateManager::SaveScreenshotData(ostream& stream)
+{
+	bool isHighRes = _console->GetPpu()->IsHighResOutput();
+	uint32_t height = isHighRes ? 478 : 239;
+	uint32_t width = isHighRes ? 512 : 256;
+
+	stream.write((char*)&width, sizeof(uint32_t));
+	stream.write((char*)&height, sizeof(uint32_t));
+
+	unsigned long compressedSize = compressBound(512*478*2);
+	vector<uint8_t> compressedData(compressedSize, 0);
+	compress2(compressedData.data(), &compressedSize, (const unsigned char*)_console->GetPpu()->GetScreenBuffer(), width*height*2, MZ_DEFAULT_LEVEL);
+
+	uint32_t screenshotLength = (uint32_t)compressedSize;
+	stream.write((char*)&screenshotLength, sizeof(uint32_t));
+	stream.write((char*)compressedData.data(), screenshotLength);
+}
+
+bool SaveStateManager::GetScreenshotData(vector<uint8_t>& out, uint32_t &width, uint32_t &height, istream& stream)
+{
+	stream.read((char*)&width, sizeof(uint32_t));
+	stream.read((char*)&height, sizeof(uint32_t));
+
+	uint32_t screenshotLength = 0;
+	stream.read((char*)&screenshotLength, sizeof(uint32_t));
+
+	vector<uint8_t> compressedData(screenshotLength, 0);
+	stream.read((char*)compressedData.data(), screenshotLength);
+
+	out = vector<uint8_t>(width * height * 2, 0);
+	unsigned long decompSize = width * height * 2;
+	if(uncompress(out.data(), &decompSize, compressedData.data(), (unsigned long)compressedData.size()) == MZ_OK) {
+		return true;
+	}
+	return false;
+}
+
 bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 {
 	if(GameClient::Connected()) {
@@ -133,6 +177,17 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 		} else {
 			char hash[41] = {};
 			stream.read(hash, 40);
+
+			if(fileFormatVersion >= 7) {
+				#ifndef LIBRETRO
+				vector<uint8_t> frameData;
+				uint32_t width = 0;
+				uint32_t height = 0;
+				if(GetScreenshotData(frameData, width, height, stream)) {
+					_console->GetVideoDecoder()->UpdateFrameSync((uint16_t*)frameData.data(), width, height, 0, true);
+				}
+				#endif
+			}
 
 			uint32_t nameLength = 0;
 			stream.read((char*)&nameLength, sizeof(uint32_t));
@@ -245,4 +300,56 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 		_console->Stop(true);
 	}
 	_console->Unlock();
+}
+
+int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* pngData)
+{
+	ifstream stream(saveStatePath, ios::binary);
+
+	if(!stream) {
+		return -1;
+	}
+
+	char header[3];
+	stream.read(header, 3);
+	if(memcmp(header, "MSS", 3) == 0) {
+		uint32_t emuVersion = 0;
+
+		stream.read((char*)&emuVersion, sizeof(emuVersion));
+		if(emuVersion > _console->GetSettings()->GetVersion()) {
+			return -1;
+		}
+
+		uint32_t fileFormatVersion = 0;
+		stream.read((char*)&fileFormatVersion, sizeof(fileFormatVersion));
+		if(fileFormatVersion <= 6) {
+			return -1;
+		}
+
+		//Skip some header fields
+		stream.seekg(40, ios::cur);
+
+		vector<uint8_t> frameData;
+		uint32_t width = 0;
+		uint32_t height = 0;
+		if(GetScreenshotData(frameData, width, height, stream)) {
+			FrameInfo baseFrameInfo;
+			baseFrameInfo.Width = width;
+			baseFrameInfo.Height = height;
+			
+			DefaultVideoFilter filter(_console);
+			filter.SetBaseFrameInfo(baseFrameInfo);
+			FrameInfo frameInfo = filter.GetFrameInfo();
+			filter.SendFrame((uint16_t*)frameData.data(), 0);
+
+			std::stringstream pngStream;
+			PNGHelper::WritePNG(pngStream, filter.GetOutputBuffer(), frameInfo.Width, frameInfo.Height);
+
+			string data = pngStream.str();
+			memcpy(pngData, data.c_str(), data.size());
+
+			return (int32_t)frameData.size();
+		}
+	}
+	return -1;
 }

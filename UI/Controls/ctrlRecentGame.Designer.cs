@@ -28,9 +28,9 @@
 		private void InitializeComponent()
 		{
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.picPreviousState = new Mesen.GUI.Controls.GamePreviewBox();
 			this.lblGameName = new System.Windows.Forms.Label();
 			this.lblSaveDate = new System.Windows.Forms.Label();
-			this.picPreviousState = new Mesen.GUI.Controls.GamePreviewBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picPreviousState)).BeginInit();
 			this.SuspendLayout();
@@ -53,36 +53,12 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(158, 93);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
-			// lblGameName
-			// 
-			this.lblGameName.AutoEllipsis = true;
-			this.lblGameName.BackColor = System.Drawing.Color.Transparent;
-			this.lblGameName.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lblGameName.ForeColor = System.Drawing.Color.White;
-			this.lblGameName.Location = new System.Drawing.Point(3, 64);
-			this.lblGameName.Name = "lblGameName";
-			this.lblGameName.Size = new System.Drawing.Size(152, 16);
-			this.lblGameName.TabIndex = 12;
-			this.lblGameName.Text = "Game Name";
-			this.lblGameName.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			// 
-			// lblSaveDate
-			// 
-			this.lblSaveDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.lblSaveDate.AutoSize = true;
-			this.lblSaveDate.BackColor = System.Drawing.Color.Transparent;
-			this.lblSaveDate.ForeColor = System.Drawing.Color.White;
-			this.lblSaveDate.Location = new System.Drawing.Point(64, 80);
-			this.lblSaveDate.Name = "lblSaveDate";
-			this.lblSaveDate.Size = new System.Drawing.Size(30, 13);
-			this.lblSaveDate.TabIndex = 13;
-			this.lblSaveDate.Text = "Date";
-			// 
 			// picPreviousState
 			// 
 			this.picPreviousState.BackColor = System.Drawing.Color.Black;
 			this.picPreviousState.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.picPreviousState.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.picPreviousState.Highlight = false;
 			this.picPreviousState.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 			this.picPreviousState.Location = new System.Drawing.Point(0, 0);
 			this.picPreviousState.Margin = new System.Windows.Forms.Padding(0);
@@ -94,6 +70,31 @@
 			this.picPreviousState.Visible = false;
 			this.picPreviousState.Click += new System.EventHandler(this.picPreviousState_Click);
 			// 
+			// lblGameName
+			// 
+			this.lblGameName.AutoEllipsis = true;
+			this.lblGameName.BackColor = System.Drawing.Color.Transparent;
+			this.lblGameName.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblGameName.ForeColor = System.Drawing.Color.White;
+			this.lblGameName.Location = new System.Drawing.Point(3, 64);
+			this.lblGameName.Name = "lblGameName";
+			this.lblGameName.Size = new System.Drawing.Size(152, 16);
+			this.lblGameName.TabIndex = 12;
+			this.lblGameName.Text = "Game Name";
+			this.lblGameName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lblSaveDate
+			// 
+			this.lblSaveDate.BackColor = System.Drawing.Color.Transparent;
+			this.lblSaveDate.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblSaveDate.ForeColor = System.Drawing.Color.White;
+			this.lblSaveDate.Location = new System.Drawing.Point(3, 80);
+			this.lblSaveDate.Name = "lblSaveDate";
+			this.lblSaveDate.Size = new System.Drawing.Size(152, 13);
+			this.lblSaveDate.TabIndex = 13;
+			this.lblSaveDate.Text = "Date";
+			this.lblSaveDate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
 			// ctrlRecentGame
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -103,7 +104,6 @@
 			this.Name = "ctrlRecentGame";
 			this.Size = new System.Drawing.Size(158, 93);
 			this.tableLayoutPanel1.ResumeLayout(false);
-			this.tableLayoutPanel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picPreviousState)).EndInit();
 			this.ResumeLayout(false);
 

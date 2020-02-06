@@ -61,11 +61,20 @@ namespace Mesen.GUI.Emulation
 				menu.DropDownItems.Add("-");
 				addSaveStateInfo(NumberOfSaveSlots + 1);
 				menu.DropDownItems.Add("-");
+
+				ToolStripMenuItem loadDialog = new ToolStripMenuItem(ResourceHelper.GetMessage("LoadStateDialog"), Resources.SplitView);
+				menu.DropDownItems.Add(loadDialog);
+				shortcutHandler.BindShortcut(loadDialog, EmulatorShortcut.LoadStateDialog, () => EmuRunner.IsRunning() && !NetplayApi.IsConnected());
+
 				ToolStripMenuItem loadFromFile = new ToolStripMenuItem(ResourceHelper.GetMessage("LoadFromFile"), Resources.Folder);
 				menu.DropDownItems.Add(loadFromFile);
 				shortcutHandler.BindShortcut(loadFromFile, EmulatorShortcut.LoadStateFromFile);
 			} else {
 				menu.DropDownItems.Add("-");
+				ToolStripMenuItem saveDialog = new ToolStripMenuItem(ResourceHelper.GetMessage("SaveStateDialog"), Resources.SplitView);
+				menu.DropDownItems.Add(saveDialog);
+				shortcutHandler.BindShortcut(saveDialog, EmulatorShortcut.SaveStateDialog, () => EmuRunner.IsRunning() && !NetplayApi.IsConnected());
+
 				ToolStripMenuItem saveToFile = new ToolStripMenuItem(ResourceHelper.GetMessage("SaveToFile"), Resources.SaveFloppy);
 				menu.DropDownItems.Add(saveToFile);
 				shortcutHandler.BindShortcut(saveToFile, EmulatorShortcut.SaveStateToFile);

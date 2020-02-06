@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -85,6 +86,22 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void LoadState(UInt32 stateIndex);
 		[DllImport(DllPath)] public static extern void SaveStateFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath);
 		[DllImport(DllPath)] public static extern void LoadStateFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath);
+
+		[DllImport(DllPath, EntryPoint = "GetSaveStatePreview")] private static extern Int32 GetSaveStatePreviewWrapper([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string saveStatePath, [Out]byte[] imgData);
+		public static Image GetSaveStatePreview(string saveStatePath)
+		{
+			if(File.Exists(saveStatePath)) {
+				byte[] buffer = new byte[512*478*4];
+				Int32 size = EmuApi.GetSaveStatePreviewWrapper(saveStatePath, buffer);
+				if(size > 0) {
+					Array.Resize(ref buffer, size);
+					using(MemoryStream stream = new MemoryStream(buffer)) {
+						return Image.FromStream(stream);
+					}
+				}
+			}
+			return null;
+		}
 
 		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();

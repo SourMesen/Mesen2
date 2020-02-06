@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
+using Mesen.GUI.Controls;
 using Mesen.GUI.Debugger;
 using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Emulation;
@@ -95,11 +96,8 @@ namespace Mesen.GUI.Forms
 				Thread.Sleep(25);
 				this.BeginInvoke((Action)(() => {
 
-					ResizeRecentGames();
-					ctrlRecentGames.Initialize();
-
 					if(!EmuRunner.IsRunning()) {
-						ctrlRecentGames.Visible = true;
+						ShowGameScreen(GameScreenMode.RecentGames);
 					}
 				}));
 			});
@@ -192,8 +190,7 @@ namespace Mesen.GUI.Forms
 					this.BeginInvoke((Action)(() => {
 						this.Text = "Mesen-S";
 						UpdateDebuggerMenu();
-						ctrlRecentGames.Initialize();
-						ctrlRecentGames.Visible = true;
+						ShowGameScreen(GameScreenMode.RecentGames);
 						ResizeRecentGames();
 						if(_displayManager.ExclusiveFullscreen) {
 							_displayManager.SetFullscreenState(false);
@@ -360,6 +357,12 @@ namespace Mesen.GUI.Forms
 			UpdateDebuggerMenu();
 		}
 
+		public void ShowGameScreen(GameScreenMode mode)
+		{
+			ctrlRecentGames.ShowScreen(mode);
+			ResizeRecentGames();
+		}
+
 		private void InitNetPlayMenus()
 		{
 			mnuConnect.Click += (s, e) => { NetPlayHelper.Connect(); };
@@ -440,7 +443,7 @@ namespace Mesen.GUI.Forms
 		
 		private void ResizeRecentGames()
 		{
-			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - 25;
+			ctrlRecentGames.Height = this.ClientSize.Height - ctrlRecentGames.Top - (ctrlRecentGames.Mode == GameScreenMode.RecentGames ? 25 : 0);
 		}
 
 		private void frmMain_Resize(object sender, EventArgs e)
@@ -485,7 +488,9 @@ namespace Mesen.GUI.Forms
 			using(frmPreferences frm = new frmPreferences()) {
 				frm.ShowDialog(sender, this);
 				ConfigManager.Config.Preferences.ApplyConfig();
-				ctrlRecentGames.Visible = !EmuRunner.IsRunning();
+				if(!EmuRunner.IsRunning()) {
+					ShowGameScreen(GameScreenMode.RecentGames);
+				}
 				if(frm.NeedRestart) {
 					this.Close();
 				}
@@ -548,13 +553,14 @@ namespace Mesen.GUI.Forms
 
 		private void mnuFile_DropDownOpening(object sender, EventArgs e)
 		{
-			mnuLoadState.Enabled = !NetplayApi.IsConnected();
-
 			mnuRecentFiles.DropDownItems.Clear();
 			mnuRecentFiles.DropDownItems.AddRange(ConfigManager.Config.RecentFiles.GetMenuItems().ToArray());
 			mnuRecentFiles.Enabled = ConfigManager.Config.RecentFiles.Items.Count > 0;
+
+			mnuSaveState.Enabled = EmuRunner.IsRunning();
+			mnuLoadState.Enabled = EmuRunner.IsRunning() && !NetplayApi.IsConnected();
 		}
-		
+
 		private void mnuVideoFilter_DropDownOpening(object sender, EventArgs e)
 		{
 			VideoFilterType filterType = ConfigManager.Config.Video.VideoFilter;

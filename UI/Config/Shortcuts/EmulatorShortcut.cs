@@ -80,6 +80,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		SaveStateSlot9,
 		SaveStateSlot10,
 		SaveStateToFile,
+		SaveStateDialog,
 
 		LoadStateSlot1,
 		LoadStateSlot2,
@@ -93,6 +94,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		LoadStateSlot10,
 		LoadStateSlotAuto,
 		LoadStateFromFile,
+		LoadStateDialog,
 
 		OpenFile,
 		LoadRandomGame,

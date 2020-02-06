@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
+using Mesen.GUI.Controls;
 using Mesen.GUI.Forms;
 using Mesen.GUI.Utilities;
 using System;
@@ -134,6 +135,22 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.LoadStateSlot9: SaveStateManager.LoadState(9); break;
 				case EmulatorShortcut.LoadStateSlot10: SaveStateManager.LoadState(10); break;
 				case EmulatorShortcut.LoadStateSlotAuto: SaveStateManager.LoadState(11); break;
+
+				case EmulatorShortcut.LoadStateDialog:
+					if(_displayManager.ExclusiveFullscreen) {
+						_displayManager.SetFullscreenState(false);
+						restoreFullscreen = false;
+					}
+					frmMain.Instance.ShowGameScreen(GameScreenMode.LoadState);
+					break;
+
+				case EmulatorShortcut.SaveStateDialog:
+					if(_displayManager.ExclusiveFullscreen) {
+						_displayManager.SetFullscreenState(false);
+						restoreFullscreen = false;
+					}
+					frmMain.Instance.ShowGameScreen(GameScreenMode.SaveState);
+					break;
 			}
 
 			if(restoreFullscreen && !_displayManager.ExclusiveFullscreen) {

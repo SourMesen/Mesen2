@@ -921,6 +921,7 @@
     <Compile Include="Utilities\RandomGameHelper.cs" />
     <Compile Include="Utilities\RomTestHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\CloseWhite.png" />
     <None Include="Resources\GsuDebugger.png" />
     <None Include="Resources\Sa1Debugger.png" />
     <None Include="Dependencies\LuaScripts\DrawMode.lua">

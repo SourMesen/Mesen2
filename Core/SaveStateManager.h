@@ -12,9 +12,11 @@ private:
 	shared_ptr<Console> _console;
 
 	string GetStateFilepath(int stateIndex);	
+	void SaveScreenshotData(ostream& stream);
+	bool GetScreenshotData(vector<uint8_t>& out, uint32_t& width, uint32_t& height, istream& stream);
 
 public:
-	static constexpr uint32_t FileFormatVersion = 6;
+	static constexpr uint32_t FileFormatVersion = 7;
 
 	SaveStateManager(shared_ptr<Console> console);
 
@@ -32,6 +34,8 @@ public:
 
 	void SaveRecentGame(string romName, string romPath, string patchPath);
 	void LoadRecentGame(string filename, bool resetGame);
+
+	int32_t GetSaveStatePreview(string saveStatePath, uint8_t* pngData);
 
 	void SelectSaveSlot(int slotIndex);
 	void MoveToNextSlot();
