@@ -6,7 +6,7 @@
 
 class Spc;
 
-class Msu1 : public ISerializable
+class Msu1 final : public ISerializable
 {
 private:
 	Spc * _spc;

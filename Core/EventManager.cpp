@@ -119,7 +119,6 @@ void EventManager::FilterEvents(EventViewerDisplayOptions &options)
 		bool isWrite = evt.Operation.Type == MemoryOperationType::Write || evt.Operation.Type == MemoryOperationType::DmaWrite;
 		bool isDma = evt.Operation.Type == MemoryOperationType::DmaWrite || evt.Operation.Type == MemoryOperationType::DmaRead;
 		bool showEvent = false;
-		uint32_t color = 0;
 		switch(evt.Type) {
 			case DebugEventType::Breakpoint: showEvent = options.ShowMarkedBreakpoints;break;
 			case DebugEventType::Irq: showEvent = options.ShowIrq; break;

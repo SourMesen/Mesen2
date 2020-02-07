@@ -14,7 +14,7 @@ private:
 
 public:
 	GifRecorder();
-	~GifRecorder();
+	virtual ~GifRecorder();
 
 	bool StartRecording(string filename, uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps) override;
 	void StopRecording() override;
