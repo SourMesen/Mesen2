@@ -1,10 +1,13 @@
 #include "stdafx.h"
 
-//TODO: Use non-experimental namespace (once it is officially supported by VC & GCC)
 #ifndef LIBRETRO
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <filesystem>
-namespace fs = std::filesystem;
+#if __has_include(<filesystem>)
+	#include <filesystem>
+	namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+	#include <experimental/filesystem>
+	namespace fs = std::experimental::filesystem;
+#endif
 #endif
 
 #include <unordered_set>
