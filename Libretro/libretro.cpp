@@ -80,6 +80,7 @@ extern "C" {
 		_messageManager.reset(new LibretroMessageManager(logCallback, retroEnv));
 
 		AudioConfig audioConfig = _console->GetSettings()->GetAudioConfig();
+		audioConfig.DisableDynamicSampleRate = true;
 		audioConfig.SampleRate = 32000;
 		_console->GetSettings()->SetAudioConfig(audioConfig);
 
@@ -421,6 +422,16 @@ extern "C" {
 		if(retroEnv(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated) {
 			update_settings();
 		}
+
+		bool isFastForward = false;
+		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		if(retroEnv(RETRO_ENVIRONMENT_GET_FASTFORWARDING, &isFastForward) && isFastForward) {
+			//Allow core to skip frame rendering during fast forwarding
+			cfg.EmulationSpeed = 0;
+		} else {
+			cfg.EmulationSpeed = 100;
+		}
+		_console->GetSettings()->SetEmulationConfig(cfg);
 
 		_console->RunSingleFrame();
 

@@ -1,16 +1,14 @@
 #pragma once
 #include "stdafx.h"
+#include <chrono>
+using namespace std::chrono;
 
 class Timer
 {
 	private:
-#ifndef LIBRETRO
-		#ifdef WIN32
-		double _frequency = 0.0;
-		#endif
-		uint64_t _start;
-#endif
-	public:
+		high_resolution_clock::time_point _start;
+
+public:
 		Timer();
 		void Reset();
 		double GetElapsedMS();

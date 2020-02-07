@@ -1448,6 +1448,7 @@ void Ppu::SendFrame()
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	bool isRewinding = _console->GetRewindManager()->IsRewinding();
+
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 #else
@@ -1456,11 +1457,11 @@ void Ppu::SendFrame()
 	} else {
 		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
 	}
+#endif
 
 	if(!_skipRender) {
 		_frameSkipTimer.Reset();
 	}
-#endif
 }
 
 
