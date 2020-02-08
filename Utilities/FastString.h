@@ -27,7 +27,7 @@ public:
 	void Write(const char* str, int size)
 	{
 		if(_lowerCase) {
-			for(size_t i = 0; i < size; i++) {
+			for(int i = 0; i < size; i++) {
 				_buffer[_pos + i] = ::tolower(str[i]);
 			}
 		} else {

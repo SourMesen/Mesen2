@@ -97,7 +97,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 	int tileCount = options.PageSize / bytesPerTile;
 	
 	uint16_t bgColor = (cgram[1] << 8) | cgram[0];
-	for(int i = 0; i < outputSize / sizeof(uint32_t); i++) {
+	for(uint32_t i = 0; i < outputSize / sizeof(uint32_t); i++) {
 		outBuffer[i] = ToArgb(bgColor);
 	}
 

@@ -21,7 +21,6 @@ SOURCES_C   := $(SEVENZIP_DIR)/7zAlloc.c \
 
 SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/AluMulDiv.cpp \
-               $(CORE_DIR)/AviRecorder.cpp \
                $(CORE_DIR)/BaseCartridge.cpp \
                $(CORE_DIR)/BaseControlDevice.cpp \
                $(CORE_DIR)/BaseRenderer.cpp \
@@ -83,6 +82,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/PcmReader.cpp \
                $(CORE_DIR)/Ppu.cpp \
                $(CORE_DIR)/PpuTools.cpp \
+               $(CORE_DIR)/Profiler.cpp \
                $(CORE_DIR)/RegisterHandlerB.cpp \
                $(CORE_DIR)/RewindData.cpp \
                $(CORE_DIR)/RewindManager.cpp \
@@ -114,6 +114,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/WaveRecorder.cpp \
                $(UTIL_DIR)/ArchiveReader.cpp \
                $(UTIL_DIR)/AutoResetEvent.cpp \
+               $(UTIL_DIR)/AviRecorder.cpp \
                $(UTIL_DIR)/AviWriter.cpp \
                $(UTIL_DIR)/blip_buf.cpp \
                $(UTIL_DIR)/BpsPatcher.cpp \
@@ -121,6 +122,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(UTIL_DIR)/CRC32.cpp \
                $(UTIL_DIR)/Equalizer.cpp \
                $(UTIL_DIR)/FolderUtilities.cpp \
+               $(UTIL_DIR)/GifRecorder.cpp \
                $(UTIL_DIR)/HexUtilities.cpp \
                $(UTIL_DIR)/IpsPatcher.cpp \
                $(UTIL_DIR)/md5.cpp \

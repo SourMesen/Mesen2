@@ -8,6 +8,8 @@
 #include "MemoryDumper.h"
 #include "DebugTypes.h"
 
+static constexpr int32_t ResetFunctionIndex = -1;
+
 Profiler::Profiler(Debugger* debugger)
 {
 	_debugger = debugger;
@@ -104,11 +106,11 @@ void Profiler::InternalReset()
 {
 	_prevMasterClock = _memoryManager->GetMasterClock();
 	_currentCycleCount = 0;
-	_currentFunction = Profiler::ResetFunctionIndex;
+	_currentFunction = ResetFunctionIndex;
 	
 	_functions.clear();
-	_functions[Profiler::ResetFunctionIndex] = ProfiledFunction();
-	_functions[Profiler::ResetFunctionIndex].Address = { Profiler::ResetFunctionIndex, SnesMemoryType::Register };
+	_functions[ResetFunctionIndex] = ProfiledFunction();
+	_functions[ResetFunctionIndex].Address = { ResetFunctionIndex, SnesMemoryType::Register };
 }
 
 void Profiler::GetProfilerData(ProfiledFunction* profilerData, uint32_t& functionCount)

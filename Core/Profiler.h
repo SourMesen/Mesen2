@@ -20,8 +20,6 @@ struct ProfiledFunction
 class Profiler
 {
 private:
-	static constexpr int32_t ResetFunctionIndex = -1;
-
 	Debugger* _debugger;
 	MemoryManager* _memoryManager;
 
