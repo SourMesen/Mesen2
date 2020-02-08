@@ -12,6 +12,7 @@
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "EmuSettings.h"
+#include "Profiler.h"
 
 SpcDebugger::SpcDebugger(Debugger* debugger)
 {
@@ -30,6 +31,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 
 void SpcDebugger::Reset()
 {
+	_callstackManager.reset(new CallstackManager(_debugger));
 	_prevOpCode = 0xFF;
 }
 
@@ -64,10 +66,12 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 			//JSR, BRK
 			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Spc);
 			uint16_t returnPc = _prevProgramCounter + opSize;
-			_callstackManager->Push(_prevProgramCounter, spcState.PC, returnPc, StackFrameFlags::None);
+			AddressInfo src = _spc->GetAbsoluteAddress(_prevProgramCounter);
+			AddressInfo ret = _spc->GetAbsoluteAddress(returnPc);
+			_callstackManager->Push(src, _prevProgramCounter, addressInfo, spcState.PC, ret, returnPc, StackFrameFlags::None);
 		} else if(_prevOpCode == 0x6F || _prevOpCode == 0x7F) {
 			//RTS, RTI
-			_callstackManager->Pop(spcState.PC);
+			_callstackManager->Pop(addressInfo, spcState.PC);
 		}
 
 		if(_step->BreakAddress == (int32_t)spcState.PC && (_prevOpCode == 0x6F || _prevOpCode == 0x7F)) {

@@ -2,13 +2,19 @@
 #include "CallstackManager.h"
 #include "Debugger.h"
 #include "DebugBreakHelper.h"
+#include "Profiler.h"
 
 CallstackManager::CallstackManager(Debugger* debugger)
 {
 	_debugger = debugger;
+	_profiler.reset(new Profiler(debugger));
 }
 
-void CallstackManager::Push(uint32_t srcAddr, uint32_t destAddr, uint32_t returnAddress, StackFrameFlags flags)
+CallstackManager::~CallstackManager()
+{
+}
+
+void CallstackManager::Push(AddressInfo &src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t returnAddress, StackFrameFlags flags)
 {
 	if(_callstack.size() >= 511) {
 		//Ensure callstack stays below 512 entries - games can use various tricks that could keep making the callstack grow
@@ -20,13 +26,15 @@ void CallstackManager::Push(uint32_t srcAddr, uint32_t destAddr, uint32_t return
 	stackFrame.Target = destAddr;
 
 	stackFrame.Return = returnAddress;
+	stackFrame.AbsReturn = ret;
 
 	stackFrame.Flags = flags;
 
 	_callstack.push_back(stackFrame);
+	_profiler->StackFunction(dest, flags);
 }
 
-void CallstackManager::Pop(uint32_t destAddress)
+void CallstackManager::Pop(AddressInfo& dest, uint32_t destAddress)
 {
 	if(_callstack.empty()) {
 		return;
@@ -34,6 +42,7 @@ void CallstackManager::Pop(uint32_t destAddress)
 
 	StackFrameInfo prevFrame = _callstack.back();
 	_callstack.pop_back();
+	_profiler->UnstackFunction();
 
 	uint32_t returnAddr = prevFrame.Return;
 
@@ -46,6 +55,7 @@ void CallstackManager::Pop(uint32_t destAddress)
 				foundMatch = true;
 				for(int j = (int)_callstack.size() - i - 1; j >= 0; j--) {
 					_callstack.pop_back();
+					_profiler->UnstackFunction();
 				}
 				break;
 			}
@@ -53,7 +63,7 @@ void CallstackManager::Pop(uint32_t destAddress)
 
 		if(!foundMatch) {
 			//Couldn't find a matching frame, replace the current one
-			Push(returnAddr, destAddress, returnAddr, StackFrameFlags::None);
+			Push(prevFrame.AbsReturn, returnAddr, dest, destAddress, prevFrame.AbsReturn, returnAddr, StackFrameFlags::None);
 		}
 	}
 }
@@ -76,4 +86,9 @@ int32_t CallstackManager::GetReturnAddress()
 		return -1;
 	}
 	return _callstack.back().Return;
+}
+
+Profiler* CallstackManager::GetProfiler()
+{
+	return _profiler.get();
 }

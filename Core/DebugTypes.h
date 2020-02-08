@@ -221,6 +221,7 @@ struct StackFrameInfo
 	uint32_t Source;
 	uint32_t Target;
 	uint32_t Return;
+	AddressInfo AbsReturn;
 	StackFrameFlags Flags;
 };
 

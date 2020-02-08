@@ -27,6 +27,7 @@ namespace Mesen.GUI.Config
 		public SpriteViewerConfig SpriteViewer = new SpriteViewerConfig();
 		public DbgIntegrationConfig DbgIntegration = new DbgIntegrationConfig();
 		public ScriptWindowConfig ScriptWindow = new ScriptWindowConfig();
+		public ProfilerConfig Profiler = new ProfilerConfig();
 
 		public DebugInfo()
 		{		

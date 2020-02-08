@@ -18,6 +18,7 @@ namespace Mesen.GUI.Debugger
 		private NotificationListener _notifListener;
 		private CpuType _cpuType;
 		private bool _firstBreak = true;
+		private int _destAddress = -1;
 
 		public CpuType CpuType { get { return _cpuType; } }
 
@@ -331,7 +332,11 @@ namespace Mesen.GUI.Debugger
 
 		public void GoToAddress(int address)
 		{
-			ctrlDisassemblyView.ScrollToAddress((uint)address);
+			if(_firstBreak) {
+				_destAddress = address;
+			} else {
+				ctrlDisassemblyView.ScrollToAddress((uint)address);
+			}
 		}
 
 		private void GoToAddress()
@@ -468,10 +473,15 @@ namespace Mesen.GUI.Debugger
 					this.BeginInvoke((MethodInvoker)(() => {
 						ProcessBreakEvent(evt, state, activeAddress);
 
-						if(_firstBreak && !ConfigManager.Config.Debug.Debugger.BreakOnOpen) {
-							DebugApi.ResumeExecution();
+						if(_firstBreak) {
+							_firstBreak = false;
+							if(!ConfigManager.Config.Debug.Debugger.BreakOnOpen) {
+								DebugApi.ResumeExecution();
+							}
+							if(_destAddress >= 0) {
+								GoToAddress(_destAddress);
+							}
 						}
-						_firstBreak = false;
 					}));
 					break;
 				}

@@ -272,6 +272,7 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Config\ProfilerConfig.cs" />
     <Compile Include="Debugger\Config\ScriptWindowConfig.cs" />
     <Compile Include="Debugger\Config\SpriteViewerConfig.cs" />
     <Compile Include="Debugger\Config\RegisterViewerConfig.cs" />
@@ -379,6 +380,18 @@
     </Compile>
     <Compile Include="Debugger\PpuViewer\SpriteInfo.cs" />
     <Compile Include="Debugger\PpuViewer\WindowRefreshManager.cs" />
+    <Compile Include="Debugger\Profiler\ctrlProfiler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Profiler\ctrlProfiler.Designer.cs">
+      <DependentUpon>ctrlProfiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\Profiler\frmProfiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\Profiler\frmProfiler.Designer.cs">
+      <DependentUpon>frmProfiler.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Scripts\FastColoredTextBox\AutocompleteItem.cs" />
     <Compile Include="Debugger\Scripts\FastColoredTextBox\AutocompleteMenu.cs">
       <SubType>UserControl</SubType>
@@ -1083,6 +1096,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\HexBox\HexBox.resx">
       <DependentUpon>HexBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Profiler\ctrlProfiler.resx">
+      <DependentUpon>ctrlProfiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Profiler\frmProfiler.resx">
+      <DependentUpon>frmProfiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Scripts\FastColoredTextBox\FastColoredTextBox.resx">
       <DependentUpon>FastColoredTextBox.cs</DependentUpon>

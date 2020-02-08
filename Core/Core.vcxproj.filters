@@ -488,6 +488,9 @@
     <ClInclude Include="Sa1BwRamHandler.h">
       <Filter>SNES\Coprocessors\SA1</Filter>
     </ClInclude>
+    <ClInclude Include="Profiler.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -772,6 +775,9 @@
     </ClCompile>
     <ClCompile Include="Msu1.cpp">
       <Filter>SNES\Coprocessors\MSU1</Filter>
+    </ClCompile>
+    <ClCompile Include="Profiler.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

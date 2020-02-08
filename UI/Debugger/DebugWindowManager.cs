@@ -39,6 +39,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.EventViewer: frm = new frmEventViewer(); frm.Icon = Properties.Resources.NesEventViewer; break;
 					case DebugWindow.ScriptWindow: frm = new frmScript(); frm.Icon = Properties.Resources.Script; break;
 					case DebugWindow.RegisterViewer: frm = new frmRegisterViewer(); frm.Icon = Properties.Resources.RegisterIcon; break;
+					case DebugWindow.Profiler: frm = new frmProfiler(); frm.Icon = Properties.Resources.PerfTracker; break;
 				}
 
 				if(_openedWindows.Count == 0) {
@@ -120,6 +121,7 @@ namespace Mesen.GUI.Debugger
 				case DebugWindow.GsuDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Gsu);
 				case DebugWindow.TraceLogger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmTraceLogger));
 				case DebugWindow.EventViewer: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmEventViewer));
+				case DebugWindow.Profiler: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmProfiler));
 			}
 
 			return null;
@@ -166,6 +168,7 @@ namespace Mesen.GUI.Debugger
 		SpriteViewer,
 		EventViewer,
 		ScriptWindow,
-		RegisterViewer
+		RegisterViewer,
+		Profiler
 	}
 }

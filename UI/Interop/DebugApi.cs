@@ -130,6 +130,19 @@ namespace Mesen.GUI
 			return callstack;
 		}
 
+		[DllImport(DllPath)] public static extern void ResetProfiler(CpuType type);
+		[DllImport(DllPath, EntryPoint = "GetProfilerData")] private static extern void GetProfilerDataWrapper(CpuType type, [In, Out]ProfiledFunction[] profilerData, ref UInt32 functionCount);
+		public static ProfiledFunction[] GetProfilerData(CpuType type)
+		{
+			ProfiledFunction[] profilerData = new ProfiledFunction[100000];
+			UInt32 functionCount = 0;
+
+			DebugApi.GetProfilerDataWrapper(type, profilerData, ref functionCount);
+			Array.Resize(ref profilerData, (int)functionCount);
+
+			return profilerData;
+		}
+
 		[DllImport(DllPath, EntryPoint = "GetMemoryAccessStamps")] private static extern void GetMemoryAccessStampsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType, [In,Out]UInt64[] stamps);
 		public static UInt64[] GetMemoryAccessStamps(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType)
 		{
@@ -444,6 +457,7 @@ namespace Mesen.GUI
 		public UInt32 Source;
 		public UInt32 Target;
 		public UInt32 Return;
+		public AddressInfo AbsReturn;
 		public StackFrameFlags Flags;
 	};
 
@@ -532,4 +546,14 @@ namespace Mesen.GUI
 		IndexMode8 = 0x10,
 		MemoryMode8 = 0x20,
 	}
+
+	public struct ProfiledFunction
+	{
+		public UInt64 ExclusiveCycles;
+		public UInt64 InclusiveCycles;
+		public UInt64 CallCount;
+		public UInt64 MinCycles;
+		public UInt64 MaxCycles;
+		public AddressInfo Address;
+	};
 }

@@ -39,6 +39,10 @@ namespace Mesen.GUI.Debugger
 			_lastUpdate = _timer.ElapsedTicks;
 			_window.RefreshData();
 			((Form)_window).BeginInvoke((Action)(() => {
+				if(((Form)_window).IsDisposed) {
+					return;
+				}
+
 				_window.RefreshViewer();
 
 				//Limit FPS to 3x time it takes for a single update (rough estimate), and cap based on requested fps.

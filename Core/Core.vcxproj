@@ -127,6 +127,7 @@
     <ClInclude Include="PcmReader.h" />
     <ClInclude Include="PlayerListMessage.h" />
     <ClInclude Include="PpuTools.h" />
+    <ClInclude Include="Profiler.h" />
     <ClInclude Include="RecordedRomTest.h" />
     <ClInclude Include="RegisterHandlerB.h" />
     <ClInclude Include="CpuTypes.h" />
@@ -273,6 +274,7 @@
     <ClCompile Include="PcmReader.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuTools.cpp" />
+    <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="RecordedRomTest.cpp" />
     <ClCompile Include="RegisterHandlerB.cpp" />
     <ClCompile Include="RewindData.cpp" />

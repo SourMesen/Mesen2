@@ -20,6 +20,7 @@
 #include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
+#include "Profiler.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {
@@ -50,6 +51,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 void CpuDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
+	_callstackManager.reset(new CallstackManager(_debugger));
 	_prevOpCode = 0xFF;
 }
 
@@ -88,10 +90,12 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			//JSR, JSL
 			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, _cpuType);
 			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
-			_callstackManager->Push(_prevProgramCounter, pc, returnPc, StackFrameFlags::None);
+			AddressInfo srcAddress = GetMemoryMappings().GetAbsoluteAddress(_prevProgramCounter);
+			AddressInfo retAddress = GetMemoryMappings().GetAbsoluteAddress(returnPc);
+			_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
 		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
 			//RTS, RTL, RTI
-			_callstackManager->Pop(pc);
+			_callstackManager->Pop(addressInfo, pc);
 		}
 
 		if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
@@ -205,7 +209,10 @@ void CpuDebugger::Step(int32_t stepCount, StepType type)
 
 void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
-	_callstackManager->Push(_prevProgramCounter, currentPc, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
+	AddressInfo src = GetMemoryMappings().GetAbsoluteAddress(_prevProgramCounter);
+	AddressInfo ret = GetMemoryMappings().GetAbsoluteAddress(originalPc);
+	AddressInfo dest = GetMemoryMappings().GetAbsoluteAddress(currentPc);
+	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
