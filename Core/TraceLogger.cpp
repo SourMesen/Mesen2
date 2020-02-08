@@ -38,6 +38,13 @@ TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 TraceLogger::~TraceLogger()
 {
 	StopLogging();
+
+	delete[] _stateCache;
+	delete[] _stateCacheCopy;
+	delete[] _disassemblyCache;
+	delete[] _disassemblyCacheCopy;
+	delete[] _logCpuType;
+	delete[] _logCpuTypeCopy;
 }
 
 template<typename T>
