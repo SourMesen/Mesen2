@@ -3,15 +3,16 @@
 #include "CpuTypes.h"
 #include "Cpu.h"
 #include "Console.h"
+#include "EmuSettings.h"
 #include "DisassemblyInfo.h"
 #include "LabelManager.h"
 #include "DummyCpu.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
-void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager)
+void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
-	FastString str;
+	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 
 	uint8_t opCode = info.GetOpCode();
 	AddrMode addrMode = CpuDisUtils::OpMode[opCode];
@@ -21,13 +22,13 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	uint32_t opAddr = CpuDisUtils::GetOperandAddress(info, memoryAddr);
 	uint32_t opSize = info.GetOpSize();
 
-	FastString operand;
+	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	if(opSize > 1) {
 		if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng || opSize == 4) {
 			AddressInfo address { (int32_t)opAddr, SnesMemoryType::CpuMemory };
 			string label = labelManager ? labelManager->GetLabel(address) : "";
 			if(label.size()) {
-				operand.Write(label);
+				operand.Write(label, true);
 			} else {
 				operand.WriteAll('$', HexUtilities::ToHex24(opAddr));
 			}

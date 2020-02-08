@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "DisassemblyInfo.h"
 #include "CpuTypes.h"
+#include "EmuSettings.h"
 #include "MemoryDumper.h"
 #include "CpuDisUtils.h"
 #include "SpcDisUtils.h"
@@ -45,18 +46,18 @@ void DisassemblyInfo::Reset()
 	_initialized = false;
 }
 
-void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelManager* labelManager)
+void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
 		case CpuType::Cpu:
-			CpuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager);
+			CpuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings);
 			break;
 
-		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
-		case CpuType::NecDsp: NecDspDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
-		case CpuType::Gsu: GsuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
-		case CpuType::Cx4: Cx4DisUtils::GetDisassembly(*this, out, memoryAddr, labelManager); break;
+		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
+		case CpuType::NecDsp: NecDspDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
+		case CpuType::Gsu: GsuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
+		case CpuType::Cx4: Cx4DisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
 	}
 }
 

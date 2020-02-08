@@ -4,6 +4,7 @@
 class Console;
 class MemoryDumper;
 class LabelManager;
+class EmuSettings;
 
 enum class SnesMemoryType;
 enum class CpuType : uint8_t;
@@ -26,7 +27,7 @@ public:
 	bool IsValid(uint8_t cpuFlags);
 	void Reset();
 
-	void GetDisassembly(string &out, uint32_t memoryAddr, LabelManager *labelManager);
+	void GetDisassembly(string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings* settings);
 	
 	CpuType GetCpuType();
 	uint8_t GetOpCode();

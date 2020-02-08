@@ -6,22 +6,33 @@ class FastString
 private:
 	char _buffer[1000];
 	uint16_t _pos = 0;
+	bool _lowerCase = false;
 
 	void WriteAll() {}
 
 public:
-	FastString() {}
+	FastString(bool lowerCase = false) { _lowerCase = lowerCase; }
 	FastString(const char* str, int size) { Write(str, size); }
 	FastString(string &str) { Write(str); }
 
 	void Write(char c)
 	{
-		_buffer[_pos++] = c;
+		if(_lowerCase) {
+			_buffer[_pos++] = ::tolower(c);
+		} else {
+			_buffer[_pos++] = c;
+		}
 	}
 
 	void Write(const char* str, int size)
 	{
-		memcpy(_buffer + _pos, str, size);
+		if(_lowerCase) {
+			for(size_t i = 0; i < size; i++) {
+				_buffer[_pos + i] = ::tolower(str[i]);
+			}
+		} else {
+			memcpy(_buffer + _pos, str, size);
+		}
 		_pos += size;
 	}
 
@@ -37,9 +48,15 @@ public:
 		Write(str, (uint16_t)strlen(str));
 	}
 
-	void Write(string &str)
+	void Write(string &str, bool preserveCase = false)
 	{
-		memcpy(_buffer + _pos, str.c_str(), str.size());
+		if(_lowerCase && !preserveCase) {
+			for(size_t i = 0; i < str.size(); i++) {
+				_buffer[_pos + i] = ::tolower(str[i]);
+			}
+		} else {
+			memcpy(_buffer + _pos, str.c_str(), str.size());
+		}
 		_pos += (uint16_t)str.size();
 	}
 

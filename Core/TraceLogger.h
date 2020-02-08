@@ -12,6 +12,7 @@ class Console;
 class Debugger;
 class LabelManager;
 class MemoryDumper;
+class EmuSettings;
 struct DebugState;
 
 struct TraceLoggerOptions
@@ -77,6 +78,7 @@ private:
 	string _outputBuffer;
 	ofstream _outputFile;
 	Console* _console;
+	EmuSettings* _settings;
 	LabelManager* _labelManager;
 	MemoryDumper* _memoryDumper;
 

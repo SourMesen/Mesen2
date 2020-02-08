@@ -1,17 +1,18 @@
 #include "stdafx.h"
 #include "NecDspDisUtils.h"
 #include "DisassemblyInfo.h"
+#include "EmuSettings.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
-void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager)
+void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings* settings)
 {
-	constexpr const char* aluOperations[16] = { "NOP ", "OR ", "AND ", "XOR ", "SUB ", "ADD ", "SBC ", "ADC ", "DEC" , "INC ", "CMP ", "SHR1 ", "SHL1 ", "SHL2 ", "SHL4 ", "XCHG " };
+	constexpr const char* aluOperations[16] = { "NOP", "OR", "AND", "XOR", "SUB", "ADD", "SBC", "ADC", "DEC" , "INC", "CMP", "SHR1", "SHL1", "SHL2", "SHL4", "XCHG" };
 	constexpr const char* sourceNames[16] = { "TRB", "A", "B", "TR", "DP", "RP", "ROM", "SGN", "DR", "DRNF", "SR", "SIM", "SIL" ,"K", "L", "MEM" };
 	constexpr const char* destNames[16] = { "NON", "A", "B", "TR", "DP", "RP", "DR", "SR", "SOL", "SOM", "K", "KLR", "KLM", "L", "TRB", "MEM" };
 	constexpr const char* dataPointerOp[4] = { "DPL:NOP", "DPL:INC", "DPL:DEC", "DPL:CLR" };
 
-	FastString str;
+	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	uint32_t opCode = *(uint32_t*)info.GetByteCode();
 	uint8_t operationType = (opCode >> 22) & 0x03;
 
@@ -27,10 +28,10 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 				uint8_t pSelect = (opCode >> 20) & 0x03;
 
 				switch(pSelect) {
-					case 0: str.Write("RAM, "); break;
-					case 1: str.WriteAll(sourceNames[source], ", "); break;
-					case 2: str.Write("M, "); break;
-					case 3: str.Write("N, "); break;
+					case 0: str.Write("RAM,"); break;
+					case 1: str.WriteAll(sourceNames[source], ","); break;
+					case 2: str.Write("M,"); break;
+					case 3: str.Write("N,"); break;
 				}
 			}
 
@@ -41,7 +42,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		if(dest) {
 			str.Delimiter(" | ");
 			str.Write("MOV ");
-			str.WriteAll(sourceNames[source], ", ");
+			str.WriteAll(sourceNames[source], ",");
 			str.Write(destNames[dest]);
 		}
 		

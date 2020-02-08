@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "Cx4DisUtils.h"
 #include "DisassemblyInfo.h"
+#include "EmuSettings.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
 
-void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager)
+void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings *settings)
 {
-	FastString str;
+	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 
 	uint8_t op = info.GetByteCode()[1] & 0xFC;
 	uint8_t param1 = info.GetByteCode()[1] & 0x03;
@@ -124,11 +125,11 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 		case 0x40: str.Write("INC MAR"); break;
 		case 0x44: str.Write("???"); break;
-		case 0x48: str.Write("CMPR "); writeSrc(); str.Write(", "); writeShiftedA(); break;
-		case 0x4C: str.WriteAll("CMPR #$", HexUtilities::ToHex(param2)); str.Write(", "); writeShiftedA(); break;
+		case 0x48: str.Write("CMPR "); writeSrc(); str.Write(","); writeShiftedA(); break;
+		case 0x4C: str.WriteAll("CMPR #$", HexUtilities::ToHex(param2)); str.Write(","); writeShiftedA(); break;
 
-		case 0x50: str.Write("CMP "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0x54: str.WriteAll("CMP "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
+		case 0x50: str.Write("CMP "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0x54: str.WriteAll("CMP "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
 		case 0x58:
 			if(param1 == 1) {
 				str.Write("SXB");
@@ -140,11 +141,11 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 			break;
 		case 0x5C: str.Write("???"); break;
 
-		case 0x60: str.Write("LD "); writeDest(); str.Write(", "); writeSrc(); break;
+		case 0x60: str.Write("LD "); writeDest(); str.Write(","); writeSrc(); break;
 		case 0x64: str.Write("LD "); writeDest(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
 
-		case 0x68: str.WriteAll("RDRAM RAM:", '0' + param1, ", A"); break;
-		case 0x6C: str.WriteAll("RDRAM RAM:", '0' + param1, ", DPR+#$", HexUtilities::ToHex(param2)); break;
+		case 0x68: str.WriteAll("RDRAM RAM:", '0' + param1, ",A"); break;
+		case 0x6C: str.WriteAll("RDRAM RAM:", '0' + param1, ",DPR+#$", HexUtilities::ToHex(param2)); break;
 
 		case 0x70: str.Write("RDROM (a)"); break;
 		case 0x74: str.WriteAll("RDROM (#$", HexUtilities::ToHex((param1 << 8) | param2), ")"); break;
@@ -152,54 +153,54 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 		case 0x7C: 
 			if(param1 <= 1) {
-				str.WriteAll("LD P", param1 ? "H" : "L", ", #$", HexUtilities::ToHex(param2));
+				str.WriteAll("LD P", param1 ? "H" : "L", ",#$", HexUtilities::ToHex(param2));
 			} else {
 				str.Write("???");
 			}
 			break;
 
-		case 0x80: str.Write("ADD "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0x84: str.WriteAll("ADD "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
-		case 0x88: str.Write("SUBR "); writeSrc(); str.Write(", "); writeShiftedA(); break;
-		case 0x8C: str.WriteAll("SUBR #$", HexUtilities::ToHex(param2)); str.Write(", "); writeShiftedA(); break;
+		case 0x80: str.Write("ADD "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0x84: str.WriteAll("ADD "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
+		case 0x88: str.Write("SUBR "); writeSrc(); str.Write(","); writeShiftedA(); break;
+		case 0x8C: str.WriteAll("SUBR #$", HexUtilities::ToHex(param2)); str.Write(","); writeShiftedA(); break;
 
-		case 0x90: str.Write("SUB "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0x94: str.WriteAll("SUB "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
+		case 0x90: str.Write("SUB "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0x94: str.WriteAll("SUB "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
 		case 0x98: str.Write("SMUL A, "); writeSrc(); break;
-		case 0x9C: str.WriteAll("SMUL A, #$", HexUtilities::ToHex(param2)); break;
+		case 0x9C: str.WriteAll("SMUL A,#$", HexUtilities::ToHex(param2)); break;
 
-		case 0xA0: str.Write("XNOR "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0xA4: str.WriteAll("XNOR "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
-		case 0xA8: str.Write("XOR "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0xAC: str.WriteAll("XOR "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
+		case 0xA0: str.Write("XNOR "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0xA4: str.WriteAll("XNOR "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
+		case 0xA8: str.Write("XOR "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0xAC: str.WriteAll("XOR "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
 
-		case 0xB0: str.Write("AND "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0xB4: str.WriteAll("AND "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
-		case 0xB8: str.Write("OR "); writeShiftedA(); str.Write(", "); writeSrc(); break;
-		case 0xBC: str.WriteAll("OR "); writeShiftedA(); str.WriteAll(", #$", HexUtilities::ToHex(param2)); break;
+		case 0xB0: str.Write("AND "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0xB4: str.WriteAll("AND "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
+		case 0xB8: str.Write("OR "); writeShiftedA(); str.Write(","); writeSrc(); break;
+		case 0xBC: str.WriteAll("OR "); writeShiftedA(); str.WriteAll(",#$", HexUtilities::ToHex(param2)); break;
 
-		case 0xC0: str.Write("SHR A, "); writeSrc(); break;
-		case 0xC4: str.WriteAll("SHR A, #$", HexUtilities::ToHex(param2 & 0x1F)); break;
-		case 0xC8: str.Write("ASR A, "); writeSrc(); break;
-		case 0xCC: str.WriteAll("ASR A, #$", HexUtilities::ToHex(param2 & 0x1F)); break;
+		case 0xC0: str.Write("SHR A,"); writeSrc(); break;
+		case 0xC4: str.WriteAll("SHR A,#$", HexUtilities::ToHex(param2 & 0x1F)); break;
+		case 0xC8: str.Write("ASR A,"); writeSrc(); break;
+		case 0xCC: str.WriteAll("ASR A,#$", HexUtilities::ToHex(param2 & 0x1F)); break;
 
-		case 0xD0: str.Write("ROR A, "); writeSrc(); break;
-		case 0xD4: str.WriteAll("ROR A, #$", HexUtilities::ToHex(param2 & 0x1F)); break;
-		case 0xD8: str.Write("SHL A, "); writeSrc(); break;
-		case 0xDC: str.WriteAll("SHL A, #$", HexUtilities::ToHex(param2 & 0x1F)); break;
+		case 0xD0: str.Write("ROR A,"); writeSrc(); break;
+		case 0xD4: str.WriteAll("ROR A,#$", HexUtilities::ToHex(param2 & 0x1F)); break;
+		case 0xD8: str.Write("SHL A,"); writeSrc(); break;
+		case 0xDC: str.WriteAll("SHL A,#$", HexUtilities::ToHex(param2 & 0x1F)); break;
 
 		case 0xE0: 
 			if(param1 <= 1) {
-				str.Write("ST "); writeSrc(); str.WriteAll(", ", param1 ? "MDR" : "A");
+				str.Write("ST "); writeSrc(); str.WriteAll(",", param1 ? "MDR" : "A");
 			} else {
 				str.Write("???");
 			}
 			break;
 		case 0xE4: str.Write("???"); break;
-		case 0xE8: str.WriteAll("WRRAM A, RAM:", '0' + param1); break;
-		case 0xEC: str.WriteAll("WRRAM DPR+#$", HexUtilities::ToHex(param2), ", RAM:", '0' + param1); break;
+		case 0xE8: str.WriteAll("WRRAM A,RAM:", '0' + param1); break;
+		case 0xEC: str.WriteAll("WRRAM DPR+#$", HexUtilities::ToHex(param2), ",RAM:", '0' + param1); break;
 
-		case 0xF0: str.WriteAll("SWAP A, R", std::to_string(param2 & 0x0F)); break;
+		case 0xF0: str.WriteAll("SWAP A,R", std::to_string(param2 & 0x0F)); break;
 		case 0xF4: str.Write("???"); break;
 		case 0xF8: str.Write("???"); break;
 		case 0xFC: str.Write("STOP"); break;

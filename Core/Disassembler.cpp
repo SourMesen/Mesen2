@@ -29,6 +29,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_labelManager = debugger->GetLabelManager();
 	_console = console.get();
 	_spc = console->GetSpc().get();
+	_settings = console->GetSettings().get();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_memoryManager = console->GetMemoryManager().get();
 
@@ -212,10 +213,10 @@ void Disassembler::Disassemble(CpuType cpuType)
 	int32_t maxAddr = isSpc ? 0xFFFF : 0xFFFFFF;
 	results.clear();
 
-	bool disUnident = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
-	bool disData = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
-	bool showUnident = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
-	bool showData = _console->GetSettings()->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
+	bool disUnident = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
+	bool disData = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
+	bool showUnident = _settings->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
+	bool showData = _settings->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
 
 	bool inUnknownBlock = false;
 	bool inVerifiedBlock = false;
@@ -520,7 +521,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				}
 
 				string text;
-				disInfo.GetDisassembly(text, result.CpuAddress, _labelManager.get());
+				disInfo.GetDisassembly(text, result.CpuAddress, _labelManager.get(), _settings);
 				memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
 
 				disInfo.GetByteCode(data.ByteCode);

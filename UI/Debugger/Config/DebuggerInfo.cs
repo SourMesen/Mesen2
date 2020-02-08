@@ -17,6 +17,7 @@ namespace Mesen.GUI.Config
 		public int? SplitterDistance = null;
 
 		public bool ShowByteCode = false;
+		public bool UseLowerCaseDisassembly = false;
 
 		public bool BreakOnBrk = false;
 		public bool BreakOnCop = false;
@@ -79,6 +80,7 @@ namespace Mesen.GUI.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Disassemble);
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseAltSpcOpNames, UseAltSpcOpNames);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseLowerCaseDisassembly, UseLowerCaseDisassembly);
 		}
 	}
 	

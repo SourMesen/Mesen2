@@ -90,6 +90,7 @@
 			this.mnuShowData = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuShowByteCode = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuUseLowerCaseDisassembly = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuUseAltSpcOpNames = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOnPowerCycleReset = new System.Windows.Forms.ToolStripMenuItem();
@@ -521,6 +522,7 @@
             this.mnuVerifiedData,
             this.toolStripMenuItem6,
             this.mnuShowByteCode,
+            this.mnuUseLowerCaseDisassembly,
             this.mnuUseAltSpcOpNames});
 			this.mnuDisassemblyOptions.Name = "mnuDisassemblyOptions";
 			this.mnuDisassemblyOptions.Size = new System.Drawing.Size(209, 22);
@@ -534,7 +536,7 @@
             this.mnuShowUnident});
 			this.mnuUnidentifiedData.Image = global::Mesen.GUI.Properties.Resources.UnidentifiedData;
 			this.mnuUnidentifiedData.Name = "mnuUnidentifiedData";
-			this.mnuUnidentifiedData.Size = new System.Drawing.Size(217, 22);
+			this.mnuUnidentifiedData.Size = new System.Drawing.Size(227, 22);
 			this.mnuUnidentifiedData.Text = "Unidentified Code/Data";
 			this.mnuUnidentifiedData.DropDownOpening += new System.EventHandler(this.mnuUnidentifiedData_DropDownOpening);
 			// 
@@ -564,7 +566,7 @@
             this.mnuShowData});
 			this.mnuVerifiedData.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
 			this.mnuVerifiedData.Name = "mnuVerifiedData";
-			this.mnuVerifiedData.Size = new System.Drawing.Size(217, 22);
+			this.mnuVerifiedData.Size = new System.Drawing.Size(227, 22);
 			this.mnuVerifiedData.Text = "Verified Data";
 			this.mnuVerifiedData.DropDownOpening += new System.EventHandler(this.mnuVerifiedData_DropDownOpening);
 			// 
@@ -589,20 +591,27 @@
 			// toolStripMenuItem6
 			// 
 			this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-			this.toolStripMenuItem6.Size = new System.Drawing.Size(214, 6);
+			this.toolStripMenuItem6.Size = new System.Drawing.Size(224, 6);
 			// 
 			// mnuShowByteCode
 			// 
 			this.mnuShowByteCode.CheckOnClick = true;
 			this.mnuShowByteCode.Name = "mnuShowByteCode";
-			this.mnuShowByteCode.Size = new System.Drawing.Size(217, 22);
+			this.mnuShowByteCode.Size = new System.Drawing.Size(227, 22);
 			this.mnuShowByteCode.Text = "Show byte code";
+			// 
+			// mnuUseLowerCaseDisassembly
+			// 
+			this.mnuUseLowerCaseDisassembly.CheckOnClick = true;
+			this.mnuUseLowerCaseDisassembly.Name = "mnuUseLowerCaseDisassembly";
+			this.mnuUseLowerCaseDisassembly.Size = new System.Drawing.Size(227, 22);
+			this.mnuUseLowerCaseDisassembly.Text = "Show in lower case";
 			// 
 			// mnuUseAltSpcOpNames
 			// 
 			this.mnuUseAltSpcOpNames.CheckOnClick = true;
 			this.mnuUseAltSpcOpNames.Name = "mnuUseAltSpcOpNames";
-			this.mnuUseAltSpcOpNames.Size = new System.Drawing.Size(217, 22);
+			this.mnuUseAltSpcOpNames.Size = new System.Drawing.Size(227, 22);
 			this.mnuUseAltSpcOpNames.Text = "Use alternative mnemonics";
 			// 
 			// mnuBreakOptions
@@ -1067,5 +1076,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuExit;
 		private Controls.ctrlGsuStatus ctrlGsuStatus;
 	  private System.Windows.Forms.ToolStripMenuItem mnuUseAltSpcOpNames;
+	  private System.Windows.Forms.ToolStripMenuItem mnuUseLowerCaseDisassembly;
    }
 }

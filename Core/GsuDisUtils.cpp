@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "GsuDisUtils.h"
 #include "DisassemblyInfo.h"
+#include "EmuSettings.h"
 #include "../Utilities/FastString.h"
 #include "../Utilities/HexUtilities.h"
 
-void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager)
+void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings *settings)
 {
 	constexpr const char* registerNames[16] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
 	bool alt1 = (info.GetFlags() & 0x01) != 0;
@@ -13,7 +14,7 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 	uint8_t opCode = info.GetOpCode();
 
-	FastString str;
+	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	const char* reg = registerNames[opCode & 0x0F];
 	uint32_t jmpTarget = memoryAddr + (int8_t)info.GetByteCode()[1];
 
@@ -127,11 +128,11 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case 0xA0: case 0xA1: case 0xA2: case 0xA3: case 0xA4: case 0xA5: case 0xA6: case 0xA7:
 		case 0xA8: case 0xA9: case 0xAA: case 0xAB: case 0xAC: case 0xAD: case 0xAE: case 0xAF:
 			if(alt1) {
-				str.WriteAll("LMS R", reg, ", ($", HexUtilities::ToHex(info.GetByteCode()[1] << 1), ')');
+				str.WriteAll("LMS R", reg, ",($", HexUtilities::ToHex(info.GetByteCode()[1] << 1), ')');
 			} else if(alt2) {
-				str.WriteAll("SMS R", reg, ", ($", HexUtilities::ToHex(info.GetByteCode()[1] << 1), ')');
+				str.WriteAll("SMS R", reg, ",($", HexUtilities::ToHex(info.GetByteCode()[1] << 1), ')');
 			} else {
-				str.WriteAll("IBT R", reg, ", #$", HexUtilities::ToHex(info.GetByteCode()[1]));
+				str.WriteAll("IBT R", reg, ",#$", HexUtilities::ToHex(info.GetByteCode()[1]));
 			}
 			break;
 
@@ -185,11 +186,11 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case 0xF0: case 0xF1: case 0xF2: case 0xF3: case 0xF4: case 0xF5: case 0xF6: case 0xF7:
 		case 0xF8: case 0xF9: case 0xFA: case 0xFB: case 0xFC: case 0xFD: case 0xFE: case 0xFF:
 			if(alt1) {
-				str.WriteAll("LM R", reg, ", ($", HexUtilities::ToHex(info.GetByteCode()[2]), HexUtilities::ToHex(info.GetByteCode()[1]), ')');
+				str.WriteAll("LM R", reg, ",($", HexUtilities::ToHex(info.GetByteCode()[2]), HexUtilities::ToHex(info.GetByteCode()[1]), ')');
 			} else if(alt2) {
-				str.WriteAll("SM R", reg, ", ($", HexUtilities::ToHex(info.GetByteCode()[2]), HexUtilities::ToHex(info.GetByteCode()[1]), ')');
+				str.WriteAll("SM R", reg, ",($", HexUtilities::ToHex(info.GetByteCode()[2]), HexUtilities::ToHex(info.GetByteCode()[1]), ')');
 			} else {
-				str.WriteAll("IWT R", reg, ", #$", HexUtilities::ToHex(info.GetByteCode()[2]), HexUtilities::ToHex(info.GetByteCode()[1]));
+				str.WriteAll("IWT R", reg, ",#$", HexUtilities::ToHex(info.GetByteCode()[2]), HexUtilities::ToHex(info.GetByteCode()[1]));
 			}
 			break;
 	}

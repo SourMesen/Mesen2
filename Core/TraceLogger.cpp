@@ -4,6 +4,7 @@
 #include "TraceLogger.h"
 #include "DisassemblyInfo.h"
 #include "Console.h"
+#include "EmuSettings.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
 #include "LabelManager.h"
@@ -18,6 +19,7 @@ string TraceLogger::_executionTrace = "";
 TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 {
 	_console = console.get();
+	_settings = console->GetSettings().get();
 	_labelManager = debugger->GetLabelManager().get();
 	_memoryDumper = debugger->GetMemoryDumper().get();
 	_currentPos = 0;
@@ -242,7 +244,7 @@ void TraceLogger::WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint
 	}
 
 	LabelManager* labelManager = _options.UseLabels ? _labelManager : nullptr;
-	info.GetDisassembly(code, pc, labelManager);
+	info.GetDisassembly(code, pc, labelManager, _settings);
 	WriteValue(output, code, rowPart);
 }
 

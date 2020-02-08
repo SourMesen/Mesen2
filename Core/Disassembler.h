@@ -12,6 +12,7 @@ class Debugger;
 class LabelManager;
 class CodeDataLogger;
 class MemoryDumper;
+class EmuSettings;
 struct CpuState;
 enum class CpuType : uint8_t;
 
@@ -27,7 +28,8 @@ class Disassembler
 private:
 	MemoryManager *_memoryManager;
 	Console *_console;
-	Spc *_spc;
+	Spc* _spc;
+	EmuSettings* _settings;
 	Debugger *_debugger;
 	shared_ptr<CodeDataLogger> _cdl;
 	shared_ptr<LabelManager> _labelManager;

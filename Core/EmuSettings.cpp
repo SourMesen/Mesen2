@@ -278,10 +278,6 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 			_debuggerFlags &= ~(int)flag;
 		}
 	}
-
-	if(flag == DebuggerFlags::UseAltSpcOpNames) {
-		SpcDisUtils::UseAltSpcOpNames = enabled;
-	}
 }
 
 bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)

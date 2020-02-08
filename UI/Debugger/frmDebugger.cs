@@ -5,14 +5,9 @@ using Mesen.GUI.Debugger.Labels;
 using Mesen.GUI.Debugger.Workspace;
 using Mesen.GUI.Forms;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
@@ -291,19 +286,24 @@ namespace Mesen.GUI.Debugger
 			);
 		}
 
+		private void UpdateFlags(object sender, EventArgs e)
+		{
+			_entityBinder.UpdateObject();
+			ConfigManager.Config.Debug.Debugger.ApplyConfig();
+			RefreshDisassembly();
+		}
+
 		private void LoadConfig()
 		{
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			_entityBinder.Entity = cfg;
 			_entityBinder.AddBinding(nameof(cfg.ShowByteCode), mnuShowByteCode);
+			_entityBinder.AddBinding(nameof(cfg.UseLowerCaseDisassembly), mnuUseLowerCaseDisassembly);
 			_entityBinder.AddBinding(nameof(cfg.UseAltSpcOpNames), mnuUseAltSpcOpNames);
 
 			mnuShowByteCode.CheckedChanged += (s, e) => { ctrlDisassemblyView.CodeViewer.ShowContentNotes = mnuShowByteCode.Checked; };
-			mnuUseAltSpcOpNames.CheckedChanged += (s, e) => {
-				_entityBinder.UpdateObject();
-				cfg.ApplyConfig();
-				RefreshDisassembly();
-			};
+			mnuUseLowerCaseDisassembly.CheckedChanged += this.UpdateFlags;
+			mnuUseAltSpcOpNames.CheckedChanged += this.UpdateFlags;
 
 			_entityBinder.UpdateUI();
 
