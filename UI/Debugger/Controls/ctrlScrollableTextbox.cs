@@ -179,7 +179,7 @@ namespace Mesen.GUI.Debugger.Controls
 			this.hScrollBar.Maximum = newMax;
 		}
 
-		public ctrlTextbox.ILineStyleProvider StyleProvider { set { this.ctrlTextbox.StyleProvider = value; } }
+		public ILineStyleProvider StyleProvider { set { this.ctrlTextbox.StyleProvider = value; } }
 
 		public ICodeDataProvider DataProvider
 		{

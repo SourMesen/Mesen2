@@ -16,7 +16,6 @@ namespace Mesen.GUI.Debugger.Controls
 {
 	public partial class ctrlTextbox : Control
 	{
-		private Regex _codeRegex = new Regex("^(\\s*)([a-z]{3})([*]{0,1})($|[ ]){1}([(\\[]{0,1})(([$][0-9a-f]*)|(#[@$:_0-9a-z]*)|([@_a-z]([@_a-z0-9])*){0,1}(\\+(\\d+)){0,1}){0,1}([)\\]]{0,1})(,X|,Y){0,1}([)\\]]{0,1})(.*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		public event EventHandler ScrollPositionChanged;
 		public event EventHandler SelectedLineChanged;
 		private bool _disableScrollPositionChangedEvent;
@@ -286,12 +285,6 @@ namespace Mesen.GUI.Debugger.Controls
 					return _dataProvider.GetCodeLineData(_selectionStart).Text.ToLowerInvariant().Contains(this._searchString);
 				}
 			}
-		}
-
-		public interface ILineStyleProvider
-		{
-			LineProperties GetLineStyle(CodeLineData lineData, int lineIndex);
-			string GetLineComment(int lineIndex);
 		}
 
 		private ILineStyleProvider _styleProvider;
@@ -911,7 +904,7 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 			}
 
-			this.DrawLineText(g, currentLine, marginLeft, positionY, lineData, codeStringLength, textColor, lineHeight);
+			this.DrawLineText(g, currentLine, marginLeft, positionY, lineData, textColor, lineHeight);
 		}
 
 		private void DrawLineNumber(Graphics g, CodeLineData lineData, int marginLeft, int positionY, Color addressColor)
@@ -955,13 +948,12 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 		}
 
-		private void DrawLineText(Graphics g, int currentLine, int marginLeft, int positionY, CodeLineData lineData, float codeStringLength, Color? textColor, int lineHeight)
+		private void DrawLineText(Graphics g, int currentLine, int marginLeft, int positionY, CodeLineData lineData, Color? textColor, int lineHeight)
 		{
 			string codeString = lineData.Text;
 			string commentString = lineData.Comment;
+			int characterCount = 0;
 
-			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
-			
 			if(lineData.Flags.HasFlag(LineFlags.BlockEnd) || lineData.Flags.HasFlag(LineFlags.BlockStart)) {
 				//Draw block start/end
 				g.TranslateTransform(HorizontalScrollPosition * HorizontalScrollFactor, 0);
@@ -981,6 +973,7 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 				g.TranslateTransform(-HorizontalScrollPosition * HorizontalScrollFactor, 0);
 			} else {
+				List<CodeColor> colors = null;
 				if(StyleProvider != null) {
 					string symbolComment = StyleProvider.GetLineComment(currentLine);
 					if(symbolComment != null) {
@@ -993,69 +986,33 @@ namespace Mesen.GUI.Debugger.Controls
 							_lastSymbolComment = symbolComment;
 						}
 					}
+
+					colors = StyleProvider.GetCodeColors(lineData, CodeHighlightingEnabled, _addressFormat, textColor, _showMemoryValues);
 				}
 
-				//Draw line content
-				int characterCount = 0;
-				Color defaultColor = Color.FromArgb(60, 60, 60);
-				if(codeString.Length > 0) {
-					Match match = CodeHighlightingEnabled ? _codeRegex.Match(codeString) : null;
-					if(match != null && match.Success && !lineData.Flags.HasFlag(LineFlags.Label)) {
-						string padding = match.Groups[1].Value;
-						string opcode = match.Groups[2].Value;
-						string invalidStar = match.Groups[3].Value;
-						string paren1 = match.Groups[5].Value;
-						string operand = match.Groups[6].Value;
-						string arrayPosition = match.Groups[12].Value;
-						string paren2 = match.Groups[13].Value;
-						string indirect = match.Groups[14].Value;
-						string paren3 = match.Groups[15].Value;
-						string rest = match.Groups[16].Value;
-						Color operandColor = operand.Length > 0 ? (operand[0] == '#' ? (Color)cfg.CodeImmediateColor : (operand[0] == '$' ? (Color)cfg.CodeAddressColor : (Color)cfg.CodeLabelDefinitionColor)) : Color.Black;
-						List<Color> colors = new List<Color>() { defaultColor, cfg.CodeOpcodeColor, defaultColor, defaultColor, defaultColor, operandColor, defaultColor, defaultColor, defaultColor };
-						int codePartCount = colors.Count;
-
-						List<string> parts = new List<string>() { padding, opcode, invalidStar, " ", paren1, operand, paren2, indirect, paren3 };
-
-						//Display the rest of the line (used by trace logger)
-						colors.Add(defaultColor);
-						parts.Add(rest);
-
-						if(lineData.EffectiveAddress >= 0) {
-							colors.Add(cfg.CodeEffectiveAddressColor);
-							parts.Add(" " + lineData.GetEffectiveAddressString(_addressFormat));
+				if(colors != null) {
+					float xOffset = 0;
+					foreach(CodeColor codeColor in colors) {
+						using(Brush b = new SolidBrush(codeColor.Color)) {
+							g.DrawString(codeColor.Text, this.Font, b, marginLeft + xOffset, positionY, StringFormat.GenericTypographic);
+							xOffset += g.MeasureString("".PadLeft(codeColor.Text.Length, 'w'), this.Font, Point.Empty, StringFormat.GenericTypographic).Width;
+							characterCount += codeColor.Text.Length;
 						}
-
-						if(this.ShowMemoryValues && lineData.ValueSize > 0) {
-							colors.Add(defaultColor);
-							parts.Add(lineData.GetValueString());
-						}
-
-						float xOffset = 0;
-						for(int i = 0; i < parts.Count; i++) {
-							using(Brush b = new SolidBrush(textColor.HasValue && (i <= codePartCount) ? textColor.Value : colors[i])) {
-								g.DrawString(parts[i], this.Font, b, marginLeft + xOffset, positionY, StringFormat.GenericTypographic);
-								xOffset += g.MeasureString("".PadLeft(parts[i].Length, 'w'), this.Font, Point.Empty, StringFormat.GenericTypographic).Width;
-								characterCount += parts[i].Length;
-							}
-						}
-						codeStringLength = xOffset;
-					} else {
-						using(Brush fgBrush = new SolidBrush(codeString.EndsWith(":") ? (Color)cfg.CodeLabelDefinitionColor : (textColor ?? defaultColor))) {
-							g.DrawString(codeString, this.Font, fgBrush, marginLeft, positionY, StringFormat.GenericTypographic);
-						}
-						characterCount = codeString.Trim().Length;
 					}
+				} else {
+					g.DrawString(codeString, this.Font, Brushes.Black, marginLeft, positionY, StringFormat.GenericTypographic);
+					characterCount = codeString.Trim().Length;
 				}
 
 				if(!string.IsNullOrWhiteSpace(commentString)) {
+					DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 					using(Brush commentBrush = new SolidBrush(cfg.CodeCommentColor)) {
 						int padding = Math.Max(CommentSpacingCharCount, characterCount + 1);
 						if(characterCount == 0) {
 							//Draw comment left-aligned, next to the margin when there is no code on the line
 							padding = 0;
 						}
-						g.DrawString(commentString.PadLeft(padding+commentString.Length), this.Font, commentBrush, marginLeft, positionY, StringFormat.GenericTypographic);
+						g.DrawString(commentString.PadLeft(padding + commentString.Length), this.Font, commentBrush, marginLeft, positionY, StringFormat.GenericTypographic);
 					}
 				}
 
@@ -1374,5 +1331,19 @@ namespace Mesen.GUI.Debugger.Controls
 
 		int GetLineAddress(int lineIndex);
 		int GetLineIndex(UInt32 address);
+	}
+
+	public interface ILineStyleProvider
+	{
+		LineProperties GetLineStyle(CodeLineData lineData, int lineIndex);
+		string GetLineComment(int lineIndex);
+
+		List<CodeColor> GetCodeColors(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues);
+	}
+
+	public class CodeColor
+	{
+		public string Text;
+		public Color Color;
 	}
 }

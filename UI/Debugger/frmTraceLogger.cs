@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
 using Mesen.GUI.Controls;
+using Mesen.GUI.Debugger.Code;
 using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Forms;
 
@@ -569,7 +570,7 @@ namespace Mesen.GUI.Debugger
 		}
 	}
 
-	public class TraceLoggerStyleProvider : ctrlTextbox.ILineStyleProvider
+	public class TraceLoggerStyleProvider : ILineStyleProvider
 	{
 		private Color _spcColor = Color.FromArgb(30, 145, 30);
 		private Color _spcBgColor = Color.FromArgb(230, 245, 230);
@@ -581,6 +582,11 @@ namespace Mesen.GUI.Debugger
 		public TraceLoggerStyleProvider(List<int> lineFlags)
 		{
 			_flags = lineFlags;
+		}
+
+		public List<CodeColor> GetCodeColors(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues)
+		{
+			return CodeHighlighting.GetCpuHighlights(lineData, highlightCode, addressFormat, textColor, showMemoryValues);
 		}
 
 		public string GetLineComment(int lineIndex)

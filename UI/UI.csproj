@@ -258,6 +258,7 @@
     </Compile>
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
+    <Compile Include="Debugger\Code\CodeHighlighting.cs" />
     <Compile Include="Debugger\Code\Sa1LineStyleProvider.cs" />
     <Compile Include="Debugger\Code\SymbolCodeDataProvider.cs" />
     <Compile Include="Debugger\Code\Sa1DisassemblyManager.cs" />

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Debugger.Code
 {
-	public abstract class BaseStyleProvider : ctrlTextbox.ILineStyleProvider
+	public abstract class BaseStyleProvider : ILineStyleProvider
 	{
 		public int? ActiveAddress { get; set; }
 
@@ -44,6 +44,11 @@ namespace Mesen.GUI.Debugger.Code
 			props.TextBgColor = bgColor;
 			props.OutlineColor = outlineColor;
 			props.Symbol = symbol;
+		}
+
+		public List<CodeColor> GetCodeColors(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues)
+		{
+			return CodeHighlighting.GetCpuHighlights(lineData, highlightCode, addressFormat, textColor, showMemoryValues);
 		}
 	}
 }
