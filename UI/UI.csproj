@@ -296,7 +296,7 @@
     <Compile Include="Debugger\Controls\ctrlSearchResult.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Debugger\Controls\ctrlSearchResult.designer.cs">
+    <Compile Include="Debugger\Controls\ctrlSearchResult.Designer.cs">
       <DependentUpon>ctrlSearchResult.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Controls\ctrlSpcStatus.cs">
@@ -332,7 +332,7 @@
     <Compile Include="Debugger\frmGoToAll.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmGoToAll.designer.cs">
+    <Compile Include="Debugger\frmGoToAll.Designer.cs">
       <DependentUpon>frmGoToAll.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Integration\DbgImporter.cs" />
