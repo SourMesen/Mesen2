@@ -46,14 +46,19 @@
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.lblLocation = new System.Windows.Forms.ToolStripStatusLabel();
 			this.ctxMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mnuAddToWatch = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuEditBreakpoint = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuEditLabel = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPaste = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuSelectAll = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuAddToWatch = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuEditBreakpoint = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuEditLabel = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuMarkSelectionAs = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuMarkAsCode = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuMarkAsData = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuMarkAsUnidentifiedData = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.tlpMain.SuspendLayout();
 			this.flowLayoutPanel1.SuspendLayout();
 			this.panelSearch.SuspendLayout();
@@ -300,6 +305,8 @@
 			// ctxMenuStrip
 			// 
 			this.ctxMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuMarkSelectionAs,
+            this.toolStripMenuItem2,
             this.mnuAddToWatch,
             this.mnuEditBreakpoint,
             this.mnuEditLabel,
@@ -309,48 +316,14 @@
             this.toolStripMenuItem5,
             this.mnuSelectAll});
 			this.ctxMenuStrip.Name = "ctxMenuStrip";
-			this.ctxMenuStrip.Size = new System.Drawing.Size(155, 170);
+			this.ctxMenuStrip.Size = new System.Drawing.Size(181, 198);
 			this.ctxMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ctxMenuStrip_Opening);
-			// 
-			// mnuCopy
-			// 
-			this.mnuCopy.Image = global::Mesen.GUI.Properties.Resources.Copy;
-			this.mnuCopy.Name = "mnuCopy";
-			this.mnuCopy.Size = new System.Drawing.Size(154, 22);
-			this.mnuCopy.Text = "Copy";
-			this.mnuCopy.Click += new System.EventHandler(this.mnuCopy_Click);
-			// 
-			// mnuPaste
-			// 
-			this.mnuPaste.Image = global::Mesen.GUI.Properties.Resources.Paste;
-			this.mnuPaste.Name = "mnuPaste";
-			this.mnuPaste.Size = new System.Drawing.Size(154, 22);
-			this.mnuPaste.Text = "Paste";
-			this.mnuPaste.Click += new System.EventHandler(this.mnuPaste_Click);
-			// 
-			// toolStripMenuItem5
-			// 
-			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-			this.toolStripMenuItem5.Size = new System.Drawing.Size(151, 6);
-			// 
-			// mnuSelectAll
-			// 
-			this.mnuSelectAll.Image = global::Mesen.GUI.Properties.Resources.SelectAll;
-			this.mnuSelectAll.Name = "mnuSelectAll";
-			this.mnuSelectAll.Size = new System.Drawing.Size(154, 22);
-			this.mnuSelectAll.Text = "Select All";
-			this.mnuSelectAll.Click += new System.EventHandler(this.mnuSelectAll_Click);
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(151, 6);
 			// 
 			// mnuAddToWatch
 			// 
 			this.mnuAddToWatch.Image = global::Mesen.GUI.Properties.Resources.Add;
 			this.mnuAddToWatch.Name = "mnuAddToWatch";
-			this.mnuAddToWatch.Size = new System.Drawing.Size(154, 22);
+			this.mnuAddToWatch.Size = new System.Drawing.Size(180, 22);
 			this.mnuAddToWatch.Text = "Add to Watch";
 			this.mnuAddToWatch.Click += new System.EventHandler(this.mnuAddToWatch_Click);
 			// 
@@ -358,7 +331,7 @@
 			// 
 			this.mnuEditBreakpoint.Image = global::Mesen.GUI.Properties.Resources.BreakpointEnableDisable;
 			this.mnuEditBreakpoint.Name = "mnuEditBreakpoint";
-			this.mnuEditBreakpoint.Size = new System.Drawing.Size(154, 22);
+			this.mnuEditBreakpoint.Size = new System.Drawing.Size(180, 22);
 			this.mnuEditBreakpoint.Text = "Edit Breakpoint";
 			this.mnuEditBreakpoint.Click += new System.EventHandler(this.mnuEditBreakpoint_Click);
 			// 
@@ -366,9 +339,79 @@
 			// 
 			this.mnuEditLabel.Image = global::Mesen.GUI.Properties.Resources.EditLabel;
 			this.mnuEditLabel.Name = "mnuEditLabel";
-			this.mnuEditLabel.Size = new System.Drawing.Size(154, 22);
+			this.mnuEditLabel.Size = new System.Drawing.Size(180, 22);
 			this.mnuEditLabel.Text = "Edit Label";
 			this.mnuEditLabel.Click += new System.EventHandler(this.mnuEditLabel_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+			// 
+			// mnuCopy
+			// 
+			this.mnuCopy.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCopy.Name = "mnuCopy";
+			this.mnuCopy.Size = new System.Drawing.Size(180, 22);
+			this.mnuCopy.Text = "Copy";
+			this.mnuCopy.Click += new System.EventHandler(this.mnuCopy_Click);
+			// 
+			// mnuPaste
+			// 
+			this.mnuPaste.Image = global::Mesen.GUI.Properties.Resources.Paste;
+			this.mnuPaste.Name = "mnuPaste";
+			this.mnuPaste.Size = new System.Drawing.Size(180, 22);
+			this.mnuPaste.Text = "Paste";
+			this.mnuPaste.Click += new System.EventHandler(this.mnuPaste_Click);
+			// 
+			// toolStripMenuItem5
+			// 
+			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+			this.toolStripMenuItem5.Size = new System.Drawing.Size(177, 6);
+			// 
+			// mnuSelectAll
+			// 
+			this.mnuSelectAll.Image = global::Mesen.GUI.Properties.Resources.SelectAll;
+			this.mnuSelectAll.Name = "mnuSelectAll";
+			this.mnuSelectAll.Size = new System.Drawing.Size(180, 22);
+			this.mnuSelectAll.Text = "Select All";
+			this.mnuSelectAll.Click += new System.EventHandler(this.mnuSelectAll_Click);
+			// 
+			// mnuMarkSelectionAs
+			// 
+			this.mnuMarkSelectionAs.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuMarkAsCode,
+            this.mnuMarkAsData,
+            this.mnuMarkAsUnidentifiedData});
+			this.mnuMarkSelectionAs.Name = "mnuMarkSelectionAs";
+			this.mnuMarkSelectionAs.Size = new System.Drawing.Size(180, 22);
+			this.mnuMarkSelectionAs.Text = "Mark selection as...";
+			// 
+			// mnuMarkAsCode
+			// 
+			this.mnuMarkAsCode.Image = global::Mesen.GUI.Properties.Resources.Accept;
+			this.mnuMarkAsCode.Name = "mnuMarkAsCode";
+			this.mnuMarkAsCode.Size = new System.Drawing.Size(199, 22);
+			this.mnuMarkAsCode.Text = "Verified Code";
+			// 
+			// mnuMarkAsData
+			// 
+			this.mnuMarkAsData.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
+			this.mnuMarkAsData.Name = "mnuMarkAsData";
+			this.mnuMarkAsData.Size = new System.Drawing.Size(199, 22);
+			this.mnuMarkAsData.Text = "Verified Data";
+			// 
+			// mnuMarkAsUnidentifiedData
+			// 
+			this.mnuMarkAsUnidentifiedData.Image = global::Mesen.GUI.Properties.Resources.Help;
+			this.mnuMarkAsUnidentifiedData.Name = "mnuMarkAsUnidentifiedData";
+			this.mnuMarkAsUnidentifiedData.Size = new System.Drawing.Size(199, 22);
+			this.mnuMarkAsUnidentifiedData.Text = "Unidentified Code/Data";
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
 			// 
 			// ctrlHexViewer
 			// 
@@ -427,5 +470,10 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuEditBreakpoint;
 		private System.Windows.Forms.ToolStripMenuItem mnuEditLabel;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-	}
+	  private System.Windows.Forms.ToolStripMenuItem mnuMarkSelectionAs;
+	  private System.Windows.Forms.ToolStripMenuItem mnuMarkAsCode;
+	  private System.Windows.Forms.ToolStripMenuItem mnuMarkAsData;
+	  private System.Windows.Forms.ToolStripMenuItem mnuMarkAsUnidentifiedData;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+   }
 }

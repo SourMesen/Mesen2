@@ -90,6 +90,17 @@ namespace Mesen.GUI.Debugger
 			throw new Exception("Invalid CPU type");			
 		}
 
+		public static frmDebugger GetDebugger(CpuType type)
+		{
+			switch(type) {
+				case CpuType.Cpu: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.Debugger);
+				case CpuType.Spc: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.SpcDebugger);
+				case CpuType.Sa1: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.Sa1Debugger);
+				case CpuType.Gsu: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.GsuDebugger);
+			}
+			throw new Exception("Invalid CPU type");
+		}
+
 		public static frmMemoryTools GetMemoryViewer()
 		{
 			return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmMemoryTools)) as frmMemoryTools;

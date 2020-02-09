@@ -119,6 +119,7 @@ public:
 	AddressInfo GetRelativeAddress(AddressInfo absAddress);
 
 	void SetCdlData(uint8_t * cdlData, uint32_t length);
+	void MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags);
 	void RefreshCodeCache();
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);

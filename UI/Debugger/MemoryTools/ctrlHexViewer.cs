@@ -54,6 +54,13 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuAddToWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_AddToWatch));
 			mnuEditBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_EditBreakpoint));
 			mnuEditLabel.InitShortcut(this, nameof(DebuggerShortcutsConfig.MemoryViewer_EditLabel));
+
+			mnuMarkAsCode.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsCode));
+			mnuMarkAsCode.Click += (s, e) => MarkSelectionAs(CdlFlags.Code);
+			mnuMarkAsData.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsData));
+			mnuMarkAsData.Click += (s, e) => MarkSelectionAs(CdlFlags.Data);
+			mnuMarkAsUnidentifiedData.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsUnidentified));
+			mnuMarkAsUnidentifiedData.Click += (s, e) => MarkSelectionAs(CdlFlags.None);
 		}
 
 		public new void Focus()
@@ -504,7 +511,48 @@ namespace Mesen.GUI.Debugger.Controls
 				mnuAddToWatch.Enabled = false;
 			}
 
+			if(_memoryType == SnesMemoryType.CpuMemory) {
+				AddressInfo start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)startAddress, Type = _memoryType });
+				AddressInfo end = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)endAddress, Type = _memoryType });
+
+				if(start.Address >= 0 && end.Address >= 0 && start.Address <= end.Address && start.Type == SnesMemoryType.PrgRom && end.Type == SnesMemoryType.PrgRom) {
+					mnuMarkSelectionAs.Text = "Mark selection as... (" + addressRange + ")";
+					mnuMarkSelectionAs.Enabled = true;
+				} else {
+					mnuMarkSelectionAs.Text = "Mark selection as...";
+					mnuMarkSelectionAs.Enabled = false;
+				}
+			} else if(_memoryType == SnesMemoryType.PrgRom) {
+				mnuMarkSelectionAs.Text = "Mark selection as... (" + addressRange + ")";
+				mnuMarkSelectionAs.Enabled = true;
+			} else {
+				mnuMarkSelectionAs.Text = "Mark selection as...";
+				mnuMarkSelectionAs.Enabled = false;
+			}
+
 			mnuEditBreakpoint.Enabled = true;
+		}
+
+		private void MarkSelectionAs(CdlFlags type)
+		{
+			if(_memoryType != SnesMemoryType.CpuMemory && _memoryType != SnesMemoryType.PrgRom) {
+				return;
+			}
+
+			int start = SelectionStartAddress;
+			int end = SelectionEndAddress;
+
+			if(_memoryType == SnesMemoryType.CpuMemory) {
+				start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = _memoryType }).Address;
+				end = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = _memoryType }).Address;
+			}
+
+			if(start >= 0 && end >= 0 && start <= end) {
+				DebugApi.MarkBytesAs((UInt32)start, (UInt32)end, type);
+				DebugWindowManager.GetDebugger(_memoryType.ToCpuType())?.RefreshDisassembly();
+			}
+
+			RefreshData(_memoryType);
 		}
 
 		private void mnuAddToWatch_Click(object sender, EventArgs e)

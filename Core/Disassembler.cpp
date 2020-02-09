@@ -467,7 +467,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, CpuType::Cpu);
 						} else {
-							data.Flags |= LineFlags::VerifiedCode;
+							data.Flags |= _cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 						}
 
 						data.OpSize = disInfo.GetOpSize();

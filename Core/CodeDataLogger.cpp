@@ -46,16 +46,19 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath)
 
 void CodeDataLogger::CalculateStats()
 {
-	_codeSize = 0;
-	_dataSize = 0;
+	uint32_t codeSize = 0;
+	uint32_t dataSize = 0;
 
 	for(int i = 0, len = _prgSize; i < len; i++) {
 		if(IsCode(i)) {
-			_codeSize++;
+			codeSize++;
 		} else if(IsData(i)) {
-			_dataSize++;
+			dataSize++;
 		}
 	}
+
+	_codeSize = codeSize;
+	_dataSize = dataSize;
 }
 
 bool CodeDataLogger::SaveCdlFile(string cdlFilepath)
@@ -126,7 +129,6 @@ void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
 {
 	if(length <= _prgSize) {
 		memcpy(_cdlData, cdlData, length);
-		CalculateStats();
 	}
 }
 
@@ -139,5 +141,12 @@ void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType
 			AddressInfo info = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 			cdlData[i] = (info.Type == SnesMemoryType::PrgRom && info.Address >= 0) ? _cdlData[info.Address] : 0;
 		}
+	}
+}
+
+void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
+{
+	for(uint32_t i = start; i <= end; i++) {
+		_cdlData[i] = (_cdlData[i] & 0xFC) | (int)flags;
 	}
 }

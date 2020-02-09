@@ -82,7 +82,8 @@ extern "C"
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, MemoryOperationType operationType, uint32_t* counts) { GetDebugger()->GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, operationType, counts); }
 	
 	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { GetDebugger()->GetCodeDataLogger()->GetCdlData(offset, length, memoryType, cdlData); }
-	DllExport void __stdcall SetCdlData(uint8_t *cdlData, uint32_t length) { GetDebugger()->SetCdlData(cdlData, length); }
+	DllExport void __stdcall SetCdlData(uint8_t* cdlData, uint32_t length) { GetDebugger()->SetCdlData(cdlData, length); }
+	DllExport void __stdcall MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(start, end, flags); }
 	
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, PpuState state, uint8_t *vram, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, state, vram, cgram, buffer); }
 	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, source, srcSize, cgram, buffer); }

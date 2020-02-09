@@ -146,6 +146,7 @@ namespace Mesen.GUI.Debugger
 		SubStart = 0x80,
 		Label = 0x100,
 		Comment = 0x200,
-		ShowAsData = 0x400
+		ShowAsData = 0x400,
+		UnexecutedCode = 0x800
 	}
 }

@@ -248,12 +248,9 @@ namespace Mesen.GUI.Debugger
 			ConfigManager.Config.Debug.Debugger.ApplyConfig();
 		}
 
-		private void RefreshDisassembly()
+		public void RefreshDisassembly()
 		{
-			DebugApi.RefreshDisassembly(CpuType.Cpu);
-			DebugApi.RefreshDisassembly(CpuType.Spc);
-			DebugApi.RefreshDisassembly(CpuType.Sa1);
-			ctrlDisassemblyView.UpdateCode();
+			ctrlDisassemblyView.UpdateCode(true);
 		}
 
 		private void mnuBreakOptions_DropDownOpening(object sender, EventArgs e)

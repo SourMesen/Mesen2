@@ -19,7 +19,6 @@ namespace Mesen.GUI.Debugger
 		private WindowRefreshManager _refreshManager;
 		private NotificationListener _notifListener;
 		private TabPage _selectedTab;
-		private int _frameCount = 0;
 
 		public ctrlScanlineCycleSelect ScanlineCycleSelect => null;
 

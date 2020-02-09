@@ -41,11 +41,6 @@ namespace Mesen.GUI.Debugger.Code
 				ConfigureActiveStatement(props);
 			}
 
-			//TODO
-			/* else if(_code._code.UnexecutedAddresses.Contains(lineNumber)) {
-				props.LineBgColor = info.CodeUnexecutedCodeColor;
-			}*/
-
 			if(lineData.Flags.HasFlag(LineFlags.PrgRom)) {
 				props.AddressColor = Color.Gray;
 			} else if(lineData.Flags.HasFlag(LineFlags.WorkRam)) {
@@ -56,6 +51,8 @@ namespace Mesen.GUI.Debugger.Code
 
 			if(lineData.Flags.HasFlag(LineFlags.VerifiedData)) {
 				props.LineBgColor = cfg.CodeVerifiedDataColor;
+			} else if(lineData.Flags.HasFlag(LineFlags.UnexecutedCode)) {
+				props.LineBgColor = cfg.CodeUnexecutedCodeColor;
 			} else if(!lineData.Flags.HasFlag(LineFlags.VerifiedCode)) {
 				props.LineBgColor = cfg.CodeUnidentifiedDataColor;
 			}

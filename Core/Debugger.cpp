@@ -483,6 +483,13 @@ void Debugger::SetCdlData(uint8_t *cdlData, uint32_t length)
 	RefreshCodeCache();
 }
 
+void Debugger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
+{
+	DebugBreakHelper helper(this);
+	_codeDataLogger->MarkBytesAs(start, end, flags);
+	RefreshCodeCache();
+}
+
 void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();

@@ -36,4 +36,6 @@ public:
 
 	void SetCdlData(uint8_t *cdlData, uint32_t length);
 	void GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t *cdlData);
+
+	void MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags);
 };

@@ -536,26 +536,26 @@
             this.mnuShowUnident});
 			this.mnuUnidentifiedData.Image = global::Mesen.GUI.Properties.Resources.UnidentifiedData;
 			this.mnuUnidentifiedData.Name = "mnuUnidentifiedData";
-			this.mnuUnidentifiedData.Size = new System.Drawing.Size(227, 22);
+			this.mnuUnidentifiedData.Size = new System.Drawing.Size(217, 22);
 			this.mnuUnidentifiedData.Text = "Unidentified Code/Data";
 			this.mnuUnidentifiedData.DropDownOpening += new System.EventHandler(this.mnuUnidentifiedData_DropDownOpening);
 			// 
 			// mnuHideUnident
 			// 
 			this.mnuHideUnident.Name = "mnuHideUnident";
-			this.mnuHideUnident.Size = new System.Drawing.Size(170, 22);
+			this.mnuHideUnident.Size = new System.Drawing.Size(180, 22);
 			this.mnuHideUnident.Text = "Hide";
 			// 
 			// mnuDisassembleUnident
 			// 
 			this.mnuDisassembleUnident.Name = "mnuDisassembleUnident";
-			this.mnuDisassembleUnident.Size = new System.Drawing.Size(170, 22);
+			this.mnuDisassembleUnident.Size = new System.Drawing.Size(180, 22);
 			this.mnuDisassembleUnident.Text = "Show disassembly";
 			// 
 			// mnuShowUnident
 			// 
 			this.mnuShowUnident.Name = "mnuShowUnident";
-			this.mnuShowUnident.Size = new System.Drawing.Size(170, 22);
+			this.mnuShowUnident.Size = new System.Drawing.Size(180, 22);
 			this.mnuShowUnident.Text = "Show as data";
 			// 
 			// mnuVerifiedData
@@ -566,52 +566,52 @@
             this.mnuShowData});
 			this.mnuVerifiedData.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
 			this.mnuVerifiedData.Name = "mnuVerifiedData";
-			this.mnuVerifiedData.Size = new System.Drawing.Size(227, 22);
+			this.mnuVerifiedData.Size = new System.Drawing.Size(217, 22);
 			this.mnuVerifiedData.Text = "Verified Data";
 			this.mnuVerifiedData.DropDownOpening += new System.EventHandler(this.mnuVerifiedData_DropDownOpening);
 			// 
 			// mnuHideData
 			// 
 			this.mnuHideData.Name = "mnuHideData";
-			this.mnuHideData.Size = new System.Drawing.Size(170, 22);
+			this.mnuHideData.Size = new System.Drawing.Size(180, 22);
 			this.mnuHideData.Text = "Hide";
 			// 
 			// mnuDisassembleData
 			// 
 			this.mnuDisassembleData.Name = "mnuDisassembleData";
-			this.mnuDisassembleData.Size = new System.Drawing.Size(170, 22);
+			this.mnuDisassembleData.Size = new System.Drawing.Size(180, 22);
 			this.mnuDisassembleData.Text = "Show disassembly";
 			// 
 			// mnuShowData
 			// 
 			this.mnuShowData.Name = "mnuShowData";
-			this.mnuShowData.Size = new System.Drawing.Size(170, 22);
+			this.mnuShowData.Size = new System.Drawing.Size(180, 22);
 			this.mnuShowData.Text = "Show as data";
 			// 
 			// toolStripMenuItem6
 			// 
 			this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-			this.toolStripMenuItem6.Size = new System.Drawing.Size(224, 6);
+			this.toolStripMenuItem6.Size = new System.Drawing.Size(214, 6);
 			// 
 			// mnuShowByteCode
 			// 
 			this.mnuShowByteCode.CheckOnClick = true;
 			this.mnuShowByteCode.Name = "mnuShowByteCode";
-			this.mnuShowByteCode.Size = new System.Drawing.Size(227, 22);
+			this.mnuShowByteCode.Size = new System.Drawing.Size(217, 22);
 			this.mnuShowByteCode.Text = "Show byte code";
 			// 
 			// mnuUseLowerCaseDisassembly
 			// 
 			this.mnuUseLowerCaseDisassembly.CheckOnClick = true;
 			this.mnuUseLowerCaseDisassembly.Name = "mnuUseLowerCaseDisassembly";
-			this.mnuUseLowerCaseDisassembly.Size = new System.Drawing.Size(227, 22);
+			this.mnuUseLowerCaseDisassembly.Size = new System.Drawing.Size(217, 22);
 			this.mnuUseLowerCaseDisassembly.Text = "Show in lower case";
 			// 
 			// mnuUseAltSpcOpNames
 			// 
 			this.mnuUseAltSpcOpNames.CheckOnClick = true;
 			this.mnuUseAltSpcOpNames.Name = "mnuUseAltSpcOpNames";
-			this.mnuUseAltSpcOpNames.Size = new System.Drawing.Size(227, 22);
+			this.mnuUseAltSpcOpNames.Size = new System.Drawing.Size(217, 22);
 			this.mnuUseAltSpcOpNames.Text = "Use alternative mnemonics";
 			// 
 			// mnuBreakOptions

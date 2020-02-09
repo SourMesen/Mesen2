@@ -31,11 +31,15 @@ namespace Mesen.GUI.Debugger.Controls
 				return;
 			}
 
-			InitShortcuts();
-
 			DebugWorkspaceManager.SymbolProviderChanged += DebugWorkspaceManager_SymbolProviderChanged;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 			LabelManager.OnLabelUpdated += OnLabelUpdated;
+		}
+
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+			InitShortcuts();
 		}
 
 		protected override void OnHandleDestroyed(EventArgs e)
@@ -44,6 +48,12 @@ namespace Mesen.GUI.Debugger.Controls
 			DebugWorkspaceManager.SymbolProviderChanged -= DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated -= OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			UpdateContextMenu();
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
 		private void DebugWorkspaceManager_SymbolProviderChanged(ISymbolProvider symbolProvider)
@@ -126,14 +136,68 @@ namespace Mesen.GUI.Debugger.Controls
 		private void InitShortcuts()
 		{
 			mnuToggleBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_ToggleBreakpoint));
+			mnuToggleBreakpoint.Click += (s, e) => ToggleBreakpoint();
 
 			mnuEditLabel.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditLabel));
+			mnuEditLabel.Click += (s, e) => EditLabel(GetActionTarget());
+
 			mnuEditInMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer));
+			mnuEditInMemoryTools.Click += (s, e) => EditInMemoryTools(GetActionTarget());
+			
 			mnuAddToWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.LabelList_AddToWatch));
+
+			mnuMarkAsCode.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsCode));
+			mnuMarkAsCode.Click += (s, e) => MarkSelectionAs(CdlFlags.Code);
+			mnuMarkAsData.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsData));
+			mnuMarkAsData.Click += (s, e) => MarkSelectionAs(CdlFlags.Data);
+			mnuMarkAsUnidentifiedData.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsUnidentified));
+			mnuMarkAsUnidentifiedData.Click += (s, e) => MarkSelectionAs(CdlFlags.None);
 
 			mnuSwitchView.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_SwitchView));
 
 			mnuSwitchView.Click += (s, e) => { ToggleView(); };
+		}
+
+		private void MarkSelectionAs(CdlFlags type)
+		{
+			SelectedAddressRange range = GetSelectedAddressRange();
+			if(!_inSourceView && range != null && range.Start.Type == SnesMemoryType.PrgRom && range.End.Type == SnesMemoryType.PrgRom) {
+				DebugApi.MarkBytesAs((UInt32)range.Start.Address, (UInt32)range.End.Address, type);
+				DebugWindowManager.OpenDebugger(CpuType.Cpu)?.RefreshDisassembly();
+			}
+		}
+
+		class SelectedAddressRange
+		{
+			public AddressInfo Start;
+			public AddressInfo End;
+			public string Display;
+		}
+
+		private SelectedAddressRange GetSelectedAddressRange()
+		{
+			int firstLineOfSelection = ctrlCode.SelectionStart;
+			
+			while(_manager.Provider.GetLineAddress(firstLineOfSelection) < 0) {
+				firstLineOfSelection++;
+			}
+			int firstLineAfterSelection = ctrlCode.SelectionStart + ctrlCode.SelectionLength + 1;
+			while(_manager.Provider.GetLineAddress(firstLineAfterSelection) < 0) {
+				firstLineAfterSelection++;
+			}
+
+			int start = _manager.Provider.GetLineAddress(firstLineOfSelection);
+			int end = _manager.Provider.GetLineAddress(firstLineAfterSelection) - 1;
+
+			if(start >= 0 && end >= 0) {
+				return new SelectedAddressRange() {
+					Start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = _manager.RelativeMemoryType }),
+					End = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = _manager.RelativeMemoryType }),
+					Display = $"${start.ToString("X4")} - ${end.ToString("X4")}"
+				};
+			}
+
+			return null;
 		}
 
 		public void ToggleView()
@@ -200,7 +264,7 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.ScrollToAddress((int)address);
 		}
 
-		public void UpdateCode()
+		public void UpdateCode(bool refreshDisassembly = false)
 		{
 			int centerLineIndex = ctrlCode.GetLineIndexAtPosition(0) + ctrlCode.GetNumberVisibleLines() / 2;
 			int centerLineAddress;
@@ -211,6 +275,12 @@ namespace Mesen.GUI.Debugger.Controls
 				centerLineIndex--;
 				scrollOffset++;
 			} while(centerLineAddress < 0 && centerLineIndex > 0);
+
+			if(refreshDisassembly) {
+				DebugApi.RefreshDisassembly(CpuType.Cpu);
+				DebugApi.RefreshDisassembly(CpuType.Spc);
+				DebugApi.RefreshDisassembly(CpuType.Sa1);
+			}
 
 			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as SourceFileInfo : null);
 			ctrlCode.DataProvider = _manager.Provider;
@@ -354,21 +424,6 @@ namespace Mesen.GUI.Debugger.Controls
 			return _manager.GetLocationInfo(word, lineIndex);
 		}
 
-		private void mnuToggleBreakpoint_Click(object sender, EventArgs e)
-		{
-			ToggleBreakpoint();
-		}
-		
-		private void mnuEditLabel_Click(object sender, EventArgs e)
-		{
-			EditLabel(GetActionTarget());
-		}
-
-		private void mnuEditInMemoryTools_Click(object sender, EventArgs e)
-		{
-			EditInMemoryTools(GetActionTarget());
-		}
-
 		private void mnuGoToLocation_Click(object sender, EventArgs e)
 		{
 			GoToLocation(GetActionTarget());
@@ -450,17 +505,17 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.SetMessage(msg);
 		}
 
-		private void ctxMenu_Opening(object sender, CancelEventArgs e)
+		private void UpdateContextMenu()
 		{
 			LocationInfo location = GetActionTarget();
 			bool active = location.Address >= 0 || location.Label != null || location.Symbol != null;
-			
+
 			string suffix = location.Symbol?.Name ?? location.Label?.Label;
 			if(string.IsNullOrWhiteSpace(suffix)) {
 				suffix = (location.Address >= 0 ? ("$" + location.Address.ToString("X6")) : "");
 			}
 
-			string labelName = ""; 
+			string labelName = "";
 			if(suffix.Length > 0) {
 				labelName = " (" + suffix + ")";
 				if(location.ArrayIndex.HasValue) {
@@ -471,7 +526,7 @@ namespace Mesen.GUI.Debugger.Controls
 				suffix = "";
 				labelName = "";
 			}
-			
+
 			bool enableGoToLocation = (location.Address != _manager.Provider.GetLineAddress(ctrlCode.SelectedLine));
 
 			mnuAddToWatch.Text = "Add to Watch" + suffix;
@@ -479,10 +534,26 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuEditLabel.Text = "Edit Label" + labelName;
 			mnuGoToLocation.Text = "Go to Location" + (enableGoToLocation ? suffix : "");
 
+			SelectedAddressRange range = GetSelectedAddressRange();
+			if(range != null && range.Start.Type == SnesMemoryType.PrgRom && range.End.Type == SnesMemoryType.PrgRom) {
+				mnuMarkSelectionAs.Enabled = true;
+				mnuMarkSelectionAs.Text = "Mark selection as... (" + range.Display + ")";
+			} else {
+				mnuMarkSelectionAs.Enabled = false;
+				mnuMarkSelectionAs.Text = "Mark selection as...";
+			}
+			mnuMarkSelectionAs.Visible = !_inSourceView;
+			sepMarkSelectionAs.Visible = !_inSourceView;
+
 			mnuAddToWatch.Enabled = active;
 			mnuEditInMemoryTools.Enabled = active;
 			mnuEditLabel.Enabled = active && location.Symbol == null;
 			mnuGoToLocation.Enabled = active && enableGoToLocation;
+		}
+
+		private void ctxMenu_Opening(object sender, CancelEventArgs e)
+		{
+			UpdateContextMenu();
 		}
 
 		private void ctxMenu_Closing(object sender, ToolStripDropDownClosingEventArgs e)

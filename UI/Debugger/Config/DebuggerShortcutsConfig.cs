@@ -312,26 +312,21 @@ namespace Mesen.GUI.Config
 			}
 
 			Keys keys = (XmlKeys)typeof(DebuggerShortcutsConfig).GetField(fieldName).GetValue(ConfigManager.Config.Debug.Shortcuts);
-			if((keys != Keys.None && !ToolStripManager.IsValidShortcut(keys)) || Program.IsMono) {
-				//Support normally invalid shortcut keys as a shortcut
-				item.ShortcutKeys = Keys.None;
-				item.ShortcutKeyDisplayString = GetShortcutDisplay(keys);
 
-				Form parentForm = parent.FindForm();
-				if(parentForm is BaseForm) {
-					ProcessCmdKeyHandler onProcessCmdKeyHandler = (Keys keyData, ref bool processed) => {
-						if(!processed && item.Enabled && parent.ContainsFocus && keyData == keys) {
-							item.PerformClick();
-							processed = true;
-						}
-					};
+			item.ShortcutKeys = Keys.None;
+			item.ShortcutKeyDisplayString = GetShortcutDisplay(keys);
 
-					((ShortcutInfo)item.Tag).KeyHandler = onProcessCmdKeyHandler;
-					(parentForm as BaseForm).OnProcessCmdKey += onProcessCmdKeyHandler;
-				}
-			} else {
-				item.ShortcutKeys = keys;
-				item.ShortcutKeyDisplayString = GetShortcutDisplay(keys);
+			Form parentForm = parent.FindForm();
+			if(parentForm is BaseForm) {
+				ProcessCmdKeyHandler onProcessCmdKeyHandler = (Keys keyData, ref bool processed) => {
+					if(!processed && item.Enabled && parent.ContainsFocus && keyData == keys) {
+						item.PerformClick();
+						processed = true;
+					}
+				};
+
+				((ShortcutInfo)item.Tag).KeyHandler = onProcessCmdKeyHandler;
+				(parentForm as BaseForm).OnProcessCmdKey += onProcessCmdKeyHandler;
 			}
 		}
 	}

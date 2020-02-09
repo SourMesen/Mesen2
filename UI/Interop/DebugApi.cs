@@ -168,6 +168,7 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern void SetCdlData([In]byte[] cdlData, Int32 length);
+		[DllImport(DllPath)] public static extern void MarkBytesAs(UInt32 start, UInt32 end, CdlFlags type);
 	}
 
 	public enum SnesMemoryType

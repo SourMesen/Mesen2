@@ -245,10 +245,10 @@ namespace Mesen.GUI.Forms
 
 		private void BindShortcuts()
 		{
-			Func<bool> notClient = () => { return true; }; //TODO
+			Func<bool> notClient = () => { return !NetplayApi.IsConnected(); };
 			Func<bool> running = () => { return EmuRunner.IsRunning(); };
-			Func<bool> runningNotClient = () => { return EmuRunner.IsRunning(); }; //TODO
-			Func<bool> runningNotClientNotMovie = () => { return EmuRunner.IsRunning(); }; //TODO
+			Func<bool> runningNotClient = () => { return EmuRunner.IsRunning() && !NetplayApi.IsConnected(); };
+			Func<bool> runningNotClientNotMovie = () => { return EmuRunner.IsRunning() && !NetplayApi.IsConnected() && !RecordApi.MoviePlaying(); };
 
 			_shortcuts.BindShortcut(mnuOpen, EmulatorShortcut.OpenFile);
 			_shortcuts.BindShortcut(mnuExit, EmulatorShortcut.Exit);
