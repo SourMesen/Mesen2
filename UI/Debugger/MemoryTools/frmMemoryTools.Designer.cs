@@ -643,29 +643,29 @@
 			// 
 			// mnuGoToAll
 			// 
+			this.mnuGoToAll.Image = global::Mesen.GUI.Properties.Resources.Find;
 			this.mnuGoToAll.Name = "mnuGoToAll";
-			this.mnuGoToAll.Size = new System.Drawing.Size(145, 22);
+			this.mnuGoToAll.Size = new System.Drawing.Size(180, 22);
 			this.mnuGoToAll.Text = "Go to All";
-			this.mnuGoToAll.Visible = false;
 			this.mnuGoToAll.Click += new System.EventHandler(this.mnuGoToAll_Click);
 			// 
 			// mnuGoTo
 			// 
 			this.mnuGoTo.Name = "mnuGoTo";
-			this.mnuGoTo.Size = new System.Drawing.Size(145, 22);
+			this.mnuGoTo.Size = new System.Drawing.Size(180, 22);
 			this.mnuGoTo.Text = "Go To...";
 			this.mnuGoTo.Click += new System.EventHandler(this.mnuGoTo_Click);
 			// 
 			// toolStripMenuItem14
 			// 
 			this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-			this.toolStripMenuItem14.Size = new System.Drawing.Size(142, 6);
+			this.toolStripMenuItem14.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuFind
 			// 
 			this.mnuFind.Image = global::Mesen.GUI.Properties.Resources.Find;
 			this.mnuFind.Name = "mnuFind";
-			this.mnuFind.Size = new System.Drawing.Size(145, 22);
+			this.mnuFind.Size = new System.Drawing.Size(180, 22);
 			this.mnuFind.Text = "Find...";
 			this.mnuFind.Click += new System.EventHandler(this.mnuFind_Click);
 			// 
@@ -673,7 +673,7 @@
 			// 
 			this.mnuFindNext.Image = global::Mesen.GUI.Properties.Resources.NextArrow;
 			this.mnuFindNext.Name = "mnuFindNext";
-			this.mnuFindNext.Size = new System.Drawing.Size(145, 22);
+			this.mnuFindNext.Size = new System.Drawing.Size(180, 22);
 			this.mnuFindNext.Text = "Find Next";
 			this.mnuFindNext.Click += new System.EventHandler(this.mnuFindNext_Click);
 			// 
@@ -681,7 +681,7 @@
 			// 
 			this.mnuFindPrev.Image = global::Mesen.GUI.Properties.Resources.PreviousArrow;
 			this.mnuFindPrev.Name = "mnuFindPrev";
-			this.mnuFindPrev.Size = new System.Drawing.Size(145, 22);
+			this.mnuFindPrev.Size = new System.Drawing.Size(180, 22);
 			this.mnuFindPrev.Text = "Find Previous";
 			this.mnuFindPrev.Click += new System.EventHandler(this.mnuFindPrev_Click);
 			// 

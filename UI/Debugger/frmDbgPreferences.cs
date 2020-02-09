@@ -39,7 +39,7 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.MarkAsCode)),
 				GetMember(nameof(DebuggerShortcutsConfig.MarkAsData)),
 				GetMember(nameof(DebuggerShortcutsConfig.MarkAsUnidentified)),
-				//GetMember(nameof(DebuggerShortcutsConfig.GoToAll)),
+				GetMember(nameof(DebuggerShortcutsConfig.GoToAll)),
 				GetMember(nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.MemoryViewer_ViewInDisassembly)),
 

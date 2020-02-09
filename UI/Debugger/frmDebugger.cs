@@ -167,6 +167,7 @@ namespace Mesen.GUI.Debugger
 			mnuReset.InitShortcut(this, nameof(DebuggerShortcutsConfig.Reset));
 			mnuPowerCycle.InitShortcut(this, nameof(DebuggerShortcutsConfig.PowerCycle));
 
+			mnuGoToAll.InitShortcut(this, nameof(DebuggerShortcutsConfig.GoToAll));
 			mnuGoToAddress.InitShortcut(this, nameof(DebuggerShortcutsConfig.GoTo));
 			mnuGoToProgramCounter.InitShortcut(this, nameof(DebuggerShortcutsConfig.GoToProgramCounter));
 
@@ -557,6 +558,20 @@ namespace Mesen.GUI.Debugger
 			byte[] emptyCdlLog = new byte[DebugApi.GetMemorySize(SnesMemoryType.PrgRom)];
 			DebugApi.SetCdlData(emptyCdlLog, emptyCdlLog.Length);
 			RefreshDisassembly();
+		}
+
+		private void mnuGoToAll_Click(object sender, EventArgs e)
+		{
+			using(frmGoToAll frm = new frmGoToAll(false, true)) {
+				if(frm.ShowDialog() == DialogResult.OK) {
+					GoToDestination(frm.Destination);
+				}
+			}
+		}
+
+		private void GoToDestination(GoToDestination dest)
+		{
+			ctrlDisassemblyView.GoToDestination(dest);
 		}
 	}
 

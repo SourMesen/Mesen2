@@ -39,6 +39,10 @@ namespace Mesen.GUI.Debugger.Controls
 		protected override void OnHandleCreated(EventArgs e)
 		{
 			base.OnHandleCreated(e);
+			if(IsDesignMode) {
+				return;
+			}
+
 			InitShortcuts();
 		}
 
@@ -177,12 +181,13 @@ namespace Mesen.GUI.Debugger.Controls
 		private SelectedAddressRange GetSelectedAddressRange()
 		{
 			int firstLineOfSelection = ctrlCode.SelectionStart;
-			
-			while(_manager.Provider.GetLineAddress(firstLineOfSelection) < 0) {
+			int lineCount = ctrlCode.LineCount;
+
+			while(firstLineOfSelection < lineCount && _manager.Provider.GetLineAddress(firstLineOfSelection) < 0) {
 				firstLineOfSelection++;
 			}
 			int firstLineAfterSelection = ctrlCode.SelectionStart + ctrlCode.SelectionLength + 1;
-			while(_manager.Provider.GetLineAddress(firstLineAfterSelection) < 0) {
+			while(firstLineOfSelection < lineCount && _manager.Provider.GetLineAddress(firstLineAfterSelection) < 0) {
 				firstLineAfterSelection++;
 			}
 
@@ -225,21 +230,58 @@ namespace Mesen.GUI.Debugger.Controls
 			ctrlCode.Invalidate();
 		}
 
-		public void ScrollToSymbol(SourceSymbol symbol)
+		public void GoToDestination(GoToDestination dest)
+		{
+			bool bringToFront = true;
+			if(dest.RelativeAddress?.Type == _manager.CpuType.ToMemoryType()) {
+				ScrollToAddress((uint)dest.RelativeAddress.Value.Address);
+			} else if(dest.RelativeAddress != null) {
+				DebugWindowManager.OpenDebugger(dest.RelativeAddress.Value.Type.ToCpuType())?.GoToAddress(dest.RelativeAddress.Value.Address);
+				bringToFront = false;
+			} else if(dest.SourceLocation != null) {
+				ScrollToSourceLocation(dest.SourceLocation);
+			} else if(dest.File != null) {
+				SelectFile(dest.File);
+			}
+
+			if(bringToFront) {
+				Form parent = this.ParentForm;
+				if(parent.WindowState == FormWindowState.Minimized) {
+					//Unminimize window if it was minimized
+					parent.WindowState = FormWindowState.Normal;
+				}
+				parent.BringToFront();
+			}
+		}
+
+		public bool SelectFile(SourceFileInfo file)
 		{
 			if(!_inSourceView) {
 				ToggleView();
 			}
 
+			foreach(SourceFileInfo fileInfo in cboSourceFile.Items) {
+				if(fileInfo == file) {
+					cboSourceFile.SelectedItem = fileInfo;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public void ScrollToSourceLocation(SourceCodeLocation location)
+		{
+			if(SelectFile(location.File)) {
+				ctrlCode.ScrollToLineIndex(location.LineNumber);
+			}
+		}
+
+		public void ScrollToSymbol(SourceSymbol symbol)
+		{
 			SourceCodeLocation definition = _symbolProvider?.GetSymbolDefinition(symbol);
 			if(definition != null) {
-				foreach(SourceFileInfo fileInfo in cboSourceFile.Items) {
-					if(fileInfo == definition.File) {
-						cboSourceFile.SelectedItem = fileInfo;
-						ctrlCode.ScrollToLineIndex(definition.LineNumber);
-						return;
-					}
-				}
+				ScrollToSourceLocation(definition);
 			}
 		}
 

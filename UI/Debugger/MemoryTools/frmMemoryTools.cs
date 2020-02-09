@@ -200,32 +200,40 @@ namespace Mesen.GUI.Debugger
 			*/
 		}
 
+		public void ShowAddress(AddressInfo address)
+		{
+			ShowAddress(address.Address, address.Type);
+		}
+
 		public void ShowAddress(int address, SnesMemoryType memoryType)
 		{
 			cboMemoryType.SetEnumValue(memoryType);
 			ctrlHexViewer.GoToAddress(address);
 		}
 
-		//TODO
-		/*
 		public void GoToDestination(GoToDestination dest)
 		{
-			if(_memoryType == DebugMemoryType.CpuMemory && dest.CpuAddress >= 0) {
-				this.ShowAddress(dest.CpuAddress, DebugMemoryType.CpuMemory);
-			} else if(dest.AddressInfo != null) {
-				this.ShowAddress(dest.AddressInfo.Address, dest.AddressInfo.Type.ToMemoryType());
+			if(dest.RelativeAddress?.Type == _memoryType) {
+				ShowAddress(dest.RelativeAddress.Value);
+			} else if(dest.AbsoluteAddress?.Type == _memoryType) {
+				ShowAddress(dest.AbsoluteAddress.Value);
+			} else if(dest.RelativeAddress != null) {
+				ShowAddress(dest.RelativeAddress.Value);
+			} else if(dest.AbsoluteAddress != null) {
+				ShowAddress(dest.AbsoluteAddress.Value);
 			} else if(dest.Label != null) {
-				int relAddress = dest.Label.GetRelativeAddress();
-				if(_memoryType == DebugMemoryType.CpuMemory && relAddress >= 0) {
-					this.ShowAddress(relAddress, DebugMemoryType.CpuMemory);
+				AddressInfo relAddress = dest.Label.GetRelativeAddress();
+				if(relAddress.Type == _memoryType && relAddress.Address >= 0) {
+					ShowAddress(relAddress);
 				} else {
-					this.ShowAddress((int)dest.Label.Address, dest.Label.AddressType.ToMemoryType());
+					AddressInfo absAddress = dest.Label.GetAbsoluteAddress();
+					ShowAddress(absAddress);
 				}
-			} else if(dest.CpuAddress >= 0) {
-				this.ShowAddress(dest.CpuAddress, DebugMemoryType.CpuMemory);
+			} else if(dest.RelativeAddress != null) {
+				ShowAddress(dest.RelativeAddress.Value);
 			}
 
-			this.BringToFront();
+			BringToFront();
 		}
 
 		public void GoToAll()
@@ -235,7 +243,7 @@ namespace Mesen.GUI.Debugger
 					GoToDestination(frm.Destination);
 				}
 			}
-		}*/
+		}
 
 		private void InitTblMappings()
 		{
@@ -359,8 +367,7 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuGoToAll_Click(object sender, EventArgs e)
 		{
-			//TODO
-			//this.GoToAll();
+			this.GoToAll();
 		}
 
 		private void mnuIncreaseFontSize_Click(object sender, EventArgs e)

@@ -293,6 +293,12 @@
     <Compile Include="Debugger\Controls\ctrlGsuStatus.Designer.cs">
       <DependentUpon>ctrlGsuStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\Controls\ctrlSearchResult.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlSearchResult.designer.cs">
+      <DependentUpon>ctrlSearchResult.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlSpcStatus.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -322,6 +328,12 @@
     </Compile>
     <Compile Include="Debugger\frmBreakOn.Designer.cs">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmGoToAll.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmGoToAll.designer.cs">
+      <DependentUpon>frmGoToAll.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Integration\DbgImporter.cs" />
     <Compile Include="Debugger\Integration\frmIntegrationSettings.cs">

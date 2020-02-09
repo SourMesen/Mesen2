@@ -220,9 +220,9 @@ namespace Mesen.GUI.Debugger.Integration
 			return null;
 		}
 
-		private List<SymbolInfo> GetSymbols()
+		public List<SourceSymbol> GetSymbols()
 		{
-			return _symbols.Values.ToList();
+			return _symbols.Values.Select(s => s.SourceSymbol).ToList();
 		}
 
 		public SourceSymbol GetSymbol(string word, int prgStartAddress, int prgEndAddress)
@@ -488,6 +488,11 @@ namespace Mesen.GUI.Debugger.Integration
 			return false;
 		}
 
+		public int GetSymbolSize(SourceSymbol srcSymbol)
+		{
+			return GetSymbolSize(srcSymbol.InternalSymbol as SymbolInfo);
+		}
+		
 		private int GetSymbolSize(SymbolInfo symbol)
 		{
 			if(symbol.SegmentID != null && _segments.ContainsKey(symbol.SegmentID.Value)) {

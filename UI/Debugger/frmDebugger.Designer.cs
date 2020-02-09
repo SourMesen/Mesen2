@@ -63,6 +63,8 @@
 			this.mnuBreakIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBreakOn = new System.Windows.Forms.ToolStripMenuItem();
 			this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGoToAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuFind = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuFindNext = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuFindPrev = new System.Windows.Forms.ToolStripMenuItem();
@@ -389,6 +391,8 @@
 			// searchToolStripMenuItem
 			// 
 			this.searchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuGoToAll,
+            this.toolStripMenuItem11,
             this.mnuFind,
             this.mnuFindNext,
             this.mnuFindPrev,
@@ -398,6 +402,19 @@
 			this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
 			this.searchToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
 			this.searchToolStripMenuItem.Text = "Search";
+			// 
+			// mnuGoToAll
+			// 
+			this.mnuGoToAll.Image = global::Mesen.GUI.Properties.Resources.Find;
+			this.mnuGoToAll.Name = "mnuGoToAll";
+			this.mnuGoToAll.Size = new System.Drawing.Size(183, 22);
+			this.mnuGoToAll.Text = "Go to All";
+			this.mnuGoToAll.Click += new System.EventHandler(this.mnuGoToAll_Click);
+			// 
+			// toolStripMenuItem11
+			// 
+			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+			this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 6);
 			// 
 			// mnuFind
 			// 
@@ -543,19 +560,19 @@
 			// mnuHideUnident
 			// 
 			this.mnuHideUnident.Name = "mnuHideUnident";
-			this.mnuHideUnident.Size = new System.Drawing.Size(180, 22);
+			this.mnuHideUnident.Size = new System.Drawing.Size(170, 22);
 			this.mnuHideUnident.Text = "Hide";
 			// 
 			// mnuDisassembleUnident
 			// 
 			this.mnuDisassembleUnident.Name = "mnuDisassembleUnident";
-			this.mnuDisassembleUnident.Size = new System.Drawing.Size(180, 22);
+			this.mnuDisassembleUnident.Size = new System.Drawing.Size(170, 22);
 			this.mnuDisassembleUnident.Text = "Show disassembly";
 			// 
 			// mnuShowUnident
 			// 
 			this.mnuShowUnident.Name = "mnuShowUnident";
-			this.mnuShowUnident.Size = new System.Drawing.Size(180, 22);
+			this.mnuShowUnident.Size = new System.Drawing.Size(170, 22);
 			this.mnuShowUnident.Text = "Show as data";
 			// 
 			// mnuVerifiedData
@@ -573,19 +590,19 @@
 			// mnuHideData
 			// 
 			this.mnuHideData.Name = "mnuHideData";
-			this.mnuHideData.Size = new System.Drawing.Size(180, 22);
+			this.mnuHideData.Size = new System.Drawing.Size(170, 22);
 			this.mnuHideData.Text = "Hide";
 			// 
 			// mnuDisassembleData
 			// 
 			this.mnuDisassembleData.Name = "mnuDisassembleData";
-			this.mnuDisassembleData.Size = new System.Drawing.Size(180, 22);
+			this.mnuDisassembleData.Size = new System.Drawing.Size(170, 22);
 			this.mnuDisassembleData.Text = "Show disassembly";
 			// 
 			// mnuShowData
 			// 
 			this.mnuShowData.Name = "mnuShowData";
-			this.mnuShowData.Size = new System.Drawing.Size(180, 22);
+			this.mnuShowData.Size = new System.Drawing.Size(170, 22);
 			this.mnuShowData.Text = "Show as data";
 			// 
 			// toolStripMenuItem6
@@ -1077,5 +1094,7 @@
 		private Controls.ctrlGsuStatus ctrlGsuStatus;
 	  private System.Windows.Forms.ToolStripMenuItem mnuUseAltSpcOpNames;
 	  private System.Windows.Forms.ToolStripMenuItem mnuUseLowerCaseDisassembly;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGoToAll;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
    }
 }
