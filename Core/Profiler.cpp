@@ -23,20 +23,18 @@ Profiler::~Profiler()
 
 void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 {
-	UpdateCycles();
-
 	if(addr.Address >= 0) {
-		_stackFlags.push_back(stackFlag);
-		
-		_cycleCountStack.push(_currentCycleCount);
-
-		_functionStack.push_back(_currentFunction);
-
 		uint32_t key = addr.Address | ((uint8_t)addr.Type << 24);
 		if(_functions.find(key) == _functions.end()) {
 			_functions[key] = ProfiledFunction();
 			_functions[key].Address = addr;
 		}
+
+		UpdateCycles();
+
+		_stackFlags.push_back(stackFlag);
+		_cycleCountStack.push_back(_currentCycleCount);
+		_functionStack.push_back(_currentFunction);
 
 		ProfiledFunction& func = _functions[key];
 		func.CallCount++;
@@ -70,9 +68,9 @@ void Profiler::UpdateCycles()
 
 void Profiler::UnstackFunction()
 {
-	UpdateCycles();
-
 	if(!_functionStack.empty()) {
+		UpdateCycles();
+
 		//Return to the previous function
 		ProfiledFunction& func = _functions[_currentFunction];
 		func.MinCycles = std::min(func.MinCycles, _currentCycleCount);
@@ -84,15 +82,9 @@ void Profiler::UnstackFunction()
 		StackFrameFlags stackFlag = _stackFlags.back();
 		_stackFlags.pop_back();
 
-		if(stackFlag == StackFrameFlags::None) {
-			//Prevent IRQ/NMI from adding cycles to the calling function
-			//Add the subroutine's cycle count to the parent function's inclusive cycle count
-			//_functions[_currentFunction].InclusiveCycles += _currentCycleCount;
-		}
-
 		//Add the subroutine's cycle count to the current routine's cycle count
-		_currentCycleCount = _cycleCountStack.top() + _currentCycleCount;
-		_cycleCountStack.pop();
+		_currentCycleCount = _cycleCountStack.back() + _currentCycleCount;
+		_cycleCountStack.pop_back();
 	}
 }
 
@@ -107,6 +99,9 @@ void Profiler::InternalReset()
 	_prevMasterClock = _memoryManager->GetMasterClock();
 	_currentCycleCount = 0;
 	_currentFunction = ResetFunctionIndex;
+	_functionStack.clear();
+	_stackFlags.clear();
+	_cycleCountStack.clear();
 	
 	_functions.clear();
 	_functions[ResetFunctionIndex] = ProfiledFunction();

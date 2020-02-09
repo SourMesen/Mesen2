@@ -48,21 +48,21 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void RefreshList()
 		{
+			int? topItemIndex = lstFunctions.TopItem?.Index;
+			int selectedIndex = lstFunctions.SelectedIndices.Count > 0 ? lstFunctions.SelectedIndices[0] : -1;
+
+			lstFunctions.BeginUpdate();
+
 			_functions = _newData;
 			_exclusiveTotal = 0;
 			foreach(ProfiledFunction func in _functions) {
 				_exclusiveTotal += func.ExclusiveCycles;
 			}
 
-			lstFunctions.BeginUpdate();
-
-			int? topItemIndex = lstFunctions.TopItem?.Index;
-			int selectedIndex = lstFunctions.SelectedIndices.Count > 0 ? lstFunctions.SelectedIndices[0] : -1;
-
 			Array.Sort(_functions, new ListComparer(this, _sortColumn, _sortOrder));
 			lstFunctions.VirtualListSize = _functions.Length;
 
-			if(topItemIndex.HasValue) {
+			if(topItemIndex.HasValue && _functions.Length > topItemIndex.Value) {
 				lstFunctions.TopItem = lstFunctions.Items[topItemIndex.Value];
 			}
 

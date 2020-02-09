@@ -67,7 +67,7 @@
 			this.btnReset.Name = "btnReset";
 			this.btnReset.Size = new System.Drawing.Size(75, 23);
 			this.btnReset.TabIndex = 5;
-			this.btnReset.Text = "Reset Counts";
+			this.btnReset.Text = "Reset";
 			this.btnReset.UseVisualStyleBackColor = true;
 			this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
 			// 

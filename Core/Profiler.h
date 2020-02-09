@@ -27,7 +27,7 @@ private:
 	
 	deque<int32_t> _functionStack;
 	deque<StackFrameFlags> _stackFlags;
-	std::stack<uint64_t> _cycleCountStack;
+	deque<uint64_t> _cycleCountStack;
 
 	uint64_t _currentCycleCount;
 	uint64_t _prevMasterClock;
