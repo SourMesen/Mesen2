@@ -218,6 +218,57 @@ namespace Mesen.GUI.Debugger
 					new RegEntry("$FE", "Timer 1 Output", spc.Timer1.Output, Format.X8),
 					new RegEntry("$FF", "Timer 2 Output", spc.Timer2.Output, Format.X8),
 				});
+			} else if(tabMain.SelectedTab == tpgDsp) {
+				DspState dsp = _state.Dsp;
+				List<RegEntry> entries = new List<RegEntry>();
+
+				Action<int, string> addReg = (int i, string name) => {
+					entries.Add(new RegEntry("$" + i.ToString("X2"), name, dsp.Regs[i], Format.X8));
+				};
+
+				addReg(0x0C, "Main Volume (MVOL) - Left");
+				addReg(0x1C, "Main Volume (MVOL) - Right");
+				addReg(0x2C, "Echo Volume (EVOL) - Left");
+				addReg(0x3C, "Echo Volume (EVOL) - Right");
+
+				addReg(0x4C, "Key On (KON)");
+				addReg(0x5C, "Key Off (KOF)");
+
+				addReg(0x7C, "Source End Block (ENDX)");
+				addReg(0x0D, "Echo Feedback (EFB)");
+				addReg(0x2D, "Pitch Modulation (PMON)");
+				addReg(0x3D, "Noise Enable (NON)");
+				addReg(0x4D, "Echo Enable (EON)");
+				addReg(0x5D, "Source Directory (Offset) (DIR)");
+				addReg(0x6D, "Echo Buffer (Offset) (ESA)");
+				addReg(0x6D, "Echo Delay (EDL)");
+
+				entries.Add(new RegEntry("$6C", "Flags (FLG)", null));
+				entries.Add(new RegEntry("$6C.0-4", "Noise Clock", dsp.Regs[0x6C] & 0x1F, Format.X8));
+				entries.Add(new RegEntry("$6C.5", "Echo Disabled", (dsp.Regs[0x6C] & 0x20) != 0));
+				entries.Add(new RegEntry("$6C.6", "Mute", (dsp.Regs[0x6C] & 0x40) != 0));
+				entries.Add(new RegEntry("$6C.7", "Reset", (dsp.Regs[0x6C] & 0x80) != 0));
+
+				entries.Add(new RegEntry("$xF", "Coefficients", null));
+				for(int i = 0; i < 8; i++) {
+					addReg((i << 4) | 0x0F, "Coefficient " + i);
+				}
+
+				for(int i = 0; i < 8; i++) {
+					entries.Add(new RegEntry("Voice #" + i.ToString(), "", null));
+
+					int voice = i << 4;
+					addReg(voice | 0x00, "Left Volume (VOL)");
+					addReg(voice | 0x01, "Right Volume (VOL)");
+					entries.Add(new RegEntry("$" + i + "2 + $" + i + "3", "Pitch (P)", dsp.Regs[voice | 0x02] | (dsp.Regs[voice | 0x03] << 8), Format.X16));
+					addReg(voice | 0x04, "Source (SRCN)");
+					addReg(voice | 0x05, "ADSR1");
+					addReg(voice | 0x06, "ADSR2");
+					addReg(voice | 0x07, "GAIN");
+					addReg(voice | 0x08, "ENVX");
+					addReg(voice | 0x09, "OUTX");
+				}
+				ctrlPropertyDsp.UpdateState(entries);
 			} else if(tabMain.SelectedTab == tpgPpu) {
 				PpuState ppu = _state.Ppu;
 

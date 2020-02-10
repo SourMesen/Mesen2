@@ -5,7 +5,13 @@
 #include "SoundMixer.h"
 #include "EmuSettings.h"
 #include "SpcFileData.h"
+#ifndef DUMMYSPC
 #include "SPC_DSP.h"
+#else
+#undef Spc
+#include "SPC_DSP.h"
+#define Spc DummySpc
+#endif
 #include "../Utilities/Serializer.h"
 
 Spc::Spc(Console* console)
@@ -18,7 +24,9 @@ Spc::Spc(Console* console)
 	_console->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
 
 	_dsp.reset(new SPC_DSP());
-	_dsp->init(_ram);
+	#ifndef DUMMYSPC
+	_dsp->init(this, _ram);
+	#endif
 	_dsp->reset();
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 
@@ -306,6 +314,23 @@ void Spc::CpuWriteRegister(uint32_t addr, uint8_t value)
 	_state.CpuRegs[addr & 0x03] = value;
 }
 
+uint8_t Spc::DspReadRam(uint16_t addr)
+{
+	uint8_t value = _ram[addr];
+#ifndef DUMMYSPC
+	_console->ProcessMemoryRead<CpuType::Spc>(addr, value, MemoryOperationType::Read);
+#endif
+	return value;
+}
+
+void Spc::DspWriteRam(uint16_t addr, uint8_t value)
+{
+#ifndef DUMMYSPC
+	_console->ProcessMemoryWrite<CpuType::Spc>(addr, value, MemoryOperationType::Write);
+#endif
+	_ram[addr] = value;
+}
+
 void Spc::Run()
 {
 	if(!_enabled || _state.StopState != CpuStopState::Running) {
@@ -346,6 +371,13 @@ void Spc::ProcessEndFrame()
 SpcState Spc::GetState()
 {
 	return _state;
+}
+
+DspState Spc::GetDspState()
+{
+	DspState state;
+	_dsp->copyRegs(state.Regs);
+	return state;
 }
 
 bool Spc::IsMuted()

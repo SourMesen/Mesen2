@@ -412,6 +412,7 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	state.Cpu = _cpu->GetState();
 	_ppu->GetState(state.Ppu, partialPpuState);
 	state.Spc = _spc->GetState();
+	state.Dsp = _spc->GetDspState();
 
 	if(!partialPpuState) {
 		for(int i = 0; i < 8; i++) {
@@ -422,7 +423,7 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	}
 
 	if(_cart->GetDsp()) {
-		state.Dsp = _cart->GetDsp()->GetState();
+		state.NecDsp = _cart->GetDsp()->GetState();
 	}
 	if(_cart->GetSa1()) {
 		state.Sa1 = _cart->GetSa1()->GetCpuState();

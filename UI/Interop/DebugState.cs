@@ -255,6 +255,12 @@ namespace Mesen.GUI
 		public SpcTimer Timer2;
 	};
 
+	public struct DspState
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+		public byte[] Regs;
+	}
+
 	public struct NecDspAccFlags
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool Carry;
@@ -492,6 +498,7 @@ namespace Mesen.GUI
 		public CpuState Cpu;
 		public PpuState Ppu;
 		public SpcState Spc;
+		public DspState Dsp;
 		public NecDspState NecDsp;
 		public CpuState Sa1;
 		public GsuState Gsu;

@@ -5,9 +5,9 @@
 #define SPC_DSP_H
 
 #include "blargg_common.h"
-
 extern "C" { typedef void (*dsp_copy_func_t)( unsigned char** io, void* state, size_t ); }
 
+class Spc;
 class SPC_DSP {
 public:
 	typedef BOOST::uint8_t uint8_t;
@@ -15,7 +15,7 @@ public:
 // Setup
 
 	// Initializes DSP and has it use the 64K RAM provided
-	void init( void* ram_64k );
+	void init( Spc* spc, void* ram_64k );
 
 	// Sets destination for output samples. If out is NULL or out_size is 0,
 	// doesn't generate any.
@@ -45,7 +45,9 @@ public:
 	void run();
 	
 	bool isMuted() { return (m.regs[r_flg] & 0x40) != 0; }
-
+	void copyRegs(uint8_t* output) { memcpy(output, m.regs, register_count); }
+	uint8_t readRam(uint16_t addr);
+	void writeRam(uint16_t addr, uint8_t value);
 // Sound control
 
 	// Mutes voices corresponding to non-zero bits in mask (issues repeated KOFF events).
@@ -188,6 +190,7 @@ private:
 		sample_t extra [extra_size];
 	};
 	state_t m;
+	Spc* _spc;
 	
 	void init_counter();
 	void run_counters();

@@ -15,7 +15,8 @@ struct DebugState
 	CpuState Cpu;
 	PpuState Ppu;
 	SpcState Spc;
-	NecDspState Dsp;
+	DspState Dsp;
+	NecDspState NecDsp;
 	CpuState Sa1;
 	GsuState Gsu;
 	Cx4State Cx4;

@@ -19,6 +19,7 @@ License along with this module; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "blargg_source.h"
+#include "Spc.h"
 
 #ifdef BLARGG_ENABLE_OPTIMIZER
 	#include BLARGG_ENABLE_OPTIMIZER
@@ -292,7 +293,7 @@ inline void SPC_DSP::run_envelope( voice_t* const v )
 inline void SPC_DSP::decode_brr( voice_t* v )
 {
 	// Arrange the four input nybbles in 0xABCD order for easy decoding
-	int nybbles = m.t_brr_byte * 0x100 + m.ram [(v->brr_addr + v->brr_offset + 1) & 0xFFFF];
+	int nybbles = m.t_brr_byte * 0x100 + readRam(v->brr_addr + v->brr_offset + 1);
 	
 	int const header = m.t_brr_header;
 	
@@ -397,10 +398,10 @@ inline VOICE_CLOCK( V1 )
 inline VOICE_CLOCK( V2 )
 {
 	// Read sample pointer (ignored if not needed)
-	uint8_t const* entry = &m.ram [m.t_dir_addr];
+	uint16_t entry = m.t_dir_addr;
 	if ( !v->kon_delay )
 		entry += 2;
-	m.t_brr_next_addr = GET_LE16A( entry );
+	m.t_brr_next_addr = readRam(entry) | (readRam(entry+1) << 8);
 	
 	m.t_adsr0 = VREG(v->regs,adsr0);
 	
@@ -414,8 +415,8 @@ inline VOICE_CLOCK( V3a )
 inline VOICE_CLOCK( V3b )
 {
 	// Read BRR header and byte
-	m.t_brr_byte   = m.ram [(v->brr_addr + v->brr_offset) & 0xFFFF];
-	m.t_brr_header = m.ram [v->brr_addr]; // brr_addr doesn't need masking
+	m.t_brr_byte   = readRam(v->brr_addr + v->brr_offset);
+	m.t_brr_header = readRam(v->brr_addr); // brr_addr doesn't need masking
 }
 VOICE_CLOCK( V3c )
 {
@@ -588,7 +589,7 @@ VOICE_CLOCK(V9_V6_V3) { voice_V9(v); voice_V6(v+1); voice_V3(v+2); }
 //// Echo
 
 // Current echo buffer pointer for left/right channel
-#define ECHO_PTR( ch )      (&m.ram [m.t_echo_ptr + ch * 2])
+#define ECHO_PTR( ch )      (m.t_echo_ptr + ch * 2)
 
 // Sample in echo history buffer, where 0 is the oldest
 #define ECHO_FIR( i )       (m.echo_hist_pos [i])
@@ -600,7 +601,8 @@ VOICE_CLOCK(V9_V6_V3) { voice_V9(v); voice_V6(v+1); voice_V3(v+2); }
 
 inline void SPC_DSP::echo_read( int ch )
 {
-	int s = GET_LE16SA( ECHO_PTR( ch ) );
+	uint16_t echoPtr = ECHO_PTR(ch);
+	int16_t s = readRam(echoPtr) | (readRam(echoPtr+1) << 8);
 	// second copy simplifies wrap-around handling
 	ECHO_FIR( 0 ) [ch] = ECHO_FIR( 8 ) [ch] = s >> 1;
 }
@@ -711,7 +713,9 @@ ECHO_CLOCK( 28 )
 inline void SPC_DSP::echo_write( int ch )
 {
 	if(!(m.t_echo_enabled & 0x20)) {
-		SET_LE16A(ECHO_PTR(ch), m.t_echo_out[ch]);
+		uint16_t echoPtr = ECHO_PTR(ch);
+		writeRam(echoPtr, m.t_echo_out[ch]);
+		writeRam(echoPtr+1, m.t_echo_out[ch] >> 8);
 	}
 	m.t_echo_out [ch] = 0;
 }
@@ -790,8 +794,9 @@ PHASE(31)  V(V4,0)       V(V1,2)\
 
 void SPC_DSP::run()
 {
-	m.phase = (m.phase + 1) & 31;
-	switch (m.phase)
+	int const phase = m.phase;
+	m.phase = (phase + 1) & 31;
+	switch (phase)
 	{
 		#define PHASE( n ) if ( n ) break; case n:
 		GEN_DSP_TIMING
@@ -799,13 +804,17 @@ void SPC_DSP::run()
 	}
 }
 
+inline uint8_t SPC_DSP::readRam(uint16_t addr) { return _spc->DspReadRam(addr); }
+inline void SPC_DSP::writeRam(uint16_t addr, uint8_t value) { _spc->DspWriteRam(addr, value); }
+
 #endif
 
 
 //// Setup
 
-void SPC_DSP::init( void* ram_64k )
+void SPC_DSP::init( Spc *spc, void* ram_64k )
 {
+	_spc = spc;
 	m.ram = (uint8_t*) ram_64k;
 	mute_voices( 0 );
 	disable_surround( false );

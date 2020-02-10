@@ -44,12 +44,15 @@
 			this.ctrlPropertyPpu = new Mesen.GUI.Debugger.ctrlPropertyList();
 			this.tpgSpc = new System.Windows.Forms.TabPage();
 			this.ctrlPropertySpc = new Mesen.GUI.Debugger.ctrlPropertyList();
+			this.tpgDsp = new System.Windows.Forms.TabPage();
+			this.ctrlPropertyDsp = new Mesen.GUI.Debugger.ctrlPropertyList();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			this.tabMain.SuspendLayout();
 			this.tpgCpu.SuspendLayout();
 			this.tpgDma.SuspendLayout();
 			this.tpgPpu.SuspendLayout();
 			this.tpgSpc.SuspendLayout();
+			this.tpgDsp.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctrlScanlineCycleSelect
@@ -125,6 +128,7 @@
 			this.tabMain.Controls.Add(this.tpgDma);
 			this.tabMain.Controls.Add(this.tpgPpu);
 			this.tabMain.Controls.Add(this.tpgSpc);
+			this.tabMain.Controls.Add(this.tpgDsp);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 24);
 			this.tabMain.Name = "tabMain";
@@ -156,7 +160,7 @@
 			this.tpgDma.Controls.Add(this.ctrlPropertyDma);
 			this.tpgDma.Location = new System.Drawing.Point(4, 22);
 			this.tpgDma.Name = "tpgDma";
-			this.tpgDma.Size = new System.Drawing.Size(526, 461);
+			this.tpgDma.Size = new System.Drawing.Size(376, 361);
 			this.tpgDma.TabIndex = 2;
 			this.tpgDma.Text = "DMA";
 			this.tpgDma.UseVisualStyleBackColor = true;
@@ -166,7 +170,7 @@
 			this.ctrlPropertyDma.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlPropertyDma.Location = new System.Drawing.Point(0, 0);
 			this.ctrlPropertyDma.Name = "ctrlPropertyDma";
-			this.ctrlPropertyDma.Size = new System.Drawing.Size(526, 461);
+			this.ctrlPropertyDma.Size = new System.Drawing.Size(376, 361);
 			this.ctrlPropertyDma.TabIndex = 1;
 			// 
 			// tpgPpu
@@ -174,7 +178,7 @@
 			this.tpgPpu.Controls.Add(this.ctrlPropertyPpu);
 			this.tpgPpu.Location = new System.Drawing.Point(4, 22);
 			this.tpgPpu.Name = "tpgPpu";
-			this.tpgPpu.Size = new System.Drawing.Size(526, 461);
+			this.tpgPpu.Size = new System.Drawing.Size(376, 361);
 			this.tpgPpu.TabIndex = 1;
 			this.tpgPpu.Text = "PPU";
 			this.tpgPpu.UseVisualStyleBackColor = true;
@@ -184,7 +188,7 @@
 			this.ctrlPropertyPpu.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlPropertyPpu.Location = new System.Drawing.Point(0, 0);
 			this.ctrlPropertyPpu.Name = "ctrlPropertyPpu";
-			this.ctrlPropertyPpu.Size = new System.Drawing.Size(526, 461);
+			this.ctrlPropertyPpu.Size = new System.Drawing.Size(376, 361);
 			this.ctrlPropertyPpu.TabIndex = 2;
 			// 
 			// tpgSpc
@@ -192,7 +196,7 @@
 			this.tpgSpc.Controls.Add(this.ctrlPropertySpc);
 			this.tpgSpc.Location = new System.Drawing.Point(4, 22);
 			this.tpgSpc.Name = "tpgSpc";
-			this.tpgSpc.Size = new System.Drawing.Size(526, 461);
+			this.tpgSpc.Size = new System.Drawing.Size(376, 361);
 			this.tpgSpc.TabIndex = 5;
 			this.tpgSpc.Text = "SPC";
 			this.tpgSpc.UseVisualStyleBackColor = true;
@@ -202,8 +206,26 @@
 			this.ctrlPropertySpc.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlPropertySpc.Location = new System.Drawing.Point(0, 0);
 			this.ctrlPropertySpc.Name = "ctrlPropertySpc";
-			this.ctrlPropertySpc.Size = new System.Drawing.Size(526, 461);
+			this.ctrlPropertySpc.Size = new System.Drawing.Size(376, 361);
 			this.ctrlPropertySpc.TabIndex = 2;
+			// 
+			// tpgDsp
+			// 
+			this.tpgDsp.Controls.Add(this.ctrlPropertyDsp);
+			this.tpgDsp.Location = new System.Drawing.Point(4, 22);
+			this.tpgDsp.Name = "tpgDsp";
+			this.tpgDsp.Size = new System.Drawing.Size(376, 361);
+			this.tpgDsp.TabIndex = 6;
+			this.tpgDsp.Text = "DSP";
+			this.tpgDsp.UseVisualStyleBackColor = true;
+			// 
+			// ctrlPropertyDsp
+			// 
+			this.ctrlPropertyDsp.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlPropertyDsp.Location = new System.Drawing.Point(0, 0);
+			this.ctrlPropertyDsp.Name = "ctrlPropertyDsp";
+			this.ctrlPropertyDsp.Size = new System.Drawing.Size(376, 361);
+			this.ctrlPropertyDsp.TabIndex = 3;
 			// 
 			// frmRegisterViewer
 			// 
@@ -225,6 +247,7 @@
 			this.tpgDma.ResumeLayout(false);
 			this.tpgPpu.ResumeLayout(false);
 			this.tpgSpc.ResumeLayout(false);
+			this.tpgDsp.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -248,5 +271,7 @@
 		private ctrlPropertyList ctrlPropertyDma;
 		private ctrlPropertyList ctrlPropertyPpu;
 		private ctrlPropertyList ctrlPropertySpc;
-	}
+	  private System.Windows.Forms.TabPage tpgDsp;
+	  private ctrlPropertyList ctrlPropertyDsp;
+   }
 }
