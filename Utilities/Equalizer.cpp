@@ -12,8 +12,8 @@ void Equalizer::ApplyEqualizer(uint32_t sampleCount, int16_t *samples)
 		_equalizerLeft->sbs_process(&inL, &outL);
 		_equalizerRight->sbs_process(&inR, &outR);
 
-		samples[i * 2] = (int16_t)outL;
-		samples[i * 2 + 1] = (int16_t)outR;
+		samples[i * 2] = (int16_t)std::max(std::min(outL, 32767.0), -32768.0);
+		samples[i * 2 + 1] = (int16_t)std::max(std::min(outR, 32767.0), -32768.0);
 	}
 }
 

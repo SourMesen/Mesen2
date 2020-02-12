@@ -8,6 +8,7 @@
 #include <vector>
 #include <atomic>
 #include <cstring>
+#include <algorithm>
 
 #include "UTF8Util.h"
 
