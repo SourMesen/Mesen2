@@ -321,7 +321,7 @@
     <Compile Include="Debugger\frmAssembler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmAssembler.designer.cs">
+    <Compile Include="Debugger\frmAssembler.Designer.cs">
       <DependentUpon>frmAssembler.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmBreakIn.cs">
@@ -339,7 +339,7 @@
     <Compile Include="Debugger\frmDebuggerColors.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debugger\frmDebuggerColors.designer.cs">
+    <Compile Include="Debugger\frmDebuggerColors.Designer.cs">
       <DependentUpon>frmDebuggerColors.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmGoToAll.cs">
