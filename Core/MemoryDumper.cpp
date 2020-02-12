@@ -149,7 +149,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 	}
 
 	if(disableSideEffects && memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
-		AddressInfo addr = { address, memoryType };
+		AddressInfo addr = { (int32_t)address, memoryType };
 		addr = _debugger->GetAbsoluteAddress(addr);
 		if(addr.Address >= 0) {
 			SetMemoryValue(addr.Type, addr.Address, value, true);
@@ -158,7 +158,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 	}
 
 	auto invalidateCache = [=]() {
-		AddressInfo addr = { address, memoryType };
+		AddressInfo addr = { (int32_t)address, memoryType };
 		_debugger->GetDisassembler()->InvalidateCache(addr, DebugUtilities::ToCpuType(memoryType));
 	};
 

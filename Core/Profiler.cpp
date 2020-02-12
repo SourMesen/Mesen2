@@ -78,8 +78,6 @@ void Profiler::UnstackFunction()
 
 		_currentFunction = _functionStack.back();
 		_functionStack.pop_back();
-
-		StackFrameFlags stackFlag = _stackFlags.back();
 		_stackFlags.pop_back();
 
 		//Add the subroutine's cycle count to the current routine's cycle count
