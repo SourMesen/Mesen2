@@ -67,8 +67,8 @@ namespace Mesen.GUI.Config
 		[ShortcutName("View in disassembly")]
 		public XmlKeys MemoryViewer_ViewInDisassembly = Keys.None;
 
-		[ShortcutName("Open APU Viewer")]
-		public XmlKeys OpenApuViewer = Keys.Control | Keys.U;
+		[ShortcutName("Open Assembler")]
+		public XmlKeys OpenAssembler = Keys.Control | Keys.U;
 		[ShortcutName("Open Debugger")]
 		public XmlKeys OpenDebugger = Keys.Control | Keys.D;
 		[ShortcutName("Open SPC Debugger")]

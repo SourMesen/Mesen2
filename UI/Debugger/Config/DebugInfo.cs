@@ -28,6 +28,7 @@ namespace Mesen.GUI.Config
 		public DbgIntegrationConfig DbgIntegration = new DbgIntegrationConfig();
 		public ScriptWindowConfig ScriptWindow = new ScriptWindowConfig();
 		public ProfilerConfig Profiler = new ProfilerConfig();
+		public AssemblerConfig Assembler = new AssemblerConfig();
 
 		public DebugInfo()
 		{		

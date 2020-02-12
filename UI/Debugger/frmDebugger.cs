@@ -498,6 +498,14 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
+		private void mnuConfigureColors_Click(object sender, EventArgs e)
+		{
+			using(frmDebuggerColors frm = new frmDebuggerColors()) {
+				frm.ShowDialog(sender, this);
+				ctrlDisassemblyView.Invalidate();
+			}
+		}
+
 		private void ctrlBreakpoints_BreakpointNavigation(Breakpoint bp)
 		{
 			ctrlDisassemblyView.ScrollToAddress((uint)bp.GetRelativeAddress());

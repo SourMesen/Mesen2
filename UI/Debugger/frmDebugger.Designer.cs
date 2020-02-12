@@ -132,6 +132,7 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
+			this.mnuConfigureColors = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -527,6 +528,7 @@
             this.toolStripMenuItem5,
             this.mnuFontOptions,
             this.toolStripMenuItem4,
+            this.mnuConfigureColors,
             this.mnuPreferences});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -743,32 +745,32 @@
 			// 
 			this.mnuIncreaseFontSize.Name = "mnuIncreaseFontSize";
 			this.mnuIncreaseFontSize.ShortcutKeyDisplayString = "";
-			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(157, 22);
+			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(180, 22);
 			this.mnuIncreaseFontSize.Text = "Increase Size";
 			// 
 			// mnuDecreaseFontSize
 			// 
 			this.mnuDecreaseFontSize.Name = "mnuDecreaseFontSize";
 			this.mnuDecreaseFontSize.ShortcutKeyDisplayString = "";
-			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(157, 22);
+			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(180, 22);
 			this.mnuDecreaseFontSize.Text = "Decrease Size";
 			// 
 			// mnuResetFontSize
 			// 
 			this.mnuResetFontSize.Name = "mnuResetFontSize";
 			this.mnuResetFontSize.ShortcutKeyDisplayString = "";
-			this.mnuResetFontSize.Size = new System.Drawing.Size(157, 22);
+			this.mnuResetFontSize.Size = new System.Drawing.Size(180, 22);
 			this.mnuResetFontSize.Text = "Reset to Default";
 			// 
 			// toolStripMenuItem21
 			// 
 			this.toolStripMenuItem21.Name = "toolStripMenuItem21";
-			this.toolStripMenuItem21.Size = new System.Drawing.Size(154, 6);
+			this.toolStripMenuItem21.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuSelectFont
 			// 
 			this.mnuSelectFont.Name = "mnuSelectFont";
-			this.mnuSelectFont.Size = new System.Drawing.Size(157, 22);
+			this.mnuSelectFont.Size = new System.Drawing.Size(180, 22);
 			this.mnuSelectFont.Text = "Select Font...";
 			this.mnuSelectFont.Click += new System.EventHandler(this.mnuSelectFont_Click);
 			// 
@@ -962,6 +964,14 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
+			// mnuConfigureColors
+			// 
+			this.mnuConfigureColors.Image = global::Mesen.GUI.Properties.Resources.PipetteSmall;
+			this.mnuConfigureColors.Name = "mnuConfigureColors";
+			this.mnuConfigureColors.Size = new System.Drawing.Size(209, 22);
+			this.mnuConfigureColors.Text = "Configure colors";
+			this.mnuConfigureColors.Click += new System.EventHandler(this.mnuConfigureColors_Click);
+			// 
 			// frmDebugger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1096,5 +1106,6 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuUseLowerCaseDisassembly;
 	  private System.Windows.Forms.ToolStripMenuItem mnuGoToAll;
 	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
+	  private System.Windows.Forms.ToolStripMenuItem mnuConfigureColors;
    }
 }

@@ -47,6 +47,7 @@
 			this.cboSourceFile = new System.Windows.Forms.ComboBox();
 			this.lblSourceFile = new System.Windows.Forms.Label();
 			this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
+			this.mnuEditSelectedCode = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxMenu.SuspendLayout();
 			this.tlpMain.SuspendLayout();
 			this.SuspendLayout();
@@ -81,6 +82,7 @@
 			// 
 			this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuMarkSelectionAs,
+            this.mnuEditSelectedCode,
             this.sepMarkSelectionAs,
             this.mnuToggleBreakpoint,
             this.mnuAddToWatch,
@@ -92,7 +94,7 @@
             this.sepSwitchView,
             this.mnuSwitchView});
 			this.ctxMenu.Name = "ctxMenu";
-			this.ctxMenu.Size = new System.Drawing.Size(227, 220);
+			this.ctxMenu.Size = new System.Drawing.Size(227, 242);
 			this.ctxMenu.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.ctxMenu_Closing);
 			this.ctxMenu.Opening += new System.ComponentModel.CancelEventHandler(this.ctxMenu_Opening);
 			// 
@@ -234,6 +236,13 @@
 			this.tlpMain.Size = new System.Drawing.Size(465, 398);
 			this.tlpMain.TabIndex = 3;
 			// 
+			// mnuEditSelectedCode
+			// 
+			this.mnuEditSelectedCode.Image = global::Mesen.GUI.Properties.Resources.Edit;
+			this.mnuEditSelectedCode.Name = "mnuEditSelectedCode";
+			this.mnuEditSelectedCode.Size = new System.Drawing.Size(226, 22);
+			this.mnuEditSelectedCode.Text = "Edit Selected Code";
+			// 
 			// ctrlDisassemblyView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,5 +278,6 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuMarkAsCode;
 	  private System.Windows.Forms.ToolStripMenuItem mnuMarkAsData;
 	  private System.Windows.Forms.ToolStripMenuItem mnuMarkAsUnidentifiedData;
+	  private System.Windows.Forms.ToolStripMenuItem mnuEditSelectedCode;
    }
 }

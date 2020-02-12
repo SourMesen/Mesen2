@@ -36,6 +36,7 @@
 #include "ExpressionEvaluator.h"
 #include "InternalRegisters.h"
 #include "AluMulDiv.h"
+#include "Assembler.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -58,13 +59,14 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Gsu].reset(new ExpressionEvaluator(this, CpuType::Gsu));
 
 	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), _memoryManager.get()));
-	_memoryDumper.reset(new MemoryDumper(_ppu, console->GetSpc(), _memoryManager, _cart));
+	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _memoryManager.get(), _console->GetDmaController().get()));
 	_scriptManager.reset(new ScriptManager(this));
+	_assembler.reset(new Assembler(_labelManager));
 
 	_cpuDebugger.reset(new CpuDebugger(this, CpuType::Cpu));
 	_spcDebugger.reset(new SpcDebugger(this));
@@ -468,7 +470,7 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress)
 			return { _spc->GetRelativeAddress(absAddress), SnesMemoryType::SpcMemory };
 
 		case SnesMemoryType::Register:
-			return { -1, SnesMemoryType::Register };
+			return { absAddress.Address & 0xFFFF, SnesMemoryType::Register };
 
 		default: 
 			return { -1, SnesMemoryType::Register };
@@ -581,6 +583,11 @@ shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 shared_ptr<Console> Debugger::GetConsole()
 {
 	return _console;
+}
+
+shared_ptr<Assembler> Debugger::GetAssembler()
+{
+	return _assembler;
 }
 
 template void Debugger::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);

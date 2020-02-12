@@ -15,6 +15,7 @@
 #include "../Core/LabelManager.h"
 #include "../Core/ScriptManager.h"
 #include "../Core/Profiler.h"
+#include "../Core/Assembler.h"
 
 extern shared_ptr<Console> _console;
 
@@ -100,4 +101,6 @@ extern "C"
 	DllExport void __stdcall RemoveScript(int32_t scriptId) { GetDebugger()->GetScriptManager()->RemoveScript(scriptId); }
 	DllExport const char* __stdcall GetScriptLog(int32_t scriptId) { return GetDebugger()->GetScriptManager()->GetScriptLog(scriptId); }
 	//DllExport void __stdcall DebugSetScriptTimeout(uint32_t timeout) { LuaScriptingContext::SetScriptTimeout(timeout); }
+
+	DllExport uint32_t __stdcall AssembleCode(char* code, uint32_t startAddress, int16_t* assembledOutput) { return GetDebugger()->GetAssembler()->AssembleCode(code, startAddress, assembledOutput); }
 };

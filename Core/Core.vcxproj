@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AluMulDiv.h" />
+    <ClInclude Include="Assembler.h" />
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseCoprocessor.h" />
@@ -210,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AluMulDiv.cpp" />
+    <ClCompile Include="Assembler.cpp" />
     <ClCompile Include="BaseCartridge.cpp" />
     <ClCompile Include="BaseControlDevice.cpp" />
     <ClCompile Include="BaseRenderer.cpp" />

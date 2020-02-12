@@ -491,6 +491,9 @@
     <ClInclude Include="Profiler.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="Assembler.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -777,6 +780,9 @@
       <Filter>SNES\Coprocessors\MSU1</Filter>
     </ClCompile>
     <ClCompile Include="Profiler.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Assembler.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>

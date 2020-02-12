@@ -7,17 +7,22 @@
 #include "Sa1.h"
 #include "Cx4.h"
 #include "Gsu.h"
+#include "Console.h"
 #include "MemoryDumper.h"
 #include "BaseCartridge.h"
 #include "VideoDecoder.h"
 #include "DebugTypes.h"
+#include "DebugBreakHelper.h"
+#include "Disassembler.h"
 
-MemoryDumper::MemoryDumper(shared_ptr<Ppu> ppu, shared_ptr<Spc> spc, shared_ptr<MemoryManager> memoryManager, shared_ptr<BaseCartridge> cartridge)
+MemoryDumper::MemoryDumper(Debugger* debugger)
 {
-	_ppu = ppu;
-	_spc = spc;
-	_memoryManager = memoryManager;
-	_cartridge = cartridge;
+	_debugger = debugger;
+	_disassembler = debugger->GetDisassembler().get();
+	_ppu = debugger->GetConsole()->GetPpu().get();
+	_spc = debugger->GetConsole()->GetSpc().get();
+	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
+	_cartridge = debugger->GetConsole()->GetCartridge().get();
 }
 
 void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t length)
@@ -131,6 +136,7 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 
 void MemoryDumper::SetMemoryValues(SnesMemoryType memoryType, uint32_t address, uint8_t* data, uint32_t length)
 {
+	DebugBreakHelper helper(_debugger);
 	for(uint32_t i = 0; i < length; i++) {
 		SetMemoryValue(memoryType, address+i, data[i], true);
 	}
@@ -142,6 +148,20 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		return;
 	}
 
+	if(disableSideEffects && memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
+		AddressInfo addr = { address, memoryType };
+		addr = _debugger->GetAbsoluteAddress(addr);
+		if(addr.Address >= 0) {
+			SetMemoryValue(addr.Type, addr.Address, value, true);
+		}
+		return;
+	}
+
+	auto invalidateCache = [=]() {
+		AddressInfo addr = { address, memoryType };
+		_debugger->GetDisassembler()->InvalidateCache(addr, DebugUtilities::ToCpuType(memoryType));
+	};
+
 	switch(memoryType) {
 		default: break;
 
@@ -150,23 +170,23 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 
-		case SnesMemoryType::PrgRom: _cartridge->DebugGetPrgRom()[address] = value; break;
-		case SnesMemoryType::WorkRam: _memoryManager->DebugGetWorkRam()[address] = value; break;
-		case SnesMemoryType::SaveRam: _cartridge->DebugGetSaveRam()[address] = value; break;
+		case SnesMemoryType::PrgRom: _cartridge->DebugGetPrgRom()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::WorkRam: _memoryManager->DebugGetWorkRam()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::SaveRam: _cartridge->DebugGetSaveRam()[address] = value; invalidateCache(); break;
 
-		case SnesMemoryType::VideoRam: _ppu->GetVideoRam()[address] = value;
+		case SnesMemoryType::VideoRam: _ppu->GetVideoRam()[address] = value; break;
 		case SnesMemoryType::SpriteRam: _ppu->GetSpriteRam()[address] = value; break;
 		case SnesMemoryType::CGRam: _ppu->GetCgRam()[address] = value; break;
-		case SnesMemoryType::SpcRam: _spc->GetSpcRam()[address] = value; break;
-		case SnesMemoryType::SpcRom: _spc->GetSpcRom()[address] = value; break;
+		case SnesMemoryType::SpcRam: _spc->GetSpcRam()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::SpcRom: _spc->GetSpcRom()[address] = value; invalidateCache(); break;
 			
-		case SnesMemoryType::DspProgramRom: _cartridge->GetDsp()->DebugGetProgramRom()[address] = value;
-		case SnesMemoryType::DspDataRom: _cartridge->GetDsp()->DebugGetDataRom()[address] = value;
-		case SnesMemoryType::DspDataRam: _cartridge->GetDsp()->DebugGetDataRam()[address] = value;
+		case SnesMemoryType::DspProgramRom: _cartridge->GetDsp()->DebugGetProgramRom()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::DspDataRom: _cartridge->GetDsp()->DebugGetDataRom()[address] = value; break;
+		case SnesMemoryType::DspDataRam: _cartridge->GetDsp()->DebugGetDataRam()[address] = value; break;
 
-		case SnesMemoryType::Sa1InternalRam: _cartridge->GetSa1()->DebugGetInternalRam()[address] = value;
-		case SnesMemoryType::GsuWorkRam: _cartridge->GetGsu()->DebugGetWorkRam()[address] = value;
-		case SnesMemoryType::Cx4DataRam: _cartridge->GetCx4()->DebugGetDataRam()[address] = value;
+		case SnesMemoryType::Sa1InternalRam: _cartridge->GetSa1()->DebugGetInternalRam()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::GsuWorkRam: _cartridge->GetGsu()->DebugGetWorkRam()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::Cx4DataRam: _cartridge->GetCx4()->DebugGetDataRam()[address] = value; break;
 	}
 }
 
@@ -214,6 +234,7 @@ uint16_t MemoryDumper::GetMemoryValueWord(SnesMemoryType memoryType, uint32_t ad
 
 void MemoryDumper::SetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, uint16_t value, bool disableSideEffects)
 {
+	DebugBreakHelper helper(_debugger);
 	SetMemoryValue(memoryType, address, (uint8_t)value, disableSideEffects);
 	SetMemoryValue(memoryType, address + 1, (uint8_t)(value >> 8), disableSideEffects);
 }

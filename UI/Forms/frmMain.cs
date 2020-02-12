@@ -289,6 +289,7 @@ namespace Mesen.GUI.Forms
 			mnuScriptWindow.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenScriptWindow));
 			mnuRegisterViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenRegisterViewer));
 			mnuProfiler.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenProfiler));
+			mnuAssembler.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenAssembler));
 
 			mnuNoneFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.None); };
 			mnuNtscFilter.Click += (s, e) => { _shortcuts.SetVideoFilter(VideoFilterType.NTSC); };
@@ -350,6 +351,7 @@ namespace Mesen.GUI.Forms
 			mnuScriptWindow.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.ScriptWindow); };
 			mnuRegisterViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.RegisterViewer); };
 			mnuProfiler.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Profiler); };
+			mnuAssembler.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Assembler); };
 
 			mnuTestRun.Click += (s, e) => { RomTestHelper.RunTest(); };
 			mnuTestRecord.Click += (s, e) => { RomTestHelper.RecordTest(); };
@@ -442,6 +444,7 @@ namespace Mesen.GUI.Forms
 			mnuEventViewer.Enabled = running;
 			mnuRegisterViewer.Enabled = running;
 			mnuProfiler.Enabled = running;
+			mnuAssembler.Enabled = running;
 		}
 		
 		private void ResizeRecentGames()

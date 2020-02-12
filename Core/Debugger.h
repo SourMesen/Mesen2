@@ -31,6 +31,7 @@ class SpcDebugger;
 class CpuDebugger;
 class GsuDebugger;
 class Breakpoint;
+class Assembler;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -62,6 +63,7 @@ private:
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<LabelManager> _labelManager;
+	shared_ptr<Assembler> _assembler;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)DebugUtilities::GetLastCpuType() + 1];
 
@@ -135,4 +137,5 @@ public:
 	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
 	shared_ptr<Console> GetConsole();
+	shared_ptr<Assembler> GetAssembler();
 };

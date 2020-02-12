@@ -306,10 +306,10 @@ void Disassembler::Disassemble(CpuType cpuType)
 				if((isData && inUnknownBlock) || (!isData && inVerifiedBlock)) {
 					if(isData && inUnknownBlock) {
 						//In an unknown block and the next byte is data, end the block
-						results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockEnd | (showUnident ? LineFlags::ShowAsData : 0)));
+						results.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd | (showUnident ? LineFlags::ShowAsData : 0)));
 					} else if(!isData && inVerifiedBlock) {
 						//In a verified data block and the next byte is unknown, end the block
-						results.push_back(DisassemblyResult(addrInfo, i, LineFlags::BlockEnd | LineFlags::VerifiedData | (showData ? LineFlags::ShowAsData : 0)));
+						results.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd | LineFlags::VerifiedData | (showData ? LineFlags::ShowAsData : 0)));
 					}
 					inUnknownBlock = false;
 					inVerifiedBlock = false;
@@ -420,6 +420,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 		DisassemblyResult result = source[lineIndex];
 		data.Address = -1;
 		data.AbsoluteAddress = -1;
+		data.EffectiveAddress = -1;
 		data.Flags = result.Flags;
 
 		switch(result.Address.Type) {
@@ -433,7 +434,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 		if(!isBlockStartEnd && result.Address.Address >= 0) {
 			if((data.Flags & LineFlags::ShowAsData)) {
 				FastString str(".db", 3);
-				int nextAddr = lineIndex < source.size() - 2 ? source[lineIndex+1].CpuAddress : (maxAddr + 1);
+				int nextAddr = lineIndex < source.size() - 2 ? (source[lineIndex+1].CpuAddress + 1) : (maxAddr + 1);
 				for(int i = 0; i < 8 && result.CpuAddress+i < nextAddr; i++) {
 					str.Write(" $", 2);
 					str.Write(HexUtilities::ToHexChar(_memoryDumper->GetMemoryValue(memType, result.CpuAddress + i)), 2);

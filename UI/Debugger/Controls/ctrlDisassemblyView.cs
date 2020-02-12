@@ -74,6 +74,12 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 		}
 
+		protected override void OnInvalidated(InvalidateEventArgs e)
+		{
+			base.OnInvalidated(e);
+			ctrlCode.Invalidate();
+		}
+
 		private void OnLabelUpdated(object sender, EventArgs e)
 		{
 			ctrlCode.Invalidate();
@@ -147,7 +153,10 @@ namespace Mesen.GUI.Debugger.Controls
 
 			mnuEditInMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditInMemoryViewer));
 			mnuEditInMemoryTools.Click += (s, e) => EditInMemoryTools(GetActionTarget());
-			
+
+			mnuEditSelectedCode.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditSelectedCode));
+			mnuEditSelectedCode.Click += (s, e) => EditSelectedCode();
+
 			mnuAddToWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.LabelList_AddToWatch));
 
 			mnuMarkAsCode.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsCode));
@@ -158,7 +167,6 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuMarkAsUnidentifiedData.Click += (s, e) => MarkSelectionAs(CdlFlags.None);
 
 			mnuSwitchView.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_SwitchView));
-
 			mnuSwitchView.Click += (s, e) => { ToggleView(); };
 		}
 
@@ -180,6 +188,21 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private SelectedAddressRange GetSelectedAddressRange()
 		{
+			SelectedAddressRange range = GetSelectedRelativeAddressRange();
+
+			if(range != null && range.Start.Address >= 0 && range.End.Address >= 0) {
+				return new SelectedAddressRange() {
+					Start = DebugApi.GetAbsoluteAddress(range.Start),
+					End = DebugApi.GetAbsoluteAddress(range.End),
+					Display = $"${range.Start.Address.ToString("X4")} - ${range.End.Address.ToString("X4")}"
+				};
+			}
+
+			return null;
+		}
+
+		private SelectedAddressRange GetSelectedRelativeAddressRange()
+		{
 			int firstLineOfSelection = ctrlCode.SelectionStart;
 			int lineCount = ctrlCode.LineCount;
 
@@ -196,8 +219,8 @@ namespace Mesen.GUI.Debugger.Controls
 
 			if(start >= 0 && end >= 0) {
 				return new SelectedAddressRange() {
-					Start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = _manager.RelativeMemoryType }),
-					End = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = _manager.RelativeMemoryType }),
+					Start = new AddressInfo() { Address = start, Type = _manager.RelativeMemoryType },
+					End = new AddressInfo() { Address = end, Type = _manager.RelativeMemoryType },
 					Display = $"${start.ToString("X4")} - ${end.ToString("X4")}"
 				};
 			}
@@ -452,6 +475,44 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 		}
 
+		private string GetSelectedCode()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			bool prevSeparator = false;
+			for(int i = ctrlCode.SelectionStart, end = ctrlCode.SelectionStart + ctrlCode.SelectionLength; i <= end; i++) {
+				CodeLineData line = _manager.Provider.GetCodeLineData(i);
+				if(line.Flags.HasFlag(LineFlags.BlockStart) || line.Flags.HasFlag(LineFlags.BlockEnd)|| line.Flags.HasFlag(LineFlags.SubStart)) {
+					if(!prevSeparator) {
+						prevSeparator = true;
+						sb.AppendLine(";-------");
+					}
+				} else {
+					prevSeparator = false;
+
+					sb.Append(line.Text.PadLeft(line.Indentation / 7 + line.Text.Length, ' '));
+					if(line.Comment.Length > 0) {
+						sb.Append(" " + line.Comment);
+					}
+					if(i < end) {
+						sb.AppendLine();
+					}
+				}
+			}
+
+			return sb.ToString();
+		}
+
+		private void EditSelectedCode()
+		{
+			SelectedAddressRange range = GetSelectedRelativeAddressRange();
+
+			if(range.Start.Address >= 0 && range.End.Address >= 0 && range.Start.Address <= range.End.Address) {
+				int length = range.End.Address - range.Start.Address + 1;
+				DebugWindowManager.OpenAssembler(GetSelectedCode(), range.Start.Address, length);
+			}
+		}
+
 		private LocationInfo GetActionTarget()
 		{
 			string word = _lastWord;
@@ -584,8 +645,11 @@ namespace Mesen.GUI.Debugger.Controls
 				mnuMarkSelectionAs.Enabled = false;
 				mnuMarkSelectionAs.Text = "Mark selection as...";
 			}
-			mnuMarkSelectionAs.Visible = !_inSourceView;
-			sepMarkSelectionAs.Visible = !_inSourceView;
+
+			bool showMarkAs = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1);
+			mnuMarkSelectionAs.Visible = showMarkAs;
+			sepMarkSelectionAs.Visible = showMarkAs;
+			mnuEditSelectedCode.Visible = showMarkAs;
 
 			mnuAddToWatch.Enabled = active;
 			mnuEditInMemoryTools.Enabled = active;

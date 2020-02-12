@@ -40,6 +40,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.ScriptWindow: frm = new frmScript(); frm.Icon = Properties.Resources.Script; break;
 					case DebugWindow.RegisterViewer: frm = new frmRegisterViewer(); frm.Icon = Properties.Resources.RegisterIcon; break;
 					case DebugWindow.Profiler: frm = new frmProfiler(); frm.Icon = Properties.Resources.PerfTracker; break;
+					case DebugWindow.Assembler: frm = new frmAssembler(); frm.Icon = Properties.Resources.Chip; break;
 				}
 
 				if(_openedWindows.Count == 0) {
@@ -99,6 +100,19 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Gsu: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.GsuDebugger);
 			}
 			throw new Exception("Invalid CPU type");
+		}
+
+		public static void OpenAssembler(string code = "", int startAddress = 0, int blockLength = 0)
+		{
+			if(_openedWindows.Count == 0) {
+				DebugWorkspaceManager.GetWorkspace();
+			}
+
+			frmAssembler frm = new frmAssembler(code, startAddress, blockLength);
+			frm.Icon = Properties.Resources.Chip;
+			_openedWindows.Add(frm);
+			frm.FormClosed += Debugger_FormClosed;
+			frm.Show();
 		}
 
 		public static frmMemoryTools GetMemoryViewer()
@@ -180,6 +194,7 @@ namespace Mesen.GUI.Debugger
 		EventViewer,
 		ScriptWindow,
 		RegisterViewer,
-		Profiler
+		Profiler,
+		Assembler
 	}
 }

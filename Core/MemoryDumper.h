@@ -7,18 +7,22 @@ class MemoryManager;
 class BaseCartridge;
 class Ppu;
 class Spc;
+class Debugger;
+class Disassembler;
 enum class SnesMemoryType;
 
 class MemoryDumper
 {
 private:
-	shared_ptr<Ppu> _ppu;
-	shared_ptr<Spc> _spc;
-	shared_ptr<MemoryManager> _memoryManager;
-	shared_ptr<BaseCartridge> _cartridge;
+	Ppu* _ppu;
+	Spc* _spc;
+	MemoryManager* _memoryManager;
+	BaseCartridge* _cartridge;
+	Debugger* _debugger;
+	Disassembler* _disassembler;
 
 public:
-	MemoryDumper(shared_ptr<Ppu> ppu, shared_ptr<Spc> spc, shared_ptr<MemoryManager> memoryManager, shared_ptr<BaseCartridge> cartridge);
+	MemoryDumper(Debugger* debugger);
 
 	uint32_t GetMemorySize(SnesMemoryType type);
 	void GetMemoryState(SnesMemoryType type, uint8_t *buffer);

@@ -51,7 +51,7 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case AddrMode::AbsLng: str.Write(operand); break;
 		case AddrMode::AbsLngJmp: str.Write(operand); break;
 		case AddrMode::Acc: break;
-		case AddrMode::BlkMov: str.WriteAll('$', operand[1], operand[2], " -> "); str.WriteAll('$', operand[3], operand[4]); break;
+		case AddrMode::BlkMov: str.WriteAll('$', operand[1], operand[2], ','); str.WriteAll('$', operand[3], operand[4]); break;
 		case AddrMode::DirIdxIndX: str.WriteAll('(', operand, ",X)"); break;
 		case AddrMode::DirIdxX: str.WriteAll(operand, ",X"); break;
 		case AddrMode::DirIdxY: str.WriteAll(operand, ",Y"); break;

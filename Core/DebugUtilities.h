@@ -20,6 +20,34 @@ public:
 		throw std::runtime_error("Invalid CPU type");
 	}
 
+	static CpuType ToCpuType(SnesMemoryType type)
+	{
+		switch(type) {
+			case SnesMemoryType::SpcMemory:
+			case SnesMemoryType::SpcRam:
+			case SnesMemoryType::SpcRom:
+				return CpuType::Spc;
+
+			case SnesMemoryType::GsuMemory:
+			case SnesMemoryType::GsuWorkRam:
+				return CpuType::Gsu;
+
+			case SnesMemoryType::Sa1InternalRam:
+			case SnesMemoryType::Sa1Memory:
+				return CpuType::Sa1;
+
+			case SnesMemoryType::DspDataRam:
+			case SnesMemoryType::DspDataRom:
+			case SnesMemoryType::DspProgramRom:
+				return CpuType::NecDsp;
+
+			default:
+				return CpuType::Cpu;
+		}
+
+		throw std::runtime_error("Invalid CPU type");
+	}
+
 	static constexpr SnesMemoryType GetLastCpuMemoryType()
 	{
 		return SnesMemoryType::GsuMemory;

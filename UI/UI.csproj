@@ -272,6 +272,7 @@
     <Compile Include="Debugger\Code\IDisassemblyManager.cs" />
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
+    <Compile Include="Debugger\Config\AssemblerConfig.cs" />
     <Compile Include="Debugger\Config\ProfilerConfig.cs" />
     <Compile Include="Debugger\Config\ScriptWindowConfig.cs" />
     <Compile Include="Debugger\Config\SpriteViewerConfig.cs" />
@@ -317,6 +318,12 @@
     <Compile Include="Debugger\EventViewer\ctrlEventViewerListView.Designer.cs">
       <DependentUpon>ctrlEventViewerListView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\frmAssembler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmAssembler.designer.cs">
+      <DependentUpon>frmAssembler.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\frmBreakIn.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -328,6 +335,12 @@
     </Compile>
     <Compile Include="Debugger\frmBreakOn.Designer.cs">
       <DependentUpon>frmBreakOn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmDebuggerColors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmDebuggerColors.designer.cs">
+      <DependentUpon>frmDebuggerColors.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\frmGoToAll.cs">
       <SubType>Form</SubType>
@@ -1024,6 +1037,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\EventViewer\ctrlEventViewerListView.resx">
       <DependentUpon>ctrlEventViewerListView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmAssembler.resx">
+      <DependentUpon>frmAssembler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\frmBreakIn.resx">
       <DependentUpon>frmBreakIn.cs</DependentUpon>
