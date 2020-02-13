@@ -145,19 +145,11 @@ namespace Mesen.GUI
 			return profilerData;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetMemoryAccessStamps")] private static extern void GetMemoryAccessStampsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType, [In,Out]UInt64[] stamps);
-		public static UInt64[] GetMemoryAccessStamps(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType)
+		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, [In,Out]AddressCounters[] counts);
+		public static AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, SnesMemoryType type)
 		{
-			UInt64[] stamps = new UInt64[length];
-			DebugApi.GetMemoryAccessStampsWrapper(offset, length, type, operationType, stamps);
-			return stamps;
-		}
-
-		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType, [In,Out]UInt32[] counts);
-		public static UInt32[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, SnesMemoryType type, MemoryOperationType operationType)
-		{
-			UInt32[] counts = new UInt32[length];
-			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, operationType, counts);
+			AddressCounters[] counts = new AddressCounters[length];
+			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, counts);
 			return counts;
 		}
 
@@ -274,6 +266,17 @@ namespace Mesen.GUI
 
 			return false;
 		}
+	}
+
+	public struct AddressCounters
+	{
+		public UInt32 ReadCount;
+		public UInt64 ReadStamp;
+		public UInt32 WriteCount;
+		public bool UninitRead;
+		public UInt64 WriteStamp;
+		public UInt32 ExecCount;
+		public UInt64 ExecStamp;
 	}
 
 	public struct AddressInfo

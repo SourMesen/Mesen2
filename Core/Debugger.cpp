@@ -143,7 +143,8 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 {
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
-	//TODO Make this more flexible/accurate
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+	
 	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Read };
 	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 }
@@ -151,7 +152,8 @@ void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
 void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 {
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
-	//TODO Make this more flexible/accurate
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+	
 	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Write };
 	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 }
@@ -162,7 +164,7 @@ void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memor
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
 	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 
-	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Read, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 }
 
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
@@ -171,7 +173,7 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
 	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
 
-	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, MemoryOperationType::Write, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 }
 
 void Debugger::ProcessPpuCycle()

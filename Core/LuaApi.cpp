@@ -611,16 +611,33 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 	checkparams();
 
 	uint32_t size = 0;
-	vector<uint32_t> counts;
-	counts.resize(_memoryDumper->GetMemorySize(memoryType), 0);
-	_debugger->GetMemoryAccessCounter()->GetAccessCounts(0, size, memoryType, operationType, counts.data());
+	vector<AddressCounters> counts;
+	counts.resize(_memoryDumper->GetMemorySize(memoryType), {});
+	_debugger->GetMemoryAccessCounter()->GetAccessCounts(0, size, memoryType, counts.data());
 
 	lua_newtable(lua);
-	for(uint32_t i = 0; i < size; i++) {
-		lua_pushinteger(lua, counts[i]);
-		lua_rawseti(lua, -2, i);
-	}
+	switch(operationType) {
+		case MemoryOperationType::Read: 
+			for(uint32_t i = 0; i < size; i++) {
+				lua_pushinteger(lua, counts[i].ReadCount);
+				lua_rawseti(lua, -2, i);
+			}
+			break;
 
+		case MemoryOperationType::Write:
+			for(uint32_t i = 0; i < size; i++) {
+				lua_pushinteger(lua, counts[i].WriteCount);
+				lua_rawseti(lua, -2, i);
+			}
+			break;
+
+		case MemoryOperationType::ExecOpCode:
+			for(uint32_t i = 0; i < size; i++) {
+				lua_pushinteger(lua, counts[i].ExecCount);
+				lua_rawseti(lua, -2, i);
+			}
+			break;
+	}
 	return 1;
 }
 

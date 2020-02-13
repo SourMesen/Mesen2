@@ -95,11 +95,14 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 				_step->StepCount = 0;
 			}
 		}
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+	} else if(type == MemoryOperationType::ExecOperand) {
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+	} else {
+		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 	}
 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
-
-	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
 }
 
 void SpcDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
@@ -110,7 +113,7 @@ void SpcDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType
 
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
 
-	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 }
 
 void SpcDebugger::Run()

@@ -128,21 +128,23 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				}
 			}
 		}
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
-	}
 
-	if(_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock())) {
-		//Memory access was a read on an uninitialized memory address
-		if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-			breakSource = BreakSource::BreakOnUninitMemoryRead;
-			_step->StepCount = 0;
+		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock())) {
+			//Memory access was a read on an uninitialized memory address
+			if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+				breakSource = BreakSource::BreakOnUninitMemoryRead;
+				_step->StepCount = 0;
+			}
 		}
 	}
 
@@ -167,7 +169,7 @@ void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	_memoryAccessCounter->ProcessMemoryAccess(addressInfo, type, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 

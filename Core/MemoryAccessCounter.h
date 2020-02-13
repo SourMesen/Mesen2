@@ -9,18 +9,21 @@ class Console;
 class Sa1;
 class Gsu;
 
+struct AddressCounters
+{
+	uint32_t ReadCount;
+	uint64_t ReadStamp;
+	uint32_t WriteCount;
+	bool UninitRead;
+	uint64_t WriteStamp;
+	uint32_t ExecCount;
+	uint64_t ExecStamp;
+};
+
 class MemoryAccessCounter
 {
 private:
-	vector<uint32_t> _readCounts[(int)SnesMemoryType::Register];
-	vector<uint32_t> _writeCounts[(int)SnesMemoryType::Register];
-	vector<uint32_t> _execCounts[(int)SnesMemoryType::Register];
-
-	vector<uint64_t> _readStamps[(int)SnesMemoryType::Register];
-	vector<uint64_t> _writeStamps[(int)SnesMemoryType::Register];
-	vector<uint64_t> _execStamps[(int)SnesMemoryType::Register];
-
-	vector<uint8_t> _uninitReads[(int)SnesMemoryType::Register];
+	vector<AddressCounters> _counters[(int)SnesMemoryType::Register];
 
 	Debugger* _debugger;
 	MemoryManager* _memoryManager;
@@ -28,17 +31,16 @@ private:
 	Sa1* _sa1;
 	Gsu* _gsu;
 
-	vector<uint32_t>& GetCountArray(MemoryOperationType operationType, SnesMemoryType memType);
-	vector<uint64_t>& GetStampArray(MemoryOperationType operationType, SnesMemoryType memType);
 	bool IsAddressUninitialized(AddressInfo &addressInfo);
 
 public:
 	MemoryAccessCounter(Debugger *debugger, Console *console);
 
-	bool ProcessMemoryAccess(AddressInfo &addressInfo, MemoryOperationType operation, uint64_t masterClock);
+	bool ProcessMemoryRead(AddressInfo& addressInfo, uint64_t masterClock);
+	void ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t masterClock);
+	void ProcessMemoryExec(AddressInfo& addressInfo, uint64_t masterClock);
+
 	void ResetCounts();
 
-	void GetAccessStamps(uint32_t offset, uint32_t length, SnesMemoryType memoryType, MemoryOperationType operationType, uint64_t stamps[]);
-	void GetAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, MemoryOperationType operationType, uint32_t counts[]);
-	void GetUninitMemoryReads(SnesMemoryType memoryType, bool uninitReads[]);
+	void GetAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters counts[]);
 };

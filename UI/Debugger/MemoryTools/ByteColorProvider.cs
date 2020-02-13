@@ -10,12 +10,7 @@ namespace Mesen.GUI.Debugger
 	public class ByteColorProvider : IByteColorProvider
 	{
 		SnesMemoryType _memoryType;
-		UInt64[] _readStamps;
-		UInt64[] _writeStamps;
-		UInt64[] _execStamps;
-		UInt32[] _readCounts;
-		UInt32[] _writeCounts;
-		UInt32[] _execCounts;
+		AddressCounters[] _counters;
 		byte[] _cdlData;
 		bool[] _hasLabel;
 		DebugState _state = new DebugState();
@@ -72,13 +67,7 @@ namespace Mesen.GUI.Debugger
 				_breakpointTypes = null;
 			}
 
-			_readStamps = DebugApi.GetMemoryAccessStamps((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType, MemoryOperationType.Read);
-			_writeStamps = DebugApi.GetMemoryAccessStamps((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType, MemoryOperationType.Write);
-			_execStamps = DebugApi.GetMemoryAccessStamps((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType, MemoryOperationType.ExecOpCode);
-
-			_readCounts = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType, MemoryOperationType.Read);
-			_writeCounts = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType, MemoryOperationType.Write);
-			_execCounts = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType, MemoryOperationType.ExecOpCode);
+			_counters = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 
 			_cdlData = null;
 			if(_highlightDataBytes || _highlightCodeBytes) {
@@ -128,13 +117,13 @@ namespace Mesen.GUI.Debugger
 
 			const int CyclesPerFrame = 357368;
 			long index = byteIndex - firstByteIndex;
-			double framesSinceExec = (double)(_state.MasterClock - _execStamps[index]) / CyclesPerFrame;
-			double framesSinceWrite = (double)(_state.MasterClock - _writeStamps[index]) / CyclesPerFrame;
-			double framesSinceRead = (double)(_state.MasterClock - _readStamps[index]) / CyclesPerFrame;
+			double framesSinceExec = (double)(_state.MasterClock - _counters[index].ExecStamp) / CyclesPerFrame;
+			double framesSinceWrite = (double)(_state.MasterClock - _counters[index].WriteStamp) / CyclesPerFrame;
+			double framesSinceRead = (double)(_state.MasterClock - _counters[index].ReadStamp) / CyclesPerFrame;
 
-			bool isRead = _readCounts[index] > 0;
-			bool isWritten = _writeCounts[index] > 0;
-			bool isExecuted = _execCounts[index] > 0;
+			bool isRead = _counters[index].ReadCount > 0;
+			bool isWritten = _counters[index].WriteCount > 0;
+			bool isExecuted = _counters[index].ExecCount > 0;
 			bool isUnused = !isRead && !isWritten && !isExecuted;
 
 			int alpha = 0;
@@ -176,11 +165,11 @@ namespace Mesen.GUI.Debugger
 				}
 			}
 
-			if(_showExec && _execStamps[index] != 0 && framesSinceExec >= 0 && (framesSinceExec < _framesToFade || _framesToFade == 0)) {
+			if(_showExec && _counters[index].ExecStamp != 0 && framesSinceExec >= 0 && (framesSinceExec < _framesToFade || _framesToFade == 0)) {
 				_colors.ForeColor = Color.FromArgb(alpha, DarkerColor(cfg.ExecColor, (_framesToFade - framesSinceExec) / _framesToFade));
-			} else if(_showWrite && _writeStamps[index] != 0 && framesSinceWrite >= 0 && (framesSinceWrite < _framesToFade || _framesToFade == 0)) {
+			} else if(_showWrite && _counters[index].WriteStamp != 0 && framesSinceWrite >= 0 && (framesSinceWrite < _framesToFade || _framesToFade == 0)) {
 				_colors.ForeColor = Color.FromArgb(alpha, DarkerColor(cfg.WriteColor, (_framesToFade - framesSinceWrite) / _framesToFade));
-			} else if(_showRead && _readStamps[index] != 0 && framesSinceRead >= 0 && (framesSinceRead < _framesToFade || _framesToFade == 0)) {
+			} else if(_showRead && _counters[index].ReadStamp != 0 && framesSinceRead >= 0 && (framesSinceRead < _framesToFade || _framesToFade == 0)) {
 				_colors.ForeColor = Color.FromArgb(alpha, DarkerColor(cfg.ReadColor, (_framesToFade - framesSinceRead) / _framesToFade));
 			} else {
 				_colors.ForeColor = Color.FromArgb(alpha, Color.Black);
