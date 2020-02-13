@@ -23,6 +23,7 @@ struct SnesCartInformation
 
 	uint8_t ChecksumComplement[2];
 	uint8_t Checksum[2];
+	uint8_t CpuVectors[0x20];
 };
 
 enum class CoprocessorType
@@ -49,6 +50,7 @@ enum class CoprocessorType
 struct RomInfo
 {
 	SnesCartInformation Header;
+	uint32_t HeaderOffset;
 	VirtualFile RomFile;
 	VirtualFile PatchFile;
 	CoprocessorType Coprocessor;

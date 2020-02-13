@@ -463,6 +463,6 @@ uint32_t Assembler::AssembleCode(string code, uint32_t startAddress, int16_t* as
 		}
 	}
 
-	memcpy(assembledCode, output.data(), std::min<int>(100000, output.size()) * sizeof(uint16_t));
+	memcpy(assembledCode, output.data(), std::min<int>(100000, (int)output.size()) * sizeof(uint16_t));
 	return (uint32_t)output.size();
 }

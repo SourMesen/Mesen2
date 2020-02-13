@@ -180,6 +180,9 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
 		public byte[] Checksum;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
+		public byte[] CpuVectors;
 	}
 
 	public enum CoprocessorType

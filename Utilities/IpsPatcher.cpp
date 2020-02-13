@@ -127,9 +127,11 @@ bool IpsPatcher::PatchBuffer(std::istream &ipsFile, vector<uint8_t> &input, vect
 
 vector<uint8_t> IpsPatcher::CreatePatch(vector<uint8_t> originalData, vector<uint8_t> newData)
 {
-	assert(originalData.size() == newData.size());
-
 	vector<uint8_t> patchFile;
+	if(originalData.size() != newData.size()) {
+		return patchFile;
+	}
+
 	uint8_t header[5] = { 'P', 'A', 'T', 'C', 'H' };
 	patchFile.insert(patchFile.end(), header, header + sizeof(header));
 

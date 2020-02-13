@@ -150,3 +150,20 @@ void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
 		_cdlData[i] = (_cdlData[i] & 0xFC) | (int)flags;
 	}
 }
+
+void CodeDataLogger::StripData(uint8_t* romBuffer, CdlStripOption flag)
+{
+	if(flag == CdlStripOption::StripUnused) {
+		for(uint32_t i = 0; i < _prgSize; i++) {
+			if(_cdlData[i] == 0) {
+				romBuffer[i] = 0;
+			}
+		}
+	} else if(flag == CdlStripOption::StripUsed) {
+		for(uint32_t i = 0; i < _prgSize; i++) {
+			if(_cdlData[i] != 0) {
+				romBuffer[i] = 0;
+			}
+		}
+	}
+}

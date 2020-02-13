@@ -38,4 +38,5 @@ public:
 	void GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t *cdlData);
 
 	void MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags);
+	void StripData(uint8_t* romBuffer, CdlStripOption flag);
 };

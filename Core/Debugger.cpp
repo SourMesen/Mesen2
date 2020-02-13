@@ -39,6 +39,7 @@
 #include "Assembler.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
+#include "../Utilities/IpsPatcher.h"
 
 Debugger::Debugger(shared_ptr<Console> console)
 {
@@ -517,6 +518,31 @@ void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 	}
 	if(_sa1Debugger) {
 		_sa1Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	}
+}
+
+void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+{
+	RomInfo romInfo = _cart->GetRomInfo();
+	vector<uint8_t> rom(_cart->DebugGetPrgRom(), _cart->DebugGetPrgRom() + _cart->DebugGetPrgRomSize());
+	vector<uint8_t> output;
+	if(saveAsIps) {
+		shared_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console.get(), romInfo.RomFile, romInfo.PatchFile);
+		vector<uint8_t> originalRom(originalCart->DebugGetPrgRom(), originalCart->DebugGetPrgRom() + originalCart->DebugGetPrgRomSize());		
+		output = IpsPatcher::CreatePatch(originalRom, rom);
+	} else {
+		if(stripOption != CdlStripOption::StripNone) {
+			_codeDataLogger->StripData(rom.data(), stripOption);
+			//Preserve SNES rom header regardless of CDL file contents
+			memcpy(rom.data()+romInfo.HeaderOffset, &romInfo.Header, sizeof(SnesCartInformation));
+		}
+		output = rom;
+	}
+
+	ofstream file(filename, ios::out | ios::binary);
+	if(file) {
+		file.write((char*)output.data(), output.size());
+		file.close();
 	}
 }
 

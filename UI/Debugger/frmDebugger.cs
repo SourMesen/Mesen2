@@ -181,6 +181,14 @@ namespace Mesen.GUI.Debugger
 			mnuIncreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.IncreaseFontSize));
 			mnuDecreaseFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.DecreaseFontSize));
 			mnuResetFontSize.InitShortcut(this, nameof(DebuggerShortcutsConfig.ResetFontSize));
+			
+			mnuSaveRomAs.InitShortcut(this, nameof(DebuggerShortcutsConfig.SaveRomAs));
+			mnuSaveAsIps.InitShortcut(this, nameof(DebuggerShortcutsConfig.SaveEditAsIps));
+
+			mnuSaveRomAs.Click += (s, e) => { SaveRomAs(false, CdlStripOption.StripNone); };
+			mnuSaveAsIps.Click += (s, e) => { SaveRomAs(true, CdlStripOption.StripNone); };
+			mnuCdlStripUnusedData.Click += (s, e) => { SaveRomAs(false, CdlStripOption.StripUnused); };
+			mnuCdlStripUsedData.Click += (s, e) => { SaveRomAs(false, CdlStripOption.StripUsed); };
 
 			mnuStepInto.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.Step); };
 			mnuStepOver.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.StepOver); };
@@ -580,6 +588,24 @@ namespace Mesen.GUI.Debugger
 		private void GoToDestination(GoToDestination dest)
 		{
 			ctrlDisassemblyView.GoToDestination(dest);
+		}
+
+		private void SaveRomAs(bool saveAsIps, CdlStripOption cdlStripOption)
+		{
+			using(SaveFileDialog sfd = new SaveFileDialog()) {
+				if(saveAsIps) {
+					sfd.SetFilter("IPS files (*.ips)|*.ips");
+					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".ips";
+				} else {
+					sfd.SetFilter("SFC files (*.sfc)|*.sfc");
+					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + "_Modified.sfc";
+				}
+
+				sfd.InitialDirectory = ConfigManager.DebuggerFolder;
+				if(sfd.ShowDialog() == DialogResult.OK) {
+					DebugApi.SaveRomToDisk(sfd.FileName, saveAsIps, cdlStripOption);
+				}
+			}
 		}
 	}
 

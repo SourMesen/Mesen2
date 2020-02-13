@@ -125,6 +125,8 @@ public:
 	void RefreshCodeCache();
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
+	
+	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	shared_ptr<TraceLogger> GetTraceLogger();
 	shared_ptr<MemoryDumper> GetMemoryDumper();

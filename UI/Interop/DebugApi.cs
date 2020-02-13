@@ -77,6 +77,8 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropBreakpoint[] breakpoints, UInt32 length);
 
+		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename, [MarshalAs(UnmanagedType.I1)]bool saveAsIps, CdlStripOption cdlStripOption);
+
 		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(SnesMemoryType type, [In, Out] byte[] buffer);
 		public static byte[] GetMemoryState(SnesMemoryType type)
 		{
@@ -544,6 +546,13 @@ namespace Mesen.GUI
 		public BreakSource Source;
 		public MemoryOperationInfo Operation;
 		public Int32 BreakpointId;
+	}
+
+	public enum CdlStripOption
+	{
+		StripNone = 0,
+		StripUnused = 1,
+		StripUsed = 2
 	}
 
 	public enum CdlFlags : byte

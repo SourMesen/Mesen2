@@ -34,11 +34,18 @@
 			this.ctrlDisassemblyView = new Mesen.GUI.Debugger.Controls.ctrlDisassemblyView();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveRomAs = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuSaveAsIps = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
 			this.importExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDbgIntegrationSettings = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.codeDataLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuResetCdlLog = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuCdlGenerateRom = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCdlStripUnusedData = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCdlStripUsedData = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,6 +122,7 @@
 			this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuSelectFont = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuConfigureColors = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlSplitContainer = new Mesen.GUI.Controls.ctrlSplitContainer();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -132,7 +140,6 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.mnuConfigureColors = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -170,6 +177,9 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuSaveRomAs,
+            this.mnuSaveAsIps,
+            this.toolStripMenuItem14,
             this.importExportToolStripMenuItem,
             this.toolStripMenuItem7,
             this.codeDataLoggerToolStripMenuItem,
@@ -179,13 +189,32 @@
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "File";
 			// 
+			// mnuSaveRomAs
+			// 
+			this.mnuSaveRomAs.Image = global::Mesen.GUI.Properties.Resources.SaveFloppy;
+			this.mnuSaveRomAs.Name = "mnuSaveRomAs";
+			this.mnuSaveRomAs.Size = new System.Drawing.Size(201, 22);
+			this.mnuSaveRomAs.Text = "Save ROM as...";
+			// 
+			// mnuSaveAsIps
+			// 
+			this.mnuSaveAsIps.Image = global::Mesen.GUI.Properties.Resources.CheatCode;
+			this.mnuSaveAsIps.Name = "mnuSaveAsIps";
+			this.mnuSaveAsIps.Size = new System.Drawing.Size(201, 22);
+			this.mnuSaveAsIps.Text = "Save edits as IPS patch...";
+			// 
+			// toolStripMenuItem14
+			// 
+			this.toolStripMenuItem14.Name = "toolStripMenuItem14";
+			this.toolStripMenuItem14.Size = new System.Drawing.Size(198, 6);
+			// 
 			// importExportToolStripMenuItem
 			// 
 			this.importExportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuDbgIntegrationSettings});
 			this.importExportToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.Import;
 			this.importExportToolStripMenuItem.Name = "importExportToolStripMenuItem";
-			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+			this.importExportToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
 			this.importExportToolStripMenuItem.Text = "Import/Export";
 			// 
 			// mnuDbgIntegrationSettings
@@ -199,35 +228,64 @@
 			// toolStripMenuItem7
 			// 
 			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-			this.toolStripMenuItem7.Size = new System.Drawing.Size(168, 6);
+			this.toolStripMenuItem7.Size = new System.Drawing.Size(198, 6);
 			// 
 			// codeDataLoggerToolStripMenuItem
 			// 
 			this.codeDataLoggerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuResetCdlLog});
+            this.mnuResetCdlLog,
+            this.toolStripSeparator1,
+            this.mnuCdlGenerateRom});
 			this.codeDataLoggerToolStripMenuItem.Image = global::Mesen.GUI.Properties.Resources.VerifiedData;
 			this.codeDataLoggerToolStripMenuItem.Name = "codeDataLoggerToolStripMenuItem";
-			this.codeDataLoggerToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+			this.codeDataLoggerToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
 			this.codeDataLoggerToolStripMenuItem.Text = "Code/Data Logger";
 			// 
 			// mnuResetCdlLog
 			// 
 			this.mnuResetCdlLog.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuResetCdlLog.Name = "mnuResetCdlLog";
-			this.mnuResetCdlLog.Size = new System.Drawing.Size(122, 22);
+			this.mnuResetCdlLog.Size = new System.Drawing.Size(197, 22);
 			this.mnuResetCdlLog.Text = "Reset log";
 			this.mnuResetCdlLog.Click += new System.EventHandler(this.mnuResetCdlLog_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(194, 6);
+			// 
+			// mnuCdlGenerateRom
+			// 
+			this.mnuCdlGenerateRom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCdlStripUnusedData,
+            this.mnuCdlStripUsedData});
+			this.mnuCdlGenerateRom.Image = global::Mesen.GUI.Properties.Resources.Copy;
+			this.mnuCdlGenerateRom.Name = "mnuCdlGenerateRom";
+			this.mnuCdlGenerateRom.Size = new System.Drawing.Size(197, 22);
+			this.mnuCdlGenerateRom.Text = "Generate stripped ROM";
+			// 
+			// mnuCdlStripUnusedData
+			// 
+			this.mnuCdlStripUnusedData.Name = "mnuCdlStripUnusedData";
+			this.mnuCdlStripUnusedData.Size = new System.Drawing.Size(166, 22);
+			this.mnuCdlStripUnusedData.Text = "Strip unused data";
+			// 
+			// mnuCdlStripUsedData
+			// 
+			this.mnuCdlStripUsedData.Name = "mnuCdlStripUsedData";
+			this.mnuCdlStripUsedData.Size = new System.Drawing.Size(166, 22);
+			this.mnuCdlStripUsedData.Text = "Strip used data";
 			// 
 			// toolStripMenuItem13
 			// 
 			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-			this.toolStripMenuItem13.Size = new System.Drawing.Size(168, 6);
+			this.toolStripMenuItem13.Size = new System.Drawing.Size(198, 6);
 			// 
 			// mnuExit
 			// 
 			this.mnuExit.Image = global::Mesen.GUI.Properties.Resources.Exit;
 			this.mnuExit.Name = "mnuExit";
-			this.mnuExit.Size = new System.Drawing.Size(171, 22);
+			this.mnuExit.Size = new System.Drawing.Size(201, 22);
 			this.mnuExit.Text = "Exit";
 			this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
 			// 
@@ -745,32 +803,32 @@
 			// 
 			this.mnuIncreaseFontSize.Name = "mnuIncreaseFontSize";
 			this.mnuIncreaseFontSize.ShortcutKeyDisplayString = "";
-			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(180, 22);
+			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(157, 22);
 			this.mnuIncreaseFontSize.Text = "Increase Size";
 			// 
 			// mnuDecreaseFontSize
 			// 
 			this.mnuDecreaseFontSize.Name = "mnuDecreaseFontSize";
 			this.mnuDecreaseFontSize.ShortcutKeyDisplayString = "";
-			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(180, 22);
+			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(157, 22);
 			this.mnuDecreaseFontSize.Text = "Decrease Size";
 			// 
 			// mnuResetFontSize
 			// 
 			this.mnuResetFontSize.Name = "mnuResetFontSize";
 			this.mnuResetFontSize.ShortcutKeyDisplayString = "";
-			this.mnuResetFontSize.Size = new System.Drawing.Size(180, 22);
+			this.mnuResetFontSize.Size = new System.Drawing.Size(157, 22);
 			this.mnuResetFontSize.Text = "Reset to Default";
 			// 
 			// toolStripMenuItem21
 			// 
 			this.toolStripMenuItem21.Name = "toolStripMenuItem21";
-			this.toolStripMenuItem21.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem21.Size = new System.Drawing.Size(154, 6);
 			// 
 			// mnuSelectFont
 			// 
 			this.mnuSelectFont.Name = "mnuSelectFont";
-			this.mnuSelectFont.Size = new System.Drawing.Size(180, 22);
+			this.mnuSelectFont.Size = new System.Drawing.Size(157, 22);
 			this.mnuSelectFont.Text = "Select Font...";
 			this.mnuSelectFont.Click += new System.EventHandler(this.mnuSelectFont_Click);
 			// 
@@ -778,6 +836,14 @@
 			// 
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
 			this.toolStripMenuItem4.Size = new System.Drawing.Size(206, 6);
+			// 
+			// mnuConfigureColors
+			// 
+			this.mnuConfigureColors.Image = global::Mesen.GUI.Properties.Resources.PipetteSmall;
+			this.mnuConfigureColors.Name = "mnuConfigureColors";
+			this.mnuConfigureColors.Size = new System.Drawing.Size(209, 22);
+			this.mnuConfigureColors.Text = "Configure colors";
+			this.mnuConfigureColors.Click += new System.EventHandler(this.mnuConfigureColors_Click);
 			// 
 			// mnuPreferences
 			// 
@@ -964,14 +1030,6 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
-			// mnuConfigureColors
-			// 
-			this.mnuConfigureColors.Image = global::Mesen.GUI.Properties.Resources.PipetteSmall;
-			this.mnuConfigureColors.Name = "mnuConfigureColors";
-			this.mnuConfigureColors.Size = new System.Drawing.Size(209, 22);
-			this.mnuConfigureColors.Text = "Configure colors";
-			this.mnuConfigureColors.Click += new System.EventHandler(this.mnuConfigureColors_Click);
-			// 
 			// frmDebugger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1107,5 +1165,12 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuGoToAll;
 	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
 	  private System.Windows.Forms.ToolStripMenuItem mnuConfigureColors;
+	  private System.Windows.Forms.ToolStripMenuItem mnuSaveRomAs;
+	  private System.Windows.Forms.ToolStripMenuItem mnuSaveAsIps;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem14;
+	  private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+	  private System.Windows.Forms.ToolStripMenuItem mnuCdlGenerateRom;
+	  private System.Windows.Forms.ToolStripMenuItem mnuCdlStripUnusedData;
+	  private System.Windows.Forms.ToolStripMenuItem mnuCdlStripUsedData;
    }
 }

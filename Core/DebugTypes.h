@@ -101,7 +101,7 @@ namespace CdlFlags
 	};
 }
 
-enum class CdlStripFlag
+enum class CdlStripOption
 {
 	StripNone = 0,
 	StripUnused,

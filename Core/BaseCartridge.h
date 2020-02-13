@@ -24,6 +24,7 @@ private:
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
 	SnesCartInformation _cartInfo = {};
+	uint32_t _headerOffset = 0;
 
 	unique_ptr<BaseCoprocessor> _coprocessor;
 	NecDsp *_necDsp = nullptr;

@@ -40,9 +40,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Misc</Filter>
     </ClInclude>

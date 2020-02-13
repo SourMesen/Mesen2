@@ -142,8 +142,9 @@ void BaseCartridge::LoadRom()
 			isLoRom = (baseAddress & 0x8000) == 0;
 			isExRom = (baseAddress & 0x400000) != 0;
 			hasHeader = (baseAddress & 0x200) != 0;
-			uint32_t headerOffset = std::min(baseAddress + 0x7FB0, _prgRomSize - 0x40);
+			uint32_t headerOffset = std::min(baseAddress + 0x7FB0, (uint32_t)(_prgRomSize - sizeof(SnesCartInformation)));
 			memcpy(&_cartInfo, _prgRom + headerOffset, sizeof(SnesCartInformation));
+			_headerOffset = headerOffset;
 		}
 	}
 
@@ -164,6 +165,7 @@ void BaseCartridge::LoadRom()
 		//Remove the copier header
 		memmove(_prgRom, _prgRom + 512, _prgRomSize - 512);
 		_prgRomSize -= 512;
+		_headerOffset -= 512;
 	}
 	
 	if((flags & CartFlags::HiRom) && (_cartInfo.MapMode & 0x27) == 0x25) {
@@ -265,6 +267,7 @@ RomInfo BaseCartridge::GetRomInfo()
 {
 	RomInfo info;
 	info.Header = _cartInfo;
+	info.HeaderOffset = _headerOffset;
 	info.RomFile = static_cast<VirtualFile>(_romPath);
 	info.PatchFile = static_cast<VirtualFile>(_patchPath);
 	info.Coprocessor = _coprocessorType;

@@ -128,8 +128,8 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.WatchList_MoveUp)),
 				GetMember(nameof(DebuggerShortcutsConfig.WatchList_MoveDown)),
 				//GetMember(nameof(DebuggerShortcutsConfig.SaveRom)),
-				//GetMember(nameof(DebuggerShortcutsConfig.SaveRomAs)),
-				//GetMember(nameof(DebuggerShortcutsConfig.SaveEditAsIps)),
+				GetMember(nameof(DebuggerShortcutsConfig.SaveRomAs)),
+				GetMember(nameof(DebuggerShortcutsConfig.SaveEditAsIps)),
 				//GetMember(nameof(DebuggerShortcutsConfig.RevertPrgChrChanges)),
 				//GetMember(nameof(DebuggerShortcutsConfig.ToggleVerifiedData)),
 				//GetMember(nameof(DebuggerShortcutsConfig.ToggleUnidentifiedCodeData))
