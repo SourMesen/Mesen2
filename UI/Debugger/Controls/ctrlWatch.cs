@@ -201,7 +201,11 @@ namespace Mesen.GUI.Debugger
 
 					if(address[0] >= '0' && address[0] <= '9' || address[0] == '$') {
 						//CPU Address
-						_selectedAddress = Int32.Parse(address[0] == '$' ? address.Substring(1) : address, address[0] == '$' ? NumberStyles.AllowHexSpecifier : NumberStyles.None);
+						bool isHex = address[0] == '$';
+						string addrString = isHex ? address.Substring(1) : address;
+						if(!Int32.TryParse(addrString, isHex ? NumberStyles.AllowHexSpecifier : NumberStyles.None, null, out _selectedAddress)) {
+							_selectedAddress = -1;
+						}
 						_selectedLabel = null;
 						mnuEditInMemoryViewer.Enabled = true;
 						mnuViewInDisassembly.Enabled = true;
