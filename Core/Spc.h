@@ -24,7 +24,7 @@ public:
 	static constexpr int SpcRomSize = 0x40;
 
 private:
-	static constexpr int SampleBufferSize = 0x100000;
+	static constexpr int SampleBufferSize = 0x20000;
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
 	Console* _console;
