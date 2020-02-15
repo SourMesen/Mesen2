@@ -75,11 +75,22 @@ double SoundResampler::GetTargetRateAdjustment()
 
 void SoundResampler::UpdateTargetSampleRate(uint32_t sampleRate)
 {
+	uint32_t spcSampleRate = SoundResampler::SpcSampleRate;
+	if(_console->GetSettings()->GetVideoConfig().IntegerFpsMode) {
+		//Adjust sample rate when running at 60.0 fps instead of 60.1
+		switch(_console->GetRegion()) {
+			default:
+			case ConsoleRegion::Ntsc: spcSampleRate = (uint32_t)(SoundResampler::SpcSampleRate * (60.0 / 60.0988118623484)); break;
+			case ConsoleRegion::Pal: spcSampleRate = (uint32_t)(SoundResampler::SpcSampleRate * (50.0 / 50.00697796826829)); break;
+		}
+	}
+
 	double targetRate = sampleRate * GetTargetRateAdjustment();
-	if(targetRate != _previousTargetRate) {
-		blip_set_rates(_blipBufLeft, SoundResampler::SpcSampleRate, targetRate);
-		blip_set_rates(_blipBufRight, SoundResampler::SpcSampleRate, targetRate);
+	if(targetRate != _previousTargetRate || spcSampleRate != _prevSpcSampleRate) {
+		blip_set_rates(_blipBufLeft, spcSampleRate, targetRate);
+		blip_set_rates(_blipBufRight, spcSampleRate, targetRate);
 		_previousTargetRate = targetRate;
+		_prevSpcSampleRate = spcSampleRate;
 	}
 }
 

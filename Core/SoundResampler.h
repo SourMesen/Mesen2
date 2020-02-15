@@ -14,6 +14,7 @@ private:
 
 	double _rateAdjustment = 1.0;
 	double _previousTargetRate = 0;
+	uint32_t _prevSpcSampleRate = 0;
 	int32_t _underTarget = 0;
 
 	blip_t *_blipBufLeft = nullptr;
