@@ -1,7 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <unordered_map>
-#include <stack>
 #include "DebugTypes.h"
 
 class Debugger;

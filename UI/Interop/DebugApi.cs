@@ -145,6 +145,14 @@ namespace Mesen.GUI
 			return profilerData;
 		}
 
+		[DllImport(DllPath)] public static extern void ResetMemoryAccessCounts();
+		public static void GetMemoryAccessCounts(SnesMemoryType type, ref AddressCounters[] counters)
+		{
+			int size = DebugApi.GetMemorySize(type);
+			Array.Resize(ref counters, size);
+			DebugApi.GetMemoryAccessCountsWrapper(0, (uint)size, type, counters);
+		}
+
 		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, [In,Out]AddressCounters[] counts);
 		public static AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, SnesMemoryType type)
 		{
@@ -268,13 +276,17 @@ namespace Mesen.GUI
 		}
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
 	public struct AddressCounters
 	{
+		public UInt32 Address;
 		public UInt32 ReadCount;
 		public UInt64 ReadStamp;
+
+		public byte UninitRead;
 		public UInt32 WriteCount;
-		public bool UninitRead;
 		public UInt64 WriteStamp;
+
 		public UInt32 ExecCount;
 		public UInt64 ExecStamp;
 	}
@@ -578,5 +590,5 @@ namespace Mesen.GUI
 		public UInt64 MinCycles;
 		public UInt64 MaxCycles;
 		public AddressInfo Address;
-	};
+	}
 }

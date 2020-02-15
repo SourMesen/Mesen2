@@ -19,7 +19,10 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
 
 	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((SnesMemoryType)i);
-		_counters[i].insert(_counters[i].end(), memSize, {});
+		_counters[i].reserve(memSize);
+		for(uint32_t j = 0; j < memSize; j++) {
+			_counters[i].push_back({ j });
+		}
 	}
 }
 
@@ -74,7 +77,9 @@ void MemoryAccessCounter::ResetCounts()
 {
 	DebugBreakHelper helper(_debugger);
 	for(int i = 0; i < (int)SnesMemoryType::Register; i++) {
-		memset(_counters[i].data(), 0, _counters[i].size() * sizeof(AddressCounters));
+		for(uint32_t j = 0; j < _counters[i].size(); j++) {
+			_counters[i][j] = { j };
+		}
 	}
 }
 
@@ -118,7 +123,7 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 			break;
 
 		default:
-			memcpy(counts, &_counters[(int)memoryType] + offset, length * sizeof(AddressCounters));
+			memcpy(counts, _counters[(int)memoryType].data() + offset, length * sizeof(AddressCounters));
 			break;
 	}
 }

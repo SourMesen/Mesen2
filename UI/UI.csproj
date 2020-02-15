@@ -279,6 +279,15 @@
     <Compile Include="Debugger\Config\RegisterViewerConfig.cs" />
     <Compile Include="Debugger\Config\TileViewerConfig.cs" />
     <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
+    <Compile Include="Debugger\Controls\ctrlMemoryType.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.Designer.cs">
+      <DependentUpon>ctrlMemoryAccessCounters.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1013,6 +1022,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlCallstack.resx">
       <DependentUpon>ctrlCallstack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.resx">
+      <DependentUpon>ctrlMemoryAccessCounters.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlPpuStatus.resx">
       <DependentUpon>ctrlPpuStatus.cs</DependentUpon>

@@ -34,7 +34,7 @@
 			this.ctrlHexViewer = new Mesen.GUI.Debugger.Controls.ctrlHexViewer();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblViewMemoryType = new System.Windows.Forms.Label();
-			this.cboMemoryType = new Mesen.GUI.Debugger.Controls.ComboBoxWithSeparator();
+			this.cboMemoryType = new Mesen.GUI.Debugger.Controls.ctrlMemoryType();
 			this.menuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuImport = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,9 +101,16 @@
 			this.mnuFindNext = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuFindPrev = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlMain = new System.Windows.Forms.Panel();
+			this.tabMain = new System.Windows.Forms.TabControl();
+			this.tpgMemoryViewer = new System.Windows.Forms.TabPage();
+			this.tpgAccessCounters = new System.Windows.Forms.TabPage();
+			this.ctrlMemoryAccessCounters = new Mesen.GUI.Debugger.Controls.ctrlMemoryAccessCounters();
 			this.flowLayoutPanel1.SuspendLayout();
 			this.menuStrip1.SuspendLayout();
 			this.pnlMain.SuspendLayout();
+			this.tabMain.SuspendLayout();
+			this.tpgMemoryViewer.SuspendLayout();
+			this.tpgAccessCounters.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctrlHexViewer
@@ -113,7 +120,7 @@
 			this.ctrlHexViewer.Location = new System.Drawing.Point(0, 0);
 			this.ctrlHexViewer.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlHexViewer.Name = "ctrlHexViewer";
-			this.ctrlHexViewer.Size = new System.Drawing.Size(614, 369);
+			this.ctrlHexViewer.Size = new System.Drawing.Size(606, 343);
 			this.ctrlHexViewer.TabIndex = 0;
 			this.ctrlHexViewer.TextZoom = 100;
 			this.ctrlHexViewer.RequiredWidthChanged += new System.EventHandler(this.ctrlHexViewer_RequiredWidthChanged);
@@ -645,27 +652,27 @@
 			// 
 			this.mnuGoToAll.Image = global::Mesen.GUI.Properties.Resources.Find;
 			this.mnuGoToAll.Name = "mnuGoToAll";
-			this.mnuGoToAll.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToAll.Size = new System.Drawing.Size(145, 22);
 			this.mnuGoToAll.Text = "Go to All";
 			this.mnuGoToAll.Click += new System.EventHandler(this.mnuGoToAll_Click);
 			// 
 			// mnuGoTo
 			// 
 			this.mnuGoTo.Name = "mnuGoTo";
-			this.mnuGoTo.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoTo.Size = new System.Drawing.Size(145, 22);
 			this.mnuGoTo.Text = "Go To...";
 			this.mnuGoTo.Click += new System.EventHandler(this.mnuGoTo_Click);
 			// 
 			// toolStripMenuItem14
 			// 
 			this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-			this.toolStripMenuItem14.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem14.Size = new System.Drawing.Size(142, 6);
 			// 
 			// mnuFind
 			// 
 			this.mnuFind.Image = global::Mesen.GUI.Properties.Resources.Find;
 			this.mnuFind.Name = "mnuFind";
-			this.mnuFind.Size = new System.Drawing.Size(180, 22);
+			this.mnuFind.Size = new System.Drawing.Size(145, 22);
 			this.mnuFind.Text = "Find...";
 			this.mnuFind.Click += new System.EventHandler(this.mnuFind_Click);
 			// 
@@ -673,7 +680,7 @@
 			// 
 			this.mnuFindNext.Image = global::Mesen.GUI.Properties.Resources.NextArrow;
 			this.mnuFindNext.Name = "mnuFindNext";
-			this.mnuFindNext.Size = new System.Drawing.Size(180, 22);
+			this.mnuFindNext.Size = new System.Drawing.Size(145, 22);
 			this.mnuFindNext.Text = "Find Next";
 			this.mnuFindNext.Click += new System.EventHandler(this.mnuFindNext_Click);
 			// 
@@ -681,7 +688,7 @@
 			// 
 			this.mnuFindPrev.Image = global::Mesen.GUI.Properties.Resources.PreviousArrow;
 			this.mnuFindPrev.Name = "mnuFindPrev";
-			this.mnuFindPrev.Size = new System.Drawing.Size(180, 22);
+			this.mnuFindPrev.Size = new System.Drawing.Size(145, 22);
 			this.mnuFindPrev.Text = "Find Previous";
 			this.mnuFindPrev.Click += new System.EventHandler(this.mnuFindPrev_Click);
 			// 
@@ -690,31 +697,75 @@
 			this.pnlMain.Controls.Add(this.flowLayoutPanel1);
 			this.pnlMain.Controls.Add(this.ctrlHexViewer);
 			this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlMain.Location = new System.Drawing.Point(0, 24);
+			this.pnlMain.Location = new System.Drawing.Point(0, 0);
 			this.pnlMain.Margin = new System.Windows.Forms.Padding(0);
 			this.pnlMain.Name = "pnlMain";
-			this.pnlMain.Size = new System.Drawing.Size(614, 369);
+			this.pnlMain.Size = new System.Drawing.Size(606, 343);
 			this.pnlMain.TabIndex = 4;
+			// 
+			// tabMain
+			// 
+			this.tabMain.Controls.Add(this.tpgMemoryViewer);
+			this.tabMain.Controls.Add(this.tpgAccessCounters);
+			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tabMain.Location = new System.Drawing.Point(0, 24);
+			this.tabMain.Name = "tabMain";
+			this.tabMain.SelectedIndex = 0;
+			this.tabMain.Size = new System.Drawing.Size(614, 369);
+			this.tabMain.TabIndex = 5;
+			this.tabMain.SelectedIndexChanged += new System.EventHandler(this.tabMain_SelectedIndexChanged);
+			// 
+			// tpgMemoryViewer
+			// 
+			this.tpgMemoryViewer.Controls.Add(this.pnlMain);
+			this.tpgMemoryViewer.Location = new System.Drawing.Point(4, 22);
+			this.tpgMemoryViewer.Name = "tpgMemoryViewer";
+			this.tpgMemoryViewer.Size = new System.Drawing.Size(606, 343);
+			this.tpgMemoryViewer.TabIndex = 0;
+			this.tpgMemoryViewer.Text = "Memory Viewer";
+			this.tpgMemoryViewer.UseVisualStyleBackColor = true;
+			// 
+			// tpgAccessCounters
+			// 
+			this.tpgAccessCounters.Controls.Add(this.ctrlMemoryAccessCounters);
+			this.tpgAccessCounters.Location = new System.Drawing.Point(4, 22);
+			this.tpgAccessCounters.Name = "tpgAccessCounters";
+			this.tpgAccessCounters.Size = new System.Drawing.Size(606, 343);
+			this.tpgAccessCounters.TabIndex = 1;
+			this.tpgAccessCounters.Text = "Access Counters";
+			this.tpgAccessCounters.UseVisualStyleBackColor = true;
+			// 
+			// ctrlMemoryAccessCounters
+			// 
+			this.ctrlMemoryAccessCounters.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctrlMemoryAccessCounters.Location = new System.Drawing.Point(0, 0);
+			this.ctrlMemoryAccessCounters.Margin = new System.Windows.Forms.Padding(0);
+			this.ctrlMemoryAccessCounters.Name = "ctrlMemoryAccessCounters";
+			this.ctrlMemoryAccessCounters.Size = new System.Drawing.Size(606, 343);
+			this.ctrlMemoryAccessCounters.TabIndex = 0;
 			// 
 			// frmMemoryTools
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(614, 393);
-			this.Controls.Add(this.pnlMain);
+			this.Controls.Add(this.tabMain);
 			this.Controls.Add(this.menuStrip1);
 			this.MainMenuStrip = this.menuStrip1;
 			this.MinimumSize = new System.Drawing.Size(429, 337);
 			this.Name = "frmMemoryTools";
 			this.Text = "Memory Tools";
 			this.Controls.SetChildIndex(this.menuStrip1, 0);
-			this.Controls.SetChildIndex(this.pnlMain, 0);
+			this.Controls.SetChildIndex(this.tabMain, 0);
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flowLayoutPanel1.PerformLayout();
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.pnlMain.ResumeLayout(false);
 			this.pnlMain.PerformLayout();
+			this.tabMain.ResumeLayout(false);
+			this.tpgMemoryViewer.ResumeLayout(false);
+			this.tpgAccessCounters.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -725,7 +776,7 @@
 		private Controls.ctrlHexViewer ctrlHexViewer;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private System.Windows.Forms.Label lblViewMemoryType;
-		private Mesen.GUI.Debugger.Controls.ComboBoxWithSeparator cboMemoryType;
+		private Mesen.GUI.Debugger.Controls.ctrlMemoryType cboMemoryType;
 		private Mesen.GUI.Controls.ctrlMesenMenuStrip menuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem mnuFind;
@@ -792,5 +843,9 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem14;
 		private System.Windows.Forms.ToolStripMenuItem mnuHighlightBreakpoints;
 		private System.Windows.Forms.ToolStripMenuItem mnuHighlightCurrentRowColumn;
+	  private System.Windows.Forms.TabControl tabMain;
+	  private System.Windows.Forms.TabPage tpgMemoryViewer;
+	  private System.Windows.Forms.TabPage tpgAccessCounters;
+		private Controls.ctrlMemoryAccessCounters ctrlMemoryAccessCounters;
 	}
 }

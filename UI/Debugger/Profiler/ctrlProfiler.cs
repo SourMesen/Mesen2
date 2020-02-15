@@ -48,9 +48,6 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void RefreshList()
 		{
-			int? topItemIndex = lstFunctions.TopItem?.Index;
-			int selectedIndex = lstFunctions.SelectedIndices.Count > 0 ? lstFunctions.SelectedIndices[0] : -1;
-
 			lstFunctions.BeginUpdate();
 
 			_functions = _newData;
@@ -61,15 +58,6 @@ namespace Mesen.GUI.Debugger.Controls
 
 			Array.Sort(_functions, new ListComparer(this, _sortColumn, _sortOrder));
 			lstFunctions.VirtualListSize = _functions.Length;
-
-			if(topItemIndex.HasValue && _functions.Length > topItemIndex.Value) {
-				lstFunctions.TopItem = lstFunctions.Items[topItemIndex.Value];
-			}
-
-			if(selectedIndex >= 0 && _functions.Length > selectedIndex) {
-				lstFunctions.Items[selectedIndex].Selected = true;
-				lstFunctions.Items[selectedIndex].Focused = true;
-			}
 
 			lstFunctions.EndUpdate();
 		}

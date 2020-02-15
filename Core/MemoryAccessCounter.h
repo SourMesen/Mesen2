@@ -11,11 +11,14 @@ class Gsu;
 
 struct AddressCounters
 {
+	uint32_t Address;
 	uint32_t ReadCount;
 	uint64_t ReadStamp;
-	uint32_t WriteCount;
+
 	bool UninitRead;
+	uint32_t WriteCount;
 	uint64_t WriteStamp;
+
 	uint32_t ExecCount;
 	uint64_t ExecStamp;
 };

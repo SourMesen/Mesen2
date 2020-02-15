@@ -62,16 +62,11 @@ namespace Mesen.GUI.Debugger
 			this.ctrlHexViewer.TextZoom = config.TextZoom;
 			this.ctrlHexViewer.BaseFont = new Font(config.FontFamily, config.FontSize, config.FontStyle);
 
-			//TODO this.ctrlMemoryAccessCounters.BaseFont = new Font(config.FontFamily, config.FontSize, config.FontStyle);
-			//TODO this.ctrlMemoryAccessCounters.TextZoom = config.TextZoom;
-
 			this.UpdateFadeOptions();
 
 			this.InitTblMappings();
 
 			this.ctrlHexViewer.StringViewVisible = mnuShowCharacters.Checked;
-			//TODO
-			//this.ctrlHexViewer.MemoryViewer = this;
 
 			UpdateImportButton();
 			InitMemoryTypeDropdown(true);
@@ -136,55 +131,7 @@ namespace Mesen.GUI.Debugger
 
 		private void InitMemoryTypeDropdown(bool forStartup)
 		{
-			cboMemoryType.SelectedIndexChanged -= this.cboMemoryType_SelectedIndexChanged;
-
-			SnesMemoryType originalValue = forStartup ? ConfigManager.Config.Debug.HexEditor.MemoryType : cboMemoryType.GetEnumValue<SnesMemoryType>();
-
-			cboMemoryType.BeginUpdate();
-			cboMemoryType.Items.Clear();
-
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
-			cboMemoryType.Items.Add("-");
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
-			if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
-			}
-			cboMemoryType.Items.Add("-");
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CGRam));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpriteRam));
-
-			if(DebugApi.GetMemorySize(SnesMemoryType.DspProgramRom) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspProgramRom));
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRom));
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRam));
-			}
-
-			if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1Memory));
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
-			}
-
-			if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuMemory));
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
-			}
-
-			if(DebugApi.GetMemorySize(SnesMemoryType.Cx4DataRam) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Cx4DataRam));
-			}
-
-			cboMemoryType.SelectedIndex = 0;
-			cboMemoryType.SetEnumValue(originalValue);
-			cboMemoryType.SelectedIndexChanged += this.cboMemoryType_SelectedIndexChanged;
-
-			cboMemoryType.EndUpdate();
+			cboMemoryType.InitMemoryTypeDropdown(forStartup ? (SnesMemoryType?)ConfigManager.Config.Debug.HexEditor.MemoryType : null);
 			UpdateMemoryType();
 		}
 		
@@ -209,6 +156,7 @@ namespace Mesen.GUI.Debugger
 		{
 			cboMemoryType.SetEnumValue(memoryType);
 			ctrlHexViewer.GoToAddress(address);
+			tabMain.SelectedTab = tpgMemoryViewer;
 		}
 
 		public void GoToDestination(GoToDestination dest)
@@ -273,7 +221,7 @@ namespace Mesen.GUI.Debugger
 						}
 						this.InitTblMappings();
 						this.InitMemoryTypeDropdown(false);
-						//TODO ctrlMemoryAccessCounters.InitMemoryTypeDropdown();
+						ctrlMemoryAccessCounters.InitMemoryTypeDropdown();
 					}));
 					this.UpdateFlags();
 					break;
@@ -287,7 +235,7 @@ namespace Mesen.GUI.Debugger
 					}
 
 					DateTime now = DateTime.Now;
-					if(!_updating && ConfigManager.Config.Debug.HexEditor.AutoRefresh && (now - _lastUpdate).Milliseconds >= refreshDelay) {
+					if(!_updating && ConfigManager.Config.Debug.HexEditor.AutoRefresh && (now - _lastUpdate).Milliseconds >= refreshDelay*3) {
 						_lastUpdate = now;
 						_updating = true;
 						this.BeginInvoke((Action)(() => {
@@ -341,8 +289,12 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			this.UpdateByteColorProvider();
-			this.ctrlHexViewer.RefreshData(_memoryType);
+			if(tabMain.SelectedTab == tpgAccessCounters) {
+				ctrlMemoryAccessCounters.RefreshData();
+			} else if(tabMain.SelectedTab == tpgMemoryViewer) {
+				UpdateByteColorProvider();
+				ctrlHexViewer.RefreshData(_memoryType);
+			}
 		}
 
 		private void mnuFind_Click(object sender, EventArgs e)
@@ -362,7 +314,11 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuGoTo_Click(object sender, EventArgs e)
 		{
-			this.ctrlHexViewer.GoToAddress();
+			if(tabMain.SelectedTab == tpgMemoryViewer) {
+				ctrlHexViewer.GoToAddress();
+			} else if(tabMain.SelectedTab == tpgAccessCounters) {
+				ctrlMemoryAccessCounters.GoToAddress();
+			}
 		}
 
 		private void mnuGoToAll_Click(object sender, EventArgs e)
@@ -373,19 +329,16 @@ namespace Mesen.GUI.Debugger
 		private void mnuIncreaseFontSize_Click(object sender, EventArgs e)
 		{
 			this.ctrlHexViewer.TextZoom += 10;
-			//TODO this.ctrlMemoryAccessCounters.TextZoom += 10;
 		}
 
 		private void mnuDecreaseFontSize_Click(object sender, EventArgs e)
 		{
 			this.ctrlHexViewer.TextZoom -= 10;
-			//TODO this.ctrlMemoryAccessCounters.TextZoom -= 10;
 		}
 
 		private void mnuResetFontSize_Click(object sender, EventArgs e)
 		{
 			this.ctrlHexViewer.TextZoom = 100;
-			//TODO this.ctrlMemoryAccessCounters.TextZoom = 100;
 		}
 
 		private void mnuClose_Click(object sender, EventArgs e)
@@ -438,7 +391,7 @@ namespace Mesen.GUI.Debugger
 
 		private void tabMain_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			this.RefreshData();
+			RefreshData();
 		}
 
 		private void ctrlHexViewer_RequiredWidthChanged(object sender, EventArgs e)
@@ -634,7 +587,6 @@ namespace Mesen.GUI.Debugger
 		private void mnuSelectFont_Click(object sender, EventArgs e)
 		{
 			ctrlHexViewer.BaseFont = FontDialogHelper.SelectFont(ctrlHexViewer.BaseFont);
-			//TODO ctrlMemoryAccessCounters.BaseFont = ctrlHexViewer.BaseFont;
 		}
 
 		private void mnuByteEditingMode_CheckedChanged(object sender, EventArgs e)
