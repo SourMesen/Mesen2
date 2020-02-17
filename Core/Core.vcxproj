@@ -168,6 +168,7 @@
     <ClInclude Include="RewindManager.h" />
     <ClInclude Include="RomFinder.h" />
     <ClInclude Include="RomHandler.h" />
+    <ClInclude Include="Rtc4513.h" />
     <ClInclude Include="Sa1.h" />
     <ClInclude Include="Sa1BwRamHandler.h" />
     <ClInclude Include="Sa1Cpu.h" />
@@ -193,6 +194,8 @@
     <ClInclude Include="SoundMixer.h" />
     <ClInclude Include="SoundResampler.h" />
     <ClInclude Include="Spc.h" />
+    <ClInclude Include="Spc7110.h" />
+    <ClInclude Include="Spc7110Decomp.h" />
     <ClInclude Include="SpcDebugger.h" />
     <ClInclude Include="SpcDisUtils.h" />
     <ClInclude Include="SpcHud.h" />
@@ -281,6 +284,7 @@
     <ClCompile Include="RegisterHandlerB.cpp" />
     <ClCompile Include="RewindData.cpp" />
     <ClCompile Include="RewindManager.cpp" />
+    <ClCompile Include="Rtc4513.cpp" />
     <ClCompile Include="Sa1.cpp" />
     <ClCompile Include="Sa1Cpu.cpp" />
     <ClCompile Include="SaveStateManager.cpp" />
@@ -297,6 +301,8 @@
     <ClCompile Include="SoundResampler.cpp" />
     <ClCompile Include="Spc.cpp" />
     <ClCompile Include="Spc.Instructions.cpp" />
+    <ClCompile Include="Spc7110.cpp" />
+    <ClCompile Include="Spc7110Decomp.cpp" />
     <ClCompile Include="SpcDebugger.cpp" />
     <ClCompile Include="SpcDisUtils.cpp" />
     <ClCompile Include="SpcHud.cpp" />

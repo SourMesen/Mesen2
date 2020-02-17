@@ -494,6 +494,15 @@
     <ClInclude Include="Assembler.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="Spc7110.h">
+      <Filter>SNES\Coprocessors\SPC7110</Filter>
+    </ClInclude>
+    <ClInclude Include="Spc7110Decomp.h">
+      <Filter>SNES\Coprocessors\SPC7110</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtc4513.h">
+      <Filter>SNES\Coprocessors\SPC7110</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -785,6 +794,15 @@
     <ClCompile Include="Assembler.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
+    <ClCompile Include="Spc7110.cpp">
+      <Filter>SNES\Coprocessors\SPC7110</Filter>
+    </ClCompile>
+    <ClCompile Include="Spc7110Decomp.cpp">
+      <Filter>SNES\Coprocessors\SPC7110</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtc4513.cpp">
+      <Filter>SNES\Coprocessors\SPC7110</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -855,6 +873,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\MSU1">
       <UniqueIdentifier>{9fb8db1f-a7b5-4570-99ca-bbc15d262632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\SPC7110">
+      <UniqueIdentifier>{996b46fc-8c11-4715-99a0-394640d3fdcf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

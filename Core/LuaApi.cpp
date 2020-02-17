@@ -617,6 +617,7 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 
 	lua_newtable(lua);
 	switch(operationType) {
+		default:
 		case MemoryOperationType::Read: 
 			for(uint32_t i = 0; i < size; i++) {
 				lua_pushinteger(lua, counts[i].ReadCount);

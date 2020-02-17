@@ -18,8 +18,9 @@ namespace Mesen.GUI.Emulation
 
 		public static void UpdateStateMenu(ToolStripMenuItem menu, bool forSave)
 		{
+			string romName = EmuApi.GetRomInfo().GetRomName();
 			for(uint i = 1; i <= NumberOfSaveSlots + (forSave ? 0 : 1); i++) {
-				string statePath = Path.Combine(ConfigManager.SaveStateFolder, EmuApi.GetRomInfo().GetRomName() + "_" + i + ".mss");
+				string statePath = Path.Combine(ConfigManager.SaveStateFolder, romName + "_" + i + ".mss");
 				string label;
 				bool isAutoSaveSlot = i == NumberOfSaveSlots + 1;
 				string slotName = isAutoSaveSlot ? "Auto" : i.ToString();

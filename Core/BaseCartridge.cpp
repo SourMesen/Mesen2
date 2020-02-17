@@ -16,6 +16,7 @@
 #include "Sdd1.h"
 #include "Cx4.h"
 #include "Obc1.h"
+#include "Spc7110.h"
 #include "SpcFileData.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
@@ -207,19 +208,29 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 {
 	if((_cartInfo.RomType & 0x0F) >= 0x03) {
 		switch((_cartInfo.RomType & 0xF0) >> 4) {
-			case 0x00: return GetDspVersion(); break;
-			case 0x01: return CoprocessorType::GSU; break;
-			case 0x02: return CoprocessorType::OBC1; break;
-			case 0x03: return CoprocessorType::SA1; break;
-			case 0x04: return CoprocessorType::SDD1; break;
-			case 0x05: return CoprocessorType::RTC; break;
-			case 0x0E: return CoprocessorType::Satellaview; break;
+			case 0x00: return GetDspVersion();
+			case 0x01: return CoprocessorType::GSU;
+			case 0x02: return CoprocessorType::OBC1;
+			case 0x03: return CoprocessorType::SA1;
+			case 0x04: return CoprocessorType::SDD1;
+			case 0x05: return CoprocessorType::RTC;
+			case 0x0E: return CoprocessorType::Satellaview;
 			case 0x0F:
 				switch(_cartInfo.CartridgeType) {
-					case 0x00: return CoprocessorType::SPC7110; _hasBattery = true; break;
-					case 0x01: return GetSt01xVersion(); _hasBattery = true; break;
-					case 0x02: return CoprocessorType::ST018; _hasBattery = true; break;
-					case 0x10: return CoprocessorType::CX4; break;
+					case 0x00: 
+						_hasBattery = true;
+						_hasRtc = (_cartInfo.RomType & 0x0F) == 0x09;
+						return CoprocessorType::SPC7110;
+
+					case 0x01: 
+						_hasBattery = true;
+						return GetSt01xVersion(); 
+
+					case 0x02: 
+						_hasBattery = true;
+						return CoprocessorType::ST018;
+
+					case 0x10: return CoprocessorType::CX4;
 				}
 				break;
 		}
@@ -288,7 +299,9 @@ void BaseCartridge::LoadBattery()
 {
 	if(_saveRamSize > 0) {
 		_console->GetBatteryManager()->LoadBattery(".srm", _saveRam, _saveRamSize);
-	} else if(_coprocessor && _hasBattery) {
+	} 
+	
+	if(_coprocessor && _hasBattery) {
 		_coprocessor->LoadBattery();
 	}
 }
@@ -297,7 +310,9 @@ void BaseCartridge::SaveBattery()
 {
 	if(_saveRamSize > 0) {
 		_console->GetBatteryManager()->SaveBattery(".srm", _saveRam, _saveRamSize);
-	} else if(_coprocessor && _hasBattery) {
+	} 
+	
+	if(_coprocessor && _hasBattery) {
 		_coprocessor->SaveBattery();
 	}
 }
@@ -333,7 +348,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 
 void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 {
-	if(MapSpecificCarts(mm) || _coprocessorType == CoprocessorType::GSU || _coprocessorType == CoprocessorType::SDD1 || _coprocessorType == CoprocessorType::CX4) {
+	if(MapSpecificCarts(mm) || _coprocessorType == CoprocessorType::GSU || _coprocessorType == CoprocessorType::SDD1 || _coprocessorType == CoprocessorType::SPC7110 || _coprocessorType == CoprocessorType::CX4) {
 		return;
 	}
 
@@ -406,6 +421,8 @@ void BaseCartridge::InitCoprocessor()
 		_gsu = dynamic_cast<Gsu*>(_coprocessor.get());
 	} else if(_coprocessorType == CoprocessorType::SDD1) {
 		_coprocessor.reset(new Sdd1(_console));
+	} else if(_coprocessorType == CoprocessorType::SPC7110) {
+		_coprocessor.reset(new Spc7110(_console, _hasRtc));
 	} else if(_coprocessorType == CoprocessorType::CX4) {
 		_coprocessor.reset(new Cx4(_console));
 		_cx4 = dynamic_cast<Cx4*>(_coprocessor.get());

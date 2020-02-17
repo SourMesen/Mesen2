@@ -35,6 +35,7 @@ private:
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
 	bool _hasBattery = false;
+	bool _hasRtc = false;
 	string _romPath;
 	string _patchPath;
 

@@ -87,6 +87,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/RegisterHandlerB.cpp \
                $(CORE_DIR)/RewindData.cpp \
                $(CORE_DIR)/RewindManager.cpp \
+               $(CORE_DIR)/Rtc4513.cpp \
                $(CORE_DIR)/SaveStateManager.cpp \
                $(CORE_DIR)/Sa1.cpp \
                $(CORE_DIR)/Sa1Cpu.cpp \
@@ -108,6 +109,8 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/SpcHud.cpp \
                $(CORE_DIR)/SPC_DSP.cpp \
                $(CORE_DIR)/SPC_Filter.cpp \
+               $(CORE_DIR)/Spc7110.cpp \
+               $(CORE_DIR)/Spc7110Decomp.cpp \
                $(CORE_DIR)/stdafx.cpp \
                $(CORE_DIR)/TraceLogger.cpp \
                $(CORE_DIR)/VideoDecoder.cpp \

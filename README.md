@@ -20,7 +20,6 @@ Linux: [![Build status](https://ci.appveyor.com/api/projects/status/arkaatgy94f2
 The following should be added over time (in no particular order):
 
 * Additions/improvements in the debugging tools
-* SPC7110 support
 * Satellaview/BS-X support
 
 ## Compiling
