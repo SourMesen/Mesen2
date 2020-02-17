@@ -158,6 +158,7 @@
 			this.cboMemoryType.Name = "cboMemoryType";
 			this.cboMemoryType.Size = new System.Drawing.Size(162, 21);
 			this.cboMemoryType.TabIndex = 1;
+			this.cboMemoryType.SelectedIndexChanged += new System.EventHandler(this.cboMemoryType_SelectedIndexChanged);
 			// 
 			// menuStrip1
 			// 
