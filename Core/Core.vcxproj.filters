@@ -503,6 +503,12 @@
     <ClInclude Include="Rtc4513.h">
       <Filter>SNES\Coprocessors\SPC7110</Filter>
     </ClInclude>
+    <ClInclude Include="BsxCart.h">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClInclude>
+    <ClInclude Include="BsxMemoryPack.h">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -803,6 +809,12 @@
     <ClCompile Include="Rtc4513.cpp">
       <Filter>SNES\Coprocessors\SPC7110</Filter>
     </ClCompile>
+    <ClCompile Include="BsxCart.cpp">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClCompile>
+    <ClCompile Include="BsxMemoryPack.cpp">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -876,6 +888,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\SPC7110">
       <UniqueIdentifier>{996b46fc-8c11-4715-99a0-394640d3fdcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\BSX">
+      <UniqueIdentifier>{c519e61b-e1c6-4182-8a23-ed23b60fbf96}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -28,6 +28,7 @@
 		private void InitializeComponent()
 		{
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.cboType = new Mesen.GUI.Debugger.Controls.ComboBoxWithSeparator();
 			this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
 			this.nudLength = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblBytes = new System.Windows.Forms.Label();
@@ -42,7 +43,6 @@
 			this.lblAddressSign = new System.Windows.Forms.Label();
 			this.txtAddress = new System.Windows.Forms.TextBox();
 			this.lblRange = new System.Windows.Forms.Label();
-			this.cboType = new Mesen.GUI.Debugger.Controls.ComboBoxWithSeparator();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.flowLayoutPanel3.SuspendLayout();
 			this.flowLayoutPanel2.SuspendLayout();
@@ -52,6 +52,7 @@
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 242);
 			this.baseConfigPanel.Size = new System.Drawing.Size(377, 29);
+			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tableLayoutPanel1
 			// 
@@ -81,6 +82,15 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(377, 242);
 			this.tableLayoutPanel1.TabIndex = 2;
 			// 
+			// cboType
+			// 
+			this.cboType.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.cboType.FormattingEnabled = true;
+			this.cboType.Location = new System.Drawing.Point(63, 3);
+			this.cboType.Name = "cboType";
+			this.cboType.Size = new System.Drawing.Size(157, 21);
+			this.cboType.TabIndex = 14;
+			// 
 			// flowLayoutPanel3
 			// 
 			this.flowLayoutPanel3.Controls.Add(this.nudLength);
@@ -100,6 +110,7 @@
             0,
             0,
             0});
+			this.nudLength.IsHex = false;
 			this.nudLength.Location = new System.Drawing.Point(3, 3);
 			this.nudLength.Maximum = new decimal(new int[] {
             65536,
@@ -243,15 +254,6 @@
 			this.lblRange.TabIndex = 10;
 			this.lblRange.Text = "(range)";
 			// 
-			// cboType
-			// 
-			this.cboType.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-			this.cboType.FormattingEnabled = true;
-			this.cboType.Location = new System.Drawing.Point(63, 3);
-			this.cboType.Name = "cboType";
-			this.cboType.Size = new System.Drawing.Size(121, 21);
-			this.cboType.TabIndex = 14;
-			// 
 			// frmEditLabel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -271,6 +273,7 @@
 			this.flowLayoutPanel2.ResumeLayout(false);
 			this.flowLayoutPanel2.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 

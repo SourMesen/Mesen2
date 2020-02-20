@@ -403,7 +403,7 @@ void Debugger::SuspendDebugger(bool release)
 			_suspendRequestCount--;
 		} else {
 		#ifdef _DEBUG
-			throw std::runtime_error("unexpected debugger suspend::release call");
+			//throw std::runtime_error("unexpected debugger suspend::release call");
 		#endif
 		}
 	} else {

@@ -71,6 +71,7 @@
 			this.chkMoviesOverride = new System.Windows.Forms.CheckBox();
 			this.grpFileAssociations = new System.Windows.Forms.GroupBox();
 			this.tlpFileFormat = new System.Windows.Forms.TableLayoutPanel();
+			this.chkBsFormat = new System.Windows.Forms.CheckBox();
 			this.chkSpcFormat = new System.Windows.Forms.CheckBox();
 			this.chkRomFormat = new System.Windows.Forms.CheckBox();
 			this.chkMssFormat = new System.Windows.Forms.CheckBox();
@@ -452,7 +453,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpPathOverrides.Controls.Add(this.tableLayoutPanel10);
-			this.grpPathOverrides.Location = new System.Drawing.Point(3, 177);
+			this.grpPathOverrides.Location = new System.Drawing.Point(3, 198);
 			this.grpPathOverrides.Name = "grpPathOverrides";
 			this.grpPathOverrides.Size = new System.Drawing.Size(528, 186);
 			this.grpPathOverrides.TabIndex = 15;
@@ -677,7 +678,7 @@
 			this.grpFileAssociations.Controls.Add(this.tlpFileFormat);
 			this.grpFileAssociations.Location = new System.Drawing.Point(3, 3);
 			this.grpFileAssociations.Name = "grpFileAssociations";
-			this.grpFileAssociations.Size = new System.Drawing.Size(528, 65);
+			this.grpFileAssociations.Size = new System.Drawing.Size(528, 86);
 			this.grpFileAssociations.TabIndex = 12;
 			this.grpFileAssociations.TabStop = false;
 			this.grpFileAssociations.Text = "File Associations";
@@ -687,6 +688,7 @@
 			this.tlpFileFormat.ColumnCount = 2;
 			this.tlpFileFormat.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tlpFileFormat.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tlpFileFormat.Controls.Add(this.chkBsFormat, 0, 2);
 			this.tlpFileFormat.Controls.Add(this.chkSpcFormat, 0, 1);
 			this.tlpFileFormat.Controls.Add(this.chkRomFormat, 0, 0);
 			this.tlpFileFormat.Controls.Add(this.chkMssFormat, 1, 0);
@@ -694,14 +696,23 @@
 			this.tlpFileFormat.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tlpFileFormat.Location = new System.Drawing.Point(3, 16);
 			this.tlpFileFormat.Name = "tlpFileFormat";
-			this.tlpFileFormat.RowCount = 3;
+			this.tlpFileFormat.RowCount = 4;
 			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tlpFileFormat.Size = new System.Drawing.Size(522, 46);
+			this.tlpFileFormat.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tlpFileFormat.Size = new System.Drawing.Size(522, 67);
 			this.tlpFileFormat.TabIndex = 0;
+			// 
+			// chkBsFormat
+			// 
+			this.chkBsFormat.AutoSize = true;
+			this.chkBsFormat.Location = new System.Drawing.Point(3, 49);
+			this.chkBsFormat.Name = "chkBsFormat";
+			this.chkBsFormat.Size = new System.Drawing.Size(147, 17);
+			this.chkBsFormat.TabIndex = 17;
+			this.chkBsFormat.Text = ".BS (BS-X memory packs)";
+			this.chkBsFormat.UseVisualStyleBackColor = true;
 			// 
 			// chkSpcFormat
 			// 
@@ -751,7 +762,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpDataStorageLocation.Controls.Add(this.tableLayoutPanel7);
-			this.grpDataStorageLocation.Location = new System.Drawing.Point(3, 74);
+			this.grpDataStorageLocation.Location = new System.Drawing.Point(3, 95);
 			this.grpDataStorageLocation.Name = "grpDataStorageLocation";
 			this.grpDataStorageLocation.Size = new System.Drawing.Size(528, 97);
 			this.grpDataStorageLocation.TabIndex = 14;
@@ -955,6 +966,7 @@
             0,
             0,
             0});
+			this.nudRewindBufferSize.IsHex = false;
 			this.nudRewindBufferSize.Location = new System.Drawing.Point(148, 0);
 			this.nudRewindBufferSize.Margin = new System.Windows.Forms.Padding(0);
 			this.nudRewindBufferSize.Maximum = new decimal(new int[] {
@@ -1211,5 +1223,6 @@
 		private System.Windows.Forms.CheckBox chkPauseOnMovieEnd;
 		private System.Windows.Forms.CheckBox chkDisableGameSelectionScreen;
 		private System.Windows.Forms.CheckBox chkSpcFormat;
-	}
+	  private System.Windows.Forms.CheckBox chkBsFormat;
+   }
 }

@@ -79,6 +79,8 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.SpcRom: return address | ((ulong)6 << 32);
 				case SnesMemoryType.Sa1InternalRam: return address | ((ulong)7 << 32);
 				case SnesMemoryType.GsuWorkRam: return address | ((ulong)8 << 32);
+				case SnesMemoryType.BsxPsRam: return address | ((ulong)9 << 32);
+				case SnesMemoryType.BsxMemoryPack: return address | ((ulong)10 << 32);
 			}
 			throw new Exception("Invalid type");
 		}

@@ -12,6 +12,8 @@ class NecDsp;
 class Sa1;
 class Gsu;
 class Cx4;
+class BsxCart;
+class BsxMemoryPack;
 class Console;
 class SpcFileData;
 enum class ConsoleRegion;
@@ -31,6 +33,8 @@ private:
 	Sa1 *_sa1 = nullptr;
 	Gsu *_gsu = nullptr;
 	Cx4 *_cx4 = nullptr;
+	BsxCart* _bsx = nullptr;
+	unique_ptr<BsxMemoryPack> _bsxMemPack;
 
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
@@ -96,6 +100,8 @@ public:
 	Sa1* GetSa1();
 	Gsu* GetGsu();
 	Cx4* GetCx4();
+	BsxCart* GetBsx();
+	BsxMemoryPack* GetBsxMemoryPack();
 
 	void RunCoprocessors();
 

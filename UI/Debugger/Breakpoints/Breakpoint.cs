@@ -123,6 +123,9 @@ namespace Mesen.GUI.Debugger
 
 				case SnesMemoryType.Sa1InternalRam: type = "IRAM"; break;
 				case SnesMemoryType.GsuWorkRam: type = "GWRAM"; break;
+				
+				case SnesMemoryType.BsxPsRam: type = "PSRAM"; break;
+				case SnesMemoryType.BsxMemoryPack: type = "MPACK"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}

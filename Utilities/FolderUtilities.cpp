@@ -137,6 +137,17 @@ string FolderUtilities::GetRecentGamesFolder()
 	return folder;
 }
 
+string FolderUtilities::GetExtension(string filename)
+{
+	size_t position = filename.find_last_of('.');
+	if(position != string::npos) {
+		string ext = filename.substr(position, filename.size() - position);
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+		return ext;
+	}
+	return "";
+}
+
 #ifndef LIBRETRO
 void FolderUtilities::CreateFolder(string folder)
 {

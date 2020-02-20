@@ -78,6 +78,7 @@ namespace Mesen.GUI.Config
 			CreateMimeType("x-mesen_s-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
 			CreateMimeType("x-mesen_s-fig", "fig", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
 			CreateMimeType("x-mesen_s-spc", "spc", "SPC Sound File", mimeTypes, cfg.AssociateSpcFiles);
+			CreateMimeType("x-mesen_s-bs", "bs", "BS-X Memory Pack", mimeTypes, cfg.AssociateBsFiles);
 			CreateMimeType("x-mesen_s-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateMssFiles);
 			CreateMimeType("x-mesen_s-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMsmFiles);
 

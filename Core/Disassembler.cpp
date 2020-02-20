@@ -7,6 +7,8 @@
 #include "NecDsp.h"
 #include "Sa1.h"
 #include "Gsu.h"
+#include "BsxCart.h"
+#include "BsxMemoryPack.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
 #include "LabelManager.h"
@@ -54,6 +56,11 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_gsuWorkRam = console->GetCartridge()->GetGsu() ? console->GetCartridge()->GetGsu()->DebugGetWorkRam() : nullptr;
 	_gsuWorkRamSize = console->GetCartridge()->GetGsu() ? console->GetCartridge()->GetGsu()->DebugGetWorkRamSize() : 0;
 
+	_bsxPsRam = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsx()->DebugGetPsRam() : nullptr;
+	_bsxPsRamSize = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsx()->DebugGetPsRamSize() : 0;
+	_bsxMemPack = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsxMemoryPack()->DebugGetMemoryPack() : nullptr;
+	_bsxMemPackSize = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsxMemoryPack()->DebugGetMemoryPackSize() : 0;
+
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_sramCache = vector<DisassemblyInfo>(_sramSize);
 	_wramCache = vector<DisassemblyInfo>(_wramSize);
@@ -62,6 +69,8 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_necDspRomCache = vector<DisassemblyInfo>(_necDspProgramRomSize);
 	_sa1InternalRamCache = vector<DisassemblyInfo>(_sa1InternalRamSize);
 	_gsuWorkRamCache = vector<DisassemblyInfo>(_gsuWorkRamSize);
+	_bsxPsRamCache = vector<DisassemblyInfo>(_bsxPsRamSize);
+	_bsxMemPackCache = vector<DisassemblyInfo>(_bsxMemPackSize);
 
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
 		_needDisassemble[i] = true;
@@ -75,6 +84,8 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_sources[(int)SnesMemoryType::DspProgramRom] = { _necDspProgramRom, &_necDspRomCache, _necDspProgramRomSize };
 	_sources[(int)SnesMemoryType::Sa1InternalRam] = { _sa1InternalRam, &_sa1InternalRamCache, _sa1InternalRamSize };
 	_sources[(int)SnesMemoryType::GsuWorkRam] = { _gsuWorkRam, &_gsuWorkRamCache, _gsuWorkRamSize };
+	_sources[(int)SnesMemoryType::BsxPsRam] = { _bsxPsRam, &_bsxPsRamCache, _bsxPsRamSize };
+	_sources[(int)SnesMemoryType::BsxMemoryPack] = { _bsxMemPack, &_bsxMemPackCache, _bsxMemPackSize };
 }
 
 DisassemblerSource Disassembler::GetSource(SnesMemoryType type)
@@ -468,7 +479,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, CpuType::Cpu);
 						} else {
-							data.Flags |= _cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+							data.Flags |= (result.Address.Type != SnesMemoryType::PrgRom || _cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 						}
 
 						data.OpSize = disInfo.GetOpSize();

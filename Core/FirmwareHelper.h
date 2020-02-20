@@ -35,6 +35,20 @@ private:
 		}
 		return false;
 	}
+	
+	static bool AttemptLoadBsxFirmware(uint8_t** prgRom, uint32_t& prgSize)
+	{
+		VirtualFile firmware(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), "BS-X BIOS.sfc"));
+		if(firmware.IsValid() && firmware.GetSize() >= 0x8000) {
+			*prgRom = new uint8_t[firmware.GetSize()];
+			prgSize = (uint32_t)firmware.GetSize();
+			firmware.ReadFile(*prgRom, (uint32_t)firmware.GetSize());
+			return true;
+		}
+
+		return false;
+	}
+
 public:
 	static bool LoadDspFirmware(Console *console, CoprocessorType coprocessorType, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
 	{
@@ -58,6 +72,26 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find firmware file for DSP: " + combinedFilename);
+		return false;
+	}
+
+	static bool LoadBsxFirmware(Console* console, uint8_t** prgRom, uint32_t& prgSize)
+	{
+		if(AttemptLoadBsxFirmware(prgRom, prgSize)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg;
+		msg.Filename = "BS-X BIOS.sfc";
+		msg.FirmwareType = CoprocessorType::Satellaview;
+		msg.Size = 1024*1024;
+		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+		
+		if(AttemptLoadBsxFirmware(prgRom, prgSize)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for BS-X");
 		return false;
 	}
 };

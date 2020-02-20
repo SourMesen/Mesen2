@@ -134,6 +134,8 @@ namespace Mesen.GUI.Debugger.Controls
 						case SnesMemoryType.SpcRam: prefix = "RAM: $"; break;
 						case SnesMemoryType.SpcRom: prefix = "ROM: $"; break;
 						case SnesMemoryType.Sa1InternalRam: prefix = "IRAM: $"; break;
+						case SnesMemoryType.BsxPsRam: prefix = "PSRAM: $"; break;
+						case SnesMemoryType.BsxMemoryPack: prefix = "MPACK: $"; break;
 						default: throw new Exception("Unsupported type");
 					}
 					int relAddress = label.GetRelativeAddress().Address;

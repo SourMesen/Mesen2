@@ -203,6 +203,8 @@ namespace Mesen.GUI
 		Sa1InternalRam,
 		GsuWorkRam,
 		Cx4DataRam,
+		BsxPsRam,
+		BsxMemoryPack,
 		Register,
 	}
 

@@ -30,6 +30,8 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/BatteryManager.cpp \
                $(CORE_DIR)/Breakpoint.cpp \
                $(CORE_DIR)/BreakpointManager.cpp \
+               $(CORE_DIR)/BsxCart.cpp \
+               $(CORE_DIR)/BsxMemoryPack.cpp \
                $(CORE_DIR)/CallstackManager.cpp \
                $(CORE_DIR)/CheatManager.cpp \
                $(CORE_DIR)/CodeDataLogger.cpp \

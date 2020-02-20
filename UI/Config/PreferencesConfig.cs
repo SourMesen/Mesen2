@@ -25,6 +25,7 @@ namespace Mesen.GUI.Config
 
 		public bool AssociateRomFiles = false;
 		public bool AssociateSpcFiles = false;
+		public bool AssociateBsFiles = false;
 		public bool AssociateMsmFiles = false;
 		public bool AssociateMssFiles = false;
 
@@ -138,6 +139,7 @@ namespace Mesen.GUI.Config
 				FileAssociationHelper.UpdateFileAssociation("msm", this.AssociateMsmFiles);
 				FileAssociationHelper.UpdateFileAssociation("mss", this.AssociateMssFiles);
 				FileAssociationHelper.UpdateFileAssociation("spc", this.AssociateSpcFiles);
+				FileAssociationHelper.UpdateFileAssociation("bs", this.AssociateBsFiles);
 			}
 
 			frmMain.Instance.TopMost = AlwaysOnTop;

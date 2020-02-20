@@ -67,6 +67,16 @@ namespace Mesen.GUI.Debugger.Controls
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Cx4DataRam));
 			}
 
+			if(DebugApi.GetMemorySize(SnesMemoryType.BsxPsRam) > 0) {
+				this.Items.Add("-");
+				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxPsRam));
+			}
+			
+			if(DebugApi.GetMemorySize(SnesMemoryType.BsxMemoryPack) > 0) {
+				this.Items.Add("-");
+				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxMemoryPack));
+			}
+
 			this.SelectedIndex = 0;
 			this.SetEnumValue(originalValue);
 			this._disableEvent = false;

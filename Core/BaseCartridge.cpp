@@ -17,6 +17,9 @@
 #include "Cx4.h"
 #include "Obc1.h"
 #include "Spc7110.h"
+#include "BsxCart.h"
+#include "BsxMemoryPack.h"
+#include "FirmwareHelper.h"
 #include "SpcFileData.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
@@ -52,9 +55,17 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 
 		cart->_console = console;
 		cart->_romPath = romFile;
-		cart->_prgRomSize = (uint32_t)romData.size();
-		cart->_prgRom = new uint8_t[cart->_prgRomSize];
-		memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
+
+		if(FolderUtilities::GetExtension(romFile.GetFileName()) == ".bs") {
+			cart->_bsxMemPack.reset(new BsxMemoryPack(romData));
+			if(!FirmwareHelper::LoadBsxFirmware(console, &cart->_prgRom, cart->_prgRomSize)) {
+				return nullptr;
+			}
+		} else {
+			cart->_prgRomSize = (uint32_t)romData.size();
+			cart->_prgRom = new uint8_t[cart->_prgRomSize];
+			memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
+		}
 
 		if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data", 27) == 0) {
 			if(cart->_prgRomSize >= 0x10200) {
@@ -272,6 +283,9 @@ void BaseCartridge::Reset()
 	if(_coprocessor) {
 		_coprocessor->Reset();
 	}
+	if(_bsxMemPack) {
+		_bsxMemPack->Reset();
+	}
 }
 
 RomInfo BaseCartridge::GetRomInfo()
@@ -423,6 +437,18 @@ void BaseCartridge::InitCoprocessor()
 		_coprocessor.reset(new Sdd1(_console));
 	} else if(_coprocessorType == CoprocessorType::SPC7110) {
 		_coprocessor.reset(new Spc7110(_console, _hasRtc));
+	} else if(_coprocessorType == CoprocessorType::Satellaview) {
+		//Share save file across all .bs files that use the BS-X bios
+		_console->GetBatteryManager()->Initialize("bsxbios");
+
+		if(!_bsxMemPack) {
+			//Create an empty memory pack if the BIOS was loaded directly (instead of a .bs file)
+			vector<uint8_t> emptyMemPack;
+			_bsxMemPack.reset(new BsxMemoryPack(emptyMemPack));
+		}
+
+		_coprocessor.reset(new BsxCart(_console, _bsxMemPack.get()));
+		_bsx = dynamic_cast<BsxCart*>(_coprocessor.get());
 	} else if(_coprocessorType == CoprocessorType::CX4) {
 		_coprocessor.reset(new Cx4(_console));
 		_cx4 = dynamic_cast<Cx4*>(_coprocessor.get());
@@ -504,6 +530,9 @@ void BaseCartridge::Serialize(Serializer &s)
 	s.StreamArray(_saveRam, _saveRamSize);
 	if(_coprocessor) {
 		s.Stream(_coprocessor.get());
+	}
+	if(_bsxMemPack) {
+		s.Stream(_bsxMemPack.get());
 	}
 }
 
@@ -631,6 +660,16 @@ Sa1* BaseCartridge::GetSa1()
 Cx4* BaseCartridge::GetCx4()
 {
 	return _cx4;
+}
+
+BsxCart* BaseCartridge::GetBsx()
+{
+	return _bsx;
+}
+
+BsxMemoryPack* BaseCartridge::GetBsxMemoryPack()
+{
+	return _bsxMemPack.get();
 }
 
 Gsu* BaseCartridge::GetGsu()

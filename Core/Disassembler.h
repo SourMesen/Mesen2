@@ -43,6 +43,8 @@ private:
 	vector<DisassemblyInfo> _necDspRomCache;
 	vector<DisassemblyInfo> _sa1InternalRamCache;
 	vector<DisassemblyInfo> _gsuWorkRamCache;
+	vector<DisassemblyInfo> _bsxPsRamCache;
+	vector<DisassemblyInfo> _bsxMemPackCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
@@ -73,6 +75,11 @@ private:
 
 	uint8_t *_gsuWorkRam;
 	uint32_t _gsuWorkRamSize;
+
+	uint8_t* _bsxPsRam;
+	uint32_t _bsxPsRamSize;
+	uint8_t* _bsxMemPack;
+	uint32_t _bsxMemPackSize;
 
 	DisassemblerSource GetSource(SnesMemoryType type);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);

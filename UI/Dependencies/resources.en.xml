@@ -969,6 +969,8 @@
 			<Value ID="Sa1InternalRam">SA-1 IRAM</Value>
 			<Value ID="GsuWorkRam">GSU Work RAM</Value>
 			<Value ID="Cx4DataRam">CX4 Data RAM</Value>
+			<Value ID="BsxPsRam">BS-X - PSRAM</Value>
+			<Value ID="BsxMemoryPack">BS-X - Memory Pack</Value>
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="TileFormat">

@@ -46,6 +46,8 @@ enum class SnesMemoryType
 	Sa1InternalRam,
 	GsuWorkRam,
 	Cx4DataRam,
+	BsxPsRam,
+	BsxMemoryPack,
 	Register,
 };
 

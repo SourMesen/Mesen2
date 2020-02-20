@@ -257,7 +257,7 @@ void Spc7110::UpdateMappings()
 	MemoryMappings* mappings = _console->GetMemoryManager()->GetMemoryMappings();
 	vector<unique_ptr<IMemoryHandler>>& prgRomHandlers = _console->GetCartridge()->GetPrgRomHandlers();
 
-	uint32_t dataRomSize = (prgRomHandlers.size() - 0x100);
+	uint32_t dataRomSize = ((uint32_t)prgRomHandlers.size() - 0x100);
 	for(int i = 0; i < 3; i++) {
 		mappings->RegisterHandler(0xD0 + (i * 0x10), 0xDF + (i * 0x10), 0x0000, 0xFFFF, prgRomHandlers, 0, 0x100 + ((_dataRomBanks[i] * 0x100) % dataRomSize));
 	}
