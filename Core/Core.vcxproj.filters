@@ -509,6 +509,12 @@
     <ClInclude Include="BsxMemoryPack.h">
       <Filter>SNES\Coprocessors\BSX</Filter>
     </ClInclude>
+    <ClInclude Include="BsxSatellaview.h">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClInclude>
+    <ClInclude Include="BsxStream.h">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -813,6 +819,12 @@
       <Filter>SNES\Coprocessors\BSX</Filter>
     </ClCompile>
     <ClCompile Include="BsxMemoryPack.cpp">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClCompile>
+    <ClCompile Include="BsxSatellaview.cpp">
+      <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClCompile>
+    <ClCompile Include="BsxStream.cpp">
       <Filter>SNES\Coprocessors\BSX</Filter>
     </ClCompile>
   </ItemGroup>

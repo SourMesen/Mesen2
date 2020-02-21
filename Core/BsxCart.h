@@ -5,6 +5,7 @@
 class Console;
 class MemoryManager;
 class BsxMemoryPack;
+class BsxSatellaview;
 
 class BsxCart : public BaseCoprocessor
 {
@@ -12,12 +13,11 @@ private:
 	Console* _console;
 	MemoryManager* _memoryManager;
 	BsxMemoryPack* _memPack;
+	unique_ptr<BsxSatellaview> _satellaview;
 
 	uint8_t* _psRam = nullptr;
 	uint32_t _psRamSize = 0;
 	vector<unique_ptr<IMemoryHandler>> _psRamHandlers;
-
-	IMemoryHandler* _bBusHandler = nullptr;
 
 	uint8_t _regs[0x10] = {};
 	uint8_t _dirtyRegs[0x10] = {};

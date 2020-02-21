@@ -5,6 +5,7 @@
 #include "MemoryMappings.h"
 #include "BaseCartridge.h"
 #include "BsxMemoryPack.h"
+#include "BsxSatellaview.h"
 #include "RamHandler.h"
 #include "EmuSettings.h"
 
@@ -18,10 +19,10 @@ BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack)
 	mm->RegisterHandler(0x00, 0x0F, 0x5000, 0x5FFF, this);
 	mm->RegisterHandler(0x10, 0x1F, 0x5000, 0x5FFF, _console->GetCartridge()->GetSaveRamHandlers());
 
-	//Regular B Bus register handler, keep a reference to it, it'll be overwritten below
-	_bBusHandler = mm->GetHandler(0x2000);
-	mm->RegisterHandler(0x00, 0x3F, 0x2000, 0x2FFF, this);
-	mm->RegisterHandler(0x80, 0xBF, 0x2000, 0x2FFF, this);
+	//Override regular B-bus handler
+	_satellaview.reset(new BsxSatellaview(console, mm->GetHandler(0x2000)));
+	mm->RegisterHandler(0x00, 0x3F, 0x2000, 0x2FFF, _satellaview.get());
+	mm->RegisterHandler(0x80, 0xBF, 0x2000, 0x2FFF, _satellaview.get());
 
 	_psRamSize = 512 * 1024;
 	_psRam = new uint8_t[_psRamSize];
@@ -41,17 +42,6 @@ BsxCart::~BsxCart()
 
 uint8_t BsxCart::Read(uint32_t addr)
 {
-	if((addr & 0x6000) == 0x2000) {
-		addr &= 0xFFFF;
-		if(addr >= 0x2188 && addr <= 0x219F) {
-			//Handle BS-X $2188-219F registers
-			return 0;
-		} else {
-			//Use regular B-bus handler for everything else
-			return _bBusHandler->Read(addr);
-		}
-	}
-
 	uint8_t openBus = _memoryManager->GetOpenBus();
 	if((addr & 0xFFFF) != 0x5000) {
 		return openBus;
@@ -69,16 +59,7 @@ uint8_t BsxCart::Read(uint32_t addr)
 
 void BsxCart::Write(uint32_t addr, uint8_t value)
 {
-	if((addr & 0x6000) == 0x2000) {
-		addr &= 0xFFFF;
-		if(addr >= 0x2188 && addr <= 0x219F) {
-			//Handle BS-X register writes
-		} else {
-			//Regular B-bus handler
-			_bBusHandler->Write(addr, value);
-		}
-		return;
-	} else if((addr & 0xFFFF) != 0x5000) {
+	if((addr & 0xFFFF) != 0x5000) {
 		return;
 	}
 
@@ -196,6 +177,8 @@ void BsxCart::Reset()
 	_dirty = false;
 	memcpy(_dirtyRegs, _regs, sizeof(_regs));
 
+	_satellaview->Reset();
+
 	UpdateMemoryMappings();
 }
 
@@ -205,6 +188,7 @@ void BsxCart::Serialize(Serializer& s)
 	ArrayInfo<uint8_t> regs = { _regs, 0x10 };
 	ArrayInfo<uint8_t> dirtyRegs = { _dirtyRegs, 0x10 };
 	s.Stream(psRam, regs, dirtyRegs, _dirty);
+	s.Stream(_satellaview.get());
 
 	if(!s.IsSaving()) {
 		UpdateMemoryMappings();

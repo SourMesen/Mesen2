@@ -26,9 +26,14 @@ namespace Mesen.GUI
 			}
 		}
 
-		private static void ExtractFile(ZipArchiveEntry entry, string outputFilename)
+		private static void ExtractFile(ZipArchiveEntry entry, string outputFilename, bool allowOverwrite = true)
 		{
 			if(File.Exists(outputFilename)) {
+				if(!allowOverwrite) {
+					//File already exists, and we don't want to replace it
+					return;
+				}
+
 				byte[] zipFileData = new byte[entry.Length];
 				using(Stream fileStream = entry.Open()) {
 					fileStream.Read(zipFileData, 0, (int)entry.Length);
@@ -100,6 +105,9 @@ namespace Mesen.GUI
 				} else if(entry.Name == "MesenUpdater.exe") {
 					string outputFilename = Path.Combine(ConfigManager.HomeFolder, "Resources", entry.Name);
 					ExtractFile(entry, outputFilename);
+				} else if(entry.Name.StartsWith("BSX")) {
+					string outputFilename = Path.Combine(ConfigManager.SatellaviewFolder, entry.Name);
+					ExtractFile(entry, outputFilename, false);
 				} else if(entry.Name == "Font.24.spritefont" || entry.Name == "Font.64.spritefont" || entry.Name == "LICENSE.txt" || entry.Name == "PixelFont.ttf") {
 					string outputFilename = Path.Combine(ConfigManager.HomeFolder, "Resources", entry.Name);
 					ExtractFile(entry, outputFilename);

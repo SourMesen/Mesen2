@@ -51,6 +51,8 @@
     <ClInclude Include="BatteryManager.h" />
     <ClInclude Include="BsxCart.h" />
     <ClInclude Include="BsxMemoryPack.h" />
+    <ClInclude Include="BsxSatellaview.h" />
+    <ClInclude Include="BsxStream.h" />
     <ClInclude Include="CheatManager.h" />
     <ClInclude Include="ClientConnectionData.h" />
     <ClInclude Include="Cpu.Shared.h" />
@@ -227,6 +229,8 @@
     <ClCompile Include="BreakpointManager.cpp" />
     <ClCompile Include="BsxCart.cpp" />
     <ClCompile Include="BsxMemoryPack.cpp" />
+    <ClCompile Include="BsxSatellaview.cpp" />
+    <ClCompile Include="BsxStream.cpp" />
     <ClCompile Include="CallstackManager.cpp" />
     <ClCompile Include="CheatManager.cpp" />
     <ClCompile Include="CodeDataLogger.cpp" />

@@ -26,6 +26,8 @@ namespace Mesen.GUI.Config
 		[MinMax(100, 1000)] public UInt32 GsuClockSpeed = 100;
 
 		public RamState RamPowerOnState = RamState.Random;
+
+		public long BsxCustomDate = -1;
 		
 		public void ApplyConfig()
 		{

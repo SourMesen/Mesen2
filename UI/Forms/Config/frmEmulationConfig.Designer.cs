@@ -68,6 +68,13 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.nudGsuClockSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblGsuClockSpeed = new System.Windows.Forms.Label();
+			this.tpgBsx = new System.Windows.Forms.TabPage();
+			this.grpBsxDateTime = new System.Windows.Forms.GroupBox();
+			this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+			this.dtpBsxCustomDate = new System.Windows.Forms.DateTimePicker();
+			this.radBsxLocalTime = new System.Windows.Forms.RadioButton();
+			this.radBsxCustomTime = new System.Windows.Forms.RadioButton();
+			this.dtpBsxCustomTime = new System.Windows.Forms.DateTimePicker();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -83,6 +90,9 @@
 			this.grpPpuTiming.SuspendLayout();
 			this.tableLayoutPanel5.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
+			this.tpgBsx.SuspendLayout();
+			this.grpBsxDateTime.SuspendLayout();
+			this.tableLayoutPanel6.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -96,6 +106,7 @@
 			this.tabMain.Controls.Add(this.tpgGeneral);
 			this.tabMain.Controls.Add(this.tpgAdvanced);
 			this.tabMain.Controls.Add(this.tpgOverclocking);
+			this.tabMain.Controls.Add(this.tpgBsx);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
@@ -709,6 +720,100 @@
 			this.lblGsuClockSpeed.TabIndex = 0;
 			this.lblGsuClockSpeed.Text = "Super FX clock speed (%):";
 			// 
+			// tpgBsx
+			// 
+			this.tpgBsx.Controls.Add(this.grpBsxDateTime);
+			this.tpgBsx.Location = new System.Drawing.Point(4, 22);
+			this.tpgBsx.Name = "tpgBsx";
+			this.tpgBsx.Padding = new System.Windows.Forms.Padding(3);
+			this.tpgBsx.Size = new System.Drawing.Size(437, 264);
+			this.tpgBsx.TabIndex = 5;
+			this.tpgBsx.Text = "BS-X";
+			this.tpgBsx.UseVisualStyleBackColor = true;
+			// 
+			// grpBsxDateTime
+			// 
+			this.grpBsxDateTime.Controls.Add(this.tableLayoutPanel6);
+			this.grpBsxDateTime.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.grpBsxDateTime.Location = new System.Drawing.Point(3, 3);
+			this.grpBsxDateTime.Name = "grpBsxDateTime";
+			this.grpBsxDateTime.Size = new System.Drawing.Size(431, 258);
+			this.grpBsxDateTime.TabIndex = 1;
+			this.grpBsxDateTime.TabStop = false;
+			this.grpBsxDateTime.Text = "BS-X/Satellaview Date and Time Settings";
+			// 
+			// tableLayoutPanel6
+			// 
+			this.tableLayoutPanel6.ColumnCount = 3;
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel6.Controls.Add(this.dtpBsxCustomDate, 1, 1);
+			this.tableLayoutPanel6.Controls.Add(this.radBsxLocalTime, 0, 0);
+			this.tableLayoutPanel6.Controls.Add(this.radBsxCustomTime, 0, 1);
+			this.tableLayoutPanel6.Controls.Add(this.dtpBsxCustomTime, 2, 1);
+			this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 16);
+			this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+			this.tableLayoutPanel6.RowCount = 3;
+			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel6.Size = new System.Drawing.Size(425, 239);
+			this.tableLayoutPanel6.TabIndex = 0;
+			// 
+			// dtpBsxCustomDate
+			// 
+			this.dtpBsxCustomDate.CustomFormat = "";
+			this.dtpBsxCustomDate.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dtpBsxCustomDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+			this.dtpBsxCustomDate.Location = new System.Drawing.Point(160, 26);
+			this.dtpBsxCustomDate.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
+			this.dtpBsxCustomDate.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
+			this.dtpBsxCustomDate.Name = "dtpBsxCustomDate";
+			this.dtpBsxCustomDate.Size = new System.Drawing.Size(128, 20);
+			this.dtpBsxCustomDate.TabIndex = 3;
+			this.dtpBsxCustomDate.Value = new System.DateTime(2020, 1, 1, 0, 0, 0, 0);
+			this.dtpBsxCustomDate.Enter += new System.EventHandler(this.dtpBsxCustomDate_Enter);
+			// 
+			// radBsxLocalTime
+			// 
+			this.radBsxLocalTime.AutoSize = true;
+			this.radBsxLocalTime.Location = new System.Drawing.Point(3, 3);
+			this.radBsxLocalTime.Name = "radBsxLocalTime";
+			this.radBsxLocalTime.Size = new System.Drawing.Size(127, 17);
+			this.radBsxLocalTime.TabIndex = 0;
+			this.radBsxLocalTime.TabStop = true;
+			this.radBsxLocalTime.Text = "Use current local time";
+			this.radBsxLocalTime.UseVisualStyleBackColor = true;
+			// 
+			// radBsxCustomTime
+			// 
+			this.radBsxCustomTime.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.radBsxCustomTime.AutoSize = true;
+			this.radBsxCustomTime.Location = new System.Drawing.Point(3, 27);
+			this.radBsxCustomTime.Name = "radBsxCustomTime";
+			this.radBsxCustomTime.Size = new System.Drawing.Size(151, 17);
+			this.radBsxCustomTime.TabIndex = 1;
+			this.radBsxCustomTime.TabStop = true;
+			this.radBsxCustomTime.Text = "Use custom date and time:";
+			this.radBsxCustomTime.UseVisualStyleBackColor = true;
+			// 
+			// dtpBsxCustomTime
+			// 
+			this.dtpBsxCustomTime.CustomFormat = "";
+			this.dtpBsxCustomTime.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dtpBsxCustomTime.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+			this.dtpBsxCustomTime.Location = new System.Drawing.Point(294, 26);
+			this.dtpBsxCustomTime.MaxDate = new System.DateTime(2000, 1, 2, 0, 0, 0, 0);
+			this.dtpBsxCustomTime.MinDate = new System.DateTime(2000, 1, 1, 0, 0, 0, 0);
+			this.dtpBsxCustomTime.Name = "dtpBsxCustomTime";
+			this.dtpBsxCustomTime.ShowUpDown = true;
+			this.dtpBsxCustomTime.Size = new System.Drawing.Size(128, 20);
+			this.dtpBsxCustomTime.TabIndex = 2;
+			this.dtpBsxCustomTime.Value = new System.DateTime(2000, 1, 1, 0, 0, 0, 0);
+			this.dtpBsxCustomTime.Enter += new System.EventHandler(this.dtpBsxCustomTime_Enter);
+			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -748,6 +853,10 @@
 			this.tableLayoutPanel5.PerformLayout();
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
+			this.tpgBsx.ResumeLayout(false);
+			this.grpBsxDateTime.ResumeLayout(false);
+			this.tableLayoutPanel6.ResumeLayout(false);
+			this.tableLayoutPanel6.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -795,5 +904,12 @@
 	  private Controls.MesenNumericUpDown nudRunAheadFrames;
 	  private System.Windows.Forms.Label lblRunAheadFrames;
 	  private System.Windows.Forms.Label lblRunAhead;
+	  private System.Windows.Forms.TabPage tpgBsx;
+	  private System.Windows.Forms.GroupBox grpBsxDateTime;
+	  private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+	  private System.Windows.Forms.RadioButton radBsxLocalTime;
+	  private System.Windows.Forms.RadioButton radBsxCustomTime;
+	  private System.Windows.Forms.DateTimePicker dtpBsxCustomTime;
+	  private System.Windows.Forms.DateTimePicker dtpBsxCustomDate;
    }
 }

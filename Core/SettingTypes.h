@@ -285,6 +285,8 @@ struct EmulationConfig
 	uint32_t GsuClockSpeed = 100;
 
 	RamState RamPowerOnState = RamState::Random;
+
+	int64_t BsxCustomDate = -1;
 };
 
 struct PreferencesConfig
