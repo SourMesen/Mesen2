@@ -78,9 +78,16 @@ void Rtc4513::UpdateTime()
 	tm.tm_year = (GetYear() >= 90 ? 0 : 100) + GetYear();
 
 	std::time_t tt = mktime(&tm);
-	if(tt == -1) {
+	if(tt == -1 || GetMonth() == 0) {
 		_lastTime = currentTime;
 		return;
+	}
+
+	int8_t dowGap = 0;
+	if(tm.tm_wday != GetDoW()) {
+		//The DoW on the RTC can be set to any arbitrary value for a specific date
+		//Check the gap between the value set by the game & the real dow for that date
+		dowGap = (int8_t)tm.tm_wday - (int8_t)GetDoW();
 	}
 
 	std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::from_time_t(tt);
@@ -115,7 +122,7 @@ void Rtc4513::UpdateTime()
 	_regs[10] = year % 10;
 	_regs[11] = year / 10;
 	
-	_regs[12] = (newTm.tm_wday + 1) % 7;
+	_regs[12] = (newTm.tm_wday - dowGap) % 7;
 
 	_lastTime = currentTime;
 }
