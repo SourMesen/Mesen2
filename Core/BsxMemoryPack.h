@@ -15,7 +15,6 @@ class BsxMemoryPack : public ISerializable
 
 	uint8_t _calculatedSize = 0x0C;
 
-	bool _writeProtect = true;
 	bool _enableCsr = false;
 	bool _enableEsr = false;
 	bool _enableVendorInfo = false;

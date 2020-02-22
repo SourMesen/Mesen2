@@ -23,7 +23,7 @@ BsxMemoryPack::~BsxMemoryPack()
 
 void BsxMemoryPack::Serialize(Serializer& s)
 {
-	s.Stream(_writeProtect, _enableCsr, _enableEsr, _enableVendorInfo, _writeByte, _command);
+	s.Stream(_enableCsr, _enableEsr, _enableVendorInfo, _writeByte, _command);
 	
 	if(s.IsSaving()) {
 		//Save content of memory pack as an IPS patch
@@ -68,14 +68,13 @@ void BsxMemoryPack::ProcessCommand(uint8_t value, uint32_t page)
 	}
 
 	switch(_command) {
-		case 0x20D0: memset(_data + page * 0x10000, 0x10000, 0xFF); break; //Page erase
-		case 0xA7D0: memset(_data, _dataSize, 0xFF); break; //Chip erase
+		case 0x20D0: memset(_data + page * 0x10000, 0xFF, 0x10000); break; //Page erase
+		case 0xA7D0: memset(_data, 0xFF, _dataSize); break; //Chip erase
 	}
 }
 
 void BsxMemoryPack::Reset()
 {
-	_writeProtect = true;
 	_enableCsr = false;
 	_enableEsr = false;
 	_writeByte = false;
@@ -141,10 +140,8 @@ uint8_t BsxMemoryPack::BsxMemoryPackHandler::Read(uint32_t addr)
 void BsxMemoryPack::BsxMemoryPackHandler::Write(uint32_t addr, uint8_t value)
 {
 	if(_memPack->_writeByte) {
-		if(!_memPack->_writeProtect) {
-			uint8_t currentByte = RamHandler::Read(addr);
-			RamHandler::Write(addr, value & currentByte);
-		}
+		uint8_t currentByte = RamHandler::Read(addr);
+		RamHandler::Write(addr, value & currentByte);
 		_memPack->_writeByte = false;
 	} else if(addr == 0xC00000) {
 		_memPack->ProcessCommand(value, _page);

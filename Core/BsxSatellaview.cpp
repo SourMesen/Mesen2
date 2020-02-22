@@ -99,13 +99,15 @@ void BsxSatellaview::ProcessClocks()
 {
 	if(_stream[0].NeedUpdate() || _stream[1].NeedUpdate()) {
 		uint64_t gap = _memoryManager->GetMasterClock() - _prevMasterClock;
+		uint64_t clocksPerFrame = _console->GetMasterClockRate() / 1000; //1000 frames/sec (224kbits/sec)
 
-		while(gap >= 288 * 2) {
+		while(gap >= clocksPerFrame) {
 			bool needUpdate = _stream[0].FillQueues() || _stream[1].FillQueues();
 			if(!needUpdate) {
+				gap = 0;
 				break;
 			}
-			gap -= 288 * 2;
+			gap -= clocksPerFrame;
 		}
 
 		_prevMasterClock = _memoryManager->GetMasterClock() - gap;

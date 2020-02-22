@@ -191,9 +191,6 @@ void BsxStream::SetChannelLow(uint8_t value)
 		_fileIndex = 0;
 	}
 	_channel = (_channel & 0xFF00) | value;
-	if(_channel == 0) {
-		std::cout << "Test";
-	}
 }
 
 void BsxStream::SetChannelHigh(uint8_t value)
@@ -202,9 +199,6 @@ void BsxStream::SetChannelHigh(uint8_t value)
 		_fileIndex = 0;
 	}
 	_channel = (_channel & 0xFF) | ((value & 0x3F) << 8);
-	if(_channel == 0) {
-		std::cout << "Test";
-	}
 }
 
 void BsxStream::SetPrefixLatch(uint8_t value)

@@ -318,9 +318,11 @@ void Console::Reset()
 	_memoryManager->Reset();
 	_spc->Reset();
 	_ppu->Reset();
-	_cpu->Reset();
 	_cart->Reset();
 	//_controlManager->Reset();
+
+	//Reset cart before CPU to ensure correct memory mappings when fetching reset vector
+	_cpu->Reset();
 
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
 	ProcessEvent(EventType::Reset);
