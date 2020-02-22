@@ -140,11 +140,13 @@ uint8_t BsxMemoryPack::BsxMemoryPackHandler::Read(uint32_t addr)
 
 void BsxMemoryPack::BsxMemoryPackHandler::Write(uint32_t addr, uint8_t value)
 {
-	if(addr == 0xC00000) {
+	if(_memPack->_writeByte) {
+		if(!_memPack->_writeProtect) {
+			uint8_t currentByte = RamHandler::Read(addr);
+			RamHandler::Write(addr, value & currentByte);
+		}
+		_memPack->_writeByte = false;
+	} else if(addr == 0xC00000) {
 		_memPack->ProcessCommand(value, _page);
-	}
-
-	if(!_memPack->_writeProtect) {
-		RamHandler::Write(addr, value);
 	}
 }

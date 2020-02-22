@@ -439,7 +439,7 @@ void BaseCartridge::InitCoprocessor()
 		_coprocessor.reset(new Spc7110(_console, _hasRtc));
 	} else if(_coprocessorType == CoprocessorType::Satellaview) {
 		//Share save file across all .bs files that use the BS-X bios
-		_console->GetBatteryManager()->Initialize("bsxbios");
+		_console->GetBatteryManager()->Initialize("BsxBios");
 
 		if(!_bsxMemPack) {
 			//Create an empty memory pack if the BIOS was loaded directly (instead of a .bs file)

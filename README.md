@@ -15,13 +15,6 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/cjk97u1yvw
 
 Linux: [![Build status](https://ci.appveyor.com/api/projects/status/arkaatgy94f23ll3/branch/master?svg=true)](https://ci.appveyor.com/project/Sour/mesen-s-hayo4/build/artifacts)
 
-## Roadmap
-
-The following should be added over time (in no particular order):
-
-* Additions/improvements in the debugging tools
-* Satellaview/BS-X support
-
 ## Compiling
 
 See [COMPILING.md](COMPILING.md)

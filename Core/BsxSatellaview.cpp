@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "BsxSatellaview.h"
 #include "Console.h"
+#include "MemoryManager.h"
 #include "EmuSettings.h"
 #include "../Utilities/Serializer.h"
 
 BsxSatellaview::BsxSatellaview(Console* console, IMemoryHandler* bBusHandler)
 {
+	_console = console;
+	_memoryManager = console->GetMemoryManager().get();
 	_customDate = console->GetSettings()->GetEmulationConfig().BsxCustomDate;
 	_bBusHandler = bBusHandler;
 	Reset();
@@ -13,10 +16,20 @@ BsxSatellaview::BsxSatellaview(Console* console, IMemoryHandler* bBusHandler)
 
 void BsxSatellaview::Reset()
 {
+	_prevMasterClock = 0;
 	_streamReg = 0;
 	_extOutput = 0xFF;
-	_stream[0].Reset(_customDate);
-	_stream[1].Reset(_customDate);
+
+	time_t resetDate;
+	if(_customDate >= 0) {
+		resetDate = (time_t)_customDate;
+	} else {
+		//Use the current date/time as the BS-X date/time
+		time(&resetDate);
+	}
+
+	_stream[0].Reset(_console, resetDate);
+	_stream[1].Reset(_console, resetDate);
 }
 
 uint8_t BsxSatellaview::Read(uint32_t addr)
@@ -24,6 +37,8 @@ uint8_t BsxSatellaview::Read(uint32_t addr)
 	addr &= 0xFFFF;
 	if(addr >= 0x2188 && addr <= 0x219F) {
 		//Handle BS-X $2188-219F registers
+		ProcessClocks();
+
 		switch(addr) {
 			case 0x2188: return _stream[0].GetChannel() & 0xFF;
 			case 0x2189: return (_stream[0].GetChannel()) >> 8;
@@ -58,6 +73,8 @@ void BsxSatellaview::Write(uint32_t addr, uint8_t value)
 	addr &= 0xFFFF;
 	if(addr >= 0x2188 && addr <= 0x219F) {
 		//Handle BS-X register writes
+		ProcessClocks();
+
 		switch(addr) {
 			case 0x2188: _stream[0].SetChannelLow(value); break;
 			case 0x2189: _stream[0].SetChannelHigh(value); break;
@@ -78,6 +95,25 @@ void BsxSatellaview::Write(uint32_t addr, uint8_t value)
 	}
 }
 
+void BsxSatellaview::ProcessClocks()
+{
+	if(_stream[0].NeedUpdate() || _stream[1].NeedUpdate()) {
+		uint64_t gap = _memoryManager->GetMasterClock() - _prevMasterClock;
+
+		while(gap >= 288 * 2) {
+			bool needUpdate = _stream[0].FillQueues() || _stream[1].FillQueues();
+			if(!needUpdate) {
+				break;
+			}
+			gap -= 288 * 2;
+		}
+
+		_prevMasterClock = _memoryManager->GetMasterClock() - gap;
+	} else {
+		_prevMasterClock = _memoryManager->GetMasterClock();
+	}
+}
+
 uint8_t BsxSatellaview::Peek(uint32_t addr)
 {
 	return 0;
@@ -95,7 +131,7 @@ AddressInfo BsxSatellaview::GetAbsoluteAddress(uint32_t address)
 
 void BsxSatellaview::Serialize(Serializer& s)
 {
-	s.Stream(_extOutput, _streamReg);
+	s.Stream(_extOutput, _streamReg, _customDate, _prevMasterClock);
 	s.Stream(&_stream[0]);
 	s.Stream(&_stream[1]);
 }

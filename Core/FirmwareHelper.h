@@ -38,7 +38,7 @@ private:
 	
 	static bool AttemptLoadBsxFirmware(uint8_t** prgRom, uint32_t& prgSize)
 	{
-		VirtualFile firmware(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), "BS-X BIOS.sfc"));
+		VirtualFile firmware(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), "BsxBios.sfc"));
 		if(firmware.IsValid() && firmware.GetSize() >= 0x8000) {
 			*prgRom = new uint8_t[firmware.GetSize()];
 			prgSize = (uint32_t)firmware.GetSize();
@@ -82,7 +82,7 @@ public:
 		}
 
 		MissingFirmwareMessage msg;
-		msg.Filename = "BS-X BIOS.sfc";
+		msg.Filename = "BsxBios.sfc";
 		msg.FirmwareType = CoprocessorType::Satellaview;
 		msg.Size = 1024*1024;
 		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);

@@ -2,9 +2,15 @@
 #include "stdafx.h"
 #include "../Utilities/ISerializable.h"
 
+class Console;
+class MemoryManager;
+
 class BsxStream : public ISerializable
 {
 private:
+	Console* _console;
+	MemoryManager* _memoryManager;
+
 	ifstream _file;
 	tm _tm = {};
 
@@ -26,11 +32,9 @@ private:
 	uint16_t _activeChannel = 0;
 	uint8_t _activeFileIndex = 0;
 
-	int64_t _customDate = -1;
-	time_t _resetTime = 0;
-	time_t _latchedTime = 0;
+	int64_t _resetDate = -1;
+	uint64_t _resetMasterClock = 0;
 
-	void FillQueues();
 	void OpenStreamFile();
 	bool LoadStreamFile();
 
@@ -39,9 +43,11 @@ private:
 
 public:
 	BsxStream();
-	void Reset(int64_t customDate);
+	void Reset(Console* console, int64_t customDate);
 
 	uint16_t GetChannel();
+	bool NeedUpdate();
+	bool FillQueues();
 
 	uint8_t GetPrefixCount();
 	uint8_t GetPrefix();

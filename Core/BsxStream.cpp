@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "BsxStream.h"
+#include "Console.h"
+#include "MemoryManager.h"
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/Serializer.h"
@@ -8,8 +10,11 @@ BsxStream::BsxStream()
 {
 }
 
-void BsxStream::Reset(int64_t customDate)
+void BsxStream::Reset(Console* console, int64_t resetDate)
 {
+	_console = console;
+	_memoryManager = console->GetMemoryManager().get();
+
 	_file.close();
 
 	_channel = 0;
@@ -30,9 +35,9 @@ void BsxStream::Reset(int64_t customDate)
 	_activeChannel = 0;
 	_activeFileIndex = 0;
 
-	_customDate = customDate;
-	time(&_resetTime);
-	_latchedTime = 0;
+	_resetDate = resetDate;
+	_resetMasterClock = 0;
+
 	_tm = {};
 }
 
@@ -41,10 +46,14 @@ uint16_t BsxStream::GetChannel()
 	return _channel;
 }
 
-void BsxStream::FillQueues()
+bool BsxStream::NeedUpdate()
 {
-	//TODO: Make this run based on master clock
-	while(_queueLength > 0) {
+	return _queueLength > 0;
+}
+
+bool BsxStream::FillQueues()
+{
+	if(_queueLength > 0) {
 		_queueLength--;
 		if(_prefixLatch && _prefixQueueLength < 0x80) {
 			_prefixQueueLength++;
@@ -53,6 +62,7 @@ void BsxStream::FillQueues()
 			_dataQueueLength++;
 		}
 	}
+	return NeedUpdate();
 }
 
 void BsxStream::OpenStreamFile()
@@ -76,7 +86,6 @@ bool BsxStream::LoadStreamFile()
 		_queueLength = (uint16_t)std::ceil(_file.tellg() / 22.0);
 		_file.seekg(0, ios::beg);
 		_fileIndex++;
-		FillQueues();
 		return true;
 	} else {
 		if(_fileIndex > 0) {
@@ -106,7 +115,6 @@ uint8_t BsxStream::GetPrefixCount()
 		if(_channel == 0) {
 			//Time channel
 			_queueLength = 1;
-			FillQueues();
 			_firstPacket = true;
 		} else {
 			LoadStreamFile();
@@ -213,16 +221,12 @@ void BsxStream::SetDataLatch(uint8_t value)
 
 void BsxStream::InitTimeStruct()
 {
-	if(_customDate >= 0) {
-		//Use custom date
-		time_t elapsed = _latchedTime - _resetTime;
-		_latchedTime = _customDate + elapsed;
-	}
+	time_t dateTime = _resetDate + ((_memoryManager->GetMasterClock() - _resetMasterClock) / _console->GetMasterClockRate());
 
 #ifdef _MSC_VER
-	localtime_s(&_tm, &_latchedTime);
+	localtime_s(&_tm, &dateTime);
 #else
-	localtime_r(&_latchedTime, &_tm);
+	localtime_r(&dateTime, &_tm);
 #endif
 
 	_tm.tm_wday++;
@@ -233,7 +237,6 @@ void BsxStream::InitTimeStruct()
 uint8_t BsxStream::GetTime()
 {
 	if(_fileOffset == 0) {
-		time(&_latchedTime);
 		InitTimeStruct();
 	}
 
@@ -264,8 +267,7 @@ void BsxStream::Serialize(Serializer& s)
 {
 	s.Stream(
 		_channel, _prefix, _data, _status, _prefixLatch, _dataLatch, _firstPacket, _fileOffset, _fileIndex,
-		_queueLength, _prefixQueueLength, _dataQueueLength, _latchedTime, _resetTime, _customDate,
-		_activeChannel, _activeFileIndex
+		_queueLength, _prefixQueueLength, _dataQueueLength, _resetDate, _resetMasterClock, _activeChannel, _activeFileIndex
 	);
 
 	if(!s.IsSaving()) {
