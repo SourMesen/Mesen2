@@ -217,7 +217,7 @@ void BsxStream::InitTimeStruct()
 {
 	time_t dateTime = _resetDate + ((_memoryManager->GetMasterClock() - _resetMasterClock) / _console->GetMasterClockRate());
 
-#ifdef _MSC_VER
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	localtime_s(&_tm, &dateTime);
 #else
 	localtime_r(&dateTime, &_tm);
