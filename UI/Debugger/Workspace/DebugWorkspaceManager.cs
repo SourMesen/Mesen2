@@ -104,16 +104,29 @@ namespace Mesen.GUI.Debugger.Workspace
 			return _workspace;
 		}
 
-		public static void ImportDbgFile()
+		public static void ImportMslFile(string mslPath, bool silent = false)
+		{
+			if(ConfigManager.Config.Debug.DbgIntegration.ResetLabelsOnImport) {
+				ResetLabels();
+			}
+			MslLabelFile.Import(mslPath, silent);
+			LabelManager.RefreshLabels();
+		}
+
+		public static void ImportDbgFile(string dbgPath = null)
 		{
 			_symbolProvider = null;
 
-			if(ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
-				RomInfo romInfo = EmuApi.GetRomInfo();
-				string dbgPath = Path.Combine(((ResourcePath)romInfo.RomPath).Folder, romInfo.GetRomName() + ".dbg");
+			if(dbgPath != null || ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
+				bool silent = dbgPath == null;
+				if(dbgPath == null) {
+					RomInfo romInfo = EmuApi.GetRomInfo();
+					dbgPath = Path.Combine(((ResourcePath)romInfo.RomPath).Folder, romInfo.GetRomName() + ".dbg");
+				}
+
 				if(File.Exists(dbgPath)) {
 					_symbolProvider = new DbgImporter();
-					(_symbolProvider as DbgImporter).Import(dbgPath, true);
+					(_symbolProvider as DbgImporter).Import(dbgPath, silent);
 					SymbolProviderChanged?.Invoke(_symbolProvider);
 					LabelManager.RefreshLabels();
 				}

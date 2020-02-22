@@ -379,6 +379,7 @@
       <DependentUpon>frmEditLabel.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Labels\LabelManager.cs" />
+    <Compile Include="Debugger\MslLabelFile.cs" />
     <Compile Include="Debugger\PpuViewer\ctrlImagePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

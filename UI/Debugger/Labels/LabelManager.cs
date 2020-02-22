@@ -68,6 +68,11 @@ namespace Mesen.GUI.Debugger.Labels
 			return _labels.Where((lbl) => lbl.Matches(cpu)).ToList<CodeLabel>();
 		}
 
+		public static List<CodeLabel> GetAllLabels()
+		{
+			return _labels.ToList();
+		}
+
 		private static UInt64 GetKey(UInt32 address, SnesMemoryType memType)
 		{
 			switch(memType) {

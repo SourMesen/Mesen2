@@ -7,6 +7,7 @@ using Mesen.GUI.Forms;
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -605,6 +606,31 @@ namespace Mesen.GUI.Debugger
 				if(sfd.ShowDialog() == DialogResult.OK) {
 					DebugApi.SaveRomToDisk(sfd.FileName, saveAsIps, cdlStripOption);
 				}
+			}
+		}
+
+		private void mnuImportLabels_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.SetFilter("All supported files (*.dbg, *.msl)|*.dbg;*.msl");
+			if(ofd.ShowDialog() == DialogResult.OK) {
+				string path = ofd.FileName;
+				string ext = Path.GetExtension(path).ToLower();
+				if(ext == ".msl") {
+					DebugWorkspaceManager.ImportMslFile(path);
+				} else {
+					DebugWorkspaceManager.ImportDbgFile(path);
+				}
+				RefreshDisassembly();
+			}
+		}
+
+		private void mnuExportLabels_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.SetFilter("All supported files (*.msl)|*.msl");
+			if(sfd.ShowDialog() == DialogResult.OK) {
+				MslLabelFile.Export(sfd.FileName);
 			}
 		}
 	}
