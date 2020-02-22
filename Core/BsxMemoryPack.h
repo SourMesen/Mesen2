@@ -5,9 +5,12 @@
 #include "../Utilities/ISerializable.h"
 
 class BsxMemoryPackHandler;
+class Console;
 
 class BsxMemoryPack : public ISerializable
 {
+private:
+	Console* _console = nullptr;
 	vector<uint8_t> _orgData;
 	uint8_t* _data = nullptr;
 	uint32_t _dataSize = 0;
@@ -15,6 +18,7 @@ class BsxMemoryPack : public ISerializable
 
 	uint8_t _calculatedSize = 0x0C;
 
+	bool _persistFlash = false;
 	bool _enableCsr = false;
 	bool _enableEsr = false;
 	bool _enableVendorInfo = false;
@@ -22,8 +26,10 @@ class BsxMemoryPack : public ISerializable
 	uint16_t _command = 0;
 
 public:
-	BsxMemoryPack(vector<uint8_t>& data);
+	BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persistFlash);
 	virtual ~BsxMemoryPack();
+
+	void SaveBattery();
 
 	void Serialize(Serializer& s) override;
 

@@ -57,7 +57,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 		cart->_romPath = romFile;
 
 		if(FolderUtilities::GetExtension(romFile.GetFileName()) == ".bs") {
-			cart->_bsxMemPack.reset(new BsxMemoryPack(romData));
+			cart->_bsxMemPack.reset(new BsxMemoryPack(console, romData, false));
 			if(!FirmwareHelper::LoadBsxFirmware(console, &cart->_prgRom, cart->_prgRomSize)) {
 				return nullptr;
 			}
@@ -329,6 +329,10 @@ void BaseCartridge::SaveBattery()
 	if(_coprocessor && _hasBattery) {
 		_coprocessor->SaveBattery();
 	}
+
+	if(_bsxMemPack) {
+		_bsxMemPack->SaveBattery();
+	}
 }
 
 void BaseCartridge::Init(MemoryMappings &mm)
@@ -363,6 +367,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 {
 	if(MapSpecificCarts(mm) || _coprocessorType == CoprocessorType::GSU || _coprocessorType == CoprocessorType::SDD1 || _coprocessorType == CoprocessorType::SPC7110 || _coprocessorType == CoprocessorType::CX4) {
+		MapBsxMemoryPack(mm);
 		return;
 	}
 
@@ -403,6 +408,8 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 		mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
 		mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 	}
+
+	MapBsxMemoryPack(mm);
 }
 
 void BaseCartridge::LoadEmbeddedFirmware()
@@ -444,7 +451,7 @@ void BaseCartridge::InitCoprocessor()
 		if(!_bsxMemPack) {
 			//Create an empty memory pack if the BIOS was loaded directly (instead of a .bs file)
 			vector<uint8_t> emptyMemPack;
-			_bsxMemPack.reset(new BsxMemoryPack(emptyMemPack));
+			_bsxMemPack.reset(new BsxMemoryPack(_console, emptyMemPack, false));
 		}
 
 		_coprocessor.reset(new BsxCart(_console, _bsxMemPack.get()));
@@ -487,6 +494,32 @@ bool BaseCartridge::MapSpecificCarts(MemoryMappings &mm)
 		return true;
 	}
 	return false;
+}
+
+void BaseCartridge::MapBsxMemoryPack(MemoryMappings& mm)
+{
+	string code = GetGameCode();
+	if(!_bsxMemPack && code.size() == 4 && code[0] == 'Z' && _cartInfo.DeveloperId == 0x33) {
+		//Game with data pack slot (e.g Sound Novel Tsukuuru, etc.)
+		vector<uint8_t> saveData = _console->GetBatteryManager()->LoadBattery(".bs");
+		if(saveData.empty()) {
+			//Make a 1 megabyte flash cartridge by default (use $FF for all bytes)
+			saveData.resize(0x100000, 0xFF);
+		}
+		_bsxMemPack.reset(new BsxMemoryPack(_console, saveData, true));
+
+		if(_flags & CartFlags::LoRom) {
+			mm.RegisterHandler(0xC0, 0xEF, 0x0000, 0x7FFF, _bsxMemPack->GetMemoryHandlers());
+			mm.RegisterHandler(0xC0, 0xEF, 0x8000, 0xFFFF, _bsxMemPack->GetMemoryHandlers());
+		} else {
+			mm.RegisterHandler(0x20, 0x3F, 0x8000, 0xFFFF, _bsxMemPack->GetMemoryHandlers(), 8);
+			mm.RegisterHandler(0x60, 0x7D, 0x0000, 0xFFFF, _bsxMemPack->GetMemoryHandlers());
+			mm.RegisterHandler(0xA0, 0xBF, 0x8000, 0xFFFF, _bsxMemPack->GetMemoryHandlers(), 8);
+			mm.RegisterHandler(0xE0, 0xFF, 0x0000, 0xFFFF, _bsxMemPack->GetMemoryHandlers());
+		}
+
+		//TODO: SA-1 cartridges, etc.
+	}
 }
 
 void BaseCartridge::ApplyConfigOverrides()
@@ -539,16 +572,16 @@ void BaseCartridge::Serialize(Serializer &s)
 string BaseCartridge::GetGameCode()
 {
 	string code;
-	if(_cartInfo.GameCode[0] >= ' ') {
+	if(_cartInfo.GameCode[0] > ' ') {
 		code += _cartInfo.GameCode[0];
 	}
-	if(_cartInfo.GameCode[1] >= ' ') {
+	if(_cartInfo.GameCode[1] > ' ') {
 		code += _cartInfo.GameCode[1];
 	}
-	if(_cartInfo.GameCode[2] >= ' ') {
+	if(_cartInfo.GameCode[2] > ' ') {
 		code += _cartInfo.GameCode[2];
 	}
-	if(_cartInfo.GameCode[3] >= ' ') {
+	if(_cartInfo.GameCode[3] > ' ') {
 		code += _cartInfo.GameCode[3];
 	}
 	return code;

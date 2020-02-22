@@ -18,7 +18,7 @@ struct SnesCartInformation
 	uint8_t SramSize;
 
 	uint8_t DestinationCode;
-	uint8_t Reserved2;
+	uint8_t DeveloperId;
 	uint8_t Version;
 
 	uint8_t ChecksumComplement[2];

@@ -1,12 +1,16 @@
 #include "stdafx.h"
 #include "BsxMemoryPack.h"
+#include "Console.h"
+#include "BatteryManager.h"
 #include "../Utilities/IpsPatcher.h"
 
-BsxMemoryPack::BsxMemoryPack(vector<uint8_t>& data)
+BsxMemoryPack::BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persistFlash)
 {
+	_console = console;
 	_orgData = data;
 	_dataSize = (uint32_t)data.size();
 	_data = new uint8_t[_dataSize];
+	_persistFlash = persistFlash;
 	memcpy(_data, data.data(), _dataSize);
 
 	_calculatedSize = std::min<uint8_t>(0x0C, (uint8_t)log2(_dataSize >> 10));
@@ -19,6 +23,13 @@ BsxMemoryPack::BsxMemoryPack(vector<uint8_t>& data)
 BsxMemoryPack::~BsxMemoryPack()
 {
 	delete[] _data;
+}
+
+void BsxMemoryPack::SaveBattery()
+{
+	if(_persistFlash) {
+		_console->GetBatteryManager()->SaveBattery(".bs", _data, _dataSize);
+	}
 }
 
 void BsxMemoryPack::Serialize(Serializer& s)
@@ -105,12 +116,10 @@ BsxMemoryPack::BsxMemoryPackHandler::BsxMemoryPackHandler(BsxMemoryPack* memPack
 
 uint8_t BsxMemoryPack::BsxMemoryPackHandler::Read(uint32_t addr)
 {
-	if(addr >= 0xC00000) {
-		if(_memPack->_enableEsr) {
-			switch(addr & 0xFFFF) {
-				case 0x0002: return 0xC0;
-				case 0x0004: return 0x82;
-			}
+	if(_offset == 0 && _memPack->_enableEsr) {
+		switch(addr & 0xFFF) {
+			case 0x0002: return 0xC0;
+			case 0x0004: return 0x82;
 		}
 	}
 
@@ -143,7 +152,7 @@ void BsxMemoryPack::BsxMemoryPackHandler::Write(uint32_t addr, uint8_t value)
 		uint8_t currentByte = RamHandler::Read(addr);
 		RamHandler::Write(addr, value & currentByte);
 		_memPack->_writeByte = false;
-	} else if(addr == 0xC00000) {
+	} else if(_offset == 0 && (addr & 0xFFF) == 0) {
 		_memPack->ProcessCommand(value, _page);
 	}
 }

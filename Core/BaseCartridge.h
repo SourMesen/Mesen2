@@ -62,7 +62,8 @@ private:
 	CoprocessorType GetSt01xVersion();
 	CoprocessorType GetDspVersion();
 
-	bool MapSpecificCarts(MemoryMappings &mm);
+	bool MapSpecificCarts(MemoryMappings& mm);
+	void MapBsxMemoryPack(MemoryMappings& mm);
 	void ApplyConfigOverrides();
 	
 	void LoadRom();
