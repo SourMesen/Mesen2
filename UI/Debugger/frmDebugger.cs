@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
@@ -145,6 +146,7 @@ namespace Mesen.GUI.Debugger
 
 		private void InitShortcuts()
 		{
+			mnuReloadRom.InitShortcut(this, nameof(DebuggerShortcutsConfig.ReloadRom));
 			mnuReset.InitShortcut(this, nameof(DebuggerShortcutsConfig.Reset));
 			mnuPowerCycle.InitShortcut(this, nameof(DebuggerShortcutsConfig.PowerCycle));
 
@@ -164,9 +166,6 @@ namespace Mesen.GUI.Debugger
 
 			mnuToggleBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_ToggleBreakpoint));
 			mnuEnableDisableBreakpoint.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_DisableEnableBreakpoint));
-
-			mnuReset.InitShortcut(this, nameof(DebuggerShortcutsConfig.Reset));
-			mnuPowerCycle.InitShortcut(this, nameof(DebuggerShortcutsConfig.PowerCycle));
 
 			mnuGoToAll.InitShortcut(this, nameof(DebuggerShortcutsConfig.GoToAll));
 			mnuGoToAddress.InitShortcut(this, nameof(DebuggerShortcutsConfig.GoTo));
@@ -200,6 +199,7 @@ namespace Mesen.GUI.Debugger
 			mnuContinue.Click += (s, e) => { DebugApi.ResumeExecution(); };
 			mnuBreak.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.Step); };
 
+			mnuReloadRom.Click += (s, e) => { Task.Run(() => { EmuApi.ReloadRom(); }); };
 			mnuReset.Click += (s, e) => { EmuApi.Reset(); };
 			mnuPowerCycle.Click += (s, e) => { EmuApi.PowerCycle(); };
 
@@ -445,7 +445,10 @@ namespace Mesen.GUI.Debugger
 
 					DebugState state = DebugApi.GetState();
 					this.BeginInvoke((MethodInvoker)(() => {
-						DebugWorkspaceManager.ImportDbgFile();
+						bool isPowerCycle = e.Parameter.ToInt32() != 0;
+						if(!isPowerCycle) {
+							DebugWorkspaceManager.ImportDbgFile();
+						}
 						LabelManager.RefreshLabels();
 						DebugApi.RefreshDisassembly(_cpuType);
 						UpdateDebugger(state, null);

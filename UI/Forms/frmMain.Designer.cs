@@ -151,10 +151,12 @@
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuProfiler = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRegisterViewer = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuScriptWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem26 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuAssembler = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuProfiler = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuScriptWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTileViewer = new System.Windows.Forms.ToolStripMenuItem();
@@ -172,8 +174,7 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
-			this.mnuAssembler = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem26 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuReloadRom = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -204,6 +205,7 @@
 			// 
 			this.mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuOpen,
+            this.mnuReloadRom,
             this.toolStripMenuItem2,
             this.mnuSaveState,
             this.mnuLoadState,
@@ -222,49 +224,49 @@
 			// 
 			this.mnuOpen.Image = global::Mesen.GUI.Properties.Resources.Folder;
 			this.mnuOpen.Name = "mnuOpen";
-			this.mnuOpen.Size = new System.Drawing.Size(136, 22);
+			this.mnuOpen.Size = new System.Drawing.Size(180, 22);
 			this.mnuOpen.Text = "Open";
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(133, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuSaveState
 			// 
 			this.mnuSaveState.Name = "mnuSaveState";
-			this.mnuSaveState.Size = new System.Drawing.Size(136, 22);
+			this.mnuSaveState.Size = new System.Drawing.Size(180, 22);
 			this.mnuSaveState.Text = "Save State";
 			this.mnuSaveState.DropDownOpening += new System.EventHandler(this.mnuSaveState_DropDownOpening);
 			// 
 			// mnuLoadState
 			// 
 			this.mnuLoadState.Name = "mnuLoadState";
-			this.mnuLoadState.Size = new System.Drawing.Size(136, 22);
+			this.mnuLoadState.Size = new System.Drawing.Size(180, 22);
 			this.mnuLoadState.Text = "Load State";
 			this.mnuLoadState.DropDownOpening += new System.EventHandler(this.mnuLoadState_DropDownOpening);
 			// 
 			// toolStripMenuItem10
 			// 
 			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(133, 6);
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuRecentFiles
 			// 
 			this.mnuRecentFiles.Name = "mnuRecentFiles";
-			this.mnuRecentFiles.Size = new System.Drawing.Size(136, 22);
+			this.mnuRecentFiles.Size = new System.Drawing.Size(180, 22);
 			this.mnuRecentFiles.Text = "Recent Files";
 			// 
 			// toolStripMenuItem6
 			// 
 			this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-			this.toolStripMenuItem6.Size = new System.Drawing.Size(133, 6);
+			this.toolStripMenuItem6.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuExit
 			// 
 			this.mnuExit.Image = global::Mesen.GUI.Properties.Resources.Exit;
 			this.mnuExit.Name = "mnuExit";
-			this.mnuExit.Size = new System.Drawing.Size(136, 22);
+			this.mnuExit.Size = new System.Drawing.Size(180, 22);
 			this.mnuExit.Text = "Exit";
 			// 
 			// mnuGame
@@ -286,7 +288,7 @@
 			this.mnuPause.Enabled = false;
 			this.mnuPause.Image = global::Mesen.GUI.Properties.Resources.MediaPause;
 			this.mnuPause.Name = "mnuPause";
-			this.mnuPause.Size = new System.Drawing.Size(139, 22);
+			this.mnuPause.Size = new System.Drawing.Size(180, 22);
 			this.mnuPause.Text = "Pause";
 			// 
 			// mnuReset
@@ -294,7 +296,7 @@
 			this.mnuReset.Enabled = false;
 			this.mnuReset.Image = global::Mesen.GUI.Properties.Resources.Refresh;
 			this.mnuReset.Name = "mnuReset";
-			this.mnuReset.Size = new System.Drawing.Size(139, 22);
+			this.mnuReset.Size = new System.Drawing.Size(180, 22);
 			this.mnuReset.Text = "Reset";
 			// 
 			// mnuPowerCycle
@@ -302,19 +304,19 @@
 			this.mnuPowerCycle.Enabled = false;
 			this.mnuPowerCycle.Image = global::Mesen.GUI.Properties.Resources.PowerCycle;
 			this.mnuPowerCycle.Name = "mnuPowerCycle";
-			this.mnuPowerCycle.Size = new System.Drawing.Size(139, 22);
+			this.mnuPowerCycle.Size = new System.Drawing.Size(180, 22);
 			this.mnuPowerCycle.Text = "Power Cycle";
 			// 
 			// toolStripMenuItem24
 			// 
 			this.toolStripMenuItem24.Name = "toolStripMenuItem24";
-			this.toolStripMenuItem24.Size = new System.Drawing.Size(136, 6);
+			this.toolStripMenuItem24.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuPowerOff
 			// 
 			this.mnuPowerOff.Image = global::Mesen.GUI.Properties.Resources.MediaStop;
 			this.mnuPowerOff.Name = "mnuPowerOff";
-			this.mnuPowerOff.Size = new System.Drawing.Size(139, 22);
+			this.mnuPowerOff.Size = new System.Drawing.Size(180, 22);
 			this.mnuPowerOff.Text = "Power Off";
 			// 
 			// mnuOptions
@@ -1126,13 +1128,6 @@
 			this.mnuMemoryTools.Size = new System.Drawing.Size(183, 22);
 			this.mnuMemoryTools.Text = "Memory Tools";
 			// 
-			// mnuProfiler
-			// 
-			this.mnuProfiler.Image = global::Mesen.GUI.Properties.Resources.PerfTracker;
-			this.mnuProfiler.Name = "mnuProfiler";
-			this.mnuProfiler.Size = new System.Drawing.Size(183, 22);
-			this.mnuProfiler.Text = "Performance Profiler";
-			// 
 			// mnuRegisterViewer
 			// 
 			this.mnuRegisterViewer.Image = global::Mesen.GUI.Properties.Resources.RegisterIcon;
@@ -1140,19 +1135,38 @@
 			this.mnuRegisterViewer.Size = new System.Drawing.Size(183, 22);
 			this.mnuRegisterViewer.Text = "Register Viewer";
 			// 
-			// mnuScriptWindow
-			// 
-			this.mnuScriptWindow.Image = global::Mesen.GUI.Properties.Resources.Script;
-			this.mnuScriptWindow.Name = "mnuScriptWindow";
-			this.mnuScriptWindow.Size = new System.Drawing.Size(183, 22);
-			this.mnuScriptWindow.Text = "Script Window";
-			// 
 			// mnuTraceLogger
 			// 
 			this.mnuTraceLogger.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
 			this.mnuTraceLogger.Name = "mnuTraceLogger";
 			this.mnuTraceLogger.Size = new System.Drawing.Size(183, 22);
 			this.mnuTraceLogger.Text = "Trace Logger";
+			// 
+			// toolStripMenuItem26
+			// 
+			this.toolStripMenuItem26.Name = "toolStripMenuItem26";
+			this.toolStripMenuItem26.Size = new System.Drawing.Size(180, 6);
+			// 
+			// mnuAssembler
+			// 
+			this.mnuAssembler.Image = global::Mesen.GUI.Properties.Resources.Chip;
+			this.mnuAssembler.Name = "mnuAssembler";
+			this.mnuAssembler.Size = new System.Drawing.Size(183, 22);
+			this.mnuAssembler.Text = "Assembler";
+			// 
+			// mnuProfiler
+			// 
+			this.mnuProfiler.Image = global::Mesen.GUI.Properties.Resources.PerfTracker;
+			this.mnuProfiler.Name = "mnuProfiler";
+			this.mnuProfiler.Size = new System.Drawing.Size(183, 22);
+			this.mnuProfiler.Text = "Performance Profiler";
+			// 
+			// mnuScriptWindow
+			// 
+			this.mnuScriptWindow.Image = global::Mesen.GUI.Properties.Resources.Script;
+			this.mnuScriptWindow.Name = "mnuScriptWindow";
+			this.mnuScriptWindow.Size = new System.Drawing.Size(183, 22);
+			this.mnuScriptWindow.Text = "Script Window";
 			// 
 			// toolStripMenuItem12
 			// 
@@ -1281,17 +1295,12 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
-			// mnuAssembler
+			// mnuReloadRom
 			// 
-			this.mnuAssembler.Image = global::Mesen.GUI.Properties.Resources.Chip;
-			this.mnuAssembler.Name = "mnuAssembler";
-			this.mnuAssembler.Size = new System.Drawing.Size(183, 22);
-			this.mnuAssembler.Text = "Assembler";
-			// 
-			// toolStripMenuItem26
-			// 
-			this.toolStripMenuItem26.Name = "toolStripMenuItem26";
-			this.toolStripMenuItem26.Size = new System.Drawing.Size(180, 6);
+			this.mnuReloadRom.Image = global::Mesen.GUI.Properties.Resources.Refresh;
+			this.mnuReloadRom.Name = "mnuReloadRom";
+			this.mnuReloadRom.Size = new System.Drawing.Size(180, 22);
+			this.mnuReloadRom.Text = "Reload ROM";
 			// 
 			// frmMain
 			// 
@@ -1465,5 +1474,6 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuProfiler;
 	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem26;
 	  private System.Windows.Forms.ToolStripMenuItem mnuAssembler;
+	  private System.Windows.Forms.ToolStripMenuItem mnuReloadRom;
    }
 }

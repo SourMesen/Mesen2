@@ -251,6 +251,7 @@ namespace Mesen.GUI.Forms
 			Func<bool> runningNotClientNotMovie = () => { return EmuRunner.IsRunning() && !NetplayApi.IsConnected() && !RecordApi.MoviePlaying(); };
 
 			_shortcuts.BindShortcut(mnuOpen, EmulatorShortcut.OpenFile);
+			_shortcuts.BindShortcut(mnuReloadRom, EmulatorShortcut.ReloadRom, runningNotClientNotMovie);
 			_shortcuts.BindShortcut(mnuExit, EmulatorShortcut.Exit);
 			_shortcuts.BindShortcut(mnuIncreaseSpeed, EmulatorShortcut.IncreaseSpeed, notClient);
 			_shortcuts.BindShortcut(mnuDecreaseSpeed, EmulatorShortcut.DecreaseSpeed, notClient);

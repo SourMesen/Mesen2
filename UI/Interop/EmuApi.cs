@@ -40,6 +40,7 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void Reset();
 		[DllImport(DllPath)] public static extern void PowerCycle();
+		[DllImport(DllPath)] public static extern void ReloadRom();
 
 		[DllImport(DllPath)] public static extern void Pause();
 		[DllImport(DllPath)] public static extern void Resume();

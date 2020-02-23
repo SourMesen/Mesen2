@@ -4,6 +4,7 @@
 		<Form ID="frmMain" Title="Mesen-S">
 			<Control ID="mnuFile">File</Control>
 			<Control ID="mnuOpen">Open</Control>
+			<Control ID="mnuReloadRom">Reload ROM</Control>
 			<Control ID="mnuSaveState">Save State</Control>
 			<Control ID="mnuLoadState">Load State</Control>
 			<Control ID="mnuLoadLastSession">Load Last Session</Control>
@@ -767,6 +768,7 @@
 		<Message ID="EmulatorShortcutMappings_Pause">Pause</Message>
 		<Message ID="EmulatorShortcutMappings_Reset">Reset</Message>
 		<Message ID="EmulatorShortcutMappings_PowerCycle">Power Cycle</Message>
+		<Message ID="EmulatorShortcutMappings_ReloadRom">Reload ROM</Message>
 		<Message ID="EmulatorShortcutMappings_PowerOff">Power Off</Message>
 		<Message ID="EmulatorShortcutMappings_Exit">Exit</Message>
 		<Message ID="EmulatorShortcutMappings_TakeScreenshot">Take Screenshot</Message>

@@ -201,6 +201,13 @@ extern "C" {
 		}
 	}
 
+	DllExport void __stdcall ReloadRom()
+	{
+		if(!GameClient::Connected()) {
+			_console->ReloadRom(false);
+		}
+	}
+
 	DllExport void __stdcall Release()
 	{
 		GameClient::Disconnect();

@@ -44,6 +44,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		Pause,
 		Reset,
 		PowerCycle,
+		ReloadRom,
 		PowerOff,
 		Exit,
 

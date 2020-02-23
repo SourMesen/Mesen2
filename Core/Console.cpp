@@ -307,11 +307,9 @@ void Console::Stop(bool sendNotification)
 void Console::Reset()
 {
 	shared_ptr<Debugger> debugger = _debugger;
-	if(debugger) {
-		debugger->Run();
-	}
 
-	Lock();
+	_lockCounter++;
+	_runLock.Acquire();
 
 	_dmaController->Reset();
 	_internalRegisters->Reset();
@@ -334,16 +332,18 @@ void Console::Reset()
 		_spcHud.reset();
 	}
 
-	_memoryManager->IncMasterClockStartup();
-
-	Unlock();
-
 	if(debugger) {
+		//Debugger was suspended in SystemActionManager::Reset(), resume debugger here
 		debugger->SuspendDebugger(true);
 	}
+
+	_memoryManager->IncMasterClockStartup();
+
+	_runLock.Release(); 
+	_lockCounter--;
 }
 
-void Console::PowerCycle()
+void Console::ReloadRom(bool forPowerCycle)
 {
 	shared_ptr<BaseCartridge> cart = _cart;
 	if(cart) {
@@ -354,14 +354,19 @@ void Console::PowerCycle()
 
 		RomInfo info = cart->GetRomInfo();
 		Lock();
-		LoadRom(info.RomFile, info.PatchFile, false);
+		LoadRom(info.RomFile, info.PatchFile, false, forPowerCycle);
 
 		_memoryManager->IncMasterClockStartup();
 		Unlock();
 	}
 }
 
-bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
+void Console::PowerCycle()
+{
+	ReloadRom(true);
+}
+
+bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
 	if(_cart) {
 		//Make sure the battery is saved to disk before we load another game (or reload the same game)
@@ -370,7 +375,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 
 	bool result = false;
 	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
-	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
+	shared_ptr<BaseCartridge> cart = forPowerCycle ? _cart : BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
 		if(stopRom) {
 			KeyManager::UpdateDevices();
@@ -422,13 +427,15 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom)
 				
 		UpdateRegion();
 
-		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded);
+		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
 
 		_paused = false;
 
-		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
-		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
-		MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
+		if(!forPowerCycle) {
+			string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
+			string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
+			MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
+		}
 
 		if(stopRom) {
 			#ifndef LIBRETRO

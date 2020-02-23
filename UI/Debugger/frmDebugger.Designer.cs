@@ -39,6 +39,9 @@
 			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
 			this.importExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDbgIntegrationSettings = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuImportLabels = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuExportLabels = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.codeDataLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuResetCdlLog = new System.Windows.Forms.ToolStripMenuItem();
@@ -140,9 +143,8 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuImportLabels = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuExportLabels = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuReloadRom = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -180,6 +182,8 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuReloadRom,
+            this.toolStripMenuItem16,
             this.mnuSaveRomAs,
             this.mnuSaveAsIps,
             this.toolStripMenuItem14,
@@ -230,6 +234,27 @@
 			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(241, 22);
 			this.mnuDbgIntegrationSettings.Text = "CC65/CA65 Integration Settings";
 			this.mnuDbgIntegrationSettings.Click += new System.EventHandler(this.mnuDbgIntegrationSettings_Click);
+			// 
+			// toolStripMenuItem15
+			// 
+			this.toolStripMenuItem15.Name = "toolStripMenuItem15";
+			this.toolStripMenuItem15.Size = new System.Drawing.Size(238, 6);
+			// 
+			// mnuImportLabels
+			// 
+			this.mnuImportLabels.Image = global::Mesen.GUI.Properties.Resources.Import;
+			this.mnuImportLabels.Name = "mnuImportLabels";
+			this.mnuImportLabels.Size = new System.Drawing.Size(241, 22);
+			this.mnuImportLabels.Text = "Import Labels";
+			this.mnuImportLabels.Click += new System.EventHandler(this.mnuImportLabels_Click);
+			// 
+			// mnuExportLabels
+			// 
+			this.mnuExportLabels.Image = global::Mesen.GUI.Properties.Resources.Export;
+			this.mnuExportLabels.Name = "mnuExportLabels";
+			this.mnuExportLabels.Size = new System.Drawing.Size(241, 22);
+			this.mnuExportLabels.Text = "Export Labels";
+			this.mnuExportLabels.Click += new System.EventHandler(this.mnuExportLabels_Click);
 			// 
 			// toolStripMenuItem7
 			// 
@@ -1036,26 +1061,17 @@
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
 			// 
-			// toolStripMenuItem15
+			// toolStripMenuItem16
 			// 
-			this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-			this.toolStripMenuItem15.Size = new System.Drawing.Size(238, 6);
+			this.toolStripMenuItem16.Name = "toolStripMenuItem16";
+			this.toolStripMenuItem16.Size = new System.Drawing.Size(198, 6);
 			// 
-			// mnuImportLabels
+			// mnuReloadRom
 			// 
-			this.mnuImportLabels.Image = global::Mesen.GUI.Properties.Resources.Import;
-			this.mnuImportLabels.Name = "mnuImportLabels";
-			this.mnuImportLabels.Size = new System.Drawing.Size(241, 22);
-			this.mnuImportLabels.Text = "Import Labels";
-			this.mnuImportLabels.Click += new System.EventHandler(this.mnuImportLabels_Click);
-			// 
-			// mnuExportLabels
-			// 
-			this.mnuExportLabels.Image = global::Mesen.GUI.Properties.Resources.Export;
-			this.mnuExportLabels.Name = "mnuExportLabels";
-			this.mnuExportLabels.Size = new System.Drawing.Size(241, 22);
-			this.mnuExportLabels.Text = "Export Labels";
-			this.mnuExportLabels.Click += new System.EventHandler(this.mnuExportLabels_Click);
+			this.mnuReloadRom.Image = global::Mesen.GUI.Properties.Resources.Refresh;
+			this.mnuReloadRom.Name = "mnuReloadRom";
+			this.mnuReloadRom.Size = new System.Drawing.Size(201, 22);
+			this.mnuReloadRom.Text = "Reload ROM";
 			// 
 			// frmDebugger
 			// 
@@ -1203,5 +1219,7 @@
 	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem15;
 	  private System.Windows.Forms.ToolStripMenuItem mnuImportLabels;
 	  private System.Windows.Forms.ToolStripMenuItem mnuExportLabels;
+	  private System.Windows.Forms.ToolStripMenuItem mnuReloadRom;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem16;
    }
 }

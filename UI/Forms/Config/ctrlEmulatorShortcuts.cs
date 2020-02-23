@@ -44,6 +44,7 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.Pause,
 				EmulatorShortcut.Reset,
 				EmulatorShortcut.PowerCycle,
+				EmulatorShortcut.ReloadRom,
 				EmulatorShortcut.PowerOff,
 				EmulatorShortcut.Exit,
 

@@ -75,6 +75,7 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.Pause: TogglePause(); break;
 				case EmulatorShortcut.Reset: EmuApi.Reset(); break;
 				case EmulatorShortcut.PowerCycle: EmuApi.PowerCycle(); break;
+				case EmulatorShortcut.ReloadRom: Task.Run(() => EmuApi.ReloadRom()); break;
 				case EmulatorShortcut.PowerOff: Task.Run(() => EmuApi.Stop()); restoreFullscreen = false; break;
 				case EmulatorShortcut.Exit: frmMain.Instance.Close(); restoreFullscreen = false; break;
 

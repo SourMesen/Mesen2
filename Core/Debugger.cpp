@@ -252,7 +252,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 
 	_executionStopped = true;
 	
-	if(_breakRequestCount == 0) {
+	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
 		//Only trigger code break event if the pause was caused by user action
 		BreakEvent evt = {};
 		evt.BreakpointId = breakpointId;

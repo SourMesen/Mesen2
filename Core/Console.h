@@ -113,6 +113,7 @@ public:
 	void ProcessEndOfFrame();
 
 	void Reset();
+	void ReloadRom(bool forPowerCycle);
 	void PowerCycle();
 
 	void PauseOnNextFrame();
@@ -121,7 +122,7 @@ public:
 	void Resume();
 	bool IsPaused();
 
-	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true);
+	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
 	RomInfo GetRomInfo();
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();

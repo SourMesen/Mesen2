@@ -108,6 +108,8 @@ namespace Mesen.GUI.Config
 		public XmlKeys Reset = Keys.Control | Keys.R;
 		[ShortcutName("Power Cycle")]
 		public XmlKeys PowerCycle = Keys.Control | Keys.T;
+		[ShortcutName("Reload ROM")]
+		public XmlKeys ReloadRom = Keys.None;
 
 		[ShortcutName("Continue")]
 		public XmlKeys Continue = Keys.F5;
