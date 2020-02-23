@@ -56,7 +56,12 @@ namespace Mesen.GUI.Debugger
 				if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
 				}
-
+				if(DebugApi.GetMemorySize(SnesMemoryType.BsxPsRam) > 0) {
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxPsRam));
+				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.BsxMemoryPack) > 0) {
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxMemoryPack));
+				}
 				if(_cpuType == CpuType.Cpu) {
 					if(cboBreakpointType.Items.Count > 2) {
 						cboBreakpointType.Items.Add("-");
