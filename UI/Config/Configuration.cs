@@ -28,8 +28,8 @@ namespace Mesen.GUI.Config
 		public NetplayConfig Netplay;
 		public Point WindowLocation;
 		public Size WindowSize;
-		public bool NeedInputReinit = true;
-		public DefaultKeyMappingType DefaultKeyMappings = DefaultKeyMappingType.None;
+		public bool NeedInputReinit2 = true;
+		public DefaultKeyMappingType DefaultKeyMappings = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
 
 		public Configuration()
 		{
@@ -79,11 +79,15 @@ namespace Mesen.GUI.Config
 
 		public void InitializeDefaults()
 		{
-			Preferences.InitializeDefaultShortcuts();
-			if(NeedInputReinit) {
+			if(NeedInputReinit2) {
+				Input.Controllers = new ControllerConfig[5];
+				Preferences.ShortcutKeys1 = null;
+				Preferences.ShortcutKeys2 = null;
+
 				Input.InitializeDefaults(DefaultKeyMappings);
-				NeedInputReinit = false;
+				NeedInputReinit2 = false;
 			}
+			Preferences.InitializeDefaultShortcuts();
 			ConfigManager.ApplyChanges();
 		}
 
