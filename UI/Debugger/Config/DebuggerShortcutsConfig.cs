@@ -322,6 +322,9 @@ namespace Mesen.GUI.Config
 			if(parentForm is BaseForm) {
 				ProcessCmdKeyHandler onProcessCmdKeyHandler = (Keys keyData, ref bool processed) => {
 					if(!processed && item.Enabled && parent.ContainsFocus && keyData == keys) {
+						if(parent is IShortcutParent && ((IShortcutParent)parent).SuppressShortcut) {
+							return;
+						}
 						item.PerformClick();
 						processed = true;
 					}
@@ -388,5 +391,10 @@ namespace Mesen.GUI.Config
 		{
 			this.Name = name;
 		}
+	}
+
+	public interface IShortcutParent
+	{
+		bool SuppressShortcut { get; }
 	}
 }

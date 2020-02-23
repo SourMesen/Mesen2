@@ -16,7 +16,7 @@ using Mesen.GUI.Debugger.Labels;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class ctrlWatch : BaseControl
+	public partial class ctrlWatch : BaseControl, IShortcutParent
 	{
 		private Color _updatedColor = Color.Red;
 		private Color _normalColor = SystemColors.ControlText;
@@ -53,6 +53,9 @@ namespace Mesen.GUI.Debugger
 				_watchManager.WatchChanged += WatchManager_WatchChanged;
 			}
 		}
+
+		//Suppress watch shortcuts while in edit mode
+		bool IShortcutParent.SuppressShortcut { get { return _isEditing; } }
 
 		protected override void OnLoad(EventArgs e)
 		{
@@ -178,7 +181,6 @@ namespace Mesen.GUI.Debugger
 
 		private void lstWatch_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			mnuRemoveWatch.Enabled = lstWatch.SelectedItems.Count >= 1;
 			UpdateActions();
 		}
 
@@ -188,6 +190,7 @@ namespace Mesen.GUI.Debugger
 			mnuDecimalDisplay.Checked = ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Signed;
 			mnuBinaryDisplay.Checked = ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Binary;
 			mnuRowDisplayFormat.Enabled = lstWatch.SelectedItems.Count > 0;
+			mnuRemoveWatch.Enabled = lstWatch.SelectedItems.Count >= 1;
 
 			mnuEditInMemoryViewer.Enabled = false;
 			mnuViewInDisassembly.Enabled = false;
