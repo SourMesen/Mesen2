@@ -365,6 +365,7 @@
       <DependentUpon>frmIntegrationSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Integration\ISymbolProvider.cs" />
+    <Compile Include="Debugger\Integration\WlaDxImporter.cs" />
     <Compile Include="Debugger\Labels\CodeLabel.cs" />
     <Compile Include="Debugger\Labels\ctrlLabelList.cs">
       <SubType>UserControl</SubType>

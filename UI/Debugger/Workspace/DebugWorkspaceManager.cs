@@ -113,6 +113,15 @@ namespace Mesen.GUI.Debugger.Workspace
 			LabelManager.RefreshLabels();
 		}
 
+		public static void ImportSymFile(string symPath, bool silent = false)
+		{
+			if(ConfigManager.Config.Debug.DbgIntegration.ResetLabelsOnImport) {
+				ResetLabels();
+			}
+			new WlaDxImporter().Import(symPath, silent);
+			LabelManager.RefreshLabels();
+		}
+
 		public static void ImportDbgFile(string dbgPath = null)
 		{
 			_symbolProvider = null;

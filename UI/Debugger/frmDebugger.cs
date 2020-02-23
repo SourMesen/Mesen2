@@ -609,19 +609,58 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
+		protected override void OnDragEnter(DragEventArgs e)
+		{
+			base.OnDragEnter(e);
+
+			try {
+				if(e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+					if(files != null && files.Length > 0) {
+						string ext = Path.GetExtension(files[0]).ToLower();
+						if(ext == ".dbg" || ext == ".msl" || ext == ".sym") {
+							e.Effect = DragDropEffects.Copy;
+						}
+					}
+				}
+			} catch(Exception ex) {
+				MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
+			}
+		}
+
+		protected override void OnDragDrop(DragEventArgs e)
+		{
+			base.OnDragDrop(e);
+
+			try {
+				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+				if(files != null && File.Exists(files[0])) {
+					ImportLabelFile(files[0]);
+				}
+			} catch(Exception ex) {
+				MesenMsgBox.Show("UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
+			}
+		}
+
 		private void mnuImportLabels_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.SetFilter("All supported files (*.dbg, *.msl)|*.dbg;*.msl");
+			ofd.SetFilter("All supported files (*.dbg, *.msl, *.sym)|*.dbg;*.msl;*.sym");
 			if(ofd.ShowDialog() == DialogResult.OK) {
-				string path = ofd.FileName;
-				string ext = Path.GetExtension(path).ToLower();
-				if(ext == ".msl") {
-					DebugWorkspaceManager.ImportMslFile(path);
-				} else {
-					DebugWorkspaceManager.ImportDbgFile(path);
-				}
+				ImportLabelFile(ofd.FileName);
 				RefreshDisassembly();
+			}
+		}
+
+		private static void ImportLabelFile(string path)
+		{
+			string ext = Path.GetExtension(path).ToLower();
+			if(ext == ".msl") {
+				DebugWorkspaceManager.ImportMslFile(path);
+			} else if(ext == ".sym") {
+				DebugWorkspaceManager.ImportSymFile(path);
+			} else {
+				DebugWorkspaceManager.ImportDbgFile(path);
 			}
 		}
 

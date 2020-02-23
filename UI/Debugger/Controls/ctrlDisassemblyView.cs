@@ -312,8 +312,8 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			if(_inSourceView) {
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)address, Type = SnesMemoryType.CpuMemory });
-				if(absAddress.Address >= 0 && absAddress.Type == SnesMemoryType.PrgRom) {
-					SourceCodeLocation line = _symbolProvider?.GetSourceCodeLineInfo(absAddress.Address);
+				if(absAddress.Address >= 0) {
+					SourceCodeLocation line = _symbolProvider?.GetSourceCodeLineInfo(absAddress);
 					if(line != null) {
 						foreach(SourceFileInfo fileInfo in cboSourceFile.Items) {
 							if(line.File == fileInfo) {

@@ -31,11 +31,11 @@ namespace Mesen.GUI.Debugger.Code
 
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
-			int prgAddress = _symbolProvider.GetPrgAddress(_file, lineIndex);
+			AddressInfo? address = _symbolProvider.GetLineAddress(_file, lineIndex);
 
 			CodeLineData data = new CodeLineData(_type) {
 				Address = GetLineAddress(lineIndex),
-				AbsoluteAddress = prgAddress,
+				AbsoluteAddress = address.HasValue ? address.Value.Address : -1,
 				EffectiveAddress = -1,
 				Flags = LineFlags.VerifiedCode
 			};
@@ -74,11 +74,12 @@ namespace Mesen.GUI.Debugger.Code
 
 		public int GetLineAddress(int lineIndex)
 		{
-			AddressInfo absAddress = new AddressInfo() {
-				Address = _symbolProvider.GetPrgAddress(_file, lineIndex),
-				Type = SnesMemoryType.PrgRom
-			};
-			return DebugApi.GetRelativeAddress(absAddress).Address;
+			AddressInfo? absAddress = _symbolProvider.GetLineAddress(_file, lineIndex);
+			if(absAddress != null) {
+				return DebugApi.GetRelativeAddress(absAddress.Value).Address;
+			} else {
+				return -1;
+			}
 		}
 
 		public int GetLineCount()
@@ -88,9 +89,10 @@ namespace Mesen.GUI.Debugger.Code
 
 		public int GetLineIndex(uint cpuAddress)
 		{
-			int absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)cpuAddress, Type = SnesMemoryType.CpuMemory }).Address;
+			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)cpuAddress, Type = SnesMemoryType.CpuMemory });
 			for(int i = 0; i < _lineCount; i++) {
-				if(_symbolProvider.GetPrgAddress(_file, i) == absAddress) {
+				AddressInfo? lineAddr = _symbolProvider.GetLineAddress(_file, i);
+				if(lineAddr != null && lineAddr.Value.Address == absAddress.Address && lineAddr.Value.Type == absAddress.Type) {
 					return i;
 				}
 			}

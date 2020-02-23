@@ -66,18 +66,18 @@ namespace Mesen.GUI.Debugger.Integration
 
 		public List<SourceFileInfo> SourceFiles { get { return _sourceFiles; } }
 
-		public int GetPrgAddress(SourceFileInfo file, int lineIndex)
+		public AddressInfo? GetLineAddress(SourceFileInfo file, int lineIndex)
 		{
 			return GetPrgAddress((file.InternalFile as FileInfo).ID, lineIndex);
 		}
 
-		private int GetPrgAddress(int fileID, int lineIndex)
+		private AddressInfo? GetPrgAddress(int fileID, int lineIndex)
 		{
 			int prgAddress;
 			if(_prgAddressByLine.TryGetValue(fileID.ToString() + "_" + lineIndex.ToString(), out prgAddress)) {
-				return prgAddress;
+				return new AddressInfo() { Address = prgAddress, Type = SnesMemoryType.CpuMemory };
 			}
-			return -1;
+			return null;
 		}
 
 		private int GetPrgAddress(SpanInfo span)
@@ -91,10 +91,10 @@ namespace Mesen.GUI.Debugger.Integration
 			return -1;
 		}
 
-		public SourceCodeLocation GetSourceCodeLineInfo(int prgRomAddress)
+		public SourceCodeLocation GetSourceCodeLineInfo(AddressInfo address)
 		{
 			SourceCodeLocation line;
-			if(_linesByPrgAddress.TryGetValue(prgRomAddress, out line)) {
+			if(address.Type == SnesMemoryType.CpuMemory && _linesByPrgAddress.TryGetValue(address.Address, out line)) {
 				return line;
 			}
 			return null;
