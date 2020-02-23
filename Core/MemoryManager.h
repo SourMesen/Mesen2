@@ -91,7 +91,7 @@ public:
 
 	bool IsRegister(uint32_t cpuAddress);
 	bool IsWorkRam(uint32_t cpuAddress);
-	int GetRelativeAddress(AddressInfo &address, int32_t cpuAddress = -1);
+	int GetRelativeAddress(AddressInfo &address, uint8_t startBank = 0);
 
 	void Serialize(Serializer &s) override;
 };

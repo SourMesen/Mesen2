@@ -161,7 +161,7 @@ namespace Mesen.GUI.Debugger
 		{
 			UInt32 address = AddressType == BreakpointAddressType.SingleAddress ? this.Address : this.StartAddress;
 			if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
-				return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)address, Type = this.MemoryType }).Address;
+				return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)address, Type = this.MemoryType }, this.CpuType).Address;
 			} else {
 				return (int)address;
 			}
@@ -171,7 +171,7 @@ namespace Mesen.GUI.Debugger
 		{
 			if(this.AddressType == BreakpointAddressType.AddressRange){
 				if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
-					return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)this.EndAddress, Type = this.MemoryType }).Address;
+					return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)this.EndAddress, Type = this.MemoryType }, this.CpuType).Address;
 				} else {
 					return (int)this.EndAddress;
 				}

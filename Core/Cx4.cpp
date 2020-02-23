@@ -456,6 +456,11 @@ AddressInfo Cx4::GetAbsoluteAddress(uint32_t address)
 	return { -1, SnesMemoryType::Register };
 }
 
+MemoryMappings* Cx4::GetMemoryMappings()
+{
+	return &_mappings;
+}
+
 uint8_t* Cx4::DebugGetDataRam()
 {
 	return _dataRam;

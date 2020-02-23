@@ -124,9 +124,9 @@ namespace Mesen.GUI.Debugger.Labels
 			return new AddressInfo() { Address = (int)this.Address, Type = this.MemoryType };
 		}
 
-		public AddressInfo GetRelativeAddress()
+		public AddressInfo GetRelativeAddress(CpuType cpuType)
 		{
-			return DebugApi.GetRelativeAddress(GetAbsoluteAddress());
+			return DebugApi.GetRelativeAddress(GetAbsoluteAddress(), cpuType);
 		}
 
 		public byte GetValue()

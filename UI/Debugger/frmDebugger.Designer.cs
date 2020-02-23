@@ -34,6 +34,8 @@
 			this.ctrlDisassemblyView = new Mesen.GUI.Debugger.Controls.ctrlDisassemblyView();
 			this.ctrlMesenMenuStrip1 = new Mesen.GUI.Controls.ctrlMesenMenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuReloadRom = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuSaveRomAs = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuSaveAsIps = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
@@ -143,8 +145,6 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripSeparator();
-			this.mnuReloadRom = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -195,6 +195,18 @@
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "File";
+			// 
+			// mnuReloadRom
+			// 
+			this.mnuReloadRom.Image = global::Mesen.GUI.Properties.Resources.Refresh;
+			this.mnuReloadRom.Name = "mnuReloadRom";
+			this.mnuReloadRom.Size = new System.Drawing.Size(201, 22);
+			this.mnuReloadRom.Text = "Reload ROM";
+			// 
+			// toolStripMenuItem16
+			// 
+			this.toolStripMenuItem16.Name = "toolStripMenuItem16";
+			this.toolStripMenuItem16.Size = new System.Drawing.Size(198, 6);
 			// 
 			// mnuSaveRomAs
 			// 
@@ -926,6 +938,7 @@
 			this.ctrlLabelList.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlLabelList.Location = new System.Drawing.Point(0, 551);
 			this.ctrlLabelList.Name = "ctrlLabelList";
+			this.ctrlLabelList.Padding = new System.Windows.Forms.Padding(3);
 			this.ctrlLabelList.Size = new System.Drawing.Size(348, 0);
 			this.ctrlLabelList.TabIndex = 4;
 			// 
@@ -1060,18 +1073,6 @@
 			this.tsToolbar.Size = new System.Drawing.Size(832, 25);
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
-			// 
-			// toolStripMenuItem16
-			// 
-			this.toolStripMenuItem16.Name = "toolStripMenuItem16";
-			this.toolStripMenuItem16.Size = new System.Drawing.Size(198, 6);
-			// 
-			// mnuReloadRom
-			// 
-			this.mnuReloadRom.Image = global::Mesen.GUI.Properties.Resources.Refresh;
-			this.mnuReloadRom.Name = "mnuReloadRom";
-			this.mnuReloadRom.Size = new System.Drawing.Size(201, 22);
-			this.mnuReloadRom.Text = "Reload ROM";
 			// 
 			// frmDebugger
 			// 

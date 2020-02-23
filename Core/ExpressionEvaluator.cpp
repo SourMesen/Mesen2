@@ -431,11 +431,11 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 			if(token >= EvalValues::FirstLabelIndex) {
 				int64_t labelIndex = token - EvalValues::FirstLabelIndex;
 				if((size_t)labelIndex < data.Labels.size()) {
-					token = _labelManager->GetLabelRelativeAddress(data.Labels[(uint32_t)labelIndex]);
+					token = _labelManager->GetLabelRelativeAddress(data.Labels[(uint32_t)labelIndex], _cpuType);
 					if(token < -1) {
 						//Label doesn't exist, try to find a matching multi-byte label
 						string label = data.Labels[(uint32_t)labelIndex] + "+0";
-						token = _labelManager->GetLabelRelativeAddress(label);
+						token = _labelManager->GetLabelRelativeAddress(label, _cpuType);
 					}
 				} else {
 					token = -2;

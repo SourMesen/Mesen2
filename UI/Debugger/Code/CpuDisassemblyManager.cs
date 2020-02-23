@@ -69,9 +69,9 @@ namespace Mesen.GUI.Debugger.Code
 
 			int address;
 			if(location.Label != null) {
-				address = location.Label.GetRelativeAddress().Address;
+				address = location.Label.GetRelativeAddress(this.CpuType).Address;
 				if(address >= 0) {
-					location.Address = location.Label.GetRelativeAddress().Address + (location.ArrayIndex ?? 0);
+					location.Address = location.Label.GetRelativeAddress(this.CpuType).Address + (location.ArrayIndex ?? 0);
 				} else {
 					location.Address = -1;
 				}
@@ -119,7 +119,7 @@ namespace Mesen.GUI.Debugger.Code
 				AddressInfo? symbolAddress = _symbolProvider.GetSymbolAddressInfo(location.Symbol);
 
 				if(symbolAddress != null && symbolAddress.Value.Address >= 0) {
-					int relativeAddress = DebugApi.GetRelativeAddress(symbolAddress.Value).Address;
+					int relativeAddress = DebugApi.GetRelativeAddress(symbolAddress.Value, this.CpuType).Address;
 					byte byteValue = relativeAddress >= 0 ? DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress) : (byte)0;
 					UInt16 wordValue = relativeAddress >= 0 ? (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress + 1) << 8)) : (UInt16)0;
 
@@ -157,7 +157,7 @@ namespace Mesen.GUI.Debugger.Code
 				} else if(absAddress.Type == SnesMemoryType.Register) {
 					relativeAddress = absAddress.Address;
 				} else {
-					relativeAddress = location.Label.GetRelativeAddress().Address + (location.ArrayIndex ?? 0);
+					relativeAddress = location.Label.GetRelativeAddress(this.CpuType).Address + (location.ArrayIndex ?? 0);
 				}
 
 				byte byteValue = relativeAddress >= 0 ? DebugApi.GetMemoryValue(this.RelativeMemoryType, (UInt32)relativeAddress) : (byte)0;

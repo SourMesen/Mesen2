@@ -248,7 +248,7 @@ namespace Mesen.GUI.Debugger
 			if(_selectedAddress >= 0) {
 				DebugWindowManager.OpenDebugger(_cpuType).GoToAddress(_selectedAddress);
 			} else if(_selectedLabel != null) {
-				AddressInfo relAddress = _selectedLabel.GetRelativeAddress();
+				AddressInfo relAddress = _selectedLabel.GetRelativeAddress(_cpuType);
 				if(relAddress.Address >= 0) {
 					DebugWindowManager.OpenDebugger(_cpuType).GoToAddress(relAddress.Address);
 				}

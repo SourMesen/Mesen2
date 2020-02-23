@@ -460,13 +460,40 @@ AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 	throw std::runtime_error("Unsupported address type");
 }
 
-AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress)
+AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
 {
+	MemoryMappings* mappings = nullptr;
+	switch(cpuType) {
+		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
+		case CpuType::Sa1: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
+		case CpuType::Gsu: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
+		case CpuType::Cx4: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
+	}
+
 	switch(absAddress.Type) {
 		case SnesMemoryType::PrgRom:
 		case SnesMemoryType::WorkRam:
-		case SnesMemoryType::SaveRam:
-			return { _memoryManager->GetRelativeAddress(absAddress), SnesMemoryType::CpuMemory };
+		case SnesMemoryType::SaveRam: {
+			if(!mappings) {
+				throw std::runtime_error("Unsupported cpu type");
+			}
+
+			uint8_t startBank = 0;
+			//Try to find a mirror close to where the PC is
+			if(cpuType == CpuType::Cpu) {
+				if(absAddress.Type == SnesMemoryType::WorkRam) {
+					startBank = 0x7E;
+				} else {
+					startBank = (_cpu->GetState().K & 0xC0) << 4;
+				}
+			} else if(cpuType == CpuType::Sa1) {
+				startBank = (_cart->GetSa1()->GetCpuState().K & 0xC0);
+			} else if(cpuType == CpuType::Gsu) {
+				startBank = (_cart->GetGsu()->GetState().ProgramBank & 0xC0);
+			}
+
+			return { mappings->GetRelativeAddress(absAddress, startBank), DebugUtilities::GetCpuMemoryType(cpuType) };
+		}
 
 		case SnesMemoryType::SpcRam:
 		case SnesMemoryType::SpcRom:
@@ -477,8 +504,6 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress)
 
 		default: 
 			return { -1, SnesMemoryType::Register };
-
-			throw std::runtime_error("Unsupported address type");
 	}
 }
 

@@ -73,7 +73,6 @@ namespace Mesen.GUI.Debugger
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.GsuDebuggerEnabled, true);
 					this.Text = "GSU Debugger";
 					ctrlCallstack.Visible = false;
-					ctrlLabelList.Visible = false;
 					mnuStepOver.Visible = false;
 					mnuStepOut.Visible = false;
 					mnuStepInto.Text = "Step";

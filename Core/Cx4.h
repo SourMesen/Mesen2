@@ -125,6 +125,7 @@ public:
 	void PeekBlock(uint32_t addr, uint8_t* output) override;
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;
 
+	MemoryMappings* GetMemoryMappings();
 	uint8_t* DebugGetDataRam();
 	uint32_t DebugGetDataRamSize();
 	Cx4State GetState();

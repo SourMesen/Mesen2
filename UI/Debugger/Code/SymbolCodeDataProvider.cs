@@ -13,14 +13,14 @@ namespace Mesen.GUI.Debugger.Code
 		//private byte[] _prgRom;
 		private int _lineCount;
 		private SourceFileInfo _file;
-		private CpuType _type;
+		private CpuType _cpuType;
 		private bool _isC;
 		private ISymbolProvider _symbolProvider;
 
 		public SymbolCodeDataProvider(CpuType type, ISymbolProvider symbolProvider, SourceFileInfo file)
 		{
 			//_prgRom = DebugApi.GetMemoryState(SnesMemoryType.PrgRom);
-			_type = type;
+			_cpuType = type;
 			_symbolProvider = symbolProvider;
 			_file = file;
 			_lineCount = file.Data.Length;
@@ -33,7 +33,7 @@ namespace Mesen.GUI.Debugger.Code
 		{
 			AddressInfo? address = _symbolProvider.GetLineAddress(_file, lineIndex);
 
-			CodeLineData data = new CodeLineData(_type) {
+			CodeLineData data = new CodeLineData(_cpuType) {
 				Address = GetLineAddress(lineIndex),
 				AbsoluteAddress = address.HasValue ? address.Value.Address : -1,
 				EffectiveAddress = -1,
@@ -76,7 +76,7 @@ namespace Mesen.GUI.Debugger.Code
 		{
 			AddressInfo? absAddress = _symbolProvider.GetLineAddress(_file, lineIndex);
 			if(absAddress != null) {
-				return DebugApi.GetRelativeAddress(absAddress.Value).Address;
+				return DebugApi.GetRelativeAddress(absAddress.Value, _cpuType).Address;
 			} else {
 				return -1;
 			}

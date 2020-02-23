@@ -415,41 +415,6 @@ bool MemoryManager::IsWorkRam(uint32_t cpuAddress)
 	return handler && handler->GetMemoryType() == SnesMemoryType::WorkRam;
 }
 
-int MemoryManager::GetRelativeAddress(AddressInfo &address, int32_t cpuAddress)
-{
-	if(address.Type == SnesMemoryType::WorkRam) {
-		return 0x7E0000 | address.Address;
-	}
-
-	uint16_t startPosition;
-	if(cpuAddress < 0) {
-		uint8_t bank = _console->GetCpu()->GetState().K;
-		startPosition = ((bank & 0xC0) << 4);
-	} else {
-		startPosition = (cpuAddress >> 12) & 0xF00;
-	}
-
-	for(int i = startPosition; i <= 0xFFF; i++) {
-		IMemoryHandler* handler = _mappings.GetHandler(i << 12);
-		if(handler) {
-			AddressInfo addrInfo = handler->GetAbsoluteAddress(address.Address & 0xFFF);
-			if(addrInfo.Type == address.Type && addrInfo.Address == address.Address) {
-				return (i << 12) | (address.Address & 0xFFF);
-			}
-		}
-	}
-	for(int i = 0; i < startPosition; i++) {
-		IMemoryHandler* handler = _mappings.GetHandler(i << 12);
-		if(handler) {
-			AddressInfo addrInfo = handler->GetAbsoluteAddress(address.Address & 0xFFF);
-			if(addrInfo.Type == address.Type && addrInfo.Address == address.Address) {
-				return (i << 12) | (address.Address & 0xFFF);
-			}
-		}
-	}
-	return -1;
-}
-
 void MemoryManager::Serialize(Serializer &s)
 {
 	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition, _hdmaInitPosition);

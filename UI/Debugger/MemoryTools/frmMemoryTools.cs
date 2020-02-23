@@ -170,7 +170,7 @@ namespace Mesen.GUI.Debugger
 			} else if(dest.AbsoluteAddress != null) {
 				ShowAddress(dest.AbsoluteAddress.Value);
 			} else if(dest.Label != null) {
-				AddressInfo relAddress = dest.Label.GetRelativeAddress();
+				AddressInfo relAddress = dest.Label.GetRelativeAddress(_memoryType.ToCpuType());
 				if(relAddress.Type == _memoryType && relAddress.Address >= 0) {
 					ShowAddress(relAddress);
 				} else {

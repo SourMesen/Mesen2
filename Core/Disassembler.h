@@ -8,6 +8,7 @@
 class MemoryManager;
 class Console;
 class Spc;
+class Gsu;
 class Debugger;
 class LabelManager;
 class CodeDataLogger;
@@ -29,6 +30,7 @@ private:
 	MemoryManager *_memoryManager;
 	Console *_console;
 	Spc* _spc;
+	Gsu* _gsu;
 	EmuSettings* _settings;
 	Debugger *_debugger;
 	shared_ptr<CodeDataLogger> _cdl;

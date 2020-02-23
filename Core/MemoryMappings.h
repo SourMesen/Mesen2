@@ -15,6 +15,7 @@ public:
 
 	IMemoryHandler* GetHandler(uint32_t addr);
 	AddressInfo GetAbsoluteAddress(uint32_t addr);
+	int GetRelativeAddress(AddressInfo& absAddress, uint8_t startBank = 0);
 
 	uint8_t Peek(uint32_t addr);
 	uint16_t PeekWord(uint32_t addr);

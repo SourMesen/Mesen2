@@ -132,14 +132,14 @@ bool LabelManager::ContainsLabel(string &label)
 	return _codeLabelReverseLookup.find(label) != _codeLabelReverseLookup.end();
 }
 
-int32_t LabelManager::GetLabelRelativeAddress(string &label)
+int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 {
 	auto result = _codeLabelReverseLookup.find(label);
 	if(result != _codeLabelReverseLookup.end()) {
 		uint64_t key = result->second;
 		SnesMemoryType type = GetKeyMemoryType(key);
 		AddressInfo addr { (int32_t)(key & 0xFFFFFFFF), type };
-		return _debugger->GetRelativeAddress(addr).Address;
+		return _debugger->GetRelativeAddress(addr, cpuType).Address;
 	}
 	//Label doesn't exist
 	return -2;

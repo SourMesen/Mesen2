@@ -60,8 +60,8 @@ namespace Mesen.GUI.Debugger.Labels
 
 		public static List<CodeLabel> GetLabels(CpuType cpu)
 		{
-			if(cpu == CpuType.Sa1) {
-				//Share label list between SNES CPU and SA1
+			if(cpu == CpuType.Sa1 || cpu == CpuType.Gsu) {
+				//Share label list between SNES CPU, SA1 and GSU (since the share the same PRG ROM)
 				cpu = CpuType.Cpu;
 			}
 
@@ -187,6 +187,7 @@ namespace Mesen.GUI.Debugger.Labels
 			} else {
 				DebugApi.RefreshDisassembly(CpuType.Cpu);
 				DebugApi.RefreshDisassembly(CpuType.Sa1);
+				DebugApi.RefreshDisassembly(CpuType.Gsu);
 			}
 		}
 

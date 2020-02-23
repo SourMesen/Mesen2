@@ -84,7 +84,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private void lstFunctions_DoubleClick(object sender, EventArgs e)
 		{
 			if(lstFunctions.SelectedIndices.Count > 0) {
-				AddressInfo relativeAddress = DebugApi.GetRelativeAddress(_functions[lstFunctions.SelectedIndices[0]].Address);
+				AddressInfo relativeAddress = DebugApi.GetRelativeAddress(_functions[lstFunctions.SelectedIndices[0]].Address, this.CpuType);
 				if(relativeAddress.Address >= 0) {
 					frmDebugger debugger = DebugWindowManager.OpenDebugger(this.CpuType);
 					debugger.GoToAddress(relativeAddress.Address);

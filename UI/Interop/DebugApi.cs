@@ -70,7 +70,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetMemoryState(SnesMemoryType type, [In] byte[] buffer, Int32 length);
 
 		[DllImport(DllPath)] public static extern AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
-		[DllImport(DllPath)] public static extern AddressInfo GetRelativeAddress(AddressInfo absAddress);
+		[DllImport(DllPath)] public static extern AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
 
 		[DllImport(DllPath)] public static extern void SetLabel(uint address, SnesMemoryType memType, string label, string comment);
 		[DllImport(DllPath)] public static extern void ClearLabels();

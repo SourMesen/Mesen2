@@ -56,6 +56,31 @@ AddressInfo MemoryMappings::GetAbsoluteAddress(uint32_t addr)
 	}
 }
 
+int MemoryMappings::GetRelativeAddress(AddressInfo& absAddress, uint8_t startBank)
+{
+	uint16_t startPosition = startBank << 4;
+
+	for(int i = startPosition; i <= 0xFFF; i++) {
+		IMemoryHandler* handler = GetHandler(i << 12);
+		if(handler) {
+			AddressInfo addrInfo = handler->GetAbsoluteAddress(absAddress.Address & 0xFFF);
+			if(addrInfo.Type == absAddress.Type && addrInfo.Address == absAddress.Address) {
+				return (i << 12) | (absAddress.Address & 0xFFF);
+			}
+		}
+	}
+	for(int i = 0; i < startPosition; i++) {
+		IMemoryHandler* handler = GetHandler(i << 12);
+		if(handler) {
+			AddressInfo addrInfo = handler->GetAbsoluteAddress(absAddress.Address & 0xFFF);
+			if(addrInfo.Type == absAddress.Type && addrInfo.Address == absAddress.Address) {
+				return (i << 12) | (absAddress.Address & 0xFFF);
+			}
+		}
+	}
+	return -1;
+}
+
 uint8_t MemoryMappings::Peek(uint32_t addr)
 {
 	//Read, without triggering side-effects

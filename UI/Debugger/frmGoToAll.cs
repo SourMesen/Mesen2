@@ -195,7 +195,7 @@ namespace Mesen.GUI.Debugger
 
 							if(addressInfo != null) {
 								value = DebugApi.GetMemoryValue(addressInfo.Value.Type, (uint)addressInfo.Value.Address);
-								relAddress = DebugApi.GetRelativeAddress(addressInfo.Value);
+								relAddress = DebugApi.GetRelativeAddress(addressInfo.Value, CpuType.Cpu); //TODO
 							} else {
 								//For constants, the address field contains the constant's value
 								value = symbol.Address ?? 0;
@@ -238,7 +238,7 @@ namespace Mesen.GUI.Debugger
 								}
 							}
 
-							AddressInfo relAddress = label.GetRelativeAddress();
+							AddressInfo relAddress = label.GetRelativeAddress(CpuType.Cpu); //TODO
 							searchResults.Add(new SearchResultInfo() {
 								Caption = label.Label,
 								AbsoluteAddress = label.GetAbsoluteAddress(),

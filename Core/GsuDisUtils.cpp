@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GsuDisUtils.h"
 #include "DisassemblyInfo.h"
+#include "LabelManager.h"
 #include "EmuSettings.h"
 #include "../Utilities/FastString.h"
 #include "../Utilities/HexUtilities.h"
@@ -15,8 +16,19 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	uint8_t opCode = info.GetOpCode();
 
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+
+	auto getJumpTarget = [&str, labelManager, memoryAddr, &info]() {
+		uint32_t jmpTarget = memoryAddr + (int8_t)info.GetByteCode()[1] + 2;
+		AddressInfo address = { (int32_t)jmpTarget, SnesMemoryType::GsuMemory };
+		string label = labelManager->GetLabel(address);
+		if(label.empty()) {
+			str.WriteAll('$', HexUtilities::ToHex24(jmpTarget));
+		} else {
+			str.Write(label, true);
+		}
+	};
+
 	const char* reg = registerNames[opCode & 0x0F];
-	uint32_t jmpTarget = memoryAddr + (int8_t)info.GetByteCode()[1];
 
 	switch(opCode) {
 		case 0x00: str.Write("STOP"); break;
@@ -25,17 +37,17 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case 0x03: str.Write("LSR"); break;
 		case 0x04: str.Write("ROL"); break;
 		
-		case 0x05: str.WriteAll("BRA $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x06: str.WriteAll("BLT $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x07: str.WriteAll("BGE $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x08: str.WriteAll("BNE $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x09: str.WriteAll("BEQ $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x0A: str.WriteAll("BPL $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x0B: str.WriteAll("BMI $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x0C: str.WriteAll("BCC $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x0D: str.WriteAll("BCS $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x0E: str.WriteAll("BCV $", HexUtilities::ToHex24(jmpTarget)); break;
-		case 0x0F: str.WriteAll("BVS $", HexUtilities::ToHex24(jmpTarget)); break;
+		case 0x05: str.WriteAll("BRA "); getJumpTarget(); break;
+		case 0x06: str.WriteAll("BLT "); getJumpTarget(); break;
+		case 0x07: str.WriteAll("BGE "); getJumpTarget(); break;
+		case 0x08: str.WriteAll("BNE "); getJumpTarget(); break;
+		case 0x09: str.WriteAll("BEQ "); getJumpTarget(); break;
+		case 0x0A: str.WriteAll("BPL "); getJumpTarget(); break;
+		case 0x0B: str.WriteAll("BMI "); getJumpTarget(); break;
+		case 0x0C: str.WriteAll("BCC "); getJumpTarget(); break;
+		case 0x0D: str.WriteAll("BCS "); getJumpTarget(); break;
+		case 0x0E: str.WriteAll("BCV "); getJumpTarget(); break;
+		case 0x0F: str.WriteAll("BVS "); getJumpTarget(); break;
 
 		case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:
 		case 0x18: case 0x19: case 0x1A: case 0x1B: case 0x1C: case 0x1D: case 0x1E: case 0x1F:
@@ -196,4 +208,29 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	}
 
 	out += str.ToString();
+}
+
+int32_t GsuDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Console* console, GsuState& state)
+{
+	uint8_t opCode = info.GetOpCode();
+	bool alt1 = (info.GetFlags() & 0x01) != 0;
+	bool alt2 = (info.GetFlags() & 0x02) != 0;
+
+	switch(opCode) {
+		case 0xA0: case 0xA1: case 0xA2: case 0xA3: case 0xA4: case 0xA5: case 0xA6: case 0xA7:
+		case 0xA8: case 0xA9: case 0xAA: case 0xAB: case 0xAC: case 0xAD: case 0xAE: case 0xAF:
+			if(alt1 || alt2) {
+				return 0x700000 | (info.GetByteCode()[1] << 1) | (state.RamBank << 16);
+			}
+			break;
+
+		case 0xF0: case 0xF1: case 0xF2: case 0xF3: case 0xF4: case 0xF5: case 0xF6: case 0xF7:
+		case 0xF8: case 0xF9: case 0xFA: case 0xFB: case 0xFC: case 0xFD: case 0xFE: case 0xFF:
+			if(alt1 || alt2) {
+				return 0x700000 | info.GetByteCode()[1] | (info.GetByteCode()[2] << 8) | (state.RamBank << 16);
+			}
+			break;
+	}
+
+	return -1;
 }

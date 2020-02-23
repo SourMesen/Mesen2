@@ -69,8 +69,8 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState)
 			return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
 
 		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, console, *(SpcState*)cpuState);
-		
-		case CpuType::Gsu:
+		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, console, *(GsuState*)cpuState);
+
 		case CpuType::Cx4:
 		case CpuType::NecDsp:
 			return -1;

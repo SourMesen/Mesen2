@@ -26,11 +26,14 @@
 
 Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger)
 {
+	shared_ptr<BaseCartridge> cart = console->GetCartridge();
+
 	_cdl = cdl;
 	_debugger = debugger;
 	_labelManager = debugger->GetLabelManager();
 	_console = console.get();
 	_spc = console->GetSpc().get();
+	_gsu = cart->GetGsu();
 	_settings = console->GetSettings().get();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_memoryManager = console->GetMemoryManager().get();
@@ -42,24 +45,25 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_wram = _memoryManager->DebugGetWorkRam();
 	_wramSize = MemoryManager::WorkRamSize;
 
-	_spcRam = console->GetSpc()->GetSpcRam();
+	_spcRam = _spc->GetSpcRam();
 	_spcRamSize = Spc::SpcRamSize;
-	_spcRom = console->GetSpc()->GetSpcRom();
+	_spcRom = _spc->GetSpcRom();
 	_spcRomSize = Spc::SpcRomSize;
 
-	_necDspProgramRom = console->GetCartridge()->GetDsp() ? console->GetCartridge()->GetDsp()->DebugGetProgramRom() : nullptr;
-	_necDspProgramRomSize = console->GetCartridge()->GetDsp() ? console->GetCartridge()->GetDsp()->DebugGetProgramRomSize() : 0;
 
-	_sa1InternalRam = console->GetCartridge()->GetSa1() ? console->GetCartridge()->GetSa1()->DebugGetInternalRam() : nullptr;
-	_sa1InternalRamSize = console->GetCartridge()->GetSa1() ? console->GetCartridge()->GetSa1()->DebugGetInternalRamSize() : 0;
+	_necDspProgramRom = cart->GetDsp() ? cart->GetDsp()->DebugGetProgramRom() : nullptr;
+	_necDspProgramRomSize = cart->GetDsp() ? cart->GetDsp()->DebugGetProgramRomSize() : 0;
 
-	_gsuWorkRam = console->GetCartridge()->GetGsu() ? console->GetCartridge()->GetGsu()->DebugGetWorkRam() : nullptr;
-	_gsuWorkRamSize = console->GetCartridge()->GetGsu() ? console->GetCartridge()->GetGsu()->DebugGetWorkRamSize() : 0;
+	_sa1InternalRam = cart->GetSa1() ? cart->GetSa1()->DebugGetInternalRam() : nullptr;
+	_sa1InternalRamSize = cart->GetSa1() ? cart->GetSa1()->DebugGetInternalRamSize() : 0;
 
-	_bsxPsRam = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsx()->DebugGetPsRam() : nullptr;
-	_bsxPsRamSize = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsx()->DebugGetPsRamSize() : 0;
-	_bsxMemPack = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsxMemoryPack()->DebugGetMemoryPack() : nullptr;
-	_bsxMemPackSize = console->GetCartridge()->GetBsx() ? console->GetCartridge()->GetBsxMemoryPack()->DebugGetMemoryPackSize() : 0;
+	_gsuWorkRam = cart->GetGsu() ? cart->GetGsu()->DebugGetWorkRam() : nullptr;
+	_gsuWorkRamSize = cart->GetGsu() ? cart->GetGsu()->DebugGetWorkRamSize() : 0;
+
+	_bsxPsRam = cart->GetBsx() ? cart->GetBsx()->DebugGetPsRam() : nullptr;
+	_bsxPsRamSize = cart->GetBsx() ? cart->GetBsx()->DebugGetPsRamSize() : 0;
+	_bsxMemPack = cart->GetBsx() ? cart->GetBsxMemoryPack()->DebugGetMemoryPack() : nullptr;
+	_bsxMemPackSize = cart->GetBsx() ? cart->GetBsxMemoryPack()->DebugGetMemoryPackSize() : 0;
 
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_sramCache = vector<DisassemblyInfo>(_sramSize);
@@ -494,7 +498,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 					
 					case CpuType::Spc: {
-						SpcState state = _console->GetSpc()->GetState();
+						SpcState state = _spc->GetState();
 						state.PC = (uint16_t)result.CpuAddress;
 
 						if(!disInfo.IsInitialized()) {
@@ -515,6 +519,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 
 					case CpuType::Gsu: {
+						GsuState state = _gsu->GetState();
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gsu);
 						} else {
@@ -522,8 +527,13 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = -1;
-						data.ValueSize = 0;
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
+						if(data.EffectiveAddress >= 0) {
+							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
+							data.ValueSize = 2;
+						} else {
+							data.ValueSize = 0;
+						}
 						break;
 					}
 

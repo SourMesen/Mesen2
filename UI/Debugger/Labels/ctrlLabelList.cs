@@ -100,7 +100,7 @@ namespace Mesen.GUI.Debugger.Controls
 			foreach(ListViewItem item in _listItems) {
 				CodeLabel label = (CodeLabel)item.Tag;
 
-				Int32 relativeAddress = label.GetRelativeAddress().Address;
+				Int32 relativeAddress = label.GetRelativeAddress(_cpuType).Address;
 				if(relativeAddress != (Int32)item.SubItems[1].Tag) {
 					needUpdate = true;
 					if(relativeAddress >= 0) {
@@ -138,7 +138,7 @@ namespace Mesen.GUI.Debugger.Controls
 						case SnesMemoryType.BsxMemoryPack: prefix = "MPACK: $"; break;
 						default: throw new Exception("Unsupported type");
 					}
-					int relAddress = label.GetRelativeAddress().Address;
+					int relAddress = label.GetRelativeAddress(_cpuType).Address;
 					item.SubItems.Add(relAddress >= 0 ? "$" + relAddress.ToString("X4") : "-");
 					item.SubItems.Add(prefix + label.Address.ToString("X4"));
 					item.SubItems.Add(ConfigManager.Config.Debug.Debugger.ShowCommentsInLabelList ? label.Comment : "");
@@ -176,7 +176,7 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			if(lstLabels.SelectedIndices.Count > 0) {
 				CodeLabel label = (CodeLabel)GetSelectedLabel();
-				int relAddress = label.GetRelativeAddress().Address;
+				int relAddress = label.GetRelativeAddress(_cpuType).Address;
 				if(relAddress >= 0) {
 					DebugWindowManager.OpenDebugger(_cpuType).GoToAddress(relAddress);
 				}
@@ -194,7 +194,7 @@ namespace Mesen.GUI.Debugger.Controls
 			if(lstLabels.SelectedIndices.Count == 1) {
 				CodeLabel label = GetSelectedLabel();
 
-				bool availableInCpuMemory = label.GetRelativeAddress().Address >= 0;
+				bool availableInCpuMemory = label.GetRelativeAddress(_cpuType).Address >= 0;
 				mnuViewInCpuMemory.Enabled = availableInCpuMemory;
 
 				bool showViewInMemoryType = label.MemoryType != SnesMemoryType.Register && label.MemoryType != SnesMemoryType.SpcRom && label.MemoryType != SnesMemoryType.SpcRam;
@@ -324,7 +324,7 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			if(lstLabels.SelectedIndices.Count == 1) {
 				CodeLabel label = GetSelectedLabel();
-				AddressInfo relAddress = label.GetRelativeAddress();
+				AddressInfo relAddress = label.GetRelativeAddress(_cpuType);
 				if(relAddress.Address >= 0) {
 					DebugWindowManager.OpenMemoryViewer(relAddress);
 				}
