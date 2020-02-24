@@ -32,7 +32,7 @@ void NecDspDebugger::Reset()
 
 void NecDspDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = { (uint32_t)addr, type == MemoryOperationType::ExecOpCode ? SnesMemoryType::DspProgramRom : SnesMemoryType::DspDataRom };
+	AddressInfo addressInfo = { (int32_t)addr, type == MemoryOperationType::ExecOpCode ? SnesMemoryType::DspProgramRom : SnesMemoryType::DspDataRom };
 	MemoryOperationInfo operation { (uint32_t)addr, value, type };
 
 	if(type == MemoryOperationType::ExecOpCode) {

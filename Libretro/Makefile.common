@@ -80,6 +80,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/Msu1.cpp \
                $(CORE_DIR)/Multitap.cpp \
                $(CORE_DIR)/NecDsp.cpp \
+               $(CORE_DIR)/NecDspDebugger.cpp \
                $(CORE_DIR)/NecDspDisUtils.cpp \
                $(CORE_DIR)/NotificationManager.cpp \
                $(CORE_DIR)/NtscFilter.cpp \

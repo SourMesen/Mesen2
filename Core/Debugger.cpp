@@ -465,6 +465,8 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType
 	MemoryMappings* mappings = nullptr;
 	switch(cpuType) {
 		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
+		case CpuType::Spc: break;
+		case CpuType::NecDsp: break;
 		case CpuType::Sa1: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
 		case CpuType::Gsu: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
 		case CpuType::Cx4: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
