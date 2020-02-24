@@ -61,6 +61,7 @@ private:
 
 public:
 	Sa1(Console* console);
+	virtual ~Sa1();
 	
 	void WriteSa1(uint32_t addr, uint8_t value, MemoryOperationType type);
 	uint8_t ReadSa1(uint32_t addr, MemoryOperationType type = MemoryOperationType::Read);

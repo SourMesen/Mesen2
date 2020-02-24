@@ -14,7 +14,7 @@ namespace Mesen.GUI.Debugger.Code
 	{
 		private static Regex _space = new Regex("^[ \t]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _opCode = new Regex("^[a-z0-9]{2,5}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex _syntax = new Regex("^[]([)!+,.]{1}", RegexOptions.Compiled);
+		private static Regex _syntax = new Regex("^[]([)!+,.|:]{1}", RegexOptions.Compiled);
 		private static Regex _operand = new Regex("^(([$][0-9a-f]*([.]\\d){0,1})|(#[@$:_0-9a-z]*)|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		public static List<CodeColor> GetCpuHighlights(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues)

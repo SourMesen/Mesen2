@@ -76,6 +76,10 @@ namespace Mesen.GUI.Debugger
 				cboBreakpointType.Items.Add("-");
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRam));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRom));
+			} else if(_cpuType == CpuType.NecDsp) {
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspProgramRom));
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRom));
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRam));
 			}
 
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");

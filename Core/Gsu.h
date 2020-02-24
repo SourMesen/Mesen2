@@ -145,6 +145,7 @@ private:
 
 public:
 	Gsu(Console *console, uint32_t gsuRamSize);
+	virtual ~Gsu();
 
 	void ProcessEndOfFrame() override;
 

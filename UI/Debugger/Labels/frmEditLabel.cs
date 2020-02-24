@@ -55,6 +55,8 @@ namespace Mesen.GUI.Debugger
 			} else if(cpuType == CpuType.Spc) {
 				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRam));
 				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRom));
+			} else if(cpuType == CpuType.NecDsp) {
+				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspProgramRom));
 			}
 		}
 

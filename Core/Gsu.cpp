@@ -68,6 +68,11 @@ Gsu::Gsu(Console *console, uint32_t gsuRamSize)
 	_mappings.RegisterHandler(0x70, 0x71, 0x0000, 0xFFFF, _gsuRamHandlers);
 }
 
+Gsu::~Gsu()
+{
+	delete[] _gsuRam;
+}
+
 void Gsu::ProcessEndOfFrame()
 {
 	uint8_t clockMultiplier = _settings->GetEmulationConfig().GsuClockSpeed / 100;

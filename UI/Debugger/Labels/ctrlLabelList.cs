@@ -136,6 +136,7 @@ namespace Mesen.GUI.Debugger.Controls
 						case SnesMemoryType.Sa1InternalRam: prefix = "IRAM: $"; break;
 						case SnesMemoryType.BsxPsRam: prefix = "PSRAM: $"; break;
 						case SnesMemoryType.BsxMemoryPack: prefix = "MPACK: $"; break;
+						case SnesMemoryType.DspProgramRom: prefix = "DSPPRG: $"; break;
 						default: throw new Exception("Unsupported type");
 					}
 					int relAddress = label.GetRelativeAddress(_cpuType).Address;
@@ -238,9 +239,23 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void mnuAdd_Click(object sender, EventArgs e)
 		{
+			SnesMemoryType defaultMemType = SnesMemoryType.PrgRom;
+			switch(_cpuType) {
+				case CpuType.Cpu: 
+				case CpuType.Sa1:
+				case CpuType.Gsu:
+					defaultMemType = SnesMemoryType.PrgRom;
+					break;
+
+				case CpuType.Spc: defaultMemType = SnesMemoryType.SpcRam; break;
+				case CpuType.NecDsp: defaultMemType = SnesMemoryType.DspProgramRom; break;
+
+				default: throw new Exception("Unsupported CPU type");
+			}
+
 			CodeLabel newLabel = new CodeLabel() {
 				Address = 0,
-				MemoryType = _cpuType == CpuType.Spc ? SnesMemoryType.SpcRam : SnesMemoryType.PrgRom,
+				MemoryType = defaultMemType,
 				Label = "",
 				Comment = ""
 			};

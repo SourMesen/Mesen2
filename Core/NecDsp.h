@@ -19,7 +19,8 @@ private:
 
 	double _frequency = 7600000;
 	uint32_t _opCode = 0;
-	uint32_t *_progRom = nullptr;
+	uint8_t *_progRom = nullptr;
+	uint32_t *_prgCache = nullptr;
 	uint16_t *_dataRom = nullptr;
 	uint16_t *_ram = nullptr;
 	uint16_t _stack[16];
@@ -38,6 +39,8 @@ private:
 	uint16_t _registerMask = 0;
 	bool _inRqmLoop = false;
 
+	void ReadOpCode();
+
 	void RunApuOp(uint8_t aluOperation, uint16_t source);
 
 	void UpdateDataPointer();
@@ -51,6 +54,8 @@ private:
 	NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
 
 public:
+	virtual ~NecDsp();
+
 	static NecDsp* InitCoprocessor(CoprocessorType type, Console* console, vector<uint8_t> &embeddedFirmware);
 
 	void Reset() override;
@@ -58,6 +63,8 @@ public:
 
 	void LoadBattery() override;
 	void SaveBattery() override;
+
+	void BuildProgramCache();
 	
 	uint8_t Read(uint32_t addr) override;
 	void Write(uint32_t addr, uint8_t value) override;

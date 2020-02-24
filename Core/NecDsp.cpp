@@ -53,9 +53,10 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 		}
 	}
 
-	_progSize = (uint32_t)programRom.size() / 3;
-	_progRom = new uint32_t[_progSize];
-	_progMask = _progSize - 1;
+	_progSize = (uint32_t)programRom.size();
+	_progRom = new uint8_t[_progSize];
+	_prgCache = new uint32_t[_progSize / 3];
+	_progMask = (_progSize / 3)- 1;
 
 	_dataSize = (uint32_t)dataRom.size() / 2;
 	_dataRom = new uint16_t[_dataSize];
@@ -69,12 +70,20 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 	console->GetSettings()->InitializeRam(_ram, _ramSize * sizeof(uint16_t));
 	console->GetSettings()->InitializeRam(_stack, _stackSize * sizeof(uint16_t));
 
-	for(uint32_t i = 0; i < _progSize; i++) {
-		_progRom[i] = programRom[i * 3] | (programRom[i * 3 + 1] << 8) | (programRom[i * 3 + 2] << 16);
-	}
+	memcpy(_progRom, programRom.data(), _progSize);
+	BuildProgramCache();
+
 	for(uint32_t i = 0; i < _dataSize; i++) {
 		_dataRom[i] = dataRom[i * 2] | (dataRom[i * 2 + 1] << 8);
 	}
+}
+
+NecDsp::~NecDsp()
+{
+	delete[] _progRom;
+	delete[] _prgCache;
+	delete[] _dataRom;
+	delete[] _ram;
 }
 
 NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console, vector<uint8_t> &embeddedFirware)
@@ -120,18 +129,31 @@ void NecDsp::SaveBattery()
 	}
 }
 
+void NecDsp::BuildProgramCache()
+{
+	//For the sake of performance, keep a precalculated array of 24-bit opcodes for each entry in the ROM
+	for(uint32_t i = 0; i < _progSize / 3; i++) {
+		_prgCache[i] = _progRom[i * 3] | (_progRom[i * 3 + 1] << 8) | (_progRom[i * 3 + 2] << 16);
+	}
+}
+
+void NecDsp::ReadOpCode()
+{
+	_opCode = _prgCache[_state.PC & _progMask];
+	_console->ProcessMemoryRead<CpuType::NecDsp>((_state.PC & _progMask) * 3, _opCode, MemoryOperationType::ExecOpCode);
+}
+
 void NecDsp::Run()
 {
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * (_frequency / _console->GetMasterClockRate()));
 
-	if(_inRqmLoop) {
+	if(_inRqmLoop && !_console->IsDebugging()) {
 		_cycleCount = targetCycle;
 		return;
 	}
 
 	while(_cycleCount < targetCycle) {
-		_opCode = _progRom[_state.PC & _progMask];
-		_console->ProcessNecDspExec(_state.PC, _opCode);
+		ReadOpCode();
 		_state.PC++;
 
 		switch(_opCode & 0xC00000) {
@@ -517,7 +539,7 @@ uint16_t NecDsp::GetSourceValue(uint8_t source)
 
 uint8_t* NecDsp::DebugGetProgramRom()
 {
-	return (uint8_t*)_progRom;
+	return _progRom;
 }
 
 uint8_t* NecDsp::DebugGetDataRom()
@@ -532,7 +554,7 @@ uint8_t* NecDsp::DebugGetDataRam()
 
 uint32_t NecDsp::DebugGetProgramRomSize()
 {
-	return _progSize * sizeof(uint32_t);
+	return _progSize;
 }
 
 uint32_t NecDsp::DebugGetDataRomSize()

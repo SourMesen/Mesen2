@@ -259,6 +259,8 @@
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
     <Compile Include="Debugger\Code\CodeHighlighting.cs" />
+    <Compile Include="Debugger\Code\NecDspLineStyleProvider.cs" />
+    <Compile Include="Debugger\Code\NecDspDisassemblyManager.cs" />
     <Compile Include="Debugger\Code\Sa1LineStyleProvider.cs" />
     <Compile Include="Debugger\Code\SymbolCodeDataProvider.cs" />
     <Compile Include="Debugger\Code\Sa1DisassemblyManager.cs" />
@@ -279,6 +281,12 @@
     <Compile Include="Debugger\Config\RegisterViewerConfig.cs" />
     <Compile Include="Debugger\Config\TileViewerConfig.cs" />
     <Compile Include="Debugger\Config\TilemapViewerConfig.cs" />
+    <Compile Include="Debugger\Controls\ctrlNecDspStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlNecDspStatus.Designer.cs">
+      <DependentUpon>ctrlNecDspStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlMemoryType.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -971,6 +979,7 @@
     <Compile Include="Utilities\RandomGameHelper.cs" />
     <Compile Include="Utilities\RomTestHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\NecDspDebugger.png" />
     <None Include="Dependencies\Satellaview\BSX0120-0.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1039,6 +1048,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlCallstack.resx">
       <DependentUpon>ctrlCallstack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlNecDspStatus.resx">
+      <DependentUpon>ctrlNecDspStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.resx">
       <DependentUpon>ctrlMemoryAccessCounters.cs</DependentUpon>

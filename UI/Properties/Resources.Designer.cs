@@ -693,6 +693,16 @@ namespace Mesen.GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap NecDspDebugger {
+            get {
+                object obj = ResourceManager.GetObject("NecDspDebugger", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap NesEventViewer {
             get {
                 object obj = ResourceManager.GetObject("NesEventViewer", resourceCulture);

@@ -77,6 +77,8 @@ namespace Mesen.GUI.Config
 		public XmlKeys OpenSa1Debugger = Keys.None;
 		[ShortcutName("Open GSU Debugger")]
 		public XmlKeys OpenGsuDebugger = Keys.None;
+		[ShortcutName("Open DSP Debugger")]
+		public XmlKeys OpenNecDspDebugger = Keys.None;
 		[ShortcutName("Open Event Viewer")]
 		public XmlKeys OpenEventViewer = Keys.Control | Keys.E;
 		[ShortcutName("Open Memory Tools")]

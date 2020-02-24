@@ -188,6 +188,7 @@ namespace Mesen.GUI
 		CpuMemory,
 		SpcMemory,
 		Sa1Memory,
+		NecDspMemory,
 		GsuMemory,
 		PrgRom,
 		WorkRam,
@@ -504,7 +505,8 @@ namespace Mesen.GUI
 		Spc,
 		NecDsp,
 		Sa1,
-		Gsu
+		Gsu,
+		Cx4
 	}
 
 	public static class CpuTypeExtensions
@@ -514,6 +516,7 @@ namespace Mesen.GUI
 			switch(cpuType) {
 				case CpuType.Cpu: return SnesMemoryType.CpuMemory;
 				case CpuType.Spc: return SnesMemoryType.SpcMemory;
+				case CpuType.NecDsp: return SnesMemoryType.NecDspMemory;
 				case CpuType.Sa1: return SnesMemoryType.Sa1Memory;
 				case CpuType.Gsu: return SnesMemoryType.GsuMemory;
 
@@ -527,6 +530,7 @@ namespace Mesen.GUI
 			switch(cpuType) {
 				case CpuType.Cpu: return 6;
 				case CpuType.Spc: return 4;
+				case CpuType.NecDsp: return 4;
 				case CpuType.Sa1: return 6;
 				case CpuType.Gsu: return 6;
 

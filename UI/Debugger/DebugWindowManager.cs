@@ -30,6 +30,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.SpcDebugger: frm = new frmDebugger(CpuType.Spc); frm.Icon = Properties.Resources.SpcDebugger; break;
 					case DebugWindow.Sa1Debugger: frm = new frmDebugger(CpuType.Sa1); frm.Icon = Properties.Resources.Sa1Debugger; break;
 					case DebugWindow.GsuDebugger: frm = new frmDebugger(CpuType.Gsu); frm.Icon = Properties.Resources.GsuDebugger; break;
+					case DebugWindow.NecDspDebugger: frm = new frmDebugger(CpuType.NecDsp); frm.Icon = Properties.Resources.NecDspDebugger; break;
 					case DebugWindow.TraceLogger: frm = new frmTraceLogger(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.MemoryTools: frm = new frmMemoryTools(); frm.Icon = Properties.Resources.CheatCode; break;
 					case DebugWindow.TileViewer: frm = new frmTileViewer(); frm.Icon = Properties.Resources.VerticalLayout; break;
@@ -85,6 +86,7 @@ namespace Mesen.GUI.Debugger
 			switch(type) {
 				case CpuType.Cpu: return (frmDebugger)OpenDebugWindow(DebugWindow.Debugger);
 				case CpuType.Spc: return (frmDebugger)OpenDebugWindow(DebugWindow.SpcDebugger);
+				case CpuType.NecDsp: return (frmDebugger)OpenDebugWindow(DebugWindow.NecDspDebugger);
 				case CpuType.Sa1: return (frmDebugger)OpenDebugWindow(DebugWindow.Sa1Debugger);
 				case CpuType.Gsu: return (frmDebugger)OpenDebugWindow(DebugWindow.GsuDebugger);
 			}
@@ -96,6 +98,7 @@ namespace Mesen.GUI.Debugger
 			switch(type) {
 				case CpuType.Cpu: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.Debugger);
 				case CpuType.Spc: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.SpcDebugger);
+				case CpuType.NecDsp: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.NecDspDebugger);
 				case CpuType.Sa1: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.Sa1Debugger);
 				case CpuType.Gsu: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.GsuDebugger);
 			}
@@ -144,6 +147,7 @@ namespace Mesen.GUI.Debugger
 				case DebugWindow.SpcDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Spc);
 				case DebugWindow.Sa1Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Sa1);
 				case DebugWindow.GsuDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Gsu);
+				case DebugWindow.NecDspDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.NecDsp);
 				case DebugWindow.TraceLogger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmTraceLogger));
 				case DebugWindow.EventViewer: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmEventViewer));
 				case DebugWindow.Profiler: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmProfiler));
@@ -185,6 +189,7 @@ namespace Mesen.GUI.Debugger
 		SpcDebugger,
 		Sa1Debugger,
 		GsuDebugger,
+		NecDspDebugger,
 		MemoryTools,
 		TraceLogger,
 		TileViewer,

@@ -131,7 +131,8 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void mnuAddBreakpoint_Click(object sender, EventArgs e)
 		{
-			Breakpoint breakpoint = new Breakpoint() { MemoryType = _cpuType.ToMemoryType(), CpuType = _cpuType };
+			SnesMemoryType memType = _cpuType == CpuType.NecDsp ? SnesMemoryType.DspProgramRom : _cpuType.ToMemoryType();
+			Breakpoint breakpoint = new Breakpoint() { MemoryType = memType, CpuType = _cpuType };
 			if(new frmBreakpoint(breakpoint).ShowDialog() == DialogResult.OK) {
 				BreakpointManager.AddBreakpoint(breakpoint);
 			}

@@ -345,6 +345,8 @@ namespace Mesen.GUI.Debugger.Controls
 				DebugApi.RefreshDisassembly(CpuType.Cpu);
 				DebugApi.RefreshDisassembly(CpuType.Spc);
 				DebugApi.RefreshDisassembly(CpuType.Sa1);
+				DebugApi.RefreshDisassembly(CpuType.Gsu);
+				DebugApi.RefreshDisassembly(CpuType.NecDsp);
 			}
 
 			_manager.RefreshCode(_inSourceView ? _symbolProvider : null, _inSourceView ? cboSourceFile.SelectedItem as SourceFileInfo : null);

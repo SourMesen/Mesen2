@@ -27,9 +27,11 @@ namespace Mesen.GUI.Debugger.Workspace
 				_workspace.SpcWatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Spc).WatchEntries);
 				_workspace.Sa1WatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Sa1).WatchEntries);
 				_workspace.GsuWatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.Gsu).WatchEntries);
+				_workspace.NecDspWatchValues = new List<string>(WatchManager.GetWatchManager(CpuType.NecDsp).WatchEntries);
 				_workspace.Breakpoints = new List<Breakpoint>(BreakpointManager.Breakpoints);
 				_workspace.CpuLabels = new List<CodeLabel>(LabelManager.GetLabels(CpuType.Cpu));
 				_workspace.SpcLabels = new List<CodeLabel>(LabelManager.GetLabels(CpuType.Spc));
+				_workspace.NecDspLabels = new List<CodeLabel>(LabelManager.GetLabels(CpuType.NecDsp));
 				_workspace.Save();
 			}
 		}
@@ -49,12 +51,15 @@ namespace Mesen.GUI.Debugger.Workspace
 				_workspace.SpcWatchValues = new List<string>();
 				_workspace.Sa1WatchValues = new List<string>();
 				_workspace.GsuWatchValues = new List<string>();
+				_workspace.NecDspWatchValues = new List<string>();
 				_workspace.CpuLabels = new List<CodeLabel>();
 				_workspace.SpcLabels = new List<CodeLabel>();
+				_workspace.NecDspLabels = new List<CodeLabel>();
 				WatchManager.GetWatchManager(CpuType.Cpu).WatchEntries = _workspace.WatchValues;
 				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
 				WatchManager.GetWatchManager(CpuType.Sa1).WatchEntries = _workspace.Sa1WatchValues;
 				WatchManager.GetWatchManager(CpuType.Gsu).WatchEntries = _workspace.GsuWatchValues;
+				WatchManager.GetWatchManager(CpuType.NecDsp).WatchEntries = _workspace.NecDspWatchValues;
 				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
 				LabelManager.SetDefaultLabels();
 				LabelManager.RefreshLabels();
@@ -68,6 +73,7 @@ namespace Mesen.GUI.Debugger.Workspace
 			if(_workspace != null) {
 				_workspace.CpuLabels = new List<CodeLabel>();
 				_workspace.SpcLabels = new List<CodeLabel>();
+				_workspace.NecDspLabels = new List<CodeLabel>();
 				LabelManager.ResetLabels();
 				LabelManager.SetDefaultLabels();
 				LabelManager.RefreshLabels();
@@ -89,10 +95,12 @@ namespace Mesen.GUI.Debugger.Workspace
 				WatchManager.GetWatchManager(CpuType.Spc).WatchEntries = _workspace.SpcWatchValues;
 				WatchManager.GetWatchManager(CpuType.Sa1).WatchEntries = _workspace.Sa1WatchValues;
 				WatchManager.GetWatchManager(CpuType.Gsu).WatchEntries = _workspace.GsuWatchValues;
+				WatchManager.GetWatchManager(CpuType.NecDsp).WatchEntries = _workspace.NecDspWatchValues;
 
 				LabelManager.ResetLabels();
 				LabelManager.SetLabels(_workspace.CpuLabels);
 				LabelManager.SetLabels(_workspace.SpcLabels);
+				LabelManager.SetLabels(_workspace.NecDspLabels);
 				LabelManager.SetDefaultLabels();
 
 				ImportDbgFile();

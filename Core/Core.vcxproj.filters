@@ -515,6 +515,9 @@
     <ClInclude Include="BsxStream.h">
       <Filter>SNES\Coprocessors\BSX</Filter>
     </ClInclude>
+    <ClInclude Include="NecDspDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -826,6 +829,9 @@
     </ClCompile>
     <ClCompile Include="BsxStream.cpp">
       <Filter>SNES\Coprocessors\BSX</Filter>
+    </ClCompile>
+    <ClCompile Include="NecDspDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

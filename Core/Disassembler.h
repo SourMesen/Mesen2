@@ -53,6 +53,7 @@ private:
 	vector<DisassemblyResult> _spcDisassembly;
 	vector<DisassemblyResult> _sa1Disassembly;
 	vector<DisassemblyResult> _gsuDisassembly;
+	vector<DisassemblyResult> _necDspDisassembly;
 
 	DisassemblerSource _sources[(int)SnesMemoryType::Register];
 

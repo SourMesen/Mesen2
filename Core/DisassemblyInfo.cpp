@@ -139,7 +139,7 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 			}
 			return 1;
 
-		case CpuType::NecDsp: return 4;
+		case CpuType::NecDsp: return 3;
 		case CpuType::Cx4: return 2;
 	}
 	return 0;
@@ -206,9 +206,11 @@ bool DisassemblyInfo::UpdateCpuFlags(uint8_t &cpuFlags)
 			
 		case CpuType::Gsu:
 		case CpuType::Spc:
-		case CpuType::NecDsp:
 		case CpuType::Cx4:
 			return false;
+		
+		case CpuType::NecDsp:
+			return true;
 	}
 
 	return false;

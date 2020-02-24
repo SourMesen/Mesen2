@@ -398,7 +398,7 @@
 			this.cboBreakpointType.FormattingEnabled = true;
 			this.cboBreakpointType.Location = new System.Drawing.Point(3, 3);
 			this.cboBreakpointType.Name = "cboBreakpointType";
-			this.cboBreakpointType.Size = new System.Drawing.Size(121, 21);
+			this.cboBreakpointType.Size = new System.Drawing.Size(159, 21);
 			this.cboBreakpointType.TabIndex = 13;
 			this.cboBreakpointType.SelectedIndexChanged += new System.EventHandler(this.cboBreakpointType_SelectedIndexChanged);
 			// 
@@ -407,7 +407,7 @@
 			this.lblRange.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblRange.AutoSize = true;
 			this.lblRange.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.lblRange.Location = new System.Drawing.Point(130, 6);
+			this.lblRange.Location = new System.Drawing.Point(168, 6);
 			this.lblRange.Name = "lblRange";
 			this.lblRange.Size = new System.Drawing.Size(40, 13);
 			this.lblRange.TabIndex = 6;

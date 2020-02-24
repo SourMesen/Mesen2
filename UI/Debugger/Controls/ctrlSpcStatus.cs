@@ -15,7 +15,7 @@ namespace Mesen.GUI.Debugger.Controls
 	public partial class ctrlSpcStatus : BaseControl
 	{
 		private EntityBinder _binder = new EntityBinder();
-		private DebugState _lastState;
+		private SpcState _lastState;
 
 		public ctrlSpcStatus()
 		{
@@ -33,11 +33,11 @@ namespace Mesen.GUI.Debugger.Controls
 			_binder.AddBinding(nameof(SpcState.PS), txtP);
 		}
 
-		public void UpdateStatus(DebugState state)
+		public void UpdateStatus(SpcState state)
 		{
 			_lastState = state;
 
-			_binder.Entity = state.Spc;
+			_binder.Entity = state;
 			_binder.UpdateUI();
 
 			UpdateCpuFlags();
@@ -46,7 +46,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void UpdateCpuFlags()
 		{
-			SpcFlags flags = _lastState.Spc.PS;
+			SpcFlags flags = _lastState.PS;
 			chkNegative.Checked = flags.HasFlag(SpcFlags.Negative);
 			chkOverflow.Checked = flags.HasFlag(SpcFlags.Overflow);
 			chkPage.Checked = flags.HasFlag(SpcFlags.DirectPage);
@@ -60,7 +60,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private void UpdateStack()
 		{
 			StringBuilder sb = new StringBuilder();
-			for(UInt32 i = (uint)_lastState.Spc.SP + 1; (i & 0xFF) != 0; i++) {
+			for(UInt32 i = (uint)_lastState.SP + 1; (i & 0xFF) != 0; i++) {
 				sb.Append("$");
 				sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.SpcMemory, 0x100 | i).ToString("X2"));
 				sb.Append(", ");

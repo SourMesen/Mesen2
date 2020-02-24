@@ -2,8 +2,10 @@
 #include "NecDspDisUtils.h"
 #include "DisassemblyInfo.h"
 #include "EmuSettings.h"
+#include "LabelManager.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FastString.h"
+#include "DebugTypes.h"
 
 void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings* settings)
 {
@@ -67,6 +69,8 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		if(operationType == 1) {
 			str.Delimiter(" | ");
 			str.Write("RET");
+		} else if(opCode == 0) {
+			str.Write("NOP");
 		}
 	} else if(operationType == 2) {
 		//Jump
@@ -116,8 +120,15 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 			case 0x141: str.Write("HCALL"); target |= 0x2000; break;
 			default: str.Write("<unknown jump>"); break;
 		}
+		str.Write(' ');
 
-		str.WriteAll(" $", HexUtilities::ToHex(target));
+		AddressInfo absAddress = { (int32_t)target*3, SnesMemoryType::DspProgramRom };
+		string label = labelManager->GetLabel(absAddress);
+		if(label.empty()) {
+			str.WriteAll('$', HexUtilities::ToHex(target * 3));
+		} else {
+			str.Write(label, true);
+		}
 	} else if(operationType == 3) {
 		//Load
 		uint16_t value = opCode >> 6;

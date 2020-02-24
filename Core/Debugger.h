@@ -30,6 +30,7 @@ class ScriptManager;
 class SpcDebugger;
 class CpuDebugger;
 class GsuDebugger;
+class NecDspDebugger;
 class Breakpoint;
 class Assembler;
 
@@ -53,6 +54,7 @@ private:
 	unique_ptr<CpuDebugger> _cpuDebugger;
 	unique_ptr<CpuDebugger> _sa1Debugger;
 	unique_ptr<GsuDebugger> _gsuDebugger;
+	unique_ptr<NecDspDebugger> _necDspDebugger;
 
 	shared_ptr<ScriptManager> _scriptManager;
 	shared_ptr<TraceLogger> _traceLogger;
@@ -96,7 +98,6 @@ public:
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuCycle();
 
-	void ProcessNecDspExec(uint32_t addr, uint32_t value);
 	void ProcessCx4Exec();
 
 	template<CpuType type>

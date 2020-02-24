@@ -63,6 +63,7 @@
     <ClInclude Include="Cx4Types.h" />
     <ClInclude Include="DebugUtilities.h" />
     <ClInclude Include="DmaControllerTypes.h" />
+    <ClInclude Include="NecDspDebugger.h" />
     <ClInclude Include="ForceDisconnectMessage.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameClientConnection.h" />
@@ -250,6 +251,7 @@
     <ClCompile Include="Disassembler.cpp" />
     <ClCompile Include="DisassemblyInfo.cpp" />
     <ClCompile Include="DmaController.cpp" />
+    <ClCompile Include="NecDspDebugger.cpp" />
     <ClCompile Include="EmuSettings.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="ExpressionEvaluator.cpp" />

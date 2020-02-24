@@ -50,7 +50,7 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 		case SnesMemoryType::SpcRam: memcpy(_spc->GetSpcRam(), buffer, length); break;
 		case SnesMemoryType::SpcRom: memcpy(_spc->GetSpcRom(), buffer, length); break;
 
-		case SnesMemoryType::DspProgramRom: memcpy(_cartridge->GetDsp()->DebugGetProgramRom(), buffer, length); break;
+		case SnesMemoryType::DspProgramRom: memcpy(_cartridge->GetDsp()->DebugGetProgramRom(), buffer, length); _cartridge->GetDsp()->BuildProgramCache(); break;
 		case SnesMemoryType::DspDataRom: memcpy(_cartridge->GetDsp()->DebugGetDataRom(), buffer, length); break;
 		case SnesMemoryType::DspDataRam: memcpy(_cartridge->GetDsp()->DebugGetDataRam(), buffer, length); break;
 
@@ -188,7 +188,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::SpcRam: _spc->GetSpcRam()[address] = value; invalidateCache(); break;
 		case SnesMemoryType::SpcRom: _spc->GetSpcRom()[address] = value; invalidateCache(); break;
 			
-		case SnesMemoryType::DspProgramRom: _cartridge->GetDsp()->DebugGetProgramRom()[address] = value; invalidateCache(); break;
+		case SnesMemoryType::DspProgramRom: _cartridge->GetDsp()->DebugGetProgramRom()[address] = value; _cartridge->GetDsp()->BuildProgramCache(); break;
 		case SnesMemoryType::DspDataRom: _cartridge->GetDsp()->DebugGetDataRom()[address] = value; break;
 		case SnesMemoryType::DspDataRam: _cartridge->GetDsp()->DebugGetDataRam()[address] = value; break;
 

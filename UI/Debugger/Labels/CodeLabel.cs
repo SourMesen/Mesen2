@@ -29,6 +29,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.SpcRom: sb.Append("SPCROM:"); break;
 				case SnesMemoryType.BsxPsRam: sb.Append("PSRAM:"); break;
 				case SnesMemoryType.BsxMemoryPack: sb.Append("MPACK:"); break;
+				case SnesMemoryType.DspProgramRom: sb.Append("DSPPRG:"); break;
 			}
 
 			sb.Append(Address.ToString("X4"));
@@ -64,6 +65,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case "SPCROM": type = SnesMemoryType.SpcRom; break;
 				case "PSRAM": type = SnesMemoryType.BsxPsRam; break;
 				case "MPACK": type = SnesMemoryType.BsxMemoryPack; break;
+				case "DSPPRG": type = SnesMemoryType.DspProgramRom; break;
 				default: return null;
 			}
 

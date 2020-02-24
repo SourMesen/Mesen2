@@ -65,6 +65,11 @@ Sa1::Sa1(Console* console)
 	Reset();
 }
 
+Sa1::~Sa1()
+{
+	delete[] _iRam;
+}
+
 void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 {
 	switch(addr) {

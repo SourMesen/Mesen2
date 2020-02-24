@@ -50,7 +50,6 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_spcRom = _spc->GetSpcRom();
 	_spcRomSize = Spc::SpcRomSize;
 
-
 	_necDspProgramRom = cart->GetDsp() ? cart->GetDsp()->DebugGetProgramRom() : nullptr;
 	_necDspProgramRomSize = cart->GetDsp() ? cart->GetDsp()->DebugGetProgramRomSize() : 0;
 
@@ -90,6 +89,12 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_sources[(int)SnesMemoryType::GsuWorkRam] = { _gsuWorkRam, &_gsuWorkRamCache, _gsuWorkRamSize };
 	_sources[(int)SnesMemoryType::BsxPsRam] = { _bsxPsRam, &_bsxPsRamCache, _bsxPsRamSize };
 	_sources[(int)SnesMemoryType::BsxMemoryPack] = { _bsxMemPack, &_bsxMemPackCache, _bsxMemPackSize };
+
+	if(_necDspProgramRomSize > 0) {
+		//Build cache for the entire DSP chip (since it only contains instructions)
+		AddressInfo dspStart = { 0, SnesMemoryType::DspProgramRom };
+		BuildCache(dspStart, 0, CpuType::NecDsp);
+	}
 }
 
 DisassemblerSource Disassembler::GetSource(SnesMemoryType type)
@@ -106,9 +111,9 @@ vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
 	switch(type) {
 		case CpuType::Cpu: return _disassembly;
 		case CpuType::Spc: return _spcDisassembly;
+		case CpuType::NecDsp: return _necDspDisassembly;
 		case CpuType::Sa1: return _sa1Disassembly;
 		case CpuType::Gsu: return _gsuDisassembly;
-		case CpuType::NecDsp: break;
 		case CpuType::Cx4: break;
 	}
 	throw std::runtime_error("Disassembly::GetDisassemblyList(): Invalid cpu type");
@@ -157,8 +162,8 @@ void Disassembler::SetDisassembleFlag(CpuType type)
 		_needDisassemble[(int)CpuType::Cpu] = true;
 		_needDisassemble[(int)CpuType::Sa1] = true;
 		_needDisassemble[(int)CpuType::Gsu] = true;
-	} else if(type == CpuType::Spc) {
-		_needDisassemble[(int)CpuType::Spc] = true;
+	} else {
+		_needDisassemble[(int)type] = true;
 	}
 }
 
@@ -202,9 +207,13 @@ void Disassembler::Disassemble(CpuType cpuType)
 	auto lock = _disassemblyLock.AcquireSafe(); 
 	
 	bool isSpc = cpuType == CpuType::Spc;
+	bool isDsp = cpuType == CpuType::NecDsp;
 	MemoryMappings *mappings = nullptr;
+	int32_t maxAddr = 0xFFFFFF;
 	switch(cpuType) {
-		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
+		case CpuType::Cpu: 
+			mappings = _memoryManager->GetMemoryMappings();
+			break;
 
 		case CpuType::Sa1:
 			if(!_console->GetCartridge()->GetSa1()) {
@@ -220,12 +229,23 @@ void Disassembler::Disassemble(CpuType cpuType)
 			mappings = _console->GetCartridge()->GetGsu()->GetMemoryMappings();
 			break;
 
-		case CpuType::Spc: mappings = nullptr; break;
+		case CpuType::NecDsp:
+			if(!_console->GetCartridge()->GetDsp()) {
+				return;
+			}
+			mappings = nullptr;
+			maxAddr = _necDspProgramRomSize - 1;
+			break;
+
+		case CpuType::Spc:
+			mappings = nullptr; 
+			maxAddr = 0xFFFF;
+			break;
+
 		default: throw std::runtime_error("Disassemble(): Invalid cpu type");
 	}
 
 	vector<DisassemblyResult> &results = GetDisassemblyList(cpuType);
-	int32_t maxAddr = isSpc ? 0xFFFF : 0xFFFFFF;
 	results.clear();
 
 	bool disUnident = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
@@ -241,7 +261,11 @@ void Disassembler::Disassemble(CpuType cpuType)
 	int byteCounter = 0;
 	for(int32_t i = 0; i <= maxAddr; i++) {
 		prevAddrInfo = addrInfo;
-		addrInfo = isSpc ? _spc->GetAbsoluteAddress(i) : mappings->GetAbsoluteAddress(i);
+		if(isDsp) {
+			addrInfo = { i, SnesMemoryType::DspProgramRom };
+		} else {
+			addrInfo = isSpc ? _spc->GetAbsoluteAddress(i) : mappings->GetAbsoluteAddress(i);
+		}
 
 		if(addrInfo.Address < 0) {
 			continue;
@@ -536,9 +560,20 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 						break;
 					}
+					
+					case CpuType::NecDsp:
+						if(!disInfo.IsInitialized()) {
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::NecDsp);
+						} else {
+							data.Flags |= LineFlags::VerifiedCode;
+						}
+
+						data.OpSize = disInfo.GetOpSize();
+						data.EffectiveAddress = -1;
+						data.ValueSize = 0;
+						break;
 
 					case CpuType::Cx4:
-					case CpuType::NecDsp:
 						throw std::runtime_error("GetLineData - CPU type not supported");
 				}
 

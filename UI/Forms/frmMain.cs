@@ -280,6 +280,7 @@ namespace Mesen.GUI.Forms
 			mnuSpcDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSpcDebugger));
 			mnuSa1Debugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSa1Debugger));
 			mnuGsuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenGsuDebugger));
+			mnuNecDspDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenNecDspDebugger));
 			mnuMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenMemoryTools));
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
 			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
@@ -342,6 +343,7 @@ namespace Mesen.GUI.Forms
 			mnuSpcDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpcDebugger); };
 			mnuSa1Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Sa1Debugger); };
 			mnuGsuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GsuDebugger); };
+			mnuNecDspDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.NecDspDebugger); };
 			mnuTraceLogger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger); };
 			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
 			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
@@ -434,6 +436,19 @@ namespace Mesen.GUI.Forms
 
 			mnuGsuDebugger.Enabled = coprocessor == CoprocessorType.GSU;
 			mnuGsuDebugger.Visible = coprocessor == CoprocessorType.GSU;
+
+			bool isNecDsp = (
+				coprocessor == CoprocessorType.DSP1 ||
+				coprocessor == CoprocessorType.DSP1B ||
+				coprocessor == CoprocessorType.DSP2 ||
+				coprocessor == CoprocessorType.DSP3 ||
+				coprocessor == CoprocessorType.DSP4 ||
+				coprocessor == CoprocessorType.ST010 ||
+				coprocessor == CoprocessorType.ST011
+			);
+
+			mnuNecDspDebugger.Enabled = isNecDsp;
+			mnuNecDspDebugger.Visible = isNecDsp;
 
 			mnuTraceLogger.Enabled = running;
 			mnuScriptWindow.Enabled = running;

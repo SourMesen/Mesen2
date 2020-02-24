@@ -86,6 +86,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.GsuWorkRam: return address | ((ulong)8 << 32);
 				case SnesMemoryType.BsxPsRam: return address | ((ulong)9 << 32);
 				case SnesMemoryType.BsxMemoryPack: return address | ((ulong)10 << 32);
+				case SnesMemoryType.DspProgramRom: return address | ((ulong)11 << 32);
 			}
 			throw new Exception("Invalid type");
 		}
@@ -184,6 +185,8 @@ namespace Mesen.GUI.Debugger.Labels
 		{
 			if(label.MemoryType.ToCpuType() == CpuType.Spc) {
 				DebugApi.RefreshDisassembly(CpuType.Spc);
+			} else if(label.MemoryType.ToCpuType() == CpuType.NecDsp) {
+				DebugApi.RefreshDisassembly(CpuType.NecDsp);
 			} else {
 				DebugApi.RefreshDisassembly(CpuType.Cpu);
 				DebugApi.RefreshDisassembly(CpuType.Sa1);
