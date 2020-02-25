@@ -7,6 +7,7 @@
 #include "Spc.h"
 #include "Sa1.h"
 #include "Gsu.h"
+#include "Cx4.h"
 #include "BaseCartridge.h"
 
 MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
@@ -16,6 +17,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
 	_spc = console->GetSpc().get();
 	_sa1 = console->GetCartridge()->GetSa1();
 	_gsu = console->GetCartridge()->GetGsu();
+	_cx4 = console->GetCartridge()->GetCx4();
 
 	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((SnesMemoryType)i);
@@ -116,6 +118,15 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 		case SnesMemoryType::GsuMemory:
 			for(uint32_t i = 0; i < length; i++) {
 				AddressInfo info = _gsu->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
+				if(info.Address >= 0) {
+					counts[i] = _counters[(int)info.Type][info.Address];
+				}
+			}
+			break;
+
+		case SnesMemoryType::Cx4Memory:
+			for(uint32_t i = 0; i < length; i++) {
+				AddressInfo info = _cx4->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
 				if(info.Address >= 0) {
 					counts[i] = _counters[(int)info.Type][info.Address];
 				}

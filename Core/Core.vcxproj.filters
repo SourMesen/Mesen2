@@ -518,6 +518,9 @@
     <ClInclude Include="NecDspDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
+    <ClInclude Include="Cx4Debugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -831,6 +834,9 @@
       <Filter>SNES\Coprocessors\BSX</Filter>
     </ClCompile>
     <ClCompile Include="NecDspDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Cx4Debugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
   </ItemGroup>

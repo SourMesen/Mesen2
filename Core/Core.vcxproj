@@ -59,6 +59,7 @@
     <ClInclude Include="CpuBwRamHandler.h" />
     <ClInclude Include="CpuDebugger.h" />
     <ClInclude Include="Cx4.h" />
+    <ClInclude Include="Cx4Debugger.h" />
     <ClInclude Include="Cx4DisUtils.h" />
     <ClInclude Include="Cx4Types.h" />
     <ClInclude Include="DebugUtilities.h" />
@@ -243,6 +244,7 @@
     <ClCompile Include="CpuDisUtils.cpp" />
     <ClCompile Include="Cx4.cpp" />
     <ClCompile Include="Cx4.Instructions.cpp" />
+    <ClCompile Include="Cx4Debugger.cpp" />
     <ClCompile Include="Cx4DisUtils.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugHud.cpp" />

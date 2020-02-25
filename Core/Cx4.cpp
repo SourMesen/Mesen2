@@ -87,8 +87,10 @@ void Cx4::Run()
 				Stop();
 			}
 		} else {
-			_console->ProcessCx4Exec();
-			uint16_t opCode = _prgRam[_state.Cache.Page][_state.PC++];
+			uint16_t opCode = _prgRam[_state.Cache.Page][_state.PC];
+			uint32_t addr = (_state.Cache.Address[_state.Cache.Page] + (_state.PC * 2)) & 0xFFFFFF;
+			_console->ProcessMemoryRead<CpuType::Cx4>(addr, (uint8_t)opCode, MemoryOperationType::ExecOpCode);
+			_state.PC++;
 			
 			if(_state.PC == 0) {
 				//If execution reached the end of the page, start loading the next page
@@ -257,7 +259,9 @@ uint8_t Cx4::ReadCx4(uint32_t addr)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
-		return handler->Read(addr);
+		uint8_t value = handler->Read(addr);
+		_console->ProcessMemoryRead<CpuType::Cx4>(addr, value, MemoryOperationType::Read);
+		return value;
 	}
 	return 0;
 }
@@ -266,6 +270,7 @@ void Cx4::WriteCx4(uint32_t addr, uint8_t value)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
+		_console->ProcessMemoryWrite<CpuType::Cx4>(addr, value, MemoryOperationType::Write);
 		handler->Write(addr, value);
 	}
 }

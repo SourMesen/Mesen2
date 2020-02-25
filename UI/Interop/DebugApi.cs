@@ -190,6 +190,7 @@ namespace Mesen.GUI
 		Sa1Memory,
 		NecDspMemory,
 		GsuMemory,
+		Cx4Memory,
 		PrgRom,
 		WorkRam,
 		SaveRam,
@@ -519,6 +520,7 @@ namespace Mesen.GUI
 				case CpuType.NecDsp: return SnesMemoryType.NecDspMemory;
 				case CpuType.Sa1: return SnesMemoryType.Sa1Memory;
 				case CpuType.Gsu: return SnesMemoryType.GsuMemory;
+				case CpuType.Cx4: return SnesMemoryType.Cx4Memory;
 
 				default:
 					throw new Exception("Invalid CPU type");
@@ -533,6 +535,7 @@ namespace Mesen.GUI
 				case CpuType.NecDsp: return 4;
 				case CpuType.Sa1: return 6;
 				case CpuType.Gsu: return 6;
+				case CpuType.Cx4: return 6;
 
 				default:
 					throw new Exception("Invalid CPU type");

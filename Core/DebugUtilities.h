@@ -13,8 +13,7 @@ public:
 			case CpuType::NecDsp: return SnesMemoryType::NecDspMemory;
 			case CpuType::Sa1: return SnesMemoryType::Sa1Memory;
 			case CpuType::Gsu: return SnesMemoryType::GsuMemory;
-			
-			case CpuType::Cx4: break;
+			case CpuType::Cx4:  return SnesMemoryType::Cx4Memory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -41,6 +40,10 @@ public:
 			case SnesMemoryType::DspProgramRom:
 				return CpuType::NecDsp;
 
+			case SnesMemoryType::Cx4DataRam:
+			case SnesMemoryType::Cx4Memory:
+				return CpuType::Cx4;
+
 			default:
 				return CpuType::Cpu;
 		}
@@ -50,7 +53,7 @@ public:
 
 	static constexpr SnesMemoryType GetLastCpuMemoryType()
 	{
-		return SnesMemoryType::GsuMemory;
+		return SnesMemoryType::Cx4Memory;
 	}
 
 	static bool IsPpuMemory(SnesMemoryType memType)

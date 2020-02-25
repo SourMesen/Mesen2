@@ -37,7 +37,7 @@ namespace Mesen.GUI.Debugger
 			_cpuType = breakpoint.CpuType;
 
 			cboBreakpointType.Items.Clear();
-			if(_cpuType == CpuType.Cpu || _cpuType == CpuType.Sa1 || _cpuType == CpuType.Gsu) {
+			if(_cpuType == CpuType.Cpu || _cpuType == CpuType.Sa1 || _cpuType == CpuType.Gsu || _cpuType == CpuType.Cx4) {
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(_cpuType.ToMemoryType()));
 				cboBreakpointType.Items.Add("-");
 

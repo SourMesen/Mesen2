@@ -39,6 +39,7 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 		case SnesMemoryType::SpcMemory:
 		case SnesMemoryType::Sa1Memory:
 		case SnesMemoryType::GsuMemory:
+		case SnesMemoryType::Cx4Memory:
 			break;
 		
 		case SnesMemoryType::PrgRom: memcpy(_cartridge->DebugGetPrgRom(), buffer, length); break;
@@ -70,6 +71,7 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::SpcMemory: return 0x10000;
 		case SnesMemoryType::Sa1Memory: return 0x1000000;
 		case SnesMemoryType::GsuMemory: return 0x1000000;
+		case SnesMemoryType::Cx4Memory: return 0x1000000;
 		case SnesMemoryType::PrgRom: return _cartridge->DebugGetPrgRomSize();
 		case SnesMemoryType::WorkRam: return MemoryManager::WorkRamSize;
 		case SnesMemoryType::SaveRam: return _cartridge->DebugGetSaveRamSize();
@@ -118,6 +120,12 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 		case SnesMemoryType::GsuMemory:
 			for(int i = 0; i <= 0xFFFFFF; i += 0x1000) {
 				_cartridge->GetGsu()->GetMemoryMappings()->PeekBlock(i, buffer + i);
+			}
+			break;
+
+		case SnesMemoryType::Cx4Memory:
+			for(int i = 0; i <= 0xFFFFFF; i += 0x1000) {
+				_cartridge->GetCx4()->GetMemoryMappings()->PeekBlock(i, buffer + i);
 			}
 			break;
 
@@ -177,6 +185,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::SpcMemory: _spc->DebugWrite(address, value); break;
 		case SnesMemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
+		case SnesMemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
 
 		case SnesMemoryType::PrgRom: _cartridge->DebugGetPrgRom()[address] = value; invalidateCache(); break;
 		case SnesMemoryType::WorkRam: _memoryManager->DebugGetWorkRam()[address] = value; invalidateCache(); break;
@@ -213,6 +222,7 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 		case SnesMemoryType::SpcMemory: return _spc->DebugRead(address);
 		case SnesMemoryType::Sa1Memory: return _cartridge->GetSa1()->GetMemoryMappings()->Peek(address);
 		case SnesMemoryType::GsuMemory: return _cartridge->GetGsu()->GetMemoryMappings()->Peek(address);
+		case SnesMemoryType::Cx4Memory: return _cartridge->GetCx4()->GetMemoryMappings()->Peek(address);
 
 		case SnesMemoryType::PrgRom: return _cartridge->DebugGetPrgRom()[address];
 		case SnesMemoryType::WorkRam: return  _memoryManager->DebugGetWorkRam()[address];

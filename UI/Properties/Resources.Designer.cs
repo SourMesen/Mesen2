@@ -263,6 +263,16 @@ namespace Mesen.GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Cx4Debugger {
+            get {
+                object obj = ResourceManager.GetObject("Cx4Debugger", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Debugger {
             get {
                 object obj = ResourceManager.GetObject("Debugger", resourceCulture);

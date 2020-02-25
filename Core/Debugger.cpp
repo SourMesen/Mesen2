@@ -13,6 +13,7 @@
 #include "SpcDebugger.h"
 #include "GsuDebugger.h"
 #include "NecDspDebugger.h"
+#include "Cx4Debugger.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "EmuSettings.h"
@@ -60,6 +61,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Sa1].reset(new ExpressionEvaluator(this, CpuType::Sa1));
 	_watchExpEval[(int)CpuType::Gsu].reset(new ExpressionEvaluator(this, CpuType::Gsu));
 	_watchExpEval[(int)CpuType::NecDsp].reset(new ExpressionEvaluator(this, CpuType::NecDsp));
+	_watchExpEval[(int)CpuType::Cx4].reset(new ExpressionEvaluator(this, CpuType::Cx4));
 
 	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), _memoryManager.get()));
 	_memoryDumper.reset(new MemoryDumper(this));
@@ -79,6 +81,8 @@ Debugger::Debugger(shared_ptr<Console> console)
 		_gsuDebugger.reset(new GsuDebugger(this));
 	} else if(_cart->GetDsp()) {
 		_necDspDebugger.reset(new NecDspDebugger(this));
+	} else if(_cart->GetCx4()) {
+		_cx4Debugger.reset(new Cx4Debugger(this));
 	}
 
 	_step.reset(new StepRequest());
@@ -131,6 +135,7 @@ void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationTy
 		case CpuType::NecDsp: _necDspDebugger->ProcessRead(addr, value, opType); break;
 		case CpuType::Sa1: _sa1Debugger->ProcessRead(addr, value, opType); break;
 		case CpuType::Gsu: _gsuDebugger->ProcessRead(addr, value, opType); break;
+		case CpuType::Cx4: _cx4Debugger->ProcessRead(addr, value, opType); break;
 	}
 }
 
@@ -143,6 +148,7 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 		case CpuType::NecDsp: _necDspDebugger->ProcessWrite(addr, value, opType); break;
 		case CpuType::Sa1: _sa1Debugger->ProcessWrite(addr, value, opType); break;
 		case CpuType::Gsu: _gsuDebugger->ProcessWrite(addr, value, opType); break;
+		case CpuType::Cx4: _cx4Debugger->ProcessWrite(addr, value, opType); break;
 	}
 }
 
@@ -208,24 +214,6 @@ void Debugger::ProcessPpuCycle()
 	}
 }
 
-void Debugger::ProcessCx4Exec()
-{
-	if(_traceLogger->IsCpuLogged(CpuType::Cx4)) {
-		DebugState debugState;
-		GetState(debugState, true);
-
-		uint32_t addr = (debugState.Cx4.Cache.Address[debugState.Cx4.Cache.Page] + (debugState.Cx4.PC * 2)) & 0xFFFFFF;
-		AddressInfo addressInfo = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(addr);
-
-		if(addressInfo.Address >= 0) {
-			_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
-
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
-			_traceLogger->Log(CpuType::Cx4, debugState, disInfo);
-		}
-	}
-}
-
 void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
 {
 	if(_suspendRequestCount) {
@@ -241,6 +229,8 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 		_disassembler->Disassemble(CpuType::Gsu);
 	} else if(_cart->GetDsp()) {
 		_disassembler->Disassemble(CpuType::NecDsp);
+	} else if(_cart->GetCx4()) {
+		_disassembler->Disassemble(CpuType::Cx4);
 	}
 
 	_executionStopped = true;
@@ -334,6 +324,9 @@ void Debugger::Run()
 	if(_necDspDebugger) {
 		_necDspDebugger->Run();
 	}
+	if(_cx4Debugger) {
+		_cx4Debugger->Run();
+	}
 	_waitForBreakResume = false;
 }
 
@@ -352,8 +345,7 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 				case CpuType::NecDsp: debugger = _necDspDebugger.get(); break;
 				case CpuType::Sa1: debugger = _sa1Debugger.get(); break;
 				case CpuType::Gsu: debugger = _gsuDebugger.get(); break;
-				case CpuType::Cx4:
-					throw std::runtime_error("Step(): Unsupported CPU type.");
+				case CpuType::Cx4: debugger = _cx4Debugger.get(); break;
 			}
 			debugger->Step(stepCount, type); 
 			break;
@@ -376,6 +368,9 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 	}
 	if(_necDspDebugger && debugger != _necDspDebugger.get()) {
 		_necDspDebugger->Run();
+	}
+	if(_cx4Debugger && debugger != _cx4Debugger.get()) {
+		_cx4Debugger->Run();
 	}
 	_waitForBreakResume = false;
 }
@@ -453,6 +448,8 @@ AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 		return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
 	} else if(relAddress.Type == SnesMemoryType::GsuMemory) {
 		return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::Cx4Memory) {
+		return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
 	} else if(relAddress.Type == SnesMemoryType::NecDspMemory) {
 		return { relAddress.Address, SnesMemoryType::DspProgramRom };
 	}
@@ -554,6 +551,9 @@ void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 	}
 	if(_necDspDebugger) {
 		_necDspDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	}
+	if(_cx4Debugger) {
+		_cx4Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
 	}
 }
 
@@ -657,12 +657,14 @@ template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t v
 template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Debugger::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Debugger::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

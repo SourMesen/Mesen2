@@ -52,18 +52,25 @@ namespace Mesen.GUI.Debugger.Controls
 
 			if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
 				this.Items.Add("-");
-				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1Memory));
+				if(!excludeCpuMemory) {
+					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1Memory));
+				}
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
 			}
 
 			if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
 				this.Items.Add("-");
-				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuMemory));
+				if(!excludeCpuMemory) {
+					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuMemory));
+				}
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
 			}
 
 			if(DebugApi.GetMemorySize(SnesMemoryType.Cx4DataRam) > 0) {
 				this.Items.Add("-");
+				if(!excludeCpuMemory) {
+					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Cx4Memory));
+				}
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Cx4DataRam));
 			}
 

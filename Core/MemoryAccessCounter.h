@@ -8,6 +8,7 @@ class Spc;
 class Console;
 class Sa1;
 class Gsu;
+class Cx4;
 
 struct AddressCounters
 {
@@ -33,6 +34,7 @@ private:
 	Spc* _spc;
 	Sa1* _sa1;
 	Gsu* _gsu;
+	Cx4* _cx4;
 
 	bool IsAddressUninitialized(AddressInfo &addressInfo);
 

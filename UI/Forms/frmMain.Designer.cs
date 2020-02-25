@@ -176,6 +176,7 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
+			this.mnuCx4Debugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -1109,7 +1110,8 @@
             this.mnuSpcDebugger,
             this.mnuSa1Debugger,
             this.mnuGsuDebugger,
-            this.mnuNecDspDebugger});
+            this.mnuNecDspDebugger,
+            this.mnuCx4Debugger});
 			this.mnuDebug.Name = "mnuDebug";
 			this.mnuDebug.Size = new System.Drawing.Size(54, 20);
 			this.mnuDebug.Text = "Debug";
@@ -1311,6 +1313,13 @@
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
 			// 
+			// mnuCx4Debugger
+			// 
+			this.mnuCx4Debugger.Image = global::Mesen.GUI.Properties.Resources.Cx4Debugger;
+			this.mnuCx4Debugger.Name = "mnuCx4Debugger";
+			this.mnuCx4Debugger.Size = new System.Drawing.Size(183, 22);
+			this.mnuCx4Debugger.Text = "CX4 Debugger";
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -1485,5 +1494,6 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuAssembler;
 	  private System.Windows.Forms.ToolStripMenuItem mnuReloadRom;
 	  private System.Windows.Forms.ToolStripMenuItem mnuNecDspDebugger;
+	  private System.Windows.Forms.ToolStripMenuItem mnuCx4Debugger;
    }
 }

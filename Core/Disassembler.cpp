@@ -7,6 +7,7 @@
 #include "NecDsp.h"
 #include "Sa1.h"
 #include "Gsu.h"
+#include "Cx4.h"
 #include "BsxCart.h"
 #include "BsxMemoryPack.h"
 #include "Debugger.h"
@@ -114,7 +115,7 @@ vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
 		case CpuType::NecDsp: return _necDspDisassembly;
 		case CpuType::Sa1: return _sa1Disassembly;
 		case CpuType::Gsu: return _gsuDisassembly;
-		case CpuType::Cx4: break;
+		case CpuType::Cx4: return _cx4Disassembly;
 	}
 	throw std::runtime_error("Disassembly::GetDisassemblyList(): Invalid cpu type");
 }
@@ -158,10 +159,11 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 
 void Disassembler::SetDisassembleFlag(CpuType type)
 {
-	if(type == CpuType::Cpu || type == CpuType::Sa1 || type == CpuType::Gsu) {
+	if(type == CpuType::Cpu || type == CpuType::Sa1 || type == CpuType::Gsu || type == CpuType::Cx4) {
 		_needDisassemble[(int)CpuType::Cpu] = true;
 		_needDisassemble[(int)CpuType::Sa1] = true;
 		_needDisassemble[(int)CpuType::Gsu] = true;
+		_needDisassemble[(int)CpuType::Cx4] = true;
 	} else {
 		_needDisassemble[(int)type] = true;
 	}
@@ -173,6 +175,7 @@ void Disassembler::ResetPrgCache()
 	_needDisassemble[(int)CpuType::Cpu] = true;
 	_needDisassemble[(int)CpuType::Sa1] = true;
 	_needDisassemble[(int)CpuType::Gsu] = true;
+	_needDisassemble[(int)CpuType::Cx4] = true;
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
@@ -240,6 +243,13 @@ void Disassembler::Disassemble(CpuType cpuType)
 		case CpuType::Spc:
 			mappings = nullptr; 
 			maxAddr = 0xFFFF;
+			break;
+
+		case CpuType::Cx4:
+			if(!_console->GetCartridge()->GetCx4()) {
+				return;
+			}
+			mappings = _console->GetCartridge()->GetCx4()->GetMemoryMappings();
 			break;
 
 		default: throw std::runtime_error("Disassemble(): Invalid cpu type");
@@ -562,8 +572,9 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 					
 					case CpuType::NecDsp:
+					case CpuType::Cx4:
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::NecDsp);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, lineCpuType);
 						} else {
 							data.Flags |= LineFlags::VerifiedCode;
 						}
@@ -572,9 +583,6 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						data.EffectiveAddress = -1;
 						data.ValueSize = 0;
 						break;
-
-					case CpuType::Cx4:
-						throw std::runtime_error("GetLineData - CPU type not supported");
 				}
 
 				string text;

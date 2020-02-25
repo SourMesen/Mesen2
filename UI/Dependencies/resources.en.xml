@@ -957,6 +957,7 @@
 			<Value ID="SpcMemory">SPC Memory</Value>
 			<Value ID="Sa1Memory">SA-1 Memory</Value>
 			<Value ID="GsuMemory">GSU Memory</Value>
+			<Value ID="Cx4Memory">CX4 Memory</Value>
 			<Value ID="PrgRom">PRG ROM</Value>
 			<Value ID="WorkRam">Work RAM</Value>
 			<Value ID="SaveRam">Save RAM</Value>

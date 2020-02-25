@@ -26,6 +26,7 @@ namespace Mesen.GUI.Debugger
 		private ctrlSpcStatus ctrlSpcStatus;
 		private ctrlGsuStatus ctrlGsuStatus;
 		private ctrlNecDspStatus ctrlNecDspStatus;
+		private ctrlCx4Status ctrlCx4Status;
 
 		public CpuType CpuType { get { return _cpuType; } }
 
@@ -134,6 +135,32 @@ namespace Mesen.GUI.Debugger
 					this.ctrlNecDspStatus.Padding = new Padding(3, 0, 3, 0);
 					this.ctrlNecDspStatus.Dock = DockStyle.Top;
 					pnlStatus.Controls.Add(this.ctrlNecDspStatus);
+					break;
+
+				case CpuType.Cx4:
+					ctrlDisassemblyView.Initialize(new Cx4DisassemblyManager(), new Cx4LineStyleProvider());
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.Cx4DebuggerEnabled, true);
+					this.Text = "CX4 Debugger";
+
+					ctrlLabelList.Visible = false;
+					ctrlCallstack.Visible = false;
+					mnuStepOver.Visible = false;
+					mnuStepOut.Visible = false;
+					mnuStepInto.Text = "Step";
+					tlpBottomPanel.ColumnCount = 2;
+
+					sepBrkCopStpWdm.Visible = false;
+					mnuBreakOnWdm.Visible = false;
+					mnuBreakOnCop.Visible = false;
+					mnuBreakOnStp.Visible = false;
+					mnuBreakOnBrk.Visible = false;
+					sepBreakOnUnitRead.Visible = false;
+					mnuBreakOnUnitRead.Visible = false;
+
+					this.ctrlCx4Status = new ctrlCx4Status();
+					this.ctrlCx4Status.Padding = new Padding(3, 0, 3, 0);
+					this.ctrlCx4Status.Dock = DockStyle.Top;
+					pnlStatus.Controls.Add(this.ctrlCx4Status);
 					break;
 			}
 
@@ -428,6 +455,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.NecDsp: ctrlNecDspStatus.UpdateStatus(state.NecDsp); break;
 				case CpuType.Sa1: ctrlCpuStatus.UpdateStatus(state.Sa1); break;
 				case CpuType.Gsu: ctrlGsuStatus.UpdateStatus(state.Gsu); break;
+				case CpuType.Cx4: ctrlCx4Status.UpdateStatus(state.Cx4); break;
 				default: throw new Exception("Unsupported CPU type");
 			}
 
@@ -436,7 +464,7 @@ namespace Mesen.GUI.Debugger
 			ctrlDisassemblyView.SetActiveAddress(activeAddress);
 			ctrlWatch.UpdateWatch(true);
 
-			if(_cpuType != CpuType.Gsu && _cpuType != CpuType.NecDsp) {
+			if(_cpuType != CpuType.Gsu && _cpuType != CpuType.NecDsp && _cpuType != CpuType.Cx4) {
 				ctrlCallstack.UpdateCallstack(_cpuType);
 			}
 		}
@@ -521,6 +549,7 @@ namespace Mesen.GUI.Debugger
 						case CpuType.NecDsp: activeAddress = (int)(state.NecDsp.PC * 3); break;
 						case CpuType.Sa1: activeAddress = (int)((state.Sa1.K << 16) | state.Sa1.PC); break;
 						case CpuType.Gsu: activeAddress = (int)((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]); break;
+						case CpuType.Cx4: activeAddress = (int)((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF); break;
 						default: throw new Exception("Unsupported cpu type");
 					}
 

@@ -33,6 +33,7 @@ enum class SnesMemoryType
 	Sa1Memory,
 	NecDspMemory,
 	GsuMemory,
+	Cx4Memory,
 	PrgRom,
 	WorkRam,
 	SaveRam,

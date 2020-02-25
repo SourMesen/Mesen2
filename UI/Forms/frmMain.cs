@@ -281,6 +281,7 @@ namespace Mesen.GUI.Forms
 			mnuSa1Debugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenSa1Debugger));
 			mnuGsuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenGsuDebugger));
 			mnuNecDspDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenNecDspDebugger));
+			mnuCx4Debugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenCx4Debugger));
 			mnuMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenMemoryTools));
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
 			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
@@ -344,6 +345,7 @@ namespace Mesen.GUI.Forms
 			mnuSa1Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Sa1Debugger); };
 			mnuGsuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GsuDebugger); };
 			mnuNecDspDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.NecDspDebugger); };
+			mnuCx4Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Cx4Debugger); };
 			mnuTraceLogger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger); };
 			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
 			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
@@ -449,6 +451,9 @@ namespace Mesen.GUI.Forms
 
 			mnuNecDspDebugger.Enabled = isNecDsp;
 			mnuNecDspDebugger.Visible = isNecDsp;
+
+			mnuCx4Debugger.Enabled = coprocessor == CoprocessorType.CX4;
+			mnuCx4Debugger.Visible = coprocessor == CoprocessorType.CX4;
 
 			mnuTraceLogger.Enabled = running;
 			mnuScriptWindow.Enabled = running;
