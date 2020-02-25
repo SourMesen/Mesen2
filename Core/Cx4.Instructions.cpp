@@ -291,8 +291,8 @@ void Cx4::PushPC()
 void Cx4::PullPC()
 {
 	_state.SP = (_state.SP - 1) & 0x07;
-	uint16_t value = _state.Stack[_state.SP];
-	_state.PB = value >> 8;
+	uint32_t value = _state.Stack[_state.SP];
+	_state.PB = (value >> 8) & 0x7FFF;
 	_state.PC = value & 0xFF;
 }
 
@@ -365,7 +365,7 @@ void Cx4::Load(uint8_t dest, uint8_t src)
 		case 0: _state.A = GetSourceValue(src); break;
 		case 1: _state.MemoryDataReg = GetSourceValue(src); break;
 		case 2: _state.MemoryAddressReg = GetSourceValue(src); break;
-		case 3: _state.P = GetSourceValue(src); break;
+		case 3: _state.P = GetSourceValue(src) & 0x7FFF; break;
 	}
 }
 
