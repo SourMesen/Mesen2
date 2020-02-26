@@ -88,8 +88,7 @@ void Cx4::Run()
 			}
 		} else {
 			uint16_t opCode = _prgRam[_state.Cache.Page][_state.PC];
-			uint32_t addr = (_state.Cache.Address[_state.Cache.Page] + (_state.PC * 2)) & 0xFFFFFF;
-			_console->ProcessMemoryRead<CpuType::Cx4>(addr, (uint8_t)opCode, MemoryOperationType::ExecOpCode);
+			_console->ProcessMemoryRead<CpuType::Cx4>(0, 0, MemoryOperationType::ExecOpCode);
 			_state.PC++;
 			
 			if(_state.PC == 0) {

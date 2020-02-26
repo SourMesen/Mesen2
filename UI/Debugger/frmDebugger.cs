@@ -48,6 +48,8 @@ namespace Mesen.GUI.Debugger
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
 
+			bool isPaused = EmuApi.IsPaused();
+
 			mnuUseAltSpcOpNames.Visible = false;
 
 			switch(_cpuType) {
@@ -174,7 +176,10 @@ namespace Mesen.GUI.Debugger
 			toolTip.SetToolTip(picWatchHelp, ctrlWatch.GetTooltipText());
 
 			BreakpointManager.AddCpuType(_cpuType);
-			DebugApi.Step(_cpuType, 10000, StepType.Step);
+
+			if(!isPaused) {
+				DebugApi.Step(_cpuType, 10000, StepType.Step);
+			}
 
 			base.OnLoad(e);
 		}

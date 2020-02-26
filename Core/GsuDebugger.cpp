@@ -13,10 +13,12 @@
 #include "Console.h"
 #include "EmuSettings.h"
 #include "MemoryAccessCounter.h"
+#include "CodeDataLogger.h"
 
 GsuDebugger::GsuDebugger(Debugger* debugger)
 {
 	_debugger = debugger;
+	_codeDataLogger = debugger->GetCodeDataLogger().get();
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
@@ -44,6 +46,10 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	MemoryOperationInfo operation { addr, value, type };
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(addressInfo.Type == SnesMemoryType::PrgRom) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Gsu);
+		}
+
 		if(_traceLogger->IsCpuLogged(CpuType::Gsu) || _settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {
 			GsuState gsuState = _gsu->GetState();
 			_disassembler->BuildCache(addressInfo, gsuState.SFR.GetFlagsHigh() & 0x13, CpuType::Gsu);
@@ -66,6 +72,9 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
+		if(addressInfo.Type == SnesMemoryType::PrgRom) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
+		}
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 	}
 
@@ -79,7 +88,6 @@ void GsuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
 	_disassembler->InvalidateCache(addressInfo, CpuType::Gsu);
-
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 }
 

@@ -102,6 +102,9 @@ namespace CdlFlags
 
 		IndexMode8 = 0x10,
 		MemoryMode8 = 0x20,
+
+		Gsu = 0x40,
+		Cx4 = 0x80
 	};
 }
 

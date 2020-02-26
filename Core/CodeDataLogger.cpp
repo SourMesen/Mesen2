@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "CodeDataLogger.h"
-#include "MemoryManager.h"
 
-CodeDataLogger::CodeDataLogger(uint32_t prgSize, MemoryManager* memoryManager)
+CodeDataLogger::CodeDataLogger(uint32_t prgSize)
 {
-	_memoryManager = memoryManager;
 	_prgSize = prgSize;
 	_cdlData = new uint8_t[prgSize];
 	Reset();
@@ -125,6 +123,17 @@ uint8_t CodeDataLogger::GetCpuFlags(uint32_t absoluteAddr)
 	return _cdlData[absoluteAddr] & (CdlFlags::MemoryMode8 | CdlFlags::IndexMode8);
 }
 
+CpuType CodeDataLogger::GetCpuType(uint32_t absoluteAddr)
+{
+	if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
+		return CpuType::Gsu;
+	} else if(_cdlData[absoluteAddr] & CdlFlags::Cx4) {
+		return CpuType::Cx4;
+	}
+
+	return CpuType::Cpu;
+}
+
 void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
 {
 	if(length <= _prgSize) {
@@ -132,16 +141,14 @@ void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
 	}
 }
 
-void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t *cdlData)
+void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, uint8_t *cdlData)
 {
-	if(memoryType == SnesMemoryType::PrgRom) {
-		memcpy(cdlData, _cdlData + offset, length);
-	} else if(memoryType == SnesMemoryType::CpuMemory) {
-		for(uint32_t i = 0; i < length; i++) {
-			AddressInfo info = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
-			cdlData[i] = (info.Type == SnesMemoryType::PrgRom && info.Address >= 0) ? _cdlData[info.Address] : 0;
-		}
-	}
+	memcpy(cdlData, _cdlData + offset, length);
+}
+
+uint8_t CodeDataLogger::GetFlags(uint32_t addr)
+{
+	return _cdlData[addr];
 }
 
 void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)

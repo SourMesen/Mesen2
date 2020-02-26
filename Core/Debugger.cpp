@@ -63,7 +63,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::NecDsp].reset(new ExpressionEvaluator(this, CpuType::NecDsp));
 	_watchExpEval[(int)CpuType::Cx4].reset(new ExpressionEvaluator(this, CpuType::Cx4));
 
-	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), _memoryManager.get()));
+	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize()));
 	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
@@ -534,7 +534,27 @@ void Debugger::RefreshCodeCache()
 	for(uint32_t i = 0; i < prgRomSize; i++) {
 		if(_codeDataLogger->IsCode(i)) {
 			addrInfo.Address = (int32_t)i;
-			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i), CpuType::Cpu) - 1;
+			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i), _codeDataLogger->GetCpuType(i)) - 1;
+		}
+	}
+}
+
+void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData)
+{
+	if(memoryType == SnesMemoryType::PrgRom) {
+		_codeDataLogger->GetCdlData(offset, length, cdlData);
+	} else {
+		MemoryMappings* mappings = nullptr;
+		switch(memoryType) {
+			case SnesMemoryType::CpuMemory: mappings = _memoryManager->GetMemoryMappings(); break;
+			case SnesMemoryType::GsuMemory: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
+			case SnesMemoryType::Cx4Memory: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
+			default: throw std::runtime_error("GetCdlData - Unsupported memory type");
+		}
+
+		for(uint32_t i = 0; i < length; i++) {
+			AddressInfo info = mappings->GetAbsoluteAddress(offset + i);
+			cdlData[i] = info.Type == SnesMemoryType::PrgRom ? _codeDataLogger->GetFlags(info.Address) : 0;
 		}
 	}
 }

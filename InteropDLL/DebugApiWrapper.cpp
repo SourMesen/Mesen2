@@ -82,7 +82,7 @@ extern "C"
 	DllExport void __stdcall ResetMemoryAccessCounts() { GetDebugger()->GetMemoryAccessCounter()->ResetCounts(); }
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters* counts) { GetDebugger()->GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts); }
 	
-	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { GetDebugger()->GetCodeDataLogger()->GetCdlData(offset, length, memoryType, cdlData); }
+	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { GetDebugger()->GetCdlData(offset, length, memoryType, cdlData); }
 	DllExport void __stdcall SetCdlData(uint8_t* cdlData, uint32_t length) { GetDebugger()->SetCdlData(cdlData, length); }
 	DllExport void __stdcall MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(start, end, flags); }
 	
