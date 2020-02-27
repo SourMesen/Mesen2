@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CodeDataLogger.h"
+#include "../Utilities/VirtualFile.h"
 
 CodeDataLogger::CodeDataLogger(uint32_t prgSize)
 {
@@ -20,24 +21,50 @@ void CodeDataLogger::Reset()
 	memset(_cdlData, 0, _prgSize);
 }
 
-bool CodeDataLogger::LoadCdlFile(string cdlFilepath)
+bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc)
 {
-	ifstream cdlFile(cdlFilepath, ios::in | ios::binary);
-	if(cdlFile) {
-		cdlFile.seekg(0, std::ios::end);
-		size_t fileSize = (size_t)cdlFile.tellg();
-		cdlFile.seekg(0, std::ios::beg);
+	VirtualFile cdlFile = cdlFilepath;
+	if(cdlFile.IsValid()) {
+		uint32_t fileSize = (uint32_t)cdlFile.GetSize();
+		vector<uint8_t> cdlData;
+		cdlFile.ReadFile(cdlData);
 
-		if(fileSize == _prgSize) {
+		if(fileSize >= _prgSize) {
 			Reset();
 
-			cdlFile.read((char*)_cdlData, _prgSize);
-			cdlFile.close();
+			constexpr int headerSize = 9; //"CDLv2" + 4-byte CRC32 value
+			if(memcmp(cdlData.data(), "CDLv2", 5) == 0) {
+				uint32_t savedCrc = cdlData[5] | (cdlData[6] << 8) | (cdlData[7] << 16) | (cdlData[8] << 24);
+				if(autoResetCdl && savedCrc != romCrc || fileSize < _prgSize + headerSize) {
+					memset(_cdlData, 0, _prgSize);
+				} else {
+					memcpy(_cdlData, cdlData.data() + headerSize, _prgSize);
+				}
+			} else {
+				//Older CRC-less CDL file, use as-is without checking CRC to avoid data loss
+				memcpy(_cdlData, cdlData.data(), _prgSize);
+			}
 
 			CalculateStats();
 			
 			return true;
 		}
+	}
+	return false;
+}
+
+bool CodeDataLogger::SaveCdlFile(string cdlFilepath, uint32_t romCrc)
+{
+	ofstream cdlFile(cdlFilepath, ios::out | ios::binary);
+	if(cdlFile) {
+		cdlFile.write("CDLv2", 5);
+		cdlFile.put(romCrc & 0xFF);
+		cdlFile.put((romCrc >> 8) & 0xFF);
+		cdlFile.put((romCrc >> 16) & 0xFF);
+		cdlFile.put((romCrc >> 24) & 0xFF);
+		cdlFile.write((char*)_cdlData, _prgSize);
+		cdlFile.close();
+		return true;
 	}
 	return false;
 }
@@ -57,17 +84,6 @@ void CodeDataLogger::CalculateStats()
 
 	_codeSize = codeSize;
 	_dataSize = dataSize;
-}
-
-bool CodeDataLogger::SaveCdlFile(string cdlFilepath)
-{
-	ofstream cdlFile(cdlFilepath, ios::out | ios::binary);
-	if(cdlFile) {
-		cdlFile.write((char*)_cdlData, _prgSize);
-		cdlFile.close();
-		return true;
-	}
-	return false;
 }
 
 void CodeDataLogger::SetFlags(int32_t absoluteAddr, uint8_t flags)

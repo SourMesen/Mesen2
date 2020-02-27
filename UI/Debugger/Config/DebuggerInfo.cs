@@ -27,6 +27,8 @@ namespace Mesen.GUI.Config
 
 		public bool BreakOnOpen = true;
 		public bool BreakOnPowerCycleReset = true;
+		
+		public bool AutoResetCdl = true;
 
 		public bool BringToFrontOnBreak = true;
 		public bool BringToFrontOnPause = false;
@@ -81,6 +83,8 @@ namespace Mesen.GUI.Config
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseAltSpcOpNames, UseAltSpcOpNames);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseLowerCaseDisassembly, UseLowerCaseDisassembly);
+
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.AutoResetCdl, AutoResetCdl);
 		}
 	}
 	

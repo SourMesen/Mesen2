@@ -61,6 +61,8 @@ namespace Mesen.GUI
 
 		UseAltSpcOpNames = 0x1000,
 		UseLowerCaseDisassembly = 0x2000,
+		
+		AutoResetCdl = 0x4000,
 
 		Cx4DebuggerEnabled = 0x04000000,
 		NecDspDebuggerEnabled = 0x08000000,

@@ -18,8 +18,8 @@ public:
 
 	void Reset();
 
-	bool LoadCdlFile(string cdlFilepath);
-	bool SaveCdlFile(string cdlFilepath);
+	bool LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc);
+	bool SaveCdlFile(string cdlFilepath, uint32_t romCrc);
 
 	void SetFlags(int32_t absoluteAddr, uint8_t flags);
 

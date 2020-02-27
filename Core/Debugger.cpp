@@ -92,7 +92,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_suspendRequestCount = 0;
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	_codeDataLogger->LoadCdlFile(cdlFile);
+	_codeDataLogger->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _cart->GetCrc32());
 
 	RefreshCodeCache();
 
@@ -109,7 +109,7 @@ Debugger::~Debugger()
 void Debugger::Release()
 {
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	_codeDataLogger->SaveCdlFile(cdlFile);
+	_codeDataLogger->SaveCdlFile(cdlFile, _cart->GetCrc32());
 
 	while(_executionStopped) {
 		Run();

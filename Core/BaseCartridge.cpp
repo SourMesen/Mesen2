@@ -26,6 +26,7 @@
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/Serializer.h"
 #include "../Utilities/sha1.h"
+#include "../Utilities/CRC32.h"
 
 BaseCartridge::~BaseCartridge()
 {
@@ -297,6 +298,11 @@ RomInfo BaseCartridge::GetRomInfo()
 	info.PatchFile = static_cast<VirtualFile>(_patchPath);
 	info.Coprocessor = _coprocessorType;
 	return info;
+}
+
+uint32_t BaseCartridge::GetCrc32()
+{
+	return CRC32::GetCRC(_prgRom, _prgRomSize);
 }
 
 string BaseCartridge::GetSha1Hash()

@@ -50,6 +50,8 @@ namespace Mesen.GUI.Debugger
 
 			bool isPaused = EmuApi.IsPaused();
 
+			ConfigManager.Config.Debug.Debugger.ApplyConfig();
+
 			mnuUseAltSpcOpNames.Visible = false;
 
 			switch(_cpuType) {
@@ -316,6 +318,7 @@ namespace Mesen.GUI.Debugger
 			mnuBreakOnUnitRead.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnUninitRead); };
 			mnuBringToFrontOnBreak.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak); };
 			mnuBringToFrontOnPause.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnPause); };
+			mnuAutoResetCdl.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.AutoResetCdl); };
 
 			mnuHideUnident.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.UnidentifiedBlockDisplay, CodeDisplayMode.Hide);  RefreshDisassembly(); };
 			mnuDisassembleUnident.Click += (s, e) => { SetValue(ref ConfigManager.Config.Debug.Debugger.UnidentifiedBlockDisplay, CodeDisplayMode.Disassemble); RefreshDisassembly(); };
@@ -357,6 +360,12 @@ namespace Mesen.GUI.Debugger
 			mnuBreakOnUnitRead.Checked = cfg.BreakOnUninitRead;
 			mnuBringToFrontOnBreak.Checked = cfg.BringToFrontOnBreak;
 			mnuBringToFrontOnPause.Checked = cfg.BringToFrontOnPause;
+		}
+
+		private void mnuCodeDataLogger_DropDownOpening(object sender, EventArgs e)
+		{
+			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
+			mnuAutoResetCdl.Checked = cfg.AutoResetCdl;
 		}
 
 		private void InitToolbar()

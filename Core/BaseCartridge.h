@@ -87,6 +87,7 @@ public:
 
 	RomInfo GetRomInfo();
 	ConsoleRegion GetRegion();
+	uint32_t GetCrc32();
 	string GetSha1Hash();
 	CartFlags::CartFlags GetCartFlags();
 
