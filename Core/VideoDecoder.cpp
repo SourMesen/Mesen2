@@ -212,9 +212,6 @@ void VideoDecoder::StartThread()
 		_frameCount = 0;
 		_waitForFrame.Reset();
 		
-		//TODO
-		//_hud.reset(new VideoHud());
-
 		_decodeThread.reset(new thread(&VideoDecoder::DecodeThread, this));
 	}
 #endif
@@ -230,16 +227,14 @@ void VideoDecoder::StopThread()
 
 		_decodeThread.reset();
 
-		
-		//TODO
-		//_hud.reset();
-		/*UpdateVideoFilter();*/
-		if(_ppuOutputBuffer != nullptr) {
-			//Clear whole screen
+		//Clear whole screen
+		if(_frameCount > 0) {
+			vector<uint16_t> outputBuffer(512 * 478, 0);
+			_ppuOutputBuffer = outputBuffer.data();
 			memset(_ppuOutputBuffer, 0, 512 * 478 * 2);
 			DecodeFrame();
+			_ppuOutputBuffer = nullptr;
 		}
-		_ppuOutputBuffer = nullptr;
 	}
 #endif
 }
