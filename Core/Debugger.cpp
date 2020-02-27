@@ -483,7 +483,7 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType
 				if(absAddress.Type == SnesMemoryType::WorkRam) {
 					startBank = 0x7E;
 				} else {
-					startBank = (_cpu->GetState().K & 0xC0) << 4;
+					startBank = _cpu->GetState().K & 0xC0;
 				}
 			} else if(cpuType == CpuType::Sa1) {
 				startBank = (_cart->GetSa1()->GetCpuState().K & 0xC0);

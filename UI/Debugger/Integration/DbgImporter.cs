@@ -75,7 +75,7 @@ namespace Mesen.GUI.Debugger.Integration
 		{
 			int prgAddress;
 			if(_prgAddressByLine.TryGetValue(fileID.ToString() + "_" + lineIndex.ToString(), out prgAddress)) {
-				return new AddressInfo() { Address = prgAddress, Type = SnesMemoryType.CpuMemory };
+				return new AddressInfo() { Address = prgAddress, Type = SnesMemoryType.PrgRom };
 			}
 			return null;
 		}
@@ -94,7 +94,7 @@ namespace Mesen.GUI.Debugger.Integration
 		public SourceCodeLocation GetSourceCodeLineInfo(AddressInfo address)
 		{
 			SourceCodeLocation line;
-			if(address.Type == SnesMemoryType.CpuMemory && _linesByPrgAddress.TryGetValue(address.Address, out line)) {
+			if(address.Type == SnesMemoryType.PrgRom && _linesByPrgAddress.TryGetValue(address.Address, out line)) {
 				return line;
 			}
 			return null;
