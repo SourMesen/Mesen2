@@ -35,7 +35,7 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t
 			constexpr int headerSize = 9; //"CDLv2" + 4-byte CRC32 value
 			if(memcmp(cdlData.data(), "CDLv2", 5) == 0) {
 				uint32_t savedCrc = cdlData[5] | (cdlData[6] << 8) | (cdlData[7] << 16) | (cdlData[8] << 24);
-				if(autoResetCdl && savedCrc != romCrc || fileSize < _prgSize + headerSize) {
+				if((autoResetCdl && savedCrc != romCrc) || fileSize < _prgSize + headerSize) {
 					memset(_cdlData, 0, _prgSize);
 				} else {
 					memcpy(_cdlData, cdlData.data() + headerSize, _prgSize);
