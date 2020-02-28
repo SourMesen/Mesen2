@@ -458,12 +458,7 @@ namespace Mesen.GUI.Debugger.Controls
 					Type = _manager.RelativeMemoryType
 				};
 
-				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-				if(absAddress.Address >= 0) {
-					DebugWindowManager.OpenMemoryViewer(absAddress);
-				} else {
-					DebugWindowManager.OpenMemoryViewer(relAddress);
-				}
+				DebugWindowManager.OpenMemoryViewer(relAddress);
 			} else if(location.Label != null) {
 				DebugWindowManager.OpenMemoryViewer(location.Label.GetAbsoluteAddress());
 			}

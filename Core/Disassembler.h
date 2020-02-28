@@ -7,8 +7,10 @@
 
 class MemoryManager;
 class Console;
+class Cpu;
 class Spc;
 class Gsu;
+class Sa1;
 class Debugger;
 class LabelManager;
 class CodeDataLogger;
@@ -29,8 +31,10 @@ class Disassembler
 private:
 	MemoryManager *_memoryManager;
 	Console *_console;
+	Cpu* _cpu;
 	Spc* _spc;
 	Gsu* _gsu;
+	Sa1* _sa1;
 	EmuSettings* _settings;
 	Debugger *_debugger;
 	shared_ptr<CodeDataLogger> _cdl;

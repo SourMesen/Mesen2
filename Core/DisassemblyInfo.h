@@ -44,7 +44,7 @@ public:
 
 	bool UpdateCpuFlags(uint8_t & cpuFlags);
 
-	int32_t GetEffectiveAddress(Console *console, void *cpuState);
+	int32_t GetEffectiveAddress(Console *console, void *cpuState, CpuType type);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize);
 };
 

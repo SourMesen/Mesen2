@@ -33,8 +33,10 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_debugger = debugger;
 	_labelManager = debugger->GetLabelManager();
 	_console = console.get();
+	_cpu = console->GetCpu().get();
 	_spc = console->GetSpc().get();
 	_gsu = cart->GetGsu();
+	_sa1 = cart->GetSa1();
 	_settings = console->GetSettings().get();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_memoryManager = console->GetMemoryManager().get();
@@ -510,18 +512,18 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				switch(lineCpuType) {
 					case CpuType::Cpu:
 					case CpuType::Sa1: {
-						CpuState state = _console->GetCpu()->GetState();
+						CpuState state = type == CpuType::Sa1 ? _sa1->GetCpuState() : _cpu->GetState();
 						state.PC = (uint16_t)result.CpuAddress;
 						state.K = (result.CpuAddress >> 16);
 
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, CpuType::Cpu);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, type);
 						} else {
 							data.Flags |= (result.Address.Type != SnesMemoryType::PrgRom || _cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, type);
 
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
@@ -542,7 +544,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
 							data.ValueSize = 1;
@@ -561,7 +563,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
 							data.ValueSize = 2;
@@ -574,7 +576,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					case CpuType::NecDsp:
 					case CpuType::Cx4:
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, lineCpuType);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, type);
 						} else {
 							data.Flags |= LineFlags::VerifiedCode;
 						}

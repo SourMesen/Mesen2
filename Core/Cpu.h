@@ -9,6 +9,7 @@
 #include "CpuTypes.h"
 #include "../Utilities/ISerializable.h"
 
+class MemoryMappings;
 class MemoryManager;
 class DmaController;
 class Console;
@@ -313,7 +314,12 @@ private:
 	void RunOp();
 
 public:
+#ifndef DUMMYCPU
 	Cpu(Console *console);
+#else
+	DummyCpu(Console* console, CpuType type);
+#endif
+
 	virtual ~Cpu();
 
 	void PowerOn();
@@ -339,6 +345,7 @@ public:
 
 #ifdef DUMMYCPU
 private:
+	MemoryMappings* _memoryMappings;
 	uint32_t _writeCounter = 0;
 	uint32_t _writeAddresses[10];
 	uint8_t _writeValue[10];

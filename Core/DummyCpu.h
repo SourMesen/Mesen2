@@ -1,6 +1,10 @@
 #pragma once
 
 #include "stdafx.h"
+#include "MemoryMappings.h"
+#include "DebugTypes.h"
+#include "BaseCartridge.h"
+#include "Sa1.h"
 
 #define DUMMYCPU
 #define Cpu DummyCpu
@@ -8,6 +12,26 @@
 #include "Cpu.cpp"
 #undef Cpu
 #undef DUMMYCPU
+
+DummyCpu::DummyCpu(Console* console, CpuType type)
+{
+	_console = console;
+	_memoryMappings = type == CpuType::Cpu ? console->GetMemoryManager()->GetMemoryMappings() : console->GetCartridge()->GetSa1()->GetMemoryMappings();
+	_dmaController = nullptr;
+	_memoryManager = nullptr;
+}
+
+uint8_t DummyCpu::Read(uint32_t addr, MemoryOperationType type)
+{
+	uint8_t value = _memoryMappings->Peek(addr);
+	LogRead(addr, value);
+	return value;
+}
+
+void DummyCpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
+{
+	LogWrite(addr, value);
+}
 
 void DummyCpu::SetDummyState(CpuState &state)
 {

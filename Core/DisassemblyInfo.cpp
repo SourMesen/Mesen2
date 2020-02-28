@@ -61,12 +61,12 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 	}
 }
 
-int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState)
+int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState, CpuType cpuType)
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
 		case CpuType::Cpu:
-			return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState);
+			return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState, cpuType);
 
 		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, console, *(SpcState*)cpuState);
 		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, console, *(GsuState*)cpuState);

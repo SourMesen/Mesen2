@@ -547,6 +547,7 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memor
 		MemoryMappings* mappings = nullptr;
 		switch(memoryType) {
 			case SnesMemoryType::CpuMemory: mappings = _memoryManager->GetMemoryMappings(); break;
+			case SnesMemoryType::Sa1Memory: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
 			case SnesMemoryType::GsuMemory: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
 			case SnesMemoryType::Cx4Memory: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
 			default: throw std::runtime_error("GetCdlData - Unsupported memory type");

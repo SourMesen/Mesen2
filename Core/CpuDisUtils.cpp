@@ -104,10 +104,10 @@ uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAd
 	return opAddr;
 }
 
-int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, CpuState &state)
+int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, CpuState &state, CpuType type)
 {
 	if(HasEffectiveAddress(CpuDisUtils::OpMode[info.GetOpCode()])) {
-		DummyCpu cpu(console);
+		DummyCpu cpu(console, type);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= info.GetFlags();
 		cpu.SetDummyState(state);

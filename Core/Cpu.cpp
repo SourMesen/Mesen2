@@ -9,12 +9,14 @@
 #include "Cpu.Instructions.h"
 #include "Cpu.Shared.h"
 
+#ifndef DUMMYCPU
 Cpu::Cpu(Console *console)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_dmaController = console->GetDmaController().get();
 }
+#endif
 
 Cpu::~Cpu()
 {
@@ -86,32 +88,24 @@ void Cpu::ProcessCpuCycle()
 	_state.IrqLock = _dmaController->ProcessPendingTransfers();
 }
 
+#ifndef DUMMYCPU
 uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 {
-#ifdef DUMMYCPU
-	uint8_t value = _memoryManager->Peek(addr);
-	LogRead(addr, value);
-	return value;
-#else
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	ProcessCpuCycle();
 	uint8_t value = _memoryManager->Read(addr, type);
 	UpdateIrqNmiFlags();
 	return value;
-#endif
 }
 
 void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-#ifdef DUMMYCPU
-	LogWrite(addr, value);
-#else
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	ProcessCpuCycle();
 	_memoryManager->Write(addr, value, type);
 	UpdateIrqNmiFlags();
-#endif
 }
+#endif
 
 uint16_t Cpu::GetResetVector()
 {
