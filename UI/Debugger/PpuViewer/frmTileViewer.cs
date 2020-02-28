@@ -410,6 +410,8 @@ namespace Mesen.GUI.Debugger
 
 			cboMemoryType.SetEnumValue(SnesMemoryType.VideoRam);
 			cboFormat.SetEnumValue(format);
+			nudAddress.Value = 0;
+			nudSize.Value = 0x10000;
 
 			if(_state.Ppu.BgMode == 7) {
 				nudAddress.Value = 0;
@@ -417,17 +419,14 @@ namespace Mesen.GUI.Debugger
 				RefreshViewer();
 				ctrlImagePanel.ScrollTo(0);
 			} else {
-				if(nudAddress.Maximum < _state.Ppu.Layers[layer].ChrAddress) {
-					int gap = _state.Ppu.Layers[layer].ChrAddress - (int)nudAddress.Value;
-					int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
-					int scrollRow = (gap / bytesPerRow) & ~0x7;
-					_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
-				} else {
-					_selectedTile = 0;
-				}
+				int gap = _state.Ppu.Layers[layer].ChrAddress - (int)nudAddress.Value;
+				int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+				int scrollRow = (gap / bytesPerRow) & ~0x7;
+				_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+
 				nudAddress.Value = _state.Ppu.Layers[layer].ChrAddress;
 				RefreshViewer();
-				ctrlImagePanel.ScrollTo(0);
+				ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
 			}
 		}
 
@@ -438,20 +437,19 @@ namespace Mesen.GUI.Debugger
 
 			cboMemoryType.SetEnumValue(SnesMemoryType.VideoRam);
 			cboFormat.SetEnumValue(TileFormat.Bpp4);
+			nudAddress.Value = 0;
+			nudSize.Value = 0x10000;
 
-			if(nudAddress.Maximum < address) {
-				int gap = address - (int)nudAddress.Value;
-				int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
-				int scrollRow = (gap / bytesPerRow) & ~0x7;
-				_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
-			} else {
-				_selectedTile = 0;
-			}
+			int gap = address - (int)nudAddress.Value;
+			int bytesPerRow = GetBytesPerTile() / 8 * _options.Width;
+			int scrollRow = (gap / bytesPerRow) & ~0x7;
+			_selectedTile = scrollRow * bytesPerRow / GetBytesPerTile();
+
 			if(ctrlPaletteViewer.SelectedPalette < 8) {
 				ctrlPaletteViewer.SelectedPalette = 8;
 			}
 			nudAddress.Value = address * 2;
-			ctrlImagePanel.ScrollTo(0);
+			ctrlImagePanel.ScrollTo(scrollRow * ctrlImagePanel.ImageScale);
 		}
 
 		private void ctrlImagePanel_MouseClick(object sender, MouseEventArgs e)
