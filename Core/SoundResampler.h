@@ -6,9 +6,6 @@ struct blip_t;
 
 class SoundResampler
 {
-public:
-	static constexpr int SpcSampleRate = 32000;
-
 private:
 	Console *_console;
 

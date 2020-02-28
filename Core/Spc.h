@@ -22,6 +22,7 @@ class Spc : public ISerializable
 public:
 	static constexpr int SpcRamSize = 0x10000;
 	static constexpr int SpcRomSize = 0x40;
+	static constexpr int SpcSampleRate = 32040;
 
 private:
 	static constexpr int SampleBufferSize = 0x20000;

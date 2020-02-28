@@ -48,7 +48,7 @@ Spc::Spc(Console* console)
 	_operandB = 0;
 	_enabled = true;
 
-	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
+	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
 }
 
 #ifndef DUMMYSPC
@@ -359,7 +359,7 @@ void Spc::ProcessEndFrame()
 {
 	Run();
 
-	_clockRatio = (double)2048000 / _console->GetMasterClockRate();
+	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
 
 	int sampleCount = _dsp->sample_count();
 	if(sampleCount != 0) {

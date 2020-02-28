@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SoundResampler.h"
 #include "Console.h"
+#include "Spc.h"
 #include "EmuSettings.h"
 #include "SoundMixer.h"
 #include "VideoRenderer.h"
@@ -9,8 +10,8 @@
 SoundResampler::SoundResampler(Console *console)
 {
 	_console = console;
-	_blipBufLeft = blip_new(SoundResampler::SpcSampleRate);
-	_blipBufRight = blip_new(SoundResampler::SpcSampleRate);
+	_blipBufLeft = blip_new(Spc::SpcSampleRate);
+	_blipBufRight = blip_new(Spc::SpcSampleRate);
 }
 
 SoundResampler::~SoundResampler()
@@ -75,13 +76,13 @@ double SoundResampler::GetTargetRateAdjustment()
 
 void SoundResampler::UpdateTargetSampleRate(uint32_t sampleRate)
 {
-	uint32_t spcSampleRate = SoundResampler::SpcSampleRate;
+	uint32_t spcSampleRate = Spc::SpcSampleRate;
 	if(_console->GetSettings()->GetVideoConfig().IntegerFpsMode) {
 		//Adjust sample rate when running at 60.0 fps instead of 60.1
 		switch(_console->GetRegion()) {
 			default:
-			case ConsoleRegion::Ntsc: spcSampleRate = (uint32_t)(SoundResampler::SpcSampleRate * (60.0 / 60.0988118623484)); break;
-			case ConsoleRegion::Pal: spcSampleRate = (uint32_t)(SoundResampler::SpcSampleRate * (50.0 / 50.00697796826829)); break;
+			case ConsoleRegion::Ntsc: spcSampleRate = (uint32_t)(Spc::SpcSampleRate * (60.0 / 60.0988118623484)); break;
+			case ConsoleRegion::Pal: spcSampleRate = (uint32_t)(Spc::SpcSampleRate * (50.0 / 50.00697796826829)); break;
 		}
 	}
 
@@ -112,8 +113,8 @@ uint32_t SoundResampler::Resample(int16_t *inSamples, uint32_t sampleCount, uint
 	blip_end_frame(_blipBufLeft, sampleCount);
 	blip_end_frame(_blipBufRight, sampleCount);
 
-	uint32_t resampledCount = blip_read_samples(_blipBufLeft, outSamples, SoundResampler::SpcSampleRate, true);
-	blip_read_samples(_blipBufRight, outSamples + 1, SoundResampler::SpcSampleRate, true);
+	uint32_t resampledCount = blip_read_samples(_blipBufLeft, outSamples, Spc::SpcSampleRate, true);
+	blip_read_samples(_blipBufRight, outSamples + 1, Spc::SpcSampleRate, true);
 
 	return resampledCount;
 }

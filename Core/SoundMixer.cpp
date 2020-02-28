@@ -6,6 +6,7 @@
 #include "RewindManager.h"
 #include "VideoRenderer.h"
 #include "WaveRecorder.h"
+#include "Spc.h"
 #include "Msu1.h"
 #include "../Utilities/Equalizer.h"
 #include "../Utilities/blip_buf.h"
@@ -70,15 +71,8 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 	_leftSample = samples[0];
 	_rightSample = samples[1];
 
-	int16_t *out = nullptr;
-	uint32_t count = 0;
-	if(cfg.SampleRate == SoundResampler::SpcSampleRate && cfg.DisableDynamicSampleRate) {
-		out = samples;
-		count = sampleCount;
-	} else {
-		count = _resampler->Resample(samples, sampleCount, cfg.SampleRate, _sampleBuffer);
-		out = _sampleBuffer;
-	}
+	int16_t *out = _sampleBuffer;
+	uint32_t count = _resampler->Resample(samples, sampleCount, cfg.SampleRate, out);
 
 	shared_ptr<Msu1> msu1 = _console->GetMsu1();
 	if(msu1) {
@@ -126,7 +120,7 @@ void SoundMixer::ProcessEqualizer(int16_t* samples, uint32_t sampleCount)
 		cfg.Band11Gain, cfg.Band12Gain, cfg.Band13Gain, cfg.Band14Gain, cfg.Band15Gain,
 		cfg.Band16Gain, cfg.Band17Gain, cfg.Band18Gain, cfg.Band19Gain, cfg.Band20Gain
 	};
-	_equalizer->UpdateEqualizers(bandGains, SoundResampler::SpcSampleRate);
+	_equalizer->UpdateEqualizers(bandGains, Spc::SpcSampleRate);
 	_equalizer->ApplyEqualizer(sampleCount, samples);
 }
 
