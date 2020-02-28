@@ -23,7 +23,7 @@ namespace Mesen.GUI.Debugger
 		private string _lastFilename;
 		private EntityBinder _entityBinder = new EntityBinder();
 		private string _previousTrace;
-		private UInt64 _previousCycleCount;
+		private UInt64 _previousMasterClock;
 		private volatile bool _refreshRunning;
 		private bool _initialized;
 		private NotificationListener _notifListener;
@@ -300,18 +300,14 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			//TODO
-			//Make sure labels are up to date
-			//DebugWorkspaceManager.GetWorkspace();
-
 			_refreshRunning = true;
 			SetOptions();
 			Task.Run(() => {
 				//Update trace log in another thread for performance
 				DebugState state = DebugApi.GetState();
-				if(_previousCycleCount != state.Cpu.CycleCount || forceUpdate) {
+				if(_previousMasterClock != state.MasterClock || forceUpdate) {
 					string newTrace = DebugApi.GetExecutionTrace((UInt32)_lineCount);
-					_previousCycleCount = state.Cpu.CycleCount;
+					_previousMasterClock = state.Cpu.CycleCount;
 					_previousTrace = newTrace;
 
 					int index = 0;
