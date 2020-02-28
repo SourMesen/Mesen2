@@ -134,7 +134,11 @@ void PcmReader::ApplySamples(int16_t *buffer, size_t sampleCount, uint8_t volume
 		return;
 	}
 
-	LoadSamples((uint32_t)sampleCount * PcmReader::PcmSampleRate / _sampleRate + 1 - blip_samples_avail(_blipLeft));
+	int32_t samplesNeeded = (int32_t)sampleCount - blip_samples_avail(_blipLeft);
+	if(samplesNeeded > 0) {
+		uint32_t samplesToLoad = samplesNeeded * PcmReader::PcmSampleRate / _sampleRate + 1;
+		LoadSamples(samplesToLoad);
+	}
 
 	int samplesRead = blip_read_samples(_blipLeft, _outputBuffer, (int)sampleCount, 1);
 	blip_read_samples(_blipRight, _outputBuffer + 1, (int)sampleCount, 1);
