@@ -5,6 +5,7 @@
 #include "MemoryMappings.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
+#include "EmuSettings.h"
 #include "BatteryManager.h"
 #include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
@@ -12,11 +13,12 @@
 Spc7110::Spc7110(Console* console, bool useRtc)
 {
 	_console = console;
+	_cart = console->GetCartridge().get();
 	_useRtc = useRtc;
 
 	MemoryMappings* mappings = console->GetMemoryManager()->GetMemoryMappings();
-	vector<unique_ptr<IMemoryHandler>>& prgRomHandlers = console->GetCartridge()->GetPrgRomHandlers();
-	vector<unique_ptr<IMemoryHandler>>& saveRamHandlers = console->GetCartridge()->GetSaveRamHandlers();
+	vector<unique_ptr<IMemoryHandler>>& prgRomHandlers = _cart->GetPrgRomHandlers();
+	vector<unique_ptr<IMemoryHandler>>& saveRamHandlers = _cart->GetSaveRamHandlers();
 
 	//Regular A Bus register handler, keep a reference to it, it'll be overwritten below
 	_cpuRegisterHandler = mappings->GetHandler(0x4000);
@@ -35,7 +37,15 @@ Spc7110::Spc7110(Console* console, bool useRtc)
 	mappings->RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, prgRomHandlers, 8);
 	mappings->RegisterHandler(0x80, 0xBF, 0x8000, 0xFFFF, prgRomHandlers, 8);
 
-	mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers);
+	bool enableStrictBoardMappings = console->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings;
+	uint32_t romSize = _cart->DebugGetPrgRomSize();
+	if(!enableStrictBoardMappings && _cart->DebugGetPrgRomSize() >= 0x600000) {
+		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers, 0, 0x600);
+		_realDataRomSize = romSize - 0x200000;
+	} else {
+		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers);
+		_realDataRomSize = romSize - 0x100000;
+	}
 	mappings->RegisterHandler(0xC0, 0xCF, 0x0000, 0xFFFF, prgRomHandlers);
 
 	Reset();
@@ -255,9 +265,9 @@ void Spc7110::Write(uint32_t addr, uint8_t value)
 void Spc7110::UpdateMappings()
 {
 	MemoryMappings* mappings = _console->GetMemoryManager()->GetMemoryMappings();
-	vector<unique_ptr<IMemoryHandler>>& prgRomHandlers = _console->GetCartridge()->GetPrgRomHandlers();
+	vector<unique_ptr<IMemoryHandler>>& prgRomHandlers = _cart->GetPrgRomHandlers();
 
-	uint32_t dataRomSize = ((uint32_t)prgRomHandlers.size() - 0x100);
+	uint32_t dataRomSize = _realDataRomSize >> 12;
 	for(int i = 0; i < 3; i++) {
 		mappings->RegisterHandler(0xD0 + (i * 0x10), 0xDF + (i * 0x10), 0x0000, 0xFFFF, prgRomHandlers, 0, 0x100 + ((_dataRomBanks[i] * 0x100) % dataRomSize));
 	}
@@ -307,16 +317,13 @@ void Spc7110::ProcessDivision()
 
 uint8_t Spc7110::ReadDataRom(uint32_t addr)
 {
-	uint32_t size = 1 << (_dataRomSize & 0x03);
-	uint32_t mask = 0x100000 * size - 1;
-	if((_dataRomSize & 0x03) != 0x03 && (addr & 0x400000)) {
+	uint32_t configSize = 0x100000 * (1 << (_dataRomSize & 0x03));
+	uint32_t dataRomSize = std::min(configSize, _realDataRomSize);
+	if(addr >= dataRomSize) {
 		return 0x00;
 	}
 
-	uint32_t realDataRomSize = _console->GetCartridge()->DebugGetPrgRomSize() - 0x100000;
-	mask = std::min(mask, realDataRomSize - 1);
-
-	return _console->GetCartridge()->DebugGetPrgRom()[0x100000 + (addr & mask)];
+	return _cart->DebugGetPrgRom()[0x100000 + addr];
 }
 
 void Spc7110::FillReadBuffer()

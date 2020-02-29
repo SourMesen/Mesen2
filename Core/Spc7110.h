@@ -7,6 +7,7 @@
 class Console;
 class Spc7110Decomp;
 class IMemoryHandler;
+class BaseCartridge;
 
 class Spc7110 : public BaseCoprocessor
 {
@@ -16,7 +17,9 @@ private:
 
 	IMemoryHandler* _cpuRegisterHandler = nullptr;
 	Console* _console = nullptr;
+	BaseCartridge* _cart = nullptr;
 	bool _useRtc = false;
+	uint32_t _realDataRomSize = 0;
 
 	//Decomp
 	uint32_t _directoryBase = 0;
