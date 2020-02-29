@@ -343,6 +343,9 @@ void BaseCartridge::SaveBattery()
 
 void BaseCartridge::Init(MemoryMappings &mm)
 {
+	_prgRomHandlers.clear();
+	_saveRamHandlers.clear();
+
 	for(uint32_t i = 0; i < _prgRomSize; i += 0x1000) {
 		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, _prgRomSize, SnesMemoryType::PrgRom)));
 	}
