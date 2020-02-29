@@ -423,7 +423,6 @@
     <ClInclude Include="AviRecorder.h" />
     <ClInclude Include="AviWriter.h" />
     <ClInclude Include="Base64.h" />
-    <ClInclude Include="blip_buf.h" />
     <ClInclude Include="BpsPatcher.h" />
     <ClInclude Include="CamstudioCodec.h" />
     <ClInclude Include="CRC32.h" />
@@ -448,6 +447,7 @@
     <ClInclude Include="PlatformUtilities.h" />
     <ClInclude Include="PNGHelper.h" />
     <ClInclude Include="RawCodec.h" />
+    <ClInclude Include="HermiteResampler.h" />
     <ClInclude Include="Scale2x\scale2x.h" />
     <ClInclude Include="Scale2x\scale3x.h" />
     <ClInclude Include="Scale2x\scalebit.h" />
@@ -477,7 +477,6 @@
     <ClCompile Include="ArchiveReader.cpp" />
     <ClCompile Include="AviRecorder.cpp" />
     <ClCompile Include="AviWriter.cpp" />
-    <ClCompile Include="blip_buf.cpp" />
     <ClCompile Include="BpsPatcher.cpp" />
     <ClCompile Include="CamstudioCodec.cpp" />
     <ClCompile Include="CRC32.cpp" />
@@ -575,6 +574,7 @@
     <ClCompile Include="PlatformUtilities.cpp" />
     <ClCompile Include="PNGHelper.cpp" />
     <ClCompile Include="AutoResetEvent.cpp" />
+    <ClCompile Include="HermiteResampler.cpp" />
     <ClCompile Include="Scale2x\scale2x.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">NotUsing</PrecompiledHeader>

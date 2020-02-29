@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PcmReader.h"
 #include "../Utilities/VirtualFile.h"
+#include "../Utilities/HermiteResampler.h"
 
 PcmReader::PcmReader()
 {
@@ -10,15 +11,11 @@ PcmReader::PcmReader()
 	_prevRight = 0;
 	_loopOffset = 8;
 	_sampleRate = 0;
-	_blipLeft = blip_new(10000);
-	_blipRight = blip_new(10000);
 	_outputBuffer = new int16_t[20000];
 }
 
 PcmReader::~PcmReader()
 {
-	blip_delete(_blipLeft);
-	blip_delete(_blipRight);
 	delete[] _outputBuffer;
 }
 
@@ -51,8 +48,9 @@ bool PcmReader::Init(string filename, bool loop, uint32_t startOffset)
 		_fileOffset = startOffset;
 		_file.seekg(_fileOffset, ios::beg);
 
-		blip_clear(_blipLeft);
-		blip_clear(_blipRight);
+		_leftoverSampleCount = 0;
+		_pcmBuffer.clear();
+		_resampler.Reset();
 
 		return true;
 	} else {
@@ -71,10 +69,7 @@ void PcmReader::SetSampleRate(uint32_t sampleRate)
 	if(sampleRate != _sampleRate) {
 		_sampleRate = sampleRate;
 
-		blip_clear(_blipLeft);
-		blip_clear(_blipRight);
-		blip_set_rates(_blipLeft, PcmReader::PcmSampleRate, _sampleRate);
-		blip_set_rates(_blipRight, PcmReader::PcmSampleRate, _sampleRate);
+		_resampler.SetSampleRates(PcmReader::PcmSampleRate, _sampleRate);
 	}
 }
 
@@ -104,8 +99,8 @@ void PcmReader::LoadSamples(uint32_t samplesToLoad)
 	for(uint32_t i = _fileOffset; i < _fileSize && samplesRead < samplesToLoad; i+=4) {
 		ReadSample(left, right);
 
-		blip_add_delta(_blipLeft, samplesRead, left - _prevLeft);
-		blip_add_delta(_blipRight, samplesRead, right - _prevRight);
+		_pcmBuffer.push_back(left);
+		_pcmBuffer.push_back(right);
 
 		_prevLeft = left;
 		_prevRight = right;
@@ -123,9 +118,6 @@ void PcmReader::LoadSamples(uint32_t samplesToLoad)
 			}
 		}
 	}
-
-	blip_end_frame(_blipLeft, samplesRead);
-	blip_end_frame(_blipRight, samplesRead);
 }
 
 void PcmReader::ApplySamples(int16_t *buffer, size_t sampleCount, uint8_t volume)
@@ -134,17 +126,25 @@ void PcmReader::ApplySamples(int16_t *buffer, size_t sampleCount, uint8_t volume
 		return;
 	}
 
-	int32_t samplesNeeded = (int32_t)sampleCount - blip_samples_avail(_blipLeft);
+	int32_t samplesNeeded = (int32_t)sampleCount - _leftoverSampleCount;
 	if(samplesNeeded > 0) {
-		uint32_t samplesToLoad = samplesNeeded * PcmReader::PcmSampleRate / _sampleRate + 1;
+		uint32_t samplesToLoad = samplesNeeded * PcmReader::PcmSampleRate / _sampleRate + 2;
 		LoadSamples(samplesToLoad);
 	}
 
-	int samplesRead = blip_read_samples(_blipLeft, _outputBuffer, (int)sampleCount, 1);
-	blip_read_samples(_blipRight, _outputBuffer + 1, (int)sampleCount, 1);
+	uint32_t samplesRead = _resampler.Resample(_pcmBuffer.data(), (uint32_t)_pcmBuffer.size() / 2, _outputBuffer + _leftoverSampleCount*2);
+	_pcmBuffer.clear();
 
-	for(size_t i = 0, len = samplesRead * 2; i < len; i++) {
+	uint32_t samplesToProcess = std::min<uint32_t>((uint32_t)sampleCount * 2, (samplesRead + _leftoverSampleCount) * 2);
+	for(uint32_t i = 0; i < samplesToProcess; i++) {
 		buffer[i] += (int16_t)((int32_t)_outputBuffer[i] * volume / 255);
+	}
+
+	//Calculate count of extra samples that couldn't be mixed with the rest of the audio and copy them to the beginning of the buffer
+	//These will be mixed on the next call to ApplySamples
+	_leftoverSampleCount = std::max(0, (int32_t)(samplesRead + _leftoverSampleCount) - (int32_t)sampleCount);
+	for(uint32_t i = 0; i < _leftoverSampleCount*2; i++) {
+		_outputBuffer[i] = _outputBuffer[samplesToProcess + i];
 	}
 }
 

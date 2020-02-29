@@ -22,3 +22,13 @@ using std::string;
 using std::vector;
 using std::atomic;
 using std::atomic_flag;
+
+#ifndef __MINGW32__
+	#ifdef __clang__
+		#define __forceinline __attribute__((always_inline)) inline
+	#else
+		#ifdef __GNUC__
+			#define __forceinline __attribute__((always_inline)) inline
+		#endif
+	#endif
+#endif

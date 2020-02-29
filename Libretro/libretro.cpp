@@ -7,6 +7,7 @@
 #include "LibretroMessageManager.h"
 #include "libretro.h"
 #include "../Core/Console.h"
+#include "../Core/Spc.h"
 #include "../Core/BaseCartridge.h"
 #include "../Core/MemoryManager.h"
 #include "../Core/VideoDecoder.h"
@@ -81,7 +82,7 @@ extern "C" {
 
 		AudioConfig audioConfig = _console->GetSettings()->GetAudioConfig();
 		audioConfig.DisableDynamicSampleRate = true;
-		audioConfig.SampleRate = 32000;
+		audioConfig.SampleRate = Spc::SpcSampleRate;
 		_console->GetSettings()->SetAudioConfig(audioConfig);
 
 		PreferencesConfig preferences = _console->GetSettings()->GetPreferences();

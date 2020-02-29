@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "../Utilities/stb_vorbis.h"
-#include "../Utilities/blip_buf.h"
+#include "../Utilities/HermiteResampler.h"
 
 class PcmReader
 {
@@ -22,8 +22,9 @@ private:
 	bool _loop;
 	bool _done;
 
-	blip_t* _blipLeft;
-	blip_t* _blipRight;
+	HermiteResampler _resampler;
+	vector<int16_t> _pcmBuffer;
+	uint32_t _leftoverSampleCount = 0;
 
 	uint32_t _sampleRate;
 

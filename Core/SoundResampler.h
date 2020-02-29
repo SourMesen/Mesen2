@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
+#include "../Utilities/HermiteResampler.h"
 
 class Console;
-struct blip_t;
 
 class SoundResampler
 {
@@ -11,13 +11,10 @@ private:
 
 	double _rateAdjustment = 1.0;
 	double _previousTargetRate = 0;
-	uint32_t _prevSpcSampleRate = 0;
+	double _prevSpcSampleRate = 0;
 	int32_t _underTarget = 0;
 
-	blip_t *_blipBufLeft = nullptr;
-	blip_t *_blipBufRight = nullptr;
-	int16_t _lastSampleLeft = 0;
-	int16_t _lastSampleRight = 0;
+	HermiteResampler _resampler;
 
 	double GetTargetRateAdjustment();
 	void UpdateTargetSampleRate(uint32_t sampleRate);

@@ -5,19 +5,15 @@
 #include "EmuSettings.h"
 #include "SoundMixer.h"
 #include "VideoRenderer.h"
-#include "../Utilities/blip_buf.h"
+#include "../Utilities/HermiteResampler.h"
 
 SoundResampler::SoundResampler(Console *console)
 {
 	_console = console;
-	_blipBufLeft = blip_new(Spc::SpcSampleRate);
-	_blipBufRight = blip_new(Spc::SpcSampleRate);
 }
 
 SoundResampler::~SoundResampler()
 {
-	blip_delete(_blipBufLeft);
-	blip_delete(_blipBufRight);
 }
 
 double SoundResampler::GetRateAdjustment()
@@ -76,45 +72,26 @@ double SoundResampler::GetTargetRateAdjustment()
 
 void SoundResampler::UpdateTargetSampleRate(uint32_t sampleRate)
 {
-	uint32_t spcSampleRate = Spc::SpcSampleRate;
+	double spcSampleRate = Spc::SpcSampleRate;
 	if(_console->GetSettings()->GetVideoConfig().IntegerFpsMode) {
 		//Adjust sample rate when running at 60.0 fps instead of 60.1
 		switch(_console->GetRegion()) {
 			default:
-			case ConsoleRegion::Ntsc: spcSampleRate = (uint32_t)(Spc::SpcSampleRate * (60.0 / 60.0988118623484)); break;
-			case ConsoleRegion::Pal: spcSampleRate = (uint32_t)(Spc::SpcSampleRate * (50.0 / 50.00697796826829)); break;
+			case ConsoleRegion::Ntsc: spcSampleRate = Spc::SpcSampleRate * (60.0 / 60.0988118623484); break;
+			case ConsoleRegion::Pal: spcSampleRate = Spc::SpcSampleRate * (50.0 / 50.00697796826829); break;
 		}
 	}
 
 	double targetRate = sampleRate * GetTargetRateAdjustment();
 	if(targetRate != _previousTargetRate || spcSampleRate != _prevSpcSampleRate) {
-		blip_set_rates(_blipBufLeft, spcSampleRate, targetRate);
-		blip_set_rates(_blipBufRight, spcSampleRate, targetRate);
 		_previousTargetRate = targetRate;
 		_prevSpcSampleRate = spcSampleRate;
+		_resampler.SetSampleRates(spcSampleRate, targetRate);
 	}
 }
 
 uint32_t SoundResampler::Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sampleRate, int16_t *outSamples)
 {
 	UpdateTargetSampleRate(sampleRate);
-
-	blip_add_delta(_blipBufLeft, 0, inSamples[0] - _lastSampleLeft);
-	blip_add_delta(_blipBufRight, 0, inSamples[1] - _lastSampleRight);
-
-	for(uint32_t i = 1; i < sampleCount; i++) {
-		blip_add_delta(_blipBufLeft, i, inSamples[i * 2] - inSamples[i * 2 - 2]);
-		blip_add_delta(_blipBufRight, i, inSamples[i * 2 + 1] - inSamples[i * 2 - 1]);
-	}
-
-	_lastSampleLeft = inSamples[(sampleCount - 1) * 2];
-	_lastSampleRight = inSamples[(sampleCount - 1) * 2 + 1];
-
-	blip_end_frame(_blipBufLeft, sampleCount);
-	blip_end_frame(_blipBufRight, sampleCount);
-
-	uint32_t resampledCount = blip_read_samples(_blipBufLeft, outSamples, Spc::SpcSampleRate, true);
-	blip_read_samples(_blipBufRight, outSamples + 1, Spc::SpcSampleRate, true);
-
-	return resampledCount;
+	return _resampler.Resample(inSamples, sampleCount, outSamples);
 }
