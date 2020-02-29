@@ -280,6 +280,8 @@ private:
 	void EndAddr();
 	void ProcessCycle();
 	void Exec();
+	
+	void UpdateClockRatio();
 
 public:
 	Spc(Console* console);

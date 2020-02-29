@@ -48,7 +48,7 @@ Spc::Spc(Console* console)
 	_operandB = 0;
 	_enabled = true;
 
-	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
+	UpdateClockRatio();
 }
 
 #ifndef DUMMYSPC
@@ -96,12 +96,25 @@ void Spc::SetSpcState(bool enabled)
 	if(_enabled != enabled) {
 		if(enabled) {
 			//When re-enabling, adjust the cycle counter to prevent running extra cycles
-			_state.Cycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
+			UpdateClockRatio();
 		} else {
 			//Catch up SPC before disabling it
 			Run();
 		}
 		_enabled = enabled;
+	}
+}
+
+void Spc::UpdateClockRatio()
+{
+	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
+
+	//If the target cycle is off by more than 10 cycles, reset the counter to match what was expected
+	//This can happen due to overclocking (which disables the SPC for some scanlines) or if the SPC's 
+	//internal sample rate is changed between versions (e.g 32000hz -> 32040hz)
+	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
+	if(std::abs((int64_t)targetCycle - (int64_t)_state.Cycle) > 10) {
+		_state.Cycle = targetCycle;
 	}
 }
 
@@ -359,7 +372,7 @@ void Spc::ProcessEndFrame()
 {
 	Run();
 
-	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
+	UpdateClockRatio();
 
 	int sampleCount = _dsp->sample_count();
 	if(sampleCount != 0) {
@@ -445,6 +458,8 @@ void Spc::Serialize(Serializer &s)
 		s.StreamArray(dspState, SPC_DSP::state_size);
 	} else {
 		s.StreamArray(dspState, SPC_DSP::state_size);
+
+		UpdateClockRatio();
 
 		uint8_t *in = dspState;
 		_dsp->copy_state(&in, [](uint8_t** input, void* output, size_t size) {
