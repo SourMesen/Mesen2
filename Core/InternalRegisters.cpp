@@ -81,7 +81,6 @@ uint8_t InternalRegisters::GetIoPortOutput()
 void InternalRegisters::SetNmiFlag(bool nmiFlag)
 {
 	_nmiFlag = nmiFlag;
-	_cpu->SetNmiFlag(_state.EnableNmi && _nmiFlag);
 }
 
 void InternalRegisters::SetIrqFlag(bool irqFlag)

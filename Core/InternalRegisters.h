@@ -77,4 +77,5 @@ void InternalRegisters::ProcessIrqCounters()
 		_needIrq = 4;
 	}
 	_irqLevel = irqLevel;
+	_cpu->SetNmiFlag(_state.EnableNmi & _nmiFlag);
 }
