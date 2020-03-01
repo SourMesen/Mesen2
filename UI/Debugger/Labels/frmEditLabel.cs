@@ -32,7 +32,7 @@ namespace Mesen.GUI.Debugger
 
 			CpuType cpuType = label.MemoryType.ToCpuType();
 			cboType.Items.Clear();
-			if(cpuType == CpuType.Cpu) {
+			if(cpuType == CpuType.Cpu || cpuType == CpuType.Sa1) {
 				if(DebugApi.GetMemorySize(SnesMemoryType.PrgRom) > 0) {
 					cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 				}
