@@ -387,6 +387,10 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			if(_scanline == 0) {
 				_overscanFrame = _state.OverscanMode;
 				_mosaicScanlineCounter = _state.MosaicEnabled ? _state.MosaicSize + 1 : 0;
+
+				//Update overclock timings once per frame
+				UpdateNmiScanline();
+
 				if(!_skipRender) {
 					if(!_interlacedFrame) {
 						_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
@@ -475,9 +479,6 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			if(_console->IsRunAheadFrame()) {
 				_skipRender = true;
 			}
-
-			//Update overclock timings once per frame
-			UpdateNmiScanline();
 
 			//Ensure the SPC is re-enabled for the next frame
 			_spc->SetSpcState(true);
@@ -2097,7 +2098,6 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				}
 			}
 			ConvertToHiRes();
-			UpdateNmiScanline();
 			break;
 		}
 
