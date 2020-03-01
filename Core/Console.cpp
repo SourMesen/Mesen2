@@ -385,6 +385,16 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 		_cheatManager->ClearCheats(false);
 		
 		_cart = cart;
+		
+		auto lock = _debuggerLock.AcquireSafe();
+		bool debuggerActive = _debugger != nullptr;
+
+		if(_debugger) {
+			//Reset debugger if it was running before
+			_debugger->Release();
+			_debugger.reset();
+		}
+
 		_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
 
 		UpdateRegion();
@@ -409,11 +419,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 		_memoryManager->Initialize(this);
 		_internalRegisters->Initialize(this);
 
-		if(_debugger) {
-			//Reset debugger if it was running before
-			auto lock = _debuggerLock.AcquireSafe();
-			_debugger->Release();
-			_debugger.reset();
+		if(debuggerActive) {
 			GetDebugger();
 		}
 
