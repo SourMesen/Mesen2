@@ -43,7 +43,6 @@ Spc7110::Spc7110(Console* console, bool useRtc)
 		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers, 0, 0x600);
 		_realDataRomSize = romSize - 0x200000;
 	} else {
-		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers);
 		_realDataRomSize = romSize - 0x100000;
 	}
 	mappings->RegisterHandler(0xC0, 0xCF, 0x0000, 0xFFFF, prgRomHandlers);
