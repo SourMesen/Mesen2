@@ -603,9 +603,7 @@ void Sa1::UpdatePrgRomMappings()
 void Sa1::UpdateVectorMappings()
 {
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
-	_sa1VectorHandler.reset(new Sa1VectorHandler(cpuMappings->GetHandler(0xF000), &_state, false));
-	_cpuVectorHandler.reset(new Sa1VectorHandler(cpuMappings->GetHandler(0xF000), &_state, true));
-	_mappings.RegisterHandler(0x00, 0x00, 0xF000, 0xFFFF, _sa1VectorHandler.get());
+	_cpuVectorHandler.reset(new Sa1VectorHandler(cpuMappings->GetHandler(0xF000), &_state));
 	cpuMappings->RegisterHandler(0x00, 0x00, 0xF000, 0xFFFF, _cpuVectorHandler.get());
 }
 
@@ -783,6 +781,20 @@ uint32_t Sa1::DebugGetInternalRamSize()
 CpuState Sa1::GetCpuState()
 {
 	return _cpu->GetState();
+}
+
+uint16_t Sa1::ReadVector(uint16_t vector)
+{
+	switch(vector) {
+		case Sa1Cpu::NmiVector: return _state.Sa1NmiVector;
+		case Sa1Cpu::ResetVector: return _state.Sa1ResetVector;
+		case Sa1Cpu::IrqVector: return _state.Sa1IrqVector;
+	}
+
+	//BRK/COP vectors are taken from ROM
+	uint8_t low = ReadSa1(vector);
+	uint8_t high = ReadSa1(vector + 1);
+	return (high << 8) | low;
 }
 
 MemoryMappings* Sa1::GetMemoryMappings()

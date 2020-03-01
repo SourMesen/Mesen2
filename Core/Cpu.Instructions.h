@@ -475,7 +475,7 @@ void Cpu::ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt)
 		ClearFlags(ProcFlags::Decimal);
 
 		_state.K = 0;
-		_state.PC = ReadDataWord(vector);
+		_state.PC = ReadVector(vector);
 	} else {
 		PushByte(_state.K);
 		PushWord(_state.PC);
@@ -485,7 +485,7 @@ void Cpu::ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt)
 		ClearFlags(ProcFlags::Decimal);
 
 		_state.K = 0;
-		_state.PC = ReadDataWord(vector);
+		_state.PC = ReadVector(vector);
 	}
 }
 

@@ -63,6 +63,8 @@ private:
 	uint16_t ReadOperandWord();
 	uint32_t ReadOperandLong();
 
+	uint16_t ReadVector(uint16_t vector);
+
 	uint8_t Read(uint32_t addr, MemoryOperationType type);
 
 	void SetSP(uint16_t sp);

@@ -32,7 +32,6 @@ private:
 
 	unique_ptr<IMemoryHandler> _iRamHandler;
 	unique_ptr<IMemoryHandler> _bwRamHandler;
-	unique_ptr<IMemoryHandler> _sa1VectorHandler;
 	unique_ptr<IMemoryHandler> _cpuVectorHandler;
 	
 	vector<unique_ptr<IMemoryHandler>> _cpuBwRamHandlers;
@@ -90,5 +89,6 @@ public:
 	uint32_t DebugGetInternalRamSize();
 
 	CpuState GetCpuState();
+	uint16_t ReadVector(uint16_t vector);
 	MemoryMappings* GetMemoryMappings();
 };

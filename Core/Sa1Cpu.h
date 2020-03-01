@@ -40,6 +40,7 @@ private:
 
 	uint8_t GetOpCode();
 
+	uint16_t ReadVector(uint16_t vector);
 	uint16_t GetResetVector();
 
 	void ProcessCpuCycle(uint32_t addr);

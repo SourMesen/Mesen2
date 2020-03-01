@@ -88,6 +88,17 @@ void Cpu::ProcessCpuCycle()
 	_state.IrqLock = _dmaController->ProcessPendingTransfers();
 }
 
+uint16_t Cpu::ReadVector(uint16_t vector)
+{
+	//Overridden in SA-1 to return the correct value directly, rather than loading from ROM
+	return ReadDataWord(vector);
+}
+
+uint16_t Cpu::GetResetVector()
+{
+	return _memoryManager->PeekWord(Cpu::ResetVector);
+}
+
 #ifndef DUMMYCPU
 uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 {
@@ -106,8 +117,3 @@ void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 	UpdateIrqNmiFlags();
 }
 #endif
-
-uint16_t Cpu::GetResetVector()
-{
-	return _memoryManager->PeekWord(Cpu::ResetVector);
-}

@@ -129,9 +129,14 @@ void Sa1Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 	_sa1->WriteSa1(addr, value, type);
 }
 
+uint16_t Sa1Cpu::ReadVector(uint16_t vector)
+{
+	return _sa1->ReadVector(vector);
+}
+
 uint16_t Sa1Cpu::GetResetVector()
 {
-	return _sa1->ReadSa1(Sa1Cpu::ResetVector) | (_sa1->ReadSa1(Sa1Cpu::ResetVector+1) << 8);
+	return _sa1->ReadVector(Sa1Cpu::ResetVector);
 }
 
 void Sa1Cpu::IncreaseCycleCount(uint64_t cycleCount)
