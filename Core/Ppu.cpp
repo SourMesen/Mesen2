@@ -385,15 +385,16 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			RenderScanline();
 
 			if(_scanline == 0) {
+				_overscanFrame = _state.OverscanMode;
 				_mosaicScanlineCounter = _state.MosaicEnabled ? _state.MosaicSize + 1 : 0;
 				if(!_skipRender) {
 					if(!_interlacedFrame) {
 						_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 					}
 					
-					//If we're not skipping this frame, reset the high resolution flag
-					_useHighResOutput = false;
-					_interlacedFrame = false;
+					//If we're not skipping this frame, reset the high resolution/interlace flags
+					_useHighResOutput = IsDoubleWidth() || _state.ScreenInterlace;
+					_interlacedFrame = _state.ScreenInterlace;
 				}
 			}
 			
@@ -1335,7 +1336,15 @@ void Ppu::ApplyBrightness()
 
 void Ppu::ConvertToHiRes()
 {
-	uint16_t scanline = _state.OverscanMode ? (_scanline - 1) : (_scanline + 6);
+	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || _state.ScreenInterlace;
+	if(!useHighResOutput || _useHighResOutput == useHighResOutput || _scanline >= _vblankStartScanline || _scanline == 0) {
+		return;
+	}
+
+	//Convert standard res picture to high resolution when the PPU starts drawing in high res mid frame
+	_useHighResOutput = useHighResOutput;
+
+	uint16_t scanline = _overscanFrame ? (_scanline - 1) : (_scanline + 6);
 
 	if(_drawStartX > 0) {
 		for(int x = 0; x < _drawStartX; x++) {
@@ -1357,14 +1366,7 @@ void Ppu::ConvertToHiRes()
 void Ppu::ApplyHiResMode()
 {
 	//When overscan mode is off, center the 224-line picture in the center of the 239-line output buffer
-	uint16_t scanline = _state.OverscanMode ? (_scanline - 1) : (_scanline + 6);
-
-	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || _state.ScreenInterlace;
-	if(_useHighResOutput != useHighResOutput) {
-		//Convert standard res picture to high resolution when the PPU starts drawing in high res mid frame
-		ConvertToHiRes();
-		_useHighResOutput = useHighResOutput;
-	}
+	uint16_t scanline = _overscanFrame ? (_scanline - 1) : (_scanline + 6);
 
 	if(!_useHighResOutput) {
 		memcpy(_currentBuffer + (scanline << 8) + _drawStartX, _mainScreenBuffer + _drawStartX, (_drawEndX - _drawStartX + 1) << 1);
@@ -1437,7 +1439,7 @@ void Ppu::SendFrame()
 	uint16_t width = _useHighResOutput ? 512 : 256;
 	uint16_t height = _useHighResOutput ? 478 : 239;
 
-	if(!_state.OverscanMode) {
+	if(!_overscanFrame) {
 		//Clear the top 7 and bottom 8 rows
 		int top = (_useHighResOutput ? 14 : 7);
 		int bottom = (_useHighResOutput ? 16 : 8);
@@ -1812,6 +1814,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				LogDebug("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
 			}
 			_state.BgMode = value & 0x07;
+			ConvertToHiRes();
+
 			_state.Mode1Bg3Priority = (value & 0x08) != 0;
 
 			_state.Layers[0].LargeTiles = (value & 0x10) != 0;
@@ -2092,6 +2096,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 					memset(GetPreviousScreenBuffer(), 0, 512 * 478 * sizeof(uint16_t));
 				}
 			}
+			ConvertToHiRes();
 			UpdateNmiScanline();
 			break;
 		}

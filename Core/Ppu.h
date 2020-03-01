@@ -73,6 +73,7 @@ private:
 	uint16_t *_currentBuffer = nullptr;
 	bool _useHighResOutput = false;
 	bool _interlacedFrame = false;
+	bool _overscanFrame = false;
 
 	uint8_t _mainScreenFlags[256] = {};
 	uint16_t _mainScreenBuffer[256] = {};
