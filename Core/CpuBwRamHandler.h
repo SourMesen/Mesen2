@@ -15,7 +15,7 @@ private:
 	Sa1* _sa1;
 
 public:
-	CpuBwRamHandler(IMemoryHandler* handler, Sa1State* state, Sa1* sa1)
+	CpuBwRamHandler(IMemoryHandler* handler, Sa1State* state, Sa1* sa1) : IMemoryHandler(handler->GetMemoryType())
 	{
 		_handler = handler;
 		_sa1 = sa1;

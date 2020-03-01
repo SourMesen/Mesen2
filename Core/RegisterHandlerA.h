@@ -13,12 +13,11 @@ private:
 	ControlManager *_controlManager;
 
 public:
-	RegisterHandlerA(DmaController *dmaController, InternalRegisters *regs, ControlManager *controlManager)
+	RegisterHandlerA(DmaController *dmaController, InternalRegisters *regs, ControlManager *controlManager) : IMemoryHandler(SnesMemoryType::Register)
 	{
 		_regs = regs;
 		_dmaController = dmaController;
 		_controlManager = controlManager;
-		_memoryType = SnesMemoryType::Register;
 	}
 
 	uint8_t Read(uint32_t addr) override

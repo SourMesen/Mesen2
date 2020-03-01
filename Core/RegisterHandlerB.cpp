@@ -9,7 +9,7 @@
 #include "CheatManager.h"
 #include "../Utilities/Serializer.h"
 
-RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8_t * workRam)
+RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(SnesMemoryType::Register)
 {
 	_console = console;
 	_cheatManager = console->GetCheatManager().get();
@@ -19,7 +19,6 @@ RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8
 	_msu1 = console->GetMsu1().get();
 	_workRam = workRam;
 	_wramPosition = 0;
-	_memoryType = SnesMemoryType::Register;
 }
 
 uint8_t RegisterHandlerB::Read(uint32_t addr)

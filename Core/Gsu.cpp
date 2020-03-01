@@ -12,7 +12,7 @@
 #include "BatteryManager.h"
 #include "../Utilities/HexUtilities.h"
 
-Gsu::Gsu(Console *console, uint32_t gsuRamSize)
+Gsu::Gsu(Console *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();

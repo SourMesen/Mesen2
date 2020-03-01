@@ -6,7 +6,7 @@
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
 
-Sdd1::Sdd1(Console* console)
+Sdd1::Sdd1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	//This handler is used to dynamically map the ROM based on the banking registers
 	_sdd1Mmc.reset(new Sdd1Mmc(_state, console->GetCartridge().get()));

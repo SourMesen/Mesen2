@@ -4,7 +4,7 @@
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
 
-Obc1::Obc1(Console* console, uint8_t* saveRam, uint32_t saveRamSize)
+Obc1::Obc1(Console* console, uint8_t* saveRam, uint32_t saveRamSize) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	MemoryMappings *mappings = console->GetMemoryManager()->GetMemoryMappings();	
 	mappings->RegisterHandler(0x00, 0x3F, 0x6000, 0x7FFF, this);

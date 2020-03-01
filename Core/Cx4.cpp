@@ -13,7 +13,7 @@
 //TODO: CPU shouldn't have access to PRG ROM while the CX4 is loading from PRG ROM
 //TODO: Timings are apparently not perfect (desync in MMX2 intro)
 
-Cx4::Cx4(Console* console)
+Cx4::Cx4(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_memoryType = SnesMemoryType::Register;

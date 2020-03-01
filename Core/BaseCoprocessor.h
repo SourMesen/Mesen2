@@ -6,6 +6,8 @@
 class BaseCoprocessor : public ISerializable, public IMemoryHandler
 {
 public:
+	using IMemoryHandler::IMemoryHandler;
+
 	virtual void Reset() = 0;
 	
 	virtual void ProcessEndOfFrame() { }

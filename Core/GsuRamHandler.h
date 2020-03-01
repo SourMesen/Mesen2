@@ -10,9 +10,8 @@ private:
 	IMemoryHandler *_handler;
 
 public:
-	GsuRamHandler(GsuState &state, IMemoryHandler *handler)
+	GsuRamHandler(GsuState &state, IMemoryHandler *handler) : IMemoryHandler(SnesMemoryType::GsuWorkRam)
 	{
-		_memoryType = SnesMemoryType::GsuWorkRam;
 		_handler = handler;
 		_state = &state;
 	}

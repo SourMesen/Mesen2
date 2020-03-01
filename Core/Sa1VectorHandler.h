@@ -11,7 +11,7 @@ private:
 	Sa1State* _state;
 
 public:
-	Sa1VectorHandler(IMemoryHandler* handler, Sa1State* state)
+	Sa1VectorHandler(IMemoryHandler* handler, Sa1State* state) : IMemoryHandler(handler->GetMemoryType())
 	{
 		_handler = handler;
 		_state = state;

@@ -10,9 +10,8 @@ private:
 	IMemoryHandler *_romHandler;
 
 public:
-	GsuRomHandler(GsuState &state, IMemoryHandler *romHandler)
+	GsuRomHandler(GsuState &state, IMemoryHandler *romHandler) : IMemoryHandler(SnesMemoryType::PrgRom)
 	{
-		_memoryType = SnesMemoryType::PrgRom;
 		_romHandler = romHandler;
 		_state = &state;
 	}

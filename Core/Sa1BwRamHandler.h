@@ -37,7 +37,7 @@ private:
 	}
 
 public:
-	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state)
+	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state) : IMemoryHandler(SnesMemoryType::SaveRam)
 	{
 		_ram = bwRam;
 		_mask = bwRamSize - 1;

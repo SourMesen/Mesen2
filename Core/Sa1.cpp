@@ -15,7 +15,7 @@
 #include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
 
-Sa1::Sa1(Console* console)
+Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();

@@ -9,7 +9,7 @@
 #include "RamHandler.h"
 #include "EmuSettings.h"
 
-BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack)
+BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_memoryManager = _console->GetMemoryManager().get();

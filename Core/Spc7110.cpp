@@ -10,7 +10,7 @@
 #include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
 
-Spc7110::Spc7110(Console* console, bool useRtc)
+Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_cart = console->GetCartridge().get();

@@ -13,7 +13,7 @@
 #include "FirmwareHelper.h"
 #include "../Utilities/FolderUtilities.h"
 
-NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom)
+NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_type = type;

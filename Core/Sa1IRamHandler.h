@@ -18,10 +18,9 @@ private:
 	}
 
 public:
-	Sa1IRamHandler(uint8_t *ram)
+	Sa1IRamHandler(uint8_t *ram) : IMemoryHandler(SnesMemoryType::Sa1InternalRam)
 	{
 		_ram = ram;
-		_memoryType = SnesMemoryType::Sa1InternalRam;
 	}
 
 	uint8_t Read(uint32_t addr) override
