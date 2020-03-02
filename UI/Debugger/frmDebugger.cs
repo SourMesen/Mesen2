@@ -181,6 +181,9 @@ namespace Mesen.GUI.Debugger
 
 			if(!isPaused) {
 				DebugApi.Step(_cpuType, 10000, StepType.Step);
+			} else {
+				BreakEvent evt = new BreakEvent() { BreakpointId = -1, Source = BreakSource.Unspecified };
+				RefreshDebugger(evt);
 			}
 
 			base.OnLoad(e);
@@ -555,36 +558,41 @@ namespace Mesen.GUI.Debugger
 
 				case ConsoleNotificationType.CodeBreak: {
 					BreakEvent evt = (BreakEvent)Marshal.PtrToStructure(e.Parameter, typeof(BreakEvent));
-					DebugState state = DebugApi.GetState();
-					int activeAddress;
-					switch(_cpuType) {
-						case CpuType.Cpu: activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC); break;
-						case CpuType.Spc: activeAddress = (int)state.Spc.PC; break;
-						case CpuType.NecDsp: activeAddress = (int)(state.NecDsp.PC * 3); break;
-						case CpuType.Sa1: activeAddress = (int)((state.Sa1.K << 16) | state.Sa1.PC); break;
-						case CpuType.Gsu: activeAddress = (int)((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]); break;
-						case CpuType.Cx4: activeAddress = (int)((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF); break;
-						default: throw new Exception("Unsupported cpu type");
-					}
-
-					this.BeginInvoke((MethodInvoker)(() => {
-						ProcessBreakEvent(evt, state, activeAddress);
-
-						if(_firstBreak) {
-							_firstBreak = false;
-							if(!ConfigManager.Config.Debug.Debugger.BreakOnOpen) {
-								DebugApi.ResumeExecution();
-							}
-							if(_destAddress >= 0) {
-								GoToAddress(_destAddress);
-							}
-						}
-					}));
+					RefreshDebugger(evt);
 					break;
 				}
 			}
 		}
-		
+
+		private void RefreshDebugger(BreakEvent evt)
+		{
+			DebugState state = DebugApi.GetState();
+			int activeAddress;
+			switch(_cpuType) {
+				case CpuType.Cpu: activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC); break;
+				case CpuType.Spc: activeAddress = (int)state.Spc.PC; break;
+				case CpuType.NecDsp: activeAddress = (int)(state.NecDsp.PC * 3); break;
+				case CpuType.Sa1: activeAddress = (int)((state.Sa1.K << 16) | state.Sa1.PC); break;
+				case CpuType.Gsu: activeAddress = (int)((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]); break;
+				case CpuType.Cx4: activeAddress = (int)((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF); break;
+				default: throw new Exception("Unsupported cpu type");
+			}
+
+			this.BeginInvoke((MethodInvoker)(() => {
+				ProcessBreakEvent(evt, state, activeAddress);
+
+				if(_firstBreak) {
+					_firstBreak = false;
+					if(!ConfigManager.Config.Debug.Debugger.BreakOnOpen) {
+						DebugApi.ResumeExecution();
+					}
+					if(_destAddress >= 0) {
+						GoToAddress(_destAddress);
+					}
+				}
+			}));
+		}
+
 		private void ctrlCallstack_FunctionSelected(uint address)
 		{
 			ctrlDisassemblyView.ScrollToAddress(address);
