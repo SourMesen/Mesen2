@@ -252,7 +252,6 @@ namespace Mesen.GUI.Controls
 			if(this._needResume) {
 				EmuApi.Resume();
 			}
-			this.Visible = false;
 		}
 
 		private bool _waitForRelease = false;
