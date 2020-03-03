@@ -6,6 +6,7 @@
 #include "NecDspTypes.h"
 #include "GsuTypes.h"
 #include "Cx4Types.h"
+#include "Sa1Types.h"
 #include "InternalRegisterTypes.h"
 #include "DmaControllerTypes.h"
 
@@ -17,7 +18,7 @@ struct DebugState
 	SpcState Spc;
 	DspState Dsp;
 	NecDspState NecDsp;
-	CpuState Sa1;
+	DebugSa1State Sa1;
 	GsuState Gsu;
 	Cx4State Cx4;
 

@@ -88,7 +88,9 @@ public:
 	uint8_t* DebugGetInternalRam();
 	uint32_t DebugGetInternalRamSize();
 
+	DebugSa1State GetState();
 	CpuState GetCpuState();
+
 	uint16_t ReadVector(uint16_t vector);
 	MemoryMappings* GetMemoryMappings();
 };

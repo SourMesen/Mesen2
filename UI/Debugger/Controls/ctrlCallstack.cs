@@ -42,7 +42,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 			switch(_cpuType) {
 				case CpuType.Cpu: _programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;  break;
-				case CpuType.Sa1: _programCounter = (uint)(state.Sa1.K << 16) | state.Sa1.PC;  break;
+				case CpuType.Sa1: _programCounter = (uint)(state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC;  break;
 				case CpuType.Spc: _programCounter = (uint)state.Spc.PC; break;
 				default: throw new Exception("Invalid cpu type");
 			}

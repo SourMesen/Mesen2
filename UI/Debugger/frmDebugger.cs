@@ -470,7 +470,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Cpu: ctrlCpuStatus.UpdateStatus(state.Cpu); break;
 				case CpuType.Spc: ctrlSpcStatus.UpdateStatus(state.Spc); break;
 				case CpuType.NecDsp: ctrlNecDspStatus.UpdateStatus(state.NecDsp); break;
-				case CpuType.Sa1: ctrlCpuStatus.UpdateStatus(state.Sa1); break;
+				case CpuType.Sa1: ctrlCpuStatus.UpdateStatus(state.Sa1.Cpu); break;
 				case CpuType.Gsu: ctrlGsuStatus.UpdateStatus(state.Gsu); break;
 				case CpuType.Cx4: ctrlCx4Status.UpdateStatus(state.Cx4); break;
 				default: throw new Exception("Unsupported CPU type");
@@ -572,7 +572,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Cpu: activeAddress = (int)((state.Cpu.K << 16) | state.Cpu.PC); break;
 				case CpuType.Spc: activeAddress = (int)state.Spc.PC; break;
 				case CpuType.NecDsp: activeAddress = (int)(state.NecDsp.PC * 3); break;
-				case CpuType.Sa1: activeAddress = (int)((state.Sa1.K << 16) | state.Sa1.PC); break;
+				case CpuType.Sa1: activeAddress = (int)((state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC); break;
 				case CpuType.Gsu: activeAddress = (int)((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]); break;
 				case CpuType.Cx4: activeAddress = (int)((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF); break;
 				default: throw new Exception("Unsupported cpu type");

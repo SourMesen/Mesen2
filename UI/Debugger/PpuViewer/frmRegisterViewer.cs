@@ -26,6 +26,10 @@ namespace Mesen.GUI.Debugger
 		private byte _reg4211;
 		private byte _reg4212;
 
+		private CoprocessorType _coprocessorType;
+		private TabPage tpgCoprocessor;
+		private ctrlPropertyList ctrlCoprocessor;
+
 		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return this.ctrlScanlineCycleSelect; } }
 
 		public frmRegisterViewer()
@@ -55,6 +59,8 @@ namespace Mesen.GUI.Debugger
 			_refreshManager.AutoRefresh = config.AutoRefresh;
 			_refreshManager.AutoRefreshSpeed = RefreshSpeed.High;
 
+			UpdateTabs();
+
 			RefreshData();
 			RefreshViewer();
 
@@ -82,9 +88,30 @@ namespace Mesen.GUI.Debugger
 			base.OnFormClosed(e);
 		}
 
+		private void UpdateTabs()
+		{
+			if(tpgCoprocessor != null) {
+				tabMain.TabPages.Remove(tpgCoprocessor);
+			}
+
+			_coprocessorType = EmuApi.GetRomInfo().CoprocessorType;
+			if(_coprocessorType == CoprocessorType.SA1) {
+				tpgCoprocessor = new TabPage();
+				tpgCoprocessor.Text = "SA-1";
+				ctrlCoprocessor = new ctrlPropertyList();
+				ctrlCoprocessor.Dock = DockStyle.Fill;
+				tpgCoprocessor.Controls.Add(ctrlCoprocessor);
+				tabMain.TabPages.Add(tpgCoprocessor);
+			}
+		}
+
 		private void OnNotificationReceived(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					this.BeginInvoke((Action)(() => UpdateTabs()));
+					break;
+
 				case ConsoleNotificationType.CodeBreak:
 					RefreshData();
 					this.BeginInvoke((Action)(() => {
@@ -149,7 +176,7 @@ namespace Mesen.GUI.Debugger
 				});
 			} else if(tabMain.SelectedTab == tpgDma) {
 				List<RegEntry> entries = new List<RegEntry>();
-				
+
 				//TODO
 				/*for(int i = 0; i < 8; i++) {
 					entries.Add(new RegEntry("$420C." + i.ToString(), "HDMA Channel " + i.ToString() + " Enabled", _state.DmaChannels[i].DmaActive));
@@ -205,7 +232,7 @@ namespace Mesen.GUI.Debugger
 					new RegEntry("$F8 - $F9", "RAM Registers", null),
 					new RegEntry("$F8", "RAM Reg 0", spc.RamReg[0], Format.X8),
 					new RegEntry("$F9", "RAM Reg 1", spc.RamReg[1], Format.X8),
-					
+
 					new RegEntry("$FA - $FF", "Timers", null),
 					new RegEntry("$FA", "Timer 0 Divider", spc.Timer0.Target, Format.X8),
 					new RegEntry("$FA", "Timer 0 Frequency", GetTimerFrequency(8000, spc.Timer0.Target)),
@@ -450,6 +477,134 @@ namespace Mesen.GUI.Debugger
 					new RegEntry("$2133.3", "High Resolution Mode", ppu.HiResMode),
 					new RegEntry("$2133.4", "Ext. BG Enabled", ppu.ExtBgEnabled),
 				});
+			} else if(tabMain.SelectedTab == tpgCoprocessor) {
+				if(_coprocessorType == CoprocessorType.SA1) {
+					Sa1State sa1 = _state.Sa1.Sa1;
+
+					List<RegEntry> entries = new List<RegEntry>() {
+						new RegEntry("$2200", "SA-1 CPU Control", null),
+						new RegEntry("$2200.0-3", "Message", sa1.Sa1MessageReceived, Format.X8),
+						new RegEntry("$2200.4", "NMI Requested", sa1.Sa1NmiRequested),
+						new RegEntry("$2200.5", "Reset", sa1.Sa1Reset),
+						new RegEntry("$2200.6", "Wait", sa1.Sa1Wait),
+						new RegEntry("$2200.7", "IRQ Requested", sa1.Sa1IrqRequested),
+
+						new RegEntry("$2201", "S-CPU Interrupt Enable", null),
+						new RegEntry("$2201.5", "Character Conversion IRQ Enable", sa1.CharConvIrqEnabled),
+						new RegEntry("$2201.7", "IRQ Enabled", sa1.CpuIrqEnabled),
+
+						new RegEntry("$2202", "S-CPU Interrupt Clear", null),
+						new RegEntry("$2202.5", "Character IRQ Flag", sa1.CharConvIrqFlag),
+						new RegEntry("$2202.7", "IRQ Flag", sa1.CpuIrqRequested),
+
+						new RegEntry("$2203/4", "SA-1 Reset Vector", sa1.Sa1ResetVector, Format.X16),
+						new RegEntry("$2205/6", "SA-1 NMI Vector", sa1.Sa1ResetVector, Format.X16),
+						new RegEntry("$2207/8", "SA-1 IRQ Vector", sa1.Sa1ResetVector, Format.X16),
+
+						new RegEntry("$2209", "S-CPU Control", null),
+						new RegEntry("$2209.0-3", "Message", sa1.CpuMessageReceived, Format.X8),
+						new RegEntry("$2209.4", "Use NMI Vector", sa1.UseCpuNmiVector),
+						new RegEntry("$2209.6", "Use IRQ Vector", sa1.UseCpuIrqVector),
+						new RegEntry("$2209.7", "IRQ Requested", sa1.CpuIrqRequested),
+
+						new RegEntry("$220A", "SA-1 CPU Interrupt Enable", null),
+						new RegEntry("$220A.4", "SA-1 NMI Enabled", sa1.Sa1NmiEnabled),
+						new RegEntry("$220A.5", "DMA IRQ Enabled", sa1.DmaIrqEnabled),
+						new RegEntry("$220A.6", "Timer IRQ Enabled", sa1.TimerIrqEnabled),
+						new RegEntry("$220A.7", "SA-1 IRQ Enabled", sa1.Sa1IrqEnabled),
+
+						new RegEntry("$220B", "S-CPU Interrupt Clear", null),
+						new RegEntry("$220B.4", "SA-1 NMI Requested", sa1.Sa1NmiRequested),
+						new RegEntry("$220B.5", "DMA IRQ Flag", sa1.DmaIrqFlag),
+						new RegEntry("$220B.7", "SA-1 IRQ Requested", sa1.Sa1IrqRequested),
+
+						new RegEntry("$220C/D", "S-CPU NMI Vector", sa1.CpuNmiVector, Format.X16),
+						new RegEntry("$220E/F", "S-CPU IRQ Vector", sa1.CpuIrqVector, Format.X16),
+
+						new RegEntry("$2210", "H/V Timer Control", null),
+						new RegEntry("$2210.0", "Horizontal Timer Enabled", sa1.HorizontalTimerEnabled),
+						new RegEntry("$2210.1", "Vertical Timer Enabled", sa1.VerticalTimerEnabled),
+						new RegEntry("$2210.7", "Linear Timer", sa1.UseLinearTimer),
+
+						new RegEntry("$2212/3", "H-Timer", sa1.HTimer, Format.X16),
+						new RegEntry("$2214/5", "V-Timer", sa1.VTimer, Format.X16),
+
+						new RegEntry("", "ROM/BWRAM/IRAM Mappings", null),
+						new RegEntry("$2220", "MMC Bank C", sa1.Banks[0], Format.X8),
+						new RegEntry("$2221", "MMC Bank D", sa1.Banks[1], Format.X8),
+						new RegEntry("$2222", "MMC Bank E", sa1.Banks[2], Format.X8),
+						new RegEntry("$2223", "MMC Bank F", sa1.Banks[3], Format.X8),
+
+						new RegEntry("$2224", "S-CPU BW-RAM Bank", sa1.CpuBwBank, Format.X8),
+						new RegEntry("$2225.0-6", "SA-1 CPU BW-RAM Bank", sa1.Sa1BwBank, Format.X8),
+						new RegEntry("$2225.7", "SA-1 CPU BW-RAM Mode", sa1.Sa1BwMode, Format.X8),
+						new RegEntry("$2226.7", "S-CPU BW-RAM Write Enabled", sa1.CpuBwWriteEnabled),
+						new RegEntry("$2227.7", "SA-1 BW-RAM Write Enabled", sa1.Sa1BwWriteEnabled),
+						new RegEntry("$2228.0-3", "S-CPU BW-RAM Write Protected Area", sa1.BwWriteProtectedArea, Format.X8),
+						new RegEntry("$2229", "S-CPU I-RAM Write Protection", sa1.CpuIRamWriteProtect, Format.X8),
+						new RegEntry("$222A", "SA-1 CPU I-RAM Write Protection", sa1.Sa1IRamWriteProtect, Format.X8),
+
+						new RegEntry("$2230", "DMA Control", null),
+						new RegEntry("$2230.0-1", "DMA Source Device", sa1.DmaSrcDevice.ToString()),
+						new RegEntry("$2230.2-3", "DMA Destination Device", sa1.DmaDestDevice.ToString()),
+						new RegEntry("$2230.4", "Automatic DMA Character Conversion", sa1.DmaCharConvAuto),
+						new RegEntry("$2230.5", "DMA Character Conversion", sa1.DmaCharConv),
+						new RegEntry("$2230.6", "DMA Priority", sa1.DmaPriority),
+						new RegEntry("$2230.7", "DMA Enabled", sa1.DmaEnabled),
+
+						new RegEntry("$2231.0-1", "Character Format (BPP)", sa1.CharConvBpp, Format.D),
+						new RegEntry("$2231.2-5", "Character Conversion Width", sa1.CharConvWidth, Format.X8),
+						new RegEntry("$2231.7", "Character DMA Active", sa1.CharConvDmaActive),
+
+						new RegEntry("$2232/3/4", "DMA Source Address", sa1.DmaSrcAddr, Format.X24),
+						new RegEntry("$2235/6/7", "DMA Destination Address", sa1.DmaDestAddr, Format.X24),
+
+						new RegEntry("$2238/9", "DMA Size", sa1.DmaSize, Format.X16),
+						new RegEntry("$223F.7", "BW-RAM 2 bpp mode", sa1.BwRam2BppMode)
+					};
+
+					entries.Add(new RegEntry("", "Bitmap Register File", null));
+					for(int i = 0; i < 8; i++) {
+						entries.Add(new RegEntry("$224" + i, "BRF #" + i, sa1.BitmapRegister1[i]));
+					}
+					for(int i = 0; i < 8; i++) {
+						entries.Add(new RegEntry("$224" + (8 + i).ToString("X"), "BRF #" + (i+8), sa1.BitmapRegister2[i]));
+					}					
+
+					entries.AddRange(new List<RegEntry>() {
+						new RegEntry("", "Math Registers", null),
+						new RegEntry("$2250.0-1", "Math Operation", sa1.MathOp.ToString()),
+						new RegEntry("$2251/2", "Multiplicand/Dividend", sa1.MultiplicandDividend, Format.X16),
+						new RegEntry("$2253/4", "Multiplier/Divisor", sa1.MultiplierDivisor, Format.X16),
+
+						new RegEntry("", "Variable Length Registers", null),
+						new RegEntry("$2258", "Variable Length Bit Processing", null),
+						new RegEntry("$2258.0-3", "Variable Length Bit Count", sa1.VarLenBitCount, Format.X8),
+						new RegEntry("$2258.7", "Variable Length Auto-Increment", sa1.VarLenAutoInc),
+						new RegEntry("$2259/A/B", "Variable Length Address", sa1.VarLenAddress, Format.X24),
+
+						new RegEntry("$2300", "S-CPU Status Flags", null),
+						new RegEntry("$2300.0-3", "Message Received", sa1.CpuMessageReceived, Format.X8),
+						new RegEntry("$2300.4", "Use NMI Vector", sa1.UseCpuNmiVector),
+						new RegEntry("$2300.5", "Character Conversion IRQ Flag", sa1.CharConvIrqFlag),
+						new RegEntry("$2300.6", "Use IRQ Vector", sa1.UseCpuIrqVector),
+						new RegEntry("$2300.7", "IRQ Requested", sa1.CpuIrqRequested),
+
+						new RegEntry("$2301", "SA-1 Status Flags", null),
+						new RegEntry("$2301.0-3", "Message Received", sa1.Sa1MessageReceived, Format.X8),
+						new RegEntry("$2301.4", "NMI Requested", sa1.Sa1NmiRequested),
+						new RegEntry("$2301.5", "DMA IRQ Flag", sa1.DmaIrqFlag),
+						new RegEntry("$2301.7", "IRQ Requested", sa1.Sa1IrqRequested),
+						
+						new RegEntry("$2302/3", "SA-1 H-Counter", 0, Format.X16),
+						new RegEntry("$2304/5", "SA-1 V-Counter", 0, Format.X16),
+
+						new RegEntry("$2306/7/8/9/A", "Math Result", sa1.MathOpResult),
+						new RegEntry("$230B.7", "Math Overflow", sa1.MathOverflow)
+					});
+
+					ctrlCoprocessor.UpdateState(entries);
+				}
 			}
 		}
 

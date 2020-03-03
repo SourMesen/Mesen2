@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "CpuTypes.h"
 
 enum class Sa1MathOp
 {
@@ -105,4 +106,10 @@ struct Sa1State
 	uint8_t VarLenCurrentBit;
 
 	uint8_t Banks[4];
+};
+
+struct DebugSa1State
+{
+	CpuState Cpu;
+	Sa1State Sa1;
 };

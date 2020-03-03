@@ -492,7 +492,7 @@ void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &
 		case CpuType::Cpu: GetTraceRow(output, state.Cpu, state.Ppu, disassemblyInfo, SnesMemoryType::CpuMemory, cpuType); break;
 		case CpuType::Spc: GetTraceRow(output, state.Spc, state.Ppu, disassemblyInfo); break;
 		case CpuType::NecDsp: GetTraceRow(output, state.NecDsp, state.Ppu, disassemblyInfo); break;
-		case CpuType::Sa1: GetTraceRow(output, state.Sa1, state.Ppu, disassemblyInfo, SnesMemoryType::Sa1Memory, cpuType); break;
+		case CpuType::Sa1: GetTraceRow(output, state.Sa1.Cpu, state.Ppu, disassemblyInfo, SnesMemoryType::Sa1Memory, cpuType); break;
 		case CpuType::Gsu: GetTraceRow(output, state.Gsu, state.Ppu, disassemblyInfo); break;
 		case CpuType::Cx4: GetTraceRow(output, state.Cx4, state.Ppu, disassemblyInfo); break;
 	}
@@ -588,7 +588,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((state.Cpu.K << 16) | state.Cpu.PC) + "\x1"; break;
 				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(state.Spc.PC) + "\x1"; break;
 				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(state.NecDsp.PC) + "\x1"; break;
-				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Sa1.K << 16) | state.Sa1.PC) + "\x1"; break;
+				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC) + "\x1"; break;
 				case CpuType::Gsu: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]) + "\x1"; break;
 				case CpuType::Cx4: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF) + "\x1"; break;
 			}

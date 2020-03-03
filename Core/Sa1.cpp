@@ -778,6 +778,14 @@ uint32_t Sa1::DebugGetInternalRamSize()
 	return Sa1::InternalRamSize;
 }
 
+DebugSa1State Sa1::GetState()
+{
+	return {
+		_cpu->GetState(),
+		_state
+	};
+}
+
 CpuState Sa1::GetCpuState()
 {
 	return _cpu->GetState();

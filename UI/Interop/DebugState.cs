@@ -42,7 +42,7 @@ namespace Mesen.GUI
 		DirectPage = 0x20,
 		Overflow = 0x40,
 		Negative = 0x80
-	};
+	}
 
 	public struct CpuState
 	{
@@ -71,7 +71,7 @@ namespace Mesen.GUI
 		public byte IrqSource;
 		public byte PrevIrqSource;
 		public CpuStopState StopState;
-	};
+	}
 
 	public struct PpuState
 	{
@@ -144,7 +144,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool ColorMathSubstractMode;
 		[MarshalAs(UnmanagedType.I1)] public bool ColorMathHalveResult;
 		public UInt16 FixedColor;
-	};
+	}
 
 	public struct LayerConfig
 	{
@@ -253,7 +253,7 @@ namespace Mesen.GUI
 		public SpcTimer Timer0;
 		public SpcTimer Timer1;
 		public SpcTimer Timer2;
-	};
+	}
 
 	public struct DspState
 	{
@@ -307,7 +307,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool ImmHigh;
 		[MarshalAs(UnmanagedType.I1)] public bool Prefix;
 		[MarshalAs(UnmanagedType.I1)] public bool Irq;
-	};
+	}
 
 	public struct GsuPixelCache
 	{
@@ -316,7 +316,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
 		public byte[] Pixels;
 		public byte ValidBits;
-	};
+	}
 
 	public struct GsuState
 	{
@@ -370,7 +370,7 @@ namespace Mesen.GUI
 
 		public GsuPixelCache PrimaryCache;
 		public GsuPixelCache SecondaryCache;
-	};
+	}
 
 	public struct Cx4Dma
 	{
@@ -379,13 +379,13 @@ namespace Mesen.GUI
 		public UInt16 Length;
 		public UInt32 Pos;
 		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
-	};
+	}
 
 	public struct Cx4Suspend
 	{
 		public UInt32 Duration;
 		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
-	};
+	}
 
 	public struct Cx4Cache
 	{
@@ -402,7 +402,7 @@ namespace Mesen.GUI
 		public UInt16 ProgramBank;
 		public byte ProgramCounter;
 		public UInt16 Pos;
-	};
+	}
 
 	public struct Cx4Bus
 	{
@@ -411,7 +411,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool Writing;
 		public byte DelayCycles;
 		public UInt32 Address;
-	};
+	}
 
 	public struct Cx4State
 	{
@@ -462,7 +462,122 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
 		public byte[] Vectors;
-	};
+	}
+
+	public struct Sa1State
+	{
+		public UInt16 Sa1ResetVector;
+		public UInt16 Sa1IrqVector;
+		public UInt16 Sa1NmiVector;
+
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1IrqRequested;
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1IrqEnabled;
+
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1NmiRequested;
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1NmiEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1Wait;
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1Reset;
+
+		[MarshalAs(UnmanagedType.I1)] public bool DmaIrqEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool TimerIrqEnabled;
+
+		public byte Sa1MessageReceived;
+		public byte CpuMessageReceived;
+
+		public UInt16 CpuIrqVector;
+		public UInt16 CpuNmiVector;
+		[MarshalAs(UnmanagedType.I1)] public bool UseCpuIrqVector;
+		[MarshalAs(UnmanagedType.I1)] public bool UseCpuNmiVector;
+
+		[MarshalAs(UnmanagedType.I1)] public bool CpuIrqRequested;
+		[MarshalAs(UnmanagedType.I1)] public bool CpuIrqEnabled;
+
+		[MarshalAs(UnmanagedType.I1)] public bool CharConvIrqFlag;
+		[MarshalAs(UnmanagedType.I1)] public bool CharConvIrqEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool CharConvDmaActive;
+		public byte CharConvBpp;
+		public byte CharConvFormat;
+		public byte CharConvWidth;
+		public byte CharConvCounter;
+
+		public byte CpuBwBank;
+		[MarshalAs(UnmanagedType.I1)] public bool CpuBwWriteEnabled;
+
+		public byte Sa1BwBank;
+		public byte Sa1BwMode;
+		[MarshalAs(UnmanagedType.I1)] public bool Sa1BwWriteEnabled;
+		public byte BwWriteProtectedArea;
+		[MarshalAs(UnmanagedType.I1)] public bool BwRam2BppMode;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+		public byte[] BitmapRegister1;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+		public byte[] BitmapRegister2;
+
+		public byte CpuIRamWriteProtect;
+		public byte Sa1IRamWriteProtect;
+
+		public UInt32 DmaSrcAddr;
+		public UInt32 DmaDestAddr;
+		public UInt16 DmaSize;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaPriority;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaCharConv;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaCharConvAuto;
+		public Sa1DmaDestDevice DmaDestDevice;
+		public Sa1DmaSrcDevice DmaSrcDevice;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaRunning;
+		[MarshalAs(UnmanagedType.I1)] public bool DmaIrqFlag;
+
+		[MarshalAs(UnmanagedType.I1)] public bool HorizontalTimerEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool VerticalTimerEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool UseLinearTimer;
+
+		public UInt16 HTimer;
+		public UInt16 VTimer;
+		public UInt32 LinearTimerValue;
+
+		public Sa1MathOp MathOp;
+		public UInt16 MultiplicandDividend;
+		public UInt16 MultiplierDivisor;
+		public UInt64 MathOpResult;
+		public byte MathOverflow;
+
+		[MarshalAs(UnmanagedType.I1)] public bool VarLenAutoInc;
+		public byte VarLenBitCount;
+		public UInt32 VarLenAddress;
+		public byte VarLenCurrentBit;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public byte[] Banks;
+	}
+
+	public struct DebugSa1State
+	{
+		public CpuState Cpu;
+		public Sa1State Sa1;
+	}
+
+	public enum Sa1MathOp
+	{
+		Mul = 0,
+		Div = 1,
+		Sum = 2
+	}
+
+	public enum Sa1DmaSrcDevice
+	{
+		PrgRom = 0,
+		BwRam = 1,
+		InternalRam = 2,
+		Reserved = 3
+	}
+
+	public enum Sa1DmaDestDevice
+	{
+		InternalRam = 0,
+		BwRam = 1
+	}
 
 	public struct AluState
 	{
@@ -473,7 +588,7 @@ namespace Mesen.GUI
 		public UInt16 Dividend;
 		public byte Divisor;
 		public UInt16 DivResult;
-	};
+	}
 
 	public struct InternalRegisterState
 	{
@@ -490,7 +605,7 @@ namespace Mesen.GUI
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 		public UInt16[] ControllerData;
-	};
+	}
 
 	public struct DebugState
 	{
@@ -500,7 +615,7 @@ namespace Mesen.GUI
 		public SpcState Spc;
 		public DspState Dsp;
 		public NecDspState NecDsp;
-		public CpuState Sa1;
+		public DebugSa1State Sa1;
 		public GsuState Gsu;
 		public Cx4State Cx4;
 

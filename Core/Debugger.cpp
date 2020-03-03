@@ -424,7 +424,7 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 		state.NecDsp = _cart->GetDsp()->GetState();
 	}
 	if(_cart->GetSa1()) {
-		state.Sa1 = _cart->GetSa1()->GetCpuState();
+		state.Sa1 = _cart->GetSa1()->GetState();
 	}
 	if(_cart->GetGsu()) {
 		state.Gsu = _cart->GetGsu()->GetState();

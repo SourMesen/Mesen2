@@ -21,7 +21,7 @@ namespace Mesen.GUI.Debugger.Code
 
 		protected override int GetFullAddress(int address, int length)
 		{
-			CpuState state = DebugApi.GetState().Sa1;
+			CpuState state = DebugApi.GetState().Sa1.Cpu;
 			if(length == 4) {
 				//Append current DB register to 2-byte addresses
 				return (state.DBR << 16) | address;
