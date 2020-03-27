@@ -47,6 +47,7 @@ Console::Console()
 	_paused = false;
 	_pauseOnNextFrame = false;
 	_stopFlag = false;
+	_isRunAheadFrame = false;
 	_lockCounter = 0;
 }
 
@@ -236,6 +237,7 @@ void Console::RunSingleFrame()
 	//Used by Libretro
 	uint32_t lastFrameNumber = _ppu->GetFrameCount();
 	_emulationThreadId = std::this_thread::get_id();
+	_isRunAheadFrame = false;
 
 	_controlManager->UpdateInputState();
 	_internalRegisters->ProcessAutoJoypadRead();
