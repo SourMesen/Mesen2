@@ -86,6 +86,7 @@ extern "C" {
 		_console->GetSettings()->SetAudioConfig(audioConfig);
 
 		PreferencesConfig preferences = _console->GetSettings()->GetPreferences();
+		preferences.DisableOsd = true;
 		preferences.RewindBufferSize = 0;
 		_console->GetSettings()->SetPreferences(preferences);
 	}
