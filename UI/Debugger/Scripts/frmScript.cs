@@ -221,6 +221,7 @@ namespace Mesen.GUI.Debugger
 			this.Text = $"{name} - Script Window";
 			txtScriptContent.Text = ResourceExtractor.ReadZippedResource(name);
 			_originalText = txtScriptContent.Text;
+			_filePath = null;
 			_builtInScriptName = name;
 			txtScriptContent.ClearUndo();
 		}
