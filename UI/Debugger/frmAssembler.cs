@@ -265,7 +265,12 @@ namespace Mesen.GUI.Debugger
 				}
 
 				DebugApi.SetMemoryValues(SnesMemoryType.CpuMemory, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
-				DebugApi.MarkBytesAs((uint)_startAddress, (uint)(_startAddress + bytes.Count), CdlFlags.Code);
+
+				AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress, Type = SnesMemoryType.CpuMemory });
+				AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress + bytes.Count, Type = SnesMemoryType.CpuMemory });
+				if(absStart.Type == SnesMemoryType.PrgRom && absEnd.Type == SnesMemoryType.PrgRom && (absEnd.Address - absStart.Address) == bytes.Count) {
+					DebugApi.MarkBytesAs((uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+				}
 
 				frmDebugger debugger = DebugWindowManager.OpenDebugger(CpuType.Cpu);
 				if(debugger != null) {
