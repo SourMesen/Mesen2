@@ -29,6 +29,7 @@ namespace Mesen.GUI.Debugger
 		private DebugState _state;
 		private int _selectedTile = 0;
 		private WindowRefreshManager _refreshManager;
+		private NotificationListener _notifListener;
 
 		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return this.ctrlScanlineCycleSelect; } }
 
@@ -62,10 +63,11 @@ namespace Mesen.GUI.Debugger
 			cboLayout.SetEnumValue(config.Layout);
 			nudColumns.Value = config.ColumnCount;
 
-			int memSize = DebugApi.GetMemorySize(_memoryType);
-			config.Address = Math.Min(memSize - config.PageSize, config.Address);
-
 			UpdateMemoryType(config.Source);
+
+			int memSize = DebugApi.GetMemorySize(_memoryType);
+			config.Address = Math.Max(0, Math.Min(memSize - config.PageSize, config.Address));
+
 			nudAddress.Value = config.Address;
 			nudSize.Value = config.PageSize;
 			mnuAutoRefresh.Checked = config.AutoRefresh;
@@ -118,8 +120,11 @@ namespace Mesen.GUI.Debugger
 			btnPresetBg4.Click += (s, e) => GoToBgLayer(3);
 			btnPresetOam1.Click += (s, e) => GoToOamPreset(0);
 			btnPresetOam2.Click += (s, e) => GoToOamPreset(1);
+
+			_notifListener = new NotificationListener();
+			_notifListener.OnNotification += OnNotificationReceived;
 		}
-		
+
 		private void InitShortcuts()
 		{
 			mnuRefresh.InitShortcut(this, nameof(DebuggerShortcutsConfig.Refresh));
@@ -135,6 +140,7 @@ namespace Mesen.GUI.Debugger
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
+			_notifListener?.Dispose();
 			_refreshManager?.Dispose();
 
 			TileViewerConfig config = ConfigManager.Config.Debug.TileViewer;
@@ -157,6 +163,17 @@ namespace Mesen.GUI.Debugger
 
 			ConfigManager.ApplyChanges();
 			base.OnFormClosed(e);
+		}
+
+		private void OnNotificationReceived(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					this.BeginInvoke((Action)(() => {
+						this.InitMemoryTypeDropdown();
+					}));
+					break;
+			}
 		}
 
 		private int GetBytesPerTile()
@@ -251,7 +268,10 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
 			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
+			if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
+			}
+
 			if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
 				cboMemoryType.Items.Add("-");
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
