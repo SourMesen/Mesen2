@@ -15,6 +15,16 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/cjk97u1yvw
 
 Linux: [![Build status](https://ci.appveyor.com/api/projects/status/arkaatgy94f23ll3/branch/master?svg=true)](https://ci.appveyor.com/project/Sour/mesen-s-hayo4/build/artifacts)
 
+## Releases
+
+### Windows / Ubuntu
+
+The latest version is available from the [releases tab on GitHub](https://github.com/SourMesen/Mesen-S/releases).  
+
+### Arch Linux
+
+Packages are available here: <https://aur.archlinux.org/packages/mesen-s-git/>
+
 ## Compiling
 
 See [COMPILING.md](COMPILING.md)
