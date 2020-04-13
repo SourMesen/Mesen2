@@ -74,6 +74,9 @@ namespace Mesen.GUI.Debugger
 			chkShowTileGrid.Checked = config.ShowTileGrid;
 			ctrlImagePanel.ImageScale = config.ImageScale;
 			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
+
+			double scale = (double)ctrlPaletteViewer.Width / 176;
+			ctrlPaletteViewer.PaletteScale = (int)(11 * scale);
 			ctrlPaletteViewer.SelectedPalette = config.SelectedPalette;
 
 			nudSize.Increment = 0x1000;

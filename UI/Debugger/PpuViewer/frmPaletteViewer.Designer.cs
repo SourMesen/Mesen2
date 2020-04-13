@@ -50,7 +50,7 @@
 			// ctrlScanlineCycleSelect
 			// 
 			this.ctrlScanlineCycleSelect.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.ctrlScanlineCycleSelect.Location = new System.Drawing.Point(0, 263);
+			this.ctrlScanlineCycleSelect.Location = new System.Drawing.Point(0, 275);
 			this.ctrlScanlineCycleSelect.Name = "ctrlScanlineCycleSelect";
 			this.ctrlScanlineCycleSelect.Size = new System.Drawing.Size(398, 28);
 			this.ctrlScanlineCycleSelect.TabIndex = 5;
@@ -68,7 +68,7 @@
 			this.tableLayoutPanel1.RowCount = 2;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(398, 263);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(398, 275);
 			this.tableLayoutPanel1.TabIndex = 7;
 			// 
 			// ctrlPaletteViewer
@@ -76,9 +76,11 @@
 			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 3);
 			this.ctrlPaletteViewer.Name = "ctrlPaletteViewer";
 			this.ctrlPaletteViewer.PaletteScale = 16;
+			this.ctrlPaletteViewer.SelectedPalette = 0;
 			this.ctrlPaletteViewer.SelectionMode = Mesen.GUI.Debugger.PaletteSelectionMode.SingleColor;
 			this.ctrlPaletteViewer.Size = new System.Drawing.Size(256, 256);
 			this.ctrlPaletteViewer.TabIndex = 0;
+			this.ctrlPaletteViewer.TabStop = false;
 			this.ctrlPaletteViewer.SelectionChanged += new Mesen.GUI.Debugger.ctrlPaletteViewer.SelectionChangedHandler(this.ctrlPaletteViewer_SelectionChanged);
 			// 
 			// tableLayoutPanel2
@@ -109,7 +111,7 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(130, 257);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(136, 269);
 			this.tableLayoutPanel2.TabIndex = 1;
 			// 
 			// txtR
@@ -224,7 +226,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(398, 291);
+			this.ClientSize = new System.Drawing.Size(398, 303);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.ctrlScanlineCycleSelect);
 			this.Name = "frmPaletteViewer";

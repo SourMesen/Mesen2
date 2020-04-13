@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.GUI.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -190,6 +191,12 @@ namespace Mesen.GUI.Controls
 			base.OnSizeChanged(e);
 			if(this.Height < 21) {
 				this.Height = 21;
+			}
+
+			double scale = (double)this.Height / 21;
+			if(scale > 1) {
+				btnDown.Image = Properties.Resources.NudDownArrow.GetScaledImage(scale);
+				btnUp.Image = Properties.Resources.NudUpArrow.GetScaledImage(scale);
 			}
 		}
 

@@ -27,6 +27,9 @@ namespace Mesen.GUI.Debugger
 			_refreshManager.AutoRefresh = true;
 			ctrlScanlineCycleSelect.Initialize(241, 0);
 
+			double scale = (double)ctrlPaletteViewer.Width / 256;
+			ctrlPaletteViewer.PaletteScale = (int)(16 * scale);
+
 			ctrlPaletteViewer.RefreshData();
 			ctrlPaletteViewer.RefreshViewer();
 			UpdateFields();

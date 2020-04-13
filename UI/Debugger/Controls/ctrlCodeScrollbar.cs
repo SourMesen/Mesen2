@@ -16,8 +16,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private Timer _tmrScroll;
 		private bool _scrollUp = false;
 		private bool _mouseDown = false;
-
-		private const int _buttonSize = 15;
+		private int _buttonSize = 15;
 
 		private IScrollbarColorProvider _colorProvider = null;
 		public IScrollbarColorProvider ColorProvider
@@ -58,6 +57,9 @@ namespace Mesen.GUI.Debugger.Controls
 			int width = rect.Width;
 			e.Graphics.FillRectangle(Brushes.DimGray, rect);
 
+			double scale = (double)width / 18;
+			_buttonSize = (int)(15 * scale);
+
 			int barTop = rect.Top + _buttonSize;
 			int barHeight = this.Height - _buttonSize * 2;
 
@@ -90,9 +92,9 @@ namespace Mesen.GUI.Debugger.Controls
 
 			float highlightTop = barTop + barHeight * startPos - HighlightOffset;
 			using(SolidBrush brush = new SolidBrush(Color.FromArgb(120, 220, 220, 255))) {
-				e.Graphics.FillRectangle(brush, left + 1, highlightTop, width, HighlightHeight - 2);
-				e.Graphics.DrawRectangle(Pens.DarkSlateGray, left + 1, highlightTop, width - 2, HighlightHeight - 2);
-				e.Graphics.DrawRectangle(Pens.Gray, left + 2, highlightTop + 1, width - 4, HighlightHeight - 4);
+				e.Graphics.FillRectangle(brush, left + 1, highlightTop, width, (int)(HighlightHeight * scale) - 2);
+				e.Graphics.DrawRectangle(Pens.DarkSlateGray, left + 1, highlightTop, width - 2, (int)(HighlightHeight * scale) - 2);
+				e.Graphics.DrawRectangle(Pens.Gray, left + 2, highlightTop + 1, width - 4, (int)(HighlightHeight * scale) - 4);
 			}
 
 			if(this.ColorProvider != null) {
@@ -123,8 +125,8 @@ namespace Mesen.GUI.Debugger.Controls
 				}
 			}
 
-			int arrowWidth = 10;
-			int arrowHeight = 5;
+			int arrowWidth = (int)(10 * scale);
+			int arrowHeight = (int)(5 * scale);
 			int bottom = barTop + barHeight + _buttonSize;
 			e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 			e.Graphics.FillRectangle(Brushes.Gainsboro, rect.Left + 1, rect.Top, this.Width - 1, _buttonSize);
@@ -132,8 +134,10 @@ namespace Mesen.GUI.Debugger.Controls
 			e.Graphics.DrawLine(Pens.DimGray, rect.Left + 1, rect.Top + _buttonSize, rect.Left + width, rect.Top + _buttonSize);
 			e.Graphics.DrawLine(Pens.DimGray, rect.Left + 1, bottom - _buttonSize, rect.Left + width, bottom - _buttonSize);
 			e.Graphics.DrawLine(Pens.DimGray, rect.Left + 1, bottom, rect.Left + width, bottom);
-			e.Graphics.TranslateTransform(5, (_buttonSize - arrowHeight) / 2);
+
+			e.Graphics.TranslateTransform((int)(5 * scale), (_buttonSize - arrowHeight) / 2);
 			e.Graphics.FillPolygon(Brushes.DimGray, new Point[] { new Point(left, rect.Top + arrowHeight), new Point(left + arrowWidth, rect.Top + arrowHeight), new Point(left + arrowWidth / 2, rect.Top) }, FillMode.Winding);
+			
 			e.Graphics.TranslateTransform(0, -(_buttonSize - arrowHeight));
 			e.Graphics.FillPolygon(Brushes.DimGray, new Point[] { new Point(left, bottom - arrowHeight), new Point(left + arrowWidth, bottom - arrowHeight), new Point(left + arrowWidth / 2, bottom) }, FillMode.Winding);
 		}
