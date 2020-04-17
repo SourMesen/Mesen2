@@ -385,12 +385,13 @@ namespace Mesen.GUI.Forms
 			mnuNetPlaySpectator.Click += (s, e) => { NetplayApi.NetPlaySelectController(0xFF); };
 
 			mnuNetPlay.DropDownOpening += (s, e) => {
+				bool runAheadDisabled = ConfigManager.Config.Emulation.RunAheadFrames == 0;
 				bool isClient = NetplayApi.IsConnected();
 				bool isServer = NetplayApi.IsServerRunning();
 				mnuConnect.Text = ResourceHelper.GetMessage(isClient ? "Disconnect" : "ConnectToServer");
-				mnuConnect.Enabled = !isServer;
+				mnuConnect.Enabled = runAheadDisabled && !isServer;
 				mnuStartServer.Text = ResourceHelper.GetMessage(isServer ? "StopServer" : "StartServer");
-				mnuStartServer.Enabled = !isClient;
+				mnuStartServer.Enabled = runAheadDisabled && !isClient;
 				mnuNetPlaySelectController.Enabled = isClient || isServer;
 			};
 
@@ -664,10 +665,14 @@ namespace Mesen.GUI.Forms
 		private void mnuTools_DropDownOpening(object sender, EventArgs e)
 		{
 			bool isClient = NetplayApi.IsConnected();
-			mnuMovies.Enabled = EmuRunner.IsRunning();
-			mnuPlayMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording() && !isClient;
-			mnuRecordMovie.Enabled = EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording();
-			mnuStopMovie.Enabled = EmuRunner.IsRunning() && (RecordApi.MoviePlaying() || RecordApi.MovieRecording());
+			bool runAheadDisabled = ConfigManager.Config.Emulation.RunAheadFrames == 0;
+
+			mnuNetPlay.Enabled = runAheadDisabled;
+
+			mnuMovies.Enabled = runAheadDisabled && EmuRunner.IsRunning();
+			mnuPlayMovie.Enabled = runAheadDisabled && EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording() && !isClient;
+			mnuRecordMovie.Enabled = runAheadDisabled && EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording();
+			mnuStopMovie.Enabled = runAheadDisabled && EmuRunner.IsRunning() && (RecordApi.MoviePlaying() || RecordApi.MovieRecording());
 
 			mnuSoundRecorder.Enabled = EmuRunner.IsRunning();
 			mnuWaveRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.WaveIsRecording();
