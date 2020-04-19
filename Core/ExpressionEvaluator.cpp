@@ -367,7 +367,7 @@ bool ExpressionEvaluator::ToRpn(string expression, ExpressionData &data)
 			if(!ProcessSpecialOperator(EvalOperators::Parenthesis, opStack, precedenceStack, data.RpnQueue)) {
 				return false;
 			}
-			operatorExpected = true;
+			operatorOrEndTokenExpected = true;
 		} else if(token[0] == '[') {
 			bracketCount++;
 			opStack.push(EvalOperators::Bracket);
@@ -377,7 +377,7 @@ bool ExpressionEvaluator::ToRpn(string expression, ExpressionData &data)
 			if(!ProcessSpecialOperator(EvalOperators::Bracket, opStack, precedenceStack, data.RpnQueue)) {
 				return false;
 			}
-			operatorExpected = true;
+			operatorOrEndTokenExpected = true;
 		} else if(token[0] == '{') {
 			braceCount++;
 			opStack.push(EvalOperators::Braces);
@@ -387,7 +387,7 @@ bool ExpressionEvaluator::ToRpn(string expression, ExpressionData &data)
 			if(!ProcessSpecialOperator(EvalOperators::Braces, opStack, precedenceStack, data.RpnQueue)){
 				return false;
 			}
-			operatorExpected = true;
+			operatorOrEndTokenExpected = true;
 		} else {
 			if(token[0] < '0' || token[0] > '9') {
 				return false;
@@ -717,5 +717,8 @@ void ExpressionEvaluator::RunTests()
 	test("%011", EvalResultType::Numeric, 3);
 	test("%1011", EvalResultType::Numeric, 11);
 	test("%12", EvalResultType::Invalid, 0);
+
+	test("[$4500+[$4500]]", EvalResultType::Numeric, 0x45);
+	test("-($10+[$4500])", EvalResultType::Numeric, -0x55);
 }
 #endif

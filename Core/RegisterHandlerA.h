@@ -34,6 +34,7 @@ public:
 
 	uint8_t Peek(uint32_t addr) override
 	{
+		addr &= 0xFFFF;
 		if(addr == 0x4016 || addr == 0x4017) {
 			//Avoid side effects for now
 			return 0;
