@@ -37,6 +37,7 @@
 #define errorCond(cond, text) if(cond) { luaL_error(lua, text); return 0; }
 #define checkparams() if(!l.CheckParamCount()) { return 0; }
 #define checkminparams(x) if(!l.CheckParamCount(x)) { return 0; }
+#define checkinitdone() if(!_context->CheckInitDone()) { error("This function cannot be called outside a callback"); return 0; }
 #define checksavestateconditions() if(!_context->CheckInStartFrameEvent() && !_context->CheckInExecOpEvent()) { error("This function must be called inside a StartFrame event callback or a CpuExec memory operation callback"); return 0; }
 
 Debugger* LuaApi::_debugger = nullptr;
@@ -499,6 +500,7 @@ int LuaApi::Reset(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
+	checkinitdone();
 	_console->Reset();
 	return l.ReturnCount();
 }
@@ -508,6 +510,7 @@ int LuaApi::Stop(lua_State *lua)
 	LuaCallHelper l(lua);
 	int32_t stopCode = l.ReadInteger(0);
 	checkminparams(0);
+	checkinitdone();
 	_console->Stop(stopCode);
 	return l.ReturnCount();
 }
@@ -516,6 +519,7 @@ int LuaApi::Break(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
+	checkinitdone();
 	_debugger->Step(CpuType::Cpu, 1, StepType::Step);
 	return l.ReturnCount();
 }
@@ -524,6 +528,7 @@ int LuaApi::Resume(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
+	checkinitdone();
 	_debugger->Run();
 	return l.ReturnCount();
 }
@@ -534,6 +539,7 @@ int LuaApi::Execute(lua_State *lua)
 	StepType type = (StepType)l.ReadInteger();
 	int count = l.ReadInteger();
 	checkparams();
+	checkinitdone();
 	errorCond(count <= 0, "count must be >= 1");
 	errorCond(type != StepType::Step && type != StepType::PpuStep, "type is invalid");
 

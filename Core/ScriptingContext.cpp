@@ -59,6 +59,11 @@ int ScriptingContext::CallEventCallback(EventType type)
 	return returnValue;
 }
 
+bool ScriptingContext::CheckInitDone()
+{
+	return _initDone;
+}
+
 bool ScriptingContext::CheckInStartFrameEvent()
 {
 	return _inStartFrameEvent;
