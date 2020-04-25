@@ -517,13 +517,13 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						state.K = (result.CpuAddress >> 16);
 
 						if(!disInfo.IsInitialized()) {
-							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, type);
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, lineCpuType);
 						} else {
 							data.Flags |= (result.Address.Type != SnesMemoryType::PrgRom || _cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, type);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
 
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
