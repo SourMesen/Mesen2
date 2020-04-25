@@ -80,6 +80,9 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.Exit: frmMain.Instance.Close(); restoreFullscreen = false; break;
 
 				case EmulatorShortcut.ToggleAudio: ToggleAudio(); break;
+				case EmulatorShortcut.IncreaseVolume: IncreaseVolume(); break;
+				case EmulatorShortcut.DecreaseVolume: DecreaseVolume(); break;
+
 				case EmulatorShortcut.ToggleFps: ToggleFps(); break;
 				case EmulatorShortcut.ToggleGameTimer: ToggleGameTimer(); break;
 				case EmulatorShortcut.ToggleFrameCounter: ToggleFrameCounter(); break;
@@ -322,6 +325,20 @@ namespace Mesen.GUI.Emulation
 		private void ToggleAudio()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Audio.EnableAudio);
+		}
+
+		private void IncreaseVolume()
+		{
+			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Min(100, (int)ConfigManager.Config.Audio.MasterVolume + 10);
+			ConfigManager.Config.Audio.ApplyConfig();
+			ConfigManager.ApplyChanges();
+		}
+
+		private void DecreaseVolume()
+		{
+			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Max(0, (int)ConfigManager.Config.Audio.MasterVolume - 10);
+			ConfigManager.Config.Audio.ApplyConfig();
+			ConfigManager.ApplyChanges();
 		}
 
 		private void ToggleFrameCounter()

@@ -383,7 +383,10 @@ enum class EmulatorShortcut
 	ToggleOsd,
 	ToggleAlwaysOnTop,
 	ToggleDebugInfo,
+	
 	ToggleAudio,
+	IncreaseVolume,
+	DecreaseVolume,
 
 	ToggleBgLayer0,
 	ToggleBgLayer1,

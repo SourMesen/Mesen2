@@ -65,7 +65,6 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.ToggleFrameCounter,
 				EmulatorShortcut.ToggleOsd,
 				EmulatorShortcut.ToggleAlwaysOnTop,
-				EmulatorShortcut.ToggleAudio,
 				EmulatorShortcut.ToggleCheats,
 
 				EmulatorShortcut.ToggleBgLayer0,
@@ -74,6 +73,10 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.ToggleBgLayer3,
 				EmulatorShortcut.ToggleSprites,
 				EmulatorShortcut.EnableAllLayers,
+
+				EmulatorShortcut.ToggleAudio,
+				EmulatorShortcut.IncreaseVolume,
+				EmulatorShortcut.DecreaseVolume,
 
 				EmulatorShortcut.MaxSpeed,
 				EmulatorShortcut.IncreaseSpeed,

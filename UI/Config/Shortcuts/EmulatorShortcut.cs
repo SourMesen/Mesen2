@@ -61,7 +61,10 @@ namespace Mesen.GUI.Config.Shortcuts
 		ToggleOsd,
 		ToggleAlwaysOnTop,
 		ToggleDebugInfo,
+		
 		ToggleAudio,
+		IncreaseVolume,
+		DecreaseVolume,
 
 		ToggleBgLayer0,
 		ToggleBgLayer1,

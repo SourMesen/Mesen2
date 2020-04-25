@@ -778,6 +778,8 @@
 		<Message ID="EmulatorShortcutMappings_LoadState">Load State</Message>
 		<Message ID="EmulatorShortcutMappings_ToggleCheats">Enable/Disable Cheat Codes</Message>
 		<Message ID="EmulatorShortcutMappings_ToggleAudio">Enable/Disable Audio</Message>
+		<Message ID="EmulatorShortcutMappings_IncreaseVolume">Increase Volume</Message>
+		<Message ID="EmulatorShortcutMappings_DecreaseVolume">Decrease Volume</Message>
 		<Message ID="EmulatorShortcutMappings_RunSingleFrame">Run Single Frame</Message>
 
 		<Message ID="EmulatorShortcutMappings_SetScale1x">Set Scale 1x</Message>

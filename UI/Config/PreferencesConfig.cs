@@ -86,6 +86,9 @@ namespace Mesen.GUI.Config
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.DecreaseSpeed, new KeyCombination() { Key1 = InputApi.GetKeyCode("-") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.MaxSpeed, new KeyCombination() { Key1 = InputApi.GetKeyCode("F9") }));
 
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.IncreaseVolume, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("=") }));
+			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.DecreaseVolume, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("-") }));
+
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFps, new KeyCombination() { Key1 = InputApi.GetKeyCode("F10") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFullscreen, new KeyCombination() { Key1 = InputApi.GetKeyCode("F11") }));
 			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.TakeScreenshot, new KeyCombination() { Key1 = InputApi.GetKeyCode("F12") }));
