@@ -29,6 +29,8 @@
 #define lua_pushdoublevalue(name, value) lua_pushliteral(lua, #name); lua_pushnumber(lua, (double)value); lua_settable(lua, -3);
 #define lua_pushboolvalue(name, value) lua_pushliteral(lua, #name); lua_pushboolean(lua, (int)value); lua_settable(lua, -3);
 #define lua_pushstringvalue(name, value) lua_pushliteral(lua, #name); lua_pushstring(lua, value.c_str()); lua_settable(lua, -3);
+#define lua_pusharrayvalue(index, value) lua_pushinteger(lua, index); lua_pushinteger(lua, value); lua_settable(lua, -3);
+
 #define lua_starttable(name) lua_pushliteral(lua, name); lua_newtable(lua);
 #define lua_endtable() lua_settable(lua, -3);
 #define lua_readint(name, dest) lua_getfield(lua, -1, #name); dest = l.ReadInteger();
@@ -697,7 +699,7 @@ int LuaApi::GetState(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	DebugState state;
-	_debugger->GetState(state, true);
+	_debugger->GetState(state, false);
 
 	lua_newtable(lua);
 	lua_pushintvalue(masterClock, state.MasterClock);
@@ -723,6 +725,137 @@ int LuaApi::GetState(lua_State *lua)
 	lua_pushintvalue(frameCount, state.Ppu.FrameCount);
 	lua_pushintvalue(scanline, state.Ppu.Scanline);
 	lua_pushintvalue(hClock, state.Ppu.HClock);
+	lua_pushboolvalue(forcedVblank, state.Ppu.ForcedVblank);
+	lua_pushintvalue(screenBrightness, state.Ppu.ScreenBrightness);
+	
+	lua_starttable("mode7");
+	
+	lua_starttable("matrix");
+	lua_pusharrayvalue(0, state.Ppu.Mode7.Matrix[0]);
+	lua_pusharrayvalue(1, state.Ppu.Mode7.Matrix[0]);
+	lua_pusharrayvalue(2, state.Ppu.Mode7.Matrix[0]);
+	lua_pusharrayvalue(3, state.Ppu.Mode7.Matrix[0]);
+	lua_endtable();
+
+	lua_pushintvalue(hScroll, state.Ppu.Mode7.HScroll);
+	lua_pushintvalue(vScroll, state.Ppu.Mode7.VScroll);
+	lua_pushintvalue(centerX, state.Ppu.Mode7.CenterX);
+	lua_pushintvalue(centerY, state.Ppu.Mode7.CenterY);
+	lua_pushintvalue(valueLatch, state.Ppu.Mode7.ValueLatch);
+	lua_pushboolvalue(largeMap, state.Ppu.Mode7.LargeMap);
+	lua_pushboolvalue(fillWithTile0, state.Ppu.Mode7.FillWithTile0);
+	lua_pushboolvalue(horizontalMirroring, state.Ppu.Mode7.HorizontalMirroring);
+	lua_pushboolvalue(verticalMirroring, state.Ppu.Mode7.VerticalMirroring);
+	lua_endtable(); //end mode7
+
+	lua_pushintvalue(bgMode, state.Ppu.BgMode);
+	lua_pushboolvalue(mode1Bg3Priority, state.Ppu.Mode1Bg3Priority);
+	lua_pushintvalue(mainScreenLayers, state.Ppu.MainScreenLayers);
+	lua_pushintvalue(subScreenLayers, state.Ppu.SubScreenLayers);
+	
+	lua_starttable("layers")
+	for(int i = 0; i < 4; i++) {
+		lua_pushinteger(lua, i);
+		
+		lua_newtable(lua);
+		lua_pushintvalue(tilemapAddress, state.Ppu.Layers[i].TilemapAddress);
+		lua_pushintvalue(chrAddress, state.Ppu.Layers[i].ChrAddress);
+		lua_pushintvalue(hScroll, state.Ppu.Layers[i].HScroll);
+		lua_pushintvalue(vScroll, state.Ppu.Layers[i].VScroll);
+		lua_pushintvalue(doubleWidth, state.Ppu.Layers[i].DoubleWidth);
+		lua_pushintvalue(doubleHeight, state.Ppu.Layers[i].DoubleHeight);
+		lua_pushintvalue(largeTiles, state.Ppu.Layers[i].LargeTiles);		
+
+		lua_settable(lua, -3);
+	}
+	lua_endtable(); //end layers
+
+	lua_starttable("windows")
+	for(int i = 0; i < 2; i++) {
+		lua_pushinteger(lua, i);
+
+		lua_newtable(lua);
+		lua_pushintvalue(activeLayers, (
+			state.Ppu.Window[i].ActiveLayers[0] |
+			(state.Ppu.Window[i].ActiveLayers[1] << 1) |
+			(state.Ppu.Window[i].ActiveLayers[2] << 2) |
+			(state.Ppu.Window[i].ActiveLayers[3] << 3) |
+			(state.Ppu.Window[i].ActiveLayers[4] << 4) |
+			(state.Ppu.Window[i].ActiveLayers[5] << 5)
+		));
+
+		lua_pushintvalue(invertedLayers, (
+			state.Ppu.Window[i].InvertedLayers[0] |
+			(state.Ppu.Window[i].InvertedLayers[1] << 1) |
+			(state.Ppu.Window[i].InvertedLayers[2] << 2) |
+			(state.Ppu.Window[i].InvertedLayers[3] << 3) |
+			(state.Ppu.Window[i].InvertedLayers[4] << 4) |
+			(state.Ppu.Window[i].InvertedLayers[5] << 5)
+		));
+
+		lua_pushintvalue(left, state.Ppu.Window[i].Left);
+		lua_pushintvalue(right, state.Ppu.Window[i].Right);
+
+		lua_settable(lua, -3);
+	}
+	lua_endtable(); //end windows
+	
+	lua_pushboolvalue(windowMaskLogicBg0, (int)state.Ppu.MaskLogic[0]);
+	lua_pushboolvalue(windowMaskLogicBg1, (int)state.Ppu.MaskLogic[1]);
+	lua_pushboolvalue(windowMaskLogicBg2, (int)state.Ppu.MaskLogic[2]);
+	lua_pushboolvalue(windowMaskLogicBg3, (int)state.Ppu.MaskLogic[3]);
+	lua_pushboolvalue(windowMaskLogicSprites, (int)state.Ppu.MaskLogic[4]);
+	lua_pushboolvalue(windowMaskLogicColor, (int)state.Ppu.MaskLogic[5]);
+
+	lua_pushboolvalue(windowMaskMainBg0, state.Ppu.WindowMaskMain[0]);
+	lua_pushboolvalue(windowMaskMainBg1, state.Ppu.WindowMaskMain[1]);
+	lua_pushboolvalue(windowMaskMainBg2, state.Ppu.WindowMaskMain[2]);
+	lua_pushboolvalue(windowMaskMainBg3, state.Ppu.WindowMaskMain[3]);
+	lua_pushboolvalue(windowMaskMainSprites, state.Ppu.WindowMaskMain[4]);
+
+	lua_pushboolvalue(windowMaskSubBg0, state.Ppu.WindowMaskSub[0]);
+	lua_pushboolvalue(windowMaskSubBg1, state.Ppu.WindowMaskSub[1]);
+	lua_pushboolvalue(windowMaskSubBg2, state.Ppu.WindowMaskSub[2]);
+	lua_pushboolvalue(windowMaskSubBg3, state.Ppu.WindowMaskSub[3]);
+	lua_pushboolvalue(windowMaskSubSprites, state.Ppu.WindowMaskSub[4]);
+
+	lua_pushintvalue(vramAddress, state.Ppu.VramAddress);
+	lua_pushintvalue(vramIncrementValue, state.Ppu.VramIncrementValue);
+	lua_pushintvalue(vramAddressRemapping, state.Ppu.VramAddressRemapping);
+	lua_pushboolvalue(vramAddrIncrementOnSecondReg, state.Ppu.VramAddrIncrementOnSecondReg);
+	lua_pushintvalue(vramReadBuffer, state.Ppu.VramReadBuffer);
+
+	lua_pushintvalue(ppu1OpenBus, state.Ppu.Ppu1OpenBus);
+	lua_pushintvalue(ppu2OpenBus, state.Ppu.Ppu2OpenBus);
+	
+	lua_pushintvalue(cgramAddress, state.Ppu.CgramAddress);
+	lua_pushintvalue(cgramWriteBuffer, state.Ppu.CgramWriteBuffer);
+	lua_pushboolvalue(cgramAddressLatch, state.Ppu.CgramAddressLatch);
+
+	lua_pushintvalue(mosaicSize, state.Ppu.MosaicSize);
+	lua_pushintvalue(mosaicEnabled, state.Ppu.MosaicEnabled);
+
+	lua_pushintvalue(oamRamAddress, state.Ppu.OamRamAddress);
+	lua_pushintvalue(oamMode, state.Ppu.OamMode);
+	lua_pushintvalue(oamBaseAddress, state.Ppu.OamBaseAddress);
+	lua_pushintvalue(oamAddressOffset, state.Ppu.OamAddressOffset);
+	lua_pushboolvalue(enableOamPriority, state.Ppu.EnableOamPriority);
+
+	lua_pushboolvalue(extBgEnabled, state.Ppu.ExtBgEnabled);
+	lua_pushboolvalue(hiResMode, state.Ppu.HiResMode);
+	lua_pushboolvalue(screenInterlace, state.Ppu.ScreenInterlace);
+	lua_pushboolvalue(objInterlace, state.Ppu.ObjInterlace);
+	lua_pushboolvalue(overscanMode, state.Ppu.OverscanMode);
+	lua_pushboolvalue(directColorMode, state.Ppu.DirectColorMode);
+
+	lua_pushintvalue(colorMathClipMode, (int)state.Ppu.ColorMathClipMode);
+	lua_pushintvalue(colorMathPreventMode, (int)state.Ppu.ColorMathPreventMode);
+	lua_pushboolvalue(colorMathAddSubscreen, state.Ppu.ColorMathAddSubscreen);
+	lua_pushintvalue(colorMathEnabled, state.Ppu.ColorMathEnabled);
+	lua_pushboolvalue(colorMathSubstractMode, state.Ppu.ColorMathSubstractMode);
+	lua_pushboolvalue(colorMathHalveResult, state.Ppu.ColorMathHalveResult);
+	lua_pushintvalue(fixedColor, state.Ppu.FixedColor);
+
 	lua_endtable(); //end ppu
 
 	lua_starttable("spc");
