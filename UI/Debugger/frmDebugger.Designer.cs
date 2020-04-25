@@ -47,10 +47,11 @@
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuCodeDataLogger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuResetCdlLog = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuCdlGenerateRom = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuCdlStripUnusedData = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuCdlStripUsedData = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuAutoResetCdl = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
 			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -142,7 +143,6 @@
 			this.grpCallstack = new System.Windows.Forms.GroupBox();
 			this.ctrlCallstack = new Mesen.GUI.Debugger.Controls.ctrlCallstack();
 			this.tsToolbar = new Mesen.GUI.Controls.ctrlMesenToolStrip();
-			this.mnuAutoResetCdl = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlMesenMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlSplitContainer)).BeginInit();
 			this.ctrlSplitContainer.Panel1.SuspendLayout();
@@ -292,11 +292,6 @@
 			this.mnuResetCdlLog.Text = "Reset log";
 			this.mnuResetCdlLog.Click += new System.EventHandler(this.mnuResetCdlLog_Click);
 			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(261, 6);
-			// 
 			// mnuCdlGenerateRom
 			// 
 			this.mnuCdlGenerateRom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -310,14 +305,25 @@
 			// mnuCdlStripUnusedData
 			// 
 			this.mnuCdlStripUnusedData.Name = "mnuCdlStripUnusedData";
-			this.mnuCdlStripUnusedData.Size = new System.Drawing.Size(180, 22);
+			this.mnuCdlStripUnusedData.Size = new System.Drawing.Size(166, 22);
 			this.mnuCdlStripUnusedData.Text = "Strip unused data";
 			// 
 			// mnuCdlStripUsedData
 			// 
 			this.mnuCdlStripUsedData.Name = "mnuCdlStripUsedData";
-			this.mnuCdlStripUsedData.Size = new System.Drawing.Size(180, 22);
+			this.mnuCdlStripUsedData.Size = new System.Drawing.Size(166, 22);
 			this.mnuCdlStripUsedData.Text = "Strip used data";
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(261, 6);
+			// 
+			// mnuAutoResetCdl
+			// 
+			this.mnuAutoResetCdl.Name = "mnuAutoResetCdl";
+			this.mnuAutoResetCdl.Size = new System.Drawing.Size(264, 22);
+			this.mnuAutoResetCdl.Text = "Auto-reset CDL when ROM changes";
 			// 
 			// toolStripMenuItem13
 			// 
@@ -571,54 +577,54 @@
 			// mnuGoToAddress
 			// 
 			this.mnuGoToAddress.Name = "mnuGoToAddress";
-			this.mnuGoToAddress.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToAddress.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToAddress.Text = "Address";
 			// 
 			// toolStripMenuItem23
 			// 
 			this.toolStripMenuItem23.Name = "toolStripMenuItem23";
-			this.toolStripMenuItem23.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem23.Size = new System.Drawing.Size(163, 6);
 			// 
 			// mnuGoToProgramCounter
 			// 
 			this.mnuGoToProgramCounter.Name = "mnuGoToProgramCounter";
 			this.mnuGoToProgramCounter.ShortcutKeyDisplayString = "";
-			this.mnuGoToProgramCounter.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToProgramCounter.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToProgramCounter.Text = "Program Counter";
 			// 
 			// toolStripMenuItem22
 			// 
 			this.toolStripMenuItem22.Name = "toolStripMenuItem22";
-			this.toolStripMenuItem22.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem22.Size = new System.Drawing.Size(163, 6);
 			// 
 			// mnuGoToResetHandler
 			// 
 			this.mnuGoToResetHandler.Name = "mnuGoToResetHandler";
-			this.mnuGoToResetHandler.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToResetHandler.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToResetHandler.Text = "Reset Handler";
 			// 
 			// mnuGoToIrqHandler
 			// 
 			this.mnuGoToIrqHandler.Name = "mnuGoToIrqHandler";
-			this.mnuGoToIrqHandler.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToIrqHandler.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToIrqHandler.Text = "IRQ Handler";
 			// 
 			// mnuGoToNmiHandler
 			// 
 			this.mnuGoToNmiHandler.Name = "mnuGoToNmiHandler";
-			this.mnuGoToNmiHandler.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToNmiHandler.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToNmiHandler.Text = "NMI Handler";
 			// 
 			// mnuGoToBrkHandler
 			// 
 			this.mnuGoToBrkHandler.Name = "mnuGoToBrkHandler";
-			this.mnuGoToBrkHandler.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToBrkHandler.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToBrkHandler.Text = "BRK Handler";
 			// 
 			// mnuGoToCopHandler
 			// 
 			this.mnuGoToCopHandler.Name = "mnuGoToCopHandler";
-			this.mnuGoToCopHandler.Size = new System.Drawing.Size(180, 22);
+			this.mnuGoToCopHandler.Size = new System.Drawing.Size(166, 22);
 			this.mnuGoToCopHandler.Text = "COP Handler";
 			// 
 			// optionsToolStripMenuItem
@@ -846,32 +852,32 @@
 			// 
 			this.mnuIncreaseFontSize.Name = "mnuIncreaseFontSize";
 			this.mnuIncreaseFontSize.ShortcutKeyDisplayString = "";
-			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(180, 22);
+			this.mnuIncreaseFontSize.Size = new System.Drawing.Size(157, 22);
 			this.mnuIncreaseFontSize.Text = "Increase Size";
 			// 
 			// mnuDecreaseFontSize
 			// 
 			this.mnuDecreaseFontSize.Name = "mnuDecreaseFontSize";
 			this.mnuDecreaseFontSize.ShortcutKeyDisplayString = "";
-			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(180, 22);
+			this.mnuDecreaseFontSize.Size = new System.Drawing.Size(157, 22);
 			this.mnuDecreaseFontSize.Text = "Decrease Size";
 			// 
 			// mnuResetFontSize
 			// 
 			this.mnuResetFontSize.Name = "mnuResetFontSize";
 			this.mnuResetFontSize.ShortcutKeyDisplayString = "";
-			this.mnuResetFontSize.Size = new System.Drawing.Size(180, 22);
+			this.mnuResetFontSize.Size = new System.Drawing.Size(157, 22);
 			this.mnuResetFontSize.Text = "Reset to Default";
 			// 
 			// toolStripMenuItem21
 			// 
 			this.toolStripMenuItem21.Name = "toolStripMenuItem21";
-			this.toolStripMenuItem21.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem21.Size = new System.Drawing.Size(154, 6);
 			// 
 			// mnuSelectFont
 			// 
 			this.mnuSelectFont.Name = "mnuSelectFont";
-			this.mnuSelectFont.Size = new System.Drawing.Size(180, 22);
+			this.mnuSelectFont.Size = new System.Drawing.Size(157, 22);
 			this.mnuSelectFont.Text = "Select Font...";
 			this.mnuSelectFont.Click += new System.EventHandler(this.mnuSelectFont_Click);
 			// 
@@ -1043,12 +1049,6 @@
 			this.tsToolbar.Size = new System.Drawing.Size(832, 25);
 			this.tsToolbar.TabIndex = 3;
 			this.tsToolbar.Text = "ctrlMesenToolStrip1";
-			// 
-			// mnuAutoResetCdl
-			// 
-			this.mnuAutoResetCdl.Name = "mnuAutoResetCdl";
-			this.mnuAutoResetCdl.Size = new System.Drawing.Size(264, 22);
-			this.mnuAutoResetCdl.Text = "Auto-reset CDL when ROM changes";
 			// 
 			// frmDebugger
 			// 

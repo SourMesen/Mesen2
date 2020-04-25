@@ -97,19 +97,8 @@ namespace Mesen.GUI.Debugger
 					ctrlDisassemblyView.Initialize(new GsuDisassemblyManager(), new GsuLineStyleProvider());
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.GsuDebuggerEnabled, true);
 					this.Text = "GSU Debugger";
-					ctrlCallstack.Visible = false;
-					mnuStepOver.Visible = false;
-					mnuStepOut.Visible = false;
-					mnuStepInto.Text = "Step";
-					tlpBottomPanel.ColumnCount = 2;
+					HideDebuggerElements();
 
-					sepBrkCopStpWdm.Visible = false;
-					mnuBreakOnWdm.Visible = false;
-					mnuBreakOnCop.Visible = false;
-					mnuBreakOnStp.Visible = false;
-					mnuBreakOnBrk.Visible = false;
-					sepBreakOnUnitRead.Visible = false;
-					mnuBreakOnUnitRead.Visible = false;
 
 					this.ctrlGsuStatus = new ctrlGsuStatus();
 					this.ctrlGsuStatus.Padding = new Padding(3, 0, 3, 0);
@@ -121,19 +110,8 @@ namespace Mesen.GUI.Debugger
 					ctrlDisassemblyView.Initialize(new NecDspDisassemblyManager(), new NecDspLineStyleProvider());
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.NecDspDebuggerEnabled, true);
 					this.Text = "DSP Debugger";
-					ctrlCallstack.Visible = false;
-					mnuStepOver.Visible = false;
-					mnuStepOut.Visible = false;
-					mnuStepInto.Text = "Step";
-					tlpBottomPanel.ColumnCount = 2;
+					HideDebuggerElements();
 
-					sepBrkCopStpWdm.Visible = false;
-					mnuBreakOnWdm.Visible = false;
-					mnuBreakOnCop.Visible = false;
-					mnuBreakOnStp.Visible = false;
-					mnuBreakOnBrk.Visible = false;
-					sepBreakOnUnitRead.Visible = false;
-					mnuBreakOnUnitRead.Visible = false;
 
 					this.ctrlNecDspStatus = new ctrlNecDspStatus();
 					this.ctrlNecDspStatus.Padding = new Padding(3, 0, 3, 0);
@@ -147,19 +125,7 @@ namespace Mesen.GUI.Debugger
 					this.Text = "CX4 Debugger";
 
 					ctrlLabelList.Visible = false;
-					ctrlCallstack.Visible = false;
-					mnuStepOver.Visible = false;
-					mnuStepOut.Visible = false;
-					mnuStepInto.Text = "Step";
-					tlpBottomPanel.ColumnCount = 2;
-
-					sepBrkCopStpWdm.Visible = false;
-					mnuBreakOnWdm.Visible = false;
-					mnuBreakOnCop.Visible = false;
-					mnuBreakOnStp.Visible = false;
-					mnuBreakOnBrk.Visible = false;
-					sepBreakOnUnitRead.Visible = false;
-					mnuBreakOnUnitRead.Visible = false;
+					HideDebuggerElements();
 
 					this.ctrlCx4Status = new ctrlCx4Status();
 					this.ctrlCx4Status.Padding = new Padding(3, 0, 3, 0);
@@ -187,6 +153,28 @@ namespace Mesen.GUI.Debugger
 			}
 
 			base.OnLoad(e);
+		}
+
+		private void HideDebuggerElements()
+		{
+			grpCallstack.Visible = false;
+
+			//Needed for Mono
+			tlpBottomPanel.Controls.Remove(grpCallstack);
+			tlpBottomPanel.ColumnCount = 2;
+			tlpBottomPanel.ColumnStyles.RemoveAt(2);
+
+			mnuStepOver.Visible = false;
+			mnuStepOut.Visible = false;
+			mnuStepInto.Text = "Step";
+
+			sepBrkCopStpWdm.Visible = false;
+			mnuBreakOnWdm.Visible = false;
+			mnuBreakOnCop.Visible = false;
+			mnuBreakOnStp.Visible = false;
+			mnuBreakOnBrk.Visible = false;
+			sepBreakOnUnitRead.Visible = false;
+			mnuBreakOnUnitRead.Visible = false;
 		}
 
 		protected override void OnClosing(CancelEventArgs e)

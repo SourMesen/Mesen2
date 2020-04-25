@@ -576,8 +576,8 @@ void Console::WaitForPauseEnd()
 	}
 
 	PlatformUtilities::DisableScreensaver();
+	_runLock.Acquire();
 	if(!_stopFlag) {
-		_runLock.Acquire();
 		_notificationManager->SendNotification(ConsoleNotificationType::GameResumed);
 	}
 }

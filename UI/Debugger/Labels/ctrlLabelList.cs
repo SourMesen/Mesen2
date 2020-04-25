@@ -157,7 +157,9 @@ namespace Mesen.GUI.Debugger.Controls
 			lstLabels.VirtualListSize = items.Count;
 			lstLabels.EndUpdate();
 
-			colComment.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+			if(items.Count > 0) { //Mono: Using AutoResize when the list is empty causes a crash
+				colComment.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+			}
 			if(!ConfigManager.Config.Debug.Debugger.ShowCommentsInLabelList) {
 				colComment.Width = 0;
 			}

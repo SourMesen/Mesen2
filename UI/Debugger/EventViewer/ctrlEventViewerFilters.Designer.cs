@@ -124,7 +124,7 @@
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.Controls.Add(this.lblPpuRegisterWrites, 0, 1);
@@ -190,7 +190,6 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(270, 414);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
@@ -207,7 +206,8 @@
 			// chkOamWrites
 			// 
 			this.chkOamWrites.AutoSize = true;
-			this.chkOamWrites.Location = new System.Drawing.Point(51, 46);
+			this.chkOamWrites.Location = new System.Drawing.Point(48, 46);
+			this.chkOamWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkOamWrites.Name = "chkOamWrites";
 			this.chkOamWrites.Size = new System.Drawing.Size(50, 17);
 			this.chkOamWrites.TabIndex = 33;
@@ -231,7 +231,8 @@
 			// 
 			this.picNmi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picNmi.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picNmi.Location = new System.Drawing.Point(248, 217);
+			this.picNmi.Location = new System.Drawing.Point(225, 217);
+			this.picNmi.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picNmi.Name = "picNmi";
 			this.picNmi.Size = new System.Drawing.Size(14, 14);
 			this.picNmi.TabIndex = 25;
@@ -241,7 +242,8 @@
 			// chkShowNmi
 			// 
 			this.chkShowNmi.AutoSize = true;
-			this.chkShowNmi.Location = new System.Drawing.Point(172, 217);
+			this.chkShowNmi.Location = new System.Drawing.Point(155, 217);
+			this.chkShowNmi.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowNmi.Name = "chkShowNmi";
 			this.chkShowNmi.Size = new System.Drawing.Size(46, 17);
 			this.chkShowNmi.TabIndex = 24;
@@ -253,7 +255,8 @@
 			// 
 			this.picIrq.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picIrq.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picIrq.Location = new System.Drawing.Point(137, 217);
+			this.picIrq.Location = new System.Drawing.Point(128, 217);
+			this.picIrq.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picIrq.Name = "picIrq";
 			this.picIrq.Size = new System.Drawing.Size(14, 14);
 			this.picIrq.TabIndex = 23;
@@ -263,7 +266,8 @@
 			// chkShowIrq
 			// 
 			this.chkShowIrq.AutoSize = true;
-			this.chkShowIrq.Location = new System.Drawing.Point(51, 217);
+			this.chkShowIrq.Location = new System.Drawing.Point(48, 217);
+			this.chkShowIrq.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowIrq.Name = "chkShowIrq";
 			this.chkShowIrq.Size = new System.Drawing.Size(45, 17);
 			this.chkShowIrq.TabIndex = 22;
@@ -285,7 +289,8 @@
 			// 
 			this.picWramWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picWramWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picWramWrites.Location = new System.Drawing.Point(248, 194);
+			this.picWramWrites.Location = new System.Drawing.Point(225, 194);
+			this.picWramWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picWramWrites.Name = "picWramWrites";
 			this.picWramWrites.Size = new System.Drawing.Size(14, 14);
 			this.picWramWrites.TabIndex = 20;
@@ -295,7 +300,8 @@
 			// chkShowWorkRamRegisterWrites
 			// 
 			this.chkShowWorkRamRegisterWrites.AutoSize = true;
-			this.chkShowWorkRamRegisterWrites.Location = new System.Drawing.Point(172, 194);
+			this.chkShowWorkRamRegisterWrites.Location = new System.Drawing.Point(155, 194);
+			this.chkShowWorkRamRegisterWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowWorkRamRegisterWrites.Name = "chkShowWorkRamRegisterWrites";
 			this.chkShowWorkRamRegisterWrites.Size = new System.Drawing.Size(51, 17);
 			this.chkShowWorkRamRegisterWrites.TabIndex = 19;
@@ -307,7 +313,8 @@
 			// 
 			this.picWramReads.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picWramReads.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picWramReads.Location = new System.Drawing.Point(137, 194);
+			this.picWramReads.Location = new System.Drawing.Point(128, 194);
+			this.picWramReads.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picWramReads.Name = "picWramReads";
 			this.picWramReads.Size = new System.Drawing.Size(14, 14);
 			this.picWramReads.TabIndex = 18;
@@ -317,7 +324,8 @@
 			// chkShowWorkRamRegisterReads
 			// 
 			this.chkShowWorkRamRegisterReads.AutoSize = true;
-			this.chkShowWorkRamRegisterReads.Location = new System.Drawing.Point(51, 194);
+			this.chkShowWorkRamRegisterReads.Location = new System.Drawing.Point(48, 194);
+			this.chkShowWorkRamRegisterReads.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowWorkRamRegisterReads.Name = "chkShowWorkRamRegisterReads";
 			this.chkShowWorkRamRegisterReads.Size = new System.Drawing.Size(52, 17);
 			this.chkShowWorkRamRegisterReads.TabIndex = 17;
@@ -340,7 +348,8 @@
 			// 
 			this.picCpuWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picCpuWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picCpuWrites.Location = new System.Drawing.Point(248, 171);
+			this.picCpuWrites.Location = new System.Drawing.Point(225, 171);
+			this.picCpuWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picCpuWrites.Name = "picCpuWrites";
 			this.picCpuWrites.Size = new System.Drawing.Size(14, 14);
 			this.picCpuWrites.TabIndex = 15;
@@ -350,7 +359,8 @@
 			// chkShowCpuRegisterWrites
 			// 
 			this.chkShowCpuRegisterWrites.AutoSize = true;
-			this.chkShowCpuRegisterWrites.Location = new System.Drawing.Point(172, 171);
+			this.chkShowCpuRegisterWrites.Location = new System.Drawing.Point(155, 171);
+			this.chkShowCpuRegisterWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowCpuRegisterWrites.Name = "chkShowCpuRegisterWrites";
 			this.chkShowCpuRegisterWrites.Size = new System.Drawing.Size(51, 17);
 			this.chkShowCpuRegisterWrites.TabIndex = 14;
@@ -362,7 +372,8 @@
 			// 
 			this.picCpuReads.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picCpuReads.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picCpuReads.Location = new System.Drawing.Point(137, 171);
+			this.picCpuReads.Location = new System.Drawing.Point(128, 171);
+			this.picCpuReads.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picCpuReads.Name = "picCpuReads";
 			this.picCpuReads.Size = new System.Drawing.Size(14, 14);
 			this.picCpuReads.TabIndex = 13;
@@ -372,7 +383,8 @@
 			// chkShowCpuRegisterReads
 			// 
 			this.chkShowCpuRegisterReads.AutoSize = true;
-			this.chkShowCpuRegisterReads.Location = new System.Drawing.Point(51, 171);
+			this.chkShowCpuRegisterReads.Location = new System.Drawing.Point(48, 171);
+			this.chkShowCpuRegisterReads.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowCpuRegisterReads.Name = "chkShowCpuRegisterReads";
 			this.chkShowCpuRegisterReads.Size = new System.Drawing.Size(52, 17);
 			this.chkShowCpuRegisterReads.TabIndex = 12;
@@ -394,7 +406,8 @@
 			// 
 			this.picApuWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picApuWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picApuWrites.Location = new System.Drawing.Point(248, 148);
+			this.picApuWrites.Location = new System.Drawing.Point(225, 148);
+			this.picApuWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picApuWrites.Name = "picApuWrites";
 			this.picApuWrites.Size = new System.Drawing.Size(14, 14);
 			this.picApuWrites.TabIndex = 10;
@@ -404,7 +417,8 @@
 			// chkShowApuRegisterWrites
 			// 
 			this.chkShowApuRegisterWrites.AutoSize = true;
-			this.chkShowApuRegisterWrites.Location = new System.Drawing.Point(172, 148);
+			this.chkShowApuRegisterWrites.Location = new System.Drawing.Point(155, 148);
+			this.chkShowApuRegisterWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowApuRegisterWrites.Name = "chkShowApuRegisterWrites";
 			this.chkShowApuRegisterWrites.Size = new System.Drawing.Size(51, 17);
 			this.chkShowApuRegisterWrites.TabIndex = 9;
@@ -416,7 +430,8 @@
 			// 
 			this.picApuReads.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picApuReads.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picApuReads.Location = new System.Drawing.Point(137, 148);
+			this.picApuReads.Location = new System.Drawing.Point(128, 148);
+			this.picApuReads.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picApuReads.Name = "picApuReads";
 			this.picApuReads.Size = new System.Drawing.Size(14, 14);
 			this.picApuReads.TabIndex = 8;
@@ -426,7 +441,8 @@
 			// chkShowApuRegisterReads
 			// 
 			this.chkShowApuRegisterReads.AutoSize = true;
-			this.chkShowApuRegisterReads.Location = new System.Drawing.Point(51, 148);
+			this.chkShowApuRegisterReads.Location = new System.Drawing.Point(48, 148);
+			this.chkShowApuRegisterReads.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowApuRegisterReads.Name = "chkShowApuRegisterReads";
 			this.chkShowApuRegisterReads.Size = new System.Drawing.Size(52, 17);
 			this.chkShowApuRegisterReads.TabIndex = 7;
@@ -447,7 +463,8 @@
 			// chkShowPpuRegisterReads
 			// 
 			this.chkShowPpuRegisterReads.AutoSize = true;
-			this.chkShowPpuRegisterReads.Location = new System.Drawing.Point(51, 115);
+			this.chkShowPpuRegisterReads.Location = new System.Drawing.Point(48, 115);
+			this.chkShowPpuRegisterReads.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowPpuRegisterReads.Name = "chkShowPpuRegisterReads";
 			this.chkShowPpuRegisterReads.Size = new System.Drawing.Size(78, 17);
 			this.chkShowPpuRegisterReads.TabIndex = 0;
@@ -459,7 +476,8 @@
 			// 
 			this.picPpuReads.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuReads.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuReads.Location = new System.Drawing.Point(137, 115);
+			this.picPpuReads.Location = new System.Drawing.Point(128, 115);
+			this.picPpuReads.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuReads.Name = "picPpuReads";
 			this.picPpuReads.Size = new System.Drawing.Size(14, 14);
 			this.picPpuReads.TabIndex = 4;
@@ -470,7 +488,8 @@
 			// 
 			this.chkShowMarkedBreakpoints.AutoSize = true;
 			this.tableLayoutPanel1.SetColumnSpan(this.chkShowMarkedBreakpoints, 2);
-			this.chkShowMarkedBreakpoints.Location = new System.Drawing.Point(3, 240);
+			this.chkShowMarkedBreakpoints.Location = new System.Drawing.Point(0, 240);
+			this.chkShowMarkedBreakpoints.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowMarkedBreakpoints.Name = "chkShowMarkedBreakpoints";
 			this.chkShowMarkedBreakpoints.Size = new System.Drawing.Size(121, 17);
 			this.chkShowMarkedBreakpoints.TabIndex = 26;
@@ -482,7 +501,8 @@
 			// 
 			this.picMarkedBreakpoints.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picMarkedBreakpoints.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picMarkedBreakpoints.Location = new System.Drawing.Point(137, 240);
+			this.picMarkedBreakpoints.Location = new System.Drawing.Point(128, 240);
+			this.picMarkedBreakpoints.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picMarkedBreakpoints.Name = "picMarkedBreakpoints";
 			this.picMarkedBreakpoints.Size = new System.Drawing.Size(14, 14);
 			this.picMarkedBreakpoints.TabIndex = 27;
@@ -631,7 +651,8 @@
 			// 
 			this.picPpuVramWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuVramWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuVramWrites.Location = new System.Drawing.Point(137, 23);
+			this.picPpuVramWrites.Location = new System.Drawing.Point(128, 23);
+			this.picPpuVramWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuVramWrites.Name = "picPpuVramWrites";
 			this.picPpuVramWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuVramWrites.TabIndex = 32;
@@ -641,7 +662,8 @@
 			// chkVramWrites
 			// 
 			this.chkVramWrites.AutoSize = true;
-			this.chkVramWrites.Location = new System.Drawing.Point(51, 23);
+			this.chkVramWrites.Location = new System.Drawing.Point(48, 23);
+			this.chkVramWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkVramWrites.Name = "chkVramWrites";
 			this.chkVramWrites.Size = new System.Drawing.Size(57, 17);
 			this.chkVramWrites.TabIndex = 31;
@@ -652,7 +674,8 @@
 			// chkShowPpuBgOptionWrites
 			// 
 			this.chkShowPpuBgOptionWrites.AutoSize = true;
-			this.chkShowPpuBgOptionWrites.Location = new System.Drawing.Point(51, 69);
+			this.chkShowPpuBgOptionWrites.Location = new System.Drawing.Point(48, 69);
+			this.chkShowPpuBgOptionWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkShowPpuBgOptionWrites.Name = "chkShowPpuBgOptionWrites";
 			this.chkShowPpuBgOptionWrites.Size = new System.Drawing.Size(80, 17);
 			this.chkShowPpuBgOptionWrites.TabIndex = 34;
@@ -663,7 +686,8 @@
 			// chkWindowWrites
 			// 
 			this.chkWindowWrites.AutoSize = true;
-			this.chkWindowWrites.Location = new System.Drawing.Point(51, 92);
+			this.chkWindowWrites.Location = new System.Drawing.Point(48, 92);
+			this.chkWindowWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkWindowWrites.Name = "chkWindowWrites";
 			this.chkWindowWrites.Size = new System.Drawing.Size(65, 17);
 			this.chkWindowWrites.TabIndex = 35;
@@ -674,7 +698,8 @@
 			// chkCgramWrites
 			// 
 			this.chkCgramWrites.AutoSize = true;
-			this.chkCgramWrites.Location = new System.Drawing.Point(172, 23);
+			this.chkCgramWrites.Location = new System.Drawing.Point(155, 23);
+			this.chkCgramWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkCgramWrites.Name = "chkCgramWrites";
 			this.chkCgramWrites.Size = new System.Drawing.Size(65, 17);
 			this.chkCgramWrites.TabIndex = 36;
@@ -685,7 +710,8 @@
 			// chkMode7Writes
 			// 
 			this.chkMode7Writes.AutoSize = true;
-			this.chkMode7Writes.Location = new System.Drawing.Point(172, 46);
+			this.chkMode7Writes.Location = new System.Drawing.Point(155, 46);
+			this.chkMode7Writes.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkMode7Writes.Name = "chkMode7Writes";
 			this.chkMode7Writes.Size = new System.Drawing.Size(62, 17);
 			this.chkMode7Writes.TabIndex = 37;
@@ -696,7 +722,8 @@
 			// chkBgScroll
 			// 
 			this.chkBgScroll.AutoSize = true;
-			this.chkBgScroll.Location = new System.Drawing.Point(172, 69);
+			this.chkBgScroll.Location = new System.Drawing.Point(155, 69);
+			this.chkBgScroll.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkBgScroll.Name = "chkBgScroll";
 			this.chkBgScroll.Size = new System.Drawing.Size(70, 17);
 			this.chkBgScroll.TabIndex = 38;
@@ -707,7 +734,8 @@
 			// chkOtherWrites
 			// 
 			this.chkOtherWrites.AutoSize = true;
-			this.chkOtherWrites.Location = new System.Drawing.Point(172, 92);
+			this.chkOtherWrites.Location = new System.Drawing.Point(155, 92);
+			this.chkOtherWrites.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
 			this.chkOtherWrites.Name = "chkOtherWrites";
 			this.chkOtherWrites.Size = new System.Drawing.Size(57, 17);
 			this.chkOtherWrites.TabIndex = 39;
@@ -719,7 +747,8 @@
 			// 
 			this.picPpuOamWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuOamWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuOamWrites.Location = new System.Drawing.Point(137, 46);
+			this.picPpuOamWrites.Location = new System.Drawing.Point(128, 46);
+			this.picPpuOamWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuOamWrites.Name = "picPpuOamWrites";
 			this.picPpuOamWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuOamWrites.TabIndex = 40;
@@ -730,7 +759,8 @@
 			// 
 			this.picPpuBgOptionWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuBgOptionWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuBgOptionWrites.Location = new System.Drawing.Point(137, 69);
+			this.picPpuBgOptionWrites.Location = new System.Drawing.Point(128, 69);
+			this.picPpuBgOptionWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuBgOptionWrites.Name = "picPpuBgOptionWrites";
 			this.picPpuBgOptionWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuBgOptionWrites.TabIndex = 43;
@@ -741,7 +771,8 @@
 			// 
 			this.picPpuWindowWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuWindowWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuWindowWrites.Location = new System.Drawing.Point(137, 92);
+			this.picPpuWindowWrites.Location = new System.Drawing.Point(128, 92);
+			this.picPpuWindowWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuWindowWrites.Name = "picPpuWindowWrites";
 			this.picPpuWindowWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuWindowWrites.TabIndex = 42;
@@ -752,7 +783,8 @@
 			// 
 			this.picPpuOtherWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuOtherWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuOtherWrites.Location = new System.Drawing.Point(248, 92);
+			this.picPpuOtherWrites.Location = new System.Drawing.Point(225, 92);
+			this.picPpuOtherWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuOtherWrites.Name = "picPpuOtherWrites";
 			this.picPpuOtherWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuOtherWrites.TabIndex = 44;
@@ -763,7 +795,8 @@
 			// 
 			this.picPpuBgScrollWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuBgScrollWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuBgScrollWrites.Location = new System.Drawing.Point(248, 69);
+			this.picPpuBgScrollWrites.Location = new System.Drawing.Point(225, 69);
+			this.picPpuBgScrollWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuBgScrollWrites.Name = "picPpuBgScrollWrites";
 			this.picPpuBgScrollWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuBgScrollWrites.TabIndex = 41;
@@ -774,7 +807,8 @@
 			// 
 			this.picPpuCgramWrites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuCgramWrites.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuCgramWrites.Location = new System.Drawing.Point(248, 23);
+			this.picPpuCgramWrites.Location = new System.Drawing.Point(225, 23);
+			this.picPpuCgramWrites.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuCgramWrites.Name = "picPpuCgramWrites";
 			this.picPpuCgramWrites.Size = new System.Drawing.Size(14, 14);
 			this.picPpuCgramWrites.TabIndex = 45;
@@ -785,7 +819,8 @@
 			// 
 			this.picPpuMode7Writes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picPpuMode7Writes.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picPpuMode7Writes.Location = new System.Drawing.Point(248, 46);
+			this.picPpuMode7Writes.Location = new System.Drawing.Point(225, 46);
+			this.picPpuMode7Writes.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.picPpuMode7Writes.Name = "picPpuMode7Writes";
 			this.picPpuMode7Writes.Size = new System.Drawing.Size(14, 14);
 			this.picPpuMode7Writes.TabIndex = 46;

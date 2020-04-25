@@ -28,19 +28,6 @@ namespace Mesen.GUI.Debugger.Controls
 			InitializeComponent();
 		}
 
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-
-			bool designMode = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
-			if(!designMode) {
-				lstFunctions.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-				int newWidth = Math.Max(colFunction.Width * 2, 250);
-				columnHeader7.Width -= (newWidth - colFunction.Width) + 30;
-				colFunction.Width = newWidth;
-			}
-		}
-
 		public void RefreshData()
 		{
 			_newData = DebugApi.GetProfilerData(this.CpuType);
