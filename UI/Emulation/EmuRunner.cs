@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI.Config;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,13 +36,12 @@ namespace Mesen.GUI.Emulation
 			}
 		}
 
-		public static  void LoadPatchFile(string patchFile)
+		public static void LoadPatchFile(string patchFile)
 		{
 			string patchFolder = Path.GetDirectoryName(patchFile);
-			HashSet<string> romExtensions = new HashSet<string>() { ".sfc", ".smc", ".swc", ".fig" };
 			List<string> romsInFolder = new List<string>();
 			foreach(string filepath in Directory.EnumerateFiles(patchFolder)) {
-				if(romExtensions.Contains(Path.GetExtension(filepath).ToLowerInvariant())) {
+				if(FolderHelper.IsRomFile(filepath)) {
 					romsInFolder.Add(filepath);
 				}
 			}
