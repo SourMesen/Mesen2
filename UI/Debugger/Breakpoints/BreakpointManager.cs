@@ -18,6 +18,8 @@ namespace Mesen.GUI.Debugger
 			get { return _breakpoints.ToList().AsReadOnly(); }
 		}
 
+		public static List<Breakpoint> Asserts { internal get; set; }
+
 		public static void AddCpuType(CpuType cpuType)
 		{
 			_activeCpuTypes.Add(cpuType);
@@ -121,20 +123,34 @@ namespace Mesen.GUI.Debugger
 		public static void SetBreakpoints()
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
-			for(int i = 0; i < Breakpoints.Count; i++) {
-				if(_activeCpuTypes.Contains(Breakpoints[i].CpuType)) {
-					breakpoints.Add(Breakpoints[i].ToInteropBreakpoint(i));
+
+			ReadOnlyCollection<Breakpoint> userBreakpoints = BreakpointManager.Breakpoints;
+			for(int i = 0; i < userBreakpoints.Count; i++) {
+				if(_activeCpuTypes.Contains(userBreakpoints[i].CpuType)) {
+					breakpoints.Add(userBreakpoints[i].ToInteropBreakpoint(breakpoints.Count));
 				}
 			}
+
+			List<Breakpoint> assertBreakpoints = BreakpointManager.Asserts;
+			for(int i = 0; i < assertBreakpoints.Count; i++) {
+				if(_activeCpuTypes.Contains(assertBreakpoints[i].CpuType)) {
+					breakpoints.Add(assertBreakpoints[i].ToInteropBreakpoint(breakpoints.Count));
+				}
+			}
+
 			DebugApi.SetBreakpoints(breakpoints.ToArray(), (UInt32)breakpoints.Count);
 		}
 
 		public static Breakpoint GetBreakpointById(int breakpointId)
 		{
-			if(breakpointId < 0 || breakpointId >= _breakpoints.Count) {
+			if(breakpointId < 0) {
 				return null;
+			} else if(breakpointId < _breakpoints.Count) {
+				return _breakpoints[breakpointId];
+			} else if(breakpointId < _breakpoints.Count + Asserts.Count) {
+				return Asserts[breakpointId - _breakpoints.Count];
 			}
-			return _breakpoints[breakpointId];
+			return null;
 		}
 	}
 }

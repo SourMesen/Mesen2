@@ -596,6 +596,7 @@ namespace Mesen.GUI.Debugger.Integration
 		private void LoadComments()
 		{
 			DbgIntegrationConfig config = ConfigManager.Config.Debug.DbgIntegration;
+			SortedDictionary<string, int> constants = GetConstants();
 			foreach(KeyValuePair<int, LineInfo> kvp in _lines) {
 				try {
 					LineInfo line = kvp.Value;
@@ -668,7 +669,7 @@ namespace Mesen.GUI.Debugger.Integration
 						if(address >= 0 && memoryType != null) {
 							CodeLabel label = this.CreateLabel(address, memoryType.Value, 1);
 							if(label != null) {
-								label.Comment = comment;
+								label.Comment = ParseAsserts(constants, comment);
 							}
 						}
 					}
@@ -676,6 +677,42 @@ namespace Mesen.GUI.Debugger.Integration
 					_errorCount++;
 				}
 			}
+		}
+
+		private string[] _splitOnNewLine = { Environment.NewLine };
+		private string ParseAsserts(SortedDictionary<string, int> constants, string comment)
+		{
+			//Parse and replace content of asserts as needed
+			string[] commentLines = comment.Split(_splitOnNewLine, StringSplitOptions.None);
+			for(int i = 0; i < commentLines.Length; i++) {
+				Match m = LabelManager.AssertRegex.Match(commentLines[i]);
+				if(m.Success) {
+					foreach(KeyValuePair<string, int> entry in constants) {
+						commentLines[i] = commentLines[i].Replace(entry.Key, entry.Value.ToString());
+					}
+				}
+			}
+
+			return string.Join(Environment.NewLine, commentLines);
+		}
+
+		private SortedDictionary<string, int> GetConstants()
+		{
+			SortedDictionary<string, int> constants = new SortedDictionary<string, int>(Comparer<string>.Create((string a, string b) => {
+				if(a.Length == b.Length) {
+					return a.CompareTo(b);
+				}
+				return b.Length - a.Length;
+			}));
+
+			foreach(SymbolInfo symbol in _symbols.Values) {
+				AddressInfo? addressInfo = GetSymbolAddressInfo(symbol);
+				if(!addressInfo.HasValue && symbol.Address.HasValue) {
+					constants[symbol.Name] = symbol.Address.Value;
+				}
+			}
+
+			return constants;
 		}
 
 		private void LoadFileData(string path)

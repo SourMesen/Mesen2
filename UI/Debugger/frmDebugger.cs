@@ -476,8 +476,9 @@ namespace Mesen.GUI.Debugger
 
 		void ProcessBreakEvent(BreakEvent evt, DebugState state, int activeAddress)
 		{
+			Breakpoint bp = null;
 			if(ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak) {
-				Breakpoint bp = BreakpointManager.GetBreakpointById(evt.BreakpointId);
+				bp = BreakpointManager.GetBreakpointById(evt.BreakpointId);
 				if(bp?.CpuType == _cpuType || evt.Source > BreakSource.PpuStep) {
 					DebugWindowManager.BringToFront(this);
 				}
@@ -489,7 +490,11 @@ namespace Mesen.GUI.Debugger
 			if(evt.Source == BreakSource.Breakpoint || evt.Source > BreakSource.PpuStep) {
 				string message = ResourceHelper.GetEnumText(evt.Source);
 				if(evt.Source == BreakSource.Breakpoint) {
-					message += ": " + ResourceHelper.GetEnumText(evt.Operation.Type) + " ($" + evt.Operation.Address.ToString("X4") + ":$" + evt.Operation.Value.ToString("X2") + ")";
+					if(bp != null && bp.IsAssert) {
+						message = "Assert failed: " + bp.Condition.Substring(2, bp.Condition.Length - 3);
+					} else {
+						message += ": " + ResourceHelper.GetEnumText(evt.Operation.Type) + " ($" + evt.Operation.Address.ToString("X4") + ":$" + evt.Operation.Value.ToString("X2") + ")";
+					}
 				}
 				ctrlDisassemblyView.SetMessage(new TextboxMessageInfo() { Message = message });
 			}

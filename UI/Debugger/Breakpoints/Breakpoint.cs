@@ -21,6 +21,7 @@ namespace Mesen.GUI.Debugger
 		public CpuType CpuType;
 		public BreakpointAddressType AddressType = BreakpointAddressType.SingleAddress;
 		public string Condition = "";
+		public bool IsAssert = false;
 		
 		public SnesMemoryType MemoryType
 		{

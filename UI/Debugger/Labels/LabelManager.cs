@@ -12,6 +12,7 @@ namespace Mesen.GUI.Debugger.Labels
 	public class LabelManager
 	{
 		public static Regex LabelRegex { get; } = new Regex("^[@_a-zA-Z]+[@_a-zA-Z0-9]*$", RegexOptions.Compiled);
+		public static Regex AssertRegex { get; } = new Regex(@"assert\((.*)\)", RegexOptions.Compiled);
 
 		private static Dictionary<UInt64, CodeLabel> _labelsByKey = new Dictionary<UInt64, CodeLabel>();
 		private static HashSet<CodeLabel> _labels = new HashSet<CodeLabel>();
@@ -54,7 +55,7 @@ namespace Mesen.GUI.Debugger.Labels
 				SetLabel(label, false);
 			}
 			if(raiseEvents) {
-				OnLabelUpdated?.Invoke(null, null);
+				ProcessLabelUpdate();
 			}
 		}
 
@@ -135,7 +136,7 @@ namespace Mesen.GUI.Debugger.Labels
 			}
 
 			if(raiseEvent) {
-				OnLabelUpdated?.Invoke(null, null);
+				ProcessLabelUpdate();
 				RefreshDisassembly(label);
 			}
 
@@ -162,7 +163,7 @@ namespace Mesen.GUI.Debugger.Labels
 			}
 
 			if(needEvent) {
-				OnLabelUpdated?.Invoke(null, null);
+				ProcessLabelUpdate();
 				RefreshDisassembly(label);
 			}
 		}
@@ -198,6 +199,44 @@ namespace Mesen.GUI.Debugger.Labels
 		{
 			DebugApi.ClearLabels();
 			LabelManager.SetLabels(new List<CodeLabel>(_labels), true);
+		}
+
+		private static void ProcessLabelUpdate()
+		{
+			OnLabelUpdated?.Invoke(null, null);
+			UpdateAssertBreakpoints();
+		}
+
+		private static void UpdateAssertBreakpoints()
+		{
+			List<Breakpoint> asserts = new List<Breakpoint>();
+
+			Action<CodeLabel, string, CpuType> addAssert = (CodeLabel label, string condition, CpuType cpuType) => {
+				asserts.Add(new Breakpoint() {
+					BreakOnExec = true,
+					MemoryType = label.MemoryType,
+					CpuType = cpuType,
+					Address = label.Address,
+					Condition = "!(" + condition + ")",
+					IsAssert = true
+				});
+			};
+
+			foreach(CodeLabel label in _labels) {
+				foreach(string commentLine in label.Comment.Split('\n')) {
+					Match m = LabelManager.AssertRegex.Match(commentLine);
+					if(m.Success) {
+						CpuType cpuType = label.MemoryType.ToCpuType();
+						addAssert(label, m.Groups[1].Value, cpuType);
+						if(cpuType == CpuType.Cpu) {
+							addAssert(label, m.Groups[1].Value, CpuType.Sa1);
+						}
+					}
+				}
+			}
+
+			BreakpointManager.Asserts = asserts;
+			BreakpointManager.SetBreakpoints();
 		}
 
 		public static void SetDefaultLabels()
