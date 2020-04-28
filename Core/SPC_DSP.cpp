@@ -20,6 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "blargg_source.h"
 #include "Spc.h"
+#include "EmuSettings.h"
 
 #ifdef BLARGG_ENABLE_OPTIMIZER
 	#include BLARGG_ENABLE_OPTIMIZER
@@ -130,6 +131,25 @@ static short const gauss [512] =
 1282,1283,1284,1286,1287,1288,1290,1291,1292,1293,1294,1295,1296,1297,1297,1298,
 1299,1300,1300,1301,1302,1302,1303,1303,1303,1304,1304,1304,1304,1304,1305,1305,
 };
+
+inline int SPC_DSP::interpolate_cubic(voice_t const* v)
+{
+	int const* in = &v->buf[(v->interp_pos >> 12) + v->buf_pos];
+
+	float v0 = in[0] / 32768.0;
+	float v1 = in[1] / 32768.0;
+	float v2 = in[2] / 32768.0;
+	float v3 = in[3] / 32768.0;
+
+	float a = (v3 - v2) - (v0 - v1);
+	float b = (v0 - v1) - a;
+	float c = v2 - v0;
+	float d = v1;
+	
+	float ratio = (double)(v->interp_pos & 0xFFF) / 0x1000;
+
+	return (int)((d + ratio * (c + ratio * (b + ratio * a))) * 32768);
+}
 
 inline int SPC_DSP::interpolate( voice_t const* v )
 {
@@ -451,7 +471,7 @@ VOICE_CLOCK( V3c )
 	
 	// Gaussian interpolation
 	{
-		int output = interpolate( v );
+		int output = _settings->GetAudioConfig().EnableCubicInterpolation ? interpolate_cubic(v) : interpolate( v );
 		
 		// Noise
 		if ( m.t_non & v->vbit )
@@ -812,9 +832,10 @@ inline void SPC_DSP::writeRam(uint16_t addr, uint8_t value) { _spc->DspWriteRam(
 
 //// Setup
 
-void SPC_DSP::init( Spc *spc, void* ram_64k )
+void SPC_DSP::init( Spc *spc, EmuSettings *settings, void* ram_64k )
 {
 	_spc = spc;
+	_settings = settings;
 	m.ram = (uint8_t*) ram_64k;
 	mute_voices( 0 );
 	disable_surround( false );

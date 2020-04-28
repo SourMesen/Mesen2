@@ -76,6 +76,7 @@
 			this.tpgAdvanced = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.chkDisableDynamicSampleRate = new Mesen.GUI.Controls.ctrlRiskyOption();
+			this.chkEnableCubicInterpolation = new System.Windows.Forms.CheckBox();
 			this.tabControl1.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -298,6 +299,7 @@
             0,
             0,
             0});
+			this.nudLatency.IsHex = false;
 			this.nudLatency.Location = new System.Drawing.Point(3, 3);
 			this.nudLatency.Maximum = new decimal(new int[] {
             300,
@@ -890,11 +892,13 @@
 			// 
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.chkDisableDynamicSampleRate, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.chkDisableDynamicSampleRate, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.chkEnableCubicInterpolation, 0, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 2;
+			this.tableLayoutPanel1.RowCount = 3;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(478, 346);
@@ -903,11 +907,21 @@
 			// chkDisableDynamicSampleRate
 			// 
 			this.chkDisableDynamicSampleRate.Checked = false;
-			this.chkDisableDynamicSampleRate.Location = new System.Drawing.Point(0, 0);
+			this.chkDisableDynamicSampleRate.Location = new System.Drawing.Point(0, 23);
 			this.chkDisableDynamicSampleRate.Name = "chkDisableDynamicSampleRate";
 			this.chkDisableDynamicSampleRate.Size = new System.Drawing.Size(463, 24);
 			this.chkDisableDynamicSampleRate.TabIndex = 5;
 			this.chkDisableDynamicSampleRate.Text = "Disable dynamic sample rate";
+			// 
+			// chkEnableCubicInterpolation
+			// 
+			this.chkEnableCubicInterpolation.AutoSize = true;
+			this.chkEnableCubicInterpolation.Location = new System.Drawing.Point(3, 3);
+			this.chkEnableCubicInterpolation.Name = "chkEnableCubicInterpolation";
+			this.chkEnableCubicInterpolation.Size = new System.Drawing.Size(148, 17);
+			this.chkEnableCubicInterpolation.TabIndex = 6;
+			this.chkEnableCubicInterpolation.Text = "Enable cubic interpolation";
+			this.chkEnableCubicInterpolation.UseVisualStyleBackColor = true;
 			// 
 			// frmAudioConfig
 			// 
@@ -938,6 +952,7 @@
 			this.tlpEqualizer.ResumeLayout(false);
 			this.tpgAdvanced.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -994,5 +1009,6 @@
 		private System.Windows.Forms.TabPage tpgAdvanced;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private Controls.ctrlRiskyOption chkDisableDynamicSampleRate;
-	}
+	  private System.Windows.Forms.CheckBox chkEnableCubicInterpolation;
+   }
 }

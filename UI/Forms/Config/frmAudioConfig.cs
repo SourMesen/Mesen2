@@ -30,6 +30,8 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(AudioConfig.SampleRate), cboSampleRate);
 			AddBinding(nameof(AudioConfig.AudioDevice), cboAudioDevice);
 			AddBinding(nameof(AudioConfig.DisableDynamicSampleRate), chkDisableDynamicSampleRate);
+			
+			AddBinding(nameof(AudioConfig.EnableCubicInterpolation), chkEnableCubicInterpolation);
 
 			AddBinding(nameof(AudioConfig.EnableEqualizer), chkEnableEqualizer);
 			AddBinding(nameof(AudioConfig.Band1Gain), trkBand1Gain);

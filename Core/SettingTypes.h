@@ -119,6 +119,8 @@ struct AudioConfig
 	uint32_t SampleRate = 48000;
 	uint32_t AudioLatency = 60;
 
+	bool EnableCubicInterpolation  = true;
+
 	bool MuteSoundInBackground = false;
 	bool ReduceSoundInBackground = true;
 	bool ReduceSoundInFastForward = false;

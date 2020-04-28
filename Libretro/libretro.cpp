@@ -42,6 +42,7 @@ static constexpr const char* MesenNtscFilter = "mesen-s_ntsc_filter";
 static constexpr const char* MesenRegion = "mesen-s_region";
 static constexpr const char* MesenAspectRatio = "mesen-s_aspect_ratio";
 static constexpr const char* MesenBlendHighRes = "mesen-s_blend_high_res";
+static constexpr const char* MesenCubicInterpolation = "mesen-s_cubic_interpolation";
 static constexpr const char* MesenOverscanVertical = "mesen-s_overscan_vertical";
 static constexpr const char* MesenOverscanHorizontal = "mesen-s_overscan_horizontal";
 static constexpr const char* MesenRamState = "mesen-s_ramstate";
@@ -114,6 +115,7 @@ extern "C" {
 			{ MesenOverscanHorizontal, "Horizontal Overscan; None|8px|16px" },
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
 			{ MesenBlendHighRes, "Blend Hi-Res Modes; disabled|enabled" },
+			{ MesenCubicInterpolation, "Cubic Interpolation (Audio); disabled|enabled" },
 			{ MesenOverclock, "Overclock; None|Low|Medium|High|Very High" },
 			{ MesenOverclockType, "Overclock Type; Before NMI|After NMI" },
 			{ MesenSuperFxOverclock, "Super FX Clock Speed; 100%|200%|300%|400%|500%|1000%" },
@@ -208,6 +210,7 @@ extern "C" {
 	{
 		struct retro_variable var = { };
 		VideoConfig video = _console->GetSettings()->GetVideoConfig();
+		AudioConfig audio = _console->GetSettings()->GetAudioConfig();
 		EmulationConfig emulation = _console->GetSettings()->GetEmulationConfig();
 		InputConfig input = _console->GetSettings()->GetInputConfig();
 		video.Brightness = 0;
@@ -378,6 +381,11 @@ extern "C" {
 			string value = string(var.value);
 			video.BlendHighResolutionModes = (value == "enabled");
 		}
+		
+		if(readVariable(MesenCubicInterpolation, var)) {
+			string value = string(var.value);
+			audio.EnableCubicInterpolation = (value == "enabled");
+		}
 
 		auto getKeyCode = [=](int port, int retroKey) {
 			return (port << 8) | (retroKey + 1);
@@ -412,6 +420,7 @@ extern "C" {
 		_console->GetSettings()->SetVideoConfig(video);
 		_console->GetSettings()->SetEmulationConfig(emulation);
 		_console->GetSettings()->SetInputConfig(input);
+		_console->GetSettings()->SetAudioConfig(audio);
 
 		retro_system_av_info avInfo = {};
 		_renderer->GetSystemAudioVideoInfo(avInfo);

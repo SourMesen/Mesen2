@@ -8,6 +8,7 @@
 extern "C" { typedef void (*dsp_copy_func_t)( unsigned char** io, void* state, size_t ); }
 
 class Spc;
+class EmuSettings;
 class SPC_DSP {
 public:
 	typedef BOOST::uint8_t uint8_t;
@@ -15,7 +16,7 @@ public:
 // Setup
 
 	// Initializes DSP and has it use the 64K RAM provided
-	void init( Spc* spc, void* ram_64k );
+	void init( Spc* spc, EmuSettings* settings, void* ram_64k );
 
 	// Sets destination for output samples. If out is NULL or out_size is 0,
 	// doesn't generate any.
@@ -191,11 +192,13 @@ private:
 	};
 	state_t m;
 	Spc* _spc;
+	EmuSettings* _settings;
 	
 	void init_counter();
 	void run_counters();
 	unsigned read_counter( int rate );
 	
+	int interpolate_cubic(voice_t const* v);
 	int  interpolate( voice_t const* v );
 	void run_envelope( voice_t* const v );
 	void decode_brr( voice_t* v );
