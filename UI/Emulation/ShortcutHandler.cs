@@ -329,14 +329,14 @@ namespace Mesen.GUI.Emulation
 
 		private void IncreaseVolume()
 		{
-			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Min(100, (int)ConfigManager.Config.Audio.MasterVolume + 10);
+			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Min(100, (int)ConfigManager.Config.Audio.MasterVolume + 5);
 			ConfigManager.Config.Audio.ApplyConfig();
 			ConfigManager.ApplyChanges();
 		}
 
 		private void DecreaseVolume()
 		{
-			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Max(0, (int)ConfigManager.Config.Audio.MasterVolume - 10);
+			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Max(0, (int)ConfigManager.Config.Audio.MasterVolume - 5);
 			ConfigManager.Config.Audio.ApplyConfig();
 			ConfigManager.ApplyChanges();
 		}
