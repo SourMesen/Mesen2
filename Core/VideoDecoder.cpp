@@ -40,27 +40,27 @@ ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 {
 	ScreenSize size;
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
-	double aspectRatio = _console->GetSettings()->GetAspectRatio(_console->GetRegion());
-	double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoConfig().VideoScale);
 
+	double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoConfig().VideoScale);
 	bool useHighResOutput = _baseFrameInfo.Width >= 512 || _videoFilterType == VideoFilterType::NTSC;
 	int divider = useHighResOutput ? 2 : 1;
-
 	size.Width = (int32_t)(frameInfo.Width * scale / divider);
 	size.Height = (int32_t)(frameInfo.Height * scale / divider);
+	size.Scale = scale;
+
+	double aspectRatio = _console->GetSettings()->GetAspectRatio(_console->GetRegion());
 	if(aspectRatio != 0.0) {
-		OverscanDimensions overscan = _console->GetSettings()->GetOverscan();
-		uint32_t originalHeight = frameInfo.Height + (overscan.Top + overscan.Bottom) * divider;
-		uint32_t originalWidth = frameInfo.Width + (overscan.Left + overscan.Right) * divider;
-		size.Width = (uint32_t)(originalHeight * scale * aspectRatio * ((double)frameInfo.Width / originalWidth)) / divider;
+		VideoAspectRatio aspect = _console->GetSettings()->GetVideoConfig().AspectRatio;
+		bool usePar = aspect == VideoAspectRatio::NTSC || aspect == VideoAspectRatio::PAL || aspect == VideoAspectRatio::Auto;
+		if(usePar) {
+			OverscanDimensions overscan = _console->GetSettings()->GetOverscan();
+			uint32_t fullWidth = frameInfo.Width + (overscan.Left + overscan.Right);
+			size.Width = (uint32_t)(256 * scale * aspectRatio * frameInfo.Width / fullWidth);
+		} else {
+			size.Width = (uint32_t)(size.Height * aspectRatio);
+		}
 	}
 
-	/*
-	if(_console->GetSettings()->GetScreenRotation() % 180) {
-		std::swap(size.Width, size.Height);
-	}*/
-
-	size.Scale = scale;
 	return size;
 }
 
@@ -79,16 +79,6 @@ void VideoDecoder::UpdateVideoFilter()
 			default: _scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType); break;
 		}
 	}
-
-	//TODO
-	/*	
-	if(_console->GetSettings()->GetScreenRotation() == 0 && _rotateFilter) {
-		_rotateFilter.reset();
-	} else if(_console->GetSettings()->GetScreenRotation() > 0) {
-		if(!_rotateFilter || _rotateFilter->GetAngle() != _console->GetSettings()->GetScreenRotation()) {
-			_rotateFilter.reset(new RotateFilter(_console->GetSettings()->GetScreenRotation()));
-		}
-	}*/
 }
 
 void VideoDecoder::DecodeFrame(bool forRewind)
@@ -104,21 +94,10 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
 	_console->GetDebugHud()->Draw(outputBuffer, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
 
-	/*
-	if(_rotateFilter) {
-		outputBuffer = _rotateFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height);
-		frameInfo = _rotateFilter->GetFrameInfo(frameInfo);
-	}*/
-
 	if(_scaleFilter) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _console->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = _scaleFilter->GetFrameInfo(frameInfo);
 	}
-
-	/*
-	if(_hud) {
-		_hud->DrawHud(_console, outputBuffer, frameInfo, _videoFilter->GetOverscan());
-	}*/
 
 	ScreenSize screenSize = GetScreenSize(true);
 	VideoConfig config = _console->GetSettings()->GetVideoConfig();

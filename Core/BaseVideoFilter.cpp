@@ -109,27 +109,12 @@ void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename
 
 	pngBuffer = frameBuffer;
 
-	//TODO
-	/*
-	uint32_t rotationAngle = _console->GetSettings()->GetScreenRotation();
-	shared_ptr<RotateFilter> rotateFilter;
-	if(rotationAngle > 0) {
-		rotateFilter.reset(new RotateFilter(rotationAngle));
-		pngBuffer = rotateFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height);
-		frameInfo = rotateFilter->GetFrameInfo(frameInfo);
-	}*/
-
 	shared_ptr<ScaleFilter> scaleFilter = ScaleFilter::GetScaleFilter(filterType);
 	if(scaleFilter) {
 		pngBuffer = scaleFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height, _console->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = scaleFilter->GetFrameInfo(frameInfo);
 	}
 	
-	//TODO
-	/*
-	VideoHud hud;
-	hud.DrawHud(_console, pngBuffer, frameInfo, _console->GetSettings()->GetOverscanDimensions());
-	*/
 	if(!filename.empty()) {
 		PNGHelper::WritePNG(filename, pngBuffer, frameInfo.Width, frameInfo.Height);
 	} else {

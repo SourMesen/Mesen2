@@ -57,16 +57,23 @@ public:
 		info.timing.fps = _console->GetRegion() == ConsoleRegion::Ntsc ? 60.098811862348404716732985230828 : 50.006977968268290848936010226333;
 		info.timing.sample_rate = audio.SampleRate;
 
-		float ratio = (float)_console->GetSettings()->GetAspectRatio(_console->GetRegion());
-		if(ratio == 0.0f) {
-			ratio = (float)256 / 239;
-		}
 		OverscanDimensions overscan = _console->GetSettings()->GetOverscan();
 		int width = (256 - overscan.Left - overscan.Right);
 		int height = (239 - overscan.Top - overscan.Bottom);
-		ratio *= (float)width / height / 256 * 239;
 
-		info.geometry.aspect_ratio = ratio;
+		double aspectRatio = _console->GetSettings()->GetAspectRatio(_console->GetRegion());
+		if(aspectRatio != 0.0) {
+			VideoAspectRatio aspect = _console->GetSettings()->GetVideoConfig().AspectRatio;
+			bool usePar = aspect == VideoAspectRatio::NTSC || aspect == VideoAspectRatio::PAL || aspect == VideoAspectRatio::Auto;
+			if(usePar) {
+				info.geometry.aspect_ratio = (float)(width * aspectRatio / height);
+			} else {
+				info.geometry.aspect_ratio = (float)aspectRatio;
+			}
+		} else {
+			info.geometry.aspect_ratio = (float)width / height;
+		}
+
 		info.geometry.base_width = width;
 		info.geometry.base_height = height;
 

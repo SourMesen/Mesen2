@@ -43,8 +43,8 @@ namespace Mesen.GUI.Config
 
 		[MinMax(0, 100)] public UInt32 OverscanLeft = 0;
 		[MinMax(0, 100)] public UInt32 OverscanRight = 0;
-		[MinMax(0, 100)] public UInt32 OverscanTop = 0;
-		[MinMax(0, 100)] public UInt32 OverscanBottom = 0;
+		[MinMax(0, 100)] public UInt32 OverscanTop = 7;
+		[MinMax(0, 100)] public UInt32 OverscanBottom = 8;
 
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale = false;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen = false;

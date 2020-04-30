@@ -31,6 +31,9 @@
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tpgGeneral = new System.Windows.Forms.TabPage();
 			this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
+			this.flpResolution = new System.Windows.Forms.FlowLayoutPanel();
+			this.lblFullscreenResolution = new System.Windows.Forms.Label();
+			this.cboFullscreenResolution = new System.Windows.Forms.ComboBox();
 			this.chkUseExclusiveFullscreen = new System.Windows.Forms.CheckBox();
 			this.lblVideoScale = new System.Windows.Forms.Label();
 			this.chkVerticalSync = new System.Windows.Forms.CheckBox();
@@ -100,12 +103,10 @@
 			this.mnuPresetSVideo = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetRgb = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPresetMonochrome = new System.Windows.Forms.ToolStripMenuItem();
-			this.flpResolution = new System.Windows.Forms.FlowLayoutPanel();
-			this.lblFullscreenResolution = new System.Windows.Forms.Label();
-			this.cboFullscreenResolution = new System.Windows.Forms.ComboBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tlpMain.SuspendLayout();
+			this.flpResolution.SuspendLayout();
 			this.flowLayoutPanel6.SuspendLayout();
 			this.flpRefreshRate.SuspendLayout();
 			this.tpgPicture.SuspendLayout();
@@ -127,7 +128,6 @@
 			this.tpgAdvanced.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.ctxPicturePresets.SuspendLayout();
-			this.flpResolution.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -191,6 +191,60 @@
 			this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tlpMain.Size = new System.Drawing.Size(560, 395);
 			this.tlpMain.TabIndex = 1;
+			// 
+			// flpResolution
+			// 
+			this.tlpMain.SetColumnSpan(this.flpResolution, 2);
+			this.flpResolution.Controls.Add(this.lblFullscreenResolution);
+			this.flpResolution.Controls.Add(this.cboFullscreenResolution);
+			this.flpResolution.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flpResolution.Location = new System.Drawing.Point(30, 116);
+			this.flpResolution.Margin = new System.Windows.Forms.Padding(30, 0, 0, 0);
+			this.flpResolution.Name = "flpResolution";
+			this.flpResolution.Size = new System.Drawing.Size(530, 27);
+			this.flpResolution.TabIndex = 28;
+			this.flpResolution.Visible = false;
+			// 
+			// lblFullscreenResolution
+			// 
+			this.lblFullscreenResolution.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.lblFullscreenResolution.AutoSize = true;
+			this.lblFullscreenResolution.Location = new System.Drawing.Point(3, 7);
+			this.lblFullscreenResolution.Name = "lblFullscreenResolution";
+			this.lblFullscreenResolution.Size = new System.Drawing.Size(111, 13);
+			this.lblFullscreenResolution.TabIndex = 17;
+			this.lblFullscreenResolution.Text = "Fullscreen Resolution:";
+			// 
+			// cboFullscreenResolution
+			// 
+			this.cboFullscreenResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboFullscreenResolution.FormattingEnabled = true;
+			this.cboFullscreenResolution.Items.AddRange(new object[] {
+            "3840x2160",
+            "2560x1440",
+            "2160x1200",
+            "1920x1440",
+            "1920x1200",
+            "1920x1080",
+            "1680x1050",
+            "1600x1200",
+            "1600x1024",
+            "1600x900",
+            "1366x768",
+            "1360x768",
+            "1280x1024",
+            "1280x960",
+            "1280x800",
+            "1280x768",
+            "1280x720",
+            "1152x864",
+            "1024x768",
+            "800x600",
+            "640x480"});
+			this.cboFullscreenResolution.Location = new System.Drawing.Point(120, 3);
+			this.cboFullscreenResolution.Name = "cboFullscreenResolution";
+			this.cboFullscreenResolution.Size = new System.Drawing.Size(85, 21);
+			this.cboFullscreenResolution.TabIndex = 25;
 			// 
 			// chkUseExclusiveFullscreen
 			// 
@@ -285,12 +339,6 @@
 			// 
 			this.cboAspectRatio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cboAspectRatio.FormattingEnabled = true;
-			this.cboAspectRatio.Items.AddRange(new object[] {
-            "Auto",
-            "NTSC (8:7)",
-            "PAL (18:13)",
-            "Standard (4:3)",
-            "Widescreen (16:9)"});
 			this.cboAspectRatio.Location = new System.Drawing.Point(3, 3);
 			this.cboAspectRatio.Name = "cboAspectRatio";
 			this.cboAspectRatio.Size = new System.Drawing.Size(197, 21);
@@ -1233,60 +1281,6 @@
 			this.mnuPresetMonochrome.Text = "Monochrome";
 			this.mnuPresetMonochrome.Click += new System.EventHandler(this.mnuPresetMonochrome_Click);
 			// 
-			// flpResolution
-			// 
-			this.tlpMain.SetColumnSpan(this.flpResolution, 2);
-			this.flpResolution.Controls.Add(this.lblFullscreenResolution);
-			this.flpResolution.Controls.Add(this.cboFullscreenResolution);
-			this.flpResolution.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.flpResolution.Location = new System.Drawing.Point(30, 116);
-			this.flpResolution.Margin = new System.Windows.Forms.Padding(30, 0, 0, 0);
-			this.flpResolution.Name = "flpResolution";
-			this.flpResolution.Size = new System.Drawing.Size(530, 27);
-			this.flpResolution.TabIndex = 28;
-			this.flpResolution.Visible = false;
-			// 
-			// lblFullscreenResolution
-			// 
-			this.lblFullscreenResolution.Anchor = System.Windows.Forms.AnchorStyles.Right;
-			this.lblFullscreenResolution.AutoSize = true;
-			this.lblFullscreenResolution.Location = new System.Drawing.Point(3, 7);
-			this.lblFullscreenResolution.Name = "lblFullscreenResolution";
-			this.lblFullscreenResolution.Size = new System.Drawing.Size(111, 13);
-			this.lblFullscreenResolution.TabIndex = 17;
-			this.lblFullscreenResolution.Text = "Fullscreen Resolution:";
-			// 
-			// cboFullscreenResolution
-			// 
-			this.cboFullscreenResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cboFullscreenResolution.FormattingEnabled = true;
-			this.cboFullscreenResolution.Items.AddRange(new object[] {
-            "3840x2160",
-            "2560x1440",
-            "2160x1200",
-            "1920x1440",
-            "1920x1200",
-            "1920x1080",
-            "1680x1050",
-            "1600x1200",
-            "1600x1024",
-            "1600x900",
-            "1366x768",
-            "1360x768",
-            "1280x1024",
-            "1280x960",
-            "1280x800",
-            "1280x768",
-            "1280x720",
-            "1152x864",
-            "1024x768",
-            "800x600",
-            "640x480"});
-			this.cboFullscreenResolution.Location = new System.Drawing.Point(120, 3);
-			this.cboFullscreenResolution.Name = "cboFullscreenResolution";
-			this.cboFullscreenResolution.Size = new System.Drawing.Size(85, 21);
-			this.cboFullscreenResolution.TabIndex = 25;
-			// 
 			// frmVideoConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1305,6 +1299,8 @@
 			this.tpgGeneral.ResumeLayout(false);
 			this.tlpMain.ResumeLayout(false);
 			this.tlpMain.PerformLayout();
+			this.flpResolution.ResumeLayout(false);
+			this.flpResolution.PerformLayout();
 			this.flowLayoutPanel6.ResumeLayout(false);
 			this.flowLayoutPanel6.PerformLayout();
 			this.flpRefreshRate.ResumeLayout(false);
@@ -1336,8 +1332,6 @@
 			this.tpgAdvanced.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.ctxPicturePresets.ResumeLayout(false);
-			this.flpResolution.ResumeLayout(false);
-			this.flpResolution.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
