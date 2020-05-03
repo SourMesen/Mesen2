@@ -157,6 +157,9 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuEditSelectedCode.InitShortcut(this, nameof(DebuggerShortcutsConfig.CodeWindow_EditSelectedCode));
 			mnuEditSelectedCode.Click += (s, e) => EditSelectedCode();
 
+			mnuCopySelection.InitShortcut(this, nameof(DebuggerShortcutsConfig.Copy));
+			mnuCopySelection.Click += (s, e) => ctrlCode.CopySelection(true, false, true);
+
 			mnuAddToWatch.InitShortcut(this, nameof(DebuggerShortcutsConfig.LabelList_AddToWatch));
 
 			mnuMarkAsCode.InitShortcut(this, nameof(DebuggerShortcutsConfig.MarkAsCode));
@@ -646,7 +649,6 @@ namespace Mesen.GUI.Debugger.Controls
 
 			bool showMarkAs = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1);
 			mnuMarkSelectionAs.Visible = showMarkAs;
-			sepMarkSelectionAs.Visible = showMarkAs;
 			mnuEditSelectedCode.Visible = showMarkAs;
 
 			mnuAddToWatch.Enabled = active;
