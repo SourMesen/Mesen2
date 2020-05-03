@@ -525,6 +525,8 @@ extern "C" {
 				addDesc(port, RETRO_DEVICE_ID_JOYPAD_Y, "Y");
 				addDesc(port, RETRO_DEVICE_ID_JOYPAD_L, "L");
 				addDesc(port, RETRO_DEVICE_ID_JOYPAD_R, "R");
+				addDesc(port, RETRO_DEVICE_ID_JOYPAD_START, "Start");
+				addDesc(port, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select");
 			}
 		};
 
