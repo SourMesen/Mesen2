@@ -59,6 +59,7 @@
 			this.mnuSetScriptTimeout = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuSaveBeforeRun = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRestart = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoReload = new System.Windows.Forms.ToolStripMenuItem();
 			this.onStartupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBlankWindow = new System.Windows.Forms.ToolStripMenuItem();
@@ -263,6 +264,7 @@
             this.mnuSetScriptTimeout,
             this.toolStripMenuItem3,
             this.mnuSaveBeforeRun,
+            this.mnuAutoRestart,
             this.mnuAutoReload,
             this.onStartupToolStripMenuItem});
 			this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
@@ -312,6 +314,13 @@
 			this.mnuSaveBeforeRun.Name = "mnuSaveBeforeRun";
 			this.mnuSaveBeforeRun.Size = new System.Drawing.Size(258, 22);
 			this.mnuSaveBeforeRun.Text = "Auto-save before running";
+			// 
+			// mnuAutoRestart
+			// 
+			this.mnuAutoRestart.CheckOnClick = true;
+			this.mnuAutoRestart.Name = "mnuAutoRestart";
+			this.mnuAutoRestart.Size = new System.Drawing.Size(258, 22);
+			this.mnuAutoRestart.Text = "Auto-restart after reload";
 			// 
 			// mnuAutoReload
 			// 
@@ -404,7 +413,6 @@
 			this.txtScriptContent.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.txtScriptContent.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.txtScriptContent.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.txtScriptContent.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.txtScriptContent.IsReplaceMode = false;
 			this.txtScriptContent.Language = FastColoredTextBoxNS.Language.Lua;
 			this.txtScriptContent.LeftBracket = '(';
@@ -619,5 +627,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuApiReference;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
 		private System.Windows.Forms.ToolStripMenuItem mnuSetScriptTimeout;
-	}
+	  private System.Windows.Forms.ToolStripMenuItem mnuAutoRestart;
+   }
 }

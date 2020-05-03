@@ -26,6 +26,7 @@ namespace Mesen.GUI.Config
 		public ScriptStartupBehavior ScriptStartupBehavior = ScriptStartupBehavior.ShowTutorial;
 		public bool SaveScriptBeforeRun = true;
 		public bool AutoLoadLastScript = true;
+		public bool AutoRestartScript = true;
 		public UInt32 ScriptTimeout = 1000;
 
 		public void AddRecentScript(string scriptFile)

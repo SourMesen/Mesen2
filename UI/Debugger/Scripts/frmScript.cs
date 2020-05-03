@@ -101,6 +101,7 @@ namespace Mesen.GUI.Debugger
 
 			RestoreLocation(cfg.WindowLocation, cfg.WindowSize);
 			mnuSaveBeforeRun.Checked = cfg.SaveScriptBeforeRun;
+			mnuAutoRestart.Checked = cfg.AutoRestartScript;
 
 			if(cfg.CodeWindowHeight >= ctrlSplit.Panel1MinSize) {
 				if(cfg.CodeWindowHeight == Int32.MaxValue) {
@@ -147,9 +148,13 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.BeforeGameUnload:
 				case ConsoleNotificationType.GameLoaded:
+					bool wasRunning = this._scriptId >= 0;
 					this._scriptId = -1;
 					this.BeginInvoke((Action)(() => {
 						lblScriptActive.Visible = false;
+						if(e.NotificationType == ConsoleNotificationType.GameLoaded && wasRunning && mnuAutoRestart.Checked) {
+							RunScript();
+						}
 					}));
 					break;
 			}
@@ -183,6 +188,7 @@ namespace Mesen.GUI.Debugger
 			cfg.FontStyle = txtScriptContent.OriginalFont.Style;
 			cfg.FontSize = txtScriptContent.OriginalFont.Size;
 			cfg.AutoLoadLastScript = mnuAutoLoadLastScript.Checked;
+			cfg.AutoRestartScript = mnuAutoRestart.Checked;
 			ConfigManager.ApplyChanges();
 
 			base.OnClosing(e);
