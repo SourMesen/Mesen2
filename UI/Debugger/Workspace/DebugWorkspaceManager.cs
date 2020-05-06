@@ -104,11 +104,12 @@ namespace Mesen.GUI.Debugger.Workspace
 				LabelManager.SetDefaultLabels();
 
 				ImportDbgFile();
-				LabelManager.RefreshLabels();
-
-				//Load breakpoints
-				BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
 			}
+			
+			//Send breakpoints & labels to emulation core (even if the same game is running)
+			LabelManager.RefreshLabels();
+			BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
+
 			return _workspace;
 		}
 
