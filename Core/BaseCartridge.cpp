@@ -64,8 +64,13 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 			}
 		} else {
 			cart->_prgRomSize = (uint32_t)romData.size();
+			if((cart->_prgRomSize & 0xFFF) != 0) {
+				//Round up to the next 4kb size, to ensure we have access to all the rom's data
+				cart->_prgRomSize = (cart->_prgRomSize & ~0xFFF) + 0x1000;
+			}
 			cart->_prgRom = new uint8_t[cart->_prgRomSize];
-			memcpy(cart->_prgRom, romData.data(), cart->_prgRomSize);
+			memset(cart->_prgRom, 0, cart->_prgRomSize);
+			memcpy(cart->_prgRom, romData.data(), romData.size());
 		}
 
 		if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data", 27) == 0) {
