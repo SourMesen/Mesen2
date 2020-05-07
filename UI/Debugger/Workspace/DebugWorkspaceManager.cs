@@ -83,10 +83,11 @@ namespace Mesen.GUI.Debugger.Workspace
 		public static DebugWorkspace GetWorkspace()
 		{
 			string romName = EmuApi.GetRomInfo().GetRomName();
+			if(_workspace != null) {
+				SaveWorkspace();
+			}
+
 			if(_workspace == null || _romName != romName) {
-				if(_workspace != null) {
-					SaveWorkspace();
-				}
 				_romName = romName;
 				_workspace = DebugWorkspace.GetWorkspace();
 
