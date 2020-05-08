@@ -41,7 +41,7 @@
 			this.grpGeneral = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
 			this.chkResetLabelsOnImport = new System.Windows.Forms.CheckBox();
-			this.chkAutoLoadDbgFiles = new System.Windows.Forms.CheckBox();
+			this.chkAutoLoadFiles = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpSPC.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
@@ -54,7 +54,7 @@
 			// baseConfigPanel
 			// 
 			this.baseConfigPanel.Location = new System.Drawing.Point(0, 196);
-			this.baseConfigPanel.Size = new System.Drawing.Size(419, 29);
+			this.baseConfigPanel.Size = new System.Drawing.Size(463, 29);
 			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tableLayoutPanel1
@@ -71,16 +71,16 @@
 			this.tableLayoutPanel1.RowCount = 2;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(419, 196);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(463, 196);
 			this.tableLayoutPanel1.TabIndex = 2;
 			// 
 			// grpSPC
 			// 
 			this.grpSPC.Controls.Add(this.tableLayoutPanel3);
 			this.grpSPC.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpSPC.Location = new System.Drawing.Point(212, 75);
+			this.grpSPC.Location = new System.Drawing.Point(234, 75);
 			this.grpSPC.Name = "grpSPC";
-			this.grpSPC.Size = new System.Drawing.Size(204, 118);
+			this.grpSPC.Size = new System.Drawing.Size(226, 118);
 			this.grpSPC.TabIndex = 1;
 			this.grpSPC.TabStop = false;
 			this.grpSPC.Text = "SPC700";
@@ -101,7 +101,7 @@
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(198, 99);
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(220, 99);
 			this.tableLayoutPanel3.TabIndex = 0;
 			// 
 			// chkSpcComments
@@ -130,7 +130,7 @@
 			this.grpCpu.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpCpu.Location = new System.Drawing.Point(3, 75);
 			this.grpCpu.Name = "grpCpu";
-			this.grpCpu.Size = new System.Drawing.Size(203, 118);
+			this.grpCpu.Size = new System.Drawing.Size(225, 118);
 			this.grpCpu.TabIndex = 0;
 			this.grpCpu.TabStop = false;
 			this.grpCpu.Text = "CPU (65816)";
@@ -153,7 +153,7 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(197, 99);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(219, 99);
 			this.tableLayoutPanel2.TabIndex = 0;
 			// 
 			// chkCpuComments
@@ -203,7 +203,7 @@
 			this.grpGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpGeneral.Location = new System.Drawing.Point(3, 3);
 			this.grpGeneral.Name = "grpGeneral";
-			this.grpGeneral.Size = new System.Drawing.Size(413, 66);
+			this.grpGeneral.Size = new System.Drawing.Size(457, 66);
 			this.grpGeneral.TabIndex = 2;
 			this.grpGeneral.TabStop = false;
 			this.grpGeneral.Text = "General Settings";
@@ -213,7 +213,7 @@
 			this.tableLayoutPanel4.ColumnCount = 1;
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel4.Controls.Add(this.chkResetLabelsOnImport, 0, 1);
-			this.tableLayoutPanel4.Controls.Add(this.chkAutoLoadDbgFiles, 0, 0);
+			this.tableLayoutPanel4.Controls.Add(this.chkAutoLoadFiles, 0, 0);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -221,7 +221,7 @@
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(407, 47);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(451, 47);
 			this.tableLayoutPanel4.TabIndex = 0;
 			// 
 			// chkResetLabelsOnImport
@@ -229,26 +229,26 @@
 			this.chkResetLabelsOnImport.AutoSize = true;
 			this.chkResetLabelsOnImport.Location = new System.Drawing.Point(3, 26);
 			this.chkResetLabelsOnImport.Name = "chkResetLabelsOnImport";
-			this.chkResetLabelsOnImport.Size = new System.Drawing.Size(360, 17);
+			this.chkResetLabelsOnImport.Size = new System.Drawing.Size(369, 17);
 			this.chkResetLabelsOnImport.TabIndex = 2;
-			this.chkResetLabelsOnImport.Text = "Reset workspace labels to their default state before importing DBG files";
+			this.chkResetLabelsOnImport.Text = "Reset workspace labels to their default state before importing symbol files";
 			this.chkResetLabelsOnImport.UseVisualStyleBackColor = true;
 			// 
-			// chkAutoLoadDbgFiles
+			// chkAutoLoadFiles
 			// 
-			this.chkAutoLoadDbgFiles.AutoSize = true;
-			this.chkAutoLoadDbgFiles.Location = new System.Drawing.Point(3, 3);
-			this.chkAutoLoadDbgFiles.Name = "chkAutoLoadDbgFiles";
-			this.chkAutoLoadDbgFiles.Size = new System.Drawing.Size(354, 17);
-			this.chkAutoLoadDbgFiles.TabIndex = 3;
-			this.chkAutoLoadDbgFiles.Text = "Automatically load DBG files when debugger opens or on power cycle";
-			this.chkAutoLoadDbgFiles.UseVisualStyleBackColor = true;
+			this.chkAutoLoadFiles.AutoSize = true;
+			this.chkAutoLoadFiles.Location = new System.Drawing.Point(3, 3);
+			this.chkAutoLoadFiles.Name = "chkAutoLoadFiles";
+			this.chkAutoLoadFiles.Size = new System.Drawing.Size(433, 17);
+			this.chkAutoLoadFiles.TabIndex = 3;
+			this.chkAutoLoadFiles.Text = "Automatically load DBG/MSL debug symbols when debugger opens or on power cycle";
+			this.chkAutoLoadFiles.UseVisualStyleBackColor = true;
 			// 
 			// frmIntegrationSettings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(419, 225);
+			this.ClientSize = new System.Drawing.Size(463, 225);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "frmIntegrationSettings";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -286,6 +286,6 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 		private System.Windows.Forms.CheckBox chkSpcComments;
 		private System.Windows.Forms.CheckBox chkSpcRam;
-		private System.Windows.Forms.CheckBox chkAutoLoadDbgFiles;
+		private System.Windows.Forms.CheckBox chkAutoLoadFiles;
 	}
 }

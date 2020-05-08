@@ -103,15 +103,35 @@ namespace Mesen.GUI.Debugger.Workspace
 				LabelManager.SetLabels(_workspace.SpcLabels);
 				LabelManager.SetLabels(_workspace.NecDspLabels);
 				LabelManager.SetDefaultLabels();
-
-				ImportDbgFile();
+				
+				AutoImportSymbols();
 			}
-			
+
 			//Send breakpoints & labels to emulation core (even if the same game is running)
 			LabelManager.RefreshLabels();
 			BreakpointManager.SetBreakpoints(_workspace.Breakpoints);
 
 			return _workspace;
+		}
+
+		public static void AutoImportSymbols()
+		{
+			if(ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
+				RomInfo romInfo = EmuApi.GetRomInfo();
+				string romName = romInfo.GetRomName();
+
+				string romFolder = ((ResourcePath)romInfo.RomPath).Folder;
+				string dbgPath = Path.Combine(romFolder, romName + ".dbg");
+				string mslPath = Path.Combine(romFolder, romName + ".msl");
+				string symPath = Path.Combine(romFolder, romName + ".sym");
+				if(File.Exists(dbgPath)) {
+					ImportDbgFile(dbgPath, true);
+				} else if(File.Exists(mslPath)) {
+					ImportMslFile(mslPath, true);
+				} else if(File.Exists(symPath)) {
+					ImportSymFile(symPath, true);
+				}
+			}
 		}
 
 		public static void ImportMslFile(string mslPath, bool silent = false)
@@ -132,24 +152,14 @@ namespace Mesen.GUI.Debugger.Workspace
 			LabelManager.RefreshLabels();
 		}
 
-		public static void ImportDbgFile(string dbgPath = null)
+		public static void ImportDbgFile(string dbgPath, bool silent = false)
 		{
 			_symbolProvider = null;
 
-			if(dbgPath != null || ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
-				bool silent = dbgPath == null;
-				if(dbgPath == null) {
-					RomInfo romInfo = EmuApi.GetRomInfo();
-					dbgPath = Path.Combine(((ResourcePath)romInfo.RomPath).Folder, romInfo.GetRomName() + ".dbg");
-				}
-
-				if(File.Exists(dbgPath)) {
-					_symbolProvider = new DbgImporter();
-					(_symbolProvider as DbgImporter).Import(dbgPath, silent);
-					SymbolProviderChanged?.Invoke(_symbolProvider);
-					LabelManager.RefreshLabels();
-				}
-			}
+			_symbolProvider = new DbgImporter();
+			(_symbolProvider as DbgImporter).Import(dbgPath, silent);
+			SymbolProviderChanged?.Invoke(_symbolProvider);
+			LabelManager.RefreshLabels();
 
 			SymbolProviderChanged?.Invoke(_symbolProvider);
 		}

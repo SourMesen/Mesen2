@@ -20,7 +20,7 @@ namespace Mesen.GUI.Debugger
 
 			Entity = ConfigManager.Config.Debug.DbgIntegration;
 
-			AddBinding(nameof(DbgIntegrationConfig.AutoImport), chkAutoLoadDbgFiles);
+			AddBinding(nameof(DbgIntegrationConfig.AutoImport), chkAutoLoadFiles);
 			AddBinding(nameof(DbgIntegrationConfig.ResetLabelsOnImport), chkResetLabelsOnImport);
 
 			AddBinding(nameof(DbgIntegrationConfig.ImportCpuPrgRomLabels), chkCpuPrgRom);

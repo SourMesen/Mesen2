@@ -528,7 +528,7 @@ namespace Mesen.GUI.Debugger
 
 						bool isPowerCycle = e.Parameter.ToInt32() != 0;
 						if(!isPowerCycle) {
-							DebugWorkspaceManager.ImportDbgFile();
+							DebugWorkspaceManager.AutoImportSymbols();
 						}
 						LabelManager.RefreshLabels();
 						DebugApi.RefreshDisassembly(_cpuType);
