@@ -148,7 +148,14 @@ namespace Mesen.GUI.Debugger.Workspace
 			if(ConfigManager.Config.Debug.DbgIntegration.ResetLabelsOnImport) {
 				ResetLabels();
 			}
-			new WlaDxImporter().Import(symPath, silent);
+
+			string symContent = File.ReadAllText(symPath);
+			if(symContent.Contains("[labels]")) {
+				//Assume WLA-DX symbol files
+				new WlaDxImporter().Import(symPath, silent);
+			} else {
+				BassLabelFile.Import(symPath, silent);
+			}
 			LabelManager.RefreshLabels();
 		}
 

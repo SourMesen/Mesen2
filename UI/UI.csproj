@@ -298,6 +298,7 @@
     <Compile Include="Debugger\Controls\ctrlMemoryType.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Debugger\Labels\BassLabelFile.cs" />
     <Compile Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -396,7 +397,7 @@
       <DependentUpon>frmEditLabel.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Labels\LabelManager.cs" />
-    <Compile Include="Debugger\MslLabelFile.cs" />
+    <Compile Include="Debugger\Labels\MslLabelFile.cs" />
     <Compile Include="Debugger\PpuViewer\ctrlImagePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
