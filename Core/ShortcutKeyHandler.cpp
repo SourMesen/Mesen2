@@ -91,11 +91,12 @@ bool ShortcutKeyHandler::DetectKeyRelease(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::ProcessRunSingleFrame()
 {
-	shared_ptr<EmuSettings> settings = _console->GetSettings();
-	if(!_runSingleFrameRepeatTimer) {
-		_runSingleFrameRepeatTimer.reset(new Timer());
+	shared_ptr<Timer> timer = _runSingleFrameRepeatTimer;
+	if(!timer) {
+		timer.reset(new Timer());
+		_runSingleFrameRepeatTimer = timer;
 	}
-	_runSingleFrameRepeatTimer->Reset();
+	timer->Reset();
 
 	_console->PauseOnNextFrame();
 }
@@ -223,8 +224,9 @@ void ShortcutKeyHandler::ProcessKeys()
 		_lastPressedKeys = _pressedKeys;
 	}
 
-	if(_runSingleFrameRepeatTimer) {
-		double elapsedMs = _runSingleFrameRepeatTimer->GetElapsedMS();
+	shared_ptr<Timer> timer = _runSingleFrameRepeatTimer;
+	if(timer) {
+		double elapsedMs = timer->GetElapsedMS();
 		if((_repeatStarted && elapsedMs >= 50) || (!_repeatStarted && elapsedMs >= 500)) {
 			//Over 500ms has elapsed since the key was first pressed, or over 50ms since repeat mode started (20fps)
 			//In this case, run another frame and pause again.

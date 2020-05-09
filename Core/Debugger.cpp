@@ -332,6 +332,7 @@ void Debugger::Run()
 
 void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 {
+	DebugBreakHelper helper(this);
 	StepRequest step;
 	IDebugger *debugger = nullptr;
 
