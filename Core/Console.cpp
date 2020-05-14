@@ -49,6 +49,7 @@ Console::Console()
 	_stopFlag = false;
 	_isRunAheadFrame = false;
 	_lockCounter = 0;
+	_threadPaused = false;
 }
 
 Console::~Console()
@@ -144,6 +145,11 @@ void Console::Run()
 		if(_paused && !_stopFlag && !_debugger) {
 			WaitForPauseEnd();
 		}		
+
+		if(_memoryManager->GetMasterClock() == 0) {
+			//After a reset or power cycle, run the PPU/etc ahead of the CPU (simulates delay CPU takes to get out of reset)
+			_memoryManager->IncMasterClockStartup();
+		}
 	}
 
 	_movieManager->Stop();
@@ -339,8 +345,6 @@ void Console::Reset()
 		debugger->SuspendDebugger(true);
 	}
 
-	_memoryManager->IncMasterClockStartup();
-
 	_runLock.Release(); 
 	_lockCounter--;
 }
@@ -357,8 +361,6 @@ void Console::ReloadRom(bool forPowerCycle)
 		RomInfo info = cart->GetRomInfo();
 		Lock();
 		LoadRom(info.RomFile, info.PatchFile, false, forPowerCycle);
-
-		_memoryManager->IncMasterClockStartup();
 		Unlock();
 	}
 }
@@ -609,14 +611,28 @@ void Console::Unlock()
 	_lockCounter--;
 }
 
+bool Console::IsThreadPaused()
+{
+	return !_emuThread || _threadPaused;
+}
+
 void Console::WaitForLock()
 {
 	if(_lockCounter > 0) {
 		//Need to temporarely pause the emu (to save/load a state, etc.)
 		_runLock.Release();
 
+		_threadPaused = true;
+
 		//Spin wait until we are allowed to start again
 		while(_lockCounter > 0) {}
+
+		shared_ptr<Debugger> debugger = _debugger;
+		if(debugger) {
+			while(debugger->HasBreakRequest()) {}
+		}
+
+		_threadPaused = false;
 
 		_runLock.Acquire();
 	}

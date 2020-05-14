@@ -87,7 +87,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 
 	_step.reset(new StepRequest());
 
-	_executionStopped = false;
+	_executionStopped = true;
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
@@ -99,6 +99,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	if(_console->IsPaused()) {
 		Step(CpuType::Cpu, 1, StepType::Step);
 	}
+	_executionStopped = false;
 }
 
 Debugger::~Debugger()
@@ -378,7 +379,12 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 
 bool Debugger::IsExecutionStopped()
 {
-	return _executionStopped;
+	return _executionStopped || _console->IsThreadPaused();
+}
+
+bool Debugger::HasBreakRequest()
+{
+	return _breakRequestCount > 0;
 }
 
 void Debugger::BreakRequest(bool release)

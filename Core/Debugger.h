@@ -111,6 +111,7 @@ public:
 	void Step(CpuType cpuType, int32_t stepCount, StepType type);
 	bool IsExecutionStopped();
 
+	bool HasBreakRequest();
 	void BreakRequest(bool release);
 	void SuspendDebugger(bool release);
 

@@ -78,6 +78,7 @@ private:
 	atomic<bool> _stopFlag;
 	atomic<bool> _paused;
 	atomic<bool> _pauseOnNextFrame;
+	atomic<bool> _threadPaused;
 
 	ConsoleRegion _region;
 	uint32_t _masterClockRate;
@@ -130,6 +131,7 @@ public:
 	ConsoleLock AcquireLock();
 	void Lock();
 	void Unlock();
+	bool IsThreadPaused();
 
 	void Serialize(ostream &out, int compressionLevel = 1);
 	void Deserialize(istream &in, uint32_t fileFormatVersion, bool compressed = true);
