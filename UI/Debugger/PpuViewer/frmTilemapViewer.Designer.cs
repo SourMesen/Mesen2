@@ -76,15 +76,17 @@
 			this.mnuClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuView = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshSpeed = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshLow = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshNormal = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuAutoRefreshHigh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshSpeed = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshLow = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshNormal = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuAutoRefreshHigh = new System.Windows.Forms.ToolStripMenuItem();
+			this.lblTileAddress = new System.Windows.Forms.Label();
+			this.txtTileAddress = new System.Windows.Forms.TextBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.grpTileInfo.SuspendLayout();
@@ -146,7 +148,7 @@
 			// ctrlScanlineCycleSelect
 			// 
 			this.ctrlScanlineCycleSelect.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.ctrlScanlineCycleSelect.Location = new System.Drawing.Point(0, 532);
+			this.ctrlScanlineCycleSelect.Location = new System.Drawing.Point(0, 563);
 			this.ctrlScanlineCycleSelect.Name = "ctrlScanlineCycleSelect";
 			this.ctrlScanlineCycleSelect.Size = new System.Drawing.Size(676, 28);
 			this.ctrlScanlineCycleSelect.TabIndex = 5;
@@ -165,7 +167,7 @@
 			this.tableLayoutPanel1.RowCount = 2;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 508);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 539);
 			this.tableLayoutPanel1.TabIndex = 7;
 			// 
 			// tableLayoutPanel2
@@ -186,7 +188,7 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(147, 502);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(147, 533);
 			this.tableLayoutPanel2.TabIndex = 7;
 			// 
 			// chkShowScrollOverlay
@@ -217,7 +219,7 @@
 			this.grpTileInfo.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpTileInfo.Location = new System.Drawing.Point(3, 203);
 			this.grpTileInfo.Name = "grpTileInfo";
-			this.grpTileInfo.Size = new System.Drawing.Size(141, 268);
+			this.grpTileInfo.Size = new System.Drawing.Size(141, 273);
 			this.grpTileInfo.TabIndex = 2;
 			this.grpTileInfo.TabStop = false;
 			this.grpTileInfo.Text = "Tile Information";
@@ -227,7 +229,7 @@
 			this.tableLayoutPanel4.ColumnCount = 2;
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel4.Controls.Add(this.txtPalette, 1, 7);
+			this.tableLayoutPanel4.Controls.Add(this.txtPalette, 1, 8);
 			this.tableLayoutPanel4.Controls.Add(this.txtTileNumber, 1, 6);
 			this.tableLayoutPanel4.Controls.Add(this.txtAddress, 1, 3);
 			this.tableLayoutPanel4.Controls.Add(this.txtPosition, 1, 1);
@@ -236,34 +238,37 @@
 			this.tableLayoutPanel4.Controls.Add(this.lblAddress, 0, 3);
 			this.tableLayoutPanel4.Controls.Add(this.lblValue, 0, 4);
 			this.tableLayoutPanel4.Controls.Add(this.lblTileNumber, 0, 6);
-			this.tableLayoutPanel4.Controls.Add(this.lblPalette, 0, 7);
-			this.tableLayoutPanel4.Controls.Add(this.chkPriorityFlag, 0, 8);
-			this.tableLayoutPanel4.Controls.Add(this.chkHorizontalMirror, 0, 9);
-			this.tableLayoutPanel4.Controls.Add(this.chkVerticalMirror, 0, 10);
+			this.tableLayoutPanel4.Controls.Add(this.lblPalette, 0, 8);
+			this.tableLayoutPanel4.Controls.Add(this.chkPriorityFlag, 0, 9);
+			this.tableLayoutPanel4.Controls.Add(this.chkHorizontalMirror, 0, 10);
+			this.tableLayoutPanel4.Controls.Add(this.chkVerticalMirror, 0, 11);
 			this.tableLayoutPanel4.Controls.Add(this.txtMapNumber, 1, 0);
 			this.tableLayoutPanel4.Controls.Add(this.txtValue, 1, 4);
+			this.tableLayoutPanel4.Controls.Add(this.lblTileAddress, 0, 7);
+			this.tableLayoutPanel4.Controls.Add(this.txtTileAddress, 1, 7);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-			this.tableLayoutPanel4.RowCount = 12;
+			this.tableLayoutPanel4.RowCount = 13;
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(135, 249);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(135, 254);
 			this.tableLayoutPanel4.TabIndex = 0;
 			// 
 			// txtPalette
 			// 
-			this.txtPalette.Location = new System.Drawing.Point(76, 153);
+			this.txtPalette.Location = new System.Drawing.Point(77, 179);
 			this.txtPalette.Name = "txtPalette";
 			this.txtPalette.ReadOnly = true;
 			this.txtPalette.Size = new System.Drawing.Size(30, 20);
@@ -271,7 +276,7 @@
 			// 
 			// txtTileNumber
 			// 
-			this.txtTileNumber.Location = new System.Drawing.Point(76, 127);
+			this.txtTileNumber.Location = new System.Drawing.Point(77, 127);
 			this.txtTileNumber.Name = "txtTileNumber";
 			this.txtTileNumber.ReadOnly = true;
 			this.txtTileNumber.Size = new System.Drawing.Size(42, 20);
@@ -279,7 +284,7 @@
 			// 
 			// txtAddress
 			// 
-			this.txtAddress.Location = new System.Drawing.Point(76, 65);
+			this.txtAddress.Location = new System.Drawing.Point(77, 65);
 			this.txtAddress.Name = "txtAddress";
 			this.txtAddress.ReadOnly = true;
 			this.txtAddress.Size = new System.Drawing.Size(43, 20);
@@ -287,7 +292,7 @@
 			// 
 			// txtPosition
 			// 
-			this.txtPosition.Location = new System.Drawing.Point(76, 29);
+			this.txtPosition.Location = new System.Drawing.Point(77, 29);
 			this.txtPosition.Name = "txtPosition";
 			this.txtPosition.ReadOnly = true;
 			this.txtPosition.Size = new System.Drawing.Size(52, 20);
@@ -347,7 +352,7 @@
 			// 
 			this.lblPalette.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblPalette.AutoSize = true;
-			this.lblPalette.Location = new System.Drawing.Point(3, 156);
+			this.lblPalette.Location = new System.Drawing.Point(3, 182);
 			this.lblPalette.Name = "lblPalette";
 			this.lblPalette.Size = new System.Drawing.Size(43, 13);
 			this.lblPalette.TabIndex = 5;
@@ -358,7 +363,8 @@
 			this.chkPriorityFlag.AutoCheck = false;
 			this.chkPriorityFlag.AutoSize = true;
 			this.tableLayoutPanel4.SetColumnSpan(this.chkPriorityFlag, 2);
-			this.chkPriorityFlag.Location = new System.Drawing.Point(3, 179);
+			this.chkPriorityFlag.Location = new System.Drawing.Point(3, 202);
+			this.chkPriorityFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.chkPriorityFlag.Name = "chkPriorityFlag";
 			this.chkPriorityFlag.Size = new System.Drawing.Size(57, 17);
 			this.chkPriorityFlag.TabIndex = 6;
@@ -370,7 +376,8 @@
 			this.chkHorizontalMirror.AutoCheck = false;
 			this.chkHorizontalMirror.AutoSize = true;
 			this.tableLayoutPanel4.SetColumnSpan(this.chkHorizontalMirror, 2);
-			this.chkHorizontalMirror.Location = new System.Drawing.Point(3, 202);
+			this.chkHorizontalMirror.Location = new System.Drawing.Point(3, 219);
+			this.chkHorizontalMirror.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.chkHorizontalMirror.Name = "chkHorizontalMirror";
 			this.chkHorizontalMirror.Size = new System.Drawing.Size(102, 17);
 			this.chkHorizontalMirror.TabIndex = 8;
@@ -382,7 +389,8 @@
 			this.chkVerticalMirror.AutoCheck = false;
 			this.chkVerticalMirror.AutoSize = true;
 			this.tableLayoutPanel4.SetColumnSpan(this.chkVerticalMirror, 2);
-			this.chkVerticalMirror.Location = new System.Drawing.Point(3, 225);
+			this.chkVerticalMirror.Location = new System.Drawing.Point(3, 236);
+			this.chkVerticalMirror.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.chkVerticalMirror.Name = "chkVerticalMirror";
 			this.chkVerticalMirror.Size = new System.Drawing.Size(90, 17);
 			this.chkVerticalMirror.TabIndex = 7;
@@ -391,7 +399,7 @@
 			// 
 			// txtMapNumber
 			// 
-			this.txtMapNumber.Location = new System.Drawing.Point(76, 3);
+			this.txtMapNumber.Location = new System.Drawing.Point(77, 3);
 			this.txtMapNumber.Name = "txtMapNumber";
 			this.txtMapNumber.ReadOnly = true;
 			this.txtMapNumber.Size = new System.Drawing.Size(30, 20);
@@ -399,7 +407,7 @@
 			// 
 			// txtValue
 			// 
-			this.txtValue.Location = new System.Drawing.Point(76, 91);
+			this.txtValue.Location = new System.Drawing.Point(77, 91);
 			this.txtValue.Name = "txtValue";
 			this.txtValue.ReadOnly = true;
 			this.txtValue.Size = new System.Drawing.Size(43, 20);
@@ -579,7 +587,7 @@
 			this.ctrlImagePanel.Overlay = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.Selection = new System.Drawing.Rectangle(0, 0, 0, 0);
 			this.ctrlImagePanel.SelectionWrapPosition = 0;
-			this.ctrlImagePanel.Size = new System.Drawing.Size(517, 474);
+			this.ctrlImagePanel.Size = new System.Drawing.Size(517, 505);
 			this.ctrlImagePanel.TabIndex = 9;
 			this.ctrlImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ctrlImagePanel_MouseClick);
 			// 
@@ -656,6 +664,35 @@
 			this.mnuAutoRefresh.Text = "Auto-refresh";
 			this.mnuAutoRefresh.CheckedChanged += new System.EventHandler(this.mnuAutoRefresh_CheckedChanged);
 			// 
+			// mnuAutoRefreshSpeed
+			// 
+			this.mnuAutoRefreshSpeed.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuAutoRefreshLow,
+            this.mnuAutoRefreshNormal,
+            this.mnuAutoRefreshHigh});
+			this.mnuAutoRefreshSpeed.Image = global::Mesen.GUI.Properties.Resources.Speed;
+			this.mnuAutoRefreshSpeed.Name = "mnuAutoRefreshSpeed";
+			this.mnuAutoRefreshSpeed.Size = new System.Drawing.Size(176, 22);
+			this.mnuAutoRefreshSpeed.Text = "Auto-refresh Speed";
+			// 
+			// mnuAutoRefreshLow
+			// 
+			this.mnuAutoRefreshLow.Name = "mnuAutoRefreshLow";
+			this.mnuAutoRefreshLow.Size = new System.Drawing.Size(159, 22);
+			this.mnuAutoRefreshLow.Text = "Low (15 FPS)";
+			// 
+			// mnuAutoRefreshNormal
+			// 
+			this.mnuAutoRefreshNormal.Name = "mnuAutoRefreshNormal";
+			this.mnuAutoRefreshNormal.Size = new System.Drawing.Size(159, 22);
+			this.mnuAutoRefreshNormal.Text = "Normal (30 FPS)";
+			// 
+			// mnuAutoRefreshHigh
+			// 
+			this.mnuAutoRefreshHigh.Name = "mnuAutoRefreshHigh";
+			this.mnuAutoRefreshHigh.Size = new System.Drawing.Size(159, 22);
+			this.mnuAutoRefreshHigh.Text = "High (60 FPS)";
+			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
@@ -688,40 +725,29 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
-			// mnuAutoRefreshSpeed
+			// lblTileAddress
 			// 
-			this.mnuAutoRefreshSpeed.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuAutoRefreshLow,
-            this.mnuAutoRefreshNormal,
-            this.mnuAutoRefreshHigh});
-			this.mnuAutoRefreshSpeed.Image = global::Mesen.GUI.Properties.Resources.Speed;
-			this.mnuAutoRefreshSpeed.Name = "mnuAutoRefreshSpeed";
-			this.mnuAutoRefreshSpeed.Size = new System.Drawing.Size(176, 22);
-			this.mnuAutoRefreshSpeed.Text = "Auto-refresh Speed";
+			this.lblTileAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblTileAddress.AutoSize = true;
+			this.lblTileAddress.Location = new System.Drawing.Point(3, 156);
+			this.lblTileAddress.Name = "lblTileAddress";
+			this.lblTileAddress.Size = new System.Drawing.Size(68, 13);
+			this.lblTileAddress.TabIndex = 15;
+			this.lblTileAddress.Text = "Tile Address:";
 			// 
-			// mnuAutoRefreshLow
+			// txtTileAddress
 			// 
-			this.mnuAutoRefreshLow.Name = "mnuAutoRefreshLow";
-			this.mnuAutoRefreshLow.Size = new System.Drawing.Size(159, 22);
-			this.mnuAutoRefreshLow.Text = "Low (15 FPS)";
-			// 
-			// mnuAutoRefreshNormal
-			// 
-			this.mnuAutoRefreshNormal.Name = "mnuAutoRefreshNormal";
-			this.mnuAutoRefreshNormal.Size = new System.Drawing.Size(159, 22);
-			this.mnuAutoRefreshNormal.Text = "Normal (30 FPS)";
-			// 
-			// mnuAutoRefreshHigh
-			// 
-			this.mnuAutoRefreshHigh.Name = "mnuAutoRefreshHigh";
-			this.mnuAutoRefreshHigh.Size = new System.Drawing.Size(159, 22);
-			this.mnuAutoRefreshHigh.Text = "High (60 FPS)";
+			this.txtTileAddress.Location = new System.Drawing.Point(77, 153);
+			this.txtTileAddress.Name = "txtTileAddress";
+			this.txtTileAddress.ReadOnly = true;
+			this.txtTileAddress.Size = new System.Drawing.Size(42, 20);
+			this.txtTileAddress.TabIndex = 16;
 			// 
 			// frmTilemapViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(676, 560);
+			this.ClientSize = new System.Drawing.Size(676, 591);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.ctrlScanlineCycleSelect);
 			this.Controls.Add(this.ctrlMesenMenuStrip1);
@@ -808,5 +834,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuAutoRefreshLow;
 		private System.Windows.Forms.ToolStripMenuItem mnuAutoRefreshNormal;
 		private System.Windows.Forms.ToolStripMenuItem mnuAutoRefreshHigh;
-	}
+	  private System.Windows.Forms.Label lblTileAddress;
+	  private System.Windows.Forms.TextBox txtTileAddress;
+   }
 }

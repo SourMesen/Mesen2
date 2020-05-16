@@ -231,6 +231,7 @@ namespace Mesen.GUI.Debugger
 				txtAddress.Text = address.ToString("X4");
 				txtValue.Text = value.ToString("X4");
 				txtTileNumber.Text = (value & 0xFF).ToString();
+				txtTileAddress.Text = ((value & 0xFF) * 128).ToString("X4");
 
 				txtPalette.Text = "0";
 				chkPriorityFlag.Checked = false;
@@ -258,7 +259,12 @@ namespace Mesen.GUI.Debugger
 				txtPosition.Text = (column & 0x1F).ToString() + ", " + (row & 0x1F).ToString();
 				txtAddress.Text = address.ToString("X4");
 				txtValue.Text = value.ToString("X4");
-				txtTileNumber.Text = (value & 0x3FF).ToString();
+
+				int bpp = _layerBpp[_state.BgMode, _options.Layer];
+				int tileNumber = (value & 0x3FF);
+				txtTileNumber.Text = tileNumber.ToString();
+				txtTileAddress.Text = ((layer.ChrAddress << 1) + (tileNumber * bpp * 8)).ToString("X4");
+
 				txtPalette.Text = ((value >> 10) & 0x07).ToString();
 				chkPriorityFlag.Checked = (value & 0x2000) != 0;
 				chkHorizontalMirror.Checked = (value & 0x4000) != 0;
@@ -269,7 +275,7 @@ namespace Mesen.GUI.Debugger
 				txtMapAddress.Text = (layer.TilemapAddress << 1).ToString("X4");
 				txtTilesetAddress.Text = (layer.ChrAddress << 1).ToString("X4");
 				txtTileSize.Text = (IsLargeTileWidth ? "16" : "8") + "x" + (IsLargeTileHeight ? "16" : "8");
-				txtBitDepth.Text = _layerBpp[_state.BgMode, _options.Layer].ToString();
+				txtBitDepth.Text = bpp.ToString();
 			}
 		}
 
