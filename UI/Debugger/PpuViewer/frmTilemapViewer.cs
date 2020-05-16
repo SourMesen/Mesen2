@@ -141,7 +141,6 @@ namespace Mesen.GUI.Debugger
 
 			LayerConfig layer = _state.Layers[_options.Layer];
 			bool largeTileWidth = layer.LargeTiles || _state.BgMode == 5 || _state.BgMode == 6;
-			bool largeTileHeight = layer.LargeTiles;
 
 			int width = 256;
 			if(layer.DoubleWidth) {
@@ -227,7 +226,7 @@ namespace Mesen.GUI.Debugger
 				//Selected tile
 				txtMapNumber.Text = "0";
 				txtPosition.Text = _selectedColumn.ToString() + ", " + _selectedRow.ToString();
-				int address = _selectedRow * 128 + _selectedColumn;
+				int address = _selectedRow * 256 + _selectedColumn * 2;
 				int value = _vram[address] | (_vram[address + 1] << 8);
 				txtAddress.Text = address.ToString("X4");
 				txtValue.Text = value.ToString("X4");
