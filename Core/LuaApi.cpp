@@ -88,6 +88,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "rewind", LuaApi::Rewind },
 		{ "takeScreenshot", LuaApi::TakeScreenshot },
 		{ "isKeyPressed", LuaApi::IsKeyPressed },
+		{ "getInput", LuaApi::GetInput },
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
 		{ "getState", LuaApi::GetState },
@@ -587,7 +588,7 @@ int LuaApi::GetInput(lua_State *lua)
 	LuaCallHelper l(lua);
 	int port = l.ReadInteger();
 	checkparams();
-	errorCond(port < 0 || port > 3, "Invalid port number - must be between 0 to 3");
+	errorCond(port < 0 || port > 4, "Invalid port number - must be between 0 to 4");
 
 	shared_ptr<SnesController> controller = std::dynamic_pointer_cast<SnesController>(_console->GetControlManager()->GetControlDevice(port));
 	errorCond(controller == nullptr, "Input port must be connected to a standard controller");
