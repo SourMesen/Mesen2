@@ -677,7 +677,7 @@ extern "C" {
 	RETRO_API size_t retro_get_memory_size(unsigned id)
 	{
 		switch(id) {
-			case RETRO_MEMORY_SAVE_RAM: _console->GetCartridge()->DebugGetSaveRamSize(); break;
+			case RETRO_MEMORY_SAVE_RAM: return _console->GetCartridge()->DebugGetSaveRamSize(); break;
 			case RETRO_MEMORY_SYSTEM_RAM: return MemoryManager::WorkRamSize;
 		}
 		return 0;
