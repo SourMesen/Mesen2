@@ -6,6 +6,7 @@
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "NotificationManager.h"
+#include "DefaultVideoFilter.h"
 
 PpuTools::PpuTools(Console *console, Ppu *ppu)
 {
@@ -39,15 +40,6 @@ uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, 
 	return color;
 }
 
-uint32_t PpuTools::ToArgb(uint16_t color)
-{
-	uint8_t b = (color >> 10) << 3;
-	uint8_t g = ((color >> 5) & 0x1F) << 3;
-	uint8_t r = (color & 0x1F) << 3;
-
-	return 0xFF000000 | (r << 16) | (g << 8) | b;
-}
-
 void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
 {
 	uint8_t alpha = input[3] + 1;
@@ -71,7 +63,7 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t 
 		uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + colorIndex) * 2;
 		paletteColor = cgram[paletteRamOffset] | (cgram[paletteRamOffset + 1] << 8);
 	}
-	return ToArgb(paletteColor);
+	return DefaultVideoFilter::ToArgb(paletteColor);
 }
 
 void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer)
@@ -98,7 +90,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 	
 	uint16_t bgColor = (cgram[1] << 8) | cgram[0];
 	for(uint32_t i = 0; i < outputSize / sizeof(uint32_t); i++) {
-		outBuffer[i] = ToArgb(bgColor);
+		outBuffer[i] = DefaultVideoFilter::ToArgb(bgColor);
 	}
 
 	int rowCount = (int)std::ceil((double)tileCount / options.Width);
@@ -132,7 +124,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 						if(color != 0) {
 							uint32_t rgbColor;
 							if(directColor) {
-								rgbColor = ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
+								rgbColor = DefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
 								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
 							}
@@ -170,7 +162,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vr
 
 	LayerConfig layer = state.Layers[options.Layer];
 
-	uint32_t bgColor = ToArgb((cgram[1] << 8) | cgram[0]);
+	uint32_t bgColor = DefaultVideoFilter::ToArgb((cgram[1] << 8) | cgram[0]);
 	std::fill(outBuffer, outBuffer + 1024*1024, bgColor);
 
 	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
@@ -196,7 +188,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vr
 						if(color != 0) {
 							uint32_t rgbColor;
 							if(directColor) {
-								rgbColor = ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
+								rgbColor = DefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
 								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
 							}
