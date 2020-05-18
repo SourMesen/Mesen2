@@ -91,6 +91,8 @@ extern "C"
 	DllExport void __stdcall GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t *oamRam, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetSpritePreview(options, state, vram, oamRam, cgram, buffer); }
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle); }
 
+	DllExport void __stdcall GetGameboyTilemap(uint8_t* vram, uint16_t offset, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboyTilemap(vram, offset, buffer); }
+
 	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount); }
 	DllExport uint32_t __stdcall GetDebugEventCount(EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->GetEventCount(options); }
 	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, options); }

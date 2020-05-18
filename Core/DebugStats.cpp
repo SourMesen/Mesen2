@@ -2,7 +2,6 @@
 #include "DebugStats.h"
 #include "Console.h"
 #include "SoundMixer.h"
-#include "Ppu.h"
 #include "EmuSettings.h"
 #include "DebugHud.h"
 #include "IAudioDevice.h"
@@ -16,7 +15,7 @@ void DebugStats::DisplayStats(Console *console, double lastFrameTime)
 	_frameDurations[_frameDurationIndex] = lastFrameTime;
 	_frameDurationIndex = (_frameDurationIndex + 1) % 60;
 
-	int startFrame = console->GetPpu()->GetFrameCount();
+	int startFrame = console->GetFrameCount();
 
 	hud->DrawRectangle(8, 8, 115, 49, 0x40000000, true, 1, startFrame);
 	hud->DrawRectangle(8, 8, 115, 49, 0xFFFFFF, false, 1, startFrame);
@@ -50,7 +49,7 @@ void DebugStats::DisplayStats(Console *console, double lastFrameTime)
 	ss << "Last Frame: " << std::fixed << std::setprecision(2) << lastFrameTime << " ms";
 	hud->DrawString(134, 30, ss.str(), 0xFFFFFF, 0xFF000000, 1, startFrame);
 
-	if(console->GetPpu()->GetFrameCount() > 60) {
+	if(console->GetFrameCount() > 60) {
 		_lastFrameMin = std::min(lastFrameTime, _lastFrameMin);
 		_lastFrameMax = std::max(lastFrameTime, _lastFrameMax);
 	} else {

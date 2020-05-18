@@ -4,11 +4,12 @@
 
 enum class EmulationFlags
 {
-	Turbo = 1,
-	Rewind = 2,
-	TurboOrRewind = 3,
-	MaximumSpeed = 4,
-	InBackground = 8
+	Turbo = 0x01,
+	Rewind = 0x02,
+	TurboOrRewind = 0x03,
+	MaximumSpeed = 0x04,
+	InBackground = 0x08,
+	GameboyMode = 0x10,
 };
 
 enum class ScaleFilterType
@@ -493,6 +494,7 @@ enum class DebuggerFlags : uint32_t
 	
 	AutoResetCdl = 0x4000,
 
+	GbDebuggerEnabled = 0x02000000,
 	Cx4DebuggerEnabled = 0x04000000,
 	NecDspDebuggerEnabled = 0x08000000,
 	GsuDebuggerEnabled = 0x10000000,

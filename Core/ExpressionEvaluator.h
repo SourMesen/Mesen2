@@ -90,6 +90,14 @@ enum EvalValues : int64_t
 	RomBR = 20000000141,
 	RamBR = 20000000142,
 
+	RegB = 20000000160,
+	RegC = 20000000161,
+	RegD = 20000000162,
+	RegE = 20000000163,
+	RegF = 20000000164,
+	RegH = 20000000165,
+	RegL = 20000000166,
+
 	FirstLabelIndex = 20000002000,
 };
 
@@ -142,6 +150,7 @@ private:
 	int64_t ProcessCpuSpcTokens(string token);
 	int64_t ProcessSharedTokens(string token);
 	int64_t ProcessGsuTokens(string token);
+	int64_t ProcessGameboyTokens(string token);
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);

@@ -136,17 +136,17 @@ inline int SPC_DSP::interpolate_cubic(voice_t const* v)
 {
 	int const* in = &v->buf[(v->interp_pos >> 12) + v->buf_pos];
 
-	float v0 = in[0] / 32768.0;
-	float v1 = in[1] / 32768.0;
-	float v2 = in[2] / 32768.0;
-	float v3 = in[3] / 32768.0;
+	float v0 = in[0] / 32768.0f;
+	float v1 = in[1] / 32768.0f;
+	float v2 = in[2] / 32768.0f;
+	float v3 = in[3] / 32768.0f;
 
 	float a = (v3 - v2) - (v0 - v1);
 	float b = (v0 - v1) - a;
 	float c = v2 - v0;
 	float d = v1;
 	
-	float ratio = (double)(v->interp_pos & 0xFFF) / 0x1000;
+	float ratio = (float)(v->interp_pos & 0xFFF) / 0x1000;
 
 	return (int)((d + ratio * (c + ratio * (b + ratio * a))) * 32768);
 }

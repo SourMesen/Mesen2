@@ -638,7 +638,7 @@
 		<Message ID="FilterAvi">Avi files (*.avi)|*.avi|All Files (*.*)|*.*</Message>
 		<Message ID="FilterGif">GIF files (*.gif)|*.gif|All Files (*.*)|*.*</Message>
 		<Message ID="FilterPalette">Palette Files (*.pal)|*.pal|All Files (*.*)|*.*</Message>
-		<Message ID="FilterRom">All supported formats (*.sfc, *.bs, *.spc, *.zip, *.7z)|*.SFC;*.SMC;*.SWC;*.FIG;*.ZIP;*.7Z;*.SPC;*.BS|SNES Roms (*.sfc)|*.SFC;*.SMC;*.SWC;*.FIG;*.BS|SPC Sound Files (*.spc)|*.SPC|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
+		<Message ID="FilterRom">All supported formats (*.sfc, *.gb, *.bs, *.spc, *.zip, *.7z)|*.SFC;*.SMC;*.SWC;*.FIG;*.ZIP;*.7Z;*.SPC;*.BS;*.GB|SNES Roms (*.sfc)|*.SFC;*.SMC;*.SWC;*.FIG;*.BS|Gameboy Roms (*.gb)|*.GB|SPC Sound Files (*.spc)|*.SPC|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
 		<Message ID="FilterTest">Test files (*.mtp)|*.mtp|All (*.*)|*.*</Message>
 		<Message ID="FilterCheat">All supported formats (*.cht, *.xml)|*.cht;*.xml</Message>
 		<Message ID="FilterSavestate">Mesen-S Savestates (*.mss)|*.mss|All files (*.*)|*.*</Message>
@@ -956,6 +956,12 @@
 			<Value ID="Cx4DataRam">CX4 Data RAM</Value>
 			<Value ID="BsxPsRam">BS-X - PSRAM</Value>
 			<Value ID="BsxMemoryPack">BS-X - Memory Pack</Value>
+			<Value ID="GameboyMemory">GB - CPU Memory</Value>
+			<Value ID="GbPrgRom">GB - PRG ROM</Value>
+			<Value ID="GbWorkRam">GB - Work RAM</Value>
+			<Value ID="GbVideoRam">GB - Video RAM</Value>
+			<Value ID="GbCartRam">GB - Cart RAM</Value>
+			<Value ID="GbHighRam">GB - High RAM</Value>
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="TileFormat">

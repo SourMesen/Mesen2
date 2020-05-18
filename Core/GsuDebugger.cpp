@@ -59,7 +59,7 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				_debugger->GetState(debugState, true);
 				debugState.Gsu.R[15] = addr;
 
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gsu);
 				_traceLogger->Log(CpuType::Gsu, debugState, disInfo);
 			}
 		}

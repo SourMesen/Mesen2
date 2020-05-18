@@ -17,7 +17,7 @@ private:
 	HermiteResampler _resampler;
 
 	double GetTargetRateAdjustment();
-	void UpdateTargetSampleRate(uint32_t sampleRate);
+	void UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sampleRate);
 
 public:
 	SoundResampler(Console *console);
@@ -25,5 +25,5 @@ public:
 
 	double GetRateAdjustment();
 
-	uint32_t Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sampleRate, int16_t *outSamples);
+	uint32_t Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sourceRate, uint32_t sampleRate, int16_t *outSamples);
 };

@@ -4,7 +4,6 @@
 #include "DebugBreakHelper.h"
 #include "Debugger.h"
 #include "Console.h"
-#include "MemoryManager.h"
 #include "MemoryDumper.h"
 #include "DebugTypes.h"
 
@@ -13,7 +12,7 @@ static constexpr int32_t ResetFunctionIndex = -1;
 Profiler::Profiler(Debugger* debugger)
 {
 	_debugger = debugger;
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
+	_console = debugger->GetConsole().get();
 	InternalReset();
 }
 
@@ -46,7 +45,7 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 
 void Profiler::UpdateCycles()
 {
-	uint64_t masterClock = _memoryManager->GetMasterClock();
+	uint64_t masterClock = _console->GetMasterClock();
 	
 	ProfiledFunction& func = _functions[_currentFunction];
 	uint64_t clockGap = masterClock - _prevMasterClock;
@@ -94,7 +93,7 @@ void Profiler::Reset()
 
 void Profiler::InternalReset()
 {
-	_prevMasterClock = _memoryManager->GetMasterClock();
+	_prevMasterClock = _console->GetMasterClock();
 	_currentCycleCount = 0;
 	_currentFunction = ResetFunctionIndex;
 	_functionStack.clear();

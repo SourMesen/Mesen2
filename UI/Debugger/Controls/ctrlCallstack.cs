@@ -44,6 +44,7 @@ namespace Mesen.GUI.Debugger.Controls
 				case CpuType.Cpu: _programCounter = (uint)(state.Cpu.K << 16) | state.Cpu.PC;  break;
 				case CpuType.Sa1: _programCounter = (uint)(state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC;  break;
 				case CpuType.Spc: _programCounter = (uint)state.Spc.PC; break;
+				case CpuType.Gameboy: _programCounter = (uint)state.Gameboy.Cpu.PC; break;
 				default: throw new Exception("Invalid cpu type");
 			}
 

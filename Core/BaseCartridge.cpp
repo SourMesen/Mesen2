@@ -21,6 +21,7 @@
 #include "BsxMemoryPack.h"
 #include "FirmwareHelper.h"
 #include "SpcFileData.h"
+#include "Gameboy.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -62,6 +63,12 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 			if(!FirmwareHelper::LoadBsxFirmware(console, &cart->_prgRom, cart->_prgRomSize)) {
 				return nullptr;
 			}
+		} else if(FolderUtilities::GetExtension(romFile.GetFileName()) == ".gb") {
+			if(cart->LoadGameboy(romFile)) {
+				return cart;
+			} else {
+				return nullptr;
+			}			
 		} else {
 			cart->_prgRomSize = (uint32_t)romData.size();
 			if((cart->_prgRomSize & 0xFFF) != 0) {
@@ -329,6 +336,10 @@ void BaseCartridge::LoadBattery()
 	if(_coprocessor && _hasBattery) {
 		_coprocessor->LoadBattery();
 	}
+
+	if(_gameboy) {
+		_gameboy->LoadBattery();
+	}
 }
 
 void BaseCartridge::SaveBattery()
@@ -343,6 +354,10 @@ void BaseCartridge::SaveBattery()
 
 	if(_bsxMemPack) {
 		_bsxMemPack->SaveBattery();
+	}
+
+	if(_gameboy) {
+		_gameboy->SaveBattery();
 	}
 }
 
@@ -374,7 +389,11 @@ void BaseCartridge::Init(MemoryMappings &mm)
 	}
 
 	RegisterHandlers(mm);
-	InitCoprocessor();
+	
+	if(_coprocessorType != CoprocessorType::Gameboy) {
+		InitCoprocessor();
+	}
+
 	LoadBattery();
 }
 
@@ -555,7 +574,24 @@ void BaseCartridge::ApplyConfigOverrides()
 void BaseCartridge::LoadSpc()
 {
 	_spcData.reset(new SpcFileData(_prgRom));
-	
+	SetupCpuHalt();
+}
+
+bool BaseCartridge::LoadGameboy(VirtualFile &romFile)
+{
+	_gameboy.reset(Gameboy::Create(_console, romFile));
+	if(!_gameboy) {
+		return false;
+	}
+
+	_cartInfo = { };
+	_coprocessorType = CoprocessorType::Gameboy;
+	SetupCpuHalt();
+	return true;
+}
+
+void BaseCartridge::SetupCpuHalt()
+{
 	//Setup a fake LOROM rom that runs STP right away to disable the main CPU
 	_flags = CartFlags::LoRom;
 
@@ -563,13 +599,16 @@ void BaseCartridge::LoadSpc()
 	_prgRom = new uint8_t[0x8000];
 	_prgRomSize = 0x8000;
 	memset(_prgRom, 0, 0x8000);
-	
+
 	//Set reset vector to $8000
 	_prgRom[0x7FFC] = 0x00;
 	_prgRom[0x7FFD] = 0x80;
 
-	//STP instruction at $8000
-	_prgRom[0] = 0xDB;
+	//JML $008000 instruction at $8000
+	_prgRom[0] = 0x5C;
+	_prgRom[1] = 0x00;
+	_prgRom[2] = 0x80;
+	_prgRom[3] = 0x00;
 }
 
 void BaseCartridge::Serialize(Serializer &s)
@@ -580,6 +619,9 @@ void BaseCartridge::Serialize(Serializer &s)
 	}
 	if(_bsxMemPack) {
 		s.Stream(_bsxMemPack.get());
+	}
+	if(_gameboy) {
+		s.Stream(_gameboy.get());
 	}
 }
 
@@ -668,6 +710,7 @@ void BaseCartridge::DisplayCartInfo()
 			case CoprocessorType::ST010: coProcMessage += "ST010"; break;
 			case CoprocessorType::ST011: coProcMessage += "ST011"; break;
 			case CoprocessorType::ST018: coProcMessage += "ST018"; break;
+			case CoprocessorType::Gameboy: coProcMessage += "Game Boy"; break;
 		}
 		MessageManager::Log(coProcMessage);
 	}
@@ -722,6 +765,11 @@ BsxMemoryPack* BaseCartridge::GetBsxMemoryPack()
 Gsu* BaseCartridge::GetGsu()
 {
 	return _gsu;
+}
+
+Gameboy* BaseCartridge::GetGameboy()
+{
+	return _gameboy.get();
 }
 
 void BaseCartridge::RunCoprocessors()

@@ -20,7 +20,6 @@
 #include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
-#include "Profiler.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {
@@ -35,7 +34,6 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_codeDataLogger = debugger->GetCodeDataLogger().get();
 	_settings = debugger->GetConsole()->GetSettings().get();
 	_eventManager = debugger->GetEventManager().get();
-	_scriptManager = debugger->GetScriptManager().get();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -81,7 +79,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			DebugState debugState;
 			_debugger->GetState(debugState, true);
 
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
 			_traceLogger->Log(_cpuType, debugState, disInfo);
 		}
 
@@ -153,8 +151,6 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
-
-	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
 
 void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -172,8 +168,6 @@ void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
-
-	_scriptManager->ProcessMemoryOperation(addr, value, type);
 }
 
 void CpuDebugger::Run()

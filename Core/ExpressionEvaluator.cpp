@@ -71,18 +71,18 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 		}
 	} while(pos < len);
 
+	int64_t tokenValue = -1;
 	if(_cpuType == CpuType::Gsu) {
-		int64_t gsuToken = ProcessGsuTokens(token);
-		if(gsuToken != -1) {
-			output += std::to_string(gsuToken);
-			return true;
-		}
+		tokenValue = ProcessGsuTokens(token);
+	} else if(_cpuType == CpuType::Gameboy) {
+		tokenValue = ProcessGameboyTokens(token);
 	} else {
-		int64_t cpuToken = ProcessCpuSpcTokens(token);
-		if(cpuToken != -1) {
-			output += std::to_string(cpuToken);
-			return true;
-		}
+		tokenValue = ProcessCpuSpcTokens(token);
+	}
+
+	if(tokenValue != -1) {
+		output += std::to_string(tokenValue);
+		return true;
 	}
 
 	int64_t sharedToken = ProcessSharedTokens(token);
@@ -202,6 +202,33 @@ int64_t ExpressionEvaluator::ProcessGsuTokens(string token)
 		return EvalValues::RomBR;
 	} else if(token == "rambr") {
 		return EvalValues::RamBR;
+	}
+	return -1;
+}
+
+
+int64_t ExpressionEvaluator::ProcessGameboyTokens(string token)
+{
+	if(token == "a") {
+		return EvalValues::RegA;
+	} else if(token == "b") {
+		return EvalValues::RegB;
+	} else if(token == "c") {
+		return EvalValues::RegC;
+	} else if(token == "d") {
+		return EvalValues::RegD;
+	} else if(token == "e") {
+		return EvalValues::RegE;
+	} else if(token == "f") {
+		return EvalValues::RegF;
+	} else if(token == "h") {
+		return EvalValues::RegH;
+	} else if(token == "l") {
+		return EvalValues::RegL;
+	} else if(token == "sp") {
+		return EvalValues::RegSP;
+	} else if(token == "pc") {
+		return EvalValues::RegPC;
 	}
 	return -1;
 }
@@ -448,9 +475,9 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 			} else {
 				switch(token) {
 					/*case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;*/
-					case EvalValues::PpuFrameCount: token = state.Ppu.FrameCount; break;
-					case EvalValues::PpuCycle: token = state.Ppu.Cycle; break;
-					case EvalValues::PpuScanline: token = state.Ppu.Scanline; break;
+					case EvalValues::PpuFrameCount: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.FrameCount : state.Ppu.FrameCount; break;
+					case EvalValues::PpuCycle: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Cycle : state.Ppu.Cycle; break;
+					case EvalValues::PpuScanline: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Scanline : state.Ppu.Scanline; break;
 					case EvalValues::Value: token = operationInfo.Value; break;
 					case EvalValues::Address: token = operationInfo.Address; break;
 					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
@@ -482,6 +509,21 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 									case EvalValues::RegSP: token = state.Spc.SP; break;
 									case EvalValues::RegPS: token = state.Spc.PS; break;
 									case EvalValues::RegPC: token = state.Spc.PC; break;
+								}
+								break;
+
+							case CpuType::Gameboy:
+								switch(token) {
+									case EvalValues::RegA: token = state.Gameboy.Cpu.A; break;
+									case EvalValues::RegB: token = state.Gameboy.Cpu.B; break;
+									case EvalValues::RegC: token = state.Gameboy.Cpu.C; break;
+									case EvalValues::RegD: token = state.Gameboy.Cpu.D; break;
+									case EvalValues::RegE: token = state.Gameboy.Cpu.E; break;
+									case EvalValues::RegF: token = state.Gameboy.Cpu.Flags; break;
+									case EvalValues::RegH: token = state.Gameboy.Cpu.H; break;
+									case EvalValues::RegL: token = state.Gameboy.Cpu.L; break;
+									case EvalValues::RegSP: token = state.Gameboy.Cpu.SP; break;
+									case EvalValues::RegPC: token = state.Gameboy.Cpu.PC; break;
 								}
 								break;
 

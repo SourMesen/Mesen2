@@ -32,6 +32,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.GsuDebugger: frm = new frmDebugger(CpuType.Gsu); frm.Icon = Properties.Resources.GsuDebugger; break;
 					case DebugWindow.NecDspDebugger: frm = new frmDebugger(CpuType.NecDsp); frm.Icon = Properties.Resources.NecDspDebugger; break;
 					case DebugWindow.Cx4Debugger: frm = new frmDebugger(CpuType.Cx4); frm.Icon = Properties.Resources.Cx4Debugger; break;
+					case DebugWindow.GbDebugger: frm = new frmDebugger(CpuType.Gameboy); frm.Icon = Properties.Resources.GbDebugger; break;
 					case DebugWindow.TraceLogger: frm = new frmTraceLogger(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.MemoryTools: frm = new frmMemoryTools(); frm.Icon = Properties.Resources.CheatCode; break;
 					case DebugWindow.TileViewer: frm = new frmTileViewer(); frm.Icon = Properties.Resources.VerticalLayout; break;
@@ -91,6 +92,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Sa1: return (frmDebugger)OpenDebugWindow(DebugWindow.Sa1Debugger);
 				case CpuType.Gsu: return (frmDebugger)OpenDebugWindow(DebugWindow.GsuDebugger);
 				case CpuType.Cx4: return (frmDebugger)OpenDebugWindow(DebugWindow.Cx4Debugger);
+				case CpuType.Gameboy: return (frmDebugger)OpenDebugWindow(DebugWindow.GbDebugger);
 			}
 			throw new Exception("Invalid CPU type");			
 		}
@@ -104,6 +106,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Sa1: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.Sa1Debugger);
 				case CpuType.Gsu: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.GsuDebugger);
 				case CpuType.Cx4: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.Cx4Debugger);
+				case CpuType.Gameboy: return (frmDebugger)GetExistingSingleInstanceWindow(DebugWindow.GbDebugger);
 			}
 			throw new Exception("Invalid CPU type");
 		}
@@ -152,6 +155,7 @@ namespace Mesen.GUI.Debugger
 				case DebugWindow.GsuDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Gsu);
 				case DebugWindow.NecDspDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.NecDsp);
 				case DebugWindow.Cx4Debugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Cx4);
+				case DebugWindow.GbDebugger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugger) && ((frmDebugger)form).CpuType == CpuType.Gameboy);
 				case DebugWindow.TraceLogger: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmTraceLogger));
 				case DebugWindow.EventViewer: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmEventViewer));
 				case DebugWindow.Profiler: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmProfiler));
@@ -195,6 +199,7 @@ namespace Mesen.GUI.Debugger
 		GsuDebugger,
 		NecDspDebugger,
 		Cx4Debugger,
+		GbDebugger,
 		MemoryTools,
 		TraceLogger,
 		TileViewer,

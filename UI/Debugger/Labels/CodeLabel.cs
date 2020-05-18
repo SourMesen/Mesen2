@@ -30,6 +30,10 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.BsxPsRam: sb.Append("PSRAM:"); break;
 				case SnesMemoryType.BsxMemoryPack: sb.Append("MPACK:"); break;
 				case SnesMemoryType.DspProgramRom: sb.Append("DSPPRG:"); break;
+				case SnesMemoryType.GbPrgRom: sb.Append("GBPRG:"); break;
+				case SnesMemoryType.GbWorkRam: sb.Append("GBWRAM:"); break;
+				case SnesMemoryType.GbCartRam: sb.Append("GBSRAM:"); break;
+				case SnesMemoryType.GbHighRam: sb.Append("GBHRAM:"); break;
 			}
 
 			sb.Append(Address.ToString("X4"));
@@ -66,6 +70,10 @@ namespace Mesen.GUI.Debugger.Labels
 				case "PSRAM": type = SnesMemoryType.BsxPsRam; break;
 				case "MPACK": type = SnesMemoryType.BsxMemoryPack; break;
 				case "DSPPRG": type = SnesMemoryType.DspProgramRom; break;
+				case "GBPRG": type = SnesMemoryType.GbPrgRom; break;
+				case "GBWRAM": type = SnesMemoryType.GsuWorkRam; break;
+				case "GBSRAM": type = SnesMemoryType.GbCartRam; break;
+				case "GBHRAM": type = SnesMemoryType.GbHighRam; break;
 				default: return null;
 			}
 

@@ -57,6 +57,13 @@ namespace Mesen.GUI.Debugger
 				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcRom));
 			} else if(cpuType == CpuType.NecDsp) {
 				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspProgramRom));
+			} else if(cpuType == CpuType.Gameboy) {
+				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbPrgRom));
+				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbWorkRam));
+				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbHighRam));
+				if(DebugApi.GetMemorySize(SnesMemoryType.GbCartRam) > 0) {
+					cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));
+				}
 			}
 		}
 

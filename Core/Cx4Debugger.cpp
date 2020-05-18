@@ -58,7 +58,7 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				DebugState debugState;
 				_debugger->GetState(debugState, true);
 
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
 				_traceLogger->Log(CpuType::Cx4, debugState, disInfo);
 			}
 		}

@@ -137,6 +137,10 @@ namespace Mesen.GUI.Debugger.Controls
 						case SnesMemoryType.BsxPsRam: prefix = "PSRAM: $"; break;
 						case SnesMemoryType.BsxMemoryPack: prefix = "MPACK: $"; break;
 						case SnesMemoryType.DspProgramRom: prefix = "DSPPRG: $"; break;
+						case SnesMemoryType.GbPrgRom: prefix = "PRG: $"; break;
+						case SnesMemoryType.GbWorkRam: prefix = "WRAM: $"; break;
+						case SnesMemoryType.GbCartRam: prefix = "SRAM: $"; break;
+						case SnesMemoryType.GbHighRam: prefix = "HRAM: $"; break;
 						default: throw new Exception("Unsupported type");
 					}
 					int relAddress = label.GetRelativeAddress(_cpuType).Address;
@@ -251,6 +255,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 				case CpuType.Spc: defaultMemType = SnesMemoryType.SpcRam; break;
 				case CpuType.NecDsp: defaultMemType = SnesMemoryType.DspProgramRom; break;
+				case CpuType.Gameboy: defaultMemType = SnesMemoryType.GbPrgRom; break;
 
 				default: throw new Exception("Unsupported CPU type");
 			}

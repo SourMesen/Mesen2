@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "../Utilities/SimpleLock.h"
 #include "EventType.h"
+#include "DebugTypes.h"
 
 class Debugger;
 class ScriptHost;
@@ -23,5 +24,5 @@ public:
 	void RemoveScript(int32_t scriptId);
 	const char* GetScriptLog(int32_t scriptId);
 	void ProcessEvent(EventType type);
-	void ProcessMemoryOperation(uint32_t address, uint8_t &value, MemoryOperationType type);
+	void ProcessMemoryOperation(uint32_t address, uint8_t &value, MemoryOperationType type, CpuType cpuType);
 };

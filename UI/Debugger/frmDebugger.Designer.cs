@@ -130,6 +130,8 @@
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuConfigureColors = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuShowMemoryMappings = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctrlSplitContainer = new Mesen.GUI.Controls.ctrlSplitContainer();
 			this.pnlStatus = new System.Windows.Forms.Panel();
 			this.ctrlLabelList = new Mesen.GUI.Debugger.Controls.ctrlLabelList();
@@ -636,7 +638,9 @@
             this.mnuFontOptions,
             this.toolStripMenuItem4,
             this.mnuConfigureColors,
-            this.mnuPreferences});
+            this.mnuPreferences,
+            this.toolStripMenuItem12,
+            this.mnuShowMemoryMappings});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
 			this.optionsToolStripMenuItem.Text = "Options";
@@ -902,6 +906,18 @@
 			this.mnuPreferences.Text = "Configure shortcut keys...";
 			this.mnuPreferences.Click += new System.EventHandler(this.mnuPreferences_Click);
 			// 
+			// toolStripMenuItem12
+			// 
+			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+			this.toolStripMenuItem12.Size = new System.Drawing.Size(206, 6);
+			// 
+			// mnuShowMemoryMappings
+			// 
+			this.mnuShowMemoryMappings.CheckOnClick = true;
+			this.mnuShowMemoryMappings.Name = "mnuShowMemoryMappings";
+			this.mnuShowMemoryMappings.Size = new System.Drawing.Size(209, 22);
+			this.mnuShowMemoryMappings.Text = "Show memory mappings";
+			// 
 			// ctrlSplitContainer
 			// 
 			this.ctrlSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -976,9 +992,10 @@
 			this.grpWatch.Controls.Add(this.picWatchHelp);
 			this.grpWatch.Controls.Add(this.ctrlWatch);
 			this.grpWatch.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpWatch.Location = new System.Drawing.Point(3, 3);
+			this.grpWatch.Location = new System.Drawing.Point(2, 0);
+			this.grpWatch.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
 			this.grpWatch.Name = "grpWatch";
-			this.grpWatch.Size = new System.Drawing.Size(271, 152);
+			this.grpWatch.Size = new System.Drawing.Size(273, 158);
 			this.grpWatch.TabIndex = 1;
 			this.grpWatch.TabStop = false;
 			this.grpWatch.Text = "Watch";
@@ -986,7 +1003,7 @@
 			// picWatchHelp
 			// 
 			this.picWatchHelp.Image = global::Mesen.GUI.Properties.Resources.Help;
-			this.picWatchHelp.Location = new System.Drawing.Point(44, -1);
+			this.picWatchHelp.Location = new System.Drawing.Point(44, 0);
 			this.picWatchHelp.Name = "picWatchHelp";
 			this.picWatchHelp.Size = new System.Drawing.Size(16, 16);
 			this.picWatchHelp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -998,17 +1015,19 @@
 			this.ctrlWatch.CpuType = Mesen.GUI.CpuType.Cpu;
 			this.ctrlWatch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlWatch.Location = new System.Drawing.Point(3, 16);
+			this.ctrlWatch.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlWatch.Name = "ctrlWatch";
-			this.ctrlWatch.Size = new System.Drawing.Size(265, 133);
+			this.ctrlWatch.Size = new System.Drawing.Size(267, 139);
 			this.ctrlWatch.TabIndex = 0;
 			// 
 			// grpBreakpoints
 			// 
 			this.grpBreakpoints.Controls.Add(this.ctrlBreakpoints);
 			this.grpBreakpoints.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpBreakpoints.Location = new System.Drawing.Point(280, 3);
+			this.grpBreakpoints.Location = new System.Drawing.Point(279, 0);
+			this.grpBreakpoints.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
 			this.grpBreakpoints.Name = "grpBreakpoints";
-			this.grpBreakpoints.Size = new System.Drawing.Size(271, 152);
+			this.grpBreakpoints.Size = new System.Drawing.Size(273, 158);
 			this.grpBreakpoints.TabIndex = 2;
 			this.grpBreakpoints.TabStop = false;
 			this.grpBreakpoints.Text = "Breakpoints";
@@ -1017,8 +1036,9 @@
 			// 
 			this.ctrlBreakpoints.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlBreakpoints.Location = new System.Drawing.Point(3, 16);
+			this.ctrlBreakpoints.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlBreakpoints.Name = "ctrlBreakpoints";
-			this.ctrlBreakpoints.Size = new System.Drawing.Size(265, 133);
+			this.ctrlBreakpoints.Size = new System.Drawing.Size(267, 139);
 			this.ctrlBreakpoints.TabIndex = 0;
 			this.ctrlBreakpoints.BreakpointNavigation += new Mesen.GUI.Debugger.Controls.ctrlBreakpoints.BreakpointNavigationHandler(this.ctrlBreakpoints_BreakpointNavigation);
 			// 
@@ -1026,9 +1046,10 @@
 			// 
 			this.grpCallstack.Controls.Add(this.ctrlCallstack);
 			this.grpCallstack.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpCallstack.Location = new System.Drawing.Point(557, 3);
+			this.grpCallstack.Location = new System.Drawing.Point(556, 0);
+			this.grpCallstack.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
 			this.grpCallstack.Name = "grpCallstack";
-			this.grpCallstack.Size = new System.Drawing.Size(272, 152);
+			this.grpCallstack.Size = new System.Drawing.Size(274, 158);
 			this.grpCallstack.TabIndex = 3;
 			this.grpCallstack.TabStop = false;
 			this.grpCallstack.Text = "Call Stack";
@@ -1037,8 +1058,9 @@
 			// 
 			this.ctrlCallstack.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ctrlCallstack.Location = new System.Drawing.Point(3, 16);
+			this.ctrlCallstack.Margin = new System.Windows.Forms.Padding(0);
 			this.ctrlCallstack.Name = "ctrlCallstack";
-			this.ctrlCallstack.Size = new System.Drawing.Size(266, 133);
+			this.ctrlCallstack.Size = new System.Drawing.Size(268, 139);
 			this.ctrlCallstack.TabIndex = 0;
 			this.ctrlCallstack.FunctionSelected += new Mesen.GUI.Debugger.Controls.ctrlCallstack.NavigateToAddressHandler(this.ctrlCallstack_FunctionSelected);
 			// 
@@ -1196,5 +1218,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuReloadRom;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem16;
 	  private System.Windows.Forms.ToolStripMenuItem mnuAutoResetCdl;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
+	  private System.Windows.Forms.ToolStripMenuItem mnuShowMemoryMappings;
    }
 }

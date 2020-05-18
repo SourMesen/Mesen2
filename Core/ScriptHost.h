@@ -20,7 +20,7 @@ public:
 
 	bool LoadScript(string scriptName, string scriptContent, Debugger* debugger);
 
-	void ProcessMemoryOperation(uint32_t addr, uint8_t &value, MemoryOperationType type);
+	void ProcessMemoryOperation(uint32_t addr, uint8_t &value, MemoryOperationType type, CpuType cpuType);
 	void ProcessEvent(EventType eventType);
 	bool ProcessSavestate();
 

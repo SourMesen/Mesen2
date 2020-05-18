@@ -43,7 +43,7 @@ void NecDspDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationTy
 				DebugState debugState;
 				_debugger->GetState(debugState, true);
 
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
 				_traceLogger->Log(CpuType::NecDsp, debugState, disInfo);
 			}
 		}

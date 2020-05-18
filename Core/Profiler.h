@@ -3,7 +3,7 @@
 #include "DebugTypes.h"
 
 class Debugger;
-class MemoryManager;
+class Console;
 
 struct ProfiledFunction
 {
@@ -19,7 +19,7 @@ class Profiler
 {
 private:
 	Debugger* _debugger;
-	MemoryManager* _memoryManager;
+	Console* _console;
 
 	unordered_map<int32_t, ProfiledFunction> _functions;
 	

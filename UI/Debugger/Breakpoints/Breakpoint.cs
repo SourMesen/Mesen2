@@ -36,7 +36,7 @@ namespace Mesen.GUI.Debugger
 		public string GetAddressString(bool showLabel)
 		{
 			string addr = "";
-			string format = _memoryType == SnesMemoryType.SpcMemory ? "X4" : "X6";
+			string format = (_memoryType == SnesMemoryType.SpcMemory || _memoryType == SnesMemoryType.GameboyMemory) ? "X4" : "X6";
 			switch(AddressType) {
 				case BreakpointAddressType.AnyAddress:
 					return "<any>";
@@ -129,6 +129,12 @@ namespace Mesen.GUI.Debugger
 				
 				case SnesMemoryType.BsxPsRam: type = "PSRAM"; break;
 				case SnesMemoryType.BsxMemoryPack: type = "MPACK"; break;
+				
+				case SnesMemoryType.GameboyMemory: type = "CPU"; break;
+				case SnesMemoryType.GbPrgRom: type = "PRG"; break;
+				case SnesMemoryType.GbWorkRam: type = "WRAM"; break;
+				case SnesMemoryType.GbCartRam: type = "SRAM"; break;
+				case SnesMemoryType.GbHighRam: type = "HRAM"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}

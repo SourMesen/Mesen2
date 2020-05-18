@@ -43,10 +43,10 @@ string ScriptingContext::GetScriptName()
 	return _scriptName;
 }
 
-void ScriptingContext::CallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type)
+void ScriptingContext::CallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType)
 {
 	_inExecOpEvent = type == CallbackType::CpuExec;
-	InternalCallMemoryCallback(addr, value, type);
+	InternalCallMemoryCallback(addr, value, type, cpuType);
 	_inExecOpEvent = false;
 }
 
@@ -81,7 +81,7 @@ bool ScriptingContext::CheckStateLoadedFlag()
 	return stateLoaded;
 }
 
-void ScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, int reference)
+void ScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference)
 {
 	if(endAddr < startAddr) {
 		return;
@@ -95,10 +95,11 @@ void ScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, 
 	callback.StartAddress = (uint32_t)startAddr;
 	callback.EndAddress = (uint32_t)endAddr;
 	callback.Reference = reference;
+	callback.Type = cpuType;
 	_callbacks[(int)type].push_back(callback);
 }
 
-void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, int reference)
+void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference)
 {
 	if(endAddr < startAddr) {
 		return;
@@ -110,7 +111,7 @@ void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr
 
 	for(size_t i = 0; i < _callbacks[(int)type].size(); i++) {
 		MemoryCallback &callback = _callbacks[(int)type][i];
-		if(callback.Reference == reference && (int)callback.StartAddress == startAddr && (int)callback.EndAddress == endAddr) {
+		if(callback.Reference == reference && callback.Type == cpuType && (int)callback.StartAddress == startAddr && (int)callback.EndAddress == endAddr) {
 			_callbacks[(int)type].erase(_callbacks[(int)type].begin() + i);
 			break;
 		}

@@ -29,6 +29,7 @@ namespace Mesen.GUI.Debugger
 		private int _selectedColumn = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
 		private WindowRefreshManager _refreshManager;
+		private bool _isGameboyMode = false;
 
 		public frmTilemapViewer()
 		{
@@ -103,8 +104,9 @@ namespace Mesen.GUI.Debugger
 
 		public void RefreshData()
 		{
+			_isGameboyMode = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
 			_state = DebugApi.GetState().Ppu;
-			_vram = DebugApi.GetMemoryState(SnesMemoryType.VideoRam);
+			_vram = DebugApi.GetMemoryState(_isGameboyMode ? SnesMemoryType.GbVideoRam : SnesMemoryType.VideoRam);
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 
@@ -135,7 +137,9 @@ namespace Mesen.GUI.Debugger
 
 		private int GetWidth()
 		{
-			if(_state.BgMode == 7) {
+			if(_isGameboyMode) {
+				return 256;
+			} else if(_state.BgMode == 7) {
 				return 1024;
 			}
 
@@ -154,7 +158,9 @@ namespace Mesen.GUI.Debugger
 
 		private int GetHeight()
 		{
-			if(_state.BgMode == 7) {
+			if(_isGameboyMode) {
+				return 256;
+			} else if(_state.BgMode == 7) {
 				return 1024;
 			}
 
@@ -176,7 +182,11 @@ namespace Mesen.GUI.Debugger
 				_options.Layer = 0;
 			}
 
-			DebugApi.GetTilemap(_options, _state, _vram, _cgram, _tilemapData);
+			if(_isGameboyMode) {
+				DebugApi.GetGameboyTilemap(_vram, (ushort)(_options.Layer == 0 ? 0x1800 : 0x1C00), _tilemapData);
+			} else {
+				DebugApi.GetTilemap(_options, _state, _vram, _cgram, _tilemapData);
+			}
 
 			int mapWidth = GetWidth();
 			int mapHeight = GetHeight();
@@ -201,13 +211,20 @@ namespace Mesen.GUI.Debugger
 			btnLayer3.Enabled = _layerBpp[_state.BgMode, 2] > 0;
 			btnLayer4.Enabled = _layerBpp[_state.BgMode, 3] > 0;
 
+			grpLayerInfo.Visible = !_isGameboyMode;
+			grpTileInfo.Visible = !_isGameboyMode;
+			btnLayer3.Visible = !_isGameboyMode;
+			btnLayer4.Visible = !_isGameboyMode;
+
+			chkShowScrollOverlay.Visible = !_isGameboyMode;
+
 			ctrlImagePanel.ImageSize = new Size(GetWidth(), GetHeight());
 			ctrlImagePanel.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
 
 			ctrlImagePanel.GridSizeX = chkShowTileGrid.Checked ? (IsLargeTileWidth ? 16 : 8): 0;
 			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? (IsLargeTileHeight ? 16 : 8): 0;
 
-			if(chkShowScrollOverlay.Checked) {
+			if(!_isGameboyMode && chkShowScrollOverlay.Checked) {
 				LayerConfig layer = _state.Layers[_options.Layer];
 				int hScroll = _state.BgMode == 7 ? (int)_state.Mode7.HScroll : layer.HScroll;
 				int vScroll = _state.BgMode == 7 ? (int)_state.Mode7.VScroll : layer.VScroll;
@@ -217,7 +234,10 @@ namespace Mesen.GUI.Debugger
 				ctrlImagePanel.Overlay = Rectangle.Empty;
 			}
 			ctrlImagePanel.Refresh();
-			UpdateFields();
+
+			if(!_isGameboyMode) {
+				UpdateFields();
+			}
 		}
 
 		private void UpdateFields()

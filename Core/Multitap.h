@@ -3,7 +3,6 @@
 #include "BaseControlDevice.h"
 #include "../Utilities/Serializer.h"
 
-class Ppu;
 class InternalRegisters;
 class SnesController;
 
@@ -13,7 +12,6 @@ private:
 	enum Buttons { A = 0, B, X, Y, L, R, Select, Start, Up, Down, Left, Right };
 	static constexpr int ButtonCount = 12;
 
-	Ppu *_ppu;
 	vector<KeyMapping> _mappings[4];
 	uint8_t _turboSpeed[4] = {};
 	uint16_t _stateBuffer[4] = {};

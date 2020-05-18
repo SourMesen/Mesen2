@@ -68,6 +68,8 @@ namespace Mesen.GUI.Debugger
 			this.chkLogSpc = new System.Windows.Forms.CheckBox();
 			this.chkLogNecDsp = new System.Windows.Forms.CheckBox();
 			this.chkLogGsu = new System.Windows.Forms.CheckBox();
+			this.chkLogCx4 = new System.Windows.Forms.CheckBox();
+			this.chkLogGameboy = new System.Windows.Forms.CheckBox();
 			this.btnClearLog = new System.Windows.Forms.Button();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.grpExecutionLog = new System.Windows.Forms.GroupBox();
@@ -94,7 +96,6 @@ namespace Mesen.GUI.Debugger
 			this.mnuAutoRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
-			this.chkLogCx4 = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.grpLogOptions.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -570,6 +571,7 @@ namespace Mesen.GUI.Debugger
 			this.tableLayoutPanel6.Controls.Add(this.chkLogNecDsp, 2, 0);
 			this.tableLayoutPanel6.Controls.Add(this.chkLogGsu, 4, 0);
 			this.tableLayoutPanel6.Controls.Add(this.chkLogCx4, 5, 0);
+			this.tableLayoutPanel6.Controls.Add(this.chkLogGameboy, 6, 0);
 			this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel6.Location = new System.Drawing.Point(81, 0);
 			this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(0);
@@ -640,6 +642,30 @@ namespace Mesen.GUI.Debugger
 			this.chkLogGsu.TabIndex = 26;
 			this.chkLogGsu.Text = "GSU";
 			this.chkLogGsu.UseVisualStyleBackColor = true;
+			// 
+			// chkLogCx4
+			// 
+			this.chkLogCx4.AutoSize = true;
+			this.chkLogCx4.Checked = true;
+			this.chkLogCx4.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogCx4.Location = new System.Drawing.Point(322, 3);
+			this.chkLogCx4.Name = "chkLogCx4";
+			this.chkLogCx4.Size = new System.Drawing.Size(46, 16);
+			this.chkLogCx4.TabIndex = 27;
+			this.chkLogCx4.Text = "CX4";
+			this.chkLogCx4.UseVisualStyleBackColor = true;
+			// 
+			// chkLogGameboy
+			// 
+			this.chkLogGameboy.AutoSize = true;
+			this.chkLogGameboy.Checked = true;
+			this.chkLogGameboy.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkLogGameboy.Location = new System.Drawing.Point(374, 3);
+			this.chkLogGameboy.Name = "chkLogGameboy";
+			this.chkLogGameboy.Size = new System.Drawing.Size(71, 16);
+			this.chkLogGameboy.TabIndex = 28;
+			this.chkLogGameboy.Text = "Gameboy";
+			this.chkLogGameboy.UseVisualStyleBackColor = true;
 			// 
 			// btnClearLog
 			// 
@@ -876,18 +902,6 @@ namespace Mesen.GUI.Debugger
 			this.mnuRefresh.Text = "Refresh";
 			this.mnuRefresh.Click += new System.EventHandler(this.mnuRefresh_Click);
 			// 
-			// chkLogCx4
-			// 
-			this.chkLogCx4.AutoSize = true;
-			this.chkLogCx4.Checked = true;
-			this.chkLogCx4.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkLogCx4.Location = new System.Drawing.Point(322, 3);
-			this.chkLogCx4.Name = "chkLogCx4";
-			this.chkLogCx4.Size = new System.Drawing.Size(46, 16);
-			this.chkLogCx4.TabIndex = 27;
-			this.chkLogCx4.Text = "CX4";
-			this.chkLogCx4.UseVisualStyleBackColor = true;
-			// 
 			// frmTraceLogger
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -991,5 +1005,6 @@ namespace Mesen.GUI.Debugger
 		private System.Windows.Forms.CheckBox chkLogSa1;
 		private System.Windows.Forms.CheckBox chkLogGsu;
 		private System.Windows.Forms.CheckBox chkLogCx4;
-	}
+	  private System.Windows.Forms.CheckBox chkLogGameboy;
+   }
 }

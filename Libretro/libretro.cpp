@@ -8,6 +8,7 @@
 #include "libretro.h"
 #include "../Core/Console.h"
 #include "../Core/Spc.h"
+#include "../Core/Gameboy.h"
 #include "../Core/BaseCartridge.h"
 #include "../Core/MemoryManager.h"
 #include "../Core/VideoDecoder.h"
@@ -667,18 +668,34 @@ extern "C" {
 
 	RETRO_API void *retro_get_memory_data(unsigned id)
 	{
-		switch(id) {
-			case RETRO_MEMORY_SAVE_RAM: return _console->GetCartridge()->DebugGetSaveRam();
-			case RETRO_MEMORY_SYSTEM_RAM: return _console->GetMemoryManager()->DebugGetWorkRam();
+		shared_ptr<BaseCartridge> cart = _console->GetCartridge();
+		if(_console->GetSettings()->CheckFlag(EmulationFlags::GameboyMode)) {
+			switch(id) {
+				case RETRO_MEMORY_SAVE_RAM: return cart->GetGameboy()->DebugGetMemory(SnesMemoryType::GbCartRam);
+				case RETRO_MEMORY_SYSTEM_RAM: return cart->GetGameboy()->DebugGetMemory(SnesMemoryType::GbWorkRam);
+			}
+		} else {
+			switch(id) {
+				case RETRO_MEMORY_SAVE_RAM: return cart->DebugGetSaveRam();
+				case RETRO_MEMORY_SYSTEM_RAM: return _console->GetMemoryManager()->DebugGetWorkRam();
+			}
 		}
 		return nullptr;
 	}
 
 	RETRO_API size_t retro_get_memory_size(unsigned id)
 	{
-		switch(id) {
-			case RETRO_MEMORY_SAVE_RAM: return _console->GetCartridge()->DebugGetSaveRamSize(); break;
-			case RETRO_MEMORY_SYSTEM_RAM: return MemoryManager::WorkRamSize;
+		shared_ptr<BaseCartridge> cart = _console->GetCartridge();
+		if(_console->GetSettings()->CheckFlag(EmulationFlags::GameboyMode)) {
+			switch(id) {
+				case RETRO_MEMORY_SAVE_RAM: return cart->GetGameboy()->DebugGetMemorySize(SnesMemoryType::GbCartRam);
+				case RETRO_MEMORY_SYSTEM_RAM: return cart->GetGameboy()->DebugGetMemorySize(SnesMemoryType::GbWorkRam);
+			}
+		} else {
+			switch(id) {
+				case RETRO_MEMORY_SAVE_RAM: return cart->DebugGetSaveRamSize(); break;
+				case RETRO_MEMORY_SYSTEM_RAM: return MemoryManager::WorkRamSize;
+			}
 		}
 		return 0;
 	}

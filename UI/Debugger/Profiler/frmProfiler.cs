@@ -70,7 +70,7 @@ namespace Mesen.GUI.Debugger
 				ctrlProfiler.RefreshData();
 			} else if(_selectedTab == tpgSpc) {
 				ctrlProfilerSpc.RefreshData();
-			} else {
+			} else if(_selectedTab != null) {
 				ctrlProfilerCoprocessor.RefreshData();
 			}
 		}
@@ -81,27 +81,34 @@ namespace Mesen.GUI.Debugger
 				ctrlProfiler.RefreshList();
 			} else if(_selectedTab == tpgSpc) {
 				ctrlProfilerSpc.RefreshList();
-			} else {
+			} else if(_selectedTab != null) {
 				ctrlProfilerCoprocessor.RefreshList();
 			}
 		}
 
 		private void UpdateAvailableTabs()
 		{
-			if(tabMain.Controls.Count > 2) {
-				tabMain.Controls.RemoveAt(2);
-			}
-			tabMain.SelectedTab = tpgCpu;
-			_selectedTab = tpgCpu;
+			tabMain.SelectedIndexChanged -= tabMain_SelectedIndexChanged;
+			tabMain.TabPages.Clear();
 
-			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.SA1) {
-				TabPage coprocessorTab = new TabPage(ResourceHelper.GetEnumText(CoprocessorType.SA1));
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			if(romInfo.CoprocessorType != CoprocessorType.Gameboy) {
+				tabMain.TabPages.Add(tpgCpu);
+				tabMain.TabPages.Add(tpgSpc);
+				tabMain.SelectedTab = tpgCpu;
+			}
+
+			if(romInfo.CoprocessorType == CoprocessorType.SA1 || romInfo.CoprocessorType == CoprocessorType.Gameboy) {
+				TabPage coprocessorTab = new TabPage(ResourceHelper.GetEnumText(romInfo.CoprocessorType));
 				tabMain.TabPages.Add(coprocessorTab);
 
 				coprocessorTab.Controls.Add(ctrlProfilerCoprocessor);
 				ctrlProfilerCoprocessor.Dock = DockStyle.Fill;
-				ctrlProfilerCoprocessor.CpuType = CpuType.Sa1;
+				ctrlProfilerCoprocessor.CpuType = romInfo.CoprocessorType == CoprocessorType.SA1 ? CpuType.Sa1 : CpuType.Gameboy;
 			}
+
+			_selectedTab = tabMain.TabPages[0];
+			tabMain.SelectedIndexChanged += tabMain_SelectedIndexChanged;
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

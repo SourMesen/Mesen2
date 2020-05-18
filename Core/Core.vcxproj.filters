@@ -521,6 +521,66 @@
     <ClInclude Include="Cx4Debugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
+    <ClInclude Include="GbCpu.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GbTypes.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GbMemoryManager.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GbPpu.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GbTimer.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GameboyDisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
+    <ClInclude Include="GbDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
+    <ClInclude Include="GbMbc1.h">
+      <Filter>GB\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="GbCart.h">
+      <Filter>GB\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="GbCartFactory.h">
+      <Filter>GB\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="SnesMemoryType.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GameboyHeader.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GbApu.h">
+      <Filter>GB\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GbSquareChannel.h">
+      <Filter>GB\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GbWaveChannel.h">
+      <Filter>GB\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GbNoiseChannel.h">
+      <Filter>GB\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GbMbc5.h">
+      <Filter>GB\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="GbMbc2.h">
+      <Filter>GB\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="GbMbc3.h">
+      <Filter>GB\Carts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -839,6 +899,30 @@
     <ClCompile Include="Cx4Debugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
+    <ClCompile Include="GbMemoryManager.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GbTimer.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GbPpu.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameboy.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GameboyDisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="GbDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClCompile>
+    <ClCompile Include="GbApu.cpp">
+      <Filter>GB\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GbCpu.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -915,6 +999,15 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\BSX">
       <UniqueIdentifier>{c519e61b-e1c6-4182-8a23-ed23b60fbf96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GB">
+      <UniqueIdentifier>{3b255a1a-392b-4005-b21e-4c3f5b6f08d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GB\Carts">
+      <UniqueIdentifier>{92514dec-b6e7-4085-843b-bcff985f9e41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GB\APU">
+      <UniqueIdentifier>{c020f128-b5e1-4f6c-9849-ff098fe93d39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -108,16 +108,24 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(spc, SnesMemoryType::SpcMemory);
 	lua_pushintvalue(sa1, SnesMemoryType::Sa1Memory);
 	lua_pushintvalue(gsu, SnesMemoryType::GsuMemory);
+	lua_pushintvalue(cx4, SnesMemoryType::Cx4Memory);
+	lua_pushintvalue(gameboy, SnesMemoryType::GameboyMemory);
 	lua_pushintvalue(cgram, SnesMemoryType::CGRam);
 	lua_pushintvalue(vram, SnesMemoryType::VideoRam);
 	lua_pushintvalue(oam, SnesMemoryType::SpriteRam);
 	lua_pushintvalue(prgRom, SnesMemoryType::PrgRom);
 	lua_pushintvalue(workRam, SnesMemoryType::WorkRam);
 	lua_pushintvalue(saveRam, SnesMemoryType::SaveRam);
+	lua_pushintvalue(gbPrgRom, SnesMemoryType::GbPrgRom);
+	lua_pushintvalue(gbWorkRam, SnesMemoryType::GbWorkRam);
+	lua_pushintvalue(gbCartRam, SnesMemoryType::GbCartRam);
+	lua_pushintvalue(gbVideoRam, SnesMemoryType::GbVideoRam);
 	lua_pushintvalue(cpuDebug, SnesMemoryType::CpuMemory | 0x100);
 	lua_pushintvalue(spcDebug, SnesMemoryType::SpcMemory | 0x100);
 	lua_pushintvalue(sa1Debug, SnesMemoryType::Sa1Memory | 0x100);
 	lua_pushintvalue(gsuDebug, SnesMemoryType::GsuMemory | 0x100);
+	lua_pushintvalue(cx4Debug, SnesMemoryType::Cx4Memory | 0x100);
+	lua_pushintvalue(gameboyDebug, SnesMemoryType::GameboyMemory | 0x100);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "memCallbackType");
@@ -132,7 +140,24 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(prgRom, SnesMemoryType::PrgRom);
 	lua_pushintvalue(workRam, SnesMemoryType::WorkRam);
 	lua_pushintvalue(saveRam, SnesMemoryType::SaveRam);
-	//TODO add more
+	lua_pushintvalue(videoRam, SnesMemoryType::VideoRam);
+	lua_pushintvalue(spriteRam, SnesMemoryType::SpriteRam);
+	lua_pushintvalue(cgRam, SnesMemoryType::CGRam);
+	lua_pushintvalue(spcRam, SnesMemoryType::SpcRam);
+	lua_pushintvalue(spcRom, SnesMemoryType::SpcRom);
+	lua_pushintvalue(dspProgramRom, SnesMemoryType::DspProgramRom);
+	lua_pushintvalue(dspDataRom, SnesMemoryType::DspDataRom);
+	lua_pushintvalue(dspDataRam, SnesMemoryType::DspDataRam);
+	lua_pushintvalue(sa1InternalRam, SnesMemoryType::Sa1InternalRam);
+	lua_pushintvalue(gsuWorkRam, SnesMemoryType::GsuWorkRam);
+	lua_pushintvalue(cx4DataRam, SnesMemoryType::Cx4DataRam);
+	lua_pushintvalue(bsxPsRam, SnesMemoryType::BsxPsRam);
+	lua_pushintvalue(bsxMemoryPack, SnesMemoryType::BsxMemoryPack);
+	lua_pushintvalue(gbPrgRom, SnesMemoryType::GbPrgRom);
+	lua_pushintvalue(gbWorkRam, SnesMemoryType::GbWorkRam);
+	lua_pushintvalue(gbCartRam, SnesMemoryType::GbCartRam);
+	lua_pushintvalue(gbVideoRam, SnesMemoryType::GbVideoRam);
+	lua_pushintvalue(gbHighRam, SnesMemoryType::GbHighRam);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "counterOpType");
@@ -162,6 +187,17 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_newtable(lua);
 	lua_pushintvalue(cpuInstructions, StepType::Step);
 	lua_pushintvalue(ppuCycles, StepType::PpuStep);
+	lua_settable(lua, -3);
+
+	lua_pushliteral(lua, "cpuType");
+	lua_newtable(lua);
+	lua_pushintvalue(cpu, CpuType::Cpu);
+	lua_pushintvalue(spc, CpuType::Spc);
+	lua_pushintvalue(dsp, CpuType::NecDsp);
+	lua_pushintvalue(sa1, CpuType::Sa1);
+	lua_pushintvalue(gsu, CpuType::Gsu);
+	lua_pushintvalue(cx4, CpuType::Cx4);
+	lua_pushintvalue(gameboy, CpuType::Gameboy);
 	lua_settable(lua, -3);
 
 	return 1;
@@ -266,10 +302,11 @@ int LuaApi::GetPrgRomOffset(lua_State *lua)
 int LuaApi::RegisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	l.ForceParamCount(4);
+	l.ForceParamCount(5);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Cpu);
 	int32_t endAddr = l.ReadInteger(-1);
 	int32_t startAddr = l.ReadInteger();
-	CallbackType type = (CallbackType)l.ReadInteger();
+	CallbackType callbackType = (CallbackType)l.ReadInteger();
 	int reference = l.GetReference();
 	checkminparams(3);
 
@@ -278,9 +315,10 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 	}
 
 	errorCond(startAddr > endAddr, "start address must be <= end address");
-	errorCond(type < CallbackType::CpuRead || type > CallbackType::CpuExec, "the specified type is invalid");
+	errorCond(callbackType < CallbackType::CpuRead || callbackType > CallbackType::CpuExec, "the specified type is invalid");
+	errorCond(cpuType < CpuType::Cpu || cpuType > CpuType::Gameboy, "the cpu type is invalid");
 	errorCond(reference == LUA_NOREF, "the specified function could not be found");
-	_context->RegisterMemoryCallback(type, startAddr, endAddr, reference);
+	_context->RegisterMemoryCallback(callbackType, startAddr, endAddr, cpuType, reference);
 	_context->Log("Registered memory callback from $" + HexUtilities::ToHex((uint32_t)startAddr) + " to $" + HexUtilities::ToHex((uint32_t)endAddr));
 	l.Return(reference);
 	return l.ReturnCount();
@@ -289,8 +327,9 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	l.ForceParamCount(4);
+	l.ForceParamCount(5);
 
+	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Cpu);
 	int endAddr = l.ReadInteger(-1);
 	int startAddr = l.ReadInteger();
 	CallbackType type = (CallbackType)l.ReadInteger();
@@ -305,7 +344,7 @@ int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 	errorCond(startAddr > endAddr, "start address must be <= end address");
 	errorCond(type < CallbackType::CpuRead || type > CallbackType::CpuExec, "the specified type is invalid");
 	errorCond(reference == LUA_NOREF, "function reference is invalid");
-	_context->UnregisterMemoryCallback(type, startAddr, endAddr, reference);
+	_context->UnregisterMemoryCallback(type, startAddr, endAddr, cpuType, reference);
 	return l.ReturnCount();
 }
 
@@ -347,7 +386,7 @@ int LuaApi::DrawString(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(3);
 
-	int startFrame = _ppu->GetFrameCount() + displayDelay;
+	int startFrame = _console->GetFrameCount() + displayDelay;
 	_console->GetDebugHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame);
 
 	return l.ReturnCount();
@@ -366,7 +405,7 @@ int LuaApi::DrawLine(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(4);
 
-	int startFrame = _ppu->GetFrameCount() + displayDelay;
+	int startFrame = _console->GetFrameCount() + displayDelay;
 	_console->GetDebugHud()->DrawLine(x, y, x2, y2, color, frameCount, startFrame);
 
 	return l.ReturnCount();
@@ -383,7 +422,7 @@ int LuaApi::DrawPixel(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(3);
 
-	int startFrame = _ppu->GetFrameCount() + displayDelay;
+	int startFrame = _console->GetFrameCount() + displayDelay;
 	_console->GetDebugHud()->DrawPixel(x, y, color, frameCount, startFrame);
 
 	return l.ReturnCount();
@@ -403,7 +442,7 @@ int LuaApi::DrawRectangle(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(4);
 
-	int startFrame = _ppu->GetFrameCount() + displayDelay;
+	int startFrame = _console->GetFrameCount() + displayDelay;
 	_console->GetDebugHud()->DrawRectangle(x, y, width, height, color, fill, frameCount, startFrame);
 
 	return l.ReturnCount();
@@ -445,7 +484,7 @@ int LuaApi::SetScreenBuffer(lua_State *lua)
 		pixels[i] = l.ReadInteger() ^ 0xFF000000;
 	}
 	
-	int startFrame = _ppu->GetFrameCount();
+	int startFrame = _console->GetFrameCount();
 	_console->GetDebugHud()->DrawScreenBuffer(pixels, startFrame);
 
 	return l.ReturnCount();
@@ -777,21 +816,21 @@ int LuaApi::GetState(lua_State *lua)
 
 		lua_newtable(lua);
 		lua_pushintvalue(activeLayers, (
-			state.Ppu.Window[i].ActiveLayers[0] |
-			(state.Ppu.Window[i].ActiveLayers[1] << 1) |
-			(state.Ppu.Window[i].ActiveLayers[2] << 2) |
-			(state.Ppu.Window[i].ActiveLayers[3] << 3) |
-			(state.Ppu.Window[i].ActiveLayers[4] << 4) |
-			(state.Ppu.Window[i].ActiveLayers[5] << 5)
+			(uint8_t)state.Ppu.Window[i].ActiveLayers[0] |
+			((uint8_t)state.Ppu.Window[i].ActiveLayers[1] << 1) |
+			((uint8_t)state.Ppu.Window[i].ActiveLayers[2] << 2) |
+			((uint8_t)state.Ppu.Window[i].ActiveLayers[3] << 3) |
+			((uint8_t)state.Ppu.Window[i].ActiveLayers[4] << 4) |
+			((uint8_t)state.Ppu.Window[i].ActiveLayers[5] << 5)
 		));
 
 		lua_pushintvalue(invertedLayers, (
-			state.Ppu.Window[i].InvertedLayers[0] |
-			(state.Ppu.Window[i].InvertedLayers[1] << 1) |
-			(state.Ppu.Window[i].InvertedLayers[2] << 2) |
-			(state.Ppu.Window[i].InvertedLayers[3] << 3) |
-			(state.Ppu.Window[i].InvertedLayers[4] << 4) |
-			(state.Ppu.Window[i].InvertedLayers[5] << 5)
+			(uint8_t)state.Ppu.Window[i].InvertedLayers[0] |
+			((uint8_t)state.Ppu.Window[i].InvertedLayers[1] << 1) |
+			((uint8_t)state.Ppu.Window[i].InvertedLayers[2] << 2) |
+			((uint8_t)state.Ppu.Window[i].InvertedLayers[3] << 3) |
+			((uint8_t)state.Ppu.Window[i].InvertedLayers[4] << 4) |
+			((uint8_t)state.Ppu.Window[i].InvertedLayers[5] << 5)
 		));
 
 		lua_pushintvalue(left, state.Ppu.Window[i].Left);

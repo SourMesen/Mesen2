@@ -62,6 +62,14 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/GameConnection.cpp \
                $(CORE_DIR)/GameServer.cpp \
                $(CORE_DIR)/GameServerConnection.cpp \
+               $(CORE_DIR)/Gameboy.cpp \
+               $(CORE_DIR)/GbCpu.cpp \
+               $(CORE_DIR)/GbPpu.cpp \
+               $(CORE_DIR)/GbApu.cpp \
+               $(CORE_DIR)/GbTimer.cpp \
+               $(CORE_DIR)/GbMemoryManager.cpp \
+               $(CORE_DIR)/GbDebugger.cpp \
+               $(CORE_DIR)/GameboyDisUtils.cpp \
                $(CORE_DIR)/Gsu.cpp \
                $(CORE_DIR)/Gsu.Instructions.cpp \
                $(CORE_DIR)/GsuDisUtils.cpp \
@@ -126,6 +134,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(UTIL_DIR)/AutoResetEvent.cpp \
                $(UTIL_DIR)/AviRecorder.cpp \
                $(UTIL_DIR)/AviWriter.cpp \
+               $(UTIL_DIR)/blip_buf.cpp \
                $(UTIL_DIR)/BpsPatcher.cpp \
                $(UTIL_DIR)/CamstudioCodec.cpp \
                $(UTIL_DIR)/CRC32.cpp \

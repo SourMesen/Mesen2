@@ -27,6 +27,9 @@ namespace Mesen.GUI.Debugger
 		private ctrlGsuStatus ctrlGsuStatus;
 		private ctrlNecDspStatus ctrlNecDspStatus;
 		private ctrlCx4Status ctrlCx4Status;
+		private ctrlGameboyStatus ctrlGameboyStatus;
+
+		private ctrlMemoryMapping ctrlMemoryMapping;
 
 		public CpuType CpuType { get { return _cpuType; } }
 
@@ -98,8 +101,7 @@ namespace Mesen.GUI.Debugger
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.GsuDebuggerEnabled, true);
 					this.Text = "GSU Debugger";
 					HideDebuggerElements();
-
-
+					
 					this.ctrlGsuStatus = new ctrlGsuStatus();
 					this.ctrlGsuStatus.Padding = new Padding(3, 0, 3, 0);
 					this.ctrlGsuStatus.Dock = DockStyle.Top;
@@ -111,8 +113,7 @@ namespace Mesen.GUI.Debugger
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.NecDspDebuggerEnabled, true);
 					this.Text = "DSP Debugger";
 					HideDebuggerElements();
-
-
+					
 					this.ctrlNecDspStatus = new ctrlNecDspStatus();
 					this.ctrlNecDspStatus.Padding = new Padding(3, 0, 3, 0);
 					this.ctrlNecDspStatus.Dock = DockStyle.Top;
@@ -131,6 +132,34 @@ namespace Mesen.GUI.Debugger
 					this.ctrlCx4Status.Padding = new Padding(3, 0, 3, 0);
 					this.ctrlCx4Status.Dock = DockStyle.Top;
 					pnlStatus.Controls.Add(this.ctrlCx4Status);
+					break;
+
+				case CpuType.Gameboy:
+					ctrlDisassemblyView.Initialize(new GbDisassemblyManager(), new GbLineStyleProvider());
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.GbDebuggerEnabled, true);
+					this.Text = "Game Boy Debugger";
+
+					ctrlMemoryMapping = new ctrlMemoryMapping();
+					ctrlMemoryMapping.Size = new Size(this.ClientSize.Width, 33);
+					ctrlMemoryMapping.Margin = new Padding(3, 0, 3, 3);
+					ctrlMemoryMapping.Dock = DockStyle.Bottom;
+					ctrlMemoryMapping.Visible = ConfigManager.Config.Debug.Debugger.ShowMemoryMappings;
+					this.Controls.Add(ctrlMemoryMapping);
+					ctrlMemoryMapping.SendToBack();
+
+					sepBrkCopStpWdm.Visible = false;
+					mnuBreakOnBrk.Visible = false;
+					mnuBreakOnWdm.Visible = false;
+					mnuBreakOnCop.Visible = false;
+					mnuBreakOnStp.Visible = false;
+					sepBreakOnUnitRead.Visible = false;
+					mnuBreakOnUnitRead.Visible = false;
+					ctrlPpuStatus.Visible = false;
+
+					this.ctrlGameboyStatus = new ctrlGameboyStatus();
+					this.ctrlGameboyStatus.Padding = new Padding(3, 0, 3, 0);
+					this.ctrlGameboyStatus.Dock = DockStyle.Top;
+					pnlStatus.Controls.Add(this.ctrlGameboyStatus);
 					break;
 			}
 
@@ -388,10 +417,16 @@ namespace Mesen.GUI.Debugger
 			DebuggerInfo cfg = ConfigManager.Config.Debug.Debugger;
 			_entityBinder.Entity = cfg;
 			_entityBinder.AddBinding(nameof(cfg.ShowByteCode), mnuShowByteCode);
+			_entityBinder.AddBinding(nameof(cfg.ShowMemoryMappings), mnuShowMemoryMappings);
 			_entityBinder.AddBinding(nameof(cfg.UseLowerCaseDisassembly), mnuUseLowerCaseDisassembly);
 			_entityBinder.AddBinding(nameof(cfg.UseAltSpcOpNames), mnuUseAltSpcOpNames);
 
 			mnuShowByteCode.CheckedChanged += (s, e) => { ctrlDisassemblyView.CodeViewer.ShowContentNotes = mnuShowByteCode.Checked; };
+			mnuShowMemoryMappings.CheckedChanged += (s, e) => { 
+				if(_cpuType == CpuType.Gameboy) {
+					ctrlMemoryMapping.Visible = mnuShowMemoryMappings.Checked;
+				}
+			};
 			mnuUseLowerCaseDisassembly.CheckedChanged += this.UpdateFlags;
 			mnuUseAltSpcOpNames.CheckedChanged += this.UpdateFlags;
 
@@ -461,6 +496,10 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Sa1: ctrlCpuStatus.UpdateStatus(state.Sa1.Cpu); break;
 				case CpuType.Gsu: ctrlGsuStatus.UpdateStatus(state.Gsu); break;
 				case CpuType.Cx4: ctrlCx4Status.UpdateStatus(state.Cx4); break;
+				case CpuType.Gameboy: 
+					ctrlGameboyStatus.UpdateStatus(state.Gameboy);
+					ctrlMemoryMapping.UpdateCpuRegions(state.Gameboy);
+					break;
 				default: throw new Exception("Unsupported CPU type");
 			}
 
@@ -568,6 +607,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Sa1: activeAddress = (int)((state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC); break;
 				case CpuType.Gsu: activeAddress = (int)((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]); break;
 				case CpuType.Cx4: activeAddress = (int)((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF); break;
+				case CpuType.Gameboy: activeAddress = (int)(state.Gameboy.Cpu.PC & 0xFFFF); break;
 				default: throw new Exception("Unsupported cpu type");
 			}
 

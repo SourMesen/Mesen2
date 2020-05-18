@@ -28,4 +28,6 @@ public:
 	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);
 	void UpdateViewers(uint16_t scanline, uint16_t cycle);
+
+	void GetGameboyTilemap(uint8_t* vram, uint16_t offset, uint32_t* outBuffer);
 };

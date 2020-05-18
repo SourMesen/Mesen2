@@ -95,9 +95,9 @@ bool LuaScriptingContext::LoadScript(string scriptName, string scriptContent, De
 	return false;
 }
 
-void LuaScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, int reference)
+void LuaScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference)
 {
-	ScriptingContext::UnregisterMemoryCallback(type, startAddr, endAddr, reference);
+	ScriptingContext::UnregisterMemoryCallback(type, startAddr, endAddr, cpuType, reference);
 	luaL_unref(_lua, LUA_REGISTRYINDEX, reference);
 }
 
@@ -107,7 +107,7 @@ void LuaScriptingContext::UnregisterEventCallback(EventType type, int reference)
 	luaL_unref(_lua, LUA_REGISTRYINDEX, reference);
 }
 
-void LuaScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type)
+void LuaScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType)
 {
 	if(_callbacks[(int)type].empty()) {
 		return;
@@ -118,7 +118,7 @@ void LuaScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t &val
 	lua_sethook(_lua, LuaScriptingContext::ExecutionCountHook, LUA_MASKCOUNT, 1000); 
 	LuaApi::SetContext(this);
 	for(MemoryCallback &callback: _callbacks[(int)type]) {
-		if(addr < callback.StartAddress || addr > callback.EndAddress) {
+		if(callback.Type != cpuType || addr < callback.StartAddress || addr > callback.EndAddress) {
 			continue;
 		}
 

@@ -14,6 +14,7 @@ class Gsu;
 class Cx4;
 class BsxCart;
 class BsxMemoryPack;
+class Gameboy;
 class Console;
 class SpcFileData;
 enum class ConsoleRegion;
@@ -35,6 +36,7 @@ private:
 	Cx4 *_cx4 = nullptr;
 	BsxCart* _bsx = nullptr;
 	unique_ptr<BsxMemoryPack> _bsxMemPack;
+	unique_ptr<Gameboy> _gameboy;
 
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
@@ -68,6 +70,8 @@ private:
 	
 	void LoadRom();
 	void LoadSpc();
+	bool LoadGameboy(VirtualFile& romFile);
+	void SetupCpuHalt();
 	void InitCoprocessor();
 	void LoadEmbeddedFirmware();
 
@@ -104,6 +108,7 @@ public:
 	Cx4* GetCx4();
 	BsxCart* GetBsx();
 	BsxMemoryPack* GetBsxMemoryPack();
+	Gameboy* GetGameboy();
 
 	void RunCoprocessors();
 

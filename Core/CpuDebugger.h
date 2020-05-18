@@ -27,7 +27,6 @@ class CpuDebugger final : public IDebugger
 	MemoryManager* _memoryManager;
 	EmuSettings* _settings;
 	CodeDataLogger* _codeDataLogger;
-	ScriptManager* _scriptManager;
 	EventManager* _eventManager;
 	Cpu* _cpu;
 	Sa1* _sa1;

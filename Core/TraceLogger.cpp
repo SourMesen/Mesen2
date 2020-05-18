@@ -22,6 +22,7 @@ TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 	_settings = console->GetSettings().get();
 	_labelManager = debugger->GetLabelManager().get();
 	_memoryDumper = debugger->GetMemoryDumper().get();
+	_options = {};
 	_currentPos = 0;
 	_logCount = 0;
 	_logToFile = false;
@@ -76,6 +77,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	_logCpu[(int)CpuType::Sa1] = options.LogSa1;
 	_logCpu[(int)CpuType::Gsu] = options.LogGsu;
 	_logCpu[(int)CpuType::Cx4] = options.LogCx4;
+	_logCpu[(int)CpuType::Gameboy] = options.LogGameboy;
 
 	string condition = _options.Condition;
 	string format = _options.Format;
@@ -95,6 +97,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	ParseFormatString(_dspRowParts, "[PC,4h]   [ByteCode,11h] [Disassembly] [Align,65] [A,2h] S:[SP,2h] H:[Cycle,3] V:[Scanline,3]");
 	ParseFormatString(_gsuRowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,50] SRC:[X,2] DST:[Y,2] R0:[A,2h] H:[Cycle,3] V:[Scanline,3]");
 	ParseFormatString(_cx4RowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,45] [A,2h] H:[Cycle,3] V:[Scanline,3]");
+	ParseFormatString(_gbRowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,45] A:[A,2h] B:[B,2h] C:[C,2h] D:[D,2h] E:[E,2h] HL:[H,2h][L,2h] F:[F,2h] SP:[SP,4h] CYC:[Cycle,3] LY:[Scanline,3]");
 }
 
 void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)
@@ -131,6 +134,20 @@ void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)
 				part.DataType = RowDataType::PC;
 			} else if(dataType == "A") {
 				part.DataType = RowDataType::A;
+			} else if(dataType == "B") {
+				part.DataType = RowDataType::B;
+			} else if(dataType == "C") {
+				part.DataType = RowDataType::C;
+			} else if(dataType == "D") {
+				part.DataType = RowDataType::D;
+			} else if(dataType == "E") {
+				part.DataType = RowDataType::E;
+			} else if(dataType == "F") {
+				part.DataType = RowDataType::F;
+			} else if(dataType == "H") {
+				part.DataType = RowDataType::H;
+			} else if(dataType == "L") {
+				part.DataType = RowDataType::L;
 			} else if(dataType == "X") {
 				part.DataType = RowDataType::X;
 			} else if(dataType == "Y") {
@@ -323,6 +340,7 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::HClock: WriteValue(output, ppuState.HClock, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
 			case RowDataType::CycleCount: WriteValue(output, (uint32_t)cpuState.CycleCount, rowPart); break;
+			default: break;
 		}
 	}
 	output += _options.UseWindowsEol ? "\r\n" : "\n";
@@ -467,6 +485,39 @@ void TraceLogger::GetTraceRow(string &output, Cx4State &cx4State, PpuState &ppuS
 	output += _options.UseWindowsEol ? "\r\n" : "\n";
 }
 
+void TraceLogger::GetTraceRow(string& output, GbCpuState& cpuState, GbPpuState& ppuState, DisassemblyInfo& disassemblyInfo)
+{
+	int originalSize = (int)output.size();
+	uint32_t pcAddress = cpuState.PC;
+	for(RowPart& rowPart : _gbRowParts) {
+		switch(rowPart.DataType) {
+			case RowDataType::Text: output += rowPart.Text; break;
+			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
+			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, (uint8_t)cpuState.SP, pcAddress, output); break;
+			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::GameboyMemory, CpuType::Gameboy); break;
+			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::GameboyMemory, CpuType::Gameboy); break;
+			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
+
+			case RowDataType::PC: WriteValue(output, HexUtilities::ToHex((uint16_t)pcAddress), rowPart); break;
+			case RowDataType::A: WriteValue(output, cpuState.A, rowPart); break;
+			case RowDataType::B: WriteValue(output, cpuState.B, rowPart); break;
+			case RowDataType::C: WriteValue(output, cpuState.C, rowPart); break;
+			case RowDataType::D: WriteValue(output, cpuState.D, rowPart); break;
+			case RowDataType::E: WriteValue(output, cpuState.E, rowPart); break;
+			case RowDataType::F: WriteValue(output, cpuState.Flags, rowPart); break;
+			case RowDataType::H: WriteValue(output, cpuState.H, rowPart); break;
+			case RowDataType::L: WriteValue(output, cpuState.L, rowPart); break;
+			case RowDataType::SP: WriteValue(output, cpuState.SP, rowPart); break;
+			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
+			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
+			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
+
+			default: break;
+		}
+	}
+	output += _options.UseWindowsEol ? "\r\n" : "\n";
+}
+
 /*
 bool TraceLogger::ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo)
 {
@@ -495,6 +546,7 @@ void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &
 		case CpuType::Sa1: GetTraceRow(output, state.Sa1.Cpu, state.Ppu, disassemblyInfo, SnesMemoryType::Sa1Memory, cpuType); break;
 		case CpuType::Gsu: GetTraceRow(output, state.Gsu, state.Ppu, disassemblyInfo); break;
 		case CpuType::Cx4: GetTraceRow(output, state.Cx4, state.Ppu, disassemblyInfo); break;
+		case CpuType::Gameboy: GetTraceRow(output, state.Gameboy.Cpu, state.Gameboy.Ppu, disassemblyInfo); break;
 	}
 }
 
@@ -591,6 +643,7 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC) + "\x1"; break;
 				case CpuType::Gsu: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]) + "\x1"; break;
 				case CpuType::Cx4: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF) + "\x1"; break;
+				case CpuType::Gameboy: _executionTrace += "\x4\x1" + HexUtilities::ToHex(state.Gameboy.Cpu.PC) + "\x1"; break;
 			}
 
 			string byteCode;

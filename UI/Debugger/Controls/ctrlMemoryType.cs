@@ -28,6 +28,41 @@ namespace Mesen.GUI.Debugger.Controls
 			this.BeginUpdate();
 			this.Items.Clear();
 
+			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy) {
+				this.AddGameboyTypes(excludeCpuMemory);
+			} else {
+				this.AddSnesMemoryTypes(excludeCpuMemory);
+				this.AddGameboyTypes(excludeCpuMemory);
+			}
+
+			this.SelectedIndex = 0;
+			this.SetEnumValue(originalValue);
+			this._disableEvent = false;
+
+			this.EndUpdate();
+		}
+
+		private void AddGameboyTypes(bool excludeCpuMemory)
+		{
+			if(DebugApi.GetMemorySize(SnesMemoryType.GbPrgRom) > 0) {
+				if(this.Items.Count > 0) {
+					this.Items.Add("-");
+				}
+
+				if(!excludeCpuMemory) {
+					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GameboyMemory));
+				}
+				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbPrgRom));
+				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbWorkRam));
+				if(DebugApi.GetMemorySize(SnesMemoryType.GbCartRam) > 0) {
+					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));
+				}
+				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbVideoRam));
+			}
+		}
+
+		private void AddSnesMemoryTypes(bool excludeCpuMemory)
+		{
 			if(!excludeCpuMemory) {
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SpcMemory));
@@ -78,17 +113,11 @@ namespace Mesen.GUI.Debugger.Controls
 				this.Items.Add("-");
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxPsRam));
 			}
-			
+
 			if(DebugApi.GetMemorySize(SnesMemoryType.BsxMemoryPack) > 0) {
 				this.Items.Add("-");
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxMemoryPack));
 			}
-
-			this.SelectedIndex = 0;
-			this.SetEnumValue(originalValue);
-			this._disableEvent = false;
-
-			this.EndUpdate();
 		}
 	}
 }

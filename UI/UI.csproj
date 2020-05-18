@@ -259,7 +259,9 @@
     <Compile Include="Debugger\Breakpoints\InteropBreakpoint.cs" />
     <Compile Include="Debugger\Code\BaseStyleProvider.cs" />
     <Compile Include="Debugger\Code\CodeHighlighting.cs" />
+    <Compile Include="Debugger\Code\GbDisassemblyManager.cs" />
     <Compile Include="Debugger\Code\Cx4DisassemblyManager.cs" />
+    <Compile Include="Debugger\Code\GbLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\Cx4LineStyleProvider.cs" />
     <Compile Include="Debugger\Code\NecDspLineStyleProvider.cs" />
     <Compile Include="Debugger\Code\NecDspDisassemblyManager.cs" />
@@ -289,6 +291,9 @@
     <Compile Include="Debugger\Controls\ctrlCx4Status.Designer.cs">
       <DependentUpon>ctrlCx4Status.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debugger\Controls\ctrlMemoryMapping.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Debugger\Controls\ctrlNecDspStatus.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -297,6 +302,12 @@
     </Compile>
     <Compile Include="Debugger\Controls\ctrlMemoryType.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlGameboyStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debugger\Controls\ctrlGameboyStatus.Designer.cs">
+      <DependentUpon>ctrlGameboyStatus.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Labels\BassLabelFile.cs" />
     <Compile Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.cs">
@@ -989,6 +1000,7 @@
     <Compile Include="Utilities\RandomGameHelper.cs" />
     <Compile Include="Utilities\RomTestHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\GbDebugger.png" />
     <None Include="Resources\Cx4Debugger.png" />
     <None Include="Resources\NecDspDebugger.png" />
     <None Include="Dependencies\Satellaview\BSX0120-0.bin">
@@ -1065,6 +1077,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlNecDspStatus.resx">
       <DependentUpon>ctrlNecDspStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\Controls\ctrlGameboyStatus.resx">
+      <DependentUpon>ctrlGameboyStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.resx">
       <DependentUpon>ctrlMemoryAccessCounters.cs</DependentUpon>

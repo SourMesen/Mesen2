@@ -4,6 +4,7 @@
 #include "Ppu.h"
 #include "Spc.h"
 #include "NecDsp.h"
+#include "Gameboy.h"
 #include "InternalRegisters.h"
 #include "ControlManager.h"
 #include "MemoryManager.h"
@@ -94,9 +95,16 @@ void Console::Release()
 
 void Console::RunFrame()
 {
-	uint32_t frameCount = _ppu->GetFrameCount();
-	while(frameCount == _ppu->GetFrameCount()) {
-		_cpu->Exec();
+	_frameRunning = true;
+	if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+		Gameboy* gameboy = _cart->GetGameboy();
+		while(_frameRunning) {
+			gameboy->Exec();
+		}
+	} else {
+		while(_frameRunning) {
+			_cpu->Exec();
+		}
 	}
 }
 
@@ -236,21 +244,19 @@ void Console::ProcessEndOfFrame()
 	_controlManager->UpdateControlDevices();
 	_internalRegisters->ProcessAutoJoypadRead();
 #endif
+	_frameRunning = false;
 }
 
 void Console::RunSingleFrame()
 {
 	//Used by Libretro
-	uint32_t lastFrameNumber = _ppu->GetFrameCount();
 	_emulationThreadId = std::this_thread::get_id();
 	_isRunAheadFrame = false;
 
 	_controlManager->UpdateInputState();
 	_internalRegisters->ProcessAutoJoypadRead();
 
-	while(_ppu->GetFrameCount() == lastFrameNumber) {
-		_cpu->Exec();
-	}
+	RunFrame();
 
 	_cart->RunCoprocessors();
 	if(_cart->GetCoprocessor()) {
@@ -430,6 +436,13 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 		_ppu->PowerOn();
 		_cpu->PowerOn();
 
+		if(_cart->GetGameboy()) {
+			_cart->GetGameboy()->PowerOn();
+			_settings->SetFlag(EmulationFlags::GameboyMode);
+		} else {
+			_settings->ClearFlag(EmulationFlags::GameboyMode);
+		}
+
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);
 
@@ -471,6 +484,15 @@ RomInfo Console::GetRomInfo()
 	}
 }
 
+uint64_t Console::GetMasterClock()
+{
+	if(_settings->CheckFlag(EmulationFlags::GameboyMode) && _cart->GetGameboy()) {
+		return _cart->GetGameboy()->GetCycleCount();
+	} else {
+		return _memoryManager->GetMasterClock();
+	}
+}
+
 uint32_t Console::GetMasterClockRate()
 {
 	return _masterClockRate;
@@ -496,10 +518,14 @@ void Console::UpdateRegion()
 
 double Console::GetFps()
 {
-	if(_region == ConsoleRegion::Ntsc) {
-		return _settings->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.098812;
+	if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+		return 59.72750056960583;
 	} else {
-		return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.006978;
+		if(_region == ConsoleRegion::Ntsc) {
+			return _settings->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.0988118623484;
+		} else {
+			return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.00697796826829;
+		}
 	}
 }
 
@@ -511,10 +537,14 @@ double Console::GetFrameDelay()
 		frameDelay = 0;
 	} else {
 		UpdateRegion();
-		switch(_region) {
-			default:
-			case ConsoleRegion::Ntsc: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947; break;
-			case ConsoleRegion::Pal: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146; break;
+		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+			frameDelay = 16.74270629882813;
+		} else {
+			switch(_region) {
+				default:
+				case ConsoleRegion::Ntsc: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947; break;
+				case ConsoleRegion::Pal: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146; break;
+			}
 		}
 		frameDelay /= (emulationSpeed / 100.0);
 	}
@@ -525,7 +555,11 @@ void Console::PauseOnNextFrame()
 {
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
-		debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
+		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+			debugger->Step(CpuType::Cpu, 144, StepType::SpecificScanline);
+		} else {
+			debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
+		}
 	} else {
 		_pauseOnNextFrame = true;
 		_paused = false;
@@ -536,7 +570,11 @@ void Console::Pause()
 {
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
-		debugger->Step(CpuType::Cpu, 1, StepType::Step);
+		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+			debugger->Step(CpuType::Gameboy, 1, StepType::Step);
+		} else {
+			debugger->Step(CpuType::Cpu, 1, StepType::Step);
+		}
 	} else {
 		_paused = true;
 	}
@@ -641,16 +679,23 @@ void Console::WaitForLock()
 void Console::Serialize(ostream &out, int compressionLevel)
 {
 	Serializer serializer(SaveStateManager::FileFormatVersion);
-	serializer.Stream(_cpu.get());
-	serializer.Stream(_memoryManager.get());
-	serializer.Stream(_ppu.get());
-	serializer.Stream(_dmaController.get());
-	serializer.Stream(_internalRegisters.get());
-	serializer.Stream(_cart.get());
-	serializer.Stream(_controlManager.get());
-	serializer.Stream(_spc.get());
-	if(_msu1) {
-		serializer.Stream(_msu1.get());
+	bool isGameboyMode = _settings->CheckFlag(EmulationFlags::GameboyMode);
+
+	if(!isGameboyMode) {
+		serializer.Stream(_cpu.get());
+		serializer.Stream(_memoryManager.get());
+		serializer.Stream(_ppu.get());
+		serializer.Stream(_dmaController.get());
+		serializer.Stream(_internalRegisters.get());
+		serializer.Stream(_cart.get());
+		serializer.Stream(_controlManager.get());
+		serializer.Stream(_spc.get());
+		if(_msu1) {
+			serializer.Stream(_msu1.get());
+		}
+	} else {
+		serializer.Stream(_cart.get());
+		serializer.Stream(_controlManager.get());
 	}
 	serializer.Save(out, compressionLevel);
 }
@@ -658,16 +703,23 @@ void Console::Serialize(ostream &out, int compressionLevel)
 void Console::Deserialize(istream &in, uint32_t fileFormatVersion, bool compressed)
 {
 	Serializer serializer(in, fileFormatVersion, compressed);
-	serializer.Stream(_cpu.get());
-	serializer.Stream(_memoryManager.get());
-	serializer.Stream(_ppu.get());
-	serializer.Stream(_dmaController.get());
-	serializer.Stream(_internalRegisters.get());
-	serializer.Stream(_cart.get());
-	serializer.Stream(_controlManager.get());
-	serializer.Stream(_spc.get());
-	if(_msu1) {
-		serializer.Stream(_msu1.get());
+	bool isGameboyMode = _settings->CheckFlag(EmulationFlags::GameboyMode);
+
+	if(!isGameboyMode) {
+		serializer.Stream(_cpu.get());
+		serializer.Stream(_memoryManager.get());
+		serializer.Stream(_ppu.get());
+		serializer.Stream(_dmaController.get());
+		serializer.Stream(_internalRegisters.get());
+		serializer.Stream(_cart.get());
+		serializer.Stream(_controlManager.get());
+		serializer.Stream(_spc.get());
+		if(_msu1) {
+			serializer.Stream(_msu1.get());
+		}
+	} else {
+		serializer.Stream(_cart.get());
+		serializer.Stream(_controlManager.get());
 	}
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 }
@@ -820,6 +872,17 @@ bool Console::IsRunAheadFrame()
 	return _isRunAheadFrame;
 }
 
+uint32_t Console::GetFrameCount()
+{
+	shared_ptr<BaseCartridge> cart = _cart;
+	if(_settings->CheckFlag(EmulationFlags::GameboyMode) && cart->GetGameboy()) {
+		return cart->GetGameboy()->GetState().Ppu.FrameCount;
+	} else {
+		shared_ptr<Ppu> ppu = _ppu;
+		return ppu ? ppu->GetFrameCount() : 0;
+	}
+}
+
 template<CpuType type>
 void Console::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
@@ -864,10 +927,10 @@ void Console::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
 	}
 }
 
-void Console::ProcessPpuCycle()
+void Console::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
 {
 	if(_debugger) {
-		_debugger->ProcessPpuCycle();
+		_debugger->ProcessPpuCycle(scanline, cycle);
 	}
 }
 
@@ -882,7 +945,7 @@ void Console::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool for
 void Console::ProcessEvent(EventType type)
 {
 	if(type == EventType::EndFrame && _spcHud) {
-		_spcHud->Draw(_ppu->GetFrameCount());
+		_spcHud->Draw(GetFrameCount());
 	}
 
 	if(_debugger) {
@@ -896,6 +959,7 @@ template void Console::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t va
 template void Console::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Console::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -903,6 +967,7 @@ template void Console::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t v
 template void Console::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Console::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Console::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Console::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

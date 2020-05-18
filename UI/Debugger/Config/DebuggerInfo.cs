@@ -30,6 +30,8 @@ namespace Mesen.GUI.Config
 		
 		public bool AutoResetCdl = true;
 
+		public bool ShowMemoryMappings = true;
+
 		public bool BringToFrontOnBreak = true;
 		public bool BringToFrontOnPause = false;
 

@@ -423,6 +423,7 @@
     <ClInclude Include="AviRecorder.h" />
     <ClInclude Include="AviWriter.h" />
     <ClInclude Include="Base64.h" />
+    <ClInclude Include="blip_buf.h" />
     <ClInclude Include="BpsPatcher.h" />
     <ClInclude Include="CamstudioCodec.h" />
     <ClInclude Include="CRC32.h" />
@@ -477,6 +478,7 @@
     <ClCompile Include="ArchiveReader.cpp" />
     <ClCompile Include="AviRecorder.cpp" />
     <ClCompile Include="AviWriter.cpp" />
+    <ClCompile Include="blip_buf.cpp" />
     <ClCompile Include="BpsPatcher.cpp" />
     <ClCompile Include="CamstudioCodec.cpp" />
     <ClCompile Include="CRC32.cpp" />

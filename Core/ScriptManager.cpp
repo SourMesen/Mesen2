@@ -77,11 +77,11 @@ void ScriptManager::ProcessEvent(EventType type)
 	}
 }
 
-void ScriptManager::ProcessMemoryOperation(uint32_t address, uint8_t &value, MemoryOperationType type)
+void ScriptManager::ProcessMemoryOperation(uint32_t address, uint8_t &value, MemoryOperationType type, CpuType cpuType)
 {
 	if(_hasScript) {
 		for(shared_ptr<ScriptHost> &script : _scripts) {
-			script->ProcessMemoryOperation(address, value, type);
+			script->ProcessMemoryOperation(address, value, type, cpuType);
 		}
 	}
 }

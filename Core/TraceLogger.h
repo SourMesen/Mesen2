@@ -3,6 +3,7 @@
 #include "CpuTypes.h"
 #include "PpuTypes.h"
 #include "SpcTypes.h"
+#include "GbTypes.h"
 #include "DebugTypes.h"
 #include "DisassemblyInfo.h"
 #include "DebugUtilities.h"
@@ -23,6 +24,7 @@ struct TraceLoggerOptions
 	bool LogSa1;
 	bool LogGsu;
 	bool LogCx4;
+	bool LogGameboy;
 
 	bool ShowExtraInfo;
 	bool IndentCode;
@@ -44,9 +46,15 @@ enum class RowDataType
 	Align,
 	PC,
 	A,
+	B,
+	C,
+	D,
+	E,
+	F,
+	H,
+	L,
 	X,
 	Y,
-	D,
 	DB,
 	SP,
 	PS,
@@ -87,6 +95,7 @@ private:
 	vector<RowPart> _dspRowParts;
 	vector<RowPart> _gsuRowParts;
 	vector<RowPart> _cx4RowParts;
+	vector<RowPart> _gbRowParts;
 
 	bool _logCpu[(int)DebugUtilities::GetLastCpuType() + 1] = {};
 
@@ -124,7 +133,8 @@ private:
 	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, NecDspState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, GsuState &gsuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
-	void GetTraceRow(string &output, Cx4State &cx4State, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string& output, Cx4State& cx4State, PpuState& ppuState, DisassemblyInfo& disassemblyInfo);
+	void GetTraceRow(string &output, GbCpuState &gbState, GbPpuState &gbPpuState, DisassemblyInfo &disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 

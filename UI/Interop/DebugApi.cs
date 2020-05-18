@@ -88,6 +88,7 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, PpuState state, byte[] vram, byte[] cgram, [In, Out] byte[] buffer);
+		[DllImport(DllPath)] public static extern void GetGameboyTilemap(byte[] vram, UInt16 offset, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, byte[] cgram, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, byte[] cgram, [In, Out] byte[] buffer);
 
@@ -191,6 +192,7 @@ namespace Mesen.GUI
 		NecDspMemory,
 		GsuMemory,
 		Cx4Memory,
+		GameboyMemory,
 		PrgRom,
 		WorkRam,
 		SaveRam,
@@ -207,6 +209,11 @@ namespace Mesen.GUI
 		Cx4DataRam,
 		BsxPsRam,
 		BsxMemoryPack,
+		GbPrgRom,
+		GbWorkRam,
+		GbCartRam,
+		GbVideoRam,
+		GbHighRam,
 		Register,
 	}
 
@@ -233,6 +240,12 @@ namespace Mesen.GUI
 				case SnesMemoryType.DspProgramRom:
 					return CpuType.NecDsp;
 
+				case SnesMemoryType.GbPrgRom:
+				case SnesMemoryType.GbWorkRam:
+				case SnesMemoryType.GbCartRam:
+				case SnesMemoryType.GbHighRam:
+					return CpuType.Gameboy;
+
 				default:
 					return CpuType.Cpu;
 			}
@@ -245,6 +258,9 @@ namespace Mesen.GUI
 				case SnesMemoryType.SpcMemory:
 				case SnesMemoryType.Sa1Memory:
 				case SnesMemoryType.GsuMemory:
+				case SnesMemoryType.NecDspMemory:
+				case SnesMemoryType.Cx4Memory:
+				case SnesMemoryType.GameboyMemory:
 					return true;
 			}
 			return false;
@@ -260,6 +276,10 @@ namespace Mesen.GUI
 				case SnesMemoryType.SpcRam:
 				case SnesMemoryType.SpcRom:
 				case SnesMemoryType.Sa1InternalRam:
+				case SnesMemoryType.GbPrgRom:
+				case SnesMemoryType.GbWorkRam:
+				case SnesMemoryType.GbCartRam:
+				case SnesMemoryType.GbHighRam:
 					return true;
 			}
 
@@ -273,6 +293,9 @@ namespace Mesen.GUI
 				case SnesMemoryType.SpcMemory:
 				case SnesMemoryType.Sa1Memory:
 				case SnesMemoryType.GsuMemory:
+				case SnesMemoryType.NecDspMemory:
+				case SnesMemoryType.Cx4Memory:
+				case SnesMemoryType.GameboyMemory:
 					return true;
 			}
 
@@ -461,6 +484,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool LogSa1;
 		[MarshalAs(UnmanagedType.I1)] public bool LogGsu;
 		[MarshalAs(UnmanagedType.I1)] public bool LogCx4;
+		[MarshalAs(UnmanagedType.I1)] public bool LogGameboy;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;
@@ -507,7 +531,8 @@ namespace Mesen.GUI
 		NecDsp,
 		Sa1,
 		Gsu,
-		Cx4
+		Cx4,
+		Gameboy
 	}
 
 	public static class CpuTypeExtensions
@@ -521,6 +546,7 @@ namespace Mesen.GUI
 				case CpuType.Sa1: return SnesMemoryType.Sa1Memory;
 				case CpuType.Gsu: return SnesMemoryType.GsuMemory;
 				case CpuType.Cx4: return SnesMemoryType.Cx4Memory;
+				case CpuType.Gameboy: return SnesMemoryType.GameboyMemory;
 
 				default:
 					throw new Exception("Invalid CPU type");
@@ -536,6 +562,7 @@ namespace Mesen.GUI
 				case CpuType.Sa1: return 6;
 				case CpuType.Gsu: return 6;
 				case CpuType.Cx4: return 6;
+				case CpuType.Gameboy: return 4;
 
 				default:
 					throw new Exception("Invalid CPU type");

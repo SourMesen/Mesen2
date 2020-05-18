@@ -219,7 +219,7 @@ void MemoryManager::Exec()
 		}
 
 		if((_hClock & 0x03) == 0) {
-			_console->ProcessPpuCycle();
+			_console->ProcessPpuCycle(_ppu->GetScanline(), _hClock);
 			_regs->ProcessIrqCounters();
 
 			if(_hClock == 276 * 4 && _ppu->GetScanline() < _ppu->GetVblankStart()) {
@@ -236,7 +236,7 @@ void MemoryManager::Exec()
 			_cpu->IncreaseCycleCount<5>();
 		}
 	} else if((_hClock & 0x03) == 0) {
-		_console->ProcessPpuCycle();
+		_console->ProcessPpuCycle(_ppu->GetScanline(), _hClock);
 		_regs->ProcessIrqCounters();
 	}
 

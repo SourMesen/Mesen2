@@ -48,7 +48,7 @@ void SoundMixer::StopAudio(bool clearBuffer)
 	}
 }
 
-void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
+void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_t sourceRate)
 {
 	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
 
@@ -71,7 +71,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount)
 	_rightSample = samples[1];
 
 	int16_t *out = _sampleBuffer;
-	uint32_t count = _resampler->Resample(samples, sampleCount, cfg.SampleRate, out);
+	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out);
 
 	shared_ptr<Msu1> msu1 = _console->GetMsu1();
 	if(msu1) {

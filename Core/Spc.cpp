@@ -376,7 +376,7 @@ void Spc::ProcessEndFrame()
 
 	int sampleCount = _dsp->sample_count();
 	if(sampleCount != 0) {
-		_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2);
+		_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2, Spc::SpcSampleRate);
 	}
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 }

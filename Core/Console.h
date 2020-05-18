@@ -84,6 +84,7 @@ private:
 	uint32_t _masterClockRate;
 
 	atomic<bool> _isRunAheadFrame;
+	bool _frameRunning = false;
 
 	unique_ptr<DebugStats> _stats;
 	unique_ptr<FrameLimiter> _frameLimiter;
@@ -125,6 +126,7 @@ public:
 
 	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
 	RomInfo GetRomInfo();
+	uint64_t GetMasterClock();
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();
 
@@ -166,7 +168,8 @@ public:
 	
 	bool IsRunning();
 	bool IsRunAheadFrame();
-	
+
+	uint32_t GetFrameCount();	
 	double GetFps();
 
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -175,7 +178,7 @@ public:
 	void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
 	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
-	void ProcessPpuCycle();
+	void ProcessPpuCycle(uint16_t scanline, uint16_t cycle);
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 };

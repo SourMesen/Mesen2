@@ -114,7 +114,41 @@ namespace Mesen.GUI.Debugger
 
 		public void RefreshData()
 		{
-			_cgRam = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy) {
+				_cgRam = GetGameboyPalette();
+			} else {
+				_cgRam = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+			}
+		}
+
+		public static byte[] GetGameboyPalette()
+		{
+			byte[] cgRam = new byte[512];
+
+			//Generate a fake SNES-like palette based on the gameboy PPU state
+			GbPpuState state = DebugApi.GetState().Gameboy.Ppu;
+
+			byte[,] paletteBytes = new byte[4,2] {
+				{ 0xFF, 0x7F}, {0x18,0x63}, {0x8C, 0x31}, {0,0}
+			};
+
+			Action<byte, UInt16> setPalette = (byte pal, UInt16 offset) => {
+				cgRam[offset] = paletteBytes[pal & 0x03, 0];
+				cgRam[offset+1] = paletteBytes[pal & 0x03, 1];
+				cgRam[offset+2] = paletteBytes[(pal >> 2) & 0x03, 0];
+				cgRam[offset+3] = paletteBytes[(pal >> 2) & 0x03, 1];
+				cgRam[offset+4] = paletteBytes[(pal >> 4) & 0x03, 0];
+				cgRam[offset+5] = paletteBytes[(pal >> 4) & 0x03, 1];
+				cgRam[offset+6] = paletteBytes[(pal >> 6) & 0x03, 0];
+				cgRam[offset+7] = paletteBytes[(pal >> 6) & 0x03, 1];
+			};
+
+			setPalette(state.BgPalette, 0);
+			setPalette(state.ObjPalette0, 32);
+			setPalette(state.ObjPalette1, 64);
+			setPalette(0xE4, 96);
+
+			return cgRam;
 		}
 
 		private uint To8Bit(int color)

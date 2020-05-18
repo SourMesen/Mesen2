@@ -35,13 +35,13 @@ bool ScriptHost::LoadScript(string scriptName, string scriptContent, Debugger* d
 #endif
 }
 
-void ScriptHost::ProcessMemoryOperation(uint32_t addr, uint8_t &value, MemoryOperationType type)
+void ScriptHost::ProcessMemoryOperation(uint32_t addr, uint8_t &value, MemoryOperationType type, CpuType cpuType)
 {
 	if(_context) {
 		switch(type) {
-			case MemoryOperationType::Read: _context->CallMemoryCallback(addr, value, CallbackType::CpuRead); break;
-			case MemoryOperationType::Write: _context->CallMemoryCallback(addr, value, CallbackType::CpuWrite); break;
-			case MemoryOperationType::ExecOpCode: _context->CallMemoryCallback(addr, value, CallbackType::CpuExec); break;
+			case MemoryOperationType::Read: _context->CallMemoryCallback(addr, value, CallbackType::CpuRead, cpuType); break;
+			case MemoryOperationType::Write: _context->CallMemoryCallback(addr, value, CallbackType::CpuWrite, cpuType); break;
+			case MemoryOperationType::ExecOpCode: _context->CallMemoryCallback(addr, value, CallbackType::CpuExec, cpuType); break;
 			default: break;
 		}
 	}

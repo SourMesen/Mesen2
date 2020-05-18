@@ -3,14 +3,11 @@
 #include "BaseControlDevice.h"
 #include "../Utilities/Serializer.h"
 
-class Ppu;
-
 class SnesController : public BaseControlDevice
 {
 private:
 	uint32_t _stateBuffer = 0;
 	uint8_t _turboSpeed = 0;
-	Ppu *_ppu;
 
 protected:
 	string GetKeyNames() override;

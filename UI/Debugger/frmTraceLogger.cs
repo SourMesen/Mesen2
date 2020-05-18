@@ -50,6 +50,7 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogSa1), chkLogSa1);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogGsu), chkLogGsu);
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogCx4), chkLogCx4);
+			_entityBinder.AddBinding(nameof(TraceLoggerOptions.LogGameboy), chkLogGameboy);
 
 			_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowByteCode), chkShowByteCode);
 			//_entityBinder.AddBinding(nameof(TraceLoggerOptions.ShowCpuCycles), chkShowCpuCycles);
@@ -93,6 +94,8 @@ namespace Mesen.GUI.Debugger
 				"[Scanline,h] will display the scanline in hexadecimal." + Environment.NewLine +
 				"[Align,50]: Align is a special tag that is useful when trying to align some content. [Align,50] will make the next tag start on column 50."
 			);
+
+			UpdateAvailableOptions();
 
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
@@ -165,8 +168,21 @@ namespace Mesen.GUI.Debugger
 				case ConsoleNotificationType.GameLoaded:
 					//Configuration is lost when debugger is restarted (when switching game or power cycling)
 					SetCoreOptions();
+					this.BeginInvoke((Action)(() => this.UpdateAvailableOptions()));
 					break;
 			}
+		}
+
+		private void UpdateAvailableOptions()
+		{
+			CoprocessorType coproc = EmuApi.GetRomInfo().CoprocessorType;
+			chkLogCpu.Visible = coproc != CoprocessorType.Gameboy;
+			chkLogSpc.Visible = coproc != CoprocessorType.Gameboy;
+			chkLogNecDsp.Visible = (coproc >= CoprocessorType.DSP1 && coproc <= CoprocessorType.DSP4) || (coproc >= CoprocessorType.ST010 && coproc <= CoprocessorType.ST011);
+			chkLogSa1.Visible = coproc == CoprocessorType.SA1;
+			chkLogGsu.Visible = coproc == CoprocessorType.GSU;
+			chkLogCx4.Visible = coproc == CoprocessorType.CX4;
+			chkLogGameboy.Visible = coproc == CoprocessorType.Gameboy;
 		}
 
 		protected void UpdateFormatOptions()
@@ -232,13 +248,16 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.UpdateObject();
 			TraceLoggerOptions options = (TraceLoggerOptions)_entityBinder.Entity;
 
+			CoprocessorType coproc = EmuApi.GetRomInfo().CoprocessorType;
+
 			_interopOptions = new InteropTraceLoggerOptions();
-			_interopOptions.LogCpu = !disableLogging && options.LogCpu;
-			_interopOptions.LogSpc = !disableLogging && options.LogSpc;
+			_interopOptions.LogCpu = !disableLogging && options.LogCpu && coproc != CoprocessorType.Gameboy;
+			_interopOptions.LogSpc = !disableLogging && options.LogSpc && coproc != CoprocessorType.Gameboy;
 			_interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
 			_interopOptions.LogSa1 = !disableLogging && options.LogSa1;
 			_interopOptions.LogGsu = !disableLogging && options.LogGsu;
 			_interopOptions.LogCx4 = !disableLogging && options.LogCx4;
+			_interopOptions.LogGameboy = !disableLogging && options.LogGameboy;
 			_interopOptions.IndentCode = options.IndentCode;
 			_interopOptions.ShowExtraInfo = options.ShowExtraInfo;
 			_interopOptions.UseLabels = options.UseLabels;

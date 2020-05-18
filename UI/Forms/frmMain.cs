@@ -282,6 +282,7 @@ namespace Mesen.GUI.Forms
 			mnuGsuDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenGsuDebugger));
 			mnuNecDspDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenNecDspDebugger));
 			mnuCx4Debugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenCx4Debugger));
+			mnuGbDebugger.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenGameboyDebugger));
 			mnuMemoryTools.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenMemoryTools));
 			mnuEventViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenEventViewer));
 			mnuTilemapViewer.InitShortcut(this, nameof(DebuggerShortcutsConfig.OpenTilemapViewer));
@@ -346,6 +347,7 @@ namespace Mesen.GUI.Forms
 			mnuGsuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GsuDebugger); };
 			mnuNecDspDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.NecDspDebugger); };
 			mnuCx4Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Cx4Debugger); };
+			mnuGbDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbDebugger); };
 			mnuTraceLogger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger); };
 			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
 			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
@@ -467,6 +469,28 @@ namespace Mesen.GUI.Forms
 			mnuRegisterViewer.Enabled = running;
 			mnuProfiler.Enabled = running;
 			mnuAssembler.Enabled = running;
+
+			bool isGameboyMode = coprocessor == CoprocessorType.Gameboy;
+			mnuGbDebugger.Enabled = isGameboyMode;
+			mnuGbDebugger.Visible = isGameboyMode;
+			sepGameboyDebugger.Visible = isGameboyMode;
+			
+			if(isGameboyMode) {
+				//Remove/disable all tools that aren't useful when running a plain GB game
+				mnuGbDebugger.Text = "Debugger";
+
+				mnuDebugger.Enabled = false;
+				mnuDebugger.Visible = false;
+				mnuSpcDebugger.Enabled = false;
+				mnuSpcDebugger.Visible = false;
+				mnuSpriteViewer.Enabled = false;
+				mnuSpriteViewer.Visible = false;
+				mnuEventViewer.Enabled = false;
+				mnuEventViewer.Visible = false;
+				mnuAssembler.Enabled = false;
+				mnuAssembler.Visible = false;
+				sepCoprocessors.Visible = false;
+			}
 		}
 		
 		private void ResizeRecentGames()
@@ -666,8 +690,9 @@ namespace Mesen.GUI.Forms
 		{
 			bool isClient = NetplayApi.IsConnected();
 			bool runAheadDisabled = ConfigManager.Config.Emulation.RunAheadFrames == 0;
+			bool isGameboyMode = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
 
-			mnuNetPlay.Enabled = runAheadDisabled;
+			mnuNetPlay.Enabled = runAheadDisabled && !isGameboyMode;
 
 			mnuMovies.Enabled = runAheadDisabled && EmuRunner.IsRunning();
 			mnuPlayMovie.Enabled = runAheadDisabled && EmuRunner.IsRunning() && !RecordApi.MoviePlaying() && !RecordApi.MovieRecording() && !isClient;
@@ -682,7 +707,7 @@ namespace Mesen.GUI.Forms
 			mnuAviRecord.Enabled = EmuRunner.IsRunning() && !RecordApi.AviIsRecording();
 			mnuAviStop.Enabled = EmuRunner.IsRunning() && RecordApi.AviIsRecording();
 
-			mnuCheats.Enabled = EmuRunner.IsRunning() && !isClient;
+			mnuCheats.Enabled = EmuRunner.IsRunning() && !isClient && !isGameboyMode;
 		}
 
 		private void mnuAviRecord_Click(object sender, EventArgs e)

@@ -23,6 +23,7 @@ public:
 	DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags, CpuType type);
 
 	void Initialize(uint8_t *opPointer, uint8_t cpuFlags, CpuType type);
+	void Initialize(uint32_t cpuAddress, uint8_t cpuFlags, CpuType type, MemoryDumper* memoryDumper);
 	bool IsInitialized();
 	bool IsValid(uint8_t cpuFlags);
 	void Reset();
@@ -42,7 +43,8 @@ public:
 	static bool IsJumpToSub(uint8_t opCode, CpuType type);
 	static bool IsReturnInstruction(uint8_t opCode, CpuType type);
 
-	bool UpdateCpuFlags(uint8_t & cpuFlags);
+	bool IsUnconditionalJump();
+	void UpdateCpuFlags(uint8_t& cpuFlags);
 
 	int32_t GetEffectiveAddress(Console *console, void *cpuState, CpuType type);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize);

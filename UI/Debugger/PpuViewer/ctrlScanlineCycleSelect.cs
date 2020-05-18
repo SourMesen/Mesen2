@@ -42,12 +42,13 @@ namespace Mesen.GUI.Debugger.Controls
 			this.nudScanline.Value = _scanline;
 			this.nudCycle.Value = _cycle;
 
-			DebugApi.SetViewerUpdateTiming(_viewerId, _scanline, _cycle);
+			RefreshSettings();
 		}
 
 		public void RefreshSettings()
 		{
-			DebugApi.SetViewerUpdateTiming(_viewerId, _scanline, _cycle);
+			bool isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+			DebugApi.SetViewerUpdateTiming(_viewerId, Math.Min(_scanline, isGameboy ? 153 : 312), _cycle);
 		}
 
 		private void SetUpdateScanlineCycle(int scanline, int cycle)
@@ -64,7 +65,8 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void btnReset_Click(object sender, EventArgs e)
 		{
-			this.nudScanline.Value = 241;
+			bool isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+			this.nudScanline.Value = isGameboy ? 144 : 241;
 			this.nudCycle.Value = 0;
 		}
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "DebugTypes.h"
 #include "ScriptingContext.h"
 #include "EventType.h"
 #include "../Utilities/Timer.h"
@@ -19,7 +20,7 @@ private:
 	static void ExecutionCountHook(lua_State* lua, lua_Debug* ar);
 
 protected:
-	void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type) override;
+	void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType) override;
 	int InternalCallEventCallback(EventType type) override;
 
 public:
@@ -30,6 +31,6 @@ public:
 
 	bool LoadScript(string scriptName, string scriptContent, Debugger* debugger) override;
 	
-	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, int reference) override;
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference) override;
 	void UnregisterEventCallback(EventType type, int reference) override;
 };

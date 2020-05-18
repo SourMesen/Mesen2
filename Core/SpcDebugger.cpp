@@ -12,7 +12,6 @@
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "EmuSettings.h"
-#include "Profiler.h"
 
 SpcDebugger::SpcDebugger(Debugger* debugger)
 {
@@ -56,7 +55,7 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 				DebugState debugState;
 				_debugger->GetState(debugState, true);
 
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo);
+				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
 				_traceLogger->Log(CpuType::Spc, debugState, disInfo);
 			}
 		}

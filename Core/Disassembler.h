@@ -11,6 +11,7 @@ class Cpu;
 class Spc;
 class Gsu;
 class Sa1;
+class Gameboy;
 class Debugger;
 class LabelManager;
 class CodeDataLogger;
@@ -35,6 +36,7 @@ private:
 	Spc* _spc;
 	Gsu* _gsu;
 	Sa1* _sa1;
+	Gameboy* _gameboy;
 	EmuSettings* _settings;
 	Debugger *_debugger;
 	shared_ptr<CodeDataLogger> _cdl;
@@ -52,6 +54,11 @@ private:
 	vector<DisassemblyInfo> _bsxPsRamCache;
 	vector<DisassemblyInfo> _bsxMemPackCache;
 	
+	vector<DisassemblyInfo> _gbPrgCache;
+	vector<DisassemblyInfo> _gbWorkRamCache;
+	vector<DisassemblyInfo> _gbCartRamCache;
+	vector<DisassemblyInfo> _gbHighRamCache;
+	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
 	vector<DisassemblyResult> _spcDisassembly;
@@ -59,6 +66,7 @@ private:
 	vector<DisassemblyResult> _gsuDisassembly;
 	vector<DisassemblyResult> _necDspDisassembly;
 	vector<DisassemblyResult> _cx4Disassembly;
+	vector<DisassemblyResult> _gbDisassembly;
 
 	DisassemblerSource _sources[(int)SnesMemoryType::Register];
 
@@ -89,6 +97,15 @@ private:
 	uint8_t* _bsxMemPack;
 	uint32_t _bsxMemPackSize;
 
+	uint8_t* _gbPrgRom;
+	uint32_t _gbPrgRomSize;
+	uint8_t* _gbWorkRam;
+	uint32_t _gbWorkRamSize;
+	uint8_t* _gbCartRam;
+	uint32_t _gbCartRamSize;
+	uint8_t* _gbHighRam;
+	uint32_t _gbHighRamSize;
+
 	DisassemblerSource GetSource(SnesMemoryType type);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);
 	void SetDisassembleFlag(CpuType type);
@@ -101,7 +118,7 @@ public:
 	void InvalidateCache(AddressInfo addrInfo, CpuType type);
 	void Disassemble(CpuType cpuType);
 
-	DisassemblyInfo GetDisassemblyInfo(AddressInfo &info);
+	DisassemblyInfo GetDisassemblyInfo(AddressInfo &info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type);
 
 	void RefreshDisassembly(CpuType type);
 	uint32_t GetLineCount(CpuType type);

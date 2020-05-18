@@ -44,7 +44,8 @@ enum class CoprocessorType
 	ST010,
 	ST011,
 	ST018,
-	CX4
+	CX4,
+	Gameboy
 };
 
 struct RomInfo

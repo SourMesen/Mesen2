@@ -81,6 +81,8 @@ namespace Mesen.GUI.Config
 		public XmlKeys OpenNecDspDebugger = Keys.None;
 		[ShortcutName("Open CX4 Debugger")]
 		public XmlKeys OpenCx4Debugger = Keys.None;
+		[ShortcutName("Open Game Boy Debugger")]
+		public XmlKeys OpenGameboyDebugger = Keys.None;
 		[ShortcutName("Open Event Viewer")]
 		public XmlKeys OpenEventViewer = Keys.Control | Keys.E;
 		[ShortcutName("Open Memory Tools")]

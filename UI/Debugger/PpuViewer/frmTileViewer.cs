@@ -196,7 +196,12 @@ namespace Mesen.GUI.Debugger
 		public void RefreshData()
 		{
 			_state = DebugApi.GetState();
-			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+
+			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy) {
+				_cgram = ctrlPaletteViewer.GetGameboyPalette();
+			} else {
+				_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+			}
 
 			byte[] source = DebugApi.GetMemoryState(_memoryType);
 
@@ -246,6 +251,11 @@ namespace Mesen.GUI.Debugger
 			btnPresetBg3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
 			btnPresetBg4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
 
+			bool isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+			lblPresets.Visible = !isGameboy;
+			tlpPresets1.Visible = !isGameboy;
+			tlpPresets2.Visible = !isGameboy;
+
 			UpdateMapSize();
 			ctrlImagePanel.Refresh();
 
@@ -266,35 +276,54 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.BeginUpdate();
 			cboMemoryType.Items.Clear();
 
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
-			cboMemoryType.Items.Add("-");
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
-			cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
-			if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
-			}
+			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy) {
+				AddGameboyTypes();
+			} else {
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.VideoRam));
+				cboMemoryType.Items.Add("-");
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.CpuMemory));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.PrgRom));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.WorkRam));
+				if(DebugApi.GetMemorySize(SnesMemoryType.SaveRam) > 0) {
+					cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.SaveRam));
+				}
 
-			if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
-			}
-			if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1Memory));
-			}
-			if(DebugApi.GetMemorySize(SnesMemoryType.BsxPsRam) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxPsRam));
-			}
-			if(DebugApi.GetMemorySize(SnesMemoryType.BsxMemoryPack) > 0) {
-				cboMemoryType.Items.Add("-");
-				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxMemoryPack));
+				if(DebugApi.GetMemorySize(SnesMemoryType.GsuWorkRam) > 0) {
+					cboMemoryType.Items.Add("-");
+					cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GsuWorkRam));
+				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.Sa1InternalRam) > 0) {
+					cboMemoryType.Items.Add("-");
+					cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1InternalRam));
+					cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.Sa1Memory));
+				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.BsxPsRam) > 0) {
+					cboMemoryType.Items.Add("-");
+					cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxPsRam));
+				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.BsxMemoryPack) > 0) {
+					cboMemoryType.Items.Add("-");
+					cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.BsxMemoryPack));
+				}
+				AddGameboyTypes();
 			}
 
 			cboMemoryType.SelectedIndex = 0;
 			cboMemoryType.EndUpdate();
+		}
+
+		private void AddGameboyTypes()
+		{
+			if(DebugApi.GetMemorySize(SnesMemoryType.GbPrgRom) > 0) {
+				if(cboMemoryType.Items.Count > 0) {
+					cboMemoryType.Items.Add("-");
+				}
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbVideoRam));
+				cboMemoryType.Items.Add("-");
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbPrgRom));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbWorkRam));
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));
+			}
 		}
 
 		private void UpdatePaletteControl()

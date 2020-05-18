@@ -149,6 +149,8 @@
 			this.mnuRandomGame = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTakeScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDebug = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbDebugger = new System.Windows.Forms.ToolStripMenuItem();
+			this.sepGameboyDebugger = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
@@ -163,11 +165,12 @@
 			this.mnuTileViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuSpriteViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuPaletteViewer = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripSeparator();
+			this.sepCoprocessors = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuSpcDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuSa1Debugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuGsuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuNecDspDebugger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuCx4Debugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuCheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripSeparator();
@@ -176,7 +179,6 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
-			this.mnuCx4Debugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -1092,6 +1094,8 @@
 			// mnuDebug
 			// 
 			this.mnuDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuGbDebugger,
+            this.sepGameboyDebugger,
             this.mnuDebugger,
             this.mnuEventViewer,
             this.mnuMemoryTools,
@@ -1106,7 +1110,7 @@
             this.mnuTileViewer,
             this.mnuSpriteViewer,
             this.mnuPaletteViewer,
-            this.toolStripMenuItem22,
+            this.sepCoprocessors,
             this.mnuSpcDebugger,
             this.mnuSa1Debugger,
             this.mnuGsuDebugger,
@@ -1117,6 +1121,18 @@
 			this.mnuDebug.Text = "Debug";
 			this.mnuDebug.DropDownClosed += new System.EventHandler(this.mnu_DropDownClosed);
 			this.mnuDebug.DropDownOpened += new System.EventHandler(this.mnu_DropDownOpened);
+			// 
+			// mnuGbDebugger
+			// 
+			this.mnuGbDebugger.Image = global::Mesen.GUI.Properties.Resources.GbDebugger;
+			this.mnuGbDebugger.Name = "mnuGbDebugger";
+			this.mnuGbDebugger.Size = new System.Drawing.Size(183, 22);
+			this.mnuGbDebugger.Text = "Game Boy Debugger";
+			// 
+			// sepGameboyDebugger
+			// 
+			this.sepGameboyDebugger.Name = "sepGameboyDebugger";
+			this.sepGameboyDebugger.Size = new System.Drawing.Size(180, 6);
 			// 
 			// mnuDebugger
 			// 
@@ -1212,10 +1228,10 @@
 			this.mnuPaletteViewer.Size = new System.Drawing.Size(183, 22);
 			this.mnuPaletteViewer.Text = "Palette Viewer";
 			// 
-			// toolStripMenuItem22
+			// sepCoprocessors
 			// 
-			this.toolStripMenuItem22.Name = "toolStripMenuItem22";
-			this.toolStripMenuItem22.Size = new System.Drawing.Size(180, 6);
+			this.sepCoprocessors.Name = "sepCoprocessors";
+			this.sepCoprocessors.Size = new System.Drawing.Size(180, 6);
 			// 
 			// mnuSpcDebugger
 			// 
@@ -1244,6 +1260,13 @@
 			this.mnuNecDspDebugger.Name = "mnuNecDspDebugger";
 			this.mnuNecDspDebugger.Size = new System.Drawing.Size(183, 22);
 			this.mnuNecDspDebugger.Text = "DSP Debugger";
+			// 
+			// mnuCx4Debugger
+			// 
+			this.mnuCx4Debugger.Image = global::Mesen.GUI.Properties.Resources.Cx4Debugger;
+			this.mnuCx4Debugger.Name = "mnuCx4Debugger";
+			this.mnuCx4Debugger.Size = new System.Drawing.Size(183, 22);
+			this.mnuCx4Debugger.Text = "CX4 Debugger";
 			// 
 			// mnuHelp
 			// 
@@ -1312,13 +1335,6 @@
 			this.ctrlRecentGames.Size = new System.Drawing.Size(512, 265);
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
-			// 
-			// mnuCx4Debugger
-			// 
-			this.mnuCx4Debugger.Image = global::Mesen.GUI.Properties.Resources.Cx4Debugger;
-			this.mnuCx4Debugger.Name = "mnuCx4Debugger";
-			this.mnuCx4Debugger.Size = new System.Drawing.Size(183, 22);
-			this.mnuCx4Debugger.Text = "CX4 Debugger";
 			// 
 			// frmMain
 			// 
@@ -1455,7 +1471,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuWaveStop;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
 		private System.Windows.Forms.ToolStripMenuItem mnuPaletteViewer;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem22;
+		private System.Windows.Forms.ToolStripSeparator sepCoprocessors;
 		private System.Windows.Forms.ToolStripMenuItem mnuTileViewer;
 		private System.Windows.Forms.ToolStripMenuItem mnuSpcDebugger;
 		private System.Windows.Forms.ToolStripMenuItem mnuSpriteViewer;
@@ -1495,5 +1511,7 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuReloadRom;
 	  private System.Windows.Forms.ToolStripMenuItem mnuNecDspDebugger;
 	  private System.Windows.Forms.ToolStripMenuItem mnuCx4Debugger;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbDebugger;
+	  private System.Windows.Forms.ToolStripSeparator sepGameboyDebugger;
    }
 }

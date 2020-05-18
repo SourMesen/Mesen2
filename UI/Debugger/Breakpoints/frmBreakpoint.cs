@@ -80,6 +80,15 @@ namespace Mesen.GUI.Debugger
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspProgramRom));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRom));
 				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.DspDataRam));
+			} else if(_cpuType == CpuType.Gameboy) {
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GameboyMemory));
+				cboBreakpointType.Items.Add("-");
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbPrgRom));
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbWorkRam));
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbHighRam));
+				if(DebugApi.GetMemorySize(SnesMemoryType.GbCartRam) > 0) {
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));
+				}
 			}
 
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");

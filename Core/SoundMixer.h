@@ -26,7 +26,7 @@ public:
 	SoundMixer(Console *console);
 	~SoundMixer();
 
-	void PlayAudioBuffer(int16_t *samples, uint32_t sampleCount);
+	void PlayAudioBuffer(int16_t *samples, uint32_t sampleCount, uint32_t sourceRate);
 	void StopAudio(bool clearBuffer = false);
 
 	void RegisterAudioDevice(IAudioDevice *audioDevice);

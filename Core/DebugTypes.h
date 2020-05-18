@@ -7,8 +7,10 @@
 #include "GsuTypes.h"
 #include "Cx4Types.h"
 #include "Sa1Types.h"
+#include "GbTypes.h"
 #include "InternalRegisterTypes.h"
 #include "DmaControllerTypes.h"
+#include "SnesMemoryType.h"
 
 struct DebugState
 {
@@ -22,36 +24,11 @@ struct DebugState
 	GsuState Gsu;
 	Cx4State Cx4;
 
+	GbState Gameboy;
+
 	DmaChannelConfig DmaChannels[8];
 	InternalRegisterState InternalRegs;
 	AluState Alu;
-};
-
-enum class SnesMemoryType
-{
-	CpuMemory,
-	SpcMemory,
-	Sa1Memory,
-	NecDspMemory,
-	GsuMemory,
-	Cx4Memory,
-	PrgRom,
-	WorkRam,
-	SaveRam,
-	VideoRam,
-	SpriteRam,
-	CGRam,
-	SpcRam,
-	SpcRom,
-	DspProgramRom,
-	DspDataRom,
-	DspDataRam,
-	Sa1InternalRam,
-	GsuWorkRam,
-	Cx4DataRam,
-	BsxPsRam,
-	BsxMemoryPack,
-	Register,
 };
 
 struct AddressInfo
@@ -279,5 +256,6 @@ enum class CpuType : uint8_t
 	NecDsp,
 	Sa1,
 	Gsu,
-	Cx4
+	Cx4,
+	Gameboy
 };

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Multitap.h"
 #include "InternalRegisters.h"
-#include "Ppu.h"
 #include "SnesController.h"
 
 string Multitap::GetKeyNames()
@@ -29,7 +28,7 @@ void Multitap::InternalSetStateFromInput()
 			SetPressedState(Buttons::Right + offset, keyMapping.Right);
 
 			uint8_t turboFreq = 1 << (4 - _turboSpeed[i]);
-			bool turboOn = (uint8_t)(_ppu->GetFrameCount() % turboFreq) < turboFreq / 2;
+			bool turboOn = (uint8_t)(_console->GetFrameCount() % turboFreq) < turboFreq / 2;
 			if(turboOn) {
 				SetPressedState(Buttons::A + offset, keyMapping.TurboA);
 				SetPressedState(Buttons::B + offset, keyMapping.TurboB);
@@ -93,9 +92,8 @@ void Multitap::RefreshStateBuffer()
 	}
 }
 
-Multitap::Multitap(Console * console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console, port, keyMappings1)
+Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console, port, keyMappings1)
 {
-	_ppu = console->GetPpu().get();
 	_turboSpeed[0] = keyMappings1.TurboSpeed;
 	_turboSpeed[1] = keyMappings2.TurboSpeed;
 	_turboSpeed[2] = keyMappings3.TurboSpeed;
