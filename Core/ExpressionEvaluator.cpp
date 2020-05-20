@@ -233,7 +233,7 @@ int64_t ExpressionEvaluator::ProcessGameboyTokens(string token)
 	return -1;
 }
 
-string ExpressionEvaluator::GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success)
+string ExpressionEvaluator::GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success, bool previousTokenIsOp)
 {
 	string output;
 	success = true;
@@ -255,12 +255,12 @@ string ExpressionEvaluator::GetNextToken(string expression, size_t &pos, Express
 			success = false;
 		}
 		output = std::to_string((uint32_t)HexUtilities::FromHex(output));
-	} else if(c == '%') {
+	} else if(c == '%' && previousTokenIsOp) {
 		//Binary numbers
 		pos++;
 		for(size_t len = expression.size(); pos < len; pos++) {
 			c = std::tolower(expression[pos]);
-			if(c == '0' || c <= '1') {
+			if(c == '0' || c == '1') {
 				output += c;
 			} else {
 				break;
@@ -347,7 +347,7 @@ bool ExpressionEvaluator::ToRpn(string expression, ExpressionData &data)
 	bool operatorOrEndTokenExpected = false;
 	while(true) {
 		bool success = true;
-		string token = GetNextToken(expression, position, data, success);
+		string token = GetNextToken(expression, position, data, success, previousTokenIsOp);
 		if(!success) {
 			return false;
 		}
@@ -759,6 +759,14 @@ void ExpressionEvaluator::RunTests()
 	test("%011", EvalResultType::Numeric, 3);
 	test("%1011", EvalResultType::Numeric, 11);
 	test("%12", EvalResultType::Invalid, 0);
+
+	test("10 % 5", EvalResultType::Numeric, 0);
+	test("%100 % 5", EvalResultType::Numeric, 4);
+	test("%100%5", EvalResultType::Numeric, 4);
+	test("%10(10)", EvalResultType::Invalid, 0);
+	test("10%4*10", EvalResultType::Numeric, 20);
+	test("(5+5)%3", EvalResultType::Numeric, 1);
+	test("11%%10", EvalResultType::Numeric, 1); //11 modulo of 2 in binary (%10)
 
 	test("[$4500+[$4500]]", EvalResultType::Numeric, 0x45);
 	test("-($10+[$4500])", EvalResultType::Numeric, -0x55);
