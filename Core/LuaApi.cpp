@@ -367,7 +367,7 @@ int LuaApi::UnregisterEventCallback(lua_State *lua)
 	EventType type = (EventType)l.ReadInteger();
 	int reference = l.ReadInteger();
 	checkparams();
-	errorCond(type < EventType::Reset || type >= EventType::EventTypeSize, "the specified type is invalid");
+	errorCond(type < EventType::Nmi || type >= EventType::EventTypeSize, "the specified type is invalid");
 	errorCond(reference == LUA_NOREF, "function reference is invalid");
 	_context->UnregisterEventCallback(type, reference);
 	return l.ReturnCount();
