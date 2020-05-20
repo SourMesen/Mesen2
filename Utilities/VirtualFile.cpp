@@ -10,7 +10,7 @@
 #include "../Utilities/IpsPatcher.h"
 #include "../Utilities/UpsPatcher.h"
 
-const std::initializer_list<string> VirtualFile::RomExtensions = { ".sfc", ".smc", ".swc", ".fig", ".bs", ".gb" };
+const std::initializer_list<string> VirtualFile::RomExtensions = { ".sfc", ".smc", ".swc", ".fig", ".bs", ".gb", ".gbc" };
 
 VirtualFile::VirtualFile()
 {

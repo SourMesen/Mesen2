@@ -625,6 +625,11 @@ namespace Mesen.GUI
 
 	public struct GbMemoryManagerState
 	{
+		public byte CgbWorkRamBank;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbSwitchSpeedRequest;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbHighSpeed;
+		public UInt64 ApuCycleCount;
+
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBootRom;
 		public byte IrqRequests;
 		public byte IrqEnabled;
@@ -646,8 +651,15 @@ namespace Mesen.GUI
 		public RegisterAccess[] MemoryAccessType;
 	}
 
+	public enum GbType
+	{
+		Gb = 0,
+		Cgb = 1,
+	}
+
 	public struct GbState
 	{
+		public GbType Type;
 		public GbCpuState Cpu;
 		public GbPpuState Ppu;
 		public GbApuDebugState Apu;
@@ -720,6 +732,24 @@ namespace Mesen.GUI
 
 		public byte Status;
 		public UInt32 FrameCount;
+
+		public byte CgbVramBank;
+		public UInt16 CgbDmaSource;
+		public UInt16 CgbDmaDest;
+		public byte CgbDmaLength;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaMode;
+
+		public byte CgbBgPalPosition;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbBgPalAutoInc;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4*8)]
+		public UInt16[] CgbBgPalettes;
+
+		public byte CgbObjPalPosition;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbObjPalAutoInc;
+		
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4 * 8)]
+		public UInt16[] CgbObjPalettes;
 	}
 
 	public struct GbSquareState

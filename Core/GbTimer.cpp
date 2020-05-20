@@ -25,7 +25,8 @@ void GbTimer::Exec()
 		}
 	}
 
-	if(!(newValue & 0x1000) && (_divider & 0x1000)) {
+	uint16_t frameSeqBit = _memoryManager->IsHighSpeed() ? 0x2000 : 0x1000;
+	if(!(newValue & frameSeqBit) && (_divider & frameSeqBit)) {
 		_apu->ClockFrameSequencer();
 	}
 

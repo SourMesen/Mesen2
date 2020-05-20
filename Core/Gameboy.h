@@ -15,8 +15,6 @@ class VirtualFile;
 class Gameboy : public ISerializable
 {
 private:
-	static constexpr int WorkRamSize = 0x2000;
-	static constexpr int VideoRamSize = 0x2000;
 	static constexpr int SpriteRamSize = 0xA0;
 	static constexpr int HighRamSize = 0x7F;
 
@@ -30,6 +28,7 @@ private:
 	unique_ptr<GbTimer> _timer;
 
 	bool _hasBattery;
+	bool _cgbMode;
 
 	uint8_t* _prgRom;
 	uint32_t _prgRomSize;
@@ -38,7 +37,11 @@ private:
 	uint32_t _cartRamSize;
 
 	uint8_t* _workRam;
+	uint32_t _workRamSize;
+
 	uint8_t* _videoRam;
+	uint32_t _videoRamSize;
+
 	uint8_t* _spriteRam;
 	uint8_t* _highRam;
 
@@ -62,7 +65,9 @@ public:
 	AddressInfo GetAbsoluteAddress(uint16_t addr);
 	int32_t GetRelativeAddress(AddressInfo& absAddress);
 
+	bool IsCgb();
 	uint64_t GetCycleCount();
+	uint64_t GetApuCycleCount();
 
 	void Serialize(Serializer& s) override;
 };

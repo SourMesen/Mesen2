@@ -15,7 +15,7 @@ namespace Mesen.GUI.Utilities
 		public static bool IsRomFile(string path)
 		{
 			string ext = Path.GetExtension(path).ToLower();
-			return ext == ".sfc" || ext == ".smc" || ext == ".fig" || ext == ".swc" || ext == ".bs" || ext == ".gb";
+			return ext == ".sfc" || ext == ".smc" || ext == ".fig" || ext == ".swc" || ext == ".bs" || ext == ".gb" || ext == ".gbc";
 		}
 
 		public static bool IsArchiveFile(string path)

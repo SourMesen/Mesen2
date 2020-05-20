@@ -49,11 +49,15 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 		gb->_cartRam = new uint8_t[gb->_cartRamSize];
 		gb->_hasBattery = header.HasBattery();
 
-		gb->_workRam = new uint8_t[Gameboy::WorkRamSize];
-		gb->_videoRam = new uint8_t[Gameboy::VideoRamSize];
+		gb->_cgbMode = (header.CgbFlag & 0x80) != 0;
+		gb->_workRamSize = gb->_cgbMode ? 0x8000 : 0x2000;
+		gb->_videoRamSize = gb->_cgbMode ? 0x4000 : 0x2000;
+
+		gb->_workRam = new uint8_t[gb->_workRamSize];
+		gb->_videoRam = new uint8_t[gb->_videoRamSize];
 		gb->_spriteRam = new uint8_t[Gameboy::SpriteRamSize];
 		gb->_highRam = new uint8_t[Gameboy::HighRamSize];
-
+		
 		return gb;
 	}
 
@@ -78,12 +82,12 @@ void Gameboy::PowerOn()
 {
 	EmuSettings* settings = _console->GetSettings().get();
 	settings->InitializeRam(_cartRam, _cartRamSize);
-	settings->InitializeRam(_workRam, Gameboy::WorkRamSize);
+	settings->InitializeRam(_workRam, _workRamSize);
 	settings->InitializeRam(_spriteRam, Gameboy::SpriteRamSize);
 	settings->InitializeRam(_highRam, Gameboy::HighRamSize);
 
 	//VRAM is filled with 0s by the boot rom
-	memset(_videoRam, 0, Gameboy::VideoRamSize);
+	memset(_videoRam, 0, _videoRamSize);
 
 	LoadBattery();
 
@@ -94,7 +98,7 @@ void Gameboy::PowerOn()
 	_cart->Init(this, _memoryManager.get());
 	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get());
 
-	_cpu.reset(new GbCpu(_memoryManager.get()));
+	_cpu.reset(new GbCpu(this, _memoryManager.get()));
 	_ppu->Init(_console, this, _memoryManager.get(), _videoRam, _spriteRam);
 }
 
@@ -127,6 +131,7 @@ void Gameboy::SaveBattery()
 GbState Gameboy::GetState()
 {
 	GbState state;
+	state.Type = IsCgb() ? GbType::Cgb : GbType::Gb;
 	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
 	state.Apu = _apu->GetState();
@@ -139,8 +144,8 @@ uint32_t Gameboy::DebugGetMemorySize(SnesMemoryType type)
 {
 	switch(type) {
 		case SnesMemoryType::GbPrgRom: return _prgRomSize;
-		case SnesMemoryType::GbWorkRam: return Gameboy::WorkRamSize;
-		case SnesMemoryType::GbVideoRam: return Gameboy::VideoRamSize;
+		case SnesMemoryType::GbWorkRam: return _workRamSize;
+		case SnesMemoryType::GbVideoRam: return _videoRamSize;
 		case SnesMemoryType::GbCartRam: return _cartRamSize;
 		case SnesMemoryType::GbHighRam: return Gameboy::HighRamSize;
 		default: return 0;
@@ -190,7 +195,7 @@ AddressInfo Gameboy::GetAbsoluteAddress(uint16_t addr)
 	if(ptr >= _prgRom && ptr < _prgRom + _prgRomSize) {
 		addrInfo.Address = (int32_t)(ptr - _prgRom);
 		addrInfo.Type = SnesMemoryType::GbPrgRom;
-	} else if(ptr >= _workRam && ptr < _workRam + Gameboy::WorkRamSize) {
+	} else if(ptr >= _workRam && ptr < _workRam + _workRamSize) {
 		addrInfo.Address = (int32_t)(ptr - _workRam);
 		addrInfo.Type = SnesMemoryType::GbWorkRam;
 	} else if(ptr >= _cartRam && ptr < _cartRam + _cartRamSize) {
@@ -216,9 +221,19 @@ int32_t Gameboy::GetRelativeAddress(AddressInfo& absAddress)
 	return -1;
 }
 
+bool Gameboy::IsCgb()
+{
+	return _cgbMode;
+}
+
 uint64_t Gameboy::GetCycleCount()
 {
 	return _cpu->GetCycleCount();
+}
+
+uint64_t Gameboy::GetApuCycleCount()
+{
+	return _memoryManager->GetApuCycleCount();
 }
 
 void Gameboy::Serialize(Serializer& s)
@@ -232,8 +247,8 @@ void Gameboy::Serialize(Serializer& s)
 	s.Stream(_hasBattery);
 
 	s.StreamArray(_cartRam, _cartRamSize);
-	s.StreamArray(_workRam, Gameboy::WorkRamSize);
-	s.StreamArray(_videoRam, Gameboy::VideoRamSize);
+	s.StreamArray(_workRam, _workRamSize);
+	s.StreamArray(_videoRam, _videoRamSize);
 	s.StreamArray(_spriteRam, Gameboy::SpriteRamSize);
 	s.StreamArray(_highRam, Gameboy::HighRamSize);
 }

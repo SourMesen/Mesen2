@@ -320,6 +320,8 @@ namespace Mesen.GUI.Debugger
 				}
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbVideoRam));
 				cboMemoryType.Items.Add("-");
+				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GameboyMemory));
+				cboMemoryType.Items.Add("-");
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbPrgRom));
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbWorkRam));
 				cboMemoryType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));

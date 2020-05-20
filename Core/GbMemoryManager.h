@@ -61,6 +61,10 @@ public:
 	void RequestIrq(uint8_t source);
 	void ClearIrqRequest(uint8_t source);
 	uint8_t ProcessIrqRequests();
+
+	void ToggleSpeed();
+	bool IsHighSpeed();
+	uint64_t GetApuCycleCount();
 	
 	uint8_t ReadInputPort();
 

@@ -126,28 +126,40 @@ namespace Mesen.GUI.Debugger
 			byte[] cgRam = new byte[512];
 
 			//Generate a fake SNES-like palette based on the gameboy PPU state
-			GbPpuState state = DebugApi.GetState().Gameboy.Ppu;
+			GbState state = DebugApi.GetState().Gameboy;
+			GbPpuState ppu = state.Ppu;
 
-			byte[,] paletteBytes = new byte[4,2] {
-				{ 0xFF, 0x7F}, {0x18,0x63}, {0x8C, 0x31}, {0,0}
-			};
+			if(state.Type == GbType.Cgb) {
+				for(int i = 0; i < 8 * 4; i++) {
+					cgRam[i * 2] = (byte)(ppu.CgbBgPalettes[i] & 0xFF);
+					cgRam[i * 2 + 1] = (byte)(ppu.CgbBgPalettes[i] >> 8);
+				}
 
-			Action<byte, UInt16> setPalette = (byte pal, UInt16 offset) => {
-				cgRam[offset] = paletteBytes[pal & 0x03, 0];
-				cgRam[offset+1] = paletteBytes[pal & 0x03, 1];
-				cgRam[offset+2] = paletteBytes[(pal >> 2) & 0x03, 0];
-				cgRam[offset+3] = paletteBytes[(pal >> 2) & 0x03, 1];
-				cgRam[offset+4] = paletteBytes[(pal >> 4) & 0x03, 0];
-				cgRam[offset+5] = paletteBytes[(pal >> 4) & 0x03, 1];
-				cgRam[offset+6] = paletteBytes[(pal >> 6) & 0x03, 0];
-				cgRam[offset+7] = paletteBytes[(pal >> 6) & 0x03, 1];
-			};
+				for(int i = 0; i < 8 * 4; i++) {
+					cgRam[128 + i * 2] = (byte)(ppu.CgbObjPalettes[i] & 0xFF);
+					cgRam[128 + i * 2 + 1] = (byte)(ppu.CgbObjPalettes[i] >> 8);
+				}
+			} else {
+				byte[,] paletteBytes = new byte[4,2] {
+					{ 0xFF, 0x7F}, {0x18,0x63}, {0x8C, 0x31}, {0,0}
+				};
 
-			setPalette(state.BgPalette, 0);
-			setPalette(state.ObjPalette0, 32);
-			setPalette(state.ObjPalette1, 64);
-			setPalette(0xE4, 96);
+				Action<byte, UInt16> setPalette = (byte pal, UInt16 offset) => {
+					cgRam[offset] = paletteBytes[pal & 0x03, 0];
+					cgRam[offset+1] = paletteBytes[pal & 0x03, 1];
+					cgRam[offset+2] = paletteBytes[(pal >> 2) & 0x03, 0];
+					cgRam[offset+3] = paletteBytes[(pal >> 2) & 0x03, 1];
+					cgRam[offset+4] = paletteBytes[(pal >> 4) & 0x03, 0];
+					cgRam[offset+5] = paletteBytes[(pal >> 4) & 0x03, 1];
+					cgRam[offset+6] = paletteBytes[(pal >> 6) & 0x03, 0];
+					cgRam[offset+7] = paletteBytes[(pal >> 6) & 0x03, 1];
+				};
 
+				setPalette(ppu.BgPalette, 0);
+				setPalette(ppu.ObjPalette0, 32);
+				setPalette(ppu.ObjPalette1, 64);
+				setPalette(0xE4, 96);
+			}
 			return cgRam;
 		}
 

@@ -128,6 +128,20 @@ struct GbPpuState
 
 	uint8_t Status;
 	uint32_t FrameCount;
+
+	uint8_t CgbVramBank;
+	uint16_t CgbDmaSource;
+	uint16_t CgbDmaDest;
+	uint8_t CgbDmaLength;
+	bool CgbHdmaMode;
+
+	uint8_t CgbBgPalPosition;
+	bool CgbBgPalAutoInc;
+	uint16_t CgbBgPalettes[4 * 8];
+	
+	uint8_t CgbObjPalPosition;
+	bool CgbObjPalAutoInc;
+	uint16_t CgbObjPalettes[4 * 8];
 };
 
 struct GbSquareState
@@ -249,6 +263,10 @@ enum class GbMemoryType
 
 struct GbMemoryManagerState
 {
+	uint8_t CgbWorkRamBank;
+	bool CgbSwitchSpeedRequest;
+	bool CgbHighSpeed;
+	uint64_t ApuCycleCount;
 	bool DisableBootRom;
 	uint8_t IrqRequests;
 	uint8_t IrqEnabled;
@@ -262,8 +280,15 @@ struct GbMemoryManagerState
 	RegisterAccess MemoryAccessType[0x100];
 };
 
+enum class GbType
+{
+	Gb = 0,
+	Cgb = 1,
+};
+
 struct GbState
 {
+	GbType Type;
 	GbCpuState Cpu;
 	GbPpuState Ppu;	
 	GbApuDebugState Apu;

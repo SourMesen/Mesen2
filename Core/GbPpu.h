@@ -24,6 +24,11 @@ private:
 
 	void ExecCycle();
 	void RenderScanline();
+	
+	template<bool isCgb>
+	void RenderScanline();
+
+	void WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value);
 
 public:
 	virtual ~GbPpu();
@@ -46,5 +51,8 @@ public:
 	uint8_t ReadOam(uint8_t addr);
 	void WriteOam(uint8_t addr, uint8_t value);
 
+	uint8_t ReadCgbRegister(uint16_t addr);
+	void WriteCgbRegister(uint16_t addr, uint8_t value);
+	
 	void Serialize(Serializer& s) override;
 };

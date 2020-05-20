@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "GbCpu.h"
+#include "Gameboy.h"
 #include "GbMemoryManager.h"
 #include "../Utilities/Serializer.h"
 
-GbCpu::GbCpu(GbMemoryManager* memoryManager)
+GbCpu::GbCpu(Gameboy* gameboy, GbMemoryManager* memoryManager)
 {
+	_gameboy = gameboy;
 	_memoryManager = memoryManager;
 	_state = {};
 
@@ -14,7 +16,7 @@ GbCpu::GbCpu(GbMemoryManager* memoryManager)
 #else
 	_state.PC = 0x100;
 	_state.SP = 0xFFFE;
-	_state.A = 0x01;
+	_state.A = gameboy->IsCgb() ? 0x11 : 0x01;
 	_state.B = 0x00;
 	_state.C = 0x13;
 	_state.D = 0x00;
@@ -691,7 +693,11 @@ void GbCpu::InvalidOp()
 
 void GbCpu::STOP()
 {
-
+	if(_gameboy->IsCgb() && _memoryManager->GetState().CgbSwitchSpeedRequest) {
+		_memoryManager->ToggleSpeed();
+	} else {
+		_state.Halted = true;
+	}
 }
 
 void GbCpu::HALT()

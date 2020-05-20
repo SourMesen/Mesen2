@@ -4,6 +4,7 @@
 #include "../Utilities/ISerializable.h"
 
 class GbMemoryManager;
+class Gameboy;
 
 class GbCpu : public ISerializable
 {
@@ -15,9 +16,10 @@ private:
 	Register16 _regHL = Register16(&_state.H, &_state.L);
 
 	GbMemoryManager* _memoryManager;
+	Gameboy* _gameboy;
 
 public:
-	GbCpu(GbMemoryManager* memoryManager);
+	GbCpu(Gameboy* gameboy, GbMemoryManager* memoryManager);
 	virtual ~GbCpu();
 
 	GbCpuState GetState();

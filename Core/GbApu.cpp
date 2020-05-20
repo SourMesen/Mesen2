@@ -42,58 +42,58 @@ GbApuDebugState GbApu::GetState()
 
 void GbApu::Run()
 {
-	uint64_t clockCount = _gameboy->GetCycleCount();
+	uint64_t clockCount = _gameboy->GetApuCycleCount();
 	uint32_t clocksToRun = (uint32_t)(clockCount - _prevClockCount);
 	_prevClockCount = clockCount;
 
 	if(!_state.ApuEnabled) {
-		return;
+		_clockCounter += clocksToRun;
+	} else {
+		while(clocksToRun > 0) {
+			uint32_t minTimer = std::min<uint32_t>({ clocksToRun, _square1.GetState().Timer, _square2.GetState().Timer, _wave.GetState().Timer, _noise.GetState().Timer });
+
+			clocksToRun -= minTimer;
+			_square1.Exec(minTimer);
+			_square2.Exec(minTimer);
+			_wave.Exec(minTimer);
+			_noise.Exec(minTimer);
+
+			int16_t leftOutput = (
+				(_square1.GetOutput() & _state.EnableLeftSq1) +
+				(_square2.GetOutput() & _state.EnableLeftSq2) +
+				(_wave.GetOutput() & _state.EnableLeftWave) +
+				(_noise.GetOutput() & _state.EnableLeftNoise)
+				) * (_state.LeftVolume + 1) * 40;
+
+			if(_prevLeftOutput != leftOutput) {
+				blip_add_delta(_leftChannel, _clockCounter, leftOutput - _prevLeftOutput);
+				_prevLeftOutput = leftOutput;
+			}
+
+			int16_t rightOutput = (
+				(_square1.GetOutput() & _state.EnableRightSq1) +
+				(_square2.GetOutput() & _state.EnableRightSq2) +
+				(_wave.GetOutput() & _state.EnableRightWave) +
+				(_noise.GetOutput() & _state.EnableRightNoise)
+				) * (_state.RightVolume + 1) * 40;
+
+			if(_prevRightOutput != rightOutput) {
+				blip_add_delta(_rightChannel, _clockCounter, rightOutput - _prevRightOutput);
+				_prevRightOutput = rightOutput;
+			}
+
+			_clockCounter += minTimer;
+		}
 	}
 
-	while(clocksToRun > 0) {
-		uint32_t minTimer = std::min<uint32_t>({ clocksToRun, _square1.GetState().Timer, _square2.GetState().Timer, _wave.GetState().Timer, _noise.GetState().Timer });
+	if(_clockCounter >= 20000) {
+		blip_end_frame(_leftChannel, _clockCounter);
+		blip_end_frame(_rightChannel, _clockCounter);
 
-		clocksToRun -= minTimer;
-		_square1.Exec(minTimer);
-		_square2.Exec(minTimer);
-		_wave.Exec(minTimer);
-		_noise.Exec(minTimer);
-
-		int16_t leftOutput = (
-			(_square1.GetOutput() & _state.EnableLeftSq1) +
-			(_square2.GetOutput() & _state.EnableLeftSq2) +
-			(_wave.GetOutput() & _state.EnableLeftWave) +
-			(_noise.GetOutput() & _state.EnableLeftNoise)
-			) * (_state.LeftVolume + 1) * 40;
-
-		if(_prevLeftOutput != leftOutput) {
-			blip_add_delta(_leftChannel, _clockCounter, leftOutput - _prevLeftOutput);
-			_prevLeftOutput = leftOutput;
-		}
-
-		int16_t rightOutput = (
-			(_square1.GetOutput() & _state.EnableRightSq1) +
-			(_square2.GetOutput() & _state.EnableRightSq2) +
-			(_wave.GetOutput() & _state.EnableRightWave) +
-			(_noise.GetOutput() & _state.EnableRightNoise)
-			) * (_state.RightVolume + 1) * 40;
-
-		if(_prevRightOutput != rightOutput) {
-			blip_add_delta(_rightChannel, _clockCounter, rightOutput - _prevRightOutput);
-			_prevRightOutput = rightOutput;
-		}
-
-		_clockCounter += minTimer;
-
-		if(_clockCounter >= 20000) {
-			blip_end_frame(_leftChannel, _clockCounter);
-			blip_end_frame(_rightChannel, _clockCounter);
-
-			uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, GbApu::MaxSamples, 1);
-			blip_read_samples(_rightChannel, _soundBuffer + 1, GbApu::MaxSamples, 1);
-			_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount, GbApu::SampleRate);
-			_clockCounter = 0;
-		}
+		uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, GbApu::MaxSamples, 1);
+		blip_read_samples(_rightChannel, _soundBuffer + 1, GbApu::MaxSamples, 1);
+		_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount, GbApu::SampleRate);
+		_clockCounter = 0;
 	}
 }
 

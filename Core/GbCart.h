@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
+#include "MessageManager.h"
+#include "../Utilities/HexUtilities.h"
 #include "../Utilities/ISerializable.h"
 
 class GbCart : public ISerializable
@@ -44,6 +46,7 @@ public:
 
 	virtual uint8_t ReadRegister(uint16_t addr)
 	{
+		LogDebug("[Debug] GB - Missing read handler: $" + HexUtilities::ToHex(addr));
 		return 0;
 	}
 

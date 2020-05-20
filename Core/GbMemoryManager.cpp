@@ -9,14 +9,17 @@
 #include "GbCart.h"
 #include "EmuSettings.h"
 #include "ControlManager.h"
+#include "SnesController.h"
+#include "MessageManager.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
-#include "SnesController.h"
+#include "../Utilities/HexUtilities.h"
 
 void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer)
 {
 	_state = {};
 	_state.DisableBootRom = true;
+	_state.CgbWorkRamBank = 1;
 
 	_prgRom = gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
 	_prgRomSize = gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
@@ -58,14 +61,17 @@ void GbMemoryManager::RefreshMappings()
 		//Map(0x0000, 0x00FF, GbMemoryType::WorkRam, true);
 	}
 
-	Map(0xC000, 0xDFFF, GbMemoryType::WorkRam, 0, false);
-	Map(0xE000, 0xFCFF, GbMemoryType::WorkRam, 0, false);
+	Map(0xC000, 0xCFFF, GbMemoryType::WorkRam, 0, false);
+	Map(0xD000, 0xDFFF, GbMemoryType::WorkRam, _state.CgbWorkRamBank * 0x1000, false);
+	Map(0xE000, 0xEFFF, GbMemoryType::WorkRam, 0, false);
+	Map(0xF000, 0xFCFF, GbMemoryType::WorkRam, _state.CgbWorkRamBank * 0x1000, false);
 
 	_cart->RefreshMappings();
 }
 
 void GbMemoryManager::Exec()
 {
+	_state.ApuCycleCount += _state.CgbHighSpeed ? 2 : 4;
 	_timer->Exec();
 	_ppu->Exec();
 }
@@ -180,10 +186,25 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 			return _state.IrqEnabled; //IE - Interrupt Enable (R/W)
 		} else if(addr >= 0xFF80) {
 			return _highRam[addr & 0x7F]; //80-FE
-		} else if(addr >= 0xFF50) {
-			return 0; //50-7F
+		} else if(addr >= 0xFF4D) {
+			if(_gameboy->IsCgb()) {
+				switch(addr) {
+					//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
+					case 0xFF4D: return _state.CgbHighSpeed ? 0x80 : 0;
+
+					case 0xFF4F: //CGB - VRAM bank
+					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
+					case 0xFF68: case 0xFF69: case 0xFF6A: case 0xFF6B: //CGB - Palette
+						return _ppu->ReadCgbRegister(addr);
+
+					//FF70 - SVBK - CGB Mode Only - WRAM Bank
+					case 0xFF70: return _state.CgbWorkRamBank;
+				}
+			}
+			LogDebug("[Debug] GB - Missing read handler: $" + HexUtilities::ToHex(addr));
+			return 0; //4D-7F
 		} else if(addr >= 0xFF40) {
-			return _ppu->Read(addr); //40-4F
+			return _ppu->Read(addr); //40-4C
 		} else if(addr >= 0xFF10) {
 			return _apu->Read(addr); //10-3F
 		} else {
@@ -214,14 +235,39 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 			_state.IrqEnabled = value; //IE register
 		} else if(addr >= 0xFF80) {
 			_highRam[addr & 0x7F] = value; //80-FE
-		} else if(addr >= 0xFF50) {
-			//50-7F
-			if(addr == 0xFF50 && (value & 0x01)) {
-				_state.DisableBootRom = true;
-				RefreshMappings();
+		} else if(addr >= 0xFF4D) {
+			//4D-7F
+			if(addr == 0xFF50) {
+				if(value & 0x01) {
+					_state.DisableBootRom = true;
+					RefreshMappings();
+				}
+			} else if(_gameboy->IsCgb()) {
+				switch(addr) {
+					case 0xFF4D:
+						//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
+						_state.CgbSwitchSpeedRequest = (value & 0x01) != 0;
+						break;
+
+					case 0xFF4F: //CGB - VRAM banking
+					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
+					case 0xFF68: case 0xFF69: case 0xFF6A: case 0xFF6B: //CGB - Palette
+						_ppu->WriteCgbRegister(addr, value);
+						break;
+
+					case 0xFF70:
+						//FF70 - SVBK - CGB Mode Only - WRAM Bank
+						_state.CgbWorkRamBank = std::max(1, value & 0x07);
+						RefreshMappings();
+						break;
+
+					default:
+						LogDebug("[Debug] GBC - Missing write handler: $" + HexUtilities::ToHex(addr));
+						break;
+				}
 			}
 		} else if(addr >= 0xFF40) {
-			_ppu->Write(addr, value); //40-4F
+			_ppu->Write(addr, value); //40-4C
 		} else if(addr >= 0xFF10) {
 			_apu->Write(addr, value); //10-3F
 		} else {
@@ -275,6 +321,22 @@ uint8_t GbMemoryManager::ProcessIrqRequests()
 	return 0;
 }
 
+void GbMemoryManager::ToggleSpeed()
+{
+	_state.CgbSwitchSpeedRequest = false;
+	_state.CgbHighSpeed = !_state.CgbHighSpeed;
+}
+
+bool GbMemoryManager::IsHighSpeed()
+{
+	return _state.CgbHighSpeed;
+}
+
+uint64_t GbMemoryManager::GetApuCycleCount()
+{
+	return _state.ApuCycleCount;
+}
+
 uint8_t GbMemoryManager::ReadInputPort()
 {
 	//Bit 7 - Not used
@@ -307,7 +369,10 @@ uint8_t GbMemoryManager::ReadInputPort()
 
 void GbMemoryManager::Serialize(Serializer& s)
 {
-	s.Stream(_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests, _state.InputSelect);
+	s.Stream(
+		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests, _state.InputSelect,
+		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank
+	);
 	s.StreamArray(_state.MemoryType, 0x100);
 	s.StreamArray(_state.MemoryOffset, 0x100);
 	s.StreamArray(_state.MemoryAccessType, 0x100);

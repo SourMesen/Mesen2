@@ -378,15 +378,18 @@ void PpuTools::UpdateViewers(uint16_t scanline, uint16_t cycle)
 
 void PpuTools::GetGameboyTilemap(uint8_t* vram, uint16_t offset, uint32_t* outBuffer)
 {
-	GbPpu* ppu = _console->GetCartridge()->GetGameboy()->GetPpu();
-	GbPpuState state = ppu->GetState();
+	Gameboy* gameboy = _console->GetCartridge()->GetGameboy();
+	GbState state = gameboy->GetState();
+	bool isCgb = state.Type == GbType::Cgb;
 
 	uint16_t palette[4];
-	ppu->GetPalette(palette, state.BgPalette);
+	gameboy->GetPpu()->GetPalette(palette, state.Ppu.BgPalette);
 
-	uint16_t baseTile = state.BgTileSelect ? 0 : 0x1000;
+	uint16_t baseTile = state.Ppu.BgTileSelect ? 0 : 0x1000;
 
 	std::fill(outBuffer, outBuffer + 1024*256, 0xFFFFFFFF);
+
+	uint16_t vramMask = isCgb ? 0x3FFF : 0x1FFF;
 
 	for(int row = 0; row < 32; row++) {
 		uint16_t baseOffset = offset + ((row & 0x1F) << 5);
@@ -394,14 +397,27 @@ void PpuTools::GetGameboyTilemap(uint8_t* vram, uint16_t offset, uint32_t* outBu
 		for(int column = 0; column < 32; column++) {
 			uint16_t addr = (baseOffset + column);
 			uint8_t tileIndex = vram[addr];
-			uint16_t tileStart = baseTile + (baseTile ? (int8_t)tileIndex*16 : tileIndex*16);
-			for(int y = 0; y < 8; y++) {
-				uint16_t pixelStart = tileStart + y * 2;
-				for(int x = 0; x < 8; x++) {
-					uint8_t shift = 7 - (x & 0x07);
-					uint8_t color = GetTilePixelColor(vram, 0x1FFF, 2, pixelStart, shift);
 
-					if(color != 0) {
+			uint8_t attributes = isCgb ? vram[addr | 0x2000] : 0;
+
+			uint8_t bgPalette = (attributes & 0x07) << 2;
+			uint16_t tileBank = (attributes & 0x08) ? 0x2000 : 0x0000;
+			bool hMirror = (attributes & 0x20) != 0;
+			bool vMirror = (attributes & 0x40) != 0;
+			//bool bgPriority = (attributes & 0x80) != 0;
+
+			uint16_t tileStart = baseTile + (baseTile ? (int8_t)tileIndex*16 : tileIndex*16);
+			tileStart |= tileBank;
+
+			for(int y = 0; y < 8; y++) {
+				uint16_t pixelStart = tileStart + (vMirror ? (7 - y) : y) * 2;
+				for(int x = 0; x < 8; x++) {
+					uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
+					uint8_t color = GetTilePixelColor(vram, vramMask, 2, pixelStart, shift);
+
+					if(isCgb) {
+						outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = DefaultVideoFilter::ToArgb(state.Ppu.CgbBgPalettes[bgPalette + color]);
+					} else if(color != 0) {
 						outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = DefaultVideoFilter::ToArgb(palette[color]);
 					}					
 				}

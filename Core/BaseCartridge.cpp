@@ -58,12 +58,13 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 		cart->_console = console;
 		cart->_romPath = romFile;
 
-		if(FolderUtilities::GetExtension(romFile.GetFileName()) == ".bs") {
+		string fileExt = FolderUtilities::GetExtension(romFile.GetFileName());
+		if(fileExt == ".bs") {
 			cart->_bsxMemPack.reset(new BsxMemoryPack(console, romData, false));
 			if(!FirmwareHelper::LoadBsxFirmware(console, &cart->_prgRom, cart->_prgRomSize)) {
 				return nullptr;
 			}
-		} else if(FolderUtilities::GetExtension(romFile.GetFileName()) == ".gb") {
+		} else if(fileExt == ".gb" || fileExt == ".gbc") {
 			if(cart->LoadGameboy(romFile)) {
 				return cart;
 			} else {
