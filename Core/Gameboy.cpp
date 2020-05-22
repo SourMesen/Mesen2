@@ -98,7 +98,7 @@ void Gameboy::PowerOn()
 	_cart->Init(this, _memoryManager.get());
 	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get());
 
-	_cpu.reset(new GbCpu(this, _memoryManager.get()));
+	_cpu.reset(new GbCpu(_console, this, _memoryManager.get()));
 	_ppu->Init(_console, this, _memoryManager.get(), _videoRam, _spriteRam);
 }
 
@@ -172,6 +172,11 @@ GbMemoryManager* Gameboy::GetMemoryManager()
 GbPpu* Gameboy::GetPpu()
 {
 	return _ppu.get();
+}
+
+GbCpu* Gameboy::GetCpu()
+{
+	return _cpu.get();
 }
 
 AddressInfo Gameboy::GetAbsoluteAddress(uint16_t addr)

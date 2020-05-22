@@ -5,6 +5,7 @@
 
 class GbMemoryManager;
 class Gameboy;
+class Console;
 
 class GbCpu : public ISerializable
 {
@@ -16,10 +17,11 @@ private:
 	Register16 _regHL = Register16(&_state.H, &_state.L);
 
 	GbMemoryManager* _memoryManager;
+	Console* _console;
 	Gameboy* _gameboy;
 
 public:
-	GbCpu(Gameboy* gameboy, GbMemoryManager* memoryManager);
+	GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager);
 	virtual ~GbCpu();
 
 	GbCpuState GetState();

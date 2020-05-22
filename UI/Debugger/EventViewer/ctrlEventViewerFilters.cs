@@ -102,5 +102,29 @@ namespace Mesen.GUI.Debugger
 				this.OptionsChanged?.Invoke(this, e);
 			}
 		}
+
+		public void SetCpuType(CpuType cpu)
+		{
+			bool isGb = cpu == CpuType.Gameboy;
+
+			chkCgramWrites.Text = isGb ? "Palette" : "CGRAM";
+
+			chkMode7Writes.Visible = !isGb;
+			picPpuMode7Writes.Visible = !isGb;
+
+			chkShowPpuBgOptionWrites.Visible = !isGb;
+			picPpuBgOptionWrites.Visible = !isGb;
+
+			grpDmaFilters.Visible = !isGb;
+
+			chkShowWorkRamRegisterReads.Visible = !isGb;
+			picWramReads.Visible = !isGb;
+			chkShowWorkRamRegisterWrites.Visible = !isGb;
+			picWramWrites.Visible = !isGb;
+			lblWorkRam.Visible = !isGb;
+
+			chkShowNmi.Visible = !isGb;
+			picNmi.Visible = !isGb;
+		}
 	}
 }

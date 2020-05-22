@@ -429,19 +429,19 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 		_memoryManager->Initialize(this);
 		_internalRegisters->Initialize(this);
 
-		if(debuggerActive) {
-			GetDebugger();
-		}
-
-		_ppu->PowerOn();
-		_cpu->PowerOn();
-
 		if(_cart->GetGameboy()) {
 			_cart->GetGameboy()->PowerOn();
 			_settings->SetFlag(EmulationFlags::GameboyMode);
 		} else {
 			_settings->ClearFlag(EmulationFlags::GameboyMode);
 		}
+
+		if(debuggerActive) {
+			GetDebugger();
+		}
+
+		_ppu->PowerOn();
+		_cpu->PowerOn();
 
 		_rewindManager.reset(new RewindManager(shared_from_this()));
 		_notificationManager->RegisterNotificationListener(_rewindManager);
@@ -971,3 +971,4 @@ template void Console::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8
 
 template void Console::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Console::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Console::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

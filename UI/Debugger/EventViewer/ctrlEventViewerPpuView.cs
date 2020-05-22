@@ -22,6 +22,8 @@ namespace Mesen.GUI.Debugger
 		public const int HdmaChannelFlag = 0x40;
 
 		private int _baseWidth = 1364 / 2;
+		private double _xRatio = 2;
+		private bool _isGameboy = false;
 
 		private Point _lastPos = new Point(-1, -1);
 		private bool _needUpdate = false;
@@ -54,10 +56,18 @@ namespace Mesen.GUI.Debugger
 		public void RefreshViewer()
 		{
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			_pictureData = DebugApi.GetEventViewerOutput(ScanlineCount, options);
+			_isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+			if(_isGameboy) {
+				_baseWidth = 456 * 2;
+				_xRatio = 0.5;
+			} else {
+				_baseWidth = 1364 / 2;
+				_xRatio = 2;
+			}
+			_pictureData = DebugApi.GetEventViewerOutput(_baseWidth, ScanlineCount, options);
 
 			int picHeight = (int)ScanlineCount*2;
-			if(_screenBitmap == null || _screenBitmap.Height != picHeight) {
+			if(_screenBitmap == null || _screenBitmap.Height != picHeight || _screenBitmap.Width != _baseWidth) {
 				_screenBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
 				_overlayBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
 				_displayBitmap = new Bitmap(_baseWidth, picHeight, PixelFormat.Format32bppPArgb);
@@ -92,20 +102,20 @@ namespace Mesen.GUI.Debugger
 				if(_lastPos.X >= 0) {
 					string location = _lastPos.X + ", " + _lastPos.Y;
 					SizeF size = g.MeasureString(location, _overlayFont);
-					int x = _lastPos.X + 5;
+					int x = (int)(_lastPos.X / _xRatio) + 5;
 					int y = _lastPos.Y - (int)size.Height / 2 - 5;
 					
-					if(x/2 - picViewer.ScrollOffsets.X / picViewer.ImageScale + size.Width > (picViewer.Width / picViewer.ImageScale) - 5) {
-						x -= (int)size.Width * 2 + 10;
+					if(x - picViewer.ScrollOffsets.X / picViewer.ImageScale + size.Width > (picViewer.Width / picViewer.ImageScale) - 5) {
+						x -= (int)size.Width + 5;
 					}
 					if(y*2 - picViewer.ScrollOffsets.Y / picViewer.ImageScale < size.Height + 5) {
 						y = _lastPos.Y + 5;
 					}
 
-					g.DrawOutlinedString(location, _overlayFont, Brushes.Black, Brushes.White, x/2, y*2);
+					g.DrawOutlinedString(location, _overlayFont, Brushes.Black, Brushes.White, x, y*2);
 
 					location = GetCycle(_lastPos.X).ToString();
-					g.DrawOutlinedString(location, _smallOverlayFont, Brushes.Black, Brushes.White, x/2, y*2 + (int)size.Height - 5);
+					g.DrawOutlinedString(location, _smallOverlayFont, Brushes.Black, Brushes.White, x, y*2 + (int)size.Height - 5);
 				}
 			}
 
@@ -126,7 +136,7 @@ namespace Mesen.GUI.Debugger
 			using(Graphics g = Graphics.FromImage(_overlayBitmap)) {
 				g.Clear(Color.Transparent);
 				using(Pen bg = new Pen(Color.FromArgb(128, Color.LightGray))) {
-					g.DrawRectangle(bg, pos.X / 2 - 1, 0, 3, _overlayBitmap.Height);
+					g.DrawRectangle(bg, (int)(pos.X / _xRatio) - 1, 0, 3, _overlayBitmap.Height);
 					g.DrawRectangle(bg, 0, pos.Y * 2 - 1, _overlayBitmap.Width, 3);
 				}
 			}
@@ -147,7 +157,7 @@ namespace Mesen.GUI.Debugger
 		private Point GetHClockAndScanline(Point location)
 		{
 			return new Point(
-				(location.X / this.ImageScale) * 2,
+				(int)((location.X / this.ImageScale) * _xRatio),
 				((location.Y & ~0x01) / this.ImageScale) / 2
 			);
 		}
@@ -171,13 +181,13 @@ namespace Mesen.GUI.Debugger
 			DebugEventInfo evt = new DebugEventInfo();
 			DebugApi.GetEventViewerEvent(ref evt, (UInt16)pos.Y, (UInt16)pos.X, options);
 			if(evt.ProgramCounter == 0xFFFFFFFF) {
-				int[] xOffsets = new int[] { 0, 2, -2, 4, -4, 6 };
+				int[] xOffsets = new int[] { 0, 1, -1, 2, -2, 3 };
 				int[] yOffsets = new int[] { 0, -1, 1 };
 
 				//Check for other events near the current mouse position
 				for(int j = 0; j < yOffsets.Length; j++) {
 					for(int i = 0; i < xOffsets.Length; i++) {
-						DebugApi.GetEventViewerEvent(ref evt, (UInt16)(pos.Y + yOffsets[j]), (UInt16)(pos.X + xOffsets[i]), options);
+						DebugApi.GetEventViewerEvent(ref evt, (UInt16)(pos.Y + yOffsets[j]), (UInt16)(pos.X + xOffsets[i] * _xRatio), options);
 						if(evt.ProgramCounter != 0xFFFFFFFF) {
 							return evt;
 						}
@@ -204,12 +214,24 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			Dictionary<string, string> values = new Dictionary<string, string>() {
-				{ "Type", ResourceHelper.GetEnumText(evt.Type) },
-				{ "Scanline", evt.Scanline.ToString() },
-				{ "H-Clock", evt.Cycle.ToString() + " (" + GetCycle(evt.Cycle) + ")" },
-				{ "PC", "$" + evt.ProgramCounter.ToString("X6") },
-			};
+			EmuApi.WriteLogEntry("Old: " + _lastPos.ToString() + "  new: " + newPos.ToString());
+
+			Dictionary<string, string> values;
+			if(_isGameboy) {
+				values = new Dictionary<string, string>() {
+					{ "Type", ResourceHelper.GetEnumText(evt.Type) },
+					{ "Scanline", evt.Scanline.ToString() },
+					{ "Cycle", evt.Cycle.ToString() },
+					{ "PC", "$" + evt.ProgramCounter.ToString("X4") },
+				};
+			} else {
+				values = new Dictionary<string, string>() {
+					{ "Type", ResourceHelper.GetEnumText(evt.Type) },
+					{ "Scanline", evt.Scanline.ToString() },
+					{ "H-Clock", evt.Cycle.ToString() + " (" + GetCycle(evt.Cycle) + ")" },
+					{ "PC", "$" + evt.ProgramCounter.ToString("X6") },
+				};
+			}
 
 			switch(evt.Type) {
 				case DebugEventType.Register:
@@ -266,7 +288,7 @@ namespace Mesen.GUI.Debugger
 					break;
 			}
 
-			UpdateOverlay(new Point((int)(evt.Cycle / 2 * this.ImageScale), (int)(evt.Scanline * 2 * this.ImageScale)));
+			UpdateOverlay(new Point((int)(evt.Cycle / _xRatio * this.ImageScale), (int)(evt.Scanline * 2 * this.ImageScale)));
 
 			Form parentForm = this.FindForm();
 			Point location = parentForm.PointToClient(Control.MousePosition);

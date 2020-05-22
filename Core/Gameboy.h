@@ -58,7 +58,9 @@ public:
 	void SaveBattery();
 
 	GbPpu* GetPpu();
+	GbCpu* GetCpu();
 	GbState GetState();
+
 	uint32_t DebugGetMemorySize(SnesMemoryType type);
 	uint8_t* DebugGetMemory(SnesMemoryType type);
 	GbMemoryManager* GetMemoryManager();

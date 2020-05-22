@@ -41,7 +41,7 @@
 			this.chkShowWorkRamRegisterWrites = new System.Windows.Forms.CheckBox();
 			this.picWramReads = new Mesen.GUI.Debugger.ctrlColorPicker();
 			this.chkShowWorkRamRegisterReads = new System.Windows.Forms.CheckBox();
-			this.label3 = new System.Windows.Forms.Label();
+			this.lblWorkRam = new System.Windows.Forms.Label();
 			this.picCpuWrites = new Mesen.GUI.Debugger.ctrlColorPicker();
 			this.chkShowCpuRegisterWrites = new System.Windows.Forms.CheckBox();
 			this.picCpuReads = new Mesen.GUI.Debugger.ctrlColorPicker();
@@ -139,7 +139,7 @@
 			this.tableLayoutPanel1.Controls.Add(this.chkShowWorkRamRegisterWrites, 4, 9);
 			this.tableLayoutPanel1.Controls.Add(this.picWramReads, 2, 9);
 			this.tableLayoutPanel1.Controls.Add(this.chkShowWorkRamRegisterReads, 1, 9);
-			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 9);
+			this.tableLayoutPanel1.Controls.Add(this.lblWorkRam, 0, 9);
 			this.tableLayoutPanel1.Controls.Add(this.picCpuWrites, 5, 8);
 			this.tableLayoutPanel1.Controls.Add(this.chkShowCpuRegisterWrites, 4, 8);
 			this.tableLayoutPanel1.Controls.Add(this.picCpuReads, 2, 8);
@@ -333,16 +333,16 @@
 			this.chkShowWorkRamRegisterReads.UseVisualStyleBackColor = true;
 			this.chkShowWorkRamRegisterReads.Click += new System.EventHandler(this.chkOption_Click);
 			// 
-			// label3
+			// lblWorkRam
 			// 
-			this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(3, 196);
-			this.label3.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(45, 13);
-			this.label3.TabIndex = 16;
-			this.label3.Text = "WRAM:";
+			this.lblWorkRam.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblWorkRam.AutoSize = true;
+			this.lblWorkRam.Location = new System.Drawing.Point(3, 196);
+			this.lblWorkRam.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+			this.lblWorkRam.Name = "lblWorkRam";
+			this.lblWorkRam.Size = new System.Drawing.Size(45, 13);
+			this.lblWorkRam.TabIndex = 16;
+			this.lblWorkRam.Text = "WRAM:";
 			// 
 			// picCpuWrites
 			// 
@@ -886,7 +886,7 @@
 		private System.Windows.Forms.CheckBox chkShowWorkRamRegisterWrites;
 		private ctrlColorPicker picWramReads;
 		private System.Windows.Forms.CheckBox chkShowWorkRamRegisterReads;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label lblWorkRam;
 		private ctrlColorPicker picCpuWrites;
 		private System.Windows.Forms.CheckBox chkShowCpuRegisterWrites;
 		private ctrlColorPicker picCpuReads;

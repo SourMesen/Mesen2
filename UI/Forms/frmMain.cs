@@ -475,22 +475,17 @@ namespace Mesen.GUI.Forms
 			mnuGbDebugger.Visible = isGameboyMode;
 			sepGameboyDebugger.Visible = isGameboyMode;
 			
-			if(isGameboyMode) {
-				//Remove/disable all tools that aren't useful when running a plain GB game
-				mnuGbDebugger.Text = "Debugger";
-
-				mnuDebugger.Enabled = false;
-				mnuDebugger.Visible = false;
-				mnuSpcDebugger.Enabled = false;
-				mnuSpcDebugger.Visible = false;
-				mnuSpriteViewer.Enabled = false;
-				mnuSpriteViewer.Visible = false;
-				mnuEventViewer.Enabled = false;
-				mnuEventViewer.Visible = false;
-				mnuAssembler.Enabled = false;
-				mnuAssembler.Visible = false;
-				sepCoprocessors.Visible = false;
-			}
+			//Remove/disable all tools that aren't useful when running a plain GB game
+			mnuGbDebugger.Text = isGameboyMode ? "Debugger" : "Game Boy Debugger";
+			mnuDebugger.Enabled = !isGameboyMode;
+			mnuDebugger.Visible = !isGameboyMode;
+			mnuSpcDebugger.Enabled = !isGameboyMode;
+			mnuSpcDebugger.Visible = !isGameboyMode;
+			mnuSpriteViewer.Enabled = !isGameboyMode;
+			mnuSpriteViewer.Visible = !isGameboyMode;
+			mnuAssembler.Enabled = !isGameboyMode;
+			mnuAssembler.Visible = !isGameboyMode;
+			sepCoprocessors.Visible = !isGameboyMode;
 		}
 		
 		private void ResizeRecentGames()

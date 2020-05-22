@@ -14,6 +14,8 @@
 #include "EmuSettings.h"
 #include "BaseCartridge.h"
 #include "GameboyDisUtils.h"
+#include "GbEventManager.h"
+#include "BaseEventManager.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {
@@ -25,8 +27,9 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 	_settings = debugger->GetConsole()->GetSettings().get();
 
+	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _gameboy->GetPpu()));
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
 }
 
@@ -88,6 +91,9 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+		if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {
+			_eventManager->AddEvent(DebugEventType::Register, operation);
+		}
 	}
 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
@@ -101,6 +107,10 @@ void GbDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType 
 
 	if(addressInfo.Type == SnesMemoryType::GbWorkRam || addressInfo.Type == SnesMemoryType::GbCartRam || addressInfo.Type == SnesMemoryType::GbHighRam) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Gameboy);
+	}
+
+	if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
@@ -133,6 +143,20 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 	}
 
 	_step.reset(new StepRequest(step));
+}
+
+void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc)
+{
+	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
+	AddressInfo ret = _gameboy->GetAbsoluteAddress(originalPc);
+	AddressInfo dest = _gameboy->GetAbsoluteAddress(currentPc);
+	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, StackFrameFlags::Irq);
+	_eventManager->AddEvent(DebugEventType::Irq);
+}
+
+shared_ptr<GbEventManager> GbDebugger::GetEventManager()
+{
+	return _eventManager;
 }
 
 shared_ptr<CallstackManager> GbDebugger::GetCallstackManager()

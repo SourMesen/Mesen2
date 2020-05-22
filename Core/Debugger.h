@@ -35,6 +35,7 @@ class Cx4Debugger;
 class GbDebugger;
 class Breakpoint;
 class Assembler;
+class IEventManager;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -67,7 +68,6 @@ private:
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 	shared_ptr<Disassembler> _disassembler;
 	shared_ptr<PpuTools> _ppuTools;
-	shared_ptr<EventManager> _eventManager;
 	shared_ptr<LabelManager> _labelManager;
 	shared_ptr<Assembler> _assembler;
 
@@ -139,7 +139,7 @@ public:
 	shared_ptr<CodeDataLogger> GetCodeDataLogger();
 	shared_ptr<Disassembler> GetDisassembler();
 	shared_ptr<PpuTools> GetPpuTools();
-	shared_ptr<EventManager> GetEventManager();
+	shared_ptr<IEventManager> GetEventManager();
 	shared_ptr<LabelManager> GetLabelManager();
 	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);

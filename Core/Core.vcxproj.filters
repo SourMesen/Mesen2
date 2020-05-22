@@ -176,9 +176,6 @@
     <ClInclude Include="PpuTools.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="EventManager.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="EventType.h">
       <Filter>Misc</Filter>
     </ClInclude>
@@ -581,6 +578,15 @@
     <ClInclude Include="GbMbc3.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>Debugger\EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GbEventManager.h">
+      <Filter>Debugger\EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseEventManager.h">
+      <Filter>Debugger\EventManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -666,9 +672,6 @@
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="BreakpointManager.cpp">
-      <Filter>Debugger</Filter>
-    </ClCompile>
-    <ClCompile Include="EventManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="PpuTools.cpp">
@@ -923,6 +926,12 @@
     <ClCompile Include="GbCpu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>Debugger\EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GbEventManager.cpp">
+      <Filter>Debugger\EventManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -1008,6 +1017,9 @@
     </Filter>
     <Filter Include="GB\APU">
       <UniqueIdentifier>{c020f128-b5e1-4f6c-9849-ff098fe93d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debugger\EventManager">
+      <UniqueIdentifier>{b1753ff0-0c73-4acf-978b-1964222e01c6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -27,10 +27,10 @@ class CpuDebugger final : public IDebugger
 	MemoryManager* _memoryManager;
 	EmuSettings* _settings;
 	CodeDataLogger* _codeDataLogger;
-	EventManager* _eventManager;
 	Cpu* _cpu;
 	Sa1* _sa1;
 
+	shared_ptr<EventManager> _eventManager;
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
@@ -53,6 +53,8 @@ public:
 	void Run();
 	void Step(int32_t stepCount, StepType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+
+	shared_ptr<EventManager> GetEventManager();
 	shared_ptr<CallstackManager> GetCallstackManager();
 	BreakpointManager* GetBreakpointManager();
 };

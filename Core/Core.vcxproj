@@ -48,6 +48,7 @@
     <ClInclude Include="BaseCartridge.h" />
     <ClInclude Include="BaseControlDevice.h" />
     <ClInclude Include="BaseCoprocessor.h" />
+    <ClInclude Include="BaseEventManager.h" />
     <ClInclude Include="BatteryManager.h" />
     <ClInclude Include="BsxCart.h" />
     <ClInclude Include="BsxMemoryPack.h" />
@@ -72,6 +73,7 @@
     <ClInclude Include="GbCartFactory.h" />
     <ClInclude Include="GbCpu.h" />
     <ClInclude Include="GbDebugger.h" />
+    <ClInclude Include="GbEventManager.h" />
     <ClInclude Include="GbMbc1.h" />
     <ClInclude Include="GbMbc2.h" />
     <ClInclude Include="GbMbc3.h" />
@@ -278,6 +280,7 @@
     <ClCompile Include="GbApu.cpp" />
     <ClCompile Include="GbCpu.cpp" />
     <ClCompile Include="GbDebugger.cpp" />
+    <ClCompile Include="GbEventManager.cpp" />
     <ClCompile Include="GbMemoryManager.cpp" />
     <ClCompile Include="GbPpu.cpp" />
     <ClCompile Include="GbTimer.cpp" />

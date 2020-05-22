@@ -16,6 +16,7 @@
 #include "../Core/ScriptManager.h"
 #include "../Core/Profiler.h"
 #include "../Core/Assembler.h"
+#include "../Core/BaseEventManager.h"
 
 extern shared_ptr<Console> _console;
 
@@ -95,7 +96,7 @@ extern "C"
 
 	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount); }
 	DllExport uint32_t __stdcall GetDebugEventCount(EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->GetEventCount(options); }
-	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, options); }
+	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, uint32_t bufferSize, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, bufferSize, options); }
 	DllExport void __stdcall GetEventViewerEvent(DebugEventInfo *evtInfo, uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { *evtInfo = GetDebugger()->GetEventManager()->GetEvent(scanline, cycle, options); }
 	DllExport uint32_t __stdcall TakeEventSnapshot(EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->TakeEventSnapshot(options); }
 

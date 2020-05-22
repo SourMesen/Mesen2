@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "DmaController.h"
 #include "DebugTypes.h"
+#include "BaseEventManager.h"
 #include "../Utilities/SimpleLock.h"
 
 enum class DebugEventType;
@@ -13,7 +14,7 @@ class Debugger;
 class DmaController;
 class MemoryManager;
 
-class EventManager
+class EventManager final : public IEventManager
 {
 private:
 	static constexpr int ScanlineWidth = 1364 / 2;
@@ -28,7 +29,7 @@ private:
 	vector<DebugEventInfo> _sentEvents;
 	
 	vector<DebugEventInfo> _snapshot;
-	uint16_t _snapshotScanline = 0;
+	int16_t _snapshotScanline = -1;
 	uint16_t _snapshotCycle = 0;
 	SimpleLock _lock;
 
@@ -52,76 +53,6 @@ public:
 	void ClearFrameEvents();
 
 	uint32_t TakeEventSnapshot(EventViewerDisplayOptions options);
-	void GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions options);
+	void GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize, EventViewerDisplayOptions options);
 	DebugEventInfo GetEvent(uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions &options);
-};
-
-enum class DebugEventType
-{
-	Register,
-	Nmi,
-	Irq,
-	Breakpoint
-};
-
-struct DebugEventInfo
-{
-	MemoryOperationInfo Operation;
-	DebugEventType Type;
-	uint32_t ProgramCounter;
-	uint16_t Scanline;
-	uint16_t Cycle;
-	int16_t BreakpointId;
-	int8_t DmaChannel;
-	DmaChannelConfig DmaChannelInfo;
-};
-
-struct EventViewerDisplayOptions
-{
-	uint32_t IrqColor;
-	uint32_t NmiColor;
-	uint32_t BreakpointColor;
-	
-	uint32_t PpuRegisterReadColor;
-	uint32_t PpuRegisterWriteCgramColor;
-	uint32_t PpuRegisterWriteVramColor;
-	uint32_t PpuRegisterWriteOamColor;
-	uint32_t PpuRegisterWriteMode7Color;
-	uint32_t PpuRegisterWriteBgOptionColor;
-	uint32_t PpuRegisterWriteBgScrollColor;
-	uint32_t PpuRegisterWriteWindowColor;
-	uint32_t PpuRegisterWriteOtherColor;
-
-	uint32_t ApuRegisterReadColor;
-	uint32_t ApuRegisterWriteColor;
-	uint32_t CpuRegisterReadColor;
-	uint32_t CpuRegisterWriteColor;
-	uint32_t WorkRamRegisterReadColor;
-	uint32_t WorkRamRegisterWriteColor;
-
-	bool ShowPpuRegisterCgramWrites;
-	bool ShowPpuRegisterVramWrites;
-	bool ShowPpuRegisterOamWrites;
-	bool ShowPpuRegisterMode7Writes;
-	bool ShowPpuRegisterBgOptionWrites;
-	bool ShowPpuRegisterBgScrollWrites;
-	bool ShowPpuRegisterWindowWrites;
-	bool ShowPpuRegisterOtherWrites;
-
-	bool ShowPpuRegisterReads;
-	bool ShowCpuRegisterWrites;
-	bool ShowCpuRegisterReads;
-
-	bool ShowApuRegisterWrites;
-	bool ShowApuRegisterReads;
-	bool ShowWorkRamRegisterWrites;
-	bool ShowWorkRamRegisterReads;
-
-	bool ShowNmi;
-	bool ShowIrq;
-
-	bool ShowMarkedBreakpoints;
-	bool ShowPreviousFrameEvents;
-
-	bool ShowDmaChannels[8];
 };

@@ -212,6 +212,14 @@ struct StackFrameInfo
 	StackFrameFlags Flags;
 };
 
+enum class DebugEventType
+{
+	Register,
+	Nmi,
+	Irq,
+	Breakpoint
+};
+
 enum class BreakSource
 {
 	Unspecified = -1,

@@ -7,12 +7,12 @@
 #include "ExpressionEvaluator.h"
 #include "EventManager.h"
 
-BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType)
+BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, IEventManager* eventManager)
 {
 	_debugger = debugger;
 	_cpuType = cpuType;
 	_hasBreakpoint = false;
-	_eventManager = debugger->GetEventManager().get();
+	_eventManager = eventManager ? eventManager : debugger->GetEventManager().get();
 }
 
 void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)

@@ -32,6 +32,7 @@
 #include "BreakpointManager.h"
 #include "PpuTools.h"
 #include "EventManager.h"
+#include "GbEventManager.h"
 #include "EventType.h"
 #include "DebugBreakHelper.h"
 #include "LabelManager.h"
@@ -72,10 +73,12 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
-	_eventManager.reset(new EventManager(this, _cpu.get(), _ppu.get(), _memoryManager.get(), _console->GetDmaController().get()));
 	_scriptManager.reset(new ScriptManager(this));
 	_assembler.reset(new Assembler(_labelManager));
 
+	if(_cart->GetGameboy()) {
+		_gbDebugger.reset(new GbDebugger(this));
+	}
 	_cpuDebugger.reset(new CpuDebugger(this, CpuType::Cpu));
 	_spcDebugger.reset(new SpcDebugger(this));
 	if(_cart->GetSa1()) {
@@ -86,8 +89,6 @@ Debugger::Debugger(shared_ptr<Console> console)
 		_necDspDebugger.reset(new NecDspDebugger(this));
 	} else if(_cart->GetCx4()) {
 		_cx4Debugger.reset(new Cx4Debugger(this));
-	} else if(_cart->GetGameboy()) {
-		_gbDebugger.reset(new GbDebugger(this));
 	}
 
 	_step.reset(new StepRequest());
@@ -282,6 +283,7 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 	switch(type) {
 		case CpuType::Cpu: _cpuDebugger->ProcessInterrupt(originalPc, currentPc, forNmi); break;
 		case CpuType::Sa1: _sa1Debugger->ProcessInterrupt(originalPc, currentPc, forNmi); break;
+		case CpuType::Gameboy: _gbDebugger->ProcessInterrupt(originalPc, currentPc); break;
 	}
 }
 
@@ -294,7 +296,7 @@ void Debugger::ProcessEvent(EventType type)
 
 		case EventType::StartFrame:
 			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh);
-			_eventManager->ClearFrameEvents();
+			GetEventManager()->ClearFrameEvents();
 			break;
 
 		case EventType::Reset:
@@ -670,9 +672,13 @@ shared_ptr<PpuTools> Debugger::GetPpuTools()
 	return _ppuTools;
 }
 
-shared_ptr<EventManager> Debugger::GetEventManager()
+shared_ptr<IEventManager> Debugger::GetEventManager()
 {
-	return _eventManager;
+	if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+		return std::dynamic_pointer_cast<IEventManager>(_gbDebugger->GetEventManager());
+	} else {
+		return std::dynamic_pointer_cast<IEventManager>(_cpuDebugger->GetEventManager());
+	}
 }
 
 shared_ptr<LabelManager> Debugger::GetLabelManager()
@@ -729,3 +735,4 @@ template void Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint
 
 template void Debugger::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

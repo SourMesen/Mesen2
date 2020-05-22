@@ -8,6 +8,7 @@
 #include "Debugger.h"
 #include "DebugBreakHelper.h"
 #include "DefaultVideoFilter.h"
+#include "BaseEventManager.h"
 
 EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController)
 {
@@ -263,9 +264,13 @@ uint32_t EventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 	return _scanlineCount;
 }
 
-void EventManager::GetDisplayBuffer(uint32_t *buffer, EventViewerDisplayOptions options)
+void EventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize, EventViewerDisplayOptions options)
 {
 	auto lock = _lock.AcquireSafe();
+
+	if(bufferSize < _scanlineCount * 2 * EventManager::ScanlineWidth * 4) {
+		return;
+	}
 
 	for(int i = 0; i < EventManager::ScanlineWidth * (int)_scanlineCount * 2; i++) {
 		buffer[i] = 0xFF555555;

@@ -1,11 +1,13 @@
 #include "stdafx.h"
+#include "Console.h"
 #include "GbCpu.h"
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
 #include "../Utilities/Serializer.h"
 
-GbCpu::GbCpu(Gameboy* gameboy, GbMemoryManager* memoryManager)
+GbCpu::GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
 {
+	_console = console;
 	_gameboy = gameboy;
 	_memoryManager = memoryManager;
 	_state = {};
@@ -46,6 +48,7 @@ void GbCpu::Exec()
 	uint8_t irqVector = _memoryManager->ProcessIrqRequests();
 	if(irqVector) {
 		if(_state.IME) {
+			uint16_t oldPc = _state.PC;
 			_memoryManager->ClearIrqRequest(irqVector);
 			IncCycleCount();
 			IncCycleCount();
@@ -59,6 +62,7 @@ void GbCpu::Exec()
 				case GbIrqSource::Joypad: _state.PC = 0x60; break;
 			}
 			_state.IME = false;
+			_console->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
 		}
 		_state.Halted = false;
 	}

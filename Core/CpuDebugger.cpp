@@ -33,11 +33,11 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_sa1 = debugger->GetConsole()->GetCartridge()->GetSa1();
 	_codeDataLogger = debugger->GetCodeDataLogger().get();
 	_settings = debugger->GetConsole()->GetSettings().get();
-	_eventManager = debugger->GetEventManager().get();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
-
+	
+	_eventManager.reset(new EventManager(debugger, _cpu, _debugger->GetConsole()->GetPpu().get(), _memoryManager, _debugger->GetConsole()->GetDmaController().get()));
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, cpuType));
+	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
 
 	if(GetState().PC == 0) {
@@ -233,6 +233,11 @@ CpuState CpuDebugger::GetState()
 bool CpuDebugger::IsRegister(uint32_t addr)
 {
 	return _cpuType == CpuType::Cpu && _memoryManager->IsRegister(addr);
+}
+
+shared_ptr<EventManager> CpuDebugger::GetEventManager()
+{
+	return _eventManager;
 }
 
 shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()

@@ -91,6 +91,7 @@ namespace Mesen.GUI.Debugger
 
 		public void RefreshViewer()
 		{
+			ctrlFilters.SetCpuType(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy ? CpuType.Gameboy : CpuType.Cpu);
 			if(tabMain.SelectedTab == tpgPpuView) {
 				ctrlPpuView.RefreshViewer();
 			} else {
