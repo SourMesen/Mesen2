@@ -21,7 +21,7 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_oam = oam;
 	
 	_state = {};
-	_state.Mode = PpuMode::HBlank;
+	_state.Mode = PpuMode::OamEvaluation;
 	_lastFrameTime = 0;
 
 	_outputBuffers[0] = new uint16_t[256 * 240];
@@ -99,12 +99,8 @@ void GbPpu::ExecCycle()
 		_spriteCount = 0;
 
 		if(_state.Scanline == 144) {
-			_state.Mode = PpuMode::VBlank;
+			ChangeMode(PpuMode::VBlank);
 			_memoryManager->RequestIrq(GbIrqSource::VerticalBlank);
-
-			if(_state.Status & GbPpuStatusFlags::VBlankIrq) {
-				_memoryManager->RequestIrq(GbIrqSource::LcdStat);
-			}
 
 			SendFrame();
 		} else if(_state.Scanline == 154) {
@@ -119,11 +115,7 @@ void GbPpu::ExecCycle()
 		}
 
 		if(_state.Scanline < 144) {
-			_state.Mode = PpuMode::OamEvaluation;
-
-			if(_state.Status & GbPpuStatusFlags::OamIrq) {
-				_memoryManager->RequestIrq(GbIrqSource::LcdStat);
-			}
+			ChangeMode(PpuMode::OamEvaluation);
 		}
 
 		if(_state.LyCompare == _state.Scanline && (_state.Status & GbPpuStatusFlags::CoincidenceIrq)) {
@@ -189,10 +181,7 @@ void GbPpu::ExecCycle()
 			}
 
 			if(_drawnPixels >= 160) {
-				_state.Mode = PpuMode::HBlank;
-				if(_state.Status & GbPpuStatusFlags::HBlankIrq) {
-					_memoryManager->RequestIrq(GbIrqSource::LcdStat);
-				}
+				ChangeMode(PpuMode::HBlank);
 			}
 		}
 	}
@@ -212,7 +201,7 @@ void GbPpu::RunSpriteEvaluation()
 		}
 
 		if(_state.Cycle == 79) {
-			_state.Mode = PpuMode::Drawing;
+			ChangeMode(PpuMode::Drawing);
 
 			//Reset fetcher & pixel FIFO
 			_fetcherStep = 0;
@@ -229,11 +218,6 @@ void GbPpu::RunSpriteEvaluation()
 	}
 }
 
-void GbPpu::ResetTileFetcher()
-{
-	_fetcherStep = 0;
-}
-
 void GbPpu::ClockTileFetcher()
 {
 	if(_fetchSprite < 0 && _fifoSize >= 8) {
@@ -242,7 +226,7 @@ void GbPpu::ClockTileFetcher()
 				_fetchSprite = _spriteIndexes[i];
 				_fetchSpriteOffset = _spriteX[i] < 8 ? (8 - _spriteX[i]) : 0;
 				_spriteX[i] = 0xFF; //prevent processing this sprite again
-				ResetTileFetcher();
+				_fetcherStep = 0;
 				break;
 			}
 		}
@@ -320,7 +304,7 @@ void GbPpu::ClockTileFetcher()
 void GbPpu::PushSpriteToPixelFifo()
 {
 	_fetchSprite = -1;
-	ResetTileFetcher();
+	_fetcherStep = 0;
 
 	if(!_state.SpritesEnabled) {
 		return;
@@ -363,7 +347,29 @@ void GbPpu::PushTileToPixelFifo()
 
 	_fetchColumn = (_fetchColumn + 1) & 0x1F;
 	_fifoSize += 8;
-	ResetTileFetcher();
+	_fetcherStep = 0;
+}
+
+void GbPpu::ChangeMode(PpuMode mode)
+{
+	_state.Mode = mode;
+	UpdateStatIrq();
+}
+
+void GbPpu::UpdateStatIrq()
+{
+	bool irqFlag = (
+		_state.LcdEnabled &&
+		((_state.Scanline == _state.LyCompare && (_state.Status & GbPpuStatusFlags::CoincidenceIrq)) ||
+		(_state.Mode == PpuMode::HBlank && (_state.Status & GbPpuStatusFlags::HBlankIrq)) ||
+		(_state.Mode == PpuMode::OamEvaluation && (_state.Status & GbPpuStatusFlags::OamIrq)) ||
+		(_state.Mode == PpuMode::VBlank && ((_state.Status & GbPpuStatusFlags::VBlankIrq) || (_state.Status & GbPpuStatusFlags::OamIrq))))
+	);
+
+	if(irqFlag && !_state.StatIrqFlag) {
+		_memoryManager->RequestIrq(GbIrqSource::LcdStat);
+	}
+	_state.StatIrqFlag = irqFlag;
 }
 
 void GbPpu::GetPalette(uint16_t out[4], uint8_t palCfg)
@@ -441,7 +447,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					//Reset LCD to top of screen when it gets turned on
 					_state.Cycle = 0;
 					_state.Scanline = 0;
-					_state.Mode = PpuMode::HBlank;
+					ChangeMode(PpuMode::HBlank);
 
 					//Send a blank (white) frame
 					_lastFrameTime = _gameboy->GetCycleCount();
@@ -459,7 +465,11 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			_state.BgEnabled = (value & 0x01) != 0;
 			break;
 
-		case 0xFF41: _state.Status = value & 0xF8; break;
+		case 0xFF41: 
+			_state.Status = value & 0xF8;
+			UpdateStatIrq();
+			break;
+
 		case 0xFF42: _state.ScrollY = value; break;
 		case 0xFF43: _state.ScrollX = value; break;
 		case 0xFF45: _state.LyCompare = value; break;

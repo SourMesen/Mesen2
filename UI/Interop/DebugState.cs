@@ -710,6 +710,7 @@ namespace Mesen.GUI
 		public byte Scanline;
 		public UInt16 Cycle;
 		public PpuMode Mode;
+		[MarshalAs(UnmanagedType.I1)] public bool StatIrqFlag;
 
 		public byte LyCompare;
 		public byte BgPalette;

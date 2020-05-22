@@ -28,7 +28,7 @@ private:
 
 	uint8_t* _vram = nullptr;
 	uint8_t* _oam = nullptr;
-	
+
 	uint64_t _lastFrameTime = 0;
 
 	uint8_t _fifoPosition = 0;
@@ -53,10 +53,12 @@ private:
 
 	void ExecCycle();
 	void RunSpriteEvaluation();
-	void ResetTileFetcher();
 	void ClockTileFetcher();
 	void PushSpriteToPixelFifo();
 	void PushTileToPixelFifo();
+
+	void ChangeMode(PpuMode mode);
+	void UpdateStatIrq();
 
 	void WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value);
 

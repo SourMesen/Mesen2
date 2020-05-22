@@ -106,6 +106,7 @@ struct GbPpuState
 	uint8_t Scanline;
 	uint16_t Cycle;
 	PpuMode Mode;
+	bool StatIrqFlag;
 
 	uint8_t LyCompare;
 	uint8_t BgPalette;
