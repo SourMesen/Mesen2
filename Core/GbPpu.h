@@ -46,8 +46,9 @@ private:
 	bool _fetchWindow = false;
 
 	int16_t _fetchSprite = -1;
+	int16_t _fetchSpriteOffset = -1;
 	uint8_t _spriteCount = 0;
-	uint8_t _spriteCountersX[10] = {};
+	uint8_t _spriteX[10] = {};
 	uint8_t _spriteIndexes[10] = {};
 
 	void ExecCycle();

@@ -205,7 +205,7 @@ void GbPpu::RunSpriteEvaluation()
 			uint8_t spriteIndex = (_state.Cycle >> 1) * 4;
 			int16_t sprY = (int16_t)_oam[spriteIndex] - 16;
 			if(_state.Scanline >= sprY && _state.Scanline < sprY + (_state.LargeSprites ? 16 : 8)) {
-				_spriteCountersX[_spriteCount] = _oam[spriteIndex + 1];
+				_spriteX[_spriteCount] = _oam[spriteIndex + 1];
 				_spriteIndexes[_spriteCount] = spriteIndex;
 				_spriteCount++;
 			}
@@ -238,9 +238,10 @@ void GbPpu::ClockTileFetcher()
 {
 	if(_fetchSprite < 0 && _fifoSize >= 8) {
 		for(int i = 0; i < _spriteCount; i++) {
-			if((int)_spriteCountersX[i] - 8 <= _drawnPixels) {
+			if((int)_spriteX[i] - 8 <= _drawnPixels) {
 				_fetchSprite = _spriteIndexes[i];
-				_spriteCountersX[i] = 0xFF; //prevent processing this sprite again
+				_fetchSpriteOffset = _spriteX[i] < 8 ? (8 - _spriteX[i]) : 0;
+				_spriteX[i] = 0xFF; //prevent processing this sprite again
 				ResetTileFetcher();
 				break;
 			}
@@ -325,20 +326,25 @@ void GbPpu::PushSpriteToPixelFifo()
 		return;
 	}
 
+	uint8_t pos = _fifoPosition;
+
 	//Overlap sprite
-	for(int i = 0; i < 8; i++) {
+	for(int i = _fetchSpriteOffset; i < 8; i++) {
 		uint8_t shift = (_fetcherAttributes & 0x20) ? i : (7 - i);
 		uint8_t bits = ((_fetcherTileLowByte >> shift) & 0x01);
 		bits |= ((_fetcherTileHighByte >> shift) & 0x01) << 1;
 
 		if(bits > 0) {
-			uint8_t pos = (_fifoPosition + i) & 0x0F;
-			if(!(_fifoContent[pos].Attributes & 0x40) && (_fifoContent[pos].Color == 0 || !(_fetcherAttributes & 0x80))) {
-				//Draw pixel if the current pixel is a BG pixel, and the color is 0, or the sprite is NOT background priority
+			if(!(_fifoContent[pos].Attributes & 0x40) && !(_fifoContent[pos].Attributes & 0x80) && (_fifoContent[pos].Color == 0 || !(_fetcherAttributes & 0x80))) {
+				//Draw pixel if the current pixel:
+				// -Is a BG pixel, and
+				// -Does not have the BG priority flag turned on (CGB only)
+				// -Is color 0, or the sprite is NOT background priority
 				_fifoContent[pos].Color = bits;
 				_fifoContent[pos].Attributes = _fetcherAttributes;
 			}
 		}
+		pos = (pos + 1) & 0x0F;
 	}
 }
 
@@ -619,10 +625,10 @@ void GbPpu::Serialize(Serializer& s)
 		_fifoPosition, _fifoSize, _shiftedPixels, _drawnPixels,
 		_fetcherAttributes, _fetcherStep, _fetchColumn, _fetcherTileAddr,
 		_fetcherTileLowByte, _fetcherTileHighByte, _fetchWindow, _fetchSprite,
-		_spriteCount
+		_spriteCount, _fetchSpriteOffset
 	);
 
-	s.StreamArray(_spriteCountersX, 10);
+	s.StreamArray(_spriteX, 10);
 	s.StreamArray(_spriteIndexes, 10);
 
 	for(int i = 0; i < 16; i++) {
