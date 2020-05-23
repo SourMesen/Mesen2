@@ -44,7 +44,7 @@ uint8_t GbTimer::Read(uint16_t addr)
 		case 0xFF04: return _divider >> 8;
 		case 0xFF05: return _counter; //FF05 - TIMA - Timer counter (R/W)
 		case 0xFF06: return _modulo; //FF06 - TMA - Timer Modulo (R/W)
-		case 0xFF07: return _control; //FF07 - TAC - Timer Control (R/W)
+		case 0xFF07: return _control | 0xF8; //FF07 - TAC - Timer Control (R/W)
 	}
 	return 0;
 }
