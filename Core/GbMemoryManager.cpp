@@ -154,7 +154,7 @@ bool GbMemoryManager::IsOamDmaRunning()
 void GbMemoryManager::WriteDma(uint16_t addr, uint8_t value)
 {
 	_console->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaWrite);
-	_ppu->WriteOam(addr, value, true);
+	_ppu->WriteOam((uint8_t)addr, value, true);
 }
 
 uint8_t GbMemoryManager::ReadDma(uint16_t addr)
@@ -254,7 +254,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					return _timer->Read(addr);
 
-				case 0xFF0F: return _state.IrqRequests; break; //IF - Interrupt flags (R/W)
+				case 0xFF0F: return _state.IrqRequests | 0xE0; break; //IF - Interrupt flags (R/W)
 
 				default: return 0xFF; //Open bus
 			}
@@ -325,7 +325,7 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 					_timer->Write(addr, value);
 					break;
 
-				case 0xFF0F: _state.IrqRequests = value; break; //IF - Interrupt flags (R/W)
+				case 0xFF0F: _state.IrqRequests = value & 0x1F; break; //IF - Interrupt flags (R/W)
 			}
 		}
 	} else if(addr >= 0xFE00) {

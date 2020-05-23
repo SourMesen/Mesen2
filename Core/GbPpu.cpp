@@ -440,7 +440,7 @@ uint8_t GbPpu::Read(uint16_t addr)
 	}
 	
 	LogDebug("[Debug] GB - Missing read handler: $" + HexUtilities::ToHex(addr));
-	return 0;
+	return 0xFF;
 }
 
 void GbPpu::Write(uint16_t addr, uint8_t value)
