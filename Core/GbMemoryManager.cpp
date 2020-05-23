@@ -151,6 +151,12 @@ bool GbMemoryManager::IsOamDmaRunning()
 	return _dmaController->IsOamDmaRunning();
 }
 
+void GbMemoryManager::WriteDma(uint16_t addr, uint8_t value)
+{
+	_console->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaWrite);
+	_ppu->WriteOam(addr, value, true);
+}
+
 uint8_t GbMemoryManager::ReadDma(uint16_t addr)
 {
 	uint8_t value = 0;
@@ -323,7 +329,7 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 			}
 		}
 	} else if(addr >= 0xFE00) {
-		_ppu->WriteOam((uint8_t)addr, value);
+		_ppu->WriteOam((uint8_t)addr, value, false);
 	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
 		_ppu->WriteVram(addr, value);
 	} else {

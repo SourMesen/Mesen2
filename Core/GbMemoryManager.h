@@ -57,6 +57,7 @@ public:
 
 	uint8_t Read(uint16_t addr, MemoryOperationType opType);
 	bool IsOamDmaRunning();
+	void WriteDma(uint16_t addr, uint8_t value);
 	uint8_t ReadDma(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
 

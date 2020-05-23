@@ -84,7 +84,7 @@ public:
 	void WriteVram(uint16_t addr, uint8_t value);
 
 	uint8_t ReadOam(uint8_t addr);
-	void WriteOam(uint8_t addr, uint8_t value);
+	void WriteOam(uint8_t addr, uint8_t value, bool forDma);
 
 	uint8_t ReadCgbRegister(uint16_t addr);
 	void WriteCgbRegister(uint16_t addr, uint8_t value);

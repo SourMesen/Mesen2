@@ -14,7 +14,7 @@ void GbDmaController::Exec()
 {
 	if(_state.DmaCounter > 0) {
 		if(_state.DmaCounter <= 160) {
-			_memoryManager->Write(0xFE00 + (160 - _state.DmaCounter), _state.DmaReadBuffer);
+			_memoryManager->WriteDma(0xFE00 + (160 - _state.DmaCounter), _state.DmaReadBuffer);
 		}
 
 		_state.DmaCounter--;
