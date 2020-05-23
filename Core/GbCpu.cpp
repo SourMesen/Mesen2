@@ -1044,9 +1044,9 @@ void GbCpu::RETI()
 //rst  n         xx          16 ---- call to 00,08,10,18,20,28,30,38
 void GbCpu::RST(uint8_t value)
 {
+	IncCycleCount();
 	PushWord(_state.PC);
 	_state.PC = value;
-	IncCycleCount();
 }
 
 void GbCpu::POP(Register16& reg)
@@ -1056,8 +1056,8 @@ void GbCpu::POP(Register16& reg)
 
 void GbCpu::PUSH(Register16& reg)
 {
-	PushWord(reg);
 	IncCycleCount();
+	PushWord(reg);
 }
 
 void GbCpu::POP_AF()
