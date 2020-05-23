@@ -82,6 +82,8 @@ namespace Mesen.GUI.Debugger.Integration
 
 			Dictionary<string, CodeLabel> labels = new Dictionary<string, CodeLabel>();
 
+			bool isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+
 			for(int i = 0; i < lines.Length; i++) {
 				string str = lines[i].Trim();
 				if(str == "[labels]") {
@@ -90,16 +92,28 @@ namespace Mesen.GUI.Debugger.Integration
 							Match m = labelRegex.Match(lines[i]);
 							if(m.Success) {
 								int bank = Int32.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
-								int addr = (bank << 16) | Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
 								string label = m.Groups[3].Value;
+								label = label.Replace('.', '_').Replace(':', '_').Replace('$', '_');
 
 								if(!LabelManager.LabelRegex.IsMatch(label)) {
 									//ignore labels that don't respect the label naming restrictions
 									continue;
 								}
 
-								AddressInfo relAddr = new AddressInfo() { Address = addr, Type = SnesMemoryType.CpuMemory };
-								AddressInfo absAddr = DebugApi.GetAbsoluteAddress(relAddr);
+								AddressInfo absAddr;
+								if(isGameboy) {
+									int addr = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
+									if(addr >= 0x8000) {
+										AddressInfo relAddr = new AddressInfo() { Address = addr, Type = SnesMemoryType.GameboyMemory };
+										absAddr = DebugApi.GetAbsoluteAddress(relAddr);
+									} else {
+										absAddr = new AddressInfo() { Address = bank * 0x4000 + (addr & 0x3FFF), Type = SnesMemoryType.GbPrgRom };
+									}
+								} else {
+									int addr = (bank << 16) | Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
+									AddressInfo relAddr = new AddressInfo() { Address = addr, Type = SnesMemoryType.CpuMemory };
+									absAddr = DebugApi.GetAbsoluteAddress(relAddr);
+								}
 
 								if(absAddr.Address < 0) {
 									continue;
