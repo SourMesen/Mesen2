@@ -9,7 +9,6 @@ GbTimer::GbTimer(GbMemoryManager* memoryManager, GbApu* apu)
 	_apu = apu;
 	_memoryManager = memoryManager;
 	
-
 	//Passes boot_div-dmgABCmgb
 	//But that test depends on LCD power on timings, so may be wrong.
 	_divider = 0x06; 
@@ -21,12 +20,27 @@ GbTimer::~GbTimer()
 
 void GbTimer::Exec()
 {
-	uint16_t newValue = _divider + 4;
+	_reloaded = false;
+	if(_needReload) {
+		ReloadCounter();
+	}
+	SetDivider(_divider + 4);	
+}
+
+void GbTimer::ReloadCounter()
+{
+	_counter = _modulo;
+	_memoryManager->RequestIrq(GbIrqSource::Timer);
+	_needReload = false;
+	_reloaded = true;
+}
+
+void GbTimer::SetDivider(uint16_t newValue)
+{
 	if(_timerEnabled && !(newValue & _timerDivider) && (_divider & _timerDivider)) {
 		_counter++;
 		if(_counter == 0) {
-			_counter = _modulo;
-			_memoryManager->RequestIrq(GbIrqSource::Timer);
+			_needReload = true;
 		}
 	}
 
@@ -54,30 +68,64 @@ void GbTimer::Write(uint16_t addr, uint8_t value)
 	//TODO properly detect edges when setting new values to registers or disabling timer, etc.
 	switch(addr) {
 		case 0xFF04:
-			_divider = 0;
+			SetDivider(0);
 			break;
 
 		case 0xFF05:
 			//FF05 - TIMA - Timer counter (R/W)
-			_counter = value;
+			if(_needReload) {
+				//Writing to TIMA when a reload is pending will cancel the reload and IRQ request
+				_needReload = false;
+			}
+
+			if(!_reloaded) {
+				//Writes to TIMA on the cycle TIMA was reloaded with TMA are ignored
+				_counter = value;
+			}
 			break;
 
 		case 0xFF06:
 			//FF06 - TMA - Timer Modulo (R/W)
 			_modulo = value;
-			break;
-
-		case 0xFF07:
-			//FF07 - TAC - Timer Control (R/W)
-			_control = value;
-			_timerEnabled = (value & 0x04) != 0;
-			switch(value & 0x03) {
-				case 0: _timerDivider = 1 << 9; break;
-				case 1: _timerDivider = 1 << 3; break;
-				case 2: _timerDivider = 1 << 5; break;
-				case 3: _timerDivider = 1 << 7; break;
+			if(_reloaded) {
+				//Writing to TMA on the same cycle it was reloaded into TIMA will also update TIMA
+				_counter = value;
 			}
 			break;
+
+		case 0xFF07: {
+			//FF07 - TAC - Timer Control (R/W)
+			_control = value;
+			bool enabled = (value & 0x04) != 0;
+			uint16_t newDivider = 0;
+			switch(value & 0x03) {
+				case 0: newDivider = 1 << 9; break;
+				case 1: newDivider = 1 << 3; break;
+				case 2: newDivider = 1 << 5; break;
+				case 3: newDivider = 1 << 7; break;
+			}
+
+			if(_timerEnabled) {
+				//When changing the value of TAC, the TIMA register can get incremented due to a glitch
+				bool incrementCounter;
+				if(enabled) {
+					incrementCounter = (_divider & _timerDivider) != 0 && (_divider & newDivider) == 0;
+				} else {
+					incrementCounter = (_divider & _timerDivider) != 0;
+				}
+
+				if(incrementCounter) {
+					_counter++;
+					if(_counter == 0) {
+						ReloadCounter();
+					}
+				}
+			}
+
+			_timerEnabled = enabled;
+			_timerDivider = newDivider;
+			break;
+		}
 	}
 }
 

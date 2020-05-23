@@ -14,12 +14,17 @@ private:
 
 	uint16_t _divider = 0;
 
+	bool _needReload = false; //Set after TIMA (_counter) overflowed, next cycle will reload TMA into TIMA
+	bool _reloaded = false; //Set during the cycle on which TIMA is reloaded (affects TMA/TIMA writes)
 	uint8_t _counter = 0;
 	uint8_t _modulo = 0;
 
 	uint8_t _control = 0;
 	bool _timerEnabled = false;
 	uint16_t _timerDivider = 1024;
+	
+	void SetDivider(uint16_t value);
+	void ReloadCounter();
 
 public:
 	GbTimer(GbMemoryManager* memoryManager, GbApu* apu);
