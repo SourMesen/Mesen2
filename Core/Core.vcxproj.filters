@@ -587,6 +587,9 @@
     <ClInclude Include="BaseEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
+    <ClInclude Include="GbDmaController.h">
+      <Filter>GB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -931,6 +934,9 @@
     </ClCompile>
     <ClCompile Include="GbEventManager.cpp">
       <Filter>Debugger\EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GbDmaController.cpp">
+      <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

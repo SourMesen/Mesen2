@@ -53,6 +53,7 @@ private:
 
 	void ExecCycle();
 	void RunSpriteEvaluation();
+	void ResetRenderer();
 	void ClockTileFetcher();
 	void PushSpriteToPixelFifo();
 	void PushTileToPixelFifo();

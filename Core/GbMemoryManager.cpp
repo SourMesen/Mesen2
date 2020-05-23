@@ -7,6 +7,7 @@
 #include "GbTimer.h"
 #include "GbTypes.h"
 #include "GbCart.h"
+#include "GbDmaController.h"
 #include "EmuSettings.h"
 #include "ControlManager.h"
 #include "SnesController.h"
@@ -15,10 +16,9 @@
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
-void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer)
+void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {
 	_state = {};
-	_state.DisableBootRom = true;
 	_state.CgbWorkRamBank = 1;
 
 	_prgRom = gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
@@ -29,12 +29,21 @@ void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbP
 	_workRamSize = gameboy->DebugGetMemorySize(SnesMemoryType::GbWorkRam);
 	_highRam = gameboy->DebugGetMemory(SnesMemoryType::GbHighRam);
 
+#ifdef USEBOOTROM
+	VirtualFile bootRom("Firmware\\boot.bin");
+	bootRom.ReadFile(_bootRom, 256);
+	_state.DisableBootRom = false;
+#else
+	_state.DisableBootRom = true;
+#endif
+
 	_apu = apu;
 	_ppu = ppu;
 	_gameboy = gameboy;
 	_cart = cart;
 	_timer = timer;
 	_console = console;
+	_dmaController = dmaController;
 	_controlManager = console->GetControlManager().get();
 	_settings = console->GetSettings().get();
 
@@ -56,17 +65,16 @@ GbMemoryManagerState GbMemoryManager::GetState()
 
 void GbMemoryManager::RefreshMappings()
 {
-	if(!_state.DisableBootRom) {
-		//TODO
-		//Map(0x0000, 0x00FF, GbMemoryType::WorkRam, true);
-	}
-
 	Map(0xC000, 0xCFFF, GbMemoryType::WorkRam, 0, false);
 	Map(0xD000, 0xDFFF, GbMemoryType::WorkRam, _state.CgbWorkRamBank * 0x1000, false);
 	Map(0xE000, 0xEFFF, GbMemoryType::WorkRam, 0, false);
-	Map(0xF000, 0xFCFF, GbMemoryType::WorkRam, _state.CgbWorkRamBank * 0x1000, false);
+	Map(0xF000, 0xFFFF, GbMemoryType::WorkRam, _state.CgbWorkRamBank * 0x1000, false);
 
 	_cart->RefreshMappings();
+
+	if(!_state.DisableBootRom) {
+		_reads[0] = _bootRom;
+	}
 }
 
 void GbMemoryManager::Exec()
@@ -74,6 +82,7 @@ void GbMemoryManager::Exec()
 	_state.ApuCycleCount += _state.CgbHighSpeed ? 2 : 4;
 	_timer->Exec();
 	_ppu->Exec();
+	_dmaController->Exec();
 }
 
 void GbMemoryManager::MapRegisters(uint16_t start, uint16_t end, RegisterAccess access)
@@ -137,6 +146,23 @@ uint8_t GbMemoryManager::Read(uint16_t addr, MemoryOperationType opType)
 	return value;
 }
 
+bool GbMemoryManager::IsOamDmaRunning()
+{
+	return _dmaController->IsOamDmaRunning();
+}
+
+uint8_t GbMemoryManager::ReadDma(uint16_t addr)
+{
+	uint8_t value = 0;
+	if(_reads[addr >> 8]) {
+		value = _reads[addr >> 8][(uint8_t)addr];
+	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
+		value = ReadRegister(addr);
+	}
+	_console->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaRead);
+	return value;
+}
+
 void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 {
 	_console->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, MemoryOperationType::Write);
@@ -184,6 +210,8 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 	if(addr >= 0xFF00) {
 		if(addr == 0xFFFF) {
 			return _state.IrqEnabled; //IE - Interrupt Enable (R/W)
+		} else if(addr == 0xFF46) {
+			return _dmaController->Read();
 		} else if(addr >= 0xFF80) {
 			return _highRam[addr & 0x7F]; //80-FE
 		} else if(addr >= 0xFF4D) {
@@ -191,9 +219,11 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 				switch(addr) {
 					//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
 					case 0xFF4D: return _state.CgbHighSpeed ? 0x80 : 0;
+					
+					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
+						return _dmaController->ReadCgb(addr);
 
 					case 0xFF4F: //CGB - VRAM bank
-					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
 					case 0xFF68: case 0xFF69: case 0xFF6A: case 0xFF6B: //CGB - Palette
 						return _ppu->ReadCgbRegister(addr);
 
@@ -202,7 +232,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 				}
 			}
 			LogDebug("[Debug] GB - Missing read handler: $" + HexUtilities::ToHex(addr));
-			return 0; //4D-7F
+			return 0xFF; //4D-7F, open bus
 		} else if(addr >= 0xFF40) {
 			return _ppu->Read(addr); //40-4C
 		} else if(addr >= 0xFF10) {
@@ -211,12 +241,16 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 			//00-0F
 			switch(addr) {
 				case 0xFF00: return ReadInputPort(); break;
-				case 0xFF01: break; //Serial
+				
+				case 0xFF01: return 0; //SB - Serial transfer data (R/W)
+				case 0xFF02: return 0x7E; //SC - Serial Transfer Control (R/W)
 
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					return _timer->Read(addr);
 
 				case 0xFF0F: return _state.IrqRequests; break; //IF - Interrupt flags (R/W)
+
+				default: return 0xFF; //Open bus
 			}
 		}
 	} else if(addr >= 0xFE00) {
@@ -233,6 +267,8 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 	 if(addr >= 0xFF00) {
 		if(addr == 0xFFFF) {
 			_state.IrqEnabled = value; //IE register
+		} else if(addr == 0xFF46) {
+			_dmaController->Write(value);
 		} else if(addr >= 0xFF80) {
 			_highRam[addr & 0x7F] = value; //80-FE
 		} else if(addr >= 0xFF4D) {
@@ -249,8 +285,11 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 						_state.CgbSwitchSpeedRequest = (value & 0x01) != 0;
 						break;
 
-					case 0xFF4F: //CGB - VRAM banking
 					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
+						_dmaController->WriteCgb(addr, value);
+						break;
+
+					case 0xFF4F: //CGB - VRAM banking
 					case 0xFF68: case 0xFF69: case 0xFF6A: case 0xFF6B: //CGB - Palette
 						_ppu->WriteCgbRegister(addr, value);
 						break;
@@ -364,7 +403,7 @@ uint8_t GbMemoryManager::ReadInputPort()
 		}
 	}
 
-	return result | (_state.InputSelect & 0x30);
+	return result | (_state.InputSelect & 0x30) | 0xC0;
 }
 
 void GbMemoryManager::Serialize(Serializer& s)
@@ -384,5 +423,6 @@ void GbMemoryManager::Serialize(Serializer& s)
 		for(int i = 0; i < 0x100; i++) {
 			Map(i*0x100, i*0x100+0xFF, _state.MemoryType[i], _state.MemoryOffset[i], _state.MemoryAccessType[i] == RegisterAccess::ReadWrite ? false : true);
 		}
+		RefreshMappings();
 	}
 }

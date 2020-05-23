@@ -6,6 +6,7 @@
 #include "GbApu.h"
 #include "GbCart.h"
 #include "GbTimer.h"
+#include "GbDmaController.h"
 #include "DebugTypes.h"
 #include "GbMemoryManager.h"
 #include "GbCartFactory.h"
@@ -88,6 +89,7 @@ void Gameboy::PowerOn()
 
 	//VRAM is filled with 0s by the boot rom
 	memset(_videoRam, 0, _videoRamSize);
+	memset(_spriteRam, 0, Gameboy::SpriteRamSize);
 
 	LoadBattery();
 
@@ -95,8 +97,9 @@ void Gameboy::PowerOn()
 	_apu.reset(new GbApu(_console, this));
 	_memoryManager.reset(new GbMemoryManager());
 	_timer.reset(new GbTimer(_memoryManager.get(), _apu.get()));
+	_dmaController.reset(new GbDmaController(_memoryManager.get()));
 	_cart->Init(this, _memoryManager.get());
-	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get());
+	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get(), _dmaController.get());
 
 	_cpu.reset(new GbCpu(_console, this, _memoryManager.get()));
 	_ppu->Init(_console, this, _memoryManager.get(), _videoRam, _spriteRam);
@@ -249,6 +252,7 @@ void Gameboy::Serialize(Serializer& s)
 	s.Stream(_memoryManager.get());
 	s.Stream(_cart.get());
 	s.Stream(_timer.get());
+	s.Stream(_dmaController.get());
 	s.Stream(_hasBattery);
 
 	s.StreamArray(_cartRam, _cartRamSize);

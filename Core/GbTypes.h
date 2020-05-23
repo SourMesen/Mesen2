@@ -109,6 +109,7 @@ struct GbPpuState
 	bool StatIrqFlag;
 
 	uint8_t LyCompare;
+	bool LyCoincidenceFlag;
 	uint8_t BgPalette;
 	uint8_t ObjPalette0;
 	uint8_t ObjPalette1;
@@ -131,11 +132,7 @@ struct GbPpuState
 	uint32_t FrameCount;
 
 	uint8_t CgbVramBank;
-	uint16_t CgbDmaSource;
-	uint16_t CgbDmaDest;
-	uint8_t CgbDmaLength;
-	bool CgbHdmaMode;
-
+	
 	uint8_t CgbBgPalPosition;
 	bool CgbBgPalAutoInc;
 	uint16_t CgbBgPalettes[4 * 8];
@@ -143,6 +140,20 @@ struct GbPpuState
 	uint8_t CgbObjPalPosition;
 	bool CgbObjPalAutoInc;
 	uint16_t CgbObjPalettes[4 * 8];
+};
+
+struct GbDmaControllerState
+{
+	uint8_t OamDmaDest;
+	uint8_t DmaStartDelay;
+	uint8_t InternalDest;
+	uint8_t DmaCounter;
+	uint8_t DmaReadBuffer;
+
+	uint16_t CgbDmaSource;
+	uint16_t CgbDmaDest;
+	uint8_t CgbDmaLength;
+	bool CgbHdmaMode;
 };
 
 struct GbSquareState

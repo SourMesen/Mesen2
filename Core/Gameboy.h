@@ -10,6 +10,7 @@ class GbCpu;
 class GbCart;
 class GbTimer;
 class GbMemoryManager;
+class GbDmaController;
 class VirtualFile;
 
 class Gameboy : public ISerializable
@@ -26,6 +27,7 @@ private:
 	unique_ptr<GbApu> _apu;
 	unique_ptr<GbCart> _cart;
 	unique_ptr<GbTimer> _timer;
+	unique_ptr<GbDmaController> _dmaController;
 
 	bool _hasBattery;
 	bool _cgbMode;

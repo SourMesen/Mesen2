@@ -8,6 +8,11 @@ GbTimer::GbTimer(GbMemoryManager* memoryManager, GbApu* apu)
 {
 	_apu = apu;
 	_memoryManager = memoryManager;
+	
+
+	//Passes boot_div-dmgABCmgb
+	//But that test depends on LCD power on timings, so may be wrong.
+	_divider = 0x06; 
 }
 
 GbTimer::~GbTimer()

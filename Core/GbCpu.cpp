@@ -1010,9 +1010,9 @@ void GbCpu::CALL(uint16_t dstAddr)
 void GbCpu::CALL(bool condition, uint16_t dstAddr)
 {
 	if(condition) {
+		IncCycleCount();
 		PushWord(_state.PC);
 		_state.PC = dstAddr;
-		IncCycleCount();
 	}
 }
 

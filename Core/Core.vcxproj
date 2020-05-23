@@ -73,6 +73,7 @@
     <ClInclude Include="GbCartFactory.h" />
     <ClInclude Include="GbCpu.h" />
     <ClInclude Include="GbDebugger.h" />
+    <ClInclude Include="GbDmaController.h" />
     <ClInclude Include="GbEventManager.h" />
     <ClInclude Include="GbMbc1.h" />
     <ClInclude Include="GbMbc2.h" />
@@ -280,6 +281,7 @@
     <ClCompile Include="GbApu.cpp" />
     <ClCompile Include="GbCpu.cpp" />
     <ClCompile Include="GbDebugger.cpp" />
+    <ClCompile Include="GbDmaController.cpp" />
     <ClCompile Include="GbEventManager.cpp" />
     <ClCompile Include="GbMemoryManager.cpp" />
     <ClCompile Include="GbPpu.cpp" />

@@ -8,6 +8,7 @@ class GbCart;
 class GbPpu;
 class GbApu;
 class GbTimer;
+class GbDmaController;
 
 class EmuSettings;
 class Console;
@@ -25,7 +26,9 @@ private:
 	GbApu* _apu = nullptr;
 	GbPpu* _ppu = nullptr;
 	GbTimer* _timer;
+	GbDmaController* _dmaController;
 
+	uint8_t _bootRom[256];
 	uint8_t* _prgRom = nullptr;
 	uint32_t _prgRomSize = 0;
 	uint8_t* _workRam = nullptr;
@@ -44,7 +47,7 @@ public:
 
 	GbMemoryManagerState GetState();
 
-	void Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer);
+	void Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController);
 	void MapRegisters(uint16_t start, uint16_t end, RegisterAccess access);
 	void Map(uint16_t start, uint16_t end, GbMemoryType type, uint32_t offset, bool readonly);
 	void Unmap(uint16_t start, uint16_t end);
@@ -53,6 +56,8 @@ public:
 	void Exec();
 
 	uint8_t Read(uint16_t addr, MemoryOperationType opType);
+	bool IsOamDmaRunning();
+	uint8_t ReadDma(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
 
 	uint8_t ReadRegister(uint16_t addr);

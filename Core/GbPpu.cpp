@@ -21,7 +21,7 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_oam = oam;
 	
 	_state = {};
-	_state.Mode = PpuMode::OamEvaluation;
+	_state.Mode = PpuMode::HBlank;
 	_lastFrameTime = 0;
 
 	_outputBuffers[0] = new uint16_t[256 * 240];
@@ -92,13 +92,20 @@ void GbPpu::Exec()
 void GbPpu::ExecCycle()
 {
 	_state.Cycle++;
+
+	PpuMode mode = _state.Mode;
+	bool lyCoincidenceFlag = _state.LyCoincidenceFlag;
+	_state.LyCoincidenceFlag = (_state.LyCompare == _state.Scanline);
+
 	if(_state.Cycle == 456) {
 		_state.Cycle = 0;
 
 		_state.Scanline++;
 		_spriteCount = 0;
 
-		if(_state.Scanline == 144) {
+		if(_state.Scanline < 144) {
+			ChangeMode(PpuMode::OamEvaluation);
+		} else if(_state.Scanline == 144) {
 			ChangeMode(PpuMode::VBlank);
 			_memoryManager->RequestIrq(GbIrqSource::VerticalBlank);
 
@@ -113,23 +120,17 @@ void GbPpu::ExecCycle()
 				}
 			}
 		}
+	}
 
-		if(_state.Scanline < 144) {
-			ChangeMode(PpuMode::OamEvaluation);
-		}
-
-		if(_state.LyCompare == _state.Scanline && (_state.Status & GbPpuStatusFlags::CoincidenceIrq)) {
-			_memoryManager->RequestIrq(GbIrqSource::LcdStat);
-		}
+	if(mode != _state.Mode || _state.LyCoincidenceFlag != lyCoincidenceFlag) {
+		UpdateStatIrq();
 	}
 
 	_console->ProcessPpuCycle(_state.Scanline, _state.Cycle);
 
 	//TODO: Dot-based renderer, currently draws at the end of the scanline
 	if(_state.Scanline < 144) {
-		if(_state.Cycle < 80) {
-			RunSpriteEvaluation();
-		} else if(_state.Mode == PpuMode::Drawing) {
+		if(_state.Mode == PpuMode::Drawing) {
 			bool fetchWindow = _state.WindowEnabled && _shiftedPixels >= _state.WindowX - 7 && _state.Scanline >= _state.WindowY;
 			if(_fetchWindow != fetchWindow) {
 				//Switched between window & background, reset fetcher & pixel FIFO
@@ -167,7 +168,8 @@ void GbPpu::ExecCycle()
 						}
 						rgbColor = palette[entry.Color];
 					}
-						_currentBuffer[outOffset] = rgbColor;
+					
+					_currentBuffer[outOffset] = rgbColor;
 					_fifoPosition = (_fifoPosition + 1) & 0x0F;
 
 					if(_console->IsDebugging()) {
@@ -183,6 +185,8 @@ void GbPpu::ExecCycle()
 			if(_drawnPixels >= 160) {
 				ChangeMode(PpuMode::HBlank);
 			}
+		} else if(_state.Cycle < 80) {
+			RunSpriteEvaluation();
 		}
 	}
 }
@@ -202,20 +206,24 @@ void GbPpu::RunSpriteEvaluation()
 
 		if(_state.Cycle == 79) {
 			ChangeMode(PpuMode::Drawing);
-
-			//Reset fetcher & pixel FIFO
-			_fetcherStep = 0;
-			_fifoPosition = 0;
-			_fifoSize = 0;
-			_shiftedPixels = 0;
-			_drawnPixels = 0;
-			_fetchSprite = -1;
-			_fetchWindow = false;
-			_fetchColumn = _state.ScrollX / 8;
+			ResetRenderer();
 		}
 	} else {
 		//Hardware probably reads sprite Y and loads the X counter with the value on the next cycle
 	}
+}
+
+void GbPpu::ResetRenderer()
+{	
+	//Reset fetcher & pixel FIFO
+	_fetcherStep = 0;
+	_fifoPosition = 0;
+	_fifoSize = 0;
+	_shiftedPixels = 0;
+	_drawnPixels = 0;
+	_fetchSprite = -1;
+	_fetchWindow = false;
+	_fetchColumn = _state.ScrollX / 8;
 }
 
 void GbPpu::ClockTileFetcher()
@@ -240,7 +248,7 @@ void GbPpu::ClockTileFetcher()
 				uint8_t sprTile = _oam[_fetchSprite + 2];
 				uint8_t sprAttr = _oam[_fetchSprite + 3];
 				bool vMirror = (sprAttr & 0x40) != 0;
-				uint16_t tileBank = (sprAttr & 0x08) ? 0x2000 : 0x0000;
+				uint16_t tileBank = _gameboy->IsCgb() ? ((sprAttr & 0x08) ? 0x2000 : 0x0000) : 0;
 
 				uint8_t sprOffsetY = vMirror ? (_state.LargeSprites ? 15 : 7) - (_state.Scanline - sprY) : (_state.Scanline - sprY);
 				if(_state.LargeSprites) {
@@ -353,7 +361,6 @@ void GbPpu::PushTileToPixelFifo()
 void GbPpu::ChangeMode(PpuMode mode)
 {
 	_state.Mode = mode;
-	UpdateStatIrq();
 }
 
 void GbPpu::UpdateStatIrq()
@@ -415,8 +422,9 @@ uint8_t GbPpu::Read(uint16_t addr)
 		case 0xFF41:
 			//FF41 - STAT - LCDC Status (R/W)
 			return (
-				(_state.Status & 0xF8) |
-				((_state.LyCompare == _state.Scanline) ? 0x04 : 0x00) |
+				0x80 | 
+				(_state.Status & 0x78) |
+				(_state.LyCoincidenceFlag ? 0x04 : 0x00) |
 				(int)_state.Mode
 			);
 
@@ -444,7 +452,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 				_state.LcdEnabled = (value & 0x80) != 0;
 				
 				if(!_state.LcdEnabled) {
-					//Reset LCD to top of screen when it gets turned on
+					//Reset LCD to top of screen when it gets turned off
 					_state.Cycle = 0;
 					_state.Scanline = 0;
 					ChangeMode(PpuMode::HBlank);
@@ -454,6 +462,10 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					std::fill(_outputBuffers[0], _outputBuffers[0] + 256 * 239, 0x7FFF);
 					std::fill(_outputBuffers[1], _outputBuffers[1] + 256 * 239, 0x7FFF);
 					SendFrame();
+				} else {
+					_state.Cycle = 6;
+					_state.Scanline = 0;
+					ChangeMode(PpuMode::Drawing);
 				}
 			}
 			_state.WindowTilemapSelect = (value & 0x40) != 0;
@@ -465,24 +477,10 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			_state.BgEnabled = (value & 0x01) != 0;
 			break;
 
-		case 0xFF41: 
-			_state.Status = value & 0xF8;
-			UpdateStatIrq();
-			break;
-
+		case 0xFF41: _state.Status = value & 0xF8; break;
 		case 0xFF42: _state.ScrollY = value; break;
 		case 0xFF43: _state.ScrollX = value; break;
 		case 0xFF45: _state.LyCompare = value; break;
-		
-		case 0xFF46:
-			//OAM DMA
-			//TODO restrict CPU accesses to high ram during this
-			//TODO timing
-			for(int i = 0; i < 0xA0; i++) {
-				_memoryManager->Write(0xFE00 | i, _memoryManager->Read((value << 8) | i, MemoryOperationType::DmaRead));
-			}
-			break;
-
 		case 0xFF47: _state.BgPalette = value; break;
 		case 0xFF48: _state.ObjPalette0 = value; break;
 		case 0xFF49: _state.ObjPalette1 = value; break;
@@ -514,10 +512,10 @@ void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 uint8_t GbPpu::ReadOam(uint8_t addr)
 {
 	if(addr < 0xA0) {
-		if((int)_state.Mode <= (int)PpuMode::VBlank) {
-			return _oam[addr];
-		} else {
+		if((int)_state.Mode >= (int)PpuMode::OamEvaluation || _memoryManager->IsOamDmaRunning()) {
 			return 0xFF;
+		} else {
+			return _oam[addr];
 		}
 	}
 	return 0;
@@ -534,11 +532,6 @@ uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 {
 	switch(addr) {
 		case 0xFF4F: return _state.CgbVramBank;
-		case 0xFF51: return _state.CgbDmaSource >> 8;
-		case 0xFF52: return _state.CgbDmaSource & 0xFF;
-		case 0xFF53: return _state.CgbDmaDest >> 8;
-		case 0xFF54: return _state.CgbDmaDest & 0xFF;
-		case 0xFF55: return _state.CgbDmaLength | (_state.CgbHdmaMode ? 0x80 : 0);
 		case 0xFF68: return _state.CgbBgPalPosition | (_state.CgbBgPalAutoInc ? 0x80 : 0);
 		case 0xFF69: return (_state.CgbBgPalettes[_state.CgbBgPalPosition >> 1] >> ((_state.CgbBgPalPosition & 0x01) ? 8 : 0) & 0xFF);
 		case 0xFF6A: return _state.CgbObjPalPosition | (_state.CgbObjPalAutoInc ? 0x80 : 0);
@@ -552,27 +545,7 @@ void GbPpu::WriteCgbRegister(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0xFF4F: _state.CgbVramBank = value & 0x01; break;
-		case 0xFF51: _state.CgbDmaSource = (_state.CgbDmaSource & 0xFF) | (value << 8); break;
-		case 0xFF52: _state.CgbDmaSource = (_state.CgbDmaSource & 0xFF00) | value; break;
-		case 0xFF53: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF) | (value << 8); break;
-		case 0xFF54: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF00) | value; break;
-		case 0xFF55: 
-			_state.CgbDmaLength = value & 0x7F;
-			_state.CgbHdmaMode = (value & 0x80) != 0;
-
-			if(!_state.CgbHdmaMode) {
-				//TODO check invalid dma sources/etc.
-				//TODO timing
-				for(int i = 0; i < _state.CgbDmaLength * 16; i++) {
-					uint16_t dst = 0x8000 | (((_state.CgbDmaDest & 0x1FF0) + i) & 0x1FFF);
-					_memoryManager->Write(dst, _memoryManager->Read((_state.CgbDmaSource & 0xFFF0) + i, MemoryOperationType::DmaRead));
-				}
-				_state.CgbDmaLength = 0x7F;
-			} else {
-				MessageManager::Log("TODO HDMA");
-			}
-			break;
-
+		
 		case 0xFF68:
 			//FF68 - BCPS/BGPI - CGB Mode Only - Background Palette Index
 			_state.CgbBgPalPosition = value & 0x3F;
@@ -624,7 +597,7 @@ void GbPpu::Serialize(Serializer& s)
 		_state.ScrollX, _state.ScrollY, _state.WindowX, _state.WindowY, _state.Control, _state.LcdEnabled, _state.WindowTilemapSelect,
 		_state.WindowEnabled, _state.BgTileSelect, _state.BgTilemapSelect, _state.LargeSprites, _state.SpritesEnabled, _state.BgEnabled,
 		_state.Status, _state.FrameCount, _lastFrameTime,
-		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition, _state.CgbDmaDest, _state.CgbDmaLength, _state.CgbDmaSource, _state.CgbHdmaMode,
+		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
 		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank
 	);
 
