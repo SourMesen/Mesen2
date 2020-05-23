@@ -1001,9 +1001,9 @@ void GbCpu::JR(bool condition, int8_t offset)
 //call nn        CD nn nn    24 ---- call to nn, SP=SP-2, (SP)=PC, PC=nn
 void GbCpu::CALL(uint16_t dstAddr)
 {
+	IncCycleCount();
 	PushWord(_state.PC);
 	_state.PC = dstAddr;
-	IncCycleCount();
 }
 
 //call f,nn      xx nn nn 24;12 ---- conditional call if nz,z,nc,c
