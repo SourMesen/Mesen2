@@ -220,7 +220,7 @@ int32_t Gameboy::GetRelativeAddress(AddressInfo& absAddress)
 	}
 
 	for(int32_t i = 0; i < 0x10000; i += 0x100) {
-		AddressInfo blockAddr = GetAbsoluteAddress(absAddress.Address);
+		AddressInfo blockAddr = GetAbsoluteAddress(i);
 		if(blockAddr.Type == absAddress.Type && (blockAddr.Address & ~0xFF) == (absAddress.Address & ~0xFF)) {
 			return i | (absAddress.Address & 0xFF);
 		}
