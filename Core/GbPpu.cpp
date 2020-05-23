@@ -524,7 +524,7 @@ uint8_t GbPpu::ReadOam(uint8_t addr)
 void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 {
 	//During DMA or rendering/oam evaluation, ignore writes to OAM
-	if(addr < 0xA0 && (int)_state.Mode <= (int)PpuMode::VBlank && (forDma || !_memoryManager->IsOamDmaRunning())) {
+	if(addr < 0xA0 && (forDma || ((int)_state.Mode <= (int)PpuMode::VBlank && !_memoryManager->IsOamDmaRunning()))) {
 		_oam[addr] = value;
 	}
 }
