@@ -49,18 +49,32 @@ void GbCpu::Exec()
 	if(irqVector) {
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
-			_memoryManager->ClearIrqRequest(irqVector);
 			IncCycleCount();
 			IncCycleCount();
-			PushWord(_state.PC);
+
+			PushByte(_state.PC >> 8);
+			irqVector = _memoryManager->ProcessIrqRequests(); //Check IRQ line again before jumping (ie_push)
+			PushByte((uint8_t)_state.PC);
+
 			IncCycleCount();
+			
 			switch(irqVector) {
+				case 0:
+					//IRQ request bit is no longer set, jump to $0000 (ie_push test)
+					_state.PC = 0;
+					break;
+
 				case GbIrqSource::VerticalBlank: _state.PC = 0x40; break;
 				case GbIrqSource::LcdStat: _state.PC = 0x48; break;
 				case GbIrqSource::Timer: _state.PC = 0x50; break;
 				case GbIrqSource::Serial: _state.PC = 0x58; break;
 				case GbIrqSource::Joypad: _state.PC = 0x60; break;
 			}
+			if(irqVector) {
+				//Only clear IRQ bit if an IRQ was processed
+				_memoryManager->ClearIrqRequest(irqVector);
+			}
+
 			_state.IME = false;
 			_console->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
 		}
@@ -70,6 +84,11 @@ void GbCpu::Exec()
 	if(_state.Halted) {
 		IncCycleCount();
 		return;
+	}
+
+	if(_state.EiPending) {
+		_state.EiPending = false;
+		_state.IME = true;
 	}
 
 	ExecOpCode(ReadOpCode());
@@ -1083,7 +1102,7 @@ void GbCpu::CCF()
 
 void GbCpu::EI()
 {
-	_state.IME = true;
+	_state.EiPending = true;
 }
 
 void GbCpu::DI()

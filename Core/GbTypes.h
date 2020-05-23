@@ -19,6 +19,7 @@ struct GbCpuState
 	uint8_t H;
 	uint8_t L;
 
+	bool EiPending;
 	bool IME;
 	bool Halted;
 };
