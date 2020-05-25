@@ -473,6 +473,11 @@ void GbPpu::GetPalette(uint16_t out[4], uint8_t palCfg)
 	out[3] = bwRgbPalette[(palCfg >> 6) & 0x03];
 }
 
+uint32_t GbPpu::GetFrameCount()
+{
+	return _state.FrameCount;
+}
+
 void GbPpu::SendFrame()
 {
 	_console->ProcessEvent(EventType::EndFrame);

@@ -4,13 +4,14 @@
 #include "Ppu.h"
 #include "Spc.h"
 #include "NecDsp.h"
-#include "Gameboy.h"
 #include "InternalRegisters.h"
 #include "ControlManager.h"
 #include "MemoryManager.h"
 #include "DmaController.h"
 #include "BaseCartridge.h"
 #include "RamHandler.h"
+#include "Gameboy.h"
+#include "GbPpu.h"
 #include "Debugger.h"
 #include "DebugTypes.h"
 #include "NotificationManager.h"
@@ -293,6 +294,8 @@ void Console::Stop(bool sendNotification)
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
 	}
+
+	_settings->ClearFlag(EmulationFlags::GameboyMode);
 
 	//Make sure we release both pointers to destroy the debugger before everything else
 	_debugger.reset();
@@ -876,7 +879,8 @@ uint32_t Console::GetFrameCount()
 {
 	shared_ptr<BaseCartridge> cart = _cart;
 	if(_settings->CheckFlag(EmulationFlags::GameboyMode) && cart->GetGameboy()) {
-		return cart->GetGameboy()->GetState().Ppu.FrameCount;
+		GbPpu* ppu = cart->GetGameboy()->GetPpu();
+		return ppu ? ppu->GetFrameCount() : 0;
 	} else {
 		shared_ptr<Ppu> ppu = _ppu;
 		return ppu ? ppu->GetFrameCount() : 0;

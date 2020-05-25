@@ -145,10 +145,8 @@ void BaseRenderer::ShowFpsCounter(int lineNumber)
 void BaseRenderer::ShowGameTimer(int lineNumber)
 {
 	int yPos = 13 + 24 * lineNumber;
-	shared_ptr<Ppu> ppu = _console->GetPpu();
 	uint32_t frameCount = _console->GetFrameCount();
-	bool isPal = _console->GetRegion() == ConsoleRegion::Pal;
-	double frameRate = isPal ? 50.006977968268290848936010226333 : 60.098811862348404716732985230828;
+	double frameRate = _console->GetFps();
 	uint32_t seconds = (uint32_t)(frameCount / frameRate) % 60;
 	uint32_t minutes = (uint32_t)(frameCount / frameRate / 60) % 60;
 	uint32_t hours = (uint32_t)(frameCount / frameRate / 3600);
