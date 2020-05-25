@@ -322,7 +322,7 @@ endif
 	$(CXX) $(CXXFLAGS) $(fpic) -c $< $(OBJOUT)$@
 
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TARGET) $(ALTTARGET)
 
 .PHONY: clean
 
