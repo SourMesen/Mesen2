@@ -69,6 +69,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/GbTimer.cpp \
                $(CORE_DIR)/GbMemoryManager.cpp \
                $(CORE_DIR)/GbDebugger.cpp \
+               $(CORE_DIR)/GbEventManager.cpp \
                $(CORE_DIR)/GameboyDisUtils.cpp \
                $(CORE_DIR)/Gsu.cpp \
                $(CORE_DIR)/Gsu.Instructions.cpp \
