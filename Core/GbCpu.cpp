@@ -1376,6 +1376,7 @@ void GbCpu::Serialize(Serializer& s)
 {
 	s.Stream(
 		_state.CycleCount, _state.PC, _state.SP, _state.A, _state.Flags, _state.B,
-		_state.C, _state.D, _state.E, _state.H, _state.L, _state.IME, _state.Halted
+		_state.C, _state.D, _state.E, _state.H, _state.L, _state.IME, _state.Halted,
+		_state.EiPending
 	);
 }

@@ -64,6 +64,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/GameServerConnection.cpp \
                $(CORE_DIR)/Gameboy.cpp \
                $(CORE_DIR)/GbCpu.cpp \
+               $(CORE_DIR)/GbDmaController.cpp \
                $(CORE_DIR)/GbPpu.cpp \
                $(CORE_DIR)/GbApu.cpp \
                $(CORE_DIR)/GbTimer.cpp \

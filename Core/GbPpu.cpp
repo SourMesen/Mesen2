@@ -701,7 +701,7 @@ void GbPpu::Serialize(Serializer& s)
 		_state.Scanline, _state.Cycle, _state.Mode, _state.LyCompare, _state.BgPalette, _state.ObjPalette0, _state.ObjPalette1,
 		_state.ScrollX, _state.ScrollY, _state.WindowX, _state.WindowY, _state.Control, _state.LcdEnabled, _state.WindowTilemapSelect,
 		_state.WindowEnabled, _state.BgTileSelect, _state.BgTilemapSelect, _state.LargeSprites, _state.SpritesEnabled, _state.BgEnabled,
-		_state.Status, _state.FrameCount, _lastFrameTime,
+		_state.Status, _state.FrameCount, _lastFrameTime, _state.LyCoincidenceFlag,
 		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
 		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank
 	);

@@ -131,5 +131,5 @@ void GbTimer::Write(uint16_t addr, uint8_t value)
 
 void GbTimer::Serialize(Serializer& s)
 {
-	s.Stream(_divider, _counter, _modulo, _control, _timerEnabled, _timerDivider);
+	s.Stream(_divider, _counter, _modulo, _control, _timerEnabled, _timerDivider, _needReload, _reloaded);
 }
