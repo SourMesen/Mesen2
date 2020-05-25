@@ -102,6 +102,53 @@ namespace GbPpuStatusFlags
 	};
 }
 
+enum class EvtColor
+{
+	HBlank = 0,
+	VBlank = 1,
+	OamEvaluation = 2,
+	RenderingIdle = 3,
+	RenderingBgLoad = 4,
+	RenderingOamLoad = 5,
+	LcdColor = 6,
+};
+
+struct GbFifoEntry
+{
+	uint8_t Color;
+	uint8_t Attributes;
+};
+
+struct GbPpuFifo
+{
+	uint8_t Position = 0;
+	uint8_t Size = 0;
+	GbFifoEntry Content[8] = {};
+
+	void Reset()
+	{
+		Size = 0;
+		Position = 0;
+		memset(Content, 0, sizeof(Content));
+	}
+
+	void Pop()
+	{
+		Content[Position].Color = 0;
+		Position = (Position + 1) & 0x07;
+		Size--;
+	}
+};
+
+struct GbPpuFetcher
+{
+	uint16_t Addr = 0;
+	uint8_t Attributes = 0;
+	uint8_t Step = 0;
+	uint8_t LowByte = 0;
+	uint8_t HighByte = 0;
+};
+
 struct GbPpuState
 {
 	uint8_t Scanline;

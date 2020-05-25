@@ -234,14 +234,10 @@ void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize, Eve
 		}
 	}
 
-	constexpr uint32_t vblankScanlineColor = 0xFF55FFFF;
 	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
-	int vblankScanline = GbEventManager::VBlankScanline * 2 * GbEventManager::ScanlineWidth;
 	uint32_t scanlineOffset = _snapshotScanline * 2 * GbEventManager::ScanlineWidth;
-	for(int i = 0; i < GbEventManager::ScanlineWidth; i++) {
-		buffer[vblankScanline + i] = vblankScanlineColor;
-		buffer[vblankScanline + GbEventManager::ScanlineWidth + i] = vblankScanlineColor;
-		if(_snapshotScanline != 0) {
+	if(_snapshotScanline != 0) {
+		for(int i = 0; i < GbEventManager::ScanlineWidth; i++) {
 			buffer[scanlineOffset + i] = currentScanlineColor;
 			buffer[scanlineOffset + GbEventManager::ScanlineWidth + i] = currentScanlineColor;
 		}

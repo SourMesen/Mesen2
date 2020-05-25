@@ -7,12 +7,6 @@ class Console;
 class Gameboy;
 class GbMemoryManager;
 
-struct FifoEntry
-{
-	uint8_t Color;
-	uint8_t Attributes;
-};
-
 class GbPpu : public ISerializable
 {
 private:
@@ -25,41 +19,45 @@ private:
 
 	uint16_t* _eventViewerBuffers[2] = {};
 	uint16_t* _currentEventViewerBuffer = nullptr;
+	EvtColor _evtColor = EvtColor::HBlank;
+	int16_t _prevDrawnPixels = 0;
 
 	uint8_t* _vram = nullptr;
 	uint8_t* _oam = nullptr;
 
 	uint64_t _lastFrameTime = 0;
 
-	uint8_t _fifoPosition = 0;
-	uint8_t _fifoSize = 0;
-	FifoEntry _fifoContent[16];
-	uint8_t _shiftedPixels = 0;
-	uint8_t _drawnPixels = 0;
+	GbPpuFifo _bgFifo;
+	GbPpuFetcher _bgFetcher;
 
-	uint8_t _fetcherAttributes = 0;
-	uint8_t _fetcherStep = 0;
+	GbPpuFifo _oamFifo;
+	GbPpuFetcher _oamFetcher;
+
+	int16_t _drawnPixels = 0;
 	uint8_t _fetchColumn = 0;
-	uint16_t _fetcherTileAddr = 0;
-	uint8_t _fetcherTileLowByte = 0;
-	uint8_t _fetcherTileHighByte = 0;
 	bool _fetchWindow = false;
 
 	int16_t _fetchSprite = -1;
-	int16_t _fetchSpriteOffset = -1;
+	uint8_t _prevSprite = 0;
 	uint8_t _spriteCount = 0;
 	uint8_t _spriteX[10] = {};
 	uint8_t _spriteIndexes[10] = {};
 
-	void ExecCycle();
-	void RunSpriteEvaluation();
-	void ResetRenderer();
-	void ClockTileFetcher();
-	void PushSpriteToPixelFifo();
-	void PushTileToPixelFifo();
+	__forceinline void ProcessPpuCycle();
 
-	void ChangeMode(PpuMode mode);
-	void UpdateStatIrq();
+	__forceinline void ExecCycle();
+	__forceinline void RunDrawCycle();
+	__forceinline void RunSpriteEvaluation();
+	void ResetRenderer();
+	void ClockSpriteFetcher();
+	void FindNextSprite();
+	__forceinline void ClockTileFetcher();
+	__forceinline void PushSpriteToPixelFifo();
+	__forceinline void PushTileToPixelFifo();
+
+	__forceinline void ChangeMode(PpuMode mode);
+	__forceinline void UpdateLyCoincidenceFlag();
+	__forceinline void UpdateStatIrq();
 
 	void WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value);
 
