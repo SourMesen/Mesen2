@@ -219,6 +219,7 @@ struct GbSquareState
 	bool EnvRaiseVolume;
 	uint8_t EnvPeriod;
 	uint8_t EnvTimer;
+	bool EnvStopped;
 
 	uint8_t Duty;
 	uint16_t Frequency;

@@ -693,6 +693,7 @@ namespace Mesen.GUI
 		public byte H;
 		public byte L;
 
+		[MarshalAs(UnmanagedType.I1)] public bool EiPending;
 		[MarshalAs(UnmanagedType.I1)] public bool IME;
 		[MarshalAs(UnmanagedType.I1)] public bool Halted;
 	}
@@ -713,6 +714,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool StatIrqFlag;
 
 		public byte LyCompare;
+		[MarshalAs(UnmanagedType.I1)] public bool LyCoincidenceFlag;
 		public byte BgPalette;
 		public byte ObjPalette0;
 		public byte ObjPalette1;
@@ -735,10 +737,6 @@ namespace Mesen.GUI
 		public UInt32 FrameCount;
 
 		public byte CgbVramBank;
-		public UInt16 CgbDmaSource;
-		public UInt16 CgbDmaDest;
-		public byte CgbDmaLength;
-		[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaMode;
 
 		public byte CgbBgPalPosition;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbBgPalAutoInc;
@@ -768,6 +766,7 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool EnvRaiseVolume;
 		public byte EnvPeriod;
 		public byte EnvTimer;
+		[MarshalAs(UnmanagedType.I1)] public bool EnvStopped;
 
 		public byte Duty;
 		public UInt16 Frequency;

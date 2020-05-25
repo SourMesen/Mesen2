@@ -90,7 +90,7 @@ public:
 
 	void ClockEnvelope()
 	{
-		if(_state.EnvTimer > 0) {
+		if(_state.EnvTimer > 0 && !_state.EnvStopped) {
 			_state.EnvTimer--;
 
 			if(_state.EnvTimer == 0) {
@@ -98,6 +98,8 @@ public:
 					_state.Volume++;
 				} else if(!_state.EnvRaiseVolume && _state.Volume > 0) {
 					_state.Volume--;
+				} else {
+					_state.EnvStopped = true;
 				}
 
 				_state.EnvTimer = _state.EnvPeriod;
@@ -170,15 +172,33 @@ public:
 				_state.Duty = (value & 0xC0) >> 6;
 				break;
 
-			case 2: 
+			case 2: {
+				if(_state.EnvPeriod == 0 && !_state.EnvStopped){
+					//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
+					_state.Volume++;
+				} else if(!_state.EnvRaiseVolume) {
+					//"otherwise if the envelope was in subtract mode, volume is incremented by 2"
+					_state.Volume += 2;
+				}
+				
+				bool raiseVolume = (value & 0x08) != 0;
+				if(raiseVolume != _state.EnvRaiseVolume) {
+					//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
+					_state.Volume = 16 - _state.Volume;
+				}
+
+				//"Only the low 4 bits of volume are kept after the above operations."
+				_state.Volume &= 0xF;
+
 				_state.EnvPeriod = value & 0x07;
-				_state.EnvRaiseVolume = (value & 0x08) != 0;
+				_state.EnvRaiseVolume = raiseVolume;
 				_state.EnvVolume = (value & 0xF0) >> 4;
 
 				if(!(value & 0xF8)) {
 					_state.Enabled = false;
 				}
 				break;
+			}
 
 			case 3:
 				_state.Frequency = (_state.Frequency & 0x700) | value;
@@ -204,6 +224,7 @@ public:
 
 					//Volume envelope timer is reloaded with period.
 					_state.EnvTimer = _state.EnvPeriod;
+					_state.EnvStopped = false;
 					
 					//Channel volume is reloaded from NRx2.
 					_state.Volume = _state.EnvVolume;
