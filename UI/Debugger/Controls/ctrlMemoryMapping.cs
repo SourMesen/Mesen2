@@ -127,6 +127,9 @@ namespace Mesen.GUI.Debugger.Controls
 				currentSize += 0x100;
 			}
 
+			//Set work ram mappings to stop at 0xFE00
+			regions[regions.Count - 1].Size = 0x1E00;
+
 			regions.Add(new MemoryRegionInfo() { Name = "", Size = 0x200, Color = Color.FromArgb(222, 222, 222) });
 
 			UpdateRegionArray(regions);
