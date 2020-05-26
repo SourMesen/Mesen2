@@ -189,7 +189,7 @@ void Ppu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 
 	/* The tilemap address to read the tile data from */
 	uint16_t addr = baseOffset + (column & 0x1F) + (config.DoubleWidth ? (column & 0x20) << 5 : 0);
-	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr];
+	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr & 0x7FFF];
 	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
 }
 
@@ -244,7 +244,7 @@ void Ppu::GetHorizontalOffsetByte(uint8_t columnIndex)
 	uint16_t columnOffset = (((columnIndex << 3) + (_state.Layers[2].HScroll & ~0x07)) >> 3) & (_state.Layers[2].DoubleWidth ? 0x3F : 0x1F);
 	uint16_t rowOffset = (_state.Layers[2].VScroll >> 3) & (_state.Layers[2].DoubleHeight ? 0x3F : 0x1F);
 
-	_hOffset = _vram[_state.Layers[2].TilemapAddress + columnOffset + (rowOffset << 5)];
+	_hOffset = _vram[(_state.Layers[2].TilemapAddress + columnOffset + (rowOffset << 5)) & 0x7FFF];
 }
 
 void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
@@ -257,7 +257,7 @@ void Ppu::GetVerticalOffsetByte(uint8_t columnIndex)
 	//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
 	uint16_t vOffsetAddr = _state.Layers[2].TilemapAddress + ((tileOffset + 0x20) & (_state.Layers[2].DoubleHeight ? 0x7FF : 0x3FF));
 
-	_vOffset = _vram[vOffsetAddr];
+	_vOffset = _vram[vOffsetAddr & 0x7FFF];
 }
 
 void Ppu::FetchTileData()
@@ -706,8 +706,8 @@ void Ppu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint8_t row = (tileRow + rowOffset) & 0x0F;
 	uint8_t columnOffset = _currentSprite.HorizontalMirror ? _currentSprite.ColumnOffset : (columnCount - _currentSprite.ColumnOffset - 1);
 	uint8_t tileIndex = (row << 4) | ((tileColumn + columnOffset) & 0x0F);
-	uint16_t tileStart = (_state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? _state.OamAddressOffset : 0)) & 0x7FFF;
-	_currentSprite.FetchAddress = tileStart + yOffset;
+	uint16_t tileStart = (_state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? _state.OamAddressOffset : 0));
+	_currentSprite.FetchAddress = (tileStart + yOffset) & 0x7FFF;
 
 	int16_t x = _currentSprite.X == -256 ? 0 : _currentSprite.X;
 	int16_t endTileX = x + ((columnCount - _currentSprite.ColumnOffset - 1) << 3) + 8;
@@ -727,7 +727,7 @@ void Ppu::FetchSpriteTile(bool secondCycle)
 	_currentSprite.ChrData[secondCycle] = chrData;
 
 	if(!secondCycle) {
-		_currentSprite.FetchAddress += 8;
+		_currentSprite.FetchAddress = (_currentSprite.FetchAddress + 8) & 0x7FFF;
 	} else {
 		int16_t xPos = _currentSprite.DrawX;
 		for(int x = 0; x < 8; x++) {

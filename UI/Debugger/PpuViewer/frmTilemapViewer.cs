@@ -271,7 +271,7 @@ namespace Mesen.GUI.Debugger
 				LayerConfig layer = _state.Layers[_options.Layer];
 				int addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 				int baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
-				int address = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+				int address = ((baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1) & 0xFFFF;
 				int value = _vram[address] | (_vram[address + 1] << 8);
 
 				//Selected tile
