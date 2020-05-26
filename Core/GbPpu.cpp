@@ -111,7 +111,6 @@ void GbPpu::ExecCycle()
 		case 4: {
 			if(_state.Scanline < 144) {
 				_spriteCount = 0;
-				_prevSprite = 0;
 				ChangeMode(PpuMode::OamEvaluation);
 			} else if(_state.Scanline == 144) {
 				ChangeMode(PpuMode::VBlank);
@@ -123,14 +122,6 @@ void GbPpu::ExecCycle()
 
 		case 84: {
 			if(_state.Scanline < 144) {
-				std::sort(_spriteIndexes, _spriteIndexes + _spriteCount, [=](uint8_t a, uint8_t b) {
-					if(_oam[a + 1] == _oam[b + 1]) {
-						return a < b;
-					} else {
-						return _oam[a + 1] < _oam[b + 1];
-					}
-				});
-				std::sort(_spriteX, _spriteX + _spriteCount);
 				ChangeMode(PpuMode::Drawing);
 				ResetRenderer();
 			}
@@ -319,11 +310,11 @@ void GbPpu::ClockSpriteFetcher()
 
 void GbPpu::FindNextSprite()
 {
-	if(_prevSprite < _spriteCount && _fetchSprite < 0 && (_state.SpritesEnabled || _state.CgbEnabled)) {
-		for(int i = _prevSprite; i < _spriteCount; i++) {
+	if(_fetchSprite < 0 && (_state.SpritesEnabled || _state.CgbEnabled)) {
+		for(int i = 0; i < _spriteCount; i++) {
 			if((int)_spriteX[i] - 8 == _drawnPixels) {
 				_fetchSprite = _spriteIndexes[i];
-				_prevSprite++;
+				_spriteX[i] = 0xFF; //Prevent processing the same sprite again
 				_oamFetcher.Step = 0;
 				break;
 			}
@@ -729,7 +720,7 @@ void GbPpu::Serialize(Serializer& s)
 	s.Stream(
 		_bgFetcher.Attributes, _bgFetcher.Step, _bgFetcher.Addr, _bgFetcher.LowByte, _bgFetcher.HighByte,
 		_oamFetcher.Attributes, _oamFetcher.Step, _oamFetcher.Addr, _oamFetcher.LowByte, _oamFetcher.HighByte,
-		_drawnPixels, _fetchColumn, _fetchWindow, _fetchSprite, _spriteCount, _prevSprite,
+		_drawnPixels, _fetchColumn, _fetchWindow, _fetchSprite, _spriteCount,
 		_bgFifo.Position, _bgFifo.Size, _oamFifo.Position, _oamFifo.Size
 	);
 

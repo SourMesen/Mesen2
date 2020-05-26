@@ -38,7 +38,6 @@ private:
 	bool _fetchWindow = false;
 
 	int16_t _fetchSprite = -1;
-	uint8_t _prevSprite = 0;
 	uint8_t _spriteCount = 0;
 	uint8_t _spriteX[10] = {};
 	uint8_t _spriteIndexes[10] = {};
