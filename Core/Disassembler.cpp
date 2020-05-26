@@ -273,6 +273,9 @@ void Disassembler::Disassemble(CpuType cpuType)
 
 		case CpuType::Gameboy:
 		case CpuType::Spc:
+			if(!_gameboy) {
+				return;
+			}
 			mappings = nullptr; 
 			maxAddr = 0xFFFF;
 			break;
