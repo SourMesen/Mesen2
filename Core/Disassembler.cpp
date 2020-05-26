@@ -77,6 +77,8 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_gbCartRamSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbCartRam) : 0;
 	_gbHighRam = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbHighRam) : nullptr;
 	_gbHighRamSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbHighRam) : 0;
+	_gbBootRom = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbBootRom) : nullptr;
+	_gbBootRomSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbBootRom) : 0;
 
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
 	_sramCache = vector<DisassemblyInfo>(_sramSize);
@@ -93,6 +95,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_gbWorkRamCache = vector<DisassemblyInfo>(_gbWorkRamSize);
 	_gbCartRamCache = vector<DisassemblyInfo>(_gbCartRamSize);
 	_gbHighRamCache = vector<DisassemblyInfo>(_gbHighRamSize);
+	_gbBootRomCache = vector<DisassemblyInfo>(_gbBootRomSize);
 
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
 		_needDisassemble[i] = true;
@@ -113,6 +116,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_sources[(int)SnesMemoryType::GbWorkRam] = { _gbWorkRam, &_gbWorkRamCache, _gbWorkRamSize };
 	_sources[(int)SnesMemoryType::GbCartRam] = { _gbCartRam, &_gbCartRamCache, _gbCartRamSize };
 	_sources[(int)SnesMemoryType::GbHighRam] = { _gbHighRam, &_gbHighRamCache, _gbHighRamSize };
+	_sources[(int)SnesMemoryType::GbBootRom] = { _gbBootRom, &_gbBootRomCache, _gbBootRomSize };
 
 	if(_necDspProgramRomSize > 0) {
 		//Build cache for the entire DSP chip (since it only contains instructions)

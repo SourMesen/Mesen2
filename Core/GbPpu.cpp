@@ -22,10 +22,6 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_memoryManager = memoryManager;
 	_vram = vram;
 	_oam = oam;
-	
-	_state = {};
-	_state.Mode = PpuMode::HBlank;
-	_lastFrameTime = 0;
 
 	_outputBuffers[0] = new uint16_t[256 * 240];
 	_outputBuffers[1] = new uint16_t[256 * 240];
@@ -39,17 +35,31 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	memset(_eventViewerBuffers[1], 0, 456 * 154 * sizeof(uint16_t));
 	_currentEventViewerBuffer = _eventViewerBuffers[0];
 
-#ifndef USEBOOTROM
-	Write(0xFF40, 0x91);
-	Write(0xFF42, 0x00);
-	Write(0xFF43, 0x00);
-	Write(0xFF45, 0x00);
-	Write(0xFF47, 0xFC);
-	Write(0xFF48, 0xFF);
-	Write(0xFF49, 0xFF);
-	Write(0xFF4A, 0);
-	Write(0xFF4B, 0);
-#endif
+	_state = {};
+	_state.Mode = PpuMode::HBlank;
+	_state.CgbEnabled = _gameboy->IsCgb();
+	_lastFrameTime = 0;
+
+	if(!_gameboy->IsCgb()) {
+		for(int i = 0; i < 4; i++) {
+			//Init default palette for use with DMG
+			_state.CgbBgPalettes[i] = bwRgbPalette[i];
+			_state.CgbObjPalettes[i] = bwRgbPalette[i];
+			_state.CgbObjPalettes[i+4] = bwRgbPalette[i];
+		}
+	}
+
+	if(!_gameboy->UseBootRom()) {
+		Write(0xFF40, 0x91);
+		Write(0xFF42, 0x00);
+		Write(0xFF43, 0x00);
+		Write(0xFF45, 0x00);
+		Write(0xFF47, 0xFC);
+		Write(0xFF48, 0xFF);
+		Write(0xFF49, 0xFF);
+		Write(0xFF4A, 0);
+		Write(0xFF4B, 0);
+	}
 }
 
 GbPpu::~GbPpu()
@@ -213,7 +223,7 @@ void GbPpu::RunDrawCycle()
 			}
 
 			uint16_t rgbColor;
-			if(_gameboy->IsCgb()) {
+			if(_state.CgbEnabled) {
 				if(isSprite) {
 					rgbColor = _state.CgbObjPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
 				} else {
@@ -221,9 +231,10 @@ void GbPpu::RunDrawCycle()
 				}
 			} else {
 				if(isSprite) {
-					rgbColor = bwRgbPalette[(((entry.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (entry.Color * 2)) & 0x03];
+					uint8_t colorIndex = (((entry.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (entry.Color * 2)) & 0x03;
+					rgbColor = _state.CgbObjPalettes[((entry.Attributes & 0x10) ? 4 : 0) | colorIndex];
 				} else {
-					rgbColor = bwRgbPalette[(_state.BgPalette >> (entry.Color * 2)) & 0x03];
+					rgbColor = _state.CgbBgPalettes[(_state.BgPalette >> (entry.Color * 2)) & 0x03];
 				}
 			}
 			_currentBuffer[outOffset] = rgbColor;
@@ -282,7 +293,7 @@ void GbPpu::ClockSpriteFetcher()
 			uint8_t sprTile = _oam[_fetchSprite + 2];
 			uint8_t sprAttr = _oam[_fetchSprite + 3];
 			bool vMirror = (sprAttr & 0x40) != 0;
-			uint16_t tileBank = _gameboy->IsCgb() ? ((sprAttr & 0x08) ? 0x2000 : 0x0000) : 0;
+			uint16_t tileBank = _state.CgbEnabled ? ((sprAttr & 0x08) ? 0x2000 : 0x0000) : 0;
 
 			uint8_t sprOffsetY = vMirror ? (_state.LargeSprites ? 15 : 7) - (_state.Scanline - sprY) : (_state.Scanline - sprY);
 			if(_state.LargeSprites) {
@@ -308,7 +319,7 @@ void GbPpu::ClockSpriteFetcher()
 
 void GbPpu::FindNextSprite()
 {
-	if(_prevSprite < _spriteCount && _fetchSprite < 0 && (_state.SpritesEnabled || _gameboy->IsCgb())) {
+	if(_prevSprite < _spriteCount && _fetchSprite < 0 && (_state.SpritesEnabled || _state.CgbEnabled)) {
 		for(int i = _prevSprite; i < _spriteCount; i++) {
 			if((int)_spriteX[i] - 8 == _drawnPixels) {
 				_fetchSprite = _spriteIndexes[i];
@@ -349,7 +360,7 @@ void GbPpu::ClockTileFetcher()
 			uint16_t tileAddr = tilemapAddr + _fetchColumn + row * 32;
 			uint8_t tileIndex = _vram[tileAddr];
 
-			uint8_t attributes = _gameboy->IsCgb() ? _vram[tileAddr | 0x2000] : 0;
+			uint8_t attributes = _state.CgbEnabled ? _vram[tileAddr | 0x2000] : 0;
 			bool vMirror = (attributes & 0x40) != 0;
 			uint16_t tileBank = (attributes & 0x08) ? 0x2000 : 0x0000;
 
@@ -648,12 +659,13 @@ uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 		case 0xFF6B: return (_state.CgbObjPalettes[_state.CgbObjPalPosition >> 1] >> ((_state.CgbObjPalPosition & 0x01) ? 8 : 0) & 0xFF);
 	}
 	LogDebug("[Debug] GBC - Missing read handler: $" + HexUtilities::ToHex(addr));
-	return 0;
+	return 0xFF;
 }
 
 void GbPpu::WriteCgbRegister(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
+		case 0xFF4C: _state.CgbEnabled = (value & 0x0C) == 0; break;
 		case 0xFF4F: _state.CgbVramBank = value & 0x01; break;
 		
 		case 0xFF68:
@@ -708,7 +720,7 @@ void GbPpu::Serialize(Serializer& s)
 		_state.WindowEnabled, _state.BgTileSelect, _state.BgTilemapSelect, _state.LargeSprites, _state.SpritesEnabled, _state.BgEnabled,
 		_state.Status, _state.FrameCount, _lastFrameTime, _state.LyCoincidenceFlag,
 		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
-		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank
+		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank, _state.CgbEnabled
 	);
 
 	s.StreamArray(_state.CgbBgPalettes, 4 * 8);

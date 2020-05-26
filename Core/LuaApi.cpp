@@ -158,6 +158,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(gbCartRam, SnesMemoryType::GbCartRam);
 	lua_pushintvalue(gbVideoRam, SnesMemoryType::GbVideoRam);
 	lua_pushintvalue(gbHighRam, SnesMemoryType::GbHighRam);
+	lua_pushintvalue(gbBootRom, SnesMemoryType::GbBootRom);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "counterOpType");

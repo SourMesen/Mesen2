@@ -28,13 +28,6 @@ private:
 	GbTimer* _timer;
 	GbDmaController* _dmaController;
 
-	uint8_t _bootRom[256];
-	uint8_t* _prgRom = nullptr;
-	uint32_t _prgRomSize = 0;
-	uint8_t* _workRam = nullptr;
-	uint32_t _workRamSize = 0;
-	uint8_t* _cartRam = nullptr;
-	uint32_t _cartRamSize = 0;
 	uint8_t* _highRam = nullptr;
 	
 	uint8_t* _reads[0x100] = {};

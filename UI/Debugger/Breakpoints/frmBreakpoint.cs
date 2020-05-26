@@ -89,6 +89,9 @@ namespace Mesen.GUI.Debugger
 				if(DebugApi.GetMemorySize(SnesMemoryType.GbCartRam) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));
 				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.GbBootRom) > 0) {
+					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbBootRom));
+				}
 			}
 
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");

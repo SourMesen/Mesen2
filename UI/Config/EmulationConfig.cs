@@ -29,6 +29,9 @@ namespace Mesen.GUI.Config
 
 		public long BsxCustomDate = -1;
 		
+		[MarshalAs(UnmanagedType.I1)] public bool GbUseBootRom = false;
+		public GameboyModel GbModel = GameboyModel.Auto;
+
 		public void ApplyConfig()
 		{
 			ConfigApi.SetEmulationConfig(this);
@@ -47,5 +50,12 @@ namespace Mesen.GUI.Config
 		Random = 0,
 		AllZeros = 1,
 		AllOnes = 2,
+	}
+
+	public enum GameboyModel
+	{
+		Auto = 0,
+		Gameboy = 1,
+		GameboyColor = 2,
 	}
 }

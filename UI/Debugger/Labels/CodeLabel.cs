@@ -34,6 +34,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.GbWorkRam: sb.Append("GBWRAM:"); break;
 				case SnesMemoryType.GbCartRam: sb.Append("GBSRAM:"); break;
 				case SnesMemoryType.GbHighRam: sb.Append("GBHRAM:"); break;
+				case SnesMemoryType.GbBootRom: sb.Append("GBBOOT:"); break;
 			}
 
 			sb.Append(Address.ToString("X4"));
@@ -74,6 +75,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case "GBWRAM": type = SnesMemoryType.GsuWorkRam; break;
 				case "GBSRAM": type = SnesMemoryType.GbCartRam; break;
 				case "GBHRAM": type = SnesMemoryType.GbHighRam; break;
+				case "GBBOOT": type = SnesMemoryType.GbBootRom; break;
 				default: return null;
 			}
 

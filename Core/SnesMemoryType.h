@@ -28,7 +28,9 @@ enum class SnesMemoryType
 	GbPrgRom,
 	GbWorkRam,
 	GbCartRam,
-	GbVideoRam,
 	GbHighRam,
+	GbBootRom,
+	GbVideoRam,
+	GbSpriteRam,
 	Register
 };

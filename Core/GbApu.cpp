@@ -11,6 +11,7 @@ GbApu::GbApu(Console* console, Gameboy* gameboy)
 	_console = console;
 	_soundMixer = console->GetSoundMixer().get();
 	_gameboy = gameboy;
+	_state = {};
 
 	_soundBuffer = new int16_t[GbApu::MaxSamples*2];
 	memset(_soundBuffer, 0, GbApu::MaxSamples*2*sizeof(int16_t));

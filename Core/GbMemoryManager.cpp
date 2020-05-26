@@ -18,24 +18,7 @@
 
 void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {
-	_state = {};
-	_state.CgbWorkRamBank = 1;
-
-	_prgRom = gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
-	_prgRomSize = gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
-	_cartRam = gameboy->DebugGetMemory(SnesMemoryType::GbCartRam);
-	_cartRamSize = gameboy->DebugGetMemorySize(SnesMemoryType::GbCartRam);
-	_workRam = gameboy->DebugGetMemory(SnesMemoryType::GbWorkRam);
-	_workRamSize = gameboy->DebugGetMemorySize(SnesMemoryType::GbWorkRam);
 	_highRam = gameboy->DebugGetMemory(SnesMemoryType::GbHighRam);
-
-#ifdef USEBOOTROM
-	VirtualFile bootRom("Firmware\\boot.bin");
-	bootRom.ReadFile(_bootRom, 256);
-	_state.DisableBootRom = false;
-#else
-	_state.DisableBootRom = true;
-#endif
 
 	_apu = apu;
 	_ppu = ppu;
@@ -46,6 +29,10 @@ void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbP
 	_dmaController = dmaController;
 	_controlManager = console->GetControlManager().get();
 	_settings = console->GetSettings().get();
+
+	_state = {};
+	_state.CgbWorkRamBank = 1;
+	_state.DisableBootRom = !_gameboy->UseBootRom();
 
 	MapRegisters(0x8000, 0x9FFF, RegisterAccess::ReadWrite);
 	MapRegisters(0xFE00, 0xFFFF, RegisterAccess::ReadWrite);
@@ -73,7 +60,10 @@ void GbMemoryManager::RefreshMappings()
 	_cart->RefreshMappings();
 
 	if(!_state.DisableBootRom) {
-		_reads[0] = _bootRom;
+		Map(0x0000, 0x00FF, GbMemoryType::BootRom, 0, true);
+		if(_gameboy->IsCgb()) {
+			Map(0x0200, 0x08FF, GbMemoryType::BootRom, 0x200, true);
+		}
 	}
 }
 
@@ -220,7 +210,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 			return _dmaController->Read();
 		} else if(addr >= 0xFF80) {
 			return _highRam[addr & 0x7F]; //80-FE
-		} else if(addr >= 0xFF4D) {
+		} else if(addr >= 0xFF4C) {
 			if(_gameboy->IsCgb()) {
 				switch(addr) {
 					//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
@@ -238,9 +228,9 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 				}
 			}
 			LogDebug("[Debug] GB - Missing read handler: $" + HexUtilities::ToHex(addr));
-			return 0xFF; //4D-7F, open bus
+			return 0xFF; //4C-7F, open bus
 		} else if(addr >= 0xFF40) {
-			return _ppu->Read(addr); //40-4C
+			return _ppu->Read(addr); //40-4B
 		} else if(addr >= 0xFF10) {
 			return _apu->Read(addr); //10-3F
 		} else {
@@ -277,8 +267,8 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 			_dmaController->Write(value);
 		} else if(addr >= 0xFF80) {
 			_highRam[addr & 0x7F] = value; //80-FE
-		} else if(addr >= 0xFF4D) {
-			//4D-7F
+		} else if(addr >= 0xFF4C) {
+			//4C-7F
 			if(addr == 0xFF50) {
 				if(value & 0x01) {
 					_state.DisableBootRom = true;
@@ -293,6 +283,12 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 
 					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
 						_dmaController->WriteCgb(addr, value);
+						break;
+
+					case 0xFF4C: //CGB - "LCDMODE", set by boot rom to turn off CGB features for the LCD for DMG games
+						if(!_state.DisableBootRom) {
+							_ppu->WriteCgbRegister(addr, value);
+						}
 						break;
 
 					case 0xFF4F: //CGB - VRAM banking
@@ -312,7 +308,7 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 				}
 			}
 		} else if(addr >= 0xFF40) {
-			_ppu->Write(addr, value); //40-4C
+			_ppu->Write(addr, value); //40-4B
 		} else if(addr >= 0xFF10) {
 			_apu->Write(addr, value); //10-3F
 		} else {

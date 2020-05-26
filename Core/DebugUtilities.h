@@ -50,6 +50,7 @@ public:
 			case SnesMemoryType::GbCartRam:
 			case SnesMemoryType::GbVideoRam:
 			case SnesMemoryType::GbHighRam:
+			case SnesMemoryType::GbBootRom:
 				return CpuType::Gameboy;
 
 			default:

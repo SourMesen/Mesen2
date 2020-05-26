@@ -124,6 +124,7 @@ namespace Mesen.GUI.Debugger.Controls
 					case SnesMemoryType.GbWorkRam: functionName = "WRAM: $"; break;
 					case SnesMemoryType.GbCartRam: functionName = "SRAM: $"; break;
 					case SnesMemoryType.GbHighRam: functionName = "HRAM: $"; break;
+					case SnesMemoryType.GbBootRom: functionName = "BOOT: $"; break;
 					default: throw new Exception("Unsupported type");
 				}
 

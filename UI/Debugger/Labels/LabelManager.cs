@@ -92,6 +92,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.GbWorkRam: return address | ((ulong)13 << 32);
 				case SnesMemoryType.GbCartRam: return address | ((ulong)14 << 32);
 				case SnesMemoryType.GbHighRam: return address | ((ulong)15 << 32);
+				case SnesMemoryType.GbBootRom: return address | ((ulong)16 << 32);
 			}
 			throw new Exception("Invalid type");
 		}

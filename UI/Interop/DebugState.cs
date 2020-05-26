@@ -736,6 +736,7 @@ namespace Mesen.GUI
 		public byte Status;
 		public UInt32 FrameCount;
 
+		[MarshalAs(UnmanagedType.I1)] public bool CgbEnabled;
 		public byte CgbVramBank;
 
 		public byte CgbBgPalPosition;

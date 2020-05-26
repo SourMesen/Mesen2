@@ -19,7 +19,7 @@ private:
 	static constexpr int SpriteRamSize = 0xA0;
 	static constexpr int HighRamSize = 0x7F;
 
-	Console* _console;
+	Console* _console = nullptr;
 
 	unique_ptr<GbMemoryManager> _memoryManager;
 	unique_ptr<GbCpu> _cpu;
@@ -29,23 +29,27 @@ private:
 	unique_ptr<GbTimer> _timer;
 	unique_ptr<GbDmaController> _dmaController;
 
-	bool _hasBattery;
-	bool _cgbMode;
+	bool _hasBattery = false;
+	bool _cgbMode = false;
+	bool _useBootRom = false;
 
-	uint8_t* _prgRom;
-	uint32_t _prgRomSize;
+	uint8_t* _prgRom = nullptr;
+	uint32_t _prgRomSize = 0;
 
-	uint8_t* _cartRam;
-	uint32_t _cartRamSize;
+	uint8_t* _cartRam = nullptr;
+	uint32_t _cartRamSize = 0;
 
-	uint8_t* _workRam;
-	uint32_t _workRamSize;
+	uint8_t* _workRam = nullptr;
+	uint32_t _workRamSize = 0;
 
-	uint8_t* _videoRam;
-	uint32_t _videoRamSize;
+	uint8_t* _videoRam = nullptr;
+	uint32_t _videoRamSize = 0;
 
-	uint8_t* _spriteRam;
-	uint8_t* _highRam;
+	uint8_t* _spriteRam = nullptr;
+	uint8_t* _highRam = nullptr;
+
+	uint8_t* _bootRom = nullptr;
+	uint32_t _bootRomSize = 0;
 
 public:
 	static Gameboy* Create(Console* console, VirtualFile& romFile);
@@ -70,6 +74,7 @@ public:
 	int32_t GetRelativeAddress(AddressInfo& absAddress);
 
 	bool IsCgb();
+	bool UseBootRom();
 	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
 

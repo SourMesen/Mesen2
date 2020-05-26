@@ -60,6 +60,7 @@ int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
 		case SnesMemoryType::GbWorkRam: return absoluteAddr | ((uint64_t)13 << 32);
 		case SnesMemoryType::GbCartRam: return absoluteAddr | ((uint64_t)14 << 32);
 		case SnesMemoryType::GbHighRam: return absoluteAddr | ((uint64_t)15 << 32);
+		case SnesMemoryType::GbBootRom: return absoluteAddr | ((uint64_t)16 << 32);
 		default: return -1;
 	}
 }
@@ -82,6 +83,7 @@ SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 		case ((uint64_t)13 << 32): return SnesMemoryType::GbWorkRam; break;
 		case ((uint64_t)14 << 32): return SnesMemoryType::GbCartRam; break;
 		case ((uint64_t)15 << 32): return SnesMemoryType::GbHighRam; break;
+		case ((uint64_t)16 << 32): return SnesMemoryType::GbBootRom; break;
 	}
 
 	throw std::runtime_error("Invalid label key");

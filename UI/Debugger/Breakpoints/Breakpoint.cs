@@ -135,6 +135,7 @@ namespace Mesen.GUI.Debugger
 				case SnesMemoryType.GbWorkRam: type = "WRAM"; break;
 				case SnesMemoryType.GbCartRam: type = "SRAM"; break;
 				case SnesMemoryType.GbHighRam: type = "HRAM"; break;
+				case SnesMemoryType.GbBootRom: type = "BOOT"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}

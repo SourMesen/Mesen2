@@ -213,8 +213,10 @@ namespace Mesen.GUI
 		GbPrgRom,
 		GbWorkRam,
 		GbCartRam,
-		GbVideoRam,
 		GbHighRam,
+		GbBootRom,
+		GbVideoRam,
+		GbSpriteRam,
 		Register,
 	}
 
@@ -245,6 +247,7 @@ namespace Mesen.GUI
 				case SnesMemoryType.GbWorkRam:
 				case SnesMemoryType.GbCartRam:
 				case SnesMemoryType.GbHighRam:
+				case SnesMemoryType.GbBootRom:
 					return CpuType.Gameboy;
 
 				default:
@@ -281,6 +284,7 @@ namespace Mesen.GUI
 				case SnesMemoryType.GbWorkRam:
 				case SnesMemoryType.GbCartRam:
 				case SnesMemoryType.GbHighRam:
+				case SnesMemoryType.GbBootRom:
 					return true;
 			}
 

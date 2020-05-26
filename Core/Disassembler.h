@@ -58,6 +58,7 @@ private:
 	vector<DisassemblyInfo> _gbWorkRamCache;
 	vector<DisassemblyInfo> _gbCartRamCache;
 	vector<DisassemblyInfo> _gbHighRamCache;
+	vector<DisassemblyInfo> _gbBootRomCache;
 	
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassembly;
@@ -105,6 +106,8 @@ private:
 	uint32_t _gbCartRamSize;
 	uint8_t* _gbHighRam;
 	uint32_t _gbHighRamSize;
+	uint8_t* _gbBootRom;
+	uint32_t _gbBootRomSize;
 
 	DisassemblerSource GetSource(SnesMemoryType type);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);

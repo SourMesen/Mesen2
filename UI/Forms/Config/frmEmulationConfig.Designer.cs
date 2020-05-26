@@ -75,6 +75,11 @@
 			this.radBsxLocalTime = new System.Windows.Forms.RadioButton();
 			this.radBsxCustomTime = new System.Windows.Forms.RadioButton();
 			this.dtpBsxCustomTime = new System.Windows.Forms.DateTimePicker();
+			this.tpgGameboy = new System.Windows.Forms.TabPage();
+			this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+			this.lblGameboy = new System.Windows.Forms.Label();
+			this.cboGameboyModel = new System.Windows.Forms.ComboBox();
+			this.chkUseBootRom = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -93,6 +98,8 @@
 			this.tpgBsx.SuspendLayout();
 			this.grpBsxDateTime.SuspendLayout();
 			this.tableLayoutPanel6.SuspendLayout();
+			this.tpgGameboy.SuspendLayout();
+			this.tableLayoutPanel7.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
@@ -104,9 +111,10 @@
 			// tabMain
 			// 
 			this.tabMain.Controls.Add(this.tpgGeneral);
+			this.tabMain.Controls.Add(this.tpgGameboy);
+			this.tabMain.Controls.Add(this.tpgBsx);
 			this.tabMain.Controls.Add(this.tpgAdvanced);
 			this.tabMain.Controls.Add(this.tpgOverclocking);
-			this.tabMain.Controls.Add(this.tpgBsx);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
@@ -814,6 +822,64 @@
 			this.dtpBsxCustomTime.Value = new System.DateTime(2000, 1, 1, 0, 0, 0, 0);
 			this.dtpBsxCustomTime.Enter += new System.EventHandler(this.dtpBsxCustomTime_Enter);
 			// 
+			// tpgGameboy
+			// 
+			this.tpgGameboy.Controls.Add(this.tableLayoutPanel7);
+			this.tpgGameboy.Location = new System.Drawing.Point(4, 22);
+			this.tpgGameboy.Name = "tpgGameboy";
+			this.tpgGameboy.Padding = new System.Windows.Forms.Padding(3);
+			this.tpgGameboy.Size = new System.Drawing.Size(437, 264);
+			this.tpgGameboy.TabIndex = 6;
+			this.tpgGameboy.Text = "Game Boy";
+			this.tpgGameboy.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel7
+			// 
+			this.tableLayoutPanel7.ColumnCount = 2;
+			this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel7.Controls.Add(this.lblGameboy, 0, 0);
+			this.tableLayoutPanel7.Controls.Add(this.cboGameboyModel, 1, 0);
+			this.tableLayoutPanel7.Controls.Add(this.chkUseBootRom, 0, 1);
+			this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 3);
+			this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+			this.tableLayoutPanel7.RowCount = 3;
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel7.Size = new System.Drawing.Size(431, 258);
+			this.tableLayoutPanel7.TabIndex = 0;
+			// 
+			// lblGameboy
+			// 
+			this.lblGameboy.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblGameboy.AutoSize = true;
+			this.lblGameboy.Location = new System.Drawing.Point(3, 7);
+			this.lblGameboy.Name = "lblGameboy";
+			this.lblGameboy.Size = new System.Drawing.Size(91, 13);
+			this.lblGameboy.TabIndex = 0;
+			this.lblGameboy.Text = "Game Boy Model:";
+			// 
+			// cboGameboyModel
+			// 
+			this.cboGameboyModel.FormattingEnabled = true;
+			this.cboGameboyModel.Location = new System.Drawing.Point(100, 3);
+			this.cboGameboyModel.Name = "cboGameboyModel";
+			this.cboGameboyModel.Size = new System.Drawing.Size(119, 21);
+			this.cboGameboyModel.TabIndex = 1;
+			// 
+			// chkUseBootRom
+			// 
+			this.chkUseBootRom.AutoSize = true;
+			this.tableLayoutPanel7.SetColumnSpan(this.chkUseBootRom, 2);
+			this.chkUseBootRom.Location = new System.Drawing.Point(3, 30);
+			this.chkUseBootRom.Name = "chkUseBootRom";
+			this.chkUseBootRom.Size = new System.Drawing.Size(89, 17);
+			this.chkUseBootRom.TabIndex = 2;
+			this.chkUseBootRom.Text = "Use boot rom";
+			this.chkUseBootRom.UseVisualStyleBackColor = true;
+			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -857,6 +923,9 @@
 			this.grpBsxDateTime.ResumeLayout(false);
 			this.tableLayoutPanel6.ResumeLayout(false);
 			this.tableLayoutPanel6.PerformLayout();
+			this.tpgGameboy.ResumeLayout(false);
+			this.tableLayoutPanel7.ResumeLayout(false);
+			this.tableLayoutPanel7.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -911,5 +980,10 @@
 	  private System.Windows.Forms.RadioButton radBsxCustomTime;
 	  private System.Windows.Forms.DateTimePicker dtpBsxCustomTime;
 	  private System.Windows.Forms.DateTimePicker dtpBsxCustomDate;
+	  private System.Windows.Forms.TabPage tpgGameboy;
+	  private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+	  private System.Windows.Forms.Label lblGameboy;
+	  private System.Windows.Forms.ComboBox cboGameboyModel;
+	  private System.Windows.Forms.CheckBox chkUseBootRom;
    }
 }

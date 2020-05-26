@@ -7,7 +7,7 @@
 struct MissingFirmwareMessage
 {
 	const char* Filename;
-	CoprocessorType FirmwareType;
+	FirmwareType Firmware;
 	uint32_t Size;
 };
 
@@ -49,8 +49,20 @@ private:
 		return false;
 	}
 
+	static bool AttemptLoadFirmware(uint8_t** out, string filename, uint32_t size)
+	{
+		VirtualFile firmware(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), filename));
+		if(firmware.IsValid() && firmware.GetSize() == size) {
+			*out = new uint8_t[firmware.GetSize()];
+			firmware.ReadFile(*out, (uint32_t)firmware.GetSize());
+			return true;
+		}
+
+		return false;
+	}
+
 public:
-	static bool LoadDspFirmware(Console *console, CoprocessorType coprocessorType, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
+	static bool LoadDspFirmware(Console *console, FirmwareType type, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
 	{
 		if(embeddedFirware.size() == programSize + dataSize) {
 			programRom.insert(programRom.end(), embeddedFirware.begin(), embeddedFirware.begin() + programSize);
@@ -62,7 +74,7 @@ public:
 
 		MissingFirmwareMessage msg;
 		msg.Filename = combinedFilename.c_str();
-		msg.FirmwareType = coprocessorType;
+		msg.Firmware = type;
 		msg.Size = programSize + dataSize;
 		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
@@ -83,7 +95,7 @@ public:
 
 		MissingFirmwareMessage msg;
 		msg.Filename = "BsxBios.sfc";
-		msg.FirmwareType = CoprocessorType::Satellaview;
+		msg.Firmware = FirmwareType::Satellaview;
 		msg.Size = 1024*1024;
 		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 		
@@ -92,6 +104,28 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find firmware file for BS-X");
+		return false;
+	}
+
+	static bool LoadGbBootRom(Console* console, uint8_t** bootRom, FirmwareType type)
+	{
+		string filename = type == FirmwareType::Gameboy ? "dmg_boot.bin" : "cgb_boot.bin";
+		uint32_t size = type == FirmwareType::Gameboy ? 256 : 2304;
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg;
+		msg.Filename = filename.c_str();
+		msg.Firmware = type;
+		msg.Size = size;
+		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find boot rom: " + filename);
 		return false;
 	}
 };

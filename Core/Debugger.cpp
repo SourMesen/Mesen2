@@ -533,6 +533,7 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType
 		case SnesMemoryType::GbWorkRam:
 		case SnesMemoryType::GbCartRam:
 		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
 			return { _cart->GetGameboy()->GetRelativeAddress(absAddress), SnesMemoryType::GameboyMemory };
 
 		case SnesMemoryType::DspProgramRom:

@@ -64,6 +64,8 @@ private:
 public:
 	virtual ~GbPpu();
 
+	void Reset(bool useBootRom);
+
 	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, uint8_t* vram, uint8_t* oam);
 
 	GbPpuState GetState();

@@ -57,7 +57,12 @@ namespace Mesen.GUI.Debugger.Controls
 				if(DebugApi.GetMemorySize(SnesMemoryType.GbCartRam) > 0) {
 					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbCartRam));
 				}
+				if(DebugApi.GetMemorySize(SnesMemoryType.GbBootRom) > 0) {
+					this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbBootRom));
+				}
+				this.Items.Add("-");
 				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbVideoRam));
+				this.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbSpriteRam));
 			}
 		}
 

@@ -270,6 +270,13 @@ enum class ConsoleRegion
 	Pal = 2
 };
 
+enum class GameboyModel
+{
+	Auto = 0,
+	Gameboy = 1,
+	GameboyColor = 2,
+};
+
 struct EmulationConfig
 {
 	uint32_t EmulationSpeed = 100;
@@ -290,6 +297,9 @@ struct EmulationConfig
 	RamState RamPowerOnState = RamState::Random;
 
 	int64_t BsxCustomDate = -1;
+
+	bool GbUseBootRom = false;
+	GameboyModel GbModel = GameboyModel::Auto;
 };
 
 struct PreferencesConfig

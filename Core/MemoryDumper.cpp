@@ -69,6 +69,8 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 		case SnesMemoryType::GbVideoRam:
 		case SnesMemoryType::GbCartRam:
 		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
+		case SnesMemoryType::GbSpriteRam:
 			if(_cartridge->GetGameboy()) {
 				memcpy(_cartridge->GetGameboy()->DebugGetMemory(type), buffer, length);
 			}
@@ -112,6 +114,8 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::GbVideoRam:
 		case SnesMemoryType::GbCartRam:
 		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
+		case SnesMemoryType::GbSpriteRam:
 			return _cartridge->GetGameboy() ? _cartridge->GetGameboy()->DebugGetMemorySize(type) : 0;
 	}
 }
@@ -191,6 +195,8 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 		case SnesMemoryType::GbVideoRam:
 		case SnesMemoryType::GbCartRam:
 		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
+		case SnesMemoryType::GbSpriteRam:
 			if(_cartridge->GetGameboy()) {
 				memcpy(buffer, _cartridge->GetGameboy()->DebugGetMemory(type), _cartridge->GetGameboy()->DebugGetMemorySize(type));
 			}
@@ -261,6 +267,8 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::GbVideoRam:
 		case SnesMemoryType::GbCartRam:
 		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
+		case SnesMemoryType::GbSpriteRam:
 			if(_cartridge->GetGameboy()) {
 				_cartridge->GetGameboy()->DebugGetMemory(memoryType)[address] = value;
 			}
@@ -309,6 +317,8 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 		case SnesMemoryType::GbVideoRam:
 		case SnesMemoryType::GbCartRam:
 		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
+		case SnesMemoryType::GbSpriteRam:
 			return _cartridge->GetGameboy() ? _cartridge->GetGameboy()->DebugGetMemory(memoryType)[address] : 0;
 	}
 }

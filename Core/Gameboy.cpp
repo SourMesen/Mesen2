@@ -14,6 +14,7 @@
 #include "GameboyHeader.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
+#include "FirmwareHelper.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
 
@@ -50,7 +51,16 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 		gb->_cartRam = new uint8_t[gb->_cartRamSize];
 		gb->_hasBattery = header.HasBattery();
 
-		gb->_cgbMode = (header.CgbFlag & 0x80) != 0;
+		shared_ptr<EmuSettings> settings = console->GetSettings();
+		EmulationConfig cfg = settings->GetEmulationConfig();
+		switch(cfg.GbModel) {
+			default:
+			case GameboyModel::Auto: gb->_cgbMode = (header.CgbFlag & 0x80) != 0; break;
+
+			case GameboyModel::Gameboy: gb->_cgbMode = false; break;
+			case GameboyModel::GameboyColor: gb->_cgbMode = true; break;
+		}
+
 		gb->_workRamSize = gb->_cgbMode ? 0x8000 : 0x2000;
 		gb->_videoRamSize = gb->_cgbMode ? 0x4000 : 0x2000;
 
@@ -59,6 +69,15 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 		gb->_spriteRam = new uint8_t[Gameboy::SpriteRamSize];
 		gb->_highRam = new uint8_t[Gameboy::HighRamSize];
 		
+		gb->_useBootRom = cfg.GbUseBootRom;
+		gb->_bootRomSize = 0;
+		if(gb->_useBootRom) {
+			gb->_useBootRom = FirmwareHelper::LoadGbBootRom(console, &gb->_bootRom, gb->_cgbMode ? FirmwareType::GameboyColor : FirmwareType::Gameboy);
+			if(gb->_useBootRom) {
+				gb->_bootRomSize = gb->_cgbMode ? 9 * 256 : 256;
+			}
+		}
+
 		return gb;
 	}
 
@@ -77,11 +96,13 @@ Gameboy::~Gameboy()
 
 	delete[] _highRam;
 	delete[] _workRam;
+
+	delete[] _bootRom;
 }
 
 void Gameboy::PowerOn()
 {
-	EmuSettings* settings = _console->GetSettings().get();
+	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	settings->InitializeRam(_cartRam, _cartRamSize);
 	settings->InitializeRam(_workRam, _workRamSize);
 	settings->InitializeRam(_spriteRam, Gameboy::SpriteRamSize);
@@ -148,9 +169,11 @@ uint32_t Gameboy::DebugGetMemorySize(SnesMemoryType type)
 	switch(type) {
 		case SnesMemoryType::GbPrgRom: return _prgRomSize;
 		case SnesMemoryType::GbWorkRam: return _workRamSize;
-		case SnesMemoryType::GbVideoRam: return _videoRamSize;
 		case SnesMemoryType::GbCartRam: return _cartRamSize;
 		case SnesMemoryType::GbHighRam: return Gameboy::HighRamSize;
+		case SnesMemoryType::GbBootRom: return _bootRomSize;
+		case SnesMemoryType::GbVideoRam: return _videoRamSize;
+		case SnesMemoryType::GbSpriteRam: return Gameboy::SpriteRamSize;
 		default: return 0;
 	}
 }
@@ -160,9 +183,11 @@ uint8_t* Gameboy::DebugGetMemory(SnesMemoryType type)
 	switch(type) {
 		case SnesMemoryType::GbPrgRom: return _prgRom;
 		case SnesMemoryType::GbWorkRam: return _workRam;
-		case SnesMemoryType::GbVideoRam: return _videoRam;
 		case SnesMemoryType::GbCartRam: return _cartRam;
 		case SnesMemoryType::GbHighRam: return _highRam;
+		case SnesMemoryType::GbBootRom: return _bootRom;
+		case SnesMemoryType::GbVideoRam: return _videoRam;
+		case SnesMemoryType::GbSpriteRam: return _spriteRam;
 		default: return nullptr;
 	}
 }
@@ -209,6 +234,9 @@ AddressInfo Gameboy::GetAbsoluteAddress(uint16_t addr)
 	} else if(ptr >= _cartRam && ptr < _cartRam + _cartRamSize) {
 		addrInfo.Address = (int32_t)(ptr - _cartRam);
 		addrInfo.Type = SnesMemoryType::GbCartRam;
+	} else if(ptr >= _bootRom && ptr < _bootRom + _bootRomSize) {
+		addrInfo.Address = (int32_t)(ptr - _bootRom);
+		addrInfo.Type = SnesMemoryType::GbBootRom;
 	}
 	return addrInfo;
 }
@@ -232,6 +260,11 @@ int32_t Gameboy::GetRelativeAddress(AddressInfo& absAddress)
 bool Gameboy::IsCgb()
 {
 	return _cgbMode;
+}
+
+bool Gameboy::UseBootRom()
+{
+	return _useBootRom;
 }
 
 uint64_t Gameboy::GetCycleCount()

@@ -48,6 +48,22 @@ enum class CoprocessorType
 	Gameboy
 };
 
+enum class FirmwareType
+{
+	CX4,
+	DSP1,
+	DSP1B,
+	DSP2,
+	DSP3,
+	DSP4,
+	ST010,
+	ST011,
+	ST018,
+	Satellaview,
+	Gameboy,
+	GameboyColor
+};
+
 struct RomInfo
 {
 	SnesCartInformation Header;

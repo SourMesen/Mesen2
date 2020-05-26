@@ -960,9 +960,16 @@
 			<Value ID="GbPrgRom">GB - PRG ROM</Value>
 			<Value ID="GbWorkRam">GB - Work RAM</Value>
 			<Value ID="GbVideoRam">GB - Video RAM</Value>
+			<Value ID="GbSpriteRam">GB - Sprite RAM</Value>
 			<Value ID="GbCartRam">GB - Cart RAM</Value>
 			<Value ID="GbHighRam">GB - High RAM</Value>
+			<Value ID="GbBootRom">GB - Boot ROM</Value>
 			<Value ID="Register">Register</Value>
+		</Enum>
+		<Enum ID="GameboyModel">
+			<Value ID="Auto">Auto</Value>
+			<Value ID="Gameboy">Game Boy</Value>
+			<Value ID="GameboyColor">Game Boy Color</Value>
 		</Enum>
 		<Enum ID="TileFormat">
 			<Value ID="Bpp2">2 bpp</Value>

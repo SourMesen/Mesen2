@@ -141,6 +141,7 @@ namespace Mesen.GUI.Debugger.Controls
 						case SnesMemoryType.GbWorkRam: prefix = "WRAM: $"; break;
 						case SnesMemoryType.GbCartRam: prefix = "SRAM: $"; break;
 						case SnesMemoryType.GbHighRam: prefix = "HRAM: $"; break;
+						case SnesMemoryType.GbBootRom: prefix = "BOOT: $"; break;
 						default: throw new Exception("Unsupported type");
 					}
 					int relAddress = label.GetRelativeAddress(_cpuType).Address;

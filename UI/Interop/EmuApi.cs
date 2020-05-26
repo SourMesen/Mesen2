@@ -208,10 +208,26 @@ namespace Mesen.GUI
 		Gameboy
 	}
 
+	public enum FirmwareType
+	{
+		CX4,
+		DSP1,
+		DSP1B,
+		DSP2,
+		DSP3,
+		DSP4,
+		ST010,
+		ST011,
+		ST018,
+		Satellaview,
+		Gameboy,
+		GameboyColor
+	}
+
 	public struct MissingFirmwareMessage
 	{
 		public IntPtr Filename;
-		public CoprocessorType FirmwareType;
+		public FirmwareType Firmware;
 		public UInt32 Size;
 	}
 }

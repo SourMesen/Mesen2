@@ -179,6 +179,7 @@ struct GbPpuState
 	uint8_t Status;
 	uint32_t FrameCount;
 
+	bool CgbEnabled;
 	uint8_t CgbVramBank;
 	
 	uint8_t CgbBgPalPosition;
@@ -202,6 +203,20 @@ struct GbDmaControllerState
 	uint16_t CgbDmaDest;
 	uint8_t CgbDmaLength;
 	bool CgbHdmaMode;
+};
+
+struct GbTimerState
+{
+	uint16_t Divider = 0;
+
+	bool NeedReload = false; //Set after TIMA (_counter) overflowed, next cycle will reload TMA into TIMA
+	bool Reloaded = false; //Set during the cycle on which TIMA is reloaded (affects TMA/TIMA writes)
+	uint8_t Counter = 0;
+	uint8_t Modulo = 0;
+
+	uint8_t Control = 0;
+	bool TimerEnabled = false;
+	uint16_t TimerDivider = 1024;
 };
 
 struct GbSquareState
@@ -320,6 +335,7 @@ enum class GbMemoryType
 	PrgRom = (int)SnesMemoryType::GbPrgRom,
 	WorkRam = (int)SnesMemoryType::GbWorkRam,
 	CartRam = (int)SnesMemoryType::GbCartRam,
+	BootRom = (int)SnesMemoryType::GbBootRom,
 };
 
 struct GbMemoryManagerState

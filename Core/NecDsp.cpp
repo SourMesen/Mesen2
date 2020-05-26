@@ -92,13 +92,13 @@ NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console, vector<u
 	vector<uint8_t> programRom;
 	vector<uint8_t> dataRom;
 	switch(type) {
-		case CoprocessorType::DSP1: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP1B: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP2: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP3: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP4: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::ST010: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
-		case CoprocessorType::ST011: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, type, "st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
+		case CoprocessorType::DSP1: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP1, "dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP1B: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP1B, "dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP2: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP2, "dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP3: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP3, "dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP4: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP4, "dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::ST010: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::ST010, "st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
+		case CoprocessorType::ST011: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::ST011, "st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
 		default: break;
 	}
 

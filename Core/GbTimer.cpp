@@ -9,9 +9,12 @@ GbTimer::GbTimer(GbMemoryManager* memoryManager, GbApu* apu)
 	_apu = apu;
 	_memoryManager = memoryManager;
 	
+	_state = {};
+	_state.TimerDivider = 1024;
+
 	//Passes boot_div-dmgABCmgb
 	//But that test depends on LCD power on timings, so may be wrong.
-	_divider = 0x06; 
+	_state.Divider = 0x06;
 }
 
 GbTimer::~GbTimer()
@@ -20,45 +23,45 @@ GbTimer::~GbTimer()
 
 void GbTimer::Exec()
 {
-	_reloaded = false;
-	if(_needReload) {
+	_state.Reloaded = false;
+	if(_state.NeedReload) {
 		ReloadCounter();
 	}
-	SetDivider(_divider + 4);	
+	SetDivider(_state.Divider + 4);
 }
 
 void GbTimer::ReloadCounter()
 {
-	_counter = _modulo;
+	_state.Counter = _state.Modulo;
 	_memoryManager->RequestIrq(GbIrqSource::Timer);
-	_needReload = false;
-	_reloaded = true;
+	_state.NeedReload = false;
+	_state.Reloaded = true;
 }
 
 void GbTimer::SetDivider(uint16_t newValue)
 {
-	if(_timerEnabled && !(newValue & _timerDivider) && (_divider & _timerDivider)) {
-		_counter++;
-		if(_counter == 0) {
-			_needReload = true;
+	if(_state.TimerEnabled && !(newValue & _state.TimerDivider) && (_state.Divider & _state.TimerDivider)) {
+		_state.Counter++;
+		if(_state.Counter == 0) {
+			_state.NeedReload = true;
 		}
 	}
 
 	uint16_t frameSeqBit = _memoryManager->IsHighSpeed() ? 0x2000 : 0x1000;
-	if(!(newValue & frameSeqBit) && (_divider & frameSeqBit)) {
+	if(!(newValue & frameSeqBit) && (_state.Divider & frameSeqBit)) {
 		_apu->ClockFrameSequencer();
 	}
 
-	_divider = newValue;
+	_state.Divider = newValue;
 }
 
 uint8_t GbTimer::Read(uint16_t addr)
 {
 	switch(addr) {
-		case 0xFF04: return _divider >> 8;
-		case 0xFF05: return _counter; //FF05 - TIMA - Timer counter (R/W)
-		case 0xFF06: return _modulo; //FF06 - TMA - Timer Modulo (R/W)
-		case 0xFF07: return _control | 0xF8; //FF07 - TAC - Timer Control (R/W)
+		case 0xFF04: return _state.Divider >> 8;
+		case 0xFF05: return _state.Counter; //FF05 - TIMA - Timer counter (R/W)
+		case 0xFF06: return _state.Modulo; //FF06 - TMA - Timer Modulo (R/W)
+		case 0xFF07: return _state.Control | 0xF8; //FF07 - TAC - Timer Control (R/W)
 	}
 	return 0;
 }
@@ -73,29 +76,29 @@ void GbTimer::Write(uint16_t addr, uint8_t value)
 
 		case 0xFF05:
 			//FF05 - TIMA - Timer counter (R/W)
-			if(_needReload) {
+			if(_state.NeedReload) {
 				//Writing to TIMA when a reload is pending will cancel the reload and IRQ request
-				_needReload = false;
+				_state.NeedReload = false;
 			}
 
-			if(!_reloaded) {
+			if(!_state.Reloaded) {
 				//Writes to TIMA on the cycle TIMA was reloaded with TMA are ignored
-				_counter = value;
+				_state.Counter = value;
 			}
 			break;
 
 		case 0xFF06:
 			//FF06 - TMA - Timer Modulo (R/W)
-			_modulo = value;
-			if(_reloaded) {
+			_state.Modulo = value;
+			if(_state.Reloaded) {
 				//Writing to TMA on the same cycle it was reloaded into TIMA will also update TIMA
-				_counter = value;
+				_state.Counter = value;
 			}
 			break;
 
 		case 0xFF07: {
 			//FF07 - TAC - Timer Control (R/W)
-			_control = value;
+			_state.Control = value;
 			bool enabled = (value & 0x04) != 0;
 			uint16_t newDivider = 0;
 			switch(value & 0x03) {
@@ -105,25 +108,25 @@ void GbTimer::Write(uint16_t addr, uint8_t value)
 				case 3: newDivider = 1 << 7; break;
 			}
 
-			if(_timerEnabled) {
+			if(_state.TimerEnabled) {
 				//When changing the value of TAC, the TIMA register can get incremented due to a glitch
 				bool incrementCounter;
 				if(enabled) {
-					incrementCounter = (_divider & _timerDivider) != 0 && (_divider & newDivider) == 0;
+					incrementCounter = (_state.Divider & _state.TimerDivider) != 0 && (_state.Divider & newDivider) == 0;
 				} else {
-					incrementCounter = (_divider & _timerDivider) != 0;
+					incrementCounter = (_state.Divider & _state.TimerDivider) != 0;
 				}
 
 				if(incrementCounter) {
-					_counter++;
-					if(_counter == 0) {
+					_state.Counter++;
+					if(_state.Counter == 0) {
 						ReloadCounter();
 					}
 				}
 			}
 
-			_timerEnabled = enabled;
-			_timerDivider = newDivider;
+			_state.TimerEnabled = enabled;
+			_state.TimerDivider = newDivider;
 			break;
 		}
 	}
@@ -131,5 +134,5 @@ void GbTimer::Write(uint16_t addr, uint8_t value)
 
 void GbTimer::Serialize(Serializer& s)
 {
-	s.Stream(_divider, _counter, _modulo, _control, _timerEnabled, _timerDivider, _needReload, _reloaded);
+	s.Stream(_state.Divider, _state.Counter, _state.Modulo, _state.Control, _state.TimerEnabled, _state.TimerDivider, _state.NeedReload, _state.Reloaded);
 }
