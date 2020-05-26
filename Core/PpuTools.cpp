@@ -273,11 +273,7 @@ void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state,
 			uint8_t largeSprite = (highTableValue & 0x02) >> 1;
 			uint8_t height = _oamSizes[state.OamMode][largeSprite][1] << 3;
 
-			if(state.ObjInterlace) {
-				height /= 2;
-			}
-
-			uint8_t endY = (y + height) & 0xFF;
+			uint8_t endY = (y + (state.ObjInterlace ? (height >> 1): height)) & 0xFF;
 
 			bool visible = (screenY >= y && screenY < endY) || (endY < y && screenY < endY);
 			if(!visible) {
@@ -311,7 +307,9 @@ void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state,
 			int yGap = (screenY - y);
 			if(state.ObjInterlace) {
 				yGap <<= 1;
+				yGap |= (state.FrameCount & 0x01);
 			}
+
 			if(verticalMirror) {
 				yOffset = (height - 1 - yGap) & 0x07;
 				rowOffset = (height - 1 - yGap) >> 3;

@@ -580,7 +580,7 @@ void Ppu::EvaluateNextLineSprites()
 			FetchSpritePosition(_oamEvaluationIndex << 2);
 		} else {
 			//Second cycle: Check if sprite is in range, if so, keep its index
-			if(_currentSprite.IsVisible(_scanline)) {
+			if(_currentSprite.IsVisible(_scanline, _state.ObjInterlace)) {
 				if(_spriteCount < 32) {
 					_spriteIndexes[_spriteCount] = _oamEvaluationIndex;
 					_spriteCount++;
@@ -662,9 +662,6 @@ void Ppu::FetchSpritePosition(uint16_t oamAddress)
 	}
 
 	uint8_t height = _oamSizes[_state.OamMode][largeSprite][1] << 3;
-	if(_state.ObjInterlace) {
-		height /= 2;
-	}
 	_currentSprite.Height = height;
 }
 

@@ -34,7 +34,7 @@ struct SpriteInfo
 	uint16_t FetchAddress;
 	uint16_t ChrData[2];
 
-	bool IsVisible(uint16_t scanline)
+	bool IsVisible(uint16_t scanline, bool interlace)
 	{
 		if(X != -256 && (X + Width <= 0 || X > 255)) {
 			//Sprite is not visible (and must be ignored for time/range flag calculations)
@@ -42,7 +42,7 @@ struct SpriteInfo
 			return false;
 		}
 
-		uint8_t endY = (Y + Height) & 0xFF;
+		uint8_t endY = (Y + (interlace ? (Height >> 1) : Height)) & 0xFF;
 		return (scanline >= Y && scanline < endY) || (endY < Y && scanline < endY);
 	}
 };
