@@ -522,7 +522,11 @@ uint8_t GbPpu::Read(uint16_t addr)
 
 		case 0xFF42: return _state.ScrollY; //FF42 - SCY - Scroll Y (R/W)
 		case 0xFF43: return _state.ScrollX; //FF43 - SCX - Scroll X (R/W)
-		case 0xFF44: return _state.Scanline; //FF44 - LY - LCDC Y-Coordinate (R)
+		case 0xFF44:
+			//FF44 - LY - LCDC Y-Coordinate (R)
+			//On the last scanline (153), at cycle >= 4 (TODO: exact cycle varies by model) , the value 0 is returned instead of 153
+			return (_state.Scanline < 153 || _state.Cycle < 4) ? _state.Scanline : 0;
+
 		case 0xFF45: return _state.LyCompare; //FF45 - LYC - LY Compare (R/W)
 		case 0xFF47: return _state.BgPalette; //FF47 - BGP - BG Palette Data (R/W) - Non CGB Mode Only
 		case 0xFF48: return _state.ObjPalette0; //FF48 - OBP0 - Object Palette 0 Data (R/W) - Non CGB Mode Only
@@ -690,7 +694,7 @@ void GbPpu::WriteCgbRegister(uint16_t addr, uint8_t value)
 
 void GbPpu::WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value)
 {
-	if((int)_state.Mode <= (int)PpuMode::OamEvaluation) {
+	if(_state.Mode <= PpuMode::OamEvaluation) {
 		if(pos & 0x01) {
 			pal[pos >> 1] = (pal[pos >> 1] & 0xFF) | ((value & 0x7F) << 8);
 		} else {
