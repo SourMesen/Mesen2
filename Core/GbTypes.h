@@ -349,6 +349,10 @@ struct GbMemoryManagerState
 	uint8_t IrqEnabled;
 	uint8_t InputSelect;
 
+	uint8_t SerialData;
+	uint8_t SerialControl;
+	uint8_t SerialBitCount;
+
 	bool IsReadRegister[0x100];
 	bool IsWriteRegister[0x100];
 

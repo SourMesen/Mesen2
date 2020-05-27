@@ -73,6 +73,13 @@ void GbMemoryManager::Exec()
 	_timer->Exec();
 	_ppu->Exec();
 	_dmaController->Exec();
+
+	if(_state.SerialBitCount && (_gameboy->GetCycleCount() & 0x1FF) == 0) {
+		_state.SerialData = (_state.SerialData << 1) | 0x01;
+		if(--_state.SerialBitCount == 0) {
+			RequestIrq(GbIrqSource::Serial);
+		}
+	}
 }
 
 void GbMemoryManager::MapRegisters(uint16_t start, uint16_t end, RegisterAccess access)
@@ -238,8 +245,8 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 			switch(addr) {
 				case 0xFF00: return ReadInputPort(); break;
 				
-				case 0xFF01: return 0; //SB - Serial transfer data (R/W)
-				case 0xFF02: return 0x7E; //SC - Serial Transfer Control (R/W)
+				case 0xFF01: return _state.SerialData; //SB - Serial transfer data (R/W)
+				case 0xFF02: return _state.SerialControl | ~(_gameboy->IsCgb() ? 0x83 : 0x81); //SC - Serial Transfer Control (R/W)
 
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					return _timer->Read(addr);
@@ -315,7 +322,16 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 			//00-0F
 			switch(addr) {
 				case 0xFF00: _state.InputSelect = value; break;
-				case 0xFF01: break; //Serial
+				case 0xFF01: _state.SerialData = value; break; //FF01 - SB - Serial transfer data (R/W)
+				case 0xFF02: 
+					//FF02 - SC - Serial Transfer Control (R/W)
+					_state.SerialControl = value & (_gameboy->IsCgb() ? 0x83 : 0x81);
+					if((_state.SerialControl & 0x80) && (_state.SerialControl & 0x01)) {
+						_state.SerialBitCount = 8;
+					} else {
+						_state.SerialBitCount = 0;
+					}
+					break;
 
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					_timer->Write(addr, value);
@@ -412,7 +428,8 @@ void GbMemoryManager::Serialize(Serializer& s)
 {
 	s.Stream(
 		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests, _state.InputSelect,
-		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank
+		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank,
+		_state.SerialData, _state.SerialControl, _state.SerialBitCount
 	);
 	s.StreamArray(_state.MemoryType, 0x100);
 	s.StreamArray(_state.MemoryOffset, 0x100);

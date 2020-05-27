@@ -635,6 +635,10 @@ namespace Mesen.GUI
 		public byte IrqEnabled;
 		public byte InputSelect;
 
+		public byte SerialData;
+		public byte SerialControl;
+		public byte SerialBitCount;
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public byte[] IsReadRegister;
 		
