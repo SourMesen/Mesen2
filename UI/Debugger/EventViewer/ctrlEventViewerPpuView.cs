@@ -214,8 +214,6 @@ namespace Mesen.GUI.Debugger
 				return;
 			}
 
-			EmuApi.WriteLogEntry("Old: " + _lastPos.ToString() + "  new: " + newPos.ToString());
-
 			Dictionary<string, string> values;
 			if(_isGameboy) {
 				values = new Dictionary<string, string>() {

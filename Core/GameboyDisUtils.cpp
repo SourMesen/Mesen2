@@ -58,7 +58,7 @@ constexpr const uint8_t _opSize[256] = {
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-	1,1,3,3,3,1,2,1,1,1,3,1,3,3,2,1,
+	1,1,3,3,3,1,2,1,1,1,3,2,3,3,2,1,
 	1,1,3,1,3,1,2,1,1,1,3,1,3,1,2,1,
 	2,1,1,1,1,1,2,1,2,1,3,1,1,1,2,1,
 	2,1,1,1,1,1,2,1,2,1,3,1,1,1,2,1,
@@ -80,7 +80,7 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 	};
 
 	uint8_t* byteCode = info.GetByteCode();
-	const char* op = byteCode[0] == 0xCB ? _cbTemplate[byteCode[0]] : _opTemplate[byteCode[0]];
+	const char* op = byteCode[0] == 0xCB ? _cbTemplate[byteCode[1]] : _opTemplate[byteCode[0]];
 	if(byteCode[0] == 0xCB) {
 		byteCode++;
 	}
