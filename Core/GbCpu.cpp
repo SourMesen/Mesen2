@@ -16,7 +16,6 @@ GbCpu::GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
 	if(_gameboy->UseBootRom()) {
 		_state.PC = 0;
 		_state.SP = 0xFFFF;
-		_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
 	} else {
 		_state.PC = 0x100;
 		_state.SP = 0xFFFE;
@@ -28,7 +27,6 @@ GbCpu::GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
 		_state.H = _gameboy->IsCgb() ? 0x00 : 0x01;
 		_state.L = _gameboy->IsCgb() ? 0x7C : 0x4D;
 		_state.Flags = _gameboy->IsCgb() ? 0x80 : 0xB0;
-		_state.CycleCount = _gameboy->IsCgb() ? 13051516 : 23440332;
 	}
 }
 
@@ -39,11 +37,6 @@ GbCpu::~GbCpu()
 GbCpuState GbCpu::GetState()
 {
 	return _state;
-}
-
-uint64_t GbCpu::GetCycleCount()
-{
-	return _state.CycleCount;
 }
 
 void GbCpu::Exec()
@@ -361,7 +354,6 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 
 void GbCpu::IncCycleCount()
 {
-	_state.CycleCount += 4;
 	_memoryManager->Exec();
 }
 
@@ -1378,7 +1370,7 @@ void GbCpu::PREFIX()
 void GbCpu::Serialize(Serializer& s)
 {
 	s.Stream(
-		_state.CycleCount, _state.PC, _state.SP, _state.A, _state.Flags, _state.B,
+		_state.PC, _state.SP, _state.A, _state.Flags, _state.B,
 		_state.C, _state.D, _state.E, _state.H, _state.L, _state.IME, _state.Halted,
 		_state.EiPending
 	);

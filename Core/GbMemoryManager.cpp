@@ -33,6 +33,11 @@ void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbP
 	_state = {};
 	_state.CgbWorkRamBank = 1;
 	_state.DisableBootRom = !_gameboy->UseBootRom();
+	if(_gameboy->UseBootRom()) {
+		_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
+	} else {
+		_state.CycleCount = _gameboy->IsCgb() ? 13051516 : 23440332;
+	}
 
 	MapRegisters(0x8000, 0x9FFF, RegisterAccess::ReadWrite);
 	MapRegisters(0xFE00, 0xFFFF, RegisterAccess::ReadWrite);
@@ -69,12 +74,13 @@ void GbMemoryManager::RefreshMappings()
 
 void GbMemoryManager::Exec()
 {
+	_state.CycleCount += 4;
 	_state.ApuCycleCount += _state.CgbHighSpeed ? 2 : 4;
 	_timer->Exec();
 	_ppu->Exec();
 	_dmaController->Exec();
 
-	if(_state.SerialBitCount && (_gameboy->GetCycleCount() & 0x1FF) == 0) {
+	if(_state.SerialBitCount && (_state.CycleCount & 0x1FF) == 0) {
 		_state.SerialData = (_state.SerialData << 1) | 0x01;
 		if(--_state.SerialBitCount == 0) {
 			RequestIrq(GbIrqSource::Serial);
@@ -389,6 +395,11 @@ bool GbMemoryManager::IsHighSpeed()
 	return _state.CgbHighSpeed;
 }
 
+uint64_t GbMemoryManager::GetCycleCount()
+{
+	return _state.CycleCount;
+}
+
 uint64_t GbMemoryManager::GetApuCycleCount()
 {
 	return _state.ApuCycleCount;
@@ -429,7 +440,7 @@ void GbMemoryManager::Serialize(Serializer& s)
 	s.Stream(
 		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests, _state.InputSelect,
 		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank,
-		_state.SerialData, _state.SerialControl, _state.SerialBitCount
+		_state.SerialData, _state.SerialControl, _state.SerialBitCount, _state.CycleCount
 	);
 	s.StreamArray(_state.MemoryType, 0x100);
 	s.StreamArray(_state.MemoryOffset, 0x100);

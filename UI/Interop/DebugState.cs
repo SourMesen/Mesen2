@@ -625,10 +625,12 @@ namespace Mesen.GUI
 
 	public struct GbMemoryManagerState
 	{
+		public UInt64 CycleCount;
+		public UInt64 ApuCycleCount;
+		
 		public byte CgbWorkRamBank;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbSwitchSpeedRequest;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbHighSpeed;
-		public UInt64 ApuCycleCount;
 
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBootRom;
 		public byte IrqRequests;
@@ -682,7 +684,6 @@ namespace Mesen.GUI
 
 	public struct GbCpuState
 	{
-		public UInt64 CycleCount;
 		public UInt16 PC;
 		public UInt16 SP;
 

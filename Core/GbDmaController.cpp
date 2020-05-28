@@ -62,20 +62,32 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0xFF51: _state.CgbDmaSource = (_state.CgbDmaSource & 0xFF) | (value << 8); break;
-		case 0xFF52: _state.CgbDmaSource = (_state.CgbDmaSource & 0xFF00) | value; break;
+		case 0xFF52: _state.CgbDmaSource = (_state.CgbDmaSource & 0xFF00) | (value & 0xF0); break;
 		case 0xFF53: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF) | (value << 8); break;
-		case 0xFF54: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF00) | value; break;
+		case 0xFF54: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF00) | (value & 0xF0); break;
 		case 0xFF55:
 			_state.CgbDmaLength = value & 0x7F;
 			_state.CgbHdmaMode = (value & 0x80) != 0;
 
 			if(!_state.CgbHdmaMode) {
 				//TODO check invalid dma sources/etc.
-				//TODO timing
-				for(int i = 0; i < _state.CgbDmaLength * 16; i++) {
-					uint16_t dst = 0x8000 | (((_state.CgbDmaDest & 0x1FF0) + i) & 0x1FFF);
-					_memoryManager->Write(dst, _memoryManager->Read((_state.CgbDmaSource & 0xFFF0) + i, MemoryOperationType::DmaRead));
+				//4 cycles for setup
+				_memoryManager->Exec();
+				int count = (_state.CgbDmaLength + 1) * 16;
+				for(int i = 0; i < count; i++) {
+					uint16_t dst = 0x8000 | ((_state.CgbDmaDest + i) & 0x1FFF);
+
+					//2 or 4 cycles per byte transfered (2x more cycles in high speed mode - effective speed is the same in both modes
+					if(_memoryManager->IsHighSpeed() || (i & 0x01)) {
+						//TODO: Not perfectly accurate (in "slow" mode mode both occur on the same cycle)
+						_memoryManager->Exec();
+					}
+					_memoryManager->Write(dst, _memoryManager->Read(_state.CgbDmaSource + i, MemoryOperationType::DmaRead));
 				}
+
+				//Source/Dest/Length are all modified by the DMA process and keep their last value after DMA completes
+				_state.CgbDmaSource += count;
+				_state.CgbDmaDest += count;
 				_state.CgbDmaLength = 0x7F;
 			} else {
 				MessageManager::Log("TODO HDMA");

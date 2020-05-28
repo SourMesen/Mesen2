@@ -133,7 +133,7 @@ void Gameboy::Exec()
 
 void Gameboy::Run(uint64_t masterClock)
 {
-	while(_cpu->GetState().CycleCount < masterClock) {
+	while(_memoryManager->GetCycleCount() < masterClock) {
 		_cpu->Exec();
 	}
 }
@@ -269,7 +269,7 @@ bool Gameboy::UseBootRom()
 
 uint64_t Gameboy::GetCycleCount()
 {
-	return _cpu->GetCycleCount();
+	return _memoryManager->GetCycleCount();
 }
 
 uint64_t Gameboy::GetApuCycleCount()

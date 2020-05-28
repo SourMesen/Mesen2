@@ -37,8 +37,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 			_cpuBinder.AddBinding(nameof(GbCpuState.Halted), chkHalted);
 			_cpuBinder.AddBinding(nameof(GbCpuState.IME), chkIme);
-			_cpuBinder.AddBinding(nameof(GbCpuState.CycleCount), txtCycleCount, eNumberFormat.Decimal);
-
+			
 			_ppuBinder.Entity = new GbPpuState();
 			_ppuBinder.AddBinding(nameof(GbPpuState.Cycle), txtCycle, eNumberFormat.Decimal);
 			_ppuBinder.AddBinding(nameof(GbPpuState.Scanline), txtScanline, eNumberFormat.Decimal);
@@ -51,6 +50,7 @@ namespace Mesen.GUI.Debugger.Controls
 			_cpuBinder.Entity = state.Cpu;
 			_cpuBinder.UpdateUI();
 
+			txtCycleCount.Text = state.MemoryManager.CycleCount.ToString();
 			txtHL.Text = ((state.Cpu.H << 8) | state.Cpu.L).ToString("X4");
 
 			_ppuBinder.Entity = state.Ppu;

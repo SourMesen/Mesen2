@@ -25,7 +25,6 @@ public:
 	virtual ~GbCpu();
 
 	GbCpuState GetState();
-	uint64_t GetCycleCount();
 
 	void Exec();
 	void ExecOpCode(uint8_t opCode);

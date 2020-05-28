@@ -63,6 +63,7 @@ public:
 
 	void ToggleSpeed();
 	bool IsHighSpeed();
+	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
 	
 	uint8_t ReadInputPort();
