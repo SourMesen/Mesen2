@@ -206,29 +206,26 @@ void GbPpu::RunDrawCycle()
 		if(_drawnPixels >= 0) {
 			uint16_t outOffset = _state.Scanline * 256 + _drawnPixels;
 
-			bool isSprite = false;
 			GbFifoEntry entry = _bgFifo.Content[_bgFifo.Position];
-			if(_oamFifo.Size > 0 && _oamFifo.Content[_oamFifo.Position].Color != 0 && (entry.Color == 0 || !(_oamFifo.Content[_oamFifo.Position].Attributes & 0x80))) {
-				entry = _oamFifo.Content[_oamFifo.Position];
-				isSprite = true;
-			}
-
-			uint16_t rgbColor;
-			if(_state.CgbEnabled) {
-				if(isSprite) {
-					rgbColor = _state.CgbObjPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
+			GbFifoEntry sprite = _oamFifo.Content[_oamFifo.Position];
+			if(sprite.Color != 0 && (entry.Color == 0 || (!(sprite.Attributes & 0x80) && !(entry.Attributes & 0x80)) || (_state.CgbEnabled && !_state.BgEnabled))) {
+				//Use sprite pixel if:
+				//  -BG color is 0, OR
+				//  -Sprite is background priority AND BG does not have its priority bit set, OR
+				//  -On CGB, the "bg enabled" flag is cleared, causing all sprites to appear above BG tiles
+				if(_state.CgbEnabled) {
+					_currentBuffer[outOffset] = _state.CgbObjPalettes[sprite.Color | ((sprite.Attributes & 0x07) << 2)];
 				} else {
-					rgbColor = _state.CgbBgPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
+					uint8_t colorIndex = (((sprite.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (sprite.Color * 2)) & 0x03;
+					_currentBuffer[outOffset] = _state.CgbObjPalettes[((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex];
 				}
 			} else {
-				if(isSprite) {
-					uint8_t colorIndex = (((entry.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (entry.Color * 2)) & 0x03;
-					rgbColor = _state.CgbObjPalettes[((entry.Attributes & 0x10) ? 4 : 0) | colorIndex];
+				if(_state.CgbEnabled) {
+					_currentBuffer[outOffset] = _state.CgbBgPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
 				} else {
-					rgbColor = _state.CgbBgPalettes[(_state.BgPalette >> (entry.Color * 2)) & 0x03];
+					_currentBuffer[outOffset] = _state.CgbBgPalettes[(_state.BgPalette >> (entry.Color * 2)) & 0x03];
 				}
 			}
-			_currentBuffer[outOffset] = rgbColor;
 		}
 
 		_bgFifo.Pop();
@@ -423,7 +420,7 @@ void GbPpu::PushTileToPixelFifo()
 		uint8_t bits = ((_bgFetcher.LowByte >> shift) & 0x01);
 		bits |= ((_bgFetcher.HighByte >> shift) & 0x01) << 1;
 
-		_bgFifo.Content[i].Color = _state.BgEnabled ? bits : 0;
+		_bgFifo.Content[i].Color = (_state.CgbEnabled || _state.BgEnabled) ? bits : 0;
 		_bgFifo.Content[i].Attributes = _bgFetcher.Attributes;
 	}
 
