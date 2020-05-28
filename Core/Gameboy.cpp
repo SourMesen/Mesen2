@@ -118,12 +118,12 @@ void Gameboy::PowerOn()
 	_apu.reset(new GbApu(_console, this));
 	_memoryManager.reset(new GbMemoryManager());
 	_timer.reset(new GbTimer(_memoryManager.get(), _apu.get()));
-	_dmaController.reset(new GbDmaController(_memoryManager.get()));
+	_dmaController.reset(new GbDmaController(_memoryManager.get(), _ppu.get()));
 	_cart->Init(this, _memoryManager.get());
 	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get(), _dmaController.get());
 
 	_cpu.reset(new GbCpu(_console, this, _memoryManager.get()));
-	_ppu->Init(_console, this, _memoryManager.get(), _videoRam, _spriteRam);
+	_ppu->Init(_console, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
 }
 
 void Gameboy::Exec()

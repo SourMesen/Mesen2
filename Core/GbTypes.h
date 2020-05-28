@@ -201,7 +201,8 @@ struct GbDmaControllerState
 	uint16_t CgbDmaSource;
 	uint16_t CgbDmaDest;
 	uint8_t CgbDmaLength;
-	bool CgbHdmaMode;
+	bool CgbHdmaDone;
+	bool CgbHdmaRunning;
 };
 
 struct GbTimerState

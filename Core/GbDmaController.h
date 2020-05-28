@@ -4,15 +4,19 @@
 #include "../Utilities/ISerializable.h"
 
 class GbMemoryManager;
+class GbPpu;
 
 class GbDmaController : public ISerializable
 {
 private:
 	GbDmaControllerState _state;
 	GbMemoryManager* _memoryManager;
+	GbPpu* _ppu;
+	
+	void ProcessDmaBlock();
 
 public:
-	GbDmaController(GbMemoryManager* memoryManager);
+	GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu);
 	void Exec();
 
 	bool IsOamDmaRunning();
@@ -22,6 +26,8 @@ public:
 
 	uint8_t ReadCgb(uint16_t addr);
 	void WriteCgb(uint16_t addr, uint8_t value);
+
+	void ProcessHdma();
 
 	void Serialize(Serializer& s) override;
 };

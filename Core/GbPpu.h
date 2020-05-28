@@ -6,6 +6,7 @@
 class Console;
 class Gameboy;
 class GbMemoryManager;
+class GbDmaController;
 
 class GbPpu : public ISerializable
 {
@@ -14,6 +15,7 @@ private:
 	Gameboy* _gameboy = nullptr;
 	GbPpuState _state = {};
 	GbMemoryManager* _memoryManager = nullptr;
+	GbDmaController* _dmaController = nullptr;
 	uint16_t* _outputBuffers[2] = {};
 	uint16_t* _currentBuffer = nullptr;
 
@@ -63,15 +65,16 @@ private:
 public:
 	virtual ~GbPpu();
 
-	void Reset(bool useBootRom);
-
-	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, uint8_t* vram, uint8_t* oam);
+	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam);
 
 	GbPpuState GetState();
 	uint16_t* GetEventViewerBuffer();
 	uint16_t* GetPreviousEventViewerBuffer();
 	void GetPalette(uint16_t out[4], uint8_t palCfg);
+	
 	uint32_t GetFrameCount();
+	bool IsLcdEnabled();
+	PpuMode GetMode();
 
 	void Exec();
 

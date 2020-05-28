@@ -7,6 +7,7 @@
 #include "VideoDecoder.h"
 #include "RewindManager.h"
 #include "GbMemoryManager.h"
+#include "GbDmaController.h"
 #include "NotificationManager.h"
 #include "MessageManager.h"
 #include "../Utilities/HexUtilities.h"
@@ -15,11 +16,12 @@
 constexpr uint16_t bwRgbPalette[4] = { 0x7FFF, 0x6318, 0x318C, 0x0000 };
 constexpr uint16_t evtColors[6] = { 0x18C6, 0x294A, 0x108C, 0x4210, 0x3084, 0x1184 };
 
-void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, uint8_t* vram, uint8_t* oam)
+void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam)
 {
 	_console = console;
 	_gameboy = gameboy;
 	_memoryManager = memoryManager;
+	_dmaController = dmaController;
 	_vram = vram;
 	_oam = oam;
 
@@ -151,6 +153,10 @@ void GbPpu::ExecCycle()
 			RunDrawCycle();
 		} else {
 			ChangeMode(PpuMode::HBlank);
+			if(_state.Scanline < 143) {
+				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 – 153"
+				_dmaController->ProcessHdma();
+			}
 		}
 	} else if(_state.Mode == PpuMode::OamEvaluation) {
 		RunSpriteEvaluation();
@@ -477,6 +483,16 @@ uint32_t GbPpu::GetFrameCount()
 	return _state.FrameCount;
 }
 
+bool GbPpu::IsLcdEnabled()
+{
+	return _state.LcdEnabled;
+}
+
+PpuMode GbPpu::GetMode()
+{
+	return _state.Mode;
+}
+
 void GbPpu::SendFrame()
 {
 	_console->ProcessEvent(EventType::EndFrame);
@@ -555,6 +571,9 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					std::fill(_outputBuffers[0], _outputBuffers[0] + 256 * 239, 0x7FFF);
 					std::fill(_outputBuffers[1], _outputBuffers[1] + 256 * 239, 0x7FFF);
 					SendFrame();
+					
+					//"If the HDMA started when the screen was on, when the screen is switched off it will copy one block after the switch."
+					_dmaController->ProcessHdma();
 				} else {
 					_state.Cycle = 4;
 					_state.Scanline = 0;

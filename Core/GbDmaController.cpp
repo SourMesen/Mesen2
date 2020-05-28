@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "GbDmaController.h"
-#include "MessageManager.h"
-#include "CpuTypes.h"
 #include "GbMemoryManager.h"
+#include "GbPpu.h"
 
-GbDmaController::GbDmaController(GbMemoryManager* memoryManager)
+GbDmaController::GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu)
 {
 	_memoryManager = memoryManager;
+	_ppu = ppu;
 	_state = {};
 }
 
@@ -52,7 +52,7 @@ uint8_t GbDmaController::ReadCgb(uint16_t addr)
 		case 0xFF52: return _state.CgbDmaSource & 0xFF;
 		case 0xFF53: return _state.CgbDmaDest >> 8;
 		case 0xFF54: return _state.CgbDmaDest & 0xFF;
-		case 0xFF55: return _state.CgbDmaLength | (_state.CgbHdmaMode ? 0x80 : 0);
+		case 0xFF55: return _state.CgbDmaLength | (_state.CgbHdmaDone ? 0x80 : 0);
 	}
 
 	return 0;
@@ -65,34 +65,71 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 		case 0xFF52: _state.CgbDmaSource = (_state.CgbDmaSource & 0xFF00) | (value & 0xF0); break;
 		case 0xFF53: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF) | (value << 8); break;
 		case 0xFF54: _state.CgbDmaDest = (_state.CgbDmaDest & 0xFF00) | (value & 0xF0); break;
-		case 0xFF55:
+		case 0xFF55: {
+			bool hdmaMode = (value & 0x80) != 0;
 			_state.CgbDmaLength = value & 0x7F;
-			_state.CgbHdmaMode = (value & 0x80) != 0;
 
-			if(!_state.CgbHdmaMode) {
-				//TODO check invalid dma sources/etc.
-				//4 cycles for setup
-				_memoryManager->Exec();
-				int count = (_state.CgbDmaLength + 1) * 16;
-				for(int i = 0; i < count; i++) {
-					uint16_t dst = 0x8000 | ((_state.CgbDmaDest + i) & 0x1FFF);
-
-					//2 or 4 cycles per byte transfered (2x more cycles in high speed mode - effective speed is the same in both modes
-					if(_memoryManager->IsHighSpeed() || (i & 0x01)) {
-						//TODO: Not perfectly accurate (in "slow" mode mode both occur on the same cycle)
-						_memoryManager->Exec();
-					}
-					_memoryManager->Write(dst, _memoryManager->Read(_state.CgbDmaSource + i, MemoryOperationType::DmaRead));
+			if(!hdmaMode) {
+				if(_state.CgbHdmaRunning) {
+					//"If HDMA5 is written during a HDMA copy, the behaviour depends on the written bit 7. 
+					//  - New bit 7 is 0: Stop copy. HDMA5 new value is ( 80h OR written_value ).
+					//  - New bit 7 is 1: Restart copy. New size is the value of written_value bits 0-6.
+					//This means that HDMA can't switch to GDMA with only one write. It must be stopped first."
+					_state.CgbHdmaRunning = false;
+					_state.CgbHdmaDone = true;
+				} else {
+					do {
+						ProcessDmaBlock();
+					} while(_state.CgbDmaLength != 0x7F);
 				}
-
-				//Source/Dest/Length are all modified by the DMA process and keep their last value after DMA completes
-				_state.CgbDmaSource += count;
-				_state.CgbDmaDest += count;
-				_state.CgbDmaLength = 0x7F;
 			} else {
-				MessageManager::Log("TODO HDMA");
+				//"After writing a value to HDMA5 that starts the HDMA copy, the upper bit (that indicates HDMA mode when set to '1') will be cleared"
+				_state.CgbHdmaDone = false;
+				_state.CgbHdmaRunning = true;
+
+				//"If a HDMA transfer is started when the screen is off, one block is copied. "
+				//" When a HDMA transfer is started during HBL it will start right away."
+				if(!_ppu->IsLcdEnabled() || _ppu->GetMode() == PpuMode::HBlank) {
+					ProcessHdma();
+				}
 			}
 			break;
+		}
+	}
+}
+
+void GbDmaController::ProcessHdma()
+{
+	if(_state.CgbHdmaRunning) {
+		ProcessDmaBlock();
+	}
+}
+
+void GbDmaController::ProcessDmaBlock()
+{
+	//TODO check invalid dma sources/etc.
+	//4 cycles for setup
+	_memoryManager->Exec();
+
+	for(int i = 0; i < 16; i++) {
+		uint16_t dst = 0x8000 | ((_state.CgbDmaDest + i) & 0x1FFF);
+
+		//2 or 4 cycles per byte transfered (2x more cycles in high speed mode - effective speed is the same in both modes
+		if(_memoryManager->IsHighSpeed() || (i & 0x01)) {
+			//TODO: Not perfectly accurate (in "slow" mode mode both occur on the same cycle)
+			_memoryManager->Exec();
+		}
+		_memoryManager->Write(dst, _memoryManager->Read(_state.CgbDmaSource + i, MemoryOperationType::DmaRead));
+	}
+
+	//Source/Dest/Length are all modified by the DMA process and keep their last value after DMA completes
+	_state.CgbDmaSource += 16;
+	_state.CgbDmaDest += 16;
+	_state.CgbDmaLength = (_state.CgbDmaLength - 1) & 0x7F;
+
+	if(_state.CgbHdmaRunning && _state.CgbDmaLength == 0x7F) {
+		_state.CgbHdmaRunning = false;
+		_state.CgbHdmaDone = true;
 	}
 }
 
@@ -100,6 +137,6 @@ void GbDmaController::Serialize(Serializer& s)
 {
 	s.Stream(
 		_state.OamDmaDest, _state.DmaStartDelay, _state.InternalDest, _state.DmaCounter, _state.DmaReadBuffer,
-		_state.CgbDmaDest, _state.CgbDmaLength, _state.CgbDmaSource, _state.CgbHdmaMode
+		_state.CgbDmaDest, _state.CgbDmaLength, _state.CgbDmaSource, _state.CgbHdmaDone, _state.CgbHdmaRunning
 	);
 }
