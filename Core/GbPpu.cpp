@@ -504,6 +504,12 @@ void GbPpu::SendFrame()
 	_state.FrameCount++;
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
+	if(_isFirstFrame) {
+		//Send blank frame on the first frame after enabling LCD
+		std::fill(_currentBuffer, _currentBuffer + 256 * 239, 0x7FFF);
+		_isFirstFrame = false;
+	}
+
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, false);
 #else
@@ -580,6 +586,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					//"If the HDMA started when the screen was on, when the screen is switched off it will copy one block after the switch."
 					_dmaController->ProcessHdma();
 				} else {
+					_isFirstFrame = true;
 					_state.Cycle = 4;
 					_state.Scanline = 0;
 					ResetRenderer();
@@ -737,7 +744,7 @@ void GbPpu::Serialize(Serializer& s)
 		_state.Status, _state.FrameCount, _lastFrameTime, _state.LyCoincidenceFlag,
 		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
 		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank, _state.CgbEnabled,
-		_latchWindowX, _latchWindowY, _latchWindowEnabled, _windowCounter
+		_latchWindowX, _latchWindowY, _latchWindowEnabled, _windowCounter, _isFirstFrame
 	);
 
 	s.StreamArray(_state.CgbBgPalettes, 4 * 8);

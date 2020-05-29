@@ -48,6 +48,8 @@ private:
 	uint8_t _spriteX[10] = {};
 	uint8_t _spriteIndexes[10] = {};
 
+	bool _isFirstFrame = true;
+
 	__forceinline void ProcessPpuCycle();
 
 	__forceinline void ExecCycle();
