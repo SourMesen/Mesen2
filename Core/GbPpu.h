@@ -38,6 +38,10 @@ private:
 	int16_t _drawnPixels = 0;
 	uint8_t _fetchColumn = 0;
 	bool _fetchWindow = false;
+	int16_t _windowCounter = -1;
+	uint8_t _latchWindowX = 0;
+	uint8_t _latchWindowY = 0;
+	bool _latchWindowEnabled = false;
 
 	int16_t _fetchSprite = -1;
 	uint8_t _spriteCount = 0;

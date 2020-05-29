@@ -116,6 +116,7 @@ void GbPpu::ExecCycle()
 				ChangeMode(PpuMode::OamEvaluation);
 			} else if(_state.Scanline == 144) {
 				ChangeMode(PpuMode::VBlank);
+				_windowCounter = -1;
 				_memoryManager->RequestIrq(GbIrqSource::VerticalBlank);
 				SendFrame();
 			}
@@ -124,6 +125,9 @@ void GbPpu::ExecCycle()
 
 		case 84: {
 			if(_state.Scanline < 144) {
+				_latchWindowX = _state.WindowX;
+				_latchWindowY = _state.WindowY;
+				_latchWindowEnabled = _state.WindowEnabled;
 				ChangeMode(PpuMode::Drawing);
 				ResetRenderer();
 			}
@@ -194,11 +198,12 @@ void GbPpu::RunDrawCycle()
 		return;
 	}
 
-	bool fetchWindow = _state.WindowEnabled && _drawnPixels >= _state.WindowX - 7 && _state.Scanline >= _state.WindowY;
+	bool fetchWindow = _latchWindowEnabled && _drawnPixels >= _latchWindowX - 7 && _state.Scanline >= _latchWindowY;
 	if(_fetchWindow != fetchWindow) {
 		//Switched between window & background, reset fetcher & pixel FIFO
 		_fetchWindow = fetchWindow;
 		_fetchColumn = 0;
+		_windowCounter++;
 
 		_bgFetcher.Step = 0;
 		_bgFifo.Reset();
@@ -344,7 +349,7 @@ void GbPpu::ClockTileFetcher()
 			uint8_t yOffset;
 			if(_fetchWindow) {
 				tilemapAddr = _state.WindowTilemapSelect ? 0x1C00 : 0x1800;
-				yOffset = _state.Scanline - _state.WindowY;
+				yOffset = (uint8_t)_windowCounter;
 			} else {
 				tilemapAddr = _state.BgTilemapSelect ? 0x1C00 : 0x1800;
 				yOffset = _state.ScrollY + _state.Scanline;
@@ -731,7 +736,8 @@ void GbPpu::Serialize(Serializer& s)
 		_state.WindowEnabled, _state.BgTileSelect, _state.BgTilemapSelect, _state.LargeSprites, _state.SpritesEnabled, _state.BgEnabled,
 		_state.Status, _state.FrameCount, _lastFrameTime, _state.LyCoincidenceFlag,
 		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
-		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank, _state.CgbEnabled
+		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank, _state.CgbEnabled,
+		_latchWindowX, _latchWindowY, _latchWindowEnabled, _windowCounter
 	);
 
 	s.StreamArray(_state.CgbBgPalettes, 4 * 8);
