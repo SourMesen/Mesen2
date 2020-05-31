@@ -726,7 +726,15 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 
 		case 0xFF42: _state.ScrollY = value; break;
 		case 0xFF43: _state.ScrollX = value; break;
-		case 0xFF45: _state.LyCompare = value; _state.IdleCycles = 0; break;
+		case 0xFF45: 
+			_state.LyCompare = value;
+			if(_state.LcdEnabled) {
+				_state.IdleCycles = 0;
+				_state.LyCoincidenceFlag = (_state.LyCompare == _state.LyForCompare);
+				UpdateStatIrq();
+			}
+			break;
+
 		case 0xFF47: _state.BgPalette = value; break;
 		case 0xFF48: _state.ObjPalette0 = value; break;
 		case 0xFF49: _state.ObjPalette1 = value; break;
