@@ -21,8 +21,6 @@ public:
 	GbTimer(GbMemoryManager* memoryManager, GbApu* apu);
 	virtual ~GbTimer();
 
-	void Reset();
-
 	void Exec();
 
 	uint8_t Read(uint16_t addr);

@@ -38,6 +38,7 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_currentEventViewerBuffer = _eventViewerBuffers[0];
 
 	_state = {};
+	_state.Cycle = -1;
 	_state.Mode = PpuMode::HBlank;
 	_state.CgbEnabled = _gameboy->IsCgb();
 	_lastFrameTime = 0;
@@ -96,69 +97,40 @@ void GbPpu::Exec()
 		return;
 	}
 
-	uint8_t cyclesToRun = _memoryManager->IsHighSpeed() ? 2 : 4;
+	uint8_t cyclesToRun = _memoryManager->IsHighSpeed() ? 1 : 2;
 	for(int i = 0; i < cyclesToRun; i++) {
+		_state.Cycle++;
+		if(_state.IdleCycles > 0) {
+			_state.IdleCycles--;
+			ProcessPpuCycle();
+			continue;
+		}
+
 		ExecCycle();
 	}
 }
 
 void GbPpu::ExecCycle()
 {
-	_state.Cycle++;
+	PpuMode oldMode = _state.IrqMode;
 
-	PpuMode oldMode = _state.Mode;
-	bool oldCoincidenceFlag = _state.LyCoincidenceFlag;
-
-	switch(_state.Cycle) {
-		case 4: {
-			if(_state.Scanline < 144) {
-				_spriteCount = 0;
-				ChangeMode(PpuMode::OamEvaluation);
-			} else if(_state.Scanline == 144) {
-				ChangeMode(PpuMode::VBlank);
-				_windowCounter = -1;
-				_memoryManager->RequestIrq(GbIrqSource::VerticalBlank);
-				SendFrame();
-			}
-			break;
+	if(_state.Scanline < 144) {
+		if(_state.Scanline == 0 && _isFirstFrame) {
+			ProcessFirstScanlineAfterPowerOn();
+		} else {
+			ProcessVisibleScanline();
 		}
-
-		case 84: {
-			if(_state.Scanline < 144) {
-				_latchWindowX = _state.WindowX;
-				_latchWindowY = _state.WindowY;
-				_latchWindowEnabled = _state.WindowEnabled;
-				ChangeMode(PpuMode::Drawing);
-				ResetRenderer();
-			}
-			break;
-		}
-
-		case 456: {
-			_state.Cycle = 0;
-			_state.Scanline++;
-
-			if(_state.Scanline < 144) {
-				ChangeMode(PpuMode::HBlank);
-			} else if(_state.Scanline == 154) {
-				_state.Scanline = 0;
-				ChangeMode(PpuMode::HBlank);
-				_console->ProcessEvent(EventType::StartFrame);
-				if(_console->IsDebugging()) {
-					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
-				}
-			}
-			break;
-		}
-	} 
+	} else {
+		ProcessVblankScanline();
+	}
 
 	if(_state.Mode == PpuMode::Drawing) {
-		if(_drawnPixels < 160) {
-			RunDrawCycle();
-		} else {
-			ChangeMode(PpuMode::HBlank);
+		RunDrawCycle();
+		if(_drawnPixels == 160) {
+			//Mode turns to hblank on the same cycle as the last pixel is output (IRQ is on next cycle)
+			_state.Mode = PpuMode::HBlank;
 			if(_state.Scanline < 143) {
-				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 – 153"
+				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 – 153)"
 				_dmaController->ProcessHdma();
 			}
 		}
@@ -166,12 +138,159 @@ void GbPpu::ExecCycle()
 		RunSpriteEvaluation();
 	}
 
-	UpdateLyCoincidenceFlag();
-	if(_state.Mode != oldMode || _state.LyCoincidenceFlag != oldCoincidenceFlag) {
+	bool coincidenceFlag = (_state.LyCompare == _state.LyForCompare);
+	if(_state.IrqMode != oldMode || _state.LyCoincidenceFlag != coincidenceFlag) {
+		_state.LyCoincidenceFlag = coincidenceFlag;
 		UpdateStatIrq();
 	}
 
 	ProcessPpuCycle();
+}
+
+void GbPpu::ProcessVblankScanline()
+{
+	switch(_state.Cycle) {
+		case 2:
+			if(_state.Scanline == 144) {
+				_state.IrqMode = PpuMode::OamEvaluation;
+			}
+			break;
+
+		case 4:
+			if(_state.Scanline < 153) {
+				_state.LyForCompare = _state.Scanline;
+				if(_state.Scanline == 144) {
+					_state.Mode = PpuMode::VBlank;
+					_state.IrqMode = PpuMode::VBlank;
+					_windowCounter = -1;
+					_memoryManager->RequestIrq(GbIrqSource::VerticalBlank);
+					SendFrame();
+				}
+			}
+			break;
+
+		case 6:
+			if(_state.Scanline == 153) {
+				_state.Ly = 0;
+				_state.LyForCompare = _state.Scanline;
+			}
+			break;
+
+		case 8:
+			if(_state.Scanline == 153) {
+				_state.LyForCompare = -1;
+			}
+			break;
+
+		case 12:
+			if(_state.Scanline == 153) {
+				_state.LyForCompare = 0;
+			}
+			_state.IdleCycles = 456 - 12 - 1;
+			break;
+
+		case 456:
+			_state.Cycle = 0;
+			_state.Scanline++;
+
+			if(_state.Scanline == 154) {
+				_state.Scanline = 0;
+				_console->ProcessEvent(EventType::StartFrame);
+				if(_console->IsDebugging()) {
+					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
+				}
+			} else {
+				_state.Ly = _state.Scanline;
+				_state.LyForCompare = -1;
+			}
+			break;
+	}
+}
+
+void GbPpu::ProcessFirstScanlineAfterPowerOn()
+{
+	switch(_state.Cycle) {
+		case 1:
+			_state.IrqMode = PpuMode::NoIrq;
+			break;
+
+		case 79:
+			_latchWindowX = _state.WindowX;
+			_latchWindowY = _state.WindowY;
+			_latchWindowEnabled = _state.WindowEnabled;
+			_state.Mode = PpuMode::Drawing;
+			_state.IrqMode = PpuMode::Drawing;
+			ResetRenderer();
+			_rendererIdle = true;
+			break;
+
+		case 84:
+			_rendererIdle = false;
+			break;
+
+		case 448:
+			_state.Cycle = 0;
+			_state.Scanline++;
+			_drawnPixels = 0;
+			_state.Mode = PpuMode::HBlank;
+			_state.IrqMode = PpuMode::HBlank;
+			break;
+	}
+}
+
+void GbPpu::ProcessVisibleScanline()
+{
+	if(_drawnPixels == 160) {
+		//IRQ flag for Hblank is 1 cycle late compared to the mode register
+		_state.IrqMode = PpuMode::HBlank;
+		_drawnPixels = 0;
+		_state.IdleCycles = 456 - _state.Cycle - 1;
+	}
+
+	switch(_state.Cycle) {
+		case 3:
+			_state.Ly = _state.Scanline;
+			_state.LyForCompare = -1;
+
+			if(_state.Scanline > 0) {
+				//On scanlines 1-143, the OAM IRQ fires 1 cycle early
+				_state.IrqMode = PpuMode::OamEvaluation;
+			} else {
+				//On scanline 0, hblank gets set for 1 cycle here
+				_state.Mode = PpuMode::HBlank;
+			}
+			break;
+
+		case 4:
+			_spriteCount = 0;
+			_state.LyForCompare = _state.Scanline;
+			_state.Mode = PpuMode::OamEvaluation;
+			_state.IrqMode = PpuMode::OamEvaluation; //TODO set to noirq?
+			break;
+
+		case 84:
+			_latchWindowX = _state.WindowX;
+			_latchWindowY = _state.WindowY;
+			_latchWindowEnabled = _state.WindowEnabled;
+			_state.Mode = PpuMode::Drawing;
+			_state.IrqMode = PpuMode::Drawing;
+			_rendererIdle = true;
+			ResetRenderer();
+			break;
+
+		case 89:
+			_rendererIdle = false;
+			break;
+
+		case 456:
+			_state.Cycle = 0;
+			_state.Scanline++;
+			if(_state.Scanline == 144) {
+				_state.Ly = 144;
+				_state.LyForCompare = -1;
+			}
+			break;
+	}
 }
 
 void GbPpu::ProcessPpuCycle()
@@ -192,7 +311,7 @@ void GbPpu::ProcessPpuCycle()
 
 void GbPpu::RunDrawCycle()
 {
-	if(_state.Cycle < 89) {
+	if(_rendererIdle) {
 		//Idle cycles
 		_evtColor = EvtColor::RenderingIdle;
 		return;
@@ -210,6 +329,14 @@ void GbPpu::RunDrawCycle()
 
 		//Idle cycle when switching to window
 		_evtColor = EvtColor::RenderingIdle;
+		return;
+	}
+
+	FindNextSprite();
+	if(_fetchSprite >= 0 && _bgFetcher.Step >= 5 && _bgFifo.Size > 0) {
+		_evtColor = EvtColor::RenderingOamLoad;
+		ClockSpriteFetcher();
+		FindNextSprite();
 		return;
 	}
 
@@ -332,14 +459,6 @@ void GbPpu::FindNextSprite()
 
 void GbPpu::ClockTileFetcher()
 {
-	FindNextSprite();
-	if(_fetchSprite >= 0 && _bgFetcher.Step >= 5 && _bgFifo.Size > 0) {
-		_evtColor = EvtColor::RenderingOamLoad;
-		ClockSpriteFetcher();
-		FindNextSprite();
-		return;
-	}
-
 	_evtColor = EvtColor::RenderingBgLoad;
 
 	switch(_bgFetcher.Step++) {
@@ -441,32 +560,14 @@ void GbPpu::PushTileToPixelFifo()
 	_bgFetcher.Step = 0;
 }
 
-void GbPpu::ChangeMode(PpuMode mode)
-{
-	_state.Mode = mode;
-}
-
-void GbPpu::UpdateLyCoincidenceFlag()
-{
-	if(_state.Scanline < 153) {
-		_state.LyCoincidenceFlag = (_state.LyCompare == _state.Scanline) && (_state.Cycle >= 4 || _state.Scanline == 0);
-	} else {
-		if(_state.LyCompare == 153) {
-			_state.LyCoincidenceFlag = (_state.LyCompare == _state.Scanline) && _state.Cycle >= 4 && _state.Cycle < 8;
-		} else {
-			_state.LyCoincidenceFlag = (_state.LyCompare == 0) && _state.Cycle >= 12;
-		}
-	}
-}
-
 void GbPpu::UpdateStatIrq()
 {
 	bool irqFlag = (
 		_state.LcdEnabled &&
 		((_state.LyCoincidenceFlag && (_state.Status & GbPpuStatusFlags::CoincidenceIrq)) ||
-		(_state.Mode == PpuMode::HBlank && (_state.Status & GbPpuStatusFlags::HBlankIrq)) ||
-		(_state.Mode == PpuMode::OamEvaluation && (_state.Status & GbPpuStatusFlags::OamIrq)) ||
-		(_state.Mode == PpuMode::VBlank && ((_state.Status & GbPpuStatusFlags::VBlankIrq) || (_state.Status & GbPpuStatusFlags::OamIrq))))
+		(_state.IrqMode == PpuMode::HBlank && (_state.Status & GbPpuStatusFlags::HBlankIrq)) ||
+		(_state.IrqMode == PpuMode::OamEvaluation && (_state.Status & GbPpuStatusFlags::OamIrq)) ||
+		(_state.IrqMode == PpuMode::VBlank && (_state.Status & GbPpuStatusFlags::VBlankIrq)))
 	);
 
 	if(irqFlag && !_state.StatIrqFlag) {
@@ -546,11 +647,7 @@ uint8_t GbPpu::Read(uint16_t addr)
 
 		case 0xFF42: return _state.ScrollY; //FF42 - SCY - Scroll Y (R/W)
 		case 0xFF43: return _state.ScrollX; //FF43 - SCX - Scroll X (R/W)
-		case 0xFF44:
-			//FF44 - LY - LCDC Y-Coordinate (R)
-			//On the last scanline (153), at cycle >= 4 (TODO: exact cycle varies by model) , the value 0 is returned instead of 153
-			return (_state.Scanline < 153 || _state.Cycle < 4) ? _state.Scanline : 0;
-
+		case 0xFF44: return _state.Ly; //FF44 - LY - LCDC Y-Coordinate (R)
 		case 0xFF45: return _state.LyCompare; //FF45 - LYC - LY Compare (R/W)
 		case 0xFF47: return _state.BgPalette; //FF47 - BGP - BG Palette Data (R/W) - Non CGB Mode Only
 		case 0xFF48: return _state.ObjPalette0; //FF48 - OBP0 - Object Palette 0 Data (R/W) - Non CGB Mode Only
@@ -575,7 +672,10 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					//Reset LCD to top of screen when it gets turned off
 					_state.Cycle = 0;
 					_state.Scanline = 0;
-					ChangeMode(PpuMode::HBlank);
+					_state.Ly = 0;
+					_state.LyForCompare = -1;
+					_state.Mode = PpuMode::HBlank;
+					_state.IrqMode = PpuMode::HBlank;
 
 					//Send a blank (white) frame
 					_lastFrameTime = _gameboy->GetCycleCount();
@@ -587,11 +687,15 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_dmaController->ProcessHdma();
 				} else {
 					_isFirstFrame = true;
-					_state.Cycle = 4;
+					_state.Cycle = -1;
 					_state.Scanline = 0;
+					_state.Ly = 0;
+					_state.LyForCompare = 0;
+					_state.IdleCycles = 0;
 					ResetRenderer();
-					ChangeMode(PpuMode::HBlank);
-					UpdateLyCoincidenceFlag();
+					_state.Mode = PpuMode::HBlank;
+					_state.IrqMode = PpuMode::HBlank;
+					_state.LyCoincidenceFlag = _state.LyCompare == _state.LyForCompare;
 					UpdateStatIrq();
 					
 					_console->ProcessEvent(EventType::StartFrame);
@@ -619,7 +723,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 
 		case 0xFF42: _state.ScrollY = value; break;
 		case 0xFF43: _state.ScrollX = value; break;
-		case 0xFF45: _state.LyCompare = value; break;
+		case 0xFF45: _state.LyCompare = value; _state.IdleCycles = 0; break;
 		case 0xFF47: _state.BgPalette = value; break;
 		case 0xFF48: _state.ObjPalette0 = value; break;
 		case 0xFF49: _state.ObjPalette1 = value; break;
@@ -634,7 +738,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 
 uint8_t GbPpu::ReadVram(uint16_t addr)
 {
-	if((int)_state.Mode <= (int)PpuMode::OamEvaluation) {
+	if(_state.Mode <= PpuMode::VBlank || (_state.Mode == PpuMode::OamEvaluation && _state.Cycle < 80)) {
 		return _vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)];
 	} else {
 		return 0xFF;
@@ -643,7 +747,7 @@ uint8_t GbPpu::ReadVram(uint16_t addr)
 
 void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 {
-	if((int)_state.Mode <= (int)PpuMode::OamEvaluation) {
+	if(_state.Mode <= PpuMode::OamEvaluation) {
 		_vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)] = value;
 	}
 }
@@ -651,10 +755,22 @@ void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 uint8_t GbPpu::ReadOam(uint8_t addr)
 {
 	if(addr < 0xA0) {
-		if((int)_state.Mode >= (int)PpuMode::OamEvaluation || _memoryManager->IsOamDmaRunning()) {
+		if(_memoryManager->IsOamDmaRunning()) {
 			return 0xFF;
+		}
+
+		if(_state.Scanline == 0 && _isFirstFrame) {
+			if(_state.Mode == PpuMode::HBlank) {
+				return _oam[addr];
+			} else {
+				return 0xFF;
+			}
 		} else {
-			return _oam[addr];
+			if(_state.Mode == PpuMode::VBlank || (_state.Mode == PpuMode::HBlank && _state.Cycle != 3)) {
+				return _oam[addr];
+			} else {
+				return 0xFF;
+			}
 		}
 	}
 	return 0;
@@ -664,10 +780,22 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 {
 	//During DMA or rendering/oam evaluation, ignore writes to OAM
 	//The DMA controller is always allowed to write to OAM (presumably the PPU can't read OAM during that time? TODO implement)
-	//On the DMG, there is apparently a ~4 clock gap (80 to 84) between OAM evaluation & rendering where writing is allowed?
+	//On the DMG, there is a 4 clock gap (80 to 83) between OAM evaluation & rendering where writing is allowed
 	if(addr < 0xA0) {
-		if(forDma || ((int)_state.Mode <= (int)PpuMode::VBlank && !_memoryManager->IsOamDmaRunning()) || (_state.Cycle >= 80 && _state.Cycle < 84)) {
+		if(forDma) {
 			_oam[addr] = value;
+		} else if(_memoryManager->IsOamDmaRunning()) {
+			return;
+		}
+
+		if(_state.Scanline == 0 && _isFirstFrame) {
+			if(_state.Mode == PpuMode::HBlank && _state.Cycle != 77 && _state.Cycle != 78) {
+				_oam[addr] = value;
+			}
+		} else {
+			if(_state.Mode <= PpuMode::VBlank || (_state.Cycle >= 80 && _state.Cycle < 84)) {
+				_oam[addr] = value;
+			}
 		}
 	}
 }
@@ -744,7 +872,8 @@ void GbPpu::Serialize(Serializer& s)
 		_state.Status, _state.FrameCount, _lastFrameTime, _state.LyCoincidenceFlag,
 		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
 		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank, _state.CgbEnabled,
-		_latchWindowX, _latchWindowY, _latchWindowEnabled, _windowCounter, _isFirstFrame
+		_latchWindowX, _latchWindowY, _latchWindowEnabled, _windowCounter, _isFirstFrame, _rendererIdle,
+		_state.IdleCycles, _state.Ly, _state.LyForCompare, _state.IrqMode
 	);
 
 	s.StreamArray(_state.CgbBgPalettes, 4 * 8);

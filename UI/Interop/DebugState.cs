@@ -708,15 +708,21 @@ namespace Mesen.GUI
 		HBlank,
 		VBlank,
 		OamEvaluation,
-		Drawing
+		Drawing,
+		NoIrq
 	}
 
 	public struct GbPpuState
 	{
 		public byte Scanline;
 		public UInt16 Cycle;
+		public UInt16 IdleCycles;
 		public PpuMode Mode;
+		public PpuMode IrqMode;
 		[MarshalAs(UnmanagedType.I1)] public bool StatIrqFlag;
+
+		public byte Ly;
+		public Int16 LyForCompare;
 
 		public byte LyCompare;
 		[MarshalAs(UnmanagedType.I1)] public bool LyCoincidenceFlag;

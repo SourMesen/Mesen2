@@ -355,20 +355,28 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 void GbCpu::IncCycleCount()
 {
 	_memoryManager->Exec();
+	_memoryManager->Exec();
+}
+
+void GbCpu::HalfCycle()
+{
+	_memoryManager->Exec();
 }
 
 uint8_t GbCpu::ReadOpCode()
 {
-	IncCycleCount();
+	HalfCycle();
 	uint8_t value = _memoryManager->Read(_state.PC, MemoryOperationType::ExecOpCode);
+	HalfCycle();
 	_state.PC++;
 	return value;
 }
 
 uint8_t GbCpu::ReadCode()
 {
-	IncCycleCount();
+	HalfCycle();
 	uint8_t value = _memoryManager->Read(_state.PC, MemoryOperationType::ExecOperand);
+	HalfCycle();
 	_state.PC++;
 	return value;
 }
@@ -382,14 +390,17 @@ uint16_t GbCpu::ReadCodeWord()
 
 uint8_t GbCpu::Read(uint16_t addr)
 {
-	IncCycleCount();
-	return _memoryManager->Read(addr, MemoryOperationType::Read);
+	HalfCycle();
+	uint8_t value = _memoryManager->Read(addr, MemoryOperationType::Read);
+	HalfCycle();
+	return value;
 }
 
 void GbCpu::Write(uint16_t addr, uint8_t value)
 {
-	IncCycleCount();
+	HalfCycle();
 	_memoryManager->Write(addr, value);
+	HalfCycle();
 }
 
 bool GbCpu::CheckFlag(uint8_t flag)

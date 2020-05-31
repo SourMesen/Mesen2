@@ -298,8 +298,21 @@ namespace Mesen.GUI.Debugger
 			mnuStepOver.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.StepOver); };
 			mnuStepOut.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.StepOut); };
 			mnuRunPpuCycle.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.PpuStep); };
-			mnuRunScanline.Click += (s, e) => { DebugApi.Step(_cpuType, 341, StepType.PpuStep); };
-			mnuRunOneFrame.Click += (s, e) => { DebugApi.Step(_cpuType, 341 * 262, StepType.PpuStep); }; //TODO ntsc/pal
+			mnuRunScanline.Click += (s, e) => {
+				if(_cpuType == CpuType.Gameboy) {
+					DebugApi.Step(_cpuType, 456, StepType.PpuStep);
+				} else {
+					DebugApi.Step(_cpuType, 341, StepType.PpuStep);
+				}
+			};
+			mnuRunOneFrame.Click += (s, e) => {
+				if(_cpuType == CpuType.Gameboy) {
+					DebugApi.Step(_cpuType, 456*154, StepType.PpuStep);
+				} else {
+					//TODO ntsc/pal
+					DebugApi.Step(_cpuType, 341 * 262, StepType.PpuStep);
+				}
+			};
 			mnuContinue.Click += (s, e) => { DebugApi.ResumeExecution(); };
 			mnuBreak.Click += (s, e) => { DebugApi.Step(_cpuType, 1, StepType.Step); };
 

@@ -23,11 +23,13 @@ GbTimer::~GbTimer()
 
 void GbTimer::Exec()
 {
-	_state.Reloaded = false;
-	if(_state.NeedReload) {
-		ReloadCounter();
+	if((_state.Divider & 0x03) == 2) {
+		_state.Reloaded = false;
+		if(_state.NeedReload) {
+			ReloadCounter();
+		}
 	}
-	SetDivider(_state.Divider + 4);
+	SetDivider(_state.Divider + 2);
 }
 
 void GbTimer::ReloadCounter()

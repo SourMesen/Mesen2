@@ -30,6 +30,7 @@ public:
 	void ExecOpCode(uint8_t opCode);
 
 	__forceinline void IncCycleCount();
+	__forceinline void HalfCycle();
 	__forceinline uint8_t ReadOpCode();
 	__forceinline uint8_t ReadCode();
 	__forceinline uint16_t ReadCodeWord();

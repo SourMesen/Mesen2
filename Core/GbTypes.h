@@ -87,7 +87,8 @@ enum class PpuMode
 	HBlank,
 	VBlank,
 	OamEvaluation,
-	Drawing
+	Drawing,
+	NoIrq,
 };
 
 namespace GbPpuStatusFlags
@@ -152,8 +153,13 @@ struct GbPpuState
 {
 	uint8_t Scanline;
 	uint16_t Cycle;
+	uint16_t IdleCycles;
 	PpuMode Mode;
+	PpuMode IrqMode;
 	bool StatIrqFlag;
+	
+	uint8_t Ly;
+	int16_t LyForCompare;
 
 	uint8_t LyCompare;
 	bool LyCoincidenceFlag;

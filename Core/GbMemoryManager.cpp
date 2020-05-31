@@ -74,11 +74,13 @@ void GbMemoryManager::RefreshMappings()
 
 void GbMemoryManager::Exec()
 {
-	_state.CycleCount += 4;
-	_state.ApuCycleCount += _state.CgbHighSpeed ? 2 : 4;
+	_state.CycleCount += 2;
+	_state.ApuCycleCount += _state.CgbHighSpeed ? 1 : 2;
 	_timer->Exec();
 	_ppu->Exec();
-	_dmaController->Exec();
+	if((_state.CycleCount & 0x03) == 0) {
+		_dmaController->Exec();
+	}
 
 	if(_state.SerialBitCount && (_state.CycleCount & 0x1FF) == 0) {
 		_state.SerialData = (_state.SerialData << 1) | 0x01;

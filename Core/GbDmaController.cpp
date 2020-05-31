@@ -110,16 +110,18 @@ void GbDmaController::ProcessDmaBlock()
 	//TODO check invalid dma sources/etc.
 	//4 cycles for setup
 	_memoryManager->Exec();
+	_memoryManager->Exec();
 
 	for(int i = 0; i < 16; i++) {
 		uint16_t dst = 0x8000 | ((_state.CgbDmaDest + i) & 0x1FFF);
 
 		//2 or 4 cycles per byte transfered (2x more cycles in high speed mode - effective speed is the same in both modes
-		if(_memoryManager->IsHighSpeed() || (i & 0x01)) {
-			//TODO: Not perfectly accurate (in "slow" mode mode both occur on the same cycle)
+		_memoryManager->Exec();
+		uint8_t value = _memoryManager->Read(_state.CgbDmaSource + i, MemoryOperationType::DmaRead);
+		if(_memoryManager->IsHighSpeed()) {
 			_memoryManager->Exec();
 		}
-		_memoryManager->Write(dst, _memoryManager->Read(_state.CgbDmaSource + i, MemoryOperationType::DmaRead));
+		_memoryManager->Write(dst, value);
 	}
 
 	//Source/Dest/Length are all modified by the DMA process and keep their last value after DMA completes

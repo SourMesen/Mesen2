@@ -187,7 +187,7 @@ namespace Mesen.GUI.Debugger
 				new RegEntry("", "LCD Registers", null),
 				new RegEntry("$FF42", "Scroll Y (SCY)", ppu.ScrollY, Format.X8),
 				new RegEntry("$FF43", "Scroll X (SCX)", ppu.ScrollX, Format.X8),
-				new RegEntry("$FF44", "Y-Coordinate (LY)", (ppu.Scanline < 153 || ppu.Cycle < 4) ? ppu.Scanline : 0, Format.X8),
+				new RegEntry("$FF44", "Y-Coordinate (LY)", ppu.Ly, Format.X8),
 				new RegEntry("$FF45", "LY Compare (LYC)", ppu.LyCompare, Format.X8),
 				new RegEntry("$FF47", "BG Palette (BGP)", ppu.BgPalette, Format.X8),
 				new RegEntry("$FF48", "OBJ Palette 0 (OBP0)", ppu.ObjPalette0, Format.X8),

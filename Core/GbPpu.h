@@ -49,10 +49,14 @@ private:
 	uint8_t _spriteIndexes[10] = {};
 
 	bool _isFirstFrame = true;
+	bool _rendererIdle = false;
 
 	__forceinline void ProcessPpuCycle();
 
 	__forceinline void ExecCycle();
+	__forceinline void ProcessVblankScanline();
+	void ProcessFirstScanlineAfterPowerOn();
+	__forceinline void ProcessVisibleScanline();
 	__forceinline void RunDrawCycle();
 	__forceinline void RunSpriteEvaluation();
 	void ResetRenderer();
@@ -62,9 +66,7 @@ private:
 	__forceinline void PushSpriteToPixelFifo();
 	__forceinline void PushTileToPixelFifo();
 
-	__forceinline void ChangeMode(PpuMode mode);
-	__forceinline void UpdateLyCoincidenceFlag();
-	__forceinline void UpdateStatIrq();
+	void UpdateStatIrq();
 
 	void WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value);
 
