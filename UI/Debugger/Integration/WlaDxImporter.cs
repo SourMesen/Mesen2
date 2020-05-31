@@ -76,9 +76,9 @@ namespace Mesen.GUI.Debugger.Integration
 			string basePath = Path.GetDirectoryName(path);
 			string[] lines = File.ReadAllLines(path);
 
-			Regex labelRegex = new Regex(@"^([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([^\s]*)", RegexOptions.Compiled);
+			Regex labelRegex = new Regex(@"^([0-9a-fA-F]{2,4}):([0-9a-fA-F]{4}) ([^\s]*)", RegexOptions.Compiled);
 			Regex fileRegex = new Regex(@"^([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
-			Regex addrRegex = new Regex(@"^([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
+			Regex addrRegex = new Regex(@"^([0-9a-fA-F]{2,4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 
 			Dictionary<string, CodeLabel> labels = new Dictionary<string, CodeLabel>();
 
