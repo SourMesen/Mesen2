@@ -195,6 +195,8 @@ void GbPpu::ProcessVblankScanline()
 
 			if(_state.Scanline == 154) {
 				_state.Scanline = 0;
+				_state.Ly = 0;
+				_state.LyForCompare = 0;
 				_console->ProcessEvent(EventType::StartFrame);
 				if(_console->IsDebugging()) {
 					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
@@ -209,6 +211,13 @@ void GbPpu::ProcessVblankScanline()
 
 void GbPpu::ProcessFirstScanlineAfterPowerOn()
 {
+	if(_drawnPixels == 160) {
+		//IRQ flag for Hblank is 1 cycle late compared to the mode register
+		_state.IrqMode = PpuMode::HBlank;
+		_drawnPixels = 0;
+		_state.IdleCycles = 448 - _state.Cycle - 1;
+	}
+
 	switch(_state.Cycle) {
 		case 1:
 			_state.IrqMode = PpuMode::NoIrq;
@@ -250,11 +259,11 @@ void GbPpu::ProcessVisibleScanline()
 	switch(_state.Cycle) {
 		case 3:
 			_state.Ly = _state.Scanline;
-			_state.LyForCompare = -1;
 
 			if(_state.Scanline > 0) {
 				//On scanlines 1-143, the OAM IRQ fires 1 cycle early
 				_state.IrqMode = PpuMode::OamEvaluation;
+				_state.LyForCompare = -1;
 			} else {
 				//On scanline 0, hblank gets set for 1 cycle here
 				_state.Mode = PpuMode::HBlank;
@@ -673,9 +682,8 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.Cycle = 0;
 					_state.Scanline = 0;
 					_state.Ly = 0;
-					_state.LyForCompare = -1;
+					_state.LyForCompare = 0;
 					_state.Mode = PpuMode::HBlank;
-					_state.IrqMode = PpuMode::HBlank;
 
 					//Send a blank (white) frame
 					_lastFrameTime = _gameboy->GetCycleCount();
@@ -688,13 +696,8 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 				} else {
 					_isFirstFrame = true;
 					_state.Cycle = -1;
-					_state.Scanline = 0;
-					_state.Ly = 0;
-					_state.LyForCompare = 0;
 					_state.IdleCycles = 0;
 					ResetRenderer();
-					_state.Mode = PpuMode::HBlank;
-					_state.IrqMode = PpuMode::HBlank;
 					_state.LyCoincidenceFlag = _state.LyCompare == _state.LyForCompare;
 					UpdateStatIrq();
 					
