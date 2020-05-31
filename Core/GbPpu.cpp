@@ -274,7 +274,13 @@ void GbPpu::ProcessVisibleScanline()
 			_spriteCount = 0;
 			_state.LyForCompare = _state.Scanline;
 			_state.Mode = PpuMode::OamEvaluation;
-			_state.IrqMode = PpuMode::OamEvaluation; //TODO set to noirq?
+			_state.IrqMode = PpuMode::OamEvaluation;
+			break;
+
+		case 5:
+			//Turning on OAM IRQs in the middle of evaluation has no effect?
+			//Or is this a patch to get the proper behavior for the STAT write bug?
+			_state.IrqMode = PpuMode::NoIrq;
 			break;
 
 		case 84:
@@ -720,7 +726,14 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 0xFF41:
-			_state.Status = value & 0xF8; 
+			if(!_gameboy->IsCgb()) {
+				//STAT write bug (DMG ONLY)
+				//Writing to STAT causes all IRQ types to be turned on for a single cycle
+				_state.Status = 0xF8 | (_state.Status & 0x07);
+				UpdateStatIrq();
+			}
+
+			_state.Status = value & 0xF8;
 			UpdateStatIrq();
 			break;
 
