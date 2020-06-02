@@ -412,3 +412,67 @@ void PpuTools::GetGameboyTilemap(uint8_t* vram, GbPpuState& state, uint16_t offs
 		}
 	}
 }
+
+void PpuTools::GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, uint8_t* vram, uint8_t* oamRam, uint32_t* outBuffer)
+{
+	std::fill(outBuffer, outBuffer + 256 * 256, 0xFF333311);
+	for(int i = 16; i < 16 + 144; i++) {
+		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, 0xFF888866);
+	}
+
+	bool isCgb = state.CgbEnabled;
+	bool largeSprites = state.LargeSprites;
+	uint8_t height = largeSprites ? 16 : 8;
+	constexpr uint8_t width = 8;
+
+	uint8_t filled[256];
+	for(int row = 0; row < 256; row++) {
+		std::fill(filled, filled + 256, 0xFF);
+
+		for(int i = 0; i < 0xA0; i += 4) {
+			uint8_t sprY = oamRam[i];
+			if(sprY > row || sprY + height <= row) {
+				continue;
+			}
+
+			int y = row - sprY;
+			uint8_t sprX = oamRam[i + 1];
+			uint8_t tileIndex = oamRam[i + 2];
+			uint8_t attributes = oamRam[i + 3];
+
+			uint16_t tileBank = isCgb ? ((attributes & 0x08) ? 0x2000 : 0x0000) : 0;
+			uint8_t palette = isCgb ? (attributes & 0x07) << 2 : 0;
+			bool hMirror = (attributes & 0x20) != 0;
+			bool vMirror = (attributes & 0x40) != 0;
+
+			if(largeSprites) {
+				tileIndex &= 0xFE;
+			}
+
+			uint16_t tileStart = tileIndex * 16;
+			tileStart |= tileBank;
+
+			uint16_t pixelStart = tileStart + (vMirror ? (height - 1 - y) : y) * 2;
+			for(int x = 0; x < width; x++) {
+				if(sprX + x >= 256) {
+					break;
+				} else if(filled[sprX + x] < sprX) {
+					continue;
+				}
+
+				uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
+				uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift);
+
+				if(color > 0) {
+					if(!isCgb) {
+						color = (((attributes & 0x10) ? state.ObjPalette1 : state.ObjPalette0) >> (color * 2)) & 0x03;
+					}
+
+					uint32_t outOffset = (row * 256) + sprX + x;
+					outBuffer[outOffset] = DefaultVideoFilter::ToArgb(state.CgbObjPalettes[palette + color]);
+					filled[sprX + x] = sprX;
+				}
+			}
+		}
+	}
+}

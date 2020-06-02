@@ -25,6 +25,8 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		public bool VerticalMirror;
 		public bool UseSecondTable;
 
+		private bool GameboyMode;
+
 		public Rectangle GetBounds()
 		{
 			return new Rectangle(X, Y, Width, Height);
@@ -32,6 +34,10 @@ namespace Mesen.GUI.Debugger.PpuViewer
 
 		public bool IsVisible()
 		{
+			if(GameboyMode) {
+				return !(X == 0 || X >= 168 || Y+Height <= 16 || Y >= 160);
+			}
+
 			if(X + Width <= 0 || X > 255) {
 				return false;
 			}
@@ -42,6 +48,33 @@ namespace Mesen.GUI.Debugger.PpuViewer
 			}
 
 			return true;
+		}
+
+		public static SpriteInfo GetGbSpriteInfo(byte[] oamRam, int spriteIndex, bool largeSprite, bool cgbEnabled)
+		{
+			SpriteInfo sprite = new SpriteInfo();
+			int addr = spriteIndex << 2;
+			sprite.Index = spriteIndex;
+			sprite.Y = oamRam[addr];
+
+			sprite.LargeSprite = largeSprite;
+			sprite.Height = largeSprite ? 16 : 8;
+
+			sprite.Width = 8;
+			sprite.X = oamRam[addr + 1];
+			sprite.TileIndex = oamRam[addr + 2];
+
+			byte attributes = oamRam[addr + 3];
+			sprite.Flags = attributes;
+			sprite.UseSecondTable = cgbEnabled ? ((attributes & 0x08) != 0) : false;
+			sprite.Palette = cgbEnabled ? (attributes & 0x07) : ((attributes & 0x10) >> 4);
+			sprite.Priority = (attributes & 0x80) != 0 ? 1 : 0;
+			sprite.HorizontalMirror = (attributes & 0x20) != 0;
+			sprite.VerticalMirror = (attributes & 0x40) != 0;
+			
+			sprite.GameboyMode = true;
+
+			return sprite;
 		}
 
 		public static SpriteInfo GetSpriteInfo(byte[] oamRam, int oamMode, int spriteIndex)

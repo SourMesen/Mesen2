@@ -16,8 +16,10 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		public event SpriteSelectedHandler SpriteSelected;
 
 		private List<SpriteInfo> _sprites;
+		private DebugState _state;
 		private byte[] _oamRam;
 		private int _oamMode;
+		private bool _isGameboyMode;
 		private int _selectedIndex;
 		private int _sortOrder = 1;
 		private DateTime _lastRefresh = DateTime.MinValue;
@@ -63,14 +65,16 @@ namespace Mesen.GUI.Debugger.PpuViewer
 			}
 		}
 
-		public void SetData(byte[] oamRam, int oamMode)
+		public void SetData(DebugState state, byte[] oamRam, int oamMode, bool gameboyMode)
 		{
 			if(_oamRam == oamRam) {
 				return;
 			}
 
+			_state = state;
 			_oamRam = oamRam;
 			_oamMode = oamMode;
+			_isGameboyMode = gameboyMode;
 			if((DateTime.Now - _lastRefresh).TotalMilliseconds > 200) {
 				RefreshList();
 			}
@@ -79,8 +83,14 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private void RefreshList()
 		{
 			List<SpriteInfo> sprites = new List<SpriteInfo>();
-			for(int i = 0; i < 128; i++) {
-				SpriteInfo sprite = SpriteInfo.GetSpriteInfo(_oamRam, _oamMode, i);
+			for(int i = 0; i < (_isGameboyMode ? 40 : 128); i++) {
+				SpriteInfo sprite;
+				if(_isGameboyMode) {
+					sprite = SpriteInfo.GetGbSpriteInfo(_oamRam, i, _state.Gameboy.Ppu.LargeSprites, _state.Gameboy.Ppu.CgbEnabled);
+				} else {
+					sprite = SpriteInfo.GetSpriteInfo(_oamRam, _state.Ppu.OamMode, i);
+				}
+
 				if(!chkHideOffscreenSprites.Checked || sprite.IsVisible()) {
 					sprites.Add(sprite);
 				}
