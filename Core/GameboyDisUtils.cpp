@@ -10,8 +10,8 @@
 constexpr const char* _opTemplate[256] = {
 	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (b), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",
 	"STOP",			"LD DE, e",		"LD (DE), A",	"INC DE",	"INC D",			"DEC D",			"LD D, d",		"RLA",		"JR r",			"ADD HL, DE",	"LD A, (DE)",	"DEC DE",	"INC E",		"DEC E",		"LD E, d",		"RRA",
-	"JR NZ, r",		"LD HL, e",		"LD (HL), A",	"INC HL",	"INC H",			"DEC H",			"LD H, d",		"DAA",		"JR Z, r",		"ADD HL, HL",	"LD A, (HL)",	"DEC HL",	"INC L",		"DEC L",		"LD L, d",		"CPL",
-	"JR NC, r",		"LD SP, e",		"LD (HL), A",	"INC SP",	"INC (HL)",		"DEC (HL)",		"LD (HL), d",	"SCF",		"JR C, r",		"ADD HL, SP",	"LD A, (HL)",	"DEC SP",	"INC A",		"DEC A",		"LD A, d",		"CCF",
+	"JR NZ, r",		"LD HL, e",		"LD (HL+), A",	"INC HL",	"INC H",			"DEC H",			"LD H, d",		"DAA",		"JR Z, r",		"ADD HL, HL",	"LD A, (HL+)",	"DEC HL",	"INC L",		"DEC L",		"LD L, d",		"CPL",
+	"JR NC, r",		"LD SP, e",		"LD (HL-), A",	"INC SP",	"INC (HL)",		"DEC (HL)",		"LD (HL), d",	"SCF",		"JR C, r",		"ADD HL, SP",	"LD A, (HL-)",	"DEC SP",	"INC A",		"DEC A",		"LD A, d",		"CCF",
 	"LD B, B",		"LD B, C",		"LD B, D",		"LD B, E",	"LD B, H",		"LD B, L",		"LD B, (HL)",	"LD B, A",	"LD C, B",		"LD C, C",		"LD C, D",		"LD C, E",	"LD C, H",	"LD C, L",	"LD C, (HL)",	"LD C, A",
 	"LD D, B",		"LD D, C",		"LD D, D",		"LD D, E",	"LD D, H",		"LD D, L",		"LD D, (HL)",	"LD D, A",	"LD E, B",		"LD E, C",		"LD E, D",		"LD E, E",	"LD E, H",	"LD E, L",	"LD E, (HL)",	"LD E, A",
 	"LD H, B",		"LD H, C",		"LD H, D",		"LD H, E",	"LD H, H",		"LD H, L",		"LD H, (HL)",	"LD H, A",	"LD L, B",		"LD L, C",		"LD L, D",		"LD L, E",	"LD L, H",	"LD L, L",	"LD L, (HL)",	"LD L, A",
@@ -88,14 +88,17 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 	int i = 0;
 	while(op[i]) {
 		switch(op[i]) {
+			//Relative jumps
 			case 'r': getOperand((uint16_t)(memoryAddr + (int8_t)byteCode[1] + GetOpSize(byteCode[0]))); break;
 
+			//Jump addresses, memory addresses
 			case 'a': getOperand((uint16_t)(byteCode[1] | (byteCode[2] << 8))); break;
 			case 'b': str.WriteAll('$', HexUtilities::ToHex(byteCode[1])); break;
 			case 'c': str.WriteAll('$', HexUtilities::ToHex((uint16_t)(0xFF00 | byteCode[1]))); break;
 
-			case 'd': str.WriteAll("#$", HexUtilities::ToHex(byteCode[1])); break;
-			case 'e': str.WriteAll("#$", HexUtilities::ToHex((uint16_t)(byteCode[1] | (byteCode[2] << 8)))); break;
+			//Immediate values
+			case 'd': str.WriteAll("$", HexUtilities::ToHex(byteCode[1])); break;
+			case 'e': str.WriteAll("$", HexUtilities::ToHex((uint16_t)(byteCode[1] | (byteCode[2] << 8)))); break;
 
 			default: str.Write(op[i]); break;
 		}
