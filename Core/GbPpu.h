@@ -78,8 +78,7 @@ public:
 	GbPpuState GetState();
 	uint16_t* GetEventViewerBuffer();
 	uint16_t* GetPreviousEventViewerBuffer();
-	void GetPalette(uint16_t out[4], uint8_t palCfg);
-	
+
 	uint32_t GetFrameCount();
 	bool IsLcdEnabled();
 	PpuMode GetMode();

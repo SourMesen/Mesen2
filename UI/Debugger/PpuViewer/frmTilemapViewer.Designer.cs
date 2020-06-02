@@ -53,6 +53,8 @@
 			this.chkVerticalMirror = new System.Windows.Forms.CheckBox();
 			this.txtMapNumber = new System.Windows.Forms.TextBox();
 			this.txtValue = new System.Windows.Forms.TextBox();
+			this.lblTileAddress = new System.Windows.Forms.Label();
+			this.txtTileAddress = new System.Windows.Forms.TextBox();
 			this.grpLayerInfo = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
 			this.lblMapAddress = new System.Windows.Forms.Label();
@@ -85,8 +87,6 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
-			this.lblTileAddress = new System.Windows.Forms.Label();
-			this.txtTileAddress = new System.Windows.Forms.TextBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.grpTileInfo.SuspendLayout();
@@ -252,10 +252,10 @@
 			this.tableLayoutPanel4.RowCount = 13;
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -268,7 +268,7 @@
 			// 
 			// txtPalette
 			// 
-			this.txtPalette.Location = new System.Drawing.Point(77, 179);
+			this.txtPalette.Location = new System.Drawing.Point(77, 169);
 			this.txtPalette.Name = "txtPalette";
 			this.txtPalette.ReadOnly = true;
 			this.txtPalette.Size = new System.Drawing.Size(30, 20);
@@ -276,18 +276,18 @@
 			// 
 			// txtTileNumber
 			// 
-			this.txtTileNumber.Location = new System.Drawing.Point(77, 127);
+			this.txtTileNumber.Location = new System.Drawing.Point(77, 117);
 			this.txtTileNumber.Name = "txtTileNumber";
 			this.txtTileNumber.ReadOnly = true;
-			this.txtTileNumber.Size = new System.Drawing.Size(42, 20);
+			this.txtTileNumber.Size = new System.Drawing.Size(52, 20);
 			this.txtTileNumber.TabIndex = 13;
 			// 
 			// txtAddress
 			// 
-			this.txtAddress.Location = new System.Drawing.Point(77, 65);
+			this.txtAddress.Location = new System.Drawing.Point(77, 60);
 			this.txtAddress.Name = "txtAddress";
 			this.txtAddress.ReadOnly = true;
-			this.txtAddress.Size = new System.Drawing.Size(43, 20);
+			this.txtAddress.Size = new System.Drawing.Size(52, 20);
 			this.txtAddress.TabIndex = 11;
 			// 
 			// txtPosition
@@ -322,7 +322,7 @@
 			// 
 			this.lblAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblAddress.AutoSize = true;
-			this.lblAddress.Location = new System.Drawing.Point(3, 68);
+			this.lblAddress.Location = new System.Drawing.Point(3, 63);
 			this.lblAddress.Name = "lblAddress";
 			this.lblAddress.Size = new System.Drawing.Size(48, 13);
 			this.lblAddress.TabIndex = 2;
@@ -332,7 +332,7 @@
 			// 
 			this.lblValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblValue.AutoSize = true;
-			this.lblValue.Location = new System.Drawing.Point(3, 94);
+			this.lblValue.Location = new System.Drawing.Point(3, 89);
 			this.lblValue.Name = "lblValue";
 			this.lblValue.Size = new System.Drawing.Size(37, 13);
 			this.lblValue.TabIndex = 3;
@@ -342,7 +342,7 @@
 			// 
 			this.lblTileNumber.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblTileNumber.AutoSize = true;
-			this.lblTileNumber.Location = new System.Drawing.Point(3, 130);
+			this.lblTileNumber.Location = new System.Drawing.Point(3, 120);
 			this.lblTileNumber.Name = "lblTileNumber";
 			this.lblTileNumber.Size = new System.Drawing.Size(67, 13);
 			this.lblTileNumber.TabIndex = 4;
@@ -352,7 +352,7 @@
 			// 
 			this.lblPalette.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblPalette.AutoSize = true;
-			this.lblPalette.Location = new System.Drawing.Point(3, 182);
+			this.lblPalette.Location = new System.Drawing.Point(3, 172);
 			this.lblPalette.Name = "lblPalette";
 			this.lblPalette.Size = new System.Drawing.Size(43, 13);
 			this.lblPalette.TabIndex = 5;
@@ -363,7 +363,7 @@
 			this.chkPriorityFlag.AutoCheck = false;
 			this.chkPriorityFlag.AutoSize = true;
 			this.tableLayoutPanel4.SetColumnSpan(this.chkPriorityFlag, 2);
-			this.chkPriorityFlag.Location = new System.Drawing.Point(3, 202);
+			this.chkPriorityFlag.Location = new System.Drawing.Point(3, 192);
 			this.chkPriorityFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.chkPriorityFlag.Name = "chkPriorityFlag";
 			this.chkPriorityFlag.Size = new System.Drawing.Size(57, 17);
@@ -376,7 +376,7 @@
 			this.chkHorizontalMirror.AutoCheck = false;
 			this.chkHorizontalMirror.AutoSize = true;
 			this.tableLayoutPanel4.SetColumnSpan(this.chkHorizontalMirror, 2);
-			this.chkHorizontalMirror.Location = new System.Drawing.Point(3, 219);
+			this.chkHorizontalMirror.Location = new System.Drawing.Point(3, 209);
 			this.chkHorizontalMirror.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.chkHorizontalMirror.Name = "chkHorizontalMirror";
 			this.chkHorizontalMirror.Size = new System.Drawing.Size(102, 17);
@@ -389,7 +389,7 @@
 			this.chkVerticalMirror.AutoCheck = false;
 			this.chkVerticalMirror.AutoSize = true;
 			this.tableLayoutPanel4.SetColumnSpan(this.chkVerticalMirror, 2);
-			this.chkVerticalMirror.Location = new System.Drawing.Point(3, 236);
+			this.chkVerticalMirror.Location = new System.Drawing.Point(3, 226);
 			this.chkVerticalMirror.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
 			this.chkVerticalMirror.Name = "chkVerticalMirror";
 			this.chkVerticalMirror.Size = new System.Drawing.Size(90, 17);
@@ -407,11 +407,29 @@
 			// 
 			// txtValue
 			// 
-			this.txtValue.Location = new System.Drawing.Point(77, 91);
+			this.txtValue.Location = new System.Drawing.Point(77, 86);
 			this.txtValue.Name = "txtValue";
 			this.txtValue.ReadOnly = true;
-			this.txtValue.Size = new System.Drawing.Size(43, 20);
+			this.txtValue.Size = new System.Drawing.Size(52, 20);
 			this.txtValue.TabIndex = 12;
+			// 
+			// lblTileAddress
+			// 
+			this.lblTileAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblTileAddress.AutoSize = true;
+			this.lblTileAddress.Location = new System.Drawing.Point(3, 146);
+			this.lblTileAddress.Name = "lblTileAddress";
+			this.lblTileAddress.Size = new System.Drawing.Size(68, 13);
+			this.lblTileAddress.TabIndex = 15;
+			this.lblTileAddress.Text = "Tile Address:";
+			// 
+			// txtTileAddress
+			// 
+			this.txtTileAddress.Location = new System.Drawing.Point(77, 143);
+			this.txtTileAddress.Name = "txtTileAddress";
+			this.txtTileAddress.ReadOnly = true;
+			this.txtTileAddress.Size = new System.Drawing.Size(52, 20);
+			this.txtTileAddress.TabIndex = 16;
 			// 
 			// grpLayerInfo
 			// 
@@ -724,24 +742,6 @@
 			this.mnuZoomOut.Size = new System.Drawing.Size(176, 22);
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
-			// 
-			// lblTileAddress
-			// 
-			this.lblTileAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.lblTileAddress.AutoSize = true;
-			this.lblTileAddress.Location = new System.Drawing.Point(3, 156);
-			this.lblTileAddress.Name = "lblTileAddress";
-			this.lblTileAddress.Size = new System.Drawing.Size(68, 13);
-			this.lblTileAddress.TabIndex = 15;
-			this.lblTileAddress.Text = "Tile Address:";
-			// 
-			// txtTileAddress
-			// 
-			this.txtTileAddress.Location = new System.Drawing.Point(77, 153);
-			this.txtTileAddress.Name = "txtTileAddress";
-			this.txtTileAddress.ReadOnly = true;
-			this.txtTileAddress.Size = new System.Drawing.Size(42, 20);
-			this.txtTileAddress.TabIndex = 16;
 			// 
 			// frmTilemapViewer
 			// 

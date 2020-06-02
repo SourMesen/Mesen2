@@ -7,9 +7,7 @@
 #include "MemoryManager.h"
 #include "NotificationManager.h"
 #include "DefaultVideoFilter.h"
-#include "Gameboy.h"
 #include "GbTypes.h"
-#include "GbPpu.h"
 
 PpuTools::PpuTools(Console *console, Ppu *ppu)
 {
@@ -374,16 +372,11 @@ void PpuTools::UpdateViewers(uint16_t scanline, uint16_t cycle)
 	}
 }
 
-void PpuTools::GetGameboyTilemap(uint8_t* vram, uint16_t offset, uint32_t* outBuffer)
+void PpuTools::GetGameboyTilemap(uint8_t* vram, GbPpuState& state, uint16_t offset, uint32_t* outBuffer)
 {
-	Gameboy* gameboy = _console->GetCartridge()->GetGameboy();
-	GbState state = gameboy->GetState();
-	bool isCgb = state.Type == GbType::Cgb;
+	bool isCgb = state.CgbEnabled;
 
-	uint16_t palette[4];
-	gameboy->GetPpu()->GetPalette(palette, state.Ppu.BgPalette);
-
-	uint16_t baseTile = state.Ppu.BgTileSelect ? 0 : 0x1000;
+	uint16_t baseTile = state.BgTileSelect ? 0 : 0x1000;
 
 	std::fill(outBuffer, outBuffer + 1024*256, 0xFFFFFFFF);
 
@@ -413,11 +406,7 @@ void PpuTools::GetGameboyTilemap(uint8_t* vram, uint16_t offset, uint32_t* outBu
 					uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
 					uint8_t color = GetTilePixelColor(vram, vramMask, 2, pixelStart, shift);
 
-					if(isCgb) {
-						outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = DefaultVideoFilter::ToArgb(state.Ppu.CgbBgPalettes[bgPalette + color]);
-					} else if(color != 0) {
-						outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = DefaultVideoFilter::ToArgb(palette[color]);
-					}					
+					outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = DefaultVideoFilter::ToArgb(state.CgbBgPalettes[bgPalette + color]);
 				}
 			}
 		}

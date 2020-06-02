@@ -591,14 +591,6 @@ void GbPpu::UpdateStatIrq()
 	_state.StatIrqFlag = irqFlag;
 }
 
-void GbPpu::GetPalette(uint16_t out[4], uint8_t palCfg)
-{
-	out[0] = bwRgbPalette[palCfg & 0x03];
-	out[1] = bwRgbPalette[(palCfg >> 2) & 0x03];
-	out[2] = bwRgbPalette[(palCfg >> 4) & 0x03];
-	out[3] = bwRgbPalette[(palCfg >> 6) & 0x03];
-}
-
 uint32_t GbPpu::GetFrameCount()
 {
 	return _state.FrameCount;
