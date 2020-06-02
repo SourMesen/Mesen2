@@ -154,7 +154,16 @@ namespace Mesen.GUI.Debugger.Workspace
 				//Assume WLA-DX symbol files
 				new WlaDxImporter().Import(symPath, silent);
 			} else {
-				BassLabelFile.Import(symPath, silent);
+				RomInfo romInfo = EmuApi.GetRomInfo();
+				if(romInfo.CoprocessorType == CoprocessorType.Gameboy) {
+					if(RgbdsSymbolFile.IsValidFile(symPath)) {
+						RgbdsSymbolFile.Import(symPath, silent);
+					} else {
+						BassLabelFile.Import(symPath, silent);
+					}
+				} else {
+					BassLabelFile.Import(symPath, silent);
+				}
 			}
 			LabelManager.RefreshLabels();
 		}

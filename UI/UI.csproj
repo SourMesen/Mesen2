@@ -309,7 +309,8 @@
     <Compile Include="Debugger\Controls\ctrlGameboyStatus.Designer.cs">
       <DependentUpon>ctrlGameboyStatus.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debugger\Labels\BassLabelFile.cs" />
+    <Compile Include="Debugger\Integration\RgbdsSymbolFile.cs" />
+    <Compile Include="Debugger\Integration\BassLabelFile.cs" />
     <Compile Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.cs">
       <SubType>UserControl</SubType>
     </Compile>

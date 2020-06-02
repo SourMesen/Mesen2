@@ -25,6 +25,7 @@ namespace Mesen.GUI.Debugger
 				
 				if(!UInt32.TryParse(lineData.Substring(0, splitIndex), NumberStyles.HexNumber, null, out address)) {
 					errorCount++;
+					continue;
 				}
 
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)address, Type = SnesMemoryType.CpuMemory });
