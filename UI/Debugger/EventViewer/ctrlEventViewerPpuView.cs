@@ -234,7 +234,7 @@ namespace Mesen.GUI.Debugger
 			switch(evt.Type) {
 				case DebugEventType.Register:
 					bool isWrite = evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite;
-					bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite|| evt.Operation.Type == MemoryOperationType.DmaRead;
+					bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
 
 					CodeLabel label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = SnesMemoryType.CpuMemory });
 					string registerText = "$" + evt.Operation.Address.ToString("X4");
@@ -245,7 +245,7 @@ namespace Mesen.GUI.Debugger
 					values["Register"] = registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "");
 					values["Value"] = "$" + evt.Operation.Value.ToString("X2");
 
-					if(isDma) {
+					if(isDma && !_isGameboy) {
 						bool indirectHdma = false;
 						values["Channel"] = (evt.DmaChannel & 0x07).ToString();
 

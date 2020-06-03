@@ -117,11 +117,11 @@ void GbDmaController::ProcessDmaBlock()
 
 		//2 or 4 cycles per byte transfered (2x more cycles in high speed mode - effective speed is the same in both modes
 		_memoryManager->Exec();
-		uint8_t value = _memoryManager->Read(_state.CgbDmaSource + i, MemoryOperationType::DmaRead);
+		uint8_t value = _memoryManager->Read<MemoryOperationType::DmaRead>(_state.CgbDmaSource + i);
 		if(_memoryManager->IsHighSpeed()) {
 			_memoryManager->Exec();
 		}
-		_memoryManager->Write(dst, value);
+		_memoryManager->Write<MemoryOperationType::DmaWrite>(dst, value);
 	}
 
 	//Source/Dest/Length are all modified by the DMA process and keep their last value after DMA completes

@@ -139,7 +139,8 @@ void GbMemoryManager::Unmap(uint16_t start, uint16_t end)
 	}
 }
 
-uint8_t GbMemoryManager::Read(uint16_t addr, MemoryOperationType opType)
+template<MemoryOperationType opType>
+uint8_t GbMemoryManager::Read(uint16_t addr)
 {
 	uint8_t value = 0;
 	if(_state.IsReadRegister[addr >> 8]) {
@@ -174,9 +175,10 @@ uint8_t GbMemoryManager::ReadDma(uint16_t addr)
 	return value;
 }
 
+template<MemoryOperationType type>
 void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 {
-	_console->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, MemoryOperationType::Write);
+	_console->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, type);
 	if(_state.IsWriteRegister[addr >> 8]) {
 		WriteRegister(addr, value);
 	} else if(_writes[addr >> 8]) {
@@ -458,3 +460,10 @@ void GbMemoryManager::Serialize(Serializer& s)
 		RefreshMappings();
 	}
 }
+
+template uint8_t GbMemoryManager::Read<MemoryOperationType::Read>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOpCode>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOperand>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::DmaRead>(uint16_t addr);
+template void GbMemoryManager::Write<MemoryOperationType::Write>(uint16_t addr, uint8_t value);
+template void GbMemoryManager::Write<MemoryOperationType::DmaWrite>(uint16_t addr, uint8_t value);

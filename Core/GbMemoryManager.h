@@ -14,6 +14,8 @@ class EmuSettings;
 class Console;
 class ControlManager;
 
+enum class MemoryOperationType;
+
 class GbMemoryManager : public ISerializable
 {
 private:
@@ -48,10 +50,14 @@ public:
 
 	void Exec();
 
-	uint8_t Read(uint16_t addr, MemoryOperationType opType);
+	template<MemoryOperationType type = MemoryOperationType::Read>
+	uint8_t Read(uint16_t addr);
+
 	bool IsOamDmaRunning();
 	void WriteDma(uint16_t addr, uint8_t value);
 	uint8_t ReadDma(uint16_t addr);
+
+	template<MemoryOperationType type = MemoryOperationType::Write>
 	void Write(uint16_t addr, uint8_t value);
 
 	uint8_t ReadRegister(uint16_t addr);
