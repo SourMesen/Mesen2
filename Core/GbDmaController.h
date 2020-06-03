@@ -6,7 +6,7 @@
 class GbMemoryManager;
 class GbPpu;
 
-class GbDmaController : public ISerializable
+class GbDmaController final : public ISerializable
 {
 private:
 	GbDmaControllerState _state;
@@ -17,6 +17,7 @@ private:
 
 public:
 	GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu);
+
 	void Exec();
 
 	bool IsOamDmaRunning();

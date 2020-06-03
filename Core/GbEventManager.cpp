@@ -118,7 +118,7 @@ void GbEventManager::FilterEvents(EventViewerDisplayOptions& options)
 					showEvent = isWrite ? options.ShowPpuRegisterBgScrollWrites : options.ShowPpuRegisterReads;
 				} else if(reg >= 0x8000 && reg <= 0x9FFF) {
 					showEvent = isWrite ? options.ShowPpuRegisterVramWrites : options.ShowPpuRegisterReads;
-				} else if(reg >= 0xFF47 && reg <= 0xFF49 || (reg >= 0xFF68 && reg <= 0xFF6B)) {
+				} else if((reg >= 0xFF47 && reg <= 0xFF49) || (reg >= 0xFF68 && reg <= 0xFF6B)) {
 					showEvent = isWrite ? options.ShowPpuRegisterCgramWrites : options.ShowPpuRegisterReads;
 				} else if(reg >= 0xFF4A && reg <= 0xFF4B) {
 					showEvent = isWrite ? options.ShowPpuRegisterWindowWrites : options.ShowPpuRegisterReads;
@@ -155,7 +155,7 @@ void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_
 				color = isWrite ? options.PpuRegisterWriteBgScrollColor : ppuReadColor;
 			} else if(reg >= 0x8000 && reg <= 0x9FFF) {
 				color = isWrite ? options.PpuRegisterWriteVramColor : ppuReadColor;
-			} else if(reg >= 0xFF47 && reg <= 0xFF49 || (reg >= 0xFF68 && reg <= 0xFF6B)) {
+			} else if((reg >= 0xFF47 && reg <= 0xFF49) || (reg >= 0xFF68 && reg <= 0xFF6B)) {
 				color = isWrite ? options.PpuRegisterWriteCgramColor : ppuReadColor;
 			} else if(reg >= 0xFF4A && reg <= 0xFF4B) {
 				color = isWrite ? options.PpuRegisterWriteWindowColor : ppuReadColor;
@@ -222,7 +222,7 @@ void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize, Eve
 {
 	auto lock = _lock.AcquireSafe();
 
-	if(bufferSize < _scanlineCount * 2 * GbEventManager::ScanlineWidth * 4) {
+	if(_snapshotScanline < 0 || bufferSize < _scanlineCount * 2 * GbEventManager::ScanlineWidth * 4) {
 		return;
 	}
 

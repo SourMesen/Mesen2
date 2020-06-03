@@ -268,7 +268,7 @@ void EventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize, Event
 {
 	auto lock = _lock.AcquireSafe();
 
-	if(bufferSize < _scanlineCount * 2 * EventManager::ScanlineWidth * 4) {
+	if(_snapshotScanline < 0 || bufferSize < _scanlineCount * 2 * EventManager::ScanlineWidth * 4) {
 		return;
 	}
 

@@ -27,7 +27,7 @@ private:
 	vector<DebugEventInfo> _sentEvents;
 
 	vector<DebugEventInfo> _snapshot;
-	uint16_t _snapshotScanline = 0;
+	int16_t _snapshotScanline = -1;
 	uint16_t _snapshotCycle = 0;
 	SimpleLock _lock;
 
