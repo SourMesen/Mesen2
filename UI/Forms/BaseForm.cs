@@ -39,7 +39,9 @@ namespace Mesen.GUI.Forms
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			bool processed = false;
-			OnProcessCmdKey?.Invoke(keyData, ref processed);
+			if(keyData != Keys.None) {
+				OnProcessCmdKey?.Invoke(keyData, ref processed);
+			}
 			return processed || base.ProcessCmdKey(ref msg, keyData);
 		}
 
