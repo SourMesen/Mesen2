@@ -13,6 +13,7 @@
 #include "Sa1BwRamHandler.h"
 #include "CpuBwRamHandler.h"
 #include "MessageManager.h"
+#include "BatteryManager.h"
 #include "../Utilities/HexUtilities.h"
 
 Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
@@ -610,14 +611,17 @@ void Sa1::UpdateVectorMappings()
 void Sa1::UpdateSaveRamMappings()
 {
 	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cart->GetSaveRamHandlers();
-	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
-	uint32_t bankNumber = _state.CpuBwBank & ((_cpuBwRamHandlers.size() / 2) - 1);
-	for(int i = 0; i <= 0x3F; i++) {
-		//S-CPU: 00-3F:6000-7FFF + 80-BF:6000-7FFF
-		cpuMappings->RegisterHandler(i, i, 0x6000, 0x6FFF, saveRamHandlers[bankNumber * 2].get());
-		cpuMappings->RegisterHandler(i, i, 0x7000, 0x7FFF, saveRamHandlers[bankNumber * 2 + 1].get());
-		cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x6FFF, saveRamHandlers[bankNumber * 2].get());
-		cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x7000, 0x7FFF, saveRamHandlers[bankNumber * 2 + 1].get());
+	if(saveRamHandlers.size() > 0) {
+		MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
+		uint32_t bank1 = (_state.CpuBwBank * 2) % saveRamHandlers.size();
+		uint32_t bank2 = (_state.CpuBwBank * 2 + 1) % saveRamHandlers.size();
+		for(int i = 0; i <= 0x3F; i++) {
+			//S-CPU: 00-3F:6000-7FFF + 80-BF:6000-7FFF
+			cpuMappings->RegisterHandler(i, i, 0x6000, 0x6FFF, saveRamHandlers[bank1].get());
+			cpuMappings->RegisterHandler(i, i, 0x7000, 0x7FFF, saveRamHandlers[bank2].get());
+			cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x6FFF, saveRamHandlers[bank1].get());
+			cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x7000, 0x7FFF, saveRamHandlers[bank2].get());
+		}
 	}
 }
 
@@ -809,6 +813,23 @@ MemoryMappings* Sa1::GetMemoryMappings()
 {
 	return &_mappings;
 }
+
+void Sa1::LoadBattery()
+{
+	if(_cpuBwRamHandlers.empty()) {
+		//When there is no actual save RAM and the battery flag is set, IRAM is backed up instead
+		//Used by Pachi-Slot Monogatari - PAL Kougyou Special
+		_console->GetBatteryManager()->LoadBattery(".srm", _iRam, Sa1::InternalRamSize);
+	}
+}
+
+void Sa1::SaveBattery()
+{
+	if(_cpuBwRamHandlers.empty()) {
+		_console->GetBatteryManager()->SaveBattery(".srm", _iRam, Sa1::InternalRamSize);
+	}
+}
+
 
 void Sa1::Serialize(Serializer &s)
 {

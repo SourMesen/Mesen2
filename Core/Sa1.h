@@ -93,4 +93,6 @@ public:
 
 	uint16_t ReadVector(uint16_t vector);
 	MemoryMappings* GetMemoryMappings();
+	void LoadBattery();
+	void SaveBattery();
 };

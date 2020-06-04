@@ -733,7 +733,10 @@ void BaseCartridge::DisplayCartInfo()
 		MessageManager::Log("SRAM size: " + std::to_string(_saveRamSize / 1024) + " KB" + (_hasBattery ? " (with battery)" : ""));
 	}
 	if(_coprocessorRamSize > 0) {
-		MessageManager::Log("Coprocessor RAM size: " + std::to_string(_coprocessorRamSize / 1024) + " KB" + (_hasBattery ? " (with battery)" : ""));
+		MessageManager::Log("Coprocessor RAM size: " + std::to_string(_coprocessorRamSize / 1024) + " KB");
+	}
+	if(_hasBattery) {
+		MessageManager::Log("Battery: yes");
 	}
 	MessageManager::Log("-----------------------------");
 }
