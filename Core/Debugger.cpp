@@ -285,6 +285,8 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 		case CpuType::Sa1: _sa1Debugger->ProcessInterrupt(originalPc, currentPc, forNmi); break;
 		case CpuType::Gameboy: _gbDebugger->ProcessInterrupt(originalPc, currentPc); break;
 	}
+
+	ProcessEvent(forNmi ? EventType::Nmi : EventType::Irq);
 }
 
 void Debugger::ProcessEvent(EventType type)
