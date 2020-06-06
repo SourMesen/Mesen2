@@ -76,7 +76,9 @@ namespace Mesen.GUI.Debugger
 					case SnesMemoryType.Sa1Memory:
 					case SnesMemoryType.Cx4Memory:
 					case SnesMemoryType.GsuMemory:
+					case SnesMemoryType.GameboyMemory:
 					case SnesMemoryType.PrgRom:
+					case SnesMemoryType.GbPrgRom:
 						_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 						break;
 				}

@@ -68,7 +68,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Cx4].reset(new ExpressionEvaluator(this, CpuType::Cx4));
 	_watchExpEval[(int)CpuType::Gameboy].reset(new ExpressionEvaluator(this, CpuType::Gameboy));
 
-	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize()));
+	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), CpuType::Cpu));
 	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
@@ -98,7 +98,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_suspendRequestCount = 0;
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	_codeDataLogger->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _cart->GetCrc32());
+	GetCodeDataLogger()->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _cart->GetCrc32());
 
 	RefreshCodeCache();
 
@@ -116,7 +116,7 @@ Debugger::~Debugger()
 void Debugger::Release()
 {
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	_codeDataLogger->SaveCdlFile(cdlFile, _cart->GetCrc32());
+	GetCodeDataLogger()->SaveCdlFile(cdlFile, _cart->GetCrc32());
 
 	while(_executionStopped) {
 		Run();
@@ -552,49 +552,48 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType
 void Debugger::SetCdlData(uint8_t *cdlData, uint32_t length)
 {
 	DebugBreakHelper helper(this);
-	_codeDataLogger->SetCdlData(cdlData, length);
+	GetCodeDataLogger()->SetCdlData(cdlData, length);
 	RefreshCodeCache();
 }
 
 void Debugger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
 {
 	DebugBreakHelper helper(this);
-	_codeDataLogger->MarkBytesAs(start, end, flags);
+	GetCodeDataLogger()->MarkBytesAs(start, end, flags);
 	RefreshCodeCache();
 }
 
 void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
-	uint32_t prgRomSize = _cart->DebugGetPrgRomSize();
+
+	shared_ptr<CodeDataLogger> cdl = GetCodeDataLogger();
+	uint32_t prgRomSize = cdl->GetPrgSize();
 	AddressInfo addrInfo;
-	addrInfo.Type = SnesMemoryType::PrgRom;
+	addrInfo.Type = _gbDebugger ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
 
 	for(uint32_t i = 0; i < prgRomSize; i++) {
-		if(_codeDataLogger->IsCode(i)) {
+		if(cdl->IsCode(i)) {
 			addrInfo.Address = (int32_t)i;
-			i += _disassembler->BuildCache(addrInfo, _codeDataLogger->GetCpuFlags(i), _codeDataLogger->GetCpuType(i)) - 1;
+			i += _disassembler->BuildCache(addrInfo, cdl->GetCpuFlags(i), cdl->GetCpuType(i)) - 1;
 		}
 	}
 }
 
 void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData)
 {
-	if(memoryType == SnesMemoryType::PrgRom) {
-		_codeDataLogger->GetCdlData(offset, length, cdlData);
+	shared_ptr<CodeDataLogger> cdl = GetCodeDataLogger();
+	if(memoryType == SnesMemoryType::PrgRom || memoryType == SnesMemoryType::GbPrgRom) {
+		cdl->GetCdlData(offset, length, cdlData);
 	} else {
-		MemoryMappings* mappings = nullptr;
-		switch(memoryType) {
-			case SnesMemoryType::CpuMemory: mappings = _memoryManager->GetMemoryMappings(); break;
-			case SnesMemoryType::Sa1Memory: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
-			case SnesMemoryType::GsuMemory: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
-			case SnesMemoryType::Cx4Memory: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
-			default: throw std::runtime_error("GetCdlData - Unsupported memory type");
-		}
+		SnesMemoryType prgType = _gbDebugger ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
 
+		AddressInfo relAddress;
+		relAddress.Type = memoryType;
 		for(uint32_t i = 0; i < length; i++) {
-			AddressInfo info = mappings->GetAbsoluteAddress(offset + i);
-			cdlData[i] = info.Type == SnesMemoryType::PrgRom ? _codeDataLogger->GetFlags(info.Address) : 0;
+			relAddress.Address = offset + i;
+			AddressInfo info = GetAbsoluteAddress(relAddress);
+			cdlData[i] = info.Type == prgType ? cdl->GetFlags(info.Address) : 0;
 		}
 	}
 }
@@ -631,7 +630,7 @@ void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 		output = IpsPatcher::CreatePatch(originalRom, rom);
 	} else {
 		if(stripOption != CdlStripOption::StripNone) {
-			_codeDataLogger->StripData(rom.data(), stripOption);
+			GetCodeDataLogger()->StripData(rom.data(), stripOption);
 			//Preserve SNES rom header regardless of CDL file contents
 			memcpy(rom.data()+romInfo.HeaderOffset, &romInfo.Header, sizeof(SnesCartInformation));
 		}
@@ -662,7 +661,11 @@ shared_ptr<MemoryAccessCounter> Debugger::GetMemoryAccessCounter()
 
 shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger()
 {
-	return _codeDataLogger;
+	if(_gbDebugger) {
+		return _gbDebugger->GetCodeDataLogger();
+	} else {
+		return _codeDataLogger;
+	}
 }
 
 shared_ptr<Disassembler> Debugger::GetDisassembler()

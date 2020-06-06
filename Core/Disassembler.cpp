@@ -202,10 +202,12 @@ void Disassembler::SetDisassembleFlag(CpuType type)
 void Disassembler::ResetPrgCache()
 {
 	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
+	_gbPrgCache = vector<DisassemblyInfo>(_gbPrgRomSize);
 	_needDisassemble[(int)CpuType::Cpu] = true;
 	_needDisassemble[(int)CpuType::Sa1] = true;
 	_needDisassemble[(int)CpuType::Gsu] = true;
 	_needDisassemble[(int)CpuType::Cx4] = true;
+	_needDisassemble[(int)CpuType::Gameboy] = true;
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)

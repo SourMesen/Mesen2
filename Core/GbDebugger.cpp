@@ -14,6 +14,7 @@
 #include "EmuSettings.h"
 #include "BaseCartridge.h"
 #include "GameboyDisUtils.h"
+#include "CodeDataLogger.h"
 #include "GbEventManager.h"
 #include "BaseEventManager.h"
 #include "GbAssembler.h"
@@ -27,6 +28,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_gameboy = debugger->GetConsole()->GetCartridge()->GetGameboy();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 	_settings = debugger->GetConsole()->GetSettings().get();
+	_codeDataLogger.reset(new CodeDataLogger(_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
 
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _gameboy->GetPpu()));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -56,6 +58,9 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 
 		if(_traceLogger->IsCpuLogged(CpuType::Gameboy) || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 			if(addressInfo.Address >= 0) {
+				if(addressInfo.Type == SnesMemoryType::GbPrgRom) {
+					_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+				}
 				_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 			}
 
@@ -94,8 +99,15 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
+		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
+		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
+		}
+
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 		if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {
 			_eventManager->AddEvent(DebugEventType::Register, operation);
@@ -173,6 +185,11 @@ shared_ptr<GbAssembler> GbDebugger::GetAssembler()
 shared_ptr<CallstackManager> GbDebugger::GetCallstackManager()
 {
 	return _callstackManager;
+}
+
+shared_ptr<CodeDataLogger> GbDebugger::GetCodeDataLogger()
+{
+	return _codeDataLogger;
 }
 
 BreakpointManager* GbDebugger::GetBreakpointManager()

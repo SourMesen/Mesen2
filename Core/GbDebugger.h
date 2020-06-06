@@ -14,6 +14,7 @@ class BreakpointManager;
 class EmuSettings;
 class GbEventManager;
 class GbAssembler;
+class CodeDataLogger;
 
 class GbDebugger final : public IDebugger
 {
@@ -27,6 +28,7 @@ class GbDebugger final : public IDebugger
 
 	shared_ptr<GbEventManager> _eventManager;
 	shared_ptr<CallstackManager> _callstackManager;
+	shared_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 	shared_ptr<GbAssembler> _assembler;
@@ -49,5 +51,6 @@ public:
 	shared_ptr<GbEventManager> GetEventManager();
 	shared_ptr<GbAssembler> GetAssembler();
 	shared_ptr<CallstackManager> GetCallstackManager();
+	shared_ptr<CodeDataLogger> GetCodeDataLogger();
 	BreakpointManager* GetBreakpointManager();
 };

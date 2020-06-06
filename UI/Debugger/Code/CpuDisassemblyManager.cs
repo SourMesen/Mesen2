@@ -18,6 +18,7 @@ namespace Mesen.GUI.Debugger.Code
 
 		public virtual CpuType CpuType { get { return CpuType.Cpu; } }
 		public virtual SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.CpuMemory; } }
+		public virtual SnesMemoryType PrgMemoryType { get { return SnesMemoryType.PrgRom; } }
 		public virtual int AddressSize { get { return 6; } }
 		public virtual int ByteCodeSize { get { return 4; } }
 		public virtual bool AllowSourceView { get { return true; } }

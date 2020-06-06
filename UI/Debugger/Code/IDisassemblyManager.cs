@@ -15,6 +15,7 @@ namespace Mesen.GUI.Debugger.Code
 
 		CpuType CpuType { get; }
 		SnesMemoryType RelativeMemoryType { get; }
+		SnesMemoryType PrgMemoryType { get; }
 		int AddressSize { get; }
 		int ByteCodeSize { get; }
 		bool AllowSourceView { get; }

@@ -5,7 +5,8 @@
 class CodeDataLogger
 {
 private:
-	uint8_t *_cdlData = nullptr;
+	uint8_t* _cdlData = nullptr;
+	CpuType _cpuType = CpuType::Cpu;
 	uint32_t _prgSize = 0;
 	uint32_t _codeSize = 0;
 	uint32_t _dataSize = 0;
@@ -13,10 +14,11 @@ private:
 	void CalculateStats();
 
 public:
-	CodeDataLogger(uint32_t prgSize);
+	CodeDataLogger(uint32_t prgSize, CpuType cpuType);
 	~CodeDataLogger();
 
 	void Reset();
+	uint32_t GetPrgSize();
 
 	bool LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc);
 	bool SaveCdlFile(string cdlFilepath, uint32_t romCrc);

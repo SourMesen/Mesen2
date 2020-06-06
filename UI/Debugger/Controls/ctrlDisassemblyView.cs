@@ -176,9 +176,9 @@ namespace Mesen.GUI.Debugger.Controls
 		private void MarkSelectionAs(CdlFlags type)
 		{
 			SelectedAddressRange range = GetSelectedAddressRange();
-			if(!_inSourceView && range != null && range.Start.Type == SnesMemoryType.PrgRom && range.End.Type == SnesMemoryType.PrgRom) {
+			if(!_inSourceView && range != null && range.Start.Type == _manager.PrgMemoryType && range.End.Type == _manager.PrgMemoryType) {
 				DebugApi.MarkBytesAs((UInt32)range.Start.Address, (UInt32)range.End.Address, type);
-				DebugWindowManager.OpenDebugger(CpuType.Cpu)?.RefreshDisassembly();
+				DebugWindowManager.OpenDebugger(_manager.CpuType)?.RefreshDisassembly();
 			}
 		}
 
@@ -640,7 +640,7 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuGoToLocation.Text = "Go to Location" + (enableGoToLocation ? suffix : "");
 
 			SelectedAddressRange range = GetSelectedAddressRange();
-			if(range != null && range.Start.Type == SnesMemoryType.PrgRom && range.End.Type == SnesMemoryType.PrgRom) {
+			if(range != null && range.Start.Type == _manager.PrgMemoryType && range.End.Type == _manager.PrgMemoryType) {
 				mnuMarkSelectionAs.Enabled = true;
 				mnuMarkSelectionAs.Text = "Mark selection as... (" + range.Display + ")";
 			} else {
@@ -648,7 +648,7 @@ namespace Mesen.GUI.Debugger.Controls
 				mnuMarkSelectionAs.Text = "Mark selection as...";
 			}
 
-			bool showMarkAs = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1);
+			bool showMarkAs = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1 || _manager.CpuType == CpuType.Gameboy);
 			mnuMarkSelectionAs.Visible = showMarkAs;
 
 			bool showEditCode = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1 || _manager.CpuType == CpuType.Gameboy);

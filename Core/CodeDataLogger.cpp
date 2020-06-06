@@ -2,8 +2,9 @@
 #include "CodeDataLogger.h"
 #include "../Utilities/VirtualFile.h"
 
-CodeDataLogger::CodeDataLogger(uint32_t prgSize)
+CodeDataLogger::CodeDataLogger(uint32_t prgSize, CpuType cpuType)
 {
+	_cpuType = cpuType;
 	_prgSize = prgSize;
 	_cdlData = new uint8_t[prgSize];
 	Reset();
@@ -19,6 +20,11 @@ void CodeDataLogger::Reset()
 	_codeSize = 0;
 	_dataSize = 0;
 	memset(_cdlData, 0, _prgSize);
+}
+
+uint32_t CodeDataLogger::GetPrgSize()
+{
+	return _prgSize;
 }
 
 bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc)
@@ -141,7 +147,9 @@ uint8_t CodeDataLogger::GetCpuFlags(uint32_t absoluteAddr)
 
 CpuType CodeDataLogger::GetCpuType(uint32_t absoluteAddr)
 {
-	if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
+	if(_cpuType == CpuType::Gameboy) {
+		return _cpuType;
+	} else if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
 		return CpuType::Gsu;
 	} else if(_cdlData[absoluteAddr] & CdlFlags::Cx4) {
 		return CpuType::Cx4;

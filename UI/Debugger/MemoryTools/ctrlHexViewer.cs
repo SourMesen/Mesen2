@@ -511,18 +511,19 @@ namespace Mesen.GUI.Debugger.Controls
 				mnuAddToWatch.Enabled = false;
 			}
 
-			if(_memoryType == SnesMemoryType.CpuMemory) {
+
+			if(_memoryType == SnesMemoryType.CpuMemory || _memoryType == SnesMemoryType.GameboyMemory) {
 				AddressInfo start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)startAddress, Type = _memoryType });
 				AddressInfo end = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)endAddress, Type = _memoryType });
 
-				if(start.Address >= 0 && end.Address >= 0 && start.Address <= end.Address && start.Type == SnesMemoryType.PrgRom && end.Type == SnesMemoryType.PrgRom) {
+				if(start.Address >= 0 && end.Address >= 0 && start.Address <= end.Address && ((start.Type == SnesMemoryType.PrgRom && end.Type == SnesMemoryType.PrgRom) || (start.Type == SnesMemoryType.GbPrgRom && end.Type == SnesMemoryType.GbPrgRom))) {
 					mnuMarkSelectionAs.Text = "Mark selection as... (" + addressRange + ")";
 					mnuMarkSelectionAs.Enabled = true;
 				} else {
 					mnuMarkSelectionAs.Text = "Mark selection as...";
 					mnuMarkSelectionAs.Enabled = false;
 				}
-			} else if(_memoryType == SnesMemoryType.PrgRom) {
+			} else if(_memoryType == SnesMemoryType.PrgRom || _memoryType == SnesMemoryType.GbPrgRom) {
 				mnuMarkSelectionAs.Text = "Mark selection as... (" + addressRange + ")";
 				mnuMarkSelectionAs.Enabled = true;
 			} else {
@@ -535,14 +536,14 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void MarkSelectionAs(CdlFlags type)
 		{
-			if(_memoryType != SnesMemoryType.CpuMemory && _memoryType != SnesMemoryType.PrgRom) {
+			if(_memoryType != SnesMemoryType.CpuMemory && _memoryType != SnesMemoryType.PrgRom && _memoryType != SnesMemoryType.GameboyMemory && _memoryType != SnesMemoryType.GbPrgRom) {
 				return;
 			}
 
 			int start = SelectionStartAddress;
 			int end = SelectionEndAddress;
 
-			if(_memoryType == SnesMemoryType.CpuMemory) {
+			if(_memoryType == SnesMemoryType.CpuMemory || _memoryType == SnesMemoryType.GameboyMemory) {
 				start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = _memoryType }).Address;
 				end = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = _memoryType }).Address;
 			}

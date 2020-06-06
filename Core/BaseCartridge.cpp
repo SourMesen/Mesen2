@@ -315,12 +315,20 @@ RomInfo BaseCartridge::GetRomInfo()
 
 uint32_t BaseCartridge::GetCrc32()
 {
-	return CRC32::GetCRC(_prgRom, _prgRomSize);
+	if(_gameboy) {
+		return CRC32::GetCRC(_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom), _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom));
+	} else {
+		return CRC32::GetCRC(_prgRom, _prgRomSize);
+	}
 }
 
 string BaseCartridge::GetSha1Hash()
 {
-	return SHA1::GetHash(_prgRom, _prgRomSize);
+	if(_gameboy) {
+		return SHA1::GetHash(_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom), _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom));
+	} else {
+		return SHA1::GetHash(_prgRom, _prgRomSize);
+	}
 }
 
 CartFlags::CartFlags BaseCartridge::GetCartFlags()

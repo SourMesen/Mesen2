@@ -278,22 +278,24 @@ namespace Mesen.GUI.Debugger
 					bytes.Add(0xEA);
 				}
 
-				frmDebugger debugger = null;
+				SnesMemoryType memType;
+				SnesMemoryType prgType;
 				if(_cpuType == CpuType.Gameboy) {
-					DebugApi.SetMemoryValues(SnesMemoryType.GameboyMemory, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
-					debugger = DebugWindowManager.OpenDebugger(CpuType.Gameboy);
-					//TODO: CDL for gameboy
+					memType = SnesMemoryType.GameboyMemory;
+					prgType = SnesMemoryType.GbPrgRom;
 				} else {
-					DebugApi.SetMemoryValues(SnesMemoryType.CpuMemory, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
-
-					AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress, Type = SnesMemoryType.CpuMemory });
-					AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress + bytes.Count, Type = SnesMemoryType.CpuMemory });
-					if(absStart.Type == SnesMemoryType.PrgRom && absEnd.Type == SnesMemoryType.PrgRom && (absEnd.Address - absStart.Address) == bytes.Count) {
-						DebugApi.MarkBytesAs((uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
-					}
-					debugger = DebugWindowManager.OpenDebugger(CpuType.Cpu);
+					memType = SnesMemoryType.CpuMemory;
+					prgType = SnesMemoryType.PrgRom;
 				}
 
+				DebugApi.SetMemoryValues(memType, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
+				AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress, Type = memType });
+				AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress + bytes.Count, Type = memType });
+				if(absStart.Type == prgType && absEnd.Type == prgType && (absEnd.Address - absStart.Address) == bytes.Count) {
+					DebugApi.MarkBytesAs((uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+				}
+
+				frmDebugger debugger = DebugWindowManager.OpenDebugger(_cpuType);
 				if(debugger != null) {
 					debugger.RefreshDisassembly();
 				}
