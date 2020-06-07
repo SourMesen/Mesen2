@@ -170,6 +170,9 @@ int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 		uint64_t key = result->second;
 		SnesMemoryType type = GetKeyMemoryType(key);
 		AddressInfo addr { (int32_t)(key & 0xFFFFFFFF), type };
+		if(type <= DebugUtilities::GetLastCpuMemoryType()) {
+			return addr.Address;
+		}
 		return _debugger->GetRelativeAddress(addr, cpuType).Address;
 	}
 	//Label doesn't exist
