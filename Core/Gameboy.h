@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
+#include "GameboyHeader.h"
 #include "../Utilities/ISerializable.h"
 
 class Console;
@@ -52,6 +53,8 @@ private:
 	uint32_t _bootRomSize = 0;
 
 public:
+	static constexpr int HeaderOffset = 0x134;
+
 	static Gameboy* Create(Console* console, VirtualFile& romFile);
 	virtual ~Gameboy();
 
@@ -66,6 +69,7 @@ public:
 	GbPpu* GetPpu();
 	GbCpu* GetCpu();
 	GbState GetState();
+	GameboyHeader GetHeader();
 
 	uint32_t DebugGetMemorySize(SnesMemoryType type);
 	uint8_t* DebugGetMemory(SnesMemoryType type);

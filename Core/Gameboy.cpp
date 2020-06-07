@@ -24,7 +24,7 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 	romFile.ReadFile(romData);
 
 	GameboyHeader header;
-	memcpy(&header, romData.data() + 0x134, sizeof(GameboyHeader));
+	memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
 
 	MessageManager::Log("-----------------------------");
 	MessageManager::Log("File: " + romFile.GetFileName());
@@ -255,6 +255,13 @@ int32_t Gameboy::GetRelativeAddress(AddressInfo& absAddress)
 	}
 
 	return -1;
+}
+
+GameboyHeader Gameboy::GetHeader()
+{
+	GameboyHeader header;
+	memcpy(&header, _prgRom + Gameboy::HeaderOffset, sizeof(GameboyHeader));
+	return header;
 }
 
 bool Gameboy::IsCgb()

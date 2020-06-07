@@ -741,6 +741,9 @@ namespace Mesen.GUI.Debugger
 				if(saveAsIps) {
 					sfd.SetFilter("IPS files (*.ips)|*.ips");
 					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + ".ips";
+				} else if(_cpuType == CpuType.Gameboy) {
+					sfd.SetFilter("GB files (*.gb,*.gbc)|*.gb;*.gbc");
+					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + "_Modified.gb";
 				} else {
 					sfd.SetFilter("SFC files (*.sfc)|*.sfc");
 					sfd.FileName = EmuApi.GetRomInfo().GetRomName() + "_Modified.sfc";

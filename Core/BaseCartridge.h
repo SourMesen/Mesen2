@@ -90,6 +90,7 @@ public:
 	void Init(MemoryMappings &mm);
 
 	RomInfo GetRomInfo();
+	vector<uint8_t> GetOriginalPrgRom();
 	ConsoleRegion GetRegion();
 	uint32_t GetCrc32();
 	string GetSha1Hash();

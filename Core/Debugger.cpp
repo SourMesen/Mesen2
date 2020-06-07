@@ -43,6 +43,7 @@
 #include "AluMulDiv.h"
 #include "Assembler.h"
 #include "GbAssembler.h"
+#include "GameboyHeader.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/IpsPatcher.h"
@@ -621,18 +622,32 @@ void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 
 void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
-	RomInfo romInfo = _cart->GetRomInfo();
-	vector<uint8_t> rom(_cart->DebugGetPrgRom(), _cart->DebugGetPrgRom() + _cart->DebugGetPrgRomSize());
 	vector<uint8_t> output;
+	RomInfo romInfo = _cart->GetRomInfo();
+	Gameboy* gb = _cart->GetGameboy();
+
+	vector<uint8_t> rom;
+	if(gb) {
+		uint8_t* prgRom = gb->DebugGetMemory(SnesMemoryType::GbPrgRom);
+		uint32_t prgRomSize = gb->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
+		rom = vector<uint8_t>(prgRom, prgRom+prgRomSize);
+	} else {
+		rom = vector<uint8_t>(_cart->DebugGetPrgRom(), _cart->DebugGetPrgRom() + _cart->DebugGetPrgRomSize());
+	}
+
 	if(saveAsIps) {
-		shared_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console.get(), romInfo.RomFile, romInfo.PatchFile);
-		vector<uint8_t> originalRom(originalCart->DebugGetPrgRom(), originalCart->DebugGetPrgRom() + originalCart->DebugGetPrgRomSize());		
-		output = IpsPatcher::CreatePatch(originalRom, rom);
+		output = IpsPatcher::CreatePatch(_cart->GetOriginalPrgRom(), rom);
 	} else {
 		if(stripOption != CdlStripOption::StripNone) {
 			GetCodeDataLogger()->StripData(rom.data(), stripOption);
-			//Preserve SNES rom header regardless of CDL file contents
-			memcpy(rom.data()+romInfo.HeaderOffset, &romInfo.Header, sizeof(SnesCartInformation));
+
+			//Preserve rom header regardless of CDL file contents
+			if(gb) {
+				GameboyHeader header = gb->GetHeader();
+				memcpy(rom.data() + romInfo.HeaderOffset, &header, sizeof(GameboyHeader));
+			} else {
+				memcpy(rom.data() + romInfo.HeaderOffset, &romInfo.Header, sizeof(SnesCartInformation));
+			}
 		}
 		output = rom;
 	}

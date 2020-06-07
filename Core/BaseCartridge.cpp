@@ -313,6 +313,19 @@ RomInfo BaseCartridge::GetRomInfo()
 	return info;
 }
 
+vector<uint8_t> BaseCartridge::GetOriginalPrgRom()
+{
+	RomInfo romInfo = GetRomInfo();
+	shared_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile, romInfo.PatchFile);
+	if(originalCart->_gameboy) {
+		uint8_t* orgPrgRom = originalCart->_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
+		uint32_t orgRomSize = originalCart->_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
+		return vector<uint8_t>(orgPrgRom, orgPrgRom + orgRomSize);
+	} else {
+		return vector<uint8_t>(originalCart->DebugGetPrgRom(), originalCart->DebugGetPrgRom() + originalCart->DebugGetPrgRomSize());
+	}
+}
+
 uint32_t BaseCartridge::GetCrc32()
 {
 	if(_gameboy) {
@@ -594,6 +607,7 @@ bool BaseCartridge::LoadGameboy(VirtualFile &romFile)
 	}
 
 	_cartInfo = { };
+	_headerOffset = Gameboy::HeaderOffset;
 	_coprocessorType = CoprocessorType::Gameboy;
 	SetupCpuHalt();
 	return true;
