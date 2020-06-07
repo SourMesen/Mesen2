@@ -16,6 +16,7 @@
 #include "GameboyDisUtils.h"
 #include "GbEventManager.h"
 #include "BaseEventManager.h"
+#include "GbAssembler.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {
@@ -31,6 +32,11 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
+	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
+}
+
+GbDebugger::~GbDebugger()
+{
 }
 
 void GbDebugger::Reset()
@@ -157,6 +163,11 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc)
 shared_ptr<GbEventManager> GbDebugger::GetEventManager()
 {
 	return _eventManager;
+}
+
+shared_ptr<GbAssembler> GbDebugger::GetAssembler()
+{
+	return _assembler;
 }
 
 shared_ptr<CallstackManager> GbDebugger::GetCallstackManager()

@@ -15,4 +15,5 @@ public:
 	static uint8_t GetOpSize(uint8_t opCode);
 	static bool IsJumpToSub(uint8_t opCode);
 	static bool IsReturnInstruction(uint8_t opCode);
+	static string GetOpTemplate(uint8_t op, bool prefixed);
 };

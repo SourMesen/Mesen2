@@ -18,6 +18,7 @@ namespace Mesen.GUI.Debugger
 {
 	public partial class frmAssembler : BaseForm
 	{
+		private CpuType _cpuType;
 		private int _startAddress;
 		private int _blockLength;
 		private bool _hasParsingErrors = false;
@@ -27,9 +28,20 @@ namespace Mesen.GUI.Debugger
 		private int _textVersion = 0;
 		private bool _updating = false;
 
-		public frmAssembler(string code = "", int startAddress = 0, int blockLength = 0)
+		public frmAssembler(CpuType? cpuType = null, string code = "", int startAddress = 0, int blockLength = 0)
 		{
+			if(cpuType != null) {
+				_cpuType = cpuType.Value;
+			} else {
+				_cpuType = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy ? CpuType.Gameboy : CpuType.Cpu;
+			}
+
+			if(_cpuType == CpuType.Sa1) {
+				_cpuType = CpuType.Cpu;
+			}
+
 			InitializeComponent();
+			
 			txtCode.ForeColor = Color.Black;
 
 			AssemblerConfig cfg = ConfigManager.Config.Debug.Assembler;
@@ -126,7 +138,7 @@ namespace Mesen.GUI.Debugger
 					return false;
 				} else {
 					for(int i = 0; i < ctrlHexBox.ByteProvider.Length; i++) {
-						if(DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, (UInt32)(_startAddress + i)) != ctrlHexBox.ByteProvider.ReadByte(i)) {
+						if(DebugApi.GetMemoryValue(_cpuType.ToMemoryType(), (UInt32)(_startAddress + i)) != ctrlHexBox.ByteProvider.ReadByte(i)) {
 							return false;
 						}
 					}
@@ -153,7 +165,7 @@ namespace Mesen.GUI.Debugger
 			int version = _textVersion;
 			
 			Task.Run(() => {
-				short[] byteCode = DebugApi.AssembleCode(text, (UInt32)_startAddress);
+				short[] byteCode = DebugApi.AssembleCode(_cpuType, text, (UInt32)_startAddress);
 
 				this.BeginInvoke((Action)(() => {
 					_updating = false;
@@ -184,6 +196,8 @@ namespace Mesen.GUI.Debugger
 								case AssemblerSpecialCodes.UnknownLabel: message = "Unknown label"; break;
 								case AssemblerSpecialCodes.InvalidInstruction: message = "Invalid instruction"; break;
 								case AssemblerSpecialCodes.InvalidBinaryValue: message = "Invalid binary value"; break;
+								case AssemblerSpecialCodes.InvalidOperands: message = "Invalid operands for instruction"; break;
+								case AssemblerSpecialCodes.InvalidLabel: message = "Invalid label name"; break;
 							}
 							errorList.Add(new ErrorDetail() { Message = message + " - " + codeLines[line-1], LineNumber = line });
 							line++;
@@ -264,15 +278,22 @@ namespace Mesen.GUI.Debugger
 					bytes.Add(0xEA);
 				}
 
-				DebugApi.SetMemoryValues(SnesMemoryType.CpuMemory, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
+				frmDebugger debugger = null;
+				if(_cpuType == CpuType.Gameboy) {
+					DebugApi.SetMemoryValues(SnesMemoryType.GameboyMemory, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
+					debugger = DebugWindowManager.OpenDebugger(CpuType.Gameboy);
+					//TODO: CDL for gameboy
+				} else {
+					DebugApi.SetMemoryValues(SnesMemoryType.CpuMemory, (UInt32)_startAddress, bytes.ToArray(), bytes.Count);
 
-				AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress, Type = SnesMemoryType.CpuMemory });
-				AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress + bytes.Count, Type = SnesMemoryType.CpuMemory });
-				if(absStart.Type == SnesMemoryType.PrgRom && absEnd.Type == SnesMemoryType.PrgRom && (absEnd.Address - absStart.Address) == bytes.Count) {
-					DebugApi.MarkBytesAs((uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+					AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress, Type = SnesMemoryType.CpuMemory });
+					AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress + bytes.Count, Type = SnesMemoryType.CpuMemory });
+					if(absStart.Type == SnesMemoryType.PrgRom && absEnd.Type == SnesMemoryType.PrgRom && (absEnd.Address - absStart.Address) == bytes.Count) {
+						DebugApi.MarkBytesAs((uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+					}
+					debugger = DebugWindowManager.OpenDebugger(CpuType.Cpu);
 				}
 
-				frmDebugger debugger = DebugWindowManager.OpenDebugger(CpuType.Cpu);
 				if(debugger != null) {
 					debugger.RefreshDisassembly();
 				}
@@ -374,7 +395,9 @@ namespace Mesen.GUI.Debugger
 			TrailingText = -9,
 			UnknownLabel = -10,
 			InvalidInstruction = -11,
-			InvalidBinaryValue = -12
+			InvalidBinaryValue = -12,
+			InvalidOperands = -13,
+			InvalidLabel = -14,
 		}
 
 		private void lstErrors_DoubleClick(object sender, EventArgs e)

@@ -511,7 +511,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 			if(range.Start.Address >= 0 && range.End.Address >= 0 && range.Start.Address <= range.End.Address) {
 				int length = range.End.Address - range.Start.Address + 1;
-				DebugWindowManager.OpenAssembler(GetSelectedCode(), range.Start.Address, length);
+				DebugWindowManager.OpenAssembler(_manager.CpuType, GetSelectedCode(), range.Start.Address, length);
 			}
 		}
 
@@ -650,7 +650,9 @@ namespace Mesen.GUI.Debugger.Controls
 
 			bool showMarkAs = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1);
 			mnuMarkSelectionAs.Visible = showMarkAs;
-			mnuEditSelectedCode.Visible = showMarkAs;
+
+			bool showEditCode = !_inSourceView && (_manager.CpuType == CpuType.Cpu || _manager.CpuType == CpuType.Sa1 || _manager.CpuType == CpuType.Gameboy);
+			mnuEditSelectedCode.Visible = showEditCode;
 
 			mnuAddToWatch.Enabled = active;
 			mnuEditInMemoryTools.Enabled = active;

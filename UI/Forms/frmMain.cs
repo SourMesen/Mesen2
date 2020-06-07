@@ -481,8 +481,6 @@ namespace Mesen.GUI.Forms
 			mnuDebugger.Visible = !isGameboyMode;
 			mnuSpcDebugger.Enabled = !isGameboyMode;
 			mnuSpcDebugger.Visible = !isGameboyMode;
-			mnuAssembler.Enabled = !isGameboyMode;
-			mnuAssembler.Visible = !isGameboyMode;
 			sepCoprocessors.Visible = !isGameboyMode;
 		}
 		

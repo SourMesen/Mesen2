@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include <unordered_set>
 #include <regex>
+#include "IAssembler.h"
 #include "CpuDisUtils.h"
 
 class LabelManager;
@@ -21,24 +21,7 @@ struct LineData
 	bool HasOpeningBracket = false;
 };
 
-enum AssemblerSpecialCodes
-{
-	OK = 0,
-	EndOfLine = -1,
-	ParsingError = -2,
-	OutOfRangeJump = -3,
-	LabelRedefinition = -4,
-	MissingOperand = -5,
-	OperandOutOfRange = -6,
-	InvalidHex = -7,
-	InvalidSpaces = -8,
-	TrailingText = -9,
-	UnknownLabel = -10,
-	InvalidInstruction = -11,
-	InvalidBinaryValue = -12,
-};
-
-class Assembler
+class Assembler : public IAssembler
 {
 private:
 	std::unordered_map<string, std::unordered_set<int>> _availableModesByOpName;
@@ -54,6 +37,7 @@ private:
 
 public:
 	Assembler(shared_ptr<LabelManager> labelManager);
+	virtual ~Assembler();
 
 	uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode);
 };

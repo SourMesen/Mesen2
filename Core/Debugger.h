@@ -34,8 +34,8 @@ class NecDspDebugger;
 class Cx4Debugger;
 class GbDebugger;
 class Breakpoint;
-class Assembler;
 class IEventManager;
+class IAssembler;
 
 enum class EventType;
 enum class EvalResultType : int32_t;
@@ -69,7 +69,6 @@ private:
 	shared_ptr<Disassembler> _disassembler;
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<LabelManager> _labelManager;
-	shared_ptr<Assembler> _assembler;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)DebugUtilities::GetLastCpuType() + 1];
 
@@ -144,5 +143,5 @@ public:
 	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
 	shared_ptr<Console> GetConsole();
-	shared_ptr<Assembler> GetAssembler();
+	shared_ptr<IAssembler> GetAssembler(CpuType cpuType);
 };

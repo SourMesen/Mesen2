@@ -20,6 +20,7 @@
 #include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
+#include "Assembler.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {
@@ -39,6 +40,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
+	_assembler.reset(new Assembler(_debugger->GetLabelManager()));
 
 	if(GetState().PC == 0) {
 		//Enable breaking on uninit reads when debugger is opened at power on
@@ -238,6 +240,11 @@ bool CpuDebugger::IsRegister(uint32_t addr)
 shared_ptr<EventManager> CpuDebugger::GetEventManager()
 {
 	return _eventManager;
+}
+
+shared_ptr<Assembler> CpuDebugger::GetAssembler()
+{
+	return _assembler;
 }
 
 shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()

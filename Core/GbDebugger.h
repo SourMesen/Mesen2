@@ -13,6 +13,7 @@ class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
 class GbEventManager;
+class GbAssembler;
 
 class GbDebugger final : public IDebugger
 {
@@ -28,12 +29,14 @@ class GbDebugger final : public IDebugger
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
+	shared_ptr<GbAssembler> _assembler;
 
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
 
 public:
 	GbDebugger(Debugger* debugger);
+	~GbDebugger();
 
 	void Reset();
 
@@ -44,6 +47,7 @@ public:
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc);
 
 	shared_ptr<GbEventManager> GetEventManager();
+	shared_ptr<GbAssembler> GetAssembler();
 	shared_ptr<CallstackManager> GetCallstackManager();
 	BreakpointManager* GetBreakpointManager();
 };

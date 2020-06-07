@@ -17,6 +17,7 @@ class EventManager;
 class MemoryMappings;
 class BreakpointManager;
 class Sa1;
+class Assembler;
 
 class CpuDebugger final : public IDebugger
 {
@@ -31,6 +32,7 @@ class CpuDebugger final : public IDebugger
 	Sa1* _sa1;
 
 	shared_ptr<EventManager> _eventManager;
+	shared_ptr<Assembler> _assembler;
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
@@ -55,6 +57,7 @@ public:
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
 	shared_ptr<EventManager> GetEventManager();
+	shared_ptr<Assembler> GetAssembler();
 	shared_ptr<CallstackManager> GetCallstackManager();
 	BreakpointManager* GetBreakpointManager();
 };

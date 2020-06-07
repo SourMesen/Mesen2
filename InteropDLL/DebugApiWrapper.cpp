@@ -106,7 +106,7 @@ extern "C"
 	DllExport const char* __stdcall GetScriptLog(int32_t scriptId) { return GetDebugger()->GetScriptManager()->GetScriptLog(scriptId); }
 	//DllExport void __stdcall DebugSetScriptTimeout(uint32_t timeout) { LuaScriptingContext::SetScriptTimeout(timeout); }
 
-	DllExport uint32_t __stdcall AssembleCode(char* code, uint32_t startAddress, int16_t* assembledOutput) { return GetDebugger()->GetAssembler()->AssembleCode(code, startAddress, assembledOutput); }
+	DllExport uint32_t __stdcall AssembleCode(CpuType cpuType, char* code, uint32_t startAddress, int16_t* assembledOutput) { return GetDebugger()->GetAssembler(cpuType)->AssembleCode(code, startAddress, assembledOutput); }
 	
 	DllExport void __stdcall SaveRomToDisk(char* filename, bool saveIpsFile, CdlStripOption cdlStripOption) { GetDebugger()->SaveRomToDisk(filename, saveIpsFile, cdlStripOption); }
 };

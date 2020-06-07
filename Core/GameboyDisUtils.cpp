@@ -8,14 +8,14 @@
 #include"../Utilities/HexUtilities.h"
 
 constexpr const char* _opTemplate[256] = {
-	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (b), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",
+	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (a), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",
 	"STOP",			"LD DE, e",		"LD (DE), A",	"INC DE",	"INC D",			"DEC D",			"LD D, d",		"RLA",		"JR r",			"ADD HL, DE",	"LD A, (DE)",	"DEC DE",	"INC E",		"DEC E",		"LD E, d",		"RRA",
 	"JR NZ, r",		"LD HL, e",		"LD (HL+), A",	"INC HL",	"INC H",			"DEC H",			"LD H, d",		"DAA",		"JR Z, r",		"ADD HL, HL",	"LD A, (HL+)",	"DEC HL",	"INC L",		"DEC L",		"LD L, d",		"CPL",
 	"JR NC, r",		"LD SP, e",		"LD (HL-), A",	"INC SP",	"INC (HL)",		"DEC (HL)",		"LD (HL), d",	"SCF",		"JR C, r",		"ADD HL, SP",	"LD A, (HL-)",	"DEC SP",	"INC A",		"DEC A",		"LD A, d",		"CCF",
 	"LD B, B",		"LD B, C",		"LD B, D",		"LD B, E",	"LD B, H",		"LD B, L",		"LD B, (HL)",	"LD B, A",	"LD C, B",		"LD C, C",		"LD C, D",		"LD C, E",	"LD C, H",	"LD C, L",	"LD C, (HL)",	"LD C, A",
 	"LD D, B",		"LD D, C",		"LD D, D",		"LD D, E",	"LD D, H",		"LD D, L",		"LD D, (HL)",	"LD D, A",	"LD E, B",		"LD E, C",		"LD E, D",		"LD E, E",	"LD E, H",	"LD E, L",	"LD E, (HL)",	"LD E, A",
 	"LD H, B",		"LD H, C",		"LD H, D",		"LD H, E",	"LD H, H",		"LD H, L",		"LD H, (HL)",	"LD H, A",	"LD L, B",		"LD L, C",		"LD L, D",		"LD L, E",	"LD L, H",	"LD L, L",	"LD L, (HL)",	"LD L, A",
-	"LD (HL), B",	"LD (HL), C",	"LD (HL), D",	"LD (HL), E","LD (HL), H",	"LD (HL), L",	"HALT",			"LD (HL), A",	"LD A, B",	"LD A, C",		"LD A, D",		"LD A, E",	"LD A, H",	"LD A, L",	"LD A, (HL)",	"LD A, A",
+	"LD (HL), B",	"LD (HL), C",	"LD (HL), D",	"LD (HL), E","LD (HL), H",	"LD (HL), L",	"HALT",			"LD (HL), A","LD A, B",		"LD A, C",		"LD A, D",		"LD A, E",	"LD A, H",	"LD A, L",	"LD A, (HL)",	"LD A, A",
 	"ADD A, B",		"ADD A, C",		"ADD A, D",		"ADD A, E",	"ADD A, H",		"ADD A, L",		"ADD A, (HL)",	"ADD A, A",	"ADC A, B",		"ADC A, C",		"ADC A, D",		"ADC A, E",	"ADC A, H",	"ADC A, L",	"ADC A, (HL)",	"ADC A, A",
 	"SUB B",			"SUB C",			"SUB D",			"SUB E",		"SUB H",			"SUB L",			"SUB (HL)",		"SUB A",		"SBC A, B",		"SBC A, C",		"SBC A, D",		"SBC A, E",	"SBC A, H",	"SBC A, L",	"SBC A, (HL)",	"SBC A, A",
 	"AND B",			"AND C",			"AND D",			"AND E",		"AND H",			"AND L",			"AND (HL)",		"AND A",		"XOR B",			"XOR C",			"XOR D",			"XOR E",		"XOR H",		"XOR L",		"XOR (HL)",		"XOR A",
@@ -23,7 +23,7 @@ constexpr const char* _opTemplate[256] = {
 	"RET NZ",		"POP BC",		"JP NZ, a",		"JP a",		"CALL NZ, a",	"PUSH BC",		"ADD A, d",		"RST 00H",	"RET Z",			"RET",			"JP Z, a",		"PREFIX",	"CALL Z, a","CALL a",	"ADC A, d",		"RST 08H",
 	"RET NC",		"POP DE",		"JP NC, a",		"ILL_D3",	"CALL NC, a",	"PUSH DE",		"SUB d",			"RST 10H",	"RET C",			"RETI",			"JP C, a",		"ILL_DB",	"CALL C, a","ILL_DD",	"SBC A, d",		"RST 18H",
 	"LDH (c), A",	"POP HL",		"LD ($FF00+C), A","ILL_E3","ILL_E4",		"PUSH HL",		"AND d",			"RST 20H",	"ADD SP, d",	"JP HL",			"LD (a), A",	"ILL_EB",	"ILL_EC",	"ILL_ED",	"XOR d",			"RST 28H",
-	"LDH A, (c)",	"POP AF",		"LD A, ($FF00+C)","DI",		"ILL_F4",		"PUSH AF",		"OR d",			"RST 30H",	"LD HL, SP+d",	"LD SP, HL",	"LD A, (a)",	"EI",		"ILL_FC",		"ILL_FD",	"CP d",			"RST 38H"
+	"LDH A, (c)",	"POP AF",		"LD A, ($FF00+C)","DI",		"ILL_F4",		"PUSH AF",		"OR d",			"RST 30H",	"LD HL, SP+d",	"LD SP, HL",	"LD A, (a)",	"EI",			"ILL_FC",	"ILL_FD",	"CP d",			"RST 38H"
 };
 
 constexpr const char* _cbTemplate[256] = {
@@ -93,8 +93,7 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 
 			//Jump addresses, memory addresses
 			case 'a': getOperand((uint16_t)(byteCode[1] | (byteCode[2] << 8))); break;
-			case 'b': str.WriteAll('$', HexUtilities::ToHex(byteCode[1])); break;
-			case 'c': str.WriteAll('$', HexUtilities::ToHex((uint16_t)(0xFF00 | byteCode[1]))); break;
+			case 'c': getOperand((uint16_t)(0xFF00 | byteCode[1])); break;
 
 			//Immediate values
 			case 'd': str.WriteAll("$", HexUtilities::ToHex(byteCode[1])); break;
@@ -112,7 +111,6 @@ int32_t GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Console* con
 {
 	return -1;
 }
-
 
 uint8_t GameboyDisUtils::GetOpSize(uint8_t opCode)
 {
@@ -134,4 +132,9 @@ bool GameboyDisUtils::IsReturnInstruction(uint8_t opCode)
 		opCode == 0xC0 || opCode == 0xC8 || opCode == 0xD0 || opCode == 0xD8 || //Conditional RET
 		opCode == 0xC9 || opCode == 0xD9 //Unconditional RET/RETI
 	);
+}
+
+string GameboyDisUtils::GetOpTemplate(uint8_t op, bool prefixed)
+{
+	return prefixed ? _cbTemplate[op] : _opTemplate[op];
 }

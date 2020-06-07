@@ -42,6 +42,7 @@
 #include "InternalRegisters.h"
 #include "AluMulDiv.h"
 #include "Assembler.h"
+#include "GbAssembler.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/IpsPatcher.h"
@@ -74,7 +75,6 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
 	_scriptManager.reset(new ScriptManager(this));
-	_assembler.reset(new Assembler(_labelManager));
 
 	if(_cart->GetGameboy()) {
 		_gbDebugger.reset(new GbDebugger(this));
@@ -715,9 +715,13 @@ shared_ptr<Console> Debugger::GetConsole()
 	return _console;
 }
 
-shared_ptr<Assembler> Debugger::GetAssembler()
+shared_ptr<IAssembler> Debugger::GetAssembler(CpuType cpuType)
 {
-	return _assembler;
+	if(cpuType == CpuType::Gameboy) {
+		return std::dynamic_pointer_cast<IAssembler>(_gbDebugger->GetAssembler());
+	} else {
+		return std::dynamic_pointer_cast<IAssembler>(_cpuDebugger->GetAssembler());
+	}
 }
 
 template void Debugger::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);

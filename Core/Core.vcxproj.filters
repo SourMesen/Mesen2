@@ -488,9 +488,6 @@
     <ClInclude Include="Profiler.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="Assembler.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="Spc7110.h">
       <Filter>SNES\Coprocessors\SPC7110</Filter>
     </ClInclude>
@@ -589,6 +586,15 @@
     </ClInclude>
     <ClInclude Include="GbDmaController.h">
       <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="Assembler.h">
+      <Filter>Debugger\Assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="GbAssembler.h">
+      <Filter>Debugger\Assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="IAssembler.h">
+      <Filter>Debugger\Assembler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -875,9 +881,6 @@
     <ClCompile Include="Profiler.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="Assembler.cpp">
-      <Filter>Debugger</Filter>
-    </ClCompile>
     <ClCompile Include="Spc7110.cpp">
       <Filter>SNES\Coprocessors\SPC7110</Filter>
     </ClCompile>
@@ -937,6 +940,12 @@
     </ClCompile>
     <ClCompile Include="GbDmaController.cpp">
       <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="Assembler.cpp">
+      <Filter>Debugger\Assembler</Filter>
+    </ClCompile>
+    <ClCompile Include="GbAssembler.cpp">
+      <Filter>Debugger\Assembler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1026,6 +1035,9 @@
     </Filter>
     <Filter Include="Debugger\EventManager">
       <UniqueIdentifier>{b1753ff0-0c73-4acf-978b-1964222e01c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debugger\Assembler">
+      <UniqueIdentifier>{8abb14c6-e2ee-48cb-ad91-38402cb8510c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

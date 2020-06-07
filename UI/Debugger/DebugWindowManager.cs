@@ -111,13 +111,13 @@ namespace Mesen.GUI.Debugger
 			throw new Exception("Invalid CPU type");
 		}
 
-		public static void OpenAssembler(string code = "", int startAddress = 0, int blockLength = 0)
+		public static void OpenAssembler(CpuType cpuType, string code = "", int startAddress = 0, int blockLength = 0)
 		{
 			if(_openedWindows.Count == 0) {
 				DebugWorkspaceManager.GetWorkspace();
 			}
 
-			frmAssembler frm = new frmAssembler(code, startAddress, blockLength);
+			frmAssembler frm = new frmAssembler(cpuType, code, startAddress, blockLength);
 			frm.Icon = Properties.Resources.Chip;
 			_openedWindows.Add(frm);
 			frm.FormClosed += Debugger_FormClosed;

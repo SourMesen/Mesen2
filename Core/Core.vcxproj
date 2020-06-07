@@ -69,6 +69,7 @@
     <ClInclude Include="GameboyDisUtils.h" />
     <ClInclude Include="GameboyHeader.h" />
     <ClInclude Include="GbApu.h" />
+    <ClInclude Include="GbAssembler.h" />
     <ClInclude Include="GbCart.h" />
     <ClInclude Include="GbCartFactory.h" />
     <ClInclude Include="GbCpu.h" />
@@ -86,6 +87,7 @@
     <ClInclude Include="GbTimer.h" />
     <ClInclude Include="GbTypes.h" />
     <ClInclude Include="GbWaveChannel.h" />
+    <ClInclude Include="IAssembler.h" />
     <ClInclude Include="NecDspDebugger.h" />
     <ClInclude Include="ForceDisconnectMessage.h" />
     <ClInclude Include="GameClient.h" />
@@ -279,6 +281,7 @@
     <ClCompile Include="Gameboy.cpp" />
     <ClCompile Include="GameboyDisUtils.cpp" />
     <ClCompile Include="GbApu.cpp" />
+    <ClCompile Include="GbAssembler.cpp" />
     <ClCompile Include="GbCpu.cpp" />
     <ClCompile Include="GbDebugger.cpp" />
     <ClCompile Include="GbDmaController.cpp" />

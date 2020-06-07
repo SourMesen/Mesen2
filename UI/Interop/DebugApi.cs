@@ -176,12 +176,12 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetCdlData([In]byte[] cdlData, Int32 length);
 		[DllImport(DllPath)] public static extern void MarkBytesAs(UInt32 start, UInt32 end, CdlFlags type);
 
-		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string code, UInt32 startAddress, [In, Out]Int16[] assembledCodeBuffer);
-		public static Int16[] AssembleCode(string code, UInt32 startAddress)
+		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string code, UInt32 startAddress, [In, Out]Int16[] assembledCodeBuffer);
+		public static Int16[] AssembleCode(CpuType cpuType, string code, UInt32 startAddress)
 		{
 			code = code.Replace(Environment.NewLine, "\n");
 			Int16[] assembledCode = new Int16[100000];
-			UInt32 size = DebugApi.AssembleCodeWrapper(code, startAddress, assembledCode);
+			UInt32 size = DebugApi.AssembleCodeWrapper(cpuType, code, startAddress, assembledCode);
 			Array.Resize(ref assembledCode, (int)size);
 			return assembledCode;
 		}

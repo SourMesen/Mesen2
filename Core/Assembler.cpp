@@ -415,6 +415,10 @@ Assembler::Assembler(shared_ptr<LabelManager> labelManager)
 	_labelManager = labelManager;
 }
 
+Assembler::~Assembler()
+{
+}
+
 uint32_t Assembler::AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode)
 {
 	for(uint8_t i = 0; i < 255; i++) {
