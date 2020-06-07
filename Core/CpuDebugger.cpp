@@ -141,7 +141,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock())) {
 			//Memory access was a read on an uninitialized memory address
-			if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+			if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
 				breakSource = BreakSource::BreakOnUninitMemoryRead;
 				_step->StepCount = 0;
 			}

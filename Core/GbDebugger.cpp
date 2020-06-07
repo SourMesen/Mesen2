@@ -116,7 +116,7 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 		if(addr < 0xFE00 || addr >= 0xFF80) {
 			if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock())) {
 				//Memory access was a read on an uninitialized memory address
-				if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+				if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
 					breakSource = BreakSource::BreakOnUninitMemoryRead;
 					_step->StepCount = 0;
 				}
