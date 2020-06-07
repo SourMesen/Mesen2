@@ -198,7 +198,7 @@ struct GbPpuState
 
 struct GbDmaControllerState
 {
-	uint8_t OamDmaDest;
+	uint8_t OamDmaSource;
 	uint8_t DmaStartDelay;
 	uint8_t InternalDest;
 	uint8_t DmaCounter;
@@ -213,16 +213,16 @@ struct GbDmaControllerState
 
 struct GbTimerState
 {
-	uint16_t Divider = 0;
+	uint16_t Divider;
 
-	bool NeedReload = false; //Set after TIMA (_counter) overflowed, next cycle will reload TMA into TIMA
-	bool Reloaded = false; //Set during the cycle on which TIMA is reloaded (affects TMA/TIMA writes)
-	uint8_t Counter = 0;
-	uint8_t Modulo = 0;
+	bool NeedReload; //Set after TIMA (_counter) overflowed, next cycle will reload TMA into TIMA
+	bool Reloaded; //Set during the cycle on which TIMA is reloaded (affects TMA/TIMA writes)
+	uint8_t Counter;
+	uint8_t Modulo;
 
-	uint8_t Control = 0;
-	bool TimerEnabled = false;
-	uint16_t TimerDivider = 1024;
+	uint8_t Control;
+	bool TimerEnabled;
+	uint16_t TimerDivider;
 };
 
 struct GbSquareState
@@ -383,5 +383,7 @@ struct GbState
 	GbPpuState Ppu;	
 	GbApuDebugState Apu;
 	GbMemoryManagerState MemoryManager;
+	GbTimerState Timer;
+	GbDmaControllerState Dma;
 	bool HasBattery;
 };

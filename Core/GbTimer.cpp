@@ -21,6 +21,11 @@ GbTimer::~GbTimer()
 {
 }
 
+GbTimerState GbTimer::GetState()
+{
+	return _state;
+}
+
 void GbTimer::Exec()
 {
 	if((_state.Divider & 0x03) == 2) {
@@ -70,7 +75,6 @@ uint8_t GbTimer::Read(uint16_t addr)
 
 void GbTimer::Write(uint16_t addr, uint8_t value)
 {
-	//TODO properly detect edges when setting new values to registers or disabling timer, etc.
 	switch(addr) {
 		case 0xFF04:
 			SetDivider(0);

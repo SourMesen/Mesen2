@@ -196,8 +196,53 @@ namespace Mesen.GUI.Debugger
 				new RegEntry("$FF4B", "Window X (WX)", ppu.WindowX, Format.X8),
 			});
 
+			GbTimerState timer = gb.Timer;
+			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("$FF04-7", "Timer", null),
+				new RegEntry("$FF04", "DIV - Divider", timer.Divider, Format.X16),
+				new RegEntry("$FF05", "TIMA - Counter", timer.Counter, Format.X8),
+				new RegEntry("$FF06", "TMA - Modulo", timer.Modulo, Format.X8),
+				new RegEntry("$FF07", "TAC - Control", timer.Control, Format.X8)
+			});
+
+			GbDmaControllerState dma = gb.Dma;
+			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("", "DMA", null),
+				new RegEntry("$FF46", "OAM DMA - Source", (dma.OamDmaSource << 8), Format.X16),
+				new RegEntry("$FF51-2", "CGB - Source", dma.CgbDmaSource, Format.X16),
+				new RegEntry("$FF53-4", "CGB - Destination", dma.CgbDmaDest, Format.X16),
+				new RegEntry("$FF55.0-6", "CGB - Length", dma.CgbDmaLength, Format.X8),
+				new RegEntry("$FF55.7", "CGB - HDMA Done", dma.CgbHdmaDone),
+				new RegEntry("", "CGB - HDMA Running", dma.CgbHdmaRunning),
+			});
+
+			GbMemoryManagerState memManager = gb.MemoryManager;
+			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("", "IRQ", null),
+				new RegEntry("$FF0F", "IF - IRQ Flags", memManager.IrqRequests, Format.X8),
+				new RegEntry("$FF0F.0", "IF - Vertical Blank IRQ", (memManager.IrqRequests & 0x01) != 0),
+				new RegEntry("$FF0F.1", "IF - STAT IRQ", (memManager.IrqRequests & 0x02) != 0),
+				new RegEntry("$FF0F.2", "IF - Timer IRQ", (memManager.IrqRequests & 0x04) != 0),
+				new RegEntry("$FF0F.3", "IF - Serial IRQ", (memManager.IrqRequests & 0x08) != 0),
+				new RegEntry("$FF0F.4", "IF - Joypad IRQ", (memManager.IrqRequests & 0x10) != 0),
+
+				new RegEntry("$FFFF", "IE - IRQ Enabled", memManager.IrqEnabled, Format.X8),
+				new RegEntry("$FFFF.0", "IE - Vertical Blank IRQ Enabled", (memManager.IrqEnabled & 0x01) != 0),
+				new RegEntry("$FFFF.1", "IE - STAT IRQ Enabled", (memManager.IrqEnabled & 0x02) != 0),
+				new RegEntry("$FFFF.2", "IE - Timer IRQ Enabled", (memManager.IrqEnabled & 0x04) != 0),
+				new RegEntry("$FFFF.3", "IE - Serial IRQ Enabled", (memManager.IrqEnabled & 0x08) != 0),
+				new RegEntry("$FFFF.4", "IE - Joypad IRQ Enabled", (memManager.IrqEnabled & 0x10) != 0),
+
+				new RegEntry("", "Misc", null),
+				new RegEntry("$FF00", "Input Select", memManager.InputSelect, Format.X8),
+				new RegEntry("$FF01", "Serial Data", memManager.SerialData, Format.X8),
+				new RegEntry("$FF02", "Serial Control", memManager.SerialControl, Format.X8),
+				new RegEntry("", "Serial Bit Count", memManager.SerialBitCount),
+			});
+
 			GbSquareState sq1 = gb.Apu.Square1;
 			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("", "APU", null),
 				new RegEntry("$FF10-$FF14", "Square 1", null),
 				new RegEntry("$FF10.0-2", "Sweep Shift", sq1.SweepShift),
 				new RegEntry("$FF10.3", "Sweep Negate", sq1.SweepNegate),

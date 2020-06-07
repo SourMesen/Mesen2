@@ -63,7 +63,12 @@ namespace Mesen.GUI.Debugger
 			ctrlHexBox.Width = ctrlHexBox.RequiredWidth;
 			ctrlHexBox.ByteProvider = new StaticByteProvider(new byte[0]);
 
-			txtStartAddress.Text = _startAddress.ToString("X6");
+			if(_cpuType == CpuType.Gameboy) {
+				txtStartAddress.MaxLength = 4;
+				txtStartAddress.Text = _startAddress.ToString("X4");
+			} else {
+				txtStartAddress.Text = _startAddress.ToString("X6");
+			}
 		}
 
 		private void InitShortcuts()

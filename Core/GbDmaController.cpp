@@ -10,6 +10,11 @@ GbDmaController::GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu)
 	_state = {};
 }
 
+GbDmaControllerState GbDmaController::GetState()
+{
+	return _state;
+}
+
 void GbDmaController::Exec()
 {
 	if(_state.DmaCounter > 0) {
@@ -18,12 +23,12 @@ void GbDmaController::Exec()
 		}
 
 		_state.DmaCounter--;
-		_state.DmaReadBuffer = _memoryManager->ReadDma((_state.OamDmaDest << 8) + (160 - _state.DmaCounter));
+		_state.DmaReadBuffer = _memoryManager->ReadDma((_state.OamDmaSource << 8) + (160 - _state.DmaCounter));
 	}
 
 	if(_state.DmaStartDelay > 0) {
 		if(--_state.DmaStartDelay == 0) {
-			_state.InternalDest = _state.OamDmaDest;
+			_state.InternalDest = _state.OamDmaSource;
 			_state.DmaCounter = 161;
 		}
 	}
@@ -36,13 +41,13 @@ bool GbDmaController::IsOamDmaRunning()
 
 uint8_t GbDmaController::Read()
 {
-	return _state.OamDmaDest;
+	return _state.OamDmaSource;
 }
 
 void GbDmaController::Write(uint8_t value)
 {
 	_state.DmaStartDelay = 1;
-	_state.OamDmaDest = value;
+	_state.OamDmaSource = value;
 }
 
 uint8_t GbDmaController::ReadCgb(uint16_t addr)
@@ -138,7 +143,7 @@ void GbDmaController::ProcessDmaBlock()
 void GbDmaController::Serialize(Serializer& s)
 {
 	s.Stream(
-		_state.OamDmaDest, _state.DmaStartDelay, _state.InternalDest, _state.DmaCounter, _state.DmaReadBuffer,
+		_state.OamDmaSource, _state.DmaStartDelay, _state.InternalDest, _state.DmaCounter, _state.DmaReadBuffer,
 		_state.CgbDmaDest, _state.CgbDmaLength, _state.CgbDmaSource, _state.CgbHdmaDone, _state.CgbHdmaRunning
 	);
 }

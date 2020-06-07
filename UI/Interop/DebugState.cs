@@ -657,6 +657,35 @@ namespace Mesen.GUI
 		public RegisterAccess[] MemoryAccessType;
 	}
 
+	public struct GbDmaControllerState
+	{
+		public byte OamDmaSource;
+		public byte DmaStartDelay;
+		public byte InternalDest;
+		public byte DmaCounter;
+		public byte DmaReadBuffer;
+
+		public UInt16 CgbDmaSource;
+		public UInt16 CgbDmaDest;
+		public byte CgbDmaLength;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaDone;
+		[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaRunning;
+	};
+
+	public struct GbTimerState
+	{
+		public UInt16 Divider;
+
+		[MarshalAs(UnmanagedType.I1)] public bool NeedReload;
+		[MarshalAs(UnmanagedType.I1)] public bool Reloaded;
+		public byte Counter;
+		public byte Modulo;
+
+		public byte Control;
+		[MarshalAs(UnmanagedType.I1)] public bool TimerEnabled;
+		public UInt16 TimerDivider;
+	};
+
 	public enum GbType
 	{
 		Gb = 0,
@@ -670,6 +699,8 @@ namespace Mesen.GUI
 		public GbPpuState Ppu;
 		public GbApuDebugState Apu;
 		public GbMemoryManagerState MemoryManager;
+		public GbTimerState Timer;
+		public GbDmaControllerState Dma;
 		[MarshalAs(UnmanagedType.I1)] public bool HasBattery;
 	}
 

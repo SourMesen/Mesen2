@@ -18,6 +18,8 @@ private:
 public:
 	GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu);
 
+	GbDmaControllerState GetState();
+
 	void Exec();
 
 	bool IsOamDmaRunning();

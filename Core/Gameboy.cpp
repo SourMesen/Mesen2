@@ -160,6 +160,8 @@ GbState Gameboy::GetState()
 	state.Ppu = _ppu->GetState();
 	state.Apu = _apu->GetState();
 	state.MemoryManager = _memoryManager->GetState();
+	state.Dma = _dmaController->GetState();
+	state.Timer = _timer->GetState();
 	state.HasBattery = _hasBattery;
 	return state;
 }
