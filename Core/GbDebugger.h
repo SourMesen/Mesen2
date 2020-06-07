@@ -9,7 +9,7 @@ class TraceLogger;
 class Gameboy;
 class CallstackManager;
 class MemoryAccessCounter;
-class MemoryManager;
+class Console;
 class BreakpointManager;
 class EmuSettings;
 class GbEventManager;
@@ -19,10 +19,10 @@ class CodeDataLogger;
 class GbDebugger final : public IDebugger
 {
 	Debugger* _debugger;
+	Console* _console;
 	Disassembler* _disassembler;
 	TraceLogger* _traceLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
-	MemoryManager* _memoryManager;
 	Gameboy* _gameboy;
 	EmuSettings* _settings;
 
@@ -35,6 +35,7 @@ class GbDebugger final : public IDebugger
 
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
+	bool _enableBreakOnUninitRead = false;
 
 public:
 	GbDebugger(Debugger* debugger);

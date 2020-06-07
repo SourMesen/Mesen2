@@ -477,9 +477,9 @@ namespace Mesen.GUI.Forms
 			
 			//Remove/disable all tools that aren't useful when running a plain GB game
 			mnuGbDebugger.Text = isGameboyMode ? "Debugger" : "Game Boy Debugger";
-			mnuDebugger.Enabled = !isGameboyMode;
+			mnuDebugger.Enabled = running && !isGameboyMode;
 			mnuDebugger.Visible = !isGameboyMode;
-			mnuSpcDebugger.Enabled = !isGameboyMode;
+			mnuSpcDebugger.Enabled = running && !isGameboyMode;
 			mnuSpcDebugger.Visible = !isGameboyMode;
 			sepCoprocessors.Visible = !isGameboyMode;
 		}

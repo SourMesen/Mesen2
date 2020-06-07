@@ -22,11 +22,11 @@
 GbDebugger::GbDebugger(Debugger* debugger)
 {
 	_debugger = debugger;
+	_console = debugger->GetConsole().get();
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_gameboy = debugger->GetConsole()->GetCartridge()->GetGameboy();
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 	_settings = debugger->GetConsole()->GetSettings().get();
 	_codeDataLogger.reset(new CodeDataLogger(_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
 
@@ -35,6 +35,11 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
+
+	if(_gameboy->GetState().MemoryManager.ApuCycleCount == 0) {
+		//Enable breaking on uninit reads when debugger is opened at power on
+		_enableBreakOnUninitRead = true;
+	}
 }
 
 GbDebugger::~GbDebugger()
@@ -97,18 +102,27 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 			_step->StepCount--;
 		}
 
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _console->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _console->GetMasterClock());
 	} else {
 		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
 
-		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+		if(addr < 0xFE00 || addr >= 0xFF80) {
+			if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock())) {
+				//Memory access was a read on an uninitialized memory address
+				if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+					breakSource = BreakSource::BreakOnUninitMemoryRead;
+					_step->StepCount = 0;
+				}
+			}
+		}
+
 		if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {
 			_eventManager->AddEvent(DebugEventType::Register, operation);
 		}
@@ -131,7 +145,7 @@ void GbDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType 
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
 }
 
 void GbDebugger::Run()

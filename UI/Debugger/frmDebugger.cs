@@ -152,8 +152,6 @@ namespace Mesen.GUI.Debugger
 					mnuBreakOnWdm.Visible = false;
 					mnuBreakOnCop.Visible = false;
 					mnuBreakOnStp.Visible = false;
-					sepBreakOnUnitRead.Visible = false;
-					mnuBreakOnUnitRead.Visible = false;
 					ctrlPpuStatus.Visible = false;
 
 					this.ctrlGameboyStatus = new ctrlGameboyStatus();

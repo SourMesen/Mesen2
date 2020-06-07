@@ -32,7 +32,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
 
 bool MemoryAccessCounter::IsAddressUninitialized(AddressInfo &addressInfo)
 {
-	if(addressInfo.Type != SnesMemoryType::PrgRom && addressInfo.Type != SnesMemoryType::SaveRam) {
+	if(addressInfo.Type != SnesMemoryType::PrgRom && addressInfo.Type != SnesMemoryType::SaveRam && addressInfo.Type != SnesMemoryType::GbPrgRom && addressInfo.Type != SnesMemoryType::GbBootRom) {
 		return _counters[(int)addressInfo.Type][addressInfo.Address].WriteCount == 0;
 	}
 	return false;
