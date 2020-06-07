@@ -214,6 +214,8 @@ void Debugger::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
 	if(cycle == 0 && scanline == _step->BreakScanline) {
 		_step->BreakScanline = -1;
 		SleepUntilResume(BreakSource::PpuStep);
+	} else if(_breakRequestCount > 0) {
+		SleepUntilResume(BreakSource::Unspecified);
 	}
 
 	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
