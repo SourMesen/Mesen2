@@ -116,7 +116,7 @@ namespace Mesen.GUI.Debugger
 			syntax.styles.Add(new TextStyle(new SolidBrush(cfg.CodeAddressColor), Brushes.Transparent, FontStyle.Regular));
 			syntax.styles.Add(new TextStyle(new SolidBrush(cfg.CodeCommentColor), Brushes.Transparent, FontStyle.Regular));
 			syntax.rules.Add(new RuleDesc() { style = syntax.styles[0], pattern = @"(\n|^)[ \t]*(?<range>[a-zA-Z]{3}[*]{0,1})( |[^:a-zA-Z])" });
-			syntax.rules.Add(new RuleDesc() { style = syntax.styles[1], pattern = @"(\n|^)[ \t]*(?<range>[a-zA-Z_]*):" });
+			syntax.rules.Add(new RuleDesc() { style = syntax.styles[1], pattern = @"(\n|^)[ \t]*(?<range>[@_a-zA-Z]+[@_a-zA-Z0-9]*):" });
 			syntax.rules.Add(new RuleDesc() { style = syntax.styles[1], pattern = @"(\n|^)[ \t]*[a-zA-Z]{3}[ \t]+[(]{0,1}(?<range>[@_a-zA-Z]([@_a-zA-Z0-9])+)" });
 			syntax.rules.Add(new RuleDesc() { style = syntax.styles[2], pattern = @"(\n|^)[ \t]*[a-zA-Z]{3}[ \t]+(?<range>#[$]{0,1}([A-Fa-f0-9])+)" });
 			syntax.rules.Add(new RuleDesc() { style = syntax.styles[3], pattern = @"(\n|^)[ \t]*[a-zA-Z]{3}[ \t]+[\[(]{0,1}(?<range>([$][A-Fa-f0-9]+)|([0-9]+))[\])]{0,1}[ \t]*(,X|,Y|,x|,y|,s|,s\),y){0,1}[\])]{0,1}" });
