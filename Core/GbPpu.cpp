@@ -677,6 +677,10 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 				
 				if(!_state.LcdEnabled) {
 					//Reset LCD to top of screen when it gets turned off
+					if(_state.Mode != PpuMode::VBlank) {
+						_console->BreakImmediately(BreakSource::GbDisableLcdOutsideVblank);
+					}
+
 					_state.Cycle = 0;
 					_state.Scanline = 0;
 					_state.Ly = 0;
@@ -752,41 +756,82 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 	}
 }
 
+bool GbPpu::IsVramReadAllowed()
+{
+	return _state.Mode <= PpuMode::VBlank || (_state.Mode == PpuMode::OamEvaluation && _state.Cycle < 80);
+}
+
+bool GbPpu::IsVramWriteAllowed()
+{
+	return _state.Mode <= PpuMode::OamEvaluation;
+}
+
 uint8_t GbPpu::ReadVram(uint16_t addr)
 {
-	if(_state.Mode <= PpuMode::VBlank || (_state.Mode == PpuMode::OamEvaluation && _state.Cycle < 80)) {
+	if(IsVramReadAllowed()) {
 		return _vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)];
 	} else {
+		_console->BreakImmediately(BreakSource::GbInvalidVramAccess);
 		return 0xFF;
 	}
 }
 
+uint8_t GbPpu::PeekVram(uint8_t addr)
+{
+	return IsVramReadAllowed() ? _vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)] : 0xFF;
+}
+
 void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 {
-	if(_state.Mode <= PpuMode::OamEvaluation) {
+	if(IsVramWriteAllowed()) {
 		_vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)] = value;
+	} else {
+		_console->BreakImmediately(BreakSource::GbInvalidVramAccess);
 	}
+}
+
+bool GbPpu::IsOamWriteAllowed()
+{
+	if(_memoryManager->IsOamDmaRunning()) {
+		return false;
+	}
+
+	if(_state.Scanline == 0 && _isFirstFrame) {
+		return _state.Mode == PpuMode::HBlank && _state.Cycle != 77 && _state.Cycle != 78;
+	} else {
+		return _state.Mode <= PpuMode::VBlank || (_state.Cycle >= 80 && _state.Cycle < 84);
+	}
+}
+
+bool GbPpu::IsOamReadAllowed()
+{
+	if(_memoryManager->IsOamDmaRunning()) {
+		return false;
+	}
+
+	if(_state.Scanline == 0 && _isFirstFrame) {
+		return _state.Mode == PpuMode::HBlank;
+	} else {
+		return _state.Mode == PpuMode::VBlank || (_state.Mode == PpuMode::HBlank && _state.Cycle != 3);
+	}
+}
+
+uint8_t GbPpu::PeekOam(uint8_t addr)
+{
+	if(addr < 0xA0) {
+		return IsOamReadAllowed() ? _oam[addr] : 0xFF;
+	}
+	return 0;
 }
 
 uint8_t GbPpu::ReadOam(uint8_t addr)
 {
 	if(addr < 0xA0) {
-		if(_memoryManager->IsOamDmaRunning()) {
-			return 0xFF;
-		}
-
-		if(_state.Scanline == 0 && _isFirstFrame) {
-			if(_state.Mode == PpuMode::HBlank) {
-				return _oam[addr];
-			} else {
-				return 0xFF;
-			}
+		if(IsOamReadAllowed()) {
+			return _oam[addr];
 		} else {
-			if(_state.Mode == PpuMode::VBlank || (_state.Mode == PpuMode::HBlank && _state.Cycle != 3)) {
-				return _oam[addr];
-			} else {
-				return 0xFF;
-			}
+			_console->BreakImmediately(BreakSource::GbInvalidOamAccess);
+			return 0xFF;
 		}
 	}
 	return 0;
@@ -800,18 +845,10 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 	if(addr < 0xA0) {
 		if(forDma) {
 			_oam[addr] = value;
-		} else if(_memoryManager->IsOamDmaRunning()) {
-			return;
-		}
-
-		if(_state.Scanline == 0 && _isFirstFrame) {
-			if(_state.Mode == PpuMode::HBlank && _state.Cycle != 77 && _state.Cycle != 78) {
-				_oam[addr] = value;
-			}
+		} else if(IsOamWriteAllowed()) {
+			_oam[addr] = value;
 		} else {
-			if(_state.Mode <= PpuMode::VBlank || (_state.Cycle >= 80 && _state.Cycle < 84)) {
-				_oam[addr] = value;
-			}
+			_console->BreakImmediately(BreakSource::GbInvalidOamAccess);
 		}
 	}
 }

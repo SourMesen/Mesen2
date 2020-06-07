@@ -218,6 +218,18 @@ uint8_t* GbMemoryManager::GetMappedBlock(uint16_t addr)
 	return nullptr;
 }
 
+uint8_t GbMemoryManager::PeekRegister(uint16_t addr)
+{
+	//Peek on oam/vram to avoid triggering the invalid oam/vram access break options
+	if(addr >= 0xFE00 && addr <= 0xFE9F) {
+		return _ppu->PeekOam((uint8_t)addr);
+	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
+		return _ppu->PeekVram(addr);
+	} else {
+		ReadRegister(addr);
+	}
+}
+
 uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 {
 	if(addr >= 0xFF00) {

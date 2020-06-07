@@ -120,6 +120,13 @@
 			this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuBringToFrontOnBreak = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuBringToFrontOnPause = new System.Windows.Forms.ToolStripMenuItem();
+			this.sepGameboyBreak = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuGbBreakOnOamCorruption = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbBreakOnInvalidOamAccess = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbBreakOnInvalidVramAccess = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbBreakOnDisableLcdOutsideVblank = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbBreakOnInvalidOpCode = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbBreakOnNopLoad = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuFontOptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuIncreaseFontSize = new System.Windows.Forms.ToolStripMenuItem();
@@ -758,7 +765,14 @@
             this.mnuBreakOnUnitRead,
             this.toolStripMenuItem10,
             this.mnuBringToFrontOnBreak,
-            this.mnuBringToFrontOnPause});
+            this.mnuBringToFrontOnPause,
+            this.sepGameboyBreak,
+            this.mnuGbBreakOnOamCorruption,
+            this.mnuGbBreakOnInvalidOamAccess,
+            this.mnuGbBreakOnInvalidVramAccess,
+            this.mnuGbBreakOnDisableLcdOutsideVblank,
+            this.mnuGbBreakOnInvalidOpCode,
+            this.mnuGbBreakOnNopLoad});
 			this.mnuBreakOptions.Name = "mnuBreakOptions";
 			this.mnuBreakOptions.Size = new System.Drawing.Size(209, 22);
 			this.mnuBreakOptions.Text = "Break Options";
@@ -767,72 +781,120 @@
 			// mnuBreakOnPowerCycleReset
 			// 
 			this.mnuBreakOnPowerCycleReset.Name = "mnuBreakOnPowerCycleReset";
-			this.mnuBreakOnPowerCycleReset.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnPowerCycleReset.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnPowerCycleReset.Text = "Break on power/reset";
 			// 
 			// mnuBreakOnOpen
 			// 
 			this.mnuBreakOnOpen.Name = "mnuBreakOnOpen";
-			this.mnuBreakOnOpen.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnOpen.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnOpen.Text = "Break when debugger is opened";
 			// 
 			// sepBrkCopStpWdm
 			// 
 			this.sepBrkCopStpWdm.Name = "sepBrkCopStpWdm";
-			this.sepBrkCopStpWdm.Size = new System.Drawing.Size(258, 6);
+			this.sepBrkCopStpWdm.Size = new System.Drawing.Size(262, 6);
 			// 
 			// mnuBreakOnBrk
 			// 
 			this.mnuBreakOnBrk.Name = "mnuBreakOnBrk";
-			this.mnuBreakOnBrk.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnBrk.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnBrk.Text = "Break on BRK";
 			// 
 			// mnuBreakOnCop
 			// 
 			this.mnuBreakOnCop.Name = "mnuBreakOnCop";
-			this.mnuBreakOnCop.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnCop.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnCop.Text = "Break on COP";
 			// 
 			// mnuBreakOnStp
 			// 
 			this.mnuBreakOnStp.Name = "mnuBreakOnStp";
-			this.mnuBreakOnStp.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnStp.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnStp.Text = "Break on STP";
 			// 
 			// mnuBreakOnWdm
 			// 
 			this.mnuBreakOnWdm.Name = "mnuBreakOnWdm";
-			this.mnuBreakOnWdm.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnWdm.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnWdm.Text = "Break on WDM";
 			// 
 			// sepBreakOnUnitRead
 			// 
 			this.sepBreakOnUnitRead.Name = "sepBreakOnUnitRead";
-			this.sepBreakOnUnitRead.Size = new System.Drawing.Size(258, 6);
+			this.sepBreakOnUnitRead.Size = new System.Drawing.Size(262, 6);
 			// 
 			// mnuBreakOnUnitRead
 			// 
 			this.mnuBreakOnUnitRead.Name = "mnuBreakOnUnitRead";
-			this.mnuBreakOnUnitRead.Size = new System.Drawing.Size(261, 22);
+			this.mnuBreakOnUnitRead.Size = new System.Drawing.Size(265, 22);
 			this.mnuBreakOnUnitRead.Text = "Break on uninitialized memory read";
 			// 
 			// toolStripMenuItem10
 			// 
 			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(258, 6);
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(262, 6);
 			// 
 			// mnuBringToFrontOnBreak
 			// 
 			this.mnuBringToFrontOnBreak.Name = "mnuBringToFrontOnBreak";
-			this.mnuBringToFrontOnBreak.Size = new System.Drawing.Size(261, 22);
+			this.mnuBringToFrontOnBreak.Size = new System.Drawing.Size(265, 22);
 			this.mnuBringToFrontOnBreak.Text = "Bring debugger to front on break";
 			// 
 			// mnuBringToFrontOnPause
 			// 
 			this.mnuBringToFrontOnPause.Name = "mnuBringToFrontOnPause";
-			this.mnuBringToFrontOnPause.Size = new System.Drawing.Size(261, 22);
+			this.mnuBringToFrontOnPause.Size = new System.Drawing.Size(265, 22);
 			this.mnuBringToFrontOnPause.Text = "Bring debugger to front on pause";
 			this.mnuBringToFrontOnPause.Visible = false;
+			// 
+			// sepGameboyBreak
+			// 
+			this.sepGameboyBreak.Name = "sepGameboyBreak";
+			this.sepGameboyBreak.Size = new System.Drawing.Size(262, 6);
+			this.sepGameboyBreak.Visible = false;
+			// 
+			// mnuGbBreakOnOamCorruption
+			// 
+			this.mnuGbBreakOnOamCorruption.Name = "mnuGbBreakOnOamCorruption";
+			this.mnuGbBreakOnOamCorruption.Size = new System.Drawing.Size(265, 22);
+			this.mnuGbBreakOnOamCorruption.Text = "Break on OAM corruption";
+			this.mnuGbBreakOnOamCorruption.Visible = false;
+			// 
+			// mnuGbBreakOnInvalidOamAccess
+			// 
+			this.mnuGbBreakOnInvalidOamAccess.Name = "mnuGbBreakOnInvalidOamAccess";
+			this.mnuGbBreakOnInvalidOamAccess.Size = new System.Drawing.Size(265, 22);
+			this.mnuGbBreakOnInvalidOamAccess.Text = "Break on invalid OAM access";
+			this.mnuGbBreakOnInvalidOamAccess.Visible = false;
+			// 
+			// mnuGbBreakOnInvalidVramAccess
+			// 
+			this.mnuGbBreakOnInvalidVramAccess.Name = "mnuGbBreakOnInvalidVramAccess";
+			this.mnuGbBreakOnInvalidVramAccess.Size = new System.Drawing.Size(265, 22);
+			this.mnuGbBreakOnInvalidVramAccess.Text = "Break on invalid VRAM access";
+			this.mnuGbBreakOnInvalidVramAccess.Visible = false;
+			// 
+			// mnuGbBreakOnDisableLcdOutsideVblank
+			// 
+			this.mnuGbBreakOnDisableLcdOutsideVblank.Name = "mnuGbBreakOnDisableLcdOutsideVblank";
+			this.mnuGbBreakOnDisableLcdOutsideVblank.Size = new System.Drawing.Size(265, 22);
+			this.mnuGbBreakOnDisableLcdOutsideVblank.Text = "Break on LCD disable outside vblank";
+			this.mnuGbBreakOnDisableLcdOutsideVblank.Visible = false;
+			// 
+			// mnuGbBreakOnInvalidOpCode
+			// 
+			this.mnuGbBreakOnInvalidOpCode.Name = "mnuGbBreakOnInvalidOpCode";
+			this.mnuGbBreakOnInvalidOpCode.Size = new System.Drawing.Size(265, 22);
+			this.mnuGbBreakOnInvalidOpCode.Text = "Break on invalid instructions";
+			this.mnuGbBreakOnInvalidOpCode.Visible = false;
+			// 
+			// mnuGbBreakOnNopLoad
+			// 
+			this.mnuGbBreakOnNopLoad.Name = "mnuGbBreakOnNopLoad";
+			this.mnuGbBreakOnNopLoad.Size = new System.Drawing.Size(265, 22);
+			this.mnuGbBreakOnNopLoad.Text = "Break on LD B, B (nop)";
+			this.mnuGbBreakOnNopLoad.Visible = false;
 			// 
 			// toolStripMenuItem5
 			// 
@@ -1220,5 +1282,12 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuAutoResetCdl;
 	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
 	  private System.Windows.Forms.ToolStripMenuItem mnuShowMemoryMappings;
+	  private System.Windows.Forms.ToolStripSeparator sepGameboyBreak;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbBreakOnInvalidOamAccess;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbBreakOnInvalidVramAccess;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbBreakOnDisableLcdOutsideVblank;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbBreakOnInvalidOpCode;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbBreakOnNopLoad;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbBreakOnOamCorruption;
    }
 }

@@ -434,6 +434,18 @@ void Debugger::SuspendDebugger(bool release)
 	}
 }
 
+void Debugger::BreakImmediately(BreakSource source)
+{
+	if(source == BreakSource::GbDisableLcdOutsideVblank && !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnDisableLcdOutsideVblank)) {
+		return;
+	} else if(source == BreakSource::GbInvalidVramAccess && !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidVramAccess)) {
+		return;
+	} else if(source == BreakSource::GbInvalidOamAccess && !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOamAccess)) {
+		return;
+	}
+	SleepUntilResume(source);
+}
+
 void Debugger::GetState(DebugState &state, bool partialPpuState)
 {
 	state.MasterClock = _memoryManager->GetMasterClock();

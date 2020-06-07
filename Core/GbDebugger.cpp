@@ -95,6 +95,25 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 			_step->StepCount = 0;
 		}
 
+		if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
+			bool needBreak = false;
+			switch(value) {
+				case 0x40:
+					needBreak = _settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnNopLoad);
+					breakSource = BreakSource::GbNopLoad;
+					break;
+
+				case 0xD3: case 0xDB: case 0xDD: case 0xE3: case 0xE4: case 0xE8: case 0xEC: case 0xED: case 0xF4: case 0xFC: case 0xFD:
+					needBreak = _settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOpCode);
+					breakSource = BreakSource::GbInvalidOpCode;
+					break;
+			}
+
+			if(needBreak) {
+				_step->StepCount = 0;
+			}
+		}
+
 		_prevOpCode = value;
 		_prevProgramCounter = gbState.PC;
 

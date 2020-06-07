@@ -116,6 +116,8 @@ public:
 	void BreakRequest(bool release);
 	void SuspendDebugger(bool release);
 
+	void BreakImmediately(BreakSource source);
+
 	void ProcessBreakConditions(bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 
 	void GetState(DebugState &state, bool partialPpuState);

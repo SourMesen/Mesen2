@@ -25,6 +25,13 @@ namespace Mesen.GUI.Config
 		public bool BreakOnStp = false;
 		public bool BreakOnUninitRead = false;
 
+		public bool GbBreakOnInvalidOamAccess = false;
+		public bool GbBreakOnInvalidVramAccess = false;
+		public bool GbBreakOnDisableLcdOutsideVblank = false;
+		public bool GbBreakOnInvalidOpCode = false;
+		public bool GbBreakOnNopLoad = false;
+		public bool GbBreakOnOamCorruption = false;
+
 		public bool BreakOnOpen = true;
 		public bool BreakOnPowerCycleReset = true;
 		
@@ -77,6 +84,13 @@ namespace Mesen.GUI.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnWdm, BreakOnWdm);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnStp, BreakOnStp);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
+
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidOamAccess, GbBreakOnInvalidOamAccess);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidVramAccess, GbBreakOnInvalidVramAccess);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnDisableLcdOutsideVblank, GbBreakOnDisableLcdOutsideVblank);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidOpCode, GbBreakOnInvalidOpCode);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnNopLoad, GbBreakOnNopLoad);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnOamCorruption, GbBreakOnOamCorruption);
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Show);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);

@@ -998,6 +998,12 @@
 			<Value ID="BreakOnWdm">WDM</Value>
 			<Value ID="BreakOnStp">STP</Value>
 			<Value ID="BreakOnUninitMemoryRead">Uninitialized memory read</Value>
+			<Value ID="GbInvalidOamAccess">Invalid OAM access</Value>
+			<Value ID="GbInvalidVramAccess">Invalid VRAM access</Value>
+			<Value ID="GbDisableLcdOutsideVblank">Disabled LCD outside vblank</Value>
+			<Value ID="GbInvalidOpCode">Invalid instruction</Value>
+			<Value ID="GbNopLoad">LD B,B (NOP)</Value>
+			<Value ID="GbOamCorruption">OAM corruption bug triggered</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>

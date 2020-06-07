@@ -154,6 +154,14 @@ namespace Mesen.GUI.Debugger
 					mnuBreakOnStp.Visible = false;
 					ctrlPpuStatus.Visible = false;
 
+					sepGameboyBreak.Visible = true;
+					mnuGbBreakOnDisableLcdOutsideVblank.Visible = true;
+					mnuGbBreakOnInvalidOamAccess.Visible = true;
+					mnuGbBreakOnInvalidOpCode.Visible = true;
+					mnuGbBreakOnInvalidVramAccess.Visible = true;
+					mnuGbBreakOnNopLoad.Visible = true;
+					mnuGbBreakOnOamCorruption.Visible = false;
+
 					this.ctrlGameboyStatus = new ctrlGameboyStatus();
 					this.ctrlGameboyStatus.Padding = new Padding(3, 0, 3, 0);
 					this.ctrlGameboyStatus.Dock = DockStyle.Top;
@@ -345,8 +353,17 @@ namespace Mesen.GUI.Debugger
 			mnuBreakOnStp.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnStp); };
 			mnuBreakOnWdm.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnWdm); };
 			mnuBreakOnOpen.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnOpen); };
+
 			mnuBreakOnPowerCycleReset.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset); };
 			mnuBreakOnUnitRead.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BreakOnUninitRead); };
+
+			mnuGbBreakOnDisableLcdOutsideVblank.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.GbBreakOnDisableLcdOutsideVblank); };
+			mnuGbBreakOnInvalidOamAccess.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.GbBreakOnInvalidOamAccess); };
+			mnuGbBreakOnInvalidOpCode.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.GbBreakOnInvalidOpCode); };
+			mnuGbBreakOnInvalidVramAccess.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.GbBreakOnInvalidVramAccess); };
+			mnuGbBreakOnNopLoad.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.GbBreakOnNopLoad); };
+			mnuGbBreakOnOamCorruption.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.GbBreakOnOamCorruption); };
+
 			mnuBringToFrontOnBreak.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnBreak); };
 			mnuBringToFrontOnPause.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.BringToFrontOnPause); };
 			mnuAutoResetCdl.Click += (s, e) => { InvertFlag(ref ConfigManager.Config.Debug.Debugger.AutoResetCdl); };
@@ -389,6 +406,12 @@ namespace Mesen.GUI.Debugger
 			mnuBreakOnOpen.Checked = cfg.BreakOnOpen;
 			mnuBreakOnPowerCycleReset.Checked = cfg.BreakOnPowerCycleReset;
 			mnuBreakOnUnitRead.Checked = cfg.BreakOnUninitRead;
+			mnuGbBreakOnDisableLcdOutsideVblank.Checked = cfg.GbBreakOnDisableLcdOutsideVblank;
+			mnuGbBreakOnInvalidOamAccess.Checked = cfg.GbBreakOnInvalidOamAccess;
+			mnuGbBreakOnInvalidOpCode.Checked = cfg.GbBreakOnInvalidOpCode;
+			mnuGbBreakOnInvalidVramAccess.Checked = cfg.GbBreakOnInvalidVramAccess;
+			mnuGbBreakOnNopLoad.Checked = cfg.GbBreakOnNopLoad;
+			mnuGbBreakOnOamCorruption.Checked = cfg.GbBreakOnOamCorruption;
 			mnuBringToFrontOnBreak.Checked = cfg.BringToFrontOnBreak;
 			mnuBringToFrontOnPause.Checked = cfg.BringToFrontOnPause;
 		}

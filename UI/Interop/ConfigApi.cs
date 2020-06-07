@@ -64,6 +64,13 @@ namespace Mesen.GUI
 		
 		AutoResetCdl = 0x4000,
 
+		GbBreakOnInvalidOamAccess = 0x10000,
+		GbBreakOnInvalidVramAccess = 0x20000,
+		GbBreakOnDisableLcdOutsideVblank = 0x40000,
+		GbBreakOnInvalidOpCode = 0x80000,
+		GbBreakOnNopLoad = 0x100000,
+		GbBreakOnOamCorruption = 0x200000,
+
 		GbDebuggerEnabled = 0x02000000,
 		Cx4DebuggerEnabled = 0x04000000,
 		NecDspDebuggerEnabled = 0x08000000,

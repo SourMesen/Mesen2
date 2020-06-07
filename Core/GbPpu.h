@@ -90,10 +90,16 @@ public:
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
 
+	bool IsVramReadAllowed();
+	bool IsVramWriteAllowed();
 	uint8_t ReadVram(uint16_t addr);
+	uint8_t PeekVram(uint8_t addr);
 	void WriteVram(uint16_t addr, uint8_t value);
 
+	bool IsOamReadAllowed();
+	bool IsOamWriteAllowed();
 	uint8_t ReadOam(uint8_t addr);
+	uint8_t PeekOam(uint8_t addr);
 	void WriteOam(uint8_t addr, uint8_t value, bool forDma);
 
 	uint8_t ReadCgbRegister(uint16_t addr);

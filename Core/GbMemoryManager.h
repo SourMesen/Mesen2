@@ -60,6 +60,7 @@ public:
 	template<MemoryOperationType type = MemoryOperationType::Write>
 	void Write(uint16_t addr, uint8_t value);
 
+	uint8_t PeekRegister(uint16_t addr);
 	uint8_t ReadRegister(uint16_t addr);
 	void WriteRegister(uint16_t addr, uint8_t value);
 

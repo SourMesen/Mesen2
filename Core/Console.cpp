@@ -957,6 +957,13 @@ void Console::ProcessEvent(EventType type)
 	}
 }
 
+void Console::BreakImmediately(BreakSource source)
+{
+	if(_debugger) {
+		_debugger->BreakImmediately(source);
+	}
+}
+
 template void Console::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Console::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);

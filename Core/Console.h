@@ -181,4 +181,5 @@ public:
 	void ProcessPpuCycle(uint16_t scanline, uint16_t cycle);
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
+	void BreakImmediately(BreakSource source);
 };
