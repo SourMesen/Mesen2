@@ -20,9 +20,11 @@ namespace Mesen.GUI.Debugger.Workspace
 		public List<string> Sa1WatchValues = new List<string>();
 		public List<string> GsuWatchValues = new List<string>();
 		public List<string> NecDspWatchValues = new List<string>();
+		public List<string> GbWatchValues = new List<string>();
 		public List<CodeLabel> CpuLabels = new List<CodeLabel>();
 		public List<CodeLabel> SpcLabels = new List<CodeLabel>();
 		public List<CodeLabel> NecDspLabels = new List<CodeLabel>();
+		public List<CodeLabel> GbLabels = new List<CodeLabel>();
 		public List<string> TblMappings = null;
 		private string _filePath;
 
