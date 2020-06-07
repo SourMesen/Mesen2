@@ -155,7 +155,7 @@ namespace Mesen.GUI.Debugger.Code
 					if(absIndexedAddress.Address > absAddress.Address) {
 						location.ArrayIndex = absIndexedAddress.Address - absAddress.Address;
 					}
-				} else if(absAddress.Type == SnesMemoryType.Register) {
+				} else if(absAddress.Type.IsRelativeMemory() || absAddress.Type == SnesMemoryType.Register) {
 					relativeAddress = absAddress.Address;
 				} else {
 					relativeAddress = location.Label.GetRelativeAddress(this.CpuType).Address + (location.ArrayIndex ?? 0);

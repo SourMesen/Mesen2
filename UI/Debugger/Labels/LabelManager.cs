@@ -93,6 +93,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case SnesMemoryType.GbCartRam: return address | ((ulong)14 << 32);
 				case SnesMemoryType.GbHighRam: return address | ((ulong)15 << 32);
 				case SnesMemoryType.GbBootRom: return address | ((ulong)16 << 32);
+				case SnesMemoryType.GameboyMemory: return address | ((ulong)17 << 32);
 			}
 			throw new Exception("Invalid type");
 		}
@@ -248,6 +249,15 @@ namespace Mesen.GUI.Debugger.Labels
 
 		public static void SetDefaultLabels()
 		{
+			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy) {
+				SetGameboyDefaultLabels();
+			} else {
+				SetSnesDefaultLabels();
+			}
+		}
+
+		private static void SetSnesDefaultLabels()
+		{
 			//B-Bus registers
 			LabelManager.SetLabel(0x2100, SnesMemoryType.Register, "INIDISP", "Screen Display Register");
 			LabelManager.SetLabel(0x2101, SnesMemoryType.Register, "OBSEL", "Object Size and Character Size Register");
@@ -389,6 +399,66 @@ namespace Mesen.GUI.Debugger.Labels
 			LabelManager.SetLabel(0xFD, SnesMemoryType.SpcRam, "T0OUT", "Timer 0 output");
 			LabelManager.SetLabel(0xFE, SnesMemoryType.SpcRam, "T1OUT", "Timer 1 output");
 			LabelManager.SetLabel(0xFF, SnesMemoryType.SpcRam, "T2OUT", "Timer 2 output");
+		}
+
+		private static void SetGameboyDefaultLabels()
+		{
+			//LCD
+			LabelManager.SetLabel(0xFF40, SnesMemoryType.GameboyMemory, "LCDC_FF40", "LCD Control");
+			LabelManager.SetLabel(0xFF41, SnesMemoryType.GameboyMemory, "STAT_FF41", "LCD Status");
+			LabelManager.SetLabel(0xFF42, SnesMemoryType.GameboyMemory, "SCY_FF42", "Scroll Y");
+			LabelManager.SetLabel(0xFF43, SnesMemoryType.GameboyMemory, "SCX_FF43", "Scroll X");
+			LabelManager.SetLabel(0xFF44, SnesMemoryType.GameboyMemory, "LY_FF44", "LCD Y-Coordinate");
+			LabelManager.SetLabel(0xFF45, SnesMemoryType.GameboyMemory, "LYC_FF45", "LY Compare");
+
+			LabelManager.SetLabel(0xFF47, SnesMemoryType.GameboyMemory, "BGP_FF47", "BG Palette Data");
+			LabelManager.SetLabel(0xFF48, SnesMemoryType.GameboyMemory, "OBP0_FF48", "Object Palette 0 Data");
+			LabelManager.SetLabel(0xFF49, SnesMemoryType.GameboyMemory, "OBP1_FF49", "Object Palette 1 Data");
+
+			LabelManager.SetLabel(0xFF4A, SnesMemoryType.GameboyMemory, "WY_FF4A", "Window Y Position");
+			LabelManager.SetLabel(0xFF4B, SnesMemoryType.GameboyMemory, "WX_FF4B", "Window X Position");
+
+			//APU
+			LabelManager.SetLabel(0xFF10, SnesMemoryType.GameboyMemory, "NR10_FF10", "Channel 1 Sweep");
+			LabelManager.SetLabel(0xFF11, SnesMemoryType.GameboyMemory, "NR11_FF11", "Channel 1 Length/Wave Pattern Duty");
+			LabelManager.SetLabel(0xFF12, SnesMemoryType.GameboyMemory, "NR12_FF12", "Channel 1 Volume Envelope");
+			LabelManager.SetLabel(0xFF13, SnesMemoryType.GameboyMemory, "NR13_FF13", "Channel 1 Frequency Low");
+			LabelManager.SetLabel(0xFF14, SnesMemoryType.GameboyMemory, "NR14_FF14", "Channel 1 Frequency High");
+
+			LabelManager.SetLabel(0xFF16, SnesMemoryType.GameboyMemory, "NR21_FF16", "Channel 2 Length/Wave Pattern Duty");
+			LabelManager.SetLabel(0xFF17, SnesMemoryType.GameboyMemory, "NR22_FF17", "Channel 2 Volume Envelope");
+			LabelManager.SetLabel(0xFF18, SnesMemoryType.GameboyMemory, "NR23_FF18", "Channel 2 Frequency Low");
+			LabelManager.SetLabel(0xFF19, SnesMemoryType.GameboyMemory, "NR24_FF19", "Channel 2 Frequency High");
+			
+			LabelManager.SetLabel(0xFF1A, SnesMemoryType.GameboyMemory, "NR30_FF1A", "Channel 3 On/Off ");
+			LabelManager.SetLabel(0xFF1B, SnesMemoryType.GameboyMemory, "NR31_FF1B", "Channel 3 Length");
+			LabelManager.SetLabel(0xFF1C, SnesMemoryType.GameboyMemory, "NR32_FF1C", "Channel 3 Output Level");
+			LabelManager.SetLabel(0xFF1D, SnesMemoryType.GameboyMemory, "NR33_FF1D", "Channel 3 Frequency Low");
+			LabelManager.SetLabel(0xFF1E, SnesMemoryType.GameboyMemory, "NR34_FF1E", "Channel 3 Frequency High");
+
+			LabelManager.SetLabel(0xFF20, SnesMemoryType.GameboyMemory, "NR41_FF20", "Channel 4 Length");
+			LabelManager.SetLabel(0xFF21, SnesMemoryType.GameboyMemory, "NR42_FF21", "Channel 4 Volume Envelope");
+			LabelManager.SetLabel(0xFF22, SnesMemoryType.GameboyMemory, "NR43_FF22", "Channel 4 Polynomial Counter");
+			LabelManager.SetLabel(0xFF23, SnesMemoryType.GameboyMemory, "NR44_FF23", "Channel 4 Loop");
+			
+			LabelManager.SetLabel(0xFF24, SnesMemoryType.GameboyMemory, "NR50_FF24", "Channel Volume");
+			LabelManager.SetLabel(0xFF25, SnesMemoryType.GameboyMemory, "NR51_FF25", "Channel Left/Right");
+			LabelManager.SetLabel(0xFF26, SnesMemoryType.GameboyMemory, "NR52_FF26", "Channel On/Off");
+			
+			//Others
+			LabelManager.SetLabel(0xFF00, SnesMemoryType.GameboyMemory, "JOYP_FF00", "Joypad");
+			LabelManager.SetLabel(0xFF01, SnesMemoryType.GameboyMemory, "SB_FF01", "Serial Data");
+			LabelManager.SetLabel(0xFF02, SnesMemoryType.GameboyMemory, "SC_FF02", "Serial Control");
+			
+			LabelManager.SetLabel(0xFF04, SnesMemoryType.GameboyMemory, "DIV_FF04", "Divider");
+			LabelManager.SetLabel(0xFF05, SnesMemoryType.GameboyMemory, "TIMA_FF05", "Timer Counter");
+			LabelManager.SetLabel(0xFF06, SnesMemoryType.GameboyMemory, "TMA_FF06", "Timer Modulo");
+			LabelManager.SetLabel(0xFF07, SnesMemoryType.GameboyMemory, "TAC_FF07", "Timer Control");
+
+			LabelManager.SetLabel(0xFF0F, SnesMemoryType.GameboyMemory, "IF_FF0F", "Interrupt Flag");
+			LabelManager.SetLabel(0xFFFF, SnesMemoryType.GameboyMemory, "IE_FFFF", "Interrupt Enable");
+			
+			LabelManager.SetLabel(0xFF46, SnesMemoryType.GameboyMemory, "DMA_FF46", "OAM DMA Start");
 		}
 	}
 

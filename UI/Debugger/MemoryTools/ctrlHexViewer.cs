@@ -497,7 +497,7 @@ namespace Mesen.GUI.Debugger.Controls
 			mnuEditBreakpoint.Text = $"Edit Breakpoint ({addressRange})";
 			mnuAddToWatch.Text = $"Add to Watch ({addressRange})";
 
-			if(_memoryType == SnesMemoryType.CpuMemory || _memoryType == SnesMemoryType.SpcMemory) {
+			if(_memoryType.IsRelativeMemory()) {
 				AddressInfo relAddress = new AddressInfo() {
 					Address = (int)startAddress,
 					Type = _memoryType
@@ -510,7 +510,6 @@ namespace Mesen.GUI.Debugger.Controls
 				mnuEditLabel.Enabled = _memoryType.SupportsLabels();
 				mnuAddToWatch.Enabled = false;
 			}
-
 
 			if(_memoryType == SnesMemoryType.CpuMemory || _memoryType == SnesMemoryType.GameboyMemory) {
 				AddressInfo start = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)startAddress, Type = _memoryType });

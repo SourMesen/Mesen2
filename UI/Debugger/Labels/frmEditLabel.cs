@@ -67,6 +67,7 @@ namespace Mesen.GUI.Debugger
 				if(DebugApi.GetMemorySize(SnesMemoryType.GbBootRom) > 0) {
 					cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbBootRom));
 				}
+				cboType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GameboyMemory));
 			}
 		}
 

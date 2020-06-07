@@ -32,6 +32,7 @@ private:
 
 	int64_t GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType);
 	SnesMemoryType GetKeyMemoryType(uint64_t key);
+	bool InternalGetLabel(AddressInfo address, string& label);
 
 public:
 	LabelManager(Debugger *debugger);

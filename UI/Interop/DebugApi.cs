@@ -250,6 +250,7 @@ namespace Mesen.GUI
 				case SnesMemoryType.GbCartRam:
 				case SnesMemoryType.GbHighRam:
 				case SnesMemoryType.GbBootRom:
+				case SnesMemoryType.GameboyMemory:
 					return CpuType.Gameboy;
 
 				default:

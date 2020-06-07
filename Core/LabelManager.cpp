@@ -61,6 +61,7 @@ int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
 		case SnesMemoryType::GbCartRam: return absoluteAddr | ((uint64_t)14 << 32);
 		case SnesMemoryType::GbHighRam: return absoluteAddr | ((uint64_t)15 << 32);
 		case SnesMemoryType::GbBootRom: return absoluteAddr | ((uint64_t)16 << 32);
+		case SnesMemoryType::GameboyMemory: return absoluteAddr | ((uint64_t)17 << 32);
 		default: return -1;
 	}
 }
@@ -84,6 +85,7 @@ SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 		case ((uint64_t)14 << 32): return SnesMemoryType::GbCartRam; break;
 		case ((uint64_t)15 << 32): return SnesMemoryType::GbHighRam; break;
 		case ((uint64_t)16 << 32): return SnesMemoryType::GbBootRom; break;
+		case ((uint64_t)17 << 32): return SnesMemoryType::GameboyMemory; break;
 	}
 
 	throw std::runtime_error("Invalid label key");
@@ -91,21 +93,35 @@ SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 
 string LabelManager::GetLabel(AddressInfo address)
 {
+	string label ;
 	if(address.Type <= DebugUtilities::GetLastCpuMemoryType()) {
+		if(address.Type == SnesMemoryType::GameboyMemory) {
+			//Labels for GB registers
+			if(InternalGetLabel(address, label)) {
+				return label;
+			}
+		}
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 
 	if(address.Address >= 0) {
-		int64_t key = GetLabelKey(address.Address, address.Type);
-		if(key >= 0) {
-			auto result = _codeLabels.find(key);
-			if(result != _codeLabels.end()) {
-				return result->second.Label;
-			}
-		}
+		InternalGetLabel(address, label);
 	}
 
-	return "";
+	return label;
+}
+
+bool LabelManager::InternalGetLabel(AddressInfo address, string &label)
+{
+	int64_t key = GetLabelKey(address.Address, address.Type);
+	if(key >= 0) {
+		auto result = _codeLabels.find(key);
+		if(result != _codeLabels.end()) {
+			label = result->second.Label;
+			return true;
+		}
+	}
+	return false;
 }
 
 string LabelManager::GetComment(AddressInfo absAddress)
