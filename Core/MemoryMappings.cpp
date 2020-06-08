@@ -8,7 +8,7 @@ void MemoryMappings::RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_
 		return;
 	}
 
-	startPageNumber &= handlers.size() - 1;
+	startPageNumber %= handlers.size();
 
 	uint32_t pageNumber = startPageNumber;
 	for(uint32_t i = startBank; i <= endBank; i++) {

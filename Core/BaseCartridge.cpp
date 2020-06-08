@@ -50,8 +50,8 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 
 		vector<uint8_t> romData;
 		romFile.ReadFile(romData);
-		
-		if(romData.size() < 0x8000) {
+
+		if(romData.size() < 0x4000) {
 			return nullptr;
 		}
 
@@ -71,6 +71,10 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 				return nullptr;
 			}			
 		} else {
+			if(romData.size() < 0x8000) {
+				return nullptr;
+			}
+
 			cart->_prgRomSize = (uint32_t)romData.size();
 			if((cart->_prgRomSize & 0xFFF) != 0) {
 				//Round up to the next 4kb size, to ensure we have access to all the rom's data
