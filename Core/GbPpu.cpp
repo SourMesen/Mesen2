@@ -43,7 +43,7 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_state.CgbEnabled = _gameboy->IsCgb();
 	_lastFrameTime = 0;
 
-	if(!_gameboy->IsCgb()) {
+	if(!_gameboy->IsCgb() || !_gameboy->UseBootRom()) {
 		for(int i = 0; i < 4; i++) {
 			//Init default palette for use with DMG
 			_state.CgbBgPalettes[i] = bwRgbPalette[i];
@@ -613,10 +613,16 @@ void GbPpu::SendFrame()
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	if(_isFirstFrame) {
-		//Send blank frame on the first frame after enabling LCD
-		std::fill(_currentBuffer, _currentBuffer + 256 * 239, 0x7FFF);
-		_isFirstFrame = false;
+		if(!_state.CgbEnabled) {
+			//Send blank frame on the first frame after enabling LCD (DMG only)
+			std::fill(_currentBuffer, _currentBuffer + 256 * 239, 0x7FFF);
+		} else {
+			//CGB repeats the previous frame?
+			uint16_t* src = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+			std::copy(src, src + 256 * 239, _currentBuffer);
+		}
 	}
+	_isFirstFrame = false;
 
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, false);
@@ -679,6 +685,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					//Reset LCD to top of screen when it gets turned off
 					if(_state.Mode != PpuMode::VBlank) {
 						_console->BreakImmediately(BreakSource::GbDisableLcdOutsideVblank);
+						SendFrame();
 					}
 
 					_state.Cycle = 0;
@@ -687,11 +694,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.LyForCompare = 0;
 					_state.Mode = PpuMode::HBlank;
 
-					//Send a blank (white) frame
-					_lastFrameTime = _gameboy->GetCycleCount();
-					std::fill(_outputBuffers[0], _outputBuffers[0] + 256 * 239, 0x7FFF);
-					std::fill(_outputBuffers[1], _outputBuffers[1] + 256 * 239, 0x7FFF);
-					SendFrame();
+					_lastFrameTime = _gameboy->GetApuCycleCount();
 					
 					//"If the HDMA started when the screen was on, when the screen is switched off it will copy one block after the switch."
 					_dmaController->ProcessHdma();
