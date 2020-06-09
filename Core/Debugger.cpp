@@ -436,11 +436,12 @@ void Debugger::SuspendDebugger(bool release)
 
 void Debugger::BreakImmediately(BreakSource source)
 {
-	if(source == BreakSource::GbDisableLcdOutsideVblank && !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnDisableLcdOutsideVblank)) {
+	bool gbDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
+	if(source == BreakSource::GbDisableLcdOutsideVblank && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnDisableLcdOutsideVblank))) {
 		return;
-	} else if(source == BreakSource::GbInvalidVramAccess && !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidVramAccess)) {
+	} else if(source == BreakSource::GbInvalidVramAccess && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidVramAccess))) {
 		return;
-	} else if(source == BreakSource::GbInvalidOamAccess && !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOamAccess)) {
+	} else if(source == BreakSource::GbInvalidOamAccess && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOamAccess))) {
 		return;
 	}
 	SleepUntilResume(source);
