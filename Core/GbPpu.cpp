@@ -779,7 +779,7 @@ uint8_t GbPpu::ReadVram(uint16_t addr)
 	}
 }
 
-uint8_t GbPpu::PeekVram(uint8_t addr)
+uint8_t GbPpu::PeekVram(uint16_t addr)
 {
 	return IsVramReadAllowed() ? _vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)] : 0xFF;
 }

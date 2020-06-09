@@ -93,7 +93,7 @@ public:
 	bool IsVramReadAllowed();
 	bool IsVramWriteAllowed();
 	uint8_t ReadVram(uint16_t addr);
-	uint8_t PeekVram(uint8_t addr);
+	uint8_t PeekVram(uint16_t addr);
 	void WriteVram(uint16_t addr, uint8_t value);
 
 	bool IsOamReadAllowed();

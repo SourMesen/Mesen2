@@ -190,7 +190,7 @@ uint8_t GbMemoryManager::DebugRead(uint16_t addr)
 {
 	if(_state.IsReadRegister[addr >> 8]) {
 		if(addr >= 0xFE00) {
-			return ReadRegister(addr);
+			return PeekRegister(addr);
 		} else {
 			//Avoid potential read side effects
 			return 0xFF;
@@ -226,7 +226,7 @@ uint8_t GbMemoryManager::PeekRegister(uint16_t addr)
 	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
 		return _ppu->PeekVram(addr);
 	} else {
-		ReadRegister(addr);
+		return ReadRegister(addr);
 	}
 }
 
