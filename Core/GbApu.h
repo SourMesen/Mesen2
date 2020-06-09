@@ -20,10 +20,10 @@ private:
 	Gameboy* _gameboy = nullptr;
 	SoundMixer* _soundMixer = nullptr;
 
-	GbSquareChannel _square1;
-	GbSquareChannel _square2;
-	GbWaveChannel _wave;
-	GbNoiseChannel _noise;
+	GbSquareChannel _square1 = GbSquareChannel(this);
+	GbSquareChannel _square2 = GbSquareChannel(this);
+	GbWaveChannel _wave = GbWaveChannel(this);
+	GbNoiseChannel _noise = GbNoiseChannel(this);
 
 	int16_t* _soundBuffer = nullptr;
 	blip_t* _leftChannel = nullptr;
@@ -48,6 +48,8 @@ public:
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	template<typename T> void ProcessLengthEnableFlag(uint8_t value, T& length, bool& lengthEnabled, bool& enabled);
 
 	void Serialize(Serializer& s) override;
 };

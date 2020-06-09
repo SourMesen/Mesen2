@@ -256,6 +256,28 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 	}
 }
 
+template<typename T>
+void GbApu::ProcessLengthEnableFlag(uint8_t value, T &length, bool &lengthEnabled, bool &enabled)
+{
+	bool newLengthEnabled = (value & 0x40) != 0;
+	if(newLengthEnabled && !lengthEnabled && (_state.FrameSequenceStep & 0x01) == 1) {
+		//"Extra length clocking occurs when writing to NRx4 when the frame sequencer's next step is one that doesn't clock
+		//the length counter. In this case, if the length counter was PREVIOUSLY disabled and now enabled and the length counter
+		//is not zero, it is decremented. If this decrement makes it zero and trigger is clear, the channel is disabled."
+		if(length > 0) {
+			length--;
+			if(length == 0) {
+				if(value & 0x80) {
+					length = sizeof(T) == 1 ? 0x3F : 0xFF;
+				} else {
+					enabled = false;
+				}
+			}
+		}
+	}
+	lengthEnabled = newLengthEnabled;
+}
+
 void GbApu::Serialize(Serializer& s)
 {
 	s.Stream(
@@ -271,3 +293,6 @@ void GbApu::Serialize(Serializer& s)
 	s.Stream(&_wave);
 	s.Stream(&_noise);
 }
+
+template void GbApu::ProcessLengthEnableFlag<uint8_t>(uint8_t value, uint8_t& length, bool& lengthEnabled, bool& enabled);
+template void GbApu::ProcessLengthEnableFlag<uint16_t>(uint8_t value, uint16_t& length, bool& lengthEnabled, bool& enabled);

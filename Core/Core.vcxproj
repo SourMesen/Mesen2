@@ -287,8 +287,11 @@
     <ClCompile Include="GbDmaController.cpp" />
     <ClCompile Include="GbEventManager.cpp" />
     <ClCompile Include="GbMemoryManager.cpp" />
+    <ClCompile Include="GbNoiseChannel.cpp" />
     <ClCompile Include="GbPpu.cpp" />
+    <ClCompile Include="GbSquareChannel.cpp" />
     <ClCompile Include="GbTimer.cpp" />
+    <ClCompile Include="GbWaveChannel.cpp" />
     <ClCompile Include="NecDspDebugger.cpp" />
     <ClCompile Include="EmuSettings.cpp" />
     <ClCompile Include="EventManager.cpp" />

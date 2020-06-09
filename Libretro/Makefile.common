@@ -68,6 +68,9 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/GbDmaController.cpp \
                $(CORE_DIR)/GbPpu.cpp \
                $(CORE_DIR)/GbApu.cpp \
+               $(CORE_DIR)/GbNoiseChannel.cpp \
+               $(CORE_DIR)/GbSquareChannel.cpp \
+               $(CORE_DIR)/GbWaveChannel.cpp \
                $(CORE_DIR)/GbTimer.cpp \
                $(CORE_DIR)/GbMemoryManager.cpp \
                $(CORE_DIR)/GbDebugger.cpp \

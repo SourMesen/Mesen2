@@ -947,6 +947,15 @@
     <ClCompile Include="GbAssembler.cpp">
       <Filter>Debugger\Assembler</Filter>
     </ClCompile>
+    <ClCompile Include="GbSquareChannel.cpp">
+      <Filter>GB\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GbNoiseChannel.cpp">
+      <Filter>GB\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GbWaveChannel.cpp">
+      <Filter>GB\APU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
