@@ -240,9 +240,28 @@ namespace Mesen.GUI.Debugger
 				new RegEntry("", "Serial Bit Count", memManager.SerialBitCount),
 			});
 
-			GbSquareState sq1 = gb.Apu.Square1;
+
+			GbApuState apu = gb.Apu.Common;
 			entries.AddRange(new List<RegEntry>() {
 				new RegEntry("", "APU", null),
+				new RegEntry("$FF24.0-2", "Volume Right", apu.RightVolume),
+				new RegEntry("$FF24.3", "External Audio Right Enabled", apu.ExtAudioRightEnabled),
+				new RegEntry("$FF24.4-6", "Volume Left", apu.LeftVolume),
+				new RegEntry("$FF24.7", "External Audio Left Enabled", apu.ExtAudioRightEnabled),
+				new RegEntry("$FF25.0", "Right Square 1 Enabled", apu.EnableRightSq1 != 0),
+				new RegEntry("$FF25.1", "Right Square 2 Enabled", apu.EnableRightSq2 != 0),
+				new RegEntry("$FF25.2", "Right Wave Enabled", apu.EnableRightWave != 0),
+				new RegEntry("$FF25.3", "Right Noise Enabled", apu.EnableRightNoise != 0),
+				new RegEntry("$FF25.4", "Left Square 1 Enabled", apu.EnableLeftSq1 != 0),
+				new RegEntry("$FF25.5", "Left Square 2 Enabled", apu.EnableLeftSq2 != 0),
+				new RegEntry("$FF25.6", "Left Wave Enabled", apu.EnableLeftWave != 0),
+				new RegEntry("$FF25.7", "Left Noise Enabled", apu.EnableLeftNoise != 0),
+				new RegEntry("$FF26.7", "APU Enabled", apu.ApuEnabled),
+				new RegEntry("", "Frame Sequencer", apu.FrameSequenceStep),
+			});
+
+			GbSquareState sq1 = gb.Apu.Square1;
+			entries.AddRange(new List<RegEntry>() {
 				new RegEntry("$FF10-$FF14", "Square 1", null),
 				new RegEntry("$FF10.0-2", "Sweep Shift", sq1.SweepShift),
 				new RegEntry("$FF10.3", "Sweep Negate", sq1.SweepNegate),
