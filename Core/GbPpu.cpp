@@ -62,6 +62,9 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 		Write(0xFF49, 0xFF);
 		Write(0xFF4A, 0);
 		Write(0xFF4B, 0);
+	} else {
+		Write(0xFF48, 0xFF);
+		Write(0xFF49, 0xFF);
 	}
 }
 
