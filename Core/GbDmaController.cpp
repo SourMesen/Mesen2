@@ -2,11 +2,13 @@
 #include "GbDmaController.h"
 #include "GbMemoryManager.h"
 #include "GbPpu.h"
+#include "GbCpu.h"
 
-GbDmaController::GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu)
+void GbDmaController::Init(GbMemoryManager* memoryManager, GbPpu* ppu, GbCpu* cpu)
 {
 	_memoryManager = memoryManager;
 	_ppu = ppu;
+	_cpu = cpu;
 	_state = {};
 }
 
@@ -17,6 +19,11 @@ GbDmaControllerState GbDmaController::GetState()
 
 void GbDmaController::Exec()
 {
+	if(_cpu->IsHalted()) {
+		//OAM DMA is halted while the CPU is in halt mode, and resumes when the CPU resumes
+		return;
+	}
+
 	if(_state.DmaCounter > 0) {
 		if(_state.DmaCounter <= 160) {
 			_memoryManager->WriteDma(0xFE00 + (160 - _state.DmaCounter), _state.DmaReadBuffer);

@@ -400,7 +400,7 @@ void GbPpu::RunSpriteEvaluation()
 	if(_state.Cycle & 0x01) {
 		if(_spriteCount < 10) {
 			uint8_t spriteIndex = ((_state.Cycle - 4) >> 1) * 4;
-			int16_t sprY = (int16_t)_oam[spriteIndex] - 16;
+			int16_t sprY = _dmaController->IsOamDmaRunning() ? 0xFF : ((int16_t)_oam[spriteIndex] - 16);
 			if(_state.Scanline >= sprY && _state.Scanline < sprY + (_state.LargeSprites ? 16 : 8)) {
 				_spriteX[_spriteCount] = _oam[spriteIndex + 1];
 				_spriteIndexes[_spriteCount] = spriteIndex;

@@ -5,6 +5,7 @@
 
 class GbMemoryManager;
 class GbPpu;
+class GbCpu;
 
 class GbDmaController final : public ISerializable
 {
@@ -12,11 +13,12 @@ private:
 	GbDmaControllerState _state;
 	GbMemoryManager* _memoryManager;
 	GbPpu* _ppu;
+	GbCpu* _cpu;
 	
 	void ProcessDmaBlock();
 
 public:
-	GbDmaController(GbMemoryManager* memoryManager, GbPpu* ppu);
+	void Init(GbMemoryManager* memoryManager, GbPpu* ppu, GbCpu* cpu);
 
 	GbDmaControllerState GetState();
 

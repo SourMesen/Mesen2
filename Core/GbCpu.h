@@ -20,13 +20,6 @@ private:
 	Console* _console;
 	Gameboy* _gameboy;
 
-public:
-	GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager);
-	virtual ~GbCpu();
-
-	GbCpuState GetState();
-
-	void Exec();
 	void ExecOpCode(uint8_t opCode);
 
 	__forceinline void IncCycleCount();
@@ -146,5 +139,14 @@ public:
 	void DI();
 	void PREFIX();
 
+public:
+	GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager);
+	virtual ~GbCpu();
+
+	GbCpuState GetState();
+	bool IsHalted();
+
+	void Exec();
+	
 	void Serialize(Serializer& s) override;
 };

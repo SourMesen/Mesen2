@@ -39,6 +39,11 @@ GbCpuState GbCpu::GetState()
 	return _state;
 }
 
+bool GbCpu::IsHalted()
+{
+	return _state.Halted;
+}
+
 void GbCpu::Exec()
 {
 	uint8_t irqVector = _memoryManager->ProcessIrqRequests();
