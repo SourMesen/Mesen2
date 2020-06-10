@@ -30,6 +30,7 @@ private:
 	
 	void RunHdmaTransfer(DmaChannelConfig &channel);
 	bool ProcessHdmaChannels();
+	bool IsLastActiveHdmaChannel(uint8_t channel);
 	bool InitHdmaChannels();
 
 	void SyncStartDma();

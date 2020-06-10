@@ -271,7 +271,7 @@ bool DmaController::ProcessHdmaChannels()
 
 			//"b. If Addressing Mode is Indirect, read two bytes from Address into Indirect Address(and increment Address by two bytes)."
 			if(ch.HdmaIndirectAddressing) {
-				if(ch.HdmaLineCounterAndRepeat == 0) {
+				if(ch.HdmaLineCounterAndRepeat == 0 && IsLastActiveHdmaChannel(i)) {
 					//"One oddity: if $43xA is 0 and this is the last active HDMA channel for this scanline, only load one byte for Address, 
 					//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
@@ -307,6 +307,16 @@ bool DmaController::ProcessHdmaChannels()
 	_activeChannel = originalActiveChannel;
 	UpdateNeedToProcessFlag();
 
+	return true;
+}
+
+bool DmaController::IsLastActiveHdmaChannel(uint8_t channel)
+{
+	for(int i = channel + 1; i < 8; i++) {
+		if((_hdmaChannels & (1 << i)) && !_channel[i].HdmaFinished) {
+			return false;
+		}
+	}
 	return true;
 }
 
