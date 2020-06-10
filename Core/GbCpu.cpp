@@ -731,8 +731,15 @@ void GbCpu::STOP()
 
 void GbCpu::HALT()
 {
-	//TODO: HALT BUG emulation
-	_state.Halted = true;
+	if(_state.IME || _memoryManager->ProcessIrqRequests() == 0) {
+		_state.Halted = true;
+	} else {
+		//HALT bug, execution continues, but PC isn't incremented for the first byte
+		HalfCycle();
+		uint8_t opCode = _memoryManager->Read<MemoryOperationType::ExecOpCode>(_state.PC);
+		HalfCycle();
+		ExecOpCode(opCode);
+	}
 }
 
 // cpl              2F         4 -11- A = A xor FF
