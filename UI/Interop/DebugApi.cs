@@ -94,16 +94,16 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void GetGameboyTilemap(byte[] vram, GbPpuState state, UInt16 offset, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, byte[] vram, byte[] oamRam, [In, Out] byte[] buffer);
 
-		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle);
+		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
-		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(EventViewerDisplayOptions options);
-		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper([In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount);
-		public static DebugEventInfo[] GetDebugEvents(EventViewerDisplayOptions options)
+		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(CpuType cpuType, EventViewerDisplayOptions options);
+		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper(CpuType cpuType, [In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount);
+		public static DebugEventInfo[] GetDebugEvents(CpuType cpuType, EventViewerDisplayOptions options)
 		{
-			UInt32 maxEventCount = GetDebugEventCount(options);
+			UInt32 maxEventCount = GetDebugEventCount(cpuType, options);
 			DebugEventInfo[] debugEvents = new DebugEventInfo[maxEventCount];
 
-			DebugApi.GetDebugEventsWrapper(debugEvents, ref maxEventCount);
+			DebugApi.GetDebugEventsWrapper(cpuType, debugEvents, ref maxEventCount);
 			if(maxEventCount < debugEvents.Length) {
 				//Remove the excess from the array if needed
 				Array.Resize(ref debugEvents, (int)maxEventCount);
@@ -112,15 +112,15 @@ namespace Mesen.GUI
 			return debugEvents;
 		}
 
-		[DllImport(DllPath)] public static extern void GetEventViewerEvent(ref DebugEventInfo evtInfo, UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
-		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(EventViewerDisplayOptions options);		
+		[DllImport(DllPath)] public static extern void GetEventViewerEvent(CpuType cpuType, ref DebugEventInfo evtInfo, UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
+		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType, EventViewerDisplayOptions options);		
 
-		[DllImport(DllPath, EntryPoint = "GetEventViewerOutput")] private static extern void GetEventViewerOutputWrapper([In, Out]byte[] buffer, UInt32 bufferSize, EventViewerDisplayOptions options);
-		public static byte[] GetEventViewerOutput(int scanlineWidth, UInt32 scanlineCount, EventViewerDisplayOptions options)
+		[DllImport(DllPath, EntryPoint = "GetEventViewerOutput")] private static extern void GetEventViewerOutputWrapper(CpuType cpuType, [In, Out]byte[] buffer, UInt32 bufferSize, EventViewerDisplayOptions options);
+		public static byte[] GetEventViewerOutput(CpuType cpuType, int scanlineWidth, UInt32 scanlineCount, EventViewerDisplayOptions options)
 		{
 			UInt32 bufferSize = (UInt32)(scanlineWidth * scanlineCount * 2 * 4);
 			byte[] buffer = new byte[bufferSize];
-			DebugApi.GetEventViewerOutputWrapper(buffer, bufferSize, options);
+			DebugApi.GetEventViewerOutputWrapper(cpuType, buffer, bufferSize, options);
 			return buffer;
 		}
 
@@ -173,8 +173,8 @@ namespace Mesen.GUI
 			return cdlData;
 		}
 
-		[DllImport(DllPath)] public static extern void SetCdlData([In]byte[] cdlData, Int32 length);
-		[DllImport(DllPath)] public static extern void MarkBytesAs(UInt32 start, UInt32 end, CdlFlags type);
+		[DllImport(DllPath)] public static extern void SetCdlData(CpuType cpuType, [In]byte[] cdlData, Int32 length);
+		[DllImport(DllPath)] public static extern void MarkBytesAs(CpuType cpuType, UInt32 start, UInt32 end, CdlFlags type);
 
 		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string code, UInt32 startAddress, [In, Out]Int16[] assembledCodeBuffer);
 		public static Int16[] AssembleCode(CpuType cpuType, string code, UInt32 startAddress)

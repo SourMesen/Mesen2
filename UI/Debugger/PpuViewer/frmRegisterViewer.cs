@@ -53,7 +53,7 @@ namespace Mesen.GUI.Debugger
 			RestoreLocation(config.WindowLocation, config.WindowSize);
 
 			mnuAutoRefresh.Checked = config.AutoRefresh;
-			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
+			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle, EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy ? CpuType.Gameboy : CpuType.Cpu);
 
 			_refreshManager = new WindowRefreshManager(this);
 			_refreshManager.AutoRefresh = config.AutoRefresh;
@@ -99,7 +99,7 @@ namespace Mesen.GUI.Debugger
 				tabMain.SelectedTab = tpgCpu;
 			}
 
-			if(_coprocessorType == CoprocessorType.SA1 || _coprocessorType == CoprocessorType.Gameboy) {
+			if(_coprocessorType == CoprocessorType.SA1 || _coprocessorType == CoprocessorType.Gameboy || _coprocessorType == CoprocessorType.SGB) {
 				tpgCoprocessor = new TabPage();
 				tpgCoprocessor.Text = _coprocessorType == CoprocessorType.SA1 ? "SA-1" : "Gameboy";
 				ctrlCoprocessor = new ctrlPropertyList();
@@ -111,6 +111,9 @@ namespace Mesen.GUI.Debugger
 					tabMain.SelectedTab = tpgCoprocessor;
 				}
 			}
+
+			ctrlScanlineCycleSelect.Initialize(ctrlScanlineCycleSelect.Scanline, ctrlScanlineCycleSelect.Cycle, EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy ? CpuType.Gameboy : CpuType.Cpu);
+
 			tabMain.SelectedIndexChanged += tabMain_SelectedIndexChanged;
 		}
 
@@ -153,7 +156,7 @@ namespace Mesen.GUI.Debugger
 			} else if(tabMain.SelectedTab == tpgCoprocessor) {
 				if(_coprocessorType == CoprocessorType.SA1) {
 					UpdateSa1Tab();
-				} else if(_coprocessorType == CoprocessorType.Gameboy) {
+				} else if(_coprocessorType == CoprocessorType.Gameboy || _coprocessorType == CoprocessorType.SGB) {
 					UpdateGameboyTab();
 				}
 			}

@@ -179,6 +179,8 @@ int LuaApi::GetLibrary(lua_State *lua)
 	lua_pushintvalue(scriptEnded, EventType::ScriptEnded);
 	lua_pushintvalue(stateLoaded, EventType::StateLoaded);
 	lua_pushintvalue(stateSaved, EventType::StateSaved);
+	lua_pushintvalue(gbStartFrame, EventType::GbStartFrame);
+	lua_pushintvalue(gbEndFrame, EventType::GbEndFrame);
 	//TODO
 	/*lua_pushintvalue(codeBreak, EventType::CodeBreak);
 	*/

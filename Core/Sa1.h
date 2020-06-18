@@ -78,7 +78,7 @@ public:
 	void Write(uint32_t addr, uint8_t value) override;
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;
 	
-	void Run();
+	void Run() override;
 	void Reset() override;
 
 	SnesMemoryType GetSa1MemoryType();
@@ -93,6 +93,6 @@ public:
 
 	uint16_t ReadVector(uint16_t vector);
 	MemoryMappings* GetMemoryMappings();
-	void LoadBattery();
-	void SaveBattery();
+	void LoadBattery() override;
+	void SaveBattery() override;
 };

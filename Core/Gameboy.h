@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 #include "GameboyHeader.h"
+#include "SettingTypes.h"
 #include "../Utilities/ISerializable.h"
 
 class Console;
@@ -12,6 +13,7 @@ class GbCart;
 class GbTimer;
 class GbMemoryManager;
 class GbDmaController;
+class SuperGameboy;
 class VirtualFile;
 
 class Gameboy : public ISerializable
@@ -21,6 +23,7 @@ private:
 	static constexpr int HighRamSize = 0x7F;
 
 	Console* _console = nullptr;
+	SuperGameboy* _superGameboy = nullptr;
 
 	unique_ptr<GbMemoryManager> _memoryManager;
 	unique_ptr<GbCpu> _cpu;
@@ -30,9 +33,9 @@ private:
 	unique_ptr<GbTimer> _timer;
 	unique_ptr<GbDmaController> _dmaController;
 
+	GameboyModel _model = GameboyModel::Auto;
+
 	bool _hasBattery = false;
-	bool _cgbMode = false;
-	bool _useBootRom = false;
 
 	uint8_t* _prgRom = nullptr;
 	uint32_t _prgRomSize = 0;
@@ -52,13 +55,15 @@ private:
 	uint8_t* _bootRom = nullptr;
 	uint32_t _bootRomSize = 0;
 
+	Gameboy();
+
 public:
 	static constexpr int HeaderOffset = 0x134;
 
 	static Gameboy* Create(Console* console, VirtualFile& romFile);
 	virtual ~Gameboy();
 
-	void PowerOn();
+	void PowerOn(SuperGameboy* superGameboy = nullptr);
 
 	void Exec();
 	void Run(uint64_t masterClock);
@@ -68,6 +73,7 @@ public:
 
 	GbPpu* GetPpu();
 	GbCpu* GetCpu();
+	void GetSoundSamples(int16_t* &samples, uint32_t& sampleCount);
 	GbState GetState();
 	GameboyHeader GetHeader();
 
@@ -78,7 +84,9 @@ public:
 	int32_t GetRelativeAddress(AddressInfo& absAddress);
 
 	bool IsCgb();
-	bool UseBootRom();
+	bool IsSgb();
+	SuperGameboy* GetSgb();
+
 	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
 

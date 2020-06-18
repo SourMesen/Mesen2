@@ -150,6 +150,11 @@
 			this.mnuTakeScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuDebug = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuGbDebugger = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbEventViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbTilemapViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbTileViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbSpriteViewer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbPaletteViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.sepGameboyDebugger = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
@@ -1095,6 +1100,11 @@
 			// 
 			this.mnuDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuGbDebugger,
+            this.mnuGbEventViewer,
+            this.mnuGbTilemapViewer,
+            this.mnuGbTileViewer,
+            this.mnuGbSpriteViewer,
+            this.mnuGbPaletteViewer,
             this.sepGameboyDebugger,
             this.mnuDebugger,
             this.mnuEventViewer,
@@ -1127,7 +1137,42 @@
 			this.mnuGbDebugger.Image = global::Mesen.GUI.Properties.Resources.GbDebugger;
 			this.mnuGbDebugger.Name = "mnuGbDebugger";
 			this.mnuGbDebugger.Size = new System.Drawing.Size(183, 22);
-			this.mnuGbDebugger.Text = "Game Boy Debugger";
+			this.mnuGbDebugger.Text = "GB Debugger";
+			// 
+			// mnuGbEventViewer
+			// 
+			this.mnuGbEventViewer.Image = global::Mesen.GUI.Properties.Resources.NesEventViewer;
+			this.mnuGbEventViewer.Name = "mnuGbEventViewer";
+			this.mnuGbEventViewer.Size = new System.Drawing.Size(183, 22);
+			this.mnuGbEventViewer.Text = "GB Event Viewer";
+			// 
+			// mnuGbTilemapViewer
+			// 
+			this.mnuGbTilemapViewer.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
+			this.mnuGbTilemapViewer.Name = "mnuGbTilemapViewer";
+			this.mnuGbTilemapViewer.Size = new System.Drawing.Size(183, 22);
+			this.mnuGbTilemapViewer.Text = "GB Tilemap Viewer";
+			// 
+			// mnuGbTileViewer
+			// 
+			this.mnuGbTileViewer.Image = global::Mesen.GUI.Properties.Resources.VerticalLayout;
+			this.mnuGbTileViewer.Name = "mnuGbTileViewer";
+			this.mnuGbTileViewer.Size = new System.Drawing.Size(183, 22);
+			this.mnuGbTileViewer.Text = "GB Tile Viewer";
+			// 
+			// mnuGbSpriteViewer
+			// 
+			this.mnuGbSpriteViewer.Image = global::Mesen.GUI.Properties.Resources.PerfTracker;
+			this.mnuGbSpriteViewer.Name = "mnuGbSpriteViewer";
+			this.mnuGbSpriteViewer.Size = new System.Drawing.Size(183, 22);
+			this.mnuGbSpriteViewer.Text = "GB Sprite Viewer";
+			// 
+			// mnuGbPaletteViewer
+			// 
+			this.mnuGbPaletteViewer.Image = global::Mesen.GUI.Properties.Resources.VideoFilter;
+			this.mnuGbPaletteViewer.Name = "mnuGbPaletteViewer";
+			this.mnuGbPaletteViewer.Size = new System.Drawing.Size(183, 22);
+			this.mnuGbPaletteViewer.Text = "GB Palette Viewer";
 			// 
 			// sepGameboyDebugger
 			// 
@@ -1513,5 +1558,10 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuCx4Debugger;
 	  private System.Windows.Forms.ToolStripMenuItem mnuGbDebugger;
 	  private System.Windows.Forms.ToolStripSeparator sepGameboyDebugger;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbTilemapViewer;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbTileViewer;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbSpriteViewer;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbPaletteViewer;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGbEventViewer;
    }
 }

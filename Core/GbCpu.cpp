@@ -5,7 +5,7 @@
 #include "GbMemoryManager.h"
 #include "../Utilities/Serializer.h"
 
-GbCpu::GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
+void GbCpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
 {
 	_console = console;
 	_gameboy = gameboy;
@@ -13,21 +13,8 @@ GbCpu::GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
 	
 	_state = {};
 
-	if(_gameboy->UseBootRom()) {
-		_state.PC = 0;
-		_state.SP = 0xFFFF;
-	} else {
-		_state.PC = 0x100;
-		_state.SP = 0xFFFE;
-		_state.A = _gameboy->IsCgb() ? 0x11 : 0x01;
-		_state.B = 0x00;
-		_state.C = _gameboy->IsCgb() ? 0x00 : 0x13;
-		_state.D = 0x00;
-		_state.E = _gameboy->IsCgb() ? 0x08 : 0xD8;
-		_state.H = _gameboy->IsCgb() ? 0x00 : 0x01;
-		_state.L = _gameboy->IsCgb() ? 0x7C : 0x4D;
-		_state.Flags = _gameboy->IsCgb() ? 0x80 : 0xB0;
-	}
+	_state.PC = 0;
+	_state.SP = 0xFFFF;
 }
 
 GbCpu::~GbCpu()

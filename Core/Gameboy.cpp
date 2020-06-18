@@ -15,6 +15,8 @@
 #include "EmuSettings.h"
 #include "MessageManager.h"
 #include "FirmwareHelper.h"
+#include "SuperGameboy.h"
+#include "GbBootRom.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
 
@@ -53,28 +55,53 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 
 		shared_ptr<EmuSettings> settings = console->GetSettings();
 		EmulationConfig cfg = settings->GetEmulationConfig();
-		switch(cfg.GbModel) {
-			default:
-			case GameboyModel::Auto: gb->_cgbMode = (header.CgbFlag & 0x80) != 0; break;
-
-			case GameboyModel::Gameboy: gb->_cgbMode = false; break;
-			case GameboyModel::GameboyColor: gb->_cgbMode = true; break;
+		GameboyModel model = cfg.GbModel;
+		if(model == GameboyModel::Auto) {
+			if((header.CgbFlag & 0x80) != 0) {
+				model = GameboyModel::GameboyColor;
+			} else {
+				model = GameboyModel::SuperGameboy;
+			}
 		}
 
-		gb->_workRamSize = gb->_cgbMode ? 0x8000 : 0x2000;
-		gb->_videoRamSize = gb->_cgbMode ? 0x4000 : 0x2000;
+		gb->_model = model;
+
+		bool cgbMode = gb->_model == GameboyModel::GameboyColor;
+		gb->_workRamSize = cgbMode ? 0x8000 : 0x2000;
+		gb->_videoRamSize = cgbMode ? 0x4000 : 0x2000;
 
 		gb->_workRam = new uint8_t[gb->_workRamSize];
 		gb->_videoRam = new uint8_t[gb->_videoRamSize];
 		gb->_spriteRam = new uint8_t[Gameboy::SpriteRamSize];
 		gb->_highRam = new uint8_t[Gameboy::HighRamSize];
 		
-		gb->_useBootRom = cfg.GbUseBootRom;
 		gb->_bootRomSize = 0;
-		if(gb->_useBootRom) {
-			gb->_useBootRom = FirmwareHelper::LoadGbBootRom(console, &gb->_bootRom, gb->_cgbMode ? FirmwareType::GameboyColor : FirmwareType::Gameboy);
-			if(gb->_useBootRom) {
-				gb->_bootRomSize = gb->_cgbMode ? 9 * 256 : 256;
+
+		FirmwareType type = FirmwareType::Gameboy;
+		if(gb->_model == GameboyModel::SuperGameboy) {
+			type = FirmwareType::SgbGameboyCpu;
+		} else if(gb->_model == GameboyModel::GameboyColor) {
+			type = FirmwareType::GameboyColor;
+		}
+		
+		gb->_bootRomSize = cgbMode ? 9 * 256 : 256;
+		if(!FirmwareHelper::LoadGbBootRom(console, &gb->_bootRom, type)) {
+			switch(gb->_model) {
+				default:
+				case GameboyModel::Gameboy:
+					gb->_bootRom = new uint8_t[gb->_bootRomSize];
+					memcpy(gb->_bootRom, dmgBootRom, gb->_bootRomSize);
+					break;
+
+				case GameboyModel::GameboyColor:
+					gb->_bootRom = new uint8_t[gb->_bootRomSize];
+					memcpy(gb->_bootRom, cgbBootRom, gb->_bootRomSize);
+					break;
+
+				case GameboyModel::SuperGameboy:
+					gb->_bootRom = new uint8_t[gb->_bootRomSize];
+					memcpy(gb->_bootRom, sgbBootRom, gb->_bootRomSize);
+					break;
 			}
 		}
 
@@ -82,6 +109,16 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 	}
 
 	return nullptr;
+}
+
+Gameboy::Gameboy()
+{
+	_ppu.reset(new GbPpu());
+	_apu.reset(new GbApu());
+	_cpu.reset(new GbCpu());
+	_memoryManager.reset(new GbMemoryManager());
+	_timer.reset(new GbTimer());
+	_dmaController.reset(new GbDmaController());
 }
 
 Gameboy::~Gameboy()
@@ -100,7 +137,7 @@ Gameboy::~Gameboy()
 	delete[] _bootRom;
 }
 
-void Gameboy::PowerOn()
+void Gameboy::PowerOn(SuperGameboy* superGameboy)
 {
 	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	settings->InitializeRam(_cartRam, _cartRamSize);
@@ -114,17 +151,15 @@ void Gameboy::PowerOn()
 
 	LoadBattery();
 
-	_ppu.reset(new GbPpu());
-	_apu.reset(new GbApu(_console, this));
-	_memoryManager.reset(new GbMemoryManager());
-	_timer.reset(new GbTimer(_memoryManager.get(), _apu.get()));
-	_dmaController.reset(new GbDmaController());
+	_timer->Init(_memoryManager.get(), _apu.get());
+	_apu->Init(_console, this);
 	_cart->Init(this, _memoryManager.get());
 	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get(), _dmaController.get());
-
-	_cpu.reset(new GbCpu(_console, this, _memoryManager.get()));
+	_cpu->Init(_console, this, _memoryManager.get());
 	_ppu->Init(_console, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
 	_dmaController->Init(_memoryManager.get(), _ppu.get(), _cpu.get());
+
+	_superGameboy = superGameboy;
 }
 
 void Gameboy::Exec()
@@ -134,6 +169,12 @@ void Gameboy::Exec()
 
 void Gameboy::Run(uint64_t masterClock)
 {
+	if(!(_superGameboy->GetControl() & 0x80)) {
+		return;
+	}
+
+	//TODO support SGB2 timings
+	masterClock = (masterClock - _superGameboy->GetResetClock()) / 5;
 	while(_memoryManager->GetCycleCount() < masterClock) {
 		_cpu->Exec();
 	}
@@ -210,6 +251,11 @@ GbCpu* Gameboy::GetCpu()
 	return _cpu.get();
 }
 
+void Gameboy::GetSoundSamples(int16_t* &samples, uint32_t& sampleCount)
+{
+	_apu->GetSoundSamples(samples, sampleCount);
+}
+
 AddressInfo Gameboy::GetAbsoluteAddress(uint16_t addr)
 {
 	AddressInfo addrInfo = { -1, SnesMemoryType::Register };
@@ -269,12 +315,17 @@ GameboyHeader Gameboy::GetHeader()
 
 bool Gameboy::IsCgb()
 {
-	return _cgbMode;
+	return _model == GameboyModel::GameboyColor;
 }
 
-bool Gameboy::UseBootRom()
+bool Gameboy::IsSgb()
 {
-	return _useBootRom;
+	return _model == GameboyModel::SuperGameboy;
+}
+
+SuperGameboy* Gameboy::GetSgb()
+{
+	return _superGameboy;
 }
 
 uint64_t Gameboy::GetCycleCount()

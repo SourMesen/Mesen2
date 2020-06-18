@@ -76,10 +76,13 @@ public:
 	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam);
 
 	GbPpuState GetState();
+	uint16_t* GetOutputBuffer();
 	uint16_t* GetEventViewerBuffer();
 	uint16_t* GetPreviousEventViewerBuffer();
 
 	uint32_t GetFrameCount();
+	uint8_t GetScanline();
+	uint16_t GetCycle();
 	bool IsLcdEnabled();
 	PpuMode GetMode();
 

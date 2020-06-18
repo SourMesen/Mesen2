@@ -18,8 +18,9 @@ private:
 	void ReloadCounter();
 
 public:
-	GbTimer(GbMemoryManager* memoryManager, GbApu* apu);
 	virtual ~GbTimer();
+
+	void Init(GbMemoryManager* memoryManager, GbApu* apu);
 
 	GbTimerState GetState();
 

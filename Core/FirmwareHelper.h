@@ -107,15 +107,43 @@ public:
 		return false;
 	}
 
-	static bool LoadGbBootRom(Console* console, uint8_t** bootRom, FirmwareType type)
+	static bool LoadSgbFirmware(Console* console, uint8_t** prgRom, uint32_t& prgSize)
 	{
-		string filename = type == FirmwareType::Gameboy ? "dmg_boot.bin" : "cgb_boot.bin";
-		uint32_t size = type == FirmwareType::Gameboy ? 256 : 2304;
-		if(AttemptLoadFirmware(bootRom, filename, size)) {
+		prgSize = 0x40000;
+		if(AttemptLoadFirmware(prgRom, "SgbBios.sfc", prgSize)) {
 			return true;
 		}
 
 		MissingFirmwareMessage msg;
+		msg.Filename = "SgbBios.sfc";
+		msg.Firmware = FirmwareType::SGB;
+		msg.Size = prgSize;
+		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(prgRom, "SgbBios.sfc", prgSize)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for Super Game Boy");
+		return false;
+	}
+
+	static bool LoadGbBootRom(Console* console, uint8_t** bootRom, FirmwareType type)
+	{
+		string filename;
+		switch(type) {
+			default:
+			case FirmwareType::Gameboy: filename = "dmg_boot.bin"; break;
+			case FirmwareType::GameboyColor: filename = "cgb_boot.bin"; break;
+			case FirmwareType::SgbGameboyCpu: filename = "sgb_boot.bin"; break;
+		}
+
+		uint32_t size = type == FirmwareType::GameboyColor ? 2304 : 256;
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		/*MissingFirmwareMessage msg;
 		msg.Filename = filename.c_str();
 		msg.Firmware = type;
 		msg.Size = size;
@@ -125,7 +153,7 @@ public:
 			return true;
 		}
 
-		MessageManager::DisplayMessage("Error", "Could not find boot rom: " + filename);
+		MessageManager::DisplayMessage("Error", "Could not find boot rom: " + filename);*/
 		return false;
 	}
 };

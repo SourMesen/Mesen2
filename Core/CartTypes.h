@@ -45,7 +45,8 @@ enum class CoprocessorType
 	ST011,
 	ST018,
 	CX4,
-	Gameboy
+	Gameboy,
+	SGB
 };
 
 enum class FirmwareType
@@ -61,7 +62,9 @@ enum class FirmwareType
 	ST018,
 	Satellaview,
 	Gameboy,
-	GameboyColor
+	GameboyColor,
+	SgbGameboyCpu,
+	SGB
 };
 
 struct RomInfo

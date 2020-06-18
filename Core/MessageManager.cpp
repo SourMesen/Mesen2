@@ -60,6 +60,8 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "SaveStateEmpty", u8"Slot is empty." },
 	{ "SaveStateIncompatibleVersion", u8"Save state is incompatible with this version of Mesen-S." },
 	{ "SaveStateInvalidFile", u8"Invalid save state file." },
+	{ "SaveStateWrongSystemSnes", u8"Error: State cannot be loaded (wrong console type: SNES)" },
+	{ "SaveStateWrongSystemGb", u8"Error: State cannot be loaded (wrong console type: Game Boy)" },
 	{ "SaveStateLoaded", u8"State #%1 loaded." },
 	{ "SaveStateMissingRom", u8"Missing ROM required (%1) to load save state." },
 	{ "SaveStateNewerVersion", u8"Cannot load save states created by a more recent version of Mesen-S. Please download the latest version." },

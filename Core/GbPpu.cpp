@@ -10,6 +10,7 @@
 #include "GbDmaController.h"
 #include "NotificationManager.h"
 #include "MessageManager.h"
+#include "SuperGameboy.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/Serializer.h"
 
@@ -43,7 +44,7 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_state.CgbEnabled = _gameboy->IsCgb();
 	_lastFrameTime = 0;
 
-	if(!_gameboy->IsCgb() || !_gameboy->UseBootRom()) {
+	if(!_gameboy->IsCgb()) {
 		for(int i = 0; i < 4; i++) {
 			//Init default palette for use with DMG
 			_state.CgbBgPalettes[i] = bwRgbPalette[i];
@@ -52,20 +53,8 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 		}
 	}
 
-	if(!_gameboy->UseBootRom()) {
-		Write(0xFF40, 0x91);
-		Write(0xFF42, 0x00);
-		Write(0xFF43, 0x00);
-		Write(0xFF45, 0x00);
-		Write(0xFF47, 0xFC);
-		Write(0xFF48, 0xFF);
-		Write(0xFF49, 0xFF);
-		Write(0xFF4A, 0);
-		Write(0xFF4B, 0);
-	} else {
-		Write(0xFF48, 0xFF);
-		Write(0xFF49, 0xFF);
-	}
+	Write(0xFF48, 0xFF);
+	Write(0xFF49, 0xFF);
 }
 
 GbPpu::~GbPpu()
@@ -75,6 +64,11 @@ GbPpu::~GbPpu()
 GbPpuState GbPpu::GetState()
 {
 	return _state;
+}
+
+uint16_t* GbPpu::GetOutputBuffer()
+{
+	return _currentBuffer;
 }
 
 uint16_t* GbPpu::GetEventViewerBuffer()
@@ -200,8 +194,9 @@ void GbPpu::ProcessVblankScanline()
 				_state.Scanline = 0;
 				_state.Ly = 0;
 				_state.LyForCompare = 0;
-				_console->ProcessEvent(EventType::StartFrame);
+
 				if(_console->IsDebugging()) {
+					_console->ProcessEvent(EventType::GbStartFrame);
 					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 				}
 			} else {
@@ -314,7 +309,7 @@ void GbPpu::ProcessVisibleScanline()
 void GbPpu::ProcessPpuCycle()
 {
 	if(_console->IsDebugging()) {
-		_console->ProcessPpuCycle(_state.Scanline, _state.Cycle);
+		_console->ProcessPpuCycle<CpuType::Gameboy>();
 		if(_state.Mode <= PpuMode::OamEvaluation) {
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = evtColors[(int)_state.Mode];
 		} else if(_prevDrawnPixels != _drawnPixels && _drawnPixels > 0) {
@@ -373,13 +368,20 @@ void GbPpu::RunDrawCycle()
 					_currentBuffer[outOffset] = _state.CgbObjPalettes[sprite.Color | ((sprite.Attributes & 0x07) << 2)];
 				} else {
 					uint8_t colorIndex = (((sprite.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (sprite.Color * 2)) & 0x03;
+					if(_gameboy->IsSgb()) {
+						_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex);
+					} 
 					_currentBuffer[outOffset] = _state.CgbObjPalettes[((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex];
 				}
 			} else {
 				if(_state.CgbEnabled) {
 					_currentBuffer[outOffset] = _state.CgbBgPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
 				} else {
-					_currentBuffer[outOffset] = _state.CgbBgPalettes[(_state.BgPalette >> (entry.Color * 2)) & 0x03];
+					uint8_t colorIndex = (_state.BgPalette >> (entry.Color * 2)) & 0x03;
+					if(_gameboy->IsSgb()) {
+						_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex);
+					}
+					_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex];
 				}
 			}
 		}
@@ -599,6 +601,16 @@ uint32_t GbPpu::GetFrameCount()
 	return _state.FrameCount;
 }
 
+uint8_t GbPpu::GetScanline()
+{
+	return _state.Scanline;
+}
+
+uint16_t GbPpu::GetCycle()
+{
+	return _state.Cycle;
+}
+
 bool GbPpu::IsLcdEnabled()
 {
 	return _state.LcdEnabled;
@@ -611,8 +623,13 @@ PpuMode GbPpu::GetMode()
 
 void GbPpu::SendFrame()
 {
-	_console->ProcessEvent(EventType::EndFrame);
+	_console->ProcessEvent(EventType::GbEndFrame);
 	_state.FrameCount++;
+
+	if(_gameboy->IsSgb()) {
+		return;
+	}
+
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	if(_isFirstFrame) {
@@ -709,8 +726,9 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.LyCoincidenceFlag = _state.LyCompare == _state.LyForCompare;
 					UpdateStatIrq();
 					
-					_console->ProcessEvent(EventType::StartFrame);
 					if(_console->IsDebugging()) {
+						_console->ProcessEvent(EventType::GbStartFrame);
+
 						_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 						for(int i = 0; i < 456 * 154; i++) {
 							_currentEventViewerBuffer[i] = 0x18C6;

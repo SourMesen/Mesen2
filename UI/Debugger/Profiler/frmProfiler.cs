@@ -98,7 +98,7 @@ namespace Mesen.GUI.Debugger
 				tabMain.SelectedTab = tpgCpu;
 			}
 
-			if(romInfo.CoprocessorType == CoprocessorType.SA1 || romInfo.CoprocessorType == CoprocessorType.Gameboy) {
+			if(romInfo.CoprocessorType == CoprocessorType.SA1 || romInfo.CoprocessorType == CoprocessorType.Gameboy || romInfo.CoprocessorType == CoprocessorType.SGB) {
 				TabPage coprocessorTab = new TabPage(ResourceHelper.GetEnumText(romInfo.CoprocessorType));
 				tabMain.TabPages.Add(coprocessorTab);
 

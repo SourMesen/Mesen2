@@ -32,7 +32,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_cpu = debugger->GetConsole()->GetCpu().get();
 	_sa1 = debugger->GetConsole()->GetCartridge()->GetSa1();
-	_codeDataLogger = debugger->GetCodeDataLogger().get();
+	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu).get();
 	_settings = debugger->GetConsole()->GetSettings().get();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 	
@@ -78,11 +78,10 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		if(_traceLogger->IsCpuLogged(_cpuType)) {
-			DebugState debugState;
-			_debugger->GetState(debugState, true);
+			_debugger->GetState(_debugState, true);
 
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
-			_traceLogger->Log(_cpuType, debugState, disInfo);
+			_traceLogger->Log(_cpuType, _debugState, disInfo);
 		}
 
 		uint32_t pc = (state.K << 16) | state.PC;
@@ -197,9 +196,8 @@ void CpuDebugger::Step(int32_t stepCount, StepType type)
 				}
 				break;
 
-			case StepType::SpecificScanline:
-			case StepType::PpuStep:
-				break;
+			case StepType::PpuStep: step.PpuStepCount = stepCount; _step.reset(new StepRequest(step)); break;
+			case StepType::SpecificScanline: step.BreakScanline = stepCount; _step.reset(new StepRequest(step)); break;
 		}
 	}
 	_step.reset(new StepRequest(step));
@@ -212,6 +210,21 @@ void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	AddressInfo dest = GetMemoryMappings().GetAbsoluteAddress(currentPc);
 	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
+}
+
+void CpuDebugger::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
+{
+	if(_step->PpuStepCount > 0) {
+		_step->PpuStepCount--;
+		if(_step->PpuStepCount == 0) {
+			_debugger->SleepUntilResume(BreakSource::PpuStep);
+		}
+	}
+
+	if(cycle == 0 && scanline == _step->BreakScanline) {
+		_step->BreakScanline = -1;
+		_debugger->SleepUntilResume(BreakSource::PpuStep);
+	}
 }
 
 MemoryMappings& CpuDebugger::GetMemoryMappings()

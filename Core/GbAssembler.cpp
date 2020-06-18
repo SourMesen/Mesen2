@@ -14,6 +14,10 @@ GbAssembler::GbAssembler(shared_ptr<LabelManager> labelManager)
 	InitAssembler();
 }
 
+GbAssembler::~GbAssembler()
+{
+}
+
 void GbAssembler::InitAssembler()
 {
 	for(int i = 0; i < 512; i++) {
@@ -112,7 +116,7 @@ int GbAssembler::ReadValue(string operand, int min, int max, unordered_map<strin
 				}
 			} else {
 				//Decimal
-				for(int i = 0; i < operand.size(); i++) {
+				for(size_t i = 0; i < operand.size(); i++) {
 					if(operand[i] != '-' && (operand[i] < '0' || operand[i] > '9')) {
 						return -1;
 					}
@@ -218,6 +222,9 @@ void GbAssembler::PushWord(uint16_t operand, vector<int16_t>& output, uint32_t& 
 void GbAssembler::ProcessOperand(ParamEntry& entry, string operand, vector<int16_t>& output, uint32_t& address, unordered_map<string, uint16_t>& localLabels, bool firstPass)
 {
 	switch(entry.Type) {
+		default:
+			break;
+
 		case ParamType::Byte:
 			PushByte((uint8_t)ReadValue(operand, -128, 255, localLabels, firstPass), output, address);
 			break;

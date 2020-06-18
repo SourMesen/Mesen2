@@ -275,6 +275,7 @@ enum class GameboyModel
 	Auto = 0,
 	Gameboy = 1,
 	GameboyColor = 2,
+	SuperGameboy = 3
 };
 
 struct EmulationConfig
@@ -298,7 +299,6 @@ struct EmulationConfig
 
 	int64_t BsxCustomDate = -1;
 
-	bool GbUseBootRom = false;
 	GameboyModel GbModel = GameboyModel::Auto;
 };
 

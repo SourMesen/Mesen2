@@ -140,8 +140,9 @@ private:
 	void PREFIX();
 
 public:
-	GbCpu(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager);
 	virtual ~GbCpu();
+
+	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager);
 
 	GbCpuState GetState();
 	bool IsHalted();

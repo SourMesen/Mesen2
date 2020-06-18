@@ -84,22 +84,22 @@ extern "C"
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters* counts) { GetDebugger()->GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts); }
 	
 	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { GetDebugger()->GetCdlData(offset, length, memoryType, cdlData); }
-	DllExport void __stdcall SetCdlData(uint8_t* cdlData, uint32_t length) { GetDebugger()->SetCdlData(cdlData, length); }
-	DllExport void __stdcall MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(start, end, flags); }
+	DllExport void __stdcall SetCdlData(CpuType cpuType, uint8_t* cdlData, uint32_t length) { GetDebugger()->SetCdlData(cpuType, cdlData, length); }
+	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(cpuType, start, end, flags); }
 	
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, PpuState state, uint8_t *vram, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, state, vram, cgram, buffer); }
 	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, source, srcSize, cgram, buffer); }
 	DllExport void __stdcall GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t *oamRam, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetSpritePreview(options, state, vram, oamRam, cgram, buffer); }
-	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle); }
+	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle, cpuType); }
 
 	DllExport void __stdcall GetGameboyTilemap(uint8_t* vram, GbPpuState state, uint16_t offset, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboyTilemap(vram, state, offset, buffer); }
 	DllExport void __stdcall GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, uint8_t* vram, uint8_t* oamRam, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboySpritePreview(options, state, vram, oamRam, buffer); }
 
-	DllExport void __stdcall GetDebugEvents(DebugEventInfo *infoArray, uint32_t &maxEventCount) { GetDebugger()->GetEventManager()->GetEvents(infoArray, maxEventCount); }
-	DllExport uint32_t __stdcall GetDebugEventCount(EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->GetEventCount(options); }
-	DllExport void __stdcall GetEventViewerOutput(uint32_t *buffer, uint32_t bufferSize, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager()->GetDisplayBuffer(buffer, bufferSize, options); }
-	DllExport void __stdcall GetEventViewerEvent(DebugEventInfo *evtInfo, uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { *evtInfo = GetDebugger()->GetEventManager()->GetEvent(scanline, cycle, options); }
-	DllExport uint32_t __stdcall TakeEventSnapshot(EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager()->TakeEventSnapshot(options); }
+	DllExport void __stdcall GetDebugEvents(CpuType cpuType, DebugEventInfo *infoArray, uint32_t &maxEventCount) { GetDebugger()->GetEventManager(cpuType)->GetEvents(infoArray, maxEventCount); }
+	DllExport uint32_t __stdcall GetDebugEventCount(CpuType cpuType, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager(cpuType)->GetEventCount(options); }
+	DllExport void __stdcall GetEventViewerOutput(CpuType cpuType, uint32_t *buffer, uint32_t bufferSize, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager(cpuType)->GetDisplayBuffer(buffer, bufferSize, options); }
+	DllExport void __stdcall GetEventViewerEvent(CpuType cpuType, DebugEventInfo *evtInfo, uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { *evtInfo = GetDebugger()->GetEventManager(cpuType)->GetEvent(scanline, cycle, options); }
+	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager(cpuType)->TakeEventSnapshot(options); }
 
 	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return GetDebugger()->GetScriptManager()->LoadScript(name, content, scriptId); }
 	DllExport void __stdcall RemoveScript(int32_t scriptId) { GetDebugger()->GetScriptManager()->RemoveScript(scriptId); }

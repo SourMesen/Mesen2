@@ -6,7 +6,7 @@
 
 class GbApu;
 
-class GbSquareChannel : public ISerializable
+class GbSquareChannel final : public ISerializable
 {
 private:
 	const uint8_t _dutySequences[4][8] = {
@@ -25,15 +25,12 @@ public:
 	GbSquareState GetState();
 
 	bool Enabled();
-
 	void Disable();
 
-	void ClockSweepUnit();
-
+	void ClockSweepUnit();	
 	uint16_t GetSweepTargetFrequency();
 
 	void ClockLengthCounter();
-
 	void ClockEnvelope();
 
 	uint8_t GetOutput();
@@ -41,7 +38,6 @@ public:
 	void Exec(uint32_t clocksToRun);
 
 	uint8_t Read(uint16_t addr);
-
 	void Write(uint16_t addr, uint8_t value);
 
 	void Serialize(Serializer& s) override;

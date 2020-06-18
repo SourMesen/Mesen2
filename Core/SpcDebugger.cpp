@@ -52,11 +52,10 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
 			if(_traceLogger->IsCpuLogged(CpuType::Spc)) {
-				DebugState debugState;
-				_debugger->GetState(debugState, true);
+				_debugger->GetState(_debugState, true);
 
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-				_traceLogger->Log(CpuType::Spc, debugState, disInfo);
+				_traceLogger->Log(CpuType::Spc, _debugState, disInfo);
 			}
 		}
 

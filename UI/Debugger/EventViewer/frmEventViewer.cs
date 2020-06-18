@@ -13,16 +13,20 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmEventViewer : BaseForm, IRefresh
+	public partial class frmEventViewer : BaseForm, IRefresh, IDebuggerWindow
 	{
 		private NotificationListener _notifListener;
 		private WindowRefreshManager _refreshManager;
-
 		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return null; } }
+		public CpuType CpuType { get; private set; }
 
-		public frmEventViewer()
+		public frmEventViewer(CpuType cpuType)
 		{
+			this.CpuType = cpuType;
 			InitializeComponent();
+			if(cpuType == CpuType.Gameboy) {
+				this.Text = "GB " + this.Text;
+			}
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -41,7 +45,7 @@ namespace Mesen.GUI.Debugger
 				_notifListener = new NotificationListener();
 				_notifListener.OnNotification += OnNotificationReceived;
 
-				_refreshManager = new WindowRefreshManager(this);
+				_refreshManager = new WindowRefreshManager(this, this.CpuType);
 				_refreshManager.AutoRefresh = config.AutoRefresh;
 				_refreshManager.AutoRefreshSpeed = config.AutoRefreshSpeed;
 				mnuAutoRefresh.Checked = config.AutoRefresh;
@@ -86,12 +90,14 @@ namespace Mesen.GUI.Debugger
 		public void RefreshData()
 		{
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			ctrlPpuView.ScanlineCount = DebugApi.TakeEventSnapshot(options);
+			ctrlPpuView.ScanlineCount = DebugApi.TakeEventSnapshot(this.CpuType, options);
 		}
 
 		public void RefreshViewer()
 		{
-			ctrlFilters.SetCpuType(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy ? CpuType.Gameboy : CpuType.Cpu);
+			ctrlFilters.SetCpuType(this.CpuType);
+			ctrlPpuView.CpuType = this.CpuType;
+			ctrlListView.CpuType = this.CpuType;
 			if(tabMain.SelectedTab == tpgPpuView) {
 				ctrlPpuView.RefreshViewer();
 			} else {

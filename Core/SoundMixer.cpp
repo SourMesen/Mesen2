@@ -8,6 +8,8 @@
 #include "WaveRecorder.h"
 #include "Spc.h"
 #include "Msu1.h"
+#include "BaseCartridge.h"
+#include "SuperGameboy.h"
 #include "../Utilities/Equalizer.h"
 
 SoundMixer::SoundMixer(Console *console)
@@ -72,6 +74,12 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 
 	int16_t *out = _sampleBuffer;
 	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out);
+
+	SuperGameboy* sgb = _console->GetCartridge()->GetSuperGameboy();
+	if(sgb) {
+		uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());
+		sgb->MixAudio(targetRate, out, count);
+	}
 
 	shared_ptr<Msu1> msu1 = _console->GetMsu1();
 	if(msu1) {

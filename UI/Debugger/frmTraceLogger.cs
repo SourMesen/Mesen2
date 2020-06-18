@@ -182,7 +182,7 @@ namespace Mesen.GUI.Debugger
 			chkLogSa1.Visible = coproc == CoprocessorType.SA1;
 			chkLogGsu.Visible = coproc == CoprocessorType.GSU;
 			chkLogCx4.Visible = coproc == CoprocessorType.CX4;
-			chkLogGameboy.Visible = coproc == CoprocessorType.Gameboy;
+			chkLogGameboy.Visible = (coproc == CoprocessorType.Gameboy || coproc == CoprocessorType.SGB);
 		}
 
 		protected void UpdateFormatOptions()

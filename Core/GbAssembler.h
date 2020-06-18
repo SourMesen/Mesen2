@@ -50,6 +50,7 @@ private:
 
 public:
 	GbAssembler(shared_ptr<LabelManager> labelManager);
+	virtual ~GbAssembler();
 
 	uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode);
 };

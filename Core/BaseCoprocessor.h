@@ -9,7 +9,8 @@ public:
 	using IMemoryHandler::IMemoryHandler;
 
 	virtual void Reset() = 0;
-	
+
+	virtual void Run() { }	
 	virtual void ProcessEndOfFrame() { }
 	virtual void LoadBattery() { }
 	virtual void SaveBattery() { }

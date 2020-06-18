@@ -297,7 +297,7 @@ namespace Mesen.GUI.Debugger
 				AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress, Type = memType });
 				AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _startAddress + bytes.Count, Type = memType });
 				if(absStart.Type == prgType && absEnd.Type == prgType && (absEnd.Address - absStart.Address) == bytes.Count) {
-					DebugApi.MarkBytesAs((uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+					DebugApi.MarkBytesAs(_cpuType, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
 				}
 
 				frmDebugger debugger = DebugWindowManager.OpenDebugger(_cpuType);

@@ -548,7 +548,7 @@ namespace Mesen.GUI.Debugger.Controls
 			}
 
 			if(start >= 0 && end >= 0 && start <= end) {
-				DebugApi.MarkBytesAs((UInt32)start, (UInt32)end, type);
+				DebugApi.MarkBytesAs(_memoryType.ToCpuType(), (UInt32)start, (UInt32)end, type);
 				DebugWindowManager.GetDebugger(_memoryType.ToCpuType())?.RefreshDisassembly();
 			}
 

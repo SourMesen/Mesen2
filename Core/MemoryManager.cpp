@@ -14,6 +14,7 @@
 #include "Sa1.h"
 #include "Gsu.h"
 #include "Cx4.h"
+#include "Gameboy.h"
 #include "BaseCoprocessor.h"
 #include "CheatManager.h"
 #include "../Utilities/Serializer.h"
@@ -194,19 +195,6 @@ void MemoryManager::UpdateEvents()
 	_hasEvent[_dramRefreshPosition] = true;
 }
 
-void MemoryManager::SyncCoprocessors()
-{
-	if(_cart->GetCoprocessor()) {
-		if(_cart->GetGsu()) {
-			_cart->GetGsu()->Run();
-		} else if(_cart->GetSa1()) {
-			_cart->GetSa1()->Run();
-		} else if(_cart->GetCx4()) {
-			_cart->GetCx4()->Run();
-		}
-	}
-}
-
 void MemoryManager::Exec()
 {
 	_masterClock += 2;
@@ -219,7 +207,7 @@ void MemoryManager::Exec()
 		}
 
 		if((_hClock & 0x03) == 0) {
-			_console->ProcessPpuCycle(_ppu->GetScanline(), _hClock);
+			_console->ProcessPpuCycle<CpuType::Cpu>();
 			_regs->ProcessIrqCounters();
 
 			if(_hClock == 276 * 4 && _ppu->GetScanline() < _ppu->GetVblankStart()) {
@@ -236,11 +224,11 @@ void MemoryManager::Exec()
 			_cpu->IncreaseCycleCount<5>();
 		}
 	} else if((_hClock & 0x03) == 0) {
-		_console->ProcessPpuCycle(_ppu->GetScanline(), _hClock);
+		_console->ProcessPpuCycle<CpuType::Cpu>();
 		_regs->ProcessIrqCounters();
 	}
 
-	SyncCoprocessors();
+	_cart->SyncCoprocessors();
 }
 
 uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)

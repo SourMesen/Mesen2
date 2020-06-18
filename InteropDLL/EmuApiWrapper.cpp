@@ -269,6 +269,9 @@ extern "C" {
 			_console.reset(new Console());
 			KeyManager::SetSettings(_console->GetSettings().get());
 			_console->Initialize();
+			EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+			cfg.GbModel = GameboyModel::GameboyColor;
+			_console->GetSettings()->SetEmulationConfig(cfg);
 			_console->LoadRom((VirtualFile)testRoms[i], VirtualFile());
 
 			if(enableDebugger) {

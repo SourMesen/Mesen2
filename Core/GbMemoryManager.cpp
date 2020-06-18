@@ -11,6 +11,8 @@
 #include "EmuSettings.h"
 #include "ControlManager.h"
 #include "SnesController.h"
+#include "BaseCartridge.h"
+#include "SuperGameboy.h"
 #include "MessageManager.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
@@ -30,14 +32,13 @@ void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbP
 	_controlManager = console->GetControlManager().get();
 	_settings = console->GetSettings().get();
 
+	memset(_reads, 0, sizeof(_reads));
+	memset(_writes, 0, sizeof(_writes));
+
 	_state = {};
 	_state.CgbWorkRamBank = 1;
-	_state.DisableBootRom = !_gameboy->UseBootRom();
-	if(_gameboy->UseBootRom()) {
-		_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
-	} else {
-		_state.CycleCount = _gameboy->IsCgb() ? 13051516 : 23440332;
-	}
+	_state.DisableBootRom = false;
+	_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
 
 	MapRegisters(0x8000, 0x9FFF, RegisterAccess::ReadWrite);
 	MapRegisters(0xFE00, 0xFFFF, RegisterAccess::ReadWrite);
@@ -343,7 +344,7 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 		} else {
 			//00-0F
 			switch(addr) {
-				case 0xFF00: _state.InputSelect = value; break;
+				case 0xFF00: WriteInputPort(value); break;
 				case 0xFF01: _state.SerialData = value; break; //FF01 - SB - Serial transfer data (R/W)
 				case 0xFF02: 
 					//FF02 - SC - Serial Transfer Control (R/W)
@@ -431,24 +432,47 @@ uint8_t GbMemoryManager::ReadInputPort()
 	//Bit 2 - P12 Input Up    or Select   (0=Pressed) (Read Only)
 	//Bit 1 - P11 Input Left  or Button B (0=Pressed) (Read Only)
 	//Bit 0 - P10 Input Right or Button A (0=Pressed) (Read Only)
-	BaseControlDevice* controller = (SnesController*)_controlManager->GetControlDevice(0).get();
 	uint8_t result = 0x0F;
-	if(controller && controller->GetControllerType() == ControllerType::SnesController) {
-		if(!(_state.InputSelect & 0x20)) {
-			result &= ~(controller->IsPressed(SnesController::A) ? 0x01 : 0);
-			result &= ~(controller->IsPressed(SnesController::B) ? 0x02 : 0);
-			result &= ~(controller->IsPressed(SnesController::Select) ? 0x04 : 0);
-			result &= ~(controller->IsPressed(SnesController::Start) ? 0x08 : 0);
+
+	if(_gameboy->IsSgb()) {
+		SuperGameboy* sgb = _console->GetCartridge()->GetSuperGameboy();
+		if((_state.InputSelect & 0x30) == 0x30) {
+			result = sgb->GetInputIndex();
+		} else {
+			if(!(_state.InputSelect & 0x20)) {
+				result &= sgb->GetInput() >> 4;
+			}
+			if(!(_state.InputSelect & 0x10)) {
+				result &= sgb->GetInput() & 0x0F;
+			}
 		}
-		if(!(_state.InputSelect & 0x10)) {
-			result &= ~(controller->IsPressed(SnesController::Right) ? 0x01 : 0);
-			result &= ~(controller->IsPressed(SnesController::Left) ? 0x02 : 0);
-			result &= ~(controller->IsPressed(SnesController::Up) ? 0x04 : 0);
-			result &= ~(controller->IsPressed(SnesController::Down) ? 0x08 : 0);
+	} else {
+		BaseControlDevice* controller = (SnesController*)_controlManager->GetControlDevice(0).get();
+		if(controller && controller->GetControllerType() == ControllerType::SnesController) {
+			if(!(_state.InputSelect & 0x20)) {
+				result &= ~(controller->IsPressed(SnesController::A) ? 0x01 : 0);
+				result &= ~(controller->IsPressed(SnesController::B) ? 0x02 : 0);
+				result &= ~(controller->IsPressed(SnesController::Select) ? 0x04 : 0);
+				result &= ~(controller->IsPressed(SnesController::Start) ? 0x08 : 0);
+			}
+			if(!(_state.InputSelect & 0x10)) {
+				result &= ~(controller->IsPressed(SnesController::Right) ? 0x01 : 0);
+				result &= ~(controller->IsPressed(SnesController::Left) ? 0x02 : 0);
+				result &= ~(controller->IsPressed(SnesController::Up) ? 0x04 : 0);
+				result &= ~(controller->IsPressed(SnesController::Down) ? 0x08 : 0);
+			}
 		}
 	}
 
 	return result | (_state.InputSelect & 0x30) | 0xC0;
+}
+
+void GbMemoryManager::WriteInputPort(uint8_t value)
+{
+	_state.InputSelect = value;
+	if(_gameboy->IsSgb()) {
+		_console->GetCartridge()->GetSuperGameboy()->ProcessInputPortWrite(value & 0x30);
+	}
 }
 
 void GbMemoryManager::Serialize(Serializer& s)

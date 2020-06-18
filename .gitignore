@@ -161,6 +161,8 @@ $RECYCLE.BIN/
 .DS_Store
 *.nes
 *.sfc
+*.gb
+*.gbc
 *.sav
 *.svs
 *.trt

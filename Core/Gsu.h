@@ -155,7 +155,7 @@ public:
 	void LoadBattery() override;
 	void SaveBattery() override;
 	
-	void Run();
+	void Run() override;
 	void Reset() override;
 
 	uint8_t Read(uint32_t addr) override;

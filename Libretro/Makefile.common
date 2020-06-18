@@ -131,6 +131,7 @@ SOURCES_CXX := $(LIBRETRO_DIR)/libretro.cpp \
                $(CORE_DIR)/SPC_Filter.cpp \
                $(CORE_DIR)/Spc7110.cpp \
                $(CORE_DIR)/Spc7110Decomp.cpp \
+               $(CORE_DIR)/SuperGameboy.cpp \
                $(CORE_DIR)/stdafx.cpp \
                $(CORE_DIR)/TraceLogger.cpp \
                $(CORE_DIR)/VideoDecoder.cpp \

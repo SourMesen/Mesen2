@@ -5,15 +5,20 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmPaletteViewer : BaseForm, IRefresh
+	public partial class frmPaletteViewer : BaseForm, IRefresh, IDebuggerWindow
 	{
 		private WindowRefreshManager _refreshManager;
-
+		public CpuType CpuType { get; private set; }
 		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return this.ctrlScanlineCycleSelect; } }
 
-		public frmPaletteViewer()
+		public frmPaletteViewer(CpuType cpuType)
 		{
+			this.CpuType = cpuType;
 			InitializeComponent();
+			ctrlPaletteViewer.CpuType = cpuType;
+			if(cpuType == CpuType.Gameboy) {
+				this.Text = "GB " + this.Text;
+			}
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -25,7 +30,7 @@ namespace Mesen.GUI.Debugger
 
 			_refreshManager = new WindowRefreshManager(this);
 			_refreshManager.AutoRefresh = true;
-			ctrlScanlineCycleSelect.Initialize(241, 0);
+			ctrlScanlineCycleSelect.Initialize(241, 0, this.CpuType);
 
 			double scale = (double)ctrlPaletteViewer.Width / 256;
 			ctrlPaletteViewer.PaletteScale = (int)(16 * scale);

@@ -48,6 +48,7 @@ public:
 	void Run();
 	void Step(int32_t stepCount, StepType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc);
+	void ProcessPpuCycle(uint16_t scanline, uint16_t cycle);
 
 	shared_ptr<GbEventManager> GetEventManager();
 	shared_ptr<GbAssembler> GetAssembler();

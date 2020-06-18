@@ -6,7 +6,7 @@
 
 class GbApu;
 
-class GbNoiseChannel : public ISerializable
+class GbNoiseChannel final : public ISerializable
 {
 private:
 	GbNoiseState _state = {};

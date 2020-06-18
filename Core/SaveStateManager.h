@@ -16,7 +16,7 @@ private:
 	bool GetScreenshotData(vector<uint8_t>& out, uint32_t& width, uint32_t& height, istream& stream);
 
 public:
-	static constexpr uint32_t FileFormatVersion = 7;
+	static constexpr uint32_t FileFormatVersion = 8;
 
 	SaveStateManager(shared_ptr<Console> console);
 

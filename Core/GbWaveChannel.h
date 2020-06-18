@@ -6,7 +6,7 @@
 
 class GbApu;
 
-class GbWaveChannel : public ISerializable
+class GbWaveChannel final : public ISerializable
 {
 private:
 	GbWaveState _state = {};

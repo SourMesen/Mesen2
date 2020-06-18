@@ -177,7 +177,7 @@ namespace Mesen.GUI.Debugger.Controls
 		{
 			SelectedAddressRange range = GetSelectedAddressRange();
 			if(!_inSourceView && range != null && range.Start.Type == _manager.PrgMemoryType && range.End.Type == _manager.PrgMemoryType) {
-				DebugApi.MarkBytesAs((UInt32)range.Start.Address, (UInt32)range.End.Address, type);
+				DebugApi.MarkBytesAs(_manager.CpuType, (UInt32)range.Start.Address, (UInt32)range.End.Address, type);
 				DebugWindowManager.OpenDebugger(_manager.CpuType)?.RefreshDisassembly();
 			}
 		}

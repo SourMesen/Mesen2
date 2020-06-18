@@ -21,6 +21,7 @@
 #include "BsxMemoryPack.h"
 #include "FirmwareHelper.h"
 #include "SpcFileData.h"
+#include "SuperGameboy.h"
 #include "Gameboy.h"
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/VirtualFile.h"
@@ -243,7 +244,14 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 			case 0x03: return CoprocessorType::SA1;
 			case 0x04: return CoprocessorType::SDD1;
 			case 0x05: return CoprocessorType::RTC;
-			case 0x0E: return CoprocessorType::Satellaview;
+			case 0x0E: 
+				switch(_cartInfo.RomType) {
+					case 0xE3: return CoprocessorType::SGB;
+					case 0xE5: return CoprocessorType::Satellaview;
+					default: return CoprocessorType::None;
+				}
+				break;
+
 			case 0x0F:
 				switch(_cartInfo.CartridgeType) {
 					case 0x00: 
@@ -496,9 +504,11 @@ void BaseCartridge::InitCoprocessor()
 	if(_coprocessorType == CoprocessorType::SA1) {
 		_coprocessor.reset(new Sa1(_console));
 		_sa1 = dynamic_cast<Sa1*>(_coprocessor.get());
+		_needCoprocSync = true;
 	} else if(_coprocessorType == CoprocessorType::GSU) {
 		_coprocessor.reset(new Gsu(_console, _coprocessorRamSize));
 		_gsu = dynamic_cast<Gsu*>(_coprocessor.get());
+		_needCoprocSync = true;
 	} else if(_coprocessorType == CoprocessorType::SDD1) {
 		_coprocessor.reset(new Sdd1(_console));
 	} else if(_coprocessorType == CoprocessorType::SPC7110) {
@@ -518,8 +528,13 @@ void BaseCartridge::InitCoprocessor()
 	} else if(_coprocessorType == CoprocessorType::CX4) {
 		_coprocessor.reset(new Cx4(_console));
 		_cx4 = dynamic_cast<Cx4*>(_coprocessor.get());
+		_needCoprocSync = true;
 	} else if(_coprocessorType == CoprocessorType::OBC1 && _saveRamSize > 0) {
 		_coprocessor.reset(new Obc1(_console, _saveRam, _saveRamSize));
+	} else if(_coprocessorType == CoprocessorType::SGB) {
+		_coprocessor.reset(new SuperGameboy(_console));
+		_sgb = dynamic_cast<SuperGameboy*>(_coprocessor.get());
+		_needCoprocSync = true;
 	}
 }
 
@@ -612,8 +627,16 @@ bool BaseCartridge::LoadGameboy(VirtualFile &romFile)
 
 	_cartInfo = { };
 	_headerOffset = Gameboy::HeaderOffset;
-	_coprocessorType = CoprocessorType::Gameboy;
-	SetupCpuHalt();
+
+	if(_gameboy->IsSgb()) {
+		if(!FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize)) {
+			return false;
+		}
+		LoadRom();
+	} else {
+		_coprocessorType = CoprocessorType::Gameboy;
+		SetupCpuHalt();
+	}
 	return true;
 }
 
@@ -738,6 +761,7 @@ void BaseCartridge::DisplayCartInfo()
 			case CoprocessorType::ST011: coProcMessage += "ST011"; break;
 			case CoprocessorType::ST018: coProcMessage += "ST018"; break;
 			case CoprocessorType::Gameboy: coProcMessage += "Game Boy"; break;
+			case CoprocessorType::SGB: coProcMessage += "Super Game Boy"; break;
 		}
 		MessageManager::Log(coProcMessage);
 	}
@@ -780,6 +804,11 @@ Sa1* BaseCartridge::GetSa1()
 Cx4* BaseCartridge::GetCx4()
 {
 	return _cx4;
+}
+
+SuperGameboy* BaseCartridge::GetSuperGameboy()
+{
+	return _sgb;
 }
 
 BsxCart* BaseCartridge::GetBsx()

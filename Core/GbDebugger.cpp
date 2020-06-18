@@ -188,9 +188,8 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 			}
 			break;
 
-		case StepType::SpecificScanline:
-		case StepType::PpuStep:
-			break;
+		case StepType::PpuStep: step.PpuStepCount = stepCount; _step.reset(new StepRequest(step)); break;
+		case StepType::SpecificScanline: step.BreakScanline = stepCount; _step.reset(new StepRequest(step)); break;
 	}
 
 	_step.reset(new StepRequest(step));
@@ -203,6 +202,21 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc)
 	AddressInfo dest = _gameboy->GetAbsoluteAddress(currentPc);
 	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, StackFrameFlags::Irq);
 	_eventManager->AddEvent(DebugEventType::Irq);
+}
+
+void GbDebugger::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
+{
+	if(_step->PpuStepCount > 0) {
+		_step->PpuStepCount--;
+		if(_step->PpuStepCount == 0) {
+			_debugger->SleepUntilResume(BreakSource::PpuStep);
+		}
+	}
+
+	if(cycle == 0 && scanline == _step->BreakScanline) {
+		_step->BreakScanline = -1;
+		_debugger->SleepUntilResume(BreakSource::PpuStep);
+	}
 }
 
 shared_ptr<GbEventManager> GbDebugger::GetEventManager()

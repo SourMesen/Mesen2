@@ -12,7 +12,7 @@ BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, IEvent
 	_debugger = debugger;
 	_cpuType = cpuType;
 	_hasBreakpoint = false;
-	_eventManager = eventManager ? eventManager : debugger->GetEventManager().get();
+	_eventManager = eventManager ? eventManager : debugger->GetEventManager(cpuType).get();
 }
 
 void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)

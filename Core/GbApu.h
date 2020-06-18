@@ -12,18 +12,20 @@ class SoundMixer;
 
 class GbApu : public ISerializable
 {
+public:
+	static constexpr int SampleRate = 96000;
+
 private:
 	static constexpr int ApuFrequency = 1024 * 1024 * 4; //4mhz
 	static constexpr int MaxSamples = 4000;
-	static constexpr int SampleRate = 96000;
 	Console* _console = nullptr;
 	Gameboy* _gameboy = nullptr;
 	SoundMixer* _soundMixer = nullptr;
 
-	GbSquareChannel _square1 = GbSquareChannel(this);
-	GbSquareChannel _square2 = GbSquareChannel(this);
-	GbWaveChannel _wave = GbWaveChannel(this);
-	GbNoiseChannel _noise = GbNoiseChannel(this);
+	unique_ptr<GbSquareChannel> _square1;
+	unique_ptr<GbSquareChannel> _square2;
+	unique_ptr<GbWaveChannel> _wave;
+	unique_ptr<GbNoiseChannel> _noise;
 
 	int16_t* _soundBuffer = nullptr;
 	blip_t* _leftChannel = nullptr;
@@ -37,12 +39,16 @@ private:
 	GbApuState _state = {};
 
 public:
-	GbApu(Console* console, Gameboy* gameboy);
+	GbApu();
 	virtual ~GbApu();
+
+	void Init(Console* console, Gameboy* gameboy);
 
 	GbApuDebugState GetState();
 
 	void Run();
+
+	void GetSoundSamples(int16_t* &samples, uint32_t& sampleCount);
 
 	void ClockFrameSequencer();
 

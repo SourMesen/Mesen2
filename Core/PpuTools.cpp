@@ -350,26 +350,20 @@ void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state,
 	}
 }
 
-void PpuTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle)
+void PpuTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType)
 {
 	//TODO Thread safety
-	_updateTimings[viewerId] = (scanline << 16) | cycle;
+	ViewerRefreshConfig cfg;
+	cfg.Scanline = scanline;
+	cfg.Cycle = cycle;
+	cfg.Type = cpuType;
+	_updateTimings[viewerId] = cfg;
 }
 
 void PpuTools::RemoveViewer(uint32_t viewerId)
 {
 	//TODO Thread safety
 	_updateTimings.erase(viewerId);
-}
-
-void PpuTools::UpdateViewers(uint16_t scanline, uint16_t cycle)
-{
-	uint32_t currentCycle = (scanline << 16) | cycle;
-	for(auto updateTiming : _updateTimings) {
-		if(updateTiming.second == currentCycle) {
-			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
-		}
-	}
 }
 
 void PpuTools::GetGameboyTilemap(uint8_t* vram, GbPpuState& state, uint16_t offset, uint32_t* outBuffer)

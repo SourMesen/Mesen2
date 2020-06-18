@@ -27,15 +27,15 @@ private:
 	GbCart* _cart = nullptr;
 	GbApu* _apu = nullptr;
 	GbPpu* _ppu = nullptr;
-	GbTimer* _timer;
-	GbDmaController* _dmaController;
+	GbTimer* _timer = nullptr;
+	GbDmaController* _dmaController = nullptr;
 
 	uint8_t* _highRam = nullptr;
 	
 	uint8_t* _reads[0x100] = {};
 	uint8_t* _writes[0x100] = {};
 
-	GbMemoryManagerState _state;
+	GbMemoryManagerState _state = {};
 
 public:
 	virtual ~GbMemoryManager();
@@ -74,6 +74,7 @@ public:
 	uint64_t GetApuCycleCount();
 	
 	uint8_t ReadInputPort();
+	void WriteInputPort(uint8_t value);
 
 	uint8_t DebugRead(uint16_t addr);
 	void DebugWrite(uint16_t addr, uint8_t value);

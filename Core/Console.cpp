@@ -432,7 +432,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 		_memoryManager->Initialize(this);
 		_internalRegisters->Initialize(this);
 
-		if(_cart->GetGameboy()) {
+		if(_cart->GetCoprocessor() == nullptr && _cart->GetGameboy()) {
 			_cart->GetGameboy()->PowerOn();
 			_settings->SetFlag(EmulationFlags::GameboyMode);
 		} else {
@@ -884,57 +884,6 @@ uint32_t Console::GetFrameCount()
 	} else {
 		shared_ptr<Ppu> ppu = _ppu;
 		return ppu ? ppu->GetFrameCount() : 0;
-	}
-}
-
-template<CpuType type>
-void Console::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
-{
-	if(_debugger) {
-		_debugger->ProcessMemoryRead<type>(addr, value, opType);
-	}
-}
-
-template<CpuType type>
-void Console::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
-{
-	if(_debugger) {
-		_debugger->ProcessMemoryWrite<type>(addr, value, opType);
-	}
-}
-
-void Console::ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
-{
-	if(_debugger) {
-		_debugger->ProcessPpuRead(addr, value, memoryType);
-	}
-}
-
-void Console::ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
-{
-	if(_debugger) {
-		_debugger->ProcessPpuWrite(addr, value, memoryType);
-	}
-}
-
-void Console::ProcessWorkRamRead(uint32_t addr, uint8_t value)
-{
-	if(_debugger) {
-		_debugger->ProcessWorkRamRead(addr, value);
-	}
-}
-
-void Console::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
-{
-	if(_debugger) {
-		_debugger->ProcessWorkRamWrite(addr, value);
-	}
-}
-
-void Console::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
-{
-	if(_debugger) {
-		_debugger->ProcessPpuCycle(scanline, cycle);
 	}
 }
 

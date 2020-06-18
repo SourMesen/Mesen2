@@ -114,7 +114,7 @@ public:
 
 	void Reset() override;
 
-	void Run();
+	void Run() override;
 
 	uint8_t Read(uint32_t addr) override;
 	void Write(uint32_t addr, uint8_t value) override;

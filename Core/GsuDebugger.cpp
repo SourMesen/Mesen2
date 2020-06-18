@@ -18,7 +18,7 @@
 GsuDebugger::GsuDebugger(Debugger* debugger)
 {
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger().get();
+	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu).get();
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();

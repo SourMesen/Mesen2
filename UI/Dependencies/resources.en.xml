@@ -970,6 +970,7 @@
 			<Value ID="Auto">Auto</Value>
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="GameboyColor">Game Boy Color</Value>
+			<Value ID="SuperGameboy">Super Game Boy</Value>
 		</Enum>
 		<Enum ID="TileFormat">
 			<Value ID="Bpp2">2 bpp</Value>

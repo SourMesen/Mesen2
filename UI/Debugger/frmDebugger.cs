@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmDebugger : BaseForm
+	public partial class frmDebugger : BaseForm, IDebuggerWindow
 	{
 		private EntityBinder _entityBinder = new EntityBinder();
 		private NotificationListener _notifListener;
@@ -137,7 +137,7 @@ namespace Mesen.GUI.Debugger
 				case CpuType.Gameboy:
 					ctrlDisassemblyView.Initialize(new GbDisassemblyManager(), new GbLineStyleProvider());
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.GbDebuggerEnabled, true);
-					this.Text = "Game Boy Debugger";
+					this.Text = "GB Debugger";
 
 					ctrlMemoryMapping = new ctrlMemoryMapping();
 					ctrlMemoryMapping.Size = new Size(this.ClientSize.Width, 33);
@@ -577,16 +577,6 @@ namespace Mesen.GUI.Debugger
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded: {
-					if(_cpuType == CpuType.Sa1) {
-						CoprocessorType coprocessor = EmuApi.GetRomInfo().CoprocessorType;
-						if(coprocessor != CoprocessorType.SA1) {
-							this.Invoke((MethodInvoker)(() => {
-								this.Close();
-							}));
-							return;
-						}
-					}
-
 					if(ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset) {
 						DebugApi.Step(_cpuType, 1, StepType.PpuStep);
 					}
@@ -737,8 +727,9 @@ namespace Mesen.GUI.Debugger
 
 		private void mnuResetCdlLog_Click(object sender, EventArgs e)
 		{
-			byte[] emptyCdlLog = new byte[DebugApi.GetMemorySize(SnesMemoryType.PrgRom)];
-			DebugApi.SetCdlData(emptyCdlLog, emptyCdlLog.Length);
+			int memSize = DebugApi.GetMemorySize(_cpuType == CpuType.Gameboy ? SnesMemoryType.GbPrgRom : SnesMemoryType.PrgRom);
+			byte[] emptyCdlLog = new byte[memSize];
+			DebugApi.SetCdlData(_cpuType, emptyCdlLog, emptyCdlLog.Length);
 			RefreshDisassembly();
 		}
 

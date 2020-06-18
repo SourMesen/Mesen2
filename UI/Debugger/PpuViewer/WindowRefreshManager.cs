@@ -17,12 +17,14 @@ namespace Mesen.GUI.Debugger
 		private Stopwatch _timer;
 		private long _lastUpdate = 0;
 		private long _minDelay = 0;
+		private CpuType _cpuType;
 
 		public bool AutoRefresh { get; set; }
 		public RefreshSpeed AutoRefreshSpeed { get; set; }
 
-		public WindowRefreshManager(IRefresh window)
+		public WindowRefreshManager(IRefresh window, CpuType cpuType = CpuType.Cpu)
 		{
+			_cpuType = cpuType;
 			_window = window;
 			_notifListener = new NotificationListener();
 			_notifListener.OnNotification += OnNotificationReceived;
@@ -66,7 +68,7 @@ namespace Mesen.GUI.Debugger
 					break;
 
 				case ConsoleNotificationType.EventViewerRefresh:
-					if(_window.ScanlineCycleSelect == null && this.AutoRefresh && (_timer.ElapsedTicks - _lastUpdate) > _minDelay) {
+					if(_window.ScanlineCycleSelect == null && this.AutoRefresh && (_timer.ElapsedTicks - _lastUpdate) > _minDelay && (CpuType)e.Parameter == _cpuType) {
 						RefreshContent();
 					}
 					break;

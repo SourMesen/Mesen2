@@ -163,7 +163,7 @@ namespace Mesen.GUI.Debugger.Workspace
 				new WlaDxImporter().Import(symPath, silent);
 			} else {
 				RomInfo romInfo = EmuApi.GetRomInfo();
-				if(romInfo.CoprocessorType == CoprocessorType.Gameboy) {
+				if(romInfo.CoprocessorType == CoprocessorType.Gameboy || romInfo.CoprocessorType == CoprocessorType.SGB) {
 					if(RgbdsSymbolFile.IsValidFile(symPath)) {
 						RgbdsSymbolFile.Import(symPath, silent);
 					} else {

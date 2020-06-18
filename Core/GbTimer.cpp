@@ -4,7 +4,7 @@
 #include "GbMemoryManager.h"
 #include "GbApu.h"
 
-GbTimer::GbTimer(GbMemoryManager* memoryManager, GbApu* apu)
+void GbTimer::Init(GbMemoryManager* memoryManager, GbApu* apu)
 {
 	_apu = apu;
 	_memoryManager = memoryManager;

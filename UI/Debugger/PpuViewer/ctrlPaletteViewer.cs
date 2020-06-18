@@ -112,9 +112,11 @@ namespace Mesen.GUI.Debugger
 			get { return _cgRam; }
 		}
 
+		public CpuType CpuType { get; set; } = CpuType.Cpu;
+
 		public void RefreshData()
 		{
-			if(EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy) {
+			if(this.CpuType == CpuType.Gameboy) {
 				_cgRam = GetGameboyPalette();
 			} else {
 				_cgRam = DebugApi.GetMemoryState(SnesMemoryType.CGRam);

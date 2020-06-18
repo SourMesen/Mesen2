@@ -23,7 +23,6 @@ namespace Mesen.GUI.Debugger
 
 		private int _baseWidth = 1364 / 2;
 		private double _xRatio = 2;
-		private bool _isGameboy = false;
 
 		private Point _lastPos = new Point(-1, -1);
 		private bool _needUpdate = false;
@@ -53,18 +52,19 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 		
+		public CpuType CpuType { get; set; }
+
 		public void RefreshViewer()
 		{
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			_isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
-			if(_isGameboy) {
+			if(this.CpuType == CpuType.Gameboy) {
 				_baseWidth = 456 * 2;
 				_xRatio = 0.5;
 			} else {
 				_baseWidth = 1364 / 2;
 				_xRatio = 2;
 			}
-			_pictureData = DebugApi.GetEventViewerOutput(_baseWidth, ScanlineCount, options);
+			_pictureData = DebugApi.GetEventViewerOutput(this.CpuType, _baseWidth, ScanlineCount, options);
 
 			int picHeight = (int)ScanlineCount*2;
 			if(_screenBitmap == null || _screenBitmap.Height != picHeight || _screenBitmap.Width != _baseWidth) {
@@ -179,7 +179,7 @@ namespace Mesen.GUI.Debugger
 
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
 			DebugEventInfo evt = new DebugEventInfo();
-			DebugApi.GetEventViewerEvent(ref evt, (UInt16)pos.Y, (UInt16)pos.X, options);
+			DebugApi.GetEventViewerEvent(this.CpuType, ref evt, (UInt16)pos.Y, (UInt16)pos.X, options);
 			if(evt.ProgramCounter == 0xFFFFFFFF) {
 				int[] xOffsets = new int[] { 0, 1, -1, 2, -2, 3 };
 				int[] yOffsets = new int[] { 0, -1, 1 };
@@ -187,7 +187,7 @@ namespace Mesen.GUI.Debugger
 				//Check for other events near the current mouse position
 				for(int j = 0; j < yOffsets.Length; j++) {
 					for(int i = 0; i < xOffsets.Length; i++) {
-						DebugApi.GetEventViewerEvent(ref evt, (UInt16)(pos.Y + yOffsets[j]), (UInt16)(pos.X + xOffsets[i] * _xRatio), options);
+						DebugApi.GetEventViewerEvent(this.CpuType, ref evt, (UInt16)(pos.Y + yOffsets[j]), (UInt16)(pos.X + xOffsets[i] * _xRatio), options);
 						if(evt.ProgramCounter != 0xFFFFFFFF) {
 							return evt;
 						}
@@ -215,7 +215,7 @@ namespace Mesen.GUI.Debugger
 			}
 
 			Dictionary<string, string> values;
-			if(_isGameboy) {
+			if(this.CpuType == CpuType.Gameboy) {
 				values = new Dictionary<string, string>() {
 					{ "Type", ResourceHelper.GetEnumText(evt.Type) },
 					{ "Scanline", evt.Scanline.ToString() },
@@ -245,7 +245,7 @@ namespace Mesen.GUI.Debugger
 					values["Register"] = registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "");
 					values["Value"] = "$" + evt.Operation.Value.ToString("X2");
 
-					if(isDma && !_isGameboy) {
+					if(isDma && this.CpuType != CpuType.Gameboy) {
 						bool indirectHdma = false;
 						values["Channel"] = (evt.DmaChannel & 0x07).ToString();
 

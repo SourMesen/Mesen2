@@ -125,7 +125,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	}
 }
 
-DisassemblerSource Disassembler::GetSource(SnesMemoryType type)
+DisassemblerSource& Disassembler::GetSource(SnesMemoryType type)
 {
 	if(_sources[(int)type].Data == nullptr) {
 		throw std::runtime_error("Disassembler::GetSource() invalid memory type");
@@ -150,7 +150,7 @@ vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
 
 uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type)
 {
-	DisassemblerSource src = GetSource(addrInfo.Type);
+	DisassemblerSource& src = GetSource(addrInfo.Type);
 
 	bool needDisassemble = false;
 	int returnSize = 0;

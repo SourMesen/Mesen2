@@ -157,6 +157,15 @@ namespace Mesen.GUI.Forms
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
 					CheatCodes.ApplyCheats();
+					RomInfo romInfo = EmuApi.GetRomInfo();
+
+					this.Invoke((Action)(() => {
+						if(romInfo.CoprocessorType == CoprocessorType.Gameboy) {
+							DebugWindowManager.CloseWindows(CpuType.Cpu);
+						} else if(romInfo.CoprocessorType != CoprocessorType.SGB) {
+							DebugWindowManager.CloseWindows(CpuType.Gameboy);
+						}
+					}));
 
 					this.BeginInvoke((Action)(() => {
 						UpdateDebuggerMenu();
@@ -164,7 +173,6 @@ namespace Mesen.GUI.Forms
 						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
 						SaveStateManager.UpdateStateMenu(mnuSaveState, true);
 
-						RomInfo romInfo = EmuApi.GetRomInfo();
 						this.Text = "Mesen-S - " + romInfo.GetRomName();
 
 						if(DebugWindowManager.HasOpenedWindow) {
@@ -341,7 +349,8 @@ namespace Mesen.GUI.Forms
 			
 			InitNetPlayMenus();
 
-			mnuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Debugger); };
+			Func<bool> isGameboyMode = () => EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+			mnuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(isGameboyMode() ? DebugWindow.GbDebugger : DebugWindow.Debugger); };
 			mnuSpcDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpcDebugger); };
 			mnuSa1Debugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Sa1Debugger); };
 			mnuGsuDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GsuDebugger); };
@@ -350,15 +359,21 @@ namespace Mesen.GUI.Forms
 			mnuGbDebugger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbDebugger); };
 			mnuTraceLogger.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TraceLogger); };
 			mnuMemoryTools.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.MemoryTools); };
-			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TilemapViewer); };
-			mnuTileViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.TileViewer); };
-			mnuSpriteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.SpriteViewer); };
-			mnuPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.PaletteViewer); };
-			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.EventViewer); };
+			mnuTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(isGameboyMode() ? DebugWindow.GbTilemapViewer : DebugWindow.TilemapViewer); };
+			mnuTileViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(isGameboyMode() ? DebugWindow.GbTileViewer : DebugWindow.TileViewer); };
+			mnuSpriteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(isGameboyMode() ? DebugWindow.GbSpriteViewer : DebugWindow.SpriteViewer); };
+			mnuPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(isGameboyMode() ? DebugWindow.GbPaletteViewer : DebugWindow.PaletteViewer); };
+			mnuEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(isGameboyMode() ? DebugWindow.GbEventViewer : DebugWindow.EventViewer); };
 			mnuScriptWindow.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.ScriptWindow); };
 			mnuRegisterViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.RegisterViewer); };
 			mnuProfiler.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Profiler); };
 			mnuAssembler.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.Assembler); };
+
+			mnuGbTilemapViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbTilemapViewer); };
+			mnuGbTileViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbTileViewer); };
+			mnuGbSpriteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbSpriteViewer); };
+			mnuGbPaletteViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbPaletteViewer); };
+			mnuGbEventViewer.Click += (s, e) => { DebugWindowManager.OpenDebugWindow(DebugWindow.GbEventViewer); };
 
 			mnuTestRun.Click += (s, e) => { RomTestHelper.RunTest(); };
 			mnuTestRecord.Click += (s, e) => { RomTestHelper.RecordTest(); };
@@ -471,14 +486,24 @@ namespace Mesen.GUI.Forms
 			mnuAssembler.Enabled = running;
 
 			bool isGameboyMode = coprocessor == CoprocessorType.Gameboy;
-			mnuGbDebugger.Enabled = isGameboyMode;
-			mnuGbDebugger.Visible = isGameboyMode;
-			sepGameboyDebugger.Visible = isGameboyMode;
+			bool isSuperGameboy = coprocessor == CoprocessorType.SGB;
 			
-			//Remove/disable all tools that aren't useful when running a plain GB game
-			mnuGbDebugger.Text = isGameboyMode ? "Debugger" : "Game Boy Debugger";
-			mnuDebugger.Enabled = running && !isGameboyMode;
-			mnuDebugger.Visible = !isGameboyMode;
+			//Only show in super gameboy mode
+			mnuGbDebugger.Enabled = isSuperGameboy;
+			mnuGbDebugger.Visible = isSuperGameboy;
+			mnuGbEventViewer.Enabled = isSuperGameboy;
+			mnuGbEventViewer.Visible = isSuperGameboy;
+			mnuGbPaletteViewer.Enabled = isSuperGameboy;
+			mnuGbPaletteViewer.Visible = isSuperGameboy;
+			mnuGbSpriteViewer.Enabled = isSuperGameboy;
+			mnuGbSpriteViewer.Visible = isSuperGameboy;
+			mnuGbTilemapViewer.Enabled = isSuperGameboy;
+			mnuGbTilemapViewer.Visible = isSuperGameboy;
+			mnuGbTileViewer.Enabled = isSuperGameboy;
+			mnuGbTileViewer.Visible = isSuperGameboy;
+			sepGameboyDebugger.Visible = isSuperGameboy;
+
+			//Hide in gameboy-only mode
 			mnuSpcDebugger.Enabled = running && !isGameboyMode;
 			mnuSpcDebugger.Visible = !isGameboyMode;
 			sepCoprocessors.Visible = !isGameboyMode;

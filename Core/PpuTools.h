@@ -1,17 +1,25 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
+#include "Console.h"
+#include "NotificationManager.h"
 
 class Ppu;
-class Console;
 struct GbPpuState;
+
+struct ViewerRefreshConfig
+{
+	uint16_t Scanline;
+	uint16_t Cycle;
+	CpuType Type;
+};
 
 class PpuTools
 {
 private:
 	Ppu *_ppu;
 	Console *_console;
-	unordered_map<uint32_t, uint32_t> _updateTimings;
+	unordered_map<uint32_t, ViewerRefreshConfig> _updateTimings;
 
 	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift);
 
@@ -26,9 +34,20 @@ public:
 	void GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vram, uint8_t* cgram, uint32_t *outBuffer);
 	void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t* oamRam, uint8_t* cgram, uint32_t *outBuffer);
 
-	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
+	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType);
 	void RemoveViewer(uint32_t viewerId);
-	void UpdateViewers(uint16_t scanline, uint16_t cycle);
+	
+	__forceinline void UpdateViewers(uint16_t scanline, uint16_t cycle, CpuType cpuType)
+	{
+		if(_updateTimings.size() > 0) {
+			for(auto updateTiming : _updateTimings) {
+				ViewerRefreshConfig cfg = updateTiming.second;
+				if(cfg.Cycle == cycle && cfg.Scanline == scanline && cfg.Type == cpuType) {
+					_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
+				}
+			}
+		}
+	}
 
 	void GetGameboyTilemap(uint8_t* vram, GbPpuState& state, uint16_t offset, uint32_t* outBuffer);
 	void GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, uint8_t* vram, uint8_t* oamRam, uint32_t* outBuffer);

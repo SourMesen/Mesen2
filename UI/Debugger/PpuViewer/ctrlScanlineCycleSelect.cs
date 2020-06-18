@@ -18,6 +18,7 @@ namespace Mesen.GUI.Debugger.Controls
 		private int _viewerId = 0;
 		private int _scanline = 241;
 		private int _cycle = 0;
+		private CpuType _cpuType = CpuType.Cpu;
 
 		public int Scanline { get { return _scanline; } }
 		public int Cycle { get { return _cycle; } }
@@ -34,10 +35,11 @@ namespace Mesen.GUI.Debugger.Controls
 			return _nextViewerId++;
 		}
 
-		public void Initialize(int scanline, int cycle)
+		public void Initialize(int scanline, int cycle, CpuType cpuType)
 		{
 			_scanline = scanline;
 			_cycle = cycle;
+			_cpuType = cpuType;
 
 			this.nudScanline.Value = _scanline;
 			this.nudCycle.Value = _cycle;
@@ -47,8 +49,8 @@ namespace Mesen.GUI.Debugger.Controls
 
 		public void RefreshSettings()
 		{
-			bool isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
-			DebugApi.SetViewerUpdateTiming(_viewerId, Math.Min(_scanline, isGameboy ? 153 : 312), _cycle);
+			bool isGameboy = _cpuType == CpuType.Gameboy;
+			DebugApi.SetViewerUpdateTiming(_viewerId, Math.Min(_scanline, isGameboy ? 153 : 312), _cycle, _cpuType);
 		}
 
 		private void SetUpdateScanlineCycle(int scanline, int cycle)
@@ -65,7 +67,7 @@ namespace Mesen.GUI.Debugger.Controls
 
 		private void btnReset_Click(object sender, EventArgs e)
 		{
-			bool isGameboy = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
+			bool isGameboy = _cpuType == CpuType.Gameboy;
 			this.nudScanline.Value = isGameboy ? 144 : 241;
 			this.nudCycle.Value = 0;
 		}

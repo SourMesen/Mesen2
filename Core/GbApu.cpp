@@ -6,21 +6,42 @@
 #include "EmuSettings.h"
 #include "../Utilities/Serializer.h"
 
-GbApu::GbApu(Console* console, Gameboy* gameboy)
+GbApu::GbApu()
 {
+	_soundBuffer = new int16_t[GbApu::MaxSamples * 2];
+	memset(_soundBuffer, 0, GbApu::MaxSamples * 2 * sizeof(int16_t));
+
+	_leftChannel = blip_new(GbApu::MaxSamples);
+	_rightChannel = blip_new(GbApu::MaxSamples);
+}
+
+void GbApu::Init(Console* console, Gameboy* gameboy)
+{
+	_square1.reset(new GbSquareChannel(this));
+	_square2.reset(new GbSquareChannel(this));
+	_wave.reset(new GbWaveChannel(this));
+	_noise.reset(new GbNoiseChannel(this));
+
+	_prevLeftOutput = 0;
+	_prevRightOutput = 0;
+	_clockCounter = 0;
+	_prevClockCount = 0;
+
 	_console = console;
 	_soundMixer = console->GetSoundMixer().get();
 	_gameboy = gameboy;
 	_state = {};
 
-	_soundBuffer = new int16_t[GbApu::MaxSamples*2];
-	memset(_soundBuffer, 0, GbApu::MaxSamples*2*sizeof(int16_t));
+	blip_clear(_leftChannel);
+	blip_clear(_rightChannel);
 
-	_leftChannel = blip_new(GbApu::MaxSamples);
-	_rightChannel = blip_new(GbApu::MaxSamples);
-
-	blip_set_rates(_leftChannel, GbApu::ApuFrequency, GbApu::SampleRate);
-	blip_set_rates(_rightChannel, GbApu::ApuFrequency, GbApu::SampleRate);
+	if(_gameboy->IsSgb()) {
+		blip_set_rates(_leftChannel, _console->GetMasterClockRate() / 5, GbApu::SampleRate);
+		blip_set_rates(_rightChannel, _console->GetMasterClockRate() / 5, GbApu::SampleRate);
+	} else {
+		blip_set_rates(_leftChannel, GbApu::ApuFrequency, GbApu::SampleRate);
+		blip_set_rates(_rightChannel, GbApu::ApuFrequency, GbApu::SampleRate);
+	}
 }
 
 GbApu::~GbApu()
@@ -34,10 +55,10 @@ GbApuDebugState GbApu::GetState()
 {
 	GbApuDebugState state;
 	state.Common = _state;
-	state.Square1 = _square1.GetState();
-	state.Square2 = _square2.GetState();
-	state.Wave = _wave.GetState();
-	state.Noise = _noise.GetState();
+	state.Square1 = _square1->GetState();
+	state.Square2 = _square2->GetState();
+	state.Wave = _wave->GetState();
+	state.Noise = _noise->GetState();
 	return state;
 }
 
@@ -51,19 +72,19 @@ void GbApu::Run()
 		_clockCounter += clocksToRun;
 	} else {
 		while(clocksToRun > 0) {
-			uint32_t minTimer = std::min<uint32_t>({ clocksToRun, _square1.GetState().Timer, _square2.GetState().Timer, _wave.GetState().Timer, _noise.GetState().Timer });
+			uint32_t minTimer = std::min<uint32_t>({ clocksToRun, _square1->GetState().Timer, _square2->GetState().Timer, _wave->GetState().Timer, _noise->GetState().Timer });
 
 			clocksToRun -= minTimer;
-			_square1.Exec(minTimer);
-			_square2.Exec(minTimer);
-			_wave.Exec(minTimer);
-			_noise.Exec(minTimer);
+			_square1->Exec(minTimer);
+			_square2->Exec(minTimer);
+			_wave->Exec(minTimer);
+			_noise->Exec(minTimer);
 
 			int16_t leftOutput = (
-				(_square1.GetOutput() & _state.EnableLeftSq1) +
-				(_square2.GetOutput() & _state.EnableLeftSq2) +
-				(_wave.GetOutput() & _state.EnableLeftWave) +
-				(_noise.GetOutput() & _state.EnableLeftNoise)
+				(_square1->GetOutput() & _state.EnableLeftSq1) +
+				(_square2->GetOutput() & _state.EnableLeftSq2) +
+				(_wave->GetOutput() & _state.EnableLeftWave) +
+				(_noise->GetOutput() & _state.EnableLeftNoise)
 				) * (_state.LeftVolume + 1) * 40;
 
 			if(_prevLeftOutput != leftOutput) {
@@ -72,10 +93,10 @@ void GbApu::Run()
 			}
 
 			int16_t rightOutput = (
-				(_square1.GetOutput() & _state.EnableRightSq1) +
-				(_square2.GetOutput() & _state.EnableRightSq2) +
-				(_wave.GetOutput() & _state.EnableRightWave) +
-				(_noise.GetOutput() & _state.EnableRightNoise)
+				(_square1->GetOutput() & _state.EnableRightSq1) +
+				(_square2->GetOutput() & _state.EnableRightSq2) +
+				(_wave->GetOutput() & _state.EnableRightWave) +
+				(_noise->GetOutput() & _state.EnableRightNoise)
 				) * (_state.RightVolume + 1) * 40;
 
 			if(_prevRightOutput != rightOutput) {
@@ -87,15 +108,27 @@ void GbApu::Run()
 		}
 	}
 
-	if(_clockCounter >= 20000) {
+	if(!_gameboy->IsSgb() && _clockCounter >= 20000) {
 		blip_end_frame(_leftChannel, _clockCounter);
 		blip_end_frame(_rightChannel, _clockCounter);
 
 		uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, GbApu::MaxSamples, 1);
 		blip_read_samples(_rightChannel, _soundBuffer + 1, GbApu::MaxSamples, 1);
-		_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount, GbApu::SampleRate);
+		_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, GbApu::SampleRate);
 		_clockCounter = 0;
 	}
+}
+
+void GbApu::GetSoundSamples(int16_t* &samples, uint32_t& sampleCount)
+{
+	Run();
+	blip_end_frame(_leftChannel, _clockCounter);
+	blip_end_frame(_rightChannel, _clockCounter);
+
+	sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, GbApu::MaxSamples, 1);
+	blip_read_samples(_rightChannel, _soundBuffer + 1, GbApu::MaxSamples, 1);
+	samples = _soundBuffer;
+	_clockCounter = 0;
 }
 
 void GbApu::ClockFrameSequencer()
@@ -107,18 +140,18 @@ void GbApu::ClockFrameSequencer()
 	}
 
 	if((_state.FrameSequenceStep & 0x01) == 0) {
-		_square1.ClockLengthCounter();
-		_square2.ClockLengthCounter();
-		_wave.ClockLengthCounter();
-		_noise.ClockLengthCounter();
+		_square1->ClockLengthCounter();
+		_square2->ClockLengthCounter();
+		_wave->ClockLengthCounter();
+		_noise->ClockLengthCounter();
 
 		if((_state.FrameSequenceStep & 0x03) == 2) {
-			_square1.ClockSweepUnit();
+			_square1->ClockSweepUnit();
 		}
 	} else if(_state.FrameSequenceStep == 7) {
-		_square1.ClockEnvelope();
-		_square2.ClockEnvelope();
-		_noise.ClockEnvelope();
+		_square1->ClockEnvelope();
+		_square2->ClockEnvelope();
+		_noise->ClockEnvelope();
 	}
 
 	_state.FrameSequenceStep = (_state.FrameSequenceStep + 1) & 0x07;
@@ -130,16 +163,16 @@ uint8_t GbApu::Read(uint16_t addr)
 
 	switch(addr) {
 		case 0xFF10: case 0xFF11: case 0xFF12: case 0xFF13: case 0xFF14:
-			return _square1.Read(addr - 0xFF10);
+			return _square1->Read(addr - 0xFF10);
 			
 		case 0xFF16: case 0xFF17: case 0xFF18: case 0xFF19:
-			return _square2.Read(addr - 0xFF15);
+			return _square2->Read(addr - 0xFF15);
 
 		case 0xFF1A: case 0xFF1B: case 0xFF1C: case 0xFF1D: case 0xFF1E:
-			return _wave.Read(addr - 0xFF1A);
+			return _wave->Read(addr - 0xFF1A);
 
 		case 0xFF20: case 0xFF21: case 0xFF22: case 0xFF23:
-			return _noise.Read(addr - 0xFF1F);
+			return _noise->Read(addr - 0xFF1F);
 
 		case 0xFF24: 
 			return (
@@ -165,15 +198,15 @@ uint8_t GbApu::Read(uint16_t addr)
 			return (
 				(_state.ApuEnabled ? 0x80 : 0) |
 				0x70 | //open bus
-				((_state.ApuEnabled && _noise.Enabled()) ? 0x08 : 0) |
-				((_state.ApuEnabled && _wave.Enabled()) ? 0x04 : 0) |
-				((_state.ApuEnabled && _square2.Enabled()) ? 0x02 : 0) |
-				((_state.ApuEnabled && _square1.Enabled()) ? 0x01 : 0)
+				((_state.ApuEnabled && _noise->Enabled()) ? 0x08 : 0) |
+				((_state.ApuEnabled && _wave->Enabled()) ? 0x04 : 0) |
+				((_state.ApuEnabled && _square2->Enabled()) ? 0x02 : 0) |
+				((_state.ApuEnabled && _square1->Enabled()) ? 0x01 : 0)
 			);
 
 		case 0xFF30: case 0xFF31: case 0xFF32: case 0xFF33: case 0xFF34: case 0xFF35: case 0xFF36: case 0xFF37:
 		case 0xFF38: case 0xFF39: case 0xFF3A: case 0xFF3B: case 0xFF3C: case 0xFF3D: case 0xFF3E: case 0xFF3F:
-			return _wave.ReadRam(addr);
+			return _wave->ReadRam(addr);
 	}
 
 	//Open bus
@@ -196,19 +229,19 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 
 	switch(addr) {
 		case 0xFF10: case 0xFF11: case 0xFF12: case 0xFF13: case 0xFF14:
-			_square1.Write(addr - 0xFF10, value);
+			_square1->Write(addr - 0xFF10, value);
 			break;
 
 		case 0xFF16: case 0xFF17: case 0xFF18: case 0xFF19:
-			_square2.Write(addr - 0xFF15, value); //Same as square1, but without a sweep unit
+			_square2->Write(addr - 0xFF15, value); //Same as square1, but without a sweep unit
 			break;
 
 		case 0xFF1A: case 0xFF1B: case 0xFF1C: case 0xFF1D: case 0xFF1E:
-			_wave.Write(addr - 0xFF1A, value);
+			_wave->Write(addr - 0xFF1A, value);
 			break;
 
 		case 0xFF20: case 0xFF21: case 0xFF22: case 0xFF23:
-			_noise.Write(addr - 0xFF1F, value);
+			_noise->Write(addr - 0xFF1F, value);
 			break;
 
 		case 0xFF24: 
@@ -234,10 +267,10 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 			bool apuEnabled = (value & 0x80) != 0;
 			if(_state.ApuEnabled != apuEnabled) {
 				if(!apuEnabled) {
-					_square1.Disable();
-					_square2.Disable();
-					_wave.Disable();
-					_noise.Disable();
+					_square1->Disable();
+					_square2->Disable();
+					_wave->Disable();
+					_noise->Disable();
 					Write(0xFF24, 0);
 					Write(0xFF25, 0);
 				} else {
@@ -251,7 +284,7 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 		}
 		case 0xFF30: case 0xFF31: case 0xFF32: case 0xFF33: case 0xFF34: case 0xFF35: case 0xFF36: case 0xFF37:
 		case 0xFF38: case 0xFF39: case 0xFF3A: case 0xFF3B: case 0xFF3C: case 0xFF3D: case 0xFF3E: case 0xFF3F:
-			_wave.WriteRam(addr, value);
+			_wave->WriteRam(addr, value);
 			break;
 	}
 }
@@ -288,10 +321,10 @@ void GbApu::Serialize(Serializer& s)
 		_prevLeftOutput, _prevRightOutput, _clockCounter, _prevClockCount
 	);
 
-	s.Stream(&_square1);
-	s.Stream(&_square2);
-	s.Stream(&_wave);
-	s.Stream(&_noise);
+	s.Stream(_square1.get());
+	s.Stream(_square2.get());
+	s.Stream(_wave.get());
+	s.Stream(_noise.get());
 }
 
 template void GbApu::ProcessLengthEnableFlag<uint8_t>(uint8_t value, uint8_t& length, bool& lengthEnabled, bool& enabled);

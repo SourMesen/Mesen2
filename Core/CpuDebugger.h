@@ -41,7 +41,8 @@ class CpuDebugger final : public IDebugger
 	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
-	
+	DebugState _debugState;
+
 	MemoryMappings& GetMemoryMappings();
 	CpuState GetState();
 	bool IsRegister(uint32_t addr);
@@ -55,6 +56,7 @@ public:
 	void Run();
 	void Step(int32_t stepCount, StepType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+	void ProcessPpuCycle(uint16_t scanline, uint16_t cycle);
 
 	shared_ptr<EventManager> GetEventManager();
 	shared_ptr<Assembler> GetAssembler();

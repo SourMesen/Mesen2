@@ -22,6 +22,8 @@ namespace Mesen.GUI.Debugger
 		private eSortColumn _sortColumn = eSortColumn.Scanline;
 		private bool _sortAscending = true;
 
+		public CpuType CpuType { get; set; } = CpuType.Cpu;
+
 		public ctrlEventViewerListView()
 		{
 			InitializeComponent();
@@ -39,7 +41,7 @@ namespace Mesen.GUI.Debugger
 		{
 			_breakpoints = BreakpointManager.Breakpoints;
 			EventViewerDisplayOptions options = ConfigManager.Config.Debug.EventViewer.GetInteropOptions();
-			DebugEventInfo[] eventInfoArray = DebugApi.GetDebugEvents(options);
+			DebugEventInfo[] eventInfoArray = DebugApi.GetDebugEvents(this.CpuType, options);
 
 			lstEvents.BeginUpdate();
 			_debugEvents = new List<DebugEventInfo>(eventInfoArray);

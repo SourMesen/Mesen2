@@ -109,7 +109,7 @@ private:
 	uint8_t* _gbBootRom;
 	uint32_t _gbBootRomSize;
 
-	DisassemblerSource GetSource(SnesMemoryType type);
+	DisassemblerSource& GetSource(SnesMemoryType type);
 	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);
 	void SetDisassembleFlag(CpuType type);
 

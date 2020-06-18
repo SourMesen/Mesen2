@@ -70,6 +70,7 @@
     <ClInclude Include="GameboyHeader.h" />
     <ClInclude Include="GbApu.h" />
     <ClInclude Include="GbAssembler.h" />
+    <ClInclude Include="GbBootRom.h" />
     <ClInclude Include="GbCart.h" />
     <ClInclude Include="GbCartFactory.h" />
     <ClInclude Include="GbCpu.h" />
@@ -236,6 +237,7 @@
     <ClInclude Include="SPC_DSP.h" />
     <ClInclude Include="SPC_Filter.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SuperGameboy.h" />
     <ClInclude Include="SuperScope.h" />
     <ClInclude Include="SystemActionManager.h" />
     <ClInclude Include="TraceLogger.h" />
@@ -371,6 +373,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SuperGameboy.cpp" />
     <ClCompile Include="TraceLogger.cpp" />
     <ClCompile Include="VideoDecoder.cpp" />
     <ClCompile Include="VideoRenderer.cpp" />

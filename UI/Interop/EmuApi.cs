@@ -205,10 +205,38 @@ namespace Mesen.GUI
 		ST011,
 		ST018,
 		CX4,
-		Gameboy
+		Gameboy,
+		SGB
 	}
 
-	public enum FirmwareType
+	public static class CoprocessorTypeExtensions
+	{
+		public static CpuType? ToCpuType(this CoprocessorType type)
+		{
+			switch(type) {
+				case CoprocessorType.CX4: 
+					return CpuType.Cx4;
+
+				case CoprocessorType.DSP1: case CoprocessorType.DSP1B: case CoprocessorType.DSP2: case CoprocessorType.DSP3: case CoprocessorType.DSP4: 
+					return CpuType.NecDsp;
+
+				case CoprocessorType.SA1:
+					return CpuType.Sa1;
+
+				case CoprocessorType.GSU:
+					return CpuType.Gsu;
+
+				case CoprocessorType.Gameboy: 
+				case CoprocessorType.SGB: 
+					return CpuType.Gameboy;
+
+				default:
+					return null;
+			}
+		}
+	}
+
+		public enum FirmwareType
 	{
 		CX4,
 		DSP1,
@@ -221,7 +249,9 @@ namespace Mesen.GUI
 		ST018,
 		Satellaview,
 		Gameboy,
-		GameboyColor
+		GameboyColor,
+		SgbGameboyCpu,
+		SGB
 	}
 
 	public struct MissingFirmwareMessage

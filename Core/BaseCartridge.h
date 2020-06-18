@@ -2,9 +2,9 @@
 #include "stdafx.h"
 #include "IMemoryHandler.h"
 #include "CartTypes.h"
+#include "BaseCoprocessor.h"
 #include "../Utilities/ISerializable.h"
 
-class BaseCoprocessor;
 class MemoryMappings;
 class VirtualFile;
 class EmuSettings;
@@ -12,6 +12,7 @@ class NecDsp;
 class Sa1;
 class Gsu;
 class Cx4;
+class SuperGameboy;
 class BsxCart;
 class BsxMemoryPack;
 class Gameboy;
@@ -29,11 +30,14 @@ private:
 	SnesCartInformation _cartInfo = {};
 	uint32_t _headerOffset = 0;
 
+	bool _needCoprocSync = false;
 	unique_ptr<BaseCoprocessor> _coprocessor;
+	
 	NecDsp *_necDsp = nullptr;
 	Sa1 *_sa1 = nullptr;
 	Gsu *_gsu = nullptr;
 	Cx4 *_cx4 = nullptr;
+	SuperGameboy *_sgb = nullptr;
 	BsxCart* _bsx = nullptr;
 	unique_ptr<BsxMemoryPack> _bsxMemPack;
 	unique_ptr<Gameboy> _gameboy;
@@ -107,11 +111,19 @@ public:
 	Sa1* GetSa1();
 	Gsu* GetGsu();
 	Cx4* GetCx4();
+	SuperGameboy* GetSuperGameboy();
 	BsxCart* GetBsx();
 	BsxMemoryPack* GetBsxMemoryPack();
 	Gameboy* GetGameboy();
 
 	void RunCoprocessors();
+	
+	__forceinline void SyncCoprocessors()
+	{
+		if(_needCoprocSync) {
+			_coprocessor->Run();
+		}
+	}
 
 	BaseCoprocessor* GetCoprocessor();
 

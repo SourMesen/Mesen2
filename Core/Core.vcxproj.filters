@@ -596,6 +596,12 @@
     <ClInclude Include="IAssembler.h">
       <Filter>Debugger\Assembler</Filter>
     </ClInclude>
+    <ClInclude Include="SuperGameboy.h">
+      <Filter>SNES\Coprocessors\SuperGameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="GbBootRom.h">
+      <Filter>GB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -956,6 +962,9 @@
     <ClCompile Include="GbWaveChannel.cpp">
       <Filter>GB\APU</Filter>
     </ClCompile>
+    <ClCompile Include="SuperGameboy.cpp">
+      <Filter>SNES\Coprocessors\SuperGameboy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -1047,6 +1056,9 @@
     </Filter>
     <Filter Include="Debugger\Assembler">
       <UniqueIdentifier>{8abb14c6-e2ee-48cb-ad91-38402cb8510c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\SuperGameboy">
+      <UniqueIdentifier>{50d3ab3e-f393-4fa3-a8a6-8ec593089f1b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

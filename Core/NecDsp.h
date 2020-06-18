@@ -59,7 +59,7 @@ public:
 	static NecDsp* InitCoprocessor(CoprocessorType type, Console* console, vector<uint8_t> &embeddedFirmware);
 
 	void Reset() override;
-	void Run();
+	void Run() override;
 
 	void LoadBattery() override;
 	void SaveBattery() override;

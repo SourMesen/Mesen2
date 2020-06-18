@@ -15,7 +15,7 @@ using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmTilemapViewer : BaseForm, IRefresh
+	public partial class frmTilemapViewer : BaseForm, IRefresh, IDebuggerWindow
 	{
 		private int[,] _layerBpp = new int[8, 4] { { 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 } };
 
@@ -29,11 +29,16 @@ namespace Mesen.GUI.Debugger
 		private int _selectedColumn = 0;
 		private DateTime _lastUpdate = DateTime.MinValue;
 		private WindowRefreshManager _refreshManager;
-		private bool _isGameboyMode = false;
+		
+		public CpuType CpuType { get; private set; }
 
-		public frmTilemapViewer()
+		public frmTilemapViewer(CpuType cpuType)
 		{
+			this.CpuType = cpuType;
 			InitializeComponent();
+			if(cpuType == CpuType.Gameboy) {
+				this.Text = "GB " + this.Text;
+			}
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -56,7 +61,7 @@ namespace Mesen.GUI.Debugger
 			chkShowTileGrid.Checked = config.ShowTileGrid;
 			chkShowScrollOverlay.Checked = config.ShowScrollOverlay;
 			ctrlImagePanel.ImageScale = config.ImageScale;
-			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle);
+			ctrlScanlineCycleSelect.Initialize(config.RefreshScanline, config.RefreshCycle, this.CpuType);
 
 			_refreshManager = new WindowRefreshManager(this);
 			_refreshManager.AutoRefresh = config.AutoRefresh;
@@ -104,9 +109,8 @@ namespace Mesen.GUI.Debugger
 
 		public void RefreshData()
 		{
-			_isGameboyMode = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
 			_state = DebugApi.GetState();
-			_vram = DebugApi.GetMemoryState(_isGameboyMode ? SnesMemoryType.GbVideoRam : SnesMemoryType.VideoRam);
+			_vram = DebugApi.GetMemoryState(this.CpuType == CpuType.Gameboy ? SnesMemoryType.GbVideoRam : SnesMemoryType.VideoRam);
 			_cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 		}
 
@@ -137,7 +141,7 @@ namespace Mesen.GUI.Debugger
 
 		private int GetWidth()
 		{
-			if(_isGameboyMode) {
+			if(this.CpuType == CpuType.Gameboy) {
 				return 256;
 			} else if(_state.Ppu.BgMode == 7) {
 				return 1024;
@@ -158,7 +162,7 @@ namespace Mesen.GUI.Debugger
 
 		private int GetHeight()
 		{
-			if(_isGameboyMode) {
+			if(this.CpuType == CpuType.Gameboy) {
 				return 256;
 			} else if(_state.Ppu.BgMode == 7) {
 				return 1024;
@@ -178,11 +182,12 @@ namespace Mesen.GUI.Debugger
 
 		public void RefreshViewer()
 		{
+			bool isGameboy = this.CpuType == CpuType.Gameboy;
 			if(_layerBpp[_state.Ppu.BgMode, _options.Layer] == 0) {
 				_options.Layer = 0;
 			}
 
-			if(_isGameboyMode) {
+			if(isGameboy) {
 				DebugApi.GetGameboyTilemap(_vram, _state.Gameboy.Ppu, (ushort)(_options.Layer == 0 ? 0x1800 : 0x1C00), _tilemapData);
 			} else {
 				DebugApi.GetTilemap(_options, _state.Ppu, _vram, _cgram, _tilemapData);
@@ -211,17 +216,17 @@ namespace Mesen.GUI.Debugger
 			btnLayer3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
 			btnLayer4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
 
-			btnLayer1.Text = _isGameboyMode ? "BG" : "1";
-			btnLayer2.Text = _isGameboyMode ? "Window" : "2";
-			btnLayer2.Width = _isGameboyMode ? 64 : 32;
+			btnLayer1.Text = isGameboy ? "BG" : "1";
+			btnLayer2.Text = isGameboy ? "Window" : "2";
+			btnLayer2.Width = isGameboy ? 64 : 32;
 
-			btnLayer3.Visible = !_isGameboyMode;
-			btnLayer4.Visible = !_isGameboyMode;
+			btnLayer3.Visible = !isGameboy;
+			btnLayer4.Visible = !isGameboy;
 
-			lblMap.Visible = !_isGameboyMode;
-			txtMapNumber.Visible = !_isGameboyMode;
-			lblValue.Visible = !_isGameboyMode;
-			txtValue.Visible = !_isGameboyMode;
+			lblMap.Visible = !isGameboy;
+			txtMapNumber.Visible = !isGameboy;
+			lblValue.Visible = !isGameboy;
+			txtValue.Visible = !isGameboy;
 
 			ctrlImagePanel.ImageSize = new Size(GetWidth(), GetHeight());
 			ctrlImagePanel.Selection = new Rectangle(_selectedColumn * 8, _selectedRow * 8, IsLargeTileWidth ? 16 : 8, IsLargeTileHeight ? 16 : 8);
@@ -230,7 +235,7 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? (IsLargeTileHeight ? 16 : 8): 0;
 
 			if(chkShowScrollOverlay.Checked) {
-				if(_isGameboyMode) {
+				if(isGameboy) {
 					if(_options.Layer == 0) {
 						GbPpuState ppu = _state.Gameboy.Ppu;
 						ctrlImagePanel.Overlay = new Rectangle(ppu.ScrollX, ppu.ScrollY, 160, 144);
@@ -250,7 +255,7 @@ namespace Mesen.GUI.Debugger
 			}
 			ctrlImagePanel.Refresh();
 
-			if(_isGameboyMode) {
+			if(isGameboy) {
 				UpdateGameboyFields();
 			} else {
 				UpdateFields();
