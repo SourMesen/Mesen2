@@ -42,81 +42,94 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile, bool sgbEnabled
 
 	if(cart) {
 		Gameboy* gb = new Gameboy();
-		gb->_console = console;
-		gb->_cart.reset(cart);
-		gb->_prgRomSize = (uint32_t)romData.size();
-		gb->_prgRom = new uint8_t[gb->_prgRomSize];
-		memcpy(gb->_prgRom, romData.data(), romData.size());
-
-		gb->_cartRamSize = header.GetCartRamSize();
-		gb->_cartRam = new uint8_t[gb->_cartRamSize];
-		gb->_hasBattery = header.HasBattery();
-
-		shared_ptr<EmuSettings> settings = console->GetSettings();
-		EmulationConfig cfg = settings->GetEmulationConfig();
-		GameboyModel model = cfg.GbModel;
-		if(model == GameboyModel::Auto) {
-			if((header.CgbFlag & 0x80) != 0) {
-				model = GameboyModel::GameboyColor;
-			} else {
-				model = GameboyModel::SuperGameboy;
-			}
-		}
-
-		if(!sgbEnabled && model == GameboyModel::SuperGameboy) {
-			//SGB bios isn't available, use gameboy color mode instead
-			model = GameboyModel::GameboyColor;
-		}
-
-		gb->_model = model;
-
-		bool cgbMode = gb->_model == GameboyModel::GameboyColor;
-		gb->_workRamSize = cgbMode ? 0x8000 : 0x2000;
-		gb->_videoRamSize = cgbMode ? 0x4000 : 0x2000;
-
-		gb->_workRam = new uint8_t[gb->_workRamSize];
-		gb->_videoRam = new uint8_t[gb->_videoRamSize];
-		gb->_spriteRam = new uint8_t[Gameboy::SpriteRamSize];
-		gb->_highRam = new uint8_t[Gameboy::HighRamSize];
-		
-		gb->_bootRomSize = 0;
-
-		FirmwareType type = FirmwareType::Gameboy;
-		if(gb->_model == GameboyModel::SuperGameboy) {
-			type = FirmwareType::SgbGameboyCpu;
-		} else if(gb->_model == GameboyModel::GameboyColor) {
-			type = FirmwareType::GameboyColor;
-		}
-		
-		gb->_bootRomSize = cgbMode ? 9 * 256 : 256;
-		if(!FirmwareHelper::LoadGbBootRom(console, &gb->_bootRom, type)) {
-			switch(gb->_model) {
-				default:
-				case GameboyModel::Gameboy:
-					gb->_bootRom = new uint8_t[gb->_bootRomSize];
-					memcpy(gb->_bootRom, dmgBootRom, gb->_bootRomSize);
-					break;
-
-				case GameboyModel::GameboyColor:
-					gb->_bootRom = new uint8_t[gb->_bootRomSize];
-					memcpy(gb->_bootRom, cgbBootRom, gb->_bootRomSize);
-					break;
-
-				case GameboyModel::SuperGameboy:
-					gb->_bootRom = new uint8_t[gb->_bootRomSize];
-					if(cfg.UseSgb2) {
-						memcpy(gb->_bootRom, sgb2BootRom, gb->_bootRomSize);
-					} else {
-						memcpy(gb->_bootRom, sgbBootRom, gb->_bootRomSize);
-					}
-					break;
-			}
-		}
-
+		gb->Init(console, cart, romData, header, sgbEnabled);
 		return gb;
 	}
 
 	return nullptr;
+}
+
+void Gameboy::Init(Console* console, GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled)
+{
+	_console = console;
+	_cart.reset(cart);
+
+	_prgRomSize = (uint32_t)romData.size();
+	_prgRom = new uint8_t[_prgRomSize];
+	memcpy(_prgRom, romData.data(), romData.size());
+
+	_cartRamSize = header.GetCartRamSize();
+	_cartRam = new uint8_t[_cartRamSize];
+	_hasBattery = header.HasBattery();
+
+	shared_ptr<EmuSettings> settings = console->GetSettings();
+	EmulationConfig cfg = settings->GetEmulationConfig();
+	GameboyModel model = cfg.GbModel;
+	if(model == GameboyModel::Auto) {
+		if((header.CgbFlag & 0x80) != 0) {
+			model = GameboyModel::GameboyColor;
+		} else {
+			model = GameboyModel::SuperGameboy;
+		}
+	}
+
+	if(!sgbEnabled && model == GameboyModel::SuperGameboy) {
+		//SGB bios isn't available, use gameboy color mode instead
+		model = GameboyModel::GameboyColor;
+	}
+
+	_model = model;
+
+	bool cgbMode = _model == GameboyModel::GameboyColor;
+	_workRamSize = cgbMode ? 0x8000 : 0x2000;
+	_videoRamSize = cgbMode ? 0x4000 : 0x2000;
+
+	_workRam = new uint8_t[_workRamSize];
+	_videoRam = new uint8_t[_videoRamSize];
+	_spriteRam = new uint8_t[Gameboy::SpriteRamSize];
+	_highRam = new uint8_t[Gameboy::HighRamSize];
+
+	_bootRomSize = 0;
+
+	FirmwareType type = FirmwareType::Gameboy;
+	if(_model == GameboyModel::SuperGameboy) {
+		type = FirmwareType::SgbGameboyCpu;
+	} else if(_model == GameboyModel::GameboyColor) {
+		type = FirmwareType::GameboyColor;
+	}
+
+	_bootRomSize = cgbMode ? 9 * 256 : 256;
+	if(!FirmwareHelper::LoadGbBootRom(console, &_bootRom, type)) {
+		switch(_model) {
+			default:
+			case GameboyModel::Gameboy:
+				_bootRom = new uint8_t[_bootRomSize];
+				memcpy(_bootRom, dmgBootRom, _bootRomSize);
+				break;
+
+			case GameboyModel::GameboyColor:
+				_bootRom = new uint8_t[_bootRomSize];
+				memcpy(_bootRom, cgbBootRom, _bootRomSize);
+				break;
+
+			case GameboyModel::SuperGameboy:
+				_bootRom = new uint8_t[_bootRomSize];
+				if(cfg.UseSgb2) {
+					memcpy(_bootRom, sgb2BootRom, _bootRomSize);
+				} else {
+					memcpy(_bootRom, sgbBootRom, _bootRomSize);
+				}
+				break;
+		}
+	}
+
+	settings->InitializeRam(_cartRam, _cartRamSize);
+	settings->InitializeRam(_workRam, _workRamSize);
+	settings->InitializeRam(_spriteRam, Gameboy::SpriteRamSize);
+	settings->InitializeRam(_highRam, Gameboy::HighRamSize);
+	settings->InitializeRam(_videoRam, _videoRamSize);
+
+	LoadBattery();
 }
 
 Gameboy::Gameboy()
@@ -148,18 +161,6 @@ Gameboy::~Gameboy()
 void Gameboy::PowerOn(SuperGameboy* superGameboy)
 {
 	_superGameboy = superGameboy;
-	
-	shared_ptr<EmuSettings> settings = _console->GetSettings();
-	settings->InitializeRam(_cartRam, _cartRamSize);
-	settings->InitializeRam(_workRam, _workRamSize);
-	settings->InitializeRam(_spriteRam, Gameboy::SpriteRamSize);
-	settings->InitializeRam(_highRam, Gameboy::HighRamSize);
-
-	//VRAM is filled with 0s by the boot rom
-	memset(_videoRam, 0, _videoRamSize);
-	memset(_spriteRam, 0, Gameboy::SpriteRamSize);
-
-	LoadBattery();
 
 	_timer->Init(_memoryManager.get(), _apu.get());
 	_apu->Init(_console, this);

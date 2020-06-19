@@ -63,6 +63,7 @@ public:
 	static Gameboy* Create(Console* console, VirtualFile& romFile, bool sgbEnabled);
 	virtual ~Gameboy();
 
+	void Init(Console* console, GbCart* cart, vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled);
 	void PowerOn(SuperGameboy* superGameboy = nullptr);
 
 	void Exec();
