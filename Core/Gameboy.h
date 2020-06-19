@@ -60,7 +60,7 @@ private:
 public:
 	static constexpr int HeaderOffset = 0x134;
 
-	static Gameboy* Create(Console* console, VirtualFile& romFile);
+	static Gameboy* Create(Console* console, VirtualFile& romFile, bool sgbEnabled);
 	virtual ~Gameboy();
 
 	void PowerOn(SuperGameboy* superGameboy = nullptr);

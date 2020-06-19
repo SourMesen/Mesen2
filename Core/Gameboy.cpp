@@ -19,7 +19,7 @@
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
 
-Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
+Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile, bool sgbEnabled)
 {
 	vector<uint8_t> romData;
 	romFile.ReadFile(romData);
@@ -61,6 +61,11 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 			} else {
 				model = GameboyModel::SuperGameboy;
 			}
+		}
+
+		if(!sgbEnabled && model == GameboyModel::SuperGameboy) {
+			//SGB bios isn't available, use gameboy color mode instead
+			model = GameboyModel::GameboyColor;
 		}
 
 		gb->_model = model;

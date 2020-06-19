@@ -66,7 +66,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 				return nullptr;
 			}
 		} else if(fileExt == ".gb" || fileExt == ".gbc") {
-			if(cart->LoadGameboy(romFile)) {
+			if(cart->LoadGameboy(romFile, true)) {
 				return cart;
 			} else {
 				return nullptr;
@@ -620,9 +620,9 @@ void BaseCartridge::LoadSpc()
 	SetupCpuHalt();
 }
 
-bool BaseCartridge::LoadGameboy(VirtualFile &romFile)
+bool BaseCartridge::LoadGameboy(VirtualFile &romFile, bool sgbEnabled)
 {
-	_gameboy.reset(Gameboy::Create(_console, romFile));
+	_gameboy.reset(Gameboy::Create(_console, romFile, sgbEnabled));
 	if(!_gameboy) {
 		return false;
 	}
@@ -632,10 +632,16 @@ bool BaseCartridge::LoadGameboy(VirtualFile &romFile)
 
 	if(_gameboy->IsSgb()) {
 		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
-		if(!FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
-			return false;
+		if(FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
+			LoadRom();
+			if(_coprocessorType != CoprocessorType::SGB) {
+				//SGB bios file isn't a recognized SGB bios, try again without SGB mode
+				return LoadGameboy(romFile, false);
+			}
+		} else {
+			//Couldn't load the SGB bios, try again with in GB/GBC mode
+			return LoadGameboy(romFile, false);
 		}
-		LoadRom();
 	} else {
 		_coprocessorType = CoprocessorType::Gameboy;
 		SetupCpuHalt();
