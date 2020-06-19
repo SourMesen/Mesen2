@@ -585,9 +585,40 @@ extern "C" {
 
 		_console->GetSettings()->SetInputConfig(input);
 	}
-	
+
 	void retro_set_memory_maps()
 	{
+		shared_ptr<BaseCartridge> cart = _console->GetCartridge();
+		Gameboy* gb = cart->GetGameboy();
+		if(gb) {
+			retro_memory_descriptor descriptors[20] = {};
+			uint32_t count = 0;
+
+			auto addDescriptor = [&count, &descriptors](uint8_t* ptr, uint32_t address, uint32_t length) {
+				descriptors[count].ptr = ptr;
+				descriptors[count].start = (size_t)address;
+				descriptors[count].len = (size_t)length;
+				count++;
+			};
+
+			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbPrgRom), 0x0000, std::min(0x8000, (int)gb->DebugGetMemorySize(SnesMemoryType::GbPrgRom)));
+			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbVideoRam), 0x8000, 0x2000);
+			if(gb->DebugGetMemory(SnesMemoryType::GbCartRam)) {
+				addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbCartRam), 0xA000, 0x2000);
+			}
+			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbWorkRam), 0xC000, 0x2000);
+			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbHighRam), 0xFF80, 0x80);
+
+			if(gb->DebugGetMemorySize(SnesMemoryType::GsuWorkRam) == 0x8000) {
+				//GBC - map extra work ram at "fake" 0x10000-0x16000 range
+				addDescriptor(gb->DebugGetMemory(SnesMemoryType::WorkRam) + 0x2000, 0x10000, 0x6000);
+			}
+
+			retro_memory_map memoryMap = {};
+			memoryMap.descriptors = descriptors;
+			memoryMap.num_descriptors = count;
+			retroEnv(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &memoryMap);
+		}
 	}
 
 	RETRO_API void retro_set_controller_port_device(unsigned port, unsigned device)
