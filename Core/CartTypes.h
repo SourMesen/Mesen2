@@ -64,7 +64,8 @@ enum class FirmwareType
 	Gameboy,
 	GameboyColor,
 	SgbGameboyCpu,
-	SGB
+	SGB1,
+	SGB2
 };
 
 struct RomInfo

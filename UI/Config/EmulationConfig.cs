@@ -30,6 +30,7 @@ namespace Mesen.GUI.Config
 		public long BsxCustomDate = -1;
 		
 		public GameboyModel GbModel = GameboyModel.Auto;
+		[MarshalAs(UnmanagedType.I1)] public bool UseSgb2 = true;
 
 		public void ApplyConfig()
 		{

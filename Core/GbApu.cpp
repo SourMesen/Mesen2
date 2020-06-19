@@ -4,6 +4,7 @@
 #include "Gameboy.h"
 #include "SoundMixer.h"
 #include "EmuSettings.h"
+#include "SuperGameboy.h"
 #include "../Utilities/Serializer.h"
 
 GbApu::GbApu()
@@ -36,8 +37,8 @@ void GbApu::Init(Console* console, Gameboy* gameboy)
 	blip_clear(_rightChannel);
 
 	if(_gameboy->IsSgb()) {
-		blip_set_rates(_leftChannel, _console->GetMasterClockRate() / 5, GbApu::SampleRate);
-		blip_set_rates(_rightChannel, _console->GetMasterClockRate() / 5, GbApu::SampleRate);
+		blip_set_rates(_leftChannel, _gameboy->GetSgb()->GetClockRate(), GbApu::SampleRate);
+		blip_set_rates(_rightChannel, _gameboy->GetSgb()->GetClockRate(), GbApu::SampleRate);
 	} else {
 		blip_set_rates(_leftChannel, GbApu::ApuFrequency, GbApu::SampleRate);
 		blip_set_rates(_rightChannel, GbApu::ApuFrequency, GbApu::SampleRate);

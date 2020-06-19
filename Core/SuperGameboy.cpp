@@ -2,6 +2,7 @@
 #include "SuperGameboy.h"
 #include "Console.h"
 #include "MemoryManager.h"
+#include "EmuSettings.h"
 #include "BaseCartridge.h"
 #include "Gameboy.h"
 #include "GbApu.h"
@@ -12,20 +13,25 @@
 
 SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
+	_mixBuffer = new int16_t[0x10000];
+
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_cart = _console->GetCartridge().get();
 	
 	_gameboy = _cart->GetGameboy();
-	_gameboy->PowerOn(this);
 	_ppu = _gameboy->GetPpu();
-	_mixBuffer = new int16_t[0x10000];
 
+	_control = 0x01; //Divider = 5, gameboy = not running
+	UpdateClockRatio();
+	
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
 	for(int i = 0; i <= 0x3F; i++) {
 		cpuMappings->RegisterHandler(i, i, 0x6000, 0x7FFF, this);
 		cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, this);
 	}
+
+	_gameboy->PowerOn(this);
 }
 
 SuperGameboy::~SuperGameboy()
@@ -109,6 +115,8 @@ void SuperGameboy::Write(uint32_t addr, uint8_t value)
 			}
 			_control = value;
 			_inputIndex %= GetPlayerCount();
+
+			UpdateClockRatio();
 			break;
 		}
 
@@ -117,11 +125,6 @@ void SuperGameboy::Write(uint32_t addr, uint8_t value)
 		case 0x6006: _input[2] = value; break;
 		case 0x6007: _input[3] = value; break;
 	}
-}
-
-void SuperGameboy::Run()
-{
-	_gameboy->Run(_memoryManager->GetMasterClock());
 }
 
 void SuperGameboy::ProcessInputPortWrite(uint8_t value)
@@ -242,14 +245,36 @@ void SuperGameboy::MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t
 	}
 }
 
-uint8_t SuperGameboy::GetControl()
+void SuperGameboy::Run()
 {
-	return _control;
+	if(!(_control & 0x80)) {
+		return;
+	}
+
+	_gameboy->Run((uint64_t)((_memoryManager->GetMasterClock() - _resetClock) * _clockRatio));
 }
 
-uint64_t SuperGameboy::GetResetClock()
+void SuperGameboy::UpdateClockRatio()
 {
-	return _resetClock;
+	bool isSgb2 = _console->GetSettings()->GetEmulationConfig().UseSgb2;
+	uint32_t masterRate = isSgb2 ? 20971520 : _console->GetMasterClockRate();
+	uint8_t divider = 5;
+
+	//TODO: This doesn't actually work properly if the speed is changed while the SGB is running (but this most likely never happens?)
+	switch(_control & 0x03) {
+		case 0: divider = 4; break;
+		case 1: divider = 5; break;
+		case 2: divider = 7; break;
+		case 3: divider = 9; break;
+	}
+
+	double effectiveRate = (double)masterRate / divider;
+	_clockRatio = effectiveRate / _console->GetMasterClockRate();
+}
+
+uint32_t SuperGameboy::GetClockRate()
+{
+	return (uint32_t)(_console->GetMasterClockRate() * _clockRatio);
 }
 
 uint8_t SuperGameboy::GetInputIndex()
@@ -281,7 +306,7 @@ void SuperGameboy::Serialize(Serializer& s)
 {
 	s.Stream(
 		_control, _resetClock, _input[0], _input[1], _input[2], _input[3], _inputIndex, _listeningForPacket, _packetReady,
-		_inputWriteClock, _inputValue, _packetByte, _packetBit, _lcdRowSelect, _readPosition, _waitForHigh
+		_inputWriteClock, _inputValue, _packetByte, _packetBit, _lcdRowSelect, _readPosition, _waitForHigh, _clockRatio
 	);
 
 	s.StreamArray(_packetData, 16);

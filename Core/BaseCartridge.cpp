@@ -271,6 +271,8 @@ CoprocessorType BaseCartridge::GetCoprocessorType()
 				}
 				break;
 		}
+	} else if(GetGameCode() == "042J") {
+		return CoprocessorType::SGB;
 	}
 
 	return CoprocessorType::None;
@@ -629,7 +631,8 @@ bool BaseCartridge::LoadGameboy(VirtualFile &romFile)
 	_headerOffset = Gameboy::HeaderOffset;
 
 	if(_gameboy->IsSgb()) {
-		if(!FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize)) {
+		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		if(!FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
 			return false;
 		}
 		LoadRom();

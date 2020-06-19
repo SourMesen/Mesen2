@@ -251,7 +251,8 @@ namespace Mesen.GUI
 		Gameboy,
 		GameboyColor,
 		SgbGameboyCpu,
-		SGB
+		SGB1,
+		SGB2,
 	}
 
 	public struct MissingFirmwareMessage

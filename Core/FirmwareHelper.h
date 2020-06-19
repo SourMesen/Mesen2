@@ -107,20 +107,21 @@ public:
 		return false;
 	}
 
-	static bool LoadSgbFirmware(Console* console, uint8_t** prgRom, uint32_t& prgSize)
+	static bool LoadSgbFirmware(Console* console, uint8_t** prgRom, uint32_t& prgSize, bool useSgb2)
 	{
-		prgSize = 0x40000;
-		if(AttemptLoadFirmware(prgRom, "SgbBios.sfc", prgSize)) {
+		string filename = useSgb2 ? "SGB2.sfc" : "SGB1.sfc";
+		prgSize = useSgb2 ? 0x80000 : 0x40000;
+		if(AttemptLoadFirmware(prgRom, filename, prgSize)) {
 			return true;
 		}
 
 		MissingFirmwareMessage msg;
-		msg.Filename = "SgbBios.sfc";
-		msg.Firmware = FirmwareType::SGB;
+		msg.Filename = filename.c_str();
+		msg.Firmware = useSgb2 ? FirmwareType::SGB2 : FirmwareType::SGB1;
 		msg.Size = prgSize;
 		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
-		if(AttemptLoadFirmware(prgRom, "SgbBios.sfc", prgSize)) {
+		if(AttemptLoadFirmware(prgRom, filename, prgSize)) {
 			return true;
 		}
 

@@ -15,7 +15,6 @@
 #include "EmuSettings.h"
 #include "MessageManager.h"
 #include "FirmwareHelper.h"
-#include "SuperGameboy.h"
 #include "GbBootRom.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
@@ -100,7 +99,11 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile)
 
 				case GameboyModel::SuperGameboy:
 					gb->_bootRom = new uint8_t[gb->_bootRomSize];
-					memcpy(gb->_bootRom, sgbBootRom, gb->_bootRomSize);
+					if(cfg.UseSgb2) {
+						memcpy(gb->_bootRom, sgb2BootRom, gb->_bootRomSize);
+					} else {
+						memcpy(gb->_bootRom, sgbBootRom, gb->_bootRomSize);
+					}
 					break;
 			}
 		}
@@ -139,6 +142,8 @@ Gameboy::~Gameboy()
 
 void Gameboy::PowerOn(SuperGameboy* superGameboy)
 {
+	_superGameboy = superGameboy;
+	
 	shared_ptr<EmuSettings> settings = _console->GetSettings();
 	settings->InitializeRam(_cartRam, _cartRamSize);
 	settings->InitializeRam(_workRam, _workRamSize);
@@ -158,8 +163,6 @@ void Gameboy::PowerOn(SuperGameboy* superGameboy)
 	_cpu->Init(_console, this, _memoryManager.get());
 	_ppu->Init(_console, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
 	_dmaController->Init(_memoryManager.get(), _ppu.get(), _cpu.get());
-
-	_superGameboy = superGameboy;
 }
 
 void Gameboy::Exec()
@@ -167,15 +170,9 @@ void Gameboy::Exec()
 	_cpu->Exec();
 }
 
-void Gameboy::Run(uint64_t masterClock)
+void Gameboy::Run(uint64_t runUntilClock)
 {
-	if(!(_superGameboy->GetControl() & 0x80)) {
-		return;
-	}
-
-	//TODO support SGB2 timings
-	masterClock = (masterClock - _superGameboy->GetResetClock()) / 5;
-	while(_memoryManager->GetCycleCount() < masterClock) {
+	while(_memoryManager->GetCycleCount() < runUntilClock) {
 		_cpu->Exec();
 	}
 }

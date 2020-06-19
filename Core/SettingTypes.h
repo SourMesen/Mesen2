@@ -300,6 +300,7 @@ struct EmulationConfig
 	int64_t BsxCustomDate = -1;
 
 	GameboyModel GbModel = GameboyModel::Auto;
+	bool UseSgb2 = true;
 };
 
 struct PreferencesConfig

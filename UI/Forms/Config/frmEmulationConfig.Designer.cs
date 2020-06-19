@@ -79,6 +79,7 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.nudGsuClockSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblGsuClockSpeed = new System.Windows.Forms.Label();
+			this.chkUseSgb2 = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -450,13 +451,14 @@
 			this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel7.Controls.Add(this.lblGameboy, 0, 0);
 			this.tableLayoutPanel7.Controls.Add(this.cboGameboyModel, 1, 0);
+			this.tableLayoutPanel7.Controls.Add(this.chkUseSgb2, 0, 1);
 			this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-			this.tableLayoutPanel7.RowCount = 2;
+			this.tableLayoutPanel7.RowCount = 3;
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel7.Size = new System.Drawing.Size(431, 258);
 			this.tableLayoutPanel7.TabIndex = 0;
 			// 
@@ -867,6 +869,17 @@
 			this.lblGsuClockSpeed.TabIndex = 0;
 			this.lblGsuClockSpeed.Text = "Super FX clock speed (%):";
 			// 
+			// chkUseSgb2
+			// 
+			this.chkUseSgb2.AutoSize = true;
+			this.tableLayoutPanel7.SetColumnSpan(this.chkUseSgb2, 2);
+			this.chkUseSgb2.Location = new System.Drawing.Point(3, 30);
+			this.chkUseSgb2.Name = "chkUseSgb2";
+			this.chkUseSgb2.Size = new System.Drawing.Size(237, 17);
+			this.chkUseSgb2.TabIndex = 2;
+			this.chkUseSgb2.Text = "Use Super Game Boy 2 timings and behavior";
+			this.chkUseSgb2.UseVisualStyleBackColor = true;
+			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -971,5 +984,6 @@
 	  private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
 	  private System.Windows.Forms.Label lblGameboy;
 	  private System.Windows.Forms.ComboBox cboGameboyModel;
+	  private System.Windows.Forms.CheckBox chkUseSgb2;
    }
 }

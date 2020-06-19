@@ -20,6 +20,7 @@ private:
 
 	uint8_t _control = 0;
 	uint64_t _resetClock = 0;
+	double _clockRatio = 0;
 	
 	uint8_t _input[4] = {};
 	uint8_t _inputIndex = 0;
@@ -62,8 +63,9 @@ public:
 
 	void MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t sampleCount);
 
-	uint8_t GetControl();
-	uint64_t GetResetClock();
+	void UpdateClockRatio();
+	uint32_t GetClockRate();
+
 	uint8_t GetInputIndex();
 	uint8_t GetInput();
 

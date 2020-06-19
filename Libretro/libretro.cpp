@@ -52,6 +52,7 @@ static constexpr const char* MesenOverclock = "mesen-s_overclock";
 static constexpr const char* MesenOverclockType = "mesen-s_overclock_type";
 static constexpr const char* MesenSuperFxOverclock = "mesen-s_superfx_overclock";
 static constexpr const char* MesenGbModel = "mesen-s_gbmodel";
+static constexpr const char* MesenGbSgb2 = "mesen-s_sgb2";
 
 extern "C" {
 	void logMessage(retro_log_level level, const char* message)
@@ -115,6 +116,7 @@ extern "C" {
 			{ MesenNtscFilter, "NTSC filter; Disabled|Composite (Blargg)|S-Video (Blargg)|RGB (Blargg)|Monochrome (Blargg)" },
 			{ MesenRegion, "Region; Auto|NTSC|PAL" },
 			{ MesenGbModel, "Game Boy Model; Auto|Game Boy|Game Boy Color|Super Game Boy" },
+			{ MesenGbSgb2, "Use SGB2; enabled|disabled" },
 			{ MesenOverscanVertical, "Vertical Overscan; None|8px|16px" },
 			{ MesenOverscanHorizontal, "Horizontal Overscan; None|8px|16px" },
 			{ MesenAspectRatio, "Aspect Ratio; Auto|No Stretching|NTSC|PAL|4:3|16:9" },
@@ -402,6 +404,11 @@ extern "C" {
 			} else {
 				emulation.GbModel = GameboyModel::Auto;
 			}
+		}
+
+		if(readVariable(MesenGbSgb2, var)) {
+			string value = string(var.value);
+			emulation.UseSgb2 = (value == "enabled");
 		}
 
 		auto getKeyCode = [=](int port, int retroKey) {

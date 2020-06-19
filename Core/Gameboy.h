@@ -66,7 +66,7 @@ public:
 	void PowerOn(SuperGameboy* superGameboy = nullptr);
 
 	void Exec();
-	void Run(uint64_t masterClock);
+	void Run(uint64_t runUntilClock);
 	
 	void LoadBattery();
 	void SaveBattery();
