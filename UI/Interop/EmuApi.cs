@@ -236,7 +236,7 @@ namespace Mesen.GUI
 		}
 	}
 
-		public enum FirmwareType
+	public enum FirmwareType
 	{
 		CX4,
 		DSP1,
@@ -250,7 +250,8 @@ namespace Mesen.GUI
 		Satellaview,
 		Gameboy,
 		GameboyColor,
-		SgbGameboyCpu,
+		Sgb1GameboyCpu,
+		Sgb2GameboyCpu,
 		SGB1,
 		SGB2,
 	}

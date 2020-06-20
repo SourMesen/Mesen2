@@ -63,7 +63,8 @@ enum class FirmwareType
 	Satellaview,
 	Gameboy,
 	GameboyColor,
-	SgbGameboyCpu,
+	Sgb1GameboyCpu,
+	Sgb2GameboyCpu,
 	SGB1,
 	SGB2
 };

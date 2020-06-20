@@ -136,7 +136,8 @@ public:
 			default:
 			case FirmwareType::Gameboy: filename = "dmg_boot.bin"; break;
 			case FirmwareType::GameboyColor: filename = "cgb_boot.bin"; break;
-			case FirmwareType::SgbGameboyCpu: filename = "sgb_boot.bin"; break;
+			case FirmwareType::Sgb1GameboyCpu: filename = "sgb_boot.bin"; break;
+			case FirmwareType::Sgb2GameboyCpu: filename = "sgb2_boot.bin"; break;
 		}
 
 		uint32_t size = type == FirmwareType::GameboyColor ? 2304 : 256;

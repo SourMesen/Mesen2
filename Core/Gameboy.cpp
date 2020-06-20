@@ -93,7 +93,7 @@ void Gameboy::Init(Console* console, GbCart* cart, std::vector<uint8_t>& romData
 
 	FirmwareType type = FirmwareType::Gameboy;
 	if(_model == GameboyModel::SuperGameboy) {
-		type = FirmwareType::SgbGameboyCpu;
+		type = cfg.UseSgb2 ? FirmwareType::Sgb2GameboyCpu : FirmwareType::Sgb1GameboyCpu;
 	} else if(_model == GameboyModel::GameboyColor) {
 		type = FirmwareType::GameboyColor;
 	}
