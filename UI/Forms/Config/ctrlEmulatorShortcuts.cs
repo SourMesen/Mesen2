@@ -48,6 +48,10 @@ namespace Mesen.GUI.Forms.Config
 				EmulatorShortcut.PowerOff,
 				EmulatorShortcut.Exit,
 
+				EmulatorShortcut.ToggleRecordVideo,
+				EmulatorShortcut.ToggleRecordAudio,
+				EmulatorShortcut.ToggleRecordMovie,
+
 				EmulatorShortcut.TakeScreenshot,
 				EmulatorShortcut.RunSingleFrame,
 

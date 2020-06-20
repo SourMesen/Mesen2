@@ -113,6 +113,10 @@ namespace Mesen.GUI.Emulation
 				case EmulatorShortcut.ToggleSprites: ToggleSprites(); break;
 				case EmulatorShortcut.EnableAllLayers: EnableAllLayers(); break;
 
+				case EmulatorShortcut.ToggleRecordVideo: ToggleRecordVideo(); break;
+				case EmulatorShortcut.ToggleRecordAudio: ToggleRecordAudio(); break;
+				case EmulatorShortcut.ToggleRecordMovie: ToggleRecordMovie(); break;
+
 				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
 
 				case EmulatorShortcut.LoadStateFromFile: SaveStateManager.LoadStateFromFile(); break;
@@ -162,7 +166,69 @@ namespace Mesen.GUI.Emulation
 				_displayManager.SetFullscreenState(true);
 			}
 		}
-		
+
+		private static void ToggleRecordVideo()
+		{
+			if(!EmuApi.IsRunning()) {
+				return;
+			}
+
+			if(RecordApi.AviIsRecording()) {
+				RecordApi.AviStop();
+			} else {
+				string filename = GetOutputFilename(ConfigManager.AviFolder, ConfigManager.Config.AviRecord.Codec == VideoCodec.GIF ? ".gif" : ".avi");
+				RecordApi.AviRecord(filename, ConfigManager.Config.AviRecord.Codec, ConfigManager.Config.AviRecord.CompressionLevel);
+			}
+		}
+
+		private static void ToggleRecordAudio()
+		{
+			if(!EmuApi.IsRunning()) {
+				return;
+			}
+
+			if(RecordApi.WaveIsRecording()) {
+				RecordApi.WaveStop();
+			} else {
+				string filename = GetOutputFilename(ConfigManager.WaveFolder, ".wav");
+				RecordApi.WaveRecord(filename);
+			}
+		}
+
+		private static void ToggleRecordMovie()
+		{
+			if(!EmuApi.IsRunning()) {
+				return;
+			}
+
+			if(!RecordApi.MoviePlaying() && !NetplayApi.IsConnected()) {
+				if(RecordApi.MovieRecording()) {
+					RecordApi.MovieStop();
+				} else {
+					RecordMovieOptions options = new RecordMovieOptions(
+						GetOutputFilename(ConfigManager.MovieFolder, ".msm"),
+						ConfigManager.Config.MovieRecord.Author,
+						ConfigManager.Config.MovieRecord.Description,
+						ConfigManager.Config.MovieRecord.RecordFrom
+					);
+					RecordApi.MovieRecord(ref options);
+				}
+			}
+		}
+
+		private static string GetOutputFilename(string folder, string ext)
+		{
+			DateTime now = DateTime.Now;
+			string baseName = EmuApi.GetRomInfo().GetRomName();
+			string dateTime = " " + now.ToShortDateString() + " " + now.ToLongTimeString();
+			string filename = baseName + dateTime + ext;
+
+			//Replace any illegal chars with _
+			filename = string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+
+			return Path.Combine(folder, filename);
+		}
+
 		private void OpenFile()
 		{
 			using(OpenFileDialog ofd = new OpenFileDialog()) {

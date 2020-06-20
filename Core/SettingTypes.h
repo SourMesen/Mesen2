@@ -373,6 +373,10 @@ enum class EmulatorShortcut
 	// Everything below this is handled UI-side
 	TakeScreenshot,
 
+	ToggleRecordVideo,
+	ToggleRecordAudio,
+	ToggleRecordMovie,
+
 	IncreaseSpeed,
 	DecreaseSpeed,
 	MaxSpeed,

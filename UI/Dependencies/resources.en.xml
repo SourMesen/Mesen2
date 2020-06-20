@@ -787,6 +787,10 @@
 		<Message ID="EmulatorShortcutMappings_ToggleSprites">Toggle Sprites</Message>
 		<Message ID="EmulatorShortcutMappings_EnableAllLayers">Enable All Layers</Message>
 
+		<Message ID="EmulatorShortcutMappings_ToggleRecordVideo">Start/Stop Recording Video</Message>
+		<Message ID="EmulatorShortcutMappings_ToggleRecordAudio">Start/Stop Recording Audio</Message>
+		<Message ID="EmulatorShortcutMappings_ToggleRecordMovie">Start/Stop Recording Movie</Message>
+		
 		<Message ID="EmulatorShortcutMappings_MaxSpeed">Toggle Maximum Speed</Message>
 		<Message ID="EmulatorShortcutMappings_LoadRandomGame">Load Random Game</Message>
 		<Message ID="EmulatorShortcutMappings_SaveStateSlot1">Save State - Slot 1</Message>

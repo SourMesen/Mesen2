@@ -37,6 +37,10 @@ namespace Mesen.GUI.Config.Shortcuts
 		// Everything below this is handled UI-side
 		TakeScreenshot,
 
+		ToggleRecordVideo,
+		ToggleRecordAudio,
+		ToggleRecordMovie,
+
 		IncreaseSpeed,
 		DecreaseSpeed,
 		MaxSpeed,

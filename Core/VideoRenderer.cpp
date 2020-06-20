@@ -116,7 +116,6 @@ void VideoRenderer::StopRecording()
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder;
 	if(recorder) {
-		recorder->StopRecording();
 		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStopped", recorder->GetOutputFile());
 	}
 	_recorder.reset();

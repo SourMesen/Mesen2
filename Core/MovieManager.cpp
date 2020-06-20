@@ -48,11 +48,7 @@ void MovieManager::Play(VirtualFile file, bool forTest)
 void MovieManager::Stop()
 {
 	_player.reset();
-
-	if(_recorder) {
-		_recorder->Stop();
-		_recorder.reset();
-	}
+	_recorder.reset();
 }
 
 bool MovieManager::Playing()

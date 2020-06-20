@@ -97,6 +97,8 @@ namespace Mesen.GUI.Emulation
 					LoadPatchFile(filename);
 				} else if(Path.GetExtension(filename).ToLowerInvariant() == ".mss") {
 					EmuApi.LoadStateFile(filename);
+				} else if(IsRunning() && Path.GetExtension(filename).ToLowerInvariant() == ".msm") {
+					RecordApi.MoviePlay(filename);
 				} else {
 					LoadRom(filename);
 				}

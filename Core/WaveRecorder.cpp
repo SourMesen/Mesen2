@@ -9,9 +9,11 @@ WaveRecorder::WaveRecorder(string outputFile, uint32_t sampleRate, bool isStereo
 	_streamSize = 0;
 	_sampleRate = sampleRate;
 	_isStereo = isStereo;
-	WriteHeader();
-
-	MessageManager::DisplayMessage("SoundRecorder", "SoundRecorderStarted", _outputFile);
+	
+	if(_stream) {
+		WriteHeader();
+		MessageManager::DisplayMessage("SoundRecorder", "SoundRecorderStarted", _outputFile);
+	}
 }
 
 WaveRecorder::~WaveRecorder()
