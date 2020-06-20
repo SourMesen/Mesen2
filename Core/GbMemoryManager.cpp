@@ -86,6 +86,11 @@ void GbMemoryManager::Exec()
 	if(_state.SerialBitCount && (_state.CycleCount & 0x1FF) == 0) {
 		_state.SerialData = (_state.SerialData << 1) | 0x01;
 		if(--_state.SerialBitCount == 0) {
+			//"It will be notified that the transfer is complete in two ways:
+			//SC's Bit 7 will be cleared"
+			_state.SerialControl &= 0x7F;
+
+			//"and the Serial Interrupt handler will be called"
 			RequestIrq(GbIrqSource::Serial);
 		}
 	}
