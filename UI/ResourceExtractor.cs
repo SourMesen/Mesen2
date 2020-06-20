@@ -111,15 +111,6 @@ namespace Mesen.GUI
 				} else if(entry.Name == "Font.24.spritefont" || entry.Name == "Font.64.spritefont" || entry.Name == "LICENSE.txt" || entry.Name == "PixelFont.ttf") {
 					string outputFilename = Path.Combine(ConfigManager.HomeFolder, "Resources", entry.Name);
 					ExtractFile(entry, outputFilename);
-				} else if(entry.Name == "DroidSansMono.ttf" && Program.IsMono) {
-					string outputFilename = Path.Combine(ConfigManager.FontFolder, entry.Name);
-					bool needRestart = !File.Exists(outputFilename);
-					ExtractFile(entry, outputFilename);
-					if(needRestart) {
-						//If font is newly installed, restart Mesen (otherwise debugger will not be able to use the font and display incorrectly)
-						ConfigManager.RestartMesen();
-						return false;
-					}
 				}
 			}
 

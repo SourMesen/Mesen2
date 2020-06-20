@@ -15,7 +15,7 @@ namespace Mesen.GUI.Controls
 			get
 			{
 				if(Program.IsMono) {
-					return "DroidSansMono";
+					return "monospace";
 				} else {
 					return "Consolas";
 				}
