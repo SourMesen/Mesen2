@@ -270,6 +270,13 @@ enum class ConsoleRegion
 	Pal = 2
 };
 
+enum class ConsoleType
+{
+	Snes = 0,
+	Gameboy = 1,
+	GameboyColor = 2
+};
+
 enum class GameboyModel
 {
 	Auto = 0,
@@ -301,6 +308,8 @@ struct EmulationConfig
 
 	GameboyModel GbModel = GameboyModel::Auto;
 	bool UseSgb2 = true;
+	bool GbBlendFrames = true;
+	bool GbcAdjustColors = true;
 };
 
 struct PreferencesConfig

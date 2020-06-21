@@ -37,6 +37,7 @@ enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
 enum class ConsoleRegion;
+enum class ConsoleType;
 
 class Console : public std::enable_shared_from_this<Console>
 {
@@ -82,6 +83,7 @@ private:
 	atomic<bool> _threadPaused;
 
 	ConsoleRegion _region;
+	ConsoleType _consoleType;
 	uint32_t _masterClockRate;
 
 	atomic<bool> _isRunAheadFrame;
@@ -130,6 +132,7 @@ public:
 	uint64_t GetMasterClock();
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();
+	ConsoleType GetConsoleType();
 
 	ConsoleLock AcquireLock();
 	void Lock();

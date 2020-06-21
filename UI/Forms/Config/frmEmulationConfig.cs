@@ -40,6 +40,8 @@ namespace Mesen.GUI.Forms.Config
 			
 			AddBinding(nameof(EmulationConfig.GbModel), cboGameboyModel);
 			AddBinding(nameof(EmulationConfig.UseSgb2), chkUseSgb2);
+			AddBinding(nameof(EmulationConfig.GbBlendFrames), chkGbBlendFrames);
+			AddBinding(nameof(EmulationConfig.GbcAdjustColors), chkGbcAdjustColors);
 
 			long customDate = ConfigManager.Config.Emulation.BsxCustomDate;
 			if(customDate >= 0) {

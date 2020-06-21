@@ -434,8 +434,10 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 
 		if(_cart->GetCoprocessor() == nullptr && _cart->GetGameboy()) {
 			_cart->GetGameboy()->PowerOn();
+			_consoleType = _cart->GetGameboy()->IsCgb() ? ConsoleType::GameboyColor : ConsoleType::Gameboy;
 			_settings->SetFlag(EmulationFlags::GameboyMode);
 		} else {
+			_consoleType = ConsoleType::Snes;
 			_settings->ClearFlag(EmulationFlags::GameboyMode);
 		}
 
@@ -504,6 +506,11 @@ uint32_t Console::GetMasterClockRate()
 ConsoleRegion Console::GetRegion()
 {
 	return _region;
+}
+
+ConsoleType Console::GetConsoleType()
+{
+	return _consoleType;
 }
 
 void Console::UpdateRegion()

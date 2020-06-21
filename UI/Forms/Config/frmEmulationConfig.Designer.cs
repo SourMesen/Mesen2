@@ -53,6 +53,9 @@
 			this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
 			this.lblGameboy = new System.Windows.Forms.Label();
 			this.cboGameboyModel = new System.Windows.Forms.ComboBox();
+			this.chkUseSgb2 = new System.Windows.Forms.CheckBox();
+			this.chkGbBlendFrames = new System.Windows.Forms.CheckBox();
+			this.chkGbcAdjustColors = new System.Windows.Forms.CheckBox();
 			this.tpgBsx = new System.Windows.Forms.TabPage();
 			this.grpBsxDateTime = new System.Windows.Forms.GroupBox();
 			this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -79,7 +82,6 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.nudGsuClockSpeed = new Mesen.GUI.Controls.MesenNumericUpDown();
 			this.lblGsuClockSpeed = new System.Windows.Forms.Label();
-			this.chkUseSgb2 = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel4.SuspendLayout();
@@ -452,10 +454,14 @@
 			this.tableLayoutPanel7.Controls.Add(this.lblGameboy, 0, 0);
 			this.tableLayoutPanel7.Controls.Add(this.cboGameboyModel, 1, 0);
 			this.tableLayoutPanel7.Controls.Add(this.chkUseSgb2, 0, 1);
+			this.tableLayoutPanel7.Controls.Add(this.chkGbBlendFrames, 0, 2);
+			this.tableLayoutPanel7.Controls.Add(this.chkGbcAdjustColors, 0, 3);
 			this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-			this.tableLayoutPanel7.RowCount = 3;
+			this.tableLayoutPanel7.RowCount = 5;
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -479,6 +485,39 @@
 			this.cboGameboyModel.Name = "cboGameboyModel";
 			this.cboGameboyModel.Size = new System.Drawing.Size(119, 21);
 			this.cboGameboyModel.TabIndex = 1;
+			// 
+			// chkUseSgb2
+			// 
+			this.chkUseSgb2.AutoSize = true;
+			this.tableLayoutPanel7.SetColumnSpan(this.chkUseSgb2, 2);
+			this.chkUseSgb2.Location = new System.Drawing.Point(3, 30);
+			this.chkUseSgb2.Name = "chkUseSgb2";
+			this.chkUseSgb2.Size = new System.Drawing.Size(237, 17);
+			this.chkUseSgb2.TabIndex = 2;
+			this.chkUseSgb2.Text = "Use Super Game Boy 2 timings and behavior";
+			this.chkUseSgb2.UseVisualStyleBackColor = true;
+			// 
+			// chkGbBlendFrames
+			// 
+			this.chkGbBlendFrames.AutoSize = true;
+			this.tableLayoutPanel7.SetColumnSpan(this.chkGbBlendFrames, 2);
+			this.chkGbBlendFrames.Location = new System.Drawing.Point(3, 53);
+			this.chkGbBlendFrames.Name = "chkGbBlendFrames";
+			this.chkGbBlendFrames.Size = new System.Drawing.Size(155, 17);
+			this.chkGbBlendFrames.TabIndex = 3;
+			this.chkGbBlendFrames.Text = "Enable LCD frame blending";
+			this.chkGbBlendFrames.UseVisualStyleBackColor = true;
+			// 
+			// chkGbcAdjustColors
+			// 
+			this.chkGbcAdjustColors.AutoSize = true;
+			this.tableLayoutPanel7.SetColumnSpan(this.chkGbcAdjustColors, 2);
+			this.chkGbcAdjustColors.Location = new System.Drawing.Point(3, 76);
+			this.chkGbcAdjustColors.Name = "chkGbcAdjustColors";
+			this.chkGbcAdjustColors.Size = new System.Drawing.Size(182, 17);
+			this.chkGbcAdjustColors.TabIndex = 4;
+			this.chkGbcAdjustColors.Text = "Enable GBC LCD color emulation";
+			this.chkGbcAdjustColors.UseVisualStyleBackColor = true;
 			// 
 			// tpgBsx
 			// 
@@ -869,17 +908,6 @@
 			this.lblGsuClockSpeed.TabIndex = 0;
 			this.lblGsuClockSpeed.Text = "Super FX clock speed (%):";
 			// 
-			// chkUseSgb2
-			// 
-			this.chkUseSgb2.AutoSize = true;
-			this.tableLayoutPanel7.SetColumnSpan(this.chkUseSgb2, 2);
-			this.chkUseSgb2.Location = new System.Drawing.Point(3, 30);
-			this.chkUseSgb2.Name = "chkUseSgb2";
-			this.chkUseSgb2.Size = new System.Drawing.Size(237, 17);
-			this.chkUseSgb2.TabIndex = 2;
-			this.chkUseSgb2.Text = "Use Super Game Boy 2 timings and behavior";
-			this.chkUseSgb2.UseVisualStyleBackColor = true;
-			// 
 			// frmEmulationConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -985,5 +1013,7 @@
 	  private System.Windows.Forms.Label lblGameboy;
 	  private System.Windows.Forms.ComboBox cboGameboyModel;
 	  private System.Windows.Forms.CheckBox chkUseSgb2;
+	  private System.Windows.Forms.CheckBox chkGbBlendFrames;
+	  private System.Windows.Forms.CheckBox chkGbcAdjustColors;
    }
 }

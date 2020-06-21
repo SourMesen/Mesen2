@@ -293,6 +293,12 @@
 			<Control ID="chkShowLagCounter">Show Lag Counter</Control>
 			<Control ID="btnResetLagCounter">Reset Counter</Control>
 
+			<Control ID="tpgGameboy">Game Boy</Control>
+			<Control ID="lblGameboy">Game Boy Model</Control>
+			<Control ID="chkUseSgb2">Use Super Game Boy 2 timings and behavior</Control>
+			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
+			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
+
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>

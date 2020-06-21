@@ -11,6 +11,8 @@ const static double PI = 3.14159265358979323846;
 DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Console> console) : BaseVideoFilter(console)
 {
 	InitLookupTable();
+	_prevFrame = new uint16_t[256 * 240];
+	memset(_prevFrame, 0, 256 * 240 * sizeof(uint16_t));
 }
 
 void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturationShift)
@@ -41,10 +43,26 @@ void DefaultVideoFilter::InitLookupTable()
 
 	double y, i, q;
 	for(int rgb555 = 0; rgb555 < 0x8000; rgb555++) {
+		uint8_t r = rgb555 & 0x1F;
+		uint8_t g = (rgb555 >> 5) & 0x1F;
+		uint8_t b = (rgb555 >> 10) & 0x1F;
+		if(_gbcAdjustColors) {
+			uint8_t r2 = std::min(240, (r * 26 + g * 4 + b * 2) >> 2);
+			uint8_t g2 = std::min(240, (g * 24 + b * 8) >> 2);
+			uint8_t b2 = std::min(240, (r * 6 + g * 4 + b * 22) >> 2);
+			r = r2;
+			g = g2;
+			b = b2;
+		} else {
+			r = To8Bit(r);
+			g = To8Bit(g);
+			b = To8Bit(b);
+		}
+
 		if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
-			double redChannel = To8Bit(rgb555 & 0x1F) / 255.0;
-			double greenChannel = To8Bit((rgb555 >> 5) & 0x1F) / 255.0;
-			double blueChannel = To8Bit(rgb555 >> 10) / 255.0;
+			double redChannel = r / 255.0;
+			double greenChannel = g / 255.0;
+			double blueChannel = b / 255.0;
 
 			//Apply brightness, contrast, hue & saturation
 			RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
@@ -57,9 +75,6 @@ void DefaultVideoFilter::InitLookupTable()
 			int b = std::min(255, (int)(blueChannel * 255));
 			_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
 		} else {
-			uint8_t r = To8Bit(rgb555 & 0x1F);
-			uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
-			uint8_t b = To8Bit((rgb555 >> 10) & 0x1F);
 			_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
 		}
 	}
@@ -70,9 +85,15 @@ void DefaultVideoFilter::InitLookupTable()
 void DefaultVideoFilter::OnBeforeApplyFilter()
 {
 	VideoConfig config = _console->GetSettings()->GetVideoConfig();
-	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
+	EmulationConfig emulationConfig = _console->GetSettings()->GetEmulationConfig();
+
+	ConsoleType consoleType = _console->GetConsoleType();
+	bool adjustColors = emulationConfig.GbcAdjustColors && consoleType == ConsoleType::GameboyColor;
+	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || _gbcAdjustColors != adjustColors) {
+		_gbcAdjustColors = adjustColors;
 		InitLookupTable();
 	}
+	_gbBlendFrames = emulationConfig.GbBlendFrames && (consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor);
 	_videoConfig = config;
 }
 
@@ -106,12 +127,12 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			if(i & 0x01) {
 				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = ApplyScanlineEffect(_calculatedPalette[ppuOutputBuffer[i * width + j + yOffset + xOffset]], scanlineIntensity);
+					*out = ApplyScanlineEffect(GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset), scanlineIntensity);
 					out++;
 				}
 			} else {
 				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = _calculatedPalette[ppuOutputBuffer[i * width + j + yOffset + xOffset]];
+					*out = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
 					out++;
 				}
 			}
@@ -119,7 +140,7 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	} else {
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			for(uint32_t j = 0; j < frameInfo.Width; j++) {
-				out[i*frameInfo.Width+j] = _calculatedPalette[ppuOutputBuffer[i * width + j + yOffset + xOffset]];
+				out[i*frameInfo.Width+j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
 			}
 		}
 	}
@@ -135,6 +156,19 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 				pixel1 = pixel2 = pixel3 = pixel4 = BlendPixels(BlendPixels(BlendPixels(pixel1, pixel2), pixel3), pixel4);
 			}
 		}
+	}
+
+	if(_gbBlendFrames) {
+		std::copy(ppuOutputBuffer, ppuOutputBuffer + 256 * 240, _prevFrame);
+	}
+}
+
+uint32_t DefaultVideoFilter::GetPixel(uint16_t* ppuFrame, uint32_t offset)
+{
+	if(_gbBlendFrames) {
+		return BlendPixels(_calculatedPalette[_prevFrame[offset]], _calculatedPalette[ppuFrame[offset]]);
+	} else {
+		return _calculatedPalette[ppuFrame[offset]];
 	}
 }
 

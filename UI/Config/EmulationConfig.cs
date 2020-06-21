@@ -31,6 +31,8 @@ namespace Mesen.GUI.Config
 		
 		public GameboyModel GbModel = GameboyModel.Auto;
 		[MarshalAs(UnmanagedType.I1)] public bool UseSgb2 = true;
+		[MarshalAs(UnmanagedType.I1)] public bool GbBlendFrames = true;
+		[MarshalAs(UnmanagedType.I1)] public bool GbcAdjustColors = true;
 
 		public void ApplyConfig()
 		{
