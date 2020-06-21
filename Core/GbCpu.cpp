@@ -709,7 +709,11 @@ void GbCpu::NOP()
 
 void GbCpu::InvalidOp()
 {
-	STOP();
+	//Disable all IRQs
+	_memoryManager->Write(0xFFFF, 0);
+
+	//Halt CPU to lock it up permanently
+	_state.Halted = true;
 }
 
 void GbCpu::STOP()
