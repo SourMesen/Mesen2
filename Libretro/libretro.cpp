@@ -607,12 +607,16 @@ extern "C" {
 			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbPrgRom), 0x0000, std::min(0x8000, (int)gb->DebugGetMemorySize(SnesMemoryType::GbPrgRom)));
 			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbVideoRam), 0x8000, 0x2000);
 			if(gb->DebugGetMemory(SnesMemoryType::GbCartRam)) {
-				addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbCartRam), 0xA000, 0x2000);
+				uint32_t size = std::min(0x2000u, gb->DebugGetMemorySize(SnesMemoryType::GbCartRam));
+				addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbCartRam), 0xA000, size);
 			}
+
 			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbWorkRam), 0xC000, 0x2000);
+			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbWorkRam), 0xE000, 0x1E00); //WRAM Mirror
+
 			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbHighRam), 0xFF80, 0x80);
 
-			if(gb->DebugGetMemorySize(SnesMemoryType::GsuWorkRam) == 0x8000) {
+			if(gb->DebugGetMemorySize(SnesMemoryType::GbWorkRam) == 0x8000) {
 				//GBC - map extra work ram at "fake" 0x10000-0x16000 range
 				addDescriptor(gb->DebugGetMemory(SnesMemoryType::WorkRam) + 0x2000, 0x10000, 0x6000);
 			}
