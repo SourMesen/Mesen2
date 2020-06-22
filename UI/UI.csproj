@@ -216,6 +216,7 @@
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Config\CheatCodes.cs" />
+    <Compile Include="Config\GameboyConfig.cs" />
     <Compile Include="Config\InputConfig.cs" />
     <Compile Include="Config\FileAssociationHelper.cs" />
     <Compile Include="Config\CheatWindowConfig.cs" />
@@ -839,6 +840,12 @@
     <Compile Include="Forms\Config\frmCopyFiles.Designer.cs">
       <DependentUpon>frmCopyFiles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Config\frmGameboyConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Config\frmGameboyConfig.Designer.cs">
+      <DependentUpon>frmGameboyConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Config\frmInputConfig.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1001,6 +1008,7 @@
     <Compile Include="Utilities\RandomGameHelper.cs" />
     <Compile Include="Utilities\RomTestHelper.cs" />
     <Compile Include="Utilities\XmlColor.cs" />
+    <None Include="Resources\GameboyIcon.png" />
     <None Include="Resources\GbDebugger.png" />
     <None Include="Resources\Cx4Debugger.png" />
     <None Include="Resources\NecDspDebugger.png" />
@@ -1252,6 +1260,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmCopyFiles.resx">
       <DependentUpon>frmCopyFiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config\frmGameboyConfig.resx">
+      <DependentUpon>frmGameboyConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config\frmInputConfig.resx">
       <DependentUpon>frmInputConfig.cs</DependentUpon>

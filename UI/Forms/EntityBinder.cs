@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -87,7 +88,11 @@ namespace Mesen.GUI.Forms
 					} else if(kvp.Value is RadioButton) {
 						((RadioButton)kvp.Value).Checked = (bool)value;
 					} else if(kvp.Value is PictureBox) {
-						((PictureBox)kvp.Value).BackColor = (XmlColor)value;
+						if(value is UInt32) {
+							((PictureBox)kvp.Value).BackColor = Color.FromArgb((int)(0xFF000000 | (UInt32)value));
+						} else {
+							((PictureBox)kvp.Value).BackColor = (XmlColor)value;
+						}
 					} else if(kvp.Value is Panel) {
 						RadioButton radio = ((Panel)kvp.Value).Controls.OfType<RadioButton>().FirstOrDefault(r => r.Tag.Equals(value));
 						if(radio != null) {
@@ -234,7 +239,11 @@ namespace Mesen.GUI.Forms
 						} else if(kvp.Value is RadioButton) {
 							field.SetValue(Entity, ((RadioButton)kvp.Value).Checked);
 						} else if(kvp.Value is PictureBox) {
-							field.SetValue(Entity, (XmlColor)((PictureBox)kvp.Value).BackColor);
+							if(field.FieldType == typeof(UInt32)) {
+								field.SetValue(Entity, (UInt32)((PictureBox)kvp.Value).BackColor.ToArgb() & 0xFFFFFF);
+							} else {
+								field.SetValue(Entity, (XmlColor)((PictureBox)kvp.Value).BackColor);
+							}
 						} else if(kvp.Value is Panel) {
 							field.SetValue(Entity, ((Panel)kvp.Value).Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Tag);
 						} else if(kvp.Value is ctrlTrackbar) {

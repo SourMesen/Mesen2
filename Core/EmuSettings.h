@@ -15,6 +15,7 @@ private:
 	AudioConfig _audio;
 	InputConfig _input;
 	EmulationConfig _emulation;
+	GameboyConfig _gameboy;
 	PreferencesConfig _preferences;
 
 	atomic<uint32_t> _flags;
@@ -53,6 +54,9 @@ public:
 
 	void SetEmulationConfig(EmulationConfig config);
 	EmulationConfig GetEmulationConfig();
+
+	void SetGameboyConfig(GameboyConfig config);
+	GameboyConfig GetGameboyConfig();
 
 	void SetPreferences(PreferencesConfig config);
 	PreferencesConfig GetPreferences();

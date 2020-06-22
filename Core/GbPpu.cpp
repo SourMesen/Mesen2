@@ -3,6 +3,7 @@
 #include "GbTypes.h"
 #include "EventType.h"
 #include "Console.h"
+#include "EmuSettings.h"
 #include "Gameboy.h"
 #include "VideoDecoder.h"
 #include "RewindManager.h"
@@ -14,7 +15,6 @@
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/Serializer.h"
 
-constexpr uint16_t bwRgbPalette[4] = { 0x7FFF, 0x6318, 0x318C, 0x0000 };
 constexpr uint16_t evtColors[6] = { 0x18C6, 0x294A, 0x108C, 0x4210, 0x3084, 0x1184 };
 
 void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam)
@@ -44,14 +44,7 @@ void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryMana
 	_state.CgbEnabled = _gameboy->IsCgb();
 	_lastFrameTime = 0;
 
-	if(!_gameboy->IsCgb()) {
-		for(int i = 0; i < 4; i++) {
-			//Init default palette for use with DMG
-			_state.CgbBgPalettes[i] = bwRgbPalette[i];
-			_state.CgbObjPalettes[i] = bwRgbPalette[i];
-			_state.CgbObjPalettes[i+4] = bwRgbPalette[i];
-		}
-	}
+	UpdatePalette();
 
 	Write(0xFF48, 0xFF);
 	Write(0xFF49, 0xFF);
@@ -630,6 +623,8 @@ void GbPpu::SendFrame()
 		return;
 	}
 
+	UpdatePalette();
+
 	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	if(_isFirstFrame) {
@@ -663,6 +658,24 @@ void GbPpu::SendFrame()
 	}
 
 	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+}
+
+void GbPpu::UpdatePalette()
+{
+	if(!_gameboy->IsCgb()) {
+		GameboyConfig cfg = _console->GetSettings()->GetGameboyConfig();
+		for(int i = 0; i < 4; i++) {
+			//Set palette based on settings (DMG)
+			uint16_t bgColor = ((cfg.BgColors[i] & 0xF8) << 7) | ((cfg.BgColors[i] & 0xF800) >> 6) | ((cfg.BgColors[i] & 0xF80000) >> 19);
+			_state.CgbBgPalettes[i] = bgColor;
+
+			uint16_t obj0Color = ((cfg.Obj0Colors[i] & 0xF8) << 7) | ((cfg.Obj0Colors[i] & 0xF800) >> 6) | ((cfg.Obj0Colors[i] & 0xF80000) >> 19);
+			_state.CgbObjPalettes[i] = obj0Color;
+			
+			uint16_t obj1Color = ((cfg.Obj1Colors[i] & 0xF8) << 7) | ((cfg.Obj1Colors[i] & 0xF800) >> 6) | ((cfg.Obj1Colors[i] & 0xF80000) >> 19);
+			_state.CgbObjPalettes[i + 4] = obj1Color;
+		}
+	}
 }
 
 uint8_t GbPpu::Read(uint16_t addr)

@@ -124,6 +124,16 @@ EmulationConfig EmuSettings::GetEmulationConfig()
 	return _emulation;
 }
 
+void EmuSettings::SetGameboyConfig(GameboyConfig config)
+{
+	_gameboy = config;
+}
+
+GameboyConfig EmuSettings::GetGameboyConfig()
+{
+	return _gameboy;
+}
+
 void EmuSettings::SetPreferences(PreferencesConfig config)
 {
 	ProcessString(_saveFolder, &config.SaveFolderOverride);

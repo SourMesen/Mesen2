@@ -28,11 +28,6 @@ namespace Mesen.GUI.Config
 		public RamState RamPowerOnState = RamState.Random;
 
 		public long BsxCustomDate = -1;
-		
-		public GameboyModel GbModel = GameboyModel.Auto;
-		[MarshalAs(UnmanagedType.I1)] public bool UseSgb2 = true;
-		[MarshalAs(UnmanagedType.I1)] public bool GbBlendFrames = true;
-		[MarshalAs(UnmanagedType.I1)] public bool GbcAdjustColors = true;
 
 		public void ApplyConfig()
 		{
@@ -52,13 +47,5 @@ namespace Mesen.GUI.Config
 		Random = 0,
 		AllZeros = 1,
 		AllOnes = 2,
-	}
-
-	public enum GameboyModel
-	{
-		Auto = 0,
-		Gameboy = 1,
-		GameboyColor = 2,
-		SuperGameboy = 3
 	}
 }

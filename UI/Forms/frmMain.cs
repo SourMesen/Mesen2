@@ -542,7 +542,15 @@ namespace Mesen.GUI.Forms
 			}
 			ConfigManager.Config.Emulation.ApplyConfig();
 		}
-		
+
+		private void mnuGameboyConfig_Click(object sender, EventArgs e)
+		{
+			using(frmGameboyConfig frm = new frmGameboyConfig()) {
+				frm.ShowDialog(sender, this);
+			}
+			ConfigManager.Config.Gameboy.ApplyConfig();
+		}
+
 		private void mnuInputConfig_Click(object sender, EventArgs e)
 		{
 			using(frmInputConfig frm = new frmInputConfig()) {

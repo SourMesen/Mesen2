@@ -483,6 +483,16 @@ namespace Mesen.GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GameboyIcon {
+            get {
+                object obj = ResourceManager.GetObject("GameboyIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap GbDebugger {
             get {
                 object obj = ResourceManager.GetObject("GbDebugger", resourceCulture);

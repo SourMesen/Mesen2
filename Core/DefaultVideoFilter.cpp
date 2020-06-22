@@ -85,15 +85,15 @@ void DefaultVideoFilter::InitLookupTable()
 void DefaultVideoFilter::OnBeforeApplyFilter()
 {
 	VideoConfig config = _console->GetSettings()->GetVideoConfig();
-	EmulationConfig emulationConfig = _console->GetSettings()->GetEmulationConfig();
+	GameboyConfig gbConfig = _console->GetSettings()->GetGameboyConfig();
 
 	ConsoleType consoleType = _console->GetConsoleType();
-	bool adjustColors = emulationConfig.GbcAdjustColors && consoleType == ConsoleType::GameboyColor;
+	bool adjustColors = gbConfig.GbcAdjustColors && consoleType == ConsoleType::GameboyColor;
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || _gbcAdjustColors != adjustColors) {
 		_gbcAdjustColors = adjustColors;
 		InitLookupTable();
 	}
-	_gbBlendFrames = emulationConfig.GbBlendFrames && (consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor);
+	_gbBlendFrames = gbConfig.BlendFrames && (consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor);
 	_videoConfig = config;
 }
 

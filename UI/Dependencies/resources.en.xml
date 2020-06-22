@@ -293,9 +293,22 @@
 			<Control ID="chkShowLagCounter">Show Lag Counter</Control>
 			<Control ID="btnResetLagCounter">Reset Counter</Control>
 
-			<Control ID="tpgGameboy">Game Boy</Control>
-			<Control ID="lblGameboy">Game Boy Model</Control>
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		<Form ID="frmGameboyConfig" Title="Game Boy Config">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblModel">Model</Control>
 			<Control ID="chkUseSgb2">Use Super Game Boy 2 timings and behavior</Control>
+
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblGameboyPalette">Game Boy (DMG) Palette</Control>
+			<Control ID="lblGbBackground">Background:</Control>
+			<Control ID="lblGbObj0">Sprites #1:</Control>
+			<Control ID="lblGbObj1">Sprites #2:</Control>
+			<Control ID="btnSelectPreset">Select Preset...</Control>
+
+			<Control ID="lblLcdSettings">LCD Settings</Control>
 			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
 

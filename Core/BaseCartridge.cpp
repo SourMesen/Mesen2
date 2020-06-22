@@ -631,7 +631,7 @@ bool BaseCartridge::LoadGameboy(VirtualFile &romFile, bool sgbEnabled)
 	_headerOffset = Gameboy::HeaderOffset;
 
 	if(_gameboy->IsSgb()) {
-		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		GameboyConfig cfg = _console->GetSettings()->GetGameboyConfig();
 		if(FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
 			LoadRom();
 			if(_coprocessorType != CoprocessorType::SGB) {

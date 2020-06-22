@@ -68,6 +68,9 @@ private:
 
 	void UpdateStatIrq();
 
+	void SendFrame();
+	void UpdatePalette();
+
 	void WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value);
 
 public:
@@ -87,8 +90,6 @@ public:
 	PpuMode GetMode();
 
 	void Exec();
-
-	void SendFrame();
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);

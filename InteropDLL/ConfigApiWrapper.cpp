@@ -28,6 +28,11 @@ extern "C" {
 	{
 		_console->GetSettings()->SetEmulationConfig(config);
 	}
+	
+	DllExport void __stdcall SetGameboyConfig(GameboyConfig config)
+	{
+		_console->GetSettings()->SetGameboyConfig(config);
+	}
 
 	DllExport void __stdcall SetPreferences(PreferencesConfig config)
 	{

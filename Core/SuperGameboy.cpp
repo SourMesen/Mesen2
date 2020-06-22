@@ -256,7 +256,7 @@ void SuperGameboy::Run()
 
 void SuperGameboy::UpdateClockRatio()
 {
-	bool isSgb2 = _console->GetSettings()->GetEmulationConfig().UseSgb2;
+	bool isSgb2 = _console->GetSettings()->GetGameboyConfig().UseSgb2;
 	uint32_t masterRate = isSgb2 ? 20971520 : _console->GetMasterClockRate();
 	uint8_t divider = 5;
 

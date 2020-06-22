@@ -110,6 +110,8 @@
 			this.mnuInputConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuVideoConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEmulationConfig = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuGameboyConfig = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTools = new System.Windows.Forms.ToolStripMenuItem();
@@ -347,6 +349,8 @@
             this.mnuInputConfig,
             this.mnuVideoConfig,
             this.mnuEmulationConfig,
+            this.toolStripMenuItem22,
+            this.mnuGameboyConfig,
             this.toolStripMenuItem3,
             this.mnuPreferences});
 			this.mnuOptions.Name = "mnuOptions";
@@ -372,7 +376,7 @@
             this.mnuShowFPS});
 			this.mnuEmulationSpeed.Image = global::Mesen.GUI.Properties.Resources.Speed;
 			this.mnuEmulationSpeed.Name = "mnuEmulationSpeed";
-			this.mnuEmulationSpeed.Size = new System.Drawing.Size(135, 22);
+			this.mnuEmulationSpeed.Size = new System.Drawing.Size(180, 22);
 			this.mnuEmulationSpeed.Text = "Speed";
 			this.mnuEmulationSpeed.DropDownOpening += new System.EventHandler(this.mnuEmulationSpeed_DropDownOpening);
 			// 
@@ -459,7 +463,7 @@
             this.mnuFullscreen});
 			this.mnuVideoScale.Image = global::Mesen.GUI.Properties.Resources.Fullscreen;
 			this.mnuVideoScale.Name = "mnuVideoScale";
-			this.mnuVideoScale.Size = new System.Drawing.Size(135, 22);
+			this.mnuVideoScale.Size = new System.Drawing.Size(180, 22);
 			this.mnuVideoScale.Text = "Video Size";
 			this.mnuVideoScale.DropDownOpening += new System.EventHandler(this.mnuVideoScale_DropDownOpening);
 			// 
@@ -546,7 +550,7 @@
             this.mnuBlendHighResolutionModes});
 			this.mnuVideoFilter.Image = global::Mesen.GUI.Properties.Resources.VideoFilter;
 			this.mnuVideoFilter.Name = "mnuVideoFilter";
-			this.mnuVideoFilter.Size = new System.Drawing.Size(135, 22);
+			this.mnuVideoFilter.Size = new System.Drawing.Size(180, 22);
 			this.mnuVideoFilter.Text = "Video Filter";
 			this.mnuVideoFilter.DropDownOpening += new System.EventHandler(this.mnuVideoFilter_DropDownOpening);
 			// 
@@ -740,7 +744,7 @@
             this.mnuRegionPal});
 			this.mnuRegion.Image = global::Mesen.GUI.Properties.Resources.WebBrowser;
 			this.mnuRegion.Name = "mnuRegion";
-			this.mnuRegion.Size = new System.Drawing.Size(135, 22);
+			this.mnuRegion.Size = new System.Drawing.Size(180, 22);
 			this.mnuRegion.Text = "Region";
 			this.mnuRegion.DropDownOpening += new System.EventHandler(this.mnuRegion_DropDownOpening);
 			// 
@@ -770,13 +774,13 @@
 			// toolStripMenuItem4
 			// 
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-			this.toolStripMenuItem4.Size = new System.Drawing.Size(132, 6);
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuAudioConfig
 			// 
 			this.mnuAudioConfig.Image = global::Mesen.GUI.Properties.Resources.Audio;
 			this.mnuAudioConfig.Name = "mnuAudioConfig";
-			this.mnuAudioConfig.Size = new System.Drawing.Size(135, 22);
+			this.mnuAudioConfig.Size = new System.Drawing.Size(180, 22);
 			this.mnuAudioConfig.Text = "Audio";
 			this.mnuAudioConfig.Click += new System.EventHandler(this.mnuAudioConfig_Click);
 			// 
@@ -784,7 +788,7 @@
 			// 
 			this.mnuInputConfig.Image = global::Mesen.GUI.Properties.Resources.Controller;
 			this.mnuInputConfig.Name = "mnuInputConfig";
-			this.mnuInputConfig.Size = new System.Drawing.Size(135, 22);
+			this.mnuInputConfig.Size = new System.Drawing.Size(180, 22);
 			this.mnuInputConfig.Text = "Input";
 			this.mnuInputConfig.Click += new System.EventHandler(this.mnuInputConfig_Click);
 			// 
@@ -792,7 +796,7 @@
 			// 
 			this.mnuVideoConfig.Image = global::Mesen.GUI.Properties.Resources.VideoOptions;
 			this.mnuVideoConfig.Name = "mnuVideoConfig";
-			this.mnuVideoConfig.Size = new System.Drawing.Size(135, 22);
+			this.mnuVideoConfig.Size = new System.Drawing.Size(180, 22);
 			this.mnuVideoConfig.Text = "Video";
 			this.mnuVideoConfig.Click += new System.EventHandler(this.mnuVideoConfig_Click);
 			// 
@@ -800,20 +804,33 @@
 			// 
 			this.mnuEmulationConfig.Image = global::Mesen.GUI.Properties.Resources.DipSwitches;
 			this.mnuEmulationConfig.Name = "mnuEmulationConfig";
-			this.mnuEmulationConfig.Size = new System.Drawing.Size(135, 22);
+			this.mnuEmulationConfig.Size = new System.Drawing.Size(180, 22);
 			this.mnuEmulationConfig.Text = "Emulation";
 			this.mnuEmulationConfig.Click += new System.EventHandler(this.mnuEmulationConfig_Click);
+			// 
+			// toolStripMenuItem22
+			// 
+			this.toolStripMenuItem22.Name = "toolStripMenuItem22";
+			this.toolStripMenuItem22.Size = new System.Drawing.Size(177, 6);
+			// 
+			// mnuGameboyConfig
+			// 
+			this.mnuGameboyConfig.Image = global::Mesen.GUI.Properties.Resources.GameboyIcon;
+			this.mnuGameboyConfig.Name = "mnuGameboyConfig";
+			this.mnuGameboyConfig.Size = new System.Drawing.Size(180, 22);
+			this.mnuGameboyConfig.Text = "Game Boy";
+			this.mnuGameboyConfig.Click += new System.EventHandler(this.mnuGameboyConfig_Click);
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(132, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuPreferences
 			// 
 			this.mnuPreferences.Image = global::Mesen.GUI.Properties.Resources.Settings;
 			this.mnuPreferences.Name = "mnuPreferences";
-			this.mnuPreferences.Size = new System.Drawing.Size(135, 22);
+			this.mnuPreferences.Size = new System.Drawing.Size(180, 22);
 			this.mnuPreferences.Text = "Preferences";
 			this.mnuPreferences.Click += new System.EventHandler(this.mnuPreferences_Click);
 			// 
@@ -1563,5 +1580,7 @@
 	  private System.Windows.Forms.ToolStripMenuItem mnuGbSpriteViewer;
 	  private System.Windows.Forms.ToolStripMenuItem mnuGbPaletteViewer;
 	  private System.Windows.Forms.ToolStripMenuItem mnuGbEventViewer;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem22;
+	  private System.Windows.Forms.ToolStripMenuItem mnuGameboyConfig;
    }
 }

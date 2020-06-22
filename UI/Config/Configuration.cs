@@ -19,6 +19,7 @@ namespace Mesen.GUI.Config
 		public AudioConfig Audio;
 		public InputConfig Input;
 		public EmulationConfig Emulation;
+		public GameboyConfig Gameboy;
 		public PreferencesConfig Preferences;
 		public DebugInfo Debug;
 		public RecentItems RecentFiles;
@@ -39,6 +40,7 @@ namespace Mesen.GUI.Config
 			Audio = new AudioConfig();
 			Input = new InputConfig();
 			Emulation = new EmulationConfig();
+			Gameboy = new GameboyConfig();
 			Preferences = new PreferencesConfig();
 			AviRecord = new AviRecordConfig();
 			MovieRecord = new MovieRecordConfig();
@@ -73,6 +75,7 @@ namespace Mesen.GUI.Config
 			Audio.ApplyConfig();
 			Input.ApplyConfig();
 			Emulation.ApplyConfig();
+			Gameboy.ApplyConfig();
 			Preferences.ApplyConfig();
 			Debug.Debugger.ApplyConfig();
 		}

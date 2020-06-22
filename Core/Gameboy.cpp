@@ -63,8 +63,8 @@ void Gameboy::Init(Console* console, GbCart* cart, std::vector<uint8_t>& romData
 	_hasBattery = header.HasBattery();
 
 	shared_ptr<EmuSettings> settings = console->GetSettings();
-	EmulationConfig cfg = settings->GetEmulationConfig();
-	GameboyModel model = cfg.GbModel;
+	GameboyConfig cfg = settings->GetGameboyConfig();
+	GameboyModel model = cfg.Model;
 	if(model == GameboyModel::Auto) {
 		if((header.CgbFlag & 0x80) != 0) {
 			model = GameboyModel::GameboyColor;

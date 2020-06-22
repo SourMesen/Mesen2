@@ -215,10 +215,12 @@ extern "C" {
 	void update_settings()
 	{
 		struct retro_variable var = { };
-		VideoConfig video = _console->GetSettings()->GetVideoConfig();
-		AudioConfig audio = _console->GetSettings()->GetAudioConfig();
-		EmulationConfig emulation = _console->GetSettings()->GetEmulationConfig();
-		InputConfig input = _console->GetSettings()->GetInputConfig();
+		shared_ptr<EmuSettings> settings = _console->GetSettings();
+		VideoConfig video = settings->GetVideoConfig();
+		AudioConfig audio = settings->GetAudioConfig();
+		EmulationConfig emulation = settings->GetEmulationConfig();
+		GameboyConfig gbConfig = settings->GetGameboyConfig();
+		InputConfig input = settings->GetInputConfig();
 		video.Brightness = 0;
 		video.Contrast = 0;
 		video.Hue = 0;
@@ -396,19 +398,19 @@ extern "C" {
 		if(readVariable(MesenGbModel, var)) {
 			string value = string(var.value);
 			if(value == "Game Boy") {
-				emulation.GbModel = GameboyModel::Gameboy;
+				gbConfig.Model = GameboyModel::Gameboy;
 			} else if(value == "Game Boy Color") {
-				emulation.GbModel = GameboyModel::GameboyColor;
+				gbConfig.Model = GameboyModel::GameboyColor;
 			} else if(value == "Super Game Boy") {
-				emulation.GbModel = GameboyModel::SuperGameboy;
+				gbConfig.Model = GameboyModel::SuperGameboy;
 			} else {
-				emulation.GbModel = GameboyModel::Auto;
+				gbConfig.Model = GameboyModel::Auto;
 			}
 		}
 
 		if(readVariable(MesenGbSgb2, var)) {
 			string value = string(var.value);
-			emulation.UseSgb2 = (value == "enabled");
+			gbConfig.UseSgb2 = (value == "enabled");
 		}
 
 		auto getKeyCode = [=](int port, int retroKey) {
@@ -441,10 +443,11 @@ extern "C" {
 		input.Controllers[2].Keys = getKeyBindings(2);
 		input.Controllers[3].Keys = getKeyBindings(3);
 
-		_console->GetSettings()->SetVideoConfig(video);
-		_console->GetSettings()->SetEmulationConfig(emulation);
-		_console->GetSettings()->SetInputConfig(input);
-		_console->GetSettings()->SetAudioConfig(audio);
+		settings->SetVideoConfig(video);
+		settings->SetEmulationConfig(emulation);
+		settings->SetInputConfig(input);
+		settings->SetAudioConfig(audio);
+		settings->SetGameboyConfig(gbConfig);
 
 		retro_system_av_info avInfo = {};
 		_renderer->GetSystemAudioVideoInfo(avInfo);
