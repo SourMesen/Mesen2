@@ -154,12 +154,9 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 				_packetReady = true;
 				_listeningForPacket = false;
 
-				/*string log = HexUtilities::ToHex(_packetData[0] >> 3);
-				log += " Size: " + std::to_string(_packetData[0] & 0x07) + " - ";
-				for(int i = 0; i < 16; i++) {
-					log += HexUtilities::ToHex(_packetData[i]) + " ";
+				if(_console->IsDebugging()) {
+					LogPacket();
 				}
-				MessageManager::Log(log);*/
 			} else {
 				_packetData[_packetByte] &= ~(1 << _packetBit);
 			}
@@ -189,6 +186,50 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 
 	_inputValue = value;
 	_inputWriteClock = _memoryManager->GetMasterClock();
+}
+
+void SuperGameboy::LogPacket()
+{
+	uint8_t commandId = _packetData[0] >> 3;
+	string name;
+	switch(commandId) {
+		case 0: name = "PAL01"; break; //Set SGB Palette 0, 1 Data
+		case 1: name = "PAL23"; break; //Set SGB Palette 2, 3 Data
+		case 2: name = "PAL03"; break; //Set SGB Palette 0, 3 Data
+		case 3: name = "PAL12"; break; //Set SGB Palette 1, 2 Data
+		case 4: name = "ATTR_BLK"; break; //"Block" Area Designation Mode
+		case 5: name = "ATTR_LIN"; break; //"Line" Area Designation Mode
+		case 6: name = "ATTR_DIV"; break; //"Divide" Area Designation Mode
+		case 7: name = "ATTR_CHR"; break; //"1CHR" Area Designation Mode
+		case 8: name = "SOUND"; break; //Sound On / Off
+		case 9: name = "SOU_TRN"; break; //Transfer Sound PRG / DATA
+		case 0xA: name = "PAL_SET"; break; //Set SGB Palette Indirect
+		case 0xB: name = "PAL_TRN"; break; //Set System Color Palette Data
+		case 0xC: name = "ATRC_EN"; break; //Enable / disable Attraction Mode
+		case 0xD: name = "TEST_EN"; break; //Speed Function
+		case 0xE: name = "ICON_EN"; break; //SGB Function
+		case 0xF: name = "DATA_SND"; break; //SUPER NES WRAM Transfer 1
+		case 0x10: name = "DATA_TRN"; break; //SUPER NES WRAM Transfer 2
+		case 0x11: name = "MLT_REG"; break; //Controller 2 Request
+		case 0x12: name = "JUMP"; break; //Set SNES Program Counter
+		case 0x13: name = "CHR_TRN"; break; //Transfer Character Font Data
+		case 0x14: name = "PCT_TRN"; break; //Set Screen Data Color Data
+		case 0x15: name = "ATTR_TRN"; break; //Set Attribute from ATF
+		case 0x16: name = "ATTR_SET"; break; //Set Data to ATF
+		case 0x17: name = "MASK_EN"; break; //Game Boy Window Mask
+		case 0x18: name = "OBJ_TRN"; break; //Super NES OBJ Mode
+		
+		case 0x1E: name = "Header Data"; break;
+		case 0x1F: name = "Header Data"; break;
+
+		default: name = "Unknown"; break;
+	}
+
+	string log = "SGB Command: " + HexUtilities::ToHex(commandId) + " - " + name + " (Len: " + std::to_string(_packetData[0] & 0x07) + ") - ";
+	for(int i = 0; i < 16; i++) {
+		log += HexUtilities::ToHex(_packetData[i]) + " ";
+	}
+	_console->DebugLog(log);
 }
 
 void SuperGameboy::WriteLcdColor(uint8_t scanline, uint8_t pixel, uint8_t color)

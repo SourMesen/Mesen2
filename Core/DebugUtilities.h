@@ -79,6 +79,17 @@ public:
 		}
 	}
 
+	static bool IsRomMemory(SnesMemoryType memType)
+	{
+		switch(memType) {
+			case SnesMemoryType::PrgRom:
+			case SnesMemoryType::GbPrgRom:
+			case SnesMemoryType::GbBootRom:
+			case SnesMemoryType::SaveRam: //Include save ram here to avoid uninit memory read warnings on save ram
+				return true;
+		}
+	}
+
 	static constexpr CpuType GetLastCpuType()
 	{
 		return CpuType::Gameboy;

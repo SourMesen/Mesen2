@@ -18,6 +18,7 @@
 #include "GbEventManager.h"
 #include "BaseEventManager.h"
 #include "GbAssembler.h"
+#include "../Utilities/HexUtilities.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {
@@ -135,9 +136,15 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 		if(addr < 0xFE00 || addr >= 0xFF80) {
 			if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock())) {
 				//Memory access was a read on an uninitialized memory address
-				if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-					breakSource = BreakSource::BreakOnUninitMemoryRead;
-					_step->StepCount = 0;
+				if(_enableBreakOnUninitRead) {
+					if(_memoryAccessCounter->GetReadCount(addressInfo) == 1) {
+						//Only warn the first time
+						_debugger->Log("[GB] Uninitialized memory read: $" + HexUtilities::ToHex(addr));
+					}
+					if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+						breakSource = BreakSource::BreakOnUninitMemoryRead;
+						_step->StepCount = 0;
+					}
 				}
 			}
 		}

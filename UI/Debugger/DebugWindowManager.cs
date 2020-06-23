@@ -45,6 +45,7 @@ namespace Mesen.GUI.Debugger
 					case DebugWindow.RegisterViewer: frm = new frmRegisterViewer(); frm.Icon = Properties.Resources.RegisterIcon; break;
 					case DebugWindow.Profiler: frm = new frmProfiler(); frm.Icon = Properties.Resources.PerfTracker; break;
 					case DebugWindow.Assembler: frm = new frmAssembler(); frm.Icon = Properties.Resources.Chip; break;
+					case DebugWindow.DebugLog: frm = new frmDebugLog(); frm.Icon = Properties.Resources.LogWindow; break;
 					case DebugWindow.GbTileViewer: frm = new frmTileViewer(CpuType.Gameboy); frm.Icon = Properties.Resources.VerticalLayout; break;
 					case DebugWindow.GbTilemapViewer: frm = new frmTilemapViewer(CpuType.Gameboy); frm.Icon = Properties.Resources.VideoOptions; break;
 					case DebugWindow.GbPaletteViewer: frm = new frmPaletteViewer(CpuType.Gameboy); frm.Icon = Properties.Resources.VideoFilter; break;
@@ -176,6 +177,7 @@ namespace Mesen.GUI.Debugger
 				case DebugWindow.EventViewer: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmEventViewer) && ((frmEventViewer)form).CpuType == CpuType.Cpu);
 				case DebugWindow.GbEventViewer: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmEventViewer) && ((frmEventViewer)form).CpuType == CpuType.Gameboy);
 				case DebugWindow.Profiler: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmProfiler));
+				case DebugWindow.DebugLog: return _openedWindows.ToList().Find((form) => form.GetType() == typeof(frmDebugLog));
 			}
 
 			return null;
@@ -233,6 +235,8 @@ namespace Mesen.GUI.Debugger
 		RegisterViewer,
 		Profiler,
 		Assembler,
+		DebugLog,
+
 		GbTileViewer,
 		GbTilemapViewer,
 		GbPaletteViewer,

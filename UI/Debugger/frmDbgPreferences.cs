@@ -51,7 +51,7 @@ namespace Mesen.GUI.Debugger
 				GetMember(nameof(DebuggerShortcutsConfig.OpenProfiler)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenScriptWindow)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenTraceLogger)),
-				//GetMember(nameof(DebuggerShortcutsConfig.OpenWatchWindow)),
+				GetMember(nameof(DebuggerShortcutsConfig.OpenDebugLog)),
 
 				GetMember(nameof(DebuggerShortcutsConfig.OpenTilemapViewer)),
 				GetMember(nameof(DebuggerShortcutsConfig.OpenTileViewer)),

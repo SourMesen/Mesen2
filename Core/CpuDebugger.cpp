@@ -21,6 +21,7 @@
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "Assembler.h"
+#include "../Utilities/HexUtilities.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {
@@ -140,9 +141,15 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock())) {
 			//Memory access was a read on an uninitialized memory address
-			if(_enableBreakOnUninitRead && _settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-				breakSource = BreakSource::BreakOnUninitMemoryRead;
-				_step->StepCount = 0;
+			if(_enableBreakOnUninitRead) {
+				if(_memoryAccessCounter->GetReadCount(addressInfo) == 1) {
+					//Only warn the first time
+					_debugger->Log(string(_cpuType == CpuType::Sa1 ? "[SA1]" : "[CPU]") + " Uninitialized memory read: $" + HexUtilities::ToHex24(addr));
+				}
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+					breakSource = BreakSource::BreakOnUninitMemoryRead;
+					_step->StepCount = 0;
+				}
 			}
 		}
 	}

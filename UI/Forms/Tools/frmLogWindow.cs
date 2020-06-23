@@ -18,11 +18,6 @@ namespace Mesen.GUI.Forms
 			InitializeComponent();
 		}
 
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-		}
-
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);

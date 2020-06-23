@@ -280,6 +280,7 @@
     <Compile Include="Debugger\Config\DebuggerShortcutsConfig.cs" />
     <Compile Include="Debugger\Config\DebuggerInfo.cs" />
     <Compile Include="Debugger\Config\AssemblerConfig.cs" />
+    <Compile Include="Debugger\Config\DebugLogConfig.cs" />
     <Compile Include="Debugger\Config\ProfilerConfig.cs" />
     <Compile Include="Debugger\Config\ScriptWindowConfig.cs" />
     <Compile Include="Debugger\Config\SpriteViewerConfig.cs" />
@@ -309,6 +310,12 @@
     </Compile>
     <Compile Include="Debugger\Controls\ctrlGameboyStatus.Designer.cs">
       <DependentUpon>ctrlGameboyStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debugger\frmDebugLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debugger\frmDebugLog.Designer.cs">
+      <DependentUpon>frmDebugLog.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\Integration\RgbdsSymbolFile.cs" />
     <Compile Include="Debugger\Integration\BassLabelFile.cs" />
@@ -1089,6 +1096,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\Controls\ctrlGameboyStatus.resx">
       <DependentUpon>ctrlGameboyStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debugger\frmDebugLog.resx">
+      <DependentUpon>frmDebugLog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debugger\MemoryTools\ctrlMemoryAccessCounters.resx">
       <DependentUpon>ctrlMemoryAccessCounters.cs</DependentUpon>

@@ -30,12 +30,17 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
 	}
 }
 
-bool MemoryAccessCounter::IsAddressUninitialized(AddressInfo &addressInfo)
+bool MemoryAccessCounter::IsAddressUninitialized(AddressInfo& addressInfo)
 {
-	if(addressInfo.Type != SnesMemoryType::PrgRom && addressInfo.Type != SnesMemoryType::SaveRam && addressInfo.Type != SnesMemoryType::GbPrgRom && addressInfo.Type != SnesMemoryType::GbBootRom) {
+	if(!DebugUtilities::IsRomMemory(addressInfo.Type)) {
 		return _counters[(int)addressInfo.Type][addressInfo.Address].WriteCount == 0;
 	}
 	return false;
+}
+
+uint64_t MemoryAccessCounter::GetReadCount(AddressInfo& addressInfo)
+{
+	return _counters[(int)addressInfo.Type][addressInfo.Address].ReadCount;
 }
 
 bool MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint64_t masterClock)

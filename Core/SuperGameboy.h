@@ -59,6 +59,8 @@ public:
 
 	void ProcessInputPortWrite(uint8_t value);
 
+	void LogPacket();
+
 	void WriteLcdColor(uint8_t scanline, uint8_t pixel, uint8_t color);
 
 	void MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t sampleCount);

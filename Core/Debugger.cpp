@@ -666,6 +666,25 @@ void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 	}
 }
 
+void Debugger::Log(string message)
+{
+	auto lock = _logLock.AcquireSafe();
+	if(_debuggerLog.size() >= 1000) {
+		_debuggerLog.pop_front();
+	}
+	_debuggerLog.push_back(message);
+}
+
+string Debugger::GetLog()
+{
+	auto lock = _logLock.AcquireSafe();
+	stringstream ss;
+	for(string& msg : _debuggerLog) {
+		ss << msg << "\n";
+	}
+	return ss.str();
+}
+
 void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
 	vector<uint8_t> output;

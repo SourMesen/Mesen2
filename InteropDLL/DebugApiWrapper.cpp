@@ -19,6 +19,7 @@
 #include "../Core/BaseEventManager.h"
 
 extern shared_ptr<Console> _console;
+static string _logString;
 
 shared_ptr<Debugger> GetDebugger()
 {
@@ -65,7 +66,13 @@ extern "C"
 	DllExport void __stdcall GetProfilerData(CpuType cpuType, ProfiledFunction* profilerData, uint32_t& functionCount) { GetDebugger()->GetCallstackManager(cpuType)->GetProfiler()->GetProfilerData(profilerData, functionCount); }
 	DllExport void __stdcall ResetProfiler(CpuType cpuType) { GetDebugger()->GetCallstackManager(cpuType)->GetProfiler()->Reset(); }
 
-	DllExport void __stdcall GetState(DebugState &state) { GetDebugger()->GetState(state, false); }
+	DllExport void __stdcall GetState(DebugState& state) { GetDebugger()->GetState(state, false); }
+	
+	DllExport const char* __stdcall GetDebuggerLog()
+	{
+		_logString = GetDebugger()->GetLog();
+		return _logString.c_str();
+	}
 
 	DllExport void __stdcall SetMemoryState(SnesMemoryType type, uint8_t *buffer, int32_t length) { GetDebugger()->GetMemoryDumper()->SetMemoryState(type, buffer, length); }
 	DllExport uint32_t __stdcall GetMemorySize(SnesMemoryType type) { return GetDebugger()->GetMemoryDumper()->GetMemorySize(type); }

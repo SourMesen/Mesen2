@@ -390,6 +390,7 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
 	shared_ptr<BaseCartridge> cart = forPowerCycle ? _cart : BaseCartridge::CreateCartridge(this, romFile, patchFile);
 	if(cart) {
+		bool debuggerActive = _debugger != nullptr;
 		if(stopRom) {
 			KeyManager::UpdateDevices();
 			Stop(false);
@@ -400,8 +401,6 @@ bool Console::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, 
 		_cart = cart;
 		
 		auto lock = _debuggerLock.AcquireSafe();
-		bool debuggerActive = _debugger != nullptr;
-
 		if(_debugger) {
 			//Reset debugger if it was running before
 			_debugger->Release();

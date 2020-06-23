@@ -22,12 +22,12 @@ private:
 	static constexpr uint32_t LegacyIrqVector = 0xFFFE;
 	static constexpr uint32_t LegacyCoprocessorVector = 0x00FFF4;
 
-	Sa1* _sa1;
-	Console* _console;
+	Sa1* _sa1 = nullptr;
+	Console* _console = nullptr;
 
 	bool _immediateMode = false;
 
-	CpuState _state;
+	CpuState _state = {};
 	uint32_t _operand = -1;
 
 	uint32_t GetProgramAddress(uint16_t addr);

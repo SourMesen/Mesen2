@@ -225,6 +225,13 @@ public:
 		}
 	}
 
+	__forceinline void DebugLog(string log)
+	{
+		if(_debugger) {
+			_debugger->Log(log);
+		}
+	}
+
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 	void BreakImmediately(BreakSource source);

@@ -4,6 +4,7 @@
 #include "PpuTypes.h"
 #include "DebugTypes.h"
 #include "DebugUtilities.h"
+#include "../Utilities/SimpleLock.h"
 
 class Console;
 class Cpu;
@@ -74,6 +75,9 @@ private:
 	shared_ptr<LabelManager> _labelManager;
 
 	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)DebugUtilities::GetLastCpuType() + 1];
+	
+	SimpleLock _logLock;
+	std::list<string> _debuggerLog;
 
 	atomic<bool> _executionStopped;
 	atomic<uint32_t> _breakRequestCount;
@@ -139,6 +143,9 @@ public:
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
 	
+	void Log(string message);
+	string GetLog();
+
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	shared_ptr<TraceLogger> GetTraceLogger();

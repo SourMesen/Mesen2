@@ -29,6 +29,7 @@ namespace Mesen.GUI.Config
 		public ScriptWindowConfig ScriptWindow = new ScriptWindowConfig();
 		public ProfilerConfig Profiler = new ProfilerConfig();
 		public AssemblerConfig Assembler = new AssemblerConfig();
+		public DebugLogConfig DebugLog = new DebugLogConfig();
 
 		public DebugInfo()
 		{		

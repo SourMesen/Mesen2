@@ -30,13 +30,13 @@ private:
 
 	typedef void(Cpu::*Func)();
 	
-	MemoryManager *_memoryManager;
-	DmaController *_dmaController;
-	Console *_console;
+	MemoryManager *_memoryManager = nullptr;
+	DmaController *_dmaController = nullptr;
+	Console *_console = nullptr;
 
 	bool _immediateMode = false;
 
-	CpuState _state;
+	CpuState _state = {};
 	uint32_t _operand = -1;
 
 	uint32_t GetProgramAddress(uint16_t addr);

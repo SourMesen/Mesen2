@@ -43,6 +43,8 @@ private:
 public:
 	MemoryAccessCounter(Debugger *debugger, Console *console);
 
+	uint64_t GetReadCount(AddressInfo& addressInfo);
+
 	bool ProcessMemoryRead(AddressInfo& addressInfo, uint64_t masterClock);
 	void ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t masterClock);
 	void ProcessMemoryExec(AddressInfo& addressInfo, uint64_t masterClock);
