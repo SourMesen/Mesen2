@@ -718,7 +718,7 @@ extern "C" {
 		info->library_name = "Mesen-S";
 		info->library_version = _mesenVersion.c_str();
 		info->need_fullpath = false;
-		info->valid_extensions = "sfc|smc|fig|swc|gb|gbc";
+		info->valid_extensions = "sfc|smc|fig|swc|gb|gbc|bs";
 		info->block_extract = false;
 	}
 
