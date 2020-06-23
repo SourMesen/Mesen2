@@ -49,9 +49,15 @@ private:
 		return false;
 	}
 
-	static bool AttemptLoadFirmware(uint8_t** out, string filename, uint32_t size)
+	static bool AttemptLoadFirmware(uint8_t** out, string filename, uint32_t size, string altFilename = "")
 	{
-		VirtualFile firmware(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), filename));
+		string path = FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), filename);
+		VirtualFile firmware(path);
+		if((!firmware.IsValid() || firmware.GetSize() != size) && !altFilename.empty()) {
+			string altPath = FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), altFilename);
+			firmware = VirtualFile(altPath);
+		}
+
 		if(firmware.IsValid() && firmware.GetSize() == size) {
 			*out = new uint8_t[firmware.GetSize()];
 			firmware.ReadFile(*out, (uint32_t)firmware.GetSize());
@@ -132,16 +138,17 @@ public:
 	static bool LoadGbBootRom(Console* console, uint8_t** bootRom, FirmwareType type)
 	{
 		string filename;
+		string altFilename;
 		switch(type) {
 			default:
-			case FirmwareType::Gameboy: filename = "dmg_boot.bin"; break;
-			case FirmwareType::GameboyColor: filename = "cgb_boot.bin"; break;
-			case FirmwareType::Sgb1GameboyCpu: filename = "sgb_boot.bin"; break;
-			case FirmwareType::Sgb2GameboyCpu: filename = "sgb2_boot.bin"; break;
+			case FirmwareType::Gameboy: filename = "dmg_boot.bin"; altFilename = "gb_bios.bin"; break;
+			case FirmwareType::GameboyColor: filename = "cgb_boot.bin"; altFilename = "gbc_bios.bin"; break;
+			case FirmwareType::Sgb1GameboyCpu: filename = "sgb_boot.bin"; altFilename = "sgb_bios.bin"; break;
+			case FirmwareType::Sgb2GameboyCpu: filename = "sgb2_boot.bin"; altFilename = "sgb_bios.bin"; break;
 		}
 
 		uint32_t size = type == FirmwareType::GameboyColor ? 2304 : 256;
-		if(AttemptLoadFirmware(bootRom, filename, size)) {
+		if(AttemptLoadFirmware(bootRom, filename, size, altFilename)) {
 			return true;
 		}
 
