@@ -101,7 +101,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Margin = new System.Windows.Forms.Padding(0);
-			this.MaximumSize = new System.Drawing.Size(63, 160);
+			this.MaximumSize = new System.Drawing.Size(63, 300);
 			this.MinimumSize = new System.Drawing.Size(34, 160);
 			this.Name = "ctrlTrackbar";
 			this.Size = new System.Drawing.Size(34, 160);

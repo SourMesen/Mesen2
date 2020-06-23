@@ -41,12 +41,24 @@ namespace Mesen.GUI.Forms.Config
 			AddBinding(nameof(GameboyConfig.Obj1Color1), picGbObj1Pal1);
 			AddBinding(nameof(GameboyConfig.Obj1Color2), picGbObj1Pal2);
 			AddBinding(nameof(GameboyConfig.Obj1Color3), picGbObj1Pal3);
+
+			AddBinding(nameof(GameboyConfig.Square1Vol), trkSquare1Vol);
+			AddBinding(nameof(GameboyConfig.Square2Vol), trkSquare2Vol);
+			AddBinding(nameof(GameboyConfig.WaveVol), trkWaveVol);
+			AddBinding(nameof(GameboyConfig.NoiseVol), trkNoiseVol);
 		}
 
 		protected override void OnApply()
 		{
 			ConfigManager.Config.Gameboy = (GameboyConfig)this.Entity;
 			ConfigManager.ApplyChanges();
+		}
+
+		protected override bool ValidateInput()
+		{
+			UpdateObject();
+			((GameboyConfig)this.Entity).ApplyConfig();
+			return true;
 		}
 
 		private void btnSelectPreset_Click(object sender, EventArgs e)

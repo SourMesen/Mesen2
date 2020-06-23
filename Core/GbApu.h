@@ -9,6 +9,7 @@
 class Console;
 class Gameboy;
 class SoundMixer;
+class EmuSettings;
 
 class GbApu : public ISerializable
 {
@@ -20,6 +21,7 @@ private:
 	static constexpr int MaxSamples = 4000;
 	Console* _console = nullptr;
 	Gameboy* _gameboy = nullptr;
+	EmuSettings* _settings = nullptr;
 	SoundMixer* _soundMixer = nullptr;
 
 	unique_ptr<GbSquareChannel> _square1;

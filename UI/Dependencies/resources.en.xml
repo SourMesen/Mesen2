@@ -312,6 +312,9 @@
 			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
 
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpVolume">Volume</Control>
+			
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>

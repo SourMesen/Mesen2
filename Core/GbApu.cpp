@@ -29,6 +29,7 @@ void GbApu::Init(Console* console, Gameboy* gameboy)
 	_prevClockCount = 0;
 
 	_console = console;
+	_settings = console->GetSettings().get();
 	_soundMixer = console->GetSoundMixer().get();
 	_gameboy = gameboy;
 	_state = {};
@@ -69,6 +70,8 @@ void GbApu::Run()
 	uint32_t clocksToRun = (uint32_t)(clockCount - _prevClockCount);
 	_prevClockCount = clockCount;
 
+	GameboyConfig cfg = _settings->GetGameboyConfig();
+
 	if(!_state.ApuEnabled) {
 		_clockCounter += clocksToRun;
 	} else {
@@ -82,10 +85,10 @@ void GbApu::Run()
 			_noise->Exec(minTimer);
 
 			int16_t leftOutput = (
-				(_square1->GetOutput() & _state.EnableLeftSq1) +
-				(_square2->GetOutput() & _state.EnableLeftSq2) +
-				(_wave->GetOutput() & _state.EnableLeftWave) +
-				(_noise->GetOutput() & _state.EnableLeftNoise)
+				(_square1->GetOutput() & _state.EnableLeftSq1) * cfg.Square1Vol / 100 +
+				(_square2->GetOutput() & _state.EnableLeftSq2) * cfg.Square2Vol / 100 +
+				(_wave->GetOutput() & _state.EnableLeftWave) * cfg.WaveVol / 100 +
+				(_noise->GetOutput() & _state.EnableLeftNoise) * cfg.NoiseVol / 100
 				) * (_state.LeftVolume + 1) * 40;
 
 			if(_prevLeftOutput != leftOutput) {
@@ -94,10 +97,10 @@ void GbApu::Run()
 			}
 
 			int16_t rightOutput = (
-				(_square1->GetOutput() & _state.EnableRightSq1) +
-				(_square2->GetOutput() & _state.EnableRightSq2) +
-				(_wave->GetOutput() & _state.EnableRightWave) +
-				(_noise->GetOutput() & _state.EnableRightNoise)
+				(_square1->GetOutput() & _state.EnableRightSq1) * cfg.Square1Vol / 100 +
+				(_square2->GetOutput() & _state.EnableRightSq2) * cfg.Square2Vol / 100 +
+				(_wave->GetOutput() & _state.EnableRightWave) * cfg.WaveVol / 100 +
+				(_noise->GetOutput() & _state.EnableRightNoise) * cfg.NoiseVol / 100
 				) * (_state.RightVolume + 1) * 40;
 
 			if(_prevRightOutput != rightOutput) {

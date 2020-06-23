@@ -57,11 +57,18 @@
 			this.chkGbBlendFrames = new System.Windows.Forms.CheckBox();
 			this.lblGameboyPalette = new System.Windows.Forms.Label();
 			this.lblLcdSettings = new System.Windows.Forms.Label();
+			this.tpgAudio = new System.Windows.Forms.TabPage();
+			this.grpVolume = new System.Windows.Forms.GroupBox();
+			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.trkSquare2Vol = new Mesen.GUI.Controls.ctrlTrackbar();
+			this.trkSquare1Vol = new Mesen.GUI.Controls.ctrlTrackbar();
+			this.trkNoiseVol = new Mesen.GUI.Controls.ctrlTrackbar();
+			this.trkWaveVol = new Mesen.GUI.Controls.ctrlTrackbar();
 			this.ctxGbColorPresets = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mnuGbColorPresetGrayscale = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuGbColorPresetGrayscaleConstrast = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuGbColorPresetGreen = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuGbColorPresetBrown = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuGbColorPresetGrayscaleConstrast = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabMain.SuspendLayout();
 			this.tpgGeneral.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -80,24 +87,28 @@
 			((System.ComponentModel.ISupportInitialize)(this.picGbObj1Pal1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picGbObj1Pal2)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picGbObj1Pal3)).BeginInit();
+			this.tpgAudio.SuspendLayout();
+			this.grpVolume.SuspendLayout();
+			this.tableLayoutPanel2.SuspendLayout();
 			this.ctxGbColorPresets.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// baseConfigPanel
 			// 
-			this.baseConfigPanel.Location = new System.Drawing.Point(0, 290);
-			this.baseConfigPanel.Size = new System.Drawing.Size(445, 29);
+			this.baseConfigPanel.Location = new System.Drawing.Point(0, 280);
+			this.baseConfigPanel.Size = new System.Drawing.Size(361, 29);
 			this.baseConfigPanel.TabIndex = 4;
 			// 
 			// tabMain
 			// 
 			this.tabMain.Controls.Add(this.tpgGeneral);
 			this.tabMain.Controls.Add(this.tpgVideo);
+			this.tabMain.Controls.Add(this.tpgAudio);
 			this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabMain.Location = new System.Drawing.Point(0, 0);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
-			this.tabMain.Size = new System.Drawing.Size(445, 290);
+			this.tabMain.Size = new System.Drawing.Size(361, 280);
 			this.tabMain.TabIndex = 2;
 			// 
 			// tpgGeneral
@@ -106,7 +117,7 @@
 			this.tpgGeneral.Location = new System.Drawing.Point(4, 22);
 			this.tpgGeneral.Name = "tpgGeneral";
 			this.tpgGeneral.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgGeneral.Size = new System.Drawing.Size(437, 264);
+			this.tpgGeneral.Size = new System.Drawing.Size(353, 254);
 			this.tpgGeneral.TabIndex = 2;
 			this.tpgGeneral.Text = "General";
 			this.tpgGeneral.UseVisualStyleBackColor = true;
@@ -126,7 +137,7 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(431, 258);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(347, 248);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// lblModel
@@ -164,7 +175,7 @@
 			this.tpgVideo.Location = new System.Drawing.Point(4, 22);
 			this.tpgVideo.Name = "tpgVideo";
 			this.tpgVideo.Padding = new System.Windows.Forms.Padding(3);
-			this.tpgVideo.Size = new System.Drawing.Size(437, 264);
+			this.tpgVideo.Size = new System.Drawing.Size(353, 254);
 			this.tpgVideo.TabIndex = 6;
 			this.tpgVideo.Text = "Video";
 			this.tpgVideo.UseVisualStyleBackColor = true;
@@ -173,7 +184,6 @@
 			// 
 			this.tableLayoutPanel7.ColumnCount = 1;
 			this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel7.Controls.Add(this.tableLayoutPanel8, 0, 1);
 			this.tableLayoutPanel7.Controls.Add(this.chkGbcAdjustColors, 0, 3);
 			this.tableLayoutPanel7.Controls.Add(this.chkGbBlendFrames, 0, 4);
@@ -183,13 +193,13 @@
 			this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 3);
 			this.tableLayoutPanel7.Name = "tableLayoutPanel7";
 			this.tableLayoutPanel7.RowCount = 6;
-			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel7.Size = new System.Drawing.Size(431, 258);
+			this.tableLayoutPanel7.Size = new System.Drawing.Size(347, 248);
 			this.tableLayoutPanel7.TabIndex = 0;
 			// 
 			// tableLayoutPanel8
@@ -218,7 +228,7 @@
 			this.tableLayoutPanel8.Controls.Add(this.lblGbBackground, 0, 0);
 			this.tableLayoutPanel8.Controls.Add(this.lblGbObj1, 0, 2);
 			this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel8.Location = new System.Drawing.Point(0, 20);
+			this.tableLayoutPanel8.Location = new System.Drawing.Point(0, 15);
 			this.tableLayoutPanel8.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel8.Name = "tableLayoutPanel8";
 			this.tableLayoutPanel8.RowCount = 4;
@@ -226,14 +236,15 @@
 			this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel8.Size = new System.Drawing.Size(431, 83);
+			this.tableLayoutPanel8.Size = new System.Drawing.Size(347, 83);
 			this.tableLayoutPanel8.TabIndex = 7;
 			// 
 			// lblGbObj0
 			// 
 			this.lblGbObj0.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblGbObj0.AutoSize = true;
-			this.lblGbObj0.Location = new System.Drawing.Point(3, 36);
+			this.lblGbObj0.Location = new System.Drawing.Point(10, 36);
+			this.lblGbObj0.Margin = new System.Windows.Forms.Padding(10, 0, 3, 0);
 			this.lblGbObj0.Name = "lblGbObj0";
 			this.lblGbObj0.Size = new System.Drawing.Size(58, 13);
 			this.lblGbObj0.TabIndex = 21;
@@ -243,7 +254,7 @@
 			// 
 			this.picGbBgPal0.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbBgPal0.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbBgPal0.Location = new System.Drawing.Point(77, 3);
+			this.picGbBgPal0.Location = new System.Drawing.Point(84, 3);
 			this.picGbBgPal0.Name = "picGbBgPal0";
 			this.picGbBgPal0.Size = new System.Drawing.Size(21, 21);
 			this.picGbBgPal0.TabIndex = 10;
@@ -253,7 +264,7 @@
 			// 
 			this.picGbBgPal1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbBgPal1.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbBgPal1.Location = new System.Drawing.Point(104, 3);
+			this.picGbBgPal1.Location = new System.Drawing.Point(111, 3);
 			this.picGbBgPal1.Name = "picGbBgPal1";
 			this.picGbBgPal1.Size = new System.Drawing.Size(21, 21);
 			this.picGbBgPal1.TabIndex = 7;
@@ -263,7 +274,7 @@
 			// 
 			this.picGbBgPal2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbBgPal2.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbBgPal2.Location = new System.Drawing.Point(131, 3);
+			this.picGbBgPal2.Location = new System.Drawing.Point(138, 3);
 			this.picGbBgPal2.Name = "picGbBgPal2";
 			this.picGbBgPal2.Size = new System.Drawing.Size(21, 21);
 			this.picGbBgPal2.TabIndex = 8;
@@ -273,7 +284,7 @@
 			// 
 			this.picGbBgPal3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbBgPal3.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbBgPal3.Location = new System.Drawing.Point(158, 3);
+			this.picGbBgPal3.Location = new System.Drawing.Point(165, 3);
 			this.picGbBgPal3.Name = "picGbBgPal3";
 			this.picGbBgPal3.Size = new System.Drawing.Size(21, 21);
 			this.picGbBgPal3.TabIndex = 9;
@@ -285,7 +296,7 @@
 			this.btnSelectPreset.AutoSize = true;
 			this.btnSelectPreset.Image = global::Mesen.GUI.Properties.Resources.DownArrow;
 			this.btnSelectPreset.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.btnSelectPreset.Location = new System.Drawing.Point(185, 3);
+			this.btnSelectPreset.Location = new System.Drawing.Point(192, 3);
 			this.btnSelectPreset.Name = "btnSelectPreset";
 			this.btnSelectPreset.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.btnSelectPreset.Size = new System.Drawing.Size(99, 23);
@@ -299,7 +310,7 @@
 			// 
 			this.picGbObj0Pal0.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj0Pal0.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj0Pal0.Location = new System.Drawing.Point(77, 32);
+			this.picGbObj0Pal0.Location = new System.Drawing.Point(84, 32);
 			this.picGbObj0Pal0.Name = "picGbObj0Pal0";
 			this.picGbObj0Pal0.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj0Pal0.TabIndex = 12;
@@ -309,7 +320,7 @@
 			// 
 			this.picGbObj0Pal1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj0Pal1.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj0Pal1.Location = new System.Drawing.Point(104, 32);
+			this.picGbObj0Pal1.Location = new System.Drawing.Point(111, 32);
 			this.picGbObj0Pal1.Name = "picGbObj0Pal1";
 			this.picGbObj0Pal1.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj0Pal1.TabIndex = 13;
@@ -319,7 +330,7 @@
 			// 
 			this.picGbObj0Pal2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj0Pal2.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj0Pal2.Location = new System.Drawing.Point(131, 32);
+			this.picGbObj0Pal2.Location = new System.Drawing.Point(138, 32);
 			this.picGbObj0Pal2.Name = "picGbObj0Pal2";
 			this.picGbObj0Pal2.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj0Pal2.TabIndex = 14;
@@ -329,7 +340,7 @@
 			// 
 			this.picGbObj0Pal3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj0Pal3.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj0Pal3.Location = new System.Drawing.Point(158, 32);
+			this.picGbObj0Pal3.Location = new System.Drawing.Point(165, 32);
 			this.picGbObj0Pal3.Name = "picGbObj0Pal3";
 			this.picGbObj0Pal3.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj0Pal3.TabIndex = 15;
@@ -339,7 +350,7 @@
 			// 
 			this.picGbObj1Pal0.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj1Pal0.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj1Pal0.Location = new System.Drawing.Point(77, 59);
+			this.picGbObj1Pal0.Location = new System.Drawing.Point(84, 59);
 			this.picGbObj1Pal0.Name = "picGbObj1Pal0";
 			this.picGbObj1Pal0.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj1Pal0.TabIndex = 16;
@@ -349,7 +360,7 @@
 			// 
 			this.picGbObj1Pal1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj1Pal1.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj1Pal1.Location = new System.Drawing.Point(104, 59);
+			this.picGbObj1Pal1.Location = new System.Drawing.Point(111, 59);
 			this.picGbObj1Pal1.Name = "picGbObj1Pal1";
 			this.picGbObj1Pal1.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj1Pal1.TabIndex = 17;
@@ -359,7 +370,7 @@
 			// 
 			this.picGbObj1Pal2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj1Pal2.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj1Pal2.Location = new System.Drawing.Point(131, 59);
+			this.picGbObj1Pal2.Location = new System.Drawing.Point(138, 59);
 			this.picGbObj1Pal2.Name = "picGbObj1Pal2";
 			this.picGbObj1Pal2.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj1Pal2.TabIndex = 18;
@@ -369,7 +380,7 @@
 			// 
 			this.picGbObj1Pal3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.picGbObj1Pal3.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.picGbObj1Pal3.Location = new System.Drawing.Point(158, 59);
+			this.picGbObj1Pal3.Location = new System.Drawing.Point(165, 59);
 			this.picGbObj1Pal3.Name = "picGbObj1Pal3";
 			this.picGbObj1Pal3.Size = new System.Drawing.Size(21, 21);
 			this.picGbObj1Pal3.TabIndex = 19;
@@ -379,7 +390,8 @@
 			// 
 			this.lblGbBackground.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblGbBackground.AutoSize = true;
-			this.lblGbBackground.Location = new System.Drawing.Point(3, 8);
+			this.lblGbBackground.Location = new System.Drawing.Point(10, 8);
+			this.lblGbBackground.Margin = new System.Windows.Forms.Padding(10, 0, 3, 0);
 			this.lblGbBackground.Name = "lblGbBackground";
 			this.lblGbBackground.Size = new System.Drawing.Size(68, 13);
 			this.lblGbBackground.TabIndex = 20;
@@ -389,7 +401,8 @@
 			// 
 			this.lblGbObj1.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblGbObj1.AutoSize = true;
-			this.lblGbObj1.Location = new System.Drawing.Point(3, 63);
+			this.lblGbObj1.Location = new System.Drawing.Point(10, 63);
+			this.lblGbObj1.Margin = new System.Windows.Forms.Padding(10, 0, 3, 0);
 			this.lblGbObj1.Name = "lblGbObj1";
 			this.lblGbObj1.Size = new System.Drawing.Size(58, 13);
 			this.lblGbObj1.TabIndex = 22;
@@ -398,7 +411,8 @@
 			// chkGbcAdjustColors
 			// 
 			this.chkGbcAdjustColors.AutoSize = true;
-			this.chkGbcAdjustColors.Location = new System.Drawing.Point(3, 126);
+			this.chkGbcAdjustColors.Location = new System.Drawing.Point(10, 121);
+			this.chkGbcAdjustColors.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
 			this.chkGbcAdjustColors.Name = "chkGbcAdjustColors";
 			this.chkGbcAdjustColors.Size = new System.Drawing.Size(182, 17);
 			this.chkGbcAdjustColors.TabIndex = 4;
@@ -408,7 +422,8 @@
 			// chkGbBlendFrames
 			// 
 			this.chkGbBlendFrames.AutoSize = true;
-			this.chkGbBlendFrames.Location = new System.Drawing.Point(3, 149);
+			this.chkGbBlendFrames.Location = new System.Drawing.Point(10, 144);
+			this.chkGbBlendFrames.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
 			this.chkGbBlendFrames.Name = "chkGbBlendFrames";
 			this.chkGbBlendFrames.Size = new System.Drawing.Size(155, 17);
 			this.chkGbBlendFrames.TabIndex = 3;
@@ -420,7 +435,7 @@
 			this.lblGameboyPalette.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblGameboyPalette.AutoSize = true;
 			this.lblGameboyPalette.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblGameboyPalette.Location = new System.Drawing.Point(0, 7);
+			this.lblGameboyPalette.Location = new System.Drawing.Point(0, 2);
 			this.lblGameboyPalette.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.lblGameboyPalette.Name = "lblGameboyPalette";
 			this.lblGameboyPalette.Size = new System.Drawing.Size(126, 13);
@@ -432,12 +447,129 @@
 			this.lblLcdSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblLcdSettings.AutoSize = true;
 			this.lblLcdSettings.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblLcdSettings.Location = new System.Drawing.Point(0, 110);
+			this.lblLcdSettings.Location = new System.Drawing.Point(0, 105);
 			this.lblLcdSettings.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.lblLcdSettings.Name = "lblLcdSettings";
 			this.lblLcdSettings.Size = new System.Drawing.Size(69, 13);
 			this.lblLcdSettings.TabIndex = 28;
 			this.lblLcdSettings.Text = "LCD Settings";
+			// 
+			// tpgAudio
+			// 
+			this.tpgAudio.Controls.Add(this.grpVolume);
+			this.tpgAudio.Location = new System.Drawing.Point(4, 22);
+			this.tpgAudio.Name = "tpgAudio";
+			this.tpgAudio.Padding = new System.Windows.Forms.Padding(3);
+			this.tpgAudio.Size = new System.Drawing.Size(353, 254);
+			this.tpgAudio.TabIndex = 7;
+			this.tpgAudio.Text = "Audio";
+			this.tpgAudio.UseVisualStyleBackColor = true;
+			// 
+			// grpVolume
+			// 
+			this.grpVolume.Controls.Add(this.tableLayoutPanel2);
+			this.grpVolume.Location = new System.Drawing.Point(3, 3);
+			this.grpVolume.Name = "grpVolume";
+			this.grpVolume.Size = new System.Drawing.Size(347, 191);
+			this.grpVolume.TabIndex = 3;
+			this.grpVolume.TabStop = false;
+			this.grpVolume.Text = "Volume";
+			// 
+			// tableLayoutPanel2
+			// 
+			this.tableLayoutPanel2.ColumnCount = 4;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+			this.tableLayoutPanel2.Controls.Add(this.trkSquare2Vol, 1, 0);
+			this.tableLayoutPanel2.Controls.Add(this.trkSquare1Vol, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this.trkNoiseVol, 3, 0);
+			this.tableLayoutPanel2.Controls.Add(this.trkWaveVol, 2, 0);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+			this.tableLayoutPanel2.RowCount = 1;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 172F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(341, 172);
+			this.tableLayoutPanel2.TabIndex = 2;
+			// 
+			// trkSquare2Vol
+			// 
+			this.trkSquare2Vol.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.trkSquare2Vol.LargeChange = 5;
+			this.trkSquare2Vol.Location = new System.Drawing.Point(96, 0);
+			this.trkSquare2Vol.Margin = new System.Windows.Forms.Padding(0);
+			this.trkSquare2Vol.Maximum = 100;
+			this.trkSquare2Vol.MaximumSize = new System.Drawing.Size(63, 300);
+			this.trkSquare2Vol.Minimum = 0;
+			this.trkSquare2Vol.MinimumSize = new System.Drawing.Size(63, 160);
+			this.trkSquare2Vol.Multiplier = 1;
+			this.trkSquare2Vol.Name = "trkSquare2Vol";
+			this.trkSquare2Vol.Size = new System.Drawing.Size(63, 172);
+			this.trkSquare2Vol.SmallChange = 1;
+			this.trkSquare2Vol.TabIndex = 13;
+			this.trkSquare2Vol.Text = "Square 2";
+			this.trkSquare2Vol.TickFrequency = 10;
+			this.trkSquare2Vol.Value = 50;
+			// 
+			// trkSquare1Vol
+			// 
+			this.trkSquare1Vol.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.trkSquare1Vol.LargeChange = 5;
+			this.trkSquare1Vol.Location = new System.Drawing.Point(11, 0);
+			this.trkSquare1Vol.Margin = new System.Windows.Forms.Padding(0);
+			this.trkSquare1Vol.Maximum = 100;
+			this.trkSquare1Vol.MaximumSize = new System.Drawing.Size(63, 300);
+			this.trkSquare1Vol.Minimum = 0;
+			this.trkSquare1Vol.MinimumSize = new System.Drawing.Size(63, 160);
+			this.trkSquare1Vol.Multiplier = 1;
+			this.trkSquare1Vol.Name = "trkSquare1Vol";
+			this.trkSquare1Vol.Size = new System.Drawing.Size(63, 172);
+			this.trkSquare1Vol.SmallChange = 1;
+			this.trkSquare1Vol.TabIndex = 12;
+			this.trkSquare1Vol.Text = "Square 1";
+			this.trkSquare1Vol.TickFrequency = 10;
+			this.trkSquare1Vol.Value = 50;
+			// 
+			// trkNoiseVol
+			// 
+			this.trkNoiseVol.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.trkNoiseVol.LargeChange = 5;
+			this.trkNoiseVol.Location = new System.Drawing.Point(266, 0);
+			this.trkNoiseVol.Margin = new System.Windows.Forms.Padding(0);
+			this.trkNoiseVol.Maximum = 100;
+			this.trkNoiseVol.MaximumSize = new System.Drawing.Size(63, 300);
+			this.trkNoiseVol.Minimum = 0;
+			this.trkNoiseVol.MinimumSize = new System.Drawing.Size(63, 160);
+			this.trkNoiseVol.Multiplier = 1;
+			this.trkNoiseVol.Name = "trkNoiseVol";
+			this.trkNoiseVol.Size = new System.Drawing.Size(63, 172);
+			this.trkNoiseVol.SmallChange = 1;
+			this.trkNoiseVol.TabIndex = 15;
+			this.trkNoiseVol.Text = "Noise";
+			this.trkNoiseVol.TickFrequency = 10;
+			this.trkNoiseVol.Value = 50;
+			// 
+			// trkWaveVol
+			// 
+			this.trkWaveVol.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.trkWaveVol.LargeChange = 5;
+			this.trkWaveVol.Location = new System.Drawing.Point(181, 0);
+			this.trkWaveVol.Margin = new System.Windows.Forms.Padding(0);
+			this.trkWaveVol.Maximum = 100;
+			this.trkWaveVol.MaximumSize = new System.Drawing.Size(63, 300);
+			this.trkWaveVol.Minimum = 0;
+			this.trkWaveVol.MinimumSize = new System.Drawing.Size(63, 160);
+			this.trkWaveVol.Multiplier = 1;
+			this.trkWaveVol.Name = "trkWaveVol";
+			this.trkWaveVol.Size = new System.Drawing.Size(63, 172);
+			this.trkWaveVol.SmallChange = 1;
+			this.trkWaveVol.TabIndex = 16;
+			this.trkWaveVol.Text = "Wave";
+			this.trkWaveVol.TickFrequency = 10;
+			this.trkWaveVol.Value = 50;
 			// 
 			// ctxGbColorPresets
 			// 
@@ -447,7 +579,7 @@
             this.mnuGbColorPresetGreen,
             this.mnuGbColorPresetBrown});
 			this.ctxGbColorPresets.Name = "contextPicturePresets";
-			this.ctxGbColorPresets.Size = new System.Drawing.Size(208, 114);
+			this.ctxGbColorPresets.Size = new System.Drawing.Size(208, 92);
 			// 
 			// mnuGbColorPresetGrayscale
 			// 
@@ -455,6 +587,13 @@
 			this.mnuGbColorPresetGrayscale.Size = new System.Drawing.Size(207, 22);
 			this.mnuGbColorPresetGrayscale.Text = "Grayscale";
 			this.mnuGbColorPresetGrayscale.Click += new System.EventHandler(this.mnuGbColorPresetGrayscale_Click);
+			// 
+			// mnuGbColorPresetGrayscaleConstrast
+			// 
+			this.mnuGbColorPresetGrayscaleConstrast.Name = "mnuGbColorPresetGrayscaleConstrast";
+			this.mnuGbColorPresetGrayscaleConstrast.Size = new System.Drawing.Size(207, 22);
+			this.mnuGbColorPresetGrayscaleConstrast.Text = "Grayscale (High contrast)";
+			this.mnuGbColorPresetGrayscaleConstrast.Click += new System.EventHandler(this.mnuGbColorPresetGrayscaleConstrast_Click);
 			// 
 			// mnuGbColorPresetGreen
 			// 
@@ -470,18 +609,11 @@
 			this.mnuGbColorPresetBrown.Text = "Brown";
 			this.mnuGbColorPresetBrown.Click += new System.EventHandler(this.mnuGbColorPresetBrown_Click);
 			// 
-			// mnuGbColorPresetGrayscaleConstrast
-			// 
-			this.mnuGbColorPresetGrayscaleConstrast.Name = "mnuGbColorPresetGrayscaleConstrast";
-			this.mnuGbColorPresetGrayscaleConstrast.Size = new System.Drawing.Size(207, 22);
-			this.mnuGbColorPresetGrayscaleConstrast.Text = "Grayscale (High contrast)";
-			this.mnuGbColorPresetGrayscaleConstrast.Click += new System.EventHandler(this.mnuGbColorPresetGrayscaleConstrast_Click);
-			// 
 			// frmGameboyConfig
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(445, 319);
+			this.ClientSize = new System.Drawing.Size(361, 309);
 			this.Controls.Add(this.tabMain);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
@@ -512,6 +644,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.picGbObj1Pal1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picGbObj1Pal2)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picGbObj1Pal3)).EndInit();
+			this.tpgAudio.ResumeLayout(false);
+			this.grpVolume.ResumeLayout(false);
+			this.tableLayoutPanel2.ResumeLayout(false);
 			this.ctxGbColorPresets.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -554,5 +689,12 @@
 	  private System.Windows.Forms.Label lblGameboyPalette;
 	  private System.Windows.Forms.Label lblLcdSettings;
 	  private System.Windows.Forms.ToolStripMenuItem mnuGbColorPresetGrayscaleConstrast;
+	  private System.Windows.Forms.TabPage tpgAudio;
+	  private System.Windows.Forms.GroupBox grpVolume;
+	  private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+	  private Controls.ctrlTrackbar trkSquare2Vol;
+	  private Controls.ctrlTrackbar trkSquare1Vol;
+	  private Controls.ctrlTrackbar trkNoiseVol;
+	  private Controls.ctrlTrackbar trkWaveVol;
    }
 }

@@ -29,6 +29,11 @@ namespace Mesen.GUI.Config
 		public UInt32 Obj1Color2 = 0x686868;
 		public UInt32 Obj1Color3 = 0x000000;
 
+		public UInt32 Square1Vol = 100;
+		public UInt32 Square2Vol = 100;
+		public UInt32 NoiseVol = 100;
+		public UInt32 WaveVol = 100;
+
 		public void ApplyConfig()
 		{
 			ConfigApi.SetGameboyConfig(this);

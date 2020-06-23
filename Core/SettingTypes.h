@@ -311,11 +311,18 @@ struct GameboyConfig
 {
 	GameboyModel Model = GameboyModel::Auto;
 	bool UseSgb2 = true;
+
 	bool BlendFrames = true;
 	bool GbcAdjustColors = true;
+
 	uint32_t BgColors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
 	uint32_t Obj0Colors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
 	uint32_t Obj1Colors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
+
+	uint32_t Square1Vol = 100;
+	uint32_t Square2Vol = 100;
+	uint32_t NoiseVol = 100;
+	uint32_t WaveVol = 100;
 };
 
 struct PreferencesConfig
