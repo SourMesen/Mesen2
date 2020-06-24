@@ -28,7 +28,6 @@ Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	
 	_iRam = new uint8_t[Sa1::InternalRamSize];
 	_iRamHandler.reset(new Sa1IRamHandler(_iRam));
-	_bwRamHandler.reset(new Sa1BwRamHandler(_cart->DebugGetSaveRam(), _cart->DebugGetSaveRamSize(), &_state));
 	console->GetSettings()->InitializeRam(_iRam, 0x800);
 	
 	//Register the SA1 in the CPU's memory space ($22xx-$23xx registers)
@@ -44,14 +43,17 @@ Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	_mappings.RegisterHandler(0x00, 0x3F, 0x0000, 0x0FFF, _iRamHandler.get());
 	_mappings.RegisterHandler(0x80, 0xBF, 0x0000, 0x0FFF, _iRamHandler.get());
 
-	for(int i = 0; i <= 0x3F; i++) {
-		//SA-1: 00-3F:6000-7FFF + 80-BF:6000-7FFF
-		_mappings.RegisterHandler(i, i, 0x6000, 0x7FFF, _bwRamHandler.get());
-		_mappings.RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, _bwRamHandler.get());
-	}
-	for(int i = 0; i <= 0x0F; i++) {
-		//SA-1: 60-6F:0000-FFFF
-		_mappings.RegisterHandler(i + 0x60, i + 0x60, 0x0000, 0xFFFF, _bwRamHandler.get());
+	if(_cart->DebugGetSaveRamSize() > 0) {
+		_bwRamHandler.reset(new Sa1BwRamHandler(_cart->DebugGetSaveRam(), _cart->DebugGetSaveRamSize(), &_state));
+		for(int i = 0; i <= 0x3F; i++) {
+			//SA-1: 00-3F:6000-7FFF + 80-BF:6000-7FFF
+			_mappings.RegisterHandler(i, i, 0x6000, 0x7FFF, _bwRamHandler.get());
+			_mappings.RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, _bwRamHandler.get());
+		}
+		for(int i = 0; i <= 0x0F; i++) {
+			//SA-1: 60-6F:0000-FFFF
+			_mappings.RegisterHandler(i + 0x60, i + 0x60, 0x0000, 0xFFFF, _bwRamHandler.get());
+		}
 	}
 
 	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cart->GetSaveRamHandlers();
