@@ -48,13 +48,6 @@ void MemoryManager::Initialize(Console *console)
 		_workRam
 	));
 
-	memset(_hasEvent, 0, sizeof(_hasEvent));
-	_hasEvent[276 * 4] = true;
-	_hasEvent[285 * 4] = true;
-	_hasEvent[1360] = true;
-	_hasEvent[1364] = true;
-	_hasEvent[1368] = true;
-
 	for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
 		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, MemoryManager::WorkRamSize, SnesMemoryType::WorkRam)));
 	}
@@ -75,7 +68,7 @@ void MemoryManager::Initialize(Console *console)
 	_cart->Init(_mappings);
 
 	GenerateMasterClockTable();
-	UpdateEvents();
+	Reset();
 }
 
 MemoryManager::~MemoryManager()
@@ -87,47 +80,47 @@ void MemoryManager::Reset()
 {
 	_masterClock = 0;
 	_hClock = 0;
-	UpdateEvents();
+	_dramRefreshPosition = 538 - (_masterClock & 0x07);
+	_nextEventClock = _dramRefreshPosition;
+	_nextEvent = SnesEventType::DramRefresh;
 }
 
 void MemoryManager::GenerateMasterClockTable()
 {
-	for(int j = 0; j < 2; j++) {
-		for(int i = 0; i < 0x10000; i++) {
-			uint8_t bank = (i & 0xFF00) >> 8;
-			if(bank >= 0x40 && bank <= 0x7F) {
+	for(int i = 0; i < 0x800; i++) {
+		uint8_t bank = (i & 0x300) >> 8;
+		if(bank == 1) {
+			//Banks $40-$7F - Slow
+			_masterClockTable[i] = 8;
+		} else if(bank == 3) {
+			//Banks $C0-$FF
+			//Slow or fast (depending on register)
+			_masterClockTable[i] = (i >= 0x400) ? 6 : 8;
+		} else {
+			//Banks $00-$3F and $80-$BF
+			uint8_t page = (i & 0xFF);
+			if(page <= 0x1F) {
 				//Slow
-				_masterClockTable[j][i] = 8;
-			} else if(bank >= 0xC0) {
-				//Banks $C0-$FF
-				//Slow or fast (depending on register)
-				_masterClockTable[j][i] = j == 1 ? 6 : 8;
+				_masterClockTable[i] = 8;
+			} else if(page >= 0x20 && page <= 0x3F) {
+				//Fast
+				_masterClockTable[i] = 6;
+			} else if(page == 0x40 || page == 0x41) {
+				//Extra slow
+				_masterClockTable[i] = 12;
+			} else if(page >= 0x42 && page <= 0x5F) {
+				//Fast
+				_masterClockTable[i] = 6;
+			} else if(page >= 0x60 && page <= 0x7F) {
+				//Slow
+				_masterClockTable[i] = 8;
+			} else if(bank == 0) {
+				//Slow
+				_masterClockTable[i] = 8;
 			} else {
-				//Banks $00-$3F and $80-$BF
-				uint8_t page = (i & 0xFF);
-				if(page <= 0x1F) {
-					//Slow
-					_masterClockTable[j][i] = 8;
-				} else if(page >= 0x20 && page <= 0x3F) {
-					//Fast
-					_masterClockTable[j][i] = 6;
-				} else if(page == 0x40 || page == 0x41) {
-					//Extra slow
-					_masterClockTable[j][i] = 12;
-				} else if(page >= 0x42 && page <= 0x5F) {
-					//Fast
-					_masterClockTable[j][i] = 6;
-				} else if(page >= 0x60 && page <= 0x7F) {
-					//Slow
-					_masterClockTable[j][i] = 8;
-				} else if(bank <= 0x3F) {
-					//Slow
-					_masterClockTable[j][i] = 8;
-				} else {
-					//page >= $80
-					//Slow or fast (depending on register)
-					_masterClockTable[j][i] = j == 1 ? 6 : 8;
-				}
+				//page >= $80
+				//Slow or fast (depending on register)
+				_masterClockTable[i] = (i >= 0x400) ? 6 : 8;
 			}
 		}
 	}
@@ -181,54 +174,68 @@ void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 	}
 }
 
-void MemoryManager::UpdateEvents()
-{
-	_hasEvent[_hdmaInitPosition] = false;
-	_hasEvent[_dramRefreshPosition] = false;
-
-	if(_ppu->GetScanline() == 0) {
-		_hdmaInitPosition = 12 + (_masterClock & 0x07);
-		_hasEvent[_hdmaInitPosition] = true;
-	}
-
-	_dramRefreshPosition = 538 - (_masterClock & 0x07);
-	_hasEvent[_dramRefreshPosition] = true;
-}
-
 void MemoryManager::Exec()
 {
 	_masterClock += 2;
 	_hClock += 2;
 
-	if(_hasEvent[_hClock]) {
-		if(_hClock >= 1360 && _ppu->ProcessEndOfScanline(_hClock)) {
-			_hClock = 0;
-			UpdateEvents();
-		}
-
-		if((_hClock & 0x03) == 0) {
-			_console->ProcessPpuCycle<CpuType::Cpu>();
-			_regs->ProcessIrqCounters();
-
-			if(_hClock == 276 * 4 && _ppu->GetScanline() < _ppu->GetVblankStart()) {
-				_console->GetDmaController()->BeginHdmaTransfer();
-			}
-		}
-
-		 if(_hClock == _hdmaInitPosition && _ppu->GetScanline() == 0) {
-			_console->GetDmaController()->BeginHdmaInit();
-		}
-
-		if(_hClock == _dramRefreshPosition) {
-			IncMasterClock40();
-			_cpu->IncreaseCycleCount<5>();
-		}
-	} else if((_hClock & 0x03) == 0) {
+	if(_hClock == _nextEventClock) {
+		ProcessEvent();
+	} 
+	
+	if((_hClock & 0x03) == 0) {
 		_console->ProcessPpuCycle<CpuType::Cpu>();
 		_regs->ProcessIrqCounters();
 	}
 
 	_cart->SyncCoprocessors();
+}
+
+void MemoryManager::ProcessEvent()
+{
+	switch(_nextEvent) {
+		case SnesEventType::HdmaInit:
+			_console->GetDmaController()->BeginHdmaInit();
+			_nextEvent = SnesEventType::DramRefresh;
+			_nextEventClock = _dramRefreshPosition;
+			break;
+
+		case SnesEventType::DramRefresh:
+			IncMasterClock40();
+			_cpu->IncreaseCycleCount<5>();
+
+			if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
+				_nextEvent = SnesEventType::HdmaStart;
+				_nextEventClock = 276 * 4;
+			} else {
+				_nextEvent = SnesEventType::EndOfScanline;
+				_nextEventClock = 1360;
+			}
+			break;
+
+		case SnesEventType::HdmaStart:
+			_console->GetDmaController()->BeginHdmaTransfer();
+			_nextEvent = SnesEventType::EndOfScanline;
+			_nextEventClock = 1360;
+			break;
+
+		case SnesEventType::EndOfScanline:
+			if(_ppu->ProcessEndOfScanline(_hClock)) {
+				_hClock = 0;
+
+				if(_ppu->GetScanline() == 0) {
+					_nextEvent = SnesEventType::HdmaInit;
+					_nextEventClock = 12 + (_masterClock & 0x07);
+				} else {
+					_dramRefreshPosition = 538 - (_masterClock & 0x07);
+					_nextEvent = SnesEventType::DramRefresh;
+					_nextEventClock = _dramRefreshPosition;
+				}
+			} else {
+				_nextEventClock += 2;
+			}
+			break;
+	}
 }
 
 uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
@@ -373,7 +380,7 @@ MemoryMappings* MemoryManager::GetMemoryMappings()
 
 uint8_t MemoryManager::GetCpuSpeed(uint32_t addr)
 {
-	return _masterClockTable[(uint8_t)_regs->IsFastRomEnabled()][addr >> 8];
+	return _masterClockTable[(_regs->IsFastRomEnabled() << 10) | ((addr & 0xC00000) >> 14) | ((addr & 0xFF00) >> 8)];
 }
 
 uint8_t MemoryManager::GetCpuSpeed()
@@ -405,8 +412,13 @@ bool MemoryManager::IsWorkRam(uint32_t cpuAddress)
 
 void MemoryManager::Serialize(Serializer &s)
 {
-	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition, _hdmaInitPosition);
+	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition);
 	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
-	s.StreamArray(_hasEvent, sizeof(_hasEvent));
+
+	if(s.GetVersion() < 8) {
+		bool unusedHasEvent[1369];
+		s.StreamArray(unusedHasEvent, sizeof(unusedHasEvent));
+	}
+
 	s.Stream(_registerHandlerB.get());
 }

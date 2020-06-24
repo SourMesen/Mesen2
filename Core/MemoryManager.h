@@ -16,6 +16,14 @@ class Cpu;
 class CheatManager;
 enum class MemoryOperationType;
 
+enum class SnesEventType : uint8_t
+{
+	HdmaInit,
+	DramRefresh,
+	HdmaStart,
+	EndOfScanline
+};
+
 class MemoryManager : public ISerializable
 {
 public:
@@ -32,25 +40,25 @@ private:
 	Cpu* _cpu;
 	BaseCartridge* _cart;
 	CheatManager* _cheatManager;
+	uint8_t *_workRam;
+
+	uint64_t _masterClock = 0;
+	uint16_t _hClock = 0;
+	uint16_t _nextEventClock = 0;
+	uint16_t _dramRefreshPosition = 0;
+	SnesEventType _nextEvent = SnesEventType::DramRefresh;
+	SnesMemoryType _memTypeBusA = SnesMemoryType::PrgRom;
+
+	uint8_t _cpuSpeed = 8;
+	uint8_t _openBus = 0;
 
 	MemoryMappings _mappings;
 	vector<unique_ptr<IMemoryHandler>> _workRamHandlers;
+	uint8_t _masterClockTable[0x800];
 
-	uint8_t *_workRam;
-	uint64_t _masterClock = 0;
-	uint16_t _hClock = 0;
-	uint16_t _dramRefreshPosition = 0;
-	uint16_t _hdmaInitPosition = 0;
-	uint8_t _openBus = 0;
-	uint8_t _cpuSpeed = 8;
-	SnesMemoryType _memTypeBusA = SnesMemoryType::PrgRom;
-
-	bool _hasEvent[1369];
-	uint8_t _masterClockTable[2][0x10000];
-
-	void UpdateEvents();
-	__forceinline void SyncCoprocessors();
 	void Exec();
+
+	void ProcessEvent();
 
 public:
 	void Initialize(Console* console);
@@ -91,7 +99,6 @@ public:
 
 	bool IsRegister(uint32_t cpuAddress);
 	bool IsWorkRam(uint32_t cpuAddress);
-	int GetRelativeAddress(AddressInfo &address, uint8_t startBank = 0);
 
 	void Serialize(Serializer &s) override;
 };
