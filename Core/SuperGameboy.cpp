@@ -4,6 +4,7 @@
 #include "MemoryManager.h"
 #include "EmuSettings.h"
 #include "BaseCartridge.h"
+#include "Spc.h"
 #include "Gameboy.h"
 #include "GbApu.h"
 #include "GbPpu.h"
@@ -18,6 +19,7 @@ SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::R
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_cart = _console->GetCartridge().get();
+	_spc = _console->GetSpc().get();
 	
 	_gameboy = _cart->GetGameboy();
 	_ppu = _gameboy->GetPpu();
@@ -273,8 +275,10 @@ void SuperGameboy::MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t
 	_mixSampleCount += outCount;
 
 	int32_t copyCount = (int32_t)std::min(_mixSampleCount, sampleCount*2);
-	for(int32_t i = 0; i < copyCount; i++) {
-		soundSamples[i] += _mixBuffer[i];
+	if(!_spc->IsMuted()) {
+		for(int32_t i = 0; i < copyCount; i++) {
+			soundSamples[i] += _mixBuffer[i];
+		}
 	}
 
 	int32_t remainingSamples = (int32_t)_mixSampleCount - copyCount;

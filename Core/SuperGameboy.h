@@ -6,6 +6,7 @@
 class Console;
 class MemoryManager;
 class BaseCartridge;
+class Spc;
 class Gameboy;
 class GbPpu;
 
@@ -15,6 +16,7 @@ private:
 	Console* _console = nullptr;
 	MemoryManager* _memoryManager = nullptr;
 	BaseCartridge* _cart = nullptr;
+	Spc* _spc = nullptr;
 	Gameboy* _gameboy = nullptr;
 	GbPpu* _ppu = nullptr;
 
