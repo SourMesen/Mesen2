@@ -693,7 +693,7 @@ namespace Mesen.GUI.Debugger
 			addReg(0x4D, "Echo Enable (EON)");
 			addReg(0x5D, "Source Directory (Offset) (DIR)");
 			addReg(0x6D, "Echo Buffer (Offset) (ESA)");
-			addReg(0x6D, "Echo Delay (EDL)");
+			addReg(0x7D, "Echo Delay (EDL)");
 
 			entries.Add(new RegEntry("$6C", "Flags (FLG)", null));
 			entries.Add(new RegEntry("$6C.0-4", "Noise Clock", dsp.Regs[0x6C] & 0x1F, Format.X8));
