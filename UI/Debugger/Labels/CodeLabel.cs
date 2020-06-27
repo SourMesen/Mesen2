@@ -73,7 +73,7 @@ namespace Mesen.GUI.Debugger.Labels
 				case "MPACK": type = SnesMemoryType.BsxMemoryPack; break;
 				case "DSPPRG": type = SnesMemoryType.DspProgramRom; break;
 				case "GBPRG": type = SnesMemoryType.GbPrgRom; break;
-				case "GBWRAM": type = SnesMemoryType.GsuWorkRam; break;
+				case "GBWRAM": type = SnesMemoryType.GbWorkRam; break;
 				case "GBSRAM": type = SnesMemoryType.GbCartRam; break;
 				case "GBHRAM": type = SnesMemoryType.GbHighRam; break;
 				case "GBBOOT": type = SnesMemoryType.GbBootRom; break;
