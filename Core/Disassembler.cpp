@@ -273,8 +273,12 @@ void Disassembler::Disassemble(CpuType cpuType)
 			maxAddr = _necDspProgramRomSize - 1;
 			break;
 
-		case CpuType::Gameboy:
 		case CpuType::Spc:
+			mappings = nullptr;
+			maxAddr = 0xFFFF;
+			break;
+
+		case CpuType::Gameboy:
 			if(!_gameboy) {
 				return;
 			}
