@@ -637,7 +637,7 @@
 			this.lblOverclockHint.Location = new System.Drawing.Point(3, 0);
 			this.lblOverclockHint.Name = "lblOverclockHint";
 			this.lblOverclockHint.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-			this.lblOverclockHint.Size = new System.Drawing.Size(400, 54);
+			this.lblOverclockHint.Size = new System.Drawing.Size(431, 54);
 			this.lblOverclockHint.TabIndex = 1;
 			this.lblOverclockHint.Text = resources.GetString("lblOverclockHint.Text");
 			// 

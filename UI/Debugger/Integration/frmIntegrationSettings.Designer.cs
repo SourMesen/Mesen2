@@ -252,7 +252,7 @@
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "frmIntegrationSettings";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "CC65/CA65 Integration Settings (DBG files)";
+			this.Text = "Integration Settings";
 			this.Controls.SetChildIndex(this.baseConfigPanel, 0);
 			this.Controls.SetChildIndex(this.tableLayoutPanel1, 0);
 			this.tableLayoutPanel1.ResumeLayout(false);

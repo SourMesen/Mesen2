@@ -218,7 +218,7 @@ namespace Mesen.GUI.Debugger
 
 			btnLayer1.Text = isGameboy ? "BG" : "1";
 			btnLayer2.Text = isGameboy ? "Window" : "2";
-			btnLayer2.Width = isGameboy ? 64 : 32;
+			btnLayer2.Width = isGameboy ? 75 : 32;
 
 			btnLayer3.Visible = !isGameboy;
 			btnLayer4.Visible = !isGameboy;

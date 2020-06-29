@@ -1,0 +1,18 @@
+{{ partial "header.html" . }}
+
+{{ if ne .Params.toc false }}
+<div class="toc">
+	<div>{{.TableOfContents}}</div>
+</div>
+{{ end }}     
+
+{{ .Content }}
+
+<footer class=" footline" >
+	{{with .Params.LastModifierDisplayName}}
+	    <i class='fa fa-user'></i> <a href="mailto:{{ $.Params.LastModifierEmail }}">{{ . }}</a> {{with $.Date}} <i class='fa fa-calendar'></i> {{ .Format "02/01/2006" }}{{end}}
+	    </div>
+	{{end}}
+</footer>
+
+{{ partial "footer.html" . }}

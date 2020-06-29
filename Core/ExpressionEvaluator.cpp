@@ -551,8 +551,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 									
 									case EvalValues::SFR: token = (state.Gsu.SFR.GetFlagsHigh() << 8) | state.Gsu.SFR.GetFlagsLow(); break;
 									case EvalValues::PBR: token = state.Gsu.ProgramBank; break;
-									case EvalValues::RomBR: token = state.Gsu.ProgramBank; break;
-									case EvalValues::RamBR: token = state.Gsu.ProgramBank; break;
+									case EvalValues::RomBR: token = state.Gsu.RomBank; break;
+									case EvalValues::RamBR: token = state.Gsu.RamBank; break;
 								}
 								break;
 

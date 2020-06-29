@@ -250,20 +250,20 @@
 			// 
 			this.mnuDbgIntegrationSettings.Image = global::Mesen.GUI.Properties.Resources.Settings;
 			this.mnuDbgIntegrationSettings.Name = "mnuDbgIntegrationSettings";
-			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(241, 22);
-			this.mnuDbgIntegrationSettings.Text = "CC65/CA65 Integration Settings";
+			this.mnuDbgIntegrationSettings.Size = new System.Drawing.Size(180, 22);
+			this.mnuDbgIntegrationSettings.Text = "Integration Settings";
 			this.mnuDbgIntegrationSettings.Click += new System.EventHandler(this.mnuDbgIntegrationSettings_Click);
 			// 
 			// toolStripMenuItem15
 			// 
 			this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-			this.toolStripMenuItem15.Size = new System.Drawing.Size(238, 6);
+			this.toolStripMenuItem15.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuImportLabels
 			// 
 			this.mnuImportLabels.Image = global::Mesen.GUI.Properties.Resources.Import;
 			this.mnuImportLabels.Name = "mnuImportLabels";
-			this.mnuImportLabels.Size = new System.Drawing.Size(241, 22);
+			this.mnuImportLabels.Size = new System.Drawing.Size(180, 22);
 			this.mnuImportLabels.Text = "Import Labels";
 			this.mnuImportLabels.Click += new System.EventHandler(this.mnuImportLabels_Click);
 			// 
@@ -271,7 +271,7 @@
 			// 
 			this.mnuExportLabels.Image = global::Mesen.GUI.Properties.Resources.Export;
 			this.mnuExportLabels.Name = "mnuExportLabels";
-			this.mnuExportLabels.Size = new System.Drawing.Size(241, 22);
+			this.mnuExportLabels.Size = new System.Drawing.Size(180, 22);
 			this.mnuExportLabels.Text = "Export Labels";
 			this.mnuExportLabels.Click += new System.EventHandler(this.mnuExportLabels_Click);
 			// 
