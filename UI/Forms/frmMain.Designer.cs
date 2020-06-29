@@ -161,11 +161,11 @@
 			this.mnuDebugger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuEventViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMemoryTools = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuDebugLog = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuRegisterViewer = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuTraceLogger = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem26 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuAssembler = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuDebugLog = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuProfiler = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuScriptWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
@@ -187,6 +187,8 @@
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlRenderer = new System.Windows.Forms.Panel();
 			this.ctrlRecentGames = new Mesen.GUI.Controls.ctrlRecentGames();
+			this.mnuOnlineHelp = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuMain.SuspendLayout();
 			this.pnlRenderer.SuspendLayout();
 			this.SuspendLayout();
@@ -1219,13 +1221,6 @@
 			this.mnuMemoryTools.Size = new System.Drawing.Size(183, 22);
 			this.mnuMemoryTools.Text = "Memory Tools";
 			// 
-			// mnuDebugLog
-			// 
-			this.mnuDebugLog.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
-			this.mnuDebugLog.Name = "mnuDebugLog";
-			this.mnuDebugLog.Size = new System.Drawing.Size(183, 22);
-			this.mnuDebugLog.Text = "Debug Log";
-			// 
 			// mnuRegisterViewer
 			// 
 			this.mnuRegisterViewer.Image = global::Mesen.GUI.Properties.Resources.RegisterIcon;
@@ -1251,6 +1246,13 @@
 			this.mnuAssembler.Name = "mnuAssembler";
 			this.mnuAssembler.Size = new System.Drawing.Size(183, 22);
 			this.mnuAssembler.Text = "Assembler";
+			// 
+			// mnuDebugLog
+			// 
+			this.mnuDebugLog.Image = global::Mesen.GUI.Properties.Resources.LogWindow;
+			this.mnuDebugLog.Name = "mnuDebugLog";
+			this.mnuDebugLog.Size = new System.Drawing.Size(183, 22);
+			this.mnuDebugLog.Text = "Debug Log";
 			// 
 			// mnuProfiler
 			// 
@@ -1342,6 +1344,8 @@
 			// mnuHelp
 			// 
 			this.mnuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuOnlineHelp,
+            this.toolStripMenuItem27,
             this.mnuCheckForUpdates,
             this.toolStripMenuItem20,
             this.mnuReportBug,
@@ -1357,33 +1361,33 @@
 			// 
 			this.mnuCheckForUpdates.Image = global::Mesen.GUI.Properties.Resources.Update;
 			this.mnuCheckForUpdates.Name = "mnuCheckForUpdates";
-			this.mnuCheckForUpdates.Size = new System.Drawing.Size(170, 22);
+			this.mnuCheckForUpdates.Size = new System.Drawing.Size(180, 22);
 			this.mnuCheckForUpdates.Text = "Check for updates";
 			this.mnuCheckForUpdates.Click += new System.EventHandler(this.mnuCheckForUpdates_Click);
 			// 
 			// toolStripMenuItem20
 			// 
 			this.toolStripMenuItem20.Name = "toolStripMenuItem20";
-			this.toolStripMenuItem20.Size = new System.Drawing.Size(167, 6);
+			this.toolStripMenuItem20.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuReportBug
 			// 
 			this.mnuReportBug.Image = global::Mesen.GUI.Properties.Resources.Comment;
 			this.mnuReportBug.Name = "mnuReportBug";
-			this.mnuReportBug.Size = new System.Drawing.Size(170, 22);
+			this.mnuReportBug.Size = new System.Drawing.Size(180, 22);
 			this.mnuReportBug.Text = "Report a bug";
 			this.mnuReportBug.Click += new System.EventHandler(this.mnuReportBug_Click);
 			// 
 			// toolStripMenuItem5
 			// 
 			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-			this.toolStripMenuItem5.Size = new System.Drawing.Size(167, 6);
+			this.toolStripMenuItem5.Size = new System.Drawing.Size(177, 6);
 			// 
 			// mnuAbout
 			// 
 			this.mnuAbout.Image = global::Mesen.GUI.Properties.Resources.Exclamation;
 			this.mnuAbout.Name = "mnuAbout";
-			this.mnuAbout.Size = new System.Drawing.Size(170, 22);
+			this.mnuAbout.Size = new System.Drawing.Size(180, 22);
 			this.mnuAbout.Text = "About";
 			this.mnuAbout.Click += new System.EventHandler(this.mnuAbout_Click);
 			// 
@@ -1406,6 +1410,19 @@
 			this.ctrlRecentGames.Size = new System.Drawing.Size(512, 265);
 			this.ctrlRecentGames.TabIndex = 1;
 			this.ctrlRecentGames.Visible = false;
+			// 
+			// mnuOnlineHelp
+			// 
+			this.mnuOnlineHelp.Image = global::Mesen.GUI.Properties.Resources.Help;
+			this.mnuOnlineHelp.Name = "mnuOnlineHelp";
+			this.mnuOnlineHelp.Size = new System.Drawing.Size(180, 22);
+			this.mnuOnlineHelp.Text = "Online Help";
+			this.mnuOnlineHelp.Click += new System.EventHandler(this.mnuOnlineHelp_Click);
+			// 
+			// toolStripMenuItem27
+			// 
+			this.toolStripMenuItem27.Name = "toolStripMenuItem27";
+			this.toolStripMenuItem27.Size = new System.Drawing.Size(177, 6);
 			// 
 			// frmMain
 			// 
@@ -1592,5 +1609,7 @@
 	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem22;
 	  private System.Windows.Forms.ToolStripMenuItem mnuGameboyConfig;
 	  private System.Windows.Forms.ToolStripMenuItem mnuDebugLog;
+	  private System.Windows.Forms.ToolStripMenuItem mnuOnlineHelp;
+	  private System.Windows.Forms.ToolStripSeparator toolStripMenuItem27;
    }
 }

@@ -367,13 +367,12 @@
 			this.mnuHelp.Name = "mnuHelp";
 			this.mnuHelp.Size = new System.Drawing.Size(44, 20);
 			this.mnuHelp.Text = "Help";
-			this.mnuHelp.Visible = false;
 			// 
 			// mnuApiReference
 			// 
 			this.mnuApiReference.Image = global::Mesen.GUI.Properties.Resources.Exclamation;
 			this.mnuApiReference.Name = "mnuApiReference";
-			this.mnuApiReference.Size = new System.Drawing.Size(147, 22);
+			this.mnuApiReference.Size = new System.Drawing.Size(180, 22);
 			this.mnuApiReference.Text = "API Reference";
 			this.mnuApiReference.Click += new System.EventHandler(this.mnuApiReference_Click);
 			// 
@@ -413,6 +412,7 @@
 			this.txtScriptContent.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.txtScriptContent.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.txtScriptContent.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtScriptContent.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.txtScriptContent.IsReplaceMode = false;
 			this.txtScriptContent.Language = FastColoredTextBoxNS.Language.Lua;
 			this.txtScriptContent.LeftBracket = '(';

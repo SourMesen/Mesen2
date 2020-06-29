@@ -803,5 +803,11 @@ namespace Mesen.GUI.Forms
 				Interlocked.Decrement(ref _inMenu);
 			});
 		}
+
+		private void mnuOnlineHelp_Click(object sender, EventArgs e)
+		{
+			string platform = Program.IsMono ? "linux" : "win";
+			Process.Start("http://www.mesen.ca/snes/docs/?v=" + EmuApi.GetMesenVersion() + "&p=" + platform + "&l=" + ResourceHelper.GetLanguageCode());
+		}
 	}
 }

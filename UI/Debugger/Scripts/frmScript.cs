@@ -491,7 +491,7 @@ namespace Mesen.GUI.Debugger
 		
 		private void mnuApiReference_Click(object sender, EventArgs e)
 		{
-			Process.Start("https://www.mesen.ca/ApiReference.php");
+			Process.Start("https://www.mesen.ca/snes/ApiReference.php");
 		}
 
 		private void mnuSetScriptTimeout_Click(object sender, EventArgs e)
