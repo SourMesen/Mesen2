@@ -295,6 +295,7 @@ void Console::Stop(bool sendNotification)
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
 	}
 
+	_consoleType = ConsoleType::Snes;
 	_settings->ClearFlag(EmulationFlags::GameboyMode);
 
 	//Make sure we release both pointers to destroy the debugger before everything else
