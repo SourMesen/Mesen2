@@ -57,7 +57,11 @@ VirtualFile::operator std::string() const
 	} else if(_path.empty()) {
 		throw std::runtime_error("Cannot convert to string");
 	} else {
-		return _path + "\x1" + _innerFile;
+		if(_innerFileIndex >= 0) {
+			return _path + "\x1" + _innerFile + "\x1" + std::to_string(_innerFileIndex);
+		} else {
+			return _path + "\x1" + _innerFile;
+		}
 	}
 }
 
