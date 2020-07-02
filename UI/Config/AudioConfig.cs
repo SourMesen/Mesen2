@@ -18,7 +18,7 @@ namespace Mesen.GUI.Config
 		[ValidValues(11025, 22050, 32000, 44100, 48000, 96000)] public UInt32 SampleRate = 48000;
 		[MinMax(15, 300)] public UInt32 AudioLatency = 60;
 
-		[MarshalAs(UnmanagedType.I1)] public bool EnableCubicInterpolation = true;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableCubicInterpolation = false;
 
 		[MarshalAs(UnmanagedType.I1)] public bool MuteSoundInBackground = false;
 		[MarshalAs(UnmanagedType.I1)] public bool ReduceSoundInBackground = true;
