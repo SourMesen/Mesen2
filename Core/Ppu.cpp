@@ -1221,20 +1221,25 @@ void Ppu::ApplyColorMath()
 {
 	uint8_t activeWindowCount = (uint8_t)_state.Window[0].ActiveLayers[Ppu::ColorWindowIndex] + (uint8_t)_state.Window[1].ActiveLayers[Ppu::ColorWindowIndex];
 	bool hiResMode = _state.HiResMode || _state.BgMode == 5 || _state.BgMode == 6;
-	uint16_t prevMainPixel = 0;
-	int prevX = _drawStartX > 0 ? _drawStartX - 1 : 0;
 
-	for(int x = _drawStartX; x <= _drawEndX; x++) {
-		bool isInsideWindow = ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
+	if(hiResMode) {
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
+			bool isInsideWindow = ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
 
-		uint16_t subPixel = _subScreenBuffer[x];
-		if(hiResMode) {
+			//Keep original subscreen color, which is used to apply color math to the main screen after
+			uint16_t subPixel = _subScreenBuffer[x];
 			//Apply the color math based on the previous main pixel
+			uint16_t prevMainPixel = x > 0 ? _mainScreenBuffer[x - 1] : 0;
+			int prevX = x > 0 ? x - 1 : 0;
 			ApplyColorMathToPixel(_subScreenBuffer[x], prevMainPixel, prevX, isInsideWindow);
-			prevMainPixel = _mainScreenBuffer[x];
-			prevX = x;
+
+			ApplyColorMathToPixel(_mainScreenBuffer[x], subPixel, x, isInsideWindow);
 		}
-		ApplyColorMathToPixel(_mainScreenBuffer[x], subPixel, x, isInsideWindow);
+	} else {
+		for(int x = _drawStartX; x <= _drawEndX; x++) {
+			bool isInsideWindow = ProcessMaskWindow<Ppu::ColorWindowIndex>(activeWindowCount, x);
+			ApplyColorMathToPixel(_mainScreenBuffer[x], _subScreenBuffer[x], x, isInsideWindow);
+		}
 	}
 }
 
