@@ -248,6 +248,17 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 		} else if(addr >= 0xFF4C) {
 			if(_gameboy->IsCgb()) {
 				switch(addr) {
+					//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
+					case 0xFF4D:
+						if(_ppu->IsCgbEnabled()) {
+							return (
+								(_state.CgbHighSpeed ? 0x80 : 0) |
+								(_state.CgbSwitchSpeedRequest ? 0x01 : 0) |
+								0x7E
+							);
+						}
+						return 0xFF;
+					
 					case 0xFF55: //CGB - DMA
 						return _ppu->IsCgbEnabled() ? _dmaController->ReadCgb(addr) : 0xFF;
 
