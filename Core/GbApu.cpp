@@ -161,10 +161,19 @@ void GbApu::ClockFrameSequencer()
 	_state.FrameSequenceStep = (_state.FrameSequenceStep + 1) & 0x07;
 }
 
+uint8_t GbApu::Peek(uint16_t addr)
+{
+	return InternalRead(addr);
+}
+
 uint8_t GbApu::Read(uint16_t addr)
 {
 	Run();
+	return InternalRead(addr);
+}
 
+uint8_t GbApu::InternalRead(uint16_t addr)
+{
 	switch(addr) {
 		case 0xFF10: case 0xFF11: case 0xFF12: case 0xFF13: case 0xFF14:
 			return _square1->Read(addr - 0xFF10);

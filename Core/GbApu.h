@@ -40,6 +40,8 @@ private:
 
 	GbApuState _state = {};
 
+	uint8_t InternalRead(uint16_t addr);
+
 public:
 	GbApu();
 	virtual ~GbApu();
@@ -54,6 +56,7 @@ public:
 
 	void ClockFrameSequencer();
 
+	uint8_t Peek(uint16_t addr);
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
 

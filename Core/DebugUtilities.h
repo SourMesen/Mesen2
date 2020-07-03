@@ -90,6 +90,9 @@ public:
 			case SnesMemoryType::GbBootRom:
 			case SnesMemoryType::SaveRam: //Include save ram here to avoid uninit memory read warnings on save ram
 				return true;
+
+			default:
+				return false;
 		}
 	}
 

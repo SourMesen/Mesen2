@@ -231,6 +231,8 @@ uint8_t GbMemoryManager::PeekRegister(uint16_t addr)
 		return _ppu->PeekOam((uint8_t)addr);
 	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
 		return _ppu->PeekVram(addr);
+	} else if(addr >= 0xFF10 && addr <= 0xFF3F) {
+		return _apu->Peek(addr);
 	} else {
 		return ReadRegister(addr);
 	}
