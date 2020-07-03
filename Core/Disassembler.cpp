@@ -11,6 +11,7 @@
 #include "BsxCart.h"
 #include "BsxMemoryPack.h"
 #include "Gameboy.h"
+#include "GbCpu.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
 #include "LabelManager.h"
@@ -638,7 +639,8 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						data.ValueSize = 0;
 						break;
 
-					case CpuType::Gameboy:
+					case CpuType::Gameboy: {
+						GbCpuState state = _gameboy->GetCpu()->GetState();
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gameboy);
 						} else {
@@ -646,9 +648,10 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = -1;
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
 						data.ValueSize = 0;
 						break;
+					}
 				}
 
 				string text;

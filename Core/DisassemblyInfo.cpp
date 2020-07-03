@@ -93,8 +93,9 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState, C
 
 		case CpuType::Cx4:
 		case CpuType::NecDsp:
-		case CpuType::Gameboy:
 			return -1;
+
+		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, console, *(GbCpuState*)cpuState);
 	}
 	return -1;
 }

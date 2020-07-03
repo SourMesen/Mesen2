@@ -64,6 +64,35 @@ constexpr const uint8_t _opSize[256] = {
 	2,1,1,1,1,1,2,1,2,1,3,1,1,1,2,1,
 };
 
+static enum class AddrType : uint8_t
+{
+	None,
+	BC,
+	DE, 
+	HL,
+	C,
+	Suff
+};
+
+static constexpr const AddrType _gbEffAddrType[256] = {
+	AddrType::None,AddrType::None,AddrType::BC,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::BC,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::DE,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::DE,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::HL,	AddrType::HL,	AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::HL,	AddrType::HL,	AddrType::HL,	AddrType::HL,	AddrType::HL,	AddrType::HL,	AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::Suff,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::C,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::None,AddrType::C,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None
+};
+
 void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
@@ -109,7 +138,20 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 
 int32_t GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Console* console, GbCpuState& state)
 {
-	return -1;
+	switch(_gbEffAddrType[info.GetOpCode()]) {
+		default:
+		case AddrType::None: return -1;
+
+		case AddrType::BC: return (state.B << 8) | state.C;
+		case AddrType::DE: return (state.D << 8) | state.E;
+		case AddrType::HL: return (state.H << 8) | state.L;
+		case AddrType::C: return 0xFF00 + state.C;
+		case AddrType::Suff:
+			if((info.GetByteCode()[1] & 0x07) == 0x06) {
+				return (state.H << 8) | state.L;
+			}
+			return -1;
+	}
 }
 
 uint8_t GameboyDisUtils::GetOpSize(uint8_t opCode)
