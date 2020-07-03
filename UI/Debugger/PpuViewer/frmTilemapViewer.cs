@@ -216,9 +216,10 @@ namespace Mesen.GUI.Debugger
 			btnLayer3.Enabled = _layerBpp[_state.Ppu.BgMode, 2] > 0;
 			btnLayer4.Enabled = _layerBpp[_state.Ppu.BgMode, 3] > 0;
 
-			btnLayer1.Text = isGameboy ? "BG" : "1";
-			btnLayer2.Text = isGameboy ? "Window" : "2";
-			btnLayer2.Width = isGameboy ? 75 : 32;
+			btnLayer1.Text = isGameboy ? "$9800" : "1";
+			btnLayer2.Text = isGameboy ? "$9C00" : "2";
+			btnLayer1.Width = isGameboy ? 65 : 32;
+			btnLayer2.Width = isGameboy ? 65 : 32;
 
 			btnLayer3.Visible = !isGameboy;
 			btnLayer4.Visible = !isGameboy;
@@ -236,13 +237,8 @@ namespace Mesen.GUI.Debugger
 
 			if(chkShowScrollOverlay.Checked) {
 				if(isGameboy) {
-					if(_options.Layer == 0) {
-						GbPpuState ppu = _state.Gameboy.Ppu;
-						ctrlImagePanel.Overlay = new Rectangle(ppu.ScrollX, ppu.ScrollY, 160, 144);
-					} else {
-						//Hide for window, doesn't make sense to show this
-						ctrlImagePanel.Overlay = Rectangle.Empty;
-					}
+					GbPpuState ppu = _state.Gameboy.Ppu;
+					ctrlImagePanel.Overlay = new Rectangle(ppu.ScrollX, ppu.ScrollY, 160, 144);
 				} else {
 					LayerConfig layer = _state.Ppu.Layers[_options.Layer];
 					int hScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.HScroll : layer.HScroll;
@@ -325,8 +321,7 @@ namespace Mesen.GUI.Debugger
 		{
 			GbPpuState state = _state.Gameboy.Ppu;
 			bool isGbc = state.CgbEnabled;
-			bool tilemapSelect = _options.Layer == 1 ? state.WindowTilemapSelect : state.BgTilemapSelect;
-			int tilemapAddress = tilemapSelect ? 0x1C00 : 0x1800;
+			int tilemapAddress = _options.Layer == 1 ? 0x1C00 : 0x1800;
 			int tilesetAddress = state.BgTileSelect ? 0x0000 : 0x1000;
 
 			int row = _selectedRow;
