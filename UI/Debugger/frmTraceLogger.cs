@@ -330,7 +330,7 @@ namespace Mesen.GUI.Debugger
 				DebugState state = DebugApi.GetState();
 				if(_previousMasterClock != state.MasterClock || forceUpdate) {
 					string newTrace = DebugApi.GetExecutionTrace((UInt32)_lineCount);
-					_previousMasterClock = state.Cpu.CycleCount;
+					_previousMasterClock = state.MasterClock;
 					_previousTrace = newTrace;
 
 					int index = 0;

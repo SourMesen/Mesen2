@@ -474,7 +474,7 @@ void Debugger::BreakImmediately(BreakSource source)
 
 void Debugger::GetState(DebugState &state, bool partialPpuState)
 {
-	state.MasterClock = _memoryManager->GetMasterClock();
+	state.MasterClock = _console->GetMasterClock();
 	state.Cpu = _cpu->GetState();
 	_ppu->GetState(state.Ppu, partialPpuState);
 	state.Spc = _spc->GetState();
