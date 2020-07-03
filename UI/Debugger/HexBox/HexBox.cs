@@ -113,10 +113,6 @@ namespace Be.Windows.Forms
 			protected HexBox _hexBox;
 
 			/// <summary>
-			/// Contains True, if shift key is down
-			/// </summary>
-			protected bool _shiftDown;
-			/// <summary>
 			/// Contains True, if mouse is down
 			/// </summary>
 			bool _mouseDown;
@@ -167,7 +163,7 @@ namespace Be.Windows.Forms
 
 				_mouseDown = true;
 
-				if (!_shiftDown)
+				if (!Control.ModifierKeys.HasFlag(Keys.Shift))
 				{
 					_bpiStart = new BytePositionInfo(_hexBox._bytePos, _hexBox._byteCharacterPos);
 					_hexBox.ReleaseSelection();
@@ -423,7 +419,6 @@ namespace Be.Windows.Forms
 					}
 					else
 					{
-						sel -= _hexBox._iHexMaxHBytes;
 						_hexBox.InternalSelect(pos, sel);
 						_hexBox.ScrollByteIntoView(pos + sel);
 					}
@@ -515,7 +510,6 @@ namespace Be.Windows.Forms
 			{
 				if (_hexBox._keyInterpreter is StringKeyInterpreter)
 				{
-					_shiftDown = false;
 					_hexBox.ActivateKeyInterpreter();
 					_hexBox.ScrollByteIntoView();
 					_hexBox.ReleaseSelection();
@@ -624,10 +618,6 @@ namespace Be.Windows.Forms
 			{
 				if (_mouseDown)
 					return true;
-				if (_shiftDown)
-					return true;
-
-				_shiftDown = true;
 
 				if (_hexBox._selectionLength > 0)
 					return true;
@@ -764,7 +754,6 @@ namespace Be.Windows.Forms
 
 				switch (keyData)
 				{
-					case Keys.ShiftKey:
 					case Keys.Insert:
 						if (RaiseKeyUp(keyData))
 							return true;
@@ -773,9 +762,6 @@ namespace Be.Windows.Forms
 
 				switch (keyData)
 				{
-					case Keys.ShiftKey:
-						_shiftDown = false;
-						return true;
 					case Keys.Insert:
 						return PreProcessWmKeyUp_Insert(ref m);
 					default:
