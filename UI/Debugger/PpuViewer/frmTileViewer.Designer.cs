@@ -73,6 +73,8 @@
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuZoomIn = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuZoomOut = new System.Windows.Forms.ToolStripMenuItem();
+			this.cboBackgroundColor = new System.Windows.Forms.ComboBox();
+			this.lblBgColor = new System.Windows.Forms.Label();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ctrlPaletteViewer)).BeginInit();
@@ -112,27 +114,30 @@
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.Controls.Add(this.cboMemoryType, 1, 0);
 			this.tableLayoutPanel2.Controls.Add(this.lblSource, 0, 0);
-			this.tableLayoutPanel2.Controls.Add(this.chkShowTileGrid, 0, 6);
+			this.tableLayoutPanel2.Controls.Add(this.chkShowTileGrid, 0, 7);
 			this.tableLayoutPanel2.Controls.Add(this.lblBpp, 0, 1);
 			this.tableLayoutPanel2.Controls.Add(this.cboFormat, 1, 1);
-			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 9);
-			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 7);
-			this.tableLayoutPanel2.Controls.Add(this.tlpPresets1, 1, 7);
-			this.tableLayoutPanel2.Controls.Add(this.tlpPresets2, 1, 8);
-			this.tableLayoutPanel2.Controls.Add(this.lblTileAddress, 0, 10);
-			this.tableLayoutPanel2.Controls.Add(this.txtTileAddress, 1, 10);
+			this.tableLayoutPanel2.Controls.Add(this.ctrlPaletteViewer, 0, 10);
+			this.tableLayoutPanel2.Controls.Add(this.lblPresets, 0, 8);
+			this.tableLayoutPanel2.Controls.Add(this.tlpPresets1, 1, 8);
+			this.tableLayoutPanel2.Controls.Add(this.tlpPresets2, 1, 9);
+			this.tableLayoutPanel2.Controls.Add(this.lblTileAddress, 0, 11);
+			this.tableLayoutPanel2.Controls.Add(this.txtTileAddress, 1, 11);
 			this.tableLayoutPanel2.Controls.Add(this.lblTileLayout, 0, 2);
 			this.tableLayoutPanel2.Controls.Add(this.cboLayout, 1, 2);
-			this.tableLayoutPanel2.Controls.Add(this.lblAddress, 0, 3);
-			this.tableLayoutPanel2.Controls.Add(this.nudAddress, 1, 3);
-			this.tableLayoutPanel2.Controls.Add(this.lblColumns, 0, 5);
-			this.tableLayoutPanel2.Controls.Add(this.lblSize, 0, 4);
-			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 5);
-			this.tableLayoutPanel2.Controls.Add(this.nudSize, 1, 4);
+			this.tableLayoutPanel2.Controls.Add(this.lblAddress, 0, 4);
+			this.tableLayoutPanel2.Controls.Add(this.nudAddress, 1, 4);
+			this.tableLayoutPanel2.Controls.Add(this.lblColumns, 0, 6);
+			this.tableLayoutPanel2.Controls.Add(this.lblSize, 0, 5);
+			this.tableLayoutPanel2.Controls.Add(this.nudColumns, 1, 6);
+			this.tableLayoutPanel2.Controls.Add(this.nudSize, 1, 5);
+			this.tableLayoutPanel2.Controls.Add(this.cboBackgroundColor, 1, 3);
+			this.tableLayoutPanel2.Controls.Add(this.lblBgColor, 0, 3);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(534, 3);
 			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 12;
+			this.tableLayoutPanel2.RowCount = 13;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -173,7 +178,7 @@
 			// 
 			this.chkShowTileGrid.AutoSize = true;
 			this.tableLayoutPanel2.SetColumnSpan(this.chkShowTileGrid, 2);
-			this.chkShowTileGrid.Location = new System.Drawing.Point(3, 165);
+			this.chkShowTileGrid.Location = new System.Drawing.Point(3, 192);
 			this.chkShowTileGrid.Name = "chkShowTileGrid";
 			this.chkShowTileGrid.Size = new System.Drawing.Size(89, 17);
 			this.chkShowTileGrid.TabIndex = 0;
@@ -210,7 +215,8 @@
 			// ctrlPaletteViewer
 			// 
 			this.tableLayoutPanel2.SetColumnSpan(this.ctrlPaletteViewer, 2);
-			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 244);
+			this.ctrlPaletteViewer.CpuType = Mesen.GUI.CpuType.Cpu;
+			this.ctrlPaletteViewer.Location = new System.Drawing.Point(3, 271);
 			this.ctrlPaletteViewer.Name = "ctrlPaletteViewer";
 			this.ctrlPaletteViewer.PaletteScale = 11;
 			this.ctrlPaletteViewer.SelectedPalette = 0;
@@ -223,7 +229,7 @@
 			// 
 			this.lblPresets.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblPresets.AutoSize = true;
-			this.lblPresets.Location = new System.Drawing.Point(3, 192);
+			this.lblPresets.Location = new System.Drawing.Point(3, 219);
 			this.lblPresets.Name = "lblPresets";
 			this.lblPresets.Size = new System.Drawing.Size(45, 13);
 			this.lblPresets.TabIndex = 13;
@@ -241,7 +247,7 @@
 			this.tlpPresets1.Controls.Add(this.btnPresetBg3, 2, 0);
 			this.tlpPresets1.Controls.Add(this.btnPresetBg4, 3, 0);
 			this.tlpPresets1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tlpPresets1.Location = new System.Drawing.Point(74, 185);
+			this.tlpPresets1.Location = new System.Drawing.Point(74, 212);
 			this.tlpPresets1.Margin = new System.Windows.Forms.Padding(0);
 			this.tlpPresets1.Name = "tlpPresets1";
 			this.tlpPresets1.RowCount = 1;
@@ -293,7 +299,7 @@
 			this.tlpPresets2.Controls.Add(this.btnPresetOam1, 0, 0);
 			this.tlpPresets2.Controls.Add(this.btnPresetOam2, 1, 0);
 			this.tlpPresets2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tlpPresets2.Location = new System.Drawing.Point(74, 213);
+			this.tlpPresets2.Location = new System.Drawing.Point(74, 240);
 			this.tlpPresets2.Margin = new System.Windows.Forms.Padding(0);
 			this.tlpPresets2.Name = "tlpPresets2";
 			this.tlpPresets2.RowCount = 1;
@@ -323,7 +329,7 @@
 			// 
 			this.lblTileAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblTileAddress.AutoSize = true;
-			this.lblTileAddress.Location = new System.Drawing.Point(3, 429);
+			this.lblTileAddress.Location = new System.Drawing.Point(3, 456);
 			this.lblTileAddress.Name = "lblTileAddress";
 			this.lblTileAddress.Size = new System.Drawing.Size(68, 13);
 			this.lblTileAddress.TabIndex = 16;
@@ -331,7 +337,7 @@
 			// 
 			// txtTileAddress
 			// 
-			this.txtTileAddress.Location = new System.Drawing.Point(77, 426);
+			this.txtTileAddress.Location = new System.Drawing.Point(77, 453);
 			this.txtTileAddress.Name = "txtTileAddress";
 			this.txtTileAddress.ReadOnly = true;
 			this.txtTileAddress.Size = new System.Drawing.Size(60, 20);
@@ -368,7 +374,7 @@
 			// 
 			this.lblAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblAddress.AutoSize = true;
-			this.lblAddress.Location = new System.Drawing.Point(3, 88);
+			this.lblAddress.Location = new System.Drawing.Point(3, 115);
 			this.lblAddress.Name = "lblAddress";
 			this.lblAddress.Size = new System.Drawing.Size(48, 13);
 			this.lblAddress.TabIndex = 9;
@@ -383,7 +389,7 @@
             0,
             0});
 			this.nudAddress.IsHex = true;
-			this.nudAddress.Location = new System.Drawing.Point(77, 84);
+			this.nudAddress.Location = new System.Drawing.Point(77, 111);
 			this.nudAddress.Maximum = new decimal(new int[] {
             65536,
             0,
@@ -409,7 +415,7 @@
 			// 
 			this.lblColumns.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblColumns.AutoSize = true;
-			this.lblColumns.Location = new System.Drawing.Point(3, 142);
+			this.lblColumns.Location = new System.Drawing.Point(3, 169);
 			this.lblColumns.Name = "lblColumns";
 			this.lblColumns.Size = new System.Drawing.Size(50, 13);
 			this.lblColumns.TabIndex = 3;
@@ -419,7 +425,7 @@
 			// 
 			this.lblSize.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.lblSize.AutoSize = true;
-			this.lblSize.Location = new System.Drawing.Point(3, 115);
+			this.lblSize.Location = new System.Drawing.Point(3, 142);
 			this.lblSize.Name = "lblSize";
 			this.lblSize.Size = new System.Drawing.Size(64, 13);
 			this.lblSize.TabIndex = 5;
@@ -434,7 +440,7 @@
             0,
             0});
 			this.nudColumns.IsHex = false;
-			this.nudColumns.Location = new System.Drawing.Point(77, 138);
+			this.nudColumns.Location = new System.Drawing.Point(77, 165);
 			this.nudColumns.Maximum = new decimal(new int[] {
             64,
             0,
@@ -465,7 +471,7 @@
             0,
             0});
 			this.nudSize.IsHex = true;
-			this.nudSize.Location = new System.Drawing.Point(77, 111);
+			this.nudSize.Location = new System.Drawing.Point(77, 138);
 			this.nudSize.Maximum = new decimal(new int[] {
             0,
             0,
@@ -637,6 +643,32 @@
 			this.mnuZoomOut.Text = "Zoom Out";
 			this.mnuZoomOut.Click += new System.EventHandler(this.mnuZoomOut_Click);
 			// 
+			// cboBackgroundColor
+			// 
+			this.cboBackgroundColor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboBackgroundColor.FormattingEnabled = true;
+			this.cboBackgroundColor.Items.AddRange(new object[] {
+            "2 BPP",
+            "4 BPP",
+            "8 BPP",
+            "8 BPP - Direct Color Mode",
+            "Mode 7",
+            "Mode 7 - Direct Color Mode"});
+			this.cboBackgroundColor.Location = new System.Drawing.Point(77, 84);
+			this.cboBackgroundColor.Name = "cboBackgroundColor";
+			this.cboBackgroundColor.Size = new System.Drawing.Size(120, 21);
+			this.cboBackgroundColor.TabIndex = 20;
+			// 
+			// lblBgColor
+			// 
+			this.lblBgColor.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.lblBgColor.AutoSize = true;
+			this.lblBgColor.Location = new System.Drawing.Point(3, 88);
+			this.lblBgColor.Name = "lblBgColor";
+			this.lblBgColor.Size = new System.Drawing.Size(68, 13);
+			this.lblBgColor.TabIndex = 21;
+			this.lblBgColor.Text = "Background:";
+			// 
 			// frmTileViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -710,5 +742,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuAutoRefreshLow;
 		private System.Windows.Forms.ToolStripMenuItem mnuAutoRefreshNormal;
 		private System.Windows.Forms.ToolStripMenuItem mnuAutoRefreshHigh;
-	}
+	  private System.Windows.Forms.ComboBox cboBackgroundColor;
+	  private System.Windows.Forms.Label lblBgColor;
+   }
 }

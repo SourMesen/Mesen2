@@ -57,6 +57,7 @@ namespace Mesen.GUI.Debugger
 
 			BaseConfigForm.InitializeComboBox(cboFormat, typeof(TileFormat));
 			BaseConfigForm.InitializeComboBox(cboLayout, typeof(TileLayout));
+			BaseConfigForm.InitializeComboBox(cboBackgroundColor, typeof(TileBackground));
 			InitMemoryTypeDropdown();
 
 			InitShortcuts();
@@ -67,6 +68,7 @@ namespace Mesen.GUI.Debugger
 			cboMemoryType.SetEnumValue(config.Source);
 			cboFormat.SetEnumValue(config.Format);
 			cboLayout.SetEnumValue(config.Layout);
+			cboBackgroundColor.SetEnumValue(config.Background);
 			nudColumns.Value = config.ColumnCount;
 
 			UpdateMemoryType(config.Source);
@@ -94,6 +96,7 @@ namespace Mesen.GUI.Debugger
 			_address = config.Address;
 			_options.Format = config.Format;
 			_options.Layout = config.Layout;
+			_options.Background = config.Background;
 			_options.Palette = config.SelectedPalette;
 			_options.Width = config.ColumnCount;
 			_options.PageSize = config.PageSize;
@@ -116,6 +119,7 @@ namespace Mesen.GUI.Debugger
 			chkShowTileGrid.Click += chkShowTileGrid_Click;
 			cboFormat.SelectedIndexChanged += cboFormat_SelectedIndexChanged;
 			cboLayout.SelectedIndexChanged += cboLayout_SelectedIndexChanged;
+			cboBackgroundColor.SelectedIndexChanged += cboBackgroundColor_SelectedIndexChanged;
 			nudColumns.ValueChanged += nudColumns_ValueChanged;
 			nudSize.ValueChanged += nudSize_ValueChanged;
 			ctrlPaletteViewer.SelectionChanged += ctrlPaletteViewer_SelectionChanged;
@@ -165,6 +169,7 @@ namespace Mesen.GUI.Debugger
 			config.Source = cboMemoryType.GetEnumValue<SnesMemoryType>();
 			config.Format = cboFormat.GetEnumValue<TileFormat>();
 			config.Layout = cboLayout.GetEnumValue<TileLayout>();
+			config.Background = cboBackgroundColor.GetEnumValue<TileBackground>();
 			config.ColumnCount = (int)nudColumns.Value;
 			config.Address = (int)nudAddress.Value;
 			config.PageSize = (int)nudSize.Value;
@@ -374,6 +379,12 @@ namespace Mesen.GUI.Debugger
 		{
 			_options.Format = cboFormat.GetEnumValue<TileFormat>();
 			UpdatePaletteControl();
+			RefreshViewer();
+		}
+		
+		private void cboBackgroundColor_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			_options.Background = cboBackgroundColor.GetEnumValue<TileBackground>();
 			RefreshViewer();
 		}
 

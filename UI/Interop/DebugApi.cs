@@ -472,10 +472,20 @@ namespace Mesen.GUI
 		public byte Layer;
 	}
 
+	public enum TileBackground
+	{
+		Default = 0,
+		PaletteColor = 1,
+		Black = 2,
+		White = 3,
+		Magenta = 4
+	}
+
 	public struct GetTileViewOptions
 	{
 		public TileFormat Format;
 		public TileLayout Layout;
+		public TileBackground Background;
 		public Int32 Width;
 		public Int32 Palette;
 		public Int32 PageSize;

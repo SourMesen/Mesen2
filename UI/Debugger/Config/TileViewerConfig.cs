@@ -25,6 +25,7 @@ namespace Mesen.GUI.Config
 		public SnesMemoryType Source = SnesMemoryType.VideoRam;
 		public TileFormat Format = TileFormat.Bpp4;
 		public TileLayout Layout = TileLayout.Normal;
+		public TileBackground Background = TileBackground.Default;
 		public int ColumnCount = 16;
 		public int Address = 0;
 		public int PageSize = 0x10000;

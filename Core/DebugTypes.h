@@ -182,10 +182,20 @@ enum class TileLayout
 	SingleLine16x16
 };
 
+enum class TileBackground
+{
+	Default = 0,
+	PaletteColor = 1,
+	Black = 2,
+	White = 3,
+	Magenta = 4
+};
+
 struct GetTileViewOptions
 {
 	TileFormat Format;
 	TileLayout Layout;
+	TileBackground Background;
 	int32_t Width;
 	int32_t Palette;
 	int32_t PageSize;

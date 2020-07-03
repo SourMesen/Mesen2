@@ -88,10 +88,18 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 
 	int bytesPerTile = 64 * bpp / 8;
 	int tileCount = options.PageSize / bytesPerTile;
-	
-	uint16_t bgColor = (cgram[1] << 8) | cgram[0];
+
+	uint32_t bgColor = 0;
+	switch(options.Background) {
+		case TileBackground::Default: bgColor = DefaultVideoFilter::ToArgb((cgram[1] << 8) | cgram[0]); break;
+		case TileBackground::PaletteColor: bgColor = DefaultVideoFilter::ToArgb(0); break;
+		case TileBackground::Black: bgColor = DefaultVideoFilter::ToArgb(0); break;
+		case TileBackground::White: bgColor = DefaultVideoFilter::ToArgb(0x7FFF); break;
+		case TileBackground::Magenta: bgColor = DefaultVideoFilter::ToArgb(0x7C1F); break;
+	}
+
 	for(uint32_t i = 0; i < outputSize / sizeof(uint32_t); i++) {
-		outBuffer[i] = DefaultVideoFilter::ToArgb(bgColor);
+		outBuffer[i] = bgColor;
 	}
 
 	int rowCount = (int)std::ceil((double)tileCount / options.Width);
@@ -122,7 +130,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = ram[(pixelStart + x * 2 + 1) & ramMask];
 
-						if(color != 0) {
+						if(color != 0 || options.Background == TileBackground::PaletteColor) {
 							uint32_t rgbColor;
 							if(directColor) {
 								rgbColor = DefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
@@ -138,7 +146,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 					uint32_t pixelStart = addr + y * 2;
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, 7 - x);
-						if(color != 0) {
+						if(color != 0 || options.Background == TileBackground::PaletteColor) {
 							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = GetRgbPixelColor(cgram, color, options.Palette, bpp, directColor, 0);
 						}
 					}

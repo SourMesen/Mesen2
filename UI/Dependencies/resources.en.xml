@@ -1011,6 +1011,13 @@
 			<Value ID="SingleLine8x16">8x16 (same line)</Value>
 			<Value ID="SingleLine16x16">16x16 (same line)</Value>
 		</Enum>
+		<Enum ID="TileBackground">
+			<Value ID="Default">Default (Color 0)</Value>
+			<Value ID="PaletteColor">Palette Color 0</Value>
+			<Value ID="Black">Black</Value>
+			<Value ID="White">White</Value>
+			<Value ID="Magenta">Magenta</Value>
+		</Enum>
 		<Enum ID="StatusFlagFormat">
 			<Value ID="Hexadecimal">Hexadecimal</Value>
 			<Value ID="Text">Text</Value>
