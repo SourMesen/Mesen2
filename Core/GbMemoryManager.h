@@ -70,6 +70,8 @@ public:
 
 	void ToggleSpeed();
 	bool IsHighSpeed();
+	bool IsBootRomDisabled();
+
 	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
 	

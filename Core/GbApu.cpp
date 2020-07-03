@@ -293,6 +293,17 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 	}
 }
 
+uint8_t GbApu::ReadCgbRegister(uint16_t addr)
+{
+	switch(addr) {
+		case 0xFF76: return _square1->GetOutput() | (_square2->GetOutput() << 4);
+		case 0xFF77: return _noise->GetOutput() | (_wave->GetOutput() << 4);
+	}
+
+	//Should not be called
+	return 0;
+}
+
 template<typename T>
 void GbApu::ProcessLengthEnableFlag(uint8_t value, T &length, bool &lengthEnabled, bool &enabled)
 {

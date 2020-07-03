@@ -31,7 +31,13 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile, bool sgbEnabled
 	MessageManager::Log("File: " + romFile.GetFileName());
 	MessageManager::Log("Game: " + header.GetCartName());
 	MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
+	switch(header.CgbFlag & 0xC0) {
+		case 0x00: MessageManager::Log("Supports: Game Boy"); break;
+		case 0x80: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
+		case 0xC0: MessageManager::Log("Supports: Game Boy Color only"); break;
+	}
 	MessageManager::Log("File size: " + std::to_string(romData.size() / 1024) + " KB");
+
 	if(header.GetCartRamSize() > 0) {
 		string sizeString = header.GetCartRamSize() > 1024 ? std::to_string(header.GetCartRamSize() / 1024) + " KB" : std::to_string(header.GetCartRamSize()) + " bytes";
 		MessageManager::Log("Cart RAM size: " + sizeString + (header.HasBattery() ? " (with battery)" : ""));

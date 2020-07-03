@@ -353,6 +353,11 @@ struct GbMemoryManagerState
 	bool CgbSwitchSpeedRequest;
 	bool CgbHighSpeed;
 
+	uint8_t CgbRegFF72;
+	uint8_t CgbRegFF73;
+	uint8_t CgbRegFF74;
+	uint8_t CgbRegFF75;
+
 	bool DisableBootRom;
 	uint8_t IrqRequests;
 	uint8_t IrqEnabled;

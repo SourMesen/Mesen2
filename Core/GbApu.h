@@ -57,6 +57,8 @@ public:
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
 
+	uint8_t ReadCgbRegister(uint16_t addr);
+
 	template<typename T> void ProcessLengthEnableFlag(uint8_t value, T& length, bool& lengthEnabled, bool& enabled);
 
 	void Serialize(Serializer& s) override;

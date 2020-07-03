@@ -609,6 +609,11 @@ bool GbPpu::IsLcdEnabled()
 	return _state.LcdEnabled;
 }
 
+bool GbPpu::IsCgbEnabled()
+{
+	return _state.CgbEnabled;
+}
+
 PpuMode GbPpu::GetMode()
 {
 	return _state.Mode;
@@ -892,11 +897,15 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 
 uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 {
+	if(!_state.CgbEnabled) {
+		return 0xFF;
+	}
+
 	switch(addr) {
-		case 0xFF4F: return _state.CgbVramBank;
-		case 0xFF68: return _state.CgbBgPalPosition | (_state.CgbBgPalAutoInc ? 0x80 : 0);
+		case 0xFF4F: return _state.CgbVramBank | 0xFE;
+		case 0xFF68: return _state.CgbBgPalPosition | (_state.CgbBgPalAutoInc ? 0x80 : 0) | 0x40;
 		case 0xFF69: return (_state.CgbBgPalettes[_state.CgbBgPalPosition >> 1] >> ((_state.CgbBgPalPosition & 0x01) ? 8 : 0) & 0xFF);
-		case 0xFF6A: return _state.CgbObjPalPosition | (_state.CgbObjPalAutoInc ? 0x80 : 0);
+		case 0xFF6A: return _state.CgbObjPalPosition | (_state.CgbObjPalAutoInc ? 0x80 : 0) | 0x40;
 		case 0xFF6B: return (_state.CgbObjPalettes[_state.CgbObjPalPosition >> 1] >> ((_state.CgbObjPalPosition & 0x01) ? 8 : 0) & 0xFF);
 	}
 	LogDebug("[Debug] GBC - Missing read handler: $" + HexUtilities::ToHex(addr));
@@ -905,6 +914,10 @@ uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 
 void GbPpu::WriteCgbRegister(uint16_t addr, uint8_t value)
 {
+	if(!_state.CgbEnabled && _memoryManager->IsBootRomDisabled()) {
+		return;
+	}
+
 	switch(addr) {
 		case 0xFF4C: _state.CgbEnabled = (value & 0x0C) == 0; break;
 		case 0xFF4F: _state.CgbVramBank = value & 0x01; break;

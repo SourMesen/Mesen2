@@ -87,6 +87,7 @@ public:
 	uint8_t GetScanline();
 	uint16_t GetCycle();
 	bool IsLcdEnabled();
+	bool IsCgbEnabled();
 	PpuMode GetMode();
 
 	void Exec();

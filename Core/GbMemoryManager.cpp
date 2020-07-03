@@ -248,18 +248,28 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 		} else if(addr >= 0xFF4C) {
 			if(_gameboy->IsCgb()) {
 				switch(addr) {
-					//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
-					case 0xFF4D: return _state.CgbHighSpeed ? 0x80 : 0;
-					
-					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
-						return _dmaController->ReadCgb(addr);
+					case 0xFF55: //CGB - DMA
+						return _ppu->IsCgbEnabled() ? _dmaController->ReadCgb(addr) : 0xFF;
 
 					case 0xFF4F: //CGB - VRAM bank
 					case 0xFF68: case 0xFF69: case 0xFF6A: case 0xFF6B: //CGB - Palette
 						return _ppu->ReadCgbRegister(addr);
 
 					//FF70 - SVBK - CGB Mode Only - WRAM Bank
-					case 0xFF70: return _state.CgbWorkRamBank;
+					case 0xFF70: return _ppu->IsCgbEnabled() ? (_state.CgbWorkRamBank | 0xF8) : 0xFF;
+					case 0xFF72: return _state.CgbRegFF72;
+					case 0xFF73: return _state.CgbRegFF73;
+					
+					case 0xFF74: 
+						if(_ppu->IsCgbEnabled()) {
+							return _state.CgbRegFF74;
+						}
+						return 0xFF;
+
+					case 0xFF75: return _state.CgbRegFF75 | 0x8F;
+					
+					case 0xFF76: case 0xFF77:
+						return _apu->ReadCgbRegister(addr);
 				}
 			}
 			LogDebug("[Debug] GB - Missing read handler: $" + HexUtilities::ToHex(addr));
@@ -274,7 +284,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 				case 0xFF00: return ReadInputPort(); break;
 				
 				case 0xFF01: return _state.SerialData; //SB - Serial transfer data (R/W)
-				case 0xFF02: return _state.SerialControl | ~(_gameboy->IsCgb() ? 0x83 : 0x81); //SC - Serial Transfer Control (R/W)
+				case 0xFF02: return _state.SerialControl | 0x7E; //SC - Serial Transfer Control (R/W)
 
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					return _timer->Read(addr);
@@ -313,11 +323,15 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 				switch(addr) {
 					case 0xFF4D:
 						//FF4D - KEY1 - CGB Mode Only - Prepare Speed Switch
-						_state.CgbSwitchSpeedRequest = (value & 0x01) != 0;
+						if(_ppu->IsCgbEnabled()) {
+							_state.CgbSwitchSpeedRequest = (value & 0x01) != 0;
+						}
 						break;
 
 					case 0xFF51: case 0xFF52: case 0xFF53: case 0xFF54: case 0xFF55: //CGB - DMA
-						_dmaController->WriteCgb(addr, value);
+						if(_ppu->IsCgbEnabled()) {
+							_dmaController->WriteCgb(addr, value);
+						}
 						break;
 
 					case 0xFF4C: //CGB - "LCDMODE", set by boot rom to turn off CGB features for the LCD for DMG games
@@ -333,9 +347,21 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 
 					case 0xFF70:
 						//FF70 - SVBK - CGB Mode Only - WRAM Bank
-						_state.CgbWorkRamBank = std::max(1, value & 0x07);
-						RefreshMappings();
+						if(_ppu->IsCgbEnabled()) {
+							_state.CgbWorkRamBank = std::max(1, value & 0x07);
+							RefreshMappings();
+						}
 						break;
+
+					case 0xFF72: _state.CgbRegFF72 = value; break;
+					case 0xFF73: _state.CgbRegFF73 = value; break;
+					case 0xFF74:
+						if(_ppu->IsCgbEnabled()) {
+							_state.CgbRegFF74 = value;
+						}
+						break;
+
+					case 0xFF75: _state.CgbRegFF75 = value; break;
 
 					default:
 						LogDebug("[Debug] GBC - Missing write handler: $" + HexUtilities::ToHex(addr));
@@ -417,6 +443,11 @@ bool GbMemoryManager::IsHighSpeed()
 	return _state.CgbHighSpeed;
 }
 
+bool GbMemoryManager::IsBootRomDisabled()
+{
+	return _state.DisableBootRom;
+}
+
 uint64_t GbMemoryManager::GetCycleCount()
 {
 	return _state.CycleCount;
@@ -485,7 +516,8 @@ void GbMemoryManager::Serialize(Serializer& s)
 	s.Stream(
 		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests, _state.InputSelect,
 		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank,
-		_state.SerialData, _state.SerialControl, _state.SerialBitCount, _state.CycleCount
+		_state.SerialData, _state.SerialControl, _state.SerialBitCount, _state.CycleCount,
+		_state.CgbRegFF72, _state.CgbRegFF73, _state.CgbRegFF74, _state.CgbRegFF75
 	);
 	s.StreamArray(_state.MemoryType, 0x100);
 	s.StreamArray(_state.MemoryOffset, 0x100);

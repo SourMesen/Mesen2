@@ -60,10 +60,6 @@ void GbDmaController::Write(uint8_t value)
 uint8_t GbDmaController::ReadCgb(uint16_t addr)
 {
 	switch(addr) {
-		case 0xFF51: return _state.CgbDmaSource >> 8;
-		case 0xFF52: return _state.CgbDmaSource & 0xFF;
-		case 0xFF53: return _state.CgbDmaDest >> 8;
-		case 0xFF54: return _state.CgbDmaDest & 0xFF;
 		case 0xFF55: return _state.CgbDmaLength | (_state.CgbHdmaDone ? 0x80 : 0);
 	}
 
