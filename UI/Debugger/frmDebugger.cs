@@ -578,7 +578,7 @@ namespace Mesen.GUI.Debugger
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded: {
 					if(ConfigManager.Config.Debug.Debugger.BreakOnPowerCycleReset) {
-						DebugApi.Step(_cpuType, 1, StepType.PpuStep);
+						DebugApi.Step(_cpuType, 1, StepType.Step);
 					}
 
 					BreakpointManager.SetBreakpoints();
