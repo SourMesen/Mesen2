@@ -153,7 +153,8 @@ namespace Mesen.GUI.Debugger
 			_entityBinder.UpdateObject();
 
 			//Disable logging when we close the trace logger
-			SetOptions(true);
+			_interopOptions = GetInteropOptions(true);
+			SetCoreOptions();
 
 			ConfigManager.ApplyChanges();
 
@@ -243,34 +244,34 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
-		private void SetOptions(bool disableLogging = false)
+		private InteropTraceLoggerOptions GetInteropOptions(bool disableLogging = false)
 		{
 			_entityBinder.UpdateObject();
 			TraceLoggerOptions options = (TraceLoggerOptions)_entityBinder.Entity;
 
 			CoprocessorType coproc = EmuApi.GetRomInfo().CoprocessorType;
 
-			_interopOptions = new InteropTraceLoggerOptions();
-			_interopOptions.LogCpu = !disableLogging && options.LogCpu && coproc != CoprocessorType.Gameboy;
-			_interopOptions.LogSpc = !disableLogging && options.LogSpc && coproc != CoprocessorType.Gameboy;
-			_interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
-			_interopOptions.LogSa1 = !disableLogging && options.LogSa1;
-			_interopOptions.LogGsu = !disableLogging && options.LogGsu;
-			_interopOptions.LogCx4 = !disableLogging && options.LogCx4;
-			_interopOptions.LogGameboy = !disableLogging && options.LogGameboy;
-			_interopOptions.IndentCode = options.IndentCode;
-			_interopOptions.ShowExtraInfo = options.ShowExtraInfo;
-			_interopOptions.UseLabels = options.UseLabels;
-			_interopOptions.UseWindowsEol = options.UseWindowsEol;
-			_interopOptions.ExtendZeroPage = options.ExtendZeroPage;
+			InteropTraceLoggerOptions interopOptions = new InteropTraceLoggerOptions();
+			interopOptions.LogCpu = !disableLogging && options.LogCpu && coproc != CoprocessorType.Gameboy;
+			interopOptions.LogSpc = !disableLogging && options.LogSpc && coproc != CoprocessorType.Gameboy;
+			interopOptions.LogNecDsp = !disableLogging && options.LogNecDsp;
+			interopOptions.LogSa1 = !disableLogging && options.LogSa1;
+			interopOptions.LogGsu = !disableLogging && options.LogGsu;
+			interopOptions.LogCx4 = !disableLogging && options.LogCx4;
+			interopOptions.LogGameboy = !disableLogging && options.LogGameboy;
+			interopOptions.IndentCode = options.IndentCode;
+			interopOptions.ShowExtraInfo = options.ShowExtraInfo;
+			interopOptions.UseLabels = options.UseLabels;
+			interopOptions.UseWindowsEol = options.UseWindowsEol;
+			interopOptions.ExtendZeroPage = options.ExtendZeroPage;
 
-			_interopOptions.Condition = Encoding.UTF8.GetBytes(txtCondition.Text);
-			Array.Resize(ref _interopOptions.Condition, 1000);
+			interopOptions.Condition = Encoding.UTF8.GetBytes(txtCondition.Text);
+			Array.Resize(ref interopOptions.Condition, 1000);
 
-			_interopOptions.Format = Encoding.UTF8.GetBytes(txtFormat.Text.Replace("\t", "\\t"));
-			Array.Resize(ref _interopOptions.Format, 1000);
+			interopOptions.Format = Encoding.UTF8.GetBytes(txtFormat.Text.Replace("\t", "\\t"));
+			Array.Resize(ref interopOptions.Format, 1000);
 
-			DebugApi.SetTraceOptions(_interopOptions);
+			return interopOptions;
 		}
 
 		private void SetCoreOptions()
@@ -286,7 +287,8 @@ namespace Mesen.GUI.Debugger
 				sfd.InitialDirectory = ConfigManager.DebuggerFolder;
 				if(sfd.ShowDialog() == DialogResult.OK) {
 					_lastFilename = sfd.FileName;
-					SetOptions();
+					_interopOptions = GetInteropOptions();
+					SetCoreOptions();
 					DebugApi.StartTraceLogger(sfd.FileName);
 
 					btnStartLogging.Enabled = false;
@@ -320,8 +322,10 @@ namespace Mesen.GUI.Debugger
 			}
 
 			_refreshRunning = true;
-			SetOptions();
+			_interopOptions = GetInteropOptions();
 			Task.Run(() => {
+				SetCoreOptions();
+
 				//Update trace log in another thread for performance
 				DebugState state = DebugApi.GetState();
 				if(_previousMasterClock != state.MasterClock || forceUpdate) {

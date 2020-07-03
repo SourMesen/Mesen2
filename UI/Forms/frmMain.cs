@@ -167,18 +167,20 @@ namespace Mesen.GUI.Forms
 						}
 					}));
 
-					this.BeginInvoke((Action)(() => {
-						UpdateDebuggerMenu();
-						ctrlRecentGames.Visible = false;
-						SaveStateManager.UpdateStateMenu(mnuLoadState, false);
-						SaveStateManager.UpdateStateMenu(mnuSaveState, true);
+					Task.Run(() => {
+						this.BeginInvoke((Action)(() => {
+							UpdateDebuggerMenu();
+							ctrlRecentGames.Visible = false;
+							SaveStateManager.UpdateStateMenu(mnuLoadState, false);
+							SaveStateManager.UpdateStateMenu(mnuSaveState, true);
 
-						this.Text = "Mesen-S - " + romInfo.GetRomName();
+							this.Text = "Mesen-S - " + romInfo.GetRomName();
 
-						if(DebugWindowManager.HasOpenedWindow) {
-							DebugWorkspaceManager.GetWorkspace();
-						}
-					}));
+							if(DebugWindowManager.HasOpenedWindow) {
+								DebugWorkspaceManager.GetWorkspace();
+							}
+						}));
+					});
 					break;
 
 				case ConsoleNotificationType.BeforeEmulationStop:
