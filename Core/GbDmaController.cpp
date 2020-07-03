@@ -86,6 +86,10 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 					_state.CgbHdmaRunning = false;
 					_state.CgbHdmaDone = true;
 				} else {
+					//4 cycles for setup
+					_memoryManager->Exec();
+					_memoryManager->Exec();
+
 					do {
 						ProcessDmaBlock();
 					} while(_state.CgbDmaLength != 0x7F);
@@ -109,6 +113,10 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 void GbDmaController::ProcessHdma()
 {
 	if(_state.CgbHdmaRunning) {
+		//4 cycles for setup
+		_memoryManager->Exec();
+		_memoryManager->Exec();
+
 		ProcessDmaBlock();
 	}
 }
@@ -116,10 +124,6 @@ void GbDmaController::ProcessHdma()
 void GbDmaController::ProcessDmaBlock()
 {
 	//TODO check invalid dma sources/etc.
-	//4 cycles for setup
-	_memoryManager->Exec();
-	_memoryManager->Exec();
-
 	for(int i = 0; i < 16; i++) {
 		uint16_t dst = 0x8000 | ((_state.CgbDmaDest + i) & 0x1FFF);
 
