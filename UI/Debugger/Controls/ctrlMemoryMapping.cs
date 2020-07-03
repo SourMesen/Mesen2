@@ -62,6 +62,8 @@ namespace Mesen.GUI.Debugger.Controls
 
 			Action<int, int, Color> addPrgRom = (int page, int size, Color color) => { regions.Add(new MemoryRegionInfo() { Name = "$" + page.ToString("X2"), Size = size, Color = color }); };
 
+			Action<int> addBootRom = (int size) => { regions.Add(new MemoryRegionInfo() { Name = "", Size = size, Color = Color.IndianRed }); };
+
 			GbMemoryType memoryType = GbMemoryType.None;
 			RegisterAccess accessType = RegisterAccess.None;
 			int currentSize = 0;
@@ -89,6 +91,8 @@ namespace Mesen.GUI.Debugger.Controls
 					} else {
 						addCartRam((int)(state.MemoryOffset[startIndex] / otherBankSize), currentSize, accessType);
 					}
+				} else if(memoryType == GbMemoryType.BootRom) {
+					addBootRom(currentSize);
 				}
 				currentSize = 0;
 				startIndex = i;

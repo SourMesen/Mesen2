@@ -125,7 +125,11 @@ void GbMemoryManager::Map(uint16_t start, uint16_t end, GbMemoryType type, uint3
 
 			if(src) {
 				src += 0x100;
-				offset = (offset + 0x100) & (size - 1);
+				offset = (offset + 0x100);
+				if(offset >= size) {
+					offset = 0;
+					src = _gameboy->DebugGetMemory((SnesMemoryType)type);
+				}
 			}
 		}
 	} else {

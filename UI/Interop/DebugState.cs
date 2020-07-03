@@ -612,7 +612,8 @@ namespace Mesen.GUI
 		None = 0,
 		PrgRom = (int)SnesMemoryType.GbPrgRom,
 		WorkRam = (int)SnesMemoryType.GbWorkRam,
-		CartRam = (int)SnesMemoryType.GbCartRam
+		CartRam = (int)SnesMemoryType.GbCartRam,
+		BootRom = (int)SnesMemoryType.GbBootRom,
 	}
 
 	public enum RegisterAccess
