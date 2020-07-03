@@ -348,7 +348,7 @@ namespace Mesen.GUI.Debugger
 				new RegEntry("$FF1E.7", "Channel Enabled", wave.Enabled),
 
 				new RegEntry("--", "Timer", wave.Timer),
-				new RegEntry("--", "Position", wave.SampleBuffer),
+				new RegEntry("--", "Sample Buffer", wave.SampleBuffer),
 				new RegEntry("--", "Position", wave.Position),
 				new RegEntry("--", "Output", wave.Output),
 			});
