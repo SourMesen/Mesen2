@@ -49,8 +49,9 @@ namespace Mesen.GUI.Debugger.Controls
 			
 			DebugApi.GetMemoryAccessCounts(_memoryType, ref _newCounts);
 
+			bool isGameboyMode = EmuApi.GetRomInfo().CoprocessorType == CoprocessorType.Gameboy;
 			DebugState state = DebugApi.GetState();
-			_masterClock = state.MasterClock;
+			_masterClock = isGameboyMode ? state.Gameboy.MemoryManager.CycleCount : state.MasterClock;
 
 			_sorting = true;
 			Task.Run(() => {

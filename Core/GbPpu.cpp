@@ -811,7 +811,9 @@ bool GbPpu::IsVramWriteAllowed()
 uint8_t GbPpu::ReadVram(uint16_t addr)
 {
 	if(IsVramReadAllowed()) {
-		return _vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)];
+		uint16_t vramAddr = (_state.CgbVramBank << 13) | (addr & 0x1FFF);
+		_console->ProcessPpuRead(vramAddr, _vram[vramAddr], SnesMemoryType::GbVideoRam);
+		return _vram[vramAddr];
 	} else {
 		_console->BreakImmediately(BreakSource::GbInvalidVramAccess);
 		return 0xFF;
@@ -826,7 +828,9 @@ uint8_t GbPpu::PeekVram(uint16_t addr)
 void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 {
 	if(IsVramWriteAllowed()) {
-		_vram[(_state.CgbVramBank << 13) | (addr & 0x1FFF)] = value;
+		uint16_t vramAddr = (_state.CgbVramBank << 13) | (addr & 0x1FFF);
+		_console->ProcessPpuWrite(vramAddr, value, SnesMemoryType::GbVideoRam);
+		_vram[vramAddr] = value;
 	} else {
 		_console->BreakImmediately(BreakSource::GbInvalidVramAccess);
 	}
@@ -870,6 +874,7 @@ uint8_t GbPpu::ReadOam(uint8_t addr)
 {
 	if(addr < 0xA0) {
 		if(IsOamReadAllowed()) {
+			_console->ProcessPpuRead(addr, _oam[addr], SnesMemoryType::GbSpriteRam);
 			return _oam[addr];
 		} else {
 			_console->BreakImmediately(BreakSource::GbInvalidOamAccess);
@@ -887,8 +892,10 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 	if(addr < 0xA0) {
 		if(forDma) {
 			_oam[addr] = value;
+			_console->ProcessPpuWrite(addr, value, SnesMemoryType::GbSpriteRam);
 		} else if(IsOamWriteAllowed()) {
 			_oam[addr] = value;
+			_console->ProcessPpuWrite(addr, value, SnesMemoryType::GbSpriteRam);
 		} else {
 			_console->BreakImmediately(BreakSource::GbInvalidOamAccess);
 		}

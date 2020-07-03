@@ -92,6 +92,9 @@ namespace Mesen.GUI.Debugger
 				if(DebugApi.GetMemorySize(SnesMemoryType.GbBootRom) > 0) {
 					cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbBootRom));
 				}
+				cboBreakpointType.Items.Add("-");
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbVideoRam));
+				cboBreakpointType.Items.Add(ResourceHelper.GetEnumText(SnesMemoryType.GbSpriteRam));
 			}
 
 			this.toolTip.SetToolTip(this.picExpressionWarning, "Condition contains invalid syntax or symbols.");

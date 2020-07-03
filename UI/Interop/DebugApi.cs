@@ -253,11 +253,28 @@ namespace Mesen.GUI
 				case SnesMemoryType.GbCartRam:
 				case SnesMemoryType.GbHighRam:
 				case SnesMemoryType.GbBootRom:
+				case SnesMemoryType.GbVideoRam:
+				case SnesMemoryType.GbSpriteRam:
 				case SnesMemoryType.GameboyMemory:
 					return CpuType.Gameboy;
 
 				default:
 					return CpuType.Cpu;
+			}
+		}
+
+		public static bool IsPpuMemory(this SnesMemoryType memType)
+		{
+			switch(memType) {
+				case SnesMemoryType.VideoRam:
+				case SnesMemoryType.SpriteRam:
+				case SnesMemoryType.CGRam:
+				case SnesMemoryType.GbVideoRam:
+				case SnesMemoryType.GbSpriteRam:
+					return true;
+
+				default:
+					return false;
 			}
 		}
 

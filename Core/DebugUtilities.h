@@ -48,9 +48,11 @@ public:
 			case SnesMemoryType::GbPrgRom:
 			case SnesMemoryType::GbWorkRam:
 			case SnesMemoryType::GbCartRam:
-			case SnesMemoryType::GbVideoRam:
 			case SnesMemoryType::GbHighRam:
 			case SnesMemoryType::GbBootRom:
+			case SnesMemoryType::GbVideoRam:
+			case SnesMemoryType::GbSpriteRam:
+			case SnesMemoryType::GameboyMemory:
 				return CpuType::Gameboy;
 
 			default:
@@ -72,6 +74,7 @@ public:
 			case SnesMemoryType::SpriteRam:
 			case SnesMemoryType::CGRam:
 			case SnesMemoryType::GbVideoRam:
+			case SnesMemoryType::GbSpriteRam:
 				return true;
 
 			default: 

@@ -60,12 +60,7 @@ namespace Mesen.GUI.Debugger
 
 		public static bool IsTypeCpuBreakpoint(SnesMemoryType type)
 		{
-			return (
-				type != SnesMemoryType.Register &&
-				type != SnesMemoryType.VideoRam &&
-				type != SnesMemoryType.CGRam &&
-				type != SnesMemoryType.SpriteRam
-			);
+			return type != SnesMemoryType.Register && !type.IsPpuMemory();
 		}
 
 		public void SetEnabled(bool enabled)
@@ -136,6 +131,8 @@ namespace Mesen.GUI.Debugger
 				case SnesMemoryType.GbCartRam: type = "SRAM"; break;
 				case SnesMemoryType.GbHighRam: type = "HRAM"; break;
 				case SnesMemoryType.GbBootRom: type = "BOOT"; break;
+				case SnesMemoryType.GbVideoRam: type = "VRAM"; break;
+				case SnesMemoryType.GbSpriteRam: type = "OAM"; break;
 
 				case SnesMemoryType.Register: type = "REG"; break;
 			}

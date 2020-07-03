@@ -197,18 +197,22 @@ void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memor
 {
 	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
-	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
+	
+	BreakpointManager* bpManager = DebugUtilities::ToCpuType(memoryType) == CpuType::Gameboy ? _gbDebugger->GetBreakpointManager() : _cpuDebugger->GetBreakpointManager();
+	ProcessBreakConditions(false, bpManager, operation, addressInfo);
 
-	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
-	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
+	
+	BreakpointManager* bpManager = DebugUtilities::ToCpuType(memoryType) == CpuType::Gameboy ? _gbDebugger->GetBreakpointManager() : _cpuDebugger->GetBreakpointManager();
+	ProcessBreakConditions(false, bpManager, operation, addressInfo);
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
 }
 
 template<CpuType cpuType>
