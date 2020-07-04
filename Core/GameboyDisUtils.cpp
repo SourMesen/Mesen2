@@ -64,7 +64,7 @@ constexpr const uint8_t _opSize[256] = {
 	2,1,1,1,1,1,2,1,2,1,3,1,1,1,2,1,
 };
 
-static enum class AddrType : uint8_t
+enum class AddrType : uint8_t
 {
 	None,
 	BC,
