@@ -39,91 +39,35 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_spc = console->GetSpc().get();
 	_gsu = cart->GetGsu();
 	_sa1 = cart->GetSa1();
+	_cx4 = cart->GetCx4();
+	_necDsp = cart->GetDsp();
 	_gameboy = cart->GetGameboy();
 	_settings = console->GetSettings().get();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_memoryManager = console->GetMemoryManager().get();
 
-	_prgRom = console->GetCartridge()->DebugGetPrgRom();
-	_prgRomSize = console->GetCartridge()->DebugGetPrgRomSize();
-	_sram = console->GetCartridge()->DebugGetSaveRam();
-	_sramSize = console->GetCartridge()->DebugGetSaveRamSize();
-	_wram = _memoryManager->DebugGetWorkRam();
-	_wramSize = MemoryManager::WorkRamSize;
-
-	_spcRam = _spc->GetSpcRam();
-	_spcRamSize = Spc::SpcRamSize;
-	_spcRom = _spc->GetSpcRom();
-	_spcRomSize = Spc::SpcRomSize;
-
-	_necDspProgramRom = cart->GetDsp() ? cart->GetDsp()->DebugGetProgramRom() : nullptr;
-	_necDspProgramRomSize = cart->GetDsp() ? cart->GetDsp()->DebugGetProgramRomSize() : 0;
-
-	_sa1InternalRam = _sa1 ? _sa1->DebugGetInternalRam() : nullptr;
-	_sa1InternalRamSize = _sa1 ? _sa1->DebugGetInternalRamSize() : 0;
-
-	_gsuWorkRam = _gsu ? _gsu->DebugGetWorkRam() : nullptr;
-	_gsuWorkRamSize = _gsu ? _gsu->DebugGetWorkRamSize() : 0;
-
-	_bsxPsRam = cart->GetBsx() ? cart->GetBsx()->DebugGetPsRam() : nullptr;
-	_bsxPsRamSize = cart->GetBsx() ? cart->GetBsx()->DebugGetPsRamSize() : 0;
-	_bsxMemPack = cart->GetBsx() ? cart->GetBsxMemoryPack()->DebugGetMemoryPack() : nullptr;
-	_bsxMemPackSize = cart->GetBsx() ? cart->GetBsxMemoryPack()->DebugGetMemoryPackSize() : 0;
-
-	_gbPrgRom = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom) : nullptr;
-	_gbPrgRomSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom) : 0;
-	_gbWorkRam = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbWorkRam) : nullptr;
-	_gbWorkRamSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbWorkRam) : 0;
-	_gbCartRam = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbCartRam) : nullptr;
-	_gbCartRamSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbCartRam) : 0;
-	_gbHighRam = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbHighRam) : nullptr;
-	_gbHighRamSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbHighRam) : 0;
-	_gbBootRom = _gameboy ? _gameboy->DebugGetMemory(SnesMemoryType::GbBootRom) : nullptr;
-	_gbBootRomSize = _gameboy ? _gameboy->DebugGetMemorySize(SnesMemoryType::GbBootRom) : 0;
-
-	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
-	_sramCache = vector<DisassemblyInfo>(_sramSize);
-	_wramCache = vector<DisassemblyInfo>(_wramSize);
-	_spcRamCache = vector<DisassemblyInfo>(_spcRamSize);
-	_spcRomCache = vector<DisassemblyInfo>(_spcRomSize);
-	_necDspRomCache = vector<DisassemblyInfo>(_necDspProgramRomSize);
-	_sa1InternalRamCache = vector<DisassemblyInfo>(_sa1InternalRamSize);
-	_gsuWorkRamCache = vector<DisassemblyInfo>(_gsuWorkRamSize);
-	_bsxPsRamCache = vector<DisassemblyInfo>(_bsxPsRamSize);
-	_bsxMemPackCache = vector<DisassemblyInfo>(_bsxMemPackSize);
-	
-	_gbPrgCache = vector<DisassemblyInfo>(_gbPrgRomSize);
-	_gbWorkRamCache = vector<DisassemblyInfo>(_gbWorkRamSize);
-	_gbCartRamCache = vector<DisassemblyInfo>(_gbCartRamSize);
-	_gbHighRamCache = vector<DisassemblyInfo>(_gbHighRamSize);
-	_gbBootRomCache = vector<DisassemblyInfo>(_gbBootRomSize);
-
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
+		_disassemblyResult[i] = vector<DisassemblyResult>();
 		_needDisassemble[i] = true;
 	}
 
-	_sources[(int)SnesMemoryType::PrgRom] = { _prgRom, &_prgCache, _prgRomSize };
-	_sources[(int)SnesMemoryType::WorkRam] = { _wram, &_wramCache, _wramSize };
-	_sources[(int)SnesMemoryType::SaveRam] = { _sram, &_sramCache, _sramSize };
-	_sources[(int)SnesMemoryType::SpcRam] = { _spcRam, &_spcRamCache, _spcRamSize };
-	_sources[(int)SnesMemoryType::SpcRom] = { _spcRom, &_spcRomCache, _spcRomSize };
-	_sources[(int)SnesMemoryType::DspProgramRom] = { _necDspProgramRom, &_necDspRomCache, _necDspProgramRomSize };
-	_sources[(int)SnesMemoryType::Sa1InternalRam] = { _sa1InternalRam, &_sa1InternalRamCache, _sa1InternalRamSize };
-	_sources[(int)SnesMemoryType::GsuWorkRam] = { _gsuWorkRam, &_gsuWorkRamCache, _gsuWorkRamSize };
-	_sources[(int)SnesMemoryType::BsxPsRam] = { _bsxPsRam, &_bsxPsRamCache, _bsxPsRamSize };
-	_sources[(int)SnesMemoryType::BsxMemoryPack] = { _bsxMemPack, &_bsxMemPackCache, _bsxMemPackSize };
-	
-	_sources[(int)SnesMemoryType::GbPrgRom] = { _gbPrgRom, &_gbPrgCache, _gbPrgRomSize };
-	_sources[(int)SnesMemoryType::GbWorkRam] = { _gbWorkRam, &_gbWorkRamCache, _gbWorkRamSize };
-	_sources[(int)SnesMemoryType::GbCartRam] = { _gbCartRam, &_gbCartRamCache, _gbCartRamSize };
-	_sources[(int)SnesMemoryType::GbHighRam] = { _gbHighRam, &_gbHighRamCache, _gbHighRamSize };
-	_sources[(int)SnesMemoryType::GbBootRom] = { _gbBootRom, &_gbBootRomCache, _gbBootRomSize };
+	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
+		InitSource((SnesMemoryType)i);
+	}
 
-	if(_necDspProgramRomSize > 0) {
+	if(_necDsp) {
 		//Build cache for the entire DSP chip (since it only contains instructions)
 		AddressInfo dspStart = { 0, SnesMemoryType::DspProgramRom };
 		BuildCache(dspStart, 0, CpuType::NecDsp);
 	}
+}
+
+void Disassembler::InitSource(SnesMemoryType type)
+{
+	uint8_t* src = _memoryDumper->GetMemoryBuffer(type);
+	uint32_t size = _memoryDumper->GetMemorySize(type);
+	_disassemblyCache[(int)type] = vector<DisassemblyInfo>(size);
+	_sources[(int)type] = { src, &_disassemblyCache[(int)type], size };
 }
 
 DisassemblerSource& Disassembler::GetSource(SnesMemoryType type)
@@ -133,20 +77,6 @@ DisassemblerSource& Disassembler::GetSource(SnesMemoryType type)
 	}
 
 	return _sources[(int)type];
-}
-
-vector<DisassemblyResult>& Disassembler::GetDisassemblyList(CpuType type)
-{
-	switch(type) {
-		case CpuType::Cpu: return _disassembly;
-		case CpuType::Spc: return _spcDisassembly;
-		case CpuType::NecDsp: return _necDspDisassembly;
-		case CpuType::Sa1: return _sa1Disassembly;
-		case CpuType::Gsu: return _gsuDisassembly;
-		case CpuType::Cx4: return _cx4Disassembly;
-		case CpuType::Gameboy: return _gbDisassembly;
-	}
-	throw std::runtime_error("Disassembly::GetDisassemblyList(): Invalid cpu type");
 }
 
 uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type)
@@ -202,8 +132,8 @@ void Disassembler::SetDisassembleFlag(CpuType type)
 
 void Disassembler::ResetPrgCache()
 {
-	_prgCache = vector<DisassemblyInfo>(_prgRomSize);
-	_gbPrgCache = vector<DisassemblyInfo>(_gbPrgRomSize);
+	InitSource(SnesMemoryType::PrgRom);
+	InitSource(SnesMemoryType::GbPrgRom);
 	_needDisassemble[(int)CpuType::Cpu] = true;
 	_needDisassemble[(int)CpuType::Sa1] = true;
 	_needDisassemble[(int)CpuType::Gsu] = true;
@@ -242,9 +172,6 @@ void Disassembler::Disassemble(CpuType cpuType)
 
 	auto lock = _disassemblyLock.AcquireSafe(); 
 	
-	bool isSpc = cpuType == CpuType::Spc;
-	bool isGb = cpuType == CpuType::Gameboy;
-	bool isDsp = cpuType == CpuType::NecDsp;
 	MemoryMappings *mappings = nullptr;
 	int32_t maxAddr = 0xFFFFFF;
 	switch(cpuType) {
@@ -253,17 +180,17 @@ void Disassembler::Disassemble(CpuType cpuType)
 			break;
 
 		case CpuType::Sa1:
-			if(!_console->GetCartridge()->GetSa1()) {
+			if(!_sa1) {
 				return;
 			}
-			mappings = _console->GetCartridge()->GetSa1()->GetMemoryMappings(); 
+			mappings = _sa1->GetMemoryMappings();
 			break;
 
 		case CpuType::Gsu:
-			if(!_console->GetCartridge()->GetGsu()) {
+			if(!_gsu) {
 				return;
 			}
-			mappings = _console->GetCartridge()->GetGsu()->GetMemoryMappings();
+			mappings = _gsu->GetMemoryMappings();
 			break;
 
 		case CpuType::NecDsp:
@@ -271,7 +198,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 				return;
 			}
 			mappings = nullptr;
-			maxAddr = _necDspProgramRomSize - 1;
+			maxAddr = _necDsp->DebugGetProgramRomSize() - 1;
 			break;
 
 		case CpuType::Spc:
@@ -297,7 +224,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 		default: throw std::runtime_error("Disassemble(): Invalid cpu type");
 	}
 
-	vector<DisassemblyResult> &results = GetDisassemblyList(cpuType);
+	vector<DisassemblyResult> &results = _disassemblyResult[(int)cpuType];
 	results.clear();
 
 	bool disUnident = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
@@ -313,16 +240,11 @@ void Disassembler::Disassemble(CpuType cpuType)
 	int byteCounter = 0;
 	for(int32_t i = 0; i <= maxAddr; i++) {
 		prevAddrInfo = addrInfo;
-		if(isDsp) {
-			addrInfo = { i, SnesMemoryType::DspProgramRom };
-		} else {
-			if(isGb) {
-				addrInfo = _gameboy->GetAbsoluteAddress(i);
-			} else if(isSpc) {
-				addrInfo = _spc->GetAbsoluteAddress(i);
-			} else {
-				addrInfo = mappings->GetAbsoluteAddress(i);
-			}
+		switch(cpuType) {
+			case CpuType::Spc: addrInfo = _spc->GetAbsoluteAddress(i); break;
+			case CpuType::NecDsp: addrInfo = { i, SnesMemoryType::DspProgramRom }; break;
+			case CpuType::Gameboy: addrInfo = _gameboy->GetAbsoluteAddress(i); break;
+			default: addrInfo = mappings->GetAbsoluteAddress(i); break;
 		}
 
 		if(addrInfo.Address < 0) {
@@ -452,21 +374,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 
 DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type)
 {
-	DisassemblyInfo disassemblyInfo;
-	switch(info.Type) {
-		default: break;
-		case SnesMemoryType::PrgRom: disassemblyInfo = _prgCache[info.Address]; break;
-		case SnesMemoryType::WorkRam: disassemblyInfo = _wramCache[info.Address]; break;
-		case SnesMemoryType::SaveRam: disassemblyInfo = _sramCache[info.Address]; break;
-		case SnesMemoryType::SpcRam: disassemblyInfo = _spcRamCache[info.Address]; break;
-		case SnesMemoryType::SpcRom: disassemblyInfo = _spcRomCache[info.Address]; break;
-		case SnesMemoryType::DspProgramRom: disassemblyInfo = _necDspRomCache[info.Address]; break;
-		case SnesMemoryType::Sa1InternalRam: disassemblyInfo = _sa1InternalRamCache[info.Address]; break;
-		case SnesMemoryType::GbPrgRom: disassemblyInfo = _gbPrgCache[info.Address]; break;
-		case SnesMemoryType::GbWorkRam: disassemblyInfo = _gbWorkRamCache[info.Address]; break;
-		case SnesMemoryType::GbCartRam: disassemblyInfo = _gbCartRamCache[info.Address]; break;
-	}
-
+	DisassemblyInfo disassemblyInfo = (*GetSource(info.Type).Cache)[info.Address];
 	if(!disassemblyInfo.IsInitialized()) {
 		disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, _memoryDumper);
 	}
@@ -483,14 +391,14 @@ void Disassembler::RefreshDisassembly(CpuType type)
 uint32_t Disassembler::GetLineCount(CpuType type)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
-	vector<DisassemblyResult> &source = GetDisassemblyList(type);
+	vector<DisassemblyResult>& source = _disassemblyResult[(int)type];
 	return (uint32_t)source.size();
 }
 
 uint32_t Disassembler::GetLineIndex(CpuType type, uint32_t cpuAddress)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
-	vector<DisassemblyResult> &source = GetDisassemblyList(type);
+	vector<DisassemblyResult>& source = _disassemblyResult[(int)type];
 	uint32_t lastAddress = 0;
 	for(size_t i = 1; i < source.size(); i++) {
 		if(source[i].CpuAddress < 0 || (source[i].Flags & LineFlags::SubStart) | (source[i].Flags & LineFlags::Label) || ((source[i].Flags & LineFlags::Comment) && source[i].CommentLine >= 0)) {
@@ -512,7 +420,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 {
 	auto lock =_disassemblyLock.AcquireSafe();
 
-	vector<DisassemblyResult> &source = GetDisassemblyList(type);
+	vector<DisassemblyResult>& source = _disassemblyResult[(int)type];
 	SnesMemoryType memType = DebugUtilities::GetCpuMemoryType(type);
 	int32_t maxAddr = type == CpuType::Spc ? 0xFFFF : 0xFFFFFF;
 	if(lineIndex < source.size()) {
@@ -695,7 +603,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 int32_t Disassembler::SearchDisassembly(CpuType type, const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)
 {
 	auto lock = _disassemblyLock.AcquireSafe();
-	vector<DisassemblyResult> &source = GetDisassemblyList(type);
+	vector<DisassemblyResult>& source = _disassemblyResult[(int)type];
 	int step = searchBackwards ? -1 : 1;
 	CodeLineData lineData = {};
 	for(int i = startPosition; i != endPosition; i += step) {

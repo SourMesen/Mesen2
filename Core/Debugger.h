@@ -83,8 +83,6 @@ private:
 	atomic<uint32_t> _breakRequestCount;
 	atomic<uint32_t> _suspendRequestCount;
 
-	unique_ptr<StepRequest> _step;
-	
 	bool _waitForBreakResume = false;
 	
 	void Reset();

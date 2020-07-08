@@ -95,8 +95,6 @@ Debugger::Debugger(shared_ptr<Console> console)
 		_cx4Debugger.reset(new Cx4Debugger(this));
 	}
 
-	_step.reset(new StepRequest());
-
 	_executionStopped = true;
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
@@ -360,7 +358,6 @@ int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalRes
 
 void Debugger::Run()
 {
-	_step.reset(new StepRequest());
 	_cpuDebugger->Run();
 	_spcDebugger->Run();
 	if(_sa1Debugger) {
@@ -396,11 +393,11 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 		case CpuType::Cx4: debugger = _cx4Debugger.get(); break;
 		case CpuType::Gameboy: debugger = _gbDebugger.get(); break;
 	}
-	debugger->Step(stepCount, type);
-	
-	if(!debugger) {
-		_step.reset(new StepRequest(step));
+
+	if(debugger) {
+		debugger->Step(stepCount, type);
 	}
+
 	if(debugger != _cpuDebugger.get()) {
 		_cpuDebugger->Run();
 	}
@@ -787,7 +784,7 @@ shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 		case CpuType::Cpu: return _cpuDebugger->GetCallstackManager();
 		case CpuType::Spc: return _spcDebugger->GetCallstackManager();
 		case CpuType::Sa1: return _sa1Debugger->GetCallstackManager();
-		case CpuType::Gameboy: return _gbDebugger->GetCallstackManager(); break;
+		case CpuType::Gameboy: return _gbDebugger->GetCallstackManager();
 
 		case CpuType::Gsu:
 		case CpuType::NecDsp:

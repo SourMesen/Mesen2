@@ -160,11 +160,7 @@ namespace Mesen.GUI.Forms
 					RomInfo romInfo = EmuApi.GetRomInfo();
 
 					this.Invoke((Action)(() => {
-						if(romInfo.CoprocessorType == CoprocessorType.Gameboy) {
-							DebugWindowManager.CloseWindows(CpuType.Cpu);
-						} else if(romInfo.CoprocessorType != CoprocessorType.SGB) {
-							DebugWindowManager.CloseWindows(CpuType.Gameboy);
-						}
+						DebugWindowManager.CloseWindows(romInfo.CoprocessorType);
 					}));
 
 					Task.Run(() => {

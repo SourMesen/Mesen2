@@ -154,6 +154,31 @@ namespace Mesen.GUI.Debugger
 			}
 		}
 
+		public static void CloseWindows(CoprocessorType coprocessorType)
+		{
+			if(coprocessorType != CoprocessorType.CX4) {
+				CloseWindows(CpuType.Cx4);
+			}
+			if(coprocessorType != CoprocessorType.GSU) {
+				CloseWindows(CpuType.Gsu);
+			}
+			if(coprocessorType != CoprocessorType.SA1) {
+				CloseWindows(CpuType.Sa1);
+			}
+			if(coprocessorType < CoprocessorType.DSP1 && coprocessorType > CoprocessorType.DSP4 && coprocessorType != CoprocessorType.ST010 && coprocessorType != CoprocessorType.ST011) {
+				CloseWindows(CpuType.NecDsp);
+			}
+
+			if(coprocessorType == CoprocessorType.Gameboy) {
+				CloseWindows(CpuType.Cpu);
+				CloseWindows(CpuType.Spc);
+			}
+
+			if(coprocessorType != CoprocessorType.Gameboy && coprocessorType != CoprocessorType.SGB) {
+				CloseWindows(CpuType.Gameboy);
+			}
+		}
+
 		public static void CloseAll()
 		{
 			List<Form> openedWindows = new List<Form>(_openedWindows);

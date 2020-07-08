@@ -11,6 +11,8 @@ class Cpu;
 class Spc;
 class Gsu;
 class Sa1;
+class Cx4;
+class NecDsp;
 class Gameboy;
 class Debugger;
 class LabelManager;
@@ -36,6 +38,8 @@ private:
 	Spc* _spc;
 	Gsu* _gsu;
 	Sa1* _sa1;
+	Cx4* _cx4;
+	NecDsp* _necDsp;
 	Gameboy* _gameboy;
 	EmuSettings* _settings;
 	Debugger *_debugger;
@@ -43,74 +47,15 @@ private:
 	shared_ptr<LabelManager> _labelManager;
 	MemoryDumper *_memoryDumper;
 
-	vector<DisassemblyInfo> _prgCache;
-	vector<DisassemblyInfo> _wramCache;
-	vector<DisassemblyInfo> _sramCache;
-	vector<DisassemblyInfo> _spcRamCache;
-	vector<DisassemblyInfo> _spcRomCache;
-	vector<DisassemblyInfo> _necDspRomCache;
-	vector<DisassemblyInfo> _sa1InternalRamCache;
-	vector<DisassemblyInfo> _gsuWorkRamCache;
-	vector<DisassemblyInfo> _bsxPsRamCache;
-	vector<DisassemblyInfo> _bsxMemPackCache;
-	
-	vector<DisassemblyInfo> _gbPrgCache;
-	vector<DisassemblyInfo> _gbWorkRamCache;
-	vector<DisassemblyInfo> _gbCartRamCache;
-	vector<DisassemblyInfo> _gbHighRamCache;
-	vector<DisassemblyInfo> _gbBootRomCache;
-	
+	DisassemblerSource _sources[(int)SnesMemoryType::Register] = {};
+	vector<DisassemblyInfo> _disassemblyCache[(int)SnesMemoryType::Register];
+
 	SimpleLock _disassemblyLock;
-	vector<DisassemblyResult> _disassembly;
-	vector<DisassemblyResult> _spcDisassembly;
-	vector<DisassemblyResult> _sa1Disassembly;
-	vector<DisassemblyResult> _gsuDisassembly;
-	vector<DisassemblyResult> _necDspDisassembly;
-	vector<DisassemblyResult> _cx4Disassembly;
-	vector<DisassemblyResult> _gbDisassembly;
-
-	DisassemblerSource _sources[(int)SnesMemoryType::Register];
-
+	vector<DisassemblyResult> _disassemblyResult[(int)DebugUtilities::GetLastCpuType()+1];
 	bool _needDisassemble[(int)DebugUtilities::GetLastCpuType()+1];
 
-	uint8_t *_prgRom;
-	uint32_t _prgRomSize;
-	uint8_t *_wram;
-	uint32_t _wramSize;
-	uint8_t *_sram;
-	uint32_t _sramSize;
-	uint8_t *_spcRam;
-	uint32_t _spcRamSize;
-	uint8_t *_spcRom;
-	uint32_t _spcRomSize;
-	
-	uint8_t *_necDspProgramRom;
-	uint32_t _necDspProgramRomSize;
-
-	uint8_t *_sa1InternalRam;
-	uint32_t _sa1InternalRamSize;
-
-	uint8_t *_gsuWorkRam;
-	uint32_t _gsuWorkRamSize;
-
-	uint8_t* _bsxPsRam;
-	uint32_t _bsxPsRamSize;
-	uint8_t* _bsxMemPack;
-	uint32_t _bsxMemPackSize;
-
-	uint8_t* _gbPrgRom;
-	uint32_t _gbPrgRomSize;
-	uint8_t* _gbWorkRam;
-	uint32_t _gbWorkRamSize;
-	uint8_t* _gbCartRam;
-	uint32_t _gbCartRamSize;
-	uint8_t* _gbHighRam;
-	uint32_t _gbHighRamSize;
-	uint8_t* _gbBootRom;
-	uint32_t _gbBootRomSize;
-
+	void InitSource(SnesMemoryType type);
 	DisassemblerSource& GetSource(SnesMemoryType type);
-	vector<DisassemblyResult>& GetDisassemblyList(CpuType type);
 	void SetDisassembleFlag(CpuType type);
 
 public:

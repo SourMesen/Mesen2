@@ -24,6 +24,7 @@ private:
 public:
 	MemoryDumper(Debugger* debugger);
 
+	uint8_t* GetMemoryBuffer(SnesMemoryType type);
 	uint32_t GetMemorySize(SnesMemoryType type);
 	void GetMemoryState(SnesMemoryType type, uint8_t *buffer);
 
