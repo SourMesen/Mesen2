@@ -183,22 +183,27 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step;
 
-	switch(type) {
-		case StepType::Step: step.StepCount = stepCount; break;
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
-		case StepType::StepOver:
-			if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
-				step.BreakAddress = _prevProgramCounter + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
-			} else {
-				//For any other instruction, step over is the same as step into
-				step.StepCount = 1;
-			}
-			break;
+	GbCpuState gbState = _gameboy->GetState().Cpu;
+	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && gbState.Halted) {
+		//CPU isn't running - use the PPU to break execution instead
+		step.PpuStepCount = 1;
+	} else {
+		switch(type) {
+			case StepType::Step: step.StepCount = stepCount; break;
+			case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+			case StepType::StepOver:
+				if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
+					step.BreakAddress = _prevProgramCounter + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
+				} else {
+					//For any other instruction, step over is the same as step into
+					step.StepCount = 1;
+				}
+				break;
 
-		case StepType::PpuStep: step.PpuStepCount = stepCount; _step.reset(new StepRequest(step)); break;
-		case StepType::SpecificScanline: step.BreakScanline = stepCount; _step.reset(new StepRequest(step)); break;
+			case StepType::PpuStep: step.PpuStepCount = stepCount; break;
+			case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
+		}
 	}
-
 	_step.reset(new StepRequest(step));
 }
 

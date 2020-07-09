@@ -188,7 +188,7 @@ void CpuDebugger::Step(int32_t stepCount, StepType type)
 	StepRequest step;
 	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetState().StopState == CpuStopState::Stopped) {
 		//If STP was called, the CPU isn't running anymore - use the PPU to break execution instead (useful for test roms that end with STP)
-		_debugger->Step(_cpuType, 1, StepType::PpuStep);
+		step.PpuStepCount = 1;
 	} else {
 		switch(type) {
 			case StepType::Step: step.StepCount = stepCount; break;
@@ -203,8 +203,8 @@ void CpuDebugger::Step(int32_t stepCount, StepType type)
 				}
 				break;
 
-			case StepType::PpuStep: step.PpuStepCount = stepCount; _step.reset(new StepRequest(step)); break;
-			case StepType::SpecificScanline: step.BreakScanline = stepCount; _step.reset(new StepRequest(step)); break;
+			case StepType::PpuStep: step.PpuStepCount = stepCount; break;
+			case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 		}
 	}
 	_step.reset(new StepRequest(step));

@@ -566,7 +566,7 @@ void Console::PauseOnNextFrame()
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
 		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
-			debugger->Step(CpuType::Cpu, 144, StepType::SpecificScanline);
+			debugger->Step(CpuType::Gameboy, 144, StepType::SpecificScanline);
 		} else {
 			debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
 		}
