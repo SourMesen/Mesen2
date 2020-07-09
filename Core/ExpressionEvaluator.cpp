@@ -225,6 +225,14 @@ int64_t ExpressionEvaluator::ProcessGameboyTokens(string token)
 		return EvalValues::RegH;
 	} else if(token == "l") {
 		return EvalValues::RegL;
+	} else if(token == "af") {
+		return EvalValues::RegAF;
+	} else if(token == "bc") {
+		return EvalValues::RegBC;
+	} else if(token == "de") {
+		return EvalValues::RegDE;
+	} else if(token == "hl") {
+		return EvalValues::RegHL;
 	} else if(token == "sp") {
 		return EvalValues::RegSP;
 	} else if(token == "pc") {
@@ -522,6 +530,10 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 									case EvalValues::RegF: token = state.Gameboy.Cpu.Flags; break;
 									case EvalValues::RegH: token = state.Gameboy.Cpu.H; break;
 									case EvalValues::RegL: token = state.Gameboy.Cpu.L; break;
+									case EvalValues::RegAF: token = (state.Gameboy.Cpu.A << 8) | state.Gameboy.Cpu.Flags; break;
+									case EvalValues::RegBC: token = (state.Gameboy.Cpu.B << 8) | state.Gameboy.Cpu.C; break;
+									case EvalValues::RegDE: token = (state.Gameboy.Cpu.D << 8) | state.Gameboy.Cpu.E; break;
+									case EvalValues::RegHL: token = (state.Gameboy.Cpu.H << 8) | state.Gameboy.Cpu.L; break;
 									case EvalValues::RegSP: token = state.Gameboy.Cpu.SP; break;
 									case EvalValues::RegPC: token = state.Gameboy.Cpu.PC; break;
 								}
