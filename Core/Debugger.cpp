@@ -329,8 +329,17 @@ void Debugger::ProcessEvent(EventType type)
 			break;
 
 		case EventType::GbStartFrame:
+			if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+				_scriptManager->ProcessEvent(EventType::StartFrame);
+			}
 			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Gameboy);
 			GetEventManager(CpuType::Gameboy)->ClearFrameEvents();
+			break;
+		
+		case EventType::GbEndFrame:
+			if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+				_scriptManager->ProcessEvent(EventType::EndFrame);
+			}
 			break;
 
 		case EventType::Reset:
