@@ -11,8 +11,6 @@
 struct KeyDefinition {
 	string name;
 	uint32_t keyCode;
-	string description;
-	string extDescription;
 };
 
 class Console;
@@ -28,7 +26,6 @@ class WindowsKeyManager : public IKeyManager
 		unique_ptr<DirectInputManager> _directInput;
 		unique_ptr<XInputManager> _xInput;
 		std::unordered_map<uint32_t, string> _keyNames;
-		std::unordered_map<uint32_t, string> _keyExtendedNames;
 		std::unordered_map<string, uint32_t> _keyCodes;
 
 		AutoResetEvent _stopSignal;

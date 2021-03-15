@@ -32,7 +32,7 @@ else
 	PROFILE_USE_FLAG = -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
 endif
 
-GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS)
+GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2
 CCOPTIONS=-fPIC -Wall -O3 $(MESENFLAGS)
 LINKOPTIONS=
 

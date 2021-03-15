@@ -11,8 +11,6 @@ class Console;
 struct KeyDefinition {
 	string name;
 	uint32_t keyCode;
-	string description;
-	string extDescription;
 };
 
 class LinuxKeyManager : public IKeyManager
