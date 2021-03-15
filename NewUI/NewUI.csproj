@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+    <AssemblyName>Mesen-X</AssemblyName>
+    <RootNamespace>Mesen</RootNamespace>
+    <StartupObject></StartupObject>
+  </PropertyGroup>
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <OutputPath>C:\Code\Mesen-S\bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <OutputPath>C:\Code\Mesen-S\bin\x64\Release\</OutputPath>
+	</PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.0" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
+    <PackageReference Include="Dock.Avalonia" Version="0.10.0" />
+    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
+    <PackageReference Include="Dock.Model.Avalonia" Version="0.10.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
+   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ConfigWindow.axaml.cs">
+      <DependentUpon>ConfigWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\VideoConfigView.axaml.cs">
+      <DependentUpon>VideoConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\BreakpointListView.axaml.cs">
+      <DependentUpon>BreakpointListView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\AudioConfigView.axaml.cs">
+      <DependentUpon>AudioConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SnesCpuView.axaml.cs">
+      <DependentUpon>SnesCpuView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DisassemblyView.axaml.cs">
+      <DependentUpon>DisassemblyView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DebuggerWindow.axaml.cs">
+      <DependentUpon>DebuggerWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+	  <AvaloniaResource Include="Styles\MesenStyles.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="MesenSCore.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InteropDLL\InteropDLL.vcxproj">
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

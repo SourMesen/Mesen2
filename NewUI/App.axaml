@@ -1,0 +1,12 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Mesen.App">
+	<Application.Styles>
+		<FluentTheme Mode="Light" />
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+		<StyleInclude Source="avares://Avalonia.Themes.Fluent/DensityStyles/Compact.xaml"/>
+		<!--<StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml" />-->
+		<!--<StyleInclude Source="avares://Dock.Avalonia.Themes.Default/DefaultTheme.axaml"/>-->
+		<!--<StyleInclude Source="/Styles/MesenStyles.xaml" />-->
+	</Application.Styles>
+</Application>

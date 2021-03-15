@@ -1,0 +1,121 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Views.SnesCpuView"
+>
+	<Design.DataContext>
+		<vm:SnesCpuViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="CheckBox">
+			<!--	<Setter Property="RenderTransform">
+				<Setter.Value>
+					<ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+				</Setter.Value>
+			</Setter>-->
+			<Setter Property="Padding" Value="2 0"/>
+			<Setter Property="Margin" Value="2 0"/>
+			<Setter Property="MinHeight" Value="0"/>
+			<Setter Property="MinWidth" Value="0"/>
+		</Style>
+		<Style Selector="TextBox.h1">
+			<Setter Property="FontFamily" Value="Consolas" />
+			<Setter Property="Padding" Value="3 1"/>
+			<Setter Property="Margin" Value="5 0 5 1"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="MinHeight" Value="0"/>
+			<Setter Property="MinWidth" Value="28"/>
+		</Style>
+	</UserControl.Styles>
+
+	<Border BorderThickness="1" CornerRadius="3" BorderBrush="LightGray" Margin="1" Padding="2">
+		<DockPanel>
+			<DockPanel DockPanel.Dock="Top">
+				<TextBlock>A:</TextBlock>
+				<TextBox Classes="h1" Text="{Binding RegA}" />
+				<TextBlock>X:</TextBlock>
+				<TextBox  Classes="h1" Text="{Binding RegX}" />
+				<TextBlock>Y:</TextBlock>
+				<TextBox Classes="h1" Text="{Binding RegY}" />
+				<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+					<TextBlock>PC:</TextBlock>
+					<TextBox Classes="h1" Text="{Binding RegPC}" />
+				</StackPanel>
+				<TextBlock />
+			</DockPanel>
+			<DockPanel DockPanel.Dock="Top">
+				<TextBlock>D:</TextBlock>
+				<TextBox Classes="h1" Text="{Binding RegD}" />
+				<TextBlock>DB:</TextBlock>
+				<TextBox  Classes="h1" Text="{Binding RegDBR}" />
+
+				<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+					<TextBlock>S:</TextBlock>
+					<TextBox Classes="h1" Text="{Binding RegSP}" />
+				</StackPanel>
+				<TextBlock />
+			</DockPanel>
+			<DockPanel DockPanel.Dock="Top" Margin="0 2 0 0">
+				<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
+					<TextBlock>P:</TextBlock>
+					<TextBox Classes="h1" Text="{Binding RegPS}" />
+				</StackPanel>
+
+				<TextBox
+					DockPanel.Dock="Right"
+					Classes="h1"
+					TextWrapping="Wrap"
+					Width="60"
+					Height="60"
+					AcceptsReturn="True"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+					Text="{Binding StackPreview}"
+				/>
+			
+				<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+					<CheckBox IsChecked="{Binding FlagN}" />
+					<TextBlock Width="15">N</TextBlock>
+					<CheckBox IsChecked="{Binding FlagV}" />
+					<TextBlock Width="15">V</TextBlock>
+					<CheckBox IsChecked="{Binding FlagM}" />
+					<TextBlock Width="15">M</TextBlock>
+					<CheckBox IsChecked="{Binding FlagX}" />
+					<TextBlock Width="15">X</TextBlock>
+				</StackPanel>
+
+				<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+					<CheckBox IsChecked="{Binding FlagD}" />
+					<TextBlock Width="15">D</TextBlock>
+					<CheckBox IsChecked="{Binding FlagI}" />
+					<TextBlock Width="15">I</TextBlock>
+					<CheckBox IsChecked="{Binding FlagZ}" />
+					<TextBlock Width="15">Z</TextBlock>
+					<CheckBox IsChecked="{Binding FlagC}" />
+					<TextBlock Width="15">C</TextBlock>
+				</StackPanel>
+
+				<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+					<CheckBox IsChecked="{Binding FlagNmi}" />
+					<TextBlock Width="34">NMI</TextBlock>
+					<CheckBox IsChecked="{Binding FlagIrq}" />
+					<TextBlock Width="33">IRQ</TextBlock>
+					<CheckBox IsChecked="{Binding FlagE}" />
+					<TextBlock>E</TextBlock>
+				</StackPanel>			
+			
+				<TextBlock />
+			</DockPanel>
+			<TextBlock />
+		</DockPanel>
+	</Border>
+</UserControl>

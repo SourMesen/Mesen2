@@ -1,0 +1,75 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	<Styles.Resources>
+		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
+	</Styles.Resources>
+
+	<Style Selector="TextBlock">
+		<Setter Property="FontSize" Value="11" />
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+	</Style>
+	
+	<Style Selector="TextBox">
+		<Setter Property="FontSize" Value="11" />
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="MinWidth" Value="30" />
+		
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+
+		<Setter Property="Margin" Value="1" />
+		<Setter Property="Padding" Value="2 0" />
+		<Setter Property="MinHeight" Value="21" />
+		<Setter Property="Height" Value="21" />
+	</Style>
+	<Style Selector="TextBox Border">
+		<Setter Property="CornerRadius" Value="0" />
+	</Style>
+
+	<Style Selector="ComboBox">
+		<Setter Property="Margin" Value="1" />
+		<Setter Property="Padding" Value="3 2" />
+		<Setter Property="MinHeight" Value="21" />
+	</Style>
+	<Style Selector="ComboBox /template/ Border#Background">
+		<Setter Property="CornerRadius" Value="0" />
+	</Style>
+
+	<Style Selector="CheckBox">
+		<Setter Property="MinHeight" Value="20" />
+	</Style>
+	<Style Selector="CheckBox /template/ Grid">
+		<Setter Property="Height" Value="20" />
+		<Setter Property="MaxHeight" Value="20" />
+	</Style>
+	<Style Selector="CheckBox /template/ Grid > Grid">
+		<Setter Property="Height" Value="16" />
+		<Setter Property="MaxHeight" Value="20" />
+	</Style>
+	<Style Selector="CheckBox /template/ Border#NormalRectangle">
+		<Setter Property="MaxWidth" Value="16" />
+		<Setter Property="MaxHeight" Value="16" />
+	</Style>
+	<Style Selector="CheckBox /template/ Grid > Grid > Viewbox > Panel">
+		<Setter Property="Height" Value="12" />
+		<Setter Property="Width" Value="12" />
+	</Style>
+	<Style Selector="CheckBox Border">
+		<Setter Property="CornerRadius" Value="0" />
+	</Style>
+	
+	<Style Selector="NumericUpDown">
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="Margin" Value="0 0 0 0" />
+	</Style>
+
+	<Style Selector="Grid > TextBlock">
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="Margin" Value="0 4 10 4" />
+	</Style>
+	<Style Selector="Grid > ComboBox">
+		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
+</Styles>

@@ -1,0 +1,72 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Views.BreakpointListView"
+>
+	<Design.DataContext>
+		<vm:BreakpointListViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="DataGridColumnHeader">
+			<Setter Property="MinHeight" Value="18" />
+		</Style>
+		<Style Selector="DataGridColumnHeader Grid">
+			<Setter Property="Margin" Value="-8 0 0 0" />
+		</Style>
+		<Style Selector="DataGridColumnHeader Grid ContentPresenter">
+			<Setter Property="Margin" Value="0 0 -30 0" />
+		</Style>
+		<Style Selector="DataGridColumnHeader Path">
+			<Setter Property="Width" Value="0" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="DataGridRow">
+			<Setter Property="Height" Value="18" />
+		</Style>
+		<Style Selector="DataGridCell">
+			<Setter Property="FontSize" Value="10.5" />
+			<Setter Property="Height" Value="14" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="DataGridCell /template/ ContentPresenter > TextBlock">
+			<Setter Property="Margin" Value="0" />
+		</Style>
+		<Style Selector="DataGridCell CheckBox">
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="DataGridCell Grid#FocusVisual">
+			<Setter Property="Opacity" Value="0" />
+		</Style>
+	</UserControl.Styles>
+	<Border BorderThickness="1" BorderBrush="LightGray">
+		<DataGrid
+			Items="{Binding Breakpoints}"
+			CanUserSortColumns="True"
+			CanUserResizeColumns="True"
+			CanUserReorderColumns="True"
+			SelectionMode="Extended"
+			FontFamily="Microsoft Sans Serif"
+			GridLinesVisibility="All"
+			Tapped="Tapped"
+			DoubleTapped="DoubleTapped"
+			IsReadOnly="True"
+		>
+			<DataGrid.Columns>
+				<DataGridCheckBoxColumn Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
+				<DataGridCheckBoxColumn Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
+				<DataGridTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
+				<DataGridTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
+				<DataGridTextColumn Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
+			</DataGrid.Columns>
+		</DataGrid>
+	</Border>
+</UserControl>

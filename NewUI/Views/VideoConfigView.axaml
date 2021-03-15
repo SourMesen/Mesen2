@@ -1,0 +1,59 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Views.VideoConfigView"
+>
+	<Design.DataContext>
+		<vm:VideoConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top">
+		<TabItem Header="General">
+			<StackPanel Margin="0 10">
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblVideoScale}" />
+					<TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Text="1" />
+
+					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
+					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+						<ComboBox Name="cboAspectRatio" SelectedItem="{Binding AspectRatio}" />
+						<StackPanel Orientation="Horizontal" VerticalAlignment="Center" IsVisible="{Binding ShowCustomRatio}">
+							<TextBlock Text="{l:Translate lblCustomRatio}" />
+							
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+				
+				<CheckBox Content="{l:Translate chkIntegerFpsMode}" />
+				<CheckBox Content="{l:Translate chkVerticalSync}" />
+				<CheckBox Name="ExFullscreen" Content="{l:Translate chkUseExclusiveFullscreen}" />
+
+				<StackPanel Orientation="Horizontal" IsVisible="{Binding #ExFullscreen.IsChecked}" Margin="35 3 0 10">
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+						<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
+						<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="0">
+							<ComboBoxItem>Default</ComboBoxItem>
+						</ComboBox>
+
+						<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRate}" />
+						<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0">
+							<ComboBoxItem>60 Hz</ComboBoxItem>
+						</ComboBox>
+					</Grid>
+				</StackPanel>
+				
+				<CheckBox Content="{l:Translate chkFullscreenForceIntegerScale}" />
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgPicture}" />
+		<TabItem Header="{l:Translate tpgOverscan}" />
+		<TabItem Header="{l:Translate tpgAdvanced}" />
+	</TabControl>
+</UserControl>

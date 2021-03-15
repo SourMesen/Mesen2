@@ -1,0 +1,155 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+	x:Class="Mesen.ConfigWindow"
+	Width="500" Height="500"
+	Title="Settings"
+>
+	<Window.Styles>
+		<Style Selector="TabControl[TabStripPlacement=Left]">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border
+						 Margin="{TemplateBinding Margin}"
+						 BorderBrush="{TemplateBinding BorderBrush}"
+						 BorderThickness="{TemplateBinding BorderThickness}"
+					>
+						<DockPanel>
+							<ScrollViewer
+								 Name="PART_ScrollViewer"
+								 HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+								 VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+								 Background="{TemplateBinding Background}"
+								 DockPanel.Dock="Left"
+							>
+								<ItemsPresenter
+									 Name="PART_ItemsPresenter"
+									 Items="{TemplateBinding Items}"
+									 ItemsPanel="{TemplateBinding ItemsPanel}"
+									 ItemTemplate="{TemplateBinding ItemTemplate}">
+								</ItemsPresenter>
+							</ScrollViewer>
+							<ContentControl Content="{TemplateBinding Tag}" HorizontalContentAlignment="Right" DockPanel.Dock="Bottom"/>
+							<ScrollViewer
+								 HorizontalScrollBarVisibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.(ScrollViewer.HorizontalScrollBarVisibility)}"
+								 VerticalScrollBarVisibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.(ScrollViewer.VerticalScrollBarVisibility)}">
+								<ContentPresenter
+										  Name="PART_SelectedContentHost"
+										  Margin="{TemplateBinding Padding}"
+										  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+										  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+										  Content="{TemplateBinding SelectedContent}"
+										  ContentTemplate="{TemplateBinding SelectedContentTemplate}">
+								</ContentPresenter>
+							</ScrollViewer>
+						</DockPanel>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+	</Window.Styles>
+
+	<DockPanel>
+		<Panel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Background="#2888">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 3">
+				<Button Width="80" HorizontalContentAlignment="Center">Apply</Button>
+				<Button Width="80" HorizontalContentAlignment="Center">OK</Button>
+				<Button Width="80" HorizontalContentAlignment="Center">Cancel</Button>
+			</StackPanel>
+		</Panel>
+		
+		<TabControl TabStripPlacement="Left" Background="#20888888">
+			<TabItem Header="Audio">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="Audio" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">Audio</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<v:AudioConfigView DataContext="{Binding Audio}" />
+				
+			</TabItem>
+			<TabItem Header="Emulation">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="Build" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">Emulation</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<StackPanel>
+					<CheckBox Content="Enable audio" />
+				</StackPanel>
+			</TabItem>
+			<TabItem Header="Input">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="Controller" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">Input</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+				<TabControl TabStripPlacement="Top">
+					<TabItem Header="Controllers">
+						<StackPanel Margin="0 10" Width="300" HorizontalAlignment="Left">
+							<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+								<TextBlock Grid.Row="0" Grid.Column="0">Player 1:</TextBlock>
+								<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="1" HorizontalAlignment="Stretch" Margin="5 0">
+									<ComboBoxItem>None</ComboBoxItem>
+									<ComboBoxItem>SNES Controller</ComboBoxItem>
+								</ComboBox>
+								<Button Grid.Row="0" Grid.Column="2" Padding="4">Setup</Button>
+
+								<TextBlock Grid.Row="1" Grid.Column="0">Player 2:</TextBlock>
+								<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0" HorizontalAlignment="Stretch" Margin="5 0">
+									<ComboBoxItem>None</ComboBoxItem>
+									<ComboBoxItem>SNES Controller</ComboBoxItem>
+								</ComboBox>
+								<Button Grid.Row="1" Grid.Column="2" Padding="4">Setup</Button>
+							</Grid>
+						</StackPanel>
+					</TabItem>
+					<TabItem Header="Advanced">
+						<StackPanel Margin="0 10" MaxWidth="300" HorizontalAlignment="Left">
+						</StackPanel>
+					</TabItem>
+				</TabControl>
+			</TabItem>
+			<TabItem Header="Video">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="Image" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">Video</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<v:VideoConfigView DataContext="{Binding Video}" />
+				
+			</TabItem>
+			<TabItem IsEnabled="False" MinHeight="10">
+				<TabItem.Header>
+					<Rectangle Fill="LightGray" Height="1" />
+				</TabItem.Header>
+			</TabItem>
+			<TabItem Header="Preferences">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="Settings" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">Preferences</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<StackPanel>
+					<CheckBox Content="Enable audio" />
+				</StackPanel>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</Window>
