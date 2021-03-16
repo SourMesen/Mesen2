@@ -6,6 +6,22 @@
 		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
 	</Styles.Resources>
 
+	<Style Selector="Button">
+		<Setter Property="Margin" Value="1" />
+		<Setter Property="Background" Value="#DDD" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderBrush" Value="Gray" />
+	</Style>
+	<Style Selector="Button:pointerover ContentPresenter">
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Background" Value="#DEE" />
+		<Setter Property="BorderBrush" Value="Gray" />
+	</Style>
+
+	<Style Selector="Button /template/ ContentPresenter">
+		<Setter Property="CornerRadius" Value="0" />
+	</Style>
+
 	<Style Selector="TextBlock">
 		<Setter Property="FontSize" Value="11" />
 		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />

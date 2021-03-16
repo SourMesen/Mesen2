@@ -59,7 +59,6 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Background="#2888">
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 3">
-				<Button Width="80" HorizontalContentAlignment="Center">Apply</Button>
 				<Button Width="80" HorizontalContentAlignment="Center">OK</Button>
 				<Button Width="80" HorizontalContentAlignment="Center">Cancel</Button>
 			</StackPanel>
