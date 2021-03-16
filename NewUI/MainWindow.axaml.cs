@@ -54,11 +54,11 @@ namespace Mesen
 			ConfigManager.Config.Input.ApplyConfig();
 
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Chrono Trigger (USA).sfc");
-			/*if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
 				EmuApi.LoadRom(@"/mnt/hgfs/Code/Mesen-S/PGOHelper/PGOGames/Super Mario World (USA).sfc");
 			} else {
 				EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
-			}*/
+			}
 		}
 
 		private void InitializeComponent()

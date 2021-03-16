@@ -16,7 +16,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void DisableAllKeys([MarshalAs(UnmanagedType.I1)]bool disabled);
 		[DllImport(DllPath)] public static extern void UpdateInputDevices();
 
-		[DllImport(DllPath)] public static extern UInt32 GetKeyCode([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string keyName);
+		[DllImport(DllPath)] public static extern UInt32 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);
 
 		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key);
 		public static string GetKeyName(UInt32 key) { return Utf8Marshaler.PtrToStringUtf8(InputApi.GetKeyNameWrapper(key)); }

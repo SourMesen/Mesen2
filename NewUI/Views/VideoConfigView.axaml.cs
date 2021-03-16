@@ -22,7 +22,7 @@ namespace Mesen.Views
 		{
 			base.OnInitialized();
 
-			DataBindingHelper.InitializeComboBox(this.FindControl<ComboBox>("cboAspectRatio"), typeof(VideoAspectRatio));
+			//DataBindingHelper.InitializeComboBox(this.FindControl<ComboBox>("cboAspectRatio"), typeof(VideoAspectRatio));
 		}
 	}
 }

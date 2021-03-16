@@ -32,7 +32,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern IntPtr RegisterNotificationCallback(NotificationListener.NotificationCallback callback);
 		[DllImport(DllPath)] public static extern void UnregisterNotificationCallback(IntPtr notificationListener);
 
-		[DllImport(DllPath)] public static extern void InitializeEmu([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string homeFolder, IntPtr windowHandle, IntPtr dxViewerHandle, [MarshalAs(UnmanagedType.I1)]bool noAudio, [MarshalAs(UnmanagedType.I1)]bool noVideo, [MarshalAs(UnmanagedType.I1)]bool noInput);
+		[DllImport(DllPath)] public static extern void InitializeEmu([MarshalAs(UnmanagedType.LPUTF8Str)]string homeFolder, IntPtr windowHandle, IntPtr dxViewerHandle, [MarshalAs(UnmanagedType.I1)]bool noAudio, [MarshalAs(UnmanagedType.I1)]bool noVideo, [MarshalAs(UnmanagedType.I1)]bool noInput);
 
 		[DllImport(DllPath)] public static extern void Release();
 
@@ -50,8 +50,8 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void TakeScreenshot();
 
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool LoadRom(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string patchFile = ""
+			[MarshalAs(UnmanagedType.LPUTF8Str)]string filepath,
+			[MarshalAs(UnmanagedType.LPUTF8Str)]string patchFile = ""
 		);
 
 		[DllImport(DllPath, EntryPoint = "GetRomInfo")] private static extern void GetRomInfoWrapper(out InteropRomInfo romInfo);
@@ -62,14 +62,14 @@ namespace Mesen.GUI
 			return new RomInfo(info);
 		}
 
-		[DllImport(DllPath)] public static extern void LoadRecentGame([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath, [MarshalAs(UnmanagedType.I1)]bool resetGame);
+		[DllImport(DllPath)] public static extern void LoadRecentGame([MarshalAs(UnmanagedType.LPUTF8Str)]string filepath, [MarshalAs(UnmanagedType.I1)]bool resetGame);
 
-		[DllImport(DllPath)] public static extern void AddKnownGameFolder([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string folder);
+		[DllImport(DllPath)] public static extern void AddKnownGameFolder([MarshalAs(UnmanagedType.LPUTF8Str)]string folder);
 
 		[DllImport(DllPath)] public static extern void SetFolderOverrides(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string saveDataFolder,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string saveStateFolder,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string screenshotFolder
+			[MarshalAs(UnmanagedType.LPUTF8Str)]string saveDataFolder,
+			[MarshalAs(UnmanagedType.LPUTF8Str)]string saveStateFolder,
+			[MarshalAs(UnmanagedType.LPUTF8Str)]string screenshotFolder
 		);
 
 		[DllImport(DllPath)] public static extern void SetDisplayLanguage(Language lang);
@@ -79,17 +79,17 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
 		public static string GetLog() { return Utf8Marshaler.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
-		[DllImport(DllPath)] public static extern void WriteLogEntry([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string message);
-		[DllImport(DllPath)] public static extern void DisplayMessage([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string title, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string message, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string param1 = null);
+		[DllImport(DllPath)] public static extern void WriteLogEntry([MarshalAs(UnmanagedType.LPUTF8Str)]string message);
+		[DllImport(DllPath)] public static extern void DisplayMessage([MarshalAs(UnmanagedType.LPUTF8Str)]string title, [MarshalAs(UnmanagedType.LPUTF8Str)]string message, [MarshalAs(UnmanagedType.LPUTF8Str)]string param1 = null);
 
-		[DllImport(DllPath)] public static extern IntPtr GetArchiveRomList([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
+		[DllImport(DllPath)] public static extern IntPtr GetArchiveRomList([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
 
 		[DllImport(DllPath)] public static extern void SaveState(UInt32 stateIndex);
 		[DllImport(DllPath)] public static extern void LoadState(UInt32 stateIndex);
-		[DllImport(DllPath)] public static extern void SaveStateFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath);
-		[DllImport(DllPath)] public static extern void LoadStateFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filepath);
+		[DllImport(DllPath)] public static extern void SaveStateFile([MarshalAs(UnmanagedType.LPUTF8Str)]string filepath);
+		[DllImport(DllPath)] public static extern void LoadStateFile([MarshalAs(UnmanagedType.LPUTF8Str)]string filepath);
 
-		[DllImport(DllPath, EntryPoint = "GetSaveStatePreview")] private static extern Int32 GetSaveStatePreviewWrapper([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string saveStatePath, [Out]byte[] imgData);
+		[DllImport(DllPath, EntryPoint = "GetSaveStatePreview")] private static extern Int32 GetSaveStatePreviewWrapper([MarshalAs(UnmanagedType.LPUTF8Str)]string saveStatePath, [Out]byte[] imgData);
 		public static Image GetSaveStatePreview(string saveStatePath)
 		{
 			if(File.Exists(saveStatePath)) {

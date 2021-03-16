@@ -21,7 +21,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void ResumeExecution();
 		[DllImport(DllPath)] public static extern void Step(CpuType cpuType, Int32 instructionCount, StepType type = StepType.Step);
 
-		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename);
+		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
 		[DllImport(DllPath)] public static extern void SetTraceOptions(InteropTraceLoggerOptions options);
 		[DllImport(DllPath)] public static extern void ClearTraceLog();
@@ -44,7 +44,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void RefreshDisassembly(CpuType type);
 		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineCount(CpuType type);
 		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineIndex(CpuType type, UInt32 cpuAddress);
-		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
+		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
 		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
@@ -58,12 +58,12 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern void SetScriptTimeout(UInt32 timeout);
-		[DllImport(DllPath)] public static extern Int32 LoadScript([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string name, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string content, Int32 scriptId = -1);
+		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)]string content, Int32 scriptId = -1);
 		[DllImport(DllPath)] public static extern void RemoveScript(Int32 scriptId);
 		[DllImport(DllPath, EntryPoint = "GetScriptLog")] private static extern IntPtr GetScriptLogWrapper(Int32 scriptId);
 		public static string GetScriptLog(Int32 scriptId) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetScriptLogWrapper(scriptId)).Replace("\n", Environment.NewLine); }
 
-		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
+		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
 
 		[DllImport(DllPath)] public static extern Int32 GetMemorySize(SnesMemoryType type);
 		[DllImport(DllPath)] public static extern Byte GetMemoryValue(SnesMemoryType type, UInt32 address);
@@ -79,7 +79,7 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropBreakpoint[] breakpoints, UInt32 length);
 
-		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string filename, [MarshalAs(UnmanagedType.I1)]bool saveAsIps, CdlStripOption cdlStripOption);
+		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, [MarshalAs(UnmanagedType.I1)]bool saveAsIps, CdlStripOption cdlStripOption);
 
 		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(SnesMemoryType type, [In, Out] byte[] buffer);
 		public static byte[] GetMemoryState(SnesMemoryType type)
@@ -178,7 +178,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetCdlData(CpuType cpuType, [In]byte[] cdlData, Int32 length);
 		[DllImport(DllPath)] public static extern void MarkBytesAs(CpuType cpuType, UInt32 start, UInt32 end, CdlFlags type);
 
-		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]string code, UInt32 startAddress, [In, Out]Int16[] assembledCodeBuffer);
+		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.LPUTF8Str)]string code, UInt32 startAddress, [In, Out]Int16[] assembledCodeBuffer);
 		public static Int16[] AssembleCode(CpuType cpuType, string code, UInt32 startAddress)
 		{
 			code = code.Replace(Environment.NewLine, "\n");
