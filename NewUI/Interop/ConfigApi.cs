@@ -16,7 +16,7 @@ namespace Mesen.GUI
 	{
 		private const string DllPath = "MesenSCore.dll";
 
-		[DllImport(DllPath)] public static extern void SetVideoConfig(VideoConfig config);
+		[DllImport(DllPath)] public static extern void SetVideoConfig(InteropVideoConfig config);
 		[DllImport(DllPath)] public static extern void SetAudioConfig(AudioConfig config);
 		[DllImport(DllPath)] public static extern void SetInputConfig(InputConfig config);
 		[DllImport(DllPath)] public static extern void SetEmulationConfig(EmulationConfig config);

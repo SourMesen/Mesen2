@@ -1,0 +1,24 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	x:Name="root"
+	x:Class="Mesen.Controls.MesenSlider"
+>
+	<DockPanel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch" Height="50">
+		<TextBlock DockPanel.Dock="Top" Text="{Binding Text}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 2 0 0" />
+		<TextBox DockPanel.Dock="Right" Text="{Binding Value}" VerticalAlignment="Top" Margin="4" />
+		<Slider
+			Minimum="{Binding Minimum}"
+			Margin="0 -14 0 0"
+			Maximum="{Binding Maximum}"
+			Value="{Binding Value}"
+			TickPlacement="BottomRight"
+			TickFrequency="5"
+			LargeChange="5"
+			SmallChange="1"
+		/>
+	</DockPanel>
+</UserControl>

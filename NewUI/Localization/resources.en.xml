@@ -242,7 +242,7 @@
 			<Control ID="mnuPresetRgb">RGB</Control>
 			<Control ID="mnuPresetMonochrome">Monochrome</Control>
 
-			<Control ID="tpgAdvanced">Advanced</Control>
+			<Control ID="tpgAdvancedSnes">Advanced (SNES)</Control>
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flashing)</Control>
 			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>

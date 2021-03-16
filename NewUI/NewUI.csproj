@@ -67,9 +67,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\InteropDLL\InteropDLL.vcxproj">
       <Private>true</Private>
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>

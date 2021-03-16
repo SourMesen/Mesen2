@@ -16,11 +16,12 @@ namespace Mesen.ViewModels
 		[Reactive] public VideoAspectRatio AspectRatio { get; set; }
 		[ObservableAsProperty] public bool ShowCustomRatio { get; set; }
 
-		[Reactive] public AudioConfig Config { get; set; }
+		[Reactive] public VideoConfig Config { get; set; }
 		
 		public VideoConfigViewModel()
 		{
-			Config = ConfigManager.Config.Audio;
+			//Config = ConfigManager.Config.Video;
+			Config = new VideoConfig();
 
 			this.WhenAnyValue(_ => _.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio);
 		}

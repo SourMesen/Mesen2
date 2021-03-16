@@ -4,22 +4,24 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	x:DataType="vm:VideoConfigViewModel"
 	x:Class="Mesen.Views.VideoConfigView"
 >
 	<Design.DataContext>
 		<vm:VideoConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top">
+	<TabControl TabStripPlacement="Top" SelectedIndex="1">
 		<TabItem Header="General">
 			<StackPanel Margin="0 10">
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblVideoScale}" />
-					<TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Text="1" />
+					<TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Text="{CompiledBinding Config.VideoScale}" />
 
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
 					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
@@ -31,11 +33,11 @@
 					</StackPanel>
 				</Grid>
 				
-				<CheckBox Content="{l:Translate chkIntegerFpsMode}" />
-				<CheckBox Content="{l:Translate chkVerticalSync}" />
-				<CheckBox Name="ExFullscreen" Content="{l:Translate chkUseExclusiveFullscreen}" />
+				<CheckBox Content="{l:Translate chkIntegerFpsMode}" IsChecked="{CompiledBinding Config.IntegerFpsMode}" />
+				<CheckBox Content="{l:Translate chkVerticalSync}" IsChecked="{CompiledBinding Config.VerticalSync}" />
+				<CheckBox Content="{l:Translate chkUseExclusiveFullscreen}" IsChecked="{CompiledBinding Config.UseExclusiveFullscreen}" />
 
-				<StackPanel Orientation="Horizontal" IsVisible="{Binding #ExFullscreen.IsChecked}" Margin="35 3 0 10">
+				<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding Config.UseExclusiveFullscreen}" Margin="35 3 0 10">
 					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 						<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
 						<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="0">
@@ -49,11 +51,81 @@
 					</Grid>
 				</StackPanel>
 				
-				<CheckBox Content="{l:Translate chkFullscreenForceIntegerScale}" />
+				<CheckBox Content="{l:Translate chkFullscreenForceIntegerScale}" IsChecked="{CompiledBinding Config.FullscreenForceIntegerScale}" />
 			</StackPanel>
 		</TabItem>
-		<TabItem Header="{l:Translate tpgPicture}" />
-		<TabItem Header="{l:Translate tpgOverscan}" />
-		<TabItem Header="{l:Translate tpgAdvanced}" />
+		<TabItem Header="{l:Translate tpgPicture}">
+			<StackPanel Orientation="Vertical">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblVideoFilter}" VerticalAlignment="Center" />
+					<ComboBox />
+				</StackPanel>
+				<WrapPanel ItemWidth="200" MaxWidth="450" HorizontalAlignment="Left">
+					<c:MesenSlider Value="{CompiledBinding Config.Brightness}" Text="{l:Translate trkBrightness}" Margin="5" Minimum="-100" Maximum="100"  />
+					<c:MesenSlider Value="{CompiledBinding Config.Contrast}" Text="{l:Translate trkContrast}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.Hue}" Text="{l:Translate trkHue}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.Saturation}" Text="{l:Translate trkSaturation}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.ScanlineIntensity}" Text="{l:Translate trkScanlines}" Margin="5" Minimum="0" Maximum="100" />
+				</WrapPanel>
+				<CheckBox IsChecked="{CompiledBinding Config.UseBilinearInterpolation}" Content="{l:Translate chkBilinearInterpolation}" />
+
+				
+				<TextBlock Margin="0 20 0 0">NTSC</TextBlock>
+				<WrapPanel ItemWidth="200" MaxWidth="450" HorizontalAlignment="Left">
+					<c:MesenSlider Value="{CompiledBinding Config.NtscArtifacts}" Text="{l:Translate trkArtifacts}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.NtscBleed}" Text="{l:Translate trkBleed}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.NtscFringing}" Text="{l:Translate trkFringing}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.NtscGamma}" Text="{l:Translate trkGamma}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.NtscResolution}" Text="{l:Translate trkResolution}" Margin="5" Minimum="-100" Maximum="100" />
+					<c:MesenSlider Value="{CompiledBinding Config.NtscSharpness}" Text="{l:Translate trkSharpness}" Margin="5" Minimum="-100" Maximum="100" />
+				</WrapPanel>
+				<CheckBox IsChecked="{CompiledBinding Config.NtscMergeFields}" Content="{l:Translate chkMergeFields}" />
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgOverscan}">
+			<Panel VerticalAlignment="Center">
+				<StackPanel HorizontalAlignment="Center">
+					<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
+					<TextBox Text="{CompiledBinding Config.OverscanTop}" Width="40" />
+					
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+							<TextBlock Text="{l:Translate lblLeft}" HorizontalAlignment="Center" />
+							<TextBox Text="{CompiledBinding Config.OverscanLeft}" Width="40" />
+						</StackPanel>
+						
+						<Border Width="258" Height="242" BorderBrush="Gray" BorderThickness="1">
+							<Canvas Width="256" Height="240">
+								<Rectangle Width="256" Height="240" Fill="LightCyan" />
+								<Rectangle Width="{CompiledBinding Config.OverscanLeft}" Height="240" Fill="DarkGray" Canvas.Left="0" />
+								<Rectangle Width="{CompiledBinding Config.OverscanRight}" Height="240" Fill="DarkGray" Canvas.Right="0" />
+								<Rectangle Width="256" Height="{CompiledBinding Config.OverscanTop}" Fill="DarkGray" Canvas.Top="0" />
+								<Rectangle Width="256" Height="{CompiledBinding Config.OverscanBottom}" Fill="DarkGray" Canvas.Bottom="0" />
+							</Canvas>
+						</Border>
+
+						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+							<TextBlock Text="{l:Translate lblRight}" HorizontalAlignment="Center" />
+							<TextBox Text="{CompiledBinding Config.OverscanRight}" Width="40" />
+						</StackPanel>
+					</StackPanel>
+					
+					<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
+					<TextBox Text="{CompiledBinding Config.OverscanBottom}" Width="40" />
+				</StackPanel>
+			</Panel>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgAdvancedSnes}">
+			<StackPanel>
+				<CheckBox IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
+				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer0}" Content="{l:Translate chkHideBgLayer0}" />
+				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer1}" Content="{l:Translate chkHideBgLayer1}" />
+				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer2}" Content="{l:Translate chkHideBgLayer2}" />
+				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer3}" Content="{l:Translate chkHideBgLayer3}" />
+				<CheckBox IsChecked="{CompiledBinding Config.HideSprites}" Content="{l:Translate chkHideSprites}" />
+				<CheckBox IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Content="{l:Translate chkDisableFrameSkipping}" />
+			</StackPanel>
+		</TabItem>
 	</TabControl>
 </UserControl>

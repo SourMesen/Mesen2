@@ -102,8 +102,8 @@ namespace Mesen.Localization
 					_enResources.LoadXml(reader.ReadToEnd());
 				}
 			} catch {
-				_resources.Load("C:/Code/Mesen/Mesen/Localization/resources.en.xml");
-				_enResources.Load("C:/Code/Mesen/Mesen/Localization/resources.en.xml");
+				_resources.Load("C:/Code/Mesen-S/NewUI/Localization/resources.en.xml");
+				_enResources.Load("C:/Code/Mesen-S/NewUI/Localization/resources.en.xml");
 			}
 		}
 
