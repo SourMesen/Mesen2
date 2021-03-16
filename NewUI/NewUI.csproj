@@ -19,6 +19,8 @@
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <OutputPath>C:\Code\Mesen-S\bin\x64\Release\</OutputPath>
+	  <Optimize>false</Optimize>
+	  <DefineConstants>DEBUG</DefineConstants>
 	</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.0" />
@@ -65,12 +67,5 @@
     <None Update="MesenSCore.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\InteropDLL\InteropDLL.vcxproj">
-      <Private>true</Private>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
 </Project>

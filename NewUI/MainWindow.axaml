@@ -4,6 +4,7 @@
 		  xmlns:m="clr-namespace:Mesen"
 		  xmlns:vm="using:Mesen.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		  xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
         x:Class="Mesen.MainWindow"
 		  Width="400" Height="400"
@@ -16,17 +17,35 @@
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
-				<MenuItem Header="_Open..."/>
+				<MenuItem Header="_Open..." Click="OnOpenClick">
+					<MenuItem.Icon>
+						<mui:MaterialIcon Kind="FolderOpen" />
+					</MenuItem.Icon>
+				</MenuItem>
 				<Separator/>
 				<MenuItem Header="_Exit"/>
 			</MenuItem>
 			<MenuItem Header="_Options">
-				<MenuItem Header="_Audio" Click="OnAudioClick"/>
-				<MenuItem Header="_Video"/>
-			</MenuItem>			
-			<MenuItem Header="_Debug" Click="OnButtonClick" />
+				<MenuItem Header="Speed" />
+				<MenuItem Header="Video Size" />
+				<MenuItem Header="Video Filter" />
+				<MenuItem Header="Region" />
+				<Separator />
+				<MenuItem Header="_Settings" Click="OnOptionsClick">
+					<MenuItem.Icon>
+						<mui:MaterialIcon Kind="Settings" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+			<MenuItem Header="_Debug">
+				<MenuItem Header="_Debugger" Click="OnDebuggerClick">
+					<MenuItem.Icon>
+						<mui:MaterialIcon Kind="Bug" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 		</Menu>
-		<Panel Background="Black">
+		<Panel>
 			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 		</Panel>
 	</DockPanel>

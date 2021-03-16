@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Mesen
 {
@@ -44,21 +45,20 @@ namespace Mesen
 			ConfigManager.InitHomeFolder();
 			System.IO.Directory.CreateDirectory(ConfigManager.HomeFolder);
 			System.IO.Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
+
 			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
-
-
-			EmuApi.InitializeEmu(ConfigManager.HomeFolder, renderer.Handle, renderer.Handle, false, false, false);
+			EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
 
 			ConfigApi.SetAudioConfig(new Mesen.GUI.Config.AudioConfig() { });
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.Input.ApplyConfig();
 
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Chrono Trigger (USA).sfc");
-			if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+			/*if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
 				EmuApi.LoadRom(@"/mnt/hgfs/Code/Mesen-S/PGOHelper/PGOGames/Super Mario World (USA).sfc");
 			} else {
 				EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
-			}
+			}*/
 		}
 
 		private void InitializeComponent()
@@ -66,19 +66,27 @@ namespace Mesen
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		public void btnClick()
+		public async void OnOpenClick(object sender, RoutedEventArgs e)
 		{
-			
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filters = new List<FileDialogFilter>() {
+				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc" } }
+			};
+
+			string[] filenames = await ofd.ShowAsync(this);
+			if(filenames.Length > 0) {
+				EmuApi.LoadRom(filenames[0]);
+			}
 		}
 
-		private void OnButtonClick(object sender, RoutedEventArgs e)
+		private void OnDebuggerClick(object sender, RoutedEventArgs e)
 		{
 			new DebuggerWindow {
 				DataContext = new DebuggerViewModel(),
 			}.Show();
 		}
 
-		private void OnAudioClick(object sender, RoutedEventArgs e)
+		private void OnOptionsClick(object sender, RoutedEventArgs e)
 		{
 			new ConfigWindow {
 				DataContext = new ConfigViewModel(),

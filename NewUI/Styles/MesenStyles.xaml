@@ -1,21 +1,77 @@
 <Styles
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 >
+	<Design.PreviewWith>
+		<Window Width="200" Height="200">
+			<Menu VerticalAlignment="Top">
+				<MenuItem Header="File">
+					<MenuItem Header="Abcd">
+						<MenuItem.Icon>
+							<mui:MaterialIcon Kind="FolderOpen" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Abcd" />
+				</MenuItem>
+			</Menu>
+		</Window>
+	</Design.PreviewWith>
+
+	<Styles.Resources>
+		<CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
+		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
+		<Color x:Key="MenuFlyoutPresenterBackground">#FDFDFD</Color>
+		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
+	</Styles.Resources>
+	
 	<Styles.Resources>
 		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
 	</Styles.Resources>
 
+	<Style Selector="Menu">
+		<Setter Property="Height" Value="25" />
+		<Setter Property="Background" Value="#F1F1F1" />
+	</Style>
+
+	<Style Selector="MenuItem">
+		<Setter Property="Height" Value="22" />
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="Margin" Value="1" />
+		<Setter Property="Padding" Value="8 2" />
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="Menu > MenuItem:selected /template/ Border">
+		<!--<Setter Property="Background" Value="#FAFAFA" />-->
+		<Setter Property="Background" Value="#B5D7F3" />
+		<Setter Property="BorderBrush" Value="#0078D7" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="MenuItem > MenuItem:selected /template/ Border">
+		<Setter Property="Background" Value="#B5D7F3" />
+		<Setter Property="BorderBrush" Value="#0078D7" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="MenuItem /template/ Border">
+		<Setter Property="CornerRadius" Value="0" />
+	</Style>
+
 	<Style Selector="Button">
 		<Setter Property="Margin" Value="1" />
-		<Setter Property="Background" Value="#DDD" />
+		<Setter Property="Background" Value="#E1E1E1" />
 		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="BorderBrush" Value="Gray" />
+		<Setter Property="BorderBrush" Value="#ADADAD" />
 	</Style>
 	<Style Selector="Button:pointerover ContentPresenter">
 		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="Background" Value="#DEE" />
-		<Setter Property="BorderBrush" Value="Gray" />
+		<Setter Property="Background" Value="#E5F1FB" />
+		<Setter Property="BorderBrush" Value="#0078D7" />
 	</Style>
 
 	<Style Selector="Button /template/ ContentPresenter">
