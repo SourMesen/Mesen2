@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
 using Mesen.GUI.Forms;
+using static Mesen.GUI.Config.AudioConfig;
 
 namespace Mesen.GUI
 {
@@ -17,7 +18,7 @@ namespace Mesen.GUI
 		private const string DllPath = "MesenSCore.dll";
 
 		[DllImport(DllPath)] public static extern void SetVideoConfig(InteropVideoConfig config);
-		[DllImport(DllPath)] public static extern void SetAudioConfig(AudioConfig config);
+		[DllImport(DllPath)] public static extern void SetAudioConfig(InteropAudioConfig config);
 		[DllImport(DllPath)] public static extern void SetInputConfig(InputConfig config);
 		[DllImport(DllPath)] public static extern void SetEmulationConfig(EmulationConfig config);
 		[DllImport(DllPath)] public static extern void SetGameboyConfig(GameboyConfig config);

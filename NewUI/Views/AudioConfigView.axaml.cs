@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Mesen.Utilities;
 using Mesen.GUI.Config;
+using Mesen.GUI;
 
 namespace Mesen.Views
 {
@@ -16,6 +17,17 @@ namespace Mesen.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			this.FindControl<ComboBox>("AudioDevice").Items = ConfigApi.GetAudioDevices();
 		}
 	}
 }

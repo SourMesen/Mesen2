@@ -49,7 +49,7 @@ namespace Mesen
 			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
 
-			ConfigApi.SetAudioConfig(new Mesen.GUI.Config.AudioConfig() { });
+			ConfigApi.SetAudioConfig(new Mesen.GUI.Config.InteropAudioConfig() { });
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.Input.ApplyConfig();
 

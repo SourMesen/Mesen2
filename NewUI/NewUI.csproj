@@ -41,6 +41,12 @@
     <Compile Update="Controls\EnumComboBox.axaml.cs">
 		 <DependentUpon>EnumComboBox.axaml</DependentUpon>
 	 </Compile>
+    <Compile Update="Controls\CheckBoxWarning.axaml.cs">
+      <DependentUpon>CheckBoxWarning.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\SectionHeader.axaml.cs">
+      <DependentUpon>SectionHeader.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\VideoConfigView.axaml.cs">
       <DependentUpon>VideoConfigView.axaml</DependentUpon>
     </Compile>

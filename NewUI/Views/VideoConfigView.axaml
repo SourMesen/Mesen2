@@ -69,8 +69,8 @@
 					<c:MesenSlider Value="{CompiledBinding Config.ScanlineIntensity}" Text="{l:Translate trkScanlines}" Margin="5" Minimum="0" Maximum="100" />
 				</WrapPanel>
 				<CheckBox IsChecked="{CompiledBinding Config.UseBilinearInterpolation}" Content="{l:Translate chkBilinearInterpolation}" />
-				
-				<TextBlock Margin="0 20 0 0">NTSC</TextBlock>
+
+				<c:SectionHeader>NTSC</c:SectionHeader>
 				<WrapPanel ItemWidth="200" MaxWidth="450" HorizontalAlignment="Left">
 					<c:MesenSlider Value="{CompiledBinding Config.NtscArtifacts}" Text="{l:Translate trkArtifacts}" Margin="5" Minimum="-100" Maximum="100" />
 					<c:MesenSlider Value="{CompiledBinding Config.NtscBleed}" Text="{l:Translate trkBleed}" Margin="5" Minimum="-100" Maximum="100" />
@@ -118,13 +118,13 @@
 		
 		<TabItem Header="{l:Translate tpgAdvancedSnes}">
 			<StackPanel>
-				<CheckBox IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
-				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer0}" Content="{l:Translate chkHideBgLayer0}" />
-				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer1}" Content="{l:Translate chkHideBgLayer1}" />
-				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer2}" Content="{l:Translate chkHideBgLayer2}" />
-				<CheckBox IsChecked="{CompiledBinding Config.HideBgLayer3}" Content="{l:Translate chkHideBgLayer3}" />
-				<CheckBox IsChecked="{CompiledBinding Config.HideSprites}" Content="{l:Translate chkHideSprites}" />
-				<CheckBox IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Content="{l:Translate chkDisableFrameSkipping}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Text="{l:Translate chkBlendHighResolutionModes}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer0}" Text="{l:Translate chkHideBgLayer0}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
 			</StackPanel>
 		</TabItem>
 	</TabControl>

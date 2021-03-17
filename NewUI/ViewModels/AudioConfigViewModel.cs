@@ -16,7 +16,7 @@ namespace Mesen.ViewModels
 		
 		public AudioConfigViewModel()
 		{
-			Config = ConfigManager.Config.Audio;
+			Config = new AudioConfig();
 		}
    }
 }

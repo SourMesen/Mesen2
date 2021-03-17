@@ -650,6 +650,9 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+		<Form ID="CheckBoxWarning">
+			<Control ID="Hint">(not recommended)</Control>
+		</Form>
 	</Forms>
 	<UserControls>
 	</UserControls>
@@ -716,8 +719,6 @@
 		<Message ID="DefaultResolution">Default</Message>
 
 		<Message ID="RomsFound">{0} roms found</Message>
-
-		<Message ID="RiskyOptionHint">(not recommended)</Message>
 
 		<Message ID="ResetSettingsConfirmation">Warning: This will reset ALL of settings and cannot be undone!&#xA;&#xA;Continue?</Message>
 

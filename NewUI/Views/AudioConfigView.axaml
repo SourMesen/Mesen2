@@ -5,9 +5,11 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	x:DataType="vm:AudioConfigViewModel"
 	x:Class="Mesen.Views.AudioConfigView"
 >
 	<Design.DataContext>
@@ -21,9 +23,7 @@
 					
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblAudioDevice}" />
-					<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="0">
-						<ComboBoxItem>Default device</ComboBoxItem>
-					</ComboBox>
+					<ComboBox Name="AudioDevice" Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.AudioDevice}" />
 
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblSampleRate}" />
 					<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0">
@@ -32,34 +32,49 @@
 
 					<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblAudioLatency}" />
 					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-						<TextBox HorizontalAlignment="Left" Text="60" />
-						<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5"/>
+						<TextBox HorizontalAlignment="Left" Text="{CompiledBinding Config.AudioLatency}" />
+						<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
 					</StackPanel>
 
 					<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblVolume}" />
-					<StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
-						<Slider Name="Volume" HorizontalAlignment="Left" Minimum="0" Maximum="100" Width="150" TickPlacement="BottomRight" TickFrequency="10" SmallChange="1" LargeChange="10" />
-						<Border BorderThickness="1" BorderBrush="Gray" VerticalAlignment="Center" Width="30" Margin="5">
-							<TextBlock Text="{Binding #Volume.Value}" HorizontalAlignment="Center" />
-						</Border>
-					</StackPanel>
+					<c:MesenSlider
+						Grid.Row="3"
+						Grid.Column="1"
+						Minimum="0"
+						Maximum="100"
+						Width="150"
+						Value="{CompiledBinding Config.MasterVolume}"
+						HorizontalAlignment="Left"
+					/>
 				</Grid>
 
-				<TextBlock Foreground="Gray" Margin="0 15 0 5" Text="{l:Translate lblVolumeReductionSettings}" />
-				<CheckBox Content="{l:Translate chkMuteSoundInBackground}" />
-				<CheckBox Content="{l:Translate chkReduceSoundInBackground}" />
-				<CheckBox Content="{l:Translate chkReduceSoundInFastForward}" />
-				
-				<StackPanel Orientation="Horizontal">
-					<TextBlock VerticalAlignment="Center" Margin="0 0 10 0" Text="{l:Translate lblVolumeReduction}" />
-					<Slider Name="VolumeReduction" HorizontalAlignment="Left" Minimum="0" Maximum="100" Width="150" TickPlacement="BottomRight" TickFrequency="10" SmallChange="1" LargeChange="10" />
-					<Border BorderThickness="1" BorderBrush="Gray" VerticalAlignment="Center" Width="30" Margin="5">
-						<TextBlock Text="{Binding #VolumeReduction.Value}" HorizontalAlignment="Center" />
-					</Border>
+				<c:SectionHeader Content="{l:Translate lblVolumeReductionSettings}" />
+				<StackPanel Margin="10 0 0 0">
+					<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{CompiledBinding Config.MuteSoundInBackground}" />
+					<CheckBox Content="{l:Translate chkReduceSoundInBackground}" IsChecked="{CompiledBinding Config.ReduceSoundInBackground}" />
+					<CheckBox Content="{l:Translate chkReduceSoundInFastForward}" IsChecked="{CompiledBinding Config.ReduceSoundInFastForward}" />
+
+					<StackPanel Orientation="Horizontal">
+						<TextBlock VerticalAlignment="Center" Margin="0 0 10 0" Text="{l:Translate lblVolumeReduction}" />
+						<c:MesenSlider
+							Minimum="0"
+							Maximum="100"
+							Width="150"
+							Value="{CompiledBinding Config.VolumeReduction}"
+							HorizontalAlignment="Left"
+					/>
+					</StackPanel>
 				</StackPanel>
 			</StackPanel>
 		</TabItem>
-		<TabItem Header="{l:Translate tpgEqualizer}"/>
-		<TabItem Header="{l:Translate tpgAdvanced}"/>
+		
+		<TabItem Header="{l:Translate tpgEqualizer}" />
+		
+		<TabItem Header="{l:Translate tpgAdvanced}">
+			<StackPanel>
+				<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
+				<c:CheckBoxWarning Text="{l:Translate chkDisableDynamicSampleRate}" IsChecked="{CompiledBinding Config.DisableDynamicSampleRate}" />
+			</StackPanel>
+		</TabItem>
 	</TabControl>
 </UserControl>
