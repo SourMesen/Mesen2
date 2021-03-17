@@ -38,6 +38,9 @@
     <Compile Update="ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\EnumComboBox.axaml.cs">
+		 <DependentUpon>EnumComboBox.axaml</DependentUpon>
+	 </Compile>
     <Compile Update="Views\VideoConfigView.axaml.cs">
       <DependentUpon>VideoConfigView.axaml</DependentUpon>
     </Compile>
@@ -62,10 +65,5 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="MesenSCore.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

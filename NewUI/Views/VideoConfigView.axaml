@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
@@ -16,7 +17,7 @@
 		<vm:VideoConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="1">
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="General">
 			<StackPanel Margin="0 10">
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
@@ -25,10 +26,10 @@
 
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
 					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-						<ComboBox Name="cboAspectRatio" SelectedItem="{Binding AspectRatio}" />
-						<StackPanel Orientation="Horizontal" VerticalAlignment="Center" IsVisible="{Binding ShowCustomRatio}">
-							<TextBlock Text="{l:Translate lblCustomRatio}" />
-							
+						<c:EnumComboBox EnumType="{x:Type cfg:VideoAspectRatio}" SelectedItem="{CompiledBinding Config.AspectRatio}" MinWidth="230" />
+						<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding ShowCustomRatio}">
+							<TextBlock Text="{l:Translate lblCustomRatio}" Margin="10 0 0 0" VerticalAlignment="Center" />
+							<TextBox Text="{CompiledBinding Config.CustomAspectRatio}" VerticalAlignment="Center" />
 						</StackPanel>
 					</StackPanel>
 				</Grid>
@@ -58,7 +59,7 @@
 			<StackPanel Orientation="Vertical">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="{l:Translate lblVideoFilter}" VerticalAlignment="Center" />
-					<ComboBox />
+					<c:EnumComboBox EnumType="{x:Type cfg:VideoFilterType}" SelectedItem="{CompiledBinding Config.VideoFilter}" MinWidth="230" />
 				</StackPanel>
 				<WrapPanel ItemWidth="200" MaxWidth="450" HorizontalAlignment="Left">
 					<c:MesenSlider Value="{CompiledBinding Config.Brightness}" Text="{l:Translate trkBrightness}" Margin="5" Minimum="-100" Maximum="100"  />
@@ -68,7 +69,6 @@
 					<c:MesenSlider Value="{CompiledBinding Config.ScanlineIntensity}" Text="{l:Translate trkScanlines}" Margin="5" Minimum="0" Maximum="100" />
 				</WrapPanel>
 				<CheckBox IsChecked="{CompiledBinding Config.UseBilinearInterpolation}" Content="{l:Translate chkBilinearInterpolation}" />
-
 				
 				<TextBlock Margin="0 20 0 0">NTSC</TextBlock>
 				<WrapPanel ItemWidth="200" MaxWidth="450" HorizontalAlignment="Left">
