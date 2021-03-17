@@ -18,7 +18,7 @@
 	</Design.DataContext>
 
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
-		<TabItem Header="General">
+		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel Margin="0 10">
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblVideoScale}" />

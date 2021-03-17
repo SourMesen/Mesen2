@@ -145,9 +145,7 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<StackPanel>
-					<CheckBox Content="Enable audio" />
-				</StackPanel>
+				<v:PreferencesConfigView DataContext="{Binding Preferences}" />
 			</TabItem>
 		</TabControl>
 	</DockPanel>

@@ -12,54 +12,54 @@ namespace Mesen.GUI.Config
 {
 	public class PreferencesConfig
 	{
-		public Language DisplayLanguage = Language.English;
-		public bool AutomaticallyCheckForUpdates = true;
-		public bool SingleInstance = true;
-		public bool AutoLoadPatches = true;
+		public Language DisplayLanguage { get; set; } = Language.English;
+		public bool AutomaticallyCheckForUpdates { get; set; } = true;
+		public bool SingleInstance { get; set; } = true;
+		public bool AutoLoadPatches { get; set; } = true;
 
-		public bool PauseWhenInBackground = false;
-		public bool PauseWhenInMenusAndConfig = false;
-		public bool PauseWhenInDebuggingTools = false;
-		public bool AllowBackgroundInput = false;
-		public bool PauseOnMovieEnd = true;
+		public bool PauseWhenInBackground { get; set; } = false;
+		public bool PauseWhenInMenusAndConfig { get; set; } = false;
+		public bool PauseWhenInDebuggingTools { get; set; } = false;
+		public bool AllowBackgroundInput { get; set; } = false;
+		public bool PauseOnMovieEnd { get; set; } = true;
 
-		public bool AssociateRomFiles = false;
-		public bool AssociateSpcFiles = false;
-		public bool AssociateBsFiles = false;
-		public bool AssociateMsmFiles = false;
-		public bool AssociateMssFiles = false;
+		public bool AssociateRomFiles { get; set; } = false;
+		public bool AssociateSpcFiles { get; set; } = false;
+		public bool AssociateBsFiles { get; set; } = false;
+		public bool AssociateMsmFiles { get; set; } = false;
+		public bool AssociateMssFiles { get; set; } = false;
 
-		public UInt32 RewindBufferSize = 30;
+		public UInt32 RewindBufferSize { get; set; } = 30;
 
-		public bool AlwaysOnTop = false;
-		public bool AutoHideMenu = false;
+		public bool AlwaysOnTop { get; set; } = false;
+		public bool AutoHideMenu { get; set; } = false;
 
-		public bool ShowFps = false;
-		public bool ShowFrameCounter = false;
-		public bool ShowGameTimer = false;
-		public bool ShowTitleBarInfo = false;
-		public bool ShowDebugInfo = false;
-		public bool DisableOsd = false;
-		public bool DisableGameSelectionScreen = false;
+		public bool ShowFps { get; set; } = false;
+		public bool ShowFrameCounter { get; set; } = false;
+		public bool ShowGameTimer { get; set; } = false;
+		public bool ShowTitleBarInfo { get; set; } = false;
+		public bool ShowDebugInfo { get; set; } = false;
+		public bool DisableOsd { get; set; } = false;
+		public bool DisableGameSelectionScreen { get; set; } = false;
 
 		public List<ShortcutKeyInfo> ShortcutKeys1;
 		public List<ShortcutKeyInfo> ShortcutKeys2;
 
-		public bool OverrideGameFolder = false;
-		public bool OverrideAviFolder = false;
-		public bool OverrideMovieFolder = false;
-		public bool OverrideSaveDataFolder = false;
-		public bool OverrideSaveStateFolder = false;
-		public bool OverrideScreenshotFolder = false;
-		public bool OverrideWaveFolder = false;
+		public bool OverrideGameFolder { get; set; } = false;
+		public bool OverrideAviFolder { get; set; } = false;
+		public bool OverrideMovieFolder { get; set; } = false;
+		public bool OverrideSaveDataFolder { get; set; } = false;
+		public bool OverrideSaveStateFolder { get; set; } = false;
+		public bool OverrideScreenshotFolder { get; set; } = false;
+		public bool OverrideWaveFolder { get; set; } = false;
 
-		public string GameFolder = "";
-		public string AviFolder = "";
-		public string MovieFolder = "";
-		public string SaveDataFolder = "";
-		public string SaveStateFolder = "";
-		public string ScreenshotFolder = "";
-		public string WaveFolder = "";
+		public string GameFolder { get; set; } = "";
+		public string AviFolder { get; set; } = "";
+		public string MovieFolder { get; set; } = "";
+		public string SaveDataFolder { get; set; } = "";
+		public string SaveStateFolder { get; set; } = "";
+		public string ScreenshotFolder { get; set; } = "";
+		public string WaveFolder { get; set; } = "";
 
 		public PreferencesConfig()
 		{

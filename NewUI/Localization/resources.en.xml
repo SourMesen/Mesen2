@@ -131,7 +131,7 @@
 			<Control ID="lblLatencyWarning">Low values may cause sound problems</Control>
 			<Control ID="lblAudioLatency">Latency:</Control>
 			<Control ID="lblAudioDevice">Device:</Control>
-			<Control ID="lblVolume">Volume</Control>
+			<Control ID="lblVolume">Volume:</Control>
 			<Control ID="grpVolume">Volume</Control>
 			<Control ID="btnReset">Reset to Defaults</Control>
 			<Control ID="btnOK">OK</Control>
@@ -319,7 +319,7 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmPreferences" Title="Preferences">
+		<Form ID="PreferencesConfigView" Title="Preferences">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
 			<Control ID="chkSingleInstance">Only allow one instance of Mesen-S at a time</Control>

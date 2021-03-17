@@ -6,9 +6,9 @@ using Mesen.GUI.Config;
 
 namespace Mesen.Views
 {
-	public class VideoConfigView : UserControl
+	public class PreferencesConfigView : UserControl
 	{
-		public VideoConfigView()
+		public PreferencesConfigView()
 		{
 			InitializeComponent();
 		}

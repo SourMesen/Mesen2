@@ -110,6 +110,7 @@
 
 	<Style Selector="CheckBox">
 		<Setter Property="MinHeight" Value="20" />
+		<Setter Property="MinWidth" Value="20" />
 	</Style>
 	<Style Selector="CheckBox /template/ Grid">
 		<Setter Property="Height" Value="20" />

@@ -15,11 +15,13 @@ namespace Mesen.ViewModels
 	{
 		[Reactive] public AudioConfigViewModel Audio { get; set; }
 		[Reactive] public VideoConfigViewModel Video { get; set; }
+		[Reactive] public PreferencesConfigViewModel Preferences { get; set; }
 		
 		public ConfigViewModel()
 		{
 			this.Audio = new AudioConfigViewModel();
 			this.Video = new VideoConfigViewModel();
+			this.Preferences = new PreferencesConfigViewModel();
 		}
    }
 }
