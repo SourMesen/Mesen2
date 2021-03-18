@@ -54,6 +54,21 @@
 		<Color x:Key="RepeatButtonBackgroundPressed">#CCE4F7</Color>
 		<Color x:Key="RepeatButtonBorderBrushPressed">#005499</Color>
 
+		<Color x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver">#0078D7</Color>
+		<Color x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver">#0078D7</Color>
+		<Color x:Key="CheckBoxBorderBrushCheckedPointerOver">#0078D7</Color>
+		
+		<Color x:Key="CheckBoxCheckBackgroundFillChecked">Transparent</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundChecked">Black</Color>
+
+		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver">Transparent</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">Black</Color>
+		<Color x:Key="CheckBoxBackgroundCheckedPressed">Transparent</Color>
+
+		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPressed">#CCE4F7</Color>
+		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedPressed">#CCE4F7</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">Black</Color>
+
 		<Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
 
 		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
@@ -129,12 +144,11 @@
 	<Style Selector="CheckBox">
 		<Setter Property="MinHeight" Value="20" />
 		<Setter Property="MinWidth" Value="20" />
-		<Setter Property="Padding" Value="2 0 0 0" />
+		<Setter Property="Padding" Value="2 0 0 0" />		
 	</Style>
 	<Style Selector="CheckBox /template/ Grid">
 		<Setter Property="Height" Value="20" />
 		<Setter Property="MaxHeight" Value="20" />
-
 	</Style>
 	<Style Selector="CheckBox /template/ Grid > Grid">
 		<Setter Property="Height" Value="16" />
@@ -148,8 +162,11 @@
 		<Setter Property="Height" Value="14" />
 		<Setter Property="Width" Value="14" />
 	</Style>
-	<Style Selector="CheckBox Border">
-		<Setter Property="CornerRadius" Value="0" />
+	<Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+		<Setter Property="BorderBrush" Value="{DynamicResource CheckBoxCheckGlyphForegroundChecked}" />
+	</Style>
+	<Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
+		<Setter Property="BorderBrush" Value="{DynamicResource CheckBoxBorderBrushCheckedPointerOver}" />
 	</Style>
 	
 	<Style Selector="NumericUpDown">
