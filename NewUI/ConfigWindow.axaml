@@ -9,7 +9,7 @@
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
 	x:Class="Mesen.ConfigWindow"
-	Width="500" Height="500"
+	Width="700" Height="500"
 	Title="Settings"
 >
 	<Window.Styles>

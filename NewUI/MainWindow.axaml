@@ -6,9 +6,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		  xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+		  Icon="/Assets/Icon.ico"
         x:Class="Mesen.MainWindow"
 		  Width="400" Height="400"
-        Title="Test">
+        Title="Mesen-S">
 
 	<Design.DataContext>
 		<vm:MainWindowViewModel />

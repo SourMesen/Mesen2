@@ -45,7 +45,6 @@
 		
 		<TabItem Header="{l:Translate tpgShortcuts}">
 			<StackPanel Orientation="Vertical">
-
 			</StackPanel>
 		</TabItem>
 		

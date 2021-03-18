@@ -32,7 +32,11 @@
 
 					<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblAudioLatency}" />
 					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-						<TextBox HorizontalAlignment="Left" Text="{CompiledBinding Config.AudioLatency}" />
+						<NumericUpDown
+							Minimum="15"
+							Maximum="300"
+							Text="{CompiledBinding Config.AudioLatency}"
+						/>
 						<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
 					</StackPanel>
 

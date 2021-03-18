@@ -50,7 +50,11 @@ namespace Mesen.Controls
 			}
 
 			cbo.Items = values;
-			cbo.SelectedItem = ResourceHelper.GetEnumText(this.SelectedItem);
+			if(this.SelectedItem != null) {
+				cbo.SelectedItem = ResourceHelper.GetEnumText(this.SelectedItem);
+			} else {
+				cbo.SelectedItem = Enum.GetValues(this.EnumType).GetValue(0);
+			}
 			cbo.SelectionChanged += MesenComboBox_SelectionChanged;
 		}
 

@@ -12,6 +12,7 @@
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
@@ -22,6 +23,9 @@
 	  <Optimize>false</Optimize>
 	  <DefineConstants>DEBUG</DefineConstants>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Assets\Icon.ico" />
+	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.0" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.0" />
@@ -70,6 +74,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+	  <AvaloniaResource Include="Assets\Icon.ico" />
 	  <AvaloniaResource Include="Styles\MesenStyles.xaml" />
   </ItemGroup>
   <ItemGroup>

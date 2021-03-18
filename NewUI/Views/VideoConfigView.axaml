@@ -86,12 +86,12 @@
 			<Panel VerticalAlignment="Center">
 				<StackPanel HorizontalAlignment="Center">
 					<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
-					<TextBox Text="{CompiledBinding Config.OverscanTop}" Width="40" />
-					
+					<NumericUpDown Text="{CompiledBinding Config.OverscanTop}" Maximum="100" HorizontalAlignment="Center"/>
+
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 							<TextBlock Text="{l:Translate lblLeft}" HorizontalAlignment="Center" />
-							<TextBox Text="{CompiledBinding Config.OverscanLeft}" Width="40" />
+							<NumericUpDown Text="{CompiledBinding Config.OverscanLeft}" Maximum="100" />
 						</StackPanel>
 						
 						<Border Width="258" Height="242" BorderBrush="Gray" BorderThickness="1">
@@ -106,12 +106,12 @@
 
 						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 							<TextBlock Text="{l:Translate lblRight}" HorizontalAlignment="Center" />
-							<TextBox Text="{CompiledBinding Config.OverscanRight}" Width="40" />
+							<NumericUpDown Text="{CompiledBinding Config.OverscanRight}" Maximum="100" />
 						</StackPanel>
 					</StackPanel>
 					
 					<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
-					<TextBox Text="{CompiledBinding Config.OverscanBottom}" Width="40" />
+					<NumericUpDown Text="{CompiledBinding Config.OverscanBottom}" Maximum="100" HorizontalAlignment="Center" />
 				</StackPanel>
 			</Panel>
 		</TabItem>
