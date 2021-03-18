@@ -29,5 +29,10 @@ namespace Mesen
 		{
 			AvaloniaXamlLoader.Load(this);
 		}
+
+		private void Cancel_OnClick(object sender, RoutedEventArgs e)
+		{
+			this.Close();
+		}
 	}
 }

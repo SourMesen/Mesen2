@@ -1,0 +1,77 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:EmulationConfigViewModel"
+	x:Class="Mesen.Views.EmulationConfigView"
+>
+	<Design.DataContext>
+		<vm:EmulationConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<StackPanel Margin="0 10">
+				<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+					<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblEmulationSpeed}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.EmulationSpeed}" Maximum="5000" Minimum="0" Width="80" />
+					<TextBlock Grid.Column="2" Grid.Row="0" Text="{l:Translate lblEmuSpeedHint}" />
+					
+					<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblTurboSpeed}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.TurboSpeed}" Maximum="5000" Minimum="0" Width="80" />
+					<TextBlock Grid.Column="2" Grid.Row="1" Text="{l:Translate lblTurboSpeedHint}" />
+					
+					<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblRewindSpeed}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="2" Value="{CompiledBinding Config.RewindSpeed}" Maximum="5000" Minimum="0" Width="80" />
+					<TextBlock Grid.Column="2" Grid.Row="2" Text="{l:Translate lblRewindSpeedHint}" />
+					
+					<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblRegion}" />
+					<c:EnumComboBox
+						EnumType="{x:Type cfg:ConsoleRegion}"
+						SelectedItem="{CompiledBinding Config.Region}"
+						Grid.Column="1"
+						Grid.Row="3"
+						Grid.ColumnSpan="2"
+						HorizontalAlignment="Left"
+						Width="100"
+					/>
+					
+					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblRunAhead}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="4" Value="{CompiledBinding Config.RunAheadFrames}" Maximum="10" Minimum="0" />
+					<TextBlock Grid.Column="2" Grid.Row="4" Text="{l:Translate lblRunAheadFrames}" />
+				</Grid>
+			</StackPanel>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgBsx}">
+			<StackPanel Orientation="Vertical">
+			</StackPanel>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgAdvanced}">
+			<StackPanel Margin="0 10">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+					<c:EnumComboBox EnumType="{x:Type cfg:RamState}" SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+				</StackPanel>
+				
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableStrictBoardMappings}" Text="{l:Translate chkStrictBoardMappings}" />
+			</StackPanel>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgOverclocking}">
+			<StackPanel>
+
+			</StackPanel>
+		</TabItem>
+	</TabControl>
+</UserControl>

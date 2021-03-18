@@ -4,7 +4,7 @@
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 >
 	<Design.PreviewWith>
-		<Window Width="300" Height="300">
+		<Window Width="300" Height="300" Padding="5">
 			<StackPanel>
 				<Menu VerticalAlignment="Top">
 					<MenuItem Header="File">
@@ -26,7 +26,7 @@
 					<ComboBoxItem>0Test</ComboBoxItem>
 				</ComboBox>
 				<TextBox Text="00bc" />
-				<ButtonSpinner />
+				<Button Content="Testgpq" />
 			</StackPanel>
 		</Window>
 	</Design.PreviewWith>
@@ -36,11 +36,32 @@
 		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
 		<Color x:Key="MenuFlyoutPresenterBackground">#FDFDFD</Color>
 		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
-	</Styles.Resources>
-	
-	<Styles.Resources>
+
+		<Color x:Key="ButtonBackground">#E1E1E1</Color>
+		<Color x:Key="ButtonBorderBrush">#ADADAD</Color>
+		<Color x:Key="ButtonBackgroundPointerOver">#E5F1FB</Color>
+		<Color x:Key="ButtonBorderBrushPointerOver">#0078D7</Color>
+		<Color x:Key="ButtonBackgroundPressed">#CCE4F7</Color>
+		<Color x:Key="ButtonBorderBrushPressed">#005499</Color>
+
+		<Color x:Key="ComboBoxBackground">#E1E1E1</Color>
+		<Color x:Key="ComboBoxBorderBrush">#ADADAD</Color>
+		<Color x:Key="ComboBoxBackgroundPointerOver">#E5F1FB</Color>
+		<Color x:Key="ComboBoxBorderBrushPointerOver">#0078D7</Color>
+
+		<Color x:Key="RepeatButtonBackgroundPointerOver">#E5F1FB</Color>
+		<Color x:Key="RepeatButtonBorderBrushPointerOver">#0078D7</Color>
+		<Color x:Key="RepeatButtonBackgroundPressed">#CCE4F7</Color>
+		<Color x:Key="RepeatButtonBorderBrushPressed">#005499</Color>
+
+		<Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+
 		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
 	</Styles.Resources>
+
+	<Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
+		<Setter Property="RenderTransform" Value="scale(1)" />
+	</Style>
 
 	<Style Selector="Menu">
 		<Setter Property="Height" Value="25" />
@@ -76,21 +97,11 @@
 	</Style>
 
 	<Style Selector="Button">
+		<Setter Property="Height" Value="21" />
 		<Setter Property="Margin" Value="1" />
-		<Setter Property="Background" Value="#E1E1E1" />
-		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="BorderBrush" Value="#ADADAD" />
+		<Setter Property="Padding" Value="4 3" />
 	</Style>
-	<Style Selector="Button:pointerover ContentPresenter">
-		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="Background" Value="#E5F1FB" />
-		<Setter Property="BorderBrush" Value="#0078D7" />
-	</Style>
-
-	<Style Selector="Button /template/ ContentPresenter">
-		<Setter Property="CornerRadius" Value="0" />
-	</Style>
-
+	
 	<Style Selector="TextBlock">
 		<Setter Property="FontSize" Value="11" />
 		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
@@ -108,17 +119,11 @@
 		<Setter Property="MinHeight" Value="21" />
 		<Setter Property="Height" Value="21" />
 	</Style>
-	<Style Selector="TextBox Border">
-		<Setter Property="CornerRadius" Value="0" />
-	</Style>
 
 	<Style Selector="ComboBox">
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="3 2" />
 		<Setter Property="MinHeight" Value="21" />
-	</Style>
-	<Style Selector="ComboBox /template/ Border#Background">
-		<Setter Property="CornerRadius" Value="0" />
 	</Style>
 
 	<Style Selector="CheckBox">
@@ -158,10 +163,20 @@
 	</Style>
 
 	<Style Selector="NumericUpDown TextBox">
-		<Setter Property="BorderThickness" Value="0" />
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="17" />
 	</Style>
+
+	<Style Selector="NumericUpDown TextBox /template/ Border#PART_BorderElement">
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="BorderBrush" Value="Transparent" />		
+	</Style>
+
+	<Style Selector="NumericUpDown TextBox:focus /template/ Border#PART_BorderElement">
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+	</Style>
+
 	<Style Selector="ButtonSpinner">
 		<Setter Property="MinHeight" Value="21" />
 	</Style>
@@ -171,6 +186,7 @@
 		<Setter Property="Margin" Value="0 2 0 0" />
 	</Style>
 	<Style Selector="RepeatButton.ButtonSpinnerRepeatButton">
+		<Setter Property="Background" Value="#E1E1E1" />
 		<Setter Property="MinWidth" Value="19" />
 		<Setter Property="MaxWidth" Value="20" />
 	</Style>
@@ -179,6 +195,9 @@
 		<Setter Property="MinHeight" Value="30" />
 	</Style>
 
+	<Style Selector="StackPanel > TextBlock">
+		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
 	<Style Selector="Grid > TextBlock">
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="Margin" Value="0 4 10 4" />

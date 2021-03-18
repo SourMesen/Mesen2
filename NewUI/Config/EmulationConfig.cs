@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,32 +9,67 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public class EmulationConfig : BaseConfig<EmulationConfig>
+	public class EmulationConfig : ReactiveObject
 	{
-		[MinMax(0, 5000)] public UInt32 EmulationSpeed = 100;
-		[MinMax(0, 5000)] public UInt32 TurboSpeed = 300;
-		[MinMax(0, 5000)] public UInt32 RewindSpeed = 100;
+		[Reactive] [MinMax(0, 5000)] public UInt32 EmulationSpeed { get; set; } = 100;
+		[Reactive] [MinMax(0, 5000)] public UInt32 TurboSpeed { get; set; } = 300;
+		[Reactive] [MinMax(0, 5000)] public UInt32 RewindSpeed { get; set; } = 100;
 
-		public ConsoleRegion Region = ConsoleRegion.Auto;
-		
-		[MinMax(0, 10)] public UInt32 RunAheadFrames = 0;
+		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
-		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState = false;
-		[MarshalAs(UnmanagedType.I1)] public bool EnableStrictBoardMappings = false;
+		[Reactive] [MinMax(0, 10)] public UInt32 RunAheadFrames { get; set; } = 0;
 
-		[MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi = 0;
-		[MinMax(0, 1000)] public UInt32 PpuExtraScanlinesAfterNmi = 0;
-		[MinMax(100, 1000)] public UInt32 GsuClockSpeed = 100;
+		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;
+		[Reactive] public bool EnableStrictBoardMappings { get; set; } = false;
 
-		public RamState RamPowerOnState = RamState.Random;
+		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi { get; set; } = 0;
+		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesAfterNmi { get; set; } = 0;
+		[Reactive] [MinMax(100, 1000)] public UInt32 GsuClockSpeed { get; set; } = 100;
 
-		public long BsxCustomDate = -1;
+		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
+
+		[Reactive] public long BsxCustomDate { get; set; } = -1;
 
 		public void ApplyConfig()
 		{
-			ConfigApi.SetEmulationConfig(this);
+			ConfigApi.SetEmulationConfig(new InteropEmulationConfig() {
+				EmulationSpeed = this.EmulationSpeed,
+				TurboSpeed = this.TurboSpeed,
+				RewindSpeed = this.RewindSpeed,
+				Region = this.Region,
+				RunAheadFrames = this.RunAheadFrames,
+				EnableRandomPowerOnState = this.EnableRandomPowerOnState,
+				EnableStrictBoardMappings = this.EnableStrictBoardMappings,
+				PpuExtraScanlinesBeforeNmi = this.PpuExtraScanlinesBeforeNmi,
+				PpuExtraScanlinesAfterNmi = this.PpuExtraScanlinesAfterNmi,
+				GsuClockSpeed = this.GsuClockSpeed,
+				RamPowerOnState = this.RamPowerOnState,
+				BsxCustomDate = this.BsxCustomDate
+			});
 		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct InteropEmulationConfig
+	{
+		public UInt32 EmulationSpeed;
+		public UInt32 TurboSpeed;
+		public UInt32 RewindSpeed;
+
+		public ConsoleRegion Region;
+
+		public UInt32 RunAheadFrames;
+
+		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableStrictBoardMappings;
+
+		public UInt32 PpuExtraScanlinesBeforeNmi;
+		public UInt32 PpuExtraScanlinesAfterNmi;
+		public UInt32 GsuClockSpeed;
+
+		public RamState RamPowerOnState;
+
+		public long BsxCustomDate;
 	}
 
 	public enum ConsoleRegion

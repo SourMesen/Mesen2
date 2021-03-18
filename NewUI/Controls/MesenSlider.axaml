@@ -14,7 +14,7 @@
 		</Panel>
 
 		<DockPanel>
-			<TextBox DockPanel.Dock="Right" Text="{Binding Value}" VerticalAlignment="Center" Margin="4" />
+			<TextBox DockPanel.Dock="Right" Text="{Binding Value}" VerticalAlignment="Center" Margin="4" IsReadOnly="True" HorizontalContentAlignment="Center" />
 			<Slider
 				Minimum="{Binding Minimum}"
 				Margin="0 -3 0 0"

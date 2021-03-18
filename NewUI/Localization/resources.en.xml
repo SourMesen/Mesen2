@@ -257,7 +257,7 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmEmulationConfig" Title="Emulation Settings">
+		<Form ID="EmulationConfigView" Title="Emulation Settings">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblEmuSpeedHint">%  (0 = Maximum speed)</Control>
 			<Control ID="lblEmulationSpeed">Emulation Speed:</Control>
@@ -267,12 +267,17 @@
 			<Control ID="lblRewindSpeed">Rewind Speed:</Control>
 			<Control ID="lblRunAhead">Run Ahead:</Control>
 			<Control ID="lblRunAheadFrames">frames (reduces input lag, increases CPU usage)</Control>
+
+			<Control ID="lblRegion">Region:</Control>
+
+			<Control ID="tpgBsx">BS-X</Control>
 			
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
-			<Control ID="chkMapperRandomPowerOnState">Randomize power-on state for mappers</Control>
+			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
+			<Control ID="chkStrictBoardMappings">Use strict board mappings (breaks some romhacks)</Control>
 
 			<Control ID="lblRamPowerOnState">Default power on state for RAM:</Control>
 

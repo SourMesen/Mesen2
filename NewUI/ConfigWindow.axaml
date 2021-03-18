@@ -8,10 +8,15 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+	x:DataType="vm:ConfigViewModel"
 	x:Class="Mesen.ConfigWindow"
 	Width="700" Height="500"
 	Title="Settings"
 >
+	<Design.DataContext>
+		<vm:ConfigViewModel />
+	</Design.DataContext>
+	
 	<Window.Styles>
 		<Style Selector="TabControl[TabStripPlacement=Left]">
 			<Setter Property="Template">
@@ -59,8 +64,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Background="#2888">
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 3">
-				<Button Width="80" HorizontalContentAlignment="Center">OK</Button>
-				<Button Width="80" HorizontalContentAlignment="Center">Cancel</Button>
+				<Button Width="70" HorizontalContentAlignment="Center">OK</Button>
+				<Button Width="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick">Cancel</Button>
 			</StackPanel>
 		</Panel>
 		
@@ -73,7 +78,7 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<v:AudioConfigView DataContext="{Binding Audio}" />
+				<v:AudioConfigView DataContext="{CompiledBinding Audio}" />
 				
 			</TabItem>
 			<TabItem Header="Emulation">
@@ -84,9 +89,7 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<StackPanel>
-					<CheckBox Content="Enable audio" />
-				</StackPanel>
+				<v:EmulationConfigView DataContext="{CompiledBinding Emulation}" />
 			</TabItem>
 			<TabItem Header="Input">
 				<TabItem.Header>
@@ -129,7 +132,7 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<v:VideoConfigView DataContext="{Binding Video}" />
+				<v:VideoConfigView DataContext="{CompiledBinding Video}" />
 				
 			</TabItem>
 			<TabItem IsEnabled="False" MinHeight="10">
@@ -145,7 +148,7 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<v:PreferencesConfigView DataContext="{Binding Preferences}" />
+				<v:PreferencesConfigView DataContext="{CompiledBinding Preferences}" />
 			</TabItem>
 		</TabControl>
 	</DockPanel>

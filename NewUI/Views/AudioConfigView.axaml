@@ -19,7 +19,7 @@
 	<TabControl TabStripPlacement="Top">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel Margin="0 10">
-				<CheckBox Content="{l:Translate chkEnableAudio}" />
+				<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{CompiledBinding Config.EnableAudio}" />
 					
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblAudioDevice}" />
@@ -35,7 +35,7 @@
 						<NumericUpDown
 							Minimum="15"
 							Maximum="300"
-							Text="{CompiledBinding Config.AudioLatency}"
+							Value="{CompiledBinding Config.AudioLatency}"
 						/>
 						<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
 					</StackPanel>
@@ -75,7 +75,7 @@
 		<TabItem Header="{l:Translate tpgEqualizer}" />
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
-			<StackPanel>
+			<StackPanel Margin="0 10">
 				<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
 				<c:CheckBoxWarning Text="{l:Translate chkDisableDynamicSampleRate}" IsChecked="{CompiledBinding Config.DisableDynamicSampleRate}" />
 			</StackPanel>
