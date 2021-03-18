@@ -159,22 +159,23 @@
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="21" />
 		<Setter Property="Width" Value="0" />
-		<Setter Property="Margin" Value="1" />
 	</Style>
 
-	<Style Selector="NumericUpDown TextBox">
+	<Style Selector="NumericUpDown /template/ TextBox">
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="17" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Margin" Value="10" />
+	</Style>
+
+	<Style Selector="NumericUpDown TextBox Border">
+		<Setter Property="BorderThickness" Value="0" />
 	</Style>
 
 	<Style Selector="NumericUpDown TextBox /template/ Border#PART_BorderElement">
+		<Setter Property="IsVisible" Value="false" />
 		<Setter Property="BorderThickness" Value="0" />
 		<Setter Property="BorderBrush" Value="Transparent" />		
-	</Style>
-
-	<Style Selector="NumericUpDown TextBox:focus /template/ Border#PART_BorderElement">
-		<Setter Property="BorderThickness" Value="0" />
-		<Setter Property="BorderBrush" Value="Transparent" />
 	</Style>
 
 	<Style Selector="ButtonSpinner">
