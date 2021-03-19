@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class VideoConfig : ReactiveObject
+	public class VideoConfig : BaseConfig<VideoConfig>
 	{
 		[Reactive] [MinMax(0.1, 10.0)] public double VideoScale { get; set; } = 2;
 		[Reactive] [MinMax(0.1, 5.0)] public double CustomAspectRatio { get; set; } = 1.0;

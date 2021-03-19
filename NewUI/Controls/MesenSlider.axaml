@@ -14,14 +14,23 @@
 		</Panel>
 
 		<DockPanel>
-			<TextBox DockPanel.Dock="Right" Text="{Binding Value}" VerticalAlignment="Center" Margin="4" IsReadOnly="True" HorizontalContentAlignment="Center" />
+			<TextBox
+				DockPanel.Dock="Right"
+				Text="{Binding Value}"
+				VerticalAlignment="Center"
+				Margin="4"
+				IsReadOnly="True"
+				HorizontalContentAlignment="Center"
+				IsVisible="{Binding !HideValue}"
+			/>
+			
 			<Slider
 				Minimum="{Binding Minimum}"
 				Margin="0 -3 0 0"
 				Maximum="{Binding Maximum}"
 				Value="{Binding Value}"
 				TickPlacement="BottomRight"
-				TickFrequency="5"
+				TickFrequency="{Binding TickFrequency}"
 				LargeChange="5"
 				SmallChange="1"
 		/>

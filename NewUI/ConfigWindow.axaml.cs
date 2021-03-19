@@ -30,6 +30,12 @@ namespace Mesen
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		private void Ok_OnClick(object sender, RoutedEventArgs e)
+		{
+			(this.DataContext as ConfigViewModel)?.SaveConfig();
+			this.Close();
+		}
+
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
 			this.Close();

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class EmulationConfig : ReactiveObject
+	public class EmulationConfig : BaseConfig<EmulationConfig>
 	{
 		[Reactive] [MinMax(0, 5000)] public UInt32 EmulationSpeed { get; set; } = 100;
 		[Reactive] [MinMax(0, 5000)] public UInt32 TurboSpeed { get; set; } = 300;

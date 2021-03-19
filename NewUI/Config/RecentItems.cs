@@ -29,7 +29,7 @@ namespace Mesen.GUI.Config
 			if(Items.Count > RecentItems.MaxRecentFiles) {
 				Items.RemoveAt(RecentItems.MaxRecentFiles);
 			}
-			ConfigManager.ApplyChanges();
+			ConfigManager.SaveConfig();
 		}
 
 		/*public List<ToolStripItem> GetMenuItems()

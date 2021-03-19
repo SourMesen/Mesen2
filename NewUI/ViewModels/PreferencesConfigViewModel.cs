@@ -16,7 +16,7 @@ namespace Mesen.ViewModels
 		
 		public PreferencesConfigViewModel()
 		{
-			Config = new PreferencesConfig();
+			Config = ConfigManager.Config.Preferences.Clone();
 		}
    }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Mesen.GUI.Config
 {
 	[StructLayout(LayoutKind.Sequential)]
-	public class GameboyConfig : BaseConfig<GameboyConfig>
+	public class GameboyConfig
 	{
 		public GameboyModel Model = GameboyModel.Auto;
 		[MarshalAs(UnmanagedType.I1)] public bool UseSgb2 = true;

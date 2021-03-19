@@ -64,8 +64,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Background="#2888">
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 3">
-				<Button Width="70" HorizontalContentAlignment="Center">OK</Button>
-				<Button Width="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick">Cancel</Button>
+				<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick">OK</Button>
+				<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick">Cancel</Button>
 			</StackPanel>
 		</Panel>
 		
@@ -98,31 +98,8 @@
 						<TextBlock VerticalAlignment="Center">Input</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-				<TabControl TabStripPlacement="Top">
-					<TabItem Header="Controllers">
-						<StackPanel Margin="0 10" Width="300" HorizontalAlignment="Left">
-							<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
-								<TextBlock Grid.Row="0" Grid.Column="0">Player 1:</TextBlock>
-								<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="1" HorizontalAlignment="Stretch" Margin="5 0">
-									<ComboBoxItem>None</ComboBoxItem>
-									<ComboBoxItem>SNES Controller</ComboBoxItem>
-								</ComboBox>
-								<Button Grid.Row="0" Grid.Column="2" Padding="4">Setup</Button>
 
-								<TextBlock Grid.Row="1" Grid.Column="0">Player 2:</TextBlock>
-								<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0" HorizontalAlignment="Stretch" Margin="5 0">
-									<ComboBoxItem>None</ComboBoxItem>
-									<ComboBoxItem>SNES Controller</ComboBoxItem>
-								</ComboBox>
-								<Button Grid.Row="1" Grid.Column="2" Padding="4">Setup</Button>
-							</Grid>
-						</StackPanel>
-					</TabItem>
-					<TabItem Header="Advanced">
-						<StackPanel Margin="0 10" MaxWidth="300" HorizontalAlignment="Left">
-						</StackPanel>
-					</TabItem>
-				</TabControl>
+				<v:InputConfigView DataContext="{CompiledBinding Input}" />
 			</TabItem>
 			<TabItem Header="Video">
 				<TabItem.Header>

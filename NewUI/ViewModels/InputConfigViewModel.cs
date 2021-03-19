@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	public class EmulationConfigViewModel : ViewModelBase
+	public class InputConfigViewModel : ViewModelBase
 	{
-		[Reactive] public EmulationConfig Config { get; set; }
+		[Reactive] public InputConfig Config { get; set; }
 		
-		public EmulationConfigViewModel()
+		public InputConfigViewModel()
 		{
-			Config = ConfigManager.Config.Emulation.Clone();
+			Config = ConfigManager.Config.Input.Clone();
 		}
    }
 }

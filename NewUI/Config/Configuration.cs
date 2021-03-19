@@ -4,33 +4,33 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Mesen.GUI.Forms;
 
 namespace Mesen.GUI.Config
 {
-	public class Configuration
+	public partial class Configuration
 	{
 		private bool _needToSave = false;
 
-		public string Version = "0.4.0";
-		public VideoConfig Video;
-		public AudioConfig Audio;
-		public InputConfig Input;
-		public EmulationConfig Emulation;
-		public GameboyConfig Gameboy;
-		public PreferencesConfig Preferences;
+		public string Version { get; set; } = "0.4.0";
+		public VideoConfig Video { get; set; }
+		public AudioConfig Audio { get; set; }
+		public InputConfig Input { get; set; }
+		public EmulationConfig Emulation { get; set; }
+		public GameboyConfig Gameboy { get; set; }
+		public PreferencesConfig Preferences { get; set; }
 		//public DebugInfo Debug;
-		public RecentItems RecentFiles;
-		public AviRecordConfig AviRecord;
-		public MovieRecordConfig MovieRecord;
-		public CheatWindowConfig Cheats;
-		public NetplayConfig Netplay;
-		public Point WindowLocation;
-		public Size WindowSize;
-		public bool NeedInputReinit2 = true;
-		public DefaultKeyMappingType DefaultKeyMappings = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
+		public RecentItems RecentFiles { get; set; }
+		public AviRecordConfig AviRecord { get; set; }
+		public MovieRecordConfig MovieRecord { get; set; }
+		public CheatWindowConfig Cheats { get; set; }
+		public NetplayConfig Netplay { get; set; }
+		public Point WindowLocation { get; set; }
+		public Size WindowSize { get; set; }
+		public bool NeedInputReinit2 { get; set; } = true;
+		public DefaultKeyMappingType DefaultKeyMappings { get; set; } = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
 
 		public Configuration()
 		{
@@ -56,9 +56,7 @@ namespace Mesen.GUI.Config
 
 		public void Save()
 		{
-			if(_needToSave) {
-				Serialize(ConfigManager.ConfigFile);
-			}
+			Serialize(ConfigManager.ConfigFile);
 		}
 
 		public bool NeedToSave
@@ -91,17 +89,17 @@ namespace Mesen.GUI.Config
 				NeedInputReinit2 = false;
 			//}
 			Preferences.InitializeDefaultShortcuts();
-			ConfigManager.ApplyChanges();
+			ConfigManager.SaveConfig();
 		}
 
 		public static Configuration Deserialize(string configFile)
 		{
 			Configuration config;
+			JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() }, IgnoreReadOnlyProperties = true };
 
 			try {
-				XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
-				using(TextReader textReader = new StreamReader(configFile)) {
-					config = (Configuration)xmlSerializer.Deserialize(textReader);
+				using(StreamReader reader = new StreamReader(configFile)) {
+					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), options) ?? new Configuration();
 				}
 			} catch {
 				config = new Configuration();
@@ -114,9 +112,9 @@ namespace Mesen.GUI.Config
 		{
 			try {
 				if(!ConfigManager.DoNotSaveSettings) {
-					XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
-					using(TextWriter textWriter = new StreamWriter(configFile)) {
-						xmlSerializer.Serialize(textWriter, this);
+					using(StreamWriter writer = new StreamWriter(configFile)) {
+						JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() }, WriteIndented = true, IgnoreReadOnlyProperties = true };
+						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), options));
 					}
 				}
 				_needToSave = false;
@@ -128,12 +126,7 @@ namespace Mesen.GUI.Config
 
 		public Configuration Clone()
 		{
-			XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
-			StringWriter stringWriter = new StringWriter();
-			xmlSerializer.Serialize(stringWriter, this);
-
-			StringReader stringReader = new StringReader(stringWriter.ToString());
-			Configuration config = (Configuration)xmlSerializer.Deserialize(stringReader);
+			Configuration config = JsonSerializer.Deserialize<Configuration>(JsonSerializer.Serialize(this, typeof(Configuration))) ?? new Configuration();
 			config.NeedToSave = false;
 			return config;
 		}

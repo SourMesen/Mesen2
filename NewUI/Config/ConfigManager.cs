@@ -16,7 +16,6 @@ namespace Mesen.GUI.Config
 	class ConfigManager
 	{
 		private static Configuration _config;
-		private static Configuration _dirtyConfig;
 		public static bool DoNotSaveSettings { get; set; }
 
 		public static string DefaultPortableFolder { get { return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location); } }
@@ -89,11 +88,9 @@ namespace Mesen.GUI.Config
 					if(_config == null) {
 						if(File.Exists(ConfigFile)) {
 							_config = Configuration.Deserialize(ConfigFile);
-							_dirtyConfig = Configuration.Deserialize(ConfigFile);
 						} else {
 							//Create new config file and save it to disk
 							_config = new Configuration();
-							_dirtyConfig = new Configuration();
 							_config.Save();
 						}
 					}
@@ -238,7 +235,7 @@ namespace Mesen.GUI.Config
 					Directory.CreateDirectory(HomeFolder);
 				}
 
-				return Path.Combine(HomeFolder, "settings.xml");
+				return Path.Combine(HomeFolder, "settings.json");
 			}
 		}
 
@@ -247,46 +244,17 @@ namespace Mesen.GUI.Config
 			get 
 			{
 				LoadConfig();
-				return _dirtyConfig;
+				return _config;
 			}
-		}
-
-		private static DateTime _lastSaveTime = DateTime.MinValue;
-		public static void ApplyChanges()
-		{
-			_config.NeedToSave = false;
-			_config = _dirtyConfig.Clone();
-			_config.NeedToSave = true;
-
-			if((DateTime.Now - _lastSaveTime).Seconds > 1) {
-				ConfigManager.SaveConfig();
-				_lastSaveTime = DateTime.Now;
-			}
-		}
-
-		public static void RejectChanges()
-		{
-			_dirtyConfig = _config.Clone();
-		}
-
-		public static void RevertToBackup(Configuration config)
-		{
-			_config = config;
-			_dirtyConfig = _config.Clone();
-		}
-
-		public static void RevertDirtyToBackup(Configuration config)
-		{
-			_dirtyConfig = config.Clone();
 		}
 
 		public static void ResetSettings()
 		{
 			DefaultKeyMappingType defaultMappings = Config.DefaultKeyMappings;
-			_dirtyConfig = new Configuration();
+			_config = new Configuration();
 			Config.DefaultKeyMappings = defaultMappings;
 			Config.InitializeDefaults();
-			ApplyChanges();
+			SaveConfig();
 			Config.ApplyConfig();
 		}
 

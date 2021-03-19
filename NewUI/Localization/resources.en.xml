@@ -140,7 +140,7 @@
 			<Control ID="tpgEqualizer">Equalizer</Control>
 			<Control ID="chkEnableEqualizer">Enable Equalizer</Control>
 		</Form>
-		<Form ID="frmInputConfig" Title="Input Settings">
+		<Form ID="InputConfigView" Title="Input Settings">
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 			<Control ID="tpgControllers">Controllers</Control>
@@ -171,6 +171,7 @@
 			<Control ID="chkDisplayPort2">Port 2</Control>
 			<Control ID="chkDisplayPort3">Port 3</Control>
 			<Control ID="chkDisplayPort4">Port 4</Control>
+			<Control ID="chkDisplayPort5">Port 5</Control>
 			<Control ID="lblDisplayPosition">Display Position:</Control>
 			<Control ID="chkDisplayInputHorizontally">Display horizontally</Control>
 

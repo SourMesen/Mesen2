@@ -1,0 +1,70 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:InputConfigViewModel"
+	x:Class="Mesen.Views.InputConfigView"
+>
+	<Design.DataContext>
+		<vm:InputConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top" SelectedIndex="1">
+		<TabItem Header="Controllers">
+			<StackPanel Margin="0 10" Width="300" HorizontalAlignment="Left">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+					<TextBlock Grid.Row="0" Grid.Column="0">Player 1:</TextBlock>
+					<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="1" HorizontalAlignment="Stretch" Margin="5 0">
+						<ComboBoxItem>None</ComboBoxItem>
+						<ComboBoxItem>SNES Controller</ComboBoxItem>
+					</ComboBox>
+					<Button Grid.Row="0" Grid.Column="2" Padding="4">Setup</Button>
+
+					<TextBlock Grid.Row="1" Grid.Column="0">Player 2:</TextBlock>
+					<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0" HorizontalAlignment="Stretch" Margin="5 0">
+						<ComboBoxItem>None</ComboBoxItem>
+						<ComboBoxItem>SNES Controller</ComboBoxItem>
+					</ComboBox>
+					<Button Grid.Row="1" Grid.Column="2" Padding="4">Setup</Button>
+				</Grid>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="Advanced">
+			<StackPanel Margin="0 10" HorizontalAlignment="Left">
+				<Border BorderBrush="LightGray" BorderThickness="1" Padding="5">
+					<StackPanel>
+						<c:SectionHeader Content="{l:Translate grpDisplayInput}" Margin="0 0 0 10" />
+						<StackPanel Orientation="Horizontal">
+							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort1}" Content="{l:Translate chkDisplayPort1}" />
+							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort2}" Content="{l:Translate chkDisplayPort2}" />
+							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort3}" Content="{l:Translate chkDisplayPort3}" />
+							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort4}" Content="{l:Translate chkDisplayPort4}" />
+							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort5}" Content="{l:Translate chkDisplayPort5}" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal" Margin="0 5">
+							<TextBlock Text="{l:Translate lblDisplayPosition}" />
+							<c:EnumComboBox EnumType="{x:Type cfg:InputDisplayPosition}" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" Width="150" />
+						</StackPanel>
+						<CheckBox IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
+					</StackPanel>
+				</Border>
+				<StackPanel Orientation="Horizontal" Margin="0 5">
+					<TextBlock Text="{l:Translate lblDeadzone}" />
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+						<c:MesenSlider Grid.ColumnSpan="2" Minimum="0" Maximum="4" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />
+						<TextBlock Grid.Row="1" Grid.Column="0" Text="Small" Margin="5" />
+						<TextBlock Grid.Row="1" Grid.Column="1" Text="Large" HorizontalAlignment="Right" Margin="5" />
+					</Grid>
+				</StackPanel>				
+			</StackPanel>
+		</TabItem>
+	</TabControl>
+</UserControl>

@@ -16,7 +16,7 @@ namespace Mesen.ViewModels
 		
 		public AudioConfigViewModel()
 		{
-			Config = new AudioConfig();
+			Config = ConfigManager.Config.Audio.Clone();
 		}
    }
 }

@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class NetplayConfig : BaseConfig<VideoConfig>
+	[StructLayout(LayoutKind.Sequential)]
+	public class NetplayConfig
 	{
 		public string Host = "localhost";
 		public UInt16 Port = 8888;

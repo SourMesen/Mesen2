@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class AudioConfig : ReactiveObject
+	public class AudioConfig : BaseConfig<AudioConfig>
 	{
 		[Reactive] public string AudioDevice { get; set; } = "";
 		[Reactive] public bool EnableAudio { get; set; } = true;

@@ -49,9 +49,8 @@ namespace Mesen
 			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
 
-			ConfigApi.SetAudioConfig(new Mesen.GUI.Config.InteropAudioConfig() { });
 			ConfigManager.Config.InitializeDefaults();
-			ConfigManager.Config.Input.ApplyConfig();
+			ConfigManager.Config.ApplyConfig();
 
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Chrono Trigger (USA).sfc");
 			/*if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {

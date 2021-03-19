@@ -7,22 +7,20 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	[StructLayout(LayoutKind.Sequential)]
 	public class InputConfig
 	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-		public ControllerConfig[] Controllers = new ControllerConfig[5];
+		public ControllerConfig[] Controllers { get; set; } = new ControllerConfig[5];
 
-		[MinMax(0, 4)] public UInt32 ControllerDeadzoneSize = 2;
-		[MinMax(0, 3)] public UInt32 MouseSensitivity = 1;
+		[MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
+		[MinMax(0, 3)] public UInt32 MouseSensitivity { get; set; } = 1;
 
-		public InputDisplayPosition DisplayInputPosition = InputDisplayPosition.BottomRight;
-		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort1 = false;
-		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort2 = false;
-		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort3 = false;
-		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort4 = false;
-		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort5 = false;
-		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputHorizontally = true;
+		public InputDisplayPosition DisplayInputPosition { get; set; } = InputDisplayPosition.BottomRight;
+		public bool DisplayInputPort1 { get; set; } = false;
+		public bool DisplayInputPort2 { get; set; } = false;
+		public bool DisplayInputPort3 { get; set; } = false;
+		public bool DisplayInputPort4 { get; set; } = false;
+		public bool DisplayInputPort5 { get; set; } = false;
+		public bool DisplayInputHorizontally { get; set; } = true;
 
 		public InputConfig()
 		{
@@ -43,7 +41,19 @@ namespace Mesen.GUI.Config
 			if(Controllers.Length != 5) {
 				Controllers = new ControllerConfig[5];
 			}
-			ConfigApi.SetInputConfig(this);
+
+			ConfigApi.SetInputConfig(new InteropInputConfig() {
+				Controllers = (ControllerConfig[])this.Controllers.Clone(),
+				ControllerDeadzoneSize = this.ControllerDeadzoneSize,
+				MouseSensitivity = this.MouseSensitivity,
+				DisplayInputPosition = this.DisplayInputPosition,
+				DisplayInputPort1 = this.DisplayInputPort1,
+				DisplayInputPort2 = this.DisplayInputPort2,
+				DisplayInputPort3 = this.DisplayInputPort3,
+				DisplayInputPort4 = this.DisplayInputPort4,
+				DisplayInputPort5 = this.DisplayInputPort5,
+				DisplayInputHorizontally = this.DisplayInputHorizontally
+			});
 		}
 
 		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
@@ -78,6 +88,24 @@ namespace Mesen.GUI.Config
 				}
 			}
 		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct InteropInputConfig
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public ControllerConfig[] Controllers;
+
+		public UInt32 ControllerDeadzoneSize;
+		public UInt32 MouseSensitivity;
+
+		public InputDisplayPosition DisplayInputPosition;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort1;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort2;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort3;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort4;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort5;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputHorizontally;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

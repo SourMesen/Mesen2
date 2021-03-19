@@ -19,7 +19,7 @@ namespace Mesen.ViewModels
 		
 		public VideoConfigViewModel()
 		{
-			Config = new VideoConfig();
+			Config = ConfigManager.Config.Video.Clone();
 			this.WhenAnyValue(_ => _.Config.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio);
 		}
    }

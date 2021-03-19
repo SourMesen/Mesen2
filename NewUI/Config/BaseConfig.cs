@@ -1,14 +1,15 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public class BaseConfig<T>
+	public class BaseConfig<T> : ReactiveObject
 	{
 		public T Clone()
 		{

@@ -51,6 +51,9 @@
     <Compile Update="Controls\SectionHeader.axaml.cs">
       <DependentUpon>SectionHeader.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\InputConfigView.axaml.cs">
+      <DependentUpon>InputConfigView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\EmulationConfigView.axaml.cs">
       <DependentUpon>EmulationConfigView.axaml</DependentUpon>
     </Compile>
