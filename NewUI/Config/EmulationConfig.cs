@@ -28,8 +28,10 @@ namespace Mesen.GUI.Config
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 
-		[Reactive] public long BsxCustomDate { get; set; } = -1;
-
+		[Reactive] public bool BsxUseCustomTime { get; set; } = false;
+		[Reactive] public DateTimeOffset BsxCustomDate { get; set; } = new DateTimeOffset(1995, 1, 1, 0, 0, 0, TimeSpan.Zero);
+		[Reactive] public TimeSpan BsxCustomTime { get; set; } = TimeSpan.Zero;
+		
 		public void ApplyConfig()
 		{
 			ConfigApi.SetEmulationConfig(new InteropEmulationConfig() {
@@ -44,7 +46,7 @@ namespace Mesen.GUI.Config
 				PpuExtraScanlinesAfterNmi = this.PpuExtraScanlinesAfterNmi,
 				GsuClockSpeed = this.GsuClockSpeed,
 				RamPowerOnState = this.RamPowerOnState,
-				BsxCustomDate = this.BsxCustomDate
+				BsxCustomDate = this.BsxCustomDate.Ticks + this.BsxCustomTime.Ticks
 			});
 		}
 	}

@@ -52,7 +52,14 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgBsx}">
-			<StackPanel Orientation="Vertical">
+			<StackPanel Margin="0 0">
+				<c:SectionHeader Content="{l:Translate lblBsxDateTime}" />
+				<RadioButton GroupName="BsxDateTime" Content="{l:Translate lblCurrentDate}" IsChecked="{CompiledBinding !Config.BsxUseCustomTime}" />
+				<StackPanel Orientation="Horizontal">
+					<RadioButton VerticalAlignment="Center" GroupName="BsxDateTime" Content="{l:Translate lblCustomDate}" IsChecked="{CompiledBinding Config.BsxUseCustomTime}" />
+					<DatePicker MonthFormat="MMM" SelectedDate="{CompiledBinding Config.BsxCustomDate}" />
+					<TimePicker SelectedTime="{CompiledBinding Config.BsxCustomTime}" />
+				</StackPanel>
 			</StackPanel>
 		</TabItem>
 		

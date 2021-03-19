@@ -271,6 +271,9 @@
 			<Control ID="lblRegion">Region:</Control>
 
 			<Control ID="tpgBsx">BS-X</Control>
+			<Control ID="lblBsxDateTime">BS-X/Satellaview Date and Time Settings</Control>
+			<Control ID="lblCurrentDate">Use current local time</Control>
+			<Control ID="lblCustomDate">Use custom date and time: </Control>
 			
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
