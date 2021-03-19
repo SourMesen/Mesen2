@@ -297,6 +297,9 @@
 			<Control ID="lblEffectiveClockRatePal">Effective Clock Rate (PAL):</Control>
 			<Control ID="lblEffectiveClockRateDendy">Effective Clock Rate (Dendy):</Control>
 
+			<Control ID="lblChipSpecificOc">Chip-specific overclocking</Control>
+			<Control ID="lblSuperFxClockSpeed">Super FX clock speed (%):</Control>
+
 			<Control ID="chkOverclockAdjustApu">Do not overclock APU (prevents sound pitch changes caused by overclocking)</Control>
 
 			<Control ID="chkShowLagCounter">Show Lag Counter</Control>

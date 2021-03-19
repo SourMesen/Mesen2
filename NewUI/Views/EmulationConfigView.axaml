@@ -7,6 +7,7 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -17,7 +18,7 @@
 		<vm:EmulationConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+	<TabControl TabStripPlacement="Top" SelectedIndex="3">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel Margin="0 10">
 				<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
@@ -76,8 +77,25 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgOverclocking}">
-			<StackPanel>
-
+			<StackPanel Margin="0 10">
+				<Border BorderThickness="1" BorderBrush="Gray" Padding="3">
+					<Panel>
+						<mui:MaterialIcon Kind="HelpCircleOutline" Margin="0" Width="20" Height="20" HorizontalAlignment="Left" />
+						<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
+					</Panel>
+				</Border>
+				<c:SectionHeader Content="{l:Translate grpPpuTiming}" />
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+					<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+					<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+				</Grid>
+				<c:SectionHeader Content="{l:Translate lblChipSpecificOc}" />
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+					<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblSuperFxClockSpeed}" />
+					<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.GsuClockSpeed}" Minimum="0" Maximum="1000" />
+				</Grid>
 			</StackPanel>
 		</TabItem>
 	</TabControl>
