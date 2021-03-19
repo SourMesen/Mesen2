@@ -186,6 +186,8 @@
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblVideoScale">Scale:</Control>
 			<Control ID="lblVideoFilter">Filter:</Control>
+			<Control ID="lblPictureSettings">General settings</Control>
+			<Control ID="lblNtscSettings">NTSC filter settings</Control>			
 			<Control ID="chkIntegerFpsMode">Enable integer FPS mode (e.g: run at 60 fps instead of 60.1)</Control>
 			<Control ID="chkVerticalSync">Enable vertical sync</Control>
 			<Control ID="lblDisplayRatio">Aspect Ratio:</Control>
