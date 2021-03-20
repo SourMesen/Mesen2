@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -44,6 +45,16 @@ namespace Mesen.Controls
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			await wnd.ShowDialog(this.VisualRoot as Window);
 			this.KeyBinding = wnd.ShortcutKey.Key1;
+		}
+
+		protected override void OnPointerReleased(PointerReleasedEventArgs e)
+		{
+			base.OnPointerReleased(e);
+
+			//Allow using right mouse button to clear bindings
+			if(e.InitialPressMouseButton == MouseButton.Right) {
+				this.KeyBinding = 0;
+			}
 		}
 
 		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
