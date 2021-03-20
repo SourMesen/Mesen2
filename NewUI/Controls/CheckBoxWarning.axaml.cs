@@ -7,7 +7,7 @@ namespace Mesen.Controls
 {
 	public class CheckBoxWarning : UserControl
 	{
-		public static readonly StyledProperty<bool> IsCheckedProperty = AvaloniaProperty.Register<CheckBoxWarning, bool>(nameof(IsChecked));
+		public static readonly StyledProperty<bool> IsCheckedProperty = AvaloniaProperty.Register<CheckBoxWarning, bool>(nameof(IsChecked), false, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<CheckBoxWarning, string>(nameof(Text));
 		public static readonly StyledProperty<IBrush> HintColorProperty = AvaloniaProperty.Register<CheckBoxWarning, IBrush>(nameof(HintColor), Brushes.DarkGray);
 

@@ -28,18 +28,18 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool HideSprites { get; set; } = false;
 		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
 
-		[Reactive] [MinMax(-1, 1.0)] public double Brightness { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double Contrast { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double Hue { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double Saturation { get; set; } = 0;
-		[Reactive] [MinMax(0, 1.0)] public double ScanlineIntensity { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int Brightness { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int Contrast { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int Hue { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int Saturation { get; set; } = 0;
+		[Reactive] [MinMax(0, 100)] public int ScanlineIntensity { get; set; } = 0;
 
-		[Reactive] [MinMax(-1, 1.0)] public double NtscArtifacts { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double NtscBleed { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double NtscFringing { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double NtscGamma { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double NtscResolution { get; set; } = 0;
-		[Reactive] [MinMax(-1, 1.0)] public double NtscSharpness { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int NtscArtifacts { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int NtscBleed { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int NtscFringing { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int NtscGamma { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int NtscResolution { get; set; } = 0;
+		[Reactive] [MinMax(-100, 100)] public int NtscSharpness { get; set; } = 0;
 		[Reactive] public bool NtscMergeFields { get; set; } = false;
 
 		[Reactive] [MinMax(0, 100)] public UInt32 OverscanLeft { get; set; } = 0;
@@ -77,18 +77,17 @@ namespace Mesen.GUI.Config
 				HideSprites = this.HideSprites,
 				DisableFrameSkipping = this.DisableFrameSkipping,
 
-				Brightness = this.Brightness,
-				Contrast = this.Contrast,
-				Hue = this.Hue,
-				Saturation = this.Saturation,
-				ScanlineIntensity = this.ScanlineIntensity,
+				Brightness = this.Brightness / 100.0,
+				Contrast = this.Contrast / 100.0,
+				Hue = this.Hue / 100.0,
+				ScanlineIntensity = this.ScanlineIntensity / 100.0,
 
-				NtscArtifacts = this.NtscArtifacts,
-				NtscBleed = this.NtscBleed,
-				NtscFringing = this.NtscFringing,
-				NtscGamma = this.NtscGamma,
-				NtscResolution = this.NtscResolution,
-				NtscSharpness = this.NtscSharpness,
+				NtscArtifacts = this.NtscArtifacts / 100.0,
+				NtscBleed = this.NtscBleed / 100.0,
+				NtscFringing = this.NtscFringing / 100.0,
+				NtscGamma = this.NtscGamma / 100.0,
+				NtscResolution = this.NtscResolution / 100.0,
+				NtscSharpness = this.NtscSharpness / 100.0,
 				NtscMergeFields = this.NtscMergeFields,
 
 				OverscanLeft = this.OverscanLeft,
