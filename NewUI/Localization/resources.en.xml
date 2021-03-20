@@ -520,7 +520,8 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmGetKey" Title="Set key binding...">
+		<Form ID="GetKeyWindow">
+			<Control ID="Title">Set key binding...</Control>
 			<Control ID="lblSetKeyMessage">Press any key on your keyboard or controller to set a new binding.</Control>
 		</Form>
 		<Form ID="frmPlayerProfile" Title="Profile">

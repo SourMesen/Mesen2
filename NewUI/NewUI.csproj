@@ -39,7 +39,7 @@
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>
   <ItemGroup>
-    <Compile Update="ConfigWindow.axaml.cs">
+    <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Controls\EnumComboBox.axaml.cs">
@@ -50,6 +50,15 @@
     </Compile>
     <Compile Update="Controls\SectionHeader.axaml.cs">
       <DependentUpon>SectionHeader.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\GetKeyWindow.axaml.cs">
+      <DependentUpon>GetKeyWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\ControllerPopupWindow.axaml.cs">
+      <DependentUpon>ControllerPopupWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SnesControllerView.axaml.cs">
+      <DependentUpon>SnesControllerView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\InputConfigView.axaml.cs">
       <DependentUpon>InputConfigView.axaml</DependentUpon>
@@ -75,7 +84,7 @@
     <Compile Update="Views\DisassemblyView.axaml.cs">
       <DependentUpon>DisassemblyView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="DebuggerWindow.axaml.cs">
+    <Compile Update="Windows\DebuggerWindow.axaml.cs">
       <DependentUpon>DebuggerWindow.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

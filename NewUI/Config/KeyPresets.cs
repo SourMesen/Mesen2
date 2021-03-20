@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mesen.Utilities;
+using System;
 
 namespace Mesen.GUI.Config
 {
@@ -10,14 +11,14 @@ namespace Mesen.GUI.Config
 		KeyMapping[] _ps4Layouts = new KeyMapping[2];
 		KeyMapping[] _snes30Layouts = new KeyMapping[2];
 
-		public KeyMapping WasdLayout { get { return _wasdLayout.Clone(); } }
-		public KeyMapping ArrowLayout { get { return _arrowLayout.Clone(); } }
-		public KeyMapping XboxLayout1 { get { return _xboxLayouts[0].Clone(); } }
-		public KeyMapping XboxLayout2 { get { return _xboxLayouts[1].Clone(); } }
-		public KeyMapping Ps4Layout1 { get { return _ps4Layouts[0].Clone(); } }
-		public KeyMapping Ps4Layout2 { get { return _ps4Layouts[1].Clone(); } }
-		public KeyMapping Snes30Layout1 { get { return _snes30Layouts[0].Clone(); } }
-		public KeyMapping Snes30Layout2 { get { return _snes30Layouts[1].Clone(); } }
+		public KeyMapping WasdLayout { get { return JsonHelper.Clone(_wasdLayout); } }
+		public KeyMapping ArrowLayout { get { return JsonHelper.Clone(_arrowLayout); } }
+		public KeyMapping XboxLayout1 { get { return JsonHelper.Clone(_xboxLayouts[0]); } }
+		public KeyMapping XboxLayout2 { get { return JsonHelper.Clone(_xboxLayouts[1]); } }
+		public KeyMapping Ps4Layout1 { get { return JsonHelper.Clone(_ps4Layouts[0]); } }
+		public KeyMapping Ps4Layout2 { get { return JsonHelper.Clone(_ps4Layouts[1]); } }
+		public KeyMapping Snes30Layout1 { get { return JsonHelper.Clone(_snes30Layouts[0]); } }
+		public KeyMapping Snes30Layout2 { get { return JsonHelper.Clone(_snes30Layouts[1]); } }
 
 		public KeyPresets()
 		{

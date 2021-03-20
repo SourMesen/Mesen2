@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Mesen.Localization;
 using Mesen.ViewModels;
+using Mesen.Windows;
 
 namespace Mesen
 {

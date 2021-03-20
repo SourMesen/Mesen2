@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,43 +9,39 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class InputConfig
+	public class InputConfig : BaseConfig<InputConfig>
 	{
-		public ControllerConfig[] Controllers { get; set; } = new ControllerConfig[5];
+		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
 
-		[MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
-		[MinMax(0, 3)] public UInt32 MouseSensitivity { get; set; } = 1;
+		[Reactive] [MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
+		[Reactive] [MinMax(0, 3)] public UInt32 MouseSensitivity { get; set; } = 1;
 
-		public InputDisplayPosition DisplayInputPosition { get; set; } = InputDisplayPosition.BottomRight;
-		public bool DisplayInputPort1 { get; set; } = false;
-		public bool DisplayInputPort2 { get; set; } = false;
-		public bool DisplayInputPort3 { get; set; } = false;
-		public bool DisplayInputPort4 { get; set; } = false;
-		public bool DisplayInputPort5 { get; set; } = false;
-		public bool DisplayInputHorizontally { get; set; } = true;
+		[Reactive] public InputDisplayPosition DisplayInputPosition { get; set; } = InputDisplayPosition.BottomRight;
+		[Reactive] public bool DisplayInputPort1 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort2 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort3 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort4 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort5 { get; set; } = false;
+		[Reactive] public bool DisplayInputHorizontally { get; set; } = true;
 
 		public InputConfig()
 		{
 		}
 
-		public InputConfig Clone()
-		{
-			InputConfig cfg = (InputConfig)this.MemberwiseClone();
-			cfg.Controllers = new ControllerConfig[5];
-			for(int i = 0; i < 5; i++) {
-				cfg.Controllers[i] = Controllers[i];
-			}
-			return cfg;
-		}
-
 		public void ApplyConfig()
 		{
-			if(Controllers.Length != 5) {
-				Controllers = new ControllerConfig[5];
+			while(Controllers.Count < 5) {
+				Controllers.Add(new ControllerConfig());
 			}
 
 			ConfigApi.SetInputConfig(new InteropInputConfig() {
-				Controllers = (ControllerConfig[])this.Controllers.Clone(),
+				Controllers = new InteropControllerConfig[5] {
+					this.Controllers[0].ToInterop(),
+					this.Controllers[1].ToInterop(),
+					this.Controllers[2].ToInterop(),
+					this.Controllers[3].ToInterop(),
+					this.Controllers[4].ToInterop()
+				},
 				ControllerDeadzoneSize = this.ControllerDeadzoneSize,
 				MouseSensitivity = this.MouseSensitivity,
 				DisplayInputPosition = this.DisplayInputPosition,
@@ -90,11 +88,91 @@ namespace Mesen.GUI.Config
 		}
 	}
 
+	public class KeyMapping : ReactiveObject
+	{
+		[Reactive] public UInt32 A { get; set; }
+		[Reactive] public UInt32 B { get; set; }
+		[Reactive] public UInt32 X { get; set; }
+		[Reactive] public UInt32 Y { get; set; }
+		[Reactive] public UInt32 L { get; set; }
+		[Reactive] public UInt32 R { get; set; }
+		[Reactive] public UInt32 Up { get; set; }
+		[Reactive] public UInt32 Down { get; set; }
+		[Reactive] public UInt32 Left { get; set; }
+		[Reactive] public UInt32 Right { get; set; }
+		[Reactive] public UInt32 Start { get; set; }
+		[Reactive] public UInt32 Select { get; set; }
+
+		[Reactive] public UInt32 TurboA { get; set; }
+		[Reactive] public UInt32 TurboB { get; set; }
+		[Reactive] public UInt32 TurboX { get; set; }
+		[Reactive] public UInt32 TurboY { get; set; }
+		[Reactive] public UInt32 TurboL { get; set; }
+		[Reactive] public UInt32 TurboR { get; set; }
+		[Reactive] public UInt32 TurboSelect { get; set; }
+		[Reactive] public UInt32 TurboStart { get; set; }
+
+		public InteropKeyMapping ToInterop()
+		{
+			return new InteropKeyMapping() {
+				A = this.A,
+				B = this.B,
+				X = this.X,
+				Y = this.Y,
+				L = this.L,
+				R = this.R,
+				Up = this.Up,
+				Down = this.Down,
+				Left = this.Left,
+				Right = this.Right,
+				Select = this.Select,
+				Start = this.Start,
+				TurboA = this.TurboA,
+				TurboB = this.TurboB,
+				TurboX = this.TurboX,
+				TurboY = this.TurboY,
+				TurboL = this.TurboL,
+				TurboR = this.TurboR,
+				TurboSelect = this.TurboSelect,
+				TurboStart = this.TurboStart
+			};
+		}
+	}
+
+	public class KeyMappingSet : ReactiveObject
+	{
+		[Reactive] public KeyMapping Mapping1 { get; set; } = new KeyMapping();
+		[Reactive] public KeyMapping Mapping2 { get; set; } = new KeyMapping();
+		[Reactive] public KeyMapping Mapping3 { get; set; } = new KeyMapping();
+		[Reactive] public KeyMapping Mapping4 { get; set; } = new KeyMapping();
+		[Reactive] public UInt32 TurboSpeed { get; set; } = 0;
+	}
+
+	public class ControllerConfig : ReactiveObject
+	{
+		[Reactive] public KeyMappingSet Keys { get; set; } = new KeyMappingSet();
+		[Reactive] public ControllerType Type { get; set; } = ControllerType.None;
+
+		public InteropControllerConfig ToInterop()
+		{
+			return new InteropControllerConfig() {
+				Type = this.Type,
+				Keys = new InteropKeyMappingSet() {
+					Mapping1 = this.Keys.Mapping1.ToInterop(),
+					Mapping2 = this.Keys.Mapping2.ToInterop(),
+					Mapping3 = this.Keys.Mapping3.ToInterop(),
+					Mapping4 = this.Keys.Mapping4.ToInterop(),
+					TurboSpeed = this.Keys.TurboSpeed
+				}
+			};
+		}
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropInputConfig
 	{
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-		public ControllerConfig[] Controllers;
+		public InteropControllerConfig[] Controllers;
 
 		public UInt32 ControllerDeadzoneSize;
 		public UInt32 MouseSensitivity;
@@ -109,7 +187,7 @@ namespace Mesen.GUI.Config
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct KeyMapping
+	public struct InteropKeyMapping
 	{
 		public UInt32 A;
 		public UInt32 B;
@@ -132,26 +210,21 @@ namespace Mesen.GUI.Config
 		public UInt32 TurboR;
 		public UInt32 TurboSelect;
 		public UInt32 TurboStart;
-
-		public KeyMapping Clone()
-		{
-			return (KeyMapping)this.MemberwiseClone();
-		}
 	}
 
-	public struct KeyMappingSet
+	public struct InteropKeyMappingSet
 	{
-		public KeyMapping Mapping1;
-		public KeyMapping Mapping2;
-		public KeyMapping Mapping3;
-		public KeyMapping Mapping4;
+		public InteropKeyMapping Mapping1;
+		public InteropKeyMapping Mapping2;
+		public InteropKeyMapping Mapping3;
+		public InteropKeyMapping Mapping4;
 		public UInt32 TurboSpeed;
 	}
 
-	public struct ControllerConfig
+	public struct InteropControllerConfig
 	{
-		public KeyMappingSet Keys;
-		public ControllerType Type;
+		public InteropKeyMappingSet Keys { get; set; }
+		public ControllerType Type { get; set; }
 	}
 
 	public enum ControllerType

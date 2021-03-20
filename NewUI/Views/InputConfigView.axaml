@@ -17,23 +17,68 @@
 		<vm:InputConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="1">
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="Controllers">
 			<StackPanel Margin="0 10" Width="300" HorizontalAlignment="Left">
 				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
 					<TextBlock Grid.Row="0" Grid.Column="0">Player 1:</TextBlock>
-					<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="1" HorizontalAlignment="Stretch" Margin="5 0">
-						<ComboBoxItem>None</ComboBoxItem>
-						<ComboBoxItem>SNES Controller</ComboBoxItem>
-					</ComboBox>
-					<Button Grid.Row="0" Grid.Column="2" Padding="4">Setup</Button>
+					<c:EnumComboBox
+						Grid.Row="0" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[0].Type}"
+					/>
+					<Button Grid.Row="0" Grid.Column="2" Click="btnSetup1_OnClick">Setup</Button>
 
 					<TextBlock Grid.Row="1" Grid.Column="0">Player 2:</TextBlock>
-					<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0" HorizontalAlignment="Stretch" Margin="5 0">
-						<ComboBoxItem>None</ComboBoxItem>
-						<ComboBoxItem>SNES Controller</ComboBoxItem>
-					</ComboBox>
-					<Button Grid.Row="1" Grid.Column="2" Padding="4">Setup</Button>
+					<c:EnumComboBox
+						Grid.Row="1" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[1].Type}"
+					/>
+					<Button Grid.Row="1" Grid.Column="2" Click="btnSetup2_OnClick">Setup</Button>
+
+					<Border 
+						Margin="0 5"
+						Padding="5"
+						Grid.Row="2"
+						Grid.Column="0"
+						Grid.ColumnSpan="3"
+						BorderBrush="LightGray" BorderThickness="1"
+					>
+						<StackPanel>
+							<c:SectionHeader Content="Multitap Configuration" Margin="0 0 0 5" />
+							<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+								<TextBlock Grid.Row="0" Grid.Column="0">Player 3:</TextBlock>
+								<c:EnumComboBox
+									Grid.Row="0" Grid.Column="1"
+									Margin="5 0"
+									EnumType="{x:Type cfg:ControllerType}"
+									SelectedItem="{CompiledBinding Config.Controllers[2].Type}"
+								/>
+								<Button Grid.Row="0" Grid.Column="2" Click="btnSetup3_OnClick">Setup</Button>
+
+								<TextBlock Grid.Row="1" Grid.Column="0">Player 4:</TextBlock>
+								<c:EnumComboBox
+									Grid.Row="1" Grid.Column="1"
+									Margin="5 0"
+									EnumType="{x:Type cfg:ControllerType}"
+									SelectedItem="{CompiledBinding Config.Controllers[3].Type}"
+								/>
+								<Button Grid.Row="1" Grid.Column="2" Click="btnSetup4_OnClick">Setup</Button>
+
+								<TextBlock Grid.Row="2" Grid.Column="0">Player 5:</TextBlock>
+								<c:EnumComboBox
+									Grid.Row="2" Grid.Column="1"
+									Margin="5 0"
+									EnumType="{x:Type cfg:ControllerType}"
+									SelectedItem="{CompiledBinding Config.Controllers[4].Type}"
+								/>
+								<Button Grid.Row="2" Grid.Column="2" Click="btnSetup5_OnClick">Setup</Button>
+							</Grid>
+						</StackPanel>
+					</Border>
 				</Grid>
 			</StackPanel>
 		</TabItem>

@@ -19,7 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Mesen
+namespace Mesen.Windows
 {
 	public class MainWindow : Window
 	{

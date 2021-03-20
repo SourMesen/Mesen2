@@ -11,7 +11,7 @@
 	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
 	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
-	x:Class="Mesen.DebuggerWindow"
+	x:Class="Mesen.Windows.DebuggerWindow"
 	Width="1000" Height="1000"
 	Title="Debugger"
 	x:Name="Debugger"

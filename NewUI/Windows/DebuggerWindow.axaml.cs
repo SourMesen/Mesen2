@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Mesen
+namespace Mesen.Windows
 {
 	public class DebuggerWindow : Window
 	{

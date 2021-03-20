@@ -1,0 +1,54 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	mc:Ignorable="d"
+	d:DesignWidth="635" d:DesignHeight="415"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:KeyMappingSet"
+	x:Class="Mesen.Windows.ControllerPopupWindow"
+	Width="635"
+	Height="415"
+>
+	<Design.DataContext>
+		<cfg:KeyMappingSet />
+	</Design.DataContext>
+
+	<StackPanel>
+		<TabControl TabStripPlacement="Top" SelectedIndex="0">
+			<TabItem Header="Key Set #1">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping1}" />
+			</TabItem>
+			<TabItem Header="Key Set #2">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping2}" />
+			</TabItem>
+			<TabItem Header="Key Set #3">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping3}" />
+			</TabItem>
+			<TabItem Header="Key Set #4">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping4}" />
+			</TabItem>
+		</TabControl>
+
+		<StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Right">
+			<TextBlock Text="Turbo Speed:" />
+			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+				<c:MesenSlider Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />
+				<TextBlock Grid.Row="1" Grid.Column="0" Text="Slow" Margin="5" />
+				<TextBlock Grid.Row="1" Grid.Column="1" Text="Fast" HorizontalAlignment="Right" Margin="5" />
+			</Grid>
+		</StackPanel>
+
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 3">
+			<Button Width="70" HorizontalContentAlignment="Center" Click="btnOk_OnClick">OK</Button>
+			<Button Width="70" HorizontalContentAlignment="Center" Click="btnCancel_OnClick" IsCancel="True">Cancel</Button>
+		</StackPanel>
+	</StackPanel>
+</Window>

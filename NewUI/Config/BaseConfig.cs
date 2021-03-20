@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Mesen.Utilities;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	public class BaseConfig<T> : ReactiveObject
+	public class BaseConfig<T> : ReactiveObject where T : class
 	{
-		public T Clone()
+		public T Clone() 
 		{
-			return (T)this.MemberwiseClone();
+			return JsonHelper.Clone<T>(this as T);
 		}
 	}
 }

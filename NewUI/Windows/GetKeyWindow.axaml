@@ -1,0 +1,39 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	mc:Ignorable="d"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Windows.GetKeyWindow"
+	Width="350"
+	Height="100"
+	Title="{l:Translate Title}"
+>
+	<Border BorderBrush="LightGray" BorderThickness="1" Margin="3">
+		<StackPanel VerticalAlignment="Center">
+			<Panel VerticalAlignment="Center" Height="40">
+				<TextBlock
+					Text="{l:Translate lblSetKeyMessage}"
+					TextWrapping="Wrap"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+			/>
+			</Panel>
+			<TextBlock
+				Grid.Row="1"
+				Height="0"
+				Name="lblCurrentKey"
+				TextWrapping="Wrap"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+			/>
+		</StackPanel>
+	</Border>
+</Window>

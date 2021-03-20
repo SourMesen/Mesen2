@@ -81,7 +81,7 @@ namespace Mesen.GUI.Config
 		public void InitializeDefaults()
 		{
 			//if(NeedInputReinit2) {
-				Input.Controllers = new ControllerConfig[5];
+				//Input.Controllers = new ControllerConfig[5];
 				Preferences.ShortcutKeys1 = null;
 				Preferences.ShortcutKeys2 = null;
 
