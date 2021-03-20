@@ -54,6 +54,9 @@
     <Compile Update="Windows\GetKeyWindow.axaml.cs">
       <DependentUpon>GetKeyWindow.axaml</DependentUpon>
     </Compile>
+	 <Compile Update="Controls\KeyBindingButton.axaml.cs">
+      <DependentUpon>KeyBindingButton.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\ControllerConfigWindow.axaml.cs">
       <DependentUpon>ControllerConfigWindow.axaml</DependentUpon>
     </Compile>
