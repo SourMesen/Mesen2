@@ -28,6 +28,15 @@ namespace Mesen.ViewModels
 			this.Input = new InputConfigViewModel();
 		}
 
+		public void ApplyConfig()
+		{
+			this.Audio.Config.ApplyConfig();
+			this.Video.Config.ApplyConfig();
+			this.Preferences.Config.ApplyConfig();
+			this.Emulation.Config.ApplyConfig();
+			this.Input.Config.ApplyConfig();
+		}
+
 		public void SaveConfig()
 		{
 			ConfigManager.Config.Audio = this.Audio.Config;
