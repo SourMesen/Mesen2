@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System;
 
 namespace Mesen.Controls
 {
@@ -57,6 +58,18 @@ namespace Mesen.Controls
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		public void Slider_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+		{
+			if(e.Property == Slider.ValueProperty) {
+				double newIntegerValue = Math.Floor((double)e.NewValue);
+				if(newIntegerValue != (double)e.NewValue) {
+					((Slider)sender).Value = newIntegerValue;
+				} else {
+					((Slider)sender).Value = Math.Ceiling((double)e.NewValue);
+				}
+			}
 		}
 	}
 }

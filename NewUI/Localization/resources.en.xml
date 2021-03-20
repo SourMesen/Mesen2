@@ -622,20 +622,24 @@
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="BaseInputConfigForm">
-			<Control ID="lblHint">Tabs with an icon contain key bindings for this player.&#13;Each button can be mapped to up to 4 different keyboard keys or gamepad buttons.</Control>
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		<Form ID="ControllerConfigWindow">
+			<Control ID="Title">Controller Configuration</Control>
+
+			<Control ID="lblHint">Each button can be mapped to up to 4 different keyboard keys or gamepad buttons.</Control>
+			<Control ID="btnSetDefault">Set Default Bindings</Control>
+			<Control ID="btnClear">Clear Key Bindings</Control>
+			
 			<Control ID="tpgSet1">Key Set #1</Control>
 			<Control ID="tpgSet2">Key Set #2</Control>
 			<Control ID="tpgSet3">Key Set #3</Control>
 			<Control ID="tpgSet4">Key Set #4</Control>
-			<Control ID="btnSetDefault">Set Default Bindings</Control>
-			<Control ID="btnClear">Clear Key Bindings</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
-		<Form ID="frmControllerConfig">
+			
 			<Control ID="lblTurboSpeed">Turbo Speed:</Control>
 			<Control ID="lblTurboFast">Fast</Control>
-			<Control ID="lblSlow">Slow</Control>
+			<Control ID="lblTurboSlow">Slow</Control>
 
 			<Control ID="btnSelectPreset">Select Preset...</Control>
 			<Control ID="mnuKeyboard">Keyboard</Control>
@@ -650,6 +654,9 @@
 			<Control ID="mnuSnes30Controller">SNES30 Controller</Control>
 			<Control ID="mnuSnes30Layout1">Controller #1</Control>
 			<Control ID="mnuSnes30Layout2">Controller #2</Control>
+
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="frmZapperConfig">
 			<Control ID="lblSmall">Small</Control>

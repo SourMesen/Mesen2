@@ -40,9 +40,14 @@ namespace Mesen.Controls
 				return;
 			}
 
-			this.GetPropertyChangedObservable(SelectedItemProperty).Subscribe(_ => _.ToString());
-
 			ComboBox cbo = this.FindControl<ComboBox>("ComboBox");
+
+			this.GetPropertyChangedObservable(SelectedItemProperty).Subscribe(_ => {
+				//If the binding is changed, update the inner combobox too
+				if(_.NewValue is Enum value) {
+					cbo.SelectedItem = ResourceHelper.GetEnumText(value);
+				}
+			});
 
 			List<string> values = new List<string>();
 			foreach(Enum val in Enum.GetValues(this.EnumType)) {

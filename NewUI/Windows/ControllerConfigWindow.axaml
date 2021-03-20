@@ -1,0 +1,95 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	mc:Ignorable="d"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:KeyMappingSet"
+	x:Class="Mesen.Windows.ControllerConfigWindow"
+	SizeToContent="WidthAndHeight"
+	Title="{l:Translate Title}"
+>
+	<Design.DataContext>
+		<cfg:KeyMappingSet />
+	</Design.DataContext>
+
+	<StackPanel>
+		<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Margin="2">
+			<Panel>
+				<mui:MaterialIcon Kind="InformationOutline" Margin="0" Width="20" Height="20" HorizontalAlignment="Left" />
+				<TextBlock Text="{l:Translate lblHint}" TextWrapping="Wrap" Margin="25 0 0 0" VerticalAlignment="Center" />
+			</Panel>
+		</Border>
+		<TabControl Name="tabMain" TabStripPlacement="Top" SelectedIndex="0">
+			<TabItem Header="{l:Translate tpgSet1}">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping1}" />
+			</TabItem>
+			<TabItem Header="{l:Translate tpgSet2}">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping2}" />
+			</TabItem>
+			<TabItem Header="{l:Translate tpgSet3}">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping3}" />
+			</TabItem>
+			<TabItem Header="{l:Translate tpgSet4}">
+				<v:SnesControllerView DataContext="{CompiledBinding Mapping4}" />
+			</TabItem>
+		</TabControl>
+
+		<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+			<Button Name="PresetButton" Content="{l:Translate btnSelectPreset}" Click="btnPreset_OnClick"  VerticalAlignment="Top" Margin="12">
+				<Button.ContextMenu>
+					<ContextMenu Name="Preset" PlacementMode="Bottom">
+						<MenuItem Header="{l:Translate mnuKeyboard}">
+							<MenuItem Header="{l:Translate mnuWasdLayout}" Click="mnuWasdLayout_OnClick" />
+							<MenuItem Header="{l:Translate mnuArrowLayout}" Click="mnuArrowLayout_OnClick" />
+						</MenuItem>
+						<Separator />
+						<MenuItem Header="{l:Translate mnuXboxController}">
+							<MenuItem Header="{l:Translate mnuXboxLayout1}" Click="mnuXboxLayout1_OnClick" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2}" Click="mnuXboxLayout2_OnClick" />
+						</MenuItem>
+						<MenuItem Header="{l:Translate mnuPs4Controller}">
+							<MenuItem Header="{l:Translate mnuPs4Layout1}" Click="mnuPs4Layout1_OnClick" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2}" Click="mnuPs4Layout2_OnClick" />
+						</MenuItem>
+						<MenuItem Header="{l:Translate mnuSnes30Controller}">
+							<MenuItem Header="{l:Translate mnuSnes30Layout1}" Click="mnuSnes30Layout1_OnClick" />
+							<MenuItem Header="{l:Translate mnuSnes30Layout2}" Click="mnuSnes30Layout2_OnClick" />
+						</MenuItem>
+					</ContextMenu>
+				</Button.ContextMenu>
+			</Button>
+
+			<Button
+				Margin="12 10 0 3"
+				Grid.Column="0"
+				Grid.Row="1"
+				Click="btnClearBindings_OnClick"
+				Content="{l:Translate btnClear}"
+			/>
+
+			<StackPanel Orientation="Horizontal" Margin="0 -6 3 0" Grid.Column="2">
+				<TextBlock Text="{l:Translate lblTurboSpeed}" Margin="0 -16 0 0" />
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+					<c:MesenSlider Value="{CompiledBinding TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />
+					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblTurboSlow}" Margin="5" />
+					<TextBlock Grid.Row="1" Grid.Column="1" Text="{l:Translate lblTurboFast}" HorizontalAlignment="Right" Margin="5" />
+				</Grid>
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 10 5 3" Grid.Column="2" Grid.Row="1">
+				<Button Width="70" HorizontalContentAlignment="Center" Click="btnOk_OnClick" Content="{l:Translate btnOK}" />
+				<Button Width="70" HorizontalContentAlignment="Center" Click="btnCancel_OnClick" IsCancel="True" Content="{l:Translate btnCancel}" />
+			</StackPanel>
+		</Grid>
+
+	</StackPanel>
+</Window>

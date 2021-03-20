@@ -54,8 +54,8 @@
     <Compile Update="Windows\GetKeyWindow.axaml.cs">
       <DependentUpon>GetKeyWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\ControllerPopupWindow.axaml.cs">
-      <DependentUpon>ControllerPopupWindow.axaml</DependentUpon>
+    <Compile Update="Windows\ControllerConfigWindow.axaml.cs">
+      <DependentUpon>ControllerConfigWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\SnesControllerView.axaml.cs">
       <DependentUpon>SnesControllerView.axaml</DependentUpon>

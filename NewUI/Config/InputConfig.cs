@@ -26,6 +26,10 @@ namespace Mesen.GUI.Config
 
 		public InputConfig()
 		{
+			//Force snes controllers for multitap
+			Controllers[2].Type = ControllerType.SnesController;
+			Controllers[3].Type = ControllerType.SnesController;
+			Controllers[4].Type = ControllerType.SnesController;
 		}
 
 		public void ApplyConfig()

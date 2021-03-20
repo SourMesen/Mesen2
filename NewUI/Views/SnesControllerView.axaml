@@ -21,13 +21,13 @@
 		<Canvas>
 			<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" RowDefinitions="Auto,Auto" Width="580" Canvas.Left="10">
 				<c:KeyBindingButton Grid.Column="0" Width="120" KeyBinding="{CompiledBinding L}" />
-				<TextBlock Grid.Column="0" Grid.Row="1" Text="L" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+				<TextBlock Grid.Column="0" Grid.Row="1" Text="L" FontSize="18	" HorizontalAlignment="Center" />
 
 				<c:KeyBindingButton Grid.Column="1" Width="70" KeyBinding="{CompiledBinding TurboL}" />
 				<TextBlock Grid.Column="1" Grid.Row="1" Text="Turbo L" FontSize="14" HorizontalAlignment="Center" />
 
 				<c:KeyBindingButton Grid.Column="3" Width="120" KeyBinding="{CompiledBinding R}" />
-				<TextBlock Grid.Column="3" Grid.Row="1" Text="R" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+				<TextBlock Grid.Column="3" Grid.Row="1" Text="R" FontSize="18" HorizontalAlignment="Center" />
 
 				<c:KeyBindingButton Grid.Column="4" Width="70" KeyBinding="{CompiledBinding TurboR}" />
 				<TextBlock Grid.Column="4" Grid.Row="1" Text="Turbo R" FontSize="14" HorizontalAlignment="Center" />
@@ -47,24 +47,24 @@
 				<Ellipse Width="220" Height="220" Fill="#F2F2F2" />
 				<StackPanel Orientation="Horizontal" Width="195" Height="220">
 					<StackPanel VerticalAlignment="Center" Margin="0 -30 5 0">
-						<TextBlock Text="Y" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
+						<TextBlock Text="Y" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding Y}" Width="60" Height="40" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboY}" Width="60" Height="20" />
 						<TextBlock Text="Turbo Y" FontSize="14" HorizontalAlignment="Center" />
 					</StackPanel>
 					<StackPanel HorizontalAlignment="Center">
-						<TextBlock Text="X" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+						<TextBlock Text="X" FontSize="18" HorizontalAlignment="Center" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding X}" Width="60" Height="40" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboX}" Width="60" Height="20" />
 						<TextBlock Text="Turbo X" FontSize="14" HorizontalAlignment="Center" />
 
-						<TextBlock Text="B" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
+						<TextBlock Text="B" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding B}" Width="60" Height="40" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboB}" Width="60" Height="20" />
 						<TextBlock Text="Turbo B" FontSize="14" HorizontalAlignment="Center" />
 					</StackPanel>
 					<StackPanel VerticalAlignment="Center" Margin="5 -30 0 0">
-						<TextBlock Text="A" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
+						<TextBlock Text="A" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding A}" Width="60" Height="40" />
 						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboA}" Width="60" Height="20" />
 						<TextBlock Text="Turbo A" FontSize="14" HorizontalAlignment="Center" />
@@ -74,10 +74,10 @@
 
 			<Grid ColumnDefinitions="*,Auto,Auto,*" RowDefinitions="Auto,Auto" Width="580" Canvas.Bottom="10">
 				<c:KeyBindingButton KeyBinding="{CompiledBinding Select}" Grid.Column="1" Width="80" />
-				<TextBlock Grid.Column="1" Grid.Row="1" Text="Select" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+				<TextBlock Grid.Column="1" Grid.Row="1" Text="Select" FontSize="14" HorizontalAlignment="Center" />
 
 				<c:KeyBindingButton KeyBinding="{CompiledBinding Start}" Grid.Column="2" Width="80" />
-				<TextBlock Grid.Column="2" Grid.Row="1" Text="Start" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+				<TextBlock Grid.Column="2" Grid.Row="1" Text="Start" FontSize="14" HorizontalAlignment="Center" />
 			</Grid>
 		</Canvas>
 	</Border>
