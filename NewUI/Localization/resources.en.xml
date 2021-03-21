@@ -371,6 +371,7 @@
 			<Control ID="grpFileAssociations">File Associations</Control>
 			<Control ID="chkRomFormat">.SFC, .SMC, .SWC, .FIG (Roms)</Control>
 			<Control ID="chkSpcFormat">.SPC (Sound/music files)</Control>
+			<Control ID="chkBsFormat">.BS (BS-X memory packs)</Control>
 			<Control ID="chkMsmFormat">.MMO (Movie)</Control>
 			<Control ID="chkMssFormat">.MSS (Save State)</Control>
 

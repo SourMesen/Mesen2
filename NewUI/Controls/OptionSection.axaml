@@ -7,12 +7,13 @@
 	xmlns:c="using:Mesen.Controls"
 	x:Name="root"
 	HorizontalAlignment="Stretch"
+	Margin="0 15 0 0"
 	x:Class="Mesen.Controls.OptionSection"
 >
 	<ItemsControl.Template>
 		<ControlTemplate>
 			<StackPanel DataContext="{Binding ElementName=root}">
-				<c:SectionHeader Content="{Binding Header}" />
+				<c:SectionHeader Content="{Binding Header}" Margin="0 0 0 5" />
 				<StackPanel Margin="10 0 0 0">
 					<ItemsPresenter Items="{Binding Items}" />
 				</StackPanel>

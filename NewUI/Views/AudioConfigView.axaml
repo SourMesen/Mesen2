@@ -18,7 +18,7 @@
 
 	<TabControl TabStripPlacement="Top">
 		<TabItem Header="{l:Translate tpgGeneral}">
-			<StackPanel Margin="0 10">
+			<StackPanel>
 				<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{CompiledBinding Config.EnableAudio}" />
 					
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
@@ -52,8 +52,7 @@
 					/>
 				</Grid>
 
-				<c:SectionHeader Content="{l:Translate lblVolumeReductionSettings}" />
-				<StackPanel Margin="10 0 0 0">
+				<c:OptionSection Header="{l:Translate lblVolumeReductionSettings}">
 					<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{CompiledBinding Config.MuteSoundInBackground}" />
 					<CheckBox Content="{l:Translate chkReduceSoundInBackground}" IsChecked="{CompiledBinding Config.ReduceSoundInBackground}" />
 					<CheckBox Content="{l:Translate chkReduceSoundInFastForward}" IsChecked="{CompiledBinding Config.ReduceSoundInFastForward}" />
@@ -66,16 +65,16 @@
 							Width="150"
 							Value="{CompiledBinding Config.VolumeReduction}"
 							HorizontalAlignment="Left"
-					/>
+						/>
 					</StackPanel>
-				</StackPanel>
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgEqualizer}" />
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
-			<StackPanel Margin="0 10">
+			<StackPanel>
 				<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
 				<c:CheckBoxWarning Text="{l:Translate chkDisableDynamicSampleRate}" IsChecked="{CompiledBinding Config.DisableDynamicSampleRate}" />
 			</StackPanel>

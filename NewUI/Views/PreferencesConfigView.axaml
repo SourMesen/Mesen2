@@ -18,9 +18,9 @@
 		<vm:PreferencesConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+	<TabControl TabStripPlacement="Top" SelectedIndex="2">
 		<TabItem Header="{l:Translate tpgGeneral}">
-			<StackPanel Margin="0 10">
+			<StackPanel>
 				<CheckBox Content="{l:Translate chkAutomaticallyCheckForUpdates}" IsChecked="{CompiledBinding Config.AutomaticallyCheckForUpdates}" />
 				<CheckBox Content="{l:Translate chkSingleInstance}" IsChecked="{CompiledBinding Config.SingleInstance}" />
 
@@ -47,14 +47,27 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgFiles}">
-			<Panel VerticalAlignment="Center">
-				
-			</Panel>
+			<StackPanel>
+				<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0">
+					<CheckBox Content="{l:Translate chkRomFormat}" IsChecked="{CompiledBinding Config.AssociateRomFiles}" />
+					<CheckBox Content="{l:Translate chkSpcFormat}" IsChecked="{CompiledBinding Config.AssociateSpcFiles}" />
+					<CheckBox Content="{l:Translate chkBsFormat}" IsChecked="{CompiledBinding Config.AssociateBsFiles}" />
+				</c:OptionSection>
+				<c:OptionSection Header="{l:Translate grpPathOverrides}">
+					<CheckBox Content="{l:Translate chkGameOverride}" IsChecked="{CompiledBinding Config.OverrideGameFolder}" />
+					<CheckBox Content="{l:Translate chkAviOverride}" IsChecked="{CompiledBinding Config.OverrideAviFolder}" />
+					<CheckBox Content="{l:Translate chkMoviesOverride}" IsChecked="{CompiledBinding Config.OverrideMovieFolder}" />
+					<CheckBox Content="{l:Translate chkSaveDataOverride}" IsChecked="{CompiledBinding Config.OverrideSaveDataFolder}" />
+					<CheckBox Content="{l:Translate chkSaveStatesOverride}" IsChecked="{CompiledBinding Config.OverrideSaveStateFolder}" />
+					<CheckBox Content="{l:Translate chkScreenshotsOverride}" IsChecked="{CompiledBinding Config.OverrideScreenshotFolder}" />
+					<CheckBox Content="{l:Translate chkWaveOverride}" IsChecked="{CompiledBinding Config.OverrideWaveFolder}" />
+				</c:OptionSection>
+			</StackPanel>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<StackPanel>
-				<c:OptionSection Header="{l:Translate lblWindowSettings}">
+				<c:OptionSection Header="{l:Translate lblWindowSettings}" Margin="0">
 					<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{CompiledBinding Config.AlwaysOnTop}" />
 				</c:OptionSection>
 

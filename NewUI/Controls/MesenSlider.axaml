@@ -20,6 +20,7 @@
 				VerticalAlignment="Center"
 				Margin="4"
 				IsReadOnly="True"
+				Focusable="False"
 				HorizontalContentAlignment="Center"
 				IsVisible="{Binding !HideValue}"
 			/>

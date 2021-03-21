@@ -42,6 +42,9 @@
     <Compile Update="Controls\MultiKeyBindingButton.axaml.cs">
       <DependentUpon>MultiKeyBindingButton.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\GroupBox.axaml.cs">
+      <DependentUpon>GroupBox.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>

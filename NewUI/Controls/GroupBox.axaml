@@ -1,0 +1,33 @@
+<ItemsControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	xmlns:c="using:Mesen.Controls"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Controls.GroupBox"
+>
+	<ItemsControl.Template>
+		<ControlTemplate>
+			<Panel DataContext="{Binding ElementName=root}">
+				<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 5" Padding="5 10 5 8">
+					<StackPanel>
+						<StackPanel>
+							<ItemsPresenter Items="{Binding Items}" />
+						</StackPanel>
+					</StackPanel>
+				</Border>
+				<TextBlock 
+					Text="{Binding Header}" 
+					Background="White"
+					Margin="8 0 0 0"
+					Padding="3 0"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+				/>
+			</Panel>
+		</ControlTemplate>
+	</ItemsControl.Template>
+</ItemsControl>

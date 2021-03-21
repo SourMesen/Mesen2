@@ -19,7 +19,7 @@
 
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="Controllers">
-			<StackPanel Margin="0 10" Width="300" HorizontalAlignment="Left">
+			<StackPanel Width="300" HorizontalAlignment="Left">
 				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
 					<TextBlock Grid.Row="0" Grid.Column="0">Player 1:</TextBlock>
 					<c:EnumComboBox
@@ -51,108 +51,100 @@
 						Content="{l:Translate btnSetupP2}"
 					/>
 
-					<Border 
+					<c:GroupBox
+						Header="Multitap Configuration"
 						IsVisible="{CompiledBinding HasMultitap}"
-						Margin="0 5"
-						Padding="5"
 						Grid.Row="2"
 						Grid.Column="0"
 						Grid.ColumnSpan="3"
-						BorderBrush="LightGray" BorderThickness="1"
-					>
-						<StackPanel>
-							<c:SectionHeader Content="Multitap Configuration" Margin="0 0 0 5" />
-							<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-								<TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Multitap1Label}" />
-								<c:EnumComboBox
-									Grid.Row="0" Grid.Column="1"
-									Margin="5 0"
-									EnumType="{x:Type cfg:ControllerType}"
-									IsEnabled="False"
-									SelectedItem="{x:Static cfg:ControllerType.SnesController}"
-								/>
-								<Button
-									Grid.Row="0"
-									Grid.Column="2"
-									Command="{CompiledBinding SetupMultitap1}"
-									CommandParameter="{Binding $self}"
-									Content="{l:Translate btnSetupMultitap1}"
-								/>
+							>
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Multitap1Label}" />
+							<c:EnumComboBox
+								Grid.Row="0" Grid.Column="1"
+								Margin="5 0"
+								EnumType="{x:Type cfg:ControllerType}"
+								IsEnabled="False"
+								SelectedItem="{x:Static cfg:ControllerType.SnesController}"
+									/>
+							<Button
+								Grid.Row="0"
+								Grid.Column="2"
+								Command="{CompiledBinding SetupMultitap1}"
+								CommandParameter="{Binding $self}"
+								Content="{l:Translate btnSetupMultitap1}"
+									/>
 
-								<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblMultitap2}" />
-								<c:EnumComboBox
-									Grid.Row="1" Grid.Column="1"
-									Margin="5 0"
-									EnumType="{x:Type cfg:ControllerType}"
-									IsEnabled="False"
-									SelectedItem="{x:Static cfg:ControllerType.SnesController}"
-								/>
-								<Button
-									Grid.Row="1"
-									Grid.Column="2"
-									Command="{CompiledBinding SetupMultitap2}"
-									CommandParameter="{Binding $self}"
-									Content="{l:Translate btnSetupMultitap2}"
-								/>
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblMultitap2}" />
+							<c:EnumComboBox
+								Grid.Row="1" Grid.Column="1"
+								Margin="5 0"
+								EnumType="{x:Type cfg:ControllerType}"
+								IsEnabled="False"
+								SelectedItem="{x:Static cfg:ControllerType.SnesController}"
+									/>
+							<Button
+								Grid.Row="1"
+								Grid.Column="2"
+								Command="{CompiledBinding SetupMultitap2}"
+								CommandParameter="{Binding $self}"
+								Content="{l:Translate btnSetupMultitap2}"
+									/>
 
-								<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblMultitap3}" />
-								<c:EnumComboBox
-									Grid.Row="2" Grid.Column="1"
-									Margin="5 0"
-									EnumType="{x:Type cfg:ControllerType}"
-									IsEnabled="False"
-									SelectedItem="{x:Static cfg:ControllerType.SnesController}"
-								/>
-								<Button
-									Grid.Row="2"
-									Grid.Column="2"
-									Command="{CompiledBinding SetupMultitap3}"
-									CommandParameter="{Binding $self}"
-									Content="{l:Translate btnSetupMultitap3}"
-								/>
+							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblMultitap3}" />
+							<c:EnumComboBox
+								Grid.Row="2" Grid.Column="1"
+								Margin="5 0"
+								EnumType="{x:Type cfg:ControllerType}"
+								IsEnabled="False"
+								SelectedItem="{x:Static cfg:ControllerType.SnesController}"
+									/>
+							<Button
+								Grid.Row="2"
+								Grid.Column="2"
+								Command="{CompiledBinding SetupMultitap3}"
+								CommandParameter="{Binding $self}"
+								Content="{l:Translate btnSetupMultitap3}"
+									/>
 
-								<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblMultitap4}" />
-								<c:EnumComboBox
-									Grid.Row="3" Grid.Column="1"
-									Margin="5 0"
-									EnumType="{x:Type cfg:ControllerType}"
-									IsEnabled="False"
-									SelectedItem="{x:Static cfg:ControllerType.SnesController}"
-								/>
-								<Button
-									Grid.Row="3"
-									Grid.Column="2"
-									Command="{CompiledBinding SetupMultitap4}"
-									CommandParameter="{Binding $self}"
-									Content="{l:Translate btnSetupMultitap4}"
-								/>
-							</Grid>
-						</StackPanel>
-					</Border>
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblMultitap4}" />
+							<c:EnumComboBox
+								Grid.Row="3" Grid.Column="1"
+								Margin="5 0"
+								EnumType="{x:Type cfg:ControllerType}"
+								IsEnabled="False"
+								SelectedItem="{x:Static cfg:ControllerType.SnesController}"
+									/>
+							<Button
+								Grid.Row="3"
+								Grid.Column="2"
+								Command="{CompiledBinding SetupMultitap4}"
+								CommandParameter="{Binding $self}"
+								Content="{l:Translate btnSetupMultitap4}"
+									/>
+						</Grid>
+					</c:GroupBox>
 				</Grid>
 			</StackPanel>
 		</TabItem>
 		<TabItem Header="Advanced">
-			<StackPanel Margin="0 10" HorizontalAlignment="Left">
-				<Border BorderBrush="LightGray" BorderThickness="1" Padding="5">
-					<StackPanel>
-						<c:SectionHeader Content="{l:Translate grpDisplayInput}" Margin="0 0 0 10" />
-						<StackPanel Orientation="Horizontal">
-							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort1}" Content="{l:Translate chkDisplayPort1}" />
-							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort2}" Content="{l:Translate chkDisplayPort2}" />
-							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort3}" Content="{l:Translate chkDisplayPort3}" />
-							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort4}" Content="{l:Translate chkDisplayPort4}" />
-							<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort5}" Content="{l:Translate chkDisplayPort5}" />
-						</StackPanel>
-						<StackPanel Orientation="Horizontal" Margin="0 5">
-							<TextBlock Text="{l:Translate lblDisplayPosition}" />
-							<c:EnumComboBox EnumType="{x:Type cfg:InputDisplayPosition}" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" Width="150" />
-						</StackPanel>
-						<CheckBox IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
+			<StackPanel>
+				<c:GroupBox Header="{l:Translate grpDisplayInput}" HorizontalAlignment="Left">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort1}" Content="{l:Translate chkDisplayPort1}" />
+						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort2}" Content="{l:Translate chkDisplayPort2}" />
+						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort3}" Content="{l:Translate chkDisplayPort3}" />
+						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort4}" Content="{l:Translate chkDisplayPort4}" />
+						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort5}" Content="{l:Translate chkDisplayPort5}" />
 					</StackPanel>
-				</Border>
-				<StackPanel Orientation="Horizontal" Margin="0 5">
-					<TextBlock Text="{l:Translate lblDeadzone}" />
+					<StackPanel Orientation="Horizontal" Margin="0 5">
+						<TextBlock Text="{l:Translate lblDisplayPosition}" />
+						<c:EnumComboBox EnumType="{x:Type cfg:InputDisplayPosition}" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" Width="150" />
+					</StackPanel>
+					<CheckBox IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
+				</c:GroupBox>
+				<StackPanel Orientation="Horizontal" Margin="0">
+					<TextBlock Text="{l:Translate lblDeadzone}" Margin="0 -17 0 0" />
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 						<c:MesenSlider Grid.ColumnSpan="2" Minimum="0" Maximum="4" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" Value="{CompiledBinding Config.ControllerDeadzoneSize}" />
 						<TextBlock Grid.Row="1" Grid.Column="0" Text="Small" Margin="5" />
