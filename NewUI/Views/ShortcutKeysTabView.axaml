@@ -1,0 +1,40 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:PreferencesConfigViewModel"
+	x:Class="Mesen.Views.ShortcutKeysTabView"
+>
+	<Design.DataContext>
+		<vm:PreferencesConfigViewModel />
+	</Design.DataContext>
+
+	<UserControl.Resources>
+		<l:EnumConverter x:Key="EnumConverter" />
+	</UserControl.Resources>
+	
+	<ScrollViewer AllowAutoHide="False">
+		<ItemsRepeater Items="{CompiledBinding ShortcutKeys}">
+			<ItemsRepeater.ItemTemplate>
+				<DataTemplate>
+					<StackPanel>
+						<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 0 20 0">
+							<TextBlock Grid.Column="0" Text="{Binding Shortcut, Converter={StaticResource EnumConverter}}" />
+							<c:MultiKeyBindingButton Grid.Column="1" KeyBinding="{Binding KeyCombination}" HorizontalAlignment="Stretch"  />
+							<c:MultiKeyBindingButton Grid.Column="2" KeyBinding="{Binding KeyCombination2}" HorizontalAlignment="Stretch" />
+						</Grid>
+						<Rectangle Stroke="LightGray" StrokeThickness="1" HorizontalAlignment="Stretch" />
+					</StackPanel>
+				</DataTemplate>
+			</ItemsRepeater.ItemTemplate>
+		</ItemsRepeater>
+	</ScrollViewer>
+</UserControl>

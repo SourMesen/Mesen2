@@ -38,6 +38,11 @@ namespace Mesen.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			_timer.Start();
 		}
 
@@ -55,6 +60,11 @@ namespace Mesen.Windows
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			_timer.Stop();
 			ConfigManager.Config.ApplyConfig();
 		}

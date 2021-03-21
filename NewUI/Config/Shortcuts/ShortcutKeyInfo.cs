@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,15 +9,10 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config.Shortcuts
 {
-	public struct ShortcutKeyInfo
+	public class ShortcutKeyInfo : ReactiveObject
 	{
-		public EmulatorShortcut Shortcut;
-		public KeyCombination KeyCombination;
-		
-		public ShortcutKeyInfo(EmulatorShortcut key, KeyCombination keyCombination)
-		{
-			Shortcut = key;
-			KeyCombination = keyCombination;
-		}
+		[Reactive] public EmulatorShortcut Shortcut { get; set; }
+		[Reactive] public KeyCombination KeyCombination { get; set; } = new KeyCombination();
+		[Reactive] public KeyCombination KeyCombination2 { get; set; } = new KeyCombination();
 	}
 }

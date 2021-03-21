@@ -2,7 +2,7 @@
 #include "WindowsKeyManager.h"
 
 static vector<KeyDefinition> _keyDefinitions = {
-	{ "None", 0 },
+	{ "", 0 },
 	{ "Cancel", 1 },
 	{ "Back", 2 },
 	{ "Tab", 3 },

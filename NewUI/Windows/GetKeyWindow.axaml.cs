@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Input;
 using System.ComponentModel;
+using Avalonia.VisualTree;
 
 namespace Mesen.Windows
 {
@@ -24,26 +25,31 @@ namespace Mesen.Windows
 		public GetKeyWindow()
 		{
 			InitializeComponent();
+			
+			lblCurrentKey = this.FindControl<TextBlock>("lblCurrentKey");
+
+			//Allow us to catch LeftAlt/RightAlt key presses
+			this.AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
+			this.AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
-			lblCurrentKey = this.FindControl<TextBlock>("lblCurrentKey");
 		}
 
-		protected override void OnKeyDown(KeyEventArgs e)
+		protected void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			InputApi.SetKeyState((int)e.Key, true);
 			this.OnKeyChange();
+			e.Handled = true;
 		}
 
-		protected override void OnKeyUp(KeyEventArgs e)
+		protected void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
-			base.OnKeyUp(e);
 			InputApi.SetKeyState((int)e.Key, false);
 			this.OnKeyChange();
+			e.Handled = true;
 		}
 
 		protected override void OnOpened(EventArgs e)

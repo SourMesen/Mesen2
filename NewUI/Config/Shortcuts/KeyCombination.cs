@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config.Shortcuts
 {
-	public struct KeyCombination
+	public class KeyCombination
 	{
-		public UInt32 Key1;
-		public UInt32 Key2;
-		public UInt32 Key3;
+		public UInt32 Key1 { get; set; }
+		public UInt32 Key2 { get; set; }
+		public UInt32 Key3 { get; set; }
 
 		public bool IsEmpty { get { return Key1 == 0 && Key2 == 0 && Key3 == 0; } }
 
@@ -21,6 +21,10 @@ namespace Mesen.GUI.Config.Shortcuts
 			} else {
 				return GetKeyNames();
 			}
+		}
+
+		public KeyCombination()
+		{
 		}
 
 		public KeyCombination(List<UInt32> scanCodes = null)
@@ -52,21 +56,21 @@ namespace Mesen.GUI.Config.Shortcuts
 					return 0;
 				}
 
-				if(a == "Ctrl") {
+				if(a.Contains("Ctrl")) {
 					return -1;
-				} else if(b == "Ctrl") {
+				} else if(b.Contains("Ctrl")) {
 					return 1;
 				}
 
-				if(a == "Alt") {
+				if(a.Contains("Alt")) {
 					return -1;
-				} else if(b == "Alt") {
+				} else if(b.Contains("Alt")) {
 					return 1;
 				}
 
-				if(a == "Shift") {
+				if(a.Contains("Shift")) {
 					return -1;
-				} else if(b == "Shift") {
+				} else if(b.Contains("Shift")) {
 					return 1;
 				}
 

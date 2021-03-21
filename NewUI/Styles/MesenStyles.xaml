@@ -229,12 +229,12 @@
 	<Style Selector="ButtonSpinner">
 		<Setter Property="MinHeight" Value="21" />
 	</Style>
-	<Style Selector="RepeatButton Path">
+	<Style Selector="ButtonSpinner RepeatButton Path">
 		<Setter Property="MaxWidth" Value="10" />
 		<Setter Property="MaxHeight" Value="5" />
 		<Setter Property="Margin" Value="0 2 0 0" />
 	</Style>
-	<Style Selector="RepeatButton.ButtonSpinnerRepeatButton">
+	<Style Selector="ButtonSpinner RepeatButton.ButtonSpinnerRepeatButton">
 		<Setter Property="Background" Value="#E1E1E1" />
 		<Setter Property="MinWidth" Value="19" />
 		<Setter Property="MaxWidth" Value="20" />

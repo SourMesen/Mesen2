@@ -24,7 +24,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetGameboyConfig(GameboyConfig config);
 
 		[DllImport(DllPath)] public static extern void SetPreferences(InteropPreferencesConfig config);
-		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]ShortcutKeyInfo[] shortcuts, UInt32 count);
+		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropShortcutKeyInfo[] shortcuts, UInt32 count);
 
 		[DllImport(DllPath)] public static extern void SetEmulationFlag(EmulationFlags flag, bool enabled);
 		[DllImport(DllPath)] public static extern void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
@@ -80,4 +80,24 @@ namespace Mesen.GUI
 		SpcDebuggerEnabled = 0x40000000,
 		CpuDebuggerEnabled = 0x80000000
 	}
+
+	public struct InteropShortcutKeyInfo
+	{
+		public EmulatorShortcut Shortcut;
+		public InteropKeyCombination KeyCombination;
+
+		public InteropShortcutKeyInfo(EmulatorShortcut key, InteropKeyCombination keyCombination)
+		{
+			Shortcut = key;
+			KeyCombination = keyCombination;
+		}
+	}
+
+	public struct InteropKeyCombination
+	{
+		public UInt32 Key1;
+		public UInt32 Key2;
+		public UInt32 Key3;
+	}
+
 }

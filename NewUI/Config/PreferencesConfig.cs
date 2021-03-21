@@ -11,7 +11,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.GUI.Config
 {
-	public class PreferencesConfig
+	public class PreferencesConfig : BaseConfig<PreferencesConfig>
 	{
 		[Reactive] public Language DisplayLanguage { get; set; } = Language.English;
 		[Reactive] public bool AutomaticallyCheckForUpdates { get; set; } = true;
@@ -43,8 +43,7 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool DisableOsd { get; set; } = false;
 		[Reactive] public bool DisableGameSelectionScreen { get; set; } = false;
 
-		public List<ShortcutKeyInfo> ShortcutKeys1;
-		public List<ShortcutKeyInfo> ShortcutKeys2;
+		[Reactive] public List<ShortcutKeyInfo> ShortcutKeys { get; set; } = new List<ShortcutKeyInfo>();
 
 		[Reactive] public bool OverrideGameFolder { get; set; } = false;
 		[Reactive] public bool OverrideAviFolder { get; set; } = false;
@@ -64,73 +63,66 @@ namespace Mesen.GUI.Config
 
 		public PreferencesConfig()
 		{
-			ShortcutKeys1 = new List<ShortcutKeyInfo>();
-			ShortcutKeys2 = new List<ShortcutKeyInfo>();
+			InitializeDefaultShortcuts();
 		}
 
-		public PreferencesConfig Clone()
+		private void AddShortcut(ShortcutKeyInfo shortcut)
 		{
-			PreferencesConfig copy = (PreferencesConfig)this.MemberwiseClone();
-			copy.ShortcutKeys1 = new List<ShortcutKeyInfo>(copy.ShortcutKeys1);
-			copy.ShortcutKeys2 = new List<ShortcutKeyInfo>(copy.ShortcutKeys2);
-			return copy;
+			if(!ShortcutKeys.Exists(a => a.Shortcut == shortcut.Shortcut)) {
+				ShortcutKeys.Add(shortcut);
+			}
 		}
 
 		public void InitializeDefaultShortcuts()
 		{
-			if(ShortcutKeys1 != null && ShortcutKeys2 != null) {
-				return;
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.FastForward, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Tab") }, KeyCombination2 = new KeyCombination() { Key1 = InputApi.GetKeyCode("Pad1 R2") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.Rewind, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Backspace") }, KeyCombination2 = new KeyCombination() { Key1 = InputApi.GetKeyCode("Pad1 L2") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.IncreaseSpeed, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("=") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.DecreaseSpeed, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("-") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.MaxSpeed, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F9") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.IncreaseVolume, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("=") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.DecreaseVolume, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("-") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.ToggleFps, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F10") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.ToggleFullscreen, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F11") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.TakeScreenshot, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F12") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.Reset, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("R") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.PowerCycle, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("T") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.Pause, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Esc") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale1x, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("1") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale2x, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("2") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale3x, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("3") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale4x, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("4") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale5x, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("5") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale6x, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("6") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.OpenFile, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("O") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot1, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F1") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot2, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F2") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot3, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F3") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot4, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F4") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot5, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F5") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot6, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F6") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateSlot7, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F7") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SaveStateToFile, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("S") } });
+
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot1, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F1") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot2, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F2") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot3, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F3") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot4, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F4") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot5, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F5") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot6, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F6") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlot7, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F7") } });
+			//AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateSlotAuto, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("F8") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateFromFile, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("L") } });
+
+			foreach(EmulatorShortcut value in Enum.GetValues<EmulatorShortcut>()) {
+				AddShortcut(new ShortcutKeyInfo { Shortcut = value });
 			}
-
-			ShortcutKeys1 = new List<ShortcutKeyInfo>();
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.FastForward, new KeyCombination() { Key1 = InputApi.GetKeyCode("Tab") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.Rewind, new KeyCombination() { Key1 = InputApi.GetKeyCode("Backspace") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.IncreaseSpeed, new KeyCombination() { Key1 = InputApi.GetKeyCode("=") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.DecreaseSpeed, new KeyCombination() { Key1 = InputApi.GetKeyCode("-") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.MaxSpeed, new KeyCombination() { Key1 = InputApi.GetKeyCode("F9") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.IncreaseVolume, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("=") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.DecreaseVolume, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("-") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFps, new KeyCombination() { Key1 = InputApi.GetKeyCode("F10") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.ToggleFullscreen, new KeyCombination() { Key1 = InputApi.GetKeyCode("F11") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.TakeScreenshot, new KeyCombination() { Key1 = InputApi.GetKeyCode("F12") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.Reset, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("R") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.PowerCycle, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("T") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.Pause, new KeyCombination() { Key1 = InputApi.GetKeyCode("Esc") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SetScale1x, new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("1") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SetScale2x, new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("2") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SetScale3x, new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("3") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SetScale4x, new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("4") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SetScale5x, new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("5") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SetScale6x, new KeyCombination() { Key1 = InputApi.GetKeyCode("Alt"), Key2 = InputApi.GetKeyCode("6") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.OpenFile, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("O") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot1, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F1") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot2, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F2") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot3, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F3") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot4, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F4") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot5, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F5") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot6, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F6") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateSlot7, new KeyCombination() { Key1 = InputApi.GetKeyCode("Shift"), Key2 = InputApi.GetKeyCode("F7") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.SaveStateToFile, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("S") }));
-
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot1, new KeyCombination() { Key1 = InputApi.GetKeyCode("F1") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot2, new KeyCombination() { Key1 = InputApi.GetKeyCode("F2") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot3, new KeyCombination() { Key1 = InputApi.GetKeyCode("F3") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot4, new KeyCombination() { Key1 = InputApi.GetKeyCode("F4") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot5, new KeyCombination() { Key1 = InputApi.GetKeyCode("F5") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot6, new KeyCombination() { Key1 = InputApi.GetKeyCode("F6") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlot7, new KeyCombination() { Key1 = InputApi.GetKeyCode("F7") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateSlotAuto, new KeyCombination() { Key1 = InputApi.GetKeyCode("F8") }));
-			ShortcutKeys1.Add(new ShortcutKeyInfo(EmulatorShortcut.LoadStateFromFile, new KeyCombination() { Key1 = InputApi.GetKeyCode("Ctrl"), Key2 = InputApi.GetKeyCode("L") }));
-
-			ShortcutKeys2 = new List<ShortcutKeyInfo>();
-			ShortcutKeys2.Add(new ShortcutKeyInfo(EmulatorShortcut.FastForward, new KeyCombination() { Key1 = InputApi.GetKeyCode("Pad1 R2") }));
-			ShortcutKeys2.Add(new ShortcutKeyInfo(EmulatorShortcut.Rewind, new KeyCombination() { Key1 = InputApi.GetKeyCode("Pad1 L2") }));
 		}
 
 		public void ApplyConfig()

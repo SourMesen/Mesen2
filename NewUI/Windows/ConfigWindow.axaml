@@ -41,18 +41,43 @@
 									 ItemTemplate="{TemplateBinding ItemTemplate}">
 								</ItemsPresenter>
 							</ScrollViewer>
-							<ContentControl Content="{TemplateBinding Tag}" HorizontalContentAlignment="Right" DockPanel.Dock="Bottom"/>
-							<ScrollViewer
-								 HorizontalScrollBarVisibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.(ScrollViewer.HorizontalScrollBarVisibility)}"
-								 VerticalScrollBarVisibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.(ScrollViewer.VerticalScrollBarVisibility)}">
-								<ContentPresenter
-										  Name="PART_SelectedContentHost"
-										  Margin="{TemplateBinding Padding}"
-										  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-										  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-										  Content="{TemplateBinding SelectedContent}"
-										  ContentTemplate="{TemplateBinding SelectedContentTemplate}">
-								</ContentPresenter>
+							<ContentPresenter
+										Name="PART_SelectedContentHost"
+										Margin="{TemplateBinding Padding}"
+										HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+										VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+										Content="{TemplateBinding SelectedContent}"
+										ContentTemplate="{TemplateBinding SelectedContentTemplate}">
+							</ContentPresenter>
+						</DockPanel>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+
+		<Style Selector="TabControl[TabStripPlacement=Top]">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Margin="{TemplateBinding Margin}"
+							  BorderBrush="{TemplateBinding BorderBrush}"
+							  BorderThickness="{TemplateBinding BorderThickness}"
+							  Background="{TemplateBinding Background}"
+							  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+							  VerticalAlignment="{TemplateBinding VerticalAlignment}">
+						<DockPanel>
+							<ItemsPresenter Name="PART_ItemsPresenter"
+												 Items="{TemplateBinding Items}"
+												 ItemsPanel="{TemplateBinding ItemsPanel}"
+												 ItemTemplate="{TemplateBinding ItemTemplate}"
+												 DockPanel.Dock="{TemplateBinding TabStripPlacement}"/>
+
+							<ScrollViewer HorizontalScrollBarVisibility="Auto">
+								<ContentPresenter Name="PART_SelectedContentHost"
+														Margin="{TemplateBinding Padding}"
+														HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+														VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+														Content="{TemplateBinding SelectedContent}"
+														ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
 							</ScrollViewer>
 						</DockPanel>
 					</Border>

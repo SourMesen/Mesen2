@@ -39,6 +39,12 @@
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\MultiKeyBindingButton.axaml.cs">
+      <DependentUpon>MultiKeyBindingButton.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ShortcutKeysTabView.axaml.cs">
+      <DependentUpon>ShortcutKeysTabView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>
