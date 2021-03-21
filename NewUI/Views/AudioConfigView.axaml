@@ -9,6 +9,7 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	x:Name="root"
 	x:DataType="vm:AudioConfigViewModel"
 	x:Class="Mesen.Views.AudioConfigView"
 >
@@ -16,7 +17,18 @@
 		<vm:AudioConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top">
+	<UserControl.Styles>
+		<Style Selector="c|MesenSlider.Equalizer">
+			<Setter Property="Height" Value="190" />
+			<Setter Property="Width" Value="45" />
+			<Setter Property="Minimum" Value="-20" />
+			<Setter Property="Maximum" Value="20" />
+			<Setter Property="Orientation" Value="Vertical" />
+			<Setter Property="IsEnabled" Value="{CompiledBinding Config.EnableEqualizer}" />
+		</Style>
+	</UserControl.Styles>
+	
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
 				<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{CompiledBinding Config.EnableAudio}" />
@@ -70,8 +82,38 @@
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
-		
-		<TabItem Header="{l:Translate tpgEqualizer}" />
+
+		<TabItem Header="{l:Translate tpgEqualizer}">
+			<c:GroupBox>
+				<c:GroupBox.Header>
+					<CheckBox Content="{l:Translate chkEnableEqualizer}" DataContext="{Binding DataContext, ElementName=root}" IsChecked="{Binding Config.EnableEqualizer}" Margin="0 -3 0 0" />
+				</c:GroupBox.Header>
+				<StackPanel Orientation="Horizontal">
+					<c:MesenSlider Classes="Equalizer" Text="40 Hz" Value="{CompiledBinding Config.Band1Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="56 Hz" Value="{CompiledBinding Config.Band2Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="80 Hz" Value="{CompiledBinding Config.Band3Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="113 Hz" Value="{CompiledBinding Config.Band4Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="160 Hz" Value="{CompiledBinding Config.Band5Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="225 Hz" Value="{CompiledBinding Config.Band6Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="320 Hz" Value="{CompiledBinding Config.Band7Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="450 Hz" Value="{CompiledBinding Config.Band8Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="600 Hz" Value="{CompiledBinding Config.Band9Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="750 Hz" Value="{CompiledBinding Config.Band10Gain}" />
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+					<c:MesenSlider Classes="Equalizer" Text="1.0 kHz" Value="{CompiledBinding Config.Band11Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="2.0 kHz" Value="{CompiledBinding Config.Band12Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="3.0 kHz" Value="{CompiledBinding Config.Band13Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="4.0 kHz" Value="{CompiledBinding Config.Band14Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="5.0 kHz" Value="{CompiledBinding Config.Band15Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="6.0 kHz" Value="{CompiledBinding Config.Band16Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="7.0 kHz" Value="{CompiledBinding Config.Band17Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="10.0 kHz" Value="{CompiledBinding Config.Band18Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="12.5 kHz" Value="{CompiledBinding Config.Band19Gain}" />
+					<c:MesenSlider Classes="Equalizer" Text="15.0 kHz" Value="{CompiledBinding Config.Band20Gain}" />
+				</StackPanel>
+			</c:GroupBox>
+		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<StackPanel>

@@ -12,17 +12,17 @@
 	<ItemsControl.Template>
 		<ControlTemplate>
 			<Panel DataContext="{Binding ElementName=root}">
-				<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 5" Padding="5 10 5 8">
+				<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 8 0 3" Padding="5 10 5 8">
 					<StackPanel>
 						<StackPanel>
 							<ItemsPresenter Items="{Binding Items}" />
 						</StackPanel>
 					</StackPanel>
 				</Border>
-				<TextBlock 
-					Text="{Binding Header}" 
+				<ContentControl
+					Content="{Binding Header}"
 					Background="White"
-					Margin="8 0 0 0"
+					Margin="8 2 0 0"
 					Padding="3 0"
 					HorizontalAlignment="Left"
 					VerticalAlignment="Top"

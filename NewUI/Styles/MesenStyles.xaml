@@ -240,6 +240,10 @@
 		<Setter Property="MaxWidth" Value="20" />
 	</Style>
 
+	<Style Selector="TabControl">
+		<Setter Property="Padding" Value="3 0" />
+	</Style>
+
 	<Style Selector="TabItem">
 		<Setter Property="MinHeight" Value="30" />
 	</Style>

@@ -3,19 +3,42 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
 	x:Name="root"
 	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Controls.MesenSlider"
 >
+	<UserControl.Styles>
+		<Style Selector="c|MesenSlider[Orientation=Vertical] DockPanel TextBox">
+			<Setter Property="DockPanel.Dock" Value="Bottom" />
+		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Vertical] > Panel > Panel">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel TextBox">
+			<Setter Property="DockPanel.Dock" Value="Right" />
+		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBlock">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+	</UserControl.Styles>
+	
 	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Panel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="-38 2 0 0">
 			<TextBlock Text="{Binding Text}" Margin="0" HorizontalAlignment="Center" />
 		</Panel>
 
 		<DockPanel>
+			<TextBlock
+				DockPanel.Dock="Bottom"
+				Text="{Binding Text}"
+				Margin="0"
+				HorizontalAlignment="Center"
+			/>
+			
 			<TextBox
-				DockPanel.Dock="Right"
 				Text="{Binding Value}"
 				VerticalAlignment="Center"
 				Margin="4"
@@ -24,11 +47,12 @@
 				HorizontalContentAlignment="Center"
 				IsVisible="{Binding !HideValue}"
 			/>
-			
+
 			<Slider
 				Minimum="{Binding Minimum}"
 				Margin="0 -3 0 0"
 				Maximum="{Binding Maximum}"
+				Orientation="{Binding Orientation}"
 				Value="{Binding Value}"
 				TickPlacement="BottomRight"
 				TickFrequency="{Binding TickFrequency}"

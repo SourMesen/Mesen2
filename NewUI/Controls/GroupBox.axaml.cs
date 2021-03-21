@@ -6,9 +6,9 @@ namespace Mesen.Controls
 {
 	public class GroupBox : ItemsControl
 	{
-		public static readonly StyledProperty<string> HeaderProperty = AvaloniaProperty.Register<GroupBox, string>(nameof(Header));
+		public static readonly StyledProperty<object> HeaderProperty = AvaloniaProperty.Register<GroupBox, object>(nameof(Header));
 
-		public string Header
+		public object Header
 		{
 			get { return GetValue(HeaderProperty); }
 			set { SetValue(HeaderProperty, value); }

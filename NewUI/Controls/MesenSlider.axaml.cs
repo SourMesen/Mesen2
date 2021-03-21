@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using System;
 
@@ -13,6 +14,7 @@ namespace Mesen.Controls
 		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<MesenSlider, string>(nameof(Text));
 		public static readonly StyledProperty<bool> HideValueProperty = AvaloniaProperty.Register<MesenSlider, bool>(nameof(HideValue));
 		public static readonly StyledProperty<int> TickFrequencyProperty = AvaloniaProperty.Register<MesenSlider, int>(nameof(TickFrequency), 10);
+		public static readonly StyledProperty<Orientation> OrientationProperty = AvaloniaProperty.Register<MesenSlider, Orientation>(nameof(Orientation));
 
 		public int Minimum
 		{
@@ -48,6 +50,12 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(TickFrequencyProperty); }
 			set { SetValue(TickFrequencyProperty, value); }
+		}
+
+		public Orientation Orientation
+		{
+			get { return GetValue(OrientationProperty); }
+			set { SetValue(OrientationProperty, value); }
 		}
 
 		public MesenSlider()
