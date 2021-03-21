@@ -23,10 +23,7 @@ namespace Mesen
       {
          var handle = base.CreateNativeControlCore(parent);
          Handle = handle.Handle;
-         //ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
-         //EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Chrono Trigger (USA).sfc");
          return handle;
       }
-
    }
 }

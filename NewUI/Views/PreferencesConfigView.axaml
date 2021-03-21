@@ -24,23 +24,21 @@
 				<CheckBox Content="{l:Translate chkAutomaticallyCheckForUpdates}" IsChecked="{CompiledBinding Config.AutomaticallyCheckForUpdates}" />
 				<CheckBox Content="{l:Translate chkSingleInstance}" IsChecked="{CompiledBinding Config.SingleInstance}" />
 
-				<c:SectionHeader Content="{l:Translate lblPauseBackgroundSettings}" />
-				<StackPanel Margin="10 0 0 0">
+				<c:OptionSection Header="{l:Translate lblPauseBackgroundSettings}">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="{l:Translate lblPauseIn}" VerticalAlignment="Center" />
 						<CheckBox Content="{l:Translate chkPauseWhenInBackground}" IsChecked="{CompiledBinding Config.PauseWhenInBackground}" Margin="5 0" />
 						<CheckBox Content="{l:Translate chkPauseInMenuAndConfig}" IsChecked="{CompiledBinding Config.PauseWhenInMenusAndConfig}" Margin="5 0" />
-						<CheckBox Content="{l:Translate chkPauseInDebugger}" IsChecked="{CompiledBinding Config.PauseWhenInDebuggingTools}" Margin="5 0" />	
+						<CheckBox Content="{l:Translate chkPauseInDebugger}" IsChecked="{CompiledBinding Config.PauseWhenInDebuggingTools}" Margin="5 0" />
 					</StackPanel>
 					<CheckBox Content="{l:Translate chkAllowBackgroundInput}" IsChecked="{CompiledBinding Config.AllowBackgroundInput}" />
 					<CheckBox Content="{l:Translate chkPauseOnMovieEnd}" IsChecked="{CompiledBinding Config.PauseOnMovieEnd}" />
-				</StackPanel>
-				
-				<c:SectionHeader Content="{l:Translate lblMiscSettings}" />
-				<StackPanel Margin="10 0 0 0">
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblMiscSettings}">
 					<CheckBox Content="{l:Translate chkAutoLoadIps}" IsChecked="{CompiledBinding Config.AutoLoadPatches}" />
 					<CheckBox Content="{l:Translate chkAutoHideMenu}" IsChecked="{CompiledBinding Config.AutoHideMenu}" />
-				</StackPanel>
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 		
@@ -56,7 +54,27 @@
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<StackPanel>
+				<c:OptionSection Header="{l:Translate lblWindowSettings}">
+					<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{CompiledBinding Config.AlwaysOnTop}" />
+				</c:OptionSection>
 
+				<c:OptionSection Header="{l:Translate lblUiDisplaySettings}">
+					<CheckBox Content="{l:Translate chkDisableOsd}" IsChecked="{CompiledBinding Config.DisableOsd}" />
+					<CheckBox Content="{l:Translate chkDisableGameSelectionScreen}" IsChecked="{CompiledBinding Config.DisableGameSelectionScreen}" />
+					<CheckBox Content="{l:Translate chkDisplayTitleBarInfo}" IsChecked="{CompiledBinding Config.ShowTitleBarInfo}" />
+					<CheckBox Content="{l:Translate chkShowFps}" IsChecked="{CompiledBinding Config.ShowFps}" />
+					<CheckBox Content="{l:Translate chkShowFrameCounter}" IsChecked="{CompiledBinding Config.ShowFrameCounter}" />
+					<CheckBox Content="{l:Translate chkShowGameTimer}" IsChecked="{CompiledBinding Config.ShowGameTimer}" />
+					<CheckBox Content="{l:Translate chkShowDebugInformation}" IsChecked="{CompiledBinding Config.ShowDebugInfo}" />
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblMiscSettings}">
+					<WrapPanel>
+						<TextBlock Text="{l:Translate lblRewind}" VerticalAlignment="Center" />
+						<NumericUpDown Value="{CompiledBinding Config.RewindBufferSize}" VerticalAlignment="Center" Margin="5 0" />
+						<TextBlock Text="{l:Translate lblRewindMinutes}" VerticalAlignment="Center" />
+					</WrapPanel>
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 	</TabControl>

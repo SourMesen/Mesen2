@@ -197,7 +197,6 @@
 			<Control ID="lblFullscreenResolution">Fullscreen Resolution:</Control>
 			<Control ID="chkBlendHighResolutionModes">Blend high resolution modes</Control>
 			<Control ID="chkFullscreenForceIntegerScale">Use integer scale values when entering fullscreen mode</Control>
-			<Control ID="chkShowFps">Show FPS</Control>
 			<Control ID="chkUseHdPacks">Use HDNes HD packs</Control>
 			<Control ID="chkUseExclusiveFullscreen">Use exclusive fullscreen mode</Control>
 			<Control ID="lblRequestedRefreshRate">Requested Refresh Rate:</Control>
@@ -418,6 +417,8 @@
 			<Control ID="chkDisableOsd">Disable on-screen display (OSD)</Control>
 
 			<Control ID="chkAlwaysOnTop">Always display on top of other windows</Control>
+			<Control ID="chkShowFps">Show FPS</Control>
+			<Control ID="chkShowDebugInformation">Show debug information</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
