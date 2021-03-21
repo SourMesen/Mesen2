@@ -13,7 +13,7 @@ using System.Reflection;
 
 namespace Mesen.GUI.Config
 {
-	class ConfigManager
+	public static class ConfigManager
 	{
 		private static Configuration _config;
 		public static bool DoNotSaveSettings { get; set; }

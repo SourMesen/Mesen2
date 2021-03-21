@@ -1,0 +1,23 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Controls.PathSelector"
+>
+	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<TextBox 
+			IsVisible="{Binding !Editable}"
+			IsReadOnly="True"
+			Focusable="False"
+			Text="{Binding DisabledPath}"
+		/>
+		<DockPanel IsVisible="{Binding Editable}">
+			<Button DockPanel.Dock="Right" Content="..." Click="btnBrowse_OnClick" />
+			<TextBox Text="{Binding Path}" />
+		</DockPanel>
+	</Panel>
+</UserControl>

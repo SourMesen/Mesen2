@@ -423,6 +423,8 @@
 			<Control ID="chkShowFps">Show FPS</Control>
 			<Control ID="chkShowDebugInformation">Show debug information</Control>
 
+			<Control ID="lblLastFolderUsed">Last Folder Used</Control>
+
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
@@ -718,7 +720,6 @@
 		<Message ID="FileSaveError">An error occurred while trying to save the file.</Message>
 		
 		<Message ID="ClearHistory">Clear History</Message>
-		<Message ID="LastFolderUsed">Last Folder Used</Message>
 
 		<Message ID="FirmwareNotFound">This game requires a firmware file for the {0} chip.&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>
 		<Message ID="FirmwareMismatch">The selected file does not match the firmware required for this chip ({0}).&#xA;&#xA;Firmware SHA-256:&#xA;{1}&#xA;&#xA;Selected file's SHA-256:&#xA;{2}&#xA;&#xA;Would you like to use this file anyway?</Message>

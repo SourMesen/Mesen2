@@ -54,13 +54,70 @@
 					<CheckBox Content="{l:Translate chkBsFormat}" IsChecked="{CompiledBinding Config.AssociateBsFiles}" />
 				</c:OptionSection>
 				<c:OptionSection Header="{l:Translate grpPathOverrides}">
-					<CheckBox Content="{l:Translate chkGameOverride}" IsChecked="{CompiledBinding Config.OverrideGameFolder}" />
-					<CheckBox Content="{l:Translate chkAviOverride}" IsChecked="{CompiledBinding Config.OverrideAviFolder}" />
-					<CheckBox Content="{l:Translate chkMoviesOverride}" IsChecked="{CompiledBinding Config.OverrideMovieFolder}" />
-					<CheckBox Content="{l:Translate chkSaveDataOverride}" IsChecked="{CompiledBinding Config.OverrideSaveDataFolder}" />
-					<CheckBox Content="{l:Translate chkSaveStatesOverride}" IsChecked="{CompiledBinding Config.OverrideSaveStateFolder}" />
-					<CheckBox Content="{l:Translate chkScreenshotsOverride}" IsChecked="{CompiledBinding Config.OverrideScreenshotFolder}" />
-					<CheckBox Content="{l:Translate chkWaveOverride}" IsChecked="{CompiledBinding Config.OverrideWaveFolder}" />
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+						<CheckBox Grid.Row="0" Content="{l:Translate chkGameOverride}" IsChecked="{CompiledBinding Config.OverrideGameFolder}" />
+						<c:PathSelector
+							Grid.Row="0"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideGameFolder}"
+							Path="{CompiledBinding Config.GameFolder}"
+							DisabledPath="{l:Translate lblLastFolderUsed}"
+						/>
+						
+						<CheckBox Grid.Row="1" Content="{l:Translate chkAviOverride}" IsChecked="{CompiledBinding Config.OverrideAviFolder}" />
+						<c:PathSelector
+							Grid.Row="1"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideAviFolder}"
+							Path="{CompiledBinding Config.AviFolder}"
+							DisabledPath="{x:Static cfg:ConfigManager.DefaultAviFolder}"
+						/>
+
+						<CheckBox Grid.Row="2" Content="{l:Translate chkMoviesOverride}" IsChecked="{CompiledBinding Config.OverrideMovieFolder}" />
+						<c:PathSelector
+							Grid.Row="2"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideMovieFolder}"
+							Path="{CompiledBinding Config.MovieFolder}"
+							DisabledPath="{x:Static cfg:ConfigManager.DefaultMovieFolder}"
+						/>
+						
+						<CheckBox Grid.Row="3" Content="{l:Translate chkSaveDataOverride}" IsChecked="{CompiledBinding Config.OverrideSaveDataFolder}" />
+						<c:PathSelector
+							Grid.Row="3"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideSaveDataFolder}"
+							Path="{CompiledBinding Config.SaveDataFolder}"
+							DisabledPath="{x:Static cfg:ConfigManager.DefaultSaveDataFolder}"
+						/>
+						
+						<CheckBox Grid.Row="4" Content="{l:Translate chkSaveStatesOverride}" IsChecked="{CompiledBinding Config.OverrideSaveStateFolder}" />
+						<c:PathSelector
+							Grid.Row="4"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideSaveStateFolder}"
+							Path="{CompiledBinding Config.SaveStateFolder}"
+							DisabledPath="{x:Static cfg:ConfigManager.DefaultSaveStateFolder}"
+						/>
+
+						<CheckBox Grid.Row="5" Content="{l:Translate chkScreenshotsOverride}" IsChecked="{CompiledBinding Config.OverrideScreenshotFolder}" />
+						<c:PathSelector
+							Grid.Row="5"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideScreenshotFolder}"
+							Path="{CompiledBinding Config.OverrideScreenshotFolder}"
+							DisabledPath="{x:Static cfg:ConfigManager.DefaultScreenshotFolder}"
+						/>
+						
+						<CheckBox Grid.Row="6" Content="{l:Translate chkWaveOverride}" IsChecked="{CompiledBinding Config.OverrideWaveFolder}" />
+						<c:PathSelector
+							Grid.Row="6"
+							Grid.Column="1"
+							Editable="{CompiledBinding Config.OverrideWaveFolder}"
+							Path="{CompiledBinding Config.WaveFolder}"
+							DisabledPath="{x:Static cfg:ConfigManager.DefaultWaveFolder}"
+						/>
+					</Grid>
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
