@@ -8,7 +8,7 @@
 	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
-	VerticalAlignment="Stretch"
+	VerticalAlignment="Top"
 	HorizontalAlignment="Stretch"
 	x:DataType="vm:PreferencesConfigViewModel"
 	x:Class="Mesen.Views.ShortcutKeysTabView"
@@ -20,21 +20,32 @@
 	<UserControl.Resources>
 		<l:EnumConverter x:Key="EnumConverter" />
 	</UserControl.Resources>
-	
-	<ScrollViewer AllowAutoHide="False">
-		<ItemsRepeater Items="{CompiledBinding ShortcutKeys}">
-			<ItemsRepeater.ItemTemplate>
-				<DataTemplate>
-					<StackPanel>
-						<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 0 20 0">
-							<TextBlock Grid.Column="0" Text="{Binding Shortcut, Converter={StaticResource EnumConverter}}" />
-							<c:MultiKeyBindingButton Grid.Column="1" KeyBinding="{Binding KeyCombination}" HorizontalAlignment="Stretch"  />
-							<c:MultiKeyBindingButton Grid.Column="2" KeyBinding="{Binding KeyCombination2}" HorizontalAlignment="Stretch" />
-						</Grid>
-						<Rectangle Stroke="LightGray" StrokeThickness="1" HorizontalAlignment="Stretch" />
-					</StackPanel>
-				</DataTemplate>
-			</ItemsRepeater.ItemTemplate>
-		</ItemsRepeater>
-	</ScrollViewer>
+
+	<DockPanel>
+		<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 5 20 5" DockPanel.Dock="Top">
+			<TextBlock Grid.Column="0" Text="{l:Translate colAction}"  />
+			<TextBlock Grid.Column="1" Text="{l:Translate colBinding1}" HorizontalAlignment="Center" />
+			<TextBlock Grid.Column="2" Text="{l:Translate colBinding2}" HorizontalAlignment="Center" />
+		</Grid>
+		
+		<Rectangle Stroke="LightGray" StrokeThickness="2" Margin="-1 0 -1 0" DockPanel.Dock="Top"/>
+
+		<ScrollViewer AllowAutoHide="False">
+			<ItemsRepeater Items="{CompiledBinding ShortcutKeys}">
+				<ItemsRepeater.ItemTemplate>
+					<DataTemplate>
+						<StackPanel>
+							<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 -1 0 0">
+								<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 0 20 0">
+									<TextBlock Grid.Column="0" Text="{Binding Shortcut, Converter={StaticResource EnumConverter}}" />
+									<c:MultiKeyBindingButton Grid.Column="1" KeyBinding="{Binding KeyCombination}" HorizontalAlignment="Stretch"  />
+									<c:MultiKeyBindingButton Grid.Column="2" KeyBinding="{Binding KeyCombination2}" HorizontalAlignment="Stretch" />
+								</Grid>
+							</Border>
+						</StackPanel>
+					</DataTemplate>
+				</ItemsRepeater.ItemTemplate>
+			</ItemsRepeater>
+		</ScrollViewer>
+	</DockPanel>
 </UserControl>

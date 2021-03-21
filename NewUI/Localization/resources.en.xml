@@ -332,6 +332,12 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+		<Form ID="ShortcutKeysTabView">
+			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
+			<Control ID="colAction">Action</Control>
+			<Control ID="colBinding1">Binding #1</Control>
+			<Control ID="colBinding2">Binding #2</Control>
+		</Form>
 		<Form ID="PreferencesConfigView" Title="Preferences">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
@@ -393,10 +399,6 @@
 			<Control ID="lblRewindMinutes">minutes (Memory Usage ≈5MB/min)</Control>
 
 			<Control ID="tpgShortcuts">Shortcut Keys</Control>
-			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
-			<Control ID="colAction">Action</Control>
-			<Control ID="colBinding1">Binding #1</Control>
-			<Control ID="colBinding2">Binding #2</Control>
 
 			<Control ID="tpgSaveData">Save Data</Control>
 			<Control ID="grpAutomaticSaves">Save States</Control>

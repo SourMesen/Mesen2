@@ -71,14 +71,14 @@
 												 ItemTemplate="{TemplateBinding ItemTemplate}"
 												 DockPanel.Dock="{TemplateBinding TabStripPlacement}"/>
 
-							<ScrollViewer HorizontalScrollBarVisibility="Auto">
+							<!--<ScrollViewer HorizontalScrollBarVisibility="Auto">-->
 								<ContentPresenter Name="PART_SelectedContentHost"
 														Margin="{TemplateBinding Padding}"
 														HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
 														VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
 														Content="{TemplateBinding SelectedContent}"
 														ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
-							</ScrollViewer>
+							<!--</ScrollViewer>-->
 						</DockPanel>
 					</Border>
 				</ControlTemplate>
