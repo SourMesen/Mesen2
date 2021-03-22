@@ -51,6 +51,9 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
+      <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ShortcutKeysTabView.axaml.cs">
       <DependentUpon>ShortcutKeysTabView.axaml</DependentUpon>
     </Compile>
@@ -90,19 +93,19 @@
     <Compile Update="Views\VideoConfigView.axaml.cs">
       <DependentUpon>VideoConfigView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\BreakpointListView.axaml.cs">
+    <Compile Update="Debugger\Views\BreakpointListView.axaml.cs">
       <DependentUpon>BreakpointListView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\AudioConfigView.axaml.cs">
       <DependentUpon>AudioConfigView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SnesCpuView.axaml.cs">
+    <Compile Update="Debugger\Views\SnesCpuView.axaml.cs">
       <DependentUpon>SnesCpuView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\DisassemblyView.axaml.cs">
+    <Compile Update="Debugger\Views\DisassemblyView.axaml.cs">
       <DependentUpon>DisassemblyView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\DebuggerWindow.axaml.cs">
+    <Compile Update="Debugger\Windows\DebuggerWindow.axaml.cs">
       <DependentUpon>DebuggerWindow.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

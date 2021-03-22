@@ -44,6 +44,11 @@
 						<mui:MaterialIcon Kind="Bug" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<MenuItem Header="_Memory Tools" Click="OnMemoryToolsClick">
+					<MenuItem.Icon>
+						<mui:MaterialIcon Kind="Memory" />
+					</MenuItem.Icon>
+				</MenuItem>
 			</MenuItem>
 		</Menu>
 		<Panel>

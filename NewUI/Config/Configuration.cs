@@ -21,7 +21,7 @@ namespace Mesen.GUI.Config
 		public EmulationConfig Emulation { get; set; }
 		public GameboyConfig Gameboy { get; set; }
 		public PreferencesConfig Preferences { get; set; }
-		//public DebugInfo Debug;
+		public DebugConfig Debug;
 		public RecentItems RecentFiles { get; set; }
 		public AviRecordConfig AviRecord { get; set; }
 		public MovieRecordConfig MovieRecord { get; set; }

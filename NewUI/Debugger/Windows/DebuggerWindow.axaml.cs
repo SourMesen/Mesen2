@@ -12,8 +12,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Mesen.Debugger.ViewModels;
+using Mesen.GUI.Config;
 
-namespace Mesen.Windows
+namespace Mesen.Debugger.Windows
 {
 	public class DebuggerWindow : Window
 	{

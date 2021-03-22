@@ -1,6 +1,7 @@
-﻿using ReactiveUI;
+﻿using Mesen.ViewModels;
+using ReactiveUI;
 
-namespace Mesen.ViewModels
+namespace Mesen.Debugger.ViewModels
 {
 	public class DisassemblyViewerViewModel : ViewModelBase
 	{

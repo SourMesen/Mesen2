@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Mesen.Views
+namespace Mesen.Debugger.Views
 {
 	public class SnesCpuView : UserControl
 	{

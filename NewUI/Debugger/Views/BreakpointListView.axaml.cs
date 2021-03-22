@@ -4,8 +4,9 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.ViewModels;
 using Mesen.GUI.Debugger;
+using Mesen.Debugger.ViewModels;
 
-namespace Mesen.Views
+namespace Mesen.Debugger.Views
 {
 	public class BreakpointListView : UserControl
 	{

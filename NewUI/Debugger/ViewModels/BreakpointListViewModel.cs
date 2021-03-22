@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Mesen.GUI;
 using Mesen.GUI.Debugger;
+using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -10,7 +11,7 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Text;
 
-namespace Mesen.ViewModels
+namespace Mesen.Debugger.ViewModels
 {
 	public class BreakpointListViewModel : ViewModelBase
 	{

@@ -12,12 +12,13 @@ using Mesen.GUI.Config;
 using Mesen.GUI.Utilities;
 using ReactiveUI;
 using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Mesen.Debugger.Windows;
+using Mesen.Debugger.ViewModels;
 
 namespace Mesen.Windows
 {
@@ -69,6 +70,13 @@ namespace Mesen.Windows
 			if(filenames.Length > 0) {
 				EmuApi.LoadRom(filenames[0]);
 			}
+		}
+
+		private void OnMemoryToolsClick(object sender, RoutedEventArgs e)
+		{
+			new MemoryToolsWindow {
+				DataContext = new MemoryToolsViewModel(),
+			}.Show();
 		}
 
 		private void OnDebuggerClick(object sender, RoutedEventArgs e)

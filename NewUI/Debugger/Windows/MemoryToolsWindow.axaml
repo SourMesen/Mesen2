@@ -1,0 +1,26 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:id="clr-namespace:Dock.Avalonia;assembly=Dock.Avalonia"
+	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
+	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
+	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
+	x:Class="Mesen.Debugger.Windows.MemoryToolsWindow"
+	Width="600" Height="600"
+	Title="Debugger"
+	x:Name="Debugger"
+>
+	<Design.DataContext>
+		<dvm:MemoryToolsViewModel />
+	</Design.DataContext>
+	
+	<dc:HexEditor />
+</Window>

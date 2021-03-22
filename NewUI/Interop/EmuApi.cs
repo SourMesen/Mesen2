@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -90,7 +89,8 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void LoadStateFile([MarshalAs(UnmanagedType.LPUTF8Str)]string filepath);
 
 		[DllImport(DllPath, EntryPoint = "GetSaveStatePreview")] private static extern Int32 GetSaveStatePreviewWrapper([MarshalAs(UnmanagedType.LPUTF8Str)]string saveStatePath, [Out]byte[] imgData);
-		public static Image GetSaveStatePreview(string saveStatePath)
+		//TODO
+		/*public static Image GetSaveStatePreview(string saveStatePath)
 		{
 			if(File.Exists(saveStatePath)) {
 				byte[] buffer = new byte[512*478*4];
@@ -103,7 +103,7 @@ namespace Mesen.GUI
 				}
 			}
 			return null;
-		}
+		}*/
 
 		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();
