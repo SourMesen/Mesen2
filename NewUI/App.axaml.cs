@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Mesen.GUI.Config;
 using Mesen.Localization;
 using Mesen.ViewModels;
 using Mesen.Windows;
@@ -12,6 +13,7 @@ namespace Mesen
 		public override void Initialize()
 		{
 			AvaloniaXamlLoader.Load(this);
+			PreferencesConfig.ApplyTheme(ConfigManager.Config.Preferences.Theme);
 			ResourceHelper.LoadResources(Language.English);
 		}
 

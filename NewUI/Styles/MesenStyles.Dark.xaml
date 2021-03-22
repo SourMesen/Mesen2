@@ -1,0 +1,95 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+>
+	<Design.PreviewWith>
+		<Window Width="300" Height="400" Padding="5">
+			<StackPanel>
+				<Menu VerticalAlignment="Top">
+					<MenuItem Header="File">
+						<MenuItem Header="Abcd">
+							<MenuItem.Icon>
+								<mui:MaterialIcon Kind="FolderOpen" />
+							</MenuItem.Icon>
+						</MenuItem>
+						<MenuItem Header="Abcd" />
+					</MenuItem>
+				</Menu>
+				<CheckBox Content="Test" />
+				<CheckBox Content="Test" IsChecked="True" />
+				<TabControl>
+					<TabItem Header="Test" />
+				</TabControl>
+				<NumericUpDown Minimum="0" />
+				<ComboBox SelectedIndex="0">
+					<ComboBoxItem>0Test</ComboBoxItem>
+				</ComboBox>
+				<TextBox Text="00bc" />
+				<Button Content="Testgpq" />
+				<RadioButton Content="Test"/>
+				<RadioButton Content="Test" IsChecked="True"/>				
+				<DatePicker />
+				<TimePicker />
+			</StackPanel>
+		</Window>
+	</Design.PreviewWith>
+
+	<Styles.Resources>
+		<!-- Custom colors -->
+		<Color x:Key="MesenMenuBackground">#000</Color>
+		<Color x:Key="MesenMenuBackgroundHighlight">#555</Color>
+		<Color x:Key="MesenMenuBorderHighlight">#777</Color>
+
+		<!-- Fluent color overrides -->
+		<Color x:Key="MenuFlyoutPresenterBackground">#000</Color>
+		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
+
+		<Color x:Key="ButtonBackground">#000</Color>
+		<Color x:Key="ButtonBorderBrush">#ADADAD</Color>
+		<Color x:Key="ButtonBackgroundPointerOver">#000</Color>
+		<Color x:Key="ButtonBorderBrushPointerOver">#0078D7</Color>
+		<Color x:Key="ButtonBackgroundPressed">#000</Color>
+		<Color x:Key="ButtonBorderBrushPressed">#005499</Color>
+
+		<Color x:Key="ComboBoxBackground">#000</Color>
+		<Color x:Key="ComboBoxBorderBrush">#ADADAD</Color>
+		<Color x:Key="ComboBoxBackgroundPointerOver">#000</Color>
+		<Color x:Key="ComboBoxBorderBrushPointerOver">#0078D7</Color>
+
+		<Color x:Key="RepeatButtonBackgroundPointerOver">#000</Color>
+		<Color x:Key="RepeatButtonBorderBrushPointerOver">#0078D7</Color>
+		<Color x:Key="RepeatButtonBackgroundPressed">#000</Color>
+		<Color x:Key="RepeatButtonBorderBrushPressed">#005499</Color>
+
+		<Color x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver">White</Color>
+		<Color x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver">#000</Color>
+		<Color x:Key="CheckBoxBorderBrushCheckedPointerOver">White</Color>
+
+		<Color x:Key="CheckBoxCheckBackgroundFillChecked">Transparent</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundChecked">White</Color>
+
+		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver">Transparent</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">White</Color>
+		<Color x:Key="CheckBoxBackgroundCheckedPressed">Transparent</Color>
+
+		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPressed">#000</Color>
+		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedPressed">#000</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">Black</Color>
+
+		<!-- Misc fluent overrides -->
+		<x:Double x:Key="DatePickerThemeMinWidth">150</x:Double>
+		<x:Double x:Key="TimePickerThemeMinWidth">150</x:Double>
+		<Thickness x:Key="DatePickerTopHeaderMargin">0</Thickness>
+		<Thickness x:Key="DatePickerHostPadding">0</Thickness>
+		<Thickness x:Key="DatePickerHostMonthPadding">0</Thickness>
+
+		<Thickness x:Key="TimePickerTopHeaderMargin">0</Thickness>
+
+		<Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+
+		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
+		<CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
+		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
+	</Styles.Resources>
+</Styles>

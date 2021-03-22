@@ -8,11 +8,16 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI.Fody.Helpers;
+using Avalonia.Styling;
+using Avalonia;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Themes.Fluent;
 
 namespace Mesen.GUI.Config
 {
 	public class PreferencesConfig : BaseConfig<PreferencesConfig>
 	{
+		[Reactive] public MesenTheme Theme { get; set; } = MesenTheme.Light;
 		[Reactive] public Language DisplayLanguage { get; set; } = Language.English;
 		[Reactive] public bool AutomaticallyCheckForUpdates { get; set; } = true;
 		[Reactive] public bool SingleInstance { get; set; } = true;
@@ -125,8 +130,28 @@ namespace Mesen.GUI.Config
 			}
 		}
 
+		public static void ApplyTheme(MesenTheme theme)
+		{
+			Application.Current.Styles.Clear();
+
+			var styles = new List<IStyle> {
+				new FluentTheme(new Uri("avares://Mesen-X/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },
+				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml") },
+				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Material.Icons.Avalonia/App.xaml") },
+				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Dock.Avalonia.Themes.Default/DefaultTheme.axaml") },
+				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("/Styles/MesenStyles.xaml", UriKind.Relative) }
+			};
+
+			if(theme == MesenTheme.Dark) {
+				styles.Add(new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("/Styles/MesenStyles.Dark.xaml", UriKind.Relative) });
+			}
+
+			Application.Current.Styles.AddRange(styles);
+		}
+
 		public void ApplyConfig()
 		{
+
 			/*if(Program.IsMono) {
 				FileAssociationHelper.ConfigureLinuxMimeTypes();
 			} else {
@@ -168,7 +193,13 @@ namespace Mesen.GUI.Config
 			});*/
 		}
 	}
-	
+
+	public enum MesenTheme
+	{
+		Light = 0,
+		Dark = 1
+	}
+
 	public struct InteropPreferencesConfig
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool ShowFps;

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Linq;
 using Mesen.GUI.Config;
 using Mesen.Localization;
+using Avalonia.Interactivity;
 
 namespace Mesen.Controls
 {
@@ -14,6 +15,14 @@ namespace Mesen.Controls
 	{
 		public static readonly StyledProperty<Enum> SelectedItemProperty = AvaloniaProperty.Register<EnumComboBox, Enum>(nameof(SelectedItem), null, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<Type> EnumTypeProperty = AvaloniaProperty.Register<EnumComboBox, Type>(nameof(EnumType));
+
+		public static readonly RoutedEvent<SelectionChangedEventArgs> SelectionChangedEvent = RoutedEvent.Register<EnumComboBox, SelectionChangedEventArgs>("SelectionChanged", RoutingStrategies.Bubble);
+
+		public event EventHandler<SelectionChangedEventArgs> SelectionChanged
+		{
+			add { AddHandler(SelectionChangedEvent, value); }
+			remove { RemoveHandler(SelectionChangedEvent, value); }
+		}
 
 		public Enum SelectedItem
 		{
@@ -44,8 +53,9 @@ namespace Mesen.Controls
 
 			this.GetPropertyChangedObservable(SelectedItemProperty).Subscribe(_ => {
 				//If the binding is changed, update the inner combobox too
-				if(_.NewValue is Enum value) {
-					cbo.SelectedItem = ResourceHelper.GetEnumText(value);
+				if(_.NewValue is Enum newValue && _.OldValue is Enum oldValue) {
+					cbo.SelectedItem = ResourceHelper.GetEnumText(newValue);
+					RaiseEvent(new SelectionChangedEventArgs(SelectionChangedEvent, new List<Enum> { oldValue }, new List<Enum> { newValue }));
 				}
 			});
 

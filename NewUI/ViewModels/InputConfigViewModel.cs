@@ -73,8 +73,6 @@ namespace Mesen.ViewModels
 				}
 			});
 
-			this.WhenAnyValue(x => x.Multitap1).Subscribe(x => System.Diagnostics.Debug.Print("new value"));
-
 			IObservable<bool> button1Enabled = this.WhenAnyValue(x => x.Config.Controllers[0].Type, x => x == ControllerType.SnesController);
 			this.SetupPlayer1 = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 0), button1Enabled);
 

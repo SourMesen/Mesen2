@@ -27,11 +27,11 @@
 	  <None Remove="Assets\Icon.ico" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.0" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
+    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0013089-beta" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.999-cibuild0013089-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0013089-beta" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0013089-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0013089-beta" />
     <PackageReference Include="Dock.Avalonia" Version="0.10.0" />
     <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
     <PackageReference Include="Dock.Model.Avalonia" Version="0.10.0" />
@@ -108,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
 	  <AvaloniaResource Include="Assets\Icon.ico" />
+	  <AvaloniaResource Include="Styles\MesenStyles.Dark.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\MesenStyles.xaml" />
   </ItemGroup>
   <ItemGroup>
