@@ -30,6 +30,8 @@ namespace Mesen.Debugger
 		ByteColors _colors = new ByteColors();
 		BreakpointTypeFlags[] _breakpointTypes;
 
+		private long _firstByteIndex = 0;
+
 		public ByteColorProvider(SnesMemoryType memoryType, bool showExec, bool showWrite, bool showRead, int framesToFade, bool hideUnusedBytes, bool hideReadBytes, bool hideWrittenBytes, bool hideExecutedBytes, bool highlightDataBytes, bool highlightCodeBytes, bool highlightLabelledBytes, bool highlightBreakpoints)
 		{
 			_memoryType = memoryType;
@@ -49,6 +51,7 @@ namespace Mesen.Debugger
 
 		public void Prepare(long firstByteIndex, long lastByteIndex)
 		{
+			_firstByteIndex = firstByteIndex;
 			int visibleByteCount = (int)(lastByteIndex - firstByteIndex + 1);
 
 			if(_highlightBreakpoints) {
@@ -120,12 +123,12 @@ namespace Mesen.Debugger
 			return Color.FromRgb((byte)(input.R * brightnessPercentage), (byte)(input.G * brightnessPercentage), (byte)(input.B * brightnessPercentage));
 		}
 
-		public ByteColors GetByteColor(long firstByteIndex, long byteIndex)
+		public ByteColors GetByteColor(long byteIndex)
 		{
 			HexEditorConfig cfg = ConfigManager.Config.Debug.HexEditor;
 
 			const int CyclesPerFrame = 357368;
-			long index = byteIndex - firstByteIndex;
+			long index = byteIndex - _firstByteIndex;
 			double framesSinceExec = (double)(_state.MasterClock - _counters[index].ExecStamp) / CyclesPerFrame;
 			double framesSinceWrite = (double)(_state.MasterClock - _counters[index].WriteStamp) / CyclesPerFrame;
 			double framesSinceRead = (double)(_state.MasterClock - _counters[index].ReadStamp) / CyclesPerFrame;
@@ -174,17 +177,15 @@ namespace Mesen.Debugger
 				}
 			}
 
-			//TODO
-			/*if(_showExec && _counters[index].ExecStamp != 0 && framesSinceExec >= 0 && (framesSinceExec < _framesToFade || _framesToFade == 0)) {
-				_colors.ForeColor = Color.FromArgb(alpha, DarkerColor(cfg.ExecColor, (_framesToFade - framesSinceExec) / _framesToFade));
+			if(_showExec && _counters[index].ExecStamp != 0 && framesSinceExec >= 0 && (framesSinceExec < _framesToFade || _framesToFade == 0)) {
+				_colors.ForeColor = cfg.ExecColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ExecColor, (_framesToFade - framesSinceExec) / _framesToFade));
 			} else if(_showWrite && _counters[index].WriteStamp != 0 && framesSinceWrite >= 0 && (framesSinceWrite < _framesToFade || _framesToFade == 0)) {
-				_colors.ForeColor = Color.FromArgb(alpha, DarkerColor(cfg.WriteColor, (_framesToFade - framesSinceWrite) / _framesToFade));
+				_colors.ForeColor = cfg.WriteColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.WriteColor, (_framesToFade - framesSinceWrite) / _framesToFade));
 			} else if(_showRead && _counters[index].ReadStamp != 0 && framesSinceRead >= 0 && (framesSinceRead < _framesToFade || _framesToFade == 0)) {
-				_colors.ForeColor = Color.FromArgb(alpha, DarkerColor(cfg.ReadColor, (_framesToFade - framesSinceRead) / _framesToFade));
+				_colors.ForeColor = cfg.ReadColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ReadColor, (_framesToFade - framesSinceRead) / _framesToFade));
 			} else {
 				_colors.ForeColor = Color.FromArgb(alpha, 0, 0, 0);
-			}*/
-			_colors.ForeColor = Color.FromArgb(alpha, 0, 0, 0);
+			}
 
 			return _colors;
 		}

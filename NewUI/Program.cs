@@ -17,8 +17,11 @@ namespace Mesen
 		// Avalonia configuration, don't remove; also used by visual designer.
 		public static AppBuilder BuildAvaloniaApp()
 			 => AppBuilder.Configure<App>()
-              .UseReactiveUI()
-				  .UsePlatformDetect().UseSkia()			
-				  .LogToTrace();
+					.UseReactiveUI()
+					.UsePlatformDetect()
+					.With(new Win32PlatformOptions { UseWgl = true })
+					.With(new X11PlatformOptions { UseGpu = true, UseEGL = true })
+					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
+					.LogToTrace();
 	}
 }

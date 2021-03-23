@@ -35,7 +35,7 @@ namespace Mesen.GUI.Config
 		public Configuration()
 		{
 			RecentFiles = new RecentItems();
-			//Debug = new DebugInfo();
+			Debug = new DebugConfig();
 			Video = new VideoConfig();
 			Audio = new AudioConfig();
 			Input = new InputConfig();

@@ -1,9 +1,13 @@
-﻿using Mesen.ViewModels;
+﻿using Avalonia.Controls;
+using Mesen.GUI;
+using Mesen.ViewModels;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,8 +15,28 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class MemoryToolsViewModel : ViewModelBase
 	{
+		[Reactive] public SnesMemoryType MemoryType { get; set; }
+		[Reactive] public int BytesPerRow { get; set; }
+		[Reactive] public int ScrollPosition { get; set; }
+
+		[ObservableAsProperty] public int MaxScrollValue { get; set; }
+
+		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 64 }; }
+
 		public MemoryToolsViewModel()
 		{
+			this.MemoryType = SnesMemoryType.CpuMemory;
+			this.BytesPerRow = 16;
+			this.ScrollPosition = 0;
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			this.WhenAnyValue(
+				x => x.MemoryType,
+				x => x.BytesPerRow
+			).Select(((SnesMemoryType memType, int bytesPerRow) o) => DebugApi.GetMemorySize(o.memType) / o.bytesPerRow).ToPropertyEx(this, x => x.MaxScrollValue);
 		}
    }
 }

@@ -4,23 +4,51 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:id="clr-namespace:Dock.Avalonia;assembly=Dock.Avalonia"
-	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
-	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
-	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
 	x:Class="Mesen.Debugger.Windows.MemoryToolsWindow"
+	x:DataType="dvm:MemoryToolsViewModel"
 	Width="600" Height="600"
-	Title="Debugger"
-	x:Name="Debugger"
+	Title="Memory Tools"
 >
 	<Design.DataContext>
 		<dvm:MemoryToolsViewModel />
 	</Design.DataContext>
-	
-	<dc:HexEditor />
+
+	<DockPanel>
+		<DockPanel DockPanel.Dock="Top">
+			<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
+			<c:EnumComboBox
+				DockPanel.Dock="Left"
+				EnumType="{x:Type cfg:SnesMemoryType}"
+				SelectedItem="{CompiledBinding MemoryType}"
+			/>
+			<ComboBox
+				DockPanel.Dock="Right"
+				SelectedItem="{CompiledBinding BytesPerRow}"
+				Items="{CompiledBinding AvailableWidths}"
+			/>
+			<TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">Number of Columns: </TextBlock>
+		</DockPanel>
+		<ScrollBar
+			DockPanel.Dock="Right"
+			AllowAutoHide="False"
+			Minimum="0"
+			Maximum="{CompiledBinding MaxScrollValue}"
+			SmallChange="1"
+			LargeChange="10"
+			Value="{CompiledBinding ScrollPosition}"
+		/>
+		<dc:HexEditor 
+			Name="Hex"
+			BytesPerRow="{CompiledBinding BytesPerRow}"
+			StartByte="{CompiledBinding ScrollPosition}"			
+		/>
+	</DockPanel>
 </Window>

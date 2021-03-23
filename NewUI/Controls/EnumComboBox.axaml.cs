@@ -41,9 +41,9 @@ namespace Mesen.Controls
 			InitializeComponent();
 		}
 
-		protected override void OnInitialized()
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
-			base.OnInitialized();
+			base.OnAttachedToVisualTree(e);
 
 			if(Design.IsDesignMode && this.EnumType == null) {
 				return;
