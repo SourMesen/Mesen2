@@ -21,7 +21,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <OutputPath>C:\Code\Mesen-S\bin\x64\Release\</OutputPath>
 	  <Optimize>true</Optimize>
-	  <DefineConstants>DEBUG</DefineConstants>
+	  <DefineConstants></DefineConstants>
 	  <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>

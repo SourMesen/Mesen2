@@ -19,7 +19,7 @@ namespace Mesen
 			 => AppBuilder.Configure<App>()
 					.UseReactiveUI()
 					.UsePlatformDetect()
-					.With(new Win32PlatformOptions { UseWgl = true, UseDeferredRendering = false })
+					.With(new Win32PlatformOptions { UseWgl = false })
 					.With(new X11PlatformOptions { UseGpu = true, UseEGL = true })
 					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
 					.LogToTrace();

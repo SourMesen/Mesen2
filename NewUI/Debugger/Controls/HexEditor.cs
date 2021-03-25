@@ -336,156 +336,89 @@ namespace Mesen.Debugger.Controls
 			context.DrawRectangle(selectedRowColumnColor, null, new Rect(letterWidth * (3 * selectedColumn), 0, letterWidth * 2, bounds.Height));
 
 			//Draw data
-			StringBuilder sbHexView = new StringBuilder();
-			StringBuilder sbStringView = new StringBuilder();
-			var text = new FormattedText("A", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			double y = 0;
-			double x = 0;
-			double stringViewX = 0;
+			ByteColors currentColors;
 
-			Dictionary<ByteColors, int[]> dataToDraw = new Dictionary<ByteColors, int[]>();
-			ByteColors newColors = new ByteColors();
-			ByteColors colors = new ByteColors();
-			int drawCalls = 0;
+			Dictionary<Color, int[]> dataToDraw = new Dictionary<Color, int[]>();
+			int visibleRows = VisibleRows + 2;
 
 			int[] GetDataToDrawArray()
 			{
-				if(!dataToDraw.TryGetValue(colors, out int[] data)) {
-					data = new int[bytesPerRow];
-					for(int j = 0; j < bytesPerRow; j++) {
+				if(!dataToDraw.TryGetValue(currentColors.ForeColor, out int[] data)) {
+					data = new int[bytesPerRow * visibleRows];
+					for(int j = 0; j < bytesPerRow * visibleRows; j++) {
 						data[j] = -1;
 					}
-					dataToDraw[colors] = data;
+					dataToDraw[currentColors.ForeColor] = data;
 				}
 				return data;
 			}
-
-			void DrawText(ByteColors colors, int[] dataToDraw, bool endOfLine)
-			{
-				/*if(dataToDraw.Count == 0) {
-					return;
-				}*/
-
-				bool needTextLayout = false;
-				foreach(int b in dataToDraw) {
-					if(b >= 0) {
-						sbHexView.Append(b.ToString(HexFormat));
-						sbHexView.Append(' ');
-
-						char c = ConvertByteToChar((byte)b);
-						if(c > 127) {
-							needTextLayout = true;
-						}
-						sbStringView.Append(c);
-					} else {
-						sbHexView.Append("   ");
-						sbStringView.Append(" ");
-					}
-				}
-
-				text.Text = sbHexView.ToString();
-				sbHexView.Clear();
-
-				//Draw hexadecimal view
-				if(colors.BackColor.Equals(Colors.Transparent) == false) {
-					bool extend = !endOfLine && colors.BackColor == newColors.BackColor;
-					Rect bgBounds = new Rect(x, y, text.Bounds.Width + (extend ? LetterSize.Width : 0), text.Bounds.Height);
-
-					SolidColorBrush bgBrush = new SolidColorBrush(colors.BackColor);
-					context.FillRectangle(bgBrush, bgBounds);
-				}
-
-				if(colors.Selected) {
-					bool extend = !endOfLine && colors.Selected == newColors.Selected;
-					Rect bgBounds = new Rect(x, y, text.Bounds.Width + (extend ? LetterSize.Width : 0), text.Bounds.Height);
-
-					SolidColorBrush bgBrush = new SolidColorBrush(Colors.DodgerBlue, 0.75);
-					context.FillRectangle(bgBrush, bgBounds);
-				}
-
-				SolidColorBrush fontBrush = new SolidColorBrush(colors.ForeColor);
-				context.DrawText(fontBrush, new Point(x, y), text);
-				//x += text.Bounds.Width + LetterSize.Width;
-				drawCalls++;
-
-				//Draw string view
-				using var stringViewTranslation = context.PushPostTransform(Matrix.CreateTranslation(stringViewX + rowWidth + 30, y));
-
-				TextLayout? textLayout = null;
-				double width;
-				if(needTextLayout) {
-					textLayout = new TextLayout(sbStringView.ToString(), Font, 14, fontBrush);
-					width = textLayout.Size.Width;
-				} else {
-					text.Text = sbStringView.ToString();
-					width = text.Bounds.Width;
-				}
-				sbStringView.Clear();
-
-				if(colors.BackColor.Equals(Colors.Transparent) == false) {
-					SolidColorBrush bgBrush = new SolidColorBrush(colors.BackColor);
-					context.FillRectangle(bgBrush, new Rect(0, 0, width, LetterSize.Height));
-				}
-
-				if(colors.Selected) {
-					SolidColorBrush bgBrush = new SolidColorBrush(Colors.DodgerBlue, 0.75);
-					context.FillRectangle(bgBrush, new Rect(0, 0, width, LetterSize.Height));
-				}
-
-				if(textLayout != null) {
-					textLayout.Draw(context);
-				} else {
-					context.DrawText(fontBrush, new Point(0, 0), text);
-				}
-				drawCalls++;
-				//stringViewX += width;
-			}
-
-			int visibleRows = VisibleRows + 2;
+			
 			int currentRow = 0;
-			while(currentRow < visibleRows) {
-				dataToDraw = new Dictionary<ByteColors, int[]>();
-				if(position / bytesPerRow == selectedRow) {
-					//Draw background color for current row
-					context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, y, rowWidth, RowHeight));
 
-					//Draw selected character/byte cursor
-					context.DrawRectangle(cursorPen, new Rect(letterWidth * selectedColumn * 3 + (_lastNibble ? letterWidth : 0), y, 1, RowHeight));
+			//Draw background color for current row
+			context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, selectedRow * RowHeight, rowWidth, RowHeight));
+
+			//Draw selected character/byte cursor
+			context.DrawRectangle(cursorPen, new Rect(letterWidth * selectedColumn * 3 + (_lastNibble ? letterWidth : 0), selectedRow*RowHeight, 1, RowHeight));
+
+			int bytesToDraw = bytesPerRow * visibleRows;
+			ByteColors[] colors = new ByteColors[bytesToDraw];
+
+			for(int i = 0; i < bytesToDraw; i++) {
+				if(dataProvider.Length <= position) {
+					break;
 				}
 
-				for(int i = 0; i < bytesPerRow; i++) {
-					if(dataProvider.Length <= position) {
-						break;
-					}
+				colors[i] = dataProvider.GetByteColor(position);
+				colors[i].Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
+				currentColors = colors[i];
 
-					newColors = dataProvider.GetByteColor(position);
-					newColors.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
-
-					if(position == SelectionStart && _newByteValue >= 0) {
-						//About to draw the selected byte, draw anything that's pending, and then the current byte
-						colors.ForeColor = Colors.DarkOrange;
-						GetDataToDrawArray()[i] = (byte)_newByteValue;
-					} else {
-						GetDataToDrawArray()[i] = dataProvider.GetByte(position);
-					}
-					colors = newColors;
-					position++;
+				if(position == SelectionStart && _newByteValue >= 0) {
+					//About to draw the selected byte, draw anything that's pending, and then the current byte
+					colors[i].ForeColor = Colors.DarkOrange;
+					GetDataToDrawArray()[i] = (byte)_newByteValue;
+				} else {
+					GetDataToDrawArray()[i] = dataProvider.GetByte(position);
 				}
 
-
-				foreach(KeyValuePair<ByteColors, int[]> kvp in dataToDraw) {
-					colors = kvp.Key;
-					DrawText(kvp.Key, kvp.Value, false);
-				}
-
-				x = 0;
-				stringViewX = 0;
-
-				y += RowHeight;
-				currentRow++;
+				position++;
 			}
 
-			System.Diagnostics.Debug.WriteLine(drawCalls);
+			DrawHexView(context, dataToDraw, rowWidth);
+
+			//System.Diagnostics.Debug.WriteLine(drawCalls);
+		}
+
+		private void DrawHexView(DrawingContext context, Dictionary<Color, int[]> dataToDraw, double rowWidth)
+		{
+			foreach(var kvp in dataToDraw) {
+				DrawHexViewLayer(context, kvp.Key, kvp.Value, rowWidth);
+			}
+		}
+
+		private void DrawHexViewLayer(DrawingContext context, Color color, int[] dataToDraw, double rowWidth)
+		{
+			StringBuilder sb = new StringBuilder();
+			int bytesPerRow = BytesPerRow;
+			for(int i = 0; i < dataToDraw.Length; i++) {
+				int b = dataToDraw[i];
+				if(i % bytesPerRow == 0) {
+					sb.Append('-');
+				}
+				if(b >= 0) {
+					sb.Append(b.ToString(HexFormat));
+				} else {
+					sb.Append("  ");
+				}
+				sb.Append(' ');
+			}
+
+			SolidColorBrush fontBrush = new SolidColorBrush(color);
+			var text = new FormattedText(sb.ToString(), this.Font, 14, TextAlignment.Left, TextWrapping.Wrap, new Size(rowWidth + LetterSize.Width, this.Bounds.Height));
+			context.DrawText(fontBrush, new Point(-LetterSize.Width, 0), text);
+			
+			/*TextLayout layout = new TextLayout(sb.ToString(), Font, 14, fontBrush, textWrapping: TextWrapping.Wrap, maxWidth: rowWidth + LetterSize.Width*2, lineHeight: RowHeight -2);
+			layout.Draw(context);*/
 		}
 
 		private void InitFontAndLetterSize()
