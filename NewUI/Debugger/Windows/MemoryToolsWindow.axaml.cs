@@ -66,6 +66,12 @@ namespace Mesen.Debugger.Windows
 			_listener.OnNotification += listener_OnNotification;
 			_editor = this.FindControl<HexEditor>("Hex");
 			_editor.ByteColorProvider = colorProvider;
+			_editor.ByteUpdated += editor_ByteUpdated;
+		}
+
+		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
+		{
+			DebugApi.SetMemoryValue(_model.MemoryType, (uint)e.ByteOffset, e.Value);
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)

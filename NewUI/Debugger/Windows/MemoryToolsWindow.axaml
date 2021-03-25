@@ -48,7 +48,7 @@
 		<dc:HexEditor 
 			Name="Hex"
 			BytesPerRow="{CompiledBinding BytesPerRow}"
-			StartByte="{CompiledBinding ScrollPosition}"			
+			TopRow="{CompiledBinding ScrollPosition}"			
 		/>
 	</DockPanel>
 </Window>
