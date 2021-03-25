@@ -342,31 +342,49 @@ namespace Mesen.Debugger.Controls
 			double y = 0;
 			double x = 0;
 			double stringViewX = 0;
-			List<byte> dataToDraw = new List<byte>();
+
+			Dictionary<ByteColors, int[]> dataToDraw = new Dictionary<ByteColors, int[]>();
 			ByteColors newColors = new ByteColors();
 			ByteColors colors = new ByteColors();
 			int drawCalls = 0;
-			void DrawText(bool endOfLine)
+
+			int[] GetDataToDrawArray()
 			{
-				if(dataToDraw.Count == 0) {
-					return;
+				if(!dataToDraw.TryGetValue(colors, out int[] data)) {
+					data = new int[bytesPerRow];
+					for(int j = 0; j < bytesPerRow; j++) {
+						data[j] = -1;
+					}
+					dataToDraw[colors] = data;
 				}
+				return data;
+			}
+
+			void DrawText(ByteColors colors, int[] dataToDraw, bool endOfLine)
+			{
+				/*if(dataToDraw.Count == 0) {
+					return;
+				}*/
 
 				bool needTextLayout = false;
-				foreach(byte b in dataToDraw) {
-					sbHexView.Append(b.ToString(HexFormat));
-					sbHexView.Append(' ');
+				foreach(int b in dataToDraw) {
+					if(b >= 0) {
+						sbHexView.Append(b.ToString(HexFormat));
+						sbHexView.Append(' ');
 
-					char c = ConvertByteToChar(b);
-					if(c > 127) {
-						needTextLayout = true;
+						char c = ConvertByteToChar((byte)b);
+						if(c > 127) {
+							needTextLayout = true;
+						}
+						sbStringView.Append(c);
+					} else {
+						sbHexView.Append("   ");
+						sbStringView.Append(" ");
 					}
-					sbStringView.Append(c);
 				}
 
-				text.Text = sbHexView.ToString().Trim();
+				text.Text = sbHexView.ToString();
 				sbHexView.Clear();
-				dataToDraw.Clear();
 
 				//Draw hexadecimal view
 				if(colors.BackColor.Equals(Colors.Transparent) == false) {
@@ -387,7 +405,7 @@ namespace Mesen.Debugger.Controls
 
 				SolidColorBrush fontBrush = new SolidColorBrush(colors.ForeColor);
 				context.DrawText(fontBrush, new Point(x, y), text);
-				x += text.Bounds.Width + LetterSize.Width;
+				//x += text.Bounds.Width + LetterSize.Width;
 				drawCalls++;
 
 				//Draw string view
@@ -420,12 +438,13 @@ namespace Mesen.Debugger.Controls
 					context.DrawText(fontBrush, new Point(0, 0), text);
 				}
 				drawCalls++;
-				stringViewX += width;
+				//stringViewX += width;
 			}
 
 			int visibleRows = VisibleRows + 2;
 			int currentRow = 0;
 			while(currentRow < visibleRows) {
+				dataToDraw = new Dictionary<ByteColors, int[]>();
 				if(position / bytesPerRow == selectedRow) {
 					//Draw background color for current row
 					context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, y, rowWidth, RowHeight));
@@ -444,22 +463,20 @@ namespace Mesen.Debugger.Controls
 
 					if(position == SelectionStart && _newByteValue >= 0) {
 						//About to draw the selected byte, draw anything that's pending, and then the current byte
-						DrawText(false);
-						dataToDraw.Add((byte)_newByteValue);
 						colors.ForeColor = Colors.DarkOrange;
-						DrawText(false);
+						GetDataToDrawArray()[i] = (byte)_newByteValue;
 					} else {
-						if(!newColors.Equals(colors) && i > 0) {
-							//Colors are changing, draw built up text
-							DrawText(false);
-						}
-						dataToDraw.Add(dataProvider.GetByte(position));
+						GetDataToDrawArray()[i] = dataProvider.GetByte(position);
 					}
 					colors = newColors;
 					position++;
 				}
 
-				DrawText(true);
+
+				foreach(KeyValuePair<ByteColors, int[]> kvp in dataToDraw) {
+					colors = kvp.Key;
+					DrawText(kvp.Key, kvp.Value, false);
+				}
 
 				x = 0;
 				stringViewX = 0;
@@ -567,7 +584,7 @@ namespace Mesen.Debugger.Controls
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return (int)(this.BackColor.ToUint32() ^ this.BorderColor.ToUint32() ^ this.ForeColor.ToUint32() ^ (this.Selected ? 1 : 0));
 		}
 	}
 }

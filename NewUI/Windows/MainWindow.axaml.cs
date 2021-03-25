@@ -69,6 +69,7 @@ namespace Mesen.Windows
 			string[] filenames = await ofd.ShowAsync(this);
 			if(filenames.Length > 0) {
 				EmuApi.LoadRom(filenames[0]);
+				ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			}
 		}
 
