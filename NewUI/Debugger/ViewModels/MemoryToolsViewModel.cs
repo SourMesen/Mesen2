@@ -18,6 +18,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SnesMemoryType MemoryType { get; set; }
 		[Reactive] public int BytesPerRow { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
+		[Reactive] public HexEditorDataProvider DataProvider { get; set; }
 
 		[ObservableAsProperty] public int MaxScrollValue { get; set; }
 
@@ -32,6 +33,22 @@ namespace Mesen.Debugger.ViewModels
 			if(Design.IsDesignMode) {
 				return;
 			}
+
+			this.WhenAnyValue(x => x.MemoryType).Subscribe(x => DataProvider = new HexEditorDataProvider(
+				x,
+				true,
+				true,
+				true,
+				60,
+				false,
+				false,
+				false,
+				false,
+				true,
+				true,
+				true,
+				true
+			));
 
 			this.WhenAnyValue(
 				x => x.MemoryType,

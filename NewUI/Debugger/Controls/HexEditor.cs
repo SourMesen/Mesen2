@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
+using Avalonia.Rendering.SceneGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,9 @@ namespace Mesen.Debugger.Controls
 {
 	public class HexEditor : Control
 	{
-		public static readonly StyledProperty<byte[]> DataProperty = AvaloniaProperty.Register<HexEditor, byte[]>(nameof(Data));
+		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
 		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0);
 		public static readonly StyledProperty<int> BytesPerRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(BytesPerRow), 16);
-		public static readonly StyledProperty<IByteColorProvider> ByteColorProviderProperty = AvaloniaProperty.Register<HexEditor, IByteColorProvider>(nameof(ByteColorProvider));
 
 		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0);
 		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0);
@@ -28,10 +28,10 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<Brush> HeaderForegroundProperty = AvaloniaProperty.Register<HexEditor, Brush>(nameof(HeaderForeground), new SolidColorBrush(Colors.Gray));
 		public static readonly StyledProperty<Brush> HeaderHighlightProperty = AvaloniaProperty.Register<HexEditor, Brush>(nameof(HeaderHighlight), new SolidColorBrush(Colors.White));
 
-		public byte[] Data
+		public IHexEditorDataProvider DataProvider
 		{
-			get { return GetValue(DataProperty); }
-			set { SetValue(DataProperty, value); this.InvalidateVisual(); }
+			get { return GetValue(DataProviderProperty); }
+			set { SetValue(DataProviderProperty, value); this.InvalidateVisual(); }
 		}
 
 		public int TopRow
@@ -44,12 +44,6 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(BytesPerRowProperty); }
 			set { SetValue(BytesPerRowProperty, value); }
-		}
-
-		public IByteColorProvider ByteColorProvider
-		{
-			get { return GetValue(ByteColorProviderProperty); }
-			set { SetValue(ByteColorProviderProperty, value); }
 		}
 
 		public int SelectionStart
@@ -106,7 +100,7 @@ namespace Mesen.Debugger.Controls
 		void MoveSelection(int offset)
 		{
 			int pos = this.SelectionStart + offset;
-			this.SelectionStart = Math.Min(Math.Max(0, pos), this.Data.Length);
+			this.SelectionStart = Math.Min(Math.Max(0, pos), this.DataProvider.Length);
 			this.SelectionLength = 0;
 			_lastNibble = false;
 
@@ -124,7 +118,7 @@ namespace Mesen.Debugger.Controls
 				
 				ScrollIntoView(this.SelectionStart);
 			} else {
-				this.SelectionLength = Math.Min(len, this.Data.Length - this.SelectionStart - 1);
+				this.SelectionLength = Math.Min(len, this.DataProvider.Length - this.SelectionStart - 1);
 
 				ScrollIntoView(this.SelectionLength + this.SelectionStart);
 			}
@@ -172,7 +166,7 @@ namespace Mesen.Debugger.Controls
 					SelectionLength = 0;
 
 					if(_newByteValue < 0) {
-						_newByteValue = Data[SelectionStart];
+						_newByteValue = DataProvider.GetByte(SelectionStart);
 					}
 
 					if(_lastNibble) {
@@ -203,7 +197,7 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
-			this.TopRow = Math.Min(this.Data.Length - 1, Math.Max(0, this.TopRow - (int)(e.Delta.Y * 3)));
+			this.TopRow = Math.Min(DataProvider.Length - 1, Math.Max(0, this.TopRow - (int)(e.Delta.Y * 3)));
 		}
 
 		private GridPoint? GetGridPosition(Point p)
@@ -223,8 +217,8 @@ namespace Mesen.Debugger.Controls
 		{
 			if(byteIndex < 0) {
 				TopRow = 0;
-			} else if(byteIndex >= Data.Length) {
-				TopRow = (Data.Length / BytesPerRow) - VisibleRows;
+			} else if(byteIndex >= DataProvider.Length) {
+				TopRow = (DataProvider.Length / BytesPerRow) - VisibleRows;
 			} else if(byteIndex < TopRow * BytesPerRow) {
 				//scroll up
 				TopRow = byteIndex / BytesPerRow;
@@ -290,7 +284,7 @@ namespace Mesen.Debugger.Controls
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
 		
-		private int HeaderCharLength => (Data.Length - 1).ToString(HexFormat).Length;
+		private int HeaderCharLength => (DataProvider.Length - 1).ToString(HexFormat).Length;
 		private double RowHeaderWidth => HeaderCharLength * LetterSize.Width + 5;
 		private double ColumnHeaderHeight => LetterSize.Height + 5;
 		private int VisibleRows => (int)((Bounds.Height - ColumnHeaderHeight) / RowHeight) - 1;
@@ -300,8 +294,8 @@ namespace Mesen.Debugger.Controls
 		{
 			base.Render(context);
 
-			byte[] data = this.Data;
-			if(data == null) {
+			IHexEditorDataProvider dataProvider = this.DataProvider;
+			if(dataProvider == null) {
 				return;
 			}
 
@@ -336,8 +330,7 @@ namespace Mesen.Debugger.Controls
 			double letterWidth = LetterSize.Width;
 
 			//Init byte color information for the data we're about to draw
-			IByteColorProvider? colorProvider = this.ByteColorProvider;
-			colorProvider?.Prepare(position, position + bytesPerRow * 100);
+			dataProvider.Prepare(position, position + bytesPerRow * (VisibleRows + 3));
 
 			//Draw selected column background color
 			context.DrawRectangle(selectedRowColumnColor, null, new Rect(letterWidth * (3 * selectedColumn), 0, letterWidth * 2, bounds.Height));
@@ -352,18 +345,23 @@ namespace Mesen.Debugger.Controls
 			List<byte> dataToDraw = new List<byte>();
 			ByteColors newColors = new ByteColors();
 			ByteColors colors = new ByteColors();
-
+			int drawCalls = 0;
 			void DrawText(bool endOfLine)
 			{
 				if(dataToDraw.Count == 0) {
 					return;
 				}
 
+				bool needTextLayout = false;
 				foreach(byte b in dataToDraw) {
 					sbHexView.Append(b.ToString(HexFormat));
 					sbHexView.Append(' ');
 
-					sbStringView.Append(ConvertByteToChar(b));
+					char c = ConvertByteToChar(b);
+					if(c > 127) {
+						needTextLayout = true;
+					}
+					sbStringView.Append(c);
 				}
 
 				text.Text = sbHexView.ToString().Trim();
@@ -390,14 +388,22 @@ namespace Mesen.Debugger.Controls
 				SolidColorBrush fontBrush = new SolidColorBrush(colors.ForeColor);
 				context.DrawText(fontBrush, new Point(x, y), text);
 				x += text.Bounds.Width + LetterSize.Width;
+				drawCalls++;
 
 				//Draw string view
-				TextLayout textLayout = new TextLayout(sbStringView.ToString(), Font, 14, fontBrush);
+				using var stringViewTranslation = context.PushPostTransform(Matrix.CreateTranslation(stringViewX + rowWidth + 30, y));
+
+				TextLayout? textLayout = null;
+				double width;
+				if(needTextLayout) {
+					textLayout = new TextLayout(sbStringView.ToString(), Font, 14, fontBrush);
+					width = textLayout.Size.Width;
+				} else {
+					text.Text = sbStringView.ToString();
+					width = text.Bounds.Width;
+				}
 				sbStringView.Clear();
 
-				using var columnHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(stringViewX + rowWidth + 30, y));
-
-				double width = textLayout.Size.Width;
 				if(colors.BackColor.Equals(Colors.Transparent) == false) {
 					SolidColorBrush bgBrush = new SolidColorBrush(colors.BackColor);
 					context.FillRectangle(bgBrush, new Rect(0, 0, width, LetterSize.Height));
@@ -408,11 +414,18 @@ namespace Mesen.Debugger.Controls
 					context.FillRectangle(bgBrush, new Rect(0, 0, width, LetterSize.Height));
 				}
 
-				textLayout.Draw(context);
-				stringViewX += textLayout.Size.Width;
+				if(textLayout != null) {
+					textLayout.Draw(context);
+				} else {
+					context.DrawText(fontBrush, new Point(0, 0), text);
+				}
+				drawCalls++;
+				stringViewX += width;
 			}
 
-			while(y < bounds.Height) {
+			int visibleRows = VisibleRows + 2;
+			int currentRow = 0;
+			while(currentRow < visibleRows) {
 				if(position / bytesPerRow == selectedRow) {
 					//Draw background color for current row
 					context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, y, rowWidth, RowHeight));
@@ -422,11 +435,11 @@ namespace Mesen.Debugger.Controls
 				}
 
 				for(int i = 0; i < bytesPerRow; i++) {
-					if(data.Length <= position) {
+					if(dataProvider.Length <= position) {
 						break;
 					}
 
-					newColors = colorProvider?.GetByteColor(position) ?? new ByteColors();
+					newColors = dataProvider.GetByteColor(position);
 					newColors.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
 
 					if(position == SelectionStart && _newByteValue >= 0) {
@@ -440,7 +453,7 @@ namespace Mesen.Debugger.Controls
 							//Colors are changing, draw built up text
 							DrawText(false);
 						}
-						dataToDraw.Add(data[position]);
+						dataToDraw.Add(dataProvider.GetByte(position));
 					}
 					colors = newColors;
 					position++;
@@ -452,7 +465,10 @@ namespace Mesen.Debugger.Controls
 				stringViewX = 0;
 
 				y += RowHeight;
+				currentRow++;
 			}
+
+			System.Diagnostics.Debug.WriteLine(drawCalls);
 		}
 
 		private void InitFontAndLetterSize()
@@ -465,7 +481,7 @@ namespace Mesen.Debugger.Controls
 		private void DrawRowHeaders(DrawingContext context)
 		{
 			Rect bounds = Bounds;
-			byte[] data = Data;
+			int dataLength = DataProvider.Length;
 			int bytesPerRow = BytesPerRow;
 
 			int headerCharLength = HeaderCharLength;
@@ -481,7 +497,7 @@ namespace Mesen.Debugger.Controls
 
 			//Draw row headers for each row
 			var text = new FormattedText("", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			while(y < bounds.Height && headerByte < data.Length) {
+			while(y < bounds.Height && headerByte < dataLength) {
 				text.Text = headerByte.ToString("X" + headerCharLength);
 				context.DrawText(HeaderForeground, new Point(xOffset, y), text);
 				y += RowHeight;
@@ -504,17 +520,19 @@ namespace Mesen.Debugger.Controls
 
 		private char ConvertByteToChar(byte b)
 		{
-			if(b < 32 || b >= 128) {
-				return 'あ';
+			if(b < 32 || b > 127) {
+				return '.';
 			}
 			return (char)b;
 		}
 	}
 
-	public interface IByteColorProvider
+	public interface IHexEditorDataProvider
 	{
-		void Prepare(long firstByteIndex, long lastByteIndex);
-		ByteColors GetByteColor(long byteIndex);
+		void Prepare(int firstByteIndex, int lastByteIndex);
+		byte GetByte(int byteIndex);
+		ByteColors GetByteColor(int byteIndex);
+		int Length { get; }
 	}
 
 	public struct GridPoint

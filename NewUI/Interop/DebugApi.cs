@@ -81,6 +81,14 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, [MarshalAs(UnmanagedType.I1)]bool saveAsIps, CdlStripOption cdlStripOption);
 
+		[DllImport(DllPath, EntryPoint = "GetMemoryValues")] private static extern void GetMemoryValuesWrapper(SnesMemoryType type, UInt32 start, UInt32 end, [In, Out] byte[] buffer);
+		public static byte[] GetMemoryValues(SnesMemoryType type, UInt32 start, UInt32 end)
+		{
+			byte[] buffer = new byte[end - start + 1];
+			DebugApi.GetMemoryValuesWrapper(type, start, end, buffer);
+			return buffer;
+		}
+
 		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(SnesMemoryType type, [In, Out] byte[] buffer);
 		public static byte[] GetMemoryState(SnesMemoryType type)
 		{

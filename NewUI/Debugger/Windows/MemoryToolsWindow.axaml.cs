@@ -34,22 +34,6 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		ByteColorProvider colorProvider = new ByteColorProvider(
-			SnesMemoryType.CpuMemory,
-			true,
-			true,
-			true,
-			60,
-			false,
-			false,
-			false,
-			false,
-			true,
-			true,
-			true,
-			true			
-		);
-
 		HexEditor _editor;
 		MemoryToolsViewModel _model;
 		protected override void OnOpened(EventArgs e)
@@ -60,12 +44,11 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			//Renderer.DrawFps = true;
+			Renderer.DrawFps = true;
 
 			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
 			_editor = this.FindControl<HexEditor>("Hex");
-			_editor.ByteColorProvider = colorProvider;
 			_editor.ByteUpdated += editor_ByteUpdated;
 		}
 
@@ -86,9 +69,8 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			byte[] data = DebugApi.GetMemoryState(_model.MemoryType);
 			Dispatcher.UIThread.Post(() => {
-				_editor.Data = data;
+				_editor.InvalidateVisual();
 			});
 		}
 	}

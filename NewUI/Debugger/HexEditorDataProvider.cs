@@ -8,7 +8,7 @@ using Mesen.GUI.Debugger;
 
 namespace Mesen.Debugger
 {
-	public class ByteColorProvider : IByteColorProvider
+	public class HexEditorDataProvider : IHexEditorDataProvider
 	{
 		SnesMemoryType _memoryType;
 		AddressCounters[] _counters;
@@ -29,12 +29,14 @@ namespace Mesen.Debugger
 		bool _highlightBreakpoints;
 		ByteColors _colors = new ByteColors();
 		BreakpointTypeFlags[] _breakpointTypes;
+		byte[] _data = new byte[0];
 
 		private long _firstByteIndex = 0;
 
-		public ByteColorProvider(SnesMemoryType memoryType, bool showExec, bool showWrite, bool showRead, int framesToFade, bool hideUnusedBytes, bool hideReadBytes, bool hideWrittenBytes, bool hideExecutedBytes, bool highlightDataBytes, bool highlightCodeBytes, bool highlightLabelledBytes, bool highlightBreakpoints)
+		public HexEditorDataProvider(SnesMemoryType memoryType, bool showExec, bool showWrite, bool showRead, int framesToFade, bool hideUnusedBytes, bool hideReadBytes, bool hideWrittenBytes, bool hideExecutedBytes, bool highlightDataBytes, bool highlightCodeBytes, bool highlightLabelledBytes, bool highlightBreakpoints)
 		{
 			_memoryType = memoryType;
+			Length = DebugApi.GetMemorySize(memoryType);
 			_showExec = showExec;
 			_showWrite = showWrite;
 			_showRead = showRead;
@@ -49,8 +51,17 @@ namespace Mesen.Debugger
 			_highlightBreakpoints = highlightBreakpoints;
 		}
 
-		public void Prepare(long firstByteIndex, long lastByteIndex)
+		public int Length { get; private set; }
+
+		public byte GetByte(int index)
 		{
+			return _data[index - _firstByteIndex];
+		}
+
+		public void Prepare(int firstByteIndex, int lastByteIndex)
+		{
+			_data = DebugApi.GetMemoryValues(_memoryType, (uint)firstByteIndex, (uint)lastByteIndex);
+
 			_firstByteIndex = firstByteIndex;
 			int visibleByteCount = (int)(lastByteIndex - firstByteIndex + 1);
 
@@ -123,7 +134,7 @@ namespace Mesen.Debugger
 			return Color.FromRgb((byte)(input.R * brightnessPercentage), (byte)(input.G * brightnessPercentage), (byte)(input.B * brightnessPercentage));
 		}
 
-		public ByteColors GetByteColor(long byteIndex)
+		public ByteColors GetByteColor(int byteIndex)
 		{
 			HexEditorConfig cfg = ConfigManager.Config.Debug.HexEditor;
 

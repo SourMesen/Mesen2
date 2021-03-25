@@ -47,6 +47,7 @@
 		/>
 		<dc:HexEditor 
 			Name="Hex"
+			DataProvider="{CompiledBinding DataProvider}"
 			BytesPerRow="{CompiledBinding BytesPerRow}"
 			TopRow="{CompiledBinding ScrollPosition}"			
 		/>

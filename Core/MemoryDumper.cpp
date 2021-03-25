@@ -220,6 +220,14 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 	}
 }
 
+void MemoryDumper::GetMemoryValues(SnesMemoryType memoryType, uint32_t start, uint32_t end, uint8_t* output)
+{
+	int x = 0;
+	for(uint32_t i = start; i < end; i++) {
+		output[x++] = GetMemoryValue(memoryType, i);
+	}
+}
+
 uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address, bool disableSideEffects)
 {
 	if(address >= GetMemorySize(memoryType)) {
