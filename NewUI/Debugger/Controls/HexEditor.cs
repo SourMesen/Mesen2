@@ -4,7 +4,10 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
+using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
+using Avalonia.Skia;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -384,42 +387,100 @@ namespace Mesen.Debugger.Controls
 				position++;
 			}
 
-			DrawHexView(context, dataToDraw, rowWidth);
+			//DrawHexView(context, dataToDraw, rowWidth);
+			context.Custom(new CustomDrawOp(bytesPerRow, HexFormat, RowHeight, bounds, dataToDraw));
 
 			//System.Diagnostics.Debug.WriteLine(drawCalls);
 		}
 
-		private void DrawHexView(DrawingContext context, Dictionary<Color, int[]> dataToDraw, double rowWidth)
+		class CustomDrawOp : ICustomDrawOperation
 		{
-			foreach(var kvp in dataToDraw) {
-				DrawHexViewLayer(context, kvp.Key, kvp.Value, rowWidth);
-			}
-		}
+			Dictionary<Color, int[]> _dataToDraw;
+			int _bytesPerRow;
+			double _rowHeight;
+			string _hexFormat;
 
-		private void DrawHexViewLayer(DrawingContext context, Color color, int[] dataToDraw, double rowWidth)
-		{
-			StringBuilder sb = new StringBuilder();
-			int bytesPerRow = BytesPerRow;
-			for(int i = 0; i < dataToDraw.Length; i++) {
-				int b = dataToDraw[i];
-				if(i % bytesPerRow == 0) {
-					sb.Append('-');
-				}
-				if(b >= 0) {
-					sb.Append(b.ToString(HexFormat));
+			public CustomDrawOp(int bytesPerRow, string hexFormat, double rowHeight, Rect bounds, Dictionary<Color, int[]> dataToDraw)
+			{
+				_bytesPerRow = bytesPerRow;
+				_hexFormat = hexFormat;
+				_rowHeight = rowHeight;
+				Bounds = bounds;
+				_dataToDraw = dataToDraw;
+			}
+
+			public Rect Bounds { get; private set; }
+
+			public void Dispose()
+			{
+			}
+
+			public bool Equals(ICustomDrawOperation? other) => false;
+			public bool HitTest(Point p) => false;
+
+			public void Render(IDrawingContextImpl context)
+			{
+				var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
+				if(canvas == null) {
+					//context.DrawText(Brushes.Black, new Point(), _noSkia.PlatformImpl);
 				} else {
-					sb.Append("  ");
+					canvas.Save();
+					
+					canvas.Translate(0, 13);
+					DrawHexView(canvas, _dataToDraw, 0);
+
+					canvas.Restore();
 				}
-				sb.Append(' ');
 			}
 
-			SolidColorBrush fontBrush = new SolidColorBrush(color);
-			var text = new FormattedText(sb.ToString(), this.Font, 14, TextAlignment.Left, TextWrapping.Wrap, new Size(rowWidth + LetterSize.Width, this.Bounds.Height));
-			context.DrawText(fontBrush, new Point(-LetterSize.Width, 0), text);
-			
-			/*TextLayout layout = new TextLayout(sb.ToString(), Font, 14, fontBrush, textWrapping: TextWrapping.Wrap, maxWidth: rowWidth + LetterSize.Width*2, lineHeight: RowHeight -2);
-			layout.Draw(context);*/
+			private void DrawHexView(SKCanvas canvas, Dictionary<Color, int[]> dataToDraw, double rowWidth)
+			{
+				foreach(var kvp in dataToDraw) {
+					DrawHexViewLayer(canvas, kvp.Key, kvp.Value, rowWidth);
+				}
+			}
+
+			private void DrawHexViewLayer(SKCanvas canvas, Color color, int[] dataToDraw, double rowWidth)
+			{
+				SKPaint paint = new SKPaint();
+				paint.Color = new SKColor(color.ToUint32());
+
+				SKTypeface typeface = SKTypeface.FromFamilyName("Consolas");
+				SKFont font = new SKFont(typeface, 14);
+
+				using var builder = new SKTextBlobBuilder();
+
+				int pos = 0;
+
+				StringBuilder sb = new StringBuilder();
+				int row = 0;
+				while(pos < dataToDraw.Length) {
+					for(int i = 0; i < _bytesPerRow; i++) {
+						if(pos + i >= dataToDraw.Length) {
+							break;
+						}
+						int b = dataToDraw[pos + i];
+						if(b >= 0) {
+							sb.Append(b.ToString(_hexFormat));
+						} else {
+							sb.Append("  ");
+						}
+						sb.Append(' ');
+					}
+					pos += _bytesPerRow;
+
+					string rowText = sb.ToString();
+					int count = font.CountGlyphs(rowText);
+					var buffer = builder.AllocateRun(font, count, 0, (float)(row*_rowHeight));
+					font.GetGlyphs(rowText, buffer.GetGlyphSpan());
+					row++;
+					sb.Clear();
+				}
+
+				canvas.DrawText(builder.Build(), 0, 0, paint);
+			}
 		}
+
 
 		private void InitFontAndLetterSize()
 		{
