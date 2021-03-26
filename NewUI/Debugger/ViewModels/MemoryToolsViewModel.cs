@@ -22,7 +22,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[ObservableAsProperty] public int MaxScrollValue { get; set; }
 
-		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 64 }; }
+		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 48, 64, 80, 96, 112, 128 }; }
 
 		public MemoryToolsViewModel()
 		{

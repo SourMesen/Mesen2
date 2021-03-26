@@ -341,20 +341,7 @@ namespace Mesen.Debugger.Controls
 			//Draw data
 			ByteColors currentColors;
 
-			Dictionary<Color, int[]> dataToDraw = new Dictionary<Color, int[]>();
 			int visibleRows = VisibleRows + 2;
-
-			int[] GetDataToDrawArray()
-			{
-				if(!dataToDraw.TryGetValue(currentColors.ForeColor, out int[] data)) {
-					data = new int[bytesPerRow * visibleRows];
-					for(int j = 0; j < bytesPerRow * visibleRows; j++) {
-						data[j] = -1;
-					}
-					dataToDraw[currentColors.ForeColor] = data;
-				}
-				return data;
-			}
 			
 			int currentRow = 0;
 
@@ -365,48 +352,61 @@ namespace Mesen.Debugger.Controls
 			context.DrawRectangle(cursorPen, new Rect(letterWidth * selectedColumn * 3 + (_lastNibble ? letterWidth : 0), selectedRow*RowHeight, 1, RowHeight));
 
 			int bytesToDraw = bytesPerRow * visibleRows;
-			ByteColors[] colors = new ByteColors[bytesToDraw];
+			List<(ByteColors, byte)> dataToDraw = new List<(ByteColors, byte)>(bytesToDraw);
+			HashSet<Color> fgColors = new HashSet<Color>();
 
 			for(int i = 0; i < bytesToDraw; i++) {
 				if(dataProvider.Length <= position) {
 					break;
 				}
 
-				colors[i] = dataProvider.GetByteColor(position);
-				colors[i].Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
-				currentColors = colors[i];
+				ByteColors colors = dataProvider.GetByteColor(position);
+				colors.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
 
 				if(position == SelectionStart && _newByteValue >= 0) {
 					//About to draw the selected byte, draw anything that's pending, and then the current byte
-					colors[i].ForeColor = Colors.DarkOrange;
-					GetDataToDrawArray()[i] = (byte)_newByteValue;
+					colors.ForeColor = Colors.DarkOrange;
+					dataToDraw.Add((colors, (byte)_newByteValue));
 				} else {
-					GetDataToDrawArray()[i] = dataProvider.GetByte(position);
+					dataToDraw.Add((colors, dataProvider.GetByte(position)));
 				}
+
+				fgColors.Add(colors.ForeColor);
 
 				position++;
 			}
 
 			//DrawHexView(context, dataToDraw, rowWidth);
-			context.Custom(new CustomDrawOp(bytesPerRow, HexFormat, RowHeight, bounds, dataToDraw));
+			context.Custom(new CustomDrawOp(bytesPerRow, HexFormat, RowHeight, bounds, dataToDraw, fgColors, LetterSize));
 
 			//System.Diagnostics.Debug.WriteLine(drawCalls);
 		}
 
 		class CustomDrawOp : ICustomDrawOperation
 		{
-			Dictionary<Color, int[]> _dataToDraw;
+			List<(ByteColors, byte)> _dataToDraw;
+			HashSet<Color> _fgColors;
+			Size _letterSize;
 			int _bytesPerRow;
 			double _rowHeight;
 			string _hexFormat;
+			Dictionary<Color, SKPaint> _skPaints = new Dictionary<Color, SKPaint>();
 
-			public CustomDrawOp(int bytesPerRow, string hexFormat, double rowHeight, Rect bounds, Dictionary<Color, int[]> dataToDraw)
+			public CustomDrawOp(int bytesPerRow, string hexFormat, double rowHeight, Rect bounds, List<(ByteColors, byte)> dataToDraw, HashSet<Color> fgColors, Size letterSize)
 			{
+				Bounds = bounds;
 				_bytesPerRow = bytesPerRow;
 				_hexFormat = hexFormat;
 				_rowHeight = rowHeight;
-				Bounds = bounds;
 				_dataToDraw = dataToDraw;
+				_fgColors = fgColors;
+				_letterSize = letterSize;
+
+				foreach(var (colors, _) in dataToDraw) {
+					if(!_skPaints.ContainsKey(colors.BackColor)) {
+						_skPaints[colors.BackColor] = new SKPaint() { Color = new SKColor(colors.BackColor.ToUint32()) };
+					}
+				}
 			}
 
 			public Rect Bounds { get; private set; }
@@ -425,22 +425,19 @@ namespace Mesen.Debugger.Controls
 					//context.DrawText(Brushes.Black, new Point(), _noSkia.PlatformImpl);
 				} else {
 					canvas.Save();
-					
+
+					DrawBackground(canvas);
+
 					canvas.Translate(0, 13);
-					DrawHexView(canvas, _dataToDraw, 0);
+					foreach(Color color in _fgColors) {
+						DrawHexViewText(canvas, color);
+					}
 
 					canvas.Restore();
 				}
 			}
 
-			private void DrawHexView(SKCanvas canvas, Dictionary<Color, int[]> dataToDraw, double rowWidth)
-			{
-				foreach(var kvp in dataToDraw) {
-					DrawHexViewLayer(canvas, kvp.Key, kvp.Value, rowWidth);
-				}
-			}
-
-			private void DrawHexViewLayer(SKCanvas canvas, Color color, int[] dataToDraw, double rowWidth)
+			private void DrawHexViewText(SKCanvas canvas, Color color)
 			{
 				SKPaint paint = new SKPaint();
 				paint.Color = new SKColor(color.ToUint32());
@@ -454,14 +451,14 @@ namespace Mesen.Debugger.Controls
 
 				StringBuilder sb = new StringBuilder();
 				int row = 0;
-				while(pos < dataToDraw.Length) {
+				while(pos < _dataToDraw.Count) {
 					for(int i = 0; i < _bytesPerRow; i++) {
-						if(pos + i >= dataToDraw.Length) {
+						if(pos + i >= _dataToDraw.Count) {
 							break;
 						}
-						int b = dataToDraw[pos + i];
-						if(b >= 0) {
-							sb.Append(b.ToString(_hexFormat));
+						var (colors, value) = _dataToDraw[pos + i];
+						if(colors.ForeColor == color) {
+							sb.Append(value.ToString(_hexFormat));
 						} else {
 							sb.Append("  ");
 						}
@@ -479,8 +476,62 @@ namespace Mesen.Debugger.Controls
 
 				canvas.DrawText(builder.Build(), 0, 0, paint);
 			}
-		}
 
+			private void DrawBackground(SKCanvas canvas)
+			{
+				int pos = 0;
+
+				StringBuilder sb = new StringBuilder();
+				int row = 0;
+				while(pos < _dataToDraw.Count) {
+					int startPos = -1;
+					Color bgColor = Colors.Transparent;
+					for(int i = 0; i < _bytesPerRow; i++) {
+						if(pos + i >= _dataToDraw.Count) {
+							break;
+						}
+						
+						var (colors, _) = _dataToDraw[pos+i];
+
+						if(colors.BackColor != bgColor) {
+							if(bgColor != Colors.Transparent) {
+								if(startPos >= 0) {
+									canvas.DrawRect(
+										new SKRect(
+											(float)(startPos * 3 * _letterSize.Width),
+											(float)(row * _rowHeight),
+											(float)((i * 3 - 1) * _letterSize.Width),
+											(float)((row + 1) * _rowHeight)
+										),
+										_skPaints[bgColor]
+									);
+								}
+							}
+
+							if(colors.BackColor != Colors.Transparent) {
+								startPos = i;
+							}
+							bgColor = colors.BackColor;
+						}
+
+					}
+					pos += _bytesPerRow;
+
+					if(startPos >= 0) {
+						canvas.DrawRect(
+							new SKRect(
+								(float)(startPos * 3 * _letterSize.Width),
+								(float)(row * _rowHeight),
+								(float)((_bytesPerRow * 3 - 1) * _letterSize.Width),
+								(float)((row + 1) * _rowHeight)
+							),
+							_skPaints[bgColor]
+						);
+					}
+					row++;
+				}
+			}
+		}
 
 		private void InitFontAndLetterSize()
 		{
