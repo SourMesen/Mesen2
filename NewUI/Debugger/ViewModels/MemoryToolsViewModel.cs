@@ -53,7 +53,7 @@ namespace Mesen.Debugger.ViewModels
 			this.WhenAnyValue(
 				x => x.MemoryType,
 				x => x.BytesPerRow
-			).Select(((SnesMemoryType memType, int bytesPerRow) o) => DebugApi.GetMemorySize(o.memType) / o.bytesPerRow).ToPropertyEx(this, x => x.MaxScrollValue);
+			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue);
 		}
    }
 }

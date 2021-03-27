@@ -49,7 +49,7 @@
 			Name="Hex"
 			DataProvider="{CompiledBinding DataProvider}"
 			BytesPerRow="{CompiledBinding BytesPerRow}"
-			TopRow="{CompiledBinding ScrollPosition}"			
+			TopRow="{CompiledBinding ScrollPosition}"
 		/>
 	</DockPanel>
 </Window>

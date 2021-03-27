@@ -19,7 +19,7 @@ namespace Mesen.Debugger.Controls
 	public class HexEditor : Control
 	{
 		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
-		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0);
+		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> BytesPerRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(BytesPerRow), 16);
 
 		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0);
@@ -169,7 +169,7 @@ namespace Mesen.Debugger.Controls
 					SelectionLength = 0;
 
 					if(_newByteValue < 0) {
-						_newByteValue = DataProvider.GetByte(SelectionStart);
+						_newByteValue = DataProvider.GetByte(SelectionStart).Value;
 					}
 
 					if(_lastNibble) {
@@ -200,13 +200,17 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
-			this.TopRow = Math.Min(DataProvider.Length - 1, Math.Max(0, this.TopRow - (int)(e.Delta.Y * 3)));
+			this.TopRow = Math.Min((DataProvider.Length / BytesPerRow) - 1, Math.Max(0, this.TopRow - (int)(e.Delta.Y * 3)));
 		}
 
 		private GridPoint? GetGridPosition(Point p)
 		{
 			if(p.X >= RowHeaderWidth && p.Y >= ColumnHeaderHeight) {
 				double column = (p.X - RowHeaderWidth + LetterSize.Width) / (LetterSize.Width * 3);
+				if(column > BytesPerRow || column < 0) {
+					return null;
+				}
+
 				int row = (int)((p.Y - ColumnHeaderHeight) / RowHeight);
 				bool middle = (column - Math.Floor(column)) >= 0.5;
 
@@ -350,7 +354,7 @@ namespace Mesen.Debugger.Controls
 			}
 
 			int bytesToDraw = bytesPerRow * visibleRows;
-			List<(ByteColors, byte)> dataToDraw = new List<(ByteColors, byte)>(bytesToDraw);
+			List<ByteInfo> dataToDraw = new List<ByteInfo>(bytesToDraw);
 			HashSet<Color> fgColors = new HashSet<Color>();
 
 			for(int i = 0; i < bytesToDraw; i++) {
@@ -358,18 +362,19 @@ namespace Mesen.Debugger.Controls
 					break;
 				}
 
-				ByteColors colors = dataProvider.GetByteColor(position);
-				colors.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
+				ByteInfo byteInfo = dataProvider.GetByte(position);
+				byteInfo.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
 
 				if(position == SelectionStart && _newByteValue >= 0) {
 					//About to draw the selected byte, draw anything that's pending, and then the current byte
-					colors.ForeColor = Colors.DarkOrange;
-					dataToDraw.Add((colors, (byte)_newByteValue));
+					byteInfo.ForeColor = Colors.DarkOrange;
+					byteInfo.Value = (byte)_newByteValue;
+					dataToDraw.Add(byteInfo);
 				} else {
-					dataToDraw.Add((colors, dataProvider.GetByte(position)));
+					dataToDraw.Add(byteInfo);
 				}
 
-				fgColors.Add(colors.ForeColor);
+				fgColors.Add(byteInfo.ForeColor);
 
 				position++;
 			}
@@ -380,7 +385,7 @@ namespace Mesen.Debugger.Controls
 
 		class CustomDrawOp : ICustomDrawOperation
 		{
-			List<(ByteColors, byte)> _dataToDraw;
+			List<ByteInfo> _dataToDraw;
 			HashSet<Color> _fgColors;
 			Size _letterSize;
 			int _bytesPerRow;
@@ -390,7 +395,7 @@ namespace Mesen.Debugger.Controls
 			List<float> _startPositionByByte;
 			List<float> _endPositionByByte;
 
-			public CustomDrawOp(int bytesPerRow, string hexFormat, double rowHeight, Rect bounds, List<(ByteColors, byte)> dataToDraw, HashSet<Color> fgColors, Size letterSize)
+			public CustomDrawOp(int bytesPerRow, string hexFormat, double rowHeight, Rect bounds, List<ByteInfo> dataToDraw, HashSet<Color> fgColors, Size letterSize)
 			{
 				Bounds = bounds;
 				_bytesPerRow = bytesPerRow;
@@ -400,9 +405,9 @@ namespace Mesen.Debugger.Controls
 				_fgColors = fgColors;
 				_letterSize = letterSize;
 
-				foreach(var (colors, _) in dataToDraw) {
-					if(!_skPaints.ContainsKey(colors.BackColor)) {
-						_skPaints[colors.BackColor] = new SKPaint() { Color = new SKColor(colors.BackColor.ToUint32()) };
+				foreach(ByteInfo byteInfo in dataToDraw) {
+					if(!_skPaints.ContainsKey(byteInfo.BackColor)) {
+						_skPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(byteInfo.BackColor.ToUint32()) };
 					}
 				}
 			}
@@ -460,9 +465,9 @@ namespace Mesen.Debugger.Controls
 						if(pos + i >= _dataToDraw.Count) {
 							break;
 						}
-						var (colors, value) = _dataToDraw[pos + i];
-						if(colors.ForeColor == color) {
-							sb.Append(value.ToString(_hexFormat));
+						ByteInfo byteInfo = _dataToDraw[pos + i];
+						if(byteInfo.ForeColor == color) {
+							sb.Append(byteInfo.Value.ToString(_hexFormat));
 						} else {
 							sb.Append("  ");
 						}
@@ -499,8 +504,8 @@ namespace Mesen.Debugger.Controls
 							break;
 						}
 
-						var (colors, value) = _dataToDraw[pos + i];
-						string str = ConvertByteToString(value);
+						ByteInfo byteInfo = _dataToDraw[pos + i];
+						string str = ConvertByteToString(byteInfo.Value);
 						int codepoint = Char.ConvertToUtf32(str, 0);
 
 						if(codepoint > 0x024F) {
@@ -547,17 +552,17 @@ namespace Mesen.Debugger.Controls
 							break;
 						}
 
-						var (colors, value) = _dataToDraw[pos + i];
-						string str = ConvertByteToString(value);
+						ByteInfo byteInfo = _dataToDraw[pos + i];
+						string str = ConvertByteToString(byteInfo.Value);
 
-						if(colors.ForeColor == color) {
+						if(byteInfo.ForeColor == color) {
 							int codepoint = Char.ConvertToUtf32(str, 0);
 							SKFont currentFont = (codepoint > 0x024F) ? altFont : monoFont;
 
-							if(colors.BackColor != Colors.Transparent) {
-								canvas.DrawRect(GetRect(pos+i), _skPaints[colors.BackColor]);
+							if(byteInfo.BackColor != Colors.Transparent) {
+								canvas.DrawRect(GetRect(pos+i), _skPaints[byteInfo.BackColor]);
 							}
-							if(colors.Selected) {
+							if(byteInfo.Selected) {
 								canvas.DrawRect(GetRect(pos+i), selectedPaint);
 							}
 
@@ -598,28 +603,28 @@ namespace Mesen.Debugger.Controls
 							break;
 						}
 
-						var (colors, _) = _dataToDraw[pos + i];
+						ByteInfo byteInfo = _dataToDraw[pos + i];
 
-						if(colors.BackColor != bgColor) {
+						if(byteInfo.BackColor != bgColor) {
 							if(bgColor != Colors.Transparent && bgStartPos >= 0) {
 								canvas.DrawRect(GetRect(bgStartPos, i), _skPaints[bgColor]);
 								bgStartPos = -1;
 							}
-							if(colors.BackColor != Colors.Transparent) {
+							if(byteInfo.BackColor != Colors.Transparent) {
 								bgStartPos = i;
 							}
-							bgColor = colors.BackColor;
+							bgColor = byteInfo.BackColor;
 						}
 
-						if(selected != colors.Selected) {
+						if(selected != byteInfo.Selected) {
 							if(selectedStartPos >= 0 && selected) {
 								canvas.DrawRect(GetRect(selectedStartPos, i), selectedPaint);
 								selectedStartPos = -1;
 							}
-							if(colors.Selected) {
+							if(byteInfo.Selected) {
 								selectedStartPos = i;
 							}
-							selected = colors.Selected;
+							selected = byteInfo.Selected;
 						}
 					}
 					pos += _bytesPerRow;
@@ -704,8 +709,7 @@ namespace Mesen.Debugger.Controls
 	public interface IHexEditorDataProvider
 	{
 		void Prepare(int firstByteIndex, int lastByteIndex);
-		byte GetByte(int byteIndex);
-		ByteColors GetByteColor(int byteIndex);
+		ByteInfo GetByte(int byteIndex);
 		int Length { get; }
 	}
 
@@ -722,20 +726,21 @@ namespace Mesen.Debugger.Controls
 		public byte Value;
 	}
 
-	public struct ByteColors
+	public struct ByteInfo
 	{
 		public Color ForeColor { get; set; }
 		public Color BackColor { get; set; }
 		public Color BorderColor { get; set; }
 		public bool Selected { get; set; }
+		public byte Value { get; set; }
 
 		public override bool Equals(object? obj)
 		{
-			if(obj == null || !(obj is ByteColors)) {
+			if(obj == null || !(obj is ByteInfo)) {
 				return false;
 			}
 
-			ByteColors a = (ByteColors)obj;
+			ByteInfo a = (ByteInfo)obj;
 			return this.BackColor == a.BackColor && this.BorderColor == a.BorderColor && this.ForeColor == a.ForeColor && this.Selected == a.Selected;
 		}
 

@@ -27,7 +27,7 @@ namespace Mesen.Debugger
 		bool _highlightCodeBytes;
 		bool _highlightLabelledBytes;
 		bool _highlightBreakpoints;
-		ByteColors _colors = new ByteColors();
+		ByteInfo _byteInfo = new ByteInfo();
 		BreakpointTypeFlags[] _breakpointTypes;
 		byte[] _data = new byte[0];
 
@@ -53,13 +53,15 @@ namespace Mesen.Debugger
 
 		public int Length { get; private set; }
 
-		public byte GetByte(int index)
-		{
-			return _data[index - _firstByteIndex];
-		}
-
 		public void Prepare(int firstByteIndex, int lastByteIndex)
 		{
+			if(firstByteIndex >= Length) {
+				return;
+			}
+			if(lastByteIndex >= Length) {
+				lastByteIndex = Length - 1;
+			}
+
 			_data = DebugApi.GetMemoryValues(_memoryType, (uint)firstByteIndex, (uint)lastByteIndex);
 
 			_firstByteIndex = firstByteIndex;
@@ -134,7 +136,7 @@ namespace Mesen.Debugger
 			return Color.FromRgb((byte)(input.R * brightnessPercentage), (byte)(input.G * brightnessPercentage), (byte)(input.B * brightnessPercentage));
 		}
 
-		public ByteColors GetByteColor(int byteIndex)
+		public ByteInfo GetByte(int byteIndex)
 		{
 			HexEditorConfig cfg = ConfigManager.Config.Debug.HexEditor;
 
@@ -157,48 +159,50 @@ namespace Mesen.Debugger
 				alpha = 255;
 			}
 
-			_colors.BackColor = Colors.Transparent;
+			_byteInfo.BackColor = Colors.Transparent;
 			if(_cdlData != null) {
 				if((_cdlData[index] & (byte)CdlFlags.Code) != 0 && _highlightCodeBytes) {
 					//Code
-					_colors.BackColor = cfg.CodeByteColor;
+					_byteInfo.BackColor = cfg.CodeByteColor;
 				} else if((_cdlData[index] & (byte)CdlFlags.Data) != 0 && _highlightDataBytes) {
 					//Data
-					_colors.BackColor = cfg.DataByteColor;
+					_byteInfo.BackColor = cfg.DataByteColor;
 				}
 			}
 
 			if(_hasLabel[index]) {
 				//Labels/comments
-				_colors.BackColor = cfg.LabelledByteColor;
+				_byteInfo.BackColor = cfg.LabelledByteColor;
 			}
 
-			_colors.BorderColor = Colors.Transparent;
+			_byteInfo.BorderColor = Colors.Transparent;
 			if(_breakpointTypes != null) {
 				switch(_breakpointTypes[index]) {
 					case BreakpointTypeFlags.Execute:
-						_colors.BorderColor = ConfigManager.Config.Debug.Debugger.CodeExecBreakpointColor;
+						_byteInfo.BorderColor = ConfigManager.Config.Debug.Debugger.CodeExecBreakpointColor;
 						break;
 					case BreakpointTypeFlags.Write:
-						_colors.BorderColor = ConfigManager.Config.Debug.Debugger.CodeWriteBreakpointColor;
+						_byteInfo.BorderColor = ConfigManager.Config.Debug.Debugger.CodeWriteBreakpointColor;
 						break;
 					case BreakpointTypeFlags.Read:
-						_colors.BorderColor = ConfigManager.Config.Debug.Debugger.CodeReadBreakpointColor;
+						_byteInfo.BorderColor = ConfigManager.Config.Debug.Debugger.CodeReadBreakpointColor;
 						break;
 				}
 			}
 
 			if(_showExec && _counters[index].ExecStamp != 0 && framesSinceExec >= 0 && (framesSinceExec < _framesToFade || _framesToFade == 0)) {
-				_colors.ForeColor = cfg.ExecColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ExecColor, (_framesToFade - framesSinceExec) / _framesToFade));
+				_byteInfo.ForeColor = cfg.ExecColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ExecColor, (_framesToFade - framesSinceExec) / _framesToFade));
 			} else if(_showWrite && _counters[index].WriteStamp != 0 && framesSinceWrite >= 0 && (framesSinceWrite < _framesToFade || _framesToFade == 0)) {
-				_colors.ForeColor = cfg.WriteColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.WriteColor, (_framesToFade - framesSinceWrite) / _framesToFade));
+				_byteInfo.ForeColor = cfg.WriteColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.WriteColor, (_framesToFade - framesSinceWrite) / _framesToFade));
 			} else if(_showRead && _counters[index].ReadStamp != 0 && framesSinceRead >= 0 && (framesSinceRead < _framesToFade || _framesToFade == 0)) {
-				_colors.ForeColor = cfg.ReadColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ReadColor, (_framesToFade - framesSinceRead) / _framesToFade));
+				_byteInfo.ForeColor = cfg.ReadColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ReadColor, (_framesToFade - framesSinceRead) / _framesToFade));
 			} else {
-				_colors.ForeColor = Color.FromArgb(alpha, 0, 0, 0);
+				_byteInfo.ForeColor = Color.FromArgb(alpha, 0, 0, 0);
 			}
 
-			return _colors;
+			_byteInfo.Value = _data[index];
+
+			return _byteInfo;
 		}
 	}
 }
