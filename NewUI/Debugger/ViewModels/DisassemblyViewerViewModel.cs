@@ -10,6 +10,11 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public ICodeDataProvider DataProvider { get; set; }
 		[Reactive] public ILineStyleProvider StyleProvider { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
-		[Reactive] public int MaxScrollPosition { get; set; } = 1000;
+		[Reactive] public int MaxScrollPosition { get; set; } = 0;
+
+		public void UpdateMaxScroll()
+		{
+			MaxScrollPosition = DataProvider.GetLineCount() - 1;
+		}
 	}
 }

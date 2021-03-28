@@ -297,6 +297,7 @@ namespace Mesen.Debugger.Windows
 			}
 
 			_context.Disassembly.DataProvider = new CodeDataProvider(CpuType.Cpu);
+			_context.Disassembly.UpdateMaxScroll();
 			_context.SnesCpu.State = state.Cpu;
 
 			/*waitHandle.Set();

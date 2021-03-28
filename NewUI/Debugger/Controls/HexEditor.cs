@@ -220,12 +220,6 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
-		{
-			base.OnPointerWheelChanged(e);
-			this.TopRow = Math.Min((DataProvider.Length / BytesPerRow) - 1, Math.Max(0, this.TopRow - (int)(e.Delta.Y * 3)));
-		}
-
 		private GridPoint? GetGridPosition(Point p)
 		{
 			if(p.X >= RowHeaderWidth && p.Y >= ColumnHeaderHeight) {
@@ -283,6 +277,12 @@ namespace Mesen.Debugger.Controls
 			} else if(byteIndex > (TopRow + VisibleRows) * BytesPerRow) {
 				TopRow = byteIndex / BytesPerRow - VisibleRows;
 			}
+		}
+
+		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+		{
+			base.OnPointerWheelChanged(e);
+			this.TopRow = Math.Min((DataProvider.Length / BytesPerRow) - 1, Math.Max(0, this.TopRow - (int)(e.Delta.Y * 3)));
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)

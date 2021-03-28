@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 using Mesen.GUI.Debugger;
 using Mesen.Utilities;
@@ -35,15 +36,21 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ScrollPositionProperty, value); }
 		}
 
+		private Typeface Font { get; set; }
+		private Size LetterSize { get; set; }
+		private double RowHeight => this.LetterSize.Height;
+		private int VisibleRows => (int)(Bounds.Height / RowHeight) - 1;
+		
 		static DisassemblyViewer()
 		{
 			AffectsRender<DisassemblyViewer>(DataProviderProperty, ScrollPositionProperty, StyleProviderProperty);
 		}
 
-		private Typeface Font { get; set; }
-		private Size LetterSize { get; set; }
-		private double RowHeight => this.LetterSize.Height;
-		private int VisibleRows => (int)(Bounds.Height / RowHeight) - 1;
+		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+		{
+			base.OnPointerWheelChanged(e);
+			ScrollPosition = Math.Max(0, Math.Min(ScrollPosition - (int)(e.Delta.Y * 3), DataProvider.GetLineCount() - 1));
+		}
 
 		private void InitFontAndLetterSize()
 		{
@@ -63,7 +70,9 @@ namespace Mesen.Debugger.Controls
 			List<CodeLineData> lines = new List<CodeLineData>();
 			if(dp != null) {
 				for(int i = scrollPosition, len = scrollPosition + VisibleRows + 1; i < len; i++) {
-					lines.Add(dp.GetCodeLineData(i));
+					if(i < dp.GetLineCount()) {
+						lines.Add(dp.GetCodeLineData(i));
+					}
 				}
 			}
 			_lines = lines;
