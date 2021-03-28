@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Mesen.Debugger;
 using Mesen.GUI.Config;
 using Mesen.GUI.Debugger;
 using Mesen.GUI.Forms;

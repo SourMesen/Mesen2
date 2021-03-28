@@ -3,6 +3,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
+using Mesen.Utilities;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Mesen.Debugger.Controls
 			private string _hexFormat;
 			private double _stringViewPosition;
 			private Dictionary<Color, SKPaint> _skPaints = new Dictionary<Color, SKPaint>();
+			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
 
 			public HexViewDrawOperation(HexEditor he, List<ByteInfo> dataToDraw, HashSet<Color> fgColors)
 			{
@@ -38,7 +40,7 @@ namespace Mesen.Debugger.Controls
 
 				foreach(ByteInfo byteInfo in dataToDraw) {
 					if(!_skPaints.ContainsKey(byteInfo.BackColor)) {
-						_skPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(byteInfo.BackColor.ToUint32()) };
+						_skPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(ColorHelper.GetColor(byteInfo.BackColor).ToUint32()) };
 					}
 				}
 			}
@@ -80,7 +82,7 @@ namespace Mesen.Debugger.Controls
 			private void DrawHexView(SKCanvas canvas, Color color)
 			{
 				SKPaint paint = new SKPaint();
-				paint.Color = new SKColor(color.ToUint32());
+				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUint32());
 
 				SKTypeface typeface = SKTypeface.FromFamilyName("Consolas");
 				SKFont font = new SKFont(typeface, 14);
@@ -160,7 +162,7 @@ namespace Mesen.Debugger.Controls
 			private void DrawStringView(SKCanvas canvas, Color color)
 			{
 				SKPaint paint = new SKPaint();
-				paint.Color = new SKColor(color.ToUint32());
+				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUint32());
 
 				SKTypeface typeface = SKTypeface.FromFamilyName("Consolas");
 				SKFont monoFont = new SKFont(typeface, 14);
@@ -170,8 +172,8 @@ namespace Mesen.Debugger.Controls
 
 				int pos = 0;
 				int row = 0;
-				
-				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(30, 144, 255, 200) };
+
+				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(_selectedColor.R, _selectedColor.G, _selectedColor.B, 255) };
 
 				SKRect GetRect(int i) => new SKRect(
 					(float)_he._startPositionByByte[i],
@@ -218,7 +220,7 @@ namespace Mesen.Debugger.Controls
 				int pos = 0;
 				int row = 0;
 
-				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(30, 144, 255, 200) };
+				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(_selectedColor.R, _selectedColor.G, _selectedColor.B, 255) };
 
 				SKRect GetRect(int start, int end) => new SKRect(
 					(float)(start * 3 * _letterSize.Width),

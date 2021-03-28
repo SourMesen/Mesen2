@@ -9,7 +9,6 @@ using Avalonia.Threading;
 using Mesen.ViewModels;
 using Mesen.GUI;
 using Mesen.GUI.Config;
-using Mesen.GUI.Utilities;
 using ReactiveUI;
 using System;
 using System.Runtime.InteropServices;
@@ -52,6 +51,8 @@ namespace Mesen.Windows
 
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
+		
+			EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
 		}
 
 		private void InitializeComponent()

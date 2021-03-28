@@ -3,32 +3,34 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	x:DataType="vm:DisassemblyViewerViewModel"
 	x:Class="Mesen.Debugger.Views.DisassemblyView"
 >
 	<Design.DataContext>
 		<vm:DisassemblyViewerViewModel />
 	</Design.DataContext>
 
-	<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+	<DockPanel>
 		<ScrollBar
 			DockPanel.Dock="Right"
 			Orientation="Vertical"
 			Minimum="0"
-			Maximum="10000"
+			Maximum="{CompiledBinding MaxScrollPosition}"
 			VerticalAlignment="Stretch"
 			AllowAutoHide="False"
-			Value="{Binding Location}"
+			Value="{CompiledBinding ScrollPosition}"
 		/>
-		<TextBlock
+		
+		<dc:DisassemblyViewer
 			DockPanel.Dock="Left"
-			FontFamily="Consolas"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch"
-			Text="{Binding Content}"
+			DataProvider="{CompiledBinding DataProvider}"
+			StyleProvider="{CompiledBinding StyleProvider}"
+			ScrollPosition="{CompiledBinding ScrollPosition}"
 		/>
 	</DockPanel>
 </UserControl>

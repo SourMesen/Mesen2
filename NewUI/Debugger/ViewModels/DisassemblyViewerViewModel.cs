@@ -1,22 +1,15 @@
-﻿using Mesen.ViewModels;
+﻿using Mesen.Debugger.Controls;
+using Mesen.ViewModels;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class DisassemblyViewerViewModel : ViewModelBase
 	{
-		public string _content = "";
-		public string Content
-		{
-			get => _content;
-			set => this.RaiseAndSetIfChanged(ref _content, value);
-		}
-
-		public int _location = 0;
-		public int Location
-		{
-			get => _location;
-			set => this.RaiseAndSetIfChanged(ref _location, value);
-		}
+		[Reactive] public ICodeDataProvider DataProvider { get; set; }
+		[Reactive] public ILineStyleProvider StyleProvider { get; set; }
+		[Reactive] public int ScrollPosition { get; set; }
+		[Reactive] public int MaxScrollPosition { get; set; } = 1000;
 	}
 }

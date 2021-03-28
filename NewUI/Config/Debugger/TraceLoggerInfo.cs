@@ -9,7 +9,6 @@ using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Media;
 using Mesen.GUI.Debugger;
-using Mesen.GUI.Utilities;
 
 namespace Mesen.GUI.Config
 {

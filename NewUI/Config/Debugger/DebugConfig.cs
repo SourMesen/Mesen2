@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Mesen.GUI.Debugger;
-using Mesen.GUI.Utilities;
 
 namespace Mesen.GUI.Config
 {

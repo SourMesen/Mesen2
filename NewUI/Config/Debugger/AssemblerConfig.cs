@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using Mesen.GUI.Utilities;
 
 namespace Mesen.GUI.Config
 {

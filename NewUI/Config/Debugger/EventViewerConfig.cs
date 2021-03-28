@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using Mesen.GUI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

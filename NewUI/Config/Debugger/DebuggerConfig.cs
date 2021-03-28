@@ -1,12 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Mesen.GUI.Debugger;
-using Mesen.GUI.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {

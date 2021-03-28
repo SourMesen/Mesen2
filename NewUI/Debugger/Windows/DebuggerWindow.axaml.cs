@@ -14,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mesen.Debugger.ViewModels;
 using Mesen.GUI.Config;
+using Mesen.Debugger.Controls;
+using Mesen.Debugger.Disassembly;
 
 namespace Mesen.Debugger.Windows
 {
@@ -32,6 +34,14 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			_context = this.DataContext as DebuggerViewModel;
+			_context.Disassembly.StyleProvider = new BaseStyleProvider();
+		}
+
+		DebuggerViewModel _context;
 		NotificationListener _listener;
 		Avalonia.Controls.Image _picDebug;
 		Avalonia.Controls.Image _picDebug2;
@@ -53,6 +63,7 @@ namespace Mesen.Debugger.Windows
 		WriteableBitmap _bmp8;
 		WriteableBitmap _bmp9;
 		WriteableBitmap _bmp10;
+		DisassemblyViewer _disView;
 		EventViewerDisplayOptions evtOpts = new EventViewerConfig().GetInteropOptions();
 
 		protected override void OnOpened(EventArgs e)
@@ -66,6 +77,8 @@ namespace Mesen.Debugger.Windows
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 
 			Renderer.DrawFps = true;
+
+			_disView = this.FindControl<DisassemblyViewer>("DisassemblyView");
 
 			_picDebug = this.FindControl<Avalonia.Controls.Image>("picDebug");
 			_picDebug2 = this.FindControl<Avalonia.Controls.Image>("picDebug2");
@@ -261,7 +274,6 @@ namespace Mesen.Debugger.Windows
 		byte[] oamram;
 		byte[] cgram;
 		byte[] vram;
-		uint _loc = 0;
 		int frmCnt = 0;
 		private void _listener_OnNotification(NotificationEventArgs e)
 		{
@@ -284,29 +296,16 @@ namespace Mesen.Debugger.Windows
 				DebugApi.RefreshDisassembly(CpuType.Cpu);
 			}
 
+			_context.Disassembly.DataProvider = new CodeDataProvider(CpuType.Cpu);
+			_context.SnesCpu.State = state.Cpu;
 
-			Dispatcher.UIThread.Post(() => _loc = (uint)(this.DataContext as DebuggerViewModel).Disassembly.Location);
-
-			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < 70; i++) {
-				sb.AppendLine(DebugApi.GetDisassemblyLineData(CpuType.Cpu, (uint)i + _loc).ToString());
-			}
-
-			Dispatcher.UIThread.Post(() => {
-				(this.DataContext as DebuggerViewModel).Disassembly.Content = sb.ToString();
-				(this.DataContext as DebuggerViewModel).SnesCpu.State = state.Cpu;
-			});
-
-			waitHandle.Set();
+			/*waitHandle.Set();
 			waitHandle2.Set();
-			/*waitHandle3.Set();
-			waitHandle4.Set();
-			waitHandle5.Set();*/
 			waitHandle6.Set();
 			waitHandle7.Set();
 			waitHandle8.Set();
 			waitHandle9.Set();
-			waitHandle10.Set();
+			waitHandle10.Set();*/
 		}
 	}
 }

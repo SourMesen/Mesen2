@@ -5,6 +5,7 @@
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:v="using:Mesen.Debugger.Views"
+	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:id="clr-namespace:Dock.Avalonia;assembly=Dock.Avalonia"
 	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
@@ -53,13 +54,7 @@
 						<dmc:SplitterDock x:Name="LeftSplitter" Id="LeftSplitter" Title="LeftSplitter"/>
 						<dmc:ToolDock x:Name="DocumentsPane" Id="DocumentsPane" Title="DocumentsPane" IsCollapsable="False" Proportion="NaN" ActiveDockable="{Binding #Document1}">
 							<dmc:ToolContent x:Name="Document1" Id="Document1" Title="Disassembly">
-								<v:DisassemblyView
-									DataContext="{Binding #Debugger.DataContext.Disassembly}"
-									HorizontalContentAlignment="Stretch"
-									VerticalContentAlignment="Stretch"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Stretch"
-								/>
+								<v:DisassemblyView DataContext="{Binding #Debugger.DataContext.Disassembly}" />
 							</dmc:ToolContent>
 						</dmc:ToolDock>
 						<dmc:SplitterDock x:Name="RightSplitter" Id="RightSplitter" Title="RightSplitter"/>
