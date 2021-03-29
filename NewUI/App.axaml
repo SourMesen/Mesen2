@@ -1,6 +1,13 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Mesen.App">
+<Application
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:dbg="using:Mesen.Debugger"
+	x:Class="Mesen.App"
+>
+	<Application.DataTemplates>
+		<dbg:DebuggerViewLocator />
+	</Application.DataTemplates>
+
 	<Application.Styles>
 	</Application.Styles>
 </Application>

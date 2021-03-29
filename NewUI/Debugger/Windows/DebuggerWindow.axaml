@@ -3,7 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:m="clr-namespace:Mesen"
-	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:v="using:Mesen.Debugger.Views"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,90 +12,25 @@
 	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
 	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
 	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
-	mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
+	x:DataType="vm:DebuggerWindowViewModel"
 	Width="1000" Height="1000"
 	Title="Debugger"
 	x:Name="Debugger"
 >
-
 	<Design.DataContext>
-		<vm:DebuggerViewModel />
+		<vm:DebuggerWindowViewModel />
 	</Design.DataContext>
 
-	<Window.Styles>
-
-	</Window.Styles>
-
 	<DockPanel>
-		<idc:DockControl x:Name="dockControl" InitializeLayout="True" InitializeFactory="True">
-			<idc:DockControl.Factory>
-				<dm:Factory/>
-			</idc:DockControl.Factory>
-			<dmc:RootDock x:Name="Root" Id="Root" Title="Root" ActiveDockable="{Binding #MainLayout2}" DefaultDockable="{Binding #MainLayout2}" IsCollapsable="False">
-				<dmc:ProportionalDock x:Name="MainLayout2" Id="MainLayout2" Title="MainLayout" Proportion="NaN" Orientation="Vertical">
-					<dmc:ProportionalDock x:Name="MainLayout" Id="MainLayout" Title="MainLayout" Proportion="0.8" Orientation="Horizontal">
-						<dmc:ProportionalDock x:Name="LeftPane" Id="LeftPane" Title="LeftPane" Proportion="NaN" Orientation="Vertical">
-							<dmc:ToolDock x:Name="LeftPaneBottom" Id="LeftPaneBottom" Title="LeftPaneBottom" Proportion="NaN" ActiveDockable="{Binding #LeftBottom1}">
-								<dmc:ToolContent x:Name="LeftBottom1" Id="LeftBottom1" Title="PPU">
-									<ScrollViewer AllowAutoHide="False">
-										<StackPanel DockPanel.Dock="Left" Width="341" MaxWidth="341">
-											<Image DockPanel.Dock="Top" x:Name="picDebug" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug2" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug6" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug7" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug3" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug4" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug5" Width="341" Height="262" Stretch="Fill" />
-										</StackPanel>
-									</ScrollViewer>
-								</dmc:ToolContent>
-							</dmc:ToolDock>
-						</dmc:ProportionalDock>
-						<dmc:SplitterDock x:Name="LeftSplitter" Id="LeftSplitter" Title="LeftSplitter"/>
-						<dmc:ToolDock x:Name="DocumentsPane" Id="DocumentsPane" Title="DocumentsPane" IsCollapsable="False" Proportion="NaN" ActiveDockable="{Binding #Document1}">
-							<dmc:ToolContent x:Name="Document1" Id="Document1" Title="Disassembly">
-								<v:DisassemblyView DataContext="{Binding #Debugger.DataContext.Disassembly}" />
-							</dmc:ToolContent>
-						</dmc:ToolDock>
-						<dmc:SplitterDock x:Name="RightSplitter" Id="RightSplitter" Title="RightSplitter"/>
-						<dmc:ProportionalDock x:Name="RightPane" Id="RightPane" Title="RightPane" Proportion="NaN" Orientation="Vertical">
-							<dmc:ToolDock x:Name="RightPaneTop" Id="RightPaneTop" Title="RightPaneTop" Proportion="NaN" ActiveDockable="{Binding #RightTop1}">
-								<dmc:ToolContent x:Name="RightTop1" Id="RightTop1" Title="CPU">
-									<v:SnesCpuView DataContext="{Binding #Debugger.DataContext.SnesCpu}" />
-								</dmc:ToolContent>
-							</dmc:ToolDock>
-							<dmc:SplitterDock x:Name="RightPaneTopSplitter" Id="RightPaneTopSplitter" Title="RightPaneTopSplitter"/>
-							<dmc:ToolDock x:Name="RightPaneBottom" Id="RightPaneBottom" Title="RightPaneBottom" Proportion="NaN" ActiveDockable="{Binding #RightBottom1}">
-								<dmc:ToolContent x:Name="RightBottom1" Id="RightBottom1" Title="PPU 2">
-									<ScrollViewer AllowAutoHide="False">
-										<StackPanel DockPanel.Dock="Right" Width="341" MaxWidth="341">
-											<Image DockPanel.Dock="Top" x:Name="picDebug8" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug9" Width="341" Height="262" Stretch="Fill" />
-											<Image DockPanel.Dock="Top" x:Name="picDebug10" Width="341" Height="262" Stretch="Fill" />
-										</StackPanel>
-									</ScrollViewer>
-								</dmc:ToolContent>
-							</dmc:ToolDock>
-						</dmc:ProportionalDock>
-					</dmc:ProportionalDock>
-					<dmc:SplitterDock x:Name="BottomSplitter" Id="BottomSplitter" Title="BottomSplitter"/>
-					<dmc:ProportionalDock x:Name="Bottom" Id="Bottom" Title="Bottom" Proportion="NaN" Orientation="Vertical">
-						<dmc:ToolDock x:Name="LeftPaneBottom2" Id="LeftPaneBottom2" Title="LeftPaneBottom2" Proportion="0.2" ActiveDockable="{Binding #LeftBottom12}">
-							<dmc:ToolContent x:Name="LeftBottom12" Id="LeftBottom12" Title="Breakpoints">
-								<v:BreakpointListView DataContext="{Binding #Debugger.DataContext.BreakpointList}" />
-							</dmc:ToolContent>
-						</dmc:ToolDock>
-					</dmc:ProportionalDock>
-				</dmc:ProportionalDock>
-			</dmc:RootDock>
-		</idc:DockControl>
-		
-
-
-		<StackPanel>
-		
-			
-		</StackPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="View">
+				<MenuItem Command="{CompiledBinding ShowBreakpointsCommand}" Header="Show breakpoints" />
+				<MenuItem Command="{CompiledBinding ShowCpuStatusCommand}" Header="Show CPU status" />
+				<MenuItem Command="{CompiledBinding ShowPpuStatusCommand}" Header="Show PPU status" />
+			</MenuItem>
+		</Menu>
+		<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
 	</DockPanel>
 </Window>

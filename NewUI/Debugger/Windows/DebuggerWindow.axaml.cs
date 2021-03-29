@@ -37,11 +37,11 @@ namespace Mesen.Debugger.Windows
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			_context = this.DataContext as DebuggerViewModel;
+			_context = this.DataContext as DebuggerWindowViewModel;
 			_context.Disassembly.StyleProvider = new BaseStyleProvider();
 		}
 
-		DebuggerViewModel _context;
+		DebuggerWindowViewModel _context;
 		NotificationListener _listener;
 		Avalonia.Controls.Image _picDebug;
 		Avalonia.Controls.Image _picDebug2;
@@ -76,11 +76,11 @@ namespace Mesen.Debugger.Windows
 
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 
-			Renderer.DrawFps = true;
+			//Renderer.DrawFps = true;
 
 			_disView = this.FindControl<DisassemblyViewer>("DisassemblyView");
 
-			_picDebug = this.FindControl<Avalonia.Controls.Image>("picDebug");
+			/*_picDebug = this.FindControl<Avalonia.Controls.Image>("picDebug");
 			_picDebug2 = this.FindControl<Avalonia.Controls.Image>("picDebug2");
 			_picDebug3 = this.FindControl<Avalonia.Controls.Image>("picDebug3");
 			_picDebug4 = this.FindControl<Avalonia.Controls.Image>("picDebug4");
@@ -254,7 +254,7 @@ namespace Mesen.Debugger.Windows
 				}
 			}, TaskCreationOptions.LongRunning);
 
-
+			*/
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
 		}
@@ -299,6 +299,7 @@ namespace Mesen.Debugger.Windows
 			_context.Disassembly.DataProvider = new CodeDataProvider(CpuType.Cpu);
 			_context.Disassembly.UpdateMaxScroll();
 			_context.SnesCpu.State = state.Cpu;
+			_context.SnesPpu.State = state.Ppu;
 
 			/*waitHandle.Set();
 			waitHandle2.Set();

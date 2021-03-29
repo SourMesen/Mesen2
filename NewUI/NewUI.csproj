@@ -33,9 +33,10 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0013089-beta" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0013089-beta" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0013089-beta" />
-    <PackageReference Include="Dock.Avalonia" Version="0.10.0" />
-    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
-    <PackageReference Include="Dock.Model.Avalonia" Version="0.10.0" />
+    <PackageReference Include="Dock.Avalonia" Version="0.10.0-build20210219-01" />
+    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0-build20210201-01" />
+    <PackageReference Include="Dock.Model" Version="0.10.0-build20210219-01" />
+    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.0-build20210219-01" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>
@@ -51,6 +52,18 @@
     </Compile>
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\DebuggerDock\PpuStatusToolView.axaml.cs">
+      <DependentUpon>PpuStatusToolView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\DebuggerDock\CpuStatusToolView.axaml.cs">
+      <DependentUpon>CpuStatusToolView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\DebuggerDock\DisassemblyToolView.axaml.cs">
+      <DependentUpon>DisassemblyToolView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
+      <DependentUpon>SnesPpuView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
       <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>

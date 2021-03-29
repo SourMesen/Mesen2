@@ -138,7 +138,7 @@ namespace Mesen.GUI.Config
 				new FluentTheme(new Uri("avares://Mesen-X/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },
 				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml") },
 				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Material.Icons.Avalonia/App.xaml") },
-				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Dock.Avalonia.Themes.Default/DefaultTheme.axaml") },
+				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Dock.Avalonia/Themes/FluentTheme.axaml") },
 				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("/Styles/MesenStyles.xaml", UriKind.Relative) }
 			};
 

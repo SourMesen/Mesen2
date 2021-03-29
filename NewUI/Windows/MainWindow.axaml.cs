@@ -84,7 +84,7 @@ namespace Mesen.Windows
 		private void OnDebuggerClick(object sender, RoutedEventArgs e)
 		{
 			new DebuggerWindow {
-				DataContext = new DebuggerViewModel(),
+				DataContext = new DebuggerWindowViewModel(),
 			}.Show();
 		}
 
