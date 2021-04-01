@@ -1,0 +1,69 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
+	x:Class="Mesen.Debugger.Windows.TileViewerWindow"
+	x:DataType="dvm:TileViewerViewModel"
+	Width="600" Height="600"
+	Title="Tile Viewer"
+>
+	<Design.DataContext>
+		<dvm:TileViewerViewModel />
+	</Design.DataContext>
+
+	<DockPanel>
+		<Grid
+			DockPanel.Dock="Right"
+			MaxWidth="250"
+			ColumnDefinitions="Auto,Auto"
+			RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+			Margin="5 0 0 0"
+		>
+			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
+			<c:EnumComboBox 
+				Grid.Column="1" Grid.Row="0"
+				EnumType="{x:Type cfg:SnesMemoryType}"
+				SelectedItem="{CompiledBinding MemoryType}"
+			/>
+
+			<TextBlock Grid.Column="0" Grid.Row="1" Text="Format:" />
+			<c:EnumComboBox
+				Grid.Column="1" Grid.Row="1"
+				EnumType="{x:Type cfg:TileFormat}"
+				SelectedItem="{CompiledBinding TileFormat}"
+			/>
+
+			<TextBlock Grid.Column="0" Grid.Row="2" Text="Tile Layout:" />
+			<c:EnumComboBox
+				Grid.Column="1" Grid.Row="2"
+				EnumType="{x:Type cfg:TileLayout}"
+				SelectedItem="{CompiledBinding TileLayout}"
+			/>
+
+			<TextBlock Grid.Column="0" Grid.Row="3" Text="Background:" />
+			<c:EnumComboBox
+				Grid.Column="1" Grid.Row="3"				
+				EnumType="{x:Type cfg:TileBackground}"
+				SelectedItem="{CompiledBinding TileBackground}"
+			/>
+			
+			<CheckBox Grid.Row="4" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding ShowGrid}" />
+		</Grid>
+		
+		<Border BorderBrush="Gray" BorderThickness="1">
+			<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
+				<dc:PictureViewer DockPanel.Dock="Top" x:Name="picViewer" Width="768" Height="1376" ShowGrid="{CompiledBinding ShowGrid}" />
+			</ScrollViewer>
+		</Border>
+	</DockPanel>
+</Window>

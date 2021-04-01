@@ -49,6 +49,11 @@
 						<mui:MaterialIcon Kind="Memory" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<MenuItem Header="_Tile Viewer" Click="OnTileViewerClick">
+					<MenuItem.Icon>
+						<mui:MaterialIcon Kind="Till" />
+					</MenuItem.Icon>
+				</MenuItem>
 			</MenuItem>
 		</Menu>
 		<Panel>

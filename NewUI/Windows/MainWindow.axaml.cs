@@ -74,6 +74,13 @@ namespace Mesen.Windows
 			}
 		}
 
+		private void OnTileViewerClick(object sender, RoutedEventArgs e)
+		{
+			new TileViewerWindow {
+				DataContext = new TileViewerViewModel(),
+			}.Show();
+		}
+
 		private void OnMemoryToolsClick(object sender, RoutedEventArgs e)
 		{
 			new MemoryToolsWindow {

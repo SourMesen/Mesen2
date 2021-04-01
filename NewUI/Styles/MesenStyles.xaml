@@ -2,6 +2,7 @@
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	xmlns:c="using:Mesen.Controls"
 >
 	<Design.PreviewWith>
 		<Window Width="300" Height="400" Padding="5">
@@ -289,5 +290,59 @@
 	</Style>
 	<Style Selector="Grid > ComboBox">
 		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
+
+	<!-- Disable overlapped scrollbar in scrollviewer -->
+	<Style Selector="ScrollViewer">
+		<Setter Property="Background"
+				  Value="Transparent" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+					<c:MesenScrollContentPresenter Name="PART_ContentPresenter"
+													Grid.Row="0"
+													Grid.Column="0"
+													Grid.RowSpan="1"
+													Grid.ColumnSpan="1"
+													Background="{TemplateBinding Background}"
+													CanHorizontallyScroll="{TemplateBinding CanHorizontallyScroll}"
+													CanVerticallyScroll="{TemplateBinding CanVerticallyScroll}"
+													Content="{TemplateBinding Content}"
+													Extent="{TemplateBinding Extent, Mode=TwoWay}"
+													Margin="{TemplateBinding Padding}"
+													Offset="{TemplateBinding Offset, Mode=TwoWay}"
+													Viewport="{TemplateBinding Viewport, Mode=TwoWay}">
+						<ScrollContentPresenter.GestureRecognizers>
+							<ScrollGestureRecognizer
+							  CanHorizontallyScroll="{TemplateBinding CanHorizontallyScroll}"
+							  CanVerticallyScroll="{TemplateBinding CanVerticallyScroll}" />
+						</ScrollContentPresenter.GestureRecognizers>
+					</c:MesenScrollContentPresenter>
+					<ScrollBar Name="PART_HorizontalScrollBar"
+								  AllowAutoHide="{TemplateBinding AllowAutoHide}"
+								  Orientation="Horizontal"
+								  LargeChange="{Binding LargeChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
+								  SmallChange="{Binding SmallChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
+								  Maximum="{TemplateBinding HorizontalScrollBarMaximum}"
+								  Value="{TemplateBinding HorizontalScrollBarValue, Mode=TwoWay}"
+								  ViewportSize="{TemplateBinding HorizontalScrollBarViewportSize}"
+								  Visibility="{TemplateBinding HorizontalScrollBarVisibility}"
+								  Grid.Row="1"
+								  Focusable="False" />
+					<ScrollBar Name="PART_VerticalScrollBar"
+								  AllowAutoHide="{TemplateBinding AllowAutoHide}"
+								  Orientation="Vertical"
+								  LargeChange="{Binding LargeChange.Height, RelativeSource={RelativeSource TemplatedParent}}"
+								  SmallChange="{Binding SmallChange.Height, RelativeSource={RelativeSource TemplatedParent}}"
+								  Maximum="{TemplateBinding VerticalScrollBarMaximum}"
+								  Value="{TemplateBinding VerticalScrollBarValue, Mode=TwoWay}"
+								  ViewportSize="{TemplateBinding VerticalScrollBarViewportSize}"
+								  Visibility="{TemplateBinding VerticalScrollBarVisibility}"
+								  Grid.Column="1"
+								  Focusable="False" />
+					<Panel x:Name="PART_ScrollBarsSeparator" Grid.Row="1" Grid.Column="1" Background="{DynamicResource ScrollViewerScrollBarsSeparatorBackground}" />
+				</Grid>
+			</ControlTemplate>
+		</Setter>
 	</Style>
 </Styles>

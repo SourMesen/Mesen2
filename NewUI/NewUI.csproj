@@ -65,6 +65,9 @@
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\TileViewerWindow.axaml.cs">
+      <DependentUpon>TileViewerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
       <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>
     </Compile>
