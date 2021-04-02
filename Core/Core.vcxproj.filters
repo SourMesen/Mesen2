@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Cpu.h">
       <Filter>SNES</Filter>
     </ClInclude>
@@ -602,9 +601,96 @@
     <ClInclude Include="GbBootRom.h">
       <Filter>GB</Filter>
     </ClInclude>
+    <ClInclude Include="NES\ApuEnvelope.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\ApuFrameCounter.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\ApuLengthCounter.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\BaseApuChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\BaseLoader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\BaseMapper.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesCpu.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\DeltaModulationChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\iNesLoader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\MapperFactory.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesApu.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NESHeader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NoiseChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesPpu.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\SquareChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\TriangleChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesConsole.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesMemoryManager.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesTypes.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\GameDatabase.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\INesMemoryHandler.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\InternalRamHandler.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesDebuggerTypes.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesSoundMixer.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\NROM.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\OpenBusHandler.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\RomData.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\RomLoader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\stdafx.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="Emulator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Cpu.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
@@ -965,6 +1051,43 @@
     <ClCompile Include="SuperGameboy.cpp">
       <Filter>SNES\Coprocessors\SuperGameboy</Filter>
     </ClCompile>
+    <ClCompile Include="NES\BaseMapper.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesCpu.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\DeltaModulationChannel.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\iNesLoader.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\MapperFactory.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesApu.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NESHeader.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesPpu.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesMemoryManager.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\GameDatabase.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesSoundMixer.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\RomLoader.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="Emulator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
@@ -1059,6 +1182,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\SuperGameboy">
       <UniqueIdentifier>{50d3ab3e-f393-4fa3-a8a6-8ec593089f1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES">
+      <UniqueIdentifier>{ab1a18a6-8ac5-4c33-bcbb-7169a7fbbcb1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

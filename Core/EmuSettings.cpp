@@ -134,6 +134,16 @@ GameboyConfig EmuSettings::GetGameboyConfig()
 	return _gameboy;
 }
 
+void EmuSettings::SetNesConfig(NesConfig config)
+{
+	_nes = config;
+}
+
+NesConfig EmuSettings::GetNesConfig()
+{
+	return _nes;
+}
+
 void EmuSettings::SetPreferences(PreferencesConfig config)
 {
 	ProcessString(_saveFolder, &config.SaveFolderOverride);

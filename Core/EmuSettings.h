@@ -17,6 +17,7 @@ private:
 	EmulationConfig _emulation;
 	GameboyConfig _gameboy;
 	PreferencesConfig _preferences;
+	NesConfig _nes;
 
 	atomic<uint32_t> _flags;
 	atomic<uint32_t> _inputConfigVersion;
@@ -57,6 +58,9 @@ public:
 
 	void SetGameboyConfig(GameboyConfig config);
 	GameboyConfig GetGameboyConfig();
+
+	void SetNesConfig(NesConfig config);
+	NesConfig GetNesConfig();
 
 	void SetPreferences(PreferencesConfig config);
 	PreferencesConfig GetPreferences();

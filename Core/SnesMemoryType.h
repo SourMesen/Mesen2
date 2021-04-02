@@ -32,5 +32,12 @@ enum class SnesMemoryType
 	GbBootRom,
 	GbVideoRam,
 	GbSpriteRam,
+
+	NametableRam,
+	ChrRam,
+	ChrRom,
+	NesInternalRam,
+	PaletteRam,
+
 	Register
 };

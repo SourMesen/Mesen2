@@ -325,6 +325,27 @@ struct GameboyConfig
 	uint32_t WaveVol = 100;
 };
 
+struct NesConfig
+{
+	bool ReduceDmcPopping = false;
+	bool RandomizeMapperPowerOnState = false;
+	uint32_t DipSwitches = 0;
+	bool BreakOnCrash = false;
+	bool RandomizeCpuPpuAlignment = false;
+	bool EnableOamDecay = false;
+	bool DisablePpu2004Reads = false;
+	bool DisablePaletteRead = false;
+	bool EnablePpu2000ScrollGlitch = false;
+	bool ForceBackgroundFirstColumn = false;
+	bool ForceSpritesFirstColumn = false;
+	bool RemoveSpriteLimit = false;
+	bool AdaptiveSpriteLimit = false;
+	bool EnablePpuOamRowCorruption = false;
+	bool DisableNoiseModeFlag = false;
+	bool SilenceTriangleHighFreq = false;
+	bool SwapDutyCycles = false;
+};
+
 struct PreferencesConfig
 {
 	bool ShowFps = false;
