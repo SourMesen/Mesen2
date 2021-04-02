@@ -495,8 +495,9 @@ namespace Mesen.GUI
 		public TileLayout Layout;
 		public TileBackground Background;
 		public Int32 Width;
+		public Int32 Height;
+		public Int32 StartAddress;
 		public Int32 Palette;
-		public Int32 PageSize;
 	}
 
 	public struct GetSpritePreviewOptions

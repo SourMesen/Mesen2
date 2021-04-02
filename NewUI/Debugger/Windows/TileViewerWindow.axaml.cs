@@ -51,10 +51,14 @@ namespace Mesen.Debugger.Windows
 			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
 			
-			_viewerBitmap = new WriteableBitmap(new PixelSize(48 * 8, 86 * 8), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
-			
 			_picViewer = this.FindControl<PictureViewer>("picViewer");
 			_picViewer.Source = _viewerBitmap;
+			InitBitmap();
+		}
+
+		private void InitBitmap()
+		{
+			_viewerBitmap = new WriteableBitmap(new PixelSize(_model.ColumnCount * 8, _model.RowCount * 8), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
@@ -72,18 +76,26 @@ namespace Mesen.Debugger.Windows
 			byte[] cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
 			byte[] source = DebugApi.GetMemoryState(_model.MemoryType);
 
+			if(_viewerBitmap.PixelSize.Width != _model.ColumnCount * 8 || _viewerBitmap.PixelSize.Height != _model.RowCount * 8) {
+				InitBitmap();
+			}
+
 			using(var framebuffer = _viewerBitmap.Lock()) {
 				DebugApi.GetTileView(new GetTileViewOptions() {
 					Format = _model.TileFormat,
-					Width = 48,
-					PageSize = 0x10000,
-					Palette = 6,
+					Width = _model.ColumnCount,
+					Height = _model.RowCount,
+					Palette = _model.SelectedPalette,
 					Layout = _model.TileLayout,
+					StartAddress = _model.StartAddress,
 					Background = _model.TileBackground
-				}, source, 0x10000, cgram, framebuffer.Address);
+				}, source, source.Length, cgram, framebuffer.Address);
 			}
 
+			_model.UpdatePaletteColors(cgram);
+
 			Dispatcher.UIThread.Post(() => {
+				_picViewer.Source = _viewerBitmap;
 				_picViewer.InvalidateVisual();
 			});
 		}

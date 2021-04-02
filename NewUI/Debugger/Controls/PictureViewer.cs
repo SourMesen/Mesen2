@@ -125,10 +125,10 @@ namespace Mesen.Debugger.Controls
 			int gridSizeY = GridSizeY * Zoom;
 			if(ShowGrid) {
 				Pen pen = new Pen(Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B).ToUint32());
-				for(int i = 1; i < width / 8; i++) {
+				for(int i = 1; i < width / gridSizeX; i++) {
 					context.DrawLine(pen, new Point(i * gridSizeX + 0.5, 0), new Point(i* gridSizeX + 0.5, height));
 				}
-				for(int i = 1; i < height / 8; i++) {
+				for(int i = 1; i < height / gridSizeY; i++) {
 					context.DrawLine(pen, new Point(0, i * gridSizeY + 0.5), new Point(width, i * gridSizeY + 0.5));
 				}
 			}

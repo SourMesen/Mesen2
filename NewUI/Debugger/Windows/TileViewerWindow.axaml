@@ -24,10 +24,9 @@
 	<DockPanel>
 		<Grid
 			DockPanel.Dock="Right"
-			MaxWidth="250"
 			ColumnDefinitions="Auto,Auto"
-			RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-			Margin="5 0 0 0"
+			RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+			Margin="5 0 5 0"
 		>
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
 			<c:EnumComboBox 
@@ -36,33 +35,67 @@
 				SelectedItem="{CompiledBinding MemoryType}"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="1" Text="Format:" />
+			<TextBlock Grid.Column="0" Grid.Row="1" Text="Display:" />
+			<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+				<NumericUpDown Value="{CompiledBinding ColumnCount}" Minimum="1" Maximum="256" />
+				<TextBlock Margin="5 0">by</TextBlock>
+				<NumericUpDown Value="{CompiledBinding RowCount}" Minimum="1" Maximum="256" />
+			</StackPanel>
+
+			<TextBlock Grid.Column="0" Grid.Row="2" Text="Address:" />
+			<NumericUpDown
+				Grid.Column="1" Grid.Row="2"
+				Value="{CompiledBinding StartAddress}"
+				Increment="{CompiledBinding AddressIncrement}"
+				Minimum="0"
+				Maximum="{CompiledBinding MaximumAddress}"
+				Width="150"
+			/>
+
+			<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" />
 			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="1"
+				Grid.Column="1" Grid.Row="3"
 				EnumType="{x:Type cfg:TileFormat}"
 				SelectedItem="{CompiledBinding TileFormat}"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="2" Text="Tile Layout:" />
+			<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
 			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="2"
+				Grid.Column="1" Grid.Row="4"
 				EnumType="{x:Type cfg:TileLayout}"
 				SelectedItem="{CompiledBinding TileLayout}"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="3" Text="Background:" />
+			<TextBlock Grid.Column="0" Grid.Row="5" Text="Background:" />
 			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="3"				
+				Grid.Column="1" Grid.Row="5"				
 				EnumType="{x:Type cfg:TileBackground}"
 				SelectedItem="{CompiledBinding TileBackground}"
 			/>
 			
-			<CheckBox Grid.Row="4" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding ShowGrid}" />
+			<CheckBox Grid.Row="6" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding ShowGrid}" />
+
+			<dc:PaletteSelector 
+				Grid.Row="7"
+				Grid.ColumnSpan="2"
+				ColumnCount="16"
+				Width="192"
+				Height="192"
+				SelectionMode="{CompiledBinding PaletteSelectionMode}"
+				SelectedPalette="{CompiledBinding SelectedPalette}"
+				PaletteColors="{CompiledBinding PaletteColors}"
+			/>
 		</Grid>
 		
 		<Border BorderBrush="Gray" BorderThickness="1">
 			<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
-				<dc:PictureViewer DockPanel.Dock="Top" x:Name="picViewer" Width="768" Height="1376" ShowGrid="{CompiledBinding ShowGrid}" />
+				<dc:PictureViewer
+					DockPanel.Dock="Top"
+					x:Name="picViewer"
+					Width="768"
+					Height="1376"
+					ShowGrid="{CompiledBinding ShowGrid}"
+				/>
 			</ScrollViewer>
 		</Border>
 	</DockPanel>
