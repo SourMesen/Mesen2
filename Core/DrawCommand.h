@@ -1,7 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "SettingTypes.h"
-#include "Console.h"
 
 class DrawCommand
 {

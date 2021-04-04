@@ -23,13 +23,13 @@
 #include "FirmwareHelper.h"
 #include "SpcFileData.h"
 #include "SuperGameboy.h"
-#include "Gameboy.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/sha1.h"
-#include "../Utilities/CRC32.h"
+#include "Gameboy/Gameboy.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/sha1.h"
+#include "Utilities/CRC32.h"
 
 BaseCartridge::~BaseCartridge()
 {

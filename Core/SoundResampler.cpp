@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "SoundResampler.h"
 #include "Emulator.h"
-#include "Spc.h"
 #include "EmuSettings.h"
 #include "SoundMixer.h"
 #include "VideoRenderer.h"
-#include "../Utilities/HermiteResampler.h"
+#include "Utilities/HermiteResampler.h"
 
 SoundResampler::SoundResampler(Emulator* emu)
 {

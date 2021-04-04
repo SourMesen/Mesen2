@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "BaseControlDevice.h"
-#include "Console.h"
+#include "SNES/Console.h"
 
 class SystemActionManager : public BaseControlDevice
 {

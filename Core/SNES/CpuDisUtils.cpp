@@ -7,8 +7,8 @@
 #include "DisassemblyInfo.h"
 #include "LabelManager.h"
 #include "DummyCpu.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/FastString.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/FastString.h"
 
 void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {

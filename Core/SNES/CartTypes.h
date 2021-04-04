@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/VirtualFile.h"
+#include "Utilities/VirtualFile.h"
 
 struct SnesCartInformation
 {

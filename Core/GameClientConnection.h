@@ -2,8 +2,8 @@
 #include "stdafx.h"
 #include <deque>
 #include "GameConnection.h"
-#include "../Utilities/AutoResetEvent.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/AutoResetEvent.h"
+#include "Utilities/SimpleLock.h"
 #include "BaseControlDevice.h"
 #include "INotificationListener.h"
 #include "IInputProvider.h"

@@ -2,7 +2,7 @@
 #include "Cx4.h"
 #include "Cpu.h"
 #include "Cx4DisUtils.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 static constexpr int shiftLut[4] = { 0 , 1, 8, 16 };
 

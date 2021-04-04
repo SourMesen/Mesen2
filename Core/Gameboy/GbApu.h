@@ -3,8 +3,8 @@
 #include "GbSquareChannel.h"
 #include "GbWaveChannel.h"
 #include "GbNoiseChannel.h"
-#include "../Utilities/blip_buf.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/blip_buf.h"
+#include "Utilities/ISerializable.h"
 
 class Emulator;
 class Gameboy;

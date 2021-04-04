@@ -1,9 +1,8 @@
 #pragma once
 #include "stdafx.h"
 #include "Emulator.h"
-#include "BaseCartridge.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/FolderUtilities.h"
 
 class RomFinder
 {

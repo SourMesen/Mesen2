@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "BaseVideoFilter.h"
-#include "../Utilities/snes_ntsc.h"
+#include "Utilities/snes_ntsc.h"
 
 class Emulator;
 

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Console.h"
 #include "Gameboy.h"
 #include "GbCpu.h"
 #include "GbPpu.h"
@@ -16,8 +15,8 @@
 #include "MessageManager.h"
 #include "FirmwareHelper.h"
 #include "GbBootRom.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/Serializer.h"
 
 Gameboy* Gameboy::Create(Emulator* emu, VirtualFile &romFile, bool sgbEnabled)
 {

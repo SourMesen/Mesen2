@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/SimpleLock.h"
-#include "../Utilities/Timer.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/Timer.h"
 #include "SettingTypes.h"
 
 class Emulator;

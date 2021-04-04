@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 #include "CpuTypes.h"
 #include "Sa1Cpu.h"
 #include "Emulator.h"

@@ -2,9 +2,9 @@
 #include "BsxStream.h"
 #include "Console.h"
 #include "MemoryManager.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 BsxStream::BsxStream()
 {

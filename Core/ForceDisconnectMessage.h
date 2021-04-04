@@ -2,8 +2,7 @@
 #include "stdafx.h"
 #include "MessageManager.h"
 #include "NetMessage.h"
-#include "Console.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/FolderUtilities.h"
 
 class ForceDisconnectMessage : public NetMessage
 {

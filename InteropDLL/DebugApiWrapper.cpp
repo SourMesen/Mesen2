@@ -10,12 +10,11 @@
 #include "../Core/BreakpointManager.h"
 #include "../Core/PpuTools.h"
 #include "../Core/CodeDataLogger.h"
-#include "../Core/EventManager.h"
 #include "../Core/CallstackManager.h"
 #include "../Core/LabelManager.h"
 #include "../Core/ScriptManager.h"
 #include "../Core/Profiler.h"
-#include "../Core/Assembler.h"
+#include "../Core/IAssembler.h"
 #include "../Core/BaseEventManager.h"
 
 extern shared_ptr<Emulator> _emu;

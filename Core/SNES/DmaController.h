@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "DmaControllerTypes.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class MemoryManager;
 

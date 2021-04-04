@@ -4,9 +4,8 @@
 #include "KeyManager.h"
 #include "MessageManager.h"
 #include "Emulator.h"
-#include "SpcDisUtils.h"
 #include "NotificationManager.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/FolderUtilities.h"
 
 EmuSettings::EmuSettings(Emulator* emu)
 {

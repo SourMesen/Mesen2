@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include <deque>
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/ZipWriter.h"
-#include "../Utilities/VirtualFile.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/ZipWriter.h"
+#include "Utilities/VirtualFile.h"
 #include "MovieRecorder.h"
 #include "MessageManager.h"
-#include "ControlManager.h"
+#include "SNES/ControlManager.h"
 #include "BaseControlDevice.h"
 #include "Emulator.h"
 #include "EmuSettings.h"
@@ -16,7 +16,6 @@
 #include "MovieTypes.h"
 #include "BatteryManager.h"
 #include "CheatManager.h"
-#include "BaseCartridge.h"
 
 MovieRecorder::MovieRecorder(shared_ptr<Emulator> emu)
 {

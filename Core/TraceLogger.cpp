@@ -3,17 +3,17 @@
 #include <algorithm>
 #include "TraceLogger.h"
 #include "DisassemblyInfo.h"
-#include "Console.h"
 #include "Emulator.h"
 #include "EmuSettings.h"
 #include "Debugger.h"
-#include "MemoryManager.h"
 #include "LabelManager.h"
 #include "DebugUtilities.h"
-#include "CpuTypes.h"
-#include "SpcTypes.h"
-#include "NecDspTypes.h"
-#include "../Utilities/HexUtilities.h"
+#include "SNES/MemoryManager.h"
+#include "SNES/Console.h"
+#include "SNES/CpuTypes.h"
+#include "SNES/SpcTypes.h"
+#include "SNES/NecDspTypes.h"
+#include "Utilities/HexUtilities.h"
 
 string TraceLogger::_executionTrace = "";
 

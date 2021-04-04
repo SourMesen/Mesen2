@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
 #include "PcmReader.h"
-#include "../Utilities/ISerializable.h"
-#include "../Utilities/VirtualFile.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/VirtualFile.h"
 
 class Spc;
 

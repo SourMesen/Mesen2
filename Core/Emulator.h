@@ -3,11 +3,10 @@
 #include "DebugTypes.h"
 #include "Debugger.h"
 #include "EmulatorLock.h"
-#include "CartTypes.h"
 #include "IConsole.h"
-#include "../Utilities/Timer.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/Timer.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/VirtualFile.h"
 
 class Debugger;
 class DebugHud;
@@ -24,6 +23,7 @@ class MovieManager;
 class FrameLimiter;
 class DebugStats;
 class ControlManager;
+class VirtualFile;
 
 struct RomInfo;
 

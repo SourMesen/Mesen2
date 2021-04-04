@@ -9,7 +9,7 @@
 #include "SpcTypes.h"
 #include "CpuTypes.h"
 #include "SpcTimer.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class Console;
 class Emulator;

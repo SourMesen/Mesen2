@@ -2,8 +2,8 @@
 #include "Cx4DisUtils.h"
 #include "DisassemblyInfo.h"
 #include "EmuSettings.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/FastString.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/FastString.h"
 
 void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings *settings)
 {

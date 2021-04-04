@@ -3,7 +3,7 @@
 #include "Profiler.h"
 #include "DebugBreakHelper.h"
 #include "Debugger.h"
-#include "Console.h"
+#include "SNES/Console.h"
 #include "MemoryDumper.h"
 #include "DebugTypes.h"
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/ClientConnectionData.h"
 #include "../Core/GameServer.h"
 #include "../Core/GameClient.h"

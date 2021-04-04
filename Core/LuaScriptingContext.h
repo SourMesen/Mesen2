@@ -3,7 +3,7 @@
 #include "DebugTypes.h"
 #include "ScriptingContext.h"
 #include "EventType.h"
-#include "../Utilities/Timer.h"
+#include "Utilities/Timer.h"
 
 struct lua_State;
 struct lua_Debug;

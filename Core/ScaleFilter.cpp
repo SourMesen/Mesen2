@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "ScaleFilter.h"
-#include "../Utilities/xBRZ/xbrz.h"
-#include "../Utilities/HQX/hqx.h"
-#include "../Utilities/Scale2x/scalebit.h"
-#include "../Utilities/KreedSaiEagle/SaiEagle.h"
+#include "Utilities/xBRZ/xbrz.h"
+#include "Utilities/HQX/hqx.h"
+#include "Utilities/Scale2x/scalebit.h"
+#include "Utilities/KreedSaiEagle/SaiEagle.h"
 
 bool ScaleFilter::_hqxInitDone = false;
 

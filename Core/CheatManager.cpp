@@ -3,7 +3,7 @@
 #include "MessageManager.h"
 #include "Emulator.h"
 #include "NotificationManager.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 CheatManager::CheatManager(Emulator* emu)
 {

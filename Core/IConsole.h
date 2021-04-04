@@ -1,8 +1,10 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
+#include "SNES/CartTypes.h"
 
 class ControlManager;
+class VirtualFile;
 
 struct PpuFrameInfo
 {

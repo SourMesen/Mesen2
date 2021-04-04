@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "BaseControlDevice.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 class InternalRegisters;
 class SnesController;

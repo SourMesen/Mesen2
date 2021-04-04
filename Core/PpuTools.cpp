@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "PpuTools.h"
-#include "Ppu.h"
 #include "DebugTypes.h"
-#include "Console.h"
-#include "BaseCartridge.h"
-#include "MemoryManager.h"
 #include "NotificationManager.h"
 #include "DefaultVideoFilter.h"
-#include "GbTypes.h"
+#include "SNES/Ppu.h"
+#include "SNES/Console.h"
+#include "SNES/BaseCartridge.h"
+#include "SNES/MemoryManager.h"
+#include "Gameboy/GbTypes.h"
 
 PpuTools::PpuTools(Emulator *emu)
 {

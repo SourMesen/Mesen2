@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Console.h"
 #include "Emulator.h"
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
@@ -10,14 +9,13 @@
 #include "GbCart.h"
 #include "GbDmaController.h"
 #include "EmuSettings.h"
-#include "ControlManager.h"
-#include "SnesController.h"
-#include "BaseCartridge.h"
-#include "SuperGameboy.h"
+#include "SNES/SuperGameboy.h"
+#include "SNES/ControlManager.h"
+#include "SNES/SnesController.h"
 #include "MessageManager.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/HexUtilities.h"
 
 void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "RamHandler.h"
 #include "IMemoryHandler.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class BsxMemoryPackHandler;
 class Console;

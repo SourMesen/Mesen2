@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/HermiteResampler.h"
+#include "Utilities/HermiteResampler.h"
 
 class Emulator;
 

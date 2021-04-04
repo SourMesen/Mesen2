@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BatteryManager.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/FolderUtilities.h"
 
 void BatteryManager::Initialize(string romName)
 {

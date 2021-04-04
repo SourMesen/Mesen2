@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
 #include "GbTypes.h"
-#include "../Utilities/ISerializable.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
 
 class GbApu;
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "IMessageManager.h"
 #include "SettingTypes.h"
-#include "../Utilities/Timer.h"
+#include "Utilities/Timer.h"
 
 class Emulator;
 

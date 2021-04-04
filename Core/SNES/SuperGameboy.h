@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "BaseCoprocessor.h"
-#include "../Utilities/HermiteResampler.h"
+#include "Utilities/HermiteResampler.h"
 
 class Console;
 class Emulator;

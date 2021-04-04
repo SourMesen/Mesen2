@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 template<uint8_t rate>
 class SpcTimer

@@ -22,7 +22,7 @@
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "Assembler.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {

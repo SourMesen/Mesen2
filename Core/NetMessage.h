@@ -2,8 +2,8 @@
 #include "stdafx.h"
 #include "MessageType.h"
 #include "SaveStateManager.h"
-#include "../Utilities/Socket.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Socket.h"
+#include "Utilities/Serializer.h"
 
 class NetMessage
 {

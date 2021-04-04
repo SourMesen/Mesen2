@@ -4,7 +4,7 @@
 #include "Emulator.h"
 #include "MemoryManager.h"
 #include "EmuSettings.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 BsxSatellaview::BsxSatellaview(Console* console, IMemoryHandler* bBusHandler) : IMemoryHandler(SnesMemoryType::Register)
 {

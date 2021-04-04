@@ -3,8 +3,8 @@
 #include "MessageManager.h"
 #include "ScaleFilter.h"
 #include "EmuSettings.h"
-#include "../Utilities/PNGHelper.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/PNGHelper.h"
+#include "Utilities/FolderUtilities.h"
 #include "Emulator.h"
 
 BaseVideoFilter::BaseVideoFilter(shared_ptr<Emulator> emu)

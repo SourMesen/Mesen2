@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "CpuTypes.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class Sa1;
 class Emulator;

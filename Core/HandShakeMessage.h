@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "NetMessage.h"
-#include "../Utilities/sha1.h"
+#include "Utilities/sha1.h"
 
 class HandShakeMessage : public NetMessage
 {

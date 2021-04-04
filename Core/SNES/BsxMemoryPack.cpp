@@ -3,7 +3,7 @@
 #include "Console.h"
 #include "Emulator.h"
 #include "BatteryManager.h"
-#include "../Utilities/IpsPatcher.h"
+#include "Utilities/IpsPatcher.h"
 
 BsxMemoryPack::BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persistFlash)
 {

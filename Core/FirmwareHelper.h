@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Emulator.h"
 #include "NotificationManager.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/FolderUtilities.h"
 
 struct MissingFirmwareMessage
 {

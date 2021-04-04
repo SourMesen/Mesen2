@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "BaseControlDevice.h"
-#include "Console.h"
+#include "SNES/Console.h" //TODO
 #include "KeyManager.h"
-#include "../Utilities/StringUtilities.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/Serializer.h"
 
 BaseControlDevice::BaseControlDevice(Console* console, uint8_t port, KeyMappingSet keyMappingSet)
 {

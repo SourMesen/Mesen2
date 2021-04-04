@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Msu1.h"
 #include "Spc.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/FolderUtilities.h"
 
 Msu1* Msu1::Init(VirtualFile romFile, Spc* spc)
 {

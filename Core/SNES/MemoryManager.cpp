@@ -15,11 +15,11 @@
 #include "Sa1.h"
 #include "Gsu.h"
 #include "Cx4.h"
-#include "Gameboy.h"
 #include "BaseCoprocessor.h"
 #include "CheatManager.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/HexUtilities.h"
+#include "Gameboy/Gameboy.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/HexUtilities.h"
 
 void MemoryManager::Initialize(Console *console)
 {

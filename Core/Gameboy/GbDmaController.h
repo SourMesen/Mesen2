@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "GbTypes.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class GbMemoryManager;
 class GbPpu;

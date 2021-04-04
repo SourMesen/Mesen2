@@ -7,7 +7,7 @@
     <ClInclude Include="SNES\CpuTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryManager.h">
+    <ClInclude Include="SNES\MemoryManager.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="TraceLogger.h">
@@ -49,7 +49,7 @@
     <ClInclude Include="SNES\Ppu.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="PpuTypes.h">
+    <ClInclude Include="SNES\PpuTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="VideoRenderer.h">
@@ -145,7 +145,7 @@
     <ClInclude Include="SNES\SnesController.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\ControlDeviceState.h">
+    <ClInclude Include="ControlDeviceState.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
     <ClInclude Include="SNES\ControlManager.h">
@@ -574,7 +574,7 @@
     <ClInclude Include="Gameboy\GbMbc3.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
-    <ClInclude Include="EventManager.h">
+    <ClInclude Include="SNES\EventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbEventManager.h">
@@ -678,7 +678,7 @@
     <ClCompile Include="CodeDataLogger.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryManager.cpp">
+    <ClCompile Include="SNES\MemoryManager.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionEvaluator.cpp">
@@ -939,7 +939,7 @@
     <ClCompile Include="Gameboy\GbCpu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="EventManager.cpp">
+    <ClCompile Include="SNES\EventManager.cpp">
       <Filter>Debugger\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="Gameboy\GbEventManager.cpp">

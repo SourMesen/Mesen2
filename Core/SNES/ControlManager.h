@@ -1,9 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
-#include "../Utilities/SimpleLock.h"
-#include "../Utilities/ISerializable.h"
-#include "IMemoryHandler.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/ISerializable.h"
 
 class BaseControlDevice;
 class IInputRecorder;

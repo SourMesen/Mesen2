@@ -7,8 +7,8 @@
 #include "MemoryManager.h"
 #include "MessageManager.h"
 #include "InternalRegisterTypes.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/HexUtilities.h"
 
 InternalRegisters::InternalRegisters()
 {

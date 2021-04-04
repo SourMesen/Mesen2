@@ -3,7 +3,7 @@
 #include "BaseControlDevice.h"
 #include "KeyManager.h"
 #include "Ppu.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 class SuperScope : public BaseControlDevice
 {

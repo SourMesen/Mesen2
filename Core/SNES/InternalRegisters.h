@@ -5,7 +5,7 @@
 #include "Cpu.h"
 #include "Ppu.h"
 #include "InternalRegisterTypes.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class MemoryManager;
 

@@ -9,7 +9,7 @@
 #include "EmuSettings.h"
 #include "BatteryManager.h"
 #include "MessageManager.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType::Register)
 {

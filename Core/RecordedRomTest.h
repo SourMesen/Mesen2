@@ -3,17 +3,15 @@
 #include "stdafx.h"
 #include <deque>
 #include "INotificationListener.h"
-#include "../Utilities/AutoResetEvent.h"
+#include "Utilities/AutoResetEvent.h"
 
 class VirtualFile;
 class Emulator;
-class Ppu;
 
 class RecordedRomTest : public INotificationListener, public std::enable_shared_from_this<RecordedRomTest>
 {
 private:
 	shared_ptr<Emulator> _emu;
-	Ppu* _ppu;
 
 	bool _recording = false;
 	bool _runningTest = false;

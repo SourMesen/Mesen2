@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <regex>
 #include <unordered_map>
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/StringUtilities.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/StringUtilities.h"
 #include "Assembler.h"
 #include "Cpu.h"
 #include "CpuDisUtils.h"

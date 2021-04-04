@@ -6,7 +6,7 @@
 #include "Console.h"
 #include "Emulator.h"
 #include "EmuSettings.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 class SnesMouse : public BaseControlDevice
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/SimpleLock.h"
-#include "../Utilities/AutoResetEvent.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/AutoResetEvent.h"
 #include "SettingTypes.h"
 
 class BaseVideoFilter;

@@ -7,19 +7,18 @@
 #include "TraceLogger.h"
 #include "CallstackManager.h"
 #include "BreakpointManager.h"
-#include "MemoryManager.h"
 #include "Debugger.h"
-#include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "EmuSettings.h"
-#include "BaseCartridge.h"
 #include "GameboyDisUtils.h"
 #include "CodeDataLogger.h"
 #include "GbEventManager.h"
 #include "BaseEventManager.h"
 #include "GbAssembler.h"
-#include "../Utilities/HexUtilities.h"
+#include "SNES/BaseCartridge.h"
+#include "SNES/Console.h"
+#include "Utilities/HexUtilities.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {

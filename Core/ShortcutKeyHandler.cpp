@@ -3,7 +3,6 @@
 #include "EmuSettings.h"
 #include "KeyManager.h"
 #include "VideoDecoder.h"
-#include "ControlManager.h"
 #include "Emulator.h"
 #include "RewindManager.h"
 #include "NotificationManager.h"

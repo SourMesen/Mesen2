@@ -1,14 +1,8 @@
 #include "stdafx.h"
 #include "InputHud.h"
 #include "BaseControlDevice.h"
-#include "SnesController.h"
-#include "Multitap.h"
-#include "SnesMouse.h"
-#include "SuperScope.h"
-#include "Console.h"
 #include "EmuSettings.h"
 #include "DebugHud.h"
-#include "ControlManager.h"
 
 static constexpr int color[2] = { 0x00111111, 0x00FFFFFF };
 

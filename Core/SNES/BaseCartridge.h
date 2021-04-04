@@ -3,7 +3,7 @@
 #include "IMemoryHandler.h"
 #include "CartTypes.h"
 #include "BaseCoprocessor.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class MemoryMappings;
 class VirtualFile;

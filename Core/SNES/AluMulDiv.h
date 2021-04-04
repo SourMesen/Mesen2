@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "InternalRegisterTypes.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class Cpu;
 

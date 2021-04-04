@@ -3,13 +3,13 @@
 #include <algorithm>
 #include "DebugTypes.h"
 #include "ExpressionEvaluator.h"
-#include "Console.h"
+#include "SNES/Console.h"
 #include "Debugger.h"
 #include "MemoryDumper.h"
 #include "Disassembler.h"
 #include "LabelManager.h"
 #include "DebugUtilities.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };
 const vector<int> ExpressionEvaluator::_binaryPrecedence = { { 10,  10,  10,   9,   9,    8,    8,   7,   7,    7,    7,    6,    6,   5,   4,   3,    2,    1 } };

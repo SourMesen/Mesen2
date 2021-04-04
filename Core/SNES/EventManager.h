@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
-#include "DmaController.h"
+#include "SNES/DmaController.h"
 #include "DebugTypes.h"
 #include "BaseEventManager.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 
 enum class DebugEventType;
 struct DebugEventInfo;

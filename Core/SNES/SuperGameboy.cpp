@@ -6,12 +6,12 @@
 #include "BaseCartridge.h"
 #include "Spc.h"
 #include "Emulator.h"
-#include "Gameboy.h"
-#include "GbApu.h"
-#include "GbPpu.h"
+#include "Gameboy/Gameboy.h"
+#include "Gameboy/GbApu.h"
+#include "Gameboy/GbPpu.h"
 #include "MessageManager.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/HermiteResampler.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/HermiteResampler.h"
 
 SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {

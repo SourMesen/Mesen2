@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "INotificationListener.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 
 class NotificationManager
 {

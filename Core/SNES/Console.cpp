@@ -10,8 +10,8 @@
 #include "DmaController.h"
 #include "BaseCartridge.h"
 #include "RamHandler.h"
-#include "Gameboy.h"
-#include "GbPpu.h"
+#include "Gameboy/Gameboy.h"
+#include "Gameboy/GbPpu.h"
 #include "Debugger.h"
 #include "DebugTypes.h"
 #include "NotificationManager.h"
@@ -36,11 +36,11 @@
 #include "SpcHud.h"
 #include "Msu1.h"
 #include "Emulator.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/Timer.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/PlatformUtilities.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/Timer.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/PlatformUtilities.h"
+#include "Utilities/FolderUtilities.h"
 
 Console::Console(Emulator* emu)
 {
@@ -283,6 +283,7 @@ double Console::GetFps()
 
 PpuFrameInfo Console::GetPpuFrame()
 {
+	//TODO
 	return PpuFrameInfo();
 }
 

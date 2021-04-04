@@ -7,7 +7,7 @@
 
 #include "stdafx.h"
 #include "CpuTypes.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class MemoryMappings;
 class MemoryManager;

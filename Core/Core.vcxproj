@@ -126,7 +126,7 @@
     <ClInclude Include="CodeDataLogger.h" />
     <ClInclude Include="SNES\Console.h" />
     <ClInclude Include="EmulatorLock.h" />
-    <ClInclude Include="SNES\ControlDeviceState.h" />
+    <ClInclude Include="ControlDeviceState.h" />
     <ClInclude Include="SNES\ControlManager.h" />
     <ClInclude Include="SNES\Cpu.h" />
     <ClInclude Include="SNES\Cpu.Instructions.h" />
@@ -136,7 +136,7 @@
     <ClInclude Include="SNES\DummyCpu.h" />
     <ClInclude Include="SNES\DummySpc.h" />
     <ClInclude Include="EmuSettings.h" />
-    <ClInclude Include="EventManager.h" />
+    <ClInclude Include="SNES\EventManager.h" />
     <ClInclude Include="EventType.h" />
     <ClInclude Include="ExpressionEvaluator.h" />
     <ClInclude Include="LabelManager.h" />
@@ -190,11 +190,11 @@
     <ClInclude Include="IRenderingDevice.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="MemoryDumper.h" />
-    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="SNES\MemoryManager.h" />
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="NotificationManager.h" />
     <ClInclude Include="SNES\Ppu.h" />
-    <ClInclude Include="PpuTypes.h" />
+    <ClInclude Include="SNES\PpuTypes.h" />
     <ClInclude Include="RamHandler.h" />
     <ClInclude Include="SNES\RegisterHandlerA.h" />
     <ClInclude Include="RewindData.h" />
@@ -299,7 +299,7 @@
     <ClCompile Include="Gameboy\GbWaveChannel.cpp" />
     <ClCompile Include="SNES\NecDspDebugger.cpp" />
     <ClCompile Include="EmuSettings.cpp" />
-    <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="SNES\EventManager.cpp" />
     <ClCompile Include="ExpressionEvaluator.cpp" />
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameClientConnection.cpp" />
@@ -319,7 +319,7 @@
     <ClCompile Include="LuaScriptingContext.cpp" />
     <ClCompile Include="MemoryAccessCounter.cpp" />
     <ClCompile Include="MemoryDumper.cpp" />
-    <ClCompile Include="MemoryManager.cpp" />
+    <ClCompile Include="SNES\MemoryManager.cpp" />
     <ClCompile Include="MemoryMappings.cpp" />
     <ClCompile Include="MesenMovie.cpp" />
     <ClCompile Include="MessageManager.cpp" />
@@ -513,7 +513,7 @@
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
-    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Libretro|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -538,7 +538,7 @@
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
-    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Libretro|x64'">
     <LinkIncremental>false</LinkIncremental>

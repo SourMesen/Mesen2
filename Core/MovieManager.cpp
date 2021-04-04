@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <algorithm>
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/ZipReader.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/ZipReader.h"
 #include "Emulator.h"
 #include "MovieManager.h"
 #include "MesenMovie.h"

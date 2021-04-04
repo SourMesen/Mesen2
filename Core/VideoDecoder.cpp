@@ -10,9 +10,9 @@
 #include "SettingTypes.h"
 #include "NtscFilter.h"
 #include "ScaleFilter.h"
-#include "Ppu.h"
 #include "DebugHud.h"
 #include "InputHud.h"
+#include "SNES/CartTypes.h"
 
 VideoDecoder::VideoDecoder(shared_ptr<Emulator> emu)
 {

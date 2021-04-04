@@ -5,8 +5,8 @@
 #include "DisassemblyInfo.h"
 #include "EmuSettings.h"
 #include "LabelManager.h"
-#include "../Utilities/FastString.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/FastString.h"
+#include "Utilities/HexUtilities.h"
 
 constexpr const char* _altOpTemplate[256] = {
 	"NOP",	"TCALL 0",	"SET1 d.0",	"BBS d.0,q",	"OR A,d",		"OR A,!a",		"OR A,(X)",		"OR A,[d+X]",	"OR A,#i",	"OR t,s",		"OR1 C,m.b",	"ASL d",			"ASL !a",	"PUSH PSW",	"TSET1 !a",		"BRK",

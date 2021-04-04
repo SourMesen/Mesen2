@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Emulator.h"
-#include "Console.h"
+#include "SNES/Console.h"
 #include "Debugger.h"
 #include "DebugTypes.h"
 #include "NotificationManager.h"
@@ -23,11 +23,11 @@
 #include "MovieManager.h"
 #include "IConsole.h"
 #include "SystemActionManager.h"
-#include "../Utilities/Serializer.h"
-#include "../Utilities/Timer.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/PlatformUtilities.h"
-#include "../Utilities/FolderUtilities.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/Timer.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/PlatformUtilities.h"
+#include "Utilities/FolderUtilities.h"
 
 Emulator::Emulator()
 {

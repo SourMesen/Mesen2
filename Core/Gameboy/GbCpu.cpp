@@ -3,7 +3,7 @@
 #include "GbCpu.h"
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 void GbCpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager)
 {

@@ -5,7 +5,7 @@
 #include "Breakpoint.h"
 #include "DebugUtilities.h"
 #include "ExpressionEvaluator.h"
-#include "EventManager.h"
+#include "BaseEventManager.h"
 
 BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, IEventManager* eventManager)
 {

@@ -5,11 +5,11 @@ using std::thread;
 #include "MessageManager.h"
 #include "GameServer.h"
 #include "Emulator.h"
-#include "ControlManager.h"
-#include "Multitap.h"
+#include "SNES/ControlManager.h"
+#include "SNES/Multitap.h"
 #include "PlayerListMessage.h"
 #include "NotificationManager.h"
-#include "../Utilities/Socket.h"
+#include "Utilities/Socket.h"
 
 shared_ptr<GameServer> GameServer::Instance;
 

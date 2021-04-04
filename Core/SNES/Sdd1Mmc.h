@@ -3,7 +3,7 @@
 #include "IMemoryHandler.h"
 #include "Sdd1Types.h"
 #include "Sdd1Decomp.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class BaseCartridge;
 

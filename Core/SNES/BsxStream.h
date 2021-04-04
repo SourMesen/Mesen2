@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class Console;
 class MemoryManager;

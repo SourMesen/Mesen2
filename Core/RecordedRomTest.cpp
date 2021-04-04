@@ -4,16 +4,14 @@
 #include "Emulator.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
-#include "Ppu.h"
 #include "MovieManager.h"
-#include "BaseCartridge.h"
 #include "NotificationManager.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/md5.h"
-#include "../Utilities/ZipWriter.h"
-#include "../Utilities/ZipReader.h"
-#include "../Utilities/ArchiveReader.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/md5.h"
+#include "Utilities/ZipWriter.h"
+#include "Utilities/ZipReader.h"
+#include "Utilities/ArchiveReader.h"
 
 RecordedRomTest::RecordedRomTest(shared_ptr<Emulator> emu)
 {
@@ -57,13 +55,10 @@ void RecordedRomTest::SaveFrame()
 
 void RecordedRomTest::ValidateFrame()
 {
-	bool highRes = _ppu->IsHighResOutput();
-	uint16_t width = highRes ? 512 : 256;
-	uint16_t height = highRes ? 478 : 239;
-	uint16_t* ppuFrameBuffer = _ppu->GetScreenBuffer();
+	PpuFrameInfo frame = _emu->GetPpuFrame();
 
 	uint8_t md5Hash[16];
-	GetMd5Sum(md5Hash, ppuFrameBuffer, width * height * sizeof(uint16_t));
+	GetMd5Sum(md5Hash, frame.FrameBuffer, frame.Width * frame.Height * sizeof(uint16_t));
 
 	if(_currentCount == 0) {
 		_currentCount = _repetitionCount.front();

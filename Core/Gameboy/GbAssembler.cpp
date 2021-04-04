@@ -3,8 +3,8 @@
 #include "GbAssembler.h"
 #include "LabelManager.h"
 #include "GameboyDisUtils.h"
-#include "../Utilities/StringUtilities.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9]*)", std::regex_constants::icase);
 

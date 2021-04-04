@@ -6,7 +6,7 @@ using std::thread;
 #include "GameClient.h"
 #include "Emulator.h"
 #include "NotificationManager.h"
-#include "../Utilities/Socket.h"
+#include "Utilities/Socket.h"
 #include "ClientConnectionData.h"
 #include "GameClientConnection.h"
 

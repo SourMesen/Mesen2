@@ -5,9 +5,9 @@
 #include "Emulator.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
-#include "../Utilities/IVideoRecorder.h"
-#include "../Utilities/AviRecorder.h"
-#include "../Utilities/GifRecorder.h"
+#include "Utilities/IVideoRecorder.h"
+#include "Utilities/AviRecorder.h"
+#include "Utilities/GifRecorder.h"
 
 VideoRenderer::VideoRenderer(shared_ptr<Emulator> emu)
 {

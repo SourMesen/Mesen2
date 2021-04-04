@@ -4,7 +4,7 @@
 
 #include "IMessageManager.h"
 #include <unordered_map>
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 
 #ifdef _DEBUG
 	#define LogDebug(msg) MessageManager::Log(msg);

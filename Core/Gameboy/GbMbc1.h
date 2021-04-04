@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "GbCart.h"
 #include "GbMemoryManager.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 class GbMbc1 : public GbCart
 {

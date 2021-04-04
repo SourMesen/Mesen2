@@ -3,7 +3,6 @@
 #include "GbTypes.h"
 #include "EventType.h"
 #include "Emulator.h"
-#include "Console.h"
 #include "EmuSettings.h"
 #include "Gameboy.h"
 #include "VideoDecoder.h"
@@ -12,9 +11,9 @@
 #include "GbDmaController.h"
 #include "NotificationManager.h"
 #include "MessageManager.h"
-#include "SuperGameboy.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/Serializer.h"
+#include "SNES/SuperGameboy.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 constexpr uint16_t evtColors[6] = { 0x18C6, 0x294A, 0x108C, 0x4210, 0x3084, 0x1184 };
 

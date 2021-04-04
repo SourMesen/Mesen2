@@ -3,8 +3,8 @@
 #include "ControlDeviceState.h"
 #include "SettingTypes.h"
 #include "IKeyManager.h"
-#include "../Utilities/SimpleLock.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/ISerializable.h"
 
 class Console;
 

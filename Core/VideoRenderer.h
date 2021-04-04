@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include <thread>
-#include "../Utilities/AutoResetEvent.h"
+#include "Utilities/AutoResetEvent.h"
 
 class IRenderingDevice;
 class Emulator;

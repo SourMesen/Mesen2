@@ -1,10 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "CpuTypes.h"
-#include "PpuTypes.h"
 #include "DebugTypes.h"
 #include "DebugUtilities.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 
 class Console;
 class Emulator;

@@ -2,7 +2,7 @@
 #include "RewindData.h"
 #include "Emulator.h"
 #include "SaveStateManager.h"
-#include "../Utilities/miniz.h"
+#include "Utilities/miniz.h"
 
 void RewindData::GetStateData(stringstream &stateData)
 {

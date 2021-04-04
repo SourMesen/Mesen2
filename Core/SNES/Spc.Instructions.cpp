@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Spc.h"
-#include "../Utilities/HexUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 void Spc::EndOp()
 {

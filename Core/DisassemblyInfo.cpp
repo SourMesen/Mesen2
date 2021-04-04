@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include <algorithm>
 #include "DisassemblyInfo.h"
-#include "CpuTypes.h"
 #include "EmuSettings.h"
 #include "MemoryDumper.h"
-#include "CpuDisUtils.h"
-#include "SpcDisUtils.h"
-#include "GsuDisUtils.h"
-#include "NecDspDisUtils.h"
-#include "Cx4DisUtils.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/FastString.h"
-#include "GameboyDisUtils.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/FastString.h"
 #include "DebugUtilities.h"
+#include "SNES/CpuTypes.h"
+#include "SNES/CpuDisUtils.h"
+#include "SNES/SpcDisUtils.h"
+#include "SNES/GsuDisUtils.h"
+#include "SNES/NecDspDisUtils.h"
+#include "SNES/Cx4DisUtils.h"
+#include "Gameboy/GameboyDisUtils.h"
 
 DisassemblyInfo::DisassemblyInfo()
 {
@@ -95,7 +95,7 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState, C
 		case CpuType::NecDsp:
 			return -1;
 
-		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, console, *(GbCpuState*)cpuState);
+		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, *(GbCpuState*)cpuState);
 	}
 	return -1;
 }

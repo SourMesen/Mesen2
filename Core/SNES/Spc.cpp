@@ -13,7 +13,7 @@
 #include "SPC_DSP.h"
 #define Spc DummySpc
 #endif
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 Spc::Spc(Console* console)
 {

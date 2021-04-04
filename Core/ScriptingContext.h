@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include <deque>
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 #include "EventType.h"
 #include "DebugTypes.h"
 

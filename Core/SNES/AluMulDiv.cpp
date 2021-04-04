@@ -2,7 +2,7 @@
 #include "AluMulDiv.h"
 #include "Cpu.h"
 #include "InternalRegisterTypes.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 void AluMulDiv::Initialize(Cpu* cpu)
 {

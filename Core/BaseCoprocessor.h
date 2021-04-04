@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 #include "IMemoryHandler.h"
 
 class BaseCoprocessor : public ISerializable, public IMemoryHandler

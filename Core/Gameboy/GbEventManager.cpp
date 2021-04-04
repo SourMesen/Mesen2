@@ -7,8 +7,6 @@
 #include "DebugBreakHelper.h"
 #include "DefaultVideoFilter.h"
 #include "Gameboy.h"
-#include "Console.h"
-#include "BaseCartridge.h"
 #include "BaseEventManager.h"
 
 GbEventManager::GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu)

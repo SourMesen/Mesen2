@@ -3,7 +3,7 @@
 #include "DmaControllerTypes.h"
 #include "MemoryManager.h"
 #include "MessageManager.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };
 static constexpr uint8_t _transferOffset[8][4] = {

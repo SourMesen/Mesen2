@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
 #include "PpuTypes.h"
-#include "../Utilities/ISerializable.h"
-#include "../Utilities/Timer.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Timer.h"
 
 class Emulator;
 class Console;

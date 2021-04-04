@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 #include "EventType.h"
 #include "DebugTypes.h"
 

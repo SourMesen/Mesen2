@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "IMemoryHandler.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class Console;
 class Emulator;

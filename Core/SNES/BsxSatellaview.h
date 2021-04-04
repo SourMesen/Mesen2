@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "IMemoryHandler.h"
 #include "BsxStream.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 class Console;
 class MemoryManager;

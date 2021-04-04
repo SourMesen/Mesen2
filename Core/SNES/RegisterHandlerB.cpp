@@ -8,7 +8,7 @@
 #include "Sa1.h"
 #include "Msu1.h"
 #include "CheatManager.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(SnesMemoryType::Register)
 {

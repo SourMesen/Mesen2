@@ -14,7 +14,7 @@
 #include "Multitap.h"
 #include "SuperScope.h"
 #include "EventType.h"
-#include "../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
 ControlManager::ControlManager(Console* console)
 {

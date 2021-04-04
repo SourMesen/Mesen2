@@ -1,11 +1,10 @@
-#include"stdafx.h"
-#include"GameboyDisUtils.h"
-#include"Console.h"
-#include"DisassemblyInfo.h"
-#include"EmuSettings.h"
-#include"LabelManager.h"
-#include"../Utilities/FastString.h"
-#include"../Utilities/HexUtilities.h"
+#include "stdafx.h"
+#include "GameboyDisUtils.h"
+#include "DisassemblyInfo.h"
+#include "EmuSettings.h"
+#include "LabelManager.h"
+#include "Utilities/FastString.h"
+#include "Utilities/HexUtilities.h"
 
 constexpr const char* _opTemplate[256] = {
 	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (a), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",
@@ -136,7 +135,7 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 	out += str.ToString();
 }
 
-int32_t GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Console* console, GbCpuState& state)
+int32_t GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, GbCpuState& state)
 {
 	switch(_gbEffAddrType[info.GetOpCode()]) {
 		default:

@@ -4,9 +4,9 @@
 #include "DebugTypes.h"
 #include "Debugger.h"
 #include "IConsole.h"
-#include "../Utilities/Timer.h"
-#include "../Utilities/VirtualFile.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/Timer.h"
+#include "Utilities/VirtualFile.h"
+#include "Utilities/SimpleLock.h"
 
 class Cpu;
 class Ppu;

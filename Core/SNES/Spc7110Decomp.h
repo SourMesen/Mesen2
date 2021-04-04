@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 
 //Based on bsnes' code (by byuu)
 //original implementation: neviksti

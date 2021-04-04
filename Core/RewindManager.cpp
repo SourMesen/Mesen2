@@ -3,10 +3,10 @@
 #include "MessageManager.h"
 #include "Emulator.h"
 #include "EmuSettings.h"
-#include "ControlManager.h"
 #include "VideoRenderer.h"
 #include "SoundMixer.h"
 #include "BaseControlDevice.h"
+#include "SNES/ControlManager.h"
 
 RewindManager::RewindManager(shared_ptr<Emulator> emu)
 {

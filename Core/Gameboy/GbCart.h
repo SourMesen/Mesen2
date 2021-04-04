@@ -3,8 +3,8 @@
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
 #include "MessageManager.h"
-#include "../Utilities/HexUtilities.h"
-#include "../Utilities/ISerializable.h"
+#include "Utilities/HexUtilities.h"
+#include "Utilities/ISerializable.h"
 
 class GbCart : public ISerializable
 {

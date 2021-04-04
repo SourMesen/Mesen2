@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CodeDataLogger.h"
-#include "../Utilities/VirtualFile.h"
+#include "Utilities/VirtualFile.h"
 
 CodeDataLogger::CodeDataLogger(uint32_t prgSize, CpuType cpuType)
 {

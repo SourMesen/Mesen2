@@ -3,7 +3,7 @@
 #include "DisassemblyInfo.h"
 #include "DebugTypes.h"
 #include "DebugUtilities.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 
 class MemoryManager;
 class Console;

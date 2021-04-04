@@ -1,13 +1,13 @@
 #pragma once
 #include "stdafx.h"
-#include "CpuTypes.h"
-#include "PpuTypes.h"
-#include "SpcTypes.h"
-#include "GbTypes.h"
+#include "SNES/CpuTypes.h"
+#include "SNES/PpuTypes.h"
+#include "SNES/SpcTypes.h"
+#include "Gameboy/GbTypes.h"
 #include "DebugTypes.h"
 #include "DisassemblyInfo.h"
 #include "DebugUtilities.h"
-#include "../Utilities/SimpleLock.h"
+#include "Utilities/SimpleLock.h"
 
 class Console;
 class Debugger;
