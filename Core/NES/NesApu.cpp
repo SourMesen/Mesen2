@@ -142,9 +142,6 @@ void NesApu::GetMemoryRanges(MemoryRanges &ranges)
 
 void NesApu::Run()
 {
-	//TODO
-	return;
-
 	//Update framecounter and all channels
 	//This is called:
 	//-At the end of a frame
@@ -200,8 +197,6 @@ void NesApu::Exec()
 
 void NesApu::EndFrame()
 {
-	//TODO
-	return;
 	Run();
 	_squareChannel[0]->EndFrame();
 	_squareChannel[1]->EndFrame();

@@ -40,7 +40,7 @@ public:
 	BaseMapper* GetMapper() { return _mapper.get(); }
 	NesSoundMixer* GetSoundMixer() { return _mixer.get(); }
 	Emulator* GetEmulator();
-	NesConfig GetNesConfig() { return {}; }
+	NesConfig& GetNesConfig();
 
 	void ProcessCpuClock();
 	void InitializeRam(uint8_t* ram, uint32_t size) {}

@@ -10,6 +10,7 @@
 #include "NesSoundMixer.h"
 #include "NesMemoryManager.h"
 #include "NesPpu.h"
+#include "EmuSettings.h"
 
 NesConsole::NesConsole(Emulator* emu)
 {
@@ -21,6 +22,11 @@ Emulator* NesConsole::GetEmulator()
 	return _emu;
 }
 
+NesConfig& NesConsole::GetNesConfig()
+{
+	return _emu->GetSettings()->GetNesConfig();
+}
+
 void NesConsole::ProcessCpuClock() 
 {
 	_mapper->ProcessCpuClock();
@@ -29,10 +35,12 @@ void NesConsole::ProcessCpuClock()
 
 void NesConsole::Serialize(Serializer& s)
 {
+	//TODO
 }
 
 void NesConsole::Stop()
 {
+	//TODO
 }
 
 void NesConsole::Reset()
@@ -46,6 +54,7 @@ void NesConsole::Reset()
 
 void NesConsole::OnBeforeRun()
 {
+	//TODO
 }
 
 bool NesConsole::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
@@ -55,10 +64,10 @@ bool NesConsole::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
 	if(mapper) {
 		shared_ptr<BaseMapper> previousMapper = _mapper;
 		_mapper = mapper;
+		_mixer.reset(new NesSoundMixer(shared_from_this()));
 		_memoryManager.reset(new NesMemoryManager(shared_from_this()));
 		_cpu.reset(new NesCpu(shared_from_this()));
 		_apu.reset(new NesApu(shared_from_this()));
-		_mixer.reset(new NesSoundMixer());
 
 		_mapper->SetConsole(shared_from_this());
 		_mapper->Initialize(romData);
@@ -137,6 +146,7 @@ bool NesConsole::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
 		_mapper->SetNesModel(model);
 		_ppu->SetNesModel(model);
 		_apu->SetNesModel(model);
+		_mixer->Reset();
 
 		return true;
 	}
@@ -165,26 +175,31 @@ shared_ptr<IControlManager> NesConsole::GetControlManager()
 
 double NesConsole::GetFrameDelay()
 {
-    return 0.0;
+	//TODO
+	return 16.6666667;
 }
 
 double NesConsole::GetFps()
 {
-    return 0.0;
+	//TODO
+	return 60;
 }
 
 RomInfo NesConsole::GetRomInfo()
 {
-    return RomInfo();
+	//TODO
+	return RomInfo();
 }
 
 void NesConsole::RunSingleFrame()
 {
+	//TODO
 }
 
 PpuFrameInfo NesConsole::GetPpuFrame()
 {
-    return PpuFrameInfo();
+	//TODO
+	return PpuFrameInfo();
 }
 
 ConsoleType NesConsole::GetConsoleType()

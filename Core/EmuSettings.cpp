@@ -138,7 +138,7 @@ void EmuSettings::SetNesConfig(NesConfig config)
 	_nes = config;
 }
 
-NesConfig EmuSettings::GetNesConfig()
+NesConfig& EmuSettings::GetNesConfig()
 {
 	return _nes;
 }

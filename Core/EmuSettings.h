@@ -60,7 +60,7 @@ public:
 	GameboyConfig GetGameboyConfig();
 
 	void SetNesConfig(NesConfig config);
-	NesConfig GetNesConfig();
+	NesConfig& GetNesConfig();
 
 	void SetPreferences(PreferencesConfig config);
 	PreferencesConfig GetPreferences();

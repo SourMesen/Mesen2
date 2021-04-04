@@ -6,7 +6,7 @@
 #include "VideoRenderer.h"
 #include "SoundMixer.h"
 #include "BaseControlDevice.h"
-#include "SNES/ControlManager.h"
+#include "IControlManager.h"
 
 RewindManager::RewindManager(shared_ptr<Emulator> emu)
 {

@@ -50,10 +50,6 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 {
 	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
 
-	if(cfg.EnableEqualizer) {
-		ProcessEqualizer(samples, sampleCount);
-	}
-
 	uint32_t masterVolume = cfg.MasterVolume;
 	if(_emu->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
 		if(cfg.MuteSoundInBackground) {
@@ -82,7 +78,11 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	if(msu1) {
 		msu1->MixAudio(out, count, cfg.SampleRate);
 	}*/
-	
+
+	if(cfg.EnableEqualizer) {
+		ProcessEqualizer(samples, sampleCount);
+	}
+
 	if(masterVolume < 100) {
 		//Apply volume if not using the default value
 		for(uint32_t i = 0; i < count * 2; i++) {
@@ -124,8 +124,8 @@ void SoundMixer::ProcessEqualizer(int16_t* samples, uint32_t sampleCount)
 		cfg.Band11Gain, cfg.Band12Gain, cfg.Band13Gain, cfg.Band14Gain, cfg.Band15Gain,
 		cfg.Band16Gain, cfg.Band17Gain, cfg.Band18Gain, cfg.Band19Gain, cfg.Band20Gain
 	};
-	//TODO
-	//_equalizer->UpdateEqualizers(bandGains, Spc::SpcSampleRate);
+	
+	_equalizer->UpdateEqualizers(bandGains, cfg.SampleRate);
 	_equalizer->ApplyEqualizer(sampleCount, samples);
 }
 

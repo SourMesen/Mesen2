@@ -5,7 +5,7 @@
 #include "Utilities/VirtualFile.h"
 #include "MesenMovie.h"
 #include "MessageManager.h"
-#include "SNES/ControlManager.h"
+#include "IControlManager.h"
 #include "BaseControlDevice.h"
 #include "Emulator.h"
 #include "EmuSettings.h"
