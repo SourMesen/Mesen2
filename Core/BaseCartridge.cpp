@@ -6,6 +6,7 @@
 #include "IMemoryHandler.h"
 #include "BaseCoprocessor.h"
 #include "MessageManager.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "EmuSettings.h"
 #include "SettingTypes.h"
@@ -57,12 +58,13 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 		}
 
 		cart->_console = console;
+		cart->_emu = console->GetEmulator();
 		cart->_romPath = romFile;
 
 		string fileExt = FolderUtilities::GetExtension(romFile.GetFileName());
 		if(fileExt == ".bs") {
 			cart->_bsxMemPack.reset(new BsxMemoryPack(console, romData, false));
-			if(!FirmwareHelper::LoadBsxFirmware(console, &cart->_prgRom, cart->_prgRomSize)) {
+			if(!FirmwareHelper::LoadBsxFirmware(cart->_emu, &cart->_prgRom, cart->_prgRomSize)) {
 				return nullptr;
 			}
 		} else if(fileExt == ".gb" || fileExt == ".gbc") {
@@ -229,7 +231,7 @@ void BaseCartridge::LoadRom()
 	uint8_t rawSramSize = std::min(_cartInfo.SramSize & 0x0F, 8);
 	_saveRamSize = rawSramSize > 0 ? 1024 * (1 << rawSramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
-	_console->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
+	_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 
 	DisplayCartInfo();
 }
@@ -366,7 +368,7 @@ CartFlags::CartFlags BaseCartridge::GetCartFlags()
 void BaseCartridge::LoadBattery()
 {
 	if(_saveRamSize > 0) {
-		_console->GetBatteryManager()->LoadBattery(".srm", _saveRam, _saveRamSize);
+		_emu->GetBatteryManager()->LoadBattery(".srm", _saveRam, _saveRamSize);
 	} 
 	
 	if(_coprocessor && _hasBattery) {
@@ -381,7 +383,7 @@ void BaseCartridge::LoadBattery()
 void BaseCartridge::SaveBattery()
 {
 	if(_saveRamSize > 0) {
-		_console->GetBatteryManager()->SaveBattery(".srm", _saveRam, _saveRamSize);
+		_emu->GetBatteryManager()->SaveBattery(".srm", _saveRam, _saveRamSize);
 	} 
 	
 	if(_coprocessor && _hasBattery) {
@@ -517,7 +519,7 @@ void BaseCartridge::InitCoprocessor()
 		_coprocessor.reset(new Spc7110(_console, _hasRtc));
 	} else if(_coprocessorType == CoprocessorType::Satellaview) {
 		//Share save file across all .bs files that use the BS-X bios
-		_console->GetBatteryManager()->Initialize("BsxBios");
+		_emu->GetBatteryManager()->Initialize("BsxBios");
 
 		if(!_bsxMemPack) {
 			//Create an empty memory pack if the BIOS was loaded directly (instead of a .bs file)
@@ -577,7 +579,7 @@ void BaseCartridge::MapBsxMemoryPack(MemoryMappings& mm)
 	string code = GetGameCode();
 	if(!_bsxMemPack && code.size() == 4 && code[0] == 'Z' && _cartInfo.DeveloperId == 0x33) {
 		//Game with data pack slot (e.g Sound Novel Tsukuuru, etc.)
-		vector<uint8_t> saveData = _console->GetBatteryManager()->LoadBattery(".bs");
+		vector<uint8_t> saveData = _emu->GetBatteryManager()->LoadBattery(".bs");
 		if(saveData.empty()) {
 			//Make a 1 megabyte flash cartridge by default (use $FF for all bytes)
 			saveData.resize(0x100000, 0xFF);
@@ -603,14 +605,14 @@ void BaseCartridge::ApplyConfigOverrides()
 	string name = GetCartName();
 	if(name == "POWERDRIVE" || name == "DEATH BRADE" || name == "RPG SAILORMOON") {
 		//These games work better when ram is initialized to $FF
-		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		EmulationConfig cfg = _emu->GetSettings()->GetEmulationConfig();
 		cfg.RamPowerOnState = RamState::AllOnes;
-		_console->GetSettings()->SetEmulationConfig(cfg);
+		_emu->GetSettings()->SetEmulationConfig(cfg);
 	} else if(name == "SUPER KEIBA 2") {
 		//Super Keiba 2 behaves incorrectly if save ram is filled with 0s
-		EmulationConfig cfg = _console->GetSettings()->GetEmulationConfig();
+		EmulationConfig cfg = _emu->GetSettings()->GetEmulationConfig();
 		cfg.RamPowerOnState = RamState::Random;
-		_console->GetSettings()->SetEmulationConfig(cfg);
+		_emu->GetSettings()->SetEmulationConfig(cfg);
 	}
 }
 
@@ -622,7 +624,7 @@ void BaseCartridge::LoadSpc()
 
 bool BaseCartridge::LoadGameboy(VirtualFile &romFile, bool sgbEnabled)
 {
-	_gameboy.reset(Gameboy::Create(_console, romFile, sgbEnabled));
+	_gameboy.reset(Gameboy::Create(_emu, romFile, sgbEnabled));
 	if(!_gameboy) {
 		return false;
 	}
@@ -631,8 +633,8 @@ bool BaseCartridge::LoadGameboy(VirtualFile &romFile, bool sgbEnabled)
 	_headerOffset = Gameboy::HeaderOffset;
 
 	if(_gameboy->IsSgb()) {
-		GameboyConfig cfg = _console->GetSettings()->GetGameboyConfig();
-		if(FirmwareHelper::LoadSgbFirmware(_console, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
+		GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
+		if(FirmwareHelper::LoadSgbFirmware(_emu, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
 			LoadRom();
 			if(_coprocessorType != CoprocessorType::SGB) {
 				//SGB bios file isn't a recognized SGB bios, try again without SGB mode

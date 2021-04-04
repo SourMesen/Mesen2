@@ -4,7 +4,7 @@
 #include "DebugBreakHelper.h"
 #include "Debugger.h"
 #include "CpuTypes.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "DebugHud.h"
 
 ScriptManager::ScriptManager(Debugger* debugger)
@@ -49,7 +49,7 @@ void ScriptManager::RemoveScript(int32_t scriptId)
 		if(script->GetScriptId() == scriptId) {
 			//Send a ScriptEnded event before unloading the script
 			script->ProcessEvent(EventType::ScriptEnded);
-			_debugger->GetConsole()->GetDebugHud()->ClearScreen();
+			_debugger->GetEmulator()->GetDebugHud()->ClearScreen();
 			return true;
 		}
 		return false;

@@ -10,6 +10,7 @@
 #include "MemoryManager.h"
 #include "Debugger.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "CodeDataLogger.h"
@@ -26,7 +27,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_cx4 = debugger->GetConsole()->GetCartridge()->GetCx4();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
-	_settings = debugger->GetConsole()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4));
 	_step.reset(new StepRequest());

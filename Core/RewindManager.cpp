@@ -1,30 +1,30 @@
 #include "stdafx.h"
 #include "RewindManager.h"
 #include "MessageManager.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "ControlManager.h"
 #include "VideoRenderer.h"
 #include "SoundMixer.h"
 #include "BaseControlDevice.h"
 
-RewindManager::RewindManager(shared_ptr<Console> console)
+RewindManager::RewindManager(shared_ptr<Emulator> emu)
 {
-	_console = console;
-	_settings = console->GetSettings();
+	_emu = emu;
+	_settings = emu->GetSettings();
 	_rewindState = RewindState::Stopped;
 	_framesToFastForward = 0;
 	_hasHistory = false;
 	AddHistoryBlock();
 
-	_console->GetControlManager()->RegisterInputProvider(this);
-	_console->GetControlManager()->RegisterInputRecorder(this);
+	_emu->GetControlManager()->RegisterInputProvider(this);
+	_emu->GetControlManager()->RegisterInputRecorder(this);
 }
 
 RewindManager::~RewindManager()
 {
-	_console->GetControlManager()->UnregisterInputProvider(this);
-	_console->GetControlManager()->UnregisterInputRecorder(this);
+	_emu->GetControlManager()->UnregisterInputProvider(this);
+	_emu->GetControlManager()->UnregisterInputRecorder(this);
 }
 
 void RewindManager::ClearBuffer()
@@ -44,7 +44,7 @@ void RewindManager::ClearBuffer()
 
 void RewindManager::ProcessNotification(ConsoleNotificationType type, void * parameter)
 {
-	if(_console->IsRunAheadFrame()) {
+	if(_emu->IsRunAheadFrame()) {
 		return;
 	}
 
@@ -103,7 +103,7 @@ void RewindManager::AddHistoryBlock()
 			_history.push_back(_currentHistory);
 		}
 		_currentHistory = RewindData();
-		_currentHistory.SaveState(_console);
+		_currentHistory.SaveState(_emu);
 	}
 }
 
@@ -118,7 +118,7 @@ void RewindManager::PopHistory()
 		}
 
 		_historyBackup.push_front(_currentHistory);
-		_currentHistory.LoadState(_console);
+		_currentHistory.LoadState(_emu);
 		if(!_audioHistoryBuilder.empty()) {
 			_audioHistory.insert(_audioHistory.begin(), _audioHistoryBuilder.begin(), _audioHistoryBuilder.end());
 			_audioHistoryBuilder.clear();
@@ -129,7 +129,7 @@ void RewindManager::PopHistory()
 void RewindManager::Start(bool forDebugger)
 {
 	if(_rewindState == RewindState::Stopped && _settings->GetRewindBufferSize() > 0) {
-		auto lock = _console->AcquireLock();
+		auto lock = _emu->AcquireLock();
 
 		_rewindState = forDebugger ? RewindState::Debugging : RewindState::Starting;
 		_videoHistoryBuilder.clear();
@@ -139,7 +139,7 @@ void RewindManager::Start(bool forDebugger)
 		_historyBackup.clear();
 		
 		PopHistory();
-		_console->GetSoundMixer()->StopAudio(true);
+		_emu->GetSoundMixer()->StopAudio(true);
 		_settings->SetFlag(EmulationFlags::MaximumSpeed);
 		_settings->SetFlag(EmulationFlags::Rewind);
 	}
@@ -163,7 +163,7 @@ void RewindManager::ForceStop()
 void RewindManager::Stop()
 {
 	if(_rewindState >= RewindState::Starting) {
-		auto lock = _console->AcquireLock();
+		auto lock = _emu->AcquireLock();
 		if(_rewindState == RewindState::Started) {
 			//Move back to the save state containing the frame currently shown on the screen
 			if(_historyBackup.size() > 1) {
@@ -188,7 +188,7 @@ void RewindManager::Stop()
 			_framesToFastForward = _historyBackup.front().FrameCount;
 		}
 
-		_currentHistory.LoadState(_console);
+		_currentHistory.LoadState(_emu);
 		if(_framesToFastForward > 0) {
 			_rewindState = RewindState::Stopping;
 			_currentHistory.FrameCount = 0;
@@ -248,14 +248,14 @@ void RewindManager::ProcessFrame(void * frameBuffer, uint32_t width, uint32_t he
 			_settings->ClearFlag(EmulationFlags::MaximumSpeed);
 			if(!_videoHistory.empty()) {
 				VideoFrame &frameData = _videoHistory.back();
-				_console->GetVideoRenderer()->UpdateFrame(frameData.Data.data(), frameData.Width, frameData.Height);
+				_emu->GetVideoRenderer()->UpdateFrame(frameData.Data.data(), frameData.Width, frameData.Height);
 				_videoHistory.pop_back();
 			}
 		}
 	} else if(_rewindState == RewindState::Stopping || _rewindState == RewindState::Debugging) {
 		//Display nothing while resyncing
 	} else {
-		_console->GetVideoRenderer()->UpdateFrame(frameBuffer, width, height);
+		_emu->GetVideoRenderer()->UpdateFrame(frameBuffer, width, height);
 	}
 }
 
@@ -333,7 +333,7 @@ void RewindManager::RewindSeconds(uint32_t seconds)
 {
 	if(_rewindState == RewindState::Stopped) {
 		uint32_t removeCount = (seconds * 60 / RewindManager::BufferSize) + 1;
-		auto lock = _console->AcquireLock();
+		auto lock = _emu->AcquireLock();
 
 		for(uint32_t i = 0; i < removeCount; i++) {
 			if(!_history.empty()) {
@@ -343,7 +343,7 @@ void RewindManager::RewindSeconds(uint32_t seconds)
 				break;
 			}
 		}
-		_currentHistory.LoadState(_console);
+		_currentHistory.LoadState(_emu);
 	}
 }
 

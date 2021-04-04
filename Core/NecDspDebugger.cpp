@@ -9,6 +9,7 @@
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
@@ -20,7 +21,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_dsp = debugger->GetConsole()->GetCartridge()->GetDsp();
-	_settings = debugger->GetConsole()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp));
 	_step.reset(new StepRequest());

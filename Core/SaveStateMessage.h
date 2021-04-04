@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "NetMessage.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "CheatManager.h"
 #include "SaveStateManager.h"
@@ -30,52 +30,52 @@ protected:
 public:
 	SaveStateMessage(void* buffer, uint32_t length) : NetMessage(buffer, length) { }
 	
-	SaveStateMessage(shared_ptr<Console> console) : NetMessage(MessageType::SaveState)
+	SaveStateMessage(shared_ptr<Emulator> emu) : NetMessage(MessageType::SaveState)
 	{
 		//Used when sending state to clients
-		console->Lock();
-		_activeCheats = console->GetCheatManager()->GetCheats();
+		emu->Lock();
+		_activeCheats = emu->GetCheatManager()->GetCheats();
 		stringstream state;
-		console->Serialize(state);
+		emu->Serialize(state);
 
-		EmulationConfig emuCfg = console->GetSettings()->GetEmulationConfig();
+		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
 		_region = emuCfg.Region;
 		_ppuExtraScanlinesAfterNmi = emuCfg.PpuExtraScanlinesAfterNmi;
 		_ppuExtraScanlinesBeforeNmi = emuCfg.PpuExtraScanlinesBeforeNmi;
 		_gsuClockSpeed = emuCfg.GsuClockSpeed;
 
-		InputConfig inputCfg = console->GetSettings()->GetInputConfig();
+		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
 			_controllerTypes[i] = inputCfg.Controllers[i].Type;
 		}
 
-		console->Unlock();
+		emu->Unlock();
 
 		uint32_t dataSize = (uint32_t)state.tellp();
 		_stateData.resize(dataSize);
 		state.read((char*)_stateData.data(), dataSize);
 	}
 	
-	void LoadState(shared_ptr<Console> console)
+	void LoadState(shared_ptr<Emulator> emu)
 	{
 		std::stringstream ss;
 		ss.write((char*)_stateData.data(), _stateData.size());
-		console->Deserialize(ss, SaveStateManager::FileFormatVersion);
+		emu->Deserialize(ss, SaveStateManager::FileFormatVersion);
 
-		console->GetCheatManager()->SetCheats(_activeCheats);
+		emu->GetCheatManager()->SetCheats(_activeCheats);
 
-		EmulationConfig emuCfg = console->GetSettings()->GetEmulationConfig();
+		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
 		emuCfg.Region = _region;
 		emuCfg.PpuExtraScanlinesAfterNmi = _ppuExtraScanlinesAfterNmi;
 		emuCfg.PpuExtraScanlinesBeforeNmi = _ppuExtraScanlinesBeforeNmi;
 		emuCfg.GsuClockSpeed = _gsuClockSpeed;
 
-		InputConfig inputCfg = console->GetSettings()->GetInputConfig();
+		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
 			inputCfg.Controllers[i].Type = _controllerTypes[i];
 		}
 
-		console->GetSettings()->SetEmulationConfig(emuCfg);
-		console->GetSettings()->SetInputConfig(inputCfg);
+		emu->GetSettings()->SetEmulationConfig(emuCfg);
+		emu->GetSettings()->SetInputConfig(inputCfg);
 	}
 };

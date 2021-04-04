@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/EmuSettings.h"
 #include "../Core/VideoDecoder.h"
 #include "../Core/ControlManager.h"
@@ -31,7 +31,7 @@ unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
 unique_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
-shared_ptr<Console> _console;
+shared_ptr<Emulator> _emu;
 
 static void* _windowHandle = nullptr;
 static void* _viewerHandle = nullptr;
@@ -57,20 +57,20 @@ extern "C" {
 		return true;
 	}
 
-	DllExport uint32_t __stdcall GetMesenVersion() { return _console->GetSettings()->GetVersion(); }
+	DllExport uint32_t __stdcall GetMesenVersion() { return _emu->GetSettings()->GetVersion(); }
 
 	DllExport void __stdcall InitDll()
 	{
-		_console.reset(new Console());
-		KeyManager::SetSettings(_console->GetSettings().get());
+		_emu.reset(new Emulator());
+		KeyManager::SetSettings(_emu->GetSettings().get());
 	}
 
 	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool noAudio, bool noVideo, bool noInput)
 	{
-		_console->Initialize();
+		_emu->Initialize();
 
 		FolderUtilities::SetHomeFolder(homeFolder);
-		_shortcutKeyHandler.reset(new ShortcutKeyHandler(_console));
+		_shortcutKeyHandler.reset(new ShortcutKeyHandler(_emu));
 
 		if(windowHandle != nullptr && viewerHandle != nullptr) {
 			_windowHandle = windowHandle;
@@ -78,7 +78,7 @@ extern "C" {
 
 			if(!noVideo) {
 				#ifdef _WIN32
-					_renderer.reset(new Renderer(_console, (HWND)_viewerHandle, true));
+					_renderer.reset(new Renderer(_emu, (HWND)_viewerHandle, true));
 				#else 
 					_renderer.reset(new SdlRenderer(_console, _viewerHandle, true));
 				#endif
@@ -86,7 +86,7 @@ extern "C" {
 
 			if(!noAudio) {
 				#ifdef _WIN32
-					_soundManager.reset(new SoundManager(_console, (HWND)_windowHandle));
+					_soundManager.reset(new SoundManager(_emu, (HWND)_windowHandle));
 				#else
 					_soundManager.reset(new SdlSoundManager(_console));
 				#endif
@@ -94,7 +94,7 @@ extern "C" {
 
 			if(!noInput) {
 				#ifdef _WIN32
-					_keyManager.reset(new WindowsKeyManager(_console, (HWND)_windowHandle));
+					_keyManager.reset(new WindowsKeyManager(_emu, (HWND)_windowHandle));
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_console));
 				#endif				
@@ -114,19 +114,15 @@ extern "C" {
 	DllExport bool __stdcall LoadRom(char* filename, char* patchFile)
 	{
 		GameClient::Disconnect();
-		return _console->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile());
+		return _emu->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile());
 	}
 
 	DllExport void __stdcall AddKnownGameFolder(char* folder) { FolderUtilities::AddKnownGameFolder(folder); }
 
 	DllExport void __stdcall GetRomInfo(InteropRomInfo &info)
 	{
-		RomInfo romInfo = {};
-		string sha1;
-		if(_console->GetCartridge()) {
-			romInfo = _console->GetCartridge()->GetRomInfo();
-			sha1 = _console->GetCartridge()->GetSha1Hash();
-		}
+		RomInfo romInfo = _emu->GetRomInfo();
+		string sha1 = _emu->GetHash(HashType::Sha1);
 
 		_romPath = romInfo.RomFile;
 		_patchPath = romInfo.PatchFile;
@@ -139,7 +135,7 @@ extern "C" {
 		memcpy(info.Sha1, sha1.c_str(), sha1.size());
 	}
 	
-	DllExport void __stdcall TakeScreenshot() { _console->GetVideoDecoder()->TakeScreenshot(); }
+	DllExport void __stdcall TakeScreenshot() { _emu->GetVideoDecoder()->TakeScreenshot(); }
 
 	DllExport const char* __stdcall GetArchiveRomList(char* filename) { 
 		std::ostringstream out;
@@ -155,34 +151,34 @@ extern "C" {
 
 	DllExport bool __stdcall IsRunning()
 	{
-		return _console->IsRunning();
+		return _emu->IsRunning();
 	}
 
 	DllExport void __stdcall Stop()
 	{
 		GameClient::Disconnect();
-		_console->Stop(true);
+		_emu->Stop(true);
 	}
 
 	DllExport void __stdcall Pause()
 	{
 		if(!GameClient::Connected()) {
-			_console->Pause();
+			_emu->Pause();
 		}
 	}
 
 	DllExport void __stdcall Resume()
 	{
 		if(!GameClient::Connected()) {
-			_console->Resume();
+			_emu->Resume();
 		}
 	}
 
 	DllExport bool __stdcall IsPaused()
 	{
-		shared_ptr<Console> console = _console;
-		if(console) {
-			return console->IsPaused();
+		shared_ptr<Emulator> emu = _emu;
+		if(emu) {
+			return emu->IsPaused();
 		}
 		return true;
 	}
@@ -190,21 +186,21 @@ extern "C" {
 	DllExport void __stdcall Reset()
 	{
 		if(!GameClient::Connected()) {
-			_console->GetControlManager()->GetSystemActionManager()->Reset();
+			_emu->GetControlManager()->GetSystemActionManager()->Reset();
 		}
 	}
 
 	DllExport void __stdcall PowerCycle()
 	{
 		if(!GameClient::Connected()) {
-			_console->GetControlManager()->GetSystemActionManager()->PowerCycle();
+			_emu->GetControlManager()->GetSystemActionManager()->PowerCycle();
 		}
 	}
 
 	DllExport void __stdcall ReloadRom()
 	{
 		if(!GameClient::Connected()) {
-			_console->ReloadRom(false);
+			_emu->ReloadRom(false);
 		}
 	}
 
@@ -215,10 +211,10 @@ extern "C" {
 
 		_shortcutKeyHandler.reset();
 		
-		_console->Stop(true);
+		_emu->Stop(true);
 		
-		_console->Release();
-		_console.reset();			
+		_emu->Release();
+		_emu.reset();
 
 		_renderer.reset();
 		_soundManager.reset();
@@ -227,7 +223,7 @@ extern "C" {
 
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
 	{
-		return _listeners.RegisterNotificationCallback(callback, _console);
+		return _listeners.RegisterNotificationCallback(callback, _emu);
 	}
 
 	DllExport void __stdcall UnregisterNotificationCallback(INotificationListener *listener)
@@ -244,20 +240,20 @@ extern "C" {
 
 	DllExport ScreenSize __stdcall GetScreenSize(bool ignoreScale)
 	{
-		return _console->GetVideoDecoder()->GetScreenSize(ignoreScale);
+		return _emu->GetVideoDecoder()->GetScreenSize(ignoreScale);
 	}
 	
-	DllExport void __stdcall ClearCheats() { _console->GetCheatManager()->ClearCheats(); }
-	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _console->GetCheatManager()->SetCheats(codes, length); }
+	DllExport void __stdcall ClearCheats() { _emu->GetCheatManager()->ClearCheats(); }
+	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _emu->GetCheatManager()->SetCheats(codes, length); }
 
 	DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
 
-	DllExport void __stdcall SaveState(uint32_t stateIndex) { _console->GetSaveStateManager()->SaveState(stateIndex); }
-	DllExport void __stdcall LoadState(uint32_t stateIndex) { _console->GetSaveStateManager()->LoadState(stateIndex); }
-	DllExport void __stdcall SaveStateFile(char* filepath) { _console->GetSaveStateManager()->SaveState(filepath); }
-	DllExport void __stdcall LoadStateFile(char* filepath) { _console->GetSaveStateManager()->LoadState(filepath); }
-	DllExport void __stdcall LoadRecentGame(char* filepath, bool resetGame) { _console->GetSaveStateManager()->LoadRecentGame(filepath, resetGame); }
-	DllExport int32_t __stdcall GetSaveStatePreview(char* saveStatePath, uint8_t* pngData) { return _console->GetSaveStateManager()->GetSaveStatePreview(saveStatePath, pngData); }
+	DllExport void __stdcall SaveState(uint32_t stateIndex) { _emu->GetSaveStateManager()->SaveState(stateIndex); }
+	DllExport void __stdcall LoadState(uint32_t stateIndex) { _emu->GetSaveStateManager()->LoadState(stateIndex); }
+	DllExport void __stdcall SaveStateFile(char* filepath) { _emu->GetSaveStateManager()->SaveState(filepath); }
+	DllExport void __stdcall LoadStateFile(char* filepath) { _emu->GetSaveStateManager()->LoadState(filepath); }
+	DllExport void __stdcall LoadRecentGame(char* filepath, bool resetGame) { _emu->GetSaveStateManager()->LoadRecentGame(filepath, resetGame); }
+	DllExport int32_t __stdcall GetSaveStatePreview(char* saveStatePath, uint8_t* pngData) { return _emu->GetSaveStateManager()->GetSaveStatePreview(saveStatePath, pngData); }
 
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
 	{
@@ -266,22 +262,22 @@ extern "C" {
 		for(size_t i = 0; i < testRoms.size(); i++) {
 			std::cout << "Running: " << testRoms[i] << std::endl;
 
-			_console.reset(new Console());
-			KeyManager::SetSettings(_console->GetSettings().get());
-			_console->Initialize();
-			GameboyConfig cfg = _console->GetSettings()->GetGameboyConfig();
+			_emu.reset(new Emulator());
+			KeyManager::SetSettings(_emu->GetSettings().get());
+			_emu->Initialize();
+			GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
 			cfg.Model = GameboyModel::GameboyColor;
-			_console->GetSettings()->SetGameboyConfig(cfg);
-			_console->LoadRom((VirtualFile)testRoms[i], VirtualFile());
+			_emu->GetSettings()->SetGameboyConfig(cfg);
+			_emu->LoadRom((VirtualFile)testRoms[i], VirtualFile());
 
 			if(enableDebugger) {
 				//turn on debugger to profile the debugger's code too
-				_console->GetDebugger();
+				_emu->GetDebugger();
 			}
 				
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
-			_console->Stop(false);
-			_console->Release();
+			_emu->Stop(false);
+			_emu->Release();
 		}
 	}
 }

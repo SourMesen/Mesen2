@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "RegisterHandlerB.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "Ppu.h"
 #include "Spc.h"
@@ -12,7 +13,8 @@
 RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(SnesMemoryType::Register)
 {
 	_console = console;
-	_cheatManager = console->GetCheatManager().get();
+	_emu = console->GetEmulator();
+	_cheatManager = _emu->GetCheatManager().get();
 	_sa1 = console->GetCartridge()->GetSa1();
 	_ppu = ppu;
 	_spc = spc;
@@ -28,8 +30,8 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 		return _spc->CpuReadRegister(addr & 0x03);
 	} else if(addr == 0x2180) {
 		uint8_t value = _workRam[_wramPosition];
-		_console->ProcessWorkRamRead(_wramPosition, value);
-		_console->GetCheatManager()->ApplyCheat(0x7E0000 | _wramPosition, value);
+		_emu->ProcessWorkRamRead(_wramPosition, value);
+		_cheatManager->ApplyCheat(0x7E0000 | _wramPosition, value);
 		_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 		return value;
 	} else if(addr >= 0x2300 && addr <= 0x23FF && _console->GetCartridge()->GetSa1()) {
@@ -61,7 +63,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 	} if(addr >= 0x2180 && addr <= 0x2183) {
 		switch(addr & 0xFFFF) {
 			case 0x2180:
-				_console->ProcessWorkRamWrite(_wramPosition, value);
+				_emu->ProcessWorkRamWrite(_wramPosition, value);
 				_workRam[_wramPosition] = value;
 				_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 				break;

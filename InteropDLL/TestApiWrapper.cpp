@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "../Core/RecordedRomTest.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 
-extern shared_ptr<Console> _console;
+extern shared_ptr<Emulator> _emu;
 shared_ptr<RecordedRomTest> _recordedRomTest;
 
 extern "C"
 {
 	DllExport int32_t __stdcall RunRecordedTest(char* filename, bool inBackground)
 	{
-		shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(inBackground ? nullptr : _console));
+		shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(inBackground ? nullptr : _emu));
 		return romTest->Run(filename);
 	}
 
 	DllExport void __stdcall RomTestRecord(char* filename, bool reset)
 	{
-		_recordedRomTest.reset(new RecordedRomTest(_console));
+		_recordedRomTest.reset(new RecordedRomTest(_emu));
 		_recordedRomTest->Record(filename, reset);
 	}
 	

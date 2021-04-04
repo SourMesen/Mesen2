@@ -3,7 +3,7 @@
 #include "../Utilities/SimpleLock.h"
 #include "SettingTypes.h"
 
-class Console;
+class Emulator;
 
 class BaseVideoFilter
 {
@@ -17,7 +17,7 @@ private:
 	void UpdateBufferSize();
 
 protected:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	FrameInfo _baseFrameInfo;
 
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer) = 0;
@@ -27,7 +27,7 @@ protected:
 	uint32_t ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity);
 
 public:
-	BaseVideoFilter(shared_ptr<Console> console);
+	BaseVideoFilter(shared_ptr<Emulator> emu);
 	virtual ~BaseVideoFilter();
 
 	uint32_t* GetOutputBuffer();

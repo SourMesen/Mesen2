@@ -3,7 +3,7 @@
 #include <deque>
 #include "BaseControlDevice.h"
 
-class Console;
+class Emulator;
 
 class RewindData
 {
@@ -17,6 +17,6 @@ public:
 
 	void GetStateData(stringstream &stateData);
 
-	void LoadState(shared_ptr<Console> &console);
-	void SaveState(shared_ptr<Console> &console);
+	void LoadState(shared_ptr<Emulator> &emu);
+	void SaveState(shared_ptr<Emulator> &emu);
 };

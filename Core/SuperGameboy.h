@@ -4,6 +4,7 @@
 #include "../Utilities/HermiteResampler.h"
 
 class Console;
+class Emulator;
 class MemoryManager;
 class BaseCartridge;
 class Spc;
@@ -14,6 +15,7 @@ class SuperGameboy : public BaseCoprocessor
 {
 private:
 	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 	MemoryManager* _memoryManager = nullptr;
 	BaseCartridge* _cart = nullptr;
 	Spc* _spc = nullptr;

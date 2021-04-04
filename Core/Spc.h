@@ -12,6 +12,7 @@
 #include "../Utilities/ISerializable.h"
 
 class Console;
+class Emulator;
 class MemoryManager;
 class SpcFileData;
 class SPC_DSP;
@@ -28,6 +29,7 @@ private:
 	static constexpr int SampleBufferSize = 0x20000;
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
+	Emulator* _emu;
 	Console* _console;
 	MemoryManager* _memoryManager;
 	unique_ptr<SPC_DSP> _dsp;

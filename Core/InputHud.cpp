@@ -12,15 +12,15 @@
 
 static constexpr int color[2] = { 0x00111111, 0x00FFFFFF };
 
-InputHud::InputHud(Console* console)
+InputHud::InputHud(Emulator* emu)
 {
-	_console = console;
+	_emu = emu;
 }
 
 void InputHud::DrawController(int port, ControlDeviceState state, int x, int y, int frameNumber)
 {
-	
-	SnesController controller(_console, 0, KeyMappingSet());
+	//TODO
+	/*SnesController controller(_console, 0, KeyMappingSet());
 	controller.SetRawState(state);
 
 	shared_ptr<DebugHud> hud = _console->GetDebugHud();
@@ -84,11 +84,13 @@ void InputHud::DrawController(int port, ControlDeviceState state, int x, int y, 
 			hud->DrawPixel(18 + x, 5 + y, color[0], 1, frameNumber);
 			hud->DrawLine(16 + x, 6 + y, 18 + x, 6 + y, color[0], 1, frameNumber);
 			break;
-	}
+	}*/
 }
 
 void InputHud::DrawControllers(OverscanDimensions overscan, int frameNumber)
 {
+	//TODO
+	/*
 	vector<ControllerData> controllerData = _console->GetControlManager()->GetPortStates();
 	InputConfig cfg = _console->GetSettings()->GetInputConfig();
 
@@ -180,5 +182,5 @@ void InputHud::DrawControllers(OverscanDimensions overscan, int frameNumber)
 				yStart += yOffset;
 			}
 		}
-	}
+	}*/
 }

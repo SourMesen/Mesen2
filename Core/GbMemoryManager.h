@@ -11,7 +11,7 @@ class GbTimer;
 class GbDmaController;
 
 class EmuSettings;
-class Console;
+class Emulator;
 class ControlManager;
 
 enum class MemoryOperationType;
@@ -19,7 +19,7 @@ enum class MemoryOperationType;
 class GbMemoryManager : public ISerializable
 {
 private:
-	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 	EmuSettings* _settings = nullptr;
 	ControlManager* _controlManager = nullptr;
 
@@ -42,7 +42,7 @@ public:
 
 	GbMemoryManagerState GetState();
 
-	void Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController);
+	void Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController);
 	void MapRegisters(uint16_t start, uint16_t end, RegisterAccess access);
 	void Map(uint16_t start, uint16_t end, GbMemoryType type, uint32_t offset, bool readonly);
 	void Unmap(uint16_t start, uint16_t end);

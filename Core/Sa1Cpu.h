@@ -4,7 +4,7 @@
 #include "../Utilities/ISerializable.h"
 
 class Sa1;
-class Console;
+class Emulator;
 
 class Sa1Cpu : public ISerializable
 {
@@ -23,7 +23,7 @@ private:
 	static constexpr uint32_t LegacyCoprocessorVector = 0x00FFF4;
 
 	Sa1* _sa1 = nullptr;
-	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 
 	bool _immediateMode = false;
 
@@ -310,7 +310,7 @@ private:
 	void RunOp();
 
 public:
-	Sa1Cpu(Sa1 *sa1, Console* console);
+	Sa1Cpu(Sa1 *sa1, Emulator* emu);
 	virtual ~Sa1Cpu();
 
 	void PowerOn();

@@ -2,9 +2,9 @@
 #include "NtscFilter.h"
 #include "EmuSettings.h"
 #include "SettingTypes.h"
-#include "Console.h"
+#include "Emulator.h"
 
-NtscFilter::NtscFilter(shared_ptr<Console> console) : BaseVideoFilter(console)
+NtscFilter::NtscFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
 {
 	memset(&_ntscData, 0, sizeof(_ntscData));
 	_ntscSetup = { };
@@ -26,7 +26,7 @@ FrameInfo NtscFilter::GetFrameInfo()
 
 void NtscFilter::OnBeforeApplyFilter()
 {
-	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 
 	if(_ntscSetup.hue != cfg.Hue / 100.0 || _ntscSetup.saturation != cfg.Saturation / 100.0 || _ntscSetup.brightness != cfg.Brightness / 100.0 || _ntscSetup.contrast != cfg.Contrast / 100.0 ||
 		_ntscSetup.artifacts != cfg.NtscArtifacts || _ntscSetup.bleed != cfg.NtscBleed || _ntscSetup.fringing != cfg.NtscFringing || _ntscSetup.gamma != cfg.NtscGamma ||
@@ -62,7 +62,7 @@ void NtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	} else {
 		snes_ntsc_blit(&_ntscData, ppuOutputBuffer, 256, IsOddFrame() ? 0 : 1, 256, _baseFrameInfo.Height, _ntscBuffer, SNES_NTSC_OUT_WIDTH(256) * 8);
 	}
-	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 
 	if(cfg.ScanlineIntensity == 0) {
 		for(uint32_t i = 0; i < frameInfo.Height; i+=2) {

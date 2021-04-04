@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "SoundResampler.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "Spc.h"
 #include "EmuSettings.h"
 #include "SoundMixer.h"
 #include "VideoRenderer.h"
 #include "../Utilities/HermiteResampler.h"
 
-SoundResampler::SoundResampler(Console *console)
+SoundResampler::SoundResampler(Emulator* emu)
 {
-	_console = console;
+	_emu = emu;
 }
 
 SoundResampler::~SoundResampler()
@@ -23,14 +23,14 @@ double SoundResampler::GetRateAdjustment()
 
 double SoundResampler::GetTargetRateAdjustment()
 {
-	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
-	bool isRecording = _console->GetSoundMixer()->IsRecording() || _console->GetVideoRenderer()->IsRecording();
+	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
+	bool isRecording = _emu->GetSoundMixer()->IsRecording() || _emu->GetVideoRenderer()->IsRecording();
 	if(!isRecording && !cfg.DisableDynamicSampleRate) {
 		//Don't deviate from selected sample rate while recording
 		//TODO: Have 2 output streams (one for recording, one for the speakers)
-		AudioStatistics stats = _console->GetSoundMixer()->GetStatistics();
+		AudioStatistics stats = _emu->GetSoundMixer()->GetStatistics();
 
-		if(stats.AverageLatency > 0 && _console->GetSettings()->GetEmulationSpeed() == 100) {
+		if(stats.AverageLatency > 0 && _emu->GetSettings()->GetEmulationSpeed() == 100) {
 			//Try to stay within +/- 3ms of requested latency
 			constexpr int32_t maxGap = 3;
 			constexpr int32_t maxSubAdjustment = 3600;
@@ -73,12 +73,12 @@ double SoundResampler::GetTargetRateAdjustment()
 void SoundResampler::UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sampleRate)
 {
 	double spcSampleRate = sourceRate;
-	if(_console->GetSettings()->GetVideoConfig().IntegerFpsMode) {
+	if(_emu->GetSettings()->GetVideoConfig().IntegerFpsMode) {
 		//Adjust sample rate when running at 60.0 fps instead of 60.1
-		switch(_console->GetRegion()) {
+		switch(_emu->GetRegion()) {
 			default:
-			case ConsoleRegion::Ntsc: spcSampleRate = sourceRate * (60.0 / _console->GetFps()); break;
-			case ConsoleRegion::Pal: spcSampleRate = sourceRate * (50.0 / _console->GetFps()); break;
+			case ConsoleRegion::Ntsc: spcSampleRate = sourceRate * (60.0 / _emu->GetFps()); break;
+			case ConsoleRegion::Pal: spcSampleRate = sourceRate * (50.0 / _emu->GetFps()); break;
 		}
 	}
 

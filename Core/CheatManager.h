@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-class Console;
+class Emulator;
 
 struct CheatCode
 {
@@ -12,7 +12,7 @@ struct CheatCode
 class CheatManager
 {
 private:
-	Console* _console;
+	Emulator* _emu;
 	bool _hasCheats = false;
 	bool _bankHasCheats[0x100] = {};
 	vector<CheatCode> _cheats;
@@ -21,7 +21,7 @@ private:
 	void AddCheat(CheatCode code);
 
 public:
-	CheatManager(Console* console);
+	CheatManager(Emulator* emu);
 
 	void AddStringCheat(string code);
 

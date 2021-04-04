@@ -5,17 +5,17 @@
 #include "../Core/GameClient.h"
 #include "../Core/EmuSettings.h"
 
-extern shared_ptr<Console> _console;
+extern shared_ptr<Emulator> _emu;
 
 extern "C" {
-	DllExport void __stdcall StartServer(uint16_t port, char* password, char* hostPlayerName) { GameServer::StartServer(_console, port, password, hostPlayerName); }
+	DllExport void __stdcall StartServer(uint16_t port, char* password, char* hostPlayerName) { GameServer::StartServer(_emu, port, password, hostPlayerName); }
 	DllExport void __stdcall StopServer() { GameServer::StopServer(); }
 	DllExport bool __stdcall IsServerRunning() { return GameServer::Started(); }
 
 	DllExport void __stdcall Connect(char* host, uint16_t port, char* password, char* playerName, bool spectator)
 	{
 		ClientConnectionData connectionData(host, port, password, playerName, spectator);
-		GameClient::Connect(_console, connectionData);
+		GameClient::Connect(_emu, connectionData);
 	}
 
 	DllExport void __stdcall Disconnect() { GameClient::Disconnect(); }

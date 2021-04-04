@@ -3,7 +3,7 @@
 #include <dinput.h>
 #include "../Utilities/SimpleLock.h"
 
-class Console;
+class Emulator;
 
 struct DirectInputData
 {
@@ -18,7 +18,7 @@ class DirectInputManager
 {
 private:
 	static HWND _hWnd;
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	bool _needToUpdate = false;
 	bool _requestUpdate = false;
 	static LPDIRECTINPUT8 _directInput;
@@ -36,7 +36,7 @@ private:
 	static int __stdcall EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, void* pContext);
 
 public:
-	DirectInputManager(shared_ptr<Console> console, HWND window);
+	DirectInputManager(shared_ptr<Emulator> emu, HWND window);
 	~DirectInputManager();
 
 	void RefreshState();

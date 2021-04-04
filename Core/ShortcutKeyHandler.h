@@ -4,12 +4,12 @@
 #include "../Utilities/Timer.h"
 #include "SettingTypes.h"
 
-class Console;
+class Emulator;
 
 class ShortcutKeyHandler
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 
 	thread _thread;
 	atomic<bool> _stopThread;
@@ -38,7 +38,7 @@ private:
 	void ProcessRunSingleFrame();
 
 public:
-	ShortcutKeyHandler(shared_ptr<Console> console);
+	ShortcutKeyHandler(shared_ptr<Emulator> emu);
 	~ShortcutKeyHandler();
 
 	void ProcessKeys();

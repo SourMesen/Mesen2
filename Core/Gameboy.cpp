@@ -19,7 +19,7 @@
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/Serializer.h"
 
-Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile, bool sgbEnabled)
+Gameboy* Gameboy::Create(Emulator* emu, VirtualFile &romFile, bool sgbEnabled)
 {
 	vector<uint8_t> romData;
 	romFile.ReadFile(romData);
@@ -48,16 +48,16 @@ Gameboy* Gameboy::Create(Console* console, VirtualFile &romFile, bool sgbEnabled
 
 	if(cart) {
 		Gameboy* gb = new Gameboy();
-		gb->Init(console, cart, romData, header, sgbEnabled);
+		gb->Init(emu, cart, romData, header, sgbEnabled);
 		return gb;
 	}
 
 	return nullptr;
 }
 
-void Gameboy::Init(Console* console, GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled)
+void Gameboy::Init(Emulator* emu, GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled)
 {
-	_console = console;
+	_emu = emu;
 	_cart.reset(cart);
 
 	_prgRomSize = (uint32_t)romData.size();
@@ -68,7 +68,7 @@ void Gameboy::Init(Console* console, GbCart* cart, std::vector<uint8_t>& romData
 	_cartRam = new uint8_t[_cartRamSize];
 	_hasBattery = header.HasBattery();
 
-	shared_ptr<EmuSettings> settings = console->GetSettings();
+	shared_ptr<EmuSettings> settings = emu->GetSettings();
 	GameboyConfig cfg = settings->GetGameboyConfig();
 	GameboyModel model = cfg.Model;
 	if(model == GameboyModel::Auto) {
@@ -105,7 +105,7 @@ void Gameboy::Init(Console* console, GbCart* cart, std::vector<uint8_t>& romData
 	}
 
 	_bootRomSize = cgbMode ? 9 * 256 : 256;
-	if(!FirmwareHelper::LoadGbBootRom(console, &_bootRom, type)) {
+	if(!FirmwareHelper::LoadGbBootRom(_emu, &_bootRom, type)) {
 		switch(_model) {
 			default:
 			case GameboyModel::Gameboy:
@@ -169,11 +169,11 @@ void Gameboy::PowerOn(SuperGameboy* superGameboy)
 	_superGameboy = superGameboy;
 
 	_timer->Init(_memoryManager.get(), _apu.get());
-	_apu->Init(_console, this);
+	_apu->Init(_emu, this);
 	_cart->Init(this, _memoryManager.get());
-	_memoryManager->Init(_console, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get(), _dmaController.get());
-	_cpu->Init(_console, this, _memoryManager.get());
-	_ppu->Init(_console, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
+	_memoryManager->Init(_emu, this, _cart.get(), _ppu.get(), _apu.get(), _timer.get(), _dmaController.get());
+	_cpu->Init(_emu, this, _memoryManager.get());
+	_ppu->Init(_emu, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
 	_dmaController->Init(_memoryManager.get(), _ppu.get(), _cpu.get());
 }
 
@@ -192,14 +192,14 @@ void Gameboy::Run(uint64_t runUntilClock)
 void Gameboy::LoadBattery()
 {
 	if(_hasBattery) {
-		_console->GetBatteryManager()->LoadBattery(".srm", _cartRam, _cartRamSize);
+		_emu->GetBatteryManager()->LoadBattery(".srm", _cartRam, _cartRamSize);
 	}
 }
 
 void Gameboy::SaveBattery()
 {
 	if(_hasBattery) {
-		_console->GetBatteryManager()->SaveBattery(".srm", _cartRam, _cartRamSize);
+		_emu->GetBatteryManager()->SaveBattery(".srm", _cartRam, _cartRamSize);
 	}
 }
 

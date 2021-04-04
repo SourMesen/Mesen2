@@ -5,6 +5,7 @@
 #include "EmuSettings.h"
 #include "BaseCartridge.h"
 #include "Spc.h"
+#include "Emulator.h"
 #include "Gameboy.h"
 #include "GbApu.h"
 #include "GbPpu.h"
@@ -17,6 +18,7 @@ SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::R
 	_mixBuffer = new int16_t[0x10000];
 
 	_console = console;
+	_emu = console->GetEmulator();
 	_memoryManager = console->GetMemoryManager().get();
 	_cart = _console->GetCartridge().get();
 	_spc = _console->GetSpc().get();
@@ -156,7 +158,7 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 				_packetReady = true;
 				_listeningForPacket = false;
 
-				if(_console->IsDebugging()) {
+				if(_emu->IsDebugging()) {
 					LogPacket();
 				}
 			} else {
@@ -231,7 +233,7 @@ void SuperGameboy::LogPacket()
 	for(int i = 0; i < 16; i++) {
 		log += HexUtilities::ToHex(_packetData[i]) + " ";
 	}
-	_console->DebugLog(log);
+	_emu->DebugLog(log);
 }
 
 void SuperGameboy::WriteLcdColor(uint8_t scanline, uint8_t pixel, uint8_t color)
@@ -301,7 +303,7 @@ void SuperGameboy::Run()
 
 void SuperGameboy::UpdateClockRatio()
 {
-	bool isSgb2 = _console->GetSettings()->GetGameboyConfig().UseSgb2;
+	bool isSgb2 = _emu->GetSettings()->GetGameboyConfig().UseSgb2;
 	uint32_t masterRate = isSgb2 ? 20971520 : _console->GetMasterClockRate();
 	uint8_t divider = 5;
 

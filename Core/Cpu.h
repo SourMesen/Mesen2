@@ -13,6 +13,7 @@ class MemoryMappings;
 class MemoryManager;
 class DmaController;
 class Console;
+class Emulator;
 
 class Cpu : public ISerializable
 {
@@ -32,6 +33,7 @@ private:
 	
 	MemoryManager *_memoryManager = nullptr;
 	DmaController *_dmaController = nullptr;
+	Emulator *_emu = nullptr;
 	Console *_console = nullptr;
 
 	bool _immediateMode = false;

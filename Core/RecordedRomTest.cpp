@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "RecordedRomTest.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
 #include "Ppu.h"
@@ -15,13 +15,13 @@
 #include "../Utilities/ZipReader.h"
 #include "../Utilities/ArchiveReader.h"
 
-RecordedRomTest::RecordedRomTest(shared_ptr<Console> console)
+RecordedRomTest::RecordedRomTest(shared_ptr<Emulator> emu)
 {
-	if(console) {
-		_console = console;
+	if(emu) {
+		_emu = emu;
 	} else {
-		_console.reset(new Console());
-		_console->Initialize();
+		_emu.reset(new Emulator());
+		_emu->Initialize();
 	}
 	Reset();
 }
@@ -33,13 +33,10 @@ RecordedRomTest::~RecordedRomTest()
 
 void RecordedRomTest::SaveFrame()
 {
-	bool highRes = _ppu->IsHighResOutput();
-	uint16_t width = highRes ? 512 : 256;
-	uint16_t height = highRes ? 478 : 239;
-	uint16_t* ppuFrameBuffer = _ppu->GetScreenBuffer();
+	PpuFrameInfo frame = _emu->GetPpuFrame();
 
 	uint8_t md5Hash[16];
-	GetMd5Sum(md5Hash, ppuFrameBuffer, width*height*sizeof(uint16_t));
+	GetMd5Sum(md5Hash, frame.FrameBuffer, frame.Width * frame.Height * sizeof(uint16_t));
 
 	if(memcmp(_previousHash, md5Hash, 16) == 0 && _currentCount < 255) {
 		_currentCount++;
@@ -122,42 +119,41 @@ void RecordedRomTest::Reset()
 
 void RecordedRomTest::Record(string filename, bool reset)
 {
-	_console->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
+	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 	_filename = filename;
 
 	string mrtFilename = FolderUtilities::CombinePath(FolderUtilities::GetFolderName(filename), FolderUtilities::GetFilename(filename, false) + ".mrt");
 	_file.open(mrtFilename, ios::out | ios::binary);
 
 	if(_file) {
-		_console->Lock();
+		_emu->Lock();
 		Reset();
 
-		VideoConfig videoCfg = _console->GetSettings()->GetVideoConfig();
+		VideoConfig videoCfg = _emu->GetSettings()->GetVideoConfig();
 		videoCfg.DisableFrameSkipping = true;
-		_console->GetSettings()->SetVideoConfig(videoCfg);
+		_emu->GetSettings()->SetVideoConfig(videoCfg);
 
-		EmulationConfig emuCfg = _console->GetSettings()->GetEmulationConfig();
+		EmulationConfig emuCfg = _emu->GetSettings()->GetEmulationConfig();
 		emuCfg.RamPowerOnState = RamState::AllZeros;
-		_console->GetSettings()->SetEmulationConfig(emuCfg);
+		_emu->GetSettings()->SetEmulationConfig(emuCfg);
 				
 		//Start recording movie alongside with screenshots
 		RecordMovieOptions options;
 		string movieFilename = FolderUtilities::CombinePath(FolderUtilities::GetFolderName(filename), FolderUtilities::GetFilename(filename, false) + ".mmo");
 		memcpy(options.Filename, movieFilename.c_str(), std::max(1000, (int)movieFilename.size()));
 		options.RecordFrom = reset ? RecordMovieFrom::StartWithSaveData : RecordMovieFrom::CurrentState;
-		_console->GetMovieManager()->Record(options);
+		_emu->GetMovieManager()->Record(options);
 
-		_ppu = _console->GetPpu().get();
 		_recording = true;
-		_console->Unlock();
+		_emu->Unlock();
 	}
 }
 
 int32_t RecordedRomTest::Run(string filename)
 {
-	_console->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
+	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 
-	EmuSettings* settings = _console->GetSettings().get();
+	EmuSettings* settings = _emu->GetSettings().get();
 	string testName = FolderUtilities::GetFilename(filename, false);
 	
 	VirtualFile testMovie(filename, "TestMovie.msm");
@@ -199,26 +195,24 @@ int32_t RecordedRomTest::Run(string filename)
 		cfg.DisableFrameSkipping = true;
 		settings->SetVideoConfig(cfg);
 
-		EmulationConfig emuCfg = _console->GetSettings()->GetEmulationConfig();
+		EmulationConfig emuCfg = _emu->GetSettings()->GetEmulationConfig();
 		emuCfg.RamPowerOnState = RamState::AllZeros;
-		_console->GetSettings()->SetEmulationConfig(emuCfg);
+		_emu->GetSettings()->SetEmulationConfig(emuCfg);
 
-		_console->Lock();
+		_emu->Lock();
 		//Start playing movie
-		if(_console->LoadRom(testRom, VirtualFile(""))) {
+		if(_emu->LoadRom(testRom, VirtualFile(""))) {
 			settings->SetFlag(EmulationFlags::MaximumSpeed);
-			_console->GetMovieManager()->Play(testMovie, true);
+			_emu->GetMovieManager()->Play(testMovie, true);
 
-			_ppu = _console->GetPpu().get();
-			
 			_runningTest = true;
-			_console->Unlock();
+			_emu->Unlock();
 			_signal.Wait();
-			_console->Stop(false);
+			_emu->Stop(false);
 			_runningTest = false;
 		} else {
 			//Something went wrong when loading the rom
-			_console->Unlock();
+			_emu->Unlock();
 			return -2;
 		}
 
@@ -246,7 +240,7 @@ void RecordedRomTest::Save()
 	_recording = false;
 
 	//Stop playing/recording the movie
-	_console->GetMovieManager()->Stop();
+	_emu->GetMovieManager()->Stop();
 
 	_file.write("MRT", 3);
 
@@ -271,7 +265,7 @@ void RecordedRomTest::Save()
 	writer.AddFile(mmoFilename, "TestMovie.msm");
 	std::remove(mmoFilename.c_str());
 
-	writer.AddFile(_console->GetCartridge()->GetRomInfo().RomFile.GetFilePath(), "TestRom.sfc");
+	writer.AddFile(_emu->GetRomInfo().RomFile.GetFilePath(), "TestRom.sfc");
 	
 	writer.Save();
 

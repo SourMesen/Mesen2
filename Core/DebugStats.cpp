@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "DebugStats.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "SoundMixer.h"
 #include "EmuSettings.h"
 #include "DebugHud.h"
 #include "IAudioDevice.h"
 
-void DebugStats::DisplayStats(Console *console, double lastFrameTime)
+void DebugStats::DisplayStats(Emulator *emu, double lastFrameTime)
 {
-	AudioStatistics stats = console->GetSoundMixer()->GetStatistics();
-	AudioConfig audioCfg = console->GetSettings()->GetAudioConfig();
-	shared_ptr<DebugHud> hud = console->GetDebugHud();
+	AudioStatistics stats = emu->GetSoundMixer()->GetStatistics();
+	AudioConfig audioCfg = emu->GetSettings()->GetAudioConfig();
+	shared_ptr<DebugHud> hud = emu->GetDebugHud();
 
 	_frameDurations[_frameDurationIndex] = lastFrameTime;
 	_frameDurationIndex = (_frameDurationIndex + 1) % 60;
 
-	int startFrame = console->GetFrameCount();
+	int startFrame = emu->GetFrameCount();
 
 	hud->DrawRectangle(8, 8, 115, 49, 0x40000000, true, 1, startFrame);
 	hud->DrawRectangle(8, 8, 115, 49, 0xFFFFFF, false, 1, startFrame);
@@ -30,7 +30,7 @@ void DebugStats::DisplayStats(Console *console, double lastFrameTime)
 
 	hud->DrawString(10, 30, "Underruns: " + std::to_string(stats.BufferUnderrunEventCount), 0xFFFFFF, 0xFF000000, 1, startFrame);
 	hud->DrawString(10, 39, "Buffer Size: " + std::to_string(stats.BufferSize / 1024) + "kb", 0xFFFFFF, 0xFF000000, 1, startFrame);
-	hud->DrawString(10, 48, "Rate: " + std::to_string((uint32_t)(audioCfg.SampleRate *  console->GetSoundMixer()->GetRateAdjustment())) + "Hz", 0xFFFFFF, 0xFF000000, 1, startFrame);
+	hud->DrawString(10, 48, "Rate: " + std::to_string((uint32_t)(audioCfg.SampleRate * emu->GetSoundMixer()->GetRateAdjustment())) + "Hz", 0xFFFFFF, 0xFF000000, 1, startFrame);
 
 	hud->DrawRectangle(132, 8, 115, 49, 0x40000000, true, 1, startFrame);
 	hud->DrawRectangle(132, 8, 115, 49, 0xFFFFFF, false, 1, startFrame);
@@ -49,7 +49,7 @@ void DebugStats::DisplayStats(Console *console, double lastFrameTime)
 	ss << "Last Frame: " << std::fixed << std::setprecision(2) << lastFrameTime << " ms";
 	hud->DrawString(134, 30, ss.str(), 0xFFFFFF, 0xFF000000, 1, startFrame);
 
-	if(console->GetFrameCount() > 60) {
+	if(emu->GetFrameCount() > 60) {
 		_lastFrameMin = std::min(lastFrameTime, _lastFrameMin);
 		_lastFrameMax = std::max(lastFrameTime, _lastFrameMax);
 	} else {

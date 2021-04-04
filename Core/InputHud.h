@@ -3,17 +3,17 @@
 #include "SettingTypes.h"
 #include "ControlDeviceState.h"
 
-class Console;
+class Emulator;
 
 class InputHud
 {
 private:
-	Console* _console;
+	Emulator* _emu;
 
 	void DrawController(int port, ControlDeviceState state, int x, int y, int frameNumber);
 
 public:
-	InputHud(Console *console);
+	InputHud(Emulator *emu);
 
 	void DrawControllers(OverscanDimensions overscan, int frameNumber);
 };

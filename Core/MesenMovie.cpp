@@ -7,7 +7,7 @@
 #include "MessageManager.h"
 #include "ControlManager.h"
 #include "BaseControlDevice.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "SaveStateManager.h"
 #include "MovieTypes.h"
@@ -16,9 +16,9 @@
 #include "BatteryManager.h"
 #include "CheatManager.h"
 
-MesenMovie::MesenMovie(shared_ptr<Console> console, bool forTest)
+MesenMovie::MesenMovie(shared_ptr<Emulator> emu, bool forTest)
 {
-	_console = console;
+	_emu = emu;
 	_forTest = forTest;
 }
 
@@ -34,20 +34,20 @@ void MesenMovie::Stop()
 			MessageManager::DisplayMessage("Movies", "MovieEnded");
 		}
 
-		if(_console->GetSettings()->GetPreferences().PauseOnMovieEnd) {
-			_console->Pause();
+		if(_emu->GetSettings()->GetPreferences().PauseOnMovieEnd) {
+			_emu->Pause();
 		}
 
-		_console->GetCheatManager()->SetCheats(_originalCheats);
+		_emu->GetCheatManager()->SetCheats(_originalCheats);
 
 		_playing = false;
 	}
-	_console->GetControlManager()->UnregisterInputProvider(this);
+	_emu->GetControlManager()->UnregisterInputProvider(this);
 }
 
 bool MesenMovie::SetInput(BaseControlDevice *device)
 {
-	uint32_t inputRowIndex = _console->GetControlManager()->GetPollCounter();
+	uint32_t inputRowIndex = _emu->GetControlManager()->GetPollCounter();
 	_lastPollCounter = inputRowIndex;
 
 	if(_inputData.size() > inputRowIndex && _inputData[inputRowIndex].size() > _deviceIndex) {
@@ -59,7 +59,7 @@ bool MesenMovie::SetInput(BaseControlDevice *device)
 			_deviceIndex = 0;
 		}
 	} else {
-		_console->GetMovieManager()->Stop();
+		_emu->GetMovieManager()->Stop();
 	}
 	return true;
 }
@@ -79,8 +79,8 @@ vector<uint8_t> MesenMovie::LoadBattery(string extension)
 void MesenMovie::ProcessNotification(ConsoleNotificationType type, void* parameter)
 {
 	if(type == ConsoleNotificationType::GameLoaded) {
-		_console->GetControlManager()->RegisterInputProvider(this);
-		_console->GetControlManager()->SetPollCounter(_lastPollCounter);
+		_emu->GetControlManager()->RegisterInputProvider(this);
+		_emu->GetControlManager()->SetPollCounter(_lastPollCounter);
 	}
 }
 
@@ -116,10 +116,10 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	ParseSettings(settingsData);
 	
-	_console->Lock();
+	_emu->Lock();
 		
-	_console->GetBatteryManager()->SetBatteryProvider(shared_from_this());
-	_console->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
+	_emu->GetBatteryManager()->SetBatteryProvider(shared_from_this());
+	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 	ApplySettings();
 
 	//TODO
@@ -127,7 +127,7 @@ bool MesenMovie::Play(VirtualFile &file)
 	//bool autoConfigureInput = _console->GetSettings()->CheckFlag(EmulationFlags::AutoConfigureInput);
 	//_console->GetSettings()->ClearFlags(EmulationFlags::AutoConfigureInput);
 
-	ControlManager *controlManager = _console->GetControlManager().get();
+	ControlManager *controlManager = _emu->GetControlManager().get();
 	if(controlManager) {
 		//ControlManager can be empty if no game is loaded
 		controlManager->SetPollCounter(0);
@@ -142,11 +142,11 @@ bool MesenMovie::Play(VirtualFile &file)
 		return false;
 	}*/
 
-	_originalCheats = _console->GetCheatManager()->GetCheats();
+	_originalCheats = _emu->GetCheatManager()->GetCheats();
 
 	controlManager->UpdateControlDevices();
 	if(!_forTest) {
-		_console->PowerCycle();
+		_emu->PowerCycle();
 	} else {
 		controlManager->RegisterInputProvider(this);
 	}
@@ -155,17 +155,17 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	stringstream saveStateData;
 	if(_reader->GetStream("SaveState.mss", saveStateData)) {
-		if(!_console->GetSaveStateManager()->LoadState(saveStateData, true)) {
-			_console->Resume();
+		if(!_emu->GetSaveStateManager()->LoadState(saveStateData, true)) {
+			_emu->Resume();
 			return false;
 		} else {
-			_console->GetControlManager()->SetPollCounter(0);
+			_emu->GetControlManager()->SetPollCounter(0);
 		}
 	}
 
 	_playing = true;
 
-	_console->Unlock();
+	_emu->Unlock();
 
 	return true;
 }
@@ -238,7 +238,7 @@ bool MesenMovie::LoadGame()
 
 void MesenMovie::ApplySettings()
 {
-	EmuSettings* settings = _console->GetSettings().get();
+	EmuSettings* settings = _emu->GetSettings().get();
 	EmulationConfig emuConfig = settings->GetEmulationConfig();
 	InputConfig inputConfig = settings->GetInputConfig();
 
@@ -311,7 +311,7 @@ void MesenMovie::LoadCheats()
 			cheats.push_back(code);
 		}
 	}
-	_console->GetCheatManager()->SetCheats(cheats);
+	_emu->GetCheatManager()->SetCheats(cheats);
 }
 
 bool MesenMovie::LoadCheat(string cheatData, CheatCode &code)

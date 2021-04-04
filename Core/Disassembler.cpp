@@ -42,7 +42,7 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 	_cx4 = cart->GetCx4();
 	_necDsp = cart->GetDsp();
 	_gameboy = cart->GetGameboy();
-	_settings = console->GetSettings().get();
+	_settings = console->GetEmulator()->GetSettings().get();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_memoryManager = console->GetMemoryManager().get();
 

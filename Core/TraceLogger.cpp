@@ -4,6 +4,7 @@
 #include "TraceLogger.h"
 #include "DisassemblyInfo.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "Debugger.h"
 #include "MemoryManager.h"
@@ -19,7 +20,7 @@ string TraceLogger::_executionTrace = "";
 TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
 {
 	_console = console.get();
-	_settings = console->GetSettings().get();
+	_settings = console->GetEmulator()->GetSettings().get();
 	_labelManager = debugger->GetLabelManager().get();
 	_memoryDumper = debugger->GetMemoryDumper().get();
 	_options = {};

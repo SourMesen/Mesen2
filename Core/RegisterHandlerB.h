@@ -4,6 +4,7 @@
 #include "../Utilities/ISerializable.h"
 
 class Console;
+class Emulator;
 class Ppu;
 class Spc;
 class Sa1;
@@ -13,6 +14,7 @@ class CheatManager;
 class RegisterHandlerB : public IMemoryHandler, public ISerializable
 {
 private:
+	Emulator* _emu;
 	Console *_console;
 	CheatManager *_cheatManager;
 	Ppu *_ppu;

@@ -3,7 +3,7 @@
 #include "BaseVideoFilter.h"
 #include "../Utilities/snes_ntsc.h"
 
-class Console;
+class Emulator;
 
 class NtscFilter : public BaseVideoFilter
 {
@@ -16,7 +16,7 @@ protected:
 	void OnBeforeApplyFilter();
 
 public:
-	NtscFilter(shared_ptr<Console> console);
+	NtscFilter(shared_ptr<Emulator> emu);
 	virtual ~NtscFilter();
 
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer);

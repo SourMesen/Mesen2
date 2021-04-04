@@ -9,12 +9,12 @@ class ScaleFilter;
 //class RotateFilter;
 class IRenderingDevice;
 class InputHud;
-class Console;
+class Emulator;
 
 class VideoDecoder
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 
 	uint16_t *_ppuOutputBuffer = nullptr;
 	uint32_t _frameNumber = 0;
@@ -43,7 +43,7 @@ private:
 	void DecodeThread();
 
 public:
-	VideoDecoder(shared_ptr<Console> console);
+	VideoDecoder(shared_ptr<Emulator> console);
 	~VideoDecoder();
 
 	void DecodeFrame(bool synchronous = false);

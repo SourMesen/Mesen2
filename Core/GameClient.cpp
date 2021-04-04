@@ -4,7 +4,7 @@ using std::thread;
 
 #include "MessageManager.h"
 #include "GameClient.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "NotificationManager.h"
 #include "../Utilities/Socket.h"
 #include "ClientConnectionData.h"
@@ -12,9 +12,9 @@ using std::thread;
 
 shared_ptr<GameClient> GameClient::_instance;
 
-GameClient::GameClient(shared_ptr<Console> console)
+GameClient::GameClient(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 	_stop = false;
 }
 
@@ -32,10 +32,10 @@ bool GameClient::Connected()
 	return instance ? instance->_connected : false;
 }
 
-void GameClient::Connect(shared_ptr<Console> console, ClientConnectionData &connectionData)
+void GameClient::Connect(shared_ptr<Emulator> emu, ClientConnectionData &connectionData)
 {
-	_instance.reset(new GameClient(console));
-	console->GetNotificationManager()->RegisterNotificationListener(_instance);
+	_instance.reset(new GameClient(emu));
+	emu->GetNotificationManager()->RegisterNotificationListener(_instance);
 	
 	shared_ptr<GameClient> instance = _instance;
 	if(instance) {
@@ -60,8 +60,8 @@ void GameClient::PrivateConnect(ClientConnectionData &connectionData)
 	_stop = false;
 	shared_ptr<Socket> socket(new Socket());
 	if(socket->Connect(connectionData.Host.c_str(), connectionData.Port)) {
-		_connection.reset(new GameClientConnection(_console, socket, connectionData));
-		_console->GetNotificationManager()->RegisterNotificationListener(_connection);
+		_connection.reset(new GameClientConnection(_emu, socket, connectionData));
+		_emu->GetNotificationManager()->RegisterNotificationListener(_connection);
 		_connected = true;
 	} else {
 		MessageManager::DisplayMessage("NetPlay", "CouldNotConnect");
@@ -91,7 +91,7 @@ void GameClient::ProcessNotification(ConsoleNotificationType type, void* paramet
 {
 	if(type == ConsoleNotificationType::GameLoaded &&
 		std::this_thread::get_id() != _clientThread->get_id() && 
-		std::this_thread::get_id() != _console->GetEmulationThreadId()
+		std::this_thread::get_id() != _emu->GetEmulationThreadId()
 	) {
 		//Disconnect if the client tried to manually load a game
 		//A deadlock occurs if this is called from the emulation thread while a network message is being processed

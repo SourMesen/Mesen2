@@ -10,7 +10,7 @@
 #include "DirectInputManager.h"
 #include <algorithm>
 #include "../Core/MessageManager.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/EmuSettings.h"
 
 LPDIRECTINPUT8 DirectInputManager::_directInput = nullptr;
@@ -354,7 +354,7 @@ bool DirectInputManager::IsPressed(int port, int button)
 
 	DIJOYSTATE2& state = _joysticks[port].state;
 	DIJOYSTATE2& defaultState = _joysticks[port].defaultState;
-	int deadRange = (int)(500 * _console->GetSettings()->GetControllerDeadzoneRatio());
+	int deadRange = (int)(500 * _emu->GetSettings()->GetControllerDeadzoneRatio());
 
 	int povDirection = state.rgdwPOV[0] / 4500;
 	bool povCentered = (LOWORD(state.rgdwPOV[0]) == 0xFFFF) || povDirection >= 8;
@@ -419,9 +419,9 @@ void DirectInputManager::UpdateInputState(DirectInputData &data)
 }
 
 
-DirectInputManager::DirectInputManager(shared_ptr<Console> console, HWND hWnd)
+DirectInputManager::DirectInputManager(shared_ptr<Emulator> emu, HWND hWnd)
 {
-	_console = console;
+	_emu = emu;
 	_hWnd = hWnd;
 	Initialize();
 }

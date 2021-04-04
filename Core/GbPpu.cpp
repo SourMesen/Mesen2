@@ -2,6 +2,7 @@
 #include "GbPpu.h"
 #include "GbTypes.h"
 #include "EventType.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "EmuSettings.h"
 #include "Gameboy.h"
@@ -17,9 +18,9 @@
 
 constexpr uint16_t evtColors[6] = { 0x18C6, 0x294A, 0x108C, 0x4210, 0x3084, 0x1184 };
 
-void GbPpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam)
+void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam)
 {
-	_console = console;
+	_emu = emu;
 	_gameboy = gameboy;
 	_memoryManager = memoryManager;
 	_dmaController = dmaController;
@@ -188,8 +189,8 @@ void GbPpu::ProcessVblankScanline()
 				_state.Ly = 0;
 				_state.LyForCompare = 0;
 
-				if(_console->IsDebugging()) {
-					_console->ProcessEvent(EventType::GbStartFrame);
+				if(_emu->IsDebugging()) {
+					_emu->ProcessEvent(EventType::GbStartFrame);
 					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 				}
 			} else {
@@ -301,8 +302,8 @@ void GbPpu::ProcessVisibleScanline()
 
 void GbPpu::ProcessPpuCycle()
 {
-	if(_console->IsDebugging()) {
-		_console->ProcessPpuCycle<CpuType::Gameboy>();
+	if(_emu->IsDebugging()) {
+		_emu->ProcessPpuCycle<CpuType::Gameboy>();
 		if(_state.Mode <= PpuMode::OamEvaluation) {
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = evtColors[(int)_state.Mode];
 		} else if(_prevDrawnPixels != _drawnPixels && _drawnPixels > 0) {
@@ -621,7 +622,7 @@ PpuMode GbPpu::GetMode()
 
 void GbPpu::SendFrame()
 {
-	_console->ProcessEvent(EventType::GbEndFrame);
+	_emu->ProcessEvent(EventType::GbEndFrame);
 	_state.FrameCount++;
 
 	if(_gameboy->IsSgb()) {
@@ -630,7 +631,7 @@ void GbPpu::SendFrame()
 
 	UpdatePalette();
 
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	if(_isFirstFrame) {
 		if(!_state.CgbEnabled) {
@@ -645,18 +646,19 @@ void GbPpu::SendFrame()
 	_isFirstFrame = false;
 
 #ifdef LIBRETRO
-	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, false);
+	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, false);
 #else
-	if(_console->GetRewindManager()->IsRewinding()) {
-		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, true);
+	if(_emu->GetRewindManager()->IsRewinding()) {
+		_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, true);
 	} else {
-		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, 256, 239, _state.FrameCount);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, 256, 239, _state.FrameCount);
 	}
 #endif
 
 	//TODO move this somewhere that makes more sense
 	uint8_t prevInput = _memoryManager->ReadInputPort();
-	_console->ProcessEndOfFrame();
+	//TODO
+	//_console->ProcessEndOfFrame();
 	uint8_t newInput = _memoryManager->ReadInputPort();
 	if(prevInput != newInput) {
 		_memoryManager->RequestIrq(GbIrqSource::Joypad);
@@ -668,7 +670,7 @@ void GbPpu::SendFrame()
 void GbPpu::UpdatePalette()
 {
 	if(!_gameboy->IsCgb()) {
-		GameboyConfig cfg = _console->GetSettings()->GetGameboyConfig();
+		GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
 		for(int i = 0; i < 4; i++) {
 			//Set palette based on settings (DMG)
 			uint16_t bgColor = ((cfg.BgColors[i] & 0xF8) << 7) | ((cfg.BgColors[i] & 0xF800) >> 6) | ((cfg.BgColors[i] & 0xF80000) >> 19);
@@ -722,7 +724,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 				if(!_state.LcdEnabled) {
 					//Reset LCD to top of screen when it gets turned off
 					if(_state.Mode != PpuMode::VBlank) {
-						_console->BreakImmediately(BreakSource::GbDisableLcdOutsideVblank);
+						_emu->BreakImmediately(BreakSource::GbDisableLcdOutsideVblank);
 						SendFrame();
 					}
 
@@ -744,8 +746,8 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.LyCoincidenceFlag = _state.LyCompare == _state.LyForCompare;
 					UpdateStatIrq();
 					
-					if(_console->IsDebugging()) {
-						_console->ProcessEvent(EventType::GbStartFrame);
+					if(_emu->IsDebugging()) {
+						_emu->ProcessEvent(EventType::GbStartFrame);
 
 						_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 						for(int i = 0; i < 456 * 154; i++) {
@@ -812,10 +814,10 @@ uint8_t GbPpu::ReadVram(uint16_t addr)
 {
 	if(IsVramReadAllowed()) {
 		uint16_t vramAddr = (_state.CgbVramBank << 13) | (addr & 0x1FFF);
-		_console->ProcessPpuRead(vramAddr, _vram[vramAddr], SnesMemoryType::GbVideoRam);
+		_emu->ProcessPpuRead(vramAddr, _vram[vramAddr], SnesMemoryType::GbVideoRam);
 		return _vram[vramAddr];
 	} else {
-		_console->BreakImmediately(BreakSource::GbInvalidVramAccess);
+		_emu->BreakImmediately(BreakSource::GbInvalidVramAccess);
 		return 0xFF;
 	}
 }
@@ -829,10 +831,10 @@ void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 {
 	if(IsVramWriteAllowed()) {
 		uint16_t vramAddr = (_state.CgbVramBank << 13) | (addr & 0x1FFF);
-		_console->ProcessPpuWrite(vramAddr, value, SnesMemoryType::GbVideoRam);
+		_emu->ProcessPpuWrite(vramAddr, value, SnesMemoryType::GbVideoRam);
 		_vram[vramAddr] = value;
 	} else {
-		_console->BreakImmediately(BreakSource::GbInvalidVramAccess);
+		_emu->BreakImmediately(BreakSource::GbInvalidVramAccess);
 	}
 }
 
@@ -874,10 +876,10 @@ uint8_t GbPpu::ReadOam(uint8_t addr)
 {
 	if(addr < 0xA0) {
 		if(IsOamReadAllowed()) {
-			_console->ProcessPpuRead(addr, _oam[addr], SnesMemoryType::GbSpriteRam);
+			_emu->ProcessPpuRead(addr, _oam[addr], SnesMemoryType::GbSpriteRam);
 			return _oam[addr];
 		} else {
-			_console->BreakImmediately(BreakSource::GbInvalidOamAccess);
+			_emu->BreakImmediately(BreakSource::GbInvalidOamAccess);
 			return 0xFF;
 		}
 	}
@@ -892,12 +894,12 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 	if(addr < 0xA0) {
 		if(forDma) {
 			_oam[addr] = value;
-			_console->ProcessPpuWrite(addr, value, SnesMemoryType::GbSpriteRam);
+			_emu->ProcessPpuWrite(addr, value, SnesMemoryType::GbSpriteRam);
 		} else if(IsOamWriteAllowed()) {
 			_oam[addr] = value;
-			_console->ProcessPpuWrite(addr, value, SnesMemoryType::GbSpriteRam);
+			_emu->ProcessPpuWrite(addr, value, SnesMemoryType::GbSpriteRam);
 		} else {
-			_console->BreakImmediately(BreakSource::GbInvalidOamAccess);
+			_emu->BreakImmediately(BreakSource::GbInvalidOamAccess);
 		}
 	}
 }

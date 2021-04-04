@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Debugger.h"
-#include "Console.h"
+#include "Emulator.h"
 
 class DebugBreakHelper
 {
@@ -15,7 +15,7 @@ public:
 	{
 		_debugger = debugger;
 
-		_isEmulationThread = debugger->GetConsole()->GetEmulationThreadId() == std::this_thread::get_id();
+		_isEmulationThread = debugger->GetEmulator()->GetEmulationThreadId() == std::this_thread::get_id();
 
 		if(!_isEmulationThread) {
 			//Only attempt to break if this is done in a thread other than the main emulation thread

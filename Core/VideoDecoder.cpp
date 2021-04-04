@@ -4,7 +4,7 @@
 #include "VideoRenderer.h"
 #include "DefaultVideoFilter.h"
 #include "NotificationManager.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "RewindManager.h"
 #include "EmuSettings.h"
 #include "SettingTypes.h"
@@ -14,16 +14,16 @@
 #include "DebugHud.h"
 #include "InputHud.h"
 
-VideoDecoder::VideoDecoder(shared_ptr<Console> console)
+VideoDecoder::VideoDecoder(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 	_frameChanged = false;
 	_stopFlag = false;
 	_baseFrameInfo = { 512, 478 };
 	_lastFrameInfo = _baseFrameInfo;
 	UpdateVideoFilter();
 	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
-	_inputHud.reset(new InputHud(console.get()));
+	_inputHud.reset(new InputHud(emu.get()));
 }
 
 VideoDecoder::~VideoDecoder()
@@ -41,19 +41,19 @@ ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 	ScreenSize size;
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 
-	double scale = (ignoreScale ? 1 : _console->GetSettings()->GetVideoConfig().VideoScale);
+	double scale = (ignoreScale ? 1 : _emu->GetSettings()->GetVideoConfig().VideoScale);
 	bool useHighResOutput = _baseFrameInfo.Width >= 512 || _videoFilterType == VideoFilterType::NTSC;
 	int divider = useHighResOutput ? 2 : 1;
 	size.Width = (int32_t)(frameInfo.Width * scale / divider);
 	size.Height = (int32_t)(frameInfo.Height * scale / divider);
 	size.Scale = scale;
 
-	double aspectRatio = _console->GetSettings()->GetAspectRatio(_console->GetRegion());
+	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
 	if(aspectRatio != 0.0) {
-		VideoAspectRatio aspect = _console->GetSettings()->GetVideoConfig().AspectRatio;
+		VideoAspectRatio aspect = _emu->GetSettings()->GetVideoConfig().AspectRatio;
 		bool usePar = aspect == VideoAspectRatio::NTSC || aspect == VideoAspectRatio::PAL || aspect == VideoAspectRatio::Auto;
 		if(usePar) {
-			OverscanDimensions overscan = _console->GetSettings()->GetOverscan();
+			OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
 			uint32_t fullWidth = frameInfo.Width + (overscan.Left + overscan.Right);
 			size.Width = (uint32_t)(256 * scale * aspectRatio * frameInfo.Width / fullWidth);
 		} else {
@@ -66,16 +66,16 @@ ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 
 void VideoDecoder::UpdateVideoFilter()
 {
-	VideoFilterType newFilter = _console->GetSettings()->GetVideoConfig().VideoFilter;
+	VideoFilterType newFilter = _emu->GetSettings()->GetVideoConfig().VideoFilter;
 
 	if(_videoFilterType != newFilter || _videoFilter == nullptr) {
 		_videoFilterType = newFilter;
-		_videoFilter.reset(new DefaultVideoFilter(_console));
+		_videoFilter.reset(new DefaultVideoFilter(_emu));
 		_scaleFilter.reset();
 
 		switch(_videoFilterType) {
 			case VideoFilterType::None: break;
-			case VideoFilterType::NTSC: _videoFilter.reset(new NtscFilter(_console)); break;
+			case VideoFilterType::NTSC: _videoFilter.reset(new NtscFilter(_emu)); break;
 			default: _scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType); break;
 		}
 	}
@@ -92,24 +92,24 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	
 	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
-	_console->GetDebugHud()->Draw(outputBuffer, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
+	_emu->GetDebugHud()->Draw(outputBuffer, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
 
 	if(_scaleFilter) {
-		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _console->GetSettings()->GetVideoConfig().ScanlineIntensity);
+		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = _scaleFilter->GetFrameInfo(frameInfo);
 	}
 
 	ScreenSize screenSize = GetScreenSize(true);
-	VideoConfig config = _console->GetSettings()->GetVideoConfig();
+	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 	if(_previousScale != config.VideoScale || screenSize.Height != _previousScreenSize.Height || screenSize.Width != _previousScreenSize.Width) {
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ResolutionChanged);
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ResolutionChanged);
 	}
 	_previousScale = config.VideoScale;
 	_previousScreenSize = screenSize;
 	_lastFrameInfo = frameInfo;
 
 	//Rewind manager will take care of sending the correct frame to the video renderer
-	_console->GetRewindManager()->SendFrame(outputBuffer, frameInfo.Width, frameInfo.Height, forRewind);
+	_emu->GetRewindManager()->SendFrame(outputBuffer, frameInfo.Width, frameInfo.Height, forRewind);
 
 	_frameChanged = false;
 }
@@ -137,7 +137,7 @@ uint32_t VideoDecoder::GetFrameCount()
 
 void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool forRewind)
 {
-	if(_console->IsRunAheadFrame()) {
+	if(_emu->IsRunAheadFrame()) {
 		return;
 	}
 
@@ -160,7 +160,7 @@ void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, ui
 
 void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber)
 {
-	if(_console->IsRunAheadFrame()) {
+	if(_emu->IsRunAheadFrame()) {
 		return;
 	}
 
@@ -226,7 +226,7 @@ bool VideoDecoder::IsRunning()
 void VideoDecoder::TakeScreenshot()
 {
 	if(_videoFilter) {
-		_videoFilter->TakeScreenshot(_console->GetRomInfo().RomFile.GetFileName(), _videoFilterType);
+		_videoFilter->TakeScreenshot(_emu->GetRomInfo().RomFile.GetFileName(), _videoFilterType);
 	}
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "NotificationManager.h"
 
 class Ppu;
@@ -17,8 +17,7 @@ struct ViewerRefreshConfig
 class PpuTools
 {
 private:
-	Ppu *_ppu;
-	Console *_console;
+	Emulator *_emu;
 	unordered_map<uint32_t, ViewerRefreshConfig> _updateTimings;
 
 	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift);
@@ -28,7 +27,7 @@ private:
 	uint32_t GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
 
 public:
-	PpuTools(Console *console, Ppu *ppu);
+	PpuTools(Emulator *emu);
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer);
 	void GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vram, uint8_t* cgram, uint32_t *outBuffer);
@@ -43,7 +42,7 @@ public:
 			for(auto updateTiming : _updateTimings) {
 				ViewerRefreshConfig cfg = updateTiming.second;
 				if(cfg.Cycle == cycle && cfg.Scanline == scanline && cfg.Type == cpuType) {
-					_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
+					_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
 				}
 			}
 		}

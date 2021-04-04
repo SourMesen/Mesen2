@@ -5,26 +5,24 @@
 #include "../Utilities/PNGHelper.h"
 #include "SaveStateManager.h"
 #include "MessageManager.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "VideoDecoder.h"
-#include "BaseCartridge.h"
 #include "MovieManager.h"
 #include "EventType.h"
 #include "Debugger.h"
 #include "GameClient.h"
-#include "Ppu.h"
 #include "DefaultVideoFilter.h"
 
-SaveStateManager::SaveStateManager(shared_ptr<Console> console)
+SaveStateManager::SaveStateManager(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 	_lastIndex = 1;
 }
 
 string SaveStateManager::GetStateFilepath(int stateIndex)
 {
-	string romFile = _console->GetRomInfo().RomFile.GetFileName();
+	string romFile = _emu->GetRomInfo().RomFile.GetFileName();
 	string folder = FolderUtilities::GetSaveStateFolder();
 	string filename = FolderUtilities::GetFilename(romFile, false) + "_" + std::to_string(stateIndex) + ".mss";
 	return FolderUtilities::CombinePath(folder, filename);
@@ -60,23 +58,23 @@ bool SaveStateManager::LoadState()
 
 void SaveStateManager::GetSaveStateHeader(ostream &stream)
 {
-	uint32_t emuVersion = _console->GetSettings()->GetVersion();
+	uint32_t emuVersion = _emu->GetSettings()->GetVersion();
 	uint32_t formatVersion = SaveStateManager::FileFormatVersion;
 	stream.write("MSS", 3);
 	stream.write((char*)&emuVersion, sizeof(emuVersion));
 	stream.write((char*)&formatVersion, sizeof(uint32_t));
 
-	string sha1Hash = _console->GetCartridge()->GetSha1Hash();
+	string sha1Hash = _emu->GetHash(HashType::Sha1);
 	stream.write(sha1Hash.c_str(), sha1Hash.size());
 
-	bool isGameboyMode = _console->GetSettings()->CheckFlag(EmulationFlags::GameboyMode);
+	bool isGameboyMode = _emu->GetSettings()->CheckFlag(EmulationFlags::GameboyMode);
 	stream.write((char*)&isGameboyMode, sizeof(bool));
 
 	#ifndef LIBRETRO
 	SaveScreenshotData(stream);
 	#endif
 
-	RomInfo romInfo = _console->GetCartridge()->GetRomInfo();
+	RomInfo romInfo = _emu->GetRomInfo();
 	string romName = FolderUtilities::GetFilename(romInfo.RomFile.GetFileName(), true);
 	uint32_t nameLength = (uint32_t)romName.size();
 	stream.write((char*)&nameLength, sizeof(uint32_t));
@@ -86,7 +84,7 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 void SaveStateManager::SaveState(ostream &stream)
 {
 	GetSaveStateHeader(stream);
-	_console->Serialize(stream);
+	_emu->Serialize(stream);
 }
 
 bool SaveStateManager::SaveState(string filepath)
@@ -94,12 +92,12 @@ bool SaveStateManager::SaveState(string filepath)
 	ofstream file(filepath, ios::out | ios::binary);
 
 	if(file) {
-		_console->Lock();
+		_emu->Lock();
 		SaveState(file);
-		_console->Unlock();
+		_emu->Unlock();
 		file.close();
 
-		shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+		shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
 		if(debugger) {
 			debugger->ProcessEvent(EventType::StateSaved);
 		}
@@ -120,16 +118,13 @@ void SaveStateManager::SaveState(int stateIndex, bool displayMessage)
 
 void SaveStateManager::SaveScreenshotData(ostream& stream)
 {
-	bool isHighRes = _console->GetPpu()->IsHighResOutput();
-	uint32_t height = isHighRes ? 478 : 239;
-	uint32_t width = isHighRes ? 512 : 256;
-
-	stream.write((char*)&width, sizeof(uint32_t));
-	stream.write((char*)&height, sizeof(uint32_t));
+	PpuFrameInfo frame = _emu->GetPpuFrame();
+	stream.write((char*)&frame.Width, sizeof(uint32_t));
+	stream.write((char*)&frame.Height, sizeof(uint32_t));
 
 	unsigned long compressedSize = compressBound(512*478*2);
 	vector<uint8_t> compressedData(compressedSize, 0);
-	compress2(compressedData.data(), &compressedSize, (const unsigned char*)_console->GetPpu()->GetScreenBuffer(), width*height*2, MZ_DEFAULT_LEVEL);
+	compress2(compressedData.data(), &compressedSize, (const unsigned char*)frame.FrameBuffer, frame.Width*frame.Height*2, MZ_DEFAULT_LEVEL);
 
 	uint32_t screenshotLength = (uint32_t)compressedSize;
 	stream.write((char*)&screenshotLength, sizeof(uint32_t));
@@ -168,7 +163,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 		uint32_t emuVersion, fileFormatVersion;
 
 		stream.read((char*)&emuVersion, sizeof(emuVersion));
-		if(emuVersion > _console->GetSettings()->GetVersion()) {
+		if(emuVersion > _emu->GetSettings()->GetVersion()) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateNewerVersion");
 			return false;
 		}
@@ -184,7 +179,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 			if(fileFormatVersion >= 8) {
 				bool isGameboyMode = false;
 				stream.read((char*)&isGameboyMode, sizeof(bool));
-				if(isGameboyMode != _console->GetSettings()->CheckFlag(EmulationFlags::GameboyMode)) {
+				if(isGameboyMode != _emu->GetSettings()->CheckFlag(EmulationFlags::GameboyMode)) {
 					MessageManager::DisplayMessage("SaveStates", isGameboyMode ? "SaveStateWrongSystemGb" : "SaveStateWrongSystemSnes");
 					return false;
 				}
@@ -196,7 +191,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 				uint32_t width = 0;
 				uint32_t height = 0;
 				if(GetScreenshotData(frameData, width, height, stream)) {
-					_console->GetVideoDecoder()->UpdateFrameSync((uint16_t*)frameData.data(), width, height, 0, true);
+					_emu->GetVideoDecoder()->UpdateFrameSync((uint16_t*)frameData.data(), width, height, 0, true);
 				}
 				#endif
 			}
@@ -208,8 +203,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 			stream.read(nameBuffer.data(), nameBuffer.size());
 			string romName(nameBuffer.data(), nameLength);
 			
-			shared_ptr<BaseCartridge> cartridge = _console->GetCartridge();
-			if(!cartridge /*|| cartridge->GetSha1Hash() != string(hash)*/) {
+			if(!_emu->IsRunning() /*|| cartridge->GetSha1Hash() != string(hash)*/) {
 				//Game isn't loaded, or CRC doesn't match
 				//TODO: Try to find and load the game
 				return false;
@@ -218,9 +212,9 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 
 		//Stop any movie that might have been playing/recording if a state is loaded
 		//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
-		_console->GetMovieManager()->Stop();
+		_emu->GetMovieManager()->Stop();
 
-		_console->Deserialize(stream, fileFormatVersion);
+		_emu->Deserialize(stream, fileFormatVersion);
 
 		return true;
 	}
@@ -234,13 +228,13 @@ bool SaveStateManager::LoadState(string filepath, bool hashCheckRequired)
 	bool result = false;
 
 	if(file.good()) {
-		_console->Lock();
+		_emu->Lock();
 		result = LoadState(file, hashCheckRequired);
-		_console->Unlock();
+		_emu->Unlock();
 		file.close();
 
 		if(result) {
-			shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+			shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
 			if(debugger) {
 				debugger->ProcessEvent(EventType::StateLoaded);
 			}
@@ -266,12 +260,12 @@ void SaveStateManager::SaveRecentGame(string romName, string romPath, string pat
 {
 #ifndef LIBRETRO
 	//Don't do this for libretro core
-	string filename = FolderUtilities::GetFilename(_console->GetRomInfo().RomFile.GetFileName(), false) + ".rgd";
+	string filename = FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".rgd";
 	ZipWriter writer;
 	writer.Initialize(FolderUtilities::CombinePath(FolderUtilities::GetRecentGamesFolder(), filename));
 
 	std::stringstream pngStream;
-	_console->GetVideoDecoder()->TakeScreenshot(pngStream);
+	_emu->GetVideoDecoder()->TakeScreenshot(pngStream);
 	writer.AddFile(pngStream, "Screenshot.png");
 
 	std::stringstream stateStream;
@@ -301,17 +295,17 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 	std::getline(romInfoStream, romPath);
 	std::getline(romInfoStream, patchPath);
 
-	_console->Lock();
+	_emu->Lock();
 	try {
-		if(_console->LoadRom(romPath, patchPath)) {
+		if(_emu->LoadRom(romPath, patchPath)) {
 			if(!resetGame) {
 				SaveStateManager::LoadState(stateStream, false);
 			}
 		}
 	} catch(std::exception&) { 
-		_console->Stop(true);
+		_emu->Stop(true);
 	}
-	_console->Unlock();
+	_emu->Unlock();
 }
 
 int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* pngData)
@@ -328,7 +322,7 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 		uint32_t emuVersion = 0;
 
 		stream.read((char*)&emuVersion, sizeof(emuVersion));
-		if(emuVersion > _console->GetSettings()->GetVersion()) {
+		if(emuVersion > _emu->GetSettings()->GetVersion()) {
 			return -1;
 		}
 
@@ -349,7 +343,7 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 			baseFrameInfo.Width = width;
 			baseFrameInfo.Height = height;
 			
-			DefaultVideoFilter filter(_console);
+			DefaultVideoFilter filter(_emu);
 			filter.SetBaseFrameInfo(baseFrameInfo);
 			FrameInfo frameInfo = filter.GetFrameInfo();
 			filter.SendFrame((uint16_t*)frameData.data(), 0);

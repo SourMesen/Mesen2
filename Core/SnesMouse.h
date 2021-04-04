@@ -4,6 +4,7 @@
 #include "IKeyManager.h"
 #include "KeyManager.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "../Utilities/Serializer.h"
 
@@ -12,6 +13,7 @@ class SnesMouse : public BaseControlDevice
 private:
 	uint32_t _stateBuffer = 0;
 	uint8_t _sensitivity = 0;
+	EmuSettings* _settings = nullptr;
 
 protected:
 	bool HasCoordinates() override { return true; }
@@ -32,8 +34,8 @@ protected:
 		SetPressedState(Buttons::Left, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
 		SetPressedState(Buttons::Right, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
 		SetMovement(KeyManager::GetMouseMovement(
-			_console->GetSettings()->GetVideoConfig().VideoScale,
-			_console->GetSettings()->GetInputConfig().MouseSensitivity + 1
+			_settings->GetVideoConfig().VideoScale,
+			_settings->GetInputConfig().MouseSensitivity + 1
 		));
 	}
 
@@ -42,6 +44,7 @@ public:
 
 	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console, port)
 	{
+		_settings = console->GetEmulator()->GetSettings().get();
 	}
 
 	ControllerType GetControllerType() override

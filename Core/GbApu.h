@@ -6,7 +6,7 @@
 #include "../Utilities/blip_buf.h"
 #include "../Utilities/ISerializable.h"
 
-class Console;
+class Emulator;
 class Gameboy;
 class SoundMixer;
 class EmuSettings;
@@ -19,7 +19,7 @@ public:
 private:
 	static constexpr int ApuFrequency = 1024 * 1024 * 4; //4mhz
 	static constexpr int MaxSamples = 4000;
-	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 	Gameboy* _gameboy = nullptr;
 	EmuSettings* _settings = nullptr;
 	SoundMixer* _soundMixer = nullptr;
@@ -46,7 +46,7 @@ public:
 	GbApu();
 	virtual ~GbApu();
 
-	void Init(Console* console, Gameboy* gameboy);
+	void Init(Emulator* emu, Gameboy* gameboy);
 
 	GbApuDebugState GetState();
 

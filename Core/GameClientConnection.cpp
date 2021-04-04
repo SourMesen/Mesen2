@@ -5,7 +5,7 @@
 #include "MovieDataMessage.h"
 #include "GameInformationMessage.h"
 #include "SaveStateMessage.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "ControlManager.h"
 #include "ClientConnectionData.h"
@@ -17,7 +17,7 @@
 #include "NotificationManager.h"
 #include "RomFinder.h"
 
-GameClientConnection::GameClientConnection(shared_ptr<Console> console, shared_ptr<Socket> socket, ClientConnectionData &connectionData) : GameConnection(console, socket)
+GameClientConnection::GameClientConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, ClientConnectionData &connectionData) : GameConnection(emu, socket)
 {
 	_connectionData = connectionData;
 	_shutdown = false;
@@ -38,19 +38,19 @@ void GameClientConnection::Shutdown()
 		_shutdown = true;
 		DisableControllers();
 
-		shared_ptr<ControlManager> controlManager = _console->GetControlManager();
+		shared_ptr<ControlManager> controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			controlManager->UnregisterInputProvider(this);
 		}
 
 		MessageManager::DisplayMessage("NetPlay", "ConnectionLost");
-		_console->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
+		_emu->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
 	}
 }
 
 void GameClientConnection::SendHandshake()
 {
-	HandShakeMessage message(_connectionData.PlayerName, HandShakeMessage::GetPasswordHash(_connectionData.Password, _serverSalt), _connectionData.Spectator, _console->GetSettings()->GetVersion());
+	HandShakeMessage message(_connectionData.PlayerName, HandShakeMessage::GetPasswordHash(_connectionData.Password, _serverSalt), _connectionData.Spectator, _emu->GetSettings()->GetVersion());
 	SendNetMessage(message);
 }
 
@@ -82,12 +82,12 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 		case MessageType::SaveState:
 			if(_gameLoaded) {
 				DisableControllers();
-				_console->Lock();
+				_emu->Lock();
 				ClearInputData();
-				((SaveStateMessage*)message)->LoadState(_console);
+				((SaveStateMessage*)message)->LoadState(_emu);
 				_enableControllers = true;
 				InitControlDevice();
-				_console->Unlock();
+				_emu->Unlock();
 			}
 			break;
 
@@ -107,7 +107,7 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 
 		case MessageType::GameInformation:
 			DisableControllers();
-			_console->Lock();
+			_emu->Lock();
 			gameInfo = (GameInformationMessage*)message;
 			if(gameInfo->GetPort() != _controllerPort) {
 				_controllerPort = gameInfo->GetPort();
@@ -120,18 +120,18 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 			}
 
 			ClearInputData();
-			_console->Unlock();
+			_emu->Unlock();
 
 			_gameLoaded = AttemptLoadGame(gameInfo->GetRomFilename(), gameInfo->GetSha1Hash());
 			if(!_gameLoaded) {
-				_console->Stop(true);
+				_emu->Stop(true);
 			} else {
-				_console->GetControlManager()->UnregisterInputProvider(this);
-				_console->GetControlManager()->RegisterInputProvider(this);
+				_emu->GetControlManager()->UnregisterInputProvider(this);
+				_emu->GetControlManager()->RegisterInputProvider(this);
 				if(gameInfo->IsPaused()) {
-					_console->Pause();
+					_emu->Pause();
 				} else {
-					_console->Resume();
+					_emu->Resume();
 				}
 			}
 			break;
@@ -143,7 +143,7 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 bool GameClientConnection::AttemptLoadGame(string filename, string sha1Hash)
 {
 	if(filename.size() > 0) {
-		if(!RomFinder::LoadMatchingRom(_console.get(), filename, sha1Hash)) {
+		if(!RomFinder::LoadMatchingRom(_emu.get(), filename, sha1Hash)) {
 			MessageManager::DisplayMessage("NetPlay", "CouldNotFindRom", filename);
 			return false;
 		} else {
@@ -202,9 +202,9 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 
 		if(_inputData[port].size() > _minimumQueueSize) {
 			//Too much data, catch up
-			_console->GetSettings()->SetFlag(EmulationFlags::MaximumSpeed);
+			_emu->GetSettings()->SetFlag(EmulationFlags::MaximumSpeed);
 		} else {
-			_console->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
+			_emu->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
 		}
 
 		device->SetRawState(state);
@@ -215,7 +215,8 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 void GameClientConnection::InitControlDevice()
 {
 	//Pretend we are using port 0 (to use player 1's keybindings during netplay)
-	_newControlDevice = ControlManager::CreateControllerDevice(_console->GetSettings()->GetInputConfig().Controllers[_controllerPort].Type, 0, _console.get());
+	//TODO
+	//_newControlDevice = ControlManager::CreateControllerDevice(_emu->GetSettings()->GetInputConfig().Controllers[_controllerPort].Type, 0, _emu.get());
 }
 
 void GameClientConnection::ProcessNotification(ConsoleNotificationType type, void* parameter)
@@ -223,7 +224,7 @@ void GameClientConnection::ProcessNotification(ConsoleNotificationType type, voi
 	if(type == ConsoleNotificationType::ConfigChanged) {
 		InitControlDevice();
 	} else if(type == ConsoleNotificationType::GameLoaded) {
-		_console->GetControlManager()->RegisterInputProvider(this);
+		_emu->GetControlManager()->RegisterInputProvider(this);
 	}
 }
 

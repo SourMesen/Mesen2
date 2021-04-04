@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "GbCpu.h"
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
 #include "../Utilities/Serializer.h"
 
-void GbCpu::Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager)
+void GbCpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager)
 {
-	_console = console;
+	_emu = emu;
 	_gameboy = gameboy;
 	_memoryManager = memoryManager;
 	
@@ -64,7 +64,7 @@ void GbCpu::Exec()
 			}
 
 			_state.IME = false;
-			_console->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
+			_emu->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
 		}
 		_state.Halted = false;
 	}

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Ppu.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryManager.h"
 #include "Cpu.h"
 #include "Spc.h"
@@ -28,8 +29,9 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 	{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
 };
 
-Ppu::Ppu(Console* console)
+Ppu::Ppu(Emulator* emu, Console* console)
 {
+	_emu = emu;
 	_console = console;
 
 	_vram = new uint16_t[Ppu::VideoRamSize >> 1];
@@ -51,7 +53,7 @@ void Ppu::PowerOn()
 {
 	_skipRender = false;
 	_regs = _console->GetInternalRegisters().get();
-	_settings = _console->GetSettings().get();
+	_settings = _emu->GetSettings().get();
 	_spc = _console->GetSpc().get();
 	_memoryManager = _console->GetMemoryManager().get();
 
@@ -451,7 +453,7 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			VideoConfig cfg = _settings->GetVideoConfig();
 			_configVisibleLayers = (cfg.HideBgLayer0 ? 0 : 1) | (cfg.HideBgLayer1 ? 0 : 2) | (cfg.HideBgLayer2 ? 0 : 4) | (cfg.HideBgLayer3 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
 
-			_console->ProcessEvent(EventType::EndFrame);
+			_emu->ProcessEvent(EventType::EndFrame);
 
 			_frameCount++;
 			_spc->ProcessEndFrame();
@@ -466,17 +468,17 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_scanline = 0;
 			_rangeOver = false;
 			_timeOver = false;
-			_console->ProcessEvent(EventType::StartFrame);
+			_emu->ProcessEvent(EventType::StartFrame);
 
 			_skipRender = (
 				!_settings->GetVideoConfig().DisableFrameSkipping &&
-				!_console->GetRewindManager()->IsRewinding() &&
-				!_console->GetVideoRenderer()->IsRecording() &&
+				!_emu->GetRewindManager()->IsRewinding() &&
+				!_emu->GetVideoRenderer()->IsRecording() &&
 				(_settings->GetEmulationSpeed() == 0 || _settings->GetEmulationSpeed() > 150) &&
 				_frameSkipTimer.GetElapsedMS() < 10
 			);
 			
-			if(_console->IsRunAheadFrame()) {
+			if(_emu->IsRunAheadFrame()) {
 				_skipRender = true;
 			}
 
@@ -509,7 +511,7 @@ void Ppu::UpdateSpcState()
 void Ppu::UpdateNmiScanline()
 {
 	EmulationConfig cfg = _settings->GetEmulationConfig();
-	if(_console->GetRegion() == ConsoleRegion::Ntsc) {
+	if(_emu->GetRegion() == ConsoleRegion::Ntsc) {
 		if(!_state.ScreenInterlace || _oddFrame) {
 			_baseVblankEndScanline = 261;
 		} else {
@@ -1456,17 +1458,17 @@ void Ppu::SendFrame()
 		memset(_currentBuffer + width * (height - bottom), 0, width * bottom * sizeof(uint16_t));
 	}
 
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	bool isRewinding = _console->GetRewindManager()->IsRewinding();
+	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
 
 #ifdef LIBRETRO
-	_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
+	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 #else
 	if(isRewinding || _interlacedFrame) {
-		_console->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
+		_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
 	} else {
-		_console->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
 	}
 #endif
 
@@ -1617,10 +1619,10 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(oamAddr < 512) {
 				value = _oamRam[oamAddr];
-				_console->ProcessPpuRead(oamAddr, value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuRead(oamAddr, value, SnesMemoryType::SpriteRam);
 			} else {
 				value = _oamRam[0x200 | (oamAddr & 0x1F)];
-				_console->ProcessPpuRead(0x200 | (oamAddr & 0x1F), value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuRead(0x200 | (oamAddr & 0x1F), value, SnesMemoryType::SpriteRam);
 			}
 			
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1631,7 +1633,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
 			uint8_t returnValue = (uint8_t)_state.VramReadBuffer;
-			_console->ProcessPpuRead(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
+			_emu->ProcessPpuRead(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
 			if(!_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
@@ -1643,7 +1645,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
 			uint8_t returnValue = (uint8_t)(_state.VramReadBuffer >> 8);
-			_console->ProcessPpuRead(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
+			_emu->ProcessPpuRead(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
 			if(_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
@@ -1659,10 +1661,10 @@ uint8_t Ppu::Read(uint16_t addr)
 				value = ((_cgram[_state.CgramAddress] >> 8) & 0x7F) | (_state.Ppu2OpenBus & 0x80);
 				_state.CgramAddress++;
 				
-				_console->ProcessPpuRead((_state.CgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
+				_emu->ProcessPpuRead((_state.CgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
 			} else {
 				value = (uint8_t)_cgram[_state.CgramAddress];
-				_console->ProcessPpuRead(_state.CgramAddress >> 1, value, SnesMemoryType::CGRam);
+				_emu->ProcessPpuRead(_state.CgramAddress >> 1, value, SnesMemoryType::CGRam);
 			}
 			_state.CgramAddressLatch = !_state.CgramAddressLatch;
 			
@@ -1722,7 +1724,7 @@ uint8_t Ppu::Read(uint16_t addr)
 				(_oddFrame ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |
 				(_state.Ppu2OpenBus & 0x20) |
-				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
+				(_emu->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
 				0x03 //PPU (5c78) chip version
 			);
 
@@ -1791,10 +1793,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			
 			if(oamAddr < 512) {
 				if(oamAddr & 0x01) {
-					_console->ProcessPpuWrite(oamAddr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
+					_emu->ProcessPpuWrite(oamAddr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
 					_oamRam[oamAddr - 1] = _oamWriteBuffer;
 	
-					_console->ProcessPpuWrite(oamAddr, value, SnesMemoryType::SpriteRam);
+					_emu->ProcessPpuWrite(oamAddr, value, SnesMemoryType::SpriteRam);
 					_oamRam[oamAddr] = value;
 				} else {
 					_oamWriteBuffer = value;
@@ -1811,7 +1813,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				if((oamAddr & 0x01) == 0) {
 					_oamWriteBuffer = value;
 				}
-				_console->ProcessPpuWrite(address, value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuWrite(address, value, SnesMemoryType::SpriteRam);
 				_oamRam[address] = value;
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1917,7 +1919,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//VMDATAL - VRAM Data Write low byte
 			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
-				_console->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
+				_emu->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
 			}
 
@@ -1931,7 +1933,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//VMDATAH - VRAM Data Write high byte
 			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
-				_console->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
+				_emu->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
 			}
 			
@@ -1977,8 +1979,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//CGRAM Data write (CGDATA)
 			if(_state.CgramAddressLatch) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
-				_console->ProcessPpuWrite(_state.CgramAddress >> 1, _state.CgramWriteBuffer, SnesMemoryType::CGRam);
-				_console->ProcessPpuWrite((_state.CgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
+				_emu->ProcessPpuWrite(_state.CgramAddress >> 1, _state.CgramWriteBuffer, SnesMemoryType::CGRam);
+				_emu->ProcessPpuWrite((_state.CgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
 
 				_cgram[_state.CgramAddress] = _state.CgramWriteBuffer | ((value & 0x7F) << 8);
 				_state.CgramAddress++;

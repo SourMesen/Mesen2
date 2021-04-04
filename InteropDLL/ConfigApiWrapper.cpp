@@ -1,53 +1,53 @@
 #include "stdafx.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/IAudioDevice.h"
 #include "../Core/EmuSettings.h"
 #include "../Core/SettingTypes.h"
 
-extern shared_ptr<Console> _console;
+extern shared_ptr<Emulator> _emu;
 extern unique_ptr<IAudioDevice> _soundManager;
 static string _returnString;
 
 extern "C" {
 	DllExport void __stdcall SetVideoConfig(VideoConfig config)
 	{
-		_console->GetSettings()->SetVideoConfig(config);
+		_emu->GetSettings()->SetVideoConfig(config);
 	}
 
 	DllExport void __stdcall SetAudioConfig(AudioConfig config)
 	{
-		_console->GetSettings()->SetAudioConfig(config);
+		_emu->GetSettings()->SetAudioConfig(config);
 	}
 
 	DllExport void __stdcall SetInputConfig(InputConfig config)
 	{
-		_console->GetSettings()->SetInputConfig(config);
+		_emu->GetSettings()->SetInputConfig(config);
 	}
 
 	DllExport void __stdcall SetEmulationConfig(EmulationConfig config)
 	{
-		_console->GetSettings()->SetEmulationConfig(config);
+		_emu->GetSettings()->SetEmulationConfig(config);
 	}
 	
 	DllExport void __stdcall SetGameboyConfig(GameboyConfig config)
 	{
-		_console->GetSettings()->SetGameboyConfig(config);
+		_emu->GetSettings()->SetGameboyConfig(config);
 	}
 
 	DllExport void __stdcall SetPreferences(PreferencesConfig config)
 	{
-		_console->GetSettings()->SetPreferences(config);
+		_emu->GetSettings()->SetPreferences(config);
 	}
 
 	DllExport void __stdcall SetShortcutKeys(ShortcutKeyInfo shortcuts[], uint32_t count)
 	{
 		vector<ShortcutKeyInfo> shortcutList(shortcuts, shortcuts + count);
-		_console->GetSettings()->SetShortcutKeys(shortcutList);
+		_emu->GetSettings()->SetShortcutKeys(shortcutList);
 	}
 
 	DllExport ControllerType __stdcall GetControllerType(int player)
 	{
-		return _console->GetSettings()->GetInputConfig().Controllers[player].Type;
+		return _emu->GetSettings()->GetInputConfig().Controllers[player].Type;
 	}
 
 	DllExport const char* __stdcall GetAudioDevices()
@@ -58,11 +58,11 @@ extern "C" {
 
 	DllExport void __stdcall SetEmulationFlag(EmulationFlags flag, bool enabled)
 	{
-		_console->GetSettings()->SetFlagState(flag, enabled);
+		_emu->GetSettings()->SetFlagState(flag, enabled);
 	}
 
 	DllExport void __stdcall SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 	{
-		_console->GetSettings()->SetDebuggerFlag(flag, enabled);
+		_emu->GetSettings()->SetDebuggerFlag(flag, enabled);
 	}
 }

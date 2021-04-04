@@ -8,6 +8,7 @@
 #include "BreakpointManager.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
@@ -21,7 +22,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_spc = debugger->GetConsole()->GetSpc().get();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
-	_settings = debugger->GetConsole()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc));

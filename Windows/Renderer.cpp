@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "DirectXTK/SpriteBatch.h"
 #include "DirectXTK/SpriteFont.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/VideoDecoder.h"
 #include "../Core/VideoRenderer.h"
 #include "../Core/Debugger.h"
@@ -13,7 +13,7 @@
 
 using namespace DirectX;
 
-Renderer::Renderer(shared_ptr<Console> console, HWND hWnd, bool registerAsMessageManager) : BaseRenderer(console, registerAsMessageManager)
+Renderer::Renderer(shared_ptr<Emulator> emu, HWND hWnd, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager)
 {
 	_hWnd = hWnd;
 
@@ -22,7 +22,7 @@ Renderer::Renderer(shared_ptr<Console> console, HWND hWnd, bool registerAsMessag
 
 Renderer::~Renderer()
 {
-	shared_ptr<VideoRenderer> videoRenderer = _console->GetVideoRenderer();
+	shared_ptr<VideoRenderer> videoRenderer = _emu->GetVideoRenderer();
 	if(videoRenderer) {
 		videoRenderer->UnregisterRenderingDevice(this);
 	}
@@ -41,12 +41,12 @@ void Renderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t m
 
 void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
-	ScreenSize screenSize = _console->GetVideoDecoder()->GetScreenSize(false);
-	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+	ScreenSize screenSize = _emu->GetVideoDecoder()->GetScreenSize(false);
+	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 	if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
-		screenSize = _console->GetVideoDecoder()->GetScreenSize(false);
+		screenSize = _emu->GetVideoDecoder()->GetScreenSize(false);
 		if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 			_nesFrameHeight = height;
 			_nesFrameWidth = width;
@@ -116,7 +116,7 @@ void Renderer::Reset()
 	if(FAILED(InitDevice())) {
 		CleanupDevice();
 	} else {
-		_console->GetVideoRenderer()->RegisterRenderingDevice(this);
+		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
 	}
 }
 
@@ -285,7 +285,7 @@ HRESULT Renderer::InitDevice()
 	sd.BufferDesc.Width = _realScreenWidth;
 	sd.BufferDesc.Height = _realScreenHeight;
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-	sd.BufferDesc.RefreshRate.Numerator = _console->GetSettings()->GetVideoConfig().ExclusiveFullscreenRefreshRate;
+	sd.BufferDesc.RefreshRate.Numerator = _emu->GetSettings()->GetVideoConfig().ExclusiveFullscreenRefreshRate;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.Flags = _fullscreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
@@ -408,7 +408,7 @@ HRESULT Renderer::InitDevice()
 
 HRESULT Renderer::CreateSamplerState()
 {
-	_useBilinearInterpolation = _console->GetSettings()->GetVideoConfig().UseBilinearInterpolation;
+	_useBilinearInterpolation = _emu->GetSettings()->GetVideoConfig().UseBilinearInterpolation;
 
 	//Sample state
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -553,7 +553,7 @@ void Renderer::DrawPauseScreen()
 
 void Renderer::Render()
 {
-	bool paused = _console->IsPaused();
+	bool paused = _emu->IsPaused();
 
 	if(_noUpdateCount > 10 || _frameChanged || paused || IsMessageShown()) {
 		_noUpdateCount = 0;
@@ -580,7 +580,7 @@ void Renderer::Render()
 		//Draw screen
 		DrawScreen();
 
-		if(_console->IsRunning()) {
+		if(_emu->IsRunning()) {
 			if(paused) {
 				DrawPauseScreen();
 			}
@@ -593,7 +593,7 @@ void Renderer::Render()
 
 		// Present the information rendered to the back buffer to the front buffer (the screen)
 
-		bool waitVSync = _console->GetSettings()->GetVideoConfig().VerticalSync;
+		bool waitVSync = _emu->GetSettings()->GetVideoConfig().VerticalSync;
 		HRESULT hr = _pSwapChain->Present(waitVSync ? 1 : 0, 0);
 		if(FAILED(hr)) {
 			MessageManager::Log("SwapChain::Present() failed - Error:" + std::to_string(hr));

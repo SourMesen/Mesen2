@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BsxCart.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
 #include "BaseCartridge.h"
@@ -26,7 +27,7 @@ BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack) : BaseCoprocessor(Sne
 
 	_psRamSize = 512 * 1024;
 	_psRam = new uint8_t[_psRamSize];
-	console->GetSettings()->InitializeRam(_psRam, _psRamSize);
+	console->GetEmulator()->GetSettings()->InitializeRam(_psRam, _psRamSize);
 
 	for(uint32_t i = 0; i < _psRamSize / 0x1000; i++) {
 		_psRamHandlers.push_back(unique_ptr<IMemoryHandler>(new RamHandler(_psRam, i * 0x1000, _psRamSize, SnesMemoryType::BsxPsRam)));

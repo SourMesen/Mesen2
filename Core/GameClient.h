@@ -7,14 +7,14 @@ using std::thread;
 class Socket;
 class GameClientConnection;
 class ClientConnectionData;
-class Console;
+class Emulator;
 
 class GameClient : public INotificationListener
 {
 private:
 	static shared_ptr<GameClient> _instance;
 
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	unique_ptr<thread> _clientThread;
 	atomic<bool> _stop;
 
@@ -27,11 +27,11 @@ private:
 	void Exec();
 
 public:
-	GameClient(shared_ptr<Console> console);
+	GameClient(shared_ptr<Emulator> emu);
 	virtual ~GameClient();
 
 	static bool Connected();
-	static void Connect(shared_ptr<Console> console, ClientConnectionData &connectionData);
+	static void Connect(shared_ptr<Emulator> emu, ClientConnectionData &connectionData);
 	static void Disconnect();
 
 	static void SelectController(uint8_t port);

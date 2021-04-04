@@ -2,13 +2,13 @@
 #include "DefaultVideoFilter.h"
 #include <algorithm>
 #include "DebugHud.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "SettingTypes.h"
 
 const static double PI = 3.14159265358979323846;
 
-DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Console> console) : BaseVideoFilter(console)
+DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
 {
 	InitLookupTable();
 	_prevFrame = new uint16_t[256 * 240];
@@ -37,7 +37,7 @@ void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturation
 
 void DefaultVideoFilter::InitLookupTable()
 {
-	VideoConfig config = _console->GetSettings()->GetVideoConfig();
+	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 
 	InitConversionMatrix(config.Hue, config.Saturation);
 
@@ -84,10 +84,10 @@ void DefaultVideoFilter::InitLookupTable()
 
 void DefaultVideoFilter::OnBeforeApplyFilter()
 {
-	VideoConfig config = _console->GetSettings()->GetVideoConfig();
-	GameboyConfig gbConfig = _console->GetSettings()->GetGameboyConfig();
+	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
+	GameboyConfig gbConfig = _emu->GetSettings()->GetGameboyConfig();
 
-	ConsoleType consoleType = _console->GetConsoleType();
+	ConsoleType consoleType = _emu->GetConsoleType();
 	bool adjustColors = gbConfig.GbcAdjustColors && consoleType == ConsoleType::GameboyColor;
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || _gbcAdjustColors != adjustColors) {
 		_gbcAdjustColors = adjustColors;
@@ -122,7 +122,7 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t xOffset = overscan.Left * overscanMultiplier;
 	uint32_t yOffset = overscan.Top * overscanMultiplier * width;
 
-	uint8_t scanlineIntensity = (uint8_t)((1.0 - _console->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
+	uint8_t scanlineIntensity = (uint8_t)((1.0 - _emu->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
 	if(scanlineIntensity < 255) {
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			if(i & 0x01) {

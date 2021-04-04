@@ -5,7 +5,7 @@
 #include "SettingTypes.h"
 #include "../Utilities/ISerializable.h"
 
-class Console;
+class Emulator;
 class GbPpu;
 class GbApu;
 class GbCpu;
@@ -22,7 +22,7 @@ private:
 	static constexpr int SpriteRamSize = 0xA0;
 	static constexpr int HighRamSize = 0x7F;
 
-	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 	SuperGameboy* _superGameboy = nullptr;
 
 	unique_ptr<GbMemoryManager> _memoryManager;
@@ -60,10 +60,10 @@ private:
 public:
 	static constexpr int HeaderOffset = 0x134;
 
-	static Gameboy* Create(Console* console, VirtualFile& romFile, bool sgbEnabled);
+	static Gameboy* Create(Emulator* emu, VirtualFile& romFile, bool sgbEnabled);
 	virtual ~Gameboy();
 
-	void Init(Console* console, GbCart* cart, vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled);
+	void Init(Emulator* emu, GbCart* cart, vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled);
 	void PowerOn(SuperGameboy* superGameboy = nullptr);
 
 	void Exec();

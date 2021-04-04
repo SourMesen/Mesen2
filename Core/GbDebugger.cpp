@@ -3,6 +3,7 @@
 #include "DisassemblyInfo.h"
 #include "Disassembler.h"
 #include "Gameboy.h"
+#include "Emulator.h"
 #include "TraceLogger.h"
 #include "CallstackManager.h"
 #include "BreakpointManager.h"
@@ -28,7 +29,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_gameboy = debugger->GetConsole()->GetCartridge()->GetGameboy();
-	_settings = debugger->GetConsole()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 	_codeDataLogger.reset(new CodeDataLogger(_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
 
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _gameboy->GetPpu()));

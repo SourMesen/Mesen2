@@ -4,7 +4,7 @@ using std::thread;
 
 #include "MessageManager.h"
 #include "GameServer.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "ControlManager.h"
 #include "Multitap.h"
 #include "PlayerListMessage.h"
@@ -13,9 +13,9 @@ using std::thread;
 
 shared_ptr<GameServer> GameServer::Instance;
 
-GameServer::GameServer(shared_ptr<Console> console, uint16_t listenPort, string password, string hostPlayerName)
+GameServer::GameServer(shared_ptr<Emulator> emu, uint16_t listenPort, string password, string hostPlayerName)
 {
-	_console = console;
+	_emu = emu;
 	_stop = false;
 	_port = listenPort;
 	_password = password;
@@ -33,7 +33,7 @@ GameServer::~GameServer()
 
 	Stop();
 	
-	shared_ptr<ControlManager> controlManager = _console->GetControlManager();
+	shared_ptr<ControlManager> controlManager = _emu->GetControlManager();
 	if(controlManager) {
 		controlManager->UnregisterInputRecorder(this);
 		controlManager->UnregisterInputProvider(this);
@@ -42,7 +42,7 @@ GameServer::~GameServer()
 
 void GameServer::RegisterServerInput()
 {
-	shared_ptr<ControlManager> controlManager = _console->GetControlManager();
+	shared_ptr<ControlManager> controlManager = _emu->GetControlManager();
 	if(controlManager) {
 		controlManager->RegisterInputRecorder(this);
 		controlManager->RegisterInputProvider(this);
@@ -54,8 +54,8 @@ void GameServer::AcceptConnections()
 	while(true) {
 		shared_ptr<Socket> socket = _listener->Accept();
 		if(!socket->ConnectionError()) {
-			auto connection = shared_ptr<GameServerConnection>(new GameServerConnection(_console, socket, _password));
-			_console->GetNotificationManager()->RegisterNotificationListener(connection);
+			auto connection = shared_ptr<GameServerConnection>(new GameServerConnection(_emu, socket, _password));
+			_emu->GetNotificationManager()->RegisterNotificationListener(connection);
 			_openConnections.push_back(connection);
 		} else {
 			break;
@@ -163,10 +163,10 @@ void GameServer::Stop()
 	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
 }
 
-void GameServer::StartServer(shared_ptr<Console> console, uint16_t port, string password, string hostPlayerName)
+void GameServer::StartServer(shared_ptr<Emulator> emu, uint16_t port, string password, string hostPlayerName)
 {
-	Instance.reset(new GameServer(console, port, password, hostPlayerName));
-	console->GetNotificationManager()->RegisterNotificationListener(Instance);
+	Instance.reset(new GameServer(emu, port, password, hostPlayerName));
+	emu->GetNotificationManager()->RegisterNotificationListener(Instance);
 	Instance->_serverThread.reset(new thread(&GameServer::Exec, Instance.get()));
 }
 
@@ -205,13 +205,13 @@ uint8_t GameServer::GetHostControllerPort()
 void GameServer::SetHostControllerPort(uint8_t port)
 {
 	if(GameServer::Started()) {
-		Instance->_console->Lock();
+		Instance->_emu->Lock();
 		if(port == GameConnection::SpectatorPort || GetAvailableControllers() & (1 << port)) {
 			//Port is available
 			Instance->_hostControllerPort = port;
 			SendPlayerList();
 		}
-		Instance->_console->Unlock();
+		Instance->_emu->Unlock();
 	}
 }
 

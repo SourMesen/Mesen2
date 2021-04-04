@@ -2,12 +2,12 @@
 #include "stdafx.h"
 #include "../Utilities/ISerializable.h"
 
-class Console;
+class Emulator;
 
 class Rtc4513 : public ISerializable
 {
 private:
-	Console* _console;
+	Emulator* _emu;
 
 	uint64_t _lastTime = 0;
 	uint8_t _enabled = 0;
@@ -31,7 +31,7 @@ private:
 	void UpdateTime();
 
 public:
-	Rtc4513(Console* console);
+	Rtc4513(Emulator* emu);
 	virtual ~Rtc4513();
 
 	void LoadBattery();

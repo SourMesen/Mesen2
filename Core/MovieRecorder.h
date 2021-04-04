@@ -8,16 +8,14 @@
 #include "MovieTypes.h"
 
 class ZipWriter;
-class Console;
-//class RewindData;
-//struct CodeInfo;
+class Emulator;
 
 class MovieRecorder : public INotificationListener, public IInputRecorder, public IBatteryRecorder, public IBatteryProvider, public std::enable_shared_from_this<MovieRecorder>
 {
 private:
 	static const uint32_t MovieFormatVersion = 1;
 
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	string _filename;
 	string _author;
 	string _description;
@@ -34,7 +32,7 @@ private:
 	void WriteBool(stringstream &out, string name, bool enabled);
 
 public:
-	MovieRecorder(shared_ptr<Console> console);
+	MovieRecorder(shared_ptr<Emulator> emu);
 	virtual ~MovieRecorder();
 
 	bool Record(RecordMovieOptions options);

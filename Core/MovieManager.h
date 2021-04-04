@@ -6,7 +6,7 @@
 
 class MovieRecorder;
 class VirtualFile;
-class Console;
+class Emulator;
 
 class IMovie : public IInputProvider
 {
@@ -18,12 +18,12 @@ public:
 class MovieManager
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	shared_ptr<IMovie> _player;
 	shared_ptr<MovieRecorder> _recorder;
 
 public:
-	MovieManager(shared_ptr<Console> console);
+	MovieManager(shared_ptr<Emulator> emu);
 
 	void Record(RecordMovieOptions options);
 	void Play(VirtualFile file, bool silent = false);

@@ -4,6 +4,7 @@
 struct lua_State;
 class ScriptingContext;
 class Debugger;
+class Emulator;
 class Console;
 class Ppu;
 class MemoryDumper;
@@ -76,7 +77,7 @@ public:
 	static int ResetAccessCounters(lua_State *lua);
 
 private:
-	static Console* _console;
+	static Emulator* _emu;
 	static Ppu* _ppu;
 	static Debugger* _debugger;
 	static MemoryDumper* _memoryDumper;

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "CheatManager.h"
 #include "MessageManager.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "NotificationManager.h"
 #include "../Utilities/HexUtilities.h"
 
-CheatManager::CheatManager(Console* console)
+CheatManager::CheatManager(Emulator* emu)
 {
-	_console = console;
+	_emu = emu;
 }
 
 void CheatManager::AddCheat(CheatCode code)
@@ -32,7 +32,7 @@ void CheatManager::AddCheat(CheatCode code)
 
 void CheatManager::SetCheats(vector<CheatCode> codes)
 {
-	auto lock = _console->AcquireLock();
+	auto lock = _emu->AcquireLock();
 
 	bool hasCheats = !_cheats.empty();
 	ClearCheats(false);
@@ -48,7 +48,7 @@ void CheatManager::SetCheats(vector<CheatCode> codes)
 		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
 	}
 
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CheatsChanged);
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CheatsChanged);
 }
 
 void CheatManager::SetCheats(uint32_t codes[], uint32_t length)
@@ -66,7 +66,7 @@ void CheatManager::SetCheats(uint32_t codes[], uint32_t length)
 
 void CheatManager::ClearCheats(bool showMessage)
 {
-	auto lock = _console->AcquireLock();
+	auto lock = _emu->AcquireLock();
 
 	bool hadCheats = !_cheats.empty();
 
@@ -79,7 +79,7 @@ void CheatManager::ClearCheats(bool showMessage)
 		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
 
 		//Used by net play
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CheatsChanged);
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CheatsChanged);
 	}
 }
 
@@ -87,7 +87,7 @@ void CheatManager::AddStringCheat(string code)
 {
 	static string _convertTable = "DF4709156BC8A23E";
 	
-	auto lock = _console->AcquireLock();
+	auto lock = _emu->AcquireLock();
 	
 	std::transform(code.begin(), code.end(), code.begin(), ::toupper);
 

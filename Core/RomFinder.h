@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "BaseCartridge.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/FolderUtilities.h"
@@ -8,25 +8,25 @@
 class RomFinder
 {
 public:
-	static bool LoadMatchingRom(Console* console, string romName, string sha1Hash)
+	static bool LoadMatchingRom(Emulator* emu, string romName, string sha1Hash)
 	{
-		if(console->IsRunning() && console->GetCartridge()->GetSha1Hash() == sha1Hash) {
+		if(emu->IsRunning() && emu->GetHash(HashType::Sha1) == sha1Hash) {
 			//Current game matches
 			return true;
 		}
 
-		string match = FindMatchingRom(console, romName, sha1Hash);
+		string match = FindMatchingRom(emu, romName, sha1Hash);
 		if(!match.empty()) {
-			return console->LoadRom(match, VirtualFile(""));
+			return emu->LoadRom(match, VirtualFile(""));
 		}
 		return false;
 	}
 
-	static string FindMatchingRom(Console* console, string romName, string sha1Hash)
+	static string FindMatchingRom(Emulator* emu, string romName, string sha1Hash)
 	{
-		if(console->IsRunning() && console->GetCartridge()->GetSha1Hash() == sha1Hash) {
+		if(emu->IsRunning() && emu->GetHash(HashType::Sha1) == sha1Hash) {
 			//Current game matches
-			return console->GetRomInfo().RomFile;
+			return emu->GetRomInfo().RomFile;
 		}
 
 		string lcRomname = romName;

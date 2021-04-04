@@ -151,7 +151,6 @@ namespace Mesen.GUI.Config
 
 		public void ApplyConfig()
 		{
-
 			/*if(Program.IsMono) {
 				FileAssociationHelper.ConfigureLinuxMimeTypes();
 			} else {
@@ -164,18 +163,19 @@ namespace Mesen.GUI.Config
 				FileAssociationHelper.UpdateFileAssociation("spc", this.AssociateSpcFiles);
 				FileAssociationHelper.UpdateFileAssociation("bs", this.AssociateBsFiles);
 			}
+			//TODO
+			frmMain.Instance.TopMost = AlwaysOnTop;*/
 
-			frmMain.Instance.TopMost = AlwaysOnTop;
-
-			ShortcutKeyInfo[] shortcutKeys = new ShortcutKeyInfo[ShortcutKeys1.Count + ShortcutKeys2.Count];
-			int i = 0;
-			foreach(ShortcutKeyInfo shortcutInfo in ShortcutKeys1) {
-				shortcutKeys[i++] = shortcutInfo;
+			List<InteropShortcutKeyInfo> shortcutKeys = new List<InteropShortcutKeyInfo>();
+			foreach(ShortcutKeyInfo shortcutInfo in ShortcutKeys) {
+				if(!shortcutInfo.KeyCombination.IsEmpty) {
+					shortcutKeys.Add(new InteropShortcutKeyInfo(shortcutInfo.Shortcut, shortcutInfo.KeyCombination.ToInterop()));
+				}
+				if(!shortcutInfo.KeyCombination2.IsEmpty) {
+					shortcutKeys.Add(new InteropShortcutKeyInfo(shortcutInfo.Shortcut, shortcutInfo.KeyCombination2.ToInterop()));
+				}
 			}
-			foreach(ShortcutKeyInfo shortcutInfo in ShortcutKeys2) {
-				shortcutKeys[i++] = shortcutInfo;
-			}
-			ConfigApi.SetShortcutKeys(shortcutKeys, (UInt32)shortcutKeys.Length);
+			ConfigApi.SetShortcutKeys(shortcutKeys.ToArray(), (UInt32)shortcutKeys.Count);
 
 			ConfigApi.SetPreferences(new InteropPreferencesConfig() {
 				ShowFps = ShowFps,
@@ -190,7 +190,7 @@ namespace Mesen.GUI.Config
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
 				RewindBufferSize = RewindBufferSize
-			});*/
+			});
 		}
 	}
 

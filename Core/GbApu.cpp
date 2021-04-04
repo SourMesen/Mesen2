@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GbApu.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "Gameboy.h"
 #include "SoundMixer.h"
 #include "EmuSettings.h"
@@ -16,7 +16,7 @@ GbApu::GbApu()
 	_rightChannel = blip_new(GbApu::MaxSamples);
 }
 
-void GbApu::Init(Console* console, Gameboy* gameboy)
+void GbApu::Init(Emulator* emu, Gameboy* gameboy)
 {
 	_square1.reset(new GbSquareChannel(this));
 	_square2.reset(new GbSquareChannel(this));
@@ -28,9 +28,9 @@ void GbApu::Init(Console* console, Gameboy* gameboy)
 	_clockCounter = 0;
 	_prevClockCount = 0;
 
-	_console = console;
-	_settings = console->GetSettings().get();
-	_soundMixer = console->GetSoundMixer().get();
+	_emu = emu;
+	_settings = emu->GetSettings().get();
+	_soundMixer = emu->GetSoundMixer().get();
 	_gameboy = gameboy;
 	_state = {};
 

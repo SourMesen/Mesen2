@@ -7,13 +7,13 @@
 #include "INotificationListener.h"
 
 class ZipReader;
-class Console;
+class Emulator;
 struct CheatCode;
 
 class MesenMovie : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 
 	VirtualFile _movieFile;
 	shared_ptr<ZipReader> _reader;
@@ -41,7 +41,7 @@ private:
 	bool LoadCheat(string cheatData, CheatCode &code);
 
 public:
-	MesenMovie(shared_ptr<Console> console, bool silent);
+	MesenMovie(shared_ptr<Emulator> emu, bool silent);
 	virtual ~MesenMovie();
 
 	bool Play(VirtualFile &file) override;

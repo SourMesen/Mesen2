@@ -2,7 +2,9 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 #include "Debugger.h"
-#include "ConsoleLock.h"
+#include "EmulatorLock.h"
+#include "CartTypes.h"
+#include "IConsole.h"
 #include "../Utilities/Timer.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/SimpleLock.h"
@@ -21,12 +23,16 @@ class CheatManager;
 class MovieManager;
 class FrameLimiter;
 class DebugStats;
+class ControlManager;
+
+struct RomInfo;
 
 enum class MemoryOperationType;
 enum class SnesMemoryType;
 enum class EventType;
 enum class ConsoleRegion;
 enum class ConsoleType;
+enum class HashType;
 
 class Emulator : public std::enable_shared_from_this<Emulator>
 {
@@ -47,6 +53,8 @@ private:
 	shared_ptr<CheatManager> _cheatManager;
 	shared_ptr<MovieManager> _movieManager;
 
+	shared_ptr<IConsole> _console;
+
 	thread::id _emulationThreadId;
 
 	atomic<uint32_t> _lockCounter;
@@ -59,6 +67,9 @@ private:
 	atomic<bool> _pauseOnNextFrame;
 	atomic<bool> _threadPaused;
 
+	ConsoleRegion _region;
+	ConsoleType _consoleType;
+
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
 
@@ -67,12 +78,10 @@ private:
 	Timer _lastFrameTimer;
 	double _frameDelay = 0;
 
-	double GetFrameDelay();
 	void UpdateRegion();
 	void WaitForLock();
 	void WaitForPauseEnd();
 
-	void RunFrame();
 	bool ProcessSystemActions();
 	void RunFrameWithRunAhead();
 
@@ -101,12 +110,12 @@ public:
 
 	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
 	RomInfo GetRomInfo();
-	uint64_t GetMasterClock();
-	uint32_t GetMasterClockRate();
+	string GetHash(HashType type);
+	PpuFrameInfo GetPpuFrame();
 	ConsoleRegion GetRegion();
 	ConsoleType GetConsoleType();
 
-	ConsoleLock AcquireLock();
+	EmulatorLock AcquireLock();
 	void Lock();
 	void Unlock();
 	bool IsThreadPaused();
@@ -125,6 +134,8 @@ public:
 	shared_ptr<BatteryManager> GetBatteryManager();
 	shared_ptr<CheatManager> GetCheatManager();
 	shared_ptr<MovieManager> GetMovieManager();
+
+	shared_ptr<ControlManager> GetControlManager();
 
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
 	void StopDebugger();
@@ -197,4 +208,10 @@ public:
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 	void BreakImmediately(BreakSource source);
+};
+
+enum class HashType
+{
+	Crc32,
+	Sha1
 };

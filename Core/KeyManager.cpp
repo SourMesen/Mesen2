@@ -2,7 +2,7 @@
 #include "KeyManager.h"
 #include "IKeyManager.h"
 #include "EmuSettings.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "VideoDecoder.h"
 
 IKeyManager* KeyManager::_keyManager = nullptr;
@@ -95,14 +95,14 @@ MouseMovement KeyManager::GetMouseMovement(double videoScale, double mouseSensit
 	return mov;
 }
 
-void KeyManager::SetMousePosition(shared_ptr<Console> console, double x, double y)
+void KeyManager::SetMousePosition(Emulator* emu, double x, double y)
 {
 	if(x < 0 || y < 0) {
 		_mousePosition.X = -1;
 		_mousePosition.Y = -1;
 	} else {
-		OverscanDimensions overscan = console->GetSettings()->GetOverscan();
-		ScreenSize size = console->GetVideoDecoder()->GetScreenSize(true);
+		OverscanDimensions overscan = emu->GetSettings()->GetOverscan();
+		ScreenSize size = emu->GetVideoDecoder()->GetScreenSize(true);
 		_mousePosition.X = (int32_t)(x*size.Width + overscan.Left);
 		_mousePosition.Y = (int32_t)(y*size.Height + overscan.Top);
 	}

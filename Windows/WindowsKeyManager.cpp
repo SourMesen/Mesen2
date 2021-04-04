@@ -210,9 +210,9 @@ static vector<KeyDefinition> _keyDefinitions = {
 	{ "FnDownArrow", 10004 }
 };
 
-WindowsKeyManager::WindowsKeyManager(shared_ptr<Console> console, HWND hWnd)
+WindowsKeyManager::WindowsKeyManager(shared_ptr<Emulator> emu, HWND hWnd)
 {
-	_console = console;
+	_emu = emu;
 	_hWnd = hWnd;
 
 	ResetKeyState();
@@ -255,8 +255,8 @@ WindowsKeyManager::~WindowsKeyManager()
 void WindowsKeyManager::StartUpdateDeviceThread()
 {
 	_updateDeviceThread = std::thread([=]() {
-		_xInput.reset(new XInputManager(_console));
-		_directInput.reset(new DirectInputManager(_console, _hWnd));
+		_xInput.reset(new XInputManager(_emu));
+		_directInput.reset(new DirectInputManager(_emu, _hWnd));
 
 		while(!_stopUpdateDeviceThread) {
 			//Check for newly plugged in XInput controllers every 5 secs

@@ -79,5 +79,14 @@ namespace Mesen.GUI.Config.Shortcuts
 
 			return string.Join("+", keyNames);
 		}
+
+		public InteropKeyCombination ToInterop()
+		{
+			return new InteropKeyCombination() {
+				Key1 = Key1,
+				Key2 = Key2,
+				Key3 = Key3
+			};
+		}
 	}
 }

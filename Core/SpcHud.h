@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-class Console;
+class Emulator;
 class SoundMixer;
 class DebugHud;
 class SpcFileData;
@@ -19,7 +19,7 @@ private:
 	SpcFileData* _spcData;
 
 public:
-	SpcHud(Console* console, SpcFileData* spcData);
+	SpcHud(Emulator* emu, SpcFileData* spcData);
 
 	void Draw(uint32_t frame);
 };

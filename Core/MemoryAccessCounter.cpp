@@ -3,6 +3,7 @@
 #include "MemoryManager.h"
 #include "DebugBreakHelper.h"
 #include "Debugger.h"
+#include "Console.h"
 #include "MemoryDumper.h"
 #include "Spc.h"
 #include "Sa1.h"

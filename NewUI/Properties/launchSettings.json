@@ -2,7 +2,7 @@
   "profiles": {
     "Mesen": {
       "commandName": "Project",
-      "nativeDebugging": false
+      "nativeDebugging": true
     }
   }
 }

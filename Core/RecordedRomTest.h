@@ -6,13 +6,13 @@
 #include "../Utilities/AutoResetEvent.h"
 
 class VirtualFile;
-class Console;
+class Emulator;
 class Ppu;
 
 class RecordedRomTest : public INotificationListener, public std::enable_shared_from_this<RecordedRomTest>
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	Ppu* _ppu;
 
 	bool _recording = false;
@@ -36,7 +36,7 @@ private:
 	void Save();
 
 public:
-	RecordedRomTest(shared_ptr<Console> console = nullptr);
+	RecordedRomTest(shared_ptr<Emulator> console = nullptr);
 	virtual ~RecordedRomTest();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;

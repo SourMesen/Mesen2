@@ -9,10 +9,9 @@
 #include "DefaultVideoFilter.h"
 #include "GbTypes.h"
 
-PpuTools::PpuTools(Console *console, Ppu *ppu)
+PpuTools::PpuTools(Emulator *emu)
 {
-	_console = console;
-	_ppu = ppu;
+	_emu = emu;
 }
 
 uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift)

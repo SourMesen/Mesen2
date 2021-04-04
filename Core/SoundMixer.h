@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "IAudioDevice.h"
 
-class Console;
+class Emulator;
 class Equalizer;
 class SoundResampler;
 class WaveRecorder;
@@ -11,7 +11,7 @@ class SoundMixer
 {
 private:
 	IAudioDevice *_audioDevice;
-	Console *_console;
+	Emulator *_emu;
 	unique_ptr<Equalizer> _equalizer;
 	unique_ptr<SoundResampler> _resampler;
 	shared_ptr<WaveRecorder> _waveRecorder;
@@ -23,7 +23,7 @@ private:
 	void ProcessEqualizer(int16_t *samples, uint32_t sampleCount);
 
 public:
-	SoundMixer(Console *console);
+	SoundMixer(Emulator *emu);
 	~SoundMixer();
 
 	void PlayAudioBuffer(int16_t *samples, uint32_t sampleCount, uint32_t sourceRate);

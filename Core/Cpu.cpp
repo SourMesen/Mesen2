@@ -3,6 +3,7 @@
 #include "CpuTypes.h"
 #include "Cpu.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryManager.h"
 #include "DmaController.h"
 #include "EventType.h"
@@ -13,6 +14,7 @@
 Cpu::Cpu(Console *console)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 	_memoryManager = console->GetMemoryManager().get();
 	_dmaController = console->GetDmaController().get();
 }
@@ -52,11 +54,11 @@ void Cpu::Exec()
 		_state.NeedNmi = false;
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector, true);
-		_console->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), true);
+		_emu->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), true);
 	} else if(_state.PrevIrqSource) {
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector, true);
-		_console->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), false);
+		_emu->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), false);
 	}
 #endif
 }

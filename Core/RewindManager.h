@@ -6,7 +6,7 @@
 #include "IInputProvider.h"
 #include "IInputRecorder.h"
 
-class Console;
+class Emulator;
 class EmuSettings;
 
 enum class RewindState
@@ -30,7 +30,7 @@ class RewindManager : public INotificationListener, public IInputProvider, publi
 private:
 	static constexpr int32_t BufferSize = 60; //Number of frames between each save state
 
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	shared_ptr<EmuSettings> _settings;
 	
 	bool _hasHistory;
@@ -60,7 +60,7 @@ private:
 	void ClearBuffer();
 
 public:
-	RewindManager(shared_ptr<Console> console);
+	RewindManager(shared_ptr<Emulator> emu);
 	virtual ~RewindManager();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;

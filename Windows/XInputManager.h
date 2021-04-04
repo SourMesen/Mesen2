@@ -3,17 +3,17 @@
 #include "stdafx.h"
 #include <Xinput.h>
 
-class Console;
+class Emulator;
 
 class XInputManager
 {
 	private:
-		shared_ptr<Console> _console;
+		shared_ptr<Emulator> _emu;
 		vector<shared_ptr<XINPUT_STATE>> _gamePadStates;
 		vector<uint8_t> _gamePadConnected;
 
 	public:
-		XInputManager(shared_ptr<Console> console);
+		XInputManager(shared_ptr<Emulator> emu);
 
 		bool NeedToUpdate();
 		void UpdateDeviceList();

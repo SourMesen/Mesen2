@@ -4,6 +4,7 @@
 #include "../Utilities/ISerializable.h"
 #include "../Utilities/Timer.h"
 
+class Emulator;
 class Console;
 class InternalRegisters;
 class MemoryManager;
@@ -21,6 +22,7 @@ private:
 	constexpr static int SpriteLayerIndex = 4;
 	constexpr static int ColorWindowIndex = 5;
 
+	Emulator* _emu;
 	Console* _console;
 	InternalRegisters* _regs;
 	MemoryManager* _memoryManager;
@@ -203,7 +205,7 @@ private:
 	void RandomizeState();
 
 public:
-	Ppu(Console* console);
+	Ppu(Emulator* emu, Console* console);
 	virtual ~Ppu();
 
 	void PowerOn();

@@ -2,16 +2,16 @@
 #include "IRenderingDevice.h"
 #include "VideoRenderer.h"
 #include "VideoDecoder.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
 #include "../Utilities/IVideoRecorder.h"
 #include "../Utilities/AviRecorder.h"
 #include "../Utilities/GifRecorder.h"
 
-VideoRenderer::VideoRenderer(shared_ptr<Console> console)
+VideoRenderer::VideoRenderer(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 	_stopFlag = false;	
 	StartThread();
 }
@@ -64,7 +64,7 @@ void VideoRenderer::UpdateFrame(void* frameBuffer, uint32_t width, uint32_t heig
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder;
 	if(recorder) {
-		recorder->AddFrame(frameBuffer, width, height, _console->GetFps());
+		recorder->AddFrame(frameBuffer, width, height, _emu->GetFps());
 	}
 
 	if(_renderer) {
@@ -89,7 +89,7 @@ void VideoRenderer::UnregisterRenderingDevice(IRenderingDevice *renderer)
 
 void VideoRenderer::StartRecording(string filename, VideoCodec codec, uint32_t compressionLevel)
 {
-	FrameInfo frameInfo = _console->GetVideoDecoder()->GetFrameInfo();
+	FrameInfo frameInfo = _emu->GetVideoDecoder()->GetFrameInfo();
 
 	shared_ptr<IVideoRecorder> recorder;
 	if(codec == VideoCodec::GIF) {
@@ -98,7 +98,7 @@ void VideoRenderer::StartRecording(string filename, VideoCodec codec, uint32_t c
 		recorder.reset(new AviRecorder(codec, compressionLevel));
 	}
 
-	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _console->GetSettings()->GetAudioConfig().SampleRate, _console->GetFps())) {
+	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _emu->GetSettings()->GetAudioConfig().SampleRate, _emu->GetFps())) {
 		_recorder = recorder;
 		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStarted", filename);
 	}

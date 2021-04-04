@@ -14,6 +14,7 @@
 #include "VideoDecoder.h"
 #include "RewindManager.h"
 #include "SaveStateManager.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "BaseCartridge.h"
 #include "IKeyManager.h"
@@ -43,7 +44,7 @@
 #define checksavestateconditions() if(!_context->CheckInStartFrameEvent() && !_context->CheckInExecOpEvent()) { error("This function must be called inside a StartFrame event callback or a CpuExec memory operation callback"); return 0; }
 
 Debugger* LuaApi::_debugger = nullptr;
-Console* LuaApi::_console = nullptr;
+Emulator* LuaApi::_emu = nullptr;
 Ppu* LuaApi::_ppu = nullptr;
 MemoryDumper* LuaApi::_memoryDumper = nullptr;
 ScriptingContext* LuaApi::_context = nullptr;
@@ -53,8 +54,8 @@ void LuaApi::SetContext(ScriptingContext* context)
 	_context = context;
 	_debugger = _context->GetDebugger();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
-	_console = _debugger->GetConsole().get();
-	_ppu = _console->GetPpu().get();
+	_emu = _debugger->GetEmulator();
+	_ppu = _debugger->GetConsole()->GetPpu().get();
 }
 
 int LuaApi::GetLibrary(lua_State *lua)
@@ -388,8 +389,8 @@ int LuaApi::DrawString(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(3);
 
-	int startFrame = _console->GetFrameCount() + displayDelay;
-	_console->GetDebugHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame);
+	int startFrame = _emu->GetFrameCount() + displayDelay;
+	_emu->GetDebugHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -407,8 +408,8 @@ int LuaApi::DrawLine(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(4);
 
-	int startFrame = _console->GetFrameCount() + displayDelay;
-	_console->GetDebugHud()->DrawLine(x, y, x2, y2, color, frameCount, startFrame);
+	int startFrame = _emu->GetFrameCount() + displayDelay;
+	_emu->GetDebugHud()->DrawLine(x, y, x2, y2, color, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -424,8 +425,8 @@ int LuaApi::DrawPixel(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(3);
 
-	int startFrame = _console->GetFrameCount() + displayDelay;
-	_console->GetDebugHud()->DrawPixel(x, y, color, frameCount, startFrame);
+	int startFrame = _emu->GetFrameCount() + displayDelay;
+	_emu->GetDebugHud()->DrawPixel(x, y, color, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -444,8 +445,8 @@ int LuaApi::DrawRectangle(lua_State *lua)
 	int x = l.ReadInteger();
 	checkminparams(4);
 
-	int startFrame = _console->GetFrameCount() + displayDelay;
-	_console->GetDebugHud()->DrawRectangle(x, y, width, height, color, fill, frameCount, startFrame);
+	int startFrame = _emu->GetFrameCount() + displayDelay;
+	_emu->GetDebugHud()->DrawRectangle(x, y, width, height, color, fill, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -455,7 +456,7 @@ int LuaApi::ClearScreen(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 
-	_console->GetDebugHud()->ClearScreen();
+	_emu->GetDebugHud()->ClearScreen();
 	return l.ReturnCount();
 }
 
@@ -486,8 +487,8 @@ int LuaApi::SetScreenBuffer(lua_State *lua)
 		pixels[i] = l.ReadInteger() ^ 0xFF000000;
 	}
 	
-	int startFrame = _console->GetFrameCount();
-	_console->GetDebugHud()->DrawScreenBuffer(pixels, startFrame);
+	int startFrame = _emu->GetFrameCount();
+	_emu->GetDebugHud()->DrawScreenBuffer(pixels, startFrame);
 
 	return l.ReturnCount();
 }
@@ -545,7 +546,7 @@ int LuaApi::Reset(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	checkinitdone();
-	_console->Reset();
+	_emu->Reset();
 	return l.ReturnCount();
 }
 
@@ -589,7 +590,7 @@ int LuaApi::Rewind(lua_State *lua)
 	checkparams();
 	checksavestateconditions();
 	errorCond(seconds <= 0, "seconds must be >= 1");
-	_console->GetRewindManager()->RewindSeconds(seconds);
+	_emu->GetRewindManager()->RewindSeconds(seconds);
 	return l.ReturnCount();
 }
 
@@ -598,7 +599,7 @@ int LuaApi::TakeScreenshot(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	stringstream ss;
-	_console->GetVideoDecoder()->TakeScreenshot(ss);
+	_emu->GetVideoDecoder()->TakeScreenshot(ss);
 	l.Return(ss.str());
 	return l.ReturnCount();
 }
@@ -621,7 +622,7 @@ int LuaApi::GetInput(lua_State *lua)
 	checkparams();
 	errorCond(port < 0 || port > 4, "Invalid port number - must be between 0 to 4");
 
-	shared_ptr<SnesController> controller = std::dynamic_pointer_cast<SnesController>(_console->GetControlManager()->GetControlDevice(port));
+	shared_ptr<SnesController> controller = std::dynamic_pointer_cast<SnesController>(_emu->GetControlManager()->GetControlDevice(port));
 	errorCond(controller == nullptr, "Input port must be connected to a standard controller");
 
 	lua_newtable(lua);
@@ -707,12 +708,12 @@ int LuaApi::GetRomInfo(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 
-	RomInfo romInfo = _console->GetRomInfo();
+	RomInfo romInfo = _emu->GetRomInfo();
 
 	lua_newtable(lua);
 	lua_pushstringvalue(name, romInfo.RomFile.GetFileName());
 	lua_pushstringvalue(path, romInfo.RomFile.GetFilePath());
-	lua_pushstringvalue(fileSha1Hash, _console->GetCartridge()->GetSha1Hash());
+	lua_pushstringvalue(fileSha1Hash, _emu->GetHash(HashType::Sha1));
 
 	return 1;
 }

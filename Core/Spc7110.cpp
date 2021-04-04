@@ -2,6 +2,7 @@
 #include "Spc7110.h"
 #include "Spc7110Decomp.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryMappings.h"
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
@@ -13,6 +14,7 @@
 Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 	_cart = console->GetCartridge().get();
 	_useRtc = useRtc;
 
@@ -37,7 +39,7 @@ Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType
 	mappings->RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, prgRomHandlers, 8);
 	mappings->RegisterHandler(0x80, 0xBF, 0x8000, 0xFFFF, prgRomHandlers, 8);
 
-	bool enableStrictBoardMappings = console->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings;
+	bool enableStrictBoardMappings = _emu->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings;
 	uint32_t romSize = _cart->DebugGetPrgRomSize();
 	if(!enableStrictBoardMappings && _cart->DebugGetPrgRomSize() >= 0x600000) {
 		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers, 0, 0x600);
@@ -472,7 +474,7 @@ void Spc7110::Reset()
 
 	_decomp.reset(new Spc7110Decomp(this));
 	if(_useRtc) {
-		_rtc.reset(new Rtc4513(_console));
+		_rtc.reset(new Rtc4513(_emu));
 	}
 }
 

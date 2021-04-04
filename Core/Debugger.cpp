@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Debugger.h"
 #include "DebugTypes.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "Cpu.h"
 #include "Ppu.h"
@@ -53,11 +54,12 @@
 Debugger::Debugger(shared_ptr<Console> console)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
 	_spc = console->GetSpc();
 	_cart = console->GetCartridge();
-	_settings = console->GetSettings();
+	_settings = _emu->GetSettings();
 	_memoryManager = console->GetMemoryManager();
 	_dmaController = console->GetDmaController();
 	_internalRegs = console->GetInternalRegisters();
@@ -77,7 +79,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
-	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
+	_ppuTools.reset(new PpuTools(_emu));
 	_scriptManager.reset(new ScriptManager(this));
 
 	if(_gameboy) {
@@ -105,7 +107,7 @@ Debugger::Debugger(shared_ptr<Console> console)
 
 	RefreshCodeCache();
 
-	if(_console->IsPaused()) {
+	if(_emu->IsPaused()) {
 		Step(CpuType::Cpu, 1, StepType::Step);
 	}
 	_executionStopped = false;
@@ -256,7 +258,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 		return;
 	}
 
-	_console->GetSoundMixer()->StopAudio();
+	_emu->GetSoundMixer()->StopAudio();
 	_disassembler->Disassemble(CpuType::Cpu);
 	_disassembler->Disassemble(CpuType::Spc);
 	if(_cart->GetSa1()) {
@@ -282,7 +284,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 			evt.Operation = *operation;
 		}
 		_waitForBreakResume = true;
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
 	}
 
 	while((_waitForBreakResume && !_suspendRequestCount) || _breakRequestCount) {
@@ -324,7 +326,7 @@ void Debugger::ProcessEvent(EventType type)
 		default: break;
 
 		case EventType::StartFrame:
-			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Cpu);
+			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Cpu);
 			GetEventManager(CpuType::Cpu)->ClearFrameEvents();
 			break;
 
@@ -332,7 +334,7 @@ void Debugger::ProcessEvent(EventType type)
 			if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
 				_scriptManager->ProcessEvent(EventType::StartFrame);
 			}
-			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Gameboy);
+			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Gameboy);
 			GetEventManager(CpuType::Gameboy)->ClearFrameEvents();
 			break;
 		
@@ -433,7 +435,7 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 
 bool Debugger::IsExecutionStopped()
 {
-	return _executionStopped || _console->IsThreadPaused();
+	return _executionStopped || _emu->IsThreadPaused();
 }
 
 bool Debugger::HasBreakRequest()
@@ -806,6 +808,11 @@ shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 shared_ptr<Console> Debugger::GetConsole()
 {
 	return _console;
+}
+
+Emulator* Debugger::GetEmulator()
+{
+	return _emu;
 }
 
 shared_ptr<IAssembler> Debugger::GetAssembler(CpuType cpuType)

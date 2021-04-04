@@ -10,7 +10,7 @@
 #include "ControlDeviceState.h"
 #include "ClientConnectionData.h"
 
-class Console;
+class Emulator;
 
 class GameClientConnection : public GameConnection, public INotificationListener, public IInputProvider
 {
@@ -45,7 +45,7 @@ protected:
 	void ProcessMessage(NetMessage* message) override;
 
 public:
-	GameClientConnection(shared_ptr<Console> console, shared_ptr<Socket> socket, ClientConnectionData &connectionData);
+	GameClientConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, ClientConnectionData &connectionData);
 	virtual ~GameClientConnection();
 
 	void Shutdown();

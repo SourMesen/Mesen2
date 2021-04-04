@@ -4,6 +4,7 @@
 #include "BaseCoprocessor.h"
 
 class Console;
+class Emulator;
 class MemoryManager;
 class RamHandler;
 enum class CoprocessorType;
@@ -12,6 +13,7 @@ class NecDsp final : public BaseCoprocessor
 {
 private:
 	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 	MemoryManager* _memoryManager = nullptr;
 	NecDspState _state = {};
 	unique_ptr<RamHandler> _ramHandler;

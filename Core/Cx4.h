@@ -5,6 +5,7 @@
 #include "MemoryMappings.h"
 
 class Console;
+class Emulator;
 class MemoryManager;
 class Cpu;
 
@@ -13,6 +14,7 @@ class Cx4 : public BaseCoprocessor
 private:
 	static constexpr int DataRamSize = 0xC00;
 
+	Emulator *_emu;
 	Console *_console;
 	MemoryManager *_memoryManager;
 	Cpu *_cpu;

@@ -18,6 +18,7 @@
 #include "Debugger.h"
 #include "BaseCartridge.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "Assembler.h"
@@ -34,7 +35,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_cpu = debugger->GetConsole()->GetCpu().get();
 	_sa1 = debugger->GetConsole()->GetCartridge()->GetSa1();
 	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu).get();
-	_settings = debugger->GetConsole()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
 	
 	_eventManager.reset(new EventManager(debugger, _cpu, _debugger->GetConsole()->GetPpu().get(), _memoryManager, _debugger->GetConsole()->GetDmaController().get()));

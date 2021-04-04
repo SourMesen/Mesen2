@@ -5,12 +5,12 @@
 #include "EmuSettings.h"
 #include "../Utilities/PNGHelper.h"
 #include "../Utilities/FolderUtilities.h"
-#include "Console.h"
+#include "Emulator.h"
 
-BaseVideoFilter::BaseVideoFilter(shared_ptr<Console> console)
+BaseVideoFilter::BaseVideoFilter(shared_ptr<Emulator> emu)
 {
-	_console = console;
-	_overscan = _console->GetSettings()->GetOverscan();
+	_emu = emu;
+	_overscan = _emu->GetSettings()->GetOverscan();
 }
 
 BaseVideoFilter::~BaseVideoFilter()
@@ -68,7 +68,7 @@ uint32_t BaseVideoFilter::GetBufferSize()
 void BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
 {
 	_frameLock.Acquire();
-	_overscan = _console->GetSettings()->GetOverscan();
+	_overscan = _emu->GetSettings()->GetOverscan();
 	_isOddFrame = frameNumber % 2;
 	UpdateBufferSize();
 	OnBeforeApplyFilter();
@@ -111,7 +111,7 @@ void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename
 
 	shared_ptr<ScaleFilter> scaleFilter = ScaleFilter::GetScaleFilter(filterType);
 	if(scaleFilter) {
-		pngBuffer = scaleFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height, _console->GetSettings()->GetVideoConfig().ScanlineIntensity);
+		pngBuffer = scaleFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = scaleFilter->GetFrameInfo(frameInfo);
 	}
 	

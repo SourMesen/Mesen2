@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-class Console;
+class Emulator;
 
 class DebugStats
 {
@@ -12,5 +12,5 @@ private:
 	double _lastFrameMax = 0;
 
 public:
-	void DisplayStats(Console *console, double lastFrameTime);
+	void DisplayStats(Emulator *emu, double lastFrameTime);
 };

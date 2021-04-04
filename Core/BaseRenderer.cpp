@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <cmath>
 #include "BaseRenderer.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "MessageManager.h"
 
-BaseRenderer::BaseRenderer(shared_ptr<Console> console, bool registerAsMessageManager)
+BaseRenderer::BaseRenderer(shared_ptr<Emulator> emu, bool registerAsMessageManager)
 {
-	_console = console;
+	_emu = emu;
 
 	if(registerAsMessageManager) {
 		//Only display messages on the master CPU's screen
@@ -119,7 +119,7 @@ void BaseRenderer::ShowFpsCounter(int lineNumber)
 	int yPos = 13 + 24 * lineNumber;
 	if(_fpsTimer.GetElapsedMS() > 1000) {
 		//Update fps every sec
-		uint32_t frameCount = _console->GetFrameCount();
+		uint32_t frameCount = _emu->GetFrameCount();
 		if(_lastFrameCount > frameCount) {
 			_currentFPS = 0;
 		} else {
@@ -145,8 +145,8 @@ void BaseRenderer::ShowFpsCounter(int lineNumber)
 void BaseRenderer::ShowGameTimer(int lineNumber)
 {
 	int yPos = 13 + 24 * lineNumber;
-	uint32_t frameCount = _console->GetFrameCount();
-	double frameRate = _console->GetFps();
+	uint32_t frameCount = _emu->GetFrameCount();
+	double frameRate = _emu->GetFps();
 	uint32_t seconds = (uint32_t)(frameCount / frameRate) % 60;
 	uint32_t minutes = (uint32_t)(frameCount / frameRate / 60) % 60;
 	uint32_t hours = (uint32_t)(frameCount / frameRate / 3600);
@@ -161,7 +161,7 @@ void BaseRenderer::ShowGameTimer(int lineNumber)
 void BaseRenderer::ShowFrameCounter(int lineNumber)
 {
 	int yPos = 13 + 24 * lineNumber;
-	uint32_t frameCount = _console->GetFrameCount();
+	uint32_t frameCount = _emu->GetFrameCount();
 
 	string frameCounter = MessageManager::Localize("Frame") + ": " + std::to_string(frameCount);
 	DrawString(frameCounter, _screenWidth - 146, yPos, 250, 235, 215);
@@ -170,7 +170,7 @@ void BaseRenderer::ShowFrameCounter(int lineNumber)
 void BaseRenderer::DrawCounters()
 {
 	int lineNumber = 0;
-	PreferencesConfig cfg = _console->GetSettings()->GetPreferences();
+	PreferencesConfig cfg = _emu->GetSettings()->GetPreferences();
 	if(cfg.ShowGameTimer) {
 		ShowGameTimer(lineNumber++);
 	}

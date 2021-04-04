@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "NotificationManager.h"
 #include "../Utilities/FolderUtilities.h"
 
@@ -68,7 +68,7 @@ private:
 	}
 
 public:
-	static bool LoadDspFirmware(Console *console, FirmwareType type, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
+	static bool LoadDspFirmware(Emulator* emu, FirmwareType type, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
 	{
 		if(embeddedFirware.size() == programSize + dataSize) {
 			programRom.insert(programRom.end(), embeddedFirware.begin(), embeddedFirware.begin() + programSize);
@@ -82,7 +82,7 @@ public:
 		msg.Filename = combinedFilename.c_str();
 		msg.Firmware = type;
 		msg.Size = programSize + dataSize;
-		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
 		//Try again in case the user selected a valid firmware file
 		if(AttemptLoadDspFirmware(combinedFilename, splitFilenameProgram, splitFilenameData, programRom, dataRom, programSize, dataSize)) {
@@ -93,7 +93,7 @@ public:
 		return false;
 	}
 
-	static bool LoadBsxFirmware(Console* console, uint8_t** prgRom, uint32_t& prgSize)
+	static bool LoadBsxFirmware(Emulator* emu, uint8_t** prgRom, uint32_t& prgSize)
 	{
 		if(AttemptLoadBsxFirmware(prgRom, prgSize)) {
 			return true;
@@ -103,7 +103,7 @@ public:
 		msg.Filename = "BS-X.bin";
 		msg.Firmware = FirmwareType::Satellaview;
 		msg.Size = 1024*1024;
-		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 		
 		if(AttemptLoadBsxFirmware(prgRom, prgSize)) {
 			return true;
@@ -113,7 +113,7 @@ public:
 		return false;
 	}
 
-	static bool LoadSgbFirmware(Console* console, uint8_t** prgRom, uint32_t& prgSize, bool useSgb2)
+	static bool LoadSgbFirmware(Emulator* emu, uint8_t** prgRom, uint32_t& prgSize, bool useSgb2)
 	{
 		string filename = useSgb2 ? "SGB2.sfc" : "SGB1.sfc";
 		prgSize = useSgb2 ? 0x80000 : 0x40000;
@@ -125,7 +125,7 @@ public:
 		msg.Filename = filename.c_str();
 		msg.Firmware = useSgb2 ? FirmwareType::SGB2 : FirmwareType::SGB1;
 		msg.Size = prgSize;
-		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
 		if(AttemptLoadFirmware(prgRom, filename, prgSize)) {
 			return true;
@@ -135,7 +135,7 @@ public:
 		return false;
 	}
 
-	static bool LoadGbBootRom(Console* console, uint8_t** bootRom, FirmwareType type)
+	static bool LoadGbBootRom(Emulator* emu, uint8_t** bootRom, FirmwareType type)
 	{
 		string filename;
 		string altFilename;

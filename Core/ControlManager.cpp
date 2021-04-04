@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ControlManager.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "MemoryManager.h"
 #include "KeyManager.h"
@@ -18,6 +19,7 @@
 ControlManager::ControlManager(Console* console)
 {
 	_console = console;
+	_emu = _console->GetEmulator();
 	_inputConfigVersion = -1;
 	_pollCounter = 0;
 	_systemActionManager.reset(new SystemActionManager(console));
@@ -98,14 +100,14 @@ void ControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> control
 
 ControllerType ControlManager::GetControllerType(uint8_t port)
 {
-	return _console->GetSettings()->GetInputConfig().Controllers[port].Type;
+	return _emu->GetSettings()->GetInputConfig().Controllers[port].Type;
 }
 
 shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerType type, uint8_t port, Console* console)
 {
 	shared_ptr<BaseControlDevice> device;
 	
-	InputConfig cfg = console->GetSettings()->GetInputConfig();
+	InputConfig cfg = console->GetEmulator()->GetSettings()->GetInputConfig();
 
 	switch(type) {
 		case ControllerType::None: break;
@@ -120,7 +122,7 @@ shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerT
 
 void ControlManager::UpdateControlDevices()
 {
-	uint32_t version = _console->GetSettings()->GetInputConfigVersion();
+	uint32_t version = _emu->GetSettings()->GetInputConfigVersion();
 	if(_inputConfigVersion != version) {
 		_inputConfigVersion = version;
 
@@ -158,12 +160,12 @@ void ControlManager::UpdateInputState()
 		//log += "|" + device->GetTextState();
 	}
 
-	shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+	shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
 	if(debugger) {
 		debugger->ProcessEvent(EventType::InputPolled);
 	}
 
-	if(!_console->IsRunAheadFrame()) {
+	if(!_emu->IsRunAheadFrame()) {
 		for(IInputRecorder* recorder : _inputRecorders) {
 			recorder->RecordInput(_controlDevices);
 		}
@@ -203,10 +205,10 @@ void ControlManager::Write(uint16_t addr, uint8_t value)
 
 void ControlManager::Serialize(Serializer &s)
 {
-	InputConfig cfg = _console->GetSettings()->GetInputConfig();
+	InputConfig cfg = _emu->GetSettings()->GetInputConfig();
 	s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type, cfg.Controllers[4].Type);
 	if(!s.IsSaving()) {
-		_console->GetSettings()->SetInputConfig(cfg);
+		_emu->GetSettings()->SetInputConfig(cfg);
 		UpdateControlDevices();
 	}
 

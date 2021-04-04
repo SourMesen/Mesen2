@@ -3,18 +3,19 @@
 #include "../Utilities/FolderUtilities.h"
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/ZipReader.h"
+#include "Emulator.h"
 #include "MovieManager.h"
 #include "MesenMovie.h"
 #include "MovieRecorder.h"
 
-MovieManager::MovieManager(shared_ptr<Console> console)
+MovieManager::MovieManager(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 }
 
 void MovieManager::Record(RecordMovieOptions options)
 {
-	shared_ptr<MovieRecorder> recorder(new MovieRecorder(_console));
+	shared_ptr<MovieRecorder> recorder(new MovieRecorder(_emu));
 	if(recorder->Record(options)) {
 		_recorder = recorder;
 	}
@@ -32,7 +33,7 @@ void MovieManager::Play(VirtualFile file, bool forTest)
 
 			vector<string> files = reader.GetFileList();
 			if(std::find(files.begin(), files.end(), "GameSettings.txt") != files.end()) {
-				player.reset(new MesenMovie(_console, forTest));
+				player.reset(new MesenMovie(_emu, forTest));
 			}
 		}
 

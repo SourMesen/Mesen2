@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/Debugger.h"
 #include "../Core/TraceLogger.h"
 #include "../Core/MemoryDumper.h"
@@ -18,12 +18,12 @@
 #include "../Core/Assembler.h"
 #include "../Core/BaseEventManager.h"
 
-extern shared_ptr<Console> _console;
+extern shared_ptr<Emulator> _emu;
 static string _logString;
 
 shared_ptr<Debugger> GetDebugger()
 {
-	return _console->GetDebugger();
+	return _emu->GetDebugger();
 }
 
 extern "C"
@@ -36,12 +36,12 @@ extern "C"
 
 	DllExport void __stdcall ReleaseDebugger()
 	{
-		_console->StopDebugger();
+		_emu->StopDebugger();
 	}
 
 	DllExport bool __stdcall IsDebuggerRunning()
 	{
-		return _console->GetDebugger(false).get() != nullptr;
+		return _emu->GetDebugger(false).get() != nullptr;
 	}
 
 	DllExport bool __stdcall IsExecutionStopped() { return GetDebugger()->IsExecutionStopped(); }

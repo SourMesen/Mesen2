@@ -7,13 +7,13 @@
 #include "IInputRecorder.h"
 
 using std::thread;
-class Console;
+class Emulator;
 
 class GameServer : public IInputRecorder, public IInputProvider, public INotificationListener
 {
 private:
 	static shared_ptr<GameServer> Instance;
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	unique_ptr<thread> _serverThread;
 	atomic<bool> _stop;
 	unique_ptr<Socket> _listener;
@@ -32,12 +32,12 @@ private:
 	void Stop();
 
 public:
-	GameServer(shared_ptr<Console> console, uint16_t port, string password, string hostPlayerName);
+	GameServer(shared_ptr<Emulator> emu, uint16_t port, string password, string hostPlayerName);
 	virtual ~GameServer();
 
 	void RegisterServerInput();
 
-	static void StartServer(shared_ptr<Console> console, uint16_t port, string password, string hostPlayerName);
+	static void StartServer(shared_ptr<Emulator> emu, uint16_t port, string password, string hostPlayerName);
 	static void StopServer();
 	static bool Started();
 

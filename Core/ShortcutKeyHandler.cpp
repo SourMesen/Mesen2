@@ -4,16 +4,16 @@
 #include "KeyManager.h"
 #include "VideoDecoder.h"
 #include "ControlManager.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "RewindManager.h"
 #include "NotificationManager.h"
 #include "SaveStateManager.h"
 #include "MovieManager.h"
 #include "GameClient.h"
 
-ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Console> console)
+ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 	_keySetIndex = 0;
 	_isKeyUp = false;
 	_repeatStarted = false;
@@ -35,8 +35,8 @@ ShortcutKeyHandler::~ShortcutKeyHandler()
 
 bool ShortcutKeyHandler::IsKeyPressed(EmulatorShortcut shortcut)
 {
-	KeyCombination keyComb = _console->GetSettings()->GetShortcutKey(shortcut, _keySetIndex);
-	vector<KeyCombination> supersets = _console->GetSettings()->GetShortcutSupersets(shortcut, _keySetIndex);
+	KeyCombination keyComb = _emu->GetSettings()->GetShortcutKey(shortcut, _keySetIndex);
+	vector<KeyCombination> supersets = _emu->GetSettings()->GetShortcutSupersets(shortcut, _keySetIndex);
 	for(KeyCombination &superset : supersets) {
 		if(IsKeyPressed(superset)) {
 			//A superset is pressed, ignore this subset
@@ -98,21 +98,21 @@ void ShortcutKeyHandler::ProcessRunSingleFrame()
 	}
 	timer->Reset();
 
-	_console->PauseOnNextFrame();
+	_emu->PauseOnNextFrame();
 }
 
 void ShortcutKeyHandler::CheckMappedKeys()
 {
-	shared_ptr<EmuSettings> settings = _console->GetSettings();
+	shared_ptr<EmuSettings> settings = _emu->GetSettings();
 	bool isNetplayClient = GameClient::Connected();
-	bool isMovieActive = _console->GetMovieManager()->Playing() || _console->GetMovieManager()->Recording();
-	bool isMovieRecording = _console->GetMovieManager()->Recording();
+	bool isMovieActive = _emu->GetMovieManager()->Playing() || _emu->GetMovieManager()->Recording();
+	bool isMovieRecording = _emu->GetMovieManager()->Recording();
 
 	//Let the UI handle these shortcuts
 	for(uint64_t i = (uint64_t)EmulatorShortcut::TakeScreenshot; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
 		if(DetectKeyPress((EmulatorShortcut)i)) {
 			void* param = (void*)i;
-			_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, param);
+			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, param);
 		}
 	}
 
@@ -132,28 +132,28 @@ void ShortcutKeyHandler::CheckMappedKeys()
 
 	for(int i = 0; i < 10; i++) {
 		if(DetectKeyPress((EmulatorShortcut)((int)EmulatorShortcut::SelectSaveSlot1 + i))) {
-			_console->GetSaveStateManager()->SelectSaveSlot(i + 1);
+			_emu->GetSaveStateManager()->SelectSaveSlot(i + 1);
 		}
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::MoveToNextStateSlot)) {
-		_console->GetSaveStateManager()->MoveToNextSlot();
+		_emu->GetSaveStateManager()->MoveToNextSlot();
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::MoveToPreviousStateSlot)) {
-		_console->GetSaveStateManager()->MoveToPreviousSlot();
+		_emu->GetSaveStateManager()->MoveToPreviousSlot();
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::SaveState)) {
-		_console->GetSaveStateManager()->SaveState();
+		_emu->GetSaveStateManager()->SaveState();
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::LoadState)) {
-		_console->GetSaveStateManager()->LoadState();
+		_emu->GetSaveStateManager()->LoadState();
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::ToggleCheats) && !isNetplayClient && !isMovieActive) {
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, (void*)EmulatorShortcut::ToggleCheats);
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, (void*)EmulatorShortcut::ToggleCheats);
 	}
 
 	if(DetectKeyPress(EmulatorShortcut::RunSingleFrame)) {
@@ -166,7 +166,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 	}
 
 	if(!isNetplayClient && !isMovieRecording) {
-		shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
+		shared_ptr<RewindManager> rewindManager = _emu->GetRewindManager();
 		if(rewindManager) {
 			if(DetectKeyPress(EmulatorShortcut::ToggleRewind)) {
 				if(rewindManager->IsRewinding()) {
@@ -191,7 +191,7 @@ void ShortcutKeyHandler::CheckMappedKeys()
 
 void ShortcutKeyHandler::ProcessKeys()
 {
-	if(!_console->GetSettings()->IsInputEnabled()) {
+	if(!_emu->GetSettings()->IsInputEnabled()) {
 		return;
 	}
 

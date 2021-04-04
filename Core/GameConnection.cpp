@@ -11,9 +11,9 @@
 #include "ForceDisconnectMessage.h"
 #include "ServerInformationMessage.h"
 
-GameConnection::GameConnection(shared_ptr<Console> console, shared_ptr<Socket> socket)
+GameConnection::GameConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket)
 {
-	_console = console;
+	_emu = emu;
 	_socket = socket;
 }
 

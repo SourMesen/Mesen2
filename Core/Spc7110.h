@@ -5,6 +5,7 @@
 #include "Rtc4513.h"
 
 class Console;
+class Emulator;
 class Spc7110Decomp;
 class IMemoryHandler;
 class BaseCartridge;
@@ -16,6 +17,7 @@ private:
 	unique_ptr<Rtc4513> _rtc;
 
 	IMemoryHandler* _cpuRegisterHandler = nullptr;
+	Emulator* _emu = nullptr;
 	Console* _console = nullptr;
 	BaseCartridge* _cart = nullptr;
 	bool _useRtc = false;

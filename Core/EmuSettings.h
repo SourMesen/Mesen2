@@ -3,12 +3,12 @@
 #include "SettingTypes.h"
 #include <random>
 
-class Console;
+class Emulator;
 
 class EmuSettings
 {
 private:
-	Console* _console;
+	Emulator* _emu;
 	std::mt19937 _mt;
 
 	VideoConfig _video;
@@ -38,7 +38,7 @@ private:
 	void SetShortcutKey(EmulatorShortcut shortcut, KeyCombination keyCombination, int keySetIndex);
 
 public:
-	EmuSettings(Console* console);
+	EmuSettings(Emulator* emu);
 
 	uint32_t GetVersion();
 	string GetVersionString();

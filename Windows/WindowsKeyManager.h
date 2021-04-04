@@ -13,13 +13,13 @@ struct KeyDefinition {
 	uint32_t keyCode;
 };
 
-class Console;
+class Emulator;
 
 class WindowsKeyManager : public IKeyManager
 {
 	private:
 		HWND _hWnd;
-		shared_ptr<Console> _console;
+		shared_ptr<Emulator> _emu;
 
 		bool _keyState[0x200];
 		bool _mouseState[0x03];
@@ -37,7 +37,7 @@ class WindowsKeyManager : public IKeyManager
 		void StartUpdateDeviceThread();
 
 	public:
-		WindowsKeyManager(shared_ptr<Console> console, HWND hWnd);
+		WindowsKeyManager(shared_ptr<Emulator> emu, HWND hWnd);
 		~WindowsKeyManager();
 
 		void RefreshState();

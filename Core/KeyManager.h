@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "IKeyManager.h"
 
-class Console;
+class Emulator;
 class EmuSettings;
 
 class KeyManager
@@ -30,6 +30,6 @@ public:
 	static void SetMouseMovement(int16_t x, int16_t y);
 	static MouseMovement GetMouseMovement(double videoScale, double mouseSensitivity);
 	
-	static void SetMousePosition(shared_ptr<Console> console, double x, double y);
+	static void SetMousePosition(Emulator* emu, double x, double y);
 	static MousePosition GetMousePosition();
 };

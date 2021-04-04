@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Spc.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "MemoryManager.h"
 #include "SoundMixer.h"
@@ -16,16 +17,17 @@
 
 Spc::Spc(Console* console)
 {
+	_emu = console->GetEmulator();
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];
-	_console->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
+	_emu->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
 
 	_dsp.reset(new SPC_DSP());
 	#ifndef DUMMYSPC
-	_dsp->init(this, _console->GetSettings().get(), _ram);
+	_dsp->init(this, _emu->GetSettings().get(), _ram);
 	#endif
 	_dsp->reset();
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
@@ -237,7 +239,7 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 	}
 
 #ifndef DUMMYSPC
-	_console->ProcessMemoryRead<CpuType::Spc>(addr, value, type);
+	_emu->ProcessMemoryRead<CpuType::Spc>(addr, value, type);
 #else 
 	LogRead(addr, value);
 #endif
@@ -255,7 +257,7 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 
 	//Writes always affect the underlying RAM
 	if(_state.WriteEnabled) {
-		_console->ProcessMemoryWrite<CpuType::Spc>(addr, value, type);
+		_emu->ProcessMemoryWrite<CpuType::Spc>(addr, value, type);
 		_ram[addr] = value;
 	}
 
@@ -331,7 +333,7 @@ uint8_t Spc::DspReadRam(uint16_t addr)
 {
 	uint8_t value = _ram[addr];
 #ifndef DUMMYSPC
-	_console->ProcessMemoryRead<CpuType::Spc>(addr, value, MemoryOperationType::Read);
+	_emu->ProcessMemoryRead<CpuType::Spc>(addr, value, MemoryOperationType::Read);
 #endif
 	return value;
 }
@@ -339,7 +341,7 @@ uint8_t Spc::DspReadRam(uint16_t addr)
 void Spc::DspWriteRam(uint16_t addr, uint8_t value)
 {
 #ifndef DUMMYSPC
-	_console->ProcessMemoryWrite<CpuType::Spc>(addr, value, MemoryOperationType::Write);
+	_emu->ProcessMemoryWrite<CpuType::Spc>(addr, value, MemoryOperationType::Write);
 #endif
 	_ram[addr] = value;
 }
@@ -376,7 +378,7 @@ void Spc::ProcessEndFrame()
 
 	int sampleCount = _dsp->sample_count();
 	if(sampleCount != 0) {
-		_console->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2, Spc::SpcSampleRate);
+		_emu->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2, Spc::SpcSampleRate);
 	}
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 }

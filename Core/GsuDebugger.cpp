@@ -11,6 +11,7 @@
 #include "MemoryManager.h"
 #include "Debugger.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "MemoryAccessCounter.h"
 #include "CodeDataLogger.h"
@@ -24,7 +25,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_gsu = debugger->GetConsole()->GetCartridge()->GetGsu();
 	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
-	_settings = debugger->GetConsole()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu));
 	_step.reset(new StepRequest());

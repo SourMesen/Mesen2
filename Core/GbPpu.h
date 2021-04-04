@@ -3,7 +3,7 @@
 #include "GbTypes.h"
 #include "../Utilities/ISerializable.h"
 
-class Console;
+class Emulator;
 class Gameboy;
 class GbMemoryManager;
 class GbDmaController;
@@ -11,7 +11,7 @@ class GbDmaController;
 class GbPpu : public ISerializable
 {
 private:
-	Console* _console = nullptr;
+	Emulator* _emu = nullptr;
 	Gameboy* _gameboy = nullptr;
 	GbPpuState _state = {};
 	GbMemoryManager* _memoryManager = nullptr;
@@ -76,7 +76,7 @@ private:
 public:
 	virtual ~GbPpu();
 
-	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam);
+	void Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam);
 
 	GbPpuState GetState();
 	uint16_t* GetOutputBuffer();

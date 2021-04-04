@@ -274,7 +274,8 @@ enum class ConsoleType
 {
 	Snes = 0,
 	Gameboy = 1,
-	GameboyColor = 2
+	GameboyColor = 2,
+	Nes = 3
 };
 
 enum class GameboyModel

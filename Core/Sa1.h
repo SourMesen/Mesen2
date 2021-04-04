@@ -5,6 +5,7 @@
 #include "Sa1Types.h"
 
 class Console;
+class Emulator;
 class Cpu;
 class Sa1Cpu;
 class MemoryManager;
@@ -20,6 +21,7 @@ private:
 
 	unique_ptr<Sa1Cpu> _cpu;
 	Console* _console;
+	Emulator* _emu;
 	MemoryManager* _memoryManager;
 	BaseCartridge* _cart;
 	Cpu* _snesCpu;

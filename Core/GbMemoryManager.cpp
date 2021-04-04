@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "Gameboy.h"
 #include "GbMemoryManager.h"
 #include "GbPpu.h"
@@ -18,19 +19,19 @@
 #include "../Utilities/Serializer.h"
 #include "../Utilities/HexUtilities.h"
 
-void GbMemoryManager::Init(Console* console, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
+void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {
 	_highRam = gameboy->DebugGetMemory(SnesMemoryType::GbHighRam);
 
+	_emu = emu;
 	_apu = apu;
 	_ppu = ppu;
 	_gameboy = gameboy;
 	_cart = cart;
 	_timer = timer;
-	_console = console;
 	_dmaController = dmaController;
-	_controlManager = console->GetControlManager().get();
-	_settings = console->GetSettings().get();
+	_controlManager = emu->GetControlManager().get();
+	_settings = _emu->GetSettings().get();
 
 	memset(_reads, 0, sizeof(_reads));
 	memset(_writes, 0, sizeof(_writes));
@@ -158,7 +159,7 @@ uint8_t GbMemoryManager::Read(uint16_t addr)
 	} else if(_reads[addr >> 8]) {
 		value = _reads[addr >> 8][(uint8_t)addr];
 	}
-	_console->ProcessMemoryRead<CpuType::Gameboy>(addr, value, opType);
+	_emu->ProcessMemoryRead<CpuType::Gameboy>(addr, value, opType);
 	return value;
 }
 
@@ -169,7 +170,7 @@ bool GbMemoryManager::IsOamDmaRunning()
 
 void GbMemoryManager::WriteDma(uint16_t addr, uint8_t value)
 {
-	_console->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaWrite);
+	_emu->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaWrite);
 	_ppu->WriteOam((uint8_t)addr, value, true);
 }
 
@@ -181,14 +182,14 @@ uint8_t GbMemoryManager::ReadDma(uint16_t addr)
 	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
 		value = ReadRegister(addr);
 	}
-	_console->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaRead);
+	_emu->ProcessMemoryRead<CpuType::Gameboy>(addr, value, MemoryOperationType::DmaRead);
 	return value;
 }
 
 template<MemoryOperationType type>
 void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 {
-	_console->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, type);
+	_emu->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, type);
 	if(_state.IsWriteRegister[addr >> 8]) {
 		WriteRegister(addr, value);
 	} else if(_writes[addr >> 8]) {
@@ -487,8 +488,8 @@ uint8_t GbMemoryManager::ReadInputPort()
 	//Bit 0 - P10 Input Right or Button A (0=Pressed) (Read Only)
 	uint8_t result = 0x0F;
 
-	if(_gameboy->IsSgb()) {
-		SuperGameboy* sgb = _console->GetCartridge()->GetSuperGameboy();
+	SuperGameboy* sgb = _gameboy->GetSgb();
+	if(sgb) {
 		if((_state.InputSelect & 0x30) == 0x30) {
 			result = sgb->GetInputIndex();
 		} else {
@@ -523,8 +524,9 @@ uint8_t GbMemoryManager::ReadInputPort()
 void GbMemoryManager::WriteInputPort(uint8_t value)
 {
 	_state.InputSelect = value;
-	if(_gameboy->IsSgb()) {
-		_console->GetCartridge()->GetSuperGameboy()->ProcessInputPortWrite(value & 0x30);
+	SuperGameboy* sgb = _gameboy->GetSgb();
+	if(sgb) {
+		sgb->ProcessInputPortWrite(value & 0x30);
 	}
 }
 

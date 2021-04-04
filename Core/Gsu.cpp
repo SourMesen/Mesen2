@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Gsu.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "Cpu.h"
 #include "MemoryManager.h"
@@ -14,11 +15,12 @@
 
 Gsu::Gsu(Console *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType::Register)
 {
+	_emu = console->GetEmulator();
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
 	_cpu = console->GetCpu().get();
 	_memoryType = SnesMemoryType::Register;
-	_settings = _console->GetSettings().get();
+	_settings = _emu->GetSettings().get();
 
 	_clockMultiplier = _settings->GetEmulationConfig().GsuClockSpeed / 100;
 
@@ -225,7 +227,7 @@ void Gsu::Exec()
 			break;
 	}
 
-	_console->ProcessMemoryRead<CpuType::Gsu>(_lastOpAddr, _state.ProgramReadBuffer, MemoryOperationType::ExecOpCode);
+	_emu->ProcessMemoryRead<CpuType::Gsu>(_lastOpAddr, _state.ProgramReadBuffer, MemoryOperationType::ExecOpCode);
 
 	if(!_r15Changed) {
 		_state.R[15]++;
@@ -245,7 +247,7 @@ uint8_t Gsu::ReadGsu(uint32_t addr, MemoryOperationType opType)
 		value = 0;
 		LogDebug("[Debug] GSU - Missing read handler: " + HexUtilities::ToHex(addr));
 	}
-	_console->ProcessMemoryRead<CpuType::Gsu>(addr, value, opType);
+	_emu->ProcessMemoryRead<CpuType::Gsu>(addr, value, opType);
 
 	return value;
 }
@@ -258,7 +260,7 @@ void Gsu::WriteGsu(uint32_t addr, uint8_t value, MemoryOperationType opType)
 	} else {
 		LogDebug("[Debug] GSU - Missing write handler: " + HexUtilities::ToHex(addr));
 	}
-	_console->ProcessMemoryWrite<CpuType::Gsu>(addr, value, opType);
+	_emu->ProcessMemoryWrite<CpuType::Gsu>(addr, value, opType);
 }
 
 void Gsu::InitProgramCache(uint16_t cacheAddr)
@@ -307,7 +309,7 @@ uint8_t Gsu::ReadProgramByte(MemoryOperationType opType)
 		}
 		
 		Step(_state.ClockSelect ? 1 : 2);
-		_console->ProcessMemoryRead<CpuType::Gsu>(_lastOpAddr, _cache[cacheAddr], opType);
+		_emu->ProcessMemoryRead<CpuType::Gsu>(_lastOpAddr, _cache[cacheAddr], opType);
 		return _cache[cacheAddr];
 	} else {
 		if(_state.ProgramBank <= 0x5F) {
@@ -445,7 +447,7 @@ void Gsu::Reset()
 	_state = {};
 	_state.ProgramReadBuffer = 0x01; //Run a NOP on first cycle
 	
-	_console->GetSettings()->InitializeRam(_cache, 512);
+	_emu->GetSettings()->InitializeRam(_cache, 512);
 	memset(_cacheValid, 0, sizeof(_cacheValid));
 	_waitForRomAccess = false;
 	_waitForRamAccess = false;
@@ -624,12 +626,12 @@ void Gsu::Serialize(Serializer &s)
 
 void Gsu::LoadBattery()
 {
-	_console->GetBatteryManager()->LoadBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
+	_emu->GetBatteryManager()->LoadBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
 }
 
 void Gsu::SaveBattery()
 {
-	_console->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
+	_emu->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
 }
 
 GsuState Gsu::GetState()

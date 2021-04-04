@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "SoundManager.h"
 #include "../Core/SoundMixer.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Core/EmuSettings.h"
 #include "../Core/MessageManager.h"
 
-SoundManager::SoundManager(shared_ptr<Console> console, HWND hwnd)
+SoundManager::SoundManager(shared_ptr<Emulator> emu, HWND hwnd)
 {
-	_console = console;
+	_emu = emu;
 	_hWnd = hwnd;
 	_directSound = 0;
 	_primaryBuffer = 0;
@@ -16,7 +16,7 @@ SoundManager::SoundManager(shared_ptr<Console> console, HWND hwnd)
 	memset(&_audioDeviceID, 0, sizeof(_audioDeviceID));
 
 	if(InitializeDirectSound(44100, true)) {
-		_console->GetSoundMixer()->RegisterAudioDevice(this);
+		_emu->GetSoundMixer()->RegisterAudioDevice(this);
 	} else {
 		MessageManager::DisplayMessage("Error", "CouldNotInitializeAudioSystem");
 	}
@@ -24,8 +24,8 @@ SoundManager::SoundManager(shared_ptr<Console> console, HWND hwnd)
 
 SoundManager::~SoundManager()
 {
-	if(_console && _console->GetSoundMixer()) {
-		_console->GetSoundMixer()->RegisterAudioDevice(nullptr);
+	if(_emu && _emu->GetSoundMixer()) {
+		_emu->GetSoundMixer()->RegisterAudioDevice(nullptr);
 	}
 	Release();
 }
@@ -132,7 +132,7 @@ bool SoundManager::InitializeDirectSound(uint32_t sampleRate, bool isStereo)
 		return false;
 	}
 
-	int32_t latency = _console->GetSettings()->GetAudioConfig().AudioLatency;
+	int32_t latency = _emu->GetSettings()->GetAudioConfig().AudioLatency;
 	int32_t requestedByteLatency = (int32_t)((float)(sampleRate * latency) / 1000.0f * waveFormat.nBlockAlign);
 	_bufferSize = (int32_t)std::ceil((double)requestedByteLatency * 2 / 0x10000) * 0x10000;
 
@@ -271,7 +271,7 @@ void SoundManager::ProcessEndOfFrame()
 	_secondaryBuffer->GetCurrentPosition(&currentPlayCursor, &safeWriteCursor);
 	ValidateWriteCursor(safeWriteCursor);
 
-	uint32_t emulationSpeed = _console->GetSettings()->GetEmulationSpeed();
+	uint32_t emulationSpeed = _emu->GetSettings()->GetEmulationSpeed();
 	uint32_t targetRate = _sampleRate;
 	if(emulationSpeed > 0 && emulationSpeed < 100) {
 		//Slow down playback when playing at less than 100%
@@ -281,7 +281,7 @@ void SoundManager::ProcessEndOfFrame()
 
 	ProcessLatency(currentPlayCursor, _lastWriteOffset);
 
-	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
+	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
 	SetAudioDevice(cfg.AudioDevice);
 
 	if(_averageLatency > 0 && emulationSpeed <= 100 && emulationSpeed > 0 && std::abs(_averageLatency - cfg.AudioLatency) > 50) {
@@ -293,7 +293,7 @@ void SoundManager::ProcessEndOfFrame()
 void SoundManager::PlayBuffer(int16_t *soundBuffer, uint32_t sampleCount, uint32_t sampleRate, bool isStereo)
 {
 	uint32_t bytesPerSample = 2 * (isStereo ? 2 : 1);
-	uint32_t latency = _console->GetSettings()->GetAudioConfig().AudioLatency;
+	uint32_t latency = _emu->GetSettings()->GetAudioConfig().AudioLatency;
 	if(_sampleRate != sampleRate || _isStereo != isStereo || _needReset || latency != _previousLatency) {
 		_previousLatency = latency;
 		Release();

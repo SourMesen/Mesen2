@@ -17,12 +17,14 @@ class BsxCart;
 class BsxMemoryPack;
 class Gameboy;
 class Console;
+class Emulator;
 class SpcFileData;
 enum class ConsoleRegion;
 
 class BaseCartridge : public ISerializable
 {
 private:
+	Emulator *_emu;
 	Console *_console;
 
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;

@@ -5,6 +5,7 @@
 #include "MemoryMappings.h"
 #include "IMemoryHandler.h"
 
+class Emulator;
 class Console;
 class Cpu;
 class MemoryManager;
@@ -13,6 +14,7 @@ class EmuSettings;
 class Gsu : public BaseCoprocessor
 {
 private:
+	Emulator* _emu;
 	Console *_console;
 	MemoryManager *_memoryManager;
 	Cpu *_cpu;

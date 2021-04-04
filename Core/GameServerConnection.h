@@ -37,7 +37,7 @@ protected:
 	void ProcessMessage(NetMessage* message) override;
 	
 public:
-	GameServerConnection(shared_ptr<Console> console, shared_ptr<Socket> socket, string serverPassword);
+	GameServerConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, string serverPassword);
 	virtual ~GameServerConnection();
 
 	ControlDeviceState GetState();

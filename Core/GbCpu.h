@@ -5,7 +5,7 @@
 
 class GbMemoryManager;
 class Gameboy;
-class Console;
+class Emulator;
 
 class GbCpu : public ISerializable
 {
@@ -17,7 +17,7 @@ private:
 	Register16 _regHL = Register16(&_state.H, &_state.L);
 
 	GbMemoryManager* _memoryManager;
-	Console* _console;
+	Emulator* _emu;
 	Gameboy* _gameboy;
 
 	void ExecOpCode(uint8_t opCode);
@@ -142,7 +142,7 @@ private:
 public:
 	virtual ~GbCpu();
 
-	void Init(Console* console, Gameboy* gameboy, GbMemoryManager* memoryManager);
+	void Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager);
 
 	GbCpuState GetState();
 	bool IsHalted();

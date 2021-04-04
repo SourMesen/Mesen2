@@ -3,6 +3,7 @@
 #include "Sa1Cpu.h"
 #include "EmuSettings.h"
 #include "Cpu.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
@@ -19,6 +20,7 @@
 Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 	_memoryManager = console->GetMemoryManager().get();
 	_memoryType = SnesMemoryType::Register;
 	_lastAccessMemType = SnesMemoryType::PrgRom;
@@ -28,7 +30,7 @@ Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	
 	_iRam = new uint8_t[Sa1::InternalRamSize];
 	_iRamHandler.reset(new Sa1IRamHandler(_iRam));
-	console->GetSettings()->InitializeRam(_iRam, 0x800);
+	_emu->GetSettings()->InitializeRam(_iRam, 0x800);
 	
 	//Register the SA1 in the CPU's memory space ($22xx-$23xx registers)
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
@@ -63,7 +65,7 @@ Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	cpuMappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, _cpuBwRamHandlers);
 	_mappings.RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, saveRamHandlers);
 
-	_cpu.reset(new Sa1Cpu(this, _console));
+	_cpu.reset(new Sa1Cpu(this, _emu));
 	_cpu->PowerOn();
 	Reset();
 }
@@ -438,7 +440,7 @@ void Sa1::ProcessInterrupts()
 void Sa1::WriteSa1(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	IMemoryHandler *handler = _mappings.GetHandler(addr);
-	_console->ProcessMemoryWrite<CpuType::Sa1>(addr, value, type);
+	_emu->ProcessMemoryWrite<CpuType::Sa1>(addr, value, type);
 	if(handler) {
 		_lastAccessMemType = handler->GetMemoryType();
 		_openBus = value;
@@ -460,7 +462,7 @@ uint8_t Sa1::ReadSa1(uint32_t addr, MemoryOperationType type)
 		value = _openBus;
 		LogDebug("[Debug] Read SA1 - missing handler: $" + HexUtilities::ToHex(addr));
 	}
-	_console->ProcessMemoryRead<CpuType::Sa1>(addr, value, type);
+	_emu->ProcessMemoryRead<CpuType::Sa1>(addr, value, type);
 	return value;
 }
 
@@ -821,14 +823,14 @@ void Sa1::LoadBattery()
 	if(_cpuBwRamHandlers.empty()) {
 		//When there is no actual save RAM and the battery flag is set, IRAM is backed up instead
 		//Used by Pachi-Slot Monogatari - PAL Kougyou Special
-		_console->GetBatteryManager()->LoadBattery(".srm", _iRam, Sa1::InternalRamSize);
+		_emu->GetBatteryManager()->LoadBattery(".srm", _iRam, Sa1::InternalRamSize);
 	}
 }
 
 void Sa1::SaveBattery()
 {
 	if(_cpuBwRamHandlers.empty()) {
-		_console->GetBatteryManager()->SaveBattery(".srm", _iRam, Sa1::InternalRamSize);
+		_emu->GetBatteryManager()->SaveBattery(".srm", _iRam, Sa1::InternalRamSize);
 	}
 }
 

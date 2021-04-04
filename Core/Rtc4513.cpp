@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <time.h>
 #include "Rtc4513.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "MessageManager.h"
 #include "BatteryManager.h"
 #include "../Utilities/HexUtilities.h"
@@ -9,9 +9,9 @@
 //TODO: Partial implementation
 //Missing stuff: most flags e.g: 30ADJ, 24/12, CAL/HW, WRAP, etc.
 
-Rtc4513::Rtc4513(Console* console)
+Rtc4513::Rtc4513(Emulator* emu)
 {
-	_console = console;
+	_emu = emu;
 }
 
 Rtc4513::~Rtc4513()
@@ -20,7 +20,7 @@ Rtc4513::~Rtc4513()
 
 void Rtc4513::LoadBattery()
 {
-	vector<uint8_t> rtcData = _console->GetBatteryManager()->LoadBattery(".rtc");
+	vector<uint8_t> rtcData = _emu->GetBatteryManager()->LoadBattery(".rtc");
 	
 	if(rtcData.size() == sizeof(_regs) + sizeof(uint64_t)) {
 		memcpy(_regs, rtcData.data(), sizeof(_regs));
@@ -47,7 +47,7 @@ void Rtc4513::SaveBattery()
 		time <<= 8;
 	}
 
-	_console->GetBatteryManager()->SaveBattery(".rtc", rtcData.data(), (uint32_t)rtcData.size());
+	_emu->GetBatteryManager()->SaveBattery(".rtc", rtcData.data(), (uint32_t)rtcData.size());
 }
 
 void Rtc4513::UpdateTime()

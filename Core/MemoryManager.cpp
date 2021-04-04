@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MemoryManager.h"
+#include "Emulator.h"
 #include "Console.h"
 #include "BaseCartridge.h"
 #include "Cpu.h"
@@ -26,14 +27,15 @@ void MemoryManager::Initialize(Console *console)
 	_openBus = 0;
 	_cpuSpeed = 8;
 	_console = console;
+	_emu = console->GetEmulator();
 	_regs = console->GetInternalRegisters().get();
 	_cpu = console->GetCpu().get();
 	_ppu = console->GetPpu().get();
 	_cart = console->GetCartridge().get();
-	_cheatManager = console->GetCheatManager().get();
+	_cheatManager = _emu->GetCheatManager().get();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
-	_console->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
+	_emu->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(
 		console->GetDmaController().get(),
@@ -184,7 +186,7 @@ void MemoryManager::Exec()
 	} 
 	
 	if((_hClock & 0x03) == 0) {
-		_console->ProcessPpuCycle<CpuType::Cpu>();
+		_emu->ProcessPpuCycle<CpuType::Cpu>();
 		_regs->ProcessIrqCounters();
 	}
 
@@ -254,7 +256,7 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_cheatManager->ApplyCheat(addr, value);
-	_console->ProcessMemoryRead<CpuType::Cpu>(addr, value, type);
+	_emu->ProcessMemoryRead<CpuType::Cpu>(addr, value, type);
 
 	IncMasterClock4();
 	return value;
@@ -292,7 +294,7 @@ uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_cheatManager->ApplyCheat(addr, value);
-	_console->ProcessMemoryRead<CpuType::Cpu>(addr, value, MemoryOperationType::DmaRead);
+	_emu->ProcessMemoryRead<CpuType::Cpu>(addr, value, MemoryOperationType::DmaRead);
 	return value;
 }
 
@@ -315,7 +317,7 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 {
 	IncrementMasterClockValue(_cpuSpeed);
 
-	_console->ProcessMemoryWrite<CpuType::Cpu>(addr, value, type);
+	_emu->ProcessMemoryWrite<CpuType::Cpu>(addr, value, type);
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
 		handler->Write(addr, value);
@@ -329,7 +331,7 @@ void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
 	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
-	_console->ProcessMemoryWrite<CpuType::Cpu>(addr, value, MemoryOperationType::DmaWrite);
+	_emu->ProcessMemoryWrite<CpuType::Cpu>(addr, value, MemoryOperationType::DmaWrite);
 
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {

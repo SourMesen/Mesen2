@@ -8,7 +8,7 @@
 #include "MessageManager.h"
 #include "ControlManager.h"
 #include "BaseControlDevice.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "SaveStateManager.h"
 #include "NotificationManager.h"
@@ -18,9 +18,9 @@
 #include "CheatManager.h"
 #include "BaseCartridge.h"
 
-MovieRecorder::MovieRecorder(shared_ptr<Console> console)
+MovieRecorder::MovieRecorder(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 }
 
 MovieRecorder::~MovieRecorder()
@@ -43,26 +43,26 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 		_writer.reset();
 		return false;
 	} else {
-		_console->Lock();
-		_console->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
+		_emu->Lock();
+		_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 
 		if(options.RecordFrom == RecordMovieFrom::StartWithoutSaveData) {
 			//Power cycle and ignore save data that exists on the disk
-			_console->GetBatteryManager()->SetBatteryProvider(shared_from_this());
-			_console->PowerCycle();
+			_emu->GetBatteryManager()->SetBatteryProvider(shared_from_this());
+			_emu->PowerCycle();
 		} else if(options.RecordFrom == RecordMovieFrom::StartWithSaveData) {
 			//Power cycle and save existing battery files into the movie file
-			_console->GetBatteryManager()->SetBatteryRecorder(shared_from_this());
-			_console->PowerCycle();
+			_emu->GetBatteryManager()->SetBatteryRecorder(shared_from_this());
+			_emu->PowerCycle();
 		} else if(options.RecordFrom == RecordMovieFrom::CurrentState) {
 			//Record from current state, store a save state in the movie file
-			_console->GetControlManager()->RegisterInputRecorder(this);
-			_console->GetSaveStateManager()->SaveState(_saveStateData);
+			_emu->GetControlManager()->RegisterInputRecorder(this);
+			_emu->GetSaveStateManager()->SaveState(_saveStateData);
 			_hasSaveState = true;
 		}
 		
-		_console->GetBatteryManager()->SetBatteryRecorder(nullptr);
-		_console->Unlock();
+		_emu->GetBatteryManager()->SetBatteryRecorder(nullptr);
+		_emu->Unlock();
 
 		MessageManager::DisplayMessage("Movies", "MovieRecordingTo", FolderUtilities::GetFilename(_filename, true));
 
@@ -72,18 +72,18 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 
 void MovieRecorder::GetGameSettings(stringstream &out)
 {
-	EmuSettings* settings = _console->GetSettings().get();
+	EmuSettings* settings = _emu->GetSettings().get();
 	EmulationConfig emuConfig = settings->GetEmulationConfig();
 	InputConfig inputConfig = settings->GetInputConfig();
 	
 	WriteString(out, MovieKeys::MesenVersion, settings->GetVersionString());
 	WriteInt(out, MovieKeys::MovieFormatVersion, MovieRecorder::MovieFormatVersion);
 
-	VirtualFile romFile = _console->GetRomInfo().RomFile;
+	VirtualFile romFile = _emu->GetRomInfo().RomFile;
 	WriteString(out, MovieKeys::GameFile, romFile.GetFileName());
-	WriteString(out, MovieKeys::Sha1, _console->GetCartridge()->GetSha1Hash());
+	WriteString(out, MovieKeys::Sha1, _emu->GetHash(HashType::Sha1));
 
-	VirtualFile patchFile = _console->GetRomInfo().PatchFile;
+	VirtualFile patchFile = _emu->GetRomInfo().PatchFile;
 	if(patchFile.IsValid()) {
 		WriteString(out, MovieKeys::PatchFile, patchFile.GetFileName());
 		WriteString(out, MovieKeys::PatchFileSha1, patchFile.GetSha1Hash());
@@ -92,7 +92,7 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 		WriteString(out, MovieKeys::PatchedRomSha1, romFile.GetSha1Hash());
 	}
 
-	ConsoleRegion region = _console->GetRegion();
+	ConsoleRegion region = _emu->GetRegion();
 	switch(region) {
 		case ConsoleRegion::Auto:
 		case ConsoleRegion::Ntsc: WriteString(out, MovieKeys::Region, "NTSC"); break;
@@ -116,7 +116,7 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 		case RamState::Random: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break; //TODO: Random memory isn't supported for movies yet
 	}
 
-	for(CheatCode &code : _console->GetCheatManager()->GetCheats()) {
+	for(CheatCode &code : _emu->GetCheatManager()->GetCheats()) {
 		out << "Cheat " << HexUtilities::ToHex24(code.Address) << " " << HexUtilities::ToHex(code.Value) << "\n";
 	}
 }
@@ -139,7 +139,7 @@ void MovieRecorder::WriteBool(stringstream &out, string name, bool enabled)
 bool MovieRecorder::Stop()
 {
 	if(_writer) {
-		_console->GetControlManager()->UnregisterInputRecorder(this);
+		_emu->GetControlManager()->UnregisterInputRecorder(this);
 
 		_writer->AddFile(_inputData, "Input.txt");
 
@@ -154,7 +154,7 @@ bool MovieRecorder::Stop()
 			_writer->AddFile(movieInfo, "MovieInfo.txt");
 		}
 
-		VirtualFile patchFile = _console->GetRomInfo().PatchFile;
+		VirtualFile patchFile = _emu->GetRomInfo().PatchFile;
 		vector<uint8_t> patchData;
 		if(patchFile.IsValid() && patchFile.ReadFile(patchData)) {
 			_writer->AddFile(patchData, "PatchData.dat");
@@ -199,7 +199,7 @@ vector<uint8_t> MovieRecorder::LoadBattery(string extension)
 void MovieRecorder::ProcessNotification(ConsoleNotificationType type, void *parameter)
 {
 	if(type == ConsoleNotificationType::GameLoaded) {
-		_console->GetControlManager()->RegisterInputRecorder(this);
+		_emu->GetControlManager()->RegisterInputRecorder(this);
 	}
 }
 /*

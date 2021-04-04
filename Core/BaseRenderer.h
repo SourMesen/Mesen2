@@ -3,7 +3,7 @@
 #include "SettingTypes.h"
 #include "../Utilities/Timer.h"
 
-class Console;
+class Emulator;
 
 class BaseRenderer : public IMessageManager
 {
@@ -22,13 +22,13 @@ private:
 	virtual bool ContainsCharacter(wchar_t character) = 0;
 
 protected:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 
 	uint32_t _screenWidth = 0;
 	uint32_t _screenHeight = 0;
 	uint32_t _renderedFrameCount = 0;	
 
-	BaseRenderer(shared_ptr<Console> console, bool registerAsMessageManager);
+	BaseRenderer(shared_ptr<Emulator> emu, bool registerAsMessageManager);
 	virtual ~BaseRenderer();
 
 	bool IsMessageShown();	

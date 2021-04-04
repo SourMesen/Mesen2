@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Cx4.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "Cpu.h"
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
@@ -15,19 +16,20 @@
 
 Cx4::Cx4(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
+	_emu = console->GetEmulator();
 	_console = console;
 	_memoryType = SnesMemoryType::Register;
 	_memoryManager = console->GetMemoryManager().get();
 	_cpu = console->GetCpu().get();
 	
-	console->GetSettings()->InitializeRam(_dataRam, Cx4::DataRamSize);
+	_emu->GetSettings()->InitializeRam(_dataRam, Cx4::DataRamSize);
 	
 	auto &prgRomHandlers = console->GetCartridge()->GetPrgRomHandlers();
 	auto &saveRamHandlers = console->GetCartridge()->GetSaveRamHandlers();
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
 
 	//PRG ROM
-	uint8_t bankCount = console->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings ? 0x3F : 0x7F;
+	uint8_t bankCount = _emu->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings ? 0x3F : 0x7F;
 	cpuMappings->RegisterHandler(0x00, std::min<uint8_t>(0x7D, bankCount), 0x8000, 0xFFFF, prgRomHandlers);
 	cpuMappings->RegisterHandler(0x80, 0x80 + bankCount, 0x8000, 0xFFFF, prgRomHandlers);
 	_mappings.RegisterHandler(0x00, bankCount, 0x8000, 0xFFFF, prgRomHandlers);
@@ -88,7 +90,7 @@ void Cx4::Run()
 			}
 		} else {
 			uint16_t opCode = _prgRam[_state.Cache.Page][_state.PC];
-			_console->ProcessMemoryRead<CpuType::Cx4>(0, 0, MemoryOperationType::ExecOpCode);
+			_emu->ProcessMemoryRead<CpuType::Cx4>(0, 0, MemoryOperationType::ExecOpCode);
 			_state.PC++;
 			
 			if(_state.PC == 0) {
@@ -259,7 +261,7 @@ uint8_t Cx4::ReadCx4(uint32_t addr)
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
 		uint8_t value = handler->Read(addr);
-		_console->ProcessMemoryRead<CpuType::Cx4>(addr, value, MemoryOperationType::Read);
+		_emu->ProcessMemoryRead<CpuType::Cx4>(addr, value, MemoryOperationType::Read);
 		return value;
 	}
 	return 0;
@@ -269,7 +271,7 @@ void Cx4::WriteCx4(uint32_t addr, uint8_t value)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
-		_console->ProcessMemoryWrite<CpuType::Cx4>(addr, value, MemoryOperationType::Write);
+		_emu->ProcessMemoryWrite<CpuType::Cx4>(addr, value, MemoryOperationType::Write);
 		handler->Write(addr, value);
 	}
 }

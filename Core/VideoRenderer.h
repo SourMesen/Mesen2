@@ -4,7 +4,7 @@
 #include "../Utilities/AutoResetEvent.h"
 
 class IRenderingDevice;
-class Console;
+class Emulator;
 
 class IVideoRecorder;
 enum class VideoCodec;
@@ -12,7 +12,7 @@ enum class VideoCodec;
 class VideoRenderer
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 
 	AutoResetEvent _waitForRender;
 	unique_ptr<std::thread> _renderThread;
@@ -24,7 +24,7 @@ private:
 	void RenderThread();
 
 public:
-	VideoRenderer(shared_ptr<Console> console);
+	VideoRenderer(shared_ptr<Emulator> emu);
 	~VideoRenderer();
 
 	void StartThread();

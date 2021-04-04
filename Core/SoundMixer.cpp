@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SoundMixer.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "EmuSettings.h"
 #include "SoundResampler.h"
 #include "RewindManager.h"
@@ -12,11 +12,11 @@
 #include "SuperGameboy.h"
 #include "../Utilities/Equalizer.h"
 
-SoundMixer::SoundMixer(Console *console)
+SoundMixer::SoundMixer(Emulator* emu)
 {
-	_console = console;
+	_emu = emu;
 	_audioDevice = nullptr;
-	_resampler.reset(new SoundResampler(console));
+	_resampler.reset(new SoundResampler(emu));
 	_sampleBuffer = new int16_t[0x10000];
 }
 
@@ -52,20 +52,20 @@ void SoundMixer::StopAudio(bool clearBuffer)
 
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_t sourceRate)
 {
-	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
+	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
 
 	if(cfg.EnableEqualizer) {
 		ProcessEqualizer(samples, sampleCount);
 	}
 
 	uint32_t masterVolume = cfg.MasterVolume;
-	if(_console->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
+	if(_emu->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
 		if(cfg.MuteSoundInBackground) {
 			masterVolume = 0;
 		} else if(cfg.ReduceSoundInBackground) {
 			masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 		}
-	} else if(cfg.ReduceSoundInFastForward && _console->GetSettings()->CheckFlag(EmulationFlags::TurboOrRewind)) {
+	} else if(cfg.ReduceSoundInFastForward && _emu->GetSettings()->CheckFlag(EmulationFlags::TurboOrRewind)) {
 		masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 	}
 
@@ -75,16 +75,17 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	int16_t *out = _sampleBuffer;
 	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out);
 
-	SuperGameboy* sgb = _console->GetCartridge()->GetSuperGameboy();
+	//TODO
+	/*SuperGameboy* sgb = _emu->GetCartridge()->GetSuperGameboy();
 	if(sgb) {
 		uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());
 		sgb->MixAudio(targetRate, out, count);
 	}
 
-	shared_ptr<Msu1> msu1 = _console->GetMsu1();
+	shared_ptr<Msu1> msu1 = _emu->GetMsu1();
 	if(msu1) {
 		msu1->MixAudio(out, count, cfg.SampleRate);
-	}
+	}*/
 	
 	if(masterVolume < 100) {
 		//Apply volume if not using the default value
@@ -93,14 +94,14 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 		}
 	}
 
-	shared_ptr<RewindManager> rewindManager = _console->GetRewindManager();
-	if(!_console->IsRunAheadFrame() && rewindManager && rewindManager->SendAudio(out, count)) {
-		bool isRecording = _waveRecorder || _console->GetVideoRenderer()->IsRecording();
+	shared_ptr<RewindManager> rewindManager = _emu->GetRewindManager();
+	if(!_emu->IsRunAheadFrame() && rewindManager && rewindManager->SendAudio(out, count)) {
+		bool isRecording = _waveRecorder || _emu->GetVideoRenderer()->IsRecording();
 		if(isRecording) {
 			if(_waveRecorder) {
 				_waveRecorder->WriteSamples(out, count, cfg.SampleRate, true);
 			}
-			_console->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
+			_emu->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
 		}
 
 		if(_audioDevice) {
@@ -117,7 +118,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 
 void SoundMixer::ProcessEqualizer(int16_t* samples, uint32_t sampleCount)
 {
-	AudioConfig cfg = _console->GetSettings()->GetAudioConfig();
+	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
 	if(!_equalizer) {
 		_equalizer.reset(new Equalizer());
 	}
@@ -138,7 +139,7 @@ double SoundMixer::GetRateAdjustment()
 
 void SoundMixer::StartRecording(string filepath)
 {
-	_waveRecorder.reset(new WaveRecorder(filepath, _console->GetSettings()->GetAudioConfig().SampleRate, true));
+	_waveRecorder.reset(new WaveRecorder(filepath, _emu->GetSettings()->GetAudioConfig().SampleRate, true));
 }
 
 void SoundMixer::StopRecording()

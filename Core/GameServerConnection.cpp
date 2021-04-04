@@ -7,7 +7,7 @@
 #include "MovieDataMessage.h"
 #include "GameInformationMessage.h"
 #include "SaveStateMessage.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "BaseCartridge.h"
 #include "ControlManager.h"
 #include "ClientConnectionData.h"
@@ -21,7 +21,7 @@
 
 GameServerConnection* GameServerConnection::_netPlayDevices[BaseControlDevice::PortCount] = { };
 
-GameServerConnection::GameServerConnection(shared_ptr<Console> console, shared_ptr<Socket> socket, string serverPassword) : GameConnection(console, socket)
+GameServerConnection::GameServerConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, string serverPassword) : GameConnection(emu, socket)
 {
 	//Server-side connection
 	_serverPassword = serverPassword;
@@ -57,13 +57,13 @@ void GameServerConnection::SendServerInformation()
 
 void GameServerConnection::SendGameInformation()
 {
-	_console->Lock();
-	RomInfo romInfo = _console->GetRomInfo();
-	GameInformationMessage gameInfo(romInfo.RomFile.GetFileName(), _console->GetCartridge()->GetSha1Hash(), _controllerPort, _console->IsPaused());
+	_emu->Lock();
+	RomInfo romInfo = _emu->GetRomInfo();
+	GameInformationMessage gameInfo(romInfo.RomFile.GetFileName(), _emu->GetHash(HashType::Sha1), _controllerPort, _emu->IsPaused());
 	SendNetMessage(gameInfo);
-	SaveStateMessage saveState(_console);
+	SaveStateMessage saveState(_emu);
 	SendNetMessage(saveState);
-	_console->Unlock();
+	_emu->Unlock();
 }
 
 void GameServerConnection::SendMovieData(uint8_t port, ControlDeviceState state)
@@ -106,9 +106,9 @@ ControlDeviceState GameServerConnection::GetState()
 void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 {
 	//Send the game's current state to the client and register the controller
-	if(message->IsValid(_console->GetSettings()->GetVersion())) {
+	if(message->IsValid(_emu->GetSettings()->GetVersion())) {
 		if(message->CheckPassword(_serverPassword, _connectionHash)) {
-			_console->Lock();
+			_emu->Lock();
 
 			_controllerPort = message->IsSpectator() ? GameConnection::SpectatorPort : GetFirstFreeControllerPort();
 			_playerName = message->GetPlayerName();
@@ -117,19 +117,19 @@ void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 
 			MessageManager::DisplayMessage("NetPlay", _playerName + " (" + playerPortMessage + ") connected.");
 
-			if(_console->GetCartridge()) {
+			if(_emu->IsRunning()) {
 				SendGameInformation();
 			}
 
 			_handshakeCompleted = true;
 			RegisterNetPlayDevice(this, _controllerPort);
 			GameServer::SendPlayerList();
-			_console->Unlock();
+			_emu->Unlock();
 		} else {
 			SendForceDisconnectMessage("The password you provided did not match - you have been disconnected.");
 		}
 	} else {
-		SendForceDisconnectMessage("Server is using a different version of Mesen-S (" + _console->GetSettings()->GetVersionString() + ") - you have been disconnected.");
+		SendForceDisconnectMessage("Server is using a different version of Mesen-S (" + _emu->GetSettings()->GetVersionString() + ") - you have been disconnected.");
 		MessageManager::DisplayMessage("NetPlay", + "NetplayVersionMismatch", message->GetPlayerName());
 	}
 }
@@ -164,7 +164,7 @@ void GameServerConnection::ProcessMessage(NetMessage* message)
 
 void GameServerConnection::SelectControllerPort(uint8_t port)
 {
-	_console->Lock();
+	_emu->Lock();
 	if(port == GameConnection::SpectatorPort) {
 		//Client wants to be a spectator, make sure we are not using any controller
 		UnregisterNetPlayDevice(this);
@@ -184,7 +184,7 @@ void GameServerConnection::SelectControllerPort(uint8_t port)
 	}
 	SendGameInformation();
 	GameServer::SendPlayerList();
-	_console->Unlock();
+	_emu->Unlock();
 }
 
 void GameServerConnection::ProcessNotification(ConsoleNotificationType type, void* parameter)

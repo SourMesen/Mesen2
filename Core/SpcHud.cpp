@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "SpcHud.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "SoundMixer.h"
 #include "DebugHud.h"
 #include "SpcFileData.h"
 
-SpcHud::SpcHud(Console * console, SpcFileData* spcData)
+SpcHud::SpcHud(Emulator* emu, SpcFileData* spcData)
 {
-	_mixer = console->GetSoundMixer().get();
-	_hud = console->GetDebugHud().get();
+	_mixer = emu->GetSoundMixer().get();
+	_hud = emu->GetDebugHud().get();
 	_spcData = spcData;
 }
 

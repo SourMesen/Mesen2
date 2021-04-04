@@ -3,7 +3,7 @@
 #include "ScriptingContext.h"
 #include "DebugTypes.h"
 #include "Debugger.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "SaveStateManager.h"
 
 string ScriptingContext::_log = "";
@@ -156,7 +156,7 @@ void ScriptingContext::SaveState()
 {
 	if(_saveSlot >= 0) {
 		stringstream ss;
-		_debugger->GetConsole()->GetSaveStateManager()->SaveState(ss);
+		_debugger->GetEmulator()->GetSaveStateManager()->SaveState(ss);
 		_saveSlotData[_saveSlot] = ss.str();
 		_saveSlot = -1;
 	}
@@ -167,7 +167,7 @@ bool ScriptingContext::LoadState()
 	if(_loadSlot >= 0 && _saveSlotData.find(_loadSlot) != _saveSlotData.end()) {
 		stringstream ss;
 		ss << _saveSlotData[_loadSlot];
-		bool result = _debugger->GetConsole()->GetSaveStateManager()->LoadState(ss);
+		bool result = _debugger->GetEmulator()->GetSaveStateManager()->LoadState(ss);
 		_loadSlot = -1;
 		if(result) {
 			_stateLoaded = true;
@@ -181,7 +181,7 @@ bool ScriptingContext::LoadState(string stateData)
 {
 	stringstream ss;
 	ss << stateData;
-	bool result = _debugger->GetConsole()->GetSaveStateManager()->LoadState(ss);
+	bool result = _debugger->GetEmulator()->GetSaveStateManager()->LoadState(ss);
 	if(result) {
 		_stateLoaded = true;
 	}

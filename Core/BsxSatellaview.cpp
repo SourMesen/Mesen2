@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BsxSatellaview.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "MemoryManager.h"
 #include "EmuSettings.h"
 #include "../Utilities/Serializer.h"
@@ -9,7 +10,7 @@ BsxSatellaview::BsxSatellaview(Console* console, IMemoryHandler* bBusHandler) : 
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
-	_customDate = console->GetSettings()->GetEmulationConfig().BsxCustomDate;
+	_customDate = console->GetEmulator()->GetSettings()->GetEmulationConfig().BsxCustomDate;
 	_bBusHandler = bBusHandler;
 	Reset();
 }

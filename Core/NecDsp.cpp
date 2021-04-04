@@ -3,6 +3,7 @@
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "NotificationManager.h"
 #include "BaseCartridge.h"
 #include "CartTypes.h"
@@ -16,6 +17,7 @@
 NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 	_type = type;
 	_memoryManager = console->GetMemoryManager().get();
 	_memoryType = SnesMemoryType::Register;
@@ -67,8 +69,8 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 
 	_stackMask = _stackSize - 1;
 
-	console->GetSettings()->InitializeRam(_ram, _ramSize * sizeof(uint16_t));
-	console->GetSettings()->InitializeRam(_stack, _stackSize * sizeof(uint16_t));
+	_emu->GetSettings()->InitializeRam(_ram, _ramSize * sizeof(uint16_t));
+	_emu->GetSettings()->InitializeRam(_stack, _stackSize * sizeof(uint16_t));
 
 	memcpy(_progRom, programRom.data(), _progSize);
 	BuildProgramCache();
@@ -88,17 +90,18 @@ NecDsp::~NecDsp()
 
 NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console, vector<uint8_t> &embeddedFirware)
 {
+	Emulator* emu = console->GetEmulator();
 	bool firmwareLoaded = false;
 	vector<uint8_t> programRom;
 	vector<uint8_t> dataRom;
 	switch(type) {
-		case CoprocessorType::DSP1: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP1, "dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP1B: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP1B, "dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP2: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP2, "dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP3: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP3, "dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::DSP4: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::DSP4, "dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom, embeddedFirware); break;
-		case CoprocessorType::ST010: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::ST010, "st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
-		case CoprocessorType::ST011: firmwareLoaded = FirmwareHelper::LoadDspFirmware(console, FirmwareType::ST011, "st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
+		case CoprocessorType::DSP1: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::DSP1, "dsp1.rom", "dsp1.program.rom", "dsp1.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP1B: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::DSP1B, "dsp1b.rom", "dsp1b.program.rom", "dsp1b.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP2: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::DSP2, "dsp2.rom", "dsp2.program.rom", "dsp2.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP3: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::DSP3, "dsp3.rom", "dsp3.program.rom", "dsp3.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::DSP4: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::DSP4, "dsp4.rom", "dsp4.program.rom", "dsp4.data.rom", programRom, dataRom, embeddedFirware); break;
+		case CoprocessorType::ST010: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::ST010, "st010.rom", "st010.program.rom", "st010.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
+		case CoprocessorType::ST011: firmwareLoaded = FirmwareHelper::LoadDspFirmware(emu, FirmwareType::ST011, "st011.rom", "st011.program.rom", "st011.data.rom", programRom, dataRom, embeddedFirware, 0xC000, 0x1000); break;
 		default: break;
 	}
 
@@ -118,14 +121,14 @@ void NecDsp::Reset()
 void NecDsp::LoadBattery()
 {
 	if(_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) {
-		_console->GetBatteryManager()->LoadBattery(".srm", (uint8_t*)_ram, _ramSize * sizeof(uint16_t));
+		_emu->GetBatteryManager()->LoadBattery(".srm", (uint8_t*)_ram, _ramSize * sizeof(uint16_t));
 	}
 }
 
 void NecDsp::SaveBattery()
 {
 	if(_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) {
-		_console->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_ram, _ramSize * sizeof(uint16_t));
+		_emu->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_ram, _ramSize * sizeof(uint16_t));
 	}
 }
 
@@ -140,14 +143,14 @@ void NecDsp::BuildProgramCache()
 void NecDsp::ReadOpCode()
 {
 	_opCode = _prgCache[_state.PC & _progMask];
-	_console->ProcessMemoryRead<CpuType::NecDsp>((_state.PC & _progMask) * 3, _opCode, MemoryOperationType::ExecOpCode);
+	_emu->ProcessMemoryRead<CpuType::NecDsp>((_state.PC & _progMask) * 3, _opCode, MemoryOperationType::ExecOpCode);
 }
 
 void NecDsp::Run()
 {
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * (_frequency / _console->GetMasterClockRate()));
 
-	if(_inRqmLoop && !_console->IsDebugging()) {
+	if(_inRqmLoop && !_emu->IsDebugging()) {
 		_cycleCount = targetCycle;
 		return;
 	}

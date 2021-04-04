@@ -2,7 +2,7 @@
 #include "../Utilities/Serializer.h"
 #include "CpuTypes.h"
 #include "Sa1Cpu.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "MemoryManager.h"
 #include "EventType.h"
 #include "Sa1.h"
@@ -13,10 +13,10 @@
 #include "Cpu.Shared.h"
 #undef Cpu
 
-Sa1Cpu::Sa1Cpu(Sa1* sa1, Console* console)
+Sa1Cpu::Sa1Cpu(Sa1* sa1, Emulator* emu)
 {
 	_sa1 = sa1;
-	_console = console;
+	_emu = emu;
 }
 
 Sa1Cpu::~Sa1Cpu()
@@ -49,11 +49,11 @@ void Sa1Cpu::Exec()
 		_state.NeedNmi = false;
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Sa1Cpu::LegacyNmiVector : Sa1Cpu::NmiVector, true);
-		_console->ProcessInterrupt<CpuType::Sa1>(originalPc, GetProgramAddress(_state.PC), true);
+		_emu->ProcessInterrupt<CpuType::Sa1>(originalPc, GetProgramAddress(_state.PC), true);
 	} else if(_state.PrevIrqSource) {
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Sa1Cpu::LegacyIrqVector : Sa1Cpu::IrqVector, true);
-		_console->ProcessInterrupt<CpuType::Sa1>(originalPc, GetProgramAddress(_state.PC), false);
+		_emu->ProcessInterrupt<CpuType::Sa1>(originalPc, GetProgramAddress(_state.PC), false);
 	}
 }
 

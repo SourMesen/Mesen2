@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BsxMemoryPack.h"
 #include "Console.h"
+#include "Emulator.h"
 #include "BatteryManager.h"
 #include "../Utilities/IpsPatcher.h"
 
@@ -28,7 +29,7 @@ BsxMemoryPack::~BsxMemoryPack()
 void BsxMemoryPack::SaveBattery()
 {
 	if(_persistFlash) {
-		_console->GetBatteryManager()->SaveBattery(".bs", _data, _dataSize);
+		_console->GetEmulator()->GetBatteryManager()->SaveBattery(".bs", _data, _dataSize);
 	}
 }
 

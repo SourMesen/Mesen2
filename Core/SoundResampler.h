@@ -2,12 +2,12 @@
 #include "stdafx.h"
 #include "../Utilities/HermiteResampler.h"
 
-class Console;
+class Emulator;
 
 class SoundResampler
 {
 private:
-	Console *_console;
+	Emulator *_emu;
 
 	double _rateAdjustment = 1.0;
 	double _previousTargetRate = 0;
@@ -20,7 +20,7 @@ private:
 	void UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sampleRate);
 
 public:
-	SoundResampler(Console *console);
+	SoundResampler(Emulator *emu);
 	~SoundResampler();
 
 	double GetRateAdjustment();

@@ -7,6 +7,7 @@
 #include "../Utilities/SimpleLock.h"
 
 class Console;
+class Emulator;
 class Cpu;
 class Ppu;
 class Spc;
@@ -54,6 +55,7 @@ private:
 	shared_ptr<InternalRegisters> _internalRegs;
 	shared_ptr<DmaController> _dmaController;
 
+	Emulator* _emu = nullptr;
 	Gameboy* _gameboy = nullptr;
 
 	shared_ptr<EmuSettings> _settings;
@@ -157,5 +159,6 @@ public:
 	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
 	shared_ptr<Console> GetConsole();
+	Emulator* GetEmulator();
 	shared_ptr<IAssembler> GetAssembler(CpuType cpuType);
 };

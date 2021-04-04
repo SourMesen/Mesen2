@@ -10,6 +10,7 @@ class RegisterHandlerB;
 class InternalRegisters;
 class RamHandler;
 class BaseCartridge;
+class Emulator;
 class Console;
 class Ppu;
 class Cpu;
@@ -31,6 +32,7 @@ public:
 
 private:
 	Console* _console;
+	Emulator* _emu;
 
 	shared_ptr<RegisterHandlerA> _registerHandlerA;
 	shared_ptr<RegisterHandlerB> _registerHandlerB;

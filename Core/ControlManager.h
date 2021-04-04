@@ -9,6 +9,7 @@ class BaseControlDevice;
 class IInputRecorder;
 class IInputProvider;
 class Console;
+class Emulator;
 class SystemActionManager;
 struct ControllerData;
 enum class ControllerType;
@@ -25,6 +26,7 @@ private:
 
 protected:
 	Console* _console;
+	Emulator* _emu;
 	SimpleLock _deviceLock;
 	vector<shared_ptr<BaseControlDevice>> _controlDevices;
 	shared_ptr<SystemActionManager> _systemActionManager;

@@ -3,14 +3,14 @@
 #include "EmuSettings.h"
 #include "KeyManager.h"
 #include "MessageManager.h"
-#include "Console.h"
+#include "Emulator.h"
 #include "SpcDisUtils.h"
 #include "NotificationManager.h"
 #include "../Utilities/FolderUtilities.h"
 
-EmuSettings::EmuSettings(Console* console)
+EmuSettings::EmuSettings(Emulator* emu)
 {
-	_console = console;
+	_emu = emu;
 	_flags = 0;
 	_debuggerFlags = 0;
 	_inputConfigVersion = 0;
@@ -79,7 +79,7 @@ void EmuSettings::SetInputConfig(InputConfig config)
 
 	if(controllersChanged) {
 		//Used by net play
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
 	}
 }
 
@@ -115,7 +115,7 @@ void EmuSettings::SetEmulationConfig(EmulationConfig config)
 		}
 
 		//Used by net play
-		_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
 	}
 }
 

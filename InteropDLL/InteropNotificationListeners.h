@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "../Core/INotificationListener.h"
 #include "../Core/NotificationManager.h"
-#include "../Core/Console.h"
+#include "../Core/Emulator.h"
 #include "../Utilities/SimpleLock.h"
 #include "InteropNotificationListener.h"
 
@@ -14,12 +14,12 @@ class InteropNotificationListeners
 	vector<shared_ptr<INotificationListener>> _externalNotificationListeners;
 
 public:
-	INotificationListener* RegisterNotificationCallback(NotificationListenerCallback callback, shared_ptr<Console> console)
+	INotificationListener* RegisterNotificationCallback(NotificationListenerCallback callback, shared_ptr<Emulator> emu)
 	{
 		auto lock = _externalNotificationListenerLock.AcquireSafe();
 		auto listener = shared_ptr<INotificationListener>(new InteropNotificationListener(callback));
 		_externalNotificationListeners.push_back(listener);
-		console->GetNotificationManager()->RegisterNotificationListener(listener);
+		emu->GetNotificationManager()->RegisterNotificationListener(listener);
 		return listener.get();
 	}
 
