@@ -7,6 +7,8 @@
 #include "Utilities/FolderUtilities.h"
 #include "Emulator.h"
 
+const static double PI = 3.14159265358979323846;
+
 BaseVideoFilter::BaseVideoFilter(shared_ptr<Emulator> emu)
 {
 	_emu = emu;
@@ -89,6 +91,40 @@ uint32_t BaseVideoFilter::ApplyScanlineEffect(uint32_t argb, uint8_t scanlineInt
 	uint8_t b = (argb & 0xFF) * scanlineIntensity / 255;
 
 	return 0xFF000000 | (r << 16) | (g << 8) | b;
+}
+
+void BaseVideoFilter::InitConversionMatrix(double hueShift, double saturationShift)
+{
+	double hue = hueShift * PI;
+	double sat = saturationShift + 1;
+
+	double baseValues[6] = { 0.956f, 0.621f, -0.272f, -0.647f, -1.105f, 1.702f };
+
+	double s = sin(hue) * sat;
+	double c = cos(hue) * sat;
+
+	double* output = _yiqToRgbMatrix;
+	double* input = baseValues;
+	for(int n = 0; n < 3; n++) {
+		double i = *input++;
+		double q = *input++;
+		*output++ = i * c - q * s;
+		*output++ = i * s + q * c;
+	}
+}
+
+void BaseVideoFilter::RgbToYiq(double r, double g, double b, double& y, double& i, double& q)
+{
+	y = r * 0.299f + g * 0.587f + b * 0.114f;
+	i = r * 0.596f - g * 0.275f - b * 0.321f;
+	q = r * 0.212f - g * 0.523f + b * 0.311f;
+}
+
+void BaseVideoFilter::YiqToRgb(double y, double i, double q, double& r, double& g, double& b)
+{
+	r = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[0] * i + _yiqToRgbMatrix[1] * q)));
+	g = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[2] * i + _yiqToRgbMatrix[3] * q)));
+	b = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[4] * i + _yiqToRgbMatrix[5] * q)));
 }
 
 void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream)

@@ -3,6 +3,7 @@
 #include "VideoDecoder.h"
 #include "VideoRenderer.h"
 #include "DefaultVideoFilter.h"
+#include "NesDefaultVideoFilter.h"
 #include "NotificationManager.h"
 #include "Emulator.h"
 #include "RewindManager.h"
@@ -67,10 +68,17 @@ ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
 void VideoDecoder::UpdateVideoFilter()
 {
 	VideoFilterType newFilter = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+	ConsoleType consoleType = _emu->GetConsoleType();
 
-	if(_videoFilterType != newFilter || _videoFilter == nullptr) {
+	if(_videoFilterType != newFilter || _videoFilter == nullptr || _consoleType != consoleType) {
 		_videoFilterType = newFilter;
-		_videoFilter.reset(new DefaultVideoFilter(_emu));
+		_consoleType = consoleType;
+
+		if(consoleType == ConsoleType::Nes) {
+			_videoFilter.reset(new NesDefaultVideoFilter(_emu));
+		} else {
+			_videoFilter.reset(new DefaultVideoFilter(_emu));
+		}
 		_scaleFilter.reset();
 
 		switch(_videoFilterType) {

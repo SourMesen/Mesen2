@@ -186,3 +186,8 @@ PpuFrameInfo NesConsole::GetPpuFrame()
 {
     return PpuFrameInfo();
 }
+
+ConsoleType NesConsole::GetConsoleType()
+{
+	return ConsoleType::Nes;
+}

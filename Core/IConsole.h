@@ -5,6 +5,7 @@
 
 class IControlManager;
 class VirtualFile;
+enum class ConsoleType;
 
 struct PpuFrameInfo
 {
@@ -29,6 +30,8 @@ public:
 	virtual void RunFrame() = 0;
 
 	virtual shared_ptr<IControlManager> GetControlManager() = 0;
+
+	virtual ConsoleType GetConsoleType() = 0;
 
 	virtual double GetFrameDelay() = 0;
 	virtual double GetFps() = 0;

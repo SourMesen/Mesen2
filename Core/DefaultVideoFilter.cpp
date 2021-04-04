@@ -6,33 +6,11 @@
 #include "EmuSettings.h"
 #include "SettingTypes.h"
 
-const static double PI = 3.14159265358979323846;
-
 DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
 {
 	InitLookupTable();
 	_prevFrame = new uint16_t[256 * 240];
 	memset(_prevFrame, 0, 256 * 240 * sizeof(uint16_t));
-}
-
-void DefaultVideoFilter::InitConversionMatrix(double hueShift, double saturationShift)
-{
-	double hue = hueShift * PI;
-	double sat = saturationShift + 1;
-
-	double baseValues[6] = { 0.956f, 0.621f, -0.272f, -0.647f, -1.105f, 1.702f };
-
-	double s = sin(hue) * sat;
-	double c = cos(hue) * sat;
-
-	double *output = _yiqToRgbMatrix;
-	double *input = baseValues;
-	for(int n = 0; n < 3; n++) {
-		double i = *input++;
-		double q = *input++;
-		*output++ = i * c - q * s;
-		*output++ = i * s + q * c;
-	}
 }
 
 void DefaultVideoFilter::InitLookupTable()
@@ -175,18 +153,4 @@ uint32_t DefaultVideoFilter::GetPixel(uint16_t* ppuFrame, uint32_t offset)
 uint32_t DefaultVideoFilter::BlendPixels(uint32_t a, uint32_t b)
 {
 	return ((((a) ^ (b)) & 0xfffefefeL) >> 1) + ((a) & (b));
-}
-
-void DefaultVideoFilter::RgbToYiq(double r, double g, double b, double &y, double &i, double &q)
-{
-	y = r * 0.299f + g * 0.587f + b * 0.114f;
-	i = r * 0.596f - g * 0.275f - b * 0.321f;
-	q = r * 0.212f - g * 0.523f + b * 0.311f;
-}
-
-void DefaultVideoFilter::YiqToRgb(double y, double i, double q, double &r, double &g, double &b)
-{
-	r = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[0] * i + _yiqToRgbMatrix[1] * q)));
-	g = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[2] * i + _yiqToRgbMatrix[3] * q)));
-	b = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[4] * i + _yiqToRgbMatrix[5] * q)));
 }

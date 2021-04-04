@@ -18,6 +18,7 @@ private:
 
 	uint16_t *_ppuOutputBuffer = nullptr;
 	uint32_t _frameNumber = 0;
+	ConsoleType _consoleType = ConsoleType::Snes;
 
 	unique_ptr<thread> _decodeThread;
 	unique_ptr<InputHud> _inputHud;

@@ -423,8 +423,11 @@ ConsoleRegion Emulator::GetRegion()
 
 ConsoleType Emulator::GetConsoleType()
 {
-	//TODO
-	return ConsoleType::Snes;
+	if(_console) {
+		return _console->GetConsoleType();
+	} else {
+		return ConsoleType::Snes;
+	}
 }
 
 uint32_t Emulator::GetFrameCount()

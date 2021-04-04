@@ -71,4 +71,7 @@ public:
 	virtual RomInfo GetRomInfo() override;
 	virtual void RunSingleFrame() override;
 	virtual PpuFrameInfo GetPpuFrame() override;
+
+	// Inherited via IConsole
+	virtual ConsoleType GetConsoleType() override;
 };

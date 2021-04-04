@@ -347,6 +347,9 @@ struct NesConfig
 	bool SwapDutyCycles = false;
 
 	bool DisableOamAddrBug = false;
+
+	bool IsFullColorPalette = false;
+	uint32_t UserPalette[512] = { };
 };
 
 struct PreferencesConfig

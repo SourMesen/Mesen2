@@ -46,6 +46,7 @@
     <ClInclude Include="DebugState.h" />
     <ClInclude Include="IControlManager.h" />
     <ClInclude Include="MemoryOperationType.h" />
+    <ClInclude Include="NesDefaultVideoFilter.h" />
     <ClInclude Include="NES\ApuEnvelope.h" />
     <ClInclude Include="NES\ApuFrameCounter.h" />
     <ClInclude Include="NES\ApuLengthCounter.h" />
@@ -282,6 +283,7 @@
     <ClInclude Include="WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />
     <ClCompile Include="NES\NesControlManager.cpp" />
     <ClCompile Include="NES\DeltaModulationChannel.cpp" />

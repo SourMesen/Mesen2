@@ -702,6 +702,9 @@
     <ClInclude Include="IControlManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="NesDefaultVideoFilter.h">
+      <Filter>Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1106,6 +1109,9 @@
       <Filter>NES</Filter>
     </ClCompile>
     <ClCompile Include="NES\NesControlManager.cpp" />
+    <ClCompile Include="NesDefaultVideoFilter.cpp">
+      <Filter>Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

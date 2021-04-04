@@ -9,6 +9,7 @@ class BaseVideoFilter
 {
 private:
 	uint32_t* _outputBuffer = nullptr;
+	double _yiqToRgbMatrix[6] = {};
 	uint32_t _bufferSize = 0;
 	SimpleLock _frameLock;
 	OverscanDimensions _overscan;
@@ -19,6 +20,10 @@ private:
 protected:
 	shared_ptr<Emulator> _emu;
 	FrameInfo _baseFrameInfo;
+
+	void InitConversionMatrix(double hueShift, double saturationShift);
+	void RgbToYiq(double r, double g, double b, double& y, double& i, double& q);
+	void YiqToRgb(double y, double i, double q, double& r, double& g, double& b);
 
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer) = 0;
 	virtual void OnBeforeApplyFilter();
