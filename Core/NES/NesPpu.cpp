@@ -22,7 +22,7 @@ NesPpu::NesPpu(shared_ptr<NesConsole> console)
 	_emu = console->GetEmulator();
 	_masterClock = 0;
 	_masterClockDivider = 4;
-	_settings = _console->GetSettings();
+	_settings = _emu->GetSettings().get();
 
 	_outputBuffers[0] = new uint16_t[256 * 240];
 	_outputBuffers[1] = new uint16_t[256 * 240];
@@ -833,9 +833,9 @@ uint8_t NesPpu::GetPixelColor()
 		//BackgroundMask = false: Hide background in leftmost 8 pixels of screen
 		spriteBgColor = (((_state.LowBitShift << offset) & 0x8000) >> 15) | (((_state.HighBitShift << offset) & 0x8000) >> 14);
 		//TODO
-		/*if(_settings->GetBackgroundEnabled()) {
+		//if(_settings->GetBackgroundEnabled()) {
 			backgroundColor = spriteBgColor;
-		}*/
+		//}
 	}
 
 	if(_hasSprite[_cycle] && _cycle > _minimumDrawSpriteCycle) {

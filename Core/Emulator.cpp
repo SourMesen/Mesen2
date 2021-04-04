@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Emulator.h"
 #include "SNES/Console.h"
+#include "NES/NesConsole.h"
 #include "Debugger.h"
 #include "DebugTypes.h"
 #include "NotificationManager.h"
@@ -331,9 +332,12 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	bool result = false;
 	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
 	
-	shared_ptr<IConsole> console = shared_ptr<IConsole>(new Console(this));
+	shared_ptr<IConsole> console = shared_ptr<IConsole>(new NesConsole(this));
 	if(!console->LoadRom(romFile, patchFile)) {
-		return false;
+		console.reset(new Console(this));
+		if(!console->LoadRom(romFile, patchFile)) {
+			return false;
+		}
 	}
 
 	if(console) {

@@ -11,6 +11,7 @@
 #include "DeltaModulationChannel.h"
 #include "ApuFrameCounter.h"
 #include "NesSoundMixer.h"
+#include "Emulator.h"
 
 NesApu::NesApu(shared_ptr<NesConsole> console)
 {
@@ -20,7 +21,7 @@ NesApu::NesApu(shared_ptr<NesConsole> console)
 
 	_console = console;
 	_mixer = _console->GetSoundMixer();
-	_settings = _console->GetSettings();
+	_settings = _console->GetEmulator()->GetSettings().get();
 
 	_squareChannel[0].reset(new SquareChannel(AudioChannel::Square1, _console, _mixer, true));
 	_squareChannel[1].reset(new SquareChannel(AudioChannel::Square2, _console, _mixer, false));
@@ -141,6 +142,9 @@ void NesApu::GetMemoryRanges(MemoryRanges &ranges)
 
 void NesApu::Run()
 {
+	//TODO
+	return;
+
 	//Update framecounter and all channels
 	//This is called:
 	//-At the end of a frame
@@ -196,6 +200,8 @@ void NesApu::Exec()
 
 void NesApu::EndFrame()
 {
+	//TODO
+	return;
 	Run();
 	_squareChannel[0]->EndFrame();
 	_squareChannel[1]->EndFrame();

@@ -4,6 +4,7 @@
 #include "../../Utilities/Serializer.h"
 #include "../MessageManager.h"
 #include "../EmuSettings.h"
+#include "Emulator.h"
 #include "NesCpu.h"
 #include "NesPpu.h"
 #include "NesApu.h"
@@ -474,7 +475,7 @@ void NesCpu::SetMasterClockDivider(NesModel region)
 
 void NesCpu::Serialize(Serializer &s)
 {
-	EmuSettings* settings = _console->GetSettings();
+	EmuSettings* settings = _console->GetEmulator()->GetSettings().get();
 	EmulationConfig emuConfig = settings->GetEmulationConfig();
 	uint32_t extraScanlinesBeforeNmi = emuConfig.PpuExtraScanlinesBeforeNmi;
 	uint32_t extraScanlinesAfterNmi = emuConfig.PpuExtraScanlinesAfterNmi;

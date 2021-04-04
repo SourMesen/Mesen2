@@ -18,7 +18,7 @@ enum class DebugEventType;
 enum class EventType;
 enum class NesModel;
 
-class NesConsole : public IConsole
+class NesConsole : public IConsole, public std::enable_shared_from_this<NesConsole>
 {
 private:
 	Emulator* _emu = nullptr;
@@ -28,6 +28,7 @@ private:
 	shared_ptr<NesMemoryManager> _memoryManager;
 	shared_ptr<BaseMapper> _mapper;
 	shared_ptr<NesControlManager> _controlManager;
+	shared_ptr<NesSoundMixer> _mixer;
 
 public:
 	NesConsole(Emulator* emulator);
@@ -37,13 +38,11 @@ public:
 	NesApu* GetApu() { return _apu.get(); }
 	NesMemoryManager* GetMemoryManager() { return _memoryManager.get(); }
 	BaseMapper* GetMapper() { return _mapper.get(); }
-	EmuSettings* GetSettings() { return nullptr; }
-	NesSoundMixer* GetSoundMixer() { return nullptr; }
+	NesSoundMixer* GetSoundMixer() { return _mixer.get(); }
 	Emulator* GetEmulator();
 	NesConfig GetNesConfig() { return {}; }
 
-	//TODO
-	void ProcessCpuClock() {}
+	void ProcessCpuClock();
 	void InitializeRam(uint8_t* ram, uint32_t size) {}
 
 	std::thread::id  GetEmulationThreadId() { return std::thread::id(); }

@@ -367,7 +367,7 @@ void NesControlManager::Serialize(Serializer& s)
 {
 	//Restore controllers that were being used at the time the snapshot was made
 	//This is particularely important to ensure proper sync during NetPlay
-	EmuSettings* settings = _console->GetSettings();
+	EmuSettings* settings = _emu->GetSettings().get();
 	ControllerType controllerTypes[4];
 	NesModel nesModel;
 	ExpansionPortDevice expansionDevice;
