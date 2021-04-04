@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
+#include "SNES/DmaControllerTypes.h"
 
 struct DebugEventInfo
 {

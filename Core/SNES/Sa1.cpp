@@ -15,7 +15,9 @@
 #include "CpuBwRamHandler.h"
 #include "MessageManager.h"
 #include "BatteryManager.h"
+#include "MemoryOperationType.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {

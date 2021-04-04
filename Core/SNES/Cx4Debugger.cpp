@@ -9,6 +9,7 @@
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "Debugger.h"
+#include "DebugState.h"
 #include "Console.h"
 #include "Emulator.h"
 #include "MemoryAccessCounter.h"
@@ -17,6 +18,7 @@
 #include "EmuSettings.h"
 #include "Cx4.h"
 #include "MemoryMappings.h"
+#include "MemoryOperationType.h"
 
 Cx4Debugger::Cx4Debugger(Debugger* debugger)
 {

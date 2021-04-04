@@ -9,6 +9,7 @@
 #include "EmuSettings.h"
 #include "RamHandler.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 //TODO: Proper open bus behavior (and return 0s for missing save ram, too)
 //TODO: CPU shouldn't have access to PRG ROM while the CX4 is loading from PRG ROM

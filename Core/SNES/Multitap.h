@@ -5,6 +5,7 @@
 
 class InternalRegisters;
 class SnesController;
+class Console;
 
 class Multitap : public BaseControlDevice
 {

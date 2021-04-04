@@ -7,12 +7,14 @@
 #include "CallstackManager.h"
 #include "BreakpointManager.h"
 #include "MemoryManager.h"
+#include "DebugState.h"
 #include "Debugger.h"
 #include "Emulator.h"
 #include "Console.h"
 #include "MemoryAccessCounter.h"
 #include "ExpressionEvaluator.h"
 #include "EmuSettings.h"
+#include "MemoryOperationType.h"
 
 SpcDebugger::SpcDebugger(Debugger* debugger)
 {

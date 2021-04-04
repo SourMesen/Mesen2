@@ -9,6 +9,7 @@
 
 class Debugger;
 class LabelManager;
+struct DebugState;
 
 enum EvalOperators : int64_t
 {

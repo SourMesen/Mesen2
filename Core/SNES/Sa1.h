@@ -11,6 +11,8 @@ class Sa1Cpu;
 class MemoryManager;
 class BaseCartridge;
 
+enum class MemoryOperationType;
+
 //TODO: Implement write protection flags
 //TODO: Timers
 

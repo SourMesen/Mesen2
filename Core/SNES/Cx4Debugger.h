@@ -14,6 +14,8 @@ class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
+enum class MemoryOperationType;
+
 class Cx4Debugger final : public IDebugger
 {
 	Debugger* _debugger;

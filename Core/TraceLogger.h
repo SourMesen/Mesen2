@@ -16,6 +16,10 @@ class MemoryDumper;
 class EmuSettings;
 struct DebugState;
 
+struct NecDspState;
+struct GsuState;
+struct Cx4State;
+
 struct TraceLoggerOptions
 {
 	bool LogCpu;

@@ -15,6 +15,7 @@ class BaseCartridge;
 class MemoryManager;
 class InternalRegisters;
 class ControlManager;
+class IControlManager;
 class DmaController;
 class Debugger;
 class DebugHud;
@@ -115,7 +116,7 @@ public:
 	shared_ptr<BaseCartridge> GetCartridge();
 	shared_ptr<MemoryManager> GetMemoryManager();
 	shared_ptr<InternalRegisters> GetInternalRegisters();
-	shared_ptr<ControlManager> GetControlManager();
+	shared_ptr<IControlManager> GetControlManager();
 	shared_ptr<DmaController> GetDmaController();
 	shared_ptr<Msu1> GetMsu1();
 	

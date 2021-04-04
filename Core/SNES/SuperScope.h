@@ -93,7 +93,7 @@ protected:
 	}
 
 public:
-	SuperScope(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console, port, keyMappings)
+	SuperScope(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), port, keyMappings)
 	{
 		_ppu = console->GetPpu().get();
 	}

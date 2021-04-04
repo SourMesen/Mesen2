@@ -32,6 +32,7 @@ understood.
 #include "stdafx.h"
 #include "Sdd1Decomp.h"
 #include "Sdd1Mmc.h"
+#include "Utilities/Serializer.h"
 
 void SDD1_IM::prepareDecomp(Sdd1Mmc *mmc, uint32_t readAddr)
 {

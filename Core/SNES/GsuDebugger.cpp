@@ -15,6 +15,8 @@
 #include "EmuSettings.h"
 #include "MemoryAccessCounter.h"
 #include "CodeDataLogger.h"
+#include "MemoryOperationType.h"
+#include "DebugState.h"
 
 GsuDebugger::GsuDebugger(Debugger* debugger)
 {

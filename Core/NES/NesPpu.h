@@ -5,12 +5,15 @@
 #include "NesTypes.h"
 #include "NesDebuggerTypes.h"
 #include "INesMemoryHandler.h"
+#include "MemoryOperationType.h"
 
 enum class NesModel;
 
+class Emulator;
 class BaseMapper;
 class ControlManager;
 class NesConsole;
+class EmuSettings;
 
 enum PPURegisters
 {
@@ -29,7 +32,8 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 {
 	protected:
 		shared_ptr<NesConsole> _console;
-		EmulationSettings* _settings;
+		Emulator* _emu;
+		EmuSettings* _settings;
 
 		PPUState _state;
 		int32_t _scanline;
@@ -117,6 +121,8 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 
 		void SetOpenBus(uint8_t mask, uint8_t value);
 		uint8_t ApplyOpenBus(uint8_t mask, uint8_t value);
+
+		PpuModel GetPpuModel();
 
 		void ProcessStatusRegOpenBus(uint8_t & openBusMask, uint8_t & returnValue);
 

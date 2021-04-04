@@ -36,6 +36,7 @@
 #include "SpcHud.h"
 #include "Msu1.h"
 #include "Emulator.h"
+#include "IControlManager.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
@@ -361,7 +362,7 @@ shared_ptr<InternalRegisters> Console::GetInternalRegisters()
 	return _internalRegisters;
 }
 
-shared_ptr<ControlManager> Console::GetControlManager()
+shared_ptr<IControlManager> Console::GetControlManager()
 {
 	return _controlManager;
 }

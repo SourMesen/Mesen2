@@ -345,6 +345,8 @@ struct NesConfig
 	bool DisableNoiseModeFlag = false;
 	bool SilenceTriangleHighFreq = false;
 	bool SwapDutyCycles = false;
+
+	bool DisableOamAddrBug = false;
 };
 
 struct PreferencesConfig

@@ -7,6 +7,7 @@
 #include "EventType.h"
 #include "Sa1.h"
 #include "MemoryMappings.h"
+#include "MemoryOperationType.h"
 
 #define Cpu Sa1Cpu
 #include "Cpu.Instructions.h"

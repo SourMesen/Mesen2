@@ -20,6 +20,7 @@
 #include "Gameboy/Gameboy.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
+#include "MemoryOperationType.h"
 
 void MemoryManager::Initialize(Console *console)
 {
@@ -40,7 +41,7 @@ void MemoryManager::Initialize(Console *console)
 	_registerHandlerA.reset(new RegisterHandlerA(
 		console->GetDmaController().get(),
 		console->GetInternalRegisters().get(),
-		console->GetControlManager().get()
+		(ControlManager*)console->GetControlManager().get()
 	));
 
 	_registerHandlerB.reset(new RegisterHandlerB(

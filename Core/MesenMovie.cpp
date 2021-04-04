@@ -127,7 +127,7 @@ bool MesenMovie::Play(VirtualFile &file)
 	//bool autoConfigureInput = _console->GetSettings()->CheckFlag(EmulationFlags::AutoConfigureInput);
 	//_console->GetSettings()->ClearFlags(EmulationFlags::AutoConfigureInput);
 
-	ControlManager *controlManager = _emu->GetControlManager().get();
+	IControlManager *controlManager = _emu->GetControlManager().get();
 	if(controlManager) {
 		//ControlManager can be empty if no game is loaded
 		controlManager->SetPollCounter(0);

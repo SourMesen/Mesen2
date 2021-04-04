@@ -11,7 +11,9 @@
 #include "EmuSettings.h"
 #include "MessageManager.h"
 #include "BatteryManager.h"
+#include "MemoryOperationType.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 Gsu::Gsu(Console *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType::Register)
 {

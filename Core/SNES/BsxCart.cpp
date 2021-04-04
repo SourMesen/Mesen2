@@ -9,6 +9,7 @@
 #include "BsxSatellaview.h"
 #include "RamHandler.h"
 #include "EmuSettings.h"
+#include "Utilities/Serializer.h"
 
 BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack) : BaseCoprocessor(SnesMemoryType::Register)
 {

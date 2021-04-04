@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "BaseControlDevice.h"
-#include "SNES/Console.h" //TODO
+#include "Emulator.h"
 #include "KeyManager.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/Serializer.h"
 
-BaseControlDevice::BaseControlDevice(Console* console, uint8_t port, KeyMappingSet keyMappingSet)
+BaseControlDevice::BaseControlDevice(Emulator* emu, uint8_t port, KeyMappingSet keyMappingSet)
 {
-	_console = console;
+	_emu = emu;
 	_port = port;
 	_strobe = false;
 	_keyMappings = keyMappingSet.GetKeyMappingArray();

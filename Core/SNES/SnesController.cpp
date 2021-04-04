@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SnesController.h"
-#include "Console.h"
+#include "Emulator.h"
 
-SnesController::SnesController(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console, port, keyMappings)
+SnesController::SnesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, port, keyMappings)
 {
 	_turboSpeed = keyMappings.TurboSpeed;
 }
@@ -29,7 +29,7 @@ void SnesController::InternalSetStateFromInput()
 		SetPressedState(Buttons::Right, keyMapping.Right);
 
 		uint8_t turboFreq = 1 << (4 - _turboSpeed);
-		bool turboOn = (uint8_t)(_console->GetPpuFrame().FrameCount % turboFreq) < turboFreq / 2;
+		bool turboOn = (uint8_t)(_emu->GetPpuFrame().FrameCount % turboFreq) < turboFreq / 2;
 		if(turboOn) {
 			SetPressedState(Buttons::A, keyMapping.TurboA);
 			SetPressedState(Buttons::B, keyMapping.TurboB);

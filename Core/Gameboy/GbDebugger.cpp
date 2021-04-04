@@ -19,6 +19,8 @@
 #include "SNES/BaseCartridge.h"
 #include "SNES/Console.h"
 #include "Utilities/HexUtilities.h"
+#include "MemoryOperationType.h"
+#include "DebugState.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {

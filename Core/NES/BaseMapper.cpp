@@ -9,11 +9,13 @@
 #include "NesConsole.h"
 #include "NesTypes.h"
 #include "NesMemoryManager.h"
+#include "RomData.h"
 #include "../SnesMemoryType.h"
 #include "../DebugTypes.h"
 #include "../CheatManager.h"
 #include "../BatteryManager.h"
 #include "../EmuSettings.h"
+#include "../MemoryOperationType.h"
 
 void BaseMapper::WriteRegister(uint16_t addr, uint8_t value) { }
 uint8_t BaseMapper::ReadRegister(uint16_t addr) { return 0; }
@@ -405,22 +407,22 @@ bool BaseMapper::HasBattery()
 void BaseMapper::LoadBattery()
 {
 	if(HasBattery() && _saveRamSize > 0) {
-		_console->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+		_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
 	}
 
 	if(_hasChrBattery && _chrRamSize > 0) {
-		_console->GetBatteryManager()->LoadBattery(".sav.chr", _chrRam, _chrRamSize);
+		_emu->GetBatteryManager()->LoadBattery(".sav.chr", _chrRam, _chrRamSize);
 	}
 }
 
 void BaseMapper::SaveBattery()
 {
 	if(HasBattery() && _saveRamSize > 0) {
-		_console->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
+		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
 	}
 
 	if(_hasChrBattery && _chrRamSize > 0) {
-		_console->GetBatteryManager()->SaveBattery(".sav.chr", _chrRam, _chrRamSize);
+		_emu->GetBatteryManager()->SaveBattery(".sav.chr", _chrRam, _chrRamSize);
 	}
 }
 
@@ -670,6 +672,7 @@ void BaseMapper::GetMemoryRanges(MemoryRanges &ranges)
 void BaseMapper::SetConsole(shared_ptr<NesConsole> console)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 }
 
 uint8_t* BaseMapper::GetNametable(uint8_t nametableIndex)
@@ -733,9 +736,9 @@ shared_ptr<BaseControlDevice> BaseMapper::GetMapperControlDevice()
 	return _mapperControlDevice;
 }
 
-RomInfo BaseMapper::GetRomInfo()
+NesRomInfo BaseMapper::GetRomInfo()
 {
-	RomInfo romInfo = _romInfo;
+	NesRomInfo romInfo = _romInfo;
 	romInfo.BusConflicts = _hasBusConflicts ? BusConflictType::Yes : BusConflictType::No;
 	return romInfo;
 }
@@ -785,7 +788,8 @@ void BaseMapper::WriteRam(uint16_t addr, uint8_t value)
 		if(_hasBusConflicts) {
 			uint8_t prgValue = _prgPages[addr >> 8][(uint8_t)addr];
 			if(value != prgValue) {
-				_console->DebugProcessEvent(EventType::BusConflict);
+				//TODO
+				//_console->DebugProcessEvent(EventType::BusConflict);
 			}
 			value &= prgValue;
 		}
@@ -861,7 +865,7 @@ void BaseMapper::DebugWriteVRAM(uint16_t addr, uint8_t value, bool disableSideEf
 
 void BaseMapper::WriteVRAM(uint16_t addr, uint8_t value)
 {
-	_console->DebugProcessVramWriteOperation(addr, value);
+	_emu->ProcessPpuWrite(addr, value, SnesMemoryType::VideoRam);
 
 	if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
 		_chrPages[addr >> 8][(uint8_t)addr] = value;
@@ -1193,7 +1197,7 @@ void BaseMapper::GetRomFileData(vector<uint8_t> &out, bool asIpsFile, uint8_t* h
 	if(header) {
 		//Get original rom with edited header
 		vector<uint8_t> originalFile;
-		_console->GetRomPath().ReadFile(originalFile);
+		_emu->GetRomInfo().RomFile.ReadFile(originalFile);
 
 		out.insert(out.end(), header, header+sizeof(NesHeader));
 		if(_romInfo.IsHeaderlessRom) {
@@ -1212,7 +1216,7 @@ void BaseMapper::GetRomFileData(vector<uint8_t> &out, bool asIpsFile, uint8_t* h
 		//Get edited rom
 		if(asIpsFile) {
 			vector<uint8_t> originalFile;
-			_console->GetRomPath().ReadFile(originalFile);
+			_console->GetRomInfo().RomFile.ReadFile(originalFile);
 
 			vector<uint8_t> patchData = IpsPatcher::CreatePatch(originalFile, newFile);
 			out.insert(out.end(), patchData.begin(), patchData.end());

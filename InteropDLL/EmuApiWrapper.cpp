@@ -2,7 +2,7 @@
 #include "../Core/Emulator.h"
 #include "../Core/EmuSettings.h"
 #include "../Core/VideoDecoder.h"
-#include "../Core/SNES/ControlManager.h"
+#include "../Core/IControlManager.h"
 #include "../Core/SystemActionManager.h"
 #include "../Core/MessageManager.h"
 #include "../Core/SaveStateManager.h"
@@ -185,14 +185,16 @@ extern "C" {
 	DllExport void __stdcall Reset()
 	{
 		if(!GameClient::Connected()) {
-			_emu->GetControlManager()->GetSystemActionManager()->Reset();
+			//TODO
+			//_emu->GetControlManager()->GetSystemActionManager()->Reset();
 		}
 	}
 
 	DllExport void __stdcall PowerCycle()
 	{
 		if(!GameClient::Connected()) {
-			_emu->GetControlManager()->GetSystemActionManager()->PowerCycle();
+			//TODO
+			//_emu->GetControlManager()->GetSystemActionManager()->PowerCycle();
 		}
 	}
 

@@ -9,6 +9,7 @@
 #include "EventType.h"
 #include "Cpu.Instructions.h"
 #include "Cpu.Shared.h"
+#include "MemoryOperationType.h"
 
 #ifndef DUMMYCPU
 Cpu::Cpu(Console *console)

@@ -14,11 +14,12 @@
 #include "../VideoDecoder.h"
 #include "../RewindManager.h"
 #include "../NotificationManager.h"
-#include "ControlManager.h"
+#include "MemoryOperationType.h"
 
 NesPpu::NesPpu(shared_ptr<NesConsole> console)
 {
 	_console = console;
+	_emu = console->GetEmulator();
 	_masterClock = 0;
 	_masterClockDivider = 4;
 	_settings = _console->GetSettings();
@@ -144,10 +145,11 @@ void NesPpu::SetNesModel(NesModel model)
 			break;
 	}
 
-	_nmiScanline += _settings->GetPpuExtraScanlinesBeforeNmi();
+	EmulationConfig cfg = _settings->GetEmulationConfig();
+	_nmiScanline += cfg.PpuExtraScanlinesBeforeNmi;
 	_palSpriteEvalScanline = _nmiScanline + 24;
-	_standardVblankEnd += _settings->GetPpuExtraScanlinesBeforeNmi();
-	_vblankEnd += _settings->GetPpuExtraScanlinesAfterNmi() + _settings->GetPpuExtraScanlinesBeforeNmi();
+	_standardVblankEnd += cfg.PpuExtraScanlinesBeforeNmi;
+	_vblankEnd += cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
 }
 
 double NesPpu::GetOverclockRate()
@@ -204,7 +206,8 @@ void NesPpu::UpdateVideoRamAddr()
 		_state.VideoRamAddr = (_state.VideoRamAddr + (_flags.VerticalWrite ? 32 : 1)) & 0x7FFF;
 
 		if(!_renderingEnabled) {
-			_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+			//TODO
+			//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
 		}
 
 		//Trigger memory read when setting the vram address - needed by MMC3 IRQ counter
@@ -255,9 +258,14 @@ uint8_t NesPpu::ApplyOpenBus(uint8_t mask, uint8_t value)
 	return value | (_openBus & mask);
 }
 
+PpuModel NesPpu::GetPpuModel()
+{
+	return PpuModel::Ppu2C02;
+}
+
 void NesPpu::ProcessStatusRegOpenBus(uint8_t &openBusMask, uint8_t &returnValue)
 {
-	switch(_settings->GetPpuModel()) {
+	switch(GetPpuModel()) {
 		case PpuModel::Ppu2C05A: openBusMask = 0x00; returnValue |= 0x1B; break;
 		case PpuModel::Ppu2C05B: openBusMask = 0x00; returnValue |= 0x3D; break;
 		case PpuModel::Ppu2C05C: openBusMask = 0x00; returnValue |= 0x1C; break;
@@ -362,7 +370,8 @@ uint8_t NesPpu::ReadRam(uint16_t addr)
 
 				if((_ppuBusAddress & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
 					returnValue = ReadPaletteRAM(_ppuBusAddress) | (_openBus & 0xC0);
-					_console->DebugProcessVramReadOperation(MemoryOperationType::Read, _ppuBusAddress & 0x3FFF, returnValue);
+					//TODO
+					//_emu->DebugProcessVramReadOperation(MemoryOperationType::Read, _ppuBusAddress & 0x3FFF, returnValue);
 					openBusMask = 0xC0;
 				} else {
 					openBusMask = 0x00;
@@ -388,14 +397,14 @@ void NesPpu::WriteRam(uint16_t addr, uint8_t value)
 
 	switch(GetRegisterID(addr)) {
 		case PPURegisters::Control:
-			if(_settings->GetPpuModel() >= PpuModel::Ppu2C05A && _settings->GetPpuModel() <= PpuModel::Ppu2C05E) {
+			if(GetPpuModel() >= PpuModel::Ppu2C05A && GetPpuModel() <= PpuModel::Ppu2C05E) {
 				SetMaskRegister(value);
 			} else {
 				SetControlRegister(value);
 			}
 			break;
 		case PPURegisters::Mask:
-			if(_settings->GetPpuModel() >= PpuModel::Ppu2C05A && _settings->GetPpuModel() <= PpuModel::Ppu2C05E) {
+			if(GetPpuModel() >= PpuModel::Ppu2C05A && GetPpuModel() <= PpuModel::Ppu2C05E) {
 				SetControlRegister(value);
 			} else {
 				SetMaskRegister(value);
@@ -447,7 +456,8 @@ void NesPpu::WriteRam(uint16_t addr, uint8_t value)
 		case PPURegisters::VideoMemoryData:
 			if((_ppuBusAddress & 0x3FFF) >= 0x3F00) {
 				WritePaletteRAM(_ppuBusAddress, value);
-				_console->DebugProcessVramWriteOperation(_ppuBusAddress & 0x3FFF, value);
+				//TODO
+				//_console->DebugProcessVramWriteOperation(_ppuBusAddress & 0x3FFF, value);
 			} else {
 				if(_scanline >= 240 || !IsRenderingEnabled()) {
 					_console->GetMapper()->WriteVRAM(_ppuBusAddress & 0x3FFF, value);
@@ -573,7 +583,8 @@ void NesPpu::SetMaskRegister(uint8_t value)
 		_intensifyColorBits = (_flags.IntensifyRed ? 0x40 : 0x00) | (_flags.IntensifyGreen ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
 	}
 
-	_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+	//TODO
+	//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
 }
 
 void NesPpu::UpdateStatusFlag()
@@ -821,9 +832,10 @@ uint8_t NesPpu::GetPixelColor()
 	if(_cycle > _minimumDrawBgCycle) {
 		//BackgroundMask = false: Hide background in leftmost 8 pixels of screen
 		spriteBgColor = (((_state.LowBitShift << offset) & 0x8000) >> 15) | (((_state.HighBitShift << offset) & 0x8000) >> 14);
-		if(_settings->GetBackgroundEnabled()) {
+		//TODO
+		/*if(_settings->GetBackgroundEnabled()) {
 			backgroundColor = spriteBgColor;
-		}
+		}*/
 	}
 
 	if(_hasSprite[_cycle] && _cycle > _minimumDrawSpriteCycle) {
@@ -848,10 +860,12 @@ uint8_t NesPpu::GetPixelColor()
 						//"Should always miss when Y >= 239"
 						_statusFlags.Sprite0Hit = true;
 
-						_console->DebugProcessEvent(EventType::SpriteZeroHit);
+						//TODO
+						//_console->DebugProcessEvent(EventType::SpriteZeroHit);
 					}
 
-					if(_settings->GetSpritesEnabled() && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
+					//TODO
+					if(/*_settings->GetSpritesEnabled() &&*/ (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
 						//Check sprite priority
 						return _lastSprite->PaletteOffset + spriteColor;
 					}
@@ -944,7 +958,7 @@ void NesPpu::ProcessScanline()
 				_statusFlags.VerticalBlank = false;
 				_console->GetCpu()->ClearNmiFlag();
 			}
-			if(_state.SpriteRamAddr >= 0x08 && IsRenderingEnabled() && !_settings->CheckFlag(EmulationFlags::DisableOamAddrBug)) {
+			if(_state.SpriteRamAddr >= 0x08 && IsRenderingEnabled() && !_settings->GetNesConfig().DisableOamAddrBug) {
 				//This should only be done if rendering is enabled (otherwise oam_stress test fails immediately)
 				//"If OAMADDR is not less than eight when rendering starts, the eight bytes starting at OAMADDR & 0xF8 are copied to the first eight bytes of OAM"
 				WriteSpriteRam(_cycle - 1, ReadSpriteRam((_state.SpriteRamAddr & 0xF8) + _cycle - 1));
@@ -1002,7 +1016,7 @@ void NesPpu::ProcessScanline()
 		if(IsRenderingEnabled()) {
 			ReadVram(GetNameTableAddr());
 
-			if(_scanline == -1 && _cycle == 339 && (_frameCount & 0x01) && _nesModel == NesModel::NTSC && _settings->GetPpuModel() == PpuModel::Ppu2C02) {
+			if(_scanline == -1 && _cycle == 339 && (_frameCount & 0x01) && _nesModel == NesModel::NTSC && GetPpuModel() == PpuModel::Ppu2C02) {
 				//This behavior is NTSC-specific - PAL frames are always the same number of cycles
 				//"With rendering enabled, each odd PPU frame is one PPU clock shorter than normal" (skip from 339 to 0, going over 340)
 				_cycle = 340;
@@ -1136,11 +1150,12 @@ uint8_t NesPpu::ReadSpriteRam(uint8_t addr)
 			return _spriteRAM[addr];
 		} else {
 			if(_flags.SpritesEnabled) {
-				shared_ptr<Debugger> debugger = _console->GetDebugger(false);
+				//TODO
+				/*shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
 				if(debugger && debugger->CheckFlag(DebuggerFlags::BreakOnDecayedOamRead)) {
 					//When debugging with the break on decayed oam read flag turned on, break (only if sprite rendering is enabled to avoid false positives)
 					debugger->BreakImmediately(BreakSource::BreakOnDecayedOamRead);
-				}
+				}*/
 			}
 			//If this 8-byte row hasn't been read/written to in over 3000 cpu cycles (~1.7ms), return 0x10 to simulate decay
 			return 0x10;
@@ -1158,7 +1173,7 @@ void NesPpu::WriteSpriteRam(uint8_t addr, uint8_t value)
 
 void NesPpu::DebugSendFrame()
 {
-	_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer);
+	_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount);
 }
 
 uint16_t* NesPpu::GetScreenBuffer(bool previousBuffer)
@@ -1175,21 +1190,21 @@ void NesPpu::SendFrame()
 {
 	UpdateGrayscaleAndIntensifyBits();
 
-	_console->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentOutputBuffer);
 #else 
-	if(_console->GetRewindManager()->IsRewinding()) {
-		if(!_console->GetRewindManager()->IsStepBack()) {
-			_console->GetVideoDecoder()->UpdateFrameSync(_currentOutputBuffer);
+	if(_emu->GetRewindManager()->IsRewinding()) {
+		if(!_emu->GetRewindManager()->IsStepBack()) {
+			_emu->GetVideoDecoder()->UpdateFrameSync(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, true);
 		}
 	} else {
 		//If VideoDecoder isn't done with the previous frame, UpdateFrame will block until it is ready to accept a new frame.
-		_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount);
 	}
 
-	_enableOamDecay = _settings->CheckFlag(EmulationFlags::EnableOamDecay);
+	_enableOamDecay = _settings->GetNesConfig().EnableOamDecay;
 #endif
 }
 
@@ -1297,9 +1312,10 @@ void NesPpu::Exec()
 		
 		UpdateApuStatus();
 		
-		if(_scanline == _settings->GetInputPollScanline()) {
+		//TODO
+		/*if(_scanline == _settings->GetInputPollScanline()) {
 			_console->GetControlManager()->UpdateInputState();
-		}
+		}*/
 
 		//Cycle = 0
 		if(_scanline == -1) {
@@ -1387,12 +1403,14 @@ void NesPpu::UpdateState()
 		_needStateUpdate = true;
 	}
 
-	_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+	//TODO
+	//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
 
 	if(_updateVramAddrDelay > 0) {
 		_updateVramAddrDelay--;
 		if(_updateVramAddrDelay == 0) {
-			if(_settings->CheckFlag(EmulationFlags::EnablePpu2006ScrollGlitch) && _scanline < 240 && IsRenderingEnabled()) {
+			//TODO
+			/*if(_settings->CheckFlag(EmulationFlags::EnablePpu2006ScrollGlitch) && _scanline < 240 && IsRenderingEnabled()) {
 				//When a $2006 address update lands on the Y or X increment, the written value is bugged and is ANDed with the incremented value
 				if(_cycle == 257) {
 					_state.VideoRamAddr &= _updateVramAddr;
@@ -1409,12 +1427,13 @@ void NesPpu::UpdateState()
 				} else {
 					_state.VideoRamAddr = _updateVramAddr;
 				}
-			} else {
+			} else {*/
 				_state.VideoRamAddr = _updateVramAddr;
-			}
+			//}
 
 			if(!_renderingEnabled) {
-				_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+				//TODO
+				//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
 			}
 
 			//The glitches updates corrupt both V and T, so set the new value of V back into T
@@ -1456,10 +1475,13 @@ uint8_t* NesPpu::GetSpriteRam()
 
 uint32_t NesPpu::GetPixelBrightness(uint8_t x, uint8_t y)
 {
+	return 0;
+
+	//TODO
 	//Used by Zapper, gives a rough approximation of the brightness level of the specific pixel
-	uint16_t pixelData = _currentOutputBuffer[y << 8 | x];
+	/*uint16_t pixelData = _currentOutputBuffer[y << 8 | x];
 	uint32_t argbColor = _settings->GetRgbPalette()[pixelData & 0x3F];
-	return (argbColor & 0xFF) + ((argbColor >> 8) & 0xFF) + ((argbColor >> 16) & 0xFF);
+	return (argbColor & 0xFF) + ((argbColor >> 8) & 0xFF) + ((argbColor >> 16) & 0xFF);*/
 }
 
 void NesPpu::Serialize(Serializer& s)

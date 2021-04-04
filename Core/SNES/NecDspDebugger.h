@@ -13,6 +13,8 @@ class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
+enum class MemoryOperationType;
+
 class NecDspDebugger final : public IDebugger
 {
 	Debugger* _debugger;

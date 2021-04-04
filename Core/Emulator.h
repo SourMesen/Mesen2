@@ -22,7 +22,7 @@ class CheatManager;
 class MovieManager;
 class FrameLimiter;
 class DebugStats;
-class ControlManager;
+class IControlManager;
 class VirtualFile;
 
 struct RomInfo;
@@ -135,7 +135,7 @@ public:
 	shared_ptr<CheatManager> GetCheatManager();
 	shared_ptr<MovieManager> GetMovieManager();
 
-	shared_ptr<ControlManager> GetControlManager();
+	shared_ptr<IControlManager> GetControlManager();
 
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
 	void StopDebugger();

@@ -25,6 +25,8 @@
 #include "MemoryAccessCounter.h"
 #include "LabelManager.h"
 #include "DefaultVideoFilter.h"
+#include "MemoryOperationType.h"
+#include "DebugState.h"
 
 #define lua_pushintvalue(name, value) lua_pushliteral(lua, #name); lua_pushinteger(lua, (int)value); lua_settable(lua, -3);
 #define lua_pushdoublevalue(name, value) lua_pushliteral(lua, #name); lua_pushnumber(lua, (double)value); lua_settable(lua, -3);

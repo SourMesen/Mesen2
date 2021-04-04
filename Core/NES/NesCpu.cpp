@@ -11,6 +11,8 @@
 #include "Debugger.h"
 #include "NesMemoryManager.h"
 #include "NesConsole.h"
+#include "MemoryOperationType.h"
+#include "Emulator.h"
 
 NesCpu::NesCpu(shared_ptr<NesConsole> console)
 {
@@ -304,12 +306,12 @@ uint16_t NesCpu::FetchOperand()
 
 	if(_console->GetNesConfig().BreakOnCrash) {
 		//When "Break on Crash" is enabled, open the debugger and break immediately if a crash occurs
-		_console->GetDebugger(true)->BreakImmediately(BreakSource::BreakOnCpuCrash);
+		_console->GetEmulator()->GetDebugger(true)->BreakImmediately(BreakSource::BreakOnCpuCrash);
 	}
 	
 	if(_console->IsNsf()) {
 		//Don't stop emulation on CPU crash when playing NSFs, reset cpu instead
-		_console->Reset(true);
+		_console->GetEmulator()->Reset();
 		return 0;
 	} else {
 		return 0;
@@ -383,7 +385,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 			if(_dmcDmaRunning && !_needHalt && !_needDummyRead) {
 				//DMC DMA is ready to read a byte (both halt and dummy read cycles were performed before this)
 				processCycle();
-				readValue = _memoryManager->Read(_console->GetApu()->GetDmcReadAddress(), MemoryOperationType::DmcRead);
+				readValue = _memoryManager->Read(_console->GetApu()->GetDmcReadAddress(), MemoryOperationType::DmaRead);
 				EndCpuCycle(true); 
 				_console->GetApu()->SetDmcReadBuffer(readValue);
 				_dmcDmaRunning = false;

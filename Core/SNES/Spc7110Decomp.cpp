@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Spc7110Decomp.h"
 #include "Spc7110.h"
+#include "Utilities/Serializer.h"
 
 //Based on bsnes' code (by byuu)
 //original implementation: neviksti

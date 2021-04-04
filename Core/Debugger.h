@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
-#include "DebugUtilities.h"
 #include "Utilities/SimpleLock.h"
+#include "DebugUtilities.h"
+#include "DebugTypes.h"
 
 class Console;
 class Emulator;
@@ -38,7 +38,10 @@ class IEventManager;
 class IAssembler;
 class Gameboy;
 
+struct DebugState;
+
 enum class EventType;
+enum class MemoryOperationType;
 enum class EvalResultType : int32_t;
 
 class Debugger

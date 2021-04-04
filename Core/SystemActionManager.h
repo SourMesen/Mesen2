@@ -18,7 +18,7 @@ protected:
 public:
 	enum Buttons { ResetButton = 0, PowerButton = 1 };
 
-	SystemActionManager(Console* console) : BaseControlDevice(console, BaseControlDevice::ConsoleInputPort)
+	SystemActionManager(Console* console) : BaseControlDevice(console->GetEmulator(), BaseControlDevice::ConsoleInputPort)
 	{
 	}
 

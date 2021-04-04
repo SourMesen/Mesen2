@@ -3,6 +3,7 @@
 #include "DebugTypes.h"
 #include "GameboyHeader.h"
 #include "SettingTypes.h"
+#include "GbTypes.h"
 #include "Utilities/ISerializable.h"
 
 class Emulator;

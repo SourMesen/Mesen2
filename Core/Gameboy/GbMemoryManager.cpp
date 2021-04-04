@@ -16,6 +16,7 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
+#include "MemoryOperationType.h"
 
 void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {
@@ -28,7 +29,7 @@ void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu*
 	_cart = cart;
 	_timer = timer;
 	_dmaController = dmaController;
-	_controlManager = emu->GetControlManager().get();
+	_controlManager = (ControlManager*)emu->GetControlManager().get();
 	_settings = _emu->GetSettings().get();
 
 	memset(_reads, 0, sizeof(_reads));

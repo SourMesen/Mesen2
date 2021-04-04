@@ -16,6 +16,8 @@ class GbEventManager;
 class GbAssembler;
 class CodeDataLogger;
 
+enum class MemoryOperationType;
+
 class GbDebugger final : public IDebugger
 {
 	Debugger* _debugger;

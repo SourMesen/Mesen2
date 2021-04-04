@@ -1,12 +1,15 @@
 #pragma once 
-#include "../stdafx.h"
+#include "stdafx.h"
 
-#include "../SettingTypes.h"
+#include "SettingTypes.h"
+#include "IConsole.h"
 
+class Emulator;
 class NesCpu;
 class NesPpu;
 class NesApu;
 class NesMemoryManager;
+class NesControlManager;
 class BaseMapper;
 class EmuSettings;
 class NesSoundMixer;
@@ -15,17 +18,20 @@ enum class DebugEventType;
 enum class EventType;
 enum class NesModel;
 
-class NesConsole
+class NesConsole : public IConsole
 {
 private:
+	Emulator* _emu = nullptr;
 	shared_ptr<NesCpu> _cpu;
 	shared_ptr<NesPpu> _ppu;
 	shared_ptr<NesApu> _apu;
 	shared_ptr<NesMemoryManager> _memoryManager;
 	shared_ptr<BaseMapper> _mapper;
-	//shared_ptr<ControlManager> _controlManager;
+	shared_ptr<NesControlManager> _controlManager;
 
 public:
+	NesConsole(Emulator* emulator);
+
 	NesCpu* GetCpu() { return _cpu.get(); }
 	NesPpu* GetPpu() { return _ppu.get(); }
 	NesApu* GetApu() { return _apu.get(); }
@@ -33,6 +39,7 @@ public:
 	BaseMapper* GetMapper() { return _mapper.get(); }
 	EmuSettings* GetSettings() { return nullptr; }
 	NesSoundMixer* GetSoundMixer() { return nullptr; }
+	Emulator* GetEmulator();
 	NesConfig GetNesConfig() { return {}; }
 
 	//TODO
@@ -41,6 +48,8 @@ public:
 
 	std::thread::id  GetEmulationThreadId() { return std::thread::id(); }
 
+	bool IsNsf() { return false; }
+
 	void DebugAddTrace(char* str) {}
 	void DebugAddDebugEvent(DebugEventType eventType) {}
 	void DebugProcessEvent(EventType eventType) {}
@@ -48,4 +57,19 @@ public:
 	void DebugProcessPpuCycle() {}
 	void DebugSetLastFramePpuScroll(uint16_t addr, uint8_t xScroll, bool updateHorizontalScrollOnly) {}
 	void SetNextFrameOverclockStatus(bool enabled) {}
+
+	// Inherited via IConsole
+	virtual void Serialize(Serializer& s) override;
+	virtual void Stop() override;
+	virtual void Reset() override;
+	virtual void OnBeforeRun() override;
+	virtual bool LoadRom(VirtualFile& romFile, VirtualFile& patchFile) override;
+	virtual void Init() override;
+	virtual void RunFrame() override;
+	virtual shared_ptr<IControlManager> GetControlManager() override;
+	virtual double GetFrameDelay() override;
+	virtual double GetFps() override;
+	virtual RomInfo GetRomInfo() override;
+	virtual void RunSingleFrame() override;
+	virtual PpuFrameInfo GetPpuFrame() override;
 };

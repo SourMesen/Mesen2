@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 #include "IDebugger.h"
+#include "DebugState.h"
 
 class Disassembler;
 class Debugger;
@@ -12,6 +13,8 @@ class MemoryAccessCounter;
 class MemoryManager;
 class BreakpointManager;
 class EmuSettings;
+
+enum class MemoryOperationType;
 
 class SpcDebugger final : public IDebugger
 {

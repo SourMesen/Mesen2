@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
+#include "IControlManager.h"
 
 class BaseControlDevice;
 class IInputRecorder;
@@ -14,7 +15,7 @@ struct ControllerData;
 enum class ControllerType;
 enum class ExpansionPortDevice;
 
-class ControlManager : public ISerializable
+class ControlManager : public ISerializable, public IControlManager
 {
 private:
 	vector<IInputRecorder*> _inputRecorders;

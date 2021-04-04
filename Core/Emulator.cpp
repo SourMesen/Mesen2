@@ -23,6 +23,7 @@
 #include "MovieManager.h"
 #include "IConsole.h"
 #include "SystemActionManager.h"
+#include "MemoryOperationType.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
@@ -626,7 +627,7 @@ shared_ptr<MovieManager> Emulator::GetMovieManager()
 	return _movieManager;
 }
 
-shared_ptr<ControlManager> Emulator::GetControlManager()
+shared_ptr<IControlManager> Emulator::GetControlManager()
 {
 	return _console->GetControlManager();
 }

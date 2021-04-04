@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Multitap.h"
+#include "Console.h"
+#include "Emulator.h"
 #include "InternalRegisters.h"
 #include "SnesController.h"
 
@@ -28,7 +30,7 @@ void Multitap::InternalSetStateFromInput()
 			SetPressedState(Buttons::Right + offset, keyMapping.Right);
 
 			uint8_t turboFreq = 1 << (4 - _turboSpeed[i]);
-			bool turboOn = (uint8_t)(_console->GetPpuFrame().FrameCount % turboFreq) < turboFreq / 2;
+			bool turboOn = (uint8_t)(_emu->GetPpuFrame().FrameCount % turboFreq) < turboFreq / 2;
 			if(turboOn) {
 				SetPressedState(Buttons::A + offset, keyMapping.TurboA);
 				SetPressedState(Buttons::B + offset, keyMapping.TurboB);
@@ -92,7 +94,7 @@ void Multitap::RefreshStateBuffer()
 	}
 }
 
-Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console, port, keyMappings1)
+Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console->GetEmulator(), port, keyMappings1)
 {
 	_turboSpeed[0] = keyMappings1.TurboSpeed;
 	_turboSpeed[1] = keyMappings2.TurboSpeed;
@@ -113,7 +115,7 @@ ControllerType Multitap::GetControllerType()
 
 void Multitap::SetControllerState(uint8_t controllerNumber, ControlDeviceState state)
 {
-	SnesController controller(_console, 0, KeyMappingSet());
+	SnesController controller(_emu, 0, KeyMappingSet());
 	controller.SetRawState(state);
 	UpdateControllerState(controllerNumber, controller);
 }

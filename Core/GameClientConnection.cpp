@@ -38,7 +38,7 @@ void GameClientConnection::Shutdown()
 		_shutdown = true;
 		DisableControllers();
 
-		shared_ptr<ControlManager> controlManager = _emu->GetControlManager();
+		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			controlManager->UnregisterInputProvider(this);
 		}

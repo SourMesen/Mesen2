@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 #include "IDebugger.h"
+#include "CpuTypes.h"
+#include "DebugState.h"
 
 class Disassembler;
 class Debugger;
@@ -18,6 +20,7 @@ class MemoryMappings;
 class BreakpointManager;
 class Sa1;
 class Assembler;
+enum class MemoryOperationType;
 
 class CpuDebugger final : public IDebugger
 {

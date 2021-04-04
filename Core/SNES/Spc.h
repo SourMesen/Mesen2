@@ -9,6 +9,7 @@
 #include "SpcTypes.h"
 #include "CpuTypes.h"
 #include "SpcTimer.h"
+#include "MemoryOperationType.h"
 #include "Utilities/ISerializable.h"
 
 class Console;

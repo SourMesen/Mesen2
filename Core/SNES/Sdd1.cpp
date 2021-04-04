@@ -5,6 +5,7 @@
 #include "BaseCartridge.h"
 #include "MemoryManager.h"
 #include "MemoryMappings.h"
+#include "Utilities/Serializer.h"
 
 Sdd1::Sdd1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {

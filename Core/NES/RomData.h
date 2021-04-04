@@ -59,7 +59,7 @@ struct GameInfo
 	PpuModel VsPpuModel;
 };
 
-struct RomInfo
+struct NesRomInfo
 {
 	string RomName;
 	string Filename;
@@ -108,7 +108,7 @@ struct StudyBoxData
 
 struct RomData
 {
-	RomInfo Info;
+	NesRomInfo Info;
 
 	int32_t ChrRamSize = -1;
 	int32_t SaveChrRamSize = -1;

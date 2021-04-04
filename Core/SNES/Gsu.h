@@ -11,6 +11,8 @@ class Cpu;
 class MemoryManager;
 class EmuSettings;
 
+enum class MemoryOperationType;
+
 class Gsu : public BaseCoprocessor
 {
 private:

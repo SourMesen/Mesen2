@@ -3,12 +3,16 @@
 #include "NesMemoryManager.h"
 #include "BaseMapper.h"
 //#include "Debugger.h"
-//#include "CheatManager.h"
+#include "CheatManager.h"
+#include "Emulator.h"
 #include "NesConsole.h"
+#include "MemoryOperationType.h"
 
 NesMemoryManager::NesMemoryManager(shared_ptr<NesConsole> console)
 {
 	_console = console;
+	_emu = console->GetEmulator();
+	_cheatManager = _emu->GetCheatManager();
 	_internalRAM = new uint8_t[InternalRAMSize];
 	_internalRamHandler.SetInternalRam(_internalRAM);
 
@@ -109,7 +113,7 @@ uint8_t NesMemoryManager::DebugRead(uint16_t addr, bool disableSideEffects)
 		}
 	}
 
-	_console->GetCheatManager()->ApplyCodes(addr, value);
+	_cheatManager->ApplyCheat(addr, value);
 
 	return value;
 }
@@ -122,8 +126,8 @@ uint16_t NesMemoryManager::DebugReadWord(uint16_t addr)
 uint8_t NesMemoryManager::Read(uint16_t addr, MemoryOperationType operationType)
 {
 	uint8_t value = _ramReadHandlers[addr]->ReadRam(addr);
-	_console->GetCheatManager()->ApplyCodes(addr, value);
-	_console->DebugProcessRamOperation(operationType, addr, value);
+	_cheatManager->ApplyCheat(addr, value);
+	_emu->ProcessMemoryRead<CpuType::Nes>(addr, value, operationType);
 
 	_openBusHandler.SetOpenBus(value);
 
@@ -132,9 +136,11 @@ uint8_t NesMemoryManager::Read(uint16_t addr, MemoryOperationType operationType)
 
 void NesMemoryManager::Write(uint16_t addr, uint8_t value, MemoryOperationType operationType)
 {
-	if(_console->DebugProcessRamOperation(operationType, addr, value)) {
+	_emu->ProcessMemoryWrite<CpuType::Nes>(addr, value, operationType);
+	//TODO
+	//if(_console->DebugProcessRamOperation(operationType, addr, value)) {
 		_ramWriteHandlers[addr]->WriteRam(addr, value);
-	}
+	//}
 }
 
 void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSideEffects)

@@ -187,7 +187,7 @@ bool NesApu::NeedToRun(uint32_t currentCycle)
 void NesApu::Exec()
 {
 	_currentCycle++;
-	if(_currentCycle == SoundMixer::CycleLength - 1) {
+	if(_currentCycle == NesSoundMixer::CycleLength - 1) {
 		EndFrame();
 	} else if(NeedToRun(_currentCycle)) {
 		Run();
@@ -239,7 +239,13 @@ void NesApu::Serialize(Serializer& s)
 		_currentCycle = 0;
 	}
 
-	s.Stream(_nesModel, _squareChannel[0].get(), _squareChannel[1].get(), _triangleChannel.get(), _noiseChannel.get(), _deltaModulationChannel.get(), _frameCounter.get(), _mixer);
+	s.Stream(_nesModel);
+	s.Stream(_squareChannel[0].get());
+	s.Stream(_squareChannel[1].get());
+	s.Stream(_triangleChannel.get());
+	s.Stream(_noiseChannel.get());
+	s.Stream(_deltaModulationChannel.get());
+	s.Stream(_mixer);
 }
 
 void NesApu::AddExpansionAudioDelta(AudioChannel channel, int16_t delta)

@@ -604,6 +604,104 @@
     <ClInclude Include="Emulator.h" />
     <ClInclude Include="IConsole.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="NES\ApuEnvelope.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\ApuFrameCounter.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\ApuLengthCounter.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\BaseApuChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\BaseMapper.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\DeltaModulationChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\GameDatabase.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\iNesLoader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\INesMemoryHandler.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\InternalRamHandler.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\MapperFactory.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesApu.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesConsole.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesCpu.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesDebuggerTypes.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesHeader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesMemoryManager.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesPpu.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesSoundMixer.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesTypes.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NoiseChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\NROM.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\OpenBusHandler.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\SquareChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\TriangleChannel.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\BaseLoader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\RomData.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\RomLoader.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\stdafx.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryOperationType.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugState.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesControlManager.h" />
+    <ClInclude Include="NES\StandardController.h" />
+    <ClInclude Include="IControlManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -968,6 +1066,46 @@
     </ClCompile>
     <ClCompile Include="Emulator.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="NES\BaseMapper.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\DeltaModulationChannel.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\GameDatabase.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\iNesLoader.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\MapperFactory.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesApu.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesCpu.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesHeader.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesMemoryManager.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesPpu.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesSoundMixer.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\RomLoader.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesConsole.cpp">
+      <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesControlManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

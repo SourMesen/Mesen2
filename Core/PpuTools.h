@@ -3,6 +3,7 @@
 #include "DebugTypes.h"
 #include "Emulator.h"
 #include "NotificationManager.h"
+#include "SNES/PpuTypes.h"
 
 class Ppu;
 struct GbPpuState;

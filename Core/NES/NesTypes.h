@@ -39,18 +39,6 @@ enum class MemoryOperation
 	Any = 3
 };
 
-enum class MemoryOperationType
-{
-	Read = 0,
-	Write = 1,
-	ExecOpCode = 2,
-	ExecOperand = 3,
-	PpuRenderingRead = 4,
-	DummyRead = 5,
-	DmcRead = 6,
-	DummyWrite = 7
-};
-
 struct State
 {
 	uint16_t PC = 0;
@@ -282,18 +270,6 @@ struct ApuState
 	ApuNoiseState Noise;
 	ApuDmcState Dmc;
 	ApuFrameCounterState FrameCounter;
-};
-
-struct MousePosition
-{
-	int16_t X;
-	int16_t Y;
-};
-
-struct MouseMovement
-{
-	int16_t dx;
-	int16_t dy;
 };
 
 enum class ConsoleFeatures

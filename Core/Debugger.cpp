@@ -38,6 +38,7 @@
 #include "DebugBreakHelper.h"
 #include "LabelManager.h"
 #include "ScriptManager.h"
+#include "DebugState.h"
 #include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
 #include "SNES/InternalRegisters.h"
@@ -51,6 +52,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/IpsPatcher.h"
+#include "MemoryOperationType.h"
 
 Debugger::Debugger(shared_ptr<Console> console)
 {

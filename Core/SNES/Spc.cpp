@@ -6,6 +6,7 @@
 #include "SoundMixer.h"
 #include "EmuSettings.h"
 #include "SpcFileData.h"
+#include "MemoryOperationType.h"
 #ifndef DUMMYSPC
 #include "SPC_DSP.h"
 #else

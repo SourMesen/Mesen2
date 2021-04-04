@@ -33,7 +33,7 @@ GameServer::~GameServer()
 
 	Stop();
 	
-	shared_ptr<ControlManager> controlManager = _emu->GetControlManager();
+	shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
 	if(controlManager) {
 		controlManager->UnregisterInputRecorder(this);
 		controlManager->UnregisterInputProvider(this);
@@ -42,7 +42,7 @@ GameServer::~GameServer()
 
 void GameServer::RegisterServerInput()
 {
-	shared_ptr<ControlManager> controlManager = _emu->GetControlManager();
+	shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
 	if(controlManager) {
 		controlManager->RegisterInputRecorder(this);
 		controlManager->RegisterInputProvider(this);

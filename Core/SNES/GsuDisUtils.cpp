@@ -3,6 +3,7 @@
 #include "DisassemblyInfo.h"
 #include "LabelManager.h"
 #include "EmuSettings.h"
+#include "GsuTypes.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
 

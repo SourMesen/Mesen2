@@ -5,6 +5,7 @@
 #include "MessageManager.h"
 #include "BatteryManager.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 //TODO: Partial implementation
 //Missing stuff: most flags e.g: 30ADJ, 24/12, CAL/HW, WRAP, etc.

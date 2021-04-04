@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CpuTypes.h"
 #include "Utilities/ISerializable.h"
+#include "MemoryOperationType.h"
 
 class Sa1;
 class Emulator;

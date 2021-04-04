@@ -48,7 +48,7 @@ void InternalRegisters::ProcessAutoJoypadRead()
 		return;
 	}
 
-	shared_ptr<ControlManager> controlManager = _console->GetControlManager();
+	ControlManager* controlManager = (ControlManager*)_console->GetControlManager().get();
 
 	controlManager->Write(0x4016, 1);
 	controlManager->Write(0x4016, 0);

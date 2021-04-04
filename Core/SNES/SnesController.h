@@ -19,7 +19,7 @@ protected:
 public:
 	enum Buttons { A = 0, B, X, Y, L, R, Select, Start, Up, Down, Left, Right };
 
-	SnesController(Console* console, uint8_t port, KeyMappingSet keyMappings);
+	SnesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings);
 
 	ControllerType GetControllerType() override;
 	uint8_t ReadRam(uint16_t addr) override;

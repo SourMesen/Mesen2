@@ -2,6 +2,7 @@
 #include "Sdd1Mmc.h"
 #include "Sdd1Types.h"
 #include "BaseCartridge.h"
+#include "Utilities/Serializer.h"
 
 Sdd1Mmc::Sdd1Mmc(Sdd1State &state, BaseCartridge *cart) : IMemoryHandler(SnesMemoryType::Register)
 {

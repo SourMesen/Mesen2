@@ -3,6 +3,7 @@
 #include "GbMemoryManager.h"
 #include "GbPpu.h"
 #include "GbCpu.h"
+#include "Utilities/Serializer.h"
 
 void GbDmaController::Init(GbMemoryManager* memoryManager, GbPpu* ppu, GbCpu* cpu)
 {

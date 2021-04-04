@@ -8,6 +8,7 @@
 #include "Debugger.h"
 #include "LabelManager.h"
 #include "DebugUtilities.h"
+#include "DebugState.h"
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/CpuTypes.h"

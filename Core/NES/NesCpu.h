@@ -8,6 +8,7 @@
 #include "../stdafx.h"
 #include "../../Utilities/ISerializable.h"
 #include "NesTypes.h"
+#include "MemoryOperationType.h"
 
 enum class NesModel;
 class NesConsole;

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 #include "EventType.h"
+#include "MemoryOperationType.h"
 
 class ScriptingContext;
 class Debugger;

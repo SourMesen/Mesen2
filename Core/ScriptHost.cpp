@@ -2,6 +2,7 @@
 #include "ScriptHost.h"
 #include "ScriptingContext.h"
 #include "EventType.h"
+#include "MemoryOperationType.h"
 #ifndef LIBRETRO
 #include "LuaScriptingContext.h"
 #endif

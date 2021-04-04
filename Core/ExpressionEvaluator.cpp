@@ -9,6 +9,7 @@
 #include "Disassembler.h"
 #include "LabelManager.h"
 #include "DebugUtilities.h"
+#include "DebugState.h"
 #include "Utilities/HexUtilities.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };

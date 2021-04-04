@@ -42,9 +42,9 @@ protected:
 public:
 	enum Buttons { Left = 0, Right };
 
-	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console, port)
+	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console->GetEmulator(), port)
 	{
-		_settings = console->GetEmulator()->GetSettings().get();
+		_settings = _emu->GetSettings().get();
 	}
 
 	ControllerType GetControllerType() override

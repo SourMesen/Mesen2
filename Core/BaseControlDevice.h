@@ -6,7 +6,7 @@
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
 
-class Console;
+class Emulator;
 
 class BaseControlDevice : public ISerializable
 {
@@ -14,7 +14,7 @@ private:
 	ControlDeviceState _state;
 
 protected:
-	Console* _console;
+	Emulator* _emu;
 	vector<KeyMapping> _keyMappings;
 	bool _strobe;
 	uint8_t _port;
@@ -51,7 +51,7 @@ public:
 	static constexpr uint8_t ExpDevicePort2 = 7;
 	static constexpr uint8_t PortCount = ExpDevicePort2 + 1;
 
-	BaseControlDevice(Console* console, uint8_t port, KeyMappingSet keyMappingSet = KeyMappingSet());
+	BaseControlDevice(Emulator* emu, uint8_t port, KeyMappingSet keyMappingSet = KeyMappingSet());
 	virtual ~BaseControlDevice();
 
 	uint8_t GetPort();

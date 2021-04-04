@@ -3,7 +3,7 @@
 #include "Utilities/ISerializable.h"
 #include "SNES/CartTypes.h"
 
-class ControlManager;
+class IControlManager;
 class VirtualFile;
 
 struct PpuFrameInfo
@@ -28,7 +28,7 @@ public:
 	//virtual void RunFrameWithRunAhead() = 0;
 	virtual void RunFrame() = 0;
 
-	virtual shared_ptr<ControlManager> GetControlManager() = 0;
+	virtual shared_ptr<IControlManager> GetControlManager() = 0;
 
 	virtual double GetFrameDelay() = 0;
 	virtual double GetFps() = 0;

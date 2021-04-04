@@ -1,10 +1,12 @@
 #pragma once
 
 #include "../stdafx.h"
-#include "../../Utilities/ISerializable.h"
+#include "Utilities/ISerializable.h"
 #include "INesMemoryHandler.h"
 #include "NesTypes.h"
 #include "RomData.h"
+#include "Emulator.h"
+#include "../MemoryOperationType.h"
 
 class NesConsole;
 class BaseControlDevice;
@@ -50,10 +52,11 @@ private:
 	vector<uint8_t> _originalChrRom;
 
 protected:
-	RomInfo _romInfo;
+	NesRomInfo _romInfo;
 
 	shared_ptr<BaseControlDevice> _mapperControlDevice;
 	shared_ptr<NesConsole> _console;
+	Emulator* _emu;
 
 	uint8_t* _prgRom = nullptr;
 	uint8_t* _chrRom = nullptr;
@@ -172,7 +175,7 @@ public:
 	void SetConsole(shared_ptr<NesConsole> console);
 
 	shared_ptr<BaseControlDevice> GetMapperControlDevice();
-	RomInfo GetRomInfo();
+	NesRomInfo GetRomInfo();
 	uint32_t GetMapperDipSwitchCount();
 
 	virtual void ApplySamples(int16_t* buffer, size_t sampleCount, double volume) {}
@@ -189,7 +192,7 @@ public:
 	__forceinline uint8_t ReadVRAM(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
 		uint8_t value = MapperReadVRAM(addr, type);
-		_console->DebugProcessVramReadOperation(type, addr, value);
+		_emu->ProcessPpuRead(addr, value, SnesMemoryType::VideoRam);
 		return value;
 	}
 

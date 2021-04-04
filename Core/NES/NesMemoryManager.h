@@ -6,8 +6,11 @@
 #include "INesMemoryHandler.h"
 #include "OpenBusHandler.h"
 #include "InternalRamHandler.h"
+#include "MemoryOperationType.h"
 
 class BaseMapper;
+class CheatManager;
+class Emulator;
 class NesConsole;
 
 class NesMemoryManager : public ISerializable
@@ -16,6 +19,8 @@ class NesMemoryManager : public ISerializable
 		static constexpr int RAMSize = 0x10000;
 		static constexpr int VRAMSize = 0x4000;
 		
+		Emulator* _emu = nullptr;
+		shared_ptr<CheatManager> _cheatManager;
 		shared_ptr<NesConsole> _console;
 		shared_ptr<BaseMapper> _mapper;
 
