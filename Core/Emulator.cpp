@@ -413,6 +413,12 @@ string Emulator::GetHash(HashType type)
 	return "";
 }
 
+uint32_t Emulator::GetCrc32()
+{
+	//TODO
+	return 0;
+}
+
 PpuFrameInfo Emulator::GetPpuFrame()
 {
 	return _console->GetPpuFrame();
@@ -431,6 +437,21 @@ ConsoleType Emulator::GetConsoleType()
 	} else {
 		return ConsoleType::Snes;
 	}
+}
+
+vector<CpuType> Emulator::GetCpuTypes()
+{
+	if(_console) {
+		return _console->GetCpuTypes();
+	} else {
+		return {};
+	}
+}
+
+uint64_t Emulator::GetMasterClock()
+{
+	//TODO
+	return 0;
 }
 
 uint32_t Emulator::GetFrameCount()
@@ -668,7 +689,7 @@ shared_ptr<Debugger> Emulator::GetDebugger(bool autoStart)
 		auto lock = _debuggerLock.AcquireSafe();
 		debugger = _debugger;
 		if(!debugger) {
-			//debugger.reset(new Debugger(shared_from_this()));
+			debugger.reset(new Debugger(this, _console.get()));
 			_debugger = debugger;
 		}
 	}

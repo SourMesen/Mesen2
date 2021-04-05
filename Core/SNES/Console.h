@@ -124,7 +124,13 @@ public:
 	bool IsRunning();
 	bool IsRunAheadFrame();
 
+	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
+	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
+
 	double GetFrameDelay() override;
 	double GetFps() override;
 	PpuFrameInfo GetPpuFrame() override;
+
+	// Inherited via IConsole
+	virtual vector<CpuType> GetCpuTypes() override;
 };

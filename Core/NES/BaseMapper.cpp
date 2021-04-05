@@ -865,7 +865,7 @@ void BaseMapper::DebugWriteVRAM(uint16_t addr, uint8_t value, bool disableSideEf
 
 void BaseMapper::WriteVRAM(uint16_t addr, uint8_t value)
 {
-	_emu->ProcessPpuWrite(addr, value, SnesMemoryType::VideoRam);
+	_emu->ProcessPpuWrite<CpuType::Nes>(addr, value, SnesMemoryType::VideoRam);
 
 	if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
 		_chrPages[addr >> 8][(uint8_t)addr] = value;

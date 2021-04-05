@@ -25,8 +25,8 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_gsu = debugger->GetConsole()->GetCartridge()->GetGsu();
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
+	_gsu = ((Console*)debugger->GetConsole())->GetCartridge()->GetGsu();
+	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
 	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu));
@@ -119,4 +119,24 @@ void GsuDebugger::Step(int32_t stepCount, StepType type)
 BreakpointManager* GsuDebugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
+}
+
+shared_ptr<CallstackManager> GsuDebugger::GetCallstackManager()
+{
+	throw std::runtime_error("Call stack not supported for GSU");
+}
+
+shared_ptr<IAssembler> GsuDebugger::GetAssembler()
+{
+	throw std::runtime_error("Assembler not supported for GSU");
+}
+
+shared_ptr<IEventManager> GsuDebugger::GetEventManager()
+{
+	throw std::runtime_error("Event manager not supported for GSU");
+}
+
+shared_ptr<CodeDataLogger> GsuDebugger::GetCodeDataLogger()
+{
+	throw std::runtime_error("CDL not supported for GSU");
 }

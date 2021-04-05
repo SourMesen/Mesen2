@@ -57,7 +57,9 @@ void LuaApi::SetContext(ScriptingContext* context)
 	_debugger = _context->GetDebugger();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
 	_emu = _debugger->GetEmulator();
-	_ppu = _debugger->GetConsole()->GetPpu().get();
+
+	//TODO
+	//_ppu = _debugger->GetConsole()->GetPpu().get();
 }
 
 int LuaApi::GetLibrary(lua_State *lua)

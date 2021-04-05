@@ -1,11 +1,13 @@
 #pragma once
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
+#include "DebugTypes.h"
 #include "SNES/CartTypes.h"
 
 class IControlManager;
 class VirtualFile;
 enum class ConsoleType;
+enum class CpuType : uint8_t;
 
 struct PpuFrameInfo
 {
@@ -32,6 +34,7 @@ public:
 	virtual shared_ptr<IControlManager> GetControlManager() = 0;
 
 	virtual ConsoleType GetConsoleType() = 0;
+	virtual vector<CpuType> GetCpuTypes() = 0;
 
 	virtual double GetFrameDelay() = 0;
 	virtual double GetFps() = 0;
@@ -41,5 +44,8 @@ public:
 	virtual void RunSingleFrame() = 0;
 
 	virtual PpuFrameInfo GetPpuFrame() = 0;
+
+	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) = 0;
+	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) = 0;
 };
 

@@ -9,42 +9,18 @@
 #include "DebugBreakHelper.h"
 #include "EmuSettings.h"
 #include "DebugUtilities.h"
+#include "DebugState.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
-#include "SNES/Cpu.h"
-#include "SNES/Spc.h"
-#include "SNES/NecDsp.h"
-#include "SNES/Sa1.h"
-#include "SNES/Gsu.h"
-#include "SNES/Cx4.h"
-#include "SNES/BsxCart.h"
-#include "SNES/BsxMemoryPack.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/Console.h"
-#include "SNES/BaseCartridge.h"
-#include "Gameboy/Gameboy.h"
-#include "Gameboy/GbCpu.h"
 
-Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger)
+Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 {
-	shared_ptr<BaseCartridge> cart = console->GetCartridge();
-
-	_cdl = cdl;
 	_debugger = debugger;
 	_labelManager = debugger->GetLabelManager();
-	_console = console.get();
-	_cpu = console->GetCpu().get();
-	_spc = console->GetSpc().get();
-	_gsu = cart->GetGsu();
-	_sa1 = cart->GetSa1();
-	_cx4 = cart->GetCx4();
-	_necDsp = cart->GetDsp();
-	_gameboy = cart->GetGameboy();
-	_settings = console->GetEmulator()->GetSettings().get();
+	_console = console;
+	_settings = debugger->GetEmulator()->GetSettings().get();
 	_memoryDumper = _debugger->GetMemoryDumper().get();
-	_memoryManager = console->GetMemoryManager().get();
 
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
 		_disassemblyResult[i] = vector<DisassemblyResult>();
@@ -55,11 +31,12 @@ Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogge
 		InitSource((SnesMemoryType)i);
 	}
 
-	if(_necDsp) {
+	//TODO
+	/*if(_necDsp) {
 		//Build cache for the entire DSP chip (since it only contains instructions)
 		AddressInfo dspStart = { 0, SnesMemoryType::DspProgramRom };
 		BuildCache(dspStart, 0, CpuType::NecDsp);
-	}
+	}*/
 }
 
 void Disassembler::InitSource(SnesMemoryType type)
@@ -172,58 +149,6 @@ void Disassembler::Disassemble(CpuType cpuType)
 
 	auto lock = _disassemblyLock.AcquireSafe(); 
 	
-	MemoryMappings *mappings = nullptr;
-	int32_t maxAddr = 0xFFFFFF;
-	switch(cpuType) {
-		case CpuType::Cpu: 
-			mappings = _memoryManager->GetMemoryMappings();
-			break;
-
-		case CpuType::Sa1:
-			if(!_sa1) {
-				return;
-			}
-			mappings = _sa1->GetMemoryMappings();
-			break;
-
-		case CpuType::Gsu:
-			if(!_gsu) {
-				return;
-			}
-			mappings = _gsu->GetMemoryMappings();
-			break;
-
-		case CpuType::NecDsp:
-			if(!_console->GetCartridge()->GetDsp()) {
-				return;
-			}
-			mappings = nullptr;
-			maxAddr = _necDsp->DebugGetProgramRomSize() - 1;
-			break;
-
-		case CpuType::Spc:
-			mappings = nullptr;
-			maxAddr = 0xFFFF;
-			break;
-
-		case CpuType::Gameboy:
-			if(!_gameboy) {
-				return;
-			}
-			mappings = nullptr; 
-			maxAddr = 0xFFFF;
-			break;
-
-		case CpuType::Cx4:
-			if(!_console->GetCartridge()->GetCx4()) {
-				return;
-			}
-			mappings = _console->GetCartridge()->GetCx4()->GetMemoryMappings();
-			break;
-
-		default: throw std::runtime_error("Disassemble(): Invalid cpu type");
-	}
-
 	vector<DisassemblyResult> &results = _disassemblyResult[(int)cpuType];
 	results.clear();
 
@@ -238,16 +163,21 @@ void Disassembler::Disassemble(CpuType cpuType)
 	AddressInfo addrInfo = {};
 	AddressInfo prevAddrInfo = {};
 	int byteCounter = 0;
+	
+	AddressInfo absAddress = {};
+	absAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);;
+	int32_t maxAddr = _memoryDumper->GetMemorySize(absAddress.Type) - 1;
+	CodeDataLogger* cdl = nullptr;
+	if(cpuType == CpuType::Cpu || cpuType == CpuType::Gameboy) {
+		cdl = _debugger->GetCodeDataLogger(cpuType).get();
+	}
+
 	for(int32_t i = 0; i <= maxAddr; i++) {
 		prevAddrInfo = addrInfo;
-		switch(cpuType) {
-			case CpuType::Spc: addrInfo = _spc->GetAbsoluteAddress(i); break;
-			case CpuType::NecDsp: addrInfo = { i, SnesMemoryType::DspProgramRom }; break;
-			case CpuType::Gameboy: addrInfo = _gameboy->GetAbsoluteAddress(i); break;
-			default: addrInfo = mappings->GetAbsoluteAddress(i); break;
-		}
-
-		if(addrInfo.Address < 0) {
+		
+		absAddress.Address = i;
+		addrInfo = _debugger->GetAbsoluteAddress(absAddress);
+		if(addrInfo.Address < 0 || addrInfo.Type == SnesMemoryType::Register) {
 			continue;
 		}
 
@@ -258,8 +188,8 @@ void Disassembler::Disassemble(CpuType cpuType)
 		uint8_t opSize = 0;
 		uint8_t opCode = (src.Data + addrInfo.Address)[0];
 
-		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsCode(addrInfo.Address) : false;
-		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsData(addrInfo.Address) : false;
+		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? cdl->IsCode(addrInfo.Address) : false;
+		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? cdl->IsData(addrInfo.Address) : false;
 
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
@@ -276,7 +206,7 @@ void Disassembler::Disassemble(CpuType cpuType)
 			}
 			byteCounter = 0;
 
-			if(addrInfo.Type == SnesMemoryType::PrgRom && _cdl->IsSubEntryPoint(addrInfo.Address)) {
+			if(addrInfo.Type == SnesMemoryType::PrgRom && cdl->IsSubEntryPoint(addrInfo.Address)) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 
@@ -473,14 +403,17 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				switch(lineCpuType) {
 					case CpuType::Cpu:
 					case CpuType::Sa1: {
-						CpuState state = type == CpuType::Sa1 ? _sa1->GetCpuState() : _cpu->GetState();
+						//TODO
+						/*CpuState state = type == CpuType::Sa1 ? _sa1->GetCpuState() : _cpu->GetState();
 						state.PC = (uint16_t)result.CpuAddress;
-						state.K = (result.CpuAddress >> 16);
+						state.K = (result.CpuAddress >> 16);*/
+						CpuState state = {};
 
+						CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType).get();
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, state.PS, lineCpuType);
 						} else {
-							data.Flags |= (result.Address.Type != SnesMemoryType::PrgRom || _cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+							data.Flags |= (result.Address.Type != SnesMemoryType::PrgRom || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 						}
 
 						data.OpSize = disInfo.GetOpSize();
@@ -495,7 +428,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 					
 					case CpuType::Spc: {
-						SpcState state = _spc->GetState();
+						SpcState state = {}; //TODO _spc->GetState();
 						state.PC = (uint16_t)result.CpuAddress;
 
 						if(!disInfo.IsInitialized()) {
@@ -516,7 +449,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 
 					case CpuType::Gsu: {
-						GsuState state = _gsu->GetState();
+						GsuState state = {}; //TODO _gsu->GetState();
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gsu);
 						} else {
@@ -548,7 +481,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						break;
 
 					case CpuType::Gameboy: {
-						GbCpuState state = _gameboy->GetCpu()->GetState();
+						GbCpuState state = {}; //TODO _gameboy->GetCpu()->GetState();
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gameboy);
 						} else {

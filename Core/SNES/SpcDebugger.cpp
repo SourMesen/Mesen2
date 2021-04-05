@@ -22,8 +22,8 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_spc = debugger->GetConsole()->GetSpc().get();
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
+	_spc = ((Console*)debugger->GetConsole())->GetSpc().get();
+	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
 	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -37,7 +37,7 @@ void SpcDebugger::Reset()
 	_prevOpCode = 0xFF;
 }
 
-void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type)
+void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	if(type == MemoryOperationType::DummyRead) {
 		//Ignore all dummy reads for now
@@ -106,7 +106,7 @@ void SpcDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
 }
 
-void SpcDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
+void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { addr, SnesMemoryType::SpcRam }; //Writes never affect the SPC ROM
 	MemoryOperationInfo operation { addr, value, type };
@@ -155,4 +155,19 @@ shared_ptr<CallstackManager> SpcDebugger::GetCallstackManager()
 BreakpointManager* SpcDebugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
+}
+
+shared_ptr<IAssembler> SpcDebugger::GetAssembler()
+{
+	throw std::runtime_error("Assembler not supported for SPC");
+}
+
+shared_ptr<IEventManager> SpcDebugger::GetEventManager()
+{
+	throw std::runtime_error("Event manager not supported for SPC");
+}
+
+shared_ptr<CodeDataLogger> SpcDebugger::GetCodeDataLogger()
+{
+	throw std::runtime_error("CDL not supported for SPC");
 }

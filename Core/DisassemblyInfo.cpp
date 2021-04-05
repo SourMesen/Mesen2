@@ -12,6 +12,7 @@
 #include "SNES/GsuDisUtils.h"
 #include "SNES/NecDspDisUtils.h"
 #include "SNES/Cx4DisUtils.h"
+#include "SNES/Console.h"
 #include "Gameboy/GameboyDisUtils.h"
 
 DisassemblyInfo::DisassemblyInfo()
@@ -81,15 +82,15 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 	}
 }
 
-int32_t DisassemblyInfo::GetEffectiveAddress(Console *console, void *cpuState, CpuType cpuType)
+int32_t DisassemblyInfo::GetEffectiveAddress(IConsole *console, void *cpuState, CpuType cpuType)
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
 		case CpuType::Cpu:
-			return CpuDisUtils::GetEffectiveAddress(*this, console, *(CpuState*)cpuState, cpuType);
+			return CpuDisUtils::GetEffectiveAddress(*this, (Console*)console, *(CpuState*)cpuState, cpuType);
 
-		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, console, *(SpcState*)cpuState);
-		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, console, *(GsuState*)cpuState);
+		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, (Console*)console, *(SpcState*)cpuState);
+		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, (Console*)console, *(GsuState*)cpuState);
 
 		case CpuType::Cx4:
 		case CpuType::NecDsp:

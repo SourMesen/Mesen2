@@ -12,15 +12,9 @@
 #include "SNES/BaseCartridge.h"
 #include "Gameboy/Gameboy.h"
 
-MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger, Console *console)
+MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 {
 	_debugger = debugger;
-	_memoryManager = console->GetMemoryManager().get();
-	_spc = console->GetSpc().get();
-	_sa1 = console->GetCartridge()->GetSa1();
-	_gsu = console->GetCartridge()->GetGsu();
-	_cx4 = console->GetCartridge()->GetCx4();
-	_gameboy = console->GetCartridge()->GetGameboy();
 
 	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((SnesMemoryType)i);
@@ -95,71 +89,17 @@ void MemoryAccessCounter::ResetCounts()
 
 void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters counts[])
 {
-	switch(memoryType) {
-		case SnesMemoryType::CpuMemory:
-			for(uint32_t i = 0; i < length; i++) {
-				AddressInfo info = _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
-				if(info.Address >= 0) {
-					counts[i] = _counters[(int)info.Type][info.Address];
-				}
+	if(memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
+		AddressInfo addr = {};
+		addr.Type = memoryType;
+		for(uint32_t i = 0; i < length; i++) {
+			addr.Address = offset + i;
+			AddressInfo info = _debugger->GetAbsoluteAddress(addr);
+			if(info.Address >= 0) {
+				counts[i] = _counters[(int)info.Type][info.Address];
 			}
-			break;
-
-		case SnesMemoryType::SpcMemory:
-			for(uint32_t i = 0; i < length; i++) {
-				AddressInfo info = _spc->GetAbsoluteAddress(offset + i);
-				if(info.Address >= 0) {
-					counts[i] = _counters[(int)info.Type][info.Address];
-				}
-			}
-			break;
-
-		case SnesMemoryType::Sa1Memory:
-			if(_sa1) {
-				for(uint32_t i = 0; i < length; i++) {
-					AddressInfo info = _sa1->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
-					if(info.Address >= 0) {
-						counts[i] = _counters[(int)info.Type][info.Address];
-					}
-				}
-			}
-			break;
-
-		case SnesMemoryType::GsuMemory:
-			if(_gsu) {
-				for(uint32_t i = 0; i < length; i++) {
-					AddressInfo info = _gsu->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
-					if(info.Address >= 0) {
-						counts[i] = _counters[(int)info.Type][info.Address];
-					}
-				}
-			}
-			break;
-
-		case SnesMemoryType::Cx4Memory:
-			if(_cx4) {
-				for(uint32_t i = 0; i < length; i++) {
-					AddressInfo info = _cx4->GetMemoryMappings()->GetAbsoluteAddress(offset + i);
-					if(info.Address >= 0) {
-						counts[i] = _counters[(int)info.Type][info.Address];
-					}
-				}
-			}
-			break;
-		
-		case SnesMemoryType::GameboyMemory:
-			if(_gameboy) {
-				for(uint32_t i = 0; i < length; i++) {
-					AddressInfo info = _gameboy->GetAbsoluteAddress(offset + i);
-					if(info.Address >= 0) {
-						counts[i] = _counters[(int)info.Type][info.Address];
-					}
-				}
-			}
-			break;
-
-		default:
-			memcpy(counts, _counters[(int)memoryType].data() + offset, length * sizeof(AddressCounters));
-			break;
+		}
+	} else {
+		memcpy(counts, _counters[(int)memoryType].data() + offset, length * sizeof(AddressCounters));
 	}
 }

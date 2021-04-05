@@ -31,17 +31,11 @@ private:
 	vector<AddressCounters> _counters[(int)SnesMemoryType::Register];
 
 	Debugger* _debugger;
-	MemoryManager* _memoryManager;
-	Spc* _spc;
-	Sa1* _sa1;
-	Gsu* _gsu;
-	Cx4* _cx4;
-	Gameboy* _gameboy;
 
 	bool IsAddressUninitialized(AddressInfo &addressInfo);
 
 public:
-	MemoryAccessCounter(Debugger *debugger, Console *console);
+	MemoryAccessCounter(Debugger *debugger);
 
 	uint64_t GetReadCount(AddressInfo& addressInfo);
 

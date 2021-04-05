@@ -23,23 +23,36 @@
 #include "ExpressionEvaluator.h"
 #include "Assembler.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/FolderUtilities.h"
 #include "MemoryOperationType.h"
+#include "CodeDataLogger.h"
+#include "Spc.h"
+#include "Ppu.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {
 	_cpuType = cpuType;
 
 	_debugger = debugger;
+	Console* console = (Console*)debugger->GetConsole();
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_cpu = debugger->GetConsole()->GetCpu().get();
-	_sa1 = debugger->GetConsole()->GetCartridge()->GetSa1();
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu).get();
+	_cpu = console->GetCpu().get();
+	_sa1 = console->GetCartridge()->GetSa1();
 	_settings = debugger->GetEmulator()->GetSettings().get();
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager().get();
+	_cart = console->GetCartridge().get();
+	_spc = console->GetSpc().get();
+	_ppu = console->GetPpu().get();
 	
-	_eventManager.reset(new EventManager(debugger, _cpu, _debugger->GetConsole()->GetPpu().get(), _memoryManager, _debugger->GetConsole()->GetDmaController().get()));
+	if(cpuType == CpuType::Sa1) {
+		_codeDataLogger = _debugger->GetCodeDataLogger(CpuType::Cpu);
+	} else {
+		_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Cpu));
+	}
+
+	_eventManager.reset(new EventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
@@ -221,8 +234,20 @@ void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void CpuDebugger::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
+void CpuDebugger::ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle)
 {
+	if(_cpuType == CpuType::Cpu) {
+		scanline = _ppu->GetScanline();
+		cycle = _memoryManager->GetHClock();
+
+		//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
+		if(_traceLogger->IsCpuLogged(CpuType::Spc) || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
+			_spc->Run();
+		} else if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
+			_cart->RunCoprocessors();
+		}
+	}
+
 	if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;
 		if(_step->PpuStepCount == 0) {
@@ -259,16 +284,6 @@ bool CpuDebugger::IsRegister(uint32_t addr)
 	return _cpuType == CpuType::Cpu && _memoryManager->IsRegister(addr);
 }
 
-shared_ptr<EventManager> CpuDebugger::GetEventManager()
-{
-	return _eventManager;
-}
-
-shared_ptr<Assembler> CpuDebugger::GetAssembler()
-{
-	return _assembler;
-}
-
 shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()
 {
 	return _callstackManager;
@@ -277,4 +292,19 @@ shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()
 BreakpointManager* CpuDebugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
+}
+
+shared_ptr<IAssembler> CpuDebugger::GetAssembler()
+{
+	return _assembler;
+}
+
+shared_ptr<IEventManager> CpuDebugger::GetEventManager()
+{
+	return _eventManager;
+}
+
+shared_ptr<CodeDataLogger> CpuDebugger::GetCodeDataLogger()
+{
+	return _codeDataLogger;
 }

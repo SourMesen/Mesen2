@@ -5,15 +5,7 @@
 #include "DebugUtilities.h"
 #include "Utilities/SimpleLock.h"
 
-class MemoryManager;
-class Console;
-class Cpu;
-class Spc;
-class Gsu;
-class Sa1;
-class Cx4;
-class NecDsp;
-class Gameboy;
+class IConsole;
 class Debugger;
 class LabelManager;
 class CodeDataLogger;
@@ -32,18 +24,9 @@ struct DisassemblerSource
 class Disassembler
 {
 private:
-	MemoryManager *_memoryManager;
-	Console *_console;
-	Cpu* _cpu;
-	Spc* _spc;
-	Gsu* _gsu;
-	Sa1* _sa1;
-	Cx4* _cx4;
-	NecDsp* _necDsp;
-	Gameboy* _gameboy;
+	IConsole *_console;
 	EmuSettings* _settings;
 	Debugger *_debugger;
-	shared_ptr<CodeDataLogger> _cdl;
 	shared_ptr<LabelManager> _labelManager;
 	MemoryDumper *_memoryDumper;
 
@@ -59,7 +42,7 @@ private:
 	void SetDisassembleFlag(CpuType type);
 
 public:
-	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger);
+	Disassembler(IConsole* console, Debugger* debugger);
 
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void ResetPrgCache();

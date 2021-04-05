@@ -12,6 +12,7 @@
 #include "NesPpu.h"
 #include "Utilities/Serializer.h"
 #include "EmuSettings.h"
+#include "DebugTypes.h"
 
 NesConsole::NesConsole(Emulator* emu)
 {
@@ -225,4 +226,19 @@ PpuFrameInfo NesConsole::GetPpuFrame()
 ConsoleType NesConsole::GetConsoleType()
 {
 	return ConsoleType::Nes;
+}
+
+vector<CpuType> NesConsole::GetCpuTypes()
+{
+	return { CpuType::Nes };
+}
+
+AddressInfo NesConsole::GetAbsoluteAddress(AddressInfo relAddress)
+{
+	return AddressInfo();
+}
+
+AddressInfo NesConsole::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
+{
+	return AddressInfo();
 }

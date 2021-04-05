@@ -16,20 +16,29 @@
 #include "GbEventManager.h"
 #include "BaseEventManager.h"
 #include "GbAssembler.h"
-#include "SNES/BaseCartridge.h"
-#include "SNES/Console.h"
 #include "Utilities/HexUtilities.h"
 #include "MemoryOperationType.h"
 #include "DebugState.h"
+#include "Emulator.h"
+#include "GbPpu.h"
+#include "SNES/Console.h"
+#include "SNES/BaseCartridge.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {
 	_debugger = debugger;
-	_console = debugger->GetConsole().get();
+	_emu = debugger->GetEmulator();
+
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_gameboy = debugger->GetConsole()->GetCartridge()->GetGameboy();
+
+	if(_emu->GetConsoleType() == ConsoleType::Snes) {
+		_gameboy = ((Console*)debugger->GetConsole())->GetCartridge()->GetGameboy();
+	} else {
+		_gameboy = ((Gameboy*)debugger->GetConsole());
+	}
+
 	_settings = debugger->GetEmulator()->GetSettings().get();
 	_codeDataLogger.reset(new CodeDataLogger(_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
 
@@ -55,7 +64,7 @@ void GbDebugger::Reset()
 	_prevOpCode = 0;
 }
 
-void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type)
+void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation { addr, value, type };
@@ -124,19 +133,19 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 			_step->StepCount--;
 		}
 
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _console->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _console->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else {
 		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
 
 		if(addr < 0xFE00 || addr >= 0xFF80) {
-			if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock())) {
+			if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock())) {
 				//Memory access was a read on an uninitialized memory address
 				if(_enableBreakOnUninitRead) {
 					if(_memoryAccessCounter->GetReadCount(addressInfo) == 1) {
@@ -159,7 +168,7 @@ void GbDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType t
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
 }
 
-void GbDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
+void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation { addr, value, type };
@@ -173,7 +182,7 @@ void GbDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType 
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _emu->GetMasterClock());
 }
 
 void GbDebugger::Run()
@@ -209,7 +218,7 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
-void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc)
+void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _gameboy->GetAbsoluteAddress(originalPc);
@@ -218,8 +227,11 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc)
 	_eventManager->AddEvent(DebugEventType::Irq);
 }
 
-void GbDebugger::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
+void GbDebugger::ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle)
 {
+	scanline = _gameboy->GetPpu()->GetScanline();
+	cycle = _gameboy->GetPpu()->GetCycle();
+
 	if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;
 		if(_step->PpuStepCount == 0) {
@@ -233,12 +245,12 @@ void GbDebugger::ProcessPpuCycle(uint16_t scanline, uint16_t cycle)
 	}
 }
 
-shared_ptr<GbEventManager> GbDebugger::GetEventManager()
+shared_ptr<IEventManager> GbDebugger::GetEventManager()
 {
 	return _eventManager;
 }
 
-shared_ptr<GbAssembler> GbDebugger::GetAssembler()
+shared_ptr<IAssembler> GbDebugger::GetAssembler()
 {
 	return _assembler;
 }

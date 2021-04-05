@@ -23,10 +23,15 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 {
 	_debugger = debugger;
 	_disassembler = debugger->GetDisassembler().get();
-	_ppu = debugger->GetConsole()->GetPpu().get();
-	_spc = debugger->GetConsole()->GetSpc().get();
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
-	_cartridge = debugger->GetConsole()->GetCartridge().get();
+
+	IConsole* console = _debugger->GetConsole();
+	if(Console* c = dynamic_cast<Console*>(console)) {
+		//TODO
+		_ppu = c->GetPpu().get();
+		_spc = c->GetSpc().get();
+		_memoryManager = c->GetMemoryManager().get();
+		_cartridge = c->GetCartridge().get();
+	}
 }
 
 void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t length)

@@ -36,6 +36,9 @@
 #include "SpcHud.h"
 #include "Msu1.h"
 #include "Emulator.h"
+#include "Sa1.h"
+#include "Gsu.h"
+#include "Cx4.h"
 #include "IControlManager.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
@@ -264,6 +267,11 @@ PpuFrameInfo Console::GetPpuFrame()
 	return PpuFrameInfo();
 }
 
+vector<CpuType> Console::GetCpuTypes()
+{
+	return { CpuType::Cpu, CpuType::Spc };
+}
+
 double Console::GetFrameDelay()
 {
 	uint32_t emulationSpeed = _settings->GetEmulationSpeed();
@@ -355,4 +363,90 @@ bool Console::IsRunning()
 bool Console::IsRunAheadFrame()
 {
 	return _isRunAheadFrame;
+}
+
+AddressInfo Console::GetAbsoluteAddress(AddressInfo relAddress)
+{
+	if(relAddress.Type == SnesMemoryType::CpuMemory) {
+		if(_memoryManager->IsRegister(relAddress.Address)) {
+			return { relAddress.Address & 0xFFFF, SnesMemoryType::Register };
+		} else {
+			return _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		}
+	} else if(relAddress.Type == SnesMemoryType::SpcMemory) {
+		return _spc->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::Sa1Memory) {
+		return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::GsuMemory) {
+		return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::Cx4Memory) {
+		return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+	} else if(relAddress.Type == SnesMemoryType::NecDspMemory) {
+		return { relAddress.Address, SnesMemoryType::DspProgramRom };
+	} else if(relAddress.Type == SnesMemoryType::GameboyMemory) {
+		return _cart->GetGameboy()->GetAbsoluteAddress(relAddress.Address);
+	}
+
+	throw std::runtime_error("Unsupported address type");
+}
+
+AddressInfo Console::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
+{
+	MemoryMappings* mappings = nullptr;
+	switch(cpuType) {
+		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
+		case CpuType::Spc: break;
+		case CpuType::NecDsp: break;
+		case CpuType::Sa1: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
+		case CpuType::Gsu: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
+		case CpuType::Cx4: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
+		case CpuType::Gameboy: break;
+	}
+
+	switch(absAddress.Type) {
+		case SnesMemoryType::PrgRom:
+		case SnesMemoryType::WorkRam:
+		case SnesMemoryType::SaveRam:
+		{
+			if(!mappings) {
+				throw std::runtime_error("Unsupported cpu type");
+			}
+
+			uint8_t startBank = 0;
+			//Try to find a mirror close to where the PC is
+			if(cpuType == CpuType::Cpu) {
+				if(absAddress.Type == SnesMemoryType::WorkRam) {
+					startBank = 0x7E;
+				} else {
+					startBank = _cpu->GetState().K & 0xC0;
+				}
+			} else if(cpuType == CpuType::Sa1) {
+				startBank = (_cart->GetSa1()->GetCpuState().K & 0xC0);
+			} else if(cpuType == CpuType::Gsu) {
+				startBank = (_cart->GetGsu()->GetState().ProgramBank & 0xC0);
+			}
+
+			return { mappings->GetRelativeAddress(absAddress, startBank), DebugUtilities::GetCpuMemoryType(cpuType) };
+		}
+
+		case SnesMemoryType::SpcRam:
+		case SnesMemoryType::SpcRom:
+			return { _spc->GetRelativeAddress(absAddress), SnesMemoryType::SpcMemory };
+
+		case SnesMemoryType::GbPrgRom:
+		case SnesMemoryType::GbWorkRam:
+		case SnesMemoryType::GbCartRam:
+		case SnesMemoryType::GbHighRam:
+		case SnesMemoryType::GbBootRom:
+			return { _cart->GetGameboy()->GetRelativeAddress(absAddress), SnesMemoryType::GameboyMemory };
+
+		case SnesMemoryType::DspProgramRom:
+			return { absAddress.Address, SnesMemoryType::NecDspMemory };
+
+		case SnesMemoryType::Register:
+			return { absAddress.Address & 0xFFFF, SnesMemoryType::Register };
+
+		default:
+			return { -1, SnesMemoryType::Register };
+	}
 }

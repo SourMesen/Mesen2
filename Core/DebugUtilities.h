@@ -98,6 +98,6 @@ public:
 
 	static constexpr CpuType GetLastCpuType()
 	{
-		return CpuType::Gameboy;
+		return CpuType::Nes;
 	}
 };

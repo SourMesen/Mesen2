@@ -9,7 +9,7 @@
 #include "DebugUtilities.h"
 #include "Utilities/SimpleLock.h"
 
-class Console;
+class IConsole;
 class Debugger;
 class LabelManager;
 class MemoryDumper;
@@ -89,7 +89,7 @@ private:
 	string _outputFilepath;
 	string _outputBuffer;
 	ofstream _outputFile;
-	Console* _console;
+	IConsole* _console;
 	EmuSettings* _settings;
 	LabelManager* _labelManager;
 	MemoryDumper* _memoryDumper;
@@ -143,7 +143,7 @@ private:
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 
 public:
-	TraceLogger(Debugger* debugger, shared_ptr<Console> console);
+	TraceLogger(Debugger* debugger);
 	~TraceLogger();
 
 	__forceinline bool IsCpuLogged(CpuType type) { return _logCpu[(int)type]; }

@@ -18,10 +18,10 @@
 
 string TraceLogger::_executionTrace = "";
 
-TraceLogger::TraceLogger(Debugger* debugger, shared_ptr<Console> console)
+TraceLogger::TraceLogger(Debugger* debugger)
 {
-	_console = console.get();
-	_settings = console->GetEmulator()->GetSettings().get();
+	_console = debugger->GetConsole();
+	_settings = debugger->GetEmulator()->GetSettings().get();
 	_labelManager = debugger->GetLabelManager().get();
 	_memoryDumper = debugger->GetMemoryDumper().get();
 	_options = {};

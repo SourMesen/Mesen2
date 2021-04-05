@@ -1619,10 +1619,10 @@ uint8_t Ppu::Read(uint16_t addr)
 			uint8_t value;
 			if(oamAddr < 512) {
 				value = _oamRam[oamAddr];
-				_emu->ProcessPpuRead(oamAddr, value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuRead<CpuType::Cpu>(oamAddr, value, SnesMemoryType::SpriteRam);
 			} else {
 				value = _oamRam[0x200 | (oamAddr & 0x1F)];
-				_emu->ProcessPpuRead(0x200 | (oamAddr & 0x1F), value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuRead<CpuType::Cpu>(0x200 | (oamAddr & 0x1F), value, SnesMemoryType::SpriteRam);
 			}
 			
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1633,7 +1633,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
 			uint8_t returnValue = (uint8_t)_state.VramReadBuffer;
-			_emu->ProcessPpuRead(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
+			_emu->ProcessPpuRead<CpuType::Cpu>(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
 			if(!_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
@@ -1645,7 +1645,7 @@ uint8_t Ppu::Read(uint16_t addr)
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
 			uint8_t returnValue = (uint8_t)(_state.VramReadBuffer >> 8);
-			_emu->ProcessPpuRead(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
+			_emu->ProcessPpuRead<CpuType::Cpu>(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
 			if(_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
@@ -1661,10 +1661,10 @@ uint8_t Ppu::Read(uint16_t addr)
 				value = ((_cgram[_state.CgramAddress] >> 8) & 0x7F) | (_state.Ppu2OpenBus & 0x80);
 				_state.CgramAddress++;
 				
-				_emu->ProcessPpuRead((_state.CgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
+				_emu->ProcessPpuRead<CpuType::Cpu>((_state.CgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
 			} else {
 				value = (uint8_t)_cgram[_state.CgramAddress];
-				_emu->ProcessPpuRead(_state.CgramAddress >> 1, value, SnesMemoryType::CGRam);
+				_emu->ProcessPpuRead<CpuType::Cpu>(_state.CgramAddress >> 1, value, SnesMemoryType::CGRam);
 			}
 			_state.CgramAddressLatch = !_state.CgramAddressLatch;
 			
@@ -1793,10 +1793,10 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			
 			if(oamAddr < 512) {
 				if(oamAddr & 0x01) {
-					_emu->ProcessPpuWrite(oamAddr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
+					_emu->ProcessPpuWrite<CpuType::Cpu>(oamAddr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
 					_oamRam[oamAddr - 1] = _oamWriteBuffer;
 	
-					_emu->ProcessPpuWrite(oamAddr, value, SnesMemoryType::SpriteRam);
+					_emu->ProcessPpuWrite<CpuType::Cpu>(oamAddr, value, SnesMemoryType::SpriteRam);
 					_oamRam[oamAddr] = value;
 				} else {
 					_oamWriteBuffer = value;
@@ -1813,7 +1813,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 				if((oamAddr & 0x01) == 0) {
 					_oamWriteBuffer = value;
 				}
-				_emu->ProcessPpuWrite(address, value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuWrite<CpuType::Cpu>(address, value, SnesMemoryType::SpriteRam);
 				_oamRam[address] = value;
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1919,7 +1919,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//VMDATAL - VRAM Data Write low byte
 			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
-				_emu->ProcessPpuWrite(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
+				_emu->ProcessPpuWrite<CpuType::Cpu>(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
 			}
 
@@ -1933,7 +1933,7 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//VMDATAH - VRAM Data Write high byte
 			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
-				_emu->ProcessPpuWrite((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
+				_emu->ProcessPpuWrite<CpuType::Cpu>((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
 				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
 			}
 			
@@ -1979,8 +1979,8 @@ void Ppu::Write(uint32_t addr, uint8_t value)
 			//CGRAM Data write (CGDATA)
 			if(_state.CgramAddressLatch) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
-				_emu->ProcessPpuWrite(_state.CgramAddress >> 1, _state.CgramWriteBuffer, SnesMemoryType::CGRam);
-				_emu->ProcessPpuWrite((_state.CgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
+				_emu->ProcessPpuWrite<CpuType::Cpu>(_state.CgramAddress >> 1, _state.CgramWriteBuffer, SnesMemoryType::CGRam);
+				_emu->ProcessPpuWrite<CpuType::Cpu>((_state.CgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
 
 				_cgram[_state.CgramAddress] = _state.CgramWriteBuffer | ((value & 0x7F) << 8);
 				_state.CgramAddress++;

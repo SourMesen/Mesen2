@@ -30,7 +30,7 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 		return _spc->CpuReadRegister(addr & 0x03);
 	} else if(addr == 0x2180) {
 		uint8_t value = _workRam[_wramPosition];
-		_emu->ProcessWorkRamRead(_wramPosition, value);
+		_emu->ProcessMemoryRead<CpuType::Cpu>(0x7E0000 | _wramPosition, value, MemoryOperationType::Read);
 		_cheatManager->ApplyCheat(0x7E0000 | _wramPosition, value);
 		_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 		return value;
@@ -63,7 +63,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 	} if(addr >= 0x2180 && addr <= 0x2183) {
 		switch(addr & 0xFFFF) {
 			case 0x2180:
-				_emu->ProcessWorkRamWrite(_wramPosition, value);
+				_emu->ProcessMemoryWrite<CpuType::Cpu>(0x7E0000 | _wramPosition, value, MemoryOperationType::Write);
 				_workRam[_wramPosition] = value;
 				_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 				break;

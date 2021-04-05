@@ -19,6 +19,9 @@ class EventManager;
 class MemoryMappings;
 class BreakpointManager;
 class Sa1;
+class BaseCartridge;
+class Spc;
+class Ppu;
 class Assembler;
 enum class MemoryOperationType;
 
@@ -30,9 +33,13 @@ class CpuDebugger final : public IDebugger
 	MemoryAccessCounter* _memoryAccessCounter;
 	MemoryManager* _memoryManager;
 	EmuSettings* _settings;
-	CodeDataLogger* _codeDataLogger;
 	Cpu* _cpu;
 	Sa1* _sa1;
+	BaseCartridge* _cart;
+	Spc* _spc;
+	Ppu* _ppu;
+
+	shared_ptr<CodeDataLogger> _codeDataLogger;
 
 	shared_ptr<EventManager> _eventManager;
 	shared_ptr<Assembler> _assembler;
@@ -53,16 +60,19 @@ class CpuDebugger final : public IDebugger
 public:
 	CpuDebugger(Debugger* debugger, CpuType cpuType);
 
-	void Reset();
-	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void Run();
-	void Step(int32_t stepCount, StepType type);
-	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
-	void ProcessPpuCycle(uint16_t scanline, uint16_t cycle);
+	void Reset() override;
 
-	shared_ptr<EventManager> GetEventManager();
-	shared_ptr<Assembler> GetAssembler();
-	shared_ptr<CallstackManager> GetCallstackManager();
-	BreakpointManager* GetBreakpointManager();
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
+	void ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle) override;
+
+	void Run() override;
+	void Step(int32_t stepCount, StepType type) override;
+
+	BreakpointManager* GetBreakpointManager() override;
+	shared_ptr<CallstackManager> GetCallstackManager() override;
+	shared_ptr<IAssembler> GetAssembler() override;
+	shared_ptr<IEventManager> GetEventManager() override;
+	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 };

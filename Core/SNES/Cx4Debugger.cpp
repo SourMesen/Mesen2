@@ -27,8 +27,8 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_cx4 = debugger->GetConsole()->GetCartridge()->GetCx4();
-	_memoryManager = debugger->GetConsole()->GetMemoryManager().get();
+	_cx4 = ((Console*)debugger->GetConsole())->GetCartridge()->GetCx4();
+	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
 	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4));
@@ -120,4 +120,24 @@ void Cx4Debugger::Step(int32_t stepCount, StepType type)
 BreakpointManager* Cx4Debugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
+}
+
+shared_ptr<CallstackManager> Cx4Debugger::GetCallstackManager()
+{
+	throw std::runtime_error("Call stack not supported for CX4");
+}
+
+shared_ptr<IAssembler> Cx4Debugger::GetAssembler()
+{
+	throw std::runtime_error("Assembler not supported for CX4");
+}
+
+shared_ptr<IEventManager> Cx4Debugger::GetEventManager()
+{
+	throw std::runtime_error("Event manager not supported for CX4");
+}
+
+shared_ptr<CodeDataLogger> Cx4Debugger::GetCodeDataLogger()
+{
+	throw std::runtime_error("CDL not supported for CX4");
 }

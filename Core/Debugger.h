@@ -4,7 +4,7 @@
 #include "DebugUtilities.h"
 #include "DebugTypes.h"
 
-class Console;
+class IConsole;
 class Emulator;
 class Cpu;
 class Ppu;
@@ -27,16 +27,11 @@ class EventManager;
 class CallstackManager;
 class LabelManager;
 class ScriptManager;
-class SpcDebugger;
-class CpuDebugger;
-class GsuDebugger;
-class NecDspDebugger;
-class Cx4Debugger;
-class GbDebugger;
 class Breakpoint;
 class IEventManager;
 class IAssembler;
 class Gameboy;
+class IDebugger;
 
 struct DebugState;
 
@@ -44,29 +39,22 @@ enum class EventType;
 enum class MemoryOperationType;
 enum class EvalResultType : int32_t;
 
+struct CpuInfo
+{
+	unique_ptr<IDebugger> Debugger;
+	unique_ptr<ExpressionEvaluator> Evaluator;
+};
+
 class Debugger
 {
 private:
-	shared_ptr<Console> _console;
-	shared_ptr<Cpu> _cpu;
-	shared_ptr<Ppu> _ppu;
-	shared_ptr<Spc> _spc;
-	shared_ptr<MemoryManager> _memoryManager;
-	shared_ptr<BaseCartridge> _cart;
-	shared_ptr<InternalRegisters> _internalRegs;
-	shared_ptr<DmaController> _dmaController;
-
 	Emulator* _emu = nullptr;
+	IConsole* _console = nullptr;
 	Gameboy* _gameboy = nullptr;
 
 	shared_ptr<EmuSettings> _settings;
-	unique_ptr<SpcDebugger> _spcDebugger;
-	unique_ptr<CpuDebugger> _cpuDebugger;
-	unique_ptr<CpuDebugger> _sa1Debugger;
-	unique_ptr<GsuDebugger> _gsuDebugger;
-	unique_ptr<NecDspDebugger> _necDspDebugger;
-	unique_ptr<Cx4Debugger> _cx4Debugger;
-	unique_ptr<GbDebugger> _gbDebugger;
+
+	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
 
 	shared_ptr<ScriptManager> _scriptManager;
 	shared_ptr<TraceLogger> _traceLogger;
@@ -77,8 +65,6 @@ private:
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<LabelManager> _labelManager;
 
-	unique_ptr<ExpressionEvaluator> _watchExpEval[(int)DebugUtilities::GetLastCpuType() + 1];
-	
 	SimpleLock _logLock;
 	std::list<string> _debuggerLog;
 
@@ -91,27 +77,16 @@ private:
 	void Reset();
 
 public:
-	Debugger(shared_ptr<Console> console);
+	Debugger(Emulator* emu, IConsole* console);
 	~Debugger();
 	void Release();
 
-	template<CpuType type>
-	void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
-	
-	template<CpuType type>
-	void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
-
-	void ProcessWorkRamRead(uint32_t addr, uint8_t value);
-	void ProcessWorkRamWrite(uint32_t addr, uint8_t value);
-
-	void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-
-	template<CpuType cpuType>
-	void ProcessPpuCycle();
-
-	template<CpuType type>
-	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
+	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
+	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+	template<CpuType type> void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+	template<CpuType type> void ProcessPpuCycle();
+	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
 	void ProcessEvent(EventType type);
 
@@ -159,7 +134,7 @@ public:
 	shared_ptr<LabelManager> GetLabelManager();
 	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
-	shared_ptr<Console> GetConsole();
+	IConsole* GetConsole();
 	Emulator* GetEmulator();
 	shared_ptr<IAssembler> GetAssembler(CpuType cpuType);
 };

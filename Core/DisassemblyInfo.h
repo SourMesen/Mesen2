@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-class Console;
+class IConsole;
 class MemoryDumper;
 class LabelManager;
 class EmuSettings;
@@ -46,7 +46,7 @@ public:
 	bool IsUnconditionalJump();
 	void UpdateCpuFlags(uint8_t& cpuFlags);
 
-	int32_t GetEffectiveAddress(Console *console, void *cpuState, CpuType type);
+	int32_t GetEffectiveAddress(IConsole* console, void *cpuState, CpuType type);
 	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize);
 };
 

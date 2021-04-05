@@ -14,6 +14,7 @@ class BreakpointManager;
 class EmuSettings;
 class GbEventManager;
 class GbAssembler;
+class Emulator;
 class CodeDataLogger;
 
 enum class MemoryOperationType;
@@ -21,7 +22,7 @@ enum class MemoryOperationType;
 class GbDebugger final : public IDebugger
 {
 	Debugger* _debugger;
-	Console* _console;
+	Emulator* _emu;
 	Disassembler* _disassembler;
 	TraceLogger* _traceLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
@@ -43,18 +44,19 @@ public:
 	GbDebugger(Debugger* debugger);
 	~GbDebugger();
 
-	void Reset();
+	void Reset() override;
 
-	void ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type);
-	void Run();
-	void Step(int32_t stepCount, StepType type);
-	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc);
-	void ProcessPpuCycle(uint16_t scanline, uint16_t cycle);
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
+	void ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle) override;
 
-	shared_ptr<GbEventManager> GetEventManager();
-	shared_ptr<GbAssembler> GetAssembler();
-	shared_ptr<CallstackManager> GetCallstackManager();
-	shared_ptr<CodeDataLogger> GetCodeDataLogger();
-	BreakpointManager* GetBreakpointManager();
+	void Run() override;
+	void Step(int32_t stepCount, StepType type) override;
+
+	shared_ptr<IEventManager> GetEventManager() override;
+	shared_ptr<IAssembler> GetAssembler() override;
+	shared_ptr<CallstackManager> GetCallstackManager() override;
+	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	BreakpointManager* GetBreakpointManager() override;
 };

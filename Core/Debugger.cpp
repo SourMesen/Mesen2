@@ -2,7 +2,7 @@
 #include "Debugger.h"
 #include "DebugTypes.h"
 #include "Emulator.h"
-#include "SNES/Console.h"
+#include "IConsole.h"
 #include "SNES/Cpu.h"
 #include "SNES/Ppu.h"
 #include "SNES/Spc.h"
@@ -54,59 +54,44 @@
 #include "Utilities/IpsPatcher.h"
 #include "MemoryOperationType.h"
 
-Debugger::Debugger(shared_ptr<Console> console)
+Debugger::Debugger(Emulator* emu, IConsole* console)
 {
+	_emu = emu;
 	_console = console;
-	_emu = console->GetEmulator();
-	_cpu = console->GetCpu();
-	_ppu = console->GetPpu();
-	_spc = console->GetSpc();
-	_cart = console->GetCartridge();
 	_settings = _emu->GetSettings();
-	_memoryManager = console->GetMemoryManager();
-	_dmaController = console->GetDmaController();
-	_internalRegs = console->GetInternalRegisters();
-	_gameboy = _cart->GetGameboy();
 
 	_labelManager.reset(new LabelManager(this));
-	_watchExpEval[(int)CpuType::Cpu].reset(new ExpressionEvaluator(this, CpuType::Cpu));
-	_watchExpEval[(int)CpuType::Spc].reset(new ExpressionEvaluator(this, CpuType::Spc));
-	_watchExpEval[(int)CpuType::Sa1].reset(new ExpressionEvaluator(this, CpuType::Sa1));
-	_watchExpEval[(int)CpuType::Gsu].reset(new ExpressionEvaluator(this, CpuType::Gsu));
-	_watchExpEval[(int)CpuType::NecDsp].reset(new ExpressionEvaluator(this, CpuType::NecDsp));
-	_watchExpEval[(int)CpuType::Cx4].reset(new ExpressionEvaluator(this, CpuType::Cx4));
-	_watchExpEval[(int)CpuType::Gameboy].reset(new ExpressionEvaluator(this, CpuType::Gameboy));
-
-	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), CpuType::Cpu));
+	
 	_memoryDumper.reset(new MemoryDumper(this));
-	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
-	_traceLogger.reset(new TraceLogger(this, _console));
-	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
+	_disassembler.reset(new Disassembler(console, this));
+	_traceLogger.reset(new TraceLogger(this));
+	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
 	_ppuTools.reset(new PpuTools(_emu));
 	_scriptManager.reset(new ScriptManager(this));
 
-	if(_gameboy) {
-		_gbDebugger.reset(new GbDebugger(this));
-	}
-	_cpuDebugger.reset(new CpuDebugger(this, CpuType::Cpu));
-	_spcDebugger.reset(new SpcDebugger(this));
-	if(_cart->GetSa1()) {
-		_sa1Debugger.reset(new CpuDebugger(this, CpuType::Sa1));
-	} else if(_cart->GetGsu()) {
-		_gsuDebugger.reset(new GsuDebugger(this));
-	} else if(_cart->GetDsp()) {
-		_necDspDebugger.reset(new NecDspDebugger(this));
-	} else if(_cart->GetCx4()) {
-		_cx4Debugger.reset(new Cx4Debugger(this));
+	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+	for(CpuType type : cpuTypes) {
+		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
+		switch(type) {
+			case CpuType::Cpu: debugger.reset(new CpuDebugger(this, CpuType::Cpu)); break;
+			case CpuType::Spc: debugger.reset(new SpcDebugger(this)); break;
+			case CpuType::NecDsp: debugger.reset(new NecDspDebugger(this)); break;
+			case CpuType::Sa1: debugger.reset(new CpuDebugger(this, CpuType::Sa1)); break;
+			case CpuType::Gsu: debugger.reset(new GsuDebugger(this)); break;
+			case CpuType::Cx4: debugger.reset(new Cx4Debugger(this)); break;
+			case CpuType::Gameboy: debugger.reset(new GbDebugger(this)); break;
+			default: throw std::runtime_error("Unsupported CPU type");
+		}
+
+		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, type));
 	}
 
 	_executionStopped = true;
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
-	CpuType cpuType = _gbDebugger ? CpuType::Gameboy : CpuType::Cpu;
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	GetCodeDataLogger(cpuType)->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _cart->GetCrc32());
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
+	GetCodeDataLogger(CpuType::Cpu)->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());
 
 	RefreshCodeCache();
 
@@ -123,9 +108,10 @@ Debugger::~Debugger()
 
 void Debugger::Release()
 {
-	CpuType cpuType = _gbDebugger ? CpuType::Gameboy : CpuType::Cpu;
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_cart->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	GetCodeDataLogger(cpuType)->SaveCdlFile(cdlFile, _cart->GetCrc32());
+	bool hasGameboy = _debuggers[(int)CpuType::Gameboy].Debugger != nullptr;
+	CpuType cpuType = hasGameboy ? CpuType::Gameboy : CpuType::Cpu;
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
+	GetCodeDataLogger(cpuType)->SaveCdlFile(cdlFile, _emu->GetCrc32());
 
 	while(_executionStopped) {
 		Run();
@@ -135,25 +121,17 @@ void Debugger::Release()
 void Debugger::Reset()
 {
 	_memoryAccessCounter->ResetCounts();
-	_cpuDebugger->Reset();
-	_spcDebugger->Reset();
-	if(_sa1Debugger) {
-		_sa1Debugger->Reset();
+	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
+		if(_debuggers[i].Debugger) {
+			_debuggers[i].Debugger->Reset();
+		}
 	}
 }
 
 template<CpuType type>
 void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
-	switch(type) {
-		case CpuType::Cpu: _cpuDebugger->ProcessRead(addr, value, opType); break;
-		case CpuType::Spc: _spcDebugger->ProcessRead(addr, value, opType); break;
-		case CpuType::NecDsp: _necDspDebugger->ProcessRead(addr, value, opType); break;
-		case CpuType::Sa1: _sa1Debugger->ProcessRead(addr, value, opType); break;
-		case CpuType::Gsu: _gsuDebugger->ProcessRead(addr, value, opType); break;
-		case CpuType::Cx4: _cx4Debugger->ProcessRead(addr, value, opType); break;
-		case CpuType::Gameboy: _gbDebugger->ProcessRead(addr, value, opType); break;
-	}
+	_debuggers[(int)type].Debugger->ProcessRead(addr, value, opType);
 	
 	if(_scriptManager->HasScript()) {
 		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
@@ -163,92 +141,51 @@ void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationTy
 template<CpuType type>
 void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
-	switch(type) {
-		case CpuType::Cpu: _cpuDebugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::Spc: _spcDebugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::NecDsp: _necDspDebugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::Sa1: _sa1Debugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::Gsu: _gsuDebugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::Cx4: _cx4Debugger->ProcessWrite(addr, value, opType); break;
-		case CpuType::Gameboy: _gbDebugger->ProcessWrite(addr, value, opType); break;
-	}
+	_debuggers[(int)type].Debugger->ProcessWrite(addr, value, opType);
 	
 	if(_scriptManager->HasScript()) {
 		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
 	}
 }
 
-void Debugger::ProcessWorkRamRead(uint32_t addr, uint8_t value)
-{
-	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
-	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
-	
-	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Read };
-	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
-}
-
-void Debugger::ProcessWorkRamWrite(uint32_t addr, uint8_t value)
-{
-	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::WorkRam };
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
-	
-	MemoryOperationInfo operation { 0x7E0000 | addr, value, MemoryOperationType::Write };
-	ProcessBreakConditions(false, _cpuDebugger->GetBreakpointManager(), operation, addressInfo);
-}
-
+template<CpuType type>
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
 	
-	BreakpointManager* bpManager = DebugUtilities::ToCpuType(memoryType) == CpuType::Gameboy ? _gbDebugger->GetBreakpointManager() : _cpuDebugger->GetBreakpointManager();
+	BreakpointManager* bpManager = _debuggers[(int)type].Debugger->GetBreakpointManager();
 	ProcessBreakConditions(false, bpManager, operation, addressInfo);
 
-	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock());
 }
 
+template<CpuType type>
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	AddressInfo addressInfo { addr, memoryType };
 	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
 	
-	BreakpointManager* bpManager = DebugUtilities::ToCpuType(memoryType) == CpuType::Gameboy ? _gbDebugger->GetBreakpointManager() : _cpuDebugger->GetBreakpointManager();
+	BreakpointManager* bpManager = _debuggers[(int)type].Debugger->GetBreakpointManager();
 	ProcessBreakConditions(false, bpManager, operation, addressInfo);
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _emu->GetMasterClock());
 }
 
-template<CpuType cpuType>
+template<CpuType type>
 void Debugger::ProcessPpuCycle()
 {
-	uint16_t scanline;
-	uint16_t cycle;
-	if(cpuType == CpuType::Gameboy) {
-		scanline = _gameboy->GetPpu()->GetScanline();
-		cycle = _gameboy->GetPpu()->GetCycle();
-	} else {
-		scanline = _ppu->GetScanline();
-		cycle = _memoryManager->GetHClock();
-	}
+	uint16_t scanline = 0;
+	uint16_t cycle = 0;
 
-	_ppuTools->UpdateViewers(scanline, cycle, cpuType);
-
-	switch(cpuType) {
+	switch(type) {
 		case CpuType::Cpu: 
-			//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
-			if(_traceLogger->IsCpuLogged(CpuType::Spc) || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
-				_spc->Run();
-			} else if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
-				_cart->RunCoprocessors();
-			}
-
-			_cpuDebugger->ProcessPpuCycle(scanline, cycle);
-			break;
-
 		case CpuType::Gameboy: 
-			_gbDebugger->ProcessPpuCycle(scanline, cycle);
+			_debuggers[(int)type].Debugger->ProcessPpuCycle(scanline, cycle);
 			break;
 	}
+
+	_ppuTools->UpdateViewers(scanline, cycle, type);
 
 	if(_breakRequestCount > 0) {
 		SleepUntilResume(BreakSource::Unspecified);
@@ -264,17 +201,11 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	_emu->GetSoundMixer()->StopAudio();
 	_disassembler->Disassemble(CpuType::Cpu);
 	_disassembler->Disassemble(CpuType::Spc);
-	if(_cart->GetSa1()) {
-		_disassembler->Disassemble(CpuType::Sa1);
-	} else if(_cart->GetGsu()) {
-		_disassembler->Disassemble(CpuType::Gsu);
-	} else if(_cart->GetDsp()) {
-		_disassembler->Disassemble(CpuType::NecDsp);
-	} else if(_cart->GetCx4()) {
-		_disassembler->Disassemble(CpuType::Cx4);
-	} else if(_cart->GetGameboy()) {
-		_disassembler->RefreshDisassembly(CpuType::Gameboy);
-	}
+	_disassembler->Disassemble(CpuType::Sa1);
+	_disassembler->Disassemble(CpuType::Gsu);
+	_disassembler->Disassemble(CpuType::NecDsp);
+	_disassembler->Disassemble(CpuType::Cx4);
+	_disassembler->RefreshDisassembly(CpuType::Gameboy);
 
 	_executionStopped = true;
 	
@@ -312,12 +243,7 @@ void Debugger::ProcessBreakConditions(bool needBreak, BreakpointManager* bpManag
 template<CpuType type>
 void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
-	switch(type) {
-		case CpuType::Cpu: _cpuDebugger->ProcessInterrupt(originalPc, currentPc, forNmi); break;
-		case CpuType::Sa1: _sa1Debugger->ProcessInterrupt(originalPc, currentPc, forNmi); break;
-		case CpuType::Gameboy: _gbDebugger->ProcessInterrupt(originalPc, currentPc); break;
-	}
-
+	_debuggers[(int)type].Debugger->ProcessInterrupt(originalPc, currentPc, forNmi);
 	ProcessEvent(forNmi ? EventType::Nmi : EventType::Irq);
 }
 
@@ -363,7 +289,7 @@ int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalRes
 	DebugState state;
 	GetState(state, false);
 	if(useCache) {
-		return _watchExpEval[(int)cpuType]->Evaluate(expression, state, resultType, operationInfo);
+		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, state, resultType, operationInfo);
 	} else {
 		ExpressionEvaluator expEval(this, cpuType);
 		return expEval.Evaluate(expression, state, resultType, operationInfo);
@@ -372,22 +298,10 @@ int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalRes
 
 void Debugger::Run()
 {
-	_cpuDebugger->Run();
-	_spcDebugger->Run();
-	if(_sa1Debugger) {
-		_sa1Debugger->Run();
-	}
-	if(_gsuDebugger) {
-		_gsuDebugger->Run();
-	}
-	if(_necDspDebugger) {
-		_necDspDebugger->Run();
-	}
-	if(_cx4Debugger) {
-		_cx4Debugger->Run();
-	}	
-	if(_gbDebugger) {
-		_gbDebugger->Run();
+	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
+		if(_debuggers[i].Debugger) {
+			_debuggers[i].Debugger->Run();
+		}
 	}
 	_waitForBreakResume = false;
 }
@@ -395,44 +309,18 @@ void Debugger::Run()
 void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 {
 	DebugBreakHelper helper(this);
-	StepRequest step;
-	IDebugger *debugger = nullptr;
-
-	switch(cpuType) {
-		case CpuType::Cpu: debugger = _cpuDebugger.get(); break;
-		case CpuType::Spc: debugger = _spcDebugger.get(); break;
-		case CpuType::NecDsp: debugger = _necDspDebugger.get(); break;
-		case CpuType::Sa1: debugger = _sa1Debugger.get(); break;
-		case CpuType::Gsu: debugger = _gsuDebugger.get(); break;
-		case CpuType::Cx4: debugger = _cx4Debugger.get(); break;
-		case CpuType::Gameboy: debugger = _gbDebugger.get(); break;
-	}
+	IDebugger* debugger = _debuggers[(int)cpuType].Debugger.get();
 
 	if(debugger) {
 		debugger->Step(stepCount, type);
 	}
 
-	if(debugger != _cpuDebugger.get()) {
-		_cpuDebugger->Run();
+	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
+		if(_debuggers[i].Debugger && _debuggers[i].Debugger.get() != debugger) {
+			_debuggers[i].Debugger->Run();
+		}
 	}
-	if(debugger != _spcDebugger.get()) {
-		_spcDebugger->Run();
-	}
-	if(_sa1Debugger && debugger != _sa1Debugger.get()) {
-		_sa1Debugger->Run();
-	}
-	if(_gsuDebugger && debugger != _gsuDebugger.get()) {
-		_gsuDebugger->Run();
-	}
-	if(_necDspDebugger && debugger != _necDspDebugger.get()) {
-		_necDspDebugger->Run();
-	}
-	if(_cx4Debugger && debugger != _cx4Debugger.get()) {
-		_cx4Debugger->Run();
-	}
-	if(_gbDebugger && debugger != _gbDebugger.get()) {
-		_gbDebugger->Run();
-	}
+
 	_waitForBreakResume = false;
 }
 
@@ -485,7 +373,7 @@ void Debugger::BreakImmediately(BreakSource source)
 
 void Debugger::GetState(DebugState &state, bool partialPpuState)
 {
-	state.MasterClock = _console->GetMasterClock();
+	/*state.MasterClock = _console->GetMasterClock();
 	state.Cpu = _cpu->GetState();
 	_ppu->GetState(state.Ppu, partialPpuState);
 	state.Spc = _spc->GetState();
@@ -513,92 +401,17 @@ void Debugger::GetState(DebugState &state, bool partialPpuState)
 	}
 	if(_cart->GetGameboy()) {
 		state.Gameboy = _cart->GetGameboy()->GetState();
-	}
+	}*/
 }
 
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 {
-	if(relAddress.Type == SnesMemoryType::CpuMemory) {
-		if(_memoryManager->IsRegister(relAddress.Address)) {
-			return { relAddress.Address & 0xFFFF, SnesMemoryType::Register };
-		} else {
-			return _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-		}
-	} else if(relAddress.Type == SnesMemoryType::SpcMemory) {
-		return _spc->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::Sa1Memory) {
-		return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::GsuMemory) {
-		return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::Cx4Memory) {
-		return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::NecDspMemory) {
-		return { relAddress.Address, SnesMemoryType::DspProgramRom };
-	} else if(relAddress.Type == SnesMemoryType::GameboyMemory) {
-		return _cart->GetGameboy()->GetAbsoluteAddress(relAddress.Address);
-	}
-
-	throw std::runtime_error("Unsupported address type");
+	return _console->GetAbsoluteAddress(relAddress);
 }
 
 AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
 {
-	MemoryMappings* mappings = nullptr;
-	switch(cpuType) {
-		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
-		case CpuType::Spc: break;
-		case CpuType::NecDsp: break;
-		case CpuType::Sa1: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
-		case CpuType::Gsu: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
-		case CpuType::Cx4: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
-		case CpuType::Gameboy: break;
-	}
-
-	switch(absAddress.Type) {
-		case SnesMemoryType::PrgRom:
-		case SnesMemoryType::WorkRam:
-		case SnesMemoryType::SaveRam: {
-			if(!mappings) {
-				throw std::runtime_error("Unsupported cpu type");
-			}
-
-			uint8_t startBank = 0;
-			//Try to find a mirror close to where the PC is
-			if(cpuType == CpuType::Cpu) {
-				if(absAddress.Type == SnesMemoryType::WorkRam) {
-					startBank = 0x7E;
-				} else {
-					startBank = _cpu->GetState().K & 0xC0;
-				}
-			} else if(cpuType == CpuType::Sa1) {
-				startBank = (_cart->GetSa1()->GetCpuState().K & 0xC0);
-			} else if(cpuType == CpuType::Gsu) {
-				startBank = (_cart->GetGsu()->GetState().ProgramBank & 0xC0);
-			}
-
-			return { mappings->GetRelativeAddress(absAddress, startBank), DebugUtilities::GetCpuMemoryType(cpuType) };
-		}
-
-		case SnesMemoryType::SpcRam:
-		case SnesMemoryType::SpcRom:
-			return { _spc->GetRelativeAddress(absAddress), SnesMemoryType::SpcMemory };
-		
-		case SnesMemoryType::GbPrgRom:
-		case SnesMemoryType::GbWorkRam:
-		case SnesMemoryType::GbCartRam:
-		case SnesMemoryType::GbHighRam:
-		case SnesMemoryType::GbBootRom:
-			return { _cart->GetGameboy()->GetRelativeAddress(absAddress), SnesMemoryType::GameboyMemory };
-
-		case SnesMemoryType::DspProgramRom:
-			return { absAddress.Address, SnesMemoryType::NecDspMemory };
-
-		case SnesMemoryType::Register:
-			return { absAddress.Address & 0xFFFF, SnesMemoryType::Register };
-
-		default: 
-			return { -1, SnesMemoryType::Register };
-	}
+	return _console->GetRelativeAddress(absAddress, cpuType);
 }
 
 void Debugger::SetCdlData(CpuType cpuType, uint8_t *cdlData, uint32_t length)
@@ -619,7 +432,9 @@ void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
 	RebuildPrgCache(CpuType::Cpu);
-	RebuildPrgCache(CpuType::Gameboy);
+	
+	//TODO
+	//RebuildPrgCache(CpuType::Gameboy);
 }
 
 void Debugger::RebuildPrgCache(CpuType cpuType)
@@ -648,7 +463,8 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memor
 	if(memoryType == SnesMemoryType::PrgRom || memoryType == SnesMemoryType::GbPrgRom) {
 		cdl->GetCdlData(offset, length, cdlData);
 	} else {
-		SnesMemoryType prgType = _gbDebugger ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
+		bool hasGameboy = _debuggers[(int)CpuType::Gameboy].Debugger != nullptr;
+		SnesMemoryType prgType = hasGameboy ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
 
 		AddressInfo relAddress;
 		relAddress.Type = memoryType;
@@ -662,22 +478,10 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memor
 
 void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 {
-	_cpuDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
-	_spcDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
-	if(_gsuDebugger) {
-		_gsuDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
-	}
-	if(_sa1Debugger) {
-		_sa1Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
-	}
-	if(_necDspDebugger) {
-		_necDspDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
-	}
-	if(_cx4Debugger) {
-		_cx4Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
-	}
-	if(_gbDebugger) {
-		_gbDebugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
+		if(_debuggers[i].Debugger) {
+			_debuggers[i].Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
+		}
 	}
 }
 
@@ -702,14 +506,15 @@ string Debugger::GetLog()
 
 void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
-	vector<uint8_t> output;
-	RomInfo romInfo = _cart->GetRomInfo();
+	//TODO
+	/*vector<uint8_t> output;
+	RomInfo romInfo = _emu->GetRomInfo();
 	Gameboy* gb = _cart->GetGameboy();
 
 	vector<uint8_t> rom;
 	if(gb) {
-		uint8_t* prgRom = gb->DebugGetMemory(SnesMemoryType::GbPrgRom);
-		uint32_t prgRomSize = gb->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
+		uint8_t* prgRom = _memoryDumper->GetMemoryBuffer(SnesMemoryType::GbPrgRom);
+		uint32_t prgRomSize = _memoryDumper->GetMemorySize(SnesMemoryType::GbPrgRom);
 		rom = vector<uint8_t>(prgRom, prgRom+prgRomSize);
 	} else {
 		rom = vector<uint8_t>(_cart->DebugGetPrgRom(), _cart->DebugGetPrgRom() + _cart->DebugGetPrgRomSize());
@@ -736,7 +541,7 @@ void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 	if(file) {
 		file.write((char*)output.data(), output.size());
 		file.close();
-	}
+	}*/
 }
 
 shared_ptr<TraceLogger> Debugger::GetTraceLogger()
@@ -756,11 +561,10 @@ shared_ptr<MemoryAccessCounter> Debugger::GetMemoryAccessCounter()
 
 shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger(CpuType cpuType)
 {
-	if(cpuType == CpuType::Gameboy) {
-		return _gbDebugger ? _gbDebugger->GetCodeDataLogger() : nullptr;
-	} else {
-		return _codeDataLogger;
+	if(_debuggers[(int)cpuType].Debugger) {
+		return _debuggers[(int)cpuType].Debugger->GetCodeDataLogger();
 	}
+	throw std::runtime_error("GetCodeDataLogger() - Unsupported CPU type");
 }
 
 shared_ptr<Disassembler> Debugger::GetDisassembler()
@@ -775,11 +579,10 @@ shared_ptr<PpuTools> Debugger::GetPpuTools()
 
 shared_ptr<IEventManager> Debugger::GetEventManager(CpuType cpuType)
 {
-	if(cpuType == CpuType::Gameboy) {
-		return std::dynamic_pointer_cast<IEventManager>(_gbDebugger->GetEventManager());
-	} else {
-		return std::dynamic_pointer_cast<IEventManager>(_cpuDebugger->GetEventManager());
+	if(_debuggers[(int)cpuType].Debugger) {
+		return _debuggers[(int)cpuType].Debugger->GetEventManager();
 	}
+	throw std::runtime_error("GetEventManager() - Unsupported CPU type");
 }
 
 shared_ptr<LabelManager> Debugger::GetLabelManager()
@@ -794,21 +597,13 @@ shared_ptr<ScriptManager> Debugger::GetScriptManager()
 
 shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 {
-	switch(cpuType) {
-		case CpuType::Cpu: return _cpuDebugger->GetCallstackManager();
-		case CpuType::Spc: return _spcDebugger->GetCallstackManager();
-		case CpuType::Sa1: return _sa1Debugger->GetCallstackManager();
-		case CpuType::Gameboy: return _gbDebugger->GetCallstackManager();
-
-		case CpuType::Gsu:
-		case CpuType::NecDsp:
-		case CpuType::Cx4:
-			break;
+	if(_debuggers[(int)cpuType].Debugger) {
+		_debuggers[(int)cpuType].Debugger->GetCallstackManager();
 	}
 	throw std::runtime_error("GetCallstackManager() - Unsupported CPU type");
 }
 
-shared_ptr<Console> Debugger::GetConsole()
+IConsole* Debugger::GetConsole()
 {
 	return _console;
 }
@@ -820,11 +615,10 @@ Emulator* Debugger::GetEmulator()
 
 shared_ptr<IAssembler> Debugger::GetAssembler(CpuType cpuType)
 {
-	if(cpuType == CpuType::Gameboy) {
-		return std::dynamic_pointer_cast<IAssembler>(_gbDebugger->GetAssembler());
-	} else {
-		return std::dynamic_pointer_cast<IAssembler>(_cpuDebugger->GetAssembler());
+	if(_debuggers[(int)cpuType].Debugger) {
+		_debuggers[(int)cpuType].Debugger->GetAssembler();
 	}
+	throw std::runtime_error("GetAssembler() - Unsupported CPU type");
 }
 
 template void Debugger::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -849,5 +643,14 @@ template void Debugger::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
+template void Debugger::ProcessPpuRead<CpuType::Cpu>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+
+template void Debugger::ProcessPpuWrite<CpuType::Cpu>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Nes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+
 template void Debugger::ProcessPpuCycle<CpuType::Cpu>();
 template void Debugger::ProcessPpuCycle<CpuType::Gameboy>();
+template void Debugger::ProcessPpuCycle<CpuType::Nes>();

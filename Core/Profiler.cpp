@@ -12,7 +12,7 @@ static constexpr int32_t ResetFunctionIndex = -1;
 Profiler::Profiler(Debugger* debugger)
 {
 	_debugger = debugger;
-	_console = debugger->GetConsole().get();
+	_emu = debugger->GetEmulator();
 	InternalReset();
 }
 
@@ -45,7 +45,7 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 
 void Profiler::UpdateCycles()
 {
-	uint64_t masterClock = _console->GetMasterClock();
+	uint64_t masterClock = _emu->GetMasterClock();
 	
 	ProfiledFunction& func = _functions[_currentFunction];
 	uint64_t clockGap = masterClock - _prevMasterClock;
@@ -93,7 +93,7 @@ void Profiler::Reset()
 
 void Profiler::InternalReset()
 {
-	_prevMasterClock = _console->GetMasterClock();
+	_prevMasterClock = _emu->GetMasterClock();
 	_currentCycleCount = 0;
 	_currentFunction = ResetFunctionIndex;
 	_functionStack.clear();

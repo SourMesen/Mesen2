@@ -111,9 +111,12 @@ public:
 	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
 	RomInfo GetRomInfo();
 	string GetHash(HashType type);
+	uint32_t GetCrc32();
 	PpuFrameInfo GetPpuFrame();
 	ConsoleRegion GetRegion();
 	ConsoleType GetConsoleType();
+	vector<CpuType> GetCpuTypes();
+	uint64_t GetMasterClock();
 
 	EmulatorLock AcquireLock();
 	void Lock();
@@ -163,38 +166,24 @@ public:
 		}
 	}
 
-	__forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
+	template<CpuType type> __forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
 	{
 		if(_debugger) {
-			_debugger->ProcessPpuRead(addr, value, memoryType);
+			_debugger->ProcessPpuRead<type>(addr, value, memoryType);
 		}
 	}
 
-	__forceinline void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
+	template<CpuType type> __forceinline void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
 	{
 		if(_debugger) {
-			_debugger->ProcessPpuWrite(addr, value, memoryType);
+			_debugger->ProcessPpuWrite<type>(addr, value, memoryType);
 		}
 	}
 
-	__forceinline void ProcessWorkRamRead(uint32_t addr, uint8_t value)
+	template<CpuType type> __forceinline void ProcessPpuCycle()
 	{
 		if(_debugger) {
-			_debugger->ProcessWorkRamRead(addr, value);
-		}
-	}
-
-	__forceinline void ProcessWorkRamWrite(uint32_t addr, uint8_t value)
-	{
-		if(_debugger) {
-			_debugger->ProcessWorkRamWrite(addr, value);
-		}
-	}
-
-	template<CpuType cpuType> __forceinline void ProcessPpuCycle()
-	{
-		if(_debugger) {
-			_debugger->ProcessPpuCycle<cpuType>();
+			_debugger->ProcessPpuCycle<type>();
 		}
 	}
 

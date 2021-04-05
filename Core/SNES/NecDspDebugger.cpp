@@ -22,7 +22,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	_debugger = debugger;
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
-	_dsp = debugger->GetConsole()->GetCartridge()->GetDsp();
+	_dsp = ((Console*)debugger->GetConsole())->GetCartridge()->GetDsp();
 	_settings = debugger->GetEmulator()->GetSettings().get();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp));
@@ -33,7 +33,7 @@ void NecDspDebugger::Reset()
 {
 }
 
-void NecDspDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type)
+void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = { (int32_t)addr, type == MemoryOperationType::ExecOpCode ? SnesMemoryType::DspProgramRom : SnesMemoryType::DspDataRom };
 	MemoryOperationInfo operation { (uint32_t)addr, value, type };
@@ -61,7 +61,7 @@ void NecDspDebugger::ProcessRead(uint16_t addr, uint8_t value, MemoryOperationTy
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
 }
 
-void NecDspDebugger::ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type)
+void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { addr, SnesMemoryType::DspDataRam }; //Writes never affect the DSP ROM
 	MemoryOperationInfo operation { addr, value, type };
@@ -95,10 +95,25 @@ void NecDspDebugger::Step(int32_t stepCount, StepType type)
 
 shared_ptr<CallstackManager> NecDspDebugger::GetCallstackManager()
 {
-	return nullptr;
+	throw std::runtime_error("Callstack not supported for NEC DSP");
 }
 
 BreakpointManager* NecDspDebugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
+}
+
+shared_ptr<IAssembler> NecDspDebugger::GetAssembler()
+{
+	throw std::runtime_error("Assembler not supported for NEC DSP");
+}
+
+shared_ptr<IEventManager> NecDspDebugger::GetEventManager()
+{
+	throw std::runtime_error("Event manager not supported for NEC DSP");
+}
+
+shared_ptr<CodeDataLogger> NecDspDebugger::GetCodeDataLogger()
+{
+	throw std::runtime_error("CDL not supported for NEC DSP");
 }

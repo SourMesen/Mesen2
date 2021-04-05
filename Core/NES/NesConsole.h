@@ -3,6 +3,7 @@
 
 #include "SettingTypes.h"
 #include "IConsole.h"
+#include "DebugTypes.h"
 
 class Emulator;
 class NesCpu;
@@ -71,7 +72,9 @@ public:
 	virtual RomInfo GetRomInfo() override;
 	virtual void RunSingleFrame() override;
 	virtual PpuFrameInfo GetPpuFrame() override;
-
-	// Inherited via IConsole
 	virtual ConsoleType GetConsoleType() override;
+	virtual vector<CpuType> GetCpuTypes() override;
+
+	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
+	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
 };

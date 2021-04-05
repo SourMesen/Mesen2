@@ -192,7 +192,7 @@ public:
 	__forceinline uint8_t ReadVRAM(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
 		uint8_t value = MapperReadVRAM(addr, type);
-		_emu->ProcessPpuRead(addr, value, SnesMemoryType::VideoRam);
+		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, SnesMemoryType::VideoRam);
 		return value;
 	}
 

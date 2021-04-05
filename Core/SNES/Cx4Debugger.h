@@ -37,9 +37,15 @@ public:
 
 	void Reset();
 
-	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
-	void Run();
-	void Step(int32_t stepCount, StepType type);
-	BreakpointManager* GetBreakpointManager();
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+
+	void Run() override;
+	void Step(int32_t stepCount, StepType type) override;
+
+	BreakpointManager* GetBreakpointManager() override;
+	shared_ptr<CallstackManager> GetCallstackManager() override;
+	shared_ptr<IAssembler> GetAssembler() override;
+	shared_ptr<IEventManager> GetEventManager() override;
+	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 };

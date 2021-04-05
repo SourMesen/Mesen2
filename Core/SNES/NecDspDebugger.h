@@ -31,12 +31,17 @@ class NecDspDebugger final : public IDebugger
 public:
 	NecDspDebugger(Debugger* debugger);
 
-	void Reset();
+	void Reset() override;
 
-	void ProcessRead(uint16_t addr, uint8_t value, MemoryOperationType type);
-	void ProcessWrite(uint16_t addr, uint8_t value, MemoryOperationType type);
-	void Run();
-	void Step(int32_t stepCount, StepType type);
-	shared_ptr<CallstackManager> GetCallstackManager();
-	BreakpointManager* GetBreakpointManager();
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	
+	void Run() override;
+	void Step(int32_t stepCount, StepType type) override;
+
+	shared_ptr<CallstackManager> GetCallstackManager() override;
+	BreakpointManager* GetBreakpointManager() override;
+	shared_ptr<IAssembler> GetAssembler() override;
+	shared_ptr<IEventManager> GetEventManager() override;
+	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 };
