@@ -23,6 +23,7 @@
 #include "CheatManager.h"
 #include "MovieManager.h"
 #include "IConsole.h"
+#include "IControlManager.h"
 #include "SystemActionManager.h"
 #include "MemoryOperationType.h"
 #include "Utilities/Serializer.h"
@@ -372,7 +373,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_notificationManager->RegisterNotificationListener(_rewindManager);
 
 		//TODO
-		//_controlManager->UpdateControlDevices();
+		GetControlManager()->UpdateControlDevices();
 		//UpdateRegion();
 
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);

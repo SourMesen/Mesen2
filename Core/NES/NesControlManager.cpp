@@ -10,6 +10,7 @@
 #include "IInputRecorder.h"
 #include "BatteryManager.h"
 #include "StandardController.h"
+#include "SNES/SnesController.h"
 #include "NesConsole.h"
 #include "Emulator.h"
 #include "KeyManager.h"
@@ -116,21 +117,22 @@ void NesControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> cont
 
 ControllerType NesControlManager::GetControllerType(uint8_t port)
 {
-	return ControllerType::None;
-	//return _emu->GetSettings()->GetControllerType(port);
+	return _emu->GetSettings()->GetInputConfig().Controllers[port].Type;
 }
 
 shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(ControllerType type, uint8_t port, shared_ptr<NesConsole> console)
 {
 	shared_ptr<BaseControlDevice> device;
+	
+	InputConfig cfg = console->GetEmulator()->GetSettings()->GetInputConfig();
 
 	switch(type) {
 		case ControllerType::None: break;
-		/*case ControllerType::StandardController: device.reset(new StandardController(console, port, console->GetSettings()->GetControllerKeys(port))); break;
-		case ControllerType::Zapper: device.reset(new Zapper(console, port)); break;
-		case ControllerType::ArkanoidController: device.reset(new ArkanoidController(console, port)); break;
-		case ControllerType::SnesController: device.reset(new SnesController(console, port, console->GetSettings()->GetControllerKeys(port))); break;
-		case ControllerType::PowerPad: device.reset(new PowerPad(console, port, console->GetSettings()->GetControllerKeys(port))); break;
+		//case ControllerType::StandardController: device.reset(new StandardController(console, port, console->GetSettings()->GetControllerKeys(port))); break;
+		//case ControllerType::Zapper: device.reset(new Zapper(console, port)); break;
+		//case ControllerType::ArkanoidController: device.reset(new ArkanoidController(console, port)); break;
+		case ControllerType::SnesController: device.reset(new SnesController(console->GetEmulator(), port, cfg.Controllers[port].Keys)); break;
+		/*case ControllerType::PowerPad: device.reset(new PowerPad(console, port, console->GetSettings()->GetControllerKeys(port))); break;
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(console, port)); break;
 		case ControllerType::SuborMouse: device.reset(new SuborMouse(console, port)); break;
 		case ControllerType::VsZapper: device.reset(new VsZapper(console, port)); break;
@@ -171,27 +173,29 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateExpansionDevice(Expansion
 
 void NesControlManager::UpdateControlDevices()
 {
-	/*auto lock = _deviceLock.AcquireSafe();
-	EmuSettings* settings = _emu->GetSettings();
-
+	auto lock = _deviceLock.AcquireSafe();
+	//EmuSettings* settings = _emu->GetSettings();
+	//TODO
 	//Reset update flag
-	settings->NeedControllerUpdate();
+	//settings->NeedControllerUpdate();
 
 	bool hadKeyboard = HasKeyboard();
 
 	_controlDevices.clear();
 
-	RegisterControlDevice(_systemActionManager);
+	//TODO
+	//RegisterControlDevice(_systemActionManager);
 
-	bool fourScore = settings->CheckFlag(EmulationFlags::HasFourScore);
-	ConsoleType consoleType = settings->GetConsoleType();
+	bool fourScore = false; //settings->CheckFlag(EmulationFlags::HasFourScore);
+	//TODO
+	/*ConsoleType consoleType = settings->GetConsoleType();
 	ExpansionPortDevice expansionDevice = settings->GetExpansionDevice();
 
 	if(consoleType != ConsoleType::Famicom) {
 		expansionDevice = ExpansionPortDevice::None;
 	} else if(expansionDevice != ExpansionPortDevice::FourPlayerAdapter) {
 		fourScore = false;
-	}
+	}*/
 
 	for(int i = 0; i < (fourScore ? 4 : 2); i++) {
 		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i, _console);
@@ -200,27 +204,30 @@ void NesControlManager::UpdateControlDevices()
 		}
 	}
 
-	if(fourScore && consoleType == ConsoleType::Nes) {
+	//TODO
+	/*if(fourScore && consoleType == ConsoleType::Nes) {
 		//FourScore is only used to provide the signature for reads past the first 16 reads
 		RegisterControlDevice(shared_ptr<FourScore>(new FourScore(_console)));
-	}
+	}*/
 
-	shared_ptr<BaseControlDevice> expDevice = CreateExpansionDevice(expansionDevice, _console);
+	/*<BaseControlDevice> expDevice = CreateExpansionDevice(expansionDevice, _console);
 	if(expDevice) {
 		RegisterControlDevice(expDevice);
-	}
+	}*/
 
 	bool hasKeyboard = HasKeyboard();
-	if(!hasKeyboard) {
+	//TODO
+	/*if(!hasKeyboard) {
 		settings->DisableKeyboardMode();
 	} else if(!hadKeyboard && hasKeyboard) {
 		settings->EnableKeyboardMode();
-	}
+	}*/
 
 	if(_mapperControlDevice) {
 		RegisterControlDevice(_mapperControlDevice);
 	}
-
+	//TODO
+	/*
 	if(std::dynamic_pointer_cast<FamilyBasicKeyboard>(expDevice)) {
 		//Automatically connect the data recorder if the keyboard is connected
 		RegisterControlDevice(shared_ptr<FamilyBasicDataRecorder>(new FamilyBasicDataRecorder(_console)));

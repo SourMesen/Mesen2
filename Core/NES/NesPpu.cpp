@@ -7,13 +7,14 @@
 #include "NesApu.h"
 #include "NesMemoryManager.h"
 #include "NesConsole.h"
+#include "NesControlManager.h"
 #include "BaseMapper.h"
 
-#include "../EmuSettings.h"
-#include "../Debugger.h"
-#include "../VideoDecoder.h"
-#include "../RewindManager.h"
-#include "../NotificationManager.h"
+#include "EmuSettings.h"
+#include "Debugger.h"
+#include "VideoDecoder.h"
+#include "RewindManager.h"
+#include "NotificationManager.h"
 #include "MemoryOperationType.h"
 
 NesPpu::NesPpu(shared_ptr<NesConsole> console)
@@ -1312,10 +1313,9 @@ void NesPpu::Exec()
 		
 		UpdateApuStatus();
 		
-		//TODO
-		/*if(_scanline == _settings->GetInputPollScanline()) {
-			_console->GetControlManager()->UpdateInputState();
-		}*/
+		if(_scanline == 241  /* TODO _settings->GetInputPollScanline()*/) {
+			((NesControlManager*)_console->GetControlManager().get())->UpdateInputState();
+		}
 
 		//Cycle = 0
 		if(_scanline == -1) {
