@@ -1,12 +1,13 @@
 #pragma once
 #include "stdafx.h"
 #include "PcmReader.h"
+#include "IAudioProvider.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/VirtualFile.h"
 
 class Spc;
 
-class Msu1 final : public ISerializable
+class Msu1 final : public ISerializable, public IAudioProvider
 {
 private:
 	Spc * _spc;
@@ -38,7 +39,7 @@ public:
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);
 	
-	void MixAudio(int16_t *buffer, size_t sampleCount, uint32_t sampleRate);
+	void MixAudio(int16_t* buffer, uint32_t sampleCount, uint32_t sampleRate) override;
 	
 	void Serialize(Serializer &s);
 };

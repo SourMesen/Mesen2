@@ -65,7 +65,10 @@ namespace Mesen.Windows
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc" } }
+				new FileDialogFilter() { Name = "All ROM Files", Extensions = { "sfc" , "fig", "smc", "nes", "fds", "unif", "gb", "gbc" } },
+				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc" } },
+				new FileDialogFilter() { Name = "NES ROM Files", Extensions = { "nes" , "fds", "unif" } },
+				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc" } }
 			};
 
 			string[] filenames = await ofd.ShowAsync(this);

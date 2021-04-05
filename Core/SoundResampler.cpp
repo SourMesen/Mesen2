@@ -71,21 +71,21 @@ double SoundResampler::GetTargetRateAdjustment()
 
 void SoundResampler::UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sampleRate)
 {
-	double spcSampleRate = sourceRate;
+	double inputRate = sourceRate;
 	if(_emu->GetSettings()->GetVideoConfig().IntegerFpsMode) {
 		//Adjust sample rate when running at 60.0 fps instead of 60.1
 		switch(_emu->GetRegion()) {
 			default:
-			case ConsoleRegion::Ntsc: spcSampleRate = sourceRate * (60.0 / _emu->GetFps()); break;
-			case ConsoleRegion::Pal: spcSampleRate = sourceRate * (50.0 / _emu->GetFps()); break;
+			case ConsoleRegion::Ntsc: inputRate = sourceRate * (60.0 / _emu->GetFps()); break;
+			case ConsoleRegion::Pal: inputRate = sourceRate * (50.0 / _emu->GetFps()); break;
 		}
 	}
 
 	double targetRate = sampleRate * GetTargetRateAdjustment();
-	if(targetRate != _previousTargetRate || spcSampleRate != _prevSpcSampleRate) {
+	if(targetRate != _previousTargetRate || inputRate != _prevInputRate) {
 		_previousTargetRate = targetRate;
-		_prevSpcSampleRate = spcSampleRate;
-		_resampler.SetSampleRates(spcSampleRate, targetRate);
+		_prevInputRate = inputRate;
+		_resampler.SetSampleRates(inputRate, targetRate);
 	}
 }
 

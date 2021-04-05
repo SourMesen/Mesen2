@@ -27,6 +27,7 @@ private:
 
 	Emulator* _emu = nullptr;
 	SuperGameboy* _superGameboy = nullptr;
+	bool _allowSgb = false;
 
 	unique_ptr<GbMemoryManager> _memoryManager;
 	unique_ptr<GbCpu> _cpu;
@@ -59,16 +60,14 @@ private:
 	uint8_t* _bootRom = nullptr;
 	uint32_t _bootRomSize = 0;
 
-	Gameboy();
-
 public:
 	static constexpr int HeaderOffset = 0x134;
 
-	Gameboy(Emulator* emu, bool sgbEnabled);
+	Gameboy(Emulator* emu, bool allowSgb);
 	virtual ~Gameboy();
 
 	void Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header);
-	void PowerOn(SuperGameboy* superGameboy = nullptr);
+	void PowerOn(SuperGameboy* sgb);
 
 	void Run(uint64_t runUntilClock);
 	

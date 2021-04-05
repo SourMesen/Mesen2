@@ -19,9 +19,10 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
 
-Gameboy::Gameboy(Emulator* emu, bool sgbEnabled)
+Gameboy::Gameboy(Emulator* emu, bool allowSgb)
 {
 	_emu = emu;
+	_allowSgb = allowSgb;
 }
 
 Gameboy::~Gameboy()
@@ -71,14 +72,11 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 		}
 	}
 
-	//TODO
-	/*if(!sgbEnabled && model == GameboyModel::SuperGameboy) {
-		//SGB bios isn't available, use gameboy color mode instead
+	if(!_allowSgb && model == GameboyModel::SuperGameboy) {
+		//SGB isn't available, use gameboy color mode instead
 		model = GameboyModel::GameboyColor;
-	}*/
+	}
 
-	//TODO
-	model = GameboyModel::Gameboy;
 	_model = model;
 
 	bool cgbMode = _model == GameboyModel::GameboyColor;
@@ -131,14 +129,14 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 	settings->InitializeRam(_videoRam, _videoRamSize);
 
 	LoadBattery();
-
-	//TODO
-	PowerOn(nullptr);
+	if(!_allowSgb) {
+		PowerOn(nullptr);
+	}
 }
 
-void Gameboy::PowerOn(SuperGameboy* superGameboy)
+void Gameboy::PowerOn(SuperGameboy *sgb)
 {
-	_superGameboy = superGameboy;
+	_superGameboy = sgb;
 
 	_timer->Init(_memoryManager.get(), _apu.get());
 	_apu->Init(_emu, this);
@@ -409,12 +407,12 @@ ConsoleType Gameboy::GetConsoleType()
 
 double Gameboy::GetFrameDelay()
 {
-	return 16.66667;
+	return 16.74270629882813;
 }
 
 double Gameboy::GetFps()
 {
-	return 60;
+	return 59.72750056960583;
 }
 
 RomInfo Gameboy::GetRomInfo()

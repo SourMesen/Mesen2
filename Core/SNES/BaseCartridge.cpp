@@ -68,7 +68,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 				return nullptr;
 			}
 		} else if(fileExt == ".gb" || fileExt == ".gbc") {
-			if(cart->LoadGameboy(romFile, true)) {
+			if(cart->LoadGameboy(romFile, patchFile)) {
 				return cart;
 			} else {
 				return nullptr;
@@ -427,11 +427,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 	}
 
 	RegisterHandlers(mm);
-	
-	if(_coprocessorType != CoprocessorType::Gameboy) {
-		InitCoprocessor();
-	}
-
+	InitCoprocessor();
 	LoadBattery();
 }
 
@@ -536,9 +532,10 @@ void BaseCartridge::InitCoprocessor()
 	} else if(_coprocessorType == CoprocessorType::OBC1 && _saveRamSize > 0) {
 		_coprocessor.reset(new Obc1(_console, _saveRam, _saveRamSize));
 	} else if(_coprocessorType == CoprocessorType::SGB) {
-		_coprocessor.reset(new SuperGameboy(_console));
+		_coprocessor.reset(new SuperGameboy(_console, _gameboy.get()));
 		_sgb = dynamic_cast<SuperGameboy*>(_coprocessor.get());
 		_needCoprocSync = true;
+		_gameboy->PowerOn(_sgb);
 	}
 }
 
@@ -622,34 +619,24 @@ void BaseCartridge::LoadSpc()
 	SetupCpuHalt();
 }
 
-bool BaseCartridge::LoadGameboy(VirtualFile &romFile, bool sgbEnabled)
+bool BaseCartridge::LoadGameboy(VirtualFile& romFile, VirtualFile& patchFile)
 {
-	_gameboy.reset(new Gameboy(_emu, sgbEnabled));
-	VirtualFile patchFile = VirtualFile();
-	if(!_gameboy->LoadRom(romFile, patchFile)) {
-		return false;
-	}
-
 	_cartInfo = { };
 	_headerOffset = Gameboy::HeaderOffset;
 
-	if(_gameboy->IsSgb()) {
-		GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
-		if(FirmwareHelper::LoadSgbFirmware(_emu, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
-			LoadRom();
-			if(_coprocessorType != CoprocessorType::SGB) {
-				//SGB bios file isn't a recognized SGB bios, try again without SGB mode
-				return LoadGameboy(romFile, false);
+	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
+	bool useSgb = cfg.Model == GameboyModel::Auto || cfg.Model == GameboyModel::SuperGameboy;
+	if(useSgb && FirmwareHelper::LoadSgbFirmware(_emu, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
+		LoadRom();
+		if(_coprocessorType == CoprocessorType::SGB) {
+			_gameboy.reset(new Gameboy(_emu, true));
+			if(_gameboy->LoadRom(romFile, patchFile)) {
+				return _gameboy->IsSgb();
 			}
-		} else {
-			//Couldn't load the SGB bios, try again with in GB/GBC mode
-			return LoadGameboy(romFile, false);
 		}
-	} else {
-		_coprocessorType = CoprocessorType::Gameboy;
-		SetupCpuHalt();
 	}
-	return true;
+
+	return false;
 }
 
 void BaseCartridge::SetupCpuHalt()
@@ -772,7 +759,6 @@ void BaseCartridge::DisplayCartInfo()
 			case CoprocessorType::ST010: coProcMessage += "ST010"; break;
 			case CoprocessorType::ST011: coProcMessage += "ST011"; break;
 			case CoprocessorType::ST018: coProcMessage += "ST018"; break;
-			case CoprocessorType::Gameboy: coProcMessage += "Game Boy"; break;
 			case CoprocessorType::SGB: coProcMessage += "Super Game Boy"; break;
 		}
 		MessageManager::Log(coProcMessage);

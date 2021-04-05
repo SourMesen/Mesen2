@@ -9,7 +9,6 @@ enum class EmulationFlags
 	TurboOrRewind = 0x03,
 	MaximumSpeed = 0x04,
 	InBackground = 0x08,
-	GameboyMode = 0x10,
 };
 
 enum class ScaleFilterType

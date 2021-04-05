@@ -715,6 +715,9 @@
     <ClInclude Include="Gameboy\stdafx.h">
       <Filter>GB</Filter>
     </ClInclude>
+    <ClInclude Include="IAudioProvider.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

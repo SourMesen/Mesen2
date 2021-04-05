@@ -188,15 +188,6 @@ bool Console::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
 		_memoryManager->Initialize(this);
 		_internalRegisters->Initialize(this);
 
-		if(_cart->GetCoprocessor() == nullptr && _cart->GetGameboy()) {
-			_cart->GetGameboy()->PowerOn();
-			_consoleType = _cart->GetGameboy()->IsCgb() ? ConsoleType::GameboyColor : ConsoleType::Gameboy;
-			_settings->SetFlag(EmulationFlags::GameboyMode);
-		} else {
-			_consoleType = ConsoleType::Snes;
-			_settings->ClearFlag(EmulationFlags::GameboyMode);
-		}
-
 		_ppu->PowerOn();
 		_cpu->PowerOn();
 
@@ -227,11 +218,7 @@ RomInfo Console::GetRomInfo()
 
 uint64_t Console::GetMasterClock()
 {
-	if(_settings->CheckFlag(EmulationFlags::GameboyMode) && _cart->GetGameboy()) {
-		return _cart->GetGameboy()->GetCycleCount();
-	} else {
-		return _memoryManager->GetMasterClock();
-	}
+	return _memoryManager->GetMasterClock();
 }
 
 uint32_t Console::GetMasterClockRate()
@@ -246,7 +233,7 @@ ConsoleRegion Console::GetRegion()
 
 ConsoleType Console::GetConsoleType()
 {
-	return _consoleType;
+	return ConsoleType::Snes;
 }
 
 void Console::UpdateRegion()
@@ -264,14 +251,10 @@ void Console::UpdateRegion()
 
 double Console::GetFps()
 {
-	if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
-		return 59.72750056960583;
+	if(_region == ConsoleRegion::Ntsc) {
+		return _settings->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.0988118623484;
 	} else {
-		if(_region == ConsoleRegion::Ntsc) {
-			return _settings->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.0988118623484;
-		} else {
-			return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.00697796826829;
-		}
+		return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.00697796826829;
 	}
 }
 
@@ -289,14 +272,10 @@ double Console::GetFrameDelay()
 		frameDelay = 0;
 	} else {
 		UpdateRegion();
-		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
-			frameDelay = 16.74270629882813;
-		} else {
-			switch(_region) {
-				default:
-				case ConsoleRegion::Ntsc: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947; break;
-				case ConsoleRegion::Pal: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146; break;
-			}
+		switch(_region) {
+			default:
+			case ConsoleRegion::Ntsc: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947; break;
+			case ConsoleRegion::Pal: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146; break;
 		}
 		frameDelay /= (emulationSpeed / 100.0);
 	}
@@ -305,23 +284,16 @@ double Console::GetFrameDelay()
 
 void Console::Serialize(Serializer& s)
 {
-	bool isGameboyMode = _settings->CheckFlag(EmulationFlags::GameboyMode);
-
-	if(!isGameboyMode) {
-		s.Stream(_cpu.get());
-		s.Stream(_memoryManager.get());
-		s.Stream(_ppu.get());
-		s.Stream(_dmaController.get());
-		s.Stream(_internalRegisters.get());
-		s.Stream(_cart.get());
-		s.Stream(_controlManager.get());
-		s.Stream(_spc.get());
-		if(_msu1) {
-			s.Stream(_msu1.get());
-		}
-	} else {
-		s.Stream(_cart.get());
-		s.Stream(_controlManager.get());
+	s.Stream(_cpu.get());
+	s.Stream(_memoryManager.get());
+	s.Stream(_ppu.get());
+	s.Stream(_dmaController.get());
+	s.Stream(_internalRegisters.get());
+	s.Stream(_cart.get());
+	s.Stream(_controlManager.get());
+	s.Stream(_spc.get());
+	if(_msu1) {
+		s.Stream(_msu1.get());
 	}
 }
 

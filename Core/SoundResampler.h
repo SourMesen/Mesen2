@@ -11,7 +11,7 @@ private:
 
 	double _rateAdjustment = 1.0;
 	double _previousTargetRate = 0;
-	double _prevSpcSampleRate = 0;
+	double _prevInputRate = 0;
 	int32_t _underTarget = 0;
 
 	HermiteResampler _resampler;

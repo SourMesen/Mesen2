@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "BaseCoprocessor.h"
+#include "IAudioProvider.h"
 #include "Utilities/HermiteResampler.h"
 
 class Console;
@@ -11,7 +12,7 @@ class Spc;
 class Gameboy;
 class GbPpu;
 
-class SuperGameboy : public BaseCoprocessor
+class SuperGameboy : public BaseCoprocessor, public IAudioProvider
 {
 private:
 	Console* _console = nullptr;
@@ -51,7 +52,7 @@ private:
 	uint8_t GetPlayerCount();
 
 public:
-	SuperGameboy(Console* console);
+	SuperGameboy(Console* console, Gameboy* gameboy);
 	~SuperGameboy();
 
 	void Reset() override;
@@ -67,7 +68,7 @@ public:
 
 	void WriteLcdColor(uint8_t scanline, uint8_t pixel, uint8_t color);
 
-	void MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t sampleCount);
+	void MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate) override;
 
 	void UpdateClockRatio();
 	uint32_t GetClockRate();

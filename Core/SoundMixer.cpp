@@ -6,6 +6,7 @@
 #include "RewindManager.h"
 #include "VideoRenderer.h"
 #include "WaveRecorder.h"
+#include "IAudioProvider.h"
 #include "Utilities/Equalizer.h"
 
 SoundMixer::SoundMixer(Emulator* emu)
@@ -24,6 +25,17 @@ SoundMixer::~SoundMixer()
 void SoundMixer::RegisterAudioDevice(IAudioDevice *audioDevice)
 {
 	_audioDevice = audioDevice;
+}
+
+void SoundMixer::RegisterAudioProvider(IAudioProvider* provider)
+{
+	_audioProviders.push_back(provider);
+}
+
+void SoundMixer::UnregisterAudioProvider(IAudioProvider* provider)
+{
+	vector<IAudioProvider*>& vec = _audioProviders;
+	vec.erase(std::remove(vec.begin(), vec.end(), provider), vec.end());
 }
 
 AudioStatistics SoundMixer::GetStatistics()
@@ -67,17 +79,10 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	int16_t *out = _sampleBuffer;
 	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out);
 
-	//TODO
-	/*SuperGameboy* sgb = _emu->GetCartridge()->GetSuperGameboy();
-	if(sgb) {
-		uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());
-		sgb->MixAudio(targetRate, out, count);
+	uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());
+	for(IAudioProvider* provider : _audioProviders) 	{
+		provider->MixAudio(out, count, targetRate);
 	}
-
-	shared_ptr<Msu1> msu1 = _emu->GetMsu1();
-	if(msu1) {
-		msu1->MixAudio(out, count, cfg.SampleRate);
-	}*/
 
 	if(cfg.EnableEqualizer) {
 		ProcessEqualizer(samples, sampleCount);

@@ -76,7 +76,7 @@ private:
 	
 	void LoadRom();
 	void LoadSpc();
-	bool LoadGameboy(VirtualFile& romFile, bool sgbEnabled);
+	bool LoadGameboy(VirtualFile& romFile, VirtualFile& patchFile);
 	void SetupCpuHalt();
 	void InitCoprocessor();
 	void LoadEmbeddedFirmware();

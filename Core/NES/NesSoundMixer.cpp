@@ -125,7 +125,7 @@ void NesSoundMixer::PlayAudioBuffer(uint32_t time)
 		_crossFeedFilter.ApplyFilter(_outputBuffer, sampleCount, filterSettings.CrossFadeRatio);
 	}*/
 
-	_mixer->PlayAudioBuffer(_outputBuffer, sampleCount, 96000);
+	_mixer->PlayAudioBuffer(_outputBuffer, (uint32_t)sampleCount, 96000);
 
 	UpdateRates(false);
 }

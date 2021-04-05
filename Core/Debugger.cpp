@@ -334,7 +334,7 @@ void Debugger::ProcessEvent(EventType type)
 			break;
 
 		case EventType::GbStartFrame:
-			if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::StartFrame);
 			}
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Gameboy);
@@ -342,7 +342,7 @@ void Debugger::ProcessEvent(EventType type)
 			break;
 		
 		case EventType::GbEndFrame:
-			if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
+			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::EndFrame);
 			}
 			break;

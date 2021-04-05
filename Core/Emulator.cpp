@@ -264,8 +264,6 @@ void Emulator::Stop(bool sendNotification)
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
 	}
 
-	_settings->ClearFlag(EmulationFlags::GameboyMode);
-
 	//Make sure we release both pointers to destroy the debugger before everything else
 	_debugger.reset();
 	debugger.reset();
@@ -336,9 +334,9 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	
 	shared_ptr<IConsole> console = shared_ptr<IConsole>(new NesConsole(this));
 	if(!console->LoadRom(romFile, patchFile)) {
-		console.reset(new Gameboy(this, false));
+		console.reset(new Console(this));
 		if(!console->LoadRom(romFile, patchFile)) {
-			console.reset(new Console(this));
+			console.reset(new Gameboy(this, false));
 			if(!console->LoadRom(romFile, patchFile)) {
 				return false;
 			}
@@ -449,10 +447,19 @@ void Emulator::PauseOnNextFrame()
 {
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
-		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
-			debugger->Step(CpuType::Gameboy, 144, StepType::SpecificScanline);
-		} else {
-			debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
+		switch(GetConsoleType()) {
+			case ConsoleType::Snes:
+				debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
+				break;
+
+			case ConsoleType::Gameboy:
+			case ConsoleType::GameboyColor:
+				debugger->Step(CpuType::Gameboy, 144, StepType::SpecificScanline);
+				break;
+
+			case ConsoleType::Nes:
+				debugger->Step(CpuType::Nes, 240, StepType::SpecificScanline);
+				break;
 		}
 	} else {
 		_pauseOnNextFrame = true;
@@ -464,10 +471,19 @@ void Emulator::Pause()
 {
 	shared_ptr<Debugger> debugger = _debugger;
 	if(debugger) {
-		if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
-			debugger->Step(CpuType::Gameboy, 1, StepType::Step);
-		} else {
-			debugger->Step(CpuType::Cpu, 1, StepType::Step);
+		switch(GetConsoleType()) {
+			case ConsoleType::Snes:
+				debugger->Step(CpuType::Cpu, 1, StepType::Step);
+				break;
+
+			case ConsoleType::Gameboy:
+			case ConsoleType::GameboyColor:
+				debugger->Step(CpuType::Gameboy, 1, StepType::Step);
+				break;
+
+			case ConsoleType::Nes:
+				debugger->Step(CpuType::Nes, 1, StepType::Step);
+				break;
 		}
 	} else {
 		_paused = true;

@@ -95,7 +95,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 		case TileBackground::Magenta: bgColor = DefaultVideoFilter::ToArgb(0x7C1F); break;
 	}
 
-	int outputSize = tileCount * 8*8;
+	uint32_t outputSize = tileCount * 8*8;
 	for(uint32_t i = 0; i < outputSize; i++) {
 		outBuffer[i] = bgColor;
 	}

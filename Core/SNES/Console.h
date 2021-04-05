@@ -69,7 +69,6 @@ private:
 	uint32_t _masterClockRate;
 
 	ConsoleRegion _region;
-	ConsoleType _consoleType;
 
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;

@@ -46,6 +46,7 @@
     <ClInclude Include="DebugState.h" />
     <ClInclude Include="Gameboy\GbControlManager.h" />
     <ClInclude Include="Gameboy\stdafx.h" />
+    <ClInclude Include="IAudioProvider.h" />
     <ClInclude Include="IControlManager.h" />
     <ClInclude Include="MemoryOperationType.h" />
     <ClInclude Include="NesDefaultVideoFilter.h" />

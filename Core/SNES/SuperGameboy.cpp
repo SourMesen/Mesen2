@@ -10,10 +10,11 @@
 #include "Gameboy/GbApu.h"
 #include "Gameboy/GbPpu.h"
 #include "MessageManager.h"
+#include "SoundMixer.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/HermiteResampler.h"
 
-SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
+SuperGameboy::SuperGameboy(Console* console, Gameboy* gameboy) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_mixBuffer = new int16_t[0x10000];
 
@@ -23,8 +24,8 @@ SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::R
 	_cart = _console->GetCartridge().get();
 	_spc = _console->GetSpc().get();
 	
-	_gameboy = _cart->GetGameboy();
-	_ppu = _gameboy->GetPpu();
+	_gameboy = gameboy;
+	_ppu = gameboy->GetPpu();
 
 	_control = 0x01; //Divider = 5, gameboy = not running
 	UpdateClockRatio();
@@ -35,12 +36,14 @@ SuperGameboy::SuperGameboy(Console* console) : BaseCoprocessor(SnesMemoryType::R
 		cpuMappings->RegisterHandler(i + 0x80, i + 0x80, 0x6000, 0x7FFF, this);
 	}
 
-	_gameboy->PowerOn(this);
+	_emu->GetSoundMixer()->RegisterAudioProvider(this);
 }
 
 SuperGameboy::~SuperGameboy()
 {
 	delete[] _mixBuffer;
+
+	_emu->GetSoundMixer()->UnregisterAudioProvider(this);
 }
 
 void SuperGameboy::Reset()
@@ -266,12 +269,12 @@ uint8_t SuperGameboy::GetPlayerCount()
 	return playerCount;
 }
 
-void SuperGameboy::MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t sampleCount)
+void SuperGameboy::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
 	int16_t* gbSamples = nullptr;
 	uint32_t gbSampleCount = 0;
 	_gameboy->GetSoundSamples(gbSamples, gbSampleCount);
-	_resampler.SetSampleRates(GbApu::SampleRate, targetRate);
+	_resampler.SetSampleRates(GbApu::SampleRate, sampleRate);
 	
 	int32_t outCount = (int32_t)_resampler.Resample(gbSamples, gbSampleCount, _mixBuffer + _mixSampleCount) * 2;
 	_mixSampleCount += outCount;
@@ -279,7 +282,7 @@ void SuperGameboy::MixAudio(uint32_t targetRate, int16_t* soundSamples, uint32_t
 	int32_t copyCount = (int32_t)std::min(_mixSampleCount, sampleCount*2);
 	if(!_spc->IsMuted()) {
 		for(int32_t i = 0; i < copyCount; i++) {
-			soundSamples[i] += _mixBuffer[i];
+			out[i] += _mixBuffer[i];
 		}
 	}
 

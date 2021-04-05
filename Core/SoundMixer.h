@@ -6,11 +6,13 @@ class Emulator;
 class Equalizer;
 class SoundResampler;
 class WaveRecorder;
+class IAudioProvider;
 
 class SoundMixer 
 {
 private:
 	IAudioDevice *_audioDevice;
+	vector<IAudioProvider*> _audioProviders;
 	Emulator *_emu;
 	unique_ptr<Equalizer> _equalizer;
 	unique_ptr<SoundResampler> _resampler;
@@ -30,6 +32,10 @@ public:
 	void StopAudio(bool clearBuffer = false);
 
 	void RegisterAudioDevice(IAudioDevice *audioDevice);
+
+	void RegisterAudioProvider(IAudioProvider* provider);
+	void UnregisterAudioProvider(IAudioProvider* provider);
+
 	AudioStatistics GetStatistics();
 	double GetRateAdjustment();
 

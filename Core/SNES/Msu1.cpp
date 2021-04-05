@@ -93,11 +93,11 @@ uint8_t Msu1::Read(uint16_t addr)
 	return 0;
 }
 
-void Msu1::MixAudio(int16_t* buffer, size_t sampleCount, uint32_t sampleRate)
+void Msu1::MixAudio(int16_t* buffer, uint32_t sampleCount, uint32_t sampleRate)
 {
 	if(!_paused) {
 		_pcmReader.SetSampleRate(sampleRate);
-		_pcmReader.ApplySamples(buffer, sampleCount, _spc->IsMuted() ? 0 : _volume);
+		_pcmReader.ApplySamples(buffer, (size_t)sampleCount, _spc->IsMuted() ? 0 : _volume);
 	}
 }
 

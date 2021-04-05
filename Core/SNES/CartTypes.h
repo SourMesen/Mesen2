@@ -45,7 +45,6 @@ enum class CoprocessorType
 	ST011,
 	ST018,
 	CX4,
-	Gameboy,
 	SGB
 };
 

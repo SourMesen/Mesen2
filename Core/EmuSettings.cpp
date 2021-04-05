@@ -84,14 +84,6 @@ void EmuSettings::SetInputConfig(InputConfig config)
 
 InputConfig EmuSettings::GetInputConfig()
 {
-	if(CheckFlag(EmulationFlags::GameboyMode)) {
-		if(_input.Controllers[0].Type != ControllerType::SnesController) {
-			//Force SNES controller for P1 for gameboy-only mode
-			InputConfig input = _input;
-			input.Controllers[0].Type = ControllerType::SnesController;
-			SetInputConfig(input);
-		}
-	}
 	return _input;
 }
 
@@ -227,18 +219,10 @@ vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortc
 OverscanDimensions EmuSettings::GetOverscan()
 {
 	OverscanDimensions overscan;
-	if(CheckFlag(EmulationFlags::GameboyMode)) {
-		//Force overscan values for gameboy-only mode (not SGB)
-		overscan.Left = 0;
-		overscan.Right = 256 - 160;
-		overscan.Top = 0;
-		overscan.Bottom = 239 - 144;
-	} else {
-		overscan.Left = _video.OverscanLeft;
-		overscan.Right = _video.OverscanRight;
-		overscan.Top = _video.OverscanTop;
-		overscan.Bottom = _video.OverscanBottom;
-	}
+	overscan.Left = _video.OverscanLeft;
+	overscan.Right = _video.OverscanRight;
+	overscan.Top = _video.OverscanTop;
+	overscan.Bottom = _video.OverscanBottom;
 	return overscan;
 }
 

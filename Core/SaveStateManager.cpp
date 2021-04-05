@@ -67,8 +67,8 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	string sha1Hash = _emu->GetHash(HashType::Sha1);
 	stream.write(sha1Hash.c_str(), sha1Hash.size());
 
-	bool isGameboyMode = _emu->GetSettings()->CheckFlag(EmulationFlags::GameboyMode);
-	stream.write((char*)&isGameboyMode, sizeof(bool));
+	ConsoleType consoleType = _emu->GetConsoleType();
+	stream.write((char*)&consoleType, sizeof(consoleType));
 
 	#ifndef LIBRETRO
 	SaveScreenshotData(stream);
@@ -177,10 +177,10 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 			stream.read(hash, 40);
 
 			if(fileFormatVersion >= 8) {
-				bool isGameboyMode = false;
-				stream.read((char*)&isGameboyMode, sizeof(bool));
-				if(isGameboyMode != _emu->GetSettings()->CheckFlag(EmulationFlags::GameboyMode)) {
-					MessageManager::DisplayMessage("SaveStates", isGameboyMode ? "SaveStateWrongSystemGb" : "SaveStateWrongSystemSnes");
+				ConsoleType consoleType;
+				stream.read((char*)&consoleType, sizeof(consoleType));
+				if(consoleType != _emu->GetConsoleType()) {
+					MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
 					return false;
 				}
 			} 
