@@ -5,6 +5,7 @@
 #include "GbApu.h"
 #include "GbCart.h"
 #include "GbTimer.h"
+#include "GbControlManager.h"
 #include "GbDmaController.h"
 #include "DebugTypes.h"
 #include "GbMemoryManager.h"
@@ -18,46 +19,38 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
 
-Gameboy* Gameboy::Create(Emulator* emu, VirtualFile &romFile, bool sgbEnabled)
-{
-	vector<uint8_t> romData;
-	romFile.ReadFile(romData);
-
-	GameboyHeader header;
-	memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
-
-	MessageManager::Log("-----------------------------");
-	MessageManager::Log("File: " + romFile.GetFileName());
-	MessageManager::Log("Game: " + header.GetCartName());
-	MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
-	switch(header.CgbFlag & 0xC0) {
-		case 0x00: MessageManager::Log("Supports: Game Boy"); break;
-		case 0x80: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
-		case 0xC0: MessageManager::Log("Supports: Game Boy Color only"); break;
-	}
-	MessageManager::Log("File size: " + std::to_string(romData.size() / 1024) + " KB");
-
-	if(header.GetCartRamSize() > 0) {
-		string sizeString = header.GetCartRamSize() > 1024 ? std::to_string(header.GetCartRamSize() / 1024) + " KB" : std::to_string(header.GetCartRamSize()) + " bytes";
-		MessageManager::Log("Cart RAM size: " + sizeString + (header.HasBattery() ? " (with battery)" : ""));
-	}
-	MessageManager::Log("-----------------------------");
-
-	GbCart* cart = GbCartFactory::CreateCart(header.CartType);
-
-	if(cart) {
-		Gameboy* gb = new Gameboy();
-		gb->Init(emu, cart, romData, header, sgbEnabled);
-		return gb;
-	}
-
-	return nullptr;
-}
-
-void Gameboy::Init(Emulator* emu, GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled)
+Gameboy::Gameboy(Emulator* emu, bool sgbEnabled)
 {
 	_emu = emu;
+}
+
+Gameboy::~Gameboy()
+{
+	SaveBattery();
+
+	delete[] _cartRam;
+	delete[] _prgRom;
+
+	delete[] _spriteRam;
+	delete[] _videoRam;
+
+	delete[] _highRam;
+	delete[] _workRam;
+
+	delete[] _bootRom;
+}
+
+void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header)
+{
 	_cart.reset(cart);
+
+	_ppu.reset(new GbPpu());
+	_apu.reset(new GbApu());
+	_cpu.reset(new GbCpu());
+	_memoryManager.reset(new GbMemoryManager());
+	_timer.reset(new GbTimer());
+	_dmaController.reset(new GbDmaController());
+	_controlManager.reset(new GbControlManager(_emu));
 
 	_prgRomSize = (uint32_t)romData.size();
 	_prgRom = new uint8_t[_prgRomSize];
@@ -67,7 +60,7 @@ void Gameboy::Init(Emulator* emu, GbCart* cart, std::vector<uint8_t>& romData, G
 	_cartRam = new uint8_t[_cartRamSize];
 	_hasBattery = header.HasBattery();
 
-	shared_ptr<EmuSettings> settings = emu->GetSettings();
+	shared_ptr<EmuSettings> settings = _emu->GetSettings();
 	GameboyConfig cfg = settings->GetGameboyConfig();
 	GameboyModel model = cfg.Model;
 	if(model == GameboyModel::Auto) {
@@ -78,11 +71,14 @@ void Gameboy::Init(Emulator* emu, GbCart* cart, std::vector<uint8_t>& romData, G
 		}
 	}
 
-	if(!sgbEnabled && model == GameboyModel::SuperGameboy) {
+	//TODO
+	/*if(!sgbEnabled && model == GameboyModel::SuperGameboy) {
 		//SGB bios isn't available, use gameboy color mode instead
 		model = GameboyModel::GameboyColor;
-	}
+	}*/
 
+	//TODO
+	model = GameboyModel::Gameboy;
 	_model = model;
 
 	bool cgbMode = _model == GameboyModel::GameboyColor;
@@ -135,32 +131,9 @@ void Gameboy::Init(Emulator* emu, GbCart* cart, std::vector<uint8_t>& romData, G
 	settings->InitializeRam(_videoRam, _videoRamSize);
 
 	LoadBattery();
-}
 
-Gameboy::Gameboy()
-{
-	_ppu.reset(new GbPpu());
-	_apu.reset(new GbApu());
-	_cpu.reset(new GbCpu());
-	_memoryManager.reset(new GbMemoryManager());
-	_timer.reset(new GbTimer());
-	_dmaController.reset(new GbDmaController());
-}
-
-Gameboy::~Gameboy()
-{
-	SaveBattery();
-
-	delete[] _cartRam;
-	delete[] _prgRom;
-	
-	delete[] _spriteRam;
-	delete[] _videoRam;
-
-	delete[] _highRam;
-	delete[] _workRam;
-
-	delete[] _bootRom;
+	//TODO
+	PowerOn(nullptr);
 }
 
 void Gameboy::PowerOn(SuperGameboy* superGameboy)
@@ -174,11 +147,6 @@ void Gameboy::PowerOn(SuperGameboy* superGameboy)
 	_cpu->Init(_emu, this, _memoryManager.get());
 	_ppu->Init(_emu, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
 	_dmaController->Init(_memoryManager.get(), _ppu.get(), _cpu.get());
-}
-
-void Gameboy::Exec()
-{
-	_cpu->Exec();
 }
 
 void Gameboy::Run(uint64_t runUntilClock)
@@ -362,4 +330,103 @@ void Gameboy::Serialize(Serializer& s)
 	s.StreamArray(_videoRam, _videoRamSize);
 	s.StreamArray(_spriteRam, Gameboy::SpriteRamSize);
 	s.StreamArray(_highRam, Gameboy::HighRamSize);
+}
+
+void Gameboy::Stop()
+{
+}
+
+void Gameboy::Reset()
+{
+}
+
+void Gameboy::OnBeforeRun()
+{
+}
+
+bool Gameboy::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
+{
+	vector<uint8_t> romData;
+	romFile.ReadFile(romData);
+
+	GameboyHeader header;
+	memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
+
+	MessageManager::Log("-----------------------------");
+	MessageManager::Log("File: " + romFile.GetFileName());
+	MessageManager::Log("Game: " + header.GetCartName());
+	MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
+	switch(header.CgbFlag & 0xC0) {
+		case 0x00: MessageManager::Log("Supports: Game Boy"); break;
+		case 0x80: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
+		case 0xC0: MessageManager::Log("Supports: Game Boy Color only"); break;
+	}
+	MessageManager::Log("File size: " + std::to_string(romData.size() / 1024) + " KB");
+
+	if(header.GetCartRamSize() > 0) {
+		string sizeString = header.GetCartRamSize() > 1024 ? std::to_string(header.GetCartRamSize() / 1024) + " KB" : std::to_string(header.GetCartRamSize()) + " bytes";
+		MessageManager::Log("Cart RAM size: " + sizeString + (header.HasBattery() ? " (with battery)" : ""));
+	}
+	MessageManager::Log("-----------------------------");
+
+	GbCart* cart = GbCartFactory::CreateCart(header.CartType);
+
+	if(cart) {
+		Init(cart, romData, header);
+		return true;
+	}
+
+	return false;
+}
+
+void Gameboy::Init()
+{
+}
+
+void Gameboy::RunFrame()
+{
+	uint32_t frameCount = _ppu->GetFrameCount();
+	while(frameCount == _ppu->GetFrameCount()) {
+		_cpu->Exec();
+	}
+	_emu->ProcessEndOfFrame();
+}
+
+void Gameboy::ProcessEndOfFrame()
+{
+	_controlManager->UpdateInputState();
+}
+
+shared_ptr<IControlManager> Gameboy::GetControlManager()
+{
+	return _controlManager;
+}
+
+ConsoleType Gameboy::GetConsoleType()
+{
+	return ConsoleType::Gameboy;
+}
+
+double Gameboy::GetFrameDelay()
+{
+	return 16.66667;
+}
+
+double Gameboy::GetFps()
+{
+	return 60;
+}
+
+RomInfo Gameboy::GetRomInfo()
+{
+	return RomInfo();
+}
+
+void Gameboy::RunSingleFrame()
+{
+}
+
+PpuFrameInfo Gameboy::GetPpuFrame()
+{
+	return PpuFrameInfo();
 }

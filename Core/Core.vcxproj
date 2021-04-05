@@ -44,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugState.h" />
+    <ClInclude Include="Gameboy\GbControlManager.h" />
+    <ClInclude Include="Gameboy\stdafx.h" />
     <ClInclude Include="IControlManager.h" />
     <ClInclude Include="MemoryOperationType.h" />
     <ClInclude Include="NesDefaultVideoFilter.h" />
@@ -283,6 +285,7 @@
     <ClInclude Include="WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />
     <ClCompile Include="NES\NesControlManager.cpp" />

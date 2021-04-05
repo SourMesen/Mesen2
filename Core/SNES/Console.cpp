@@ -65,15 +65,8 @@ void Console::RunFrame()
 {
 	_frameRunning = true;
 
-	if(_settings->CheckFlag(EmulationFlags::GameboyMode)) {
-		Gameboy* gameboy = _cart->GetGameboy();
-		while(_frameRunning) {
-			gameboy->Exec();
-		}
-	} else {
-		while(_frameRunning) {
-			_cpu->Exec();
-		}
+	while(_frameRunning) {
+		_cpu->Exec();
 	}
 }
 

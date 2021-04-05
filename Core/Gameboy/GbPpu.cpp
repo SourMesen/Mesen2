@@ -656,8 +656,7 @@ void GbPpu::SendFrame()
 
 	//TODO move this somewhere that makes more sense
 	uint8_t prevInput = _memoryManager->ReadInputPort();
-	//TODO
-	//_console->ProcessEndOfFrame();
+	_gameboy->ProcessEndOfFrame();
 	uint8_t newInput = _memoryManager->ReadInputPort();
 	if(prevInput != newInput) {
 		_memoryManager->RequestIrq(GbIrqSource::Joypad);

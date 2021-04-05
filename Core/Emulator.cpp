@@ -2,6 +2,7 @@
 #include "Emulator.h"
 #include "SNES/Console.h"
 #include "NES/NesConsole.h"
+#include "Gameboy/Gameboy.h"
 #include "Debugger.h"
 #include "DebugTypes.h"
 #include "NotificationManager.h"
@@ -335,9 +336,12 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	
 	shared_ptr<IConsole> console = shared_ptr<IConsole>(new NesConsole(this));
 	if(!console->LoadRom(romFile, patchFile)) {
-		console.reset(new Console(this));
+		console.reset(new Gameboy(this, false));
 		if(!console->LoadRom(romFile, patchFile)) {
-			return false;
+			console.reset(new Console(this));
+			if(!console->LoadRom(romFile, patchFile)) {
+				return false;
+			}
 		}
 	}
 

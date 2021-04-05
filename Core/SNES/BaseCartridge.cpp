@@ -624,8 +624,9 @@ void BaseCartridge::LoadSpc()
 
 bool BaseCartridge::LoadGameboy(VirtualFile &romFile, bool sgbEnabled)
 {
-	_gameboy.reset(Gameboy::Create(_emu, romFile, sgbEnabled));
-	if(!_gameboy) {
+	_gameboy.reset(new Gameboy(_emu, sgbEnabled));
+	VirtualFile patchFile = VirtualFile();
+	if(!_gameboy->LoadRom(romFile, patchFile)) {
 		return false;
 	}
 

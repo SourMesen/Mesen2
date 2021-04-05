@@ -12,7 +12,7 @@ class GbDmaController;
 
 class EmuSettings;
 class Emulator;
-class ControlManager;
+class IControlManager;
 
 enum class MemoryOperationType;
 
@@ -21,7 +21,7 @@ class GbMemoryManager : public ISerializable
 private:
 	Emulator* _emu = nullptr;
 	EmuSettings* _settings = nullptr;
-	ControlManager* _controlManager = nullptr;
+	IControlManager* _controlManager = nullptr;
 
 	Gameboy* _gameboy = nullptr;
 	GbCart* _cart = nullptr;

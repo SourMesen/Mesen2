@@ -709,6 +709,12 @@
     <ClInclude Include="NES\Mappers\NROM.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\GbControlManager.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\stdafx.h">
+      <Filter>GB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1117,6 +1123,9 @@
     </ClCompile>
     <ClCompile Include="NES\NesControlManager.cpp">
       <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameboy\GbControlManager.cpp">
+      <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

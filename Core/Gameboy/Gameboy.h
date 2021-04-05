@@ -4,6 +4,7 @@
 #include "GameboyHeader.h"
 #include "SettingTypes.h"
 #include "GbTypes.h"
+#include "IConsole.h"
 #include "Utilities/ISerializable.h"
 
 class Emulator;
@@ -14,10 +15,11 @@ class GbCart;
 class GbTimer;
 class GbMemoryManager;
 class GbDmaController;
+class GbControlManager;
 class SuperGameboy;
 class VirtualFile;
 
-class Gameboy : public ISerializable
+class Gameboy : public IConsole
 {
 private:
 	static constexpr int SpriteRamSize = 0xA0;
@@ -33,6 +35,7 @@ private:
 	unique_ptr<GbCart> _cart;
 	unique_ptr<GbTimer> _timer;
 	unique_ptr<GbDmaController> _dmaController;
+	shared_ptr<GbControlManager> _controlManager;
 
 	GameboyModel _model = GameboyModel::Auto;
 
@@ -61,13 +64,12 @@ private:
 public:
 	static constexpr int HeaderOffset = 0x134;
 
-	static Gameboy* Create(Emulator* emu, VirtualFile& romFile, bool sgbEnabled);
+	Gameboy(Emulator* emu, bool sgbEnabled);
 	virtual ~Gameboy();
 
-	void Init(Emulator* emu, GbCart* cart, vector<uint8_t>& romData, GameboyHeader& header, bool sgbEnabled);
+	void Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header);
 	void PowerOn(SuperGameboy* superGameboy = nullptr);
 
-	void Exec();
 	void Run(uint64_t runUntilClock);
 	
 	void LoadBattery();
@@ -91,6 +93,23 @@ public:
 
 	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
+	
+	void ProcessEndOfFrame();
 
 	void Serialize(Serializer& s) override;
+
+	// Inherited via IConsole
+	virtual void Stop() override;
+	virtual void Reset() override;
+	virtual void OnBeforeRun() override;
+	virtual bool LoadRom(VirtualFile& romFile, VirtualFile& patchFile) override;
+	virtual void Init() override;
+	virtual void RunFrame() override;
+	virtual shared_ptr<IControlManager> GetControlManager() override;
+	virtual ConsoleType GetConsoleType() override;
+	virtual double GetFrameDelay() override;
+	virtual double GetFps() override;
+	virtual RomInfo GetRomInfo() override;
+	virtual void RunSingleFrame() override;
+	virtual PpuFrameInfo GetPpuFrame() override;
 };
