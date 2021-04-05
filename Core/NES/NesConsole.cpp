@@ -10,6 +10,7 @@
 #include "NesSoundMixer.h"
 #include "NesMemoryManager.h"
 #include "NesPpu.h"
+#include "Utilities/Serializer.h"
 #include "EmuSettings.h"
 
 NesConsole::NesConsole(Emulator* emu)
@@ -35,7 +36,26 @@ void NesConsole::ProcessCpuClock()
 
 void NesConsole::Serialize(Serializer& s)
 {
+	_apu->EndFrame();
+
+	s.Stream(_cpu.get());
+	s.Stream(_ppu.get());
+	s.Stream(_memoryManager.get());
+	s.Stream(_apu.get());
+	s.Stream(_controlManager.get());
+	s.Stream(_mapper.get());
+
 	//TODO
+	/*if(_hdAudioDevice) {
+		_hdAudioDevice->LoadSnapshot(&loadStream, stateVersion);
+	} else {
+		Snapshotable::SkipBlock(&loadStream);
+	}
+
+	if(_slave) {
+		//For VS Dualsystem, the slave console's savestate is appended to the end of the file
+		_slave->LoadState(loadStream, stateVersion);
+	}*/
 }
 
 void NesConsole::Stop()

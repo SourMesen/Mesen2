@@ -667,9 +667,6 @@
     <ClInclude Include="NES\NoiseChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\NROM.h">
-      <Filter>NES</Filter>
-    </ClInclude>
     <ClInclude Include="NES\OpenBusHandler.h">
       <Filter>NES</Filter>
     </ClInclude>
@@ -697,13 +694,20 @@
     <ClInclude Include="DebugState.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="NES\NesControlManager.h" />
-    <ClInclude Include="NES\StandardController.h" />
     <ClInclude Include="IControlManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="NesDefaultVideoFilter.h">
       <Filter>Video</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\NesControlManager.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\StandardController.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\NROM.h">
+      <Filter>NES\Mappers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1108,9 +1112,11 @@
     <ClCompile Include="NES\NesConsole.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="NES\NesControlManager.cpp" />
     <ClCompile Include="NesDefaultVideoFilter.cpp">
       <Filter>Video</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesControlManager.cpp">
+      <Filter>NES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1209,6 +1215,9 @@
     </Filter>
     <Filter Include="NES">
       <UniqueIdentifier>{ab1a18a6-8ac5-4c33-bcbb-7169a7fbbcb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers">
+      <UniqueIdentifier>{37f1c0e4-e6fd-4ba4-b2a0-7239ca48f81a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
