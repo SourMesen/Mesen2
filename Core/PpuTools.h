@@ -26,11 +26,12 @@ private:
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 
 	uint32_t GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
+	uint32_t GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
 
 public:
 	PpuTools(Emulator *emu);
 
-	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer);
+	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t* palette, uint32_t *outBuffer);
 	void GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vram, uint8_t* cgram, uint32_t *outBuffer);
 	void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t* oamRam, uint8_t* cgram, uint32_t *outBuffer);
 

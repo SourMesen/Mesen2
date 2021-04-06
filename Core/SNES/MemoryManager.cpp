@@ -36,6 +36,7 @@ void MemoryManager::Initialize(Console *console)
 	_cheatManager = _emu->GetCheatManager().get();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
+	_emu->RegisterMemory(SnesMemoryType::WorkRam, _workRam, MemoryManager::WorkRamSize);
 	_emu->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(

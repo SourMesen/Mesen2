@@ -718,6 +718,9 @@
     <ClInclude Include="IAudioProvider.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="NES\NesDebugger.h">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1130,6 +1133,7 @@
     <ClCompile Include="Gameboy\GbControlManager.cpp">
       <Filter>GB</Filter>
     </ClCompile>
+    <ClCompile Include="NES\NesDebugger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

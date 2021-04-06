@@ -47,13 +47,12 @@ namespace Mesen.Debugger.Windows
 			}
 
 			//Renderer.DrawFps = true;
-
-			_listener = new NotificationListener();
-			_listener.OnNotification += listener_OnNotification;
-			
 			_picViewer = this.FindControl<PictureViewer>("picViewer");
 			_picViewer.Source = _viewerBitmap;
 			InitBitmap();
+
+			_listener = new NotificationListener();
+			_listener.OnNotification += listener_OnNotification;
 		}
 
 		private void InitBitmap()
@@ -73,7 +72,8 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			byte[] cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+			_model.UpdatePaletteColors();
+
 			byte[] source = DebugApi.GetMemoryState(_model.MemoryType);
 
 			if(_viewerBitmap.PixelSize.Width != _model.ColumnCount * 8 || _viewerBitmap.PixelSize.Height != _model.RowCount * 8) {
@@ -89,10 +89,8 @@ namespace Mesen.Debugger.Windows
 					Layout = _model.TileLayout,
 					StartAddress = _model.StartAddress,
 					Background = _model.TileBackground
-				}, source, source.Length, cgram, framebuffer.Address);
+				}, source, source.Length, _model.PaletteColors, framebuffer.Address);
 			}
-
-			_model.UpdatePaletteColors(cgram);
 
 			Dispatcher.UIThread.Post(() => {
 				_picViewer.Source = _viewerBitmap;

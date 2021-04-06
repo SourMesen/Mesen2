@@ -39,6 +39,9 @@ NesPpu::NesPpu(shared_ptr<NesConsole> console)
 	//This should (presumably) persist across resets
 	memset(_corruptOamRow, 0, sizeof(_corruptOamRow));
 
+	_emu->RegisterMemory(SnesMemoryType::NesSpriteRam, _spriteRAM, sizeof(_spriteRAM));
+	_emu->RegisterMemory(SnesMemoryType::NesPaletteRam, _paletteRAM, sizeof(_paletteRAM));
+	
 	_console->InitializeRam(_spriteRAM, 0x100);
 	_console->InitializeRam(_secondarySpriteRAM, 0x20);
 

@@ -16,7 +16,7 @@ BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, IEvent
 	_hasBreakpoint = false;
 	
 	//TODO
-	_eventManager = eventManager ? eventManager : debugger->GetEventManager(CpuType::Cpu).get();
+	//_eventManager = eventManager ? eventManager : debugger->GetEventManager(CpuType::Cpu).get();
 }
 
 void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
@@ -91,7 +91,8 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 		if(breakpoints[i].Matches(operationInfo.Address, address)) {
 			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)type][i], state, resultType, operationInfo)) {
 				if(breakpoints[i].IsMarked()) {
-					_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
+					//TODO
+					//_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
 				}
 				if(breakpoints[i].IsEnabled()) {
 					return breakpoints[i].GetId();

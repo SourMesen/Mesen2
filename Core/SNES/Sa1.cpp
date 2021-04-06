@@ -31,6 +31,7 @@ Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	_snesCpu = _console->GetCpu().get();
 	
 	_iRam = new uint8_t[Sa1::InternalRamSize];
+	_emu->RegisterMemory(SnesMemoryType::Sa1InternalRam, _iRam, Sa1::InternalRamSize);
 	_iRamHandler.reset(new Sa1IRamHandler(_iRam));
 	_emu->GetSettings()->InitializeRam(_iRam, 0x800);
 	

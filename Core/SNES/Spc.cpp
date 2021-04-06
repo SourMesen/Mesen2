@@ -24,7 +24,10 @@ Spc::Spc(Console* console)
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];
+	_emu->RegisterMemory(SnesMemoryType::SpcRam, _ram, Spc::SpcRamSize);
 	_emu->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
+
+	_emu->RegisterMemory(SnesMemoryType::SpcRom, _spcBios, Spc::SpcRomSize);
 
 	_dsp.reset(new SPC_DSP());
 	#ifndef DUMMYSPC

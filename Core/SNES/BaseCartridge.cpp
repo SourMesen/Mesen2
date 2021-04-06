@@ -84,6 +84,8 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 				cart->_prgRomSize = (cart->_prgRomSize & ~0xFFF) + 0x1000;
 			}
 			cart->_prgRom = new uint8_t[cart->_prgRomSize];
+			cart->_emu->RegisterMemory(SnesMemoryType::PrgRom, cart->_prgRom, cart->_prgRomSize);
+
 			memset(cart->_prgRom, 0, cart->_prgRomSize);
 			memcpy(cart->_prgRom, romData.data(), romData.size());
 		}
@@ -231,6 +233,7 @@ void BaseCartridge::LoadRom()
 	uint8_t rawSramSize = std::min(_cartInfo.SramSize & 0x0F, 8);
 	_saveRamSize = rawSramSize > 0 ? 1024 * (1 << rawSramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
+	_emu->RegisterMemory(SnesMemoryType::SaveRam, _saveRam, _saveRamSize);
 	_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 
 	DisplayCartInfo();

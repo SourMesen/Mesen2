@@ -56,9 +56,12 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 	_prgRomSize = (uint32_t)romData.size();
 	_prgRom = new uint8_t[_prgRomSize];
 	memcpy(_prgRom, romData.data(), romData.size());
+	_emu->RegisterMemory(SnesMemoryType::GbPrgRom, _prgRom, _prgRomSize);
 
 	_cartRamSize = header.GetCartRamSize();
 	_cartRam = new uint8_t[_cartRamSize];
+	_emu->RegisterMemory(SnesMemoryType::GbCartRam, _cartRam, _cartRamSize);
+
 	_hasBattery = header.HasBattery();
 
 	shared_ptr<EmuSettings> settings = _emu->GetSettings();
@@ -84,9 +87,16 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 	_videoRamSize = cgbMode ? 0x4000 : 0x2000;
 
 	_workRam = new uint8_t[_workRamSize];
+	_emu->RegisterMemory(SnesMemoryType::GbWorkRam, _cartRam, _cartRamSize);
+
 	_videoRam = new uint8_t[_videoRamSize];
+	_emu->RegisterMemory(SnesMemoryType::GbVideoRam, _videoRam, _videoRamSize);
+
 	_spriteRam = new uint8_t[Gameboy::SpriteRamSize];
+	_emu->RegisterMemory(SnesMemoryType::GbSpriteRam, _spriteRam, Gameboy::SpriteRamSize);
+
 	_highRam = new uint8_t[Gameboy::HighRamSize];
+	_emu->RegisterMemory(SnesMemoryType::GbHighRam, _highRam, Gameboy::HighRamSize);
 
 	_bootRomSize = 0;
 
@@ -121,6 +131,8 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 				break;
 		}
 	}
+	
+	_emu->RegisterMemory(SnesMemoryType::GbBootRom, _bootRom, _bootRomSize);
 
 	settings->InitializeRam(_cartRam, _cartRamSize);
 	settings->InitializeRam(_workRam, _workRamSize);

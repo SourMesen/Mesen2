@@ -33,6 +33,7 @@ Gsu::Gsu(Console *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType
 
 	_gsuRamSize = gsuRamSize;
 	_gsuRam = new uint8_t[_gsuRamSize];
+	_emu->RegisterMemory(SnesMemoryType::GsuWorkRam, _gsuRam, _gsuRamSize);
 	_settings->InitializeRam(_gsuRam, _gsuRamSize);
 
 	for(uint32_t i = 0; i < _gsuRamSize / 0x1000; i++) {

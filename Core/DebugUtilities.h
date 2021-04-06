@@ -15,6 +15,7 @@ public:
 			case CpuType::Gsu: return SnesMemoryType::GsuMemory;
 			case CpuType::Cx4:  return SnesMemoryType::Cx4Memory;
 			case CpuType::Gameboy:  return SnesMemoryType::GameboyMemory;
+			case CpuType::Nes:  return SnesMemoryType::NesMemory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -55,6 +56,18 @@ public:
 			case SnesMemoryType::GameboyMemory:
 				return CpuType::Gameboy;
 
+			case SnesMemoryType::NesChrRam:
+			case SnesMemoryType::NesChrRom:
+			case SnesMemoryType::NesInternalRam:
+			case SnesMemoryType::NesMemory:
+			case SnesMemoryType::NesNametableRam:
+			case SnesMemoryType::NesPaletteRam:
+			case SnesMemoryType::NesPrgRom:
+			case SnesMemoryType::NesSaveRam:
+			case SnesMemoryType::NesSpriteRam:
+			case SnesMemoryType::NesWorkRam:
+				return CpuType::Nes;
+
 			default:
 				return CpuType::Cpu;
 		}
@@ -75,6 +88,12 @@ public:
 			case SnesMemoryType::CGRam:
 			case SnesMemoryType::GbVideoRam:
 			case SnesMemoryType::GbSpriteRam:
+			
+			case SnesMemoryType::NesChrRam:
+			case SnesMemoryType::NesChrRom:
+			case SnesMemoryType::NesSpriteRam:
+			case SnesMemoryType::NesPaletteRam:
+			case SnesMemoryType::NesNametableRam:
 				return true;
 
 			default: 
@@ -88,6 +107,8 @@ public:
 			case SnesMemoryType::PrgRom:
 			case SnesMemoryType::GbPrgRom:
 			case SnesMemoryType::GbBootRom:
+			case SnesMemoryType::NesPrgRom:
+			case SnesMemoryType::NesChrRom:
 			case SnesMemoryType::SaveRam: //Include save ram here to avoid uninit memory read warnings on save ram
 				return true;
 

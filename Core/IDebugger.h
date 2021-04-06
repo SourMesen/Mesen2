@@ -7,6 +7,7 @@ class CallstackManager;
 class IAssembler;
 class IEventManager;
 class CodeDataLogger;
+enum class MemoryOperationType;
 
 class IDebugger
 {

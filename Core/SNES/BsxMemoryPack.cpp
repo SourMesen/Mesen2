@@ -12,6 +12,7 @@ BsxMemoryPack::BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persi
 	_orgData = data;
 	_dataSize = (uint32_t)data.size();
 	_data = new uint8_t[_dataSize];
+	console->GetEmulator()->RegisterMemory(SnesMemoryType::BsxMemoryPack, _data, _dataSize);
 	_persistFlash = persistFlash;
 	memcpy(_data, data.data(), _dataSize);
 

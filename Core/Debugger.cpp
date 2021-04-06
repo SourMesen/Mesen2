@@ -53,6 +53,7 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/IpsPatcher.h"
 #include "MemoryOperationType.h"
+#include "NES/NesDebugger.h"
 
 Debugger::Debugger(Emulator* emu, IConsole* console)
 {
@@ -80,6 +81,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 			case CpuType::Gsu: debugger.reset(new GsuDebugger(this)); break;
 			case CpuType::Cx4: debugger.reset(new Cx4Debugger(this)); break;
 			case CpuType::Gameboy: debugger.reset(new GbDebugger(this)); break;
+			case CpuType::Nes: debugger.reset(new NesDebugger(this)); break;
 			default: throw std::runtime_error("Unsupported CPU type");
 		}
 
@@ -90,8 +92,9 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	GetCodeDataLogger(CpuType::Cpu)->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());
+	//TODO
+	/*string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
+	GetCodeDataLogger(CpuType::Cpu)->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());*/
 
 	RefreshCodeCache();
 
@@ -108,10 +111,11 @@ Debugger::~Debugger()
 
 void Debugger::Release()
 {
-	bool hasGameboy = _debuggers[(int)CpuType::Gameboy].Debugger != nullptr;
+	//TODO
+	/*bool hasGameboy = _debuggers[(int)CpuType::Gameboy].Debugger != nullptr;
 	CpuType cpuType = hasGameboy ? CpuType::Gameboy : CpuType::Cpu;
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	GetCodeDataLogger(cpuType)->SaveCdlFile(cdlFile, _emu->GetCrc32());
+	GetCodeDataLogger(cpuType)->SaveCdlFile(cdlFile, _emu->GetCrc32());*/
 
 	while(_executionStopped) {
 		Run();
@@ -431,10 +435,11 @@ void Debugger::MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_
 void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
-	RebuildPrgCache(CpuType::Cpu);
 	
-	//TODO
-	//RebuildPrgCache(CpuType::Gameboy);
+	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+	for(CpuType type : _emu->GetCpuTypes()) {
+		RebuildPrgCache(type);
+	}
 }
 
 void Debugger::RebuildPrgCache(CpuType cpuType)

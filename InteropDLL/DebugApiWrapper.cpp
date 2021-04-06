@@ -95,7 +95,7 @@ extern "C"
 	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(cpuType, start, end, flags); }
 	
 	DllExport void __stdcall GetTilemap(GetTilemapOptions options, PpuState state, uint8_t *vram, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, state, vram, cgram, buffer); }
-	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, source, srcSize, cgram, buffer); }
+	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, source, srcSize, colors, buffer); }
 	DllExport void __stdcall GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t *oamRam, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetSpritePreview(options, state, vram, oamRam, cgram, buffer); }
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle, cpuType); }
 

@@ -332,12 +332,16 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	bool result = false;
 	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
 	
+	memset(_consoleMemory, 0, sizeof(_consoleMemory));
 	shared_ptr<IConsole> console = shared_ptr<IConsole>(new NesConsole(this));
 	if(!console->LoadRom(romFile, patchFile)) {
+		memset(_consoleMemory, 0, sizeof(_consoleMemory));
 		console.reset(new Console(this));
 		if(!console->LoadRom(romFile, patchFile)) {
+			memset(_consoleMemory, 0, sizeof(_consoleMemory));
 			console.reset(new Gameboy(this, false));
 			if(!console->LoadRom(romFile, patchFile)) {
+				memset(_consoleMemory, 0, sizeof(_consoleMemory));
 				return false;
 			}
 		}
@@ -717,6 +721,16 @@ bool Emulator::IsDebugging()
 thread::id Emulator::GetEmulationThreadId()
 {
 	return _emulationThreadId;
+}
+
+void Emulator::RegisterMemory(SnesMemoryType type, void* memory, uint32_t size)
+{
+	_consoleMemory[(int)type] = { memory, size };
+}
+
+ConsoleMemoryInfo Emulator::GetMemory(SnesMemoryType type)
+{
+	return _consoleMemory[(int)type];
 }
 
 bool Emulator::IsRunning()

@@ -28,6 +28,7 @@ BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack) : BaseCoprocessor(Sne
 
 	_psRamSize = 512 * 1024;
 	_psRam = new uint8_t[_psRamSize];
+	console->GetEmulator()->RegisterMemory(SnesMemoryType::BsxPsRam, _psRam, _psRamSize);
 	console->GetEmulator()->GetSettings()->InitializeRam(_psRam, _psRamSize);
 
 	for(uint32_t i = 0; i < _psRamSize / 0x1000; i++) {

@@ -35,6 +35,10 @@ Ppu::Ppu(Emulator* emu, Console* console)
 	_console = console;
 
 	_vram = new uint16_t[Ppu::VideoRamSize >> 1];
+	_emu->RegisterMemory(SnesMemoryType::VideoRam, _vram, Ppu::VideoRamSize);
+
+	_emu->RegisterMemory(SnesMemoryType::SpriteRam, _oamRam, Ppu::SpriteRamSize);
+	_emu->RegisterMemory(SnesMemoryType::CGRam, _cgram, Ppu::CgRamSize);
 
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];

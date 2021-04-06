@@ -14,6 +14,7 @@ enum class SnesMemoryType;
 class MemoryDumper
 {
 private:
+	Emulator* _emu;
 	Ppu* _ppu;
 	Spc* _spc;
 	MemoryManager* _memoryManager;

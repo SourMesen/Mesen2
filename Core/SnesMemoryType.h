@@ -9,6 +9,8 @@ enum class SnesMemoryType
 	GsuMemory,
 	Cx4Memory,
 	GameboyMemory,
+	NesMemory,
+
 	PrgRom,
 	WorkRam,
 	SaveRam,
@@ -25,6 +27,7 @@ enum class SnesMemoryType
 	Cx4DataRam,
 	BsxPsRam,
 	BsxMemoryPack,
+
 	GbPrgRom,
 	GbWorkRam,
 	GbCartRam,
@@ -33,11 +36,15 @@ enum class SnesMemoryType
 	GbVideoRam,
 	GbSpriteRam,
 
-	NametableRam,
-	ChrRam,
-	ChrRom,
+	NesPrgRom,
 	NesInternalRam,
-	PaletteRam,
+	NesWorkRam,
+	NesSaveRam,
+	NesNametableRam,
+	NesSpriteRam,
+	NesPaletteRam,
+	NesChrRam,
+	NesChrRom,
 
 	Register
 };

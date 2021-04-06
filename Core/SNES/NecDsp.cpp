@@ -58,14 +58,18 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 
 	_progSize = (uint32_t)programRom.size();
 	_progRom = new uint8_t[_progSize];
+	_emu->RegisterMemory(SnesMemoryType::DspProgramRom, _progRom, _progSize);
+
 	_prgCache = new uint32_t[_progSize / 3];
 	_progMask = (_progSize / 3)- 1;
 
 	_dataSize = (uint32_t)dataRom.size() / 2;
 	_dataRom = new uint16_t[_dataSize];
+	_emu->RegisterMemory(SnesMemoryType::DspDataRom, _dataRom, _dataSize * sizeof(uint16_t));
 	_dataMask = _dataSize - 1;
 
 	_ram = new uint16_t[_ramSize];
+	_emu->RegisterMemory(SnesMemoryType::DspDataRam, _ram, _ramSize * sizeof(uint16_t));
 	_ramMask = _ramSize - 1;
 
 	_stackMask = _stackSize - 1;

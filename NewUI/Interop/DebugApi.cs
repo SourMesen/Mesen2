@@ -99,7 +99,7 @@ namespace Mesen.GUI
 		}
 
 		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, PpuState state, byte[] vram, byte[] cgram, IntPtr buffer);
-		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, byte[] cgram, IntPtr buffer);
+		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, UInt32[] cgram, IntPtr buffer);
 		[DllImport(DllPath)] public static extern void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, byte[] cgram, IntPtr buffer);
 
 		[DllImport(DllPath)] public static extern void GetGameboyTilemap(byte[] vram, GbPpuState state, UInt16 offset, [In, Out] byte[] buffer);
@@ -207,6 +207,8 @@ namespace Mesen.GUI
 		GsuMemory,
 		Cx4Memory,
 		GameboyMemory,
+		NesMemory,
+
 		PrgRom,
 		WorkRam,
 		SaveRam,
@@ -223,6 +225,7 @@ namespace Mesen.GUI
 		Cx4DataRam,
 		BsxPsRam,
 		BsxMemoryPack,
+
 		GbPrgRom,
 		GbWorkRam,
 		GbCartRam,
@@ -230,7 +233,18 @@ namespace Mesen.GUI
 		GbBootRom,
 		GbVideoRam,
 		GbSpriteRam,
-		Register,
+
+		NesPrgRom,
+		NesInternalRam,
+		NesWorkRam,
+		NesSaveRam,
+		NesNametableRam,
+		NesSpriteRam,
+		NesPaletteRam,
+		NesChrRam,
+		NesChrRom,
+
+		Register
 	}
 
 	public static class SnesMemoryTypeExtensions

@@ -67,6 +67,7 @@
     <ClInclude Include="NES\NesApu.h" />
     <ClInclude Include="NES\NesConsole.h" />
     <ClInclude Include="NES\NesCpu.h" />
+    <ClInclude Include="NES\NesDebugger.h" />
     <ClInclude Include="NES\NesDebuggerTypes.h" />
     <ClInclude Include="NES\NesHeader.h" />
     <ClInclude Include="NES\NesMemoryManager.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="NES\NesApu.cpp" />
     <ClCompile Include="NES\NesConsole.cpp" />
     <ClCompile Include="NES\NesCpu.cpp" />
+    <ClCompile Include="NES\NesDebugger.cpp" />
     <ClCompile Include="NES\NesHeader.cpp" />
     <ClCompile Include="NES\NesMemoryManager.cpp" />
     <ClCompile Include="NES\NesPpu.cpp" />

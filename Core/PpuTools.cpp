@@ -18,8 +18,13 @@ uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, 
 {
 	uint8_t color;
 	if(bpp == 2) {
+		int secondByteOffset = 1;
+		//TODO
+		if(_emu->GetConsoleType() == ConsoleType::Nes) {
+			secondByteOffset = 8;
+		}
 		color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-		color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
+		color |= (((ram[(pixelStart + secondByteOffset) & ramMask] >> shift) & 0x01) << 1);
 	} else if(bpp == 4) {
 		color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
 		color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
@@ -66,7 +71,21 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t 
 	return DefaultVideoFilter::ToArgb(paletteColor);
 }
 
-void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint8_t *cgram, uint32_t *outBuffer)
+uint32_t PpuTools::GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset)
+{
+	if(bpp == 8 && directColorMode) {
+		uint32_t paletteColor = (
+			((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
+			(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
+			(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
+			);
+		return DefaultVideoFilter::ToArgb(paletteColor);
+	} else {
+		return colors[basePaletteOffset + (palette * (1 << bpp) + colorIndex)];
+	}
+}
+
+void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *outBuffer)
 {
 	uint32_t ramMask = srcSize - 1;
 
@@ -88,7 +107,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 
 	uint32_t bgColor = 0;
 	switch(options.Background) {
-		case TileBackground::Default: bgColor = DefaultVideoFilter::ToArgb((cgram[1] << 8) | cgram[0]); break;
+		case TileBackground::Default: bgColor = colors[0]; break;
 		case TileBackground::PaletteColor: bgColor = DefaultVideoFilter::ToArgb(0); break;
 		case TileBackground::Black: bgColor = DefaultVideoFilter::ToArgb(0); break;
 		case TileBackground::White: bgColor = DefaultVideoFilter::ToArgb(0x7FFF); break;
@@ -136,19 +155,25 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 							if(directColor) {
 								rgbColor = DefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
-								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
+								rgbColor = GetRgbPixelColor(colors, color, 0, 8, false, 0);
 							}
 							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = rgbColor;
 						}
 					}
 				}
 			} else {
+				int rowOffset = 2;
+				//TODO
+				if(_emu->GetConsoleType() == ConsoleType::Nes) {
+					rowOffset = 1;
+				}
+
 				for(int y = 0; y < 8; y++) {
-					uint32_t pixelStart = addr + y * 2;
+					uint32_t pixelStart = addr + y * rowOffset;
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, 7 - x);
 						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = GetRgbPixelColor(cgram, color, options.Palette, bpp, directColor, 0);
+							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = GetRgbPixelColor(colors, color, options.Palette, bpp, directColor, 0);
 						}
 					}
 				}

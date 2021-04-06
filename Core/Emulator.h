@@ -34,6 +34,12 @@ enum class ConsoleRegion;
 enum class ConsoleType;
 enum class HashType;
 
+struct ConsoleMemoryInfo
+{
+	void* Memory;
+	uint32_t Size;
+};
+
 class Emulator : public std::enable_shared_from_this<Emulator>
 {
 private:
@@ -72,6 +78,8 @@ private:
 
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
+
+	ConsoleMemoryInfo _consoleMemory[(int)SnesMemoryType::Register] = {};
 
 	unique_ptr<DebugStats> _stats;
 	unique_ptr<FrameLimiter> _frameLimiter;
@@ -145,6 +153,9 @@ public:
 	bool IsDebugging();
 
 	thread::id GetEmulationThreadId();
+
+	void RegisterMemory(SnesMemoryType type, void* memory, uint32_t size);
+	ConsoleMemoryInfo GetMemory(SnesMemoryType type);
 
 	bool IsRunning();
 	bool IsRunAheadFrame();

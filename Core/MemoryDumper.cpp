@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Debugger.h"
+#include "Emulator.h"
 #include "SNES/MemoryManager.h"
 #include "SNES/Ppu.h"
 #include "SNES/Spc.h"
@@ -22,6 +23,7 @@
 MemoryDumper::MemoryDumper(Debugger* debugger)
 {
 	_debugger = debugger;
+	_emu = debugger->GetEmulator();
 	_disassembler = debugger->GetDisassembler().get();
 
 	IConsole* console = _debugger->GetConsole();
@@ -48,76 +50,20 @@ void MemoryDumper::SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t
 
 uint8_t* MemoryDumper::GetMemoryBuffer(SnesMemoryType type)
 {
-	switch(type) {
-		default: return nullptr;
-		case SnesMemoryType::PrgRom: return _cartridge->DebugGetPrgRom();
-		case SnesMemoryType::WorkRam: return _memoryManager->DebugGetWorkRam();
-		case SnesMemoryType::SaveRam: return _cartridge->DebugGetSaveRam();
-		case SnesMemoryType::VideoRam: return _ppu->GetVideoRam();
-		case SnesMemoryType::SpriteRam: return _ppu->GetSpriteRam();
-		case SnesMemoryType::CGRam: return _ppu->GetCgRam();
-		case SnesMemoryType::SpcRam: return _spc->GetSpcRam();
-		case SnesMemoryType::SpcRom: return _spc->GetSpcRom();
-
-		case SnesMemoryType::DspProgramRom: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetProgramRom() : nullptr;
-		case SnesMemoryType::DspDataRom: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetDataRom() : nullptr;
-		case SnesMemoryType::DspDataRam: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetDataRam() : nullptr;
-
-		case SnesMemoryType::Sa1InternalRam: return _cartridge->GetSa1() ? _cartridge->GetSa1()->DebugGetInternalRam() : nullptr;
-		case SnesMemoryType::GsuWorkRam: return _cartridge->GetGsu() ? _cartridge->GetGsu()->DebugGetWorkRam() : nullptr;
-		case SnesMemoryType::Cx4DataRam: return _cartridge->GetCx4() ? _cartridge->GetCx4()->DebugGetDataRam() : nullptr;
-		case SnesMemoryType::BsxPsRam: return _cartridge->GetBsx() ? _cartridge->GetBsx()->DebugGetPsRam() : nullptr;
-		case SnesMemoryType::BsxMemoryPack: return _cartridge->GetBsxMemoryPack() ? _cartridge->GetBsxMemoryPack()->DebugGetMemoryPack() : nullptr;
-
-		case SnesMemoryType::GbPrgRom:
-		case SnesMemoryType::GbWorkRam:
-		case SnesMemoryType::GbVideoRam:
-		case SnesMemoryType::GbCartRam:
-		case SnesMemoryType::GbHighRam:
-		case SnesMemoryType::GbBootRom:
-		case SnesMemoryType::GbSpriteRam:
-			return _cartridge->GetGameboy() ? _cartridge->GetGameboy()->DebugGetMemory(type) : nullptr;
-	}
+	return (uint8_t*)_emu->GetMemory(type).Memory;
 }
 
 uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 {
 	switch(type) {
-		default: return 0;
 		case SnesMemoryType::CpuMemory: return 0x1000000;
 		case SnesMemoryType::SpcMemory: return 0x10000;
 		case SnesMemoryType::Sa1Memory: return 0x1000000;
 		case SnesMemoryType::GsuMemory: return 0x1000000;
 		case SnesMemoryType::Cx4Memory: return 0x1000000;
 		case SnesMemoryType::GameboyMemory: return 0x10000;
-		case SnesMemoryType::PrgRom: return _cartridge->DebugGetPrgRomSize();
-		case SnesMemoryType::WorkRam: return MemoryManager::WorkRamSize;
-		case SnesMemoryType::SaveRam: return _cartridge->DebugGetSaveRamSize();
-		case SnesMemoryType::VideoRam: return Ppu::VideoRamSize;
-		case SnesMemoryType::SpriteRam: return Ppu::SpriteRamSize;
-		case SnesMemoryType::CGRam: return Ppu::CgRamSize;
-		case SnesMemoryType::SpcRam: return Spc::SpcRamSize;
-		case SnesMemoryType::SpcRom: return Spc::SpcRomSize;
-		case SnesMemoryType::Register: return 0x10000;
-
-		case SnesMemoryType::DspProgramRom: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetProgramRomSize() : 0;
-		case SnesMemoryType::DspDataRom: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetDataRomSize() : 0;
-		case SnesMemoryType::DspDataRam: return _cartridge->GetDsp() ? _cartridge->GetDsp()->DebugGetDataRamSize() : 0;
-		
-		case SnesMemoryType::Sa1InternalRam: return _cartridge->GetSa1() ? _cartridge->GetSa1()->DebugGetInternalRamSize() : 0;
-		case SnesMemoryType::GsuWorkRam: return _cartridge->GetGsu() ? _cartridge->GetGsu()->DebugGetWorkRamSize() : 0;
-		case SnesMemoryType::Cx4DataRam: return _cartridge->GetCx4() ? _cartridge->GetCx4()->DebugGetDataRamSize() : 0;
-		case SnesMemoryType::BsxPsRam: return _cartridge->GetBsx() ? _cartridge->GetBsx()->DebugGetPsRamSize() : 0;
-		case SnesMemoryType::BsxMemoryPack: return _cartridge->GetBsxMemoryPack() ? _cartridge->GetBsxMemoryPack()->DebugGetMemoryPackSize() : 0;
-		
-		case SnesMemoryType::GbPrgRom:
-		case SnesMemoryType::GbWorkRam:
-		case SnesMemoryType::GbVideoRam:
-		case SnesMemoryType::GbCartRam:
-		case SnesMemoryType::GbHighRam:
-		case SnesMemoryType::GbBootRom:
-		case SnesMemoryType::GbSpriteRam:
-			return _cartridge->GetGameboy() ? _cartridge->GetGameboy()->DebugGetMemorySize(type) : 0;
+		case SnesMemoryType::NesMemory: return 0x10000;
+		default: return _emu->GetMemory(type).Size;
 	}
 }
 
