@@ -6,12 +6,12 @@
 #include "NesTypes.h"
 #include "RomData.h"
 #include "Emulator.h"
-#include "../MemoryOperationType.h"
+#include "DebugTypes.h"
+#include "MemoryOperationType.h"
 
 class NesConsole;
 class BaseControlDevice;
 enum class SnesMemoryType;
-struct AddressInfo;
 
 class BaseMapper : public INesMemoryHandler, public ISerializable
 {
@@ -220,17 +220,10 @@ public:
 	uint32_t CopyMemory(SnesMemoryType type, uint8_t* buffer);
 	void WriteMemory(SnesMemoryType type, uint8_t* buffer, int32_t length);
 
-	void GetAbsoluteAddressAndType(uint32_t relativeAddr, AddressInfo *info);
-	void GetPpuAbsoluteAddressAndType(uint32_t relativeAddr, AddressInfo *info);
-	int32_t ToAbsoluteAddress(uint16_t addr);
-	int32_t ToAbsoluteSaveRamAddress(uint16_t addr);
-	int32_t ToAbsoluteWorkRamAddress(uint16_t addr);
-	int32_t ToAbsoluteChrAddress(uint16_t addr);
-	int32_t ToAbsoluteChrRamAddress(uint16_t addr);
-	int32_t ToAbsoluteChrRomAddress(uint16_t addr);
-	int32_t FromAbsoluteChrAddress(uint32_t addr);
-	int32_t FromAbsoluteAddress(uint32_t addr, SnesMemoryType type);
-	int32_t FromAbsolutePpuAddress(uint32_t addr, SnesMemoryType type);
+	AddressInfo GetAbsoluteAddress(uint32_t relativeAddr);
+	AddressInfo GetPpuAbsoluteAddress(uint32_t relativeAddr);
+	int32_t GetRelativeAddress(AddressInfo& addr);
+	int32_t GetPpuRelativeAddress(AddressInfo& addr);
 
 	bool IsWriteRegister(uint16_t addr);
 	bool IsReadRegister(uint16_t addr);

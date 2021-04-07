@@ -455,3 +455,8 @@ AddressInfo Gameboy::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
 {
 	return { GetRelativeAddress(absAddress), SnesMemoryType::GameboyMemory };
 }
+
+uint64_t Gameboy::GetMasterClock()
+{
+	return _memoryManager->GetCycleCount();
+}

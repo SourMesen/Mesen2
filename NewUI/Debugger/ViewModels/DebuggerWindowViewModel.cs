@@ -36,8 +36,8 @@ namespace Mesen.Debugger.ViewModels
 			ShowPpuStatusCommand = ReactiveCommand.Create(ShowPpuStatus);
 
 			Disassembly = new DisassemblyViewerViewModel();
-			SnesCpu = new SnesCpuViewModel();
-			SnesPpu = new SnesPpuViewModel();
+			//SnesCpu = new SnesCpuViewModel();
+			//SnesPpu = new SnesPpuViewModel();
 			BreakpointList = new BreakpointListViewModel();
 
 			var factory = new DebuggerDockFactory(this);

@@ -40,8 +40,8 @@ NesCpu::NesCpu(shared_ptr<NesConsole> console)
 		&NesCpu::BEQ,	&NesCpu::SBC,	&NesCpu::HLT,	&NesCpu::ISB,	&NesCpu::NOP,	&NesCpu::SBC,	&NesCpu::INC,			&NesCpu::ISB,	&NesCpu::SED,	&NesCpu::SBC,	&NesCpu::NOP,			&NesCpu::ISB,	&NesCpu::NOP,			&NesCpu::SBC,	&NesCpu::INC,			&NesCpu::ISB  //F
 	};
 
-	typedef AddrMode M;
-	AddrMode addrMode[] = {
+	typedef NesAddrMode M;
+	NesAddrMode addrMode[] = {
 	//	0			1				2			3				4				5				6				7				8			9			A			B			C			D			E			F
 		M::Imp,	M::IndX,		M::None,	M::IndX,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::Abs,	//0
 		M::Rel,	M::IndY,		M::None,	M::IndYW,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::AbsX,	M::AbsX,	M::AbsXW,M::AbsXW,//1
@@ -64,7 +64,7 @@ NesCpu::NesCpu(shared_ptr<NesConsole> console)
 	memcpy(_opTable, opTable, sizeof(opTable));
 	memcpy(_addrMode, addrMode, sizeof(addrMode));
 
-	_instAddrMode = AddrMode::None;
+	_instAddrMode = NesAddrMode::None;
 	_state = {};
 	_cycleCount = 0;
 	_operand = 0;
@@ -280,22 +280,22 @@ uint8_t NesCpu::MemoryRead(uint16_t addr, MemoryOperationType operationType) {
 uint16_t NesCpu::FetchOperand()
 {
 	switch(_instAddrMode) {
-		case AddrMode::Acc:
-		case AddrMode::Imp: DummyRead(); return 0;
-		case AddrMode::Imm:
-		case AddrMode::Rel: return GetImmediate();
-		case AddrMode::Zero: return GetZeroAddr();
-		case AddrMode::ZeroX: return GetZeroXAddr();
-		case AddrMode::ZeroY: return GetZeroYAddr();
-		case AddrMode::Ind: return GetIndAddr();
-		case AddrMode::IndX: return GetIndXAddr();
-		case AddrMode::IndY: return GetIndYAddr(false);
-		case AddrMode::IndYW: return GetIndYAddr(true);
-		case AddrMode::Abs: return GetAbsAddr();
-		case AddrMode::AbsX: return GetAbsXAddr(false);
-		case AddrMode::AbsXW: return GetAbsXAddr(true);
-		case AddrMode::AbsY: return GetAbsYAddr(false);
-		case AddrMode::AbsYW: return GetAbsYAddr(true);
+		case NesAddrMode::Acc:
+		case NesAddrMode::Imp: DummyRead(); return 0;
+		case NesAddrMode::Imm:
+		case NesAddrMode::Rel: return GetImmediate();
+		case NesAddrMode::Zero: return GetZeroAddr();
+		case NesAddrMode::ZeroX: return GetZeroXAddr();
+		case NesAddrMode::ZeroY: return GetZeroYAddr();
+		case NesAddrMode::Ind: return GetIndAddr();
+		case NesAddrMode::IndX: return GetIndXAddr();
+		case NesAddrMode::IndY: return GetIndYAddr(false);
+		case NesAddrMode::IndYW: return GetIndYAddr(true);
+		case NesAddrMode::Abs: return GetAbsAddr();
+		case NesAddrMode::AbsX: return GetAbsXAddr(false);
+		case NesAddrMode::AbsXW: return GetAbsXAddr(true);
+		case NesAddrMode::AbsY: return GetAbsYAddr(false);
+		case NesAddrMode::AbsYW: return GetAbsYAddr(true);
 		default: break;
 	}
 	

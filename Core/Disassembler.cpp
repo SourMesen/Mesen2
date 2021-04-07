@@ -10,6 +10,7 @@
 #include "EmuSettings.h"
 #include "DebugUtilities.h"
 #include "DebugState.h"
+#include "NES/NesTypes.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
@@ -20,7 +21,7 @@ Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 	_labelManager = debugger->GetLabelManager();
 	_console = console;
 	_settings = debugger->GetEmulator()->GetSettings().get();
-	_memoryDumper = _debugger->GetMemoryDumper().get();
+	_memoryDumper = _debugger->GetMemoryDumper();
 
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {
 		_disassemblyResult[i] = vector<DisassemblyResult>();
@@ -116,6 +117,7 @@ void Disassembler::ResetPrgCache()
 	_needDisassemble[(int)CpuType::Gsu] = true;
 	_needDisassemble[(int)CpuType::Cx4] = true;
 	_needDisassemble[(int)CpuType::Gameboy] = true;
+	_needDisassemble[(int)CpuType::Nes] = true;
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
@@ -417,7 +419,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
 
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
@@ -438,7 +440,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
 							data.ValueSize = 1;
@@ -457,7 +459,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
 						if(data.EffectiveAddress >= 0) {
 							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
 							data.ValueSize = 2;
@@ -489,8 +491,26 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						}
 
 						data.OpSize = disInfo.GetOpSize();
-						data.EffectiveAddress = disInfo.GetEffectiveAddress(_console, &state, lineCpuType);
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
 						data.ValueSize = 0;
+						break;
+					}
+
+					case CpuType::Nes: {
+						NesCpuState state = {}; //TODO
+						if(!disInfo.IsInitialized()) {
+							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Nes);
+						} else {
+							data.Flags |= LineFlags::VerifiedCode;
+						}
+
+						data.OpSize = disInfo.GetOpSize();
+						data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
+						if(data.EffectiveAddress >= 0) {
+							data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
+						} else {
+							data.ValueSize = 0;
+						}
 						break;
 					}
 				}

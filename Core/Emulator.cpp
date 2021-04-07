@@ -454,8 +454,7 @@ vector<CpuType> Emulator::GetCpuTypes()
 
 uint64_t Emulator::GetMasterClock()
 {
-	//TODO
-	return 0;
+	return _console->GetMasterClock();
 }
 
 uint32_t Emulator::GetFrameCount()

@@ -163,11 +163,6 @@ void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSide
 	}
 }
 
-uint32_t NesMemoryManager::ToAbsolutePrgAddress(uint16_t ramAddr)
-{
-	return _mapper->ToAbsoluteAddress(ramAddr);
-}
-
 void NesMemoryManager::Serialize(Serializer &s)
 {
 	ArrayInfo<uint8_t> internalRam = { _internalRAM, NesMemoryManager::InternalRAMSize };

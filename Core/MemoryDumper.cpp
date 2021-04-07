@@ -15,6 +15,8 @@
 #include "SNES/Console.h"
 #include "MemoryDumper.h"
 #include "SNES/BaseCartridge.h"
+#include "NES/NesConsole.h"
+#include "NES/NesMemoryManager.h"
 #include "VideoDecoder.h"
 #include "DebugTypes.h"
 #include "DebugBreakHelper.h"
@@ -27,12 +29,14 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 	_disassembler = debugger->GetDisassembler().get();
 
 	IConsole* console = _debugger->GetConsole();
+	//TODO
 	if(Console* c = dynamic_cast<Console*>(console)) {
-		//TODO
 		_ppu = c->GetPpu().get();
 		_spc = c->GetSpc().get();
 		_memoryManager = c->GetMemoryManager().get();
 		_cartridge = c->GetCartridge().get();
+	} else if(NesConsole* c = dynamic_cast<NesConsole*>(console)) {
+		_nesMemoryManager = c->GetMemoryManager();
 	}
 }
 
@@ -186,12 +190,14 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 	}
 
 	switch(memoryType) {
+		//TODO
 		case SnesMemoryType::CpuMemory: return _memoryManager->Peek(address);
 		case SnesMemoryType::SpcMemory: return _spc->DebugRead(address);
 		case SnesMemoryType::Sa1Memory: return _cartridge->GetSa1()->GetMemoryMappings()->Peek(address);
 		case SnesMemoryType::GsuMemory: return _cartridge->GetGsu()->GetMemoryMappings()->Peek(address);
 		case SnesMemoryType::Cx4Memory: return _cartridge->GetCx4()->GetMemoryMappings()->Peek(address);
 		case SnesMemoryType::GameboyMemory: return _cartridge->GetGameboy()->GetMemoryManager()->DebugRead(address);
+		case SnesMemoryType::NesMemory: return _nesMemoryManager->DebugRead(address);
 		
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

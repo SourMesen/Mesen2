@@ -993,137 +993,69 @@ void BaseMapper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, uin
 	}
 }
 
-void BaseMapper::GetAbsoluteAddressAndType(uint32_t relativeAddr, AddressInfo* info)
+AddressInfo BaseMapper::GetAbsoluteAddress(uint32_t relativeAddr)
 {
+	AddressInfo info;
 	if(relativeAddr < 0x2000) {
-		info->Address = relativeAddr & 0x7FF;
-		info->Type = SnesMemoryType::NesInternalRam;
+		info.Address = relativeAddr & 0x7FF;
+		info.Type = SnesMemoryType::NesInternalRam;
 	} else {
 		uint8_t *prgAddr = _prgPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
 		if(prgAddr >= _prgRom && prgAddr < _prgRom + _prgSize) {
-			info->Address = (uint32_t)(prgAddr - _prgRom);
-			info->Type = SnesMemoryType::NesPrgRom;
+			info.Address = (uint32_t)(prgAddr - _prgRom);
+			info.Type = SnesMemoryType::NesPrgRom;
 		} else if(prgAddr >= _workRam && prgAddr < _workRam + _workRamSize) {
-			info->Address = (uint32_t)(prgAddr - _workRam);
-			info->Type = SnesMemoryType::NesWorkRam;
+			info.Address = (uint32_t)(prgAddr - _workRam);
+			info.Type = SnesMemoryType::NesWorkRam;
 		} else if(prgAddr >= _saveRam && prgAddr < _saveRam + _saveRamSize) {
-			info->Address = (uint32_t)(prgAddr - _saveRam);
-			info->Type = SnesMemoryType::NesSaveRam;
+			info.Address = (uint32_t)(prgAddr - _saveRam);
+			info.Type = SnesMemoryType::NesSaveRam;
 		} else {
-			info->Address = -1;
-			info->Type = SnesMemoryType::NesInternalRam;
+			info.Address = -1;
+			info.Type = SnesMemoryType::NesInternalRam;
 		}
 	}
+	return info;
 }
 
-int32_t BaseMapper::ToAbsoluteAddress(uint16_t addr)
+AddressInfo BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr)
 {
-	uint8_t *prgAddr = _prgPages[addr >> 8] + (uint8_t)addr;
-	if(prgAddr >= _prgRom && prgAddr < _prgRom + _prgSize) {
-		return (uint32_t)(prgAddr - _prgRom);
-	}
-	return -1;
-}
-
-int32_t BaseMapper::ToAbsoluteWorkRamAddress(uint16_t addr)
-{
-	uint8_t *prgRamAddr = _prgPages[addr >> 8] + (uint8_t)addr;
-	if(prgRamAddr >= _workRam && prgRamAddr < _workRam + _workRamSize) {
-		return (uint32_t)(prgRamAddr - _workRam);
-	}
-	return -1;
-}
-
-int32_t BaseMapper::ToAbsoluteSaveRamAddress(uint16_t addr)
-{
-	uint8_t *prgRamAddr = _prgPages[addr >> 8] + (uint8_t)addr;
-	if(prgRamAddr >= _saveRam && prgRamAddr < _saveRam + _saveRamSize) {
-		return (uint32_t)(prgRamAddr - _saveRam);
-	}
-	return -1;
-}
-
-void BaseMapper::GetPpuAbsoluteAddressAndType(uint32_t relativeAddr, AddressInfo* info)
-{
+	AddressInfo info;
 	if(relativeAddr >= 0x3F00) {
-		info->Address = relativeAddr & 0x1F;
-		info->Type = SnesMemoryType::NesPaletteRam;
+		info.Address = relativeAddr & 0x1F;
+		info.Type = SnesMemoryType::NesPaletteRam;
 	} else {
 		uint8_t *addr = _chrPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
 		if(addr >= _chrRom && addr < _chrRom + _chrRomSize) {
-			info->Address = (uint32_t)(addr - _chrRom);
-			info->Type = SnesMemoryType::NesChrRom;
+			info.Address = (uint32_t)(addr - _chrRom);
+			info.Type = SnesMemoryType::NesChrRom;
 		} else if(addr >= _chrRam && addr < _chrRam + _chrRamSize) {
-			info->Address = (uint32_t)(addr - _chrRam);
-			info->Type = SnesMemoryType::NesChrRam;
+			info.Address = (uint32_t)(addr - _chrRam);
+			info.Type = SnesMemoryType::NesChrRam;
 		} else if(addr >= _nametableRam && addr < _nametableRam + BaseMapper::NametableSize * BaseMapper::NametableCount) {
-			info->Address = (uint32_t)(addr - _nametableRam);
-			info->Type = SnesMemoryType::NesNametableRam;
+			info.Address = (uint32_t)(addr - _nametableRam);
+			info.Type = SnesMemoryType::NesNametableRam;
 		} else {
-			info->Address = -1;
-			info->Type = SnesMemoryType::NesMemory;
+			info.Address = -1;
+			info.Type = SnesMemoryType::NesMemory;
 		}
 	}
+	return info;
 }
 
-int32_t BaseMapper::ToAbsoluteChrAddress(uint16_t addr)
-{
-	uint8_t *chrAddr = _chrPages[addr >> 8] + (uint8_t)addr;
-	if(chrAddr >= _chrRom && chrAddr < _chrRom + _chrRomSize) {
-		return (uint32_t)(chrAddr - _chrRom);
-	}
-	if(chrAddr >= _chrRam && chrAddr < _chrRam + _chrRamSize) {
-		return (uint32_t)(chrAddr - _chrRam);
-	}
-	return -1;
-}
-
-int32_t BaseMapper::ToAbsoluteChrRamAddress(uint16_t addr)
-{
-	uint8_t *chrAddr = _chrPages[addr >> 8] + (uint8_t)addr;
-	if(chrAddr >= _chrRam && chrAddr < _chrRam + _chrRamSize) {
-		return (uint32_t)(chrAddr - _chrRam);
-	}
-	return -1;
-}
-
-int32_t BaseMapper::ToAbsoluteChrRomAddress(uint16_t addr)
-{
-	uint8_t *chrAddr = _chrPages[addr >> 8] + (uint8_t)addr;
-	if(chrAddr >= _chrRom && chrAddr < _chrRom + _chrRomSize) {
-		return (uint32_t)(chrAddr - _chrRom);
-	}
-	return -1;
-}
-
-int32_t BaseMapper::FromAbsoluteChrAddress(uint32_t addr)
-{
-	uint8_t* ptrAddress = (_onlyChrRam ? _chrRam : _chrRom) + (addr & 0x3FFF);
-
-	for(int i = 0; i < 64; i++) {
-		uint8_t* pageAddress = _chrPages[i];
-		if(pageAddress != nullptr && ptrAddress >= pageAddress && ptrAddress <= pageAddress + 0xFF) {
-			return (i << 8) + (uint32_t)(ptrAddress - pageAddress);
-		}
-	}
-
-	//Address is currently not mapped
-	return -1;
-}
-
-int32_t BaseMapper::FromAbsoluteAddress(uint32_t addr, SnesMemoryType type)
+int32_t BaseMapper::GetRelativeAddress(AddressInfo& addr)
 {
 	uint8_t* ptrAddress;
 
-	switch(type) {
+	switch(addr.Type) {
 		case SnesMemoryType::NesPrgRom: ptrAddress = _prgRom; break;
 		case SnesMemoryType::NesWorkRam: ptrAddress = _workRam; break;
 		case SnesMemoryType::NesSaveRam: ptrAddress = _saveRam; break;
-		case SnesMemoryType::Register: return addr & 0xFFFF; break;
-		case SnesMemoryType::NesInternalRam: return addr & 0x1FFF; break;
+		case SnesMemoryType::Register: return (addr.Address) & 0xFFFF; break;
+		case SnesMemoryType::NesInternalRam: return (addr.Address) & 0x1FFF; break;
 		default: return -1;
 	}
-	ptrAddress += addr;
+	ptrAddress += addr.Address;
 
 	for(int i = 0; i < 256; i++) {
 		uint8_t* pageAddress = _prgPages[i];
@@ -1136,17 +1068,17 @@ int32_t BaseMapper::FromAbsoluteAddress(uint32_t addr, SnesMemoryType type)
 	return -1;
 }
 
-int32_t BaseMapper::FromAbsolutePpuAddress(uint32_t addr, SnesMemoryType type)
+int32_t BaseMapper::GetPpuRelativeAddress(AddressInfo& addr)
 {
 	uint8_t* ptrAddress;
 
-	switch(type) {
+	switch(addr.Type) {
 		case SnesMemoryType::NesChrRom: ptrAddress = _chrRom; break;
 		case SnesMemoryType::NesChrRam: ptrAddress = _chrRam; break;
 		case SnesMemoryType::NesNametableRam: ptrAddress = _nametableRam; break;
 		default: return -1;
 	}
-	ptrAddress += addr;
+	ptrAddress += addr.Address;
 
 	for(int i = 0; i < 0x40; i++) {
 		uint8_t* pageAddress = _chrPages[i];

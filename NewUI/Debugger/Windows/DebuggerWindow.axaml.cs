@@ -282,7 +282,16 @@ namespace Mesen.Debugger.Windows
 			}
 			frmCnt++;
 
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, true);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesDebuggerEnabled, true);
+
+			if(frmCnt % 200 == 0) {
+				DebugApi.RefreshDisassembly(CpuType.Nes);
+			}
+
+			_context.Disassembly.DataProvider = new CodeDataProvider(CpuType.Nes);
+			_context.Disassembly.UpdateMaxScroll();
+
+			/*ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, true);
 
 			state = DebugApi.GetState();
 
@@ -299,7 +308,7 @@ namespace Mesen.Debugger.Windows
 			_context.Disassembly.DataProvider = new CodeDataProvider(CpuType.Cpu);
 			_context.Disassembly.UpdateMaxScroll();
 			_context.SnesCpu.State = state.Cpu;
-			_context.SnesPpu.State = state.Ppu;
+			_context.SnesPpu.State = state.Ppu;*/
 
 			/*waitHandle.Set();
 			waitHandle2.Set();

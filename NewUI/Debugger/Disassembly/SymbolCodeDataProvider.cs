@@ -102,6 +102,8 @@ namespace Mesen.Debugger.Disassembly
 
 		public bool UseOptimizedSearch { get { return false; } }
 
+		public CpuType CpuType => _cpuType;
+
 		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
 		{
 			throw new NotImplementedException();

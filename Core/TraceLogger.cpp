@@ -14,16 +14,20 @@
 #include "SNES/CpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/NecDspTypes.h"
+#include "SNES/PpuTypes.h"
+#include "Gameboy/GbTypes.h"
+#include "DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
 string TraceLogger::_executionTrace = "";
 
 TraceLogger::TraceLogger(Debugger* debugger)
 {
+	_debugger = debugger;
 	_console = debugger->GetConsole();
 	_settings = debugger->GetEmulator()->GetSettings().get();
 	_labelManager = debugger->GetLabelManager().get();
-	_memoryDumper = debugger->GetMemoryDumper().get();
+	_memoryDumper = debugger->GetMemoryDumper();
 	_options = {};
 	_currentPos = 0;
 	_logCount = 0;
@@ -276,7 +280,7 @@ void TraceLogger::WriteDisassembly(DisassemblyInfo &info, RowPart &rowPart, uint
 
 void TraceLogger::WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType, CpuType cpuType)
 {
-	int32_t effectiveAddress = info.GetEffectiveAddress(_console, cpuState, cpuType);
+	int32_t effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
 	if(effectiveAddress >= 0) {
 		if(_options.UseLabels) {
 			AddressInfo addr { effectiveAddress, cpuMemoryType };
@@ -292,7 +296,7 @@ void TraceLogger::WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart,
 
 void TraceLogger::WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType memType, CpuType cpuType)
 {
-	int32_t address = info.GetEffectiveAddress(_console, cpuState, cpuType);
+	int32_t address = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
 	if(address >= 0) {
 		uint8_t valueSize;
 		uint16_t value = info.GetMemoryValue(address, _memoryDumper, memType, valueSize);

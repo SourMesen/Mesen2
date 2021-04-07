@@ -125,7 +125,7 @@ public:
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	shared_ptr<TraceLogger> GetTraceLogger();
-	shared_ptr<MemoryDumper> GetMemoryDumper();
+	MemoryDumper* GetMemoryDumper();
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();
 	shared_ptr<CodeDataLogger> GetCodeDataLogger(CpuType cpuType);
 	shared_ptr<Disassembler> GetDisassembler();

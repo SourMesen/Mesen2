@@ -14,6 +14,7 @@
 #include "SNES/Cx4DisUtils.h"
 #include "SNES/Console.h"
 #include "Gameboy/GameboyDisUtils.h"
+#include "NES/NesDisUtils.h"
 
 DisassemblyInfo::DisassemblyInfo()
 {
@@ -79,26 +80,34 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 		case CpuType::Gsu: GsuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
 		case CpuType::Cx4: Cx4DisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
 		case CpuType::Gameboy: GameboyDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
+		case CpuType::Nes: NesDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
+
+		default:
+			throw std::runtime_error("GetDisassembly - Unsupported CPU type");
 	}
+
 }
 
-int32_t DisassemblyInfo::GetEffectiveAddress(IConsole *console, void *cpuState, CpuType cpuType)
+int32_t DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState, CpuType cpuType)
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
 		case CpuType::Cpu:
-			return CpuDisUtils::GetEffectiveAddress(*this, (Console*)console, *(CpuState*)cpuState, cpuType);
+			return CpuDisUtils::GetEffectiveAddress(*this, (Console*)debugger->GetConsole(), *(CpuState*)cpuState, cpuType);
 
-		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, (Console*)console, *(SpcState*)cpuState);
-		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, (Console*)console, *(GsuState*)cpuState);
+		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, (Console*)debugger->GetConsole(), *(SpcState*)cpuState);
+		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, (Console*)debugger->GetConsole(), *(GsuState*)cpuState);
 
 		case CpuType::Cx4:
 		case CpuType::NecDsp:
 			return -1;
 
 		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, *(GbCpuState*)cpuState);
+
+		case CpuType::Nes: return NesDisUtils::GetEffectiveAddress(*this, *(NesCpuState*)cpuState, debugger->GetMemoryDumper());
 	}
-	return -1;
+
+	throw std::runtime_error("GetEffectiveAddress - Unsupported CPU type");
 }
 
 CpuType DisassemblyInfo::GetCpuType()
@@ -166,8 +175,10 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 		case CpuType::Cx4: return 2;
 		
 		case CpuType::Gameboy: return GameboyDisUtils::GetOpSize(opCode);
+		case CpuType::Nes: return NesDisUtils::GetOpSize(opCode);
 	}
-	return 0;
+
+	throw std::runtime_error("GetOpSize - Unsupported CPU type");
 }
 
 //TODO: This is never called, removed?
@@ -186,8 +197,12 @@ bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
 		case CpuType::NecDsp:
 		case CpuType::Cx4:
 			return false;
+
+		case CpuType::Nes:
+			return opCode == 0x20;
 	}
-	return false;
+
+	throw std::runtime_error("IsJumpToSub - Unsupported CPU type");
 }
 
 bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
@@ -206,9 +221,12 @@ bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
 		case CpuType::NecDsp:
 		case CpuType::Cx4:
 			return false;
+
+		case CpuType::Nes:
+			return opCode == 0x60;
 	}
 	
-	return false;
+	throw std::runtime_error("IsReturnInstruction - Unsupported CPU type");
 }
 
 bool DisassemblyInfo::IsUnconditionalJump()
@@ -239,9 +257,18 @@ bool DisassemblyInfo::IsUnconditionalJump()
 
 		case CpuType::NecDsp:
 			return false;
+
+		case CpuType::Nes:
+			return (
+				opCode == 0x4C || //JMP (Absolute)
+				opCode == 0x6C || //JMP (Indirect)
+				opCode == 0x20 || //JSR
+				opCode == 0x40 || //RTI
+				opCode == 0x60 //RTS
+			);
 	}
 
-	return false;
+	throw std::runtime_error("IsUnconditionalJump - Unsupported CPU type");
 }
 
 void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
@@ -262,7 +289,7 @@ void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 
 uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize)
 {
-	if((_cpuType == CpuType::Spc || _cpuType == CpuType::Gameboy) || (_flags & ProcFlags::MemoryMode8)) {
+	if((_cpuType == CpuType::Spc || _cpuType == CpuType::Gameboy || _cpuType == CpuType::Nes) || (_flags & ProcFlags::MemoryMode8)) {
 		valueSize = 1;
 		return memoryDumper->GetMemoryValue(memType, effectiveAddress);
 	} else {

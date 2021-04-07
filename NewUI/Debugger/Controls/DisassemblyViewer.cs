@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Mesen.GUI;
 using Mesen.GUI.Debugger;
 using Mesen.Utilities;
 using System;
@@ -80,7 +81,11 @@ namespace Mesen.Debugger.Controls
 
 		public override void Render(DrawingContext context)
 		{
-			this.Refresh();
+			if(DataProvider == null) {
+				return;
+			}
+
+			Refresh();
 
 			List<CodeLineData> lines = _lines;
 			double y = 0;
@@ -91,9 +96,10 @@ namespace Mesen.Debugger.Controls
 
 			ILineStyleProvider styleProvider = this.StyleProvider;
 
+			string addrFormat = "X" + DataProvider.CpuType.GetAddressSize();
 			double symbolMargin = 20;
-			double addressMargin = Math.Floor(LetterSize.Width * 6 + symbolMargin) + 0.5;
-			double byteCodeMargin = Math.Floor(LetterSize.Width * (4 * 4));
+			double addressMargin = Math.Floor(LetterSize.Width * DataProvider.CpuType.GetAddressSize() + symbolMargin) + 0.5;
+			double byteCodeMargin = Math.Floor(LetterSize.Width * (4 * DataProvider.CpuType.GetByteCodeSize()));
 			double codeIndent = Math.Floor(LetterSize.Width * 2) + 0.5;
 
 			//Draw margin (address)
@@ -106,11 +112,11 @@ namespace Mesen.Debugger.Controls
 
 			//Draw code
 			foreach(CodeLineData line in lines) {
-				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, "X6", null, true);
+				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, null, true);
 				
 				double x = 0;
 
-				text.Text = line.Address >= 0 ? line.Address.ToString("X6") : "..";
+				text.Text = line.Address >= 0 ? line.Address.ToString(addrFormat) : "..";
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(symbolMargin, y), text);
 				x += addressMargin;
 
@@ -148,6 +154,8 @@ namespace Mesen.Debugger.Controls
 
 	public interface ICodeDataProvider
 	{
+		CpuType CpuType { get; }
+
 		CodeLineData GetCodeLineData(int lineIndex);
 		int GetLineCount();
 		int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards);

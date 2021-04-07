@@ -1,10 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/PpuTypes.h"
-#include "SNES/SpcTypes.h"
-#include "Gameboy/GbTypes.h"
-#include "DebugTypes.h"
 #include "DisassemblyInfo.h"
 #include "DebugUtilities.h"
 #include "Utilities/SimpleLock.h"
@@ -16,9 +11,14 @@ class MemoryDumper;
 class EmuSettings;
 struct DebugState;
 
+struct CpuState;
 struct NecDspState;
 struct GsuState;
 struct Cx4State;
+struct PpuState;
+struct SpcState;
+struct GbPpuState;
+struct GbCpuState;
 
 struct TraceLoggerOptions
 {
@@ -93,6 +93,7 @@ private:
 	EmuSettings* _settings;
 	LabelManager* _labelManager;
 	MemoryDumper* _memoryDumper;
+	Debugger* _debugger;
 
 	vector<RowPart> _rowParts;
 	vector<RowPart> _spcRowParts;

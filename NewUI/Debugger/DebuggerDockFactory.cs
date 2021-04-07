@@ -52,7 +52,7 @@ namespace Mesen.Debugger
 								Proportion = 0.40,
 								Orientation = Orientation.Vertical,
 								VisibleDockables = CreateList<IDockable>(
-									new ToolDock {
+									/*new ToolDock {
 										Proportion = double.NaN,
 										VisibleDockables = CreateList<IDockable>(CpuStatusTool)
 									},
@@ -61,7 +61,7 @@ namespace Mesen.Debugger
 										Proportion = double.NaN,
 										VisibleDockables = CreateList<IDockable>(PpuStatusTool)
 									},
-									new SplitterDockable(),
+									new SplitterDockable(),*/
 									new ToolDock {
 										Proportion = 0.33,
 										VisibleDockables = CreateList<IDockable>(new DummyTool() { Id = "Labels", Title = "Labels" })

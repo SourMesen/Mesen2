@@ -721,6 +721,9 @@
     <ClInclude Include="NES\NesDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
+    <ClInclude Include="NES\NesDisUtils.h">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1133,7 +1136,12 @@
     <ClCompile Include="Gameboy\GbControlManager.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="NES\NesDebugger.cpp" />
+    <ClCompile Include="NES\NesDisUtils.cpp">
+      <Filter>Debugger\Disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\NesDebugger.cpp">
+      <Filter>Debugger\Debuggers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

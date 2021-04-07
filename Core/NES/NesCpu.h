@@ -40,8 +40,8 @@ private:
 	uint16_t _operand;
 
 	Func _opTable[256];
-	AddrMode _addrMode[256];
-	AddrMode _instAddrMode;
+	NesAddrMode _addrMode[256];
+	NesAddrMode _instAddrMode;
 
 	bool _needHalt = false;
 	bool _spriteDmaTransfer = false;
@@ -53,7 +53,7 @@ private:
 
 	uint8_t _irqMask;
 
-	State _state;
+	NesCpuState _state;
 	shared_ptr<NesConsole> _console;
 	NesMemoryManager* _memoryManager;
 
@@ -201,7 +201,7 @@ private:
 
 	uint8_t GetOperandValue()
 	{
-		if(_instAddrMode >= AddrMode::Zero) {
+		if(_instAddrMode >= NesAddrMode::Zero) {
 			return MemoryRead(GetOperand());
 		} else {
 			return (uint8_t)GetOperand();
@@ -813,7 +813,7 @@ public:
 	void Reset(bool softReset, NesModel model);
 	void Exec();
 
-	void GetState(State &state) 
+	void GetState(NesCpuState &state) 
 	{ 
 		state = _state;
 		state.CycleCount = _cycleCount;
@@ -822,7 +822,7 @@ public:
 	uint16_t GetDebugPC() { return _state.DebugPC; }
 	uint16_t GetPC() { return _state.PC; }
 
-	void SetState(State state)
+	void SetState(NesCpuState state)
 	{
 		uint16_t originalPc = state.PC;
 		uint16_t originalDebugPc = state.DebugPC;

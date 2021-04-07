@@ -593,7 +593,8 @@ namespace Mesen.GUI
 		Sa1,
 		Gsu,
 		Cx4,
-		Gameboy
+		Gameboy,
+		Nes
 	}
 
 	public static class CpuTypeExtensions
@@ -608,6 +609,7 @@ namespace Mesen.GUI
 				case CpuType.Gsu: return SnesMemoryType.GsuMemory;
 				case CpuType.Cx4: return SnesMemoryType.Cx4Memory;
 				case CpuType.Gameboy: return SnesMemoryType.GameboyMemory;
+				case CpuType.Nes: return SnesMemoryType.NesMemory;
 
 				default:
 					throw new Exception("Invalid CPU type");
@@ -624,6 +626,24 @@ namespace Mesen.GUI
 				case CpuType.Gsu: return 6;
 				case CpuType.Cx4: return 6;
 				case CpuType.Gameboy: return 4;
+				case CpuType.Nes: return 4;
+
+				default:
+					throw new Exception("Invalid CPU type");
+			}
+		}
+
+		public static int GetByteCodeSize(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Cpu: return 4;
+				case CpuType.Spc: return 3;
+				case CpuType.NecDsp: return 3;
+				case CpuType.Sa1: return 4;
+				case CpuType.Gsu: return 3;
+				case CpuType.Cx4: return 4;
+				case CpuType.Gameboy: return 3;
+				case CpuType.Nes: return 3;
 
 				default:
 					throw new Exception("Invalid CPU type");

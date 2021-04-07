@@ -4,6 +4,7 @@
 #include "DebugTypes.h"
 
 class MemoryManager;
+class NesMemoryManager;
 class BaseCartridge;
 class Ppu;
 class Spc;
@@ -18,6 +19,7 @@ private:
 	Ppu* _ppu;
 	Spc* _spc;
 	MemoryManager* _memoryManager;
+	NesMemoryManager* _nesMemoryManager;
 	BaseCartridge* _cartridge;
 	Debugger* _debugger;
 	Disassembler* _disassembler;

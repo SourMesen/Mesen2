@@ -699,7 +699,8 @@ void NesPpu::LoadTileInfo()
 
 			case 5:
 				_nextTile.LowByte = ReadVram(_nextTile.TileAddr);
-				_nextTile.AbsoluteTileAddr = _console->GetMapper()->ToAbsoluteChrAddress(_nextTile.TileAddr);
+				//TODO PERF
+				_nextTile.AbsoluteTileAddr = _console->GetMapper()->GetPpuAbsoluteAddress(_nextTile.TileAddr).Address;
 				break;
 
 			case 7:
@@ -731,7 +732,7 @@ void NesPpu::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, 
 
 	bool fetchLastSprite = true;
 	if((_spriteIndex < _spriteCount || extraSprite) && spriteY < 240) {
-		SpriteInfo &info = _spriteTiles[_spriteIndex];
+		NesSpriteInfo &info = _spriteTiles[_spriteIndex];
 		info.BackgroundPriority = backgroundPriority;
 		info.HorizontalMirror = horizontalMirror;
 		info.VerticalMirror = verticalMirror;
@@ -746,7 +747,8 @@ void NesPpu::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, 
 			info.HighByte = ReadVram(tileAddr + 8);
 		}
 		info.TileAddr = tileAddr;
-		info.AbsoluteTileAddr = _console->GetMapper()->ToAbsoluteChrAddress(tileAddr);
+		//TODO PERF
+		info.AbsoluteTileAddr = _console->GetMapper()->GetAbsoluteAddress(tileAddr).Address;
 		info.OffsetY = lineOffset;
 		info.SpriteX = spriteX;
 

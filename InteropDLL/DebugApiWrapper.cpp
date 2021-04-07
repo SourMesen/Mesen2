@@ -16,6 +16,7 @@
 #include "../Core/Profiler.h"
 #include "../Core/IAssembler.h"
 #include "../Core/BaseEventManager.h"
+#include "../Core/Gameboy/GbTypes.h"
 
 extern shared_ptr<Emulator> _emu;
 static string _logString;

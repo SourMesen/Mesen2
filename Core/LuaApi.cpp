@@ -55,7 +55,7 @@ void LuaApi::SetContext(ScriptingContext* context)
 {
 	_context = context;
 	_debugger = _context->GetDebugger();
-	_memoryDumper = _debugger->GetMemoryDumper().get();
+	_memoryDumper = _debugger->GetMemoryDumper();
 	_emu = _debugger->GetEmulator();
 
 	//TODO

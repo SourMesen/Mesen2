@@ -19,6 +19,8 @@ namespace Mesen.Debugger.Disassembly
 			_lineCount = (int)DebugApi.GetDisassemblyLineCount(_type);
 		}
 
+		public CpuType CpuType => _type;
+
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
 			return DebugApi.GetDisassemblyLineData(_type, (UInt32)lineIndex);

@@ -66,14 +66,14 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		uint8_t _paletteRamMask;
 		int32_t _lastUpdatedPixel;
 
-		SpriteInfo *_lastSprite; //used by HD ppu
+		NesSpriteInfo *_lastSprite; //used by HD ppu
 
 		uint16_t _ppuBusAddress;
 		TileInfo _currentTile;
 		TileInfo _nextTile;
 		TileInfo _previousTile;
 
-		SpriteInfo _spriteTiles[64];
+		NesSpriteInfo _spriteTiles[64];
 		uint32_t _spriteCount;
 		uint32_t _secondaryOAMAddr;
 		bool _sprite0Visible;

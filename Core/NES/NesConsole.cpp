@@ -235,10 +235,18 @@ vector<CpuType> NesConsole::GetCpuTypes()
 
 AddressInfo NesConsole::GetAbsoluteAddress(AddressInfo relAddress)
 {
-	return AddressInfo();
+	return _mapper->GetAbsoluteAddress(relAddress.Address);
 }
 
 AddressInfo NesConsole::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
 {
-	return AddressInfo();
+	AddressInfo addr;
+	addr.Address = _mapper->GetRelativeAddress(absAddress);
+	addr.Type = SnesMemoryType::NesMemory;
+	return addr;
+}
+
+uint64_t NesConsole::GetMasterClock()
+{
+	return _cpu->GetCycleCount();
 }

@@ -564,6 +564,7 @@ enum class DebuggerFlags : uint32_t
 	GbBreakOnNopLoad = 0x100000,
 	GbBreakOnOamCorruption = 0x200000,
 
+	NesDebuggerEnabled = 0x01000000,
 	GbDebuggerEnabled = 0x02000000,
 	Cx4DebuggerEnabled = 0x04000000,
 	NecDspDebuggerEnabled = 0x08000000,

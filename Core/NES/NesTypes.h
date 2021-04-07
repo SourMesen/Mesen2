@@ -16,7 +16,7 @@ namespace PSFlags
 	};
 }
 
-enum class AddrMode
+enum class NesAddrMode
 {
 	None, Acc, Imp, Imm, Rel,
 	Zero, Abs, ZeroX, ZeroY,
@@ -39,7 +39,7 @@ enum class MemoryOperation
 	Any = 3
 };
 
-struct State
+struct NesCpuState
 {
 	uint16_t PC = 0;
 	uint8_t SP = 0;
@@ -166,7 +166,7 @@ struct TileInfo
 	uint8_t OffsetY; //used by HD ppu
 };
 
-struct SpriteInfo : TileInfo
+struct NesSpriteInfo : TileInfo
 {
 	bool HorizontalMirror;
 	bool BackgroundPriority;

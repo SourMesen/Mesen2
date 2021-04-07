@@ -209,6 +209,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	_disassembler->Disassemble(CpuType::Gsu);
 	_disassembler->Disassemble(CpuType::NecDsp);
 	_disassembler->Disassemble(CpuType::Cx4);
+	_disassembler->Disassemble(CpuType::Nes);
 	_disassembler->RefreshDisassembly(CpuType::Gameboy);
 
 	_executionStopped = true;
@@ -554,9 +555,9 @@ shared_ptr<TraceLogger> Debugger::GetTraceLogger()
 	return _traceLogger;
 }
 
-shared_ptr<MemoryDumper> Debugger::GetMemoryDumper()
+MemoryDumper* Debugger::GetMemoryDumper()
 {
-	return _memoryDumper;
+	return _memoryDumper.get();
 }
 
 shared_ptr<MemoryAccessCounter> Debugger::GetMemoryAccessCounter()

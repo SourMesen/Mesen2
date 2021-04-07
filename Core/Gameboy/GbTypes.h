@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "SnesMemoryType.h"
+#include "../SnesMemoryType.h"
 
 struct GbCpuState
 {

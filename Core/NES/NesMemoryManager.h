@@ -58,8 +58,6 @@ class NesMemoryManager : public ISerializable
 		uint8_t Read(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 		void Write(uint16_t addr, uint8_t value, MemoryOperationType operationType);
 
-		uint32_t ToAbsolutePrgAddress(uint16_t ramAddr);
-
 		uint8_t GetOpenBus(uint8_t mask = 0xFF);
 };
 
