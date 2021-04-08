@@ -306,7 +306,7 @@ public:
 
 	void ProcessEndFrame();
 
-	SpcState GetState();
+	SpcState& GetState();
 	DspState GetDspState();
 
 	bool IsMuted();

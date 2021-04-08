@@ -1,5 +1,6 @@
 #pragma once
-#include "../stdafx.h"
+#include "stdafx.h"
+#include "BaseState.h"
 
 namespace PSFlags
 {
@@ -39,21 +40,17 @@ enum class MemoryOperation
 	Any = 3
 };
 
-struct NesCpuState
+struct NesCpuState : BaseState
 {
+	uint64_t CycleCount = 0;
 	uint16_t PC = 0;
 	uint8_t SP = 0;
 	uint8_t A = 0;
 	uint8_t X = 0;
 	uint8_t Y = 0;
 	uint8_t PS = 0;
-	uint32_t IRQFlag = 0;
-	uint64_t CycleCount = 0;
+	uint8_t IRQFlag = 0;
 	bool NMIFlag = false;
-
-	//Used by debugger
-	uint16_t DebugPC = 0;
-	uint16_t PreviousDebugPC = 0;
 };
 
 enum class PrgMemoryType

@@ -66,4 +66,6 @@ public:
 	shared_ptr<IAssembler> GetAssembler() override;
 	shared_ptr<IEventManager> GetEventManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+
+	BaseState& GetState() override;
 };

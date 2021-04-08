@@ -2,8 +2,9 @@
 #include "stdafx.h"
 #include "SpcTimer.h"
 #include "CpuTypes.h"
+#include "BaseState.h"
 
-struct SpcState
+struct SpcState : BaseState
 {
 	uint64_t Cycle;
 	uint16_t PC;

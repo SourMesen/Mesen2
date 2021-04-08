@@ -21,6 +21,7 @@
 #include "DebugState.h"
 #include "Emulator.h"
 #include "GbPpu.h"
+#include "GbCpu.h"
 #include "SNES/Console.h"
 #include "SNES/BaseCartridge.h"
 
@@ -38,6 +39,8 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	} else {
 		_gameboy = ((Gameboy*)debugger->GetConsole());
 	}
+	
+	_cpu = _gameboy->GetCpu();
 
 	_settings = debugger->GetEmulator()->GetSettings().get();
 	_codeDataLogger.reset(new CodeDataLogger(_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
@@ -70,9 +73,10 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 	MemoryOperationInfo operation { addr, value, type };
 	BreakSource breakSource = BreakSource::Unspecified;
 
-	if(type == MemoryOperationType::ExecOpCode) {
-		GbCpuState gbState = _gameboy->GetState().Cpu;
+	GbCpuState state = _cpu->GetState();
+	uint16_t pc = state.PC;
 
+	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsCpuLogged(CpuType::Gameboy) || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 			if(addressInfo.Address >= 0) {
 				if(addressInfo.Type == SnesMemoryType::GbPrgRom) {
@@ -82,27 +86,24 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 			}
 
 			if(_traceLogger->IsCpuLogged(CpuType::Gameboy)) {
-				DebugState debugState;
-				_debugger->GetState(debugState, true);
-
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gameboy);
-				_traceLogger->Log(CpuType::Gameboy, debugState, disInfo);
+				_traceLogger->Log(CpuType::Gameboy, state, disInfo);
 			}
 		}
 
-		if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && gbState.PC != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+		if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
 			//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
 			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
 			uint16_t returnPc = _prevProgramCounter + opSize;
 			AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 			AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
-			_callstackManager->Push(src, _prevProgramCounter, addressInfo, gbState.PC, ret, returnPc, StackFrameFlags::None);
-		} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode) && gbState.PC != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+			_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
+		} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
 			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-			_callstackManager->Pop(addressInfo, gbState.PC);
+			_callstackManager->Pop(addressInfo, pc);
 		}
 
-		if(_step->BreakAddress == (int32_t)gbState.PC && GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
+		if(_step->BreakAddress == (int32_t)pc && GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
 			//RET/RETI found, if we're on the expected return address, break immediately (for step over/step out)
 			_step->StepCount = 0;
 		}
@@ -127,7 +128,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 
 		_prevOpCode = value;
-		_prevProgramCounter = gbState.PC;
+		_prevProgramCounter = pc;
 
 		if(_step->StepCount > 0) {
 			_step->StepCount--;
@@ -194,8 +195,7 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step;
 
-	GbCpuState gbState = _gameboy->GetState().Cpu;
-	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && gbState.Halted) {
+	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && _cpu->GetState().Halted) {
 		//CPU isn't running - use the PPU to break execution instead
 		step.PpuStepCount = 1;
 	} else {
@@ -268,4 +268,9 @@ shared_ptr<CodeDataLogger> GbDebugger::GetCodeDataLogger()
 BreakpointManager* GbDebugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
+}
+
+BaseState& GbDebugger::GetState()
+{
+	return _cpu->GetState();
 }

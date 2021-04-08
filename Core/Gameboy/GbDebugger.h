@@ -16,6 +16,7 @@ class GbEventManager;
 class GbAssembler;
 class Emulator;
 class CodeDataLogger;
+class GbCpu;
 
 enum class MemoryOperationType;
 
@@ -23,6 +24,7 @@ class GbDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Emulator* _emu;
+	GbCpu* _cpu;
 	Disassembler* _disassembler;
 	TraceLogger* _traceLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
@@ -59,4 +61,6 @@ public:
 	shared_ptr<CallstackManager> GetCallstackManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 	BreakpointManager* GetBreakpointManager() override;
+
+	BaseState& GetState() override;
 };

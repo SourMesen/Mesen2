@@ -81,7 +81,7 @@ public:
 	uint32_t DebugGetProgramRomSize();
 	uint32_t DebugGetDataRomSize();
 	uint32_t DebugGetDataRamSize();
-	NecDspState GetState();
+	NecDspState& GetState();
 
 	void Serialize(Serializer &s) override;
 };

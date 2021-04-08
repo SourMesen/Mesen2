@@ -52,6 +52,7 @@ namespace Mesen.Windows
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
 		
+			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
 		}
@@ -74,7 +75,6 @@ namespace Mesen.Windows
 			string[] filenames = await ofd.ShowAsync(this);
 			if(filenames.Length > 0) {
 				EmuApi.LoadRom(filenames[0]);
-				//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			}
 		}
 

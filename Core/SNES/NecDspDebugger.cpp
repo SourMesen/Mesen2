@@ -43,11 +43,9 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 			_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
 
 			if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
-				DebugState debugState;
-				_debugger->GetState(debugState, true);
-
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
-				_traceLogger->Log(CpuType::NecDsp, debugState, disInfo);
+				NecDspState state = _dsp->GetState();
+				_traceLogger->Log(CpuType::NecDsp, state, disInfo);
 			}
 		}
 
@@ -116,4 +114,9 @@ shared_ptr<IEventManager> NecDspDebugger::GetEventManager()
 shared_ptr<CodeDataLogger> NecDspDebugger::GetCodeDataLogger()
 {
 	throw std::runtime_error("CDL not supported for NEC DSP");
+}
+
+BaseState& NecDspDebugger::GetState()
+{
+	return _dsp->GetState();
 }

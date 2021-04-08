@@ -319,7 +319,7 @@ public:
 	void Reset();
 	void Exec();
 
-	CpuState GetState();
+	CpuState& GetState();
 	uint64_t GetCycleCount();
 
 	template<uint64_t value>

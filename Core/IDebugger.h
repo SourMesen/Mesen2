@@ -7,6 +7,7 @@ class CallstackManager;
 class IAssembler;
 class IEventManager;
 class CodeDataLogger;
+struct BaseState;
 enum class MemoryOperationType;
 
 class IDebugger
@@ -26,4 +27,6 @@ public:
 	virtual shared_ptr<IAssembler> GetAssembler() = 0;
 	virtual shared_ptr<IEventManager> GetEventManager() = 0;
 	virtual shared_ptr<CodeDataLogger> GetCodeDataLogger() = 0;
+
+	virtual BaseState& GetState() = 0;
 };

@@ -32,7 +32,6 @@ public:
 private:
 	typedef void(NesCpu::*Func)();
 
-	uint64_t _cycleCount;
 	uint64_t _masterClock;
 	uint8_t _ppuOffset;
 	uint8_t _startClockCount;
@@ -788,7 +787,7 @@ protected:
 public:
 	NesCpu(shared_ptr<NesConsole> console);
 	
-	uint64_t GetCycleCount() { return _cycleCount; }
+	uint64_t GetCycleCount() { return _state.CycleCount; }
 	void SetMasterClockDivider(NesModel region);
 	void SetNmiFlag() { _state.NMIFlag = true; }
 	void ClearNmiFlag() { _state.NMIFlag = false; }
@@ -802,34 +801,22 @@ public:
 
 	uint32_t GetClockRate(NesModel model);
 	bool IsCpuWrite() { return _cpuWrite; }
-		
-	//Used by debugger for "Set Next Statement"
-	void SetDebugPC(uint16_t value) {
-		SetPC(value);
-		_state.PreviousDebugPC = _state.DebugPC;
-		_state.DebugPC = value;
-	}
 
 	void Reset(bool softReset, NesModel model);
 	void Exec();
 
-	void GetState(NesCpuState &state) 
+	NesCpuState& GetState()
 	{ 
-		state = _state;
-		state.CycleCount = _cycleCount;
+		return _state;
 	}
 
-	uint16_t GetDebugPC() { return _state.DebugPC; }
 	uint16_t GetPC() { return _state.PC; }
 
 	void SetState(NesCpuState state)
 	{
 		uint16_t originalPc = state.PC;
-		uint16_t originalDebugPc = state.DebugPC;
 		_state = state;
-		_cycleCount = state.CycleCount;
 		state.PC = originalPc;
-		state.DebugPC = originalDebugPc;
 	}
 
 #ifdef DUMMYCPU
@@ -842,7 +829,6 @@ public:
 
 		_state = c->_state;
 
-		_cycleCount = c->_cycleCount;
 		_operand = c->_operand;
 		_spriteDmaTransfer = c->_spriteDmaTransfer;
 		_needHalt = c->_needHalt;
@@ -854,7 +840,6 @@ public:
 		_irqMask = c->_irqMask;
 		_prevRunIrq = c->_prevRunIrq;
 		_runIrq = c->_runIrq;
-		_cycleCount = c->_cycleCount;
 	}
 
 	uint32_t GetWriteCount()

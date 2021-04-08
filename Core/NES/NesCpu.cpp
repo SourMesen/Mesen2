@@ -66,7 +66,6 @@ NesCpu::NesCpu(shared_ptr<NesConsole> console)
 
 	_instAddrMode = NesAddrMode::None;
 	_state = {};
-	_cycleCount = 0;
 	_operand = 0;
 	_spriteDmaTransfer = false;
 	_spriteDmaOffset = 0;
@@ -99,8 +98,6 @@ void NesCpu::Reset(bool softReset, NesModel model)
 
 	//Use _memoryManager->Read() directly to prevent clocking the PPU/APU when setting PC at reset
 	_state.PC = _memoryManager->Read(NesCpu::ResetVector) | _memoryManager->Read(NesCpu::ResetVector+1) << 8;
-	_state.DebugPC = _state.PC;
-	_state.PreviousDebugPC = _state.PC;
 
 	if(softReset) {
 		SetFlags(PSFlags::Interrupt);
@@ -135,7 +132,7 @@ void NesCpu::Reset(bool softReset, NesModel model)
 			break;
 	}
 
-	_cycleCount = -1;
+	_state.CycleCount = -1;
 	_masterClock = 0;
 
 	uint8_t cpuOffset = 0;
@@ -300,9 +297,9 @@ uint16_t NesCpu::FetchOperand()
 	}
 	
 #if !defined(LIBRETRO) && !defined(DUMMYCPU)
-	if(_lastCrashWarning == 0 || _cycleCount - _lastCrashWarning > 5000000) {
+	if(_lastCrashWarning == 0 || _state.CycleCount - _lastCrashWarning > 5000000) {
 		MessageManager::DisplayMessage("Error", "GameCrash", "Invalid OP code - CPU crashed.");
-		_lastCrashWarning = _cycleCount;
+		_lastCrashWarning = _state.CycleCount;
 	}
 
 	if(_console->GetNesConfig().BreakOnCrash) {
@@ -348,7 +345,7 @@ void NesCpu::EndCpuCycle(bool forRead)
 void NesCpu::StartCpuCycle(bool forRead)
 {
 	_masterClock += forRead ? (_startClockCount - 1) : (_startClockCount + 1);
-	_cycleCount++;
+	_state.CycleCount++;
 	_console->GetPpu()->Run(_masterClock - _ppuOffset);
 	_console->ProcessCpuClock();
 }
@@ -381,7 +378,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 	};
 
 	while(_dmcDmaRunning || _spriteDmaTransfer) {
-		bool getCycle = (_cycleCount & 0x01) == 0;
+		bool getCycle = (_state.CycleCount & 0x01) == 0;
 		if(getCycle) {
 			if(_dmcDmaRunning && !_needHalt && !_needDummyRead) {
 				//DMC DMA is ready to read a byte (both halt and dummy read cycles were performed before this)
@@ -481,7 +478,7 @@ void NesCpu::Serialize(Serializer &s)
 	uint32_t extraScanlinesAfterNmi = emuConfig.PpuExtraScanlinesAfterNmi;
 	uint32_t dipSwitches = _console->GetNesConfig().DipSwitches;
 
-	s.Stream(_state.PC, _state.SP, _state.PS, _state.A, _state.X, _state.Y, _cycleCount, _state.NMIFlag, 
+	s.Stream(_state.PC, _state.SP, _state.PS, _state.A, _state.X, _state.Y, _state.CycleCount, _state.NMIFlag, 
 			_state.IRQFlag, _dmcDmaRunning, _spriteDmaTransfer,
 			extraScanlinesBeforeNmi, extraScanlinesBeforeNmi, dipSwitches,
 			_needDummyRead, _needHalt, _startClockCount, _endClockCount, _ppuOffset, _masterClock,

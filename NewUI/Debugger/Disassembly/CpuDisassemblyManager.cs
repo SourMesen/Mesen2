@@ -36,7 +36,7 @@ namespace Mesen.Debugger.Disassembly
 
 		protected virtual int GetFullAddress(int address, int length)
 		{
-			CpuState state = DebugApi.GetState().Cpu;
+			CpuState state = DebugApi.GetState<CpuState>(CpuType.Cpu);
 			if(length == 4) {
 				//Append current DB register to 2-byte addresses
 				return (state.DBR << 16) | address;

@@ -23,7 +23,7 @@ namespace Mesen.Debugger.Disassembly
 
 		protected override int GetFullAddress(int address, int length)
 		{
-			SpcState state = DebugApi.GetState().Spc;
+			SpcState state = DebugApi.GetState<SpcState>(CpuType.Spc);
 			if(length == 2) {
 				//Determine address based on direct page flag
 				return (state.PS.HasFlag(SpcFlags.DirectPage) ? 0x100 : 0) | address;

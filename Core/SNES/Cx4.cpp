@@ -479,7 +479,7 @@ uint32_t Cx4::DebugGetDataRamSize()
 	return Cx4::DataRamSize;
 }
 
-Cx4State Cx4::GetState()
+Cx4State& Cx4::GetState()
 {
 	return _state;
 }

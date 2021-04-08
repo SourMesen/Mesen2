@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "BaseState.h"
 
 struct NecDspAccFlags
 {
@@ -27,7 +28,7 @@ namespace NecDspStatusFlags
 	};
 }
 
-struct NecDspState
+struct NecDspState : BaseState
 {
 	/* Accumulator A */
 	uint16_t A;

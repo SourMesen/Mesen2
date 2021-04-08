@@ -14,7 +14,7 @@ namespace Mesen.Debugger
 		AddressCounters[] _counters;
 		byte[] _cdlData;
 		bool[] _hasLabel;
-		DebugState _state = new DebugState();
+		UInt64 _masterClock;
 		bool _showExec;
 		bool _showWrite;
 		bool _showRead;
@@ -120,7 +120,8 @@ namespace Mesen.Debugger
 				}
 			}
 
-			_state = DebugApi.GetState();
+			//TODO
+			_masterClock = 0;
 		}
 
 		public static Color DarkerColor(Color input, double brightnessPercentage)
@@ -142,9 +143,9 @@ namespace Mesen.Debugger
 
 			const int CyclesPerFrame = 357368;
 			long index = byteIndex - _firstByteIndex;
-			double framesSinceExec = (double)(_state.MasterClock - _counters[index].ExecStamp) / CyclesPerFrame;
-			double framesSinceWrite = (double)(_state.MasterClock - _counters[index].WriteStamp) / CyclesPerFrame;
-			double framesSinceRead = (double)(_state.MasterClock - _counters[index].ReadStamp) / CyclesPerFrame;
+			double framesSinceExec = (double)(_masterClock - _counters[index].ExecStamp) / CyclesPerFrame;
+			double framesSinceWrite = (double)(_masterClock - _counters[index].WriteStamp) / CyclesPerFrame;
+			double framesSinceRead = (double)(_masterClock - _counters[index].ReadStamp) / CyclesPerFrame;
 
 			bool isRead = _counters[index].ReadCount > 0;
 			bool isWritten = _counters[index].WriteCount > 0;

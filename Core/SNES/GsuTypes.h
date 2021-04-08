@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "BaseState.h"
 
 struct GsuFlags
 {
@@ -49,7 +50,7 @@ struct GsuPixelCache
 	uint8_t ValidBits;
 };
 
-struct GsuState
+struct GsuState : BaseState
 {
 	uint64_t CycleCount;
 

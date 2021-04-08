@@ -130,5 +130,5 @@ public:
 	MemoryMappings* GetMemoryMappings();
 	uint8_t* DebugGetDataRam();
 	uint32_t DebugGetDataRamSize();
-	Cx4State GetState();
+	Cx4State& GetState();
 };

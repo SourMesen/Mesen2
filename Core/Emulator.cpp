@@ -104,7 +104,7 @@ void Emulator::Run()
 
 	_console->OnBeforeRun();
 
-	_frameDelay = _console->GetFrameDelay();
+	_frameDelay = GetFrameDelay();
 	_stats.reset(new DebugStats());
 	_frameLimiter.reset(new FrameLimiter(_frameDelay));
 	_lastFrameTimer.Reset();
@@ -193,13 +193,13 @@ void Emulator::ProcessEndOfFrame()
 	if(!_isRunAheadFrame) {
 		_frameLimiter->ProcessFrame();
 		while(_frameLimiter->WaitForNextFrame()) {
-			if(_stopFlag || _frameDelay != _console->GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {
+			if(_stopFlag || _frameDelay != GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {
 				//Need to process another event, stop sleeping
 				break;
 			}
 		}
 
-		double newFrameDelay = _console->GetFrameDelay();
+		double newFrameDelay = GetFrameDelay();
 		if(newFrameDelay != _frameDelay) {
 			_frameDelay = newFrameDelay;
 			_frameLimiter->SetDelay(_frameDelay);
@@ -465,6 +465,19 @@ uint32_t Emulator::GetFrameCount()
 double Emulator::GetFps()
 {
 	return _console->GetFps();
+}
+
+double Emulator::GetFrameDelay()
+{
+	uint32_t emulationSpeed = _settings->GetEmulationSpeed();
+	double frameDelay;
+	if(emulationSpeed == 0) {
+		frameDelay = 0;
+	} else {
+		frameDelay = _console->GetFrameDelay();
+		frameDelay /= (emulationSpeed / 100.0);
+	}
+	return frameDelay;
 }
 
 void Emulator::PauseOnNextFrame()

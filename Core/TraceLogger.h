@@ -19,6 +19,7 @@ struct PpuState;
 struct SpcState;
 struct GbPpuState;
 struct GbCpuState;
+struct BaseState;
 
 struct TraceLoggerOptions
 {
@@ -128,7 +129,7 @@ private:
 	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType, CpuType cpuType);
 	void WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType memType, CpuType cpuType);
 	void WriteAlign(int originalSize, RowPart &rowPart, string &output);
-	void AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state);
+	void AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo);
 	//bool ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo);
 	
 	void ParseFormatString(vector<RowPart> &rowParts, string format);
@@ -149,7 +150,7 @@ public:
 
 	__forceinline bool IsCpuLogged(CpuType type) { return _logCpu[(int)type]; }
 
-	void Log(CpuType cpuType, DebugState &state, DisassemblyInfo &disassemblyInfo);
+	void Log(CpuType cpuType, BaseState& cpuState, DisassemblyInfo &disassemblyInfo);
 	void Clear();
 	//void LogNonExec(OperationInfo& operationInfo);
 	void SetOptions(TraceLoggerOptions options);

@@ -55,10 +55,8 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
 			if(_traceLogger->IsCpuLogged(CpuType::Spc)) {
-				_debugger->GetState(_debugState, true);
-
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-				_traceLogger->Log(CpuType::Spc, _debugState, disInfo);
+				_traceLogger->Log(CpuType::Spc, spcState, disInfo);
 			}
 		}
 
@@ -170,4 +168,9 @@ shared_ptr<IEventManager> SpcDebugger::GetEventManager()
 shared_ptr<CodeDataLogger> SpcDebugger::GetCodeDataLogger()
 {
 	throw std::runtime_error("CDL not supported for SPC");
+}
+
+BaseState& SpcDebugger::GetState()
+{
+	return _spc->GetState();
 }

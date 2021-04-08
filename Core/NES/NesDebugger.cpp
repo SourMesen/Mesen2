@@ -46,9 +46,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_step.reset(new StepRequest());
 	//_assembler.reset(new Assembler(_debugger->GetLabelManager()));
 
-	NesCpuState cpuState;
-	_cpu->GetState(cpuState);
-	if(cpuState.PC == 0) {
+	if(_cpu->GetState().PC == 0) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
@@ -66,8 +64,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
 
-	NesCpuState state;
-	_cpu->GetState(state);
+	NesCpuState state = _cpu->GetState();
 
 	BreakSource breakSource = BreakSource::Unspecified;
 
@@ -87,10 +84,8 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		if(_traceLogger->IsCpuLogged(CpuType::Nes)) {
-			/*_debugger->GetState(_debugState, true);
-
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, CpuType::Nes);
-			_traceLogger->Log(CpuType::Nes, _debugState, disInfo);*/
+			_traceLogger->Log(CpuType::Nes, state, disInfo);
 		}
 
 		uint32_t pc = state.PC;
@@ -258,4 +253,9 @@ shared_ptr<IEventManager> NesDebugger::GetEventManager()
 shared_ptr<CodeDataLogger> NesDebugger::GetCodeDataLogger()
 {
 	return _codeDataLogger;
+}
+
+BaseState& NesDebugger::GetState()
+{
+	return _cpu->GetState();
 }

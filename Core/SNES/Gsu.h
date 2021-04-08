@@ -170,7 +170,7 @@ public:
 
 	void Serialize(Serializer &s) override;
 
-	GsuState GetState();
+	GsuState& GetState();
 	MemoryMappings* GetMemoryMappings();
 	uint8_t* DebugGetWorkRam();
 	uint32_t DebugGetWorkRamSize();

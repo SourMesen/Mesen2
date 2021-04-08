@@ -1,8 +1,9 @@
 #pragma once
 #include "stdafx.h"
 #include "../SnesMemoryType.h"
+#include "../BaseState.h"
 
-struct GbCpuState
+struct GbCpuState : BaseState
 {
 	uint16_t PC;
 	uint16_t SP;

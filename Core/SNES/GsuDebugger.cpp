@@ -58,12 +58,10 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_disassembler->BuildCache(addressInfo, gsuState.SFR.GetFlagsHigh() & 0x13, CpuType::Gsu);
 
 			if(_traceLogger->IsCpuLogged(CpuType::Gsu)) {
-				DebugState debugState;
-				_debugger->GetState(debugState, true);
-				debugState.Gsu.R[15] = addr;
+				gsuState.R[15] = addr;
 
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gsu);
-				_traceLogger->Log(CpuType::Gsu, debugState, disInfo);
+				_traceLogger->Log(CpuType::Gsu, gsuState, disInfo);
 			}
 		}
 
@@ -139,4 +137,9 @@ shared_ptr<IEventManager> GsuDebugger::GetEventManager()
 shared_ptr<CodeDataLogger> GsuDebugger::GetCodeDataLogger()
 {
 	throw std::runtime_error("CDL not supported for GSU");
+}
+
+BaseState& GsuDebugger::GetState()
+{
+	return _gsu->GetState();
 }

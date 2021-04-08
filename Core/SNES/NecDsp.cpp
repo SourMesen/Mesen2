@@ -575,7 +575,7 @@ uint32_t NecDsp::DebugGetDataRamSize()
 	return _ramSize * sizeof(uint16_t);
 }
 
-NecDspState NecDsp::GetState()
+NecDspState& NecDsp::GetState()
 {
 	return _state;
 }

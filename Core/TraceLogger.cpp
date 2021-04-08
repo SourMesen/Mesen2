@@ -556,11 +556,12 @@ void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &
 	}
 }
 
-void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state)
+void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo)
 {
 	_logCpuType[_currentPos] = cpuType;
 	_disassemblyCache[_currentPos] = disassemblyInfo;
-	_stateCache[_currentPos] = state;
+	//TODO
+	//_stateCache[_currentPos] = state;
 	_pendingLog = false;
 
 	if(_logCount < ExecutionLogSize) {
@@ -588,13 +589,13 @@ void TraceLogger::LogNonExec(OperationInfo& operationInfo)
 	}
 }*/
 
-void TraceLogger::Log(CpuType cpuType, DebugState &state, DisassemblyInfo &disassemblyInfo)
+void TraceLogger::Log(CpuType cpuType, BaseState& cpuState, DisassemblyInfo &disassemblyInfo)
 {
 	if(_logCpu[(int)cpuType]) {
 		//For the sake of performance, only log data for the CPUs we're actively displaying/logging
 		auto lock = _lock.AcquireSafe();
 		//if(ConditionMatches(state, disassemblyInfo, operationInfo)) {
-			AddRow(cpuType, disassemblyInfo, state);
+			AddRow(cpuType, disassemblyInfo);
 		//}
 	}
 }

@@ -387,7 +387,7 @@ void Spc::ProcessEndFrame()
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 }
 
-SpcState Spc::GetState()
+SpcState& Spc::GetState()
 {
 	return _state;
 }

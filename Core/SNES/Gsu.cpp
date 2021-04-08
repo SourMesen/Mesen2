@@ -637,7 +637,7 @@ void Gsu::SaveBattery()
 	_emu->GetBatteryManager()->SaveBattery(".srm", (uint8_t*)_gsuRam, _gsuRamSize);
 }
 
-GsuState Gsu::GetState()
+GsuState& Gsu::GetState()
 {
 	return _state;
 }

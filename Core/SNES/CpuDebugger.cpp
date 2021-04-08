@@ -58,7 +58,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_step.reset(new StepRequest());
 	_assembler.reset(new Assembler(_debugger->GetLabelManager()));
 
-	if(GetState().PC == 0) {
+	if(GetCpuState().PC == 0) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
@@ -75,7 +75,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	AddressInfo addressInfo = GetMemoryMappings().GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
-	CpuState state = GetState();
+	CpuState state = GetCpuState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
@@ -94,10 +94,8 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		if(_traceLogger->IsCpuLogged(_cpuType)) {
-			_debugger->GetState(_debugState, true);
-
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
-			_traceLogger->Log(_cpuType, _debugState, disInfo);
+			_traceLogger->Log(_cpuType, state, disInfo);
 		}
 
 		uint32_t pc = (state.K << 16) | state.PC;
@@ -201,7 +199,7 @@ void CpuDebugger::Run()
 void CpuDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step;
-	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetState().StopState == CpuStopState::Stopped) {
+	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetCpuState().StopState == CpuStopState::Stopped) {
 		//If STP was called, the CPU isn't running anymore - use the PPU to break execution instead (useful for test roms that end with STP)
 		step.PpuStepCount = 1;
 	} else {
@@ -270,7 +268,7 @@ MemoryMappings& CpuDebugger::GetMemoryMappings()
 	}
 }
 
-CpuState CpuDebugger::GetState()
+CpuState& CpuDebugger::GetCpuState()
 {
 	if(_cpuType == CpuType::Cpu) {
 		return _cpu->GetState();
@@ -307,4 +305,9 @@ shared_ptr<IEventManager> CpuDebugger::GetEventManager()
 shared_ptr<CodeDataLogger> CpuDebugger::GetCodeDataLogger()
 {
 	return _codeDataLogger;
+}
+
+BaseState& CpuDebugger::GetState()
+{
+	return GetCpuState();
 }

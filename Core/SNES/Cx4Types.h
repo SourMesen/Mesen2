@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "BaseState.h"
 
 struct Cx4Dma
 {
@@ -37,7 +38,7 @@ struct Cx4Bus
 	uint32_t Address;
 };
 
-struct Cx4State
+struct Cx4State : BaseState
 {
 	uint64_t CycleCount;
 

@@ -9,7 +9,7 @@
 #include "Disassembler.h"
 #include "LabelManager.h"
 #include "DebugUtilities.h"
-#include "DebugState.h"
+#include "BaseState.h"
 #include "Utilities/HexUtilities.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };
@@ -447,7 +447,7 @@ bool ExpressionEvaluator::ToRpn(string expression, ExpressionData &data)
 	return true;
 }
 
-int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo)
+int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo)
 {
 	if(data.RpnQueue.empty()) {
 		resultType = EvalResultType::Invalid;
@@ -457,6 +457,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 	int pos = 0;
 	int64_t right = 0;
 	int64_t left = 0;
+	int64_t operandStack[100];
 	resultType = EvalResultType::Numeric;
 
 	for(size_t i = 0, len = data.RpnQueue.size(); i < len; i++) {
@@ -482,8 +483,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 					return 0;
 				}
 			} else {
-				switch(token) {
-					/*case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;*/
+				/*switch(token) {
+					//case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;
 					case EvalValues::PpuFrameCount: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.FrameCount : state.Ppu.FrameCount; break;
 					case EvalValues::PpuCycle: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Cycle : state.Ppu.Cycle; break;
 					case EvalValues::PpuScanline: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Scanline : state.Ppu.Scanline; break;
@@ -574,7 +575,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 								throw std::runtime_error("Invalid CPU type");
 						}
 						break;
-				}
+				}*/
 			}
 		} else if(token >= EvalOperators::Multiplication) {
 			right = operandStack[--pos];
@@ -626,6 +627,9 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, DebugState &state, E
 			}
 		}
 		operandStack[pos++] = token;
+		if(pos >= 100) {
+			throw std::runtime_error("Out of stack space");
+		}
 	}
 	return (int32_t)operandStack[0];
 }
@@ -677,7 +681,7 @@ ExpressionData* ExpressionEvaluator::PrivateGetRpnList(string expression, bool& 
 	return cachedData;
 }
 
-int32_t ExpressionEvaluator::PrivateEvaluate(string expression, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool& success)
+int32_t ExpressionEvaluator::PrivateEvaluate(string expression, BaseState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool& success)
 {
 	success = true;
 	ExpressionData *cachedData = PrivateGetRpnList(expression, success);
@@ -690,7 +694,7 @@ int32_t ExpressionEvaluator::PrivateEvaluate(string expression, DebugState &stat
 	return Evaluate(*cachedData, state, resultType, operationInfo);	
 }
 
-int32_t ExpressionEvaluator::Evaluate(string expression, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo)
+int32_t ExpressionEvaluator::Evaluate(string expression, BaseState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo)
 {
 	try {
 		bool success;
@@ -707,7 +711,7 @@ int32_t ExpressionEvaluator::Evaluate(string expression, DebugState &state, Eval
 bool ExpressionEvaluator::Validate(string expression)
 {
 	try {
-		DebugState state;
+		BaseState state;
 		EvalResultType type;
 		MemoryOperationInfo operationInfo;
 		bool success;
@@ -724,7 +728,7 @@ void ExpressionEvaluator::RunTests()
 {
 	//Some basic unit tests to run in debug mode
 	auto test = [=](string expr, EvalResultType expectedType, int expectedResult) {
-		DebugState state = { 0 };
+		BaseState state = { };
 		MemoryOperationInfo opInfo { 0, 0, MemoryOperationType::Read };
 		EvalResultType type;
 		int32_t result = Evaluate(expr, state, type, opInfo);

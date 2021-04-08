@@ -299,7 +299,7 @@ void Cpu::RunOp()
 	}
 }
 
-CpuState Cpu::GetState()
+CpuState& Cpu::GetState()
 {
 	return _state;
 }

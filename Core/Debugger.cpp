@@ -54,6 +54,8 @@
 #include "Utilities/IpsPatcher.h"
 #include "MemoryOperationType.h"
 #include "NES/NesDebugger.h"
+#include "NES/NesTypes.h"
+#include "BaseState.h"
 
 Debugger::Debugger(Emulator* emu, IConsole* console)
 {
@@ -291,8 +293,7 @@ void Debugger::ProcessEvent(EventType type)
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read };
-	DebugState state;
-	GetState(state, false);
+	BaseState& state = _debuggers[(int)cpuType].Debugger->GetState();
 	if(useCache) {
 		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, state, resultType, operationInfo);
 	} else {
@@ -376,37 +377,24 @@ void Debugger::BreakImmediately(BreakSource source)
 	SleepUntilResume(source);
 }
 
-void Debugger::GetState(DebugState &state, bool partialPpuState)
+void Debugger::GetState(BaseState &dstState, CpuType cpuType)
 {
-	/*state.MasterClock = _console->GetMasterClock();
-	state.Cpu = _cpu->GetState();
-	_ppu->GetState(state.Ppu, partialPpuState);
-	state.Spc = _spc->GetState();
-	state.Dsp = _spc->GetDspState();
+	BaseState& srcState = GetStateRef(cpuType);
+	switch(cpuType) {
+		case CpuType::Cpu: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Spc: memcpy(&dstState, &srcState, sizeof(SpcState)); break;
+		case CpuType::NecDsp: memcpy(&dstState, &srcState, sizeof(NecDspState)); break;
+		case CpuType::Sa1: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Gsu: memcpy(&dstState, &srcState, sizeof(GsuState)); break;
+		case CpuType::Cx4: memcpy(&dstState, &srcState, sizeof(Cx4State)); break;
+		case CpuType::Gameboy: memcpy(&dstState, &srcState, sizeof(GbCpuState)); break;
+		case CpuType::Nes: memcpy(&dstState, &srcState, sizeof(NesCpuState)); break;
+	}
+}
 
-	if(!partialPpuState) {
-		for(int i = 0; i < 8; i++) {
-			state.DmaChannels[i] = _dmaController->GetChannelConfig(i);
-		}
-		state.InternalRegs = _internalRegs->GetState();
-		state.Alu = _internalRegs->GetAluState();
-	}
-
-	if(_cart->GetDsp()) {
-		state.NecDsp = _cart->GetDsp()->GetState();
-	}
-	if(_cart->GetSa1()) {
-		state.Sa1 = _cart->GetSa1()->GetState();
-	}
-	if(_cart->GetGsu()) {
-		state.Gsu = _cart->GetGsu()->GetState();
-	}
-	if(_cart->GetCx4()) {
-		state.Cx4 = _cart->GetCx4()->GetState();
-	}
-	if(_cart->GetGameboy()) {
-		state.Gameboy = _cart->GetGameboy()->GetState();
-	}*/
+BaseState& Debugger::GetStateRef(CpuType cpuType)
+{
+	return _debuggers[(int)cpuType].Debugger->GetState();
 }
 
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)

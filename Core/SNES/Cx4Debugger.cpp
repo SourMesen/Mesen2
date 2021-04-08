@@ -58,11 +58,8 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
 
 			if(_traceLogger->IsCpuLogged(CpuType::Cx4)) {
-				DebugState debugState;
-				_debugger->GetState(debugState, true);
-
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
-				_traceLogger->Log(CpuType::Cx4, debugState, disInfo);
+				_traceLogger->Log(CpuType::Cx4, state, disInfo);
 			}
 		}
 
@@ -140,4 +137,9 @@ shared_ptr<IEventManager> Cx4Debugger::GetEventManager()
 shared_ptr<CodeDataLogger> Cx4Debugger::GetCodeDataLogger()
 {
 	throw std::runtime_error("CDL not supported for CX4");
+}
+
+BaseState& Cx4Debugger::GetState()
+{
+	return _cx4->GetState();
 }

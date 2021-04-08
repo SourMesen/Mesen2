@@ -9,7 +9,7 @@
 
 class Debugger;
 class LabelManager;
-struct DebugState;
+struct BaseState;
 
 enum EvalOperators : int64_t
 {
@@ -143,7 +143,6 @@ private:
 	std::unordered_map<string, ExpressionData, StringHasher> _cache;
 	SimpleLock _cacheLock;
 	
-	int64_t operandStack[1000];
 	Debugger* _debugger;
 	LabelManager* _labelManager;
 	CpuType _cpuType;
@@ -159,14 +158,16 @@ private:
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success, bool previousTokenIsOp);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);
-	int32_t PrivateEvaluate(string expression, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool &success);
+	int32_t PrivateEvaluate(string expression, BaseState& state, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool &success);
 	ExpressionData* PrivateGetRpnList(string expression, bool& success);
+
+protected:
 
 public:
 	ExpressionEvaluator(Debugger* debugger, CpuType cpuType);
 
-	int32_t Evaluate(ExpressionData &data, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
-	int32_t Evaluate(string expression, DebugState &state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
+	int32_t Evaluate(ExpressionData &data, BaseState& state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
+	int32_t Evaluate(string expression, BaseState& state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
 	ExpressionData GetRpnList(string expression, bool &success);
 
 	bool Validate(string expression);

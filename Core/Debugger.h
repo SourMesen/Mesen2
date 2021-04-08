@@ -33,7 +33,7 @@ class IAssembler;
 class Gameboy;
 class IDebugger;
 
-struct DebugState;
+struct BaseState;
 
 enum class EventType;
 enum class MemoryOperationType;
@@ -105,7 +105,8 @@ public:
 	void ProcessBreakConditions(bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 	void SleepUntilResume(BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
 
-	void GetState(DebugState &state, bool partialPpuState);
+	void GetState(BaseState &state, CpuType cpuType);
+	BaseState& GetStateRef(CpuType cpuType);
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);

@@ -9,6 +9,10 @@ using System.Runtime.InteropServices;
 
 namespace Mesen.GUI
 {
+	public interface BaseState
+	{
+	}
+
 	public enum CpuStopState : byte
 	{
 		Running = 0,
@@ -42,7 +46,7 @@ namespace Mesen.GUI
 		Negative = 0x80
 	}
 
-	public struct CpuState
+	public struct CpuState : BaseState
 	{
 		public UInt64 CycleCount;
 
@@ -219,7 +223,7 @@ namespace Mesen.GUI
 		public byte Target;
 	}
 
-	public struct SpcState
+	public struct SpcState : BaseState
 	{
 		public UInt64 Cycle;
 		public UInt16 PC;
@@ -902,6 +906,19 @@ namespace Mesen.GUI
 		public GbWaveState Wave;
 		public GbNoiseState Noise;
 	}
+
+	public struct NesCpuState : BaseState
+	{
+		public UInt64 CycleCount;
+		public UInt16 PC;
+		public byte SP;
+		public byte A;
+		public byte X;
+		public byte Y;
+		public byte PS;
+		public byte IRQFlag;
+		[MarshalAs(UnmanagedType.I1)] public bool NMIFlag;
+	};
 
 	public struct DebugState
 	{

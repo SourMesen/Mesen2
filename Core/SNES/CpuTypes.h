@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "BaseState.h"
 
 enum class CpuStopState : uint8_t
 {
@@ -8,7 +9,7 @@ enum class CpuStopState : uint8_t
 	WaitingForIrq = 2
 };
 
-struct CpuState
+struct CpuState : BaseState
 {
 	uint64_t CycleCount;
 

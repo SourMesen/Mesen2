@@ -2,6 +2,7 @@
 using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
+using Mesen.GUI;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -34,6 +35,8 @@ namespace Mesen.Debugger.ViewModels
 			ShowBreakpointsCommand = ReactiveCommand.Create(ShowBreakpoints);
 			ShowCpuStatusCommand = ReactiveCommand.Create(ShowCpuStatus);
 			ShowPpuStatusCommand = ReactiveCommand.Create(ShowPpuStatus);
+
+			NesCpuState state = DebugApi.GetState<NesCpuState>(CpuType.Nes);
 
 			Disassembly = new DisassemblyViewerViewModel();
 			//SnesCpu = new SnesCpuViewModel();

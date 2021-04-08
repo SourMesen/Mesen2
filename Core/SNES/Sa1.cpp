@@ -797,7 +797,7 @@ DebugSa1State Sa1::GetState()
 	};
 }
 
-CpuState Sa1::GetCpuState()
+CpuState& Sa1::GetCpuState()
 {
 	return _cpu->GetState();
 }

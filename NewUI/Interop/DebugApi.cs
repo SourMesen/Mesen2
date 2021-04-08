@@ -50,11 +50,16 @@ namespace Mesen.GUI
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
 		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
 
-		[DllImport(DllPath, EntryPoint = "GetState")] private static extern void GetStateWrapper(ref DebugState state);
-		public static DebugState GetState()
+		[DllImport(DllPath, EntryPoint = "GetState")] private static extern void GetState(IntPtr state, CpuType cpuType);
+		
+		public static T GetState<T>(CpuType cpuType) where T : struct, BaseState
 		{
-			DebugState state = new DebugState();
-			DebugApi.GetStateWrapper(ref state);
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr ptr = Marshal.AllocHGlobal(len);
+			DebugApi.GetState(ptr, cpuType);
+
+			T state = Marshal.PtrToStructure<T>(ptr);
+			Marshal.FreeHGlobal(ptr);
 			return state;
 		}
 

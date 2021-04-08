@@ -274,20 +274,12 @@ vector<CpuType> Console::GetCpuTypes()
 
 double Console::GetFrameDelay()
 {
-	uint32_t emulationSpeed = _settings->GetEmulationSpeed();
-	double frameDelay;
-	if(emulationSpeed == 0) {
-		frameDelay = 0;
-	} else {
-		UpdateRegion();
-		switch(_region) {
-			default:
-			case ConsoleRegion::Ntsc: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947; break;
-			case ConsoleRegion::Pal: frameDelay = _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146; break;
-		}
-		frameDelay /= (emulationSpeed / 100.0);
+	UpdateRegion();
+	switch(_region) {
+		default:
+		case ConsoleRegion::Ntsc: return _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947;
+		case ConsoleRegion::Pal: return _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146;
 	}
-	return frameDelay;
 }
 
 void Console::Serialize(Serializer& s)

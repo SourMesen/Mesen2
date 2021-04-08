@@ -21,7 +21,7 @@ GbCpu::~GbCpu()
 {
 }
 
-GbCpuState GbCpu::GetState()
+GbCpuState& GbCpu::GetState()
 {
 	return _state;
 }

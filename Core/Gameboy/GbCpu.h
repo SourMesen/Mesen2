@@ -144,7 +144,7 @@ public:
 
 	void Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager);
 
-	GbCpuState GetState();
+	GbCpuState& GetState();
 	bool IsHalted();
 
 	void Exec();
