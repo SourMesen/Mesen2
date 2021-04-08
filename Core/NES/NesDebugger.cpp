@@ -73,7 +73,8 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(addressInfo.Address >= 0) {
 			if(addressInfo.Type == SnesMemoryType::NesPrgRom) {
 				uint8_t flags = CdlFlags::Code;
-				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
+				if(_prevOpCode == 0x20) {
+					//JSR
 					flags |= CdlFlags::SubEntryPoint;
 				}
 				_codeDataLogger->SetFlags(addressInfo.Address, flags);
@@ -89,20 +90,20 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		uint32_t pc = state.PC;
-		if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
-			//JSR, JSL
+		if(_prevOpCode == 0x20) {
+			//JSR
 			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, CpuType::Nes);
 			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
 			AddressInfo srcAddress = _mapper->GetAbsoluteAddress(_prevProgramCounter);
 			AddressInfo retAddress = _mapper->GetAbsoluteAddress(returnPc);
 			_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
-		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
-			//RTS, RTL, RTI
+		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x40) {
+			//RTS, RTI
 			_callstackManager->Pop(addressInfo, pc);
 		}
 
-		if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
-			//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
+		if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40)) {
+			//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 			_step->StepCount = 0;
 		}
 
@@ -123,12 +124,12 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
 
 		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock())) {
@@ -182,8 +183,8 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::Step: step.StepCount = stepCount; break;
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
 		case StepType::StepOver:
-			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
-				//JSR, JSL, BRK, COP, MVP, MVN
+			if(_prevOpCode == 0x20 || _prevOpCode == 0x00) {
+				//JSR, BRK
 				step.BreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Nes)) & 0xFFFF);
 			} else {
 				//For any other instruction, step over is the same as step into
