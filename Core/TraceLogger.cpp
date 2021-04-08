@@ -8,13 +8,14 @@
 #include "Debugger.h"
 #include "LabelManager.h"
 #include "DebugUtilities.h"
-#include "DebugState.h"
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/CpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/NecDspTypes.h"
 #include "SNES/PpuTypes.h"
+#include "SNES/Cx4Types.h"
+#include "SNES/GsuTypes.h"
 #include "Gameboy/GbTypes.h"
 #include "DebugTypes.h"
 #include "Utilities/HexUtilities.h"
@@ -34,8 +35,8 @@ TraceLogger::TraceLogger(Debugger* debugger)
 	_logToFile = false;
 	_pendingLog = false;
 
-	_stateCache = new DebugState[TraceLogger::ExecutionLogSize];
-	_stateCacheCopy = new DebugState[TraceLogger::ExecutionLogSize];
+	_stateCache = new shared_ptr<BaseState>[TraceLogger::ExecutionLogSize];
+	_stateCacheCopy = new shared_ptr<BaseState>[TraceLogger::ExecutionLogSize];
 	_disassemblyCache = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
 	_disassemblyCacheCopy = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
 	_logCpuType = new CpuType[TraceLogger::ExecutionLogSize];
@@ -543,16 +544,18 @@ bool TraceLogger::ConditionMatches(DebugState &state, DisassemblyInfo &disassemb
 }
 */
 
-void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state)
+void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &disassemblyInfo, BaseState &state)
 {
+	PpuState ppu = {};
+	GbPpuState gbPpu = {};
 	switch(cpuType) {
-		case CpuType::Cpu: GetTraceRow(output, state.Cpu, state.Ppu, disassemblyInfo, SnesMemoryType::CpuMemory, cpuType); break;
-		case CpuType::Spc: GetTraceRow(output, state.Spc, state.Ppu, disassemblyInfo); break;
-		case CpuType::NecDsp: GetTraceRow(output, state.NecDsp, state.Ppu, disassemblyInfo); break;
-		case CpuType::Sa1: GetTraceRow(output, state.Sa1.Cpu, state.Ppu, disassemblyInfo, SnesMemoryType::Sa1Memory, cpuType); break;
-		case CpuType::Gsu: GetTraceRow(output, state.Gsu, state.Ppu, disassemblyInfo); break;
-		case CpuType::Cx4: GetTraceRow(output, state.Cx4, state.Ppu, disassemblyInfo); break;
-		case CpuType::Gameboy: GetTraceRow(output, state.Gameboy.Cpu, state.Gameboy.Ppu, disassemblyInfo); break;
+		case CpuType::Cpu: GetTraceRow(output, (CpuState&)state, ppu, disassemblyInfo, SnesMemoryType::CpuMemory, cpuType); break;
+		case CpuType::Spc: GetTraceRow(output, (SpcState&)state, ppu, disassemblyInfo); break;
+		case CpuType::NecDsp: GetTraceRow(output, (NecDspState&)state, ppu, disassemblyInfo); break;
+		case CpuType::Sa1: GetTraceRow(output, (CpuState&)state, ppu, disassemblyInfo, SnesMemoryType::Sa1Memory, cpuType); break;
+		case CpuType::Gsu: GetTraceRow(output, (GsuState&)state, ppu, disassemblyInfo); break;
+		case CpuType::Cx4: GetTraceRow(output, (Cx4State&)state, ppu, disassemblyInfo); break;
+		case CpuType::Gameboy: GetTraceRow(output, (GbCpuState&)state, gbPpu, disassemblyInfo); break;
 	}
 }
 
@@ -569,7 +572,7 @@ void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo)
 	}
 
 	if(_logToFile) {
-		GetTraceRow(_outputBuffer, cpuType, _disassemblyCache[_currentPos], _stateCache[_currentPos]);
+		GetTraceRow(_outputBuffer, cpuType, _disassemblyCache[_currentPos], *_stateCache[_currentPos].get());
 		if(_outputBuffer.size() > 32768) {
 			_outputFile << _outputBuffer;
 			_outputBuffer.clear();
@@ -613,7 +616,9 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 	{
 		auto lock = _lock.AcquireSafe();
 		lineCount = std::min(lineCount, _logCount);
-		memcpy(_stateCacheCopy, _stateCache, sizeof(DebugState) * TraceLogger::ExecutionLogSize);
+		for(int i = 0; i < TraceLogger::ExecutionLogSize; i++) {
+			_stateCacheCopy[i] = _stateCache[i];
+		}
 		memcpy(_disassemblyCacheCopy, _disassemblyCache, sizeof(DisassemblyInfo) * TraceLogger::ExecutionLogSize);
 		memcpy(_logCpuTypeCopy, _logCpuType, sizeof(CpuType) * TraceLogger::ExecutionLogSize);
 		startPos = (_currentPos > 0 ? _currentPos : TraceLogger::ExecutionLogSize) - 1;
@@ -642,21 +647,42 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				continue;
 			}
 
-			DebugState &state = _stateCacheCopy[index];
+			BaseState &state = *_stateCacheCopy[index].get();
 			switch(cpuType) {
-				case CpuType::Cpu: _executionTrace += "\x2\x1" + HexUtilities::ToHex24((state.Cpu.K << 16) | state.Cpu.PC) + "\x1"; break;
-				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(state.Spc.PC) + "\x1"; break;
-				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(state.NecDsp.PC) + "\x1"; break;
-				case CpuType::Sa1: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Sa1.Cpu.K << 16) | state.Sa1.Cpu.PC) + "\x1"; break;
-				case CpuType::Gsu: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Gsu.ProgramBank << 16) | state.Gsu.R[15]) + "\x1"; break;
-				case CpuType::Cx4: _executionTrace += "\x4\x1" + HexUtilities::ToHex24((state.Cx4.Cache.Address[state.Cx4.Cache.Page] + (state.Cx4.PC * 2)) & 0xFFFFFF) + "\x1"; break;
-				case CpuType::Gameboy: _executionTrace += "\x4\x1" + HexUtilities::ToHex(state.Gameboy.Cpu.PC) + "\x1"; break;
+				case CpuType::Cpu: {
+					CpuState& snesCpu = (CpuState&)state;
+					_executionTrace += "\x2\x1" + HexUtilities::ToHex24((snesCpu.K << 16) | snesCpu.PC) + "\x1";
+					break;
+				}
+
+				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(((SpcState&)state).PC) + "\x1"; break;
+				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(((NecDspState&)state).PC) + "\x1"; break;
+
+				case CpuType::Sa1: {
+					CpuState& sa1 = (CpuState&)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((sa1.K << 16) | sa1.PC) + "\x1";
+					break;
+				}
+
+				case CpuType::Gsu: {
+					GsuState& gsu = (GsuState&)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((gsu.ProgramBank << 16) | gsu.R[15]) + "\x1";
+					break;
+				}
+
+				case CpuType::Cx4: {
+					Cx4State& cx4 = (Cx4State&)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((cx4.Cache.Address[cx4.Cache.Page] + (cx4.PC * 2)) & 0xFFFFFF) + "\x1"; 
+					break;
+				}
+
+				case CpuType::Gameboy: _executionTrace += "\x4\x1" + HexUtilities::ToHex(((GbCpuState&)state).PC) + "\x1"; break;
 			}
 
 			string byteCode;
 			_disassemblyCacheCopy[index].GetByteCode(byteCode);
 			_executionTrace += byteCode + "\x1";
-			GetTraceRow(_executionTrace, cpuType, _disassemblyCacheCopy[index], _stateCacheCopy[index]);
+			GetTraceRow(_executionTrace, cpuType, _disassemblyCacheCopy[index], *_stateCacheCopy[index].get());
 
 			lineCount--;
 			if(lineCount == 0) {

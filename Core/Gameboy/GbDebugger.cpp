@@ -18,7 +18,6 @@
 #include "GbAssembler.h"
 #include "Utilities/HexUtilities.h"
 #include "MemoryOperationType.h"
-#include "DebugState.h"
 #include "Emulator.h"
 #include "GbPpu.h"
 #include "GbCpu.h"

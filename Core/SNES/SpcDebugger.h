@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 #include "IDebugger.h"
-#include "DebugState.h"
 
 class Disassembler;
 class Debugger;

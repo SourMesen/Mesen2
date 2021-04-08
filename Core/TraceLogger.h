@@ -9,7 +9,6 @@ class Debugger;
 class LabelManager;
 class MemoryDumper;
 class EmuSettings;
-struct DebugState;
 
 struct CpuState;
 struct NecDspState;
@@ -112,12 +111,12 @@ private:
 	bool _logToFile;
 	uint32_t _currentPos;
 	uint32_t _logCount;
-	DebugState *_stateCache = nullptr;
+	shared_ptr<BaseState> *_stateCache = nullptr;
 	DisassemblyInfo *_disassemblyCache = nullptr;
 	CpuType* _logCpuType = nullptr;
 
-	DebugState *_stateCacheCopy = nullptr;
-	DisassemblyInfo *_disassemblyCacheCopy = nullptr;
+	shared_ptr<BaseState>* _stateCacheCopy = nullptr;
+	DisassemblyInfo* _disassemblyCacheCopy = nullptr;
 	CpuType* _logCpuTypeCopy = nullptr;
 
 	SimpleLock _lock;
@@ -134,7 +133,7 @@ private:
 	
 	void ParseFormatString(vector<RowPart> &rowParts, string format);
 
-	void GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &disassemblyInfo, DebugState &state);
+	void GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &disassemblyInfo, BaseState &state);
 	void GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo, SnesMemoryType memType, CpuType cpuType);
 	void GetTraceRow(string &output, SpcState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string &output, NecDspState &cpuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);

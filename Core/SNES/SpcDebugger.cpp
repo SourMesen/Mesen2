@@ -7,7 +7,6 @@
 #include "CallstackManager.h"
 #include "BreakpointManager.h"
 #include "MemoryManager.h"
-#include "DebugState.h"
 #include "Debugger.h"
 #include "Emulator.h"
 #include "Console.h"

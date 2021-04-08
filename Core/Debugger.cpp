@@ -38,7 +38,6 @@
 #include "DebugBreakHelper.h"
 #include "LabelManager.h"
 #include "ScriptManager.h"
-#include "DebugState.h"
 #include "CallstackManager.h"
 #include "ExpressionEvaluator.h"
 #include "SNES/InternalRegisters.h"

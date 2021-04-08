@@ -120,6 +120,15 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 			break;
 		}
 
+		case SnesMemoryType::NesMemory: {
+			if(_nesMemoryManager) {
+				for(int i = 0; i <= 0xFFFF; i++) {
+					buffer[i] = _nesMemoryManager->DebugRead(i);
+				}
+			}
+			break;
+		}
+
 		default: 
 			uint8_t* src = GetMemoryBuffer(type);
 			if(src) {
@@ -164,6 +173,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::GameboyMemory: _cartridge->GetGameboy()->GetMemoryManager()->DebugWrite(address, value); break;
+		case SnesMemoryType::NesMemory: _nesMemoryManager->DebugWrite(address, value); break;
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

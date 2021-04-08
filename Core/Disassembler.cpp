@@ -9,7 +9,10 @@
 #include "DebugBreakHelper.h"
 #include "EmuSettings.h"
 #include "DebugUtilities.h"
-#include "DebugState.h"
+#include "SNES/CpuTypes.h"
+#include "SNES/SpcTypes.h"
+#include "SNES/GsuTypes.h"
+#include "Gameboy/GbTypes.h"
 #include "NES/NesTypes.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
@@ -405,11 +408,9 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 				switch(lineCpuType) {
 					case CpuType::Cpu:
 					case CpuType::Sa1: {
-						//TODO
-						/*CpuState state = type == CpuType::Sa1 ? _sa1->GetCpuState() : _cpu->GetState();
+						CpuState state = (CpuState&)_debugger->GetStateRef(lineCpuType);
 						state.PC = (uint16_t)result.CpuAddress;
-						state.K = (result.CpuAddress >> 16);*/
-						CpuState state = {};
+						state.K = (result.CpuAddress >> 16);
 
 						CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType).get();
 						if(!disInfo.IsInitialized()) {
@@ -430,7 +431,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 					
 					case CpuType::Spc: {
-						SpcState state = {}; //TODO _spc->GetState();
+						SpcState state = (SpcState&)_debugger->GetStateRef(lineCpuType);
 						state.PC = (uint16_t)result.CpuAddress;
 
 						if(!disInfo.IsInitialized()) {
@@ -451,7 +452,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 
 					case CpuType::Gsu: {
-						GsuState state = {}; //TODO _gsu->GetState();
+						GsuState state = (GsuState&)_debugger->GetStateRef(lineCpuType);
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gsu);
 						} else {
@@ -483,7 +484,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						break;
 
 					case CpuType::Gameboy: {
-						GbCpuState state = {}; //TODO _gameboy->GetCpu()->GetState();
+						GbCpuState state = (GbCpuState&)_debugger->GetStateRef(lineCpuType);
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Gameboy);
 						} else {
@@ -497,7 +498,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 					}
 
 					case CpuType::Nes: {
-						NesCpuState state = {}; //TODO
+						NesCpuState state = (NesCpuState&)_debugger->GetStateRef(lineCpuType);
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Nes);
 						} else {

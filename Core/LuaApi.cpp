@@ -26,7 +26,6 @@
 #include "LabelManager.h"
 #include "DefaultVideoFilter.h"
 #include "MemoryOperationType.h"
-#include "DebugState.h"
 
 #define lua_pushintvalue(name, value) lua_pushliteral(lua, #name); lua_pushinteger(lua, (int)value); lua_settable(lua, -3);
 #define lua_pushdoublevalue(name, value) lua_pushliteral(lua, #name); lua_pushnumber(lua, (double)value); lua_settable(lua, -3);
@@ -735,10 +734,9 @@ int LuaApi::GetState(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
-	DebugState state = {};
 
 	//TODO
-
+	/*
 	lua_newtable(lua);
 	lua_pushintvalue(masterClock, state.MasterClock);
 
@@ -904,7 +902,7 @@ int LuaApi::GetState(lua_State *lua)
 	lua_pushintvalue(x, state.Spc.X);
 	lua_pushintvalue(y, state.Spc.Y);
 	lua_endtable(); //end spc
-	
+	*/
 	return 1;
 }
 #endif

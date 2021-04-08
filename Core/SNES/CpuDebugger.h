@@ -3,7 +3,6 @@
 #include "DebugTypes.h"
 #include "IDebugger.h"
 #include "CpuTypes.h"
-#include "DebugState.h"
 
 class Disassembler;
 class Debugger;
@@ -51,7 +50,6 @@ class CpuDebugger final : public IDebugger
 	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
-	DebugState _debugState;
 
 	MemoryMappings& GetMemoryMappings();
 	CpuState& GetCpuState();

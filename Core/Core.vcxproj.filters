@@ -691,9 +691,6 @@
     <ClInclude Include="MemoryOperationType.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="DebugState.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="IControlManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
