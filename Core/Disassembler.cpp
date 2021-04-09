@@ -53,9 +53,11 @@ void Disassembler::InitSource(SnesMemoryType type)
 
 DisassemblerSource& Disassembler::GetSource(SnesMemoryType type)
 {
+#if _DEBUG
 	if(_sources[(int)type].Data == nullptr) {
 		throw std::runtime_error("Disassembler::GetSource() invalid memory type");
 	}
+#endif
 
 	return _sources[(int)type];
 }
@@ -305,15 +307,6 @@ void Disassembler::Disassemble(CpuType cpuType)
 		int flags = LineFlags::BlockEnd | (inVerifiedBlock ? LineFlags::VerifiedData : 0) | (((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) ? LineFlags::ShowAsData : 0);
 		results.push_back(DisassemblyResult(addrInfo, maxAddr, flags));
 	}
-}
-
-DisassemblyInfo Disassembler::GetDisassemblyInfo(AddressInfo &info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type)
-{
-	DisassemblyInfo disassemblyInfo = (*GetSource(info.Type).Cache)[info.Address];
-	if(!disassemblyInfo.IsInitialized()) {
-		disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, _memoryDumper);
-	}
-	return disassemblyInfo;
 }
 
 void Disassembler::RefreshDisassembly(CpuType type)

@@ -17,8 +17,11 @@
 #include "SNES/Cx4Types.h"
 #include "SNES/GsuTypes.h"
 #include "Gameboy/GbTypes.h"
+#include "NES/NesTypes.h"
+#include "NES/NesDebuggerTypes.h"
 #include "DebugTypes.h"
 #include "Utilities/HexUtilities.h"
+#include "DebugBreakHelper.h"
 
 string TraceLogger::_executionTrace = "";
 
@@ -35,24 +38,35 @@ TraceLogger::TraceLogger(Debugger* debugger)
 	_logToFile = false;
 	_pendingLog = false;
 
-	_stateCache = new shared_ptr<BaseState>[TraceLogger::ExecutionLogSize];
-	_stateCacheCopy = new shared_ptr<BaseState>[TraceLogger::ExecutionLogSize];
+	_snesCpuState = new CpuState[TraceLogger::ExecutionLogSize];
+	_spcState = new SpcState[TraceLogger::ExecutionLogSize];
+	_necDspState = new NecDspState[TraceLogger::ExecutionLogSize];
+	_gsuState = new GsuState[TraceLogger::ExecutionLogSize];
+	_cx4State = new Cx4State[TraceLogger::ExecutionLogSize];
+	_gbCpuState = new GbCpuState[TraceLogger::ExecutionLogSize];
+	_nesCpuState = new NesCpuState[TraceLogger::ExecutionLogSize];
+
 	_disassemblyCache = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
-	_disassemblyCacheCopy = new DisassemblyInfo[TraceLogger::ExecutionLogSize];
 	_logCpuType = new CpuType[TraceLogger::ExecutionLogSize];
-	_logCpuTypeCopy = new CpuType[TraceLogger::ExecutionLogSize];
+
+	SetOptions({});
+	_logCpu[(int)CpuType::Nes] = true;
 }
 
 TraceLogger::~TraceLogger()
 {
 	StopLogging();
 
-	delete[] _stateCache;
-	delete[] _stateCacheCopy;
 	delete[] _disassemblyCache;
-	delete[] _disassemblyCacheCopy;
 	delete[] _logCpuType;
-	delete[] _logCpuTypeCopy;
+
+	delete[] _snesCpuState;
+	delete[] _spcState;
+	delete[] _necDspState;
+	delete[] _gsuState;
+	delete[] _cx4State;
+	delete[] _gbCpuState;
+	delete[] _nesCpuState;
 }
 
 template<typename T>
@@ -76,6 +90,7 @@ void TraceLogger::WriteValue(string &output, string value, RowPart& rowPart)
 
 void TraceLogger::SetOptions(TraceLoggerOptions options)
 {
+	DebugBreakHelper helper(_debugger);
 	_options = options;
 	
 	_logCpu[(int)CpuType::Cpu] = options.LogCpu;
@@ -85,11 +100,11 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	_logCpu[(int)CpuType::Gsu] = options.LogGsu;
 	_logCpu[(int)CpuType::Cx4] = options.LogCx4;
 	_logCpu[(int)CpuType::Gameboy] = options.LogGameboy;
+	_logCpu[(int)CpuType::Nes] = options.LogNes;
 
 	string condition = _options.Condition;
 	string format = _options.Format;
 
-	auto lock = _lock.AcquireSafe();
 	/*_conditionData = ExpressionData();
 	if(!condition.empty()) {
 		bool success = false;
@@ -105,6 +120,7 @@ void TraceLogger::SetOptions(TraceLoggerOptions options)
 	ParseFormatString(_gsuRowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,50] SRC:[X,2] DST:[Y,2] R0:[A,2h] H:[Cycle,3] V:[Scanline,3]");
 	ParseFormatString(_cx4RowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,45] [A,2h] H:[Cycle,3] V:[Scanline,3]");
 	ParseFormatString(_gbRowParts, "[PC,6h]   [ByteCode,11h] [Disassembly] [Align,45] A:[A,2h] B:[B,2h] C:[C,2h] D:[D,2h] E:[E,2h] HL:[H,2h][L,2h] F:[F,2h] SP:[SP,4h] CYC:[Cycle,3] LY:[Scanline,3]");
+	ParseFormatString(_nesRowParts, "[PC,4h]  [ByteCode,11h] [Disassembly][EffectiveAddress] [MemoryValue,2h][Align,48] A:[A,2h] X:[X,2h] Y:[Y,2h] P:[P,8] SP:[SP,2h] CYC:[Cycle,3] SL:[Scanline,3] FC:[FrameCount] CPU Cycle:[CycleCount]");
 }
 
 void TraceLogger::ParseFormatString(vector<RowPart> &rowParts, string format)
@@ -234,8 +250,11 @@ void TraceLogger::GetStatusFlag(string &output, uint8_t ps, RowPart& part)
 	constexpr char spcActiveStatusLetters[8] = { 'N', 'V', 'P', 'B', 'H', 'I', 'Z', 'C' };
 	constexpr char spcInactiveStatusLetters[8] = { 'n', 'v', 'p', 'b', 'h', 'i', 'z', 'c' };
 
-	const char *activeStatusLetters = cpuType == CpuType::Cpu ? cpuActiveStatusLetters : spcActiveStatusLetters;
-	const char *inactiveStatusLetters = cpuType == CpuType::Cpu ? cpuInactiveStatusLetters : spcInactiveStatusLetters;
+	constexpr char nesActiveStatusLetters[8] = { 'N', 'V', '-', '-', 'D', 'I', 'Z', 'C' };
+	constexpr char nesInactiveStatusLetters[8] = { 'n', 'v', '-', '-', 'd', 'i', 'z', 'c' };
+
+	const char *activeStatusLetters = cpuType == CpuType::Cpu ? cpuActiveStatusLetters : (cpuType == CpuType::Spc ? spcActiveStatusLetters : nesActiveStatusLetters);
+	const char *inactiveStatusLetters = cpuType == CpuType::Cpu ? cpuInactiveStatusLetters : (cpuType == CpuType::Spc ? spcInactiveStatusLetters : nesInactiveStatusLetters);
 
 	if(part.DisplayInHex) {
 		WriteValue(output, ps, part);
@@ -346,7 +365,10 @@ void TraceLogger::GetTraceRow(string &output, CpuState &cpuState, PpuState &ppuS
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
 			case RowDataType::HClock: WriteValue(output, ppuState.HClock, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
-			case RowDataType::CycleCount: WriteValue(output, (uint32_t)cpuState.CycleCount, rowPart); break;
+			case RowDataType::CycleCount:
+				WriteValue(output, (uint32_t)(cpuState.CycleCount >> 32), rowPart);
+				WriteValue(output, (uint32_t)cpuState.CycleCount, rowPart); 
+				break;
 			default: break;
 		}
 	}
@@ -518,6 +540,37 @@ void TraceLogger::GetTraceRow(string& output, GbCpuState& cpuState, GbPpuState& 
 			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
 			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
 			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
+			default: break;
+		}
+	}
+	output += _options.UseWindowsEol ? "\r\n" : "\n";
+}
+
+void TraceLogger::GetTraceRow(string &output, NesCpuState &cpuState, NesPpuState &ppuState, DisassemblyInfo &disassemblyInfo)
+{
+	int originalSize = (int)output.size();
+	for(RowPart& rowPart : _nesRowParts) {
+		switch(rowPart.DataType) {
+			case RowDataType::Text: output += rowPart.Text; break;
+			case RowDataType::ByteCode: WriteByteCode(disassemblyInfo, rowPart, output); break;
+			case RowDataType::Disassembly: WriteDisassembly(disassemblyInfo, rowPart, cpuState.SP, cpuState.PC, output); break;
+			case RowDataType::EffectiveAddress: WriteEffectiveAddress(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::NesMemory, CpuType::Nes); break;
+			case RowDataType::MemoryValue: WriteMemoryValue(disassemblyInfo, rowPart, &cpuState, output, SnesMemoryType::NesMemory, CpuType::Nes); break;
+			case RowDataType::Align: WriteAlign(originalSize, rowPart, output); break;
+
+			case RowDataType::PC: WriteValue(output, HexUtilities::ToHex((uint16_t)cpuState.PC), rowPart); break;
+			case RowDataType::A: WriteValue(output, cpuState.A, rowPart); break;
+			case RowDataType::X: WriteValue(output, cpuState.X, rowPart); break;
+			case RowDataType::Y: WriteValue(output, cpuState.Y, rowPart); break;
+			case RowDataType::SP: WriteValue(output, cpuState.SP, rowPart); break;
+			case RowDataType::PS: GetStatusFlag<CpuType::Nes>(output, cpuState.PS, rowPart); break;
+			case RowDataType::Cycle: WriteValue(output, ppuState.Cycle, rowPart); break;
+			case RowDataType::Scanline: WriteValue(output, ppuState.Scanline, rowPart); break;
+			case RowDataType::FrameCount: WriteValue(output, ppuState.FrameCount, rowPart); break;
+			case RowDataType::CycleCount: 
+				WriteValue(output, (uint32_t)(cpuState.CycleCount >> 32), rowPart);
+				WriteValue(output, (uint32_t)cpuState.CycleCount, rowPart);
+				break;
 
 			default: break;
 		}
@@ -548,6 +601,7 @@ void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &
 {
 	PpuState ppu = {};
 	GbPpuState gbPpu = {};
+	NesPpuState nesPpu = {};
 	switch(cpuType) {
 		case CpuType::Cpu: GetTraceRow(output, (CpuState&)state, ppu, disassemblyInfo, SnesMemoryType::CpuMemory, cpuType); break;
 		case CpuType::Spc: GetTraceRow(output, (SpcState&)state, ppu, disassemblyInfo); break;
@@ -556,15 +610,29 @@ void TraceLogger::GetTraceRow(string &output, CpuType cpuType, DisassemblyInfo &
 		case CpuType::Gsu: GetTraceRow(output, (GsuState&)state, ppu, disassemblyInfo); break;
 		case CpuType::Cx4: GetTraceRow(output, (Cx4State&)state, ppu, disassemblyInfo); break;
 		case CpuType::Gameboy: GetTraceRow(output, (GbCpuState&)state, gbPpu, disassemblyInfo); break;
+		case CpuType::Nes: GetTraceRow(output, (NesCpuState&)state, nesPpu, disassemblyInfo); break;
+		default: throw std::runtime_error("Trace logger - Unsupported CPU type");
 	}
 }
 
-void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo)
+template<class T>
+void TraceLogger::AddRow(CpuType cpuType, T& cpuState, DisassemblyInfo &disassemblyInfo)
 {
 	_logCpuType[_currentPos] = cpuType;
 	_disassemblyCache[_currentPos] = disassemblyInfo;
-	//TODO
-	//_stateCache[_currentPos] = state;
+
+	switch(cpuType) {
+		case CpuType::Cpu: _snesCpuState[_currentPos] = (CpuState&)cpuState; break;
+		case CpuType::Spc: _spcState[_currentPos] = (SpcState&)cpuState; break;
+		case CpuType::NecDsp: _necDspState[_currentPos] = (NecDspState&)cpuState; break;
+		case CpuType::Sa1: _snesCpuState[_currentPos] = (CpuState&)cpuState; break;
+		case CpuType::Gsu: _gsuState[_currentPos] = (GsuState&)cpuState; break;
+		case CpuType::Cx4: _cx4State[_currentPos] = (Cx4State&)cpuState; break;
+		case CpuType::Gameboy: _gbCpuState[_currentPos] = (GbCpuState&)cpuState; break;
+		case CpuType::Nes: _nesCpuState[_currentPos] = (NesCpuState&)cpuState; break;
+		default: throw std::runtime_error("Trace logger - Unsupported CPU type");
+	}
+
 	_pendingLog = false;
 
 	if(_logCount < ExecutionLogSize) {
@@ -572,7 +640,7 @@ void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo)
 	}
 
 	if(_logToFile) {
-		GetTraceRow(_outputBuffer, cpuType, _disassemblyCache[_currentPos], *_stateCache[_currentPos].get());
+		GetTraceRow(_outputBuffer, cpuType, _disassemblyCache[_currentPos], cpuState);
 		if(_outputBuffer.size() > 32768) {
 			_outputFile << _outputBuffer;
 			_outputBuffer.clear();
@@ -585,20 +653,19 @@ void TraceLogger::AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo)
 void TraceLogger::LogNonExec(OperationInfo& operationInfo)
 {
 	if(_pendingLog) {
-		auto lock = _lock.AcquireSafe();
 		if(ConditionMatches(_lastState, _lastDisassemblyInfo, operationInfo)) {
 			AddRow(_lastDisassemblyInfo, _lastState);
 		}
 	}
 }*/
 
-void TraceLogger::Log(CpuType cpuType, BaseState& cpuState, DisassemblyInfo &disassemblyInfo)
+template<class T>
+void TraceLogger::Log(CpuType cpuType, T& cpuState, DisassemblyInfo &disassemblyInfo)
 {
 	if(_logCpu[(int)cpuType]) {
 		//For the sake of performance, only log data for the CPUs we're actively displaying/logging
-		auto lock = _lock.AcquireSafe();
 		//if(ConditionMatches(state, disassemblyInfo, operationInfo)) {
-			AddRow(cpuType, disassemblyInfo);
+			AddRow(cpuType, cpuState, disassemblyInfo);
 		//}
 	}
 }
@@ -610,20 +677,11 @@ void TraceLogger::Clear()
 
 const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 {
-	int startPos;
-
+	DebugBreakHelper helper(_debugger);
 	_executionTrace.clear();
-	{
-		auto lock = _lock.AcquireSafe();
-		lineCount = std::min(lineCount, _logCount);
-		for(int i = 0; i < TraceLogger::ExecutionLogSize; i++) {
-			_stateCacheCopy[i] = _stateCache[i];
-		}
-		memcpy(_disassemblyCacheCopy, _disassemblyCache, sizeof(DisassemblyInfo) * TraceLogger::ExecutionLogSize);
-		memcpy(_logCpuTypeCopy, _logCpuType, sizeof(CpuType) * TraceLogger::ExecutionLogSize);
-		startPos = (_currentPos > 0 ? _currentPos : TraceLogger::ExecutionLogSize) - 1;
-	}
 
+	int startPos = (_currentPos > 0 ? _currentPos : TraceLogger::ExecutionLogSize) - 1;
+	
 	bool enabled = false;
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
 		enabled |= _logCpu[i];
@@ -636,53 +694,83 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 				index = TraceLogger::ExecutionLogSize + index;
 			}
 
-			if((i > 0 && startPos == index) || !_disassemblyCacheCopy[index].IsInitialized()) {
+			if((i > 0 && startPos == index) || !_disassemblyCache[index].IsInitialized()) {
 				//If the entire array was checked, or this element is not initialized, stop
 				break;
 			}
 
-			CpuType cpuType = _logCpuTypeCopy[index];
+			CpuType cpuType = _logCpuType[index];
 			if(!_logCpu[(int)cpuType]) {
 				//This line isn't for a CPU currently being logged
 				continue;
 			}
 
-			BaseState &state = *_stateCacheCopy[index].get();
+			BaseState* state;
 			switch(cpuType) {
 				case CpuType::Cpu: {
-					CpuState& snesCpu = (CpuState&)state;
-					_executionTrace += "\x2\x1" + HexUtilities::ToHex24((snesCpu.K << 16) | snesCpu.PC) + "\x1";
+					state = &_snesCpuState[index];
+					CpuState* snesCpu = (CpuState*)state;
+					_executionTrace += "\x2\x1" + HexUtilities::ToHex24((snesCpu->K << 16) | snesCpu->PC) + "\x1";
 					break;
 				}
 
-				case CpuType::Spc: _executionTrace += "\x3\x1" + HexUtilities::ToHex(((SpcState&)state).PC) + "\x1"; break;
-				case CpuType::NecDsp: _executionTrace += "\x4\x1" + HexUtilities::ToHex(((NecDspState&)state).PC) + "\x1"; break;
+				case CpuType::Spc: {
+					state = &_spcState[index];
+					SpcState* spc = (SpcState*)state;
+					_executionTrace += "\x3\x1" + HexUtilities::ToHex(spc->PC) + "\x1";
+					break;
+				}
+
+				case CpuType::NecDsp: {
+					state = &_spcState[index];
+					NecDspState* necDsp = (NecDspState*)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex(necDsp->PC) + "\x1";
+					break;
+				}
 
 				case CpuType::Sa1: {
-					CpuState& sa1 = (CpuState&)state;
-					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((sa1.K << 16) | sa1.PC) + "\x1";
+					state = &_snesCpuState[index];
+					CpuState* sa1 = (CpuState*)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((sa1->K << 16) | sa1->PC) + "\x1";
 					break;
 				}
 
 				case CpuType::Gsu: {
-					GsuState& gsu = (GsuState&)state;
-					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((gsu.ProgramBank << 16) | gsu.R[15]) + "\x1";
+					state = &_gsuState[index];
+					GsuState* gsu = (GsuState*)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((gsu->ProgramBank << 16) | gsu->R[15]) + "\x1";
 					break;
 				}
 
 				case CpuType::Cx4: {
-					Cx4State& cx4 = (Cx4State&)state;
-					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((cx4.Cache.Address[cx4.Cache.Page] + (cx4.PC * 2)) & 0xFFFFFF) + "\x1"; 
+					state = &_cx4State[index];
+					Cx4State* cx4 = (Cx4State*)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex24((cx4->Cache.Address[cx4->Cache.Page] + (cx4->PC * 2)) & 0xFFFFFF) + "\x1"; 
 					break;
 				}
 
-				case CpuType::Gameboy: _executionTrace += "\x4\x1" + HexUtilities::ToHex(((GbCpuState&)state).PC) + "\x1"; break;
+				case CpuType::Gameboy: {
+					state = &_gbCpuState[index];
+					GbCpuState* gb = (GbCpuState*)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex(gb->PC) + "\x1";
+					break;
+				}
+
+				case CpuType::Nes: {
+					state = &_nesCpuState[index];
+					NesCpuState* nes = (NesCpuState*)state;
+					_executionTrace += "\x4\x1" + HexUtilities::ToHex(nes->PC) + "\x1";
+					break;
+				}
+
+				default:
+					throw std::runtime_error("Trace logger - Unsupported CPU type");
 			}
 
 			string byteCode;
-			_disassemblyCacheCopy[index].GetByteCode(byteCode);
+			_disassemblyCache[index].GetByteCode(byteCode);
 			_executionTrace += byteCode + "\x1";
-			GetTraceRow(_executionTrace, cpuType, _disassemblyCacheCopy[index], *_stateCacheCopy[index].get());
+			GetTraceRow(_executionTrace, cpuType, _disassemblyCache[index], *state);
 
 			lineCount--;
 			if(lineCount == 0) {
@@ -692,3 +780,11 @@ const char* TraceLogger::GetExecutionTrace(uint32_t lineCount)
 	}
 	return _executionTrace.c_str();
 }
+
+template void TraceLogger::Log(CpuType cpuType, CpuState& cpuState, DisassemblyInfo& disassemblyInfo);
+template void TraceLogger::Log(CpuType cpuType, SpcState& cpuState, DisassemblyInfo& disassemblyInfo);
+template void TraceLogger::Log(CpuType cpuType, GsuState& cpuState, DisassemblyInfo& disassemblyInfo);
+template void TraceLogger::Log(CpuType cpuType, Cx4State& cpuState, DisassemblyInfo& disassemblyInfo);
+template void TraceLogger::Log(CpuType cpuType, NecDspState& cpuState, DisassemblyInfo& disassemblyInfo);
+template void TraceLogger::Log(CpuType cpuType, GbCpuState& cpuState, DisassemblyInfo& disassemblyInfo);
+template void TraceLogger::Log(CpuType cpuType, NesCpuState& cpuState, DisassemblyInfo& disassemblyInfo);

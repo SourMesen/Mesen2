@@ -286,6 +286,7 @@ namespace Mesen.Debugger.Windows
 
 			if(frmCnt % 200 == 0) {
 				DebugApi.RefreshDisassembly(CpuType.Nes);
+				string test = DebugApi.GetExecutionTrace(10000);
 			}
 
 			_context.Disassembly.DataProvider = new CodeDataProvider(CpuType.Nes);

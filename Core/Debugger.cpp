@@ -58,6 +58,8 @@
 
 Debugger::Debugger(Emulator* emu, IConsole* console)
 {
+	_executionStopped = true;
+
 	_emu = emu;
 	_console = console;
 	_settings = _emu->GetSettings();
@@ -89,7 +91,6 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, type));
 	}
 
-	_executionStopped = true;
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 

@@ -169,7 +169,7 @@ double NesPpu::GetOverclockRate()
 	return (double)(_vblankEnd + 2) / (regularVblankEnd + 2);
 }
 
-void NesPpu::GetState(PPUDebugState &state)
+void NesPpu::GetState(NesPpuState &state)
 {
 	state.ControlFlags = _flags;
 	state.StatusFlags = _statusFlags;
@@ -184,7 +184,7 @@ void NesPpu::GetState(PPUDebugState &state)
 	state.MemoryReadBuffer = _memoryReadBuffer;
 }
 
-void NesPpu::SetState(PPUDebugState &state)
+void NesPpu::SetState(NesPpuState &state)
 {
 	_flags = state.ControlFlags;
 	_statusFlags = state.StatusFlags;

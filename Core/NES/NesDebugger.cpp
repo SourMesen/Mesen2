@@ -38,7 +38,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_settings = debugger->GetEmulator()->GetSettings().get();
 
-	_codeDataLogger.reset(new CodeDataLogger(_emu->GetMemory(SnesMemoryType::PrgRom).Size, CpuType::Nes));
+	_codeDataLogger.reset(new CodeDataLogger(_emu->GetMemory(SnesMemoryType::NesPrgRom).Size, CpuType::Nes));
 
 	//_eventManager.reset(new EventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -121,18 +121,18 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				_step->StepCount = 0;
 			}
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else if(type == MemoryOperationType::ExecOperand) {
-		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else {
-		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
 
-		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock())) {
+		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount())) {
 			//Memory access was a read on an uninitialized memory address
 			if(_enableBreakOnUninitRead) {
 				if(_memoryAccessCounter->GetReadCount(addressInfo) == 1) {
@@ -166,7 +166,7 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 		//_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _emu->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());
 
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 }

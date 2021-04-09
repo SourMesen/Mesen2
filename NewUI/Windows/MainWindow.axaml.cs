@@ -52,7 +52,7 @@ namespace Mesen.Windows
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
 		
-			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
+			ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
 		}

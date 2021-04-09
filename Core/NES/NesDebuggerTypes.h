@@ -1,7 +1,7 @@
 #pragma once
 #include "NesTypes.h"
 
-struct PPUDebugState
+struct NesPpuState
 {
 	PPUControlFlags ControlFlags;
 	PPUStatusFlags StatusFlags;

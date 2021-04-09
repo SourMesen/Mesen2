@@ -192,8 +192,8 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		uint16_t* GetScreenBuffer(bool previousBuffer);
 		void DebugCopyOutputBuffer(uint16_t *target);
 		void DebugUpdateFrameBuffer(bool toGrayscale);
-		void GetState(PPUDebugState &state);
-		void SetState(PPUDebugState &state);
+		void GetState(NesPpuState &state);
+		void SetState(NesPpuState &state);
 
 		void GetMemoryRanges(MemoryRanges &ranges) override
 		{

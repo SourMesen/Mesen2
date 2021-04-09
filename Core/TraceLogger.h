@@ -18,6 +18,8 @@ struct PpuState;
 struct SpcState;
 struct GbPpuState;
 struct GbCpuState;
+struct NesCpuState;
+struct NesPpuState;
 struct BaseState;
 
 struct TraceLoggerOptions
@@ -29,6 +31,7 @@ struct TraceLoggerOptions
 	bool LogGsu;
 	bool LogCx4;
 	bool LogGameboy;
+	bool LogNes;
 
 	bool ShowExtraInfo;
 	bool IndentCode;
@@ -101,6 +104,7 @@ private:
 	vector<RowPart> _gsuRowParts;
 	vector<RowPart> _cx4RowParts;
 	vector<RowPart> _gbRowParts;
+	vector<RowPart> _nesRowParts;
 
 	bool _logCpu[(int)DebugUtilities::GetLastCpuType() + 1] = {};
 
@@ -111,15 +115,17 @@ private:
 	bool _logToFile;
 	uint32_t _currentPos;
 	uint32_t _logCount;
-	shared_ptr<BaseState> *_stateCache = nullptr;
+	
+	CpuState* _snesCpuState;
+	SpcState* _spcState;
+	NecDspState* _necDspState;
+	GsuState* _gsuState;
+	Cx4State* _cx4State;
+	GbCpuState* _gbCpuState;
+	NesCpuState* _nesCpuState;
+
 	DisassemblyInfo *_disassemblyCache = nullptr;
 	CpuType* _logCpuType = nullptr;
-
-	shared_ptr<BaseState>* _stateCacheCopy = nullptr;
-	DisassemblyInfo* _disassemblyCacheCopy = nullptr;
-	CpuType* _logCpuTypeCopy = nullptr;
-
-	SimpleLock _lock;
 
 	template<CpuType cpuType> void GetStatusFlag(string &output, uint8_t ps, RowPart& part);
 
@@ -128,7 +134,9 @@ private:
 	void WriteEffectiveAddress(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType cpuMemoryType, CpuType cpuType);
 	void WriteMemoryValue(DisassemblyInfo &info, RowPart &rowPart, void *cpuState, string &output, SnesMemoryType memType, CpuType cpuType);
 	void WriteAlign(int originalSize, RowPart &rowPart, string &output);
-	void AddRow(CpuType cpuType, DisassemblyInfo &disassemblyInfo);
+	
+	template<class T> void AddRow(CpuType cpuType, T& cpuState, DisassemblyInfo& disassemblyInfo);
+
 	//bool ConditionMatches(DebugState &state, DisassemblyInfo &disassemblyInfo, OperationInfo &operationInfo);
 	
 	void ParseFormatString(vector<RowPart> &rowParts, string format);
@@ -140,6 +148,7 @@ private:
 	void GetTraceRow(string &output, GsuState &gsuState, PpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void GetTraceRow(string& output, Cx4State& cx4State, PpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 	void GetTraceRow(string &output, GbCpuState &gbState, GbPpuState &gbPpuState, DisassemblyInfo &disassemblyInfo);
+	void GetTraceRow(string& output, NesCpuState& cpuState, NesPpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 
 	template<typename T> void WriteValue(string &output, T value, RowPart& rowPart);
 
@@ -149,7 +158,8 @@ public:
 
 	__forceinline bool IsCpuLogged(CpuType type) { return _logCpu[(int)type]; }
 
-	void Log(CpuType cpuType, BaseState& cpuState, DisassemblyInfo &disassemblyInfo);
+	template<class T> void Log(CpuType cpuType, T& cpuState, DisassemblyInfo& disassemblyInfo);
+
 	void Clear();
 	//void LogNonExec(OperationInfo& operationInfo);
 	void SetOptions(TraceLoggerOptions options);

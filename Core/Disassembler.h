@@ -49,7 +49,14 @@ public:
 	void InvalidateCache(AddressInfo addrInfo, CpuType type);
 	void Disassemble(CpuType cpuType);
 
-	DisassemblyInfo GetDisassemblyInfo(AddressInfo &info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type);
+	__forceinline DisassemblyInfo GetDisassemblyInfo(AddressInfo& info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type)
+	{
+		DisassemblyInfo disassemblyInfo = (*GetSource(info.Type).Cache)[info.Address];
+		if(!disassemblyInfo.IsInitialized()) {
+			disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, _memoryDumper);
+		}
+		return disassemblyInfo;
+	}
 
 	void RefreshDisassembly(CpuType type);
 	uint32_t GetLineCount(CpuType type);
