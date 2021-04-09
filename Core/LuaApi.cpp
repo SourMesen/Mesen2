@@ -19,7 +19,7 @@
 #include "SNES/BaseCartridge.h"
 #include "IKeyManager.h"
 #include "SNES/ControlManager.h"
-#include "SNES/SnesController.h"
+#include "SNES/Input/SnesController.h"
 #include "SNES/Ppu.h"
 #include "KeyManager.h"
 #include "MemoryAccessCounter.h"

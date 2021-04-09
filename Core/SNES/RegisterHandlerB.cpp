@@ -5,8 +5,8 @@
 #include "Ppu.h"
 #include "Spc.h"
 #include "BaseCartridge.h"
-#include "Sa1.h"
-#include "Msu1.h"
+#include "SNES/Coprocessors/SA1/Sa1.h"
+#include "SNES/Coprocessors/MSU1/Msu1.h"
 #include "CheatManager.h"
 #include "Utilities/Serializer.h"
 

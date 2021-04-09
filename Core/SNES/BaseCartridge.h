@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "IMemoryHandler.h"
 #include "CartTypes.h"
-#include "BaseCoprocessor.h"
+#include "Coprocessors/BaseCoprocessor.h"
 #include "Utilities/ISerializable.h"
 
 class MemoryMappings;
