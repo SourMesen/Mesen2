@@ -7,14 +7,14 @@
 #include "Utilities/FastString.h"
 #include "DebugUtilities.h"
 #include "SNES/CpuTypes.h"
-#include "SNES/CpuDisUtils.h"
-#include "SNES/SpcDisUtils.h"
-#include "SNES/GsuDisUtils.h"
-#include "SNES/NecDspDisUtils.h"
-#include "SNES/Cx4DisUtils.h"
 #include "SNES/Console.h"
-#include "Gameboy/GameboyDisUtils.h"
-#include "NES/NesDisUtils.h"
+#include "SNES/Debugger/CpuDisUtils.h"
+#include "SNES/Debugger/SpcDisUtils.h"
+#include "SNES/Debugger/GsuDisUtils.h"
+#include "SNES/Debugger/NecDspDisUtils.h"
+#include "SNES/Debugger/Cx4DisUtils.h"
+#include "Gameboy/Debugger/GameboyDisUtils.h"
+#include "NES/Debugger/NesDisUtils.h"
 
 DisassemblyInfo::DisassemblyInfo()
 {

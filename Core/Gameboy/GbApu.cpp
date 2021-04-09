@@ -4,7 +4,7 @@
 #include "Gameboy.h"
 #include "SoundMixer.h"
 #include "EmuSettings.h"
-#include "SNES/SuperGameboy.h"
+#include "SNES/Coprocessors/SGB/SuperGameboy.h"
 #include "Utilities/Serializer.h"
 
 GbApu::GbApu()

@@ -6,7 +6,7 @@ using std::thread;
 #include "GameServer.h"
 #include "Emulator.h"
 #include "SNES/ControlManager.h"
-#include "SNES/Multitap.h"
+#include "SNES/Input/Multitap.h"
 #include "PlayerListMessage.h"
 #include "NotificationManager.h"
 #include "Utilities/Socket.h"

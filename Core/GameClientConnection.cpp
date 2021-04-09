@@ -9,7 +9,7 @@
 #include "EmuSettings.h"
 #include "SNES/ControlManager.h"
 #include "ClientConnectionData.h"
-#include "SNES/SnesController.h"
+#include "SNES/Input/SnesController.h"
 #include "SelectControllerMessage.h"
 #include "PlayerListMessage.h"
 #include "ForceDisconnectMessage.h"

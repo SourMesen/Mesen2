@@ -1,10 +1,10 @@
 #pragma once
 #include "stdafx.h"
-#include "GbCart.h"
-#include "GbMbc1.h"
-#include "GbMbc2.h"
-#include "GbMbc3.h"
-#include "GbMbc5.h"
+#include "Carts/GbCart.h"
+#include "Carts/GbMbc1.h"
+#include "Carts/GbMbc2.h"
+#include "Carts/GbMbc3.h"
+#include "Carts/GbMbc5.h"
 
 class GbCartFactory
 {

@@ -532,16 +532,16 @@
     <ClInclude Include="Gameboy\GbTimer.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GameboyDisUtils.h">
+    <ClInclude Include="Gameboy\Debugger\GameboyDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbDebugger.h">
+    <ClInclude Include="Gameboy\Debugger\GbDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbMbc1.h">
+    <ClInclude Include="Gameboy\Carts\GbMbc1.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbCart.h">
+    <ClInclude Include="Gameboy\Carts\GbCart.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbCartFactory.h">
@@ -565,19 +565,19 @@
     <ClInclude Include="Gameboy\GbNoiseChannel.h">
       <Filter>GB\APU</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbMbc5.h">
+    <ClInclude Include="Gameboy\Carts\GbMbc5.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbMbc2.h">
+    <ClInclude Include="Gameboy\Carts\GbMbc2.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbMbc3.h">
+    <ClInclude Include="Gameboy\Carts\GbMbc3.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Debugger\EventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbEventManager.h">
+    <ClInclude Include="Gameboy\Debugger\GbEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="BaseEventManager.h">
@@ -589,7 +589,7 @@
     <ClInclude Include="SNES\Debugger\Assembler.h">
       <Filter>Debugger\Assembler</Filter>
     </ClInclude>
-    <ClInclude Include="Gameboy\GbAssembler.h">
+    <ClInclude Include="Gameboy\Debugger\GbAssembler.h">
       <Filter>Debugger\Assembler</Filter>
     </ClInclude>
     <ClInclude Include="IAssembler.h">
@@ -1047,10 +1047,10 @@
     <ClCompile Include="Gameboy\Gameboy.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="Gameboy\GameboyDisUtils.cpp">
+    <ClCompile Include="Gameboy\Debugger\GameboyDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="Gameboy\GbDebugger.cpp">
+    <ClCompile Include="Gameboy\Debugger\GbDebugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
     <ClCompile Include="Gameboy\GbApu.cpp">
@@ -1062,7 +1062,7 @@
     <ClCompile Include="SNES\Debugger\EventManager.cpp">
       <Filter>Debugger\EventManager</Filter>
     </ClCompile>
-    <ClCompile Include="Gameboy\GbEventManager.cpp">
+    <ClCompile Include="Gameboy\Debugger\GbEventManager.cpp">
       <Filter>Debugger\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="Gameboy\GbDmaController.cpp">
@@ -1071,7 +1071,7 @@
     <ClCompile Include="SNES\Debugger\Assembler.cpp">
       <Filter>Debugger\Assembler</Filter>
     </ClCompile>
-    <ClCompile Include="Gameboy\GbAssembler.cpp">
+    <ClCompile Include="Gameboy\Debugger\GbAssembler.cpp">
       <Filter>Debugger\Assembler</Filter>
     </ClCompile>
     <ClCompile Include="Gameboy\GbSquareChannel.cpp">

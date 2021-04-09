@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-#include "../../Utilities/Serializer.h"
+#include "Utilities/Serializer.h"
 
-#include "NesPpu.h"
-#include "NesCpu.h"
-#include "NesApu.h"
-#include "NesMemoryManager.h"
-#include "NesConsole.h"
-#include "NesControlManager.h"
-#include "BaseMapper.h"
+#include "NES/NesPpu.h"
+#include "NES/NesCpu.h"
+#include "NES/APU/NesApu.h"
+#include "NES/NesMemoryManager.h"
+#include "NES/NesConsole.h"
+#include "NES/NesControlManager.h"
+#include "NES/BaseMapper.h"
 
 #include "EmuSettings.h"
 #include "Debugger.h"

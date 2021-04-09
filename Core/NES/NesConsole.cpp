@@ -4,7 +4,7 @@
 #include "NesControlManager.h"
 #include "IControlManager.h"
 #include "MapperFactory.h"
-#include "NesApu.h"
+#include "NES/APU/NesApu.h"
 #include "NesCpu.h"
 #include "BaseMapper.h"
 #include "NesSoundMixer.h"

@@ -2,7 +2,7 @@
 #include "Emulator.h"
 #include "EmuSettings.h"
 #include "GbControlManager.h"
-#include "SNES/SnesController.h"
+#include "SNES/Input/SnesController.h"
 #include "KeyManager.h"
 
 GbControlManager::GbControlManager(Emulator* emu)

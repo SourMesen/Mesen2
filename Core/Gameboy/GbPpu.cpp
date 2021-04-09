@@ -11,7 +11,7 @@
 #include "GbDmaController.h"
 #include "NotificationManager.h"
 #include "MessageManager.h"
-#include "SNES/SuperGameboy.h"
+#include "SNES/Coprocessors/SGB/SuperGameboy.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 

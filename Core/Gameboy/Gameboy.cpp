@@ -3,7 +3,7 @@
 #include "GbCpu.h"
 #include "GbPpu.h"
 #include "GbApu.h"
-#include "GbCart.h"
+#include "Carts/GbCart.h"
 #include "GbTimer.h"
 #include "GbControlManager.h"
 #include "GbDmaController.h"

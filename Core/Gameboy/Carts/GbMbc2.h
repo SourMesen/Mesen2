@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "GbCart.h"
-#include "GbMemoryManager.h"
+#include "Gameboy/Carts/GbCart.h"
+#include "Gameboy/GbMemoryManager.h"
 #include "Utilities/Serializer.h"
 
 class GbMbc2 : public GbCart

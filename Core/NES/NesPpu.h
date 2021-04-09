@@ -2,9 +2,9 @@
 
 #include "../stdafx.h"
 #include "../../Utilities/ISerializable.h"
-#include "NesTypes.h"
-#include "NesDebuggerTypes.h"
-#include "INesMemoryHandler.h"
+#include "NES/NesTypes.h"
+#include "NES/Debugger/NesDebuggerTypes.h"
+#include "NES/INesMemoryHandler.h"
 #include "MemoryOperationType.h"
 
 enum class NesModel;

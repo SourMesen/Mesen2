@@ -11,7 +11,7 @@
 #include "DebugUtilities.h"
 #include "SNES/CpuTypes.h"
 #include "SNES/SpcTypes.h"
-#include "SNES/GsuTypes.h"
+#include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Gameboy/GbTypes.h"
 #include "NES/NesTypes.h"
 #include "Utilities/FastString.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "NesTypes.h"
+#include "NES/NesTypes.h"
 
 struct NesPpuState
 {

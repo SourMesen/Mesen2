@@ -5,7 +5,7 @@
 #include "LabelManager.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
-#include "GbTypes.h"
+#include "Gameboy/GbTypes.h"
 
 constexpr const char* _opTemplate[256] = {
 	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (a), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",

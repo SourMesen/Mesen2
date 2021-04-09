@@ -6,9 +6,9 @@
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/Spc.h"
-#include "SNES/Sa1.h"
-#include "SNES/Gsu.h"
-#include "SNES/Cx4.h"
+#include "SNES/Coprocessors/SA1/Sa1.h"
+#include "SNES/Coprocessors/GSU/Gsu.h"
+#include "SNES/Coprocessors/CX4/Cx4.h"
 #include "SNES/BaseCartridge.h"
 #include "Gameboy/Gameboy.h"
 
