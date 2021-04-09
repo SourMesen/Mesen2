@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "NesDisUtils.h"
 
-#include "NesTypes.h"
+#include "NES/NesTypes.h"
 #include "EmuSettings.h"
 #include "DisassemblyInfo.h"
 #include "LabelManager.h"

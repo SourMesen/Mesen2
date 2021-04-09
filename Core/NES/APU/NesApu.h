@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../stdafx.h"
-#include "../../Utilities/ISerializable.h"
-#include "INesMemoryHandler.h"
-#include "NesTypes.h"
+#include "stdafx.h"
+#include "Utilities/ISerializable.h"
+#include "NES/INesMemoryHandler.h"
+#include "NES/NesTypes.h"
 
 class NesConsole;
 class SquareChannel;

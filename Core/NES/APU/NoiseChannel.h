@@ -1,9 +1,9 @@
 #pragma once
-#include "../stdafx.h"
+#include "stdafx.h"
 #include "NesApu.h"
 #include "ApuEnvelope.h"
-#include "NesCpu.h"
-#include "NesConsole.h"
+#include "NES/NesCpu.h"
+#include "NES/NesConsole.h"
 
 class NoiseChannel : public ApuEnvelope
 {

@@ -1,9 +1,9 @@
 #pragma once
 #include "../stdafx.h"
-#include "INesMemoryHandler.h"
-#include "NesConsole.h"
-#include "../../Utilities/ISerializable.h"
-#include "../../Utilities/Serializer.h"
+#include "NES/INesMemoryHandler.h"
+#include "NES/NesConsole.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
 
 enum class FrameType
 {

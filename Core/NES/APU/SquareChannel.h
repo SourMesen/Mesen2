@@ -1,7 +1,7 @@
 #pragma once
-#include "../stdafx.h"
+#include "stdafx.h"
 #include "ApuEnvelope.h"
-#include "NesConsole.h"
+#include "NES/NesConsole.h"
 
 class SquareChannel : public ApuEnvelope
 {

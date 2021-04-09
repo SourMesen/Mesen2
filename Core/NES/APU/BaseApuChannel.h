@@ -1,10 +1,10 @@
 #pragma once
-#include "../stdafx.h"
-#include "../../Utilities/ISerializable.h"
-#include "../../Utilities/Serializer.h"
-#include "INesMemoryHandler.h"
-#include "NesSoundMixer.h"
-#include "NesConsole.h"
+#include "stdafx.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
+#include "NES/INesMemoryHandler.h"
+#include "NES/NesConsole.h"
+#include "NES/NesSoundMixer.h"
 
 class BaseApuChannel : public INesMemoryHandler, public ISerializable
 {

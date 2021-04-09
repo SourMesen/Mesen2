@@ -1,7 +1,7 @@
 #pragma once
 #include "../stdafx.h"
 #include "BaseApuChannel.h"
-#include "NesConsole.h"
+#include "NES/NesConsole.h"
 #include "NesApu.h"
 
 class ApuLengthCounter : public BaseApuChannel

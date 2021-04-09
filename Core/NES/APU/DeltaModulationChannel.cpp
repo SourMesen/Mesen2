@@ -2,9 +2,9 @@
 
 #include "DeltaModulationChannel.h"
 #include "NesApu.h"
-#include "NesCpu.h"
-#include "NesConsole.h"
-#include "NesMemoryManager.h"
+#include "NES/NesCpu.h"
+#include "NES/NesConsole.h"
+#include "NES/NesMemoryManager.h"
 
 DeltaModulationChannel::DeltaModulationChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer *mixer) : BaseApuChannel(channel, console, mixer)
 {

@@ -1,6 +1,6 @@
 #pragma once
-#include "../stdafx.h"
-#include "NesConsole.h"
+#include "stdafx.h"
+#include "NES/NesConsole.h"
 #include "ApuLengthCounter.h"
 
 class TriangleChannel : public ApuLengthCounter

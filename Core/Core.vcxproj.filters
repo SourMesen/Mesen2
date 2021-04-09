@@ -604,22 +604,22 @@
     <ClInclude Include="Emulator.h" />
     <ClInclude Include="IConsole.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="NES\ApuEnvelope.h">
+    <ClInclude Include="NES\APU\ApuEnvelope.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\ApuFrameCounter.h">
+    <ClInclude Include="NES\APU\ApuFrameCounter.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\ApuLengthCounter.h">
+    <ClInclude Include="NES\APU\ApuLengthCounter.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\BaseApuChannel.h">
+    <ClInclude Include="NES\APU\BaseApuChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\BaseMapper.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\DeltaModulationChannel.h">
+    <ClInclude Include="NES\APU\DeltaModulationChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\GameDatabase.h">
@@ -637,7 +637,7 @@
     <ClInclude Include="NES\MapperFactory.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\NesApu.h">
+    <ClInclude Include="NES\APU\NesApu.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\NesConsole.h">
@@ -646,7 +646,7 @@
     <ClInclude Include="NES\NesCpu.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\NesDebuggerTypes.h">
+    <ClInclude Include="NES\Debugger\NesDebuggerTypes.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\NesHeader.h">
@@ -664,16 +664,16 @@
     <ClInclude Include="NES\NesTypes.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\NoiseChannel.h">
+    <ClInclude Include="NES\APU\NoiseChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\OpenBusHandler.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\SquareChannel.h">
+    <ClInclude Include="NES\APU\SquareChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\TriangleChannel.h">
+    <ClInclude Include="NES\APU\TriangleChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\BaseLoader.h">
@@ -700,7 +700,7 @@
     <ClInclude Include="NES\NesControlManager.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\StandardController.h">
+    <ClInclude Include="NES\Input\StandardController.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\NROM.h">
@@ -715,10 +715,10 @@
     <ClInclude Include="IAudioProvider.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="NES\NesDebugger.h">
+    <ClInclude Include="NES\Debugger\NesDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
-    <ClInclude Include="NES\NesDisUtils.h">
+    <ClInclude Include="NES\Debugger\NesDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
     <ClInclude Include="BaseState.h">
@@ -1091,7 +1091,7 @@
     <ClCompile Include="NES\BaseMapper.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="NES\DeltaModulationChannel.cpp">
+    <ClCompile Include="NES\APU\DeltaModulationChannel.cpp">
       <Filter>NES</Filter>
     </ClCompile>
     <ClCompile Include="NES\GameDatabase.cpp">
@@ -1103,7 +1103,7 @@
     <ClCompile Include="NES\MapperFactory.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="NES\NesApu.cpp">
+    <ClCompile Include="NES\APU\NesApu.cpp">
       <Filter>NES</Filter>
     </ClCompile>
     <ClCompile Include="NES\NesCpu.cpp">
@@ -1136,10 +1136,10 @@
     <ClCompile Include="Gameboy\GbControlManager.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="NES\NesDisUtils.cpp">
+    <ClCompile Include="NES\Debugger\NesDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="NES\NesDebugger.cpp">
+    <ClCompile Include="NES\Debugger\NesDebugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
   </ItemGroup>

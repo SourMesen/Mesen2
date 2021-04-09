@@ -18,10 +18,10 @@
 #include "Utilities/FolderUtilities.h"
 #include "MemoryOperationType.h"
 #include "CodeDataLogger.h"
-#include "NesConsole.h"
-#include "NesCpu.h"
-#include "NesPpu.h"
-#include "BaseMapper.h"
+#include "NES/NesConsole.h"
+#include "NES/NesCpu.h"
+#include "NES/NesPpu.h"
+#include "NES/BaseMapper.h"
 
 NesDebugger::NesDebugger(Debugger* debugger)
 {
