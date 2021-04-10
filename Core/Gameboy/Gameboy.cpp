@@ -429,16 +429,23 @@ double Gameboy::GetFps()
 
 RomInfo Gameboy::GetRomInfo()
 {
+	//TODO
 	return RomInfo();
 }
 
 void Gameboy::RunSingleFrame()
 {
+	//TODO
 }
 
 PpuFrameInfo Gameboy::GetPpuFrame()
 {
-	return PpuFrameInfo();
+	PpuFrameInfo frame;
+	frame.FrameBuffer = (uint8_t*)_ppu->GetOutputBuffer();
+	frame.FrameCount = _ppu->GetFrameCount();
+	frame.Width = 160;
+	frame.Height = 144;
+	return frame;
 }
 
 vector<CpuType> Gameboy::GetCpuTypes()

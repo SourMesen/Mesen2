@@ -247,8 +247,12 @@ double Console::GetFps()
 
 PpuFrameInfo Console::GetPpuFrame()
 {
-	//TODO
-	return PpuFrameInfo();
+	PpuFrameInfo frame;
+	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
+	frame.Width = 256;
+	frame.Height = 239;
+	frame.FrameCount = _ppu->GetFrameCount();
+	return frame;
 }
 
 vector<CpuType> Console::GetCpuTypes()

@@ -219,8 +219,12 @@ void NesConsole::RunSingleFrame()
 
 PpuFrameInfo NesConsole::GetPpuFrame()
 {
-	//TODO
-	return PpuFrameInfo();
+	PpuFrameInfo frame;
+	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer(false);
+	frame.Width = NesPpu::ScreenWidth;
+	frame.Height = NesPpu::ScreenHeight;
+	frame.FrameCount = _ppu->GetFrameCount();
+	return frame;
 }
 
 ConsoleType NesConsole::GetConsoleType()
