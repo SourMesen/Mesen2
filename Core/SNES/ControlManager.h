@@ -39,22 +39,22 @@ public:
 	ControlManager(Console* console);
 	virtual ~ControlManager();
 
-	void UpdateControlDevices();
+	void UpdateControlDevices() override;
 	void UpdateInputState();
 
-	uint32_t GetPollCounter();
-	void SetPollCounter(uint32_t value);
+	uint32_t GetPollCounter() override;
+	void SetPollCounter(uint32_t value) override;
 
-	void RegisterInputProvider(IInputProvider* provider);
-	void UnregisterInputProvider(IInputProvider* provider);
+	void RegisterInputProvider(IInputProvider* provider) override;
+	void UnregisterInputProvider(IInputProvider* provider) override;
 
-	void RegisterInputRecorder(IInputRecorder* recorder);
-	void UnregisterInputRecorder(IInputRecorder* recorder);
+	void RegisterInputRecorder(IInputRecorder* recorder) override;
+	void UnregisterInputRecorder(IInputRecorder* recorder) override;
 
 	vector<ControllerData> GetPortStates();
 
 	SystemActionManager* GetSystemActionManager();
-	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);
+	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port) override;
 	vector<shared_ptr<BaseControlDevice>> GetControlDevices();
 	
 	static shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port, Console* console);

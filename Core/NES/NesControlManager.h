@@ -16,7 +16,7 @@ struct ControlDeviceState;
 enum class ControllerType;
 enum class ExpansionPortDevice;
 
-class NesControlManager : public ISerializable, public INesMemoryHandler, public IControlManager
+class NesControlManager final : public ISerializable, public INesMemoryHandler, public IControlManager
 {
 private:
 	vector<IInputRecorder*> _inputRecorders;
@@ -48,26 +48,26 @@ public:
 	NesControlManager(shared_ptr<NesConsole> console, shared_ptr<BaseControlDevice> systemActionManager, shared_ptr<BaseControlDevice> mapperControlDevice);
 	virtual ~NesControlManager();
 
-	virtual void UpdateControlDevices();
+	virtual void UpdateControlDevices() override;
 	void UpdateInputState();
 
 	uint32_t GetLagCounter();
 	void ResetLagCounter();
 
-	uint32_t GetPollCounter();
-	void SetPollCounter(uint32_t value);
+	uint32_t GetPollCounter() override;
+	void SetPollCounter(uint32_t value) override;
 
 	virtual void Reset(bool softReset);
 
-	void RegisterInputProvider(IInputProvider* provider);
-	void UnregisterInputProvider(IInputProvider* provider);
+	void RegisterInputProvider(IInputProvider* provider) override;
+	void UnregisterInputProvider(IInputProvider* provider) override;
 
-	void RegisterInputRecorder(IInputRecorder* recorder);
-	void UnregisterInputRecorder(IInputRecorder* recorder);
+	void RegisterInputRecorder(IInputRecorder* recorder) override;
+	void UnregisterInputRecorder(IInputRecorder* recorder) override;
 
 	vector<ControlDeviceState> GetPortStates();
 
-	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);
+	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port) override;
 	vector<shared_ptr<BaseControlDevice>> GetControlDevices();
 	bool HasKeyboard();
 	

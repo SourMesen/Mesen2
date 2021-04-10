@@ -21,5 +21,5 @@ private:
 public:
 	static void GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings);
 	static uint8_t GetOpSize(uint8_t opCode);
-	static int32_t NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& state, MemoryDumper* memoryDumper);
+	static int32_t GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& state, MemoryDumper* memoryDumper);
 };

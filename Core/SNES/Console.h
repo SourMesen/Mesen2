@@ -42,7 +42,7 @@ enum class EventType;
 enum class ConsoleRegion;
 enum class ConsoleType;
 
-class Console : public std::enable_shared_from_this<Console>, public IConsole
+class Console final : public std::enable_shared_from_this<Console>, public IConsole
 {
 private:
 	shared_ptr<Cpu> _cpu;
@@ -65,7 +65,6 @@ private:
 
 	void UpdateRegion();
 
-	void RunFrame();
 	bool ProcessSystemActions();
 
 public:
@@ -79,20 +78,21 @@ public:
 	void Stop() override;
 	void Reset() override;
 
-	void RunSingleFrame();
+	void RunFrame() override;
+	void RunSingleFrame() override;
 
 	void ProcessEndOfFrame();
 
 	bool LoadRom(VirtualFile& romFile, VirtualFile& patchFile) override;
 	void Init() override;
 
-	RomInfo GetRomInfo();
-	uint64_t GetMasterClock();
+	RomInfo GetRomInfo() override;
+	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();
-	ConsoleType GetConsoleType();
+	ConsoleType GetConsoleType() override;
 
-	void Serialize(Serializer& s);
+	void Serialize(Serializer& s) override;
 
 	shared_ptr<Cpu> GetCpu();
 	shared_ptr<Ppu> GetPpu();
@@ -100,7 +100,7 @@ public:
 	shared_ptr<BaseCartridge> GetCartridge();
 	shared_ptr<MemoryManager> GetMemoryManager();
 	shared_ptr<InternalRegisters> GetInternalRegisters();
-	shared_ptr<IControlManager> GetControlManager();
+	shared_ptr<IControlManager> GetControlManager() override;
 	shared_ptr<DmaController> GetDmaController();
 	shared_ptr<Msu1> GetMsu1();
 	
@@ -108,8 +108,8 @@ public:
 	
 	bool IsRunning();
 
-	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
-	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
+	AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
+	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
 
 	double GetFrameDelay() override;
 	double GetFps() override;

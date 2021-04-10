@@ -35,7 +35,7 @@ class Cx4Debugger final : public IDebugger
 public:
 	Cx4Debugger(Debugger* debugger);
 
-	void Reset();
+	void Reset() override;
 
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;

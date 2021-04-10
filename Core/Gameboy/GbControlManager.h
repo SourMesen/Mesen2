@@ -7,7 +7,7 @@ class BaseControlDevice;
 class IInputRecorder;
 class IInputProvider;
 
-class GbControlManager : public IControlManager
+class GbControlManager final : public IControlManager
 {
 private:
 	Emulator* _emu;

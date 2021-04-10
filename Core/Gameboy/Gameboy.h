@@ -19,7 +19,7 @@ class GbControlManager;
 class SuperGameboy;
 class VirtualFile;
 
-class Gameboy : public IConsole
+class Gameboy final : public IConsole
 {
 private:
 	static constexpr int SpriteRamSize = 0xA0;
