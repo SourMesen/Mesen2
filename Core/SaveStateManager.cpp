@@ -10,8 +10,8 @@
 #include "VideoDecoder.h"
 #include "MovieManager.h"
 #include "EventType.h"
-#include "Debugger.h"
-#include "GameClient.h"
+#include "Debugger/Debugger.h"
+#include "Netplay/GameClient.h"
 #include "DefaultVideoFilter.h"
 
 SaveStateManager::SaveStateManager(shared_ptr<Emulator> emu)

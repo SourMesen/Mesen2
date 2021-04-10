@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
-#include "BaseEventManager.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/BaseEventManager.h"
 #include "Utilities/SimpleLock.h"
 
 enum class DebugEventType;

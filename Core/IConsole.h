@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 #include "SNES/CartTypes.h"
 
 class IControlManager;

@@ -2,14 +2,13 @@
 #include "Renderer.h"
 #include "DirectXTK/SpriteBatch.h"
 #include "DirectXTK/SpriteFont.h"
-#include "../Core/Emulator.h"
-#include "../Core/VideoDecoder.h"
-#include "../Core/VideoRenderer.h"
-#include "../Core/Debugger.h"
-#include "../Core/MessageManager.h"
-#include "../Core/SettingTypes.h"
-#include "../Core/EmuSettings.h"
-#include "../Utilities/UTF8Util.h"
+#include "Core/Emulator.h"
+#include "Core/VideoDecoder.h"
+#include "Core/VideoRenderer.h"
+#include "Core/MessageManager.h"
+#include "Core/SettingTypes.h"
+#include "Core/EmuSettings.h"
+#include "Utilities/UTF8Util.h"
 
 using namespace DirectX;
 

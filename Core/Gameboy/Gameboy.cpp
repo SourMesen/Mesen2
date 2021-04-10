@@ -7,7 +7,7 @@
 #include "GbTimer.h"
 #include "GbControlManager.h"
 #include "GbDmaController.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 #include "GbMemoryManager.h"
 #include "GbCartFactory.h"
 #include "BatteryManager.h"

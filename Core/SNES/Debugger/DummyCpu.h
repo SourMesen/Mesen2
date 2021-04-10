@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "MemoryMappings.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 

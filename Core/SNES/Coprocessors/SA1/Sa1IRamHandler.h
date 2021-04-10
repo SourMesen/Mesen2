@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "IMemoryHandler.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 
 class Sa1IRamHandler : public IMemoryHandler
 {

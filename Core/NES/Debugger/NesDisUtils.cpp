@@ -3,9 +3,9 @@
 
 #include "NES/NesTypes.h"
 #include "EmuSettings.h"
-#include "DisassemblyInfo.h"
-#include "LabelManager.h"
-#include "MemoryDumper.h"
+#include "Debugger/DisassemblyInfo.h"
+#include "Debugger/LabelManager.h"
+#include "Debugger/MemoryDumper.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
 

@@ -3,7 +3,7 @@
 
 #include "SettingTypes.h"
 #include "IConsole.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 
 class Emulator;
 class NesCpu;

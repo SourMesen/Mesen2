@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
 #include <regex>
-#include "IAssembler.h"
-#include "CpuDisUtils.h"
+#include "Debugger/IAssembler.h"
+#include "SNES/Debugger/CpuDisUtils.h"
 
 class LabelManager;
 

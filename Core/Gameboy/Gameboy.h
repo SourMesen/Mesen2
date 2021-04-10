@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 #include "GameboyHeader.h"
 #include "SettingTypes.h"
 #include "GbTypes.h"

@@ -10,10 +10,10 @@
     <ClInclude Include="SNES\MemoryManager.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="TraceLogger.h">
+    <ClInclude Include="Debugger\TraceLogger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="Debugger.h">
+    <ClInclude Include="Debugger\Debugger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Console.h">
@@ -94,10 +94,10 @@
     <ClInclude Include="SNES\DmaController.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryDumper.h">
+    <ClInclude Include="Debugger\MemoryDumper.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="DebugTypes.h">
+    <ClInclude Include="Debugger\DebugTypes.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="SNES\BaseCartridge.h">
@@ -151,7 +151,7 @@
     <ClInclude Include="SNES\ControlManager.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="CodeDataLogger.h">
+    <ClInclude Include="Debugger\CodeDataLogger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="SNES\RegisterHandlerB.h">
@@ -160,25 +160,25 @@
     <ClInclude Include="SNES\RegisterHandlerA.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="ExpressionEvaluator.h">
+    <ClInclude Include="Debugger\ExpressionEvaluator.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Debugger\DummyCpu.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="BreakpointManager.h">
+    <ClInclude Include="Debugger\BreakpointManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="Breakpoint.h">
+    <ClInclude Include="Debugger\Breakpoint.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="PpuTools.h">
+    <ClInclude Include="Debugger\PpuTools.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="EventType.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="DebugBreakHelper.h">
+    <ClInclude Include="Debugger\DebugBreakHelper.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="EmuSettings.h">
@@ -235,16 +235,16 @@
     <ClInclude Include="SNES\SpcTimer.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="CallstackManager.h">
+    <ClInclude Include="Debugger\CallstackManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryAccessCounter.h">
+    <ClInclude Include="Debugger\MemoryAccessCounter.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="Disassembler.h">
+    <ClInclude Include="Debugger\Disassembler.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
-    <ClInclude Include="DisassemblyInfo.h">
+    <ClInclude Include="Debugger\DisassemblyInfo.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Debugger\CpuDisUtils.h">
@@ -256,25 +256,25 @@
     <ClInclude Include="SNES\Debugger\DummySpc.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="LabelManager.h">
+    <ClInclude Include="Debugger\LabelManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptingContext.h">
+    <ClInclude Include="Debugger\ScriptingContext.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="LuaScriptingContext.h">
+    <ClInclude Include="Debugger\LuaScriptingContext.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptHost.h">
+    <ClInclude Include="Debugger\ScriptHost.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="LuaApi.h">
+    <ClInclude Include="Debugger\LuaApi.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="LuaCallHelper.h">
+    <ClInclude Include="Debugger\LuaCallHelper.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptManager.h">
+    <ClInclude Include="Debugger\ScriptManager.h">
       <Filter>Debugger\Scripts</Filter>
     </ClInclude>
     <ClInclude Include="SNES\AluMulDiv.h">
@@ -292,7 +292,7 @@
     <ClInclude Include="MemoryMappings.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="DebugUtilities.h">
+    <ClInclude Include="Debugger\DebugUtilities.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\SA1\Sa1.h">
@@ -415,40 +415,40 @@
     <ClInclude Include="SNES\SpcFileData.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="GameClient.h">
+    <ClInclude Include="Netplay\GameClient.h">
       <Filter>Netplay</Filter>
     </ClInclude>
-    <ClInclude Include="GameClientConnection.h">
+    <ClInclude Include="Netplay\GameClientConnection.h">
       <Filter>Netplay</Filter>
     </ClInclude>
-    <ClInclude Include="GameConnection.h">
+    <ClInclude Include="Netplay\GameConnection.h">
       <Filter>Netplay</Filter>
     </ClInclude>
-    <ClInclude Include="GameServerConnection.h">
+    <ClInclude Include="Netplay\GameServerConnection.h">
       <Filter>Netplay</Filter>
     </ClInclude>
-    <ClInclude Include="ServerInformationMessage.h">
+    <ClInclude Include="Netplay\ServerInformationMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
     <ClInclude Include="SaveStateMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerListMessage.h">
+    <ClInclude Include="Netplay\PlayerListMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessage.h">
+    <ClInclude Include="Netplay\NetMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="HandShakeMessage.h">
+    <ClInclude Include="Netplay\HandShakeMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="GameInformationMessage.h">
+    <ClInclude Include="Netplay\GameInformationMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="ForceDisconnectMessage.h">
+    <ClInclude Include="Netplay\ForceDisconnectMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="SelectControllerMessage.h">
+    <ClInclude Include="Netplay\SelectControllerMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
     <ClInclude Include="MovieDataMessage.h">
@@ -460,16 +460,16 @@
     <ClInclude Include="MessageType.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="ClientConnectionData.h">
+    <ClInclude Include="Netplay\ClientConnectionData.h">
       <Filter>Netplay</Filter>
     </ClInclude>
-    <ClInclude Include="GameServer.h">
+    <ClInclude Include="Netplay\GameServer.h">
       <Filter>Netplay</Filter>
     </ClInclude>
     <ClInclude Include="RomFinder.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="IDebugger.h">
+    <ClInclude Include="Debugger\IDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\MSU1\Msu1.h">
@@ -484,7 +484,7 @@
     <ClInclude Include="SNES\Coprocessors\SA1\Sa1BwRamHandler.h">
       <Filter>SNES\Coprocessors\SA1</Filter>
     </ClInclude>
-    <ClInclude Include="Profiler.h">
+    <ClInclude Include="Debugger\Profiler.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\SPC7110\Spc7110.h">
@@ -580,7 +580,7 @@
     <ClInclude Include="Gameboy\Debugger\GbEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
-    <ClInclude Include="BaseEventManager.h">
+    <ClInclude Include="Debugger\BaseEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbDmaController.h">
@@ -592,7 +592,7 @@
     <ClInclude Include="Gameboy\Debugger\GbAssembler.h">
       <Filter>Debugger\Assembler</Filter>
     </ClInclude>
-    <ClInclude Include="IAssembler.h">
+    <ClInclude Include="Debugger\IAssembler.h">
       <Filter>Debugger\Assembler</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\SGB\SuperGameboy.h">
@@ -729,10 +729,10 @@
     <ClCompile Include="SNES\Cpu.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="TraceLogger.cpp">
+    <ClCompile Include="Debugger\TraceLogger.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="Debugger.cpp">
+    <ClCompile Include="Debugger\Debugger.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Console.cpp">
@@ -768,7 +768,7 @@
     <ClCompile Include="SNES\DmaController.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryDumper.cpp">
+    <ClCompile Include="Debugger\MemoryDumper.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="NotificationManager.cpp">
@@ -795,22 +795,22 @@
     <ClCompile Include="SNES\ControlManager.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
-    <ClCompile Include="CodeDataLogger.cpp">
+    <ClCompile Include="Debugger\CodeDataLogger.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="SNES\MemoryManager.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionEvaluator.cpp">
+    <ClCompile Include="Debugger\ExpressionEvaluator.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="Breakpoint.cpp">
+    <ClCompile Include="Debugger\Breakpoint.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="BreakpointManager.cpp">
+    <ClCompile Include="Debugger\BreakpointManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="PpuTools.cpp">
+    <ClCompile Include="Debugger\PpuTools.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="EmuSettings.cpp">
@@ -855,16 +855,16 @@
     <ClCompile Include="SNES\Spc.Instructions.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="CallstackManager.cpp">
+    <ClCompile Include="Debugger\CallstackManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryAccessCounter.cpp">
+    <ClCompile Include="Debugger\MemoryAccessCounter.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="Disassembler.cpp">
+    <ClCompile Include="Debugger\Disassembler.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="DisassemblyInfo.cpp">
+    <ClCompile Include="Debugger\DisassemblyInfo.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Debugger\CpuDisUtils.cpp">
@@ -876,25 +876,25 @@
     <ClCompile Include="EmulatorLock.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="LabelManager.cpp">
+    <ClCompile Include="Debugger\LabelManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="LuaScriptingContext.cpp">
+    <ClCompile Include="Debugger\LuaScriptingContext.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptingContext.cpp">
+    <ClCompile Include="Debugger\ScriptingContext.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptHost.cpp">
+    <ClCompile Include="Debugger\ScriptHost.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="LuaApi.cpp">
+    <ClCompile Include="Debugger\LuaApi.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="LuaCallHelper.cpp">
+    <ClCompile Include="Debugger\LuaCallHelper.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptManager.cpp">
+    <ClCompile Include="Debugger\ScriptManager.cpp">
       <Filter>Debugger\Scripts</Filter>
     </ClCompile>
     <ClCompile Include="SNES\AluMulDiv.cpp">
@@ -984,19 +984,19 @@
     <ClCompile Include="SNES\SpcHud.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="GameClient.cpp">
+    <ClCompile Include="Netplay\GameClient.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
-    <ClCompile Include="GameClientConnection.cpp">
+    <ClCompile Include="Netplay\GameClientConnection.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
-    <ClCompile Include="GameConnection.cpp">
+    <ClCompile Include="Netplay\GameConnection.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
-    <ClCompile Include="GameServerConnection.cpp">
+    <ClCompile Include="Netplay\GameServerConnection.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
-    <ClCompile Include="GameServer.cpp">
+    <ClCompile Include="Netplay\GameServer.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
     <ClCompile Include="PcmReader.cpp">
@@ -1005,7 +1005,7 @@
     <ClCompile Include="SNES\Coprocessors\MSU1\Msu1.cpp">
       <Filter>SNES\Coprocessors\MSU1</Filter>
     </ClCompile>
-    <ClCompile Include="Profiler.cpp">
+    <ClCompile Include="Debugger\Profiler.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Coprocessors\SPC7110\Spc7110.cpp">

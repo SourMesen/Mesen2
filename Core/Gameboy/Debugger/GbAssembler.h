@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "IAssembler.h"
+#include "Debugger/IAssembler.h"
 
 class LabelManager;
 

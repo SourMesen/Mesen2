@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "../Core/Emulator.h"
-#include "../Core/ClientConnectionData.h"
-#include "../Core/GameServer.h"
-#include "../Core/GameClient.h"
-#include "../Core/EmuSettings.h"
+#include "Core/Emulator.h"
+#include "Core/EmuSettings.h"
+#include "Core/Netplay/ClientConnectionData.h"
+#include "Core/Netplay/GameServer.h"
+#include "Core/Netplay/GameClient.h"
 
 extern shared_ptr<Emulator> _emu;
 

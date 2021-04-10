@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "GameboyDisUtils.h"
-#include "DisassemblyInfo.h"
+#include "Gameboy/Debugger/GameboyDisUtils.h"
+#include "Gameboy/GbTypes.h"
+#include "Debugger/DisassemblyInfo.h"
+#include "Debugger/LabelManager.h"
 #include "EmuSettings.h"
-#include "LabelManager.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
-#include "Gameboy/GbTypes.h"
 
 constexpr const char* _opTemplate[256] = {
 	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (a), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",

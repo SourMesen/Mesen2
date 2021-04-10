@@ -8,7 +8,7 @@
 #include "NotificationManager.h"
 #include "SaveStateManager.h"
 #include "MovieManager.h"
-#include "GameClient.h"
+#include "Netplay/GameClient.h"
 
 ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Emulator> emu)
 {

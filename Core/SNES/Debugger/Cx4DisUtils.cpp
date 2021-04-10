@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Cx4DisUtils.h"
-#include "DisassemblyInfo.h"
+#include "SNES/Debugger/Cx4DisUtils.h"
+#include "Debugger/DisassemblyInfo.h"
 #include "EmuSettings.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"

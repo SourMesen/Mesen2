@@ -3,11 +3,11 @@
 #include <unordered_map>
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
-#include "Assembler.h"
 #include "SNES/Cpu.h"
+#include "SNES/Debugger/Assembler.h"
 #include "SNES/Debugger/CpuDisUtils.h"
-#include "DisassemblyInfo.h"
-#include "LabelManager.h"
+#include "Debugger/DisassemblyInfo.h"
+#include "Debugger/LabelManager.h"
 
 static const std::regex instRegex = std::regex("^\\s*([a-zA-Z]{3})[\\s]*(#%|#){0,1}([([]{0,1})[\\s]*([$]{0,1})([^\\[\\],)(;:]*)[\\s]*((,[$][0-9a-f]{1,2}|,x\\)|\\),y|,x|,y|,s\\),y|,s|\\)|\\],y|\\]){0,1})\\s*(;*)(.*)", std::regex_constants::icase);
 static const std::regex isCommentOrBlank = std::regex("^\\s*([;]+.*$|\\s*$)", std::regex_constants::icase);

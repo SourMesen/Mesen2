@@ -12,7 +12,7 @@
 #include "NesPpu.h"
 #include "Utilities/Serializer.h"
 #include "EmuSettings.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 
 NesConsole::NesConsole(Emulator* emu)
 {

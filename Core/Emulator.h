@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
-#include "Debugger.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/Debugger.h"
 #include "EmulatorLock.h"
 #include "IConsole.h"
 #include "Utilities/Timer.h"

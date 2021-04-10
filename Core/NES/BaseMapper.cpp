@@ -10,12 +10,12 @@
 #include "NesTypes.h"
 #include "NesMemoryManager.h"
 #include "RomData.h"
-#include "../SnesMemoryType.h"
-#include "../DebugTypes.h"
-#include "../CheatManager.h"
-#include "../BatteryManager.h"
-#include "../EmuSettings.h"
-#include "../MemoryOperationType.h"
+#include "SnesMemoryType.h"
+#include "Debugger/DebugTypes.h"
+#include "CheatManager.h"
+#include "BatteryManager.h"
+#include "EmuSettings.h"
+#include "MemoryOperationType.h"
 
 void BaseMapper::WriteRegister(uint16_t addr, uint8_t value) { }
 uint8_t BaseMapper::ReadRegister(uint16_t addr) { return 0; }

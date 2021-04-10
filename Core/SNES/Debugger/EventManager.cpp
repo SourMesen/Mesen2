@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "EventManager.h"
-#include "DebugTypes.h"
+#include "SNES/Debugger/EventManager.h"
 #include "SNES/Cpu.h"
 #include "SNES/Ppu.h"
 #include "SNES/DmaController.h"
 #include "SNES/MemoryManager.h"
-#include "Debugger.h"
-#include "DebugBreakHelper.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/DebugBreakHelper.h"
+#include "Debugger/BaseEventManager.h"
 #include "DefaultVideoFilter.h"
-#include "BaseEventManager.h"
 
 EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController)
 {

@@ -3,7 +3,6 @@
 #include "BaseMapper.h"
 #include "EmuSettings.h"
 #include "NesConsole.h"
-#include "GameServerConnection.h"
 #include "NesMemoryManager.h"
 #include "IKeyManager.h"
 #include "IInputProvider.h"

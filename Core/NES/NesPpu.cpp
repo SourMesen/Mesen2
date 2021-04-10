@@ -10,8 +10,8 @@
 #include "NES/NesControlManager.h"
 #include "NES/BaseMapper.h"
 
+#include "Debugger/Debugger.h"
 #include "EmuSettings.h"
-#include "Debugger.h"
 #include "VideoDecoder.h"
 #include "RewindManager.h"
 #include "NotificationManager.h"

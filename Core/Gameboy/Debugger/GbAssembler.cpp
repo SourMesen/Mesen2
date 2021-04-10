@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <regex>
-#include "GbAssembler.h"
-#include "LabelManager.h"
-#include "GameboyDisUtils.h"
+#include "Debugger/LabelManager.h"
+#include "Gameboy/Debugger/GbAssembler.h"
+#include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/HexUtilities.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
-#include "IDebugger.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/IDebugger.h"
 
 class Disassembler;
 class Debugger;
