@@ -162,10 +162,10 @@
     <ClInclude Include="Shared\Audio\BaseSoundManager.h" />
     <ClInclude Include="Shared\Video\BaseVideoFilter.h" />
     <ClInclude Include="FirmwareHelper.h" />
-    <ClInclude Include="blargg_common.h" />
-    <ClInclude Include="blargg_config.h" />
-    <ClInclude Include="blargg_endian.h" />
-    <ClInclude Include="blargg_source.h" />
+    <ClInclude Include="SNES\DSP\blargg_common.h" />
+    <ClInclude Include="SNES\DSP\blargg_config.h" />
+    <ClInclude Include="SNES\DSP\blargg_endian.h" />
+    <ClInclude Include="SNES\DSP\blargg_source.h" />
     <ClInclude Include="Debugger\Breakpoint.h" />
     <ClInclude Include="Debugger\BreakpointManager.h" />
     <ClInclude Include="Debugger\CallstackManager.h" />
@@ -283,8 +283,8 @@
     <ClInclude Include="SNES\SpcFileData.h" />
     <ClInclude Include="SNES\SpcTimer.h" />
     <ClInclude Include="SNES\SpcTypes.h" />
-    <ClInclude Include="SNES\SPC_DSP.h" />
-    <ClInclude Include="SNES\SPC_Filter.h" />
+    <ClInclude Include="SNES\DSP\SPC_DSP.h" />
+    <ClInclude Include="SNES\DSP\SPC_Filter.h" />
     <ClInclude Include="SNES\stdafx.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SNES\Coprocessors\SGB\SuperGameboy.h" />
@@ -428,8 +428,8 @@
     <ClCompile Include="SNES\Debugger\SpcDebugger.cpp" />
     <ClCompile Include="SNES\Debugger\SpcDisUtils.cpp" />
     <ClCompile Include="SNES\SpcHud.cpp" />
-    <ClCompile Include="SNES\SPC_DSP.cpp" />
-    <ClCompile Include="SNES\SPC_Filter.cpp" />
+    <ClCompile Include="SNES\DSP\SPC_DSP.cpp" />
+    <ClCompile Include="SNES\DSP\SPC_Filter.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">Create</PrecompiledHeader>

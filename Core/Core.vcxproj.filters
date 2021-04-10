@@ -109,22 +109,22 @@
     <ClInclude Include="Shared\NotificationManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="blargg_common.h">
+    <ClInclude Include="SNES\DSP\blargg_common.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
-    <ClInclude Include="blargg_config.h">
+    <ClInclude Include="SNES\DSP\blargg_config.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\SPC_Filter.h">
+    <ClInclude Include="SNES\DSP\SPC_Filter.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\SPC_DSP.h">
+    <ClInclude Include="SNES\DSP\SPC_DSP.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
-    <ClInclude Include="blargg_source.h">
+    <ClInclude Include="SNES\DSP\blargg_source.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
-    <ClInclude Include="blargg_endian.h">
+    <ClInclude Include="SNES\DSP\blargg_endian.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Spc.h">
@@ -782,10 +782,10 @@
     <ClCompile Include="Shared\NotificationManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\SPC_DSP.cpp">
+    <ClCompile Include="SNES\DSP\SPC_DSP.cpp">
       <Filter>SNES\DSP</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\SPC_Filter.cpp">
+    <ClCompile Include="SNES\DSP\SPC_Filter.cpp">
       <Filter>SNES\DSP</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Spc.cpp">

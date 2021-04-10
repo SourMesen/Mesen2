@@ -4,10 +4,10 @@
 #include "SNES/MemoryManager.h"
 #include "SNES/SpcFileData.h"
 #ifndef DUMMYSPC
-#include "SNES/SPC_DSP.h"
+#include "SNES/DSP/SPC_DSP.h"
 #else
 #undef Spc
-#include "SNES/SPC_DSP.h"
+#include "SNES/DSP/SPC_DSP.h"
 #define Spc DummySpc
 #endif
 #include "Shared/Emulator.h"
