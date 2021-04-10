@@ -201,7 +201,9 @@ enum class DebugEventType
 	Register,
 	Nmi,
 	Irq,
-	Breakpoint
+	Breakpoint,
+	BgColorChange,
+	SpriteZeroHit
 };
 
 enum class BreakSource
@@ -223,7 +225,10 @@ enum class BreakSource
 	GbNopLoad = 12,
 	GbOamCorruption = 13,
 
-	BreakOnCpuCrash = 14
+	BreakOnCpuCrash = 14,
+
+	NesBreakOnDecayedOamRead = 100,
+	NesBreakOnPpu2006ScrollGlitch = 101,
 };
 
 struct BreakEvent

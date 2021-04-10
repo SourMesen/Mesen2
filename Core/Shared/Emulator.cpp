@@ -23,6 +23,7 @@
 #include "NES/NesConsole.h"
 #include "Gameboy/Gameboy.h"
 #include "Debugger/Debugger.h"
+#include "Debugger/BaseEventManager.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
@@ -775,6 +776,15 @@ void Emulator::ProcessEvent(EventType type)
 	}
 }
 
+template<CpuType cpuType>
+void Emulator::AddDebugEvent(DebugEventType evtType)
+{
+	if(_debugger) {
+		_debugger->GetEventManager(cpuType)->AddEvent(evtType);
+	}
+}
+
+
 void Emulator::BreakImmediately(BreakSource source)
 {
 	if(_debugger) {
@@ -801,3 +811,7 @@ template void Emulator::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint
 template void Emulator::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+
+template void Emulator::AddDebugEvent<CpuType::Cpu>(DebugEventType evtType);
+template void Emulator::AddDebugEvent<CpuType::Gameboy>(DebugEventType evtType);
+template void Emulator::AddDebugEvent<CpuType::Nes>(DebugEventType evtType);

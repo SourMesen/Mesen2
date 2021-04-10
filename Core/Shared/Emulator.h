@@ -86,7 +86,6 @@ private:
 	Timer _lastFrameTimer;
 	double _frameDelay = 0;
 
-	void UpdateRegion();
 	void WaitForLock();
 	void WaitForPauseEnd();
 
@@ -208,6 +207,7 @@ public:
 
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
+	template<CpuType cpuType> void AddDebugEvent(DebugEventType evtType);
 	void BreakImmediately(BreakSource source);
 };
 

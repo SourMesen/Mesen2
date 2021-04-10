@@ -332,18 +332,27 @@ struct NesConfig
 	uint32_t DipSwitches = 0;
 	bool BreakOnCrash = false;
 	bool RandomizeCpuPpuAlignment = false;
+	
 	bool EnableOamDecay = false;
 	bool DisablePpu2004Reads = false;
 	bool DisablePaletteRead = false;
 	bool EnablePpu2000ScrollGlitch = false;
+	bool EnablePpu2006ScrollGlitch = false;
 	bool ForceBackgroundFirstColumn = false;
 	bool ForceSpritesFirstColumn = false;
+	
 	bool RemoveSpriteLimit = false;
 	bool AdaptiveSpriteLimit = false;
+	
 	bool EnablePpuOamRowCorruption = false;
 	bool DisableNoiseModeFlag = false;
 	bool SilenceTriangleHighFreq = false;
 	bool SwapDutyCycles = false;
+
+	bool SpritesEnabled = true;
+	bool BackgroundEnabled = true;
+
+	int8_t InputScanline = 241;
 
 	bool DisableOamAddrBug = false;
 
@@ -538,7 +547,7 @@ struct ShortcutKeyInfo
 	KeyCombination Keys;
 };
 
-enum class DebuggerFlags : uint32_t
+enum class DebuggerFlags : uint64_t
 {
 	BreakOnBrk = 0x01,
 	BreakOnCop = 0x02,
@@ -571,5 +580,8 @@ enum class DebuggerFlags : uint32_t
 	GsuDebuggerEnabled = 0x10000000,
 	Sa1DebuggerEnabled = 0x20000000,
 	SpcDebuggerEnabled = 0x40000000,
-	CpuDebuggerEnabled = 0x80000000
+	CpuDebuggerEnabled = 0x80000000,
+
+	NesBreakOnDecayedOamRead = 0x100000000,
+	NesBreakOnPpu2006ScrollGlitch = 0x200000000,
 };

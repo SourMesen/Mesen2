@@ -210,8 +210,7 @@ void NesPpu::UpdateVideoRamAddr()
 		_state.VideoRamAddr = (_state.VideoRamAddr + (_flags.VerticalWrite ? 32 : 1)) & 0x7FFF;
 
 		if(!_renderingEnabled) {
-			//TODO
-			//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+			_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 		}
 
 		//Trigger memory read when setting the vram address - needed by MMC3 IRQ counter
@@ -587,8 +586,7 @@ void NesPpu::SetMaskRegister(uint8_t value)
 		_intensifyColorBits = (_flags.IntensifyRed ? 0x40 : 0x00) | (_flags.IntensifyGreen ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
 	}
 
-	//TODO
-	//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+	_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 }
 
 void NesPpu::UpdateStatusFlag()
@@ -838,10 +836,9 @@ uint8_t NesPpu::GetPixelColor()
 	if(_cycle > _minimumDrawBgCycle) {
 		//BackgroundMask = false: Hide background in leftmost 8 pixels of screen
 		spriteBgColor = (((_state.LowBitShift << offset) & 0x8000) >> 15) | (((_state.HighBitShift << offset) & 0x8000) >> 14);
-		//TODO
-		//if(_settings->GetBackgroundEnabled()) {
+		if(_console->GetNesConfig().BackgroundEnabled) {
 			backgroundColor = spriteBgColor;
-		//}
+		}
 	}
 
 	if(_hasSprite[_cycle] && _cycle > _minimumDrawSpriteCycle) {
@@ -866,12 +863,10 @@ uint8_t NesPpu::GetPixelColor()
 						//"Should always miss when Y >= 239"
 						_statusFlags.Sprite0Hit = true;
 
-						//TODO
-						//_console->DebugProcessEvent(EventType::SpriteZeroHit);
+						_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::SpriteZeroHit);
 					}
 
-					//TODO
-					if(/*_settings->GetSpritesEnabled() &&*/ (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
+					if(_console->GetNesConfig().SpritesEnabled && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
 						//Check sprite priority
 						return _lastSprite->PaletteOffset + spriteColor;
 					}
@@ -1156,12 +1151,13 @@ uint8_t NesPpu::ReadSpriteRam(uint8_t addr)
 			return _spriteRAM[addr];
 		} else {
 			if(_flags.SpritesEnabled) {
-				//TODO
-				/*shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
-				if(debugger && debugger->CheckFlag(DebuggerFlags::BreakOnDecayedOamRead)) {
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnDecayedOamRead)) {
 					//When debugging with the break on decayed oam read flag turned on, break (only if sprite rendering is enabled to avoid false positives)
-					debugger->BreakImmediately(BreakSource::BreakOnDecayedOamRead);
-				}*/
+					shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
+					if(debugger) {
+						debugger->BreakImmediately(BreakSource::NesBreakOnDecayedOamRead);
+					}
+				}
 			}
 			//If this 8-byte row hasn't been read/written to in over 3000 cpu cycles (~1.7ms), return 0x10 to simulate decay
 			return 0x10;
@@ -1318,7 +1314,7 @@ void NesPpu::Exec()
 		
 		UpdateApuStatus();
 		
-		if(_scanline == 241  /* TODO _settings->GetInputPollScanline()*/) {
+		if(_scanline == _console->GetNesConfig().InputScanline) {
 			((NesControlManager*)_console->GetControlManager().get())->UpdateInputState();
 		}
 
@@ -1408,37 +1404,38 @@ void NesPpu::UpdateState()
 		_needStateUpdate = true;
 	}
 
-	//TODO
-	//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+	_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 
 	if(_updateVramAddrDelay > 0) {
 		_updateVramAddrDelay--;
 		if(_updateVramAddrDelay == 0) {
-			//TODO
-			/*if(_settings->CheckFlag(EmulationFlags::EnablePpu2006ScrollGlitch) && _scanline < 240 && IsRenderingEnabled()) {
+			if(_console->GetNesConfig().EnablePpu2006ScrollGlitch && _scanline < 240 && IsRenderingEnabled()) {
 				//When a $2006 address update lands on the Y or X increment, the written value is bugged and is ANDed with the incremented value
 				if(_cycle == 257) {
 					_state.VideoRamAddr &= _updateVramAddr;
-					shared_ptr<Debugger> debugger = _console->GetDebugger(false);
-					if(debugger && debugger->CheckFlag(DebuggerFlags::BreakOnPpu2006ScrollGlitch)) {
-						debugger->BreakImmediately(BreakSource::BreakOnPpu2006ScrollGlitch);
+					if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnPpu2006ScrollGlitch)) {
+						shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
+						if(debugger) {
+							debugger->BreakImmediately(BreakSource::NesBreakOnPpu2006ScrollGlitch);
+						}
 					}
 				} else if(_cycle > 0 && (_cycle & 0x07) == 0 && (_cycle <= 256 || _cycle > 320)) {
 					_state.VideoRamAddr = (_updateVramAddr & ~0x41F) | (_state.VideoRamAddr & _updateVramAddr & 0x41F);
-					shared_ptr<Debugger> debugger = _console->GetDebugger(false);
-					if(debugger && debugger->CheckFlag(DebuggerFlags::BreakOnPpu2006ScrollGlitch)) {
-						debugger->BreakImmediately(BreakSource::BreakOnPpu2006ScrollGlitch);
+					if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnPpu2006ScrollGlitch)) {
+						shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
+						if(debugger) {
+							debugger->BreakImmediately(BreakSource::NesBreakOnPpu2006ScrollGlitch);
+						}
 					}
 				} else {
 					_state.VideoRamAddr = _updateVramAddr;
 				}
-			} else {*/
+			} else {
 				_state.VideoRamAddr = _updateVramAddr;
-			//}
+			}
 
 			if(!_renderingEnabled) {
-				//TODO
-				//_console->DebugAddDebugEvent(DebugEventType::BgColorChange);
+				_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 			}
 
 			//The glitches updates corrupt both V and T, so set the new value of V back into T
