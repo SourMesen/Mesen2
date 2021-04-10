@@ -1,9 +1,8 @@
 ﻿#include <algorithm>
 #include "LinuxKeyManager.h"
 #include "LinuxGameController.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Core/ControlManager.h"
-#include "../Core/Console.h"
+#include "Utilities/FolderUtilities.h"
+#include "Core/Shared/Emulator.h"
 
 static vector<KeyDefinition> _keyDefinitions = {
 	{ "None", 0 },
@@ -214,9 +213,9 @@ static vector<KeyDefinition> _keyDefinitions = {
 	{ "FnDownArrow", 10004 }
 };
 
-LinuxKeyManager::LinuxKeyManager(shared_ptr<Console> console)
+LinuxKeyManager::LinuxKeyManager(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 
 	ResetKeyState();
 
@@ -357,7 +356,7 @@ void LinuxKeyManager::CheckForGamepads(bool logInformation)
 			}
 
 			if(std::find(connectedIDs.begin(), connectedIDs.end(), deviceId) == connectedIDs.end()) {
-				std::shared_ptr<LinuxGameController> controller = LinuxGameController::GetController(_console, deviceId, logInformation);
+				std::shared_ptr<LinuxGameController> controller = LinuxGameController::GetController(_emu, deviceId, logInformation);
 				if(controller) {
 					_controllers.push_back(controller);
 				}
@@ -382,14 +381,14 @@ void LinuxKeyManager::StartUpdateDeviceThread()
 			CheckForGamepads(false);
 
 			if(!indexesToRemove.empty() || !controllersToAdd.empty()) {
-				_console->Pause();
+				_emu->Pause();
 				for(int index : indexesToRemove) {
 					_controllers.erase(_controllers.begin()+index);
 				}
 				for(std::shared_ptr<LinuxGameController> controller : controllersToAdd) {
 					_controllers.push_back(controller);
 				} 
-				_console->Resume();
+				_emu->Resume();
 			}
 
 			_stopSignal.Wait(5000);

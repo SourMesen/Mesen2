@@ -2,11 +2,11 @@
 #include <unordered_map>
 #include <vector>
 #include <thread>
-#include "../Core/IKeyManager.h"
-#include "../Utilities/AutoResetEvent.h"
+#include "Core/Shared/Interfaces/IKeyManager.h"
+#include "Utilities/AutoResetEvent.h"
 
 class LinuxGameController;
-class Console;
+class Emulator;
 
 struct KeyDefinition {
 	string name;
@@ -16,7 +16,7 @@ struct KeyDefinition {
 class LinuxKeyManager : public IKeyManager
 {
 private:
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	std::vector<shared_ptr<LinuxGameController>> _controllers;
 	bool _keyState[0x200];
 	bool _mouseState[0x03];
@@ -32,7 +32,7 @@ private:
 	void CheckForGamepads(bool logInformation);
 
 public:
-	LinuxKeyManager(shared_ptr<Console> console);
+	LinuxKeyManager(shared_ptr<Emulator> emu);
 	virtual ~LinuxKeyManager();
 
 	void RefreshState();

@@ -3,7 +3,7 @@
 #include <atomic>
 
 struct libevdev;
-class Console;
+class Emulator;
 
 class LinuxGameController
 {
@@ -14,17 +14,17 @@ private:
 	bool _disconnected = false;
 	std::thread _eventThread;
 	std::atomic<bool> _stopFlag;
-	shared_ptr<Console> _console;
+	shared_ptr<Emulator> _emu;
 	int _axisDefaultValue[0x100];
 
-	LinuxGameController(shared_ptr<Console> console, int deviceID, int fileDescriptor, libevdev *device);
+	LinuxGameController(shared_ptr<Emulator> emu, int deviceID, int fileDescriptor, libevdev *device);
 	bool CheckAxis(unsigned int code, bool forPositive);
 	void Calibrate();	
 
 public:
 	~LinuxGameController();
 
-	static std::shared_ptr<LinuxGameController> GetController(shared_ptr<Console> console, int deviceID, bool logInformation);
+	static std::shared_ptr<LinuxGameController> GetController(shared_ptr<Emulator> emu, int deviceID, bool logInformation);
 
 	bool IsDisconnected();
 	int GetDeviceID();

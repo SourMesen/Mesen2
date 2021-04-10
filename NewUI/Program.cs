@@ -20,7 +20,7 @@ namespace Mesen
 					.UseReactiveUI()
 					.UsePlatformDetect()
 					.With(new Win32PlatformOptions { AllowEglInitialization = true })
-					.With(new X11PlatformOptions { UseGpu = true, UseEGL = true })
+					.With(new X11PlatformOptions { UseGpu = false, UseEGL = false })
 					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
 					.LogToTrace();
 	}

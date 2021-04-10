@@ -79,7 +79,7 @@ extern "C" {
 				#ifdef _WIN32
 					_renderer.reset(new Renderer(_emu, (HWND)_viewerHandle, true));
 				#else 
-					_renderer.reset(new SdlRenderer(_console, _viewerHandle, true));
+					_renderer.reset(new SdlRenderer(_emu, _viewerHandle, true));
 				#endif
 			} 
 
@@ -87,7 +87,7 @@ extern "C" {
 				#ifdef _WIN32
 					_soundManager.reset(new SoundManager(_emu, (HWND)_windowHandle));
 				#else
-					_soundManager.reset(new SdlSoundManager(_console));
+					_soundManager.reset(new SdlSoundManager(_emu));
 				#endif
 			}
 
@@ -95,7 +95,7 @@ extern "C" {
 				#ifdef _WIN32
 					_keyManager.reset(new WindowsKeyManager(_emu, (HWND)_windowHandle));
 				#else 
-					_keyManager.reset(new LinuxKeyManager(_console));
+					_keyManager.reset(new LinuxKeyManager(_emu));
 				#endif				
 					
 				KeyManager::RegisterKeyManager(_keyManager.get());

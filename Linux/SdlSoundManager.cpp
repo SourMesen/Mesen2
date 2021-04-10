@@ -1,15 +1,15 @@
 ﻿#include "SdlSoundManager.h"
-#include "../Core/EmuSettings.h"
-#include "../Core/MessageManager.h"
-#include "../Core/SoundMixer.h"
-#include "../Core/Console.h"
+#include "Core/Shared/EmuSettings.h"
+#include "Core/Shared/MessageManager.h"
+#include "Core/Shared/Audio/SoundMixer.h"
+#include "Core/Shared/Emulator.h"
 
-SdlSoundManager::SdlSoundManager(shared_ptr<Console> console)
+SdlSoundManager::SdlSoundManager(shared_ptr<Emulator> emu)
 {
-	_console = console;
+	_emu = emu;
 
 	if(InitializeAudio(44100, false)) {
-		_console->GetSoundMixer()->RegisterAudioDevice(this);
+		_emu->GetSoundMixer()->RegisterAudioDevice(this);
 	}
 }
 
@@ -50,7 +50,7 @@ bool SdlSoundManager::InitializeAudio(uint32_t sampleRate, bool isStereo)
 
 	_sampleRate = sampleRate;
 	_isStereo = isStereo;
-	_previousLatency = _console->GetSettings()->GetAudioConfig().AudioLatency;
+	_previousLatency = _emu->GetSettings()->GetAudioConfig().AudioLatency;
 
 	int bytesPerSample = 2 * (isStereo ? 2 : 1);
 	int32_t requestedByteLatency = (int32_t)((float)(sampleRate * _previousLatency) / 1000.0f * bytesPerSample);
@@ -149,7 +149,7 @@ void SdlSoundManager::WriteToBuffer(uint8_t* input, uint32_t len)
 void SdlSoundManager::PlayBuffer(int16_t *soundBuffer, uint32_t sampleCount, uint32_t sampleRate, bool isStereo)
 {
 	uint32_t bytesPerSample = 2 * (isStereo ? 2 : 1);
-	uint32_t latency = _console->GetSettings()->GetAudioConfig().AudioLatency;
+	uint32_t latency = _emu->GetSettings()->GetAudioConfig().AudioLatency;
 	if(_sampleRate != sampleRate || _isStereo != isStereo || _needReset || _previousLatency != latency) {
 		Release();
 		InitializeAudio(sampleRate, isStereo);
@@ -187,8 +187,8 @@ void SdlSoundManager::ProcessEndOfFrame()
 {
 	ProcessLatency(_readPosition, _writePosition);
 
-	uint32_t emulationSpeed = _console->GetSettings()->GetEmulationSpeed();
-	if(_averageLatency > 0 && emulationSpeed <= 100 && emulationSpeed > 0 && std::abs(_averageLatency - _console->GetSettings()->GetAudioConfig().AudioLatency) > 50) {
+	uint32_t emulationSpeed = _emu->GetSettings()->GetEmulationSpeed();
+	if(_averageLatency > 0 && emulationSpeed <= 100 && emulationSpeed > 0 && std::abs(_averageLatency - _emu->GetSettings()->GetAudioConfig().AudioLatency) > 50) {
 		//Latency is way off (over 50ms gap), stop audio & start again
 		Stop();
 	}

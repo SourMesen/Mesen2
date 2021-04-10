@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <SDL2/SDL.h>
-#include "../Core/IRenderingDevice.h"
-#include "../Utilities/SimpleLock.h"
-#include "../Core/VideoRenderer.h"
-#include "../Core/BaseRenderer.h"
+#include "Core/Shared/Interfaces/IRenderingDevice.h"
+#include "Utilities/SimpleLock.h"
+#include "Core/Shared/Video/VideoRenderer.h"
+#include "Core/Shared/Video/BaseRenderer.h"
 #include "SpriteFont.h"
 
 struct SDL_Window
@@ -20,7 +20,7 @@ struct SDL_Window
 };
 typedef struct SDL_Window SDL_Window;
 
-class Console;
+class Emulator;
 
 class SdlRenderer : public IRenderingDevice, public BaseRenderer
 {
@@ -62,7 +62,7 @@ private:
 	bool ContainsCharacter(wchar_t character) override;
 
 public:
-	SdlRenderer(shared_ptr<Console> console, void* windowHandle, bool registerAsMessageManager);
+	SdlRenderer(shared_ptr<Emulator> emu, void* windowHandle, bool registerAsMessageManager);
 	virtual ~SdlRenderer();
 
 	void UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height) override;

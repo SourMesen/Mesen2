@@ -32,7 +32,7 @@ else
 	PROFILE_USE_FLAG = -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
 endif
 
-GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2
+GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core)
 CCOPTIONS=-fPIC -Wall -O3 $(MESENFLAGS)
 LINKOPTIONS=
 
@@ -67,24 +67,37 @@ ifeq ($(STATICLINK),true)
 endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
-SHAREDLIB=libMesenSCore.$(MESENPLATFORM).dll
+SHAREDLIB=libMesenSCore.dll
 LIBRETROLIB=mesen-s_libretro.$(MESENPLATFORM).so
 RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 
-COREOBJ=$(patsubst Core/%.cpp,Core/$(OBJFOLDER)/%.o,$(wildcard Core/*.cpp))
-UTILOBJ=$(patsubst Utilities/%.cpp,Utilities/$(OBJFOLDER)/%.o,$(wildcard Utilities/*.cpp)) $(patsubst Utilities/HQX/%.cpp,Utilities/$(OBJFOLDER)/%.o,$(wildcard Utilities/HQX/*.cpp)) $(patsubst Utilities/xBRZ/%.cpp,Utilities/$(OBJFOLDER)/%.o,$(wildcard Utilities/xBRZ/*.cpp)) $(patsubst Utilities/KreedSaiEagle/%.cpp,Utilities/$(OBJFOLDER)/%.o,$(wildcard Utilities/KreedSaiEagle/*.cpp)) $(patsubst Utilities/Scale2x/%.cpp,Utilities/$(OBJFOLDER)/%.o,$(wildcard Utilities/Scale2x/*.cpp))
-LINUXOBJ=$(patsubst Linux/%.cpp,Linux/$(OBJFOLDER)/%.o,$(wildcard Linux/*.cpp)) 
-SEVENZIPOBJ=$(patsubst SevenZip/%.c,SevenZip/$(OBJFOLDER)/%.o,$(wildcard SevenZip/*.c))
-LUAOBJ=$(patsubst Lua/%.c,Lua/$(OBJFOLDER)/%.o,$(wildcard Lua/*.c))
-DLLOBJ=$(patsubst InteropDLL/%.cpp,InteropDLL/$(OBJFOLDER)/%.o,$(wildcard InteropDLL/*.cpp))
+CORESRC := $(shell find Core -name '*.cpp')
+COREOBJ := $(CORESRC:.cpp=.o)
+
+UTILSRC := $(shell find Utilities -name '*.cpp')
+UTILOBJ := $(UTILSRC:.cpp=.o)
+
+LINUXSRC := $(shell find Linux -name '*.cpp')
+LINUXOBJ := $(LINUXSRC:.cpp=.o)
+
+SEVENZIPSRC := $(shell find SevenZip -name '*.c')
+SEVENZIPOBJ := $(SEVENZIPSRC:.c=.o)
+
+LUASRC := $(shell find Lua -name '*.c')
+LUAOBJ := $(LUASRC:.c=.o)
+
+DLLSRC := $(shell find InteropDLL -name '*.cpp')
+DLLOBJ := $(DLLSRC:.cpp=.o)
 
 ifeq ($(SYSTEM_LIBEVDEV), true)
 	LIBEVDEVLIB=$(shell pkg-config --libs libevdev)
 	LIBEVDEVINC=$(shell pkg-config --cflags libevdev)
 else
-	LIBEVDEVOBJ=$(patsubst Linux/libevdev/%.c,Linux/$(OBJFOLDER)/%.o,$(wildcard Linux/libevdev/*.c))
+	LIBEVDEVSRC := $(shell find Linux/libevdev -name '*.c')
+	LIBEVDEVOBJ := $(LIBEVDEVSRC:.c=.o)
 	LIBEVDEVINC=-I../
 endif
+
 SDL2LIB=$(shell sdl2-config --libs)
 SDL2INC=$(shell sdl2-config --cflags)
 FSLIB=-lstdc++fs
@@ -94,12 +107,8 @@ all: ui
 ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
-	cd UpdateHelper && xbuild /property:Configuration="Release" /property:Platform="AnyCPU"
-	cp "bin/Any CPU/Release/MesenUpdater.exe" $(RELEASEFOLDER)/Dependencies/
-	cp -r UI/Dependencies/* $(RELEASEFOLDER)/Dependencies/
-	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(RELEASEFOLDER)/Dependencies/$(SHAREDLIB)	
-	cd $(RELEASEFOLDER)/Dependencies && zip -r ../Dependencies.zip *	
-	cd UI && xbuild /property:Configuration="Release" /property:Platform="$(MESENPLATFORM)" /property:PreBuildEvent="" /property:DefineConstants="HIDETESTMENU,DISABLEAUTOUPDATE"
+	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" --self-contained true -p:PublishSingleFile=true
+	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) NewUI/bin/x64/Release/linux-x64/publish/$(SHAREDLIB)
 
 libretro: Libretro/$(OBJFOLDER)/$(LIBRETROLIB)
 	mkdir -p bin
@@ -117,30 +126,13 @@ testhelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
 pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+
+%.o: %.c
+	$(CC) $(CCOPTIONS) -c $< -o $@
 	
-SevenZip/$(OBJFOLDER)/%.o: SevenZip/%.c
-	mkdir -p SevenZip/$(OBJFOLDER) && cd SevenZip/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst SevenZip/%, ../%, $<)
-Lua/$(OBJFOLDER)/%.o: Lua/%.c
-	mkdir -p Lua/$(OBJFOLDER) && cd Lua/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst Lua/%, ../%, $<)	
-Utilities/$(OBJFOLDER)/%.o: Utilities/%.cpp
-	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Utilities/%, ../%, $<)
-Utilities/$(OBJFOLDER)/%.o: Utilities/HQX/%.cpp
-	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Utilities/%, ../%, $<)
-Utilities/$(OBJFOLDER)/%.o: Utilities/xBRZ/%.cpp
-	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Utilities/%, ../%, $<)
-Utilities/$(OBJFOLDER)/%.o: Utilities/KreedSaiEagle/%.cpp
-	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Utilities/%, ../%, $<)
-Utilities/$(OBJFOLDER)/%.o: Utilities/Scale2x/%.cpp
-	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Utilities/%, ../%, $<)
-Core/$(OBJFOLDER)/%.o: Core/%.cpp
-	mkdir -p Core/$(OBJFOLDER) && cd Core/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS)  -c $(patsubst Core/%, ../%, $<)
-Linux/$(OBJFOLDER)/%.o: Linux/%.cpp
-	mkdir -p Linux/$(OBJFOLDER) && cd Linux/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Linux/%, ../%, $<) $(SDL2INC) $(LIBEVDEVINC)
-Linux/$(OBJFOLDER)/%.o: Linux/libevdev/%.c
-	mkdir -p Linux/$(OBJFOLDER) && cd Linux/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst Linux/%, ../%, $<)
-InteropDLL/$(OBJFOLDER)/%.o: InteropDLL/%.cpp
-	mkdir -p InteropDLL/$(OBJFOLDER) && cd InteropDLL/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS)  -c $(patsubst InteropDLL/%, ../%, $<)
-	
+%.o: %.cpp
+	$(CPPC) $(GCCOPTIONS) -c $< -o $@
+
 InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
@@ -168,6 +160,7 @@ run:
 	mono $(RELEASEFOLDER)/Mesen-S.exe
 
 clean:
+	rm -r $(COREOBJ)
 	rm -rf Lua/$(OBJFOLDER)
 	rm -rf SevenZip/$(OBJFOLDER)
 	rm -rf Utilities/$(OBJFOLDER)

@@ -1,28 +1,28 @@
 ﻿#include "SdlRenderer.h"
-#include "../Core/Console.h"
-#include "../Core/Debugger.h"
-#include "../Core/VideoRenderer.h"
-#include "../Core/VideoDecoder.h"
-#include "../Core/EmuSettings.h"
-#include "../Core/MessageManager.h"
+#include "Core/Debugger/Debugger.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/Video/VideoRenderer.h"
+#include "Core/Shared/Video/VideoDecoder.h"
+#include "Core/Shared/EmuSettings.h"
+#include "Core/Shared/MessageManager.h"
 
 SimpleLock SdlRenderer::_frameLock;
 
-SdlRenderer::SdlRenderer(shared_ptr<Console> console, void* windowHandle, bool registerAsMessageManager) : BaseRenderer(console, registerAsMessageManager), _windowHandle(windowHandle)
+SdlRenderer::SdlRenderer(shared_ptr<Emulator> emu, void* windowHandle, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager), _windowHandle(windowHandle)
 {
 	_frameBuffer = nullptr;
 	_requiredWidth = 256;
 	_requiredHeight = 240;
 	
-	shared_ptr<VideoRenderer> videoRenderer = _console->GetVideoRenderer();
+	shared_ptr<VideoRenderer> videoRenderer = _emu->GetVideoRenderer();
 	if(videoRenderer) {
-		_console->GetVideoRenderer()->RegisterRenderingDevice(this);
+		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
 	}
 }
 
 SdlRenderer::~SdlRenderer()
 {
-	shared_ptr<VideoRenderer> videoRenderer = _console->GetVideoRenderer();
+	shared_ptr<VideoRenderer> videoRenderer = _emu->GetVideoRenderer();
 	if(videoRenderer) {
 		videoRenderer->UnregisterRenderingDevice(this);
 	}
@@ -106,7 +106,7 @@ void SdlRenderer::Reset()
 {
 	Cleanup();
 	if(Init()) {
-		_console->GetVideoRenderer()->RegisterRenderingDevice(this);
+		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
 	} else {
 		Cleanup();
 	}
@@ -114,9 +114,9 @@ void SdlRenderer::Reset()
 
 void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 {
-	ScreenSize screenSize = _console->GetVideoDecoder()->GetScreenSize(false);
+	ScreenSize screenSize = _emu->GetVideoDecoder()->GetScreenSize(false);
 	
-	VideoConfig cfg = _console->GetSettings()->GetVideoConfig();
+	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 	if(_screenHeight != (uint32_t)screenSize.Height || _screenWidth != (uint32_t)screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _useBilinearInterpolation != cfg.UseBilinearInterpolation || _vsyncEnabled != cfg.VerticalSync) {
 		_vsyncEnabled = cfg.VerticalSync;
 		_useBilinearInterpolation = cfg.UseBilinearInterpolation;
@@ -160,7 +160,7 @@ void SdlRenderer::Render()
 		return;
 	}
 
-	bool paused = _console->IsPaused() && _console->IsRunning();
+	bool paused = _emu->IsPaused() && _emu->IsRunning();
 
 	if(_noUpdateCount > 10 || _frameChanged || paused || IsMessageShown()) {	
 		SDL_RenderClear(_sdlRenderer);
@@ -190,7 +190,7 @@ void SdlRenderer::Render()
 		SDL_Rect dest = {0, 0, (int)_screenWidth, (int)_screenHeight };
 		SDL_RenderCopy(_sdlRenderer, _sdlTexture, &source, &dest);
 
-		if(_console->IsRunning()) {
+		if(_emu->IsRunning()) {
 			if(paused) {
 				DrawPauseScreen();
 			}
