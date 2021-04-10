@@ -1,8 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
-#include "INesMemoryHandler.h"
-#include "IControlManager.h"
+#include "NES/INesMemoryHandler.h"
+#include "Shared/Interfaces/IControlManager.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
 

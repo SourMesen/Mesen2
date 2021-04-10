@@ -1,10 +1,10 @@
 #pragma once
 #include "stdafx.h"
+#include "Gameboy/GameboyHeader.h"
+#include "Gameboy/GbTypes.h"
 #include "Debugger/DebugTypes.h"
-#include "GameboyHeader.h"
-#include "SettingTypes.h"
-#include "GbTypes.h"
-#include "IConsole.h"
+#include "Shared/SettingTypes.h"
+#include "Shared/Interfaces/IConsole.h"
 #include "Utilities/ISerializable.h"
 
 class Emulator;

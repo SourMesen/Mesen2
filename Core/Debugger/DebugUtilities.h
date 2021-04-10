@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
+#include "Core/Debugger/DebugTypes.h"
+#include "Core/SnesMemoryType.h"
 
 class DebugUtilities
 {

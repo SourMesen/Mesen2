@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "../Core/Emulator.h"
-#include "../Core/IAudioDevice.h"
-#include "../Core/EmuSettings.h"
-#include "../Core/SettingTypes.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/Interfaces/IAudioDevice.h"
+#include "Core/Shared/EmuSettings.h"
+#include "Core/Shared/SettingTypes.h"
 
 extern shared_ptr<Emulator> _emu;
 extern unique_ptr<IAudioDevice> _soundManager;

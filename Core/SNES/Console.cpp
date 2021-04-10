@@ -1,49 +1,34 @@
 #include "stdafx.h"
-#include "Console.h"
-#include "Cpu.h"
-#include "Ppu.h"
-#include "Spc.h"
-#include "InternalRegisters.h"
-#include "ControlManager.h"
-#include "MemoryManager.h"
-#include "DmaController.h"
-#include "BaseCartridge.h"
-#include "RamHandler.h"
+#include "SNES/Console.h"
+#include "SNES/Cpu.h"
+#include "SNES/Ppu.h"
+#include "SNES/Spc.h"
+#include "SNES/InternalRegisters.h"
+#include "SNES/ControlManager.h"
+#include "SNES/MemoryManager.h"
+#include "SNES/DmaController.h"
+#include "SNES/BaseCartridge.h"
+#include "SNES/RamHandler.h"
+#include "SNES/CartTypes.h"
+#include "SNES/SpcHud.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbPpu.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
-#include "NotificationManager.h"
-#include "SoundMixer.h"
-#include "VideoDecoder.h"
-#include "VideoRenderer.h"
-#include "DebugHud.h"
-#include "FrameLimiter.h"
-#include "MessageManager.h"
-#include "KeyManager.h"
-#include "EventType.h"
-#include "EmuSettings.h"
-#include "SaveStateManager.h"
-#include "DebugStats.h"
-#include "CartTypes.h"
-#include "RewindManager.h"
-#include "MovieManager.h"
-#include "BatteryManager.h"
-#include "CheatManager.h"
-#include "MovieManager.h"
-#include "SystemActionManager.h"
-#include "SpcHud.h"
-#include "Emulator.h"
 #include "SNES/Coprocessors/MSU1/Msu1.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
-#include "IControlManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Interfaces/IControlManager.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "EventType.h"
+#include "SystemActionManager.h"
 
 Console::Console(Emulator* emu)
 {
@@ -349,11 +334,6 @@ Emulator* Console::GetEmulator()
 bool Console::IsRunning()
 {
 	return _cpu != nullptr;
-}
-
-bool Console::IsRunAheadFrame()
-{
-	return _isRunAheadFrame;
 }
 
 AddressInfo Console::GetAbsoluteAddress(AddressInfo relAddress)

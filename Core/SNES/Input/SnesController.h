@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "BaseControlDevice.h"
+#include "Shared/BaseControlDevice.h"
 #include "Utilities/Serializer.h"
 
 class SnesController : public BaseControlDevice

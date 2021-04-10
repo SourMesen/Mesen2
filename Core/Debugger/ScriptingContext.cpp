@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include <algorithm>
-#include "ScriptingContext.h"
-#include "DebugTypes.h"
-#include "Debugger.h"
-#include "Emulator.h"
-#include "SaveStateManager.h"
+#include "Debugger/ScriptingContext.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/Debugger.h"
+#include "Shared/Emulator.h"
+#include "Shared/SaveStateManager.h"
 
 string ScriptingContext::_log = "";
 

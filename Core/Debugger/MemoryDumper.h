@@ -8,6 +8,7 @@ class NesMemoryManager;
 class BaseCartridge;
 class Ppu;
 class Spc;
+class Emulator;
 class Debugger;
 class Disassembler;
 enum class SnesMemoryType;

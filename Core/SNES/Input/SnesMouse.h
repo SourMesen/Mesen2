@@ -1,11 +1,11 @@
 #pragma once
 #include "stdafx.h"
-#include "BaseControlDevice.h"
-#include "IKeyManager.h"
-#include "KeyManager.h"
 #include "SNES/Console.h"
-#include "Emulator.h"
-#include "EmuSettings.h"
+#include "Shared/BaseControlDevice.h"
+#include "Shared/Interfaces/IKeyManager.h"
+#include "Shared/KeyManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
 class SnesMouse : public BaseControlDevice

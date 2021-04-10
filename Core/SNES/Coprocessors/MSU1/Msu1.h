@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "PcmReader.h"
-#include "IAudioProvider.h"
+#include "Shared/Interfaces/IAudioProvider.h"
+#include "Shared/Audio/PcmReader.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/VirtualFile.h"
 

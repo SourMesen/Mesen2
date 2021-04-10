@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "BaseState.h"
+#include "Shared/BaseState.h"
 
 enum class CpuStopState : uint8_t
 {

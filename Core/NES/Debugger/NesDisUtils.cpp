@@ -1,13 +1,14 @@
 #include "stdafx.h"
-#include "NesDisUtils.h"
+#include "NES/Debugger/NesDisUtils.h"
 
 #include "NES/NesTypes.h"
-#include "EmuSettings.h"
+#include "Shared/EmuSettings.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
 #include "Debugger/MemoryDumper.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
+#include "SnesMemoryType.h"
 
 void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {

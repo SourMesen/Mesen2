@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "BaseControlDevice.h"
-#include "Emulator.h"
+#include "Shared/BaseControlDevice.h"
+#include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
 
 class StandardController : public BaseControlDevice

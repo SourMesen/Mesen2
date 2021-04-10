@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Obc1.h"
+#include "SNES/Coprocessors/OBC1/Obc1.h"
 #include "SNES/Console.h"
 #include "SNES/MemoryManager.h"
-#include "MemoryMappings.h"
+#include "SNES/MemoryMappings.h"
 
 Obc1::Obc1(Console* console, uint8_t* saveRam, uint32_t saveRamSize) : BaseCoprocessor(SnesMemoryType::Register)
 {

@@ -13,9 +13,9 @@
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
-#include "Emulator.h"
-#include "EmuSettings.h"
-#include "MemoryMappings.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "SNES/MemoryMappings.h"
 #include "MemoryOperationType.h"
 
 Cx4Debugger::Cx4Debugger(Debugger* debugger)

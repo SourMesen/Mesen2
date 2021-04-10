@@ -9,9 +9,9 @@
 #include <oleauto.h>
 #include "DirectInputManager.h"
 #include <algorithm>
-#include "../Core/MessageManager.h"
-#include "../Core/Emulator.h"
-#include "../Core/EmuSettings.h"
+#include "Core/Shared/MessageManager.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/EmuSettings.h"
 
 LPDIRECTINPUT8 DirectInputManager::_directInput = nullptr;
 vector<DirectInputData> DirectInputManager::_joysticks;

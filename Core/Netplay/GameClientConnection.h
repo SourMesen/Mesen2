@@ -1,14 +1,14 @@
 #pragma once
 #include "stdafx.h"
 #include <deque>
-#include "GameConnection.h"
 #include "Utilities/AutoResetEvent.h"
 #include "Utilities/SimpleLock.h"
-#include "BaseControlDevice.h"
-#include "INotificationListener.h"
-#include "IInputProvider.h"
-#include "ControlDeviceState.h"
-#include "ClientConnectionData.h"
+#include "Shared/BaseControlDevice.h"
+#include "Shared/Interfaces/INotificationListener.h"
+#include "Shared/Interfaces/IInputProvider.h"
+#include "Shared/ControlDeviceState.h"
+#include "Netplay/GameConnection.h"
+#include "Netplay/ClientConnectionData.h"
 
 class Emulator;
 

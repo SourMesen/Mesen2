@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "DmaController.h"
-#include "DmaControllerTypes.h"
-#include "MemoryManager.h"
-#include "MessageManager.h"
+#include "SNES/DmaController.h"
+#include "SNES/DmaControllerTypes.h"
+#include "SNES/MemoryManager.h"
+#include "Shared/MessageManager.h"
 #include "Utilities/Serializer.h"
 
 static constexpr uint8_t _transferByteCount[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };

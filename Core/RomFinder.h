@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "Emulator.h"
+#include "Shared/Emulator.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
 

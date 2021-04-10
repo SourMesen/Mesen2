@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
-#include "Sa1Cpu.h"
-#include "Sa1Types.h"
-#include "Sa1.h"
+#include "SNES/Coprocessors/SA1/Sa1Cpu.h"
+#include "SNES/Coprocessors/SA1/Sa1Types.h"
+#include "SNES/Coprocessors/SA1/Sa1.h"
+#include "SNES/IMemoryHandler.h"
 
 //Manages BWRAM access from the SA-1 CPU, for regions that can enable bitmap mode. e.g:
 //00-3F:6000-7FFF + 80-BF:6000-7FFF (optional bitmap mode + bank select)

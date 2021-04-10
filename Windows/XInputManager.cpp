@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "XInputManager.h"
-#include "../Core/Emulator.h"
-#include "../Core/EmuSettings.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/EmuSettings.h"
 
 XInputManager::XInputManager(shared_ptr<Emulator> emu)
 {

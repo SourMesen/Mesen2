@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "IControlManager.h"
+#include "Shared/Interfaces/IControlManager.h"
 
 class Emulator;
 class BaseControlDevice;

@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include <climits>
 #include <algorithm>
-#include "DebugTypes.h"
-#include "ExpressionEvaluator.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/ExpressionEvaluator.h"
 #include "SNES/Console.h"
-#include "Debugger.h"
-#include "MemoryDumper.h"
-#include "Disassembler.h"
-#include "LabelManager.h"
-#include "DebugUtilities.h"
-#include "BaseState.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/MemoryDumper.h"
+#include "Debugger/Disassembler.h"
+#include "Debugger/LabelManager.h"
+#include "Debugger/DebugUtilities.h"
+#include "Shared/BaseState.h"
 #include "Utilities/HexUtilities.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };

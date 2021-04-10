@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include <algorithm>
-#include "DisassemblyInfo.h"
-#include "EmuSettings.h"
-#include "MemoryDumper.h"
+#include "Debugger/DisassemblyInfo.h"
+#include "Debugger/MemoryDumper.h"
+#include "Debugger/DebugUtilities.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
-#include "DebugUtilities.h"
 #include "SNES/CpuTypes.h"
 #include "SNES/Console.h"
 #include "SNES/Debugger/CpuDisUtils.h"
@@ -15,6 +14,7 @@
 #include "SNES/Debugger/Cx4DisUtils.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "NES/Debugger/NesDisUtils.h"
+#include "Shared/EmuSettings.h"
 
 DisassemblyInfo::DisassemblyInfo()
 {

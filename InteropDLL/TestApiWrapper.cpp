@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "../Core/RecordedRomTest.h"
-#include "../Core/Emulator.h"
+#include "Core/Shared/RecordedRomTest.h"
+#include "Core/Shared/Emulator.h"
 
 extern shared_ptr<Emulator> _emu;
 shared_ptr<RecordedRomTest> _recordedRomTest;

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
-#include "IAudioProvider.h"
+#include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/HermiteResampler.h"
 
 class Console;

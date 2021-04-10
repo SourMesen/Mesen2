@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Emulator.h"
 #include "SNES/Spc.h"
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
@@ -12,7 +11,8 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "EmuSettings.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
 
 SpcDebugger::SpcDebugger(Debugger* debugger)
@@ -105,7 +105,7 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo { addr, SnesMemoryType::SpcRam }; //Writes never affect the SPC ROM
+	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::SpcRam }; //Writes never affect the SPC ROM
 	MemoryOperationInfo operation { addr, value, type };
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 

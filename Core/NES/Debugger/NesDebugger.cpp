@@ -17,10 +17,9 @@
 #include "NES/Debugger/NesDebugger.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
-#include "EmuSettings.h"
-#include "SettingTypes.h"
-#include "MemoryMappings.h"
-#include "Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/SettingTypes.h"
+#include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
 
 NesDebugger::NesDebugger(Debugger* debugger)

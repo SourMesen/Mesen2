@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
-#include "BsxStream.h"
+#include "SNES/IMemoryHandler.h"
+#include "SNES/Coprocessors/BSX/BsxStream.h"
 #include "Utilities/ISerializable.h"
 
 class Console;

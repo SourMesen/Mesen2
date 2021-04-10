@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "GbEventManager.h"
+#include "Gameboy/Debugger/GbEventManager.h"
 #include "Gameboy/GbCpu.h"
 #include "Gameboy/GbPpu.h"
-#include "DefaultVideoFilter.h"
 #include "Gameboy/Gameboy.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/BaseEventManager.h"
+#include "Shared/Video/DefaultVideoFilter.h"
 
 GbEventManager::GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu)
 {

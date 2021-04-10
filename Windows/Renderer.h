@@ -1,12 +1,12 @@
 #pragma once
 
 #include "stdafx.h"
-#include "../Core/IRenderingDevice.h"
-#include "../Core/IMessageManager.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/SimpleLock.h"
-#include "../Utilities/Timer.h"
-#include "../Core/BaseRenderer.h"
+#include "Core/Shared/Interfaces/IRenderingDevice.h"
+#include "Core/Shared/Interfaces/IMessageManager.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/Timer.h"
+#include "Core/Shared/Video/BaseRenderer.h"
 
 using namespace DirectX;
 

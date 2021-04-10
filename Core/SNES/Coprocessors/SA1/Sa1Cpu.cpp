@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "Utilities/Serializer.h"
+#include "Shared/Emulator.h"
 #include "SNES/CpuTypes.h"
-#include "Sa1Cpu.h"
-#include "Emulator.h"
+#include "SNES/Coprocessors/SA1/Sa1Cpu.h"
 #include "SNES/MemoryManager.h"
-#include "EventType.h"
-#include "Sa1.h"
-#include "MemoryMappings.h"
+#include "SNES/Coprocessors/SA1/Sa1.h"
+#include "SNES/MemoryMappings.h"
 #include "MemoryOperationType.h"
+#include "EventType.h"
 
 #define Cpu Sa1Cpu
 #include "SNES/Cpu.Instructions.h"

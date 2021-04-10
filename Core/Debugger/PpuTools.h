@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
-#include "Emulator.h"
-#include "NotificationManager.h"
+#include "Debugger/DebugTypes.h"
+#include "Shared/Emulator.h"
+#include "Shared/NotificationManager.h"
 #include "SNES/PpuTypes.h"
 
 class Ppu;

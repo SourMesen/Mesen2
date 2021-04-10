@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include <thread>
-#include "INotificationListener.h"
+#include "Shared/Interfaces/INotificationListener.h"
 
 using std::thread;
 class Socket;

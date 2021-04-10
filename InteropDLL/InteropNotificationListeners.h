@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
-#include "../Core/INotificationListener.h"
-#include "../Core/NotificationManager.h"
-#include "../Core/Emulator.h"
-#include "../Utilities/SimpleLock.h"
+#include "Core/Shared/Interfaces/INotificationListener.h"
+#include "Core/Shared/NotificationManager.h"
+#include "Core/Shared/Emulator.h"
+#include "Utilities/SimpleLock.h"
 #include "InteropNotificationListener.h"
 
 typedef void(__stdcall *NotificationListenerCallback)(int, void*);

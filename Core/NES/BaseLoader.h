@@ -1,6 +1,6 @@
 #pragma once
-#include "../stdafx.h"
-#include "../MessageManager.h"
+#include "stdafx.h"
+#include "Shared/MessageManager.h"
 
 class BaseLoader
 {

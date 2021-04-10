@@ -1,6 +1,5 @@
 #include "stdafx.h"
-#include "MemoryManager.h"
-#include "Emulator.h"
+#include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Cpu.h"
@@ -8,14 +7,15 @@
 #include "SNES/DmaController.h"
 #include "SNES/RegisterHandlerA.h"
 #include "SNES/RegisterHandlerB.h"
-#include "RamHandler.h"
-#include "MessageManager.h"
-#include "EmuSettings.h"
-#include "CheatManager.h"
+#include "SNES/RamHandler.h"
+#include "Debugger/DebugTypes.h"
+#include "Shared/MessageManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/CheatManager.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
 #include "MemoryOperationType.h"
-#include "Debugger/DebugTypes.h"
 
 void MemoryManager::Initialize(Console *console)
 {

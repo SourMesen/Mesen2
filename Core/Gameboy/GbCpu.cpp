@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Emulator.h"
-#include "GbCpu.h"
-#include "Gameboy.h"
-#include "GbMemoryManager.h"
+#include "Gameboy/GbCpu.h"
+#include "Gameboy/Gameboy.h"
+#include "Gameboy/GbMemoryManager.h"
+#include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
 
 void GbCpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager)

@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
-#include "Sdd1Types.h"
-#include "Sdd1Decomp.h"
+#include "SNES/IMemoryHandler.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Types.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Decomp.h"
 #include "Utilities/ISerializable.h"
 
 class BaseCartridge;

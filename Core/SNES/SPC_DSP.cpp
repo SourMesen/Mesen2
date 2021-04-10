@@ -19,8 +19,8 @@ License along with this module; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "blargg_source.h"
-#include "Spc.h"
-#include "EmuSettings.h"
+#include "SNES/Spc.h"
+#include "Shared/EmuSettings.h"
 
 #ifdef BLARGG_ENABLE_OPTIMIZER
 	#include BLARGG_ENABLE_OPTIMIZER

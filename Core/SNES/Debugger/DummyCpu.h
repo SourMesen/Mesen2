@@ -1,8 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
-#include "MemoryMappings.h"
 #include "Debugger/DebugTypes.h"
+#include "SNES/MemoryMappings.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 

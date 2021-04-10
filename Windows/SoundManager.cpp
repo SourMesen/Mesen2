@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "SoundManager.h"
-#include "../Core/SoundMixer.h"
-#include "../Core/Emulator.h"
-#include "../Core/EmuSettings.h"
-#include "../Core/MessageManager.h"
+#include "Core/Shared/Audio/SoundMixer.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/EmuSettings.h"
+#include "Core/Shared/MessageManager.h"
 
 SoundManager::SoundManager(shared_ptr<Emulator> emu, HWND hwnd)
 {

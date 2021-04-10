@@ -1,10 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include <thread>
-#include "GameServerConnection.h"
-#include "INotificationListener.h"
-#include "IInputProvider.h"
-#include "IInputRecorder.h"
+#include "Netplay/GameServerConnection.h"
+#include "Shared/Interfaces/INotificationListener.h"
+#include "Shared/Interfaces/IInputProvider.h"
+#include "Shared/Interfaces/IInputRecorder.h"
 
 using std::thread;
 class Emulator;

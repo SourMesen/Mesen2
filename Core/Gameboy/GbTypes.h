@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "../SnesMemoryType.h"
-#include "../BaseState.h"
+#include "SnesMemoryType.h"
+#include "Shared/BaseState.h"
 
 struct GbCpuState : BaseState
 {

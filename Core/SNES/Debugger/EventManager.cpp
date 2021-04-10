@@ -8,7 +8,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/BaseEventManager.h"
-#include "DefaultVideoFilter.h"
+#include "Shared/Video/DefaultVideoFilter.h"
 
 EventManager::EventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController)
 {

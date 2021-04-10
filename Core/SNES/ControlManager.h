@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
-#include "IControlManager.h"
+#include "Shared/Interfaces/IControlManager.h"
 
 class BaseControlDevice;
 class IInputRecorder;

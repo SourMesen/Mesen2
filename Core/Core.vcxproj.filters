@@ -19,31 +19,31 @@
     <ClInclude Include="SNES\Console.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="IAudioDevice.h">
+    <ClInclude Include="Shared\Interfaces\IAudioDevice.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="IInputProvider.h">
+    <ClInclude Include="Shared\Interfaces\IInputProvider.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="IInputRecorder.h">
+    <ClInclude Include="Shared\Interfaces\IInputRecorder.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="IKeyManager.h">
+    <ClInclude Include="Shared\Interfaces\IKeyManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="IMessageManager.h">
+    <ClInclude Include="Shared\Interfaces\IMessageManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="INotificationListener.h">
+    <ClInclude Include="Shared\Interfaces\INotificationListener.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderingDevice.h">
+    <ClInclude Include="Shared\Interfaces\IRenderingDevice.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="MessageManager.h">
+    <ClInclude Include="Shared\MessageManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="KeyManager.h">
+    <ClInclude Include="Shared\KeyManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Ppu.h">
@@ -52,43 +52,43 @@
     <ClInclude Include="SNES\PpuTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="VideoRenderer.h">
+    <ClInclude Include="Shared\Video\VideoRenderer.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="VideoDecoder.h">
+    <ClInclude Include="Shared\Video\VideoDecoder.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="BaseRenderer.h">
+    <ClInclude Include="Shared\Video\BaseRenderer.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="DefaultVideoFilter.h">
+    <ClInclude Include="Shared\Video\DefaultVideoFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="BaseVideoFilter.h">
+    <ClInclude Include="Shared\Video\BaseVideoFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="SettingTypes.h">
+    <ClInclude Include="Shared\SettingTypes.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="DebugHud.h">
+    <ClInclude Include="Shared\Video\DebugHud.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="DrawCommand.h">
+    <ClInclude Include="Shared\Video\DrawCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="DrawLineCommand.h">
+    <ClInclude Include="Shared\Video\DrawLineCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="DrawPixelCommand.h">
+    <ClInclude Include="Shared\Video\DrawPixelCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="DrawRectangleCommand.h">
+    <ClInclude Include="Shared\Video\DrawRectangleCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="DrawScreenBufferCommand.h">
+    <ClInclude Include="Shared\Video\DrawScreenBufferCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="DrawStringCommand.h">
+    <ClInclude Include="Shared\Video\DrawStringCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
     <ClInclude Include="SNES\DmaController.h">
@@ -103,10 +103,10 @@
     <ClInclude Include="SNES\BaseCartridge.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="IMemoryHandler.h">
+    <ClInclude Include="SNES\IMemoryHandler.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="NotificationManager.h">
+    <ClInclude Include="Shared\NotificationManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="blargg_common.h">
@@ -130,22 +130,22 @@
     <ClInclude Include="SNES\Spc.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="RomHandler.h">
+    <ClInclude Include="SNES\RomHandler.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="RamHandler.h">
+    <ClInclude Include="SNES\RamHandler.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="SNES\InternalRegisters.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="BaseControlDevice.h">
+    <ClInclude Include="Shared\BaseControlDevice.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Input\SnesController.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="ControlDeviceState.h">
+    <ClInclude Include="Shared\ControlDeviceState.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
     <ClInclude Include="SNES\ControlManager.h">
@@ -181,46 +181,46 @@
     <ClInclude Include="Debugger\DebugBreakHelper.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="EmuSettings.h">
+    <ClInclude Include="Shared\EmuSettings.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="ScaleFilter.h">
+    <ClInclude Include="Shared\Video\ScaleFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="NtscFilter.h">
+    <ClInclude Include="Shared\Video\NtscFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="SoundMixer.h">
+    <ClInclude Include="Shared\Audio\SoundMixer.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="SoundResampler.h">
+    <ClInclude Include="Shared\Audio\SoundResampler.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="BaseSoundManager.h">
+    <ClInclude Include="Shared\Audio\BaseSoundManager.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="DebugStats.h">
+    <ClInclude Include="Shared\Video\DebugStats.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="ShortcutKeyHandler.h">
+    <ClInclude Include="Shared\ShortcutKeyHandler.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="SaveStateManager.h">
+    <ClInclude Include="Shared\SaveStateManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="SNES\CartTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="EmulatorLock.h">
+    <ClInclude Include="Shared\EmulatorLock.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="RewindData.h">
+    <ClInclude Include="Shared\RewindData.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="RewindManager.h">
+    <ClInclude Include="Shared\RewindManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="WaveRecorder.h">
+    <ClInclude Include="Shared\Audio\WaveRecorder.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Input\SnesMouse.h">
@@ -289,7 +289,7 @@
     <ClInclude Include="FirmwareHelper.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryMappings.h">
+    <ClInclude Include="SNES\MemoryMappings.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="Debugger\DebugUtilities.h">
@@ -373,22 +373,22 @@
     <ClInclude Include="SNES\Input\Multitap.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="MesenMovie.h">
+    <ClInclude Include="Shared\Movies\MesenMovie.h">
       <Filter>Movies</Filter>
     </ClInclude>
-    <ClInclude Include="MovieManager.h">
+    <ClInclude Include="Shared\Movies\MovieManager.h">
       <Filter>Movies</Filter>
     </ClInclude>
-    <ClInclude Include="MovieRecorder.h">
+    <ClInclude Include="Shared\Movies\MovieRecorder.h">
       <Filter>Movies</Filter>
     </ClInclude>
-    <ClInclude Include="MovieTypes.h">
+    <ClInclude Include="Shared\Movies\MovieTypes.h">
       <Filter>Movies</Filter>
     </ClInclude>
-    <ClInclude Include="BatteryManager.h">
+    <ClInclude Include="Shared\BatteryManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="FrameLimiter.h">
+    <ClInclude Include="Shared\FrameLimiter.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Input\SuperScope.h">
@@ -400,13 +400,13 @@
     <ClInclude Include="SNES\DmaControllerTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="CheatManager.h">
+    <ClInclude Include="Shared\CheatManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="RecordedRomTest.h">
+    <ClInclude Include="Shared\RecordedRomTest.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="InputHud.h">
+    <ClInclude Include="Shared\InputHud.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
     <ClInclude Include="SNES\SpcHud.h">
@@ -430,7 +430,7 @@
     <ClInclude Include="Netplay\ServerInformationMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="SaveStateMessage.h">
+    <ClInclude Include="Netplay\SaveStateMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
     <ClInclude Include="Netplay\PlayerListMessage.h">
@@ -451,13 +451,13 @@
     <ClInclude Include="Netplay\SelectControllerMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="MovieDataMessage.h">
+    <ClInclude Include="Netplay\MovieDataMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="InputDataMessage.h">
+    <ClInclude Include="Netplay\InputDataMessage.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="MessageType.h">
+    <ClInclude Include="Netplay\MessageType.h">
       <Filter>Netplay\Messages</Filter>
     </ClInclude>
     <ClInclude Include="Netplay\ClientConnectionData.h">
@@ -475,7 +475,7 @@
     <ClInclude Include="SNES\Coprocessors\MSU1\Msu1.h">
       <Filter>SNES\Coprocessors\MSU1</Filter>
     </ClInclude>
-    <ClInclude Include="PcmReader.h">
+    <ClInclude Include="Shared\Audio\PcmReader.h">
       <Filter>SNES\Coprocessors\MSU1</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\SA1\Sa1IRamHandler.h">
@@ -601,8 +601,8 @@
     <ClInclude Include="Gameboy\GbBootRom.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="Emulator.h" />
-    <ClInclude Include="IConsole.h" />
+    <ClInclude Include="Shared\Emulator.h" />
+    <ClInclude Include="Shared\Interfaces\IConsole.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="NES\APU\ApuEnvelope.h">
       <Filter>NES</Filter>
@@ -691,10 +691,10 @@
     <ClInclude Include="MemoryOperationType.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="IControlManager.h">
+    <ClInclude Include="Shared\Interfaces\IControlManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="NesDefaultVideoFilter.h">
+    <ClInclude Include="Shared\Video\NesDefaultVideoFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
     <ClInclude Include="NES\NesControlManager.h">
@@ -712,7 +712,7 @@
     <ClInclude Include="Gameboy\stdafx.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="IAudioProvider.h">
+    <ClInclude Include="Shared\Interfaces\IAudioProvider.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="NES\Debugger\NesDebugger.h">
@@ -721,9 +721,17 @@
     <ClInclude Include="NES\Debugger\NesDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
-    <ClInclude Include="BaseState.h">
+    <ClInclude Include="Shared\BaseState.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Debugger\stdafx.h" />
+    <ClInclude Include="Shared\Audio\stdafx.h" />
+    <ClInclude Include="Shared\Video\stdafx.h" />
+    <ClInclude Include="Shared\Movies\stdafx.h" />
+    <ClInclude Include="Shared\Interfaces\stdafx.h" />
+    <ClInclude Include="Shared\stdafx.h" />
+    <ClInclude Include="SNES\stdafx.h" />
+    <ClInclude Include="Netplay\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -738,31 +746,31 @@
     <ClCompile Include="SNES\Console.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="MessageManager.cpp">
+    <ClCompile Include="Shared\MessageManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="KeyManager.cpp">
+    <ClCompile Include="Shared\KeyManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Ppu.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="VideoDecoder.cpp">
+    <ClCompile Include="Shared\Video\VideoDecoder.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="VideoRenderer.cpp">
+    <ClCompile Include="Shared\Video\VideoRenderer.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="BaseRenderer.cpp">
+    <ClCompile Include="Shared\Video\BaseRenderer.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="DefaultVideoFilter.cpp">
+    <ClCompile Include="Shared\Video\DefaultVideoFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="BaseVideoFilter.cpp">
+    <ClCompile Include="Shared\Video\BaseVideoFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="DebugHud.cpp">
+    <ClCompile Include="Shared\Video\DebugHud.cpp">
       <Filter>Video\DebugHud</Filter>
     </ClCompile>
     <ClCompile Include="SNES\DmaController.cpp">
@@ -771,7 +779,7 @@
     <ClCompile Include="Debugger\MemoryDumper.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="NotificationManager.cpp">
+    <ClCompile Include="Shared\NotificationManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="SNES\SPC_DSP.cpp">
@@ -789,7 +797,7 @@
     <ClCompile Include="SNES\InternalRegisters.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="BaseControlDevice.cpp">
+    <ClCompile Include="Shared\BaseControlDevice.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
     <ClCompile Include="SNES\ControlManager.cpp">
@@ -813,43 +821,43 @@
     <ClCompile Include="Debugger\PpuTools.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="EmuSettings.cpp">
+    <ClCompile Include="Shared\EmuSettings.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="ScaleFilter.cpp">
+    <ClCompile Include="Shared\Video\ScaleFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="NtscFilter.cpp">
+    <ClCompile Include="Shared\Video\NtscFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="SoundMixer.cpp">
+    <ClCompile Include="Shared\Audio\SoundMixer.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="SoundResampler.cpp">
+    <ClCompile Include="Shared\Audio\SoundResampler.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="BaseSoundManager.cpp">
+    <ClCompile Include="Shared\Audio\BaseSoundManager.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="ShortcutKeyHandler.cpp">
+    <ClCompile Include="Shared\ShortcutKeyHandler.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="DebugStats.cpp">
+    <ClCompile Include="Shared\Video\DebugStats.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="SNES\RegisterHandlerB.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
-    <ClCompile Include="SaveStateManager.cpp">
+    <ClCompile Include="Shared\SaveStateManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="RewindData.cpp">
+    <ClCompile Include="Shared\RewindData.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="RewindManager.cpp">
+    <ClCompile Include="Shared\RewindManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="WaveRecorder.cpp">
+    <ClCompile Include="Shared\Audio\WaveRecorder.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Spc.Instructions.cpp">
@@ -873,7 +881,7 @@
     <ClCompile Include="SNES\Debugger\SpcDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="EmulatorLock.cpp">
+    <ClCompile Include="Shared\EmulatorLock.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\LabelManager.cpp">
@@ -903,7 +911,7 @@
     <ClCompile Include="SNES\Debugger\NecDspDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryMappings.cpp">
+    <ClCompile Include="SNES\MemoryMappings.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Coprocessors\SA1\Sa1.cpp">
@@ -954,28 +962,28 @@
     <ClCompile Include="SNES\Coprocessors\OBC1\Obc1.cpp">
       <Filter>SNES\Coprocessors\OBC1</Filter>
     </ClCompile>
-    <ClCompile Include="MesenMovie.cpp">
+    <ClCompile Include="Shared\Movies\MesenMovie.cpp">
       <Filter>Movies</Filter>
     </ClCompile>
-    <ClCompile Include="MovieRecorder.cpp">
+    <ClCompile Include="Shared\Movies\MovieRecorder.cpp">
       <Filter>Movies</Filter>
     </ClCompile>
-    <ClCompile Include="MovieManager.cpp">
+    <ClCompile Include="Shared\Movies\MovieManager.cpp">
       <Filter>Movies</Filter>
     </ClCompile>
-    <ClCompile Include="BatteryManager.cpp">
+    <ClCompile Include="Shared\BatteryManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="CheatManager.cpp">
+    <ClCompile Include="Shared\CheatManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Input\SnesController.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
-    <ClCompile Include="RecordedRomTest.cpp">
+    <ClCompile Include="Shared\RecordedRomTest.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="InputHud.cpp">
+    <ClCompile Include="Shared\InputHud.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Input\Multitap.cpp">
@@ -999,7 +1007,7 @@
     <ClCompile Include="Netplay\GameServer.cpp">
       <Filter>Netplay</Filter>
     </ClCompile>
-    <ClCompile Include="PcmReader.cpp">
+    <ClCompile Include="Shared\Audio\PcmReader.cpp">
       <Filter>SNES\Coprocessors\MSU1</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Coprocessors\MSU1\Msu1.cpp">
@@ -1086,7 +1094,7 @@
     <ClCompile Include="SNES\Coprocessors\SGB\SuperGameboy.cpp">
       <Filter>SNES\Coprocessors\SuperGameboy</Filter>
     </ClCompile>
-    <ClCompile Include="Emulator.cpp" />
+    <ClCompile Include="Shared\Emulator.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp">
       <Filter>NES</Filter>
@@ -1127,7 +1135,7 @@
     <ClCompile Include="NES\NesConsole.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="NesDefaultVideoFilter.cpp">
+    <ClCompile Include="Shared\Video\NesDefaultVideoFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
     <ClCompile Include="NES\NesControlManager.cpp">

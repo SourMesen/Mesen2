@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "SettingTypes.h"
 #include "SNES/Cpu.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/MemoryManager.h"
@@ -7,6 +6,7 @@
 #include "SNES/Console.h"
 #include "SNES/Spc.h"
 #include "SNES/Ppu.h"
+#include "SNES/MemoryMappings.h"
 #include "SNES/Debugger/Assembler.h"
 #include "SNES/Debugger/CpuDebugger.h"
 #include "SNES/Debugger/EventManager.h"
@@ -22,12 +22,12 @@
 #include "Debugger/ScriptManager.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/CodeDataLogger.h"
-#include "EmuSettings.h"
-#include "MemoryMappings.h"
-#include "Emulator.h"
-#include "MemoryOperationType.h"
+#include "Shared/SettingTypes.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Emulator.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "MemoryOperationType.h"
 
 CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 {

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <regex>
 #include <algorithm>
-#include "TraceLogger.h"
-#include "DisassemblyInfo.h"
-#include "Emulator.h"
-#include "EmuSettings.h"
-#include "Debugger.h"
-#include "LabelManager.h"
-#include "DebugUtilities.h"
+#include "Debugger/TraceLogger.h"
+#include "Debugger/DisassemblyInfo.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/LabelManager.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
+#include "Debugger/DebugBreakHelper.h"
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/CpuTypes.h"
@@ -19,9 +19,9 @@
 #include "Gameboy/GbTypes.h"
 #include "NES/NesTypes.h"
 #include "NES/Debugger/NesDebuggerTypes.h"
-#include "DebugTypes.h"
 #include "Utilities/HexUtilities.h"
-#include "DebugBreakHelper.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 
 string TraceLogger::_executionTrace = "";
 

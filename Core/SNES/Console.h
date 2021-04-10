@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
-#include "CartTypes.h"
+#include "SNES/CartTypes.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
-#include "IConsole.h"
+#include "Shared/Interfaces/IConsole.h"
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/SimpleLock.h"
@@ -45,8 +45,6 @@ enum class ConsoleType;
 class Console : public std::enable_shared_from_this<Console>, public IConsole
 {
 private:
-	unique_ptr<thread> _emuThread;
-
 	shared_ptr<Cpu> _cpu;
 	shared_ptr<Ppu> _ppu;
 	shared_ptr<Spc> _spc;
@@ -57,26 +55,13 @@ private:
 	shared_ptr<DmaController> _dmaController;
 	
 	shared_ptr<Msu1> _msu1;
-
-	shared_ptr<Debugger> _debugger;
-
+	shared_ptr<EmuSettings> _settings;
+	shared_ptr<SpcHud> _spcHud;
 	Emulator* _emu;
 
-	shared_ptr<EmuSettings> _settings;
-
-	shared_ptr<SpcHud> _spcHud;
-
 	uint32_t _masterClockRate;
-
 	ConsoleRegion _region;
-
-	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
-
-	unique_ptr<DebugStats> _stats;
-	unique_ptr<FrameLimiter> _frameLimiter;
-	Timer _lastFrameTimer;
-	double _frameDelay = 0;
 
 	void UpdateRegion();
 
@@ -122,7 +107,6 @@ public:
 	Emulator* GetEmulator();
 	
 	bool IsRunning();
-	bool IsRunAheadFrame();
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);

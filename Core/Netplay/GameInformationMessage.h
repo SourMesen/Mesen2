@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "MessageManager.h"
-#include "NetMessage.h"
+#include "Shared/MessageManager.h"
+#include "Netplay/NetMessage.h"
 #include "Utilities/FolderUtilities.h"
 
 class GameInformationMessage : public NetMessage

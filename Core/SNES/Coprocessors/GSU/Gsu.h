@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
-#include "GsuTypes.h"
-#include "MemoryMappings.h"
-#include "IMemoryHandler.h"
+#include "SNES/Coprocessors/GSU/GsuTypes.h"
+#include "SNES/MemoryMappings.h"
+#include "SNES/IMemoryHandler.h"
 
 class Emulator;
 class Console;

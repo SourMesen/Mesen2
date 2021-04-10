@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "NesHeader.h"
-#include "RomData.h"
-#include "../MessageManager.h"
+#include "NES/NesHeader.h"
+#include "NES/RomData.h"
+#include "Shared/MessageManager.h"
 
 uint16_t NesHeader::GetMapperID()
 {

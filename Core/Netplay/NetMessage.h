@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "MessageType.h"
-#include "SaveStateManager.h"
+#include "Netplay/MessageType.h"
+#include "Shared/SaveStateManager.h"
 #include "Utilities/Socket.h"
 #include "Utilities/Serializer.h"
 

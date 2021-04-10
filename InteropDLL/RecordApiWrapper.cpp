@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "../Core/Emulator.h"
-#include "../Core/VideoRenderer.h"
-#include "../Core/SoundMixer.h"
-#include "../Core/MovieManager.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/Video/VideoRenderer.h"
+#include "Core/Shared/Audio/SoundMixer.h"
+#include "Core/Shared/Movies/MovieManager.h"
 
 extern shared_ptr<Emulator> _emu;
 enum class VideoCodec;

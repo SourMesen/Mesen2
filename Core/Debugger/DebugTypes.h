@@ -1,7 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "SnesMemoryType.h"
-#include "MemoryOperationType.h"
+#include "Core/MemoryOperationType.h"
+
+enum class SnesMemoryType;
 
 struct AddressInfo
 {

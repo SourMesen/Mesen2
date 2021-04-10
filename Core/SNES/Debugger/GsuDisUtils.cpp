@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "SNES/Debugger/GsuDisUtils.h"
+#include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
-#include "EmuSettings.h"
-#include "SNES/Coprocessors/GSU/GsuTypes.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
+#include "SnesMemoryType.h"
 
 void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings *settings)
 {

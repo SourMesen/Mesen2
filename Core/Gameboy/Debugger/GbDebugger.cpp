@@ -19,9 +19,9 @@
 #include "Gameboy/GbCpu.h"
 #include "SNES/Console.h"
 #include "SNES/BaseCartridge.h"
-#include "EmuSettings.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
-#include "Emulator.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {

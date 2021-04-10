@@ -11,10 +11,10 @@
 #include "NES/BaseMapper.h"
 
 #include "Debugger/Debugger.h"
-#include "EmuSettings.h"
-#include "VideoDecoder.h"
-#include "RewindManager.h"
-#include "NotificationManager.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Video/VideoDecoder.h"
+#include "Shared/RewindManager.h"
+#include "Shared/NotificationManager.h"
 #include "MemoryOperationType.h"
 
 NesPpu::NesPpu(shared_ptr<NesConsole> console)

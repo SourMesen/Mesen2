@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Core/Emulator.h"
+#include "Core/Shared/Emulator.h"
 #include "Core/Debugger/Debugger.h"
 #include "Core/Debugger/TraceLogger.h"
 #include "Core/Debugger/MemoryDumper.h"

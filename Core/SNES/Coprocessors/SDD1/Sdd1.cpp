@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Sdd1.h"
-#include "Sdd1Mmc.h"
+#include "SNES/Coprocessors/SDD1/Sdd1.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Mmc.h"
 #include "SNES/Console.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/MemoryManager.h"
-#include "MemoryMappings.h"
+#include "SNES/MemoryMappings.h"
 #include "Utilities/Serializer.h"
 
 Sdd1::Sdd1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)

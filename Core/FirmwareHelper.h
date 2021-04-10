@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "Emulator.h"
-#include "NotificationManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/NotificationManager.h"
 #include "Utilities/FolderUtilities.h"
 
 struct MissingFirmwareMessage

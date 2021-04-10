@@ -2,13 +2,13 @@
 #include <thread>
 using std::thread;
 
-#include "MessageManager.h"
-#include "GameServer.h"
-#include "Emulator.h"
+#include "Netplay/GameServer.h"
+#include "Netplay/PlayerListMessage.h"
 #include "SNES/ControlManager.h"
 #include "SNES/Input/Multitap.h"
-#include "PlayerListMessage.h"
-#include "NotificationManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/NotificationManager.h"
+#include "Shared/MessageManager.h"
 #include "Utilities/Socket.h"
 
 shared_ptr<GameServer> GameServer::Instance;

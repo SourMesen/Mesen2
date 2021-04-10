@@ -1,18 +1,17 @@
 #include "stdafx.h"
-#include "NesControlManager.h"
-#include "BaseMapper.h"
-#include "EmuSettings.h"
-#include "NesConsole.h"
-#include "NesMemoryManager.h"
-#include "IKeyManager.h"
-#include "IInputProvider.h"
-#include "IInputRecorder.h"
-#include "BatteryManager.h"
+#include "NES/NesControlManager.h"
+#include "NES/BaseMapper.h"
+#include "NES/NesConsole.h"
+#include "NES/NesMemoryManager.h"
 #include "NES/Input/StandardController.h"
 #include "SNES/Input/SnesController.h"
-#include "NesConsole.h"
-#include "Emulator.h"
-#include "KeyManager.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Interfaces/IKeyManager.h"
+#include "Shared/Interfaces/IInputProvider.h"
+#include "Shared/Interfaces/IInputRecorder.h"
+#include "Shared/BatteryManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/KeyManager.h"
 /*#include "Zapper.h"
 #include "ArkanoidController.h"
 #include "OekaKidsTablet.h"
@@ -145,8 +144,8 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateExpansionDevice(Expansion
 {
 	shared_ptr<BaseControlDevice> device;
 
-	switch(type) {
-		/*case ExpansionPortDevice::Zapper: device.reset(new Zapper(console, BaseControlDevice::ExpDevicePort)); break;
+	/*switch(type) {
+		case ExpansionPortDevice::Zapper: device.reset(new Zapper(console, BaseControlDevice::ExpDevicePort)); break;
 		case ExpansionPortDevice::ArkanoidController: device.reset(new ArkanoidController(console, BaseControlDevice::ExpDevicePort)); break;
 		case ExpansionPortDevice::OekaKidsTablet: device.reset(new OekaKidsTablet(console)); break;
 		case ExpansionPortDevice::FamilyTrainerMat: device.reset(new FamilyMatTrainer(console, console->GetSettings()->GetControllerKeys(0))); break;
@@ -163,9 +162,9 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateExpansionDevice(Expansion
 		case ExpansionPortDevice::AsciiTurboFile: device.reset(new AsciiTurboFile(console)); break;
 		case ExpansionPortDevice::BattleBox: device.reset(new BattleBox(console)); break;
 
-		case ExpansionPortDevice::FourPlayerAdapter:*/
+		case ExpansionPortDevice::FourPlayerAdapter:
 		default: break;
-	}
+	}*/
 
 	return device;
 }

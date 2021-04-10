@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "../Core/Emulator.h"
-#include "../Core/KeyManager.h"
-#include "../Core/ShortcutKeyHandler.h"
+#include "Core/Shared/Emulator.h"
+#include "Core/Shared/KeyManager.h"
+#include "Core/Shared/ShortcutKeyHandler.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
 extern unique_ptr<ShortcutKeyHandler> _shortcutKeyHandler;

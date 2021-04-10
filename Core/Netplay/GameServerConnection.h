@@ -1,10 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include <deque>
-#include "GameConnection.h"
-#include "INotificationListener.h"
-#include "BaseControlDevice.h"
-#include "ControlDeviceState.h"
+#include "Netplay/GameConnection.h"
+#include "Shared/Interfaces/INotificationListener.h"
+#include "Shared/BaseControlDevice.h"
+#include "Shared/ControlDeviceState.h"
 
 class HandShakeMessage;
 

@@ -1,7 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
-#include "GsuTypes.h"
+#include "SNES/IMemoryHandler.h"
+#include "SNES/Coprocessors/GSU/GsuTypes.h"
+#include "SnesMemoryType.h"
 
 class GsuRamHandler : public IMemoryHandler
 {

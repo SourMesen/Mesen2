@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "BsxMemoryPack.h"
+#include "SNES/Coprocessors/BSX/BsxMemoryPack.h"
 #include "SNES/Console.h"
-#include "Emulator.h"
-#include "BatteryManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/BatteryManager.h"
 #include "Utilities/IpsPatcher.h"
 #include "Utilities/Serializer.h"
 

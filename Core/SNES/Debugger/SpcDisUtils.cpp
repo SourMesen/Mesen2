@@ -4,7 +4,7 @@
 #include "SNES/Debugger/DummySpc.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
-#include "EmuSettings.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
 

@@ -1,7 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
+#include "SNES/IMemoryHandler.h"
 #include "Debugger/DebugTypes.h"
+#include "SnesMemoryType.h"
 
 class Sa1IRamHandler : public IMemoryHandler
 {

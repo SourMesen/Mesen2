@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Multitap.h"
+#include "SNES/Input/Multitap.h"
+#include "SNES/Input/SnesController.h"
 #include "SNES/Console.h"
-#include "Emulator.h"
 #include "SNES/InternalRegisters.h"
-#include "SnesController.h"
+#include "Shared/Emulator.h"
 
 string Multitap::GetKeyNames()
 {

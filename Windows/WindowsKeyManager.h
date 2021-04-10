@@ -2,9 +2,9 @@
 
 #include "stdafx.h"
 #include <unordered_map>
-#include "../Core/IKeyManager.h"
-#include "../Utilities/Timer.h"
-#include "../Utilities/AutoResetEvent.h"
+#include "Core/Shared/Interfaces/IKeyManager.h"
+#include "Utilities/Timer.h"
+#include "Utilities/AutoResetEvent.h"
 #include "XInputManager.h"
 #include "DirectInputManager.h"
 

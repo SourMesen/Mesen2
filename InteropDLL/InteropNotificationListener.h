@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "../Core/INotificationListener.h"
-#include "../Core/NotificationManager.h"
+#include "Core/Shared/Interfaces/INotificationListener.h"
+#include "Core/Shared/NotificationManager.h"
 
 typedef void(__stdcall *NotificationListenerCallback)(int, void*);
 

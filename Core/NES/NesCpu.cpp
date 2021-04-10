@@ -8,11 +8,10 @@
 #include "NES/APU/NesApu.h"
 #include "NES/NesMemoryManager.h"
 #include "NES/NesConsole.h"
-#include "MessageManager.h"
-#include "EmuSettings.h"
-#include "Emulator.h"
+#include "Shared/MessageManager.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
-#include "Emulator.h"
 
 NesCpu::NesCpu(shared_ptr<NesConsole> console)
 {

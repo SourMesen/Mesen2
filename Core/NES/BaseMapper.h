@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../stdafx.h"
-#include "Utilities/ISerializable.h"
-#include "INesMemoryHandler.h"
-#include "NesTypes.h"
-#include "RomData.h"
-#include "Emulator.h"
+#include "stdafx.h"
+#include "NES/INesMemoryHandler.h"
+#include "NES/NesTypes.h"
+#include "NES/RomData.h"
 #include "Debugger/DebugTypes.h"
+#include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
+#include "Utilities/ISerializable.h"
 
 class NesConsole;
 class BaseControlDevice;

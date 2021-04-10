@@ -1,11 +1,12 @@
 #include "stdafx.h"
-#include "EmuSettings.h"
 #include "SNES/Debugger/NecDspDisUtils.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
 #include "Debugger/DebugTypes.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
+#include "SnesMemoryType.h"
 
 void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings* settings)
 {

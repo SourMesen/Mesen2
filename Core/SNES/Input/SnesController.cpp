@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "SnesController.h"
-#include "Emulator.h"
+#include "SNES/Input/SnesController.h"
+#include "Shared/Emulator.h"
 
 SnesController::SnesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, port, keyMappings)
 {

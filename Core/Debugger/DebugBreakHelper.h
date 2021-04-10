@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "Debugger.h"
-#include "Emulator.h"
+#include "Debugger/Debugger.h"
+#include "Shared/Emulator.h"
 
 class DebugBreakHelper
 {

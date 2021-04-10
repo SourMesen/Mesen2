@@ -1,8 +1,8 @@
 #pragma once 
 #include "stdafx.h"
 
-#include "SettingTypes.h"
-#include "IConsole.h"
+#include "Shared/SettingTypes.h"
+#include "Shared/Interfaces/IConsole.h"
 #include "Debugger/DebugTypes.h"
 
 class Emulator;

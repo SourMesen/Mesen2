@@ -1,11 +1,10 @@
 #include "stdafx.h"
-#include "../../Utilities/Serializer.h"
-#include "NesMemoryManager.h"
-#include "BaseMapper.h"
-//#include "Debugger.h"
-#include "CheatManager.h"
-#include "Emulator.h"
-#include "NesConsole.h"
+#include "NES/NesMemoryManager.h"
+#include "NES/BaseMapper.h"
+#include "NES/NesConsole.h"
+#include "Shared/CheatManager.h"
+#include "Shared/Emulator.h"
+#include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
 NesMemoryManager::NesMemoryManager(shared_ptr<NesConsole> console)

@@ -1,20 +1,20 @@
 #include "stdafx.h"
-#include "Spc.h"
-#include "Emulator.h"
-#include "Console.h"
-#include "MemoryManager.h"
-#include "SoundMixer.h"
-#include "EmuSettings.h"
-#include "SpcFileData.h"
-#include "MemoryOperationType.h"
+#include "SNES/Spc.h"
+#include "SNES/Console.h"
+#include "SNES/MemoryManager.h"
+#include "SNES/SpcFileData.h"
 #ifndef DUMMYSPC
-#include "SPC_DSP.h"
+#include "SNES/SPC_DSP.h"
 #else
 #undef Spc
-#include "SPC_DSP.h"
+#include "SNES/SPC_DSP.h"
 #define Spc DummySpc
 #endif
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Serializer.h"
+#include "MemoryOperationType.h"
 
 Spc::Spc(Console* console)
 {

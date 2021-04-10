@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "SpcHud.h"
-#include "Emulator.h"
-#include "SoundMixer.h"
-#include "DebugHud.h"
-#include "SpcFileData.h"
+#include "SNES/SpcHud.h"
+#include "SNES/SpcFileData.h"
+#include "Shared/Emulator.h"
+#include "Shared/Audio/SoundMixer.h"
+#include "Shared/Video/DebugHud.h"
 
 SpcHud::SpcHud(Emulator* emu, SpcFileData* spcData)
 {

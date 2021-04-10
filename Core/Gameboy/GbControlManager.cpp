@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Emulator.h"
-#include "EmuSettings.h"
-#include "GbControlManager.h"
+#include "Gameboy/GbControlManager.h"
 #include "SNES/Input/SnesController.h"
-#include "KeyManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/KeyManager.h"
 
 GbControlManager::GbControlManager(Emulator* emu)
 {

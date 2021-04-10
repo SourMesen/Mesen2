@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "ScriptManager.h"
-#include "ScriptHost.h"
-#include "DebugBreakHelper.h"
-#include "Debugger.h"
-#include "Emulator.h"
-#include "DebugHud.h"
+#include "Debugger/ScriptManager.h"
+#include "Debugger/ScriptHost.h"
+#include "Debugger/DebugBreakHelper.h"
+#include "Debugger/Debugger.h"
+#include "Shared/Emulator.h"
+#include "Shared/Video/DebugHud.h"
 #include "MemoryOperationType.h"
 
 ScriptManager::ScriptManager(Debugger* debugger)

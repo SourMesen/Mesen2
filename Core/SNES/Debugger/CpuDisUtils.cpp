@@ -3,7 +3,7 @@
 #include "SNES/CpuTypes.h"
 #include "SNES/Cpu.h"
 #include "SNES/Console.h"
-#include "EmuSettings.h"
+#include "Shared/EmuSettings.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
 #include "SNES/Debugger/DummyCpu.h"

@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Debugger.h"
-#include "Emulator.h"
+#include "Debugger/Debugger.h"
+#include "Shared/Emulator.h"
 #include "SNES/MemoryManager.h"
 #include "SNES/Ppu.h"
 #include "SNES/Spc.h"
@@ -13,14 +13,14 @@
 #include "SNES/Coprocessors/BSX/BsxCart.h"
 #include "SNES/Coprocessors/BSX/BsxMemoryPack.h"
 #include "SNES/Console.h"
-#include "MemoryDumper.h"
+#include "Debugger/MemoryDumper.h"
 #include "SNES/BaseCartridge.h"
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
-#include "VideoDecoder.h"
-#include "DebugTypes.h"
-#include "DebugBreakHelper.h"
-#include "Disassembler.h"
+#include "Shared/Video/VideoDecoder.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/DebugBreakHelper.h"
+#include "Debugger/Disassembler.h"
 
 MemoryDumper::MemoryDumper(Debugger* debugger)
 {

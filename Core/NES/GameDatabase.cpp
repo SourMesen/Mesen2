@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "RomData.h"
-#include "../MessageManager.h"
-#include "../../Utilities/CRC32.h"
-#include "../../Utilities/FolderUtilities.h"
-#include "../../Utilities/StringUtilities.h"
-#include "../../Utilities/HexUtilities.h"
-#include "GameDatabase.h"
+#include "NES/RomData.h"
+#include "NES/GameDatabase.h"
+#include "Shared/MessageManager.h"
+#include "Utilities/CRC32.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/HexUtilities.h"
 
 //TODO NES
 //#include "EmulationSettings.h"

@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
-#include "Sa1Cpu.h"
-#include "Sa1Types.h"
-#include "Sa1.h"
+#include "SNES/IMemoryHandler.h"
+#include "SNES/Coprocessors/SA1/Sa1Cpu.h"
+#include "SNES/Coprocessors/SA1/Sa1Types.h"
+#include "SNES/Coprocessors/SA1/Sa1.h"
 
 //Manages BWRAM access from the SNES CPU
 //Returns conversion result when char conversion type 1 is enabled

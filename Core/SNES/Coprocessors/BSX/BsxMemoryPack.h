@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "RamHandler.h"
-#include "IMemoryHandler.h"
+#include "SNES/RamHandler.h"
+#include "SNES/IMemoryHandler.h"
 #include "Utilities/ISerializable.h"
 
 class BsxMemoryPackHandler;

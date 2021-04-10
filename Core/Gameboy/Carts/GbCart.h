@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "Gameboy.h"
-#include "GbMemoryManager.h"
-#include "MessageManager.h"
+#include "Gameboy/Gameboy.h"
+#include "Gameboy/GbMemoryManager.h"
+#include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/ISerializable.h"
 

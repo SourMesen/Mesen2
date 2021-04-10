@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include <time.h>
-#include "Rtc4513.h"
-#include "Emulator.h"
-#include "MessageManager.h"
-#include "BatteryManager.h"
+#include "SNES/Coprocessors/SPC7110/Rtc4513.h"
+#include "Shared/Emulator.h"
+#include "Shared/MessageManager.h"
+#include "Shared/BatteryManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 

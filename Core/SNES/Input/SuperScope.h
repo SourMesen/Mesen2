@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "BaseControlDevice.h"
-#include "KeyManager.h"
+#include "Shared/BaseControlDevice.h"
+#include "Shared/KeyManager.h"
 #include "SNES/Ppu.h"
 #include "Utilities/Serializer.h"
 

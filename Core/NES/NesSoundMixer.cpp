@@ -1,12 +1,12 @@
 #include "stdafx.h"
+#include "NES/NesSoundMixer.h"
+#include "NES/NesConsole.h"
+#include "NES/NesCpu.h"
+#include "NES/NesTypes.h"
+#include "Shared/Emulator.h"
+#include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/blip_buf.h"
-#include "NesConsole.h"
-#include "NesCpu.h"
-#include "NesSoundMixer.h"
-#include "NesTypes.h"
-#include "Emulator.h"
-#include "SoundMixer.h"
 
 NesSoundMixer::NesSoundMixer(shared_ptr<NesConsole> console)
 {

@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "SpcTimer.h"
-#include "CpuTypes.h"
-#include "BaseState.h"
+#include "SNES/SpcTimer.h"
+#include "SNES/CpuTypes.h"
+#include "Shared/BaseState.h"
 
 struct SpcState : BaseState
 {

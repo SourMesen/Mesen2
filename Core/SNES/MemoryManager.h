@@ -3,6 +3,7 @@
 #include "Debugger/DebugTypes.h"
 #include "MemoryMappings.h"
 #include "Utilities/ISerializable.h"
+#include "SnesMemoryType.h"
 
 class IMemoryHandler;
 class RegisterHandlerA;

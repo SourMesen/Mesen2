@@ -2,13 +2,13 @@
 #include <thread>
 using std::thread;
 
-#include "MessageManager.h"
-#include "GameClient.h"
-#include "Emulator.h"
-#include "NotificationManager.h"
+#include "Netplay/GameClient.h"
+#include "Netplay/ClientConnectionData.h"
+#include "Netplay/GameClientConnection.h"
+#include "Shared/MessageManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/NotificationManager.h"
 #include "Utilities/Socket.h"
-#include "ClientConnectionData.h"
-#include "GameClientConnection.h"
 
 shared_ptr<GameClient> GameClient::_instance;
 
