@@ -55,7 +55,7 @@ private:
 	shared_ptr<DmaController> _dmaController;
 	
 	shared_ptr<Msu1> _msu1;
-	shared_ptr<EmuSettings> _settings;
+	EmuSettings* _settings;
 	shared_ptr<SpcHud> _spcHud;
 	Emulator* _emu;
 

@@ -29,7 +29,7 @@ void GbApu::Init(Emulator* emu, Gameboy* gameboy)
 	_prevClockCount = 0;
 
 	_emu = emu;
-	_settings = emu->GetSettings().get();
+	_settings = emu->GetSettings();
 	_soundMixer = emu->GetSoundMixer().get();
 	_gameboy = gameboy;
 	_state = {};

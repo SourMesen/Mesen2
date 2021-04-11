@@ -71,7 +71,7 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 
 void MovieRecorder::GetGameSettings(stringstream &out)
 {
-	EmuSettings* settings = _emu->GetSettings().get();
+	EmuSettings* settings = _emu->GetSettings();
 	EmulationConfig emuConfig = settings->GetEmulationConfig();
 	InputConfig inputConfig = settings->GetInputConfig();
 	
@@ -105,14 +105,24 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 	WriteString(out, MovieKeys::Controller4, ControllerTypeNames[(int)inputConfig.Controllers[3].Type]);
 	WriteString(out, MovieKeys::Controller5, ControllerTypeNames[(int)inputConfig.Controllers[4].Type]);
 
-	WriteInt(out, MovieKeys::ExtraScanlinesBeforeNmi, emuConfig.PpuExtraScanlinesBeforeNmi);
-	WriteInt(out, MovieKeys::ExtraScanlinesAfterNmi, emuConfig.PpuExtraScanlinesAfterNmi);
-	WriteInt(out, MovieKeys::GsuClockSpeed, emuConfig.GsuClockSpeed);
-	
-	switch(emuConfig.RamPowerOnState) {
-		case RamState::AllZeros: WriteString(out, MovieKeys::RamPowerOnState, "AllZeros"); break;
-		case RamState::AllOnes: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break;
-		case RamState::Random: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break; //TODO: Random memory isn't supported for movies yet
+	switch(_emu->GetConsoleType()) {
+		case ConsoleType::Snes: {
+			SnesConfig snesCfg = settings->GetSnesConfig();
+			WriteInt(out, MovieKeys::ExtraScanlinesBeforeNmi, snesCfg.PpuExtraScanlinesBeforeNmi);
+			WriteInt(out, MovieKeys::ExtraScanlinesAfterNmi, snesCfg.PpuExtraScanlinesAfterNmi);
+			WriteInt(out, MovieKeys::GsuClockSpeed, snesCfg.GsuClockSpeed);
+
+			switch(snesCfg.RamPowerOnState) {
+				case RamState::AllZeros: WriteString(out, MovieKeys::RamPowerOnState, "AllZeros"); break;
+				case RamState::AllOnes: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break;
+				case RamState::Random: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break; //TODO: Random memory isn't supported for movies yet
+			}
+			break;
+		}
+
+		default:
+			//TODO
+			break;
 	}
 
 	for(CheatCode &code : _emu->GetCheatManager()->GetCheats()) {

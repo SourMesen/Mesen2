@@ -29,7 +29,7 @@ TraceLogger::TraceLogger(Debugger* debugger)
 {
 	_debugger = debugger;
 	_console = debugger->GetConsole();
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 	_labelManager = debugger->GetLabelManager().get();
 	_memoryDumper = debugger->GetMemoryDumper();
 	_options = {};

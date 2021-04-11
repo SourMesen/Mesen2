@@ -1,0 +1,95 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:SnesConfigViewModel"
+	x:Class="Mesen.Views.SnesConfigView"
+>
+	<Design.DataContext>
+		<vm:SnesConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+		<TabItem Header="{l:Translate tpgAudio}">
+			<StackPanel>
+				<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
+			</StackPanel>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgEmulation}">
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+					<c:EnumComboBox EnumType="{x:Type cfg:RamState}" SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+				</StackPanel>
+
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableStrictBoardMappings}" Text="{l:Translate chkStrictBoardMappings}" />
+			</StackPanel>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgOverclocking}">
+			<StackPanel>
+				<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
+					<Panel>
+						<mui:MaterialIcon Kind="HelpCircleOutline" Margin="0" Width="20" Height="20" HorizontalAlignment="Left" />
+						<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
+					</Panel>
+				</Border>
+
+				<c:OptionSection Header="{l:Translate grpPpuTiming}">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
+						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+						<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
+						<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+					</Grid>
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblChipSpecificOc}">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblSuperFxClockSpeed}" />
+						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.GsuClockSpeed}" Minimum="0" Maximum="1000" />
+					</Grid>
+				</c:OptionSection>
+			</StackPanel>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgVideo}">
+			<StackPanel>
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Text="{l:Translate chkBlendHighResolutionModes}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer0}" Text="{l:Translate chkHideBgLayer0}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
+			</StackPanel>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgBsx}">
+			<StackPanel>
+				<c:OptionSection Header="{l:Translate lblBsxDateTime}" Margin="0">
+					<RadioButton GroupName="BsxDateTime" Content="{l:Translate lblCurrentDate}" IsChecked="{CompiledBinding !Config.BsxUseCustomTime}" />
+					<RadioButton VerticalAlignment="Center" GroupName="BsxDateTime" Content="{l:Translate lblCustomDate}" IsChecked="{CompiledBinding Config.BsxUseCustomTime}" />
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="35 0 0 0">
+						<TextBlock Text="{l:Translate lblDate}" />
+						<DatePicker Grid.Column="1" MonthFormat="MMM" SelectedDate="{CompiledBinding Config.BsxCustomDate}" />
+						<TextBlock Text="{l:Translate lblTime}" Grid.Row="1" />
+						<TimePicker Grid.Column="1" Grid.Row="1" SelectedTime="{CompiledBinding Config.BsxCustomTime}" />
+					</Grid>
+				</c:OptionSection>
+			</StackPanel>
+		</TabItem>
+	</TabControl>
+</UserControl>

@@ -470,10 +470,9 @@ void NesCpu::SetMasterClockDivider(NesModel region)
 
 void NesCpu::Serialize(Serializer &s)
 {
-	EmuSettings* settings = _console->GetEmulator()->GetSettings().get();
-	EmulationConfig emuConfig = settings->GetEmulationConfig();
-	uint32_t extraScanlinesBeforeNmi = emuConfig.PpuExtraScanlinesBeforeNmi;
-	uint32_t extraScanlinesAfterNmi = emuConfig.PpuExtraScanlinesAfterNmi;
+	EmuSettings* settings = _console->GetEmulator()->GetSettings();
+	uint32_t extraScanlinesBeforeNmi = _console->GetNesConfig().PpuExtraScanlinesBeforeNmi;
+	uint32_t extraScanlinesAfterNmi = _console->GetNesConfig().PpuExtraScanlinesAfterNmi;
 	uint32_t dipSwitches = _console->GetNesConfig().DipSwitches;
 
 	s.Stream(_state.PC, _state.SP, _state.PS, _state.A, _state.X, _state.Y, _state.CycleCount, _state.NMIFlag, 

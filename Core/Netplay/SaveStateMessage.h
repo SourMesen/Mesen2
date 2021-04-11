@@ -40,9 +40,12 @@ public:
 
 		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
 		_region = emuCfg.Region;
+
+		//TODO
+		/*
 		_ppuExtraScanlinesAfterNmi = emuCfg.PpuExtraScanlinesAfterNmi;
 		_ppuExtraScanlinesBeforeNmi = emuCfg.PpuExtraScanlinesBeforeNmi;
-		_gsuClockSpeed = emuCfg.GsuClockSpeed;
+		_gsuClockSpeed = emuCfg.GsuClockSpeed;*/
 
 		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
@@ -66,9 +69,13 @@ public:
 
 		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
 		emuCfg.Region = _region;
+
+		//TODO
+		/*
 		emuCfg.PpuExtraScanlinesAfterNmi = _ppuExtraScanlinesAfterNmi;
 		emuCfg.PpuExtraScanlinesBeforeNmi = _ppuExtraScanlinesBeforeNmi;
 		emuCfg.GsuClockSpeed = _gsuClockSpeed;
+		*/
 
 		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {

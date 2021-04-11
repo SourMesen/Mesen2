@@ -117,7 +117,50 @@
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<StackPanel>
-				<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
+				<StackPanel Orientation="Horizontal">
+					<CheckBox 
+						IsChecked="{CompiledBinding Config.CrossFeedEnabled}"
+						Content="{l:Translate chkCrossFeedEnabled}"
+					/>
+					<NumericUpDown
+						IsEnabled="{CompiledBinding Config.CrossFeedEnabled}"
+						Margin="10 0 5 0"
+						Minimum="0"
+						Maximum="100"
+						Value="{CompiledBinding Config.CrossFeedRatio}"						
+					/>
+					<TextBlock>%</TextBlock>
+				</StackPanel>
+				<StackPanel Orientation="Vertical" Margin="0 1">
+					<CheckBox
+						IsChecked="{CompiledBinding Config.ReverbEnabled}"
+						Content="{l:Translate chkReverbEnabled}"
+					/>
+					<Grid Margin="25 0 0 0" ColumnDefinitions="Auto, Auto" RowDefinitions="Auto, Auto">
+						<TextBlock Text="{l:Translate lblStrength}" />
+						<NumericUpDown
+							Grid.Column="1"
+							IsEnabled="{CompiledBinding Config.ReverbEnabled}"
+							Margin="10 0 5 2"
+							Minimum="0"
+							Maximum="10"
+							Value="{CompiledBinding Config.ReverbStrength}"
+						/>
+						<TextBlock
+							Grid.Row="1"
+							Text="{l:Translate lblDelay}"
+						/>
+						<NumericUpDown
+							Grid.Row="1"
+							Grid.Column="1"
+							IsEnabled="{CompiledBinding Config.ReverbEnabled}"
+							Margin="10 0 5 0"
+							Minimum="0"
+							Maximum="30"
+							Value="{CompiledBinding Config.ReverbDelay}"
+						/>
+					</Grid>
+				</StackPanel>
 				<c:CheckBoxWarning Text="{l:Translate chkDisableDynamicSampleRate}" IsChecked="{CompiledBinding Config.DisableDynamicSampleRate}" />
 			</StackPanel>
 		</TabItem>

@@ -40,7 +40,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_cpu = console->GetCpu().get();
 	_sa1 = console->GetCartridge()->GetSa1();
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 	_memoryManager = console->GetMemoryManager().get();
 	_cart = console->GetCartridge().get();
 	_spc = console->GetSpc().get();

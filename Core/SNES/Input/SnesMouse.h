@@ -44,7 +44,7 @@ public:
 
 	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console->GetEmulator(), port)
 	{
-		_settings = _emu->GetSettings().get();
+		_settings = _emu->GetSettings();
 	}
 
 	ControllerType GetControllerType() override

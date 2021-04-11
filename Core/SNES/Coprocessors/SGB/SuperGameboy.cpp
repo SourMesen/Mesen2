@@ -12,7 +12,7 @@
 #include "Shared/MessageManager.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/HexUtilities.h"
-#include "Utilities/HermiteResampler.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 SuperGameboy::SuperGameboy(Console* console, Gameboy* gameboy) : BaseCoprocessor(SnesMemoryType::Register)
 {

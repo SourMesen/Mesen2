@@ -4,7 +4,7 @@
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/Audio/SoundResampler.h"
 #include "Shared/Video/VideoRenderer.h"
-#include "Utilities/HermiteResampler.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 SoundResampler::SoundResampler(Emulator* emu)
 {
@@ -19,6 +19,12 @@ double SoundResampler::GetRateAdjustment()
 {
 	return _rateAdjustment;
 }
+
+uint32_t SoundResampler::GetTargetRate()
+{
+	return (uint32_t)_previousTargetRate;
+}
+
 
 double SoundResampler::GetTargetRateAdjustment()
 {

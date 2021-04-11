@@ -23,7 +23,7 @@ Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 	_debugger = debugger;
 	_labelManager = debugger->GetLabelManager();
 	_console = console;
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 	_memoryDumper = _debugger->GetMemoryDumper();
 
 	for(int i = 0; i < (int)DebugUtilities::GetLastCpuType(); i++) {

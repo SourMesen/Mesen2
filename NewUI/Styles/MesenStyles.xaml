@@ -32,6 +32,7 @@
 				<RadioButton Content="Test" IsChecked="True"/>				
 				<DatePicker />
 				<TimePicker />
+				<Slider />
 			</StackPanel>
 		</Window>
 	</Design.PreviewWith>
@@ -251,6 +252,11 @@
 		<Setter Property="IsVisible" Value="false" />
 		<Setter Property="BorderThickness" Value="0" />
 		<Setter Property="BorderBrush" Value="Transparent" />		
+	</Style>
+
+	<Style Selector="Slider Thumb">
+		<Setter Property="MaxWidth" Value="15" />
+		<Setter Property="MaxHeight" Value="15" />
 	</Style>
 
 	<Style Selector="ButtonSpinner">

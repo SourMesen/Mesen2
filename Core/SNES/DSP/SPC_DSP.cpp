@@ -471,7 +471,7 @@ VOICE_CLOCK( V3c )
 	
 	// Gaussian interpolation
 	{
-		int output = _settings->GetAudioConfig().EnableCubicInterpolation ? interpolate_cubic(v) : interpolate( v );
+		int output = _settings->GetSnesConfig().EnableCubicInterpolation ? interpolate_cubic(v) : interpolate( v );
 		
 		// Noise
 		if ( m.t_non & v->vbit )

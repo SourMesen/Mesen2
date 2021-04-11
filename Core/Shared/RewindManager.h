@@ -31,7 +31,7 @@ private:
 	static constexpr int32_t BufferSize = 60; //Number of frames between each save state
 
 	shared_ptr<Emulator> _emu;
-	shared_ptr<EmuSettings> _settings;
+	EmuSettings* _settings;
 	
 	bool _hasHistory;
 

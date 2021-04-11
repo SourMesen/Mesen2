@@ -78,7 +78,7 @@ extern "C" {
 
 		_console.reset(new Console());
 		_console->Initialize();
-		KeyManager::SetSettings(_console->GetSettings().get());
+		KeyManager::SetSettings(_console->GetSettings());
 		
 		_renderer.reset(new LibretroRenderer(_console, retroEnv));
 		_soundManager.reset(new LibretroSoundManager(_console));

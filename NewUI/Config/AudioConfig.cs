@@ -19,12 +19,17 @@ namespace Mesen.GUI.Config
 		[Reactive] [ValidValues(11025, 22050, 32000, 44100, 48000, 96000)] public UInt32 SampleRate { get; set; } = 48000;
 		[Reactive] [MinMax(15, 300)] public UInt32 AudioLatency { get; set; } = 60;
 
-		[Reactive] public bool EnableCubicInterpolation { get; set; } = false;
-
 		[Reactive] public bool MuteSoundInBackground { get; set; } = false;
 		[Reactive] public bool ReduceSoundInBackground { get; set; } = true;
 		[Reactive] public bool ReduceSoundInFastForward { get; set; } = false;
 		[Reactive] [MinMax(0, 100)] public int VolumeReduction { get; set; } = 75;
+
+		[Reactive] public bool ReverbEnabled { get; set; } = false;
+		[Reactive] [MinMax(1, 10)] public UInt32 ReverbStrength { get; set; } = 5;
+		[Reactive] [MinMax(1, 30)] public UInt32 ReverbDelay { get; set; } = 10;
+
+		[Reactive] public bool CrossFeedEnabled { get; set; } = false;
+		[Reactive] [MinMax(0, 100)] public UInt32 CrossFeedRatio { get; set; } = 0;
 
 		[Reactive] public bool EnableEqualizer { get; set; } = false;
 		[Reactive] [MinMax(-20.0, 20.0)] public double Band1Gain { get; set; } = 0;
@@ -59,13 +64,17 @@ namespace Mesen.GUI.Config
 				SampleRate = this.SampleRate,
 				AudioLatency = this.AudioLatency,
 
-				EnableCubicInterpolation = this.EnableCubicInterpolation,
-
 				MuteSoundInBackground = this.MuteSoundInBackground,
 				ReduceSoundInBackground = this.ReduceSoundInBackground,
 				ReduceSoundInFastForward = this.ReduceSoundInFastForward,
 				VolumeReduction = this.VolumeReduction,
 
+				ReverbEnabled = this.ReverbEnabled,
+				ReverbStrength = this.ReverbStrength,
+				ReverbDelay = this.ReverbDelay,
+				CrossFeedEnabled = this.CrossFeedEnabled,
+				CrossFeedRatio = this.CrossFeedRatio,
+				
 				EnableEqualizer = this.EnableEqualizer,
 				Band1Gain = this.Band1Gain,
 				Band2Gain = this.Band2Gain,
@@ -102,12 +111,17 @@ namespace Mesen.GUI.Config
 		public UInt32 SampleRate;
 		public UInt32 AudioLatency;
 
-		[MarshalAs(UnmanagedType.I1)] public bool EnableCubicInterpolation;
-
 		[MarshalAs(UnmanagedType.I1)] public bool MuteSoundInBackground;
 		[MarshalAs(UnmanagedType.I1)] public bool ReduceSoundInBackground;
 		[MarshalAs(UnmanagedType.I1)] public bool ReduceSoundInFastForward;
 		public int VolumeReduction;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ReverbEnabled;
+		public UInt32 ReverbStrength;
+		public UInt32 ReverbDelay;
+
+		[MarshalAs(UnmanagedType.I1)] public bool CrossFeedEnabled;
+		public UInt32 CrossFeedRatio;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableEqualizer;
 		public double Band1Gain;

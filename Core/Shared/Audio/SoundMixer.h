@@ -7,6 +7,8 @@ class Equalizer;
 class SoundResampler;
 class WaveRecorder;
 class IAudioProvider;
+class CrossFeedFilter;
+class ReverbFilter;
 
 class SoundMixer 
 {
@@ -21,6 +23,9 @@ private:
 
 	int16_t _leftSample = 0;
 	int16_t _rightSample = 0;
+
+	unique_ptr<CrossFeedFilter> _crossFeedFilter;
+	unique_ptr<ReverbFilter> _reverbFilter;
 
 	void ProcessEqualizer(int16_t *samples, uint32_t sampleCount);
 

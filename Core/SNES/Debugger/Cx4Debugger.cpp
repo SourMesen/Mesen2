@@ -27,7 +27,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_cx4 = ((Console*)debugger->GetConsole())->GetCartridge()->GetCx4();
 	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4));
 	_step.reset(new StepRequest());

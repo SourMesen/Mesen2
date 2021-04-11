@@ -49,7 +49,7 @@
 #include "Shared/Interfaces/IConsole.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
-#include "Utilities/IpsPatcher.h"
+#include "Utilities/Patches/IpsPatcher.h"
 #include "MemoryOperationType.h"
 #include "EventType.h"
 

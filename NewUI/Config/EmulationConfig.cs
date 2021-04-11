@@ -18,19 +18,6 @@ namespace Mesen.GUI.Config
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
 		[Reactive] [MinMax(0, 10)] public UInt32 RunAheadFrames { get; set; } = 0;
-
-		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;
-		[Reactive] public bool EnableStrictBoardMappings { get; set; } = false;
-
-		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi { get; set; } = 0;
-		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesAfterNmi { get; set; } = 0;
-		[Reactive] [MinMax(100, 1000)] public UInt32 GsuClockSpeed { get; set; } = 100;
-
-		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
-
-		[Reactive] public bool BsxUseCustomTime { get; set; } = false;
-		[Reactive] public DateTimeOffset BsxCustomDate { get; set; } = new DateTimeOffset(1995, 1, 1, 0, 0, 0, TimeSpan.Zero);
-		[Reactive] public TimeSpan BsxCustomTime { get; set; } = TimeSpan.Zero;
 		
 		public void ApplyConfig()
 		{
@@ -39,14 +26,7 @@ namespace Mesen.GUI.Config
 				TurboSpeed = this.TurboSpeed,
 				RewindSpeed = this.RewindSpeed,
 				Region = this.Region,
-				RunAheadFrames = this.RunAheadFrames,
-				EnableRandomPowerOnState = this.EnableRandomPowerOnState,
-				EnableStrictBoardMappings = this.EnableStrictBoardMappings,
-				PpuExtraScanlinesBeforeNmi = this.PpuExtraScanlinesBeforeNmi,
-				PpuExtraScanlinesAfterNmi = this.PpuExtraScanlinesAfterNmi,
-				GsuClockSpeed = this.GsuClockSpeed,
-				RamPowerOnState = this.RamPowerOnState,
-				BsxCustomDate = this.BsxCustomDate.Ticks + this.BsxCustomTime.Ticks
+				RunAheadFrames = this.RunAheadFrames
 			});
 		}
 	}
@@ -61,17 +41,6 @@ namespace Mesen.GUI.Config
 		public ConsoleRegion Region;
 
 		public UInt32 RunAheadFrames;
-
-		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState;
-		[MarshalAs(UnmanagedType.I1)] public bool EnableStrictBoardMappings;
-
-		public UInt32 PpuExtraScanlinesBeforeNmi;
-		public UInt32 PpuExtraScanlinesAfterNmi;
-		public UInt32 GsuClockSpeed;
-
-		public RamState RamPowerOnState;
-
-		public long BsxCustomDate;
 	}
 
 	public enum ConsoleRegion

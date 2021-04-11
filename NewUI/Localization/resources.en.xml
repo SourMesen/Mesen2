@@ -117,15 +117,13 @@
 		</Form>
 		<Form ID="AudioConfigView" Title="Audio Options">
 			<Control ID="tpgGeneral">General</Control>
-			<Control ID="tpgAdvanced">Advanced</Control>
-			<Control ID="chkDisableDynamicSampleRate">Disable dynamic sample rate</Control>
+					
 			<Control ID="chkMuteSoundInBackground">Mute sound when in background</Control>
 			<Control ID="chkReduceSoundInBackground">Reduce volume when in background</Control>
 			<Control ID="chkReduceSoundInFastForward">Reduce volume during fast forward/rewind</Control>
 			<Control ID="lblVolumeReduction">Volume Reduction (%)</Control>
 			<Control ID="lblVolumeReductionSettings">Volume Reduction Settings</Control>
 			<Control ID="chkEnableAudio">Enable Audio</Control>
-			<Control ID="chkEnableCubicInterpolation">Enable cubic interpolation</Control>
 			<Control ID="lblSampleRate">Sample Rate:</Control>
 			<Control ID="lblLatencyMs">ms</Control>
 			<Control ID="lblLatencyWarning">Low values may cause sound problems</Control>
@@ -134,8 +132,13 @@
 			<Control ID="lblVolume">Volume:</Control>
 			<Control ID="grpVolume">Volume</Control>
 			<Control ID="btnReset">Reset to Defaults</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
+
+			<Control ID="tpgAdvanced">Advanced</Control>
+			<Control ID="chkDisableDynamicSampleRate">Disable dynamic sample rate</Control>
+			<Control ID="chkReverbEnabled">Enable reverb</Control>
+			<Control ID="chkCrossFeedEnabled">Enable cross feed</Control>
+			<Control ID="lblStrength">Strength</Control>
+			<Control ID="lblDelay">Delay</Control>
 
 			<Control ID="tpgEqualizer">Equalizer</Control>
 			<Control ID="chkEnableEqualizer">Enable Equalizer</Control>
@@ -195,9 +198,7 @@
 			<Control ID="lblCustomRatio">Custom Ratio: </Control>
 			<Control ID="chkBilinearInterpolation">Use bilinear interpolation when scaling</Control>
 			<Control ID="lblFullscreenResolution">Fullscreen Resolution:</Control>
-			<Control ID="chkBlendHighResolutionModes">Blend high resolution modes</Control>
 			<Control ID="chkFullscreenForceIntegerScale">Use integer scale values when entering fullscreen mode</Control>
-			<Control ID="chkUseHdPacks">Use HDNes HD packs</Control>
 			<Control ID="chkUseExclusiveFullscreen">Use exclusive fullscreen mode</Control>
 			<Control ID="lblRequestedRefreshRate">Requested Refresh Rate:</Control>
 			<Control ID="tpgOverscan">Overscan</Control>
@@ -208,13 +209,7 @@
 			<Control ID="lblTop">Top</Control>
 			<Control ID="lblBottom">Bottom</Control>
 			<Control ID="lblRight">Right</Control>
-			<Control ID="tpgPalette">Palette</Control>
-			<Control ID="chkShowColorIndexes">Show color indexes</Control>
-			<Control ID="mnuDefaultPalette">Default (NTSC)</Control>
-			<Control ID="btnSelectPalette">Load Preset Palette...</Control>
-			<Control ID="btnExportPalette">Export Palette</Control>
-			<Control ID="btnLoadPalFile">Load Palette File</Control>
-			<Control ID="chkUseCustomVsPalette">Use this palette for VS System games</Control>
+
 			<Control ID="tpgPicture">Picture</Control>
 			<Control ID="btnSelectPreset">Select Preset...</Control>
 			<Control ID="grpCommon">Common Settings</Control>
@@ -244,20 +239,8 @@
 			<Control ID="mnuPresetRgb">RGB</Control>
 			<Control ID="mnuPresetMonochrome">Monochrome</Control>
 
-			<Control ID="tpgAdvancedSnes">Advanced (SNES)</Control>
+			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
-			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flashing)</Control>
-			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>
-			
-			<Control ID="chkHideBgLayer0">Hide background layer 0</Control>
-			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
-			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
-			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
-			<Control ID="chkHideSprites">Hide sprites</Control>
-			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
-
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="EmulationConfigView" Title="Emulation Settings">
 			<Control ID="tpgGeneral">General</Control>
@@ -271,20 +254,11 @@
 			<Control ID="lblRunAheadFrames">frames (reduces input lag, increases CPU usage)</Control>
 
 			<Control ID="lblRegion">Region:</Control>
-
-			<Control ID="tpgBsx">BS-X</Control>
-			<Control ID="lblBsxDateTime">BS-X/Satellaview Date and Time Settings</Control>
-			<Control ID="lblCurrentDate">Use current local time</Control>
-			<Control ID="lblCustomDate">Use custom date and time: </Control>
 			
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
-			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
-			<Control ID="chkStrictBoardMappings">Use strict board mappings (breaks some romhacks)</Control>
-
-			<Control ID="lblRamPowerOnState">Default power on state for RAM:</Control>
 
 			<Control ID="tpgOverclocking">Overclocking</Control>
 			<Control ID="grpOverclocking">Overclocking</Control>
@@ -292,25 +266,102 @@
 			<Control ID="lblClockRate">Clock Rate Multiplier:</Control>
 			<Control ID="lblClockRatePercent">% (Default: 100%)</Control>
 
-			<Control ID="grpPpuTiming">PPU Vertical Blank Configuration</Control>
-			<Control ID="lblExtraScanlinesBeforeNmi">Additional scanlines before NMI:</Control>
-			<Control ID="lblExtraScanlinesAfterNmi">Additional scanlines after NMI:</Control>
 			<Control ID="lblEffectiveClockRate">Effective Clock Rate (NTSC):</Control>
 			<Control ID="lblEffectiveClockRatePal">Effective Clock Rate (PAL):</Control>
 			<Control ID="lblEffectiveClockRateDendy">Effective Clock Rate (Dendy):</Control>
-
-			<Control ID="lblChipSpecificOc">Chip-specific overclocking</Control>
-			<Control ID="lblSuperFxClockSpeed">Super FX clock speed (%):</Control>
 
 			<Control ID="chkOverclockAdjustApu">Do not overclock APU (prevents sound pitch changes caused by overclocking)</Control>
 
 			<Control ID="chkShowLagCounter">Show Lag Counter</Control>
 			<Control ID="btnResetLagCounter">Reset Counter</Control>
-
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmGameboyConfig" Title="Game Boy Config">
+		<Form ID="SnesConfigView">
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="chkEnableCubicInterpolation">Enable cubic interpolation</Control>
+
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM:</Control>
+			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
+			<Control ID="chkStrictBoardMappings">Use strict board mappings (breaks some romhacks)</Control>
+
+			<Control ID="tpgOverclocking">Overclocking</Control>
+			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
+			<Control ID="grpPpuTiming">PPU Vertical Blank Configuration</Control>
+			<Control ID="lblExtraScanlinesBeforeNmi">Additional scanlines before NMI:</Control>
+			<Control ID="lblExtraScanlinesAfterNmi">Additional scanlines after NMI:</Control>
+			<Control ID="lblChipSpecificOc">Chip-specific overclocking</Control>
+			<Control ID="lblSuperFxClockSpeed">Super FX clock speed (%):</Control>
+
+			<Control ID="tpgBsx">BS-X</Control>
+			<Control ID="lblBsxDateTime">BS-X/Satellaview Date and Time Settings</Control>
+			<Control ID="lblCurrentDate">Use current local time</Control>
+			<Control ID="lblCustomDate">Use custom date and time: </Control>
+			<Control ID="lblDate">Date: </Control>
+			<Control ID="lblTime">Time: </Control>
+
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="chkBlendHighResolutionModes">Blend high resolution modes</Control>
+			<Control ID="chkHideBgLayer0">Hide background layer 0</Control>
+			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
+			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
+			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
+			<Control ID="chkHideSprites">Hide sprites</Control>
+			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
+		</Form>
+		<Form ID="NesConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="chkEnableHdPacks">Enable HD packs</Control>
+
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblPalette">Palette</Control>
+			<Control ID="chkShowColorIndexes">Show color indexes</Control>
+			<Control ID="mnuDefaultPalette">Default (NTSC)</Control>
+			<Control ID="btnSelectPalette">Load preset palette...</Control>
+			<Control ID="btnExportPalette">Export palette</Control>
+			<Control ID="btnLoadPalFile">Load palette file</Control>
+			<Control ID="chkUseCustomVsPalette">Use this palette for VS System games</Control>
+
+			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flashing)</Control>
+			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>
+			<Control ID="chkDisableBackground">Disable background</Control>
+			<Control ID="chkDisableSprites">Disable sprites</Control>
+			<Control ID="chkForceBackgroundFirstColumn">Force background display in first column</Control>
+			<Control ID="chkForceSpritesFirstColumn">Force sprite display in first column</Control>
+
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="lblVolume">Channel volume</Control>
+			<Control ID="lblPanning">Channel panning</Control>
+			<Control ID="lblAdvanced">Advanced</Control>
+			<Control ID="chkSwapDutyCycles">Swap square channels duty cycles (Mimics old clones)</Control>
+			<Control ID="chkSilenceTriangleHighFreq">Mute ultrasonic frequencies on triangle channel (reduces popping)</Control>
+			<Control ID="chkReduceDmcPopping">Reduce popping sounds on the DMC channel</Control>
+			<Control ID="chkDisableNoiseModeFlag">Disable noise channel mode flag</Control>
+			<Control ID="grpEffects">Effects</Control>
+			<Control ID="lblStereoEffect">Stereo effect: </Control>
+			<Control ID="lblDelay">Delay: </Control>
+			<Control ID="lblStrength">Strength: </Control>
+			<Control ID="lblMs">ms</Control>
+			<Control ID="lblAngle">angle (in degrees)</Control>
+
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
+			<Control ID="chkEnableOamDecay">Enable PPU OAM decay</Control>
+			<Control ID="chkEnablePpuOamRowCorruption">Enable PPU OAM row corruption emulation</Control>
+			<Control ID="chkEnablePpu2006ScrollGlitch">Enable PPU $2006 scroll glitch emulation</Control>
+			<Control ID="chkEnablePpu2000ScrollGlitch">Enable PPU $2000/$2005/$2006 first-write scroll glitch emulation</Control>
+
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+			<Control ID="chkDisableOamAddrBug">Disable PPU OAMADDR bug emulation</Control>			
+			<Control ID="chkDisablePaletteRead">Disable PPU palette reads</Control>
+			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>			
+			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
+			<Control ID="chkUseNes101Hvc101Behavior">Use NES/HVC-101 (Top-loader / AV Famicom) behavior</Control>
+			<Control ID="chkMapperRandomPowerOnState">Randomize power-on state for mappers</Control>
+			<Control ID="chkRandomizeCpuPpuAlignment">Randomize power-on/reset CPU/PPU alignment</Control>
+
+			<Control ID="tpgFdsNsfVs">FDS / NSF / VS System</Control>
+		</Form>
+		<Form ID="GameboyConfigView" Title="Game Boy Config">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblModel">Model</Control>
 			<Control ID="chkUseSgb2">Use Super Game Boy 2 timings and behavior</Control>
@@ -328,9 +379,6 @@
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
-			
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="ShortcutKeysTabView">
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>

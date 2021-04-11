@@ -10,7 +10,7 @@ BsxSatellaview::BsxSatellaview(Console* console, IMemoryHandler* bBusHandler) : 
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager().get();
-	_customDate = console->GetEmulator()->GetSettings()->GetEmulationConfig().BsxCustomDate;
+	_customDate = console->GetEmulator()->GetSettings()->GetSnesConfig().BsxCustomDate;
 	_bBusHandler = bBusHandler;
 	Reset();
 }

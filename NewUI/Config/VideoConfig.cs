@@ -17,16 +17,8 @@ namespace Mesen.GUI.Config
 		[Reactive] public VideoAspectRatio AspectRatio { get; set; } = VideoAspectRatio.NoStretching;
 
 		[Reactive] public bool UseBilinearInterpolation { get; set; } = false;
-		[Reactive] public bool BlendHighResolutionModes { get; set; } = false;
 		[Reactive] public bool VerticalSync { get; set; } = false;
 		[Reactive] public bool IntegerFpsMode { get; set; } = false;
-
-		[Reactive] public bool HideBgLayer0 { get; set; } = false;
-		[Reactive] public bool HideBgLayer1 { get; set; } = false;
-		[Reactive] public bool HideBgLayer2 { get; set; } = false;
-		[Reactive] public bool HideBgLayer3 { get; set; } = false;
-		[Reactive] public bool HideSprites { get; set; } = false;
-		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
 
 		[Reactive] [MinMax(-100, 100)] public int Brightness { get; set; } = 0;
 		[Reactive] [MinMax(-100, 100)] public int Contrast { get; set; } = 0;
@@ -66,16 +58,8 @@ namespace Mesen.GUI.Config
 				AspectRatio = this.AspectRatio,
 
 				UseBilinearInterpolation = this.UseBilinearInterpolation,
-				BlendHighResolutionModes = this.BlendHighResolutionModes,
 				VerticalSync = this.VerticalSync,
 				IntegerFpsMode = this.IntegerFpsMode,
-
-				HideBgLayer0 = this.HideBgLayer0,
-				HideBgLayer1 = this.HideBgLayer1,
-				HideBgLayer2 = this.HideBgLayer2,
-				HideBgLayer3 = this.HideBgLayer3,
-				HideSprites = this.HideSprites,
-				DisableFrameSkipping = this.DisableFrameSkipping,
 
 				Brightness = this.Brightness / 100.0,
 				Contrast = this.Contrast / 100.0,
@@ -113,16 +97,8 @@ namespace Mesen.GUI.Config
 		public VideoAspectRatio AspectRatio;
 
 		[MarshalAs(UnmanagedType.I1)] public bool UseBilinearInterpolation;
-		[MarshalAs(UnmanagedType.I1)] public bool BlendHighResolutionModes;
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalSync;
 		[MarshalAs(UnmanagedType.I1)] public bool IntegerFpsMode;
-
-		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer0;
-		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer1;
-		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer2;
-		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer3;
-		[MarshalAs(UnmanagedType.I1)] public bool HideSprites;
-		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping;
 
 		public double Brightness;
 		public double Contrast;

@@ -94,11 +94,13 @@ uint32_t EmuSettings::GetInputConfigVersion()
 
 void EmuSettings::SetEmulationConfig(EmulationConfig config)
 {
-	bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0 || _emulation.GsuClockSpeed > 100;
-	bool overclockEnabled = config.PpuExtraScanlinesAfterNmi > 0 || config.PpuExtraScanlinesBeforeNmi > 0 || config.GsuClockSpeed > 100;
+	//TODO
+	//bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0 || _emulation.GsuClockSpeed > 100;
+	//bool overclockEnabled = config.PpuExtraScanlinesAfterNmi > 0 || config.PpuExtraScanlinesBeforeNmi > 0 || config.GsuClockSpeed > 100;
 	_emulation = config;
 
-	if(prevOverclockEnabled != overclockEnabled) {
+	//TODO
+	/*if(prevOverclockEnabled != overclockEnabled) {
 		if(overclockEnabled) {
 			MessageManager::DisplayMessage("Overclock", "OverclockEnabled");
 		} else {
@@ -107,7 +109,7 @@ void EmuSettings::SetEmulationConfig(EmulationConfig config)
 
 		//Used by net play
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
-	}
+	}*/
 }
 
 EmulationConfig EmuSettings::GetEmulationConfig()
@@ -115,14 +117,14 @@ EmulationConfig EmuSettings::GetEmulationConfig()
 	return _emulation;
 }
 
-void EmuSettings::SetGameboyConfig(GameboyConfig config)
+void EmuSettings::SetSnesConfig(SnesConfig config)
 {
-	_gameboy = config;
+	_snes = config;
 }
 
-GameboyConfig EmuSettings::GetGameboyConfig()
+SnesConfig& EmuSettings::GetSnesConfig()
 {
-	return _gameboy;
+	return _snes;
 }
 
 void EmuSettings::SetNesConfig(NesConfig config)
@@ -133,6 +135,16 @@ void EmuSettings::SetNesConfig(NesConfig config)
 NesConfig& EmuSettings::GetNesConfig()
 {
 	return _nes;
+}
+
+void EmuSettings::SetGameboyConfig(GameboyConfig config)
+{
+	_gameboy = config;
+}
+
+GameboyConfig EmuSettings::GetGameboyConfig()
+{
+	return _gameboy;
 }
 
 void EmuSettings::SetPreferences(PreferencesConfig config)
@@ -306,7 +318,19 @@ bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 
 void EmuSettings::InitializeRam(void* data, uint32_t length)
 {
-	switch(_emulation.RamPowerOnState) {
+	RamState state;
+	switch(_emu->GetConsoleType()) {
+		default:
+		case ConsoleType::Snes: state = _snes.RamPowerOnState; break;
+		case ConsoleType::Nes: state = _snes.RamPowerOnState; break;
+		
+		case ConsoleType::Gameboy:
+		case ConsoleType::GameboyColor:
+			state = _gameboy.RamPowerOnState;
+			
+			break;
+	}
+	switch(state) {
 		default:
 		case RamState::AllZeros: memset(data, 0, length); break;
 		case RamState::AllOnes: memset(data, 0xFF, length); break;

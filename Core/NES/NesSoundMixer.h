@@ -1,7 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
-#include "Utilities/blip_buf.h"
+#include "Utilities/Audio/blip_buf.h"
+#include "Utilities/Audio/StereoDelayFilter.h"
+#include "Utilities/Audio/StereoPanningFilter.h"
+#include "Utilities/Audio/StereoCombFilter.h"
 #include "NesTypes.h"
 
 class NesConsole;
@@ -24,19 +27,13 @@ private:
 	SoundMixer* _mixer;
 	double _fadeRatio;
 	uint32_t _muteFrameCount;
-	/*unique_ptr<OggMixer> _oggMixer;
 
-	unique_ptr<orfanidis_eq::freq_grid> _eqFrequencyGrid;
-	unique_ptr<orfanidis_eq::eq1> _equalizerLeft;
-	unique_ptr<orfanidis_eq::eq1> _equalizerRight;
-	shared_ptr<Console> _console;
+	//TODO
+	//unique_ptr<OggMixer> _oggMixer;
 
-	CrossFeedFilter _crossFeedFilter;
-	LowPassFilter _lowPassFilter;
 	StereoPanningFilter _stereoPanning;
 	StereoDelayFilter _stereoDelay;
 	StereoCombFilter _stereoCombFilter;
-	ReverbFilter _reverbFilter;*/
 
 	int16_t _previousOutputLeft = 0;
 	int16_t _previousOutputRight = 0;

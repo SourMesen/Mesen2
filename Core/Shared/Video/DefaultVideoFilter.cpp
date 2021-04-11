@@ -63,6 +63,7 @@ void DefaultVideoFilter::InitLookupTable()
 void DefaultVideoFilter::OnBeforeApplyFilter()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
+	SnesConfig snesConfig = _emu->GetSettings()->GetSnesConfig();
 	GameboyConfig gbConfig = _emu->GetSettings()->GetGameboyConfig();
 
 	ConsoleType consoleType = _emu->GetConsoleType();
@@ -72,7 +73,9 @@ void DefaultVideoFilter::OnBeforeApplyFilter()
 		InitLookupTable();
 	}
 	_gbBlendFrames = gbConfig.BlendFrames && (consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor);
+	_snesBlendHighRes = snesConfig.BlendHighResolutionModes;
 	_videoConfig = config;
+
 }
 
 uint8_t DefaultVideoFilter::To8Bit(uint8_t color)
@@ -123,7 +126,7 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		}
 	}
 
-	if(_baseFrameInfo.Width == 512 && _videoConfig.BlendHighResolutionModes) {
+	if(_baseFrameInfo.Width == 512 && _snesBlendHighRes) {
 		//Very basic blend effect for high resolution modes
 		for(uint32_t i = 0; i < frameInfo.Height; i+=2) {
 			for(uint32_t j = 0; j < frameInfo.Width; j+=2) {

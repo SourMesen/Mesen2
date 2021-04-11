@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "Utilities/stb_vorbis.h"
-#include "Utilities/HermiteResampler.h"
+#include "Utilities/Audio/stb_vorbis.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 class PcmReader
 {

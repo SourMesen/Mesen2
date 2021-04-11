@@ -61,7 +61,7 @@ extern "C" {
 	DllExport void __stdcall InitDll()
 	{
 		_emu.reset(new Emulator());
-		KeyManager::SetSettings(_emu->GetSettings().get());
+		KeyManager::SetSettings(_emu->GetSettings());
 	}
 
 	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool noAudio, bool noVideo, bool noInput)
@@ -264,7 +264,7 @@ extern "C" {
 			std::cout << "Running: " << testRoms[i] << std::endl;
 
 			_emu.reset(new Emulator());
-			KeyManager::SetSettings(_emu->GetSettings().get());
+			KeyManager::SetSettings(_emu->GetSettings());
 			_emu->Initialize();
 			GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
 			cfg.Model = GameboyModel::GameboyColor;

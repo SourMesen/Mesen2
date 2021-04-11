@@ -52,7 +52,7 @@ private:
 	IConsole* _console = nullptr;
 	Gameboy* _gameboy = nullptr;
 
-	shared_ptr<EmuSettings> _settings;
+	EmuSettings* _settings;
 
 	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
 

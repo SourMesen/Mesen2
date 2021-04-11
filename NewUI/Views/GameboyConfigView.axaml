@@ -1,0 +1,54 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="250"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:GameboyConfigViewModel"
+	x:Class="Mesen.Views.GameboyConfigView"
+>
+	<Design.DataContext>
+		<vm:GameboyConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblModel}" Margin="5" />
+					<c:EnumComboBox EnumType="{x:Type cfg:GameboyModel}" SelectedItem="{CompiledBinding Config.Model}" Width="150" />
+				</StackPanel>
+				<CheckBox IsChecked="{CompiledBinding Config.UseSgb2}" Content="{l:Translate chkUseSgb2}" />
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgAudio}">
+			<StackPanel>
+				<c:GroupBox Header="Volume" HorizontalAlignment="Left">
+					<StackPanel Orientation="Horizontal" Height="150">
+						<c:MesenSlider Text="Square 1" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.Square1Vol}" />
+						<c:MesenSlider Text="Square 2" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.Square2Vol}" />
+						<c:MesenSlider Text="Wave" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.WaveVol}" />
+						<c:MesenSlider Text="Noise" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.NoiseVol}" />
+					</StackPanel>
+				</c:GroupBox>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgVideo}">
+			<StackPanel>
+				<c:OptionSection Header="{l:Translate lblGameboyPalette}" Margin="0">
+				</c:OptionSection>
+				<c:OptionSection Header="{l:Translate lblLcdSettings}">
+					<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
+					<CheckBox IsChecked="{CompiledBinding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
+				</c:OptionSection>
+			</StackPanel>
+		</TabItem>
+	</TabControl>
+</UserControl>

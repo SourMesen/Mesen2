@@ -102,7 +102,7 @@ void ShortcutKeyHandler::ProcessRunSingleFrame()
 
 void ShortcutKeyHandler::CheckMappedKeys()
 {
-	shared_ptr<EmuSettings> settings = _emu->GetSettings();
+	EmuSettings* settings = _emu->GetSettings();
 	bool isNetplayClient = GameClient::Connected();
 	bool isMovieActive = _emu->GetMovieManager()->Playing() || _emu->GetMovieManager()->Recording();
 	bool isMovieRecording = _emu->GetMovieManager()->Recording();

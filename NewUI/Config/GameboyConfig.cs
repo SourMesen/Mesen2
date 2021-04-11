@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,37 +8,94 @@ using System.Threading.Tasks;
 
 namespace Mesen.GUI.Config
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public class GameboyConfig
+	public class GameboyConfig : BaseConfig<GameboyConfig>
 	{
-		public GameboyModel Model = GameboyModel.Auto;
-		[MarshalAs(UnmanagedType.I1)] public bool UseSgb2 = true;
-		
-		[MarshalAs(UnmanagedType.I1)] public bool BlendFrames = true;
-		[MarshalAs(UnmanagedType.I1)] public bool GbcAdjustColors = true;
+		[Reactive] public GameboyModel Model { get; set; } = GameboyModel.Auto;
+		[Reactive] public bool UseSgb2 { get; set; } = true;
 
-		public UInt32 BgColor0 = 0xFFFFFF;
-		public UInt32 BgColor1 = 0xB0B0B0;
-		public UInt32 BgColor2 = 0x686868;
-		public UInt32 BgColor3 = 0x000000;
-		public UInt32 Obj0Color0 = 0xFFFFFF;
-		public UInt32 Obj0Color1 = 0xB0B0B0;
-		public UInt32 Obj0Color2 = 0x686868;
-		public UInt32 Obj0Color3 = 0x000000;
-		public UInt32 Obj1Color0 = 0xFFFFFF;
-		public UInt32 Obj1Color1 = 0xB0B0B0;
-		public UInt32 Obj1Color2 = 0x686868;
-		public UInt32 Obj1Color3 = 0x000000;
+		[Reactive] public bool BlendFrames { get; set; } = true;
+		[Reactive] public bool GbcAdjustColors { get; set; } = true;
 
-		public UInt32 Square1Vol = 100;
-		public UInt32 Square2Vol = 100;
-		public UInt32 NoiseVol = 100;
-		public UInt32 WaveVol = 100;
+		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
+
+		[Reactive] public UInt32 BgColor0 { get; set; } = 0xFFFFFF;
+		[Reactive] public UInt32 BgColor1 { get; set; } = 0xB0B0B0;
+		[Reactive] public UInt32 BgColor2 { get; set; } = 0x686868;
+		[Reactive] public UInt32 BgColor3 { get; set; } = 0x000000;
+		[Reactive] public UInt32 Obj0Color0 { get; set; } = 0xFFFFFF;
+		[Reactive] public UInt32 Obj0Color1 { get; set; } = 0xB0B0B0;
+		[Reactive] public UInt32 Obj0Color2 { get; set; } = 0x686868;
+		[Reactive] public UInt32 Obj0Color3 { get; set; } = 0x000000;
+		[Reactive] public UInt32 Obj1Color0 { get; set; } = 0xFFFFFF;
+		[Reactive] public UInt32 Obj1Color1 { get; set; } = 0xB0B0B0;
+		[Reactive] public UInt32 Obj1Color2 { get; set; } = 0x686868;
+		[Reactive] public UInt32 Obj1Color3 { get; set; } = 0x000000;
+
+		[Reactive] public UInt32 Square1Vol { get; set; } = 100;
+		[Reactive] public UInt32 Square2Vol { get; set; } = 100;
+		[Reactive] public UInt32 NoiseVol { get; set; } = 100;
+		[Reactive] public UInt32 WaveVol { get; set; } = 100;
 
 		public void ApplyConfig()
 		{
-			ConfigApi.SetGameboyConfig(this);
+			ConfigApi.SetGameboyConfig(new InteropGameboyConfig() {
+				Model = Model,
+				UseSgb2 = UseSgb2,
+
+				BlendFrames = BlendFrames,
+				GbcAdjustColors = GbcAdjustColors,
+
+				RamPowerOnState = RamPowerOnState,
+
+				BgColor0 = BgColor0,
+				BgColor1 = BgColor1,
+				BgColor2 = BgColor2,
+				BgColor3 = BgColor3,
+				Obj0Color0 = Obj0Color0,
+				Obj0Color1 = Obj0Color1,
+				Obj0Color2 = Obj0Color2,
+				Obj0Color3 = Obj0Color3,
+				Obj1Color0 = Obj1Color0,
+				Obj1Color1 = Obj1Color1,
+				Obj1Color2 = Obj1Color2,
+				Obj1Color3 = Obj1Color3,
+
+				Square1Vol = Square1Vol,
+				Square2Vol = Square2Vol,
+				NoiseVol = NoiseVol,
+				WaveVol = WaveVol
+			});
 		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct InteropGameboyConfig
+	{
+		public GameboyModel Model;
+		[MarshalAs(UnmanagedType.I1)] public bool UseSgb2;
+
+		[MarshalAs(UnmanagedType.I1)] public bool BlendFrames;
+		[MarshalAs(UnmanagedType.I1)] public bool GbcAdjustColors;
+
+		public RamState RamPowerOnState;
+
+		public UInt32 BgColor0;
+		public UInt32 BgColor1;
+		public UInt32 BgColor2;
+		public UInt32 BgColor3;
+		public UInt32 Obj0Color0;
+		public UInt32 Obj0Color1;
+		public UInt32 Obj0Color2;
+		public UInt32 Obj0Color3;
+		public UInt32 Obj1Color0;
+		public UInt32 Obj1Color1;
+		public UInt32 Obj1Color2;
+		public UInt32 Obj1Color3;
+
+		public UInt32 Square1Vol;
+		public UInt32 Square2Vol;
+		public UInt32 NoiseVol;
+		public UInt32 WaveVol;
 	}
 
 	public enum GameboyModel

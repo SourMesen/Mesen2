@@ -30,7 +30,7 @@ void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu*
 	_timer = timer;
 	_dmaController = dmaController;
 	_controlManager = gameboy->GetControlManager().get();
-	_settings = _emu->GetSettings().get();
+	_settings = _emu->GetSettings();
 
 	memset(_reads, 0, sizeof(_reads));
 	memset(_writes, 0, sizeof(_writes));

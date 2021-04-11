@@ -137,7 +137,7 @@ public:
 	shared_ptr<VideoRenderer> GetVideoRenderer();
 	shared_ptr<VideoDecoder> GetVideoDecoder();
 	shared_ptr<NotificationManager> GetNotificationManager();
-	shared_ptr<EmuSettings> GetSettings();
+	EmuSettings* GetSettings();
 	shared_ptr<SaveStateManager> GetSaveStateManager();
 	shared_ptr<RewindManager> GetRewindManager();
 	shared_ptr<DebugHud> GetDebugHud();

@@ -31,7 +31,7 @@ Cx4::Cx4(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
 
 	//PRG ROM
-	uint8_t bankCount = _emu->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings ? 0x3F : 0x7F;
+	uint8_t bankCount = _emu->GetSettings()->GetSnesConfig().EnableStrictBoardMappings ? 0x3F : 0x7F;
 	cpuMappings->RegisterHandler(0x00, std::min<uint8_t>(0x7D, bankCount), 0x8000, 0xFFFF, prgRomHandlers);
 	cpuMappings->RegisterHandler(0x80, 0x80 + bankCount, 0x8000, 0xFFFF, prgRomHandlers);
 	_mappings.RegisterHandler(0x00, bankCount, 0x8000, 0xFFFF, prgRomHandlers);

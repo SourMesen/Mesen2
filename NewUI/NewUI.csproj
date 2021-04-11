@@ -71,8 +71,17 @@
     <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
       <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\GameboyConfigView.axaml.cs">
+      <DependentUpon>GameboyConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SnesConfigView.axaml.cs">
+      <DependentUpon>SnesConfigView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ShortcutKeysTabView.axaml.cs">
       <DependentUpon>ShortcutKeysTabView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NesConfigView.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>

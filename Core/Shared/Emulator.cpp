@@ -658,9 +658,9 @@ shared_ptr<NotificationManager> Emulator::GetNotificationManager()
 	return _notificationManager;
 }
 
-shared_ptr<EmuSettings> Emulator::GetSettings()
+EmuSettings* Emulator::GetSettings()
 {
-	return _settings;
+	return _settings.get();
 }
 
 shared_ptr<SaveStateManager> Emulator::GetSaveStateManager()

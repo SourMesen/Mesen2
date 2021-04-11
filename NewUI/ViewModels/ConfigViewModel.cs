@@ -18,6 +18,10 @@ namespace Mesen.ViewModels
 		[Reactive] public PreferencesConfigViewModel Preferences { get; set; }
 		[Reactive] public EmulationConfigViewModel Emulation { get; set; }
 		[Reactive] public InputConfigViewModel Input { get; set; }
+		
+		[Reactive] public SnesConfigViewModel Snes { get; set; }
+		[Reactive] public NesConfigViewModel Nes { get; set; }
+		[Reactive] public GameboyConfigViewModel Gameboy { get; set; }
 
 		public ConfigViewModel()
 		{
@@ -26,6 +30,9 @@ namespace Mesen.ViewModels
 			this.Preferences = new PreferencesConfigViewModel();
 			this.Emulation = new EmulationConfigViewModel();
 			this.Input = new InputConfigViewModel();
+			this.Nes = new NesConfigViewModel();
+			this.Snes = new SnesConfigViewModel();
+			this.Gameboy = new GameboyConfigViewModel();
 		}
 
 		public void ApplyConfig()
@@ -35,6 +42,9 @@ namespace Mesen.ViewModels
 			this.Preferences.Config.ApplyConfig();
 			this.Emulation.Config.ApplyConfig();
 			this.Input.Config.ApplyConfig();
+			this.Nes.Config.ApplyConfig();
+			this.Snes.Config.ApplyConfig();
+			this.Gameboy.Config.ApplyConfig();
 		}
 
 		public void SaveConfig()
@@ -44,6 +54,9 @@ namespace Mesen.ViewModels
 			ConfigManager.Config.Preferences = this.Preferences.Config;
 			ConfigManager.Config.Emulation = this.Emulation.Config;
 			ConfigManager.Config.Input = this.Input.Config;
+			ConfigManager.Config.Nes = this.Nes.Config;
+			ConfigManager.Config.Snes = this.Snes.Config;
+			ConfigManager.Config.Gameboy = this.Gameboy.Config;
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.SaveConfig();
 		}

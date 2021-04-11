@@ -64,7 +64,7 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 
 	_hasBattery = header.HasBattery();
 
-	shared_ptr<EmuSettings> settings = _emu->GetSettings();
+	EmuSettings* settings = _emu->GetSettings();
 	GameboyConfig cfg = settings->GetGameboyConfig();
 	GameboyModel model = cfg.Model;
 	if(model == GameboyModel::Auto) {

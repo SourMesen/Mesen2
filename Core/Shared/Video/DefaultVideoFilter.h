@@ -11,6 +11,7 @@ private:
 	VideoConfig _videoConfig = {};
 
 	uint16_t* _prevFrame = nullptr;
+	bool _snesBlendHighRes = false;
 	bool _gbBlendFrames = false;
 	bool _gbcAdjustColors = false;
 

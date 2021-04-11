@@ -57,7 +57,7 @@ void Ppu::PowerOn()
 {
 	_skipRender = false;
 	_regs = _console->GetInternalRegisters().get();
-	_settings = _emu->GetSettings().get();
+	_settings = _emu->GetSettings();
 	_spc = _console->GetSpc().get();
 	_memoryManager = _console->GetMemoryManager().get();
 
@@ -66,7 +66,7 @@ void Ppu::PowerOn()
 	_state = {};
 	_state.ForcedVblank = true;
 	_state.VramIncrementValue = 1;
-	if(_settings->GetEmulationConfig().EnableRandomPowerOnState) {
+	if(_settings->GetSnesConfig().EnableRandomPowerOnState) {
 		RandomizeState();
 	}
 
@@ -454,7 +454,7 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 				_internalOamAddress = (_state.OamRamAddress << 1);
 			}
 
-			VideoConfig cfg = _settings->GetVideoConfig();
+			SnesConfig& cfg = _settings->GetSnesConfig();
 			_configVisibleLayers = (cfg.HideBgLayer0 ? 0 : 1) | (cfg.HideBgLayer1 ? 0 : 2) | (cfg.HideBgLayer2 ? 0 : 4) | (cfg.HideBgLayer3 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
 
 			_emu->ProcessEvent(EventType::EndFrame);
@@ -475,7 +475,7 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_emu->ProcessEvent(EventType::StartFrame);
 
 			_skipRender = (
-				!_settings->GetVideoConfig().DisableFrameSkipping &&
+				!_settings->GetSnesConfig().DisableFrameSkipping &&
 				!_emu->GetRewindManager()->IsRewinding() &&
 				!_emu->GetVideoRenderer()->IsRecording() &&
 				(_settings->GetEmulationSpeed() == 0 || _settings->GetEmulationSpeed() > 150) &&
@@ -529,12 +529,13 @@ void Ppu::UpdateNmiScanline()
 		}
 	}
 
-	_overclockEnabled = cfg.PpuExtraScanlinesBeforeNmi > 0 || cfg.PpuExtraScanlinesAfterNmi > 0;
+	SnesConfig snesCfg = _settings->GetSnesConfig();
+	_overclockEnabled = snesCfg.PpuExtraScanlinesBeforeNmi > 0 || snesCfg.PpuExtraScanlinesAfterNmi > 0;
 
-	_adjustedVblankEndScanline = _baseVblankEndScanline + cfg.PpuExtraScanlinesBeforeNmi;
-	_vblankEndScanline = _baseVblankEndScanline + cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
+	_adjustedVblankEndScanline = _baseVblankEndScanline + snesCfg.PpuExtraScanlinesBeforeNmi;
+	_vblankEndScanline = _baseVblankEndScanline + snesCfg.PpuExtraScanlinesAfterNmi + snesCfg.PpuExtraScanlinesBeforeNmi;
 	_vblankStartScanline = _state.OverscanMode ? 240 : 225;
-	_nmiScanline = _vblankStartScanline + cfg.PpuExtraScanlinesBeforeNmi;
+	_nmiScanline = _vblankStartScanline + snesCfg.PpuExtraScanlinesBeforeNmi;
 }
 
 uint16_t Ppu::GetRealScanline()

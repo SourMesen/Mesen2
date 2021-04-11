@@ -1,10 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include <thread>
-#include "AutoResetEvent.h"
-#include "AviWriter.h"
-#include "SimpleLock.h"
-#include "IVideoRecorder.h"
+#include "Utilities/AutoResetEvent.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/Video/AviWriter.h"
+#include "Utilities/Video/IVideoRecorder.h"
 
 class Console;
 

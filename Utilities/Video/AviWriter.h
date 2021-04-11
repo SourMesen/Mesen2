@@ -3,8 +3,8 @@
 
 #pragma once
 #include "stdafx.h"
-#include "SimpleLock.h"
-#include "BaseCodec.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/Video/BaseCodec.h"
 
 enum class VideoCodec
 {

@@ -21,7 +21,9 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetAudioConfig(InteropAudioConfig config);
 		[DllImport(DllPath)] public static extern void SetInputConfig(InteropInputConfig config);
 		[DllImport(DllPath)] public static extern void SetEmulationConfig(InteropEmulationConfig config);
-		[DllImport(DllPath)] public static extern void SetGameboyConfig(GameboyConfig config);
+		[DllImport(DllPath)] public static extern void SetGameboyConfig(InteropGameboyConfig config);
+		[DllImport(DllPath)] public static extern void SetNesConfig(InteropNesConfig config);
+		[DllImport(DllPath)] public static extern void SetSnesConfig(InteropSnesConfig config);
 
 		[DllImport(DllPath)] public static extern void SetPreferences(InteropPreferencesConfig config);
 		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropShortcutKeyInfo[] shortcuts, UInt32 count);

@@ -155,51 +155,61 @@
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Libretro|Win32'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|Win32'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\PGO Profile\</OutDir>
     <IntDir>obj\$(Platform)\PGO Profile\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Libretro|x64'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">
     <OutDir>$(SolutionDir)\bin\$(PlatformTarget)\PGO Profile\</OutDir>
     <IntDir>obj\$(Platform)\PGO Profile\</IntDir>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -420,35 +430,34 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ArchiveReader.h" />
-    <ClInclude Include="AviRecorder.h" />
-    <ClInclude Include="AviWriter.h" />
+    <ClInclude Include="Audio\blip_buf.h" />
+    <ClInclude Include="Audio\CrossFeedFilter.h" />
+    <ClInclude Include="Audio\Equalizer.h" />
+    <ClInclude Include="Audio\HermiteResampler.h" />
+    <ClInclude Include="Audio\LowPassFilter.h" />
+    <ClInclude Include="Audio\orfanidis_eq.h" />
+    <ClInclude Include="Audio\ReverbFilter.h" />
+    <ClInclude Include="Audio\stb_vorbis.h" />
+    <ClInclude Include="Audio\StereoCombFilter.h" />
+    <ClInclude Include="Audio\StereoDelayFilter.h" />
+    <ClInclude Include="Audio\StereoPanningFilter.h" />
     <ClInclude Include="Base64.h" />
-    <ClInclude Include="blip_buf.h" />
-    <ClInclude Include="BpsPatcher.h" />
-    <ClInclude Include="CamstudioCodec.h" />
     <ClInclude Include="CRC32.h" />
-    <ClInclude Include="Equalizer.h" />
     <ClInclude Include="FastString.h" />
     <ClInclude Include="FolderUtilities.h" />
-    <ClInclude Include="gif.h" />
-    <ClInclude Include="GifRecorder.h" />
     <ClInclude Include="HexUtilities.h" />
     <ClInclude Include="HQX\common.h" />
     <ClInclude Include="HQX\hqx.h" />
-    <ClInclude Include="IpsPatcher.h" />
     <ClInclude Include="ISerializable.h" />
-    <ClInclude Include="IVideoRecorder.h" />
     <ClInclude Include="KreedSaiEagle\SaiEagle.h" />
-    <ClInclude Include="LowPassFilter.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="miniz.h" />
     <ClInclude Include="AutoResetEvent.h" />
-    <ClInclude Include="BaseCodec.h" />
-    <ClInclude Include="orfanidis_eq.h" />
+    <ClInclude Include="Patches\BpsPatcher.h" />
+    <ClInclude Include="Patches\IpsPatcher.h" />
+    <ClInclude Include="Patches\UpsPatcher.h" />
     <ClInclude Include="PlatformUtilities.h" />
     <ClInclude Include="PNGHelper.h" />
-    <ClInclude Include="RawCodec.h" />
-    <ClInclude Include="HermiteResampler.h" />
     <ClInclude Include="Scale2x\scale2x.h" />
     <ClInclude Include="Scale2x\scale3x.h" />
     <ClInclude Include="Scale2x\scalebit.h" />
@@ -457,7 +466,6 @@
     <ClInclude Include="snes_ntsc.h" />
     <ClInclude Include="snes_ntsc_config.h" />
     <ClInclude Include="snes_ntsc_impl.h" />
-    <ClInclude Include="stb_vorbis.h" />
     <ClInclude Include="StringUtilities.h" />
     <ClInclude Include="SZReader.h" />
     <ClInclude Include="UPnPPortMapper.h" />
@@ -465,26 +473,35 @@
     <ClInclude Include="Socket.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="UpsPatcher.h" />
     <ClInclude Include="UTF8Util.h" />
+    <ClInclude Include="Video\AviRecorder.h" />
+    <ClInclude Include="Video\AviWriter.h" />
+    <ClInclude Include="Video\BaseCodec.h" />
+    <ClInclude Include="Video\CamstudioCodec.h" />
+    <ClInclude Include="Video\gif.h" />
+    <ClInclude Include="Video\GifRecorder.h" />
+    <ClInclude Include="Video\IVideoRecorder.h" />
+    <ClInclude Include="Video\RawCodec.h" />
+    <ClInclude Include="Video\ZmbvCodec.h" />
     <ClInclude Include="VirtualFile.h" />
     <ClInclude Include="xBRZ\config.h" />
     <ClInclude Include="xBRZ\xbrz.h" />
     <ClInclude Include="ZipReader.h" />
     <ClInclude Include="ZipWriter.h" />
-    <ClInclude Include="ZmbvCodec.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArchiveReader.cpp" />
-    <ClCompile Include="AviRecorder.cpp" />
-    <ClCompile Include="AviWriter.cpp" />
-    <ClCompile Include="blip_buf.cpp" />
-    <ClCompile Include="BpsPatcher.cpp" />
-    <ClCompile Include="CamstudioCodec.cpp" />
+    <ClCompile Include="Audio\blip_buf.cpp" />
+    <ClCompile Include="Audio\CrossFeedFilter.cpp" />
+    <ClCompile Include="Audio\Equalizer.cpp" />
+    <ClCompile Include="Audio\HermiteResampler.cpp" />
+    <ClCompile Include="Audio\ReverbFilter.cpp" />
+    <ClCompile Include="Audio\stb_vorbis.cpp" />
+    <ClCompile Include="Audio\StereoCombFilter.cpp" />
+    <ClCompile Include="Audio\StereoDelayFilter.cpp" />
+    <ClCompile Include="Audio\StereoPanningFilter.cpp" />
     <ClCompile Include="CRC32.cpp" />
-    <ClCompile Include="Equalizer.cpp" />
     <ClCompile Include="FolderUtilities.cpp" />
-    <ClCompile Include="GifRecorder.cpp" />
     <ClCompile Include="HexUtilities.cpp" />
     <ClCompile Include="HQX\hq2x.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -534,7 +551,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Libretro|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="IpsPatcher.cpp" />
     <ClCompile Include="KreedSaiEagle\2xSai.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">NotUsing</PrecompiledHeader>
@@ -573,10 +589,12 @@
     </ClCompile>
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="miniz.cpp" />
+    <ClCompile Include="Patches\BpsPatcher.cpp" />
+    <ClCompile Include="Patches\IpsPatcher.cpp" />
+    <ClCompile Include="Patches\UpsPatcher.cpp" />
     <ClCompile Include="PlatformUtilities.cpp" />
     <ClCompile Include="PNGHelper.cpp" />
     <ClCompile Include="AutoResetEvent.cpp" />
-    <ClCompile Include="HermiteResampler.cpp" />
     <ClCompile Include="Scale2x\scale2x.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|Win32'">NotUsing</PrecompiledHeader>
@@ -618,7 +636,6 @@
     <ClCompile Include="SimpleLock.cpp" />
     <ClCompile Include="snes_ntsc.cpp" />
     <ClCompile Include="Socket.cpp" />
-    <ClCompile Include="stb_vorbis.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -634,8 +651,12 @@
     <ClCompile Include="SZReader.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UPnPPortMapper.cpp" />
-    <ClCompile Include="UpsPatcher.cpp" />
     <ClCompile Include="UTF8Util.cpp" />
+    <ClCompile Include="Video\AviRecorder.cpp" />
+    <ClCompile Include="Video\AviWriter.cpp" />
+    <ClCompile Include="Video\CamstudioCodec.cpp" />
+    <ClCompile Include="Video\GifRecorder.cpp" />
+    <ClCompile Include="Video\ZmbvCodec.cpp" />
     <ClCompile Include="VirtualFile.cpp" />
     <ClCompile Include="xBRZ\xbrz.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -651,7 +672,6 @@
     </ClCompile>
     <ClCompile Include="ZipReader.cpp" />
     <ClCompile Include="ZipWriter.cpp" />
-    <ClCompile Include="ZmbvCodec.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

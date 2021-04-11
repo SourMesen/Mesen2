@@ -26,7 +26,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_gsu = ((Console*)debugger->GetConsole())->GetCartridge()->GetGsu();
 	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu));
 	_step.reset(new StepRequest());

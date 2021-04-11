@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/IVideoRecorder.h"
+#include "Utilities/Video/IVideoRecorder.h"
 
 struct GifWriter;
 

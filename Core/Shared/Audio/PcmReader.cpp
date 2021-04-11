@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PcmReader.h"
 #include "Utilities/VirtualFile.h"
-#include "Utilities/HermiteResampler.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 PcmReader::PcmReader()
 {

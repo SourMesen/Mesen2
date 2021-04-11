@@ -31,7 +31,7 @@ Spc::Spc(Console* console)
 
 	_dsp.reset(new SPC_DSP());
 	#ifndef DUMMYSPC
-	_dsp->init(this, _emu->GetSettings().get(), _ram);
+	_dsp->init(this, _emu->GetSettings(), _ram);
 	#endif
 	_dsp->reset();
 	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);

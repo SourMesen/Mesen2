@@ -4,17 +4,16 @@
 #include "NES/NesCpu.h"
 #include "NES/NesTypes.h"
 #include "Shared/Emulator.h"
+#include "Shared/SettingTypes.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Serializer.h"
-#include "Utilities/blip_buf.h"
+#include "Utilities/Audio/blip_buf.h"
 
 NesSoundMixer::NesSoundMixer(shared_ptr<NesConsole> console)
 {
 	_clockRate = 0;
 	_console = console.get();
 	_mixer = console->GetEmulator()->GetSoundMixer().get();
-	//TODO
-	//_settings = _console->GetSettings();
 	//_oggMixer.reset();
 	_outputBuffer = new int16_t[NesSoundMixer::MaxSamplesPerFrame];
 	_blipBufLeft = blip_new(NesSoundMixer::MaxSamplesPerFrame);
@@ -37,11 +36,6 @@ void NesSoundMixer::Serialize(Serializer& s)
 	s.Stream(_clockRate, _sampleRate, _model);
 
 	if(!s.IsSaving()) {
-		if(_model == NesModel::Auto) {
-			//Older savestates - assume NTSC
-			_model = NesModel::NTSC;
-		}
-
 		Reset();
 		UpdateRates(true);
 	}
@@ -106,24 +100,13 @@ void NesSoundMixer::PlayAudioBuffer(uint32_t time)
 		}
 	}*/
 
-	/*AudioFilterSettings filterSettings = _settings->GetAudioConfig();
-
-	if(filterSettings.ReverbStrength > 0) {
-		_reverbFilter.ApplyFilter(_outputBuffer, sampleCount, _sampleRate, filterSettings.ReverbStrength, filterSettings.ReverbDelay);
-	} else {
-		_reverbFilter.ResetFilter();
+	NesConfig& cfg = _console->GetNesConfig();
+	switch(cfg.StereoFilter) {
+		case StereoFilterType::None: break;
+		case StereoFilterType::Delay: _stereoDelay.ApplyFilter(_outputBuffer, sampleCount, _sampleRate, cfg.StereoDelay); break;
+		case StereoFilterType::Panning: _stereoPanning.ApplyFilter(_outputBuffer, sampleCount, cfg.StereoPanningAngle); break;
+		case StereoFilterType::CombFilter: _stereoCombFilter.ApplyFilter(_outputBuffer, sampleCount, _sampleRate, cfg.StereoCombFilterDelay, cfg.StereoCombFilterStrength); break;
 	}
-
-	switch(filterSettings.Filter) {
-		case StereoFilter::None: break;
-		case StereoFilter::Delay: _stereoDelay.ApplyFilter(_outputBuffer, sampleCount, _sampleRate, filterSettings.Delay); break;
-		case StereoFilter::Panning: _stereoPanning.ApplyFilter(_outputBuffer, sampleCount, filterSettings.Angle); break;
-		case StereoFilter::CombFilter: _stereoCombFilter.ApplyFilter(_outputBuffer, sampleCount, _sampleRate, filterSettings.Delay, filterSettings.Strength); break;
-	}
-
-	if(filterSettings.CrossFadeRatio > 0) {
-		_crossFeedFilter.ApplyFilter(_outputBuffer, sampleCount, filterSettings.CrossFadeRatio);
-	}*/
 
 	_mixer->PlayAudioBuffer(_outputBuffer, (uint32_t)sampleCount, 96000);
 
@@ -152,11 +135,11 @@ void NesSoundMixer::UpdateRates(bool forceUpdate)
 		}*/
 	}
 
+	NesConfig& cfg = _console->GetNesConfig();
 	bool hasPanning = false;
-	//TODO
-	/*for(uint32_t i = 0; i < MaxChannelCount; i++) {
-		_volumes[i] = _settings->GetChannelVolume((AudioChannel)i);
-		_panning[i] = _settings->GetChannelPanning((AudioChannel)i);
+	for(uint32_t i = 0; i < MaxChannelCount; i++) {
+		_volumes[i] = cfg.ChannelVolumes[i] / 100.0;
+		_panning[i] = (cfg.ChannelPanning[i] + 100) / 100.0;
 		if(_panning[i] != 1.0) {
 			if(!_hasPanning) {
 				blip_clear(_blipBufLeft);
@@ -164,7 +147,7 @@ void NesSoundMixer::UpdateRates(bool forceUpdate)
 			}
 			hasPanning = true;
 		}
-	}*/
+	}
 	_hasPanning = hasPanning;
 }
 
@@ -219,12 +202,12 @@ void NesSoundMixer::EndFrame(uint32_t time)
 			_currentOutput[j] += _channelOutput[j][stamp];
 		}
 
-		int16_t currentOutput = GetOutputVolume(false);
+		int16_t currentOutput = GetOutputVolume(false) * 4;
 		blip_add_delta(_blipBufLeft, stamp, (int)(currentOutput - _previousOutputLeft));
 		_previousOutputLeft = currentOutput;
 
 		if(_hasPanning) {
-			currentOutput = GetOutputVolume(true);
+			currentOutput = GetOutputVolume(true) * 4;
 			blip_add_delta(_blipBufRight, stamp, (int)(currentOutput - _previousOutputRight));
 			_previousOutputRight = currentOutput;
 		}

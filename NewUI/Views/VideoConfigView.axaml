@@ -129,17 +129,5 @@
 				</StackPanel>
 			</Panel>
 		</TabItem>
-		
-		<TabItem Header="{l:Translate tpgAdvancedSnes}">
-			<StackPanel>
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Text="{l:Translate chkBlendHighResolutionModes}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer0}" Text="{l:Translate chkHideBgLayer0}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
-			</StackPanel>
-		</TabItem>
 	</TabControl>
 </UserControl>

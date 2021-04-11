@@ -4,8 +4,9 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:c="using:Mesen.Controls"
-	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="34"
 	x:Name="root"
+	Maximum="100"
 	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Controls.MesenSlider"
 >
@@ -19,17 +20,23 @@
 		
 		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel TextBox">
 			<Setter Property="DockPanel.Dock" Value="Right" />
+			<Setter Property="Margin" Value="2 -15 2 0" />
+			<Setter Property="MinWidth" Value="26" />
+			<Setter Property="MinHeight" Value="17" />
+			<Setter Property="Height" Value="17" />
 		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBlock">
 			<Setter Property="IsVisible" Value="False" />
 		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Horizontal]">
+			<Setter Property="Height" Value="34" />
+		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] Slider">
+			<Setter Property="Margin" Value="0 -20 0 0" />
+		</Style>
 	</UserControl.Styles>
 	
-	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<Panel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="-38 2 0 0">
-			<TextBlock Text="{Binding Text}" Margin="0" HorizontalAlignment="Center" />
-		</Panel>
-
+	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch">
 		<DockPanel>
 			<TextBlock
 				DockPanel.Dock="Bottom"
@@ -41,16 +48,12 @@
 			<TextBox
 				Text="{Binding Value}"
 				VerticalAlignment="Center"
-				Margin="4"
-				IsReadOnly="True"
-				Focusable="False"
 				HorizontalContentAlignment="Center"
 				IsVisible="{Binding !HideValue}"
 			/>
 
 			<Slider
 				Minimum="{Binding Minimum}"
-				Margin="0 -3 0 0"
 				Maximum="{Binding Maximum}"
 				Orientation="{Binding Orientation}"
 				Value="{Binding Value}"
@@ -59,7 +62,7 @@
 				PropertyChanged="Slider_OnPropertyChanged"
 				LargeChange="5"
 				SmallChange="1"
-		/>
+			/>
 		</DockPanel>
 	</Panel>
 </UserControl>

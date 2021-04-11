@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "Utilities/HermiteResampler.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 class Emulator;
 
@@ -24,6 +24,7 @@ public:
 	~SoundResampler();
 
 	double GetRateAdjustment();
+	uint32_t GetTargetRate();
 
 	uint32_t Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sourceRate, uint32_t sampleRate, int16_t *outSamples);
 };

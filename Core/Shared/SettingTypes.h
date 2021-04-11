@@ -72,16 +72,8 @@ struct VideoConfig
 	VideoFilterType VideoFilter = VideoFilterType::None;
 	VideoAspectRatio AspectRatio = VideoAspectRatio::NoStretching;
 	bool UseBilinearInterpolation = false;
-	bool BlendHighResolutionModes = false;
 	bool VerticalSync = false;
 	bool IntegerFpsMode = false;
-
-	bool HideBgLayer0 = false;
-	bool HideBgLayer1 = false;
-	bool HideBgLayer2 = false;
-	bool HideBgLayer3 = false;
-	bool HideSprites = false;
-	bool DisableFrameSkipping = false;
 
 	double Brightness = 0;
 	double Contrast = 0;
@@ -119,12 +111,17 @@ struct AudioConfig
 	uint32_t SampleRate = 48000;
 	uint32_t AudioLatency = 60;
 
-	bool EnableCubicInterpolation  = true;
-
 	bool MuteSoundInBackground = false;
 	bool ReduceSoundInBackground = true;
 	bool ReduceSoundInFastForward = false;
 	uint32_t VolumeReduction = 75;
+
+	bool ReverbEnabled;
+	uint32_t ReverbStrength;
+	uint32_t ReverbDelay;
+
+	bool CrossFeedEnabled;
+	uint32_t CrossFeedRatio;
 
 	bool EnableEqualizer = false;
 	double Band1Gain = 0;
@@ -294,17 +291,6 @@ struct EmulationConfig
 	ConsoleRegion Region = ConsoleRegion::Auto;
 
 	uint32_t RunAheadFrames = 0;
-
-	bool EnableRandomPowerOnState = false;
-	bool EnableStrictBoardMappings = false;
-
-	uint32_t PpuExtraScanlinesBeforeNmi = 0;
-	uint32_t PpuExtraScanlinesAfterNmi = 0;
-	uint32_t GsuClockSpeed = 100;
-
-	RamState RamPowerOnState = RamState::Random;
-
-	int64_t BsxCustomDate = -1;
 };
 
 struct GameboyConfig
@@ -315,6 +301,8 @@ struct GameboyConfig
 	bool BlendFrames = true;
 	bool GbcAdjustColors = true;
 
+	RamState RamPowerOnState = RamState::Random;
+	
 	uint32_t BgColors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
 	uint32_t Obj0Colors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
 	uint32_t Obj1Colors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
@@ -325,39 +313,84 @@ struct GameboyConfig
 	uint32_t WaveVol = 100;
 };
 
+struct SnesConfig
+{
+	bool BlendHighResolutionModes = false;
+	bool HideBgLayer0 = false;
+	bool HideBgLayer1 = false;
+	bool HideBgLayer2 = false;
+	bool HideBgLayer3 = false;
+	bool HideSprites = false;
+	bool DisableFrameSkipping = false;
+
+	bool EnableCubicInterpolation = true;
+
+	bool EnableRandomPowerOnState = false;
+	bool EnableStrictBoardMappings = false;
+	RamState RamPowerOnState = RamState::Random;
+
+	uint32_t PpuExtraScanlinesBeforeNmi = 0;
+	uint32_t PpuExtraScanlinesAfterNmi = 0;
+	uint32_t GsuClockSpeed = 100;
+
+	int64_t BsxCustomDate = -1;
+};
+
+enum class StereoFilterType
+{
+	None = 0,
+	Delay = 1,
+	Panning = 2,
+	CombFilter = 3,
+};
+
 struct NesConfig
 {
-	bool ReduceDmcPopping = false;
-	bool RandomizeMapperPowerOnState = false;
-	uint32_t DipSwitches = 0;
-	bool BreakOnCrash = false;
-	bool RandomizeCpuPpuAlignment = false;
-	
-	bool EnableOamDecay = false;
-	bool DisablePpu2004Reads = false;
-	bool DisablePaletteRead = false;
-	bool EnablePpu2000ScrollGlitch = false;
-	bool EnablePpu2006ScrollGlitch = false;
-	bool ForceBackgroundFirstColumn = false;
-	bool ForceSpritesFirstColumn = false;
-	
-	bool RemoveSpriteLimit = false;
-	bool AdaptiveSpriteLimit = false;
-	
-	bool EnablePpuOamRowCorruption = false;
-	bool DisableNoiseModeFlag = false;
-	bool SilenceTriangleHighFreq = false;
-	bool SwapDutyCycles = false;
+	bool EnableHdPacks = true;
 
 	bool SpritesEnabled = true;
 	bool BackgroundEnabled = true;
-
-	int8_t InputScanline = 241;
-
+	bool ForceBackgroundFirstColumn = false;
+	bool ForceSpritesFirstColumn = false;
+	bool RemoveSpriteLimit = false;
+	bool AdaptiveSpriteLimit = false;
+	
+	bool EnableOamDecay = false;
+	bool EnablePpuOamRowCorruption = false;
 	bool DisableOamAddrBug = false;
+	bool DisablePaletteRead = false;
+	bool DisablePpu2004Reads = false;
+	bool EnablePpu2000ScrollGlitch = false;
+	bool EnablePpu2006ScrollGlitch = false;
+
+	bool RandomizeMapperPowerOnState = false;
+	bool RandomizeCpuPpuAlignment = false;
+	RamState RamPowerOnState = RamState::Random;
+
+	uint32_t PpuExtraScanlinesBeforeNmi = 0;
+	uint32_t PpuExtraScanlinesAfterNmi = 0;
+
+	bool DisableNoiseModeFlag = false;
+	bool ReduceDmcPopping = false;
+	bool SilenceTriangleHighFreq = false;
+	bool SwapDutyCycles = false;
+
+	bool BreakOnCrash = false;
+	uint32_t DipSwitches = 0;
+
+	int32_t InputScanline = 241;
 
 	bool IsFullColorPalette = false;
 	uint32_t UserPalette[512] = { };
+
+	uint32_t ChannelVolumes[11];
+	uint32_t ChannelPanning[11];
+
+	StereoFilterType StereoFilter;
+	int32_t StereoDelay;
+	int32_t StereoPanningAngle;
+	int32_t StereoCombFilterDelay;
+	int32_t StereoCombFilterStrength;
 };
 
 struct PreferencesConfig

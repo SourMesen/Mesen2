@@ -23,7 +23,7 @@ NesPpu::NesPpu(shared_ptr<NesConsole> console)
 	_emu = console->GetEmulator();
 	_masterClock = 0;
 	_masterClockDivider = 4;
-	_settings = _emu->GetSettings().get();
+	_settings = _emu->GetSettings();
 
 	_outputBuffers[0] = new uint16_t[256 * 240];
 	_outputBuffers[1] = new uint16_t[256 * 240];
@@ -149,7 +149,7 @@ void NesPpu::SetNesModel(NesModel model)
 			break;
 	}
 
-	EmulationConfig cfg = _settings->GetEmulationConfig();
+	NesConfig& cfg = _console->GetNesConfig();
 	_nmiScanline += cfg.PpuExtraScanlinesBeforeNmi;
 	_palSpriteEvalScanline = _nmiScanline + 24;
 	_standardVblankEnd += cfg.PpuExtraScanlinesBeforeNmi;

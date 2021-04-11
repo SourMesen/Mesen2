@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 #include "Shared/Interfaces/IAudioProvider.h"
-#include "Utilities/HermiteResampler.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 class Console;
 class Emulator;

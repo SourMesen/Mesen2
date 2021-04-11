@@ -40,7 +40,7 @@ Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType
 	mappings->RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, prgRomHandlers, 8);
 	mappings->RegisterHandler(0x80, 0xBF, 0x8000, 0xFFFF, prgRomHandlers, 8);
 
-	bool enableStrictBoardMappings = _emu->GetSettings()->GetEmulationConfig().EnableStrictBoardMappings;
+	bool enableStrictBoardMappings = _emu->GetSettings()->GetSnesConfig().EnableStrictBoardMappings;
 	uint32_t romSize = _cart->DebugGetPrgRomSize();
 	if(!enableStrictBoardMappings && _cart->DebugGetPrgRomSize() >= 0x600000) {
 		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers, 0, 0x600);

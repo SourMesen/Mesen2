@@ -238,7 +238,7 @@ bool MesenMovie::LoadGame()
 
 void MesenMovie::ApplySettings()
 {
-	EmuSettings* settings = _emu->GetSettings().get();
+	EmuSettings* settings = _emu->GetSettings();
 	EmulationConfig emuConfig = settings->GetEmulationConfig();
 	InputConfig inputConfig = settings->GetInputConfig();
 
@@ -249,12 +249,15 @@ void MesenMovie::ApplySettings()
 	inputConfig.Controllers[4].Type = FromString(LoadString(_settings, MovieKeys::Controller5), ControllerTypeNames, ControllerType::None);
 
 	emuConfig.Region = FromString(LoadString(_settings, MovieKeys::Region), ConsoleRegionNames, ConsoleRegion::Ntsc);
+
+	//TODO
+	/*
 	if(!_forTest) {
 		emuConfig.RamPowerOnState = FromString(LoadString(_settings, MovieKeys::RamPowerOnState), RamStateNames, RamState::AllOnes);
 	}
 	emuConfig.PpuExtraScanlinesAfterNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesAfterNmi);
 	emuConfig.PpuExtraScanlinesBeforeNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesBeforeNmi);
-	emuConfig.GsuClockSpeed = LoadInt(_settings, MovieKeys::GsuClockSpeed, 100);
+	emuConfig.GsuClockSpeed = LoadInt(_settings, MovieKeys::GsuClockSpeed, 100);*/
 
 	settings->SetEmulationConfig(emuConfig);
 	settings->SetInputConfig(inputConfig);

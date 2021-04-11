@@ -7,10 +7,10 @@
 	xmlns:v="using:Mesen.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-	mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="500"
+	mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="500"
 	x:DataType="vm:ConfigViewModel"
 	x:Class="Mesen.Windows.ConfigWindow"
-	Width="620" Height="500"
+	Width="700" Height="500"
 	Title="Settings"
 >
 	<Design.DataContext>
@@ -95,7 +95,7 @@
 		</Panel>
 		
 		<TabControl TabStripPlacement="Left" Background="#20888888">
-			<TabItem Header="Audio">
+			<TabItem>
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<mui:MaterialIcon Kind="Audio" Margin="0 0 10 -1" />
@@ -106,7 +106,7 @@
 				<v:AudioConfigView DataContext="{CompiledBinding Audio}" />
 				
 			</TabItem>
-			<TabItem Header="Emulation">
+			<TabItem>
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<mui:MaterialIcon Kind="Build" Margin="0 0 10 -1" />
@@ -116,7 +116,7 @@
 
 				<v:EmulationConfigView DataContext="{CompiledBinding Emulation}" />
 			</TabItem>
-			<TabItem Header="Input">
+			<TabItem>
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<mui:MaterialIcon Kind="Controller" Margin="0 0 10 -1" />
@@ -126,7 +126,7 @@
 
 				<v:InputConfigView DataContext="{CompiledBinding Input}" />
 			</TabItem>
-			<TabItem Header="Video">
+			<TabItem>
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<mui:MaterialIcon Kind="Image" Margin="0 0 10 -1" />
@@ -134,9 +134,48 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<v:VideoConfigView DataContext="{CompiledBinding Video}" />
-				
+				<v:VideoConfigView DataContext="{CompiledBinding Video}" />				
 			</TabItem>
+			
+			<TabItem IsEnabled="False" MinHeight="10">
+				<TabItem.Header>
+					<Rectangle Fill="LightGray" Height="1" />
+				</TabItem.Header>
+			</TabItem>
+			
+			<TabItem> 
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="GamepadVariant" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">NES</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<v:NesConfigView DataContext="{CompiledBinding Nes}" />
+			</TabItem>
+
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="GamepadVariant" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">SNES</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<v:SnesConfigView DataContext="{CompiledBinding Snes}" />
+			</TabItem>
+
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<mui:MaterialIcon Kind="GamepadVariant" Margin="0 0 10 -1" />
+						<TextBlock VerticalAlignment="Center">Game Boy</TextBlock>
+					</StackPanel>
+				</TabItem.Header>
+
+				<v:GameboyConfigView DataContext="{CompiledBinding Gameboy}" />
+			</TabItem>
+
 			<TabItem IsEnabled="False" MinHeight="10">
 				<TabItem.Header>
 					<Rectangle Fill="LightGray" Height="1" />

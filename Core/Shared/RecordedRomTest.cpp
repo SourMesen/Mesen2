@@ -124,13 +124,10 @@ void RecordedRomTest::Record(string filename, bool reset)
 		_emu->Lock();
 		Reset();
 
-		VideoConfig videoCfg = _emu->GetSettings()->GetVideoConfig();
-		videoCfg.DisableFrameSkipping = true;
-		_emu->GetSettings()->SetVideoConfig(videoCfg);
-
-		EmulationConfig emuCfg = _emu->GetSettings()->GetEmulationConfig();
-		emuCfg.RamPowerOnState = RamState::AllZeros;
-		_emu->GetSettings()->SetEmulationConfig(emuCfg);
+		SnesConfig snesCfg = _emu->GetSettings()->GetSnesConfig();
+		snesCfg.DisableFrameSkipping = true;
+		snesCfg.RamPowerOnState = RamState::AllZeros;
+		_emu->GetSettings()->SetSnesConfig(snesCfg);
 				
 		//Start recording movie alongside with screenshots
 		RecordMovieOptions options;
@@ -148,7 +145,7 @@ int32_t RecordedRomTest::Run(string filename)
 {
 	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 
-	EmuSettings* settings = _emu->GetSettings().get();
+	EmuSettings* settings = _emu->GetSettings();
 	string testName = FolderUtilities::GetFilename(filename, false);
 	
 	VirtualFile testMovie(filename, "TestMovie.msm");
@@ -186,13 +183,10 @@ int32_t RecordedRomTest::Run(string filename)
 		_currentCount = _repetitionCount.front();
 		_repetitionCount.pop_front();
 
-		VideoConfig cfg = settings->GetVideoConfig();
-		cfg.DisableFrameSkipping = true;
-		settings->SetVideoConfig(cfg);
-
-		EmulationConfig emuCfg = _emu->GetSettings()->GetEmulationConfig();
-		emuCfg.RamPowerOnState = RamState::AllZeros;
-		_emu->GetSettings()->SetEmulationConfig(emuCfg);
+		SnesConfig snesCfg = _emu->GetSettings()->GetSnesConfig();
+		snesCfg.DisableFrameSkipping = true;
+		snesCfg.RamPowerOnState = RamState::AllZeros;
+		_emu->GetSettings()->SetSnesConfig(snesCfg);
 
 		_emu->Lock();
 		//Start playing movie

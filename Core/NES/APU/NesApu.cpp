@@ -21,7 +21,7 @@ NesApu::NesApu(shared_ptr<NesConsole> console)
 
 	_console = console;
 	_mixer = _console->GetSoundMixer();
-	_settings = _console->GetEmulator()->GetSettings().get();
+	_settings = _console->GetEmulator()->GetSettings();
 
 	_squareChannel[0].reset(new SquareChannel(AudioChannel::Square1, _console, _mixer, true));
 	_squareChannel[1].reset(new SquareChannel(AudioChannel::Square2, _console, _mixer, false));

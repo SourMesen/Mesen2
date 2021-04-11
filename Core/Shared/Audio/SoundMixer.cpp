@@ -7,7 +7,9 @@
 #include "Shared/Video/VideoRenderer.h"
 #include "Shared/Audio/WaveRecorder.h"
 #include "Shared/Interfaces/IAudioProvider.h"
-#include "Utilities/Equalizer.h"
+#include "Utilities/Audio/Equalizer.h"
+#include "Utilities/Audio/ReverbFilter.h"
+#include "Utilities/Audio/CrossFeedFilter.h"
 
 SoundMixer::SoundMixer(Emulator* emu)
 {
@@ -15,6 +17,8 @@ SoundMixer::SoundMixer(Emulator* emu)
 	_audioDevice = nullptr;
 	_resampler.reset(new SoundResampler(emu));
 	_sampleBuffer = new int16_t[0x10000];
+	_reverbFilter.reset(new ReverbFilter());
+	_crossFeedFilter.reset(new CrossFeedFilter());
 }
 
 SoundMixer::~SoundMixer()
@@ -86,6 +90,18 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 
 	if(cfg.EnableEqualizer) {
 		ProcessEqualizer(samples, sampleCount);
+	}
+
+	if(cfg.ReverbEnabled) {
+		if(cfg.ReverbStrength > 0) {
+			_reverbFilter->ApplyFilter(out, count, cfg.SampleRate, cfg.ReverbStrength / 10.0, cfg.ReverbDelay / 10.0);
+		} else {
+			_reverbFilter->ResetFilter();
+		}
+	}
+
+	if(cfg.CrossFeedEnabled) {
+		_crossFeedFilter->ApplyFilter(out, count, cfg.CrossFeedRatio);
 	}
 
 	if(masterVolume < 100) {

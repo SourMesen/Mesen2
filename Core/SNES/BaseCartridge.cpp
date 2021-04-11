@@ -605,14 +605,14 @@ void BaseCartridge::ApplyConfigOverrides()
 	string name = GetCartName();
 	if(name == "POWERDRIVE" || name == "DEATH BRADE" || name == "RPG SAILORMOON") {
 		//These games work better when ram is initialized to $FF
-		EmulationConfig cfg = _emu->GetSettings()->GetEmulationConfig();
+		SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
 		cfg.RamPowerOnState = RamState::AllOnes;
-		_emu->GetSettings()->SetEmulationConfig(cfg);
+		_emu->GetSettings()->SetSnesConfig(cfg);
 	} else if(name == "SUPER KEIBA 2") {
 		//Super Keiba 2 behaves incorrectly if save ram is filled with 0s
-		EmulationConfig cfg = _emu->GetSettings()->GetEmulationConfig();
+		SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
 		cfg.RamPowerOnState = RamState::Random;
-		_emu->GetSettings()->SetEmulationConfig(cfg);
+		_emu->GetSettings()->SetSnesConfig(cfg);
 	}
 }
 

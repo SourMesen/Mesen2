@@ -22,7 +22,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_dsp = ((Console*)debugger->GetConsole())->GetCartridge()->GetDsp();
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp));
 	_step.reset(new StepRequest());

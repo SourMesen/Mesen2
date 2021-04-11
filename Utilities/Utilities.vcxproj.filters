@@ -91,32 +91,8 @@
     <ClInclude Include="HexUtilities.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="ZmbvCodec.h">
-      <Filter>Avi</Filter>
-    </ClInclude>
-    <ClInclude Include="AviWriter.h">
-      <Filter>Avi</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseCodec.h">
-      <Filter>Avi</Filter>
-    </ClInclude>
-    <ClInclude Include="RawCodec.h">
-      <Filter>Avi</Filter>
-    </ClInclude>
-    <ClInclude Include="CamstudioCodec.h">
-      <Filter>Avi</Filter>
-    </ClInclude>
     <ClInclude Include="StringUtilities.h">
       <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="IpsPatcher.h">
-      <Filter>Patches</Filter>
-    </ClInclude>
-    <ClInclude Include="UpsPatcher.h">
-      <Filter>Patches</Filter>
-    </ClInclude>
-    <ClInclude Include="BpsPatcher.h">
-      <Filter>Patches</Filter>
     </ClInclude>
     <ClInclude Include="Base64.h">
       <Filter>Misc</Filter>
@@ -163,41 +139,80 @@
     <ClInclude Include="miniz.h">
       <Filter>Archives</Filter>
     </ClInclude>
-    <ClInclude Include="stb_vorbis.h">
-      <Filter>Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="orfanidis_eq.h">
-      <Filter>Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="LowPassFilter.h">
-      <Filter>Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="Equalizer.h">
-      <Filter>Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Serializer.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="ISerializable.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="AviRecorder.h">
-      <Filter>Avi</Filter>
+    <ClInclude Include="Audio\blip_buf.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="gif.h">
-      <Filter>Avi</Filter>
+    <ClInclude Include="Audio\CrossFeedFilter.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="GifRecorder.h">
-      <Filter>Avi</Filter>
+    <ClInclude Include="Audio\Equalizer.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="IVideoRecorder.h">
-      <Filter>Avi</Filter>
+    <ClInclude Include="Audio\HermiteResampler.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="HermiteResampler.h">
-      <Filter>Audio</Filter>
+    <ClInclude Include="Audio\LowPassFilter.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="blip_buf.h">
-      <Filter>Audio</Filter>
+    <ClInclude Include="Audio\orfanidis_eq.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ReverbFilter.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\stb_vorbis.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\StereoCombFilter.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\StereoDelayFilter.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\StereoPanningFilter.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\AviRecorder.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\AviWriter.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\BaseCodec.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\CamstudioCodec.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\gif.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\GifRecorder.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\IVideoRecorder.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\RawCodec.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\ZmbvCodec.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Patches\BpsPatcher.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Patches\IpsPatcher.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Patches\UpsPatcher.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -234,24 +249,6 @@
     <ClCompile Include="KreedSaiEagle\2xSai.cpp">
       <Filter>Video\KreedSaiEagle</Filter>
     </ClCompile>
-    <ClCompile Include="ZmbvCodec.cpp">
-      <Filter>Avi</Filter>
-    </ClCompile>
-    <ClCompile Include="AviWriter.cpp">
-      <Filter>Avi</Filter>
-    </ClCompile>
-    <ClCompile Include="CamstudioCodec.cpp">
-      <Filter>Avi</Filter>
-    </ClCompile>
-    <ClCompile Include="UpsPatcher.cpp">
-      <Filter>Patches</Filter>
-    </ClCompile>
-    <ClCompile Include="IpsPatcher.cpp">
-      <Filter>Patches</Filter>
-    </ClCompile>
-    <ClCompile Include="BpsPatcher.cpp">
-      <Filter>Patches</Filter>
-    </ClCompile>
     <ClCompile Include="md5.cpp">
       <Filter>Hashes</Filter>
     </ClCompile>
@@ -281,12 +278,6 @@
     </ClCompile>
     <ClCompile Include="miniz.cpp">
       <Filter>Archives</Filter>
-    </ClCompile>
-    <ClCompile Include="Equalizer.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_vorbis.cpp">
-      <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="AutoResetEvent.cpp">
       <Filter>Misc</Filter>
@@ -324,17 +315,22 @@
     <ClCompile Include="Serializer.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="AviRecorder.cpp">
-      <Filter>Avi</Filter>
-    </ClCompile>
-    <ClCompile Include="GifRecorder.cpp">
-      <Filter>Avi</Filter>
-    </ClCompile>
-    <ClCompile Include="HermiteResampler.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="blip_buf.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
+    <ClCompile Include="Audio\blip_buf.cpp" />
+    <ClCompile Include="Audio\CrossFeedFilter.cpp" />
+    <ClCompile Include="Audio\Equalizer.cpp" />
+    <ClCompile Include="Audio\HermiteResampler.cpp" />
+    <ClCompile Include="Audio\ReverbFilter.cpp" />
+    <ClCompile Include="Audio\stb_vorbis.cpp" />
+    <ClCompile Include="Audio\StereoCombFilter.cpp" />
+    <ClCompile Include="Audio\StereoDelayFilter.cpp" />
+    <ClCompile Include="Audio\StereoPanningFilter.cpp" />
+    <ClCompile Include="Video\AviRecorder.cpp" />
+    <ClCompile Include="Video\AviWriter.cpp" />
+    <ClCompile Include="Video\CamstudioCodec.cpp" />
+    <ClCompile Include="Video\GifRecorder.cpp" />
+    <ClCompile Include="Video\ZmbvCodec.cpp" />
+    <ClCompile Include="Patches\BpsPatcher.cpp" />
+    <ClCompile Include="Patches\IpsPatcher.cpp" />
+    <ClCompile Include="Patches\UpsPatcher.cpp" />
   </ItemGroup>
 </Project>

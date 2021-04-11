@@ -23,7 +23,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_spc = ((Console*)debugger->GetConsole())->GetSpc().get();
 	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
-	_settings = debugger->GetEmulator()->GetSettings().get();
+	_settings = debugger->GetEmulator()->GetSettings();
 
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc));
