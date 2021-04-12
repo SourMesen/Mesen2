@@ -7,10 +7,10 @@
 	xmlns:v="using:Mesen.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-	mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="500"
+	mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="500"
 	x:DataType="vm:ConfigViewModel"
 	x:Class="Mesen.Windows.ConfigWindow"
-	Width="700" Height="500"
+	Width="620" Height="500"
 	Title="Settings"
 >
 	<Design.DataContext>

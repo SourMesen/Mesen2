@@ -52,7 +52,7 @@
 						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
 						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
 						<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
-						<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+						<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
 					</Grid>
 				</c:OptionSection>
 

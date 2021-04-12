@@ -10,7 +10,17 @@ namespace Mesen.GUI.Config
 {
 	public class NesConfig : BaseConfig<NesConfig>
 	{
-		[Reactive] public bool EnableHdPacks { get; set; } = false;
+		[Reactive] public bool EnableHdPacks { get; set; } = true;
+		[Reactive] public bool DisableGameDatabase { get; set; } = false;
+		[Reactive] public bool FdsAutoLoadDisk { get; set; } = true;
+		[Reactive] public bool FdsFastForwardOnLoad { get; set; } = false;
+		[Reactive] public bool FdsAutoInsertDisk { get; set; } = false;
+		[Reactive] public VsDualOutputOption VsDualVideoOutput { get; set; } = VsDualOutputOption.Both;
+		[Reactive] public VsDualOutputOption VsDualAudioOutput { get; set; } = VsDualOutputOption.Both;
+		[Reactive] public bool NsfMoveToNextTrackAfterTime { get; set; } = true;
+		[Reactive] public UInt32 NsfMoveToNextTrackTime { get; set; } = 120;
+		[Reactive] public bool NsfAutoDetectSilence { get; set; } = true;
+		[Reactive] public UInt32 NsfAutoDetectSilenceDelay { get; set; } = 3000;
 
 		[Reactive] public bool DisableSprites { get; set; } = false;
 		[Reactive] public bool DisableBackground { get; set; } = false;
@@ -26,6 +36,10 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool DisablePpu2004Reads { get; set; } = false;
 		[Reactive] public bool EnablePpu2000ScrollGlitch { get; set; } = false;
 		[Reactive] public bool EnablePpu2006ScrollGlitch { get; set; } = false;
+		
+		[Reactive] public bool UseNes101Hvc101Behavior { get; set; } = false;
+		[Reactive] public bool DisablePpuReset { get; set; } = false;
+		[Reactive] public bool AllowInvalidInput { get; set; } = false;
 
 		[Reactive] public bool RandomizeMapperPowerOnState { get; set; } = false;
 		[Reactive] public bool RandomizeCpuPpuAlignment { get; set; } = false;
@@ -81,6 +95,16 @@ namespace Mesen.GUI.Config
 		{
 			ConfigApi.SetNesConfig(new InteropNesConfig() {
 				EnableHdPacks = EnableHdPacks,
+				DisableGameDatabase = DisableGameDatabase,
+				FdsAutoLoadDisk = FdsAutoLoadDisk,
+				FdsFastForwardOnLoad = FdsFastForwardOnLoad,
+				FdsAutoInsertDisk = FdsAutoInsertDisk,
+				VsDualVideoOutput = VsDualVideoOutput,
+				VsDualAudioOutput = VsDualAudioOutput,
+				NsfMoveToNextTrackAfterTime = NsfMoveToNextTrackAfterTime,
+				NsfMoveToNextTrackTime = NsfMoveToNextTrackTime,
+				NsfAutoDetectSilence = NsfAutoDetectSilence,
+				NsfAutoDetectSilenceDelay = NsfAutoDetectSilenceDelay,
 
 				SpritesEnabled = !DisableSprites,
 				BackgroundEnabled = !DisableBackground,
@@ -89,6 +113,10 @@ namespace Mesen.GUI.Config
 				RemoveSpriteLimit = RemoveSpriteLimit,
 				AdaptiveSpriteLimit = AdaptiveSpriteLimit,
 				
+				UseNes101Hvc101Behavior = UseNes101Hvc101Behavior,
+				DisablePpuReset = DisablePpuReset,
+				AllowInvalidInput = AllowInvalidInput,
+
 				EnableOamDecay = EnableOamDecay,
 				EnablePpuOamRowCorruption = EnablePpuOamRowCorruption,
 				DisableOamAddrBug = DisableOamAddrBug,
@@ -153,6 +181,16 @@ namespace Mesen.GUI.Config
 	public struct InteropNesConfig
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableGameDatabase;
+		[MarshalAs(UnmanagedType.I1)] public bool FdsAutoLoadDisk;
+		[MarshalAs(UnmanagedType.I1)] public bool FdsFastForwardOnLoad;
+		[MarshalAs(UnmanagedType.I1)] public bool FdsAutoInsertDisk;
+		public VsDualOutputOption VsDualVideoOutput;
+		public VsDualOutputOption VsDualAudioOutput;
+		[MarshalAs(UnmanagedType.I1)] public bool NsfMoveToNextTrackAfterTime;
+		public UInt32 NsfMoveToNextTrackTime;
+		[MarshalAs(UnmanagedType.I1)] public bool NsfAutoDetectSilence;
+		public UInt32 NsfAutoDetectSilenceDelay;
 
 		[MarshalAs(UnmanagedType.I1)] public bool SpritesEnabled;
 		[MarshalAs(UnmanagedType.I1)] public bool BackgroundEnabled;
@@ -160,6 +198,10 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ForceSpritesFirstColumn;
 		[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
 		[MarshalAs(UnmanagedType.I1)] public bool AdaptiveSpriteLimit;
+
+		[MarshalAs(UnmanagedType.I1)] public bool UseNes101Hvc101Behavior;
+		[MarshalAs(UnmanagedType.I1)] public bool DisablePpuReset;
+		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableOamDecay;
 		[MarshalAs(UnmanagedType.I1)] public bool EnablePpuOamRowCorruption;
@@ -227,5 +269,12 @@ namespace Mesen.GUI.Config
 		Delay = 1,
 		Panning = 2,
 		CombFilter = 3,
+	}
+
+	public enum VsDualOutputOption
+	{
+		Both = 0,
+		MasterOnly = 1,
+		SlaveOnly = 2
 	}
 }

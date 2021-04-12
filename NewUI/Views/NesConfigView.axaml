@@ -8,6 +8,7 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -23,7 +24,7 @@
 			<Setter Property="Grid.Column" Value="0" />
 		</Style>
 		<Style Selector="Grid.Panning TextBlock">
-			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="HorizontalAlignment" Value="Right" />
 			<Setter Property="VerticalAlignment" Value="Top" />
 			<Setter Property="Margin" Value="0 0 2 0" />
 		</Style>
@@ -39,7 +40,7 @@
 			<Setter Property="Grid.Column" Value="0" />
 		</Style>
 		<Style Selector="Grid.Volume TextBlock">
-			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="HorizontalAlignment" Value="Right" />
 			<Setter Property="VerticalAlignment" Value="Top" />
 			<Setter Property="Margin" Value="0 0 2 0" />
 		</Style>
@@ -51,18 +52,94 @@
 		</Style>
 	</UserControl.Styles>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="1">
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
 				<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
+				<CheckBox IsChecked="{CompiledBinding Config.DisableGameDatabase}" Content="{l:Translate chkDisableGameDatabase}" />
+
+				<c:OptionSection Header="{l:Translate lblFdsSettings}">
+					<CheckBox IsChecked="{CompiledBinding Config.FdsAutoLoadDisk}" Content="{l:Translate chkFdsAutoLoadDisk}" />
+					<CheckBox IsChecked="{CompiledBinding Config.FdsFastForwardOnLoad}" Content="{l:Translate chkFdsFastForwardOnLoad}" />
+					<CheckBox IsChecked="{CompiledBinding Config.FdsAutoInsertDisk}" Content="{l:Translate chkFdsAutoInsertDisk}" />
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblNsfSettings}">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox IsChecked="{CompiledBinding Config.NsfAutoDetectSilence}" Content="{l:Translate chkNsfAutoDetectSilence}" />
+						<NumericUpDown Margin="5 1" Maximum="999999" Width="85" Value="{CompiledBinding Config.NsfAutoDetectSilenceDelay}" />
+						<TextBlock Text="{l:Translate lblNsfMillisecondsOfSilence}" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<CheckBox IsChecked="{CompiledBinding Config.NsfMoveToNextTrackAfterTime}" Content="{l:Translate chkNsfMoveToNextTrackAfterTime}" />
+						<NumericUpDown Margin="5 1" Maximum="9999" Width="80" Value="{CompiledBinding Config.NsfMoveToNextTrackTime}" />
+						<TextBlock Text="{l:Translate lblNsfSeconds}" />
+					</StackPanel>
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblVsDualSystem}">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+						<TextBlock Text="{l:Translate lblVsDualPlayAudio}" />
+						<c:EnumComboBox
+							Grid.Column="1"
+							EnumType="{x:Type cfg:VsDualOutputOption}"
+							SelectedItem="{CompiledBinding Config.VsDualAudioOutput}"
+						/>
+						
+						<TextBlock Grid.Row="1" Text="{l:Translate lblVsDualShowVideo}" />
+						<c:EnumComboBox
+							Grid.Row="1"
+							Grid.Column="1"
+							EnumType="{x:Type cfg:VsDualOutputOption}"
+							SelectedItem="{CompiledBinding Config.VsDualVideoOutput}"
+						/>
+					</Grid>
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgAudio}">
-			<StackPanel>
-				<Grid ColumnDefinitions="50*,50*" RowDefinitions="Auto">
-					<c:GroupBox Header="{l:Translate lblVolume}" Grid.Row="0" Grid.Column="0" Margin="0 0 1 0">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:GroupBox Header="{l:Translate grpGeneral}">
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding Config.ReduceDmcPopping}" Content="{l:Translate chkReduceDmcPopping}" />
+							<CheckBox IsChecked="{CompiledBinding Config.SilenceTriangleHighFreq}" Content="{l:Translate chkSilenceTriangleHighFreq}" />
+							<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableNoiseModeFlag}" Text="{l:Translate chkDisableNoiseModeFlag}" />
+							<c:CheckBoxWarning IsChecked="{CompiledBinding Config.SwapDutyCycles}" Text="{l:Translate chkSwapDutyCycles}" />
+						</StackPanel>
+					</c:GroupBox>
+
+					<c:GroupBox Header="{l:Translate grpEffects}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblStereoEffect}" />
+							<c:EnumComboBox
+								EnumType="{x:Type cfg:StereoFilter}"
+								SelectedItem="{CompiledBinding Config.StereoFilter}"
+								Width="100"
+						/>
+							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsDelayStereoEffect}">
+								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoDelay}" />
+								<TextBlock Text="{l:Translate lblMs}" Margin="5 0 0 0" />
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsPanningStereoEffect}">
+								<NumericUpDown Minimum="0" Maximum="180" Value="{CompiledBinding Config.StereoPanningAngle}" />
+								<TextBlock Text="{l:Translate lblAngle}" Margin="5 0 0 0" />
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsCombStereoEffect}" Margin="10 0">
+								<TextBlock Text="{l:Translate lblDelay}" />
+								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoCombFilterDelay}" />
+								<TextBlock Text="{l:Translate lblMs}" Margin="5 0" />
+
+								<TextBlock Text="{l:Translate lblStrength}" Margin="10 0 0 0" />
+								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoCombFilterStrength}" />
+								<TextBlock Text="%" Margin="5 0 0 0" />
+							</StackPanel>
+						</StackPanel>
+					</c:GroupBox>
+
+					<c:GroupBox Header="{l:Translate lblVolume}">
 						<Grid ColumnDefinitions="50*,50*" RowDefinitions="Auto">
-							<StackPanel Grid.Column="0">
+							<StackPanel Grid.Column="0" Margin="0 0 4 0">
 								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="Square 1" />
@@ -95,7 +172,7 @@
 									<c:MesenSlider Grid.Row="4" Value="{CompiledBinding Config.DmcVolume}" />
 								</Grid>
 							</StackPanel>
-							<StackPanel Grid.Column="1">
+							<StackPanel Grid.Column="1" Margin="4 0 0 0">
 								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="FDS" />
@@ -136,9 +213,9 @@
 							</StackPanel>
 						</Grid>
 					</c:GroupBox>
-					<c:GroupBox Header="{l:Translate lblPanning}" Grid.Row="0" Grid.Column="1" Margin="1 0 0 0">
+					<c:GroupBox Header="{l:Translate lblPanning}">
 						<Grid ColumnDefinitions="50*,50*" RowDefinitions="Auto">
-							<StackPanel Grid.Column="0">
+							<StackPanel Grid.Column="0" Margin="0 0 4 0">
 								<Grid Classes="Panning" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="Square 1" />
@@ -173,7 +250,7 @@
 							</StackPanel>
 							<StackPanel Grid.Column="1">
 								<Grid Classes="Panning" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
-									<StackPanel Grid.Row="0" >
+									<StackPanel Grid.Row="0" Margin="4 0 0 0">
 										<TextBlock Text="FDS" />
 										<TextBlock Text="{CompiledBinding Config.FdsPanning}" />
 									</StackPanel>
@@ -212,50 +289,18 @@
 							</StackPanel>
 						</Grid>
 					</c:GroupBox>
-				</Grid>
-
-				<c:GroupBox Header="{l:Translate grpEffects}">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{l:Translate lblStereoEffect}" />
-						<c:EnumComboBox
-							EnumType="{x:Type cfg:StereoFilter}"
-							SelectedItem="{CompiledBinding Config.StereoFilter}"
-							Width="100"
-						/>
-						<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsDelayStereoEffect}">
-							<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoDelay}" />
-							<TextBlock Text="{l:Translate lblMs}" Margin="5 0" />
-						</StackPanel>
-						<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsPanningStereoEffect}">
-							<NumericUpDown Minimum="0" Maximum="180" Value="{CompiledBinding Config.StereoPanningAngle}" />
-							<TextBlock Text="{l:Translate lblAngle}" Margin="5 0" />
-						</StackPanel>
-						<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsCombStereoEffect}" Margin="10 0">
-							<TextBlock Text="{l:Translate lblDelay}" />
-							<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoCombFilterDelay}" />
-							<TextBlock Text="{l:Translate lblMs}" Margin="5 0" />
-							
-							<TextBlock Text="{l:Translate lblStrength}" Margin="10 0 0 0" />
-							<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoCombFilterStrength}" />
-							<TextBlock Text="%" Margin="5 0" />
-						</StackPanel>
-					</StackPanel>
-				</c:GroupBox>
-				
-				<c:GroupBox Header="{l:Translate lblAdvanced}">
-					<StackPanel>
-						<CheckBox IsChecked="{CompiledBinding Config.ReduceDmcPopping}" Content="{l:Translate chkReduceDmcPopping}" />
-						<CheckBox IsChecked="{CompiledBinding Config.SilenceTriangleHighFreq}" Content="{l:Translate chkSilenceTriangleHighFreq}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableNoiseModeFlag}" Text="{l:Translate chkDisableNoiseModeFlag}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.SwapDutyCycles}" Text="{l:Translate chkSwapDutyCycles}" />
-					</StackPanel>
-				</c:GroupBox>
-			</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgEmulation}">
 			<StackPanel>
 				<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+						<c:EnumComboBox EnumType="{x:Type cfg:RamState}" SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+					</StackPanel>
+					
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeMapperPowerOnState}" Text="{l:Translate chkMapperRandomPowerOnState}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeCpuPpuAlignment}" Text="{l:Translate chkRandomizeCpuPpuAlignment}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableOamDecay}" Text="{l:Translate chkEnableOamDecay}" />
@@ -265,9 +310,35 @@
 				</c:OptionSection>
 
 				<c:OptionSection Header="{l:Translate lblMiscSettings}">
+					<CheckBox IsChecked="{CompiledBinding Config.UseNes101Hvc101Behavior}" Content="{l:Translate chkUseNes101Hvc101Behavior}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
+					
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
+
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+				</c:OptionSection>
+			</StackPanel>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgOverclocking}">
+			<StackPanel>
+				<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
+					<Panel>
+						<mui:MaterialIcon Kind="HelpCircleOutline" Margin="0" Width="20" Height="20" HorizontalAlignment="Left" />
+						<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
+					</Panel>
+				</Border>
+
+				<c:OptionSection Header="{l:Translate grpPpuTiming}">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
+						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+						<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
+						<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
+					</Grid>
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
@@ -304,12 +375,6 @@
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceBackgroundFirstColumn}" Text="{l:Translate chkForceBackgroundFirstColumn}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceSpritesFirstColumn}" Text="{l:Translate chkForceSpritesFirstColumn}" />
 				</c:OptionSection>
-			</StackPanel>
-		</TabItem>
-
-		<TabItem Header="{l:Translate tpgFdsNsfVs}">
-			<StackPanel>
-
 			</StackPanel>
 		</TabItem>
 	</TabControl>

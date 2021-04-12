@@ -344,9 +344,25 @@ enum class StereoFilterType
 	CombFilter = 3,
 };
 
+enum class VsDualOutputOption
+{
+	Both = 0,
+	MasterOnly = 1,
+	SlaveOnly = 2
+};
+
 struct NesConfig
 {
 	bool EnableHdPacks = true;
+	bool FdsAutoLoadDisk = true;
+	bool FdsFastForwardOnLoad = false;
+	bool FdsAutoInsertDisk = false;
+	VsDualOutputOption VsDualVideoOutput = VsDualOutputOption::Both;
+	VsDualOutputOption VsDualAudioOutput = VsDualOutputOption::Both;
+	bool NsfMoveToNextTrackAfterTime = true;
+	uint32_t NsfMoveToNextTrackTime = 120;
+	bool NsfAutoDetectSilence = true;
+	uint32_t NsfAutoDetectSilenceDelay = 3000;
 
 	bool SpritesEnabled = true;
 	bool BackgroundEnabled = true;
@@ -355,6 +371,10 @@ struct NesConfig
 	bool RemoveSpriteLimit = false;
 	bool AdaptiveSpriteLimit = false;
 	
+	bool UseNes101Hvc101Behavior = false;
+	bool DisablePpuReset = false;
+	bool AllowInvalidInput = false;
+
 	bool EnableOamDecay = false;
 	bool EnablePpuOamRowCorruption = false;
 	bool DisableOamAddrBug = false;

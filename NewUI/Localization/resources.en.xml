@@ -255,11 +255,6 @@
 
 			<Control ID="lblRegion">Region:</Control>
 			
-			<Control ID="tpgAdvanced">Advanced</Control>
-			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
-			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
-			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
-
 			<Control ID="tpgOverclocking">Overclocking</Control>
 			<Control ID="grpOverclocking">Overclocking</Control>
 			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
@@ -280,7 +275,7 @@
 			<Control ID="chkEnableCubicInterpolation">Enable cubic interpolation</Control>
 
 			<Control ID="tpgEmulation">Emulation</Control>
-			<Control ID="lblRamPowerOnState">Default power on state for RAM:</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
 			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
 			<Control ID="chkStrictBoardMappings">Use strict board mappings (breaks some romhacks)</Control>
 
@@ -311,6 +306,22 @@
 		<Form ID="NesConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="chkEnableHdPacks">Enable HD packs</Control>
+			<Control ID="chkDisableGameDatabase">Disable built-in game database</Control>
+
+			<Control ID="lblFdsSettings">Famicom Disk System Settings</Control>
+			<Control ID="chkFdsAutoLoadDisk">Automatically insert disk 1 side A when starting FDS games</Control>
+			<Control ID="chkFdsFastForwardOnLoad">Automatically fast forward FDS games when disk or BIOS is loading</Control>
+			<Control ID="chkFdsAutoInsertDisk">Automatically switch disks for FDS games</Control>
+
+			<Control ID="lblNsfSettings">NSF Settings</Control>
+			<Control ID="chkNsfAutoDetectSilence">Move to next track after</Control>
+			<Control ID="lblNsfMillisecondsOfSilence">milliseconds of silence</Control>
+			<Control ID="chkNsfMoveToNextTrackAfterTime">Limit track run time to</Control>
+			<Control ID="lblNsfSeconds">seconds</Control>
+
+			<Control ID="lblVsDualSystem">VS. DualSystem Settings</Control>
+			<Control ID="lblVsDualPlayAudio">Play audio for:</Control>
+			<Control ID="lblVsDualShowVideo">Show video for:</Control>
 
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblPalette">Palette</Control>
@@ -329,13 +340,14 @@
 			<Control ID="chkForceSpritesFirstColumn">Force sprite display in first column</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpGeneral">General</Control>
 			<Control ID="lblVolume">Channel volume</Control>
 			<Control ID="lblPanning">Channel panning</Control>
 			<Control ID="lblAdvanced">Advanced</Control>
-			<Control ID="chkSwapDutyCycles">Swap square channels duty cycles (Mimics old clones)</Control>
+			<Control ID="chkSwapDutyCycles">Swap square channels duty cycles (mimics old clones)</Control>
 			<Control ID="chkSilenceTriangleHighFreq">Mute ultrasonic frequencies on triangle channel (reduces popping)</Control>
 			<Control ID="chkReduceDmcPopping">Reduce popping sounds on the DMC channel</Control>
-			<Control ID="chkDisableNoiseModeFlag">Disable noise channel mode flag</Control>
+			<Control ID="chkDisableNoiseModeFlag">Disable noise channel mode flag (mimics oldest Famicom models)</Control>
 			<Control ID="grpEffects">Effects</Control>
 			<Control ID="lblStereoEffect">Stereo effect: </Control>
 			<Control ID="lblDelay">Delay: </Control>
@@ -343,8 +355,17 @@
 			<Control ID="lblMs">ms</Control>
 			<Control ID="lblAngle">angle (in degrees)</Control>
 
+			<Control ID="tpgOverclocking">Overclocking</Control>
+			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
+			<Control ID="grpPpuTiming">PPU Vertical Blank Configuration</Control>
+			<Control ID="lblExtraScanlinesBeforeNmi">Additional scanlines before NMI:</Control>
+			<Control ID="lblExtraScanlinesAfterNmi">Additional scanlines after NMI:</Control>
+
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			<Control ID="chkMapperRandomPowerOnState">Randomize power-on state for mappers</Control>
+			<Control ID="chkRandomizeCpuPpuAlignment">Randomize power-on/reset CPU/PPU alignment</Control>
 			<Control ID="chkEnableOamDecay">Enable PPU OAM decay</Control>
 			<Control ID="chkEnablePpuOamRowCorruption">Enable PPU OAM row corruption emulation</Control>
 			<Control ID="chkEnablePpu2006ScrollGlitch">Enable PPU $2006 scroll glitch emulation</Control>
@@ -356,8 +377,7 @@
 			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>			
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
 			<Control ID="chkUseNes101Hvc101Behavior">Use NES/HVC-101 (Top-loader / AV Famicom) behavior</Control>
-			<Control ID="chkMapperRandomPowerOnState">Randomize power-on state for mappers</Control>
-			<Control ID="chkRandomizeCpuPpuAlignment">Randomize power-on/reset CPU/PPU alignment</Control>
+			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 
 			<Control ID="tpgFdsNsfVs">FDS / NSF / VS System</Control>
 		</Form>
