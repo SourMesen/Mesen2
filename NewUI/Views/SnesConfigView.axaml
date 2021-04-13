@@ -74,6 +74,15 @@
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
+
+				<c:OptionSection Header="{l:Translate lblOverscan}">
+					<c:OverscanConfig
+						OverscanTop="{CompiledBinding Config.OverscanTop}"
+						OverscanBottom="{CompiledBinding Config.OverscanBottom}"
+						OverscanLeft="{CompiledBinding Config.OverscanLeft}"
+						OverscanRight="{CompiledBinding Config.OverscanRight}"
+				/>
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 

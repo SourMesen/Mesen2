@@ -29,6 +29,13 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
 		[Reactive] public bool AdaptiveSpriteLimit { get; set; } = false;
 
+		[Reactive] public bool UseCustomVsPalette { get; set; } = false;		
+
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanLeft { get; set; } = 0;
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanRight { get; set; } = 0;
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanTop { get; set; } = 0;
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanBottom { get; set; } = 0;
+
 		[Reactive] public bool EnableOamDecay { get; set; } = false;
 		[Reactive] public bool EnablePpuOamRowCorruption { get; set; } = false;
 		[Reactive] public bool DisableOamAddrBug { get; set; } = false;
@@ -112,7 +119,14 @@ namespace Mesen.GUI.Config
 				ForceSpritesFirstColumn = ForceSpritesFirstColumn,
 				RemoveSpriteLimit = RemoveSpriteLimit,
 				AdaptiveSpriteLimit = AdaptiveSpriteLimit,
-				
+
+				UseCustomVsPalette = UseCustomVsPalette,
+
+				OverscanLeft = OverscanLeft,
+				OverscanRight = OverscanRight,
+				OverscanTop = OverscanTop,
+				OverscanBottom = OverscanBottom,
+
 				UseNes101Hvc101Behavior = UseNes101Hvc101Behavior,
 				DisablePpuReset = DisablePpuReset,
 				AllowInvalidInput = AllowInvalidInput,
@@ -198,6 +212,13 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ForceSpritesFirstColumn;
 		[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
 		[MarshalAs(UnmanagedType.I1)] public bool AdaptiveSpriteLimit;
+		
+		[MarshalAs(UnmanagedType.I1)] public bool UseCustomVsPalette;
+
+		public UInt32 OverscanLeft;
+		public UInt32 OverscanRight;
+		public UInt32 OverscanTop;
+		public UInt32 OverscanBottom;
 
 		[MarshalAs(UnmanagedType.I1)] public bool UseNes101Hvc101Behavior;
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePpuReset;

@@ -186,6 +186,12 @@
 
 			<Control ID="lblKeyBinding">Warning: Your current configuration contains conflicting key bindings - some physical buttons on your keyboard or gamepad are mapped to multiple buttons on the NES controller. If this is not intentional, please review and correct your key bindings.</Control>
 		</Form>
+		<Form ID="OverscanConfig">
+			<Control ID="lblLeft">Left</Control>
+			<Control ID="lblTop">Top</Control>
+			<Control ID="lblBottom">Bottom</Control>
+			<Control ID="lblRight">Right</Control>
+		</Form>
 		<Form ID="VideoConfigView" Title="Video Options">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblVideoScale">Scale:</Control>
@@ -201,14 +207,7 @@
 			<Control ID="chkFullscreenForceIntegerScale">Use integer scale values when entering fullscreen mode</Control>
 			<Control ID="chkUseExclusiveFullscreen">Use exclusive fullscreen mode</Control>
 			<Control ID="lblRequestedRefreshRate">Requested Refresh Rate:</Control>
-			<Control ID="tpgOverscan">Overscan</Control>
-			<Control ID="tpgOverscanGlobal">Global</Control>
-			<Control ID="tpgOverscanGameSpecific">Game-Specific</Control>
 			<Control ID="chkEnableGameSpecificOverscan">Enable game-specific overscan settings</Control>
-			<Control ID="lblLeft">Left</Control>
-			<Control ID="lblTop">Top</Control>
-			<Control ID="lblBottom">Bottom</Control>
-			<Control ID="lblRight">Right</Control>
 
 			<Control ID="tpgPicture">Picture</Control>
 			<Control ID="btnSelectPreset">Select Preset...</Control>
@@ -302,6 +301,7 @@
 			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
 			<Control ID="chkHideSprites">Hide sprites</Control>
 			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
+			<Control ID="lblOverscan">Overscan</Control>
 		</Form>
 		<Form ID="NesConfigView">
 			<Control ID="tpgGeneral">General</Control>
@@ -338,6 +338,8 @@
 			<Control ID="chkDisableSprites">Disable sprites</Control>
 			<Control ID="chkForceBackgroundFirstColumn">Force background display in first column</Control>
 			<Control ID="chkForceSpritesFirstColumn">Force sprite display in first column</Control>
+
+			<Control ID="lblOverscan">Overscan</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpGeneral">General</Control>
@@ -378,8 +380,6 @@
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
 			<Control ID="chkUseNes101Hvc101Behavior">Use NES/HVC-101 (Top-loader / AV Famicom) behavior</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
-
-			<Control ID="tpgFdsNsfVs">FDS / NSF / VS System</Control>
 		</Form>
 		<Form ID="GameboyConfigView" Title="Game Boy Config">
 			<Control ID="tpgGeneral">General</Control>

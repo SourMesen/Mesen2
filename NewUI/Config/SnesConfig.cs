@@ -19,6 +19,11 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool HideSprites { get; set; } = false;
 		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
 
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanLeft { get; set; } = 0;
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanRight { get; set; } = 0;
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanTop { get; set; } = 7;
+		[Reactive] [MinMax(0, 100)] public UInt32 OverscanBottom { get; set; } = 8;
+
 		//Audio
 		[Reactive] public bool EnableCubicInterpolation { get; set; } = false;
 
@@ -48,6 +53,11 @@ namespace Mesen.GUI.Config
 				HideSprites = this.HideSprites,
 				DisableFrameSkipping = this.DisableFrameSkipping,
 
+				OverscanLeft = this.OverscanLeft,
+				OverscanRight = this.OverscanRight,
+				OverscanTop = this.OverscanTop,
+				OverscanBottom = this.OverscanBottom,
+
 				EnableCubicInterpolation = this.EnableCubicInterpolation,
 
 				EnableRandomPowerOnState = this.EnableRandomPowerOnState,
@@ -71,6 +81,11 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer3;
 		[MarshalAs(UnmanagedType.I1)] public bool HideSprites;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping;
+
+		public UInt32 OverscanLeft;
+		public UInt32 OverscanRight;
+		public UInt32 OverscanTop;
+		public UInt32 OverscanBottom;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableCubicInterpolation;
 

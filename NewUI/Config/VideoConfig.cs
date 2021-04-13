@@ -34,11 +34,6 @@ namespace Mesen.GUI.Config
 		[Reactive] [MinMax(-100, 100)] public int NtscSharpness { get; set; } = 0;
 		[Reactive] public bool NtscMergeFields { get; set; } = false;
 
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanLeft { get; set; } = 0;
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanRight { get; set; } = 0;
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanTop { get; set; } = 7;
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanBottom { get; set; } = 8;
-
 		[Reactive] public bool FullscreenForceIntegerScale { get; set; } = false;
 		[Reactive] public bool UseExclusiveFullscreen { get; set; } = false;
 		[Reactive] public UInt32 ExclusiveFullscreenRefreshRate { get; set; } = 60;
@@ -74,11 +69,6 @@ namespace Mesen.GUI.Config
 				NtscSharpness = this.NtscSharpness / 100.0,
 				NtscMergeFields = this.NtscMergeFields,
 
-				OverscanLeft = this.OverscanLeft,
-				OverscanRight = this.OverscanRight,
-				OverscanTop = this.OverscanTop,
-				OverscanBottom = this.OverscanBottom,
-
 				FullscreenForceIntegerScale = this.FullscreenForceIntegerScale,
 				UseExclusiveFullscreen = this.UseExclusiveFullscreen,
 				ExclusiveFullscreenRefreshRate = this.ExclusiveFullscreenRefreshRate,
@@ -113,11 +103,6 @@ namespace Mesen.GUI.Config
 		public double NtscResolution;
 		public double NtscSharpness;
 		public bool NtscMergeFields;
-
-		public UInt32 OverscanLeft;
-		public UInt32 OverscanRight;
-		public UInt32 OverscanTop;
-		public UInt32 OverscanBottom;
 
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen;

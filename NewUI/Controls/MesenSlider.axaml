@@ -6,7 +6,6 @@
 	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="34"
 	x:Name="root"
-	Maximum="100"
 	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Controls.MesenSlider"
 >

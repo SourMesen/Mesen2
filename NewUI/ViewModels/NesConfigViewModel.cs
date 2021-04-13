@@ -17,6 +17,7 @@ namespace Mesen.ViewModels
 		[Reactive] public UInt32[] Palette { get; set; }
 
 		[Reactive] public bool ShowExpansionVolume { get; set; }
+		[Reactive] public bool ShowColorIndexes { get; set; }
 
 		[ObservableAsProperty] public bool IsDelayStereoEffect { get; set; }
 		[ObservableAsProperty] public bool IsPanningStereoEffect { get; set; }

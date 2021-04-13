@@ -89,11 +89,6 @@ struct VideoConfig
 	double NtscSharpness = 0;
 	bool NtscMergeFields = false;
 
-	uint32_t OverscanLeft = 0;
-	uint32_t OverscanRight = 0;
-	uint32_t OverscanTop = 0;
-	uint32_t OverscanBottom = 0;
-
 	bool FullscreenForceIntegerScale = false;
 	bool UseExclusiveFullscreen = false;
 	uint32_t ExclusiveFullscreenRefreshRate = 60;
@@ -323,6 +318,11 @@ struct SnesConfig
 	bool HideSprites = false;
 	bool DisableFrameSkipping = false;
 
+	uint32_t OverscanLeft = 0;
+	uint32_t OverscanRight = 0;
+	uint32_t OverscanTop = 7;
+	uint32_t OverscanBottom = 8;
+
 	bool EnableCubicInterpolation = true;
 
 	bool EnableRandomPowerOnState = false;
@@ -370,6 +370,13 @@ struct NesConfig
 	bool ForceSpritesFirstColumn = false;
 	bool RemoveSpriteLimit = false;
 	bool AdaptiveSpriteLimit = false;
+	
+	bool UseCustomVsPalette = false;
+	
+	uint32_t OverscanLeft = 0;
+	uint32_t OverscanRight = 0;
+	uint32_t OverscanTop = 0;
+	uint32_t OverscanBottom = 0;
 	
 	bool UseNes101Hvc101Behavior = false;
 	bool DisablePpuReset = false;

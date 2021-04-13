@@ -41,6 +41,9 @@
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\OverscanConfig.axaml.cs">
+      <DependentUpon>OverscanConfig.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\PathSelector.axaml.cs">
       <DependentUpon>PathSelector.axaml</DependentUpon>
     </Compile>

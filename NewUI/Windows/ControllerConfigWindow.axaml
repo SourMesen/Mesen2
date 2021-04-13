@@ -76,7 +76,7 @@
 				Content="{l:Translate btnClear}"
 			/>
 
-			<StackPanel Orientation="Horizontal" Margin="0 -6 3 0" Grid.Column="2">
+			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2">
 				<TextBlock Text="{l:Translate lblTurboSpeed}" Margin="0 -16 0 0" />
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 					<c:MesenSlider Value="{CompiledBinding TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />

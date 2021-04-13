@@ -230,11 +230,28 @@ vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortc
 
 OverscanDimensions EmuSettings::GetOverscan()
 {
-	OverscanDimensions overscan;
-	overscan.Left = _video.OverscanLeft;
-	overscan.Right = _video.OverscanRight;
-	overscan.Top = _video.OverscanTop;
-	overscan.Bottom = _video.OverscanBottom;
+	OverscanDimensions overscan = {};
+
+	switch(_emu->GetConsoleType()) {
+		case ConsoleType::Snes: 
+			overscan.Left = _snes.OverscanLeft;
+			overscan.Right = _snes.OverscanRight;
+			overscan.Top = _snes.OverscanTop;
+			overscan.Bottom = _snes.OverscanBottom;
+			break;
+
+		case ConsoleType::Nes:
+			overscan.Left = _nes.OverscanLeft;
+			overscan.Right = _nes.OverscanRight;
+			overscan.Top = _nes.OverscanTop;
+			overscan.Bottom = _nes.OverscanBottom;
+			break;
+
+		case ConsoleType::Gameboy:
+		case ConsoleType::GameboyColor:
+			break;
+	}
+
 	return overscan;
 }
 

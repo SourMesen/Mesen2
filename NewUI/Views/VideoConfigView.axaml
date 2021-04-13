@@ -96,38 +96,5 @@
 				</Grid>
 			</StackPanel>
 		</TabItem>
-		<TabItem Header="{l:Translate tpgOverscan}">
-			<Panel VerticalAlignment="Center">
-				<StackPanel HorizontalAlignment="Center">
-					<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
-					<NumericUpDown Value="{CompiledBinding Config.OverscanTop}" Minimum="0" Maximum="100" HorizontalAlignment="Center"/>
-
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-							<TextBlock Text="{l:Translate lblLeft}" HorizontalAlignment="Center" />
-							<NumericUpDown Value="{CompiledBinding Config.OverscanLeft}" Minimum="0" Maximum="100" />
-						</StackPanel>
-						
-						<Border Width="258" Height="242" BorderBrush="Gray" BorderThickness="1">
-							<Canvas Width="256" Height="240">
-								<Rectangle Width="256" Height="240" Fill="LightCyan" />
-								<Rectangle Width="{CompiledBinding Config.OverscanLeft}" Height="240" Fill="DarkGray" Canvas.Left="0" />
-								<Rectangle Width="{CompiledBinding Config.OverscanRight}" Height="240" Fill="DarkGray" Canvas.Right="0" />
-								<Rectangle Width="256" Height="{CompiledBinding Config.OverscanTop}" Fill="DarkGray" Canvas.Top="0" />
-								<Rectangle Width="256" Height="{CompiledBinding Config.OverscanBottom}" Fill="DarkGray" Canvas.Bottom="0" />
-							</Canvas>
-						</Border>
-
-						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-							<TextBlock Text="{l:Translate lblRight}" HorizontalAlignment="Center" />
-							<NumericUpDown Value="{CompiledBinding Config.OverscanRight}" Minimum="0" Maximum="100" />
-						</StackPanel>
-					</StackPanel>
-					
-					<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
-					<NumericUpDown Value="{CompiledBinding Config.OverscanBottom}" Minimum="0" Maximum="100" HorizontalAlignment="Center" />
-				</StackPanel>
-			</Panel>
-		</TabItem>
 	</TabControl>
 </UserControl>

@@ -56,7 +56,7 @@
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
 				<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
-				<CheckBox IsChecked="{CompiledBinding Config.DisableGameDatabase}" Content="{l:Translate chkDisableGameDatabase}" />
+				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameDatabase}" Text="{l:Translate chkDisableGameDatabase}" />
 
 				<c:OptionSection Header="{l:Translate lblFdsSettings}">
 					<CheckBox IsChecked="{CompiledBinding Config.FdsAutoLoadDisk}" Content="{l:Translate chkFdsAutoLoadDisk}" />
@@ -344,38 +344,51 @@
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgVideo}">
-			<StackPanel>
-				<c:OptionSection Header="{l:Translate lblPalette}" Margin="0">
-					<StackPanel Orientation="Horizontal">
-						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0">
-							<dc:PaletteSelector
-								SelectionMode="None"
-								ColumnCount="16"
-								PaletteColors="{CompiledBinding Palette}"
-								Height="96"
-								Width="384"
-								VerticalAlignment="Top"
-						/>
-						</Border>
-						<StackPanel>
-							<Button MinWidth="125" HorizontalContentAlignment="Center" Content="{l:Translate btnSelectPalette}" />
-							<Button MinWidth="125" HorizontalContentAlignment="Center" Content="{l:Translate btnLoadPalFile}" />
-							<Button MinWidth="125" HorizontalContentAlignment="Center" Content="{l:Translate btnExportPalette}" />
-							<CheckBox IsChecked="False" Content="{l:Translate chkShowColorIndexes}" />
-						</StackPanel>
-					</StackPanel>
-					<CheckBox IsChecked="False" Content="{l:Translate chkUseCustomVsPalette}" />
-				</c:OptionSection>
-				<c:OptionSection Header="{l:Translate lblMiscSettings}">
-					<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
-					<CheckBox Margin="10 0 0 0" IsChecked="{CompiledBinding Config.AdaptiveSpriteLimit}" Content="{l:Translate chkAdaptiveSpriteLimit}" IsEnabled="{CompiledBinding Config.RemoveSpriteLimit}" />
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
+						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+						<CheckBox Margin="10 0 0 0" IsChecked="{CompiledBinding Config.AdaptiveSpriteLimit}" Content="{l:Translate chkAdaptiveSpriteLimit}" IsEnabled="{CompiledBinding Config.RemoveSpriteLimit}" />
 
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceBackgroundFirstColumn}" Text="{l:Translate chkForceBackgroundFirstColumn}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceSpritesFirstColumn}" Text="{l:Translate chkForceSpritesFirstColumn}" />
-				</c:OptionSection>
-			</StackPanel>
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceBackgroundFirstColumn}" Text="{l:Translate chkForceBackgroundFirstColumn}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceSpritesFirstColumn}" Text="{l:Translate chkForceSpritesFirstColumn}" />
+					</c:OptionSection>
+					
+					<c:OptionSection Header="{l:Translate lblPalette}">
+						<StackPanel Orientation="Horizontal">
+							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0">
+								<dc:PaletteSelector
+									SelectionMode="None"
+									ColumnCount="16"
+									PaletteColors="{CompiledBinding Palette}"
+									Height="96"
+									Width="384"
+									VerticalAlignment="Top"
+									ShowIndexes="{CompiledBinding ShowColorIndexes}"
+								/>
+							</Border>
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<Button MinWidth="127" HorizontalContentAlignment="Center" Content="{l:Translate btnSelectPalette}" />
+							<Button MinWidth="126" HorizontalContentAlignment="Center" Content="{l:Translate btnLoadPalFile}" />
+							<Button MinWidth="127" HorizontalContentAlignment="Center" Content="{l:Translate btnExportPalette}" />
+						</StackPanel>
+						<CheckBox IsChecked="{CompiledBinding ShowColorIndexes}" Content="{l:Translate chkShowColorIndexes}" />
+						<CheckBox IsChecked="{CompiledBinding Config.UseCustomVsPalette}" Content="{l:Translate chkUseCustomVsPalette}" />
+					</c:OptionSection>
+					
+					<c:OptionSection Header="{l:Translate lblOverscan}">
+						<c:OverscanConfig
+							OverscanTop="{CompiledBinding Config.OverscanTop}"
+							OverscanBottom="{CompiledBinding Config.OverscanBottom}"
+							OverscanLeft="{CompiledBinding Config.OverscanLeft}"
+							OverscanRight="{CompiledBinding Config.OverscanRight}"
+					/>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 	</TabControl>
 </UserControl>

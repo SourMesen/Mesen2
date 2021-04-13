@@ -1,0 +1,43 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="280" d:DesignHeight="200"
+	x:Name="root"
+	x:Class="Mesen.Controls.OverscanConfig"
+	HorizontalAlignment="Left"
+>
+	<StackPanel DataContext="{Binding ElementName=root}">
+		<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
+		<NumericUpDown Value="{Binding OverscanTop}" Minimum="0" Maximum="100" HorizontalAlignment="Center"/>
+
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+				<TextBlock Text="{l:Translate lblLeft}" HorizontalAlignment="Center" />
+				<NumericUpDown Value="{Binding OverscanLeft}" Minimum="0" Maximum="100" />
+			</StackPanel>
+
+			<Border Width="130" Height="122" BorderBrush="Gray" BorderThickness="1">
+				<Viewbox Width="128" Height="120">
+					<Canvas Width="256" Height="240">
+						<Rectangle Width="256" Height="240" Fill="LightCyan" />
+						<Rectangle Width="{Binding OverscanLeft}" Height="240" Fill="DarkGray" Canvas.Left="0" />
+						<Rectangle Width="{Binding OverscanRight}" Height="240" Fill="DarkGray" Canvas.Right="0" />
+						<Rectangle Width="256" Height="{Binding OverscanTop}" Fill="DarkGray" Canvas.Top="0" />
+						<Rectangle Width="256" Height="{Binding OverscanBottom}" Fill="DarkGray" Canvas.Bottom="0" />
+					</Canvas>
+				</Viewbox>
+			</Border>
+
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+				<TextBlock Text="{l:Translate lblRight}" HorizontalAlignment="Center" />
+				<NumericUpDown Value="{Binding OverscanRight}" Minimum="0" Maximum="100" />
+			</StackPanel>
+		</StackPanel>
+
+		<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
+		<NumericUpDown Value="{Binding OverscanBottom}" Minimum="0" Maximum="100" HorizontalAlignment="Center" />
+	</StackPanel>
+</UserControl>

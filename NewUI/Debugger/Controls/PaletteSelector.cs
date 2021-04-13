@@ -21,6 +21,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<PaletteSelectionMode> SelectionModeProperty = AvaloniaProperty.Register<PaletteSelector, PaletteSelectionMode>(nameof(SelectionMode));
 		public static readonly StyledProperty<int> ColumnCountProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(ColumnCount), 16);
 		public static readonly StyledProperty<UInt32[]> PaletteColorsProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]>(nameof(PaletteColors));
+		public static readonly StyledProperty<bool> ShowIndexesProperty = AvaloniaProperty.Register<PaletteSelector, bool>(nameof(ShowIndexes));
 
 		public int SelectedPalette
 		{
@@ -44,6 +45,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(ColumnCountProperty); }
 			set { SetValue(ColumnCountProperty, value); }
+		}
+
+		public bool ShowIndexes
+		{
+			get { return GetValue(ShowIndexesProperty); }
+			set { SetValue(ShowIndexesProperty, value); }
 		}
 
 		static PaletteSelector()
@@ -120,9 +127,23 @@ namespace Mesen.Debugger.Controls
 			double width = size.Width / columnCount;
 			double height = size.Height / rowCount;
 
+			Typeface typeface = new Typeface("Consolas");
+			FormattedText text = new FormattedText("", typeface, 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			for(int y = 0, max = paletteColors.Length / columnCount; y < max; y++) {
 				for(int x = 0; x < columnCount; x++) {
-					context.FillRectangle(new SolidColorBrush(paletteColors[y * columnCount + x]), new Rect(x * width, y * height, width, height));
+					Rect rect = new Rect(x * width, y * height, width, height);
+					int index = y * columnCount + x;
+					context.FillRectangle(new SolidColorBrush(paletteColors[y * columnCount + x]), rect);
+
+					if(ShowIndexes) {
+						rect = rect.Translate(new Vector(2, 0));
+						text.Text = index.ToString("X2");
+						context.DrawText(Brushes.Black, rect.Translate(new Vector(-1, 0)).Position, text);
+						context.DrawText(Brushes.Black, rect.Translate(new Vector(1, 0)).Position, text);
+						context.DrawText(Brushes.Black, rect.Translate(new Vector(0, -1)).Position, text);
+						context.DrawText(Brushes.Black, rect.Translate(new Vector(0, 1)).Position, text);
+						context.DrawText(Brushes.White, rect.Position, text);
+					}
 				}
 			}
 
