@@ -437,11 +437,13 @@
 
 			<Control ID="tpgFiles">Folders/Files</Control>
 			<Control ID="grpFileAssociations">File Associations</Control>
-			<Control ID="chkRomFormat">.SFC, .SMC, .SWC, .FIG (Roms)</Control>
-			<Control ID="chkSpcFormat">.SPC (Sound/music files)</Control>
-			<Control ID="chkBsFormat">.BS (BS-X memory packs)</Control>
-			<Control ID="chkMsmFormat">.MMO (Movie)</Control>
-			<Control ID="chkMssFormat">.MSS (Save State)</Control>
+			<Control ID="chkSnesRomFiles">SNES roms: .sfc, .smc, .swc, .fig, .bs</Control>
+			<Control ID="chkSnesMusicFiles">SNES music: .spc</Control>
+			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .studybox</Control>
+			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>
+			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc</Control>
+			<Control ID="chkMovieFiles">Mesen-S movies: .msm</Control>
+			<Control ID="chkSaveStateFiles">Mesen-S save states: .mss</Control>
 
 			<Control ID="grpDataStorageLocation">Data Storage Location</Control>
 			<Control ID="radStorageDocuments">Store data in my user profile</Control>

@@ -59,6 +59,8 @@ namespace Mesen.ViewModels
 			ConfigManager.Config.Gameboy = this.Gameboy.Config;
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.SaveConfig();
+
+			ConfigManager.Config.Preferences.UpdateFileAssociations();
 		}
    }
 }

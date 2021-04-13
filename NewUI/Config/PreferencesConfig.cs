@@ -29,11 +29,13 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool AllowBackgroundInput { get; set; } = false;
 		[Reactive] public bool PauseOnMovieEnd { get; set; } = true;
 
-		[Reactive] public bool AssociateRomFiles { get; set; } = false;
-		[Reactive] public bool AssociateSpcFiles { get; set; } = false;
-		[Reactive] public bool AssociateBsFiles { get; set; } = false;
-		[Reactive] public bool AssociateMsmFiles { get; set; } = false;
-		[Reactive] public bool AssociateMssFiles { get; set; } = false;
+		[Reactive] public bool AssociateSnesRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateSnesMusicFiles { get; set; } = false;
+		[Reactive] public bool AssociateNesRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateNesMusicFiles { get; set; } = false;
+		[Reactive] public bool AssociateGbRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateMovieFiles { get; set; } = false;
+		[Reactive] public bool AssociateSaveStateFiles { get; set; } = false;
 
 		[Reactive] public UInt32 RewindBufferSize { get; set; } = 30;
 
@@ -149,22 +151,35 @@ namespace Mesen.GUI.Config
 			Application.Current.Styles.AddRange(styles);
 		}
 
+		public void UpdateFileAssociations()
+		{
+			FileAssociationHelper.UpdateFileAssociation("sfc", AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("smc", AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("swc", AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("fig", AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("bs", AssociateSnesRomFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("spc", AssociateSnesMusicFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("nes", AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("fds", AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("unf", AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("studybox", AssociateNesRomFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("nsf", AssociateNesMusicFiles);
+			FileAssociationHelper.UpdateFileAssociation("nsfe", AssociateNesMusicFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("gb", AssociateGbRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("gbc", AssociateGbRomFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("msm", AssociateMovieFiles);
+			FileAssociationHelper.UpdateFileAssociation("mss", AssociateSaveStateFiles);
+		}
+
 		public void ApplyConfig()
 		{
-			/*if(Program.IsMono) {
-				FileAssociationHelper.ConfigureLinuxMimeTypes();
-			} else {
-				FileAssociationHelper.UpdateFileAssociation("sfc", this.AssociateRomFiles);
-				FileAssociationHelper.UpdateFileAssociation("smc", this.AssociateRomFiles);
-				FileAssociationHelper.UpdateFileAssociation("swc", this.AssociateRomFiles);
-				FileAssociationHelper.UpdateFileAssociation("fig", this.AssociateRomFiles);
-				FileAssociationHelper.UpdateFileAssociation("msm", this.AssociateMsmFiles);
-				FileAssociationHelper.UpdateFileAssociation("mss", this.AssociateMssFiles);
-				FileAssociationHelper.UpdateFileAssociation("spc", this.AssociateSpcFiles);
-				FileAssociationHelper.UpdateFileAssociation("bs", this.AssociateBsFiles);
-			}
 			//TODO
-			frmMain.Instance.TopMost = AlwaysOnTop;*/
+			//frmMain.Instance.TopMost = AlwaysOnTop;
 
 			List<InteropShortcutKeyInfo> shortcutKeys = new List<InteropShortcutKeyInfo>();
 			foreach(ShortcutKeyInfo shortcutInfo in ShortcutKeys) {

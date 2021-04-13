@@ -55,7 +55,7 @@ namespace Mesen.Debugger.Controls
 
 		static PaletteSelector()
 		{
-			AffectsRender<PaletteSelector>(SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty);
+			AffectsRender<PaletteSelector>(SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty, ShowIndexesProperty);
 		}
 
 		public PaletteSelector()

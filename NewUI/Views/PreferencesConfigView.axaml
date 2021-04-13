@@ -53,9 +53,14 @@
 		<TabItem Header="{l:Translate tpgFiles}">
 			<StackPanel>
 				<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0">
-					<CheckBox Content="{l:Translate chkRomFormat}" IsChecked="{CompiledBinding Config.AssociateRomFiles}" />
-					<CheckBox Content="{l:Translate chkSpcFormat}" IsChecked="{CompiledBinding Config.AssociateSpcFiles}" />
-					<CheckBox Content="{l:Translate chkBsFormat}" IsChecked="{CompiledBinding Config.AssociateBsFiles}" />
+					<CheckBox Content="{l:Translate chkSnesRomFiles}" IsChecked="{CompiledBinding Config.AssociateSnesRomFiles}" />
+					<CheckBox Content="{l:Translate chkSnesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateSnesMusicFiles}" />
+					<CheckBox Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
+					<CheckBox Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
+					<CheckBox Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
+					
+					<CheckBox Content="{l:Translate chkMovieFiles}" IsChecked="{CompiledBinding Config.AssociateMovieFiles}" />
+					<CheckBox Content="{l:Translate chkSaveStateFiles}" IsChecked="{CompiledBinding Config.AssociateSaveStateFiles}" />
 				</c:OptionSection>
 				<c:OptionSection Header="{l:Translate grpPathOverrides}">
 					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">

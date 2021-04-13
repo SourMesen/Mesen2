@@ -71,14 +71,26 @@ namespace Mesen.GUI.Config
 			}
 
 			List<string> mimeTypes = new List<string>();
-			CreateMimeType("x-mesen_s-sfc", "sfc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen_s-smc", "smc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen_s-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen_s-fig", "fig", "SNES Rom", mimeTypes, cfg.AssociateRomFiles);
-			CreateMimeType("x-mesen_s-spc", "spc", "SPC Sound File", mimeTypes, cfg.AssociateSpcFiles);
-			CreateMimeType("x-mesen_s-bs", "bs", "BS-X Memory Pack", mimeTypes, cfg.AssociateBsFiles);
-			CreateMimeType("x-mesen_s-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateMssFiles);
-			CreateMimeType("x-mesen_s-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMsmFiles);
+			CreateMimeType("x-mesen_s-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateSaveStateFiles);
+			CreateMimeType("x-mesen_s-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMovieFiles);
+
+			CreateMimeType("x-mesen_s-sfc", "sfc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen_s-smc", "smc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen_s-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen_s-fig", "fig", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen_s-bs", "bs", "BS-X Memory Pack", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen_s-spc", "spc", "SPC Sound File", mimeTypes, cfg.AssociateSnesMusicFiles);
+
+			CreateMimeType("x-mesen-nes", "nes", "NES ROM", mimeTypes, cfg.AssociateNesRomFiles);
+			CreateMimeType("x-mesen-fds", "fds", "FDS ROM", mimeTypes, cfg.AssociateNesRomFiles);
+			CreateMimeType("x-mesen-studybox", "studybox", "Studybox ROM (Famicom)", mimeTypes, cfg.AssociateNesRomFiles);
+			CreateMimeType("x-mesen-unif", "unf", "NES ROM", mimeTypes, cfg.AssociateNesRomFiles);
+
+			CreateMimeType("x-mesen-nsf", "nsf", "Nintendo Sound File", mimeTypes, cfg.AssociateNesMusicFiles);
+			CreateMimeType("x-mesen-nsfe", "nsfe", "Nintendo Sound File (extended)", mimeTypes, cfg.AssociateNesMusicFiles);
+
+			CreateMimeType("x-mesen-gb", "gb", "Game Boy ROM", mimeTypes, cfg.AssociateGbRomFiles);
+			CreateMimeType("x-mesen-gbc", "gbc", "Game Boy Color ROM", mimeTypes, cfg.AssociateGbRomFiles);
 
 			//Icon used for shortcuts
 			//TOOD
@@ -123,6 +135,7 @@ namespace Mesen.GUI.Config
 
 		static public void UpdateFileAssociation(string extension, bool associate)
 		{
+			//TODO
 			/*string key = @"HKEY_CURRENT_USER\Software\Classes\." + extension;
 			if(associate) {
 				Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\Mesen-S\shell\open\command", null, Application.ExecutablePath + " \"%1\"");
