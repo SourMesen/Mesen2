@@ -354,6 +354,7 @@ enum class VsDualOutputOption
 struct NesConfig
 {
 	bool EnableHdPacks = true;
+	bool DisableGameDatabase = false;
 	bool FdsAutoLoadDisk = true;
 	bool FdsFastForwardOnLoad = false;
 	bool FdsAutoInsertDisk = false;

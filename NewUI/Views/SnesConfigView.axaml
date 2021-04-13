@@ -67,7 +67,7 @@
 
 		<TabItem Header="{l:Translate tpgVideo}">
 			<StackPanel>
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Text="{l:Translate chkBlendHighResolutionModes}" />
+				<CheckBox IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer0}" Text="{l:Translate chkHideBgLayer0}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
@@ -81,7 +81,7 @@
 						OverscanBottom="{CompiledBinding Config.OverscanBottom}"
 						OverscanLeft="{CompiledBinding Config.OverscanLeft}"
 						OverscanRight="{CompiledBinding Config.OverscanRight}"
-				/>
+					/>
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>

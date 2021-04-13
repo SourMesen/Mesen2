@@ -13,7 +13,12 @@
 	<ItemsControl.Template>
 		<ControlTemplate>
 			<StackPanel DataContext="{Binding ElementName=root}">
-				<c:SectionHeader Content="{Binding Header}" Margin="0 0 0 5" />
+				<TextBlock
+					Text="{Binding Header}"
+					Foreground="Gray"
+					FontSize="13"
+					Margin="0 0 0 5"					
+				/>
 				<StackPanel Margin="10 0 0 0">
 					<ItemsPresenter Items="{Binding Items}" />
 				</StackPanel>

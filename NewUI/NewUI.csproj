@@ -95,9 +95,6 @@
     <Compile Update="Controls\CheckBoxWarning.axaml.cs">
       <DependentUpon>CheckBoxWarning.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\SectionHeader.axaml.cs">
-      <DependentUpon>SectionHeader.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Windows\GetKeyWindow.axaml.cs">
       <DependentUpon>GetKeyWindow.axaml</DependentUpon>
     </Compile>
