@@ -18,9 +18,9 @@ using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	public class InputConfigViewModel : ViewModelBase
+	public class SnesInputConfigViewModel : ViewModelBase
 	{
-		[Reactive] public InputConfig Config { get; set; }
+		[Reactive] public SnesConfig Config { get; set; }
 		
 		[Reactive] public ControllerConfig Multitap1 { get; set; }
 		[Reactive] public ControllerConfig Multitap2 { get; set; }
@@ -37,9 +37,9 @@ namespace Mesen.ViewModels
 		public ReactiveCommand<Button, Unit> SetupMultitap3 { get; }
 		public ReactiveCommand<Button, Unit> SetupMultitap4 { get; }
 
-		public InputConfigViewModel()
+		public SnesInputConfigViewModel(SnesConfig config)
 		{
-			Config = ConfigManager.Config.Input.Clone();
+			Config = config;
 
 			Config.Controllers[1].Type = ControllerType.SnesController;
 			Config.Controllers[2].Type = ControllerType.SnesController;
@@ -56,7 +56,7 @@ namespace Mesen.ViewModels
 				.ToPropertyEx(this, x => x.HasMultitap);
 
 			this.WhenAnyValue(x => x.Config.Controllers[0].Type, x => x.Config.Controllers[1].Type)
-				.Select(x => ResourceHelper.GetViewLabel(nameof(InputConfigView), x.Item1 == ControllerType.Multitap ? "lblPlayer1" : "lblPlayer2"))
+				.Select(x => ResourceHelper.GetViewLabel(nameof(SnesInputConfigView), x.Item1 == ControllerType.Multitap ? "lblPlayer1" : "lblPlayer2"))
 				.ToPropertyEx(this, x => x.Multitap1Label);
 
 			this.WhenAnyValue(x => x.Config.Controllers[0].Type).Subscribe((t) => {
@@ -73,10 +73,10 @@ namespace Mesen.ViewModels
 				}
 			});
 
-			IObservable<bool> button1Enabled = this.WhenAnyValue(x => x.Config.Controllers[0].Type, x => x == ControllerType.SnesController);
+			IObservable<bool> button1Enabled = this.WhenAnyValue(x => x.Config.Controllers[0].Type, x => x.CanConfigure());
 			this.SetupPlayer1 = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 0), button1Enabled);
 
-			IObservable<bool> button2Enabled = this.WhenAnyValue(x => x.Config.Controllers[1].Type, x => x == ControllerType.SnesController);
+			IObservable<bool> button2Enabled = this.WhenAnyValue(x => x.Config.Controllers[1].Type, x => x.CanConfigure());
 			this.SetupPlayer2 = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 1), button2Enabled);
 
 			this.SetupMultitap1 = ReactiveCommand.Create<Button>(btn => this.OpenMultitapSetup(btn, 0));
@@ -92,11 +92,11 @@ namespace Mesen.ViewModels
 			wnd.WindowStartupLocation = WindowStartupLocation.Manual;
 			wnd.Position = startPosition;
 
-			KeyMappingSet mappings = JsonHelper.Clone(this.Config.Controllers[port].Keys);
-			wnd.DataContext = mappings;
+			ControllerConfig cfg = JsonHelper.Clone(this.Config.Controllers[port]);
+			wnd.DataContext = new ControllerConfigViewModel(cfg);
 
 			if(await wnd.ShowDialog<bool>(btn.Parent.VisualRoot as Window)) {
-				this.Config.Controllers[port].Keys = mappings;
+				this.Config.Controllers[port] = cfg;
 			}
 		}
 

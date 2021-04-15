@@ -28,7 +28,6 @@
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "EventType.h"
-#include "SystemActionManager.h"
 
 Console::Console(Emulator* emu)
 {
@@ -61,18 +60,6 @@ void Console::OnBeforeRun()
 {
 	_memoryManager->IncMasterClockStartup();
 	_controlManager->UpdateInputState();
-}
-
-bool Console::ProcessSystemActions()
-{
-	if(_controlManager->GetSystemActionManager()->IsResetPressed()) {
-		_emu->Reset();
-		return true;
-	} else if(_controlManager->GetSystemActionManager()->IsPowerCyclePressed()) {
-		_emu->PowerCycle();
-		return true;
-	}
-	return false;
 }
 
 void Console::ProcessEndOfFrame()

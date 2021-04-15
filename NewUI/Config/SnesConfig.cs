@@ -10,6 +10,9 @@ namespace Mesen.GUI.Config
 {
 	public class SnesConfig : BaseConfig<SnesConfig>
 	{
+		//Input
+		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
+
 		//Video
 		[Reactive] public bool BlendHighResolutionModes { get; set; } = false;
 		[Reactive] public bool HideBgLayer0 { get; set; } = false;
@@ -44,7 +47,24 @@ namespace Mesen.GUI.Config
 
 		public void ApplyConfig()
 		{
+			while(Controllers.Count < 5) {
+				Controllers.Add(new ControllerConfig());
+			}
+
+			//Force SNES controllers for multitap
+			Controllers[2].Type = ControllerType.SnesController;
+			Controllers[3].Type = ControllerType.SnesController;
+			Controllers[4].Type = ControllerType.SnesController;
+
 			ConfigApi.SetSnesConfig(new InteropSnesConfig() {
+				Controllers = new InteropControllerConfig[5] {
+					this.Controllers[0].ToInterop(),
+					this.Controllers[1].ToInterop(),
+					this.Controllers[2].ToInterop(),
+					this.Controllers[3].ToInterop(),
+					this.Controllers[4].ToInterop()
+				},
+
 				BlendHighResolutionModes = this.BlendHighResolutionModes,
 				HideBgLayer0 = this.HideBgLayer0,
 				HideBgLayer1 = this.HideBgLayer1,
@@ -69,11 +89,47 @@ namespace Mesen.GUI.Config
 				BsxCustomDate = this.BsxCustomDate.Ticks + this.BsxCustomTime.Ticks
 			});
 		}
+
+		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
+		{
+			KeyPresets presets = new KeyPresets();
+			List<KeyMapping> mappings = new List<KeyMapping>();
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
+				mappings.Add(presets.XboxLayout1);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
+				mappings.Add(presets.Ps4Layout1);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
+				mappings.Add(presets.WasdLayout);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
+				mappings.Add(presets.ArrowLayout);
+			}
+
+			Controllers[0].Type = ControllerType.SnesController;
+			Controllers[0].TurboSpeed = 2;
+			if(mappings.Count > 0) {
+				Controllers[0].Mapping1 = mappings[0];
+				if(mappings.Count > 1) {
+					Controllers[0].Mapping2 = mappings[1];
+					if(mappings.Count > 2) {
+						Controllers[0].Mapping3 = mappings[2];
+						if(mappings.Count > 3) {
+							Controllers[0].Mapping4 = mappings[3];
+						}
+					}
+				}
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropSnesConfig
 	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public InteropControllerConfig[] Controllers;
+
 		[MarshalAs(UnmanagedType.I1)] public bool BlendHighResolutionModes;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer0;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer1;

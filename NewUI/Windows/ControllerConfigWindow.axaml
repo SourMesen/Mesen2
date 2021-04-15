@@ -12,14 +12,18 @@
 	mc:Ignorable="d"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
-	x:DataType="cfg:KeyMappingSet"
+	x:DataType="vm:ControllerConfigViewModel"
 	x:Class="Mesen.Windows.ControllerConfigWindow"
 	SizeToContent="WidthAndHeight"
 	Title="{l:Translate Title}"
 >
 	<Design.DataContext>
-		<cfg:KeyMappingSet />
+		<vm:ControllerConfigViewModel />
 	</Design.DataContext>
+
+	<Window.DataTemplates>
+		<v:ControllerConfigViewLocator />
+	</Window.DataTemplates>
 
 	<StackPanel>
 		<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Margin="2">
@@ -29,18 +33,10 @@
 			</Panel>
 		</Border>
 		<TabControl Name="tabMain" TabStripPlacement="Top" SelectedIndex="0">
-			<TabItem Header="{l:Translate tpgSet1}">
-				<v:SnesControllerView DataContext="{CompiledBinding Mapping1}" />
-			</TabItem>
-			<TabItem Header="{l:Translate tpgSet2}">
-				<v:SnesControllerView DataContext="{CompiledBinding Mapping2}" />
-			</TabItem>
-			<TabItem Header="{l:Translate tpgSet3}">
-				<v:SnesControllerView DataContext="{CompiledBinding Mapping3}" />
-			</TabItem>
-			<TabItem Header="{l:Translate tpgSet4}">
-				<v:SnesControllerView DataContext="{CompiledBinding Mapping4}" />
-			</TabItem>
+			<TabItem Header="{l:Translate tpgSet1}" Content="{CompiledBinding KeyMapping1}" />
+			<TabItem Header="{l:Translate tpgSet2}" Content="{CompiledBinding KeyMapping2}" />
+			<TabItem Header="{l:Translate tpgSet3}" Content="{CompiledBinding KeyMapping3}" />
+			<TabItem Header="{l:Translate tpgSet4}" Content="{CompiledBinding KeyMapping4}" />
 		</TabControl>
 
 		<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
@@ -79,7 +75,7 @@
 			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2">
 				<TextBlock Text="{l:Translate lblTurboSpeed}" Margin="0 -16 0 0" />
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-					<c:MesenSlider Value="{CompiledBinding TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />
+					<c:MesenSlider Value="{CompiledBinding Config.TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblTurboSlow}" Margin="5" />
 					<TextBlock Grid.Row="1" Grid.Column="1" Text="{l:Translate lblTurboFast}" HorizontalAlignment="Right" Margin="5" />
 				</Grid>

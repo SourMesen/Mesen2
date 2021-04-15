@@ -10,9 +10,9 @@ using Mesen.Windows;
 
 namespace Mesen.Views
 {
-	public class InputConfigView : UserControl
+	public class SnesInputConfigView : UserControl
 	{
-		public InputConfigView()
+		public SnesInputConfigView()
 		{
 			InitializeComponent();
 		}

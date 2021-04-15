@@ -65,8 +65,6 @@ private:
 
 	void UpdateRegion();
 
-	bool ProcessSystemActions();
-
 public:
 	Console(Emulator* emu);
 	~Console();

@@ -3,7 +3,7 @@
 #include "SNES/Console.h"
 #include "Shared/Emulator.h"
 #include "Shared/BatteryManager.h"
-#include "Utilities/IpsPatcher.h"
+#include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
 
 BsxMemoryPack::BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persistFlash)

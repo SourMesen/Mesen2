@@ -57,7 +57,9 @@ extern "C" {
 
 	DllExport ControllerType __stdcall GetControllerType(int player)
 	{
-		return _emu->GetSettings()->GetInputConfig().Controllers[player].Type;
+		//TODO
+		//return _emu->GetSettings()->GetInputConfig().Controllers[player].Type;
+		return ControllerType::None;
 	}
 
 	DllExport const char* __stdcall GetAudioDevices()

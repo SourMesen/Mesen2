@@ -1315,6 +1315,7 @@ void NesPpu::Exec()
 		UpdateApuStatus();
 		
 		if(_scanline == _console->GetNesConfig().InputScanline) {
+			((NesControlManager*)_console->GetControlManager().get())->UpdateControlDevices();
 			((NesControlManager*)_console->GetControlManager().get())->UpdateInputState();
 		}
 

@@ -226,7 +226,7 @@
     <ClInclude Include="SNES\Input\SnesMouse.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="SystemActionManager.h">
+    <ClInclude Include="Shared\SystemActionManager.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
     <ClInclude Include="SNES\SpcTypes.h">
@@ -700,7 +700,7 @@
     <ClInclude Include="NES\NesControlManager.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Input\StandardController.h">
+    <ClInclude Include="NES\Input\NesController.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\NROM.h">
@@ -732,6 +732,7 @@
     <ClInclude Include="Shared\stdafx.h" />
     <ClInclude Include="SNES\stdafx.h" />
     <ClInclude Include="Netplay\stdafx.h" />
+    <ClInclude Include="Shared\BaseControlManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1150,6 +1151,7 @@
     <ClCompile Include="NES\Debugger\NesDebugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
+    <ClCompile Include="Shared\BaseControlManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

@@ -106,6 +106,16 @@ namespace Mesen.Windows
 			}.Show();
 		}
 
+		private void OnResetClick(object sender, RoutedEventArgs e)
+		{
+			EmuApi.Reset();
+		}
+
+		private void OnPowerCycleClick(object sender, RoutedEventArgs e)
+		{
+			EmuApi.PowerCycle();
+		}
+
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);

@@ -46,6 +46,7 @@
     <ClInclude Include="Debugger\stdafx.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
+    <ClInclude Include="Shared\BaseControlManager.h" />
     <ClInclude Include="Shared\BaseState.h" />
     <ClInclude Include="Gameboy\GbControlManager.h" />
     <ClInclude Include="Gameboy\stdafx.h" />
@@ -86,7 +87,7 @@
     <ClInclude Include="NES\RomData.h" />
     <ClInclude Include="NES\RomLoader.h" />
     <ClInclude Include="NES\APU\SquareChannel.h" />
-    <ClInclude Include="NES\Input\StandardController.h" />
+    <ClInclude Include="NES\Input\NesController.h" />
     <ClInclude Include="NES\stdafx.h" />
     <ClInclude Include="NES\APU\TriangleChannel.h" />
     <ClInclude Include="Shared\Video\stdafx.h" />
@@ -289,7 +290,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SNES\Coprocessors\SGB\SuperGameboy.h" />
     <ClInclude Include="SNES\Input\SuperScope.h" />
-    <ClInclude Include="SystemActionManager.h" />
+    <ClInclude Include="Shared\SystemActionManager.h" />
     <ClInclude Include="Debugger\TraceLogger.h" />
     <ClInclude Include="Shared\Video\VideoDecoder.h" />
     <ClInclude Include="Shared\Video\VideoRenderer.h" />
@@ -297,6 +298,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
+    <ClCompile Include="Shared\BaseControlManager.cpp" />
     <ClCompile Include="Shared\Video\NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />
     <ClCompile Include="NES\NesControlManager.cpp" />

@@ -2,9 +2,10 @@
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
-class StandardController : public BaseControlDevice
+class NesController : public BaseControlDevice
 {
 private:
 	bool _microphoneEnabled = false;
@@ -17,6 +18,11 @@ protected:
 	{
 		BaseControlDevice::Serialize(s);
 		s.Stream(_stateBuffer, _microphoneEnabled);
+	}
+
+	ControllerType GetControllerType()
+	{
+		return ControllerType::NesController;
 	}
 
 	string GetKeyNames() override
@@ -47,12 +53,11 @@ protected:
 				SetPressedState(Buttons::B, keyMapping.TurboB);
 			}
 
-			//TODO
-			/*if(_microphoneEnabled && (_console->GetFrameCount() % 3) == 0) {
+			if(_microphoneEnabled && (_emu->GetFrameCount() % 3) == 0) {
 				SetPressedState(Buttons::Microphone, keyMapping.Microphone);
-			}*/
+			}
 
-			/*if(!_emu->GetSettings()->CheckFlag(EmulationFlags::AllowInvalidInput)) {
+			if(!_emu->GetSettings()->GetNesConfig().AllowInvalidInput) {
 				//If both U+D or L+R are pressed at the same time, act as if neither is pressed
 				if(IsPressed(Buttons::Up) && IsPressed(Buttons::Down)) {
 					ClearBit(Buttons::Down);
@@ -62,7 +67,7 @@ protected:
 					ClearBit(Buttons::Left);
 					ClearBit(Buttons::Right);
 				}
-			}*/
+			}
 		}
 	}
 
@@ -84,7 +89,7 @@ protected:
 public:
 	enum Buttons { Up = 0, Down, Left, Right, Start, Select, B, A, Microphone };
 
-	StandardController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, port, keyMappings)
+	NesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, port, keyMappings)
 	{
 		_turboSpeed = keyMappings.TurboSpeed;
 		_microphoneEnabled = false;
@@ -130,7 +135,7 @@ public:
 			_stateBuffer |= 0x80000000;
 		}
 
-		if(addr == 0x4016 && IsPressed(StandardController::Buttons::Microphone)) {
+		if(addr == 0x4016 && IsPressed(NesController::Buttons::Microphone)) {
 			output |= 0x04;
 		}
 

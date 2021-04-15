@@ -26,6 +26,10 @@
 				<Separator/>
 				<MenuItem Header="_Exit"/>
 			</MenuItem>
+			<MenuItem Header="_Game">
+				<MenuItem Header="Reset" Click="OnResetClick" />
+				<MenuItem Header="Power Cycle" Click="OnPowerCycleClick" />
+			</MenuItem>
 			<MenuItem Header="_Options">
 				<MenuItem Header="Speed" />
 				<MenuItem Header="Video Size" />

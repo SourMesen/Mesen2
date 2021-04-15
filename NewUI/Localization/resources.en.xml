@@ -143,9 +143,19 @@
 			<Control ID="tpgEqualizer">Equalizer</Control>
 			<Control ID="chkEnableEqualizer">Enable Equalizer</Control>
 		</Form>
-		<Form ID="InputConfigView" Title="Input Settings">
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
+		<Form ID="NesInputConfigView" Title="Input Settings">
+			<Control ID="btnSetup">Setup</Control>
+			<Control ID="lblPlayer1">Player 1:</Control>
+			<Control ID="lblPlayer2">Player 2:</Control>
+			<Control ID="lblPlayer3">Player 3:</Control>
+			<Control ID="lblPlayer4">Player 4:</Control>
+
+			<Control ID="lblNesType">Console Type:</Control>
+			<Control ID="lblExpansionPort">Expansion Port:</Control>
+			<Control ID="chkFourScore">Use Four Score accessory</Control>
+			<Control ID="chkAutoConfigureInput">Automatically configure controllers when loading a game</Control>
+		</Form>
+		<Form ID="SnesInputConfigView" Title="Input Settings">
 			<Control ID="tpgControllers">Controllers</Control>
 			<Control ID="btnSetupExp">Setup</Control>
 			<Control ID="btnSetupCartridge">Setup</Control>
@@ -163,10 +173,6 @@
 			<Control ID="btnSetupMultitap2">Setup</Control>
 			<Control ID="btnSetupMultitap3">Setup</Control>
 			<Control ID="btnSetupMultitap4">Setup</Control>
-			<Control ID="lblNesType">Console Type:</Control>
-			<Control ID="lblExpansionPort">Expansion Port:</Control>
-			<Control ID="chkFourScore">Use Four Score accessory</Control>
-			<Control ID="chkAutoConfigureInput">Automatically configure controllers when loading a game</Control>
 
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="grpDisplayInput">Display Controller Input</Control>
@@ -278,6 +284,8 @@
 			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
 			<Control ID="chkStrictBoardMappings">Use strict board mappings (breaks some romhacks)</Control>
 
+			<Control ID="tpgInput">Input</Control>
+
 			<Control ID="tpgOverclocking">Overclocking</Control>
 			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
 			<Control ID="grpPpuTiming">PPU Vertical Blank Configuration</Control>
@@ -322,6 +330,8 @@
 			<Control ID="lblVsDualSystem">VS. DualSystem Settings</Control>
 			<Control ID="lblVsDualPlayAudio">Play audio for:</Control>
 			<Control ID="lblVsDualShowVideo">Show video for:</Control>
+
+			<Control ID="tpgInput">Input</Control>
 
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblPalette">Palette</Control>

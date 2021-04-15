@@ -148,7 +148,8 @@ enum class ControllerType
 	SnesController = 1,
 	SnesMouse = 2,
 	SuperScope = 3,
-	Multitap = 4
+	Multitap = 4,
+	NesController = 5
 };
 
 struct KeyMapping
@@ -174,20 +175,18 @@ struct KeyMapping
 	uint32_t TurboR = 0;
 	uint32_t TurboSelect = 0;
 	uint32_t TurboStart = 0;
+	
+	uint32_t Microphone = 0;
+
+	uint32_t CustomKeys[100];
 
 	bool HasKeySet()
 	{
 		if(A || B || X || Y || L || R || Up || Down || Left || Right || Start || Select || TurboA || TurboB || TurboX || TurboY || TurboL || TurboR || TurboStart || TurboSelect) {
 			return true;
 		}
-		return false;
-	}
-
-private:
-	bool HasKeyBinding(uint32_t* buttons, uint32_t count)
-	{
-		for(uint32_t i = 0; i < count; i++) {
-			if(buttons[i] != 0) {
+		for(uint32_t i = 0; i < 100; i++) {
+			if(CustomKeys[i] != 0) {
 				return true;
 			}
 		}
@@ -238,7 +237,6 @@ enum class InputDisplayPosition
 
 struct InputConfig
 {
-	ControllerConfig Controllers[5];
 	uint32_t ControllerDeadzoneSize = 2;
 	uint32_t MouseSensitivity = 1;
 
@@ -310,6 +308,8 @@ struct GameboyConfig
 
 struct SnesConfig
 {
+	ControllerConfig Controllers[5];
+
 	bool BlendHighResolutionModes = false;
 	bool HideBgLayer0 = false;
 	bool HideBgLayer1 = false;
@@ -353,6 +353,8 @@ enum class VsDualOutputOption
 
 struct NesConfig
 {
+	ControllerConfig Controllers[5];
+
 	bool EnableHdPacks = true;
 	bool DisableGameDatabase = false;
 	bool FdsAutoLoadDisk = true;

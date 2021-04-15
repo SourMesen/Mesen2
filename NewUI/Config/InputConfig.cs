@@ -11,8 +11,6 @@ namespace Mesen.GUI.Config
 {
 	public class InputConfig : BaseConfig<InputConfig>
 	{
-		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
-
 		[Reactive] [MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
 		[Reactive] [MinMax(0, 3)] public UInt32 MouseSensitivity { get; set; } = 1;
 
@@ -26,26 +24,11 @@ namespace Mesen.GUI.Config
 
 		public InputConfig()
 		{
-			//Force snes controllers for multitap
-			Controllers[2].Type = ControllerType.SnesController;
-			Controllers[3].Type = ControllerType.SnesController;
-			Controllers[4].Type = ControllerType.SnesController;
 		}
 
 		public void ApplyConfig()
 		{
-			while(Controllers.Count < 5) {
-				Controllers.Add(new ControllerConfig());
-			}
-
 			ConfigApi.SetInputConfig(new InteropInputConfig() {
-				Controllers = new InteropControllerConfig[5] {
-					this.Controllers[0].ToInterop(),
-					this.Controllers[1].ToInterop(),
-					this.Controllers[2].ToInterop(),
-					this.Controllers[3].ToInterop(),
-					this.Controllers[4].ToInterop()
-				},
 				ControllerDeadzoneSize = this.ControllerDeadzoneSize,
 				MouseSensitivity = this.MouseSensitivity,
 				DisplayInputPosition = this.DisplayInputPosition,
@@ -56,39 +39,6 @@ namespace Mesen.GUI.Config
 				DisplayInputPort5 = this.DisplayInputPort5,
 				DisplayInputHorizontally = this.DisplayInputHorizontally
 			});
-		}
-
-		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
-		{
-			KeyPresets presets = new KeyPresets();
-			List<KeyMapping> mappings = new List<KeyMapping>();
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				mappings.Add(presets.XboxLayout1);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				mappings.Add(presets.Ps4Layout1);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				mappings.Add(presets.WasdLayout);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				mappings.Add(presets.ArrowLayout);
-			}
-			
-			Controllers[0].Type = ControllerType.SnesController;
-			Controllers[0].Keys.TurboSpeed = 2;
-			if(mappings.Count > 0) {
-				Controllers[0].Keys.Mapping1 = mappings[0];
-				if(mappings.Count > 1) {
-					Controllers[0].Keys.Mapping2 = mappings[1];
-					if(mappings.Count > 2) {
-						Controllers[0].Keys.Mapping3 = mappings[2];
-						if(mappings.Count > 3) {
-							Controllers[0].Keys.Mapping4 = mappings[3];
-						}
-					}
-				}
-			}
 		}
 	}
 
@@ -116,7 +66,7 @@ namespace Mesen.GUI.Config
 		[Reactive] public UInt32 TurboSelect { get; set; }
 		[Reactive] public UInt32 TurboStart { get; set; }
 
-		public InteropKeyMapping ToInterop()
+		public virtual InteropKeyMapping ToInterop(ControllerType type)
 		{
 			return new InteropKeyMapping() {
 				A = this.A,
@@ -143,18 +93,26 @@ namespace Mesen.GUI.Config
 		}
 	}
 
-	public class KeyMappingSet : ReactiveObject
+	public class NesKeyMapping : KeyMapping
+	{
+		public UInt32[] PowerPadButtons = new UInt32[12];
+		public UInt32[] FamilyBasicKeyboardButtons = new UInt32[72];
+		public UInt32[] PartyTapButtons = new UInt32[6];
+		public UInt32[] PachinkoButtons = new UInt32[2];
+		public UInt32[] ExcitingBoxingButtons = new UInt32[8];
+		public UInt32[] JissenMahjongButtons = new UInt32[21];
+		public UInt32[] SuborKeyboardButtons = new UInt32[99];
+		public UInt32[] BandaiMicrophoneButtons = new UInt32[3];
+		public UInt32[] VirtualBoyButtons = new UInt32[14];
+	}
+
+	public class ControllerConfig : ReactiveObject
 	{
 		[Reactive] public KeyMapping Mapping1 { get; set; } = new KeyMapping();
 		[Reactive] public KeyMapping Mapping2 { get; set; } = new KeyMapping();
 		[Reactive] public KeyMapping Mapping3 { get; set; } = new KeyMapping();
 		[Reactive] public KeyMapping Mapping4 { get; set; } = new KeyMapping();
 		[Reactive] public UInt32 TurboSpeed { get; set; } = 0;
-	}
-
-	public class ControllerConfig : ReactiveObject
-	{
-		[Reactive] public KeyMappingSet Keys { get; set; } = new KeyMappingSet();
 		[Reactive] public ControllerType Type { get; set; } = ControllerType.None;
 
 		public InteropControllerConfig ToInterop()
@@ -162,11 +120,11 @@ namespace Mesen.GUI.Config
 			return new InteropControllerConfig() {
 				Type = this.Type,
 				Keys = new InteropKeyMappingSet() {
-					Mapping1 = this.Keys.Mapping1.ToInterop(),
-					Mapping2 = this.Keys.Mapping2.ToInterop(),
-					Mapping3 = this.Keys.Mapping3.ToInterop(),
-					Mapping4 = this.Keys.Mapping4.ToInterop(),
-					TurboSpeed = this.Keys.TurboSpeed
+					Mapping1 = this.Mapping1.ToInterop(Type),
+					Mapping2 = this.Mapping2.ToInterop(Type),
+					Mapping3 = this.Mapping3.ToInterop(Type),
+					Mapping4 = this.Mapping4.ToInterop(Type),
+					TurboSpeed = this.TurboSpeed
 				}
 			};
 		}
@@ -175,9 +133,6 @@ namespace Mesen.GUI.Config
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropInputConfig
 	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-		public InteropControllerConfig[] Controllers;
-
 		public UInt32 ControllerDeadzoneSize;
 		public UInt32 MouseSensitivity;
 
@@ -214,6 +169,11 @@ namespace Mesen.GUI.Config
 		public UInt32 TurboR;
 		public UInt32 TurboSelect;
 		public UInt32 TurboStart;
+		
+		public UInt32 Microphone;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
+		public UInt32[] CustomKeys;
 	}
 
 	public struct InteropKeyMappingSet
@@ -237,7 +197,22 @@ namespace Mesen.GUI.Config
 		SnesController = 1,
 		SnesMouse = 2,
 		SuperScope = 3,
-		Multitap = 4
+		Multitap = 4,
+		NesController = 5
+	}
+
+	public static class ControllerTypeExtensions
+	{
+		public static bool CanConfigure(this ControllerType type)
+		{
+			switch(type) {
+				case ControllerType.SnesController:
+				case ControllerType.NesController:
+					return true;
+			}
+
+			return false;
+		}
 	}
 
 	public enum InputDisplayPosition

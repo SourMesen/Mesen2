@@ -3,7 +3,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
-#include "NES/Input/StandardController.h"
+#include "NES/Input/NesController.h"
 #include "SNES/Input/SnesController.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Interfaces/IKeyManager.h"
@@ -12,6 +12,7 @@
 #include "Shared/BatteryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/KeyManager.h"
+#include "Shared/SystemActionManager.h"
 /*#include "Zapper.h"
 #include "ArkanoidController.h"
 #include "OekaKidsTablet.h"
@@ -37,99 +38,33 @@
 #include "BattleBox.h"
 #include "VbController.h"*/
 
-NesControlManager::NesControlManager(shared_ptr<NesConsole> console, shared_ptr<BaseControlDevice> systemActionManager, shared_ptr<BaseControlDevice> mapperControlDevice)
+NesControlManager::NesControlManager(shared_ptr<NesConsole> console, shared_ptr<BaseControlDevice> mapperControlDevice) : BaseControlManager(console->GetEmulator())
 {
 	_console = console;
-	_emu = console->GetEmulator();
-	_systemActionManager = systemActionManager;
 	_mapperControlDevice = mapperControlDevice;
-	_pollCounter = 0;
 }
 
 NesControlManager::~NesControlManager()
 {
 }
 
-void NesControlManager::RegisterInputProvider(IInputProvider* provider)
-{
-	auto lock = _deviceLock.AcquireSafe();
-	_inputProviders.push_back(provider);
-}
-
-void NesControlManager::UnregisterInputProvider(IInputProvider* provider)
-{
-	auto lock = _deviceLock.AcquireSafe();
-	vector<IInputProvider*> &vec = _inputProviders;
-	vec.erase(std::remove(vec.begin(), vec.end(), provider), vec.end());
-}
-
-void NesControlManager::RegisterInputRecorder(IInputRecorder* provider)
-{
-	auto lock = _deviceLock.AcquireSafe();
-	_inputRecorders.push_back(provider);
-}
-
-void NesControlManager::UnregisterInputRecorder(IInputRecorder* provider)
-{
-	auto lock = _deviceLock.AcquireSafe();
-	vector<IInputRecorder*> &vec = _inputRecorders;
-	vec.erase(std::remove(vec.begin(), vec.end(), provider), vec.end());
-}
-
-vector<ControlDeviceState> NesControlManager::GetPortStates()
-{
-	auto lock = _deviceLock.AcquireSafe();
-
-	vector<ControlDeviceState> states;
-	for(int i = 0; i < 4; i++) {
-		shared_ptr<BaseControlDevice> device = GetControlDevice(i);
-		if(device) {
-			states.push_back(device->GetRawState());
-		} else {
-			states.push_back(ControlDeviceState());
-		}
-	}
-	return states;
-}
-
-shared_ptr<BaseControlDevice> NesControlManager::GetControlDevice(uint8_t port)
-{
-	auto lock = _deviceLock.AcquireSafe();
-
-	auto result = std::find_if(_controlDevices.begin(), _controlDevices.end(), [port](const shared_ptr<BaseControlDevice> control) { return control->GetPort() == port; });
-	if(result != _controlDevices.end()) {
-		return *result;
-	}
-	return nullptr;
-}
-
-vector<shared_ptr<BaseControlDevice>> NesControlManager::GetControlDevices()
-{
-	return _controlDevices;
-}
-
-void NesControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice)
-{
-	_controlDevices.push_back(controlDevice);
-}
-
 ControllerType NesControlManager::GetControllerType(uint8_t port)
 {
-	return _emu->GetSettings()->GetInputConfig().Controllers[port].Type;
+	return _emu->GetSettings()->GetNesConfig().Controllers[port].Type;
 }
 
-shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(ControllerType type, uint8_t port, shared_ptr<NesConsole> console)
+shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
 	shared_ptr<BaseControlDevice> device;
 	
-	InputConfig cfg = console->GetEmulator()->GetSettings()->GetInputConfig();
+	NesConfig cfg = _emu->GetSettings()->GetNesConfig();
 
 	switch(type) {
 		case ControllerType::None: break;
-		//case ControllerType::StandardController: device.reset(new StandardController(console, port, console->GetSettings()->GetControllerKeys(port))); break;
+		case ControllerType::NesController: device.reset(new NesController(_emu, port, cfg.Controllers[port].Keys)); break;
 		//case ControllerType::Zapper: device.reset(new Zapper(console, port)); break;
 		//case ControllerType::ArkanoidController: device.reset(new ArkanoidController(console, port)); break;
-		case ControllerType::SnesController: device.reset(new SnesController(console->GetEmulator(), port, cfg.Controllers[port].Keys)); break;
+		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, cfg.Controllers[port].Keys)); break;
 		/*case ControllerType::PowerPad: device.reset(new PowerPad(console, port, console->GetSettings()->GetControllerKeys(port))); break;
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(console, port)); break;
 		case ControllerType::SuborMouse: device.reset(new SuborMouse(console, port)); break;
@@ -140,7 +75,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 	return device;
 }
 
-shared_ptr<BaseControlDevice> NesControlManager::CreateExpansionDevice(ExpansionPortDevice type, shared_ptr<NesConsole> console)
+shared_ptr<BaseControlDevice> NesControlManager::CreateExpansionDevice(ExpansionPortDevice type)
 {
 	shared_ptr<BaseControlDevice> device;
 
@@ -181,8 +116,7 @@ void NesControlManager::UpdateControlDevices()
 
 	_controlDevices.clear();
 
-	//TODO
-	//RegisterControlDevice(_systemActionManager);
+	RegisterControlDevice(_emu->GetSystemActionManager());
 
 	bool fourScore = false; //settings->CheckFlag(EmulationFlags::HasFourScore);
 	//TODO
@@ -196,7 +130,7 @@ void NesControlManager::UpdateControlDevices()
 	}*/
 
 	for(int i = 0; i < (fourScore ? 4 : 2); i++) {
-		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i, _console);
+		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
 		if(device) {
 			RegisterControlDevice(device);
 		}
@@ -279,48 +213,10 @@ void NesControlManager::UpdateInputState()
 		_isLagging = true;
 	}
 
-	KeyManager::RefreshKeyState();
-
-	auto lock = _deviceLock.AcquireSafe();
-
-	//string log = "";
-	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
-		device->ClearState();
-
-		bool inputSet = false;
-		for(size_t i = 0; i < _inputProviders.size(); i++) {
-			IInputProvider* provider = _inputProviders[i];
-			if(provider->SetInput(device.get())) {
-				inputSet = true;
-				break;
-			}
-		}
-
-		if(!inputSet) {
-			device->SetStateFromInput();
-		}
-
-		device->OnAfterSetState();
-		//log += "|" + device->GetTextState();
-	}
-
-	/*shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
-	if(debugger) {
-		debugger->ProcessEvent(EventType::InputPolled);
-	}*/
-
-	if(!_emu->IsRunAheadFrame()) {
-		for(IInputRecorder* recorder : _inputRecorders) {
-			recorder->RecordInput(_controlDevices);
-		}
-	}
+	BaseControlManager::UpdateInputState();
 
 	//Used by VS System games
-	RemapControllerButtons();
-
-	//MessageManager::Log(log);
-
-	_pollCounter++;
+	//RemapControllerButtons();
 }
 
 uint32_t NesControlManager::GetLagCounter()
@@ -331,16 +227,6 @@ uint32_t NesControlManager::GetLagCounter()
 void NesControlManager::ResetLagCounter()
 {
 	_lagCounter = 0;
-}
-
-uint32_t NesControlManager::GetPollCounter()
-{
-	return NesControlManager::_pollCounter;
-}
-
-void NesControlManager::SetPollCounter(uint32_t value)
-{
-	_pollCounter = value;
 }
 
 uint8_t NesControlManager::ReadRam(uint16_t addr)

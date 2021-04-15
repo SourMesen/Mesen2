@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <iterator>
 #include "VirtualFile.h"
-#include "../Utilities/sha1.h"
-#include "../Utilities/ArchiveReader.h"
-#include "../Utilities/StringUtilities.h"
-#include "../Utilities/FolderUtilities.h"
-#include "../Utilities/BpsPatcher.h"
-#include "../Utilities/IpsPatcher.h"
-#include "../Utilities/UpsPatcher.h"
+#include "Utilities/sha1.h"
+#include "Utilities/ArchiveReader.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/Patches/BpsPatcher.h"
+#include "Utilities/Patches/IpsPatcher.h"
+#include "Utilities/Patches/UpsPatcher.h"
 
 const std::initializer_list<string> VirtualFile::RomExtensions = { ".sfc", ".smc", ".swc", ".fig", ".bs", ".gb", ".gbc" };
 

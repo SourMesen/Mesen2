@@ -14,9 +14,12 @@ namespace Mesen.ViewModels
 	{
 		[Reactive] public SnesConfig Config { get; set; }
 
+		public SnesInputConfigViewModel Input { get; private set; }
+
 		public SnesConfigViewModel()
 		{
 			Config = ConfigManager.Config.Snes.Clone();
+			Input = new SnesInputConfigViewModel(Config);
 		}
    }
 }

@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
@@ -323,6 +324,10 @@
 			</StackPanel>
 		</TabItem>
 
+		<TabItem Header="{l:Translate tpgInput}">
+			<v:NesInputConfigView DataContext="{CompiledBinding Input}" />
+		</TabItem>
+		
 		<TabItem Header="{l:Translate tpgOverclocking}">
 			<StackPanel>
 				<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">

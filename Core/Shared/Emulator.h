@@ -24,6 +24,7 @@ class FrameLimiter;
 class DebugStats;
 class IControlManager;
 class VirtualFile;
+class SystemActionManager;
 
 struct RomInfo;
 
@@ -58,6 +59,7 @@ private:
 	shared_ptr<RewindManager> _rewindManager;
 	shared_ptr<CheatManager> _cheatManager;
 	shared_ptr<MovieManager> _movieManager;
+	shared_ptr<SystemActionManager> _systemActionManager;
 
 	shared_ptr<IConsole> _console;
 
@@ -144,6 +146,7 @@ public:
 	shared_ptr<BatteryManager> GetBatteryManager();
 	shared_ptr<CheatManager> GetCheatManager();
 	shared_ptr<MovieManager> GetMovieManager();
+	shared_ptr<SystemActionManager> GetSystemActionManager();
 
 	shared_ptr<IControlManager> GetControlManager();
 

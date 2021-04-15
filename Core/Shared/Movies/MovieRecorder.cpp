@@ -99,11 +99,11 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 		case ConsoleRegion::Pal: WriteString(out, MovieKeys::Region, "PAL"); break;
 	}
 
-	WriteString(out, MovieKeys::Controller1, ControllerTypeNames[(int)inputConfig.Controllers[0].Type]);
+	/*WriteString(out, MovieKeys::Controller1, ControllerTypeNames[(int)inputConfig.Controllers[0].Type]);
 	WriteString(out, MovieKeys::Controller2, ControllerTypeNames[(int)inputConfig.Controllers[1].Type]);
 	WriteString(out, MovieKeys::Controller3, ControllerTypeNames[(int)inputConfig.Controllers[2].Type]);
 	WriteString(out, MovieKeys::Controller4, ControllerTypeNames[(int)inputConfig.Controllers[3].Type]);
-	WriteString(out, MovieKeys::Controller5, ControllerTypeNames[(int)inputConfig.Controllers[4].Type]);
+	WriteString(out, MovieKeys::Controller5, ControllerTypeNames[(int)inputConfig.Controllers[4].Type]);*/
 
 	switch(_emu->GetConsoleType()) {
 		case ConsoleType::Snes: {

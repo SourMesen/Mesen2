@@ -139,7 +139,7 @@ bool NesConsole::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
 		if(romInfo.System == GameSystem::VsSystem) {
 			//_controlManager.reset(new VsControlManager(shared_from_this(), _systemActionManager, _mapper->GetMapperControlDevice()));
 		} else {
-			_controlManager.reset(new NesControlManager(shared_from_this(), nullptr /* TODO _systemActionManager */, _mapper->GetMapperControlDevice()));
+			_controlManager.reset(new NesControlManager(shared_from_this(), _mapper->GetMapperControlDevice()));
 		}
 		_controlManager->SetPollCounter(pollCounter);
 		_controlManager->UpdateControlDevices();

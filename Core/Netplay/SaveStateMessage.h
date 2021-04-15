@@ -47,10 +47,12 @@ public:
 		_ppuExtraScanlinesBeforeNmi = emuCfg.PpuExtraScanlinesBeforeNmi;
 		_gsuClockSpeed = emuCfg.GsuClockSpeed;*/
 
+		//TODO
+		/*
 		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
 			_controllerTypes[i] = inputCfg.Controllers[i].Type;
-		}
+		}*/
 
 		emu->Unlock();
 
@@ -77,12 +79,13 @@ public:
 		emuCfg.GsuClockSpeed = _gsuClockSpeed;
 		*/
 
-		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
+		//TODO
+		/*InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
 			inputCfg.Controllers[i].Type = _controllerTypes[i];
-		}
+		}*/
 
 		emu->GetSettings()->SetEmulationConfig(emuCfg);
-		emu->GetSettings()->SetInputConfig(inputCfg);
+		//emu->GetSettings()->SetInputConfig(inputCfg);
 	}
 };

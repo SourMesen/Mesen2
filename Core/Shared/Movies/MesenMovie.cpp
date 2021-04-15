@@ -240,14 +240,16 @@ void MesenMovie::ApplySettings()
 {
 	EmuSettings* settings = _emu->GetSettings();
 	EmulationConfig emuConfig = settings->GetEmulationConfig();
-	InputConfig inputConfig = settings->GetInputConfig();
+
+	//TODO
+	/*InputConfig inputConfig = settings->GetInputConfig();
 
 	inputConfig.Controllers[0].Type = FromString(LoadString(_settings, MovieKeys::Controller1), ControllerTypeNames, ControllerType::None);
 	inputConfig.Controllers[1].Type = FromString(LoadString(_settings, MovieKeys::Controller2), ControllerTypeNames, ControllerType::None);
 	inputConfig.Controllers[2].Type = FromString(LoadString(_settings, MovieKeys::Controller3), ControllerTypeNames, ControllerType::None);
 	inputConfig.Controllers[3].Type = FromString(LoadString(_settings, MovieKeys::Controller4), ControllerTypeNames, ControllerType::None);
 	inputConfig.Controllers[4].Type = FromString(LoadString(_settings, MovieKeys::Controller5), ControllerTypeNames, ControllerType::None);
-
+	*/
 	emuConfig.Region = FromString(LoadString(_settings, MovieKeys::Region), ConsoleRegionNames, ConsoleRegion::Ntsc);
 
 	//TODO
@@ -260,7 +262,7 @@ void MesenMovie::ApplySettings()
 	emuConfig.GsuClockSpeed = LoadInt(_settings, MovieKeys::GsuClockSpeed, 100);*/
 
 	settings->SetEmulationConfig(emuConfig);
-	settings->SetInputConfig(inputConfig);
+	//settings->SetInputConfig(inputConfig);
 }
 
 uint32_t MesenMovie::LoadInt(std::unordered_map<string, string> &settings, string name, uint32_t defaultValue)

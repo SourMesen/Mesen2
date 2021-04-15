@@ -123,8 +123,6 @@
 						<TextBlock VerticalAlignment="Center">Input</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:InputConfigView DataContext="{CompiledBinding Input}" />
 			</TabItem>
 			<TabItem>
 				<TabItem.Header>

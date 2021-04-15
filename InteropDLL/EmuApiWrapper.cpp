@@ -3,7 +3,7 @@
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/Video/VideoDecoder.h"
 #include "Core/Shared/Interfaces/IControlManager.h"
-#include "Core/SystemActionManager.h"
+#include "Core/Shared/SystemActionManager.h"
 #include "Core/Shared/MessageManager.h"
 #include "Core/Shared/SaveStateManager.h"
 #include "Core/Shared/Interfaces/INotificationListener.h"
@@ -185,16 +185,14 @@ extern "C" {
 	DllExport void __stdcall Reset()
 	{
 		if(!GameClient::Connected()) {
-			//TODO
-			//_emu->GetControlManager()->GetSystemActionManager()->Reset();
+			_emu->GetSystemActionManager()->Reset();
 		}
 	}
 
 	DllExport void __stdcall PowerCycle()
 	{
 		if(!GameClient::Connected()) {
-			//TODO
-			//_emu->GetControlManager()->GetSystemActionManager()->PowerCycle();
+			_emu->GetSystemActionManager()->PowerCycle();
 		}
 	}
 

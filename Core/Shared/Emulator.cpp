@@ -16,6 +16,7 @@
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/CheatManager.h"
+#include "Shared/SystemActionManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IControlManager.h"
@@ -63,6 +64,7 @@ void Emulator::Initialize()
 	_debugHud.reset(new DebugHud());
 	_cheatManager.reset(new CheatManager(this));
 	_movieManager.reset(new MovieManager(shared_from_this()));
+	_systemActionManager.reset(new SystemActionManager(this));
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
@@ -147,14 +149,13 @@ void Emulator::Run()
 
 bool Emulator::ProcessSystemActions()
 {
-	//TODO
-	/*if(_controlManager->GetSystemActionManager()->IsResetPressed()) {
+	if(_systemActionManager->IsResetPressed()) {
 		Reset();
 		return true;
-	} else if(_controlManager->GetSystemActionManager()->IsPowerCyclePressed()) {
+	} else if(_systemActionManager->IsPowerCyclePressed()) {
 		PowerCycle();
 		return true;
-	}*/
+	}
 	return false;
 }
 
@@ -693,6 +694,11 @@ shared_ptr<MovieManager> Emulator::GetMovieManager()
 	return _movieManager;
 }
 
+shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
+{
+	return _systemActionManager;
+}
+
 shared_ptr<IControlManager> Emulator::GetControlManager()
 {
 	return _console->GetControlManager();
@@ -783,7 +789,6 @@ void Emulator::AddDebugEvent(DebugEventType evtType)
 		_debugger->GetEventManager(cpuType)->AddEvent(evtType);
 	}
 }
-
 
 void Emulator::BreakImmediately(BreakSource source)
 {

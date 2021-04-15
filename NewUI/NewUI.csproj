@@ -86,6 +86,12 @@
     <Compile Update="Views\NesConfigView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
+    <Compile Update="Views\NesInputConfigView.axaml.cs">
+      <DependentUpon>NesInputConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NesControllerView.axaml.cs">
+      <DependentUpon>NesControllerView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>
@@ -107,8 +113,8 @@
     <Compile Update="Views\SnesControllerView.axaml.cs">
       <DependentUpon>SnesControllerView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\InputConfigView.axaml.cs">
-      <DependentUpon>InputConfigView.axaml</DependentUpon>
+    <Compile Update="Views\SnesInputConfigView.axaml.cs">
+      <DependentUpon>SnesInputConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\EmulationConfigView.axaml.cs">
       <DependentUpon>EmulationConfigView.axaml</DependentUpon>

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
-#include "SNES/Console.h"
+#include "Shared/Emulator.h"
 
 class SystemActionManager : public BaseControlDevice
 {
@@ -18,7 +18,7 @@ protected:
 public:
 	enum Buttons { ResetButton = 0, PowerButton = 1 };
 
-	SystemActionManager(Console* console) : BaseControlDevice(console->GetEmulator(), BaseControlDevice::ConsoleInputPort)
+	SystemActionManager(Emulator* emu) : BaseControlDevice(emu, BaseControlDevice::ConsoleInputPort)
 	{
 	}
 
@@ -39,9 +39,11 @@ public:
 	void OnAfterSetState() override
 	{
 		if(_needReset) {
+			_needReset = false;
 			SetBit(SystemActionManager::Buttons::ResetButton);
 		}
 		if(_needPowerCycle) {
+			_needPowerCycle = false;
 			SetBit(SystemActionManager::Buttons::PowerButton);
 		}
 	}
@@ -66,13 +68,11 @@ public:
 
 	bool IsResetPressed()
 	{
-		_needReset = false;
 		return IsPressed(SystemActionManager::Buttons::ResetButton);
 	}
 
 	bool IsPowerCyclePressed()
 	{
-		_needPowerCycle = false;
 		return IsPressed(SystemActionManager::Buttons::PowerButton);
 	}
 };

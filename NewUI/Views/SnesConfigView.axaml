@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
@@ -36,6 +37,10 @@
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableStrictBoardMappings}" Text="{l:Translate chkStrictBoardMappings}" />
 			</StackPanel>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgInput}">
+			<v:SnesInputConfigView DataContext="{CompiledBinding Input}" />
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgOverclocking}">

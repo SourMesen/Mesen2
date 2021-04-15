@@ -10,6 +10,10 @@ namespace Mesen.GUI.Config
 {
 	public class NesConfig : BaseConfig<NesConfig>
 	{
+		//Input
+		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
+
+		//Video
 		[Reactive] public bool EnableHdPacks { get; set; } = true;
 		[Reactive] public bool DisableGameDatabase { get; set; } = false;
 		[Reactive] public bool FdsAutoLoadDisk { get; set; } = true;
@@ -36,6 +40,7 @@ namespace Mesen.GUI.Config
 		[Reactive] [MinMax(0, 100)] public UInt32 OverscanTop { get; set; } = 0;
 		[Reactive] [MinMax(0, 100)] public UInt32 OverscanBottom { get; set; } = 0;
 
+		//Emulation
 		[Reactive] public bool EnableOamDecay { get; set; } = false;
 		[Reactive] public bool EnablePpuOamRowCorruption { get; set; } = false;
 		[Reactive] public bool DisableOamAddrBug { get; set; } = false;
@@ -55,18 +60,11 @@ namespace Mesen.GUI.Config
 		[Reactive] public UInt32 PpuExtraScanlinesBeforeNmi { get; set; } = 0;
 		[Reactive] public UInt32 PpuExtraScanlinesAfterNmi { get; set; } = 0;
 
+		//Audio
 		[Reactive] public bool DisableNoiseModeFlag { get; set; } = false;
 		[Reactive] public bool ReduceDmcPopping { get; set; } = false;
 		[Reactive] public bool SilenceTriangleHighFreq { get; set; } = false;
 		[Reactive] public bool SwapDutyCycles { get; set; } = false;
-
-		[Reactive] public bool BreakOnCrash { get; set; } = false;
-		[Reactive] public UInt32 DipSwitches { get; set; } = 0;
-
-		[Reactive] public Int32 InputScanline { get; set; } = 241;
-
-		[Reactive] public bool IsFullColorPalette { get; set; } = false;
-		[Reactive] public UInt32[] UserPalette { get; set; } = new UInt32[512];
 
 		[Reactive] [MinMax(0, 100)] public UInt32 Square1Volume { get; set; } = 100;
 		[Reactive] [MinMax(0, 100)] public UInt32 Square2Volume { get; set; } = 100;
@@ -98,9 +96,27 @@ namespace Mesen.GUI.Config
 		[Reactive] [MinMax(1, 100)] public Int32 StereoCombFilterDelay { get; set; } = 5;
 		[Reactive] [MinMax(1, 200)] public Int32 StereoCombFilterStrength { get; set; } = 100;
 
+		//Misc
+		[Reactive] public bool BreakOnCrash { get; set; } = false;
+		[Reactive] public UInt32 DipSwitches { get; set; } = 0;
+
+		[Reactive] public Int32 InputScanline { get; set; } = 241;
+
+		[Reactive] public bool IsFullColorPalette { get; set; } = false;
+		[Reactive] public UInt32[] UserPalette { get; set; } = new UInt32[512];
+
+
 		public void ApplyConfig()
 		{
 			ConfigApi.SetNesConfig(new InteropNesConfig() {
+				Controllers = new InteropControllerConfig[5] {
+					this.Controllers[0].ToInterop(),
+					this.Controllers[1].ToInterop(),
+					this.Controllers[2].ToInterop(),
+					this.Controllers[3].ToInterop(),
+					this.Controllers[4].ToInterop()
+				},
+
 				EnableHdPacks = EnableHdPacks,
 				DisableGameDatabase = DisableGameDatabase,
 				FdsAutoLoadDisk = FdsAutoLoadDisk,
@@ -151,14 +167,6 @@ namespace Mesen.GUI.Config
 				SilenceTriangleHighFreq = SilenceTriangleHighFreq,
 				SwapDutyCycles = SwapDutyCycles,
 
-				BreakOnCrash = BreakOnCrash,
-				DipSwitches = DipSwitches,
-				
-				InputScanline = InputScanline,
-
-				IsFullColorPalette = IsFullColorPalette,
-				UserPalette = UserPalette,
-
 				Square1Volume = Square1Volume,
 				Square2Volume = Square2Volume,
 				TriangleVolume = TriangleVolume,
@@ -187,13 +195,57 @@ namespace Mesen.GUI.Config
 				StereoPanningAngle = StereoPanningAngle,
 				StereoCombFilterDelay = StereoCombFilterDelay,
 				StereoCombFilterStrength = StereoCombFilterStrength,
+
+				BreakOnCrash = BreakOnCrash,
+				DipSwitches = DipSwitches,
+
+				InputScanline = InputScanline,
+
+				IsFullColorPalette = IsFullColorPalette,
+				UserPalette = UserPalette,
 			});
+		}
+
+		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
+		{
+			KeyPresets presets = new KeyPresets();
+			List<KeyMapping> mappings = new List<KeyMapping>();
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
+				mappings.Add(presets.XboxLayout1);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
+				mappings.Add(presets.Ps4Layout1);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
+				mappings.Add(presets.WasdLayout);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
+				mappings.Add(presets.ArrowLayout);
+			}
+
+			Controllers[0].Type = ControllerType.NesController;
+			Controllers[0].TurboSpeed = 2;
+			if(mappings.Count > 0) {
+				Controllers[0].Mapping1 = mappings[0];
+				if(mappings.Count > 1) {
+					Controllers[0].Mapping2 = mappings[1];
+					if(mappings.Count > 2) {
+						Controllers[0].Mapping3 = mappings[2];
+						if(mappings.Count > 3) {
+							Controllers[0].Mapping4 = mappings[3];
+						}
+					}
+				}
+			}
 		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropNesConfig
 	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public InteropControllerConfig[] Controllers;
+
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameDatabase;
 		[MarshalAs(UnmanagedType.I1)] public bool FdsAutoLoadDisk;

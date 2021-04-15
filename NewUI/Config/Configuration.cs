@@ -31,7 +31,6 @@ namespace Mesen.GUI.Config
 		public NetplayConfig Netplay { get; set; }
 		public Point WindowLocation { get; set; }
 		public Size WindowSize { get; set; }
-		public bool NeedInputReinit2 { get; set; } = true;
 		public DefaultKeyMappingType DefaultKeyMappings { get; set; } = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
 
 		public Configuration()
@@ -90,8 +89,8 @@ namespace Mesen.GUI.Config
 				//Input.Controllers = new ControllerConfig[5];
 				//Preferences.ShortcutKeys = null;
 
-				Input.InitializeDefaults(DefaultKeyMappings);
-				NeedInputReinit2 = false;
+				Snes.InitializeDefaults(DefaultKeyMappings);
+				Nes.InitializeDefaults(DefaultKeyMappings);
 			//}
 			Preferences.InitializeDefaultShortcuts();
 			ConfigManager.SaveConfig();

@@ -23,12 +23,14 @@ const vector<string> ConsoleRegionNames = {
 	"PAL"
 };
 
+//TODO
 const vector<string> ControllerTypeNames = {
 	"None",
 	"SnesController",
 	"SnesMouse",
 	"SuperScope",
-	"Multitap"
+	"Multitap",
+	"NesController"
 };
 
 const vector<string> RamStateNames = {

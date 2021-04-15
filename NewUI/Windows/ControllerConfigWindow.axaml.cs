@@ -40,13 +40,13 @@ namespace Mesen.Windows
 		private void ApplyPreset(KeyMapping preset)
 		{
 			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
-			KeyMappingSet? mappings = (this.DataContext as KeyMappingSet);
-			if(mappings != null) {
+			ControllerConfig? cfg = (this.DataContext as ControllerConfig);
+			if(cfg != null) {
 				switch(index) {
-					case 0: mappings.Mapping1 = preset; break;
-					case 1: mappings.Mapping2 = preset; break;
-					case 2: mappings.Mapping3 = preset; break;
-					case 3: mappings.Mapping4 = preset; break;
+					case 0: cfg.Mapping1 = preset; break;
+					case 1: cfg.Mapping2 = preset; break;
+					case 2: cfg.Mapping3 = preset; break;
+					case 3: cfg.Mapping4 = preset; break;
 				}
 			}
 		}

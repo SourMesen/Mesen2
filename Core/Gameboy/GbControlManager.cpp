@@ -4,54 +4,24 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
+#include "Shared/SystemActionManager.h"
 
-GbControlManager::GbControlManager(Emulator* emu)
+GbControlManager::GbControlManager(Emulator* emu) : BaseControlManager(emu)
 {
 	_emu = emu;
 }
 
-void GbControlManager::UpdateInputState()
-{
-	KeyManager::RefreshKeyState();
-	_device->ClearState();
-	_device->SetStateFromInput();
-	_device->OnAfterSetState();
-}
-
-void GbControlManager::RegisterInputProvider(IInputProvider* provider)
-{
-}
-
-void GbControlManager::UnregisterInputProvider(IInputProvider* provider)
-{
-}
-
-void GbControlManager::RegisterInputRecorder(IInputRecorder* provider)
-{
-}
-
-void GbControlManager::UnregisterInputRecorder(IInputRecorder* provider)
-{
-}
-
-shared_ptr<BaseControlDevice> GbControlManager::GetControlDevice(uint8_t port)
-{
-	return _device;
-}
-
-void GbControlManager::SetPollCounter(uint32_t pollCounter)
-{
-	//TODO
-}
-
-uint32_t GbControlManager::GetPollCounter()
-{
-	//TODO
-	return 0;
-}
-
 void GbControlManager::UpdateControlDevices()
 {
-	InputConfig cfg = _emu->GetSettings()->GetInputConfig();
-	_device.reset(new SnesController(_emu, 0, cfg.Controllers[0].Keys));
+	auto lock = _deviceLock.AcquireSafe();
+	_controlDevices.clear();
+	RegisterControlDevice(_emu->GetSystemActionManager());
+
+	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
+	for(int i = 0; i < 2; i++) {
+		shared_ptr<BaseControlDevice> device(new SnesController(_emu, 0, cfg.Controllers[0].Keys));
+		if(device) {
+			RegisterControlDevice(device);
+		}
+	}
 }
