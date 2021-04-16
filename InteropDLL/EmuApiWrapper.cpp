@@ -42,8 +42,9 @@ struct InteropRomInfo
 {
 	const char* RomPath;
 	const char* PatchPath;
-	CoprocessorType Coprocessor;
-	SnesCartInformation Header;
+	//TODO
+	//CoprocessorType Coprocessor;
+	//SnesCartInformation Header;
 	char Sha1[40];
 };
 
@@ -126,10 +127,11 @@ extern "C" {
 		_romPath = romInfo.RomFile;
 		_patchPath = romInfo.PatchFile;
 
-		info.Header = romInfo.Header;
 		info.RomPath = _romPath.c_str();
 		info.PatchPath = _patchPath.c_str();
-		info.Coprocessor = romInfo.Coprocessor;
+		//TODO
+		//info.Header = romInfo.Header;
+		//info.Coprocessor = romInfo.Coprocessor;
 
 		memcpy(info.Sha1, sha1.c_str(), sha1.size());
 	}

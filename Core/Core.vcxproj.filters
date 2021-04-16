@@ -733,6 +733,7 @@
     <ClInclude Include="SNES\stdafx.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />
+    <ClInclude Include="Shared\RomInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

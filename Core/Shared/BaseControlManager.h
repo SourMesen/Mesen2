@@ -29,8 +29,8 @@ public:
 	BaseControlManager(Emulator* emu);
 	virtual ~BaseControlManager();
 
-	virtual void UpdateControlDevices() {}
-	virtual void UpdateInputState();
+	void UpdateControlDevices() override {}
+	void UpdateInputState() override;
 
 	uint32_t GetPollCounter() override;
 	void SetPollCounter(uint32_t value) override;

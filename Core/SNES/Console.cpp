@@ -59,7 +59,9 @@ void Console::RunFrame()
 void Console::OnBeforeRun()
 {
 	_memoryManager->IncMasterClockStartup();
-	_controlManager->UpdateInputState();
+
+	//TODO?
+	//_controlManager->UpdateInputState();
 }
 
 void Console::ProcessEndOfFrame()
@@ -72,8 +74,8 @@ void Console::ProcessEndOfFrame()
 
 	_emu->ProcessEndOfFrame();
 
-	_controlManager->UpdateInputState();
 	_controlManager->UpdateControlDevices();
+	_controlManager->UpdateInputState();
 	_internalRegisters->ProcessAutoJoypadRead();
 #endif
 	_frameRunning = false;
@@ -132,11 +134,11 @@ void Console::Reset()
 	}
 }
 
-bool Console::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
+bool Console::LoadRom(VirtualFile& romFile)
 {
 	bool result = false;
 	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
-	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile, patchFile);
+	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile);
 	if(cart) {
 		_cart = cart;
 		
@@ -178,16 +180,6 @@ bool Console::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
 
 void Console::Init()
 {
-}
-
-RomInfo Console::GetRomInfo()
-{
-	shared_ptr<BaseCartridge> cart = _cart;
-	if(cart) {
-		return cart->GetRomInfo();
-	} else {
-		return {};
-	}
 }
 
 uint64_t Console::GetMasterClock()

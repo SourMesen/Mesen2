@@ -4,6 +4,7 @@
 #include "CartTypes.h"
 #include "Coprocessors/BaseCoprocessor.h"
 #include "Utilities/ISerializable.h"
+#include "Shared/RomInfo.h"
 
 class MemoryMappings;
 class VirtualFile;
@@ -49,7 +50,6 @@ private:
 	bool _hasBattery = false;
 	bool _hasRtc = false;
 	string _romPath;
-	string _patchPath;
 
 	uint8_t* _prgRom = nullptr;
 	uint8_t* _saveRam = nullptr;
@@ -76,7 +76,7 @@ private:
 	
 	void LoadRom();
 	void LoadSpc();
-	bool LoadGameboy(VirtualFile& romFile, VirtualFile& patchFile);
+	bool LoadGameboy(VirtualFile& romFile);
 	void SetupCpuHalt();
 	void InitCoprocessor();
 	void LoadEmbeddedFirmware();
@@ -87,7 +87,7 @@ private:
 public:
 	virtual ~BaseCartridge();
 
-	static shared_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile, VirtualFile &patchFile);
+	static shared_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile);
 
 	void Reset();
 

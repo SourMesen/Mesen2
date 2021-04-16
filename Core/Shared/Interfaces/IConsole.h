@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
 #include "Core/Debugger/DebugTypes.h"
-#include "Core/SNES/CartTypes.h"
+#include "Shared/RomInfo.h"
 
 class IControlManager;
 class VirtualFile;
@@ -25,7 +25,7 @@ public:
 
 	virtual void OnBeforeRun() = 0;
 	
-	virtual bool LoadRom(VirtualFile& romFile, VirtualFile& patchFile) = 0;
+	virtual bool LoadRom(VirtualFile& romFile) = 0;
 	virtual void Init() = 0;
 
 	//virtual void RunFrameWithRunAhead() = 0;
@@ -40,8 +40,6 @@ public:
 
 	virtual double GetFrameDelay() = 0;
 	virtual double GetFps() = 0;
-
-	virtual RomInfo GetRomInfo() = 0;
 
 	virtual void RunSingleFrame() = 0;
 

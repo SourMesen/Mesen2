@@ -78,9 +78,10 @@ void NesConsole::OnBeforeRun()
 	//TODO
 }
 
-bool NesConsole::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
+bool NesConsole::LoadRom(VirtualFile& romFile)
 {
 	RomData romData;
+
 	shared_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(shared_from_this(), romFile, romData);
 	if(mapper) {
 		shared_ptr<BaseMapper> previousMapper = _mapper;
@@ -204,12 +205,6 @@ double NesConsole::GetFps()
 {
 	//TODO
 	return 60;
-}
-
-RomInfo NesConsole::GetRomInfo()
-{
-	//TODO
-	return RomInfo();
 }
 
 void NesConsole::RunSingleFrame()

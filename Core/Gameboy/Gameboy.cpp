@@ -348,13 +348,15 @@ void Gameboy::Stop()
 
 void Gameboy::Reset()
 {
+	//The GB has no reset button, behave like power cycle
+	_emu->ReloadRom(true);
 }
 
 void Gameboy::OnBeforeRun()
 {
 }
 
-bool Gameboy::LoadRom(VirtualFile& romFile, VirtualFile& patchFile)
+bool Gameboy::LoadRom(VirtualFile& romFile)
 {
 	vector<uint8_t> romData;
 	romFile.ReadFile(romData);
@@ -425,12 +427,6 @@ double Gameboy::GetFrameDelay()
 double Gameboy::GetFps()
 {
 	return 59.72750056960583;
-}
-
-RomInfo Gameboy::GetRomInfo()
-{
-	//TODO
-	return RomInfo();
 }
 
 void Gameboy::RunSingleFrame()

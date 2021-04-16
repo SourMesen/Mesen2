@@ -7,6 +7,7 @@
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/SimpleLock.h"
+#include "Shared/RomInfo.h"
 
 class Cpu;
 class Ppu;
@@ -81,10 +82,9 @@ public:
 
 	void ProcessEndOfFrame();
 
-	bool LoadRom(VirtualFile& romFile, VirtualFile& patchFile) override;
+	bool LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 
-	RomInfo GetRomInfo() override;
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate();
 	ConsoleRegion GetRegion();

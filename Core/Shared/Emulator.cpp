@@ -292,6 +292,7 @@ void Emulator::Reset()
 	_runLock.Acquire();
 
 	_console->Reset();
+	GetControlManager()->UpdateInputState();
 
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
 	ProcessEvent(EventType::Reset);
@@ -325,6 +326,18 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	if(!romFile.IsValid()) {
+		return false;
+	}
+
+	if(patchFile.IsValid()) {
+		//TODO
+		//_patchPath = patchFile;
+		if(romFile.ApplyPatch(patchFile)) {
+			MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
+		}
+	}
+
 	if(_console) {
 		//Make sure the battery is saved to disk before we load another game (or reload the same game)
 		//TODO
@@ -336,81 +349,87 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	
 	memset(_consoleMemory, 0, sizeof(_consoleMemory));
 	shared_ptr<IConsole> console = shared_ptr<IConsole>(new NesConsole(this));
-	if(!console->LoadRom(romFile, patchFile)) {
+	if(!console->LoadRom(romFile)) {
 		memset(_consoleMemory, 0, sizeof(_consoleMemory));
 		console.reset(new Console(this));
-		if(!console->LoadRom(romFile, patchFile)) {
+		if(!console->LoadRom(romFile)) {
 			memset(_consoleMemory, 0, sizeof(_consoleMemory));
 			console.reset(new Gameboy(this, false));
-			if(!console->LoadRom(romFile, patchFile)) {
+			if(!console->LoadRom(romFile)) {
 				memset(_consoleMemory, 0, sizeof(_consoleMemory));
+				MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
+				
+				//TODO
+				_settings->SetEmulationConfig(orgConfig);
 				return false;
 			}
 		}
 	}
 
-	if(console) {
-		bool debuggerActive = _debugger != nullptr;
-		if(stopRom) {
-			KeyManager::UpdateDevices();
-			Stop(false);
-		}
+	_romFile = romFile;
+	_patchFile = patchFile;
 
-		_cheatManager->ClearCheats(false);
-
-		auto lock = _debuggerLock.AcquireSafe();
-		if(_debugger) {
-			//Reset debugger if it was running before
-			_debugger->Release();
-			_debugger.reset();
-		}
-
-		_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
-
-		//TODO
-		//UpdateRegion();
-
-		_console = console;
-		console->Init();
-
-		if(debuggerActive) {
-			GetDebugger();
-		}
-
-		_rewindManager.reset(new RewindManager(shared_from_this()));
-		_notificationManager->RegisterNotificationListener(_rewindManager);
-
-		//TODO
-		GetControlManager()->UpdateControlDevices();
-		//UpdateRegion();
-
-		_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
-
-		_paused = false;
-
-		if(!forPowerCycle) {
-			string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
-			string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
-			MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
-		}
-
-		if(stopRom) {
-		#ifndef LIBRETRO
-			_emuThread.reset(new thread(&Emulator::Run, this));
-		#endif
-		}
-		result = true;
-	} else {
-		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
+	bool debuggerActive = _debugger != nullptr;
+	if(stopRom) {
+		KeyManager::UpdateDevices();
+		Stop(false);
 	}
 
-	_settings->SetEmulationConfig(orgConfig);
+	_cheatManager->ClearCheats(false);
+
+	auto lock = _debuggerLock.AcquireSafe();
+	if(_debugger) {
+		//Reset debugger if it was running before
+		_debugger->Release();
+		_debugger.reset();
+	}
+
+	_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
+
+	//TODO
+	//UpdateRegion();
+
+	_console = console;
+	console->Init();
+
+	if(debuggerActive) {
+		GetDebugger();
+	}
+
+	_rewindManager.reset(new RewindManager(shared_from_this()));
+	_notificationManager->RegisterNotificationListener(_rewindManager);
+
+	//TODO
+	GetControlManager()->UpdateControlDevices();
+	GetControlManager()->UpdateInputState();
+	//UpdateRegion();
+
+	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
+
+	_paused = false;
+
+	if(!forPowerCycle) {
+		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
+		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
+		MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
+	}
+
+	if(stopRom) {
+	#ifndef LIBRETRO
+		_emuThread.reset(new thread(&Emulator::Run, this));
+	#endif
+	}
+	result = true;
+		
 	return result;
 }
 
 RomInfo Emulator::GetRomInfo()
 {
-	return _console->GetRomInfo();
+	RomInfo romInfo = {};
+	romInfo.RomFile = _romFile;
+	romInfo.PatchFile = _patchFile;
+	return romInfo;
 }
 
 string Emulator::GetHash(HashType type)

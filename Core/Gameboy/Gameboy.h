@@ -101,14 +101,13 @@ public:
 	virtual void Stop() override;
 	virtual void Reset() override;
 	virtual void OnBeforeRun() override;
-	virtual bool LoadRom(VirtualFile& romFile, VirtualFile& patchFile) override;
+	virtual bool LoadRom(VirtualFile& romFile) override;
 	virtual void Init() override;
 	virtual void RunFrame() override;
 	virtual shared_ptr<IControlManager> GetControlManager() override;
 	virtual ConsoleType GetConsoleType() override;
 	virtual double GetFrameDelay() override;
 	virtual double GetFps() override;
-	virtual RomInfo GetRomInfo() override;
 	virtual void RunSingleFrame() override;
 	virtual PpuFrameInfo GetPpuFrame() override;
 	virtual vector<CpuType> GetCpuTypes() override;

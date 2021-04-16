@@ -55,6 +55,7 @@
     <ClInclude Include="MemoryOperationType.h" />
     <ClInclude Include="Shared\Interfaces\stdafx.h" />
     <ClInclude Include="Shared\Movies\stdafx.h" />
+    <ClInclude Include="Shared\RomInfo.h" />
     <ClInclude Include="Shared\stdafx.h" />
     <ClInclude Include="Shared\Video\NesDefaultVideoFilter.h" />
     <ClInclude Include="NES\APU\ApuEnvelope.h" />

@@ -68,15 +68,6 @@ enum class FirmwareType
 	SGB2
 };
 
-struct RomInfo
-{
-	SnesCartInformation Header;
-	uint32_t HeaderOffset;
-	VirtualFile RomFile;
-	VirtualFile PatchFile;
-	CoprocessorType Coprocessor;
-};
-
 namespace CartFlags
 {
 	enum CartFlags

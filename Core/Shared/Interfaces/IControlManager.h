@@ -17,4 +17,5 @@ public:
 	virtual void SetPollCounter(uint32_t pollCounter) = 0;
 	virtual uint32_t GetPollCounter() = 0;
 	virtual void UpdateControlDevices() = 0;
+	virtual void UpdateInputState() = 0;
 };

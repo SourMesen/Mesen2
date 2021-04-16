@@ -23,6 +23,7 @@
 #include "Shared/BatteryManager.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Emulator.h"
+#include "Shared/RomInfo.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
@@ -39,16 +40,10 @@ BaseCartridge::~BaseCartridge()
 	delete[] _saveRam;
 }
 
-shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, VirtualFile &romFile, VirtualFile &patchFile)
+shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, VirtualFile &romFile)
 {
 	if(romFile.IsValid()) {
 		shared_ptr<BaseCartridge> cart(new BaseCartridge());
-		if(patchFile.IsValid()) {
-			cart->_patchPath = patchFile;
-			if(romFile.ApplyPatch(patchFile)) {
-				MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
-			}
-		}
 
 		vector<uint8_t> romData;
 		romFile.ReadFile(romData);
@@ -68,7 +63,7 @@ shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, Virtu
 				return nullptr;
 			}
 		} else if(fileExt == ".gb" || fileExt == ".gbc") {
-			if(cart->LoadGameboy(romFile, patchFile)) {
+			if(cart->LoadGameboy(romFile)) {
 				return cart;
 			} else {
 				return nullptr;
@@ -324,18 +319,19 @@ void BaseCartridge::Reset()
 RomInfo BaseCartridge::GetRomInfo()
 {
 	RomInfo info;
-	info.Header = _cartInfo;
-	info.HeaderOffset = _headerOffset;
+	//TODO
+	//info.Header = _cartInfo;
+	//info.HeaderOffset = _headerOffset;
+	//info.Coprocessor = _coprocessorType;
 	info.RomFile = static_cast<VirtualFile>(_romPath);
-	info.PatchFile = static_cast<VirtualFile>(_patchPath);
-	info.Coprocessor = _coprocessorType;
 	return info;
 }
 
 vector<uint8_t> BaseCartridge::GetOriginalPrgRom()
 {
 	RomInfo romInfo = GetRomInfo();
-	shared_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile, romInfo.PatchFile);
+	//TODO
+	shared_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile);
 	if(originalCart->_gameboy) {
 		uint8_t* orgPrgRom = originalCart->_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
 		uint32_t orgRomSize = originalCart->_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
@@ -622,7 +618,7 @@ void BaseCartridge::LoadSpc()
 	SetupCpuHalt();
 }
 
-bool BaseCartridge::LoadGameboy(VirtualFile& romFile, VirtualFile& patchFile)
+bool BaseCartridge::LoadGameboy(VirtualFile& romFile)
 {
 	_cartInfo = { };
 	_headerOffset = Gameboy::HeaderOffset;
@@ -633,7 +629,7 @@ bool BaseCartridge::LoadGameboy(VirtualFile& romFile, VirtualFile& patchFile)
 		LoadRom();
 		if(_coprocessorType == CoprocessorType::SGB) {
 			_gameboy.reset(new Gameboy(_emu, true));
-			if(_gameboy->LoadRom(romFile, patchFile)) {
+			if(_gameboy->LoadRom(romFile)) {
 				return _gameboy->IsSgb();
 			}
 		}

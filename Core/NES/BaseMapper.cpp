@@ -11,6 +11,7 @@
 #include "Shared/CheatManager.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/RomInfo.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
@@ -1158,7 +1159,7 @@ void BaseMapper::GetRomFileData(vector<uint8_t> &out, bool asIpsFile, uint8_t* h
 		//Get edited rom
 		if(asIpsFile) {
 			vector<uint8_t> originalFile;
-			_console->GetRomInfo().RomFile.ReadFile(originalFile);
+			_emu->GetRomInfo().RomFile.ReadFile(originalFile);
 
 			vector<uint8_t> patchData = IpsPatcher::CreatePatch(originalFile, newFile);
 			out.insert(out.end(), patchData.begin(), patchData.end());

@@ -81,6 +81,9 @@ private:
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
 
+	string _romFile;
+	string _patchFile;
+
 	ConsoleMemoryInfo _consoleMemory[(int)SnesMemoryType::Register] = {};
 
 	unique_ptr<DebugStats> _stats;
