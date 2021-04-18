@@ -101,16 +101,16 @@
 		<TabItem Header="{l:Translate tpgAudio}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:GroupBox Header="{l:Translate grpGeneral}">
+					<c:OptionSection Header="{l:Translate grpGeneral}" Margin="0">
 						<StackPanel>
 							<CheckBox IsChecked="{CompiledBinding Config.ReduceDmcPopping}" Content="{l:Translate chkReduceDmcPopping}" />
 							<CheckBox IsChecked="{CompiledBinding Config.SilenceTriangleHighFreq}" Content="{l:Translate chkSilenceTriangleHighFreq}" />
 							<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableNoiseModeFlag}" Text="{l:Translate chkDisableNoiseModeFlag}" />
 							<c:CheckBoxWarning IsChecked="{CompiledBinding Config.SwapDutyCycles}" Text="{l:Translate chkSwapDutyCycles}" />
 						</StackPanel>
-					</c:GroupBox>
+					</c:OptionSection>
 
-					<c:GroupBox Header="{l:Translate grpEffects}">
+					<c:OptionSection Header="{l:Translate grpEffects}">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblStereoEffect}" />
 							<c:EnumComboBox
@@ -136,9 +136,9 @@
 								<TextBlock Text="%" Margin="5 0 0 0" />
 							</StackPanel>
 						</StackPanel>
-					</c:GroupBox>
+					</c:OptionSection>
 
-					<c:GroupBox Header="{l:Translate lblVolume}">
+					<c:OptionSection Header="{l:Translate lblVolume}">
 						<Grid ColumnDefinitions="50*,50*" RowDefinitions="Auto">
 							<StackPanel Grid.Column="0" Margin="0 0 4 0">
 								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
@@ -213,8 +213,8 @@
 								</Grid>
 							</StackPanel>
 						</Grid>
-					</c:GroupBox>
-					<c:GroupBox Header="{l:Translate lblPanning}">
+					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate lblPanning}">
 						<Grid ColumnDefinitions="50*,50*" RowDefinitions="Auto">
 							<StackPanel Grid.Column="0" Margin="0 0 4 0">
 								<Grid Classes="Panning" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
@@ -289,7 +289,7 @@
 								</Grid>
 							</StackPanel>
 						</Grid>
-					</c:GroupBox>
+					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

@@ -28,9 +28,57 @@ namespace Mesen.ViewModels
 		public ReactiveCommand<Button, Unit> SetupPlayer4 { get; }
 		public ReactiveCommand<Button, Unit> SetupPlayer5 { get; }
 
+		[ObservableAsProperty] public bool HasFourPlayerAdapter { get; set; }
+
+		public Enum[] AvailableControllerTypesP12 => new Enum[] {
+			ControllerType.None,
+			ControllerType.NesController,
+			ControllerType.FamicomController,
+			ControllerType.NesZapper,
+			ControllerType.NesArkanoidController,
+			ControllerType.PowerPad,
+			ControllerType.SnesController,
+			ControllerType.SuborMouse,
+			ControllerType.VbController
+		};
+
+		public Enum[] AvailableControllerTypesP34 => new Enum[] {
+			ControllerType.None,
+			ControllerType.NesController,
+			ControllerType.FamicomController,
+			ControllerType.SnesController
+		};
+
+		public Enum[] AvailableExpansionTypes => new Enum[] {
+			ControllerType.None,
+			ControllerType.FourScore,
+			ControllerType.FamicomZapper,
+			ControllerType.FourPlayerAdapter,
+			ControllerType.FamicomArkanoidController,
+			ControllerType.OekaKidsTablet,
+			ControllerType.FamilyTrainerMat,
+			ControllerType.KonamiHyperShot,
+			ControllerType.FamilyBasicKeyboard,
+			ControllerType.PartyTap,
+			ControllerType.Pachinko,
+			ControllerType.ExcitingBoxing,
+			ControllerType.JissenMahjong,
+			ControllerType.SuborKeyboard,
+			ControllerType.BarcodeBattler,
+			ControllerType.HoriTrack,
+			ControllerType.BandaiHyperShot,
+			ControllerType.AsciiTurboFile,
+			ControllerType.BattleBox
+		};
+
+		//For designer preview
+		public NesInputConfigViewModel() : this(new NesConfig()) { }
+
 		public NesInputConfigViewModel(NesConfig config)
 		{
 			Config = config;
+
+			this.WhenAnyValue(x => x.Config.Controllers[4].Type).Select(t => t == ControllerType.FourPlayerAdapter || t == ControllerType.FourScore).ToPropertyEx(this, x => x.HasFourPlayerAdapter);
 
 			IObservable<bool> button1Enabled = this.WhenAnyValue(x => x.Config.Controllers[0].Type, x => x.CanConfigure());
 			this.SetupPlayer1 = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 0), button1Enabled);

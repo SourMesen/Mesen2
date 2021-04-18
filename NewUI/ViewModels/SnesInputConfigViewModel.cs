@@ -37,15 +37,26 @@ namespace Mesen.ViewModels
 		public ReactiveCommand<Button, Unit> SetupMultitap3 { get; }
 		public ReactiveCommand<Button, Unit> SetupMultitap4 { get; }
 
+		public Enum[] AvailableControllerTypesP12 => new Enum[] {
+			ControllerType.None,
+			ControllerType.SnesController,
+			ControllerType.SnesMouse,
+			ControllerType.SuperScope,
+			ControllerType.Multitap,
+		};
+
+		public Enum[] AvailableControllerTypesP345 => new Enum[] {
+			ControllerType.None,
+			ControllerType.SnesController
+		};
+
+		//For designer preview
+		public SnesInputConfigViewModel() : this(new SnesConfig()) { }
+
 		public SnesInputConfigViewModel(SnesConfig config)
 		{
 			Config = config;
-
-			Config.Controllers[1].Type = ControllerType.SnesController;
-			Config.Controllers[2].Type = ControllerType.SnesController;
-			Config.Controllers[3].Type = ControllerType.SnesController;
-			Config.Controllers[4].Type = ControllerType.SnesController;
-
+		
 			this.Multitap1 = Config.Controllers[1];
 			this.Multitap2 = Config.Controllers[2];
 			this.Multitap3 = Config.Controllers[3];

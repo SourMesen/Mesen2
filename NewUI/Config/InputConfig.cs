@@ -193,12 +193,46 @@ namespace Mesen.GUI.Config
 
 	public enum ControllerType
 	{
-		None = 0,
-		SnesController = 1,
-		SnesMouse = 2,
-		SuperScope = 3,
-		Multitap = 4,
-		NesController = 5
+		None,
+
+		//SNES controllers
+		SnesController,
+		SnesMouse,
+		SuperScope,
+		Multitap,
+
+		//NES controllers
+		NesController,
+		FamicomController,
+		NesZapper,
+		NesArkanoidController,
+		PowerPad,
+		SuborMouse,
+		VsZapper,
+		VbController,
+
+		//NES/Famicon expansion devices
+		FourScore,
+		FamicomZapper,
+		FourPlayerAdapter,
+		FamicomArkanoidController,
+		OekaKidsTablet,
+		FamilyTrainerMat,
+		KonamiHyperShot,
+		FamilyBasicKeyboard,
+		PartyTap,
+		Pachinko,
+		ExcitingBoxing,
+		JissenMahjong,
+		SuborKeyboard,
+		BarcodeBattler,
+		HoriTrack,
+		BandaiHyperShot,
+		AsciiTurboFile,
+		BattleBox,
+
+		//Game Boy
+		GameboyController,
 	}
 
 	public static class ControllerTypeExtensions

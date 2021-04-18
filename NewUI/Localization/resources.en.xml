@@ -144,6 +144,9 @@
 			<Control ID="chkEnableEqualizer">Enable Equalizer</Control>
 		</Form>
 		<Form ID="NesInputConfigView" Title="Input Settings">
+			<Control ID="grpControllers">Controllers</Control>
+			<Control ID="grpHardware">Hardware buttons</Control>
+			
 			<Control ID="btnSetup">Setup</Control>
 			<Control ID="lblPlayer1">Player 1:</Control>
 			<Control ID="lblPlayer2">Player 2:</Control>
@@ -151,7 +154,7 @@
 			<Control ID="lblPlayer4">Player 4:</Control>
 
 			<Control ID="lblNesType">Console Type:</Control>
-			<Control ID="lblExpansionPort">Expansion Port:</Control>
+			<Control ID="lblExpansionDevice">Expansion device:</Control>
 			<Control ID="chkFourScore">Use Four Score accessory</Control>
 			<Control ID="chkAutoConfigureInput">Automatically configure controllers when loading a game</Control>
 		</Form>
@@ -973,6 +976,36 @@
 			<Value ID="SnesMouse">SNES Mouse</Value>
 			<Value ID="SuperScope">Super Scope</Value>
 			<Value ID="Multitap">Super Multitap</Value>
+
+			<Value ID="NesController">NES Controller</Value>
+			<Value ID="FamicomController">Famicom Controller</Value>
+			<Value ID="NesZapper">Zapper (NES)</Value>
+			<Value ID="NesArkanoidController">Arkanoid Controller (NES)</Value>
+			<Value ID="PowerPad">Power Pad</Value>
+			<Value ID="SnesMouse">SNES Mouse</Value>
+			<Value ID="SuborMouse">Subor Mouse</Value>
+			<Value ID="VbController">Virtual Boy Controller</Value>
+
+			<Value ID="FourScore">Four Score (NES)</Value>
+			<Value ID="FamicomZapper">Zapper (Famicom)</Value>
+			<Value ID="FourPlayerAdapter">Four Player Adapter (Famicom)</Value>
+			<Value ID="FamicomArkanoidController">Arkanoid Controller (Famicom)</Value>
+			<Value ID="OekaKidsTablet">Oeka Kids Tablet</Value>
+			<Value ID="FamilyTrainerMat">Family Trainer</Value>
+			<Value ID="KonamiHyperShot">Konami Hyper Shot</Value>
+			<Value ID="FamilyBasicKeyboard">Family Basic Keyboard</Value>
+			<Value ID="PartyTap">Partytap</Value>
+			<Value ID="Pachinko">Pachinko Controller</Value>
+			<Value ID="ExcitingBoxing">Exciting Boxing Punching Bag</Value>
+			<Value ID="JissenMahjong">Jissen Mahjong Controller</Value>
+			<Value ID="SuborKeyboard">Subor Keyboard</Value>
+			<Value ID="BarcodeBattler">Barcode Battler</Value>
+			<Value ID="HoriTrack">Hori Track</Value>
+			<Value ID="BandaiHyperShot">Bandai Hyper Shot</Value>
+			<Value ID="AsciiTurboFile">Turbo File</Value>
+			<Value ID="BattleBox">Battle Box</Value>
+
+			<Value ID="GameboyController">Gameboy Controller</Value>
 		</Enum>
 		<Enum ID="VideoAspectRatio">
 			<Value ID="NoStretching">Default (No Stretching)</Value>

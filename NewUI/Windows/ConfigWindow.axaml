@@ -119,14 +119,6 @@
 			<TabItem>
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="Controller" Margin="0 0 10 -1" />
-						<TextBlock VerticalAlignment="Center">Input</TextBlock>
-					</StackPanel>
-				</TabItem.Header>
-			</TabItem>
-			<TabItem>
-				<TabItem.Header>
-					<StackPanel Orientation="Horizontal">
 						<mui:MaterialIcon Kind="Image" Margin="0 0 10 -1" />
 						<TextBlock VerticalAlignment="Center">Video</TextBlock>
 					</StackPanel>

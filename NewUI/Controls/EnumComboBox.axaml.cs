@@ -15,6 +15,7 @@ namespace Mesen.Controls
 	{
 		public static readonly StyledProperty<Enum> SelectedItemProperty = AvaloniaProperty.Register<EnumComboBox, Enum>(nameof(SelectedItem), null, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<Type> EnumTypeProperty = AvaloniaProperty.Register<EnumComboBox, Type>(nameof(EnumType));
+		public static readonly StyledProperty<Enum[]> AvailableValuesProperty = AvaloniaProperty.Register<EnumComboBox, Enum[]>(nameof(AvailableValues));
 
 		public static readonly RoutedEvent<SelectionChangedEventArgs> SelectionChangedEvent = RoutedEvent.Register<EnumComboBox, SelectionChangedEventArgs>("SelectionChanged", RoutingStrategies.Bubble);
 
@@ -34,6 +35,17 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(EnumTypeProperty); }
 			set { SetValue(EnumTypeProperty, value); }
+		}
+
+		public Enum[] AvailableValues
+		{
+			get { return GetValue(AvailableValuesProperty); }
+			set { SetValue(AvailableValuesProperty, value); }
+		}
+
+		static EnumComboBox()
+		{
+			AvailableValuesProperty.Changed.AddClassHandler<EnumComboBox>((x, e) => x.InitComboBox());
 		}
 
 		public EnumComboBox()
@@ -59,9 +71,19 @@ namespace Mesen.Controls
 				}
 			});
 
+			cbo.SelectionChanged += MesenComboBox_SelectionChanged;
+
+			InitComboBox();
+		}
+
+		private void InitComboBox()
+		{
+			ComboBox cbo = this.FindControl<ComboBox>("ComboBox");
 			List<string> values = new List<string>();
 			foreach(Enum val in Enum.GetValues(this.EnumType)) {
-				values.Add(ResourceHelper.GetEnumText(val));
+				if(this.AvailableValues == null || this.AvailableValues.Contains(val)) {
+					values.Add(ResourceHelper.GetEnumText(val));
+				}
 			}
 
 			cbo.Items = values;
@@ -70,7 +92,6 @@ namespace Mesen.Controls
 			} else {
 				cbo.SelectedItem = Enum.GetValues(this.EnumType).GetValue(0);
 			}
-			cbo.SelectionChanged += MesenComboBox_SelectionChanged;
 		}
 
 		private void MesenComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
