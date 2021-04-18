@@ -1102,6 +1102,20 @@
 			<Value ID="StartWithSaveData">Power on, with save data</Value>
 			<Value ID="CurrentState">Current state</Value>
 		</Enum>
+		<Enum ID="AudioSampleRate">
+			<Value ID="_11025">11,025 Hz</Value>
+			<Value ID="_22050">22,050 Hz</Value>
+			<Value ID="_32000">32,000 Hz</Value>
+			<Value ID="_44100">44,100 Hz</Value>
+			<Value ID="_48000">48,000 Hz</Value>
+			<Value ID="_96000">96,000 Hz</Value>
+		</Enum>
+		<Enum ID="StereoFilter">
+			<Value ID="None">None</Value>
+			<Value ID="Delay">Delay</Value>
+			<Value ID="Panning">Panning</Value>
+			<Value ID="CombFilter">Comb filter</Value>
+		</Enum>
 
 		<!-- Resources below are used by the debugger only - no translation is needed -->
 		<Enum ID="SnesMemoryType">

@@ -16,7 +16,7 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool DisableDynamicSampleRate { get; set; } = false;
 
 		[Reactive] [MinMax(0, 100)] public UInt32 MasterVolume { get; set; } = 100;
-		[Reactive] [ValidValues(11025, 22050, 32000, 44100, 48000, 96000)] public UInt32 SampleRate { get; set; } = 48000;
+		[Reactive] public AudioSampleRate SampleRate { get; set; } = AudioSampleRate._48000;
 		[Reactive] [MinMax(15, 300)] public UInt32 AudioLatency { get; set; } = 60;
 
 		[Reactive] public bool MuteSoundInBackground { get; set; } = false;
@@ -61,7 +61,7 @@ namespace Mesen.GUI.Config
 				DisableDynamicSampleRate = this.DisableDynamicSampleRate,
 
 				MasterVolume = this.MasterVolume,
-				SampleRate = this.SampleRate,
+				SampleRate = (UInt32)this.SampleRate,
 				AudioLatency = this.AudioLatency,
 
 				MuteSoundInBackground = this.MuteSoundInBackground,
@@ -144,5 +144,15 @@ namespace Mesen.GUI.Config
 		public double Band18Gain;
 		public double Band19Gain;
 		public double Band20Gain;
+	}
+
+	public enum AudioSampleRate
+	{
+		_11025 = 11025,
+		_22050 = 22050,
+		_32000 = 32000,
+		_44100 = 44100,
+		_48000 = 48000,
+		_96000 = 96000
 	}
 }
