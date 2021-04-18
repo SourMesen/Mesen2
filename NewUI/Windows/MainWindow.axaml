@@ -9,6 +9,7 @@
 		  Icon="/Assets/Icon.ico"
         x:Class="Mesen.Windows.MainWindow"
 		  Width="400" Height="400"
+		  DragDrop.AllowDrop="True"
         Title="Mesen-S">
 
 	<Design.DataContext>

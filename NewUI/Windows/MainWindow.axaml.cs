@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mesen.Debugger.Windows;
 using Mesen.Debugger.ViewModels;
+using System.IO;
+using System.Linq;
 
 namespace Mesen.Windows
 {
@@ -26,9 +28,23 @@ namespace Mesen.Windows
 		public MainWindow()
 		{
 			InitializeComponent();
+			AddHandler(DragDrop.DropEvent, OnDrop);
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
+		}
+
+		private void OnDrop(object? sender, DragEventArgs e)
+		{
+			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
+			if(filename != null) {
+				if(File.Exists(filename)) {
+					EmuApi.LoadRom(filename);
+					Activate();
+				} else {
+					EmuApi.DisplayMessage("Error", "File not found: " + filename);
+				}
+			}
 		}
 
 		protected override void OnOpened(EventArgs e)
