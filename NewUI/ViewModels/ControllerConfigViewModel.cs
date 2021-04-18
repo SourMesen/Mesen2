@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	class ControllerConfigViewModel : ViewModelBase
+	public class ControllerConfigViewModel : ViewModelBase
 	{
 		[Reactive] public ControllerConfig Config { get; set; }
 
@@ -18,6 +18,9 @@ namespace Mesen.ViewModels
 		[Reactive] public KeyMappingViewModel KeyMapping2 { get; set; }
 		[Reactive] public KeyMappingViewModel KeyMapping3 { get; set; }
 		[Reactive] public KeyMappingViewModel KeyMapping4 { get; set; }
+
+		//For designer
+		public ControllerConfigViewModel() : this(new ControllerConfig()) { }
 
 		public ControllerConfigViewModel(ControllerConfig config)
 		{
@@ -30,7 +33,7 @@ namespace Mesen.ViewModels
 		}
 	}
 
-	class KeyMappingViewModel : ViewModelBase
+	public class KeyMappingViewModel : ViewModelBase
 	{
 		[Reactive] public ControllerType Type { get; set; }
 		[Reactive] public KeyMapping Mapping { get; set; }

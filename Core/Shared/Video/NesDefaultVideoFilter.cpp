@@ -77,14 +77,18 @@ void NesDefaultVideoFilter::GenerateFullColorPalette(uint32_t* paletteBuffer)
 
 void NesDefaultVideoFilter::InitLookupTable()
 {
-	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
+	VideoConfig videoCfg = _emu->GetSettings()->GetVideoConfig();
+	NesConfig nesCfg = _emu->GetSettings()->GetNesConfig();
 
-	InitConversionMatrix(config.Hue, config.Saturation);
+	InitConversionMatrix(videoCfg.Hue, videoCfg.Saturation);
 
 	double y, i, q;
 	uint32_t palette[512];
-	memcpy(palette, _ppuPaletteArgb[0], sizeof(_ppuPaletteArgb[0])*sizeof(uint32_t));
-	GenerateFullColorPalette(palette);
+	memcpy(palette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette));
+	if(!nesCfg.IsFullColorPalette) {
+		//Generate emphasis palette colors
+		GenerateFullColorPalette(palette);
+	}
 
 	for(int pal = 0; pal < 512; pal++) {
 		uint32_t pixelOutput = palette[pal];
@@ -109,13 +113,13 @@ void NesDefaultVideoFilter::InitLookupTable()
 void NesDefaultVideoFilter::OnBeforeApplyFilter()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
-	GameboyConfig gbConfig = _emu->GetSettings()->GetGameboyConfig();
+	NesConfig nesConfig = _emu->GetSettings()->GetNesConfig();
 
-	ConsoleType consoleType = _emu->GetConsoleType();
-	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
+	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || memcmp(_nesConfig.UserPalette, nesConfig.UserPalette, sizeof(nesConfig.UserPalette)) != 0) {
 		InitLookupTable();
 	}
 	_videoConfig = config;
+	_nesConfig = nesConfig;
 }
 
 void NesDefaultVideoFilter::DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines)

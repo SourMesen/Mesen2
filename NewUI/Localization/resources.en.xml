@@ -1116,7 +1116,11 @@
 			<Value ID="Panning">Panning</Value>
 			<Value ID="CombFilter">Comb filter</Value>
 		</Enum>
-
+		<Enum ID="VsDualOutputOption">
+			<Value ID="Both">Both</Value>
+			<Value ID="MainSystemOnly">Main system only</Value>
+			<Value ID="SubSystemOnly">Sub system only</Value>
+		</Enum>
 		<!-- Resources below are used by the debugger only - no translation is needed -->
 		<Enum ID="SnesMemoryType">
 			<Value ID="CpuMemory">CPU Memory</Value>

@@ -8,6 +8,7 @@ class NesDefaultVideoFilter : public BaseVideoFilter
 private:
 	uint32_t _calculatedPalette[512];
 	VideoConfig _videoConfig = {};
+	NesConfig _nesConfig = {};
 
 	void InitLookupTable();
 	void GenerateFullColorPalette(uint32_t* paletteBuffer);

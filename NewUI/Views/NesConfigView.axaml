@@ -83,6 +83,7 @@
 						<TextBlock Text="{l:Translate lblVsDualPlayAudio}" />
 						<c:EnumComboBox
 							Grid.Column="1"
+							Width="130"
 							EnumType="{x:Type cfg:VsDualOutputOption}"
 							SelectedItem="{CompiledBinding Config.VsDualAudioOutput}"
 						/>
@@ -91,6 +92,7 @@
 						<c:EnumComboBox
 							Grid.Row="1"
 							Grid.Column="1"
+							Width="130"
 							EnumType="{x:Type cfg:VsDualOutputOption}"
 							SelectedItem="{CompiledBinding Config.VsDualVideoOutput}"
 						/>
@@ -367,7 +369,7 @@
 								<dc:PaletteSelector
 									SelectionMode="None"
 									ColumnCount="16"
-									PaletteColors="{CompiledBinding Palette}"
+									PaletteColors="{CompiledBinding Config.UserPalette}"
 									Height="96"
 									Width="384"
 									VerticalAlignment="Top"
@@ -376,9 +378,39 @@
 							</Border>
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
-							<Button MinWidth="127" HorizontalContentAlignment="Center" Content="{l:Translate btnSelectPalette}" />
-							<Button MinWidth="126" HorizontalContentAlignment="Center" Content="{l:Translate btnLoadPalFile}" />
-							<Button MinWidth="127" HorizontalContentAlignment="Center" Content="{l:Translate btnExportPalette}" />
+							<Button
+								MinWidth="127"
+								HorizontalContentAlignment="Center"
+								Content="{l:Translate btnSelectPalette}"
+								Click="btnSelectPalette_OnClick"
+							>
+								<Button.ContextMenu>
+									<ContextMenu Name="Preset" PlacementMode="Bottom">
+										<MenuItem Header="{l:Translate mnuDefaultPalette}" Click="mnuDefaultPalette_Click" />
+										<Separator />
+										<MenuItem Header="Composite Direct (by FirebrandX)" Click="mnuPaletteCompositeDirect_Click" />
+										<MenuItem Header="NES Classic (by FirebrandX)" Click="mnuPaletteNesClassic_Click" />
+										<MenuItem Header="Nestopia (RGB)" Click="mnuPaletteNestopiaRgb_Click" />
+										<MenuItem Header="Original Hardware (by FirebrandX)" Click="mnuPaletteOriginalHardware_Click" />
+										<MenuItem Header="PVM Style (by FirebrandX)" Click="mnuPalettePvmStyle_Click" />
+										<MenuItem Header="Sony CXA2025AS" Click="mnuPaletteSonyCxa2025As_Click" />
+										<MenuItem Header="Unsaturated v6 (by FirebrandX)" Click="mnuPaletteUnsaturated_Click" />
+										<MenuItem Header="YUV v3 (by FirebrandX)" Click="mnuPaletteYuv_Click" />
+									</ContextMenu>
+								</Button.ContextMenu>
+							</Button>
+							<Button
+								MinWidth="126"
+								HorizontalContentAlignment="Center"
+								Content="{l:Translate btnLoadPalFile}"
+								Click="btnLoadPalFile_OnClick"
+							/>
+							<Button
+								MinWidth="127"
+								HorizontalContentAlignment="Center"
+								Content="{l:Translate btnExportPalette}"
+								Click="btnExportPalette_OnClick"
+							/>
 						</StackPanel>
 						<CheckBox IsChecked="{CompiledBinding ShowColorIndexes}" Content="{l:Translate chkShowColorIndexes}" />
 						<CheckBox IsChecked="{CompiledBinding Config.UseCustomVsPalette}" Content="{l:Translate chkUseCustomVsPalette}" />
