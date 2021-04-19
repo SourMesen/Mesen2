@@ -369,11 +369,12 @@
 								<dc:PaletteSelector
 									SelectionMode="None"
 									ColumnCount="16"
-									PaletteColors="{CompiledBinding Config.UserPalette}"
+									BlockSize="24"
 									Height="96"
-									Width="384"
+									PaletteColors="{CompiledBinding Config.UserPalette}"
 									VerticalAlignment="Top"
 									ShowIndexes="{CompiledBinding ShowColorIndexes}"
+									ColorClick="PaletteColor_OnClick"
 								/>
 							</Border>
 						</StackPanel>

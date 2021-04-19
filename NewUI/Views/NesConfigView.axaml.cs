@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Mesen.ViewModels;
+using Mesen.Debugger.Controls;
+using Mesen.Windows;
 
 namespace Mesen.Views
 {
@@ -28,6 +30,22 @@ namespace Mesen.Views
 			((Button)sender).ContextMenu.Open();
 		}
 
+		private async void PaletteColor_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)
+		{
+			ColorPickerViewModel model = new ColorPickerViewModel() { Color = e.Color };
+			ColorPickerWindow wnd = new ColorPickerWindow() {
+				DataContext = model
+			};
+			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+			bool success = await wnd.ShowDialog<bool>(VisualRoot as Window);
+			if(success) {
+				UInt32[] colors = (UInt32[])(DataContext as NesConfigViewModel).Config.UserPalette.Clone();
+				colors[e.ColorIndex] = model.Color.ToUint32();
+				(DataContext as NesConfigViewModel).Config.UserPalette = colors;
+			}
+		}
+
 		private async void btnLoadPalFile_OnClick(object sender, RoutedEventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
@@ -35,9 +53,9 @@ namespace Mesen.Views
 				new FileDialogFilter() { Name = "Palette files (*.pal)", Extensions = { "pal" } }
 			};
 
-			string[] filenames = await ofd.ShowAsync(this.VisualRoot as Window);
+			string[] filenames = await ofd.ShowAsync(VisualRoot as Window);
 			if(filenames.Length > 0) {
-				(this.DataContext as NesConfigViewModel).LoadPaletteFile(filenames[0]);
+				(DataContext as NesConfigViewModel).LoadPaletteFile(filenames[0]);
 			}
 		}
 
@@ -48,9 +66,9 @@ namespace Mesen.Views
 				new FileDialogFilter() { Name = "Palette files (*.pal)", Extensions = { "pal" } }
 			};
 
-			string filename = await sfd.ShowAsync(this.VisualRoot as Window);
+			string filename = await sfd.ShowAsync(VisualRoot as Window);
 			if(filename != null) {
-				(this.DataContext as NesConfigViewModel).ExportPalette(filename);
+				(DataContext as NesConfigViewModel).ExportPalette(filename);
 			}
 		}
 
@@ -101,7 +119,7 @@ namespace Mesen.Views
 
 		private void UpdatePalette(UInt32[] newPalette)
 		{
-			(this.DataContext as NesConfigViewModel).Config.UserPalette = newPalette;
+			(DataContext as NesConfigViewModel).Config.UserPalette = newPalette;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,17 @@ namespace Mesen.Debugger.Controls
 
 		public static readonly StyledProperty<PaletteSelectionMode> SelectionModeProperty = AvaloniaProperty.Register<PaletteSelector, PaletteSelectionMode>(nameof(SelectionMode));
 		public static readonly StyledProperty<int> ColumnCountProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(ColumnCount), 16);
+		public static readonly StyledProperty<int> BlockSizeProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(BlockSize), 16);
 		public static readonly StyledProperty<UInt32[]> PaletteColorsProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]>(nameof(PaletteColors));
 		public static readonly StyledProperty<bool> ShowIndexesProperty = AvaloniaProperty.Register<PaletteSelector, bool>(nameof(ShowIndexes));
+
+		public static readonly RoutedEvent<ColorClickEventArgs> ColorClickEvent = RoutedEvent.Register<PaletteSelector, ColorClickEventArgs>(nameof(ColorClick), RoutingStrategies.Direct);
+
+		public event EventHandler<ColorClickEventArgs> ColorClick
+		{
+			add => AddHandler(ColorClickEvent, value);
+			remove => RemoveHandler(ColorClickEvent, value);
+		}
 
 		public int SelectedPalette
 		{
@@ -47,6 +57,12 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ColumnCountProperty, value); }
 		}
 
+		public int BlockSize
+		{
+			get { return GetValue(BlockSizeProperty); }
+			set { SetValue(BlockSizeProperty, value); }
+		}
+
 		public bool ShowIndexes
 		{
 			get { return GetValue(ShowIndexesProperty); }
@@ -56,6 +72,7 @@ namespace Mesen.Debugger.Controls
 		static PaletteSelector()
 		{
 			AffectsRender<PaletteSelector>(SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty, ShowIndexesProperty);
+			AffectsMeasure<PaletteSelector>(ColumnCountProperty, BlockSizeProperty, PaletteColorsProperty);
 		}
 
 		public PaletteSelector()
@@ -69,6 +86,12 @@ namespace Mesen.Debugger.Controls
 			});
 
 			Focusable = true;
+			ClipToBounds = true;
+		}
+
+		protected override Size MeasureOverride(Size availableSize)
+		{
+			return new Size(ColumnCount * BlockSize, (PaletteColors.Length / ColumnCount) * BlockSize);
 		}
 
 		private static int CoerceSelectedPalette(IAvaloniaObject o, int value)
@@ -116,7 +139,7 @@ namespace Mesen.Debugger.Controls
 		public override void Render(DrawingContext context)
 		{
 			UInt32[] paletteColors = PaletteColors;
-
+			
 			if(paletteColors == null) {
 				return;
 			}
@@ -126,6 +149,10 @@ namespace Mesen.Debugger.Controls
 			int rowCount = paletteColors.Length / columnCount;
 			double width = size.Width / columnCount;
 			double height = size.Height / rowCount;
+			if(BlockSize > 0) {
+				width = BlockSize;
+				height = BlockSize;
+			}
 
 			Typeface typeface = new Typeface("Consolas");
 			FormattedText text = new FormattedText("", typeface, 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
@@ -173,11 +200,18 @@ namespace Mesen.Debugger.Controls
 			int rowCount = PaletteColors.Length / columnCount;
 			double cellWidth = size.Width / columnCount;
 			double cellHeight = size.Height / rowCount;
+			if(BlockSize > 0) {
+				cellWidth = BlockSize;
+				cellHeight = BlockSize;
+			}
 
 			int clickedRow = (int)(p.Y / cellHeight);
 			int clickedColumn = (int)(p.X / cellWidth);
 
 			int paletteIndex = clickedRow * columnCount + clickedColumn;
+
+			RaiseEvent(new ColorClickEventArgs() { ColorIndex = paletteIndex, Color = Color.FromUInt32(PaletteColors[paletteIndex]) });
+
 			if(SelectionMode == PaletteSelectionMode.SingleColor) {
 				paletteIndex /= 1;
 			} else if(SelectionMode == PaletteSelectionMode.FourColors) {
@@ -186,6 +220,17 @@ namespace Mesen.Debugger.Controls
 				paletteIndex /= 16;
 			}
 			SelectedPalette = paletteIndex;
+		}
+
+		public class ColorClickEventArgs : RoutedEventArgs
+		{
+			public int ColorIndex;
+			public Color Color;
+
+			public ColorClickEventArgs()
+			{
+				this.RoutedEvent = PaletteSelector.ColorClickEvent;
+			}
 		}
 	}
 

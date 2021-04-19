@@ -92,6 +92,9 @@
     <Compile Update="Views\NesControllerView.axaml.cs">
       <DependentUpon>NesControllerView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\ColorPickerWindow.axaml.cs">
+      <DependentUpon>ColorPickerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>
