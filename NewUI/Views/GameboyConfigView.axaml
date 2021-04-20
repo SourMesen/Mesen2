@@ -18,6 +18,15 @@
 		<vm:GameboyConfigViewModel />
 	</Design.DataContext>
 
+	<UserControl.Styles>
+		<Style Selector="dc|PaletteSelector">
+			<Setter Property="SelectionMode" Value="None" />
+			<Setter Property="ColumnCount" Value="4" />
+			<Setter Property="Width" Value="80" />
+			<Setter Property="Height" Value="20" />
+		</Style>
+	</UserControl.Styles>
+	
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
@@ -43,10 +52,49 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<StackPanel>
 				<c:OptionSection Header="{l:Translate lblGameboyPalette}" Margin="0">
+					<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+						<TextBlock Text="{l:Translate lblGbBackground}" />
+						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Width="82">
+							<dc:PaletteSelector
+								PaletteColors="{CompiledBinding Config.BgColors}"
+								ColorClick="BgColor_OnClick"
+							/>
+						</Border>
+						<Button
+							Grid.Column="2"
+							Content="{l:Translate btnSelectPreset}"
+							Click="btnSelectPreset_OnClick"
+						>
+							<Button.ContextMenu>
+								<ContextMenu PlacementMode="Bottom">
+									<MenuItem Header="{l:Translate lblGrayscale}" Click="mnuGrayscalePreset_Click" />
+									<MenuItem Header="{l:Translate lblGrayscaleHighContrast}" Click="mnuGrayscaleHighContrastPreset_Click" />
+									<MenuItem Header="{l:Translate lblGreen}" Click="mnuGreenPreset_Click" />
+									<MenuItem Header="{l:Translate lblBrown}" Click="mnuBrownPreset_Click" />
+								</ContextMenu>
+							</Button.ContextMenu>
+						</Button>
+
+						<TextBlock Text="{l:Translate lblGbObj0}" Grid.Row="1" />
+						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="1" Width="82">
+							<dc:PaletteSelector
+								PaletteColors="{CompiledBinding Config.Obj0Colors}"
+								ColorClick="Obj0Color_OnClick"
+							/>
+						</Border>
+
+						<TextBlock Text="{l:Translate lblGbObj1}" Grid.Row="2" />
+						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="2" Width="82">
+							<dc:PaletteSelector
+								PaletteColors="{CompiledBinding Config.Obj1Colors}"
+								ColorClick="Obj1Color_OnClick"
+							/>
+						</Border>
+					</Grid>
 				</c:OptionSection>
 				<c:OptionSection Header="{l:Translate lblLcdSettings}">
-					<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
 					<CheckBox IsChecked="{CompiledBinding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
+					<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>

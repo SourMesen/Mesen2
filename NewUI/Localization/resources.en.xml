@@ -406,6 +406,12 @@
 			<Control ID="lblGbObj1">Sprites #2:</Control>
 			<Control ID="btnSelectPreset">Select Preset...</Control>
 
+			<Control ID="lblGrayscale">Grayscale</Control>
+			<Control ID="lblGrayscaleHighContrast">Grayscale (high contrast)</Control>
+			<Control ID="lblGreen">Green</Control>
+			<Control ID="lblBrown">Brown</Control>
+
+
 			<Control ID="lblLcdSettings">LCD Settings</Control>
 			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
