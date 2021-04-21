@@ -77,5 +77,6 @@ public:
 	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
 	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
 
-	virtual uint64_t GetMasterClock() override;
+	uint64_t GetMasterClock() override;
+	uint32_t GetMasterClockRate() override;
 };

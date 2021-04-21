@@ -17,6 +17,7 @@ protected:
 	Emulator* _emu;
 	vector<KeyMapping> _keyMappings;
 	bool _strobe;
+	ControllerType _type;
 	uint8_t _port;
 	SimpleLock _stateLock;
 
@@ -51,10 +52,11 @@ public:
 	static constexpr uint8_t ExpDevicePort2 = 7;
 	static constexpr uint8_t PortCount = ExpDevicePort2 + 1;
 
-	BaseControlDevice(Emulator* emu, uint8_t port, KeyMappingSet keyMappingSet = KeyMappingSet());
+	BaseControlDevice(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappingSet = KeyMappingSet());
 	virtual ~BaseControlDevice();
 
 	uint8_t GetPort();
+	ControllerType GetControllerType();
 
 	bool IsPressed(uint8_t bit);
 	MousePosition GetCoordinates();
@@ -74,7 +76,6 @@ public:
 	void SetRawState(ControlDeviceState state);
 	ControlDeviceState GetRawState();
 
-	virtual ControllerType GetControllerType() = 0;
 	virtual uint8_t ReadRam(uint16_t addr) = 0;
 	virtual void WriteRam(uint16_t addr, uint8_t value) = 0;
 	

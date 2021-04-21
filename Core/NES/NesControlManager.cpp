@@ -3,8 +3,6 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
-#include "NES/Input/NesController.h"
-#include "SNES/Input/SnesController.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/Interfaces/IInputProvider.h"
@@ -13,30 +11,31 @@
 #include "Shared/Emulator.h"
 #include "Shared/KeyManager.h"
 #include "Shared/SystemActionManager.h"
-/*#include "Zapper.h"
-#include "ArkanoidController.h"
-#include "OekaKidsTablet.h"
-#include "FourScore.h"
-#include "SnesController.h"
-#include "SnesMouse.h"
-#include "PowerPad.h"
-#include "FamilyMatTrainer.h"
-#include "KonamiHyperShot.h"
-#include "FamilyBasicKeyboard.h"
-#include "FamilyBasicDataRecorder.h"
-#include "PartyTap.h"
-#include "PachinkoController.h"
-#include "ExcitingBoxingController.h"
-#include "SuborKeyboard.h"
-#include "SuborMouse.h"
-#include "JissenMahjongController.h"
-#include "BarcodeBattlerReader.h"
-#include "HoriTrack.h"
-#include "BandaiHyperShot.h"
-#include "VsZapper.h"
-#include "AsciiTurboFile.h"
-#include "BattleBox.h"
-#include "VbController.h"*/
+#include "NES/Input/NesController.h"
+#include "SNES/Input/SnesController.h"
+#include "SNES/Input/SnesMouse.h"
+#include "NES/Input/Zapper.h"
+#include "NES/Input/ArkanoidController.h"
+#include "NES/Input/OekaKidsTablet.h"
+#include "NES/Input/FourScore.h"
+#include "NES/Input/PowerPad.h"
+#include "NES/Input/FamilyMatTrainer.h"
+#include "NES/Input/KonamiHyperShot.h"
+#include "NES/Input/FamilyBasicKeyboard.h"
+#include "NES/Input/FamilyBasicDataRecorder.h"
+#include "NES/Input/PartyTap.h"
+#include "NES/Input/PachinkoController.h"
+#include "NES/Input/ExcitingBoxingController.h"
+#include "NES/Input/SuborKeyboard.h"
+#include "NES/Input/SuborMouse.h"
+#include "NES/Input/JissenMahjongController.h"
+#include "NES/Input/BarcodeBattlerReader.h"
+#include "NES/Input/HoriTrack.h"
+#include "NES/Input/BandaiHyperShot.h"
+#include "NES/Input/VsZapper.h"
+#include "NES/Input/AsciiTurboFile.h"
+#include "NES/Input/BattleBox.h"
+#include "NES/Input/VirtualBoyController.h"
 
 NesControlManager::NesControlManager(shared_ptr<NesConsole> console, shared_ptr<BaseControlDevice> mapperControlDevice) : BaseControlManager(console->GetEmulator())
 {
@@ -58,48 +57,43 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 	shared_ptr<BaseControlDevice> device;
 	
 	NesConfig cfg = _emu->GetSettings()->GetNesConfig();
+	KeyMappingSet keys = cfg.Controllers[port].Keys;
 
 	switch(type) {
 		case ControllerType::None: break;
-		case ControllerType::NesController: device.reset(new NesController(_emu, port, cfg.Controllers[port].Keys)); break;
-		//case ControllerType::Zapper: device.reset(new Zapper(console, port)); break;
-		//case ControllerType::ArkanoidController: device.reset(new ArkanoidController(console, port)); break;
-		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, cfg.Controllers[port].Keys)); break;
-		/*case ControllerType::PowerPad: device.reset(new PowerPad(console, port, console->GetSettings()->GetControllerKeys(port))); break;
-		case ControllerType::SnesMouse: device.reset(new SnesMouse(console, port)); break;
-		case ControllerType::SuborMouse: device.reset(new SuborMouse(console, port)); break;
-		case ControllerType::VsZapper: device.reset(new VsZapper(console, port)); break;
-		case ControllerType::VbController: device.reset(new VbController(console, port, console->GetSettings()->GetControllerKeys(port))); break;*/
-	}
-	
-	return device;
-}
+		case ControllerType::NesController: device.reset(new NesController(_emu, type, port, keys)); break;
+		case ControllerType::FamicomController: device.reset(new NesController(_emu, type, port, keys)); break;
+		case ControllerType::NesZapper: device.reset(new Zapper(_console.get(), type, port)); break;
+		case ControllerType::NesArkanoidController: device.reset(new ArkanoidController(_emu, type, port)); break;
+		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, keys)); break;
+		case ControllerType::PowerPad: device.reset(new PowerPad(_emu, type, port, keys)); break;
+		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
+		case ControllerType::SuborMouse: device.reset(new SuborMouse(_emu, port)); break;
+		case ControllerType::VsZapper: device.reset(new VsZapper(_console.get(), port)); break;
+		case ControllerType::VirtualBoyController: device.reset(new VirtualBoyController(_emu, port, keys)); break;
 
-shared_ptr<BaseControlDevice> NesControlManager::CreateExpansionDevice(ExpansionPortDevice type)
-{
-	shared_ptr<BaseControlDevice> device;
+		//Exp port devices
+		case ControllerType::FamicomZapper: device.reset(new Zapper(_console.get(), type, BaseControlDevice::ExpDevicePort)); break;
+		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort)); break;
+		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu)); break;
+		case ControllerType::FamilyTrainerMat: device.reset(new FamilyMatTrainer(_emu, keys)); break;
+		case ControllerType::KonamiHyperShot: device.reset(new KonamiHyperShot(_emu, keys, cfg.Controllers[1].Keys)); break;
+		case ControllerType::FamilyBasicKeyboard: device.reset(new FamilyBasicKeyboard(_emu, keys)); break;
+		case ControllerType::PartyTap: device.reset(new PartyTap(_emu, keys)); break;
+		case ControllerType::Pachinko: device.reset(new PachinkoController(_emu, keys)); break;
+		case ControllerType::ExcitingBoxing: device.reset(new ExcitingBoxingController(_emu, keys)); break;
+		case ControllerType::JissenMahjong: device.reset(new JissenMahjongController(_emu, keys)); break;
+		case ControllerType::SuborKeyboard: device.reset(new SuborKeyboard(_emu, keys)); break;
+		case ControllerType::BarcodeBattler: device.reset(new BarcodeBattlerReader(_emu)); break;
+		case ControllerType::HoriTrack: device.reset(new HoriTrack(_emu, keys)); break;
+		case ControllerType::BandaiHyperShot: device.reset(new BandaiHyperShot(_console.get(), keys)); break;
+		case ControllerType::AsciiTurboFile: device.reset(new AsciiTurboFile(_emu)); break;
+		case ControllerType::BattleBox: device.reset(new BattleBox(_emu)); break;
 
-	/*switch(type) {
-		case ExpansionPortDevice::Zapper: device.reset(new Zapper(console, BaseControlDevice::ExpDevicePort)); break;
-		case ExpansionPortDevice::ArkanoidController: device.reset(new ArkanoidController(console, BaseControlDevice::ExpDevicePort)); break;
-		case ExpansionPortDevice::OekaKidsTablet: device.reset(new OekaKidsTablet(console)); break;
-		case ExpansionPortDevice::FamilyTrainerMat: device.reset(new FamilyMatTrainer(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::KonamiHyperShot: device.reset(new KonamiHyperShot(console, console->GetSettings()->GetControllerKeys(0), console->GetSettings()->GetControllerKeys(1))); break;
-		case ExpansionPortDevice::FamilyBasicKeyboard: device.reset(new FamilyBasicKeyboard(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::PartyTap: device.reset(new PartyTap(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::Pachinko: device.reset(new PachinkoController(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::ExcitingBoxing: device.reset(new ExcitingBoxingController(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::JissenMahjong: device.reset(new JissenMahjongController(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::SuborKeyboard: device.reset(new SuborKeyboard(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::BarcodeBattler: device.reset(new BarcodeBattlerReader(console)); break;
-		case ExpansionPortDevice::HoriTrack: device.reset(new HoriTrack(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::BandaiHyperShot: device.reset(new BandaiHyperShot(console, console->GetSettings()->GetControllerKeys(0))); break;
-		case ExpansionPortDevice::AsciiTurboFile: device.reset(new AsciiTurboFile(console)); break;
-		case ExpansionPortDevice::BattleBox: device.reset(new BattleBox(console)); break;
-
-		case ExpansionPortDevice::FourPlayerAdapter:
+		case ControllerType::FourScore: //TODO
+		case ControllerType::FourPlayerAdapter: //TODO
 		default: break;
-	}*/
+	}
 
 	return device;
 }

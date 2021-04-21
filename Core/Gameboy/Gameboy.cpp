@@ -463,3 +463,8 @@ uint64_t Gameboy::GetMasterClock()
 {
 	return _memoryManager->GetCycleCount();
 }
+
+uint32_t Gameboy::GetMasterClockRate()
+{
+	return 20971520;
+}

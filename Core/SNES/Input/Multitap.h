@@ -29,8 +29,6 @@ protected:
 public:
 	Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4);
 
-	ControllerType GetControllerType() override;
-
 	void SetControllerState(uint8_t controllerNumber, ControlDeviceState state);
 
 	uint8_t ReadRam(uint16_t addr) override;

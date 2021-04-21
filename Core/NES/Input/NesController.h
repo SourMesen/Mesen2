@@ -89,11 +89,10 @@ protected:
 public:
 	enum Buttons { Up = 0, Down, Left, Right, Start, Select, B, A, Microphone };
 
-	NesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, port, keyMappings)
+	NesController(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, type, port, keyMappings)
 	{
 		_turboSpeed = keyMappings.TurboSpeed;
-		_microphoneEnabled = false;
-		//_microphoneEnabled = port == 1 && _console->GetSettings()->GetConsoleType() == ConsoleType::Famicom;
+		_microphoneEnabled = port == 1 && type == ControllerType::FamicomController;
 	}
 	
 	uint8_t ToByte()

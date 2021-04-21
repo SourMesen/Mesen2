@@ -12,6 +12,7 @@ namespace Mesen.GUI.Config
 	{
 		//Input
 		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
+		[Reactive] public UInt32 ZapperDetectionRadius { get; set; } = 0;
 
 		//Video
 		[Reactive] public bool EnableHdPacks { get; set; } = true;
@@ -117,6 +118,7 @@ namespace Mesen.GUI.Config
 					this.Controllers[3].ToInterop(),
 					this.Controllers[4].ToInterop()
 				},
+				ZapperDetectionRadius = ZapperDetectionRadius,
 
 				EnableHdPacks = EnableHdPacks,
 				DisableGameDatabase = DisableGameDatabase,
@@ -246,6 +248,7 @@ namespace Mesen.GUI.Config
 	{
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
 		public InteropControllerConfig[] Controllers;
+		public UInt32 ZapperDetectionRadius;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameDatabase;

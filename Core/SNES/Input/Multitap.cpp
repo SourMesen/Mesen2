@@ -94,7 +94,7 @@ void Multitap::RefreshStateBuffer()
 	}
 }
 
-Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console->GetEmulator(), port, keyMappings1)
+Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console->GetEmulator(), ControllerType::Multitap, port, keyMappings1)
 {
 	_turboSpeed[0] = keyMappings1.TurboSpeed;
 	_turboSpeed[1] = keyMappings2.TurboSpeed;
@@ -106,11 +106,6 @@ Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, K
 	_mappings[2] = keyMappings3.GetKeyMappingArray();
 	_mappings[3] = keyMappings4.GetKeyMappingArray();
 	_internalRegs = console->GetInternalRegisters().get();
-}
-
-ControllerType Multitap::GetControllerType()
-{
-	return ControllerType::Multitap;
 }
 
 void Multitap::SetControllerState(uint8_t controllerNumber, ControlDeviceState state)

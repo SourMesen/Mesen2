@@ -117,5 +117,6 @@ public:
 	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
 
 	// Inherited via IConsole
-	virtual uint64_t GetMasterClock() override;
+	uint64_t GetMasterClock() override;
+	uint32_t GetMasterClockRate() override;
 };

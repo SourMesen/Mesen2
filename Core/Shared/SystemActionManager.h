@@ -18,13 +18,8 @@ protected:
 public:
 	enum Buttons { ResetButton = 0, PowerButton = 1 };
 
-	SystemActionManager(Emulator* emu) : BaseControlDevice(emu, BaseControlDevice::ConsoleInputPort)
+	SystemActionManager(Emulator* emu) : BaseControlDevice(emu, ControllerType::None, BaseControlDevice::ConsoleInputPort)
 	{
-	}
-
-	ControllerType GetControllerType() override
-	{
-		return ControllerType::None;
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

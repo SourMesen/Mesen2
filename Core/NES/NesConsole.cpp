@@ -249,3 +249,8 @@ uint64_t NesConsole::GetMasterClock()
 {
 	return _cpu->GetCycleCount();
 }
+
+uint32_t NesConsole::GetMasterClockRate()
+{
+	return NesCpu::ClockRateNtsc;
+}

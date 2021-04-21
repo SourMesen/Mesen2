@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "SNES/Console.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/KeyManager.h"
@@ -42,14 +41,9 @@ protected:
 public:
 	enum Buttons { Left = 0, Right };
 
-	SnesMouse(Console* console, uint8_t port) : BaseControlDevice(console->GetEmulator(), port)
+	SnesMouse(Emulator* emu, uint8_t port) : BaseControlDevice(emu, ControllerType::SnesMouse, port)
 	{
 		_settings = _emu->GetSettings();
-	}
-
-	ControllerType GetControllerType() override
-	{
-		return ControllerType::SnesMouse;
 	}
 
 	void WriteRam(uint16_t addr, uint8_t value) override

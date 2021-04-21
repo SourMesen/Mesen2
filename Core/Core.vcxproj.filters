@@ -734,6 +734,30 @@
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />
     <ClInclude Include="Shared\RomInfo.h" />
+    <ClInclude Include="NES\Input\AsciiTurboFile.h" />
+    <ClInclude Include="NES\Input\BandaiHyperShot.h" />
+    <ClInclude Include="NES\Input\BarcodeBattlerReader.h" />
+    <ClInclude Include="NES\Input\BattleBox.h" />
+    <ClInclude Include="NES\Input\ExcitingBoxingController.h" />
+    <ClInclude Include="NES\Input\FamilyBasicDataRecorder.h" />
+    <ClInclude Include="NES\Input\FamilyBasicKeyboard.h" />
+    <ClInclude Include="NES\Input\FamilyMatTrainer.h" />
+    <ClInclude Include="NES\Input\FourScore.h" />
+    <ClInclude Include="NES\Input\HoriTrack.h" />
+    <ClInclude Include="NES\Input\OekaKidsTablet.h" />
+    <ClInclude Include="NES\Input\PachinkoController.h" />
+    <ClInclude Include="NES\Input\PartyTap.h" />
+    <ClInclude Include="NES\Input\PowerPad.h" />
+    <ClInclude Include="NES\Input\VirtualBoyController.h" />
+    <ClInclude Include="NES\Input\VsZapper.h" />
+    <ClInclude Include="NES\Input\Zapper.h" />
+    <ClInclude Include="NES\Input\ArkanoidController.h" />
+    <ClInclude Include="NES\Input\JissenMahjongController.h" />
+    <ClInclude Include="NES\Input\KonamiHyperShot.h" />
+    <ClInclude Include="NES\Input\SuborKeyboard.h" />
+    <ClInclude Include="NES\Input\SuborMouse.h" />
+    <ClInclude Include="NES\Input\IBarcodeReader.h" />
+    <ClInclude Include="Shared\Interfaces\IBattery.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

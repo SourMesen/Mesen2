@@ -93,14 +93,9 @@ protected:
 	}
 
 public:
-	SuperScope(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), port, keyMappings)
+	SuperScope(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), ControllerType::SuperScope, port, keyMappings)
 	{
 		_ppu = console->GetPpu().get();
-	}
-
-	ControllerType GetControllerType() override
-	{
-		return ControllerType::SuperScope;
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

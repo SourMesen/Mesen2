@@ -144,12 +144,46 @@ struct AudioConfig
 //Update ControllerTypeNames when changing this
 enum class ControllerType
 {
-	None = 0,
-	SnesController = 1,
-	SnesMouse = 2,
-	SuperScope = 3,
-	Multitap = 4,
-	NesController = 5
+	None,
+
+	//SNES controllers
+	SnesController,
+	SnesMouse,
+	SuperScope,
+	Multitap,
+
+	//NES controllers
+	NesController,
+	FamicomController,
+	NesZapper,
+	NesArkanoidController,
+	PowerPad,
+	SuborMouse,
+	VsZapper,
+	VirtualBoyController,
+
+	//NES/Famicon expansion devices
+	FourScore,
+	FamicomZapper,
+	FourPlayerAdapter,
+	FamicomArkanoidController,
+	OekaKidsTablet,
+	FamilyTrainerMat,
+	KonamiHyperShot,
+	FamilyBasicKeyboard,
+	PartyTap,
+	Pachinko,
+	ExcitingBoxing,
+	JissenMahjong,
+	SuborKeyboard,
+	BarcodeBattler,
+	HoriTrack,
+	BandaiHyperShot,
+	AsciiTurboFile,
+	BattleBox,
+
+	//Game Boy
+	GameboyController,
 };
 
 struct KeyMapping
@@ -354,6 +388,7 @@ enum class VsDualOutputOption
 struct NesConfig
 {
 	ControllerConfig Controllers[5];
+	uint32_t ZapperDetectionRadius = 0;
 
 	bool EnableHdPacks = true;
 	bool DisableGameDatabase = false;

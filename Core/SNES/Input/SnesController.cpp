@@ -2,7 +2,7 @@
 #include "SNES/Input/SnesController.h"
 #include "Shared/Emulator.h"
 
-SnesController::SnesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, port, keyMappings)
+SnesController::SnesController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, ControllerType::SnesController, port, keyMappings)
 {
 	_turboSpeed = keyMappings.TurboSpeed;
 }
@@ -69,11 +69,6 @@ void SnesController::Serialize(Serializer & s)
 void SnesController::RefreshStateBuffer()
 {
 	_stateBuffer = (uint32_t)ToByte();
-}
-
-ControllerType SnesController::GetControllerType()
-{
-	return ControllerType::SnesController;
 }
 
 uint8_t SnesController::ReadRam(uint16_t addr)

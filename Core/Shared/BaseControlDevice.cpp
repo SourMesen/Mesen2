@@ -5,9 +5,10 @@
 #include "Utilities/StringUtilities.h"
 #include "Utilities/Serializer.h"
 
-BaseControlDevice::BaseControlDevice(Emulator* emu, uint8_t port, KeyMappingSet keyMappingSet)
+BaseControlDevice::BaseControlDevice(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappingSet)
 {
 	_emu = emu;
+	_type = type;
 	_port = port;
 	_strobe = false;
 	_keyMappings = keyMappingSet.GetKeyMappingArray();
@@ -20,6 +21,11 @@ BaseControlDevice::~BaseControlDevice()
 uint8_t BaseControlDevice::GetPort()
 {
 	return _port;
+}
+
+ControllerType BaseControlDevice::GetControllerType()
+{ 
+	return _type; 
 }
 
 void BaseControlDevice::SetStateFromInput()

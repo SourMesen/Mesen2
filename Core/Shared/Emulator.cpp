@@ -331,8 +331,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	}
 
 	if(patchFile.IsValid()) {
-		//TODO
-		//_patchPath = patchFile;
+		_patchFile = patchFile;
 		if(romFile.ApplyPatch(patchFile)) {
 			MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
 		}
@@ -476,6 +475,11 @@ vector<CpuType> Emulator::GetCpuTypes()
 uint64_t Emulator::GetMasterClock()
 {
 	return _console->GetMasterClock();
+}
+
+uint32_t Emulator::GetMasterClockRate()
+{
+	return _console->GetMasterClockRate();
 }
 
 uint32_t Emulator::GetFrameCount()

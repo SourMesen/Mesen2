@@ -129,6 +129,7 @@ public:
 	ConsoleType GetConsoleType();
 	vector<CpuType> GetCpuTypes();
 	uint64_t GetMasterClock();
+	uint32_t GetMasterClockRate();
 
 	EmulatorLock AcquireLock();
 	void Lock();
