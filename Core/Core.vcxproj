@@ -67,6 +67,8 @@
     <ClInclude Include="NES\Input\VirtualBoyController.h" />
     <ClInclude Include="NES\Input\VsZapper.h" />
     <ClInclude Include="NES\Input\Zapper.h" />
+    <ClInclude Include="NES\Mappers\MMC1.h" />
+    <ClInclude Include="NES\Mappers\UNROM.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />

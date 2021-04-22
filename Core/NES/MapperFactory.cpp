@@ -147,9 +147,9 @@
 #include "Mapper244.h"
 #include "Mapper246.h"
 #include "Mapper253.h"
-#include "McAcc.h"
-#include "MMC1.h"
-#include "MMC1_105.h"
+#include "McAcc.h"*/
+#include "NES/Mappers/MMC1.h"
+/*#include "MMC1_105.h"
 #include "MMC1_155.h"
 #include "MMC2.h"
 #include "MMC3.h"
@@ -205,7 +205,7 @@
 #include "Nina01.h"
 #include "Nina03_06.h"
 #include "NovelDiamond.h"*/
-#include "Mappers/NROM.h"
+#include "NES/Mappers/NROM.h"
 /*#include "NsfCart31.h"
 #include "NsfMapper.h"
 #include "NtdecTc112.h"
@@ -255,9 +255,9 @@
 #include "UnlD1038.h"
 #include "UnlDripGame.h"
 #include "UnlPci556.h"
-#include "UnlPuzzle.h"
-#include "UNROM.h"
-#include "UnRom_94.h"
+#include "UnlPuzzle.h"*/
+#include "NES/Mappers/UNROM.h"
+/*#include "UnRom_94.h"
 #include "UnRom_180.h"
 #include "UnRom512.h"
 #include "VRC1.h"
@@ -306,9 +306,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 
 	switch(romData.Info.MapperID) {
 		case 0: return new NROM();
-		/*case 1: return new MMC1();
+		case 1: return new MMC1();
 		case 2: return new UNROM();
-		case 3: return new CNROM(false);
+		/*case 3: return new CNROM(false);
 		case 4: 
 			if(romData.Info.SubMapperID == 3) {
 				return new McAcc();

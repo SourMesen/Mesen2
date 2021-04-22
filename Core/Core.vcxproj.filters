@@ -758,6 +758,8 @@
     <ClInclude Include="NES\Input\SuborMouse.h" />
     <ClInclude Include="NES\Input\IBarcodeReader.h" />
     <ClInclude Include="Shared\Interfaces\IBattery.h" />
+    <ClInclude Include="NES\Mappers\MMC1.h" />
+    <ClInclude Include="NES\Mappers\UNROM.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

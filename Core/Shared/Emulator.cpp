@@ -341,6 +341,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		//Make sure the battery is saved to disk before we load another game (or reload the same game)
 		_console->SaveBattery();
 	}
+	
+	_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
 
 	bool result = false;
 	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
@@ -381,8 +383,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_debugger->Release();
 		_debugger.reset();
 	}
-
-	_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
 
 	//TODO
 	//UpdateRegion();
