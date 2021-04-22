@@ -42,8 +42,8 @@ NesPpu::NesPpu(shared_ptr<NesConsole> console)
 	_emu->RegisterMemory(SnesMemoryType::NesSpriteRam, _spriteRAM, sizeof(_spriteRAM));
 	_emu->RegisterMemory(SnesMemoryType::NesPaletteRam, _paletteRAM, sizeof(_paletteRAM));
 	
-	_console->InitializeRam(_spriteRAM, 0x100);
-	_console->InitializeRam(_secondarySpriteRAM, 0x20);
+	_settings->InitializeRam(_spriteRAM, 0x100);
+	_settings->InitializeRam(_secondarySpriteRAM, 0x20);
 
 	Reset();
 }

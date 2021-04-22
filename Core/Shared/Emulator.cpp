@@ -339,8 +339,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	if(_console) {
 		//Make sure the battery is saved to disk before we load another game (or reload the same game)
-		//TODO
-		//_console->SaveBattery();
+		_console->SaveBattery();
 	}
 
 	bool result = false;

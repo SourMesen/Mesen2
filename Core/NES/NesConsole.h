@@ -44,12 +44,9 @@ public:
 	NesConfig& GetNesConfig();
 
 	void ProcessCpuClock();
-	void InitializeRam(uint8_t* ram, uint32_t size) {}
 
-	std::thread::id  GetEmulationThreadId() { return std::thread::id(); }
-
+	//TODO
 	bool IsNsf() { return false; }
-
 	void DebugAddTrace(char* str) {}
 	void DebugAddDebugEvent(DebugEventType eventType) {}
 	void DebugProcessEvent(EventType eventType) {}
@@ -79,4 +76,6 @@ public:
 
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate() override;
+
+	void SaveBattery() override;
 };

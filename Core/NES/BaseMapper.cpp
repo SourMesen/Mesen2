@@ -451,7 +451,7 @@ void BaseMapper::InitializeChrRam(int32_t chrRamSize)
 	if(_chrRamSize > 0) {
 		_chrRam = new uint8_t[_chrRamSize];
 		_emu->RegisterMemory(SnesMemoryType::NesChrRam, _chrRam, _chrRamSize);
-		_console->InitializeRam(_chrRam, _chrRamSize);
+		_emu->GetSettings()->InitializeRam(_chrRam, _chrRamSize);
 	}
 }
 
@@ -597,18 +597,20 @@ void BaseMapper::Initialize(RomData &romData)
 	}
 
 	_saveRam = new uint8_t[_saveRamSize];
+
+	EmuSettings* settings = _emu->GetSettings();
 	_emu->RegisterMemory(SnesMemoryType::NesSaveRam, _saveRam, _saveRamSize);
 	
 	_workRam = new uint8_t[_workRamSize];
 	_emu->RegisterMemory(SnesMemoryType::NesWorkRam, _workRam, _workRamSize);
 
-	_console->InitializeRam(_saveRam, _saveRamSize);
-	_console->InitializeRam(_workRam, _workRamSize);
+	settings->InitializeRam(_saveRam, _saveRamSize);
+	settings->InitializeRam(_workRam, _workRamSize);
 
 	_nametableCount = 2;
 	_nametableRam = new uint8_t[BaseMapper::NametableSize*BaseMapper::NametableCount];
 	_emu->RegisterMemory(SnesMemoryType::NesNametableRam, _nametableRam, BaseMapper::NametableSize * BaseMapper::NametableCount);
-	_console->InitializeRam(_nametableRam, BaseMapper::NametableSize*BaseMapper::NametableCount);
+	settings->InitializeRam(_nametableRam, BaseMapper::NametableSize*BaseMapper::NametableCount);
 
 	for(int i = 0; i < 0x100; i++) {
 		//Allow us to map a different page every 256 bytes

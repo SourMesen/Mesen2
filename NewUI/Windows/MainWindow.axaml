@@ -5,10 +5,10 @@
 		  xmlns:vm="using:Mesen.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		  xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+        mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="480"
 		  Icon="/Assets/Icon.ico"
         x:Class="Mesen.Windows.MainWindow"
-		  Width="400" Height="400"
+		  Width="512" Height="480"
 		  DragDrop.AllowDrop="True"
         Title="Mesen-S">
 

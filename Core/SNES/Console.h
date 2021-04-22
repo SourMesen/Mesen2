@@ -113,6 +113,6 @@ public:
 	double GetFps() override;
 	PpuFrameInfo GetPpuFrame() override;
 
-	// Inherited via IConsole
-	virtual vector<CpuType> GetCpuTypes() override;
+	vector<CpuType> GetCpuTypes() override;
+	void SaveBattery() override;
 };

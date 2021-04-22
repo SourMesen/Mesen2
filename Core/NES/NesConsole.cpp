@@ -10,6 +10,7 @@
 #include "NES/NesPpu.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IControlManager.h"
+#include "Shared/Interfaces/IBattery.h"
 #include "Shared/EmuSettings.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/Serializer.h"
@@ -253,4 +254,19 @@ uint64_t NesConsole::GetMasterClock()
 uint32_t NesConsole::GetMasterClockRate()
 {
 	return NesCpu::ClockRateNtsc;
+}
+
+void NesConsole::SaveBattery()
+{
+	if(_mapper) {
+		_mapper->SaveBattery();
+	}
+	
+	if(_controlManager) {
+		//TODO
+		/*shared_ptr<IBattery> device = std::dynamic_pointer_cast<IBattery>(_controlManager->GetControlDevice(BaseControlDevice::ExpDevicePort));
+		if(device) {
+			device->SaveBattery();
+		}*/
+	}
 }

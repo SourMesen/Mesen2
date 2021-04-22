@@ -4,6 +4,7 @@
 #include "NES/NesConsole.h"
 #include "Shared/CheatManager.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
@@ -43,7 +44,7 @@ void NesMemoryManager::SetMapper(shared_ptr<BaseMapper> mapper)
 void NesMemoryManager::Reset(bool softReset)
 {
 	if(!softReset) {
-		_console->InitializeRam(_internalRAM, InternalRAMSize);
+		_emu->GetSettings()->InitializeRam(_internalRAM, InternalRAMSize);
 	}
 
 	_mapper->Reset(softReset);

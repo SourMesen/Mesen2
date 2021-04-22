@@ -239,6 +239,13 @@ vector<CpuType> Console::GetCpuTypes()
 	return { CpuType::Cpu, CpuType::Spc };
 }
 
+void Console::SaveBattery()
+{
+	if(_cart) {
+		_cart->SaveBattery();
+	}
+}
+
 double Console::GetFrameDelay()
 {
 	UpdateRegion();

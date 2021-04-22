@@ -31,6 +31,8 @@ public:
 	//virtual void RunFrameWithRunAhead() = 0;
 	virtual void RunFrame() = 0;
 
+	virtual void SaveBattery() = 0;
+
 	virtual shared_ptr<IControlManager> GetControlManager() = 0;
 
 	virtual ConsoleType GetConsoleType() = 0;
