@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "NES/INesMemoryHandler.h"
 #include "Shared/BaseControlManager.h"
+#include "Shared/SettingTypes.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
 
@@ -20,6 +21,7 @@ class NesControlManager final : public ISerializable, public INesMemoryHandler, 
 private:
 	shared_ptr<BaseControlDevice> _mapperControlDevice;
 
+	NesConfig _prevConfig;
 	uint32_t _lagCounter = 0;
 	bool _isLagging = false;
 

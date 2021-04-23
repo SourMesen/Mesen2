@@ -89,9 +89,9 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::BandaiHyperShot: device.reset(new BandaiHyperShot(_console.get(), keys)); break;
 		case ControllerType::AsciiTurboFile: device.reset(new AsciiTurboFile(_emu)); break;
 		case ControllerType::BattleBox: device.reset(new BattleBox(_emu)); break;
+		case ControllerType::FourScore: device.reset(new FourScore(_emu)); break;
 
-		case ControllerType::FourScore: //TODO
-		case ControllerType::FourPlayerAdapter: //TODO
+		case ControllerType::FourPlayerAdapter:
 		default: break;
 	}
 
@@ -100,11 +100,15 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 
 void NesControlManager::UpdateControlDevices()
 {
+	NesConfig cfg = _console->GetNesConfig();
+	if(memcmp(&_prevConfig, &cfg, sizeof(NesConfig)) == 0) {
+		//Do nothing if configuration is unchanged
+		return;
+	}
+	
+	_prevConfig = cfg;
+
 	auto lock = _deviceLock.AcquireSafe();
-	//EmuSettings* settings = _emu->GetSettings();
-	//TODO
-	//Reset update flag
-	//settings->NeedControllerUpdate();
 
 	bool hadKeyboard = HasKeyboard();
 
@@ -112,34 +116,22 @@ void NesControlManager::UpdateControlDevices()
 
 	RegisterControlDevice(_emu->GetSystemActionManager());
 
-	bool fourScore = false; //settings->CheckFlag(EmulationFlags::HasFourScore);
-	//TODO
-	/*ConsoleType consoleType = settings->GetConsoleType();
-	ExpansionPortDevice expansionDevice = settings->GetExpansionDevice();
+	ControllerType expansionDevice = GetControllerType(BaseControlDevice::ExpDevicePort);
+	bool allowFourPlayers = (expansionDevice == ControllerType::FourPlayerAdapter || expansionDevice == ControllerType::FourScore);
 
-	if(consoleType != ConsoleType::Famicom) {
-		expansionDevice = ExpansionPortDevice::None;
-	} else if(expansionDevice != ExpansionPortDevice::FourPlayerAdapter) {
-		fourScore = false;
-	}*/
-
-	for(int i = 0; i < (fourScore ? 4 : 2); i++) {
+	for(int i = 0; i < (allowFourPlayers ? 4 : 2); i++) {
 		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
 		if(device) {
 			RegisterControlDevice(device);
 		}
 	}
 
-	//TODO
-	/*if(fourScore && consoleType == ConsoleType::Nes) {
-		//FourScore is only used to provide the signature for reads past the first 16 reads
-		RegisterControlDevice(shared_ptr<FourScore>(new FourScore(_console)));
-	}*/
-
-	/*<BaseControlDevice> expDevice = CreateExpansionDevice(expansionDevice, _console);
-	if(expDevice) {
-		RegisterControlDevice(expDevice);
-	}*/
+	if(expansionDevice != ControllerType::None) {
+		shared_ptr<BaseControlDevice> expDevice = CreateControllerDevice(expansionDevice, BaseControlDevice::ExpDevicePort);
+		if(expDevice) {
+			RegisterControlDevice(expDevice);
+		}
+	}
 
 	bool hasKeyboard = HasKeyboard();
 	//TODO
@@ -162,10 +154,12 @@ void NesControlManager::UpdateControlDevices()
 
 bool NesControlManager::HasKeyboard()
 {
+	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
+		if(device->GetControllerType() == ControllerType::SuborKeyboard || device->GetControllerType() == ControllerType::FamilyBasicKeyboard) {
+			return true;
+		}
+	}
 	return false;
-	//TODO
-	/*shared_ptr<BaseControlDevice> expDevice = GetControlDevice(BaseControlDevice::ExpDevicePort);
-	return expDevice && expDevice->IsKeyboard();*/
 }
 
 uint8_t NesControlManager::GetOpenBusMask(uint8_t port)
@@ -173,25 +167,18 @@ uint8_t NesControlManager::GetOpenBusMask(uint8_t port)
 	//"In the NES and Famicom, the top three (or five) bits are not driven, and so retain the bits of the previous byte on the bus. 
 	//Usually this is the most significant byte of the address of the controller port - 0x40.
 	//Paperboy relies on this behavior and requires that reads from the controller ports return exactly $40 or $41 as appropriate."
-
-	return 0xE0;
-	//TODO
-	/*switch(_console->GetSettings()->GetConsoleType()) {
+	switch(_console->GetNesConfig().ConsoleType) {
 		default:
-		case ConsoleType::Nes:
-			if(_console->GetSettings()->CheckFlag(EmulationFlags::UseNes101Hvc101Behavior)) {
-				return port == 0 ? 0xE4 : 0xE0;
-			} else {
+		case NesConsoleType::Nes001:
 				return 0xE0;
-			}
 
-		case ConsoleType::Famicom:
-			if(_console->GetSettings()->CheckFlag(EmulationFlags::UseNes101Hvc101Behavior)) {
-				return port == 0 ? 0xF8 : 0xE0;
-			} else {
-				return port == 0 ? 0xF8 : 0xE0;
-			}
-	}*/
+		case NesConsoleType::Nes101:
+			return port == 0 ? 0xE4 : 0xE0;
+
+		case NesConsoleType::Hvc001:
+		case NesConsoleType::Hvc101:
+			return port == 0 ? 0xF8 : 0xE0;
+	}
 }
 
 void NesControlManager::RemapControllerButtons()

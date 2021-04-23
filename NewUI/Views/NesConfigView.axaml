@@ -313,12 +313,14 @@
 				</c:OptionSection>
 
 				<c:OptionSection Header="{l:Translate lblMiscSettings}">
-					<CheckBox IsChecked="{CompiledBinding Config.UseNes101Hvc101Behavior}" Content="{l:Translate chkUseNes101Hvc101Behavior}" />
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblConsoleType}" Margin="0 0 5 0" />
+						<c:EnumComboBox EnumType="{x:Type cfg:NesConsoleType}" SelectedItem="{CompiledBinding Config.ConsoleType}" MinWidth="200" />
+					</StackPanel>
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
 					
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
 
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />

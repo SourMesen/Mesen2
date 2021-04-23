@@ -38,6 +38,7 @@ namespace Mesen.ViewModels
 			ControllerType.NesArkanoidController,
 			ControllerType.PowerPad,
 			ControllerType.SnesController,
+			ControllerType.SnesMouse,
 			ControllerType.SuborMouse,
 			ControllerType.VbController
 		};

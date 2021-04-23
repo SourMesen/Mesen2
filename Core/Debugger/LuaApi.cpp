@@ -625,6 +625,7 @@ int LuaApi::GetInput(lua_State *lua)
 	checkparams();
 	errorCond(port < 0 || port > 4, "Invalid port number - must be between 0 to 4");
 
+	//TODO
 	shared_ptr<SnesController> controller = std::dynamic_pointer_cast<SnesController>(_emu->GetControlManager()->GetControlDevice(port));
 	errorCond(controller == nullptr, "Input port must be connected to a standard controller");
 

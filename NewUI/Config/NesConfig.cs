@@ -49,8 +49,8 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool DisablePpu2004Reads { get; set; } = false;
 		[Reactive] public bool EnablePpu2000ScrollGlitch { get; set; } = false;
 		[Reactive] public bool EnablePpu2006ScrollGlitch { get; set; } = false;
-		
-		[Reactive] public bool UseNes101Hvc101Behavior { get; set; } = false;
+
+		[Reactive] public NesConsoleType ConsoleType { get; set; } = NesConsoleType.Nes001;
 		[Reactive] public bool DisablePpuReset { get; set; } = false;
 		[Reactive] public bool AllowInvalidInput { get; set; } = false;
 
@@ -146,7 +146,7 @@ namespace Mesen.GUI.Config
 				OverscanTop = OverscanTop,
 				OverscanBottom = OverscanBottom,
 
-				UseNes101Hvc101Behavior = UseNes101Hvc101Behavior,
+				ConsoleType = ConsoleType,
 				DisablePpuReset = DisablePpuReset,
 				AllowInvalidInput = AllowInvalidInput,
 
@@ -246,8 +246,7 @@ namespace Mesen.GUI.Config
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropNesConfig
 	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-		public InteropControllerConfig[] Controllers;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)] public InteropControllerConfig[] Controllers;
 		public UInt32 ZapperDetectionRadius;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;
@@ -276,7 +275,7 @@ namespace Mesen.GUI.Config
 		public UInt32 OverscanTop;
 		public UInt32 OverscanBottom;
 
-		[MarshalAs(UnmanagedType.I1)] public bool UseNes101Hvc101Behavior;
+		public NesConsoleType ConsoleType;
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePpuReset;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 
@@ -353,5 +352,13 @@ namespace Mesen.GUI.Config
 		Both = 0,
 		MainSystemOnly = 1,
 		SubSystemOnly = 2
+	}
+
+	public enum NesConsoleType
+	{
+		Nes001,
+		Nes101,
+		Hvc001,
+		Hvc101
 	}
 }

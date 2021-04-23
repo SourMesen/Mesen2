@@ -385,6 +385,14 @@ enum class VsDualOutputOption
 	SlaveOnly = 2
 };
 
+enum class NesConsoleType
+{
+	Nes001,
+	Nes101,
+	Hvc001,
+	Hvc101
+};
+
 struct NesConfig
 {
 	ControllerConfig Controllers[5];
@@ -416,7 +424,7 @@ struct NesConfig
 	uint32_t OverscanTop = 0;
 	uint32_t OverscanBottom = 0;
 	
-	bool UseNes101Hvc101Behavior = false;
+	NesConsoleType ConsoleType = NesConsoleType::Nes001;
 	bool DisablePpuReset = false;
 	bool AllowInvalidInput = false;
 

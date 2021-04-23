@@ -391,7 +391,7 @@
 			<Control ID="chkDisablePaletteRead">Disable PPU palette reads</Control>
 			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>			
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
-			<Control ID="chkUseNes101Hvc101Behavior">Use NES/HVC-101 (Top-loader / AV Famicom) behavior</Control>
+			<Control ID="lblConsoleType">Console model:</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 		</Form>
 		<Form ID="GameboyConfigView" Title="Game Boy Config">
@@ -1012,6 +1012,12 @@
 			<Value ID="BattleBox">Battle Box</Value>
 
 			<Value ID="GameboyController">Gameboy Controller</Value>
+		</Enum>
+		<Enum ID="NesConsoleType">
+			<Value ID="Nes001">NES - Front loader (NES-001)</Value>
+			<Value ID="Nes101">NES - Top loader (NES-101)</Value>
+			<Value ID="Hvc001">Famicom (HVC-001)</Value>
+			<Value ID="Hvc101">AV Famicom (HVC-101)</Value>
 		</Enum>
 		<Enum ID="VideoAspectRatio">
 			<Value ID="NoStretching">Default (No Stretching)</Value>

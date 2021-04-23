@@ -9,6 +9,7 @@ class NesController : public BaseControlDevice
 {
 private:
 	bool _microphoneEnabled = false;
+	bool _hasFourScore = false;
 	uint32_t _turboSpeed = 0;
 
 protected:
@@ -73,17 +74,16 @@ protected:
 
 	void RefreshStateBuffer() override
 	{
-		//TODO
-		/*if(_emu->GetConsoleType() == ConsoleType::Nes && _emu->GetSettings()->CheckFlag(EmulationFlags::HasFourScore)) {
+		if(_hasFourScore) {
 			if(_port >= 2) {
 				_stateBuffer = ToByte() << 8;
 			} else {
 				//Add some 0 bit padding to allow P3/P4 controller bits + signature bits
 				_stateBuffer = (_port == 0 ? 0xFF000000 : 0xFF000000) | ToByte();
 			}
-		} else {*/
+		} else {
 			_stateBuffer = 0xFFFFFF00 | ToByte();
-		//}
+		}
 	}
 
 public:
@@ -92,6 +92,7 @@ public:
 	NesController(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, type, port, keyMappings)
 	{
 		_turboSpeed = keyMappings.TurboSpeed;
+		_hasFourScore = _emu->GetSettings()->GetNesConfig().Controllers[BaseControlDevice::ExpDevicePort].Type == ControllerType::FourScore;
 		_microphoneEnabled = port == 1 && type == ControllerType::FamicomController;
 	}
 	
@@ -123,11 +124,10 @@ public:
 			StrobeProcessRead();
 			
 			output = _stateBuffer & 0x01;
-			//TODO
-			/*if(_port >= 2 && _console->GetSettings()->GetConsoleType() == ConsoleType::Famicom) {
+			if(_port >= 2 && GetControllerType() == ControllerType::FamicomController) {
 				//Famicom outputs P3 & P4 on bit 1
 				output <<= 1;
-			}*/
+			}
 			_stateBuffer >>= 1;
 
 			//"All subsequent reads will return D=1 on an authentic controller but may return D=0 on third party controllers."
