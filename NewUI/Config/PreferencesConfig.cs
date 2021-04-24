@@ -70,7 +70,6 @@ namespace Mesen.GUI.Config
 
 		public PreferencesConfig()
 		{
-			InitializeDefaultShortcuts();
 		}
 
 		private void AddShortcut(ShortcutKeyInfo shortcut)

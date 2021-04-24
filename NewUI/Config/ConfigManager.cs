@@ -38,19 +38,13 @@ namespace Mesen.GUI.Config
 
 		public static void InitHomeFolder()
 		{
-			HomeFolder = DefaultDocumentsFolder;
-			return;
-
 			string portableFolder = DefaultPortableFolder;
 			string documentsFolder = DefaultDocumentsFolder;
 			
-			string portableConfig = Path.Combine(portableFolder, "settings.xml");
-			string documentsConfig = Path.Combine(documentsFolder, "settings.xml");
-
-			HomeFolder = null;
+			string portableConfig = Path.Combine(portableFolder, "settings.json");
 			if(File.Exists(portableConfig)) {
 				HomeFolder = portableFolder;
-			} else if(File.Exists(documentsConfig)) {
+			} else {
 				HomeFolder = documentsFolder;
 			}
 		}
@@ -60,7 +54,7 @@ namespace Mesen.GUI.Config
 			InitHomeFolder();
 
 			if(!string.IsNullOrWhiteSpace(HomeFolder)) {
-				return Path.Combine(HomeFolder, "settings.xml");
+				return Path.Combine(HomeFolder, "settings.json");
 			} else {
 				return null;
 			}
