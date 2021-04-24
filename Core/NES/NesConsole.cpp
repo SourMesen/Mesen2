@@ -92,6 +92,13 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		_cpu.reset(new NesCpu(shared_from_this()));
 		_apu.reset(new NesApu(shared_from_this()));
 
+		//TODO
+		/*if(romInfo.System == GameSystem::VsSystem) {
+			//_controlManager.reset(new VsControlManager(shared_from_this(), _systemActionManager, _mapper->GetMapperControlDevice()));
+		} else {*/
+			_controlManager.reset(new NesControlManager(shared_from_this(), nullptr));
+		//}
+
 		_mapper->SetConsole(shared_from_this());
 		_mapper->Initialize(romData);
 
@@ -138,11 +145,7 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 			pollCounter = _controlManager->GetPollCounter();
 		}
 		*/
-		if(romInfo.System == GameSystem::VsSystem) {
-			//_controlManager.reset(new VsControlManager(shared_from_this(), _systemActionManager, _mapper->GetMapperControlDevice()));
-		} else {
-			_controlManager.reset(new NesControlManager(shared_from_this(), _mapper->GetMapperControlDevice()));
-		}
+
 		_controlManager->SetPollCounter(pollCounter);
 		_controlManager->UpdateControlDevices();
 
@@ -174,7 +177,6 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		return true;
 	}
     return false;
-
 }
 
 void NesConsole::Init()

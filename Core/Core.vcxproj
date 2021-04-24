@@ -67,7 +67,17 @@
     <ClInclude Include="NES\Input\VirtualBoyController.h" />
     <ClInclude Include="NES\Input\VsZapper.h" />
     <ClInclude Include="NES\Input\Zapper.h" />
+    <ClInclude Include="NES\Loaders\BaseLoader.h" />
+    <ClInclude Include="NES\Loaders\FdsLoader.h" />
+    <ClInclude Include="NES\Loaders\iNesLoader.h" />
+    <ClInclude Include="NES\Loaders\RomLoader.h" />
+    <ClInclude Include="NES\APU\BaseExpansionAudio.h" />
+    <ClInclude Include="NES\Mappers\FDS\BaseFdsChannel.h" />
+    <ClInclude Include="NES\Mappers\FDS\Fds.h" />
+    <ClInclude Include="NES\Mappers\FDS\FdsAudio.h" />
+    <ClInclude Include="NES\Mappers\FDS\FdsInputButtons.h" />
     <ClInclude Include="NES\Mappers\MMC1.h" />
+    <ClInclude Include="NES\Mappers\FDS\ModChannel.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
@@ -88,12 +98,10 @@
     <ClInclude Include="NES\APU\ApuFrameCounter.h" />
     <ClInclude Include="NES\APU\ApuLengthCounter.h" />
     <ClInclude Include="NES\APU\BaseApuChannel.h" />
-    <ClInclude Include="NES\BaseLoader.h" />
     <ClInclude Include="NES\BaseMapper.h" />
     <ClInclude Include="NES\NesControlManager.h" />
     <ClInclude Include="NES\APU\DeltaModulationChannel.h" />
     <ClInclude Include="NES\GameDatabase.h" />
-    <ClInclude Include="NES\iNesLoader.h" />
     <ClInclude Include="NES\INesMemoryHandler.h" />
     <ClInclude Include="NES\InternalRamHandler.h" />
     <ClInclude Include="NES\MapperFactory.h" />
@@ -112,7 +120,6 @@
     <ClInclude Include="NES\APU\NoiseChannel.h" />
     <ClInclude Include="NES\OpenBusHandler.h" />
     <ClInclude Include="NES\RomData.h" />
-    <ClInclude Include="NES\RomLoader.h" />
     <ClInclude Include="NES\APU\SquareChannel.h" />
     <ClInclude Include="NES\Input\NesController.h" />
     <ClInclude Include="NES\stdafx.h" />
@@ -325,13 +332,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
+    <ClCompile Include="NES\Loaders\FdsLoader.cpp" />
+    <ClCompile Include="NES\Loaders\iNesLoader.cpp" />
+    <ClCompile Include="NES\Loaders\RomLoader.cpp" />
+    <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
+    <ClCompile Include="NES\Mappers\FDS\Fds.cpp" />
+    <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
+    <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />
     <ClCompile Include="Shared\Video\NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />
     <ClCompile Include="NES\NesControlManager.cpp" />
     <ClCompile Include="NES\APU\DeltaModulationChannel.cpp" />
     <ClCompile Include="NES\GameDatabase.cpp" />
-    <ClCompile Include="NES\iNesLoader.cpp" />
     <ClCompile Include="NES\MapperFactory.cpp" />
     <ClCompile Include="NES\APU\NesApu.cpp" />
     <ClCompile Include="NES\NesConsole.cpp" />
@@ -342,7 +355,6 @@
     <ClCompile Include="NES\NesMemoryManager.cpp" />
     <ClCompile Include="NES\NesPpu.cpp" />
     <ClCompile Include="NES\NesSoundMixer.cpp" />
-    <ClCompile Include="NES\RomLoader.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
     <ClCompile Include="SNES\Debugger\Assembler.cpp" />
     <ClCompile Include="SNES\BaseCartridge.cpp" />

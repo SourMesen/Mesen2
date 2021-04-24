@@ -170,7 +170,7 @@ public:
 	virtual void NotifyVRAMAddressChange(uint16_t addr);
 	virtual void GetMemoryRanges(MemoryRanges &ranges) override;
 	
-	void SaveBattery();
+	virtual void SaveBattery();
 
 	void SetConsole(shared_ptr<NesConsole> console);
 

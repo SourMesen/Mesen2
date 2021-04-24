@@ -1,6 +1,6 @@
 #pragma once
-#include "../stdafx.h"
-#include "BaseLoader.h"
+#include "stdafx.h"
+#include "NES/Loaders/BaseLoader.h"
 
 struct RomData;
 struct NesHeader;

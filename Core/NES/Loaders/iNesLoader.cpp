@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "iNesLoader.h"
-#include "../../Utilities/CRC32.h"
-#include "../../Utilities/md5.h"
-#include "../../Utilities/HexUtilities.h"
-#include "NesHeader.h"
-#include "RomData.h"
-#include "GameDatabase.h"
+#include "NES/Loaders/iNesLoader.h"
+#include "Utilities/CRC32.h"
+#include "Utilities/md5.h"
+#include "Utilities/HexUtilities.h"
+#include "NES/NesHeader.h"
+#include "NES/RomData.h"
+#include "NES/GameDatabase.h"
 
 void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *preloadedHeader)
 {

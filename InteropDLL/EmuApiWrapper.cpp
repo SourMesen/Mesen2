@@ -247,6 +247,7 @@ extern "C" {
 	DllExport void __stdcall ClearCheats() { _emu->GetCheatManager()->ClearCheats(); }
 	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _emu->GetCheatManager()->SetCheats(codes, length); }
 
+	DllExport void __stdcall ExecuteShortcut(ExecuteShortcutParams params) { _emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, &params); }
 	DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
 
 	DllExport void __stdcall SaveState(uint32_t stateIndex) { _emu->GetSaveStateManager()->SaveState(stateIndex); }

@@ -20,6 +20,7 @@ using Mesen.Debugger.Windows;
 using Mesen.Debugger.ViewModels;
 using System.IO;
 using System.Linq;
+using Mesen.GUI.Config.Shortcuts;
 
 namespace Mesen.Windows
 {
@@ -144,6 +145,26 @@ namespace Mesen.Windows
 		private void OnPowerCycleClick(object sender, RoutedEventArgs e)
 		{
 			EmuApi.PowerCycle();
+		}
+
+		private void OnFdsSwitchDiskSide(object sender, RoutedEventArgs e)
+		{
+			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsSwitchDiskSide });
+		}
+
+		private void OnFdsEjectDisk(object sender, RoutedEventArgs e)
+		{
+			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsEjectDisk });
+		}
+
+		private void OnFdsInsertDisk0(object sender, RoutedEventArgs e)
+		{
+			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsInsertDiskNumber, Param = 0 });
+		}
+
+		private void OnFdsInsertDisk1(object sender, RoutedEventArgs e)
+		{
+			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsInsertDiskNumber, Param = 1 });
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)

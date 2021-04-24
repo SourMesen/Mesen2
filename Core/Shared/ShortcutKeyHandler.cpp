@@ -110,8 +110,9 @@ void ShortcutKeyHandler::CheckMappedKeys()
 	//Let the UI handle these shortcuts
 	for(uint64_t i = (uint64_t)EmulatorShortcut::TakeScreenshot; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
 		if(DetectKeyPress((EmulatorShortcut)i)) {
-			void* param = (void*)i;
-			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, param);
+			ExecuteShortcutParams params;
+			params.Shortcut = (EmulatorShortcut)i;
+			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, &params);
 		}
 	}
 

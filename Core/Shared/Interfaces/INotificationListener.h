@@ -1,6 +1,8 @@
 #pragma once
 #include "stdafx.h"
 
+enum class EmulatorShortcut;
+
 enum class ConsoleNotificationType
 {
 	GameLoaded = 0,
@@ -26,4 +28,10 @@ class INotificationListener
 {
 public:
 	virtual void ProcessNotification(ConsoleNotificationType type, void* parameter) = 0;
+};
+
+struct ExecuteShortcutParams
+{
+	EmulatorShortcut Shortcut;
+	uint32_t Param;
 };

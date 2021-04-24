@@ -20,14 +20,19 @@ private:
 protected:
 	Emulator* _emu = nullptr;
 	SimpleLock _deviceLock;
+	vector<shared_ptr<BaseControlDevice>> _systemDevices;
 	vector<shared_ptr<BaseControlDevice>> _controlDevices;
 	uint32_t _pollCounter = 0;
 
 	void RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice);
 
+	void ClearDevices();
+
 public:
 	BaseControlManager(Emulator* emu);
 	virtual ~BaseControlManager();
+
+	void AddSystemControlDevice(shared_ptr<BaseControlDevice> device);
 
 	void UpdateControlDevices() override {}
 	void UpdateInputState() override;

@@ -1,19 +1,19 @@
 #include "stdafx.h"
 #include <algorithm>
 #include <unordered_set>
-#include "../../Utilities/FolderUtilities.h"
-#include "../../Utilities/CRC32.h"
-#include "../../Utilities/sha1.h"
-#include "../../Utilities/ArchiveReader.h"
-#include "../../Utilities/VirtualFile.h"
+#include "Utilities/FolderUtilities.h"
+#include "Utilities/CRC32.h"
+#include "Utilities/sha1.h"
+#include "Utilities/ArchiveReader.h"
+#include "Utilities/VirtualFile.h"
 
-#include "RomLoader.h"
-#include "iNesLoader.h"
-#include "NesHeader.h"
-#include "GameDatabase.h"
+#include "NES/Loaders/RomLoader.h"
+#include "NES/Loaders/iNesLoader.h"
+#include "NES/Loaders/FdsLoader.h"
+#include "NES/NesHeader.h"
+#include "NES/GameDatabase.h"
 
-//TODO NES
-/*#include "FdsLoader.h"
+/*//TODO NES
 #include "NsfLoader.h"
 #include "NsfeLoader.h"
 #include "UnifLoader.h"
@@ -48,9 +48,8 @@ bool RomLoader::LoadFile(VirtualFile &romFile)
 		iNesLoader loader(_checkOnly);
 		loader.LoadRom(_romData, fileData, nullptr);
 	} else if(memcmp(fileData.data(), "FDS\x1a", 4) == 0 || memcmp(fileData.data(), "\x1*NINTENDO-HVC*", 15) == 0) {
-		//TODO NES
-		//FdsLoader loader(_checkOnly);
-		//loader.LoadRom(_romData, fileData);
+		FdsLoader loader(_checkOnly);
+		loader.LoadRom(_romData, fileData);
 	} else if(memcmp(fileData.data(), "NESM\x1a", 5) == 0) {
 		//TODO NES
 		//NsfLoader loader(_checkOnly);

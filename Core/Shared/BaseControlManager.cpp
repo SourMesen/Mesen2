@@ -14,11 +14,19 @@ BaseControlManager::BaseControlManager(Emulator* emu)
 {
 	_emu = emu;
 	_pollCounter = 0;
+	AddSystemControlDevice(_emu->GetSystemActionManager());
 	UpdateControlDevices();
 }
 
 BaseControlManager::~BaseControlManager()
 {
+}
+
+void BaseControlManager::AddSystemControlDevice(shared_ptr<BaseControlDevice> device)
+{
+	_controlDevices.clear();
+	_systemDevices.push_back(device);
+	UpdateControlDevices();
 }
 
 void BaseControlManager::RegisterInputProvider(IInputProvider* provider)
@@ -82,6 +90,15 @@ vector<shared_ptr<BaseControlDevice>> BaseControlManager::GetControlDevices()
 void BaseControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice)
 {
 	_controlDevices.push_back(controlDevice);
+}
+
+void BaseControlManager::ClearDevices()
+{
+	_controlDevices.clear();
+
+	for(shared_ptr<BaseControlDevice> device : _systemDevices) {
+		RegisterControlDevice(device);
+	}
 }
 
 void BaseControlManager::UpdateInputState()

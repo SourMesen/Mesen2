@@ -605,7 +605,21 @@ enum class EmulatorShortcut
 
 	OpenFile,
 	LoadRandomGame,
-	ShortcutCount
+
+	//NES
+	FdsSwitchDiskSide,
+	FdsEjectDisk,
+	FdsInsertDiskNumber,
+	FdsInsertNextDisk,	
+	VsServiceButton,
+	VsServiceButton2,
+	VsInsertCoin1,
+	VsInsertCoin2,
+	VsInsertCoin3,
+	VsInsertCoin4,
+	NesInputBarcode,
+
+	ShortcutCount,
 };
 
 struct KeyCombination

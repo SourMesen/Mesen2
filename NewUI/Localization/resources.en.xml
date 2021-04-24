@@ -975,6 +975,17 @@
 			<Value ID="SelectSaveSlot10">Select Save Slot 10</Value>
 
 			<Value ID="OpenFile">Open File</Value>
+
+			<Value ID="FdsSwitchDiskSide">FDS - Switch Disk Side</Value>
+			<Value ID="FdsEjectDisk">FDS - Eject Disk</Value>
+			<Value ID="FdsInsertNextDisk">FDS - Insert Next Disk</Value>
+			<Value ID="VsInsertCoin1">VS - Insert Coin 1</Value>
+			<Value ID="VsInsertCoin2">VS - Insert Coin 2</Value>
+			<Value ID="VsInsertCoin3">VS - Insert Coin 3 (DualSystem)</Value>
+			<Value ID="VsInsertCoin4">VS - Insert Coin 4 (DualSystem)</Value>
+			<Value ID="VsServiceButton">VS - Service Button</Value>
+			<Value ID="VsServiceButton2">VS - Service Button 2 (DualSystem)</Value>
+			<Value ID="NesInputBarcode">Input Barcode</Value>
 		</Enum>
 		<Enum ID="ControllerType">
 			<Value ID="None">None</Value>

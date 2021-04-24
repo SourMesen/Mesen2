@@ -625,9 +625,6 @@
     <ClInclude Include="NES\GameDatabase.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\iNesLoader.h">
-      <Filter>NES</Filter>
-    </ClInclude>
     <ClInclude Include="NES\INesMemoryHandler.h">
       <Filter>NES</Filter>
     </ClInclude>
@@ -676,13 +673,7 @@
     <ClInclude Include="NES\APU\TriangleChannel.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\BaseLoader.h">
-      <Filter>NES</Filter>
-    </ClInclude>
     <ClInclude Include="NES\RomData.h">
-      <Filter>NES</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\RomLoader.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\stdafx.h">
@@ -760,6 +751,16 @@
     <ClInclude Include="Shared\Interfaces\IBattery.h" />
     <ClInclude Include="NES\Mappers\MMC1.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
+    <ClInclude Include="NES\Loaders\BaseLoader.h" />
+    <ClInclude Include="NES\Loaders\FdsLoader.h" />
+    <ClInclude Include="NES\Loaders\iNesLoader.h" />
+    <ClInclude Include="NES\Loaders\RomLoader.h" />
+    <ClInclude Include="NES\Mappers\FDS\Fds.h" />
+    <ClInclude Include="NES\Mappers\FDS\FdsAudio.h" />
+    <ClInclude Include="NES\APU\BaseExpansionAudio.h" />
+    <ClInclude Include="NES\Mappers\FDS\BaseFdsChannel.h" />
+    <ClInclude Include="NES\Mappers\FDS\ModChannel.h" />
+    <ClInclude Include="NES\Mappers\FDS\FdsInputButtons.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1133,9 +1134,6 @@
     <ClCompile Include="NES\GameDatabase.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="NES\iNesLoader.cpp">
-      <Filter>NES</Filter>
-    </ClCompile>
     <ClCompile Include="NES\MapperFactory.cpp">
       <Filter>NES</Filter>
     </ClCompile>
@@ -1157,9 +1155,6 @@
     <ClCompile Include="NES\NesSoundMixer.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="NES\RomLoader.cpp">
-      <Filter>NES</Filter>
-    </ClCompile>
     <ClCompile Include="NES\NesConsole.cpp">
       <Filter>NES</Filter>
     </ClCompile>
@@ -1179,6 +1174,13 @@
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
     <ClCompile Include="Shared\BaseControlManager.cpp" />
+    <ClCompile Include="NES\Loaders\FdsLoader.cpp" />
+    <ClCompile Include="NES\Loaders\iNesLoader.cpp" />
+    <ClCompile Include="NES\Loaders\RomLoader.cpp" />
+    <ClCompile Include="NES\Mappers\FDS\Fds.cpp" />
+    <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
+    <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
+    <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

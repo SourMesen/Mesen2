@@ -99,18 +99,25 @@ namespace Mesen.ViewModels
 			this.SetupPlayer5 = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 4), button5Enabled);
 
 			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {
-				EmulatorShortcut.SwitchDiskSide,
-				EmulatorShortcut.EjectDisk,
-				EmulatorShortcut.InsertCoin1,
-				EmulatorShortcut.InsertCoin2,
-				EmulatorShortcut.InsertCoin3,
-				EmulatorShortcut.InsertCoin4,
-				EmulatorShortcut.InputBarcode
+				EmulatorShortcut.FdsSwitchDiskSide,
+				EmulatorShortcut.FdsEjectDisk,
+				EmulatorShortcut.FdsInsertNextDisk,
+				EmulatorShortcut.VsInsertCoin1,
+				EmulatorShortcut.VsInsertCoin2,
+				EmulatorShortcut.VsInsertCoin3,
+				EmulatorShortcut.VsInsertCoin4,
+				EmulatorShortcut.VsServiceButton,
+				EmulatorShortcut.VsServiceButton2,
+				EmulatorShortcut.NesInputBarcode
 			};
 
 			Dictionary<EmulatorShortcut, ShortcutKeyInfo> shortcuts = new Dictionary<EmulatorShortcut, ShortcutKeyInfo>();
 			foreach(ShortcutKeyInfo shortcut in preferences.ShortcutKeys) {
 				shortcuts[shortcut.Shortcut] = shortcut;
+			}
+
+			if(Design.IsDesignMode) {
+				return;
 			}
 
 			ShortcutKeys = new List<ShortcutKeyInfo>();

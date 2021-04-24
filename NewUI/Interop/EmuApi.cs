@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Mesen.Localization;
 using Mesen.GUI.Config;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Config.Shortcuts;
 
 namespace Mesen.GUI
 {
@@ -75,6 +76,8 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void SetFullscreenMode([MarshalAs(UnmanagedType.I1)]bool fullscreen, IntPtr windowHandle, UInt32 monitorWidth, UInt32 monitorHeight);
 
 		[DllImport(DllPath)] public static extern ScreenSize GetScreenSize([MarshalAs(UnmanagedType.I1)]bool ignoreScale);
+
+		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
 
 		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
 		public static string GetLog() { return Utf8Marshaler.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
@@ -262,4 +265,10 @@ namespace Mesen.GUI
 		public FirmwareType Firmware;
 		public UInt32 Size;
 	}
+
+	public struct ExecuteShortcutParams
+	{
+		public EmulatorShortcut Shortcut;
+		public UInt32 Param;
+	};
 }

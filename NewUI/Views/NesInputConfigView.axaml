@@ -17,97 +17,99 @@
 	<Design.DataContext>
 		<vm:NesInputConfigViewModel />
 	</Design.DataContext>
-	
-	<StackPanel>
-		<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
-			<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Width="300" HorizontalAlignment="Left">
-				<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPlayer1}" />
-				<c:EnumComboBox
-					Grid.Row="0" Grid.Column="1"
-					Margin="5 0"
-					EnumType="{x:Type cfg:ControllerType}"
-					SelectedItem="{CompiledBinding Config.Controllers[0].Type}"
-					AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
-				/>
-				<Button
-					Grid.Row="0"
-					Grid.Column="2"
-					Command="{CompiledBinding SetupPlayer1}"
-					CommandParameter="{Binding $self}"
-					Content="{l:Translate btnSetup}"
-				/>
 
-				<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPlayer2}" />
-				<c:EnumComboBox
-					Grid.Row="1" Grid.Column="1"
-					Margin="5 0"
-					EnumType="{x:Type cfg:ControllerType}"
-					SelectedItem="{CompiledBinding Config.Controllers[1].Type}"
-					AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
-				/>
-				<Button
-					Grid.Row="1"
-					Grid.Column="2"
-					Command="{CompiledBinding SetupPlayer2}"
-					CommandParameter="{Binding $self}"
-					Content="{l:Translate btnSetup}"
-				/>
+	<ScrollViewer AllowAutoHide="False">
+		<StackPanel>
+			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Width="300" HorizontalAlignment="Left">
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPlayer1}" />
+					<c:EnumComboBox
+						Grid.Row="0" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[0].Type}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+					/>
+					<Button
+						Grid.Row="0"
+						Grid.Column="2"
+						Command="{CompiledBinding SetupPlayer1}"
+						CommandParameter="{Binding $self}"
+						Content="{l:Translate btnSetup}"
+					/>
 
-				<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblExpansionDevice}" />
-				<c:EnumComboBox
-					Grid.Row="2" Grid.Column="1"
-					Margin="5 0"
-					EnumType="{x:Type cfg:ControllerType}"
-					SelectedItem="{CompiledBinding Config.Controllers[4].Type}"
-					AvailableValues="{CompiledBinding AvailableExpansionTypes}"
-				/>
-				<Button
-					Grid.Row="2"
-					Grid.Column="2"
-					Command="{CompiledBinding SetupPlayer5}"
-					CommandParameter="{Binding $self}"
-					Content="{l:Translate btnSetup}"
-				/>
-				
-				<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblPlayer3}" IsVisible="{CompiledBinding HasFourPlayerAdapter}" />
-				<c:EnumComboBox
-					Grid.Row="3" Grid.Column="1"
-					Margin="5 0"
-					EnumType="{x:Type cfg:ControllerType}"
-					SelectedItem="{CompiledBinding Config.Controllers[2].Type}"
-					IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-					AvailableValues="{CompiledBinding AvailableControllerTypesP34}"
-				/>
-				<Button
-					Grid.Row="3"
-					Grid.Column="2"
-					Command="{CompiledBinding SetupPlayer3}"
-					CommandParameter="{Binding $self}"
-					Content="{l:Translate btnSetup}"
-					IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-				/>
+					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPlayer2}" />
+					<c:EnumComboBox
+						Grid.Row="1" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[1].Type}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+					/>
+					<Button
+						Grid.Row="1"
+						Grid.Column="2"
+						Command="{CompiledBinding SetupPlayer2}"
+						CommandParameter="{Binding $self}"
+						Content="{l:Translate btnSetup}"
+					/>
 
-				<TextBlock Grid.Row="4" Grid.Column="0" Text="{l:Translate lblPlayer4}" IsVisible="{CompiledBinding HasFourPlayerAdapter}" />
-				<c:EnumComboBox
-					Grid.Row="4" Grid.Column="1"
-					Margin="5 0"
-					EnumType="{x:Type cfg:ControllerType}"
-					SelectedItem="{CompiledBinding Config.Controllers[3].Type}"
-					IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-					AvailableValues="{CompiledBinding AvailableControllerTypesP34}"
-				/>
-				<Button
-					Grid.Row="4"
-					Grid.Column="2"
-					Command="{CompiledBinding SetupPlayer4}"
-					CommandParameter="{Binding $self}"
-					Content="{l:Translate btnSetup}"
-					IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-				/>
-			</Grid>
-		</c:OptionSection>
-		<c:OptionSection Header="{l:Translate grpHardware}">
-			<v:ShortcutKeysTabView />
-		</c:OptionSection>
-	</StackPanel>
+					<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblExpansionDevice}" />
+					<c:EnumComboBox
+						Grid.Row="2" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[4].Type}"
+						AvailableValues="{CompiledBinding AvailableExpansionTypes}"
+					/>
+					<Button
+						Grid.Row="2"
+						Grid.Column="2"
+						Command="{CompiledBinding SetupPlayer5}"
+						CommandParameter="{Binding $self}"
+						Content="{l:Translate btnSetup}"
+					/>
+
+					<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblPlayer3}" IsVisible="{CompiledBinding HasFourPlayerAdapter}" />
+					<c:EnumComboBox
+						Grid.Row="3" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[2].Type}"
+						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP34}"
+					/>
+					<Button
+						Grid.Row="3"
+						Grid.Column="2"
+						Command="{CompiledBinding SetupPlayer3}"
+						CommandParameter="{Binding $self}"
+						Content="{l:Translate btnSetup}"
+						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+					/>
+
+					<TextBlock Grid.Row="4" Grid.Column="0" Text="{l:Translate lblPlayer4}" IsVisible="{CompiledBinding HasFourPlayerAdapter}" />
+					<c:EnumComboBox
+						Grid.Row="4" Grid.Column="1"
+						Margin="5 0"
+						EnumType="{x:Type cfg:ControllerType}"
+						SelectedItem="{CompiledBinding Config.Controllers[3].Type}"
+						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP34}"
+					/>
+					<Button
+						Grid.Row="4"
+						Grid.Column="2"
+						Command="{CompiledBinding SetupPlayer4}"
+						CommandParameter="{Binding $self}"
+						Content="{l:Translate btnSetup}"
+						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+					/>
+				</Grid>
+			</c:OptionSection>
+			<c:OptionSection Header="{l:Translate grpHardware}">
+				<v:ShortcutKeysTabView />
+			</c:OptionSection>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>

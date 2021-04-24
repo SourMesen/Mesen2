@@ -14,8 +14,8 @@ GbControlManager::GbControlManager(Emulator* emu) : BaseControlManager(emu)
 void GbControlManager::UpdateControlDevices()
 {
 	auto lock = _deviceLock.AcquireSafe();
-	_controlDevices.clear();
-	RegisterControlDevice(_emu->GetSystemActionManager());
+	
+	ClearDevices();
 
 	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
 	for(int i = 0; i < 2; i++) {

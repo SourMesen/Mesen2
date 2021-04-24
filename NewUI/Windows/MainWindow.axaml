@@ -30,6 +30,13 @@
 			<MenuItem Header="_Game">
 				<MenuItem Header="Reset" Click="OnResetClick" />
 				<MenuItem Header="Power Cycle" Click="OnPowerCycleClick" />
+				<Separator />
+				<MenuItem Header="Switch disk side" Click="OnFdsSwitchDiskSide" />
+				<MenuItem Header="Select disk">
+					<MenuItem Header="Disk 1 Side A" Click="OnFdsInsertDisk0" />
+					<MenuItem Header="Disk 1 Side B" Click="OnFdsInsertDisk1" />
+				</MenuItem>
+				<MenuItem Header="Eject disk" Click="OnFdsEjectDisk" />
 			</MenuItem>
 			<MenuItem Header="_Options">
 				<MenuItem Header="Speed" />

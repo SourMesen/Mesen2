@@ -2,7 +2,7 @@
 #include "Shared/NotificationManager.h"
 #include "NES/MapperFactory.h"
 #include "NES/NesConsole.h"
-#include "NES/RomLoader.h"
+#include "NES/Loaders/RomLoader.h"
 //#include "UnifBoards.h"
 #include "NES/BaseMapper.h"
 #include "NES/RomData.h"
@@ -59,9 +59,10 @@
 #include "Eh8813A.h"
 #include "FamicomBox.h"
 #include "FaridSlrom.h"
-#include "FaridUnrom.h"
-#include "FDS.h"
-#include "Fk23C.h"
+#include "FaridUnrom.h"*/
+#include "NES/Mappers/FDS/Fds.h"
+#include "NES/Mappers/FDS/FdsAudio.h"
+/*#include "Fk23C.h"
 #include "FrontFareast.h"
 #include "Ghostbusters63in1.h"
 #include "Gkcx1.h"
@@ -656,8 +657,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case UnifBoards::UnlPuzzle: return new UnlPuzzle();
 
 		case MapperFactory::StudyBoxMapperID: return new StudyBox();
-		case MapperFactory::NsfMapperID: return new NsfMapper();
-		case MapperFactory::FdsMapperID: return new FDS();*/
+		case MapperFactory::NsfMapperID: return new NsfMapper();*/
+		case MapperFactory::FdsMapperID: return new Fds();
 	}
 
 	/*if(romData.Info.MapperID != UnifBoards::UnknownBoard) {

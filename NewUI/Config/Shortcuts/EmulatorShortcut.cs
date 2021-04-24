@@ -100,7 +100,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		LoadStateSlot8,
 		LoadStateSlot9,
 		LoadStateSlot10,
-		//LoadStateSlotAuto,
+		LoadStateSlotAuto,
 		LoadStateFromFile,
 		LoadStateDialog,
 
@@ -108,12 +108,16 @@ namespace Mesen.GUI.Config.Shortcuts
 		LoadRandomGame,
 
 		//NES
-		SwitchDiskSide,
-		EjectDisk,
-		InsertCoin1,
-		InsertCoin2,
-		InsertCoin3,
-		InsertCoin4,
-		InputBarcode,
+		FdsSwitchDiskSide,
+		FdsEjectDisk,
+		FdsInsertDiskNumber,
+		FdsInsertNextDisk,
+		VsServiceButton,
+		VsServiceButton2,
+		VsInsertCoin1,
+		VsInsertCoin2,
+		VsInsertCoin3,
+		VsInsertCoin4,
+		NesInputBarcode,
 	}
 }

@@ -101,7 +101,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 void NesControlManager::UpdateControlDevices()
 {
 	NesConfig cfg = _console->GetNesConfig();
-	if(memcmp(&_prevConfig, &cfg, sizeof(NesConfig)) == 0) {
+	if(_controlDevices.size() > 0 && memcmp(&_prevConfig, &cfg, sizeof(NesConfig)) == 0) {
 		//Do nothing if configuration is unchanged
 		return;
 	}
@@ -109,12 +109,9 @@ void NesControlManager::UpdateControlDevices()
 	_prevConfig = cfg;
 
 	auto lock = _deviceLock.AcquireSafe();
-
 	bool hadKeyboard = HasKeyboard();
 
-	_controlDevices.clear();
-
-	RegisterControlDevice(_emu->GetSystemActionManager());
+	ClearDevices();
 
 	ControllerType expansionDevice = GetControllerType(BaseControlDevice::ExpDevicePort);
 	bool allowFourPlayers = (expansionDevice == ControllerType::FourPlayerAdapter || expansionDevice == ControllerType::FourScore);

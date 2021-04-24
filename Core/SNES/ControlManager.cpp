@@ -56,8 +56,7 @@ void ControlManager::UpdateControlDevices()
 		_inputConfigVersion = version;
 
 		auto lock = _deviceLock.AcquireSafe();
-		_controlDevices.clear();
-		RegisterControlDevice(_emu->GetSystemActionManager());
+		ClearDevices();
 		for(int i = 0; i < 2; i++) {
 			shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
 			if(device) {

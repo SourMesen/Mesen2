@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "RomData.h"
-#include "BaseLoader.h"
+#include "NES/Loaders/BaseLoader.h"
+#include "NES/RomData.h"
 
 class ArchiveReader;
 class VirtualFile;
