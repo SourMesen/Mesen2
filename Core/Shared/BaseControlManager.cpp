@@ -9,6 +9,7 @@
 #include "SystemActionManager.h"
 #include "EventType.h"
 #include "Utilities/Serializer.h"
+#include "Shared/MessageManager.h"
 
 BaseControlManager::BaseControlManager(Emulator* emu)
 {
@@ -107,7 +108,7 @@ void BaseControlManager::UpdateInputState()
 
 	auto lock = _deviceLock.AcquireSafe();
 
-	//string log = "F: " + std::to_string(_console->GetPpu()->GetFrameCount()) + " C:" + std::to_string(_pollCounter) + " ";
+	//string log = "F: " + std::to_string(_emu->GetFrameCount()) + " C:" + std::to_string(_pollCounter) + " ";
 	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
 		device->ClearState();
 		device->SetStateFromInput();

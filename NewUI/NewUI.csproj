@@ -95,6 +95,9 @@
     <Compile Update="Windows\ColorPickerWindow.axaml.cs">
       <DependentUpon>ColorPickerWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\LogWindow.axaml.cs">
+      <DependentUpon>LogWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>

@@ -1,0 +1,32 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="500"
+	x:Class="Mesen.Windows.LogWindow"
+	Width="620" Height="500"
+	Title="Log Window"
+	Name="root"
+>
+	<DockPanel DataContext="{Binding ElementName=root}">
+		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5 3">
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Ok_OnClick">Close</Button>
+		</StackPanel>
+		<TextBox
+			Name="txtLog"
+			MaxHeight="10000"
+			Height="NaN"
+			IsReadOnly="True"
+			TextWrapping="Wrap"
+			AcceptsReturn="True"
+			VerticalContentAlignment="Top"
+			ScrollViewer.VerticalScrollBarVisibility="Auto"
+			Text="{Binding LogContent}"
+		/>
+	</DockPanel>
+</Window>

@@ -137,6 +137,11 @@ namespace Mesen.Windows
 			}.Show();
 		}
 
+		private void OnLogWindowClick(object sender, RoutedEventArgs e)
+		{
+			new LogWindow().Show();
+		}
+
 		private void OnResetClick(object sender, RoutedEventArgs e)
 		{
 			EmuApi.Reset();

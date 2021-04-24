@@ -50,6 +50,9 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
+			<MenuItem Header="_Tools">
+				<MenuItem Header="Log Window" Click="OnLogWindowClick" />
+			</MenuItem>
 			<MenuItem Header="_Debug">
 				<MenuItem Header="_Debugger" Click="OnDebuggerClick">
 					<MenuItem.Icon>
