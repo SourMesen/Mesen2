@@ -106,5 +106,14 @@ namespace Mesen.GUI.Config.Shortcuts
 
 		OpenFile,
 		LoadRandomGame,
+
+		//NES
+		SwitchDiskSide,
+		EjectDisk,
+		InsertCoin1,
+		InsertCoin2,
+		InsertCoin3,
+		InsertCoin4,
+		InputBarcode,
 	}
 }

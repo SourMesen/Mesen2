@@ -6,6 +6,7 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
 	xmlns:cfg="using:Mesen.GUI.Config"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
@@ -106,6 +107,7 @@
 			</Grid>
 		</c:OptionSection>
 		<c:OptionSection Header="{l:Translate grpHardware}">
+			<v:ShortcutKeysTabView />
 		</c:OptionSection>
 	</StackPanel>
 </UserControl>

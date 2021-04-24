@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Mesen.GUI.Config;
+using Mesen.GUI.Config.Shortcuts;
 using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.Views;
@@ -27,6 +28,7 @@ namespace Mesen.ViewModels
 		public ReactiveCommand<Button, Unit> SetupPlayer3 { get; }
 		public ReactiveCommand<Button, Unit> SetupPlayer4 { get; }
 		public ReactiveCommand<Button, Unit> SetupPlayer5 { get; }
+		public List<ShortcutKeyInfo> ShortcutKeys { get; set; }
 
 		[ObservableAsProperty] public bool HasFourPlayerAdapter { get; set; }
 
@@ -73,9 +75,9 @@ namespace Mesen.ViewModels
 		};
 
 		//For designer preview
-		public NesInputConfigViewModel() : this(new NesConfig()) { }
+		public NesInputConfigViewModel() : this(new NesConfig(), new PreferencesConfig()) { }
 
-		public NesInputConfigViewModel(NesConfig config)
+		public NesInputConfigViewModel(NesConfig config, PreferencesConfig preferences)
 		{
 			Config = config;
 
@@ -95,6 +97,26 @@ namespace Mesen.ViewModels
 
 			IObservable<bool> button5Enabled = this.WhenAnyValue(x => x.Config.Controllers[4].Type, x => x.CanConfigure());
 			this.SetupPlayer5 = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 4), button5Enabled);
+
+			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {
+				EmulatorShortcut.SwitchDiskSide,
+				EmulatorShortcut.EjectDisk,
+				EmulatorShortcut.InsertCoin1,
+				EmulatorShortcut.InsertCoin2,
+				EmulatorShortcut.InsertCoin3,
+				EmulatorShortcut.InsertCoin4,
+				EmulatorShortcut.InputBarcode
+			};
+
+			Dictionary<EmulatorShortcut, ShortcutKeyInfo> shortcuts = new Dictionary<EmulatorShortcut, ShortcutKeyInfo>();
+			foreach(ShortcutKeyInfo shortcut in preferences.ShortcutKeys) {
+				shortcuts[shortcut.Shortcut] = shortcut;
+			}
+
+			ShortcutKeys = new List<ShortcutKeyInfo>();
+			for(int i = 0; i < displayOrder.Length; i++) {
+				ShortcutKeys.Add(shortcuts[displayOrder[i]]);
+			}
 		}
 
 		private async void OpenSetup(Button btn, int port)

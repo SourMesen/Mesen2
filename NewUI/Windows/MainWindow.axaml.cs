@@ -25,6 +25,8 @@ namespace Mesen.Windows
 {
 	public class MainWindow : Window
 	{
+		private NotificationListener _listener;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -59,11 +61,14 @@ namespace Mesen.Windows
 			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
 
 			ConfigManager.InitHomeFolder();
-			System.IO.Directory.CreateDirectory(ConfigManager.HomeFolder);
-			System.IO.Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
+			Directory.CreateDirectory(ConfigManager.HomeFolder);
+			Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
 
 			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
+
+			_listener = new NotificationListener();
+			_listener.OnNotification += OnNotification;
 
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
@@ -71,6 +76,15 @@ namespace Mesen.Windows
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
+		}
+
+		private void OnNotification(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.ExecuteShortcut:
+					//TODO
+					break;
+			}
 		}
 
 		private void InitializeComponent()

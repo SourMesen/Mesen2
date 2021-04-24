@@ -25,10 +25,10 @@ namespace Mesen.ViewModels
 		
 		public NesInputConfigViewModel Input { get; private set; }
 
-		public NesConfigViewModel()
+		public NesConfigViewModel(PreferencesConfig preferences)
 		{
 			Config = ConfigManager.Config.Nes.Clone();
-			Input = new NesInputConfigViewModel(Config);
+			Input = new NesInputConfigViewModel(Config, preferences);
 
 			this.WhenAnyValue(x => x.Config.StereoFilter).Select(x => x == StereoFilter.Delay).ToPropertyEx(this, x => x.IsDelayStereoEffect);
 			this.WhenAnyValue(x => x.Config.StereoFilter).Select(x => x == StereoFilter.Panning).ToPropertyEx(this, x => x.IsPanningStereoEffect);

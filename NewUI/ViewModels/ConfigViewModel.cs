@@ -28,7 +28,7 @@ namespace Mesen.ViewModels
 			this.Video = new VideoConfigViewModel();
 			this.Preferences = new PreferencesConfigViewModel();
 			this.Emulation = new EmulationConfigViewModel();
-			this.Nes = new NesConfigViewModel();
+			this.Nes = new NesConfigViewModel(Preferences.Config);
 			this.Snes = new SnesConfigViewModel();
 			this.Gameboy = new GameboyConfigViewModel();
 		}

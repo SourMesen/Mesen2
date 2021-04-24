@@ -120,13 +120,15 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.SelectSaveSlot10
 			};
 
-			Dictionary<EmulatorShortcut, int> order = new Dictionary<EmulatorShortcut, int>();
-			for(int i = 0; i < displayOrder.Length; i++) {
-				order[displayOrder[i]] = i;
+			Dictionary<EmulatorShortcut, ShortcutKeyInfo> shortcuts = new Dictionary<EmulatorShortcut, ShortcutKeyInfo>();
+			foreach(ShortcutKeyInfo shortcut in Config.ShortcutKeys) {
+				shortcuts[shortcut.Shortcut] = shortcut;
 			}
 
-			ShortcutKeys = new List<ShortcutKeyInfo>(Config.ShortcutKeys);
-			ShortcutKeys.Sort((a, b) => order[a.Shortcut] - order[b.Shortcut]);
+			ShortcutKeys = new List<ShortcutKeyInfo>();
+			for(int i = 0; i < displayOrder.Length; i++) {
+				ShortcutKeys.Add(shortcuts[displayOrder[i]]);
+			}
 		}
    }
 }

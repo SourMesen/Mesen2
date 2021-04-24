@@ -10,7 +10,6 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Top"
 	HorizontalAlignment="Stretch"
-	x:DataType="vm:PreferencesConfigViewModel"
 	x:Class="Mesen.Views.ShortcutKeysTabView"
 >
 	<Design.DataContext>
@@ -31,7 +30,7 @@
 		<Rectangle Stroke="LightGray" StrokeThickness="2" Margin="-1 0 -1 0" DockPanel.Dock="Top"/>
 
 		<ScrollViewer AllowAutoHide="False">
-			<ItemsRepeater Items="{CompiledBinding ShortcutKeys}">
+			<ItemsRepeater Items="{Binding ShortcutKeys}">
 				<ItemsRepeater.ItemTemplate>
 					<DataTemplate>
 						<StackPanel>
