@@ -10,6 +10,7 @@ class VsSystem : public BaseMapper
 {
 private:
 	uint8_t _prgChrSelectBit = 0;
+	VsControlManager* _controlManager = nullptr;
 
 protected:
 	uint16_t GetPRGPageSize() override { return 0x2000; }
@@ -63,6 +64,8 @@ protected:
 
 		uint8_t chrOuter = _console->IsVsMainConsole() ? 0 : 2;
 		SelectCHRPage(0, 0 | chrOuter);
+
+		_controlManager = dynamic_cast<VsControlManager*>(_console->GetControlManager().get());
 	}
 
 	void Reset(bool softReset) override
@@ -79,9 +82,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
-		VsControlManager* controlManager = dynamic_cast<VsControlManager*>(_console->GetControlManager().get());
-		if(controlManager && _prgChrSelectBit != controlManager->GetPrgChrSelectBit()) {
-			_prgChrSelectBit = controlManager->GetPrgChrSelectBit();
+		if(_controlManager && _prgChrSelectBit != _controlManager->GetPrgChrSelectBit()) {
+			_prgChrSelectBit = _controlManager->GetPrgChrSelectBit();
 
 			if(_romInfo.VsType == VsSystemType::Default && _prgSize > 0x8000) {
 				//"Note: In case of games with 40KiB PRG - ROM(as found in VS Gumshoe), the above bit additionally changes 8KiB PRG - ROM at $8000 - $9FFF."

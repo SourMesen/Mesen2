@@ -645,13 +645,10 @@ void GbPpu::SendFrame()
 	_isFirstFrame = false;
 
 #ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, false);
+	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, true, false);
 #else
-	if(_emu->GetRewindManager()->IsRewinding()) {
-		_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, true);
-	} else {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, 256, 239, _state.FrameCount);
-	}
+	bool rewinding = _emu->GetRewindManager()->IsRewinding();
+	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, 256, 239, _state.FrameCount, rewinding, rewinding);
 #endif
 
 	//TODO move this somewhere that makes more sense

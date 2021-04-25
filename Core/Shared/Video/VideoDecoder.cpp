@@ -143,30 +143,7 @@ uint32_t VideoDecoder::GetFrameCount()
 	return _frameCount;
 }
 
-void VideoDecoder::UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool forRewind)
-{
-	if(_emu->IsRunAheadFrame()) {
-		return;
-	}
-
-	if(_frameChanged) {
-		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
-		while(_frameChanged) {
-			//Spin until decode is done
-		}
-		//At this point, we are sure that the decode thread is no longer busy
-	}
-	
-	_frameChanged = true;
-	_baseFrameInfo.Width = width;
-	_baseFrameInfo.Height = height;
-	_frameNumber = frameNumber;
-	_ppuOutputBuffer = ppuOutputBuffer;
-	DecodeFrame(forRewind);
-	_frameCount++;
-}
-
-void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber)
+void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind)
 {
 	if(_emu->IsRunAheadFrame()) {
 		return;
@@ -184,9 +161,12 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16
 	_baseFrameInfo.Height = height;
 	_frameNumber = frameNumber;
 	_ppuOutputBuffer = ppuOutputBuffer;
-	_frameChanged = true;
-	_waitForFrame.Signal();
-
+	if(sync) {
+		DecodeFrame(forRewind);
+	} else {
+		_frameChanged = true;
+		_waitForFrame.Signal();
+	}
 	_frameCount++;
 }
 

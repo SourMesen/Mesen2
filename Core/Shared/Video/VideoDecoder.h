@@ -56,8 +56,7 @@ public:
 	FrameInfo GetFrameInfo();
 	ScreenSize GetScreenSize(bool ignoreScale);
 
-	void UpdateFrameSync(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool forRewind);
-	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber);
+	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind);
 
 	bool IsRunning();
 	void StartThread();

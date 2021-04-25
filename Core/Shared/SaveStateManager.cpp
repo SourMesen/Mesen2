@@ -191,7 +191,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 				uint32_t width = 0;
 				uint32_t height = 0;
 				if(GetScreenshotData(frameData, width, height, stream)) {
-					_emu->GetVideoDecoder()->UpdateFrameSync((uint16_t*)frameData.data(), width, height, 0, true);
+					_emu->GetVideoDecoder()->UpdateFrame((uint16_t*)frameData.data(), width, height, 0, true, true);
 				}
 				#endif
 			}

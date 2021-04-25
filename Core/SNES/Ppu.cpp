@@ -1468,12 +1468,12 @@ void Ppu::SendFrame()
 	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
 
 #ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
+	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount, true, isRewinding);
 #else
 	if(isRewinding || _interlacedFrame) {
-		_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, width, height, _frameCount, isRewinding);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount, true, isRewinding);
 	} else {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount, false, false);
 	}
 #endif
 

@@ -45,6 +45,7 @@ private:
 	blip_t* _blipBufLeft;
 	blip_t* _blipBufRight;
 	int16_t* _outputBuffer;
+	size_t _sampleCount = 0;
 	double _volumes[MaxChannelCount];
 	double _panning[MaxChannelCount];
 
@@ -57,6 +58,8 @@ private:
 	double GetChannelOutput(AudioChannel channel, bool forRightChannel);
 	int16_t GetOutputVolume(bool forRightChannel);
 	void EndFrame(uint32_t time);
+
+	void ProcessVsDualSystemAudio();
 
 	void UpdateRates(bool forceUpdate);
 	

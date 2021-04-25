@@ -157,6 +157,8 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		void UpdateGrayscaleAndIntensifyBits();
 		virtual void SendFrame();
 
+		void SendFrameVsDualSystem();
+
 		void UpdateState();
 
 		void UpdateApuStatus();
