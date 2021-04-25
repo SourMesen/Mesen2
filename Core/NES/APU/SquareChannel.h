@@ -88,7 +88,7 @@ protected:
 	}
 
 public:
-	SquareChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer *mixer, bool isChannel1) : ApuEnvelope(channel, console, mixer)
+	SquareChannel(AudioChannel channel, NesConsole* console, NesSoundMixer *mixer, bool isChannel1) : ApuEnvelope(channel, console, mixer)
 	{
 		_isChannel1 = isChannel1;
 	}

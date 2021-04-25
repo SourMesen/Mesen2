@@ -21,8 +21,8 @@ class NesMemoryManager : public ISerializable
 		
 		Emulator* _emu = nullptr;
 		shared_ptr<CheatManager> _cheatManager;
-		shared_ptr<NesConsole> _console;
-		shared_ptr<BaseMapper> _mapper;
+		NesConsole* _console;
+		BaseMapper* _mapper;
 
 		uint8_t *_internalRAM;
 
@@ -39,10 +39,10 @@ class NesMemoryManager : public ISerializable
 	public:
 		static const int InternalRAMSize = 0x800;
 
-		NesMemoryManager(shared_ptr<NesConsole> console);
+		NesMemoryManager(NesConsole* console);
 		~NesMemoryManager();
 
-		void SetMapper(shared_ptr<BaseMapper> mapper);
+		void SetMapper(BaseMapper* mapper);
 		
 		void Reset(bool softReset);
 		void RegisterIODevice(INesMemoryHandler* handler);

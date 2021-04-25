@@ -31,7 +31,7 @@ protected:
 	}
 
 public:
-	TriangleChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer* mixer) : ApuLengthCounter(channel, console, mixer)
+	TriangleChannel(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : ApuLengthCounter(channel, console, mixer)
 	{
 	}
 

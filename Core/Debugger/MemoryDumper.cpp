@@ -59,6 +59,12 @@ uint8_t* MemoryDumper::GetMemoryBuffer(SnesMemoryType type)
 
 uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 {
+	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+	CpuType cpuType = DebugUtilities::ToCpuType(type);
+	if(std::find(cpuTypes.begin(), cpuTypes.end(), cpuType) == cpuTypes.end()) {
+		return 0;
+	}
+
 	switch(type) {
 		case SnesMemoryType::CpuMemory: return 0x1000000;
 		case SnesMemoryType::SpcMemory: return 0x10000;
@@ -73,6 +79,10 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 
 void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 {
+	if(GetMemorySize(type) == 0) {
+		return;
+	}
+
 	switch(type) {
 		case SnesMemoryType::CpuMemory:
 			for(int i = 0; i <= 0xFFFFFF; i+=0x1000) {

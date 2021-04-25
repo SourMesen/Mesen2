@@ -9,10 +9,10 @@
 #include "Utilities/Serializer.h"
 #include "Utilities/Audio/blip_buf.h"
 
-NesSoundMixer::NesSoundMixer(shared_ptr<NesConsole> console)
+NesSoundMixer::NesSoundMixer(NesConsole* console)
 {
 	_clockRate = 0;
-	_console = console.get();
+	_console = console;
 	_mixer = console->GetEmulator()->GetSoundMixer().get();
 	//_oggMixer.reset();
 	_outputBuffer = new int16_t[NesSoundMixer::MaxSamplesPerFrame];
@@ -90,17 +90,18 @@ void NesSoundMixer::PlayAudioBuffer(uint32_t time)
 
 	if(_oggMixer) {
 		_oggMixer->ApplySamples(_outputBuffer, sampleCount, _settings->GetMasterVolume());
-	}
-
-	if(_console->IsDualSystem()) {
-		if(_console->IsMaster() && _settings->CheckFlag(EmulationFlags::VsDualMuteMaster)) {
-			_lowPassFilter.ApplyFilter(_outputBuffer, sampleCount, 0, 0);
-		} else if(!_console->IsMaster() && _settings->CheckFlag(EmulationFlags::VsDualMuteSlave)) {
-			_lowPassFilter.ApplyFilter(_outputBuffer, sampleCount, 0, 0);
-		}
 	}*/
 
 	NesConfig& cfg = _console->GetNesConfig();
+	//TODO
+	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
+		if(_console->IsVsMainConsole() && cfg.VsDualAudioOutput == VsDualOutputOption::SubSystemOnly) {
+			return;
+		} else if(!_console->IsVsMainConsole() && cfg.VsDualAudioOutput == VsDualOutputOption::MainSystemOnly) {
+			return;
+		}
+	}
+
 	switch(cfg.StereoFilter) {
 		case StereoFilterType::None: break;
 		case StereoFilterType::Delay: _stereoDelay.ApplyFilter(_outputBuffer, sampleCount, _sampleRate, cfg.StereoDelay); break;

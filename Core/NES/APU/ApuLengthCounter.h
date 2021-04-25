@@ -33,7 +33,7 @@ protected:
 	}
 	
 public:
-	ApuLengthCounter(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer* mixer) : BaseApuChannel(channel, console, mixer)
+	ApuLengthCounter(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : BaseApuChannel(channel, console, mixer)
 	{
 	}
 	

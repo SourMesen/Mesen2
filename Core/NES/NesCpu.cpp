@@ -13,7 +13,7 @@
 #include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
 
-NesCpu::NesCpu(shared_ptr<NesConsole> console)
+NesCpu::NesCpu(NesConsole* console)
 {
 	_console = console;
 	_memoryManager = _console->GetMemoryManager();

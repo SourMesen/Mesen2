@@ -78,7 +78,7 @@ public:
 
 	static constexpr SnesMemoryType GetLastCpuMemoryType()
 	{
-		return SnesMemoryType::GameboyMemory;
+		return SnesMemoryType::NesMemory;
 	}
 
 	static bool IsPpuMemory(SnesMemoryType memType)

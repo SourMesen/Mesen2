@@ -381,8 +381,8 @@ enum class StereoFilterType
 enum class VsDualOutputOption
 {
 	Both = 0,
-	MasterOnly = 1,
-	SlaveOnly = 2
+	MainSystemOnly = 1,
+	SubSystemOnly = 2
 };
 
 enum class NesConsoleType

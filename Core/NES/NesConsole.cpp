@@ -8,6 +8,7 @@
 #include "NES/NesSoundMixer.h"
 #include "NES/NesMemoryManager.h"
 #include "NES/NesPpu.h"
+#include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "Shared/Interfaces/IBattery.h"
@@ -18,6 +19,10 @@
 NesConsole::NesConsole(Emulator* emu)
 {
 	_emu = emu;
+}
+
+NesConsole::~NesConsole()
+{
 }
 
 Emulator* NesConsole::GetEmulator()
@@ -34,6 +39,21 @@ void NesConsole::ProcessCpuClock()
 {
 	_mapper->ProcessCpuClock();
 	_apu->ProcessCpuClock();
+}
+
+NesConsole* NesConsole::GetVsMainConsole()
+{
+	return _vsMainConsole;
+}
+
+NesConsole* NesConsole::GetVsSubConsole()
+{
+	return _vsSubConsole.get();
+}
+
+bool NesConsole::IsVsMainConsole()
+{
+	return _vsMainConsole == nullptr;
 }
 
 void NesConsole::Serialize(Serializer& s)
@@ -72,6 +92,9 @@ void NesConsole::Reset()
 	_apu->Reset(true);
 	_cpu->Reset(true, NesModel::NTSC);
 	_controlManager->Reset(true);
+	if(_vsSubConsole) {
+		_vsSubConsole->Reset();
+	}
 }
 
 void NesConsole::OnBeforeRun()
@@ -83,56 +106,47 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 {
 	RomData romData;
 
-	shared_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(shared_from_this(), romFile, romData);
+	shared_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(this, romFile, romData);
 	if(mapper) {
 		shared_ptr<BaseMapper> previousMapper = _mapper;
 		_mapper = mapper;
-		_mixer.reset(new NesSoundMixer(shared_from_this()));
-		_memoryManager.reset(new NesMemoryManager(shared_from_this()));
-		_cpu.reset(new NesCpu(shared_from_this()));
-		_apu.reset(new NesApu(shared_from_this()));
+		_mixer.reset(new NesSoundMixer(this));
+		_memoryManager.reset(new NesMemoryManager(this));
+		_cpu.reset(new NesCpu(this));
+		_apu.reset(new NesApu(this));
 
-		//TODO
-		/*if(romInfo.System == GameSystem::VsSystem) {
-			//_controlManager.reset(new VsControlManager(shared_from_this(), _systemActionManager, _mapper->GetMapperControlDevice()));
-		} else {*/
-			_controlManager.reset(new NesControlManager(shared_from_this(), nullptr));
-		//}
+		if(romData.Info.System == GameSystem::VsSystem) {
+			_controlManager.reset(new VsControlManager(this));
+		} else {
+			_controlManager.reset(new NesControlManager(this));
+		}
 
-		_mapper->SetConsole(shared_from_this());
+		_mapper->SetConsole(this);
 		_mapper->Initialize(romData);
-
-		NesRomInfo romInfo = _mapper->GetRomInfo();
 
 		/*if(!isDifferentGame && forPowerCycle) {
 			_mapper->CopyPrgChrRom(previousMapper);
-		}
-
-		if(_slave) {
-			_slave->Release(false);
-			_slave.reset();
-		}
-
-		if(!_master && romInfo.VsType == VsSystemType::VsDualSystem) {
-			_slave.reset(new Console(shared_from_this()));
-			_slave->Init();
-			_slave->Initialize(romFile, patchFile);
 		}*/
+
+		if(!_vsMainConsole && romData.Info.VsType == VsSystemType::VsDualSystem) {
+			_vsSubConsole.reset(new NesConsole(_emu));
+			_vsSubConsole->_vsMainConsole = this;
+			if(!_vsSubConsole->LoadRom(romFile)) {
+				return false;
+			}
+		}
 
 		/*switch(romInfo.System) {
 			case GameSystem::FDS:
 				_settings->SetPpuModel(PpuModel::Ppu2C02);
-				_systemActionManager.reset(new FdsSystemActionManager(shared_from_this(), _mapper));
 				break;
 
 			case GameSystem::VsSystem:
 				_settings->SetPpuModel(romInfo.VsPpuModel);
-				_systemActionManager.reset(new VsSystemActionManager(shared_from_this()));
 				break;
 
 			default:
 				_settings->SetPpuModel(PpuModel::Ppu2C02);
-				_systemActionManager.reset(new SystemActionManager(shared_from_this())); break;
 		}
 		
 
@@ -158,10 +172,10 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 			//Disable most of the PPU for NSFs
 			_ppu.reset(new NsfPpu(shared_from_this()));
 		} else {*/
-			_ppu.reset(new NesPpu(shared_from_this()));
+			_ppu.reset(new NesPpu(this));
 		//}
 
-		_memoryManager->SetMapper(_mapper);
+		_memoryManager->SetMapper(_mapper.get());
 		_memoryManager->RegisterIODevice(_ppu.get());
 		_memoryManager->RegisterIODevice(_apu.get());
 		_memoryManager->RegisterIODevice(_controlManager.get());
@@ -173,6 +187,13 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		_ppu->SetNesModel(model);
 		_apu->SetNesModel(model);
 		_mixer->Reset();
+		
+		_cpu->Reset(false, model);
+		_ppu->Reset();
+		_mapper->Reset(false);
+		_apu->Reset(false);
+		_memoryManager->Reset(false);
+		_controlManager->Reset(false);
 
 		return true;
 	}
@@ -181,7 +202,7 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 
 void NesConsole::Init()
 {
-	Reset();
+	//Reset();
 }
 
 void NesConsole::RunFrame()
@@ -189,8 +210,25 @@ void NesConsole::RunFrame()
 	int frame = _ppu->GetFrameCount();
 	while(frame == _ppu->GetFrameCount()) {
 		_cpu->Exec();
+		if(_vsSubConsole) {
+			RunVsSubConsole();
+		}
 	}
 	_emu->ProcessEndOfFrame();
+}
+
+void NesConsole::RunVsSubConsole()
+{
+	int64_t cycleGap;
+	while(true) {
+		//Run the sub console until it catches up to the main CPU
+		cycleGap = (int64_t)(_cpu->GetCycleCount() - _vsSubConsole->_cpu->GetCycleCount());
+		if(cycleGap > 5 || _ppu->GetFrameCount() > _vsSubConsole->_ppu->GetFrameCount()) {
+			_vsSubConsole->_cpu->Exec();
+		} else {
+			break;
+		}
+	}
 }
 
 shared_ptr<IControlManager> NesConsole::GetControlManager()

@@ -39,7 +39,7 @@ protected:
 	}
 
 public:
-	NoiseChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer* mixer) : ApuEnvelope(channel, console, mixer)
+	NoiseChannel(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : ApuEnvelope(channel, console, mixer)
 	{
 	}
 

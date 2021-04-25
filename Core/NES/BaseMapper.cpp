@@ -681,7 +681,7 @@ void BaseMapper::GetMemoryRanges(MemoryRanges &ranges)
 	}
 }
 
-void BaseMapper::SetConsole(shared_ptr<NesConsole> console)
+void BaseMapper::SetConsole(NesConsole* console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -741,11 +741,6 @@ void BaseMapper::SetMirroringType(MirroringType type)
 ConsoleFeatures BaseMapper::GetAvailableFeatures()
 {
 	return ConsoleFeatures::None;
-}
-
-shared_ptr<BaseControlDevice> BaseMapper::GetMapperControlDevice()
-{
-	return _mapperControlDevice;
 }
 
 NesRomInfo BaseMapper::GetRomInfo()

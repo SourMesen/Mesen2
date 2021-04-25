@@ -17,7 +17,7 @@
 #include "Shared/NotificationManager.h"
 #include "MemoryOperationType.h"
 
-NesPpu::NesPpu(shared_ptr<NesConsole> console)
+NesPpu::NesPpu(NesConsole* console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -263,7 +263,12 @@ uint8_t NesPpu::ApplyOpenBus(uint8_t mask, uint8_t value)
 
 PpuModel NesPpu::GetPpuModel()
 {
-	return PpuModel::Ppu2C02;
+	//TODO PERF
+	if(_console->GetMapper()->GetRomInfo().System == GameSystem::VsSystem) {
+		return _console->GetMapper()->GetRomInfo().VsPpuModel;
+	} else {
+		return PpuModel::Ppu2C02;
+	}
 }
 
 void NesPpu::ProcessStatusRegOpenBus(uint8_t &openBusMask, uint8_t &returnValue)
@@ -1197,13 +1202,35 @@ void NesPpu::SendFrame()
 #ifdef LIBRETRO
 	_console->GetVideoDecoder()->UpdateFrameSync(_currentOutputBuffer);
 #else 
-	if(_emu->GetRewindManager()->IsRewinding()) {
-		if(!_emu->GetRewindManager()->IsStepBack()) {
-			_emu->GetVideoDecoder()->UpdateFrameSync(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, true);
+	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
+		//TODO check display options
+		if(_console->IsVsMainConsole()) {
+			uint16_t* mergedBuffer = new uint16_t[NesPpu::ScreenWidth * NesPpu::ScreenHeight * 2];
+			
+			uint16_t* in1 = _currentOutputBuffer;
+			uint16_t* in2 = _console->GetVsSubConsole()->GetPpu()->_currentOutputBuffer;
+			uint16_t* out = mergedBuffer;
+			for(int i = 0; i < NesPpu::ScreenHeight; i++) {
+				memcpy(out, in1, NesPpu::ScreenWidth * sizeof(uint16_t));
+				out += NesPpu::ScreenWidth;
+				in1 += NesPpu::ScreenWidth;
+				memcpy(out, in2, NesPpu::ScreenWidth * sizeof(uint16_t));
+				out += NesPpu::ScreenWidth;
+				in2 += NesPpu::ScreenWidth;
+			}
+
+			_emu->GetVideoDecoder()->UpdateFrameSync(mergedBuffer, NesPpu::ScreenWidth*2, NesPpu::ScreenHeight, _frameCount, false);
+			delete[] mergedBuffer;
 		}
 	} else {
-		//If VideoDecoder isn't done with the previous frame, UpdateFrame will block until it is ready to accept a new frame.
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount);
+		if(_emu->GetRewindManager()->IsRewinding()) {
+			if(!_emu->GetRewindManager()->IsStepBack()) {
+				_emu->GetVideoDecoder()->UpdateFrameSync(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, true);
+			}
+		} else {
+			//If VideoDecoder isn't done with the previous frame, UpdateFrame will block until it is ready to accept a new frame.
+			_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount);
+		}
 	}
 
 	_enableOamDecay = _settings->GetNesConfig().EnableOamDecay;

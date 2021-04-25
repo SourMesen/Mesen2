@@ -91,7 +91,11 @@ namespace Mesen.Debugger.Controls
 
 		protected override Size MeasureOverride(Size availableSize)
 		{
-			return new Size(ColumnCount * BlockSize, (PaletteColors.Length / ColumnCount) * BlockSize);
+			if(PaletteColors != null) {
+				return new Size(ColumnCount * BlockSize, (PaletteColors.Length / ColumnCount) * BlockSize);
+			} else {
+				return availableSize;
+			}
 		}
 
 		private static int CoerceSelectedPalette(IAvaloniaObject o, int value)

@@ -22,7 +22,7 @@ private:
 	const FrameType _frameType[2][6] = { { FrameType::QuarterFrame, FrameType::HalfFrame, FrameType::QuarterFrame, FrameType::None, FrameType::HalfFrame, FrameType::None },
 													 { FrameType::QuarterFrame, FrameType::HalfFrame, FrameType::QuarterFrame, FrameType::None, FrameType::HalfFrame, FrameType::None } };
 
-	shared_ptr<NesConsole> _console;
+	NesConsole* _console;
 	int32_t _stepCycles[2][6];
 	NesModel _nesModel;
 	int32_t _previousCycle;
@@ -34,7 +34,7 @@ private:
 	int8_t _writeDelayCounter;
 
 public:
-	ApuFrameCounter(shared_ptr<NesConsole> console)
+	ApuFrameCounter(NesConsole* console)
 	{
 		_console = console;
 		Reset(false);

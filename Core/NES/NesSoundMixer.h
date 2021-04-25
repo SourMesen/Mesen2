@@ -61,7 +61,7 @@ private:
 	void UpdateRates(bool forceUpdate);
 	
 public:
-	NesSoundMixer(shared_ptr<NesConsole> console);
+	NesSoundMixer(NesConsole* console);
 	~NesSoundMixer();
 
 	void SetNesModel(NesModel model);

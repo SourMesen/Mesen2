@@ -34,7 +34,7 @@ private:
 	void Clock() override;
 
 public:
-	DeltaModulationChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer* mixer);
+	DeltaModulationChannel(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer);
 
 	void Reset(bool softReset) override;
 	void Serialize(Serializer& s) override;

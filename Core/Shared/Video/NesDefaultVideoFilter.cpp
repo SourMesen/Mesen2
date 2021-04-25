@@ -126,16 +126,18 @@ void NesDefaultVideoFilter::DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t*
 {
 	uint32_t* out = outputBuffer;
 	OverscanDimensions overscan = GetOverscan();
+	FrameInfo frame = GetFrameInfo();
+	
 	uint8_t scanlineIntensity = (uint8_t)((1.0 - _videoConfig.ScanlineIntensity) * 255);
-	for(uint32_t i = overscan.Top, iMax = 240 - overscan.Bottom; i < iMax; i++) {
+	for(uint32_t i = overscan.Top, iMax = frame.Height - overscan.Bottom; i < iMax; i++) {
 		if(displayScanlines && (i + overscan.Top) % 2 == 0) {
-			for(uint32_t j = overscan.Left, jMax = 256 - overscan.Right; j < jMax; j++) {
-				*out = ApplyScanlineEffect(ppuOutputBuffer[i * 256 + j], scanlineIntensity);
+			for(uint32_t j = overscan.Left, jMax = frame.Width - overscan.Right; j < jMax; j++) {
+				*out = ApplyScanlineEffect(ppuOutputBuffer[i * frame.Width + j], scanlineIntensity);
 				out++;
 			}
 		} else {
-			for(uint32_t j = overscan.Left, jMax = 256 - overscan.Right; j < jMax; j++) {
-				*out = _calculatedPalette[ppuOutputBuffer[i * 256 + j]];
+			for(uint32_t j = overscan.Left, jMax = frame.Width - overscan.Right; j < jMax; j++) {
+				*out = _calculatedPalette[ppuOutputBuffer[i * frame.Width + j]];
 				out++;
 			}
 		}

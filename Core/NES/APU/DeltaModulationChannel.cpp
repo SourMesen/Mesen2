@@ -6,7 +6,7 @@
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
 
-DeltaModulationChannel::DeltaModulationChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer *mixer) : BaseApuChannel(channel, console, mixer)
+DeltaModulationChannel::DeltaModulationChannel(AudioChannel channel, NesConsole* console, NesSoundMixer *mixer) : BaseApuChannel(channel, console, mixer)
 {
 }
 

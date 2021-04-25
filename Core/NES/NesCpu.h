@@ -53,7 +53,7 @@ private:
 	uint8_t _irqMask;
 
 	NesCpuState _state;
-	shared_ptr<NesConsole> _console;
+	NesConsole* _console;
 	NesMemoryManager* _memoryManager;
 
 	bool _prevRunIrq = false;
@@ -785,7 +785,7 @@ protected:
 	void Serialize(Serializer &s) override;
 
 public:
-	NesCpu(shared_ptr<NesConsole> console);
+	NesCpu(NesConsole* console);
 	
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 	void SetMasterClockDivider(NesModel region);

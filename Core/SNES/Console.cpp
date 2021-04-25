@@ -226,6 +226,7 @@ double Console::GetFps()
 
 PpuFrameInfo Console::GetPpuFrame()
 {
+	//TODO null checks
 	PpuFrameInfo frame;
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
 	frame.Width = 256;

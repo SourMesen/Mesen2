@@ -79,6 +79,9 @@
     <ClInclude Include="NES\Mappers\MMC1.h" />
     <ClInclude Include="NES\Mappers\FDS\ModChannel.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
+    <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
+    <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />
+    <ClInclude Include="NES\Mappers\VsSystem\VsInputButtons.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />
@@ -339,6 +342,7 @@
     <ClCompile Include="NES\Mappers\FDS\Fds.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
+    <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />
     <ClCompile Include="Shared\Video\NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />

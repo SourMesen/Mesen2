@@ -8,7 +8,7 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-NesMemoryManager::NesMemoryManager(shared_ptr<NesConsole> console)
+NesMemoryManager::NesMemoryManager(NesConsole* console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -36,7 +36,7 @@ NesMemoryManager::~NesMemoryManager()
 	delete[] _ramWriteHandlers;
 }
 
-void NesMemoryManager::SetMapper(shared_ptr<BaseMapper> mapper)
+void NesMemoryManager::SetMapper(BaseMapper* mapper)
 {
 	_mapper = mapper;
 }
@@ -152,7 +152,7 @@ void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSide
 		INesMemoryHandler* handler = _ramReadHandlers[addr];
 		if(handler) {
 			if(disableSideEffects) {
-				if(handler == _mapper.get()) {
+				if(handler == _mapper) {
 					//Only allow writes to prg/chr ram/rom (e.g not ppu, apu, mapper registers, etc.)
 					((BaseMapper*)handler)->DebugWriteRAM(addr, value);
 				}

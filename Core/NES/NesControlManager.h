@@ -16,17 +16,15 @@ class NesConsole;
 enum class ControllerType;
 enum class ExpansionPortDevice;
 
-class NesControlManager final : public ISerializable, public INesMemoryHandler, public BaseControlManager
+class NesControlManager : public ISerializable, public INesMemoryHandler, public BaseControlManager
 {
 private:
-	shared_ptr<BaseControlDevice> _mapperControlDevice;
-
 	NesConfig _prevConfig;
 	uint32_t _lagCounter = 0;
 	bool _isLagging = false;
 
 protected:
-	shared_ptr<NesConsole> _console;
+	NesConsole* _console;
 
 	virtual void Serialize(Serializer& s) override;
 	virtual ControllerType GetControllerType(uint8_t port);
@@ -34,7 +32,7 @@ protected:
 	virtual uint8_t GetOpenBusMask(uint8_t port);
 
 public:
-	NesControlManager(shared_ptr<NesConsole> console, shared_ptr<BaseControlDevice> mapperControlDevice);
+	NesControlManager(NesConsole* console);
 	virtual ~NesControlManager();
 
 	void UpdateControlDevices() override;

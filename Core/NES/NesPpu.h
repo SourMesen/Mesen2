@@ -31,7 +31,7 @@ enum PPURegisters
 class NesPpu : public INesMemoryHandler, public ISerializable
 {
 	protected:
-		shared_ptr<NesConsole> _console;
+		NesConsole* _console;
 		Emulator* _emu;
 		EmuSettings* _settings;
 
@@ -183,7 +183,7 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		static constexpr int32_t OutputBufferSize = 256*240*2;
 		static constexpr int32_t OamDecayCycleCount = 3000;
 
-		NesPpu(shared_ptr<NesConsole> console);
+		NesPpu(NesConsole* console);
 		virtual ~NesPpu();
 
 		void Reset();

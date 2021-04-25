@@ -808,7 +808,7 @@ template<CpuType cpuType>
 void Emulator::AddDebugEvent(DebugEventType evtType)
 {
 	if(_debugger) {
-		_debugger->GetEventManager(cpuType)->AddEvent(evtType);
+		//_debugger->GetEventManager(cpuType)->AddEvent(evtType);
 	}
 }
 

@@ -16,7 +16,7 @@ private:
 	uint8_t _counter = 0;
 
 protected:
-	ApuEnvelope(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer* mixer) : ApuLengthCounter(channel, console, mixer)
+	ApuEnvelope(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : ApuLengthCounter(channel, console, mixer)
 	{
 	}
 

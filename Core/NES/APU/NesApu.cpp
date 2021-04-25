@@ -13,7 +13,7 @@
 #include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
 
-NesApu::NesApu(shared_ptr<NesConsole> console)
+NesApu::NesApu(NesConsole* console)
 {
 	_nesModel = NesModel::Auto;
 	_apuEnabled = true;

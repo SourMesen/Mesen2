@@ -54,8 +54,7 @@ private:
 protected:
 	NesRomInfo _romInfo;
 
-	shared_ptr<BaseControlDevice> _mapperControlDevice;
-	shared_ptr<NesConsole> _console;
+	NesConsole* _console;
 	Emulator* _emu;
 
 	uint8_t* _prgRom = nullptr;
@@ -172,9 +171,8 @@ public:
 	
 	virtual void SaveBattery();
 
-	void SetConsole(shared_ptr<NesConsole> console);
+	void SetConsole(NesConsole* console);
 
-	shared_ptr<BaseControlDevice> GetMapperControlDevice();
 	NesRomInfo GetRomInfo();
 	uint32_t GetMapperDipSwitchCount();
 

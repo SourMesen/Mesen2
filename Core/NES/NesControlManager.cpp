@@ -37,10 +37,9 @@
 #include "NES/Input/BattleBox.h"
 #include "NES/Input/VirtualBoyController.h"
 
-NesControlManager::NesControlManager(shared_ptr<NesConsole> console, shared_ptr<BaseControlDevice> mapperControlDevice) : BaseControlManager(console->GetEmulator())
+NesControlManager::NesControlManager(NesConsole* console) : BaseControlManager(console->GetEmulator())
 {
 	_console = console;
-	_mapperControlDevice = mapperControlDevice;
 }
 
 NesControlManager::~NesControlManager()
@@ -63,17 +62,17 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::None: break;
 		case ControllerType::NesController: device.reset(new NesController(_emu, type, port, keys)); break;
 		case ControllerType::FamicomController: device.reset(new NesController(_emu, type, port, keys)); break;
-		case ControllerType::NesZapper: device.reset(new Zapper(_console.get(), type, port)); break;
+		case ControllerType::NesZapper: device.reset(new Zapper(_console, type, port)); break;
 		case ControllerType::NesArkanoidController: device.reset(new ArkanoidController(_emu, type, port)); break;
 		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, keys)); break;
 		case ControllerType::PowerPad: device.reset(new PowerPad(_emu, type, port, keys)); break;
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
 		case ControllerType::SuborMouse: device.reset(new SuborMouse(_emu, port)); break;
-		case ControllerType::VsZapper: device.reset(new VsZapper(_console.get(), port)); break;
+		case ControllerType::VsZapper: device.reset(new VsZapper(_console, port)); break;
 		case ControllerType::VirtualBoyController: device.reset(new VirtualBoyController(_emu, port, keys)); break;
 
 		//Exp port devices
-		case ControllerType::FamicomZapper: device.reset(new Zapper(_console.get(), type, BaseControlDevice::ExpDevicePort)); break;
+		case ControllerType::FamicomZapper: device.reset(new Zapper(_console, type, BaseControlDevice::ExpDevicePort)); break;
 		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort)); break;
 		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu)); break;
 		case ControllerType::FamilyTrainerMat: device.reset(new FamilyMatTrainer(_emu, keys)); break;
@@ -86,7 +85,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::SuborKeyboard: device.reset(new SuborKeyboard(_emu, keys)); break;
 		case ControllerType::BarcodeBattler: device.reset(new BarcodeBattlerReader(_emu)); break;
 		case ControllerType::HoriTrack: device.reset(new HoriTrack(_emu, keys)); break;
-		case ControllerType::BandaiHyperShot: device.reset(new BandaiHyperShot(_console.get(), keys)); break;
+		case ControllerType::BandaiHyperShot: device.reset(new BandaiHyperShot(_console, keys)); break;
 		case ControllerType::AsciiTurboFile: device.reset(new AsciiTurboFile(_emu)); break;
 		case ControllerType::BattleBox: device.reset(new BattleBox(_emu)); break;
 		case ControllerType::FourScore: device.reset(new FourScore(_emu)); break;
@@ -136,13 +135,8 @@ void NesControlManager::UpdateControlDevices()
 		settings->DisableKeyboardMode();
 	} else if(!hadKeyboard && hasKeyboard) {
 		settings->EnableKeyboardMode();
-	}*/
-
-	if(_mapperControlDevice) {
-		RegisterControlDevice(_mapperControlDevice);
 	}
-	//TODO
-	/*
+	
 	if(std::dynamic_pointer_cast<FamilyBasicKeyboard>(expDevice)) {
 		//Automatically connect the data recorder if the keyboard is connected
 		RegisterControlDevice(shared_ptr<FamilyBasicDataRecorder>(new FamilyBasicDataRecorder(_console)));
@@ -194,7 +188,8 @@ void NesControlManager::UpdateInputState()
 	BaseControlManager::UpdateInputState();
 
 	//Used by VS System games
-	//RemapControllerButtons();
+	//TODO?
+	RemapControllerButtons();
 }
 
 uint32_t NesControlManager::GetLagCounter()

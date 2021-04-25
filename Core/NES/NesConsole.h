@@ -23,16 +23,21 @@ class NesConsole final : public IConsole, public std::enable_shared_from_this<Ne
 {
 private:
 	Emulator* _emu = nullptr;
-	shared_ptr<NesCpu> _cpu;
-	shared_ptr<NesPpu> _ppu;
-	shared_ptr<NesApu> _apu;
-	shared_ptr<NesMemoryManager> _memoryManager;
+
+	unique_ptr<NesConsole> _vsSubConsole;
+	NesConsole* _vsMainConsole = nullptr;
+
+	unique_ptr<NesCpu> _cpu;
+	unique_ptr<NesPpu> _ppu;
+	unique_ptr<NesApu> _apu;
+	unique_ptr<NesMemoryManager> _memoryManager;
 	shared_ptr<BaseMapper> _mapper;
 	shared_ptr<NesControlManager> _controlManager;
-	shared_ptr<NesSoundMixer> _mixer;
+	unique_ptr<NesSoundMixer> _mixer;
 
 public:
 	NesConsole(Emulator* emulator);
+	~NesConsole();
 
 	NesCpu* GetCpu() { return _cpu.get(); }
 	NesPpu* GetPpu() { return _ppu.get(); }
@@ -44,6 +49,11 @@ public:
 	NesConfig& GetNesConfig();
 
 	void ProcessCpuClock();
+
+	NesConsole* GetVsMainConsole();
+	NesConsole* GetVsSubConsole();
+	bool IsVsMainConsole();
+	void RunVsSubConsole();
 
 	//TODO
 	bool IsNsf() { return false; }

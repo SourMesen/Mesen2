@@ -18,7 +18,7 @@ protected:
 	int8_t _lastOutput;
 	uint16_t _timer = 0;
 	uint16_t _period = 0;
-	shared_ptr<NesConsole> _console;
+	NesConsole* _console;
 
 	AudioChannel GetChannel()
 	{
@@ -29,7 +29,7 @@ public:
 	virtual void Clock() = 0;
 	virtual bool GetStatus() = 0;
 
-	BaseApuChannel(AudioChannel channel, shared_ptr<NesConsole> console, NesSoundMixer *mixer)
+	BaseApuChannel(AudioChannel channel, NesConsole* console, NesSoundMixer *mixer)
 	{
 		_channel = channel;
 		_mixer = mixer;

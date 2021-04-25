@@ -341,7 +341,7 @@ void EmuSettings::InitializeRam(void* data, uint32_t length)
 	switch(_emu->GetConsoleType()) {
 		default:
 		case ConsoleType::Snes: state = _snes.RamPowerOnState; break;
-		case ConsoleType::Nes: state = _snes.RamPowerOnState; break;
+		case ConsoleType::Nes: state = _nes.RamPowerOnState; break;
 		
 		case ConsoleType::Gameboy:
 		case ConsoleType::GameboyColor:

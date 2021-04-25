@@ -34,7 +34,7 @@ class NesApu : public ISerializable, public INesMemoryHandler
 		unique_ptr<DeltaModulationChannel> _deltaModulationChannel;
 		unique_ptr<ApuFrameCounter> _frameCounter;
 
-		shared_ptr<NesConsole> _console;
+		NesConsole* _console;
 		NesSoundMixer* _mixer;
 		EmuSettings* _settings;
 
@@ -47,7 +47,7 @@ class NesApu : public ISerializable, public INesMemoryHandler
 		uint8_t GetStatus();
 
 	public:
-		NesApu(shared_ptr<NesConsole> console);
+		NesApu(NesConsole* console);
 		~NesApu();
 
 		void Serialize(Serializer& s) override;
