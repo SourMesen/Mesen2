@@ -18,7 +18,7 @@ private:
 	void UpdateBufferSize();
 
 protected:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	FrameInfo _baseFrameInfo;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
@@ -32,7 +32,7 @@ protected:
 	uint32_t ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity);
 
 public:
-	BaseVideoFilter(shared_ptr<Emulator> emu);
+	BaseVideoFilter(Emulator* emu);
 	virtual ~BaseVideoFilter();
 
 	uint32_t* GetOutputBuffer();

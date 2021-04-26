@@ -9,7 +9,7 @@ private:
 	static constexpr uint32_t MaxIndex = 10;
 
 	atomic<uint32_t> _lastIndex;
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	string GetStateFilepath(int stateIndex);	
 	void SaveScreenshotData(ostream& stream);
@@ -18,7 +18,7 @@ private:
 public:
 	static constexpr uint32_t FileFormatVersion = 8;
 
-	SaveStateManager(shared_ptr<Emulator> emu);
+	SaveStateManager(Emulator* emu);
 
 	void SaveState();
 	bool LoadState();

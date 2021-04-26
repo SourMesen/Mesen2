@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Shared/Video/NtscFilter.h"
+#include "SNES/SnesNtscFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
 
-NtscFilter::NtscFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
+SnesNtscFilter::SnesNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
 	memset(&_ntscData, 0, sizeof(_ntscData));
 	_ntscSetup = { };
@@ -12,7 +12,7 @@ NtscFilter::NtscFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
 	_ntscBuffer = new uint32_t[SNES_NTSC_OUT_WIDTH(256) * 480];
 }
 
-FrameInfo NtscFilter::GetFrameInfo()
+FrameInfo SnesNtscFilter::GetFrameInfo()
 {
 	OverscanDimensions overscan = GetOverscan();
 	int widthDivider = _baseFrameInfo.Width == 512 ? 2 : 1;
@@ -24,7 +24,7 @@ FrameInfo NtscFilter::GetFrameInfo()
 	return frameInfo;
 }
 
-void NtscFilter::OnBeforeApplyFilter()
+void SnesNtscFilter::OnBeforeApplyFilter()
 {
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 
@@ -47,7 +47,7 @@ void NtscFilter::OnBeforeApplyFilter()
 	}
 }
 
-void NtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
+void SnesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	FrameInfo frameInfo = GetFrameInfo();
 	OverscanDimensions overscan = GetOverscan();
@@ -85,7 +85,7 @@ void NtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	}
 }
 
-NtscFilter::~NtscFilter()
+SnesNtscFilter::~SnesNtscFilter()
 {
 	delete[] _ntscBuffer;
 }

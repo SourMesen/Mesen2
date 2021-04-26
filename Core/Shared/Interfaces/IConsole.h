@@ -6,6 +6,7 @@
 
 class IControlManager;
 class VirtualFile;
+class BaseVideoFilter;
 enum class ConsoleType;
 enum class CpuType : uint8_t;
 
@@ -43,6 +44,8 @@ public:
 
 	virtual double GetFrameDelay() = 0;
 	virtual double GetFps() = 0;
+
+	virtual BaseVideoFilter* GetVideoFilter() = 0;
 
 	virtual void RunSingleFrame() = 0;
 

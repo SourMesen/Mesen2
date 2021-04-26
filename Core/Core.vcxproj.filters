@@ -61,7 +61,7 @@
     <ClInclude Include="Shared\Video\BaseRenderer.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="Shared\Video\DefaultVideoFilter.h">
+    <ClInclude Include="SNES\SnesDefaultVideoFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Video\BaseVideoFilter.h">
@@ -187,7 +187,7 @@
     <ClInclude Include="Shared\Video\ScaleFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
-    <ClInclude Include="Shared\Video\NtscFilter.h">
+    <ClInclude Include="SNES\SnesNtscFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Audio\SoundMixer.h">
@@ -685,7 +685,7 @@
     <ClInclude Include="Shared\Interfaces\IControlManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Shared\Video\NesDefaultVideoFilter.h">
+    <ClInclude Include="NES\NesDefaultVideoFilter.h">
       <Filter>Video</Filter>
     </ClInclude>
     <ClInclude Include="NES\NesControlManager.h">
@@ -764,6 +764,7 @@
     <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsInputButtons.h" />
+    <ClInclude Include="NES\NesNtscFilter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -796,7 +797,7 @@
     <ClCompile Include="Shared\Video\BaseRenderer.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="Shared\Video\DefaultVideoFilter.cpp">
+    <ClCompile Include="SNES\SnesDefaultVideoFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
     <ClCompile Include="Shared\Video\BaseVideoFilter.cpp">
@@ -859,7 +860,7 @@
     <ClCompile Include="Shared\Video\ScaleFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
-    <ClCompile Include="Shared\Video\NtscFilter.cpp">
+    <ClCompile Include="SNES\SnesNtscFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
     <ClCompile Include="Shared\Audio\SoundMixer.cpp">
@@ -1161,7 +1162,7 @@
     <ClCompile Include="NES\NesConsole.cpp">
       <Filter>NES</Filter>
     </ClCompile>
-    <ClCompile Include="Shared\Video\NesDefaultVideoFilter.cpp">
+    <ClCompile Include="NES\NesDefaultVideoFilter.cpp">
       <Filter>Video</Filter>
     </ClCompile>
     <ClCompile Include="NES\NesControlManager.cpp">
@@ -1185,6 +1186,7 @@
     <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
+    <ClCompile Include="NES\NesNtscFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

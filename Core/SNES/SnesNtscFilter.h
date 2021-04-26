@@ -1,11 +1,11 @@
 #pragma once
 #include "stdafx.h"
-#include "BaseVideoFilter.h"
-#include "Utilities/snes_ntsc.h"
+#include "Shared/Video/BaseVideoFilter.h"
+#include "Utilities/NTSC/snes_ntsc.h"
 
 class Emulator;
 
-class NtscFilter : public BaseVideoFilter
+class SnesNtscFilter : public BaseVideoFilter
 {
 private:
 	snes_ntsc_setup_t _ntscSetup;
@@ -16,8 +16,8 @@ protected:
 	void OnBeforeApplyFilter();
 
 public:
-	NtscFilter(shared_ptr<Emulator> emu);
-	virtual ~NtscFilter();
+	SnesNtscFilter(Emulator* emu);
+	virtual ~SnesNtscFilter();
 
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer);
 	virtual FrameInfo GetFrameInfo();

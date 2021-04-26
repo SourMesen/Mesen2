@@ -18,6 +18,8 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
 #include "FirmwareHelper.h"
+#include "SNES/SnesDefaultVideoFilter.h"
+#include "SNES/SnesNtscFilter.h"
 
 Gameboy::Gameboy(Emulator* emu, bool allowSgb)
 {
@@ -467,4 +469,15 @@ uint64_t Gameboy::GetMasterClock()
 uint32_t Gameboy::GetMasterClockRate()
 {
 	return 20971520;
+}
+
+BaseVideoFilter* Gameboy::GetVideoFilter()
+{
+	//TODO
+	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+	if(filterType == VideoFilterType::NTSC) {
+		return new SnesNtscFilter(_emu);
+	} else {
+		return new SnesDefaultVideoFilter(_emu);
+	}
 }

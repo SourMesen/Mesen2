@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "DefaultVideoFilter.h"
+#include "Shared/SettingTypes.h"
 
 class ScaleFilter
 {

@@ -115,4 +115,6 @@ public:
 
 	vector<CpuType> GetCpuTypes() override;
 	void SaveBattery() override;
+
+	BaseVideoFilter* GetVideoFilter() override;
 };

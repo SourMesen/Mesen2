@@ -112,15 +112,6 @@
     <ClInclude Include="md5.h">
       <Filter>Hashes</Filter>
     </ClInclude>
-    <ClInclude Include="snes_ntsc_impl.h">
-      <Filter>Video</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc.h">
-      <Filter>Video</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc_config.h">
-      <Filter>Video</Filter>
-    </ClInclude>
     <ClInclude Include="PNGHelper.h">
       <Filter>Video</Filter>
     </ClInclude>
@@ -214,6 +205,24 @@
     <ClInclude Include="Patches\UpsPatcher.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="NTSC\nes_ntsc.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSC\nes_ntsc_config.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSC\nes_ntsc_impl.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSC\snes_ntsc.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSC\snes_ntsc_config.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSC\snes_ntsc_impl.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">
@@ -257,9 +266,6 @@
     </ClCompile>
     <ClCompile Include="sha1.cpp">
       <Filter>Hashes</Filter>
-    </ClCompile>
-    <ClCompile Include="snes_ntsc.cpp">
-      <Filter>Video</Filter>
     </ClCompile>
     <ClCompile Include="PNGHelper.cpp">
       <Filter>Video</Filter>
@@ -332,5 +338,7 @@
     <ClCompile Include="Patches\BpsPatcher.cpp" />
     <ClCompile Include="Patches\IpsPatcher.cpp" />
     <ClCompile Include="Patches\UpsPatcher.cpp" />
+    <ClCompile Include="NTSC\nes_ntsc.cpp" />
+    <ClCompile Include="NTSC\snes_ntsc.cpp" />
   </ItemGroup>
 </Project>

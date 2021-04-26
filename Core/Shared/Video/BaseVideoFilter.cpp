@@ -9,7 +9,7 @@
 
 const static double PI = 3.14159265358979323846;
 
-BaseVideoFilter::BaseVideoFilter(shared_ptr<Emulator> emu)
+BaseVideoFilter::BaseVideoFilter(Emulator* emu)
 {
 	_emu = emu;
 	_overscan = _emu->GetSettings()->GetOverscan();

@@ -8,6 +8,8 @@
 #include "NES/NesSoundMixer.h"
 #include "NES/NesMemoryManager.h"
 #include "NES/NesPpu.h"
+#include "NES/NesDefaultVideoFilter.h"
+#include "NES/NesNtscFilter.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IControlManager.h"
@@ -308,5 +310,15 @@ void NesConsole::SaveBattery()
 		if(device) {
 			device->SaveBattery();
 		}*/
+	}
+}
+
+BaseVideoFilter* NesConsole::GetVideoFilter()
+{
+	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+	if(filterType == VideoFilterType::NTSC) {
+		return new NesNtscFilter(_emu);
+	} else {
+		return new NesDefaultVideoFilter(_emu);
 	}
 }

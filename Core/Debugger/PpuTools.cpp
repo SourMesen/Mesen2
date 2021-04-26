@@ -2,7 +2,8 @@
 #include "Debugger/PpuTools.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/NotificationManager.h"
-#include "Shared/Video/DefaultVideoFilter.h"
+#include "Shared/SettingTypes.h"
+#include "SNES/SnesDefaultVideoFilter.h"
 #include "SNES/Ppu.h"
 #include "SNES/Console.h"
 #include "SNES/BaseCartridge.h"
@@ -68,7 +69,7 @@ uint32_t PpuTools::GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t 
 		uint16_t paletteRamOffset = basePaletteOffset + (palette * (1 << bpp) + colorIndex) * 2;
 		paletteColor = cgram[paletteRamOffset] | (cgram[paletteRamOffset + 1] << 8);
 	}
-	return DefaultVideoFilter::ToArgb(paletteColor);
+	return SnesDefaultVideoFilter::ToArgb(paletteColor);
 }
 
 uint32_t PpuTools::GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset)
@@ -79,7 +80,7 @@ uint32_t PpuTools::GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_
 			(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
 			(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
 			);
-		return DefaultVideoFilter::ToArgb(paletteColor);
+		return SnesDefaultVideoFilter::ToArgb(paletteColor);
 	} else {
 		return colors[basePaletteOffset + (palette * (1 << bpp) + colorIndex)];
 	}
@@ -108,10 +109,10 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 	uint32_t bgColor = 0;
 	switch(options.Background) {
 		case TileBackground::Default: bgColor = colors[0]; break;
-		case TileBackground::PaletteColor: bgColor = DefaultVideoFilter::ToArgb(0); break;
-		case TileBackground::Black: bgColor = DefaultVideoFilter::ToArgb(0); break;
-		case TileBackground::White: bgColor = DefaultVideoFilter::ToArgb(0x7FFF); break;
-		case TileBackground::Magenta: bgColor = DefaultVideoFilter::ToArgb(0x7C1F); break;
+		case TileBackground::PaletteColor: bgColor = SnesDefaultVideoFilter::ToArgb(0); break;
+		case TileBackground::Black: bgColor = SnesDefaultVideoFilter::ToArgb(0); break;
+		case TileBackground::White: bgColor = SnesDefaultVideoFilter::ToArgb(0x7FFF); break;
+		case TileBackground::Magenta: bgColor = SnesDefaultVideoFilter::ToArgb(0x7C1F); break;
 	}
 
 	uint32_t outputSize = tileCount * 8*8;
@@ -153,7 +154,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 						if(color != 0 || options.Background == TileBackground::PaletteColor) {
 							uint32_t rgbColor;
 							if(directColor) {
-								rgbColor = DefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
+								rgbColor = SnesDefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
 								rgbColor = GetRgbPixelColor(colors, color, 0, 8, false, 0);
 							}
@@ -197,7 +198,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vr
 
 	LayerConfig layer = state.Layers[options.Layer];
 
-	uint32_t bgColor = DefaultVideoFilter::ToArgb((cgram[1] << 8) | cgram[0]);
+	uint32_t bgColor = SnesDefaultVideoFilter::ToArgb((cgram[1] << 8) | cgram[0]);
 	std::fill(outBuffer, outBuffer + 1024*1024, bgColor);
 
 	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
@@ -223,7 +224,7 @@ void PpuTools::GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vr
 						if(color != 0) {
 							uint32_t rgbColor;
 							if(directColor) {
-								rgbColor = DefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
+								rgbColor = SnesDefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
 							} else {
 								rgbColor = GetRgbPixelColor(cgram, color, 0, 8, false, 0);
 							}
@@ -434,7 +435,7 @@ void PpuTools::GetGameboyTilemap(uint8_t* vram, GbPpuState& state, uint16_t offs
 					uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
 					uint8_t color = GetTilePixelColor(vram, vramMask, 2, pixelStart, shift);
 
-					outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = DefaultVideoFilter::ToArgb(state.CgbBgPalettes[bgPalette + color]);
+					outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[bgPalette + color]);
 				}
 			}
 		}
@@ -497,7 +498,7 @@ void PpuTools::GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuSta
 					}
 
 					uint32_t outOffset = (row * 256) + sprX + x;
-					outBuffer[outOffset] = DefaultVideoFilter::ToArgb(state.CgbObjPalettes[palette + color]);
+					outBuffer[outOffset] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[palette + color]);
 					filled[sprX + x] = sprX;
 				}
 			}

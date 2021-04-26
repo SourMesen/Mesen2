@@ -4,7 +4,7 @@
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/SettingTypes.h"
 
-class DefaultVideoFilter : public BaseVideoFilter
+class SnesDefaultVideoFilter : public BaseVideoFilter
 {
 private:
 	uint32_t _calculatedPalette[0x8000] = {};
@@ -25,7 +25,7 @@ protected:
 	void OnBeforeApplyFilter();
 
 public:
-	DefaultVideoFilter(shared_ptr<Emulator> emu);
+	SnesDefaultVideoFilter(Emulator* emu);
 	void ApplyFilter(uint16_t *ppuOutputBuffer);
 
 	static uint32_t ToArgb(uint16_t rgb555);

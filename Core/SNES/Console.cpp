@@ -11,6 +11,8 @@
 #include "SNES/RamHandler.h"
 #include "SNES/CartTypes.h"
 #include "SNES/SpcHud.h"
+#include "SNES/SnesDefaultVideoFilter.h"
+#include "SNES/SnesNtscFilter.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbPpu.h"
 #include "Debugger/Debugger.h"
@@ -244,6 +246,16 @@ void Console::SaveBattery()
 {
 	if(_cart) {
 		_cart->SaveBattery();
+	}
+}
+
+BaseVideoFilter* Console::GetVideoFilter()
+{
+	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+	if(filterType == VideoFilterType::NTSC) {
+		return new SnesNtscFilter(_emu);
+	} else {
+		return new SnesDefaultVideoFilter(_emu);
 	}
 }
 

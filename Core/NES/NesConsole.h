@@ -14,6 +14,7 @@ class NesControlManager;
 class BaseMapper;
 class EmuSettings;
 class NesSoundMixer;
+class BaseVideoFilter;
 
 enum class DebugEventType;
 enum class EventType;
@@ -88,4 +89,6 @@ public:
 	uint32_t GetMasterClockRate() override;
 
 	void SaveBattery() override;
+
+	BaseVideoFilter* GetVideoFilter() override;
 };

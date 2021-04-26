@@ -1,19 +1,19 @@
 #include "stdafx.h"
 #include <algorithm>
-#include "Shared/Video/DefaultVideoFilter.h"
+#include "SNES/SnesDefaultVideoFilter.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 
-DefaultVideoFilter::DefaultVideoFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
+SnesDefaultVideoFilter::SnesDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
 	InitLookupTable();
 	_prevFrame = new uint16_t[256 * 240];
 	memset(_prevFrame, 0, 256 * 240 * sizeof(uint16_t));
 }
 
-void DefaultVideoFilter::InitLookupTable()
+void SnesDefaultVideoFilter::InitLookupTable()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 
@@ -60,7 +60,7 @@ void DefaultVideoFilter::InitLookupTable()
 	_videoConfig = config;
 }
 
-void DefaultVideoFilter::OnBeforeApplyFilter()
+void SnesDefaultVideoFilter::OnBeforeApplyFilter()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 	SnesConfig snesConfig = _emu->GetSettings()->GetSnesConfig();
@@ -78,12 +78,12 @@ void DefaultVideoFilter::OnBeforeApplyFilter()
 
 }
 
-uint8_t DefaultVideoFilter::To8Bit(uint8_t color)
+uint8_t SnesDefaultVideoFilter::To8Bit(uint8_t color)
 {
 	return (color << 3) + (color >> 2);
 }
 
-uint32_t DefaultVideoFilter::ToArgb(uint16_t rgb555)
+uint32_t SnesDefaultVideoFilter::ToArgb(uint16_t rgb555)
 {
 	uint8_t b = To8Bit(rgb555 >> 10);
 	uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
@@ -92,7 +92,7 @@ uint32_t DefaultVideoFilter::ToArgb(uint16_t rgb555)
 	return 0xFF000000 | (r << 16) | (g << 8) | b;
 }
 
-void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
+void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	uint32_t *out = GetOutputBuffer();
 	FrameInfo frameInfo = GetFrameInfo();
@@ -144,7 +144,7 @@ void DefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	}
 }
 
-uint32_t DefaultVideoFilter::GetPixel(uint16_t* ppuFrame, uint32_t offset)
+uint32_t SnesDefaultVideoFilter::GetPixel(uint16_t* ppuFrame, uint32_t offset)
 {
 	if(_gbBlendFrames) {
 		return BlendPixels(_calculatedPalette[_prevFrame[offset]], _calculatedPalette[ppuFrame[offset]]);
@@ -153,7 +153,7 @@ uint32_t DefaultVideoFilter::GetPixel(uint16_t* ppuFrame, uint32_t offset)
 	}
 }
 
-uint32_t DefaultVideoFilter::BlendPixels(uint32_t a, uint32_t b)
+uint32_t SnesDefaultVideoFilter::BlendPixels(uint32_t a, uint32_t b)
 {
 	return ((((a) ^ (b)) & 0xfffefefeL) >> 1) + ((a) & (b));
 }

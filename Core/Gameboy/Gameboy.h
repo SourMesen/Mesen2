@@ -119,4 +119,6 @@ public:
 	// Inherited via IConsole
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate() override;
+
+	BaseVideoFilter* GetVideoFilter() override;
 };

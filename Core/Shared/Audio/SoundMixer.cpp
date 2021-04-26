@@ -89,7 +89,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	}
 
 	if(cfg.EnableEqualizer) {
-		ProcessEqualizer(samples, sampleCount);
+		ProcessEqualizer(out, count, targetRate);
 	}
 
 	if(cfg.ReverbEnabled) {
@@ -133,7 +133,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	}
 }
 
-void SoundMixer::ProcessEqualizer(int16_t* samples, uint32_t sampleCount)
+void SoundMixer::ProcessEqualizer(int16_t* samples, uint32_t sampleCount, uint32_t targetRate)
 {
 	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
 	if(!_equalizer) {

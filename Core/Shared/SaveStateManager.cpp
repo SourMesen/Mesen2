@@ -12,9 +12,9 @@
 #include "Debugger/Debugger.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Video/VideoDecoder.h"
-#include "Shared/Video/DefaultVideoFilter.h"
+#include "Shared/Video/BaseVideoFilter.h"
 
-SaveStateManager::SaveStateManager(shared_ptr<Emulator> emu)
+SaveStateManager::SaveStateManager(Emulator* emu)
 {
 	_emu = emu;
 	_lastIndex = 1;
@@ -343,13 +343,13 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 			baseFrameInfo.Width = width;
 			baseFrameInfo.Height = height;
 			
-			DefaultVideoFilter filter(_emu);
-			filter.SetBaseFrameInfo(baseFrameInfo);
-			FrameInfo frameInfo = filter.GetFrameInfo();
-			filter.SendFrame((uint16_t*)frameData.data(), 0);
+			unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
+			filter->SetBaseFrameInfo(baseFrameInfo);
+			FrameInfo frameInfo = filter->GetFrameInfo();
+			filter->SendFrame((uint16_t*)frameData.data(), 0);
 
 			std::stringstream pngStream;
-			PNGHelper::WritePNG(pngStream, filter.GetOutputBuffer(), frameInfo.Width, frameInfo.Height);
+			PNGHelper::WritePNG(pngStream, filter->GetOutputBuffer(), frameInfo.Width, frameInfo.Height);
 
 			string data = pngStream.str();
 			memcpy(pngData, data.c_str(), data.size());

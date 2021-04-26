@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include <math.h>
 #include <algorithm>
-#include "Shared/Video/NesDefaultVideoFilter.h"
-#include "Shared/Video/DebugHud.h"
+#include "NES/NesDefaultVideoFilter.h"
+#include "NES/NesConsole.h"
+#include "NES/NesPpu.h"
+#include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
 
@@ -34,12 +36,12 @@ static constexpr uint8_t _paletteLut[11][64] = {
 	/* 2C05-05 */   { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,15,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,15,62,63 },
 };
 
-NesDefaultVideoFilter::NesDefaultVideoFilter(shared_ptr<Emulator> emu) : BaseVideoFilter(emu)
+NesDefaultVideoFilter::NesDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
 	InitLookupTable();
 }
 
-void NesDefaultVideoFilter::GenerateFullColorPalette(uint32_t* paletteBuffer)
+void NesDefaultVideoFilter::GenerateFullColorPalette(uint32_t paletteBuffer[512])
 {
 	for(int i = 0; i < 64; i++) {
 		for(int j = 1; j < 8; j++) {
@@ -75,6 +77,21 @@ void NesDefaultVideoFilter::GenerateFullColorPalette(uint32_t* paletteBuffer)
 	}
 }
 
+void NesDefaultVideoFilter::GetFullPalette(uint32_t palette[512], NesConfig& nesCfg, PpuModel model)
+{
+	if(model == PpuModel::Ppu2C02) {
+		memcpy(palette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette));
+		if(!nesCfg.IsFullColorPalette) {
+			//Generate emphasis palette colors
+			GenerateFullColorPalette(palette);
+		}
+	} else {
+		//TODO use custom palette option
+		memcpy(palette, _ppuPaletteArgb[(int)model], sizeof(_ppuPaletteArgb[(int)_ppuModel]));
+		GenerateFullColorPalette(palette);
+	}
+}
+
 void NesDefaultVideoFilter::InitLookupTable()
 {
 	VideoConfig videoCfg = _emu->GetSettings()->GetVideoConfig();
@@ -84,11 +101,7 @@ void NesDefaultVideoFilter::InitLookupTable()
 
 	double y, i, q;
 	uint32_t palette[512];
-	memcpy(palette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette));
-	if(!nesCfg.IsFullColorPalette) {
-		//Generate emphasis palette colors
-		GenerateFullColorPalette(palette);
-	}
+	GetFullPalette(palette, nesCfg, _ppuModel);
 
 	for(int pal = 0; pal < 512; pal++) {
 		uint32_t pixelOutput = palette[pal];
@@ -115,7 +128,10 @@ void NesDefaultVideoFilter::OnBeforeApplyFilter()
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 	NesConfig nesConfig = _emu->GetSettings()->GetNesConfig();
 
-	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || memcmp(_nesConfig.UserPalette, nesConfig.UserPalette, sizeof(nesConfig.UserPalette)) != 0) {
+	PpuModel model = ((NesConsole*)_emu->GetConsole())->GetPpu()->GetPpuModel();
+
+	if(_ppuModel != model || _videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || memcmp(_nesConfig.UserPalette, nesConfig.UserPalette, sizeof(nesConfig.UserPalette)) != 0) {
+		_ppuModel = model;
 		InitLookupTable();
 	}
 	_videoConfig = config;

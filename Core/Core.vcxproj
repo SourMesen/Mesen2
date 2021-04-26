@@ -82,6 +82,7 @@
     <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsInputButtons.h" />
+    <ClInclude Include="NES\NesNtscFilter.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />
@@ -96,7 +97,7 @@
     <ClInclude Include="Shared\Movies\stdafx.h" />
     <ClInclude Include="Shared\RomInfo.h" />
     <ClInclude Include="Shared\stdafx.h" />
-    <ClInclude Include="Shared\Video\NesDefaultVideoFilter.h" />
+    <ClInclude Include="NES\NesDefaultVideoFilter.h" />
     <ClInclude Include="NES\APU\ApuEnvelope.h" />
     <ClInclude Include="NES\APU\ApuFrameCounter.h" />
     <ClInclude Include="NES\APU\ApuLengthCounter.h" />
@@ -241,7 +242,7 @@
     <ClInclude Include="SNES\Debugger\NecDspDisUtils.h" />
     <ClInclude Include="SNES\Coprocessors\DSP\NecDspTypes.h" />
     <ClInclude Include="Netplay\NetMessage.h" />
-    <ClInclude Include="Shared\Video\NtscFilter.h" />
+    <ClInclude Include="SNES\SnesNtscFilter.h" />
     <ClInclude Include="SNES\Coprocessors\OBC1\Obc1.h" />
     <ClInclude Include="Shared\Audio\PcmReader.h" />
     <ClInclude Include="Netplay\PlayerListMessage.h" />
@@ -253,7 +254,7 @@
     <ClInclude Include="Debugger\Debugger.h" />
     <ClInclude Include="Shared\Video\DebugHud.h" />
     <ClInclude Include="Debugger\DebugTypes.h" />
-    <ClInclude Include="Shared\Video\DefaultVideoFilter.h" />
+    <ClInclude Include="SNES\SnesDefaultVideoFilter.h" />
     <ClInclude Include="Debugger\Disassembler.h" />
     <ClInclude Include="Debugger\DisassemblyInfo.h" />
     <ClInclude Include="SNES\DmaController.h" />
@@ -343,8 +344,9 @@
     <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
+    <ClCompile Include="NES\NesNtscFilter.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />
-    <ClCompile Include="Shared\Video\NesDefaultVideoFilter.cpp" />
+    <ClCompile Include="NES\NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />
     <ClCompile Include="NES\NesControlManager.cpp" />
     <ClCompile Include="NES\APU\DeltaModulationChannel.cpp" />
@@ -389,7 +391,7 @@
     <ClCompile Include="Debugger\Debugger.cpp" />
     <ClCompile Include="Shared\Video\DebugHud.cpp" />
     <ClCompile Include="Shared\Video\DebugStats.cpp" />
-    <ClCompile Include="Shared\Video\DefaultVideoFilter.cpp" />
+    <ClCompile Include="SNES\SnesDefaultVideoFilter.cpp" />
     <ClCompile Include="Debugger\Disassembler.cpp" />
     <ClCompile Include="Debugger\DisassemblyInfo.cpp" />
     <ClCompile Include="SNES\DmaController.cpp" />
@@ -441,7 +443,7 @@
     <ClCompile Include="SNES\Coprocessors\DSP\NecDsp.cpp" />
     <ClCompile Include="SNES\Debugger\NecDspDisUtils.cpp" />
     <ClCompile Include="Shared\NotificationManager.cpp" />
-    <ClCompile Include="Shared\Video\NtscFilter.cpp" />
+    <ClCompile Include="SNES\SnesNtscFilter.cpp" />
     <ClCompile Include="SNES\Coprocessors\OBC1\Obc1.cpp" />
     <ClCompile Include="Shared\Audio\PcmReader.cpp" />
     <ClCompile Include="SNES\Ppu.cpp" />

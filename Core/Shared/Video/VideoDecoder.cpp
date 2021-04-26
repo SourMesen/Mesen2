@@ -2,14 +2,12 @@
 #include "Shared/Interfaces/IRenderingDevice.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/Video/VideoRenderer.h"
-#include "Shared/Video/DefaultVideoFilter.h"
-#include "Shared/Video/NesDefaultVideoFilter.h"
+#include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/RewindManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
-#include "Shared/Video/NtscFilter.h"
 #include "Shared/Video/ScaleFilter.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/InputHud.h"
@@ -74,17 +72,12 @@ void VideoDecoder::UpdateVideoFilter()
 		_videoFilterType = newFilter;
 		_consoleType = consoleType;
 
-		if(consoleType == ConsoleType::Nes) {
-			_videoFilter.reset(new NesDefaultVideoFilter(_emu));
-		} else {
-			_videoFilter.reset(new DefaultVideoFilter(_emu));
-		}
-		_scaleFilter.reset();
+		_videoFilter.reset(_emu->GetVideoFilter());
 
-		switch(_videoFilterType) {
-			case VideoFilterType::None: break;
-			case VideoFilterType::NTSC: _videoFilter.reset(new NtscFilter(_emu)); break;
-			default: _scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType); break;
+		if(_videoFilterType != VideoFilterType::None && _videoFilterType != VideoFilterType::NTSC) {
+			_scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType);
+		} else {
+			_scaleFilter.reset();
 		}
 	}
 }

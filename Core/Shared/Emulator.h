@@ -24,6 +24,7 @@ class FrameLimiter;
 class DebugStats;
 class IControlManager;
 class VirtualFile;
+class BaseVideoFilter;
 class SystemActionManager;
 
 struct RomInfo;
@@ -126,6 +127,7 @@ public:
 	uint32_t GetCrc32();
 	PpuFrameInfo GetPpuFrame();
 	ConsoleRegion GetRegion();
+	IConsole* GetConsole();
 	ConsoleType GetConsoleType();
 	vector<CpuType> GetCpuTypes();
 	uint64_t GetMasterClock();
@@ -153,6 +155,8 @@ public:
 	shared_ptr<SystemActionManager> GetSystemActionManager();
 
 	shared_ptr<IControlManager> GetControlManager();
+	
+	BaseVideoFilter* GetVideoFilter();
 
 	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
 	void StopDebugger();

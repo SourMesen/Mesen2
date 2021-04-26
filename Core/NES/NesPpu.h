@@ -122,8 +122,6 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		void SetOpenBus(uint8_t mask, uint8_t value);
 		uint8_t ApplyOpenBus(uint8_t mask, uint8_t value);
 
-		PpuModel GetPpuModel();
-
 		void ProcessStatusRegOpenBus(uint8_t & openBusMask, uint8_t & returnValue);
 
 		void UpdateVideoRamAddr();
@@ -203,6 +201,8 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 			ranges.AddHandler(MemoryOperation::Write, 0x2000, 0x3FFF);
 			ranges.AddHandler(MemoryOperation::Write, 0x4014);
 		}
+
+		PpuModel GetPpuModel();
 
 		uint8_t ReadPaletteRAM(uint16_t addr);
 		void WritePaletteRAM(uint16_t addr, uint8_t value);

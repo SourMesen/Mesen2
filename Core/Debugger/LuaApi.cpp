@@ -16,7 +16,6 @@
 #include "Debugger/LabelManager.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Video/VideoDecoder.h"
-#include "Shared/Video/DefaultVideoFilter.h"
 #include "Shared/MessageManager.h"
 #include "Shared/RewindManager.h"
 #include "Shared/SaveStateManager.h"
@@ -472,7 +471,8 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 	lua_newtable(lua);
 	for(int y = 0; y < 239; y++) {
 		for(int x = 0; x < 256; x++) {
-			lua_pushinteger(lua, DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
+			//TODO
+			//lua_pushinteger(lua, DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
 			lua_rawseti(lua, -2, (y << 8) + x);
 		}
 	}
@@ -507,7 +507,8 @@ int LuaApi::GetPixel(lua_State *lua)
 	int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
 
 	//Ignores intensify & grayscale bits
-	l.Return(DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
+	//TODO
+	//l.Return(DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
 	return l.ReturnCount();
 }
 

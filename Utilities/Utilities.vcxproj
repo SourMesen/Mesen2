@@ -453,6 +453,12 @@
     <ClInclude Include="md5.h" />
     <ClInclude Include="miniz.h" />
     <ClInclude Include="AutoResetEvent.h" />
+    <ClInclude Include="NTSC\nes_ntsc.h" />
+    <ClInclude Include="NTSC\nes_ntsc_config.h" />
+    <ClInclude Include="NTSC\nes_ntsc_impl.h" />
+    <ClInclude Include="NTSC\snes_ntsc.h" />
+    <ClInclude Include="NTSC\snes_ntsc_config.h" />
+    <ClInclude Include="NTSC\snes_ntsc_impl.h" />
     <ClInclude Include="Patches\BpsPatcher.h" />
     <ClInclude Include="Patches\IpsPatcher.h" />
     <ClInclude Include="Patches\UpsPatcher.h" />
@@ -463,9 +469,6 @@
     <ClInclude Include="Scale2x\scalebit.h" />
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="sha1.h" />
-    <ClInclude Include="snes_ntsc.h" />
-    <ClInclude Include="snes_ntsc_config.h" />
-    <ClInclude Include="snes_ntsc_impl.h" />
     <ClInclude Include="StringUtilities.h" />
     <ClInclude Include="SZReader.h" />
     <ClInclude Include="UPnPPortMapper.h" />
@@ -589,6 +592,8 @@
     </ClCompile>
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="miniz.cpp" />
+    <ClCompile Include="NTSC\nes_ntsc.cpp" />
+    <ClCompile Include="NTSC\snes_ntsc.cpp" />
     <ClCompile Include="Patches\BpsPatcher.cpp" />
     <ClCompile Include="Patches\IpsPatcher.cpp" />
     <ClCompile Include="Patches\UpsPatcher.cpp" />
@@ -634,7 +639,6 @@
     <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="SimpleLock.cpp" />
-    <ClCompile Include="snes_ntsc.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

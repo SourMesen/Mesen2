@@ -27,7 +27,7 @@ private:
 	unique_ptr<CrossFeedFilter> _crossFeedFilter;
 	unique_ptr<ReverbFilter> _reverbFilter;
 
-	void ProcessEqualizer(int16_t *samples, uint32_t sampleCount);
+	void ProcessEqualizer(int16_t *samples, uint32_t sampleCount, uint32_t targetRate);
 
 public:
 	SoundMixer(Emulator *emu);

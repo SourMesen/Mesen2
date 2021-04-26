@@ -21,6 +21,7 @@
 #include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "SNES/Console.h"
+#include "SNES/SnesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"
 #include "Gameboy/Gameboy.h"
 #include "Debugger/Debugger.h"
@@ -59,7 +60,7 @@ void Emulator::Initialize()
 	_batteryManager.reset(new BatteryManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
-	_saveStateManager.reset(new SaveStateManager(shared_from_this()));
+	_saveStateManager.reset(new SaveStateManager(this));
 	_soundMixer.reset(new SoundMixer(this));
 	_debugHud.reset(new DebugHud());
 	_cheatManager.reset(new CheatManager(this));
@@ -453,6 +454,11 @@ ConsoleRegion Emulator::GetRegion()
 	return ConsoleRegion::Ntsc;
 }
 
+IConsole* Emulator::GetConsole()
+{
+	return _console.get();
+}
+
 ConsoleType Emulator::GetConsoleType()
 {
 	if(_console) {
@@ -724,6 +730,15 @@ shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
 shared_ptr<IControlManager> Emulator::GetControlManager()
 {
 	return _console->GetControlManager();
+}
+
+BaseVideoFilter* Emulator::GetVideoFilter()
+{
+	if(_console) {
+		return _console->GetVideoFilter();
+	} else {
+		return new SnesDefaultVideoFilter(this);
+	}
 }
 
 shared_ptr<Debugger> Emulator::GetDebugger(bool autoStart)

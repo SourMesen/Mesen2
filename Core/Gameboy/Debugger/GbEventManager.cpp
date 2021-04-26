@@ -7,7 +7,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/BaseEventManager.h"
-#include "Shared/Video/DefaultVideoFilter.h"
+#include "SNES/SnesDefaultVideoFilter.h"
 
 GbEventManager::GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu)
 {
@@ -228,7 +228,7 @@ void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize, Eve
 	for(uint32_t y = 0, len = GbEventManager::ScreenHeight*2; y < len; y++) {
 		for(uint32_t x = 0; x < GbEventManager::ScanlineWidth; x++) {
 			int srcOffset = (y >> 1) * 456 + (x >> 1);
-			buffer[y*GbEventManager::ScanlineWidth + x] = DefaultVideoFilter::ToArgb(src[srcOffset]);
+			buffer[y*GbEventManager::ScanlineWidth + x] = SnesDefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
 	}
 
