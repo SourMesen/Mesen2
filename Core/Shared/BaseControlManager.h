@@ -10,6 +10,7 @@ class IInputRecorder;
 class IInputProvider;
 class Emulator;
 struct ControllerData;
+enum class ControllerType;
 
 class BaseControlManager : public IControlManager
 {
@@ -32,10 +33,12 @@ public:
 	BaseControlManager(Emulator* emu);
 	virtual ~BaseControlManager();
 
-	void AddSystemControlDevice(shared_ptr<BaseControlDevice> device);
+	void AddSystemControlDevice(shared_ptr<BaseControlDevice> device) override;
 
 	void UpdateControlDevices() override {}
 	void UpdateInputState() override;
+
+	bool HasControlDevice(ControllerType type) override;
 
 	uint32_t GetPollCounter() override;
 	void SetPollCounter(uint32_t value) override;

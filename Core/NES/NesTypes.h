@@ -396,13 +396,6 @@ enum class PpuModel
 	Ppu2C05E = 10
 };
 
-enum class ConsoleId
-{
-	Master = 0,
-	Slave = 1,
-	HistoryViewer = 2
-};
-
 enum class AudioChannel
 {
 	Square1 = 0,

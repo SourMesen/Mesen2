@@ -233,4 +233,5 @@ public:
 	void RevertPrgChrChanges();
 	bool HasPrgChrChanges();
 	void CopyPrgChrRom(shared_ptr<BaseMapper> mapper);
+	void SwapMemoryAccess(BaseMapper* sub, bool mainHasAccess);
 };

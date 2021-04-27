@@ -9,7 +9,6 @@ class NesController : public BaseControlDevice
 {
 private:
 	bool _microphoneEnabled = false;
-	bool _hasFourScore = false;
 	uint32_t _turboSpeed = 0;
 
 protected:
@@ -19,11 +18,6 @@ protected:
 	{
 		BaseControlDevice::Serialize(s);
 		s.Stream(_stateBuffer, _microphoneEnabled);
-	}
-
-	ControllerType GetControllerType()
-	{
-		return ControllerType::NesController;
 	}
 
 	string GetKeyNames() override
@@ -74,7 +68,7 @@ protected:
 
 	void RefreshStateBuffer() override
 	{
-		if(_hasFourScore) {
+		if(_emu->GetControlManager()->HasControlDevice(ControllerType::FourScore)) {
 			if(_port >= 2) {
 				_stateBuffer = ToByte() << 8;
 			} else {
@@ -92,7 +86,6 @@ public:
 	NesController(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, type, port, keyMappings)
 	{
 		_turboSpeed = keyMappings.TurboSpeed;
-		_hasFourScore = _emu->GetSettings()->GetNesConfig().Controllers[BaseControlDevice::ExpDevicePort].Type == ControllerType::FourScore;
 		_microphoneEnabled = port == 1 && type == ControllerType::FamicomController;
 	}
 	
@@ -112,12 +105,6 @@ public:
 
 	uint8_t ReadRam(uint16_t addr) override
 	{
-		//TODO
-		/*if(_port >= 2 && _console->IsDualSystem()) {
-			//Ignore P3/P4 controllers for VS DualSystem - those are used by the slave CPU
-			return 0;
-		}*/
-
 		uint8_t output = 0;
 
 		if((addr == 0x4016 && (_port & 0x01) == 0) || (addr == 0x4017 && (_port & 0x01) == 1)) {

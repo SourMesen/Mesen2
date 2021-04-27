@@ -12,7 +12,7 @@ class VsControlManager : public NesControlManager, public IInputProvider
 private:
 	shared_ptr<VsInputButtons> _input;
 	uint8_t _prgChrSelectBit = 0;
-	uint8_t _slaveMasterBit = 0;
+	uint8_t _mainSubBit = 0;
 
 	bool _refreshState = false;
 
@@ -45,7 +45,8 @@ protected:
 	void RemapControllerButtons() override;
 	uint8_t GetOpenBusMask(uint8_t port) override;
 
-	void UpdateSlaveMasterBit(uint8_t slaveMasterBit);
+	void UpdateMainSubBit(uint8_t mainSubBit);
+	void UpdateMemoryAccess();
 
 public:
 	VsControlManager(NesConsole* console);

@@ -42,7 +42,7 @@ void VsControlManager::Reset(bool softReset)
 	_protectionCounter = 0;
 
 	//Unsure about this, needed for VS Wrecking Crew
-	UpdateSlaveMasterBit(_console->IsVsMainConsole() ? 0x00 : 0x02);
+	UpdateMainSubBit(_console->IsVsMainConsole() ? 0x00 : 0x02);
 
 	_vsSystemType = _console->GetMapper()->GetRomInfo().VsType;
 
@@ -187,31 +187,42 @@ void VsControlManager::WriteRam(uint16_t addr, uint8_t value)
 		_prgChrSelectBit = (value >> 2) & 0x01;
 		
 		//Bit 2: DualSystem-only
-		uint8_t slaveMasterBit = (value & 0x02);
-		if(slaveMasterBit != _slaveMasterBit) {
-			UpdateSlaveMasterBit(slaveMasterBit);
+		uint8_t mainSubBit = (value & 0x02);
+		if(mainSubBit != _mainSubBit) {
+			UpdateMainSubBit(mainSubBit);
 		}
 	}
 }
 
-void VsControlManager::UpdateSlaveMasterBit(uint8_t slaveMasterBit)
+void VsControlManager::UpdateMainSubBit(uint8_t mainSubBit)
 {
+	_mainSubBit = mainSubBit;
+
 	NesConsole* otherConsole = _console->GetVsMainConsole() ? _console->GetVsMainConsole() : _console->GetVsSubConsole();
 	if(otherConsole) {
 		VsSystem* mapper = dynamic_cast<VsSystem*>(_console->GetMapper());
 		
 		if(_console->IsVsMainConsole()) {
-			mapper->UpdateMemoryAccess(slaveMasterBit);
+			UpdateMemoryAccess();
 		}
 
-		if(slaveMasterBit) {
+		if(mainSubBit) {
 			otherConsole->GetCpu()->ClearIrqSource(IRQSource::External);
 		} else {
 			//When low, asserts /IRQ on the other CPU
 			otherConsole->GetCpu()->SetIrqSource(IRQSource::External);
 		}
 	}
-	_slaveMasterBit = slaveMasterBit;
+}
+
+void VsControlManager::UpdateMemoryAccess()
+{
+	NesConsole* subConsole = _console->GetVsSubConsole();
+	if(subConsole) {
+		BaseMapper* mainMapper = _console->GetMapper();
+		BaseMapper* subMapper = subConsole->GetMapper();
+		mainMapper->SwapMemoryAccess(subMapper, _mainSubBit ? true : false);
+	}
 }
 
 void VsControlManager::UpdateControlDevices()
@@ -220,12 +231,26 @@ void VsControlManager::UpdateControlDevices()
 		auto lock = _deviceLock.AcquireSafe();
 		ClearDevices();
 
-		//Force 4x standard controllers
-		//P3 & P4 will be sent to the slave CPU - see SetInput() below.
-		for(int i = 0; i < 4; i++) {
-			shared_ptr<BaseControlDevice> device = CreateControllerDevice(ControllerType::NesController, i);
-			if(device) {
-				RegisterControlDevice(device);
+		if(_console->IsVsMainConsole()) {
+			//Force 4x standard controllers for VS Dualsystem main system
+			for(int i = 0; i < 4; i++) {
+				shared_ptr<BaseControlDevice> device = CreateControllerDevice(ControllerType::NesController, i);
+				if(device) {
+					if(i >= 2) {
+						//Don't send input to main console for P3 & P4
+						//P3 & P4 will be sent to the sub console - see SetInput() below.
+						device->Disconnect();
+					}
+					RegisterControlDevice(device);
+				}
+			}
+		} else {
+			//2x standard controllers for sub system
+			for(int i = 0; i < 2; i++) {
+				shared_ptr<BaseControlDevice> device = CreateControllerDevice(ControllerType::NesController, i);
+				if(device) {
+					RegisterControlDevice(device);
+				}
 			}
 		}
 	} else {

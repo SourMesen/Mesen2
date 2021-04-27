@@ -11,14 +11,15 @@ class Emulator;
 class BaseControlDevice : public ISerializable
 {
 private:
-	ControlDeviceState _state;
+	ControlDeviceState _state = {};
 
 protected:
-	Emulator* _emu;
+	Emulator* _emu = nullptr;
 	vector<KeyMapping> _keyMappings;
-	bool _strobe;
-	ControllerType _type;
-	uint8_t _port;
+	bool _strobe = false;
+	ControllerType _type = ControllerType::None;
+	uint8_t _port = 0;
+	bool _connected = true;
 	SimpleLock _stateLock;
 
 	virtual void RefreshStateBuffer() { }
@@ -61,6 +62,10 @@ public:
 	bool IsPressed(uint8_t bit);
 	MousePosition GetCoordinates();
 	
+	void Connect();
+	void Disconnect();
+	bool IsConnected();
+
 	void ClearState();
 	void SetBit(uint8_t bit);
 	void ClearBit(uint8_t bit);

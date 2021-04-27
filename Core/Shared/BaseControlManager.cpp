@@ -140,6 +140,16 @@ void BaseControlManager::UpdateInputState()
 	_pollCounter++;
 }
 
+bool BaseControlManager::HasControlDevice(ControllerType type)
+{
+	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
+		if(device->GetControllerType() == type) {
+			return true;
+		}
+	}
+	return false;
+}
+
 uint32_t BaseControlManager::GetPollCounter()
 {
 	return BaseControlManager::_pollCounter;

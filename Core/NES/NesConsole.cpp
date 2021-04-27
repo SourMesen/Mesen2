@@ -74,12 +74,12 @@ void NesConsole::Serialize(Serializer& s)
 		_hdAudioDevice->LoadSnapshot(&loadStream, stateVersion);
 	} else {
 		Snapshotable::SkipBlock(&loadStream);
-	}
-
-	if(_slave) {
-		//For VS Dualsystem, the slave console's savestate is appended to the end of the file
-		_slave->LoadState(loadStream, stateVersion);
 	}*/
+
+	if(_vsSubConsole) {
+		//For VS Dualsystem, the sub console's savestate is appended to the end of the file
+		s.Stream(_vsSubConsole.get());
+	}
 }
 
 void NesConsole::Stop()

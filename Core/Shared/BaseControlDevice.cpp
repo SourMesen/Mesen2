@@ -253,6 +253,21 @@ MousePosition BaseControlDevice::GetCoordinates()
 	return pos;
 }
 
+void BaseControlDevice::Connect()
+{
+	_connected = true;
+}
+
+void BaseControlDevice::Disconnect()
+{
+	_connected = false;
+}
+
+bool BaseControlDevice::IsConnected()
+{
+	return _connected;
+}
+
 void BaseControlDevice::SetMovement(MouseMovement mov)
 {
 	MouseMovement prev = GetMovement();

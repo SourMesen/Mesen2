@@ -22,11 +22,6 @@ protected:
 		return "F";
 	}
 
-	ControllerType GetControllerType()
-	{
-		return ControllerType::NesController;
-	}
-
 	enum Buttons { Fire };
 
 	void InternalSetStateFromInput() override

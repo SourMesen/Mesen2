@@ -1215,3 +1215,15 @@ void BaseMapper::CopyPrgChrRom(shared_ptr<BaseMapper> mapper)
 		}
 	}
 }
+
+void BaseMapper::SwapMemoryAccess(BaseMapper* sub, bool mainHasAccess)
+{
+	//Used by VS Dualsystem to share memory access between 2 consoles
+	if(_saveRamSize == 0 && _workRamSize == 0) {
+		return;
+	}
+
+	uint8_t* memory = HasBattery() ? _saveRam : _workRam;
+	SetCpuMemoryMapping(0x6000, 0x7FFF, memory, mainHasAccess ? MemoryAccessType::ReadWrite : MemoryAccessType::NoAccess);
+	sub->SetCpuMemoryMapping(0x6000, 0x7FFF, memory, mainHasAccess ? MemoryAccessType::NoAccess : MemoryAccessType::ReadWrite);
+}

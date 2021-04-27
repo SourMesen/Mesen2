@@ -47,7 +47,6 @@ protected:
 					SelectPRGPage(2, 2);
 					SelectPRGPage(3, 3);
 				} else {
-					//Slave CPU
 					SelectPRGPage(0, 4);
 				}
 				initialized = true;
@@ -71,7 +70,6 @@ protected:
 	void Reset(bool softReset) override
 	{
 		BaseMapper::Reset(softReset);
-		UpdateMemoryAccess(0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -93,27 +91,6 @@ protected:
 
 			uint8_t chrOuter = _console->IsVsMainConsole() ? 0 : 2;
 			SelectCHRPage(0, _prgChrSelectBit | chrOuter);
-		}
-	}
-
-public:
-	void UpdateMemoryAccess(uint8_t slaveMasterBit)
-	{
-		NesConsole* subConsole = _console->GetVsSubConsole();
-		if(subConsole) {
-			VsSystem* otherMapper = dynamic_cast<VsSystem*>(subConsole->GetMapper());
-
-			//Give memory access to master CPU or slave CPU, based on "slaveMasterBit"
-			if(_saveRamSize == 0 && _workRamSize == 0) {
-				RemoveCpuMemoryMapping(0x6000, 0x7FFF);
-				otherMapper->RemoveCpuMemoryMapping(0x6000, 0x7FFF);
-			}
-
-			uint8_t* memory = HasBattery() ? _saveRam : _workRam;
-			for(int i = 0; i < 4; i++) {
-				SetCpuMemoryMapping(0x6000 + i * 0x800, 0x67FF + i * 0x800, memory, slaveMasterBit ? MemoryAccessType::ReadWrite : MemoryAccessType::NoAccess);
-				otherMapper->SetCpuMemoryMapping(0x6000 + i * 0x800, 0x67FF + i * 0x800, memory, slaveMasterBit ? MemoryAccessType::NoAccess : MemoryAccessType::ReadWrite);
-			}
 		}
 	}
 };
