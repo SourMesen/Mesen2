@@ -1346,7 +1346,7 @@ void NesPpu::Exec()
 			UpdateMinimumDrawCycles();
 		}
 
-		_console->DebugProcessPpuCycle();
+		_emu->ProcessPpuCycle<CpuType::Nes>();
 		
 		UpdateApuStatus();
 		
@@ -1373,7 +1373,7 @@ void NesPpu::Exec()
 		//Cycle > 0
 		_cycle++;
 
-		_console->DebugProcessPpuCycle();
+		_emu->ProcessPpuCycle<CpuType::Nes>();
 		if(_scanline < 240) {
 			ProcessScanline();
 		} else if(_cycle == 1 && _scanline == _nmiScanline) {

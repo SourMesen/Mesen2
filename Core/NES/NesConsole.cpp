@@ -108,10 +108,18 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 {
 	RomData romData;
 
-	shared_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(this, romFile, romData);
+	unique_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(this, romFile, romData);
 	if(mapper) {
-		shared_ptr<BaseMapper> previousMapper = _mapper;
-		_mapper = mapper;
+		if(!_vsMainConsole && romData.Info.VsType == VsSystemType::VsDualSystem) {
+			//Create 2nd console (sub) dualsystem games
+			_vsSubConsole.reset(new NesConsole(_emu));
+			_vsSubConsole->_vsMainConsole = this;
+			if(!_vsSubConsole->LoadRom(romFile)) {
+				return false;
+			}
+		}
+
+		_mapper.swap(mapper);
 		_mixer.reset(new NesSoundMixer(this));
 		_memoryManager.reset(new NesMemoryManager(this));
 		_cpu.reset(new NesCpu(this));
@@ -129,14 +137,6 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		/*if(!isDifferentGame && forPowerCycle) {
 			_mapper->CopyPrgChrRom(previousMapper);
 		}*/
-
-		if(!_vsMainConsole && romData.Info.VsType == VsSystemType::VsDualSystem) {
-			_vsSubConsole.reset(new NesConsole(_emu));
-			_vsSubConsole->_vsMainConsole = this;
-			if(!_vsSubConsole->LoadRom(romFile)) {
-				return false;
-			}
-		}
 
 		/*switch(romInfo.System) {
 			case GameSystem::FDS:

@@ -32,7 +32,7 @@ private:
 	unique_ptr<NesPpu> _ppu;
 	unique_ptr<NesApu> _apu;
 	unique_ptr<NesMemoryManager> _memoryManager;
-	shared_ptr<BaseMapper> _mapper;
+	unique_ptr<BaseMapper> _mapper;
 	shared_ptr<NesControlManager> _controlManager;
 	unique_ptr<NesSoundMixer> _mixer;
 
@@ -58,11 +58,6 @@ public:
 
 	//TODO
 	bool IsNsf() { return false; }
-	void DebugAddTrace(char* str) {}
-	void DebugAddDebugEvent(DebugEventType eventType) {}
-	void DebugProcessEvent(EventType eventType) {}
-	void DebugProcessInterrupt(uint16_t originalPc, uint16_t pc, bool forNmi) {}
-	void DebugProcessPpuCycle() {}
 	void DebugSetLastFramePpuScroll(uint16_t addr, uint8_t xScroll, bool updateHorizontalScrollOnly) {}
 	void SetNextFrameOverclockStatus(bool enabled) {}
 

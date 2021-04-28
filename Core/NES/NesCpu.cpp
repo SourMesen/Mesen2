@@ -15,6 +15,7 @@
 
 NesCpu::NesCpu(NesConsole* console)
 {
+	_emu = console->GetEmulator();
 	_console = console;
 	_memoryManager = _console->GetMemoryManager();
 
@@ -189,8 +190,7 @@ void NesCpu::IRQ()
 		SetPC(MemoryReadWord(NesCpu::NMIVector));
 
 		#ifndef DUMMYCPU
-		_console->DebugAddTrace("NMI");
-		_console->DebugProcessInterrupt(originalPc, _state.PC, true);
+		_emu->ProcessInterrupt<CpuType::Nes>(originalPc, _state.PC, true);
 		#endif
 	} else {
 		Push((uint8_t)(PS() | PSFlags::Reserved));
@@ -199,8 +199,7 @@ void NesCpu::IRQ()
 		SetPC(MemoryReadWord(NesCpu::IRQVector));
 
 		#ifndef DUMMYCPU
-		_console->DebugAddTrace("IRQ");
-		_console->DebugProcessInterrupt(originalPc, _state.PC, false);
+		_emu->ProcessInterrupt<CpuType::Nes>(originalPc, _state.PC, false);
 		#endif
 	}
 }
@@ -215,19 +214,11 @@ void NesCpu::BRK() {
 		SetFlags(PSFlags::Interrupt);
 
 		SetPC(MemoryReadWord(NesCpu::NMIVector));
-
-		#ifndef DUMMYCPU
-		_console->DebugAddTrace("NMI");
-		#endif
 	} else {
 		Push((uint8_t)flags);
 		SetFlags(PSFlags::Interrupt);
 
 		SetPC(MemoryReadWord(NesCpu::IRQVector));
-
-		#ifndef DUMMYCPU
-		_console->DebugAddTrace("IRQ");
-		#endif
 	}
 
 	//Ensure we don't start an NMI right after running a BRK instruction (first instruction in IRQ handler must run first - needed for nmi_and_brk test)
@@ -302,12 +293,12 @@ uint16_t NesCpu::FetchOperand()
 
 	if(_console->GetNesConfig().BreakOnCrash) {
 		//When "Break on Crash" is enabled, open the debugger and break immediately if a crash occurs
-		_console->GetEmulator()->GetDebugger(true)->BreakImmediately(BreakSource::BreakOnCpuCrash);
+		_emu->GetDebugger(true)->BreakImmediately(BreakSource::BreakOnCpuCrash);
 	}
 	
 	if(_console->IsNsf()) {
 		//Don't stop emulation on CPU crash when playing NSFs, reset cpu instead
-		_console->GetEmulator()->Reset();
+		_emu->Reset();
 		return 0;
 	} else {
 		return 0;
@@ -470,7 +461,7 @@ void NesCpu::SetMasterClockDivider(NesModel region)
 
 void NesCpu::Serialize(Serializer &s)
 {
-	EmuSettings* settings = _console->GetEmulator()->GetSettings();
+	EmuSettings* settings = _emu->GetSettings();
 	uint32_t extraScanlinesBeforeNmi = _console->GetNesConfig().PpuExtraScanlinesBeforeNmi;
 	uint32_t extraScanlinesAfterNmi = _console->GetNesConfig().PpuExtraScanlinesAfterNmi;
 	uint32_t dipSwitches = _console->GetNesConfig().DipSwitches;

@@ -667,7 +667,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 	return nullptr;
 }
 
-shared_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, VirtualFile &romFile, RomData &romData)
+unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, VirtualFile &romFile, RomData &romData)
 {
 	RomLoader loader;
 
@@ -684,7 +684,7 @@ shared_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, Vi
 			*/
 		}
 
-		shared_ptr<BaseMapper> mapper(GetMapperFromID(romData));
+		unique_ptr<BaseMapper> mapper(GetMapperFromID(romData));
 		if(mapper) {
 			return mapper;
 		}

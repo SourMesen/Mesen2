@@ -188,7 +188,6 @@ void NesControlManager::UpdateInputState()
 	BaseControlManager::UpdateInputState();
 
 	//Used by VS System games
-	//TODO?
 	RemapControllerButtons();
 }
 

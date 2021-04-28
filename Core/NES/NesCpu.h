@@ -55,6 +55,7 @@ private:
 	NesCpuState _state;
 	NesConsole* _console;
 	NesMemoryManager* _memoryManager;
+	Emulator* _emu;
 
 	bool _prevRunIrq = false;
 	bool _runIrq = false;
