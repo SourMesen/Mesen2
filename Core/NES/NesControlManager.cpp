@@ -260,7 +260,7 @@ void NesControlManager::Serialize(Serializer& s)
 
 	if(!s.IsSaving()) {
 		//TODO
-		/*settings->SetNesModel(nesModel);
+		/*settings->SetRegion(nesModel);
 		settings->SetExpansionDevice(expansionDevice);
 		settings->SetConsoleType(consoleType);
 		for(int i = 0; i < 4; i++) {

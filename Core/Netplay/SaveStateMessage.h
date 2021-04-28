@@ -38,22 +38,20 @@ public:
 		stringstream state;
 		emu->Serialize(state);
 
+		//TODO
+		/*
 		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
 		_region = emuCfg.Region;
 
-		//TODO
-		/*
 		_ppuExtraScanlinesAfterNmi = emuCfg.PpuExtraScanlinesAfterNmi;
 		_ppuExtraScanlinesBeforeNmi = emuCfg.PpuExtraScanlinesBeforeNmi;
-		_gsuClockSpeed = emuCfg.GsuClockSpeed;*/
+		_gsuClockSpeed = emuCfg.GsuClockSpeed;
 
-		//TODO
-		/*
 		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
 			_controllerTypes[i] = inputCfg.Controllers[i].Type;
-		}*/
-
+		}
+		*/
 		emu->Unlock();
 
 		uint32_t dataSize = (uint32_t)state.tellp();
@@ -68,24 +66,22 @@ public:
 		emu->Deserialize(ss, SaveStateManager::FileFormatVersion);
 
 		emu->GetCheatManager()->SetCheats(_activeCheats);
-
-		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
-		emuCfg.Region = _region;
-
+		
 		//TODO
-		/*
+		/*EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
+		//emuCfg.Region = _region;
+
 		emuCfg.PpuExtraScanlinesAfterNmi = _ppuExtraScanlinesAfterNmi;
 		emuCfg.PpuExtraScanlinesBeforeNmi = _ppuExtraScanlinesBeforeNmi;
 		emuCfg.GsuClockSpeed = _gsuClockSpeed;
-		*/
 
-		//TODO
-		/*InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
+		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
 		for(int i = 0; i < 5; i++) {
 			inputCfg.Controllers[i].Type = _controllerTypes[i];
-		}*/
+		}
 
 		emu->GetSettings()->SetEmulationConfig(emuCfg);
-		//emu->GetSettings()->SetInputConfig(inputCfg);
+		emu->GetSettings()->SetInputConfig(inputCfg);
+		*/
 	}
 };

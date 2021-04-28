@@ -13,6 +13,8 @@ namespace Mesen.GUI.Config
 		//Input
 		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
 
+		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
+
 		//Video
 		[Reactive] public bool BlendHighResolutionModes { get; set; } = false;
 		[Reactive] public bool HideBgLayer0 { get; set; } = false;
@@ -64,6 +66,8 @@ namespace Mesen.GUI.Config
 					this.Controllers[3].ToInterop(),
 					this.Controllers[4].ToInterop()
 				},
+
+				Region = this.Region,
 
 				BlendHighResolutionModes = this.BlendHighResolutionModes,
 				HideBgLayer0 = this.HideBgLayer0,
@@ -129,6 +133,8 @@ namespace Mesen.GUI.Config
 	{
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
 		public InteropControllerConfig[] Controllers;
+
+		public ConsoleRegion Region;
 
 		[MarshalAs(UnmanagedType.I1)] public bool BlendHighResolutionModes;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer0;

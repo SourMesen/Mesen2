@@ -19,7 +19,6 @@ NesSoundMixer::NesSoundMixer(NesConsole* console)
 	_blipBufLeft = blip_new(NesSoundMixer::MaxSamplesPerFrame);
 	_blipBufRight = blip_new(NesSoundMixer::MaxSamplesPerFrame);
 	_sampleRate = 96000; //_settings->GetSampleRate();
-	_model = NesModel::NTSC;
 }
 
 NesSoundMixer::~NesSoundMixer()
@@ -33,7 +32,7 @@ NesSoundMixer::~NesSoundMixer()
 
 void NesSoundMixer::Serialize(Serializer& s)
 {
-	s.Stream(_clockRate, _sampleRate, _model);
+	s.Stream(_clockRate, _sampleRate);
 
 	if(!s.IsSaving()) {
 		Reset();
@@ -147,17 +146,14 @@ void NesSoundMixer::ProcessVsDualSystemAudio()
 	}
 }
 
-void NesSoundMixer::SetNesModel(NesModel model)
+void NesSoundMixer::SetRegion(ConsoleRegion region)
 {
-	if(_model != model) {
-		_model = model;
-		UpdateRates(true);
-	}
+	UpdateRates(true);
 }
 
 void NesSoundMixer::UpdateRates(bool forceUpdate)
 {
-	uint32_t clockRate = _console->GetCpu()->GetClockRate(_model);
+	uint32_t clockRate = _console->GetCpu()->GetClockRate(_console->GetRegion());
 	if(forceUpdate || _clockRate != clockRate) {
 		_clockRate = clockRate;
 

@@ -15,7 +15,7 @@ class NesSoundMixer;
 class EmuSettings;
 
 enum class FrameType;
-enum class NesModel;
+enum class ConsoleRegion;
 
 class NesApu : public ISerializable, public INesMemoryHandler
 {
@@ -38,7 +38,7 @@ class NesApu : public ISerializable, public INesMemoryHandler
 		NesSoundMixer* _mixer;
 		EmuSettings* _settings;
 
-		NesModel _nesModel;
+		ConsoleRegion _region;
 
 	private:
 		__forceinline bool NeedToRun(uint32_t currentCycle);
@@ -53,7 +53,7 @@ class NesApu : public ISerializable, public INesMemoryHandler
 		void Serialize(Serializer& s) override;
 
 		void Reset(bool softReset);
-		void SetNesModel(NesModel model, bool forceInit = false);
+		void SetRegion(ConsoleRegion region, bool forceInit = false);
 
 		uint8_t ReadRam(uint16_t addr) override;
 		uint8_t PeekRam(uint16_t addr) override;

@@ -8,6 +8,7 @@ class IControlManager;
 class VirtualFile;
 class BaseVideoFilter;
 enum class ConsoleType;
+enum class ConsoleRegion;
 enum class CpuType : uint8_t;
 
 struct PpuFrameInfo
@@ -36,6 +37,7 @@ public:
 
 	virtual shared_ptr<IControlManager> GetControlManager() = 0;
 
+	virtual ConsoleRegion GetRegion() = 0;
 	virtual ConsoleType GetConsoleType() = 0;
 	virtual vector<CpuType> GetCpuTypes() = 0;
 

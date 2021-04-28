@@ -191,7 +191,7 @@ public:
 		state.DutyPosition = _dutyPos;
 		state.Enabled = _enabled;
 		state.Envelope = ApuEnvelope::GetState();
-		state.Frequency = _console->GetCpu()->GetClockRate(GetNesModel()) / 16.0 / (_realPeriod + 1);
+		state.Frequency = _console->GetCpu()->GetClockRate(GetRegion()) / 16.0 / (_realPeriod + 1);
 		state.LengthCounter = ApuLengthCounter::GetState();
 		state.OutputVolume = _lastOutput;
 		state.Period = _realPeriod;

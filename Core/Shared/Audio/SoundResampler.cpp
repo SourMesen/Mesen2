@@ -78,6 +78,8 @@ double SoundResampler::GetTargetRateAdjustment()
 void SoundResampler::UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sampleRate)
 {
 	double inputRate = sourceRate;
+	
+	//TODO this seems wrong since GetFps will return 60.0 or 50.0
 	if(_emu->GetSettings()->GetVideoConfig().IntegerFpsMode) {
 		//Adjust sample rate when running at 60.0 fps instead of 60.1
 		switch(_emu->GetRegion()) {

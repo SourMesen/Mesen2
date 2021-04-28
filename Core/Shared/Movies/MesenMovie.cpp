@@ -249,8 +249,8 @@ void MesenMovie::ApplySettings()
 	inputConfig.Controllers[2].Type = FromString(LoadString(_settings, MovieKeys::Controller3), ControllerTypeNames, ControllerType::None);
 	inputConfig.Controllers[3].Type = FromString(LoadString(_settings, MovieKeys::Controller4), ControllerTypeNames, ControllerType::None);
 	inputConfig.Controllers[4].Type = FromString(LoadString(_settings, MovieKeys::Controller5), ControllerTypeNames, ControllerType::None);
-	*/
 	emuConfig.Region = FromString(LoadString(_settings, MovieKeys::Region), ConsoleRegionNames, ConsoleRegion::Ntsc);
+	*/
 
 	//TODO
 	/*
@@ -261,7 +261,7 @@ void MesenMovie::ApplySettings()
 	emuConfig.PpuExtraScanlinesBeforeNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesBeforeNmi);
 	emuConfig.GsuClockSpeed = LoadInt(_settings, MovieKeys::GsuClockSpeed, 100);*/
 
-	settings->SetEmulationConfig(emuConfig);
+	//settings->SetEmulationConfig(emuConfig);
 	//settings->SetInputConfig(inputConfig);
 }
 

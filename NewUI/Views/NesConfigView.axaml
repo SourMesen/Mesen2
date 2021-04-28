@@ -56,6 +56,15 @@
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblRegion}" Margin="5 0" />
+					<c:EnumComboBox
+						Grid.Column="1"
+						Width="130"
+						EnumType="{x:Type cfg:ConsoleRegion}"
+						SelectedItem="{CompiledBinding Config.Region}"
+					/>
+				</StackPanel>
 				<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameDatabase}" Text="{l:Translate chkDisableGameDatabase}" />
 

@@ -743,6 +743,16 @@ ConsoleFeatures BaseMapper::GetAvailableFeatures()
 	return ConsoleFeatures::None;
 }
 
+GameSystem BaseMapper::GetGameSystem()
+{
+	return _romInfo.System;
+}
+
+PpuModel BaseMapper::GetPpuModel()
+{
+	return _romInfo.VsPpuModel;
+}
+
 NesRomInfo BaseMapper::GetRomInfo()
 {
 	NesRomInfo romInfo = _romInfo;

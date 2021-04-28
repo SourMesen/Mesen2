@@ -423,12 +423,12 @@ ConsoleType Gameboy::GetConsoleType()
 
 double Gameboy::GetFrameDelay()
 {
-	return 16.74270629882813;
+	return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.74270629882813;
 }
 
 double Gameboy::GetFps()
 {
-	return 59.72750056960583;
+	return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 60.0 : 59.72750056960583;
 }
 
 void Gameboy::RunSingleFrame()
@@ -480,4 +480,9 @@ BaseVideoFilter* Gameboy::GetVideoFilter()
 	} else {
 		return new SnesDefaultVideoFilter(_emu);
 	}
+}
+
+ConsoleRegion Gameboy::GetRegion()
+{
+	return ConsoleRegion::Ntsc;
 }

@@ -290,7 +290,8 @@ enum class ConsoleRegion
 {
 	Auto = 0,
 	Ntsc = 1,
-	Pal = 2
+	Pal = 2,
+	Dendy = 3
 };
 
 enum class ConsoleType
@@ -314,8 +315,6 @@ struct EmulationConfig
 	uint32_t EmulationSpeed = 100;
 	uint32_t TurboSpeed = 300;
 	uint32_t RewindSpeed = 100;
-
-	ConsoleRegion Region = ConsoleRegion::Auto;
 
 	uint32_t RunAheadFrames = 0;
 };
@@ -343,6 +342,8 @@ struct GameboyConfig
 struct SnesConfig
 {
 	ControllerConfig Controllers[5];
+
+	ConsoleRegion Region = ConsoleRegion::Auto;
 
 	bool BlendHighResolutionModes = false;
 	bool HideBgLayer0 = false;
@@ -398,6 +399,7 @@ struct NesConfig
 	ControllerConfig Controllers[5];
 	uint32_t ZapperDetectionRadius = 0;
 
+	ConsoleRegion Region = ConsoleRegion::Auto;
 	bool EnableHdPacks = true;
 	bool DisableGameDatabase = false;
 	bool FdsAutoLoadDisk = true;

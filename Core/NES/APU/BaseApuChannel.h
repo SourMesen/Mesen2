@@ -12,7 +12,6 @@ private:
 	NesSoundMixer*_mixer;
 	uint32_t _previousCycle;
 	AudioChannel _channel;
-	NesModel _nesModel;
 
 protected:
 	int8_t _lastOutput;
@@ -34,7 +33,6 @@ public:
 		_channel = channel;
 		_mixer = mixer;
 		_console = console;
-		_nesModel = NesModel::NTSC;
 		
 		Reset(false);
 	}	
@@ -57,21 +55,17 @@ public:
 			_previousCycle = 0;
 		}
 
-		s.Stream(_lastOutput, _timer, _period, _nesModel);
+		s.Stream(_lastOutput, _timer, _period);
 	}
 
-	void SetNesModel(NesModel model)
+	ConsoleRegion GetRegion()
 	{
-		_nesModel = model;
-	}
-
-	NesModel GetNesModel()
-	{
-		if(_nesModel == NesModel::NTSC || _nesModel == NesModel::Dendy) {
+		ConsoleRegion region = _console->GetRegion();
+		if(region == ConsoleRegion::Ntsc || region == ConsoleRegion::Dendy) {
 			//Dendy APU works with NTSC timings
-			return NesModel::NTSC;
+			return ConsoleRegion::Ntsc;
 		} else {
-			return _nesModel;
+			return region;
 		}
 	}
 

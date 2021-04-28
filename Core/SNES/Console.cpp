@@ -206,7 +206,7 @@ ConsoleType Console::GetConsoleType()
 
 void Console::UpdateRegion()
 {
-	switch(_settings->GetEmulationConfig().Region) {
+	switch(_settings->GetSnesConfig().Region) {
 		case ConsoleRegion::Auto: _region = _cart->GetRegion(); break;
 
 		default:

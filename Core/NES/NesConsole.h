@@ -18,7 +18,7 @@ class BaseVideoFilter;
 
 enum class DebugEventType;
 enum class EventType;
-enum class NesModel;
+enum class ConsoleRegion;
 
 class NesConsole final : public IConsole, public std::enable_shared_from_this<NesConsole>
 {
@@ -35,6 +35,10 @@ private:
 	unique_ptr<BaseMapper> _mapper;
 	shared_ptr<NesControlManager> _controlManager;
 	unique_ptr<NesSoundMixer> _mixer;
+
+	ConsoleRegion _region = ConsoleRegion::Auto;
+	
+	void UpdateRegion();
 
 public:
 	NesConsole(Emulator* emulator);
@@ -62,20 +66,21 @@ public:
 	void SetNextFrameOverclockStatus(bool enabled) {}
 
 	// Inherited via IConsole
-	virtual void Serialize(Serializer& s) override;
-	virtual void Stop() override;
-	virtual void Reset() override;
-	virtual void OnBeforeRun() override;
-	virtual bool LoadRom(VirtualFile& romFile) override;
-	virtual void Init() override;
-	virtual void RunFrame() override;
-	virtual shared_ptr<IControlManager> GetControlManager() override;
-	virtual double GetFrameDelay() override;
-	virtual double GetFps() override;
-	virtual void RunSingleFrame() override;
-	virtual PpuFrameInfo GetPpuFrame() override;
-	virtual ConsoleType GetConsoleType() override;
-	virtual vector<CpuType> GetCpuTypes() override;
+	void Serialize(Serializer& s) override;
+	void Stop() override;
+	void Reset() override;
+	void OnBeforeRun() override;
+	bool LoadRom(VirtualFile& romFile) override;
+	void Init() override;
+	void RunFrame() override;
+	shared_ptr<IControlManager> GetControlManager() override;
+	double GetFrameDelay() override;
+	double GetFps() override;
+	void RunSingleFrame() override;
+	PpuFrameInfo GetPpuFrame() override;
+	ConsoleRegion GetRegion() override;
+	ConsoleType GetConsoleType() override;
+	vector<CpuType> GetCpuTypes() override;
 
 	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
 	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;

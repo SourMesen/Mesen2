@@ -164,7 +164,10 @@ public:
 
 	virtual ConsoleFeatures GetAvailableFeatures();
 
-	virtual void SetNesModel(NesModel model) { }
+	GameSystem GetGameSystem();
+	PpuModel GetPpuModel();
+
+	virtual void SetRegion(ConsoleRegion region) { }
 	virtual void ProcessCpuClock() { }
 	virtual void NotifyVRAMAddressChange(uint16_t addr);
 	virtual void GetMemoryRanges(MemoryRanges &ranges) override;

@@ -92,7 +92,7 @@ void NesConsole::Reset()
 	_memoryManager->Reset(true);
 	_ppu->Reset();
 	_apu->Reset(true);
-	_cpu->Reset(true, NesModel::NTSC);
+	_cpu->Reset(true, ConsoleRegion::Ntsc);
 	_controlManager->Reset(true);
 	if(_vsSubConsole) {
 		_vsSubConsole->Reset();
@@ -183,14 +183,11 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		_memoryManager->RegisterIODevice(_controlManager.get());
 		_memoryManager->RegisterIODevice(_mapper.get());
 
-		NesModel model = NesModel::NTSC;
-		_cpu->SetMasterClockDivider(model);
-		_mapper->SetNesModel(model);
-		_ppu->SetNesModel(model);
-		_apu->SetNesModel(model);
+		UpdateRegion();
+
 		_mixer->Reset();
 		
-		_cpu->Reset(false, model);
+		_cpu->Reset(false, _region);
 		_ppu->Reset();
 		_mapper->Reset(false);
 		_apu->Reset(false);
@@ -200,6 +197,27 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		return true;
 	}
     return false;
+}
+
+void NesConsole::UpdateRegion()
+{
+	ConsoleRegion region = GetNesConfig().Region;
+	if(region == ConsoleRegion::Auto) {
+		switch(_mapper->GetRomInfo().System) {
+			case GameSystem::NesPal: region = ConsoleRegion::Pal; break;
+			case GameSystem::Dendy: region = ConsoleRegion::Dendy; break;
+			default: region = ConsoleRegion::Ntsc; break;
+		}
+	}
+	if(_region != region) {
+		_region = region;
+
+		_cpu->SetMasterClockDivider(_region);
+		_mapper->SetRegion(_region);
+		_ppu->SetRegion(_region);
+		_apu->SetRegion(_region);
+		_mixer->SetRegion(_region);
+	}
 }
 
 void NesConsole::Init()
@@ -240,14 +258,25 @@ shared_ptr<IControlManager> NesConsole::GetControlManager()
 
 double NesConsole::GetFrameDelay()
 {
-	//TODO
-	return 16.6666667;
+	UpdateRegion();
+
+	switch(_region) {
+		default:
+		case ConsoleRegion::Ntsc: return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947;
+		
+		case ConsoleRegion::Dendy:
+		case ConsoleRegion::Pal:
+			return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146;
+	}
 }
 
 double NesConsole::GetFps()
 {
-	//TODO
-	return 60;
+	if(_region == ConsoleRegion::Ntsc) {
+		return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.0988118623484;
+	} else {
+		return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.00697796826829;
+	}
 }
 
 void NesConsole::RunSingleFrame()
@@ -268,6 +297,11 @@ PpuFrameInfo NesConsole::GetPpuFrame()
 ConsoleType NesConsole::GetConsoleType()
 {
 	return ConsoleType::Nes;
+}
+
+ConsoleRegion NesConsole::GetRegion()
+{
+	return _region;
 }
 
 vector<CpuType> NesConsole::GetCpuTypes()

@@ -14,7 +14,8 @@ namespace Mesen.GUI.Config
 		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
 		[Reactive] public UInt32 ZapperDetectionRadius { get; set; } = 0;
 
-		//Video
+		//General
+		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 		[Reactive] public bool EnableHdPacks { get; set; } = true;
 		[Reactive] public bool DisableGameDatabase { get; set; } = false;
 		[Reactive] public bool FdsAutoLoadDisk { get; set; } = true;
@@ -27,6 +28,7 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool NsfAutoDetectSilence { get; set; } = true;
 		[Reactive] public UInt32 NsfAutoDetectSilenceDelay { get; set; } = 3000;
 
+		//Video
 		[Reactive] public bool DisableSprites { get; set; } = false;
 		[Reactive] public bool DisableBackground { get; set; } = false;
 		[Reactive] public bool ForceBackgroundFirstColumn { get; set; } = false;
@@ -120,6 +122,7 @@ namespace Mesen.GUI.Config
 				},
 				ZapperDetectionRadius = ZapperDetectionRadius,
 
+				Region = Region,
 				EnableHdPacks = EnableHdPacks,
 				DisableGameDatabase = DisableGameDatabase,
 				FdsAutoLoadDisk = FdsAutoLoadDisk,
@@ -249,6 +252,7 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)] public InteropControllerConfig[] Controllers;
 		public UInt32 ZapperDetectionRadius;
 
+		public ConsoleRegion Region;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameDatabase;
 		[MarshalAs(UnmanagedType.I1)] public bool FdsAutoLoadDisk;

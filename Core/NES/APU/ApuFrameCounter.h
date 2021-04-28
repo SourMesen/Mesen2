@@ -24,7 +24,6 @@ private:
 
 	NesConsole* _console;
 	int32_t _stepCycles[2][6];
-	NesModel _nesModel;
 	int32_t _previousCycle;
 	uint32_t _currentStep;
 	uint32_t _stepMode; //0: 4-step mode, 1: 5-step mode
@@ -42,8 +41,6 @@ public:
 	
 	void Reset(bool softReset)
 	{
-		_nesModel = NesModel::Auto;
-
 		_previousCycle = 0;
 
 		//"After reset: APU mode in $4017 was unchanged", so we need to keep whatever value _stepMode has for soft resets
@@ -66,31 +63,28 @@ public:
 
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_previousCycle, _currentStep, _stepMode, _inhibitIRQ, _nesModel, _blockFrameCounterTick, _writeDelayCounter, _newValue);
+		s.Stream(_previousCycle, _currentStep, _stepMode, _inhibitIRQ, _blockFrameCounterTick, _writeDelayCounter, _newValue);
 
 		if(!s.IsSaving()) {
-			SetNesModel(_nesModel);
+			SetRegion(_console->GetRegion());
 		}
 	}
 
-	void SetNesModel(NesModel model)
+	void SetRegion(ConsoleRegion region)
 	{
-		if(_nesModel != model) {
-			_nesModel = model;
-			switch(model) {
-				case NesModel::Auto:
-					//Auto should never be set here
-					break;
+		switch(region) {
+			case ConsoleRegion::Auto:
+				//Auto should never be set here
+				break;
 
-				case NesModel::NTSC:
-				case NesModel::Dendy:
-					memcpy(_stepCycles, _stepCyclesNtsc, sizeof(_stepCycles));
-					break;
+			case ConsoleRegion::Ntsc:
+			case ConsoleRegion::Dendy:
+				memcpy(_stepCycles, _stepCyclesNtsc, sizeof(_stepCycles));
+				break;
 				
-				case NesModel::PAL:
-					memcpy(_stepCycles, _stepCyclesPal, sizeof(_stepCycles));
-					break;
-			}
+			case ConsoleRegion::Pal:
+				memcpy(_stepCycles, _stepCyclesPal, sizeof(_stepCycles));
+				break;
 		}
 	}
 

@@ -117,30 +117,30 @@ void NesPpu::Reset()
 	UpdateMinimumDrawCycles();
 }
 
-void NesPpu::SetNesModel(NesModel model)
+void NesPpu::SetRegion(ConsoleRegion region)
 {
-	_nesModel = model;
+	_region = region;
 
-	switch(_nesModel) {
-		case NesModel::Auto:
+	switch(_region) {
+		case ConsoleRegion::Auto:
 			//Should never be Auto
 			break;
 
-		case NesModel::NTSC:
+		case ConsoleRegion::Ntsc:
 			_nmiScanline = 241;
 			_vblankEnd = 260;
 			_standardNmiScanline = 241;
 			_standardVblankEnd = 260;
 			_masterClockDivider = 4;
 			break;
-		case NesModel::PAL:
+		case ConsoleRegion::Pal:
 			_nmiScanline = 241;
 			_vblankEnd = 310;
 			_standardNmiScanline = 241;
 			_standardVblankEnd = 310;
 			_masterClockDivider = 5;
 			break;
-		case NesModel::Dendy:
+		case ConsoleRegion::Dendy:
 			_nmiScanline = 291;
 			_vblankEnd = 310;
 			_standardNmiScanline = 291;
@@ -159,11 +159,11 @@ void NesPpu::SetNesModel(NesModel model)
 double NesPpu::GetOverclockRate()
 {
 	uint32_t regularVblankEnd;
-	switch(_nesModel) {
+	switch(_region) {
 		default:
-		case NesModel::NTSC: regularVblankEnd = 260; break;
-		case NesModel::PAL: regularVblankEnd = 310; break;
-		case NesModel::Dendy: regularVblankEnd = 310; break;
+		case ConsoleRegion::Ntsc: regularVblankEnd = 260; break;
+		case ConsoleRegion::Pal: regularVblankEnd = 310; break;
+		case ConsoleRegion::Dendy: regularVblankEnd = 310; break;
 	}
 
 	return (double)(_vblankEnd + 2) / (regularVblankEnd + 2);
@@ -179,7 +179,7 @@ void NesPpu::GetState(NesPpuState &state)
 	state.FrameCount = _frameCount;
 	state.NmiScanline = _nmiScanline;
 	state.ScanlineCount = _vblankEnd + 2;
-	state.SafeOamScanline = _nesModel == NesModel::NTSC ? _nmiScanline + 19 : _palSpriteEvalScanline;
+	state.SafeOamScanline = _region == ConsoleRegion::Ntsc ? _nmiScanline + 19 : _palSpriteEvalScanline;
 	state.BusAddress = _ppuBusAddress;
 	state.MemoryReadBuffer = _memoryReadBuffer;
 }
@@ -196,9 +196,9 @@ void NesPpu::SetState(NesPpuState &state)
 	UpdateMinimumDrawCycles();
 
 	_paletteRamMask = _flags.Grayscale ? 0x30 : 0x3F;
-	if(_nesModel == NesModel::NTSC) {
+	if(_region == ConsoleRegion::Ntsc) {
 		_intensifyColorBits = (_flags.IntensifyGreen ? 0x40 : 0x00) | (_flags.IntensifyRed ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
-	} else if(_nesModel == NesModel::PAL || _nesModel == NesModel::Dendy) {
+	} else if(_region == ConsoleRegion::Pal || _region == ConsoleRegion::Dendy) {
 		//"Note that on the Dendy and PAL NES, the green and red bits swap meaning."
 		_intensifyColorBits = (_flags.IntensifyRed ? 0x40 : 0x00) | (_flags.IntensifyGreen ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
 	}
@@ -263,9 +263,8 @@ uint8_t NesPpu::ApplyOpenBus(uint8_t mask, uint8_t value)
 
 PpuModel NesPpu::GetPpuModel()
 {
-	//TODO PERF
-	if(_console->GetMapper()->GetRomInfo().System == GameSystem::VsSystem) {
-		return _console->GetMapper()->GetRomInfo().VsPpuModel;
+	if(_console->GetMapper()->GetGameSystem() == GameSystem::VsSystem) {
+		return _console->GetMapper()->GetPpuModel();
 	} else {
 		return PpuModel::Ppu2C02;
 	}
@@ -422,7 +421,7 @@ void NesPpu::WriteRam(uint16_t addr, uint8_t value)
 			_state.SpriteRamAddr = value;
 			break;
 		case PPURegisters::SpriteData:
-			if((_scanline >= 240 && (_nesModel != NesModel::PAL || _scanline < _palSpriteEvalScanline)) || !IsRenderingEnabled()) {
+			if((_scanline >= 240 && (_region != ConsoleRegion::Pal || _scanline < _palSpriteEvalScanline)) || !IsRenderingEnabled()) {
 				if((_state.SpriteRamAddr & 0x03) == 0x02) {
 					//"The three unimplemented bits of each sprite's byte 2 do not exist in the PPU and always read back as 0 on PPU revisions that allow reading PPU OAM through OAMDATA ($2004)"
 					value &= 0xE3;
@@ -580,11 +579,11 @@ void NesPpu::SetMaskRegister(uint8_t value)
 	//"Bit 0 controls a greyscale mode, which causes the palette to use only the colors from the grey column: $00, $10, $20, $30. This is implemented as a bitwise AND with $30 on any value read from PPU $3F00-$3FFF"
 	_paletteRamMask = _flags.Grayscale ? 0x30 : 0x3F;
 
-	if(_nesModel == NesModel::NTSC) {
+	if(_region == ConsoleRegion::Ntsc) {
 		_flags.IntensifyRed = (_state.Mask & 0x20) == 0x20;
 		_flags.IntensifyGreen = (_state.Mask & 0x40) == 0x40;
 		_intensifyColorBits = (value & 0xE0) << 1;
-	} else if(_nesModel == NesModel::PAL || _nesModel == NesModel::Dendy) {
+	} else if(_region == ConsoleRegion::Pal || _region == ConsoleRegion::Dendy) {
 		//"Note that on the Dendy and PAL NES, the green and red bits swap meaning."
 		_flags.IntensifyRed = (_state.Mask & 0x40) == 0x40;
 		_flags.IntensifyGreen = (_state.Mask & 0x20) == 0x20;
@@ -1022,7 +1021,7 @@ void NesPpu::ProcessScanline()
 		if(IsRenderingEnabled()) {
 			ReadVram(GetNameTableAddr());
 
-			if(_scanline == -1 && _cycle == 339 && (_frameCount & 0x01) && _nesModel == NesModel::NTSC && GetPpuModel() == PpuModel::Ppu2C02) {
+			if(_scanline == -1 && _cycle == 339 && (_frameCount & 0x01) && _region == ConsoleRegion::Ntsc && GetPpuModel() == PpuModel::Ppu2C02) {
 				//This behavior is NTSC-specific - PAL frames are always the same number of cycles
 				//"With rendering enabled, each odd PPU frame is one PPU clock shorter than normal" (skip from 339 to 0, going over 340)
 				_cycle = 340;
@@ -1033,7 +1032,7 @@ void NesPpu::ProcessScanline()
 
 void NesPpu::ProcessSpriteEvaluation()
 {
-	if(IsRenderingEnabled() || (_nesModel == NesModel::PAL && _scanline >= _palSpriteEvalScanline)) {
+	if(IsRenderingEnabled() || (_region == ConsoleRegion::Pal && _scanline >= _palSpriteEvalScanline)) {
 		if(_cycle < 65) {
 			//Clear secondary OAM at between cycle 1 and 64
 			_oamCopybuffer = 0xFF;
@@ -1382,7 +1381,7 @@ void NesPpu::Exec()
 				BeginVBlank();
 			}
 			_preventVblFlag = false;
-		} else if(_nesModel == NesModel::PAL && _scanline >= _palSpriteEvalScanline) {
+		} else if(_region == ConsoleRegion::Pal && _scanline >= _palSpriteEvalScanline) {
 			//"On a PAL machine, because of its extended vertical blank, the PPU begins refreshing OAM roughly 21 scanlines after NMI[2], to prevent it 
 			//from decaying during the longer hiatus of rendering. Additionally, it will continue to refresh during the visible portion of the screen 
 			//even if rendering is disabled. Because of this, OAM DMA must be done near the beginning of vertical blank on PAL, and everywhere else 
@@ -1547,7 +1546,7 @@ void NesPpu::Serialize(Serializer& s)
 		_flags.IntensifyBlue, _paletteRamMask, _intensifyColorBits, _statusFlags.SpriteOverflow, _statusFlags.Sprite0Hit, _statusFlags.VerticalBlank, _scanline,
 		_cycle, _frameCount, _memoryReadBuffer, _currentTile.LowByte, _currentTile.HighByte, _currentTile.PaletteOffset, _nextTile.LowByte, _nextTile.HighByte,
 		_nextTile.PaletteOffset, _nextTile.TileAddr, _previousTile.LowByte, _previousTile.HighByte, _previousTile.PaletteOffset, _spriteIndex, _spriteCount,
-		_secondaryOAMAddr, _sprite0Visible, _oamCopybuffer, _spriteInRange, _sprite0Added, _spriteAddrH, _spriteAddrL, _oamCopyDone, _nesModel,
+		_secondaryOAMAddr, _sprite0Visible, _oamCopybuffer, _spriteInRange, _sprite0Added, _spriteAddrH, _spriteAddrL, _oamCopyDone, _region,
 		_prevRenderingEnabled, _renderingEnabled, _openBus, _ignoreVramRead, paletteRam, spriteRam, secondarySpriteRam,
 		openBusDecayStamp, disablePpu2004Reads, disablePaletteRead, disableOamAddrBug, _overflowBugCounter, _updateVramAddr, _updateVramAddrDelay,
 		_needStateUpdate, _ppuBusAddress, _preventVblFlag, _masterClock);
@@ -1562,7 +1561,7 @@ void NesPpu::Serialize(Serializer& s)
 		_settings->SetFlagState(EmulationFlags::DisablePaletteRead, disablePaletteRead);
 		_settings->SetFlagState(EmulationFlags::DisableOamAddrBug, disableOamAddrBug);*/
 
-		SetNesModel(_nesModel);
+		SetRegion(_region);
 		UpdateMinimumDrawCycles();
 
 		for(int i = 0; i < 0x20; i++) {

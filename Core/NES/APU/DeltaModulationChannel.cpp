@@ -39,7 +39,7 @@ void DeltaModulationChannel::Reset(bool softReset)
 
 	//Not sure if this is accurate, but it seems to make things better rather than worse (for dpcmletterbox)
 	//"On the real thing, I think the power-on value is 428 (or the equivalent at least - it uses a linear feedback shift register), though only the even/oddness should matter for this test."
-	_period = (GetNesModel() == NesModel::NTSC ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[0] - 1;
+	_period = (GetRegion() == ConsoleRegion::Ntsc ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[0] - 1;
 	
 	//Make sure the DMC doesn't tick on the first cycle - this is part of what keeps Sprite/DMC DMA tests working while fixing dmc_pitch.
 	_timer = _period;
@@ -159,7 +159,7 @@ void DeltaModulationChannel::WriteRam(uint16_t addr, uint8_t value)
 
 			//"The rate determines for how many CPU cycles happen between changes in the output level during automatic delta-encoded sample playback."
 			//Because BaseApuChannel does not decrement when setting _timer, we need to actually set the value to 1 less than the lookup table
-			_period = (GetNesModel() == NesModel::NTSC ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[value & 0x0F] - 1;
+			_period = (GetRegion() == ConsoleRegion::Ntsc ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[value & 0x0F] - 1;
 
 			if(!_irqEnabled) {
 				_console->GetCpu()->ClearIrqSource(IRQSource::DMC);
@@ -241,7 +241,7 @@ ApuDmcState DeltaModulationChannel::GetState()
 	state.OutputVolume = _lastOutput;
 	state.Period = _period;
 	state.Timer = _timer;
-	state.SampleRate = (double)_console->GetCpu()->GetClockRate(GetNesModel()) / (_period + 1);
+	state.SampleRate = (double)_console->GetCpu()->GetClockRate(GetRegion()) / (_period + 1);
 	state.SampleAddr = _sampleAddr;
 	state.SampleLength = _sampleLength;
 	return state;

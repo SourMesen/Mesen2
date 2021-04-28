@@ -47,7 +47,7 @@ public:
 	{
 		ApuEnvelope::Reset(softReset);
 		
-		_period = (GetNesModel() == NesModel::NTSC ? _noisePeriodLookupTableNtsc : _noisePeriodLookupTablePal)[0] - 1;
+		_period = (GetRegion() == ConsoleRegion::Ntsc ? _noisePeriodLookupTableNtsc : _noisePeriodLookupTablePal)[0] - 1;
 		_shiftRegister = 1;
 		_modeFlag = false;
 	}
@@ -75,7 +75,7 @@ public:
 				break;
 
 			case 2:		//400E
-				_period = (GetNesModel() == NesModel::NTSC ? _noisePeriodLookupTableNtsc : _noisePeriodLookupTablePal)[value & 0x0F] - 1;
+				_period = (GetRegion() == ConsoleRegion::Ntsc ? _noisePeriodLookupTableNtsc : _noisePeriodLookupTablePal)[value & 0x0F] - 1;
 				_modeFlag = (value & 0x80) == 0x80;
 				break;
 
@@ -93,7 +93,7 @@ public:
 		ApuNoiseState state;
 		state.Enabled = _enabled;
 		state.Envelope = ApuEnvelope::GetState();
-		state.Frequency = (double)_console->GetCpu()->GetClockRate(GetNesModel()) / (_period + 1) / (_modeFlag ? 93 : 1);
+		state.Frequency = (double)_console->GetCpu()->GetClockRate(GetRegion()) / (_period + 1) / (_modeFlag ? 93 : 1);
 		state.LengthCounter = ApuLengthCounter::GetState();
 		state.ModeFlag = _modeFlag;
 		state.OutputVolume = _lastOutput;

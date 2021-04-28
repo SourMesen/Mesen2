@@ -25,6 +25,9 @@ namespace Mesen.ViewModels
 		
 		public NesInputConfigViewModel Input { get; private set; }
 
+		//For designer
+		public NesConfigViewModel() : this(new PreferencesConfig()) { }
+
 		public NesConfigViewModel(PreferencesConfig preferences)
 		{
 			Config = ConfigManager.Config.Nes.Clone();

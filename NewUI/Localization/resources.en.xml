@@ -279,6 +279,9 @@
 			<Control ID="btnResetLagCounter">Reset Counter</Control>
 		</Form>
 		<Form ID="SnesConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblRegion">Region:</Control>
+			
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="chkEnableCubicInterpolation">Enable cubic interpolation</Control>
 
@@ -316,6 +319,7 @@
 		</Form>
 		<Form ID="NesConfigView">
 			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblRegion">Region:</Control>
 			<Control ID="chkEnableHdPacks">Enable HD packs</Control>
 			<Control ID="chkDisableGameDatabase">Disable built-in game database</Control>
 
@@ -1029,6 +1033,12 @@
 			<Value ID="Nes101">NES - Top loader (NES-101)</Value>
 			<Value ID="Hvc001">Famicom (HVC-001)</Value>
 			<Value ID="Hvc101">AV Famicom (HVC-101)</Value>
+		</Enum>
+		<Enum ID="ConsoleRegion">
+			<Value ID="Auto">Auto</Value>
+			<Value ID="Ntsc">NTSC (60 FPS)</Value>
+			<Value ID="Pal">PAL (50 FPS)</Value>
+			<Value ID="Dendy">Dendy (50 FPS)</Value>
 		</Enum>
 		<Enum ID="VideoAspectRatio">
 			<Value ID="NoStretching">Default (No Stretching)</Value>

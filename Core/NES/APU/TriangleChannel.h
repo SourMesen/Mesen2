@@ -105,7 +105,7 @@ public:
 	{
 		ApuTriangleState state;
 		state.Enabled = _enabled;
-		state.Frequency = _console->GetCpu()->GetClockRate(GetNesModel()) / 32.0 / (_period + 1);
+		state.Frequency = _console->GetCpu()->GetClockRate(GetRegion()) / 32.0 / (_period + 1);
 		state.LengthCounter = ApuLengthCounter::GetState();
 		state.OutputVolume = _lastOutput;
 		state.Period = _period;

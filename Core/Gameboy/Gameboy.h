@@ -98,25 +98,24 @@ public:
 	void Serialize(Serializer& s) override;
 
 	// Inherited via IConsole
-	virtual void Stop() override;
-	virtual void Reset() override;
-	virtual void OnBeforeRun() override;
-	virtual bool LoadRom(VirtualFile& romFile) override;
-	virtual void Init() override;
-	virtual void RunFrame() override;
-	virtual shared_ptr<IControlManager> GetControlManager() override;
-	virtual ConsoleType GetConsoleType() override;
-	virtual double GetFrameDelay() override;
-	virtual double GetFps() override;
-	virtual void RunSingleFrame() override;
-	virtual PpuFrameInfo GetPpuFrame() override;
-	virtual vector<CpuType> GetCpuTypes() override;
+	void Stop() override;
+	void Reset() override;
+	void OnBeforeRun() override;
+	bool LoadRom(VirtualFile& romFile) override;
+	void Init() override;
+	void RunFrame() override;
+	shared_ptr<IControlManager> GetControlManager() override;
+	ConsoleRegion GetRegion() override;
+	ConsoleType GetConsoleType() override;
+	double GetFrameDelay() override;
+	double GetFps() override;
+	void RunSingleFrame() override;
+	PpuFrameInfo GetPpuFrame() override;
+	vector<CpuType> GetCpuTypes() override;
 
-	// Inherited via IConsole
-	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
-	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
+	AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
+	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
 
-	// Inherited via IConsole
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate() override;
 

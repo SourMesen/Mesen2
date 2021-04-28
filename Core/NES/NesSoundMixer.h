@@ -10,6 +10,7 @@
 class NesConsole;
 class SoundMixer;
 class EmuSettings;
+enum class ConsoleRegion;
 
 class NesSoundMixer : public ISerializable
 {
@@ -49,7 +50,6 @@ private:
 	double _volumes[MaxChannelCount];
 	double _panning[MaxChannelCount];
 
-	NesModel _model;
 	uint32_t _sampleRate;
 	uint32_t _clockRate;
 
@@ -67,7 +67,7 @@ public:
 	NesSoundMixer(NesConsole* console);
 	~NesSoundMixer();
 
-	void SetNesModel(NesModel model);
+	void SetRegion(ConsoleRegion region);
 	void Reset();
 
 	void PlayAudioBuffer(uint32_t cycle);

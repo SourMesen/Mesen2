@@ -16,6 +16,12 @@ namespace Mesen.ViewModels
 
 		public SnesInputConfigViewModel Input { get; private set; }
 
+		public Enum[] AvailableRegions => new Enum[] {
+			ConsoleRegion.Auto,
+			ConsoleRegion.Ntsc,
+			ConsoleRegion.Pal			
+		};
+
 		public SnesConfigViewModel()
 		{
 			Config = ConfigManager.Config.Snes.Clone();

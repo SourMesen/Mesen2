@@ -5,12 +5,12 @@
 #define __CPU__H
 #endif
 
-#include "../stdafx.h"
-#include "../../Utilities/ISerializable.h"
+#include "stdafx.h"
+#include "Utilities/ISerializable.h"
 #include "NesTypes.h"
 #include "MemoryOperationType.h"
 
-enum class NesModel;
+enum class ConsoleRegion;
 class NesConsole;
 class NesMemoryManager;
 class DummyCpu;
@@ -789,7 +789,7 @@ public:
 	NesCpu(NesConsole* console);
 	
 	uint64_t GetCycleCount() { return _state.CycleCount; }
-	void SetMasterClockDivider(NesModel region);
+	void SetMasterClockDivider(ConsoleRegion region);
 	void SetNmiFlag() { _state.NMIFlag = true; }
 	void ClearNmiFlag() { _state.NMIFlag = false; }
 	void SetIrqMask(uint8_t mask) { _irqMask = mask; }
@@ -800,10 +800,10 @@ public:
 	void RunDMATransfer(uint8_t offsetValue);
 	void StartDmcTransfer();
 
-	uint32_t GetClockRate(NesModel model);
+	uint32_t GetClockRate(ConsoleRegion region);
 	bool IsCpuWrite() { return _cpuWrite; }
 
-	void Reset(bool softReset, NesModel model);
+	void Reset(bool softReset, ConsoleRegion region);
 	void Exec();
 
 	NesCpuState& GetState()

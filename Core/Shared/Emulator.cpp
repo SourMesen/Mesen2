@@ -450,8 +450,12 @@ PpuFrameInfo Emulator::GetPpuFrame()
 
 ConsoleRegion Emulator::GetRegion()
 {
-	//TODO
-	return ConsoleRegion::Ntsc;
+	//TODO is this really useful?
+	if(_console) {
+		return _console->GetRegion();
+	} else {
+		return ConsoleRegion::Ntsc;
+	}
 }
 
 IConsole* Emulator::GetConsole()

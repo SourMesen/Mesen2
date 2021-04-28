@@ -15,7 +15,7 @@
 
 NesApu::NesApu(NesConsole* console)
 {
-	_nesModel = NesModel::Auto;
+	_region = ConsoleRegion::Auto;
 	_apuEnabled = true;
 	_needToRun = false;
 
@@ -44,22 +44,11 @@ NesApu::~NesApu()
 {
 }
 
-void NesApu::SetNesModel(NesModel model, bool forceInit)
+void NesApu::SetRegion(ConsoleRegion region, bool forceInit)
 {
-	if(_nesModel != model || forceInit) {
-		//Finish the current apu frame before switching model
-		Run();
-
-		_nesModel = model;
-		_squareChannel[0]->SetNesModel(model);
-		_squareChannel[1]->SetNesModel(model);
-		_triangleChannel->SetNesModel(model);
-		_noiseChannel->SetNesModel(model);
-		_deltaModulationChannel->SetNesModel(model);
-		_frameCounter->SetNesModel(model);
-
-		_mixer->SetNesModel(model);
-	}
+	//Finish the current apu frame before switching model
+	Run();
+	_frameCounter->SetRegion(region);
 }
 
 void NesApu::FrameCounterTick(FrameType type)
@@ -240,7 +229,6 @@ void NesApu::Serialize(Serializer& s)
 		_currentCycle = 0;
 	}
 
-	s.Stream(_nesModel);
 	s.Stream(_squareChannel[0].get());
 	s.Stream(_squareChannel[1].get());
 	s.Stream(_triangleChannel.get());

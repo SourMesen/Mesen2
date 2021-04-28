@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../stdafx.h"
-#include "../../Utilities/ISerializable.h"
+#include "stdafx.h"
+#include "Utilities/ISerializable.h"
 #include "NES/NesTypes.h"
 #include "NES/Debugger/NesDebuggerTypes.h"
 #include "NES/INesMemoryHandler.h"
 #include "MemoryOperationType.h"
 
-enum class NesModel;
+enum class ConsoleRegion;
 
 class Emulator;
 class BaseMapper;
@@ -52,7 +52,7 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		uint16_t *_currentOutputBuffer;
 		uint16_t *_outputBuffers[2];
 
-		NesModel _nesModel;
+		ConsoleRegion _region;
 		uint16_t _standardVblankEnd;
 		uint16_t _standardNmiScanline;
 		uint16_t _vblankEnd;
@@ -211,7 +211,7 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		uint8_t PeekRam(uint16_t addr) override;
 		void WriteRam(uint16_t addr, uint8_t value) override;
 
-		void SetNesModel(NesModel model);
+		void SetRegion(ConsoleRegion region);
 		double GetOverclockRate();
 		
 		void Exec();

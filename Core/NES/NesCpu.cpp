@@ -81,7 +81,7 @@ NesCpu::NesCpu(NesConsole* console)
 	_runIrq = false;
 }
 
-void NesCpu::Reset(bool softReset, NesModel model)
+void NesCpu::Reset(bool softReset, ConsoleRegion region)
 {
 	_state.NMIFlag = false;
 	_state.IRQFlag = 0;
@@ -113,19 +113,19 @@ void NesCpu::Reset(bool softReset, NesModel model)
 
 	uint8_t ppuDivider;
 	uint8_t cpuDivider;
-	switch(model) {
+	switch(region) {
 		default:
-		case NesModel::NTSC:
+		case ConsoleRegion::Ntsc:
 			ppuDivider = 4;
 			cpuDivider = 12;
 			break;
 
-		case NesModel::PAL:
+		case ConsoleRegion::Pal:
 			ppuDivider = 5;
 			cpuDivider = 16;
 			break;
 
-		case NesModel::Dendy:
+		case ConsoleRegion::Dendy:
 			ppuDivider = 5;
 			cpuDivider = 15;
 			break;
@@ -428,31 +428,31 @@ void NesCpu::StartDmcTransfer()
 	_needHalt = true;
 }
 
-uint32_t NesCpu::GetClockRate(NesModel model)
-{
-	switch(model) {
-		default:
-		case NesModel::NTSC: return NesCpu::ClockRateNtsc; break;
-		case NesModel::PAL: return NesCpu::ClockRatePal; break;
-		case NesModel::Dendy: return NesCpu::ClockRateDendy; break;
-	}
-}
-
-void NesCpu::SetMasterClockDivider(NesModel region)
+uint32_t NesCpu::GetClockRate(ConsoleRegion region)
 {
 	switch(region) {
 		default:
-		case NesModel::NTSC:
+		case ConsoleRegion::Ntsc: return NesCpu::ClockRateNtsc; break;
+		case ConsoleRegion::Pal: return NesCpu::ClockRatePal; break;
+		case ConsoleRegion::Dendy: return NesCpu::ClockRateDendy; break;
+	}
+}
+
+void NesCpu::SetMasterClockDivider(ConsoleRegion region)
+{
+	switch(region) {
+		default:
+		case ConsoleRegion::Ntsc:
 			_startClockCount = 6;
 			_endClockCount = 6;
 			break;
 
-		case NesModel::PAL:
+		case ConsoleRegion::Pal:
 			_startClockCount = 8;
 			_endClockCount = 8;
 			break;
 
-		case NesModel::Dendy:
+		case ConsoleRegion::Dendy:
 			_startClockCount = 7;
 			_endClockCount = 8;
 			break;
