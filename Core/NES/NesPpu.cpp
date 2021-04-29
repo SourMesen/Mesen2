@@ -1329,10 +1329,8 @@ void NesPpu::ProcessOamCorruption()
 
 void NesPpu::Exec()
 {
-	if(_cycle > 339) {
-		ProcessScanlineFirstCycle();
-	} else {
-		//Cycle > 0
+	if(_cycle < 340) {
+		//Process cycles 1 to 340
 		_cycle++;
 
 		_emu->ProcessPpuCycle<CpuType::Nes>();
@@ -1355,6 +1353,9 @@ void NesPpu::Exec()
 				_state.SpriteRamAddr = 0;
 			}
 		}
+	} else {
+		//Process cycle 0
+		ProcessScanlineFirstCycle();
 	}
 
 	if(_needStateUpdate) {
