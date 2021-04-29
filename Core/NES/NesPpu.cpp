@@ -1002,22 +1002,20 @@ void NesPpu::ProcessScanline()
 			}
 		}
 	} else if(_cycle >= 321 && _cycle <= 336) {
+		LoadTileInfo();
+
 		if(_cycle == 321) {
 			if(IsRenderingEnabled()) {
 				LoadExtraSprites();
 				_oamCopybuffer = _secondarySpriteRAM[0];
 			}
-			LoadTileInfo();
 			if(_scanline == -1) {
 				_console->DebugSetLastFramePpuScroll(_state.VideoRamAddr, _state.XScroll, false);
 			}
 		} else if(_prevRenderingEnabled && (_cycle == 328 || _cycle == 336)) {
-			LoadTileInfo();
 			_state.LowBitShift <<= 8;
 			_state.HighBitShift <<= 8;
 			IncHorizontalScrolling();
-		} else {
-			LoadTileInfo();
 		}
 	} else if(_cycle == 337 || _cycle == 339) {
 		if(IsRenderingEnabled()) {
@@ -1332,44 +1330,7 @@ void NesPpu::ProcessOamCorruption()
 void NesPpu::Exec()
 {
 	if(_cycle > 339) {
-		_cycle = 0;
-		if(++_scanline > _vblankEnd) {
-			_lastUpdatedPixel = -1;
-			_scanline = -1;
-
-			//Force prerender scanline sprite fetches to load the dummy $FF tiles (fixes shaking in Ninja Gaiden 3 stage 1 after beating boss)
-			_spriteCount = 0;
-
-			if(_renderingEnabled) {
-				ProcessOamCorruption();
-			}
-
-			UpdateMinimumDrawCycles();
-		}
-
-		_emu->ProcessPpuCycle<CpuType::Nes>();
-		
-		UpdateApuStatus();
-		
-		if(_scanline == _console->GetNesConfig().InputScanline) {
-			((NesControlManager*)_console->GetControlManager().get())->UpdateControlDevices();
-			((NesControlManager*)_console->GetControlManager().get())->UpdateInputState();
-		}
-
-		//Cycle = 0
-		if(_scanline == -1) {
-			_statusFlags.SpriteOverflow = false;
-			_statusFlags.Sprite0Hit = false;
-			
-			//Switch to alternate output buffer (VideoDecoder may still be decoding the last frame buffer)
-			_currentOutputBuffer = (_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0];
-		} else if(_scanline == 240) {
-			//At the start of vblank, the bus address is set back to VideoRamAddr.
-			//According to Visual NES, this occurs on scanline 240, cycle 1, but is done here on cycle for performance reasons
-			SetBusAddress(_state.VideoRamAddr);
-			SendFrame();
-			_frameCount++;
-		}
+		ProcessScanlineFirstCycle();
 	} else {
 		//Cycle > 0
 		_cycle++;
@@ -1398,6 +1359,48 @@ void NesPpu::Exec()
 
 	if(_needStateUpdate) {
 		UpdateState();
+	}
+}
+
+void NesPpu::ProcessScanlineFirstCycle()
+{
+	_cycle = 0;
+	if(++_scanline > _vblankEnd) {
+		_lastUpdatedPixel = -1;
+		_scanline = -1;
+
+		//Force prerender scanline sprite fetches to load the dummy $FF tiles (fixes shaking in Ninja Gaiden 3 stage 1 after beating boss)
+		_spriteCount = 0;
+
+		if(_renderingEnabled) {
+			ProcessOamCorruption();
+		}
+
+		UpdateMinimumDrawCycles();
+	}
+
+	_emu->ProcessPpuCycle<CpuType::Nes>();
+
+	UpdateApuStatus();
+
+	if(_scanline == _console->GetNesConfig().InputScanline) {
+		((NesControlManager*)_console->GetControlManager().get())->UpdateControlDevices();
+		((NesControlManager*)_console->GetControlManager().get())->UpdateInputState();
+	}
+
+	//Cycle = 0
+	if(_scanline == -1) {
+		_statusFlags.SpriteOverflow = false;
+		_statusFlags.Sprite0Hit = false;
+
+		//Switch to alternate output buffer (VideoDecoder may still be decoding the last frame buffer)
+		_currentOutputBuffer = (_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0];
+	} else if(_scanline == 240) {
+		//At the start of vblank, the bus address is set back to VideoRamAddr.
+		//According to Visual NES, this occurs on scanline 240, cycle 1, but is done here on cycle for performance reasons
+		SetBusAddress(_state.VideoRamAddr);
+		SendFrame();
+		_frameCount++;
 	}
 }
 

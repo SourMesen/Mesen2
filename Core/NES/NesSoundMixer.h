@@ -55,8 +55,8 @@ private:
 
 	bool _hasPanning;
 
-	double GetChannelOutput(AudioChannel channel, bool forRightChannel);
-	int16_t GetOutputVolume(bool forRightChannel);
+	__forceinline double GetChannelOutput(AudioChannel channel, bool forRightChannel);
+	__forceinline int16_t GetOutputVolume(bool forRightChannel);
 	void EndFrame(uint32_t time);
 
 	void ProcessVsDualSystemAudio();

@@ -118,7 +118,7 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		void SetControlRegister(uint8_t value);
 		void SetMaskRegister(uint8_t value);
 
-		bool IsRenderingEnabled();
+		__forceinline bool IsRenderingEnabled();
 
 		void ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask);
 
@@ -127,19 +127,20 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 
 		void ProcessStatusRegOpenBus(uint8_t & openBusMask, uint8_t & returnValue);
 
-		void UpdateVideoRamAddr();
-		void IncVerticalScrolling();
-		void IncHorizontalScrolling();
-		uint16_t GetNameTableAddr();
-		uint16_t GetAttributeAddr();
+		__forceinline void UpdateVideoRamAddr();
+		__forceinline void IncVerticalScrolling();
+		__forceinline void IncHorizontalScrolling();
+		__forceinline uint16_t GetNameTableAddr();
+		__forceinline uint16_t GetAttributeAddr();
 
+		void ProcessScanlineFirstCycle(); 
 		__forceinline void ProcessScanline();
 		__forceinline void ProcessSpriteEvaluation();
 
 		void BeginVBlank();
 		void TriggerNmi();
 
-		void LoadTileInfo();
+		__forceinline void LoadTileInfo();
 		void LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, uint8_t spriteX, bool extraSprite);
 		void LoadSpriteTileInfo();
 		void LoadExtraSprites();
@@ -153,7 +154,7 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 
 		void UpdateMinimumDrawCycles();
 
-		uint8_t GetPixelColor();
+		__forceinline uint8_t GetPixelColor();
 		__forceinline virtual void DrawPixel();
 		void UpdateGrayscaleAndIntensifyBits();
 		virtual void SendFrame();
