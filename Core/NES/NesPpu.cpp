@@ -556,6 +556,8 @@ void NesPpu::UpdateMinimumDrawCycles()
 	_minimumDrawBgCycle = _flags.BackgroundEnabled ? ((_flags.BackgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
 	_minimumDrawSpriteCycle = _flags.SpritesEnabled ? ((_flags.SpriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
 	_minimumDrawSpriteStandardCycle = _flags.SpritesEnabled ? (_flags.SpriteMask ? 0 : 8) : 300;
+	_emulatorBgEnabled = _console->GetNesConfig().BackgroundEnabled;
+	_emulatorSpritesEnabled = _console->GetNesConfig().SpritesEnabled;
 }
 
 void NesPpu::SetMaskRegister(uint8_t value)
@@ -840,7 +842,7 @@ uint8_t NesPpu::GetPixelColor()
 	if(_cycle > _minimumDrawBgCycle) {
 		//BackgroundMask = false: Hide background in leftmost 8 pixels of screen
 		spriteBgColor = (((_state.LowBitShift << offset) & 0x8000) >> 15) | (((_state.HighBitShift << offset) & 0x8000) >> 14);
-		if(_console->GetNesConfig().BackgroundEnabled) {
+		if(_emulatorBgEnabled) {
 			backgroundColor = spriteBgColor;
 		}
 	}
@@ -870,7 +872,7 @@ uint8_t NesPpu::GetPixelColor()
 						_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::SpriteZeroHit);
 					}
 
-					if(_console->GetNesConfig().SpritesEnabled && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
+					if(_emulatorSpritesEnabled && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
 						//Check sprite priority
 						return _lastSprite->PaletteOffset + spriteColor;
 					}

@@ -102,6 +102,9 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 		uint16_t _updateVramAddr;
 		uint8_t _updateVramAddrDelay;
 
+		bool _emulatorBgEnabled = true;
+		bool _emulatorSpritesEnabled = true;
+
 		uint32_t _minimumDrawBgCycle;
 		uint32_t _minimumDrawSpriteCycle;
 		uint32_t _minimumDrawSpriteStandardCycle;
