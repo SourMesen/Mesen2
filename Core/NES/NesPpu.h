@@ -263,8 +263,9 @@ class NesPpu : public INesMemoryHandler, public ISerializable
 
 void NesPpu::Run(uint64_t runTo)
 {
-	while(_masterClock + _masterClockDivider <= runTo) {
+	do {
+		//Always need to run at least once, check condition at the end of the loop (slightly faster)
 		Exec();
 		_masterClock += _masterClockDivider;
-	}
+	} while(_masterClock + _masterClockDivider <= runTo);
 }
