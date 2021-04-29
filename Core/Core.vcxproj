@@ -101,7 +101,7 @@
     <ClInclude Include="NES\APU\ApuEnvelope.h" />
     <ClInclude Include="NES\APU\ApuFrameCounter.h" />
     <ClInclude Include="NES\APU\ApuLengthCounter.h" />
-    <ClInclude Include="NES\APU\BaseApuChannel.h" />
+    <ClInclude Include="NES\APU\ApuTimer.h" />
     <ClInclude Include="NES\BaseMapper.h" />
     <ClInclude Include="NES\NesControlManager.h" />
     <ClInclude Include="NES\APU\DeltaModulationChannel.h" />

@@ -1,22 +1,25 @@
 #pragma once
-#include "../stdafx.h"
-#include "BaseApuChannel.h"
+#include "stdafx.h"
 #include "NES/NesConsole.h"
-#include "NesApu.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
 
-class ApuLengthCounter : public BaseApuChannel
+class ApuLengthCounter : public ISerializable
 {
 private:
-	uint8_t _lcLookupTable[32] = { 10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14, 12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30 };
-	bool _newHaltValue;
+	static constexpr uint8_t _lcLookupTable[32] = { 10, 254, 20, 2, 40, 4, 80, 6, 160, 8, 60, 10, 14, 12, 26, 14, 12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30 };
+	NesConsole* _console = nullptr;
+	AudioChannel _channel = AudioChannel::Square1;
+	bool _newHaltValue = false;
 
 protected:
 	bool _enabled = false;
-	bool _lengthCounterHalt;
-	uint8_t _lengthCounter;
-	uint8_t _lengthCounterReloadValue;
-	uint8_t _lengthCounterPreviousValue;
+	bool _lengthCounterHalt = false;
+	uint8_t _lengthCounter = 0;
+	uint8_t _lengthCounterReloadValue = 0;
+	uint8_t _lengthCounterPreviousValue = 0;
 
+public:
 	void InitializeLengthCounter(bool haltFlag)
 	{
 		_console->GetApu()->SetNeedToRun();
@@ -32,18 +35,16 @@ protected:
 		}
 	}
 	
-public:
-	ApuLengthCounter(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : BaseApuChannel(channel, console, mixer)
+	ApuLengthCounter(AudioChannel channel, NesConsole* console)
 	{
+		_console = console;
 	}
 	
-	virtual void Reset(bool softReset) override
+	void Reset(bool softReset)
 	{
-		BaseApuChannel::Reset(softReset);
-
 		if(softReset) {
 			_enabled = false;
-			if(GetChannel() != AudioChannel::Triangle) {
+			if(_channel != AudioChannel::Triangle) {
 				//"At reset, length counters should be enabled, triangle unaffected"
 				_lengthCounterHalt = false;
 				_lengthCounter = 0;
@@ -63,14 +64,17 @@ public:
 
 	void Serialize(Serializer &s) override
 	{
-		BaseApuChannel::Serialize(s);
-
 		s.Stream(_enabled, _lengthCounterHalt, _newHaltValue, _lengthCounter, _lengthCounterPreviousValue, _lengthCounterReloadValue);
 	}
 
-	bool GetStatus() override
+	bool GetStatus()
 	{
 		return _lengthCounter > 0;
+	}
+
+	bool IsHalted()
+	{
+		return _lengthCounterHalt;
 	}
 	
 	void ReloadCounter()
@@ -98,6 +102,11 @@ public:
 			_lengthCounter = 0;
 		}
 		_enabled = enabled;
+	}
+
+	bool IsEnabled()
+	{
+		return _enabled;
 	}
 
 	ApuLengthCounterState GetState()

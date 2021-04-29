@@ -1,9 +1,11 @@
 #pragma once
-#include "../stdafx.h"
-#include "ApuLengthCounter.h"
+#include "stdafx.h"
+#include "NES/APU/ApuLengthCounter.h"
 #include "NES/NesConsole.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
 
-class ApuEnvelope : public ApuLengthCounter
+class ApuEnvelope : public ISerializable
 {
 private:
 	bool _constantVolume = false;
@@ -15,13 +17,16 @@ private:
 	int8_t _divider = 0;
 	uint8_t _counter = 0;
 
-protected:
-	ApuEnvelope(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : ApuLengthCounter(channel, console, mixer)
+public:
+	ApuLengthCounter LengthCounter;
+
+	ApuEnvelope(AudioChannel channel, NesConsole* console) : LengthCounter(channel, console)
 	{
 	}
 
 	void InitializeEnvelope(uint8_t regValue)
 	{
+		LengthCounter.InitializeLengthCounter((regValue & 0x20) == 0x20);
 		_constantVolume = (regValue & 0x10) == 0x10;
 		_volume = regValue & 0x0F;
 	}
@@ -33,7 +38,7 @@ protected:
 	
 	uint32_t GetVolume()
 	{
-		if(_lengthCounter > 0) {
+		if(LengthCounter.GetStatus()) {
 			if(_constantVolume) {
 				return _volume;
 			} else {
@@ -44,11 +49,8 @@ protected:
 		}
 	}
 
-public:
-	virtual void Reset(bool softReset) override
+	void Reset(bool softReset)
 	{
-		ApuLengthCounter::Reset(softReset);
-
 		_constantVolume = false;
 		_volume = 0;
 		_envelopeCounter = 0;
@@ -59,8 +61,8 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		ApuLengthCounter::Serialize(s);
 		s.Stream(_constantVolume, _volume, _envelopeCounter, _start, _divider, _counter);
+		s.Stream(&LengthCounter);
 	}
 
 	void TickEnvelope()
@@ -71,7 +73,7 @@ public:
 				_divider = _volume;
 				if(_counter > 0) {
 					_counter--;
-				} else if(_lengthCounterHalt) {
+				} else if(LengthCounter.IsHalted()) {
 					_counter = 15;
 				}
 			}
@@ -88,7 +90,7 @@ public:
 		state.ConstantVolume = _constantVolume;
 		state.Counter = _counter;
 		state.Divider = _divider;
-		state.Loop = _lengthCounterHalt;
+		state.Loop = LengthCounter.IsHalted();
 		state.StartFlag = _start;
 		state.Volume = _volume;
 		return state;

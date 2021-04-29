@@ -70,6 +70,7 @@ class NesApu : public ISerializable, public INesMemoryHandler
 		void AddExpansionAudioDelta(AudioChannel channel, int16_t delta);
 		void SetApuStatus(bool enabled);
 		bool IsApuEnabled();
+		static ConsoleRegion GetApuRegion(NesConsole* console);
 		uint16_t GetDmcReadAddress();
 		void SetDmcReadBuffer(uint8_t value);
 		void SetNeedToRun();

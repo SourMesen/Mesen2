@@ -23,11 +23,11 @@ NesApu::NesApu(NesConsole* console)
 	_mixer = _console->GetSoundMixer();
 	_settings = _console->GetEmulator()->GetSettings();
 
-	_squareChannel[0].reset(new SquareChannel(AudioChannel::Square1, _console, _mixer, true));
-	_squareChannel[1].reset(new SquareChannel(AudioChannel::Square2, _console, _mixer, false));
-	_triangleChannel.reset(new TriangleChannel(AudioChannel::Triangle, _console, _mixer));
-	_noiseChannel.reset(new NoiseChannel(AudioChannel::Noise, _console, _mixer));
-	_deltaModulationChannel.reset(new DeltaModulationChannel(AudioChannel::DMC, _console, _mixer));
+	_squareChannel[0].reset(new SquareChannel(AudioChannel::Square1, _console, true));
+	_squareChannel[1].reset(new SquareChannel(AudioChannel::Square2, _console, false));
+	_triangleChannel.reset(new TriangleChannel(_console));
+	_noiseChannel.reset(new NoiseChannel(_console));
+	_deltaModulationChannel.reset(new DeltaModulationChannel(_console));
 	_frameCounter.reset(new ApuFrameCounter(_console));
 
 	_console->GetMemoryManager()->RegisterIODevice(_squareChannel[0].get());
@@ -143,10 +143,10 @@ void NesApu::Run()
 
 		//Reload counters set by writes to 4003/4008/400B/400F after running the frame counter to allow the length counter to be clocked first
 		//This fixes the test "len_reload_timing" (tests 4 & 5)
-		_squareChannel[0]->ReloadCounter();
-		_squareChannel[1]->ReloadCounter();
-		_noiseChannel->ReloadCounter();
-		_triangleChannel->ReloadCounter();
+		_squareChannel[0]->ReloadLengthCounter();
+		_squareChannel[1]->ReloadLengthCounter();
+		_noiseChannel->ReloadLengthCounter();
+		_triangleChannel->ReloadLengthCounter();
 
 		_squareChannel[0]->Run(_previousCycle);
 		_squareChannel[1]->Run(_previousCycle);
@@ -254,6 +254,17 @@ bool NesApu::IsApuEnabled()
 	//load over the entire PPU frame, like what was done before.
 	//This is most likely due to the timing of the Frame Counter & DMC IRQs.
 	return _apuEnabled;
+}
+
+ConsoleRegion NesApu::GetApuRegion(NesConsole* console)
+{
+	ConsoleRegion region = console->GetRegion();
+	if(region == ConsoleRegion::Ntsc || region == ConsoleRegion::Dendy) {
+		//Dendy APU works with NTSC timings
+		return ConsoleRegion::Ntsc;
+	} else {
+		return region;
+	}
 }
 
 uint16_t NesApu::GetDmcReadAddress()

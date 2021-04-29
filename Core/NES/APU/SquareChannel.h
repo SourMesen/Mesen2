@@ -1,18 +1,26 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/APU/ApuEnvelope.h"
+#include "NES/APU/ApuTimer.h"
 #include "NES/NesCpu.h"
 #include "NES/NesConsole.h"
+#include "NES/INesMemoryHandler.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
 
-class SquareChannel : public ApuEnvelope
+class SquareChannel : public INesMemoryHandler, public ISerializable
 {
 protected:
-	const uint8_t _dutySequences[4][8] = {
+	static constexpr uint8_t _dutySequences[4][8] = {
 		{ 0, 0, 0, 0, 0, 0, 0, 1 },
 		{ 0, 0, 0, 0, 0, 0, 1, 1 },
 		{ 0, 0, 0, 0, 1, 1, 1, 1 },
 		{ 1, 1, 1, 1, 1, 1, 0, 0 }
 	};
+
+	NesConsole* _console = nullptr;
+	ApuEnvelope _envelope;
+	ApuTimer _timer;
 
 	bool _isChannel1 = false;
 	bool _isMmc5Square = false;
@@ -67,36 +75,39 @@ protected:
 	void SetPeriod(uint16_t newPeriod)
 	{
 		_realPeriod = newPeriod;
-		_period = (_realPeriod * 2) + 1;
+		_timer.SetPeriod((_realPeriod * 2) + 1);
 		UpdateTargetPeriod();
 	}
 
 	void UpdateOutput()
 	{
 		if(IsMuted()) {
-			AddOutput(0);
+			_timer.AddOutput(0);
 		} else {
-			AddOutput(_dutySequences[_duty][_dutyPos] * GetVolume());
+			_timer.AddOutput(_dutySequences[_duty][_dutyPos] * _envelope.GetVolume());
 		}
 	}
 
-protected:
-	void Clock() override
-	{
-		_dutyPos = (_dutyPos - 1) & 0x07;
-		UpdateOutput();
-	}
-
 public:
-	SquareChannel(AudioChannel channel, NesConsole* console, NesSoundMixer *mixer, bool isChannel1) : ApuEnvelope(channel, console, mixer)
+	SquareChannel(AudioChannel channel, NesConsole* console, bool isChannel1) : _envelope(channel, console), _timer(channel, console->GetSoundMixer())
 	{
+		_console = console;
 		_isChannel1 = isChannel1;
 	}
 
-	virtual void Reset(bool softReset) override
+	void Run(uint32_t targetCycle)
 	{
-		ApuEnvelope::Reset(softReset);
-		
+		while(_timer.Run(targetCycle)) {
+			_dutyPos = (_dutyPos - 1) & 0x07;
+			UpdateOutput();
+		}
+	}
+
+	void Reset(bool softReset)
+	{
+		_envelope.Reset(softReset);
+		_timer.Reset(softReset);
+
 		_duty = 0;
 		_dutyPos = 0;
 
@@ -114,9 +125,9 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		ApuEnvelope::Serialize(s);
-
 		s.Stream(_realPeriod, _duty, _dutyPos, _sweepEnabled, _sweepPeriod, _sweepNegate, _sweepShift, _reloadSweep, _sweepDivider, _sweepTargetPeriod);
+		s.Stream(&_timer);
+		s.Stream(&_envelope);
 	}
 
 	void GetMemoryRanges(MemoryRanges &ranges) override
@@ -133,8 +144,7 @@ public:
 		_console->GetApu()->Run();
 		switch(addr & 0x03) {
 			case 0:		//4000 & 4004
-				InitializeLengthCounter((value & 0x20) == 0x20);
-				InitializeEnvelope(value);
+				_envelope.InitializeEnvelope(value);
 
 				_duty = (value & 0xC0) >> 6;
 				if(_console->GetNesConfig().SwapDutyCycles) {
@@ -151,7 +161,7 @@ public:
 				break;
 
 			case 3:		//4003 & 4007
-				LoadLengthCounter(value >> 3);
+				_envelope.LengthCounter.LoadLengthCounter(value >> 3);
 
 				SetPeriod((_realPeriod & 0xFF) | ((value & 0x07) << 8));
 
@@ -159,7 +169,7 @@ public:
 				_dutyPos = 0;
 
 				//The envelope is also restarted.
-				ResetEnvelope();
+				_envelope.ResetEnvelope();
 				break;
 		}
 		
@@ -184,22 +194,57 @@ public:
 		}
 	}
 
+	void TickEnvelope()
+	{
+		_envelope.TickEnvelope();
+	}
+
+	void TickLengthCounter()
+	{
+		_envelope.LengthCounter.TickLengthCounter();
+	}
+
+	void ReloadLengthCounter()
+	{
+		_envelope.LengthCounter.ReloadCounter();
+	}
+
+	void EndFrame()
+	{
+		_timer.EndFrame();
+	}
+
+	void SetEnabled(bool enabled)
+	{
+		_envelope.LengthCounter.SetEnabled(enabled);
+	}
+
+	bool GetStatus()
+	{
+		return _envelope.LengthCounter.GetStatus();
+	}
+
 	ApuSquareState GetState()
 	{
 		ApuSquareState state;
 		state.Duty = _duty;
 		state.DutyPosition = _dutyPos;
-		state.Enabled = _enabled;
-		state.Envelope = ApuEnvelope::GetState();
-		state.Frequency = _console->GetCpu()->GetClockRate(GetRegion()) / 16.0 / (_realPeriod + 1);
-		state.LengthCounter = ApuLengthCounter::GetState();
-		state.OutputVolume = _lastOutput;
+		state.Enabled = _envelope.LengthCounter.IsEnabled();
+		state.Envelope = _envelope.GetState();
+		state.Frequency = _console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / 16.0 / (_realPeriod + 1);
+		state.LengthCounter = _envelope.LengthCounter.GetState();
+		state.OutputVolume = _timer.GetLastOutput();
 		state.Period = _realPeriod;
-		state.Timer = _timer / 2;
+		state.Timer = _timer.GetTimer() / 2;
 		state.SweepEnabled = _sweepEnabled;
 		state.SweepNegate = _sweepNegate;
 		state.SweepPeriod = _sweepPeriod;
 		state.SweepShift = _sweepShift;
 		return state;
+	}
+
+	uint8_t ReadRam(uint16_t addr) override
+	{
+		return 0;
 	}
 };

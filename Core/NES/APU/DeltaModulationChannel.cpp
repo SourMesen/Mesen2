@@ -6,13 +6,14 @@
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
 
-DeltaModulationChannel::DeltaModulationChannel(AudioChannel channel, NesConsole* console, NesSoundMixer *mixer) : BaseApuChannel(channel, console, mixer)
+DeltaModulationChannel::DeltaModulationChannel(NesConsole* console) : _timer(AudioChannel::DMC, console->GetSoundMixer())
 {
+	_console = console;
 }
 
 void DeltaModulationChannel::Reset(bool softReset)
 {
-	BaseApuChannel::Reset(softReset);
+	_timer.Reset(softReset);
 
 	if(!softReset) {
 		//At power on, the sample address is set to $C000 and the sample length is set to 1
@@ -39,10 +40,10 @@ void DeltaModulationChannel::Reset(bool softReset)
 
 	//Not sure if this is accurate, but it seems to make things better rather than worse (for dpcmletterbox)
 	//"On the real thing, I think the power-on value is 428 (or the equivalent at least - it uses a linear feedback shift register), though only the even/oddness should matter for this test."
-	_period = (GetRegion() == ConsoleRegion::Ntsc ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[0] - 1;
+	_timer.SetPeriod((NesApu::GetApuRegion(_console) == ConsoleRegion::Ntsc ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[0] - 1);
 	
 	//Make sure the DMC doesn't tick on the first cycle - this is part of what keeps Sprite/DMC DMA tests working while fixing dmc_pitch.
-	_timer = _period;
+	_timer.SetTimer(_timer.GetPeriod());
 }
 
 void DeltaModulationChannel::InitSample()
@@ -90,47 +91,49 @@ void DeltaModulationChannel::SetDmcReadBuffer(uint8_t value)
 	}
 }
 
-void DeltaModulationChannel::Clock()
+void DeltaModulationChannel::Run(uint32_t targetCycle)
 {
-	if(!_silenceFlag) {
-		if(_shiftRegister & 0x01) {
-			if(_outputLevel <= 125) {
-				_outputLevel += 2;
+	while(_timer.Run(targetCycle)) {
+		if(!_silenceFlag) {
+			if(_shiftRegister & 0x01) {
+				if(_outputLevel <= 125) {
+					_outputLevel += 2;
+				}
+			} else {
+				if(_outputLevel >= 2) {
+					_outputLevel -= 2;
+				}
 			}
-		} else {
-			if(_outputLevel >= 2) {
-				_outputLevel -= 2;
+			_shiftRegister >>= 1;
+		}
+
+		_bitsRemaining--;
+		if(_bitsRemaining == 0) {
+			_bitsRemaining = 8;
+			if(_bufferEmpty) {
+				_silenceFlag = true;
+			} else {
+				_silenceFlag = false;
+				_shiftRegister = _readBuffer;
+				_bufferEmpty = true;
+				StartDmcTransfer();
 			}
 		}
-		_shiftRegister >>= 1;
-	}
 
-	_bitsRemaining--;
-	if(_bitsRemaining == 0) {
-		_bitsRemaining = 8;
-		if(_bufferEmpty) {
-			_silenceFlag = true;
-		} else {
-			_silenceFlag = false;
-			_shiftRegister = _readBuffer;
-			_bufferEmpty = true;
-			StartDmcTransfer();
-		}
+		_timer.AddOutput(_outputLevel);
 	}
-
-	AddOutput(_outputLevel);
 }
 
 void DeltaModulationChannel::Serialize(Serializer &s)
 {
-	BaseApuChannel::Serialize(s);
 	s.Stream(_sampleAddr, _sampleLength, _outputLevel, _irqEnabled, _loopFlag, _currentAddr, _bytesRemaining, _readBuffer, _bufferEmpty, _shiftRegister, _bitsRemaining, _silenceFlag, _needToRun);
+	s.Stream(&_timer);
 }
 
 bool DeltaModulationChannel::IrqPending(uint32_t cyclesToRun)
 {
 	if(_irqEnabled && _bytesRemaining > 0) {
-		uint32_t cyclesToEmptyBuffer = (_bitsRemaining + (_bytesRemaining-1)* 8) * _period;
+		uint32_t cyclesToEmptyBuffer = (_bitsRemaining + (_bytesRemaining-1)* 8) * _timer.GetPeriod();
 		if(cyclesToRun >= cyclesToEmptyBuffer) {
 			return true;
 		}
@@ -159,7 +162,7 @@ void DeltaModulationChannel::WriteRam(uint16_t addr, uint8_t value)
 
 			//"The rate determines for how many CPU cycles happen between changes in the output level during automatic delta-encoded sample playback."
 			//Because BaseApuChannel does not decrement when setting _timer, we need to actually set the value to 1 less than the lookup table
-			_period = (GetRegion() == ConsoleRegion::Ntsc ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[value & 0x0F] - 1;
+			_timer.SetPeriod((NesApu::GetApuRegion(_console) == ConsoleRegion::Ntsc ? _dmcPeriodLookupTableNtsc : _dmcPeriodLookupTablePal)[value & 0x0F] - 1);
 
 			if(!_irqEnabled) {
 				_console->GetCpu()->ClearIrqSource(IRQSource::DMC);
@@ -177,7 +180,7 @@ void DeltaModulationChannel::WriteRam(uint16_t addr, uint8_t value)
 			}
 
 			//4011 applies new output right away, not on the timer's reload.  This fixes bad DMC sound when playing through 4011.
-			AddOutput(_outputLevel);
+			_timer.AddOutput(_outputLevel);
 			
 			if(_lastValue4011 != value && newValue > 0) {
 				_console->SetNextFrameOverclockStatus(true);
@@ -201,6 +204,11 @@ void DeltaModulationChannel::WriteRam(uint16_t addr, uint8_t value)
 			}
 			break;
 	}
+}
+
+void DeltaModulationChannel::EndFrame()
+{
+	_timer.EndFrame();
 }
 
 void DeltaModulationChannel::SetEnabled(bool enabled)
@@ -238,10 +246,10 @@ ApuDmcState DeltaModulationChannel::GetState()
 	state.BytesRemaining = _bytesRemaining;
 	state.IrqEnabled = _irqEnabled;
 	state.Loop = _loopFlag;
-	state.OutputVolume = _lastOutput;
-	state.Period = _period;
-	state.Timer = _timer;
-	state.SampleRate = (double)_console->GetCpu()->GetClockRate(GetRegion()) / (_period + 1);
+	state.OutputVolume = _timer.GetLastOutput();
+	state.Period = _timer.GetPeriod();
+	state.Timer = _timer.GetTimer();
+	state.SampleRate = (double)_console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / (_timer.GetPeriod() + 1);
 	state.SampleAddr = _sampleAddr;
 	state.SampleLength = _sampleLength;
 	return state;

@@ -1,14 +1,19 @@
 #pragma once
-#include "../stdafx.h"
-#include "BaseApuChannel.h"
+#include "stdafx.h"
+#include "NES/APU/ApuTimer.h"
+#include "NES/INesMemoryHandler.h"
+#include "Utilities/ISerializable.h"
 
 class NesConsole;
 
-class DeltaModulationChannel : public BaseApuChannel
+class DeltaModulationChannel : public INesMemoryHandler, public ISerializable
 {
 private:	
-	const uint16_t _dmcPeriodLookupTableNtsc[16] = { 428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54 };
-	const uint16_t _dmcPeriodLookupTablePal[16] = { 398, 354, 316, 298, 276, 236, 210, 198, 176, 148, 132, 118,  98,  78,  66,  50 };
+	static constexpr uint16_t _dmcPeriodLookupTableNtsc[16] = { 428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54 };
+	static constexpr uint16_t _dmcPeriodLookupTablePal[16] = { 398, 354, 316, 298, 276, 236, 210, 198, 176, 148, 132, 118,  98,  78,  66,  50 };
+
+	NesConsole* _console;
+	ApuTimer _timer;
 
 	uint16_t _sampleAddr = 0;
 	uint16_t _sampleLength = 0;
@@ -31,19 +36,23 @@ private:
 
 	void InitSample();
 	
-	void Clock() override;
+	void Clock();
 
 public:
-	DeltaModulationChannel(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer);
+	DeltaModulationChannel(NesConsole* console);
 
-	void Reset(bool softReset) override;
+	void Run(uint32_t targetCycle);
+
+	void Reset(bool softReset);
 	void Serialize(Serializer& s) override;
 
 	bool IrqPending(uint32_t cyclesToRun);
 	bool NeedToRun();
-	bool GetStatus() override;
+	bool GetStatus();
 	void GetMemoryRanges(MemoryRanges &ranges) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;
+	uint8_t ReadRam(uint16_t addr) override { return 0; }
+	void EndFrame();
 
 	void SetEnabled(bool enabled);
 	void StartDmcTransfer();

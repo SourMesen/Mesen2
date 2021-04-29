@@ -1,12 +1,21 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/NesConsole.h"
-#include "ApuLengthCounter.h"
+#include "NES/NesCpu.h"
+#include "NES/APU/ApuTimer.h"
+#include "NES/APU/ApuLengthCounter.h"
+#include "NES/INesMemoryHandler.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
 
-class TriangleChannel : public ApuLengthCounter
+class TriangleChannel : public INesMemoryHandler, public ISerializable
 {
 private:
-	const uint8_t _sequence[32] = { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+	static constexpr uint8_t _sequence[32] = { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+
+	NesConsole* _console;
+	ApuLengthCounter _lengthCounter;
+	ApuTimer _timer;
 
 	uint8_t _linearCounter = 0;
 	uint8_t _linearCounterReload = 0;
@@ -15,30 +24,33 @@ private:
 
 	uint8_t _sequencePosition = 0;
 
-protected:
-	void Clock() override
+public:
+	TriangleChannel(NesConsole* console) : _lengthCounter(AudioChannel::Triangle, console), _timer(AudioChannel::Triangle, console->GetSoundMixer())
 	{
-		//The sequencer is clocked by the timer as long as both the linear counter and the length counter are nonzero. 
-		if(_lengthCounter > 0 && _linearCounter > 0) {
-			_sequencePosition = (_sequencePosition + 1) & 0x1F;
-			
-			if(_period >= 2 || !_console->GetNesConfig().SilenceTriangleHighFreq) {
-				//Disabling the triangle channel when period is < 2 removes "pops" in the audio that are caused by the ultrasonic frequencies
-				//This is less "accurate" in terms of emulation, so this is an option (disabled by default)
-				AddOutput(_sequence[_sequencePosition]);
+		_console = console;
+	}
+
+	void Run(uint32_t targetCycle)
+	{
+		while(_timer.Run(targetCycle)) {
+			//The sequencer is clocked by the timer as long as both the linear counter and the length counter are nonzero. 
+			if(_lengthCounter.GetStatus() && _linearCounter > 0) {
+				_sequencePosition = (_sequencePosition + 1) & 0x1F;
+
+				if(_timer.GetPeriod() >= 2 || !_console->GetNesConfig().SilenceTriangleHighFreq) {
+					//Disabling the triangle channel when period is < 2 removes "pops" in the audio that are caused by the ultrasonic frequencies
+					//This is less "accurate" in terms of emulation, so this is an option (disabled by default)
+					_timer.AddOutput(_sequence[_sequencePosition]);
+				}
 			}
 		}
 	}
 
-public:
-	TriangleChannel(AudioChannel channel, NesConsole* console, NesSoundMixer* mixer) : ApuLengthCounter(channel, console, mixer)
+	void Reset(bool softReset)
 	{
-	}
+		_timer.Reset(softReset);
+		_lengthCounter.Reset(softReset);
 
-	virtual void Reset(bool softReset) override
-	{
-		ApuLengthCounter::Reset(softReset);
-		
 		_linearCounter = 0;
 		_linearCounterReload = 0;
 		_linearReloadFlag = false;
@@ -49,9 +61,9 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		ApuLengthCounter::Serialize(s);
-
 		s.Stream(_linearCounter, _linearCounterReload, _linearReloadFlag, _linearControlFlag, _sequencePosition);
+		s.Stream(&_timer);
+		s.Stream(&_lengthCounter);
 	}
 
 	void GetMemoryRanges(MemoryRanges &ranges) override
@@ -68,19 +80,17 @@ public:
 				_linearControlFlag = (value & 0x80) == 0x80;
 				_linearCounterReload = value & 0x7F;
 
-				InitializeLengthCounter(_linearControlFlag);
+				_lengthCounter.InitializeLengthCounter(_linearControlFlag);
 				break;
 
 			case 2:		//400A
-				_period &= ~0x00FF;
-				_period |= value;
+				_timer.SetPeriod((_timer.GetPeriod() & 0xFF00) | value);
 				break;
 
 			case 3:		//400B
-				LoadLengthCounter(value >> 3);
+				_lengthCounter.LoadLengthCounter(value >> 3);
 
-				_period &= ~0xFF00;
-				_period |= (value & 0x07) << 8;
+				_timer.SetPeriod((_timer.GetPeriod() & 0xFF) | ((value & 0x07) << 8));
 
 				//Side effects 	Sets the linear counter reload flag 
 				_linearReloadFlag = true;
@@ -100,17 +110,47 @@ public:
 			_linearReloadFlag = false;
 		}
 	}
+	
+	void TickLengthCounter()
+	{
+		_lengthCounter.TickLengthCounter();
+	}
+
+	void ReloadLengthCounter()
+	{
+		_lengthCounter.ReloadCounter();
+	}
+
+	void EndFrame()
+	{
+		_timer.EndFrame();
+	}
+
+	void SetEnabled(bool enabled)
+	{
+		_lengthCounter.SetEnabled(enabled);
+	}
+
+	bool GetStatus()
+	{
+		return _lengthCounter.GetStatus();
+	}
 
 	ApuTriangleState GetState()
 	{
 		ApuTriangleState state;
-		state.Enabled = _enabled;
-		state.Frequency = _console->GetCpu()->GetClockRate(GetRegion()) / 32.0 / (_period + 1);
-		state.LengthCounter = ApuLengthCounter::GetState();
-		state.OutputVolume = _lastOutput;
-		state.Period = _period;
-		state.Timer = _timer;
+		state.Enabled = _lengthCounter.IsEnabled();
+		state.Frequency = _console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / 32.0 / (_timer.GetPeriod() + 1);
+		state.LengthCounter = _lengthCounter.GetState();
+		state.OutputVolume = _timer.GetLastOutput();
+		state.Period = _timer.GetPeriod();
+		state.Timer = _timer.GetTimer();
 		state.SequencePosition = _sequencePosition;
 		return state;
+	}
+
+	uint8_t ReadRam(uint16_t addr) override
+	{
+		return 0;
 	}
 };

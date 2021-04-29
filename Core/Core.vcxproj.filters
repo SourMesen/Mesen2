@@ -613,7 +613,7 @@
     <ClInclude Include="NES\APU\ApuLengthCounter.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\APU\BaseApuChannel.h">
+    <ClInclude Include="NES\APU\ApuTimer.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\BaseMapper.h">
