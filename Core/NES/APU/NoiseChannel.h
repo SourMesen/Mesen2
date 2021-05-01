@@ -3,7 +3,7 @@
 #include "NES/APU/NesApu.h"
 #include "NES/APU/ApuTimer.h"
 #include "NES/APU/ApuEnvelope.h"
-#include "NES/NesCpu.h"
+#include "NES/NesConstants.h"
 #include "NES/NesConsole.h"
 #include "NES/INesMemoryHandler.h"
 #include "Utilities/ISerializable.h"
@@ -133,7 +133,7 @@ public:
 		ApuNoiseState state;
 		state.Enabled = _envelope.LengthCounter.IsEnabled();
 		state.Envelope = _envelope.GetState();
-		state.Frequency = (double)_console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / (_timer.GetPeriod() + 1) / (_modeFlag ? 93 : 1);
+		state.Frequency = (double)NesConstants::GetClockRate(NesApu::GetApuRegion(_console)) / (_timer.GetPeriod() + 1) / (_modeFlag ? 93 : 1);
 		state.LengthCounter = _envelope.LengthCounter.GetState();
 		state.ModeFlag = _modeFlag;
 		state.OutputVolume = _timer.GetLastOutput();

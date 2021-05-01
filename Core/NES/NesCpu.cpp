@@ -428,16 +428,6 @@ void NesCpu::StartDmcTransfer()
 	_needHalt = true;
 }
 
-uint32_t NesCpu::GetClockRate(ConsoleRegion region)
-{
-	switch(region) {
-		default:
-		case ConsoleRegion::Ntsc: return NesCpu::ClockRateNtsc; break;
-		case ConsoleRegion::Pal: return NesCpu::ClockRatePal; break;
-		case ConsoleRegion::Dendy: return NesCpu::ClockRateDendy; break;
-	}
-}
-
 void NesCpu::SetMasterClockDivider(ConsoleRegion region)
 {
 	switch(region) {

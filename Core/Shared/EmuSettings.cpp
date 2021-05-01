@@ -172,6 +172,16 @@ PreferencesConfig EmuSettings::GetPreferences()
 	return _preferences;
 }
 
+void EmuSettings::SetAudioPlayerConfig(AudioPlayerConfig config)
+{
+	_audioPlayer = config;
+}
+
+AudioPlayerConfig EmuSettings::GetAudioPlayerConfig()
+{
+	return _audioPlayer;
+}
+
 void EmuSettings::ClearShortcutKeys()
 {
 	_emulatorKeys[0].clear();

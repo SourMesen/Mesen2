@@ -1,7 +1,8 @@
 #pragma once
-#include "../stdafx.h"
+#include "stdafx.h"
 #include "NES/INesMemoryHandler.h"
 #include "NES/NesConsole.h"
+#include "NES/NesCpu.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
@@ -22,15 +23,15 @@ private:
 	const FrameType _frameType[2][6] = { { FrameType::QuarterFrame, FrameType::HalfFrame, FrameType::QuarterFrame, FrameType::None, FrameType::HalfFrame, FrameType::None },
 													 { FrameType::QuarterFrame, FrameType::HalfFrame, FrameType::QuarterFrame, FrameType::None, FrameType::HalfFrame, FrameType::None } };
 
-	NesConsole* _console;
-	int32_t _stepCycles[2][6];
-	int32_t _previousCycle;
-	uint32_t _currentStep;
-	uint32_t _stepMode; //0: 4-step mode, 1: 5-step mode
-	bool _inhibitIRQ;
-	uint8_t _blockFrameCounterTick;
-	int16_t _newValue;
-	int8_t _writeDelayCounter;
+	NesConsole* _console = nullptr;
+	int32_t _stepCycles[2][6] = {};
+	int32_t _previousCycle = 0;
+	uint32_t _currentStep = 0;
+	uint32_t _stepMode = 0; //0: 4-step mode, 1: 5-step mode
+	bool _inhibitIRQ = false;
+	uint8_t _blockFrameCounterTick = 0;
+	int16_t _newValue = 0;
+	int8_t _writeDelayCounter = 0;
 
 public:
 	ApuFrameCounter(NesConsole* console)

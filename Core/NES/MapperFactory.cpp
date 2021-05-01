@@ -207,9 +207,9 @@
 #include "Nina03_06.h"
 #include "NovelDiamond.h"*/
 #include "NES/Mappers/NROM.h"
-/*#include "NsfCart31.h"
-#include "NsfMapper.h"
-#include "NtdecTc112.h"
+/*#include "NsfCart31.h"*/
+#include "NES/Mappers/NsfMapper.h"
+/*#include "NtdecTc112.h"
 #include "OekaKids.h"
 #include "Racermate.h"
 #include "Rambo1.h"
@@ -656,8 +656,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case UnifBoards::Unl8237A: return new Unl8237A(); //mapper 215.1
 		case UnifBoards::UnlPuzzle: return new UnlPuzzle();
 
-		case MapperFactory::StudyBoxMapperID: return new StudyBox();
-		case MapperFactory::NsfMapperID: return new NsfMapper();*/
+		case MapperFactory::StudyBoxMapperID: return new StudyBox();*/
+		case MapperFactory::NsfMapperID: return new NsfMapper();
 		case MapperFactory::FdsMapperID: return new Fds();
 	}
 

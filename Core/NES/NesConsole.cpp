@@ -10,6 +10,7 @@
 #include "NES/NesPpu.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesNtscFilter.h"
+#include "NES/NesConstants.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IControlManager.h"
@@ -288,8 +289,8 @@ PpuFrameInfo NesConsole::GetPpuFrame()
 {
 	PpuFrameInfo frame;
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer(false);
-	frame.Width = NesPpu::ScreenWidth;
-	frame.Height = NesPpu::ScreenHeight;
+	frame.Width = NesConstants::ScreenWidth;
+	frame.Height = NesConstants::ScreenHeight;
 	frame.FrameCount = _ppu->GetFrameCount();
 	return frame;
 }
@@ -329,7 +330,7 @@ uint64_t NesConsole::GetMasterClock()
 
 uint32_t NesConsole::GetMasterClockRate()
 {
-	return NesCpu::ClockRateNtsc;
+	return NesConstants::GetClockRate(_region);
 }
 
 void NesConsole::SaveBattery()

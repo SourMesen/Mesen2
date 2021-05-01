@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
 #include "DeltaModulationChannel.h"
-#include "NesApu.h"
+#include "NES/APU/NesApu.h"
 #include "NES/NesCpu.h"
+#include "NES/NesConstants.h"
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
 
@@ -249,7 +250,7 @@ ApuDmcState DeltaModulationChannel::GetState()
 	state.OutputVolume = _timer.GetLastOutput();
 	state.Period = _timer.GetPeriod();
 	state.Timer = _timer.GetTimer();
-	state.SampleRate = (double)_console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / (_timer.GetPeriod() + 1);
+	state.SampleRate = (double)NesConstants::GetClockRate(NesApu::GetApuRegion(_console)) / (_timer.GetPeriod() + 1);
 	state.SampleAddr = _sampleAddr;
 	state.SampleLength = _sampleLength;
 	return state;

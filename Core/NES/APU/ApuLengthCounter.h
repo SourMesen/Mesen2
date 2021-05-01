@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/NesConsole.h"
+#include "NES/APU/NesApu.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 

@@ -35,8 +35,6 @@ private:
 	uint8_t _lastValue4011 = 0;
 
 	void InitSample();
-	
-	void Clock();
 
 public:
 	DeltaModulationChannel(NesConsole* console);

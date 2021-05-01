@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/NesConsole.h"
-#include "NES/NesCpu.h"
+#include "NES/NesConstants.h"
 #include "NES/APU/ApuTimer.h"
 #include "NES/APU/ApuLengthCounter.h"
 #include "NES/INesMemoryHandler.h"
@@ -140,7 +140,7 @@ public:
 	{
 		ApuTriangleState state;
 		state.Enabled = _lengthCounter.IsEnabled();
-		state.Frequency = _console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / 32.0 / (_timer.GetPeriod() + 1);
+		state.Frequency = NesConstants::GetClockRate(NesApu::GetApuRegion(_console)) / 32.0 / (_timer.GetPeriod() + 1);
 		state.LengthCounter = _lengthCounter.GetState();
 		state.OutputVolume = _timer.GetLastOutput();
 		state.Period = _timer.GetPeriod();

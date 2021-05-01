@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "NES/NesSoundMixer.h"
 #include "NES/NesConsole.h"
-#include "NES/NesCpu.h"
+#include "NES/NesConstants.h"
 #include "NES/NesTypes.h"
 #include "Shared/Emulator.h"
 #include "Shared/SettingTypes.h"
@@ -153,7 +153,7 @@ void NesSoundMixer::SetRegion(ConsoleRegion region)
 
 void NesSoundMixer::UpdateRates(bool forceUpdate)
 {
-	uint32_t clockRate = _console->GetCpu()->GetClockRate(_console->GetRegion());
+	uint32_t clockRate = NesConstants::GetClockRate(_console->GetRegion());
 	if(forceUpdate || _clockRate != clockRate) {
 		_clockRate = clockRate;
 

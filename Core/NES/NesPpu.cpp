@@ -9,6 +9,7 @@
 #include "NES/NesConsole.h"
 #include "NES/NesControlManager.h"
 #include "NES/BaseMapper.h"
+#include "NES/NesConstants.h"
 
 #include "Debugger/Debugger.h"
 #include "Shared/EmuSettings.h"
@@ -1179,7 +1180,7 @@ void NesPpu::WriteSpriteRam(uint8_t addr, uint8_t value)
 
 void NesPpu::DebugSendFrame()
 {
-	_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, false, false);
+	_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, false, false);
 }
 
 uint16_t* NesPpu::GetScreenBuffer(bool previousBuffer)
@@ -1189,7 +1190,7 @@ uint16_t* NesPpu::GetScreenBuffer(bool previousBuffer)
 
 void NesPpu::DebugCopyOutputBuffer(uint16_t *target)
 {
-	memcpy(target, _currentOutputBuffer, NesPpu::PixelCount * sizeof(uint16_t));
+	memcpy(target, _currentOutputBuffer, NesConstants::ScreenPixelCount * sizeof(uint16_t));
 }
 
 void NesPpu::SendFrame()
@@ -1207,7 +1208,7 @@ void NesPpu::SendFrame()
 		SendFrameVsDualSystem();
 	} else {
 		bool forRewind = _emu->GetRewindManager()->IsRewinding();
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
 	}
 
 	_enableOamDecay = _settings->GetNesConfig().EnableOamDecay;
@@ -1220,26 +1221,26 @@ void NesPpu::SendFrameVsDualSystem()
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
 	if(cfg.VsDualVideoOutput == VsDualOutputOption::MainSystemOnly && _console->IsVsMainConsole()) {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
 	} else if(cfg.VsDualVideoOutput == VsDualOutputOption::SubSystemOnly && !_console->IsVsMainConsole()) {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
 	} else if(cfg.VsDualVideoOutput == VsDualOutputOption::Both) {
 		if(_console->IsVsMainConsole()) {
-			uint16_t* mergedBuffer = new uint16_t[NesPpu::ScreenWidth * NesPpu::ScreenHeight * 2];
+			uint16_t* mergedBuffer = new uint16_t[NesConstants::ScreenWidth * NesConstants::ScreenHeight * 2];
 
 			uint16_t* in1 = _currentOutputBuffer;
 			uint16_t* in2 = _console->GetVsSubConsole()->GetPpu()->_currentOutputBuffer;
 			uint16_t* out = mergedBuffer;
-			for(int i = 0; i < NesPpu::ScreenHeight; i++) {
-				memcpy(out, in1, NesPpu::ScreenWidth * sizeof(uint16_t));
-				out += NesPpu::ScreenWidth;
-				in1 += NesPpu::ScreenWidth;
-				memcpy(out, in2, NesPpu::ScreenWidth * sizeof(uint16_t));
-				out += NesPpu::ScreenWidth;
-				in2 += NesPpu::ScreenWidth;
+			for(int i = 0; i < NesConstants::ScreenHeight; i++) {
+				memcpy(out, in1, NesConstants::ScreenWidth * sizeof(uint16_t));
+				out += NesConstants::ScreenWidth;
+				in1 += NesConstants::ScreenWidth;
+				memcpy(out, in2, NesConstants::ScreenWidth * sizeof(uint16_t));
+				out += NesConstants::ScreenWidth;
+				in2 += NesConstants::ScreenWidth;
 			}
 
-			_emu->GetVideoDecoder()->UpdateFrame(mergedBuffer, NesPpu::ScreenWidth * 2, NesPpu::ScreenHeight, _frameCount, true, forRewind);
+			_emu->GetVideoDecoder()->UpdateFrame(mergedBuffer, NesConstants::ScreenWidth * 2, NesConstants::ScreenHeight, _frameCount, true, forRewind);
 			delete[] mergedBuffer;
 		}
 	}
@@ -1276,11 +1277,11 @@ void NesPpu::DebugUpdateFrameBuffer(bool toGrayscale)
 {
 	//Clear output buffer for "Draw partial frame" feature
 	if(toGrayscale) {
-		for(int i = 0; i < NesPpu::PixelCount; i++) {
+		for(int i = 0; i < NesConstants::ScreenPixelCount; i++) {
 			_currentOutputBuffer[i] &= 0x30;
 		}
 	} else {
-		memset(_currentOutputBuffer, 0, NesPpu::PixelCount * 2);
+		memset(_currentOutputBuffer, 0, NesConstants::ScreenPixelCount * 2);
 	}
 }
 

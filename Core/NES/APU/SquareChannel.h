@@ -2,7 +2,8 @@
 #include "stdafx.h"
 #include "NES/APU/ApuEnvelope.h"
 #include "NES/APU/ApuTimer.h"
-#include "NES/NesCpu.h"
+#include "NES/APU/NesApu.h"
+#include "NES/NesConstants.h"
 #include "NES/NesConsole.h"
 #include "NES/INesMemoryHandler.h"
 #include "Utilities/ISerializable.h"
@@ -231,7 +232,7 @@ public:
 		state.DutyPosition = _dutyPos;
 		state.Enabled = _envelope.LengthCounter.IsEnabled();
 		state.Envelope = _envelope.GetState();
-		state.Frequency = _console->GetCpu()->GetClockRate(NesApu::GetApuRegion(_console)) / 16.0 / (_realPeriod + 1);
+		state.Frequency = NesConstants::GetClockRate(NesApu::GetApuRegion(_console)) / 16.0 / (_realPeriod + 1);
 		state.LengthCounter = _envelope.LengthCounter.GetState();
 		state.OutputVolume = _timer.GetLastOutput();
 		state.Period = _realPeriod;

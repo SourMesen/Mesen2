@@ -10,12 +10,13 @@
 #include "NES/Loaders/RomLoader.h"
 #include "NES/Loaders/iNesLoader.h"
 #include "NES/Loaders/FdsLoader.h"
+#include "NES/Loaders/NsfLoader.h"
+#include "NES/Loaders/NsfeLoader.h"
 #include "NES/NesHeader.h"
 #include "NES/GameDatabase.h"
 
-/*//TODO NES
-#include "NsfLoader.h"
-#include "NsfeLoader.h"
+/*
+//TODO NES
 #include "UnifLoader.h"
 #include "StudyBoxLoader.h"*/
 
@@ -51,13 +52,11 @@ bool RomLoader::LoadFile(VirtualFile &romFile)
 		FdsLoader loader(_checkOnly);
 		loader.LoadRom(_romData, fileData);
 	} else if(memcmp(fileData.data(), "NESM\x1a", 5) == 0) {
-		//TODO NES
-		//NsfLoader loader(_checkOnly);
-		//loader.LoadRom(_romData, fileData);
+		NsfLoader loader(_checkOnly);
+		loader.LoadRom(_romData, fileData);
 	} else if(memcmp(fileData.data(), "NSFE", 4) == 0) {
-		//TODO NES
-		//NsfeLoader loader(_checkOnly);
-		//loader.LoadRom(_romData, fileData);
+		NsfeLoader loader(_checkOnly);
+		loader.LoadRom(_romData, fileData);
 	} else if(memcmp(fileData.data(), "UNIF", 4) == 0) {
 		//TODO NES
 		//UnifLoader loader(_checkOnly);

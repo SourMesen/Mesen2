@@ -30,236 +30,233 @@ enum PPURegisters
 
 class NesPpu : public INesMemoryHandler, public ISerializable
 {
-	protected:
-		NesConsole* _console;
-		Emulator* _emu;
-		EmuSettings* _settings;
+private:
+	static constexpr int32_t OamDecayCycleCount = 3000;
 
-		PPUState _state;
-		int32_t _scanline;
-		uint32_t _cycle;
-		uint32_t _frameCount;
-		uint64_t _masterClock;
-		uint8_t _masterClockDivider;
-		uint8_t _memoryReadBuffer;
+protected:
+	NesConsole* _console;
+	Emulator* _emu;
+	EmuSettings* _settings;
 
-		uint8_t _paletteRAM[0x20];
+	PPUState _state;
+	int32_t _scanline;
+	uint32_t _cycle;
+	uint32_t _frameCount;
+	uint64_t _masterClock;
+	uint8_t _masterClockDivider;
+	uint8_t _memoryReadBuffer;
 
-		uint8_t _spriteRAM[0x100];
-		uint8_t _secondarySpriteRAM[0x20];
-		bool _hasSprite[257];
+	uint8_t _paletteRAM[0x20];
 
-		uint16_t *_currentOutputBuffer;
-		uint16_t *_outputBuffers[2];
+	uint8_t _spriteRAM[0x100];
+	uint8_t _secondarySpriteRAM[0x20];
+	bool _hasSprite[257];
 
-		ConsoleRegion _region;
-		uint16_t _standardVblankEnd;
-		uint16_t _standardNmiScanline;
-		uint16_t _vblankEnd;
-		uint16_t _nmiScanline;
-		uint16_t _palSpriteEvalScanline;
+	uint16_t* _currentOutputBuffer;
+	uint16_t* _outputBuffers[2];
 
-		PPUControlFlags _flags;
-		PPUStatusFlags _statusFlags;
+	ConsoleRegion _region;
+	uint16_t _standardVblankEnd;
+	uint16_t _standardNmiScanline;
+	uint16_t _vblankEnd;
+	uint16_t _nmiScanline;
+	uint16_t _palSpriteEvalScanline;
 
-		uint16_t _intensifyColorBits;
-		uint8_t _paletteRamMask;
-		int32_t _lastUpdatedPixel;
+	PPUControlFlags _flags;
+	PPUStatusFlags _statusFlags;
 
-		NesSpriteInfo *_lastSprite; //used by HD ppu
+	uint16_t _intensifyColorBits;
+	uint8_t _paletteRamMask;
+	int32_t _lastUpdatedPixel;
 
-		uint16_t _ppuBusAddress;
-		TileInfo _currentTile;
-		TileInfo _nextTile;
-		TileInfo _previousTile;
+	NesSpriteInfo* _lastSprite; //used by HD ppu
 
-		NesSpriteInfo _spriteTiles[64];
-		uint32_t _spriteCount;
-		uint32_t _secondaryOAMAddr;
-		bool _sprite0Visible;
+	uint16_t _ppuBusAddress;
+	TileInfo _currentTile;
+	TileInfo _nextTile;
+	TileInfo _previousTile;
 
-		uint8_t _firstVisibleSpriteAddr;
-		uint8_t _lastVisibleSpriteAddr;
-		uint32_t _spriteIndex;
+	NesSpriteInfo _spriteTiles[64];
+	uint32_t _spriteCount;
+	uint32_t _secondaryOAMAddr;
+	bool _sprite0Visible;
 
-		uint8_t _openBus;
-		int32_t _openBusDecayStamp[8];
-		uint32_t _ignoreVramRead;
+	uint8_t _firstVisibleSpriteAddr;
+	uint8_t _lastVisibleSpriteAddr;
+	uint32_t _spriteIndex;
 
-		uint8_t _oamCopybuffer;
-		bool _spriteInRange;
-		bool _sprite0Added;
-		uint8_t _spriteAddrH;
-		uint8_t _spriteAddrL;
-		bool _oamCopyDone;
-		uint8_t _overflowBugCounter;
+	uint8_t _openBus;
+	int32_t _openBusDecayStamp[8];
+	uint32_t _ignoreVramRead;
 
-		bool _needStateUpdate;
-		bool _renderingEnabled;
-		bool _prevRenderingEnabled;
-		bool _preventVblFlag;
+	uint8_t _oamCopybuffer;
+	bool _spriteInRange;
+	bool _sprite0Added;
+	uint8_t _spriteAddrH;
+	uint8_t _spriteAddrL;
+	bool _oamCopyDone;
+	uint8_t _overflowBugCounter;
 
-		uint16_t _updateVramAddr;
-		uint8_t _updateVramAddrDelay;
+	bool _needStateUpdate;
+	bool _renderingEnabled;
+	bool _prevRenderingEnabled;
+	bool _preventVblFlag;
 
-		bool _emulatorBgEnabled = true;
-		bool _emulatorSpritesEnabled = true;
+	uint16_t _updateVramAddr;
+	uint8_t _updateVramAddrDelay;
 
-		uint32_t _minimumDrawBgCycle;
-		uint32_t _minimumDrawSpriteCycle;
-		uint32_t _minimumDrawSpriteStandardCycle;
+	bool _emulatorBgEnabled = true;
+	bool _emulatorSpritesEnabled = true;
 
-		uint64_t _oamDecayCycles[0x40];
-		bool _enableOamDecay;
-		bool _corruptOamRow[32];
+	uint32_t _minimumDrawBgCycle;
+	uint32_t _minimumDrawSpriteCycle;
+	uint32_t _minimumDrawSpriteStandardCycle;
 
-		void UpdateStatusFlag();
+	uint64_t _oamDecayCycles[0x40];
+	bool _enableOamDecay;
+	bool _corruptOamRow[32];
 
-		void SetControlRegister(uint8_t value);
-		void SetMaskRegister(uint8_t value);
+	void UpdateStatusFlag();
 
-		__forceinline bool IsRenderingEnabled();
+	void SetControlRegister(uint8_t value);
+	void SetMaskRegister(uint8_t value);
 
-		void ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask);
+	__forceinline bool IsRenderingEnabled();
 
-		void SetOpenBus(uint8_t mask, uint8_t value);
-		uint8_t ApplyOpenBus(uint8_t mask, uint8_t value);
+	void ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask);
 
-		void ProcessStatusRegOpenBus(uint8_t & openBusMask, uint8_t & returnValue);
+	void SetOpenBus(uint8_t mask, uint8_t value);
+	uint8_t ApplyOpenBus(uint8_t mask, uint8_t value);
 
-		__forceinline void UpdateVideoRamAddr();
-		__forceinline void IncVerticalScrolling();
-		__forceinline void IncHorizontalScrolling();
-		__forceinline uint16_t GetNameTableAddr();
-		__forceinline uint16_t GetAttributeAddr();
+	void ProcessStatusRegOpenBus(uint8_t& openBusMask, uint8_t& returnValue);
 
-		void ProcessScanlineFirstCycle(); 
-		__forceinline void ProcessScanline();
-		__forceinline void ProcessSpriteEvaluation();
+	__forceinline void UpdateVideoRamAddr();
+	__forceinline void IncVerticalScrolling();
+	__forceinline void IncHorizontalScrolling();
+	__forceinline uint16_t GetNameTableAddr();
+	__forceinline uint16_t GetAttributeAddr();
 
-		void BeginVBlank();
-		void TriggerNmi();
+	void ProcessScanlineFirstCycle();
+	__forceinline void ProcessScanline();
+	__forceinline void ProcessSpriteEvaluation();
 
-		__forceinline void LoadTileInfo();
-		void LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, uint8_t spriteX, bool extraSprite);
-		void LoadSpriteTileInfo();
-		void LoadExtraSprites();
-		__forceinline void ShiftTileRegisters();
+	void BeginVBlank();
+	void TriggerNmi();
 
-		__forceinline uint8_t ReadSpriteRam(uint8_t addr);
-		__forceinline void WriteSpriteRam(uint8_t addr, uint8_t value);
-		
-		void SetOamCorruptionFlags();
-		void ProcessOamCorruption();
+	__forceinline void LoadTileInfo();
+	void LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, uint8_t spriteX, bool extraSprite);
+	void LoadSpriteTileInfo();
+	void LoadExtraSprites();
+	__forceinline void ShiftTileRegisters();
 
-		void UpdateMinimumDrawCycles();
+	__forceinline uint8_t ReadSpriteRam(uint8_t addr);
+	__forceinline void WriteSpriteRam(uint8_t addr, uint8_t value);
 
-		__forceinline uint8_t GetPixelColor();
-		__forceinline virtual void DrawPixel();
-		void UpdateGrayscaleAndIntensifyBits();
-		virtual void SendFrame();
+	void SetOamCorruptionFlags();
+	void ProcessOamCorruption();
 
-		void SendFrameVsDualSystem();
+	void UpdateMinimumDrawCycles();
 
-		void UpdateState();
+	__forceinline uint8_t GetPixelColor();
+	__forceinline virtual void DrawPixel();
+	void UpdateGrayscaleAndIntensifyBits();
+	virtual void SendFrame();
 
-		void UpdateApuStatus();
+	void SendFrameVsDualSystem();
 
-		PPURegisters GetRegisterID(uint16_t addr)
-		{
-			if(addr == 0x4014) {
-				return PPURegisters::SpriteDMA;
-			} else {
-				return (PPURegisters)(addr & 0x07);
-			}
+	void UpdateState();
+
+	void UpdateApuStatus();
+
+	PPURegisters GetRegisterID(uint16_t addr)
+	{
+		if(addr == 0x4014) {
+			return PPURegisters::SpriteDMA;
+		} else {
+			return (PPURegisters)(addr & 0x07);
 		}
+	}
 
-		__forceinline void SetBusAddress(uint16_t addr);
-		__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead);
-		__forceinline void WriteVram(uint16_t addr, uint8_t value);
+	__forceinline void SetBusAddress(uint16_t addr);
+	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead);
+	__forceinline void WriteVram(uint16_t addr, uint8_t value);
 
-		void Serialize(Serializer& s) override;
+	void Serialize(Serializer& s) override;
 
-	public:
-		static constexpr int32_t ScreenWidth = 256;
-		static constexpr int32_t ScreenHeight = 240;
-		static constexpr int32_t PixelCount = 256*240;
-		static constexpr int32_t OutputBufferSize = 256*240*2;
-		static constexpr int32_t OamDecayCycleCount = 3000;
+public:
+	NesPpu(NesConsole* console);
+	virtual ~NesPpu();
 
-		NesPpu(NesConsole* console);
-		virtual ~NesPpu();
+	void Reset();
 
-		void Reset();
+	void DebugSendFrame();
+	uint16_t* GetScreenBuffer(bool previousBuffer);
+	void DebugCopyOutputBuffer(uint16_t* target);
+	void DebugUpdateFrameBuffer(bool toGrayscale);
+	void GetState(NesPpuState& state);
+	void SetState(NesPpuState& state);
 
-		void DebugSendFrame();
-		uint16_t* GetScreenBuffer(bool previousBuffer);
-		void DebugCopyOutputBuffer(uint16_t *target);
-		void DebugUpdateFrameBuffer(bool toGrayscale);
-		void GetState(NesPpuState &state);
-		void SetState(NesPpuState &state);
+	void GetMemoryRanges(MemoryRanges& ranges) override
+	{
+		ranges.AddHandler(MemoryOperation::Read, 0x2000, 0x3FFF);
+		ranges.AddHandler(MemoryOperation::Write, 0x2000, 0x3FFF);
+		ranges.AddHandler(MemoryOperation::Write, 0x4014);
+	}
 
-		void GetMemoryRanges(MemoryRanges &ranges) override
-		{
-			ranges.AddHandler(MemoryOperation::Read, 0x2000, 0x3FFF);
-			ranges.AddHandler(MemoryOperation::Write, 0x2000, 0x3FFF);
-			ranges.AddHandler(MemoryOperation::Write, 0x4014);
-		}
+	PpuModel GetPpuModel();
 
-		PpuModel GetPpuModel();
+	uint8_t ReadPaletteRAM(uint16_t addr);
+	void WritePaletteRAM(uint16_t addr, uint8_t value);
 
-		uint8_t ReadPaletteRAM(uint16_t addr);
-		void WritePaletteRAM(uint16_t addr, uint8_t value);
+	uint8_t ReadRam(uint16_t addr) override;
+	uint8_t PeekRam(uint16_t addr) override;
+	void WriteRam(uint16_t addr, uint8_t value) override;
 
-		uint8_t ReadRam(uint16_t addr) override;
-		uint8_t PeekRam(uint16_t addr) override;
-		void WriteRam(uint16_t addr, uint8_t value) override;
+	void SetRegion(ConsoleRegion region);
+	double GetOverclockRate();
 
-		void SetRegion(ConsoleRegion region);
-		double GetOverclockRate();
-		
-		void Exec();
-		__forceinline void Run(uint64_t runTo);
+	void Exec();
+	__forceinline void Run(uint64_t runTo);
 
-		uint32_t GetFrameCount()
-		{
-			return _frameCount;
-		}
+	uint32_t GetFrameCount()
+	{
+		return _frameCount;
+	}
 
-		uint32_t GetFrameCycle()
-		{
-			return ((_scanline + 1) * 341) + _cycle;
-		}
+	uint32_t GetFrameCycle()
+	{
+		return ((_scanline + 1) * 341) + _cycle;
+	}
 
-		PPUControlFlags GetControlFlags()
-		{
-			return _flags;
-		}
+	PPUControlFlags GetControlFlags()
+	{
+		return _flags;
+	}
 
-		uint32_t GetCurrentCycle()
-		{
-			return _cycle;
-		}
+	uint32_t GetCurrentCycle()
+	{
+		return _cycle;
+	}
 
-		int32_t GetCurrentScanline()
-		{
-			return _scanline;
-		}
-		
-		uint8_t* GetSpriteRam();
+	int32_t GetCurrentScanline()
+	{
+		return _scanline;
+	}
 
-		uint8_t* GetSecondarySpriteRam()
-		{
-			return _secondarySpriteRAM;
-		}
-		
-		uint32_t GetPixelBrightness(uint8_t x, uint8_t y);
-		uint16_t GetCurrentBgColor();
+	uint8_t* GetSpriteRam();
 
-		uint16_t GetPixel(uint8_t x, uint8_t y)
-		{
-			return _currentOutputBuffer[y << 8 | x];
-		}
+	uint8_t* GetSecondarySpriteRam()
+	{
+		return _secondarySpriteRAM;
+	}
+
+	uint32_t GetPixelBrightness(uint8_t x, uint8_t y);
+	uint16_t GetCurrentBgColor();
+
+	uint16_t GetPixel(uint8_t x, uint8_t y)
+	{
+		return _currentOutputBuffer[y << 8 | x];
+	}
 };
 
 void NesPpu::Run(uint64_t runTo)

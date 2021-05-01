@@ -17,6 +17,7 @@ private:
 	EmulationConfig _emulation;
 	GameboyConfig _gameboy;
 	PreferencesConfig _preferences;
+	AudioPlayerConfig _audioPlayer;
 	SnesConfig _snes;
 	NesConfig _nes;
 
@@ -68,6 +69,9 @@ public:
 
 	void SetPreferences(PreferencesConfig config);
 	PreferencesConfig GetPreferences();
+	
+	void SetAudioPlayerConfig(AudioPlayerConfig config);
+	AudioPlayerConfig GetAudioPlayerConfig();
 
 	void SetShortcutKeys(vector<ShortcutKeyInfo> shortcuts);
 	KeyCombination GetShortcutKey(EmulatorShortcut shortcut, int keySetIndex);

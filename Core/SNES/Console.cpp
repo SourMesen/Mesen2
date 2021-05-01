@@ -74,6 +74,10 @@ void Console::ProcessEndOfFrame()
 		_cart->GetCoprocessor()->ProcessEndOfFrame();
 	}
 
+	if(_spcHud) {
+		_spcHud->Draw(_ppu->GetFrameCount());
+	}
+	
 	_emu->ProcessEndOfFrame();
 
 	_controlManager->UpdateControlDevices();

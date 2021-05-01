@@ -43,6 +43,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Mesen\Core\NsfeLoader.h" />
+    <ClInclude Include="..\..\Mesen\Core\NsfLoader.h" />
+    <ClInclude Include="..\..\Mesen\Core\NsfMapper.h" />
     <ClInclude Include="Debugger\stdafx.h" />
     <ClInclude Include="NES\Input\ArkanoidController.h" />
     <ClInclude Include="NES\Input\AsciiTurboFile.h" />
@@ -70,18 +73,32 @@
     <ClInclude Include="NES\Loaders\BaseLoader.h" />
     <ClInclude Include="NES\Loaders\FdsLoader.h" />
     <ClInclude Include="NES\Loaders\iNesLoader.h" />
+    <ClInclude Include="NES\Loaders\NsfeLoader.h" />
+    <ClInclude Include="NES\Loaders\NsfLoader.h" />
     <ClInclude Include="NES\Loaders\RomLoader.h" />
     <ClInclude Include="NES\APU\BaseExpansionAudio.h" />
+    <ClInclude Include="NES\Mappers\Audio\Mmc5Audio.h" />
+    <ClInclude Include="NES\Mappers\Audio\Namco163Audio.h" />
+    <ClInclude Include="NES\Mappers\Audio\OpllChannel.h" />
+    <ClInclude Include="NES\Mappers\Audio\OpllEmulator.h" />
+    <ClInclude Include="NES\Mappers\Audio\OpllTables.h" />
+    <ClInclude Include="NES\Mappers\Audio\Sunsoft5bAudio.h" />
+    <ClInclude Include="NES\Mappers\Audio\Vrc6Audio.h" />
+    <ClInclude Include="NES\Mappers\Audio\Vrc6Pulse.h" />
+    <ClInclude Include="NES\Mappers\Audio\Vrc6Saw.h" />
+    <ClInclude Include="NES\Mappers\Audio\Vrc7Audio.h" />
     <ClInclude Include="NES\Mappers\FDS\BaseFdsChannel.h" />
     <ClInclude Include="NES\Mappers\FDS\Fds.h" />
     <ClInclude Include="NES\Mappers\FDS\FdsAudio.h" />
     <ClInclude Include="NES\Mappers\FDS\FdsInputButtons.h" />
     <ClInclude Include="NES\Mappers\MMC1.h" />
     <ClInclude Include="NES\Mappers\FDS\ModChannel.h" />
+    <ClInclude Include="NES\Mappers\NsfMapper.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsInputButtons.h" />
+    <ClInclude Include="NES\NesConstants.h" />
     <ClInclude Include="NES\NesNtscFilter.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
@@ -335,14 +352,18 @@
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Mesen\Core\NsfLoader.cpp" />
+    <ClCompile Include="..\..\Mesen\Core\NsfMapper.cpp" />
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="NES\Loaders\FdsLoader.cpp" />
     <ClCompile Include="NES\Loaders\iNesLoader.cpp" />
+    <ClCompile Include="NES\Loaders\NsfLoader.cpp" />
     <ClCompile Include="NES\Loaders\RomLoader.cpp" />
     <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
     <ClCompile Include="NES\Mappers\FDS\Fds.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
+    <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
     <ClCompile Include="NES\NesNtscFilter.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />

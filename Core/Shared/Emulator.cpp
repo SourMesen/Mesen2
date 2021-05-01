@@ -813,11 +813,6 @@ void Emulator::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 
 void Emulator::ProcessEvent(EventType type)
 {
-	//TODO
-	/*if(type == EventType::EndFrame && _spcHud) {
-		_spcHud->Draw(GetFrameCount());
-	}*/
-
 	if(_debugger) {
 		_debugger->ProcessEvent(type);
 	}

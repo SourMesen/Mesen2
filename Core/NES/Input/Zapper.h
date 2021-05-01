@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
+#include "NES/NesConstants.h"
 #include "NES/NesPpu.h"
 #include "NES/NesConsole.h"
 #include "Shared/Emulator.h"
@@ -74,10 +75,10 @@ public:
 		if(pos.X >= 0 && pos.Y >= 0) {
 			for(int yOffset = -radius; yOffset <= radius; yOffset++) {
 				int yPos = pos.Y + yOffset;
-				if(yPos >= 0 && yPos < NesPpu::ScreenHeight) {
+				if(yPos >= 0 && yPos < NesConstants::ScreenHeight) {
 					for(int xOffset = -radius; xOffset <= radius; xOffset++) {
 						int xPos = pos.X + xOffset;
-						if(xPos >= 0 && xPos < NesPpu::ScreenWidth) {
+						if(xPos >= 0 && xPos < NesConstants::ScreenWidth) {
 							if(scanline >= yPos && (scanline - yPos <= 20) && (scanline != yPos || cycle > xPos) && ppu->GetPixelBrightness(xPos, yPos) >= 85) {
 								//Light cannot be detected if the Y/X position is further ahead than the PPU, or if the PPU drew a dark color
 								return true;

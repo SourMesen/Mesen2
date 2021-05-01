@@ -468,6 +468,11 @@ struct NesConfig
 	int32_t StereoCombFilterStrength;
 };
 
+struct AudioPlayerConfig
+{
+	bool Repeat = false;
+	bool Shuffle = false;
+};
 struct PreferencesConfig
 {
 	bool ShowFps = false;

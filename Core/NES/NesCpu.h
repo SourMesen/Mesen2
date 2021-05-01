@@ -25,9 +25,6 @@ public:
 	static constexpr uint16_t NMIVector = 0xFFFA;
 	static constexpr uint16_t ResetVector = 0xFFFC;
 	static constexpr uint16_t IRQVector = 0xFFFE;
-	static constexpr uint32_t ClockRateNtsc = 1789773;
-	static constexpr uint32_t ClockRatePal = 1662607;
-	static constexpr uint32_t ClockRateDendy = 1773448;
 
 private:
 	typedef void(NesCpu::*Func)();
@@ -800,7 +797,6 @@ public:
 	void RunDMATransfer(uint8_t offsetValue);
 	void StartDmcTransfer();
 
-	uint32_t GetClockRate(ConsoleRegion region);
 	bool IsCpuWrite() { return _cpuWrite; }
 
 	void Reset(bool softReset, ConsoleRegion region);
