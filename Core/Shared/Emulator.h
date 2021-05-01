@@ -4,6 +4,7 @@
 #include "Core/Debugger/Debugger.h"
 #include "Core/Shared/EmulatorLock.h"
 #include "Core/Shared/Interfaces/IConsole.h"
+#include "Core/Shared/Audio/AudioTrackInfo.h"
 #include "Utilities/Timer.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/VirtualFile.h"
@@ -26,6 +27,7 @@ class IControlManager;
 class VirtualFile;
 class BaseVideoFilter;
 class SystemActionManager;
+class AudioPlayerHud;
 
 struct RomInfo;
 
@@ -64,6 +66,8 @@ private:
 
 	shared_ptr<IConsole> _console;
 
+	unique_ptr<AudioPlayerHud> _audioPlayerHud;
+
 	thread::id _emulationThreadId;
 
 	atomic<uint32_t> _lockCounter;
@@ -82,8 +86,7 @@ private:
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
 
-	string _romFile;
-	string _patchFile;
+	RomInfo _rom;
 
 	ConsoleMemoryInfo _consoleMemory[(int)SnesMemoryType::Register] = {};
 
@@ -166,6 +169,9 @@ public:
 
 	void RegisterMemory(SnesMemoryType type, void* memory, uint32_t size);
 	ConsoleMemoryInfo GetMemory(SnesMemoryType type);
+
+	AudioTrackInfo GetAudioTrackInfo();
+	AudioPlayerHud* GetAudioPlayerHud();
 
 	bool IsRunning();
 	bool IsRunAheadFrame();

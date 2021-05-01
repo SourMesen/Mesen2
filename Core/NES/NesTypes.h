@@ -309,16 +309,6 @@ struct HashInfo
 	string PrgChrMd5;
 };
 
-enum class RomFormat
-{
-	Unknown = 0,
-	iNes = 1,
-	Unif = 2,
-	Fds = 3,
-	Nsf = 4,
-	StudyBox = 5
-};
-
 enum class VsSystemType
 {
 	Default = 0,

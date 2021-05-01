@@ -482,6 +482,16 @@ BaseVideoFilter* Gameboy::GetVideoFilter()
 	}
 }
 
+RomFormat Gameboy::GetRomFormat()
+{
+	return RomFormat::Gb;
+}
+
+AudioTrackInfo Gameboy::GetAudioTrackInfo()
+{
+	return {};
+}
+
 ConsoleRegion Gameboy::GetRegion()
 {
 	return ConsoleRegion::Ntsc;

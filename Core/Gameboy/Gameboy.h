@@ -120,4 +120,7 @@ public:
 	uint32_t GetMasterClockRate() override;
 
 	BaseVideoFilter* GetVideoFilter() override;
+
+	RomFormat GetRomFormat() override;
+	AudioTrackInfo GetAudioTrackInfo() override;
 };

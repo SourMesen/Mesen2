@@ -10,7 +10,7 @@
 #include "SNES/BaseCartridge.h"
 #include "SNES/RamHandler.h"
 #include "SNES/CartTypes.h"
-#include "SNES/SpcHud.h"
+#include "SNES/SpcFileData.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "SNES/SnesNtscFilter.h"
 #include "Gameboy/Gameboy.h"
@@ -74,10 +74,6 @@ void Console::ProcessEndOfFrame()
 		_cart->GetCoprocessor()->ProcessEndOfFrame();
 	}
 
-	if(_spcHud) {
-		_spcHud->Draw(_ppu->GetFrameCount());
-	}
-	
 	_emu->ProcessEndOfFrame();
 
 	_controlManager->UpdateControlDevices();
@@ -131,13 +127,6 @@ void Console::Reset()
 
 	//Reset cart before CPU to ensure correct memory mappings when fetching reset vector
 	_cpu->Reset();
-
-	if(_cart->GetSpcData()) {
-		_spc->LoadSpcFile(_cart->GetSpcData());
-		_spcHud.reset(new SpcHud(_emu, _cart->GetSpcData()));
-	} else {
-		_spcHud.reset();
-	}
 }
 
 bool Console::LoadRom(VirtualFile& romFile)
@@ -160,10 +149,8 @@ bool Console::LoadRom(VirtualFile& romFile)
 		_msu1.reset(Msu1::Init(romFile, _spc.get()));
 
 		if(_cart->GetSpcData()) {
+			//TODO
 			_spc->LoadSpcFile(_cart->GetSpcData());
-			_spcHud.reset(new SpcHud(_emu, _cart->GetSpcData()));
-		} else {
-			_spcHud.reset();
 		}
 
 		_cpu.reset(new Cpu(this));
@@ -261,6 +248,26 @@ BaseVideoFilter* Console::GetVideoFilter()
 	} else {
 		return new SnesDefaultVideoFilter(_emu);
 	}
+}
+
+RomFormat Console::GetRomFormat()
+{
+	return _cart->GetSpcData() ? RomFormat::Spc : RomFormat::Sfc;
+}
+
+AudioTrackInfo Console::GetAudioTrackInfo()
+{
+	AudioTrackInfo track = {};
+	SpcFileData* spc = _cart->GetSpcData();
+	if(spc) {
+		track.Artist = spc->Artist;
+		track.Comment = spc->Comment;
+		track.GameTitle = spc->GameTitle;
+		track.SongTitle = spc->SongTitle;
+		track.Position = _ppu->GetFrameCount() / GetFps();
+		track.Length = -1;
+	}
+	return track;
 }
 
 double Console::GetFrameDelay()

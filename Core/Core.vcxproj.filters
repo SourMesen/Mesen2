@@ -409,7 +409,7 @@
     <ClInclude Include="Shared\InputHud.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\SpcHud.h">
+    <ClInclude Include="Shared\Audio\AudioPlayerHud.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="SNES\SpcFileData.h">
@@ -765,9 +765,6 @@
     <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsInputButtons.h" />
     <ClInclude Include="NES\NesNtscFilter.h" />
-    <ClInclude Include="..\..\Mesen\Core\NsfMapper.h" />
-    <ClInclude Include="..\..\Mesen\Core\NsfeLoader.h" />
-    <ClInclude Include="..\..\Mesen\Core\NsfLoader.h" />
     <ClInclude Include="NES\Loaders\NsfeLoader.h" />
     <ClInclude Include="NES\Loaders\NsfLoader.h" />
     <ClInclude Include="NES\Mappers\NsfMapper.h" />
@@ -782,6 +779,7 @@
     <ClInclude Include="NES\Mappers\Audio\Vrc6Pulse.h" />
     <ClInclude Include="NES\Mappers\Audio\Vrc6Saw.h" />
     <ClInclude Include="NES\NesConstants.h" />
+    <ClInclude Include="Shared\Audio\AudioTrackInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1039,7 +1037,7 @@
     <ClCompile Include="SNES\Input\Multitap.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\SpcHud.cpp">
+    <ClCompile Include="Shared\Audio\AudioPlayerHud.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="Netplay\GameClient.cpp">
@@ -1204,8 +1202,6 @@
     <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
     <ClCompile Include="NES\NesNtscFilter.cpp" />
-    <ClCompile Include="..\..\Mesen\Core\NsfLoader.cpp" />
-    <ClCompile Include="..\..\Mesen\Core\NsfMapper.cpp" />
     <ClCompile Include="NES\Loaders\NsfLoader.cpp" />
     <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
   </ItemGroup>

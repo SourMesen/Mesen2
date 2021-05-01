@@ -2,6 +2,7 @@
 #include "NES/Loaders/NsfLoader.h"
 #include "NES/RomData.h"
 #include "NES/MapperFactory.h"
+#include "Shared/RomInfo.h"
 
 void NsfLoader::Read(uint8_t *& data, uint8_t & dest)
 {
@@ -108,7 +109,6 @@ void NsfLoader::InitializeFromHeader(RomData &romData)
 
 void NsfLoader::InitHeader(NsfHeader & header)
 {
-	memset(&header, 0, sizeof(NsfHeader));
 	for(int i = 0; i < 256; i++) {
 		//Used by NSFE
 		header.TrackLength[i] = -1;

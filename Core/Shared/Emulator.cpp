@@ -2,6 +2,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/Audio/SoundMixer.h"
+#include "Shared/Audio/AudioPlayerHud.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/Video/VideoRenderer.h"
 #include "Shared/Video/DebugHud.h"
@@ -194,6 +195,10 @@ void Emulator::ProcessEndOfFrame()
 {
 #ifndef LIBRETRO
 	if(!_isRunAheadFrame) {
+		if(_audioPlayerHud) {
+			_audioPlayerHud->Draw();
+		}
+
 		_frameLimiter->ProcessFrame();
 		while(_frameLimiter->WaitForNextFrame()) {
 			if(_stopFlag || _frameDelay != GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {
@@ -332,7 +337,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	}
 
 	if(patchFile.IsValid()) {
-		_patchFile = patchFile;
 		if(romFile.ApplyPatch(patchFile)) {
 			MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
 		}
@@ -367,8 +371,17 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		}
 	}
 
-	_romFile = romFile;
-	_patchFile = patchFile;
+	_rom.RomFile = romFile;
+	if(patchFile.IsValid()) {
+		_rom.PatchFile = patchFile;
+	}
+	_rom.Format = console->GetRomFormat();
+
+	if(_rom.Format == RomFormat::Spc || _rom.Format == RomFormat::Nsf || _rom.Format == RomFormat::Gbs) {
+		_audioPlayerHud.reset(new AudioPlayerHud(this));
+	} else {
+		_audioPlayerHud.reset();
+	}
 
 	bool debuggerActive = _debugger != nullptr;
 	if(stopRom) {
@@ -425,10 +438,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 RomInfo Emulator::GetRomInfo()
 {
-	RomInfo romInfo = {};
-	romInfo.RomFile = _romFile;
-	romInfo.PatchFile = _patchFile;
-	return romInfo;
+	return _rom;
 }
 
 string Emulator::GetHash(HashType type)
@@ -791,6 +801,16 @@ void Emulator::RegisterMemory(SnesMemoryType type, void* memory, uint32_t size)
 ConsoleMemoryInfo Emulator::GetMemory(SnesMemoryType type)
 {
 	return _consoleMemory[(int)type];
+}
+
+AudioTrackInfo Emulator::GetAudioTrackInfo()
+{
+	return _console->GetAudioTrackInfo();
+}
+
+AudioPlayerHud* Emulator::GetAudioPlayerHud()
+{
+	return _audioPlayerHud.get();
 }
 
 bool Emulator::IsRunning()

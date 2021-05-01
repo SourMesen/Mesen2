@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "NES/RomData.h"
 #include "NES/Loaders/NsfLoader.h"
+#include "Shared/RomInfo.h"
 
 class NsfeLoader : public NsfLoader
 {
@@ -57,11 +58,6 @@ private:
 				ss << (char)data[0];
 			}
 			data++;
-		}
-
-		//truncate all strings to 255 characters + null
-		for(size_t i = 0; i < strings.size(); i++) {
-			strings[i] = strings[i].substr(0, std::min((int)strings[i].size(), 255));
 		}
 
 		return strings;
@@ -142,13 +138,7 @@ private:
 				i++;
 			}
 		} else if(fourCC.compare("tlbl") == 0) {
-			vector<string> trackNames = ReadStrings(data, chunkEnd);
-			stringstream ss;
-			for(string &trackName : trackNames) {
-				ss << trackName;
-				ss << "[!|!]";
-			}
-			CopyString(header.TrackName, ss.str(), 20000);
+			header.TrackNames = ReadStrings(data, chunkEnd);
 		} else if(fourCC.compare("auth") == 0) {
 			vector<string> infoStrings = ReadStrings(data, chunkEnd);
 

@@ -3,6 +3,7 @@
 
 #include "NesTypes.h"
 #include "NesHeader.h"
+#include "Shared/RomInfo.h"
 
 enum class RomHeaderVersion
 {
@@ -13,28 +14,28 @@ enum class RomHeaderVersion
 
 struct NsfHeader
 {
-	char Header[5];
-	uint8_t Version;
-	uint8_t TotalSongs;
-	uint8_t StartingSong;
-	uint16_t LoadAddress;
-	uint16_t InitAddress;
-	uint16_t PlayAddress;
-	char SongName[256];
-	char ArtistName[256];
-	char CopyrightHolder[256];
-	uint16_t PlaySpeedNtsc;
-	uint8_t BankSetup[8];
-	uint16_t PlaySpeedPal;
-	uint8_t Flags;
-	uint8_t SoundChips;
-	uint8_t Padding[4];
+	char Header[5] = {};
+	uint8_t Version = 0;
+	uint8_t TotalSongs = 0;
+	uint8_t StartingSong = 0;
+	uint16_t LoadAddress = 0;
+	uint16_t InitAddress = 0;
+	uint16_t PlayAddress = 0;
+	char SongName[256] = {};
+	char ArtistName[256] = {};
+	char CopyrightHolder[256] = {};
+	uint16_t PlaySpeedNtsc = 0;
+	uint8_t BankSetup[8] = {};
+	uint16_t PlaySpeedPal = 0;
+	uint8_t Flags = 0;
+	uint8_t SoundChips = 0;
+	uint8_t Padding[4] = {};
 
 	//NSFe extensions
-	char RipperName[256];
-	char TrackName[20000];
-	int32_t TrackLength[256];
-	int32_t TrackFade[256];
+	char RipperName[256] = {};
+	vector<string> TrackNames;
+	int32_t TrackLength[256] = {};
+	int32_t TrackFade[256] = {};
 };
 
 struct GameInfo

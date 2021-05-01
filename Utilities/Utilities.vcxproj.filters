@@ -223,6 +223,9 @@
     <ClInclude Include="NTSC\snes_ntsc_impl.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="kissfft.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">

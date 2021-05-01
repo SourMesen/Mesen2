@@ -5,6 +5,7 @@
 #include "NES/MapperFactory.h"
 #include "NES/GameDatabase.h"
 #include "Shared/MessageManager.h"
+#include "Shared/RomInfo.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/CRC32.h"

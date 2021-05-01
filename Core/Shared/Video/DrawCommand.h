@@ -9,7 +9,7 @@ private:
 	uint32_t* _argbBuffer;
 	OverscanDimensions _overscan;
 	uint32_t _lineWidth;
-	uint32_t _startFrame;
+	int32_t _startFrame;
 
 protected:
 	bool _useIntegerScaling;
@@ -76,6 +76,11 @@ public:
 
 	void Draw(uint32_t* argbBuffer, OverscanDimensions &overscan, uint32_t lineWidth, uint32_t frameNumber)
 	{
+		if(_startFrame < 0) {
+			//When no start frame was specified, start on the next drawn frame
+			_startFrame = frameNumber;
+		}
+
 		if(_startFrame <= frameNumber) {
 			_argbBuffer = argbBuffer;
 			_overscan = overscan;

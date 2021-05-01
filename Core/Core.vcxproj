@@ -43,9 +43,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Mesen\Core\NsfeLoader.h" />
-    <ClInclude Include="..\..\Mesen\Core\NsfLoader.h" />
-    <ClInclude Include="..\..\Mesen\Core\NsfMapper.h" />
     <ClInclude Include="Debugger\stdafx.h" />
     <ClInclude Include="NES\Input\ArkanoidController.h" />
     <ClInclude Include="NES\Input\AsciiTurboFile.h" />
@@ -101,6 +98,7 @@
     <ClInclude Include="NES\NesConstants.h" />
     <ClInclude Include="NES\NesNtscFilter.h" />
     <ClInclude Include="Netplay\stdafx.h" />
+    <ClInclude Include="Shared\Audio\AudioTrackInfo.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />
     <ClInclude Include="Shared\BaseState.h" />
@@ -335,7 +333,7 @@
     <ClInclude Include="SNES\Coprocessors\SPC7110\Spc7110Decomp.h" />
     <ClInclude Include="SNES\Debugger\SpcDebugger.h" />
     <ClInclude Include="SNES\Debugger\SpcDisUtils.h" />
-    <ClInclude Include="SNES\SpcHud.h" />
+    <ClInclude Include="Shared\Audio\AudioPlayerHud.h" />
     <ClInclude Include="SNES\SpcFileData.h" />
     <ClInclude Include="SNES\SpcTimer.h" />
     <ClInclude Include="SNES\SpcTypes.h" />
@@ -352,8 +350,6 @@
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Mesen\Core\NsfLoader.cpp" />
-    <ClCompile Include="..\..\Mesen\Core\NsfMapper.cpp" />
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="NES\Loaders\FdsLoader.cpp" />
     <ClCompile Include="NES\Loaders\iNesLoader.cpp" />
@@ -495,7 +491,7 @@
     <ClCompile Include="SNES\Coprocessors\SPC7110\Spc7110Decomp.cpp" />
     <ClCompile Include="SNES\Debugger\SpcDebugger.cpp" />
     <ClCompile Include="SNES\Debugger\SpcDisUtils.cpp" />
-    <ClCompile Include="SNES\SpcHud.cpp" />
+    <ClCompile Include="Shared\Audio\AudioPlayerHud.cpp" />
     <ClCompile Include="SNES\DSP\SPC_DSP.cpp" />
     <ClCompile Include="SNES\DSP\SPC_Filter.cpp" />
     <ClCompile Include="stdafx.cpp">

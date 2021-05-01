@@ -12,7 +12,9 @@
 #include "NES/NesNtscFilter.h"
 #include "NES/NesConstants.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
+#include "NES/Mappers/NsfMapper.h"
 #include "Shared/Emulator.h"
+#include "Shared/Audio/AudioTrackInfo.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "Shared/Interfaces/IBattery.h"
 #include "Shared/EmuSettings.h"
@@ -356,4 +358,18 @@ BaseVideoFilter* NesConsole::GetVideoFilter()
 	} else {
 		return new NesDefaultVideoFilter(_emu);
 	}
+}
+
+RomFormat NesConsole::GetRomFormat()
+{
+	return _mapper->GetRomInfo().Format;
+}
+
+AudioTrackInfo NesConsole::GetAudioTrackInfo()
+{
+	NsfMapper* nsfMapper = dynamic_cast<NsfMapper*>(_mapper.get());
+	if(nsfMapper) {
+		return nsfMapper->GetAudioTrackInfo();
+	}
+	return {};
 }

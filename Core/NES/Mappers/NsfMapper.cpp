@@ -496,6 +496,18 @@ ConsoleFeatures NsfMapper::GetAvailableFeatures()
 	return ConsoleFeatures::Nsf;
 }
 
+AudioTrackInfo NsfMapper::GetAudioTrackInfo()
+{
+	AudioTrackInfo track = {};
+	track.Artist = _nsfHeader.ArtistName;
+	track.Comment = _nsfHeader.RipperName;
+	track.GameTitle = _nsfHeader.SongName;
+	track.SongTitle = _nsfHeader.TrackNames.size() > _songNumber ? _nsfHeader.TrackNames[_songNumber] : "";
+	track.Position = _console->GetPpuFrame().FrameCount / _console->GetFps();
+	track.Length = _nsfHeader.TrackLength[_songNumber] / 1000;
+	return track;
+}
+
 void NsfMapper::Serialize(Serializer& s)
 {
 	BaseMapper::Serialize(s);

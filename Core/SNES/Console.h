@@ -30,7 +30,6 @@ class RewindManager;
 class BatteryManager;
 class CheatManager;
 class MovieManager;
-class SpcHud;
 class FrameLimiter;
 class DebugStats;
 class Msu1;
@@ -57,7 +56,6 @@ private:
 	
 	shared_ptr<Msu1> _msu1;
 	EmuSettings* _settings;
-	shared_ptr<SpcHud> _spcHud;
 	Emulator* _emu;
 
 	uint32_t _masterClockRate;
@@ -117,4 +115,7 @@ public:
 	void SaveBattery() override;
 
 	BaseVideoFilter* GetVideoFilter() override;
+
+	RomFormat GetRomFormat() override;
+	AudioTrackInfo GetAudioTrackInfo() override;
 };

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
 #include "Core/Debugger/DebugTypes.h"
+#include "Shared/Audio/AudioTrackInfo.h"
 #include "Shared/RomInfo.h"
 
 class IControlManager;
@@ -52,6 +53,9 @@ public:
 	virtual void RunSingleFrame() = 0;
 
 	virtual PpuFrameInfo GetPpuFrame() = 0;
+
+	virtual RomFormat GetRomFormat() = 0;
+	virtual AudioTrackInfo GetAudioTrackInfo() = 0;
 
 	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) = 0;
 	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) = 0;

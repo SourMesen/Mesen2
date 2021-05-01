@@ -3,6 +3,7 @@
 
 #include "Shared/SettingTypes.h"
 #include "Shared/Interfaces/IConsole.h"
+#include "Shared/Audio/AudioTrackInfo.h"
 #include "Debugger/DebugTypes.h"
 
 class Emulator;
@@ -91,4 +92,7 @@ public:
 	void SaveBattery() override;
 
 	BaseVideoFilter* GetVideoFilter() override;
+
+	RomFormat GetRomFormat() override;
+	AudioTrackInfo GetAudioTrackInfo() override;
 };

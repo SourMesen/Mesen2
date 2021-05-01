@@ -6,6 +6,7 @@
 #include "NES/NesHeader.h"
 #include "NES/RomData.h"
 #include "NES/GameDatabase.h"
+#include "Shared/RomInfo.h"
 
 void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *preloadedHeader)
 {

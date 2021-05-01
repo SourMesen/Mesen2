@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Shared/Audio/SoundMixer.h"
+#include "Shared/Audio/AudioPlayerHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundResampler.h"
@@ -90,6 +91,10 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 
 	if(cfg.EnableEqualizer) {
 		ProcessEqualizer(out, count, targetRate);
+	}
+
+	if(_emu->GetAudioPlayerHud()) {
+		_emu->GetAudioPlayerHud()->ProcessSamples(out, count, targetRate);
 	}
 
 	if(cfg.ReverbEnabled) {

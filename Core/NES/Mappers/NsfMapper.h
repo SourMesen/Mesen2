@@ -123,6 +123,8 @@ public:
 	
 	ConsoleFeatures GetAvailableFeatures() override;
 
+	AudioTrackInfo GetAudioTrackInfo();
+
 	void SelectTrack(uint8_t trackNumber);
 	uint8_t GetCurrentTrack();
 	NsfHeader GetNsfHeader();
