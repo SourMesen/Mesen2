@@ -49,6 +49,8 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void TakeScreenshot();
 
+		[DllImport(DllPath)] public static extern void ProcessAudioPlayerAction(AudioPlayerActionParams p);
+
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool LoadRom(
 			[MarshalAs(UnmanagedType.LPUTF8Str)]string filepath,
 			[MarshalAs(UnmanagedType.LPUTF8Str)]string patchFile = ""
@@ -119,12 +121,31 @@ namespace Mesen.GUI
 		public double Scale;
 	}
 
+	public enum RomFormat
+	{
+		Unknown,
+
+		Sfc,
+		SfcWithCopierHeader,
+		Spc,
+
+		Gb,
+		Gbs,
+
+		iNes,
+		Unif,
+		Fds,
+		Nsf,
+		StudyBox
+	}
+
 	public struct InteropRomInfo
 	{
 		public IntPtr RomPath;
 		public IntPtr PatchPath;
-		public CoprocessorType CoprocessorType;
-		public SnesCartInformation Header;
+		public RomFormat Format;
+		//public CoprocessorType CoprocessorType;
+		//public SnesCartInformation Header;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
 		public byte[] Sha1;
@@ -134,16 +155,16 @@ namespace Mesen.GUI
 	{
 		public string RomPath;
 		public string PatchPath;
-		public CoprocessorType CoprocessorType;
-		public SnesCartInformation Header;
+		public RomFormat Format;
 		public string Sha1;
 
 		public RomInfo(InteropRomInfo romInfo)
 		{
 			RomPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.RomPath);
 			PatchPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.PatchPath);
-			Header = romInfo.Header;
-			CoprocessorType = romInfo.CoprocessorType;
+			Format = romInfo.Format;
+			//Header = romInfo.Header;
+			//CoprocessorType = romInfo.CoprocessorType;
 			Sha1 = Encoding.UTF8.GetString(romInfo.Sha1);
 		}
 
@@ -271,4 +292,17 @@ namespace Mesen.GUI
 		public EmulatorShortcut Shortcut;
 		public UInt32 Param;
 	};
+
+	public enum AudioPlayerAction
+	{
+		NextTrack,
+		PrevTrack,
+		SelectTrack,
+	}
+
+	public struct AudioPlayerActionParams
+	{
+		public AudioPlayerAction Action;
+		public UInt32 TrackNumber;
+	}
 }

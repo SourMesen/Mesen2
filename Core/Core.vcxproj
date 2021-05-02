@@ -98,7 +98,7 @@
     <ClInclude Include="NES\NesConstants.h" />
     <ClInclude Include="NES\NesNtscFilter.h" />
     <ClInclude Include="Netplay\stdafx.h" />
-    <ClInclude Include="Shared\Audio\AudioTrackInfo.h" />
+    <ClInclude Include="Shared\Audio\AudioPlayerTypes.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />
     <ClInclude Include="Shared\BaseControlManager.h" />
     <ClInclude Include="Shared\BaseState.h" />

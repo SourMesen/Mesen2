@@ -42,7 +42,7 @@ struct InteropRomInfo
 {
 	const char* RomPath;
 	const char* PatchPath;
-	//TODO
+	RomFormat Format;
 	//CoprocessorType Coprocessor;
 	//SnesCartInformation Header;
 	char Sha1[40];
@@ -129,6 +129,7 @@ extern "C" {
 
 		info.RomPath = _romPath.c_str();
 		info.PatchPath = _patchPath.c_str();
+		info.Format = romInfo.Format;
 		//TODO
 		//info.Header = romInfo.Header;
 		//info.Coprocessor = romInfo.Coprocessor;
@@ -137,6 +138,8 @@ extern "C" {
 	}
 	
 	DllExport void __stdcall TakeScreenshot() { _emu->GetVideoDecoder()->TakeScreenshot(); }
+
+	DllExport void __stdcall ProcessAudioPlayerAction(AudioPlayerActionParams p) { _emu->ProcessAudioPlayerAction(p); }
 
 	DllExport const char* __stdcall GetArchiveRomList(char* filename) { 
 		std::ostringstream out;

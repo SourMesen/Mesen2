@@ -23,6 +23,7 @@ namespace Mesen.GUI.Config
 		public NesConfig Nes { get; set; }
 		public GameboyConfig Gameboy { get; set; }
 		public PreferencesConfig Preferences { get; set; }
+		public AudioPlayerConfig AudioPlayer { get; set; }
 		public DebugConfig Debug;
 		public RecentItems RecentFiles { get; set; }
 		public AviRecordConfig AviRecord { get; set; }
@@ -45,6 +46,7 @@ namespace Mesen.GUI.Config
 			Snes = new SnesConfig();
 			Nes = new NesConfig();
 			Preferences = new PreferencesConfig();
+			AudioPlayer = new AudioPlayerConfig();
 			AviRecord = new AviRecordConfig();
 			MovieRecord = new MovieRecordConfig();
 			Cheats = new CheatWindowConfig();
@@ -80,6 +82,7 @@ namespace Mesen.GUI.Config
 			Nes.ApplyConfig();
 			Snes.ApplyConfig();
 			Preferences.ApplyConfig();
+			AudioPlayer.ApplyConfig();
 			//Debug.Debugger.ApplyConfig();
 		}
 

@@ -305,8 +305,6 @@ struct HashInfo
 	uint32_t Crc32 = 0;
 	uint32_t PrgCrc32 = 0;
 	uint32_t PrgChrCrc32 = 0;
-	string Sha1;
-	string PrgChrMd5;
 };
 
 enum class VsSystemType

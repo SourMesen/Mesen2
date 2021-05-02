@@ -252,13 +252,13 @@ namespace Mesen.Debugger.Labels
 
 		public static void SetDefaultLabels()
 		{
-			CoprocessorType coproc = EmuApi.GetRomInfo().CoprocessorType;
 			//TODO
+			/*CoprocessorType coproc = EmuApi.GetRomInfo().CoprocessorType;
 			if(coproc == CoprocessorType.SGB) {
 				SetGameboyDefaultLabels();
 			} else {
 				SetSnesDefaultLabels();
-			}
+			}*/
 		}
 
 		private static void SetSnesDefaultLabels()

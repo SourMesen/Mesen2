@@ -32,7 +32,7 @@ void AudioPlayerHud::Draw()
 	
 	_hud->DrawRectangle(0, 0, 256, 240, 0, true, 1);
 
-	int y = 20;
+	int y = 12;
 	auto drawLabel = [=, &y](string label, string content) {
 		if(content.size() > 0 && content[0] != 0) {
 			_hud->DrawString(20, y, label, 0xBBBBBB, 0, 1);
@@ -42,20 +42,29 @@ void AudioPlayerHud::Draw()
 	};
 
 	drawLabel("Game:", trackInfo.GameTitle);
-	drawLabel("Track:", trackInfo.SongTitle);
 	drawLabel("Artist:", trackInfo.Artist);
 	drawLabel("Comment:", trackInfo.Comment);
 
 	string position = FormatSeconds((uint32_t)trackInfo.Position);
+
+	if(trackInfo.SongTitle.size() > 0 && trackInfo.SongTitle[0] != 0) {
+		_hud->DrawString(15, 208, trackInfo.SongTitle, 0xFFFFFF, 0, 1);
+	} else {
+		_hud->DrawString(15, 208, _emu->GetRomInfo().RomFile.GetFileName(), 0xFFFFFF, 0, 1);
+	}
+
+	_hud->DrawString(15, 218, std::to_string(trackInfo.TrackNumber) + " / " + std::to_string(trackInfo.TrackCount), 0xFFFFFF, 0, 1);
+
 	if(trackInfo.Length <= 0) {
-		_hud->DrawString(220, 218, position, 0xFFFFFF, 0, 1);
+		_hud->DrawString(220, 208, position, 0xFFFFFF, 0, 1);
 	} else {
 		position += " / " + FormatSeconds(trackInfo.Length);
-		_hud->DrawString(182, 218, position, 0xFFFFFF, 0, 1);
+		_hud->DrawString(182, 208, position, 0xFFFFFF, 0, 1);
 
-		_hud->DrawRectangle(15, 209, 226, 6, 0xFFFFFF, false, 1);
-		_hud->DrawRectangle(16, 210, 224, 4, 0, true, 1);
-		_hud->DrawRectangle(17, 211, (int)(trackInfo.Position / trackInfo.Length * 222), 2, 0x44FF88, false, 1);
+		constexpr int barWidth = 222;
+		_hud->DrawRectangle(15, 199, barWidth + 4, 6, 0xBBBBBB, false, 1);
+		//_hud->DrawRectangle(16, 200, barWidth + 2, 4, 0, true, 1);
+		_hud->DrawRectangle(17, 201, (int)(std::min(1.0, trackInfo.Position / trackInfo.Length) * barWidth), 2, 0x77BBFF, false, 1);
 	}
 
 	//Arbitrary ranges to split the graph into (8 equally sized sections on the screen that contain a specific freq range)
@@ -71,6 +80,34 @@ void AudioPlayerHud::Draw()
 	};
 
 	static constexpr int maxVal = 140;
+
+	int top = 191 - maxVal;
+	int bottom = 190;
+	int fgColor = 0x555555;
+	int fgColor2 = 0x666666;
+	int bgColor = 0x222222;
+	int transparent = 0xFF000000;
+	_hud->DrawLine(0, top - 1, 255, top - 1, fgColor, 1);
+	_hud->DrawLine(0, bottom + 1, 255, bottom + 1, fgColor, 1);
+	_hud->DrawRectangle(0, top, 256, 140, bgColor, true, 1);
+	_hud->DrawLine(192, top, 192, bottom, fgColor, 1);
+	_hud->DrawLine(128, top, 128, bottom, fgColor, 1);
+	_hud->DrawLine(64, top, 64, bottom, fgColor, 1);
+	
+	_hud->DrawLine(224, top, 224, bottom, fgColor2, 1);
+	_hud->DrawLine(160, top, 160, bottom, fgColor2, 1);
+	_hud->DrawLine(96, top, 96, bottom, fgColor2, 1);
+	_hud->DrawLine(32, top, 32, bottom, fgColor2, 1);
+
+	_hud->DrawString(3, top + 10, "20Hz", fgColor, bgColor, 1);
+	_hud->DrawString(19, top + 30, "150Hz", fgColor2, bgColor, 1);
+	_hud->DrawString(51, top + 10, "400Hz", fgColor, bgColor, 1);
+	_hud->DrawString(83, top + 30, "700Hz", fgColor2, bgColor, 1);
+	_hud->DrawString(117, top + 10, "1kHz", fgColor, bgColor, 1);
+	_hud->DrawString(150, top + 30, "2kHz", fgColor2, bgColor, 1);
+	_hud->DrawString(182, top + 10, "4kHz", fgColor, bgColor, 1);
+	_hud->DrawString(214, top + 30, "6kHz", fgColor2, bgColor, 1);
+	_hud->DrawString(228, top + 10, "20kHz", fgColor, bgColor, 1);
 
 	if(_amplitudes.size() >= N / 2) {
 		for(int i = 0; i < 8; i++) {
@@ -92,7 +129,7 @@ void AudioPlayerHud::Draw()
 
 				int red = std::min(255, (int)(256 * (avgAmp / maxVal) * 2));
 				int green = std::max(0, std::min(255, (int)(256 * ((maxVal - avgAmp) / maxVal) * 2)));
-				_hud->DrawRectangle(i*32+j, 200, 1, (int)-avgAmp, red << 16 | green << 8, true, 1);
+				_hud->DrawRectangle(i*32+j, 190, 1, (int)-avgAmp, red << 16 | green << 8, true, 1);
 			}
 		}
 	}

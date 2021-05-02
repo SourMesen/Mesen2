@@ -123,4 +123,5 @@ public:
 
 	RomFormat GetRomFormat() override;
 	AudioTrackInfo GetAudioTrackInfo() override;
+	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
 };

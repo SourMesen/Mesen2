@@ -470,9 +470,11 @@ struct NesConfig
 
 struct AudioPlayerConfig
 {
+	uint32_t Volume = 100;
 	bool Repeat = false;
 	bool Shuffle = false;
 };
+
 struct PreferencesConfig
 {
 	bool ShowFps = false;

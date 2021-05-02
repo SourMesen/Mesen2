@@ -356,17 +356,22 @@ void EmuSettings::InitializeRam(void* data, uint32_t length)
 		case ConsoleType::Gameboy:
 		case ConsoleType::GameboyColor:
 			state = _gameboy.RamPowerOnState;
-			
 			break;
 	}
+
 	switch(state) {
 		default:
 		case RamState::AllZeros: memset(data, 0, length); break;
 		case RamState::AllOnes: memset(data, 0xFF, length); break;
 		case RamState::Random:
-			std::uniform_int_distribution<> dist(0, 255);
-			for(uint32_t i = 0; i < length; i++) {
-				((uint8_t*)data)[i] = dist(_mt);
+			std::uniform_int_distribution<uint64_t> dist(0, std::numeric_limits<uint64_t>::max());
+			uint32_t i = 0;
+			while(i < length) {
+				uint64_t randomData = dist(_mt);
+				for(int j = 0; j < 8 && i < length; j++) {
+					((uint8_t*)data)[i] = (uint8_t)(randomData >> (8*j));
+					i++;
+				}
 			}
 			break;
 	}

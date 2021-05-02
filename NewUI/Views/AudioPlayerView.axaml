@@ -1,0 +1,80 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:AudioPlayerViewModel"
+	x:Class="Mesen.Views.AudioPlayerView"
+>
+	<Design.DataContext>
+		<vm:AudioPlayerViewModel />
+	</Design.DataContext>
+
+	<UserControl.Resources>
+		<Color x:Key="SliderTrackFill">Gray</Color>
+		<Color x:Key="SliderTrackFillPointerOver">Gray</Color>
+		<Color x:Key="SliderTrackFillPressed">Gray</Color>
+	</UserControl.Resources>
+
+	<UserControl.Styles>
+		<Style Selector="Slider TickBar">
+			<Setter Property="Fill" Value="Gray" />
+		</Style>
+	</UserControl.Styles>
+	
+	<Panel Background="Black">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left">
+			<Button Click="OnToggleShuffleClick">
+				<Panel>
+					<mui:MaterialIcon Kind="Shuffle" IsVisible="{CompiledBinding Config.Shuffle}" />
+					<mui:MaterialIcon Kind="ShuffleDisabled" IsVisible="{CompiledBinding !Config.Shuffle}" />
+				</Panel>
+			</Button>
+			<Button Click="OnToggleRepeatClick">
+				<Panel>
+					<mui:MaterialIcon Kind="Repeat" IsVisible="{CompiledBinding Config.Repeat}" />
+					<mui:MaterialIcon Kind="RepeatOff" IsVisible="{CompiledBinding !Config.Repeat}" />
+				</Panel>
+			</Button>
+		</StackPanel>
+		
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+			<!--<Button Click="OnPrevFileClick">
+				<mui:MaterialIcon Kind="PreviousTitle" />
+			</Button>-->
+			<Button Click="OnPrevTrackClick">
+				<mui:MaterialIcon Kind="SkipPrevious" />
+			</Button>
+			<Button Click="OnPlayClick" Height="30" Width="40">
+				<mui:MaterialIcon Kind="Play" />
+			</Button>
+			<Button Click="OnNextTrackClick">
+				<mui:MaterialIcon Kind="SkipNext" />
+			</Button>
+			<!--<Button Click="OnNextFileClick">
+				<mui:MaterialIcon Kind="NextTitle" />
+			</Button>-->
+		</StackPanel>
+
+		<Panel VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 10 5 0">
+			<c:MesenSlider
+				Width="100"
+				Height="30"
+				HideValue="True"
+				TickFrequency="10"
+				Minimum="0"
+				Maximum="100"
+				Value="{CompiledBinding Config.Volume}"
+			/>
+		</Panel>
+	</Panel>
+
+</UserControl>

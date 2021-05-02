@@ -65,16 +65,18 @@ void SoundMixer::StopAudio(bool clearBuffer)
 
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_t sourceRate)
 {
-	AudioConfig cfg = _emu->GetSettings()->GetAudioConfig();
+	EmuSettings* settings = _emu->GetSettings();
+	bool isAudioPlayer = _emu->GetAudioPlayerHud() ? true : false;
+	AudioConfig cfg = settings->GetAudioConfig();
 
-	uint32_t masterVolume = cfg.MasterVolume;
-	if(_emu->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
+	uint32_t masterVolume = isAudioPlayer ? settings->GetAudioPlayerConfig().Volume : cfg.MasterVolume;
+	if(!isAudioPlayer && settings->CheckFlag(EmulationFlags::InBackground)) {
 		if(cfg.MuteSoundInBackground) {
 			masterVolume = 0;
 		} else if(cfg.ReduceSoundInBackground) {
 			masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 		}
-	} else if(cfg.ReduceSoundInFastForward && _emu->GetSettings()->CheckFlag(EmulationFlags::TurboOrRewind)) {
+	} else if(cfg.ReduceSoundInFastForward && settings->CheckFlag(EmulationFlags::TurboOrRewind)) {
 		masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 	}
 

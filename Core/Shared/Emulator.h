@@ -4,7 +4,7 @@
 #include "Core/Debugger/Debugger.h"
 #include "Core/Shared/EmulatorLock.h"
 #include "Core/Shared/Interfaces/IConsole.h"
-#include "Core/Shared/Audio/AudioTrackInfo.h"
+#include "Core/Shared/Audio/AudioPlayerTypes.h"
 #include "Utilities/Timer.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/VirtualFile.h"
@@ -171,6 +171,7 @@ public:
 	ConsoleMemoryInfo GetMemory(SnesMemoryType type);
 
 	AudioTrackInfo GetAudioTrackInfo();
+	void ProcessAudioPlayerAction(AudioPlayerActionParams p);
 	AudioPlayerHud* GetAudioPlayerHud();
 
 	bool IsRunning();

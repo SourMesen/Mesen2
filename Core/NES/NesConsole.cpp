@@ -14,7 +14,6 @@
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "NES/Mappers/NsfMapper.h"
 #include "Shared/Emulator.h"
-#include "Shared/Audio/AudioTrackInfo.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "Shared/Interfaces/IBattery.h"
 #include "Shared/EmuSettings.h"
@@ -97,6 +96,7 @@ void NesConsole::Reset()
 	_apu->Reset(true);
 	_cpu->Reset(true, ConsoleRegion::Ntsc);
 	_controlManager->Reset(true);
+	_mixer->Reset();
 	if(_vsSubConsole) {
 		_vsSubConsole->Reset();
 	}
@@ -190,12 +190,11 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 
 		_mixer->Reset();
 		
-		_cpu->Reset(false, _region);
 		_ppu->Reset();
-		_mapper->Reset(false);
 		_apu->Reset(false);
 		_memoryManager->Reset(false);
 		_controlManager->Reset(false);
+		_cpu->Reset(false, _region);
 
 		return true;
 	}
@@ -373,3 +372,12 @@ AudioTrackInfo NesConsole::GetAudioTrackInfo()
 	}
 	return {};
 }
+
+void NesConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)
+{
+	NsfMapper* nsfMapper = dynamic_cast<NsfMapper*>(_mapper.get());
+	if(nsfMapper) {
+		return nsfMapper->ProcessAudioPlayerAction(p);
+	}
+}
+

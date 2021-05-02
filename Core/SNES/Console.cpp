@@ -104,15 +104,6 @@ void Console::RunSingleFrame()
 
 void Console::Stop()
 {
-	_cpu.reset();
-	_ppu.reset();
-	_spc.reset();
-	_cart.reset();
-	_internalRegisters.reset();
-	_controlManager.reset();
-	_memoryManager.reset();
-	_dmaController.reset();
-	_msu1.reset();
 }
 
 void Console::Reset()
@@ -150,7 +141,11 @@ bool Console::LoadRom(VirtualFile& romFile)
 
 		if(_cart->GetSpcData()) {
 			//TODO
-			_spc->LoadSpcFile(_cart->GetSpcData());
+    		_spc->LoadSpcFile(_cart->GetSpcData());
+			_spcPlaylist = FolderUtilities::GetFilesInFolder(romFile.GetFolderPath(), { ".spc" }, false);
+			std::sort(_spcPlaylist.begin(), _spcPlaylist.end());
+			auto result = std::find(_spcPlaylist.begin(), _spcPlaylist.end(), romFile.GetFilePath());
+			_spcTrackNumber = std::distance(_spcPlaylist.begin(), result);
 		}
 
 		_cpu.reset(new Cpu(this));
@@ -266,8 +261,30 @@ AudioTrackInfo Console::GetAudioTrackInfo()
 		track.SongTitle = spc->SongTitle;
 		track.Position = _ppu->GetFrameCount() / GetFps();
 		track.Length = -1;
+		track.TrackNumber = _spcTrackNumber + 1;
+		track.TrackCount = (uint32_t)_spcPlaylist.size();
+
 	}
 	return track;
+}
+
+void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
+{
+	if(_spcTrackNumber >= 0) {
+		int i = (int)_spcTrackNumber;
+		switch(p.Action) {
+			case AudioPlayerAction::PrevTrack: i--; break;
+			case AudioPlayerAction::NextTrack: i++; break;
+		}
+
+		if(i < 0) {
+			i = _spcPlaylist.size() - 1;
+		} else if(i >= _spcPlaylist.size()) {
+			i = 0;
+		}
+
+		_emu->LoadRom(VirtualFile(_spcPlaylist[i]), VirtualFile());
+	}
 }
 
 double Console::GetFrameDelay()

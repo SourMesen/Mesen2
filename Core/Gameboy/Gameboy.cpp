@@ -492,6 +492,10 @@ AudioTrackInfo Gameboy::GetAudioTrackInfo()
 	return {};
 }
 
+void Gameboy::ProcessAudioPlayerAction(AudioPlayerActionParams p)
+{
+}
+
 ConsoleRegion Gameboy::GetRegion()
 {
 	return ConsoleRegion::Ntsc;

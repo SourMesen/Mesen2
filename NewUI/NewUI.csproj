@@ -74,6 +74,9 @@
     <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
       <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\AudioPlayerView.axaml.cs">
+      <DependentUpon>AudioPlayerView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\GameboyConfigView.axaml.cs">
       <DependentUpon>GameboyConfigView.axaml</DependentUpon>
     </Compile>

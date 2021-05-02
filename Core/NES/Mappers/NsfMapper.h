@@ -124,6 +124,7 @@ public:
 	ConsoleFeatures GetAvailableFeatures() override;
 
 	AudioTrackInfo GetAudioTrackInfo();
+	void ProcessAudioPlayerAction(AudioPlayerActionParams p);
 
 	void SelectTrack(uint8_t trackNumber);
 	uint8_t GetCurrentTrack();

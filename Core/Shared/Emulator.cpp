@@ -263,7 +263,7 @@ void Emulator::Stop(bool sendNotification)
 		_emuThread.release();
 	}
 
-	if(_console && !_settings->GetPreferences().DisableGameSelectionScreen) {
+	if(_console && !_settings->GetPreferences().DisableGameSelectionScreen && !_audioPlayerHud) {
 		RomInfo romInfo = GetRomInfo();
 		_saveStateManager->SaveRecentGame(romInfo.RomFile.GetFileName(), romInfo.RomFile, romInfo.PatchFile);
 	}
@@ -347,6 +347,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_console->SaveBattery();
 	}
 	
+	//TODO need to restore name if load fails
 	_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
 
 	bool result = false;
@@ -371,6 +372,17 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		}
 	}
 
+	bool debuggerActive = _debugger != nullptr;
+
+	if(stopRom) {
+		Stop(false);
+		//TODO PERF
+		//KeyManager::UpdateDevices();
+	}
+
+	_videoDecoder->StopThread();
+	_videoRenderer->StopThread();
+
 	_rom.RomFile = romFile;
 	if(patchFile.IsValid()) {
 		_rom.PatchFile = patchFile;
@@ -381,12 +393,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_audioPlayerHud.reset(new AudioPlayerHud(this));
 	} else {
 		_audioPlayerHud.reset();
-	}
-
-	bool debuggerActive = _debugger != nullptr;
-	if(stopRom) {
-		KeyManager::UpdateDevices();
-		Stop(false);
 	}
 
 	_cheatManager->ClearCheats(false);
@@ -420,7 +426,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_paused = false;
 
-	if(!forPowerCycle) {
+	if(!forPowerCycle && !_audioPlayerHud) {
 		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
 		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
 		MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
@@ -431,6 +437,10 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_emuThread.reset(new thread(&Emulator::Run, this));
 	#endif
 	}
+
+	_videoDecoder->StartThread();
+	_videoRenderer->StartThread();
+
 	result = true;
 		
 	return result;
@@ -806,6 +816,11 @@ ConsoleMemoryInfo Emulator::GetMemory(SnesMemoryType type)
 AudioTrackInfo Emulator::GetAudioTrackInfo()
 {
 	return _console->GetAudioTrackInfo();
+}
+
+void Emulator::ProcessAudioPlayerAction(AudioPlayerActionParams p)
+{
+	return _console->ProcessAudioPlayerAction(p);
 }
 
 AudioPlayerHud* Emulator::GetAudioPlayerHud()

@@ -58,13 +58,7 @@ namespace Mesen.Windows
 				return;
 			}
 
-			EmuApi.InitDll();
 			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
-
-			ConfigManager.InitHomeFolder();
-			Directory.CreateDirectory(ConfigManager.HomeFolder);
-			Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
-
 			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
 
@@ -82,8 +76,11 @@ namespace Mesen.Windows
 		private void OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
-				case ConsoleNotificationType.ExecuteShortcut:
-					//TODO
+				case ConsoleNotificationType.GameLoaded:
+					RomInfo romInfo = EmuApi.GetRomInfo();
+					Dispatcher.UIThread.Post(() => {
+						(this.DataContext as MainWindowViewModel).RomInfo = romInfo;
+					});
 					break;
 			}
 		}
@@ -140,6 +137,16 @@ namespace Mesen.Windows
 		private void OnLogWindowClick(object sender, RoutedEventArgs e)
 		{
 			new LogWindow().Show();
+		}
+
+		private void OnStartRecordingClick(object sender, RoutedEventArgs e)
+		{
+			RecordApi.AviRecord("c:\\temp\\out.gif", VideoCodec.GIF, 0);
+		}
+
+		private void OnStopRecordingClick(object sender, RoutedEventArgs e)
+		{
+			RecordApi.AviStop();
 		}
 
 		private void OnResetClick(object sender, RoutedEventArgs e)

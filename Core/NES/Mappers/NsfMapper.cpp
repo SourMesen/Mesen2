@@ -12,6 +12,7 @@
 #include "NES/Mappers/Audio/Namco163Audio.h"
 #include "NES/Mappers/Audio/Sunsoft5bAudio.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/SystemActionManager.h"
 #include "Utilities/Serializer.h"
 
 NsfMapper::NsfMapper()
@@ -33,13 +34,6 @@ void NsfMapper::InitMapper()
 	_console->GetSettings()->ClearFlags(EmulationFlags::Paused);
 	_console->GetSettings()->SetFlags(EmulationFlags::NsfPlayerEnabled);*/
 
-	_mmc5Audio.reset(new Mmc5Audio(_console));
-	_vrc6Audio.reset(new Vrc6Audio(_console));
-	_vrc7Audio.reset(new Vrc7Audio(_console));
-	_fdsAudio.reset(new FdsAudio(_console));
-	_namcoAudio.reset(new Namco163Audio(_console));
-	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
-
 	SetCpuMemoryMapping(0x3F00, 0x3FFF, PrgMemoryType::WorkRam, 0x2000, MemoryAccessType::Read);
 	memcpy(GetWorkRam() + 0x2000, _nsfBios, 0x100);
 
@@ -52,22 +46,6 @@ void NsfMapper::InitMapper()
 	//NSF registers
 	AddRegisterRange(0x5FF6, 0x5FFF, MemoryOperation::Write);
 }
-
-//TODO
-/*
-void NsfMapper::SetNesModel(NesModel model) 
-{ 
-	if(model != _model) {
-		//Cheat a bit and change the IRQ reload value when the model changes to adjust tempo
-		switch(model) {
-			default:
-			case NesModel::NTSC: _irqReloadValue = _ntscSpeed; break;
-			case NesModel::PAL: _irqReloadValue = _palSpeed; break;
-			case NesModel::Dendy: _irqReloadValue = _dendySpeed; break;
-		}
-		_model = model;
-	}
-}*/
 
 void NsfMapper::InitMapper(RomData& romData)
 {
@@ -132,13 +110,27 @@ void NsfMapper::Reset(bool softReset)
 	_needInit = true;
 	_irqEnabled = false;
 	_irqCounter = 0;
-	_irqReloadValue = 0;
+	
+	switch(_emu->GetRegion()) {
+		default:
+		case ConsoleRegion::Ntsc: _irqReloadValue = _ntscSpeed; break;
+		case ConsoleRegion::Pal: _irqReloadValue = _palSpeed; break;
+		case ConsoleRegion::Dendy: _irqReloadValue = _dendySpeed; break;
+	}
+
 	_irqStatus = NsfIrqType::None;
 
 	_allowSilenceDetection = false;
 	_trackEndCounter = -1;
 	_trackEnded = false;
 	_trackFadeCounter = -1;
+
+	_mmc5Audio.reset(new Mmc5Audio(_console));
+	_vrc6Audio.reset(new Vrc6Audio(_console));
+	_vrc7Audio.reset(new Vrc7Audio(_console));
+	_fdsAudio.reset(new FdsAudio(_console));
+	_namcoAudio.reset(new Namco163Audio(_console));
+	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
 
 	InternalSelectTrack(_songNumber, false);
 
@@ -369,8 +361,8 @@ void NsfMapper::WriteRegister(uint16_t addr, uint8_t value)
 		_sunsoftAudio->WriteRegister(addr, value);
 	} else {
 		switch(addr) {
-			case 0x3E10: _irqReloadValue = (_irqReloadValue & 0xFF00) | value; break;
-			case 0x3E11: _irqReloadValue = (_irqReloadValue & 0xFF) | (value << 8); break;
+			/*case 0x3E10: _irqReloadValue = (_irqReloadValue & 0xFF00) | value; break;
+			case 0x3E11: _irqReloadValue = (_irqReloadValue & 0xFF) | (value << 8); break;*/
 
 			case 0x3E12:
 				_irqCounter = _irqReloadValue * 5;
@@ -433,8 +425,7 @@ void NsfMapper::InternalSelectTrack(uint8_t trackNumber, bool requestReset)
 		//Need to change track while running
 		//Some NSFs keep the interrupt flag on at all times, preventing us from triggering an IRQ to change tracks
 		//Forcing the console to reset ensures changing tracks always works, even with a bad NSF file
-		//TODO
-		_console->Reset();
+		_emu->GetSystemActionManager()->Reset();
 	} else {
 		//Selecting tracking after a reset
 		_console->GetSoundMixer()->SetFadeRatio(1.0);
@@ -504,8 +495,28 @@ AudioTrackInfo NsfMapper::GetAudioTrackInfo()
 	track.GameTitle = _nsfHeader.SongName;
 	track.SongTitle = _nsfHeader.TrackNames.size() > _songNumber ? _nsfHeader.TrackNames[_songNumber] : "";
 	track.Position = _console->GetPpuFrame().FrameCount / _console->GetFps();
-	track.Length = _nsfHeader.TrackLength[_songNumber] / 1000;
+	track.Length = _nsfHeader.TrackLength[_songNumber] / 1000 + _nsfHeader.TrackFade[_songNumber] / 1000;
+	track.TrackNumber = _songNumber + 1;
+	track.TrackCount = _nsfHeader.TotalSongs;
 	return track;
+}
+
+void NsfMapper::ProcessAudioPlayerAction(AudioPlayerActionParams p)
+{
+	int selectedTrack = _songNumber;
+	switch(p.Action) {
+		case AudioPlayerAction::NextTrack: selectedTrack++; break;
+		case AudioPlayerAction::PrevTrack: selectedTrack--; break;
+		case AudioPlayerAction::SelectTrack: selectedTrack = (int)p.TrackNumber; break;
+	}
+
+	if(selectedTrack < 0) {
+		selectedTrack = _nsfHeader.TotalSongs - 1;
+	} else if(selectedTrack >= _nsfHeader.TotalSongs) {
+		selectedTrack = 0;
+	}
+
+	SelectTrack(selectedTrack);
 }
 
 void NsfMapper::Serialize(Serializer& s)

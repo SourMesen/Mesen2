@@ -93,7 +93,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	
 	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
-	_emu->GetDebugHud()->Draw(outputBuffer, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
+	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
 
 	if(_scaleFilter) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);

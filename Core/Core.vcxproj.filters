@@ -779,7 +779,7 @@
     <ClInclude Include="NES\Mappers\Audio\Vrc6Pulse.h" />
     <ClInclude Include="NES\Mappers\Audio\Vrc6Saw.h" />
     <ClInclude Include="NES\NesConstants.h" />
-    <ClInclude Include="Shared\Audio\AudioTrackInfo.h" />
+    <ClInclude Include="Shared\Audio\AudioPlayerTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		  xmlns:m="clr-namespace:Mesen"
+		  xmlns:v="using:Mesen.Views"
 		  xmlns:vm="using:Mesen.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		  xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -52,6 +53,8 @@
 			</MenuItem>
 			<MenuItem Header="_Tools">
 				<MenuItem Header="Log Window" Click="OnLogWindowClick" />
+				<MenuItem Header="Start recording" Click="OnStartRecordingClick" />
+				<MenuItem Header="Stop recording" Click="OnStopRecordingClick" />
 			</MenuItem>
 			<MenuItem Header="_Debug">
 				<MenuItem Header="_Debugger" Click="OnDebuggerClick">
@@ -71,6 +74,9 @@
 				</MenuItem>
 			</MenuItem>
 		</Menu>
+		<Panel DockPanel.Dock="Bottom" IsVisible="{Binding ShowAudioPlayer}">
+			<v:AudioPlayerView DataContext="{Binding AudioPlayer}" />
+		</Panel>
 		<Panel>
 			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 		</Panel>

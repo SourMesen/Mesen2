@@ -58,6 +58,9 @@ private:
 	EmuSettings* _settings;
 	Emulator* _emu;
 
+	vector<string> _spcPlaylist;
+	uint32_t _spcTrackNumber = 0;
+
 	uint32_t _masterClockRate;
 	ConsoleRegion _region;
 	bool _frameRunning = false;
@@ -118,4 +121,5 @@ public:
 
 	RomFormat GetRomFormat() override;
 	AudioTrackInfo GetAudioTrackInfo() override;
+	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
 };

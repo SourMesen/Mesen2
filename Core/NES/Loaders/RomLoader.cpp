@@ -3,7 +3,6 @@
 #include <unordered_set>
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/CRC32.h"
-#include "Utilities/sha1.h"
 #include "Utilities/ArchiveReader.h"
 #include "Utilities/VirtualFile.h"
 
@@ -79,10 +78,6 @@ bool RomLoader::LoadFile(VirtualFile &romFile)
 		}
 	}
 
-	if(!skipSha1Hash) {
-		_romData.Info.Hash.Sha1 = SHA1::GetHash(fileData);
-	}
-
 	_romData.Info.RomName = romName;
 	_romData.Info.Filename = _filename;
 
@@ -118,7 +113,7 @@ string RomLoader::FindMatchingRomInFile(string filePath, HashInfo hashInfo, int 
 			vector<uint8_t> fileData;
 			VirtualFile innerFile(filePath, file);
 			if(loader.LoadFile(innerFile)) {
-				if(hashInfo.Crc32 == loader._romData.Info.Hash.Crc32 || hashInfo.Sha1.compare(loader._romData.Info.Hash.Sha1) == 0) {
+				if(hashInfo.Crc32 == loader._romData.Info.Hash.Crc32) {
 					return innerFile;
 				}
 				
@@ -132,7 +127,7 @@ string RomLoader::FindMatchingRomInFile(string filePath, HashInfo hashInfo, int 
 		RomLoader loader(true);
 		VirtualFile file = filePath;
 		if(loader.LoadFile(file)) {
-			if(hashInfo.Crc32 == loader._romData.Info.Hash.Crc32 || hashInfo.Sha1.compare(loader._romData.Info.Hash.Sha1) == 0) {
+			if(hashInfo.Crc32 == loader._romData.Info.Hash.Crc32) {
 				return filePath;
 			}
 		}

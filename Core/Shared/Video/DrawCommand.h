@@ -7,6 +7,7 @@ class DrawCommand
 private:
 	int _frameCount;
 	uint32_t* _argbBuffer;
+	FrameInfo _frameInfo;
 	OverscanDimensions _overscan;
 	uint32_t _lineWidth;
 	int32_t _startFrame;
@@ -19,7 +20,7 @@ protected:
 	virtual void InternalDraw() = 0;
 	__forceinline void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
-		if(x < _overscan.Left || x >= (256 - _overscan.Right) || y < _overscan.Top || y >= (239 - _overscan.Bottom)) {
+		if(x < _overscan.Left || x - _overscan.Left >= _frameInfo.Width || y < _overscan.Top || y - _overscan.Top >= _frameInfo.Height) {
 			//Out of bounds, skip drawing
 			return;
 		}
@@ -74,7 +75,7 @@ public:
 	{
 	}
 
-	void Draw(uint32_t* argbBuffer, OverscanDimensions &overscan, uint32_t lineWidth, uint32_t frameNumber)
+	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t lineWidth, uint32_t frameNumber)
 	{
 		if(_startFrame < 0) {
 			//When no start frame was specified, start on the next drawn frame
@@ -83,6 +84,7 @@ public:
 
 		if(_startFrame <= frameNumber) {
 			_argbBuffer = argbBuffer;
+			_frameInfo = frameInfo;
 			_overscan = overscan;
 			_lineWidth = lineWidth;
 			_yScale = lineWidth >= 512 ? 2 : 1;

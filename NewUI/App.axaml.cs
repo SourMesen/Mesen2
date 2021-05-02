@@ -1,10 +1,12 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Mesen.GUI;
 using Mesen.GUI.Config;
 using Mesen.Localization;
 using Mesen.ViewModels;
 using Mesen.Windows;
+using System.IO;
 
 namespace Mesen
 {
@@ -19,6 +21,12 @@ namespace Mesen
 
 		public override void OnFrameworkInitializationCompleted()
 		{
+			EmuApi.InitDll();
+
+			ConfigManager.InitHomeFolder();
+			Directory.CreateDirectory(ConfigManager.HomeFolder);
+			Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
+
 			if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				desktop.MainWindow = new MainWindow {
 					DataContext = new MainWindowViewModel(),
