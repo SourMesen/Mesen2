@@ -232,12 +232,12 @@ void NesSoundMixer::EndFrame(uint32_t time)
 		}
 
 		int16_t currentOutput = GetOutputVolume(false) * 4;
-		blip_add_delta(_blipBufLeft, stamp, (int)(currentOutput - _previousOutputLeft));
+		blip_add_delta(_blipBufLeft, stamp, (int)((currentOutput - _previousOutputLeft) * _fadeRatio));
 		_previousOutputLeft = currentOutput;
 
 		if(_hasPanning) {
 			currentOutput = GetOutputVolume(true) * 4;
-			blip_add_delta(_blipBufRight, stamp, (int)(currentOutput - _previousOutputRight));
+			blip_add_delta(_blipBufRight, stamp, (int)((currentOutput - _previousOutputRight) * _fadeRatio));
 			_previousOutputRight = currentOutput;
 		}
 	}

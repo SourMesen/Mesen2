@@ -205,6 +205,7 @@ void NsfMapper::ClearIrq()
 
 void NsfMapper::ClockLengthAndFadeCounters()
 {
+	NesSoundMixer* mixer = _console->GetSoundMixer();
 	if(_trackEndCounter > 0) {
 		_trackEndCounter--;
 		if(_trackEndCounter == 0) {
@@ -212,21 +213,21 @@ void NsfMapper::ClockLengthAndFadeCounters()
 		}
 	}
 
-	//TODO
-	/*if((_trackEndCounter < 0 || _allowSilenceDetection) && _console->GetSettings()->GetNsfAutoDetectSilenceDelay() > 0) {
+	if((_trackEndCounter < 0 || _allowSilenceDetection) && _silenceDetectDelay > 0) {
 		//No track length specified
-		if(_console->GetSoundMixer()->GetMuteFrameCount() * SoundMixer::CycleLength > _silenceDetectDelay) {
+		if(mixer->GetMuteFrameCount() * NesSoundMixer::CycleLength > _silenceDetectDelay) {
 			//Auto detect end of track after AutoDetectSilenceDelay (in ms) has gone by without sound
 			_trackEnded = true;
-			_console->GetSoundMixer()->ResetMuteFrameCount();
+			_trackFadeCounter = 0;
+			mixer->ResetMuteFrameCount();
 		}
-	}*/
+	}
 
 	if(_trackEnded) {
 		if(_trackFadeCounter > 0) {
 			if(_fadeLength != 0) {
 				double fadeRatio = (double)_trackFadeCounter / (double)_fadeLength * 1.2;
-				_console->GetSoundMixer()->SetFadeRatio(std::max(0.0, fadeRatio - 0.2));
+				mixer->SetFadeRatio(std::max(0.0, fadeRatio - 0.2));
 			}
 			_trackFadeCounter--;
 		}
@@ -451,13 +452,20 @@ ConsoleFeatures NsfMapper::GetAvailableFeatures()
 
 AudioTrackInfo NsfMapper::GetAudioTrackInfo()
 {
+	NesConfig& cfg = _console->GetNesConfig(); 
+
 	AudioTrackInfo track = {};
 	track.Artist = _nsfHeader.ArtistName;
-	track.Comment = _nsfHeader.RipperName;
+	string copyright = _nsfHeader.CopyrightHolder;
+	track.Comment = (copyright.size() > 0 ? copyright + " " : "") + _nsfHeader.RipperName;
 	track.GameTitle = _nsfHeader.SongName;
 	track.SongTitle = _nsfHeader.TrackNames.size() > _songNumber ? _nsfHeader.TrackNames[_songNumber] : "";
 	track.Position = _console->GetPpuFrame().FrameCount / _console->GetFps();
-	track.Length = _nsfHeader.TrackLength[_songNumber] / 1000 + _nsfHeader.TrackFade[_songNumber] / 1000;
+	if(_nsfHeader.TrackLength[_songNumber] > 0) {
+		track.Length = _nsfHeader.TrackLength[_songNumber] / 1000 + _nsfHeader.TrackFade[_songNumber] / 1000;
+	} else if(cfg.NsfMoveToNextTrackAfterTime) {
+		track.Length = cfg.NsfMoveToNextTrackTime;
+	}
 	track.TrackNumber = _songNumber + 1;
 	track.TrackCount = _nsfHeader.TotalSongs;
 	return track;
