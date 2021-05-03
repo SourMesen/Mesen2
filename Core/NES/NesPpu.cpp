@@ -1198,6 +1198,7 @@ void NesPpu::SendFrame()
 	UpdateGrayscaleAndIntensifyBits();
 
 	if(_console->IsVsMainConsole()) {
+		_emu->ProcessEndOfFrame();
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 

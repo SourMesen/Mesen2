@@ -236,7 +236,6 @@ void NesConsole::RunFrame()
 			RunVsSubConsole();
 		}
 	}
-	_emu->ProcessEndOfFrame();
 }
 
 void NesConsole::RunVsSubConsole()

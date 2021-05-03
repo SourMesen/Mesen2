@@ -79,6 +79,15 @@ void NsfMapper::InitMapper(RomData& romData)
 	if(_nsfHeader.SoundChips & NsfSoundChips::FDS) {
 		AddRegisterRange(0x4040, 0x4092, MemoryOperation::Any);
 	}
+
+	//Reset/IRQ vector
+	AddRegisterRange(0xFFFC, 0xFFFF, MemoryOperation::Read);
+
+	//Set PLAY/INIT addresses in NSF code
+	_nsfBios[0x02] = _nsfHeader.InitAddress & 0xFF;
+	_nsfBios[0x03] = (_nsfHeader.InitAddress >> 8) & 0xFF;
+	_nsfBios[0x14] = _nsfHeader.PlayAddress & 0xFF;
+	_nsfBios[0x15] = (_nsfHeader.PlayAddress >> 8) & 0xFF;
 }
 
 void NsfMapper::Reset(bool softReset)
@@ -87,28 +96,12 @@ void NsfMapper::Reset(bool softReset)
 		_songNumber = _nsfHeader.StartingSong - 1;
 	}
 
+	//INIT logic
 	NesMemoryManager* mm = _console->GetMemoryManager();
 
-	//INIT logic
-	
-	//Set PLAY/INIT addresses in NSF code
-	_nsfBios[0x02] = _nsfHeader.InitAddress & 0xFF;
-	_nsfBios[0x03] = (_nsfHeader.InitAddress >> 8) & 0xFF;
-
-	_nsfBios[0x05] = _nsfHeader.PlayAddress & 0xFF;
-	_nsfBios[0x06] = (_nsfHeader.PlayAddress >> 8) & 0xFF;
-	_nsfBios[0x14] = _nsfHeader.PlayAddress & 0xFF;
-	_nsfBios[0x15] = (_nsfHeader.PlayAddress >> 8) & 0xFF;
-
-	//Clear internal RAM
-	for(uint16_t i = 0; i < 0x800; i++) {
-		mm->Write(i, 0, MemoryOperationType::Write);
-	}
-
-	//Clear work ram
-	for(uint16_t i = 0x6000; i < 0x7FFF; i++) {
-		mm->Write(i, 0, MemoryOperationType::Write);
-	}
+	//Clear internal + work RAM
+	memset(mm->GetInternalRAM(), 0, NesMemoryManager::InternalRAMSize);
+	memset(GetWorkRam(), 0, GetWorkRamSize());
 
 	//Reset APU
 	for(uint16_t i = 0x4000; i < 0x4013; i++) {
@@ -153,7 +146,7 @@ void NsfMapper::Reset(bool softReset)
 	state.Y = 0;
 
 	_console->GetCpu()->SetIrqMask((uint8_t)IRQSource::External);
-	_irqCounter = GetIrqReloadValue();
+	_irqCounter = 0;
 
 	_allowSilenceDetection = false;
 	_trackEndCounter = -1;
@@ -168,9 +161,6 @@ void NsfMapper::Reset(bool softReset)
 	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
 
 	InternalSelectTrack(_songNumber);
-
-	//Reset/IRQ vector
-	AddRegisterRange(0xFFFC, 0xFFFF, MemoryOperation::Read);
 }
 
 void NsfMapper::GetMemoryRanges(MemoryRanges& ranges)
@@ -285,10 +275,12 @@ void NsfMapper::ProcessCpuClock()
 	}
 	*/
 
-	_irqCounter--;
-	if(_irqCounter == 0) {
-		_irqCounter = GetIrqReloadValue();
-		TriggerIrq();
+	if(_irqCounter > 0) {
+		_irqCounter--;
+		if(_irqCounter == 0) {
+			_irqCounter = GetIrqReloadValue();
+			TriggerIrq();
+		}
 	}
 
 	ClockLengthAndFadeCounters();
@@ -354,7 +346,10 @@ void NsfMapper::WriteRegister(uint16_t addr, uint8_t value)
 		_sunsoftAudio->WriteRegister(addr, value);
 	} else {
 		switch(addr) {
-			case 0x3F00: ClearIrq(); break;
+			case 0x3F00:
+				_irqCounter = GetIrqReloadValue();
+				ClearIrq();
+				break;
 
 			//MMC5 multiplication
 			case 0x5205: _mmc5MultiplierValues[0] = value; break;

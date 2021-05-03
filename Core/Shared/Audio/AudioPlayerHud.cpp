@@ -56,10 +56,10 @@ void AudioPlayerHud::Draw()
 	_hud->DrawString(15, 218, std::to_string(trackInfo.TrackNumber) + " / " + std::to_string(trackInfo.TrackCount), 0xFFFFFF, 0, 1);
 
 	if(trackInfo.Length <= 0) {
-		_hud->DrawString(220, 208, position, 0xFFFFFF, 0, 1);
+		_hud->DrawString(215, 208, " " + position + "   ", 0xFFFFFF, 0, 1);
 	} else {
 		position += " / " + FormatSeconds(trackInfo.Length);
-		_hud->DrawString(182, 208, position, 0xFFFFFF, 0, 1);
+		_hud->DrawString(177, 208, " " + position + "   ", 0xFFFFFF, 0, 1);
 
 		constexpr int barWidth = 222;
 		_hud->DrawRectangle(15, 199, barWidth + 4, 6, 0xBBBBBB, false, 1);

@@ -92,9 +92,6 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 	_dmcDmaRunning = false;
 	_lastCrashWarning = 0;
 
-	//Used by NSF code to disable Frame Counter & DMC interrupts
-	_irqMask = 0xFF;
-
 	//Use _memoryManager->Read() directly to prevent clocking the PPU/APU when setting PC at reset
 	_state.PC = _memoryManager->Read(NesCpu::ResetVector) | _memoryManager->Read(NesCpu::ResetVector+1) << 8;
 
@@ -102,6 +99,9 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 		SetFlags(PSFlags::Interrupt);
 		_state.SP -= 0x03;
 	} else {
+		//Used by NSF code to disable Frame Counter & DMC interrupts
+		_irqMask = 0xFF;
+
 		_state.A = 0;
 		_state.SP = 0xFD;
 		_state.X = 0;
