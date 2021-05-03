@@ -34,14 +34,11 @@ void NsfMapper::InitMapper()
 	_console->GetSettings()->ClearFlags(EmulationFlags::Paused);
 	_console->GetSettings()->SetFlags(EmulationFlags::NsfPlayerEnabled);*/
 
-	SetCpuMemoryMapping(0x3F00, 0x3FFF, PrgMemoryType::WorkRam, 0x2000, MemoryAccessType::Read);
-	memcpy(GetWorkRam() + 0x2000, _nsfBios, 0x100);
-
 	//Clear all register settings
 	RemoveRegisterRange(0x0000, 0xFFFF, MemoryOperation::Any);
 
-	AddRegisterRange(0x3E00, 0x3E13, MemoryOperation::Read);
-	AddRegisterRange(0x3E10, 0x3E13, MemoryOperation::Write);
+	AddRegisterRange(0x3F00, 0x3F1F, MemoryOperation::Read);
+	AddRegisterRange(0x3F00, 0x3F00, MemoryOperation::Write);
 
 	//NSF registers
 	AddRegisterRange(0x5FF6, 0x5FFF, MemoryOperation::Write);
@@ -51,24 +48,7 @@ void NsfMapper::InitMapper(RomData& romData)
 {
 	_nsfHeader = romData.Info.NsfInfo;
 
-	_hasBankSwitching = HasBankSwitching();
-	if(!_hasBankSwitching) {
-		//Update bank config to allow BIOS to select the right banks on init
-		int8_t startBank = (_nsfHeader.LoadAddress / 0x1000);
-		for(int32_t i = 0; i < (int32_t)GetPRGPageCount(); i++) {
-			if((startBank + i) > 0x0F) {
-				break;
-			}
-			if(startBank + i - 8 >= 0) {
-				_nsfHeader.BankSetup[startBank + i - 8] = i;
-			}
-		}
-	}
-
 	_songNumber = _nsfHeader.StartingSong - 1;
-	_ntscSpeed = (uint16_t)(_nsfHeader.PlaySpeedNtsc * (NesConstants::ClockRateNtsc / 1000000.0));
-	_palSpeed = (uint16_t)(_nsfHeader.PlaySpeedPal * (NesConstants::ClockRatePal / 1000000.0));
-	_dendySpeed = (uint16_t)(_nsfHeader.PlaySpeedPal * (NesConstants::ClockRateDendy / 1000000.0));
 
 	if(_nsfHeader.SoundChips & NsfSoundChips::MMC5) {
 		AddRegisterRange(0x5000, 0x5015, MemoryOperation::Write); //Registers
@@ -107,18 +87,73 @@ void NsfMapper::Reset(bool softReset)
 		_songNumber = _nsfHeader.StartingSong - 1;
 	}
 
-	_needInit = true;
-	_irqEnabled = false;
-	_irqCounter = 0;
+	NesMemoryManager* mm = _console->GetMemoryManager();
+
+	//INIT logic
 	
-	switch(_emu->GetRegion()) {
-		default:
-		case ConsoleRegion::Ntsc: _irqReloadValue = _ntscSpeed; break;
-		case ConsoleRegion::Pal: _irqReloadValue = _palSpeed; break;
-		case ConsoleRegion::Dendy: _irqReloadValue = _dendySpeed; break;
+	//Set PLAY/INIT addresses in NSF code
+	_nsfBios[0x02] = _nsfHeader.InitAddress & 0xFF;
+	_nsfBios[0x03] = (_nsfHeader.InitAddress >> 8) & 0xFF;
+
+	_nsfBios[0x05] = _nsfHeader.PlayAddress & 0xFF;
+	_nsfBios[0x06] = (_nsfHeader.PlayAddress >> 8) & 0xFF;
+	_nsfBios[0x14] = _nsfHeader.PlayAddress & 0xFF;
+	_nsfBios[0x15] = (_nsfHeader.PlayAddress >> 8) & 0xFF;
+
+	//Clear internal RAM
+	for(uint16_t i = 0; i < 0x800; i++) {
+		mm->Write(i, 0, MemoryOperationType::Write);
 	}
 
-	_irqStatus = NsfIrqType::None;
+	//Clear work ram
+	for(uint16_t i = 0x6000; i < 0x7FFF; i++) {
+		mm->Write(i, 0, MemoryOperationType::Write);
+	}
+
+	//Reset APU
+	for(uint16_t i = 0x4000; i < 0x4013; i++) {
+		mm->Write(i, 0, MemoryOperationType::Write);
+	}
+
+	mm->Write(0x4015, 0, MemoryOperationType::Write);
+	mm->Write(0x4015, 0x0F, MemoryOperationType::Write);
+	mm->Write(0x4017, 0x40, MemoryOperationType::Write);
+
+	//Disable PPU
+	mm->Write(0x2000, 0, MemoryOperationType::Write);
+	mm->Write(0x2001, 0, MemoryOperationType::Write);
+
+	//Setup bankswitching
+	_hasBankSwitching = HasBankSwitching();
+	if(!_hasBankSwitching) {
+		//Update bank config to select the right banks on init when no bankswitching is setup in header
+		int8_t startBank = (_nsfHeader.LoadAddress / 0x1000);
+		for(int32_t i = 0; i < (int32_t)GetPRGPageCount(); i++) {
+			if((startBank + i) > 0x0F) {
+				break;
+			}
+			if(startBank + i - 8 >= 0) {
+				_nsfHeader.BankSetup[startBank + i - 8] = i;
+			}
+		}
+	}
+
+	for(uint16_t i = 0; i < 8; i++) {
+		WriteRegister(0x5FF8 + i, _nsfHeader.BankSetup[i]);
+	}
+
+	if(_nsfHeader.SoundChips & NsfSoundChips::FDS) {
+		WriteRegister(0x5FF6, _nsfHeader.BankSetup[6]);
+		WriteRegister(0x5FF7, _nsfHeader.BankSetup[7]);
+	}
+
+	NesCpuState& state = _console->GetCpu()->GetState();
+	state.A = _songNumber;
+	state.X = (_nsfHeader.Flags & 0x01) ? 1 : 0; //PAL = 1, NTSC = 0
+	state.Y = 0;
+
+	_console->GetCpu()->SetIrqMask((uint8_t)IRQSource::External);
+	_irqCounter = GetIrqReloadValue();
 
 	_allowSilenceDetection = false;
 	_trackEndCounter = -1;
@@ -132,7 +167,7 @@ void NsfMapper::Reset(bool softReset)
 	_namcoAudio.reset(new Namco163Audio(_console));
 	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
 
-	InternalSelectTrack(_songNumber, false);
+	InternalSelectTrack(_songNumber);
 
 	//Reset/IRQ vector
 	AddRegisterRange(0xFFFC, 0xFFFF, MemoryOperation::Read);
@@ -142,10 +177,20 @@ void NsfMapper::GetMemoryRanges(MemoryRanges& ranges)
 {
 	BaseMapper::GetMemoryRanges(ranges);
 	
-	//Allows us to override the PPU's range (0x3E00 - 0x3FFF)
+	//Allows us to override the PPU's range (0x3F00 - 0x3F1F)
 	ranges.SetAllowOverride();
-	ranges.AddHandler(MemoryOperation::Read, 0x3E00, 0x3FFF);
-	ranges.AddHandler(MemoryOperation::Write, 0x3E00, 0x3FFF);
+	ranges.AddHandler(MemoryOperation::Read, 0x3F00, 0x3F1F);
+	ranges.AddHandler(MemoryOperation::Write, 0x3F00, 0x3F1F);
+}
+
+uint32_t NsfMapper::GetIrqReloadValue()
+{
+	switch(_emu->GetRegion()) {
+		default:
+		case ConsoleRegion::Ntsc: return (uint16_t)(_nsfHeader.PlaySpeedNtsc * (NesConstants::ClockRateNtsc / 1000000.0)); break;
+		case ConsoleRegion::Pal: return (uint16_t)(_nsfHeader.PlaySpeedPal * (NesConstants::ClockRatePal / 1000000.0)); break;
+		case ConsoleRegion::Dendy: return (uint16_t)(_nsfHeader.PlaySpeedPal * (NesConstants::ClockRateDendy / 1000000.0)); break;
+	}
 }
 
 bool NsfMapper::HasBankSwitching()
@@ -158,20 +203,13 @@ bool NsfMapper::HasBankSwitching()
 	return false;
 }
 
-void NsfMapper::TriggerIrq(NsfIrqType type)
+void NsfMapper::TriggerIrq()
 {
-	if(type == NsfIrqType::Init) {
-		_trackEnded = false;
-	}
-
-	_debugIrqStatus = type;
-	_irqStatus = type;
 	_console->GetCpu()->SetIrqSource(IRQSource::External);
 }
 
 void NsfMapper::ClearIrq()
 {
-	_irqStatus = NsfIrqType::None;
 	_console->GetCpu()->ClearIrqSource(IRQSource::External);
 }
 
@@ -221,7 +259,7 @@ void NsfMapper::SelectNextTrack()
 			_songNumber = (_songNumber + 1) % _nsfHeader.TotalSongs;
 		}
 	}
-	InternalSelectTrack(_songNumber);
+	SelectTrack(_songNumber);
 	_trackEnded = false;
 }
 
@@ -246,19 +284,11 @@ void NsfMapper::ProcessCpuClock()
 		}
 	}
 	*/
-	_console->GetCpu()->SetIrqMask((uint8_t)IRQSource::External);
 
-	if(_needInit) {
-		TriggerIrq(NsfIrqType::Init);
-		_needInit = false;
-	}
-
-	if(_irqEnabled) {
-		_irqCounter--;
-		if(_irqCounter == 0) {
-			_irqCounter = _irqReloadValue;
-			TriggerIrq(NsfIrqType::Play);
-		}
+	_irqCounter--;
+	if(_irqCounter == 0) {
+		_irqCounter = GetIrqReloadValue();
+		TriggerIrq();
 	}
 
 	ClockLengthAndFadeCounters();
@@ -289,55 +319,18 @@ uint8_t NsfMapper::ReadRegister(uint16_t addr)
 		return _fdsAudio->ReadRegister(addr);
 	} else if((_nsfHeader.SoundChips & NsfSoundChips::Namco) && addr >= 0x4800 && addr <= 0x4FFF) {
 		return _namcoAudio->ReadRegister(addr);
+	} else if(addr >= 0x3F00 && addr <= 0x3F1F) {
+		return _nsfBios[addr & 0x1F];
 	} else {
 		switch(addr) {
-			case 0x3E00: return _nsfHeader.InitAddress & 0xFF;
-			case 0x3E01: return (_nsfHeader.InitAddress >> 8) & 0xFF;
-			case 0x3E02: return _nsfHeader.PlayAddress & 0xFF;
-			case 0x3E03: return (_nsfHeader.PlayAddress >> 8) & 0xFF;
-			
-			case 0x3E04:
-			case 0x3E05:
-				switch(_console->GetRegion()) {
-					default:
-					case ConsoleRegion::Ntsc: return _ntscSpeed & 0xFF;
-					case ConsoleRegion::Pal: return _palSpeed & 0xFF;
-					case ConsoleRegion::Dendy: return _dendySpeed & 0xFF;
-				}
-				break;
-
-			case 0x3E06:
-			case 0x3E07:
-				switch(_console->GetRegion()) {
-					default:
-					case ConsoleRegion::Ntsc: return (_ntscSpeed >> 8) & 0xFF;
-					case ConsoleRegion::Pal: return (_palSpeed >> 8) & 0xFF;
-					case ConsoleRegion::Dendy: return (_dendySpeed >> 8) & 0xFF;
-				}
-				break;
-
-			case 0x3E08: case 0x3E09: case 0x3E0A: case 0x3E0B:
-			case 0x3E0C: case 0x3E0D: case 0x3E0E: case 0x3E0F:
-				return _nsfHeader.BankSetup[addr & 0x07];
-
-			case 0x3E10: return _songNumber;
-
-			case 0x3E11: return _console->GetRegion() == ConsoleRegion::Pal ? 0x01 : 0x00;
-
-			case 0x3E12: {
-				NsfIrqType result = _irqStatus;
-				ClearIrq();
-				return (uint8_t)result;
-			}
-
-			case 0x3E13: return _nsfHeader.SoundChips & 0x3F;
-
 			case 0x5205: return (_mmc5MultiplierValues[0] * _mmc5MultiplierValues[1]) & 0xFF;
 			case 0x5206: return (_mmc5MultiplierValues[0] * _mmc5MultiplierValues[1]) >> 8;
 
 			//Reset/irq vectors
-			case 0xFFFC: case 0xFFFD: case 0xFFFE: case 0xFFFF:
-				return _nsfBios[addr & 0xFF];
+			case 0xFFFC: return 0x00;
+			case 0xFFFD: return 0x3F;
+			case 0xFFFE: return 0x10;
+			case 0xFFFF: return 0x3F;
 		}
 	}
 
@@ -361,40 +354,19 @@ void NsfMapper::WriteRegister(uint16_t addr, uint8_t value)
 		_sunsoftAudio->WriteRegister(addr, value);
 	} else {
 		switch(addr) {
-			/*case 0x3E10: _irqReloadValue = (_irqReloadValue & 0xFF00) | value; break;
-			case 0x3E11: _irqReloadValue = (_irqReloadValue & 0xFF) | (value << 8); break;*/
-
-			case 0x3E12:
-				_irqCounter = _irqReloadValue * 5;
-				_irqEnabled = (value > 0);
-				break;
-
-			case 0x3E13:
-				_irqCounter = _irqReloadValue;
-				break;
+			case 0x3F00: ClearIrq(); break;
 
 			//MMC5 multiplication
 			case 0x5205: _mmc5MultiplierValues[0] = value; break;
 			case 0x5206: _mmc5MultiplierValues[1] = value; break;
 
-			case 0x5FF6: case 0x5FF7: {
-				uint16_t addrOffset = (addr == 0x5FF7 ? 0x1000 : 0x0000);
-				if(value == 0xFF || value == 0xFE) {
-					if(!_hasBankSwitching && _nsfHeader.LoadAddress < 0x7000) {
-						//Load address = 0x6000, put bank 0 at $6000
-						SetCpuMemoryMapping(0x6000 + addrOffset, 0x6FFF + addrOffset, value & 0x01, PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
-					} else if(!_hasBankSwitching && addrOffset == 0x1000 && _nsfHeader.LoadAddress < 0x8000) {
-						//Load address = 0x7000, put bank 0 at $7000
-						SetCpuMemoryMapping(0x6000 + addrOffset, 0x6FFF + addrOffset, 0, PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
-					} else {
-						//Set ram at $6000/7000 (default behavior)
-						SetCpuMemoryMapping(0x6000 + addrOffset, 0x6FFF + addrOffset, value & 0x01, PrgMemoryType::WorkRam);
-					}
-				} else {
-					SetCpuMemoryMapping(0x6000 + addrOffset, 0x6FFF + addrOffset, value, PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
-				}
+			case 0x5FF6:
+				SetCpuMemoryMapping(0x6000, 0x6FFF, value, PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
 				break;
-			}
+
+			case 0x5FF7:
+				SetCpuMemoryMapping(0x7000, 0x7FFF, value, PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
+				break;
 
 			case 0x5FF8: case 0x5FF9: case 0x5FFA: case 0x5FFB:
 			case 0x5FFC: case 0x5FFD: case 0x5FFE: case 0x5FFF:
@@ -413,62 +385,57 @@ void NsfMapper::WriteRegister(uint16_t addr, uint8_t value)
 	}
 }
 
-uint32_t NsfMapper::GetClockRate()
-{
-	return ((_nsfHeader.Flags & 0x01) ? NesConstants::ClockRatePal : NesConstants::ClockRateNtsc);
-}
-
-void NsfMapper::InternalSelectTrack(uint8_t trackNumber, bool requestReset)
+void NsfMapper::InternalSelectTrack(uint8_t trackNumber)
 {
 	_songNumber = trackNumber;
-	if(requestReset) {
-		//Need to change track while running
-		//Some NSFs keep the interrupt flag on at all times, preventing us from triggering an IRQ to change tracks
-		//Forcing the console to reset ensures changing tracks always works, even with a bad NSF file
-		_emu->GetSystemActionManager()->Reset();
-	} else {
-		//Selecting tracking after a reset
-		_console->GetSoundMixer()->SetFadeRatio(1.0);
-		NesConfig& cfg = _console->GetNesConfig();
 
-		//Set track length/fade counters (NSFe)
-		if(_nsfHeader.TrackLength[trackNumber] >= 0) {
-			_trackEndCounter = (int32_t)((double)_nsfHeader.TrackLength[trackNumber] / 1000.0 * GetClockRate());
+	//Selecting tracking after a reset
+	_console->GetSoundMixer()->SetFadeRatio(1.0);
+	NesConfig& cfg = _console->GetNesConfig();
+
+	uint32_t clockRate = _emu->GetMasterClockRate();
+
+	//Set track length/fade counters (NSFe)
+	if(_nsfHeader.TrackLength[trackNumber] >= 0) {
+		_trackEndCounter = (int32_t)((double)_nsfHeader.TrackLength[trackNumber] / 1000.0 * clockRate);
+		_allowSilenceDetection = false;
+	} else if(_nsfHeader.TotalSongs > 1) {
+		//Only apply a maximum duration to multi-track NSFs
+		//Single track NSFs will loop or restart after a portion of silence
+		//Substract 1 sec from default track time to account for 1 sec default fade time
+		if(cfg.NsfMoveToNextTrackAfterTime) {
+			_trackEndCounter = (cfg.NsfMoveToNextTrackTime - 1) * clockRate;
+			_allowSilenceDetection = true;
+		} else {
+			_trackEndCounter = 0;
 			_allowSilenceDetection = false;
-		} else if(_nsfHeader.TotalSongs > 1) {
-			//Only apply a maximum duration to multi-track NSFs
-			//Single track NSFs will loop or restart after a portion of silence
-			//Substract 1 sec from default track time to account for 1 sec default fade time
-			if(cfg.NsfMoveToNextTrackAfterTime) {
-				_trackEndCounter = (cfg.NsfMoveToNextTrackTime - 1) * GetClockRate();
-				_allowSilenceDetection = true;
-			} else {
-				_trackEndCounter = 0;
-				_allowSilenceDetection = false;
-			}
 		}
-		if(_nsfHeader.TrackFade[trackNumber] >= 0) {
-			_trackFadeCounter = (int32_t)((double)_nsfHeader.TrackFade[trackNumber] / 1000.0 * GetClockRate());
-		} else {
-			//Default to 1 sec fade if none is specified (negative number)
-			_trackFadeCounter = GetClockRate();
-		}
-
-		if(cfg.NsfAutoDetectSilence) {
-			_silenceDetectDelay = (uint32_t)((double)cfg.NsfAutoDetectSilenceDelay / 1000.0 * GetClockRate());
-		} else {
-			_silenceDetectDelay = 0;
-		}
-
-		_fadeLength = _trackFadeCounter;
-		TriggerIrq(NsfIrqType::Init);
 	}
+	if(_nsfHeader.TrackFade[trackNumber] >= 0) {
+		_trackFadeCounter = (int32_t)((double)_nsfHeader.TrackFade[trackNumber] / 1000.0 * clockRate);
+	} else {
+		//Default to 1 sec fade if none is specified (negative number)
+		_trackFadeCounter = clockRate;
+	}
+
+	if(cfg.NsfAutoDetectSilence) {
+		_silenceDetectDelay = (uint32_t)((double)cfg.NsfAutoDetectSilenceDelay / 1000.0 * clockRate);
+	} else {
+		_silenceDetectDelay = 0;
+	}
+
+	_fadeLength = _trackFadeCounter;
 }
 
 void NsfMapper::SelectTrack(uint8_t trackNumber)
 {
 	if(trackNumber < _nsfHeader.TotalSongs) {
-		InternalSelectTrack(trackNumber);
+		_songNumber = trackNumber;
+
+		//Need to change track while running
+		//Some NSFs keep the interrupt flag on at all times, preventing us from triggering an IRQ to change tracks
+		//Forcing the console to reset ensures changing tracks always works, even with a bad NSF file
+		_emu->GetSystemActionManager()->Reset();
 	}
 }
 
@@ -531,8 +498,7 @@ void NsfMapper::Serialize(Serializer& s)
 	s.Stream(_sunsoftAudio.get());
 
 	s.Stream(
-		_needInit, _irqEnabled, _irqReloadValue, _irqCounter, _irqStatus, _debugIrqStatus, _mmc5MultiplierValues[0], _mmc5MultiplierValues[1],
-		_trackEndCounter, _trackFadeCounter, _fadeLength, _silenceDetectDelay, _trackEnded, _allowSilenceDetection, _hasBankSwitching, _ntscSpeed,
-		_palSpeed, _dendySpeed, _songNumber
+		_irqCounter, _mmc5MultiplierValues[0], _mmc5MultiplierValues[1], _trackEndCounter, _trackFadeCounter,
+		_fadeLength, _silenceDetectDelay, _trackEnded, _allowSilenceDetection, _hasBankSwitching, _songNumber
 	);
 }
