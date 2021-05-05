@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "DirectXTK/SpriteBatch.h"
-#include "DirectXTK/SpriteFont.h"
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/Video/VideoDecoder.h"
 #include "Core/Shared/Video/VideoRenderer.h"
@@ -242,10 +241,6 @@ HRESULT Renderer::CreateNesBuffers()
 	////////////////////////////////////////////////////////////////////////////
 	_spriteBatch.reset(new SpriteBatch(_pDeviceContext));
 
-	_largeFont.reset(new SpriteFont(_pd3dDevice, L"Resources\\Font.64.spritefont"));
-	_font.reset(new SpriteFont(_pd3dDevice, L"Resources\\Font.24.spritefont"));
-	_font->SetDefaultCharacter('?');
-
 	return S_OK;
 }
 
@@ -470,22 +465,6 @@ ID3D11ShaderResourceView* Renderer::GetShaderResourceView(ID3D11Texture2D* textu
 	return shaderResourceView;
 }
 
-void Renderer::DrawString(string message, float x, float y, DirectX::FXMVECTOR color, float scale, SpriteFont* font)
-{
-	std::wstring textStr = utf8::utf8::decode(message);
-	DrawString(textStr, x, y, color, scale, font);
-}
-
-void Renderer::DrawString(std::wstring message, float x, float y, DirectX::FXMVECTOR color, float scale, SpriteFont* font)
-{
-	const wchar_t *text = message.c_str();
-	if(font == nullptr) {
-		font = _font.get();
-	}
-
-	font->DrawString(_spriteBatch.get(), text, XMFLOAT2(x+_leftMargin, y+_topMargin), color, 0.0f, XMFLOAT2(0, 0), scale);
-}
-
 void Renderer::UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height)
 {
 	SetScreenSize(width, height);
@@ -512,7 +491,6 @@ void Renderer::DrawScreen()
 
 		if(_frameChanged) {
 			_frameChanged = false;
-			_renderedFrameCount++;
 		}
 	}
 
@@ -543,18 +521,11 @@ void Renderer::DrawScreen()
 	_spriteBatch->Draw(_pTextureSrv, destRect);
 }
 
-void Renderer::DrawPauseScreen()
-{
-	const static XMVECTORF32 transparentBlue = { { { 1.0f, 0.6f, 0.0f, 0.66f } } };
-	DrawString("I", 15, 15, transparentBlue, 2.0f, _font.get());
-	DrawString("I", 32, 15, transparentBlue, 2.0f, _font.get());
-}
-
 void Renderer::Render()
 {
 	bool paused = _emu->IsPaused();
 
-	if(_noUpdateCount > 10 || _frameChanged || paused || IsMessageShown()) {
+	if(true) {
 		_noUpdateCount = 0;
 		
 		auto lock = _frameLock.AcquireSafe();
@@ -579,15 +550,6 @@ void Renderer::Render()
 		//Draw screen
 		DrawScreen();
 
-		if(_emu->IsRunning()) {
-			if(paused) {
-				DrawPauseScreen();
-			}
-			DrawCounters();
-		}
-
-		DrawToasts();
-
 		_spriteBatch->End();
 
 		// Present the information rendered to the back buffer to the front buffer (the screen)
@@ -605,22 +567,4 @@ void Renderer::Render()
 	} else {
 		_noUpdateCount++;
 	}
-}
-
-void Renderer::DrawString(std::wstring message, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t opacity)
-{
-	XMVECTORF32 color = { (float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, (float)opacity / 255.0f };
-	_font->DrawString(_spriteBatch.get(), message.c_str(), XMFLOAT2((float)x+_leftMargin, (float)y+_topMargin), color);
-}
-
-float Renderer::MeasureString(std::wstring text)
-{
-	XMVECTOR measure = _font->MeasureString(text.c_str());
-	float* measureF = (float*)&measure;
-	return measureF[0];
-}
-
-bool Renderer::ContainsCharacter(wchar_t character)
-{
-	return _font->ContainsCharacter(character);
 }

@@ -10,7 +10,10 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
 #include <windows.h>
-#include <Commdlg.h>
+#include <mmsystem.h>
+
+#undef min
+#undef max
 
 #pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -23,7 +26,6 @@
 #include <memory.h>
 #include <tchar.h>
 
-#include <mmsystem.h>
 #include <stdio.h>
 
 #include <d3d11_1.h>

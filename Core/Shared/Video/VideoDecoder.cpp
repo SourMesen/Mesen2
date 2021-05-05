@@ -11,6 +11,7 @@
 #include "Shared/Video/ScaleFilter.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/InputHud.h"
+#include "Shared/Video/SystemHud.h"
 #include "SNES/CartTypes.h"
 
 VideoDecoder::VideoDecoder(shared_ptr<Emulator> emu)
@@ -23,6 +24,7 @@ VideoDecoder::VideoDecoder(shared_ptr<Emulator> emu)
 	UpdateVideoFilter();
 	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
 	_inputHud.reset(new InputHud(emu.get()));
+	_systemHud.reset(new SystemHud(emu.get()));
 }
 
 VideoDecoder::~VideoDecoder()
@@ -93,6 +95,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	
 	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
+	_systemHud->Draw(frameInfo, _videoFilter->GetOverscan());
 	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
 
 	if(_scaleFilter) {

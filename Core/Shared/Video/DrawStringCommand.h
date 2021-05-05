@@ -6,13 +6,17 @@ class DrawStringCommand : public DrawCommand
 {
 private:
 	int _x, _y, _color, _backColor;
+	int _maxWidth = 0;
 	string _text;
 
 	//Taken from FCEUX's LUA code
-	const int _tabSpace = 4;
-	const uint8_t _font[792] = {
+	static constexpr int _tabSpace = 4;
+
+	static unordered_map<int, char*> _jpFont;
+
+	static constexpr uint8_t _font[792] = {
 		6,  0,  0,  0,  0,  0,  0,  0,	// 0x20 - Spacebar
-		3, 64, 64, 64, 64, 64,  0, 64,
+		2,128,128,128,128,128,  0,128,
 		5, 80, 80, 80,  0,  0,  0,  0,
 		6, 80, 80,248, 80,248, 80, 80,
 		6, 32,120,160,112, 40,240, 32,
@@ -20,7 +24,7 @@ private:
 		6, 96,144,160, 64,168,144,104,
 		3, 64, 64,  0,  0,  0,  0,  0,
 		4, 32, 64, 64, 64, 64, 64, 32,
-		4, 64, 32, 32, 32, 32, 32, 64,
+		4,128, 64, 64, 64, 64, 64,128,
 		6,  0, 80, 32,248, 32, 80,  0,
 		6,  0, 32, 32,248, 32, 32,  0,
 		3,  0,  0,  0,  0,  0, 64,128,
@@ -109,13 +113,17 @@ private:
 		5,  0,  0,113, 80,113,  0,  0,
 	};
 
-	int GetCharNumber(char ch)
+	static int GetCharNumber(char ch)
 	{
+		if(ch < 32) {
+			return 0;
+		}
+
 		ch -= 32;
 		return (ch < 0 || ch > 94) ? 95 : ch;
 	}
 
-	int GetCharWidth(char ch)
+	static int GetCharWidth(char ch)
 	{
 		return _font[GetCharNumber(ch) * 8];
 	}
@@ -124,17 +132,75 @@ protected:
 	void InternalDraw()
 	{
 		int startX = (int)(_x * _xScale / _yScale);
+		int lineWidth = 0;
 		int x = startX;
 		int y = _y;
-		for(char c : _text) {
+		int lineHeight = 9;
+		
+		auto newLine = [&lineWidth, &x, &y, &lineHeight, startX]() {
+			lineWidth = 0;
+			x = startX;
+			y += lineHeight;
+			lineHeight = 9;
+		};
+
+		for(int i = 0; i < _text.size(); i++) {
+			unsigned char c = _text[i];
 			if(c == '\n') {
-				x = startX;
-				y += 9;
+				newLine();
 			} else if(c == '\t') {
-				x += (_tabSpace - (((x - startX) / 8) % _tabSpace)) * 8;
+				int tabWidth = (_tabSpace - (((x - startX) / 8) % _tabSpace)) * 8;
+				x += tabWidth;
+				lineWidth += tabWidth;
+				if(_maxWidth > 0 && lineWidth > _maxWidth) {
+					newLine();
+				}
+			} else if(c == 0x20) {
+				//Space (ignore spaces at the start of a new line, when text wrapping is enabled)
+				if(lineWidth > 0 || _maxWidth == 0) {
+					lineWidth += 6;
+					x += 6;
+				}
+			} else if(c >= 0x80) {
+				//8x12 UTF-8 font for Japanese
+				int code = (uint8_t)c;
+				if(i + 2 < _text.size()) {
+					code |= ((uint8_t)_text[i + 1]) << 8;
+					code |= ((uint8_t)_text[i + 2]) << 16;
+
+					auto res = _jpFont.find(code);
+					if(res != _jpFont.end()) {
+						lineWidth += 8;
+						if(_maxWidth > 0 && lineWidth > _maxWidth) {
+							newLine();
+							lineWidth += 8;
+						}
+
+						uint8_t* charDef = (uint8_t*)res->second;
+
+						for(int row = 0; row < 12; row++) {
+							uint8_t rowData = charDef[row];
+							for(int column = 0; column < 8; column++) {
+								int drawFg = (rowData >> (7 - column)) & 0x01;
+								DrawPixel(x + column, y + row - 2, drawFg ? _color : _backColor);
+							}
+						}
+						i += 2;
+						x += 8;
+						lineHeight = 12;
+					}
+				}
 			} else {
+				//Variable size font for standard ASCII
 				int ch = GetCharNumber(c);
 				int width = GetCharWidth(c);
+				
+				lineWidth += width;
+				if(_maxWidth > 0 && lineWidth > _maxWidth) {
+					newLine();
+					lineWidth += width;
+				}
+
 				int rowOffset = (c == 'y' || c == 'g' || c == 'p' || c == 'q') ? 1 : 0;
 				for(int j = 0; j < 8; j++) {
 					uint8_t rowData = ((j == 7 && rowOffset == 0) || (j == 0 && rowOffset == 1)) ? 0 : _font[ch * 8 + 1 + j - rowOffset];
@@ -152,11 +218,69 @@ protected:
 	}
 
 public:
-	DrawStringCommand(int x, int y, string text, int color, int backColor, int frameCount, int startFrame) :
-		DrawCommand(startFrame, frameCount, true), _x(x), _y(y), _color(color), _backColor(backColor), _text(text)
+	DrawStringCommand(int x, int y, string text, int color, int backColor, int frameCount, int startFrame, int maxWidth = 0) :
+		DrawCommand(startFrame, frameCount, true), _x(x), _y(y), _color(color), _backColor(backColor), _text(text), _maxWidth(maxWidth)
 	{
 		//Invert alpha byte - 0 = opaque, 255 = transparent (this way, no need to specifiy alpha channel all the time)
 		_color = (~color & 0xFF000000) | (color & 0xFFFFFF);
 		_backColor = (~backColor & 0xFF000000) | (backColor & 0xFFFFFF);
+	}
+
+	static TextSize MeasureString(string text, int maxWidth = 0)
+	{
+		uint32_t maxX = 0;
+		uint32_t x = 0;
+		uint32_t y = 0;
+		uint32_t lineHeight = 9;
+
+		auto newLine = [&x, &y, &lineHeight]() {
+			x = 0;
+			y += lineHeight;
+			lineHeight = 9;
+		};
+
+		for(int i = 0; i < text.size(); i++) {
+			unsigned char c = text[i];
+			if(c == '\n') {
+				maxX = std::max(x, maxX);
+				x = 0;
+				y += 9;
+			} else if(c == '\t') {
+				x += _tabSpace - (((x / 8) % _tabSpace)) * 8;
+			} else if(c == 0x20) {
+				//Space (ignore spaces at the start of a new line, when text wrapping is enabled)
+				if(x > 0 || maxWidth == 0) {
+					x += 6;
+				}
+			} else if(c >= 0x80) {
+				//8x12 UTF-8 font for Japanese
+				int code = (uint8_t)c;
+				if(i + 2 < text.size()) {
+					code |= ((uint8_t)text[i + 1]) << 8;
+					code |= ((uint8_t)text[i + 2]) << 16;
+					auto res = _jpFont.find(code);
+					if(res != _jpFont.end()) {
+						if(maxWidth > 0 && x + 8 > maxWidth) {
+							newLine();
+						}
+
+						i += 2;
+						x += 8;
+						lineHeight = 12;
+					}
+				}
+			} else {
+				//Variable size font for standard ASCII
+				if(maxWidth > 0 && x + GetCharWidth(c) > maxWidth) {
+					newLine();
+				}
+				x += GetCharWidth(c);
+			}
+		}
+
+		TextSize size;
+		size.X = std::max(x, maxX);
+		size.Y = y + lineHeight;
+		return size;
 	}
 };

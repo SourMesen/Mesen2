@@ -399,21 +399,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DirectInputManager.h" />
-    <ClInclude Include="DirectXTK\Audio.h" />
+    <ClInclude Include="DirectXTK\BufferHelpers.h" />
     <ClInclude Include="DirectXTK\CommonStates.h" />
-    <ClInclude Include="DirectXTK\DDSTextureLoader.h" />
     <ClInclude Include="DirectXTK\DirectXHelpers.h" />
-    <ClInclude Include="DirectXTK\Effects.h" />
-    <ClInclude Include="DirectXTK\GeometricPrimitive.h" />
-    <ClInclude Include="DirectXTK\Model.h" />
-    <ClInclude Include="DirectXTK\PrimitiveBatch.h" />
-    <ClInclude Include="DirectXTK\ScreenGrab.h" />
-    <ClInclude Include="DirectXTK\SimpleMath.h" />
     <ClInclude Include="DirectXTK\SpriteBatch.h" />
-    <ClInclude Include="DirectXTK\SpriteFont.h" />
     <ClInclude Include="DirectXTK\VertexTypes.h" />
-    <ClInclude Include="DirectXTK\WICTextureLoader.h" />
-    <ClInclude Include="DirectXTK\XboxDDSTextureLoader.h" />
+    <ClInclude Include="DirectXTK\AlignedNew.h" />
+    <ClInclude Include="DirectXTK\DemandCreate.h" />
+    <ClInclude Include="DirectXTK\common.h" />
+    <ClInclude Include="DirectXTK\PlatformHelpers.h" />
+    <ClInclude Include="DirectXTK\SharedResourcePool.h" />
     <ClInclude Include="XInputManager.h" />
     <ClInclude Include="WindowsKeyManager.h" />
     <ClInclude Include="Renderer.h" />
@@ -423,6 +418,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectInputManager.cpp" />
+    <ClCompile Include="DirectXTK\BufferHelpers.cpp" />
+    <ClCompile Include="DirectXTK\CommonStates.cpp" />
+    <ClCompile Include="DirectXTK\SpriteBatch.cpp" />
+    <ClCompile Include="DirectXTK\VertexTypes.cpp" />
     <ClCompile Include="XInputManager.cpp" />
     <ClCompile Include="WindowsKeyManager.cpp">
       <DeploymentContent>false</DeploymentContent>
@@ -443,7 +442,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DirectXTK\SimpleMath.inl" />
+    <None Include="DirectXTK\SpriteEffect_SpritePixelShader.inc" />
+    <None Include="DirectXTK\SpriteEffect_SpriteVertexShader.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

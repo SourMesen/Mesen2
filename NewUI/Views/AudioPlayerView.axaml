@@ -54,7 +54,10 @@
 				<mui:MaterialIcon Kind="SkipPrevious" />
 			</Button>
 			<Button Click="OnPlayClick" Height="30" Width="40">
-				<mui:MaterialIcon Kind="Play" />
+				<Panel>
+					<mui:MaterialIcon Kind="Play" IsVisible="{CompiledBinding IsPaused}" />
+					<mui:MaterialIcon Kind="Pause" IsVisible="{CompiledBinding !IsPaused}" />
+				</Panel>
 			</Button>
 			<Button Click="OnNextTrackClick">
 				<mui:MaterialIcon Kind="SkipNext" />

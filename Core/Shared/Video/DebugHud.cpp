@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include <algorithm>
-#include "DebugHud.h"
-#include "DrawCommand.h"
-#include "DrawLineCommand.h"
-#include "DrawPixelCommand.h"
-#include "DrawRectangleCommand.h"
-#include "DrawStringCommand.h"
-#include "DrawScreenBufferCommand.h"
+#include "Shared/Video/DebugHud.h"
+#include "Shared/Video/DrawCommand.h"
+#include "Shared/Video/DrawLineCommand.h"
+#include "Shared/Video/DrawPixelCommand.h"
+#include "Shared/Video/DrawRectangleCommand.h"
+#include "Shared/Video/DrawStringCommand.h"
+#include "Shared/Video/DrawScreenBufferCommand.h"
 
 DebugHud::DebugHud()
 {
@@ -65,10 +65,10 @@ void DebugHud::DrawScreenBuffer(uint32_t* screenBuffer, int startFrame)
 	}
 }
 
-void DebugHud::DrawString(int x, int y, string text, int color, int backColor, int frameCount, int startFrame)
+void DebugHud::DrawString(int x, int y, string text, int color, int backColor, int frameCount, int startFrame, int maxWidth)
 {
 	auto lock = _commandLock.AcquireSafe();
 	if(_commands.size() < DebugHud::MaxCommandCount) {
-		_commands.push_back(unique_ptr<DrawStringCommand>(new DrawStringCommand(x, y, text, color, backColor, frameCount, startFrame)));
+		_commands.push_back(unique_ptr<DrawStringCommand>(new DrawStringCommand(x, y, text, color, backColor, frameCount, startFrame, maxWidth)));
 	}
 }

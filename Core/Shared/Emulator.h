@@ -80,7 +80,6 @@ private:
 	atomic<bool> _pauseOnNextFrame;
 	atomic<bool> _threadPaused;
 
-	ConsoleRegion _region;
 	ConsoleType _consoleType;
 
 	atomic<bool> _isRunAheadFrame;

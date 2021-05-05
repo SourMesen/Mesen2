@@ -57,13 +57,13 @@ void Emulator::Initialize()
 {
 	_lockCounter = 0;
 
+	_debugHud.reset(new DebugHud());
 	_notificationManager.reset(new NotificationManager());
 	_batteryManager.reset(new BatteryManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
 	_saveStateManager.reset(new SaveStateManager(this));
 	_soundMixer.reset(new SoundMixer(this));
-	_debugHud.reset(new DebugHud());
 	_cheatManager.reset(new CheatManager(this));
 	_movieManager.reset(new MovieManager(shared_from_this()));
 	_systemActionManager.reset(new SystemActionManager(this));
@@ -427,9 +427,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_paused = false;
 
 	if(!forPowerCycle && !_audioPlayerHud) {
-		string modelName = _region == ConsoleRegion::Pal ? "PAL" : "NTSC";
-		string messageTitle = MessageManager::Localize("GameLoaded") + " (" + modelName + ")";
-		MessageManager::DisplayMessage(messageTitle, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
+		string modelName = _console->GetRegion() == ConsoleRegion::Pal ? "PAL" : "NTSC";
+		MessageManager::DisplayMessage(modelName, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
 	}
 
 	if(stopRom) {

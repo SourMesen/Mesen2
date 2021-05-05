@@ -145,7 +145,7 @@ bool Console::LoadRom(VirtualFile& romFile)
 			_spcPlaylist = FolderUtilities::GetFilesInFolder(romFile.GetFolderPath(), { ".spc" }, false);
 			std::sort(_spcPlaylist.begin(), _spcPlaylist.end());
 			auto result = std::find(_spcPlaylist.begin(), _spcPlaylist.end(), romFile.GetFilePath());
-			_spcTrackNumber = std::distance(_spcPlaylist.begin(), result);
+			_spcTrackNumber = (uint32_t)std::distance(_spcPlaylist.begin(), result);
 		}
 
 		_cpu.reset(new Cpu(this));
@@ -215,7 +215,7 @@ double Console::GetFps()
 PpuFrameInfo Console::GetPpuFrame()
 {
 	//TODO null checks
-	PpuFrameInfo frame;
+	PpuFrameInfo frame = {};
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
 	frame.Width = 256;
 	frame.Height = 239;
@@ -278,7 +278,7 @@ void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 		}
 
 		if(i < 0) {
-			i = _spcPlaylist.size() - 1;
+			i = (int)_spcPlaylist.size() - 1;
 		} else if(i >= _spcPlaylist.size()) {
 			i = 0;
 		}

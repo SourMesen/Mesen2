@@ -28,7 +28,6 @@ namespace Mesen.Views
 			} else {
 				EmuApi.Pause();
 			}
-			
 		}
 
 		private void OnPrevTrackClick(object sender, RoutedEventArgs e)

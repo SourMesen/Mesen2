@@ -9,6 +9,7 @@ class ScaleFilter;
 //class RotateFilter;
 class IRenderingDevice;
 class InputHud;
+class SystemHud;
 class Emulator;
 
 class VideoDecoder
@@ -22,6 +23,7 @@ private:
 
 	unique_ptr<thread> _decodeThread;
 	unique_ptr<InputHud> _inputHud;
+	unique_ptr<SystemHud> _systemHud;
 
 	AutoResetEvent _waitForFrame;
 	

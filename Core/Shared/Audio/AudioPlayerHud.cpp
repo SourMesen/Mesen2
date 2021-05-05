@@ -3,6 +3,7 @@
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Emulator.h"
+#include "Shared/Video/DrawStringCommand.h"
 
 static constexpr double PI = 3.14159265358979323846;
 
@@ -35,8 +36,8 @@ void AudioPlayerHud::Draw()
 	int y = 12;
 	auto drawLabel = [=, &y](string label, string content) {
 		if(content.size() > 0 && content[0] != 0) {
-			_hud->DrawString(20, y, label, 0xBBBBBB, 0, 1);
-			_hud->DrawString(70, y, content, 0xFFFFFF, 0, 1);
+			_hud->DrawString(10, y, label, 0xBBBBBB, 0, 1);
+			_hud->DrawString(57, y, content, 0xFFFFFF, 0, 1);
 			y += 10;
 		}
 	};
@@ -47,13 +48,18 @@ void AudioPlayerHud::Draw()
 
 	string position = FormatSeconds((uint32_t)trackInfo.Position);
 
-	if(trackInfo.SongTitle.size() > 0 && trackInfo.SongTitle[0] != 0) {
-		_hud->DrawString(15, 208, trackInfo.SongTitle, 0xFFFFFF, 0, 1);
-	} else {
-		_hud->DrawString(15, 208, _emu->GetRomInfo().RomFile.GetFileName(), 0xFFFFFF, 0, 1);
-	}
+	string track = "Track: " + std::to_string(trackInfo.TrackNumber) + " / " + std::to_string(trackInfo.TrackCount);
+	TextSize size = DrawStringCommand::MeasureString(track);
+	uint32_t trackPosX = 256 - size.X - 14;
+	_hud->DrawString(trackPosX, 218, track, 0xFFFFFF, 0, 1);
 
-	_hud->DrawString(15, 218, std::to_string(trackInfo.TrackNumber) + " / " + std::to_string(trackInfo.TrackCount), 0xFFFFFF, 0, 1);
+	string trackName;
+	if(trackInfo.SongTitle.size() > 0 && trackInfo.SongTitle[0] != 0) {
+		trackName = trackInfo.SongTitle;
+	} else {
+		trackName = _emu->GetRomInfo().RomFile.GetFileName();
+	}
+	_hud->DrawString(15, 208, trackName, 0xFFFFFF, 0, 1, -1, trackPosX - 20);
 
 	if(trackInfo.Length <= 0) {
 		_hud->DrawString(215, 208, " " + position + "   ", 0xFFFFFF, 0, 1);

@@ -1,4 +1,5 @@
-﻿using Mesen.GUI.Config;
+﻿using Mesen.GUI;
+using Mesen.GUI.Config;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -13,6 +14,7 @@ namespace Mesen.ViewModels
 	public class AudioPlayerViewModel : ViewModelBase
 	{
 		[Reactive] public AudioPlayerConfig Config { get; set; }
+		[Reactive] public bool IsPaused { get; set; }
 		
 		public AudioPlayerViewModel()
 		{
@@ -22,5 +24,10 @@ namespace Mesen.ViewModels
 				Config.ApplyConfig();
 			});
 		}
-   }
+
+		public void UpdatePauseFlag()
+		{
+			IsPaused = EmuApi.IsPaused();
+		}
+	}
 }

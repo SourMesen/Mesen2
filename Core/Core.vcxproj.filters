@@ -780,6 +780,7 @@
     <ClInclude Include="NES\Mappers\Audio\Vrc6Saw.h" />
     <ClInclude Include="NES\NesConstants.h" />
     <ClInclude Include="Shared\Audio\AudioPlayerTypes.h" />
+    <ClInclude Include="Shared\Video\SystemHud.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1204,6 +1205,8 @@
     <ClCompile Include="NES\NesNtscFilter.cpp" />
     <ClCompile Include="NES\Loaders\NsfLoader.cpp" />
     <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
+    <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
+    <ClCompile Include="Shared\Video\SystemHud.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

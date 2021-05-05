@@ -14,7 +14,6 @@ class Emulator;
 
 namespace DirectX {
 	class SpriteBatch;
-	class SpriteFont;
 }
 
 class Renderer : public BaseRenderer, public IRenderingDevice
@@ -44,9 +43,6 @@ private:
 
 	bool _useBilinearInterpolation = false;
 
-	unique_ptr<SpriteFont>	_font;
-	unique_ptr<SpriteFont>	_largeFont;
-		
 	unique_ptr<SpriteBatch> _spriteBatch;
 
 	const uint32_t _bytesPerPixel = 4;
@@ -76,15 +72,7 @@ private:
 	ID3D11Texture2D* CreateTexture(uint32_t width, uint32_t height);
 	ID3D11ShaderResourceView* GetShaderResourceView(ID3D11Texture2D* texture);
 	void DrawScreen();
-	void DrawPauseScreen();
 		
-	void DrawString(string message, float x, float y, DirectX::FXMVECTOR color, float scale, SpriteFont* font = nullptr);
-	void DrawString(std::wstring message, float x, float y, DirectX::FXMVECTOR color, float scale, SpriteFont* font = nullptr);
-
-	void DrawString(std::wstring message, int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t opacity);
-	float MeasureString(std::wstring text);
-	bool ContainsCharacter(wchar_t character);
-
 	HRESULT CreateRenderTargetView();
 	void ReleaseRenderTargetView();
 	HRESULT CreateNesBuffers();

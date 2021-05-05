@@ -26,51 +26,6 @@
     <ClInclude Include="SoundManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXTK\Audio.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\CommonStates.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\DDSTextureLoader.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\DirectXHelpers.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\Effects.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\GeometricPrimitive.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\Model.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\PrimitiveBatch.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\ScreenGrab.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\SimpleMath.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\SpriteBatch.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\SpriteFont.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\VertexTypes.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\WICTextureLoader.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXTK\XboxDDSTextureLoader.h">
-      <Filter>Header Files\DirectXTK</Filter>
-    </ClInclude>
     <ClInclude Include="WindowsKeyManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,6 +33,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DirectInputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\BufferHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\CommonStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DirectXHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\SpriteBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\VertexTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DemandCreate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\SharedResourcePool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PlatformHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\AlignedNew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -100,10 +85,25 @@
     <ClCompile Include="DirectInputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXTK\BufferHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\CommonStates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\SpriteBatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\VertexTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DirectXTK\SimpleMath.inl">
-      <Filter>Header Files\DirectXTK</Filter>
+    <None Include="DirectXTK\SpriteEffect_SpritePixelShader.inc">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="DirectXTK\SpriteEffect_SpriteVertexShader.inc">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

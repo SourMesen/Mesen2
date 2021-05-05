@@ -30,7 +30,7 @@ class MMC1 : public BaseMapper
 			_writeBuffer = 0;
 		}
 
-		bool ProcessBitWrite(uint16_t addr, uint8_t value)
+		void ProcessBitWrite(uint16_t addr, uint8_t value)
 		{
 			if((value & 0x80) == 0x80) {
 				//When 'r' is set:
@@ -42,7 +42,6 @@ class MMC1 : public BaseMapper
 				_prgMode = true;
 				_slotSelect = true;
 				UpdateState();
-				return false;
 			} else {
 				_writeBuffer >>= 1;
 				_writeBuffer |= ((value << 4) & 0x10);

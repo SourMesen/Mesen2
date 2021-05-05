@@ -82,7 +82,7 @@ public:
 			_startFrame = frameNumber;
 		}
 
-		if(_startFrame <= frameNumber) {
+		if(_startFrame <= (int32_t)frameNumber) {
 			_argbBuffer = argbBuffer;
 			_frameInfo = frameInfo;
 			_overscan = overscan;
@@ -100,4 +100,10 @@ public:
 	{
 		return _frameCount == 0;
 	}
+};
+
+struct TextSize
+{
+	uint32_t X;
+	uint32_t Y;
 };
