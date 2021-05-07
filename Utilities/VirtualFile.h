@@ -29,6 +29,7 @@ public:
 	string GetFilePath();
 	string GetFolderPath();
 	string GetFileName();
+	string GetFileExtension();
 	string GetSha1Hash();
 
 	size_t GetSize();

@@ -12,6 +12,13 @@ enum class ConsoleType;
 enum class ConsoleRegion;
 enum class CpuType : uint8_t;
 
+enum class LoadRomResult
+{
+	Success,
+	Failure,
+	UnknownType
+};
+
 struct PpuFrameInfo
 {
 	uint32_t Width;
@@ -28,7 +35,7 @@ public:
 
 	virtual void OnBeforeRun() = 0;
 	
-	virtual bool LoadRom(VirtualFile& romFile) = 0;
+	virtual LoadRomResult LoadRom(VirtualFile& romFile) = 0;
 	virtual void Init() = 0;
 
 	//virtual void RunFrameWithRunAhead() = 0;

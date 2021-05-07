@@ -104,7 +104,7 @@ public:
 	void Stop() override;
 	void Reset() override;
 	void OnBeforeRun() override;
-	bool LoadRom(VirtualFile& romFile) override;
+	LoadRomResult LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 	void RunFrame() override;
 	shared_ptr<IControlManager> GetControlManager() override;

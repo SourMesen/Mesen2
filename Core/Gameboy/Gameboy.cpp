@@ -366,13 +366,13 @@ void Gameboy::OnBeforeRun()
 {
 }
 
-bool Gameboy::LoadRom(VirtualFile& romFile)
+LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 {
 	vector<uint8_t> romData;
 	romFile.ReadFile(romData);
 
 	if(romData.size() < Gameboy::HeaderOffset + sizeof(GameboyHeader)) {
-		return false;
+		return LoadRomResult::Failure;
 	}
 
 	GbsHeader gbsHeader = {};
@@ -393,7 +393,7 @@ bool Gameboy::LoadRom(VirtualFile& romFile)
 		Init(cart, gbsRomData, 0x5000, false, false);
 		cart->InitPlayback(gbsHeader.FirstTrack - 1);
 
-		return true;
+		return LoadRomResult::Success;
 	} else {
 		GameboyHeader header;
 		memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
@@ -419,11 +419,11 @@ bool Gameboy::LoadRom(VirtualFile& romFile)
 
 		if(cart) {
 			Init(cart, romData, header.GetCartRamSize(), header.HasBattery(), (header.CgbFlag & 0x80) != false);
-			return true;
+			return LoadRomResult::Success;
 		}
 	}
 
-	return false;
+	return LoadRomResult::UnknownType;
 }
 
 void Gameboy::Init()

@@ -355,26 +355,42 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//TODO need to restore name if load fails
 	_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
 
-	bool result = false;
-	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
+	//TODO fix
+	//backup emulation config (can be temporarily overriden to control the power on RAM state)
+	EmulationConfig orgConfig = _settings->GetEmulationConfig();
+
+	static const vector<string> _nesExtensions = { { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" } };
+	static const vector<string> _snesExtensions = { { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" } };
+	static const vector<string> _gbExtensions = { { ".gb", ".gbc", ".gbs" } };
+
+	shared_ptr<IConsole> console;
+	string romExt = romFile.GetFileExtension();
+	LoadRomResult result = LoadRomResult::UnknownType;
+
+	if(std::find(_nesExtensions.begin(), _nesExtensions.end(), romExt) != _nesExtensions.end()) {
+		//TODO consolememory rework
+		memset(_consoleMemory, 0, sizeof(_consoleMemory));
+		console.reset(new NesConsole(this));
+		result = console->LoadRom(romFile);
+	} 
 	
-	memset(_consoleMemory, 0, sizeof(_consoleMemory));
-	shared_ptr<IConsole> console = shared_ptr<IConsole>(new NesConsole(this));
-	if(!console->LoadRom(romFile)) {
+	if(result == LoadRomResult::UnknownType && std::find(_snesExtensions.begin(), _snesExtensions.end(), romExt) != _snesExtensions.end()) {
 		memset(_consoleMemory, 0, sizeof(_consoleMemory));
 		console.reset(new Console(this));
-		if(!console->LoadRom(romFile)) {
-			memset(_consoleMemory, 0, sizeof(_consoleMemory));
-			console.reset(new Gameboy(this, false));
-			if(!console->LoadRom(romFile)) {
-				memset(_consoleMemory, 0, sizeof(_consoleMemory));
-				MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
-				
-				//TODO
-				_settings->SetEmulationConfig(orgConfig);
-				return false;
-			}
-		}
+		result = console->LoadRom(romFile);
+	}
+	
+	if(result == LoadRomResult::UnknownType && std::find(_gbExtensions.begin(), _gbExtensions.end(), romExt) != _gbExtensions.end()) {
+		memset(_consoleMemory, 0, sizeof(_consoleMemory));
+		console.reset(new Gameboy(this, false));
+		result = console->LoadRom(romFile);
+	}
+
+	_settings->SetEmulationConfig(orgConfig);
+
+	if(result != LoadRomResult::Success) {
+		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
+		return false;
 	}
 
 	bool debuggerActive = _debugger != nullptr;
@@ -444,10 +460,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
-
-	result = true;
 		
-	return result;
+	return true;
 }
 
 RomInfo Emulator::GetRomInfo()

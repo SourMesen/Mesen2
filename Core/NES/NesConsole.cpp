@@ -107,18 +107,20 @@ void NesConsole::OnBeforeRun()
 	//TODO
 }
 
-bool NesConsole::LoadRom(VirtualFile& romFile)
+LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 {
 	RomData romData;
 
-	unique_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(this, romFile, romData);
+	LoadRomResult result = LoadRomResult::UnknownType;
+	unique_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(this, romFile, romData, result);
 	if(mapper) {
 		if(!_vsMainConsole && romData.Info.VsType == VsSystemType::VsDualSystem) {
 			//Create 2nd console (sub) dualsystem games
 			_vsSubConsole.reset(new NesConsole(_emu));
 			_vsSubConsole->_vsMainConsole = this;
-			if(!_vsSubConsole->LoadRom(romFile)) {
-				return false;
+			LoadRomResult result = _vsSubConsole->LoadRom(romFile);
+			if(result != LoadRomResult::Success) {
+				return result;
 			}
 		}
 
@@ -195,10 +197,8 @@ bool NesConsole::LoadRom(VirtualFile& romFile)
 		_memoryManager->Reset(false);
 		_controlManager->Reset(false);
 		_cpu->Reset(false, _region);
-
-		return true;
 	}
-    return false;
+    return result;
 }
 
 void NesConsole::UpdateRegion()

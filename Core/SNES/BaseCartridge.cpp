@@ -629,7 +629,7 @@ bool BaseCartridge::LoadGameboy(VirtualFile& romFile)
 		LoadRom();
 		if(_coprocessorType == CoprocessorType::SGB) {
 			_gameboy.reset(new Gameboy(_emu, true));
-			if(_gameboy->LoadRom(romFile)) {
+			if(_gameboy->LoadRom(romFile) == LoadRomResult::Success) {
 				return _gameboy->IsSgb();
 			}
 		}

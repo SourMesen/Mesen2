@@ -141,6 +141,11 @@ string VirtualFile::GetFileName()
 	return _innerFile.empty() ? FolderUtilities::GetFilename(_path, true) : _innerFile;
 }
 
+string VirtualFile::GetFileExtension()
+{
+	return FolderUtilities::GetExtension(GetFileName());
+}
+
 string VirtualFile::GetSha1Hash()
 {
 	LoadFile();

@@ -667,7 +667,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 	return nullptr;
 }
 
-unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, VirtualFile &romFile, RomData &romData)
+unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, VirtualFile &romFile, RomData &romData, LoadRomResult& result)
 {
 	RomLoader loader;
 
@@ -686,12 +686,14 @@ unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, Vi
 
 		unique_ptr<BaseMapper> mapper(GetMapperFromID(romData));
 		if(mapper) {
+			result = LoadRomResult::Success;
 			return mapper;
+		} else {
+			//File is a valid NES file, but it couldn't be loaded
+			result = LoadRomResult::Failure;
 		}
-	} else if(loader.GetRomData().BiosMissing) {
-		//TODO NES
-		//console->GetNotificationManager()->SendNotification(ConsoleNotificationType::BiosNotFound, (void*)loader.GetRomData().Info.Format);
 	}
+	result = LoadRomResult::UnknownType;
 	return nullptr;
 }
 

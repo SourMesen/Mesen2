@@ -120,10 +120,8 @@ void Console::Reset()
 	_cpu->Reset();
 }
 
-bool Console::LoadRom(VirtualFile& romFile)
+LoadRomResult Console::LoadRom(VirtualFile& romFile)
 {
-	bool result = false;
-	EmulationConfig orgConfig = _settings->GetEmulationConfig(); //backup emulation config (can be temporarily overriden to control the power on RAM state)
 	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile);
 	if(cart) {
 		_cart = cart;
@@ -159,11 +157,10 @@ bool Console::LoadRom(VirtualFile& romFile)
 				
 		UpdateRegion();
 
-		result = true;
+		return LoadRomResult::Success;
 	}
 
-	_settings->SetEmulationConfig(orgConfig);
-	return result;
+	return LoadRomResult::UnknownType;
 }
 
 void Console::Init()

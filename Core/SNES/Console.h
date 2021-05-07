@@ -83,7 +83,7 @@ public:
 
 	void ProcessEndOfFrame();
 
-	bool LoadRom(VirtualFile& romFile) override;
+	LoadRomResult LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 
 	uint64_t GetMasterClock() override;
