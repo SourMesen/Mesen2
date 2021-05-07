@@ -1198,7 +1198,6 @@ void NesPpu::SendFrame()
 	UpdateGrayscaleAndIntensifyBits();
 
 	if(_console->IsVsMainConsole()) {
-		_emu->ProcessEndOfFrame();
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 
@@ -1207,9 +1206,13 @@ void NesPpu::SendFrame()
 #else 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
 		SendFrameVsDualSystem();
+		if(_console->IsVsMainConsole()) {
+			_emu->ProcessEndOfFrame();
+		}
 	} else {
 		bool forRewind = _emu->GetRewindManager()->IsRewinding();
 		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->ProcessEndOfFrame();
 	}
 
 	_enableOamDecay = _settings->GetNesConfig().EnableOamDecay;

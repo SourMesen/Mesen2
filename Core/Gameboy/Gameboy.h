@@ -60,19 +60,22 @@ private:
 	uint8_t* _bootRom = nullptr;
 	uint32_t _bootRomSize = 0;
 
+	void Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery, bool supportsCgb);
+
 public:
 	static constexpr int HeaderOffset = 0x134;
 
 	Gameboy(Emulator* emu, bool allowSgb);
 	virtual ~Gameboy();
 
-	void Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header);
 	void PowerOn(SuperGameboy* sgb);
 
 	void Run(uint64_t runUntilClock);
 	
 	void LoadBattery();
 	void SaveBattery();
+
+	Emulator* GetEmulator();
 
 	GbPpu* GetPpu();
 	GbCpu* GetCpu();

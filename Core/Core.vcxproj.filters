@@ -781,6 +781,8 @@
     <ClInclude Include="NES\NesConstants.h" />
     <ClInclude Include="Shared\Audio\AudioPlayerTypes.h" />
     <ClInclude Include="Shared\Video\SystemHud.h" />
+    <ClInclude Include="Gameboy\GbsHeader.h" />
+    <ClInclude Include="Gameboy\Carts\GbsCart.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

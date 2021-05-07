@@ -111,6 +111,7 @@ public:
 	void RunSingleFrame();
 	void Stop(bool sendNotification);
 
+	void OnBeforeSendFrame();
 	void ProcessEndOfFrame();
 
 	void Reset();

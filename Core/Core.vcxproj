@@ -44,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debugger\stdafx.h" />
+    <ClInclude Include="Gameboy\Carts\GbsCart.h" />
+    <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="NES\Input\ArkanoidController.h" />
     <ClInclude Include="NES\Input\AsciiTurboFile.h" />
     <ClInclude Include="NES\Input\BandaiHyperShot.h" />

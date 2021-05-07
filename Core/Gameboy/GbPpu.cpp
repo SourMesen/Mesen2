@@ -651,6 +651,8 @@ void GbPpu::SendFrame()
 	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, 256, 239, _state.FrameCount, rewinding, rewinding);
 #endif
 
+	_emu->ProcessEndOfFrame();
+
 	//TODO move this somewhere that makes more sense
 	uint8_t prevInput = _memoryManager->ReadInputPort();
 	_gameboy->ProcessEndOfFrame();

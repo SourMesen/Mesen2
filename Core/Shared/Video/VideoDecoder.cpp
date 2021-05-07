@@ -145,6 +145,8 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16
 		return;
 	}
 
+	_emu->OnBeforeSendFrame();
+
 	if(_frameChanged) {
 		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
 		while(_frameChanged) {

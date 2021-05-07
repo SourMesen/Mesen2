@@ -191,14 +191,19 @@ void Emulator::RunFrameWithRunAhead()
 	}
 }
 
-void Emulator::ProcessEndOfFrame()
+void Emulator::OnBeforeSendFrame()
 {
-#ifndef LIBRETRO
 	if(!_isRunAheadFrame) {
 		if(_audioPlayerHud) {
 			_audioPlayerHud->Draw();
 		}
+	}
+}
 
+void Emulator::ProcessEndOfFrame()
+{
+#ifndef LIBRETRO
+	if(!_isRunAheadFrame) {
 		_frameLimiter->ProcessFrame();
 		while(_frameLimiter->WaitForNextFrame()) {
 			if(_stopFlag || _frameDelay != GetFrameDelay() || _paused || _pauseOnNextFrame || _lockCounter > 0) {

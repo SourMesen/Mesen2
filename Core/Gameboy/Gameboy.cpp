@@ -10,9 +10,12 @@
 #include "Gameboy/GbMemoryManager.h"
 #include "Gameboy/GbCartFactory.h"
 #include "Gameboy/GameboyHeader.h"
+#include "Gameboy/GbsHeader.h"
+#include "Gameboy/Carts/GbsCart.h"
 #include "Gameboy/GbBootRom.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/BatteryManager.h"
+#include "Shared/Audio/AudioPlayerTypes.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/VirtualFile.h"
@@ -43,7 +46,7 @@ Gameboy::~Gameboy()
 	delete[] _bootRom;
 }
 
-void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& header)
+void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery, bool supportsCgb)
 {
 	_cart.reset(cart);
 
@@ -60,17 +63,17 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 	memcpy(_prgRom, romData.data(), romData.size());
 	_emu->RegisterMemory(SnesMemoryType::GbPrgRom, _prgRom, _prgRomSize);
 
-	_cartRamSize = header.GetCartRamSize();
+	_cartRamSize = cartRamSize;
 	_cartRam = new uint8_t[_cartRamSize];
 	_emu->RegisterMemory(SnesMemoryType::GbCartRam, _cartRam, _cartRamSize);
 
-	_hasBattery = header.HasBattery();
+	_hasBattery = hasBattery;
 
 	EmuSettings* settings = _emu->GetSettings();
 	GameboyConfig cfg = settings->GetGameboyConfig();
 	GameboyModel model = cfg.Model;
 	if(model == GameboyModel::Auto) {
-		if((header.CgbFlag & 0x80) != 0) {
+		if(supportsCgb) {
 			model = GameboyModel::GameboyColor;
 		} else {
 			model = GameboyModel::SuperGameboy;
@@ -110,7 +113,7 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, GameboyHeader& h
 	}
 
 	_bootRomSize = cgbMode ? 9 * 256 : 256;
-	if(!FirmwareHelper::LoadGbBootRom(_emu, &_bootRom, type)) {
+	if(GetRomFormat() == RomFormat::Gbs || !FirmwareHelper::LoadGbBootRom(_emu, &_bootRom, type)) {
 		switch(_model) {
 			default:
 			case GameboyModel::Gameboy:
@@ -227,6 +230,11 @@ uint8_t* Gameboy::DebugGetMemory(SnesMemoryType type)
 GbMemoryManager* Gameboy::GetMemoryManager()
 {
 	return _memoryManager.get();
+}
+
+Emulator* Gameboy::GetEmulator()
+{
+	return _emu;
 }
 
 GbPpu* Gameboy::GetPpu()
@@ -363,31 +371,56 @@ bool Gameboy::LoadRom(VirtualFile& romFile)
 	vector<uint8_t> romData;
 	romFile.ReadFile(romData);
 
-	GameboyHeader header;
-	memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
-
-	MessageManager::Log("-----------------------------");
-	MessageManager::Log("File: " + romFile.GetFileName());
-	MessageManager::Log("Game: " + header.GetCartName());
-	MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
-	switch(header.CgbFlag & 0xC0) {
-		case 0x00: MessageManager::Log("Supports: Game Boy"); break;
-		case 0x80: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
-		case 0xC0: MessageManager::Log("Supports: Game Boy Color only"); break;
+	if(romData.size() < Gameboy::HeaderOffset + sizeof(GameboyHeader)) {
+		return false;
 	}
-	MessageManager::Log("File size: " + std::to_string(romData.size() / 1024) + " KB");
 
-	if(header.GetCartRamSize() > 0) {
-		string sizeString = header.GetCartRamSize() > 1024 ? std::to_string(header.GetCartRamSize() / 1024) + " KB" : std::to_string(header.GetCartRamSize()) + " bytes";
-		MessageManager::Log("Cart RAM size: " + sizeString + (header.HasBattery() ? " (with battery)" : ""));
-	}
-	MessageManager::Log("-----------------------------");
+	GbsHeader gbsHeader = {};
+	memcpy(&gbsHeader, romData.data(), sizeof(GbsHeader));
+	if(!_allowSgb && memcmp(gbsHeader.Header, "GBS", sizeof(gbsHeader.Header)) == 0) {
+		//GBS music file
+		uint16_t loadAddr = gbsHeader.LoadAddress[0] | (gbsHeader.LoadAddress[1] << 8);
 
-	GbCart* cart = GbCartFactory::CreateCart(header.CartType);
+		//Pad start with 0s until load address
+		vector<uint8_t> gbsRomData = vector<uint8_t>(loadAddr, 0);
+		gbsRomData.insert(gbsRomData.end(), romData.begin() + sizeof(GbsHeader), romData.end());
+		if((gbsRomData.size() & 0x3FFF) != 0) {
+			//Pad to multiple of 16kb
+			gbsRomData.insert(gbsRomData.end(), 0x4000 - (gbsRomData.size() & 0x3FFF), 0);
+		}
+		
+		GbsCart* cart = new GbsCart(gbsHeader);
+		Init(cart, gbsRomData, 0x5000, false, false);
+		cart->InitPlayback(gbsHeader.FirstTrack - 1);
 
-	if(cart) {
-		Init(cart, romData, header);
 		return true;
+	} else {
+		GameboyHeader header;
+		memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
+
+		MessageManager::Log("-----------------------------");
+		MessageManager::Log("File: " + romFile.GetFileName());
+		MessageManager::Log("Game: " + header.GetCartName());
+		MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
+		switch(header.CgbFlag & 0xC0) {
+			case 0x00: MessageManager::Log("Supports: Game Boy"); break;
+			case 0x80: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
+			case 0xC0: MessageManager::Log("Supports: Game Boy Color only"); break;
+		}
+		MessageManager::Log("File size: " + std::to_string(romData.size() / 1024) + " KB");
+
+		if(header.GetCartRamSize() > 0) {
+			string sizeString = header.GetCartRamSize() > 1024 ? std::to_string(header.GetCartRamSize() / 1024) + " KB" : std::to_string(header.GetCartRamSize()) + " bytes";
+			MessageManager::Log("Cart RAM size: " + sizeString + (header.HasBattery() ? " (with battery)" : ""));
+		}
+		MessageManager::Log("-----------------------------");
+
+		GbCart* cart = GbCartFactory::CreateCart(header.CartType);
+
+		if(cart) {
+			Init(cart, romData, header.GetCartRamSize(), header.HasBattery(), (header.CgbFlag & 0x80) != false);
+			return true;
+		}
 	}
 
 	return false;
@@ -403,7 +436,6 @@ void Gameboy::RunFrame()
 	while(frameCount == _ppu->GetFrameCount()) {
 		_cpu->Exec();
 	}
-	_emu->ProcessEndOfFrame();
 }
 
 void Gameboy::ProcessEndOfFrame()
@@ -468,7 +500,8 @@ uint64_t Gameboy::GetMasterClock()
 
 uint32_t Gameboy::GetMasterClockRate()
 {
-	return 20971520;
+	//TODO GBC
+	return 4194304;
 }
 
 BaseVideoFilter* Gameboy::GetVideoFilter()
@@ -484,16 +517,24 @@ BaseVideoFilter* Gameboy::GetVideoFilter()
 
 RomFormat Gameboy::GetRomFormat()
 {
-	return RomFormat::Gb;
+	return dynamic_cast<GbsCart*>(_cart.get()) ? RomFormat::Gbs : RomFormat::Gb;
 }
 
 AudioTrackInfo Gameboy::GetAudioTrackInfo()
 {
+	GbsCart* cart = dynamic_cast<GbsCart*>(_cart.get());
+	if(cart) {
+		return cart->GetAudioTrackInfo();
+	}
 	return {};
 }
 
 void Gameboy::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 {
+	GbsCart* cart = dynamic_cast<GbsCart*>(_cart.get());
+	if(cart) {
+		cart->ProcessAudioPlayerAction(p);
+	}
 }
 
 ConsoleRegion Gameboy::GetRegion()
