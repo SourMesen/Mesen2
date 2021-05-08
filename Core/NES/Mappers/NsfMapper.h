@@ -22,9 +22,9 @@ private:
 		Sunsoft = 0x20
 	};
 
-	EmuSettings* _settings;
+	EmuSettings* _settings = nullptr;
 
-	NsfHeader _nsfHeader;
+	NsfHeader _nsfHeader = {};
 	unique_ptr<Mmc5Audio> _mmc5Audio;
 	unique_ptr<Vrc6Audio> _vrc6Audio;
 	unique_ptr<Vrc7Audio> _vrc7Audio;
@@ -32,17 +32,11 @@ private:
 	unique_ptr<Namco163Audio> _namcoAudio;
 	unique_ptr<Sunsoft5bAudio> _sunsoftAudio;
 	
-	uint8_t _mmc5MultiplierValues[2];
+	uint8_t _mmc5MultiplierValues[2] = {};
 
 	uint32_t _irqCounter = 0;
-	int32_t _trackEndCounter;
-	int32_t _trackFadeCounter;
-	int32_t _fadeLength;
-	uint32_t _silenceDetectDelay;
-	bool _trackEnded;
-	bool _allowSilenceDetection;
 
-	bool _hasBankSwitching;
+	bool _hasBankSwitching = false;
 
 	uint8_t _songNumber = 0;
 	
@@ -74,8 +68,6 @@ private:
 
 	bool HasBankSwitching();
 
-	void InternalSelectTrack(uint8_t trackNumber);
-	void ClockLengthAndFadeCounters();
 	void SelectNextTrack();
 
 protected:

@@ -27,6 +27,9 @@ public:
 	uint8_t DspRegs[128];
 	uint8_t SpcRam[0x10000];
 
+	uint32_t TrackLength;
+	uint32_t FadeLength;
+
 	SpcFileData(uint8_t* spcData)
 	{
 		SongTitle = string(spcData + 0x2E, spcData + 0x2E + 0x20);
@@ -34,6 +37,20 @@ public:
 		Dumper = string(spcData + 0x6E, spcData + 0x6E + 0x10);
 		Artist = string(spcData + 0xB1, spcData + 0xB1 + 0x20);
 		Comment = string(spcData + 0x7E, spcData + 0x7E + 0x20);
+
+		string strTrackLength = string(spcData + 0xA9, spcData + 0xA9 + 0x03);
+		string strFadeLength = string(spcData + 0xAC, spcData + 0xAC + 0x05);
+		bool isStringValue = true;
+		for(char c : strTrackLength) {
+			if(c != 0 && (c < '0' || c > '9')) {
+				isStringValue = false;
+			}
+		}
+
+		if(isStringValue) {
+			TrackLength = std::stoi(strTrackLength);
+			FadeLength = std::stoi(strFadeLength);
+		}
 
 		memcpy(SpcRam, spcData + 0x100, 0xFFC0);
 		memcpy(SpcRam + 0xFFC0, spcData + 0x101C0, 0x40);

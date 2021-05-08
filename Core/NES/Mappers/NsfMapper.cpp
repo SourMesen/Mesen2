@@ -148,19 +148,12 @@ void NsfMapper::Reset(bool softReset)
 	_console->GetCpu()->SetIrqMask((uint8_t)IRQSource::External);
 	_irqCounter = 0;
 
-	_allowSilenceDetection = false;
-	_trackEndCounter = -1;
-	_trackEnded = false;
-	_trackFadeCounter = -1;
-
 	_mmc5Audio.reset(new Mmc5Audio(_console));
 	_vrc6Audio.reset(new Vrc6Audio(_console));
 	_vrc7Audio.reset(new Vrc7Audio(_console));
 	_fdsAudio.reset(new FdsAudio(_console));
 	_namcoAudio.reset(new Namco163Audio(_console));
 	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
-
-	InternalSelectTrack(_songNumber);
 }
 
 void NsfMapper::GetMemoryRanges(MemoryRanges& ranges)
@@ -203,41 +196,6 @@ void NsfMapper::ClearIrq()
 	_console->GetCpu()->ClearIrqSource(IRQSource::External);
 }
 
-void NsfMapper::ClockLengthAndFadeCounters()
-{
-	NesSoundMixer* mixer = _console->GetSoundMixer();
-	if(_trackEndCounter > 0) {
-		_trackEndCounter--;
-		if(_trackEndCounter == 0) {
-			_trackEnded = true;
-		}
-	}
-
-	if((_trackEndCounter < 0 || _allowSilenceDetection) && _silenceDetectDelay > 0) {
-		//No track length specified
-		if(mixer->GetMuteFrameCount() * NesSoundMixer::CycleLength > _silenceDetectDelay) {
-			//Auto detect end of track after AutoDetectSilenceDelay (in ms) has gone by without sound
-			_trackEnded = true;
-			_trackFadeCounter = 0;
-			mixer->ResetMuteFrameCount();
-		}
-	}
-
-	if(_trackEnded) {
-		if(_trackFadeCounter > 0) {
-			if(_fadeLength != 0) {
-				double fadeRatio = (double)_trackFadeCounter / (double)_fadeLength * 1.2;
-				mixer->SetFadeRatio(std::max(0.0, fadeRatio - 0.2));
-			}
-			_trackFadeCounter--;
-		}
-
-		if(_trackFadeCounter <= 0) {
-			SelectNextTrack();
-		}
-	}
-}
-
 void NsfMapper::SelectNextTrack()
 {
 	if(!_settings->GetAudioPlayerConfig().Repeat) {
@@ -251,7 +209,6 @@ void NsfMapper::SelectNextTrack()
 		}
 	}
 	SelectTrack(_songNumber);
-	_trackEnded = false;
 }
 
 void NsfMapper::ProcessCpuClock()
@@ -283,8 +240,6 @@ void NsfMapper::ProcessCpuClock()
 			TriggerIrq();
 		}
 	}
-
-	ClockLengthAndFadeCounters();
 
 	if(_nsfHeader.SoundChips & NsfSoundChips::MMC5) {
 		_mmc5Audio->Clock();
@@ -381,48 +336,6 @@ void NsfMapper::WriteRegister(uint16_t addr, uint8_t value)
 	}
 }
 
-void NsfMapper::InternalSelectTrack(uint8_t trackNumber)
-{
-	_songNumber = trackNumber;
-
-	//Selecting tracking after a reset
-	_console->GetSoundMixer()->SetFadeRatio(1.0);
-	NesConfig& cfg = _console->GetNesConfig();
-
-	uint32_t clockRate = _emu->GetMasterClockRate();
-
-	//Set track length/fade counters (NSFe)
-	if(_nsfHeader.TrackLength[trackNumber] >= 0) {
-		_trackEndCounter = (int32_t)((double)_nsfHeader.TrackLength[trackNumber] / 1000.0 * clockRate);
-		_allowSilenceDetection = false;
-	} else if(_nsfHeader.TotalSongs > 1) {
-		//Only apply a maximum duration to multi-track NSFs
-		//Single track NSFs will loop or restart after a portion of silence
-		//Substract 1 sec from default track time to account for 1 sec default fade time
-		if(cfg.NsfMoveToNextTrackAfterTime) {
-			_trackEndCounter = (cfg.NsfMoveToNextTrackTime - 1) * clockRate;
-			_allowSilenceDetection = true;
-		} else {
-			_trackEndCounter = 0;
-			_allowSilenceDetection = false;
-		}
-	}
-	if(_nsfHeader.TrackFade[trackNumber] >= 0) {
-		_trackFadeCounter = (int32_t)((double)_nsfHeader.TrackFade[trackNumber] / 1000.0 * clockRate);
-	} else {
-		//Default to 1 sec fade if none is specified (negative number)
-		_trackFadeCounter = clockRate;
-	}
-
-	if(cfg.NsfAutoDetectSilence) {
-		_silenceDetectDelay = (uint32_t)((double)cfg.NsfAutoDetectSilenceDelay / 1000.0 * clockRate);
-	} else {
-		_silenceDetectDelay = 0;
-	}
-
-	_fadeLength = _trackFadeCounter;
-}
-
 void NsfMapper::SelectTrack(uint8_t trackNumber)
 {
 	if(trackNumber < _nsfHeader.TotalSongs) {
@@ -452,7 +365,7 @@ ConsoleFeatures NsfMapper::GetAvailableFeatures()
 
 AudioTrackInfo NsfMapper::GetAudioTrackInfo()
 {
-	NesConfig& cfg = _console->GetNesConfig(); 
+	NesConfig& cfg = _console->GetNesConfig();
 
 	AudioTrackInfo track = {};
 	track.Artist = _nsfHeader.ArtistName;
@@ -462,9 +375,8 @@ AudioTrackInfo NsfMapper::GetAudioTrackInfo()
 	track.SongTitle = _nsfHeader.TrackNames.size() > _songNumber ? _nsfHeader.TrackNames[_songNumber] : "";
 	track.Position = _console->GetPpuFrame().FrameCount / _console->GetFps();
 	if(_nsfHeader.TrackLength[_songNumber] > 0) {
-		track.Length = _nsfHeader.TrackLength[_songNumber] / 1000 + _nsfHeader.TrackFade[_songNumber] / 1000;
-	} else if(cfg.NsfMoveToNextTrackAfterTime) {
-		track.Length = cfg.NsfMoveToNextTrackTime;
+		track.Length = _nsfHeader.TrackLength[_songNumber] / 1000.0 + _nsfHeader.TrackFade[_songNumber] / 1000.0;
+		track.FadeLength = _nsfHeader.TrackFade[_songNumber] / 1000.0;
 	}
 	track.TrackNumber = _songNumber + 1;
 	track.TrackCount = _nsfHeader.TotalSongs;
@@ -476,7 +388,12 @@ void NsfMapper::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	int selectedTrack = _songNumber;
 	switch(p.Action) {
 		case AudioPlayerAction::NextTrack: selectedTrack++; break;
-		case AudioPlayerAction::PrevTrack: selectedTrack--; break;
+		case AudioPlayerAction::PrevTrack:
+			if(GetAudioTrackInfo().Position < 2) {
+				selectedTrack--;
+			}
+			break;
+
 		case AudioPlayerAction::SelectTrack: selectedTrack = (int)p.TrackNumber; break;
 	}
 
@@ -501,7 +418,6 @@ void NsfMapper::Serialize(Serializer& s)
 	s.Stream(_sunsoftAudio.get());
 
 	s.Stream(
-		_irqCounter, _mmc5MultiplierValues[0], _mmc5MultiplierValues[1], _trackEndCounter, _trackFadeCounter,
-		_fadeLength, _silenceDetectDelay, _trackEnded, _allowSilenceDetection, _hasBankSwitching, _songNumber
+		_irqCounter, _mmc5MultiplierValues[0], _mmc5MultiplierValues[1], _hasBankSwitching, _songNumber
 	);
 }

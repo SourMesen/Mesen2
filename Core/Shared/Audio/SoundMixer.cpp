@@ -66,11 +66,11 @@ void SoundMixer::StopAudio(bool clearBuffer)
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_t sourceRate)
 {
 	EmuSettings* settings = _emu->GetSettings();
-	bool isAudioPlayer = _emu->GetAudioPlayerHud() ? true : false;
+	AudioPlayerHud* audioPlayer = _emu->GetAudioPlayerHud();
 	AudioConfig cfg = settings->GetAudioConfig();
 
-	uint32_t masterVolume = isAudioPlayer ? settings->GetAudioPlayerConfig().Volume : cfg.MasterVolume;
-	if(!isAudioPlayer && settings->CheckFlag(EmulationFlags::InBackground)) {
+	uint32_t masterVolume = audioPlayer ? audioPlayer->GetVolume() : cfg.MasterVolume;
+	if(!audioPlayer && settings->CheckFlag(EmulationFlags::InBackground)) {
 		if(cfg.MuteSoundInBackground) {
 			masterVolume = 0;
 		} else if(cfg.ReduceSoundInBackground) {
@@ -95,8 +95,8 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 		ProcessEqualizer(out, count, targetRate);
 	}
 
-	if(_emu->GetAudioPlayerHud()) {
-		_emu->GetAudioPlayerHud()->ProcessSamples(out, count, targetRate);
+	if(audioPlayer) {
+		audioPlayer->ProcessSamples(out, count, targetRate);
 	}
 
 	if(cfg.ReverbEnabled) {

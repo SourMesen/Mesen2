@@ -23,10 +23,6 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool FdsAutoInsertDisk { get; set; } = false;
 		[Reactive] public VsDualOutputOption VsDualVideoOutput { get; set; } = VsDualOutputOption.Both;
 		[Reactive] public VsDualOutputOption VsDualAudioOutput { get; set; } = VsDualOutputOption.Both;
-		[Reactive] public bool NsfMoveToNextTrackAfterTime { get; set; } = true;
-		[Reactive] public UInt32 NsfMoveToNextTrackTime { get; set; } = 120;
-		[Reactive] public bool NsfAutoDetectSilence { get; set; } = true;
-		[Reactive] public UInt32 NsfAutoDetectSilenceDelay { get; set; } = 3000;
 
 		//Video
 		[Reactive] public bool DisableSprites { get; set; } = false;
@@ -130,10 +126,6 @@ namespace Mesen.GUI.Config
 				FdsAutoInsertDisk = FdsAutoInsertDisk,
 				VsDualVideoOutput = VsDualVideoOutput,
 				VsDualAudioOutput = VsDualAudioOutput,
-				NsfMoveToNextTrackAfterTime = NsfMoveToNextTrackAfterTime,
-				NsfMoveToNextTrackTime = NsfMoveToNextTrackTime,
-				NsfAutoDetectSilence = NsfAutoDetectSilence,
-				NsfAutoDetectSilenceDelay = NsfAutoDetectSilenceDelay,
 
 				SpritesEnabled = !DisableSprites,
 				BackgroundEnabled = !DisableBackground,
@@ -260,10 +252,6 @@ namespace Mesen.GUI.Config
 		[MarshalAs(UnmanagedType.I1)] public bool FdsAutoInsertDisk;
 		public VsDualOutputOption VsDualVideoOutput;
 		public VsDualOutputOption VsDualAudioOutput;
-		[MarshalAs(UnmanagedType.I1)] public bool NsfMoveToNextTrackAfterTime;
-		public UInt32 NsfMoveToNextTrackTime;
-		[MarshalAs(UnmanagedType.I1)] public bool NsfAutoDetectSilence;
-		public UInt32 NsfAutoDetectSilenceDelay;
 
 		[MarshalAs(UnmanagedType.I1)] public bool SpritesEnabled;
 		[MarshalAs(UnmanagedType.I1)] public bool BackgroundEnabled;

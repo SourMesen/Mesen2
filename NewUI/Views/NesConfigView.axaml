@@ -74,19 +74,6 @@
 					<CheckBox IsChecked="{CompiledBinding Config.FdsAutoInsertDisk}" Content="{l:Translate chkFdsAutoInsertDisk}" />
 				</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate lblNsfSettings}">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox IsChecked="{CompiledBinding Config.NsfAutoDetectSilence}" Content="{l:Translate chkNsfAutoDetectSilence}" />
-						<NumericUpDown Margin="5 1" Maximum="999999" Width="85" Value="{CompiledBinding Config.NsfAutoDetectSilenceDelay}" />
-						<TextBlock Text="{l:Translate lblNsfMillisecondsOfSilence}" />
-					</StackPanel>
-					<StackPanel Orientation="Horizontal">
-						<CheckBox IsChecked="{CompiledBinding Config.NsfMoveToNextTrackAfterTime}" Content="{l:Translate chkNsfMoveToNextTrackAfterTime}" />
-						<NumericUpDown Margin="5 1" Maximum="9999" Width="80" Value="{CompiledBinding Config.NsfMoveToNextTrackTime}" />
-						<TextBlock Text="{l:Translate lblNsfSeconds}" />
-					</StackPanel>
-				</c:OptionSection>
-
 				<c:OptionSection Header="{l:Translate lblVsDualSystem}">
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 						<TextBlock Text="{l:Translate lblVsDualPlayAudio}" />

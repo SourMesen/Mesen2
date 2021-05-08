@@ -49,8 +49,6 @@ void NesSoundMixer::Reset()
 	/*if(_oggMixer) {
 		_oggMixer->Reset(_settings->GetSampleRate());
 	}*/
-	_fadeRatio = 1.0;
-	_muteFrameCount = 0;
 	_sampleCount = 0;
 
 	_previousOutputLeft = 0;
@@ -223,21 +221,16 @@ void NesSoundMixer::EndFrame(uint32_t time)
 	for(size_t i = 0, len = _timestamps.size(); i < len; i++) {
 		uint32_t stamp = _timestamps[i];
 		for(uint32_t j = 0; j < MaxChannelCount; j++) {
-			if(_channelOutput[j][stamp] != 0) {
-				//Assume any change in output means sound is playing, disregarding volume options
-				//NSF tracks that mute the triangle channel by setting it to a high-frequency value will not be considered silent
-				muteFrame = false;
-			}
 			_currentOutput[j] += _channelOutput[j][stamp];
 		}
 
 		int16_t currentOutput = GetOutputVolume(false) * 4;
-		blip_add_delta(_blipBufLeft, stamp, (int)((currentOutput - _previousOutputLeft) * _fadeRatio));
+		blip_add_delta(_blipBufLeft, stamp, (int)(currentOutput - _previousOutputLeft));
 		_previousOutputLeft = currentOutput;
 
 		if(_hasPanning) {
 			currentOutput = GetOutputVolume(true) * 4;
-			blip_add_delta(_blipBufRight, stamp, (int)((currentOutput - _previousOutputRight) * _fadeRatio));
+			blip_add_delta(_blipBufRight, stamp, (int)(currentOutput - _previousOutputRight));
 			_previousOutputRight = currentOutput;
 		}
 	}
@@ -247,31 +240,11 @@ void NesSoundMixer::EndFrame(uint32_t time)
 		blip_end_frame(_blipBufRight, time);
 	}
 
-	if(muteFrame) {
-		_muteFrameCount++;
-	} else {
-		_muteFrameCount = 0;
-	}
-
 	//Reset everything
 	_timestamps.clear();
 	memset(_channelOutput, 0, sizeof(_channelOutput));
 }
 
-void NesSoundMixer::SetFadeRatio(double fadeRatio)
-{
-	_fadeRatio = fadeRatio;
-}
-
-uint32_t NesSoundMixer::GetMuteFrameCount()
-{
-	return _muteFrameCount;
-}
-
-void NesSoundMixer::ResetMuteFrameCount()
-{
-	_muteFrameCount = 0;
-}
 //TODO
 /*
 OggMixer* NesSoundMixer::GetOggMixer()

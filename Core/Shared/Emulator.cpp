@@ -96,8 +96,8 @@ void Emulator::Run()
 		return;
 	}
 
-	auto emulationLock = _emulationLock.AcquireSafe();
 	auto lock = _runLock.AcquireSafe();
+	auto emulationLock = _emulationLock.AcquireSafe();
 
 	_stopFlag = false;
 	_isRunAheadFrame = false;
@@ -337,6 +337,8 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	auto lock = _loadLock.AcquireSafe();
+
 	if(!romFile.IsValid()) {
 		return false;
 	}
@@ -418,7 +420,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_cheatManager->ClearCheats(false);
 
-	auto lock = _debuggerLock.AcquireSafe();
+	auto debuggerLock = _debuggerLock.AcquireSafe();
 	if(_debugger) {
 		//Reset debugger if it was running before
 		_debugger->Release();
@@ -682,16 +684,18 @@ void Emulator::WaitForLock()
 		_threadPaused = true;
 
 		//Spin wait until we are allowed to start again
-		while(_lockCounter > 0) {}
+		while(_lockCounter > 0 && !_stopFlag) {}
 
 		shared_ptr<Debugger> debugger = _debugger;
 		if(debugger) {
-			while(debugger->HasBreakRequest()) {}
+			while(debugger->HasBreakRequest() && !_stopFlag) {}
 		}
 
-		_threadPaused = false;
+		if(!_stopFlag) {
+			_threadPaused = false;
 
-		_runLock.Acquire();
+			_runLock.Acquire();
+		}
 	}
 }
 
@@ -833,7 +837,13 @@ ConsoleMemoryInfo Emulator::GetMemory(SnesMemoryType type)
 
 AudioTrackInfo Emulator::GetAudioTrackInfo()
 {
-	return _console->GetAudioTrackInfo();
+	AudioTrackInfo track = _console->GetAudioTrackInfo();
+	AudioConfig audioCfg = _settings->GetAudioConfig();
+	if(track.Length <= 0 && audioCfg.AudioPlayerEnableTrackLength) {
+		track.Length = audioCfg.AudioPlayerTrackLength;
+		track.FadeLength = 1;
+	}
+	return track;
 }
 
 void Emulator::ProcessAudioPlayerAction(AudioPlayerActionParams p)

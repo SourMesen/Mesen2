@@ -12,8 +12,9 @@ class GbsCart : public GbCart
 {
 private:
 	uint8_t _prgBank = 1;
-	uint16_t _currentTrack = 0;
-	GbsHeader _header;
+	uint8_t _currentTrack = 0;
+	uint64_t _startClock = 0;
+	GbsHeader _header = {};
 
 public:
 	GbsCart(GbsHeader header)
@@ -27,7 +28,7 @@ public:
 		_memoryManager->MapRegisters(0x2000, 0x3FFF, RegisterAccess::Write);
 	}
 
-	void InitPlayback(uint16_t selectedTrack)
+	void InitPlayback(uint8_t selectedTrack)
 	{
 		_currentTrack = selectedTrack;
 
@@ -62,7 +63,7 @@ public:
 		state = {};
 		state.SP = _header.StackPointer[0] | (_header.StackPointer[1] << 8);
 		state.PC = 0;
-		state.A = selectedTrack;
+		state.A = (uint8_t)selectedTrack;
 		state.IME = true; //enable CPU interrupts
 
 		//Disable boot room
@@ -81,6 +82,7 @@ public:
 		//Clear all IRQ requests (needed when switching tracks)
 		_memoryManager->ClearIrqRequest(0xFF);
 
+		_startClock = _gameboy->GetMasterClock();
 		_prgBank = 1;
 		RefreshMappings();
 	}
@@ -93,7 +95,9 @@ public:
 		info.Comment = string(_header.Copyright, 32);
 		info.TrackNumber = _currentTrack + 1;
 		info.TrackCount = _header.TrackCount;
-		info.Position = (double)_gameboy->GetMasterClock() / _gameboy->GetMasterClockRate();
+		info.Position = (double)(_gameboy->GetMasterClock() - _startClock) / _gameboy->GetMasterClockRate();
+		info.Length = 0;
+		info.FadeLength = 0;
 		return info;
 	}
 
@@ -102,7 +106,11 @@ public:
 		int selectedTrack = _currentTrack;
 		switch(p.Action) {
 			case AudioPlayerAction::NextTrack: selectedTrack++; break;
-			case AudioPlayerAction::PrevTrack: selectedTrack--; break;
+			case AudioPlayerAction::PrevTrack:
+				if(GetAudioTrackInfo().Position < 2) {
+					selectedTrack--;
+				}
+				break;
 			case AudioPlayerAction::SelectTrack: selectedTrack = (int)p.TrackNumber; break;
 		}
 
@@ -112,8 +120,14 @@ public:
 			selectedTrack = 0;
 		}
 
-		auto lock = _gameboy->GetEmulator()->AcquireLock();
-		InitPlayback(selectedTrack);
+		//Asynchronously move to the next file
+		//Can't do this in the current thread in some contexts (e.g when track reaches end)
+		//because this is called from the emulation thread, which may cause infinite recursion
+		thread switchTrackTask([this, selectedTrack]() {
+			auto lock = _gameboy->GetEmulator()->AcquireLock();
+			InitPlayback(selectedTrack);
+		});
+		switchTrackTask.detach();
 	}
 
 	void RefreshMappings() override
@@ -132,6 +146,6 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_prgBank, _currentTrack);
+		s.Stream(_prgBank, _currentTrack, _startClock);
 	}
 };

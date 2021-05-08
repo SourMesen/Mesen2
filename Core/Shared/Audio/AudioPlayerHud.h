@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <complex>
 #include "Utilities/kissfft.h"
+#include "Utilities/Timer.h"
 
 class Emulator;
 class SoundMixer;
@@ -20,16 +21,21 @@ private:
 	std::vector<double> _amplitudes;
 	std::deque<int16_t> _samples;
 	
+	Timer _silenceTimer;
+	bool _changeTrackPending = false;
+
 	uint32_t _sampleRate;
 	double _hannWindow[N] = {};
 	double _input[N] = {};
 	std::complex<double> _out[N] = {};
 
 	string FormatSeconds(uint32_t s);
+	void MoveToNextTrack();
 
 public:
 	AudioPlayerHud(Emulator* emu);
 
 	void Draw();
+	uint32_t GetVolume();
 	void ProcessSamples(int16_t* samples, size_t sampleCount, uint32_t sampleRate);
 };

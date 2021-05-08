@@ -101,16 +101,6 @@
 
 			<!-- Archive Load Message -->
 			<Control ID="lblExtractingFile">Extracting file, please wait...</Control>
-
-			<!-- NSF Player -->
-			<Control ID="lblTitle">Title:</Control>
-			<Control ID="lblArtist">Artist:</Control>
-			<Control ID="lblCopyright">Copyright:</Control>
-			<Control ID="lblSoundChips">Sound Chips:</Control>
-			<Control ID="lblRecording">REC</Control>
-			<Control ID="lblSlowMotion">Slow Motion</Control>
-			<Control ID="lblRewinding">Rewinding</Control>
-			<Control ID="lblFastForward">Fast Forward</Control>
 		</Form>
 		<Form ID="frmLogWindow" Title="Log Window">
 			<Control ID="btnClose">Close</Control>
@@ -132,6 +122,13 @@
 			<Control ID="lblVolume">Volume:</Control>
 			<Control ID="grpVolume">Volume</Control>
 			<Control ID="btnReset">Reset to Defaults</Control>
+
+			<Control ID="lblAudioPlayerSettings">Audio Player Settings</Control>
+			<Control ID="lblAudioPlayerHint">When a track has an unknown duration:</Control>
+			<Control ID="chkAudioPlayerAutoDetectSilence">Move to the next track after</Control>
+			<Control ID="chkAudioPlayerEnableTrackLength">Limit track duration to</Control>
+			<Control ID="lblMillisecondsOfSilence">seconds of silence</Control>
+			<Control ID="lblSeconds">seconds</Control>
 
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="chkDisableDynamicSampleRate">Disable dynamic sample rate</Control>
@@ -327,12 +324,6 @@
 			<Control ID="chkFdsAutoLoadDisk">Automatically insert disk 1 side A when starting FDS games</Control>
 			<Control ID="chkFdsFastForwardOnLoad">Automatically fast forward FDS games when disk or BIOS is loading</Control>
 			<Control ID="chkFdsAutoInsertDisk">Automatically switch disks for FDS games</Control>
-
-			<Control ID="lblNsfSettings">NSF Settings</Control>
-			<Control ID="chkNsfAutoDetectSilence">Move to next track after</Control>
-			<Control ID="lblNsfMillisecondsOfSilence">milliseconds of silence</Control>
-			<Control ID="chkNsfMoveToNextTrackAfterTime">Limit track run time to</Control>
-			<Control ID="lblNsfSeconds">seconds</Control>
 
 			<Control ID="lblVsDualSystem">VS. DualSystem Settings</Control>
 			<Control ID="lblVsDualPlayAudio">Play audio for:</Control>

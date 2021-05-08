@@ -226,7 +226,7 @@ public:
 		_backColor = (~backColor & 0xFF000000) | (backColor & 0xFFFFFF);
 	}
 
-	static TextSize MeasureString(string text, int maxWidth = 0)
+	static TextSize MeasureString(string text, uint32_t maxWidth = 0)
 	{
 		uint32_t maxX = 0;
 		uint32_t x = 0;

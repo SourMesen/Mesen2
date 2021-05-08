@@ -53,49 +53,59 @@ namespace Mesen.GUI.Config
 		[Reactive] [MinMax(-20.0, 20.0)] public double Band19Gain { get; set; } = 0;
 		[Reactive] [MinMax(-20.0, 20.0)] public double Band20Gain { get; set; } = 0;
 
+		[Reactive] public bool AudioPlayerEnableTrackLength { get; set; } = true;
+		[Reactive] public UInt32 AudioPlayerTrackLength { get; set; } = 120;
+		[Reactive] public bool AudioPlayerAutoDetectSilence { get; set; } = true;
+		[Reactive] public UInt32 AudioPlayerSilenceDelay { get; set; } = 3;
+
 		public void ApplyConfig()
 		{
 			ConfigApi.SetAudioConfig(new InteropAudioConfig() {
-				AudioDevice = this.AudioDevice,
-				EnableAudio = this.EnableAudio,
-				DisableDynamicSampleRate = this.DisableDynamicSampleRate,
+				AudioDevice = AudioDevice,
+				EnableAudio = EnableAudio,
+				DisableDynamicSampleRate = DisableDynamicSampleRate,
 
-				MasterVolume = this.MasterVolume,
-				SampleRate = (UInt32)this.SampleRate,
-				AudioLatency = this.AudioLatency,
+				MasterVolume = MasterVolume,
+				SampleRate = (UInt32)SampleRate,
+				AudioLatency = AudioLatency,
 
-				MuteSoundInBackground = this.MuteSoundInBackground,
-				ReduceSoundInBackground = this.ReduceSoundInBackground,
-				ReduceSoundInFastForward = this.ReduceSoundInFastForward,
-				VolumeReduction = this.VolumeReduction,
+				MuteSoundInBackground = MuteSoundInBackground,
+				ReduceSoundInBackground = ReduceSoundInBackground,
+				ReduceSoundInFastForward = ReduceSoundInFastForward,
+				VolumeReduction = VolumeReduction,
 
-				ReverbEnabled = this.ReverbEnabled,
-				ReverbStrength = this.ReverbStrength,
-				ReverbDelay = this.ReverbDelay,
-				CrossFeedEnabled = this.CrossFeedEnabled,
-				CrossFeedRatio = this.CrossFeedRatio,
+				ReverbEnabled = ReverbEnabled,
+				ReverbStrength = ReverbStrength,
+				ReverbDelay = ReverbDelay,
+				CrossFeedEnabled = CrossFeedEnabled,
+				CrossFeedRatio = CrossFeedRatio,
 				
-				EnableEqualizer = this.EnableEqualizer,
-				Band1Gain = this.Band1Gain,
-				Band2Gain = this.Band2Gain,
-				Band3Gain = this.Band3Gain,
-				Band4Gain = this.Band4Gain,
-				Band5Gain = this.Band5Gain,
-				Band6Gain = this.Band6Gain,
-				Band7Gain = this.Band7Gain,
-				Band8Gain = this.Band8Gain,
-				Band9Gain = this.Band9Gain,
-				Band10Gain = this.Band10Gain,
-				Band11Gain = this.Band11Gain,
-				Band12Gain = this.Band12Gain,
-				Band13Gain = this.Band13Gain,
-				Band14Gain = this.Band14Gain,
-				Band15Gain = this.Band15Gain,
-				Band16Gain = this.Band16Gain,
-				Band17Gain = this.Band17Gain,
-				Band18Gain = this.Band18Gain,
-				Band19Gain = this.Band19Gain,
-				Band20Gain = this.Band20Gain
+				EnableEqualizer = EnableEqualizer,
+				Band1Gain = Band1Gain,
+				Band2Gain = Band2Gain,
+				Band3Gain = Band3Gain,
+				Band4Gain = Band4Gain,
+				Band5Gain = Band5Gain,
+				Band6Gain = Band6Gain,
+				Band7Gain = Band7Gain,
+				Band8Gain = Band8Gain,
+				Band9Gain = Band9Gain,
+				Band10Gain = Band10Gain,
+				Band11Gain = Band11Gain,
+				Band12Gain = Band12Gain,
+				Band13Gain = Band13Gain,
+				Band14Gain = Band14Gain,
+				Band15Gain = Band15Gain,
+				Band16Gain = Band16Gain,
+				Band17Gain = Band17Gain,
+				Band18Gain = Band18Gain,
+				Band19Gain = Band19Gain,
+				Band20Gain = Band20Gain,
+
+				AudioPlayerEnableTrackLength = AudioPlayerEnableTrackLength,
+				AudioPlayerTrackLength = AudioPlayerTrackLength,
+				AudioPlayerAutoDetectSilence = AudioPlayerAutoDetectSilence,
+				AudioPlayerSilenceDelay = AudioPlayerSilenceDelay
 			});
 		}
 	}
@@ -144,6 +154,11 @@ namespace Mesen.GUI.Config
 		public double Band18Gain;
 		public double Band19Gain;
 		public double Band20Gain;
+
+		[MarshalAs(UnmanagedType.I1)] public bool AudioPlayerEnableTrackLength;
+		public UInt32 AudioPlayerTrackLength;
+		[MarshalAs(UnmanagedType.I1)] public bool AudioPlayerAutoDetectSilence;
+		public UInt32 AudioPlayerSilenceDelay;
 	}
 
 	public enum AudioSampleRate

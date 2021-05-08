@@ -9,7 +9,8 @@ struct AudioTrackInfo
 	string Comment;
 
 	double Position;
-	int32_t Length;
+	double Length;
+	double FadeLength;
 
 	uint32_t TrackNumber;
 	uint32_t TrackCount;

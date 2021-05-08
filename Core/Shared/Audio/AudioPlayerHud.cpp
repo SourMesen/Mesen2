@@ -3,6 +3,7 @@
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/Video/DrawStringCommand.h"
 
 static constexpr double PI = 3.14159265358979323846;
@@ -30,6 +31,9 @@ string AudioPlayerHud::FormatSeconds(uint32_t s)
 void AudioPlayerHud::Draw()
 {
 	AudioTrackInfo trackInfo = _emu->GetAudioTrackInfo();
+	if(trackInfo.Position <= 1) {
+		_changeTrackPending = false;
+	}
 	
 	_hud->DrawRectangle(0, 0, 256, 240, 0, true, 1);
 
@@ -64,7 +68,7 @@ void AudioPlayerHud::Draw()
 	if(trackInfo.Length <= 0) {
 		_hud->DrawString(215, 208, " " + position + "   ", 0xFFFFFF, 0, 1);
 	} else {
-		position += " / " + FormatSeconds(trackInfo.Length);
+		position += " / " + FormatSeconds((uint32_t)trackInfo.Length);
 		_hud->DrawString(177, 208, " " + position + "   ", 0xFFFFFF, 0, 1);
 
 		constexpr int barWidth = 222;
@@ -116,6 +120,7 @@ void AudioPlayerHud::Draw()
 	_hud->DrawString(228, top + 10, "20kHz", fgColor, bgColor, 1);
 
 	if(_amplitudes.size() >= N / 2) {
+		bool silent = true;
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 32; j++) {
 				double freqRange = ranges[i][1] - ranges[i][0];
@@ -133,12 +138,55 @@ void AudioPlayerHud::Draw()
 				avgAmp *= ranges[i][2];
 				avgAmp = std::min<double>(maxVal, avgAmp);
 
+				if(avgAmp >= 1) {
+					silent = false;
+				}
+
 				int red = std::min(255, (int)(256 * (avgAmp / maxVal) * 2));
 				int green = std::max(0, std::min(255, (int)(256 * ((maxVal - avgAmp) / maxVal) * 2)));
 				_hud->DrawRectangle(i*32+j, 190, 1, (int)-avgAmp, red << 16 | green << 8, true, 1);
 			}
 		}
+
+		if(!silent) {
+			_silenceTimer.Reset();
+		} else {
+			AudioConfig audioCfg = _emu->GetSettings()->GetAudioConfig();
+			if(audioCfg.AudioPlayerAutoDetectSilence && _silenceTimer.GetElapsedMS() >= audioCfg.AudioPlayerSilenceDelay * 1000) {
+				//Silence detected, move to next track
+				_silenceTimer.Reset();
+				MoveToNextTrack();
+			}
+		}
 	}
+}
+
+void AudioPlayerHud::MoveToNextTrack()
+{
+	if(!_changeTrackPending) {
+		_changeTrackPending = true;
+		AudioPlayerActionParams params = {};
+		params.Action = AudioPlayerAction::NextTrack;
+		_emu->ProcessAudioPlayerAction(params);
+	}
+}
+
+uint32_t AudioPlayerHud::GetVolume()
+{
+	AudioTrackInfo info = _emu->GetAudioTrackInfo();
+
+	if(info.Length > 0) {
+		if(info.Position >= info.Length) {
+			//Switch to next track
+			MoveToNextTrack();
+			return 0;
+		} else if(info.Position >= info.Length - info.FadeLength) {
+			double fadeStart = info.Length - info.FadeLength;
+			double ratio = 1.0 - ((info.Position - fadeStart) / info.FadeLength);
+			return (uint32_t)(ratio * _emu->GetSettings()->GetAudioPlayerConfig().Volume);
+		}
+	}
+	return _emu->GetSettings()->GetAudioPlayerConfig().Volume;
 }
 
 void AudioPlayerHud::ProcessSamples(int16_t* samples, size_t sampleCount, uint32_t sampleRate)

@@ -139,6 +139,11 @@ struct AudioConfig
 	double Band18Gain = 0;
 	double Band19Gain = 0;
 	double Band20Gain = 0;
+
+	bool AudioPlayerEnableTrackLength = true;
+	uint32_t AudioPlayerTrackLength = 120;
+	bool AudioPlayerAutoDetectSilence = true;
+	uint32_t AudioPlayerSilenceDelay = 3;
 };
 
 //Update ControllerTypeNames when changing this
@@ -407,10 +412,6 @@ struct NesConfig
 	bool FdsAutoInsertDisk = false;
 	VsDualOutputOption VsDualVideoOutput = VsDualOutputOption::Both;
 	VsDualOutputOption VsDualAudioOutput = VsDualOutputOption::Both;
-	bool NsfMoveToNextTrackAfterTime = true;
-	uint32_t NsfMoveToNextTrackTime = 120;
-	bool NsfAutoDetectSilence = true;
-	uint32_t NsfAutoDetectSilenceDelay = 3000;
 
 	bool SpritesEnabled = true;
 	bool BackgroundEnabled = true;

@@ -74,8 +74,7 @@
 						Value="{CompiledBinding Config.MasterVolume}"
 						HorizontalAlignment="Left"
 					/>
-				
-			</Grid>
+				</Grid>
 
 				<c:OptionSection Header="{l:Translate lblVolumeReductionSettings}">
 					<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{CompiledBinding Config.MuteSoundInBackground}" />
@@ -91,6 +90,22 @@
 							Value="{CompiledBinding Config.VolumeReduction}"
 							HorizontalAlignment="Left"
 						/>
+					</StackPanel>
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblAudioPlayerSettings}">
+					<TextBlock Text="{l:Translate lblAudioPlayerHint}" />
+					<StackPanel Margin="10 5 0 0">
+						<StackPanel Orientation="Horizontal">
+							<CheckBox IsChecked="{CompiledBinding Config.AudioPlayerAutoDetectSilence}" Content="{l:Translate chkAudioPlayerAutoDetectSilence}" />
+							<NumericUpDown Margin="5 1" Maximum="999999" Width="85" Value="{CompiledBinding Config.AudioPlayerSilenceDelay}" />
+							<TextBlock Text="{l:Translate lblMillisecondsOfSilence}" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<CheckBox IsChecked="{CompiledBinding Config.AudioPlayerEnableTrackLength}" Content="{l:Translate chkAudioPlayerEnableTrackLength}" />
+							<NumericUpDown Margin="5 1" Maximum="9999" Width="80" Value="{CompiledBinding Config.AudioPlayerTrackLength}" />
+							<TextBlock Text="{l:Translate lblSeconds}" />
+						</StackPanel>
 					</StackPanel>
 				</c:OptionSection>
 			</StackPanel>

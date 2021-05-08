@@ -73,6 +73,7 @@ private:
 	atomic<uint32_t> _lockCounter;
 	SimpleLock _runLock;
 	SimpleLock _emulationLock;
+	SimpleLock _loadLock;
 
 	SimpleLock _debuggerLock;
 	atomic<bool> _stopFlag;

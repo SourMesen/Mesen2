@@ -257,7 +257,8 @@ AudioTrackInfo Console::GetAudioTrackInfo()
 		track.GameTitle = spc->GameTitle;
 		track.SongTitle = spc->SongTitle;
 		track.Position = _ppu->GetFrameCount() / GetFps();
-		track.Length = -1;
+		track.Length = spc->TrackLength + (spc->FadeLength / 1000.0);
+		track.FadeLength = spc->FadeLength / 1000.0;
 		track.TrackNumber = _spcTrackNumber + 1;
 		track.TrackCount = (uint32_t)_spcPlaylist.size();
 
@@ -270,7 +271,11 @@ void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	if(_spcTrackNumber >= 0) {
 		int i = (int)_spcTrackNumber;
 		switch(p.Action) {
-			case AudioPlayerAction::PrevTrack: i--; break;
+			case AudioPlayerAction::PrevTrack:
+				if(GetAudioTrackInfo().Position < 2) {
+					i--;
+				}
+				break;
 			case AudioPlayerAction::NextTrack: i++; break;
 		}
 
@@ -280,7 +285,13 @@ void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 			i = 0;
 		}
 
-		_emu->LoadRom(VirtualFile(_spcPlaylist[i]), VirtualFile());
+		//Asynchronously move to the next file
+		//Can't do this in the current thread in some contexts (e.g when track reaches end)
+		//because this is called from the emulation thread.
+		thread switchTrackTask([this, i]() {
+			_emu->LoadRom(VirtualFile(_spcPlaylist[i]), VirtualFile());
+		});
+		switchTrackTask.detach();
 	}
 }
 
