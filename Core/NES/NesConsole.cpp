@@ -136,9 +136,6 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			_controlManager.reset(new NesControlManager(this));
 		}
 
-		_mapper->SetConsole(this);
-		_mapper->Initialize(romData);
-
 		/*if(!isDifferentGame && forPowerCycle) {
 			_mapper->CopyPrgChrRom(previousMapper);
 		}*/
@@ -181,6 +178,9 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		} else {*/
 			_ppu.reset(new NesPpu(this));
 		//}
+
+		_mapper->SetConsole(this);
+		_mapper->Initialize(romData);
 
 		_memoryManager->SetMapper(_mapper.get());
 		_memoryManager->RegisterIODevice(_ppu.get());

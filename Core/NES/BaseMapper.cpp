@@ -834,13 +834,13 @@ void BaseMapper::WritePrgRam(uint16_t addr, uint8_t value)
 	}
 }
 
-void BaseMapper::NotifyVRAMAddressChange(uint16_t addr)
+void BaseMapper::NotifyVramAddressChange(uint16_t addr)
 {
 	//This is called when the VRAM addr on the PPU memory bus changes
 	//Used by MMC3/MMC5/etc
 }
 
-uint8_t BaseMapper::InternalReadVRAM(uint16_t addr)
+uint8_t BaseMapper::InternalReadVram(uint16_t addr)
 {
 	if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Read) {
 		return _chrPages[addr >> 8][(uint8_t)addr];
@@ -850,21 +850,21 @@ uint8_t BaseMapper::InternalReadVRAM(uint16_t addr)
 	return _vramOpenBusValue >= 0 ? _vramOpenBusValue : addr;
 }
 
-uint8_t BaseMapper::DebugReadVRAM(uint16_t addr, bool disableSideEffects)
+uint8_t BaseMapper::DebugReadVram(uint16_t addr, bool disableSideEffects)
 {
 	addr &= 0x3FFF;
 	if(!disableSideEffects) {
-		NotifyVRAMAddressChange(addr);
+		NotifyVramAddressChange(addr);
 	}
-	return InternalReadVRAM(addr);
+	return InternalReadVram(addr);
 }
 
-uint8_t BaseMapper::MapperReadVRAM(uint16_t addr, MemoryOperationType operationType)
+uint8_t BaseMapper::MapperReadVram(uint16_t addr, MemoryOperationType operationType)
 {
-	return InternalReadVRAM(addr);
+	return InternalReadVram(addr);
 }
 
-void BaseMapper::DebugWriteVRAM(uint16_t addr, uint8_t value, bool disableSideEffects)
+void BaseMapper::DebugWriteVram(uint16_t addr, uint8_t value, bool disableSideEffects)
 {
 	addr &= 0x3FFF;
 	if(disableSideEffects) {
@@ -873,14 +873,14 @@ void BaseMapper::DebugWriteVRAM(uint16_t addr, uint8_t value, bool disableSideEf
 			_chrPages[addr >> 8][(uint8_t)addr] = value;
 		}
 	} else {
-		NotifyVRAMAddressChange(addr);
+		NotifyVramAddressChange(addr);
 		if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
 			_chrPages[addr >> 8][(uint8_t)addr] = value;
 		}
 	}
 }
 
-void BaseMapper::WriteVRAM(uint16_t addr, uint8_t value)
+void BaseMapper::WriteVram(uint16_t addr, uint8_t value)
 {
 	//TODO
 	//_emu->ProcessPpuWrite<CpuType::Nes>(addr, value, SnesMemoryType::NesVideoRam);

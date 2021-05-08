@@ -152,9 +152,9 @@
 #include "NES/Mappers/MMC1.h"
 /*#include "MMC1_105.h"
 #include "MMC1_155.h"
-#include "MMC2.h"
-#include "MMC3.h"
-#include "MMC3_12.h"
+#include "MMC2.h"*/
+#include "NES/Mappers/MMC3.h"
+/*#include "MMC3_12.h"
 #include "MMC3_14.h"
 #include "MMC3_37.h"
 #include "MMC3_44.h"
@@ -194,9 +194,9 @@
 #include "MMC3_Kof97.h"
 #include "MMC3_MaliSB.h"
 #include "MMC3_StreetHeroes.h"
-#include "MMC4.h"
-#include "MMC5.h"
-#include "Namco108.h"
+#include "MMC4.h"*/
+#include "NES/Mappers/MMC5.h"
+/*#include "Namco108.h"
 #include "Namco108_76.h"
 #include "Namco108_88.h"
 #include "Namco108_95.h"
@@ -309,16 +309,15 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 0: return new NROM();
 		case 1: return new MMC1();
 		case 2: return new UNROM();
-		/*case 3: return new CNROM(false);
+		//case 3: return new CNROM(false);
 		case 4: 
 			if(romData.Info.SubMapperID == 3) {
-				return new McAcc();
+				//return new McAcc();
 			} else {
 				return new MMC3();
 			}
-
 		case 5: return new MMC5();
-		case 6: return new FrontFareast();
+		/*case 6: return new FrontFareast();
 		case 7: return new AXROM();
 		case 8: return new FrontFareast();
 		case 9: return new MMC2();

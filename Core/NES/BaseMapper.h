@@ -151,7 +151,7 @@ protected:
 	void SetMirroringType(MirroringType type);
 	MirroringType GetMirroringType();
 
-	uint8_t InternalReadVRAM(uint16_t addr);
+	uint8_t InternalReadVram(uint16_t addr);
 
 public:
 	static constexpr uint32_t NametableCount = 0x10;
@@ -169,7 +169,7 @@ public:
 
 	virtual void SetRegion(ConsoleRegion region) { }
 	virtual void ProcessCpuClock() { }
-	virtual void NotifyVRAMAddressChange(uint16_t addr);
+	virtual void NotifyVramAddressChange(uint16_t addr);
 	virtual void GetMemoryRanges(MemoryRanges &ranges) override;
 	
 	virtual void SaveBattery();
@@ -188,20 +188,20 @@ public:
 	void DebugWriteRAM(uint16_t addr, uint8_t value);
 	void WritePrgRam(uint16_t addr, uint8_t value);
 
-	virtual uint8_t MapperReadVRAM(uint16_t addr, MemoryOperationType operationType);
+	virtual uint8_t MapperReadVram(uint16_t addr, MemoryOperationType operationType);
 	
-	__forceinline uint8_t ReadVRAM(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
+	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
-		uint8_t value = MapperReadVRAM(addr, type);
+		uint8_t value = MapperReadVram(addr, type);
 		//TODO
 		//_emu->ProcessPpuRead<CpuType::Nes>(addr, value, SnesMemoryType::NesVideoRam);
 		return value;
 	}
 
-	void DebugWriteVRAM(uint16_t addr, uint8_t value, bool disableSideEffects = true);
-	void WriteVRAM(uint16_t addr, uint8_t value);
+	void DebugWriteVram(uint16_t addr, uint8_t value, bool disableSideEffects = true);
+	void WriteVram(uint16_t addr, uint8_t value);
 
-	uint8_t DebugReadVRAM(uint16_t addr, bool disableSideEffects = true);
+	uint8_t DebugReadVram(uint16_t addr, bool disableSideEffects = true);
 
 	void CopyChrTile(uint32_t address, uint8_t *dest);
 

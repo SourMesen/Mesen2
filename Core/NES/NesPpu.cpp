@@ -468,10 +468,10 @@ void NesPpu::WriteRam(uint16_t addr, uint8_t value)
 				//_console->DebugProcessVramWriteOperation(_ppuBusAddress & 0x3FFF, value);
 			} else {
 				if(_scanline >= 240 || !IsRenderingEnabled()) {
-					_console->GetMapper()->WriteVRAM(_ppuBusAddress & 0x3FFF, value);
+					_console->GetMapper()->WriteVram(_ppuBusAddress & 0x3FFF, value);
 				} else {
 					//During rendering, the value written is ignored, and instead the address' LSB is used (not confirmed, based on Visual NES)
-					_console->GetMapper()->WriteVRAM(_ppuBusAddress & 0x3FFF, _ppuBusAddress & 0xFF);
+					_console->GetMapper()->WriteVram(_ppuBusAddress & 0x3FFF, _ppuBusAddress & 0xFF);
 				}
 			}
 			UpdateVideoRamAddr();
@@ -664,19 +664,19 @@ uint16_t NesPpu::GetAttributeAddr()
 void NesPpu::SetBusAddress(uint16_t addr)
 {
 	_ppuBusAddress = addr;
-	_console->GetMapper()->NotifyVRAMAddressChange(addr);
+	_console->GetMapper()->NotifyVramAddressChange(addr);
 }
 
 uint8_t NesPpu::ReadVram(uint16_t addr, MemoryOperationType type)
 {
 	SetBusAddress(addr);
-	return _console->GetMapper()->ReadVRAM(addr, type);
+	return _console->GetMapper()->ReadVram(addr, type);
 }
 
 void NesPpu::WriteVram(uint16_t addr, uint8_t value)
 {
 	SetBusAddress(addr);
-	_console->GetMapper()->WriteVRAM(addr, value);
+	_console->GetMapper()->WriteVram(addr, value);
 }
 
 void NesPpu::LoadTileInfo()
@@ -743,9 +743,9 @@ void NesPpu::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, 
 		info.VerticalMirror = verticalMirror;
 		info.PaletteOffset = ((attributes & 0x03) << 2) | 0x10;
 		if(extraSprite) {
-			//Use DebugReadVRAM for extra sprites to prevent side-effects.
-			info.LowByte = _console->GetMapper()->DebugReadVRAM(tileAddr);
-			info.HighByte = _console->GetMapper()->DebugReadVRAM(tileAddr + 8);
+			//Use DebugReadVram for extra sprites to prevent side-effects.
+			info.LowByte = _console->GetMapper()->DebugReadVram(tileAddr);
+			info.HighByte = _console->GetMapper()->DebugReadVram(tileAddr + 8);
 		} else {
 			fetchLastSprite = false;
 			info.LowByte = ReadVram(tileAddr);

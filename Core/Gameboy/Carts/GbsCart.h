@@ -70,6 +70,7 @@ public:
 		_memoryManager->WriteRegister(0xFF50, 0x01);
 
 		//Turn on PPU for vblank interrupts
+		//TODO test and support timer IRQs properly
 		_memoryManager->WriteRegister(0xFF40, 0x80);
 
 		//Enable all IRQs

@@ -783,6 +783,10 @@
     <ClInclude Include="Shared\Video\SystemHud.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="Gameboy\Carts\GbsCart.h" />
+    <ClInclude Include="NES\Mappers\MMC3.h" />
+    <ClInclude Include="NES\Mappers\MMC5.h" />
+    <ClInclude Include="NES\Mappers\Mmc5MemoryHandler.h" />
+    <ClInclude Include="NES\Mappers\A12Watcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

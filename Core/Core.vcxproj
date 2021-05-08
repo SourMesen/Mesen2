@@ -76,6 +76,7 @@
     <ClInclude Include="NES\Loaders\NsfLoader.h" />
     <ClInclude Include="NES\Loaders\RomLoader.h" />
     <ClInclude Include="NES\APU\BaseExpansionAudio.h" />
+    <ClInclude Include="NES\Mappers\A12Watcher.h" />
     <ClInclude Include="NES\Mappers\Audio\Mmc5Audio.h" />
     <ClInclude Include="NES\Mappers\Audio\Namco163Audio.h" />
     <ClInclude Include="NES\Mappers\Audio\OpllChannel.h" />
@@ -92,6 +93,9 @@
     <ClInclude Include="NES\Mappers\FDS\FdsInputButtons.h" />
     <ClInclude Include="NES\Mappers\MMC1.h" />
     <ClInclude Include="NES\Mappers\FDS\ModChannel.h" />
+    <ClInclude Include="NES\Mappers\MMC3.h" />
+    <ClInclude Include="NES\Mappers\MMC5.h" />
+    <ClInclude Include="NES\Mappers\Mmc5MemoryHandler.h" />
     <ClInclude Include="NES\Mappers\NsfMapper.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
