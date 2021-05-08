@@ -7,7 +7,8 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesSoundMixer.h"
 #include "NES/NesMemoryManager.h"
-#include "NES/NesPpu.h"
+#include "NES/DefaultNesPpu.h"
+#include "NES/NsfPpu.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesNtscFilter.h"
 #include "NES/NesConstants.h"
@@ -172,12 +173,14 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 
 		if(_hdData && (!_hdData->Tiles.empty() || !_hdData->Backgrounds.empty())) {
 			_ppu.reset(new HdPpu(shared_from_this(), _hdData.get()));
-		} else if(std::dynamic_pointer_cast<NsfMapper>(_mapper)) {
+		} else */
+		
+		if(dynamic_cast<NsfMapper*>(_mapper.get())) {
 			//Disable most of the PPU for NSFs
-			_ppu.reset(new NsfPpu(shared_from_this()));
-		} else {*/
-			_ppu.reset(new NesPpu(this));
-		//}
+			_ppu.reset(new NsfPpu(this));
+		} else {
+			_ppu.reset(new DefaultNesPpu(this));
+		}
 
 		_mapper->SetConsole(this);
 		_mapper->Initialize(romData);

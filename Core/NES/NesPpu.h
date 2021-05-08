@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
 #include "NES/NesTypes.h"
+#include "NES/BaseNesPpu.h"
+#include "NES/BaseMapper.h"
 #include "NES/Debugger/NesDebuggerTypes.h"
 #include "NES/INesMemoryHandler.h"
 #include "MemoryOperationType.h"
@@ -10,7 +12,6 @@
 enum class ConsoleRegion;
 
 class Emulator;
-class BaseMapper;
 class ControlManager;
 class NesConsole;
 class EmuSettings;
@@ -28,31 +29,30 @@ enum PPURegisters
 	SpriteDMA = 0x4014,
 };
 
-class NesPpu : public INesMemoryHandler, public ISerializable
+template<class T>
+class NesPpu : public BaseNesPpu
 {
 private:
 	static constexpr int32_t OamDecayCycleCount = 3000;
 
 protected:
+	uint16_t* _currentOutputBuffer;
+	uint8_t _paletteRAM[0x20];
+
 	NesConsole* _console;
+	BaseMapper* _mapper;
 	Emulator* _emu;
 	EmuSettings* _settings;
 
 	PPUState _state;
-	int32_t _scanline;
-	uint32_t _cycle;
-	uint32_t _frameCount;
 	uint64_t _masterClock;
 	uint8_t _masterClockDivider;
 	uint8_t _memoryReadBuffer;
-
-	uint8_t _paletteRAM[0x20];
 
 	uint8_t _spriteRAM[0x100];
 	uint8_t _secondarySpriteRAM[0x20];
 	bool _hasSprite[257];
 
-	uint16_t* _currentOutputBuffer;
 	uint16_t* _outputBuffers[2];
 
 	ConsoleRegion _region;
@@ -105,9 +105,6 @@ protected:
 	uint16_t _updateVramAddr;
 	uint8_t _updateVramAddrDelay;
 
-	bool _emulatorBgEnabled = true;
-	bool _emulatorSpritesEnabled = true;
-
 	uint32_t _minimumDrawBgCycle;
 	uint32_t _minimumDrawSpriteCycle;
 	uint32_t _minimumDrawSpriteStandardCycle;
@@ -137,7 +134,7 @@ protected:
 	__forceinline uint16_t GetAttributeAddr();
 
 	void ProcessScanlineFirstCycle();
-	__forceinline void ProcessScanline();
+	__forceinline void ProcessScanlineImpl();
 	__forceinline void ProcessSpriteEvaluation();
 
 	void BeginVBlank();
@@ -158,7 +155,7 @@ protected:
 	void UpdateMinimumDrawCycles();
 
 	__forceinline uint8_t GetPixelColor();
-	__forceinline virtual void DrawPixel();
+
 	void UpdateGrayscaleAndIntensifyBits();
 	virtual void SendFrame();
 
@@ -187,10 +184,10 @@ public:
 	NesPpu(NesConsole* console);
 	virtual ~NesPpu();
 
-	void Reset();
+	void Reset() override;
 
 	void DebugSendFrame();
-	uint16_t* GetScreenBuffer(bool previousBuffer);
+	uint16_t* GetScreenBuffer(bool previousBuffer) override;
 	void DebugCopyOutputBuffer(uint16_t* target);
 	void DebugUpdateFrameBuffer(bool toGrayscale);
 	void GetState(NesPpuState& state);
@@ -203,7 +200,7 @@ public:
 		ranges.AddHandler(MemoryOperation::Write, 0x4014);
 	}
 
-	PpuModel GetPpuModel();
+	PpuModel GetPpuModel() override;
 
 	uint8_t ReadPaletteRAM(uint16_t addr);
 	void WritePaletteRAM(uint16_t addr, uint8_t value);
@@ -212,35 +209,16 @@ public:
 	uint8_t PeekRam(uint16_t addr) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;
 
-	void SetRegion(ConsoleRegion region);
+	void SetRegion(ConsoleRegion region) override;
 	double GetOverclockRate();
 
-	void Exec();
-	__forceinline void Run(uint64_t runTo);
+	__forceinline void Exec();
+	void Run(uint64_t runTo) override;
 
-	uint32_t GetFrameCount()
-	{
-		return _frameCount;
-	}
-
-	uint32_t GetFrameCycle()
-	{
-		return ((_scanline + 1) * 341) + _cycle;
-	}
 
 	PPUControlFlags GetControlFlags()
 	{
 		return _flags;
-	}
-
-	uint32_t GetCurrentCycle()
-	{
-		return _cycle;
-	}
-
-	int32_t GetCurrentScanline()
-	{
-		return _scanline;
 	}
 
 	uint8_t* GetSpriteRam();
@@ -250,7 +228,7 @@ public:
 		return _secondarySpriteRAM;
 	}
 
-	uint32_t GetPixelBrightness(uint8_t x, uint8_t y);
+	uint32_t GetPixelBrightness(uint8_t x, uint8_t y) override;
 	uint16_t GetCurrentBgColor();
 
 	uint16_t GetPixel(uint8_t x, uint8_t y)
@@ -259,7 +237,8 @@ public:
 	}
 };
 
-void NesPpu::Run(uint64_t runTo)
+template<class T>
+void NesPpu<T>::Run(uint64_t runTo)
 {
 	do {
 		//Always need to run at least once, check condition at the end of the loop (slightly faster)

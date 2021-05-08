@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
 #include "NES/NesConstants.h"
-#include "NES/NesPpu.h"
+#include "NES/BaseNesPpu.h"
 #include "NES/NesConsole.h"
 #include "Shared/Emulator.h"
 #include "Shared/Emulator.h"
@@ -63,7 +63,7 @@ public:
 
 	static bool StaticIsLightFound(MousePosition pos, NesConsole* console)
 	{
-		NesPpu* ppu = console ? console->GetPpu() : nullptr;
+		BaseNesPpu* ppu = console ? console->GetPpu() : nullptr;
 		if(!ppu) {
 			return false;
 		}

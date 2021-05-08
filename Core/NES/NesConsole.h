@@ -7,7 +7,7 @@
 
 class Emulator;
 class NesCpu;
-class NesPpu;
+class BaseNesPpu;
 class NesApu;
 class NesMemoryManager;
 class NesControlManager;
@@ -29,7 +29,7 @@ private:
 	NesConsole* _vsMainConsole = nullptr;
 
 	unique_ptr<NesCpu> _cpu;
-	unique_ptr<NesPpu> _ppu;
+	unique_ptr<BaseNesPpu> _ppu;
 	unique_ptr<NesApu> _apu;
 	unique_ptr<NesMemoryManager> _memoryManager;
 	unique_ptr<BaseMapper> _mapper;
@@ -45,7 +45,7 @@ public:
 	~NesConsole();
 
 	NesCpu* GetCpu() { return _cpu.get(); }
-	NesPpu* GetPpu() { return _ppu.get(); }
+	BaseNesPpu* GetPpu() { return _ppu.get(); }
 	NesApu* GetApu() { return _apu.get(); }
 	NesMemoryManager* GetMemoryManager() { return _memoryManager.get(); }
 	BaseMapper* GetMapper() { return _mapper.get(); }

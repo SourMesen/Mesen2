@@ -11,6 +11,9 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesConstants.h"
 
+#include "NES/DefaultNesPpu.h"
+#include "NES/NsfPpu.h"
+
 #include "Debugger/Debugger.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Video/VideoDecoder.h"
@@ -18,10 +21,11 @@
 #include "Shared/NotificationManager.h"
 #include "MemoryOperationType.h"
 
-NesPpu::NesPpu(NesConsole* console)
+template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
+	_mapper = console->GetMapper();
 	_masterClock = 0;
 	_masterClockDivider = 4;
 	_settings = _emu->GetSettings();
@@ -49,13 +53,13 @@ NesPpu::NesPpu(NesConsole* console)
 	Reset();
 }
 
-NesPpu::~NesPpu()
+template<class T> NesPpu<T>::~NesPpu()
 {
 	delete[] _outputBuffers[0];
 	delete[] _outputBuffers[1];
 }
 
-void NesPpu::Reset()
+template<class T> void NesPpu<T>::Reset()
 {
 	_masterClock = 0;
 	_preventVblFlag = false;
@@ -118,7 +122,7 @@ void NesPpu::Reset()
 	UpdateMinimumDrawCycles();
 }
 
-void NesPpu::SetRegion(ConsoleRegion region)
+template<class T> void NesPpu<T>::SetRegion(ConsoleRegion region)
 {
 	_region = region;
 
@@ -157,7 +161,7 @@ void NesPpu::SetRegion(ConsoleRegion region)
 	_vblankEnd += cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
 }
 
-double NesPpu::GetOverclockRate()
+template<class T> double NesPpu<T>::GetOverclockRate()
 {
 	uint32_t regularVblankEnd;
 	switch(_region) {
@@ -170,7 +174,7 @@ double NesPpu::GetOverclockRate()
 	return (double)(_vblankEnd + 2) / (regularVblankEnd + 2);
 }
 
-void NesPpu::GetState(NesPpuState &state)
+template<class T> void NesPpu<T>::GetState(NesPpuState &state)
 {
 	state.ControlFlags = _flags;
 	state.StatusFlags = _statusFlags;
@@ -185,7 +189,7 @@ void NesPpu::GetState(NesPpuState &state)
 	state.MemoryReadBuffer = _memoryReadBuffer;
 }
 
-void NesPpu::SetState(NesPpuState &state)
+template<class T> void NesPpu<T>::SetState(NesPpuState &state)
 {
 	_flags = state.ControlFlags;
 	_statusFlags = state.StatusFlags;
@@ -205,7 +209,7 @@ void NesPpu::SetState(NesPpuState &state)
 	}
 }
 
-void NesPpu::UpdateVideoRamAddr()
+template<class T> void NesPpu<T>::UpdateVideoRamAddr()
 {
 	if(_scanline >= 240 || !IsRenderingEnabled()) {
 		_state.VideoRamAddr = (_state.VideoRamAddr + (_flags.VerticalWrite ? 32 : 1)) & 0x7FFF;
@@ -225,7 +229,7 @@ void NesPpu::UpdateVideoRamAddr()
 	}
 }
 
-void NesPpu::SetOpenBus(uint8_t mask, uint8_t value)
+template<class T> void NesPpu<T>::SetOpenBus(uint8_t mask, uint8_t value)
 {
 	//Decay expired bits, set new bits and update stamps on each individual bit
 	if(mask == 0xFF) {
@@ -256,22 +260,22 @@ void NesPpu::SetOpenBus(uint8_t mask, uint8_t value)
 	}
 }
 
-uint8_t NesPpu::ApplyOpenBus(uint8_t mask, uint8_t value)
+template<class T> uint8_t NesPpu<T>::ApplyOpenBus(uint8_t mask, uint8_t value)
 {
 	SetOpenBus(~mask, value);
 	return value | (_openBus & mask);
 }
 
-PpuModel NesPpu::GetPpuModel()
+template<class T> PpuModel NesPpu<T>::GetPpuModel()
 {
-	if(_console->GetMapper()->GetGameSystem() == GameSystem::VsSystem) {
-		return _console->GetMapper()->GetPpuModel();
+	if(_mapper->GetGameSystem() == GameSystem::VsSystem) {
+		return _mapper->GetPpuModel();
 	} else {
 		return PpuModel::Ppu2C02;
 	}
 }
 
-void NesPpu::ProcessStatusRegOpenBus(uint8_t &openBusMask, uint8_t &returnValue)
+template<class T> void NesPpu<T>::ProcessStatusRegOpenBus(uint8_t &openBusMask, uint8_t &returnValue)
 {
 	switch(GetPpuModel()) {
 		case PpuModel::Ppu2C05A: openBusMask = 0x00; returnValue |= 0x1B; break;
@@ -283,7 +287,7 @@ void NesPpu::ProcessStatusRegOpenBus(uint8_t &openBusMask, uint8_t &returnValue)
 	}
 }
 
-uint8_t NesPpu::PeekRam(uint16_t addr)
+template<class T> uint8_t NesPpu<T>::PeekRam(uint16_t addr)
 {
 	//Used by debugger to get register values without side-effects (heavily edited copy of ReadRAM)
 	uint8_t openBusMask = 0xFF;
@@ -333,7 +337,7 @@ uint8_t NesPpu::PeekRam(uint16_t addr)
 	return returnValue | (_openBus & openBusMask);
 }
 
-uint8_t NesPpu::ReadRam(uint16_t addr)
+template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 {
 	uint8_t openBusMask = 0xFF;
 	uint8_t returnValue = 0;
@@ -397,7 +401,7 @@ uint8_t NesPpu::ReadRam(uint16_t addr)
 	return ApplyOpenBus(openBusMask, returnValue);
 }
 
-void NesPpu::WriteRam(uint16_t addr, uint8_t value)
+template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 {
 	if(addr != 0x4014) {
 		SetOpenBus(0xFF, value);
@@ -468,10 +472,10 @@ void NesPpu::WriteRam(uint16_t addr, uint8_t value)
 				//_console->DebugProcessVramWriteOperation(_ppuBusAddress & 0x3FFF, value);
 			} else {
 				if(_scanline >= 240 || !IsRenderingEnabled()) {
-					_console->GetMapper()->WriteVram(_ppuBusAddress & 0x3FFF, value);
+					_mapper->WriteVram(_ppuBusAddress & 0x3FFF, value);
 				} else {
 					//During rendering, the value written is ignored, and instead the address' LSB is used (not confirmed, based on Visual NES)
-					_console->GetMapper()->WriteVram(_ppuBusAddress & 0x3FFF, _ppuBusAddress & 0xFF);
+					_mapper->WriteVram(_ppuBusAddress & 0x3FFF, _ppuBusAddress & 0xFF);
 				}
 			}
 			UpdateVideoRamAddr();
@@ -484,7 +488,7 @@ void NesPpu::WriteRam(uint16_t addr, uint8_t value)
 	}
 }
 
-uint8_t NesPpu::ReadPaletteRAM(uint16_t addr)
+template<class T> uint8_t NesPpu<T>::ReadPaletteRAM(uint16_t addr)
 {
 	addr &= 0x1F;
 	if(addr == 0x10 || addr == 0x14 || addr == 0x18 || addr == 0x1C) {
@@ -493,7 +497,7 @@ uint8_t NesPpu::ReadPaletteRAM(uint16_t addr)
 	return _paletteRAM[addr];
 }
 
-void NesPpu::WritePaletteRAM(uint16_t addr, uint8_t value)
+template<class T> void NesPpu<T>::WritePaletteRAM(uint16_t addr, uint8_t value)
 {
 	addr &= 0x1F;
 	value &= 0x3F;
@@ -514,12 +518,12 @@ void NesPpu::WritePaletteRAM(uint16_t addr, uint8_t value)
 	}
 }
 
-bool NesPpu::IsRenderingEnabled()
+template<class T> bool NesPpu<T>::IsRenderingEnabled()
 {
 	return _renderingEnabled;
 }
 
-void NesPpu::ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask)
+template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask)
 {
 	_state.TmpVideoRamAddr = normalAddr;
 	if(_cycle == 257 && _console->GetNesConfig().EnablePpu2000ScrollGlitch && _scanline < 240 && IsRenderingEnabled()) {
@@ -528,7 +532,7 @@ void NesPpu::ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uin
 	}
 }
 
-void NesPpu::SetControlRegister(uint8_t value)
+template<class T> void NesPpu<T>::SetControlRegister(uint8_t value)
 {
 	_state.Control = value;
 
@@ -552,16 +556,14 @@ void NesPpu::SetControlRegister(uint8_t value)
 	}
 }
 
-void NesPpu::UpdateMinimumDrawCycles()
+template<class T> void NesPpu<T>::UpdateMinimumDrawCycles()
 {
 	_minimumDrawBgCycle = _flags.BackgroundEnabled ? ((_flags.BackgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
 	_minimumDrawSpriteCycle = _flags.SpritesEnabled ? ((_flags.SpriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
 	_minimumDrawSpriteStandardCycle = _flags.SpritesEnabled ? (_flags.SpriteMask ? 0 : 8) : 300;
-	_emulatorBgEnabled = _console->GetNesConfig().BackgroundEnabled;
-	_emulatorSpritesEnabled = _console->GetNesConfig().SpritesEnabled;
 }
 
-void NesPpu::SetMaskRegister(uint8_t value)
+template<class T> void NesPpu<T>::SetMaskRegister(uint8_t value)
 {
 	_state.Mask = value;
 	_flags.Grayscale = (_state.Mask & 0x01) == 0x01;
@@ -596,7 +598,7 @@ void NesPpu::SetMaskRegister(uint8_t value)
 	_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 }
 
-void NesPpu::UpdateStatusFlag()
+template<class T> void NesPpu<T>::UpdateStatusFlag()
 {
 	_state.Status = ((uint8_t)_statusFlags.SpriteOverflow << 5) |
 		((uint8_t)_statusFlags.Sprite0Hit << 6) |
@@ -611,7 +613,7 @@ void NesPpu::UpdateStatusFlag()
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Wrapping_around
-void NesPpu::IncVerticalScrolling()
+template<class T> void NesPpu<T>::IncVerticalScrolling()
 {
 	uint16_t addr = _state.VideoRamAddr;
 
@@ -636,7 +638,7 @@ void NesPpu::IncVerticalScrolling()
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Wrapping_around
-void NesPpu::IncHorizontalScrolling()
+template<class T> void NesPpu<T>::IncHorizontalScrolling()
 {
 	//Increase coarse X scrolling value.
 	uint16_t addr = _state.VideoRamAddr;
@@ -650,36 +652,36 @@ void NesPpu::IncHorizontalScrolling()
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Tile_and_attribute_fetching
-uint16_t NesPpu::GetNameTableAddr()
+template<class T> uint16_t NesPpu<T>::GetNameTableAddr()
 {
 	return 0x2000 | (_state.VideoRamAddr & 0x0FFF);
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Tile_and_attribute_fetching
-uint16_t NesPpu::GetAttributeAddr()
+template<class T> uint16_t NesPpu<T>::GetAttributeAddr()
 {
 	return 0x23C0 | (_state.VideoRamAddr & 0x0C00) | ((_state.VideoRamAddr >> 4) & 0x38) | ((_state.VideoRamAddr >> 2) & 0x07);
 }
 
-void NesPpu::SetBusAddress(uint16_t addr)
+template<class T> void NesPpu<T>::SetBusAddress(uint16_t addr)
 {
 	_ppuBusAddress = addr;
-	_console->GetMapper()->NotifyVramAddressChange(addr);
+	_mapper->NotifyVramAddressChange(addr);
 }
 
-uint8_t NesPpu::ReadVram(uint16_t addr, MemoryOperationType type)
+template<class T> uint8_t NesPpu<T>::ReadVram(uint16_t addr, MemoryOperationType type)
 {
 	SetBusAddress(addr);
-	return _console->GetMapper()->ReadVram(addr, type);
+	return _mapper->ReadVram(addr, type);
 }
 
-void NesPpu::WriteVram(uint16_t addr, uint8_t value)
+template<class T> void NesPpu<T>::WriteVram(uint16_t addr, uint8_t value)
 {
 	SetBusAddress(addr);
-	_console->GetMapper()->WriteVram(addr, value);
+	_mapper->WriteVram(addr, value);
 }
 
-void NesPpu::LoadTileInfo()
+template<class T> void NesPpu<T>::LoadTileInfo()
 {
 	if(IsRenderingEnabled()) {
 		switch(_cycle & 0x07) {
@@ -704,8 +706,7 @@ void NesPpu::LoadTileInfo()
 
 			case 5:
 				_nextTile.LowByte = ReadVram(_nextTile.TileAddr);
-				//TODO PERF
-				_nextTile.AbsoluteTileAddr = _console->GetMapper()->GetPpuAbsoluteAddress(_nextTile.TileAddr).Address;
+				((T*)this)->StoreTileAbsoluteAddress();				
 				break;
 
 			case 7:
@@ -715,7 +716,7 @@ void NesPpu::LoadTileInfo()
 	}
 }
 
-void NesPpu::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, uint8_t spriteX, bool extraSprite)
+template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, uint8_t spriteX, bool extraSprite)
 {
 	bool backgroundPriority = (attributes & 0x20) == 0x20;
 	bool horizontalMirror = (attributes & 0x40) == 0x40;
@@ -744,18 +745,17 @@ void NesPpu::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, 
 		info.PaletteOffset = ((attributes & 0x03) << 2) | 0x10;
 		if(extraSprite) {
 			//Use DebugReadVram for extra sprites to prevent side-effects.
-			info.LowByte = _console->GetMapper()->DebugReadVram(tileAddr);
-			info.HighByte = _console->GetMapper()->DebugReadVram(tileAddr + 8);
+			info.LowByte = _mapper->DebugReadVram(tileAddr);
+			info.HighByte = _mapper->DebugReadVram(tileAddr + 8);
 		} else {
 			fetchLastSprite = false;
 			info.LowByte = ReadVram(tileAddr);
 			info.HighByte = ReadVram(tileAddr + 8);
 		}
 		info.TileAddr = tileAddr;
-		//TODO PERF
-		info.AbsoluteTileAddr = _console->GetMapper()->GetAbsoluteAddress(tileAddr).Address;
 		info.OffsetY = lineOffset;
 		info.SpriteX = spriteX;
+		((T*)this)->StoreSpriteAbsoluteAddress();
 
 		if(_scanline >= 0) {
 			//Sprites read on prerender scanline are not shown on scanline 0
@@ -782,7 +782,7 @@ void NesPpu::LoadSprite(uint8_t spriteY, uint8_t tileIndex, uint8_t attributes, 
 	_spriteIndex++;
 }
 
-void NesPpu::LoadExtraSprites()
+template<class T> void NesPpu<T>::LoadExtraSprites()
 {
 	if(_spriteCount == 8 && _console->GetNesConfig().RemoveSpriteLimit) {
 		bool loadExtraSprites = true;
@@ -822,19 +822,19 @@ void NesPpu::LoadExtraSprites()
 	}
 }
 
-void NesPpu::LoadSpriteTileInfo()
+template<class T> void NesPpu<T>::LoadSpriteTileInfo()
 {
 	uint8_t *spriteAddr = _secondarySpriteRAM + _spriteIndex * 4;
 	LoadSprite(*spriteAddr, *(spriteAddr+1), *(spriteAddr+2), *(spriteAddr+3), false);
 }
 
-void NesPpu::ShiftTileRegisters()
+template<class T> void NesPpu<T>::ShiftTileRegisters()
 {
 	_state.LowBitShift <<= 1;
 	_state.HighBitShift <<= 1;
 }
 
-uint8_t NesPpu::GetPixelColor()
+template<class T> uint8_t NesPpu<T>::GetPixelColor()
 {
 	uint8_t offset = _state.XScroll;
 	uint8_t backgroundColor = 0;
@@ -843,7 +843,7 @@ uint8_t NesPpu::GetPixelColor()
 	if(_cycle > _minimumDrawBgCycle) {
 		//BackgroundMask = false: Hide background in leftmost 8 pixels of screen
 		spriteBgColor = (((_state.LowBitShift << offset) & 0x8000) >> 15) | (((_state.HighBitShift << offset) & 0x8000) >> 14);
-		if(_emulatorBgEnabled) {
+		if(((T*)this)->IsEmulatorBgEnabled()) {
 			backgroundColor = spriteBgColor;
 		}
 	}
@@ -873,7 +873,7 @@ uint8_t NesPpu::GetPixelColor()
 						_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::SpriteZeroHit);
 					}
 
-					if(_emulatorSpritesEnabled && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
+					if(((T*)this)->IsEmulatorSpritesEnabled() && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
 						//Check sprite priority
 						return _lastSprite->PaletteOffset + spriteColor;
 					}
@@ -885,19 +885,7 @@ uint8_t NesPpu::GetPixelColor()
 	return ((offset + ((_cycle - 1) & 0x07) < 8) ? _previousTile : _currentTile).PaletteOffset + backgroundColor;
 }
 
-void NesPpu::DrawPixel()
-{
-	//This is called 3.7 million times per second - needs to be as fast as possible.
-	if(IsRenderingEnabled() || ((_state.VideoRamAddr & 0x3F00) != 0x3F00)) {
-		uint32_t color = GetPixelColor();
-		_currentOutputBuffer[(_scanline << 8) + _cycle - 1] = _paletteRAM[color & 0x03 ? color : 0];
-	} else {
-		//"If the current VRAM address points in the range $3F00-$3FFF during forced blanking, the color indicated by this palette location will be shown on screen instead of the backdrop color."
-		_currentOutputBuffer[(_scanline << 8) + _cycle - 1] = _paletteRAM[_state.VideoRamAddr & 0x1F];
-	}
-}
-
-uint16_t NesPpu::GetCurrentBgColor()
+template<class T> uint16_t NesPpu<T>::GetCurrentBgColor()
 {
 	uint16_t color;
 	if(IsRenderingEnabled() || (_state.VideoRamAddr & 0x3F00) != 0x3F00) {
@@ -908,7 +896,7 @@ uint16_t NesPpu::GetCurrentBgColor()
 	return (color & _paletteRamMask) | _intensifyColorBits;
 }
 
-void NesPpu::UpdateGrayscaleAndIntensifyBits()
+template<class T> void NesPpu<T>::UpdateGrayscaleAndIntensifyBits()
 {
 	if(_scanline < 0 || _scanline > _nmiScanline) {
 		return;
@@ -941,7 +929,7 @@ void NesPpu::UpdateGrayscaleAndIntensifyBits()
 	}
 }
 
-void NesPpu::ProcessScanline()
+template<class T> void NesPpu<T>::ProcessScanlineImpl()
 {
 	//Only called for cycle 1+
 	if(_cycle <= 256) {
@@ -955,7 +943,7 @@ void NesPpu::ProcessScanline()
 		}
 
 		if(_scanline >= 0) {
-			DrawPixel();
+			((T*)this)->DrawPixel();
 			ShiftTileRegisters();
 
 			//"Secondary OAM clear and sprite evaluation do not occur on the pre-render line"
@@ -986,15 +974,15 @@ void NesPpu::ProcessScanline()
 			//"OAMADDR is set to 0 during each of ticks 257-320 (the sprite tile loading interval) of the pre-render and visible scanlines." (When rendering)
 			_state.SpriteRamAddr = 0;
 
-			if((_cycle - 261) % 8 == 0) {
-				//Cycle 260, 268, etc.  This is an approximation (each tile is actually loaded in 8 steps (e.g from 257 to 264))
-				LoadSpriteTileInfo();
-			} else if((_cycle - 257) % 8 == 0) {
+			switch((_cycle - 257) % 8) {
 				//Garbage NT sprite fetch (257, 265, 273, etc.) - Required for proper MC-ACC IRQs (MMC3 clone)
-				ReadVram(GetNameTableAddr());
-			} else if((_cycle - 259) % 8 == 0) {
+				case 0: ReadVram(GetNameTableAddr()); break;
+
 				//Garbage AT sprite fetch
-				ReadVram(GetAttributeAddr());
+				case 2: ReadVram(GetAttributeAddr()); break;
+
+				//Cycle 260, 268, etc.  This is an approximation (each tile is actually loaded in 8 steps (e.g from 257 to 264))
+				case 4: LoadSpriteTileInfo(); break;
 			}
 
 			if(_scanline == -1 && _cycle >= 280 && _cycle <= 304) {
@@ -1031,7 +1019,7 @@ void NesPpu::ProcessScanline()
 	}
 }
 
-void NesPpu::ProcessSpriteEvaluation()
+template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 {
 	if(IsRenderingEnabled() || (_region == ConsoleRegion::Pal && _scanline >= _palSpriteEvalScanline)) {
 		if(_cycle < 65) {
@@ -1145,13 +1133,13 @@ void NesPpu::ProcessSpriteEvaluation()
 	}
 }
 
-uint8_t NesPpu::ReadSpriteRam(uint8_t addr)
+template<class T> uint8_t NesPpu<T>::ReadSpriteRam(uint8_t addr)
 {
 	if(!_enableOamDecay) {
 		return _spriteRAM[addr];
 	} else {
 		uint64_t elapsedCycles = _console->GetCpu()->GetCycleCount() - _oamDecayCycles[addr >> 3];
-		if(elapsedCycles <= NesPpu::OamDecayCycleCount) {
+		if(elapsedCycles <= NesPpu<T>::OamDecayCycleCount) {
 			_oamDecayCycles[addr >> 3] = _console->GetCpu()->GetCycleCount();
 			return _spriteRAM[addr];
 		} else {
@@ -1170,7 +1158,7 @@ uint8_t NesPpu::ReadSpriteRam(uint8_t addr)
 	}
 }
 
-void NesPpu::WriteSpriteRam(uint8_t addr, uint8_t value)
+template<class T> void NesPpu<T>::WriteSpriteRam(uint8_t addr, uint8_t value)
 {
 	_spriteRAM[addr] = value;
 	if(_enableOamDecay) {
@@ -1178,22 +1166,22 @@ void NesPpu::WriteSpriteRam(uint8_t addr, uint8_t value)
 	}
 }
 
-void NesPpu::DebugSendFrame()
+template<class T> void NesPpu<T>::DebugSendFrame()
 {
 	_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, false, false);
 }
 
-uint16_t* NesPpu::GetScreenBuffer(bool previousBuffer)
+template<class T> uint16_t* NesPpu<T>::GetScreenBuffer(bool previousBuffer)
 {
 	return previousBuffer ? ((_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0]) : _currentOutputBuffer;
 }
 
-void NesPpu::DebugCopyOutputBuffer(uint16_t *target)
+template<class T> void NesPpu<T>::DebugCopyOutputBuffer(uint16_t *target)
 {
 	memcpy(target, _currentOutputBuffer, NesConstants::ScreenPixelCount * sizeof(uint16_t));
 }
 
-void NesPpu::SendFrame()
+template<class T> void NesPpu<T>::SendFrame()
 {
 	UpdateGrayscaleAndIntensifyBits();
 
@@ -1202,7 +1190,7 @@ void NesPpu::SendFrame()
 	}
 
 #ifdef LIBRETRO
-	_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesPpu::ScreenWidth, NesPpu::ScreenHeight, _frameCount, true, false);
+	_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, true, false);
 #else 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
 		SendFrameVsDualSystem();
@@ -1219,7 +1207,7 @@ void NesPpu::SendFrame()
 #endif
 }
 
-void NesPpu::SendFrameVsDualSystem()
+template<class T> void NesPpu<T>::SendFrameVsDualSystem()
 {
 	NesConfig& cfg = _settings->GetNesConfig();
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
@@ -1233,7 +1221,7 @@ void NesPpu::SendFrameVsDualSystem()
 			uint16_t* mergedBuffer = new uint16_t[NesConstants::ScreenWidth * NesConstants::ScreenHeight * 2];
 
 			uint16_t* in1 = _currentOutputBuffer;
-			uint16_t* in2 = _console->GetVsSubConsole()->GetPpu()->_currentOutputBuffer;
+			uint16_t* in2 = ((NesPpu<T>*)_console->GetVsSubConsole()->GetPpu())->_currentOutputBuffer;
 			uint16_t* out = mergedBuffer;
 			for(int i = 0; i < NesConstants::ScreenHeight; i++) {
 				memcpy(out, in1, NesConstants::ScreenWidth * sizeof(uint16_t));
@@ -1250,19 +1238,19 @@ void NesPpu::SendFrameVsDualSystem()
 	}
 }
 
-void NesPpu::BeginVBlank()
+template<class T> void NesPpu<T>::BeginVBlank()
 {
 	TriggerNmi();
 }
 
-void NesPpu::TriggerNmi()
+template<class T> void NesPpu<T>::TriggerNmi()
 {
 	if(_flags.VBlank) {
 		_console->GetCpu()->SetNmiFlag();
 	}
 }
 
-void NesPpu::UpdateApuStatus()
+template<class T> void NesPpu<T>::UpdateApuStatus()
 {
 	NesApu* apu = _console->GetApu();
 	apu->SetApuStatus(true);
@@ -1277,7 +1265,7 @@ void NesPpu::UpdateApuStatus()
 	}
 }
 
-void NesPpu::DebugUpdateFrameBuffer(bool toGrayscale)
+template<class T> void NesPpu<T>::DebugUpdateFrameBuffer(bool toGrayscale)
 {
 	//Clear output buffer for "Draw partial frame" feature
 	if(toGrayscale) {
@@ -1289,7 +1277,7 @@ void NesPpu::DebugUpdateFrameBuffer(bool toGrayscale)
 	}
 }
 
-void NesPpu::SetOamCorruptionFlags()
+template<class T> void NesPpu<T>::SetOamCorruptionFlags()
 {
 	if(!_console->GetNesConfig().EnablePpuOamRowCorruption) {
 		return;
@@ -1315,7 +1303,7 @@ void NesPpu::SetOamCorruptionFlags()
 	}
 }
 
-void NesPpu::ProcessOamCorruption()
+template<class T> void NesPpu<T>::ProcessOamCorruption()
 {
 	if(!_console->GetNesConfig().EnablePpuOamRowCorruption) {
 		return;
@@ -1332,7 +1320,7 @@ void NesPpu::ProcessOamCorruption()
 	}
 }
 
-void NesPpu::Exec()
+template<class T> void NesPpu<T>::Exec()
 {
 	if(_cycle < 340) {
 		//Process cycles 1 to 340
@@ -1340,7 +1328,7 @@ void NesPpu::Exec()
 
 		_emu->ProcessPpuCycle<CpuType::Nes>();
 		if(_scanline < 240) {
-			ProcessScanline();
+			((T*)this)->ProcessScanline();
 		} else if(_cycle == 1 && _scanline == _nmiScanline) {
 			if(!_preventVblFlag) {
 				_statusFlags.VerticalBlank = true;
@@ -1368,7 +1356,7 @@ void NesPpu::Exec()
 	}
 }
 
-void NesPpu::ProcessScanlineFirstCycle()
+template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 {
 	_cycle = 0;
 	if(++_scanline > _vblankEnd) {
@@ -1410,7 +1398,7 @@ void NesPpu::ProcessScanlineFirstCycle()
 	}
 }
 
-void NesPpu::UpdateState()
+template<class T> void NesPpu<T>::UpdateState()
 {
 	_needStateUpdate = false;
 
@@ -1508,13 +1496,13 @@ void NesPpu::UpdateState()
 	}
 }
 
-uint8_t* NesPpu::GetSpriteRam()
+template<class T> uint8_t* NesPpu<T>::GetSpriteRam()
 {
 	//Used by debugger
 	if(_enableOamDecay) {
 		for(int i = 0; i < 0x100; i++) {
 			//Apply OAM decay to sprite RAM before letting debugger access it
-			if((_console->GetCpu()->GetCycleCount() - _oamDecayCycles[i >> 3]) > NesPpu::OamDecayCycleCount) {
+			if((_console->GetCpu()->GetCycleCount() - _oamDecayCycles[i >> 3]) > NesPpu<T>::OamDecayCycleCount) {
 				_spriteRAM[i] = 0x10;
 			}
 		}
@@ -1522,7 +1510,7 @@ uint8_t* NesPpu::GetSpriteRam()
 	return _spriteRAM;
 }
 
-uint32_t NesPpu::GetPixelBrightness(uint8_t x, uint8_t y)
+template<class T> uint32_t NesPpu<T>::GetPixelBrightness(uint8_t x, uint8_t y)
 {
 	return 0;
 
@@ -1533,7 +1521,7 @@ uint32_t NesPpu::GetPixelBrightness(uint8_t x, uint8_t y)
 	return (argbColor & 0xFF) + ((argbColor >> 8) & 0xFF) + ((argbColor >> 16) & 0xFF);*/
 }
 
-void NesPpu::Serialize(Serializer& s)
+template<class T> void NesPpu<T>::Serialize(Serializer& s)
 {
 	ArrayInfo<uint8_t> paletteRam = { _paletteRAM, 0x20 };
 	ArrayInfo<uint8_t> spriteRam = { _spriteRAM, 0x100 };
@@ -1591,3 +1579,13 @@ void NesPpu::Serialize(Serializer& s)
 		UpdateApuStatus();
 	}
 }
+
+template NesPpu<DefaultNesPpu>::NesPpu(NesConsole* console);
+template uint16_t* NesPpu<DefaultNesPpu>::GetScreenBuffer(bool previousBuffer);
+template void NesPpu<DefaultNesPpu>::Exec();
+template uint32_t NesPpu<DefaultNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
+
+template NesPpu<NsfPpu>::NesPpu(NesConsole* console);
+template uint16_t* NesPpu<NsfPpu>::GetScreenBuffer(bool previousBuffer);
+template void NesPpu<NsfPpu>::Exec();
+template uint32_t NesPpu<NsfPpu>::GetPixelBrightness(uint8_t x, uint8_t y);

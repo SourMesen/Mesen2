@@ -139,25 +139,24 @@ struct PPUStatusFlags
 
 struct PPUState
 {
+	uint16_t VideoRamAddr;
+	uint16_t TmpVideoRamAddr;
+	uint16_t HighBitShift;
+	uint16_t LowBitShift;
+	uint8_t SpriteRamAddr;
 	uint8_t Control;
 	uint8_t Mask;
 	uint8_t Status;
-	uint32_t SpriteRamAddr;
-	uint16_t VideoRamAddr;
 	uint8_t XScroll;
-	uint16_t TmpVideoRamAddr;
 	bool WriteToggle;
-
-	uint16_t HighBitShift;
-	uint16_t LowBitShift;
 };
 
 struct TileInfo
 {
+	uint16_t TileAddr;
 	uint8_t LowByte;
 	uint8_t HighByte;
-	uint32_t PaletteOffset;
-	uint16_t TileAddr;
+	uint8_t PaletteOffset;
 	
 	int32_t AbsoluteTileAddr; //used by HD ppu
 	uint8_t OffsetY; //used by HD ppu

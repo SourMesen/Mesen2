@@ -16,7 +16,7 @@ class BreakpointManager;
 
 class Emulator;
 class NesCpu;
-class NesPpu;
+class BaseNesPpu;
 class BaseMapper;
 
 enum class MemoryOperationType;
@@ -31,7 +31,7 @@ class NesDebugger final : public IDebugger
 	EmuSettings* _settings;
 
 	NesCpu* _cpu;
-	NesPpu* _ppu;
+	BaseNesPpu* _ppu;
 	BaseMapper* _mapper;
 
 	shared_ptr<CodeDataLogger> _codeDataLogger;

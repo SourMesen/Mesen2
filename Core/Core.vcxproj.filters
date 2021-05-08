@@ -787,6 +787,10 @@
     <ClInclude Include="NES\Mappers\MMC5.h" />
     <ClInclude Include="NES\Mappers\Mmc5MemoryHandler.h" />
     <ClInclude Include="NES\Mappers\A12Watcher.h" />
+    <ClInclude Include="NES\DefaultNesPpu.h" />
+    <ClInclude Include="NES\NsfPpu.h" />
+    <ClInclude Include="NES\HdPacks\HdNesPpu.h" />
+    <ClInclude Include="NES\BaseNesPpu.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

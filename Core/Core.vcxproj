@@ -46,6 +46,9 @@
     <ClInclude Include="Debugger\stdafx.h" />
     <ClInclude Include="Gameboy\Carts\GbsCart.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
+    <ClInclude Include="NES\BaseNesPpu.h" />
+    <ClInclude Include="NES\DefaultNesPpu.h" />
+    <ClInclude Include="NES\HdPacks\HdNesPpu.h" />
     <ClInclude Include="NES\Input\ArkanoidController.h" />
     <ClInclude Include="NES\Input\AsciiTurboFile.h" />
     <ClInclude Include="NES\Input\BandaiHyperShot.h" />
@@ -103,6 +106,7 @@
     <ClInclude Include="NES\Mappers\VsSystem\VsInputButtons.h" />
     <ClInclude Include="NES\NesConstants.h" />
     <ClInclude Include="NES\NesNtscFilter.h" />
+    <ClInclude Include="NES\NsfPpu.h" />
     <ClInclude Include="Netplay\stdafx.h" />
     <ClInclude Include="Shared\Audio\AudioPlayerTypes.h" />
     <ClInclude Include="Shared\Audio\stdafx.h" />

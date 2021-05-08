@@ -5,13 +5,13 @@
 #include "NES/Mappers/A12Watcher.h"
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
-#include "NES/NesPpu.h"
+#include "NES/BaseNesPpu.h"
 
 class MMC3 : public BaseMapper
 {
 	private: 
 		NesCpu* _cpu = nullptr;
-		NesPpu* _ppu = nullptr;
+		BaseNesPpu* _ppu = nullptr;
 
 		uint8_t _currentRegister = 0;
 
