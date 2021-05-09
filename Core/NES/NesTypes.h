@@ -112,43 +112,11 @@ struct CartridgeState
 	bool HasBattery;
 };
 
-struct PPUControlFlags
-{
-	bool VerticalWrite;
-	uint16_t SpritePatternAddr;
-	uint16_t BackgroundPatternAddr;
-	bool LargeSprites;
-	bool VBlank;
-
-	bool Grayscale;
-	bool BackgroundMask;
-	bool SpriteMask;
-	bool BackgroundEnabled;
-	bool SpritesEnabled;
-	bool IntensifyRed;
-	bool IntensifyGreen;
-	bool IntensifyBlue;
-};
-
 struct PPUStatusFlags
 {
 	bool SpriteOverflow;
 	bool Sprite0Hit;
 	bool VerticalBlank;
-};
-
-struct PPUState
-{
-	uint16_t VideoRamAddr;
-	uint16_t TmpVideoRamAddr;
-	uint16_t HighBitShift;
-	uint16_t LowBitShift;
-	uint8_t SpriteRamAddr;
-	uint8_t Control;
-	uint8_t Mask;
-	uint8_t Status;
-	uint8_t XScroll;
-	bool WriteToggle;
 };
 
 struct TileInfo
@@ -157,19 +125,23 @@ struct TileInfo
 	uint8_t LowByte;
 	uint8_t HighByte;
 	uint8_t PaletteOffset;
-	
-	int32_t AbsoluteTileAddr; //used by HD ppu
-	uint8_t OffsetY; //used by HD ppu
 };
 
-struct NesSpriteInfo : TileInfo
+//TODO
+//int32_t AbsoluteTileAddr; //used by HD ppu
+//uint8_t OffsetY; //used by HD ppu
+
+struct NesSpriteInfo
 {
 	bool HorizontalMirror;
 	bool BackgroundPriority;
 	uint8_t SpriteX;
-
-	bool VerticalMirror; //used by HD ppu
+	uint8_t LowByte;
+	uint8_t HighByte;
+	uint8_t PaletteOffset;
 };
+//TODO
+//	bool VerticalMirror; //used by HD ppu
 
 struct ApuLengthCounterState
 {

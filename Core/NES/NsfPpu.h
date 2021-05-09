@@ -25,16 +25,6 @@ public:
 	{
 	}
 
-	__forceinline bool IsEmulatorBgEnabled()
-	{
-		return false;
-	}
-
-	__forceinline bool IsEmulatorSpritesEnabled()
-	{
-		return false;
-	}
-
 	void Run(uint64_t runTo) override
 	{
 		do {

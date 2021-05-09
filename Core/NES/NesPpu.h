@@ -36,83 +36,7 @@ private:
 	static constexpr int32_t OamDecayCycleCount = 3000;
 
 protected:
-	uint16_t* _currentOutputBuffer;
-	uint8_t _paletteRAM[0x20];
-
-	NesConsole* _console;
-	BaseMapper* _mapper;
-	Emulator* _emu;
-	EmuSettings* _settings;
-
-	PPUState _state;
-	uint64_t _masterClock;
-	uint8_t _masterClockDivider;
-	uint8_t _memoryReadBuffer;
-
-	uint8_t _spriteRAM[0x100];
-	uint8_t _secondarySpriteRAM[0x20];
-	bool _hasSprite[257];
-
-	uint16_t* _outputBuffers[2];
-
-	ConsoleRegion _region;
-	uint16_t _standardVblankEnd;
-	uint16_t _standardNmiScanline;
-	uint16_t _vblankEnd;
-	uint16_t _nmiScanline;
-	uint16_t _palSpriteEvalScanline;
-
-	PPUControlFlags _flags;
-	PPUStatusFlags _statusFlags;
-
-	uint16_t _intensifyColorBits;
-	uint8_t _paletteRamMask;
-	int32_t _lastUpdatedPixel;
-
-	NesSpriteInfo* _lastSprite; //used by HD ppu
-
-	uint16_t _ppuBusAddress;
-	TileInfo _currentTile;
-	TileInfo _nextTile;
-	TileInfo _previousTile;
-
-	NesSpriteInfo _spriteTiles[64];
-	uint32_t _spriteCount;
-	uint32_t _secondaryOAMAddr;
-	bool _sprite0Visible;
-
-	uint8_t _firstVisibleSpriteAddr;
-	uint8_t _lastVisibleSpriteAddr;
-	uint32_t _spriteIndex;
-
-	uint8_t _openBus;
-	int32_t _openBusDecayStamp[8];
-	uint32_t _ignoreVramRead;
-
-	uint8_t _oamCopybuffer;
-	bool _spriteInRange;
-	bool _sprite0Added;
-	uint8_t _spriteAddrH;
-	uint8_t _spriteAddrL;
-	bool _oamCopyDone;
-	uint8_t _overflowBugCounter;
-
-	bool _needStateUpdate;
-	bool _renderingEnabled;
-	bool _prevRenderingEnabled;
-	bool _preventVblFlag;
-
-	uint16_t _updateVramAddr;
-	uint8_t _updateVramAddrDelay;
-
-	uint32_t _minimumDrawBgCycle;
-	uint32_t _minimumDrawSpriteCycle;
-	uint32_t _minimumDrawSpriteStandardCycle;
-
-	uint64_t _oamDecayCycles[0x40];
-	bool _enableOamDecay;
-	bool _corruptOamRow[32];
-
+	
 	void UpdateStatusFlag();
 
 	void SetControlRegister(uint8_t value);
@@ -214,12 +138,6 @@ public:
 
 	__forceinline void Exec();
 	void Run(uint64_t runTo) override;
-
-
-	PPUControlFlags GetControlFlags()
-	{
-		return _flags;
-	}
 
 	uint8_t* GetSpriteRam();
 

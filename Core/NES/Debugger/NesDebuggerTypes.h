@@ -3,9 +3,7 @@
 
 struct NesPpuState
 {
-	PPUControlFlags ControlFlags;
 	PPUStatusFlags StatusFlags;
-	PPUState State;
 	int32_t Scanline;
 	uint32_t Cycle;
 	uint32_t FrameCount;

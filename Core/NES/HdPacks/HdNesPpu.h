@@ -16,22 +16,12 @@ public:
 
 	__forceinline void StoreTileAbsoluteAddress()
 	{
-		_nextTile.AbsoluteTileAddr = _mapper->GetPpuAbsoluteAddress(_nextTile.TileAddr).Address;
+		_tile.AbsoluteTileAddr = _mapper->GetPpuAbsoluteAddress(_tile.TileAddr).Address;
 	}
 
 	__forceinline void ProcessScanline()
 	{
 		ProcessScanlineImpl();
-	}
-
-	__forceinline bool IsEmulatorBgEnabled()
-	{
-		return true;
-	}
-
-	__forceinline bool IsEmulatorSpritesEnabled()
-	{
-		return true;
 	}
 
 	__forceinline void DrawPixel()

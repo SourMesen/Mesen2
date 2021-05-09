@@ -72,13 +72,38 @@ template<class T> void NesPpu<T>::Reset()
 	_openBus = 0;
 	memset(_openBusDecayStamp, 0, sizeof(_openBusDecayStamp));
 
-	_state = {};
-	_flags = {};
+	_videoRamAddr = 0;
+	_tmpVideoRamAddr = 0;
+	_highBitShift = 0;
+	_lowBitShift = 0;
+	_spriteRamAddr = 0;
+	_controlReg = 0;
+	_maskReg = 0;
+	_statusReg = 0;
+	_xScroll = 0;
+	_writeToggle = false;
+
+	_backgroundPatternAddr = 0;
+	_spritePatternAddr = 0;
+	_verticalWrite = false;
+	_writeToggle = false;
+	_largeSprites = false;
+	_vBlank = false;
+
+	_grayscale = false;
+	_backgroundMask = false;
+	_spriteMask = false;
+	_backgroundEnabled = false;
+	_spritesEnabled = false;
+	_intensifyRed = false;
+	_intensifyGreen = false;
+	_intensifyBlue = false;
+
 	_statusFlags = {};
 
-	_previousTile = {};
-	_currentTile = {};
-	_nextTile = {};
+	_tile = {};
+	_currentTilePalette = 0;
+	_previousTilePalette = 0;
 
 	_ppuBusAddress = 0;
 	_intensifyColorBits = 0;
@@ -176,9 +201,10 @@ template<class T> double NesPpu<T>::GetOverclockRate()
 
 template<class T> void NesPpu<T>::GetState(NesPpuState &state)
 {
-	state.ControlFlags = _flags;
+	//TODO
+	//state.ControlFlags = _flags;
 	state.StatusFlags = _statusFlags;
-	state.State = _state;
+	//state.State = _state;
 	state.Cycle = _cycle;
 	state.Scanline = _scanline;
 	state.FrameCount = _frameCount;
@@ -191,28 +217,29 @@ template<class T> void NesPpu<T>::GetState(NesPpuState &state)
 
 template<class T> void NesPpu<T>::SetState(NesPpuState &state)
 {
-	_flags = state.ControlFlags;
+	//TODO
+	//_flags = state.ControlFlags;
 	_statusFlags = state.StatusFlags;
-	_state = state.State;
+	//_state = state.State;
 	_cycle = state.Cycle;
 	_scanline = state.Scanline;
 	_frameCount = state.FrameCount;
 
 	UpdateMinimumDrawCycles();
 
-	_paletteRamMask = _flags.Grayscale ? 0x30 : 0x3F;
+	_paletteRamMask = _grayscale ? 0x30 : 0x3F;
 	if(_region == ConsoleRegion::Ntsc) {
-		_intensifyColorBits = (_flags.IntensifyGreen ? 0x40 : 0x00) | (_flags.IntensifyRed ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
+		_intensifyColorBits = (_intensifyGreen ? 0x40 : 0x00) | (_intensifyRed ? 0x80 : 0x00) | (_intensifyBlue ? 0x100 : 0x00);
 	} else if(_region == ConsoleRegion::Pal || _region == ConsoleRegion::Dendy) {
 		//"Note that on the Dendy and PAL NES, the green and red bits swap meaning."
-		_intensifyColorBits = (_flags.IntensifyRed ? 0x40 : 0x00) | (_flags.IntensifyGreen ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
+		_intensifyColorBits = (_intensifyRed ? 0x40 : 0x00) | (_intensifyGreen ? 0x80 : 0x00) | (_intensifyBlue ? 0x100 : 0x00);
 	}
 }
 
 template<class T> void NesPpu<T>::UpdateVideoRamAddr()
 {
 	if(_scanline >= 240 || !IsRenderingEnabled()) {
-		_state.VideoRamAddr = (_state.VideoRamAddr + (_flags.VerticalWrite ? 32 : 1)) & 0x7FFF;
+		_videoRamAddr = (_videoRamAddr + (_verticalWrite ? 32 : 1)) & 0x7FFF;
 
 		if(!_renderingEnabled) {
 			_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
@@ -220,7 +247,7 @@ template<class T> void NesPpu<T>::UpdateVideoRamAddr()
 
 		//Trigger memory read when setting the vram address - needed by MMC3 IRQ counter
 		//"Should be clocked when A12 changes to 1 via $2007 read/write"
-		SetBusAddress(_state.VideoRamAddr & 0x3FFF);
+		SetBusAddress(_videoRamAddr & 0x3FFF);
 	} else {
 		//"During rendering (on the pre-render line and the visible lines 0-239, provided either background or sprite rendering is enabled), "
 		//it will update v in an odd way, triggering a coarse X increment and a Y increment simultaneously"
@@ -314,7 +341,7 @@ template<class T> uint8_t NesPpu<T>::PeekRam(uint16_t addr)
 						returnValue = _oamCopybuffer;
 					}
 				} else {
-					returnValue = _spriteRAM[_state.SpriteRamAddr];
+					returnValue = _spriteRAM[_spriteRamAddr];
 				}
 				openBusMask = 0x00;
 			}
@@ -323,8 +350,8 @@ template<class T> uint8_t NesPpu<T>::PeekRam(uint16_t addr)
 		case PPURegisters::VideoMemoryData:
 			returnValue = _memoryReadBuffer;
 
-			if((_state.VideoRamAddr & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
-				returnValue = ReadPaletteRAM(_state.VideoRamAddr) | (_openBus & 0xC0);
+			if((_videoRamAddr & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
+				returnValue = ReadPaletteRAM(_videoRamAddr) | (_openBus & 0xC0);
 				openBusMask = 0xC0;
 			} else {
 				openBusMask = 0x00;
@@ -343,9 +370,9 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 	uint8_t returnValue = 0;
 	switch(GetRegisterID(addr)) {
 		case PPURegisters::Status:
-			_state.WriteToggle = false;
+			_writeToggle = false;
 			UpdateStatusFlag();
-			returnValue = _state.Status;
+			returnValue = _statusReg;
 			openBusMask = 0x1F;
 
 			ProcessStatusRegOpenBus(openBusMask, returnValue);
@@ -365,7 +392,7 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 					//Return the value that PPU is currently using for sprite evaluation/rendering
 					returnValue = _oamCopybuffer;
 				} else {
-					returnValue = ReadSpriteRam(_state.SpriteRamAddr);
+					returnValue = ReadSpriteRam(_spriteRamAddr);
 				}
 				openBusMask = 0x00;
 			}
@@ -423,47 +450,47 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 			}
 			break;
 		case PPURegisters::SpriteAddr:
-			_state.SpriteRamAddr = value;
+			_spriteRamAddr = value;
 			break;
 		case PPURegisters::SpriteData:
 			if((_scanline >= 240 && (_region != ConsoleRegion::Pal || _scanline < _palSpriteEvalScanline)) || !IsRenderingEnabled()) {
-				if((_state.SpriteRamAddr & 0x03) == 0x02) {
+				if((_spriteRamAddr & 0x03) == 0x02) {
 					//"The three unimplemented bits of each sprite's byte 2 do not exist in the PPU and always read back as 0 on PPU revisions that allow reading PPU OAM through OAMDATA ($2004)"
 					value &= 0xE3;
 				}
-				WriteSpriteRam(_state.SpriteRamAddr, value);
-				_state.SpriteRamAddr = (_state.SpriteRamAddr + 1) & 0xFF;
+				WriteSpriteRam(_spriteRamAddr, value);
+				_spriteRamAddr = (_spriteRamAddr + 1) & 0xFF;
 			} else {
 				//"Writes to OAMDATA during rendering (on the pre-render line and the visible lines 0-239, provided either sprite or background rendering is enabled) do not modify values in OAM, 
 				//but do perform a glitchy increment of OAMADDR, bumping only the high 6 bits"
-				_state.SpriteRamAddr = (_state.SpriteRamAddr + 4) & 0xFF;
+				_spriteRamAddr = (_spriteRamAddr + 4) & 0xFF;
 			}
 			break;
 		case PPURegisters::ScrollOffsets:
-			if(_state.WriteToggle) {
-				_state.TmpVideoRamAddr = (_state.TmpVideoRamAddr & ~0x73E0) | ((value & 0xF8) << 2) | ((value & 0x07) << 12);
+			if(_writeToggle) {
+				_tmpVideoRamAddr = (_tmpVideoRamAddr & ~0x73E0) | ((value & 0xF8) << 2) | ((value & 0x07) << 12);
 			} else {
-				_state.XScroll = value & 0x07;
+				_xScroll = value & 0x07;
 
-				uint16_t newAddr = (_state.TmpVideoRamAddr & ~0x001F) | (value >> 3);
+				uint16_t newAddr = (_tmpVideoRamAddr & ~0x001F) | (value >> 3);
 				ProcessTmpAddrScrollGlitch(newAddr, _console->GetMemoryManager()->GetOpenBus() >> 3, 0x001F);
 			}
-			_state.WriteToggle = !_state.WriteToggle;
+			_writeToggle = !_writeToggle;
 			break;
 		case PPURegisters::VideoMemoryAddr:
-			if(_state.WriteToggle) {
-				_state.TmpVideoRamAddr = (_state.TmpVideoRamAddr & ~0x00FF) | value;
+			if(_writeToggle) {
+				_tmpVideoRamAddr = (_tmpVideoRamAddr & ~0x00FF) | value;
 
 				//Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
 				_needStateUpdate = true;
 				_updateVramAddrDelay = 3;
-				_updateVramAddr = _state.TmpVideoRamAddr;
-				_console->DebugSetLastFramePpuScroll(_updateVramAddr, _state.XScroll, false);
+				_updateVramAddr = _tmpVideoRamAddr;
+				_console->DebugSetLastFramePpuScroll(_updateVramAddr, _xScroll, false);
 			} else {
-				uint16_t newAddr = (_state.TmpVideoRamAddr & ~0xFF00) | ((value & 0x3F) << 8);
+				uint16_t newAddr = (_tmpVideoRamAddr & ~0xFF00) | ((value & 0x3F) << 8);
 				ProcessTmpAddrScrollGlitch(newAddr, _console->GetMemoryManager()->GetOpenBus() << 8, 0x0C00);
 			}
-			_state.WriteToggle = !_state.WriteToggle;
+			_writeToggle = !_writeToggle;
 			break;
 		case PPURegisters::VideoMemoryData:
 			if((_ppuBusAddress & 0x3FFF) >= 0x3F00) {
@@ -525,55 +552,58 @@ template<class T> bool NesPpu<T>::IsRenderingEnabled()
 
 template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask)
 {
-	_state.TmpVideoRamAddr = normalAddr;
+	_tmpVideoRamAddr = normalAddr;
 	if(_cycle == 257 && _console->GetNesConfig().EnablePpu2000ScrollGlitch && _scanline < 240 && IsRenderingEnabled()) {
 		//Use open bus to set some parts of V (glitch that occurs when writing to $2000/$2005/$2006 on cycle 257)
-		_state.VideoRamAddr = (_state.VideoRamAddr & ~mask) | (value & mask);
+		_videoRamAddr = (_videoRamAddr & ~mask) | (value & mask);
 	}
 }
 
 template<class T> void NesPpu<T>::SetControlRegister(uint8_t value)
 {
-	_state.Control = value;
+	_controlReg = value;
 
-	uint8_t nameTable = (_state.Control & 0x03);
+	uint8_t nameTable = (_controlReg & 0x03);
 
-	uint16_t normalAddr = (_state.TmpVideoRamAddr & ~0x0C00) | (nameTable << 10);
+	uint16_t normalAddr = (_tmpVideoRamAddr & ~0x0C00) | (nameTable << 10);
 	ProcessTmpAddrScrollGlitch(normalAddr, _console->GetMemoryManager()->GetOpenBus() << 10, 0x0400);
 	
-	_flags.VerticalWrite = (_state.Control & 0x04) == 0x04;
-	_flags.SpritePatternAddr = ((_state.Control & 0x08) == 0x08) ? 0x1000 : 0x0000;
-	_flags.BackgroundPatternAddr = ((_state.Control & 0x10) == 0x10) ? 0x1000 : 0x0000;
-	_flags.LargeSprites = (_state.Control & 0x20) == 0x20;
+	_verticalWrite = (_controlReg & 0x04) == 0x04;
+	_spritePatternAddr = ((_controlReg & 0x08) == 0x08) ? 0x1000 : 0x0000;
+	_backgroundPatternAddr = ((_controlReg & 0x10) == 0x10) ? 0x1000 : 0x0000;
+	_largeSprites = (_controlReg & 0x20) == 0x20;
 
-	_flags.VBlank = (_state.Control & 0x80) == 0x80;
+	_vBlank = (_controlReg & 0x80) == 0x80;
 	
 	//"By toggling NMI_output ($2000 bit 7) during vertical blank without reading $2002, a program can cause /NMI to be pulled low multiple times, causing multiple NMIs to be generated."
-	if(!_flags.VBlank) {
+	if(!_vBlank) {
 		_console->GetCpu()->ClearNmiFlag();
-	} else if(_flags.VBlank && _statusFlags.VerticalBlank) {
+	} else if(_vBlank && _statusFlags.VerticalBlank) {
 		_console->GetCpu()->SetNmiFlag();
 	}
 }
 
 template<class T> void NesPpu<T>::UpdateMinimumDrawCycles()
 {
-	_minimumDrawBgCycle = _flags.BackgroundEnabled ? ((_flags.BackgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
-	_minimumDrawSpriteCycle = _flags.SpritesEnabled ? ((_flags.SpriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
-	_minimumDrawSpriteStandardCycle = _flags.SpritesEnabled ? (_flags.SpriteMask ? 0 : 8) : 300;
+	_minimumDrawBgCycle = _backgroundEnabled ? ((_backgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
+	_minimumDrawSpriteCycle = _spritesEnabled ? ((_spriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
+	_minimumDrawSpriteStandardCycle = _spritesEnabled ? (_spriteMask ? 0 : 8) : 300;
+
+	_emulatorBgEnabled = _console->GetNesConfig().BackgroundEnabled;
+	_emulatorSpritesEnabled = _console->GetNesConfig().SpritesEnabled;
 }
 
 template<class T> void NesPpu<T>::SetMaskRegister(uint8_t value)
 {
-	_state.Mask = value;
-	_flags.Grayscale = (_state.Mask & 0x01) == 0x01;
-	_flags.BackgroundMask = (_state.Mask & 0x02) == 0x02;
-	_flags.SpriteMask = (_state.Mask & 0x04) == 0x04;
-	_flags.BackgroundEnabled = (_state.Mask & 0x08) == 0x08;
-	_flags.SpritesEnabled = (_state.Mask & 0x10) == 0x10;
-	_flags.IntensifyBlue = (_state.Mask & 0x80) == 0x80;
+	_maskReg = value;
+	_grayscale = (_maskReg & 0x01) == 0x01;
+	_backgroundMask = (_maskReg & 0x02) == 0x02;
+	_spriteMask = (_maskReg & 0x04) == 0x04;
+	_backgroundEnabled = (_maskReg & 0x08) == 0x08;
+	_spritesEnabled = (_maskReg & 0x10) == 0x10;
+	_intensifyBlue = (_maskReg & 0x80) == 0x80;
 
-	if(_renderingEnabled != (_flags.BackgroundEnabled | _flags.SpritesEnabled)) {
+	if(_renderingEnabled != (_backgroundEnabled | _spritesEnabled)) {
 		_needStateUpdate = true;
 	}
 
@@ -582,17 +612,17 @@ template<class T> void NesPpu<T>::SetMaskRegister(uint8_t value)
 	UpdateGrayscaleAndIntensifyBits();
 
 	//"Bit 0 controls a greyscale mode, which causes the palette to use only the colors from the grey column: $00, $10, $20, $30. This is implemented as a bitwise AND with $30 on any value read from PPU $3F00-$3FFF"
-	_paletteRamMask = _flags.Grayscale ? 0x30 : 0x3F;
+	_paletteRamMask = _grayscale ? 0x30 : 0x3F;
 
 	if(_region == ConsoleRegion::Ntsc) {
-		_flags.IntensifyRed = (_state.Mask & 0x20) == 0x20;
-		_flags.IntensifyGreen = (_state.Mask & 0x40) == 0x40;
+		_intensifyRed = (_maskReg & 0x20) == 0x20;
+		_intensifyGreen = (_maskReg & 0x40) == 0x40;
 		_intensifyColorBits = (value & 0xE0) << 1;
 	} else if(_region == ConsoleRegion::Pal || _region == ConsoleRegion::Dendy) {
 		//"Note that on the Dendy and PAL NES, the green and red bits swap meaning."
-		_flags.IntensifyRed = (_state.Mask & 0x40) == 0x40;
-		_flags.IntensifyGreen = (_state.Mask & 0x20) == 0x20;
-		_intensifyColorBits = (_flags.IntensifyRed ? 0x40 : 0x00) | (_flags.IntensifyGreen ? 0x80 : 0x00) | (_flags.IntensifyBlue ? 0x100 : 0x00);
+		_intensifyRed = (_maskReg & 0x40) == 0x40;
+		_intensifyGreen = (_maskReg & 0x20) == 0x20;
+		_intensifyColorBits = (_intensifyRed ? 0x40 : 0x00) | (_intensifyGreen ? 0x80 : 0x00) | (_intensifyBlue ? 0x100 : 0x00);
 	}
 
 	_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
@@ -600,7 +630,7 @@ template<class T> void NesPpu<T>::SetMaskRegister(uint8_t value)
 
 template<class T> void NesPpu<T>::UpdateStatusFlag()
 {
-	_state.Status = ((uint8_t)_statusFlags.SpriteOverflow << 5) |
+	_statusReg = ((uint8_t)_statusFlags.SpriteOverflow << 5) |
 		((uint8_t)_statusFlags.Sprite0Hit << 6) |
 		((uint8_t)_statusFlags.VerticalBlank << 7);
 	_statusFlags.VerticalBlank = false;
@@ -615,7 +645,7 @@ template<class T> void NesPpu<T>::UpdateStatusFlag()
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Wrapping_around
 template<class T> void NesPpu<T>::IncVerticalScrolling()
 {
-	uint16_t addr = _state.VideoRamAddr;
+	uint16_t addr = _videoRamAddr;
 
 	if((addr & 0x7000) != 0x7000) {
 		// if fine Y < 7
@@ -634,33 +664,33 @@ template<class T> void NesPpu<T>::IncVerticalScrolling()
 		}
 		addr = (addr & ~0x03E0) | (y << 5);     // put coarse Y back into v
 	}
-	_state.VideoRamAddr = addr;
+	_videoRamAddr = addr;
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Wrapping_around
 template<class T> void NesPpu<T>::IncHorizontalScrolling()
 {
 	//Increase coarse X scrolling value.
-	uint16_t addr = _state.VideoRamAddr;
+	uint16_t addr = _videoRamAddr;
 	if((addr & 0x001F) == 31) {
 		//When the value is 31, wrap around to 0 and switch nametable
 		addr = (addr & ~0x001F) ^ 0x0400;
 	} else {
 		addr++;
 	}
-	_state.VideoRamAddr = addr;
+	_videoRamAddr = addr;
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Tile_and_attribute_fetching
 template<class T> uint16_t NesPpu<T>::GetNameTableAddr()
 {
-	return 0x2000 | (_state.VideoRamAddr & 0x0FFF);
+	return 0x2000 | (_videoRamAddr & 0x0FFF);
 }
 
 //Taken from http://wiki.nesdev.com/w/index.php/The_skinny_on_NES_scrolling#Tile_and_attribute_fetching
 template<class T> uint16_t NesPpu<T>::GetAttributeAddr()
 {
-	return 0x23C0 | (_state.VideoRamAddr & 0x0C00) | ((_state.VideoRamAddr >> 4) & 0x38) | ((_state.VideoRamAddr >> 2) & 0x07);
+	return 0x23C0 | (_videoRamAddr & 0x0C00) | ((_videoRamAddr >> 4) & 0x38) | ((_videoRamAddr >> 2) & 0x07);
 }
 
 template<class T> void NesPpu<T>::SetBusAddress(uint16_t addr)
@@ -686,31 +716,31 @@ template<class T> void NesPpu<T>::LoadTileInfo()
 	if(IsRenderingEnabled()) {
 		switch(_cycle & 0x07) {
 			case 1: {
-				_previousTile = _currentTile;
-				_currentTile = _nextTile;
+				_previousTilePalette = _currentTilePalette;
+				_currentTilePalette = _tile.PaletteOffset;
 
-				_state.LowBitShift |= _nextTile.LowByte;
-				_state.HighBitShift |= _nextTile.HighByte;
+				_lowBitShift |= _tile.LowByte;
+				_highBitShift |= _tile.HighByte;
 
 				uint8_t tileIndex = ReadVram(GetNameTableAddr());
-				_nextTile.TileAddr = (tileIndex << 4) | (_state.VideoRamAddr >> 12) | _flags.BackgroundPatternAddr;
-				_nextTile.OffsetY = _state.VideoRamAddr >> 12;
+				_tile.TileAddr = (tileIndex << 4) | (_videoRamAddr >> 12) | _backgroundPatternAddr;
+				//_nextTile.OffsetY = _state.VideoRamAddr >> 12;
 				break;
 			}
 
 			case 3: {
-				uint8_t shift = ((_state.VideoRamAddr >> 4) & 0x04) | (_state.VideoRamAddr & 0x02);
-				_nextTile.PaletteOffset = ((ReadVram(GetAttributeAddr()) >> shift) & 0x03) << 2;
+				uint8_t shift = ((_videoRamAddr >> 4) & 0x04) | (_videoRamAddr & 0x02);
+				_tile.PaletteOffset = ((ReadVram(GetAttributeAddr()) >> shift) & 0x03) << 2;
 				break;
 			}
 
 			case 5:
-				_nextTile.LowByte = ReadVram(_nextTile.TileAddr);
+				_tile.LowByte = ReadVram(_tile.TileAddr);
 				((T*)this)->StoreTileAbsoluteAddress();				
 				break;
 
 			case 7:
-				_nextTile.HighByte = ReadVram(_nextTile.TileAddr + 8);
+				_tile.HighByte = ReadVram(_tile.TileAddr + 8);
 				break;
 		}
 	}
@@ -725,15 +755,15 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 	uint16_t tileAddr;
 	uint8_t lineOffset;
 	if(verticalMirror) {
-		lineOffset = (_flags.LargeSprites ? 15 : 7) - (_scanline - spriteY);
+		lineOffset = (_largeSprites ? 15 : 7) - (_scanline - spriteY);
 	} else {
 		lineOffset = _scanline - spriteY;
 	}
 
-	if(_flags.LargeSprites) {
+	if(_largeSprites) {
 		tileAddr = (((tileIndex & 0x01) ? 0x1000 : 0x0000) | ((tileIndex & ~0x01) << 4)) + (lineOffset >= 8 ? lineOffset + 8 : lineOffset);
 	} else {
-		tileAddr = ((tileIndex << 4) | _flags.SpritePatternAddr) + lineOffset;
+		tileAddr = ((tileIndex << 4) | _spritePatternAddr) + lineOffset;
 	}
 
 	bool fetchLastSprite = true;
@@ -741,7 +771,7 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 		NesSpriteInfo &info = _spriteTiles[_spriteIndex];
 		info.BackgroundPriority = backgroundPriority;
 		info.HorizontalMirror = horizontalMirror;
-		info.VerticalMirror = verticalMirror;
+		//info.VerticalMirror = verticalMirror;
 		info.PaletteOffset = ((attributes & 0x03) << 2) | 0x10;
 		if(extraSprite) {
 			//Use DebugReadVram for extra sprites to prevent side-effects.
@@ -752,8 +782,8 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 			info.LowByte = ReadVram(tileAddr);
 			info.HighByte = ReadVram(tileAddr + 8);
 		}
-		info.TileAddr = tileAddr;
-		info.OffsetY = lineOffset;
+		//info.TileAddr = tileAddr;
+		//info.OffsetY = lineOffset;
 		info.SpriteX = spriteX;
 		((T*)this)->StoreSpriteAbsoluteAddress();
 
@@ -769,10 +799,10 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 		//Fetches to sprite 0xFF for remaining sprites/hidden - used by MMC3 IRQ counter
 		lineOffset = 0;
 		tileIndex = 0xFF;
-		if(_flags.LargeSprites) {
+		if(_largeSprites) {
 			tileAddr = (((tileIndex & 0x01) ? 0x1000 : 0x0000) | ((tileIndex & ~0x01) << 4)) + (lineOffset >= 8 ? lineOffset + 8 : lineOffset);
 		} else {
-			tileAddr = ((tileIndex << 4) | _flags.SpritePatternAddr) + lineOffset;
+			tileAddr = ((tileIndex << 4) | _spritePatternAddr) + lineOffset;
 		}
 
 		ReadVram(tileAddr);
@@ -793,7 +823,7 @@ template<class T> void NesPpu<T>::LoadExtraSprites()
 			uint8_t maxIdenticalSpriteCount = 0;
 			for(int i = 0; i < 64; i++) {
 				uint8_t y = _spriteRAM[i << 2];
-				if(_scanline >= y && _scanline < y + (_flags.LargeSprites ? 16 : 8)) {
+				if(_scanline >= y && _scanline < y + (_largeSprites ? 16 : 8)) {
 					uint8_t x = _spriteRAM[(i << 2) + 3];
 					uint16_t position = (y << 8) | x;
 					if(lastPosition != position) {
@@ -813,7 +843,7 @@ template<class T> void NesPpu<T>::LoadExtraSprites()
 		if(loadExtraSprites) {
 			for(uint32_t i = (_lastVisibleSpriteAddr + 4) & 0xFF; i != _firstVisibleSpriteAddr; i = (i + 4) & 0xFF) {
 				uint8_t spriteY = _spriteRAM[i];
-				if(_scanline >= spriteY && _scanline < spriteY + (_flags.LargeSprites ? 16 : 8)) {
+				if(_scanline >= spriteY && _scanline < spriteY + (_largeSprites ? 16 : 8)) {
 					LoadSprite(spriteY, _spriteRAM[i + 1], _spriteRAM[i + 2], _spriteRAM[i + 3], true);
 					_spriteCount++;
 				}
@@ -830,20 +860,20 @@ template<class T> void NesPpu<T>::LoadSpriteTileInfo()
 
 template<class T> void NesPpu<T>::ShiftTileRegisters()
 {
-	_state.LowBitShift <<= 1;
-	_state.HighBitShift <<= 1;
+	_lowBitShift <<= 1;
+	_highBitShift <<= 1;
 }
 
 template<class T> uint8_t NesPpu<T>::GetPixelColor()
 {
-	uint8_t offset = _state.XScroll;
+	uint8_t offset = _xScroll;
 	uint8_t backgroundColor = 0;
 	uint8_t spriteBgColor = 0;
 
 	if(_cycle > _minimumDrawBgCycle) {
 		//BackgroundMask = false: Hide background in leftmost 8 pixels of screen
-		spriteBgColor = (((_state.LowBitShift << offset) & 0x8000) >> 15) | (((_state.HighBitShift << offset) & 0x8000) >> 14);
-		if(((T*)this)->IsEmulatorBgEnabled()) {
+		spriteBgColor = (((_lowBitShift << offset) & 0x8000) >> 15) | (((_highBitShift << offset) & 0x8000) >> 14);
+		if(_emulatorBgEnabled) {
 			backgroundColor = spriteBgColor;
 		}
 	}
@@ -863,7 +893,7 @@ template<class T> uint8_t NesPpu<T>::GetPixelColor()
 
 				if(spriteColor != 0) {
 					//First sprite without a 00 color, use it.
-					if(i == 0 && spriteBgColor != 0 && _sprite0Visible && _cycle != 256 && _flags.BackgroundEnabled && !_statusFlags.Sprite0Hit && _cycle > _minimumDrawSpriteStandardCycle) {
+					if(i == 0 && spriteBgColor != 0 && _sprite0Visible && _cycle != 256 && _backgroundEnabled && !_statusFlags.Sprite0Hit && _cycle > _minimumDrawSpriteStandardCycle) {
 						//"The hit condition is basically sprite zero is in range AND the first sprite output unit is outputting a non-zero pixel AND the background drawing unit is outputting a non-zero pixel."
 						//"Sprite zero hits do not register at x=255" (cycle 256)
 						//"... provided that background and sprite rendering are both enabled"
@@ -873,7 +903,7 @@ template<class T> uint8_t NesPpu<T>::GetPixelColor()
 						_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::SpriteZeroHit);
 					}
 
-					if(((T*)this)->IsEmulatorSpritesEnabled() && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
+					if(_emulatorSpritesEnabled && (backgroundColor == 0 || !_spriteTiles[i].BackgroundPriority)) {
 						//Check sprite priority
 						return _lastSprite->PaletteOffset + spriteColor;
 					}
@@ -882,16 +912,16 @@ template<class T> uint8_t NesPpu<T>::GetPixelColor()
 			}
 		}
 	}
-	return ((offset + ((_cycle - 1) & 0x07) < 8) ? _previousTile : _currentTile).PaletteOffset + backgroundColor;
+	return ((offset + ((_cycle - 1) & 0x07) < 8) ? _previousTilePalette : _currentTilePalette) + backgroundColor;
 }
 
 template<class T> uint16_t NesPpu<T>::GetCurrentBgColor()
 {
 	uint16_t color;
-	if(IsRenderingEnabled() || (_state.VideoRamAddr & 0x3F00) != 0x3F00) {
+	if(IsRenderingEnabled() || (_videoRamAddr & 0x3F00) != 0x3F00) {
 		color = _paletteRAM[0];
 	} else {
-		color = _paletteRAM[_state.VideoRamAddr & 0x1F];
+		color = _paletteRAM[_videoRamAddr & 0x1F];
 	}
 	return (color & _paletteRamMask) | _intensifyColorBits;
 }
@@ -954,10 +984,10 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 				_statusFlags.VerticalBlank = false;
 				_console->GetCpu()->ClearNmiFlag();
 			}
-			if(_state.SpriteRamAddr >= 0x08 && IsRenderingEnabled() && !_settings->GetNesConfig().DisableOamAddrBug) {
+			if(_spriteRamAddr >= 0x08 && IsRenderingEnabled() && !_settings->GetNesConfig().DisableOamAddrBug) {
 				//This should only be done if rendering is enabled (otherwise oam_stress test fails immediately)
 				//"If OAMADDR is not less than eight when rendering starts, the eight bytes starting at OAMADDR & 0xF8 are copied to the first eight bytes of OAM"
-				WriteSpriteRam(_cycle - 1, ReadSpriteRam((_state.SpriteRamAddr & 0xF8) + _cycle - 1));
+				WriteSpriteRam(_cycle - 1, ReadSpriteRam((_spriteRamAddr & 0xF8) + _cycle - 1));
 			}
 		}
 	} else if(_cycle >= 257 && _cycle <= 320) {
@@ -966,13 +996,13 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 			memset(_hasSprite, 0, sizeof(_hasSprite));
 			if(_prevRenderingEnabled) {
 				//copy horizontal scrolling value from t
-				_state.VideoRamAddr = (_state.VideoRamAddr & ~0x041F) | (_state.TmpVideoRamAddr & 0x041F);
-				_console->DebugSetLastFramePpuScroll(_state.VideoRamAddr, _state.XScroll, true);
+				_videoRamAddr = (_videoRamAddr & ~0x041F) | (_tmpVideoRamAddr & 0x041F);
+				_console->DebugSetLastFramePpuScroll(_videoRamAddr, _xScroll, true);
 			}
 		}
 		if(IsRenderingEnabled()) {
 			//"OAMADDR is set to 0 during each of ticks 257-320 (the sprite tile loading interval) of the pre-render and visible scanlines." (When rendering)
-			_state.SpriteRamAddr = 0;
+			_spriteRamAddr = 0;
 
 			switch((_cycle - 257) % 8) {
 				//Garbage NT sprite fetch (257, 265, 273, etc.) - Required for proper MC-ACC IRQs (MMC3 clone)
@@ -987,7 +1017,7 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 
 			if(_scanline == -1 && _cycle >= 280 && _cycle <= 304) {
 				//copy vertical scrolling value from t
-				_state.VideoRamAddr = (_state.VideoRamAddr & ~0x7BE0) | (_state.TmpVideoRamAddr & 0x7BE0);
+				_videoRamAddr = (_videoRamAddr & ~0x7BE0) | (_tmpVideoRamAddr & 0x7BE0);
 			}
 		}
 	} else if(_cycle >= 321 && _cycle <= 336) {
@@ -999,11 +1029,11 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 				_oamCopybuffer = _secondarySpriteRAM[0];
 			}
 			if(_scanline == -1) {
-				_console->DebugSetLastFramePpuScroll(_state.VideoRamAddr, _state.XScroll, false);
+				_console->DebugSetLastFramePpuScroll(_videoRamAddr, _xScroll, false);
 			}
 		} else if(_prevRenderingEnabled && (_cycle == 328 || _cycle == 336)) {
-			_state.LowBitShift <<= 8;
-			_state.HighBitShift <<= 8;
+			_lowBitShift <<= 8;
+			_highBitShift <<= 8;
 			IncHorizontalScrolling();
 		}
 	} else if(_cycle == 337 || _cycle == 339) {
@@ -1035,8 +1065,8 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 				_overflowBugCounter = 0;
 
 				_oamCopyDone = false;
-				_spriteAddrH = (_state.SpriteRamAddr >> 2) & 0x3F;
-				_spriteAddrL = _state.SpriteRamAddr & 0x03;
+				_spriteAddrH = (_spriteRamAddr >> 2) & 0x3F;
+				_spriteAddrL = _spriteRamAddr & 0x03;
 
 				_firstVisibleSpriteAddr = _spriteAddrH * 4;
 				_lastVisibleSpriteAddr = _firstVisibleSpriteAddr;
@@ -1047,7 +1077,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 
 			if(_cycle & 0x01) {
 				//Read a byte from the primary OAM on odd cycles
-				_oamCopybuffer = ReadSpriteRam(_state.SpriteRamAddr);
+				_oamCopybuffer = ReadSpriteRam(_spriteRamAddr);
 			} else {
 				if(_oamCopyDone) {
 					_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
@@ -1056,7 +1086,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 						_oamCopybuffer = _secondarySpriteRAM[_secondaryOAMAddr & 0x1F];
 					}
 				} else {
-					if(!_spriteInRange && _scanline >= _oamCopybuffer && _scanline < _oamCopybuffer + (_flags.LargeSprites ? 16 : 8)) {
+					if(!_spriteInRange && _scanline >= _oamCopybuffer && _scanline < _oamCopybuffer + (_largeSprites ? 16 : 8)) {
 						_spriteInRange = true;
 					}
 
@@ -1127,7 +1157,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 						}
 					}
 				}
-				_state.SpriteRamAddr = (_spriteAddrL & 0x03) | (_spriteAddrH << 2);
+				_spriteRamAddr = (_spriteAddrL & 0x03) | (_spriteAddrH << 2);
 			}
 		}
 	}
@@ -1143,7 +1173,7 @@ template<class T> uint8_t NesPpu<T>::ReadSpriteRam(uint8_t addr)
 			_oamDecayCycles[addr >> 3] = _console->GetCpu()->GetCycleCount();
 			return _spriteRAM[addr];
 		} else {
-			if(_flags.SpritesEnabled) {
+			if(_spritesEnabled) {
 				if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnDecayedOamRead)) {
 					//When debugging with the break on decayed oam read flag turned on, break (only if sprite rendering is enabled to avoid false positives)
 					shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
@@ -1245,7 +1275,7 @@ template<class T> void NesPpu<T>::BeginVBlank()
 
 template<class T> void NesPpu<T>::TriggerNmi()
 {
-	if(_flags.VBlank) {
+	if(_vBlank) {
 		_console->GetCpu()->SetNmiFlag();
 	}
 }
@@ -1343,7 +1373,7 @@ template<class T> void NesPpu<T>::Exec()
 			if(_cycle <= 256) {
 				ProcessSpriteEvaluation();
 			} else if(_cycle >= 257 && _cycle < 320) {
-				_state.SpriteRamAddr = 0;
+				_spriteRamAddr = 0;
 			}
 		}
 	} else {
@@ -1392,7 +1422,7 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 	} else if(_scanline == 240) {
 		//At the start of vblank, the bus address is set back to VideoRamAddr.
 		//According to Visual NES, this occurs on scanline 240, cycle 1, but is done here on cycle for performance reasons
-		SetBusAddress(_state.VideoRamAddr);
+		SetBusAddress(_videoRamAddr);
 		SendFrame();
 		_frameCount++;
 	}
@@ -1414,7 +1444,7 @@ template<class T> void NesPpu<T>::UpdateState()
 				SetOamCorruptionFlags();
 
 				//When rendering is disabled midscreen, set the vram bus back to the value of 'v'
-				SetBusAddress(_state.VideoRamAddr & 0x3FFF);
+				SetBusAddress(_videoRamAddr & 0x3FFF);
 
 				if(_cycle >= 65 && _cycle <= 256) {
 					//Disabling rendering during OAM evaluation will trigger a glitch causing the current address to be incremented by 1
@@ -1422,20 +1452,20 @@ template<class T> void NesPpu<T>::UpdateState()
 					//e.g, if rendering is disabled on an even cycle, the following PPU cycle will increment the address by 5 (instead of 4)
 					//     if rendering is disabled on an odd cycle, the increment will wait until the next odd cycle (at which point it will be incremented by 1)
 					//In practice, there is no way to see the difference, so we just increment by 1 at the end of the next cycle after rendering was disabled
-					_state.SpriteRamAddr++;
+					_spriteRamAddr++;
 
 					//Also corrupt H/L to replicate a bug found in oam_flicker_test_reenable when rendering is disabled around scanlines 128-136
 					//Reenabling the causes the OAM evaluation to restart misaligned, and ends up generating a single sprite that's offset by 1
 					//such that it's Y=tile index, index = attributes, attributes = x, and X = the next sprite's Y value
-					_spriteAddrH = (_state.SpriteRamAddr >> 2) & 0x3F;
-					_spriteAddrL = _state.SpriteRamAddr & 0x03;
+					_spriteAddrH = (_spriteRamAddr >> 2) & 0x3F;
+					_spriteAddrL = _spriteRamAddr & 0x03;
 				}
 			}
 		}
 	}
 
-	if(_renderingEnabled != (_flags.BackgroundEnabled | _flags.SpritesEnabled)) {
-		_renderingEnabled = _flags.BackgroundEnabled | _flags.SpritesEnabled;
+	if(_renderingEnabled != (_backgroundEnabled | _spritesEnabled)) {
+		_renderingEnabled = _backgroundEnabled | _spritesEnabled;
 		_needStateUpdate = true;
 	}
 
@@ -1447,7 +1477,7 @@ template<class T> void NesPpu<T>::UpdateState()
 			if(_console->GetNesConfig().EnablePpu2006ScrollGlitch && _scanline < 240 && IsRenderingEnabled()) {
 				//When a $2006 address update lands on the Y or X increment, the written value is bugged and is ANDed with the incremented value
 				if(_cycle == 257) {
-					_state.VideoRamAddr &= _updateVramAddr;
+					_videoRamAddr &= _updateVramAddr;
 					if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnPpu2006ScrollGlitch)) {
 						shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
 						if(debugger) {
@@ -1455,7 +1485,7 @@ template<class T> void NesPpu<T>::UpdateState()
 						}
 					}
 				} else if(_cycle > 0 && (_cycle & 0x07) == 0 && (_cycle <= 256 || _cycle > 320)) {
-					_state.VideoRamAddr = (_updateVramAddr & ~0x41F) | (_state.VideoRamAddr & _updateVramAddr & 0x41F);
+					_videoRamAddr = (_updateVramAddr & ~0x41F) | (_videoRamAddr & _updateVramAddr & 0x41F);
 					if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnPpu2006ScrollGlitch)) {
 						shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
 						if(debugger) {
@@ -1463,10 +1493,10 @@ template<class T> void NesPpu<T>::UpdateState()
 						}
 					}
 				} else {
-					_state.VideoRamAddr = _updateVramAddr;
+					_videoRamAddr = _updateVramAddr;
 				}
 			} else {
-				_state.VideoRamAddr = _updateVramAddr;
+				_videoRamAddr = _updateVramAddr;
 			}
 
 			if(!_renderingEnabled) {
@@ -1474,14 +1504,14 @@ template<class T> void NesPpu<T>::UpdateState()
 			}
 
 			//The glitches updates corrupt both V and T, so set the new value of V back into T
-			_state.TmpVideoRamAddr = _state.VideoRamAddr;
+			_tmpVideoRamAddr = _videoRamAddr;
 
 			if(_scanline >= 240 || !IsRenderingEnabled()) {
 				//Only set the VRAM address on the bus if the PPU is not rendering
 				//More info here: https://forums.nesdev.com/viewtopic.php?p=132145#p132145
 				//Trigger bus address change when setting the vram address - needed by MMC3 IRQ counter
 				//"4) Should be clocked when A12 changes to 1 via $2006 write"
-				SetBusAddress(_state.VideoRamAddr & 0x3FFF);
+				SetBusAddress(_videoRamAddr & 0x3FFF);
 			}
 		} else {
 			_needStateUpdate = true;
@@ -1539,12 +1569,12 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 		disableOamAddrBug = _settings->CheckFlag(EmulationFlags::DisableOamAddrBug);*/
 	}
 
-	s.Stream(_state.Control, _state.Mask, _state.Status, _state.SpriteRamAddr, _state.VideoRamAddr, _state.XScroll, _state.TmpVideoRamAddr, _state.WriteToggle,
-		_state.HighBitShift, _state.LowBitShift, _flags.VerticalWrite, _flags.SpritePatternAddr, _flags.BackgroundPatternAddr, _flags.LargeSprites, _flags.VBlank,
-		_flags.Grayscale, _flags.BackgroundMask, _flags.SpriteMask, _flags.BackgroundEnabled, _flags.SpritesEnabled, _flags.IntensifyRed, _flags.IntensifyGreen,
-		_flags.IntensifyBlue, _paletteRamMask, _intensifyColorBits, _statusFlags.SpriteOverflow, _statusFlags.Sprite0Hit, _statusFlags.VerticalBlank, _scanline,
-		_cycle, _frameCount, _memoryReadBuffer, _currentTile.LowByte, _currentTile.HighByte, _currentTile.PaletteOffset, _nextTile.LowByte, _nextTile.HighByte,
-		_nextTile.PaletteOffset, _nextTile.TileAddr, _previousTile.LowByte, _previousTile.HighByte, _previousTile.PaletteOffset, _spriteIndex, _spriteCount,
+	s.Stream(_controlReg, _maskReg, _statusReg, _spriteRamAddr, _videoRamAddr, _xScroll, _tmpVideoRamAddr, _writeToggle,
+		_highBitShift, _lowBitShift, _verticalWrite, _spritePatternAddr, _backgroundPatternAddr, _largeSprites, _vBlank,
+		_grayscale, _backgroundMask, _spriteMask, _backgroundEnabled, _spritesEnabled, _intensifyRed, _intensifyGreen,
+		_intensifyBlue, _paletteRamMask, _intensifyColorBits, _statusFlags.SpriteOverflow, _statusFlags.Sprite0Hit, _statusFlags.VerticalBlank, _scanline,
+		_cycle, _frameCount, _memoryReadBuffer, _currentTilePalette, _tile.LowByte, _tile.HighByte,
+		_tile.PaletteOffset, _tile.TileAddr, _previousTilePalette, _spriteIndex, _spriteCount,
 		_secondaryOAMAddr, _sprite0Visible, _oamCopybuffer, _spriteInRange, _sprite0Added, _spriteAddrH, _spriteAddrL, _oamCopyDone, _region,
 		_prevRenderingEnabled, _renderingEnabled, _openBus, _ignoreVramRead, paletteRam, spriteRam, secondarySpriteRam,
 		openBusDecayStamp, disablePpu2004Reads, disablePaletteRead, disableOamAddrBug, _overflowBugCounter, _updateVramAddr, _updateVramAddrDelay,
