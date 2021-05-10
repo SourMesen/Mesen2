@@ -4,13 +4,15 @@
 #include "NES/HdPacks/HdNesPack.h"
 #include "NES/HdPacks/HdPackLoader.h"
 #include "NES/NesConsole.h"
+#include "NES/NesDefaultVideoFilter.h"
 #include "Shared/MessageManager.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/PNGHelper.h"
 
-HdNesPack::HdNesPack(HdPackData* hdData)
+HdNesPack::HdNesPack(EmuSettings* settings, HdPackData* hdData)
 {
+	_settings = settings;
 	_hdData = hdData;
 }
 
@@ -190,17 +192,16 @@ int32_t HdNesPack::GetLayerIndex(uint8_t priority)
 	return -1;
 }
 
-uint32_t palette[512] = {};
-
 void HdNesPack::OnBeforeApplyFilter()
 {
-	_palette = palette;
-	//TODO
-	//_palette = _hdData->Palette.size() == 0x40 ? _hdData->Palette.data() : _settings->GetRgbPalette();
+	if(_hdData->Palette.size() == 0x40) {
+		memcpy(_palette, _hdData->Palette.data(), 0x40 * sizeof(uint32_t));
+	} else {
+		NesDefaultVideoFilter::GetFullPalette(_palette, _settings->GetNesConfig(), PpuModel::Ppu2C02);
+	}
 	_cacheEnabled = (_hdData->OptionFlags & (int)HdPackOptions::DisableCache) == 0;
 	//TODO
-	/*
-	if(_hdData->OptionFlags & (int)HdPackOptions::NoSpriteLimit) {
+	/*if(_hdData->OptionFlags & (int)HdPackOptions::NoSpriteLimit) {
 		_settings->SetFlags(EmulationFlags::RemoveSpriteLimit | EmulationFlags::AdaptiveSpriteLimit);
 	}*/
 

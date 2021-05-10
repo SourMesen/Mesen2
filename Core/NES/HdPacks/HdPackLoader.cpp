@@ -209,13 +209,17 @@ bool HdPackLoader::ProcessImgTag(string src)
 	vector<uint8_t> fileData;
 	vector<uint8_t> pixelData;
 	LoadFile(src, fileData);
-
-	_hdNesBitmaps.push_back({});
-	HdPackBitmapInfo& bitmapInfo = _hdNesBitmaps.back();
-	if(PNGHelper::ReadPNG(fileData, bitmapInfo.PixelData, bitmapInfo.Width, bitmapInfo.Height)) {
+	uint32_t width, height;
+	if(PNGHelper::ReadPNG(fileData, pixelData, width, height)) {
+		_hdNesBitmaps.push_back({});
+		HdPackBitmapInfo& bitmapInfo = _hdNesBitmaps.back();
+		bitmapInfo.Width = width;
+		bitmapInfo.Height = height;
+		bitmapInfo.PixelData.resize(pixelData.size() / 4);
+		memcpy(bitmapInfo.PixelData.data(), pixelData.data(), bitmapInfo.PixelData.size() * sizeof(bitmapInfo.PixelData[0]));
+		PremultiplyAlpha(bitmapInfo.PixelData);
 		return true;
 	} else {
-		_hdNesBitmaps.pop_back();
 		MessageManager::Log("[HDPack] Error loading HDPack: PNG file " + src + " could not be read.");
 		return false;
 	}
@@ -225,7 +229,6 @@ void HdPackLoader::PremultiplyAlpha(vector<uint32_t> &pixelData)
 {
 	for(size_t i = 0; i < pixelData.size(); i++) {
 		if(pixelData[i] < 0xFF000000) {
-			//If not fully opaque, pre-multiply alpha with R/G/B to avoid having to do this while running
 			uint8_t* output = (uint8_t*)(pixelData.data() + i);
 			uint8_t alpha = output[3] + 1;
 			output[0] = (uint8_t)((alpha * output[0]) >> 8);
@@ -372,30 +375,13 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 	checkConstraint(tileInfo->BitmapIndex < _hdNesBitmaps.size(), "[HDPack] Invalid bitmap index: " + std::to_string(tileInfo->BitmapIndex));
 
 	HdPackBitmapInfo &bitmapInfo = _hdNesBitmaps[tileInfo->BitmapIndex];
-	
-	uint32_t bitmapOffset = (tileInfo->Y * bitmapInfo.Width + tileInfo->X) * sizeof(uint32_t);
-	uint8_t* pngData = bitmapInfo.PixelData.data();
+	uint32_t bitmapOffset = tileInfo->Y * bitmapInfo.Width + tileInfo->X;
+	uint32_t* pngData = (uint32_t*)bitmapInfo.PixelData.data();
 	
 	tileInfo->HdTileData.resize(64 * _data->Scale * _data->Scale);
 	for(uint32_t y = 0; y < 8 * _data->Scale; y++) {
-		for(uint32_t x = 0; x < 8 * _data->Scale; x++) {
-			uint8_t r = pngData[bitmapOffset];
-			uint8_t g = pngData[bitmapOffset + 1];
-			uint8_t b = pngData[bitmapOffset + 2];
-			uint8_t a = pngData[bitmapOffset + 3];
-			
-			if(a < 0xFF) {
-				//If not fully opaque, pre-multiply alpha with R/G/B to avoid having to do this while running
-				uint8_t alpha = a + 1;
-				r = (uint8_t)((alpha * r) >> 8);
-				g = (uint8_t)((alpha * g) >> 8);
-				b = (uint8_t)((alpha * b) >> 8);
-			}
-
-			tileInfo->HdTileData[y * 8 * _data->Scale + x] = (a << 24) | (r << 16) | (g << 8) | b;
-			bitmapOffset += sizeof(uint32_t);
-		}
-		bitmapOffset += (bitmapInfo.Width - (8 * _data->Scale)) * sizeof(uint32_t);
+		memcpy(tileInfo->HdTileData.data() + (y * 8 * _data->Scale), pngData + bitmapOffset, 8 * _data->Scale * sizeof(uint32_t));
+		bitmapOffset += bitmapInfo.Width;
 	}
 
 	tileInfo->UpdateFlags();

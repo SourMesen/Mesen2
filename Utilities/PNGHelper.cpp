@@ -54,10 +54,10 @@ bool PNGHelper::ReadPNG(vector<uint8_t> input, vector<uint8_t> &output, uint32_t
 
 	if(DecodePNG(output, width, height, input.data(), input.size()) == 0) {
 		uint32_t *pngDataPtr = (uint32_t*)output.data();
-		/*for(size_t i = 0, len = output.size() / 4; i < len; i++) {
+		for(size_t i = 0, len = output.size() / 4; i < len; i++) {
 			//ABGR to ARGB
 			pngDataPtr[i] = (pngDataPtr[i] & 0xFF00FF00) | ((pngDataPtr[i] & 0xFF0000) >> 16) | ((pngDataPtr[i] & 0xFF) << 16);
-		}*/
+		}
 		pngWidth = width;
 		pngHeight = height;
 

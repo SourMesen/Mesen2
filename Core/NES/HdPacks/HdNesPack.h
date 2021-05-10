@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "NES/HdPacks/HdData.h"
 
+class EmuSettings;
+
 class HdNesPack
 {
 private:
@@ -14,19 +16,20 @@ private:
 		int16_t BgMaxX = -1;
 	};
 
-	HdPackData* _hdData;
-
 	static constexpr uint8_t PriorityLevelsPerLayer = 10;
 	static constexpr uint8_t BehindBgSpritesPriority = 0 * PriorityLevelsPerLayer;
 	static constexpr uint8_t BehindBgPriority = 1 * PriorityLevelsPerLayer;
 	static constexpr uint8_t BehindFgSpritesPriority = 2 * PriorityLevelsPerLayer;
 	static constexpr uint8_t ForegroundPriority = 3 * PriorityLevelsPerLayer;
 
+	EmuSettings* _settings = nullptr;
+	HdPackData* _hdData = nullptr;
+
 	uint8_t _activeBgCount[4] = {};
 	HdBgConfig _bgConfig[40] = {};
 
 	HdScreenInfo *_hdScreenInfo = nullptr;
-	uint32_t* _palette = nullptr;
+	uint32_t _palette[512] = {};
 	HdPackTileInfo* _cachedTile = nullptr;
 	bool _cacheEnabled = false;
 	bool _useCachedTile = false;
@@ -52,7 +55,7 @@ private:
 public:
 	static constexpr uint32_t CurrentVersion = 106;
 
-	HdNesPack(HdPackData* hdData);
+	HdNesPack(EmuSettings* settings, HdPackData* hdData);
 	~HdNesPack();
 
 	uint32_t GetScale();

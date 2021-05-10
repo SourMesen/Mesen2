@@ -26,6 +26,7 @@ class HdNesPpu final : public NesPpu<HdNesPpu>
 	HdScreenInfo* _screenInfo[2] = {};
 	HdScreenInfo* _info = nullptr;
 	uint32_t _version = 0;
+	bool _isChrRam = false;
 	HdPackData* _hdData = nullptr;
 	NesSpriteInfoEx _exSpriteInfo[64] = {};
 	NesTileInfoEx _previousTileEx = {};
@@ -71,14 +72,12 @@ public:
 		_lastSprite = nullptr;
 
 		if(IsRenderingEnabled() || ((_videoRamAddr & 0x3F00) != 0x3F00)) {
-			bool isChrRam = !_console->GetMapper()->HasChrRom();
-			BaseMapper* mapper = _console->GetMapper();
-
 			uint32_t color = GetPixelColor();
 			pixel = (_paletteRAM[color & 0x03 ? color : 0] & _paletteRamMask) | _intensifyColorBits;
 
-			uint8_t tilePalette = (_xScroll + ((_cycle - 1) & 0x07) < 8) ? _previousTilePalette : _currentTilePalette;
-			NesTileInfoEx& lastTileEx = (_xScroll + ((_cycle - 1) & 0x07) < 8) ? _previousTileEx : _currentTileEx;
+			bool usePrev = (_xScroll + ((_cycle - 1) & 0x07) < 8);
+			uint8_t tilePalette = usePrev ? _previousTilePalette : _currentTilePalette;
+			NesTileInfoEx& lastTileEx = usePrev ? _previousTileEx : _currentTileEx;
 			uint32_t backgroundColor = 0;
 			if(_backgroundEnabled && _cycle > _minimumDrawBgCycle) {
 				backgroundColor = (((_lowBitShift << _xScroll) & 0x8000) >> 15) | (((_highBitShift << _xScroll) & 0x8000) >> 14);
@@ -107,8 +106,8 @@ public:
 					NesSpriteInfoEx& spriteEx = _exSpriteInfo[i];
 					if(shift >= 0 && shift < 8) {
 						tileInfo.Sprite[j].TileIndex = spriteEx.AbsoluteTileAddr / 16;
-						if(isChrRam) {
-							mapper->CopyChrTile(spriteEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Sprite[j].TileData);
+						if(_isChrRam) {
+							_console->GetMapper()->CopyChrTile(spriteEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Sprite[j].TileData);
 						}
 						if(_version >= 100) {
 							tileInfo.Sprite[j].PaletteColors = 0xFF000000 | _paletteRAM[sprite.PaletteOffset + 3] | (_paletteRAM[sprite.PaletteOffset + 2] << 8) | (_paletteRAM[sprite.PaletteOffset + 1] << 16);
@@ -155,8 +154,8 @@ public:
 
 			if(_backgroundEnabled && _cycle > _minimumDrawBgCycle) {
 				tileInfo.Tile.TileIndex = lastTileEx.AbsoluteTileAddr / 16;
-				if(isChrRam) {
-					mapper->CopyChrTile(lastTileEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Tile.TileData);
+				if(_isChrRam) {
+					_console->GetMapper()->CopyChrTile(lastTileEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Tile.TileData);
 				}
 				if(_version >= 100) {
 					tileInfo.Tile.PaletteColors = _paletteRAM[tilePalette + 3] | (_paletteRAM[tilePalette + 2] << 8) | (_paletteRAM[tilePalette + 1] << 16) | (_paletteRAM[0] << 24);

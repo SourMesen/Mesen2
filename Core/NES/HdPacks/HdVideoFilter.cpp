@@ -3,12 +3,13 @@
 #include "NES/HdPacks/HdVideoFilter.h"
 #include "NES/NesConsole.h"
 #include "NES/NesConstants.h"
+#include "Shared/Emulator.h"
 #include "Shared/Video/BaseVideoFilter.h"
 
 HdVideoFilter::HdVideoFilter(Emulator* emu, HdPackData* hdData) : BaseVideoFilter(emu)
 {
 	_hdData = hdData;
-	_hdNesPack.reset(new HdNesPack(hdData));
+	_hdNesPack.reset(new HdNesPack(emu->GetSettings(), hdData));
 }
 
 FrameInfo HdVideoFilter::GetFrameInfo()

@@ -12,10 +12,9 @@ HdNesPpu::HdNesPpu(NesConsole* console, HdPackData* hdData) : NesPpu(console)
 
 	if(_hdData) {
 		_version = _hdData->Version;
-
-		bool isChrRamGame = !console->GetMapper()->HasChrRom();
-		_screenInfo[0] = new HdScreenInfo(isChrRamGame);
-		_screenInfo[1] = new HdScreenInfo(isChrRamGame);
+		_isChrRam = !_console->GetMapper()->HasChrRom();
+		_screenInfo[0] = new HdScreenInfo(_isChrRam);
+		_screenInfo[1] = new HdScreenInfo(_isChrRam);
 		_info = _screenInfo[0];
 	}
 }

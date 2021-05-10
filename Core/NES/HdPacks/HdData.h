@@ -94,26 +94,19 @@ struct HdPpuTileInfo : public HdTileKey
 struct HdPpuPixelInfo
 {
 	HdPpuTileInfo Tile;
-	vector<HdPpuTileInfo> Sprite;
-	int SpriteCount;
+	HdPpuTileInfo Sprite[4];
 	
 	uint16_t TmpVideoRamAddr;
 	uint8_t XScroll;
 	uint8_t EmphasisBits;
 	bool Grayscale;
-
-	HdPpuPixelInfo()
-	{
-		for(int i = 0; i < 4; i++) {
-			Sprite.push_back(HdPpuTileInfo());
-		}		
-	}
+	uint8_t SpriteCount;
 };
 
 struct HdScreenInfo
 {
 	HdPpuPixelInfo* ScreenTiles;
-	std::unordered_map<uint32_t, uint8_t> WatchedAddressValues;
+	unordered_map<uint32_t, uint8_t> WatchedAddressValues;
 	uint32_t FrameNumber;
 
 	HdScreenInfo(const HdScreenInfo& that) = delete;
@@ -291,7 +284,7 @@ struct HdPackTileInfo : public HdTileKey
 
 struct HdPackBitmapInfo
 {
-	vector<uint8_t> PixelData;
+	vector<uint32_t> PixelData;
 	uint32_t Width;
 	uint32_t Height;
 };
