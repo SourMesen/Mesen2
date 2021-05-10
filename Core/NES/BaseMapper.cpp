@@ -544,8 +544,11 @@ void BaseMapper::RestorePrgChrState()
 	}
 }
 
-void BaseMapper::Initialize(RomData &romData)
+void BaseMapper::Initialize(NesConsole* console, RomData &romData)
 {
+	_console = console;
+	_emu = console->GetEmulator();
+
 	_romInfo = romData.Info;
 
 	_batteryFilename = GetBatteryFilename();
@@ -651,13 +654,17 @@ void BaseMapper::Initialize(RomData &romData)
 
 	SetMirroringType(romData.Info.Mirroring);
 
-	InitMapper();
-	InitMapper(romData);
 
 	//Load battery data if present
 	LoadBattery();
 
 	_romInfo.HasChrRam = HasChrRam();
+}
+
+void BaseMapper::InitSpecificMapper(RomData& romData)
+{
+	InitMapper();
+	InitMapper(romData);
 }
 
 BaseMapper::~BaseMapper()
@@ -679,12 +686,6 @@ void BaseMapper::GetMemoryRanges(MemoryRanges &ranges)
 		ranges.AddHandler(MemoryOperation::Read, 0x4018, 0xFFFF);
 		ranges.AddHandler(MemoryOperation::Write, 0x4018, 0xFFFF);
 	}
-}
-
-void BaseMapper::SetConsole(NesConsole* console)
-{
-	_console = console;
-	_emu = console->GetEmulator();
 }
 
 uint8_t* BaseMapper::GetNametable(uint8_t nametableIndex)

@@ -157,7 +157,8 @@ public:
 	static constexpr uint32_t NametableCount = 0x10;
 	static constexpr uint32_t NametableSize = 0x400;
 	
-	void Initialize(RomData &romData);
+	void Initialize(NesConsole* console, RomData &romData);
+	void InitSpecificMapper(RomData& romData);
 
 	virtual ~BaseMapper();
 	virtual void Reset(bool softReset);
@@ -173,8 +174,6 @@ public:
 	virtual void GetMemoryRanges(MemoryRanges &ranges) override;
 	
 	virtual void SaveBattery();
-
-	void SetConsole(NesConsole* console);
 
 	NesRomInfo GetRomInfo();
 	uint32_t GetMapperDipSwitchCount();

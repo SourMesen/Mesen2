@@ -148,20 +148,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			_mapper->CopyPrgChrRom(previousMapper);
 		}*/
 
-		/*switch(romInfo.System) {
-			case GameSystem::FDS:
-				_settings->SetPpuModel(PpuModel::Ppu2C02);
-				break;
-
-			case GameSystem::VsSystem:
-				_settings->SetPpuModel(romInfo.VsPpuModel);
-				break;
-
-			default:
-				_settings->SetPpuModel(PpuModel::Ppu2C02);
-		}
-		
-
+		/*
 		//Temporarely disable battery saves to prevent battery files from being created for the wrong game (for Battle Box & Turbo File)
 		_batteryManager->SetSaveEnabled(false);
 		*/
@@ -171,12 +158,6 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			pollCounter = _controlManager->GetPollCounter();
 		}
 		*/
-
-		_controlManager->SetPollCounter(pollCounter);
-		_controlManager->UpdateControlDevices();
-
-		_mapper->SetConsole(this);
-		_mapper->Initialize(romData);
 
 		//Re-enable battery saves
 		/*_batteryManager->SetSaveEnabled(true);
@@ -189,6 +170,11 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		} else {
 			_ppu.reset(new DefaultNesPpu(this));
 		}
+
+		_controlManager->SetPollCounter(pollCounter);
+		_controlManager->UpdateControlDevices();
+
+		_mapper->InitSpecificMapper(romData);
 
 		_memoryManager->SetMapper(_mapper.get());
 		_memoryManager->RegisterIODevice(_ppu.get());

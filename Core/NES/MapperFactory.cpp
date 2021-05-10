@@ -686,6 +686,7 @@ unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, Vi
 		unique_ptr<BaseMapper> mapper(GetMapperFromID(romData));
 		if(mapper) {
 			result = LoadRomResult::Success;
+			mapper->Initialize(console, romData);
 			return mapper;
 		} else {
 			//File is a valid NES file, but it couldn't be loaded
