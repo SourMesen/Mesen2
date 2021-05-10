@@ -9,7 +9,6 @@ private:
 	uint32_t* _argbBuffer;
 	FrameInfo _frameInfo;
 	OverscanDimensions _overscan;
-	uint32_t _lineWidth;
 	int32_t _startFrame;
 
 protected:
@@ -20,18 +19,19 @@ protected:
 	virtual void InternalDraw() = 0;
 	__forceinline void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
-		if(x < _overscan.Left || x - _overscan.Left >= _frameInfo.Width || y < _overscan.Top || y - _overscan.Top >= _frameInfo.Height) {
-			//Out of bounds, skip drawing
-			return;
-		}
-
 		uint32_t alpha = (color & 0xFF000000);
 		if(alpha > 0) {
 			if(_yScale == 1) {
+				int32_t offset = ((int32_t)y - _overscan.Top) * _frameInfo.Width + ((int32_t)x - _overscan.Left);
+				if(offset < 0 || offset >= (int32_t)(_frameInfo.Width * _frameInfo.Height)) {
+					//Out of bounds, skip drawing
+					return;
+				}
+
 				if(alpha != 0xFF000000) {
-					BlendColors((uint8_t*)&_argbBuffer[(y - _overscan.Top)*_lineWidth + (x - _overscan.Left)], (uint8_t*)&color);
+					BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
 				} else {
-					_argbBuffer[(y - _overscan.Top)*_lineWidth + (x - _overscan.Left)] = color;
+					_argbBuffer[offset] = color;
 				}
 			} else {
 				int xPixelCount = _useIntegerScaling ? _yScale : (int)((x + 1)*_xScale) - (int)(x*_xScale);
@@ -42,10 +42,16 @@ protected:
 
 				for(int i = 0; i < _yScale; i++) {
 					for(int j = 0; j < xPixelCount; j++) {
+						int32_t offset = ((int32_t)y - top) * _frameInfo.Width + i * _frameInfo.Width + ((int32_t)x - left) + j;
+						if(offset < 0 || offset >= (int32_t)(_frameInfo.Width * _frameInfo.Height)) {
+							//Out of bounds, skip drawing
+							continue;
+						}
+
 						if(alpha != 0xFF000000) {
-							BlendColors((uint8_t*)&_argbBuffer[(y - top)*_lineWidth + i*_lineWidth + (x - left)+j], (uint8_t*)&color);
+							BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
 						} else {
-							_argbBuffer[(y - top)*_lineWidth + i*_lineWidth + (x - left) +j] = color;
+							_argbBuffer[offset] = color;
 						}
 					}
 				}
@@ -75,7 +81,7 @@ public:
 	{
 	}
 
-	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t lineWidth, uint32_t frameNumber)
+	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber)
 	{
 		if(_startFrame < 0) {
 			//When no start frame was specified, start on the next drawn frame
@@ -86,9 +92,8 @@ public:
 			_argbBuffer = argbBuffer;
 			_frameInfo = frameInfo;
 			_overscan = overscan;
-			_lineWidth = lineWidth;
-			_yScale = lineWidth >= 512 ? 2 : 1;
-			_xScale = lineWidth >= 512 ? 2.0f : 1.0f;
+			_yScale = _frameInfo.Width >= 512 ? 2 : 1;
+			_xScale = _frameInfo.Width >= 512 ? 2.0f : 1.0f;
 
 			InternalDraw();
 

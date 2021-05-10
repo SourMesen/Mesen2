@@ -67,11 +67,12 @@ uint32_t BaseVideoFilter::GetBufferSize()
 	return _bufferSize * sizeof(uint32_t);
 }
 
-void BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber)
+void BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData)
 {
 	_frameLock.Acquire();
 	_overscan = _emu->GetSettings()->GetOverscan();
 	_isOddFrame = frameNumber % 2;
+	_frameData = frameData;
 	UpdateBufferSize();
 	OnBeforeApplyFilter();
 	ApplyFilter(ppuOutputBuffer);

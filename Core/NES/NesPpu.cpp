@@ -13,6 +13,7 @@
 
 #include "NES/DefaultNesPpu.h"
 #include "NES/NsfPpu.h"
+#include "NES/HdPacks/HdNesPpu.h"
 
 #include "Debugger/Debugger.h"
 #include "Shared/EmuSettings.h"
@@ -716,6 +717,8 @@ template<class T> void NesPpu<T>::LoadTileInfo()
 	if(IsRenderingEnabled()) {
 		switch(_cycle & 0x07) {
 			case 1: {
+				((T*)this)->StoreTileInformation(); //Used by HD packs
+
 				_previousTilePalette = _currentTilePalette;
 				_currentTilePalette = _tile.PaletteOffset;
 
@@ -724,7 +727,6 @@ template<class T> void NesPpu<T>::LoadTileInfo()
 
 				uint8_t tileIndex = ReadVram(GetNameTableAddr());
 				_tile.TileAddr = (tileIndex << 4) | (_videoRamAddr >> 12) | _backgroundPatternAddr;
-				//_nextTile.OffsetY = _state.VideoRamAddr >> 12;
 				break;
 			}
 
@@ -736,7 +738,6 @@ template<class T> void NesPpu<T>::LoadTileInfo()
 
 			case 5:
 				_tile.LowByte = ReadVram(_tile.TileAddr);
-				((T*)this)->StoreTileAbsoluteAddress();				
 				break;
 
 			case 7:
@@ -771,7 +772,6 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 		NesSpriteInfo &info = _spriteTiles[_spriteIndex];
 		info.BackgroundPriority = backgroundPriority;
 		info.HorizontalMirror = horizontalMirror;
-		//info.VerticalMirror = verticalMirror;
 		info.PaletteOffset = ((attributes & 0x03) << 2) | 0x10;
 		if(extraSprite) {
 			//Use DebugReadVram for extra sprites to prevent side-effects.
@@ -782,10 +782,8 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 			info.LowByte = ReadVram(tileAddr);
 			info.HighByte = ReadVram(tileAddr + 8);
 		}
-		//info.TileAddr = tileAddr;
-		//info.OffsetY = lineOffset;
 		info.SpriteX = spriteX;
-		((T*)this)->StoreSpriteAbsoluteAddress();
+		((T*)this)->StoreSpriteInformation(verticalMirror, tileAddr, lineOffset); //Used by HD packs
 
 		if(_scanline >= 0) {
 			//Sprites read on prerender scanline are not shown on scanline 0
@@ -1215,12 +1213,14 @@ template<class T> void NesPpu<T>::SendFrame()
 {
 	UpdateGrayscaleAndIntensifyBits();
 
+	void* frameData = ((T*)this)->OnBeforeSendFrame();
+
 	if(_console->IsVsMainConsole()) {
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 
 #ifdef LIBRETRO
-	_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, true, false);
+	_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, true, false, frameData);
 #else 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
 		SendFrameVsDualSystem();
@@ -1229,7 +1229,7 @@ template<class T> void NesPpu<T>::SendFrame()
 		}
 	} else {
 		bool forRewind = _emu->GetRewindManager()->IsRewinding();
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind, frameData);
 		_emu->ProcessEndOfFrame();
 	}
 
@@ -1619,3 +1619,8 @@ template NesPpu<NsfPpu>::NesPpu(NesConsole* console);
 template uint16_t* NesPpu<NsfPpu>::GetScreenBuffer(bool previousBuffer);
 template void NesPpu<NsfPpu>::Exec();
 template uint32_t NesPpu<NsfPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
+
+template NesPpu<HdNesPpu>::NesPpu(NesConsole* console);
+template uint16_t* NesPpu<HdNesPpu>::GetScreenBuffer(bool previousBuffer);
+template void NesPpu<HdNesPpu>::Exec();
+template uint32_t NesPpu<HdNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);

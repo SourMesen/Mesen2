@@ -15,6 +15,8 @@ class BaseMapper;
 class EmuSettings;
 class NesSoundMixer;
 class BaseVideoFilter;
+class HdAudioDevice;
+struct HdPackData;
 
 enum class DebugEventType;
 enum class EventType;
@@ -36,9 +38,13 @@ private:
 	shared_ptr<NesControlManager> _controlManager;
 	unique_ptr<NesSoundMixer> _mixer;
 
+	unique_ptr<HdPackData> _hdData;
+	unique_ptr<HdAudioDevice> _hdAudioDevice;
+
 	ConsoleRegion _region = ConsoleRegion::Auto;
 	
 	void UpdateRegion();
+	void LoadHdPack(VirtualFile& romFile);
 
 public:
 	NesConsole(Emulator* emulator);

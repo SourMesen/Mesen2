@@ -25,6 +25,11 @@ public:
 	{
 	}
 
+	void* OnBeforeSendFrame()
+	{
+		return nullptr;
+	}
+
 	void Run(uint64_t runTo) override
 	{
 		do {

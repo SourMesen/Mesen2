@@ -226,6 +226,9 @@
     <ClInclude Include="kissfft.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="spng.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">
@@ -343,5 +346,6 @@
     <ClCompile Include="Patches\UpsPatcher.cpp" />
     <ClCompile Include="NTSC\nes_ntsc.cpp" />
     <ClCompile Include="NTSC\snes_ntsc.cpp" />
+    <ClCompile Include="spng.c" />
   </ItemGroup>
 </Project>

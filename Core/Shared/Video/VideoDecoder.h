@@ -18,6 +18,7 @@ private:
 	shared_ptr<Emulator> _emu;
 
 	uint16_t *_ppuOutputBuffer = nullptr;
+	void* _frameData = nullptr;
 	uint32_t _frameNumber = 0;
 	ConsoleType _consoleType = ConsoleType::Snes;
 
@@ -58,7 +59,7 @@ public:
 	FrameInfo GetFrameInfo();
 	ScreenSize GetScreenSize(bool ignoreScale);
 
-	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind);
+	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind, void* frameData = nullptr);
 
 	bool IsRunning();
 	void StartThread();

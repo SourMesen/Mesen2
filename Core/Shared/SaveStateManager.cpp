@@ -346,7 +346,7 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 			unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
 			filter->SetBaseFrameInfo(baseFrameInfo);
 			FrameInfo frameInfo = filter->GetFrameInfo();
-			filter->SendFrame((uint16_t*)frameData.data(), 0);
+			filter->SendFrame((uint16_t*)frameData.data(), 0, nullptr);
 
 			std::stringstream pngStream;
 			PNGHelper::WritePNG(pngStream, filter->GetOutputBuffer(), frameInfo.Width, frameInfo.Height);

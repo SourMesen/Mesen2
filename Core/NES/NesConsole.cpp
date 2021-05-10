@@ -9,6 +9,11 @@
 #include "NES/NesMemoryManager.h"
 #include "NES/DefaultNesPpu.h"
 #include "NES/NsfPpu.h"
+#include "NES/HdPacks/HdAudioDevice.h"
+#include "NES/HdPacks/HdData.h"
+#include "NES/HdPacks/HdNesPpu.h"
+#include "NES/HdPacks/HdPackLoader.h"
+#include "NES/HdPacks/HdVideoFilter.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesNtscFilter.h"
 #include "NES/NesConstants.h"
@@ -112,6 +117,8 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 {
 	RomData romData;
 
+	LoadHdPack(romFile);
+
 	LoadRomResult result = LoadRomResult::UnknownType;
 	unique_ptr<BaseMapper> mapper = MapperFactory::InitializeFromFile(this, romFile, romData, result);
 	if(mapper) {
@@ -168,28 +175,33 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		_controlManager->SetPollCounter(pollCounter);
 		_controlManager->UpdateControlDevices();
 
+		_mapper->SetConsole(this);
+		_mapper->Initialize(romData);
+
 		//Re-enable battery saves
 		/*_batteryManager->SetSaveEnabled(true);
-
+		*/
 		if(_hdData && (!_hdData->Tiles.empty() || !_hdData->Backgrounds.empty())) {
-			_ppu.reset(new HdPpu(shared_from_this(), _hdData.get()));
-		} else */
-		
-		if(dynamic_cast<NsfMapper*>(_mapper.get())) {
+			_ppu.reset(new HdNesPpu(this, _hdData.get()));
+		} else if(dynamic_cast<NsfMapper*>(_mapper.get())) {
 			//Disable most of the PPU for NSFs
 			_ppu.reset(new NsfPpu(this));
 		} else {
 			_ppu.reset(new DefaultNesPpu(this));
 		}
 
-		_mapper->SetConsole(this);
-		_mapper->Initialize(romData);
-
 		_memoryManager->SetMapper(_mapper.get());
 		_memoryManager->RegisterIODevice(_ppu.get());
 		_memoryManager->RegisterIODevice(_apu.get());
 		_memoryManager->RegisterIODevice(_controlManager.get());
 		_memoryManager->RegisterIODevice(_mapper.get());
+
+		if(_hdData && (!_hdData->BgmFilesById.empty() || !_hdData->SfxFilesById.empty())) {
+			_hdAudioDevice.reset(new HdAudioDevice(_emu, _hdData.get()));
+			_memoryManager->RegisterIODevice(_hdAudioDevice.get());
+		} else {
+			_hdAudioDevice.reset();
+		}
 
 		UpdateRegion();
 
@@ -202,6 +214,23 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		_cpu->Reset(false, _region);
 	}
     return result;
+}
+
+void NesConsole::LoadHdPack(VirtualFile& romFile)
+{
+	_hdData.reset();
+	if(GetNesConfig().EnableHdPacks) {
+		_hdData.reset(new HdPackData());
+		if(!HdPackLoader::LoadHdNesPack(romFile, *_hdData.get())) {
+			_hdData.reset();
+		} else {
+			auto result = _hdData->PatchesByHash.find(romFile.GetSha1Hash());
+			if(result != _hdData->PatchesByHash.end()) {
+				VirtualFile patchFile = result->second;
+				romFile.ApplyPatch(patchFile);
+			}
+		}
+	}
 }
 
 void NesConsole::UpdateRegion()
@@ -353,11 +382,15 @@ void NesConsole::SaveBattery()
 
 BaseVideoFilter* NesConsole::GetVideoFilter()
 {
-	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
-	if(filterType == VideoFilterType::NTSC) {
-		return new NesNtscFilter(_emu);
+	if(_hdData) {
+		return new HdVideoFilter(_emu, _hdData.get());
 	} else {
-		return new NesDefaultVideoFilter(_emu);
+		VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+		if(filterType == VideoFilterType::NTSC) {
+			return new NesNtscFilter(_emu);
+		} else {
+			return new NesDefaultVideoFilter(_emu);
+		}
 	}
 }
 

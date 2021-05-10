@@ -12,14 +12,15 @@ private:
 	double _yiqToRgbMatrix[6] = {};
 	uint32_t _bufferSize = 0;
 	SimpleLock _frameLock;
-	OverscanDimensions _overscan;
-	bool _isOddFrame;
+	OverscanDimensions _overscan = {};
+	bool _isOddFrame = false;
 
 	void UpdateBufferSize();
 
 protected:
-	Emulator* _emu;
-	FrameInfo _baseFrameInfo;
+	Emulator* _emu = nullptr;
+	FrameInfo _baseFrameInfo = {};
+	void* _frameData = nullptr;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
 	void RgbToYiq(double r, double g, double b, double& y, double& i, double& q);
@@ -36,7 +37,7 @@ public:
 	virtual ~BaseVideoFilter();
 
 	uint32_t* GetOutputBuffer();
-	void SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber);
+	void SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData);
 	void TakeScreenshot(string romName, VideoFilterType filterType);
 	void TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream = nullptr);
 

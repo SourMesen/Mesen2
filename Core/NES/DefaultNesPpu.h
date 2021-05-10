@@ -9,13 +9,9 @@ public:
 	{
 	}
 
-	__forceinline void StoreSpriteAbsoluteAddress()
-	{
-	}
-
-	__forceinline void StoreTileAbsoluteAddress()
-	{
-	}
+	__forceinline void StoreSpriteInformation(bool verticalMirror, uint16_t tileAddr, uint8_t lineOffset) { }
+	__forceinline void StoreTileInformation() { }
+	void* OnBeforeSendFrame() { return nullptr; }
 
 	__forceinline void ProcessScanline()
 	{

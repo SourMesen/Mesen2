@@ -13,7 +13,6 @@ VideoRenderer::VideoRenderer(shared_ptr<Emulator> emu)
 {
 	_emu = emu;
 	_stopFlag = false;	
-	StartThread();
 }
 
 VideoRenderer::~VideoRenderer()

@@ -89,14 +89,14 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	UpdateVideoFilter();
 
 	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
-	_videoFilter->SendFrame(_ppuOutputBuffer, _frameNumber);
+	_videoFilter->SendFrame(_ppuOutputBuffer, _frameNumber, _frameData);
 
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	
 	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
 	_systemHud->Draw(frameInfo, _videoFilter->GetOverscan());
-	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, _videoFilter->GetOverscan(), frameInfo.Width, _frameNumber);
+	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, _videoFilter->GetOverscan(), _frameNumber);
 
 	if(_scaleFilter) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
@@ -139,7 +139,7 @@ uint32_t VideoDecoder::GetFrameCount()
 	return _frameCount;
 }
 
-void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind)
+void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind, void* frameData)
 {
 	if(_emu->IsRunAheadFrame()) {
 		return;
@@ -159,6 +159,7 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16
 	_baseFrameInfo.Height = height;
 	_frameNumber = frameNumber;
 	_ppuOutputBuffer = ppuOutputBuffer;
+	_frameData = frameData;
 	if(sync) {
 		DecodeFrame(forRewind);
 	} else {
@@ -171,7 +172,10 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16
 void VideoDecoder::StartThread()
 {
 #ifndef LIBRETRO
-	if(!_decodeThread) {	
+	if(!_decodeThread) {
+		_videoFilter.reset();
+		UpdateVideoFilter();
+		_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
 		_stopFlag = false;
 		_frameChanged = false;
 		_frameCount = 0;

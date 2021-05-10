@@ -157,7 +157,6 @@
 */
 
 #pragma once
-#include "stdafx.h"
 
 #ifndef MINIZ_HEADER_INCLUDED
 #define MINIZ_HEADER_INCLUDED

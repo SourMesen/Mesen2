@@ -81,7 +81,7 @@ protected:
 	__forceinline uint8_t GetPixelColor();
 
 	void UpdateGrayscaleAndIntensifyBits();
-	virtual void SendFrame();
+	void SendFrame();
 
 	void SendFrameVsDualSystem();
 

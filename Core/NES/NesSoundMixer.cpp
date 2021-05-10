@@ -14,7 +14,6 @@ NesSoundMixer::NesSoundMixer(NesConsole* console)
 	_clockRate = 0;
 	_console = console;
 	_mixer = console->GetEmulator()->GetSoundMixer().get();
-	//_oggMixer.reset();
 	_outputBuffer = new int16_t[NesSoundMixer::MaxSamplesPerFrame];
 	_blipBufLeft = blip_new(NesSoundMixer::MaxSamplesPerFrame);
 	_blipBufRight = blip_new(NesSoundMixer::MaxSamplesPerFrame);
@@ -45,10 +44,6 @@ void NesSoundMixer::Serialize(Serializer& s)
 
 void NesSoundMixer::Reset()
 {
-	//TODO
-	/*if(_oggMixer) {
-		_oggMixer->Reset(_settings->GetSampleRate());
-	}*/
 	_sampleCount = 0;
 
 	_previousOutputLeft = 0;
@@ -92,11 +87,7 @@ void NesSoundMixer::PlayAudioBuffer(uint32_t time)
 	}
 
 	//TODO
-	/*_console->GetMapper()->ApplySamples(_outputBuffer, sampleCount, _settings->GetMasterVolume());
-
-	if(_oggMixer) {
-		_oggMixer->ApplySamples(_outputBuffer, sampleCount, _settings->GetMasterVolume());
-	}*/
+	//_console->GetMapper()->ApplySamples(_outputBuffer, sampleCount, _settings->GetMasterVolume());
 
 	NesConfig& cfg = _console->GetNesConfig();
 	if(_console->GetVsSubConsole()) {
@@ -157,10 +148,6 @@ void NesSoundMixer::UpdateRates(bool forceUpdate)
 
 		blip_set_rates(_blipBufLeft, _clockRate, _sampleRate);
 		blip_set_rates(_blipBufRight, _clockRate, _sampleRate);
-		//TODO
-		/*if(_oggMixer) {
-			_oggMixer->SetSampleRate(_sampleRate);
-		}*/
 	}
 
 	NesConfig& cfg = _console->GetNesConfig();
@@ -245,14 +232,3 @@ void NesSoundMixer::EndFrame(uint32_t time)
 	memset(_channelOutput, 0, sizeof(_channelOutput));
 }
 
-//TODO
-/*
-OggMixer* NesSoundMixer::GetOggMixer()
-{
-	if(!_oggMixer) {
-		_oggMixer.reset(new OggMixer());
-		_oggMixer->Reset(_settings->GetSampleRate());
-	}
-	return _oggMixer.get();
-}
-*/

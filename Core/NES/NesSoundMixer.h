@@ -27,9 +27,6 @@ private:
 	EmuSettings* _settings = nullptr;
 	SoundMixer* _mixer = nullptr;
 
-	//TODO
-	//unique_ptr<OggMixer> _oggMixer;
-
 	StereoPanningFilter _stereoPanning;
 	StereoDelayFilter _stereoDelay;
 	StereoCombFilter _stereoCombFilter;
@@ -70,8 +67,6 @@ public:
 
 	void PlayAudioBuffer(uint32_t cycle);
 	void AddDelta(AudioChannel channel, uint32_t time, int16_t delta);
-
-	//OggMixer* GetOggMixer();
 
 	void Serialize(Serializer& s) override;
 };

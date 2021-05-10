@@ -791,6 +791,14 @@
     <ClInclude Include="NES\NsfPpu.h" />
     <ClInclude Include="NES\HdPacks\HdNesPpu.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
+    <ClInclude Include="NES\HdPacks\HdAudioDevice.h" />
+    <ClInclude Include="NES\HdPacks\HdData.h" />
+    <ClInclude Include="NES\HdPacks\HdNesPack.h" />
+    <ClInclude Include="NES\HdPacks\HdPackConditions.h" />
+    <ClInclude Include="NES\HdPacks\HdPackLoader.h" />
+    <ClInclude Include="NES\HdPacks\HdVideoFilter.h" />
+    <ClInclude Include="NES\HdPacks\OggMixer.h" />
+    <ClInclude Include="NES\HdPacks\OggReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1217,6 +1225,13 @@
     <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
     <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />
+    <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
+    <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
+    <ClCompile Include="NES\HdPacks\HdPackLoader.cpp" />
+    <ClCompile Include="NES\HdPacks\HdVideoFilter.cpp" />
+    <ClCompile Include="NES\HdPacks\OggMixer.cpp" />
+    <ClCompile Include="NES\HdPacks\OggReader.cpp" />
+    <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
