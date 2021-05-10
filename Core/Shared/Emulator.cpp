@@ -104,7 +104,6 @@ void Emulator::Run()
 
 	PlatformUtilities::EnableHighResolutionTimer();
 
-	_videoDecoder->StartThread();
 	_emulationThreadId = std::this_thread::get_id();
 
 	_console->OnBeforeRun();

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <thread>
 #include "Utilities/AutoResetEvent.h"
+#include "Utilities/SimpleLock.h"
 
 class IRenderingDevice;
 class Emulator;
@@ -18,6 +19,7 @@ private:
 	unique_ptr<std::thread> _renderThread;
 	IRenderingDevice* _renderer = nullptr;
 	atomic<bool> _stopFlag;
+	SimpleLock _stopStartLock;
 
 	shared_ptr<IVideoRecorder> _recorder;
 

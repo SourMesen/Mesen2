@@ -9,22 +9,17 @@
 HdNesPpu::HdNesPpu(NesConsole* console, HdPackData* hdData) : NesPpu(console)
 {
 	_hdData = hdData;
-
-	if(_hdData) {
-		_version = _hdData->Version;
-		_isChrRam = !_console->GetMapper()->HasChrRom();
-		_screenInfo[0] = new HdScreenInfo(_isChrRam);
-		_screenInfo[1] = new HdScreenInfo(_isChrRam);
-		_info = _screenInfo[0];
-	}
+	_version = _hdData->Version;
+	_isChrRam = !_console->GetMapper()->HasChrRom();
+	_screenInfo[0] = new HdScreenInfo(_isChrRam);
+	_screenInfo[1] = new HdScreenInfo(_isChrRam);
+	_info = _screenInfo[0];
 }
 
 HdNesPpu::~HdNesPpu()
 {
-	if(_hdData) {
-		delete _screenInfo[0];
-		delete _screenInfo[1];
-	}
+	delete _screenInfo[0];
+	delete _screenInfo[1];
 }
 
 void* HdNesPpu::OnBeforeSendFrame()

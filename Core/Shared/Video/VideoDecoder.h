@@ -26,6 +26,7 @@ private:
 	unique_ptr<InputHud> _inputHud;
 	unique_ptr<SystemHud> _systemHud;
 
+	SimpleLock _stopStartLock;
 	AutoResetEvent _waitForFrame;
 	
 	atomic<bool> _frameChanged;

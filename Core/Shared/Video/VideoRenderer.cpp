@@ -24,6 +24,7 @@ VideoRenderer::~VideoRenderer()
 void VideoRenderer::StartThread()
 {
 #ifndef LIBRETRO
+	auto lock = _stopStartLock.AcquireSafe();
 	if(!_renderThread) {
 		_stopFlag = false;
 		_waitForRender.Reset();
@@ -36,6 +37,7 @@ void VideoRenderer::StartThread()
 void VideoRenderer::StopThread()
 {
 #ifndef LIBRETRO
+	auto lock = _stopStartLock.AcquireSafe();
 	_stopFlag = true;
 	if(_renderThread) {
 		_renderThread->join();

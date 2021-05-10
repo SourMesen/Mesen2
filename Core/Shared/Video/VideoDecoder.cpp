@@ -172,6 +172,7 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16
 void VideoDecoder::StartThread()
 {
 #ifndef LIBRETRO
+	auto lock = _stopStartLock.AcquireSafe();
 	if(!_decodeThread) {
 		_videoFilter.reset();
 		UpdateVideoFilter();
@@ -189,6 +190,7 @@ void VideoDecoder::StartThread()
 void VideoDecoder::StopThread()
 {
 #ifndef LIBRETRO
+	auto lock = _stopStartLock.AcquireSafe();
 	_stopFlag = true;
 	if(_decodeThread) {
 		_waitForFrame.Signal();
