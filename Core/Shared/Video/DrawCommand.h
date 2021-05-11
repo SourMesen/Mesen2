@@ -5,25 +5,27 @@
 class DrawCommand
 {
 private:
-	int _frameCount;
-	uint32_t* _argbBuffer;
-	FrameInfo _frameInfo;
-	OverscanDimensions _overscan;
-	int32_t _startFrame;
+	int _frameCount = 0;
+	uint32_t* _argbBuffer = nullptr;
+	FrameInfo _frameInfo = {};
+	OverscanDimensions _overscan = {};
+	int32_t _startFrame = 0;
 
 protected:
-	bool _useIntegerScaling;
-	float _xScale;
-	int _yScale;
+	bool _useIntegerScaling = false;
+	float _xScale = 1;
+	int _yScale = 1;
 
 	virtual void InternalDraw() = 0;
-	__forceinline void DrawPixel(uint32_t x, uint32_t y, int color)
+	void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
 		uint32_t alpha = (color & 0xFF000000);
 		if(alpha > 0) {
-			if(_yScale == 1) {
-				int32_t offset = ((int32_t)y - _overscan.Top) * _frameInfo.Width + ((int32_t)x - _overscan.Left);
-				if(offset < 0 || offset >= (int32_t)(_frameInfo.Width * _frameInfo.Height)) {
+			int top = (int)(_overscan.Top * _yScale);
+			int left = (int)(_overscan.Left * _xScale);
+			if(_yScale == 1 && _xScale == 1) {
+				int32_t offset = ((int32_t)y - top) * _frameInfo.Width + (int32_t)x - left;
+				if((int32_t)x - left >= (int32_t)_frameInfo.Width || (int32_t)y - top >= (int32_t)_frameInfo.Height || offset < 0) {
 					//Out of bounds, skip drawing
 					return;
 				}
@@ -34,16 +36,14 @@ protected:
 					_argbBuffer[offset] = color;
 				}
 			} else {
-				int xPixelCount = _useIntegerScaling ? _yScale : (int)((x + 1)*_xScale) - (int)(x*_xScale);
-				x = (int)(x * (_useIntegerScaling ? _yScale : _xScale));
+				int xPixelCount = _useIntegerScaling ? (int)std::floor(_xScale): (int)((x + 1)*_xScale) - (int)(x*_xScale);
+				x = (int)(x * (_useIntegerScaling ? (int)std::floor(_xScale) : _xScale));
 				y = (int)(y * _yScale);
-				int top = (int)(_overscan.Top * _yScale);
-				int left = (int)(_overscan.Left * _xScale);
 
 				for(int i = 0; i < _yScale; i++) {
 					for(int j = 0; j < xPixelCount; j++) {
-						int32_t offset = ((int32_t)y - top) * _frameInfo.Width + i * _frameInfo.Width + ((int32_t)x - left) + j;
-						if(offset < 0 || offset >= (int32_t)(_frameInfo.Width * _frameInfo.Height)) {
+						int32_t offset = ((int32_t)y - top + i) * _frameInfo.Width + (int32_t)x - left + j;
+						if((int32_t)x - left + j >= (int32_t)_frameInfo.Width || (int32_t)y - top + i >= (int32_t)_frameInfo.Height || offset < 0) {
 							//Out of bounds, skip drawing
 							continue;
 						}
@@ -92,8 +92,10 @@ public:
 			_argbBuffer = argbBuffer;
 			_frameInfo = frameInfo;
 			_overscan = overscan;
-			_yScale = _frameInfo.Width >= 512 ? 2 : 1;
-			_xScale = _frameInfo.Width >= 512 ? 2.0f : 1.0f;
+
+			float scale = _frameInfo.Width + _overscan.Left + _overscan.Right > 256 ? (_frameInfo.Width + _overscan.Left + _overscan.Right) / 256.0f : 1;
+			_yScale = _frameInfo.Height + _overscan.Top + _overscan.Bottom > 240 ? (int)scale : 1;
+			_xScale = (float)scale;
 
 			InternalDraw();
 

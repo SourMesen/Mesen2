@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"
+#include "NES/NesConstants.h"
 #include "NES/NesPpu.h"
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/EmuSettings.h"
@@ -145,15 +146,15 @@ void NesDefaultVideoFilter::DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t*
 	FrameInfo frame = GetFrameInfo();
 	
 	uint8_t scanlineIntensity = (uint8_t)((1.0 - _videoConfig.ScanlineIntensity) * 255);
-	for(uint32_t i = overscan.Top, iMax = frame.Height - overscan.Bottom; i < iMax; i++) {
+	for(uint32_t i = 0; i < frame.Height; i++) {
 		if(displayScanlines && (i + overscan.Top) % 2 == 0) {
-			for(uint32_t j = overscan.Left, jMax = frame.Width - overscan.Right; j < jMax; j++) {
-				*out = ApplyScanlineEffect(ppuOutputBuffer[i * frame.Width + j], scanlineIntensity);
+			for(uint32_t j = 0; j < frame.Width; j++) {
+				*out = ApplyScanlineEffect(ppuOutputBuffer[(i + overscan.Top) * NesConstants::ScreenWidth + j + overscan.Left], scanlineIntensity);
 				out++;
 			}
 		} else {
-			for(uint32_t j = overscan.Left, jMax = frame.Width - overscan.Right; j < jMax; j++) {
-				*out = _calculatedPalette[ppuOutputBuffer[i * frame.Width + j]];
+			for(uint32_t j = 0; j < frame.Width; j++) {
+				*out = _calculatedPalette[ppuOutputBuffer[(i + overscan.Top) * NesConstants::ScreenWidth + j + overscan.Left]];
 				out++;
 			}
 		}

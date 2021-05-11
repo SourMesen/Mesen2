@@ -131,7 +131,7 @@ private:
 protected:
 	void InternalDraw()
 	{
-		int startX = (int)(_x * _xScale / _yScale);
+		int startX = (int)(_x * _xScale / std::floor(_xScale));
 		int lineWidth = 0;
 		int x = startX;
 		int y = _y;

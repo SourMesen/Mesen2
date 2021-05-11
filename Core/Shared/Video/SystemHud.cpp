@@ -19,8 +19,8 @@ SystemHud::~SystemHud()
 
 void SystemHud::Draw(FrameInfo info, OverscanDimensions overscan)
 {
-	_screenWidth = info.Width;
-	_screenHeight = info.Height;
+	_screenWidth = info.Width - _overscan.Left - _overscan.Right;
+	_screenHeight = info.Height - _overscan.Top - _overscan.Bottom;
 	_overscan = overscan;
 	DrawCounters();
 	DrawMessages();
@@ -34,21 +34,23 @@ void SystemHud::DrawMessage(MessageInfo &msg, int& lastHeight)
 
 	string text = "[" + msg.GetTitle() + "] " + msg.GetMessage();
 
-	int maxWidth = _screenWidth + _overscan.Left - textLeftMargin;
+	int maxWidth = _screenWidth - textLeftMargin;
 	TextSize size = DrawStringCommand::MeasureString(text, maxWidth);
 	lastHeight += size.Y;
-	DrawString(text, textLeftMargin, _screenHeight - lastHeight + _overscan.Top, opacity);
+	DrawString(text, textLeftMargin, _screenHeight - lastHeight, opacity);
 }
 
 void SystemHud::DrawString(string text, int x, int y, uint8_t opacity)
 {
+	int maxWidth = _screenWidth - x;
+	x += _overscan.Left;
+	y += _overscan.Top;
 	opacity = 255 - opacity;
 	for(int i = -1; i <= 1; i++) {
 		for(int j = -1; j <= 1; j++) {
-			_hud->DrawString(x + i, y + j, text, 0 | (opacity << 24), 0xFF000000, 1);
+			_hud->DrawString(x + i, y + j, text, 0 | (opacity << 24), 0xFF000000, 1, -1, maxWidth);
 		}
 	}
-	int maxWidth = _screenWidth - x + _overscan.Left;
 	_hud->DrawString(x, y, text, 0xFFFFFF | (opacity << 24), 0xFF000000, 1, -1, maxWidth);
 }
 

@@ -94,14 +94,21 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
 	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	
-	_inputHud->DrawControllers(_videoFilter->GetOverscan(), _frameNumber);
-	_systemHud->Draw(frameInfo, _videoFilter->GetOverscan());
-	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, _videoFilter->GetOverscan(), _frameNumber);
+	OverscanDimensions overscan = _videoFilter->GetOverscan();
+
+	_inputHud->DrawControllers(overscan, _frameNumber);
+	_systemHud->Draw(_baseFrameInfo, overscan);
 
 	if(_scaleFilter) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = _scaleFilter->GetFrameInfo(frameInfo);
+		overscan.Left *= _scaleFilter->GetScale();
+		overscan.Right *= _scaleFilter->GetScale();
+		overscan.Top *= _scaleFilter->GetScale();
+		overscan.Bottom *= _scaleFilter->GetScale();
 	}
+
+	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, overscan, _frameNumber);
 
 	ScreenSize screenSize = GetScreenSize(true);
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
