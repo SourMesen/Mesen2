@@ -13,6 +13,7 @@
 #include "Gameboy/GbsHeader.h"
 #include "Gameboy/Carts/GbsCart.h"
 #include "Gameboy/GbBootRom.h"
+#include "Gameboy/GbDefaultVideoFilter.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/Audio/AudioPlayerTypes.h"
@@ -21,8 +22,6 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
 #include "FirmwareHelper.h"
-#include "SNES/SnesDefaultVideoFilter.h"
-#include "SNES/SnesNtscFilter.h"
 
 Gameboy::Gameboy(Emulator* emu, bool allowSgb)
 {
@@ -506,13 +505,7 @@ uint32_t Gameboy::GetMasterClockRate()
 
 BaseVideoFilter* Gameboy::GetVideoFilter()
 {
-	//TODO
-	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
-	if(filterType == VideoFilterType::NTSC) {
-		return new SnesNtscFilter(_emu);
-	} else {
-		return new SnesDefaultVideoFilter(_emu);
-	}
+	return new GbDefaultVideoFilter(_emu);
 }
 
 RomFormat Gameboy::GetRomFormat()

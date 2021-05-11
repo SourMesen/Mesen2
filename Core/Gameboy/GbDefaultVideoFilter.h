@@ -4,13 +4,15 @@
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/SettingTypes.h"
 
-class SnesDefaultVideoFilter : public BaseVideoFilter
+class GbDefaultVideoFilter : public BaseVideoFilter
 {
 private:
 	uint32_t _calculatedPalette[0x8000] = {};
 	VideoConfig _videoConfig = {};
 
-	bool _snesBlendHighRes = false;
+	uint16_t* _prevFrame = nullptr;
+	bool _blendFrames = false;
+	bool _gbcAdjustColors = false;
 
 	void InitLookupTable();
 
@@ -22,8 +24,8 @@ protected:
 	void OnBeforeApplyFilter();
 
 public:
-	SnesDefaultVideoFilter(Emulator* emu);
-	void ApplyFilter(uint16_t *ppuOutputBuffer);
+	GbDefaultVideoFilter(Emulator* emu);
+	~GbDefaultVideoFilter();
 
-	static uint32_t ToArgb(uint16_t rgb555);
+	void ApplyFilter(uint16_t* ppuOutputBuffer);
 };

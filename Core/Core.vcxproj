@@ -45,6 +45,8 @@
   <ItemGroup>
     <ClInclude Include="Debugger\stdafx.h" />
     <ClInclude Include="Gameboy\Carts\GbsCart.h" />
+    <ClInclude Include="Gameboy\GbConstants.h" />
+    <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
     <ClInclude Include="NES\DefaultNesPpu.h" />
@@ -370,6 +372,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
+    <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />

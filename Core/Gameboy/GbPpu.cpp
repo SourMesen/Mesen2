@@ -4,6 +4,7 @@
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Gameboy/GbDmaController.h"
+#include "Gameboy/GbConstants.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/RewindManager.h"
@@ -26,10 +27,10 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 	_vram = vram;
 	_oam = oam;
 
-	_outputBuffers[0] = new uint16_t[256 * 240];
-	_outputBuffers[1] = new uint16_t[256 * 240];
-	memset(_outputBuffers[0], 0, 256 * 240 * sizeof(uint16_t));
-	memset(_outputBuffers[1], 0, 256 * 240 * sizeof(uint16_t));
+	_outputBuffers[0] = new uint16_t[GbConstants::PixelCount];
+	_outputBuffers[1] = new uint16_t[GbConstants::PixelCount];
+	memset(_outputBuffers[0], 0, GbConstants::PixelCount * sizeof(uint16_t));
+	memset(_outputBuffers[1], 0, GbConstants::PixelCount * sizeof(uint16_t));
 	_currentBuffer = _outputBuffers[0];
 
 	_eventViewerBuffers[0] = new uint16_t[456 * 154];
@@ -306,7 +307,7 @@ void GbPpu::ProcessPpuCycle()
 		if(_state.Mode <= PpuMode::OamEvaluation) {
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = evtColors[(int)_state.Mode];
 		} else if(_prevDrawnPixels != _drawnPixels && _drawnPixels > 0) {
-			uint16_t color = _currentBuffer[_state.Scanline * 256 + (_drawnPixels - 1)];
+			uint16_t color = _currentBuffer[_state.Scanline * GbConstants::ScreenWidth + (_drawnPixels - 1)];
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = color;
 		} else {
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = evtColors[(int)_evtColor];
@@ -348,7 +349,7 @@ void GbPpu::RunDrawCycle()
 
 	if(_fetchSprite == -1 && _bgFifo.Size > 0) {
 		if(_drawnPixels >= 0) {
-			uint16_t outOffset = _state.Scanline * 256 + _drawnPixels;
+			uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
 
 			GbFifoEntry entry = _bgFifo.Content[_bgFifo.Position];
 			GbFifoEntry sprite = _oamFifo.Content[_oamFifo.Position];
@@ -635,20 +636,20 @@ void GbPpu::SendFrame()
 	if(_isFirstFrame) {
 		if(!_state.CgbEnabled) {
 			//Send blank frame on the first frame after enabling LCD (DMG only)
-			std::fill(_currentBuffer, _currentBuffer + 256 * 239, 0x7FFF);
+			std::fill(_currentBuffer, _currentBuffer + GbConstants::PixelCount, 0x7FFF);
 		} else {
 			//CGB repeats the previous frame?
 			uint16_t* src = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-			std::copy(src, src + 256 * 239, _currentBuffer);
+			std::copy(src, src + GbConstants::PixelCount, _currentBuffer);
 		}
 	}
 	_isFirstFrame = false;
 
 #ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, 256, 239, _state.FrameCount, true, false);
+	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, _state.FrameCount, true, false);
 #else
 	bool rewinding = _emu->GetRewindManager()->IsRewinding();
-	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, 256, 239, _state.FrameCount, rewinding, rewinding);
+	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, _state.FrameCount, rewinding, rewinding);
 #endif
 
 	_emu->ProcessEndOfFrame();

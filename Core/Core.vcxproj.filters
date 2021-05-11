@@ -799,6 +799,8 @@
     <ClInclude Include="NES\HdPacks\HdVideoFilter.h" />
     <ClInclude Include="NES\HdPacks\OggMixer.h" />
     <ClInclude Include="NES\HdPacks\OggReader.h" />
+    <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
+    <ClInclude Include="Gameboy\GbConstants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1232,6 +1234,7 @@
     <ClCompile Include="NES\HdPacks\OggMixer.cpp" />
     <ClCompile Include="NES\HdPacks\OggReader.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
+    <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
