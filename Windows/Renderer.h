@@ -34,8 +34,6 @@ private:
 	uint8_t*						_textureBuffer[2] = { nullptr, nullptr };
 	ID3D11Texture2D*			_pTexture = nullptr;
 	ID3D11ShaderResourceView*	_pTextureSrv = nullptr;
-	ID3D11Texture2D*			_overlayTexture = nullptr;
-	ID3D11ShaderResourceView*	_pOverlaySrv = nullptr;
 
 	bool							_frameChanged = true;
 	SimpleLock					_frameLock;

@@ -21,17 +21,6 @@
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
-					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblVideoScale}" />
-					<NumericUpDown
-						Grid.Row="0"
-						Grid.Column="1"
-						HorizontalAlignment="Left"
-						ParsingNumberStyle="AllowDecimalPoint"
-						Minimum="0.1"
-						Maximum="10"
-						Value="{CompiledBinding Config.VideoScale}"
-					/>
-
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
 					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
 						<c:EnumComboBox EnumType="{x:Type cfg:VideoAspectRatio}" SelectedItem="{CompiledBinding Config.AspectRatio}" MinWidth="230" />

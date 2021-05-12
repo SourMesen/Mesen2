@@ -25,10 +25,7 @@ protected:
 	{
 		if(_emu->GetSettings()->IsInputEnabled()) {
 			SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-			SetMovement(KeyManager::GetMouseMovement(
-				_emu->GetSettings()->GetVideoConfig().VideoScale,
-				_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1
-			));
+			SetMovement(KeyManager::GetMouseMovement(_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 		}
 	}
 

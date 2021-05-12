@@ -242,9 +242,14 @@ extern "C" {
 		return _logString.c_str();
 	}
 
-	DllExport ScreenSize __stdcall GetScreenSize(bool ignoreScale)
+	DllExport double __stdcall GetAspectRatio()
 	{
-		return _emu->GetVideoDecoder()->GetScreenSize(ignoreScale);
+		double ratio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
+		if(ratio == 0.0) {
+			FrameInfo frame = _emu->GetVideoDecoder()->GetFrameInfo();
+			return (double)frame.Width / frame.Height;
+		}
+		return ratio;
 	}
 	
 	DllExport void __stdcall ClearCheats() { _emu->GetCheatManager()->ClearCheats(); }

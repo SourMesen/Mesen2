@@ -37,34 +37,6 @@ FrameInfo VideoDecoder::GetFrameInfo()
 	return _lastFrameInfo;
 }
 
-ScreenSize VideoDecoder::GetScreenSize(bool ignoreScale)
-{
-	ScreenSize size;
-	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
-
-	double scale = (ignoreScale ? 1 : _emu->GetSettings()->GetVideoConfig().VideoScale);
-	bool useHighResOutput = _baseFrameInfo.Width >= 512 || _videoFilterType == VideoFilterType::NTSC;
-	int divider = useHighResOutput ? 2 : 1;
-	size.Width = (int32_t)(frameInfo.Width * scale / divider);
-	size.Height = (int32_t)(frameInfo.Height * scale / divider);
-	size.Scale = scale;
-
-	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
-	if(aspectRatio != 0.0) {
-		VideoAspectRatio aspect = _emu->GetSettings()->GetVideoConfig().AspectRatio;
-		bool usePar = aspect == VideoAspectRatio::NTSC || aspect == VideoAspectRatio::PAL || aspect == VideoAspectRatio::Auto;
-		if(usePar) {
-			OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
-			uint32_t fullWidth = frameInfo.Width + (overscan.Left + overscan.Right);
-			size.Width = (uint32_t)(256 * scale * aspectRatio * frameInfo.Width / fullWidth);
-		} else {
-			size.Width = (uint32_t)(size.Height * aspectRatio);
-		}
-	}
-
-	return size;
-}
-
 void VideoDecoder::UpdateVideoFilter()
 {
 	VideoFilterType newFilter = _emu->GetSettings()->GetVideoConfig().VideoFilter;
@@ -110,13 +82,12 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 
 	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, overscan, _frameNumber);
 
-	ScreenSize screenSize = GetScreenSize(true);
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
-	if(_previousScale != config.VideoScale || screenSize.Height != _previousScreenSize.Height || screenSize.Width != _previousScreenSize.Width) {
+	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
+	if(frameInfo.Height != _lastFrameInfo.Height || frameInfo.Width != _lastFrameInfo.Width || aspectRatio != _lastAspectRatio) {
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ResolutionChanged);
 	}
-	_previousScale = config.VideoScale;
-	_previousScreenSize = screenSize;
+	_lastAspectRatio = aspectRatio;
 	_lastFrameInfo = frameInfo;
 
 	//Rewind manager will take care of sending the correct frame to the video renderer

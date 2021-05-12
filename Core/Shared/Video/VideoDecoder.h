@@ -33,10 +33,9 @@ private:
 	atomic<bool> _stopFlag;
 	uint32_t _frameCount = 0;
 
-	ScreenSize _previousScreenSize = {};
-	double _previousScale = 0;
-	FrameInfo _baseFrameInfo;
-	FrameInfo _lastFrameInfo;
+	double _lastAspectRatio = 0.0;
+	FrameInfo _baseFrameInfo = {};
+	FrameInfo _lastFrameInfo = {};
 
 	VideoFilterType _videoFilterType = VideoFilterType::None;
 	unique_ptr<BaseVideoFilter> _videoFilter;
@@ -56,9 +55,7 @@ public:
 	void TakeScreenshot(std::stringstream &stream);
 
 	uint32_t GetFrameCount();
-
 	FrameInfo GetFrameInfo();
-	ScreenSize GetScreenSize(bool ignoreScale);
 
 	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind, void* frameData = nullptr);
 

@@ -37,6 +37,31 @@ namespace Mesen.Windows
 #endif
 		}
 
+		private void OnPanelResized()
+		{
+			ResizeRenderer();
+		}
+
+		private void ResizeRenderer()
+		{
+			double aspectRatio = EmuApi.GetAspectRatio();
+
+			Panel panel = this.FindControl<Panel>("pnlRendererContainer");
+			double maxWidth = panel.Bounds.Width;
+			double maxHeight = panel.Bounds.Height;
+
+			double width = maxWidth;
+			double height = width / aspectRatio;
+			if(height > maxHeight) {
+				height = maxHeight;
+				width = height * aspectRatio;
+			}
+
+			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
+			renderer.Width = width;
+			renderer.Height = height;
+		}
+
 		private void OnDrop(object? sender, DragEventArgs e)
 		{
 			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
@@ -67,7 +92,10 @@ namespace Mesen.Windows
 
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
-		
+
+			Panel panel = this.FindControl<Panel>("pnlRendererContainer");
+			panel.GetObservable(BoundsProperty).Subscribe(x => OnPanelResized());
+
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
@@ -82,6 +110,13 @@ namespace Mesen.Windows
 						(this.DataContext as MainWindowViewModel).RomInfo = romInfo;
 					});
 					break;
+
+				case ConsoleNotificationType.ResolutionChanged:
+					Dispatcher.UIThread.Post(() => {
+						ResizeRenderer();
+					});
+					break;
+
 			}
 		}
 

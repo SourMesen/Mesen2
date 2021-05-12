@@ -67,7 +67,6 @@ enum class VideoAspectRatio
 
 struct VideoConfig
 {
-	double VideoScale = 2;
 	double CustomAspectRatio = 1.0;
 	VideoFilterType VideoFilter = VideoFilterType::None;
 	VideoAspectRatio AspectRatio = VideoAspectRatio::NoStretching;

@@ -83,9 +83,9 @@ void KeyManager::SetMouseMovement(int16_t x, int16_t y)
 	_yMouseMovement += y;
 }
 
-MouseMovement KeyManager::GetMouseMovement(double videoScale, double mouseSensitivity)
+MouseMovement KeyManager::GetMouseMovement(double mouseSensitivity)
 {
-	double factor = videoScale / mouseSensitivity;
+	double factor = 1 / mouseSensitivity;
 	MouseMovement mov = {};
 	mov.dx = (int16_t)(_xMouseMovement / factor);
 	mov.dy = (int16_t)(_yMouseMovement / factor);
@@ -102,9 +102,9 @@ void KeyManager::SetMousePosition(Emulator* emu, double x, double y)
 		_mousePosition.Y = -1;
 	} else {
 		OverscanDimensions overscan = emu->GetSettings()->GetOverscan();
-		ScreenSize size = emu->GetVideoDecoder()->GetScreenSize(true);
-		_mousePosition.X = (int32_t)(x*size.Width + overscan.Left);
-		_mousePosition.Y = (int32_t)(y*size.Height + overscan.Top);
+		FrameInfo frame = emu->GetVideoDecoder()->GetFrameInfo();
+		_mousePosition.X = (int32_t)(x*frame.Width + overscan.Left);
+		_mousePosition.Y = (int32_t)(y*frame.Height + overscan.Top);
 	}
 }
 

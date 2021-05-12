@@ -11,7 +11,6 @@ namespace Mesen.GUI.Config
 {
 	public class VideoConfig : BaseConfig<VideoConfig>
 	{
-		[Reactive] [MinMax(0.1, 10.0)] public double VideoScale { get; set; } = 2;
 		[Reactive] [MinMax(0.1, 5.0)] public double CustomAspectRatio { get; set; } = 1.0;
 		[Reactive] public VideoFilterType VideoFilter { get; set; } = VideoFilterType.None;
 		[Reactive] public VideoAspectRatio AspectRatio { get; set; } = VideoAspectRatio.NoStretching;
@@ -47,7 +46,6 @@ namespace Mesen.GUI.Config
 		public void ApplyConfig()
 		{
 			ConfigApi.SetVideoConfig(new InteropVideoConfig() {
-				VideoScale = this.VideoScale,
 				CustomAspectRatio = this.CustomAspectRatio,
 				VideoFilter = this.VideoFilter,
 				AspectRatio = this.AspectRatio,
@@ -81,7 +79,6 @@ namespace Mesen.GUI.Config
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropVideoConfig
 	{
-		public double VideoScale;
 		public double CustomAspectRatio;
 		public VideoFilterType VideoFilter;
 		public VideoAspectRatio AspectRatio;

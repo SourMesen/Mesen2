@@ -39,13 +39,11 @@ void Renderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t m
 
 void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
-	ScreenSize screenSize = _emu->GetVideoDecoder()->GetScreenSize(false);
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
-	if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
+	if(_nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
-		screenSize = _emu->GetVideoDecoder()->GetScreenSize(false);
-		if(_screenHeight != screenSize.Height || _screenWidth != screenSize.Width || _nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
+		if(_nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 			_nesFrameHeight = height;
 			_nesFrameWidth = width;
 			_newFrameBufferSize = width*height;
@@ -62,8 +60,8 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 
 			_fullscreen = _newFullscreen;
 
-			_screenHeight = screenSize.Height;
-			_screenWidth = screenSize.Width;
+			_screenHeight = height;
+			_screenWidth = width;
 
 			if(_fullscreen) {
 				_realScreenHeight = _monitorHeight;
@@ -71,7 +69,7 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 
 				//Ensure the screen width/height is smaller or equal to the fullscreen resolution, no matter the requested scale
 				if(_monitorHeight < _screenHeight || _monitorWidth < _screenWidth) {
-					double scale = (double)screenSize.Width / (double)screenSize.Height;
+					double scale = (double)width / (double)height;
 					_screenHeight = _monitorHeight;
 					_screenWidth = (uint32_t)(scale * _screenHeight);
 					if(_monitorWidth < _screenWidth) {
@@ -80,8 +78,8 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 					}
 				}
 			} else {
-				_realScreenHeight = screenSize.Height;
-				_realScreenWidth = screenSize.Width;
+				_realScreenHeight = height;
+				_realScreenWidth = width;
 			}
 
 			_leftMargin = (_realScreenWidth - _screenWidth) / 2;
@@ -155,17 +153,9 @@ void Renderer::ResetNesBuffers()
 		_pTexture->Release();
 		_pTexture = nullptr;
 	}
-	if(_overlayTexture) {
-		_overlayTexture->Release();
-		_overlayTexture = nullptr;
-	}
 	if(_pTextureSrv) {
 		_pTextureSrv->Release();
 		_pTextureSrv = nullptr;
-	}
-	if(_pOverlaySrv) {
-		_pOverlaySrv->Release();
-		_pOverlaySrv = nullptr;
 	}
 
 	delete[] _textureBuffer[0];
@@ -225,16 +215,8 @@ HRESULT Renderer::CreateNesBuffers()
 	if(!_pTexture) {
 		return S_FALSE;
 	}
-	_overlayTexture = CreateTexture(8, 8);
-	if(!_overlayTexture) {
-		return S_FALSE;
-	}
 	_pTextureSrv = GetShaderResourceView(_pTexture);
 	if(!_pTextureSrv) {
-		return S_FALSE;
-	}
-	_pOverlaySrv = GetShaderResourceView(_overlayTexture);
-	if(!_pOverlaySrv) {
 		return S_FALSE;
 	}
 
@@ -525,46 +507,40 @@ void Renderer::Render()
 {
 	bool paused = _emu->IsPaused();
 
-	if(true) {
-		_noUpdateCount = 0;
-		
-		auto lock = _frameLock.AcquireSafe();
-		if(_newFullscreen != _fullscreen) {
-			SetScreenSize(_nesFrameWidth, _nesFrameHeight);
-		}
+	auto lock = _frameLock.AcquireSafe();
+	if(_newFullscreen != _fullscreen) {
+		SetScreenSize(_nesFrameWidth, _nesFrameHeight);
+	}
 
+	if(_pDeviceContext == nullptr) {
+		//DirectX failed to initialize, try to init
+		Reset();
 		if(_pDeviceContext == nullptr) {
-			//DirectX failed to initialize, try to init
-			Reset();
-			if(_pDeviceContext == nullptr) {
-				//Can't init, prevent crash
-				return;
-			}
+			//Can't init, prevent crash
+			return;
 		}
+	}
 
-		// Clear the back buffer 
-		_pDeviceContext->ClearRenderTargetView(_pRenderTargetView, Colors::Black);
+	// Clear the back buffer 
+	_pDeviceContext->ClearRenderTargetView(_pRenderTargetView, Colors::Black);
 
-		_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, _samplerState);
+	_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, _samplerState);
 
-		//Draw screen
-		DrawScreen();
+	//Draw screen
+	DrawScreen();
 
-		_spriteBatch->End();
+	_spriteBatch->End();
 
-		// Present the information rendered to the back buffer to the front buffer (the screen)
+	// Present the information rendered to the back buffer to the front buffer (the screen)
 
-		bool waitVSync = _emu->GetSettings()->GetVideoConfig().VerticalSync;
-		HRESULT hr = _pSwapChain->Present(waitVSync ? 1 : 0, 0);
-		if(FAILED(hr)) {
-			MessageManager::Log("SwapChain::Present() failed - Error:" + std::to_string(hr));
-			if(hr == DXGI_ERROR_DEVICE_REMOVED) {
-				MessageManager::Log("D3DDevice: GetDeviceRemovedReason: " + std::to_string(_pd3dDevice->GetDeviceRemovedReason()));
-			}
-			MessageManager::Log("Trying to reset DX...");
-			Reset();
+	bool waitVSync = _emu->GetSettings()->GetVideoConfig().VerticalSync;
+	HRESULT hr = _pSwapChain->Present(waitVSync ? 1 : 0, 0);
+	if(FAILED(hr)) {
+		MessageManager::Log("SwapChain::Present() failed - Error:" + std::to_string(hr));
+		if(hr == DXGI_ERROR_DEVICE_REMOVED) {
+			MessageManager::Log("D3DDevice: GetDeviceRemovedReason: " + std::to_string(_pd3dDevice->GetDeviceRemovedReason()));
 		}
-	} else {
-		_noUpdateCount++;
+		MessageManager::Log("Trying to reset DX...");
+		Reset();
 	}
 }

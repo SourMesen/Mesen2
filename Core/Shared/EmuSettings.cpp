@@ -289,7 +289,7 @@ double EmuSettings::GetAspectRatio(ConsoleRegion region)
 {
 	switch(_video.AspectRatio) {
 		case VideoAspectRatio::NoStretching: return 0.0;
-		case VideoAspectRatio::Auto: return region == ConsoleRegion::Pal ? (11.0 / 8.0) : (8.0 / 7.0);
+		case VideoAspectRatio::Auto: return (region == ConsoleRegion::Pal || region == ConsoleRegion::Dendy) ? (11.0 / 8.0) : (8.0 / 7.0);
 		case VideoAspectRatio::NTSC: return 8.0 / 7.0;
 		case VideoAspectRatio::PAL: return 11.0 / 8.0;
 		case VideoAspectRatio::Standard: return 4.0 / 3.0;

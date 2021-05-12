@@ -13,10 +13,7 @@ protected:
 		NesController::InternalSetStateFromInput();
 		SetPressedState(NesController::Buttons::A, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
 		SetPressedState(NesController::Buttons::B, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
-		SetMovement(KeyManager::GetMouseMovement(
-			_emu->GetSettings()->GetVideoConfig().VideoScale,
-			_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1
-		));
+		SetMovement(KeyManager::GetMouseMovement(_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 
 public:

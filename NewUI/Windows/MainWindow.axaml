@@ -77,8 +77,10 @@
 		<Panel DockPanel.Dock="Bottom" IsVisible="{Binding ShowAudioPlayer}">
 			<v:AudioPlayerView DataContext="{Binding AudioPlayer}" />
 		</Panel>
-		<Panel>
-			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-		</Panel>
+		<DockPanel Name="pnlRendererContainer" Background="Black">
+			<Panel HorizontalAlignment="Center" VerticalAlignment="Center" >
+				<m:NativeRenderer Name="Renderer" />
+			</Panel>
+		</DockPanel>
 	</DockPanel>
 </Window>
