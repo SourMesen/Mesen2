@@ -108,7 +108,7 @@ void NesControlManager::UpdateControlDevices()
 	_prevConfig = cfg;
 
 	auto lock = _deviceLock.AcquireSafe();
-	bool hadKeyboard = HasKeyboard();
+	//bool hadKeyboard = HasKeyboard();
 
 	ClearDevices();
 
@@ -129,9 +129,9 @@ void NesControlManager::UpdateControlDevices()
 		}
 	}
 
-	bool hasKeyboard = HasKeyboard();
 	//TODO
-	/*if(!hasKeyboard) {
+	/*bool hasKeyboard = HasKeyboard();
+	if(!hasKeyboard) {
 		settings->DisableKeyboardMode();
 	} else if(!hadKeyboard && hasKeyboard) {
 		settings->EnableKeyboardMode();

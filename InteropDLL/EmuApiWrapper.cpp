@@ -2,6 +2,7 @@
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/Video/VideoDecoder.h"
+#include "Core/Shared/Video/VideoRenderer.h"
 #include "Core/Shared/Interfaces/IControlManager.h"
 #include "Core/Shared/SystemActionManager.h"
 #include "Core/Shared/MessageManager.h"
@@ -242,12 +243,23 @@ extern "C" {
 		return _logString.c_str();
 	}
 
+	DllExport void __stdcall SetRendererSize(uint32_t width, uint32_t height)
+	{
+		if(_emu->GetVideoRenderer()) {
+			_emu->GetVideoRenderer()->SetRendererSize(width, height);
+		}
+	}
+
 	DllExport double __stdcall GetAspectRatio()
 	{
 		double ratio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
 		if(ratio == 0.0) {
-			FrameInfo frame = _emu->GetVideoDecoder()->GetFrameInfo();
-			return (double)frame.Width / frame.Height;
+			if(_emu->GetVideoDecoder()) {
+				FrameInfo frame = _emu->GetVideoDecoder()->GetFrameInfo();
+				return (double)frame.Width / frame.Height;
+			} else {
+				return 256.0 / 240.0;
+			}
 		}
 		return ratio;
 	}

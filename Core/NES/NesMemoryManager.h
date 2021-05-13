@@ -40,7 +40,7 @@ class NesMemoryManager : public ISerializable
 		static const int InternalRAMSize = 0x800;
 
 		NesMemoryManager(NesConsole* console);
-		~NesMemoryManager();
+		virtual ~NesMemoryManager();
 
 		void SetMapper(BaseMapper* mapper);
 		

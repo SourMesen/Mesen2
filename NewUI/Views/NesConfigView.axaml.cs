@@ -54,7 +54,7 @@ namespace Mesen.Views
 			};
 
 			string[] filenames = await ofd.ShowAsync(VisualRoot as Window);
-			if(filenames.Length > 0) {
+			if(filenames?.Length > 0) {
 				(DataContext as NesConfigViewModel).LoadPaletteFile(filenames[0]);
 			}
 		}

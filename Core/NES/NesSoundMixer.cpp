@@ -204,7 +204,6 @@ void NesSoundMixer::EndFrame(uint32_t time)
 	sort(_timestamps.begin(), _timestamps.end());
 	_timestamps.erase(std::unique(_timestamps.begin(), _timestamps.end()), _timestamps.end());
 
-	bool muteFrame = true;
 	for(size_t i = 0, len = _timestamps.size(); i < len; i++) {
 		uint32_t stamp = _timestamps[i];
 		for(uint32_t j = 0; j < MaxChannelCount; j++) {

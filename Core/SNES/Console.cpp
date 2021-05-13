@@ -411,6 +411,7 @@ AddressInfo Console::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
 		case CpuType::Gsu: mappings = _cart->GetGsu()->GetMemoryMappings(); break;
 		case CpuType::Cx4: mappings = _cart->GetCx4()->GetMemoryMappings(); break;
 		case CpuType::Gameboy: break;
+		default: throw std::runtime_error("Unsupported cpu type");
 	}
 
 	switch(absAddress.Type) {

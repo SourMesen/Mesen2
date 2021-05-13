@@ -30,7 +30,6 @@ class ScriptManager;
 class Breakpoint;
 class IEventManager;
 class IAssembler;
-class Gameboy;
 class IDebugger;
 
 struct BaseState;
@@ -50,7 +49,6 @@ class Debugger
 private:
 	Emulator* _emu = nullptr;
 	IConsole* _console = nullptr;
-	Gameboy* _gameboy = nullptr;
 
 	EmuSettings* _settings;
 

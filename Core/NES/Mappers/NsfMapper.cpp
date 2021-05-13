@@ -365,8 +365,6 @@ ConsoleFeatures NsfMapper::GetAvailableFeatures()
 
 AudioTrackInfo NsfMapper::GetAudioTrackInfo()
 {
-	NesConfig& cfg = _console->GetNesConfig();
-
 	AudioTrackInfo track = {};
 	track.Artist = _nsfHeader.ArtistName;
 	string copyright = _nsfHeader.CopyrightHolder;

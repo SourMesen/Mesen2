@@ -41,5 +41,5 @@ public:
 	
 	void MixAudio(int16_t* buffer, uint32_t sampleCount, uint32_t sampleRate) override;
 	
-	void Serialize(Serializer &s);
+	void Serialize(Serializer &s) override;
 };

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DrawStringCommand.h"
 
-unordered_map<int, char*> DrawStringCommand::_jpFont = {
+unordered_map<int, char const*> DrawStringCommand::_jpFont = {
 { 0x8080E3, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" },
 { 0x8180E3, "\x00\x00\x00\x00\x00\x00\x00\x00\x80\x40\x40\x00" },
 { 0x8280E3, "\x00\x00\x00\x00\x00\x00\x00\x40\xA0\xA0\x40\x00" },

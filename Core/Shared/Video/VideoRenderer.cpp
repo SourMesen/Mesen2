@@ -21,6 +21,20 @@ VideoRenderer::~VideoRenderer()
 	StopThread();
 }
 
+FrameInfo VideoRenderer::GetRendererSize()
+{
+	FrameInfo frame = {};
+	frame.Width = _rendererWidth;
+	frame.Height = _rendererHeight;
+	return frame;
+}
+
+void VideoRenderer::SetRendererSize(uint32_t width, uint32_t height)
+{
+	_rendererWidth = width;
+	_rendererHeight = height;
+}
+
 void VideoRenderer::StartThread()
 {
 #ifndef LIBRETRO

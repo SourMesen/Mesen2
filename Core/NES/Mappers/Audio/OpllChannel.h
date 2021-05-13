@@ -136,6 +136,8 @@ namespace Vrc7Opll
 		}
 
 	public:
+		virtual ~OpllChannel() = default;
+
 		OpllPatch* GetPatch()
 		{
 			return &patch;

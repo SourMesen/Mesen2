@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include <thread>
+#include "Shared/SettingTypes.h"
 #include "Utilities/AutoResetEvent.h"
 #include "Utilities/SimpleLock.h"
 
@@ -21,6 +22,9 @@ private:
 	atomic<bool> _stopFlag;
 	SimpleLock _stopStartLock;
 
+	uint32_t _rendererWidth = 512;
+	uint32_t _rendererHeight = 480;
+
 	shared_ptr<IVideoRecorder> _recorder;
 
 	void RenderThread();
@@ -28,6 +32,9 @@ private:
 public:
 	VideoRenderer(shared_ptr<Emulator> emu);
 	~VideoRenderer();
+
+	FrameInfo GetRendererSize();
+	void SetRendererSize(uint32_t width, uint32_t height);
 
 	void StartThread();
 	void StopThread();

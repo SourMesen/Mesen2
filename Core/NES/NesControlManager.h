@@ -41,19 +41,19 @@ public:
 	uint32_t GetLagCounter();
 	void ResetLagCounter();
 
-	virtual void Reset(bool softReset);
+	void Reset(bool softReset) override;
 
 	bool HasKeyboard();
 	
 	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port);
 	shared_ptr<BaseControlDevice> CreateExpansionDevice(ExpansionPortDevice type);
 
-	virtual void GetMemoryRanges(MemoryRanges &ranges) override
+	void GetMemoryRanges(MemoryRanges &ranges) override
 	{
 		ranges.AddHandler(MemoryOperation::Read, 0x4016, 0x4017);
 		ranges.AddHandler(MemoryOperation::Write, 0x4016);
 	}
 
-	virtual uint8_t ReadRam(uint16_t addr) override;
-	virtual void WriteRam(uint16_t addr, uint8_t value) override;
+	uint8_t ReadRam(uint16_t addr) override;
+	void WriteRam(uint16_t addr, uint8_t value) override;
 };

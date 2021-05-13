@@ -37,29 +37,11 @@ namespace Mesen.Windows
 #endif
 		}
 
-		private void OnPanelResized()
-		{
-			ResizeRenderer();
-		}
-
 		private void ResizeRenderer()
 		{
-			double aspectRatio = EmuApi.GetAspectRatio();
-
-			Panel panel = this.FindControl<Panel>("pnlRendererContainer");
-			double maxWidth = panel.Bounds.Width;
-			double maxHeight = panel.Bounds.Height;
-
-			double width = maxWidth;
-			double height = width / aspectRatio;
-			if(height > maxHeight) {
-				height = maxHeight;
-				width = height * aspectRatio;
-			}
-
 			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
-			renderer.Width = width;
-			renderer.Height = height;
+			renderer.InvalidateMeasure();
+			renderer.InvalidateArrange();
 		}
 
 		private void OnDrop(object? sender, DragEventArgs e)
@@ -93,9 +75,6 @@ namespace Mesen.Windows
 			ConfigManager.Config.InitializeDefaults();
 			ConfigManager.Config.ApplyConfig();
 
-			Panel panel = this.FindControl<Panel>("pnlRendererContainer");
-			panel.GetObservable(BoundsProperty).Subscribe(x => OnPanelResized());
-
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
@@ -125,18 +104,23 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		public async void OnExitClick(object sender, RoutedEventArgs e)
+		{
+			Close();
+		}
+
 		public async void OnOpenClick(object sender, RoutedEventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "All ROM Files", Extensions = { "sfc" , "fig", "smc", "nes", "fds", "unif", "gb", "gbc" } },
-				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc" } },
-				new FileDialogFilter() { Name = "NES ROM Files", Extensions = { "nes" , "fds", "unif" } },
-				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc" } }
+				new FileDialogFilter() { Name = "All ROM Files", Extensions = { "sfc" , "fig", "smc", "spc", "nes", "fds", "unif", "nsf", "nsfe", "gb", "gbc", "gbs" } },
+				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc", "spc" } },
+				new FileDialogFilter() { Name = "NES ROM Files", Extensions = { "nes" , "fds", "unif", "nsf", "nsfe" } },
+				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc", "gbs" } }
 			};
 
 			string[] filenames = await ofd.ShowAsync(this);
-			if(filenames.Length > 0) {
+			if(filenames?.Length > 0) {
 				EmuApi.LoadRom(filenames[0]);
 			}
 		}

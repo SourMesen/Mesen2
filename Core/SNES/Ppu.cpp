@@ -514,7 +514,6 @@ void Ppu::UpdateSpcState()
 
 void Ppu::UpdateNmiScanline()
 {
-	EmulationConfig cfg = _settings->GetEmulationConfig();
 	if(_emu->GetRegion() == ConsoleRegion::Ntsc) {
 		if(!_state.ScreenInterlace || _oddFrame) {
 			_baseVblankEndScanline = 261;

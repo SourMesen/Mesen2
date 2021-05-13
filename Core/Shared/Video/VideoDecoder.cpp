@@ -82,7 +82,6 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 
 	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, overscan, _frameNumber);
 
-	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
 	if(frameInfo.Height != _lastFrameInfo.Height || frameInfo.Width != _lastFrameInfo.Width || aspectRatio != _lastAspectRatio) {
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ResolutionChanged);

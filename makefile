@@ -32,7 +32,7 @@ else
 	PROFILE_USE_FLAG = -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
 endif
 
-GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core)
+GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
 CCOPTIONS=-fPIC -Wall -O3 $(MESENFLAGS)
 LINKOPTIONS=
 
@@ -74,8 +74,8 @@ RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 CORESRC := $(shell find Core -name '*.cpp')
 COREOBJ := $(CORESRC:.cpp=.o)
 
-UTILSRC := $(shell find Utilities -name '*.cpp')
-UTILOBJ := $(UTILSRC:.cpp=.o)
+UTILSRC := $(shell find Utilities -name '*.cpp' -o -name '*.c')
+UTILOBJ := $(addsuffix .o,$(basename $(UTILSRC)))
 
 LINUXSRC := $(shell find Linux -name '*.cpp')
 LINUXOBJ := $(LINUXSRC:.cpp=.o)
@@ -152,22 +152,14 @@ pgo:
 	
 official:
 	./build.sh
-	
-debug:
-	MONO_LOG_LEVEL=debug mono $(RELEASEFOLDER)/Mesen-S.exe
 
 run:
-	mono $(RELEASEFOLDER)/Mesen-S.exe
+	./NewUI/bin/x64/Release/linux-x64/publish/Mesen-X
 
 clean:
 	rm -r $(COREOBJ)
-	rm -rf Lua/$(OBJFOLDER)
-	rm -rf SevenZip/$(OBJFOLDER)
-	rm -rf Utilities/$(OBJFOLDER)
-	rm -rf Core/$(OBJFOLDER)
-	rm -rf Linux/$(OBJFOLDER)
-	rm -rf InteropDLL/$(OBJFOLDER)
-	rm -rf Libretro/$(OBJFOLDER)
-	rm -rf TestHelper/$(OBJFOLDER)
-	rm -rf PGOHelper/$(OBJFOLDER)
-	rm -rf $(RELEASEFOLDER)
+	rm -r $(UTILOBJ)
+	rm -r $(LINUXOBJ)
+	rm -r $(SEVENZIPOBJ)
+	rm -r $(LUAOBJ)
+	rm -r $(DLLOBJ)

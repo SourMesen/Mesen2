@@ -44,6 +44,9 @@ shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerT
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
 		case ControllerType::SuperScope: device.reset(new SuperScope(_console, port, cfg.Controllers[port].Keys)); break;
 		case ControllerType::Multitap: device.reset(new Multitap(_console, port, cfg.Controllers[port].Keys, cfg.Controllers[2].Keys, cfg.Controllers[3].Keys, cfg.Controllers[4].Keys)); break;
+
+		default:
+			throw std::runtime_error("Unsupported controller type");
 	}
 	
 	return device;

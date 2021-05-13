@@ -183,7 +183,8 @@ void Debugger::ProcessPpuCycle()
 
 	switch(type) {
 		case CpuType::Cpu: 
-		case CpuType::Gameboy: 
+		case CpuType::Gameboy:
+		case CpuType::Nes:
 			_debuggers[(int)type].Debugger->ProcessPpuCycle(scanline, cycle);
 			break;
 	}

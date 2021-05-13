@@ -87,8 +87,8 @@ public:
 	void Init() override;
 
 	uint64_t GetMasterClock() override;
-	uint32_t GetMasterClockRate();
-	ConsoleRegion GetRegion();
+	uint32_t GetMasterClockRate() override;
+	ConsoleRegion GetRegion() override;
 	ConsoleType GetConsoleType() override;
 
 	void Serialize(Serializer& s) override;

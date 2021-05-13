@@ -18,6 +18,7 @@ private:
 
 public:
 	OggMixer();
+	virtual ~OggMixer() = default;
 
 	void SetSampleRate(int sampleRate);
 	

@@ -13,6 +13,8 @@ enum class MemoryOperationType;
 class IDebugger
 {
 public:
+	virtual ~IDebugger() = default;
+
 	virtual void Step(int32_t stepCount, StepType type) = 0;
 	virtual void Reset() = 0;
 	virtual void Run() = 0;

@@ -141,7 +141,7 @@ namespace Vrc7Opll
 
 			s.Stream(tables.get());
 			for(int i = 0; i < 12; i++) {
-				s.Stream(slot[i]);
+				s.Stream(&slot[i]);
 			}
 
 			s.Stream(adr, out, realstep, oplltime, opllstep, prev, next, pm_phase, lfo_pm, am_phase, lfo_am, mask,
@@ -163,7 +163,7 @@ namespace Vrc7Opll
 			Reset(tables->clk, tables->rate);
 		}
 
-		~OpllEmulator()
+		virtual ~OpllEmulator()
 		{
 
 		}

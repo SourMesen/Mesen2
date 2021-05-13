@@ -17,7 +17,7 @@
 		<vm:MainWindowViewModel />
 	</Design.DataContext>
 
-	<DockPanel>
+	<DockPanel Background="Black">
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
 				<MenuItem Header="_Open..." Click="OnOpenClick">
@@ -26,7 +26,7 @@
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator/>
-				<MenuItem Header="_Exit"/>
+				<MenuItem Header="_Exit" Click="OnExitClick"/>
 			</MenuItem>
 			<MenuItem Header="_Game">
 				<MenuItem Header="Reset" Click="OnResetClick" />
@@ -77,10 +77,6 @@
 		<Panel DockPanel.Dock="Bottom" IsVisible="{Binding ShowAudioPlayer}">
 			<v:AudioPlayerView DataContext="{Binding AudioPlayer}" />
 		</Panel>
-		<DockPanel Name="pnlRendererContainer" Background="Black">
-			<Panel HorizontalAlignment="Center" VerticalAlignment="Center" >
-				<m:NativeRenderer Name="Renderer" />
-			</Panel>
-		</DockPanel>
+		<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" />
 	</DockPanel>
 </Window>

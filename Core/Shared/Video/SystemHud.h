@@ -32,10 +32,9 @@ private:
 
 public:
 	SystemHud(Emulator* emu);
-	~SystemHud();
+	virtual ~SystemHud();
 
 	void Draw(FrameInfo info, OverscanDimensions overscan);
-	bool IsMessageShown();
 
 	void DrawMessages();
 
@@ -44,7 +43,6 @@ public:
 	void DrawString(string msg, int x, int y, uint8_t opacity = 255);
 
 	void ShowFpsCounter(int lineNumber);
-	void ShowLagCounter(int lineNumber);
 	void ShowFrameCounter(int lineNumber);
 	void ShowGameTimer(int lineNumber);
 	void DrawCounters();

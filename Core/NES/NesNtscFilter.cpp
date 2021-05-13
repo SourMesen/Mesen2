@@ -52,10 +52,6 @@ void NesNtscFilter::OnBeforeApplyFilter()
 		uint32_t palette[512];
 		NesDefaultVideoFilter::GetFullPalette(palette, nesCfg, model);
 		for(int i = 0; i < 512; i++) {
-			uint8_t r = (palette[i] >> 16) & 0xFF;
-			uint8_t g = (palette[i] >> 8) & 0xFF;
-			uint8_t b = palette[i] & 0xFF;
-
 			_palette[i * 3] = (palette[i] >> 16) & 0xFF;
 			_palette[i * 3 + 1] = (palette[i] >> 8) & 0xFF;
 			_palette[i * 3 + 2] = palette[i] & 0xFF;

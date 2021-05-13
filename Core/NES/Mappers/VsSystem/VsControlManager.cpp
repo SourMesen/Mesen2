@@ -202,8 +202,6 @@ void VsControlManager::UpdateMainSubBit(uint8_t mainSubBit)
 
 	NesConsole* otherConsole = _console->GetVsMainConsole() ? _console->GetVsMainConsole() : _console->GetVsSubConsole();
 	if(otherConsole) {
-		VsSystem* mapper = dynamic_cast<VsSystem*>(_console->GetMapper());
-		
 		if(_console->IsVsMainConsole()) {
 			UpdateMemoryAccess();
 		}

@@ -784,6 +784,7 @@ protected:
 
 public:
 	NesCpu(NesConsole* console);
+	virtual ~NesCpu() = default;
 	
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 	void SetMasterClockDivider(ConsoleRegion region);

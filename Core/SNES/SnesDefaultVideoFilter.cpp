@@ -51,13 +51,11 @@ void SnesDefaultVideoFilter::OnBeforeApplyFilter()
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 	SnesConfig snesConfig = _emu->GetSettings()->GetSnesConfig();
 	
-	ConsoleType consoleType = _emu->GetConsoleType();
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
 		InitLookupTable();
 	}
 	_snesBlendHighRes = snesConfig.BlendHighResolutionModes;
 	_videoConfig = config;
-
 }
 
 uint8_t SnesDefaultVideoFilter::To8Bit(uint8_t color)

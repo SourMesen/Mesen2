@@ -28,15 +28,15 @@
 	  <None Remove="Assets\Icon.ico" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0013089-beta" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.999-cibuild0013089-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0013089-beta" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0013089-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0013089-beta" />
-    <PackageReference Include="Dock.Avalonia" Version="0.10.0-build20210219-01" />
-    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0-build20210201-01" />
-    <PackageReference Include="Dock.Model" Version="0.10.0-build20210219-01" />
-    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.0-build20210219-01" />
+    <PackageReference Include="Avalonia" Version="0.10.4" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.4" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.4" />
+    <PackageReference Include="Dock.Avalonia" Version="0.10.4" />
+    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
+    <PackageReference Include="Dock.Model" Version="0.10.4" />
+    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.4" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>

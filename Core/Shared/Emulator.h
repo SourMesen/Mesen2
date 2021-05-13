@@ -81,8 +81,6 @@ private:
 	atomic<bool> _pauseOnNextFrame;
 	atomic<bool> _threadPaused;
 
-	ConsoleType _consoleType;
-
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
 

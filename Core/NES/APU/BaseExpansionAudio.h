@@ -14,6 +14,7 @@ protected:
 
 public:
 	BaseExpansionAudio(NesConsole* console);
+	virtual ~BaseExpansionAudio() = default;
 
 	void Clock();
 };

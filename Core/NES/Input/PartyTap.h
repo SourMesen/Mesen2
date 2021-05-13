@@ -61,12 +61,12 @@ public:
 	{
 		_readCount = 0;
 		_stateBuffer =
-			IsPressed(PartyTap::Buttons::B1) ? 1 : 0 |
-			IsPressed(PartyTap::Buttons::B2) ? 2 : 0 |
-			IsPressed(PartyTap::Buttons::B3) ? 4 : 0 |
-			IsPressed(PartyTap::Buttons::B4) ? 8 : 0 |
-			IsPressed(PartyTap::Buttons::B5) ? 16 : 0 |
-			IsPressed(PartyTap::Buttons::B6) ? 32 : 0;
+			(IsPressed(PartyTap::Buttons::B1) ? 1 : 0) |
+			(IsPressed(PartyTap::Buttons::B2) ? 2 : 0) |
+			(IsPressed(PartyTap::Buttons::B3) ? 4 : 0) |
+			(IsPressed(PartyTap::Buttons::B4) ? 8 : 0) |
+			(IsPressed(PartyTap::Buttons::B5) ? 16 : 0) |
+			(IsPressed(PartyTap::Buttons::B6) ? 32 : 0);
 	}
 
 	void WriteRam(uint16_t addr, uint8_t value) override

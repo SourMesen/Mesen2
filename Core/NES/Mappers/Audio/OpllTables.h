@@ -151,6 +151,8 @@ namespace Vrc7Opll {
 		}
 
 	public:
+		virtual ~OpllTables() = default;
+
 		/* Input clock */
 		uint32_t clk = 844451141;
 		/* Sampling rate */

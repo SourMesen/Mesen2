@@ -73,7 +73,7 @@ public:
 	void Run(uint64_t runUntilClock);
 	
 	void LoadBattery();
-	void SaveBattery();
+	void SaveBattery() override;
 
 	Emulator* GetEmulator();
 

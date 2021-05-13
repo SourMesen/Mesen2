@@ -94,7 +94,7 @@ public:
 		_emu->Resume();
 	}
 
-	void ProcessNotification(ConsoleNotificationType type, void* parameter)
+	void ProcessNotification(ConsoleNotificationType type, void* parameter) override
 	{
 		if(type == ConsoleNotificationType::ExecuteShortcut) {
 			ExecuteShortcutParams* params = (ExecuteShortcutParams*)parameter;

@@ -90,21 +90,21 @@ int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_
 {
 	int r = 0;
 	unique_ptr<spng_ctx> ctx = unique_ptr<spng_ctx>(spng_ctx_new(0));
-	if(r = spng_set_crc_action(ctx.get(), SPNG_CRC_USE, SPNG_CRC_USE)) {
+	if((r = spng_set_crc_action(ctx.get(), SPNG_CRC_USE, SPNG_CRC_USE))) {
 		return r;
 	}
 
 	size_t limit = 1024 * 1024 * 64;
-	if(r = spng_set_chunk_limits(ctx.get(), limit, limit)) {
+	if((r = spng_set_chunk_limits(ctx.get(), limit, limit))) {
 		return r;
 	}
 
-	if(r = spng_set_png_buffer(ctx.get(), in_png, in_size)) {
+	if((r = spng_set_png_buffer(ctx.get(), in_png, in_size))) {
 		return r;
 	}
 	
 	struct spng_ihdr ihdr;
-	if(r = spng_get_ihdr(ctx.get(), &ihdr)) {
+	if((r = spng_get_ihdr(ctx.get(), &ihdr))) {
 		return r;
 	}
 
@@ -113,13 +113,13 @@ int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_
 
 	int fmt = SPNG_FMT_RGBA8;
 	size_t out_size = 0;
-	if(r = spng_decoded_image_size(ctx.get(), fmt, &out_size)) {
+	if((r = spng_decoded_image_size(ctx.get(), fmt, &out_size))) {
 		return r;
 	}
 
 	out_image.resize(out_size);
 	
-	if(r = spng_decode_image(ctx.get(), out_image.data(), out_image.size(), fmt, 0)) {
+	if((r = spng_decode_image(ctx.get(), out_image.data(), out_image.size(), fmt, 0))) {
 		return r;
 	}
 

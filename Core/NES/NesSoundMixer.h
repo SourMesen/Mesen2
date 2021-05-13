@@ -24,7 +24,6 @@ private:
 	static constexpr uint32_t MaxChannelCount = 11;
 
 	NesConsole* _console = nullptr;
-	EmuSettings* _settings = nullptr;
 	SoundMixer* _mixer = nullptr;
 
 	StereoPanningFilter _stereoPanning;
@@ -60,7 +59,7 @@ private:
 	
 public:
 	NesSoundMixer(NesConsole* console);
-	~NesSoundMixer();
+	virtual ~NesSoundMixer();
 
 	void SetRegion(ConsoleRegion region);
 	void Reset();

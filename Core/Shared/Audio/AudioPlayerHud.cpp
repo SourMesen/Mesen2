@@ -96,7 +96,6 @@ void AudioPlayerHud::Draw()
 	int fgColor = 0x555555;
 	int fgColor2 = 0x666666;
 	int bgColor = 0x222222;
-	int transparent = 0xFF000000;
 	_hud->DrawLine(0, top - 1, 255, top - 1, fgColor, 1);
 	_hud->DrawLine(0, bottom + 1, 255, bottom + 1, fgColor, 1);
 	_hud->DrawRectangle(0, top, 256, 140, bgColor, true, 1);

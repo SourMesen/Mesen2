@@ -1623,4 +1623,5 @@ template uint32_t NesPpu<NsfPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
 template NesPpu<HdNesPpu>::NesPpu(NesConsole* console);
 template uint16_t* NesPpu<HdNesPpu>::GetScreenBuffer(bool previousBuffer);
 template void NesPpu<HdNesPpu>::Exec();
+template uint8_t NesPpu<HdNesPpu>::ReadPaletteRAM(uint16_t addr);
 template uint32_t NesPpu<HdNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
