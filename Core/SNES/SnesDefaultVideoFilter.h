@@ -23,7 +23,9 @@ protected:
 
 public:
 	SnesDefaultVideoFilter(Emulator* emu);
-	void ApplyFilter(uint16_t *ppuOutputBuffer);
+	
+	FrameInfo GetFrameInfo() override;
+	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
 
 	static uint32_t ToArgb(uint16_t rgb555);
 };

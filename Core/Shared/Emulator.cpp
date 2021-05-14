@@ -405,9 +405,10 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_videoDecoder->StopThread();
 	_videoRenderer->StopThread();
 
-	_rom.RomFile = romFile;
+	//Cast VirtualFiles to string to ensure the original file data isn't kept in memory
+	_rom.RomFile = (string)romFile;
 	if(patchFile.IsValid()) {
-		_rom.PatchFile = patchFile;
+		_rom.PatchFile = (string)patchFile;
 	}
 	_rom.Format = console->GetRomFormat();
 

@@ -27,5 +27,7 @@ public:
 	GbDefaultVideoFilter(Emulator* emu);
 	~GbDefaultVideoFilter();
 
+	FrameInfo GetFrameInfo() override;
+
 	void ApplyFilter(uint16_t* ppuOutputBuffer);
 };

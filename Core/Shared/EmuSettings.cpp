@@ -244,6 +244,14 @@ OverscanDimensions EmuSettings::GetOverscan()
 {
 	OverscanDimensions overscan = {};
 
+	switch(_emu->GetRomInfo().Format) {
+		case RomFormat::Spc:
+		case RomFormat::Gbs:
+		case RomFormat::Nsf:
+			//No overscan for music players
+			return overscan;
+	}
+
 	switch(_emu->GetConsoleType()) {
 		case ConsoleType::Snes: 
 			overscan.Left = _snes.OverscanLeft;

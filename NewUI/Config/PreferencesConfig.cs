@@ -172,6 +172,7 @@ namespace Mesen.GUI.Config
 
 			FileAssociationHelper.UpdateFileAssociation("gb", AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbc", AssociateGbRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("gbs", AssociateGbMusicFiles);
 
 			FileAssociationHelper.UpdateFileAssociation("msm", AssociateMovieFiles);
 			FileAssociationHelper.UpdateFileAssociation("mss", AssociateSaveStateFiles);

@@ -235,7 +235,7 @@ void Console::SaveBattery()
 BaseVideoFilter* Console::GetVideoFilter()
 {
 	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
-	if(filterType == VideoFilterType::NTSC) {
+	if(filterType == VideoFilterType::NTSC && GetRomFormat() != RomFormat::Spc) {
 		return new SnesNtscFilter(_emu);
 	} else {
 		return new SnesDefaultVideoFilter(_emu);

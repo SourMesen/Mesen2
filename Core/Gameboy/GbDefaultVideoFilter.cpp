@@ -18,6 +18,19 @@ GbDefaultVideoFilter::~GbDefaultVideoFilter()
 	delete[] _prevFrame;
 }
 
+FrameInfo GbDefaultVideoFilter::GetFrameInfo()
+{
+	if(_emu->GetRomInfo().Format == RomFormat::Gbs) {
+		//Give a fixed 256x240 of space to GBS player to match NES/SNES players
+		FrameInfo frame;
+		frame.Width = 256;
+		frame.Height = 240;
+		return frame;
+	} else {
+		return BaseVideoFilter::GetFrameInfo();
+	}
+}
+
 void GbDefaultVideoFilter::InitLookupTable()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
@@ -86,6 +99,10 @@ uint8_t GbDefaultVideoFilter::To8Bit(uint8_t color)
 
 void GbDefaultVideoFilter::ApplyFilter(uint16_t* ppuOutputBuffer)
 {
+	if(_emu->GetRomInfo().Format == RomFormat::Gbs) {
+		return;
+	}
+
 	uint32_t* out = GetOutputBuffer();
 	FrameInfo frameInfo = GetFrameInfo();
 	OverscanDimensions overscan = GetOverscan();

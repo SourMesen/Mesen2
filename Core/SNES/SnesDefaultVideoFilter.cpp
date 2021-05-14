@@ -11,6 +11,19 @@ SnesDefaultVideoFilter::SnesDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(
 	InitLookupTable();
 }
 
+FrameInfo SnesDefaultVideoFilter::GetFrameInfo()
+{
+	if(_emu->GetRomInfo().Format == RomFormat::Spc) {
+		//Give a fixed 256x240 of space to SPC player to match NES/GB players
+		FrameInfo frame;
+		frame.Width = 256;
+		frame.Height = 240;
+		return frame;
+	} else {
+		return BaseVideoFilter::GetFrameInfo();
+	}
+}
+
 void SnesDefaultVideoFilter::InitLookupTable()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
@@ -74,6 +87,10 @@ uint32_t SnesDefaultVideoFilter::ToArgb(uint16_t rgb555)
 
 void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
+	if(_emu->GetRomInfo().Format == RomFormat::Spc) {
+		return;
+	}
+
 	uint32_t *out = GetOutputBuffer();
 	FrameInfo frameInfo = GetFrameInfo();
 	OverscanDimensions overscan = GetOverscan();

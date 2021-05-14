@@ -372,7 +372,7 @@ BaseVideoFilter* NesConsole::GetVideoFilter()
 		return new HdVideoFilter(_emu, _hdData.get());
 	} else {
 		VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
-		if(filterType == VideoFilterType::NTSC) {
+		if(filterType == VideoFilterType::NTSC && GetRomFormat() != RomFormat::Nsf) {
 			return new NesNtscFilter(_emu);
 		} else {
 			return new NesDefaultVideoFilter(_emu);
