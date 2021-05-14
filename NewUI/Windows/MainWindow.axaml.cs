@@ -21,6 +21,7 @@ using Mesen.Debugger.ViewModels;
 using System.IO;
 using System.Linq;
 using Mesen.GUI.Config.Shortcuts;
+using Mesen.Utilities;
 
 namespace Mesen.Windows
 {
@@ -76,8 +77,28 @@ namespace Mesen.Windows
 			ConfigManager.Config.ApplyConfig();
 
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
-			EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
-			//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
+
+			if(!ProcessCommandLineArgs(Program.CommandLineArgs)) {
+				EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
+				//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
+			}
+
+			SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
+		}
+
+		private void Instance_ArgumentsReceived(object? sender, ArgumentsReceivedEventArgs e)
+		{
+			ProcessCommandLineArgs(e.Args);
+		}
+
+		private bool ProcessCommandLineArgs(string[] args)
+		{
+			foreach(string arg in args) {
+				if(File.Exists(arg)) {
+					return EmuApi.LoadRom(arg);
+				}
+			}
+			return false;
 		}
 
 		private void OnNotification(NotificationEventArgs e)

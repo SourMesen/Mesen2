@@ -34,6 +34,7 @@ namespace Mesen.GUI.Config
 		[Reactive] public bool AssociateNesRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateNesMusicFiles { get; set; } = false;
 		[Reactive] public bool AssociateGbRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateGbMusicFiles { get; set; } = false;
 		[Reactive] public bool AssociateMovieFiles { get; set; } = false;
 		[Reactive] public bool AssociateSaveStateFiles { get; set; } = false;
 

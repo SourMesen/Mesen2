@@ -456,6 +456,7 @@
 			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .studybox</Control>
 			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>
 			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc</Control>
+			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>
 			<Control ID="chkMovieFiles">Mesen-S movies: .msm</Control>
 			<Control ID="chkSaveStateFiles">Mesen-S save states: .mss</Control>
 

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Mesen.GUI.Config;
 using Microsoft.Win32;
 
@@ -91,6 +93,7 @@ namespace Mesen.GUI.Config
 
 			CreateMimeType("x-mesen-gb", "gb", "Game Boy ROM", mimeTypes, cfg.AssociateGbRomFiles);
 			CreateMimeType("x-mesen-gbc", "gbc", "Game Boy Color ROM", mimeTypes, cfg.AssociateGbRomFiles);
+			CreateMimeType("x-mesen-gbs", "gbs", "Game Boy Sound File", mimeTypes, cfg.AssociateGbMusicFiles);
 
 			//Icon used for shortcuts
 			//TOOD
@@ -114,6 +117,11 @@ namespace Mesen.GUI.Config
 
 		static public void CreateShortcutFile(string filename, List<string> mimeTypes = null)
 		{
+			ProcessModule? mainModule = Process.GetCurrentProcess().MainModule;
+			if(mainModule != null) {
+
+			}
+
 			string content = 
 				"[Desktop Entry]" + Environment.NewLine +
 				"Type=Application" + Environment.NewLine +
@@ -125,7 +133,7 @@ namespace Mesen.GUI.Config
 				content += "MimeType=" + string.Join(";", mimeTypes.Select(type => "application/" + type)) + Environment.NewLine;
 			}
 			content +=
-				"Exec=mono " + System.Reflection.Assembly.GetEntryAssembly().Location + " %f" + Environment.NewLine +
+				"Exec=mono " + mainModule.FileName + " %f" + Environment.NewLine +
 				"NoDisplay=false" + Environment.NewLine +
 				"StartupNotify=true" + Environment.NewLine +
 				"Icon=MesenSIcon" + Environment.NewLine;
@@ -135,17 +143,23 @@ namespace Mesen.GUI.Config
 
 		static public void UpdateFileAssociation(string extension, bool associate)
 		{
-			//TODO
-			/*string key = @"HKEY_CURRENT_USER\Software\Classes\." + extension;
+			if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return;
+			}
+
+			string key = @"HKEY_CURRENT_USER\Software\Classes\." + extension;
 			if(associate) {
-				Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\Mesen-S\shell\open\command", null, Application.ExecutablePath + " \"%1\"");
-				Registry.SetValue(key, null, "Mesen-S");
+				ProcessModule? mainModule = Process.GetCurrentProcess().MainModule;
+				if(mainModule != null) {
+					Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\Mesen-S\shell\open\command", null, mainModule.FileName + " \"%1\"");
+					Registry.SetValue(key, null, "Mesen-S");
+				}
 			} else {
-				object regKey = Registry.GetValue(key, null, "");
+				object? regKey = Registry.GetValue(key, null, "");
 				if(regKey != null && regKey.Equals("Mesen-S")) {
 					Registry.SetValue(key, null, "");
 				}
-			}*/
+			}
 		}
 	}
 }

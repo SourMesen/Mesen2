@@ -58,6 +58,7 @@
 					<CheckBox Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
 					<CheckBox Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
 					<CheckBox Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
+					<CheckBox Content="{l:Translate chkGbMusicFiles}" IsChecked="{CompiledBinding Config.AssociateGbMusicFiles}" />
 					
 					<CheckBox Content="{l:Translate chkMovieFiles}" IsChecked="{CompiledBinding Config.AssociateMovieFiles}" />
 					<CheckBox Content="{l:Translate chkSaveStateFiles}" IsChecked="{CompiledBinding Config.AssociateSaveStateFiles}" />

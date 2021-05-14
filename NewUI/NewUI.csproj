@@ -38,6 +38,7 @@
     <PackageReference Include="Dock.Model" Version="0.10.4" />
     <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.4" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>
   <ItemGroup>
