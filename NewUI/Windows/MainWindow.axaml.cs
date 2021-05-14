@@ -125,7 +125,7 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		public async void OnExitClick(object sender, RoutedEventArgs e)
+		public void OnExitClick(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
@@ -171,12 +171,12 @@ namespace Mesen.Windows
 		{
 			new ConfigWindow {
 				DataContext = new ConfigViewModel(),
-			}.Show();
+			}.ShowCentered(this);
 		}
 
 		private void OnLogWindowClick(object sender, RoutedEventArgs e)
 		{
-			new LogWindow().Show();
+			new LogWindow().ShowCentered(this);
 		}
 
 		private void OnStartRecordingClick(object sender, RoutedEventArgs e)
