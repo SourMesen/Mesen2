@@ -1,7 +1,6 @@
 <Styles
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 >
 	<Design.PreviewWith>
 		<Window Width="300" Height="400" Padding="5">
@@ -10,7 +9,7 @@
 					<MenuItem Header="File">
 						<MenuItem Header="Abcd">
 							<MenuItem.Icon>
-								<mui:MaterialIcon Kind="FolderOpen" />
+								<Image Source="/Assets/Folder.png" />
 							</MenuItem.Icon>
 						</MenuItem>
 						<MenuItem Header="Abcd" />

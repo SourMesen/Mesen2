@@ -110,6 +110,8 @@
 	  <None Remove="Assets\Record.png" />
 	  <None Remove="Assets\Refresh.png" />
 	  <None Remove="Assets\RegisterIcon.png" />
+	  <None Remove="Assets\Repeat.png" />
+	  <None Remove="Assets\RepeatEnabled.png" />
 	  <None Remove="Assets\RunPpuCycle.png" />
 	  <None Remove="Assets\RunPpuFrame.png" />
 	  <None Remove="Assets\RunPpuScanline.png" />
@@ -118,6 +120,8 @@
 	  <None Remove="Assets\Script.png" />
 	  <None Remove="Assets\SelectAll.png" />
 	  <None Remove="Assets\Settings.png" />
+	  <None Remove="Assets\Shuffle.png" />
+	  <None Remove="Assets\ShuffleEnabled.png" />
 	  <None Remove="Assets\SnesIcon.png" />
 	  <None Remove="Assets\SpcDebugger.png" />
 	  <None Remove="Assets\Speed.png" />
@@ -152,7 +156,6 @@
     <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
     <PackageReference Include="Dock.Model" Version="0.10.4" />
     <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.4" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
    </ItemGroup>
@@ -351,6 +354,8 @@
 	  <AvaloniaResource Include="Assets\Record.png" />
 	  <AvaloniaResource Include="Assets\Refresh.png" />
 	  <AvaloniaResource Include="Assets\RegisterIcon.png" />
+	  <AvaloniaResource Include="Assets\Repeat.png" />
+	  <AvaloniaResource Include="Assets\RepeatEnabled.png" />
 	  <AvaloniaResource Include="Assets\RunPpuCycle.png" />
 	  <AvaloniaResource Include="Assets\RunPpuFrame.png" />
 	  <AvaloniaResource Include="Assets\RunPpuScanline.png" />
@@ -359,6 +364,8 @@
 	  <AvaloniaResource Include="Assets\Script.png" />
 	  <AvaloniaResource Include="Assets\SelectAll.png" />
 	  <AvaloniaResource Include="Assets\Settings.png" />
+	  <AvaloniaResource Include="Assets\Shuffle.png" />
+	  <AvaloniaResource Include="Assets\ShuffleEnabled.png" />
 	  <AvaloniaResource Include="Assets\SnesIcon.png" />
 	  <AvaloniaResource Include="Assets\SpcDebugger.png" />
 	  <AvaloniaResource Include="Assets\Speed.png" />

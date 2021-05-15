@@ -8,10 +8,10 @@
 	xmlns:l="using:Mesen.Localization"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:cfg="using:Mesen.GUI.Config"
-	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	Icon="/Assets/Icon.ico"
 	x:DataType="vm:ControllerConfigViewModel"
 	x:Class="Mesen.Windows.ControllerConfigWindow"
 	SizeToContent="WidthAndHeight"
@@ -28,7 +28,7 @@
 	<StackPanel>
 		<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Margin="2">
 			<Panel>
-				<mui:MaterialIcon Kind="InformationOutline" Margin="0" Width="20" Height="20" HorizontalAlignment="Left" />
+				<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
 				<TextBlock Text="{l:Translate lblHint}" TextWrapping="Wrap" Margin="25 0 0 0" VerticalAlignment="Center" />
 			</Panel>
 		</Border>

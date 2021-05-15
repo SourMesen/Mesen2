@@ -6,7 +6,6 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:v="using:Mesen.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="500"
 	x:DataType="vm:ConfigViewModel"
 	Icon="/Assets/Icon.ico"

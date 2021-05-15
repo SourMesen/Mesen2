@@ -9,7 +9,6 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.GUI.Config"
 	xmlns:l="using:Mesen.Localization"
-	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -62,7 +61,7 @@
 			<StackPanel>
 				<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
 					<Panel>
-						<mui:MaterialIcon Kind="HelpCircleOutline" Margin="0" Width="20" Height="20" HorizontalAlignment="Left" />
+						<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
 						<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
 					</Panel>
 				</Border>

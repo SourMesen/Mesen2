@@ -11,6 +11,7 @@
 	mc:Ignorable="d"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	Icon="/Assets/Icon.ico"
 	x:Class="Mesen.Windows.GetKeyWindow"
 	Width="350"
 	Height="100"
