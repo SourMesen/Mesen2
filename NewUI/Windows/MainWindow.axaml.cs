@@ -28,6 +28,7 @@ namespace Mesen.Windows
 	public class MainWindow : Window
 	{
 		private NotificationListener _listener;
+		private ConfigWindow? _cfgWindow = null;
 
 		public MainWindow()
 		{
@@ -82,6 +83,8 @@ namespace Mesen.Windows
 				EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 				//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
 			}
+
+			ConfigManager.Config.Preferences.UpdateFileAssociations();
 
 			SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
 		}
@@ -167,11 +170,56 @@ namespace Mesen.Windows
 			}.Show();
 		}
 
-		private void OnOptionsClick(object sender, RoutedEventArgs e)
+		private void OpenConfig(ConfigWindowTab tab)
 		{
-			new ConfigWindow {
-				DataContext = new ConfigViewModel(),
-			}.ShowCentered(this);
+			if(_cfgWindow == null) {
+				_cfgWindow = new ConfigWindow { DataContext = new ConfigViewModel(tab) };
+				_cfgWindow.Closed += cfgWindow_Closed;
+				_cfgWindow.ShowCentered(this);
+			} else {
+				(_cfgWindow.DataContext as ConfigViewModel).SelectTab(tab);
+				_cfgWindow.Activate();
+			}
+		}
+
+		private void cfgWindow_Closed(object? sender, EventArgs e)
+		{
+			_cfgWindow = null;
+		}
+
+		private void OnPreferencesClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Preferences);
+		}
+
+		private void OnAudioConfigClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Audio);
+		}
+
+		private void OnVideoConfigClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Video);
+		}
+
+		private void OnEmulationConfigClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Emulation);
+		}
+
+		private void OnNesConfigClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Nes);
+		}
+
+		private void OnSnesConfigClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Snes);
+		}
+
+		private void OnGameboyConfigClick(object sender, RoutedEventArgs e)
+		{
+			OpenConfig(ConfigWindowTab.Gameboy);
 		}
 
 		private void OnLogWindowClick(object sender, RoutedEventArgs e)

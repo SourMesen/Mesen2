@@ -5,13 +5,12 @@
 		  xmlns:v="using:Mesen.Views"
 		  xmlns:vm="using:Mesen.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		  xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="505"
 		  Icon="/Assets/Icon.ico"
         x:Class="Mesen.Windows.MainWindow"
 		  Width="512" Height="505"
 		  DragDrop.AllowDrop="True"
-        Title="Mesen-S">
+        Title="Mesen">
 
 	<Design.DataContext>
 		<vm:MainWindowViewModel />
@@ -21,16 +20,20 @@
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
 				<MenuItem Header="_Open..." Click="OnOpenClick">
-					<MenuItem.Icon>
-						<mui:MaterialIcon Kind="FolderOpen" />
-					</MenuItem.Icon>
+					<MenuItem.Icon><Image Source="/Assets/Folder.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator/>
-				<MenuItem Header="_Exit" Click="OnExitClick"/>
+				<MenuItem Header="_Exit" Click="OnExitClick">
+					<MenuItem.Icon><Image Source="/Assets/Exit.png" /></MenuItem.Icon>
+				</MenuItem>	
 			</MenuItem>
 			<MenuItem Header="_Game">
-				<MenuItem Header="Reset" Click="OnResetClick" />
-				<MenuItem Header="Power Cycle" Click="OnPowerCycleClick" />
+				<MenuItem Header="Reset" Click="OnResetClick">
+					<MenuItem.Icon><Image Source="/Assets/Refresh.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Power Cycle" Click="OnPowerCycleClick">
+					<MenuItem.Icon><Image Source="/Assets/PowerCycle.png" /></MenuItem.Icon>
+				</MenuItem>
 				<Separator />
 				<MenuItem Header="Switch disk side" Click="OnFdsSwitchDiskSide" />
 				<MenuItem Header="Select disk">
@@ -40,37 +43,59 @@
 				<MenuItem Header="Eject disk" Click="OnFdsEjectDisk" />
 			</MenuItem>
 			<MenuItem Header="_Options">
-				<MenuItem Header="Speed" />
-				<MenuItem Header="Video Size" />
-				<MenuItem Header="Video Filter" />
-				<MenuItem Header="Region" />
+				<MenuItem Header="Speed">
+					<MenuItem.Icon><Image Source="/Assets/Speed.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Video Size">
+					<MenuItem.Icon><Image Source="/Assets/Fullscreen.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Video Filter">
+					<MenuItem.Icon><Image Source="/Assets/VideoFilter.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Region">
+					<MenuItem.Icon><Image Source="/Assets/WebBrowser.png" /></MenuItem.Icon>
+				</MenuItem>
 				<Separator />
-				<MenuItem Header="_Settings" Click="OnOptionsClick">
-					<MenuItem.Icon>
-						<mui:MaterialIcon Kind="Settings" />
-					</MenuItem.Icon>
+				<MenuItem Header="_Audio" Click="OnAudioConfigClick">
+					<MenuItem.Icon><Image Source="/Assets/Audio.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="_Emulation" Click="OnEmulationConfigClick">
+					<MenuItem.Icon><Image Source="/Assets/DipSwitches.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="_Video" Click="OnVideoConfigClick">
+					<MenuItem.Icon><Image Source="/Assets/VideoOptions.png" /></MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="_NES" Click="OnNesConfigClick">
+					<MenuItem.Icon><Image Source="/Assets/NesIcon.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="_SNES" Click="OnSnesConfigClick">
+					<MenuItem.Icon><Image Source="/Assets/SnesIcon.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="_Game Boy" Click="OnGameboyConfigClick">
+					<MenuItem.Icon><Image Source="/Assets/GameboyIcon.png" /></MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="_Preferences" Click="OnPreferencesClick">
+					<MenuItem.Icon><Image Source="/Assets/Settings.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="_Tools">
-				<MenuItem Header="Log Window" Click="OnLogWindowClick" />
+				<MenuItem Header="Log Window" Click="OnLogWindowClick">
+					<MenuItem.Icon><Image Source="/Assets/LogWindow.png" /></MenuItem.Icon>
+				</MenuItem>
 				<MenuItem Header="Start recording" Click="OnStartRecordingClick" />
 				<MenuItem Header="Stop recording" Click="OnStopRecordingClick" />
 			</MenuItem>
 			<MenuItem Header="_Debug">
 				<MenuItem Header="_Debugger" Click="OnDebuggerClick">
-					<MenuItem.Icon>
-						<mui:MaterialIcon Kind="Bug" />
-					</MenuItem.Icon>
+					<MenuItem.Icon><Image Source="/Assets/Debugger.png" /></MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="_Memory Tools" Click="OnMemoryToolsClick">
-					<MenuItem.Icon>
-						<mui:MaterialIcon Kind="Memory" />
-					</MenuItem.Icon>
+					<MenuItem.Icon><Image Source="/Assets/CheatCode.png" /></MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="_Tile Viewer" Click="OnTileViewerClick">
-					<MenuItem.Icon>
-						<mui:MaterialIcon Kind="Till" />
-					</MenuItem.Icon>
+					<MenuItem.Icon><Image Source="/Assets/VerticalLayout.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
 		</Menu>

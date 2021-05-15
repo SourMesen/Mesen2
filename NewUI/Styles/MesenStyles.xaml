@@ -94,6 +94,9 @@
 		<CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
 
+		<!-- Menu items -->
+		<Thickness x:Key="MenuFlyoutPresenterThemePadding">0</Thickness>
+		<Thickness x:Key="MenuIconPresenterMargin">0,0,10,0</Thickness>
 	</Styles.Resources>
 
 	<Style>
@@ -132,6 +135,11 @@
 
 		<Setter Property="BorderBrush" Value="Transparent" />
 		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="MenuItem > MenuItem">
+		<Setter Property="Height" Value="20" />
+		<Setter Property="Padding" Value="2 0" />
 	</Style>
 
 	<Style Selector="Menu > MenuItem:selected /template/ Border">

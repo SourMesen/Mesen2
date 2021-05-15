@@ -9,6 +9,7 @@
 	xmlns:mui="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="500"
 	x:DataType="vm:ConfigViewModel"
+	Icon="/Assets/Icon.ico"
 	x:Class="Mesen.Windows.ConfigWindow"
 	Width="620" Height="500"
 	Title="Settings"
@@ -16,6 +17,30 @@
 	<Design.DataContext>
 		<vm:ConfigViewModel />
 	</Design.DataContext>
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="{x:Type vm:AudioConfigViewModel}">
+			<v:AudioConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:EmulationConfigViewModel}">
+			<v:EmulationConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:VideoConfigViewModel}">
+			<v:VideoConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:NesConfigViewModel}">
+			<v:NesConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:SnesConfigViewModel}">
+			<v:SnesConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:GameboyConfigViewModel}">
+			<v:GameboyConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:PreferencesConfigViewModel}">
+			<v:PreferencesConfigView />
+		</DataTemplate>
+	</Window.DataTemplates>
 	
 	<Window.Styles>
 		<Style Selector="TabControl[TabStripPlacement=Left]">
@@ -94,37 +119,30 @@
 			</StackPanel>
 		</Panel>
 		
-		<TabControl TabStripPlacement="Left" Background="#20888888">
-			<TabItem>
+		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{CompiledBinding SelectedIndex, Mode=TwoWay}">
+			<TabItem Content="{CompiledBinding Audio}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="Audio" Margin="0 0 10 -1" />
+						<Image Source="/Assets/Audio.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">Audio</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:AudioConfigView DataContext="{CompiledBinding Audio}" />
-				
 			</TabItem>
-			<TabItem>
+			<TabItem Content="{CompiledBinding Emulation}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="Build" Margin="0 0 10 -1" />
+						<Image Source="/Assets/DipSwitches.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">Emulation</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:EmulationConfigView DataContext="{CompiledBinding Emulation}" />
 			</TabItem>
-			<TabItem>
+			<TabItem Content="{CompiledBinding Video}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="Image" Margin="0 0 10 -1" />
+						<Image Source="/Assets/VideoOptions.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">Video</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:VideoConfigView DataContext="{CompiledBinding Video}" />				
 			</TabItem>
 			
 			<TabItem IsEnabled="False" MinHeight="10">
@@ -133,37 +151,31 @@
 				</TabItem.Header>
 			</TabItem>
 			
-			<TabItem> 
+			<TabItem Content="{CompiledBinding Nes}"> 
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="GamepadVariant" Margin="0 0 10 -1" />
+						<Image Source="/Assets/NesIcon.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">NES</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:NesConfigView DataContext="{CompiledBinding Nes}" />
 			</TabItem>
 
-			<TabItem>
+			<TabItem Content="{CompiledBinding Snes}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="GamepadVariant" Margin="0 0 10 -1" />
+						<Image Source="/Assets/SnesIcon.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">SNES</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:SnesConfigView DataContext="{CompiledBinding Snes}" />
 			</TabItem>
 
-			<TabItem>
+			<TabItem Content="{CompiledBinding Gameboy}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="GamepadVariant" Margin="0 0 10 -1" />
+						<Image Source="/Assets/GameboyIcon.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">Game Boy</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:GameboyConfigView DataContext="{CompiledBinding Gameboy}" />
 			</TabItem>
 
 			<TabItem IsEnabled="False" MinHeight="10">
@@ -171,15 +183,14 @@
 					<Rectangle Fill="LightGray" Height="1" />
 				</TabItem.Header>
 			</TabItem>
-			<TabItem Header="Preferences">
+			
+			<TabItem Content="{CompiledBinding Preferences}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<mui:MaterialIcon Kind="Settings" Margin="0 0 10 -1" />
+						<Image Source="/Assets/Settings.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center">Preferences</TextBlock>
 					</StackPanel>
 				</TabItem.Header>
-
-				<v:PreferencesConfigView DataContext="{CompiledBinding Preferences}" />
 			</TabItem>
 		</TabControl>
 	</DockPanel>
