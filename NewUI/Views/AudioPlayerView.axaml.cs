@@ -1,11 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Mesen.Utilities;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Avalonia.Interactivity;
-using Mesen.GUI;
-using Mesen.GUI.Config.Shortcuts;
 using Avalonia.Threading;
 using Mesen.ViewModels;
 using Mesen.Interop;

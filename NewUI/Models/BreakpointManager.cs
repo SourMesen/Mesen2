@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Mesen.GUI.Debugger
+namespace Mesen.Debugger
 {
 /*	public class BreakpointManager
 	{

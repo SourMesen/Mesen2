@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Mesen.Utilities;
 using System;
 

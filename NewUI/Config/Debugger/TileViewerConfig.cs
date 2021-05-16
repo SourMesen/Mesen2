@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using Avalonia;
 using Mesen.Interop;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class TileViewerConfig
 	{

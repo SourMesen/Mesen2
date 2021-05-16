@@ -8,9 +8,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Media;
-using Mesen.GUI.Debugger;
+using Mesen.Debugger;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class TraceLoggerInfo
 	{

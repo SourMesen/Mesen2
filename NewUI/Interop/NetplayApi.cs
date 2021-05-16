@@ -1,4 +1,4 @@
-﻿using Mesen.GUI.Config;
+﻿using Mesen.Config;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;

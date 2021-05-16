@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Windows.Forms;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class DebuggerShortcutsConfig
 	{

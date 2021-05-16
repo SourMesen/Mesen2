@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public partial class Configuration
 	{

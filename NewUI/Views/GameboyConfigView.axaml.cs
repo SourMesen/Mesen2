@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Mesen.Utilities;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.ViewModels;
 using Mesen.Windows;

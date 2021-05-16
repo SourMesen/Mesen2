@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Mesen.GUI.Config;
-using Mesen.GUI.Config.Shortcuts;
+using Mesen.Config;
+using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 
 namespace Mesen.Interop

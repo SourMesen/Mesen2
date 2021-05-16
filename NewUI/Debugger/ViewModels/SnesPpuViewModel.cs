@@ -1,12 +1,8 @@
-﻿using Avalonia.Controls;
-using Mesen.GUI;
-using Mesen.Interop;
+﻿using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace Mesen.Debugger.ViewModels
 {

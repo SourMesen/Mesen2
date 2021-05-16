@@ -2,8 +2,8 @@
 
 using Avalonia;
 using Avalonia.Controls;
-using Mesen.GUI.Config;
-using Mesen.GUI.Config.Shortcuts;
+using Mesen.Config;
+using Mesen.Config.Shortcuts;
 using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.Views;

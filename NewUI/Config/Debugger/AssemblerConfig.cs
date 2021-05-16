@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class AssemblerConfig
 	{

@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using Mesen.Interop;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public static class ConfigManager
 	{

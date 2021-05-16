@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using Mesen.GUI.Debugger;
+using Mesen.Debugger;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class DebugConfig
 	{

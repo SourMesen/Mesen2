@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Mesen.Interop;
 using Microsoft.Win32;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	class FileAssociationHelper
 	{

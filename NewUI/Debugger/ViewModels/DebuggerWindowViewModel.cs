@@ -1,19 +1,11 @@
-﻿using Dock.Model;
-using Dock.Model.Controls;
+﻿using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
-using Mesen.GUI;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.Debugger.ViewModels
 {

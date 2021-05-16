@@ -1,5 +1,5 @@
-﻿using Mesen.GUI.Config;
-using Mesen.GUI.Config.Shortcuts;
+﻿using Mesen.Config;
+using Mesen.Config.Shortcuts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;

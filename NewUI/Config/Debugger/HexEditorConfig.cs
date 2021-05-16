@@ -10,7 +10,7 @@ using Avalonia;
 using Avalonia.Media;
 using Mesen.Interop;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class HexEditorConfig
 	{

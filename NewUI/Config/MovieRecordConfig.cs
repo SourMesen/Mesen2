@@ -1,6 +1,6 @@
 ﻿using Mesen.Interop;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class MovieRecordConfig
 	{

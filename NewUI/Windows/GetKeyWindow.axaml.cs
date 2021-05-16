@@ -1,17 +1,12 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Mesen.Utilities;
-using Mesen.GUI.Config;
-using Mesen.GUI;
 using Avalonia.Interactivity;
 using System;
-using Mesen.GUI.Config.Shortcuts;
+using Mesen.Config.Shortcuts;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Input;
 using System.ComponentModel;
-using Avalonia.VisualTree;
 using Mesen.Interop;
 
 namespace Mesen.Windows

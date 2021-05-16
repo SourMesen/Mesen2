@@ -7,7 +7,7 @@
 	xmlns:l="using:Mesen.Localization"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:v="using:Mesen.Views"
-	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:cfg="using:Mesen.Config"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"

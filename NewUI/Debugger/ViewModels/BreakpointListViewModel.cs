@@ -1,4 +1,4 @@
-﻿using Mesen.GUI.Debugger;
+﻿using Mesen.Debugger;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;

@@ -1,6 +1,6 @@
 ﻿using Avalonia;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class DebugLogConfig
 	{

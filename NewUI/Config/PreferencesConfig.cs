@@ -1,5 +1,5 @@
 ﻿using Mesen.Localization;
-using Mesen.GUI.Config.Shortcuts;
+using Mesen.Config.Shortcuts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Themes.Fluent;
 using Mesen.Interop;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class PreferencesConfig : BaseConfig<PreferencesConfig>
 	{

@@ -1,11 +1,7 @@
-﻿using Mesen.GUI;
-using Mesen.Interop;
+﻿using Mesen.Interop;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Labels
 {

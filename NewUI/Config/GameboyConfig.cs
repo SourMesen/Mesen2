@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class GameboyConfig : BaseConfig<GameboyConfig>
 	{

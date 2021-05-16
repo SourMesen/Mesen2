@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class CheatCodes
 	{

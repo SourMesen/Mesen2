@@ -1,6 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.Views;

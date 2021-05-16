@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mesen.GUI.Config.Shortcuts
+namespace Mesen.Config.Shortcuts
 {
 	public class KeyCombination
 	{

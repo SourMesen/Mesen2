@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.ViewModels;
-using Mesen.GUI.Debugger;
+using Mesen.Debugger;
 using Mesen.Debugger.ViewModels;
 
 namespace Mesen.Debugger.Views

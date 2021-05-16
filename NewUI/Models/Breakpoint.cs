@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Text;
 
-namespace Mesen.GUI.Debugger
+namespace Mesen.Debugger
 {
 	public class Breakpoint : ReactiveObject
 	{

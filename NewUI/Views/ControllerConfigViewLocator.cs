@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Mesen.ViewModels;
 using System;
 using System.Collections.Generic;

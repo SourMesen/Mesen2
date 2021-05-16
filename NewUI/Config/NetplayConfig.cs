@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	[StructLayout(LayoutKind.Sequential)]
 	public class NetplayConfig

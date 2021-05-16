@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using Mesen.GUI.Config;
+using Mesen.Config;
 using Mesen.Localization;
 using Avalonia.Interactivity;
 using Avalonia.Data;

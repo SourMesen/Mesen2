@@ -1,7 +1,7 @@
 ﻿using Avalonia.Media;
 using Mesen.Debugger.Controls;
-using Mesen.GUI.Config;
-using Mesen.GUI.Debugger;
+using Mesen.Config;
+using Mesen.Debugger;
 using System;
 using System.Collections.Generic;
 using System.Linq;

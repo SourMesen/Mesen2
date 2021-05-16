@@ -1,5 +1,4 @@
-﻿using Mesen.GUI;
-using Mesen.ViewModels;
+﻿using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -13,8 +12,6 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class HexEditorViewModel : ViewModelBase
 	{
-
-
 		public HexEditorViewModel()
 		{
 		}

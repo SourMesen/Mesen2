@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Mesen.Localization;
-using Mesen.GUI.Config.Shortcuts;
+using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 
 namespace Mesen.Interop

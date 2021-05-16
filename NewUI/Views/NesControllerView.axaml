@@ -6,7 +6,7 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:c="using:Mesen.Controls"
-	xmlns:cfg="using:Mesen.GUI.Config"
+	xmlns:cfg="using:Mesen.Config"
 	mc:Ignorable="d" d:DesignWidth="610" d:DesignHeight="230"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"

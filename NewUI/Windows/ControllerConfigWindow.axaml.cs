@@ -1,9 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Mesen.Utilities;
-using Mesen.GUI.Config;
-using Mesen.GUI;
+using Mesen.Config;
 using Avalonia.Interactivity;
 
 namespace Mesen.Windows

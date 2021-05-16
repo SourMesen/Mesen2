@@ -1,4 +1,4 @@
-﻿using Mesen.GUI.Debugger;
+﻿using Mesen.Debugger;
 using System;
 using System.Runtime.InteropServices;
 

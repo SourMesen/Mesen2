@@ -3,7 +3,7 @@ using Mesen.Utilities;
 using System;
 using System.Runtime.InteropServices;
 
-namespace Mesen.GUI.Config
+namespace Mesen.Config
 {
 	public class KeyPresets
 	{
