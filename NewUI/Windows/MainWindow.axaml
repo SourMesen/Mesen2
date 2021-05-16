@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		  xmlns:m="clr-namespace:Mesen"
 		  xmlns:v="using:Mesen.Views"
+			xmlns:l="using:Mesen.Localization"
 		  xmlns:vm="using:Mesen.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="505"
@@ -10,7 +11,7 @@
         x:Class="Mesen.Windows.MainWindow"
 		  Width="512" Height="505"
 		  DragDrop.AllowDrop="True"
-        Title="Mesen">
+        Title="{l:Translate wndTitle}">
 
 	<Design.DataContext>
 		<vm:MainWindowViewModel />
@@ -18,51 +19,86 @@
 
 	<DockPanel Background="Black">
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="_File">
-				<MenuItem Header="_Open..." Click="OnOpenClick">
+			<MenuItem Header="{l:Translate mnuFile}">
+				<MenuItem Header="{l:Translate mnuOpen}" Click="OnOpenClick">
 					<MenuItem.Icon><Image Source="/Assets/Folder.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator/>
-				<MenuItem Header="_Exit" Click="OnExitClick">
+				<MenuItem Header="{l:Translate mnuSaveState}" Click="OnExitClick">
+
+				</MenuItem>
+				<MenuItem Header="{l:Translate mnuLoadState}" Click="OnExitClick">
+					
+				</MenuItem>
+				<Separator/>
+				<MenuItem Header="{l:Translate mnuRecentFiles}" Click="OnExitClick">
+
+				</MenuItem>
+				<Separator/>
+				<MenuItem Header="{l:Translate mnuExit}" Click="OnExitClick">
 					<MenuItem.Icon><Image Source="/Assets/Exit.png" /></MenuItem.Icon>
 				</MenuItem>	
 			</MenuItem>
-			<MenuItem Header="_Game">
-				<MenuItem Header="Reset" Click="OnResetClick">
+			<MenuItem Header="{l:Translate mnuGame}">
+				<MenuItem Header="{l:Translate mnuReset}" Click="OnResetClick">
 					<MenuItem.Icon><Image Source="/Assets/Refresh.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="Power Cycle" Click="OnPowerCycleClick">
+				<MenuItem Header="{l:Translate mnuPowerCycle}" Click="OnPowerCycleClick">
 					<MenuItem.Icon><Image Source="/Assets/PowerCycle.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
 				<MenuItem Header="Switch disk side" Click="OnFdsSwitchDiskSide" />
-				<MenuItem Header="Select disk">
+				<MenuItem Header="{l:Translate mnuSelectDisk}">
+					<MenuItem.Icon><Image Source="/Assets/SaveFloppy.png" /></MenuItem.Icon>
 					<MenuItem Header="Disk 1 Side A" Click="OnFdsInsertDisk0" />
 					<MenuItem Header="Disk 1 Side B" Click="OnFdsInsertDisk1" />
 				</MenuItem>
-				<MenuItem Header="Eject disk" Click="OnFdsEjectDisk" />
+				<MenuItem Header="{l:Translate mnuEjectDisk}" Click="OnFdsEjectDisk">
+					<MenuItem.Icon><Image Source="/Assets/MediaEject.png" /></MenuItem.Icon>
+				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="_Options">
-				<MenuItem Header="Speed">
+			<MenuItem Header="{l:Translate mnuOptions}">
+				<MenuItem Header="{l:Translate mnuEmulationSpeed}">
 					<MenuItem.Icon><Image Source="/Assets/Speed.png" /></MenuItem.Icon>
+					<MenuItem Header="{l:Translate mnuEmuSpeedNormal}" Click="OnFdsInsertDisk1" />
+					<Separator />
+					<MenuItem Header="{l:Translate mnuIncreaseSpeed}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuDecreaseSpeed}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuEmuSpeedMaximumSpeed}" Click="OnFdsInsertDisk1" />
+					<Separator />
+					<MenuItem Header="{l:Translate mnuEmuSpeedTriple}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuEmuSpeedDouble}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuEmuSpeedHalf}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuEmuSpeedQuarter}" Click="OnFdsInsertDisk1" />
+					<Separator />
+					<MenuItem Header="{l:Translate mnuShowFPS}" Click="OnFdsInsertDisk1" />
 				</MenuItem>
-				<MenuItem Header="Video Size">
+				<MenuItem Header="{l:Translate mnuShowFPS}">
 					<MenuItem.Icon><Image Source="/Assets/Fullscreen.png" /></MenuItem.Icon>
+					<MenuItem Header="{l:Translate mnuScale1x}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuScale2x}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuScale3x}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuScale4x}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuScale5x}" Click="OnFdsInsertDisk1" />
+					<MenuItem Header="{l:Translate mnuScale6x}" Click="OnFdsInsertDisk1" />
+					<Separator />
+					<MenuItem Header="{l:Translate mnuFullscreen}" Click="OnFdsInsertDisk1" />
 				</MenuItem>
-				<MenuItem Header="Video Filter">
+				<MenuItem Header="{l:Translate mnuVideoFilter}">
 					<MenuItem.Icon><Image Source="/Assets/VideoFilter.png" /></MenuItem.Icon>
+					
 				</MenuItem>
-				<MenuItem Header="Region">
+				<MenuItem Header="{l:Translate mnuRegion}">
 					<MenuItem.Icon><Image Source="/Assets/WebBrowser.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="_Audio" Click="OnAudioConfigClick">
+				<MenuItem Header="{l:Translate mnuAudioConfig}" Click="OnAudioConfigClick">
 					<MenuItem.Icon><Image Source="/Assets/Audio.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="_Emulation" Click="OnEmulationConfigClick">
+				<MenuItem Header="{l:Translate mnuEmulationConfig}" Click="OnEmulationConfigClick">
 					<MenuItem.Icon><Image Source="/Assets/DipSwitches.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="_Video" Click="OnVideoConfigClick">
+				<MenuItem Header="{l:Translate mnuVideoConfig}" Click="OnVideoConfigClick">
 					<MenuItem.Icon><Image Source="/Assets/VideoOptions.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
@@ -76,54 +112,77 @@
 					<MenuItem.Icon><Image Source="/Assets/GameboyIcon.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="_Preferences" Click="OnPreferencesClick">
+				<MenuItem Header="{l:Translate mnuPreferences}" Click="OnPreferencesClick">
 					<MenuItem.Icon><Image Source="/Assets/Settings.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="_Tools">
-				<MenuItem Header="Cheats" Click="OnCheatsClick">
+			<MenuItem Header="{l:Translate mnuTools}">
+				<MenuItem Header="{l:Translate mnuCheats}" Click="OnCheatsClick">
 					<MenuItem.Icon><Image Source="/Assets/CheatCode.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="Movies">
+				<MenuItem Header="{l:Translate mnuHistoryViewer}">
+					<MenuItem.Icon><Image Source="/Assets/HistoryViewer.png" /></MenuItem.Icon>
+				</MenuItem>				
+				<MenuItem Header="{l:Translate mnuMovies}">
 					<MenuItem.Icon><Image Source="/Assets/Movie.png" /></MenuItem.Icon>
-					<MenuItem Header="Play..." Click="OnPlayMovieClick">
+					<MenuItem Header="{l:Translate mnuPlayMovie}" Click="OnPlayMovieClick">
 						<MenuItem.Icon><Image Source="/Assets/MediaPlay.png" /></MenuItem.Icon>
 					</MenuItem>					
-					<MenuItem Header="Record..." Click="OnRecordMovieClick">
+					<MenuItem Header="{l:Translate mnuRecordMovie}" Click="OnRecordMovieClick">
 						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="Stop" Click="OnStopMovieClick">
+					<MenuItem Header="{l:Translate mnuStopMovie}" Click="OnStopMovieClick">
 						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
 					</MenuItem>
 				</MenuItem>
-				<MenuItem Header="Net Play">
+				<MenuItem Header="{l:Translate mnuNetPlay}">
 					<MenuItem.Icon><Image Source="/Assets/Network.png" /></MenuItem.Icon>
+					<MenuItem Header="{l:Translate mnuStartServer}" />
+					<MenuItem Header="{l:Translate mnuConnect}" />
+					<Separator />
+					<MenuItem Header="{l:Translate mnuNetPlaySelectController}">
+						<MenuItem Header="{l:Translate mnuNetPlayPlayer1}" />
+						<MenuItem Header="{l:Translate mnuNetPlayPlayer2}" />
+						<MenuItem Header="{l:Translate mnuNetPlayPlayer3}" />
+						<MenuItem Header="{l:Translate mnuNetPlayPlayer4}" />
+						<MenuItem Header="{l:Translate mnuNetPlayPlayer5}" />
+					</MenuItem>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="Sound Recorder">
+				<MenuItem Header="{l:Translate mnuSoundRecorder}">
 					<MenuItem.Icon><Image Source="/Assets/Microphone.png" /></MenuItem.Icon>
-					<MenuItem Header="Start recording" Click="OnStartAudioRecordingClick">
+					<MenuItem Header="{l:Translate mnuWaveRecord}" Click="OnStartAudioRecordingClick">
 						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="Stop recording" Click="OnStopAudioRecordingClick">
+					<MenuItem Header="{l:Translate mnuWaveStop}" Click="OnStopAudioRecordingClick">
 						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
 					</MenuItem>
 				</MenuItem>
-				<MenuItem Header="Video Recorder">
+				<MenuItem Header="{l:Translate mnuVideoRecorder}">
 					<MenuItem.Icon><Image Source="/Assets/VideoRecorder.png" /></MenuItem.Icon>
-					<MenuItem Header="Start recording" Click="OnStartVideoRecordingClick">
+					<MenuItem Header="{l:Translate mnuAviRecord}" Click="OnStartVideoRecordingClick">
 						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="Stop recording" Click="OnStopVideoRecordingClick">
+					<MenuItem Header="{l:Translate mnuAviStop}" Click="OnStopVideoRecordingClick">
 						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
 					</MenuItem>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="Log Window" Click="OnLogWindowClick">
+				<MenuItem Header="{l:Translate mnuHdPacks}" Click="OnLogWindowClick">
+					<MenuItem.Icon><Image Source="/Assets/HdPack.png" /></MenuItem.Icon>
+					<MenuItem Header="{l:Translate mnuInstallHdPack}" Click="OnLogWindowClick">
+						<MenuItem.Icon><Image Source="/Assets/Import.png" /></MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="{l:Translate mnuHdPackEditor}" Click="OnLogWindowClick">
+						<MenuItem.Icon><Image Source="/Assets/HdPack.png" /></MenuItem.Icon>
+					</MenuItem>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="{l:Translate mnuLogWindow}" Click="OnLogWindowClick">
 					<MenuItem.Icon><Image Source="/Assets/LogWindow.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="Take Screenshot" Click="OnTakeScreenshotClick">
+				<MenuItem Header="{l:Translate mnuTakeScreenshot}" Click="OnTakeScreenshotClick">
 					<MenuItem.Icon><Image Source="/Assets/Camera.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
@@ -136,6 +195,26 @@
 				</MenuItem>
 				<MenuItem Header="_Tile Viewer" Click="OnTileViewerClick">
 					<MenuItem.Icon><Image Source="/Assets/VerticalLayout.png" /></MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+			<MenuItem Header="{l:Translate mnuHelp}">
+				<MenuItem Header="{l:Translate mnuOnlineHelp}">
+					<MenuItem.Icon><Image Source="/Assets/Help.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="{l:Translate mnuHelpWindow}">
+					<MenuItem.Icon><Image Source="/Assets/CommandLine.png" /></MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="{l:Translate mnuCheckForUpdates}">
+					<MenuItem.Icon><Image Source="/Assets/Update.png" /></MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="{l:Translate mnuReportBug}">
+					<MenuItem.Icon><Image Source="/Assets/Comment.png" /></MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="{l:Translate mnuAbout}">
+					<MenuItem.Icon><Image Source="/Assets/Exclamation.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
 		</Menu>

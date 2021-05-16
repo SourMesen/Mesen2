@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Resources>
 	<Forms>
-		<Form ID="frmMain" Title="Mesen-S">
+		<Form ID="MainWindow">
+			<Control ID="wndTitle">Mesen</Control>
 			<Control ID="mnuFile">File</Control>
 			<Control ID="mnuOpen">Open</Control>
 			<Control ID="mnuReloadRom">Reload ROM</Control>
@@ -88,6 +89,7 @@
 			<Control ID="mnuRunAllTests">Run all tests</Control>
 			<Control ID="mnuDebugger">Debugger</Control>
 			<Control ID="mnuLogWindow">Log Window</Control>
+			<Control ID="mnuHdPacks">HD Packs (NES)</Control>
 			<Control ID="mnuInstallHdPack">Install HD Pack</Control>
 			<Control ID="mnuHdPackEditor">HD Pack Builder</Control>
 			<Control ID="mnuRandomGame">Load Random Game</Control>
