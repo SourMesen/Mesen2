@@ -1,22 +1,30 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-		  xmlns:m="clr-namespace:Mesen"
-		  xmlns:v="using:Mesen.Views"
-			xmlns:l="using:Mesen.Localization"
-		  xmlns:vm="using:Mesen.ViewModels"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="505"
-		  Icon="/Assets/Icon.ico"
-        x:Class="Mesen.Windows.MainWindow"
-		  Width="512" Height="505"
-		  DragDrop.AllowDrop="True"
-        Title="{l:Translate wndTitle}">
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="505"
+	Icon="/Assets/Icon.ico"
+	x:Class="Mesen.Windows.MainWindow"
+	Width="512" Height="505"
+	DragDrop.AllowDrop="True"
+	x:DataType="vm:MainWindowViewModel"
+	Title="{l:Translate wndTitle}"
+>
 
 	<Design.DataContext>
 		<vm:MainWindowViewModel />
 	</Design.DataContext>
 
+	<Window.DataTemplates>
+		<DataTemplate DataType="{x:Type vm:AudioPlayerViewModel}">
+			<v:AudioPlayerView />
+		</DataTemplate>
+	</Window.DataTemplates>
+	
 	<DockPanel Background="Black">
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="{l:Translate mnuFile}">
@@ -40,20 +48,24 @@
 				</MenuItem>	
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuGame}">
-				<MenuItem Header="{l:Translate mnuReset}" Click="OnResetClick">
+				<MenuItem Header="{l:Translate mnuReset}" Click="OnResetClick" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/Refresh.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuPowerCycle}" Click="OnPowerCycleClick">
+				<MenuItem Header="{l:Translate mnuPowerCycle}" Click="OnPowerCycleClick" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/PowerCycle.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="Switch disk side" Click="OnFdsSwitchDiskSide" />
-				<MenuItem Header="{l:Translate mnuSelectDisk}">
+				<MenuItem Header="{l:Translate mnuPowerOff}" Click="OnPowerOffClick" IsEnabled="{CompiledBinding IsGameRunning}">
+					<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
+				</MenuItem>				
+				<Separator IsVisible="{CompiledBinding IsFdsGame}" />
+				<MenuItem Header="Switch disk side" Click="OnFdsSwitchDiskSide" IsVisible="{CompiledBinding IsFdsGame}" />
+				<MenuItem Header="{l:Translate mnuSelectDisk}" IsVisible="{CompiledBinding IsFdsGame}">
 					<MenuItem.Icon><Image Source="/Assets/SaveFloppy.png" /></MenuItem.Icon>
 					<MenuItem Header="Disk 1 Side A" Click="OnFdsInsertDisk0" />
 					<MenuItem Header="Disk 1 Side B" Click="OnFdsInsertDisk1" />
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuEjectDisk}" Click="OnFdsEjectDisk">
+				<MenuItem Header="{l:Translate mnuEjectDisk}" Click="OnFdsEjectDisk" IsVisible="{CompiledBinding IsFdsGame}">
 					<MenuItem.Icon><Image Source="/Assets/MediaEject.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
@@ -73,7 +85,7 @@
 					<Separator />
 					<MenuItem Header="{l:Translate mnuShowFPS}" Click="OnFdsInsertDisk1" />
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuShowFPS}">
+				<MenuItem Header="{l:Translate mnuVideoScale}">
 					<MenuItem.Icon><Image Source="/Assets/Fullscreen.png" /></MenuItem.Icon>
 					<MenuItem Header="{l:Translate mnuScale1x}" Click="OnFdsInsertDisk1" />
 					<MenuItem Header="{l:Translate mnuScale2x}" Click="OnFdsInsertDisk1" />
@@ -120,10 +132,10 @@
 				<MenuItem Header="{l:Translate mnuCheats}" Click="OnCheatsClick">
 					<MenuItem.Icon><Image Source="/Assets/CheatCode.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuHistoryViewer}">
+				<MenuItem Header="{l:Translate mnuHistoryViewer}" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/HistoryViewer.png" /></MenuItem.Icon>
 				</MenuItem>				
-				<MenuItem Header="{l:Translate mnuMovies}">
+				<MenuItem Header="{l:Translate mnuMovies}" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/Movie.png" /></MenuItem.Icon>
 					<MenuItem Header="{l:Translate mnuPlayMovie}" Click="OnPlayMovieClick">
 						<MenuItem.Icon><Image Source="/Assets/MediaPlay.png" /></MenuItem.Icon>
@@ -149,7 +161,7 @@
 					</MenuItem>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="{l:Translate mnuSoundRecorder}">
+				<MenuItem Header="{l:Translate mnuSoundRecorder}" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/Microphone.png" /></MenuItem.Icon>
 					<MenuItem Header="{l:Translate mnuWaveRecord}" Click="OnStartAudioRecordingClick">
 						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
@@ -158,7 +170,7 @@
 						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
 					</MenuItem>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuVideoRecorder}">
+				<MenuItem Header="{l:Translate mnuVideoRecorder}" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/VideoRecorder.png" /></MenuItem.Icon>
 					<MenuItem Header="{l:Translate mnuAviRecord}" Click="OnStartVideoRecordingClick">
 						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
@@ -173,7 +185,7 @@
 					<MenuItem Header="{l:Translate mnuInstallHdPack}" Click="OnLogWindowClick">
 						<MenuItem.Icon><Image Source="/Assets/Import.png" /></MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="{l:Translate mnuHdPackEditor}" Click="OnLogWindowClick">
+					<MenuItem Header="{l:Translate mnuHdPackEditor}" Click="OnLogWindowClick" IsEnabled="{CompiledBinding IsNesGame}">
 						<MenuItem.Icon><Image Source="/Assets/HdPack.png" /></MenuItem.Icon>
 					</MenuItem>
 				</MenuItem>
@@ -182,7 +194,7 @@
 					<MenuItem.Icon><Image Source="/Assets/LogWindow.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="{l:Translate mnuTakeScreenshot}" Click="OnTakeScreenshotClick">
+				<MenuItem Header="{l:Translate mnuTakeScreenshot}" Click="OnTakeScreenshotClick" IsEnabled="{CompiledBinding IsGameRunning}">
 					<MenuItem.Icon><Image Source="/Assets/Camera.png" /></MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
@@ -218,9 +230,7 @@
 				</MenuItem>
 			</MenuItem>
 		</Menu>
-		<Panel DockPanel.Dock="Bottom" IsVisible="{Binding ShowAudioPlayer}">
-			<v:AudioPlayerView DataContext="{Binding AudioPlayer}" />
-		</Panel>
+		<ContentControl DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />
 		<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" />
 	</DockPanel>
 </Window>

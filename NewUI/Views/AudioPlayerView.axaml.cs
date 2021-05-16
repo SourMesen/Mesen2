@@ -6,14 +6,29 @@ using Mesen.GUI.Config;
 using Avalonia.Interactivity;
 using Mesen.GUI;
 using Mesen.GUI.Config.Shortcuts;
+using Avalonia.Threading;
+using Mesen.ViewModels;
 
 namespace Mesen.Views
 {
 	public class AudioPlayerView : UserControl
 	{
+		private DispatcherTimer? _timer;
+
 		public AudioPlayerView()
 		{
 			InitializeComponent();
+		}
+
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			_timer = new DispatcherTimer(System.TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => ((AudioPlayerViewModel)DataContext!).UpdatePauseFlag());
+			_timer.Start();
+		}
+
+		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			_timer?.Stop();
 		}
 
 		private void InitializeComponent()

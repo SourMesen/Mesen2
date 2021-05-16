@@ -124,6 +124,12 @@ namespace Mesen.Windows
 					});
 					break;
 
+				case ConsoleNotificationType.EmulationStopped:
+					Dispatcher.UIThread.Post(() => {
+						_model!.RomInfo = new RomInfo();
+					});
+					break;
+
 				case ConsoleNotificationType.ResolutionChanged:
 					Dispatcher.UIThread.Post(() => {
 						ResizeRenderer();
@@ -237,9 +243,17 @@ namespace Mesen.Windows
 			new LogWindow().ShowCentered(this);
 		}
 
-		private void OnStartAudioRecordingClick(object sender, RoutedEventArgs e)
+		private async void OnStartAudioRecordingClick(object sender, RoutedEventArgs e)
 		{
-			RecordApi.WaveRecord("c:\\temp\\out.wav");
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Filters = new List<FileDialogFilter>() {
+				new FileDialogFilter() { Name = "Wave files (*.wav)", Extensions = { "wav" } }
+			};
+
+			string filename = await sfd.ShowAsync(VisualRoot as Window);
+			if(filename != null) {
+				RecordApi.WaveRecord(filename);
+			}
 		}
 
 		private void OnStopAudioRecordingClick(object sender, RoutedEventArgs e)
@@ -291,6 +305,11 @@ namespace Mesen.Windows
 		private void OnPowerCycleClick(object sender, RoutedEventArgs e)
 		{
 			EmuApi.PowerCycle();
+		}
+
+		private void OnPowerOffClick(object sender, RoutedEventArgs e)
+		{
+			EmuApi.Stop();
 		}
 
 		private void OnFdsSwitchDiskSide(object sender, RoutedEventArgs e)

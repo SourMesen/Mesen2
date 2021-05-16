@@ -145,27 +145,25 @@ namespace Mesen.GUI
 		public IntPtr RomPath;
 		public IntPtr PatchPath;
 		public RomFormat Format;
-		//public CoprocessorType CoprocessorType;
-		//public SnesCartInformation Header;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
 		public byte[] Sha1;
 	}
 
-	public struct RomInfo
+	public class RomInfo
 	{
-		public string RomPath;
-		public string PatchPath;
-		public RomFormat Format;
-		public string Sha1;
+		public string RomPath = "";
+		public string PatchPath = "";
+		public RomFormat Format = RomFormat.Unknown;
+		public string Sha1 = "";
+
+		public RomInfo() { }
 
 		public RomInfo(InteropRomInfo romInfo)
 		{
 			RomPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.RomPath);
 			PatchPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.PatchPath);
 			Format = romInfo.Format;
-			//Header = romInfo.Header;
-			//CoprocessorType = romInfo.CoprocessorType;
 			Sha1 = Encoding.UTF8.GetString(romInfo.Sha1);
 		}
 
