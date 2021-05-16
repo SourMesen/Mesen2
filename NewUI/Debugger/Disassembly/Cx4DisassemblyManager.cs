@@ -1,5 +1,5 @@
 ﻿using Mesen.Debugger.Integration;
-using Mesen.GUI;
+using Mesen.Interop;
 
 namespace Mesen.Debugger.Disassembly
 {

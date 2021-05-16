@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace Mesen.GUI
+namespace Mesen.Interop
 {
 	public interface BaseState
 	{

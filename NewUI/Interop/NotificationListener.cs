@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mesen.GUI
+namespace Mesen.Interop
 {
 	public class NotificationListener : IDisposable
 	{

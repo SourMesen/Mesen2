@@ -7,7 +7,7 @@
 	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
 	xmlns:c="using:Mesen.Controls"
-	xmlns:cfg="using:Mesen.GUI"
+	xmlns:i="using:Mesen.Interop"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
@@ -31,7 +31,7 @@
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
 			<c:EnumComboBox 
 				Grid.Column="1" Grid.Row="0"
-				EnumType="{x:Type cfg:SnesMemoryType}"
+				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding MemoryType}"
 			/>
 
@@ -55,21 +55,21 @@
 			<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="3"
-				EnumType="{x:Type cfg:TileFormat}"
+				EnumType="{x:Type i:TileFormat}"
 				SelectedItem="{CompiledBinding TileFormat}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="4"
-				EnumType="{x:Type cfg:TileLayout}"
+				EnumType="{x:Type i:TileLayout}"
 				SelectedItem="{CompiledBinding TileLayout}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="5" Text="Background:" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="5"				
-				EnumType="{x:Type cfg:TileBackground}"
+				EnumType="{x:Type i:TileBackground}"
 				SelectedItem="{CompiledBinding TileBackground}"
 			/>
 			

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Mesen.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Mesen.GUI
+namespace Mesen.Interop
 {
 	public class InputApi
 	{

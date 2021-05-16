@@ -1,6 +1,5 @@
-﻿using Avalonia.Controls;
-using Mesen.GUI;
-using Mesen.GUI.Debugger;
+﻿using Mesen.GUI.Debugger;
+using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

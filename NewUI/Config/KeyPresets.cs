@@ -1,4 +1,5 @@
-﻿using Mesen.Utilities;
+﻿using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.Runtime.InteropServices;
 

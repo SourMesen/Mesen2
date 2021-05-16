@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Mesen.Utilities;
 using Mesen.GUI.Config;
 using Mesen.GUI;
+using Mesen.Interop;
 
 namespace Mesen.Views
 {

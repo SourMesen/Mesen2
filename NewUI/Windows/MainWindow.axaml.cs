@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using Mesen.GUI.Config.Shortcuts;
 using Mesen.Utilities;
+using Mesen.Interop;
 
 namespace Mesen.Windows
 {

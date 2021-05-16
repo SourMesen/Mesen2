@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Mesen.GUI;
 using Mesen.GUI.Config;
+using Mesen.Interop;
 
 namespace Mesen.Localization
 {

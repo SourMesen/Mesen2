@@ -1,6 +1,7 @@
-﻿using Mesen.GUI.Forms;
+﻿using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Mesen.GUI.Config
 	public class RecentItems
 	{
 		private const int MaxRecentFiles = 10;
-		public List<RecentItem> Items = new List<RecentItem>();
+		public ObservableCollection<RecentItem> Items = new ObservableCollection<RecentItem>();
 
 		public void AddRecentFile(ResourcePath romFile, ResourcePath? patchFile)
 		{

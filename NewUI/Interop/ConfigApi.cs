@@ -8,10 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
-using Mesen.GUI.Forms;
-using static Mesen.GUI.Config.AudioConfig;
+using Mesen.Utilities;
 
-namespace Mesen.GUI
+namespace Mesen.Interop
 {
 	public class ConfigApi
 	{

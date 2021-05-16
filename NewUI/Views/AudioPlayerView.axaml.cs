@@ -8,6 +8,7 @@ using Mesen.GUI;
 using Mesen.GUI.Config.Shortcuts;
 using Avalonia.Threading;
 using Mesen.ViewModels;
+using Mesen.Interop;
 
 namespace Mesen.Views
 {

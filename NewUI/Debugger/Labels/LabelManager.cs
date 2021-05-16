@@ -1,6 +1,5 @@
-﻿using Mesen.GUI;
-using Mesen.GUI.Config;
-using Mesen.GUI.Debugger;
+﻿using Mesen.GUI.Debugger;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;

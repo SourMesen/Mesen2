@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using Mesen.Interop;
 
 namespace Mesen.GUI.Config
 {

@@ -7,11 +7,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Mesen.Localization;
-using Mesen.GUI.Config;
-using Mesen.GUI.Forms;
 using Mesen.GUI.Config.Shortcuts;
+using Mesen.Utilities;
 
-namespace Mesen.GUI
+namespace Mesen.Interop
 {
 	public class EmuApi
 	{

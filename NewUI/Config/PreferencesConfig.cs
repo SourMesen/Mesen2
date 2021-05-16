@@ -1,6 +1,5 @@
 ﻿using Mesen.Localization;
 using Mesen.GUI.Config.Shortcuts;
-using Mesen.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,7 @@ using Avalonia.Styling;
 using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Themes.Fluent;
+using Mesen.Interop;
 
 namespace Mesen.GUI.Config
 {

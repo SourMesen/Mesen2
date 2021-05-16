@@ -1,5 +1,6 @@
 ﻿using Mesen.GUI;
 using Mesen.GUI.Config;
+using Mesen.Interop;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;

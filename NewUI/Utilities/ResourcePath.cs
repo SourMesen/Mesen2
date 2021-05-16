@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mesen.GUI.Forms
+namespace Mesen.Utilities
 {
 	public struct ResourcePath : IEquatable<ResourcePath>
 	{

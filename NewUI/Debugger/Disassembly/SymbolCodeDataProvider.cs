@@ -1,6 +1,6 @@
 ﻿using Mesen.Debugger.Controls;
 using Mesen.Debugger.Integration;
-using Mesen.GUI;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;

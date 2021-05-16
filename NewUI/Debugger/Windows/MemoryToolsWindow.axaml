@@ -7,7 +7,7 @@
 	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
 	xmlns:c="using:Mesen.Controls"
-	xmlns:cfg="using:Mesen.GUI"
+	xmlns:i="using:Mesen.Interop"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
@@ -26,7 +26,7 @@
 			<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
 			<c:EnumComboBox
 				DockPanel.Dock="Left"
-				EnumType="{x:Type cfg:SnesMemoryType}"
+				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding MemoryType}"
 			/>
 			<ComboBox

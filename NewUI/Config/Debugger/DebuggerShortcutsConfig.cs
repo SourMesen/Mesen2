@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Windows.Forms;
-using Mesen.GUI.Forms;
-using static Mesen.GUI.Forms.BaseForm;
 
 namespace Mesen.GUI.Config
 {

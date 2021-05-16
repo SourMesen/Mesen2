@@ -1,12 +1,10 @@
 ﻿using Avalonia.Controls;
 using Mesen.Debugger.Controls;
-using Mesen.GUI;
+using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;

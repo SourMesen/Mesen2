@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Mesen.GUI.Config;
+using Mesen.Interop;
 using Microsoft.Win32;
 
 namespace Mesen.GUI.Config

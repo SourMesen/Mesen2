@@ -12,6 +12,7 @@ using System.Linq;
 using Avalonia.Input;
 using System.ComponentModel;
 using Avalonia.VisualTree;
+using Mesen.Interop;
 
 namespace Mesen.Windows
 {

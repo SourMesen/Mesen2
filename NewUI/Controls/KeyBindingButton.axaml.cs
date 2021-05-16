@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Mesen.GUI;
+using Mesen.Interop;
 using Mesen.Windows;
 using System;
 

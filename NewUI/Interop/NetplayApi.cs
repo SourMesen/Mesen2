@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Mesen.GUI
+namespace Mesen.Interop
 {
 	public class NetplayApi
 	{

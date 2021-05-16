@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Mesen.GUI;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;

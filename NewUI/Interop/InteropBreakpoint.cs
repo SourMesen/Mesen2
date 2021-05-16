@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Mesen.GUI.Debugger;
+using System;
 using System.Runtime.InteropServices;
 
-namespace Mesen.GUI.Debugger
+namespace Mesen.Interop
 {
 	public struct InteropBreakpoint
 	{

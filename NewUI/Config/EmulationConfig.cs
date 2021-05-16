@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Mesen.Interop;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;

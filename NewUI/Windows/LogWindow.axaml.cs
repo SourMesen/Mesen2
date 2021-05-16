@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using Mesen.GUI.Config;
 using Avalonia.Data;
+using Mesen.Interop;
 
 namespace Mesen.Windows
 {
