@@ -19,7 +19,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern UInt32 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);
 
 		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key);
-		public static string GetKeyName(UInt32 key) { return Utf8Marshaler.PtrToStringUtf8(InputApi.GetKeyNameWrapper(key)); }
+		public static string GetKeyName(UInt32 key) { return Utf8Utilities.PtrToStringUtf8(InputApi.GetKeyNameWrapper(key)); }
 
 		[DllImport(DllPath, EntryPoint = "GetPressedKeys")] private static extern void GetPressedKeysWrapper(IntPtr keyBuffer);
 		public static List<UInt32> GetPressedKeys()

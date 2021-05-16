@@ -31,7 +31,7 @@ namespace Mesen.GUI.Config
 
 		public void AddRecentScript(string scriptFile)
 		{
-			string existingItem = RecentScripts.Where((file) => file == scriptFile).FirstOrDefault();
+			string? existingItem = RecentScripts.Where((file) => file == scriptFile).FirstOrDefault();
 			if(existingItem != null) {
 				RecentScripts.Remove(existingItem);
 			}

@@ -94,16 +94,15 @@ namespace Mesen.Localization
 			_language = language;
 
 			try {
-				using(StreamReader reader = new StreamReader(Assembly.GetEntryAssembly().GetManifestResourceStream("Mesen.Localization." + filename))) {
+				Assembly assembly = Assembly.GetExecutingAssembly();
+				using(StreamReader reader = new StreamReader(assembly.GetManifestResourceStream("Mesen.Localization." + filename)!)) {
 					_resources.LoadXml(reader.ReadToEnd());
 				}
 
-				using(StreamReader reader = new StreamReader(Assembly.GetEntryAssembly().GetManifestResourceStream("Mesen.Localization.resources.en.xml"))) {
+				using(StreamReader reader = new StreamReader(assembly.GetManifestResourceStream("Mesen.Localization.resources.en.xml")!)) {
 					_enResources.LoadXml(reader.ReadToEnd());
 				}
 			} catch {
-				_resources.Load("C:/Code/Mesen-S/NewUI/Localization/resources.en.xml");
-				_enResources.Load("C:/Code/Mesen-S/NewUI/Localization/resources.en.xml");
 			}
 		}
 

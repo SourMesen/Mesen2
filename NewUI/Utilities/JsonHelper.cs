@@ -14,7 +14,11 @@ namespace Mesen.Utilities
 		{
 			using MemoryStream stream = new MemoryStream();
 			byte[] jsonData = JsonSerializer.SerializeToUtf8Bytes(obj);
-			return JsonSerializer.Deserialize<T>(jsonData);
+			T? clone = JsonSerializer.Deserialize<T>(jsonData);
+			if(clone == null) {
+				throw new Exception("Invalid object");
+			}
+			return clone;
 		}
 	}
 }

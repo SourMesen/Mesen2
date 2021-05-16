@@ -20,31 +20,19 @@ namespace Mesen.Debugger.Views
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		private void Tapped(object sender, RoutedEventArgs e)
+		private void OnGridClick(object sender, RoutedEventArgs e)
 		{
-			DataGrid grid = (sender as DataGrid);
-			BreakpointViewModel bp = (BreakpointViewModel)grid.SelectedItem;
-			if(bp != null) {
-				if(grid.CurrentColumn.Header.ToString().Length == 1) {
-					if(grid.CurrentColumn.Header.ToString() == "E") {
-						bp.Breakpoint.Enabled = !bp.Breakpoint.Enabled;
-					} else if(grid.CurrentColumn.Header.ToString() == "M") {
-						bp.Breakpoint.MarkEvent = !bp.Breakpoint.MarkEvent;
-						bp.Breakpoint.StartAddress++;
-						bp.Breakpoint.EndAddress++;
-						bp.Breakpoint.AddressType = BreakpointAddressType.AddressRange;
-					}
-				}
-			}
-		}
-
-		private void DoubleTapped(object sender, RoutedEventArgs e)
-		{
-			DataGrid grid = (sender as DataGrid);
-			Breakpoint bp = grid.SelectedItem as Breakpoint;
-			if(bp != null) {
-				if(grid.CurrentColumn.Header.ToString().Length > 1) {
-
+			DataGrid? grid = (sender as DataGrid);
+			BreakpointViewModel? bp = grid?.SelectedItem as BreakpointViewModel;
+			if(bp != null && grid != null) {
+				string? header = grid.CurrentColumn.Header.ToString();
+				if(header == "E") {
+					bp.Breakpoint.Enabled = !bp.Breakpoint.Enabled;
+				} else if(header == "M") {
+					bp.Breakpoint.MarkEvent = !bp.Breakpoint.MarkEvent;
+					bp.Breakpoint.StartAddress++;
+					bp.Breakpoint.EndAddress++;
+					bp.Breakpoint.AddressType = BreakpointAddressType.AddressRange;
 				}
 			}
 		}

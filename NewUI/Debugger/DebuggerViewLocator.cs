@@ -15,11 +15,14 @@ namespace Mesen.Debugger
 	{
 		public IControl Build(object data)
 		{
-			var name = data.GetType().FullName.Replace("ViewModel", "View");
-			var type = Type.GetType(name);
+			string? name = data.GetType().FullName?.Replace("ViewModel", "View");
+			if(name == null) {
+				return new TextBlock { Text = "Not Found: " + name };
+			}
 
+			Type? type = Type.GetType(name);
 			if(type != null) {
-				object obj = Activator.CreateInstance(type);
+				object? obj = Activator.CreateInstance(type);
 				if(obj is Control) {
 					return (Control)obj;
 				} else {

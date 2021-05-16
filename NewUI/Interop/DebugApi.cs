@@ -28,7 +28,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void ClearTraceLog();
 
 		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern IntPtr GetDebuggerLogWrapper();
-		public static string GetLog() { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetDebuggerLogWrapper()).Replace("\n", Environment.NewLine); }
+		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetDebuggerLogWrapper()).Replace("\n", Environment.NewLine); }
 
 		[DllImport(DllPath, EntryPoint = "GetDisassemblyLineData")] private static extern void GetDisassemblyLineDataWrapper(CpuType type, UInt32 lineIndex, ref InteropCodeLineData lineData);
 		public static CodeLineData GetDisassemblyLineData(CpuType type, UInt32 lineIndex)
@@ -48,7 +48,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
-		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
+		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
 
 		[DllImport(DllPath, EntryPoint = "GetState")] private static extern void GetState(IntPtr state, CpuType cpuType);
 		
@@ -67,7 +67,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)]string content, Int32 scriptId = -1);
 		[DllImport(DllPath)] public static extern void RemoveScript(Int32 scriptId);
 		[DllImport(DllPath, EntryPoint = "GetScriptLog")] private static extern IntPtr GetScriptLogWrapper(Int32 scriptId);
-		public static string GetScriptLog(Int32 scriptId) { return Utf8Marshaler.PtrToStringUtf8(DebugApi.GetScriptLogWrapper(scriptId)).Replace("\n", Environment.NewLine); }
+		public static string GetScriptLog(Int32 scriptId) { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetScriptLogWrapper(scriptId)).Replace("\n", Environment.NewLine); }
 
 		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
 

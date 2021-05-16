@@ -6,7 +6,7 @@ namespace Mesen.GUI
 	{
 		public delegate void NotificationCallback(int type, IntPtr parameter);
 		public delegate void NotificationEventHandler(NotificationEventArgs e);
-		public event NotificationEventHandler OnNotification;
+		public event NotificationEventHandler? OnNotification;
 
 		//Need to keep a reference to this callback, or it will get garbage collected (since the only reference to it is on the native side)
 		NotificationCallback _callback;
@@ -30,12 +30,10 @@ namespace Mesen.GUI
 
 		public void ProcessNotification(int type, IntPtr parameter)
 		{
-			if(this.OnNotification != null) {
-				this.OnNotification(new NotificationEventArgs() {
-					NotificationType = (ConsoleNotificationType)type,
-					Parameter = parameter
-				});
-			}
+			OnNotification?.Invoke(new NotificationEventArgs() {
+				NotificationType = (ConsoleNotificationType)type,
+				Parameter = parameter
+			});
 		}
 	}
 

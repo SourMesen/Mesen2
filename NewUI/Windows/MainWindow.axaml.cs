@@ -27,8 +27,9 @@ namespace Mesen.Windows
 {
 	public class MainWindow : Window
 	{
-		private NotificationListener _listener;
+		private NotificationListener? _listener;
 		private ConfigWindow? _cfgWindow = null;
+		private MainWindowViewModel? _model = null;
 
 		public MainWindow()
 		{
@@ -37,6 +38,15 @@ namespace Mesen.Windows
 #if DEBUG
 			this.AttachDevTools();
 #endif
+		}
+
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is MainWindowViewModel model) {
+				_model = model;
+			} else {
+				throw new Exception("Invalid model");
+			}
 		}
 
 		private void ResizeRenderer()
@@ -110,7 +120,7 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.GameLoaded:
 					RomInfo romInfo = EmuApi.GetRomInfo();
 					Dispatcher.UIThread.Post(() => {
-						(this.DataContext as MainWindowViewModel).RomInfo = romInfo;
+						_model!.RomInfo = romInfo;
 					});
 					break;
 
@@ -177,7 +187,7 @@ namespace Mesen.Windows
 				_cfgWindow.Closed += cfgWindow_Closed;
 				_cfgWindow.ShowCentered(this);
 			} else {
-				(_cfgWindow.DataContext as ConfigViewModel).SelectTab(tab);
+				(_cfgWindow.DataContext as ConfigViewModel)!.SelectTab(tab);
 				_cfgWindow.Activate();
 			}
 		}

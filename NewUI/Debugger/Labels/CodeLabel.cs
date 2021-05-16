@@ -12,8 +12,8 @@ namespace Mesen.Debugger.Labels
 	{
 		public UInt32 Address;
 		public SnesMemoryType MemoryType;
-		public string Label;
-		public string Comment;
+		public string Label = "";
+		public string Comment = "";
 		public CodeLabelFlags Flags;
 		public UInt32 Length = 1;
 
@@ -53,7 +53,7 @@ namespace Mesen.Debugger.Labels
 		}
 
 		private static char[] _separatar = new char[1] { ':' };
-		public static CodeLabel FromString(string data)
+		public static CodeLabel? FromString(string data)
 		{
 			string[] rowData = data.Split(_separatar, 4);
 			if(rowData.Length < 3) {
@@ -115,12 +115,13 @@ namespace Mesen.Debugger.Labels
 			}
 
 			CodeLabel codeLabel;
-			codeLabel = new CodeLabel();
-			codeLabel.Address = address;
-			codeLabel.MemoryType = type;
-			codeLabel.Label = labelName;
-			codeLabel.Length = length;
-			codeLabel.Comment = "";
+			codeLabel = new CodeLabel {
+				Address = address,
+				MemoryType = type,
+				Label = labelName,
+				Length = length,
+				Comment = ""
+			};
 
 			if(rowData.Length > 3) {
 				codeLabel.Comment = rowData[3].Replace("\\n", "\n");

@@ -14,7 +14,11 @@ namespace Mesen.GUI.Config
 	{
 		public T Clone() 
 		{
-			return JsonHelper.Clone<T>(this as T);
+			if(this is T obj) {
+				return JsonHelper.Clone<T>(obj);
+			} else {
+				throw new InvalidCastException();
+			}
 		}
 	}
 }

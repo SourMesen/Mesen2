@@ -27,7 +27,7 @@ namespace Mesen.GUI.Config.Shortcuts
 		{
 		}
 
-		public KeyCombination(List<UInt32> scanCodes = null)
+		public KeyCombination(List<UInt32>? scanCodes = null)
 		{
 			if(scanCodes != null) {
 				if(scanCodes.Any(code => code > 0xFFFF)) {

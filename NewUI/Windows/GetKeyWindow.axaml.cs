@@ -20,7 +20,7 @@ namespace Mesen.Windows
 		private List<UInt32> _prevScanCodes = new List<UInt32>();
 		private TextBlock lblCurrentKey;
 		public bool SingleKeyMode { get; set; } = false;
-		public KeyCombination ShortcutKey { get; set; }
+		public KeyCombination ShortcutKey { get; set; } = new KeyCombination();
 
 		public GetKeyWindow()
 		{

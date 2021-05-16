@@ -19,7 +19,9 @@ namespace Mesen.Windows
 {
 	public class ConfigWindow : Window
 	{
+		private ConfigViewModel? _model;
 		private DispatcherTimer _timer;
+
 		public ConfigWindow()
 		{
 			InitializeComponent();
@@ -27,7 +29,16 @@ namespace Mesen.Windows
 			this.AttachDevTools();
 #endif
 
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => (this.DataContext as ConfigViewModel).ApplyConfig());
+			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => _model?.ApplyConfig());
+		}
+
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is ConfigViewModel model) {
+				_model = model;
+			} else {
+				throw new Exception("Invalid model");
+			}
 		}
 
 		private void InitializeComponent()
@@ -43,24 +54,22 @@ namespace Mesen.Windows
 				return;
 			}
 
-			_timer.Start();
+			_timer?.Start();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			(this.DataContext as ConfigViewModel)?.SaveConfig();
-			this.Close();
+			_model?.SaveConfig();
+			Close();
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			base.OnClosing(e);
-
 			if(Design.IsDesignMode) {
 				return;
 			}

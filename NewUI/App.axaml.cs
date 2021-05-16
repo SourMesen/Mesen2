@@ -23,7 +23,6 @@ namespace Mesen
 		{
 			EmuApi.InitDll();
 
-			ConfigManager.InitHomeFolder();
 			Directory.CreateDirectory(ConfigManager.HomeFolder);
 			Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
 

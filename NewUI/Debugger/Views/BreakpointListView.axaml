@@ -56,8 +56,7 @@
 			SelectionMode="Extended"
 			FontFamily="Microsoft Sans Serif"
 			GridLinesVisibility="All"
-			Tapped="Tapped"
-			DoubleTapped="DoubleTapped"
+			Tapped="OnGridClick"
 			IsReadOnly="True"
 		>
 			<DataGrid.Columns>

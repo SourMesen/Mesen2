@@ -1,3 +1,5 @@
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -62,8 +64,11 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnDataContextChanged(EventArgs e)
 		{
-			base.OnDataContextChanged(e);
-			_model = this.DataContext as TileViewerViewModel;
+			if(this.DataContext is TileViewerViewModel model) {
+				_model = model;
+			} else {
+				throw new Exception("Unexception model");
+			}
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)

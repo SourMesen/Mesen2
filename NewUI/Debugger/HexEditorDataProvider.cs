@@ -11,9 +11,9 @@ namespace Mesen.Debugger
 	public class HexEditorDataProvider : IHexEditorDataProvider
 	{
 		SnesMemoryType _memoryType;
-		AddressCounters[] _counters;
-		byte[] _cdlData;
-		bool[] _hasLabel;
+		AddressCounters[] _counters = Array.Empty<AddressCounters>();
+		byte[]? _cdlData;
+		bool[] _hasLabel = Array.Empty<bool>();
 		UInt64 _masterClock;
 		bool _showExec;
 		bool _showWrite;
@@ -28,8 +28,8 @@ namespace Mesen.Debugger
 		bool _highlightLabelledBytes;
 		bool _highlightBreakpoints;
 		ByteInfo _byteInfo = new ByteInfo();
-		BreakpointTypeFlags[] _breakpointTypes;
-		byte[] _data = new byte[0];
+		BreakpointTypeFlags[]? _breakpointTypes;
+		byte[] _data = Array.Empty<byte>();
 
 		private long _firstByteIndex = 0;
 

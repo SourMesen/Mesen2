@@ -83,9 +83,9 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
 
 		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
-		public static string GetLog() { return Utf8Marshaler.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
+		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
 		[DllImport(DllPath)] public static extern void WriteLogEntry([MarshalAs(UnmanagedType.LPUTF8Str)]string message);
-		[DllImport(DllPath)] public static extern void DisplayMessage([MarshalAs(UnmanagedType.LPUTF8Str)]string title, [MarshalAs(UnmanagedType.LPUTF8Str)]string message, [MarshalAs(UnmanagedType.LPUTF8Str)]string param1 = null);
+		[DllImport(DllPath)] public static extern void DisplayMessage([MarshalAs(UnmanagedType.LPUTF8Str)]string title, [MarshalAs(UnmanagedType.LPUTF8Str)]string message, [MarshalAs(UnmanagedType.LPUTF8Str)]string? param1 = null);
 
 		[DllImport(DllPath)] public static extern IntPtr GetArchiveRomList([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
 
@@ -161,8 +161,8 @@ namespace Mesen.GUI
 
 		public RomInfo(InteropRomInfo romInfo)
 		{
-			RomPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.RomPath);
-			PatchPath = (ResourcePath)Utf8Marshaler.GetStringFromIntPtr(romInfo.PatchPath);
+			RomPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.RomPath);
+			PatchPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.PatchPath);
 			Format = romInfo.Format;
 			//Header = romInfo.Header;
 			//CoprocessorType = romInfo.CoprocessorType;

@@ -11,7 +11,7 @@ void StereoPanningFilter::UpdateFactors(double angle)
 void StereoPanningFilter::ApplyFilter(int16_t* stereoBuffer, size_t sampleCount, uint32_t angle)
 {
 	constexpr double PI = 3.14159265358979323846;
-	angle = angle / 180.0 * PI;
+	angle = (uint32_t)(angle / 180.0 * PI);
 	UpdateFactors(angle);
 
 	for(size_t i = 0; i < sampleCount * 2; i+=2) {

@@ -37,7 +37,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern IntPtr GetAudioDevicesWrapper();
 		public static List<string> GetAudioDevices()
 		{
-			return new List<string>(Utf8Marshaler.PtrToStringUtf8(ConfigApi.GetAudioDevicesWrapper()).Split(new string[1] { "||" }, StringSplitOptions.RemoveEmptyEntries));
+			return new List<string>(Utf8Utilities.PtrToStringUtf8(ConfigApi.GetAudioDevicesWrapper()).Split(new string[1] { "||" }, StringSplitOptions.RemoveEmptyEntries));
 		}
 	}
 

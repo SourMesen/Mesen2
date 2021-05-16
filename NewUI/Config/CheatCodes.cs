@@ -1,18 +1,14 @@
-﻿using Mesen.GUI.Config;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Text.Json;
 
 namespace Mesen.GUI.Config
 {
 	public class CheatCodes
 	{
-		private static string FilePath { get { return Path.Combine(ConfigManager.CheatFolder, EmuApi.GetRomInfo().GetRomName() + ".xml"); } }
+		private static string FilePath { get { return Path.Combine(ConfigManager.CheatFolder, EmuApi.GetRomInfo().GetRomName() + ".json"); } }
 
 		public List<CheatCode> Cheats = new List<CheatCode>();
 
@@ -27,10 +23,7 @@ namespace Mesen.GUI.Config
 
 			if(File.Exists(path)) {
 				try {
-					XmlSerializer xmlSerializer = new XmlSerializer(typeof(CheatCodes));
-					using(TextReader textReader = new StreamReader(path)) {
-						cheats = (CheatCodes)xmlSerializer.Deserialize(textReader);
-					}
+					cheats = JsonSerializer.Deserialize<CheatCodes>(File.ReadAllText(path), new JsonSerializerOptions() { IncludeFields = true }) ?? new CheatCodes();
 				} catch { }
 			}
 			
@@ -40,14 +33,7 @@ namespace Mesen.GUI.Config
 		public void Save()
 		{
 			try {
-				XmlWriterSettings ws = new XmlWriterSettings();
-				ws.NewLineHandling = NewLineHandling.Entitize;
-				ws.Indent = true;
-
-				XmlSerializer xmlSerializer = new XmlSerializer(typeof(CheatCodes));
-				using(XmlWriter xmlWriter = XmlWriter.Create(CheatCodes.FilePath, ws)) {
-					xmlSerializer.Serialize(xmlWriter, this);
-				}
+				File.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, new JsonSerializerOptions() { WriteIndented = true, IncludeFields = true }));
 			} catch {
 			}
 		}
@@ -78,10 +64,10 @@ namespace Mesen.GUI.Config
 	{
 		private static string _convertTable = "DF4709156BC8A23E";
 
-		public string Description;
+		public string Description = "";
 		public CheatFormat Format;
 		public bool Enabled;
-		public string Codes;
+		public string Codes = "";
 
 		public List<UInt32> GetEncodedCheats()
 		{

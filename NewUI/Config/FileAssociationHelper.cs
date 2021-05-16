@@ -115,11 +115,11 @@ namespace Mesen.GUI.Config
 			}
 		}
 
-		static public void CreateShortcutFile(string filename, List<string> mimeTypes = null)
+		static public void CreateShortcutFile(string filename, List<string>? mimeTypes = null)
 		{
 			ProcessModule? mainModule = Process.GetCurrentProcess().MainModule;
-			if(mainModule != null) {
-
+			if(mainModule == null) {
+				return;
 			}
 
 			string content = 

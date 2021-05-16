@@ -168,7 +168,7 @@ namespace Mesen.Debugger.Controls
 	public interface ILineStyleProvider
 	{
 		LineProperties GetLineStyle(CodeLineData lineData, int lineIndex);
-		string GetLineComment(int lineIndex);
+		string? GetLineComment(int lineIndex);
 
 		List<CodeColor> GetCodeColors(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues);
 	}
@@ -182,14 +182,14 @@ namespace Mesen.Debugger.Controls
 		public Color? AddressColor;
 		public LineSymbol Symbol;
 
-		public LineProgress Progress;
+		public LineProgress? Progress;
 	}
 
 	public class LineProgress
 	{
 		public int Current;
 		public int Maxixum;
-		public string Text;
+		public string Text = "";
 		public Color Color;
 	}
 
@@ -206,7 +206,7 @@ namespace Mesen.Debugger.Controls
 
 	public class CodeColor
 	{
-		public string Text;
+		public string Text = "";
 		public Color Color;
 	}
 }

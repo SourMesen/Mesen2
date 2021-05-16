@@ -22,10 +22,5 @@ namespace Mesen.Views
 		{
 			AvaloniaXamlLoader.Load(this);
 		}
-
-		private void cboTheme_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-		{
-			PreferencesConfig.ApplyTheme((MesenTheme)e.AddedItems[0]);
-		}
 	}
 }

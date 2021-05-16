@@ -19,9 +19,9 @@ namespace Mesen.ViewModels
 		[Reactive] public bool ShowExpansionVolume { get; set; }
 		[Reactive] public bool ShowColorIndexes { get; set; }
 
-		[ObservableAsProperty] public bool IsDelayStereoEffect { get; set; }
-		[ObservableAsProperty] public bool IsPanningStereoEffect { get; set; }
-		[ObservableAsProperty] public bool IsCombStereoEffect { get; set; }
+		[ObservableAsProperty] public bool IsDelayStereoEffect { get; }
+		[ObservableAsProperty] public bool IsPanningStereoEffect { get; }
+		[ObservableAsProperty] public bool IsCombStereoEffect { get; }
 		
 		public NesInputConfigViewModel Input { get; private set; }
 

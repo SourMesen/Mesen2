@@ -9,7 +9,7 @@ namespace Mesen.Utilities
 {
 	public class SingleInstance : IDisposable
 	{
-		public static SingleInstance Instance { get; private set; }
+		public static SingleInstance Instance { get; private set; } = new SingleInstance();
 
 		private Mutex? _mutex;
 		private Guid _identifier = Guid.Empty;
@@ -19,10 +19,8 @@ namespace Mesen.Utilities
 		public bool FirstInstance => _firstInstance;
 		public event EventHandler<ArgumentsReceivedEventArgs>? ArgumentsReceived;
 
-		public SingleInstance(string[] args, bool enableSingleInstanceMode)
+		public void Init(string[] args, bool enableSingleInstanceMode)
 		{
-			SingleInstance.Instance = this;
-
 			if(enableSingleInstanceMode) {
 				_identifier = new Guid("{A46696B7-2D1C-4CC5-A52F-43BCAF094AEF}");
 				_mutex = new Mutex(true, _identifier.ToString(), out _firstInstance);

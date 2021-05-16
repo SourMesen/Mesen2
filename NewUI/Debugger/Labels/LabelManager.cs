@@ -20,7 +20,7 @@ namespace Mesen.Debugger.Labels
 		private static HashSet<CodeLabel> _labels = new HashSet<CodeLabel>();
 		private static Dictionary<string, CodeLabel> _reverseLookup = new Dictionary<string, CodeLabel>();
 
-		public static event EventHandler OnLabelUpdated;
+		public static event EventHandler? OnLabelUpdated;
 
 		public static void ResetLabels()
 		{
@@ -30,14 +30,14 @@ namespace Mesen.Debugger.Labels
 			_reverseLookup.Clear();
 		}
 
-		public static CodeLabel GetLabel(UInt32 address, SnesMemoryType type)
+		public static CodeLabel? GetLabel(UInt32 address, SnesMemoryType type)
 		{
-			CodeLabel label;
+			CodeLabel? label;
 			_labelsByKey.TryGetValue(GetKey(address, type), out label);
 			return label;
 		}
 
-		public static CodeLabel GetLabel(AddressInfo relAddress)
+		public static CodeLabel? GetLabel(AddressInfo relAddress)
 		{
 			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 			if(absAddress.Address >= 0) {
@@ -46,7 +46,7 @@ namespace Mesen.Debugger.Labels
 			return null;
 		}
 
-		public static CodeLabel GetLabel(string label)
+		public static CodeLabel? GetLabel(string label)
 		{
 			return _reverseLookup.ContainsKey(label) ? _reverseLookup[label] : null;
 		}
@@ -120,7 +120,7 @@ namespace Mesen.Debugger.Labels
 			string comment = label.Comment;
 			for(UInt32 i = label.Address; i < label.Address + label.Length; i++) {
 				UInt64 key = GetKey(i, label.MemoryType);
-				CodeLabel existingLabel;
+				CodeLabel? existingLabel;
 				if(_labelsByKey.TryGetValue(key, out existingLabel)) {
 					DeleteLabel(existingLabel, false);
 					_reverseLookup.Remove(existingLabel.Label);
@@ -213,7 +213,7 @@ namespace Mesen.Debugger.Labels
 
 		private static void ProcessLabelUpdate()
 		{
-			OnLabelUpdated?.Invoke(null, null);
+			OnLabelUpdated?.Invoke(null, EventArgs.Empty);
 			UpdateAssertBreakpoints();
 		}
 

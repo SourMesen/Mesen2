@@ -12,7 +12,10 @@ namespace Mesen.GUI.Config
 {
 	public static class ConfigManager
 	{
-		private static Configuration _config;
+		private static Configuration? _config;
+		private static string? _homeFolder = null;
+		private static object _initLock = new object();
+
 		public static bool DoNotSaveSettings { get; set; }
 
 		public static string DefaultPortableFolder { get { return "./"; } }
@@ -36,28 +39,9 @@ namespace Mesen.GUI.Config
 		public static string DefaultScreenshotFolder { get { return Path.Combine(HomeFolder, "Screenshots"); } }
 		public static string DefaultWaveFolder { get { return Path.Combine(HomeFolder, "Wave"); } }
 
-		public static void InitHomeFolder()
-		{
-			string portableFolder = DefaultPortableFolder;
-			string documentsFolder = DefaultDocumentsFolder;
-			
-			string portableConfig = Path.Combine(portableFolder, "settings.json");
-			if(File.Exists(portableConfig)) {
-				HomeFolder = portableFolder;
-			} else {
-				HomeFolder = documentsFolder;
-			}
-		}
-
 		public static string GetConfigFile()
 		{
-			InitHomeFolder();
-
-			if(!string.IsNullOrWhiteSpace(HomeFolder)) {
-				return Path.Combine(HomeFolder, "settings.json");
-			} else {
-				return null;
-			}
+			return Path.Combine(HomeFolder, "settings.json");
 		}
 
 		public static void CreateConfig(bool portable)
@@ -71,7 +55,6 @@ namespace Mesen.GUI.Config
 			LoadConfig();
 		}
 		
-		private static object _initLock = new object();
 		private static void LoadConfig()
 		{
 			if(_config == null) {
@@ -96,35 +79,29 @@ namespace Mesen.GUI.Config
 				if(string.Compare(info.Name, name, true) == 0) {
 					try {
 						if(info.FieldType == typeof(int) || info.FieldType == typeof(uint) || info.FieldType == typeof(double)) {
-							MinMaxAttribute minMaxAttribute = info.GetCustomAttribute(typeof(MinMaxAttribute)) as MinMaxAttribute;
-							if(minMaxAttribute != null) {
+							if(info.GetCustomAttribute<MinMaxAttribute>() is MinMaxAttribute minMaxAttribute) {
 								if(info.FieldType == typeof(int)) {
-									int result;
-									if(int.TryParse(value, out result)) {
+									if(int.TryParse(value, out int result)) {
 										if(result >= (int)minMaxAttribute.Min && result <= (int)minMaxAttribute.Max) {
 											info.SetValue(instance, result);
 										}
 									}
 								} else if(info.FieldType == typeof(uint)) {
-									uint result;
-									if(uint.TryParse(value, out result)) {
+									if(uint.TryParse(value, out uint result)) {
 										if(result >= (uint)(int)minMaxAttribute.Min && result <= (uint)(int)minMaxAttribute.Max) {
 											info.SetValue(instance, result);
 										}
 									}
 								} else if(info.FieldType == typeof(double)) {
-									double result;
-									if(double.TryParse(value, out result)) {
+									if(double.TryParse(value, out double result)) {
 										if(result >= (double)minMaxAttribute.Min && result <= (double)minMaxAttribute.Max) {
 											info.SetValue(instance, result);
 										}
 									}
 								}
 							} else {
-								ValidValuesAttribute validValuesAttribute = info.GetCustomAttribute(typeof(ValidValuesAttribute)) as ValidValuesAttribute;
-								if(validValuesAttribute != null) {
-									uint result;
-									if(uint.TryParse(value, out result)) {
+								if(info.GetCustomAttribute<ValidValuesAttribute>() is ValidValuesAttribute validValuesAttribute) {
+									if(uint.TryParse(value, out uint result)) {
 										if(validValuesAttribute.ValidValues.Contains(result)) {
 											info.SetValue(instance, result);
 										}
@@ -168,15 +145,36 @@ namespace Mesen.GUI.Config
 
 		public static void SaveConfig()
 		{
-			_config.Save();
+			_config?.Save();
 		}
 
-		public static string HomeFolder { get; private set; }
+		public static string HomeFolder {
+			get
+			{
+				if(_homeFolder == null) {
+					string portableFolder = DefaultPortableFolder;
+					string documentsFolder = DefaultDocumentsFolder;
 
-		public static string GetFolder(string defaultFolderName, string overrideFolder, bool useOverride)
+					string portableConfig = Path.Combine(portableFolder, "settings.json");
+					if(File.Exists(portableConfig)) {
+						_homeFolder = portableFolder;
+					} else {
+						_homeFolder = documentsFolder;
+					}
+				}
+
+				return _homeFolder;
+			}
+			private set
+			{
+				_homeFolder = value;
+			}
+		}
+
+		public static string GetFolder(string defaultFolderName, string? overrideFolder, bool useOverride)
 		{
 			string folder;
-			if(useOverride) {
+			if(useOverride && overrideFolder != null) {
 				folder = overrideFolder;
 			} else {
 				folder = defaultFolderName;
@@ -217,11 +215,6 @@ namespace Mesen.GUI.Config
 		{
 			get
 			{
-				if(HomeFolder == null) {
-					//Initializes the HomeFolder property
-					InitHomeFolder();
-				}
-
 				if(!Directory.Exists(HomeFolder)) {
 					Directory.CreateDirectory(HomeFolder);
 				}
@@ -235,7 +228,7 @@ namespace Mesen.GUI.Config
 			get 
 			{
 				LoadConfig();
-				return _config;
+				return _config!;
 			}
 		}
 

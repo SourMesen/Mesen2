@@ -18,9 +18,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SnesMemoryType MemoryType { get; set; }
 		[Reactive] public int BytesPerRow { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
-		[Reactive] public HexEditorDataProvider DataProvider { get; set; }
+		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
 
-		[ObservableAsProperty] public int MaxScrollValue { get; set; }
+		[ObservableAsProperty] public int MaxScrollValue { get; }
 
 		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 48, 64, 80, 96, 112, 128 }; }
 

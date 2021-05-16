@@ -14,7 +14,7 @@ namespace Mesen.Debugger.Disassembly
 	{
 		public int? ActiveAddress { get; set; }
 
-		public string GetLineComment(int lineIndex) => null;
+		public string? GetLineComment(int lineIndex) => null;
 
 		public static void ConfigureActiveStatement(LineProperties props)
 		{

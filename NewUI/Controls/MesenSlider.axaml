@@ -55,10 +55,9 @@
 				Minimum="{Binding Minimum}"
 				Maximum="{Binding Maximum}"
 				Orientation="{Binding Orientation}"
-				Value="{Binding Value}"
+				Value="{Binding Value, Mode=TwoWay}"
 				TickPlacement="BottomRight"
 				TickFrequency="{Binding TickFrequency}"
-				PropertyChanged="Slider_OnPropertyChanged"
 				LargeChange="5"
 				SmallChange="1"
 			/>

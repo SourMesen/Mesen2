@@ -23,15 +23,15 @@ namespace Mesen.Debugger.Disassembly
 
 		void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file);
 
-		Dictionary<string, string> GetTooltipData(string word, int lineIndex);
+		Dictionary<string, string>? GetTooltipData(string word, int lineIndex);
 		LocationInfo GetLocationInfo(string lastWord, int lineIndex);
 	}
 
 	public class LocationInfo
 	{
 		public int Address;
-		public CodeLabel Label;
-		public SourceSymbol Symbol;
+		public CodeLabel? Label;
+		public SourceSymbol? Symbol;
 
 		public int? ArrayIndex = null;
 	}

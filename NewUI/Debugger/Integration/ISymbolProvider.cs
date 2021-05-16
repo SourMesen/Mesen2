@@ -31,9 +31,16 @@ namespace Mesen.Debugger.Integration
 		
 		public object InternalFile;
 
+		public SourceFileInfo(string name, string[] data, object internalFile)
+		{
+			Name = name;
+			Data = data;
+			InternalFile = internalFile;
+		}
+
 		public override string ToString()
 		{
-			string folderName = Path.GetDirectoryName(Name);
+			string? folderName = Path.GetDirectoryName(Name);
 			string fileName = Path.GetFileName(Name);
 			if(string.IsNullOrWhiteSpace(folderName)) {
 				return fileName;
@@ -48,6 +55,13 @@ namespace Mesen.Debugger.Integration
 		public string Name;
 		public int? Address;
 		public object InternalSymbol;
+
+		public SourceSymbol(string name, int? address, object internalSymbol)
+		{
+			Name = name;
+			Address = address;
+			InternalSymbol = internalSymbol;
+		}
 	}
 
 	public class SourceCodeLocation
@@ -55,5 +69,12 @@ namespace Mesen.Debugger.Integration
 		public SourceFileInfo File;
 		public int LineNumber;
 		public object InternalLine;
+
+		public SourceCodeLocation(SourceFileInfo file, int lineNumber, object internalLine)
+		{
+			File = file;
+			LineNumber = lineNumber;
+			InternalLine = internalLine;
+		}
 	}
 }

@@ -121,7 +121,7 @@ namespace Mesen.Debugger
 				[nameof(IDockWindow)] = () => new HostWindow()
 			};
 
-			this.DockableLocator = new Dictionary<string, Func<IDockable>> { };
+			this.DockableLocator = new Dictionary<string, Func<IDockable?>> { };
 
 			base.InitLayout(layout);
 		}

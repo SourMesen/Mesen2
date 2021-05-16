@@ -1,3 +1,5 @@
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -15,6 +17,8 @@ namespace Mesen.Views
 {
 	public class NesConfigView : UserControl
 	{
+		private NesConfigViewModel _model;
+
 		public NesConfigView()
 		{
 			InitializeComponent();
@@ -25,9 +29,16 @@ namespace Mesen.Views
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is NesConfigViewModel model) {
+				_model = model;
+			}
+		}
+
 		private void btnSelectPalette_OnClick(object sender, RoutedEventArgs e)
 		{
-			((Button)sender).ContextMenu.Open();
+			((Button)sender).ContextMenu?.Open();
 		}
 
 		private async void PaletteColor_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)
@@ -40,9 +51,9 @@ namespace Mesen.Views
 
 			bool success = await wnd.ShowDialog<bool>(VisualRoot as Window);
 			if(success) {
-				UInt32[] colors = (UInt32[])(DataContext as NesConfigViewModel).Config.UserPalette.Clone();
+				UInt32[] colors = (UInt32[])_model.Config.UserPalette.Clone();
 				colors[e.ColorIndex] = model.Color.ToUint32();
-				(DataContext as NesConfigViewModel).Config.UserPalette = colors;
+				_model.Config.UserPalette = colors;
 			}
 		}
 
@@ -55,7 +66,7 @@ namespace Mesen.Views
 
 			string[] filenames = await ofd.ShowAsync(VisualRoot as Window);
 			if(filenames?.Length > 0) {
-				(DataContext as NesConfigViewModel).LoadPaletteFile(filenames[0]);
+				_model.LoadPaletteFile(filenames[0]);
 			}
 		}
 
@@ -68,7 +79,7 @@ namespace Mesen.Views
 
 			string filename = await sfd.ShowAsync(VisualRoot as Window);
 			if(filename != null) {
-				(DataContext as NesConfigViewModel).ExportPalette(filename);
+				_model.ExportPalette(filename);
 			}
 		}
 
@@ -119,7 +130,7 @@ namespace Mesen.Views
 
 		private void UpdatePalette(UInt32[] newPalette)
 		{
-			(DataContext as NesConfigViewModel).Config.UserPalette = newPalette;
+			_model.Config.UserPalette = newPalette;
 		}
 	}
 }

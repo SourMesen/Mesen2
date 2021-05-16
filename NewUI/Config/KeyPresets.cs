@@ -1,5 +1,6 @@
 ﻿using Mesen.Utilities;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Mesen.GUI.Config
 {
@@ -52,8 +53,7 @@ namespace Mesen.GUI.Config
 				Right = InputApi.GetKeyCode("Right")
 			};
 			
-			if(false) {
-				//TODO test and update for Mono
+			if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				for(int i = 0; i < 2; i++) {
 					string prefix = "Pad" + (i + 1).ToString() + " ";
 					_xboxLayouts[i] = new KeyMapping() {

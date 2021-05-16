@@ -13,7 +13,7 @@ namespace Mesen.ViewModels
 {
 	public class VideoConfigViewModel : ViewModelBase
 	{
-		[ObservableAsProperty] public bool ShowCustomRatio { get; set; }
+		[ObservableAsProperty] public bool ShowCustomRatio { get; }
 
 		[Reactive] public VideoConfig Config { get; set; }
 		

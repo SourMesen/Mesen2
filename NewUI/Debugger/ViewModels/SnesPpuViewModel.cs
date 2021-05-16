@@ -11,10 +11,10 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class SnesPpuViewModel : ViewModelBase
 	{
-		[ObservableAsProperty] public string Cycle { get; }
-		[ObservableAsProperty] public string Scanline { get; }
-		[ObservableAsProperty] public string HClock { get; }
-
+		[ObservableAsProperty] public string? Cycle { get; }
+		[ObservableAsProperty] public string? Scanline { get; }
+		[ObservableAsProperty] public string? HClock { get; }
+		
 		private PpuState _state;
 		public PpuState State
 		{

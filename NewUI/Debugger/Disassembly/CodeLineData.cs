@@ -12,7 +12,7 @@ namespace Mesen.Debugger
 	{
 		private CpuType _cpuType;
 
-		public string Text;
+		public string Text = "";
 
 		public Int32 Address;
 		public Int32 AbsoluteAddress;
@@ -22,8 +22,8 @@ namespace Mesen.Debugger
 		public int? CustomIndent = null;
 
 		public byte OpSize;
-		public string ByteCode;
-		public string Comment;
+		public string ByteCode = "";
+		public string Comment = "";
 
 		public Int32 EffectiveAddress;
 		public UInt16 Value;
@@ -87,6 +87,7 @@ namespace Mesen.Debugger
 			this.Text = ConvertString(data.Text);
 			this.Comment = ConvertString(data.Comment);
 			this.OpSize = data.OpSize;
+			this.ByteCode = "";
 			for(int i = 0; i < this.OpSize; i++) {
 				this.ByteCode += "$" + data.ByteCode[i].ToString("X2") + " ";
 			}

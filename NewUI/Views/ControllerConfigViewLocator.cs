@@ -17,7 +17,7 @@ namespace Mesen.Views
 			KeyMappingViewModel mappings = (KeyMappingViewModel)data;
 
 			if(mappings != null) {
-				Control ctrl = null;
+				Control? ctrl = null;
 				switch(mappings.Type) {
 					case ControllerType.SnesController: ctrl = new SnesControllerView(); break;
 					case ControllerType.NesController: ctrl = new NesControllerView(); break;

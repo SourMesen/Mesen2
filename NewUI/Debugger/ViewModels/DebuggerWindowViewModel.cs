@@ -39,8 +39,8 @@ namespace Mesen.Debugger.ViewModels
 			NesCpuState state = DebugApi.GetState<NesCpuState>(CpuType.Nes);
 
 			Disassembly = new DisassemblyViewerViewModel();
-			//SnesCpu = new SnesCpuViewModel();
-			//SnesPpu = new SnesPpuViewModel();
+			SnesCpu = new SnesCpuViewModel();
+			SnesPpu = new SnesPpuViewModel();
 			BreakpointList = new BreakpointListViewModel();
 
 			var factory = new DebuggerDockFactory(this);
@@ -51,14 +51,19 @@ namespace Mesen.Debugger.ViewModels
 			DockLayout = layout;
 		}
 
-		private ToolDock FindToolDock(IDock dock)
+		private ToolDock? FindToolDock(IDock dock)
 		{
 			if(dock is ToolDock) {
-				return dock as ToolDock;
+				return (ToolDock)dock;
 			}
+
+			if(dock.VisibleDockables == null) {
+				return null;
+			}
+
 			foreach(IDockable dockable in dock.VisibleDockables) {
 				if(dockable is IDock) {
-					ToolDock result = FindToolDock(dockable as IDock);
+					ToolDock? result = FindToolDock((IDock)dockable);
 					if(result != null) {
 						return result;
 					}
@@ -70,14 +75,14 @@ namespace Mesen.Debugger.ViewModels
 
 		private void ShowTool(Tool tool)
 		{
-			if((tool.Owner as IDock)?.VisibleDockables.Contains(tool) == true) {
+			if((tool.Owner as IDock)?.VisibleDockables?.Contains(tool) == true) {
 				return;
 			}
 
-			ToolDock dock = FindToolDock(DockLayout);
+			ToolDock? dock = FindToolDock(DockLayout);
 			if(dock != null) {
 				tool.Owner = dock;
-				dock.VisibleDockables.Add(tool);
+				dock.VisibleDockables?.Add(tool);
 			}
 		}
 

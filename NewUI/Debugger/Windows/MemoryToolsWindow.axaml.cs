@@ -1,3 +1,5 @@
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -20,36 +22,30 @@ namespace Mesen.Debugger.Windows
 	public class MemoryToolsWindow : Window
 	{
 		private NotificationListener _listener;
+		private HexEditor _editor;
+		private MemoryToolsViewModel _model;
 
 		public MemoryToolsWindow()
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
-		}
-
-		private void InitializeComponent()
-		{
-			AvaloniaXamlLoader.Load(this);
-		}
-
-		HexEditor _editor;
-		MemoryToolsViewModel _model;
-		protected override void OnOpened(EventArgs e)
-		{
-			base.OnOpened(e);
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			Renderer.DrawFps = true;
+			_editor = this.FindControl<HexEditor>("Hex");
+			_editor.ByteUpdated += editor_ByteUpdated;
 
 			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
-			_editor = this.FindControl<HexEditor>("Hex");
-			_editor.ByteUpdated += editor_ByteUpdated;
+		}
+
+		private void InitializeComponent()
+		{
+			AvaloniaXamlLoader.Load(this);
 		}
 
 		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
@@ -59,8 +55,11 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnDataContextChanged(EventArgs e)
 		{
-			base.OnDataContextChanged(e);
-			_model = this.DataContext as MemoryToolsViewModel;
+			if(this.DataContext is MemoryToolsViewModel model) {
+				_model = model;
+			} else {
+				throw new Exception("Invalid model");
+			}
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)

@@ -13,7 +13,7 @@ namespace Mesen.Controls
 {
 	public class EnumComboBox : UserControl
 	{
-		public static readonly StyledProperty<Enum> SelectedItemProperty = AvaloniaProperty.Register<EnumComboBox, Enum>(nameof(SelectedItem), null, false, Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<Enum?> SelectedItemProperty = AvaloniaProperty.Register<EnumComboBox, Enum?>(nameof(SelectedItem), null, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<Type> EnumTypeProperty = AvaloniaProperty.Register<EnumComboBox, Type>(nameof(EnumType));
 		public static readonly StyledProperty<Enum[]> AvailableValuesProperty = AvaloniaProperty.Register<EnumComboBox, Enum[]>(nameof(AvailableValues));
 
@@ -25,7 +25,7 @@ namespace Mesen.Controls
 			remove { RemoveHandler(SelectionChangedEvent, value); }
 		}
 
-		public Enum SelectedItem
+		public Enum? SelectedItem
 		{
 			get { return GetValue(SelectedItemProperty); }
 			set { SetValue(SelectedItemProperty, value); }

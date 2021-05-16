@@ -34,7 +34,7 @@ namespace Mesen.Windows
 
 		private void btnPreset_OnClick(object sender, RoutedEventArgs e)
 		{
-			((Button)sender).ContextMenu.Open();
+			((Button)sender).ContextMenu?.Open();
 		}
 
 		private void ApplyPreset(KeyMapping preset)

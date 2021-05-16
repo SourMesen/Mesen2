@@ -1,3 +1,5 @@
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -15,6 +17,8 @@ namespace Mesen.Views
 {
 	public class GameboyConfigView : UserControl
 	{
+		private GameboyConfigViewModel _model;
+
 		public GameboyConfigView()
 		{
 			InitializeComponent();
@@ -23,6 +27,13 @@ namespace Mesen.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is GameboyConfigViewModel model) {
+				_model = model;
+			}
 		}
 
 		private async Task<Color> SelectColor(Color color)
@@ -43,30 +54,30 @@ namespace Mesen.Views
 		private async void BgColor_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)
 		{
 			Color color = await SelectColor(e.Color);
-			UInt32[] colors = (UInt32[])(DataContext as GameboyConfigViewModel).Config.BgColors.Clone();
+			UInt32[] colors = (UInt32[])_model.Config.BgColors.Clone();
 			colors[e.ColorIndex] = color.ToUint32();
-			(DataContext as GameboyConfigViewModel).Config.BgColors = colors;
+			_model.Config.BgColors = colors;
 		}
 
 		private async void Obj0Color_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)
 		{
 			Color color = await SelectColor(e.Color);
-			UInt32[] colors = (UInt32[])(DataContext as GameboyConfigViewModel).Config.Obj0Colors.Clone();
+			UInt32[] colors = (UInt32[])_model.Config.Obj0Colors.Clone();
 			colors[e.ColorIndex] = color.ToUint32();
-			(DataContext as GameboyConfigViewModel).Config.Obj0Colors = colors;
+			_model.Config.Obj0Colors = colors;
 		}
 
 		private async void Obj1Color_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)
 		{
 			Color color = await SelectColor(e.Color);
-			UInt32[] colors = (UInt32[])(DataContext as GameboyConfigViewModel).Config.Obj1Colors.Clone();
+			UInt32[] colors = (UInt32[])_model.Config.Obj1Colors.Clone();
 			colors[e.ColorIndex] = color.ToUint32();
-			(DataContext as GameboyConfigViewModel).Config.Obj1Colors = colors;
+			_model.Config.Obj1Colors = colors;
 		}
 
 		private void btnSelectPreset_OnClick(object sender, RoutedEventArgs e)
 		{
-			((Button)sender).ContextMenu.Open();
+			((Button)sender).ContextMenu?.Open();
 		}
 
 		private void mnuGrayscalePreset_Click(object sender, RoutedEventArgs e)
@@ -91,10 +102,9 @@ namespace Mesen.Views
 
 		private void SetPalette(Color color0, Color color1, Color color2, Color color3)
 		{
-			GameboyConfigViewModel model = this.DataContext as GameboyConfigViewModel;
-			model.Config.BgColors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
-			model.Config.Obj0Colors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
-			model.Config.Obj1Colors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
+			_model.Config.BgColors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
+			_model.Config.Obj0Colors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
+			_model.Config.Obj1Colors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
 		}
 	}
 }

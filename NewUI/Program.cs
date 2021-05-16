@@ -14,12 +14,13 @@ namespace Mesen
 		// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
 		// yet and stuff might break.
 
-		public static string[] CommandLineArgs { get; private set; } = new string[0];
+		public static string[] CommandLineArgs { get; private set; } = Array.Empty<string>();
 
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			using SingleInstance instance = new SingleInstance(args, ConfigManager.Config.Preferences.SingleInstance);
+			using SingleInstance instance = SingleInstance.Instance;
+			instance.Init(args, ConfigManager.Config.Preferences.SingleInstance);
 			if(instance.FirstInstance) {
 				Program.CommandLineArgs = (string[])args.Clone();
 				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);

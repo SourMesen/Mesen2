@@ -89,7 +89,7 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(HeaderHighlightProperty, value); }
 		}
 
-		public event EventHandler<ByteUpdatedEventArgs> ByteUpdated;
+		public event EventHandler<ByteUpdatedEventArgs>? ByteUpdated;
 
 		private Typeface Font { get; set; }
 		private Size LetterSize { get; set; }
@@ -107,8 +107,8 @@ namespace Mesen.Debugger.Controls
 		private int _newByteValue = -1;
 		private bool _lastNibble = false;
 		private bool _inStringView = false;
-		private List<float> _startPositionByByte;
-		private List<float> _endPositionByByte;
+		private List<float> _startPositionByByte = new List<float>();
+		private List<float> _endPositionByByte = new List<float>();
 
 		public HexEditor()
 		{

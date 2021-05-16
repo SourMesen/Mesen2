@@ -14,7 +14,7 @@ namespace Mesen.ViewModels
 	{
 		[Reactive] public RomInfo RomInfo { get; set; }
 
-		[ObservableAsProperty] public bool ShowAudioPlayer { get; set; }
+		[ObservableAsProperty] public bool ShowAudioPlayer { get; }
 
 		public AudioPlayerViewModel AudioPlayer { get; set; }
 

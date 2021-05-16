@@ -19,7 +19,7 @@ namespace Mesen.GUI.Config
 				patchFile = null;
 			}
 
-			RecentItem existingItem = Items.Where((item) => item.RomFile == romFile && item.PatchFile == patchFile).FirstOrDefault();
+			RecentItem? existingItem = Items.Where((item) => item.RomFile == romFile && item.PatchFile == patchFile).FirstOrDefault();
 			if(existingItem != null) {
 				Items.Remove(existingItem);
 			}

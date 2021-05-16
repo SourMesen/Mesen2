@@ -26,10 +26,10 @@ namespace Mesen.ViewModels
 		{
 			Config = config;
 
-			KeyMapping1 = new KeyMappingViewModel() { Type = config.Type, Mapping = config.Mapping1 };
-			KeyMapping2 = new KeyMappingViewModel() { Type = config.Type, Mapping = config.Mapping2 };
-			KeyMapping3 = new KeyMappingViewModel() { Type = config.Type, Mapping = config.Mapping3 };
-			KeyMapping4 = new KeyMappingViewModel() { Type = config.Type, Mapping = config.Mapping4 };
+			KeyMapping1 = new KeyMappingViewModel(config.Type, config.Mapping1);
+			KeyMapping2 = new KeyMappingViewModel(config.Type, config.Mapping2);
+			KeyMapping3 = new KeyMappingViewModel(config.Type, config.Mapping3);
+			KeyMapping4 = new KeyMappingViewModel(config.Type, config.Mapping4);
 		}
 	}
 
@@ -37,5 +37,11 @@ namespace Mesen.ViewModels
 	{
 		[Reactive] public ControllerType Type { get; set; }
 		[Reactive] public KeyMapping Mapping { get; set; }
+
+		public KeyMappingViewModel(ControllerType type, KeyMapping mapping)
+		{
+			Type = type;
+			Mapping = mapping;
+		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿using Avalonia;
+﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+using Avalonia;
 using Avalonia.Controls;
 using Mesen.GUI.Config;
 using Mesen.GUI.Config.Shortcuts;
@@ -30,7 +32,7 @@ namespace Mesen.ViewModels
 		public ReactiveCommand<Button, Unit> SetupPlayer5 { get; }
 		public List<ShortcutKeyInfo> ShortcutKeys { get; set; }
 
-		[ObservableAsProperty] public bool HasFourPlayerAdapter { get; set; }
+		[ObservableAsProperty] public bool HasFourPlayerAdapter { get; }
 
 		public Enum[] AvailableControllerTypesP12 => new Enum[] {
 			ControllerType.None,
@@ -136,7 +138,7 @@ namespace Mesen.ViewModels
 			ControllerConfig cfg = JsonHelper.Clone(this.Config.Controllers[port]);
 			wnd.DataContext = new ControllerConfigViewModel(cfg);
 
-			if(await wnd.ShowDialog<bool>(btn.Parent.VisualRoot as Window)) {
+			if(await wnd.ShowDialog<bool>(btn.Parent?.VisualRoot as Window)) {
 				this.Config.Controllers[port] = cfg;
 			}
 		}

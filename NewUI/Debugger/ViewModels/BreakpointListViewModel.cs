@@ -17,10 +17,9 @@ namespace Mesen.Debugger.ViewModels
 	{
 		public ObservableCollection<BreakpointViewModel> Breakpoints { get; }
 
-		private IEnumerable<BreakpointViewModel> GenerateMockPeopleTable()
+		private IEnumerable<BreakpointViewModel> GenerateBreakpoints()
 		{
-			var defaultPeople = new List<BreakpointViewModel>()
-			{
+			var breakpoints = new List<BreakpointViewModel>() {
 					 new BreakpointViewModel(new Breakpoint()
 					 {
 						  StartAddress = 0x8000,
@@ -44,20 +43,20 @@ namespace Mesen.Debugger.ViewModels
 					 })
 				};
 
-			return defaultPeople;
+			return breakpoints;
 		}
 
 		public BreakpointListViewModel()
 		{
-			this.Breakpoints = new ObservableCollection<BreakpointViewModel>(GenerateMockPeopleTable());
+			this.Breakpoints = new ObservableCollection<BreakpointViewModel>(GenerateBreakpoints());
 		}
 	}
 
 	public class BreakpointViewModel : ViewModelBase
 	{
 		public Breakpoint Breakpoint { get; set; }
-		[ObservableAsProperty] public string TypeDisplay { get; set; }
-		[ObservableAsProperty] public string AddressDisplay { get; set; }
+		[ObservableAsProperty] public string? TypeDisplay { get; }
+		[ObservableAsProperty] public string? AddressDisplay { get; }
 
 		public BreakpointViewModel(Breakpoint bp)
 		{

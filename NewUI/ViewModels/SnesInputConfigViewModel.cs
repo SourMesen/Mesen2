@@ -27,8 +27,8 @@ namespace Mesen.ViewModels
 		[Reactive] public ControllerConfig Multitap3 { get; set; }
 		[Reactive] public ControllerConfig Multitap4 { get; set; }
 
-		[ObservableAsProperty] public bool HasMultitap { get; set; }
-		[ObservableAsProperty] public string? Multitap1Label { get; set; }
+		[ObservableAsProperty] public bool HasMultitap { get; }
+		[ObservableAsProperty] public string? Multitap1Label { get; }
 
 		public ReactiveCommand<Button, Unit> SetupPlayer1 { get; }
 		public ReactiveCommand<Button, Unit> SetupPlayer2 { get; }
@@ -106,7 +106,7 @@ namespace Mesen.ViewModels
 			ControllerConfig cfg = JsonHelper.Clone(this.Config.Controllers[port]);
 			wnd.DataContext = new ControllerConfigViewModel(cfg);
 
-			if(await wnd.ShowDialog<bool>(btn.Parent.VisualRoot as Window)) {
+			if(await wnd.ShowDialog<bool>(btn.Parent?.VisualRoot as Window)) {
 				this.Config.Controllers[port] = cfg;
 			}
 		}

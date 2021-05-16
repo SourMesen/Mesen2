@@ -12,8 +12,10 @@ namespace Mesen.Debugger.Disassembly
 {
 	public class CpuDisassemblyManager : IDisassemblyManager
 	{
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		protected ICodeDataProvider _provider;
 		private ISymbolProvider _symbolProvider;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 		public ICodeDataProvider Provider { get { return this._provider; } }
 
@@ -90,7 +92,7 @@ namespace Mesen.Debugger.Disassembly
 
 			if(location.Label == null && location.Address >= 0) {
 				AddressInfo relAddress = new AddressInfo() { Address = location.Address, Type = RelativeMemoryType };
-				CodeLabel label = LabelManager.GetLabel(relAddress);
+				CodeLabel? label = LabelManager.GetLabel(relAddress);
 				if(label != null && !string.IsNullOrWhiteSpace(label.Label)) {
 					//ignore comment-only labels
 					location.Label = label; 
@@ -108,7 +110,7 @@ namespace Mesen.Debugger.Disassembly
 			return location;
 		}
 
-		public Dictionary<string, string> GetTooltipData(string word, int lineIndex)
+		public Dictionary<string, string>? GetTooltipData(string word, int lineIndex)
 		{
 			if(_provider.GetCodeLineData(lineIndex).Flags.HasFlag(LineFlags.ShowAsData)) {
 				//Disable tooltips for .db statements
@@ -139,7 +141,7 @@ namespace Mesen.Debugger.Disassembly
 						values["PRG Offset"] = "$" + (symbolAddress.Value.Address + (location.ArrayIndex ?? 0)).ToString("X4");
 					}
 
-					values["Value"] = (relativeAddress >= 0 ? $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" : "n/a");
+					values["Value"] = (relativeAddress >= 0 ? $"${byteValue:X2} (byte){Environment.NewLine}${wordValue:X4} (word)" : "n/a");
 					return values;
 				} else {
 					return new Dictionary<string, string>() {
@@ -167,8 +169,8 @@ namespace Mesen.Debugger.Disassembly
 
 				var values = new Dictionary<string, string>() {
 					{ "Label", location.Label.Label + (location.ArrayIndex != null ? $"+{location.ArrayIndex.Value}" : "") },
-					{ "Address", (relativeAddress >= 0 ? "$" + relativeAddress.ToString("X4") : "n/a") },
-					{ "Value", (relativeAddress >= 0 ? $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" : "n/a") },
+					{ "Address", relativeAddress >= 0 ? "$" + relativeAddress.ToString("X4") : "n/a" },
+					{ "Value", relativeAddress >= 0 ? $"${byteValue:X2} (byte){Environment.NewLine}${wordValue:X4} (word)" : "n/a" },
 				};
 
 				if(!string.IsNullOrWhiteSpace(location.Label.Comment)) {
@@ -180,7 +182,7 @@ namespace Mesen.Debugger.Disassembly
 				UInt16 wordValue = (UInt16)(byteValue | (DebugApi.GetMemoryValue(this.RelativeMemoryType, (uint)location.Address + 1) << 8));
 				return new Dictionary<string, string>() {
 					{ "Address", "$" + location.Address.ToString("X4") },
-					{ "Value", $"${byteValue.ToString("X2")} (byte){Environment.NewLine}${wordValue.ToString("X4")} (word)" }
+					{ "Value", $"${byteValue:X2} (byte){Environment.NewLine}${wordValue:X4} (word)" }
 				};
 			}
 

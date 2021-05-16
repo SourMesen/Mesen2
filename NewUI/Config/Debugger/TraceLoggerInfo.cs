@@ -68,7 +68,7 @@ namespace Mesen.GUI.Config
 		public StatusFlagFormat StatusFormat;
 
 		public bool OverrideFormat;
-		public string Format;
+		public string Format = "";
 	}
 
 	public enum StatusFlagFormat

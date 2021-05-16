@@ -1389,7 +1389,7 @@ static int check_exif(const struct spng_exif *exif)
 static int check_png_keyword(const char *str)
 {
     if(str == NULL) return 1;
-    char len = strlen(str);
+    char len = (char)strlen(str);
     const char *end = str + len;
 
     if(!len) return 1;

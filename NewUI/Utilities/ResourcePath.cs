@@ -17,7 +17,7 @@ namespace Mesen.GUI.Forms
 		public bool Compressed { get { return !string.IsNullOrWhiteSpace(InnerFile); } }
 
 		public string FileName { get { return Compressed ? InnerFile : System.IO.Path.GetFileName(Path); } }
-		public string Folder { get { return System.IO.Path.GetDirectoryName(Path); } }
+		public string Folder { get { return System.IO.Path.GetDirectoryName(Path) ?? ""; } }
 		
 		public string ReadablePath
 		{

@@ -25,11 +25,11 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int RowCount { get; set; }
 		[Reactive] public int ColumnCount { get; set; }
 		[Reactive] public int StartAddress { get; set; }
-		[Reactive] public UInt32[] PaletteColors { get; set; }
+		[Reactive] public UInt32[] PaletteColors { get; set; } = Array.Empty<UInt32>();
 
-		[ObservableAsProperty] public PaletteSelectionMode PaletteSelectionMode { get; set; }
-		[ObservableAsProperty] public int AddressIncrement { get; set; }
-		[ObservableAsProperty] public int MaximumAddress { get; set; }
+		[ObservableAsProperty] public PaletteSelectionMode PaletteSelectionMode { get; }
+		[ObservableAsProperty] public int AddressIncrement { get; }
+		[ObservableAsProperty] public int MaximumAddress { get; }
 
 		public TileViewerViewModel()
 		{
