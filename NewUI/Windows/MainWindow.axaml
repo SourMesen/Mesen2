@@ -36,11 +36,18 @@
 
 				</MenuItem>
 				<MenuItem Header="{l:Translate mnuLoadState}" Click="OnExitClick">
-					
+
 				</MenuItem>
 				<Separator/>
-				<MenuItem Header="{l:Translate mnuRecentFiles}" Click="OnExitClick">
-
+				<MenuItem Header="{l:Translate mnuRecentFiles}" Items="{CompiledBinding RecentItems}" Classes="RecentFiles" IsEnabled="{CompiledBinding HasRecentItems}">
+					<MenuItem.Styles>
+						<Style Selector="MenuItem.RecentFiles MenuItem">
+							<Setter Property="Header" Value="{Binding DisplayText}"/>
+							<Setter Property="Tag" Value="{Binding ShortenedFolder}"/>
+							<Setter Property="Command" Value="{Binding $parent[Window].DataContext.OpenRecentCommand}"/>
+							<Setter Property="CommandParameter" Value="{Binding $self.DataContext} "/>
+						</Style>
+					</MenuItem.Styles>
 				</MenuItem>
 				<Separator/>
 				<MenuItem Header="{l:Translate mnuExit}" Click="OnExitClick">

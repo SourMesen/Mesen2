@@ -21,6 +21,9 @@
 						<MenuItem Header="Video Size" />
 						<MenuItem Header="Abcd" />
 					</MenuItem>
+					<MenuItem Header="Test">
+						<MenuItem Header="Abcd" />
+					</MenuItem>
 				</Menu>
 				<CheckBox Content="Test" />
 				<CheckBox Content="Test" IsChecked="True" />
@@ -105,8 +108,9 @@
 		<Thickness x:Key="MenuIconPresenterMargin">0,0,10,0</Thickness>
 		<Thickness x:Key="MenuFlyoutSeparatorThemePadding">30,2,0,2</Thickness>
 		<Thickness x:Key="MenuInputGestureTextMargin">27,0,0,0</Thickness>
-		
+
 		<x:Double x:Key="MenuFlyoutSubItemPopupHorizontalOffset">1</x:Double>
+		<x:Double x:Key="MenuFlyoutThemeMinHeight">0</x:Double>
 		<StreamGeometry x:Key="MenuItemChevronPathData">M0,0L4,3.5 0,7z</StreamGeometry>
 	</Styles.Resources>
 
@@ -196,6 +200,13 @@
 										  Classes="CaptionTextBlockStyle"
 										  Margin="{DynamicResource MenuInputGestureTextMargin}"
 										  Text="{TemplateBinding InputGesture, Converter={StaticResource KeyGestureConverter}}"
+										  HorizontalAlignment="Right"
+										  VerticalAlignment="Center" />
+							<TextBlock 
+										  Grid.Column="2"
+										  Classes="CaptionTextBlockStyle"
+										  Margin="{DynamicResource MenuInputGestureTextMargin}"
+										  Text="{TemplateBinding Tag}"
 										  HorizontalAlignment="Right"
 										  VerticalAlignment="Center" />
 							<Path Name="PART_ChevronPath"

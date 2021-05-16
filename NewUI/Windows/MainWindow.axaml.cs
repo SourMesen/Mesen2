@@ -60,7 +60,7 @@ namespace Mesen.Windows
 			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
 			if(filename != null) {
 				if(File.Exists(filename)) {
-					EmuApi.LoadRom(filename);
+					LoadRomHelper.LoadFile(filename);
 					Activate();
 				} else {
 					EmuApi.DisplayMessage("Error", "File not found: " + filename);
@@ -107,7 +107,8 @@ namespace Mesen.Windows
 		{
 			foreach(string arg in args) {
 				if(File.Exists(arg)) {
-					return EmuApi.LoadRom(arg);
+					LoadRomHelper.LoadFile(arg);
+					return true;
 				}
 			}
 			return false;
@@ -160,7 +161,7 @@ namespace Mesen.Windows
 
 			string[] filenames = await ofd.ShowAsync(this);
 			if(filenames?.Length > 0) {
-				EmuApi.LoadRom(filenames[0]);
+				LoadRomHelper.LoadFile(filenames[0]);
 			}
 		}
 

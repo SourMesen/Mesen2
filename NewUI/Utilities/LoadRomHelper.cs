@@ -14,6 +14,7 @@ namespace Mesen.Utilities
 	{
 		public static void LoadRom(ResourcePath romPath, ResourcePath? patchPath = null)
 		{
+			//TODO
 			/*if(!frmSelectRom.SelectRom(ref romPath)) {
 				return;
 			}*/
@@ -36,7 +37,11 @@ namespace Mesen.Utilities
 
 		public static void LoadPatchFile(string patchFile)
 		{
-			string patchFolder = Path.GetDirectoryName(patchFile);
+			string? patchFolder = Path.GetDirectoryName(patchFile);
+			if(patchFolder == null) {
+				return;
+			}
+
 			List<string> romsInFolder = new List<string>();
 			foreach(string filepath in Directory.EnumerateFiles(patchFolder)) {
 				if(FolderHelper.IsRomFile(filepath)) {
@@ -48,6 +53,7 @@ namespace Mesen.Utilities
 				//There is a single rom in the same folder as the IPS/BPS patch, use it automatically
 				LoadRom(romsInFolder[0], patchFile);
 			} else {
+				//TODO
 				/*if(!IsRunning()) {
 					//Prompt the user for a rom to load
 					if(MesenMsgBox.Show("SelectRomIps", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {

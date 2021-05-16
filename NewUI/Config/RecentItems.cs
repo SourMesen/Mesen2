@@ -12,7 +12,7 @@ namespace Mesen.Config
 	public class RecentItems
 	{
 		private const int MaxRecentFiles = 10;
-		public ObservableCollection<RecentItem> Items = new ObservableCollection<RecentItem>();
+		public ObservableCollection<RecentItem> Items { get; set; } = new ObservableCollection<RecentItem>();
 
 		public void AddRecentFile(ResourcePath romFile, ResourcePath? patchFile)
 		{
@@ -32,59 +32,38 @@ namespace Mesen.Config
 			}
 			ConfigManager.SaveConfig();
 		}
-
-		/*public List<ToolStripItem> GetMenuItems()
-		{
-			List<ToolStripItem> menuItems = new List<ToolStripItem>();
-			foreach(RecentItem recentItem in Items) {
-				ToolStripMenuItem tsmi = new ToolStripMenuItem();
-				tsmi.Text = recentItem.ToString();
-				tsmi.Click += (object sender, EventArgs args) => {
-					EmuRunner.LoadRom(recentItem.RomFile, recentItem.PatchFile);
-				};
-
-				//Display shortened folder path as the "shortcut"				
-				tsmi.ShortcutKeyDisplayString = "(" + recentItem.GetShortenedFolder() + ")";
-				
-				menuItems.Add(tsmi);
-			}
-
-			menuItems.Add(new ToolStripSeparator());
-
-			ToolStripMenuItem clearHistory = new ToolStripMenuItem();
-			clearHistory.Text = ResourceHelper.GetMessage("ClearHistory");
-			clearHistory.Image = Resources.Close;
-			clearHistory.Click += (object sender, EventArgs args) => {
-				ConfigManager.Config.RecentFiles.Items.Clear();
-			};
-			menuItems.Add(clearHistory);
-			
-			return menuItems;
-		}*/
 	}
 
 	public class RecentItem
 	{
-		public ResourcePath RomFile;
-		public ResourcePath? PatchFile;
+		public ResourcePath RomFile { get; set; }
+		public ResourcePath? PatchFile { get; set; }
 
-		public override string ToString()
+		public string DisplayText
 		{
-			string path = RomFile.ReadablePath.Replace("&", "&&");
-			string text = Path.GetFileName(path);
-			if(PatchFile.HasValue) {
-				text += " [" + Path.GetFileName(PatchFile.Value) + "]";
+			get
+			{
+				string path = RomFile.ReadablePath.Replace("&", "&&");
+				string text = Path.GetFileName(path);
+				if(PatchFile.HasValue) {
+					text += " [" + Path.GetFileName(PatchFile.Value) + "]";
+				}
+				return text;
 			}
-			return text;
 		}
 
-		public string GetShortenedFolder()
+		public string ShortenedFolder
 		{
-			string[] folderParts = RomFile.Folder.Split(new char[2] { '\\', '/' });
-			if(folderParts.Length > 4) {
-				return folderParts[0] + Path.DirectorySeparatorChar + folderParts[1] + Path.DirectorySeparatorChar + folderParts[2] + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + folderParts[folderParts.Length - 1];
-			} else {
-				return RomFile.Folder;
+			get
+			{
+				string[] folderParts = RomFile.Folder.Split(new char[2] { '\\', '/' });
+				string folder;
+				if(folderParts.Length > 4) {
+					folder = folderParts[0] + Path.DirectorySeparatorChar + folderParts[1] + Path.DirectorySeparatorChar + folderParts[2] + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + folderParts[folderParts.Length - 1];
+				} else {
+					folder = RomFile.Folder;
+				}
+				return $"({folder})";
 			}
 		}
 	}
