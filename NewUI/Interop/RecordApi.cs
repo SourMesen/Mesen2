@@ -21,7 +21,7 @@ namespace Mesen.GUI
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool WaveIsRecording();
 
 		[DllImport(DllPath)] public static extern void MoviePlay([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
-		[DllImport(DllPath)] public static extern void MovieRecord(ref RecordMovieOptions options);
+		[DllImport(DllPath)] public static extern void MovieRecord(RecordMovieOptions options);
 		[DllImport(DllPath)] public static extern void MovieStop();
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool MoviePlaying();
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool MovieRecording();

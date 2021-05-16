@@ -237,14 +237,50 @@ namespace Mesen.Windows
 			new LogWindow().ShowCentered(this);
 		}
 
-		private void OnStartRecordingClick(object sender, RoutedEventArgs e)
+		private void OnStartAudioRecordingClick(object sender, RoutedEventArgs e)
+		{
+			RecordApi.WaveRecord("c:\\temp\\out.wav");
+		}
+
+		private void OnStopAudioRecordingClick(object sender, RoutedEventArgs e)
+		{
+			RecordApi.WaveStop();
+		}
+
+		private void OnStartVideoRecordingClick(object sender, RoutedEventArgs e)
 		{
 			RecordApi.AviRecord("c:\\temp\\out.gif", VideoCodec.GIF, 0);
 		}
 
-		private void OnStopRecordingClick(object sender, RoutedEventArgs e)
+		private void OnStopVideoRecordingClick(object sender, RoutedEventArgs e)
 		{
 			RecordApi.AviStop();
+		}
+
+		private void OnPlayMovieClick(object sender, RoutedEventArgs e)
+		{
+			RecordApi.MoviePlay("c:\\temp\\out.mmo");
+		}
+
+		private void OnRecordMovieClick(object sender, RoutedEventArgs e)
+		{
+			RecordMovieOptions options = new RecordMovieOptions("c:\\temp\\out.mmo", "", "", RecordMovieFrom.CurrentState);
+			RecordApi.MovieRecord(options);
+		}
+
+		private void OnStopMovieClick(object sender, RoutedEventArgs e)
+		{
+			RecordApi.AviStop();
+		}
+
+		private void OnCheatsClick(object sender, RoutedEventArgs e)
+		{
+			//TODO
+		}
+
+		private void OnTakeScreenshotClick(object sender, RoutedEventArgs e)
+		{
+			EmuApi.TakeScreenshot();
 		}
 
 		private void OnResetClick(object sender, RoutedEventArgs e)

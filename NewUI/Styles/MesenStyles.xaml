@@ -1,6 +1,7 @@
 <Styles
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sys="clr-namespace:System;assembly=netstandard"	
 	xmlns:c="using:Mesen.Controls"
 >
 	<Design.PreviewWith>
@@ -8,11 +9,16 @@
 			<StackPanel>
 				<Menu VerticalAlignment="Top">
 					<MenuItem Header="File">
-						<MenuItem Header="Abcd">
+						<MenuItem Header="Open">
 							<MenuItem.Icon>
 								<Image Source="/Assets/Folder.png" />
 							</MenuItem.Icon>
+							<MenuItem Header="Abcd" />
+							<Separator />
+							<MenuItem Header="Abcd" />
 						</MenuItem>
+						<Separator />
+						<MenuItem Header="Video Size" />
 						<MenuItem Header="Abcd" />
 					</MenuItem>
 				</Menu>
@@ -95,7 +101,13 @@
 
 		<!-- Menu items -->
 		<Thickness x:Key="MenuFlyoutPresenterThemePadding">0</Thickness>
+		<Thickness x:Key="MenuFlyoutScrollerMargin">0</Thickness>
 		<Thickness x:Key="MenuIconPresenterMargin">0,0,10,0</Thickness>
+		<Thickness x:Key="MenuFlyoutSeparatorThemePadding">30,2,0,2</Thickness>
+		<Thickness x:Key="MenuInputGestureTextMargin">27,0,0,0</Thickness>
+		
+		<x:Double x:Key="MenuFlyoutSubItemPopupHorizontalOffset">1</x:Double>
+		<StreamGeometry x:Key="MenuItemChevronPathData">M0,0L4,3.5 0,7z</StreamGeometry>
 	</Styles.Resources>
 
 	<Style>
@@ -130,10 +142,173 @@
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="8 2" />
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="FontFamily" Value="Segoe UI" />
 
 		<Setter Property="BorderBrush" Value="Transparent" />
 		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="MenuItem > Separator, ContextMenu > Separator">
+		<Setter Property="Background" Value="#bdbdbd" />
+	</Style>
+
+	<Style Selector="MenuItem">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Panel>
+					<Border Name="PART_LayoutRoot"
+							  Padding="{TemplateBinding Padding}"
+							  Background="{TemplateBinding Background}"
+							  BorderBrush="{TemplateBinding BorderBrush}"
+							  BorderThickness="{TemplateBinding BorderThickness}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="24"
+														SharedSizeGroup="MenuItemIcon" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto"
+														SharedSizeGroup="MenuItemIGT" />
+								<ColumnDefinition Width="Auto"
+														SharedSizeGroup="MenuItemChevron" />
+							</Grid.ColumnDefinitions>
+							<ContentPresenter Name="PART_IconPresenter"
+													Content="{TemplateBinding Icon}"
+													Width="16"
+													Height="16"
+													Margin="{DynamicResource MenuIconPresenterMargin}"
+													HorizontalAlignment="Center"
+													VerticalAlignment="Center" />
+
+							<ContentPresenter Name="PART_HeaderPresenter"
+													Content="{TemplateBinding Header}"
+													VerticalAlignment="Center"
+													Margin="5 0 0 0"
+													HorizontalAlignment="Stretch"
+													Grid.Column="1">
+								<ContentPresenter.DataTemplates>
+									<DataTemplate DataType="sys:String">
+										<AccessText Text="{Binding}" />
+									</DataTemplate>
+								</ContentPresenter.DataTemplates>
+							</ContentPresenter>
+							<TextBlock x:Name="PART_InputGestureText"
+										  Grid.Column="2"
+										  Classes="CaptionTextBlockStyle"
+										  Margin="{DynamicResource MenuInputGestureTextMargin}"
+										  Text="{TemplateBinding InputGesture, Converter={StaticResource KeyGestureConverter}}"
+										  HorizontalAlignment="Right"
+										  VerticalAlignment="Center" />
+							<Path Name="PART_ChevronPath"
+									Stretch="Uniform"
+									Width="8"
+									Height="8"
+									Data="{StaticResource MenuItemChevronPathData}"
+									Margin="{DynamicResource MenuFlyoutItemChevronMargin}"
+									VerticalAlignment="Center"
+									Grid.Column="3" />
+						</Grid>
+					</Border>
+					<Popup Name="PART_Popup"
+							 WindowManagerAddShadowHint="False"
+							 PlacementMode="Right"
+							 HorizontalOffset="{DynamicResource MenuFlyoutSubItemPopupHorizontalOffset}"
+							 IsLightDismissEnabled="False"
+							 IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}">
+						<Border Background="{DynamicResource MenuFlyoutPresenterBackground}"
+								  BorderBrush="{DynamicResource MenuFlyoutPresenterBorderBrush}"
+								  BorderThickness="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"
+								  Padding="{DynamicResource MenuFlyoutPresenterThemePadding}"
+								  MaxWidth="{DynamicResource FlyoutThemeMaxWidth}"
+								  MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
+								  HorizontalAlignment="Stretch"
+								  CornerRadius="{DynamicResource OverlayCornerRadius}">
+
+							<Panel>
+								<Rectangle
+									HorizontalAlignment="Left"
+									Width="24">
+									<Rectangle.Fill>
+										<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
+											<GradientStop Color="#fcfcfc" Offset="0.0" />
+											<GradientStop Color="#f1f1f1" Offset="1.0" />
+										</LinearGradientBrush>
+									</Rectangle.Fill>
+								</Rectangle>
+								<ScrollViewer Classes="menuscroller">
+									<ItemsPresenter Name="PART_ItemsPresenter"
+														 Items="{TemplateBinding Items}"
+														 ItemsPanel="{TemplateBinding ItemsPanel}"
+														 ItemTemplate="{TemplateBinding ItemTemplate}"
+														 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
+														 Grid.IsSharedSizeScope="True" />
+								</ScrollViewer>
+							</Panel>
+						</Border>
+					</Popup>
+				</Panel>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="Menu > MenuItem">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Name="PART_LayoutRoot"
+						  Background="{TemplateBinding Background}"
+						  BorderBrush="{TemplateBinding BorderBrush}"
+						  BorderThickness="{TemplateBinding BorderThickness}">
+					<Panel>
+						<ContentPresenter Name="PART_HeaderPresenter"
+												Content="{TemplateBinding Header}"
+												VerticalAlignment="Center"
+												HorizontalAlignment="Stretch"
+												Margin="{TemplateBinding Padding}">
+							<ContentPresenter.DataTemplates>
+								<DataTemplate DataType="sys:String">
+									<AccessText Text="{Binding}" />
+								</DataTemplate>
+							</ContentPresenter.DataTemplates>
+						</ContentPresenter>
+						<Popup Name="PART_Popup"
+								 WindowManagerAddShadowHint="False"
+								 MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+								 IsLightDismissEnabled="True"
+								 IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}"
+								 OverlayInputPassThroughElement="{Binding $parent[Menu]}">
+							<Border Background="{DynamicResource MenuFlyoutPresenterBackground}"
+									  BorderBrush="{DynamicResource MenuFlyoutPresenterBorderBrush}"
+									  BorderThickness="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"
+									  Padding="{DynamicResource MenuFlyoutPresenterThemePadding}"
+									  MaxWidth="{DynamicResource FlyoutThemeMaxWidth}"
+									  MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
+									  HorizontalAlignment="Stretch"
+									  CornerRadius="{DynamicResource OverlayCornerRadius}">
+								<Panel>
+									<Rectangle
+										HorizontalAlignment="Left"
+										Width="24">
+										<Rectangle.Fill>
+											<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
+												<GradientStop Color="#fcfcfc" Offset="0.0" />
+												<GradientStop Color="#f1f1f1" Offset="1.0" />
+											</LinearGradientBrush>
+										</Rectangle.Fill>
+									</Rectangle>
+									<ScrollViewer Classes="menuscroller">
+										<ItemsPresenter Name="PART_ItemsPresenter"
+															 Items="{TemplateBinding Items}"
+															 ItemsPanel="{TemplateBinding ItemsPanel}"
+															 ItemTemplate="{TemplateBinding ItemTemplate}"
+															 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
+															 Grid.IsSharedSizeScope="True" />
+									</ScrollViewer>
+								</Panel>
+							</Border>
+						</Popup>
+					</Panel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
 	</Style>
 
 	<Style Selector="MenuItem > MenuItem">

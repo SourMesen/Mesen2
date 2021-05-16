@@ -81,11 +81,51 @@
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="_Tools">
+				<MenuItem Header="Cheats" Click="OnCheatsClick">
+					<MenuItem.Icon><Image Source="/Assets/CheatCode.png" /></MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Movies">
+					<MenuItem.Icon><Image Source="/Assets/Movie.png" /></MenuItem.Icon>
+					<MenuItem Header="Play..." Click="OnPlayMovieClick">
+						<MenuItem.Icon><Image Source="/Assets/MediaPlay.png" /></MenuItem.Icon>
+					</MenuItem>					
+					<MenuItem Header="Record..." Click="OnRecordMovieClick">
+						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Stop" Click="OnStopMovieClick">
+						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
+					</MenuItem>
+				</MenuItem>
+				<MenuItem Header="Net Play">
+					<MenuItem.Icon><Image Source="/Assets/Network.png" /></MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="Sound Recorder">
+					<MenuItem.Icon><Image Source="/Assets/Microphone.png" /></MenuItem.Icon>
+					<MenuItem Header="Start recording" Click="OnStartAudioRecordingClick">
+						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Stop recording" Click="OnStopAudioRecordingClick">
+						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
+					</MenuItem>
+				</MenuItem>
+				<MenuItem Header="Video Recorder">
+					<MenuItem.Icon><Image Source="/Assets/VideoRecorder.png" /></MenuItem.Icon>
+					<MenuItem Header="Start recording" Click="OnStartVideoRecordingClick">
+						<MenuItem.Icon><Image Source="/Assets/Record.png" /></MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Stop recording" Click="OnStopVideoRecordingClick">
+						<MenuItem.Icon><Image Source="/Assets/MediaStop.png" /></MenuItem.Icon>
+					</MenuItem>
+				</MenuItem>
+				<Separator />
 				<MenuItem Header="Log Window" Click="OnLogWindowClick">
 					<MenuItem.Icon><Image Source="/Assets/LogWindow.png" /></MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="Start recording" Click="OnStartRecordingClick" />
-				<MenuItem Header="Stop recording" Click="OnStopRecordingClick" />
+				<Separator />
+				<MenuItem Header="Take Screenshot" Click="OnTakeScreenshotClick">
+					<MenuItem.Icon><Image Source="/Assets/Camera.png" /></MenuItem.Icon>
+				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="_Debug">
 				<MenuItem Header="_Debugger" Click="OnDebuggerClick">
