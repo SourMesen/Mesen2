@@ -281,10 +281,12 @@ void Emulator::Stop(bool sendNotification)
 	debugger.reset();
 
 	_videoDecoder->StopThread();
+	_videoRenderer->StopThread();
 	_rewindManager.reset();
 
 	if(_console) {
 		_console->Stop();
+		_console.reset();
 	}
 
 	_soundMixer->StopAudio(true);
@@ -474,6 +476,9 @@ RomInfo Emulator::GetRomInfo()
 string Emulator::GetHash(HashType type)
 {
 	//TODO
+	if(type == HashType::Sha1) {
+		return "0000000000000000000000000000000000000000";
+	}
 	return "";
 }
 

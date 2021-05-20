@@ -27,16 +27,21 @@ namespace Mesen.ViewModels
 		[Reactive] public bool HasRecentItems { get; private set; }
 		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
 
+		[Reactive] public RecentGamesViewModel RecentGames { get; private set; }
+
 		public MainWindowViewModel()
 		{
 			OpenRecentCommand = ReactiveCommand.Create<RecentItem>(OpenRecent);
 
 			RomInfo = new RomInfo();
+			
 			RecentItems = ConfigManager.Config.RecentFiles.Items;
-
 			this.WhenAnyValue(x => x.RecentItems.Count).Subscribe(count => {
 				HasRecentItems = count > 0;
 			});
+
+			RecentGames = new RecentGamesViewModel();
+			RecentGames.Init(GameScreenMode.RecentGames);
 
 			this.WhenAnyValue(x => x.RomInfo).Subscribe(x => {
 				IsGameRunning = x.Format != RomFormat.Unknown;

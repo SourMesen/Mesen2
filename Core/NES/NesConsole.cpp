@@ -76,13 +76,12 @@ void NesConsole::Serialize(Serializer& s)
 	s.Stream(_apu.get());
 	s.Stream(_controlManager.get());
 	s.Stream(_mapper.get());
+	s.Stream(_mixer.get());
 
-	//TODO
-	/*if(_hdAudioDevice) {
-		_hdAudioDevice->LoadSnapshot(&loadStream, stateVersion);
-	} else {
-		Snapshotable::SkipBlock(&loadStream);
-	}*/
+	if(_hdAudioDevice) {
+		//For HD packs, save the state of the bgm playback
+		s.Stream(_hdAudioDevice.get());
+	}
 
 	if(_vsSubConsole) {
 		//For VS Dualsystem, the sub console's savestate is appended to the end of the file

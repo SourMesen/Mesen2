@@ -1,0 +1,40 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	Name="root"
+	x:Class="Mesen.Controls.StateGrid"
+>
+	<UserControl.Resources>
+		<Color x:Key="ButtonBackgroundPointerOver">Transparent</Color>
+		<Color x:Key="ButtonBackgroundPressed">Transparent</Color>
+	</UserControl.Resources>
+	
+	<DockPanel Margin="5" DataContext="{Binding ElementName=root}">
+		<Panel DockPanel.Dock="Top">
+			<TextBlock Text="{Binding Title}" FontSize="15" FontWeight="Medium" Foreground="White" TextAlignment="Center" />
+			<Button IsVisible="{Binding ShowClose}" Click="OnCloseClick" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Padding="0" Margin="0 -2 0 -2">
+				<Image Source="/Assets/CloseWhite.png" Width="16" Height="16" />
+			</Button>
+		</Panel>
+		<Button DockPanel.Dock="Left" IsVisible="{Binding ShowArrows}" Background="Transparent" BorderThickness="0" Click="OnPrevPageClick" VerticalAlignment="Stretch" Height="NaN">
+			<Image Source="/Assets/MediaPlay.png" VerticalAlignment="Center" HorizontalAlignment="Left" Width="16">
+				<Image.RenderTransform>
+					<RotateTransform Angle="180" />
+				</Image.RenderTransform>
+			</Image>
+		</Button>
+		<Button DockPanel.Dock="Right" IsVisible="{Binding ShowArrows}" Background="Transparent" BorderThickness="0" Click="OnNextPageClick" VerticalAlignment="Stretch" Height="NaN">
+			<Image Source="/Assets/MediaPlay.png" VerticalAlignment="Center" HorizontalAlignment="Right" Width="16" />
+		</Button>
+		<Grid Name="Grid" />
+	</DockPanel>
+</UserControl>

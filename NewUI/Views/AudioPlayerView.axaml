@@ -27,17 +27,25 @@
 		<Style Selector="Slider TickBar">
 			<Setter Property="Fill" Value="Gray" />
 		</Style>
+
+		<Style Selector="Button.Toggle">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="Button.Toggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
 	</UserControl.Styles>
 	
 	<Panel Background="Black">
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left">
-			<Button Click="OnToggleShuffleClick" Height="26">
+			<Button Click="OnToggleShuffleClick" Height="26" Classes="Toggle">
 				<Panel>
 					<Image Height="24" Width="24" Source="/Assets/ShuffleEnabled.png" IsVisible="{CompiledBinding Config.Shuffle}" />
 					<Image Height="24" Width="24" Source="/Assets/Shuffle.png" IsVisible="{CompiledBinding !Config.Shuffle}" />				
 				</Panel>
 			</Button>
-			<Button Click="OnToggleRepeatClick" Height="26">
+			<Button Click="OnToggleRepeatClick" Height="26" Classes="Toggle">
 				<Panel>
 					<Image Height="24" Width="24" Source="/Assets/RepeatEnabled.png" IsVisible="{CompiledBinding Config.Repeat}" />
 					<Image Height="24" Width="24" Source="/Assets/Repeat.png" IsVisible="{CompiledBinding !Config.Repeat}" />

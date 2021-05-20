@@ -2,6 +2,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:m="clr-namespace:Mesen"
+	xmlns:c="using:Mesen.Controls"
 	xmlns:v="using:Mesen.Views"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:vm="using:Mesen.ViewModels"
@@ -23,6 +24,9 @@
 		<DataTemplate DataType="{x:Type vm:AudioPlayerViewModel}">
 			<v:AudioPlayerView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:RecentGamesViewModel}">
+			<c:StateGrid Entries="{Binding GameEntries}" Title="{Binding Title}" Mode="{Binding Mode}" />
+		</DataTemplate>
 	</Window.DataTemplates>
 	
 	<DockPanel Background="Black">
@@ -32,11 +36,11 @@
 					<MenuItem.Icon><Image Source="/Assets/Folder.png" /></MenuItem.Icon>
 				</MenuItem>
 				<Separator/>
-				<MenuItem Header="{l:Translate mnuSaveState}" Click="OnExitClick">
-
+				<MenuItem Header="{l:Translate mnuSaveState}">
+					<MenuItem Header="{l:Translate mnuSaveStateMenu}" Click="OnSaveStateMenuClick" IsEnabled="{CompiledBinding IsGameRunning}" />
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuLoadState}" Click="OnExitClick">
-
+				<MenuItem Header="{l:Translate mnuLoadState}">
+					<MenuItem Header="{l:Translate mnuLoadStateMenu}" Click="OnLoadStateMenuClick" IsEnabled="{CompiledBinding IsGameRunning}" />
 				</MenuItem>
 				<Separator/>
 				<MenuItem Header="{l:Translate mnuRecentFiles}" Items="{CompiledBinding RecentItems}" Classes="RecentFiles" IsEnabled="{CompiledBinding HasRecentItems}">
@@ -237,7 +241,12 @@
 				</MenuItem>
 			</MenuItem>
 		</Menu>
+		
 		<ContentControl DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />
-		<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+		<Panel>
+			<ContentControl Content="{CompiledBinding RecentGames}" IsVisible="{CompiledBinding RecentGames.Visible}" />
+			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{CompiledBinding !RecentGames.Visible}" />
+		</Panel>
 	</DockPanel>
 </Window>

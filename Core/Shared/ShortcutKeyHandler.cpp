@@ -100,95 +100,148 @@ void ShortcutKeyHandler::ProcessRunSingleFrame()
 	_emu->PauseOnNextFrame();
 }
 
+bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
+{
+	bool isRunning = _emu->IsRunning();
+	bool isNetplayClient = GameClient::Connected();
+	bool isMoviePlaying = _emu->GetMovieManager()->Playing();
+	bool isMovieRecording = _emu->GetMovieManager()->Recording();
+	bool isMovieActive = isMoviePlaying || isMovieRecording;
+
+	switch(shortcut) {
+		case EmulatorShortcut::ToggleRewind:
+		case EmulatorShortcut::Rewind:
+		case EmulatorShortcut::RewindTenSecs:
+		case EmulatorShortcut::RewindOneMin:
+			return isRunning && !isNetplayClient && !isMovieRecording;
+
+		case EmulatorShortcut::IncreaseSpeed:
+		case EmulatorShortcut::DecreaseSpeed:
+		case EmulatorShortcut::MaxSpeed:
+			return !isNetplayClient;
+
+		case EmulatorShortcut::Reset:
+		case EmulatorShortcut::PowerCycle:
+		case EmulatorShortcut::ReloadRom:
+			return isRunning && !isNetplayClient && !isMoviePlaying;
+
+		case EmulatorShortcut::PowerOff:
+			return isRunning && !isNetplayClient;
+
+		case EmulatorShortcut::TakeScreenshot:
+			return isRunning;
+
+		case EmulatorShortcut::ToggleCheats:
+			return !isNetplayClient && !isMovieActive;
+	}
+
+	return true;
+}
+
+void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut)
+{
+	EmuSettings* settings = _emu->GetSettings();
+
+	switch(shortcut) {
+		case EmulatorShortcut::Pause:
+			if(_emu->IsPaused()) {
+				_emu->Resume();
+			} else {
+				_emu->Pause();
+			}
+			break;
+		
+		case EmulatorShortcut::Reset: _emu->Reset(); break;
+		case EmulatorShortcut::PowerCycle: _emu->PowerCycle(); break;
+		case EmulatorShortcut::ReloadRom: _emu->ReloadRom(false); break;
+		case EmulatorShortcut::PowerOff: _emu->Stop(true); break;
+
+		case EmulatorShortcut::FastForward: settings->SetFlag(EmulationFlags::Turbo); break;
+		case EmulatorShortcut::ToggleFastForward:
+			if(settings->CheckFlag(EmulationFlags::Turbo)) {
+				settings->ClearFlag(EmulationFlags::Turbo);
+			} else {
+				settings->SetFlag(EmulationFlags::Turbo);
+			}
+			break;
+
+		case EmulatorShortcut::SelectSaveSlot1: case EmulatorShortcut::SelectSaveSlot2: case EmulatorShortcut::SelectSaveSlot3: case EmulatorShortcut::SelectSaveSlot4: case EmulatorShortcut::SelectSaveSlot5:
+		case EmulatorShortcut::SelectSaveSlot6: case EmulatorShortcut::SelectSaveSlot7: case EmulatorShortcut::SelectSaveSlot8: case EmulatorShortcut::SelectSaveSlot9: case EmulatorShortcut::SelectSaveSlot10:
+			_emu->GetSaveStateManager()->SelectSaveSlot((int)shortcut - (int)EmulatorShortcut::SelectSaveSlot1 + 1);
+			break;
+
+		case EmulatorShortcut::SaveStateSlot1: case EmulatorShortcut::SaveStateSlot2: case EmulatorShortcut::SaveStateSlot3: case EmulatorShortcut::SaveStateSlot4: case EmulatorShortcut::SaveStateSlot5:
+		case EmulatorShortcut::SaveStateSlot6: case EmulatorShortcut::SaveStateSlot7: case EmulatorShortcut::SaveStateSlot8: case EmulatorShortcut::SaveStateSlot9: case EmulatorShortcut::SaveStateSlot10:
+			_emu->GetSaveStateManager()->SaveState((int)shortcut - (int)EmulatorShortcut::SaveStateSlot1 + 1);
+			break;
+		
+		case EmulatorShortcut::LoadStateSlot1: case EmulatorShortcut::LoadStateSlot2: case EmulatorShortcut::LoadStateSlot3: case EmulatorShortcut::LoadStateSlot4: case EmulatorShortcut::LoadStateSlot5:
+		case EmulatorShortcut::LoadStateSlot6: case EmulatorShortcut::LoadStateSlot7: case EmulatorShortcut::LoadStateSlot8: case EmulatorShortcut::LoadStateSlot9: case EmulatorShortcut::LoadStateSlot10:
+			_emu->GetSaveStateManager()->LoadState((int)shortcut - (int)EmulatorShortcut::LoadStateSlot1 + 1);
+			break;
+
+		case EmulatorShortcut::MoveToNextStateSlot: _emu->GetSaveStateManager()->MoveToNextSlot(); break;
+		case EmulatorShortcut::MoveToPreviousStateSlot: _emu->GetSaveStateManager()->MoveToPreviousSlot(); break;
+		case EmulatorShortcut::SaveState: _emu->GetSaveStateManager()->SaveState(); break;
+		case EmulatorShortcut::LoadState: _emu->GetSaveStateManager()->LoadState(); break;
+
+		case EmulatorShortcut::RunSingleFrame: ProcessRunSingleFrame(); break;
+		
+		case EmulatorShortcut::ToggleRewind:
+			if(_emu->GetRewindManager()->IsRewinding()) {
+				_emu->GetRewindManager()->StopRewinding();
+			} else {
+				_emu->GetRewindManager()->StartRewinding();
+			}
+			break;
+
+		case EmulatorShortcut::Rewind: _emu->GetRewindManager()->StartRewinding(); break;
+		case EmulatorShortcut::RewindTenSecs: _emu->GetRewindManager()->RewindSeconds(10); break;
+		case EmulatorShortcut::RewindOneMin: _emu->GetRewindManager()->RewindSeconds(60); break;
+		
+		default:
+			//Anything else is managed by the UI
+			break;
+	}
+}
+
+void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut)
+{
+	EmuSettings* settings = _emu->GetSettings();
+	switch(shortcut) {
+		case EmulatorShortcut::FastForward: settings->ClearFlag(EmulationFlags::Turbo); break;
+		case EmulatorShortcut::Rewind: _emu->GetRewindManager()->StopRewinding(); break;
+		
+		case EmulatorShortcut::RunSingleFrame:
+			_runSingleFrameRepeatTimer.reset();
+			_repeatStarted = false;
+			break;
+	}
+}
+
 void ShortcutKeyHandler::CheckMappedKeys()
 {
 	EmuSettings* settings = _emu->GetSettings();
-	bool isNetplayClient = GameClient::Connected();
-	bool isMovieActive = _emu->GetMovieManager()->Playing() || _emu->GetMovieManager()->Recording();
-	bool isMovieRecording = _emu->GetMovieManager()->Recording();
 
 	//Let the UI handle these shortcuts
-	for(uint64_t i = (uint64_t)EmulatorShortcut::TakeScreenshot; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
-		if(DetectKeyPress((EmulatorShortcut)i)) {
+	for(uint64_t i = 0; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
+		EmulatorShortcut shortcut = (EmulatorShortcut)i;
+		if(DetectKeyPress(shortcut)) {
+			if(!IsShortcutAllowed(shortcut)) {
+				continue;
+			}
+
 			ExecuteShortcutParams params = {};
-			params.Shortcut = (EmulatorShortcut)i;
+			params.Shortcut = shortcut;
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, &params);
-		} else if(DetectKeyRelease((EmulatorShortcut)i)) {
+
+			ProcessShortcutPressed(shortcut);
+		} else if(DetectKeyRelease(shortcut)) {
 			ExecuteShortcutParams params = {};
-			params.Shortcut = (EmulatorShortcut)i;
+			params.Shortcut = shortcut;
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ReleaseShortcut, &params);
-		}
-	}
 
-	if(DetectKeyPress(EmulatorShortcut::FastForward)) {
-		settings->SetFlag(EmulationFlags::Turbo);
-	} else if(DetectKeyRelease(EmulatorShortcut::FastForward)) {
-		settings->ClearFlag(EmulationFlags::Turbo);
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::ToggleFastForward)) {
-		if(settings->CheckFlag(EmulationFlags::Turbo)) {
-			settings->ClearFlag(EmulationFlags::Turbo);
-		} else {
-			settings->SetFlag(EmulationFlags::Turbo);
-		}
-	}
-
-	for(int i = 0; i < 10; i++) {
-		if(DetectKeyPress((EmulatorShortcut)((int)EmulatorShortcut::SelectSaveSlot1 + i))) {
-			_emu->GetSaveStateManager()->SelectSaveSlot(i + 1);
-		}
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::MoveToNextStateSlot)) {
-		_emu->GetSaveStateManager()->MoveToNextSlot();
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::MoveToPreviousStateSlot)) {
-		_emu->GetSaveStateManager()->MoveToPreviousSlot();
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::SaveState)) {
-		_emu->GetSaveStateManager()->SaveState();
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::LoadState)) {
-		_emu->GetSaveStateManager()->LoadState();
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::ToggleCheats) && !isNetplayClient && !isMovieActive) {
-		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, (void*)EmulatorShortcut::ToggleCheats);
-	}
-
-	if(DetectKeyPress(EmulatorShortcut::RunSingleFrame)) {
-		ProcessRunSingleFrame();
-	}
-
-	if(DetectKeyRelease(EmulatorShortcut::RunSingleFrame)) {
-		_runSingleFrameRepeatTimer.reset();
-		_repeatStarted = false;
-	}
-
-	if(!isNetplayClient && !isMovieRecording) {
-		shared_ptr<RewindManager> rewindManager = _emu->GetRewindManager();
-		if(rewindManager) {
-			if(DetectKeyPress(EmulatorShortcut::ToggleRewind)) {
-				if(rewindManager->IsRewinding()) {
-					rewindManager->StopRewinding();
-				} else {
-					rewindManager->StartRewinding();
-				}
-			}
-
-			if(DetectKeyPress(EmulatorShortcut::Rewind)) {
-				rewindManager->StartRewinding();
-			} else if(DetectKeyRelease(EmulatorShortcut::Rewind)) {
-				rewindManager->StopRewinding();
-			} else  if(DetectKeyPress(EmulatorShortcut::RewindTenSecs)) {
-				rewindManager->RewindSeconds(10);
-			} else if(DetectKeyPress(EmulatorShortcut::RewindOneMin)) {
-				rewindManager->RewindSeconds(60);
-			}
+			ProcessShortcutReleased(shortcut);
 		}
 	}
 }

@@ -199,6 +199,9 @@
     <Compile Update="Views\GameboyConfigView.axaml.cs">
       <DependentUpon>GameboyConfigView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\StateGridEntry.axaml.cs">
+      <DependentUpon>StateGridEntry.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\SnesConfigView.axaml.cs">
       <DependentUpon>SnesConfigView.axaml</DependentUpon>
     </Compile>
@@ -213,6 +216,9 @@
     </Compile>
     <Compile Update="Views\NesControllerView.axaml.cs">
       <DependentUpon>NesControllerView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\StateGrid.axaml.cs">
+      <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\ColorPickerWindow.axaml.cs">
       <DependentUpon>ColorPickerWindow.axaml</DependentUpon>

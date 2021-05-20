@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Mesen.Localization;
 using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
+using Avalonia.Media.Imaging;
 
 namespace Mesen.Interop
 {
@@ -94,8 +95,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void LoadStateFile([MarshalAs(UnmanagedType.LPUTF8Str)]string filepath);
 
 		[DllImport(DllPath, EntryPoint = "GetSaveStatePreview")] private static extern Int32 GetSaveStatePreviewWrapper([MarshalAs(UnmanagedType.LPUTF8Str)]string saveStatePath, [Out]byte[] imgData);
-		//TODO
-		/*public static Image GetSaveStatePreview(string saveStatePath)
+		public static Bitmap? GetSaveStatePreview(string saveStatePath)
 		{
 			if(File.Exists(saveStatePath)) {
 				byte[] buffer = new byte[512*478*4];
@@ -103,12 +103,12 @@ namespace Mesen.Interop
 				if(size > 0) {
 					Array.Resize(ref buffer, size);
 					using(MemoryStream stream = new MemoryStream(buffer)) {
-						return Image.FromStream(stream);
+						return new Bitmap(stream);
 					}
 				}
 			}
 			return null;
-		}*/
+		}
 
 		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();

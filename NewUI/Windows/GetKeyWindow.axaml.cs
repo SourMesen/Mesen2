@@ -34,14 +34,14 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected void OnPreviewKeyDown(object? sender, KeyEventArgs e)
+		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((int)e.Key, true);
 			this.OnKeyChange();
 			e.Handled = true;
 		}
 
-		protected void OnPreviewKeyUp(object? sender, KeyEventArgs e)
+		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((int)e.Key, false);
 			this.OnKeyChange();

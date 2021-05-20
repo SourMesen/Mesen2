@@ -234,7 +234,6 @@ void NesApu::Serialize(Serializer& s)
 	s.Stream(_triangleChannel.get());
 	s.Stream(_noiseChannel.get());
 	s.Stream(_deltaModulationChannel.get());
-	s.Stream(_mixer);
 }
 
 void NesApu::AddExpansionAudioDelta(AudioChannel channel, int16_t delta)

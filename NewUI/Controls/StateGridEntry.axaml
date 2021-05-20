@@ -1,0 +1,53 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+	xmlns:c="using:Mesen.Controls"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Controls.StateGridEntry"
+>
+	<UserControl.Resources>
+		<Color x:Key="ButtonBorderBrushDisabled">Gray</Color>
+	</UserControl.Resources>
+	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="TextBlock:disabled">
+			<Setter Property="Foreground" Value="Gray" />
+		</Style>
+	</UserControl.Styles>
+	
+	<DockPanel Margin="2 2 2 7" DataContext="{Binding ElementName=root}">
+		<TextBlock
+			DockPanel.Dock="Bottom"
+			Text="{Binding SubTitle}"
+			TextAlignment="Center"
+			TextWrapping="Wrap"
+			IsEnabled="{Binding Enabled}"
+		/>
+		<TextBlock
+			DockPanel.Dock="Bottom"
+			Text="{Binding Title}"
+			TextAlignment="Center"
+			TextWrapping="Wrap"
+			IsEnabled="{Binding Enabled}"
+		/>
+		<Button
+			BorderBrush="SlateGray"
+			BorderThickness="2"
+			Height="NaN"
+			Background="Transparent"
+			Click="OnImageClick"
+			IsEnabled="{Binding Enabled}"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Stretch"
+			Padding="0"
+		>
+			<Image Source="{Binding Image}" Stretch="Uniform" StretchDirection="Both" VerticalAlignment="Center" />
+		</Button>
+	</DockPanel>
+</UserControl>

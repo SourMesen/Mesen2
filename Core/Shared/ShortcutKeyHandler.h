@@ -37,6 +37,11 @@ private:
 
 	void ProcessRunSingleFrame();
 
+	bool IsShortcutAllowed(EmulatorShortcut shortcut);
+	
+	void ProcessShortcutPressed(EmulatorShortcut shortcut);
+	void ProcessShortcutReleased(EmulatorShortcut shortcut);
+
 public:
 	ShortcutKeyHandler(shared_ptr<Emulator> emu);
 	~ShortcutKeyHandler();

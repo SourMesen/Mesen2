@@ -9,6 +9,8 @@
 			<Control ID="mnuSaveState">Save State</Control>
 			<Control ID="mnuLoadState">Load State</Control>
 			<Control ID="mnuLoadLastSession">Load Last Session</Control>
+			<Control ID="mnuLoadStateMenu">Load State Menu</Control>
+			<Control ID="mnuSaveStateMenu">Save State Menu</Control>
 			<Control ID="mnuRecentFiles">Recent Files</Control>
 			<Control ID="mnuExit">Exit</Control>
 			<Control ID="mnuGame">Game</Control>

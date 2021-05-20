@@ -26,14 +26,21 @@ namespace Mesen.Windows
 {
 	public class MainWindow : Window
 	{
-		private NotificationListener? _listener;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+		private MainWindowViewModel _model = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+		private NotificationListener? _listener = null;
 		private ConfigWindow? _cfgWindow = null;
-		private MainWindowViewModel? _model = null;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 			AddHandler(DragDrop.DropEvent, OnDrop);
+
+			//Allow us to catch LeftAlt/RightAlt key presses
+			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
+			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 #if DEBUG
 			this.AttachDevTools();
 #endif
@@ -88,10 +95,10 @@ namespace Mesen.Windows
 
 			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 
-			if(!ProcessCommandLineArgs(Program.CommandLineArgs)) {
+			/*if(!ProcessCommandLineArgs(Program.CommandLineArgs)) {
 				EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
 				//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
-			}
+			}*/
 
 			ConfigManager.Config.Preferences.UpdateFileAssociations();
 
@@ -120,13 +127,21 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.GameLoaded:
 					RomInfo romInfo = EmuApi.GetRomInfo();
 					Dispatcher.UIThread.Post(() => {
-						_model!.RomInfo = romInfo;
+						_model.RecentGames.Visible = false;
+						_model.RomInfo = romInfo;
+					});
+					break;
+
+				case ConsoleNotificationType.GameResumed:
+					Dispatcher.UIThread.Post(() => {
+						_model.RecentGames.Visible = false;
 					});
 					break;
 
 				case ConsoleNotificationType.EmulationStopped:
 					Dispatcher.UIThread.Post(() => {
-						_model!.RomInfo = new RomInfo();
+						_model.RomInfo = new RomInfo();
+						_model.RecentGames.Init(GameScreenMode.RecentGames);
 					});
 					break;
 
@@ -163,6 +178,16 @@ namespace Mesen.Windows
 			if(filenames?.Length > 0) {
 				LoadRomHelper.LoadFile(filenames[0]);
 			}
+		}
+		
+		private void OnSaveStateMenuClick(object sender, RoutedEventArgs e)
+		{
+			_model.RecentGames.Init(GameScreenMode.SaveState);
+		}
+
+		private void OnLoadStateMenuClick(object sender, RoutedEventArgs e)
+		{
+			_model.RecentGames.Init(GameScreenMode.LoadState);
 		}
 
 		private void OnTileViewerClick(object sender, RoutedEventArgs e)
@@ -201,6 +226,11 @@ namespace Mesen.Windows
 		private void cfgWindow_Closed(object? sender, EventArgs e)
 		{
 			_cfgWindow = null;
+			if(ConfigManager.Config.Preferences.DisableGameSelectionScreen && _model.RecentGames.Visible) {
+				_model.RecentGames.Visible = false;
+			} else if(!ConfigManager.Config.Preferences.DisableGameSelectionScreen && !_model.IsGameRunning) {
+				_model.RecentGames.Init(GameScreenMode.RecentGames);
+			}
 		}
 
 		private void OnPreferencesClick(object sender, RoutedEventArgs e)
@@ -332,16 +362,22 @@ namespace Mesen.Windows
 			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsInsertDiskNumber, Param = 1 });
 		}
 
-		protected override void OnKeyDown(KeyEventArgs e)
+		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			InputApi.SetKeyState((int)e.Key, true);
+			if(e.Key == Key.Tab) {
+				e.Handled = true;
+			}
 		}
 
-		protected override void OnKeyUp(KeyEventArgs e)
+		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
-			base.OnKeyUp(e);
 			InputApi.SetKeyState((int)e.Key, false);
+		}
+
+		protected override void OnLostFocus(RoutedEventArgs e)
+		{
+			InputApi.ResetKeyState();
 		}
 	}
 }

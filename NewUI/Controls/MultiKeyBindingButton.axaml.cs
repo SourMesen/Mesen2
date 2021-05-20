@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using Mesen.Config.Shortcuts;
+using Mesen.Utilities;
 using Mesen.Windows;
 using System;
 
@@ -42,7 +43,7 @@ namespace Mesen.Controls
 			GetKeyWindow wnd = new GetKeyWindow();
 			wnd.SingleKeyMode = false;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			await wnd.ShowDialog(this.VisualRoot as Window);
+			await wnd.ShowCenteredDialog((Window)this.VisualRoot);
 			this.KeyBinding = wnd.ShortcutKey;
 		}
 

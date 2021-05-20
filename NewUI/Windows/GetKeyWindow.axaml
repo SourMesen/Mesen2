@@ -25,7 +25,7 @@
 					TextWrapping="Wrap"
 					HorizontalAlignment="Center"
 					VerticalAlignment="Center"
-			/>
+				/>
 			</Panel>
 			<TextBlock
 				Grid.Row="1"

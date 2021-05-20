@@ -169,32 +169,28 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 		}
 
 		stream.read((char*)&fileFormatVersion, sizeof(fileFormatVersion));
-		if(fileFormatVersion <= 5) {
+		if(fileFormatVersion < SaveStateManager::MinimumSupportedVersion) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateIncompatibleVersion");
 			return false;
 		} else {
 			char hash[41] = {};
 			stream.read(hash, 40);
 
-			if(fileFormatVersion >= 8) {
-				ConsoleType consoleType;
-				stream.read((char*)&consoleType, sizeof(consoleType));
-				if(consoleType != _emu->GetConsoleType()) {
-					MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
-					return false;
-				}
-			} 
-			
-			if(fileFormatVersion >= 7) {
-				#ifndef LIBRETRO
-				vector<uint8_t> frameData;
-				uint32_t width = 0;
-				uint32_t height = 0;
-				if(GetScreenshotData(frameData, width, height, stream)) {
-					_emu->GetVideoDecoder()->UpdateFrame((uint16_t*)frameData.data(), width, height, 0, true, true);
-				}
-				#endif
+			ConsoleType consoleType;
+			stream.read((char*)&consoleType, sizeof(consoleType));
+			if(consoleType != _emu->GetConsoleType()) {
+				MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
+				return false;
 			}
+			
+			#ifndef LIBRETRO
+			vector<uint8_t> frameData;
+			uint32_t width = 0;
+			uint32_t height = 0;
+			if(GetScreenshotData(frameData, width, height, stream)) {
+				_emu->GetVideoDecoder()->UpdateFrame((uint16_t*)frameData.data(), width, height, 0, true, true);
+			}
+			#endif
 
 			uint32_t nameLength = 0;
 			stream.read((char*)&nameLength, sizeof(uint32_t));
@@ -295,17 +291,16 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 	std::getline(romInfoStream, romPath);
 	std::getline(romInfoStream, patchPath);
 
-	_emu->Lock();
 	try {
 		if(_emu->LoadRom(romPath, patchPath)) {
 			if(!resetGame) {
+				auto lock = _emu->AcquireLock();
 				SaveStateManager::LoadState(stateStream, false);
 			}
 		}
 	} catch(std::exception&) { 
 		_emu->Stop(true);
 	}
-	_emu->Unlock();
 }
 
 int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* pngData)
@@ -328,12 +323,12 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 
 		uint32_t fileFormatVersion = 0;
 		stream.read((char*)&fileFormatVersion, sizeof(fileFormatVersion));
-		if(fileFormatVersion <= 6) {
+		if(fileFormatVersion < SaveStateManager::MinimumSupportedVersion) {
 			return -1;
 		}
 
 		//Skip some header fields
-		stream.seekg(40, ios::cur);
+		stream.seekg(44, ios::cur);
 
 		vector<uint8_t> frameData;
 		uint32_t width = 0;
