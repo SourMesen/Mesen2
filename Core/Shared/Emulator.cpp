@@ -13,6 +13,7 @@
 #include "Shared/SaveStateManager.h"
 #include "Shared/Video/DebugStats.h"
 #include "Shared/RewindManager.h"
+#include "Shared/ShortcutKeyHandler.h"
 #include "Shared/EmulatorLock.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/BatteryManager.h"
@@ -59,6 +60,10 @@ void Emulator::Initialize()
 
 	_debugHud.reset(new DebugHud());
 	_notificationManager.reset(new NotificationManager());
+	
+	_shortcutKeyHandler.reset(new ShortcutKeyHandler(this));
+	_notificationManager->RegisterNotificationListener(_shortcutKeyHandler);
+
 	_batteryManager.reset(new BatteryManager());
 	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
 	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
@@ -82,6 +87,7 @@ void Emulator::Release()
 	_videoDecoder.reset();
 	_videoRenderer.reset();
 	_debugHud.reset();
+	_shortcutKeyHandler.reset();
 	_notificationManager.reset();
 	_saveStateManager.reset();
 	_soundMixer.reset();
@@ -731,6 +737,11 @@ shared_ptr<VideoRenderer> Emulator::GetVideoRenderer()
 shared_ptr<VideoDecoder> Emulator::GetVideoDecoder()
 {
 	return _videoDecoder;
+}
+
+shared_ptr<ShortcutKeyHandler> Emulator::GetShortcutKeyHandler()
+{
+	return _shortcutKeyHandler;
 }
 
 shared_ptr<NotificationManager> Emulator::GetNotificationManager()

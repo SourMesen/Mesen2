@@ -64,6 +64,10 @@ void FdsInputButtons::EjectDisk()
 
 void FdsInputButtons::InsertDisk(uint8_t diskNumber)
 {
+	if(diskNumber >= _sideCount) {
+		return;
+	}
+
 	if(_fds->IsDiskInserted()) {
 		//Eject disk on next frame, then insert new disk 2 seconds later
 		_needEjectDisk = true;

@@ -129,4 +129,11 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	if(!_checkOnly) {
 		GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, GameDatabase::IsEnabled(), preloadedHeader != nullptr);
 	}
+
+	if(romData.Info.System == GameSystem::VsSystem) {
+		romData.Info.Format = RomFormat::VsSystem;
+		if(romData.Info.VsType == VsSystemType::VsDualSystem) {
+			romData.Info.Format = RomFormat::VsDualSystem;
+		}
+	}
 }

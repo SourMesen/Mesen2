@@ -12,7 +12,6 @@ using Mesen.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Debugger.ViewModels;
 using System;
-using Mesen.Config.Shortcuts;
 
 namespace Mesen.Views
 {
@@ -35,27 +34,6 @@ namespace Mesen.Views
 		{
 			if(DataContext is MainMenuViewModel model) {
 				_model = model;
-			}
-		}
-
-		public void OnExitClick(object sender, RoutedEventArgs e)
-		{
-			((Window)VisualRoot).Close();
-		}
-
-		public async void OnOpenClick(object sender, RoutedEventArgs e)
-		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "All ROM Files", Extensions = { "sfc" , "fig", "smc", "spc", "nes", "fds", "unif", "nsf", "nsfe", "gb", "gbc", "gbs" } },
-				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc", "spc" } },
-				new FileDialogFilter() { Name = "NES ROM Files", Extensions = { "nes" , "fds", "unif", "nsf", "nsfe" } },
-				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc", "gbs" } }
-			};
-
-			string[] filenames = await ofd.ShowAsync((Window)VisualRoot);
-			if(filenames?.Length > 0) {
-				LoadRomHelper.LoadFile(filenames[0]);
 			}
 		}
 
@@ -201,11 +179,6 @@ namespace Mesen.Views
 			//TODO
 		}
 
-		private void OnTakeScreenshotClick(object sender, RoutedEventArgs e)
-		{
-			EmuApi.TakeScreenshot();
-		}
-
 		private void OnResetClick(object sender, RoutedEventArgs e)
 		{
 			EmuApi.Reset();
@@ -219,26 +192,6 @@ namespace Mesen.Views
 		private void OnPowerOffClick(object sender, RoutedEventArgs e)
 		{
 			EmuApi.Stop();
-		}
-
-		private void OnFdsSwitchDiskSide(object sender, RoutedEventArgs e)
-		{
-			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsSwitchDiskSide });
-		}
-
-		private void OnFdsEjectDisk(object sender, RoutedEventArgs e)
-		{
-			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsEjectDisk });
-		}
-
-		private void OnFdsInsertDisk0(object sender, RoutedEventArgs e)
-		{
-			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsInsertDiskNumber, Param = 0 });
-		}
-
-		private void OnFdsInsertDisk1(object sender, RoutedEventArgs e)
-		{
-			EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.FdsInsertDiskNumber, Param = 1 });
 		}
 	}
 }

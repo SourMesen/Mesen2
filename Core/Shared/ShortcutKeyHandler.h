@@ -1,15 +1,16 @@
 #pragma once
 #include "stdafx.h"
+#include "Shared/Interfaces/INotificationListener.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/Timer.h"
 #include "SettingTypes.h"
 
 class Emulator;
 
-class ShortcutKeyHandler
+class ShortcutKeyHandler : public INotificationListener, public std::enable_shared_from_this<ShortcutKeyHandler>
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	thread _thread;
 	atomic<bool> _stopThread;
@@ -30,21 +31,22 @@ private:
 	
 	bool IsKeyPressed(EmulatorShortcut key);
 	bool IsKeyPressed(KeyCombination comb);
-	bool IsKeyPressed(uint32_t keyCode);
+	bool IsKeyPressed(uint32_t keyCode, bool mergeCtrlAltShift);
 
 	bool DetectKeyPress(EmulatorShortcut key);
 	bool DetectKeyRelease(EmulatorShortcut key);
 
 	void ProcessRunSingleFrame();
 
-	bool IsShortcutAllowed(EmulatorShortcut shortcut);
-	
 	void ProcessShortcutPressed(EmulatorShortcut shortcut);
 	void ProcessShortcutReleased(EmulatorShortcut shortcut);
 
 public:
-	ShortcutKeyHandler(shared_ptr<Emulator> emu);
+	ShortcutKeyHandler(Emulator* emu);
 	~ShortcutKeyHandler();
 
+	bool IsShortcutAllowed(EmulatorShortcut shortcut);
 	void ProcessKeys();
+
+	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
 };

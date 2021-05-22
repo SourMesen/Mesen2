@@ -26,6 +26,7 @@ class DebugStats;
 class IControlManager;
 class VirtualFile;
 class BaseVideoFilter;
+class ShortcutKeyHandler;
 class SystemActionManager;
 class AudioPlayerHud;
 
@@ -51,6 +52,7 @@ private:
 
 	shared_ptr<Debugger> _debugger;
 
+	shared_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
 	shared_ptr<NotificationManager> _notificationManager;
 	shared_ptr<BatteryManager> _batteryManager;
 	shared_ptr<SoundMixer> _soundMixer;
@@ -146,6 +148,7 @@ public:
 	shared_ptr<SoundMixer> GetSoundMixer();
 	shared_ptr<VideoRenderer> GetVideoRenderer();
 	shared_ptr<VideoDecoder> GetVideoDecoder();
+	shared_ptr<ShortcutKeyHandler> GetShortcutKeyHandler();
 	shared_ptr<NotificationManager> GetNotificationManager();
 	EmuSettings* GetSettings();
 	shared_ptr<SaveStateManager> GetSaveStateManager();

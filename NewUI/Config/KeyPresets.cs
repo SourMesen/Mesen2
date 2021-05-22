@@ -48,10 +48,10 @@ namespace Mesen.Config
 				Start = InputApi.GetKeyCode("D"),
 				L = InputApi.GetKeyCode("Q"),
 				R = InputApi.GetKeyCode("W"),
-				Up = InputApi.GetKeyCode("Up"),
-				Down = InputApi.GetKeyCode("Down"),
-				Left = InputApi.GetKeyCode("Left"),
-				Right = InputApi.GetKeyCode("Right")
+				Up = InputApi.GetKeyCode("Up Arrow"),
+				Down = InputApi.GetKeyCode("Down Arrow"),
+				Left = InputApi.GetKeyCode("Left Arrow"),
+				Right = InputApi.GetKeyCode("Right Arrow")
 			};
 			
 			if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {

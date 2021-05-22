@@ -10,9 +10,10 @@
 #include "Shared/Movies/MovieManager.h"
 #include "Netplay/GameClient.h"
 
-ShortcutKeyHandler::ShortcutKeyHandler(shared_ptr<Emulator> emu)
+ShortcutKeyHandler::ShortcutKeyHandler(Emulator* emu)
 {
 	_emu = emu;
+
 	_keySetIndex = 0;
 	_isKeyUp = false;
 	_repeatStarted = false;
@@ -55,13 +56,21 @@ bool ShortcutKeyHandler::IsKeyPressed(KeyCombination comb)
 		return false;
 	}
 
-	return IsKeyPressed(comb.Key1) &&
-		(comb.Key2 == 0 || IsKeyPressed(comb.Key2)) &&
-		(comb.Key3 == 0 || IsKeyPressed(comb.Key3));
+	bool mergeCtrlAltShift = keyCount > 1;
+
+	return IsKeyPressed(comb.Key1, mergeCtrlAltShift) &&
+		(comb.Key2 == 0 || IsKeyPressed(comb.Key2, mergeCtrlAltShift)) &&
+		(comb.Key3 == 0 || IsKeyPressed(comb.Key3, mergeCtrlAltShift));
 }
 
-bool ShortcutKeyHandler::IsKeyPressed(uint32_t keyCode)
+bool ShortcutKeyHandler::IsKeyPressed(uint32_t keyCode, bool mergeCtrlAltShift)
 {
+	if(keyCode >= 116 && keyCode <= 121 && mergeCtrlAltShift) {
+		//Left/right ctrl/alt/shift
+		//Return true if either the left or right key is pressed
+		KeyManager::IsKeyPressed(keyCode | 1) || KeyManager::IsKeyPressed(keyCode & ~0x01);
+	}
+
 	return KeyManager::IsKeyPressed(keyCode);
 }
 
@@ -107,6 +116,7 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 	bool isMoviePlaying = _emu->GetMovieManager()->Playing();
 	bool isMovieRecording = _emu->GetMovieManager()->Recording();
 	bool isMovieActive = isMoviePlaying || isMovieRecording;
+	RomFormat romFormat = _emu->GetRomInfo().Format;
 
 	switch(shortcut) {
 		case EmulatorShortcut::ToggleRewind:
@@ -133,6 +143,34 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 
 		case EmulatorShortcut::ToggleCheats:
 			return !isNetplayClient && !isMovieActive;
+
+		case EmulatorShortcut::SelectSaveSlot1: case EmulatorShortcut::SelectSaveSlot2: case EmulatorShortcut::SelectSaveSlot3: case EmulatorShortcut::SelectSaveSlot4: case EmulatorShortcut::SelectSaveSlot5:
+		case EmulatorShortcut::SelectSaveSlot6: case EmulatorShortcut::SelectSaveSlot7: case EmulatorShortcut::SelectSaveSlot8: case EmulatorShortcut::SelectSaveSlot9: case EmulatorShortcut::SelectSaveSlot10:
+		case EmulatorShortcut::SaveStateSlot1: case EmulatorShortcut::SaveStateSlot2: case EmulatorShortcut::SaveStateSlot3: case EmulatorShortcut::SaveStateSlot4: case EmulatorShortcut::SaveStateSlot5:
+		case EmulatorShortcut::SaveStateSlot6: case EmulatorShortcut::SaveStateSlot7: case EmulatorShortcut::SaveStateSlot8: case EmulatorShortcut::SaveStateSlot9: case EmulatorShortcut::SaveStateSlot10:
+		case EmulatorShortcut::MoveToNextStateSlot:
+		case EmulatorShortcut::MoveToPreviousStateSlot:
+		case EmulatorShortcut::SaveState:
+			return isRunning;
+
+		case EmulatorShortcut::LoadStateSlot1: case EmulatorShortcut::LoadStateSlot2: case EmulatorShortcut::LoadStateSlot3: case EmulatorShortcut::LoadStateSlot4: case EmulatorShortcut::LoadStateSlot5:
+		case EmulatorShortcut::LoadStateSlot6: case EmulatorShortcut::LoadStateSlot7: case EmulatorShortcut::LoadStateSlot8: case EmulatorShortcut::LoadStateSlot9: case EmulatorShortcut::LoadStateSlot10:
+		case EmulatorShortcut::LoadState:
+			return isRunning && !isNetplayClient && !isMovieActive;
+
+		case EmulatorShortcut::FdsEjectDisk:
+		case EmulatorShortcut::FdsInsertDiskNumber:
+		case EmulatorShortcut::FdsInsertNextDisk:
+		case EmulatorShortcut::FdsSwitchDiskSide:
+			return isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::Fds;
+
+		case EmulatorShortcut::VsInsertCoin1:
+		case EmulatorShortcut::VsInsertCoin2:
+		case EmulatorShortcut::VsInsertCoin3:
+		case EmulatorShortcut::VsInsertCoin4:
+		case EmulatorShortcut::VsServiceButton:
+		case EmulatorShortcut::VsServiceButton2:
+			return isRunning && !isNetplayClient && !isMoviePlaying && (romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem);
 	}
 
 	return true;
@@ -140,6 +178,10 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut)
 {
+	if(!IsShortcutAllowed(shortcut)) {
+		return;
+	}
+
 	EmuSettings* settings = _emu->GetSettings();
 
 	switch(shortcut) {
@@ -177,6 +219,7 @@ void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut)
 		
 		case EmulatorShortcut::LoadStateSlot1: case EmulatorShortcut::LoadStateSlot2: case EmulatorShortcut::LoadStateSlot3: case EmulatorShortcut::LoadStateSlot4: case EmulatorShortcut::LoadStateSlot5:
 		case EmulatorShortcut::LoadStateSlot6: case EmulatorShortcut::LoadStateSlot7: case EmulatorShortcut::LoadStateSlot8: case EmulatorShortcut::LoadStateSlot9: case EmulatorShortcut::LoadStateSlot10:
+		case EmulatorShortcut::LoadStateSlotAuto:
 			_emu->GetSaveStateManager()->LoadState((int)shortcut - (int)EmulatorShortcut::LoadStateSlot1 + 1);
 			break;
 
@@ -234,14 +277,10 @@ void ShortcutKeyHandler::CheckMappedKeys()
 			ExecuteShortcutParams params = {};
 			params.Shortcut = shortcut;
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, &params);
-
-			ProcessShortcutPressed(shortcut);
 		} else if(DetectKeyRelease(shortcut)) {
 			ExecuteShortcutParams params = {};
 			params.Shortcut = shortcut;
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ReleaseShortcut, &params);
-
-			ProcessShortcutReleased(shortcut);
 		}
 	}
 }
@@ -289,6 +328,23 @@ void ShortcutKeyHandler::ProcessKeys()
 			//In this case, run another frame and pause again.
 			_repeatStarted = true;
 			ProcessRunSingleFrame();
+		}
+	}
+}
+
+void ShortcutKeyHandler::ProcessNotification(ConsoleNotificationType type, void* parameter)
+{
+	switch(type) {
+		case ConsoleNotificationType::ExecuteShortcut: {
+			ExecuteShortcutParams p = *(ExecuteShortcutParams*)parameter;
+			ProcessShortcutPressed(p.Shortcut);
+			break;
+		}
+
+		case ConsoleNotificationType::ReleaseShortcut: {
+			ExecuteShortcutParams p = *(ExecuteShortcutParams*)parameter;
+			ProcessShortcutReleased(p.Shortcut);
+			break;
 		}
 	}
 }

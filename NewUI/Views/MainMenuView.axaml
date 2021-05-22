@@ -19,17 +19,17 @@
 
 	<Menu DockPanel.Dock="Top">
 		<MenuItem Header="{l:Translate mnuFile}">
-			<MenuItem Header="{l:Translate mnuOpen}" Click="OnOpenClick">
+			<c:ShortcutMenuItem Shortcut="OpenFile" Header="{l:Translate mnuOpen}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Folder.png" />
 				</MenuItem.Icon>
-			</MenuItem>
+			</c:ShortcutMenuItem>
 			<Separator/>
 			<MenuItem Header="{l:Translate mnuSaveState}">
-				<MenuItem Header="{l:Translate mnuSaveStateMenu}" Click="OnSaveStateMenuClick" IsEnabled="{CompiledBinding IsGameRunning}" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuSaveStateMenu}" Shortcut="SaveStateDialog" />
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuLoadState}">
-				<MenuItem Header="{l:Translate mnuLoadStateMenu}" Click="OnLoadStateMenuClick" IsEnabled="{CompiledBinding IsGameRunning}" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuLoadStateMenu}" Shortcut="LoadStateDialog" />
 			</MenuItem>
 			<Separator/>
 			<MenuItem Header="{l:Translate mnuRecentFiles}" Items="{CompiledBinding RecentItems}" Classes="RecentFiles" IsEnabled="{CompiledBinding HasRecentItems}">
@@ -43,80 +43,102 @@
 				</MenuItem.Styles>
 			</MenuItem>
 			<Separator/>
-			<MenuItem Header="{l:Translate mnuExit}" Click="OnExitClick">
+			<c:ShortcutMenuItem Header="{l:Translate mnuExit}" Shortcut="Exit">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Exit.png" />
 				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
+			</c:ShortcutMenuItem>
+		
+	</MenuItem>
 		<MenuItem Header="{l:Translate mnuGame}">
-			<MenuItem Header="{l:Translate mnuReset}" Click="OnResetClick" IsEnabled="{CompiledBinding IsGameRunning}">
+			<c:ShortcutMenuItem Header="{l:Translate mnuReset}" Shortcut="Reset">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Refresh.png" />
 				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="{l:Translate mnuPowerCycle}" Click="OnPowerCycleClick" IsEnabled="{CompiledBinding IsGameRunning}">
+			</c:ShortcutMenuItem>
+			<c:ShortcutMenuItem Header="{l:Translate mnuPowerCycle}" Shortcut="PowerCycle">
 				<MenuItem.Icon>
 					<Image Source="/Assets/PowerCycle.png" />
 				</MenuItem.Icon>
-			</MenuItem>
+			</c:ShortcutMenuItem>
 			<Separator />
-			<MenuItem Header="{l:Translate mnuPowerOff}" Click="OnPowerOffClick" IsEnabled="{CompiledBinding IsGameRunning}">
+			<c:ShortcutMenuItem Header="{l:Translate mnuPowerOff}" Shortcut="PowerOff">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MediaStop.png" />
 				</MenuItem.Icon>
-			</MenuItem>
+			</c:ShortcutMenuItem>
 			<Separator IsVisible="{CompiledBinding IsFdsGame}" />
-			<MenuItem Header="Switch disk side" Click="OnFdsSwitchDiskSide" IsVisible="{CompiledBinding IsFdsGame}" />
 			<MenuItem Header="{l:Translate mnuSelectDisk}" IsVisible="{CompiledBinding IsFdsGame}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/SaveFloppy.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="Disk 1 Side A" Click="OnFdsInsertDisk0" />
-				<MenuItem Header="Disk 1 Side B" Click="OnFdsInsertDisk1" />
+				<c:ShortcutMenuItem Header="Disk 1 Side A" Shortcut="FdsInsertDiskNumber" ShortcutParam="0" />
+				<c:ShortcutMenuItem Header="Disk 1 Side B" Shortcut="FdsInsertDiskNumber" ShortcutParam="1" />
+				<c:ShortcutMenuItem Header="Disk 2 Side A" Shortcut="FdsInsertDiskNumber" ShortcutParam="2" />
+				<c:ShortcutMenuItem Header="Disk 2 Side B" Shortcut="FdsInsertDiskNumber" ShortcutParam="3" />
 			</MenuItem>
-			<MenuItem Header="{l:Translate mnuEjectDisk}" Click="OnFdsEjectDisk" IsVisible="{CompiledBinding IsFdsGame}">
+			<c:ShortcutMenuItem Header="{l:Translate mnuEjectDisk}" Shortcut="FdsEjectDisk" IsVisible="{CompiledBinding IsFdsGame}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MediaEject.png" />
 				</MenuItem.Icon>
-			</MenuItem>
+			</c:ShortcutMenuItem>
+			<Separator IsVisible="{CompiledBinding IsVsSystemGame}" />
+			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin1}" Shortcut="VsInsertCoin1" IsVisible="{CompiledBinding IsVsSystemGame}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Coins.png" />
+				</MenuItem.Icon>
+			</c:ShortcutMenuItem>
+			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin2}" Shortcut="VsInsertCoin2" IsVisible="{CompiledBinding IsVsSystemGame}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Coins.png" />
+				</MenuItem.Icon>
+			</c:ShortcutMenuItem>
+			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin3}" Shortcut="VsInsertCoin3" IsVisible="{CompiledBinding IsVsDualSystemGame}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Coins.png" />
+				</MenuItem.Icon>
+			</c:ShortcutMenuItem>
+			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin4}" Shortcut="VsInsertCoin4" IsVisible="{CompiledBinding IsVsDualSystemGame}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Coins.png" />
+				</MenuItem.Icon>
+			</c:ShortcutMenuItem>
 		</MenuItem>
 		<MenuItem Header="{l:Translate mnuOptions}">
 			<MenuItem Header="{l:Translate mnuEmulationSpeed}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Speed.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuEmuSpeedNormal}" Click="OnFdsInsertDisk1" />
+				<MenuItem Header="{l:Translate mnuEmuSpeedNormal}" />
 				<Separator />
-				<MenuItem Header="{l:Translate mnuIncreaseSpeed}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuDecreaseSpeed}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedMaximumSpeed}" Click="OnFdsInsertDisk1" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuIncreaseSpeed}" Shortcut="IncreaseSpeed" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuDecreaseSpeed}" Shortcut="DecreaseSpeed" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuEmuSpeedMaximumSpeed}" Shortcut="MaxSpeed" />
 				<Separator />
-				<MenuItem Header="{l:Translate mnuEmuSpeedTriple}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedDouble}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedHalf}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedQuarter}" Click="OnFdsInsertDisk1" />
+				<MenuItem Header="{l:Translate mnuEmuSpeedTriple}" />
+				<MenuItem Header="{l:Translate mnuEmuSpeedDouble}" />
+				<MenuItem Header="{l:Translate mnuEmuSpeedHalf}" />
+				<MenuItem Header="{l:Translate mnuEmuSpeedQuarter}" />
 				<Separator />
-				<MenuItem Header="{l:Translate mnuShowFPS}" Click="OnFdsInsertDisk1" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuShowFPS}" Shortcut="ToggleFps" />
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuVideoScale}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Fullscreen.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuScale1x}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuScale2x}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuScale3x}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuScale4x}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuScale5x}" Click="OnFdsInsertDisk1" />
-				<MenuItem Header="{l:Translate mnuScale6x}" Click="OnFdsInsertDisk1" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuScale1x}" Shortcut="SetScale1x" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuScale2x}" Shortcut="SetScale2x" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuScale3x}" Shortcut="SetScale3x" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuScale4x}" Shortcut="SetScale4x" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuScale5x}" Shortcut="SetScale5x" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuScale6x}" Shortcut="SetScale6x" />
 				<Separator />
-				<MenuItem Header="{l:Translate mnuFullscreen}" Click="OnFdsInsertDisk1" />
+				<c:ShortcutMenuItem Header="{l:Translate mnuFullscreen}" Shortcut="ToggleFullscreen" />
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuVideoFilter}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/VideoFilter.png" />
 				</MenuItem.Icon>
-
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuRegion}">
 				<MenuItem.Icon>
@@ -262,11 +284,11 @@
 				</MenuItem.Icon>
 			</MenuItem>
 			<Separator />
-			<MenuItem Header="{l:Translate mnuTakeScreenshot}" Click="OnTakeScreenshotClick" IsEnabled="{CompiledBinding IsGameRunning}">
+			<c:ShortcutMenuItem Header="{l:Translate mnuTakeScreenshot}" Shortcut="TakeScreenshot">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Camera.png" />
 				</MenuItem.Icon>
-			</MenuItem>
+			</c:ShortcutMenuItem>
 		</MenuItem>
 		<MenuItem Header="_Debug">
 			<MenuItem Header="_Debugger" Click="OnDebuggerClick">

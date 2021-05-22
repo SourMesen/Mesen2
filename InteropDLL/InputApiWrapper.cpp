@@ -4,7 +4,6 @@
 #include "Core/Shared/ShortcutKeyHandler.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
-extern unique_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
 extern shared_ptr<Emulator> _emu;
 
 static string _returnString;
@@ -47,7 +46,7 @@ extern "C"
 	{
 		if(_keyManager) {
 			_keyManager->SetKeyState(scanCode, state);
-			_shortcutKeyHandler->ProcessKeys();
+			_emu->GetShortcutKeyHandler()->ProcessKeys();
 		}
 	}
 	

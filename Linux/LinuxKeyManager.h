@@ -8,11 +8,6 @@
 class LinuxGameController;
 class Emulator;
 
-struct KeyDefinition {
-	string name;
-	uint32_t keyCode;
-};
-
 class LinuxKeyManager : public IKeyManager
 {
 private:

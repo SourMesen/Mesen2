@@ -30,7 +30,6 @@
 unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
-unique_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
 shared_ptr<Emulator> _emu;
 
 static void* _windowHandle = nullptr;
@@ -63,15 +62,13 @@ extern "C" {
 	DllExport void __stdcall InitDll()
 	{
 		_emu.reset(new Emulator());
+		_emu->Initialize();
 		KeyManager::SetSettings(_emu->GetSettings());
 	}
 
 	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool noAudio, bool noVideo, bool noInput)
 	{
-		_emu->Initialize();
-
 		FolderUtilities::SetHomeFolder(homeFolder);
-		_shortcutKeyHandler.reset(new ShortcutKeyHandler(_emu));
 
 		if(windowHandle != nullptr && viewerHandle != nullptr) {
 			_windowHandle = windowHandle;
@@ -214,8 +211,6 @@ extern "C" {
 		GameClient::Disconnect();
 		GameServer::StopServer();
 
-		_shortcutKeyHandler.reset();
-		
 		_emu->Stop(true);
 		
 		_emu->Release();
@@ -268,6 +263,8 @@ extern "C" {
 	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _emu->GetCheatManager()->SetCheats(codes, length); }
 
 	DllExport void __stdcall ExecuteShortcut(ExecuteShortcutParams params) { _emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, &params); }
+	DllExport bool __stdcall IsShortcutAllowed(EmulatorShortcut shortcut) { return _emu->GetShortcutKeyHandler()->IsShortcutAllowed(shortcut); }
+
 	DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
 
 	DllExport void __stdcall SaveState(uint32_t stateIndex) { _emu->GetSaveStateManager()->SaveState(stateIndex); }

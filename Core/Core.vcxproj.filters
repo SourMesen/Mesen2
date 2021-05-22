@@ -801,6 +801,7 @@
     <ClInclude Include="NES\HdPacks\OggReader.h" />
     <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbConstants.h" />
+    <ClInclude Include="Shared\KeyDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

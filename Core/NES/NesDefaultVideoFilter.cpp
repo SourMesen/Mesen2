@@ -149,12 +149,12 @@ void NesDefaultVideoFilter::DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t*
 	for(uint32_t i = 0; i < frame.Height; i++) {
 		if(displayScanlines && (i + overscan.Top) % 2 == 0) {
 			for(uint32_t j = 0; j < frame.Width; j++) {
-				*out = ApplyScanlineEffect(ppuOutputBuffer[(i + overscan.Top) * NesConstants::ScreenWidth + j + overscan.Left], scanlineIntensity);
+				*out = ApplyScanlineEffect(ppuOutputBuffer[(i + overscan.Top) * frame.Width + j + overscan.Left], scanlineIntensity);
 				out++;
 			}
 		} else {
 			for(uint32_t j = 0; j < frame.Width; j++) {
-				*out = _calculatedPalette[ppuOutputBuffer[(i + overscan.Top) * NesConstants::ScreenWidth + j + overscan.Left]];
+				*out = _calculatedPalette[ppuOutputBuffer[(i + overscan.Top) * frame.Width + j + overscan.Left]];
 				out++;
 			}
 		}

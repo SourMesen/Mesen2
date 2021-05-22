@@ -206,11 +206,14 @@ void VsControlManager::UpdateMainSubBit(uint8_t mainSubBit)
 			UpdateMemoryAccess();
 		}
 
-		if(mainSubBit) {
-			otherConsole->GetCpu()->ClearIrqSource(IRQSource::External);
-		} else {
-			//When low, asserts /IRQ on the other CPU
-			otherConsole->GetCpu()->SetIrqSource(IRQSource::External);
+		NesCpu* mainCpu = otherConsole->GetCpu(); //Will be null when running this after loading the ROM
+		if(mainCpu) {
+			if(mainSubBit) {
+				mainCpu->ClearIrqSource(IRQSource::External);
+			} else {
+				//When low, asserts /IRQ on the other CPU
+				otherConsole->GetCpu()->SetIrqSource(IRQSource::External);
+			}
 		}
 	}
 }

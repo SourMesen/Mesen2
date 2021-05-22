@@ -31,15 +31,19 @@ namespace Mesen.Windows
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
 		private NotificationListener? _listener = null;
+		private ShortcutHandler _shortcutHandler;
 
 		public MainWindow()
 		{
 			InitializeComponent();
+			_shortcutHandler = new ShortcutHandler(this);
+
 			AddHandler(DragDrop.DropEvent, OnDrop);
 
-			//Allow us to catch LeftAlt/RightAlt key presses
+			//Allows us to catch LeftAlt/RightAlt key presses
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
+
 #if DEBUG
 			this.AttachDevTools();
 #endif
@@ -150,6 +154,10 @@ namespace Mesen.Windows
 					});
 					break;
 
+				case ConsoleNotificationType.ExecuteShortcut:
+					ExecuteShortcutParams p = Marshal.PtrToStructure<ExecuteShortcutParams>(e.Parameter);
+					_shortcutHandler.ExecuteShortcut(p.Shortcut);
+					break;
 			}
 		}
 
@@ -161,7 +169,8 @@ namespace Mesen.Windows
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((int)e.Key, true);
-			if(e.Key == Key.Tab) {
+			if(e.Key == Key.Tab || e.Key == Key.F10) {
+				//Prevent menu/window from handling these keys to avoid issue with custom shortcuts
 				e.Handled = true;
 			}
 		}

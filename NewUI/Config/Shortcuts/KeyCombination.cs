@@ -28,19 +28,19 @@ namespace Mesen.Config.Shortcuts
 		{
 		}
 
-		public KeyCombination(List<UInt32>? scanCodes = null)
+		public KeyCombination(List<UInt32>? keyCodes = null)
 		{
-			if(scanCodes != null) {
-				if(scanCodes.Any(code => code > 0xFFFF)) {
-					//If both keyboard & gamepad codes exist, only use the gamepad codes
+			if(keyCodes != null) {
+				if(keyCodes.Any(code => code > 0xFFFF)) {
+					//If both keyboard & gamepad buttons/keys exist, only use the gamepad buttons
 					//This fixes an issue with Steam where Steam can remap gamepad buttons to send keyboard keys
 					//See: Settings -> Controller Settings -> General Controller Settings -> Checking the Xbox/PS4/Generic/etc controller checkboxes will cause this
-					scanCodes = scanCodes.Where(code => code > 0xFFFF).ToList();
+					keyCodes = keyCodes.Where(code => code > 0xFFFF).ToList();
 				}
 
-				Key1 = scanCodes.Count > 0 ? scanCodes[0] : 0;
-				Key2 = scanCodes.Count > 1 ? scanCodes[1] : 0;
-				Key3 = scanCodes.Count > 2 ? scanCodes[2] : 0;
+				Key1 = keyCodes.Count > 0 ? keyCodes[0] : 0;
+				Key2 = keyCodes.Count > 1 ? keyCodes[1] : 0;
+				Key3 = keyCodes.Count > 2 ? keyCodes[2] : 0;
 			} else {
 				Key1 = 0;
 				Key2 = 0;
@@ -52,6 +52,29 @@ namespace Mesen.Config.Shortcuts
 		{
 			List<UInt32> scanCodes = new List<uint>() { Key1, Key2, Key3 };
 			List<string> keyNames = scanCodes.Select((UInt32 scanCode) => InputApi.GetKeyName(scanCode)).Where((keyName) => !string.IsNullOrWhiteSpace(keyName)).ToList();
+
+			if(keyNames.Count > 1) {
+				//Merge left/right ctrl/alt/shift for key combinations
+				keyNames = keyNames.Select(key => {
+					switch(key) {
+						case "Left Ctrl":
+						case "Right Ctrl":
+							return "Ctrl";
+
+						case "Left Alt":
+						case "Right Alt":
+							return "Alt";
+
+						case "Left Shift":
+						case "Right Shift":
+							return "Shift";
+
+						default:
+							return key;
+					}
+				}).ToList();
+			}
+
 			keyNames.Sort((string a, string b) => {
 				if(a == b) {
 					return 0;

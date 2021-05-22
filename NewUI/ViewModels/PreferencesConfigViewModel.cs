@@ -77,8 +77,8 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.OpenFile,
 				EmulatorShortcut.LoadRandomGame,
 
-				EmulatorShortcut.MoveToNextStateSlot,
 				EmulatorShortcut.MoveToPreviousStateSlot,
+				EmulatorShortcut.MoveToNextStateSlot,
 				EmulatorShortcut.SaveState,
 				EmulatorShortcut.LoadState,
 

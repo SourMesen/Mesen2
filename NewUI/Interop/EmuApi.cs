@@ -81,6 +81,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetRendererSize(UInt32 width, UInt32 height);
 
 		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
+		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsShortcutAllowed(EmulatorShortcut shortcut);
 
 		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
 		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
@@ -135,6 +136,8 @@ namespace Mesen.Interop
 		iNes,
 		Unif,
 		Fds,
+		VsSystem,
+		VsDualSystem,
 		Nsf,
 		StudyBox
 	}

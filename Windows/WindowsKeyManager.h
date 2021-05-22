@@ -8,11 +8,6 @@
 #include "XInputManager.h"
 #include "DirectInputManager.h"
 
-struct KeyDefinition {
-	string name;
-	uint32_t keyCode;
-};
-
 class Emulator;
 
 class WindowsKeyManager : public IKeyManager

@@ -99,8 +99,8 @@ namespace Mesen.ViewModels
 
 	public class RecentGameInfo
 	{
-		public string FileName { get; set; }
-		public string Name { get; set; }
-		public bool SaveMode { get; set; }
+		public string FileName { get; set; } = "";
+		public string Name { get; set; } = "";
+		public bool SaveMode { get; set; } = false;
 	}
 }

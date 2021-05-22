@@ -16,6 +16,8 @@ enum class RomFormat
 	iNes,
 	Unif,
 	Fds,
+	VsSystem,
+	VsDualSystem,
 	Nsf,
 	StudyBox
 };
