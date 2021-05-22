@@ -3,6 +3,10 @@
 	<Forms>
 		<Form ID="MainWindow">
 			<Control ID="wndTitle">Mesen</Control>
+			<!-- Archive Load Message -->
+			<Control ID="lblExtractingFile">Extracting file, please wait...</Control>
+		</Form>
+		<Form ID="MainMenuView">
 			<Control ID="mnuFile">File</Control>
 			<Control ID="mnuOpen">Open</Control>
 			<Control ID="mnuReloadRom">Reload ROM</Control>
@@ -101,10 +105,7 @@
 			<Control ID="mnuCheckForUpdates">Check for updates</Control>
 			<Control ID="mnuReportBug">Report a bug</Control>
 			<Control ID="mnuHelpWindow">Command-line options</Control>
-			<Control ID="mnuAbout">About</Control>
-
-			<!-- Archive Load Message -->
-			<Control ID="lblExtractingFile">Extracting file, please wait...</Control>
+			<Control ID="mnuAbout">About</Control>			
 		</Form>
 		<Form ID="frmLogWindow" Title="Log Window">
 			<Control ID="btnClose">Close</Control>
