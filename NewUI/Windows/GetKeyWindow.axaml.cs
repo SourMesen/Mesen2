@@ -8,11 +8,15 @@ using System.Linq;
 using Avalonia.Input;
 using System.ComponentModel;
 using Mesen.Interop;
+using Avalonia.Threading;
+using Avalonia;
 
 namespace Mesen.Windows
 {
 	public class GetKeyWindow : Window
 	{
+		private DispatcherTimer _timer; 
+		
 		private List<UInt32> _prevScanCodes = new List<UInt32>();
 		private TextBlock lblCurrentKey;
 		public bool SingleKeyMode { get; set; } = false;
@@ -23,10 +27,19 @@ namespace Mesen.Windows
 			InitializeComponent();
 			
 			lblCurrentKey = this.FindControl<TextBlock>("lblCurrentKey");
+			
+			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(25), DispatcherPriority.Normal, (s, e) => UpdateKeyDisplay());
+			_timer.Start();
 
 			//Allow us to catch LeftAlt/RightAlt key presses
 			this.AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			this.AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			_timer?.Stop();
+			base.OnClosed(e);
 		}
 
 		private void InitializeComponent()
@@ -37,14 +50,12 @@ namespace Mesen.Windows
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((int)e.Key, true);
-			this.OnKeyChange();
 			e.Handled = true;
 		}
 
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((int)e.Key, false);
-			this.OnKeyChange();
 			e.Handled = true;
 		}
 
@@ -77,7 +88,7 @@ namespace Mesen.Windows
 			}
 		}
 
-		private void OnKeyChange()
+		private void UpdateKeyDisplay()
 		{
 			List<UInt32> scanCodes = InputApi.GetPressedKeys();
 
