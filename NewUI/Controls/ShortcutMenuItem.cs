@@ -38,19 +38,25 @@ namespace Mesen.Controls
 		{
 		}
 
+		public static KeyCombination? GetShortcutKeys(EmulatorShortcut shortcut)
+		{
+			PreferencesConfig cfg = ConfigManager.Config.Preferences;
+			int keyIndex = cfg.ShortcutKeys.FindIndex((ShortcutKeyInfo shortcutInfo) => shortcutInfo.Shortcut == shortcut);
+			if(keyIndex >= 0) {
+				if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
+					return cfg.ShortcutKeys[keyIndex].KeyCombination;
+				} else if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
+					return cfg.ShortcutKeys[keyIndex].KeyCombination2;
+				}
+			}
+			return null;
+		}
+
 		protected override void OnInitialized()
 		{
 			if(Parent is MenuItem parent) {
 				Action updateShortcut = () => {
-					PreferencesConfig cfg = ConfigManager.Config.Preferences;
-					int keyIndex = cfg.ShortcutKeys.FindIndex((ShortcutKeyInfo shortcutInfo) => shortcutInfo.Shortcut == Shortcut);
-					if(keyIndex >= 0) {
-						if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
-							Tag = cfg.ShortcutKeys[keyIndex].KeyCombination.ToString();
-						} else {
-							Tag = cfg.ShortcutKeys[keyIndex].KeyCombination2.ToString();
-						}
-					}
+					Tag = GetShortcutKeys(Shortcut)?.ToString() ?? "";
 					IsEnabled = EmuApi.IsShortcutAllowed(Shortcut);
 				};
 

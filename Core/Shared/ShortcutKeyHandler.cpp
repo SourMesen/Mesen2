@@ -150,11 +150,16 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 		case EmulatorShortcut::SaveStateSlot6: case EmulatorShortcut::SaveStateSlot7: case EmulatorShortcut::SaveStateSlot8: case EmulatorShortcut::SaveStateSlot9: case EmulatorShortcut::SaveStateSlot10:
 		case EmulatorShortcut::MoveToNextStateSlot:
 		case EmulatorShortcut::MoveToPreviousStateSlot:
+		case EmulatorShortcut::SaveStateDialog:
+		case EmulatorShortcut::SaveStateToFile:
 		case EmulatorShortcut::SaveState:
 			return isRunning;
 
 		case EmulatorShortcut::LoadStateSlot1: case EmulatorShortcut::LoadStateSlot2: case EmulatorShortcut::LoadStateSlot3: case EmulatorShortcut::LoadStateSlot4: case EmulatorShortcut::LoadStateSlot5:
 		case EmulatorShortcut::LoadStateSlot6: case EmulatorShortcut::LoadStateSlot7: case EmulatorShortcut::LoadStateSlot8: case EmulatorShortcut::LoadStateSlot9: case EmulatorShortcut::LoadStateSlot10:
+		case EmulatorShortcut::LoadStateSlotAuto:
+		case EmulatorShortcut::LoadStateDialog:
+		case EmulatorShortcut::LoadStateFromFile:
 		case EmulatorShortcut::LoadState:
 			return isRunning && !isNetplayClient && !isMovieActive;
 

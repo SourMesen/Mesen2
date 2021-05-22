@@ -26,10 +26,52 @@
 			</c:ShortcutMenuItem>
 			<Separator/>
 			<MenuItem Header="{l:Translate mnuSaveState}">
-				<c:ShortcutMenuItem Header="{l:Translate mnuSaveStateMenu}" Shortcut="SaveStateDialog" />
+				<c:SaveStateMenuItem SlotNumber="1" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="2" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="3" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="4" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="5" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="6" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="7" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="8" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="9" SaveMode="True" />
+				<c:SaveStateMenuItem SlotNumber="10" SaveMode="True" />
+				<Separator />
+				<c:ShortcutMenuItem Header="{l:Translate mnuSaveStateMenu}" Shortcut="SaveStateDialog">
+					<MenuItem.Icon>
+						<Image Source="/Assets/SplitView.png" />
+					</MenuItem.Icon>
+				</c:ShortcutMenuItem>
+				<c:ShortcutMenuItem Header="{l:Translate mnuSaveStateToFile}" Shortcut="SaveStateToFile">
+					<MenuItem.Icon>
+						<Image Source="/Assets/SaveFloppy.png" />
+					</MenuItem.Icon>
+				</c:ShortcutMenuItem>
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuLoadState}">
-				<c:ShortcutMenuItem Header="{l:Translate mnuLoadStateMenu}" Shortcut="LoadStateDialog" />
+				<c:SaveStateMenuItem SlotNumber="1" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="2" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="3" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="4" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="5" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="6" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="7" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="8" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="9" SaveMode="False" />
+				<c:SaveStateMenuItem SlotNumber="10" SaveMode="False" />
+				<Separator />
+				<c:SaveStateMenuItem SlotNumber="11" SaveMode="False" />
+				<Separator />
+				<c:ShortcutMenuItem Header="{l:Translate mnuLoadStateMenu}" Shortcut="LoadStateDialog">
+					<MenuItem.Icon>
+						<Image Source="/Assets/SplitView.png" />
+					</MenuItem.Icon>
+				</c:ShortcutMenuItem>
+				<c:ShortcutMenuItem Header="{l:Translate mnuLoadStateFromFile}" Shortcut="LoadStateFromFile">
+					<MenuItem.Icon>
+						<Image Source="/Assets/Folder.png" />
+					</MenuItem.Icon>
+				</c:ShortcutMenuItem>
 			</MenuItem>
 			<Separator/>
 			<MenuItem Header="{l:Translate mnuRecentFiles}" Items="{CompiledBinding RecentItems}" Classes="RecentFiles" IsEnabled="{CompiledBinding HasRecentItems}">

@@ -28,6 +28,9 @@ namespace Mesen.ViewModels
 		[Reactive] public bool HasRecentItems { get; private set; }
 		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
 
+		//For designer
+		public MainMenuViewModel() : this(new MainWindowViewModel()) { }
+
 		public MainMenuViewModel(MainWindowViewModel windowModel)
 		{
 			MainWindow = windowModel;
