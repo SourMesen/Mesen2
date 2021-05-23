@@ -1,0 +1,61 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="210"
+	x:Class="Mesen.Windows.MovieRecordWindow"
+	Icon="/Assets/Icon.ico"
+	Width="500" Height="210"
+	x:DataType="vm:MovieRecordConfigViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<DockPanel Margin="5">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<Grid ColumnDefinitions="Auto,1*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+			<TextBlock Text="{l:Translate lblSaveTo}" />
+			<TextBox Grid.Column="1" IsReadOnly="True" Text="{CompiledBinding SavePath}" />
+			<Button Grid.Column="2" Content="{l:Translate btnBrowse}" Click="OnBrowseClick" />
+
+			<TextBlock Grid.Row="1" Text="{l:Translate lblRecordFrom}" />
+			<c:EnumComboBox
+				Grid.Row="1"
+				Grid.Column="1"
+				EnumType="{x:Type i:RecordMovieFrom}"
+				SelectedItem="{CompiledBinding Config.RecordFrom}"
+			/>
+
+			<TextBlock
+				Text="{l:Translate lblMovieInformation}"
+				Grid.Row="2"
+				Grid.ColumnSpan="2"
+				Foreground="Gray"
+				Margin="0 14 0 3"
+			/>
+			<TextBlock Grid.Row="3" Text="{l:Translate lblAuthor}" />
+			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{CompiledBinding Config.Author}" />
+
+			<TextBlock Grid.Row="4" Text="{l:Translate lblDescription}" />
+			<TextBox
+				Grid.Row="4"
+				Grid.Column="1"
+				Grid.ColumnSpan="2"
+				AcceptsReturn="True"
+				Height="70"
+				VerticalContentAlignment="Top"
+				ScrollViewer.VerticalScrollBarVisibility="Auto"
+				Text="{CompiledBinding Config.Description}"
+			/>
+		</Grid>
+	</DockPanel>
+</Window>

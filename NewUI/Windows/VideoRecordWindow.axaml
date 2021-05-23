@@ -8,14 +8,14 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="125"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="130"
 	x:Class="Mesen.Windows.VideoRecordWindow"
 	Icon="/Assets/Icon.ico"
-	Width="500" Height="125"
+	Width="500" Height="130"
 	x:DataType="vm:VideoRecordConfigViewModel"
 	Title="{l:Translate wndTitle}"
 >
-	<DockPanel Margin="2">
+	<DockPanel Margin="5">
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
 			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />

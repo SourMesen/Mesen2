@@ -168,20 +168,31 @@ namespace Mesen.Views
 			_model.UpdateToolSubMenus();
 		}
 
-		private void OnPlayMovieClick(object sender, RoutedEventArgs e)
+		private async void OnPlayMovieClick(object sender, RoutedEventArgs e)
 		{
-			RecordApi.MoviePlay("c:\\temp\\out.mmo");
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Directory = ConfigManager.MovieFolder;
+			ofd.Filters = new List<FileDialogFilter>() {
+				new FileDialogFilter() { Name = "Mesen Movies", Extensions = { "msm" } },
+				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
+			};
+
+			string[] filenames = await ofd.ShowAsync((Window)VisualRoot);
+			if(filenames?.Length > 0) {
+				RecordApi.MoviePlay(filenames[0]);
+			}
 		}
 
 		private void OnRecordMovieClick(object sender, RoutedEventArgs e)
 		{
-			RecordMovieOptions options = new RecordMovieOptions("c:\\temp\\out.mmo", "", "", RecordMovieFrom.CurrentState);
-			RecordApi.MovieRecord(options);
+			new MovieRecordWindow() {
+				DataContext = new MovieRecordConfigViewModel()
+			}.ShowCenteredDialog((Window)VisualRoot);
 		}
 
 		private void OnStopMovieClick(object sender, RoutedEventArgs e)
 		{
-			RecordApi.AviStop();
+			RecordApi.MovieStop();
 		}
 
 		private void OnCheatsClick(object sender, RoutedEventArgs e)

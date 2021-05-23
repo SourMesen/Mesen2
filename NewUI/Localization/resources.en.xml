@@ -721,7 +721,8 @@
 			<Control ID="btnOk">CONFIRM</Control>
 			<Control ID="lblCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmRecordMovie" Title="Movie Recording Options">
+		<Form ID="MovieRecordWindow">
+			<Control ID="wndTitle">Movie Recording Options</Control>
 			<Control ID="lblSaveTo">Save to:</Control>
 			<Control ID="lblRecordFrom">Record from:</Control>
 			<Control ID="lblMovieInformation">Movie Information (Optional)</Control>
