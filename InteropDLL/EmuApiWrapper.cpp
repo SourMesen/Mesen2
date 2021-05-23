@@ -258,6 +258,14 @@ extern "C" {
 		}
 		return ratio;
 	}
+
+	DllExport FrameInfo __stdcall GetBaseScreenSize()
+	{
+		if(_emu->GetVideoDecoder()) {
+			return _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
+		}
+		return { 256, 240 };
+	}
 	
 	DllExport void __stdcall ClearCheats() { _emu->GetCheatManager()->ClearCheats(); }
 	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _emu->GetCheatManager()->SetCheats(codes, length); }

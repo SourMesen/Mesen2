@@ -78,6 +78,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetFullscreenMode([MarshalAs(UnmanagedType.I1)]bool fullscreen, IntPtr windowHandle, UInt32 monitorWidth, UInt32 monitorHeight);
 
 		[DllImport(DllPath)] public static extern double GetAspectRatio();
+		[DllImport(DllPath)] public static extern FrameInfo GetBaseScreenSize();
 		[DllImport(DllPath)] public static extern void SetRendererSize(UInt32 width, UInt32 height);
 
 		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
@@ -115,11 +116,10 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ClearCheats();
 	}
 
-	public struct ScreenSize
+	public struct FrameInfo
 	{
-		public Int32 Width;
-		public Int32 Height;
-		public double Scale;
+		public UInt32 Width;
+		public UInt32 Height;
 	}
 
 	public enum RomFormat

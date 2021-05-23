@@ -116,7 +116,7 @@ namespace Mesen.Controls
 			Size size = grid.Bounds.Size;
 
 			int colCount = Math.Min(4, Math.Max(1, (int)(size.Width / 220)));
-			int rowCount = Math.Min(3, Math.Max(1, (int)(size.Height / 220)));
+			int rowCount = Math.Min(3, Math.Max(1, (int)(size.Height / 210)));
 
 			if(Entries.Count <= 1) {
 				colCount = 1;

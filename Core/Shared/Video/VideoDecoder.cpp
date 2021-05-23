@@ -32,6 +32,16 @@ VideoDecoder::~VideoDecoder()
 	StopThread();
 }
 
+FrameInfo VideoDecoder::GetBaseFrameInfo(bool removeOverscan)
+{
+	if(removeOverscan) {
+		OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
+		return { _baseFrameInfo.Width - overscan.Left - overscan.Right, _baseFrameInfo.Height - overscan.Top - overscan.Bottom };
+	} else {
+		return _baseFrameInfo;
+	}
+}
+
 FrameInfo VideoDecoder::GetFrameInfo()
 {
 	return _lastFrameInfo;

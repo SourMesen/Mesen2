@@ -30,7 +30,7 @@
 	</Window.DataTemplates>
 	
 	<DockPanel Background="Black">
-		<v:MainMenuView DataContext="{CompiledBinding MainMenu}" DockPanel.Dock="Top" />
+		<v:MainMenuView Name="MainMenu" DataContext="{CompiledBinding MainMenu}" DockPanel.Dock="Top" />
 		
 		<ContentControl DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />
 

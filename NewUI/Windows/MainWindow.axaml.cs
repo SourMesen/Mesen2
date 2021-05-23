@@ -3,24 +3,17 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 using Avalonia.Threading;
 using Mesen.ViewModels;
 using Mesen.Config;
-using ReactiveUI;
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Mesen.Debugger.Windows;
-using Mesen.Debugger.ViewModels;
 using System.IO;
 using System.Linq;
-using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using Mesen.Interop;
+using Mesen.Views;
 
 namespace Mesen.Windows
 {
@@ -30,6 +23,11 @@ namespace Mesen.Windows
 
 		private NotificationListener? _listener = null;
 		private ShortcutHandler _shortcutHandler;
+
+		private FrameInfo _baseScreenSize;
+		private double _initialScale = 2.0;
+
+		public NativeRenderer _renderer;
 
 		public MainWindow()
 		{
@@ -41,6 +39,8 @@ namespace Mesen.Windows
 			//Allows us to catch LeftAlt/RightAlt key presses
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
+
+			_renderer = this.FindControl<NativeRenderer>("Renderer")!;
 
 #if DEBUG
 			this.AttachDevTools();
@@ -58,9 +58,8 @@ namespace Mesen.Windows
 
 		private void ResizeRenderer()
 		{
-			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
-			renderer.InvalidateMeasure();
-			renderer.InvalidateArrange();
+			_renderer.InvalidateMeasure();
+			_renderer.InvalidateArrange();
 		}
 
 		private void OnDrop(object? sender, DragEventArgs e)
@@ -84,11 +83,8 @@ namespace Mesen.Windows
 				return;
 			}
 
-			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
-			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
-
 			Task.Run(() => {
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl.Handle.Handle, _renderer.Handle, false, false, false);
 
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
@@ -145,7 +141,14 @@ namespace Mesen.Windows
 
 				case ConsoleNotificationType.ResolutionChanged:
 					Dispatcher.UIThread.Post(() => {
-						ResizeRenderer();
+						double scale;
+						if(_baseScreenSize.Width == 0) {
+							scale = _initialScale;
+						} else {
+							scale = ClientSize.Width / _baseScreenSize.Width;
+						}
+						SetScale(scale);
+						_baseScreenSize = EmuApi.GetBaseScreenSize();
 					});
 					break;
 
@@ -159,6 +162,13 @@ namespace Mesen.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		public void SetScale(double scale)
+		{
+			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
+			ClientSize = new Size(screenSize.Width * scale, screenSize.Height * scale + this.FindControl<MainMenuView>("MainMenu").Bounds.Height);
+			ResizeRenderer();
 		}
 
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)

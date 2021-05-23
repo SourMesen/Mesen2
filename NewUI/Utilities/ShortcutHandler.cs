@@ -16,12 +16,14 @@ namespace Mesen.Utilities
 	public class ShortcutHandler
 	{
 		private MainWindow _mainWindow;
+		private MainWindowViewModel _mainWindowModel;
 
 		private List<uint> _speedValues = new List<uint> { 1, 3, 6, 12, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 750, 1000, 2000, 4000 };
 
 		public ShortcutHandler(MainWindow mainWindow)
 		{
 			_mainWindow = mainWindow;
+			_mainWindowModel = (MainWindowViewModel)_mainWindow.DataContext!;
 		}
 
 		public void ExecuteShortcut(EmulatorShortcut shortcut)
@@ -58,14 +60,14 @@ namespace Mesen.Utilities
 				//TODO
 				//case EmulatorShortcut.LoadRandomGame: RandomGameHelper.LoadRandomGame(); break;
 
-				/*case EmulatorShortcut.SetScale1x: _displayManager.SetScale(1, true); break;
-				case EmulatorShortcut.SetScale2x: _displayManager.SetScale(2, true); break;
-				case EmulatorShortcut.SetScale3x: _displayManager.SetScale(3, true); break;
-				case EmulatorShortcut.SetScale4x: _displayManager.SetScale(4, true); break;
-				case EmulatorShortcut.SetScale5x: _displayManager.SetScale(5, true); break;
-				case EmulatorShortcut.SetScale6x: _displayManager.SetScale(6, true); break;
-		
-				case EmulatorShortcut.ToggleBgLayer0: ToggleBgLayer0(); break;
+				case EmulatorShortcut.SetScale1x: _mainWindow.SetScale(1); break;
+				case EmulatorShortcut.SetScale2x: _mainWindow.SetScale(2); break;
+				case EmulatorShortcut.SetScale3x: _mainWindow.SetScale(3); break;
+				case EmulatorShortcut.SetScale4x: _mainWindow.SetScale(4); break;
+				case EmulatorShortcut.SetScale5x: _mainWindow.SetScale(5); break;
+				case EmulatorShortcut.SetScale6x: _mainWindow.SetScale(6); break;
+
+				/*case EmulatorShortcut.ToggleBgLayer0: ToggleBgLayer0(); break;
 				case EmulatorShortcut.ToggleBgLayer1: ToggleBgLayer1(); break;
 				case EmulatorShortcut.ToggleBgLayer2: ToggleBgLayer2(); break;
 				case EmulatorShortcut.ToggleBgLayer3: ToggleBgLayer3(); break;
@@ -87,7 +89,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					((MainWindowViewModel)_mainWindow.DataContext!).RecentGames.Init(GameScreenMode.LoadState);
+					_mainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
 					break;
 
 				case EmulatorShortcut.SaveStateDialog:
@@ -96,7 +98,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					((MainWindowViewModel)_mainWindow.DataContext!).RecentGames.Init(GameScreenMode.LoadState);
+					_mainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
 					break;
 			}
 

@@ -55,6 +55,7 @@ public:
 	void TakeScreenshot(std::stringstream &stream);
 
 	uint32_t GetFrameCount();
+	FrameInfo GetBaseFrameInfo(bool removeOverscan);
 	FrameInfo GetFrameInfo();
 
 	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind, void* frameData = nullptr);
