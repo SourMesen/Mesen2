@@ -28,6 +28,12 @@ namespace Mesen.Windows
 		private double _initialScale = 2.0;
 
 		public NativeRenderer _renderer;
+		public MainMenuView _mainMenu;
+
+		static MainWindow()
+		{
+			WindowStateProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.OnWindowStateChanged());
+		}
 
 		public MainWindow()
 		{
@@ -40,7 +46,10 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
+			
+			
 			_renderer = this.FindControl<NativeRenderer>("Renderer")!;
+			_mainMenu = this.FindControl<MainMenuView>("MainMenu")!;
 
 #if DEBUG
 			this.AttachDevTools();
@@ -167,8 +176,36 @@ namespace Mesen.Windows
 		public void SetScale(double scale)
 		{
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
-			ClientSize = new Size(screenSize.Width * scale, screenSize.Height * scale + this.FindControl<MainMenuView>("MainMenu").Bounds.Height);
-			ResizeRenderer();
+			if(WindowState == WindowState.Normal) {
+				_renderer.Width = double.NaN;
+				_renderer.Height = double.NaN;
+
+				ClientSize = new Size(screenSize.Width * scale, screenSize.Height * scale + _mainMenu.Bounds.Height);
+				ResizeRenderer();
+			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
+				_renderer.Width = screenSize.Width * scale;
+				_renderer.Height = screenSize.Height * scale;
+			}
+		}
+
+		private void OnWindowStateChanged()
+		{
+			if(WindowState == WindowState.Normal) {
+				_renderer.Width = double.NaN;
+				_renderer.Height = double.NaN;
+				ResizeRenderer();
+			}
+
+			_mainMenu.IsVisible = WindowState != WindowState.FullScreen;
+		}
+
+		public void ToggleFullscreen()
+		{
+			if(WindowState == WindowState.FullScreen) {
+				WindowState = WindowState.Normal;
+			} else {
+				WindowState = WindowState.FullScreen;
+			}
 		}
 
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)

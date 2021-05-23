@@ -50,8 +50,7 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.ToggleCheats: ToggleCheats(); break;
 				case EmulatorShortcut.MaxSpeed: ToggleMaxSpeed(); break;
 
-				//TODO
-				//case EmulatorShortcut.ToggleFullscreen: _displayManager.ToggleFullscreen(); restoreFullscreen = false; break;
+				case EmulatorShortcut.ToggleFullscreen: _mainWindow.ToggleFullscreen(); break;
 
 				case EmulatorShortcut.OpenFile: OpenFile(); break;
 				case EmulatorShortcut.IncreaseSpeed: IncreaseEmulationSpeed(); break;
