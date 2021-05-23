@@ -7,9 +7,8 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:l="using:Mesen.Localization"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
-	VerticalAlignment="Stretch"
-	HorizontalAlignment="Stretch"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="650"
+	VerticalAlignment="Top"
 	x:DataType="vm:MainMenuViewModel"
 	x:Class="Mesen.Views.MainMenuView"
 >
@@ -181,6 +180,34 @@
 				<MenuItem.Icon>
 					<Image Source="/Assets/VideoFilter.png" />
 				</MenuItem.Icon>
+				<c:VideoFilterMenuItem Filter="None" />
+				<Separator />
+				<c:VideoFilterMenuItem Filter="NTSC" />
+				<Separator />
+				<c:VideoFilterMenuItem Filter="xBRZ2x" />
+				<c:VideoFilterMenuItem Filter="xBRZ3x" />
+				<c:VideoFilterMenuItem Filter="xBRZ4x" />
+				<c:VideoFilterMenuItem Filter="xBRZ5x" />
+				<c:VideoFilterMenuItem Filter="xBRZ6x" />
+				<Separator />
+				<c:VideoFilterMenuItem Filter="HQ2x" />
+				<c:VideoFilterMenuItem Filter="HQ3x" />
+				<c:VideoFilterMenuItem Filter="HQ4x" />
+				<Separator />
+				<c:VideoFilterMenuItem Filter="Scale2x" />
+				<c:VideoFilterMenuItem Filter="Scale3x" />
+				<c:VideoFilterMenuItem Filter="Scale4x" />
+				<Separator />
+				<c:VideoFilterMenuItem Filter="_2xSai" />
+				<c:VideoFilterMenuItem Filter="Super2xSai" />
+				<c:VideoFilterMenuItem Filter="SuperEagle" />
+				<Separator />
+				<c:VideoFilterMenuItem Filter="Prescale2x" />
+				<c:VideoFilterMenuItem Filter="Prescale3x" />
+				<c:VideoFilterMenuItem Filter="Prescale4x" />
+				<c:VideoFilterMenuItem Filter="Prescale6x" />
+				<c:VideoFilterMenuItem Filter="Prescale8x" />
+				<c:VideoFilterMenuItem Filter="Prescale10x" />
 			</MenuItem>
 			<MenuItem Header="{l:Translate mnuRegion}">
 				<MenuItem.Icon>
