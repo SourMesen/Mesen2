@@ -113,7 +113,7 @@ namespace Mesen.Utilities
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Directory = ConfigManager.SaveStateFolder;
 			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Mesen Save States (*.mss)", Extensions = { "mss" } },
+				new FileDialogFilter() { Name = "Mesen Save States", Extensions = { "mss" } },
 				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
 
@@ -128,7 +128,7 @@ namespace Mesen.Utilities
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Directory = ConfigManager.SaveStateFolder;
 			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Mesen Save States (*.mss)", Extensions = { "mss" } },
+				new FileDialogFilter() { Name = "Mesen Save States", Extensions = { "mss" } },
 				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
 
@@ -147,8 +147,8 @@ namespace Mesen.Utilities
 			if(RecordApi.AviIsRecording()) {
 				RecordApi.AviStop();
 			} else {
-				string filename = GetOutputFilename(ConfigManager.AviFolder, ConfigManager.Config.AviRecord.Codec == VideoCodec.GIF ? ".gif" : ".avi");
-				RecordApi.AviRecord(filename, ConfigManager.Config.AviRecord.Codec, ConfigManager.Config.AviRecord.CompressionLevel);
+				string filename = GetOutputFilename(ConfigManager.AviFolder, ConfigManager.Config.VideoRecord.Codec == VideoCodec.GIF ? ".gif" : ".avi");
+				RecordApi.AviRecord(filename, ConfigManager.Config.VideoRecord.Codec, ConfigManager.Config.VideoRecord.CompressionLevel);
 			}
 		}
 
@@ -207,7 +207,8 @@ namespace Mesen.Utilities
 				new FileDialogFilter() { Name = "All ROM Files", Extensions = { "sfc" , "fig", "smc", "spc", "nes", "fds", "unif", "nsf", "nsfe", "gb", "gbc", "gbs" } },
 				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc", "spc" } },
 				new FileDialogFilter() { Name = "NES ROM Files", Extensions = { "nes" , "fds", "unif", "nsf", "nsfe" } },
-				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc", "gbs" } }
+				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc", "gbs" } },
+				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
 
 			string[] filenames = await ofd.ShowAsync(_mainWindow);

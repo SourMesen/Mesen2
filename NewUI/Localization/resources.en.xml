@@ -79,8 +79,10 @@
 			<Control ID="mnuTools">Tools</Control>
 			<Control ID="mnuHistoryViewer">History Viewer</Control>
 			<Control ID="mnuNetPlay">Net Play</Control>
-			<Control ID="mnuStartServer">Start Server</Control>
-			<Control ID="mnuConnect">Connect to Server</Control>
+			<Control ID="mnuStartServer">Start server...</Control>
+			<Control ID="mnuStopServer">Stop server</Control>
+			<Control ID="mnuConnect">Connect to server...</Control>
+			<Control ID="mnuDisconnect">Disconnect</Control>
 			<Control ID="mnuNetPlaySelectController">Select Controller</Control>
 			<Control ID="mnuNetPlayPlayer1">Player 1</Control>
 			<Control ID="mnuNetPlayPlayer2">Player 2</Control>
@@ -641,7 +643,8 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmRecordAvi" Title="Video Recording Options">
+		<Form ID="VideoRecordWindow">
+			<Control ID="wndTitle">Video Recording Options</Control>
 			<Control ID="lblAviFile">Save to:</Control>
 			<Control ID="lblCodec">Video Codec:</Control>
 			<Control ID="lblCompressionLevel">Compression Level:</Control>

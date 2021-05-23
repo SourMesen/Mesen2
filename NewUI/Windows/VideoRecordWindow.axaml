@@ -1,0 +1,53 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="125"
+	x:Class="Mesen.Windows.VideoRecordWindow"
+	Icon="/Assets/Icon.ico"
+	Width="500" Height="125"
+	x:DataType="vm:VideoRecordConfigViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<DockPanel Margin="2">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<Grid ColumnDefinitions="Auto,1*,Auto" RowDefinitions="Auto,Auto,Auto">
+			<TextBlock Text="{l:Translate lblAviFile}" />
+			<TextBox Grid.Column="1" IsReadOnly="True" Text="{CompiledBinding SavePath}" />
+			<Button Grid.Column="2" Content="{l:Translate btnBrowse}" Click="OnBrowseClick" />
+
+			<TextBlock Grid.Row="1" Text="{l:Translate lblCodec}" />
+			<c:EnumComboBox
+				Grid.Row="1"
+				Grid.Column="1"
+				EnumType="{x:Type cfg:VideoCodec}"
+				SelectedItem="{CompiledBinding Config.Codec}"
+			/>
+
+			<TextBlock Grid.Row="2" Text="{l:Translate lblCompressionLevel}" IsVisible="{CompiledBinding CompressionAvailable}" />
+			<Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="Auto,1*,Auto" Margin="5 0" IsVisible="{CompiledBinding CompressionAvailable}">
+				<TextBlock Text="{l:Translate lblLowCompression}" />
+				<c:MesenSlider
+					Grid.Column="1"
+					Margin="5 5"
+					HideValue="True"
+					Minimum="0"
+					Maximum="8"
+					TickFrequency="1"
+					Value="{CompiledBinding Config.CompressionLevel}"
+				/>
+				<TextBlock Grid.Column="2" Text="{l:Translate lblHighCompression}" />
+			</Grid>
+		</Grid>
+	</DockPanel>
+</Window>

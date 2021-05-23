@@ -134,8 +134,11 @@ namespace Mesen.Views
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Wave files (*.wav)", Extensions = { "wav" } }
+				new FileDialogFilter() { Name = "Wave files", Extensions = { "wav" } },
+				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
+			sfd.Directory = ConfigManager.WaveFolder;
+			sfd.InitialFileName = EmuApi.GetRomInfo().GetRomName() + ".wav";
 
 			string filename = await sfd.ShowAsync(VisualRoot as Window);
 			if(filename != null) {
@@ -150,12 +153,19 @@ namespace Mesen.Views
 
 		private void OnStartVideoRecordingClick(object sender, RoutedEventArgs e)
 		{
-			RecordApi.AviRecord("c:\\temp\\out.gif", VideoCodec.GIF, 0);
+			new VideoRecordWindow() {
+				DataContext = new VideoRecordConfigViewModel()
+			}.ShowCenteredDialog((Window)VisualRoot);
 		}
 
 		private void OnStopVideoRecordingClick(object sender, RoutedEventArgs e)
 		{
 			RecordApi.AviStop();
+		}
+
+		private void OnToolSubMenuOpened(object sender, RoutedEventArgs e)
+		{
+			_model.UpdateToolSubMenus();
 		}
 
 		private void OnPlayMovieClick(object sender, RoutedEventArgs e)

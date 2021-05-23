@@ -24,6 +24,14 @@ namespace Mesen.ViewModels
 		[Reactive] public bool IsVsDualSystemGame { get; private set; }
 		[Reactive] public bool IsNesGame { get; private set; }
 
+		[Reactive] public bool IsMovieActive { get; private set; }
+		[Reactive] public bool IsVideoRecording { get; private set; }
+		[Reactive] public bool IsSoundRecording { get; private set; }
+
+		[Reactive] public bool IsNetPlayActive { get; private set; }
+		[Reactive] public bool IsNetPlayClient { get; private set; }
+		[Reactive] public bool IsNetPlayServer { get; private set; }
+
 		[Reactive] public ObservableCollection<RecentItem> RecentItems { get; private set; }
 		[Reactive] public bool HasRecentItems { get; private set; }
 		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
@@ -59,6 +67,17 @@ namespace Mesen.ViewModels
 			Task.Run(() => {
 				LoadRomHelper.LoadRom(recent.RomFile, recent.PatchFile);
 			});
+		}
+
+		internal void UpdateToolSubMenus()
+		{
+			IsVideoRecording = RecordApi.AviIsRecording();
+			IsSoundRecording = RecordApi.WaveIsRecording();
+			IsMovieActive = RecordApi.MovieRecording() || RecordApi.MovieRecording();
+			
+			IsNetPlayClient = NetplayApi.IsConnected();
+			IsNetPlayServer = NetplayApi.IsServerRunning();
+			IsNetPlayActive = IsNetPlayClient || IsNetPlayServer;
 		}
 	}
 }

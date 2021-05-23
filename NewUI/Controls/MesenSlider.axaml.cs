@@ -67,5 +67,17 @@ namespace Mesen.Controls
 		{
 			AvaloniaXamlLoader.Load(this);
 		}
+
+		public void Slider_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+		{
+			if(e.Property == Slider.ValueProperty && e.NewValue is double value && sender is Slider slider) {
+				double newIntegerValue = Math.Floor(value);
+				if(newIntegerValue != (double)e.NewValue) {
+					slider.Value = newIntegerValue;
+				} else {
+					slider.Value = Math.Ceiling(value);
+				}
+			}
+		}
 	}
 }

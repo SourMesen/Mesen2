@@ -61,7 +61,8 @@ namespace Mesen.Views
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Palette files (*.pal)", Extensions = { "pal" } }
+				new FileDialogFilter() { Name = "Palette files", Extensions = { "pal" } },
+				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
 
 			string[] filenames = await ofd.ShowAsync(VisualRoot as Window);
@@ -74,7 +75,8 @@ namespace Mesen.Views
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Palette files (*.pal)", Extensions = { "pal" } }
+				new FileDialogFilter() { Name = "Palette files", Extensions = { "pal" } },
+				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
 
 			string filename = await sfd.ShowAsync(VisualRoot as Window);

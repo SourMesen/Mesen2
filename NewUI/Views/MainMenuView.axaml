@@ -264,32 +264,42 @@
 					<Image Source="/Assets/HistoryViewer.png" />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="{l:Translate mnuMovies}" IsEnabled="{CompiledBinding IsGameRunning}">
+			<MenuItem
+				Header="{l:Translate mnuMovies}"
+				IsEnabled="{CompiledBinding IsGameRunning}"
+				SubmenuOpened="OnToolSubMenuOpened"				
+			>
 				<MenuItem.Icon>
 					<Image Source="/Assets/Movie.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuPlayMovie}" Click="OnPlayMovieClick">
+				<MenuItem Header="{l:Translate mnuPlayMovie}" Click="OnPlayMovieClick" IsEnabled="{CompiledBinding !IsMovieActive}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/MediaPlay.png" />
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuRecordMovie}" Click="OnRecordMovieClick">
+				<MenuItem Header="{l:Translate mnuRecordMovie}" Click="OnRecordMovieClick" IsEnabled="{CompiledBinding !IsMovieActive}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/Record.png" />
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuStopMovie}" Click="OnStopMovieClick">
+				<MenuItem Header="{l:Translate mnuStopMovie}" Click="OnStopMovieClick" IsEnabled="{CompiledBinding IsMovieActive}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/MediaStop.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="{l:Translate mnuNetPlay}">
+			<MenuItem
+				Header="{l:Translate mnuNetPlay}"
+				SubmenuOpened="OnToolSubMenuOpened"
+			>
 				<MenuItem.Icon>
 					<Image Source="/Assets/Network.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuStartServer}" />
-				<MenuItem Header="{l:Translate mnuConnect}" />
+				<MenuItem Header="{l:Translate mnuConnect}" IsEnabled="{CompiledBinding !IsNetPlayActive}" />
+				<MenuItem Header="{l:Translate mnuDisconnect}" IsEnabled="{CompiledBinding IsNetPlayClient}" />
+				<Separator />
+				<MenuItem Header="{l:Translate mnuStartServer}" IsEnabled="{CompiledBinding !IsNetPlayActive}" />
+				<MenuItem Header="{l:Translate mnuStopServer}" IsEnabled="{CompiledBinding IsNetPlayServer}" />
 				<Separator />
 				<MenuItem Header="{l:Translate mnuNetPlaySelectController}">
 					<MenuItem Header="{l:Translate mnuNetPlayPlayer1}" />
@@ -300,31 +310,39 @@
 				</MenuItem>
 			</MenuItem>
 			<Separator />
-			<MenuItem Header="{l:Translate mnuSoundRecorder}" IsEnabled="{CompiledBinding IsGameRunning}">
+			<MenuItem
+				Header="{l:Translate mnuSoundRecorder}"
+				IsEnabled="{CompiledBinding IsGameRunning}"
+				SubmenuOpened="OnToolSubMenuOpened"
+			>
 				<MenuItem.Icon>
 					<Image Source="/Assets/Microphone.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuWaveRecord}" Click="OnStartAudioRecordingClick">
+				<MenuItem Header="{l:Translate mnuWaveRecord}" Click="OnStartAudioRecordingClick" IsEnabled="{CompiledBinding !IsSoundRecording}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/Record.png" />
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuWaveStop}" Click="OnStopAudioRecordingClick">
+				<MenuItem Header="{l:Translate mnuWaveStop}" Click="OnStopAudioRecordingClick" IsEnabled="{CompiledBinding IsSoundRecording}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/MediaStop.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="{l:Translate mnuVideoRecorder}" IsEnabled="{CompiledBinding IsGameRunning}">
+			<MenuItem
+				Header="{l:Translate mnuVideoRecorder}"
+				IsEnabled="{CompiledBinding IsGameRunning}"
+				SubmenuOpened="OnToolSubMenuOpened"
+			>
 				<MenuItem.Icon>
 					<Image Source="/Assets/VideoRecorder.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuAviRecord}" Click="OnStartVideoRecordingClick">
+				<MenuItem Header="{l:Translate mnuAviRecord}" Click="OnStartVideoRecordingClick" IsEnabled="{CompiledBinding !IsVideoRecording}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/Record.png" />
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuAviStop}" Click="OnStopVideoRecordingClick">
+				<MenuItem Header="{l:Translate mnuAviStop}" Click="OnStopVideoRecordingClick" IsEnabled="{CompiledBinding IsVideoRecording}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/MediaStop.png" />
 					</MenuItem.Icon>

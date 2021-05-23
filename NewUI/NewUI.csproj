@@ -223,6 +223,9 @@
     <Compile Update="Controls\StateGrid.axaml.cs">
       <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\VideoRecordWindow.axaml.cs">
+      <DependentUpon>VideoRecordWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\ColorPickerWindow.axaml.cs">
       <DependentUpon>ColorPickerWindow.axaml</DependentUpon>
     </Compile>

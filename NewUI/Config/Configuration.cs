@@ -26,7 +26,7 @@ namespace Mesen.Config
 		public AudioPlayerConfig AudioPlayer { get; set; }
 		public DebugConfig Debug;
 		public RecentItems RecentFiles { get; set; }
-		public AviRecordConfig AviRecord { get; set; }
+		public VideoRecordConfig VideoRecord { get; set; }
 		public MovieRecordConfig MovieRecord { get; set; }
 		public CheatWindowConfig Cheats { get; set; }
 		public NetplayConfig Netplay { get; set; }
@@ -47,7 +47,7 @@ namespace Mesen.Config
 			Nes = new NesConfig();
 			Preferences = new PreferencesConfig();
 			AudioPlayer = new AudioPlayerConfig();
-			AviRecord = new AviRecordConfig();
+			VideoRecord = new VideoRecordConfig();
 			MovieRecord = new MovieRecordConfig();
 			Cheats = new CheatWindowConfig();
 			Netplay = new NetplayConfig();
