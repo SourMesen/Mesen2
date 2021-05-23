@@ -87,7 +87,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					((MainWindowViewModel)_mainWindow.DataContext).RecentGames.Init(GameScreenMode.LoadState);
+					((MainWindowViewModel)_mainWindow.DataContext!).RecentGames.Init(GameScreenMode.LoadState);
 					break;
 
 				case EmulatorShortcut.SaveStateDialog:
@@ -96,7 +96,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					((MainWindowViewModel)_mainWindow.DataContext).RecentGames.Init(GameScreenMode.LoadState);
+					((MainWindowViewModel)_mainWindow.DataContext!).RecentGames.Init(GameScreenMode.LoadState);
 					break;
 			}
 

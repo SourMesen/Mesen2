@@ -105,6 +105,7 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.LoadStateSlot8,
 				EmulatorShortcut.LoadStateSlot9,
 				EmulatorShortcut.LoadStateSlot10,
+				EmulatorShortcut.LoadStateSlotAuto,
 				EmulatorShortcut.LoadStateFromFile,
 				EmulatorShortcut.LoadStateDialog,
 

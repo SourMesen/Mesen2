@@ -115,8 +115,8 @@ namespace Mesen.Controls
 			Grid grid = this.FindControl<Grid>("Grid");
 			Size size = grid.Bounds.Size;
 
-			int colCount = Math.Min(4, Math.Max(1, (int)(size.Width / 300)));
-			int rowCount = Math.Min(3, Math.Max(1, (int)(size.Height / 300)));
+			int colCount = Math.Min(4, Math.Max(1, (int)(size.Width / 220)));
+			int rowCount = Math.Min(3, Math.Max(1, (int)(size.Height / 220)));
 
 			if(Entries.Count <= 1) {
 				colCount = 1;

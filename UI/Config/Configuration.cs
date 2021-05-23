@@ -91,7 +91,6 @@ namespace Mesen.GUI.Config
 				NeedInputReinit2 = false;
 			}
 			Preferences.InitializeDefaultShortcuts();
-			ConfigManager.ApplyChanges();
 		}
 
 		public static Configuration Deserialize(string configFile)

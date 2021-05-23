@@ -26,9 +26,7 @@ namespace Mesen.Windows
 {
 	public class MainWindow : Window
 	{
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-		private MainWindowViewModel _model = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+		private MainWindowViewModel _model = null!;
 
 		private NotificationListener? _listener = null;
 		private ShortcutHandler _shortcutHandler;
@@ -88,24 +86,21 @@ namespace Mesen.Windows
 
 			NativeRenderer renderer = this.FindControl<NativeRenderer>("Renderer");
 			IntPtr wndHandle = ((IWindowImpl)((TopLevel)this.VisualRoot).PlatformImpl).Handle.Handle;
-			EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
 
-			_listener = new NotificationListener();
-			_listener.OnNotification += OnNotification;
+			Task.Run(() => {
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, wndHandle, renderer.Handle, false, false, false);
 
-			ConfigManager.Config.InitializeDefaults();
-			ConfigManager.Config.ApplyConfig();
+				_listener = new NotificationListener();
+				_listener.OnNotification += OnNotification;
 
-			//ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
+				ConfigManager.Config.InitializeDefaults();
+				ConfigManager.Config.ApplyConfig();
 
-			/*if(!ProcessCommandLineArgs(Program.CommandLineArgs)) {
-				EmuApi.LoadRom(@"C:\Code\Games\Super Mario Bros. (USA).nes");
-				//EmuApi.LoadRom(@"C:\Code\Mesen-S\PGOHelper\PGOGames\Super Mario World (USA).sfc");
-			}*/
+				ProcessCommandLineArgs(Program.CommandLineArgs);
 
-			ConfigManager.Config.Preferences.UpdateFileAssociations();
-
-			SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
+				ConfigManager.Config.Preferences.UpdateFileAssociations();
+				SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
+			});
 		}
 
 		private void Instance_ArgumentsReceived(object? sender, ArgumentsReceivedEventArgs e)
