@@ -43,6 +43,7 @@ struct InteropRomInfo
 	const char* RomPath;
 	const char* PatchPath;
 	RomFormat Format;
+	ConsoleType Console;
 	//CoprocessorType Coprocessor;
 	//SnesCartInformation Header;
 	char Sha1[40];
@@ -128,6 +129,7 @@ extern "C" {
 		info.RomPath = _romPath.c_str();
 		info.PatchPath = _patchPath.c_str();
 		info.Format = romInfo.Format;
+		info.Console = _emu->GetConsoleType();
 		//TODO
 		//info.Header = romInfo.Header;
 		//info.Coprocessor = romInfo.Coprocessor;

@@ -253,7 +253,7 @@ namespace Mesen.Views
 			for(int i = 0; i < 5; i++) {
 				MenuItem item = new MenuItem() {
 					Header = ResourceHelper.GetMessage("Player") + " " + (i + 1) + " (" + ResourceHelper.GetEnumText(ConfigApi.GetControllerType(i)) + ")",
-					IsSelected = currentPort == i,
+					Icon = currentPort == i ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null!,
 					IsEnabled = (availableControllers & (1 << i)) != 0,
 				};
 
@@ -261,6 +261,57 @@ namespace Mesen.Views
 				item.Click += (_, _) => { NetplayApi.NetPlaySelectController(player); };
 				items.Add(item);
 			}
+			menu.Items = items;
+		}
+
+		private void OnRegionMenuOpened(object sender, RoutedEventArgs e)
+		{
+			MenuItem menu = ((MenuItem)sender);
+			List<IControl> items = new List<IControl>();
+
+			ConsoleType consoleType = EmuApi.GetRomInfo().ConsoleType;
+			ConsoleRegion region;
+			switch(consoleType) {
+				case ConsoleType.Snes: region = ConfigManager.Config.Snes.Region; break;
+				case ConsoleType.Nes: region = ConfigManager.Config.Nes.Region; break;
+				default: region = ConsoleRegion.Auto; break;
+			}
+
+			void AddRegion(ConsoleRegion r)
+			{
+				MenuItem item = new MenuItem() {
+					Header = ResourceHelper.GetEnumText(r),
+					Icon = region == r ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null!
+				};
+
+				item.Click += (_, _) => {
+					switch(consoleType) {
+						case ConsoleType.Snes:
+							ConfigManager.Config.Snes.Region = r;
+							ConfigManager.Config.Snes.ApplyConfig();
+							ConfigManager.SaveConfig();
+							break;
+
+						case ConsoleType.Nes:
+							ConfigManager.Config.Nes.Region = r;
+							ConfigManager.Config.Nes.ApplyConfig();
+							ConfigManager.SaveConfig();
+							break;
+
+						default: break;
+					}
+				};
+				items.Add(item);
+			}
+
+			AddRegion(ConsoleRegion.Auto);
+			items.Add(new Separator());
+			AddRegion(ConsoleRegion.Ntsc);
+			AddRegion(ConsoleRegion.Pal);
+			if(consoleType == ConsoleType.Nes) {
+				AddRegion(ConsoleRegion.Dendy);
+			}
+
 			menu.Items = items;
 		}
 

@@ -23,6 +23,7 @@ namespace Mesen.ViewModels
 		[Reactive] public bool IsVsSystemGame { get; private set; }
 		[Reactive] public bool IsVsDualSystemGame { get; private set; }
 		[Reactive] public bool IsNesGame { get; private set; }
+		[Reactive] public bool IsGbGame { get; private set; }
 
 		[Reactive] public bool IsMovieActive { get; private set; }
 		[Reactive] public bool IsVideoRecording { get; private set; }
@@ -56,7 +57,8 @@ namespace Mesen.ViewModels
 				IsFdsGame = x.Format == RomFormat.Fds;
 				IsVsSystemGame = x.Format == RomFormat.VsSystem || x.Format == RomFormat.VsDualSystem;
 				IsVsDualSystemGame = x.Format == RomFormat.VsDualSystem;
-				IsNesGame = x.Format == RomFormat.iNes || x.Format == RomFormat.Fds || x.Format == RomFormat.Unif;
+				IsNesGame = x.ConsoleType == ConsoleType.Nes;
+				IsGbGame = x.ConsoleType == ConsoleType.GameboyColor || x.ConsoleType == ConsoleType.Gameboy;
 			});
 		}
 

@@ -79,6 +79,7 @@
 	  <None Remove="Assets\MediaPause.png" />
 	  <None Remove="Assets\MediaPlay.png" />
 	  <None Remove="Assets\MediaStop.png" />
+	  <None Remove="Assets\MenuItemChecked.png" />
 	  <None Remove="Assets\MesenIcon.png" />
 	  <None Remove="Assets\MesenSIcon.png" />
 	  <None Remove="Assets\MesenSIconSmall.png" />
@@ -348,6 +349,7 @@
 	  <AvaloniaResource Include="Assets\MediaPause.png" />
 	  <AvaloniaResource Include="Assets\MediaPlay.png" />
 	  <AvaloniaResource Include="Assets\MediaStop.png" />
+	  <AvaloniaResource Include="Assets\MenuItemChecked.png" />
 	  <AvaloniaResource Include="Assets\MesenIcon.png" />
 	  <AvaloniaResource Include="Assets\MesenSIcon.png" />
 	  <AvaloniaResource Include="Assets\MesenSIconSmall.png" />

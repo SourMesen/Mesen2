@@ -209,10 +209,11 @@
 				<c:VideoFilterMenuItem Filter="Prescale8x" />
 				<c:VideoFilterMenuItem Filter="Prescale10x" />
 			</MenuItem>
-			<MenuItem Header="{l:Translate mnuRegion}">
+			<MenuItem Header="{l:Translate mnuRegion}" SubmenuOpened="OnRegionMenuOpened" IsEnabled="{CompiledBinding !IsGbGame}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/WebBrowser.png" />
 				</MenuItem.Icon>
+				<Separator />
 			</MenuItem>
 			<Separator />
 			<MenuItem Header="{l:Translate mnuAudioConfig}" Click="OnAudioConfigClick">

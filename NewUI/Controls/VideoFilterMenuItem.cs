@@ -5,6 +5,8 @@ using Mesen.Config;
 using Mesen.Localization;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
+using System.Drawing;
+using Mesen.Utilities;
 
 namespace Mesen.Controls
 {
@@ -29,7 +31,7 @@ namespace Mesen.Controls
 			if(Parent is MenuItem parent) {
 				Action updateShortcut = () => {
 					Header = ResourceHelper.GetEnumText(Filter);
-					IsSelected = ConfigManager.Config.Video.VideoFilter == Filter;
+					Icon = ConfigManager.Config.Video.VideoFilter == Filter ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null!;
 				};
 
 				updateShortcut();

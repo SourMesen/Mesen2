@@ -142,11 +142,20 @@ namespace Mesen.Interop
 		StudyBox
 	}
 
+	public enum ConsoleType
+	{
+		Snes = 0,
+		Gameboy = 1,
+		GameboyColor = 2,
+		Nes = 3
+	}
+
 	public struct InteropRomInfo
 	{
 		public IntPtr RomPath;
 		public IntPtr PatchPath;
 		public RomFormat Format;
+		public ConsoleType ConsoleType;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
 		public byte[] Sha1;
@@ -157,6 +166,7 @@ namespace Mesen.Interop
 		public string RomPath = "";
 		public string PatchPath = "";
 		public RomFormat Format = RomFormat.Unknown;
+		public ConsoleType ConsoleType = ConsoleType.Snes;
 		public string Sha1 = "";
 
 		public RomInfo() { }
@@ -166,6 +176,7 @@ namespace Mesen.Interop
 			RomPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.RomPath);
 			PatchPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.PatchPath);
 			Format = romInfo.Format;
+			ConsoleType = romInfo.ConsoleType;
 			Sha1 = Encoding.UTF8.GetString(romInfo.Sha1);
 		}
 
