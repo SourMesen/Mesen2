@@ -898,6 +898,17 @@
 		<Message ID="ConfirmPowerCycle">Are you sure you want to power cycle?</Message>
 		<Message ID="ConfirmExit">Are you sure you want to exit?</Message>
 
+		<Message ID="InstallHdPackWrongRom">The selected HD Pack is not compatible with the currently running game and cannot be installed.</Message>
+		<Message ID="InstallHdPackError">An error occurred while trying to install the HD Pack: &#xA;&#xA;{0}</Message>
+		<Message ID="InstallHdPackInvalidPack">The selected file is not a valid HD Pack.</Message>
+		<Message ID="InstallHdPackInvalidZipFile">The selected file is not a valid ZIP file.</Message>
+		<Message ID="InstallHdPackConfirmOverwrite">The destination folder ({0}) already exists - are you sure you want to overwrite it?</Message>
+		<Message ID="InstallHdPackConfirmReset">The HD Pack has been installed successfully. Do you want to reset the game and load the HD Pack now?</Message>
+
+		<Message ID="btnOK">OK</Message>
+		<Message ID="btnCancel">Cancel</Message>
+		<Message ID="btnYes">Yes</Message>
+		<Message ID="btnNo">No</Message>
 	</Messages>
 	<Enums>
 		<Enum ID="EmulatorShortcut">

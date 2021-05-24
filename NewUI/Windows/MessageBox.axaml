@@ -1,0 +1,44 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	d:DesignWidth="800"
+	d:DesignHeight="450"
+	x:Class="Mesen.Windows.MessageBox"
+	Icon="/Assets/Icon.ico"
+	SizeToContent="WidthAndHeight"
+	CanResize="False"
+>
+	<StackPanel HorizontalAlignment="Stretch">
+		<Panel Margin="20">
+			<StackPanel Orientation="Horizontal">
+				<Panel Margin="0 10 10 10">
+					<Image Name="imgError" Source="/Assets/MsgBoxError.png" IsVisible="False" />
+					<Image Name="imgWarning" Source="/Assets/MsgBoxWarning.png" IsVisible="False" />
+					<Image Name="imgQuestion" Source="/Assets/MsgBoxQuestion.png" IsVisible="False" />
+				</Panel>
+				<TextBlock
+					HorizontalAlignment="Center"
+					Name="Text"
+					MaxWidth="400"
+					TextWrapping="Wrap"
+					FontSize="12"
+				/>
+			</StackPanel>
+		</Panel>
+
+		<Panel Height="40" Background="#E7E7E7" HorizontalAlignment="Stretch">
+			<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" Name="pnlButtons">
+				<StackPanel.Styles>
+					<Style Selector="Button">
+						<Setter Property="Margin" Value="5"/>
+						<Setter Property="Width" Value="73"/>
+						<Setter Property="HorizontalContentAlignment" Value="Center"/>
+					</Style>
+				</StackPanel.Styles>
+			</StackPanel>
+		</Panel>
+	</StackPanel>
+</Window>

@@ -349,16 +349,16 @@
 				</MenuItem>
 			</MenuItem>
 			<Separator />
-			<MenuItem Header="{l:Translate mnuHdPacks}" Click="OnLogWindowClick">
+			<MenuItem Header="{l:Translate mnuHdPacks}" IsEnabled="{CompiledBinding IsNesGame}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/HdPack.png" />
 				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuInstallHdPack}" Click="OnLogWindowClick">
+				<MenuItem Header="{l:Translate mnuInstallHdPack}" Click="OnInstallHdPackClick">
 					<MenuItem.Icon>
 						<Image Source="/Assets/Import.png" />
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="{l:Translate mnuHdPackEditor}" Click="OnLogWindowClick" IsEnabled="{CompiledBinding IsNesGame}">
+				<MenuItem Header="{l:Translate mnuHdPackEditor}">
 					<MenuItem.Icon>
 						<Image Source="/Assets/HdPack.png" />
 					</MenuItem.Icon>

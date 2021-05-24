@@ -86,6 +86,9 @@
 	  <None Remove="Assets\MoveDown.png" />
 	  <None Remove="Assets\MoveUp.png" />
 	  <None Remove="Assets\Movie.png" />
+	  <None Remove="Assets\MsgBoxError.png" />
+	  <None Remove="Assets\MsgBoxQuestion.png" />
+	  <None Remove="Assets\MsgBoxWarning.png" />
 	  <None Remove="Assets\NavigateBack.png" />
 	  <None Remove="Assets\NavigateForward.png" />
 	  <None Remove="Assets\NecDspDebugger.png" />
@@ -346,6 +349,9 @@
 	  <AvaloniaResource Include="Assets\MoveDown.png" />
 	  <AvaloniaResource Include="Assets\MoveUp.png" />
 	  <AvaloniaResource Include="Assets\Movie.png" />
+	  <AvaloniaResource Include="Assets\MsgBoxError.png" />
+	  <AvaloniaResource Include="Assets\MsgBoxQuestion.png" />
+	  <AvaloniaResource Include="Assets\MsgBoxWarning.png" />
 	  <AvaloniaResource Include="Assets\NavigateBack.png" />
 	  <AvaloniaResource Include="Assets\NavigateForward.png" />
 	  <AvaloniaResource Include="Assets\NecDspDebugger.png" />

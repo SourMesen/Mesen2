@@ -483,7 +483,7 @@ string Emulator::GetHash(HashType type)
 {
 	//TODO
 	if(type == HashType::Sha1) {
-		return "0000000000000000000000000000000000000000";
+		return _rom.RomFile.GetSha1Hash();
 	}
 	return "";
 }
