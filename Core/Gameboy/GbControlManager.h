@@ -13,5 +13,6 @@ private:
 public:
 	GbControlManager(Emulator* emu);
 
-	virtual void UpdateControlDevices() override;
+	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
+	void UpdateControlDevices() override;
 };

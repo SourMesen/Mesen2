@@ -14,8 +14,7 @@ private:
 	static GameServerConnection* _netPlayDevices[BaseControlDevice::PortCount];
 
 	list<ControlDeviceState> _inputData;
-	string _playerName;
-	int _controllerPort;	
+	int _controllerPort = 0;
 	string _connectionHash;
 	string _serverPassword;
 	bool _handshakeCompleted = false;
@@ -43,7 +42,6 @@ public:
 	ControlDeviceState GetState();
 	void SendMovieData(uint8_t port, ControlDeviceState state);
 
-	string GetPlayerName();
 	uint8_t GetControllerPort();
 
 	virtual void ProcessNotification(ConsoleNotificationType type, void* parameter) override;

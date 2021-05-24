@@ -10,10 +10,9 @@
 #include "Netplay/PlayerListMessage.h"
 #include "Netplay/ForceDisconnectMessage.h"
 #include "Netplay/ServerInformationMessage.h"
+#include "Shared/Interfaces/IControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
-#include "SNES/ControlManager.h"
-#include "SNES/Input/SnesController.h"
 #include "Shared/NotificationManager.h"
 #include "RomFinder.h"
 
@@ -38,9 +37,11 @@ void GameClientConnection::Shutdown()
 		_shutdown = true;
 		DisableControllers();
 
-		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
-		if(controlManager) {
-			controlManager->UnregisterInputProvider(this);
+		if(_emu->IsRunning()) {
+			shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+			if(controlManager) {
+				controlManager->UnregisterInputProvider(this);
+			}
 		}
 
 		MessageManager::DisplayMessage("NetPlay", "ConnectionLost");
@@ -215,8 +216,12 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 void GameClientConnection::InitControlDevice()
 {
 	//Pretend we are using port 0 (to use player 1's keybindings during netplay)
-	//TODO
-	//_newControlDevice = ControlManager::CreateControllerDevice(_emu->GetSettings()->GetInputConfig().Controllers[_controllerPort].Type, 0, _emu.get());
+	shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort);
+	if(device) {
+		ControllerType type = device->GetControllerType();
+		_newControlDevice = controlManager->CreateControllerDevice(type, 0);
+	}
 }
 
 void GameClientConnection::ProcessNotification(ConsoleNotificationType type, void* parameter)
@@ -232,6 +237,7 @@ void GameClientConnection::SendInput()
 {
 	if(_gameLoaded) {
 		if(_newControlDevice) {
+			//TODO, not thread-safe
 			_controlDevice = _newControlDevice;
 			_newControlDevice.reset();
 		}

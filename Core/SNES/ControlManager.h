@@ -32,7 +32,7 @@ public:
 
 	void UpdateControlDevices() override;
 
-	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port);
+	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);

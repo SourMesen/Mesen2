@@ -12,7 +12,6 @@
 #include "Netplay/GameServer.h"
 #include "Netplay/ForceDisconnectMessage.h"
 #include "Netplay/ServerInformationMessage.h"
-#include "SNES/ControlManager.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -30,10 +29,7 @@ GameServerConnection::GameServerConnection(shared_ptr<Emulator> emu, shared_ptr<
 
 GameServerConnection::~GameServerConnection()
 {
-	if(!_playerName.empty()) {
-		MessageManager::DisplayMessage("NetPlay", _playerName + " (Player " + std::to_string(_controllerPort + 1) + ") disconnected.");
-	}
-
+	MessageManager::DisplayMessage("NetPlay", "Player " + std::to_string(_controllerPort + 1) + " disconnected.");
 	UnregisterNetPlayDevice(this);
 }
 
@@ -240,11 +236,6 @@ uint8_t GameServerConnection::GetFirstFreeControllerPort()
 		}
 	}
 	return GameConnection::SpectatorPort;
-}
-
-string GameServerConnection::GetPlayerName()
-{
-	return _playerName;
 }
 
 uint8_t GameServerConnection::GetControllerPort()

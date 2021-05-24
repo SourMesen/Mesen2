@@ -17,12 +17,12 @@ private:
 	unique_ptr<thread> _serverThread;
 	atomic<bool> _stop;
 	unique_ptr<Socket> _listener;
-	uint16_t _port;
+	uint16_t _port = 0;
 	string _password;
 	list<shared_ptr<GameServerConnection>> _openConnections;
 	bool _initialized = false;
 
-	uint8_t _hostControllerPort;
+	uint8_t _hostControllerPort = 0;
 
 	void AcceptConnections();
 	void UpdateConnections();

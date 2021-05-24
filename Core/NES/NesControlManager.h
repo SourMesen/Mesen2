@@ -45,8 +45,7 @@ public:
 
 	bool HasKeyboard();
 	
-	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port);
-	shared_ptr<BaseControlDevice> CreateExpansionDevice(ExpansionPortDevice type);
+	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
 
 	void GetMemoryRanges(MemoryRanges &ranges) override
 	{

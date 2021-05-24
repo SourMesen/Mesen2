@@ -27,10 +27,10 @@ private:
 
 	shared_ptr<BaseControlDevice> _controlDevice;
 	shared_ptr<BaseControlDevice> _newControlDevice;
-	ControlDeviceState _lastInputSent;
+	ControlDeviceState _lastInputSent = {};
 	bool _gameLoaded = false;
 	uint8_t _controllerPort = GameConnection::SpectatorPort;
-	ClientConnectionData _connectionData;
+	ClientConnectionData _connectionData = {};
 	string _serverSalt;
 
 private:

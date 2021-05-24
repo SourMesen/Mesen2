@@ -4,9 +4,9 @@ using std::thread;
 
 #include "Netplay/GameServer.h"
 #include "Netplay/PlayerListMessage.h"
-#include "SNES/ControlManager.h"
-#include "SNES/Input/Multitap.h"
 #include "Shared/Emulator.h"
+#include "Shared/Interfaces/IControlManager.h"
+#include "SNES/Input/Multitap.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Socket.h"
@@ -32,19 +32,23 @@ GameServer::~GameServer()
 
 	Stop();
 	
-	shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
-	if(controlManager) {
-		controlManager->UnregisterInputRecorder(this);
-		controlManager->UnregisterInputProvider(this);
+	if(_emu->IsRunning()) {
+		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+		if(controlManager) {
+			controlManager->UnregisterInputRecorder(this);
+			controlManager->UnregisterInputProvider(this);
+		}
 	}
 }
 
 void GameServer::RegisterServerInput()
 {
-	shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
-	if(controlManager) {
-		controlManager->RegisterInputRecorder(this);
-		controlManager->RegisterInputProvider(this);
+	if(_emu->IsRunning()) {
+		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+		if(controlManager) {
+			controlManager->RegisterInputRecorder(this);
+			controlManager->RegisterInputProvider(this);
+		}
 	}
 }
 
@@ -92,6 +96,7 @@ bool GameServer::SetInput(BaseControlDevice *device)
 {
 	uint8_t port = device->GetPort();
 
+	//TODO?
 	if(device->GetControllerType() == ControllerType::Multitap) {
 		//Need special handling for the multitap, merge data from P3/4/5 with P1 (or P2, depending which port the multitap is plugged into)
 		GameServerConnection* connection = GameServerConnection::GetNetPlayDevice(port);

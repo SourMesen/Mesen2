@@ -51,6 +51,8 @@ public:
 	void RegisterInputRecorder(IInputRecorder* recorder) override;
 	void UnregisterInputRecorder(IInputRecorder* recorder) override;
 
+	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
+
 	vector<ControllerData> GetPortStates();
 
 	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port) override;
