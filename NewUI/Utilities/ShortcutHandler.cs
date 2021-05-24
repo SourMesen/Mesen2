@@ -16,15 +16,15 @@ namespace Mesen.Utilities
 	public class ShortcutHandler
 	{
 		private MainWindow _mainWindow;
-		private MainWindowViewModel _mainWindowModel;
 
 		private List<uint> _speedValues = new List<uint> { 1, 3, 6, 12, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 750, 1000, 2000, 4000 };
 
 		public ShortcutHandler(MainWindow mainWindow)
 		{
 			_mainWindow = mainWindow;
-			_mainWindowModel = (MainWindowViewModel)_mainWindow.DataContext!;
 		}
+
+		private MainWindowViewModel MainWindowModel => (MainWindowViewModel)_mainWindow.DataContext!;
 
 		public void ExecuteShortcut(EmulatorShortcut shortcut)
 		{
@@ -88,7 +88,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					_mainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
+					MainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
 					break;
 
 				case EmulatorShortcut.SaveStateDialog:
@@ -97,7 +97,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					_mainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
+					MainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
 					break;
 			}
 
