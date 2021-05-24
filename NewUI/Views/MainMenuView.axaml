@@ -301,12 +301,8 @@
 				<MenuItem Header="{l:Translate mnuStartServer}" IsEnabled="{CompiledBinding !IsNetPlayActive}" Click="OnNetplayStartServerClick" />
 				<MenuItem Header="{l:Translate mnuStopServer}" IsEnabled="{CompiledBinding IsNetPlayServer}" Click="OnNetplayStopServerClick" />
 				<Separator />
-				<MenuItem Header="{l:Translate mnuNetPlaySelectController}" IsEnabled="{CompiledBinding IsNetPlayActive}">
-					<MenuItem Header="{l:Translate mnuNetPlayPlayer1}" />
-					<MenuItem Header="{l:Translate mnuNetPlayPlayer2}" />
-					<MenuItem Header="{l:Translate mnuNetPlayPlayer3}" />
-					<MenuItem Header="{l:Translate mnuNetPlayPlayer4}" />
-					<MenuItem Header="{l:Translate mnuNetPlayPlayer5}" />
+				<MenuItem Header="{l:Translate mnuNetPlaySelectController}" IsEnabled="{CompiledBinding IsNetPlayActive}" SubmenuOpened="OnNetplaySelectControllerOpened">
+					<MenuItem />
 				</MenuItem>
 			</MenuItem>
 			<Separator />

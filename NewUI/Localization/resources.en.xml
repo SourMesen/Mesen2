@@ -84,12 +84,6 @@
 			<Control ID="mnuConnect">Connect to server...</Control>
 			<Control ID="mnuDisconnect">Disconnect</Control>
 			<Control ID="mnuNetPlaySelectController">Select Controller</Control>
-			<Control ID="mnuNetPlayPlayer1">Player 1</Control>
-			<Control ID="mnuNetPlayPlayer2">Player 2</Control>
-			<Control ID="mnuNetPlayPlayer3">Player 3</Control>
-			<Control ID="mnuNetPlayPlayer4">Player 4</Control>
-			<Control ID="mnuNetPlayPlayer5">Player 5</Control>
-			<Control ID="mnuNetPlaySpectator">Spectator</Control>
 			<Control ID="mnuProfile">Configure Profile</Control>
 			<Control ID="mnuMovies">Movies</Control>
 			<Control ID="mnuPlayMovie">Play...</Control>
@@ -900,6 +894,8 @@
 		<Message ID="InstallHdPackInvalidZipFile">The selected file is not a valid ZIP file.</Message>
 		<Message ID="InstallHdPackConfirmOverwrite">The destination folder ({0}) already exists - are you sure you want to overwrite it?</Message>
 		<Message ID="InstallHdPackConfirmReset">The HD Pack has been installed successfully. Do you want to reset the game and load the HD Pack now?</Message>
+
+		<Message ID="Player">Player</Message>
 
 		<Message ID="btnOK">OK</Message>
 		<Message ID="btnCancel">Cancel</Message>

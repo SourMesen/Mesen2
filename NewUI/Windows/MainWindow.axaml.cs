@@ -56,6 +56,12 @@ namespace Mesen.Windows
 #endif
 		}
 
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			EmuApi.Release();
+		}
+
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(DataContext is MainWindowViewModel model) {

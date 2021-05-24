@@ -15,6 +15,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using Mesen.Localization;
 
 namespace Mesen.Views
 {
@@ -240,6 +241,27 @@ namespace Mesen.Views
 		private void OnNetplayStopServerClick(object sender, RoutedEventArgs e)
 		{
 			NetplayApi.StopServer();
+		}
+
+		private void OnNetplaySelectControllerOpened(object sender, RoutedEventArgs e)
+		{
+			int availableControllers = NetplayApi.NetPlayGetAvailableControllers();
+			int currentPort = NetplayApi.NetPlayGetControllerPort();
+
+			MenuItem menu = ((MenuItem)sender);
+			List<MenuItem> items = new List<MenuItem>();
+			for(int i = 0; i < 5; i++) {
+				MenuItem item = new MenuItem() {
+					Header = ResourceHelper.GetMessage("Player") + " " + (i + 1) + " (" + ResourceHelper.GetEnumText(ConfigApi.GetControllerType(i)) + ")",
+					IsSelected = currentPort == i,
+					IsEnabled = (availableControllers & (1 << i)) != 0,
+				};
+
+				int player = i;
+				item.Click += (_, _) => { NetplayApi.NetPlaySelectController(player); };
+				items.Add(item);
+			}
+			menu.Items = items;
 		}
 
 		private async void OnInstallHdPackClick(object sender, RoutedEventArgs e)
