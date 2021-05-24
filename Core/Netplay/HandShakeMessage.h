@@ -6,34 +6,27 @@
 class HandShakeMessage : public NetMessage
 {
 private:
-	static constexpr int CurrentVersion = 100; //Use 100+ to distinguish from Mesen
+	static constexpr int CurrentVersion = 200; //Use 200+ to distinguish from original Mesen & Mesen-S
 	uint32_t _emuVersion = 0;
 	uint32_t _protocolVersion = CurrentVersion;
-	string _playerName;
 	string _hashedPassword;
 	bool _spectator = false;
 
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_emuVersion, _protocolVersion, _playerName, _hashedPassword, _spectator);
+		s.Stream(_emuVersion, _protocolVersion, _hashedPassword, _spectator);
 	}
 
 public:
 	HandShakeMessage(void* buffer, uint32_t length) : NetMessage(buffer, length) {}
 
-	HandShakeMessage(string playerName, string hashedPassword, bool spectator, uint32_t emuVersion) : NetMessage(MessageType::HandShake)
+	HandShakeMessage(string hashedPassword, bool spectator, uint32_t emuVersion) : NetMessage(MessageType::HandShake)
 	{
 		_emuVersion = emuVersion;
 		_protocolVersion = HandShakeMessage::CurrentVersion;
-		_playerName = playerName;
 		_hashedPassword = hashedPassword;
 		_spectator = spectator;
-	}
-
-	string GetPlayerName()
-	{
-		return _playerName;
 	}
 
 	bool IsValid(uint32_t emuVersion)

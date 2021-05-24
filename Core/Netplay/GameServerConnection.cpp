@@ -105,16 +105,14 @@ ControlDeviceState GameServerConnection::GetState()
 void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 {
 	//Send the game's current state to the client and register the controller
+	string playerPortMessage = _controllerPort == GameConnection::SpectatorPort ? "Spectator" : "Player " + std::to_string(_controllerPort + 1);
 	if(message->IsValid(_emu->GetSettings()->GetVersion())) {
 		if(message->CheckPassword(_serverPassword, _connectionHash)) {
 			_emu->Lock();
 
 			_controllerPort = message->IsSpectator() ? GameConnection::SpectatorPort : GetFirstFreeControllerPort();
-			_playerName = message->GetPlayerName();
 
-			string playerPortMessage = _controllerPort == GameConnection::SpectatorPort ? "Spectator" : "Player " + std::to_string(_controllerPort + 1);
-
-			MessageManager::DisplayMessage("NetPlay", _playerName + " (" + playerPortMessage + ") connected.");
+			MessageManager::DisplayMessage("NetPlay", playerPortMessage + " connected.");
 
 			if(_emu->IsRunning()) {
 				SendGameInformation();
@@ -129,7 +127,7 @@ void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 		}
 	} else {
 		SendForceDisconnectMessage("Server is using a different version of Mesen-S (" + _emu->GetSettings()->GetVersionString() + ") - you have been disconnected.");
-		MessageManager::DisplayMessage("NetPlay", + "NetplayVersionMismatch", message->GetPlayerName());
+		MessageManager::DisplayMessage("NetPlay", + "NetplayVersionMismatch", playerPortMessage);
 	}
 }
 

@@ -13,13 +13,12 @@ using std::thread;
 
 shared_ptr<GameServer> GameServer::Instance;
 
-GameServer::GameServer(shared_ptr<Emulator> emu, uint16_t listenPort, string password, string hostPlayerName)
+GameServer::GameServer(shared_ptr<Emulator> emu, uint16_t listenPort, string password)
 {
 	_emu = emu;
 	_stop = false;
 	_port = listenPort;
 	_password = password;
-	_hostPlayerName = hostPlayerName;
 	_hostControllerPort = 0;
 
 	//If a game is already running, register ourselves as an input recorder/provider right away
@@ -163,9 +162,9 @@ void GameServer::Stop()
 	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
 }
 
-void GameServer::StartServer(shared_ptr<Emulator> emu, uint16_t port, string password, string hostPlayerName)
+void GameServer::StartServer(shared_ptr<Emulator> emu, uint16_t port, string password)
 {
-	Instance.reset(new GameServer(emu, port, password, hostPlayerName));
+	Instance.reset(new GameServer(emu, port, password));
 	emu->GetNotificationManager()->RegisterNotificationListener(Instance);
 	Instance->_serverThread.reset(new thread(&GameServer::Exec, Instance.get()));
 }
@@ -184,14 +183,6 @@ bool GameServer::Started()
 	} else {
 		return false;
 	}
-}
-
-string GameServer::GetHostPlayerName()
-{
-	if(GameServer::Started()) {
-		return Instance->_hostPlayerName;
-	}
-	return "";
 }
 
 uint8_t GameServer::GetHostControllerPort()
@@ -231,13 +222,11 @@ vector<PlayerInfo> GameServer::GetPlayerList()
 	vector<PlayerInfo> playerList;
 
 	PlayerInfo playerInfo;
-	playerInfo.Name = GetHostPlayerName();
 	playerInfo.ControllerPort = GetHostControllerPort();
 	playerInfo.IsHost = true;
 	playerList.push_back(playerInfo);
 
 	for(shared_ptr<GameServerConnection> &connection : GetConnectionList()) {
-		playerInfo.Name = connection->GetPlayerName();
 		playerInfo.ControllerPort = connection->GetControllerPort();
 		playerInfo.IsHost = false;
 		playerList.push_back(playerInfo);

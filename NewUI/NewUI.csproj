@@ -226,6 +226,12 @@
     <Compile Update="Controls\StateGrid.axaml.cs">
       <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\NetplayConnectWindow.axaml.cs">
+      <DependentUpon>NetplayConnectWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\NetplayStartServerWindow.axaml.cs">
+      <DependentUpon>NetplayStartServerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\MovieRecordWindow.axaml.cs">
       <DependentUpon>MovieRecordWindow.axaml</DependentUpon>
     </Compile>

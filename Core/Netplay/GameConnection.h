@@ -8,7 +8,6 @@ class Emulator;
 
 struct PlayerInfo
 {
-	string Name;
 	uint8_t ControllerPort;
 	bool IsHost;
 };

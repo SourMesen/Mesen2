@@ -218,6 +218,30 @@ namespace Mesen.Views
 			EmuApi.Stop();
 		}
 
+		private void OnNetplayConnectClick(object sender, RoutedEventArgs e)
+		{
+			new NetplayConnectWindow() {
+				DataContext = ConfigManager.Config.Netplay.Clone()
+			}.ShowCenteredDialog((Window)VisualRoot);
+		}
+
+		private void OnNetplayDisconnectClick(object sender, RoutedEventArgs e)
+		{
+			NetplayApi.Disconnect();
+		}
+
+		private void OnNetplayStartServerClick(object sender, RoutedEventArgs e)
+		{
+			new NetplayStartServerWindow() {
+				DataContext = ConfigManager.Config.Netplay.Clone()
+			}.ShowCenteredDialog((Window)VisualRoot);
+		}
+
+		private void OnNetplayStopServerClick(object sender, RoutedEventArgs e)
+		{
+			NetplayApi.StopServer();
+		}
+
 		private async void OnInstallHdPackClick(object sender, RoutedEventArgs e)
 		{
 			Window window = (Window)VisualRoot;

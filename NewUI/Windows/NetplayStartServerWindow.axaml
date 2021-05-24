@@ -1,0 +1,33 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="150"
+	x:Class="Mesen.Windows.NetplayStartServerWindow"
+	Icon="/Assets/Icon.ico"
+	Width="250" Height="150"
+	x:DataType="cfg:NetplayConfig"
+	Title="{l:Translate wndTitle}"
+>
+	<DockPanel Margin="5">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<Grid ColumnDefinitions="Auto,1*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+			<TextBlock Text="{l:Translate lblPort}" />
+			<TextBox Grid.Column="1" Text="{CompiledBinding ServerPort}" />
+
+			<TextBlock Grid.Row="1" Text="{l:Translate lblPassword}" />
+			<TextBox Grid.Row="1" Grid.Column="1" Text="{CompiledBinding ServerPassword}" />
+		</Grid>
+	</DockPanel>
+</Window>

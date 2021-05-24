@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ReactiveUI.Fody.Helpers;
+using System;
 
 namespace Mesen.Config
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public class NetplayConfig
+	public class NetplayConfig : BaseConfig<NetplayConfig>
 	{
-		public string Host = "localhost";
-		public UInt16 Port = 8888;
-		public string Password = "";
+		[Reactive] public string Host { get; set; } = "localhost";
+		[Reactive] public UInt16 Port { get; set; } = 8888;
+		[Reactive] public string Password { get; set; } = "";
 
-		public string PlayerName = "PlayerName";
-
-		public string ServerName = "Default";
-		public UInt16 ServerPort = 8888;
-		public string ServerPassword = "";
+		[Reactive] public UInt16 ServerPort { get; set; } = 8888;
+		[Reactive] public string ServerPassword { get; set; } = "";
 	}
 }

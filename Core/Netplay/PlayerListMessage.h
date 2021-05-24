@@ -14,7 +14,7 @@ protected:
 			uint32_t playerCount = (uint32_t)_playerList.size();
 			s.Stream(playerCount);
 			for(uint32_t i = 0; i < playerCount; i++) {
-				s.Stream(_playerList[i].Name, _playerList[i].ControllerPort, _playerList[i].IsHost);
+				s.Stream(_playerList[i].ControllerPort, _playerList[i].IsHost);
 			}
 		} else {
 			uint32_t playerCount = 0;
@@ -22,7 +22,7 @@ protected:
 			
 			for(uint32_t i = 0; i < playerCount; i++) {
 				PlayerInfo playerInfo;
-				s.Stream(playerInfo.Name, playerInfo.ControllerPort, playerInfo.IsHost);
+				s.Stream(playerInfo.ControllerPort, playerInfo.IsHost);
 				_playerList.push_back(playerInfo);
 			}
 		}

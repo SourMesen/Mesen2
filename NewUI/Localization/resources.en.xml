@@ -536,14 +536,15 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmServerConfig" Title="Server Configuration">
+		<Form ID="NetplayStartServerWindow">
+			<Control ID="wndTitle">Server Configuration</Control>
 			<Control ID="lblPort">Port:</Control>
-			<Control ID="lblServerName">Server name:</Control>
 			<Control ID="lblPassword">Password:</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmClientConfig" Title="Connect...">
+		<Form ID="NetplayConnectWindow">
+			<Control ID="wndTitle">Connect...</Control>
 			<Control ID="lblHost">Host:</Control>
 			<Control ID="lblPort">Port:</Control>
 			<Control ID="lblPassword">Password:</Control>
@@ -637,11 +638,6 @@
 		<Form ID="GetKeyWindow">
 			<Control ID="Title">Set key binding...</Control>
 			<Control ID="lblSetKeyMessage">Press any key on your keyboard or controller to set a new binding.</Control>
-		</Form>
-		<Form ID="frmPlayerProfile" Title="Profile">
-			<Control ID="lblName">Player name:</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="VideoRecordWindow">
 			<Control ID="wndTitle">Video Recording Options</Control>

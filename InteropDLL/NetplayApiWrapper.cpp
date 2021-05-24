@@ -8,13 +8,13 @@
 extern shared_ptr<Emulator> _emu;
 
 extern "C" {
-	DllExport void __stdcall StartServer(uint16_t port, char* password, char* hostPlayerName) { GameServer::StartServer(_emu, port, password, hostPlayerName); }
+	DllExport void __stdcall StartServer(uint16_t port, char* password) { GameServer::StartServer(_emu, port, password); }
 	DllExport void __stdcall StopServer() { GameServer::StopServer(); }
 	DllExport bool __stdcall IsServerRunning() { return GameServer::Started(); }
 
-	DllExport void __stdcall Connect(char* host, uint16_t port, char* password, char* playerName, bool spectator)
+	DllExport void __stdcall Connect(char* host, uint16_t port, char* password, bool spectator)
 	{
-		ClientConnectionData connectionData(host, port, password, playerName, spectator);
+		ClientConnectionData connectionData(host, port, password, spectator);
 		GameClient::Connect(_emu, connectionData);
 	}
 

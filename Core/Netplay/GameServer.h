@@ -22,7 +22,6 @@ private:
 	list<shared_ptr<GameServerConnection>> _openConnections;
 	bool _initialized = false;
 
-	string _hostPlayerName;
 	uint8_t _hostControllerPort;
 
 	void AcceptConnections();
@@ -32,16 +31,15 @@ private:
 	void Stop();
 
 public:
-	GameServer(shared_ptr<Emulator> emu, uint16_t port, string password, string hostPlayerName);
+	GameServer(shared_ptr<Emulator> emu, uint16_t port, string password);
 	virtual ~GameServer();
 
 	void RegisterServerInput();
 
-	static void StartServer(shared_ptr<Emulator> emu, uint16_t port, string password, string hostPlayerName);
+	static void StartServer(shared_ptr<Emulator> emu, uint16_t port, string password);
 	static void StopServer();
 	static bool Started();
 
-	static string GetHostPlayerName();
 	static uint8_t GetHostControllerPort();
 	static void SetHostControllerPort(uint8_t port);
 	static uint8_t GetAvailableControllers();

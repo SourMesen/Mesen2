@@ -50,7 +50,7 @@ void GameClientConnection::Shutdown()
 
 void GameClientConnection::SendHandshake()
 {
-	HandShakeMessage message(_connectionData.PlayerName, HandShakeMessage::GetPasswordHash(_connectionData.Password, _serverSalt), _connectionData.Spectator, _emu->GetSettings()->GetVersion());
+	HandShakeMessage message(HandShakeMessage::GetPasswordHash(_connectionData.Password, _serverSalt), _connectionData.Spectator, _emu->GetSettings()->GetVersion());
 	SendNetMessage(message);
 }
 
