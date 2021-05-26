@@ -203,14 +203,11 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	}
 
 	_emu->GetSoundMixer()->StopAudio();
-	_disassembler->Disassemble(CpuType::Cpu);
-	_disassembler->Disassemble(CpuType::Spc);
-	_disassembler->Disassemble(CpuType::Sa1);
-	_disassembler->Disassemble(CpuType::Gsu);
-	_disassembler->Disassemble(CpuType::NecDsp);
-	_disassembler->Disassemble(CpuType::Cx4);
-	_disassembler->Disassemble(CpuType::Nes);
-	_disassembler->RefreshDisassembly(CpuType::Gameboy);
+	
+	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+	for(CpuType type : cpuTypes) {
+		_disassembler->Disassemble(type);
+	}
 
 	_executionStopped = true;
 	

@@ -179,14 +179,14 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\DebuggerDock\PpuStatusToolView.axaml.cs">
-      <DependentUpon>PpuStatusToolView.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Debugger\Views\DebuggerDock\CpuStatusToolView.axaml.cs">
-      <DependentUpon>CpuStatusToolView.axaml</DependentUpon>
+    <Compile Update="Debugger\Views\DebuggerDock\StatusToolView.axaml.cs">
+      <DependentUpon>StatusToolView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\DebuggerDock\DisassemblyToolView.axaml.cs">
       <DependentUpon>DisassemblyToolView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\NesCpuView.axaml.cs">
+      <DependentUpon>NesCpuView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>

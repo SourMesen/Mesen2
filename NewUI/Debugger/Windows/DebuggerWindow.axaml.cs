@@ -7,6 +7,8 @@ using System;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Disassembly;
 using Mesen.Interop;
+using Avalonia.Interactivity;
+using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
@@ -50,23 +52,71 @@ namespace Mesen.Debugger.Windows
 			_listener.OnNotification += _listener_OnNotification;
 		}
 
-		int frmCnt = 0;
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			_listener?.Dispose();
+			base.OnClosing(e);
+		}
+
 		private void _listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType != ConsoleNotificationType.PpuFrameDone) {
-				return;
+			if(e.NotificationType == ConsoleNotificationType.CodeBreak) {
+				_model.UpdateCpuState();
+				_model.UpdateDisassembly();
 			}
-			frmCnt++;
+		}
 
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesDebuggerEnabled, true);
-
-			if(frmCnt % 200 == 0) {
-				DebugApi.RefreshDisassembly(CpuType.Nes);
-				string test = DebugApi.GetExecutionTrace(10000);
+		private void Step(Int32 instructionCount, StepType type = StepType.Step)
+		{
+			DebugApi.Step(_model.CpuType, instructionCount, type);
+			if(_model.Disassembly.StyleProvider is BaseStyleProvider p) {
+				p.ActiveAddress = null;
+				_model.Disassembly.DataProvider = new CodeDataProvider(_model.CpuType);
 			}
+		}
 
-			_model.Disassembly.DataProvider = new CodeDataProvider(CpuType.Nes);
-			_model.Disassembly.UpdateMaxScroll();
+		private void OnContinueClick(object sender, RoutedEventArgs e)
+		{
+			DebugApi.ResumeExecution();
+			if(_model.Disassembly.StyleProvider is BaseStyleProvider p) {
+				p.ActiveAddress = null;
+				_model.Disassembly.DataProvider = new CodeDataProvider(_model.CpuType);
+			}
+		}
+
+		private void OnStepIntoClick(object sender, RoutedEventArgs e)
+		{
+			Step(1, StepType.Step);
+		}
+
+		private void OnStepOutClick(object sender, RoutedEventArgs e)
+		{
+			Step(1, StepType.StepOut);
+		}
+
+		private void OnStepOverClick(object sender, RoutedEventArgs e)
+		{
+			Step(1, StepType.StepOver);
+		}
+
+		private void OnStepBackClick(object sender, RoutedEventArgs e)
+		{
+			//TODO
+		}
+
+		private void OnRunOnePpuCycleClick(object sender, RoutedEventArgs e)
+		{
+			Step(1, StepType.PpuStep);
+		}
+
+		private void OnRunOnePpuScanlineClick(object sender, RoutedEventArgs e)
+		{
+			//TODO
+		}
+
+		private void OnRunOnePpuFrameClick(object sender, RoutedEventArgs e)
+		{
+			//TODO
 		}
 	}
 }

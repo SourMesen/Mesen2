@@ -112,7 +112,7 @@ shared_ptr<IEventManager> NecDspDebugger::GetEventManager()
 
 shared_ptr<CodeDataLogger> NecDspDebugger::GetCodeDataLogger()
 {
-	throw std::runtime_error("CDL not supported for NEC DSP");
+	return nullptr;
 }
 
 BaseState& NecDspDebugger::GetState()

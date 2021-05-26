@@ -135,7 +135,7 @@ shared_ptr<IEventManager> GsuDebugger::GetEventManager()
 
 shared_ptr<CodeDataLogger> GsuDebugger::GetCodeDataLogger()
 {
-	throw std::runtime_error("CDL not supported for GSU");
+	return nullptr;
 }
 
 BaseState& GsuDebugger::GetState()

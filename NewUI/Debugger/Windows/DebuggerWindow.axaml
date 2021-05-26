@@ -12,10 +12,11 @@
 	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
 	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
 	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
-	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+	mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
 	x:DataType="vm:DebuggerWindowViewModel"
-	Width="1000" Height="1000"
+	Icon="/Assets/Debugger.png"
+	Width="1000" Height="600"
 	Title="Debugger"
 	x:Name="Debugger"
 >
@@ -23,6 +24,31 @@
 		<vm:DebuggerWindowViewModel />
 	</Design.DataContext>
 
+	<Window.Styles>
+		<Style Selector="TabStrip:singleitem">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="StackPanel.Toolbar Line">
+			<Setter Property="StrokeThickness" Value="1" />
+			<Setter Property="Stroke" Value="#BBB" />
+			<Setter Property="StartPoint" Value="0.5,0" />
+			<Setter Property="EndPoint" Value="0.5,20" />
+			<Setter Property="Margin" Value="2 3 3 3" />
+		</Style>
+		<Style Selector="StackPanel.Toolbar Button">
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="Height" Value="23" />
+			<Setter Property="Width" Value="22" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="ToolTip.ShowDelay" Value="1000" />
+		</Style>
+		<Style Selector="StackPanel.Toolbar Image">
+			<Setter Property="Height" Value="16" />
+			<Setter Property="Width" Value="16" />
+		</Style>
+	</Window.Styles>
+	
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="View">
@@ -31,6 +57,37 @@
 				<MenuItem Command="{CompiledBinding ShowPpuStatusCommand}" Header="Show PPU status" />
 			</MenuItem>
 		</Menu>
+		<StackPanel Classes="Toolbar" Orientation="Horizontal" DockPanel.Dock="Top">
+			<Button ToolTip.Tip="Continue" Click="OnContinueClick">
+				<Image Source="/Assets/MediaPlay.png" />
+			</Button>
+			<Button ToolTip.Tip="Break" Click="OnStepIntoClick">
+				<Image Source="/Assets/MediaPause.png" />
+			</Button>
+			<Line />
+			<Button ToolTip.Tip="Step Into" Click="OnStepIntoClick">
+				<Image Source="/Assets/StepInto.png" />
+			</Button>
+			<Button ToolTip.Tip="Step Over" Click="OnStepOverClick">
+				<Image Source="/Assets/StepOver.png"/>
+			</Button>
+			<Button ToolTip.Tip="Step Out" Click="OnStepOutClick">
+				<Image Source="/Assets/StepOut.png"/>
+			</Button>
+			<Button ToolTip.Tip="Step Back" Click="OnStepBackClick">
+				<Image Source="/Assets/StepBack.png"/>
+			</Button>
+			<Line />
+			<Button ToolTip.Tip="Run 1 PPU cycle" Click="OnRunOnePpuCycleClick">
+				<Image Source="/Assets/RunPpuCycle.png"/>
+			</Button>
+			<Button ToolTip.Tip="Run 1 PPU scanline" Click="OnRunOnePpuScanlineClick">
+				<Image Source="/Assets/RunPpuScanline.png"/>
+			</Button>
+			<Button ToolTip.Tip="Run 1 PPU frame" Click="OnRunOnePpuFrameClick">
+				<Image Source="/Assets/RunPpuFrame.png"/>
+			</Button>
+		</StackPanel>
 		<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
 	</DockPanel>
 </Window>

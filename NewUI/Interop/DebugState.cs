@@ -940,4 +940,24 @@ namespace Mesen.Interop
 		public InternalRegisterState InternalRegs;
 		public AluState Alu;
 	}
+
+	[Flags]
+	public enum NesCpuFlags
+	{
+		Carry = 0x01,
+		Zero = 0x02,
+		IrqDisable = 0x04,
+		Decimal = 0x08,
+		Overflow = 0x40,
+		Negative = 0x80
+	}
+
+	[Flags]
+	public enum NesIrqSources
+	{
+		External = 1,
+		FrameCounter = 2,
+		DMC = 4,
+		FdsDisk = 8,
+	}
 }

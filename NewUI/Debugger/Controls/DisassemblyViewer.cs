@@ -15,6 +15,10 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<ILineStyleProvider> StyleProviderProperty = AvaloniaProperty.Register<DisassemblyViewer, ILineStyleProvider>(nameof(StyleProviderProperty));
 		public static readonly StyledProperty<int> ScrollPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(ScrollPosition), 0, false, Avalonia.Data.BindingMode.TwoWay);
 
+		private static readonly PolylineGeometry ArrowShape = new PolylineGeometry(new List<Point> {
+			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
+		}, true);
+
 		public ICodeDataProvider DataProvider
 		{
 			get { return GetValue(DataProviderProperty); }
@@ -109,13 +113,28 @@ namespace Mesen.Debugger.Controls
 			//Draw code
 			foreach(CodeLineData line in lines) {
 				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, null, true);
+				LineProperties lineStyle = styleProvider.GetLineStyle(line, 0);
 				
 				double x = 0;
 
+				//Draw symbol in margin
+				switch(lineStyle.Symbol) {
+					case LineSymbol.Arrow:
+						if(lineStyle.TextBgColor.HasValue) {
+							double scaleFactor = LetterSize.Height / 16.0;
+							using var scale =  context.PushPostTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
+							using var translation =  context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+							context.DrawGeometry(new SolidColorBrush(lineStyle.TextBgColor.Value), new Pen(Brushes.Black), DisassemblyViewer.ArrowShape);
+						}
+						break;
+				}
+
+				//Draw address in margin
 				text.Text = line.Address >= 0 ? line.Address.ToString(addrFormat) : "..";
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(symbolMargin, y), text);
 				x += addressMargin;
 
+				//Draw byte code
 				text.Text = line.ByteCode;
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(x + LetterSize.Width / 2, y), text);
 				x += byteCodeMargin;
@@ -139,6 +158,9 @@ namespace Mesen.Debugger.Controls
 				} else {
 					foreach(CodeColor part in lineParts) {
 						text.Text = part.Text;
+						if(lineStyle.TextBgColor.HasValue) {
+							context.DrawRectangle(new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()), null, new Rect(x + codeIndent, y, text.Bounds.Width, text.Bounds.Height));
+						}
 						context.DrawText(ColorHelper.GetBrush(part.Color), new Point(x + codeIndent, y), text);
 						x += text.Bounds.Width;
 					}

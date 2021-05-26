@@ -377,27 +377,22 @@ bool Console::IsRunning()
 
 AddressInfo Console::GetAbsoluteAddress(AddressInfo relAddress)
 {
-	if(relAddress.Type == SnesMemoryType::CpuMemory) {
-		if(_memoryManager->IsRegister(relAddress.Address)) {
-			return { relAddress.Address & 0xFFFF, SnesMemoryType::Register };
-		} else {
-			return _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-		}
-	} else if(relAddress.Type == SnesMemoryType::SpcMemory) {
-		return _spc->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::Sa1Memory) {
-		return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::GsuMemory) {
-		return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::Cx4Memory) {
-		return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-	} else if(relAddress.Type == SnesMemoryType::NecDspMemory) {
-		return { relAddress.Address, SnesMemoryType::DspProgramRom };
-	} else if(relAddress.Type == SnesMemoryType::GameboyMemory) {
-		return _cart->GetGameboy()->GetAbsoluteAddress(relAddress.Address);
+	switch(relAddress.Type) {
+		case SnesMemoryType::CpuMemory:
+			if(_memoryManager->IsRegister(relAddress.Address)) {
+				return { relAddress.Address & 0xFFFF, SnesMemoryType::Register };
+			} else {
+				return _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+			}
+		
+		case SnesMemoryType::SpcMemory: return _spc->GetAbsoluteAddress(relAddress.Address);
+		case SnesMemoryType::Sa1Memory: return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		case SnesMemoryType::GsuMemory: return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		case SnesMemoryType::Cx4Memory: return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		case SnesMemoryType::NecDspMemory: return { relAddress.Address, SnesMemoryType::DspProgramRom };
+		case SnesMemoryType::GameboyMemory: return _cart->GetGameboy()->GetAbsoluteAddress(relAddress.Address);
+		default: throw std::runtime_error("Unsupported address type");
 	}
-
-	throw std::runtime_error("Unsupported address type");
 }
 
 AddressInfo Console::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)

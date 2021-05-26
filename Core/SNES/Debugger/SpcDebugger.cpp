@@ -166,7 +166,7 @@ shared_ptr<IEventManager> SpcDebugger::GetEventManager()
 
 shared_ptr<CodeDataLogger> SpcDebugger::GetCodeDataLogger()
 {
-	throw std::runtime_error("CDL not supported for SPC");
+	return nullptr;
 }
 
 BaseState& SpcDebugger::GetState()

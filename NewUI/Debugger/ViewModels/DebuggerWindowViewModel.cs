@@ -1,27 +1,29 @@
 ﻿using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
+using Mesen.Debugger.Disassembly;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System;
 using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class DebuggerWindowViewModel : ViewModelBase
 	{
-		[Reactive] public DisassemblyViewerViewModel Disassembly { get; set; }
-		[Reactive] public SnesCpuViewModel SnesCpu { get; set; }
-		[Reactive] public SnesPpuViewModel SnesPpu { get; set; }
-		[Reactive] public BreakpointListViewModel BreakpointList { get; set; }
+		[Reactive] public DisassemblyViewerViewModel Disassembly { get; private set; }
+		[Reactive] public BreakpointListViewModel BreakpointList { get; private set; }
 
-		[Reactive] public DebuggerDockFactory DockFactory { get; set; }
-		[Reactive] public IRootDock DockLayout { get; set; }
+		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
+		[Reactive] public IRootDock DockLayout { get; private set; }
 
 		public ReactiveCommand<Unit, Unit> ShowBreakpointsCommand { get; }
 		public ReactiveCommand<Unit, Unit> ShowCpuStatusCommand { get; }
 		public ReactiveCommand<Unit, Unit> ShowPpuStatusCommand { get; }
+
+		public CpuType CpuType { get; private set; }
 
 		public DebuggerWindowViewModel()
 		{
@@ -29,11 +31,7 @@ namespace Mesen.Debugger.ViewModels
 			ShowCpuStatusCommand = ReactiveCommand.Create(ShowCpuStatus);
 			ShowPpuStatusCommand = ReactiveCommand.Create(ShowPpuStatus);
 
-			NesCpuState state = DebugApi.GetState<NesCpuState>(CpuType.Nes);
-
 			Disassembly = new DisassemblyViewerViewModel();
-			SnesCpu = new SnesCpuViewModel();
-			SnesPpu = new SnesPpuViewModel();
 			BreakpointList = new BreakpointListViewModel();
 
 			var factory = new DebuggerDockFactory(this);
@@ -42,6 +40,79 @@ namespace Mesen.Debugger.ViewModels
 
 			DockFactory = factory;
 			DockLayout = layout;
+
+			RomInfo romInfo = EmuApi.GetRomInfo();
+
+			switch(romInfo.ConsoleType) {
+				case ConsoleType.Snes:
+					CpuType = CpuType.Cpu;
+					DockFactory.CpuStatusTool.StatusViewModel = new SnesCpuViewModel();
+					DockFactory.PpuStatusTool.StatusViewModel = new SnesPpuViewModel();
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, true);
+					break;
+
+				case ConsoleType.Nes:
+					CpuType = CpuType.Nes;
+					DockFactory.CpuStatusTool.StatusViewModel = new NesCpuViewModel();
+					//DockFactory.PpuStatusTool.StatusViewModel = new NesPpuViewModel();
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.NesDebuggerEnabled, true);
+					break;
+
+				case ConsoleType.Gameboy:
+				case ConsoleType.GameboyColor:
+					CpuType = CpuType.Gameboy;
+					ConfigApi.SetDebuggerFlag(DebuggerFlags.GbDebuggerEnabled, true);
+					break;
+			}
+		}
+
+		internal void UpdateDisassembly()
+		{
+			DebugApi.RefreshDisassembly(CpuType);
+			Disassembly.DataProvider = new CodeDataProvider(CpuType);
+			Disassembly.UpdateMaxScroll();
+			int? index = Disassembly.DataProvider?.GetLineIndex((uint)(Disassembly.StyleProvider?.ActiveAddress ?? 0));
+			if(index != null) {
+				Disassembly.ScrollPosition = index.Value;
+			}
+		}
+
+		public void UpdateCpuState()
+		{
+			switch(CpuType) {
+				case CpuType.Cpu:
+					if(DockFactory.CpuStatusTool.StatusViewModel is SnesCpuViewModel snesModel) {
+						snesModel.UpdateState(DebugApi.GetState<CpuState>(CpuType));
+					}
+					break;
+
+				case CpuType.Nes:
+					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel nesModel) {
+						NesCpuState state = DebugApi.GetState<NesCpuState>(CpuType);
+						nesModel.UpdateState(state);
+						if(Disassembly.StyleProvider != null) {
+							Disassembly.StyleProvider.ActiveAddress = state.PC;
+						}
+					}
+					break;
+			}
+		}
+
+		public void UpdatePpuState()
+		{
+			/*switch(CpuType) {
+				case CpuType.Cpu:
+					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel snesModel) {
+						snesModel.State = DebugApi.GetState<CpuState>(CpuType);
+					}
+					break;
+
+				case CpuType.Nes:
+					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel nesModel) {
+						nesModel.State = DebugApi.GetState<NesCpuState>(CpuType);
+					}
+					break;
+			}*/
 		}
 
 		private ToolDock? FindToolDock(IDock dock)

@@ -14,6 +14,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Avalonia.Platform;
 using Mesen.Interop;
+using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
@@ -52,6 +53,12 @@ namespace Mesen.Debugger.Windows
 
 			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
+		}
+		
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			_listener?.Dispose();
+			base.OnClosing(e);
 		}
 
 		private void InitBitmap()

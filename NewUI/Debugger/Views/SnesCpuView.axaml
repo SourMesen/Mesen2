@@ -3,15 +3,21 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="210"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	x:DataType="vm:SnesCpuViewModel"
 	x:Class="Mesen.Debugger.Views.SnesCpuView"
 >
 	<Design.DataContext>
 		<vm:SnesCpuViewModel />
 	</Design.DataContext>
+
+	<UserControl.Resources>
+		<dbg:HexConverter x:Key="Hex" />
+	</UserControl.Resources>
 
 	<UserControl.Styles>
 		<Style Selector="TextBlock">
@@ -27,14 +33,14 @@
 	<StackPanel>		
 		<DockPanel>
 			<TextBlock>A:</TextBlock>
-			<TextBox Classes="h1" Text="{Binding RegA}" />
+			<TextBox Classes="h1" Text="{CompiledBinding RegA, Converter={StaticResource Hex}}" />
 			<TextBlock>X:</TextBlock>
-			<TextBox  Classes="h1" Text="{Binding RegX}" />
+			<TextBox  Classes="h1" Text="{CompiledBinding RegX, Converter={StaticResource Hex}}" />
 			<TextBlock>Y:</TextBlock>
-			<TextBox Classes="h1" Text="{Binding RegY}" />
+			<TextBox Classes="h1" Text="{CompiledBinding RegY, Converter={StaticResource Hex}}" />
 			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
 				<TextBlock>PC:</TextBlock>
-				<TextBox Classes="h1" Text="{Binding RegPC}" />
+				<TextBox Classes="h1" Text="{CompiledBinding RegPC, Converter={StaticResource Hex}}" />
 			</StackPanel>
 			<TextBlock />
 		</DockPanel>

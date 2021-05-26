@@ -134,7 +134,7 @@ shared_ptr<IEventManager> Cx4Debugger::GetEventManager()
 
 shared_ptr<CodeDataLogger> Cx4Debugger::GetCodeDataLogger()
 {
-	throw std::runtime_error("CDL not supported for CX4");
+	return nullptr;
 }
 
 BaseState& Cx4Debugger::GetState()

@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Mesen.Debugger.Views.DebuggerDock
 {
-	public class CpuStatusToolView : UserControl
+	public class StatusToolView : UserControl
 	{
-		public CpuStatusToolView()
+		public StatusToolView()
 		{
 			InitializeComponent();
 		}

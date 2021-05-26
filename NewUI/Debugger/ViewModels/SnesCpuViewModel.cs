@@ -13,40 +13,48 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class SnesCpuViewModel : ViewModelBase
 	{
-		[ObservableAsProperty] public string RegA { get; }
-		[ObservableAsProperty] public string RegX { get; }
-		[ObservableAsProperty] public string RegY { get; }
-		[ObservableAsProperty] public string RegSP { get; }
-		[ObservableAsProperty] public string RegD { get; }
-		[ObservableAsProperty] public string RegPC { get; }
-		[ObservableAsProperty] public string RegK { get; }
-		[ObservableAsProperty] public string RegDBR { get; }
-		[ObservableAsProperty] public string RegPS { get; }
-		
-		[ObservableAsProperty] public bool FlagN { get; }
-		[ObservableAsProperty] public bool FlagV { get; }
-		[ObservableAsProperty] public bool FlagM { get; }
-		[ObservableAsProperty] public bool FlagX { get; }
-		[ObservableAsProperty] public bool FlagD { get; }
-		[ObservableAsProperty] public bool FlagI { get; }
-		[ObservableAsProperty] public bool FlagZ { get; }
-		[ObservableAsProperty] public bool FlagC { get; }
-		[ObservableAsProperty] public bool FlagE { get; }
-		[ObservableAsProperty] public bool FlagNmi { get; }
-		[ObservableAsProperty] public bool FlagIrq { get; }
+		[Reactive] public UInt16 RegA { get; set; }
+		[Reactive] public UInt16 RegX { get; set; }
+		[Reactive] public UInt16 RegY { get; set; }
+		[Reactive] public UInt16 RegSP { get; set; }
+		[Reactive] public UInt16 RegD { get; set; }
+		[Reactive] public UInt16 RegPC { get; set; }
+		[Reactive] public byte RegK { get; set; }
+		[Reactive] public byte RegDBR { get; set; }
+		[Reactive] public byte RegPS { get; set; }
 
-		[ObservableAsProperty] public string StackPreview { get; }
+		[Reactive] public bool FlagN { get; set; }
+		[Reactive] public bool FlagV { get; set; }
+		[Reactive] public bool FlagM { get; set; }
+		[Reactive] public bool FlagX { get; set; }
+		[Reactive] public bool FlagD { get; set; }
+		[Reactive] public bool FlagI { get; set; }
+		[Reactive] public bool FlagZ { get; set; }
+		[Reactive] public bool FlagC { get; set; }
+		[Reactive] public bool FlagE { get; set; }
+		[Reactive] public bool FlagNmi { get; set; }
+		[Reactive] public bool FlagIrq { get; set; }
 
-		private CpuState _state;
-		public CpuState State
-		{
-			get => _state;
-			set => this.RaiseAndSetIfChanged(ref _state, value);
-		}
+		public string StackPreview { get; set; }
 
 		public SnesCpuViewModel()
 		{
-			this.State = new CpuState();
+		}
+
+		public void UpdateState(CpuState state)
+		{
+			RegA = state.A;
+			RegX = state.X;
+			RegY = state.Y;
+			RegSP = state.SP;
+			RegD = state.D;
+			RegPC = state.PC;
+
+			RegK = state.K;
+			RegDBR = state.DBR;
+			RegPS = (byte)state.PS;
+			/*
+
 			this.WhenAnyValue(x => x.State).Select(st => st.A.ToString("X4")).ToPropertyEx(this, x => x.RegA);
 			this.WhenAnyValue(x => x.State).Select(st => st.X.ToString("X4")).ToPropertyEx(this, x => x.RegX);
 			this.WhenAnyValue(x => x.State).Select(st => st.Y.ToString("X4")).ToPropertyEx(this, x => x.RegY);
@@ -69,13 +77,10 @@ namespace Mesen.Debugger.ViewModels
 			this.WhenAnyValue(x => x.State).Select(st => st.NmiFlag).ToPropertyEx(this, x => x.FlagNmi);
 			this.WhenAnyValue(x => x.State).Select(st => st.IrqSource != 0).ToPropertyEx(this, x => x.FlagIrq);
 
-			this.WhenAnyValue(x => x.State).Select(st => {
-				if(Design.IsDesignMode) {
-					return "";
-				}
+			this.WhenAnyValue(x => x.State).Select(st => {*/
 
 				StringBuilder sb = new StringBuilder();
-				for(UInt32 i = (uint)st.SP + 1; (i & 0xFF) != 0; i++) {
+				for(UInt32 i = (uint)state.SP + 1; (i & 0xFF) != 0; i++) {
 					sb.Append("$");
 					sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, i).ToString("X2"));
 					sb.Append(", ");
@@ -84,8 +89,9 @@ namespace Mesen.Debugger.ViewModels
 				if(stack.Length > 2) {
 					stack = stack.Substring(0, stack.Length - 2);
 				}
-				return stack;
-			}).ToPropertyEx(this, x => x.StackPreview);
+				StackPreview = stack;
+
+			//}).ToPropertyEx(this, x => x.StackPreview);
 
 			//_a = this.WhenAnyValue(x => x.State).Select(st => st.A).ToProperty(this, x => x.A);
 			//_x = this.WhenAnyValue(x => x.State).Select(st => st.X).ToProperty(this, x => x.X);
