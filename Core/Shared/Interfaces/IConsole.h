@@ -65,7 +65,7 @@ public:
 	virtual AudioTrackInfo GetAudioTrackInfo() = 0;
 	virtual void ProcessAudioPlayerAction(AudioPlayerActionParams p) = 0;
 
-	virtual AddressInfo GetAbsoluteAddress(AddressInfo relAddress) = 0;
-	virtual AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) = 0;
+	virtual AddressInfo GetAbsoluteAddress(AddressInfo& relAddress) = 0;
+	virtual AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) = 0;
 };
 

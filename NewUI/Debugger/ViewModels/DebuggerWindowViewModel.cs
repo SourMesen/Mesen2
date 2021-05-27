@@ -82,7 +82,11 @@ namespace Mesen.Debugger.ViewModels
 			switch(CpuType) {
 				case CpuType.Cpu:
 					if(DockFactory.CpuStatusTool.StatusViewModel is SnesCpuViewModel snesModel) {
-						snesModel.UpdateState(DebugApi.GetState<CpuState>(CpuType));
+						CpuState state = DebugApi.GetState<CpuState>(CpuType);
+						snesModel.UpdateState(state);
+						if(Disassembly.StyleProvider != null) {
+							Disassembly.StyleProvider.ActiveAddress = (state.K << 16) | state.PC;
+						}
 					}
 					break;
 

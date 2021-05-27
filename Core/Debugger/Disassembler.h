@@ -17,7 +17,7 @@ enum class CpuType : uint8_t;
 struct DisassemblerSource
 {
 	uint8_t *Data;
-	vector<DisassemblyInfo> *Cache;
+	vector<DisassemblyInfo> Cache;
 	uint32_t Size;
 };
 
@@ -31,7 +31,6 @@ private:
 	MemoryDumper *_memoryDumper;
 
 	DisassemblerSource _sources[(int)SnesMemoryType::Register] = {};
-	vector<DisassemblyInfo> _disassemblyCache[(int)SnesMemoryType::Register];
 
 	SimpleLock _disassemblyLock;
 	vector<DisassemblyResult> _disassemblyResult[(int)DebugUtilities::GetLastCpuType()+1];
@@ -51,7 +50,7 @@ public:
 
 	__forceinline DisassemblyInfo GetDisassemblyInfo(AddressInfo& info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type)
 	{
-		DisassemblyInfo disassemblyInfo = (*GetSource(info.Type).Cache)[info.Address];
+		DisassemblyInfo disassemblyInfo = GetSource(info.Type).Cache[info.Address];
 		if(!disassemblyInfo.IsInitialized()) {
 			disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, _memoryDumper);
 		}

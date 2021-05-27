@@ -107,8 +107,8 @@ public:
 	
 	bool IsRunning();
 
-	AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
-	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
+	AddressInfo GetAbsoluteAddress(AddressInfo& relAddress) override;
+	AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) override;
 
 	double GetFrameDelay() override;
 	double GetFps() override;

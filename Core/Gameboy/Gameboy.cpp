@@ -482,12 +482,12 @@ vector<CpuType> Gameboy::GetCpuTypes()
 	return { CpuType::Gameboy };
 }
 
-AddressInfo Gameboy::GetAbsoluteAddress(AddressInfo relAddress)
+AddressInfo Gameboy::GetAbsoluteAddress(AddressInfo& relAddress)
 {
 	return GetAbsoluteAddress(relAddress.Address);
 }
 
-AddressInfo Gameboy::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
+AddressInfo Gameboy::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
 {
 	return { GetRelativeAddress(absAddress), SnesMemoryType::GameboyMemory };
 }

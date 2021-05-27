@@ -116,8 +116,8 @@ public:
 	PpuFrameInfo GetPpuFrame() override;
 	vector<CpuType> GetCpuTypes() override;
 
-	AddressInfo GetAbsoluteAddress(AddressInfo relAddress) override;
-	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) override;
+	AddressInfo GetAbsoluteAddress(AddressInfo& relAddress) override;
+	AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) override;
 
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate() override;

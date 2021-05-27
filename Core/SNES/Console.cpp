@@ -375,7 +375,7 @@ bool Console::IsRunning()
 	return _cpu != nullptr;
 }
 
-AddressInfo Console::GetAbsoluteAddress(AddressInfo relAddress)
+AddressInfo Console::GetAbsoluteAddress(AddressInfo& relAddress)
 {
 	switch(relAddress.Type) {
 		case SnesMemoryType::CpuMemory:
@@ -395,7 +395,7 @@ AddressInfo Console::GetAbsoluteAddress(AddressInfo relAddress)
 	}
 }
 
-AddressInfo Console::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType)
+AddressInfo Console::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
 {
 	MemoryMappings* mappings = nullptr;
 	switch(cpuType) {
