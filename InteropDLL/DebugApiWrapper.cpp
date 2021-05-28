@@ -48,10 +48,7 @@ extern "C"
 	DllExport void __stdcall ResumeExecution() { if(IsDebuggerRunning()) GetDebugger()->Run(); }
 	DllExport void __stdcall Step(CpuType cpuType, uint32_t count, StepType type) { GetDebugger()->Step(cpuType, count, type); }
 
-	DllExport void __stdcall RefreshDisassembly(CpuType type) { GetDebugger()->GetDisassembler()->RefreshDisassembly(type); }
-	DllExport void __stdcall GetDisassemblyLineData(CpuType type, uint32_t lineIndex, CodeLineData &data) { GetDebugger()->GetDisassembler()->GetLineData(type, lineIndex, data); }
-	DllExport uint32_t __stdcall GetDisassemblyLineCount(CpuType type) { return GetDebugger()->GetDisassembler()->GetLineCount(type); }
-	DllExport uint32_t __stdcall GetDisassemblyLineIndex(CpuType type, uint32_t cpuAddress) { return GetDebugger()->GetDisassembler()->GetLineIndex(type, cpuAddress); }
+	DllExport uint32_t __stdcall GetDisassemblyOutput(CpuType type, uint32_t lineIndex, CodeLineData output[], uint32_t rowCount) { return GetDebugger()->GetDisassembler()->GetDisassemblyOutput(type, lineIndex, output, rowCount); }
 	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchDisassembly(type, searchString, startPosition, endPosition, searchBackwards); }
 
 	DllExport void __stdcall SetTraceOptions(TraceLoggerOptions options) { GetDebugger()->GetTraceLogger()->SetOptions(options); }

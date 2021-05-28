@@ -41,7 +41,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_cpu = _gameboy->GetCpu();
 
 	_settings = debugger->GetEmulator()->GetSettings();
-	_codeDataLogger.reset(new CodeDataLogger(_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
+	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
 
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _gameboy->GetPpu()));
 	_callstackManager.reset(new CallstackManager(debugger));

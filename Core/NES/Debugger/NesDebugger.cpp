@@ -37,7 +37,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_settings = debugger->GetEmulator()->GetSettings();
 
-	_codeDataLogger.reset(new CodeDataLogger(_emu->GetMemory(SnesMemoryType::NesPrgRom).Size, CpuType::Nes));
+	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::NesPrgRom, _emu->GetMemory(SnesMemoryType::NesPrgRom).Size, CpuType::Nes));
 
 	//_eventManager.reset(new EventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
 	_callstackManager.reset(new CallstackManager(debugger));

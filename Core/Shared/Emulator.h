@@ -126,7 +126,7 @@ public:
 	bool IsPaused();
 
 	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
-	RomInfo GetRomInfo();
+	RomInfo& GetRomInfo();
 	string GetHash(HashType type);
 	uint32_t GetCrc32();
 	PpuFrameInfo GetPpuFrame();

@@ -63,11 +63,12 @@ namespace Mesen.Debugger.Disassembly
 				word = word.Substring(0, arraySeparatorIndex);
 			}
 
-			if(_provider is SymbolCodeDataProvider && _symbolProvider != null) {
+			//TODO
+			/*if(_provider is SymbolCodeDataProvider && _symbolProvider != null) {
 				int rangeStart, rangeEnd;
 				GetSymbolByteRange(lineIndex, out rangeStart, out rangeEnd);
 				location.Symbol = _symbolProvider.GetSymbol(word, rangeStart, rangeEnd);
-			}
+			}*/
 
 			location.Label = LabelManager.GetLabel(word);
 
@@ -110,7 +111,8 @@ namespace Mesen.Debugger.Disassembly
 			return location;
 		}
 
-		public Dictionary<string, string>? GetTooltipData(string word, int lineIndex)
+		//TODO
+		/*public Dictionary<string, string>? GetTooltipData(string word, int lineIndex)
 		{
 			if(_provider.GetCodeLineData(lineIndex).Flags.HasFlag(LineFlags.ShowAsData)) {
 				//Disable tooltips for .db statements
@@ -187,9 +189,9 @@ namespace Mesen.Debugger.Disassembly
 			}
 
 			return null;
-		}
+		}*/
 
-		private void GetSymbolByteRange(int lineIndex, out int rangeStart, out int rangeEnd)
+		/*private void GetSymbolByteRange(int lineIndex, out int rangeStart, out int rangeEnd)
 		{
 			int lineCount = _provider.GetLineCount();
 			while(lineIndex < lineCount - 2 && _provider.GetCodeLineData(lineIndex).AbsoluteAddress < 0) {
@@ -213,6 +215,6 @@ namespace Mesen.Debugger.Disassembly
 
 			rangeStart = 0;
 			rangeEnd = Int32.MaxValue;
-		}
+		}*/
 	}
 }

@@ -95,6 +95,16 @@ struct DisassemblyResult
 		Flags = flags;
 		CommentLine = commentLine;
 	}
+
+	void SetByteCount(uint8_t byteCount)
+	{
+		CommentLine = byteCount;
+	}
+
+	uint8_t GetByteCount()
+	{
+		return (uint8_t)CommentLine;
+	}
 };
 
 namespace LineFlags
@@ -113,7 +123,8 @@ namespace LineFlags
 		Label = 0x100,
 		Comment = 0x200,
 		ShowAsData = 0x400,
-		UnexecutedCode = 0x800
+		UnexecutedCode = 0x800,
+		UnmappedMemory = 0x1000
 	};
 }
 

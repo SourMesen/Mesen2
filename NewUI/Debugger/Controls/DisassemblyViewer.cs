@@ -41,10 +41,29 @@ namespace Mesen.Debugger.Controls
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
 		private int VisibleRows => (int)(Bounds.Height / RowHeight) - 1;
-		
+
+		private bool _updatingScroll = false;
+
 		static DisassemblyViewer()
 		{
 			AffectsRender<DisassemblyViewer>(DataProviderProperty, ScrollPositionProperty, StyleProviderProperty);
+			ScrollPositionProperty.Changed.AddClassHandler<DisassemblyViewer>((x, e) => {
+				if(x._updatingScroll) {
+					return;
+				}
+
+				x._updatingScroll = true;
+				CodeLineData[] lines = x._lines;
+				if((int)e.OldValue < (int)e.NewValue) {
+					foreach(CodeLineData line in lines) {
+						if(line.Address >= 0 && (int)e.NewValue < line.Address) {
+							x.ScrollPosition = line.Address;
+							break;
+						}
+					}
+				}
+				x._updatingScroll = false;
+			});
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -60,7 +79,7 @@ namespace Mesen.Debugger.Controls
 			this.LetterSize = text.Bounds.Size;
 		}
 
-		private List<CodeLineData> _lines = new List<CodeLineData>();
+		private CodeLineData[] _lines = new CodeLineData[0];
 		public void Refresh()
 		{
 			ICodeDataProvider dp = this.DataProvider;
@@ -68,15 +87,17 @@ namespace Mesen.Debugger.Controls
 
 			InitFontAndLetterSize();
 
-			List<CodeLineData> lines = new List<CodeLineData>();
-			if(dp != null) {
-				for(int i = scrollPosition, len = scrollPosition + VisibleRows + 1; i < len; i++) {
-					if(i < dp.GetLineCount()) {
-						lines.Add(dp.GetCodeLineData(i));
+			_lines = dp?.GetCodeLines(scrollPosition, VisibleRows + 3) ?? new CodeLineData[0];
+			foreach(CodeLineData line in _lines) {
+				if(line.Address >= 0) {
+					if(ScrollPosition != line.Address) {
+						_updatingScroll = true;
+						ScrollPosition = line.Address;
+						_updatingScroll = false;
 					}
+					break;
 				}
 			}
-			_lines = lines;
 		}
 
 		public override void Render(DrawingContext context)
@@ -87,7 +108,7 @@ namespace Mesen.Debugger.Controls
 
 			Refresh();
 
-			List<CodeLineData> lines = _lines;
+			CodeLineData[] lines = _lines;
 			double y = 0;
 			var text = new FormattedText("", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			var smallText = new FormattedText("", this.Font, 12, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
@@ -139,6 +160,11 @@ namespace Mesen.Debugger.Controls
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(x + LetterSize.Width / 2, y), text);
 				x += byteCodeMargin;
 
+				if(lineStyle.LineBgColor.HasValue) {
+					SolidColorBrush brush = new(lineStyle.LineBgColor.Value.ToUint32());
+					context.DrawRectangle(brush, null, new Rect(x, y, Bounds.Width - x, LetterSize.Height));
+				}
+
 				if(line.Flags.HasFlag(LineFlags.BlockStart) || line.Flags.HasFlag(LineFlags.BlockEnd) || line.Flags.HasFlag(LineFlags.SubStart)) {
 					//Draw line to mark block start/end
 					double lineHeight = Math.Floor(y + LetterSize.Height / 2) + 0.5;
@@ -174,13 +200,11 @@ namespace Mesen.Debugger.Controls
 	{
 		CpuType CpuType { get; }
 
-		CodeLineData GetCodeLineData(int lineIndex);
+		CodeLineData[] GetCodeLines(int address, int rowCount);
+
 		int GetLineCount();
 		int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards);
 		bool UseOptimizedSearch { get; }
-
-		int GetLineAddress(int lineIndex);
-		int GetLineIndex(UInt32 address);
 	}
 
 	public interface ILineStyleProvider

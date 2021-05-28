@@ -30,9 +30,9 @@ namespace Mesen.Debugger.Disassembly
 			_isC = filename.EndsWith(".h") || filename.EndsWith(".c");
 		}
 
-		public CodeLineData GetCodeLineData(int lineIndex)
+		public CodeLineData[] GetCodeLines(int startPosition, int rowCount)
 		{
-			AddressInfo? address = _symbolProvider.GetLineAddress(_file, lineIndex);
+			/*AddressInfo? address = _symbolProvider.GetLineAddress(_file, lineIndex);
 
 			CodeLineData data = new CodeLineData(_cpuType) {
 				Address = GetLineAddress(lineIndex),
@@ -42,14 +42,14 @@ namespace Mesen.Debugger.Disassembly
 			};
 
 			//TODO
-			/*if(prgAddress >= 0) {
+			if(prgAddress >= 0) {
 				int opSize = DebugApi.GetDisassemblyOpSize(_prgRom[prgAddress]);
 				string byteCode = "";
 				for(int i = prgAddress, end = prgAddress + opSize; i < end && i < _prgRom.Length; i++) {
 					byteCode += "$" + _prgRom[i].ToString("X2") + " ";
 				}
 				data.ByteCode = byteCode;
-			}*/
+			}
 
 			string text = _file.Data[lineIndex];
 			string trimmed = text.TrimStart();
@@ -70,7 +70,9 @@ namespace Mesen.Debugger.Disassembly
 				data.Text = trimmed;
 			}
 
-			return data;
+			return data;*/
+
+			return new CodeLineData[0];
 		}
 
 		public int GetLineAddress(int lineIndex)

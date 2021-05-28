@@ -204,11 +204,6 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 
 	_emu->GetSoundMixer()->StopAudio();
 	
-	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
-	for(CpuType type : cpuTypes) {
-		_disassembler->Disassemble(type);
-	}
-
 	_executionStopped = true;
 	
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {

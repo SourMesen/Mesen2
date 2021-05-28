@@ -49,7 +49,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	if(cpuType == CpuType::Sa1) {
 		_codeDataLogger = _debugger->GetCodeDataLogger(CpuType::Cpu);
 	} else {
-		_codeDataLogger.reset(new CodeDataLogger(console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Cpu));
+		_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::PrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Cpu));
 	}
 
 	_eventManager.reset(new EventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));

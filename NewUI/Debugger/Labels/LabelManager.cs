@@ -144,7 +144,6 @@ namespace Mesen.Debugger.Labels
 
 			if(raiseEvent) {
 				ProcessLabelUpdate();
-				RefreshDisassembly(label);
 			}
 
 			return true;
@@ -171,7 +170,6 @@ namespace Mesen.Debugger.Labels
 
 			if(needEvent) {
 				ProcessLabelUpdate();
-				RefreshDisassembly(label);
 			}
 		}
 
@@ -188,21 +186,6 @@ namespace Mesen.Debugger.Labels
 				LabelManager.SetLabels(labelsToAdd, true);
 			}
 		}*/
-
-		private static void RefreshDisassembly(CodeLabel label)
-		{
-			if(label.MemoryType.ToCpuType() == CpuType.Spc) {
-				DebugApi.RefreshDisassembly(CpuType.Spc);
-			} else if(label.MemoryType.ToCpuType() == CpuType.NecDsp) {
-				DebugApi.RefreshDisassembly(CpuType.NecDsp);
-			} else if(label.MemoryType.ToCpuType() == CpuType.Gameboy) {
-				DebugApi.RefreshDisassembly(CpuType.Gameboy);
-			} else {
-				DebugApi.RefreshDisassembly(CpuType.Cpu);
-				DebugApi.RefreshDisassembly(CpuType.Sa1);
-				DebugApi.RefreshDisassembly(CpuType.Gsu);
-			}
-		}
 
 		public static void RefreshLabels()
 		{

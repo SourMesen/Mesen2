@@ -31,14 +31,12 @@ private:
 	MemoryDumper *_memoryDumper;
 
 	DisassemblerSource _sources[(int)SnesMemoryType::Register] = {};
-
-	SimpleLock _disassemblyLock;
-	vector<DisassemblyResult> _disassemblyResult[(int)DebugUtilities::GetLastCpuType()+1];
-	bool _needDisassemble[(int)DebugUtilities::GetLastCpuType()+1];
-
+	
 	void InitSource(SnesMemoryType type);
 	DisassemblerSource& GetSource(SnesMemoryType type);
-	void SetDisassembleFlag(CpuType type);
+
+	CodeLineData GetLineData(DisassemblyResult& result, CpuType type, SnesMemoryType memType);
+	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint8_t bank);
 
 public:
 	Disassembler(IConsole* console, Debugger* debugger);
@@ -46,7 +44,6 @@ public:
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void ResetPrgCache();
 	void InvalidateCache(AddressInfo addrInfo, CpuType type);
-	void Disassemble(CpuType cpuType);
 
 	__forceinline DisassemblyInfo GetDisassemblyInfo(AddressInfo& info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type)
 	{
@@ -57,9 +54,6 @@ public:
 		return disassemblyInfo;
 	}
 
-	void RefreshDisassembly(CpuType type);
-	uint32_t GetLineCount(CpuType type);
-	uint32_t GetLineIndex(CpuType type, uint32_t cpuAddress);
-	bool GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &data);
+	uint32_t GetDisassemblyOutput(CpuType type, uint32_t address, CodeLineData output[], uint32_t rowCount);
 	int32_t SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards);
 };

@@ -28,21 +28,25 @@ namespace Mesen.Interop
 		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern IntPtr GetDebuggerLogWrapper();
 		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetDebuggerLogWrapper()).Replace("\n", Environment.NewLine); }
 
-		[DllImport(DllPath, EntryPoint = "GetDisassemblyLineData")] private static extern void GetDisassemblyLineDataWrapper(CpuType type, UInt32 lineIndex, ref InteropCodeLineData lineData);
-		public static CodeLineData GetDisassemblyLineData(CpuType type, UInt32 lineIndex)
+		[DllImport(DllPath, EntryPoint = "GetDisassemblyOutput")] private static extern UInt32 GetDisassemblyOutputWrapper(CpuType type, UInt32 address, [In,Out]InteropCodeLineData[] lineData, UInt32 rowCount);
+		public static CodeLineData[] GetDisassemblyOutput(CpuType type, UInt32 address, UInt32 rowCount)
 		{
-			InteropCodeLineData data = new InteropCodeLineData();
-			data.Comment = new byte[1000];
-			data.Text = new byte[1000];
-			data.ByteCode = new byte[4];
+			InteropCodeLineData[] rows = new InteropCodeLineData[rowCount];
+			for(int i = 0; i < rowCount; i++) {
+				rows[i].Comment = new byte[1000];
+				rows[i].Text = new byte[1000];
+				rows[i].ByteCode = new byte[4];
+			}
 
-			DebugApi.GetDisassemblyLineDataWrapper(type, lineIndex, ref data);
-			return new CodeLineData(data, type);
+			UInt32 resultCount = DebugApi.GetDisassemblyOutputWrapper(type, address, rows, rowCount);
+
+			CodeLineData[] result = new CodeLineData[resultCount];
+			for(int i = 0; i < resultCount; i++) {
+				result[i] = new CodeLineData(rows[i], type);
+			}
+			return result;
 		}
 
-		[DllImport(DllPath)] public static extern void RefreshDisassembly(CpuType type);
-		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineCount(CpuType type);
-		[DllImport(DllPath)] public static extern UInt32 GetDisassemblyLineIndex(CpuType type, UInt32 cpuAddress);
 		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);

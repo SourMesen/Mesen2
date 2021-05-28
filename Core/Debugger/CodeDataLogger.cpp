@@ -2,8 +2,9 @@
 #include "CodeDataLogger.h"
 #include "Utilities/VirtualFile.h"
 
-CodeDataLogger::CodeDataLogger(uint32_t prgSize, CpuType cpuType)
+CodeDataLogger::CodeDataLogger(SnesMemoryType prgMemType, uint32_t prgSize, CpuType cpuType)
 {
+	_prgMemType = prgMemType;
 	_cpuType = cpuType;
 	_prgSize = prgSize;
 	_cdlData = new uint8_t[prgSize];
@@ -25,6 +26,11 @@ void CodeDataLogger::Reset()
 uint32_t CodeDataLogger::GetPrgSize()
 {
 	return _prgSize;
+}
+
+SnesMemoryType CodeDataLogger::GetPrgMemoryType()
+{
+	return _prgMemType;
 }
 
 bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc)

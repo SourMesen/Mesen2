@@ -50,6 +50,9 @@ namespace Mesen.Debugger.Windows
 
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
+
+			_model.UpdateCpuState();
+			_model.UpdateDisassembly();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)

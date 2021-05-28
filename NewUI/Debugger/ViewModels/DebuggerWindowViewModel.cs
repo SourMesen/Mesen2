@@ -68,13 +68,10 @@ namespace Mesen.Debugger.ViewModels
 
 		internal void UpdateDisassembly()
 		{
-			DebugApi.RefreshDisassembly(CpuType);
+			//TODO
 			Disassembly.DataProvider = new CodeDataProvider(CpuType);
 			Disassembly.UpdateMaxScroll();
-			int? index = Disassembly.DataProvider?.GetLineIndex((uint)(Disassembly.StyleProvider?.ActiveAddress ?? 0));
-			if(index != null) {
-				Disassembly.ScrollPosition = index.Value;
-			}
+			Disassembly.ScrollPosition = (Disassembly.StyleProvider?.ActiveAddress ?? 0);
 		}
 
 		public void UpdateCpuState()

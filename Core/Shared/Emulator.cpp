@@ -474,7 +474,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	return true;
 }
 
-RomInfo Emulator::GetRomInfo()
+RomInfo& Emulator::GetRomInfo()
 {
 	return _rom;
 }

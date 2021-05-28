@@ -16,29 +16,16 @@ namespace Mesen.Debugger.Disassembly
 		public CodeDataProvider(CpuType type)
 		{
 			_type = type;
-			_lineCount = (int)DebugApi.GetDisassemblyLineCount(_type);
+			_lineCount = DebugApi.GetMemorySize(type.ToMemoryType());
 		}
 
 		public CpuType CpuType => _type;
+		
+		public int GetLineCount() => _lineCount;
 
-		public CodeLineData GetCodeLineData(int lineIndex)
+		public CodeLineData[] GetCodeLines(int startPosition, int rowCount)
 		{
-			return DebugApi.GetDisassemblyLineData(_type, (UInt32)lineIndex);
-		}
-
-		public int GetLineAddress(int lineIndex)
-		{
-			return DebugApi.GetDisassemblyLineData(_type, (UInt32)lineIndex).Address;
-		}
-
-		public int GetLineCount()
-		{
-			return _lineCount;
-		}
-
-		public int GetLineIndex(uint cpuAddress)
-		{
-			return (int)DebugApi.GetDisassemblyLineIndex(_type, cpuAddress);
+			return DebugApi.GetDisassemblyOutput(_type, (uint)startPosition, (uint)rowCount);
 		}
 
 		public bool UseOptimizedSearch { get { return true; } }
