@@ -159,7 +159,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void ShowBreakpoints()
 		{
-			ShowTool(DockFactory.BreakpointListTool);
+			ShowTool(BreakpointList);
 		}
 
 		public void ShowCpuStatus()

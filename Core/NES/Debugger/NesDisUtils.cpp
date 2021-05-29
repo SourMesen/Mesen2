@@ -24,18 +24,20 @@ void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 
 	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	if(opSize > 1) {
-		if(addrMode == NesAddrMode::Rel) {
-			AddressInfo address { (int32_t)opAddr, SnesMemoryType::CpuMemory };
+		if(addrMode != NesAddrMode::Imm) {
+			AddressInfo address { (int32_t)opAddr, SnesMemoryType::NesMemory };
 			string label = labelManager ? labelManager->GetLabel(address) : "";
 			if(label.size()) {
 				operand.Write(label, true);
-			} else {
+			}
+		} 
+		
+		if(operand.GetSize() == 0) {
+			if(opSize == 2) {
+				operand.WriteAll('$', HexUtilities::ToHex((uint8_t)opAddr));
+			} else if(opSize == 3) {
 				operand.WriteAll('$', HexUtilities::ToHex((uint16_t)opAddr));
 			}
-		} else if(opSize == 2) {
-			operand.WriteAll('$', HexUtilities::ToHex((uint8_t)opAddr));
-		} else if(opSize == 3) {
-			operand.WriteAll('$', HexUtilities::ToHex((uint16_t)opAddr));
 		}
 	}
 

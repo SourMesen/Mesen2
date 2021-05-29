@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mesen.Interop;
 
 namespace Mesen.Debugger.Disassembly
 {
@@ -29,7 +30,7 @@ namespace Mesen.Debugger.Disassembly
 			LineProperties props = new LineProperties();
 
 			if(lineData.Address >= 0) {
-				GetBreakpointLineProperties(props, lineData.Address);
+				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType);
 			}
 
 			bool isActiveStatement = ActiveAddress.HasValue && ActiveAddress.Value == lineData.Address;
@@ -56,16 +57,15 @@ namespace Mesen.Debugger.Disassembly
 			return props;
 		}
 
-		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress)
+		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress, CpuType cpuType)
 		{
-			//TODO
-			/*DebuggerInfo config = ConfigManager.Config.Debug.Debugger;
+			SnesMemoryType relMemoryType = cpuType.ToMemoryType();
 			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = cpuAddress, Type = SnesMemoryType.CpuMemory });
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
-				if(breakpoint.Matches((uint)cpuAddress, SnesMemoryType.CpuMemory, CpuType.Cpu) || (absAddress.Address >= 0 && breakpoint.Matches((uint)absAddress.Address, absAddress.Type, CpuType.Cpu))) {
+				if(breakpoint.Matches((uint)cpuAddress, relMemoryType, cpuType) || (absAddress.Address >= 0 && breakpoint.Matches((uint)absAddress.Address, absAddress.Type, cpuType))) {
 					SetBreakpointLineProperties(props, breakpoint);
 				}
-			}*/
+			}
 		}
 
 		protected void SetBreakpointLineProperties(LineProperties props, Breakpoint breakpoint)

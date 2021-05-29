@@ -19,7 +19,6 @@ namespace Mesen.Debugger
 	{
 		private DebuggerWindowViewModel _context;
 
-		public BreakpointToolViewModel BreakpointListTool { get; private set; }
 		public DisassemblyToolViewModel DisassemblyTool { get; private set; }
 		public StatusToolViewModel CpuStatusTool { get; private set; }
 		public StatusToolViewModel PpuStatusTool { get; private set; }
@@ -27,7 +26,6 @@ namespace Mesen.Debugger
 		public DebuggerDockFactory(DebuggerWindowViewModel context)
 		{
 			_context = context;
-			BreakpointListTool = new BreakpointToolViewModel(_context.BreakpointList);
 			DisassemblyTool = new DisassemblyToolViewModel(_context.Disassembly);
 			CpuStatusTool = new StatusToolViewModel() { Id = "CpuStatusTool", Title = "CPU Status" };
 			PpuStatusTool = new StatusToolViewModel() { Id = "PpuStatusTool", Title = "PPU Status" };
@@ -82,7 +80,7 @@ namespace Mesen.Debugger
 							new SplitterDockable(),
 							new ToolDock {
 								Proportion = 0.33,
-								VisibleDockables = CreateList<IDockable>(BreakpointListTool)
+								VisibleDockables = CreateList<IDockable>(_context.BreakpointList)
 							},
 							new SplitterDockable(),
 							new ToolDock {

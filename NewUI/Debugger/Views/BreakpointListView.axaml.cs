@@ -23,16 +23,15 @@ namespace Mesen.Debugger.Views
 		private void OnGridClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid? grid = (sender as DataGrid);
-			BreakpointViewModel? bp = grid?.SelectedItem as BreakpointViewModel;
+			Breakpoint? bp = grid?.SelectedItem as Breakpoint;
 			if(bp != null && grid != null) {
 				string? header = grid.CurrentColumn.Header.ToString();
 				if(header == "E") {
-					bp.Breakpoint.Enabled = !bp.Breakpoint.Enabled;
+					bp.Enabled = !bp.Enabled;
+					BreakpointManager.RefreshBreakpoints(bp);
 				} else if(header == "M") {
-					bp.Breakpoint.MarkEvent = !bp.Breakpoint.MarkEvent;
-					bp.Breakpoint.StartAddress++;
-					bp.Breakpoint.EndAddress++;
-					bp.Breakpoint.AddressType = BreakpointAddressType.AddressRange;
+					bp.MarkEvent = !bp.MarkEvent;
+					BreakpointManager.RefreshBreakpoints(bp);
 				}
 			}
 		}

@@ -66,6 +66,25 @@ namespace Mesen.Debugger.Controls
 			});
 		}
 
+		protected override void OnPointerPressed(PointerPressedEventArgs e)
+		{
+			base.OnPointerPressed(e);
+			PointerPoint p = e.GetCurrentPoint(this);
+			if(p.Position.X < 20) {
+				int rowNumber = (int)(p.Position.Y / LetterSize.Height);
+				CodeLineData[] lines = _lines;
+				if(rowNumber < lines.Length) {
+					AddressInfo relAddress = new AddressInfo() {
+						Address = lines[rowNumber].Address,
+						Type = DataProvider.CpuType.ToMemoryType()
+					};
+
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, DataProvider.CpuType);
+				}
+			}
+		}
+
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
@@ -133,21 +152,30 @@ namespace Mesen.Debugger.Controls
 
 			//Draw code
 			foreach(CodeLineData line in lines) {
-				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, null, true);
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, 0);
+				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor, true);
 				
 				double x = 0;
 
 				//Draw symbol in margin
-				switch(lineStyle.Symbol) {
-					case LineSymbol.Arrow:
-						if(lineStyle.TextBgColor.HasValue) {
-							double scaleFactor = LetterSize.Height / 16.0;
-							using var scale =  context.PushPostTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
-							using var translation =  context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
-							context.DrawGeometry(new SolidColorBrush(lineStyle.TextBgColor.Value), new Pen(Brushes.Black), DisassemblyViewer.ArrowShape);
-						}
-						break;
+				if(lineStyle.Symbol.HasFlag(LineSymbol.Circle) || lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline)) {
+					if(lineStyle.OutlineColor.HasValue) {
+						using var scale = context.PushPostTransform(Matrix.CreateScale(0.85, 0.85));
+						using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+						EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
+						Brush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
+						Pen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
+						context.DrawGeometry(b, p, geometry);
+					}
+				}
+
+				if(lineStyle.Symbol.HasFlag(LineSymbol.Arrow)) {
+					if(lineStyle.TextBgColor.HasValue) {
+						double scaleFactor = LetterSize.Height / 16.0;
+						using var scale = context.PushPostTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
+						using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+						context.DrawGeometry(new SolidColorBrush(lineStyle.TextBgColor.Value), new Pen(Brushes.Black), DisassemblyViewer.ArrowShape);
+					}
 				}
 
 				//Draw address in margin
@@ -182,11 +210,15 @@ namespace Mesen.Debugger.Controls
 						context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(textPosX, textPosY), smallText);
 					}
 				} else {
+					if(lineStyle.TextBgColor.HasValue || lineStyle.OutlineColor.HasValue) {
+						text.Text = line.Text.TrimEnd();
+						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()) : null;
+						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
+						context.DrawRectangle(b, p, new Rect(x + codeIndent, y, text.Bounds.Width, text.Bounds.Height));
+					}
+
 					foreach(CodeColor part in lineParts) {
 						text.Text = part.Text;
-						if(lineStyle.TextBgColor.HasValue) {
-							context.DrawRectangle(new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()), null, new Rect(x + codeIndent, y, text.Bounds.Width, text.Bounds.Height));
-						}
 						context.DrawText(ColorHelper.GetBrush(part.Color), new Point(x + codeIndent, y), text);
 						x += text.Bounds.Width;
 					}

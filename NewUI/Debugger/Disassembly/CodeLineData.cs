@@ -11,7 +11,7 @@ namespace Mesen.Debugger
 {
 	public class CodeLineData
 	{
-		private CpuType _cpuType;
+		public CpuType CpuType { get; private set; }
 
 		public string Text = "";
 
@@ -33,7 +33,7 @@ namespace Mesen.Debugger
 		public string GetEffectiveAddressString(string format)
 		{
 			if(EffectiveAddress >= 0) {
-				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = _cpuType.ToMemoryType() };
+				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = CpuType.ToMemoryType() };
 				CodeLabel? label = LabelManager.GetLabel(relAddress);
 				if(label != null) {
 					if(label.Length > 1) {
@@ -78,12 +78,12 @@ namespace Mesen.Debugger
 
 		public CodeLineData(CpuType cpuType)
 		{
-			_cpuType = cpuType;
+			CpuType = cpuType;
 		}
 
 		public CodeLineData(InteropCodeLineData data, CpuType cpuType)
 		{
-			_cpuType = cpuType;
+			CpuType = cpuType;
 
 			this.Text = ConvertString(data.Text);
 			this.Comment = ConvertString(data.Comment);

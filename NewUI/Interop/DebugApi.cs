@@ -287,6 +287,17 @@ namespace Mesen.Interop
 				case SnesMemoryType.GameboyMemory:
 					return CpuType.Gameboy;
 
+				case SnesMemoryType.NesPrgRom:
+				case SnesMemoryType.NesWorkRam:
+				case SnesMemoryType.NesSaveRam:
+				case SnesMemoryType.NesChrRam:
+				case SnesMemoryType.NesChrRom:
+				case SnesMemoryType.NesInternalRam:
+				case SnesMemoryType.NesNametableRam:
+				case SnesMemoryType.NesPaletteRam:
+				case SnesMemoryType.NesSpriteRam:
+					return CpuType.Nes;
+
 				default:
 					return CpuType.Cpu;
 			}

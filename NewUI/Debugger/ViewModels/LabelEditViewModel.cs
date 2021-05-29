@@ -15,7 +15,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public CodeLabel Label { get; set; }
 		[ObservableAsProperty] public bool OkEnabled { get; }
-		[ObservableAsProperty] public string MaxAddress { get; }
+		[ObservableAsProperty] public string MaxAddress { get; } = "";
 
 		//For designer
 		public LabelEditViewModel() : this(new CodeLabel()) { }
