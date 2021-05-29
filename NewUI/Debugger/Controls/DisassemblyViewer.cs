@@ -52,6 +52,8 @@ namespace Mesen.Debugger.Controls
 					return;
 				}
 
+				x.Refresh();
+
 				x._updatingScroll = true;
 				CodeLineData[] lines = x._lines;
 				if((int)e.OldValue < (int)e.NewValue) {
@@ -83,6 +85,8 @@ namespace Mesen.Debugger.Controls
 					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, DataProvider.CpuType);
 				}
 			}
+
+			InvalidateVisual();
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -125,8 +129,6 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			Refresh();
-
 			CodeLineData[] lines = _lines;
 			double y = 0;
 			var text = new FormattedText("", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
@@ -154,29 +156,11 @@ namespace Mesen.Debugger.Controls
 			foreach(CodeLineData line in lines) {
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, 0);
 				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor, true);
-				
+
 				double x = 0;
 
 				//Draw symbol in margin
-				if(lineStyle.Symbol.HasFlag(LineSymbol.Circle) || lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline)) {
-					if(lineStyle.OutlineColor.HasValue) {
-						using var scale = context.PushPostTransform(Matrix.CreateScale(0.85, 0.85));
-						using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
-						EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
-						Brush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
-						Pen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
-						context.DrawGeometry(b, p, geometry);
-					}
-				}
-
-				if(lineStyle.Symbol.HasFlag(LineSymbol.Arrow)) {
-					if(lineStyle.TextBgColor.HasValue) {
-						double scaleFactor = LetterSize.Height / 16.0;
-						using var scale = context.PushPostTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
-						using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
-						context.DrawGeometry(new SolidColorBrush(lineStyle.TextBgColor.Value), new Pen(Brushes.Black), DisassemblyViewer.ArrowShape);
-					}
-				}
+				DrawLineSymbol(context, y, lineStyle);
 
 				//Draw address in margin
 				text.Text = line.Address >= 0 ? line.Address.ToString(addrFormat) : "..";
@@ -214,7 +198,7 @@ namespace Mesen.Debugger.Controls
 						text.Text = line.Text.TrimEnd();
 						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()) : null;
 						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
-						context.DrawRectangle(b, p, new Rect(x + codeIndent, y, text.Bounds.Width, text.Bounds.Height));
+						context.DrawRectangle(b, p, new Rect(Math.Round(x + codeIndent) + 0.5, Math.Round(y) + 0.5, Math.Round(text.Bounds.Width), Math.Round(text.Bounds.Height)));
 					}
 
 					foreach(CodeColor part in lineParts) {
@@ -224,6 +208,41 @@ namespace Mesen.Debugger.Controls
 					}
 				}
 				y += LetterSize.Height;
+			}
+		}
+
+		private void DrawLineSymbol(DrawingContext context, double y, LineProperties lineStyle)
+		{
+			if(lineStyle.Symbol.HasFlag(LineSymbol.Circle) || lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline)) {
+				if(lineStyle.OutlineColor.HasValue) {
+					using var scale = context.PushPostTransform(Matrix.CreateScale(0.85, 0.85));
+					using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+					EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
+					IBrush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
+					IPen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
+					context.DrawGeometry(b, p, geometry);
+
+					if(lineStyle.Symbol.HasFlag(LineSymbol.Plus)) {
+						Color c = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? lineStyle.OutlineColor.Value : Colors.White;
+						p = new Pen(c.ToUint32(), 2);
+						context.DrawLine(p, new Point(2, LetterSize.Height / 2), new Point(LetterSize.Height - 2, LetterSize.Height / 2));
+						context.DrawLine(p, new Point(LetterSize.Height / 2, 2), new Point(LetterSize.Height / 2, LetterSize.Height - 2));
+					}
+
+					if(lineStyle.Symbol.HasFlag(LineSymbol.Mark)) {
+						EllipseGeometry markGeometry = new EllipseGeometry(new Rect(LetterSize.Height * 0.7, -LetterSize.Height * 0.1, LetterSize.Height / 2, LetterSize.Height / 2));
+						context.DrawGeometry(Brushes.LightSkyBlue, new Pen(Brushes.Black), markGeometry);
+					}
+				}
+			}
+
+			if(lineStyle.Symbol.HasFlag(LineSymbol.Arrow)) {
+				if(lineStyle.TextBgColor.HasValue) {
+					double scaleFactor = LetterSize.Height / 16.0;
+					using var scale = context.PushPostTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
+					using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+					context.DrawGeometry(new SolidColorBrush(lineStyle.TextBgColor.Value), new Pen(Brushes.Black), DisassemblyViewer.ArrowShape);
+				}
 			}
 		}
 	}

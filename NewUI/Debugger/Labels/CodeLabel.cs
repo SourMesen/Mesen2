@@ -1,4 +1,5 @@
 ﻿using Mesen.Interop;
+using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -151,7 +152,7 @@ namespace Mesen.Debugger.Labels
 
 		public CodeLabel Clone()
 		{
-			return (CodeLabel)this.MemberwiseClone();
+			return JsonHelper.Clone(this);
 		}
 
 		public void CopyFrom(CodeLabel copy)

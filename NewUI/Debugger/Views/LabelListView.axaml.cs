@@ -9,6 +9,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.Windows;
 using Mesen.Utilities;
 using Avalonia.Input;
+using System.Linq;
 
 namespace Mesen.Debugger.Views
 {
@@ -22,17 +23,6 @@ namespace Mesen.Debugger.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
-		}
-
-		private void OnCellPointerPressed(object sender, DataGridCellPointerPressedEventArgs e)
-		{
-			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
-			grid.SelectedIndex = e.Row.GetIndex();
-		}
-
-		private void OnGridClick(object sender, RoutedEventArgs e)
-		{
-
 		}
 
 		private async void mnuAddLabel_Click(object sender, RoutedEventArgs e)
@@ -61,9 +51,10 @@ namespace Mesen.Debugger.Views
 		private void mnuDeleteLabel_Click(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
-			CodeLabel? label = grid.SelectedItem as CodeLabel;
-			if(label != null && grid != null) {
-				LabelManager.DeleteLabel(label, true);
+			foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
+				if(item is CodeLabel label) {
+					LabelManager.DeleteLabel(label, true);
+				}
 				((LabelListViewModel)DataContext!).UpdateLabelList();
 			}
 		}

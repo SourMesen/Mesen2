@@ -68,6 +68,8 @@ namespace Mesen.Debugger.ViewModels
 
 			CallStack = new CallStackViewModel(CpuType);
 
+			BreakpointManager.AddCpuType(CpuType);
+
 			DockLayout = DockFactory.CreateLayout();
 			DockFactory.InitLayout(DockLayout);
 		}

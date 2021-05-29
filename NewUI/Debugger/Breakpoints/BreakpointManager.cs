@@ -44,16 +44,6 @@ namespace Mesen.Debugger
 			RefreshBreakpoints();
 		}
 
-		public static void EditBreakpoint(Breakpoint bp)
-		{
-			/*if(new frmBreakpoint(bp).ShowDialog() == DialogResult.OK) {
-				if(!_breakpoints.Contains(bp)) {
-					_breakpoints.Add(bp);
-				}
-				RefreshBreakpoints(bp);
-			}*/
-		}
-
 		public static void RemoveBreakpoint(Breakpoint bp)
 		{
 			_breakpoints.Remove(bp);
@@ -105,7 +95,6 @@ namespace Mesen.Debugger
 					CpuType = cpuType,
 					Enabled = true,
 					BreakOnExec = true,
-					AddressType = BreakpointAddressType.SingleAddress,
 					StartAddress = (UInt32)info.Address,
 					EndAddress = (UInt32)info.Address
 				};

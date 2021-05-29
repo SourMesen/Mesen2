@@ -1,4 +1,6 @@
-﻿using Mesen.Interop;
+﻿using Mesen.Debugger.Labels;
+using Mesen.Interop;
+using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -13,29 +15,28 @@ namespace Mesen.Debugger
 		[Reactive] public bool BreakOnWrite { get; set; }
 		[Reactive] public bool BreakOnExec { get; set; }
 
-		[Reactive] public bool Enabled { get; set; }
+		[Reactive] public bool Enabled { get; set; } = true;
 		[Reactive] public bool MarkEvent { get; set; }
 		[Reactive] public SnesMemoryType MemoryType { get; set; }
 		[Reactive] public UInt32 StartAddress { get; set; }
 		[Reactive] public UInt32 EndAddress { get; set; }
 		[Reactive] public CpuType CpuType { get; set; }
-		[Reactive] public BreakpointAddressType AddressType { get; set; }
-		[Reactive] public string Condition { get; set; }
+		[Reactive] public bool AnyAddress { get; set; } = false;
+		[Reactive] public string Condition { get; set; } = "";
 
 		[ObservableAsProperty] public string? TypeDisplay { get; }
 		[ObservableAsProperty] public string? AddressDisplay { get; }
 
 		public Breakpoint()
 		{
-			this.Condition = "";
 			this.WhenAnyValue(_ => _.MemoryType, _ => _.BreakOnRead, _ => _.BreakOnWrite, _ => _.BreakOnExec).Select(x => ToReadableType()).ToPropertyEx(this, x => x.TypeDisplay);
-			this.WhenAnyValue(_ => _.MemoryType, _ => _.AddressType, _ => _.StartAddress, _ => _.EndAddress).Select(x => GetAddressString(true)).ToPropertyEx(this, x => x.AddressDisplay);
+			this.WhenAnyValue(_ => _.MemoryType, _ => _.StartAddress, _ => _.EndAddress).Select(x => GetAddressString(true)).ToPropertyEx(this, x => x.AddressDisplay);
 		}
 
 		public bool IsAbsoluteAddress { get { return !MemoryType.IsRelativeMemory(); } }
 		public bool IsCpuBreakpoint { get { return Breakpoint.IsTypeCpuBreakpoint(MemoryType); } }
 
-		private BreakpointTypeFlags Type
+		public BreakpointTypeFlags Type
 		{
 			get
 			{
@@ -60,17 +61,11 @@ namespace Mesen.Debugger
 
 		public bool Matches(UInt32 address, SnesMemoryType type, CpuType? cpuType)
 		{
-			if((cpuType.HasValue && cpuType.Value != this.CpuType) || IsTypeCpuBreakpoint(type) != IsTypeCpuBreakpoint(MemoryType)) {
+			if((cpuType.HasValue && cpuType.Value != CpuType)) {
 				return false;
 			}
 
-			if(this.AddressType == BreakpointAddressType.SingleAddress) {
-				return address == this.StartAddress && type == this.MemoryType;
-			} else if(this.AddressType == BreakpointAddressType.AddressRange) {
-				return address >= this.StartAddress && address <= this.EndAddress && type == this.MemoryType;
-			}
-
-			return false;
+			return type == MemoryType && address >= StartAddress && address <= EndAddress;
 		}
 
 		public int GetRelativeAddress()
@@ -84,7 +79,7 @@ namespace Mesen.Debugger
 
 		private int GetRelativeAddressEnd()
 		{
-			if(this.AddressType == BreakpointAddressType.AddressRange) {
+			if(StartAddress != EndAddress) {
 				if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
 					return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)this.EndAddress, Type = this.MemoryType }, this.CpuType).Address;
 				} else {
@@ -102,24 +97,10 @@ namespace Mesen.Debugger
 				MemoryType = MemoryType,
 				Type = Type,
 				MarkEvent = MarkEvent,
-				Enabled = Enabled
+				Enabled = Enabled,
+				StartAddress = (Int32)StartAddress,
+				EndAddress = (Int32)EndAddress
 			};
-			switch(AddressType) {
-				case BreakpointAddressType.AnyAddress:
-					bp.StartAddress = -1;
-					bp.EndAddress = -1;
-					break;
-
-				case BreakpointAddressType.SingleAddress:
-					bp.StartAddress = (Int32)StartAddress;
-					bp.EndAddress = -1;
-					break;
-
-				case BreakpointAddressType.AddressRange:
-					bp.StartAddress = (Int32)StartAddress;
-					bp.EndAddress = (Int32)EndAddress;
-					break;
-			}
 
 			bp.Condition = new byte[1000];
 			byte[] condition = Encoding.UTF8.GetBytes(Condition.Replace(Environment.NewLine, " "));
@@ -131,16 +112,10 @@ namespace Mesen.Debugger
 		{
 			string addr = "";
 			string format = (MemoryType == SnesMemoryType.SpcMemory || MemoryType == SnesMemoryType.GameboyMemory) ? "X4" : "X6";
-			switch(AddressType) {
-				case BreakpointAddressType.AnyAddress:
-					return "<any>";
-				case BreakpointAddressType.SingleAddress:
-					addr += $"${StartAddress.ToString(format)}";
-					break;
-
-				case BreakpointAddressType.AddressRange:
-					addr = $"${StartAddress.ToString(format)} - ${EndAddress.ToString(format)}";
-					break;
+			if(StartAddress == EndAddress) {
+				addr += $"${StartAddress.ToString(format)}";
+			} else {
+				addr = $"${StartAddress.ToString(format)} - ${EndAddress.ToString(format)}";
 			}
 
 			if(showLabel) {
@@ -157,15 +132,13 @@ namespace Mesen.Debugger
 			UInt32 address = StartAddress;
 
 			if(IsCpuBreakpoint) {
-				/*CodeLabel label;
-				if(this.IsAbsoluteAddress) {
+				CodeLabel? label;
+				if(IsAbsoluteAddress) {
 					label = LabelManager.GetLabel(address, this.MemoryType);
 				} else {
 					label = LabelManager.GetLabel(new AddressInfo() { Address = (int)address, Type = this.MemoryType });
 				}
-				if(label != null) {
-					return label.Label;
-				}*/
+				return label?.Label ?? string.Empty;
 			}
 			return string.Empty;
 		}
@@ -230,15 +203,27 @@ namespace Mesen.Debugger
 			}
 			return type;
 		}
+
+		public Breakpoint Clone()
+		{
+			return JsonHelper.Clone(this);
+		}
+
+		public void CopyFrom(Breakpoint copy)
+		{
+			StartAddress = copy.StartAddress;
+			EndAddress = copy.EndAddress;
+			MemoryType = copy.MemoryType;
+			MarkEvent = copy.MarkEvent;
+			Enabled = copy.Enabled;
+			Condition = copy.Condition;
+			BreakOnExec = copy.BreakOnExec;
+			BreakOnRead = copy.BreakOnRead;
+			BreakOnWrite = copy.BreakOnWrite;
+			CpuType = copy.CpuType;
+		}
 	}
 
-	public enum BreakpointAddressType
-	{
-		AnyAddress,
-		SingleAddress,
-		AddressRange,
-	}
-	
 	[Flags]
 	public enum BreakpointTypeFlags
 	{

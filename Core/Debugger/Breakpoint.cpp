@@ -6,21 +6,9 @@
 bool Breakpoint::Matches(uint32_t memoryAddr, AddressInfo &info)
 {
 	if(_memoryType <= DebugUtilities::GetLastCpuMemoryType() && !DebugUtilities::IsPpuMemory(info.Type)) {
-		if(_startAddr == -1) {
-			return true;
-		} else if(_endAddr == -1) {
-			return (int32_t)memoryAddr == _startAddr;
-		} else {
-			return (int32_t)memoryAddr >= _startAddr && (int32_t)memoryAddr <= _endAddr;
-		}
+		return (int32_t)memoryAddr >= _startAddr && (int32_t)memoryAddr <= _endAddr;
 	} else if(_memoryType == info.Type) {
-		if(_startAddr == -1) {
-			return true;
-		} else if(_endAddr == -1) {
-			return info.Address == _startAddr;
-		} else {
-			return info.Address >= _startAddr && info.Address <= _endAddr;
-		}
+		return info.Address >= _startAddr && info.Address <= _endAddr;
 	}
 
 	return false;

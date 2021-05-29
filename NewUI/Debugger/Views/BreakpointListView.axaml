@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
@@ -14,16 +15,11 @@
 	</Design.DataContext>
 
 	<Border BorderThickness="1" BorderBrush="LightGray">
-		<DataGrid
+		<c:MesenDataGrid
+			Name="DataGrid"
 			Items="{Binding Breakpoints}"
-			CanUserSortColumns="True"
-			CanUserResizeColumns="True"
-			CanUserReorderColumns="True"
-			SelectionMode="Extended"
-			FontFamily="Microsoft Sans Serif"
-			GridLinesVisibility="All"
 			Tapped="OnGridClick"
-			IsReadOnly="True"
+			DoubleTapped="OnGridDoubleClick"
 		>
 			<DataGrid.Columns>
 				<DataGridCheckBoxColumn Header="E" Binding="{Binding Enabled}" Width="21" />
@@ -32,6 +28,27 @@
 				<DataGridTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
 				<DataGridTextColumn Header="Condition" Binding="{Binding Condition}" Width="3*" CanUserResize="True" />
 			</DataGrid.Columns>
-		</DataGrid>
+
+			<DataGrid.ContextMenu>
+				<ContextMenu PlacementMode="Pointer">
+					<MenuItem Header="Add" Click="mnuAddBreakpoint_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/Add.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Edit" Click="mnuEditBreakpoint_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/EditLabel.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator />
+					<MenuItem Header="Delete" Click="mnuDeleteBreakpoint_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/Close.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+		</c:MesenDataGrid>
 	</Border>
 </UserControl>

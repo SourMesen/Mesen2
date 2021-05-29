@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:dbg="using:Mesen.Debugger"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
@@ -20,19 +21,10 @@
 	</UserControl.Resources>
 	
 	<Border BorderThickness="1" BorderBrush="LightGray">
-		<DataGrid
+		<c:MesenDataGrid
 			Name="DataGrid"
 			Items="{CompiledBinding Labels}"
-			CanUserSortColumns="True"
-			CanUserResizeColumns="True"
-			CanUserReorderColumns="True"
-			SelectionMode="Extended"
-			FontFamily="Microsoft Sans Serif"
-			GridLinesVisibility="All"
 			DoubleTapped="OnGridDoubleClick"
-			Tapped="OnGridClick"
-			CellPointerPressed="OnCellPointerPressed"
-			IsReadOnly="True"
 		>
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="1*" CanUserResize="True"  />
@@ -61,6 +53,6 @@
 					</MenuItem>
 				</ContextMenu>
 			</DataGrid.ContextMenu>
-		</DataGrid>
+		</c:MesenDataGrid>
 	</Border>
 </UserControl>

@@ -1,0 +1,88 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="180"
+	x:Class="Mesen.Debugger.Windows.BreakpointEditWindow"
+	x:DataType="vm:BreakpointEditViewModel"
+	Icon="/Assets/Edit.png"
+	Width="320" Height="180"	
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:BreakpointEditViewModel />
+	</Design.DataContext>
+
+	<Window.Resources>
+		<dbg:HexConverter x:Key="Hex" />
+	</Window.Resources>
+
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" IsEnabled="{CompiledBinding OkEnabled}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<StackPanel DockPanel.Dock="Bottom" Margin="0 0 0 -20">
+			<CheckBox Content="{l:Translate chkMark}" IsChecked="{CompiledBinding Breakpoint.MarkEvent}" />
+			<CheckBox Content="{l:Translate chkEnable}" IsChecked="{CompiledBinding Breakpoint.Enabled}" />
+		</StackPanel>
+		
+		<Grid
+			DockPanel.Dock="Right"
+			ColumnDefinitions="Auto,*"
+			RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+			Margin="5 0 5 0"
+		>
+			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblBreakpointType}" />
+			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
+				<c:EnumComboBox
+					EnumType="{x:Type i:SnesMemoryType}"
+					SelectedItem="{CompiledBinding Breakpoint.MemoryType}"
+					Width="150"
+				/>
+				<TextBlock Margin="3 0 0 0" Text="{CompiledBinding MaxAddress}" Foreground="Gray" />
+			</StackPanel>
+
+			<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblBreakOn}" />
+			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1">
+				<CheckBox Content="{l:Translate chkBreakOnRead}" IsChecked="{CompiledBinding Breakpoint.BreakOnRead}" />
+				<CheckBox Content="{l:Translate chkBreakOnWrite}" IsChecked="{CompiledBinding Breakpoint.BreakOnWrite}" Margin="10 0 0 0" />
+				<CheckBox Content="{l:Translate chkBreakOnExec}" IsChecked="{CompiledBinding Breakpoint.BreakOnExec}" Margin="10 0 0 0" />
+			</StackPanel>
+
+			<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblAddress}" />
+			<StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+				<TextBlock Margin="0 0 3 0">$</TextBlock>
+				<TextBox Text="{CompiledBinding Breakpoint.StartAddress, Converter={StaticResource Hex}, ConverterParameter='X'}" Width="60" />
+
+				<TextBlock Margin="3 0 3 0" Text="{l:Translate lblAddressTo}" />
+				<TextBox Text="{CompiledBinding Breakpoint.EndAddress, Converter={StaticResource Hex}, ConverterParameter='X'}}" Width="60" />
+			</StackPanel>
+
+			<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblCondition}" />
+			<Grid ColumnDefinitions="*, Auto, Auto" Grid.Column="1" Grid.Row="3">
+				<TextBox
+					AcceptsReturn="True"
+					Height="50"
+					VerticalContentAlignment="Top"
+					Text="{CompiledBinding Breakpoint.Condition}"
+				/>
+
+				<Image Grid.Column="1" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{CompiledBinding !IsConditionValid}" />
+				<Image Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblConditionHelp}" ToolTip.Placement="Right" />
+			</Grid>
+		</Grid>
+	</DockPanel>
+</Window>
