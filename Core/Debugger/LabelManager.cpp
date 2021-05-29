@@ -44,51 +44,12 @@ void LabelManager::SetLabel(uint32_t address, SnesMemoryType memType, string lab
 
 int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
 {
-	switch(memType) {
-		case SnesMemoryType::PrgRom: return absoluteAddr | ((uint64_t)1 << 32);
-		case SnesMemoryType::WorkRam: return absoluteAddr | ((uint64_t)2 << 32);
-		case SnesMemoryType::SaveRam: return absoluteAddr | ((uint64_t)3 << 32);
-		case SnesMemoryType::Register: return absoluteAddr | ((uint64_t)4 << 32);
-		case SnesMemoryType::SpcRam: return absoluteAddr | ((uint64_t)5 << 32);
-		case SnesMemoryType::SpcRom: return absoluteAddr | ((uint64_t)6 << 32);
-		case SnesMemoryType::Sa1InternalRam: return absoluteAddr | ((uint64_t)7 << 32);
-		case SnesMemoryType::GsuWorkRam: return absoluteAddr | ((uint64_t)8 << 32);
-		case SnesMemoryType::BsxPsRam: return absoluteAddr | ((uint64_t)9 << 32);
-		case SnesMemoryType::BsxMemoryPack: return absoluteAddr | ((uint64_t)10 << 32);
-		case SnesMemoryType::DspProgramRom: return absoluteAddr | ((uint64_t)11 << 32);
-		case SnesMemoryType::GbPrgRom: return absoluteAddr | ((uint64_t)12 << 32);
-		case SnesMemoryType::GbWorkRam: return absoluteAddr | ((uint64_t)13 << 32);
-		case SnesMemoryType::GbCartRam: return absoluteAddr | ((uint64_t)14 << 32);
-		case SnesMemoryType::GbHighRam: return absoluteAddr | ((uint64_t)15 << 32);
-		case SnesMemoryType::GbBootRom: return absoluteAddr | ((uint64_t)16 << 32);
-		case SnesMemoryType::GameboyMemory: return absoluteAddr | ((uint64_t)17 << 32);
-		default: return -1;
-	}
+	return absoluteAddr | ((uint64_t)memType << 32);
 }
 
 SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 {
-	switch(key & ~(uint64_t)0xFFFFFFFF) {
-		case ((uint64_t)1 << 32): return SnesMemoryType::PrgRom; break;
-		case ((uint64_t)2 << 32): return SnesMemoryType::WorkRam; break;
-		case ((uint64_t)3 << 32): return SnesMemoryType::SaveRam; break;
-		case ((uint64_t)4 << 32): return SnesMemoryType::Register; break;
-		case ((uint64_t)5 << 32): return SnesMemoryType::SpcRam; break;
-		case ((uint64_t)6 << 32): return SnesMemoryType::SpcRom; break;
-		case ((uint64_t)7 << 32): return SnesMemoryType::Sa1InternalRam; break;
-		case ((uint64_t)8 << 32): return SnesMemoryType::GsuWorkRam; break;
-		case ((uint64_t)9 << 32): return SnesMemoryType::BsxPsRam; break;
-		case ((uint64_t)10 << 32): return SnesMemoryType::BsxMemoryPack; break;
-		case ((uint64_t)11 << 32): return SnesMemoryType::DspProgramRom; break;
-		case ((uint64_t)12 << 32): return SnesMemoryType::GbPrgRom; break;
-		case ((uint64_t)13 << 32): return SnesMemoryType::GbWorkRam; break;
-		case ((uint64_t)14 << 32): return SnesMemoryType::GbCartRam; break;
-		case ((uint64_t)15 << 32): return SnesMemoryType::GbHighRam; break;
-		case ((uint64_t)16 << 32): return SnesMemoryType::GbBootRom; break;
-		case ((uint64_t)17 << 32): return SnesMemoryType::GameboyMemory; break;
-	}
-
-	throw std::runtime_error("Invalid label key");
+	return (SnesMemoryType)(key >> 32);
 }
 
 string LabelManager::GetLabel(AddressInfo address)

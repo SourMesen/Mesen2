@@ -77,26 +77,7 @@ namespace Mesen.Debugger.Labels
 
 		private static UInt64 GetKey(UInt32 address, SnesMemoryType memType)
 		{
-			switch(memType) {
-				case SnesMemoryType.PrgRom: return address | ((ulong)1 << 32);
-				case SnesMemoryType.WorkRam: return address | ((ulong)2 << 32);
-				case SnesMemoryType.SaveRam: return address | ((ulong)3 << 32);
-				case SnesMemoryType.Register: return address | ((ulong)4 << 32);
-				case SnesMemoryType.SpcRam: return address | ((ulong)5 << 32);
-				case SnesMemoryType.SpcRom: return address | ((ulong)6 << 32);
-				case SnesMemoryType.Sa1InternalRam: return address | ((ulong)7 << 32);
-				case SnesMemoryType.GsuWorkRam: return address | ((ulong)8 << 32);
-				case SnesMemoryType.BsxPsRam: return address | ((ulong)9 << 32);
-				case SnesMemoryType.BsxMemoryPack: return address | ((ulong)10 << 32);
-				case SnesMemoryType.DspProgramRom: return address | ((ulong)11 << 32);
-				case SnesMemoryType.GbPrgRom: return address | ((ulong)12 << 32);
-				case SnesMemoryType.GbWorkRam: return address | ((ulong)13 << 32);
-				case SnesMemoryType.GbCartRam: return address | ((ulong)14 << 32);
-				case SnesMemoryType.GbHighRam: return address | ((ulong)15 << 32);
-				case SnesMemoryType.GbBootRom: return address | ((ulong)16 << 32);
-				case SnesMemoryType.GameboyMemory: return address | ((ulong)17 << 32);
-			}
-			throw new Exception("Invalid type");
+			return address | ((UInt64)memType << 32);
 		}
 
 		private static void SetLabel(uint address, SnesMemoryType memType, string label, string comment)
@@ -234,6 +215,7 @@ namespace Mesen.Debugger.Labels
 
 		public static void SetDefaultLabels()
 		{
+			SetSnesDefaultLabels();
 			//TODO
 			/*CoprocessorType coproc = EmuApi.GetRomInfo().CoprocessorType;
 			if(coproc == CoprocessorType.SGB) {

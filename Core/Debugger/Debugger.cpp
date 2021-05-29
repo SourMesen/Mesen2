@@ -582,7 +582,7 @@ shared_ptr<ScriptManager> Debugger::GetScriptManager()
 shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
-		_debuggers[(int)cpuType].Debugger->GetCallstackManager();
+		return _debuggers[(int)cpuType].Debugger->GetCallstackManager();
 	}
 	throw std::runtime_error("GetCallstackManager() - Unsupported CPU type");
 }
@@ -600,7 +600,7 @@ Emulator* Debugger::GetEmulator()
 shared_ptr<IAssembler> Debugger::GetAssembler(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
-		_debuggers[(int)cpuType].Debugger->GetAssembler();
+		return _debuggers[(int)cpuType].Debugger->GetAssembler();
 	}
 	throw std::runtime_error("GetAssembler() - Unsupported CPU type");
 }

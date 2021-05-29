@@ -27,6 +27,7 @@
 		<Style Selector="TextBox.h1">
 			<Setter Property="FontFamily" Value="Consolas" />
 			<Setter Property="FontSize" Value="12" />
+			<Setter Property="MinWidth" Value="0" />
 		</Style>
 	</UserControl.Styles>
 
@@ -39,6 +40,8 @@
 			<TextBlock>Y:</TextBlock>
 			<TextBox Classes="h1" Text="{CompiledBinding RegY, Converter={StaticResource Hex}}" />
 			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+				<TextBlock>K:</TextBlock>
+				<TextBox Classes="h1" Text="{CompiledBinding RegK, Converter={StaticResource Hex}}" />
 				<TextBlock>PC:</TextBlock>
 				<TextBox Classes="h1" Text="{CompiledBinding RegPC, Converter={StaticResource Hex}}" />
 			</StackPanel>
@@ -46,20 +49,20 @@
 		</DockPanel>
 		<DockPanel>
 			<TextBlock>D:</TextBlock>
-			<TextBox Classes="h1" Text="{Binding RegD}" />
+			<TextBox Classes="h1" Text="{Binding RegD, Converter={StaticResource Hex}}" />
 			<TextBlock>DB:</TextBlock>
-			<TextBox  Classes="h1" Text="{Binding RegDBR}" />
+			<TextBox  Classes="h1" Text="{Binding RegDBR, Converter={StaticResource Hex}}" />
 
 			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
 				<TextBlock>S:</TextBlock>
-				<TextBox Classes="h1" Text="{Binding RegSP}" />
+				<TextBox Classes="h1" Text="{Binding RegSP, Converter={StaticResource Hex}}" />
 			</StackPanel>
 			<TextBlock />
 		</DockPanel>
 		<DockPanel Margin="0 2 0 0">
 			<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
 				<TextBlock>P:</TextBlock>
-				<TextBox Classes="h1" Text="{Binding RegPS}" />
+				<TextBox Classes="h1" Text="{Binding RegPS, Converter={StaticResource Hex}}" />
 			</StackPanel>
 
 			<TextBox

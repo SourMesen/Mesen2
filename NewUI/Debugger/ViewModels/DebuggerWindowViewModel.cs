@@ -2,6 +2,7 @@
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Disassembly;
+using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -15,6 +16,8 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public DisassemblyViewerViewModel Disassembly { get; private set; }
 		[Reactive] public BreakpointListViewModel BreakpointList { get; private set; }
+		[Reactive] public LabelListViewModel LabelList { get; private set; }
+		[Reactive] public CallStackViewModel CallStack { get; private set; }
 
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
@@ -33,13 +36,8 @@ namespace Mesen.Debugger.ViewModels
 
 			Disassembly = new DisassemblyViewerViewModel();
 			BreakpointList = new BreakpointListViewModel();
-
-			var factory = new DebuggerDockFactory(this);
-			var layout = factory.CreateLayout();
-			factory.InitLayout(layout);
-
-			DockFactory = factory;
-			DockLayout = layout;
+			
+			DockFactory = new DebuggerDockFactory(this);
 
 			RomInfo romInfo = EmuApi.GetRomInfo();
 
@@ -64,6 +62,14 @@ namespace Mesen.Debugger.ViewModels
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.GbDebuggerEnabled, true);
 					break;
 			}
+
+			LabelManager.SetDefaultLabels();
+			LabelList = new LabelListViewModel(CpuType);
+
+			CallStack = new CallStackViewModel(CpuType);
+
+			DockLayout = DockFactory.CreateLayout();
+			DockFactory.InitLayout(DockLayout);
 		}
 
 		internal void UpdateDisassembly()

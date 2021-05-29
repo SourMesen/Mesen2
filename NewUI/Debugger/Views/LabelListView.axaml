@@ -1,0 +1,66 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:dbg="using:Mesen.Debugger"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:LabelListViewModel"
+	x:Class="Mesen.Debugger.Views.LabelListView"
+>
+	<Design.DataContext>
+		<vm:LabelListViewModel />
+	</Design.DataContext>
+
+	<UserControl.Resources>
+		<dbg:HexConverter x:Key="Hex" />
+	</UserControl.Resources>
+	
+	<Border BorderThickness="1" BorderBrush="LightGray">
+		<DataGrid
+			Name="DataGrid"
+			Items="{CompiledBinding Labels}"
+			CanUserSortColumns="True"
+			CanUserResizeColumns="True"
+			CanUserReorderColumns="True"
+			SelectionMode="Extended"
+			FontFamily="Microsoft Sans Serif"
+			GridLinesVisibility="All"
+			DoubleTapped="OnGridDoubleClick"
+			Tapped="OnGridClick"
+			CellPointerPressed="OnCellPointerPressed"
+			IsReadOnly="True"
+		>
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="1*" CanUserResize="True"  />
+				<DataGridTextColumn Header="CPU Addr" Width="1*" CanUserResize="True"  />
+				<DataGridTextColumn Header="ROM Addr" Binding="{Binding Address, Converter={StaticResource Hex}, ConverterParameter='X4'}}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="1*" CanUserResize="True" />
+			</DataGrid.Columns>
+
+			<DataGrid.ContextMenu>
+				<ContextMenu PlacementMode="Pointer">
+					<MenuItem Header="Add" Click="mnuAddLabel_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/Add.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Edit" Click="mnuEditLabel_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/EditLabel.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator />
+					<MenuItem Header="Delete" Click="mnuDeleteLabel_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/Close.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+		</DataGrid>
+	</Border>
+</UserControl>

@@ -1,18 +1,20 @@
 ﻿using Mesen.Interop;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Globalization;
 using System.Text;
 
 namespace Mesen.Debugger.Labels
 {
-	public class CodeLabel
+	public class CodeLabel : ReactiveObject
 	{
-		public UInt32 Address;
-		public SnesMemoryType MemoryType;
-		public string Label = "";
-		public string Comment = "";
-		public CodeLabelFlags Flags;
-		public UInt32 Length = 1;
+		[Reactive] public UInt32 Address { get; set; }
+		[Reactive] public SnesMemoryType MemoryType { get; set; }
+		[Reactive] public string Label { get; set; } = "";
+		[Reactive] public string Comment { get; set; } = "";
+		[Reactive] public CodeLabelFlags Flags { get; set; }
+		[Reactive] public UInt32 Length { get; set; } = 1;
 
 		public override string ToString()
 		{
@@ -49,10 +51,10 @@ namespace Mesen.Debugger.Labels
 			return sb.ToString();
 		}
 
-		private static char[] _separatar = new char[1] { ':' };
+		private static char[] _separator = new char[1] { ':' };
 		public static CodeLabel? FromString(string data)
 		{
-			string[] rowData = data.Split(_separatar, 4);
+			string[] rowData = data.Split(_separator, 4);
 			if(rowData.Length < 3) {
 				//Invalid row
 				return null;
@@ -150,6 +152,16 @@ namespace Mesen.Debugger.Labels
 		public CodeLabel Clone()
 		{
 			return (CodeLabel)this.MemberwiseClone();
+		}
+
+		public void CopyFrom(CodeLabel copy)
+		{
+			Address = copy.Address;
+			MemoryType = copy.MemoryType;
+			Label = copy.Label;
+			Comment = copy.Comment;
+			Flags = copy.Flags;
+			Length = copy.Length;
 		}
 	}
 }

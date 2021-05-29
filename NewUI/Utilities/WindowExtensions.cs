@@ -10,24 +10,36 @@ namespace Mesen.Utilities
 {
 	static class WindowExtensions
 	{
-		private static void CenterWindow(Window child, Window parent)
+		private static void CenterWindow(Window child, Control parent)
 		{
 			child.WindowStartupLocation = WindowStartupLocation.Manual;
-			Size wndCenter = (parent.ClientSize / 2);
-			PixelPoint screenCenter = new PixelPoint(parent.Position.X + (int)wndCenter.Width, parent.Position.Y + (int)wndCenter.Height);
+			Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);
+			PixelPoint controlPosition  =parent.PointToScreen(new Point(0, 0));
+			PixelPoint screenCenter = new PixelPoint(controlPosition.X + (int)wndCenter.Width, controlPosition.Y + (int)wndCenter.Height);
 			child.Position = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
 		}
 
-		public static void ShowCentered(this Window child, Window parent)
+		public static void ShowCentered(this Window child, Control parent)
 		{
 			CenterWindow(child, parent);
 			child.Show();
 		}
 
-		public static Task ShowCenteredDialog(this Window child, Window parent)
+		public static Task ShowCenteredDialog(this Window child, Control parent)
+		{
+			return ShowCenteredDialog<object>(child, parent);
+		}
+
+		public static Task<TResult> ShowCenteredDialog<TResult>(this Window child, Control parent)
 		{
 			CenterWindow(child, parent);
-			return child.ShowDialog(parent);
+
+			IControl parentWnd = parent;
+			while(!(parentWnd is Window) && parentWnd != null) {
+				parentWnd = parentWnd.Parent;
+			}
+
+			return child.ShowDialog<TResult>(parentWnd as Window);
 		}
 	}
 }

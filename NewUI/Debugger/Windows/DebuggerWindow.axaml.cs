@@ -9,6 +9,7 @@ using Mesen.Debugger.Disassembly;
 using Mesen.Interop;
 using Avalonia.Interactivity;
 using System.ComponentModel;
+using Mesen.Debugger.Labels;
 
 namespace Mesen.Debugger.Windows
 {
@@ -66,6 +67,7 @@ namespace Mesen.Debugger.Windows
 			if(e.NotificationType == ConsoleNotificationType.CodeBreak) {
 				_model.UpdateCpuState();
 				_model.UpdateDisassembly();
+				_model.CallStack.UpdateCallStack();
 			}
 		}
 

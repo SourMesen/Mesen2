@@ -179,6 +179,12 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\CallStackView.axaml.cs">
+      <DependentUpon>CallStackView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\LabelListView.axaml.cs">
+      <DependentUpon>LabelListView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\DebuggerDock\StatusToolView.axaml.cs">
       <DependentUpon>StatusToolView.axaml</DependentUpon>
     </Compile>
@@ -190,6 +196,9 @@
     </Compile>
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\LabelEditWindow.axaml.cs">
+      <DependentUpon>LabelEditWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\TileViewerWindow.axaml.cs">
       <DependentUpon>TileViewerWindow.axaml</DependentUpon>

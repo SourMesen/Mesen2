@@ -1,4 +1,5 @@
-﻿using Mesen.Interop;
+﻿using Mesen.Debugger.Labels;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace Mesen.Debugger
 		{
 			if(EffectiveAddress >= 0) {
 				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = _cpuType.ToMemoryType() };
-				/*CodeLabel label = LabelManager.GetLabel(relAddress);
+				CodeLabel? label = LabelManager.GetLabel(relAddress);
 				if(label != null) {
 					if(label.Length > 1) {
 						int gap = DebugApi.GetAbsoluteAddress(relAddress).Address - label.GetAbsoluteAddress().Address;
@@ -42,9 +43,9 @@ namespace Mesen.Debugger
 						}
 					}
 					return "[" + label.Label + "]";
-				} else {*/
+				} else {
 					return "[$" + EffectiveAddress.ToString(format) + "]";
-				//}
+				}
 			} else {
 				return "";
 			}

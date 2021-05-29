@@ -721,7 +721,7 @@ namespace Mesen.Interop
 		Zero = 0x80
 	}
 
-	public struct GbCpuState
+	public struct GbCpuState : BaseState
 	{
 		public UInt16 PC;
 		public UInt16 SP;

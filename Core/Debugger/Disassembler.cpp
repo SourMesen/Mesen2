@@ -293,13 +293,22 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 	switch(row.Address.Type) {
 		default: break;
 		case SnesMemoryType::GbPrgRom:
-		case SnesMemoryType::PrgRom: data.Flags |= (uint8_t)LineFlags::PrgRom; break;
+		case SnesMemoryType::PrgRom:
+		case SnesMemoryType::NesPrgRom:
+			data.Flags |= (uint8_t)LineFlags::PrgRom;
+			break;
 
 		case SnesMemoryType::GbWorkRam:
-		case SnesMemoryType::WorkRam: data.Flags |= (uint8_t)LineFlags::WorkRam; break;
+		case SnesMemoryType::WorkRam:
+		case SnesMemoryType::NesWorkRam:
+			data.Flags |= (uint8_t)LineFlags::WorkRam;
+			break;
 
 		case SnesMemoryType::GbCartRam:
-		case SnesMemoryType::SaveRam: data.Flags |= (uint8_t)LineFlags::SaveRam; break;
+		case SnesMemoryType::SaveRam:
+		case SnesMemoryType::NesSaveRam:
+			data.Flags |= (uint8_t)LineFlags::SaveRam;
+			break;
 	}
 
 	bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) != 0;
@@ -511,8 +520,8 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 	SnesMemoryType memType = DebugUtilities::GetCpuMemoryType(type);
 	uint32_t maxBank = (_memoryDumper->GetMemorySize(memType) - 1) >> 16;
 
-	uint32_t row;
-	for(row = 0; row < rowCount; row++){
+	int32_t row;
+	for(row = 0; row < (int32_t)rowCount; row++){
 		if(row + i >= rows.size()) {
 			if(bank < maxBank) {
 				bank++;

@@ -73,6 +73,7 @@ uint32_t MemoryDumper::GetMemorySize(SnesMemoryType type)
 		case SnesMemoryType::Cx4Memory: return 0x1000000;
 		case SnesMemoryType::GameboyMemory: return 0x10000;
 		case SnesMemoryType::NesMemory: return 0x10000;
+		case SnesMemoryType::Register: return 0x10000;
 		default: return _emu->GetMemory(type).Size;
 	}
 }

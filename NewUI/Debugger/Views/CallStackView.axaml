@@ -4,33 +4,36 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:dbg="using:Mesen.Debugger"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
-	x:Class="Mesen.Debugger.Views.BreakpointListView"
+	x:DataType="vm:CallStackViewModel"
+	x:Class="Mesen.Debugger.Views.CallStackView"
 >
 	<Design.DataContext>
-		<vm:BreakpointListViewModel />
+		<vm:CallStackViewModel />
 	</Design.DataContext>
 
+	<UserControl.Resources>
+		<dbg:HexConverter x:Key="Hex" />
+	</UserControl.Resources>
+	
 	<Border BorderThickness="1" BorderBrush="LightGray">
 		<DataGrid
-			Items="{Binding Breakpoints}"
+			Name="DataGrid"
+			Items="{CompiledBinding StackFrames}"
 			CanUserSortColumns="True"
 			CanUserResizeColumns="True"
 			CanUserReorderColumns="True"
 			SelectionMode="Extended"
 			FontFamily="Microsoft Sans Serif"
 			GridLinesVisibility="All"
-			Tapped="OnGridClick"
 			IsReadOnly="True"
 		>
 			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
-				<DataGridCheckBoxColumn Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
-				<DataGridTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
-				<DataGridTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
-				<DataGridTextColumn Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
+				<DataGridTextColumn Header="Function (Entry Address)" Binding="{Binding SubName}" Width="1*" CanUserResize="True"  />
+				<DataGridTextColumn Header="PC Address" Binding="{Binding Address, Converter={StaticResource Hex}, ConverterParameter='X4'}}" Width="1*" CanUserResize="True" />
 			</DataGrid.Columns>
 		</DataGrid>
 	</Border>

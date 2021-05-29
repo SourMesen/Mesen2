@@ -344,6 +344,55 @@
 		<Setter Property="CornerRadius" Value="0" />
 	</Style>
 
+	<Style Selector="ContextMenu">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Background="{TemplateBinding Background}"
+						  BorderBrush="{TemplateBinding BorderBrush}"
+						  BorderThickness="{TemplateBinding BorderThickness}"
+						  Padding="0"
+						  MaxWidth="{TemplateBinding MaxWidth}"
+						  MinHeight="{TemplateBinding MinHeight}"
+						  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+						  CornerRadius="{DynamicResource OverlayCornerRadius}">
+					<Panel>
+						<Rectangle
+							HorizontalAlignment="Left"
+							Width="24">
+							<Rectangle.Fill>
+								<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
+									<GradientStop Color="#fcfcfc" Offset="0.0" />
+									<GradientStop Color="#f1f1f1" Offset="1.0" />
+								</LinearGradientBrush>
+							</Rectangle.Fill>
+						</Rectangle>
+						
+						<ScrollViewer Classes="menuscroller">
+							<ItemsPresenter Name="PART_ItemsPresenter"
+												 Items="{TemplateBinding Items}"
+												 ItemsPanel="{TemplateBinding ItemsPanel}"
+												 ItemTemplate="{TemplateBinding ItemTemplate}"
+												 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
+												 KeyboardNavigation.TabNavigation="Continue"
+												 Grid.IsSharedSizeScope="True" />
+						</ScrollViewer>
+					</Panel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="ContextMenu > MenuItem">
+		<Setter Property="Height" Value="20" />
+		<Setter Property="Padding" Value="2 0" />
+	</Style>
+
+	<Style Selector="ContextMenu > MenuItem:selected /template/ Border">
+		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
 	<Style Selector="Button">
 		<Setter Property="Height" Value="21" />
 		<Setter Property="Margin" Value="1" />
@@ -489,6 +538,44 @@
 	</Style>
 	<Style Selector="Grid > ComboBox">
 		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="ScrollBar">
+		<Setter Property="AllowAutoHide" Value="False" />
+	</Style>
+
+	<!-- Data grid -->
+	<Style Selector="DataGridColumnHeader">
+		<Setter Property="MinHeight" Value="18" />
+	</Style>
+	<Style Selector="DataGridColumnHeader Grid">
+		<Setter Property="Margin" Value="-8 0 0 0" />
+	</Style>
+	<Style Selector="DataGridColumnHeader Grid ContentPresenter">
+		<Setter Property="Margin" Value="0 0 -30 0" />
+	</Style>
+	<Style Selector="DataGridColumnHeader Path">
+		<Setter Property="Width" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="IsVisible" Value="False" />
+	</Style>
+	<Style Selector="DataGridRow">
+		<Setter Property="Height" Value="18" />
+	</Style>
+	<Style Selector="DataGridCell">
+		<Setter Property="FontSize" Value="10.5" />
+		<Setter Property="Height" Value="14" />
+		<Setter Property="Padding" Value="0" />
+	</Style>
+	<Style Selector="DataGridCell /template/ ContentPresenter > TextBlock">
+		<Setter Property="Margin" Value="0" />
+	</Style>
+	<Style Selector="DataGridCell CheckBox">
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="Padding" Value="0" />
+	</Style>
+	<Style Selector="DataGridCell Grid#FocusVisual">
+		<Setter Property="Opacity" Value="0" />
 	</Style>
 
 	<!-- Disable overlapped scrollbar in scrollviewer -->

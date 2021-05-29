@@ -64,7 +64,7 @@ namespace Mesen.Debugger
 									new SplitterDockable(),
 									new ToolDock {
 										Proportion = 0.33,
-										VisibleDockables = CreateList<IDockable>(new DummyTool() { Id = "Labels", Title = "Labels" })
+										VisibleDockables = CreateList<IDockable>(_context.LabelList)
 									}
 								)
 							}
@@ -87,7 +87,7 @@ namespace Mesen.Debugger
 							new SplitterDockable(),
 							new ToolDock {
 								Proportion = 0.33,
-								VisibleDockables = CreateList<IDockable>(new DummyTool() { Id = "CallStack", Title = "Call Stack" })
+								VisibleDockables = CreateList<IDockable>(_context.CallStack)
 							}
 						)
 					}
