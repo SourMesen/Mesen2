@@ -75,7 +75,7 @@ namespace Mesen.Debugger
 						VisibleDockables = CreateList<IDockable>(
 							new ToolDock {
 								Proportion = 0.33,
-								VisibleDockables = CreateList<IDockable>(new DummyTool() { Id = "Watch", Title = "Watch" })
+								VisibleDockables = CreateList<IDockable>(_context.WatchList)
 							},
 							new SplitterDockable(),
 							new ToolDock {
@@ -123,9 +123,5 @@ namespace Mesen.Debugger
 
 			base.InitLayout(layout);
 		}
-	}
-
-	public class DummyTool : Tool
-	{
 	}
 }

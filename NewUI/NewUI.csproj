@@ -179,6 +179,9 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\WatchListView.axaml.cs">
+      <DependentUpon>WatchListView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\CallStackView.axaml.cs">
       <DependentUpon>CallStackView.axaml</DependentUpon>
     </Compile>

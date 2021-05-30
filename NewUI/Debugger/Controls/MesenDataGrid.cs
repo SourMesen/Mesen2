@@ -41,6 +41,7 @@ namespace Mesen.Debugger.Controls
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+
 			if(e.Key == Key.End) {
 				if(Items is IList list) {
 					if(e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {

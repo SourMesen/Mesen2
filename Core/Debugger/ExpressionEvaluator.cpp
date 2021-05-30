@@ -11,6 +11,10 @@
 #include "Debugger/DebugUtilities.h"
 #include "Shared/BaseState.h"
 #include "Utilities/HexUtilities.h"
+#include "SNES/CpuTypes.h"
+#include "SNES/SpcTypes.h"
+#include "NES/NesTypes.h"
+#include "Gameboy/GbTypes.h"
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };
 const vector<int> ExpressionEvaluator::_binaryPrecedence = { { 10,  10,  10,   9,   9,    8,    8,   7,   7,    7,    7,    6,    6,   5,   4,   3,    2,    1 } };
@@ -483,11 +487,12 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 					return 0;
 				}
 			} else {
-				/*switch(token) {
+				switch(token) {
+					//TODO
 					//case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;
-					case EvalValues::PpuFrameCount: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.FrameCount : state.Ppu.FrameCount; break;
-					case EvalValues::PpuCycle: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Cycle : state.Ppu.Cycle; break;
-					case EvalValues::PpuScanline: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Scanline : state.Ppu.Scanline; break;
+					//case EvalValues::PpuFrameCount: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.FrameCount : state.Ppu.FrameCount; break;
+					//case EvalValues::PpuCycle: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Cycle : state.Ppu.Cycle; break;
+					//case EvalValues::PpuScanline: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Scanline : state.Ppu.Scanline; break;
 					case EvalValues::Value: token = operationInfo.Value; break;
 					case EvalValues::Address: token = operationInfo.Address; break;
 					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
@@ -498,49 +503,68 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 					default:
 						switch(_cpuType) {
 							case CpuType::Cpu:
-							case CpuType::Sa1:
+							case CpuType::Sa1: {
+								CpuState& s = (CpuState&)state;
 								switch(token) {
-									case EvalValues::RegA: token = state.Cpu.A; break;
-									case EvalValues::RegX: token = state.Cpu.X; break;
-									case EvalValues::RegY: token = state.Cpu.Y; break;
-									case EvalValues::RegSP: token = state.Cpu.SP; break;
-									case EvalValues::RegPS: token = state.Cpu.PS; break;
-									case EvalValues::RegPC: token = state.Cpu.PC; break;
-									case EvalValues::Nmi: token = state.Cpu.NmiFlag; resultType = EvalResultType::Boolean; break;
-									case EvalValues::Irq: token = state.Cpu.IrqSource != 0; resultType = EvalResultType::Boolean; break;
+									case EvalValues::RegA: token = s.A; break;
+									case EvalValues::RegX: token = s.X; break;
+									case EvalValues::RegY: token = s.Y; break;
+									case EvalValues::RegSP: token = s.SP; break;
+									case EvalValues::RegPS: token = s.PS; break;
+									case EvalValues::RegPC: token = (s.K << 16) | s.PC; break;
+									case EvalValues::Nmi: token = s.NmiFlag; resultType = EvalResultType::Boolean; break;
+									case EvalValues::Irq: token = s.IrqSource != 0; resultType = EvalResultType::Boolean; break;
 								}
 								break;
+							}
 
-							case CpuType::Spc:
+							case CpuType::Spc: {
+								SpcState& s = (SpcState&)state;
 								switch(token) {
-									case EvalValues::RegA: token = state.Spc.A; break;
-									case EvalValues::RegX: token = state.Spc.X; break;
-									case EvalValues::RegY: token = state.Spc.Y; break;
-									case EvalValues::RegSP: token = state.Spc.SP; break;
-									case EvalValues::RegPS: token = state.Spc.PS; break;
-									case EvalValues::RegPC: token = state.Spc.PC; break;
+									case EvalValues::RegA: token = s.A; break;
+									case EvalValues::RegX: token = s.X; break;
+									case EvalValues::RegY: token = s.Y; break;
+									case EvalValues::RegSP: token = s.SP; break;
+									case EvalValues::RegPS: token = s.PS; break;
+									case EvalValues::RegPC: token = s.PC; break;
 								}
 								break;
+							}
 
-							case CpuType::Gameboy:
+							case CpuType::Nes: {
+								NesCpuState& s = (NesCpuState&)state;
 								switch(token) {
-									case EvalValues::RegA: token = state.Gameboy.Cpu.A; break;
-									case EvalValues::RegB: token = state.Gameboy.Cpu.B; break;
-									case EvalValues::RegC: token = state.Gameboy.Cpu.C; break;
-									case EvalValues::RegD: token = state.Gameboy.Cpu.D; break;
-									case EvalValues::RegE: token = state.Gameboy.Cpu.E; break;
-									case EvalValues::RegF: token = state.Gameboy.Cpu.Flags; break;
-									case EvalValues::RegH: token = state.Gameboy.Cpu.H; break;
-									case EvalValues::RegL: token = state.Gameboy.Cpu.L; break;
-									case EvalValues::RegAF: token = (state.Gameboy.Cpu.A << 8) | state.Gameboy.Cpu.Flags; break;
-									case EvalValues::RegBC: token = (state.Gameboy.Cpu.B << 8) | state.Gameboy.Cpu.C; break;
-									case EvalValues::RegDE: token = (state.Gameboy.Cpu.D << 8) | state.Gameboy.Cpu.E; break;
-									case EvalValues::RegHL: token = (state.Gameboy.Cpu.H << 8) | state.Gameboy.Cpu.L; break;
-									case EvalValues::RegSP: token = state.Gameboy.Cpu.SP; break;
-									case EvalValues::RegPC: token = state.Gameboy.Cpu.PC; break;
+									case EvalValues::RegA: token = s.A; break;
+									case EvalValues::RegX: token = s.X; break;
+									case EvalValues::RegY: token = s.Y; break;
+									case EvalValues::RegSP: token = s.SP; break;
+									case EvalValues::RegPS: token = s.PS; break;
+									case EvalValues::RegPC: token = s.PC; break;
 								}
 								break;
+							}
 
+							case CpuType::Gameboy: {
+								GbCpuState& s = (GbCpuState&)state;
+								switch(token) {
+									case EvalValues::RegA: token = s.A; break;
+									case EvalValues::RegB: token = s.B; break;
+									case EvalValues::RegC: token = s.C; break;
+									case EvalValues::RegD: token = s.D; break;
+									case EvalValues::RegE: token = s.E; break;
+									case EvalValues::RegF: token = s.Flags; break;
+									case EvalValues::RegH: token = s.H; break;
+									case EvalValues::RegL: token = s.L; break;
+									case EvalValues::RegAF: token = (s.A << 8) | s.Flags; break;
+									case EvalValues::RegBC: token = (s.B << 8) | s.C; break;
+									case EvalValues::RegDE: token = (s.D << 8) | s.E; break;
+									case EvalValues::RegHL: token = (s.H << 8) | s.L; break;
+									case EvalValues::RegSP: token = s.SP; break;
+									case EvalValues::RegPC: token = s.PC; break;
+								}
+								break;
+							}
+/*
 							case CpuType::Gsu:
 								switch(token) {
 									case EvalValues::R0: token = state.Gsu.R[0]; break;
@@ -572,10 +596,10 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 
 							case CpuType::NecDsp:
 							case CpuType::Cx4:
-								throw std::runtime_error("Invalid CPU type");
+								throw std::runtime_error("Invalid CPU type");*/
 						}
 						break;
-				}*/
+				}
 			}
 		} else if(token >= EvalOperators::Multiplication) {
 			right = operandStack[--pos];

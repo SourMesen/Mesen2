@@ -16,6 +16,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public DisassemblyViewerViewModel Disassembly { get; private set; }
 		[Reactive] public BreakpointListViewModel BreakpointList { get; private set; }
+		[Reactive] public WatchListViewModel WatchList { get; private set; }
 		[Reactive] public LabelListViewModel LabelList { get; private set; }
 		[Reactive] public CallStackViewModel CallStack { get; private set; }
 
@@ -67,6 +68,7 @@ namespace Mesen.Debugger.ViewModels
 			LabelList = new LabelListViewModel(CpuType);
 
 			CallStack = new CallStackViewModel(CpuType);
+			WatchList = new WatchListViewModel(CpuType);
 
 			BreakpointManager.AddCpuType(CpuType);
 

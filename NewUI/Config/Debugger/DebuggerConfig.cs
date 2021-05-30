@@ -55,7 +55,7 @@ namespace Mesen.Config
 		public int TextZoom = 100;
 
 		public bool ShowSelectionLength = false;
-		//TODO public WatchFormatStyle WatchFormat = WatchFormatStyle.Hex;
+		public WatchFormatStyle WatchFormat = WatchFormatStyle.Hex;
 
 		public bool ShowCommentsInLabelList = true;
 

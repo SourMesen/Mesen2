@@ -1,0 +1,41 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:c="using:Mesen.Debugger.Controls"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:WatchListViewModel"
+	x:Class="Mesen.Debugger.Views.WatchListView"
+>
+	<Design.DataContext>
+		<vm:WatchListViewModel />
+	</Design.DataContext>
+
+	<Border BorderThickness="1" BorderBrush="LightGray">
+		<c:MesenDataGrid
+			Name="DataGrid"
+			Items="{CompiledBinding WatchEntries}"
+			CellEditEnded="OnCellEditEnded"
+			IsReadOnly="False"
+		>
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Watch" Binding="{Binding Expression}" Width="1*" CanUserResize="True"  />
+				<DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="1*" CanUserResize="True" IsReadOnly="True" />
+			</DataGrid.Columns>
+
+			<DataGrid.ContextMenu>
+				<ContextMenu PlacementMode="Pointer">
+					<MenuItem Header="Delete" Click="mnuDeleteWatch_Click">
+						<MenuItem.Icon>
+							<Image Source="/Assets/Close.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+		</c:MesenDataGrid>
+	</Border>
+</UserControl>
