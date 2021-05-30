@@ -1,4 +1,5 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Media;
+using Mesen.Config;
 using Mesen.Interop;
 using System;
 using System.Collections.Generic;
@@ -85,7 +86,8 @@ namespace Mesen.Debugger
 					}
 				}
 
-				list.Add(new WatchValueInfo() { Expression = expression, Value = newValue, HasChanged = forceHasChanged || (i < previousValues.Count ? (previousValues[i].Value != newValue) : false) });
+				IBrush brush = forceHasChanged || (i < previousValues.Count ? (previousValues[i].Value != newValue) : false) ? Brushes.Red : Brushes.Black;
+				list.Add(new WatchValueInfo() { Expression = expression, Value = newValue, Brush = brush });
 			}
 
 			list.Add(new WatchValueInfo());
@@ -227,7 +229,7 @@ namespace Mesen.Debugger
 	{
 		public string Expression { get; set; } = "";
 		public string Value { get; set; } = "";
-		public bool HasChanged { get; set; }
+		public IBrush Brush { get; set; } = Brushes.Black;
 	}
 
 	public enum WatchFormatStyle

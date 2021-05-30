@@ -16,24 +16,36 @@ namespace Mesen.Debugger.ViewModels
 
 		private WatchManager _manager;
 
+		public WatchListViewModel() : this(CpuType.Cpu) { }
+
 		public WatchListViewModel(CpuType cpuType)
 		{
 			Id = "WatchList";
 			Title = "Watch";
 			_manager = WatchManager.GetWatchManager(cpuType);
 			_manager.WatchChanged += WatchListViewModel_WatchChanged;
-
-			WatchEntries = _manager.GetWatchContent(new List<WatchValueInfo>());
+			UpdateWatch();
 		}
 
-		public void UpdateWatch(int index, string expression)
+		public void UpdateWatch()
+		{
+			WatchEntries = _manager.GetWatchContent(WatchEntries);
+		}
+
+		public void EditWatch(int index, string expression)
 		{
 			_manager.UpdateWatch(index, expression);
 		}
 
 		private void WatchListViewModel_WatchChanged(object? sender, EventArgs e)
 		{
-			WatchEntries = _manager.GetWatchContent(WatchEntries);
+			UpdateWatch();
+		}
+
+		internal void DeleteWatch(List<WatchValueInfo> items)
+		{
+			int[] indexes = items.Select(x => WatchEntries.IndexOf(x)).ToArray();
+			_manager.RemoveWatch(indexes);
 		}
 	}
 }

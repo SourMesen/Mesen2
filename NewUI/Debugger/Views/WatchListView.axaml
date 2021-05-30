@@ -15,16 +15,30 @@
 		<vm:WatchListViewModel />
 	</Design.DataContext>
 
+	<UserControl.Styles>
+		<Style Selector="DataGridCell.watchValue">
+			<Setter Property="Foreground" Value="{Binding Path=Brush}"/>
+		</Style>
+	</UserControl.Styles>
+
 	<Border BorderThickness="1" BorderBrush="LightGray">
 		<c:MesenDataGrid
 			Name="DataGrid"
 			Items="{CompiledBinding WatchEntries}"
 			CellEditEnded="OnCellEditEnded"
+			KeyDown="OnGridKeyDown"
 			IsReadOnly="False"
 		>
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Watch" Binding="{Binding Expression}" Width="1*" CanUserResize="True"  />
-				<DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="1*" CanUserResize="True" IsReadOnly="True" />
+				<DataGridTextColumn
+					CellStyleClasses="watchValue"
+					Header="Value"
+					Binding="{Binding Value}"
+					Width="1*"
+					CanUserResize="True"
+					IsReadOnly="True"
+				/>
 			</DataGrid.Columns>
 
 			<DataGrid.ContextMenu>

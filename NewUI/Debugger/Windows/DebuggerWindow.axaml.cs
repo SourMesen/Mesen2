@@ -10,6 +10,7 @@ using Mesen.Interop;
 using Avalonia.Interactivity;
 using System.ComponentModel;
 using Mesen.Debugger.Labels;
+using Avalonia.Threading;
 
 namespace Mesen.Debugger.Windows
 {
@@ -51,9 +52,7 @@ namespace Mesen.Debugger.Windows
 
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
-
-			_model.UpdateCpuState();
-			_model.UpdateDisassembly();
+			UpdateDebugger();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -62,12 +61,20 @@ namespace Mesen.Debugger.Windows
 			base.OnClosing(e);
 		}
 
+		private void UpdateDebugger()
+		{
+			_model.UpdateCpuState();
+			_model.UpdateDisassembly();
+			_model.WatchList.UpdateWatch();
+			_model.CallStack.UpdateCallStack();
+		}
+
 		private void _listener_OnNotification(NotificationEventArgs e)
 		{
 			if(e.NotificationType == ConsoleNotificationType.CodeBreak) {
-				_model.UpdateCpuState();
-				_model.UpdateDisassembly();
-				_model.CallStack.UpdateCallStack();
+				Dispatcher.UIThread.Post(() => {
+					UpdateDebugger();
+				});
 			}
 		}
 
