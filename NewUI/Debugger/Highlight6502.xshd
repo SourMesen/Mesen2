@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="6502" extensions=".s" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+	<Color name="NumberLiteral" foreground="DarkRed" />
+	<Color name="Keywords" fontWeight="bold" foreground="Blue" />
+	<Color name="Addresses" fontWeight="bold" foreground="DarkGreen" />
+
+	<RuleSet>
+		<Span color="Comment">
+			<Begin>;</Begin>
+		</Span>
+
+		<Rule color="Keywords">
+			\b[A-Za-z]{3}\b
+		</Rule>
+
+		<Rule color="NumberLiteral">
+			(\#\$[0-9a-fA-F]+)|
+			(\#\-{0,1}[0-9]+)
+		</Rule>
+
+		<Rule color="Addresses">
+			(\$[0-9a-fA-F]+)
+		</Rule>
+	</RuleSet>
+</SyntaxDefinition>

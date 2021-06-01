@@ -149,9 +149,11 @@
 	  <None Remove="Assets\WebBrowser.png" />
 	  <None Remove="Assets\XbIcon.png" />
 	  <None Remove="Assets\Zoom2x.png" />
+	  <None Remove="Debugger\Highlight6502.xshd" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.4" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.4" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.4" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.4" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.4" />
@@ -199,6 +201,9 @@
     </Compile>
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\AssemblerWindow.axaml.cs">
+      <DependentUpon>AssemblerWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\BreakpointEditWindow.axaml.cs">
       <DependentUpon>BreakpointEditWindow.axaml</DependentUpon>
@@ -442,6 +447,7 @@
     <AvaloniaResource Include="Assets\NesIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Debugger\Highlight6502.xshd" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
   </ItemGroup>
 </Project>

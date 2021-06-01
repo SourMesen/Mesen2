@@ -49,6 +49,7 @@
     <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
+    <ClInclude Include="NES\Debugger\NesAssembler.h" />
     <ClInclude Include="NES\DefaultNesPpu.h" />
     <ClInclude Include="NES\HdPacks\HdAudioDevice.h" />
     <ClInclude Include="NES\HdPacks\HdData.h" />
@@ -167,7 +168,7 @@
     <ClInclude Include="Shared\Video\stdafx.h" />
     <ClInclude Include="Shared\Video\SystemHud.h" />
     <ClInclude Include="SNES\AluMulDiv.h" />
-    <ClInclude Include="SNES\Debugger\Assembler.h" />
+    <ClInclude Include="SNES\Debugger\SnesAssembler.h" />
     <ClInclude Include="SNES\BaseCartridge.h" />
     <ClInclude Include="Shared\BaseControlDevice.h" />
     <ClInclude Include="SNES\Coprocessors\BaseCoprocessor.h" />
@@ -374,6 +375,7 @@
   <ItemGroup>
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
+    <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
     <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
@@ -411,7 +413,7 @@
     <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
-    <ClCompile Include="SNES\Debugger\Assembler.cpp" />
+    <ClCompile Include="SNES\Debugger\SnesAssembler.cpp" />
     <ClCompile Include="SNES\BaseCartridge.cpp" />
     <ClCompile Include="Shared\BaseControlDevice.cpp" />
     <ClCompile Include="Shared\Video\BaseRenderer.cpp" />

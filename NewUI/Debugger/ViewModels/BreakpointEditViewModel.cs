@@ -24,7 +24,7 @@ namespace Mesen.Debugger.ViewModels
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
 
 		//For designer
-		public BreakpointEditViewModel() : this(new Breakpoint()) { }
+		public BreakpointEditViewModel() : this(null!) { }
 
 		public BreakpointEditViewModel(Breakpoint bp)
 		{

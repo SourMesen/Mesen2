@@ -13,6 +13,7 @@ class CodeDataLogger;
 class EmuSettings;
 class ScriptManager;
 class BreakpointManager;
+class IAssembler;
 
 class Emulator;
 class NesCpu;

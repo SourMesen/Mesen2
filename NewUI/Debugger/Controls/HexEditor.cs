@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Layout;
 using Avalonia.Media.TextFormatting;
 using Mesen.Utilities;
 using System;
@@ -26,7 +27,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0);
 		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0);
 
-		public static readonly StyledProperty<SolidColorBrush> SelectedRowColumnColorProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(SelectedRowColumnColor), new SolidColorBrush(0xFFE7E7E7));
+		public static readonly StyledProperty<SolidColorBrush> SelectedRowColumnColorProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(SelectedRowColumnColor), new SolidColorBrush(0xFFF0F0F0));
 
 		public static readonly StyledProperty<SolidColorBrush> HeaderBackgroundProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(HeaderBackground), new SolidColorBrush(Color.FromRgb(235, 235, 235)));
 		public static readonly StyledProperty<SolidColorBrush> HeaderForegroundProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(HeaderForeground), new SolidColorBrush(Colors.Gray));
@@ -95,7 +96,7 @@ namespace Mesen.Debugger.Controls
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
 
-		private int HeaderCharLength => (DataProvider.Length - 1).ToString(HexFormat).Length;
+		private int HeaderCharLength => DataProvider.Length > 0 ? (DataProvider.Length - 1).ToString(HexFormat).Length : 0;
 		private double RowHeaderWidth => HeaderCharLength * LetterSize.Width + 5;
 		private double RowWidth => LetterSize.Width * (3 * BytesPerRow - 1);
 		private double StringViewMargin => 20;
@@ -110,10 +111,19 @@ namespace Mesen.Debugger.Controls
 		private List<float> _startPositionByByte = new List<float>();
 		private List<float> _endPositionByByte = new List<float>();
 
+		static HexEditor()
+		{
+			AffectsRender<HexEditor>(
+				DataProviderProperty, TopRowProperty, BytesPerRowProperty, SelectionStartProperty, SelectionLengthProperty,
+				SelectedRowColumnColorProperty, HeaderBackgroundProperty, HeaderForegroundProperty, HeaderHighlightProperty,
+				IsFocusedProperty
+			);
+		}
+
 		public HexEditor()
 		{
-			this.Focusable = true;
-			this.Cursor = new Cursor(StandardCursorType.Ibeam);
+			Focusable = true;
+			Cursor = new Cursor(StandardCursorType.Ibeam);
 		}
 
 		void MoveSelection(int offset)
@@ -267,16 +277,19 @@ namespace Mesen.Debugger.Controls
 
 		private void ScrollIntoView(int byteIndex)
 		{
+			int topRow = 0;
 			if(byteIndex < 0) {
-				TopRow = 0;
+				topRow = 0;
 			} else if(byteIndex >= DataProvider.Length) {
-				TopRow = (DataProvider.Length / BytesPerRow) - VisibleRows;
+				topRow = (DataProvider.Length / BytesPerRow) - VisibleRows;
 			} else if(byteIndex < TopRow * BytesPerRow) {
 				//scroll up
-				TopRow = byteIndex / BytesPerRow;
+				topRow = byteIndex / BytesPerRow;
 			} else if(byteIndex > (TopRow + VisibleRows) * BytesPerRow) {
-				TopRow = byteIndex / BytesPerRow - VisibleRows;
+				topRow = byteIndex / BytesPerRow - VisibleRows;
 			}
+
+			TopRow = Math.Max(0, topRow);
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -352,7 +365,7 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			context.DrawRectangle(ColorHelper.GetBrush(Colors.White), null, this.Bounds);
+			context.DrawRectangle(ColorHelper.GetBrush(Colors.White), null, new Rect(Bounds.Size));
 
 			//Init font and letter size
 			InitFontAndLetterSize();
@@ -386,14 +399,18 @@ namespace Mesen.Debugger.Controls
 			dataProvider.Prepare(position, position + bytesPerRow * (VisibleRows + 3));
 
 			//Draw selected column background color
-			context.DrawRectangle(selectedRowColumnColor, null, new Rect(letterWidth * (3 * selectedColumn), 0, letterWidth * 2, bounds.Height));
+			if(IsFocused) {
+				context.DrawRectangle(selectedRowColumnColor, null, new Rect(letterWidth * (3 * selectedColumn), 0, letterWidth * 2, bounds.Height));
+			}
 
 			//Draw data
 			int visibleRows = VisibleRows + 2;
 
 			if(selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
-				//Draw background color for current row
-				context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, (selectedRow - TopRow) * RowHeight, rowWidth, RowHeight));
+				if(IsFocused) {
+					//Draw background color for current row
+					context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, (selectedRow - TopRow) * RowHeight, rowWidth, RowHeight));
+				}
 
 				//Draw selected character/byte cursor
 				double xPos;
@@ -432,7 +449,6 @@ namespace Mesen.Debugger.Controls
 				position++;
 			}
 
-			//DrawHexView(context, dataToDraw, rowWidth);
 			context.Custom(new HexViewDrawOperation(this, dataToDraw, fgColors));
 		}
 
@@ -440,16 +456,6 @@ namespace Mesen.Debugger.Controls
 		{
 			if(b < 32 || b >= 127) {
 				return ".";
-				/*if(b >= 250) {
-					return "[long]";
-				}
-				if(b % 3 == 0) {
-					return "あ";
-				}
-				if(b % 2 == 0) {
-					return "え";
-				}
-				return "い";*/
 			}
 			return ((char)b).ToString();
 		}

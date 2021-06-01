@@ -177,7 +177,7 @@ string NesDisUtils::OpName[256] = {
 	"BEQ",	"SBC",	"STP",	"ISC",	"NOP",	"SBC",	"INC",	"ISC",	"SED",	"SBC",	"NOP",	"ISC",	"NOP",	"SBC",	"INC",	"ISC"  //F
 };
 
-bool unofficial[256] = {
+/*bool unofficial[256] = {
 	//	0		1		2		3		4		5		6		7		8		9		A		B		C		D		E		F
 		false,false,true, true, true, false,false,true, false,false,false,true, true, false,false,true, //0
 		false,false,true, true, true, false,false,true, false,false,true, true, true, false,false,true, //1
@@ -195,7 +195,7 @@ bool unofficial[256] = {
 		false,false,true, true, true, false,false,true, false,false,true, true, true, false,false,true, //D
 		false,false,true, true, false,false,false,true, false,false,false,true, false,false,false,true, //E
 		false,false,true, true, true, false,false,true, false,false,true, true, true, false,false,true  //F
-};
+};*/
 
 typedef NesAddrMode M;
 NesAddrMode NesDisUtils::OpMode[] = {

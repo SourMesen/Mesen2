@@ -15,6 +15,7 @@
 #include "NES/NesPpu.h"
 #include "NES/BaseMapper.h"
 #include "NES/Debugger/NesDebugger.h"
+#include "NES/Debugger/NesAssembler.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Shared/EmuSettings.h"
@@ -43,7 +44,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Nes, _eventManager.get()));
 	_step.reset(new StepRequest());
-	//_assembler.reset(new Assembler(_debugger->GetLabelManager()));
+	_assembler.reset(new NesAssembler(_debugger->GetLabelManager()));
 
 	if(_cpu->GetState().PC == 0) {
 		//Enable breaking on uninit reads when debugger is opened at power on

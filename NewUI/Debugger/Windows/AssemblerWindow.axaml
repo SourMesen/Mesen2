@@ -1,0 +1,89 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+	x:Class="Mesen.Debugger.Windows.AssemblerWindow"
+	Icon="/Assets/Chip.png"
+	Width="700" Height="500"	
+	x:DataType="vm:AssemblerWindowViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:AssemblerWindowViewModel />
+	</Design.DataContext>
+
+	<Window.Resources>
+		<dbg:HexConverter x:Key="Hex" />
+	</Window.Resources>
+
+	<Window.Styles>
+		<Style Selector="Grid.main > Border">
+			<Setter Property="BorderBrush" Value="Gray" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Margin" Value="2" />
+		</Style>
+	</Window.Styles>
+	
+	<Grid Classes="main" ColumnDefinitions="1*, 300" RowDefinitions="3*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Border Grid.Column="0">
+			<dc:MesenTextEditor
+				Name="Editor"
+				ShowLineNumbers="True"
+				FontFamily="Consolas"
+			/>
+		</Border>
+		
+		<Border Grid.Column="1">
+			<dc:MesenTextEditor
+				Name="HexView"
+				IsReadOnly="True"
+				ShowLineNumbers="True"
+				FontFamily="Consolas"
+				TextBinding="{CompiledBinding ByteCodeView}"
+			/>
+		</Border>
+
+		<Border Grid.Row="1">
+			<dc:MesenDataGrid
+				Items="{CompiledBinding Errors}"
+				CellPointerPressed="OnCellPointerPressed"
+			>
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber}" Width="50" CanUserResize="True" />
+					<DataGridTextColumn Header="{l:Translate colError}" Binding="{Binding Message}" Width="*" CanUserResize="True" />
+				</DataGrid.Columns>
+			</dc:MesenDataGrid>
+		</Border>
+
+		<Border Grid.Row="1" Grid.Column="1" Padding="2">
+			<DockPanel>
+				<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+					<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
+					<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+				</StackPanel>
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+					<TextBlock Text="{l:Translate lblStartAddress}" />
+					<TextBox
+						Grid.Column="1"
+						Width="50"
+						Text="{CompiledBinding StartAddress, Converter={StaticResource Hex}, ConverterParameter='X'}}" 
+					/>
+					<TextBlock Text="{l:Translate lblBytesUsed}" Grid.Row="1" Margin="0 5 0 0" />
+					<TextBlock Text="{CompiledBinding BytesUsed}" Grid.Row="1" Grid.Column="1" Margin="0 5 0 0" />
+				</Grid>
+			</DockPanel>
+		</Border>
+	</Grid>
+</Window>

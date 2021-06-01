@@ -21,7 +21,7 @@ class Sa1;
 class BaseCartridge;
 class Spc;
 class Ppu;
-class Assembler;
+class SnesAssembler;
 enum class MemoryOperationType;
 
 class CpuDebugger final : public IDebugger
@@ -41,7 +41,7 @@ class CpuDebugger final : public IDebugger
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 
 	shared_ptr<EventManager> _eventManager;
-	shared_ptr<Assembler> _assembler;
+	shared_ptr<SnesAssembler> _assembler;
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;

@@ -72,6 +72,22 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnAssemblerClick(object sender, RoutedEventArgs e)
+		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
+
+			CpuType cpuType = romInfo.ConsoleType switch {
+				ConsoleType.Snes => CpuType.Cpu,
+				ConsoleType.Nes => CpuType.Nes,
+				ConsoleType.Gameboy or ConsoleType.GameboyColor => CpuType.Gameboy,
+				_ => throw new Exception("Invalid type")
+			};
+
+			new AssemblerWindow {
+				DataContext = new AssemblerWindowViewModel(cpuType, "")
+			}.Show();
+		}
+
 		private void OpenConfig(ConfigWindowTab tab)
 		{
 			if(_cfgWindow == null) {

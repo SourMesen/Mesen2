@@ -390,6 +390,11 @@
 					<Image Source="/Assets/VerticalLayout.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<MenuItem Header="_Assembler" Click="OnAssemblerClick">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Chip.png" />
+				</MenuItem.Icon>
+			</MenuItem>
 		</MenuItem>
 		<MenuItem Header="{l:Translate mnuHelp}">
 			<MenuItem Header="{l:Translate mnuOnlineHelp}">

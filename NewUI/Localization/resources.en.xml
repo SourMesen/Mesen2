@@ -782,6 +782,16 @@
 			<Control ID="Hint">(not recommended)</Control>
 		</Form>
 
+		<Form ID="AssemblerWindow">
+			<Control ID="wndTitle">Assembler</Control>
+			<Control ID="lblStartAddress">Start address: $</Control>
+			<Control ID="lblBytesUsed">Bytes used: </Control>
+			<Control ID="colLine">Line</Control>
+			<Control ID="colError">Error</Control>
+			<Control ID="btnOk">Apply</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+
 		<Form ID="BreakpointEditWindow">
 			<Control ID="wndTitle">Edit breakpoint...</Control>
 			<Control ID="chkBreakOnRead">Read</Control>

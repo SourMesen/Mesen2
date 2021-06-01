@@ -4,7 +4,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
 #include "SNES/Cpu.h"
-#include "SNES/Debugger/Assembler.h"
+#include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/CpuDisUtils.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
@@ -14,7 +14,7 @@ static const std::regex isCommentOrBlank = std::regex("^\\s*([;]+.*$|\\s*$)", st
 static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9]*):(.*)", std::regex_constants::icase);
 static const std::regex byteRegex = std::regex("^\\s*[.]db\\s+((\\$[a-fA-F0-9]{1,2}[ ])*)(\\$[a-fA-F0-9]{1,2})+\\s*(;*)(.*)$", std::regex_constants::icase);
 
-void Assembler::ProcessLine(string code, uint32_t& instructionAddress, vector<int16_t>& output, std::unordered_map<string, uint32_t>& labels, bool firstPass, std::unordered_map<string, uint32_t>& currentPassLabels)
+void SnesAssembler::ProcessLine(string code, uint32_t& instructionAddress, vector<int16_t>& output, std::unordered_map<string, uint32_t>& labels, bool firstPass, std::unordered_map<string, uint32_t>& currentPassLabels)
 {
 	//Remove extra spaces as part of processing
 	size_t offset = code.find_first_of(',', 0);
@@ -50,7 +50,7 @@ void Assembler::ProcessLine(string code, uint32_t& instructionAddress, vector<in
 		output.push_back(AssemblerSpecialCodes::EndOfLine);
 		return;
 	} else if(std::regex_search(code, match, instRegex) && match.size() > 1) {
-		LineData lineData;
+		SnesLineData lineData;
 		AssemblerSpecialCodes result = GetLineData(match, lineData, labels, firstPass);
 		if(result == AssemblerSpecialCodes::OK) {
 			AssembleInstruction(lineData, instructionAddress, output, firstPass);
@@ -62,7 +62,7 @@ void Assembler::ProcessLine(string code, uint32_t& instructionAddress, vector<in
 	}
 }
 
-AssemblerSpecialCodes Assembler::GetLineData(std::smatch match, LineData& lineData, std::unordered_map<string, uint32_t>& labels, bool firstPass)
+AssemblerSpecialCodes SnesAssembler::GetLineData(std::smatch match, SnesLineData& lineData, std::unordered_map<string, uint32_t>& labels, bool firstPass)
 {
 	bool isBinary = match.str(2).length() > 1 && match.str(2)[1] == '%'; //Immediate + binary: "#%"
 
@@ -143,7 +143,7 @@ AssemblerSpecialCodes Assembler::GetLineData(std::smatch match, LineData& lineDa
 	return GetAddrModeAndOperandSize(lineData, labels, firstPass);
 }
 
-AssemblerSpecialCodes Assembler::GetAddrModeAndOperandSize(LineData& lineData, std::unordered_map<string, uint32_t>& labels, bool firstPass)
+AssemblerSpecialCodes SnesAssembler::GetAddrModeAndOperandSize(SnesLineData& lineData, std::unordered_map<string, uint32_t>& labels, bool firstPass)
 {
 	int opSize = 0;
 	bool invalid = false;
@@ -326,12 +326,12 @@ AssemblerSpecialCodes Assembler::GetAddrModeAndOperandSize(LineData& lineData, s
 	return invalid ? AssemblerSpecialCodes::ParsingError : AssemblerSpecialCodes::OK;
 }
 
-bool Assembler::IsOpModeAvailable(string& opCode, AddrMode mode)
+bool SnesAssembler::IsOpModeAvailable(string& opCode, AddrMode mode)
 {
 	return _availableModesByOpName[opCode].find((int)mode) != _availableModesByOpName[opCode].end();
 }
 
-void Assembler::AssembleInstruction(LineData& lineData, uint32_t& instructionAddress, vector<int16_t>& output, bool firstPass)
+void SnesAssembler::AssembleInstruction(SnesLineData& lineData, uint32_t& instructionAddress, vector<int16_t>& output, bool firstPass)
 {
 	bool foundMatch = false;
 
@@ -410,16 +410,16 @@ void Assembler::AssembleInstruction(LineData& lineData, uint32_t& instructionAdd
 	}
 }
 
-Assembler::Assembler(shared_ptr<LabelManager> labelManager)
+SnesAssembler::SnesAssembler(shared_ptr<LabelManager> labelManager)
 {
 	_labelManager = labelManager;
 }
 
-Assembler::~Assembler()
+SnesAssembler::~SnesAssembler()
 {
 }
 
-uint32_t Assembler::AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode)
+uint32_t SnesAssembler::AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode)
 {
 	for(uint8_t i = 0; i < 255; i++) {
 		if(_availableModesByOpName.find(CpuDisUtils::OpName[i]) == _availableModesByOpName.end()) {
@@ -437,20 +437,7 @@ uint32_t Assembler::AssembleCode(string code, uint32_t startAddress, int16_t* as
 
 	uint32_t originalStartAddr = startAddress;
 
-	vector<string> codeLines;
-	codeLines.reserve(100);
-	while(i < code.size()) {
-		size_t offset = code.find_first_of('\n', i);
-		string line;
-		if(offset != string::npos) {
-			line = code.substr(i, offset - i);
-			i = offset + 1;
-		} else {
-			line = code.substr(i);
-			i = code.size();
-		}
-		codeLines.push_back(line);
-	}
+	vector<string> codeLines = StringUtilities::Split(code, '\n');
 
 	//Make 2 passes - first one to find all labels, second to assemble
 	_needSecondPass = false;

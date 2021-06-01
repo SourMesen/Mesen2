@@ -7,7 +7,7 @@
 #include "SNES/Spc.h"
 #include "SNES/Ppu.h"
 #include "SNES/MemoryMappings.h"
-#include "SNES/Debugger/Assembler.h"
+#include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/CpuDebugger.h"
 #include "SNES/Debugger/EventManager.h"
 #include "Debugger/DebugTypes.h"
@@ -56,7 +56,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
-	_assembler.reset(new Assembler(_debugger->GetLabelManager()));
+	_assembler.reset(new SnesAssembler(_debugger->GetLabelManager()));
 
 	if(GetCpuState().PC == 0) {
 		//Enable breaking on uninit reads when debugger is opened at power on

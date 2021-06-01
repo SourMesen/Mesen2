@@ -586,7 +586,7 @@
     <ClInclude Include="Gameboy\GbDmaController.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Debugger\Assembler.h">
+    <ClInclude Include="SNES\Debugger\SnesAssembler.h">
       <Filter>Debugger\Assembler</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\Debugger\GbAssembler.h">
@@ -802,6 +802,7 @@
     <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbConstants.h" />
     <ClInclude Include="Shared\KeyDefinitions.h" />
+    <ClInclude Include="NES\Debugger\NesAssembler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1146,7 +1147,7 @@
     <ClCompile Include="Gameboy\GbDmaController.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\Debugger\Assembler.cpp">
+    <ClCompile Include="SNES\Debugger\SnesAssembler.cpp">
       <Filter>Debugger\Assembler</Filter>
     </ClCompile>
     <ClCompile Include="Gameboy\Debugger\GbAssembler.cpp">
@@ -1236,6 +1237,7 @@
     <ClCompile Include="NES\HdPacks\OggReader.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
+    <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">
