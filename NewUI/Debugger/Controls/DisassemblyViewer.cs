@@ -56,9 +56,9 @@ namespace Mesen.Debugger.Controls
 
 				x._updatingScroll = true;
 				CodeLineData[] lines = x._lines;
-				if((int)e.OldValue < (int)e.NewValue) {
+				if(e.OldValue is int oldValue && e.NewValue is int newValue && oldValue < newValue) {
 					foreach(CodeLineData line in lines) {
-						if(line.Address >= 0 && (int)e.NewValue < line.Address) {
+						if(line.Address >= 0 && newValue < line.Address) {
 							x.ScrollPosition = line.Address;
 							break;
 						}

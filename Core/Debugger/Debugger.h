@@ -1,8 +1,9 @@
 #pragma once
 #include "stdafx.h"
 #include "Utilities/SimpleLock.h"
-#include "DebugUtilities.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
+#include "Debugger/DebugTypes.h"
+#include "Shared/SettingTypes.h"
 
 class IConsole;
 class Emulator;
@@ -53,6 +54,9 @@ private:
 	EmuSettings* _settings;
 
 	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
+
+	CpuType _mainCpuType = CpuType::Cpu;
+	ConsoleType _consoleType = ConsoleType::Snes;
 
 	shared_ptr<ScriptManager> _scriptManager;
 	shared_ptr<TraceLogger> _traceLogger;

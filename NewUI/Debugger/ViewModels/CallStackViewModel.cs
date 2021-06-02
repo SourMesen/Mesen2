@@ -79,7 +79,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public class StackInfo
 		{
-			public string SubName { get; set; }
+			public string SubName { get; set; } = "";
 			public UInt32 Address { get; set; }
 		}
 	}

@@ -22,6 +22,8 @@
 #include "Shared/NotificationManager.h"
 #include "MemoryOperationType.h"
 
+#include "EventType.h"
+
 template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 {
 	_console = console;
@@ -1213,6 +1215,8 @@ template<class T> void NesPpu<T>::SendFrame()
 {
 	UpdateGrayscaleAndIntensifyBits();
 
+	_emu->ProcessEvent(EventType::EndFrame);
+
 	void* frameData = ((T*)this)->OnBeforeSendFrame();
 
 	if(_console->IsVsMainConsole()) {
@@ -1399,6 +1403,8 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 		if(_renderingEnabled) {
 			ProcessOamCorruption();
 		}
+
+		_emu->ProcessEvent(EventType::StartFrame);
 
 		UpdateMinimumDrawCycles();
 	}

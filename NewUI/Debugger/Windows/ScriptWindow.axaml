@@ -1,0 +1,55 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+	x:Class="Mesen.Debugger.Windows.ScriptWindow"
+	Icon="/Assets/Script.png"
+	Width="700" Height="500"	
+	x:DataType="vm:ScriptWindowViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:ScriptWindowViewModel />
+	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="Grid.main > Border">
+			<Setter Property="BorderBrush" Value="Gray" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Margin" Value="1" />
+		</Style>
+	</Window.Styles>
+	
+	<Grid Classes="main" ColumnDefinitions="*" RowDefinitions="Auto,*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<StackPanel Classes="Toolbar" Orientation="Horizontal">
+			<Button ToolTip.Tip="{l:Translate btnRun}" Click="OnRunClick">
+				<Image Source="/Assets/MediaPlay.png" />
+			</Button>
+			<Button ToolTip.Tip="{l:Translate btnStop}" Click="OnStopClick">
+				<Image Source="/Assets/MediaStop.png" />
+			</Button>
+		</StackPanel>
+		
+		<Border Grid.Row="1">
+			<dc:MesenTextEditor
+				Name="Editor"
+				ShowLineNumbers="True"
+				FontFamily="Consolas"
+			/>
+		</Border>
+		
+		<TextBox Grid.Row="2" Height="NaN" VerticalContentAlignment="Top" />
+	</Grid>
+</Window>

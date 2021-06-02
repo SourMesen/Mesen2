@@ -1,0 +1,98 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="Lua" extensions=".lua" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+	<Color name="NumberLiteral" foreground="SteelBlue" />
+	<Color name="Keywords" fontWeight="bold" foreground="Blue" />
+	<Color name="Symbols" fontWeight="bold" foreground="DarkMagenta" />
+	<Color name="StringLiteral" fontWeight="bold" foreground="DarkRed" />
+	<Color name="Punctuation" fontWeight="bold" foreground="Black" />
+	<Color name="Mesen" fontWeight="bold" foreground="Indigo" />
+
+	<RuleSet>
+		<Span color="Comment">
+			<Begin>--</Begin>
+		</Span>
+
+		<Keywords color="Mesen">
+			<Word>emu</Word>
+		</Keywords>
+		
+		<Keywords color="Keywords">
+			<Word>and</Word>
+			<Word>break</Word>
+			<Word>do</Word>
+			<Word>else</Word>
+			<Word>elseif</Word>
+			<Word>end</Word>
+			<Word>false</Word>
+			<Word>for</Word>
+			<Word>function</Word>
+			<Word>if</Word>
+			<Word>in</Word>
+			<Word>local</Word>
+			<Word>nil</Word>
+			<Word>not</Word>
+			<Word>or</Word>
+			<Word>repeat</Word>
+			<Word>return</Word>
+			<Word>then</Word>
+			<Word>true</Word>
+			<Word>until</Word>
+			<Word>while</Word>
+		</Keywords>
+
+		<Keywords color="Symbols">
+			<Word>assert</Word>
+			<Word>collectgarbage</Word>
+			<Word>dofile</Word>
+			<Word>error</Word>
+			<Word>_G</Word>
+			<Word>getmetatable</Word>
+			<Word>ipairs</Word>
+			<Word>load</Word>
+			<Word>loadfile</Word>
+			<Word>next</Word>
+			<Word>pairs</Word>
+			<Word>pcall</Word>
+			<Word>print</Word>
+			<Word>rawequal</Word>
+			<Word>rawget</Word>
+			<Word>rawlen</Word>
+			<Word>rawset</Word>
+			<Word>select</Word>
+			<Word>setmetatable</Word>
+			<Word>tonumber</Word>
+			<Word>tostring</Word>
+			<Word>type</Word>
+			<Word>_VERSION</Word>
+			<Word>warn</Word>
+			<Word>xpcall</Word>
+
+			<Word>coroutine</Word>
+
+			<Word>require</Word>
+			<Word>package</Word>
+
+			<Word>string</Word>
+			<Word>utf8</Word>
+			<Word>table</Word>
+			<Word>math</Word>
+			<Word>io</Word>
+			<Word>file</Word>
+			<Word>os</Word>
+			<Word>debug</Word>
+		</Keywords>
+
+		<Rule color="NumberLiteral">
+			(\b\d+\b)|(\b0x[a-fA-F0-9]+\b)
+		</Rule>
+
+		<Rule color="Punctuation">
+			[+\-*/%^#&amp;~|&lt;&gt;=(){}[\]:;,.]
+		</Rule>
+
+		<Rule color="StringLiteral">
+			".*?[^\\]"|'.*?[^\\]'
+		</Rule>
+	</RuleSet>
+</SyntaxDefinition>

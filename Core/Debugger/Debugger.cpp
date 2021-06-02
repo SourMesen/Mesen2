@@ -61,6 +61,8 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_console = console;
 	_settings = _emu->GetSettings();
 
+	_consoleType = _emu->GetConsoleType();
+
 	_labelManager.reset(new LabelManager(this));
 	
 	_memoryDumper.reset(new MemoryDumper(this));
@@ -71,6 +73,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_scriptManager.reset(new ScriptManager(this));
 
 	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+	_mainCpuType = cpuTypes[0];
 	for(CpuType type : cpuTypes) {
 		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
 		switch(type) {
@@ -98,7 +101,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	RefreshCodeCache();
 
 	if(_emu->IsPaused()) {
-		Step(CpuType::Cpu, 1, StepType::Step);
+		Step(_mainCpuType, 1, StepType::Step);
 	}
 	_executionStopped = false;
 }
@@ -251,13 +254,17 @@ void Debugger::ProcessEvent(EventType type)
 	switch(type) {
 		default: break;
 
-		case EventType::StartFrame:
-			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Cpu);
-			GetEventManager(CpuType::Cpu)->ClearFrameEvents();
+		case EventType::StartFrame: {
+			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)_mainCpuType);
+			shared_ptr<IEventManager> evtMgr = GetEventManager(_mainCpuType);
+			if(evtMgr) {
+				evtMgr->ClearFrameEvents();
+			}
 			break;
+		}
 
 		case EventType::GbStartFrame:
-			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::GameboyColor) {
+			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::StartFrame);
 			}
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Gameboy);
@@ -265,7 +272,7 @@ void Debugger::ProcessEvent(EventType type)
 			break;
 		
 		case EventType::GbEndFrame:
-			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::GameboyColor) {
+			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::EndFrame);
 			}
 			break;
@@ -566,7 +573,7 @@ shared_ptr<IEventManager> Debugger::GetEventManager(CpuType cpuType)
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetEventManager();
 	}
-	throw std::runtime_error("GetEventManager() - Unsupported CPU type");
+	return nullptr;
 }
 
 shared_ptr<LabelManager> Debugger::GetLabelManager()

@@ -395,6 +395,11 @@
 					<Image Source="/Assets/Chip.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<MenuItem Header="_Script Window" Click="OnScriptWindowClick">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Script.png" />
+				</MenuItem.Icon>
+			</MenuItem>
 		</MenuItem>
 		<MenuItem Header="{l:Translate mnuHelp}">
 			<MenuItem Header="{l:Translate mnuOnlineHelp}">

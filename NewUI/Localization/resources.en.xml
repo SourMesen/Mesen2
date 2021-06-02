@@ -791,7 +791,13 @@
 			<Control ID="btnOk">Apply</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-
+		
+		<Form ID="ScriptWindow">
+			<Control ID="wndTitle">Script Window</Control>
+			<Control ID="btnRun">Run</Control>
+			<Control ID="btnStop">Stop</Control>
+		</Form>
+		
 		<Form ID="BreakpointEditWindow">
 			<Control ID="wndTitle">Edit breakpoint...</Control>
 			<Control ID="chkBreakOnRead">Read</Control>

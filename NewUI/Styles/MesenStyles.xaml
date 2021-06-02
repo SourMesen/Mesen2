@@ -560,6 +560,26 @@
 		<Setter Property="AllowAutoHide" Value="False" />
 	</Style>
 
+	<Style Selector="StackPanel.Toolbar Line">
+		<Setter Property="StrokeThickness" Value="1" />
+		<Setter Property="Stroke" Value="#BBB" />
+		<Setter Property="StartPoint" Value="0.5,0" />
+		<Setter Property="EndPoint" Value="0.5,20" />
+		<Setter Property="Margin" Value="2 3 3 3" />
+	</Style>
+	<Style Selector="StackPanel.Toolbar Button">
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Height" Value="23" />
+		<Setter Property="Width" Value="22" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="ToolTip.ShowDelay" Value="1000" />
+	</Style>
+	<Style Selector="StackPanel.Toolbar Image">
+		<Setter Property="Height" Value="16" />
+		<Setter Property="Width" Value="16" />
+	</Style>
+
 	<!-- Data grid -->
 	<Style Selector="DataGridColumnHeader">
 		<Setter Property="MinHeight" Value="18" />

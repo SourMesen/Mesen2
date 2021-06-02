@@ -150,6 +150,7 @@
 	  <None Remove="Assets\XbIcon.png" />
 	  <None Remove="Assets\Zoom2x.png" />
 	  <None Remove="Debugger\Highlight6502.xshd" />
+	  <None Remove="Debugger\HighlightLua.xshd" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.4" />
@@ -201,6 +202,9 @@
     </Compile>
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\ScriptWindow.axaml.cs">
+      <DependentUpon>ScriptWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\AssemblerWindow.axaml.cs">
       <DependentUpon>AssemblerWindow.axaml</DependentUpon>
@@ -447,6 +451,7 @@
     <AvaloniaResource Include="Assets\NesIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Debugger\HighlightLua.xshd" />
     <EmbeddedResource Include="Debugger\Highlight6502.xshd" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
   </ItemGroup>
