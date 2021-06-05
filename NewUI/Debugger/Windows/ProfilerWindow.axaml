@@ -1,0 +1,77 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+	x:Class="Mesen.Debugger.Windows.ProfilerWindow"
+	Icon="/Assets/Script.png"
+	Width="700" Height="500"
+	x:DataType="vm:ProfilerWindowViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:ProfilerWindowViewModel />
+	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="TabControl:singleitem > TabItem">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+	</Window.Styles>
+
+	<TabControl Items="{Binding ProfilerTabs}" SelectionChanged="OnTabSelected" Padding="1">
+		<TabControl.ItemTemplate>
+			<DataTemplate>
+				<TextBlock Text="{Binding TabName}" />
+			</DataTemplate>
+		</TabControl.ItemTemplate>
+		
+		<TabControl.ContentTemplate>
+			<DataTemplate>
+				<DockPanel>
+					<Button 
+						DockPanel.Dock="Bottom"
+						HorizontalAlignment="Right"
+						Content="{l:Translate btnReset}" 
+						Click="OnResetClick"
+					/>
+
+					<Border BorderBrush="Gray" BorderThickness="1">
+						<dc:MesenDataGrid
+							Items="{Binding GridData}"
+							LoadingRow="OnGridRowLoaded"
+							UnloadingRow="OnGridRowUnloaded"
+							HorizontalScrollBarVisibility="Auto"
+							VerticalScrollBarVisibility="Auto"
+							Sorting="OnGridSort"
+							CanUserReorderColumns="False"
+					>
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="{l:Translate colFunction}" Binding="{Binding FunctionName}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colCallCount}" Binding="{Binding CallCount}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colInclusiveTime}" Binding="{Binding InclusiveCycles}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colInclusiveTimePercent}" Binding="{Binding InclusivePercent}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colExclusiveTime}" Binding="{Binding ExclusiveCycles}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colExclusiveTimePercent}" Binding="{Binding ExclusivePercent}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colAvgCycles}" Binding="{Binding AvgCycles}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colMinCycles}" Binding="{Binding MinCycles}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colMaxCycles}" Binding="{Binding MaxCycles}" Width="*" CanUserResize="True" />
+							</DataGrid.Columns>
+						</dc:MesenDataGrid>
+					</Border>
+				</DockPanel>
+			</DataTemplate>
+		</TabControl.ContentTemplate>
+	</TabControl>
+</Window>

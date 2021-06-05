@@ -91,7 +91,7 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRam
 	_videoRamSize = cgbMode ? 0x4000 : 0x2000;
 
 	_workRam = new uint8_t[_workRamSize];
-	_emu->RegisterMemory(SnesMemoryType::GbWorkRam, _cartRam, _cartRamSize);
+	_emu->RegisterMemory(SnesMemoryType::GbWorkRam, _workRam, _workRamSize);
 
 	_videoRam = new uint8_t[_videoRamSize];
 	_emu->RegisterMemory(SnesMemoryType::GbVideoRam, _videoRam, _videoRamSize);

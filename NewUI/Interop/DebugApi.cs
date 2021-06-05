@@ -155,13 +155,17 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern void ResetProfiler(CpuType type);
-		[DllImport(DllPath, EntryPoint = "GetProfilerData")] private static extern void GetProfilerDataWrapper(CpuType type, [In, Out]ProfiledFunction[] profilerData, ref UInt32 functionCount);
+		[DllImport(DllPath, EntryPoint = "GetProfilerData")] private static extern void GetProfilerDataWrapper(CpuType type, IntPtr profilerData, ref UInt32 functionCount);
 		public static ProfiledFunction[] GetProfilerData(CpuType type)
 		{
 			ProfiledFunction[] profilerData = new ProfiledFunction[100000];
 			UInt32 functionCount = 0;
 
-			DebugApi.GetProfilerDataWrapper(type, profilerData, ref functionCount);
+			GCHandle handle = GCHandle.Alloc(profilerData, GCHandleType.Pinned);
+			IntPtr ptr = handle.AddrOfPinnedObject();
+			DebugApi.GetProfilerDataWrapper(type, ptr, ref functionCount);
+			handle.Free();
+
 			Array.Resize(ref profilerData, (int)functionCount);
 
 			return profilerData;
@@ -368,6 +372,58 @@ namespace Mesen.Interop
 			}
 
 			return false;
+		}
+
+		public static string GetShortName(this SnesMemoryType memType)
+		{
+			return memType switch {
+				SnesMemoryType.CpuMemory => "CPU",
+				SnesMemoryType.SpcMemory => "SPC",
+				SnesMemoryType.Sa1Memory => "SA1",
+				SnesMemoryType.GsuMemory => "GSU",
+				SnesMemoryType.NecDspMemory => "DSP",
+
+				SnesMemoryType.PrgRom => "PRG",
+				SnesMemoryType.WorkRam => "WRAM",
+				SnesMemoryType.SaveRam => "SRAM",
+				SnesMemoryType.VideoRam => "VRAM",
+				SnesMemoryType.SpriteRam => "OAM",
+				SnesMemoryType.CGRam => "CG",
+
+				SnesMemoryType.SpcRam => "RAM",
+				SnesMemoryType.SpcRom => "ROM",
+
+				SnesMemoryType.DspProgramRom => "DSP",
+				SnesMemoryType.Sa1InternalRam => "IRAM",
+				SnesMemoryType.GsuWorkRam => "GWRAM",
+
+				SnesMemoryType.BsxPsRam => "PSRAM",
+				SnesMemoryType.BsxMemoryPack => "MPACK",
+
+				SnesMemoryType.GameboyMemory => "CPU",
+				SnesMemoryType.GbPrgRom => "PRG",
+				SnesMemoryType.GbWorkRam => "WRAM",
+				SnesMemoryType.GbCartRam => "SRAM",
+				SnesMemoryType.GbHighRam => "HRAM",
+				SnesMemoryType.GbBootRom => "BOOT",
+				SnesMemoryType.GbVideoRam => "VRAM",
+				SnesMemoryType.GbSpriteRam => "OAM",
+
+				SnesMemoryType.NesMemory => "CPU",
+				SnesMemoryType.NesPrgRom => "PRG",
+				SnesMemoryType.NesWorkRam => "WRAM",
+				SnesMemoryType.NesSaveRam => "SRAM",
+				SnesMemoryType.NesSpriteRam => "SPR",
+				SnesMemoryType.NesPaletteRam => "PAL",
+				SnesMemoryType.NesNametableRam => "NTRAM",
+				SnesMemoryType.NesInternalRam => "RAM",
+				SnesMemoryType.NesChrRom => "CHR",
+				SnesMemoryType.NesChrRam => "CHR",
+
+				SnesMemoryType.Register => "REG",
+
+				_ => throw new Exception("invalid type"),
+			};
 		}
 	}
 

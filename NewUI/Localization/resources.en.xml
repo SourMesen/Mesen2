@@ -797,6 +797,21 @@
 			<Control ID="btnRun">Run</Control>
 			<Control ID="btnStop">Stop</Control>
 		</Form>
+
+		<Form ID="ProfilerWindow">
+			<Control ID="wndTitle">Profiler</Control>
+			<Control ID="btnReset">Reset</Control>
+
+			<Control ID="colFunction">Function (Entry Address)</Control>
+			<Control ID="colCallCount">Call Count</Control>
+			<Control ID="colInclusiveTime">Inclusive Time (Cycles)</Control>
+			<Control ID="colInclusiveTimePercent">Inclusive Time (%)</Control>
+			<Control ID="colExclusiveTime">Exclusive Time (Cycles)</Control>
+			<Control ID="colExclusiveTimePercent">Exclusive Time (%)</Control>
+			<Control ID="colAvgCycles">Avg. Cycles</Control>
+			<Control ID="colMinCycles">Min. Cycles</Control>
+			<Control ID="colMaxCycles">Max. Cycles</Control>
+		</Form>
 		
 		<Form ID="BreakpointEditWindow">
 			<Control ID="wndTitle">Edit breakpoint...</Control>
@@ -1237,7 +1252,18 @@ x == [$150] || y == [10]
 			<Value ID="MainSystemOnly">Main system only</Value>
 			<Value ID="SubSystemOnly">Sub system only</Value>
 		</Enum>
-		<!-- Resources below are used by the debugger only - no translation is needed -->
+
+		<Enum ID="CpuType">
+			<Value ID="Cpu">SNES (65816)</Value>
+			<Value ID="Spc">SPC</Value>
+			<Value ID="NecDsp">DSP-n</Value>
+			<Value ID="Sa1">SA-1</Value>
+			<Value ID="Gsu">GSU</Value>
+			<Value ID="Cx4">CX4</Value>
+			<Value ID="Gameboy">Game Boy</Value>
+			<Value ID="Nes">NES</Value>
+		</Enum>
+		
 		<Enum ID="SnesMemoryType">
 			<Value ID="CpuMemory">CPU Memory</Value>
 			<Value ID="SpcMemory">SPC Memory</Value>

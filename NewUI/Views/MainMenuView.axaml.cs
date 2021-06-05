@@ -88,6 +88,13 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnProfilerClick(object sender, RoutedEventArgs e)
+		{
+			new ProfilerWindow {
+				DataContext = new ProfilerWindowViewModel()
+			}.Show();
+		}
+
 		private void OpenConfig(ConfigWindowTab tab)
 		{
 			if(_cfgWindow == null) {

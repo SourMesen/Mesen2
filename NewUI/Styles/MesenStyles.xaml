@@ -397,6 +397,8 @@
 		<Setter Property="Height" Value="21" />
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="4 3" />
+		<Setter Property="MinWidth" Value="60" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
 	</Style>
 	
 	<Style Selector="TextBlock">

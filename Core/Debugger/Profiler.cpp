@@ -112,7 +112,7 @@ void Profiler::GetProfilerData(ProfiledFunction* profilerData, uint32_t& functio
 	UpdateCycles();
 
 	functionCount = 0;
-	for(auto func : _functions) {
+	for(auto& func : _functions) {
 		profilerData[functionCount] = func.second;
 		functionCount++;
 

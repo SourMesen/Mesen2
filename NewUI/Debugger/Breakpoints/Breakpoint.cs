@@ -145,56 +145,7 @@ namespace Mesen.Debugger
 
 		public string ToReadableType()
 		{
-			string type;
-
-			switch(MemoryType) {
-				default: throw new Exception("invalid type");
-				case SnesMemoryType.CpuMemory: type = "CPU"; break;
-				case SnesMemoryType.SpcMemory: type = "SPC"; break;
-				case SnesMemoryType.Sa1Memory: type = "SA1"; break;
-				case SnesMemoryType.GsuMemory: type = "GSU"; break;
-				case SnesMemoryType.NecDspMemory: type = "DSP"; break;
-
-				case SnesMemoryType.PrgRom: type = "PRG"; break;
-				case SnesMemoryType.WorkRam: type = "WRAM"; break;
-				case SnesMemoryType.SaveRam: type = "SRAM"; break;
-				case SnesMemoryType.VideoRam: type = "VRAM"; break;
-				case SnesMemoryType.SpriteRam: type = "OAM"; break;
-				case SnesMemoryType.CGRam: type = "CG"; break;
-
-				case SnesMemoryType.SpcRam: type = "RAM"; break;
-				case SnesMemoryType.SpcRom: type = "ROM"; break;
-
-				case SnesMemoryType.DspProgramRom: type = "DSP"; break;
-				case SnesMemoryType.Sa1InternalRam: type = "IRAM"; break;
-				case SnesMemoryType.GsuWorkRam: type = "GWRAM"; break;
-
-				case SnesMemoryType.BsxPsRam: type = "PSRAM"; break;
-				case SnesMemoryType.BsxMemoryPack: type = "MPACK"; break;
-
-				case SnesMemoryType.GameboyMemory: type = "CPU"; break;
-				case SnesMemoryType.GbPrgRom: type = "PRG"; break;
-				case SnesMemoryType.GbWorkRam: type = "WRAM"; break;
-				case SnesMemoryType.GbCartRam: type = "SRAM"; break;
-				case SnesMemoryType.GbHighRam: type = "HRAM"; break;
-				case SnesMemoryType.GbBootRom: type = "BOOT"; break;
-				case SnesMemoryType.GbVideoRam: type = "VRAM"; break;
-				case SnesMemoryType.GbSpriteRam: type = "OAM"; break;
-
-				case SnesMemoryType.NesMemory: type = "CPU"; break;
-				case SnesMemoryType.NesPrgRom: type = "PRG"; break;
-				case SnesMemoryType.NesWorkRam: type = "WRAM"; break;
-				case SnesMemoryType.NesSaveRam: type = "SRAM"; break;
-				case SnesMemoryType.NesSpriteRam: type = "SPR"; break;
-				case SnesMemoryType.NesPaletteRam: type = "PAL"; break;
-				case SnesMemoryType.NesNametableRam: type = "NTRAM"; break;
-				case SnesMemoryType.NesInternalRam: type = "RAM"; break;
-				case SnesMemoryType.NesChrRom: type = "CHR"; break;
-				case SnesMemoryType.NesChrRam: type = "CHR"; break;
-
-				case SnesMemoryType.Register: type = "REG"; break;
-			}
-
+			string type = MemoryType.GetShortName();
 			type += ":";
 			type += BreakOnRead ? "R" : "‒";
 			type += BreakOnWrite ? "W" : "‒";

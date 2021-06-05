@@ -157,6 +157,10 @@ namespace Mesen.Interop
 		public RomFormat Format;
 		public ConsoleType ConsoleType;
 
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public CpuType[] CpuTypes;
+		public UInt32 CpuTypeCount;
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
 		public byte[] Sha1;
 	}
@@ -168,6 +172,7 @@ namespace Mesen.Interop
 		public RomFormat Format = RomFormat.Unknown;
 		public ConsoleType ConsoleType = ConsoleType.Snes;
 		public string Sha1 = "";
+		public HashSet<CpuType> CpuTypes = new HashSet<CpuType>();
 
 		public RomInfo() { }
 
@@ -178,6 +183,10 @@ namespace Mesen.Interop
 			Format = romInfo.Format;
 			ConsoleType = romInfo.ConsoleType;
 			Sha1 = Encoding.UTF8.GetString(romInfo.Sha1);
+
+			for(int i = 0; i < romInfo.CpuTypeCount; i++) {
+				CpuTypes.Add(romInfo.CpuTypes[i]);
+			}
 		}
 
 		public string GetRomName()

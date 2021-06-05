@@ -44,6 +44,8 @@ struct InteropRomInfo
 	const char* PatchPath;
 	RomFormat Format;
 	ConsoleType Console;
+	CpuType CpuTypes[5];
+	uint32_t CpuTypeCount;
 	//CoprocessorType Coprocessor;
 	//SnesCartInformation Header;
 	char Sha1[40];
@@ -130,6 +132,12 @@ extern "C" {
 		info.PatchPath = _patchPath.c_str();
 		info.Format = romInfo.Format;
 		info.Console = _emu->GetConsoleType();
+
+		vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+		info.CpuTypeCount = std::min<uint32_t>((uint32_t)cpuTypes.size(), 5);
+		for(size_t i = 0; i < 5 && i < cpuTypes.size(); i++) {
+			info.CpuTypes[i] = cpuTypes[i];
+		}
 		//TODO
 		//info.Header = romInfo.Header;
 		//info.Coprocessor = romInfo.Coprocessor;

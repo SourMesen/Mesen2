@@ -123,7 +123,7 @@ namespace Mesen.Localization
 			if(baseNode != null) {
 				return baseNode.InnerText;
 			} else {
-				return e.ToString();
+				return "[[" + e.ToString() + "]]";
 			}
 		}
 

@@ -21,18 +21,18 @@
 	<DockPanel Margin="5" DataContext="{Binding ElementName=root}">
 		<Panel DockPanel.Dock="Top">
 			<TextBlock Text="{Binding Title}" FontSize="15" FontWeight="Medium" Foreground="White" TextAlignment="Center" />
-			<Button IsVisible="{Binding ShowClose}" Click="OnCloseClick" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Padding="0" Margin="0 -2 0 -2">
+			<Button IsVisible="{Binding ShowClose}" Click="OnCloseClick" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Padding="0" Margin="0 -2 0 -2" MinWidth="0">
 				<Image Source="/Assets/CloseWhite.png" Width="16" Height="16" />
 			</Button>
 		</Panel>
-		<Button DockPanel.Dock="Left" IsVisible="{Binding ShowArrows}" Background="Transparent" BorderThickness="0" Click="OnPrevPageClick" VerticalAlignment="Stretch" Height="NaN">
+		<Button DockPanel.Dock="Left" IsVisible="{Binding ShowArrows}" Background="Transparent" BorderThickness="0" Click="OnPrevPageClick" VerticalAlignment="Stretch" Height="NaN" MinWidth="0">
 			<Image Source="/Assets/MediaPlay.png" VerticalAlignment="Center" HorizontalAlignment="Left" Width="16">
 				<Image.RenderTransform>
 					<RotateTransform Angle="180" />
 				</Image.RenderTransform>
 			</Image>
 		</Button>
-		<Button DockPanel.Dock="Right" IsVisible="{Binding ShowArrows}" Background="Transparent" BorderThickness="0" Click="OnNextPageClick" VerticalAlignment="Stretch" Height="NaN">
+		<Button DockPanel.Dock="Right" IsVisible="{Binding ShowArrows}" Background="Transparent" BorderThickness="0" Click="OnNextPageClick" VerticalAlignment="Stretch" Height="NaN" MinWidth="0">
 			<Image Source="/Assets/MediaPlay.png" VerticalAlignment="Center" HorizontalAlignment="Right" Width="16" />
 		</Button>
 		<Grid Name="Grid" />

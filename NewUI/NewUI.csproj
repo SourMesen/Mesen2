@@ -203,6 +203,9 @@
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\ProfilerWindow.axaml.cs">
+      <DependentUpon>ProfilerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\ScriptWindow.axaml.cs">
       <DependentUpon>ScriptWindow.axaml</DependentUpon>
     </Compile>
