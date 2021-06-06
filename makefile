@@ -21,45 +21,45 @@ MESENFLAGS=
 libretro : MESENFLAGS=-D LIBRETRO
 
 ifeq ($(USE_GCC),true)
-	CPPC=g++
+	CXX=g++
 	CC=gcc
 	PROFILE_GEN_FLAG=-fprofile-generate
 	PROFILE_USE_FLAG=-fprofile-use
 else
-	CPPC=clang++
+	CXX=clang++
 	CC=clang
 	PROFILE_GEN_FLAG = -fprofile-instr-generate=$(CURDIR)/PGOHelper/pgo.profraw
 	PROFILE_USE_FLAG = -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
 endif
 
-GCCOPTIONS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
-CCOPTIONS=-fPIC -Wall -O3 $(MESENFLAGS)
+CXXFLAGS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+CFLAGS=-fPIC -Wall -O3 $(MESENFLAGS)
 LINKOPTIONS=
 
 ifeq ($(MESENPLATFORM),x86)
 	MESENPLATFORM=x86
 
-	GCCOPTIONS += -m32
-	CCOPTIONS += -m32
+	CXXFLAGS += -m32
+	CFLAGS += -m32
 else
 	MESENPLATFORM=x64
-	GCCOPTIONS += -m64
-	CCOPTIONS += -m64
+	CXXFLAGS += -m64
+	CFLAGS += -m64
 endif
 
 ifeq ($(LTO),true)
-	CCOPTIONS += -flto
-	GCCOPTIONS += -flto
+	CFLAGS += -flto
+	CXXFLAGS += -flto
 endif
 
 ifeq ($(PGO),profile)
-	CCOPTIONS += ${PROFILE_GEN_FLAG}
-	GCCOPTIONS += ${PROFILE_GEN_FLAG}
+	CFLAGS += ${PROFILE_GEN_FLAG}
+	CXXFLAGS += ${PROFILE_GEN_FLAG}
 endif
 
 ifeq ($(PGO),optimize)
-	CCOPTIONS += ${PROFILE_USE_FLAG}
-	GCCOPTIONS += ${PROFILE_USE_FLAG}
+	CFLAGS += ${PROFILE_USE_FLAG}
+	CXXFLAGS += ${PROFILE_USE_FLAG}
 endif
 
 ifeq ($(STATICLINK),true)
@@ -121,29 +121,29 @@ runtests:
 
 testhelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p TestHelper/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o testhelper TestHelper/*.cpp InteropDLL/ConsoleWrapper.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CXX) $(CXXFLAGS) -Wl,-z,defs -o testhelper TestHelper/*.cpp InteropDLL/ConsoleWrapper.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	mv testhelper TestHelper/$(OBJFOLDER)
 
 pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
-	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CXX) $(CXXFLAGS) -Wl,-z,defs -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 
 %.o: %.c
-	$(CC) $(CCOPTIONS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 	
 %.o: %.cpp
-	$(CPPC) $(GCCOPTIONS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 	
 Libretro/$(OBJFOLDER)/$(LIBRETROLIB): $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) Libretro/libretro.cpp
 	mkdir -p bin
 	mkdir -p Libretro/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) -pthread
+	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) -pthread
 	cp $(LIBRETROLIB) bin/pgohelperlib.so
 	mv $(LIBRETROLIB) Libretro/$(OBJFOLDER) 
 

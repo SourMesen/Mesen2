@@ -21,7 +21,7 @@ private:
 	__forceinline uint32_t GetPixel(uint16_t* ppuFrame, uint32_t offset);
 
 protected:
-	void OnBeforeApplyFilter();
+	void OnBeforeApplyFilter() override;
 
 public:
 	GbDefaultVideoFilter(Emulator* emu);
@@ -29,5 +29,5 @@ public:
 
 	FrameInfo GetFrameInfo() override;
 
-	void ApplyFilter(uint16_t* ppuOutputBuffer);
+	void ApplyFilter(uint16_t* ppuOutputBuffer) override;
 };

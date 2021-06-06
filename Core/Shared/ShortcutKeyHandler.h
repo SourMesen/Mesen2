@@ -7,7 +7,7 @@
 
 class Emulator;
 
-class ShortcutKeyHandler : public INotificationListener, public std::enable_shared_from_this<ShortcutKeyHandler>
+class ShortcutKeyHandler final : public INotificationListener, public std::enable_shared_from_this<ShortcutKeyHandler>
 {
 private:
 	Emulator* _emu;
@@ -43,7 +43,7 @@ private:
 
 public:
 	ShortcutKeyHandler(Emulator* emu);
-	~ShortcutKeyHandler();
+	virtual ~ShortcutKeyHandler();
 
 	bool IsShortcutAllowed(EmulatorShortcut shortcut);
 	void ProcessKeys();

@@ -20,7 +20,7 @@ struct NesLineData
 	bool HasOpeningParenthesis = false;
 };
 
-class NesAssembler : public IAssembler
+class NesAssembler final : public IAssembler
 {
 private:
 	std::unordered_map<string, unordered_set<int>> _availableModesByOpName;
@@ -36,6 +36,7 @@ private:
 
 public:
 	NesAssembler(shared_ptr<LabelManager> labelManager);
+	virtual ~NesAssembler() = default;
 
 	uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode);
 };

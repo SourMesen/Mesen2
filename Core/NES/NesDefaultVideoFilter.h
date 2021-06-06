@@ -18,7 +18,7 @@ private:
 
 protected:
 	void DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines);
-	void OnBeforeApplyFilter();
+	void OnBeforeApplyFilter() override;
 
 public:
 	NesDefaultVideoFilter(Emulator* emu);
@@ -26,5 +26,5 @@ public:
 	static void GenerateFullColorPalette(uint32_t paletteBuffer[512]);
 	static void GetFullPalette(uint32_t palette[512], NesConfig& nesCfg, PpuModel model);
 
-	void ApplyFilter(uint16_t* ppuOutputBuffer);
+	void ApplyFilter(uint16_t* ppuOutputBuffer) override;
 };

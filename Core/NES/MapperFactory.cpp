@@ -691,6 +691,7 @@ unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, Vi
 		} else {
 			//File is a valid NES file, but it couldn't be loaded
 			result = LoadRomResult::Failure;
+			return nullptr;
 		}
 	}
 	result = LoadRomResult::UnknownType;

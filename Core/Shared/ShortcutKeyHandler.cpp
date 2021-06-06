@@ -269,8 +269,6 @@ void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::CheckMappedKeys()
 {
-	EmuSettings* settings = _emu->GetSettings();
-
 	//Let the UI handle these shortcuts
 	for(uint64_t i = 0; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
 		EmulatorShortcut shortcut = (EmulatorShortcut)i;

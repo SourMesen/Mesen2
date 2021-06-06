@@ -60,7 +60,6 @@ public:
 		int32_t cyclesToRun = targetCycle - _previousCycle;
 		
 		if(cyclesToRun > _timer) {
-			cyclesToRun -= _timer + 1;
 			_previousCycle += _timer + 1;
 			_timer = _period;
 			return true;

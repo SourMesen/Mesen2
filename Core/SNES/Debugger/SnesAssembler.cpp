@@ -431,7 +431,6 @@ uint32_t SnesAssembler::AssembleCode(string code, uint32_t startAddress, int16_t
 	std::unordered_map<string, uint32_t> temporaryLabels;
 	std::unordered_map<string, uint32_t> currentPassLabels;
 
-	size_t i = 0;
 	vector<int16_t> output;
 	output.reserve(1000);
 
