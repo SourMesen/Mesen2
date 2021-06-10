@@ -5,7 +5,7 @@
 #include "NES/NesTypes.h"
 #include "NES/BaseNesPpu.h"
 #include "NES/BaseMapper.h"
-#include "NES/Debugger/NesDebuggerTypes.h"
+#include "NES/NesTypes.h"
 #include "NES/INesMemoryHandler.h"
 #include "MemoryOperationType.h"
 
@@ -114,9 +114,7 @@ public:
 	uint16_t* GetScreenBuffer(bool previousBuffer) override;
 	void DebugCopyOutputBuffer(uint16_t* target);
 	void DebugUpdateFrameBuffer(bool toGrayscale);
-	void GetState(NesPpuState& state);
-	void SetState(NesPpuState& state);
-
+	
 	void GetMemoryRanges(MemoryRanges& ranges) override
 	{
 		ranges.AddHandler(MemoryOperation::Read, 0x2000, 0x3FFF);

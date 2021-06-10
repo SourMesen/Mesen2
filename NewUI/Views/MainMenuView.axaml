@@ -405,6 +405,11 @@
 					<Image Source="/Assets/Speed.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<MenuItem Header="_Event Viewer" Click="OnEventViewerClick">
+				<MenuItem.Icon>
+					<Image Source="/Assets/EventViewer.png" />
+				</MenuItem.Icon>
+			</MenuItem>
 		</MenuItem>
 		<MenuItem Header="{l:Translate mnuHelp}">
 			<MenuItem Header="{l:Translate mnuOnlineHelp}">

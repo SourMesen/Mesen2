@@ -127,10 +127,6 @@ struct TileInfo
 	uint8_t PaletteOffset;
 };
 
-//TODO
-//int32_t AbsoluteTileAddr; //used by HD ppu
-//uint8_t OffsetY; //used by HD ppu
-
 struct NesSpriteInfo
 {
 	bool HorizontalMirror;
@@ -140,8 +136,19 @@ struct NesSpriteInfo
 	uint8_t HighByte;
 	uint8_t PaletteOffset;
 };
-//TODO
-//	bool VerticalMirror; //used by HD ppu
+
+struct NesPpuState
+{
+	PPUStatusFlags StatusFlags;
+	int32_t Scanline;
+	uint32_t Cycle;
+	uint32_t FrameCount;
+	uint32_t NmiScanline;
+	uint32_t ScanlineCount;
+	uint32_t SafeOamScanline;
+	uint16_t BusAddress;
+	uint8_t MemoryReadBuffer;
+};
 
 struct ApuLengthCounterState
 {

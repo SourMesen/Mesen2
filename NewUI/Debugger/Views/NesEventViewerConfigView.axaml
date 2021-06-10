@@ -1,0 +1,48 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:NesEventViewerConfig"
+	x:Class="Mesen.Debugger.Views.NesEventViewerConfigView"
+>
+	<Design.DataContext>
+		<cfg:NesEventViewerConfig />
+	</Design.DataContext>
+
+	<StackPanel>
+		<dc:EventViewerCategoryControl Text="$2000" Config="{CompiledBinding Ppu2000Write}" />
+		<dc:EventViewerCategoryControl Text="$2001" Config="{CompiledBinding Ppu2001Write}" />
+		<dc:EventViewerCategoryControl Text="$2003" Config="{CompiledBinding Ppu2003Write}" />
+		<dc:EventViewerCategoryControl Text="$2004" Config="{CompiledBinding Ppu2004Write}" />
+		<dc:EventViewerCategoryControl Text="$2005" Config="{CompiledBinding Ppu2005Write}" />
+		<dc:EventViewerCategoryControl Text="$2006" Config="{CompiledBinding Ppu2006Write}" />
+		<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Write}" />
+
+		<dc:EventViewerCategoryControl Text="$2002" Config="{CompiledBinding Ppu2002Read}" />
+		<dc:EventViewerCategoryControl Text="$2005" Config="{CompiledBinding Ppu2004Read}" />
+		<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Read}" />
+
+		<dc:EventViewerCategoryControl Text="APU Read" Config="{CompiledBinding ApuRegisterReads}" />
+		<dc:EventViewerCategoryControl Text="APU Write" Config="{CompiledBinding ApuRegisterWrites}" />
+
+		<dc:EventViewerCategoryControl Text="Mapper Read" Config="{CompiledBinding MapperRegisterReads}" />
+		<dc:EventViewerCategoryControl Text="Mapper Write" Config="{CompiledBinding MapperRegisterWrites}" />
+
+		<dc:EventViewerCategoryControl Text="Control Read" Config="{CompiledBinding ControlRegisterReads}" />
+		<dc:EventViewerCategoryControl Text="Control Write" Config="{CompiledBinding ControlRegisterWrites}" />
+
+		<dc:EventViewerCategoryControl Text="DMC DMA Read" Config="{CompiledBinding DmcDmaReads}" />
+		<dc:EventViewerCategoryControl Text="Sprite Zero Hit" Config="{CompiledBinding SpriteZeroHit}" />
+		
+		<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />
+		<dc:EventViewerCategoryControl Text="NMI" Config="{CompiledBinding Nmi}" />
+		
+		<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+	</StackPanel>
+</UserControl>

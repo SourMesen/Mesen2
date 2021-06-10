@@ -27,7 +27,7 @@
 #include "NES/NesConsole.h"
 #include "Gameboy/Gameboy.h"
 #include "Debugger/Debugger.h"
-#include "Debugger/BaseEventManager.h"
+#include "Debugger/IEventManager.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"

@@ -15,6 +15,7 @@
 	x:Class="Mesen.Debugger.Windows.MemoryToolsWindow"
 	x:DataType="dvm:MemoryToolsViewModel"
 	Width="600" Height="600"
+	Icon="/Assets/CheatCode.png"
 	Title="Memory Tools"
 >
 	<Design.DataContext>

@@ -24,7 +24,7 @@ namespace Mesen.Config
 		public GameboyConfig Gameboy { get; set; }
 		public PreferencesConfig Preferences { get; set; }
 		public AudioPlayerConfig AudioPlayer { get; set; }
-		public DebugConfig Debug;
+		public DebugConfig Debug { get; set; }
 		public RecentItems RecentFiles { get; set; }
 		public VideoRecordConfig VideoRecord { get; set; }
 		public MovieRecordConfig MovieRecord { get; set; }
@@ -120,7 +120,7 @@ namespace Mesen.Config
 			try {
 				if(!ConfigManager.DoNotSaveSettings) {
 					using(StreamWriter writer = new StreamWriter(configFile)) {
-						JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() }, WriteIndented = true, IgnoreReadOnlyProperties = true };
+						JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() }, WriteIndented = true, IgnoreReadOnlyProperties = true, IncludeFields = true };
 						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), options));
 					}
 				}

@@ -95,6 +95,14 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnEventViewerClick(object sender, RoutedEventArgs e)
+		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			new EventViewerWindow {
+				DataContext = new EventViewerViewModel(romInfo.ConsoleType.GetMainCpuType())
+			}.Show();
+		}
+
 		private void OpenConfig(ConfigWindowTab tab)
 		{
 			if(_cfgWindow == null) {

@@ -10,6 +10,8 @@ public:
 	static constexpr uint32_t ClockRatePal = 1662607;
 	static constexpr uint32_t ClockRateDendy = 1773448;
 
+	static constexpr uint32_t CyclesPerLine = 341;
+
 	static constexpr uint32_t ScreenWidth = 256;
 	static constexpr uint32_t ScreenHeight = 240;
 	static constexpr uint32_t ScreenPixelCount = ScreenWidth * ScreenHeight;

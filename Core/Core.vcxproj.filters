@@ -574,13 +574,13 @@
     <ClInclude Include="Gameboy\Carts\GbMbc3.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Debugger\EventManager.h">
+    <ClInclude Include="SNES\Debugger\SnesEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\Debugger\GbEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
-    <ClInclude Include="Debugger\BaseEventManager.h">
+    <ClInclude Include="Debugger\IEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbDmaController.h">
@@ -641,9 +641,6 @@
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\NesCpu.h">
-      <Filter>NES</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Debugger\NesDebuggerTypes.h">
       <Filter>NES</Filter>
     </ClInclude>
     <ClInclude Include="NES\NesHeader.h">
@@ -803,6 +800,7 @@
     <ClInclude Include="Gameboy\GbConstants.h" />
     <ClInclude Include="Shared\KeyDefinitions.h" />
     <ClInclude Include="NES\Debugger\NesAssembler.h" />
+    <ClInclude Include="NES\Debugger\NesEventManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1138,7 +1136,7 @@
     <ClCompile Include="Gameboy\GbCpu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\Debugger\EventManager.cpp">
+    <ClCompile Include="SNES\Debugger\SnesEventManager.cpp">
       <Filter>Debugger\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="Gameboy\Debugger\GbEventManager.cpp">
@@ -1238,6 +1236,8 @@
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
+    <ClCompile Include="NES\Debugger\NesEventManager.cpp" />
+    <ClCompile Include="NES\BaseNesPpu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

@@ -1,0 +1,101 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:v="using:Mesen.Debugger.Views"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
+	x:Class="Mesen.Debugger.Windows.EventViewerWindow"
+	x:DataType="dvm:EventViewerViewModel"
+	Width="600" Height="600"
+	Icon="/Assets/EventViewer.png"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<dvm:EventViewerViewModel />
+	</Design.DataContext>
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="{x:Type cfg:SnesEventViewerConfig}">
+			<v:SnesEventViewerConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type cfg:NesEventViewerConfig}">
+			<v:NesEventViewerConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type cfg:GbEventViewerConfig}">
+			<v:GbEventViewerConfigView />
+		</DataTemplate>
+	</Window.DataTemplates>
+	
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="{l:Translate mnuFile}">
+				<MenuItem Header="{l:Translate mnuClose}">
+					<MenuItem.Icon>
+						<Image Source="/Assets/Exit.png" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+			<MenuItem Header="{l:Translate mnuView}">
+				<MenuItem Header="{l:Translate mnuRefresh}">
+					<MenuItem.Icon>
+						<Image Source="/Assets/Refresh.png" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="{l:Translate mnuAutoRefresh}">
+					<MenuItem.Icon>
+						<Image Source="/Assets/Speed.png" />
+					</MenuItem.Icon>
+					<MenuItem Header="{l:Translate mnuAutoRefreshOff}"/>
+					<Separator />
+					<MenuItem Header="{l:Translate mnuAutoRefreshLow}"/>
+					<MenuItem Header="{l:Translate mnuAutoRefreshNormal}"/>
+					<MenuItem Header="{l:Translate mnuAutoRefreshHigh}"/>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="{l:Translate mnuRefreshOnPause}" />
+			</MenuItem>
+		</Menu>
+		
+		<ContentControl Content="{CompiledBinding ConsoleConfig}" DockPanel.Dock="Right" VerticalAlignment="Top" Margin="3"/>
+
+		<TabControl>
+			<TabItem Header="{l:Translate tabPpuView}">
+				<Border BorderBrush="Gray" BorderThickness="1">
+					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
+						<dc:PictureViewer
+							DockPanel.Dock="Top"
+							x:Name="picViewer"
+							Width="512"
+							Height="480"
+						/>
+					</ScrollViewer>
+				</Border>
+			</TabItem>
+			<TabItem Header="{l:Translate tabListView}">
+				<Border BorderBrush="Gray" BorderThickness="1">
+					<dc:MesenDataGrid>
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="{l:Translate colPc}" Binding="{Binding ProgramCounter}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colScanline}" Binding="{Binding Scanline}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colCycle}" Binding="{Binding Cycle}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colType}" Binding="{Binding Type}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colDetails}" Binding="{Binding Details}" Width="*" CanUserResize="True" />
+						</DataGrid.Columns>
+					</dc:MesenDataGrid>
+				</Border>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</Window>

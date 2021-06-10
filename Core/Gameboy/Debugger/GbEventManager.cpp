@@ -6,7 +6,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
-#include "Debugger/BaseEventManager.h"
+#include "Debugger/IEventManager.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 
 GbEventManager::GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu)
@@ -57,7 +57,7 @@ void GbEventManager::GetEvents(DebugEventInfo* eventArray, uint32_t& maxEventCou
 	maxEventCount = eventCount;
 }
 
-DebugEventInfo GbEventManager::GetEvent(uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions& options)
+DebugEventInfo GbEventManager::GetEvent(uint16_t scanline, uint16_t cycle)
 {
 	auto lock = _lock.AcquireSafe();
 
@@ -72,10 +72,15 @@ DebugEventInfo GbEventManager::GetEvent(uint16_t scanline, uint16_t cycle, Event
 	return empty;
 }
 
-uint32_t GbEventManager::GetEventCount(EventViewerDisplayOptions options)
+void GbEventManager::SetConfiguration(BaseEventViewerConfig& config)
+{
+	_config = (GbEventViewerConfig&)config;
+}
+
+uint32_t GbEventManager::GetEventCount()
 {
 	auto lock = _lock.AcquireSafe();
-	FilterEvents(options);
+	FilterEvents();
 	return (uint32_t)_sentEvents.size();
 }
 
@@ -85,13 +90,44 @@ void GbEventManager::ClearFrameEvents()
 	_debugEvents.clear();
 }
 
-void GbEventManager::FilterEvents(EventViewerDisplayOptions& options)
+EventViewerCategoryCfg GbEventManager::GetEventConfig(DebugEventInfo& evt)
+{
+	switch(evt.Type) {
+		default: return {};
+		case DebugEventType::Breakpoint: return _config.MarkedBreakpoints;
+		case DebugEventType::Irq: return _config.Irq;
+		case DebugEventType::Register:
+			uint16_t reg = evt.Operation.Address & 0xFFFF;
+			bool isWrite = evt.Operation.Type == MemoryOperationType::Write || evt.Operation.Type == MemoryOperationType::DmaWrite;
+			if(reg >= 0xFE00 && reg <= 0xFE9F) {
+				return isWrite ? _config.PpuRegisterOamWrites : _config.PpuRegisterReads;
+			} else if(reg >= 0xFF42 && reg <= 0xFF43) {
+				return isWrite ? _config.PpuRegisterBgScrollWrites : _config.PpuRegisterReads;
+			} else if(reg >= 0x8000 && reg <= 0x9FFF) {
+				return isWrite ? _config.PpuRegisterVramWrites : _config.PpuRegisterReads;
+			} else if((reg >= 0xFF47 && reg <= 0xFF49) || (reg >= 0xFF68 && reg <= 0xFF6B)) {
+				return isWrite ? _config.PpuRegisterCgramWrites : _config.PpuRegisterReads;
+			} else if(reg >= 0xFF4A && reg <= 0xFF4B) {
+				return isWrite ? _config.PpuRegisterWindowWrites : _config.PpuRegisterReads;
+			} else if(reg >= 0xFF40 && reg <= 0xFF70) {
+				return isWrite ? _config.PpuRegisterOtherWrites : _config.PpuRegisterReads;
+			} else if(reg >= 0xFF10 && reg <= 0xFF3F) {
+				return isWrite ? _config.ApuRegisterWrites : _config.ApuRegisterReads;
+			} else {
+				return isWrite ? _config.CpuRegisterWrites : _config.CpuRegisterReads;
+			}
+
+			return {};
+	}
+}
+
+void GbEventManager::FilterEvents()
 {
 	auto lock = _lock.AcquireSafe();
 	_sentEvents.clear();
 
 	vector<DebugEventInfo> events = _snapshot;
-	if(options.ShowPreviousFrameEvents && _snapshotScanline != 0) {
+	if(_config.ShowPreviousFrameEvents && _snapshotScanline != 0) {
 		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
 		for(DebugEventInfo& evt : _prevDebugEvents) {
 			uint32_t evtKey = (evt.Scanline << 16) + evt.Cycle;
@@ -102,70 +138,16 @@ void GbEventManager::FilterEvents(EventViewerDisplayOptions& options)
 	}
 
 	for(DebugEventInfo& evt : events) {
-		bool isWrite = evt.Operation.Type == MemoryOperationType::Write || evt.Operation.Type == MemoryOperationType::DmaWrite;
-		bool showEvent = false;
-		switch(evt.Type) {
-			default: break;
-			case DebugEventType::Breakpoint: showEvent = options.ShowMarkedBreakpoints; break;
-			case DebugEventType::Irq: showEvent = options.ShowIrq; break;
-			case DebugEventType::Register:
-				uint16_t reg = evt.Operation.Address & 0xFFFF;
-				if(reg >= 0xFE00 && reg <= 0xFE9F) {
-					showEvent = isWrite ? options.ShowPpuRegisterOamWrites : options.ShowPpuRegisterReads;
-				} else if(reg >= 0xFF42 && reg <= 0xFF43) {
-					showEvent = isWrite ? options.ShowPpuRegisterBgScrollWrites : options.ShowPpuRegisterReads;
-				} else if(reg >= 0x8000 && reg <= 0x9FFF) {
-					showEvent = isWrite ? options.ShowPpuRegisterVramWrites : options.ShowPpuRegisterReads;
-				} else if((reg >= 0xFF47 && reg <= 0xFF49) || (reg >= 0xFF68 && reg <= 0xFF6B)) {
-					showEvent = isWrite ? options.ShowPpuRegisterCgramWrites : options.ShowPpuRegisterReads;
-				} else if(reg >= 0xFF4A && reg <= 0xFF4B) {
-					showEvent = isWrite ? options.ShowPpuRegisterWindowWrites : options.ShowPpuRegisterReads;
-				} else if(reg >= 0xFF40 && reg <= 0xFF70) {
-					showEvent = isWrite ? options.ShowPpuRegisterOtherWrites : options.ShowPpuRegisterReads;
-				} else if(reg >= 0xFF10 && reg <= 0xFF3F) {
-					showEvent = isWrite ? options.ShowApuRegisterWrites : options.ShowApuRegisterReads;
-				} else {
-					showEvent = isWrite ? options.ShowCpuRegisterWrites : options.ShowCpuRegisterReads;
-				}
-				break;
-		}
-
-		if(showEvent) {
+		if(GetEventConfig(evt).Visible) {
 			_sentEvents.push_back(evt);
 		}
 	}
 }
 
-void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer, EventViewerDisplayOptions& options)
+void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer)
 {
-	bool isWrite = evt.Operation.Type == MemoryOperationType::Write || evt.Operation.Type == MemoryOperationType::DmaWrite;
-	uint32_t color = 0;
-	uint32_t ppuReadColor = options.PpuRegisterReadColor;
-	switch(evt.Type) {
-		default: break;
-		case DebugEventType::Breakpoint: color = options.BreakpointColor; break;
-		case DebugEventType::Irq: color = options.IrqColor; break;
-		case DebugEventType::Register:
-			uint16_t reg = evt.Operation.Address & 0xFFFF;
-			if(reg >= 0xFE00 && reg <= 0xFE9F) {
-				color = isWrite ? options.PpuRegisterWriteOamColor : ppuReadColor;
-			} else if(reg >= 0xFF42 && reg <= 0xFF43) {
-				color = isWrite ? options.PpuRegisterWriteBgScrollColor : ppuReadColor;
-			} else if(reg >= 0x8000 && reg <= 0x9FFF) {
-				color = isWrite ? options.PpuRegisterWriteVramColor : ppuReadColor;
-			} else if((reg >= 0xFF47 && reg <= 0xFF49) || (reg >= 0xFF68 && reg <= 0xFF6B)) {
-				color = isWrite ? options.PpuRegisterWriteCgramColor : ppuReadColor;
-			} else if(reg >= 0xFF4A && reg <= 0xFF4B) {
-				color = isWrite ? options.PpuRegisterWriteWindowColor : ppuReadColor;
-			} else if(reg >= 0xFF40 && reg <= 0xFF70) {
-				color = isWrite ? options.PpuRegisterWriteOtherColor : ppuReadColor;
-			} else if(reg >= 0xFF10 && reg <= 0xFF3F) {
-				color = isWrite ? options.ApuRegisterWriteColor : options.ApuRegisterReadColor;
-			} else {
-				color = isWrite ? options.CpuRegisterWriteColor : options.CpuRegisterReadColor;
-			}
-			break;
-	}
+	EventViewerCategoryCfg evtCfg = GetEventConfig(evt);
+	uint32_t color = evtCfg.Color;
 
 	if(drawBackground) {
 		color = 0xFF000000 | ((color >> 1) & 0x7F7F7F);
@@ -191,7 +173,7 @@ void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_
 	}
 }
 
-uint32_t GbEventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
+uint32_t GbEventManager::TakeEventSnapshot()
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
@@ -216,11 +198,19 @@ uint32_t GbEventManager::TakeEventSnapshot(EventViewerDisplayOptions options)
 	return _scanlineCount;
 }
 
-void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize, EventViewerDisplayOptions options)
+FrameInfo GbEventManager::GetDisplayBufferSize()
+{
+	FrameInfo size;
+	size.Width = GbEventManager::ScanlineWidth;
+	size.Height = _scanlineCount * 2;
+	return size;
+}
+
+void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize)
 {
 	auto lock = _lock.AcquireSafe();
-
-	if(_snapshotScanline < 0 || bufferSize < _scanlineCount * 2 * GbEventManager::ScanlineWidth * 4) {
+	FrameInfo size = GetDisplayBufferSize();
+	if(_snapshotScanline < 0 || bufferSize < size.Width * size.Height * sizeof(uint32_t)) {
 		return;
 	}
 
@@ -241,11 +231,11 @@ void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize, Eve
 		}
 	}
 
-	FilterEvents(options);
+	FilterEvents();
 	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, true, buffer, options);
+		DrawEvent(evt, true, buffer);
 	}
 	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, false, buffer, options);
+		DrawEvent(evt, false, buffer);
 	}
 }

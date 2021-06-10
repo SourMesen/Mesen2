@@ -24,7 +24,6 @@ class Disassembler;
 class BreakpointManager;
 class PpuTools;
 class CodeDataLogger;
-class EventManager;
 class CallstackManager;
 class LabelManager;
 class ScriptManager;

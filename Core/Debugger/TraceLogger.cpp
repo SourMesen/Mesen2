@@ -18,7 +18,6 @@
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Gameboy/GbTypes.h"
 #include "NES/NesTypes.h"
-#include "NES/Debugger/NesDebuggerTypes.h"
 #include "Utilities/HexUtilities.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

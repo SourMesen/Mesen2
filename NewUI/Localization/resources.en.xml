@@ -798,6 +798,32 @@
 			<Control ID="btnStop">Stop</Control>
 		</Form>
 
+		<Form ID="EventViewerWindow">
+			<Control ID="wndTitle">Event Viewer</Control>
+
+			<Control ID="mnuFile">File</Control>
+			<Control ID="mnuClose">Close</Control>
+			<Control ID="mnuView">View</Control>
+			<Control ID="mnuRefresh">Refresh</Control>
+			<Control ID="mnuAutoRefresh">Auto-refresh</Control>
+			<Control ID="mnuAutoRefreshOff">Off</Control>
+			<Control ID="mnuAutoRefreshLow">Low (15 FPS)</Control>
+			<Control ID="mnuAutoRefreshNormal">Normal (30 FPS)</Control>
+			<Control ID="mnuAutoRefreshHigh">High (60 FPS)</Control>
+			<Control ID="mnuRefreshOnPause">Refresh on break/pause</Control>
+
+			<Control ID="tabPpuView">PPU View</Control>
+			<Control ID="tabListView">List View</Control>
+
+			<Control ID="colPc">PC</Control>
+			<Control ID="colScanline">Scanline</Control>
+			<Control ID="colCycle">Cycle</Control>
+			<Control ID="colType">Type</Control>
+			<Control ID="colAddress">Address</Control>
+			<Control ID="colValue">Value</Control>
+			<Control ID="colDetails">Details</Control>
+		</Form>
+		
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
 			<Control ID="btnReset">Reset</Control>

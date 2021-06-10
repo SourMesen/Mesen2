@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "NES/INesMemoryHandler.h"
 #include "Utilities/ISerializable.h"
+#include "NES/NesTypes.h"
 
 enum class ConsoleRegion;
 
@@ -139,6 +140,9 @@ public:
 
 	virtual uint16_t* GetScreenBuffer(bool previousBuffer) = 0;
 	virtual void SetRegion(ConsoleRegion region) = 0;
+
+	void GetState(NesPpuState& state);
+	void SetState(NesPpuState& state);
 
 	virtual PpuModel GetPpuModel() = 0;
 	virtual uint32_t GetPixelBrightness(uint8_t x, uint8_t y) = 0;

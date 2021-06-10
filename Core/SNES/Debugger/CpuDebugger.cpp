@@ -9,7 +9,7 @@
 #include "SNES/MemoryMappings.h"
 #include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/CpuDebugger.h"
-#include "SNES/Debugger/EventManager.h"
+#include "SNES/Debugger/SnesEventManager.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
@@ -52,7 +52,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 		_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::PrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Cpu));
 	}
 
-	_eventManager.reset(new EventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
+	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());

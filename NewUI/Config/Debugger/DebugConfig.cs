@@ -34,9 +34,10 @@ namespace Mesen.Config
 
 	public enum RefreshSpeed
 	{
-		Low = 0,
-		Normal = 1,
-		High = 2
+		Off = 0,
+		Low = 1,
+		Normal = 2,
+		High = 3
 	}
 
 }

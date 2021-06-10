@@ -14,7 +14,7 @@ class MemoryManager;
 class CodeDataLogger;
 class EmuSettings;
 class ScriptManager;
-class EventManager;
+class IEventManager;
 class MemoryMappings;
 class BreakpointManager;
 class Sa1;
@@ -40,7 +40,7 @@ class CpuDebugger final : public IDebugger
 
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 
-	shared_ptr<EventManager> _eventManager;
+	shared_ptr<IEventManager> _eventManager;
 	shared_ptr<SnesAssembler> _assembler;
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;

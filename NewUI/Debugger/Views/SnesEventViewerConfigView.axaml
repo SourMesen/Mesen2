@@ -1,0 +1,44 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:SnesEventViewerConfig"
+	x:Class="Mesen.Debugger.Views.SnesEventViewerConfigView"
+>
+	<Design.DataContext>
+		<cfg:SnesEventViewerConfig />
+	</Design.DataContext>
+
+	<StackPanel>
+		<dc:EventViewerCategoryControl Text="VRAM" Config="{CompiledBinding PpuRegisterVramWrites}" />
+		<dc:EventViewerCategoryControl Text="CGRAM" Config="{CompiledBinding PpuRegisterCgramWrites}" />
+		<dc:EventViewerCategoryControl Text="OAM" Config="{CompiledBinding PpuRegisterOamWrites}" />
+		<dc:EventViewerCategoryControl Text="Mode 7" Config="{CompiledBinding PpuRegisterMode7Writes}" />
+		<dc:EventViewerCategoryControl Text="BG Options" Config="{CompiledBinding PpuRegisterBgOptionWrites}" />
+		<dc:EventViewerCategoryControl Text="BG Scroll" Config="{CompiledBinding PpuRegisterBgScrollWrites}" />
+		<dc:EventViewerCategoryControl Text="Window" Config="{CompiledBinding PpuRegisterWindowWrites}" />
+		<dc:EventViewerCategoryControl Text="Others" Config="{CompiledBinding PpuRegisterOtherWrites}" />
+
+		<dc:EventViewerCategoryControl Text="Read (any)" Config="{CompiledBinding PpuRegisterReads}" />
+
+		<dc:EventViewerCategoryControl Text="APU Read" Config="{CompiledBinding ApuRegisterReads}" />
+		<dc:EventViewerCategoryControl Text="APU Write" Config="{CompiledBinding ApuRegisterWrites}" />
+
+		<dc:EventViewerCategoryControl Text="CPU Read" Config="{CompiledBinding CpuRegisterReads}" />
+		<dc:EventViewerCategoryControl Text="CPU Write" Config="{CompiledBinding CpuRegisterWrites}" />
+
+		<dc:EventViewerCategoryControl Text="WRAM Read" Config="{CompiledBinding WorkRamRegisterReads}" />
+		<dc:EventViewerCategoryControl Text="WRAM Write" Config="{CompiledBinding WorkRamRegisterWrites}" />
+
+		<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />
+		<dc:EventViewerCategoryControl Text="NMI" Config="{CompiledBinding Nmi}" />
+		
+		<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+	</StackPanel>
+</UserControl>

@@ -50,6 +50,7 @@
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
     <ClInclude Include="NES\Debugger\NesAssembler.h" />
+    <ClInclude Include="NES\Debugger\NesEventManager.h" />
     <ClInclude Include="NES\DefaultNesPpu.h" />
     <ClInclude Include="NES\HdPacks\HdAudioDevice.h" />
     <ClInclude Include="NES\HdPacks\HdData.h" />
@@ -152,7 +153,6 @@
     <ClInclude Include="NES\NesCpu.h" />
     <ClInclude Include="NES\Debugger\NesDisUtils.h" />
     <ClInclude Include="NES\Debugger\NesDebugger.h" />
-    <ClInclude Include="NES\Debugger\NesDebuggerTypes.h" />
     <ClInclude Include="NES\NesHeader.h" />
     <ClInclude Include="NES\NesMemoryManager.h" />
     <ClInclude Include="NES\NesPpu.h" />
@@ -172,7 +172,7 @@
     <ClInclude Include="SNES\BaseCartridge.h" />
     <ClInclude Include="Shared\BaseControlDevice.h" />
     <ClInclude Include="SNES\Coprocessors\BaseCoprocessor.h" />
-    <ClInclude Include="Debugger\BaseEventManager.h" />
+    <ClInclude Include="Debugger\IEventManager.h" />
     <ClInclude Include="Shared\BatteryManager.h" />
     <ClInclude Include="SNES\Coprocessors\BSX\BsxCart.h" />
     <ClInclude Include="SNES\Coprocessors\BSX\BsxMemoryPack.h" />
@@ -260,7 +260,7 @@
     <ClInclude Include="SNES\Debugger\DummyCpu.h" />
     <ClInclude Include="SNES\Debugger\DummySpc.h" />
     <ClInclude Include="Shared\EmuSettings.h" />
-    <ClInclude Include="SNES\Debugger\EventManager.h" />
+    <ClInclude Include="SNES\Debugger\SnesEventManager.h" />
     <ClInclude Include="EventType.h" />
     <ClInclude Include="Debugger\ExpressionEvaluator.h" />
     <ClInclude Include="Debugger\LabelManager.h" />
@@ -375,7 +375,9 @@
   <ItemGroup>
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
+    <ClCompile Include="NES\BaseNesPpu.cpp" />
     <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
+    <ClCompile Include="NES\Debugger\NesEventManager.cpp" />
     <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
@@ -463,7 +465,7 @@
     <ClCompile Include="Gameboy\GbWaveChannel.cpp" />
     <ClCompile Include="SNES\Debugger\NecDspDebugger.cpp" />
     <ClCompile Include="Shared\EmuSettings.cpp" />
-    <ClCompile Include="SNES\Debugger\EventManager.cpp" />
+    <ClCompile Include="SNES\Debugger\SnesEventManager.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.cpp" />
     <ClCompile Include="Netplay\GameClient.cpp" />
     <ClCompile Include="Netplay\GameClientConnection.cpp" />

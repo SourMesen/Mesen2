@@ -15,7 +15,7 @@
 #include "Core/Debugger/ScriptManager.h"
 #include "Core/Debugger/Profiler.h"
 #include "Core/Debugger/IAssembler.h"
-#include "Core/Debugger/BaseEventManager.h"
+#include "Core/Debugger/IEventManager.h"
 #include "Core/Gameboy/GbTypes.h"
 
 extern shared_ptr<Emulator> _emu;
@@ -100,11 +100,13 @@ extern "C"
 	DllExport void __stdcall GetGameboyTilemap(uint8_t* vram, GbPpuState state, uint16_t offset, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboyTilemap(vram, state, offset, buffer); }
 	DllExport void __stdcall GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, uint8_t* vram, uint8_t* oamRam, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboySpritePreview(options, state, vram, oamRam, buffer); }
 
+	DllExport void __stdcall SetEventViewerConfig(CpuType cpuType, BaseEventViewerConfig& config) { GetDebugger()->GetEventManager(cpuType)->SetConfiguration(config); }
 	DllExport void __stdcall GetDebugEvents(CpuType cpuType, DebugEventInfo *infoArray, uint32_t &maxEventCount) { GetDebugger()->GetEventManager(cpuType)->GetEvents(infoArray, maxEventCount); }
-	DllExport uint32_t __stdcall GetDebugEventCount(CpuType cpuType, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager(cpuType)->GetEventCount(options); }
-	DllExport void __stdcall GetEventViewerOutput(CpuType cpuType, uint32_t *buffer, uint32_t bufferSize, EventViewerDisplayOptions options) { GetDebugger()->GetEventManager(cpuType)->GetDisplayBuffer(buffer, bufferSize, options); }
-	DllExport void __stdcall GetEventViewerEvent(CpuType cpuType, DebugEventInfo *evtInfo, uint16_t scanline, uint16_t cycle, EventViewerDisplayOptions options) { *evtInfo = GetDebugger()->GetEventManager(cpuType)->GetEvent(scanline, cycle, options); }
-	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType, EventViewerDisplayOptions options) { return GetDebugger()->GetEventManager(cpuType)->TakeEventSnapshot(options); }
+	DllExport uint32_t __stdcall GetDebugEventCount(CpuType cpuType) { return GetDebugger()->GetEventManager(cpuType)->GetEventCount(); }
+	DllExport FrameInfo __stdcall GetEventViewerDisplaySize(CpuType cpuType) { return GetDebugger()->GetEventManager(cpuType)->GetDisplayBufferSize(); }
+	DllExport void __stdcall GetEventViewerOutput(CpuType cpuType, uint32_t *buffer, uint32_t bufferSize) { GetDebugger()->GetEventManager(cpuType)->GetDisplayBuffer(buffer, bufferSize); }
+	DllExport void __stdcall GetEventViewerEvent(CpuType cpuType, DebugEventInfo *evtInfo, uint16_t scanline, uint16_t cycle) { *evtInfo = GetDebugger()->GetEventManager(cpuType)->GetEvent(scanline, cycle); }
+	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType) { return GetDebugger()->GetEventManager(cpuType)->TakeEventSnapshot(); }
 
 	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return GetDebugger()->GetScriptManager()->LoadScript(name, content, scriptId); }
 	DllExport void __stdcall RemoveScript(int32_t scriptId) { GetDebugger()->GetScriptManager()->RemoveScript(scriptId); }

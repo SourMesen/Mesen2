@@ -56,6 +56,7 @@
 	  <None Remove="Assets\Edit.png" />
 	  <None Remove="Assets\EditLabel.png" />
 	  <None Remove="Assets\Enum.png" />
+	  <None Remove="Assets\EventViewer.png" />
 	  <None Remove="Assets\Exclamation.png" />
 	  <None Remove="Assets\Exit.png" />
 	  <None Remove="Assets\Expand.png" />
@@ -93,7 +94,6 @@
 	  <None Remove="Assets\NavigateBack.png" />
 	  <None Remove="Assets\NavigateForward.png" />
 	  <None Remove="Assets\NecDspDebugger.png" />
-	  <None Remove="Assets\NesEventViewer.png" />
 	  <None Remove="Assets\NesIcon.png" />
 	  <None Remove="Assets\Network.png" />
 	  <None Remove="Assets\NextArrow.png" />
@@ -182,6 +182,18 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Controls\EventViewerCategoryControl.axaml.cs">
+      <DependentUpon>EventViewerCategoryControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\NesEventViewerConfigView.axaml.cs">
+      <DependentUpon>NesEventViewerConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\GbEventViewerConfigView.axaml.cs">
+      <DependentUpon>GbEventViewerConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\SnesEventViewerConfigView.axaml.cs">
+      <DependentUpon>SnesEventViewerConfigView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\WatchListView.axaml.cs">
       <DependentUpon>WatchListView.axaml</DependentUpon>
     </Compile>
@@ -217,6 +229,9 @@
     </Compile>
     <Compile Update="Debugger\Windows\LabelEditWindow.axaml.cs">
       <DependentUpon>LabelEditWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\EventViewerWindow.axaml.cs">
+      <DependentUpon>EventViewerWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\TileViewerWindow.axaml.cs">
       <DependentUpon>TileViewerWindow.axaml</DependentUpon>
@@ -353,6 +368,7 @@
 	  <AvaloniaResource Include="Assets\Edit.png" />
 	  <AvaloniaResource Include="Assets\EditLabel.png" />
 	  <AvaloniaResource Include="Assets\Enum.png" />
+	  <AvaloniaResource Include="Assets\EventViewer.png" />
 	  <AvaloniaResource Include="Assets\Exclamation.png" />
 	  <AvaloniaResource Include="Assets\Exit.png" />
 	  <AvaloniaResource Include="Assets\Expand.png" />
@@ -390,7 +406,6 @@
 	  <AvaloniaResource Include="Assets\NavigateBack.png" />
 	  <AvaloniaResource Include="Assets\NavigateForward.png" />
 	  <AvaloniaResource Include="Assets\NecDspDebugger.png" />
-	  <AvaloniaResource Include="Assets\NesEventViewer.png" />
 	  <AvaloniaResource Include="Assets\Network.png" />
 	  <AvaloniaResource Include="Assets\NextArrow.png" />
 	  <AvaloniaResource Include="Assets\NextTrack.png" />

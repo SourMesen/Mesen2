@@ -25,6 +25,9 @@
 	</Design.DataContext>
 
 	<Window.Styles>
+		<Style Selector="Button">
+			<Setter Property="MinWidth" Value="0" />
+		</Style>
 		<Style Selector="Grid.main > Border">
 			<Setter Property="BorderBrush" Value="Gray" />
 			<Setter Property="BorderThickness" Value="1" />

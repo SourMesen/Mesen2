@@ -10,11 +10,13 @@ namespace Mesen.Utilities
 {
 	public static class JsonHelper
 	{
+		private static JsonSerializerOptions _options = new JsonSerializerOptions() { IgnoreReadOnlyProperties = true, IncludeFields = true };
+
 		public static T Clone<T>(T obj)
 		{
 			using MemoryStream stream = new MemoryStream();
-			byte[] jsonData = JsonSerializer.SerializeToUtf8Bytes(obj);
-			T? clone = JsonSerializer.Deserialize<T>(jsonData);
+			byte[] jsonData = JsonSerializer.SerializeToUtf8Bytes(obj, _options);
+			T? clone = JsonSerializer.Deserialize<T>(jsonData, _options);
 			if(clone == null) {
 				throw new Exception("Invalid object");
 			}

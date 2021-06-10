@@ -14,7 +14,7 @@
 #include "Debugger/ScriptManager.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "Debugger/BaseEventManager.h"
+#include "Debugger/IEventManager.h"
 #include "SNES/Cpu.h"
 #include "SNES/Ppu.h"
 #include "SNES/Spc.h"

@@ -16,6 +16,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/Debugger/NesDebugger.h"
 #include "NES/Debugger/NesAssembler.h"
+#include "NES/Debugger/NesEventManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Shared/EmuSettings.h"
@@ -40,7 +41,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 
 	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::NesPrgRom, _emu->GetMemory(SnesMemoryType::NesPrgRom).Size, CpuType::Nes));
 
-	//_eventManager.reset(new EventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
+	_eventManager.reset(new NesEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Nes, _eventManager.get()));
 	_step.reset(new StepRequest());
@@ -147,8 +148,8 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
-	if(IsRegister(addr)) {
-		//_eventManager->AddEvent(DebugEventType::Register, operation);
+	if(IsRegister(operation)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
@@ -162,8 +163,8 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 		_disassembler->InvalidateCache(addressInfo, CpuType::Nes);
 	}
 
-	if(IsRegister(addr)) {
-		//_eventManager->AddEvent(DebugEventType::Register, operation);
+	if(IsRegister(operation)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());
@@ -225,9 +226,17 @@ void NesDebugger::ProcessPpuCycle(uint16_t& scanline, uint16_t& cycle)
 	}
 }
 
-bool NesDebugger::IsRegister(uint32_t addr)
+bool NesDebugger::IsRegister(MemoryOperationInfo& op)
 {
-	//TODO
+	if(op.Address >= 0x2000 && op.Address <= 0x3FFF) {
+		return true;
+	} else if(op.Address >= 0x4000 && op.Address <= 0x4015 || (op.Address == 0x4017 && op.Type == MemoryOperationType::Write)) {
+		return true;
+	} else if(op.Address == 0x4016 || (op.Address == 0x4017 && op.Type == MemoryOperationType::Read)) {
+		return true;
+	} else if(op.Address >= 0x4018 && ((op.Type == MemoryOperationType::Write && _mapper->IsWriteRegister(op.Address)) || (op.Type == MemoryOperationType::Read && _mapper->IsReadRegister(op.Address)))) {
+		return true;
+	}
 	return false;
 }
 

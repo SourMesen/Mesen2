@@ -114,11 +114,11 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
-		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(CpuType cpuType, EventViewerDisplayOptions options);
+		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(CpuType cpuType);
 		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper(CpuType cpuType, [In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount);
-		public static DebugEventInfo[] GetDebugEvents(CpuType cpuType, EventViewerDisplayOptions options)
+		public static DebugEventInfo[] GetDebugEvents(CpuType cpuType)
 		{
-			UInt32 maxEventCount = GetDebugEventCount(cpuType, options);
+			UInt32 maxEventCount = GetDebugEventCount(cpuType);
 			DebugEventInfo[] debugEvents = new DebugEventInfo[maxEventCount];
 
 			DebugApi.GetDebugEventsWrapper(cpuType, debugEvents, ref maxEventCount);
@@ -130,18 +130,16 @@ namespace Mesen.Interop
 			return debugEvents;
 		}
 
-		[DllImport(DllPath)] public static extern void GetEventViewerEvent(CpuType cpuType, ref DebugEventInfo evtInfo, UInt16 scanline, UInt16 cycle, EventViewerDisplayOptions options);
-		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType, EventViewerDisplayOptions options);		
+		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropSnesEventViewerConfig config);
+		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropNesEventViewerConfig config);
+		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropGbEventViewerConfig config);
+		
+		[DllImport(DllPath)] public static extern void GetEventViewerEvent(CpuType cpuType, ref DebugEventInfo evtInfo, UInt16 scanline, UInt16 cycle);
+		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType);
 
-		[DllImport(DllPath, EntryPoint = "GetEventViewerOutput")] public static extern void GetEventViewerOutputWrapper(CpuType cpuType, IntPtr buffer, UInt32 bufferSize, EventViewerDisplayOptions options);
-		/*public static byte[] GetEventViewerOutput(CpuType cpuType, int scanlineWidth, UInt32 scanlineCount, EventViewerDisplayOptions options)
-		{
-			UInt32 bufferSize = (UInt32)(scanlineWidth * scanlineCount * 2 * 4);
-			byte[] buffer = new byte[bufferSize];
-			DebugApi.GetEventViewerOutputWrapper(cpuType, buffer, bufferSize, options);
-			return buffer;
-		}*/
-
+		[DllImport(DllPath)] public static extern FrameInfo GetEventViewerDisplaySize(CpuType cpuType);
+		[DllImport(DllPath)] public static extern void GetEventViewerOutput(CpuType cpuType, IntPtr buffer, UInt32 bufferSize);
+		
 		[DllImport(DllPath, EntryPoint = "GetCallstack")] private static extern void GetCallstackWrapper(CpuType type, [In, Out]StackFrameInfo[] callstackArray, ref UInt32 callstackSize);
 		public static StackFrameInfo[] GetCallstack(CpuType type)
 		{
@@ -512,55 +510,98 @@ namespace Mesen.Interop
 		public DmaChannelConfig DmaChannelInfo;
 	};
 
-	public struct EventViewerDisplayOptions
+	[StructLayout(LayoutKind.Sequential)]
+	public struct InteropEventViewerCategoryCfg
 	{
-		public UInt32 IrqColor;
-		public UInt32 NmiColor;
-		public UInt32 BreakpointColor;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Visible;
 
-		public UInt32 PpuRegisterReadColor;
-		public UInt32 PpuRegisterWriteCgramColor;
-		public UInt32 PpuRegisterWriteVramColor;
-		public UInt32 PpuRegisterWriteOamColor;
-		public UInt32 PpuRegisterWriteMode7Color;
-		public UInt32 PpuRegisterWriteBgOptionColor;
-		public UInt32 PpuRegisterWriteBgScrollColor;
-		public UInt32 PpuRegisterWriteWindowColor;
-		public UInt32 PpuRegisterWriteOtherColor;
+		public UInt32 Color;
+	}
 
-		public UInt32 ApuRegisterReadColor;
-		public UInt32 ApuRegisterWriteColor;
-		public UInt32 CpuRegisterReadColor;
-		public UInt32 CpuRegisterWriteColor;
-		public UInt32 WorkRamRegisterReadColor;
-		public UInt32 WorkRamRegisterWriteColor;
+	[StructLayout(LayoutKind.Sequential)]
+	public class InteropSnesEventViewerConfig
+	{
+		public InteropEventViewerCategoryCfg Irq;
+		public InteropEventViewerCategoryCfg Nmi;
+		public InteropEventViewerCategoryCfg MarkedBreakpoints;
 
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterCgramWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterVramWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterOamWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterMode7Writes;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterBgOptionWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterBgScrollWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterWindowWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterOtherWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowPpuRegisterReads;
+		public InteropEventViewerCategoryCfg PpuRegisterReads;
+		public InteropEventViewerCategoryCfg PpuRegisterCgramWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterVramWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterOamWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterMode7Writes;
+		public InteropEventViewerCategoryCfg PpuRegisterBgOptionWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterBgScrollWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterWindowWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterOtherWrites;
 
-		[MarshalAs(UnmanagedType.I1)] public bool ShowCpuRegisterWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowCpuRegisterReads;
+		public InteropEventViewerCategoryCfg ApuRegisterReads;
+		public InteropEventViewerCategoryCfg ApuRegisterWrites;
+		public InteropEventViewerCategoryCfg CpuRegisterReads;
+		public InteropEventViewerCategoryCfg CpuRegisterWrites;
+		public InteropEventViewerCategoryCfg WorkRamRegisterReads;
+		public InteropEventViewerCategoryCfg WorkRamRegisterWrites;
 
-		[MarshalAs(UnmanagedType.I1)] public bool ShowApuRegisterWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowApuRegisterReads;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowWorkRamRegisterWrites;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowWorkRamRegisterReads;
-
-		[MarshalAs(UnmanagedType.I1)] public bool ShowNmi;
-		[MarshalAs(UnmanagedType.I1)] public bool ShowIrq;
-
-		[MarshalAs(UnmanagedType.I1)] public bool ShowMarkedBreakpoints;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-		public byte[] ShowDmaChannels;
+		public byte[] ShowDmaChannels = new byte[8];
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class InteropNesEventViewerConfig
+	{
+		public InteropEventViewerCategoryCfg Irq;
+		public InteropEventViewerCategoryCfg Nmi;
+		public InteropEventViewerCategoryCfg MarkedBreakpoints;
+
+		public InteropEventViewerCategoryCfg MapperRegisterWrites;
+		public InteropEventViewerCategoryCfg MapperRegisterReads;
+		public InteropEventViewerCategoryCfg ApuRegisterWrites;
+		public InteropEventViewerCategoryCfg ApuRegisterReads;
+		public InteropEventViewerCategoryCfg ControlRegisterWrites;
+		public InteropEventViewerCategoryCfg ControlRegisterReads;
+		
+		public InteropEventViewerCategoryCfg Ppu2000Write;
+		public InteropEventViewerCategoryCfg Ppu2001Write;
+		public InteropEventViewerCategoryCfg Ppu2003Write;
+		public InteropEventViewerCategoryCfg Ppu2004Write;
+		public InteropEventViewerCategoryCfg Ppu2005Write;
+		public InteropEventViewerCategoryCfg Ppu2006Write;
+		public InteropEventViewerCategoryCfg Ppu2007Write;
+
+		public InteropEventViewerCategoryCfg Ppu2002Read;
+		public InteropEventViewerCategoryCfg Ppu2004Read;
+		public InteropEventViewerCategoryCfg Ppu2007Read;
+
+		public InteropEventViewerCategoryCfg DmcDmaReads;
+		public InteropEventViewerCategoryCfg SpriteZeroHit;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowNtscBorders;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class InteropGbEventViewerConfig
+	{
+		public InteropEventViewerCategoryCfg Irq;
+		public InteropEventViewerCategoryCfg MarkedBreakpoints;
+
+		public InteropEventViewerCategoryCfg PpuRegisterReads;
+		public InteropEventViewerCategoryCfg PpuRegisterCgramWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterVramWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterOamWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterBgScrollWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterWindowWrites;
+		public InteropEventViewerCategoryCfg PpuRegisterOtherWrites;
+
+		public InteropEventViewerCategoryCfg ApuRegisterReads;
+		public InteropEventViewerCategoryCfg ApuRegisterWrites;
+		public InteropEventViewerCategoryCfg CpuRegisterReads;
+		public InteropEventViewerCategoryCfg CpuRegisterWrites;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}
 
 	public struct GetTilemapOptions

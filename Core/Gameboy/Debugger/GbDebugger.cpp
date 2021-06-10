@@ -12,7 +12,7 @@
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/CodeDataLogger.h"
-#include "Debugger/BaseEventManager.h"
+#include "Debugger/IEventManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Gameboy/Debugger/GbAssembler.h"
 #include "Gameboy/GbPpu.h"
