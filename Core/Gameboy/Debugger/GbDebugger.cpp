@@ -3,9 +3,9 @@
 #include "Gameboy/Debugger/GbDebugger.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Gameboy/Debugger/GbEventManager.h"
+#include "Gameboy/Debugger/GbTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
-#include "Debugger/TraceLogger.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/Debugger.h"
@@ -28,7 +28,6 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
 
-	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 
@@ -39,11 +38,13 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	}
 	
 	_cpu = _gameboy->GetCpu();
+	_ppu = _gameboy->GetPpu();
 
 	_settings = debugger->GetEmulator()->GetSettings();
 	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
+	_traceLogger.reset(new GbTraceLogger(debugger, _ppu));
 
-	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _gameboy->GetPpu()));
+	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _ppu));
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
@@ -71,11 +72,11 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 	MemoryOperationInfo operation { addr, value, type };
 	BreakSource breakSource = BreakSource::Unspecified;
 
-	GbCpuState state = _cpu->GetState();
+	GbCpuState& state = _cpu->GetState();
 	uint16_t pc = state.PC;
 
 	if(type == MemoryOperationType::ExecOpCode) {
-		if(_traceLogger->IsCpuLogged(CpuType::Gameboy) || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
+		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 			if(addressInfo.Address >= 0) {
 				if(addressInfo.Type == SnesMemoryType::GbPrgRom) {
 					_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
@@ -83,9 +84,9 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 				_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 			}
 
-			if(_traceLogger->IsCpuLogged(CpuType::Gameboy)) {
+			if(_traceLogger->IsEnabled()) {
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gameboy);
-				_traceLogger->Log(CpuType::Gameboy, state, disInfo);
+				_traceLogger->Log(state, disInfo, operation);
 			}
 		}
 
@@ -137,10 +138,19 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
+
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
+		}
+
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else {
 		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
+		}
+
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
 		}
 
 		if(addr < 0xFE00 || addr >= 0xFF80) {
@@ -175,6 +185,10 @@ void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType 
 
 	if(addressInfo.Type == SnesMemoryType::GbWorkRam || addressInfo.Type == SnesMemoryType::GbCartRam || addressInfo.Type == SnesMemoryType::GbHighRam) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Gameboy);
+	}
+
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation);
 	}
 
 	if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {
@@ -225,10 +239,10 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	_eventManager->AddEvent(DebugEventType::Irq);
 }
 
-void GbDebugger::ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle)
+void GbDebugger::ProcessPpuCycle(int16_t &scanline, uint16_t &cycle)
 {
-	scanline = _gameboy->GetPpu()->GetScanline();
-	cycle = _gameboy->GetPpu()->GetCycle();
+	scanline = _ppu->GetScanline();
+	cycle = _ppu->GetCycle();
 
 	if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;
@@ -238,7 +252,6 @@ void GbDebugger::ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle)
 	}
 
 	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_step->BreakScanline = -1;
 		_debugger->SleepUntilResume(BreakSource::PpuStep);
 	}
 }
@@ -271,4 +284,9 @@ BreakpointManager* GbDebugger::GetBreakpointManager()
 BaseState& GbDebugger::GetState()
 {
 	return _cpu->GetState();
+}
+
+ITraceLogger* GbDebugger::GetTraceLogger()
+{
+	return _traceLogger.get();
 }

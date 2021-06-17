@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
-#include "Debugger/TraceLogger.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/CodeDataLogger.h"
@@ -17,6 +16,7 @@
 #include "NES/Debugger/NesDebugger.h"
 #include "NES/Debugger/NesAssembler.h"
 #include "NES/Debugger/NesEventManager.h"
+#include "NES/Debugger/NesTraceLogger.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Shared/EmuSettings.h"
@@ -34,7 +34,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_ppu = console->GetPpu();
 	_mapper = console->GetMapper();
 
-	_traceLogger = debugger->GetTraceLogger().get();
+	_traceLogger.reset(new NesTraceLogger(debugger, _ppu));
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_settings = debugger->GetEmulator()->GetSettings();
@@ -64,13 +64,15 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
-
-	NesCpuState state = _cpu->GetState();
-
+	NesCpuState& state = _cpu->GetState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
+	if(IsRegister(operation)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
+	}
+
 	if(type == MemoryOperationType::ExecOpCode) {
-		bool needDisassemble = _traceLogger->IsCpuLogged(CpuType::Nes) || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
+		bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 		if(addressInfo.Address >= 0) {
 			if(addressInfo.Type == SnesMemoryType::NesPrgRom) {
 				uint8_t flags = CdlFlags::Code;
@@ -85,9 +87,9 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			}
 		}
 
-		if(_traceLogger->IsCpuLogged(CpuType::Nes)) {
+		if(_traceLogger->IsEnabled()) {
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, CpuType::Nes);
-			_traceLogger->Log(CpuType::Nes, state, disInfo);
+			_traceLogger->Log(state, disInfo, operation);
 		}
 
 		uint32_t pc = state.PC;
@@ -127,10 +129,19 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
+
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
+		}
+
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else {
 		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
+		}
+		
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
 		}
 
 		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount())) {
@@ -148,10 +159,6 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
-	if(IsRegister(operation)) {
-		_eventManager->AddEvent(DebugEventType::Register, operation);
-	}
-
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 }
 
@@ -165,6 +172,10 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 
 	if(IsRegister(operation)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
+	}
+
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation);
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());
@@ -208,7 +219,7 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	//_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void NesDebugger::ProcessPpuCycle(uint16_t& scanline, uint16_t& cycle)
+void NesDebugger::ProcessPpuCycle(int16_t& scanline, uint16_t& cycle)
 {
 	scanline = _ppu->GetCurrentScanline();
 	cycle = _ppu->GetCurrentCycle();
@@ -221,7 +232,6 @@ void NesDebugger::ProcessPpuCycle(uint16_t& scanline, uint16_t& cycle)
 	}
 
 	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_step->BreakScanline = -1;
 		_debugger->SleepUntilResume(BreakSource::PpuStep);
 	}
 }
@@ -268,4 +278,9 @@ shared_ptr<CodeDataLogger> NesDebugger::GetCodeDataLogger()
 BaseState& NesDebugger::GetState()
 {
 	return _cpu->GetState();
+}
+
+ITraceLogger* NesDebugger::GetTraceLogger()
+{
+	return _traceLogger.get();
 }

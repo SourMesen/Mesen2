@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Debugger/PpuTools.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/DebugBreakHelper.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/SettingTypes.h"
 #include "SNES/SnesDefaultVideoFilter.h"
@@ -10,9 +11,10 @@
 #include "SNES/MemoryManager.h"
 #include "Gameboy/GbTypes.h"
 
-PpuTools::PpuTools(Emulator *emu)
+PpuTools::PpuTools(Debugger* debugger, Emulator *emu)
 {
 	_emu = emu;
+	_debugger = debugger;
 }
 
 uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift)
@@ -387,7 +389,8 @@ void PpuTools::GetSpritePreview(GetSpritePreviewOptions options, PpuState state,
 
 void PpuTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType)
 {
-	//TODO Thread safety
+	DebugBreakHelper helper(_debugger);
+
 	ViewerRefreshConfig cfg;
 	cfg.Scanline = scanline;
 	cfg.Cycle = cycle;
@@ -397,7 +400,7 @@ void PpuTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint1
 
 void PpuTools::RemoveViewer(uint32_t viewerId)
 {
-	//TODO Thread safety
+	DebugBreakHelper helper(_debugger);
 	_updateTimings.erase(viewerId);
 }
 

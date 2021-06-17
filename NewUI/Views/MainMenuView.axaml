@@ -405,6 +405,11 @@
 					<Image Source="/Assets/Speed.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<MenuItem Header="_Trace Logger" Click="OnTraceLoggerClick">
+				<MenuItem.Icon>
+					<Image Source="/Assets/LogWindow.png" />
+				</MenuItem.Icon>
+			</MenuItem>
 			<MenuItem Header="_Event Viewer" Click="OnEventViewerClick">
 				<MenuItem.Icon>
 					<Image Source="/Assets/EventViewer.png" />

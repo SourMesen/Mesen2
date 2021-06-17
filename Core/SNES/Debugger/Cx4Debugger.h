@@ -5,7 +5,7 @@
 
 class Disassembler;
 class Debugger;
-class TraceLogger;
+class Cx4TraceLogger;
 class CodeDataLogger;
 class Cx4;
 class CallstackManager;
@@ -20,7 +20,6 @@ class Cx4Debugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;
-	TraceLogger* _traceLogger;
 	CodeDataLogger* _codeDataLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
 	MemoryManager* _memoryManager;
@@ -29,6 +28,7 @@ class Cx4Debugger final : public IDebugger
 
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
+	unique_ptr<Cx4TraceLogger> _traceLogger;
 
 	uint32_t _prevProgramCounter = 0;
 
@@ -37,8 +37,8 @@ public:
 
 	void Reset() override;
 
-	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
-	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
@@ -48,6 +48,7 @@ public:
 	shared_ptr<IAssembler> GetAssembler() override;
 	shared_ptr<IEventManager> GetEventManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	ITraceLogger* GetTraceLogger() override;
 
 	BaseState& GetState() override;
 };

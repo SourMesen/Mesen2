@@ -95,6 +95,13 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnTraceLoggerClick(object sender, RoutedEventArgs e)
+		{
+			new TraceLoggerWindow {
+				DataContext = new TraceLoggerViewModel()
+			}.Show();
+		}
+
 		private void OnEventViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();

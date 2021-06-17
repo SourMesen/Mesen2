@@ -15,14 +15,14 @@
 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>C:\Code\Mesen-S\bin\x64\Debug\</OutputPath>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <OutputPath>C:\Code\Mesen-S\bin\x64\Release\</OutputPath>
 	  <Optimize>false</Optimize>
 	  <DefineConstants>DEBUG</DefineConstants>
-	  <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Assets\Accept.png" />
@@ -214,6 +214,9 @@
     </Compile>
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\TraceLoggerWindow.axaml.cs">
+      <DependentUpon>TraceLoggerWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\ProfilerWindow.axaml.cs">
       <DependentUpon>ProfilerWindow.axaml</DependentUpon>

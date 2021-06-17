@@ -6,7 +6,7 @@
 class DebugUtilities
 {
 public:
-	static SnesMemoryType GetCpuMemoryType(CpuType type)
+	static constexpr SnesMemoryType GetCpuMemoryType(CpuType type)
 	{
 		switch(type) {
 			case CpuType::Cpu: return SnesMemoryType::CpuMemory;
@@ -22,7 +22,7 @@ public:
 		throw std::runtime_error("Invalid CPU type");
 	}
 
-	static CpuType ToCpuType(SnesMemoryType type)
+	static constexpr CpuType ToCpuType(SnesMemoryType type)
 	{
 		switch(type) {
 			case SnesMemoryType::SpcMemory:
@@ -81,7 +81,7 @@ public:
 		return SnesMemoryType::NesMemory;
 	}
 
-	static bool IsPpuMemory(SnesMemoryType memType)
+	static constexpr bool IsPpuMemory(SnesMemoryType memType)
 	{
 		switch(memType) {
 			case SnesMemoryType::VideoRam:
@@ -102,7 +102,7 @@ public:
 		}
 	}
 
-	static bool IsRomMemory(SnesMemoryType memType)
+	static constexpr bool IsRomMemory(SnesMemoryType memType)
 	{
 		switch(memType) {
 			case SnesMemoryType::PrgRom:

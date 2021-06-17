@@ -15,20 +15,20 @@ namespace Mesen.Debugger
 
 		public string Text = "";
 
-		public Int32 Address;
-		public Int32 AbsoluteAddress;
+		public Int32 Address = -1;
+		public Int32 AbsoluteAddress = -1;
 
 		public LineFlags Flags;
 
 		public int? CustomIndent = null;
 
-		public byte OpSize;
+		public byte OpSize = 0;
 		public string ByteCode = "";
 		public string Comment = "";
 
-		public Int32 EffectiveAddress;
-		public UInt16 Value;
-		public byte ValueSize;
+		public Int32 EffectiveAddress = -1;
+		public UInt16 Value = 0;
+		public byte ValueSize = 0;
 
 		public string GetEffectiveAddressString(string format)
 		{
@@ -90,7 +90,7 @@ namespace Mesen.Debugger
 			this.OpSize = data.OpSize;
 			this.ByteCode = "";
 			for(int i = 0; i < this.OpSize; i++) {
-				this.ByteCode += "$" + data.ByteCode[i].ToString("X2") + " ";
+				this.ByteCode += data.ByteCode[i].ToString("X2") + " ";
 			}
 
 			this.Address = data.Address;

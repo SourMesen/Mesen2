@@ -2,7 +2,6 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DisassemblyInfo.h"
-#include "Debugger/TraceLogger.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/CodeDataLogger.h"
@@ -46,12 +45,15 @@
 #include "Shared/NotificationManager.h"
 #include "Shared/BaseState.h"
 #include "Shared/Emulator.h"
+#include "Debugger/ITraceLogger.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "MemoryOperationType.h"
 #include "EventType.h"
+
+uint64_t ITraceLogger::NextRowId = 0;
 
 Debugger::Debugger(Emulator* emu, IConsole* console)
 {
@@ -67,14 +69,13 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	
 	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, this));
-	_traceLogger.reset(new TraceLogger(this));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
-	_ppuTools.reset(new PpuTools(_emu));
+	_ppuTools.reset(new PpuTools(this, _emu));
 	_scriptManager.reset(new ScriptManager(this));
 
-	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
-	_mainCpuType = cpuTypes[0];
-	for(CpuType type : cpuTypes) {
+	_cpuTypes = _emu->GetCpuTypes();
+	_mainCpuType = _cpuTypes[0];
+	for(CpuType type : _cpuTypes) {
 		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
 		switch(type) {
 			case CpuType::Cpu: debugger.reset(new CpuDebugger(this, CpuType::Cpu)); break;
@@ -89,6 +90,10 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 		}
 
 		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, type));
+	}
+
+	for(CpuType type : _cpuTypes) {
+		_debuggers[(int)type].Debugger->Init();
 	}
 
 	_breakRequestCount = 0;
@@ -134,10 +139,25 @@ void Debugger::Reset()
 	}
 }
 
+template<CpuType type, typename DebuggerType>
+DebuggerType* Debugger::GetDebugger()
+{
+	return (DebuggerType*)_debuggers[(int)type].Debugger.get();
+}
+
 template<CpuType type>
 void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
-	_debuggers[(int)type].Debugger->ProcessRead(addr, value, opType);
+	switch(type) {
+		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Sa1: GetDebugger<type, CpuDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessRead(addr, value, opType); break;
+	}
 	
 	if(_scriptManager->HasScript()) {
 		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
@@ -147,7 +167,16 @@ void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationTy
 template<CpuType type>
 void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
-	_debuggers[(int)type].Debugger->ProcessWrite(addr, value, opType);
+	switch(type) {
+		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Sa1: GetDebugger<type, CpuDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessWrite(addr, value, opType); break;
+	}
 	
 	if(_scriptManager->HasScript()) {
 		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
@@ -181,22 +210,17 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 template<CpuType type>
 void Debugger::ProcessPpuCycle()
 {
-	uint16_t scanline = 0;
-	uint16_t cycle = 0;
+	int16_t scanline;
+	uint16_t cycle;
 
 	switch(type) {
-		case CpuType::Cpu: 
-		case CpuType::Gameboy:
-		case CpuType::Nes:
-			_debuggers[(int)type].Debugger->ProcessPpuCycle(scanline, cycle);
-			break;
+		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuCycle(scanline, cycle); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuCycle(scanline, cycle); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuCycle(scanline, cycle); break;
+		default: throw std::runtime_error("Invalid cpu type");
 	}
 
 	_ppuTools->UpdateViewers(scanline, cycle, type);
-
-	if(_breakRequestCount > 0) {
-		SleepUntilResume(BreakSource::Unspecified);
-	}
 }
 
 void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
@@ -205,11 +229,11 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 		return;
 	}
 
-	_emu->GetSoundMixer()->StopAudio();
-	
 	_executionStopped = true;
 	
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
+		_emu->GetSoundMixer()->StopAudio();
+
 		//Only trigger code break event if the pause was caused by user action
 		BreakEvent evt = {};
 		evt.BreakpointId = breakpointId;
@@ -222,7 +246,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	}
 
 	while((_waitForBreakResume && !_suspendRequestCount) || _breakRequestCount) {
-		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(_breakRequestCount ? 1 : 10));
 	}
 
 	_executionStopped = false;
@@ -363,6 +387,7 @@ void Debugger::SuspendDebugger(bool release)
 
 void Debugger::BreakImmediately(BreakSource source)
 {
+	//TODO
 	bool gbDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
 	if(source == BreakSource::GbDisableLcdOutsideVblank && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnDisableLcdOutsideVblank))) {
 		return;
@@ -437,8 +462,8 @@ void Debugger::RebuildPrgCache(CpuType cpuType)
 
 	uint32_t prgRomSize = cdl->GetPrgSize();
 	AddressInfo addrInfo;
+	//TODO
 	addrInfo.Type = cpuType == CpuType::Gameboy ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
-
 	for(uint32_t i = 0; i < prgRomSize; i++) {
 		if(cdl->IsCode(i)) {
 			addrInfo.Address = (int32_t)i;
@@ -535,9 +560,55 @@ void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 	}*/
 }
 
-shared_ptr<TraceLogger> Debugger::GetTraceLogger()
+ITraceLogger* Debugger::GetTraceLogger(CpuType cpuType)
 {
-	return _traceLogger;
+	if(_debuggers[(int)cpuType].Debugger) {
+		return _debuggers[(int)cpuType].Debugger->GetTraceLogger();
+	}
+	return nullptr;
+}
+
+uint32_t Debugger::GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount)
+{
+	DebugBreakHelper helper(this);
+
+	uint32_t offsetsByCpu[(int)DebugUtilities::GetLastCpuType() + 1] = {};
+
+	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+
+	uint32_t count = 0;
+	int64_t lastRowId = ITraceLogger::NextRowId;
+	while(count < maxLineCount) {
+		bool added = false;
+		for(CpuType cpuType : cpuTypes) {
+			ITraceLogger* logger = GetTraceLogger(cpuType);
+			if(logger) {
+				uint32_t& offset = offsetsByCpu[(int)cpuType];
+				int64_t rowId = logger->GetRowId(offset);
+				if(rowId == -1 || rowId != lastRowId - 1) {
+					continue;
+				}
+
+				lastRowId = rowId;
+
+				if(startOffset > 0) {
+					//Skip rows until the part the UI wants to display is reached
+					startOffset--;
+				} else {
+					logger->GetExecutionTrace(output[count], offset);
+					count++;
+				}
+				offset++;
+				added = true;
+				break;
+			}
+		}
+		if(!added) {
+			break;
+		}
+	}
+
+	return count;
 }
 
 MemoryDumper* Debugger::GetMemoryDumper()

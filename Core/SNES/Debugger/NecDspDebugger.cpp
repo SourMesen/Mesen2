@@ -4,9 +4,9 @@
 #include "SNES/Console.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/Debugger/NecDspDebugger.h"
+#include "SNES/Debugger/TraceLogger/NecDspTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
-#include "Debugger/TraceLogger.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/Debugger.h"
@@ -18,11 +18,14 @@
 
 NecDspDebugger::NecDspDebugger(Debugger* debugger)
 {
+	Console* console = (Console*)debugger->GetConsole();
+
 	_debugger = debugger;
-	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
-	_dsp = ((Console*)debugger->GetConsole())->GetCartridge()->GetDsp();
+	_dsp = console->GetCartridge()->GetDsp();
 	_settings = debugger->GetEmulator()->GetSettings();
+	
+	_traceLogger.reset(new NecDspTraceLogger(debugger, console->GetPpu().get(), console->GetMemoryManager().get()));
 
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp));
 	_step.reset(new StepRequest());
@@ -38,13 +41,12 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 	MemoryOperationInfo operation { (uint32_t)addr, value, type };
 
 	if(type == MemoryOperationType::ExecOpCode) {
-		if(_traceLogger->IsCpuLogged(CpuType::NecDsp) || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
+		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
 			_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
 
-			if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
+			if(_traceLogger->IsEnabled()) {
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
-				NecDspState state = _dsp->GetState();
-				_traceLogger->Log(CpuType::NecDsp, state, disInfo);
+				_traceLogger->Log(_dsp->GetState(), disInfo, operation);
 			}
 		}
 
@@ -63,6 +65,10 @@ void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationT
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::DspDataRam }; //Writes never affect the DSP ROM
 	MemoryOperationInfo operation { addr, value, type };
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
+
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation);
+	}
 }
 
 void NecDspDebugger::Run()
@@ -118,4 +124,9 @@ shared_ptr<CodeDataLogger> NecDspDebugger::GetCodeDataLogger()
 BaseState& NecDspDebugger::GetState()
 {
 	return _dsp->GetState();
+}
+
+ITraceLogger* NecDspDebugger::GetTraceLogger()
+{
+	return _traceLogger.get();
 }

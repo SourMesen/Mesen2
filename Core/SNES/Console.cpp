@@ -222,7 +222,19 @@ PpuFrameInfo Console::GetPpuFrame()
 
 vector<CpuType> Console::GetCpuTypes()
 {
-	return { CpuType::Cpu, CpuType::Spc };
+	vector<CpuType> cpuTypes = { CpuType::Cpu, CpuType::Spc };
+	if(_cart->GetGsu()) {
+		cpuTypes.push_back(CpuType::Gsu);
+	} else if(_cart->GetDsp()) {
+		cpuTypes.push_back(CpuType::NecDsp);
+	} else if(_cart->GetCx4()) {
+		cpuTypes.push_back(CpuType::Cx4);
+	} else if(_cart->GetGameboy()) {
+		cpuTypes.push_back(CpuType::Gameboy);
+	} else if(_cart->GetSa1()) {
+		cpuTypes.push_back(CpuType::Sa1);
+	}
+	return cpuTypes;
 }
 
 void Console::SaveBattery()

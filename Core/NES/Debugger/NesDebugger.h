@@ -5,7 +5,6 @@
 
 class Disassembler;
 class Debugger;
-class TraceLogger;
 class CallstackManager;
 class MemoryAccessCounter;
 class MemoryManager;
@@ -15,6 +14,7 @@ class ScriptManager;
 class BreakpointManager;
 class IAssembler;
 class IEventManager;
+class NesTraceLogger;
 
 class Emulator;
 class NesCpu;
@@ -28,7 +28,6 @@ class NesDebugger final : public IDebugger
 	Debugger* _debugger;
 	Emulator* _emu;
 	Disassembler* _disassembler;
-	TraceLogger* _traceLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
 	EmuSettings* _settings;
 
@@ -42,6 +41,7 @@ class NesDebugger final : public IDebugger
 	shared_ptr<IAssembler> _assembler;
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
+	unique_ptr<NesTraceLogger> _traceLogger;
 	unique_ptr<StepRequest> _step;
 
 	bool _enableBreakOnUninitRead = false;
@@ -55,15 +55,16 @@ public:
 
 	void Reset() override;
 
-	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
-	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
-	void ProcessPpuCycle(uint16_t& scanline, uint16_t& cycle) override;
+	void ProcessPpuCycle(int16_t& scanline, uint16_t& cycle);
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
 
 	BreakpointManager* GetBreakpointManager() override;
+	ITraceLogger* GetTraceLogger() override;
 	shared_ptr<CallstackManager> GetCallstackManager() override;
 	shared_ptr<IAssembler> GetAssembler() override;
 	shared_ptr<IEventManager> GetEventManager() override;

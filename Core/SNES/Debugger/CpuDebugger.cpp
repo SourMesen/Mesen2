@@ -10,10 +10,10 @@
 #include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/CpuDebugger.h"
 #include "SNES/Debugger/SnesEventManager.h"
+#include "SNES/Debugger/TraceLogger/SnesCpuTraceLogger.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
-#include "Debugger/TraceLogger.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/CodeDataLogger.h"
@@ -35,7 +35,6 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 
 	_debugger = debugger;
 	Console* console = (Console*)debugger->GetConsole();
-	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_cpu = console->GetCpu().get();
@@ -45,7 +44,14 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_cart = console->GetCartridge().get();
 	_spc = console->GetSpc().get();
 	_ppu = console->GetPpu().get();
+	_traceLogger.reset(new SnesCpuTraceLogger(debugger, cpuType, _ppu, _memoryManager));
 	
+	if(_cpuType == CpuType::Cpu) {
+		_memoryMappings = _memoryManager->GetMemoryMappings();
+	} else {
+		_memoryMappings = _sa1->GetMemoryMappings();
+	}
+
 	if(cpuType == CpuType::Sa1) {
 		_codeDataLogger = _debugger->GetCodeDataLogger(CpuType::Cpu);
 	} else {
@@ -62,6 +68,14 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
+
+	_debuggerEnabledFlag = _cpuType == CpuType::Cpu ? DebuggerFlags::CpuDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled;
+}
+
+void CpuDebugger::Init()
+{
+	_spcTraceLogger = _debugger->GetTraceLogger(CpuType::Spc);
+	_dspTraceLogger = _debugger->GetTraceLogger(CpuType::NecDsp);
 }
 
 void CpuDebugger::Reset()
@@ -73,29 +87,33 @@ void CpuDebugger::Reset()
 
 void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = GetMemoryMappings().GetAbsoluteAddress(addr);
+	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
-	CpuState state = GetCpuState();
+	CpuState& state = GetCpuState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
+	if(IsRegister(addr)) {
+		_eventManager->AddEvent(DebugEventType::Register, operation);
+	}
+
 	if(type == MemoryOperationType::ExecOpCode) {
-		bool needDisassemble = _traceLogger->IsCpuLogged(_cpuType) || _settings->CheckDebuggerFlag(_cpuType == CpuType::Cpu ? DebuggerFlags::CpuDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled);
 		if(addressInfo.Address >= 0) {
+			uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 			if(addressInfo.Type == SnesMemoryType::PrgRom) {
-				uint8_t flags = CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
+				uint8_t flags = CdlFlags::Code | cpuFlags;
 				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
 					flags |= CdlFlags::SubEntryPoint;
 				}
 				_codeDataLogger->SetFlags(addressInfo.Address, flags);
 			}
-			if(needDisassemble) {
-				_disassembler->BuildCache(addressInfo, state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8), _cpuType);
+			if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(_debuggerEnabledFlag)) {
+				_disassembler->BuildCache(addressInfo, cpuFlags, _cpuType);
 			}
 		}
 
-		if(_traceLogger->IsCpuLogged(_cpuType)) {
+		if(_traceLogger->IsEnabled()) {
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
-			_traceLogger->Log(_cpuType, state, disInfo);
+			_traceLogger->Log(state, disInfo, operation);
 		}
 
 		uint32_t pc = (state.K << 16) | state.PC;
@@ -103,8 +121,8 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			//JSR, JSL
 			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, _cpuType);
 			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
-			AddressInfo srcAddress = GetMemoryMappings().GetAbsoluteAddress(_prevProgramCounter);
-			AddressInfo retAddress = GetMemoryMappings().GetAbsoluteAddress(returnPc);
+			AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
+			AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
 			_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
 		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
 			//RTS, RTL, RTI
@@ -146,10 +164,16 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
 		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
+		}
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
 		}
 
 		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock())) {
@@ -167,16 +191,12 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
-	if(IsRegister(addr)) {
-		_eventManager->AddEvent(DebugEventType::Register, operation);
-	}
-
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 }
 
 void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = GetMemoryMappings().GetAbsoluteAddress(addr);
+	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation = { addr, value, type };
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, _cpuType);
@@ -184,6 +204,10 @@ void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 
 	if(IsRegister(addr)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
+	}
+
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation);
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
@@ -225,25 +249,20 @@ void CpuDebugger::Step(int32_t stepCount, StepType type)
 
 void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
-	AddressInfo src = GetMemoryMappings().GetAbsoluteAddress(_prevProgramCounter);
-	AddressInfo ret = GetMemoryMappings().GetAbsoluteAddress(originalPc);
-	AddressInfo dest = GetMemoryMappings().GetAbsoluteAddress(currentPc);
+	AddressInfo src = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
+	AddressInfo ret = _memoryMappings->GetAbsoluteAddress(originalPc);
+	AddressInfo dest = _memoryMappings->GetAbsoluteAddress(currentPc);
 	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void CpuDebugger::ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle)
+void CpuDebugger::ProcessPpuCycle(int16_t &scanline, uint16_t &cycle)
 {
-	if(_cpuType == CpuType::Cpu) {
-		scanline = _ppu->GetScanline();
-		cycle = _memoryManager->GetHClock();
-
-		//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
-		if(_traceLogger->IsCpuLogged(CpuType::Spc) || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
-			_spc->Run();
-		} else if(_traceLogger->IsCpuLogged(CpuType::NecDsp)) {
-			_cart->RunCoprocessors();
-		}
+	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
+	if(_spcTraceLogger->IsEnabled()) {
+		_spc->Run();
+	} else if(_dspTraceLogger && _dspTraceLogger->IsEnabled()) {
+		_cart->RunCoprocessors();
 	}
 
 	if(_step->PpuStepCount > 0) {
@@ -253,18 +272,11 @@ void CpuDebugger::ProcessPpuCycle(uint16_t &scanline, uint16_t &cycle)
 		}
 	}
 
-	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_step->BreakScanline = -1;
-		_debugger->SleepUntilResume(BreakSource::PpuStep);
-	}
-}
+	scanline = _ppu->GetScanline();
+	cycle = _memoryManager->GetHClock();
 
-MemoryMappings& CpuDebugger::GetMemoryMappings()
-{
-	if(_cpuType == CpuType::Cpu) {
-		return *_memoryManager->GetMemoryMappings();
-	} else {
-		return *_sa1->GetMemoryMappings();
+	if(cycle == 0 && scanline == _step->BreakScanline) {
+		_debugger->SleepUntilResume(BreakSource::PpuStep);
 	}
 }
 
@@ -285,6 +297,11 @@ bool CpuDebugger::IsRegister(uint32_t addr)
 shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()
 {
 	return _callstackManager;
+}
+
+ITraceLogger* CpuDebugger::GetTraceLogger()
+{
+	return _traceLogger.get();
 }
 
 BreakpointManager* CpuDebugger::GetBreakpointManager()

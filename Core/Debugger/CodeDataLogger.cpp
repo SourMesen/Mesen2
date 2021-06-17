@@ -100,17 +100,15 @@ void CodeDataLogger::CalculateStats()
 
 void CodeDataLogger::SetFlags(int32_t absoluteAddr, uint8_t flags)
 {
-	if(absoluteAddr >= 0 && absoluteAddr < (int32_t)_prgSize) {
-		if((_cdlData[absoluteAddr] & flags) != flags) {
-			if(flags & CdlFlags::Code) {
-				_cdlData[absoluteAddr] = flags | (_cdlData[absoluteAddr] & ~(CdlFlags::Data | CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
-			} else if(flags & CdlFlags::Data) {
-				if(!IsCode(absoluteAddr)) {
-					_cdlData[absoluteAddr] |= flags;
-				}
-			} else {
+	if((_cdlData[absoluteAddr] & flags) != flags) {
+		if(flags & CdlFlags::Code) {
+			_cdlData[absoluteAddr] = flags | (_cdlData[absoluteAddr] & ~(CdlFlags::Data | CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
+		} else if(flags & CdlFlags::Data) {
+			if(!IsCode(absoluteAddr)) {
 				_cdlData[absoluteAddr] |= flags;
 			}
+		} else {
+			_cdlData[absoluteAddr] |= flags;
 		}
 	}
 }

@@ -3,9 +3,9 @@
 #include "SNES/MemoryManager.h"
 #include "SNES/Console.h"
 #include "SNES/Debugger/SpcDebugger.h"
+#include "SNES/Debugger/TraceLogger/SpcTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
-#include "Debugger/TraceLogger.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/Debugger.h"
@@ -18,12 +18,15 @@
 SpcDebugger::SpcDebugger(Debugger* debugger)
 {
 	_debugger = debugger;
-	_traceLogger = debugger->GetTraceLogger().get();
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_spc = ((Console*)debugger->GetConsole())->GetSpc().get();
-	_memoryManager = ((Console*)debugger->GetConsole())->GetMemoryManager().get();
+
+	Console* console = (Console*)debugger->GetConsole();
+	_spc = console->GetSpc().get();
+	_memoryManager = console->GetMemoryManager().get();
 	_settings = debugger->GetEmulator()->GetSettings();
+
+	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu().get(), console->GetMemoryManager().get()));
 
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc));
@@ -48,14 +51,14 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
-		SpcState spcState = _spc->GetState();
+		SpcState& spcState = _spc->GetState();
 
-		if(_traceLogger->IsCpuLogged(CpuType::Spc) || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
+		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
-			if(_traceLogger->IsCpuLogged(CpuType::Spc)) {
+			if(_traceLogger->IsEnabled()) {
 				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-				_traceLogger->Log(CpuType::Spc, spcState, disInfo);
+				_traceLogger->Log(spcState, disInfo, operation);
 			}
 		}
 
@@ -96,8 +99,14 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
+		}
 	} else {
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation);
+		}
 	}
 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
@@ -112,6 +121,10 @@ void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+	
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation);
+	}
 }
 
 void SpcDebugger::Run()
@@ -172,4 +185,9 @@ shared_ptr<CodeDataLogger> SpcDebugger::GetCodeDataLogger()
 BaseState& SpcDebugger::GetState()
 {
 	return _spc->GetState();
+}
+
+ITraceLogger* SpcDebugger::GetTraceLogger()
+{
+	return _traceLogger.get();
 }

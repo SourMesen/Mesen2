@@ -8,6 +8,7 @@ class NesMemoryManager;
 class BaseCartridge;
 class Ppu;
 class Spc;
+class Gameboy;
 class Emulator;
 class Debugger;
 class Disassembler;
@@ -16,14 +17,15 @@ enum class SnesMemoryType;
 class MemoryDumper
 {
 private:
-	Emulator* _emu;
-	Ppu* _ppu;
-	Spc* _spc;
-	MemoryManager* _memoryManager;
-	NesMemoryManager* _nesMemoryManager;
-	BaseCartridge* _cartridge;
-	Debugger* _debugger;
-	Disassembler* _disassembler;
+	Emulator* _emu = nullptr;
+	Ppu* _ppu = nullptr;
+	Spc* _spc = nullptr;
+	Gameboy* _gameboy = nullptr;
+	MemoryManager* _memoryManager = nullptr;
+	NesMemoryManager* _nesMemoryManager = nullptr;
+	BaseCartridge* _cartridge = nullptr;
+	Debugger* _debugger = nullptr;
+	Disassembler* _disassembler = nullptr;
 
 public:
 	MemoryDumper(Debugger* debugger);

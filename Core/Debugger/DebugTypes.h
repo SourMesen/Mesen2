@@ -263,7 +263,7 @@ struct StepRequest
 	int32_t StepCount = -1;
 	int32_t PpuStepCount = -1;
 	int32_t BreakAddress = -1;
-	int32_t BreakScanline = -1;
+	int32_t BreakScanline = INT32_MIN;
 };
 
 enum class CpuType : uint8_t

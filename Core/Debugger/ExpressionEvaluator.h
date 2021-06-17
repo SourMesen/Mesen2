@@ -127,8 +127,8 @@ public:
 
 struct ExpressionData
 {
-	std::vector<int64_t> RpnQueue;
-	std::vector<string> Labels;
+	vector<int64_t> RpnQueue;
+	vector<string> Labels;
 };
 
 class ExpressionEvaluator
@@ -138,9 +138,9 @@ private:
 	static const vector<int> _binaryPrecedence;
 	static const vector<string> _unaryOperators;
 	static const vector<int> _unaryPrecedence;
-	static const std::unordered_set<string> _operators;
+	static const unordered_set<string> _operators;
 
-	std::unordered_map<string, ExpressionData, StringHasher> _cache;
+	unordered_map<string, ExpressionData, StringHasher> _cache;
 	SimpleLock _cacheLock;
 	
 	Debugger* _debugger;

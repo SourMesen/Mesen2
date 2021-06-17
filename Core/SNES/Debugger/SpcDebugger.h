@@ -5,7 +5,7 @@
 
 class Disassembler;
 class Debugger;
-class TraceLogger;
+class SpcTraceLogger;
 class Spc;
 class CallstackManager;
 class MemoryAccessCounter;
@@ -19,7 +19,6 @@ class SpcDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;
-	TraceLogger* _traceLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
 	MemoryManager* _memoryManager;
 	Spc* _spc;
@@ -27,6 +26,7 @@ class SpcDebugger final : public IDebugger
 
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
+	unique_ptr<SpcTraceLogger> _traceLogger;
 	unique_ptr<StepRequest> _step;
 
 	uint8_t _prevOpCode = 0xFF;
@@ -37,8 +37,8 @@ public:
 
 	void Reset() override;
 
-	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type) override;
-	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type) override;
+	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
@@ -48,6 +48,7 @@ public:
 	shared_ptr<IAssembler> GetAssembler() override;
 	shared_ptr<IEventManager> GetEventManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	ITraceLogger* GetTraceLogger() override;
 
 	BaseState& GetState() override;
 };

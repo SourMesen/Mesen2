@@ -43,14 +43,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debugger\BaseTraceLogger.h" />
+    <ClInclude Include="Debugger\ITraceLogger.h" />
     <ClInclude Include="Debugger\stdafx.h" />
+    <ClInclude Include="Debugger\TraceLogFileSaver.h" />
     <ClInclude Include="Gameboy\Carts\GbsCart.h" />
+    <ClInclude Include="Gameboy\Debugger\GbTraceLogger.h" />
     <ClInclude Include="Gameboy\GbConstants.h" />
     <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
     <ClInclude Include="NES\Debugger\NesAssembler.h" />
     <ClInclude Include="NES\Debugger\NesEventManager.h" />
+    <ClInclude Include="NES\Debugger\NesTraceLogger.h" />
     <ClInclude Include="NES\DefaultNesPpu.h" />
     <ClInclude Include="NES\HdPacks\HdAudioDevice.h" />
     <ClInclude Include="NES\HdPacks\HdData.h" />
@@ -188,6 +193,11 @@
     <ClInclude Include="SNES\Debugger\Cx4DisUtils.h" />
     <ClInclude Include="SNES\Coprocessors\CX4\Cx4Types.h" />
     <ClInclude Include="Debugger\DebugUtilities.h" />
+    <ClInclude Include="SNES\Debugger\TraceLogger\Cx4TraceLogger.h" />
+    <ClInclude Include="SNES\Debugger\TraceLogger\NecDspTraceLogger.h" />
+    <ClInclude Include="SNES\Debugger\TraceLogger\GsuTraceLogger.h" />
+    <ClInclude Include="SNES\Debugger\TraceLogger\SpcTraceLogger.h" />
+    <ClInclude Include="SNES\Debugger\TraceLogger\SnesCpuTraceLogger.h" />
     <ClInclude Include="SNES\DmaControllerTypes.h" />
     <ClInclude Include="Shared\Emulator.h" />
     <ClInclude Include="Gameboy\Gameboy.h" />
@@ -367,17 +377,18 @@
     <ClInclude Include="SNES\Coprocessors\SGB\SuperGameboy.h" />
     <ClInclude Include="SNES\Input\SuperScope.h" />
     <ClInclude Include="Shared\SystemActionManager.h" />
-    <ClInclude Include="Debugger\TraceLogger.h" />
     <ClInclude Include="Shared\Video\VideoDecoder.h" />
     <ClInclude Include="Shared\Video\VideoRenderer.h" />
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseNesPpu.cpp" />
     <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
     <ClCompile Include="NES\Debugger\NesEventManager.cpp" />
+    <ClCompile Include="NES\Debugger\NesTraceLogger.cpp" />
     <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
@@ -444,6 +455,11 @@
     <ClCompile Include="Debugger\Debugger.cpp" />
     <ClCompile Include="Shared\Video\DebugHud.cpp" />
     <ClCompile Include="Shared\Video\DebugStats.cpp" />
+    <ClCompile Include="SNES\Debugger\TraceLogger\Cx4TraceLogger.cpp" />
+    <ClCompile Include="SNES\Debugger\TraceLogger\NecDspTraceLogger.cpp" />
+    <ClCompile Include="SNES\Debugger\TraceLogger\GsuTraceLogger.cpp" />
+    <ClCompile Include="SNES\Debugger\TraceLogger\SpcTraceLogger.cpp" />
+    <ClCompile Include="SNES\Debugger\TraceLogger\SnesCpuTraceLogger.cpp" />
     <ClCompile Include="SNES\SnesDefaultVideoFilter.cpp" />
     <ClCompile Include="Debugger\Disassembler.cpp" />
     <ClCompile Include="Debugger\DisassemblyInfo.cpp" />
@@ -543,7 +559,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SNES\Coprocessors\SGB\SuperGameboy.cpp" />
-    <ClCompile Include="Debugger\TraceLogger.cpp" />
     <ClCompile Include="Shared\Video\VideoDecoder.cpp" />
     <ClCompile Include="Shared\Video\VideoRenderer.cpp" />
     <ClCompile Include="Shared\Audio\WaveRecorder.cpp" />

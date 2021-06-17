@@ -16,7 +16,6 @@ class InternalRegisters;
 class DmaController;
 class EmuSettings;
 
-class TraceLogger;
 class ExpressionEvaluator;
 class MemoryDumper;
 class MemoryAccessCounter;
@@ -31,7 +30,9 @@ class Breakpoint;
 class IEventManager;
 class IAssembler;
 class IDebugger;
+class ITraceLogger;
 
+struct TraceRow;
 struct BaseState;
 
 enum class EventType;
@@ -55,10 +56,10 @@ private:
 	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
 
 	CpuType _mainCpuType = CpuType::Cpu;
+	vector<CpuType> _cpuTypes;
 	ConsoleType _consoleType = ConsoleType::Snes;
 
 	shared_ptr<ScriptManager> _scriptManager;
-	shared_ptr<TraceLogger> _traceLogger;
 	shared_ptr<MemoryDumper> _memoryDumper;
 	shared_ptr<MemoryAccessCounter> _memoryAccessCounter;
 	shared_ptr<CodeDataLogger> _codeDataLogger;
@@ -76,6 +77,8 @@ private:
 	bool _waitForBreakResume = false;
 	
 	void Reset();
+
+	template<CpuType type, typename DebuggerType> DebuggerType* GetDebugger();
 
 public:
 	Debugger(Emulator* emu, IConsole* console);
@@ -126,7 +129,9 @@ public:
 
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
-	shared_ptr<TraceLogger> GetTraceLogger();
+	uint32_t GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount);
+
+	ITraceLogger* GetTraceLogger(CpuType cpuType);
 	MemoryDumper* GetMemoryDumper();
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();
 	shared_ptr<CodeDataLogger> GetCodeDataLogger(CpuType cpuType);

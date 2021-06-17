@@ -42,11 +42,17 @@ namespace Mesen.Debugger.Controls
 		private double RowHeight => this.LetterSize.Height;
 		private int VisibleRows => (int)(Bounds.Height / RowHeight) - 1;
 
+		private bool _scrollByAddress = false;
 		private bool _updatingScroll = false;
 
 		static DisassemblyViewer()
 		{
-			AffectsRender<DisassemblyViewer>(DataProviderProperty, ScrollPositionProperty, StyleProviderProperty);
+			//AffectsRender<DisassemblyViewer>(DataProviderProperty, ScrollPositionProperty, StyleProviderProperty);
+			DataProviderProperty.Changed.AddClassHandler<DisassemblyViewer>((x, e) => {
+				x.Refresh();
+				x.InvalidateVisual();
+			});
+
 			ScrollPositionProperty.Changed.AddClassHandler<DisassemblyViewer>((x, e) => {
 				if(x._updatingScroll) {
 					return;
@@ -54,18 +60,26 @@ namespace Mesen.Debugger.Controls
 
 				x.Refresh();
 
-				x._updatingScroll = true;
-				CodeLineData[] lines = x._lines;
-				if(e.OldValue is int oldValue && e.NewValue is int newValue && oldValue < newValue) {
-					foreach(CodeLineData line in lines) {
-						if(line.Address >= 0 && newValue < line.Address) {
-							x.ScrollPosition = line.Address;
-							break;
+				if(x._scrollByAddress) {
+					x._updatingScroll = true;
+					CodeLineData[] lines = x._lines;
+					if(e.OldValue is int oldValue && e.NewValue is int newValue && oldValue < newValue) {
+						foreach(CodeLineData line in lines) {
+							if(line.Address >= 0 && newValue < line.Address) {
+								x.ScrollPosition = line.Address;
+								break;
+							}
 						}
 					}
+					x._updatingScroll = false;
 				}
-				x._updatingScroll = false;
+				x.InvalidateVisual();
 			});
+		}
+
+		public DisassemblyViewer()
+		{
+			ClipToBounds = true;
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -76,13 +90,14 @@ namespace Mesen.Debugger.Controls
 				int rowNumber = (int)(p.Position.Y / LetterSize.Height);
 				CodeLineData[] lines = _lines;
 				if(rowNumber < lines.Length) {
+					CpuType cpuType = lines[rowNumber].CpuType;
 					AddressInfo relAddress = new AddressInfo() {
 						Address = lines[rowNumber].Address,
-						Type = DataProvider.CpuType.ToMemoryType()
+						Type = cpuType.ToMemoryType()
 					};
 
 					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, DataProvider.CpuType);
+					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
 				}
 			}
 
@@ -111,14 +126,16 @@ namespace Mesen.Debugger.Controls
 			InitFontAndLetterSize();
 
 			_lines = dp?.GetCodeLines(scrollPosition, VisibleRows + 3) ?? new CodeLineData[0];
-			foreach(CodeLineData line in _lines) {
-				if(line.Address >= 0) {
-					if(ScrollPosition != line.Address) {
-						_updatingScroll = true;
-						ScrollPosition = line.Address;
-						_updatingScroll = false;
+			if(_scrollByAddress) {
+				foreach(CodeLineData line in _lines) {
+					if(line.Address >= 0) {
+						if(ScrollPosition != line.Address) {
+							_updatingScroll = true;
+							ScrollPosition = line.Address;
+							_updatingScroll = false;
+						}
+						break;
 					}
-					break;
 				}
 			}
 		}
@@ -141,7 +158,7 @@ namespace Mesen.Debugger.Controls
 			string addrFormat = "X" + DataProvider.CpuType.GetAddressSize();
 			double symbolMargin = 20;
 			double addressMargin = Math.Floor(LetterSize.Width * DataProvider.CpuType.GetAddressSize() + symbolMargin) + 0.5;
-			double byteCodeMargin = Math.Floor(LetterSize.Width * (4 * DataProvider.CpuType.GetByteCodeSize()));
+			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * DataProvider.CpuType.GetByteCodeSize()));
 			double codeIndent = Math.Floor(LetterSize.Width * 2) + 0.5;
 
 			//Draw margin (address)
@@ -261,7 +278,6 @@ namespace Mesen.Debugger.Controls
 	public interface ILineStyleProvider
 	{
 		LineProperties GetLineStyle(CodeLineData lineData, int lineIndex);
-		string? GetLineComment(int lineIndex);
 
 		List<CodeColor> GetCodeColors(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues);
 	}

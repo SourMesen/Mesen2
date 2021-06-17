@@ -20,10 +20,26 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ResumeExecution();
 		[DllImport(DllPath)] public static extern void Step(CpuType cpuType, Int32 instructionCount, StepType type = StepType.Step);
 
-		[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
+		/*[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
 		[DllImport(DllPath)] public static extern void StopTraceLogger();
-		[DllImport(DllPath)] public static extern void SetTraceOptions(InteropTraceLoggerOptions options);
-		[DllImport(DllPath)] public static extern void ClearTraceLog();
+		[DllImport(DllPath)] public static extern void ClearTraceLog();*/
+
+		[DllImport(DllPath)] public static extern void SetTraceOptions(CpuType cpuType, InteropTraceLoggerOptions options);
+
+		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern UInt32 GetExecutionTraceWrapper(IntPtr output, UInt32 startOffset, UInt32 maxRowCount);
+		public static TraceRow[] GetExecutionTrace(UInt32 startOffset, UInt32 maxRowCount)
+		{
+			TraceRow[] rows = new TraceRow[maxRowCount];
+
+			GCHandle handle = GCHandle.Alloc(rows, GCHandleType.Pinned);
+			IntPtr ptr = handle.AddrOfPinnedObject();
+			UInt32 rowCount = DebugApi.GetExecutionTraceWrapper(ptr, startOffset, maxRowCount);
+			handle.Free();
+
+			Array.Resize(ref rows, (int)rowCount);
+
+			return rows;
+		}
 
 		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern IntPtr GetDebuggerLogWrapper();
 		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetDebuggerLogWrapper()).Replace("\n", Environment.NewLine); }
@@ -48,9 +64,6 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
-
-		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern IntPtr GetExecutionTraceWrapper(UInt32 lineCount);
-		public static string GetExecutionTrace(UInt32 lineCount) { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetExecutionTraceWrapper(lineCount)); }
 
 		[DllImport(DllPath, EntryPoint = "GetState")] private static extern void GetState(IntPtr state, CpuType cpuType);
 		
@@ -654,19 +667,9 @@ namespace Mesen.Interop
 	[Serializable]
 	public struct InteropTraceLoggerOptions
 	{
-		[MarshalAs(UnmanagedType.I1)] public bool LogCpu;
-		[MarshalAs(UnmanagedType.I1)] public bool LogSpc;
-		[MarshalAs(UnmanagedType.I1)] public bool LogNecDsp;
-		[MarshalAs(UnmanagedType.I1)] public bool LogSa1;
-		[MarshalAs(UnmanagedType.I1)] public bool LogGsu;
-		[MarshalAs(UnmanagedType.I1)] public bool LogCx4;
-		[MarshalAs(UnmanagedType.I1)] public bool LogGameboy;
-
-		[MarshalAs(UnmanagedType.I1)] public bool ShowExtraInfo;
+		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
 		[MarshalAs(UnmanagedType.I1)] public bool IndentCode;
 		[MarshalAs(UnmanagedType.I1)] public bool UseLabels;
-		[MarshalAs(UnmanagedType.I1)] public bool UseWindowsEol;
-		[MarshalAs(UnmanagedType.I1)] public bool ExtendZeroPage;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1000)]
 		public byte[] Condition;
@@ -842,5 +845,42 @@ namespace Mesen.Interop
 		public UInt64 MinCycles;
 		public UInt64 MaxCycles;
 		public AddressInfo Address;
+	}
+
+	public unsafe struct TraceRow
+	{
+		public UInt32 ProgramCounter;
+		public CpuType Type;
+
+		public fixed byte ByteCode[4];
+		public byte ByteCodeSize;
+
+		public fixed byte LogOutput[500];
+
+		public unsafe string GetOutput()
+		{
+			fixed(byte* output = LogOutput) {
+				int i;
+				for(i = 0; i < 500; i++) {
+					if(output[i] == 0) {
+						break;
+					}
+				}
+
+				return UTF8Encoding.UTF8.GetString(output, i);
+			}
+		}
+
+		public unsafe string GetByteCode()
+		{
+			fixed(byte* output = ByteCode) {
+				StringBuilder sb = new StringBuilder();
+				int i;
+				for(i = 0; i < ByteCodeSize && i < 4; i++) {
+					sb.Append(ByteCode[i].ToString("X2") + " ");
+				}
+				return sb.ToString().Trim();
+			}
+		}
 	}
 }

@@ -630,6 +630,7 @@ bool BaseCartridge::LoadGameboy(VirtualFile& romFile)
 		if(_coprocessorType == CoprocessorType::SGB) {
 			_gameboy.reset(new Gameboy(_emu, true));
 			if(_gameboy->LoadRom(romFile) == LoadRomResult::Success) {
+				_emu->RegisterMemory(SnesMemoryType::PrgRom, _prgRom, _prgRomSize);
 				return _gameboy->IsSgb();
 			}
 		}

@@ -35,8 +35,11 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 		_spc = c->GetSpc().get();
 		_memoryManager = c->GetMemoryManager().get();
 		_cartridge = c->GetCartridge().get();
+		_gameboy = c->GetCartridge()->GetGameboy();
 	} else if(NesConsole* c = dynamic_cast<NesConsole*>(console)) {
 		_nesMemoryManager = c->GetMemoryManager();
+	} else if(Gameboy* c = dynamic_cast<Gameboy*>(console)) {
+		_gameboy = c;
 	}
 }
 
@@ -122,8 +125,8 @@ void MemoryDumper::GetMemoryState(SnesMemoryType type, uint8_t *buffer)
 			break;
 
 		case SnesMemoryType::GameboyMemory: {
-			if(_cartridge->GetGameboy()) {
-				GbMemoryManager* memManager = _cartridge->GetGameboy()->GetMemoryManager();
+			if(_gameboy) {
+				GbMemoryManager* memManager = _gameboy->GetMemoryManager();
 				for(int i = 0; i <= 0xFFFF; i++) {
 					buffer[i] = memManager->DebugRead(i);
 				}
@@ -183,7 +186,7 @@ void MemoryDumper::SetMemoryValue(SnesMemoryType memoryType, uint32_t address, u
 		case SnesMemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case SnesMemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
-		case SnesMemoryType::GameboyMemory: _cartridge->GetGameboy()->GetMemoryManager()->DebugWrite(address, value); break;
+		case SnesMemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
 		case SnesMemoryType::NesMemory: _nesMemoryManager->DebugWrite(address, value); break;
 
 		default:
@@ -217,7 +220,7 @@ uint8_t MemoryDumper::GetMemoryValue(SnesMemoryType memoryType, uint32_t address
 		case SnesMemoryType::Sa1Memory: return _cartridge->GetSa1()->GetMemoryMappings()->Peek(address);
 		case SnesMemoryType::GsuMemory: return _cartridge->GetGsu()->GetMemoryMappings()->Peek(address);
 		case SnesMemoryType::Cx4Memory: return _cartridge->GetCx4()->GetMemoryMappings()->Peek(address);
-		case SnesMemoryType::GameboyMemory: return _cartridge->GetGameboy()->GetMemoryManager()->DebugRead(address);
+		case SnesMemoryType::GameboyMemory: return _gameboy->GetMemoryManager()->DebugRead(address);
 		case SnesMemoryType::NesMemory: return _nesMemoryManager->DebugRead(address);
 		
 		default:

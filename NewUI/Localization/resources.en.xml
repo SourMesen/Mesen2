@@ -798,6 +798,13 @@
 			<Control ID="btnStop">Stop</Control>
 		</Form>
 
+		<Form ID="TraceLoggerWindow">
+			<Control ID="wndTitle">Trace Logger</Control>
+			<Control ID="lblFormat">Format: </Control>
+			<Control ID="lblCondition">Condition: </Control>
+			<Control ID="chkEnabled">Enabled</Control>
+		</Form>
+
 		<Form ID="EventViewerWindow">
 			<Control ID="wndTitle">Event Viewer</Control>
 

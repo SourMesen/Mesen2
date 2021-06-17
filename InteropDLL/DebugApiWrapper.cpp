@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Core/Shared/Emulator.h"
 #include "Core/Debugger/Debugger.h"
-#include "Core/Debugger/TraceLogger.h"
 #include "Core/Debugger/MemoryDumper.h"
 #include "Core/Debugger/MemoryAccessCounter.h"
 #include "Core/Debugger/Disassembler.h"
@@ -16,6 +15,7 @@
 #include "Core/Debugger/Profiler.h"
 #include "Core/Debugger/IAssembler.h"
 #include "Core/Debugger/IEventManager.h"
+#include "Core/Debugger/ITraceLogger.h"
 #include "Core/Gameboy/GbTypes.h"
 
 extern shared_ptr<Emulator> _emu;
@@ -51,11 +51,13 @@ extern "C"
 	DllExport uint32_t __stdcall GetDisassemblyOutput(CpuType type, uint32_t lineIndex, CodeLineData output[], uint32_t rowCount) { return GetDebugger()->GetDisassembler()->GetDisassemblyOutput(type, lineIndex, output, rowCount); }
 	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchDisassembly(type, searchString, startPosition, endPosition, searchBackwards); }
 
-	DllExport void __stdcall SetTraceOptions(TraceLoggerOptions options) { GetDebugger()->GetTraceLogger()->SetOptions(options); }
-	DllExport void __stdcall StartTraceLogger(char* filename) { GetDebugger()->GetTraceLogger()->StartLogging(filename); }
-	DllExport void __stdcall StopTraceLogger() { GetDebugger()->GetTraceLogger()->StopLogging(); }
-	DllExport void __stdcall ClearTraceLog() { GetDebugger()->GetTraceLogger()->Clear(); }
-	DllExport const char* GetExecutionTrace(uint32_t lineCount) { return GetDebugger()->GetTraceLogger()->GetExecutionTrace(lineCount); }
+	//DllExport void __stdcall ClearTraceLog() { GetDebugger()->GetTraceLogger()->Clear(); }
+
+	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { GetDebugger()->GetTraceLogger(type)->SetOptions(options); }
+	DllExport uint32_t __stdcall GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t lineCount) { return GetDebugger()->GetExecutionTrace(output, startOffset, lineCount); }
+
+	//DllExport void __stdcall StartLogTraceToFile(char* filename) { GetDebugger()->GetTraceLogger()->StartLogging(filename); }
+	//DllExport void __stdcall StopLogTraceToFile() { GetDebugger()->GetTraceLogger()->StopLogging(); }
 
 	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { GetDebugger()->SetBreakpoints(breakpoints, length); }
 	DllExport int32_t __stdcall EvaluateExpression(char* expression, CpuType cpuType, EvalResultType *resultType, bool useCache) { return GetDebugger()->EvaluateExpression(expression, cpuType, *resultType, useCache); }
