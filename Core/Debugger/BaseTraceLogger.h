@@ -11,6 +11,7 @@
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/ITraceLogger.h"
 #include "Debugger/ExpressionEvaluator.h"
+#include "Debugger/TraceLogFileSaver.h"
 #include "Utilities/HexUtilities.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -283,13 +284,19 @@ protected:
 
 		_pendingLog = false;
 
-		/*if(_logToFile) {
-			((TraceLoggerType*)this)->GetTraceRow(_outputBuffer, _disassemblyCache[_currentPos], cpuState);
-			if(_outputBuffer.size() > 32768) {
-				_outputFile << _outputBuffer;
-				_outputBuffer.clear();
-			}
-		}*/
+		if(_debugger->GetTraceLogFileSaver()->IsEnabled()) {
+			string row;
+			
+			//Display PC
+			RowPart rowPart = {};
+			rowPart.DisplayInHex = true;
+			rowPart.MinWidth = DebugUtilities::GetProgramCounterSize(_cpuType);
+			WriteIntValue(row, ((TraceLoggerType*)this)->GetProgramCounter(cpuState), rowPart);
+			row += "  ";
+
+			((TraceLoggerType*)this)->GetTraceRow(row, cpuState, _ppuState[_currentPos], disassemblyInfo);
+			_debugger->GetTraceLogFileSaver()->Log(row);
+		}
 
 		_currentPos = (_currentPos + 1) % ExecutionLogSize;
 	}

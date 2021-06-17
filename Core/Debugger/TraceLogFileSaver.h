@@ -4,23 +4,28 @@
 class TraceLogFileSaver
 {
 private:
-	bool _logToFile;
+	bool _enabled = false;
 	string _outputFilepath;
 	string _outputBuffer;
 	ofstream _outputFile;
 
 public:
+	~TraceLogFileSaver()
+	{
+		StopLogging();
+	}
+
 	void StartLogging(string filename)
 	{
 		_outputBuffer.clear();
 		_outputFile.open(filename, ios::out | ios::binary);
-		_logToFile = true;
+		_enabled = true;
 	}
 
 	void StopLogging()
 	{
-		if(_logToFile) {
-			_logToFile = false;
+		if(_enabled) {
+			_enabled = false;
 			if(_outputFile) {
 				if(!_outputBuffer.empty()) {
 					_outputFile << _outputBuffer;
@@ -30,13 +35,14 @@ public:
 		}
 	}
 
-	/*void LogExtraInfo(const char* log, uint32_t cycleCount)
+	__forceinline bool IsEnabled() { return _enabled; }
+
+	void Log(string& log)
 	{
-		if(_logToFile) {
-			//Flush current buffer
+		_outputBuffer += log + '\n';
+		if(_outputBuffer.size() > 32768) {
 			_outputFile << _outputBuffer;
 			_outputBuffer.clear();
-			_outputFile << "[" << log << " - Cycle: " << std::to_string(cycleCount) << "]" << (_options.UseWindowsEol ? "\r\n" : "\n");
 		}
-	}*/
+	}
 };

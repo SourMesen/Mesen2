@@ -1,21 +1,14 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Threading;
-using AvaloniaEdit;
-using AvaloniaEdit.Highlighting;
-using AvaloniaEdit.Highlighting.Xshd;
-using Mesen.Debugger.Controls;
+using Mesen.Config;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
-using System.Xml;
 
 namespace Mesen.Debugger.Windows
 {
@@ -77,6 +70,35 @@ namespace Mesen.Debugger.Windows
 					break;
 				}
 			}
+		}
+
+		private async void OnStartLoggingClick(object sender, RoutedEventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Filters = new List<FileDialogFilter>() {
+				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
+			};
+			sfd.Directory = ConfigManager.DebuggerFolder;
+			sfd.InitialFileName = EmuApi.GetRomInfo().GetRomName() + ".txt";
+			
+			string filename = await sfd.ShowAsync(VisualRoot as Window);
+			if(filename != null) {
+				Model.IsLoggingToFile = true;
+				DebugApi.StartLogTraceToFile(filename);
+			}
+		}
+
+		private void OnStopLoggingClick(object sender, RoutedEventArgs e)
+		{
+			Model.IsLoggingToFile = false;
+			DebugApi.StopLogTraceToFile();
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			DebugApi.StopLogTraceToFile();
+			Model.SaveConfig();
 		}
 
 		private void InitializeComponent()

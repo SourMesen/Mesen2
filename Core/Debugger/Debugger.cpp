@@ -14,6 +14,7 @@
 #include "Debugger/CallstackManager.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/IEventManager.h"
+#include "Debugger/TraceLogFileSaver.h"
 #include "SNES/Cpu.h"
 #include "SNES/Ppu.h"
 #include "SNES/Spc.h"
@@ -72,6 +73,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
 	_ppuTools.reset(new PpuTools(this, _emu));
 	_scriptManager.reset(new ScriptManager(this));
+	_traceLogSaver.reset(new TraceLogFileSaver());
 
 	_cpuTypes = _emu->GetCpuTypes();
 	_mainCpuType = _cpuTypes[0];
@@ -609,6 +611,11 @@ uint32_t Debugger::GetExecutionTrace(TraceRow output[], uint32_t startOffset, ui
 	}
 
 	return count;
+}
+
+TraceLogFileSaver* Debugger::GetTraceLogFileSaver()
+{
+	return _traceLogSaver.get();
 }
 
 MemoryDumper* Debugger::GetMemoryDumper()

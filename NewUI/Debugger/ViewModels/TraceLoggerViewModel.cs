@@ -16,10 +16,11 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class TraceLoggerViewModel : ViewModelBase
 	{
-		[Reactive] public TraceLoggerCodeDataProvider DataProvider { get; set; } = new TraceLoggerCodeDataProvider();
+		[Reactive] public TraceLoggerCodeDataProvider? DataProvider { get; set; }
 		[Reactive] public TraceLoggerStyleProvider StyleProvider { get; set; } = new TraceLoggerStyleProvider();
 		[Reactive] public int ScrollPosition { get; set; } = 0;
 		[Reactive] public int MaxScrollPosition { get; set; } = 0;
+		[Reactive] public bool IsLoggingToFile { get; set; } = false;
 
 		[Reactive] public List<TraceLoggerOptionTab> Tabs { get; set; } = new List<TraceLoggerOptionTab>();
 
@@ -29,11 +30,14 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			DataProvider = new TraceLoggerCodeDataProvider();
 			UpdateAvailableTabs();
 		}
 
 		public void UpdateAvailableTabs()
 		{
+			SaveConfig();
+
 			List<TraceLoggerOptionTab> tabs = new();
 			RomInfo romInfo = EmuApi.GetRomInfo();
 			StyleProvider.SetConsoleType(romInfo.ConsoleType);
@@ -41,21 +45,20 @@ namespace Mesen.Debugger.ViewModels
 				tabs.Add(new TraceLoggerOptionTab() {
 					TabName = ResourceHelper.GetEnumText(type),
 					CpuType = type,
-					Options = type switch {
-						CpuType.Cpu => ConfigManager.Config.Debug.TraceLogger.SnesCpu.Clone(),
-						CpuType.Spc => ConfigManager.Config.Debug.TraceLogger.SpcCpu.Clone(),
-						CpuType.Gameboy => ConfigManager.Config.Debug.TraceLogger.GameboyCpu.Clone(),
-						CpuType.Nes => ConfigManager.Config.Debug.TraceLogger.NesCpu.Clone(),
-						CpuType.Sa1 => ConfigManager.Config.Debug.TraceLogger.Sa1Cpu.Clone(),
-						CpuType.Gsu => ConfigManager.Config.Debug.TraceLogger.GsuCpu.Clone(),
-						CpuType.Cx4 => ConfigManager.Config.Debug.TraceLogger.Cx4Cpu.Clone(),
-						CpuType.NecDsp => ConfigManager.Config.Debug.TraceLogger.NecDspCpu.Clone(),
-						_ => throw new Exception("Unsupported cpu type")
-					}
+					Options = ConfigManager.Config.Debug.TraceLogger.CpuConfig[type].Clone()
 				});
 			}
 
 			Tabs = tabs;
+		}
+
+		public void SaveConfig()
+		{
+			TraceLoggerConfig cfg = ConfigManager.Config.Debug.TraceLogger;
+			foreach(TraceLoggerOptionTab tab in Tabs) {
+				cfg.CpuConfig[tab.CpuType] = tab.Options;
+			}
+			ConfigManager.Config.Save();
 		}
 
 		public void UpdateLog()

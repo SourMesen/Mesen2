@@ -31,6 +31,7 @@ class IEventManager;
 class IAssembler;
 class IDebugger;
 class ITraceLogger;
+class TraceLogFileSaver;
 
 struct TraceRow;
 struct BaseState;
@@ -66,6 +67,8 @@ private:
 	shared_ptr<Disassembler> _disassembler;
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<LabelManager> _labelManager;
+
+	unique_ptr<TraceLogFileSaver> _traceLogSaver;
 
 	SimpleLock _logLock;
 	std::list<string> _debuggerLog;
@@ -131,6 +134,7 @@ public:
 
 	uint32_t GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount);
 
+	TraceLogFileSaver* GetTraceLogFileSaver();
 	ITraceLogger* GetTraceLogger(CpuType cpuType);
 	MemoryDumper* GetMemoryDumper();
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();

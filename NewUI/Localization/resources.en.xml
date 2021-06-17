@@ -803,6 +803,9 @@
 			<Control ID="lblFormat">Format: </Control>
 			<Control ID="lblCondition">Condition: </Control>
 			<Control ID="chkEnabled">Enabled</Control>
+			
+			<Control ID="btnStart">Log to file...</Control>
+			<Control ID="btnStop">Stop logging</Control>
 		</Form>
 
 		<Form ID="EventViewerWindow">

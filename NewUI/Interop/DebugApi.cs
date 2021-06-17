@@ -20,9 +20,8 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ResumeExecution();
 		[DllImport(DllPath)] public static extern void Step(CpuType cpuType, Int32 instructionCount, StepType type = StepType.Step);
 
-		/*[DllImport(DllPath)] public static extern void StartTraceLogger([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
-		[DllImport(DllPath)] public static extern void StopTraceLogger();
-		[DllImport(DllPath)] public static extern void ClearTraceLog();*/
+		[DllImport(DllPath)] public static extern void StartLogTraceToFile([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
+		[DllImport(DllPath)] public static extern void StopLogTraceToFile();
 
 		[DllImport(DllPath)] public static extern void SetTraceOptions(CpuType cpuType, InteropTraceLoggerOptions options);
 

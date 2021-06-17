@@ -25,6 +25,21 @@
 	</Design.DataContext>
 
 	<DockPanel>
+		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+			<Button Click="OnStartLoggingClick" IsVisible="{CompiledBinding !IsLoggingToFile}">
+				<WrapPanel>
+					<Image Source="/Assets/Record.png" />
+					<TextBlock Text="{l:Translate btnStart}" VerticalAlignment="Center" Padding="3 1 0 0" />
+				</WrapPanel>
+			</Button>
+			<Button Click="OnStopLoggingClick" IsVisible="{CompiledBinding IsLoggingToFile}">
+				<WrapPanel>
+					<Image Source="/Assets/MediaStop.png" />
+					<TextBlock Text="{l:Translate btnStop}" VerticalAlignment="Center" Padding="3 1 0 0" />
+				</WrapPanel>
+			</Button>
+		</StackPanel>
+		
 		<TabControl Items="{CompiledBinding Tabs}" Padding="1" DockPanel.Dock="Bottom">
 			<TabControl.ItemTemplate>
 				<DataTemplate>

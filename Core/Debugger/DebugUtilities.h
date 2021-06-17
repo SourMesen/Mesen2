@@ -14,9 +14,25 @@ public:
 			case CpuType::NecDsp: return SnesMemoryType::NecDspMemory;
 			case CpuType::Sa1: return SnesMemoryType::Sa1Memory;
 			case CpuType::Gsu: return SnesMemoryType::GsuMemory;
-			case CpuType::Cx4:  return SnesMemoryType::Cx4Memory;
-			case CpuType::Gameboy:  return SnesMemoryType::GameboyMemory;
-			case CpuType::Nes:  return SnesMemoryType::NesMemory;
+			case CpuType::Cx4: return SnesMemoryType::Cx4Memory;
+			case CpuType::Gameboy: return SnesMemoryType::GameboyMemory;
+			case CpuType::Nes: return SnesMemoryType::NesMemory;
+		}
+
+		throw std::runtime_error("Invalid CPU type");
+	}
+
+	static constexpr int GetProgramCounterSize(CpuType type)
+	{
+		switch(type) {
+			case CpuType::Cpu: return 6;
+			case CpuType::Spc: return 4;
+			case CpuType::NecDsp: return 6;
+			case CpuType::Sa1: return 6;
+			case CpuType::Gsu: return 6;
+			case CpuType::Cx4: return 6;
+			case CpuType::Gameboy: return 4;
+			case CpuType::Nes: return 4;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
