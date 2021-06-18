@@ -45,6 +45,9 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 void NesEventManager::AddEvent(DebugEventType type)
 {
 	MemoryOperationInfo op = {};
+	if(type == DebugEventType::BgColorChange) {
+		op.Address = _ppu->GetCurrentBgColor();
+	}
 	AddEvent(type, op, -1);
 }
 
@@ -87,8 +90,7 @@ void NesEventManager::ClearFrameEvents()
 {
 	_prevDebugEvents = _debugEvents;
 	_debugEvents.clear();
-	//TODO
-	//AddDebugEvent(DebugEventType::BgColorChange, _ppu->GetCurrentBgColor());
+	AddEvent(DebugEventType::BgColorChange);
 }
 
 EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)

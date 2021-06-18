@@ -128,6 +128,8 @@ protected:
 
 	uint64_t _oamDecayCycles[0x40];
 	bool _corruptOamRow[32];
+	
+	__forceinline bool IsRenderingEnabled();
 
 public:
 	virtual void Reset() = 0;
@@ -143,6 +145,8 @@ public:
 
 	void GetState(NesPpuState& state);
 	void SetState(NesPpuState& state);
+
+	uint16_t GetCurrentBgColor();
 
 	virtual PpuModel GetPpuModel() = 0;
 	virtual uint32_t GetPixelBrightness(uint8_t x, uint8_t y) = 0;

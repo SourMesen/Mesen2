@@ -42,8 +42,6 @@ protected:
 	void SetControlRegister(uint8_t value);
 	void SetMaskRegister(uint8_t value);
 
-	__forceinline bool IsRenderingEnabled();
-
 	void ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask);
 
 	void SetOpenBus(uint8_t mask, uint8_t value);
@@ -145,7 +143,6 @@ public:
 	}
 
 	uint32_t GetPixelBrightness(uint8_t x, uint8_t y) override;
-	uint16_t GetCurrentBgColor();
 
 	uint16_t GetPixel(uint8_t x, uint8_t y)
 	{

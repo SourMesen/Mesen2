@@ -44,5 +44,8 @@
 		<dc:EventViewerCategoryControl Text="NMI" Config="{CompiledBinding Nmi}" />
 		
 		<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+
+		<CheckBox IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
+		<CheckBox IsChecked="{CompiledBinding ShowNtscBorders}" Content="Show NTSC borders" />
 	</StackPanel>
 </UserControl>

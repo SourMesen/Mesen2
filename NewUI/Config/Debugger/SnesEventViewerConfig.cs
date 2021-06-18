@@ -29,16 +29,16 @@ namespace Mesen.Config
 
 		public EventViewerCategoryCfg MarkedBreakpoints { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xAF, 0xFF, 0xAF));
 
-		public bool ShowPreviousFrameEvents = true;
+		public bool ShowPreviousFrameEvents { get; set; } = true;
 
-		public bool ShowDmaChannel0 = true;
-		public bool ShowDmaChannel1 = true;
-		public bool ShowDmaChannel2 = true;
-		public bool ShowDmaChannel3 = true;
-		public bool ShowDmaChannel4 = true;
-		public bool ShowDmaChannel5 = true;
-		public bool ShowDmaChannel6 = true;
-		public bool ShowDmaChannel7 = true;
+		public bool ShowDmaChannel0 { get; set; } = true;
+		public bool ShowDmaChannel1 { get; set; } = true;
+		public bool ShowDmaChannel2 { get; set; } = true;
+		public bool ShowDmaChannel3 { get; set; } = true;
+		public bool ShowDmaChannel4 { get; set; } = true;
+		public bool ShowDmaChannel5 { get; set; } = true;
+		public bool ShowDmaChannel6 { get; set; } = true;
+		public bool ShowDmaChannel7 { get; set; } = true;
 
 		public InteropSnesEventViewerConfig ToInterop()
 		{

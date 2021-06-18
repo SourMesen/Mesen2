@@ -34,8 +34,8 @@ namespace Mesen.Config
 	
 		public EventViewerCategoryCfg MarkedBreakpoints { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xAF, 0xFF, 0xAF));
 
-		public bool ShowPreviousFrameEvents = true;
-		public bool ShowNtscBorders;
+		public bool ShowPreviousFrameEvents { get; set; } = true;
+		public bool ShowNtscBorders { get; set; } = false;
 
 		public InteropNesEventViewerConfig ToInterop()
 		{
@@ -63,7 +63,8 @@ namespace Mesen.Config
 				Nmi = this.Nmi,
 				Irq = this.Irq,
 				MarkedBreakpoints = this.MarkedBreakpoints,
-				ShowPreviousFrameEvents = this.ShowPreviousFrameEvents
+				ShowPreviousFrameEvents = this.ShowPreviousFrameEvents,
+				ShowNtscBorders = this.ShowNtscBorders
 			};
 		}
 	}

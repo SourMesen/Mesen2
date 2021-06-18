@@ -511,11 +511,6 @@ template<class T> void NesPpu<T>::WritePaletteRAM(uint16_t addr, uint8_t value)
 	}
 }
 
-template<class T> bool NesPpu<T>::IsRenderingEnabled()
-{
-	return _renderingEnabled;
-}
-
 template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr, uint16_t value, uint16_t mask)
 {
 	_tmpVideoRamAddr = normalAddr;
@@ -876,17 +871,6 @@ template<class T> uint8_t NesPpu<T>::GetPixelColor()
 		}
 	}
 	return ((offset + ((_cycle - 1) & 0x07) < 8) ? _previousTilePalette : _currentTilePalette) + backgroundColor;
-}
-
-template<class T> uint16_t NesPpu<T>::GetCurrentBgColor()
-{
-	uint16_t color;
-	if(IsRenderingEnabled() || (_videoRamAddr & 0x3F00) != 0x3F00) {
-		color = _paletteRAM[0];
-	} else {
-		color = _paletteRAM[_videoRamAddr & 0x1F];
-	}
-	return (color & _paletteRamMask) | _intensifyColorBits;
 }
 
 template<class T> void NesPpu<T>::UpdateGrayscaleAndIntensifyBits()

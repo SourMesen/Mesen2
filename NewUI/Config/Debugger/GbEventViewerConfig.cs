@@ -23,7 +23,7 @@ namespace Mesen.Config
 
 		public EventViewerCategoryCfg MarkedBreakpoints { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xAF, 0xFF, 0xAF));
 
-		public bool ShowPreviousFrameEvents = true;
+		public bool ShowPreviousFrameEvents { get; set; } = true;
 
 		public InteropGbEventViewerConfig ToInterop()
 		{

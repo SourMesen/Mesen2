@@ -40,5 +40,16 @@
 		<dc:EventViewerCategoryControl Text="NMI" Config="{CompiledBinding Nmi}" />
 		
 		<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+
+		<CheckBox IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
+
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel0}" Content="DMA Channel 0" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel1}" Content="DMA Channel 1" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel2}" Content="DMA Channel 2" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel3}" Content="DMA Channel 3" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel4}" Content="DMA Channel 4" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel5}" Content="DMA Channel 5" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel6}" Content="DMA Channel 6" />
+		<CheckBox IsChecked="{CompiledBinding ShowDmaChannel7}" Content="DMA Channel 7" />
 	</StackPanel>
 </UserControl>

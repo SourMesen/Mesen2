@@ -40,3 +40,19 @@ void BaseNesPpu::SetState(NesPpuState& state)
 		_intensifyColorBits = (_intensifyRed ? 0x40 : 0x00) | (_intensifyGreen ? 0x80 : 0x00) | (_intensifyBlue ? 0x100 : 0x00);
 	}
 }
+
+bool BaseNesPpu::IsRenderingEnabled()
+{
+	return _renderingEnabled;
+}
+
+uint16_t BaseNesPpu::GetCurrentBgColor()
+{
+	uint16_t color;
+	if(IsRenderingEnabled() || (_videoRamAddr & 0x3F00) != 0x3F00) {
+		color = _paletteRAM[0];
+	} else {
+		color = _paletteRAM[_videoRamAddr & 0x1F];
+	}
+	return (color & _paletteRamMask) | _intensifyColorBits;
+}

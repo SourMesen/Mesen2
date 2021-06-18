@@ -34,5 +34,7 @@
 		<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />
 		
 		<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+
+		<CheckBox IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
 	</StackPanel>
 </UserControl>
