@@ -136,6 +136,10 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else {
+		if(operation.Type == MemoryOperationType::DmaRead) {
+			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
+		}
+
 		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}

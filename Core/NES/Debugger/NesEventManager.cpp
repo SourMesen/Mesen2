@@ -97,6 +97,7 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 		case DebugEventType::Irq: return _config.Irq;
 		case DebugEventType::Nmi: return _config.Nmi;
 		case DebugEventType::SpriteZeroHit: return _config.SpriteZeroHit;
+		case DebugEventType::DmcDmaRead: return _config.DmcDmaReads;
 		case DebugEventType::Breakpoint: return _config.MarkedBreakpoints;
 		case DebugEventType::Register:
 			uint16_t addr = (uint16_t)evt.Operation.Address;
