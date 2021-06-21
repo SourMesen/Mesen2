@@ -1,58 +1,51 @@
 #pragma once
 #include "stdafx.h"
 #include "Debugger/DebugTypes.h"
-#include "Shared/Emulator.h"
 #include "Shared/NotificationManager.h"
-#include "SNES/PpuTypes.h"
+#include "Shared/Emulator.h"
 
 class Debugger;
-class Emulator;
-class Ppu;
 struct GbPpuState;
+struct PpuState;
 
 struct ViewerRefreshConfig
 {
 	uint16_t Scanline;
 	uint16_t Cycle;
-	CpuType Type;
 };
 
 class PpuTools
 {
-private:
+protected:
 	Emulator* _emu;
 	Debugger* _debugger;
 	unordered_map<uint32_t, ViewerRefreshConfig> _updateTimings;
 
-	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift);
+	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift, const int secondByteOffset);
 
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 
-	uint32_t GetRgbPixelColor(uint8_t* cgram, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
 	uint32_t GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
 
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t* palette, uint32_t *outBuffer);
-	void GetTilemap(GetTilemapOptions options, PpuState state, uint8_t* vram, uint8_t* cgram, uint32_t *outBuffer);
-	void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t* oamRam, uint8_t* cgram, uint32_t *outBuffer);
+	virtual void GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;
+	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
 
-	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType);
+	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);
 	
-	__forceinline void UpdateViewers(uint16_t scanline, uint16_t cycle, CpuType cpuType)
+	__forceinline void UpdateViewers(uint16_t scanline, uint16_t cycle)
 	{
 		if(_updateTimings.size() > 0) {
 			for(auto updateTiming : _updateTimings) {
 				ViewerRefreshConfig cfg = updateTiming.second;
-				if(cfg.Cycle == cycle && cfg.Scanline == scanline && cfg.Type == cpuType) {
+				if(cfg.Cycle == cycle && cfg.Scanline == scanline) {
 					_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
 				}
 			}
 		}
 	}
-
-	void GetGameboyTilemap(uint8_t* vram, GbPpuState& state, uint16_t offset, uint32_t* outBuffer);
-	void GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, uint8_t* vram, uint8_t* oamRam, uint32_t* outBuffer);
 };

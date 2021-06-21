@@ -42,6 +42,7 @@ enum class SnesMemoryType
 	NesSaveRam,
 	NesNametableRam,
 	NesSpriteRam,
+	NesSecondarySpriteRam,
 	NesPaletteRam,
 	NesChrRam,
 	NesChrRom,

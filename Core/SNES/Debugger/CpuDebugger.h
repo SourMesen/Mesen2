@@ -22,6 +22,8 @@ class BaseCartridge;
 class Spc;
 class Ppu;
 class SnesAssembler;
+class SnesPpuTools;
+class PpuTools;
 enum class MemoryOperationType;
 
 class CpuDebugger final : public IDebugger
@@ -45,6 +47,7 @@ class CpuDebugger final : public IDebugger
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 	unique_ptr<SnesCpuTraceLogger> _traceLogger;
+	unique_ptr<SnesPpuTools> _ppuTools;
 
 	ITraceLogger* _spcTraceLogger = nullptr;
 	ITraceLogger* _dspTraceLogger = nullptr;
@@ -67,7 +70,7 @@ public:
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
-	void ProcessPpuCycle(int16_t &scanline, uint16_t &cycle);
+	void ProcessPpuCycle();
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
@@ -78,6 +81,8 @@ public:
 	shared_ptr<IAssembler> GetAssembler() override;
 	shared_ptr<IEventManager> GetEventManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	PpuTools* GetPpuTools() override;
 
 	BaseState& GetState() override;
+	void GetPpuState(BaseState& state) override;
 };

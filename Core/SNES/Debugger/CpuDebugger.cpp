@@ -11,6 +11,7 @@
 #include "SNES/Debugger/CpuDebugger.h"
 #include "SNES/Debugger/SnesEventManager.h"
 #include "SNES/Debugger/TraceLogger/SnesCpuTraceLogger.h"
+#include "SNES/Debugger/SnesPpuTools.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
@@ -45,6 +46,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_spc = console->GetSpc().get();
 	_ppu = console->GetPpu().get();
 	_traceLogger.reset(new SnesCpuTraceLogger(debugger, cpuType, _ppu, _memoryManager));
+	_ppuTools.reset(new SnesPpuTools(debugger, debugger->GetEmulator()));
 	
 	if(_cpuType == CpuType::Cpu) {
 		_memoryMappings = _memoryManager->GetMemoryMappings();
@@ -256,7 +258,7 @@ void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void CpuDebugger::ProcessPpuCycle(int16_t &scanline, uint16_t &cycle)
+void CpuDebugger::ProcessPpuCycle()
 {
 	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
 	if(_spcTraceLogger->IsEnabled()) {
@@ -265,18 +267,17 @@ void CpuDebugger::ProcessPpuCycle(int16_t &scanline, uint16_t &cycle)
 		_cart->RunCoprocessors();
 	}
 
-	if(_step->PpuStepCount > 0) {
+	uint16_t scanline = _ppu->GetScanline();
+	uint16_t cycle = _memoryManager->GetHClock();
+	_ppuTools->UpdateViewers(scanline, cycle);
+
+	if(cycle == 0 && scanline == _step->BreakScanline) {
+		_debugger->SleepUntilResume(BreakSource::PpuStep);
+	} else if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;
 		if(_step->PpuStepCount == 0) {
 			_debugger->SleepUntilResume(BreakSource::PpuStep);
 		}
-	}
-
-	scanline = _ppu->GetScanline();
-	cycle = _memoryManager->GetHClock();
-
-	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_debugger->SleepUntilResume(BreakSource::PpuStep);
 	}
 }
 
@@ -324,7 +325,17 @@ shared_ptr<CodeDataLogger> CpuDebugger::GetCodeDataLogger()
 	return _codeDataLogger;
 }
 
+PpuTools* CpuDebugger::GetPpuTools()
+{
+	return _ppuTools.get();
+}
+
 BaseState& CpuDebugger::GetState()
 {
 	return GetCpuState();
+}
+
+void CpuDebugger::GetPpuState(BaseState& state)
+{
+	((PpuState&)state) = _ppu->GetState();
 }

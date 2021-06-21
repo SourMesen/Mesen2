@@ -65,7 +65,6 @@ private:
 	shared_ptr<MemoryAccessCounter> _memoryAccessCounter;
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 	shared_ptr<Disassembler> _disassembler;
-	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<LabelManager> _labelManager;
 
 	unique_ptr<TraceLogFileSaver> _traceLogSaver;
@@ -115,6 +114,8 @@ public:
 	void GetState(BaseState &state, CpuType cpuType);
 	BaseState& GetStateRef(CpuType cpuType);
 
+	void GetPpuState(BaseState& state, CpuType cpuType);
+
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
 
@@ -140,7 +141,7 @@ public:
 	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();
 	shared_ptr<CodeDataLogger> GetCodeDataLogger(CpuType cpuType);
 	shared_ptr<Disassembler> GetDisassembler();
-	shared_ptr<PpuTools> GetPpuTools();
+	PpuTools* GetPpuTools(CpuType cpuType);
 	shared_ptr<IEventManager> GetEventManager(CpuType cpuType);
 	shared_ptr<LabelManager> GetLabelManager();
 	shared_ptr<ScriptManager> GetScriptManager();

@@ -16,6 +16,7 @@
 	x:DataType="dvm:TileViewerViewModel"
 	Width="600" Height="600"
 	Title="Tile Viewer"
+	Icon="/Assets/VerticalLayout.png"
 >
 	<Design.DataContext>
 		<dvm:TileViewerViewModel />
@@ -29,10 +30,11 @@
 			Margin="5 0 5 0"
 		>
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
-			<c:EnumComboBox 
+			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="0"
 				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding MemoryType}"
+				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="1" Text="Display:" />
@@ -52,11 +54,13 @@
 				Width="150"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" />
+			<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="3"
 				EnumType="{x:Type i:TileFormat}"
 				SelectedItem="{CompiledBinding TileFormat}"
+				AvailableValues="{CompiledBinding AvailableFormats}"
+				IsVisible="{CompiledBinding ShowFormatDropdown}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
@@ -75,25 +79,27 @@
 			
 			<CheckBox Grid.Row="6" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding ShowGrid}" />
 
-			<dc:PaletteSelector 
-				Grid.Row="7"
-				Grid.ColumnSpan="2"
-				ColumnCount="16"
-				Width="192"
-				Height="192"
-				SelectionMode="{CompiledBinding PaletteSelectionMode}"
-				SelectedPalette="{CompiledBinding SelectedPalette}"
-				PaletteColors="{CompiledBinding PaletteColors}"
+			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
+				<dc:PaletteSelector
+					ColumnCount="16"
+					BlockSize="14"
+					SelectionMode="{CompiledBinding PaletteSelectionMode}"
+					SelectedPalette="{CompiledBinding SelectedPalette}"
+					PaletteColors="{CompiledBinding PaletteColors}"
 			/>
+			</Border>
 		</Grid>
 		
 		<Border BorderBrush="Gray" BorderThickness="1">
-			<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
+			<ScrollViewer 
+				VerticalScrollBarVisibility="Auto"
+				HorizontalScrollBarVisibility="Auto" 
+				AllowAutoHide="False"
+			>
 				<dc:PictureViewer
-					DockPanel.Dock="Top"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
 					x:Name="picViewer"
-					Width="768"
-					Height="1376"
 					ShowGrid="{CompiledBinding ShowGrid}"
 				/>
 			</ScrollViewer>

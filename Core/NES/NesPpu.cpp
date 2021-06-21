@@ -48,6 +48,7 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 	memset(_corruptOamRow, 0, sizeof(_corruptOamRow));
 
 	_emu->RegisterMemory(SnesMemoryType::NesSpriteRam, _spriteRAM, sizeof(_spriteRAM));
+	_emu->RegisterMemory(SnesMemoryType::NesSecondarySpriteRam, _secondarySpriteRAM, sizeof(_secondarySpriteRAM));
 	_emu->RegisterMemory(SnesMemoryType::NesPaletteRam, _paletteRAM, sizeof(_paletteRAM));
 	
 	_settings->InitializeRam(_spriteRAM, 0x100);

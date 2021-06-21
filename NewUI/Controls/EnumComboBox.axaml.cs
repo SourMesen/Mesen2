@@ -87,6 +87,11 @@ namespace Mesen.Controls
 			}
 
 			cbo.Items = values;
+
+			if(AvailableValues != null && !AvailableValues.Contains(SelectedItem)) {
+				SelectedItem = AvailableValues.Length > 0 ? AvailableValues[0] : null;
+			}
+
 			if(this.SelectedItem != null) {
 				cbo.SelectedItem = ResourceHelper.GetEnumText(this.SelectedItem);
 			} else {

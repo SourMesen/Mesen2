@@ -6,10 +6,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Avalonia.Platform;
@@ -29,7 +25,7 @@ namespace Mesen.Debugger.Windows
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 		}
 
@@ -89,19 +85,19 @@ namespace Mesen.Debugger.Windows
 				InitBitmap();
 			}
 
-			using(var framebuffer = _viewerBitmap.Lock()) {
-				DebugApi.GetTileView(new GetTileViewOptions() {
-					Format = _model.TileFormat,
-					Width = _model.ColumnCount,
-					Height = _model.RowCount,
-					Palette = _model.SelectedPalette,
-					Layout = _model.TileLayout,
-					StartAddress = _model.StartAddress,
-					Background = _model.TileBackground
-				}, source, source.Length, _model.PaletteColors, framebuffer.Address);
-			}
-
 			Dispatcher.UIThread.Post(() => {
+				using(var framebuffer = _viewerBitmap.Lock()) {
+					DebugApi.GetTileView(CpuType.Cpu, new GetTileViewOptions() {
+						Format = _model.TileFormat,
+						Width = _model.ColumnCount,
+						Height = _model.RowCount,
+						Palette = _model.SelectedPalette,
+						Layout = _model.TileLayout,
+						StartAddress = _model.StartAddress,
+						Background = _model.TileBackground
+					}, source, source.Length, _model.PaletteColors, framebuffer.Address);
+				}
+
 				_picViewer.Source = _viewerBitmap;
 				_picViewer.InvalidateVisual();
 			});

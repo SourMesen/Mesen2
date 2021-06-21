@@ -808,6 +808,9 @@
     <ClInclude Include="SNES\Debugger\TraceLogger\Cx4TraceLogger.h" />
     <ClInclude Include="SNES\Debugger\TraceLogger\NecDspTraceLogger.h" />
     <ClInclude Include="Gameboy\Debugger\GbTraceLogger.h" />
+    <ClInclude Include="SNES\Debugger\SnesPpuTools.h" />
+    <ClInclude Include="Gameboy\Debugger\GbPpuTools.h" />
+    <ClInclude Include="NES\Debugger\NesPpuTools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">
@@ -1249,6 +1252,9 @@
     <ClCompile Include="SNES\Debugger\TraceLogger\Cx4TraceLogger.cpp" />
     <ClCompile Include="SNES\Debugger\TraceLogger\NecDspTraceLogger.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
+    <ClCompile Include="SNES\Debugger\SnesPpuTools.cpp" />
+    <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />
+    <ClCompile Include="NES\Debugger\NesPpuTools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

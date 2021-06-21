@@ -73,10 +73,9 @@
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
 						<dc:PictureViewer
-							DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
 							x:Name="picViewer"
-							Width="512"
-							Height="480"
 						/>
 					</ScrollViewer>
 				</Border>

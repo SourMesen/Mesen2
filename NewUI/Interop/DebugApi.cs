@@ -77,6 +77,19 @@ namespace Mesen.Interop
 			return state;
 		}
 
+		[DllImport(DllPath, EntryPoint = "GetPpuState")] private static extern void GetPpuState(IntPtr state, CpuType cpuType);
+
+		public static T GetPpuState<T>(CpuType cpuType) where T : struct, BaseState
+		{
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr ptr = Marshal.AllocHGlobal(len);
+			DebugApi.GetPpuState(ptr, cpuType);
+
+			T state = Marshal.PtrToStructure<T>(ptr);
+			Marshal.FreeHGlobal(ptr);
+			return state;
+		}
+
 		[DllImport(DllPath)] public static extern void SetScriptTimeout(UInt32 timeout);
 		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)]string content, Int32 scriptId = -1);
 		[DllImport(DllPath)] public static extern void RemoveScript(Int32 scriptId);
@@ -117,9 +130,9 @@ namespace Mesen.Interop
 			return buffer;
 		}
 
-		[DllImport(DllPath)] public static extern void GetTilemap(GetTilemapOptions options, PpuState state, byte[] vram, byte[] cgram, IntPtr buffer);
-		[DllImport(DllPath)] public static extern void GetTileView(GetTileViewOptions options, byte[] source, int srcSize, UInt32[] cgram, IntPtr buffer);
-		[DllImport(DllPath)] public static extern void GetSpritePreview(GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, byte[] cgram, IntPtr buffer);
+		[DllImport(DllPath)] public static extern void GetTilemap(CpuType cpuType, GetTilemapOptions options, PpuState state, byte[] vram, UInt32[] palette, IntPtr buffer);
+		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
+		[DllImport(DllPath)] public static extern void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, UInt32[] palette, IntPtr buffer);
 
 		[DllImport(DllPath)] public static extern void GetGameboyTilemap(byte[] vram, GbPpuState state, UInt16 offset, [In, Out] byte[] buffer);
 		[DllImport(DllPath)] public static extern void GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, byte[] vram, byte[] oamRam, [In, Out] byte[] buffer);
@@ -261,6 +274,7 @@ namespace Mesen.Interop
 		NesSaveRam,
 		NesNametableRam,
 		NesSpriteRam,
+		NesSecondarySpriteRam,
 		NesPaletteRam,
 		NesChrRam,
 		NesChrRom,
@@ -654,6 +668,7 @@ namespace Mesen.Interop
 		DirectColor,
 		Mode7,
 		Mode7DirectColor,
+		NesBpp2,
 	}
 
 	public enum TileLayout

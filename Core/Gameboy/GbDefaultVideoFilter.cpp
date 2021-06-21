@@ -85,9 +85,9 @@ void GbDefaultVideoFilter::OnBeforeApplyFilter()
 
 	bool adjustColors = gbConfig.GbcAdjustColors;
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || _gbcAdjustColors != adjustColors) {
+		_gbcAdjustColors = adjustColors;
 		InitLookupTable();
 	}
-	_gbcAdjustColors = adjustColors;
 	_blendFrames = gbConfig.BlendFrames;
 	_videoConfig = config;
 }

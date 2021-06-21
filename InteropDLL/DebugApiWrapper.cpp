@@ -65,6 +65,7 @@ extern "C"
 	DllExport void __stdcall ResetProfiler(CpuType cpuType) { GetDebugger()->GetCallstackManager(cpuType)->GetProfiler()->Reset(); }
 
 	DllExport void __stdcall GetState(BaseState& state, CpuType cpuType) { GetDebugger()->GetState(state, cpuType); }
+	DllExport void __stdcall GetPpuState(BaseState& state, CpuType cpuType) { GetDebugger()->GetPpuState(state, cpuType); }
 	
 	DllExport const char* __stdcall GetDebuggerLog()
 	{
@@ -93,13 +94,11 @@ extern "C"
 	DllExport void __stdcall SetCdlData(CpuType cpuType, uint8_t* cdlData, uint32_t length) { GetDebugger()->SetCdlData(cpuType, cdlData, length); }
 	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(cpuType, start, end, flags); }
 	
-	DllExport void __stdcall GetTilemap(GetTilemapOptions options, PpuState state, uint8_t *vram, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTilemap(options, state, vram, cgram, buffer); }
-	DllExport void __stdcall GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetTileView(options, source, srcSize, colors, buffer); }
-	DllExport void __stdcall GetSpritePreview(GetSpritePreviewOptions options, PpuState state, uint8_t* vram, uint8_t *oamRam, uint8_t *cgram, uint32_t *buffer) { GetDebugger()->GetPpuTools()->GetSpritePreview(options, state, vram, oamRam, cgram, buffer); }
-	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { GetDebugger()->GetPpuTools()->SetViewerUpdateTiming(viewerId, scanline, cycle, cpuType); }
+	DllExport void __stdcall GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState& state, uint8_t *vram, uint32_t* palette, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetTilemap(options, state, vram, palette, buffer); }
+	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetTileView(options, source, srcSize, colors, buffer); }
+	DllExport void __stdcall GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t *oamRam, uint32_t* palette, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetSpritePreview(options, state, vram, oamRam, palette, buffer); }
 
-	DllExport void __stdcall GetGameboyTilemap(uint8_t* vram, GbPpuState state, uint16_t offset, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboyTilemap(vram, state, offset, buffer); }
-	DllExport void __stdcall GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, uint8_t* vram, uint8_t* oamRam, uint32_t* buffer) { GetDebugger()->GetPpuTools()->GetGameboySpritePreview(options, state, vram, oamRam, buffer); }
+	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { GetDebugger()->GetPpuTools(cpuType)->SetViewerUpdateTiming(viewerId, scanline, cycle); }
 
 	DllExport void __stdcall SetEventViewerConfig(CpuType cpuType, BaseEventViewerConfig& config) { GetDebugger()->GetEventManager(cpuType)->SetConfiguration(config); }
 	DllExport void __stdcall GetDebugEvents(CpuType cpuType, DebugEventInfo *infoArray, uint32_t &maxEventCount) { GetDebugger()->GetEventManager(cpuType)->GetEvents(infoArray, maxEventCount); }

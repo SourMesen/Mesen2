@@ -17,6 +17,7 @@
 #include "NES/Debugger/NesAssembler.h"
 #include "NES/Debugger/NesEventManager.h"
 #include "NES/Debugger/NesTraceLogger.h"
+#include "NES/Debugger/NesPpuTools.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Shared/EmuSettings.h"
@@ -35,6 +36,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_mapper = console->GetMapper();
 
 	_traceLogger.reset(new NesTraceLogger(debugger, _ppu));
+	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator()));
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_settings = debugger->GetEmulator()->GetSettings();
@@ -223,20 +225,19 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	//_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void NesDebugger::ProcessPpuCycle(int16_t& scanline, uint16_t& cycle)
+void NesDebugger::ProcessPpuCycle()
 {
-	scanline = _ppu->GetCurrentScanline();
-	cycle = _ppu->GetCurrentCycle();
+	int16_t scanline = _ppu->GetCurrentScanline();
+	uint16_t cycle = _ppu->GetCurrentCycle();
+	_ppuTools->UpdateViewers(scanline, cycle);
 
-	if(_step->PpuStepCount > 0) {
+	if(cycle == 0 && scanline == _step->BreakScanline) {
+		_debugger->SleepUntilResume(BreakSource::PpuStep);
+	} else if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;
 		if(_step->PpuStepCount == 0) {
 			_debugger->SleepUntilResume(BreakSource::PpuStep);
 		}
-	}
-
-	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_debugger->SleepUntilResume(BreakSource::PpuStep);
 	}
 }
 
@@ -284,7 +285,17 @@ BaseState& NesDebugger::GetState()
 	return _cpu->GetState();
 }
 
+void NesDebugger::GetPpuState(BaseState& state)
+{
+	_ppu->GetState((NesPpuState&)state);
+}
+
 ITraceLogger* NesDebugger::GetTraceLogger()
 {
 	return _traceLogger.get();
+}
+
+PpuTools* NesDebugger::GetPpuTools()
+{
+	return _ppuTools.get();
 }

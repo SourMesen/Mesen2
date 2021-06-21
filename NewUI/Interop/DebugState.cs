@@ -751,7 +751,7 @@ namespace Mesen.Interop
 		NoIrq
 	}
 
-	public struct GbPpuState
+	public struct GbPpuState : BaseState
 	{
 		public byte Scanline;
 		public UInt16 Cycle;

@@ -18,6 +18,7 @@ class Emulator;
 class CodeDataLogger;
 class GbCpu;
 class GbPpu;
+class GbPpuTools;
 
 enum class MemoryOperationType;
 
@@ -39,6 +40,7 @@ class GbDebugger final : public IDebugger
 	unique_ptr<StepRequest> _step;
 	shared_ptr<GbAssembler> _assembler;
 	unique_ptr<GbTraceLogger> _traceLogger;
+	unique_ptr<GbPpuTools> _ppuTools;
 
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
@@ -53,7 +55,7 @@ public:
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
-	void ProcessPpuCycle(int16_t &scanline, uint16_t &cycle);
+	void ProcessPpuCycle();
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
@@ -64,6 +66,8 @@ public:
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 	BreakpointManager* GetBreakpointManager() override;
 	ITraceLogger* GetTraceLogger() override;
+	PpuTools* GetPpuTools() override;
 
 	BaseState& GetState() override;
+	void GetPpuState(BaseState& state) override;
 };

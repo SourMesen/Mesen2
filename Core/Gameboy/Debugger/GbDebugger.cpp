@@ -4,6 +4,7 @@
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Gameboy/Debugger/GbEventManager.h"
 #include "Gameboy/Debugger/GbTraceLogger.h"
+#include "Gameboy/Debugger/GbPpuTools.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
 #include "Debugger/CallstackManager.h"
@@ -43,6 +44,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_settings = debugger->GetEmulator()->GetSettings();
 	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
 	_traceLogger.reset(new GbTraceLogger(debugger, _ppu));
+	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
 
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _ppu));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -239,21 +241,21 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	_eventManager->AddEvent(DebugEventType::Irq);
 }
 
-void GbDebugger::ProcessPpuCycle(int16_t &scanline, uint16_t &cycle)
+void GbDebugger::ProcessPpuCycle()
 {
-	scanline = _ppu->GetScanline();
-	cycle = _ppu->GetCycle();
+	uint8_t scanline = _ppu->GetScanline();
+	uint16_t cycle = _ppu->GetCycle();
+	_ppuTools->UpdateViewers(scanline, cycle);
 
-	if(_step->PpuStepCount > 0) {
+	if(cycle == 0 && scanline == _step->BreakScanline) {
+		_debugger->SleepUntilResume(BreakSource::PpuStep);
+	} else if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;
 		if(_step->PpuStepCount == 0) {
 			_debugger->SleepUntilResume(BreakSource::PpuStep);
 		}
 	}
 
-	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_debugger->SleepUntilResume(BreakSource::PpuStep);
-	}
 }
 
 shared_ptr<IEventManager> GbDebugger::GetEventManager()
@@ -286,7 +288,17 @@ BaseState& GbDebugger::GetState()
 	return _cpu->GetState();
 }
 
+void GbDebugger::GetPpuState(BaseState& state)
+{
+	(GbPpuState&)state =_ppu->GetState();
+}
+
 ITraceLogger* GbDebugger::GetTraceLogger()
 {
 	return _traceLogger.get();
+}
+
+PpuTools* GbDebugger::GetPpuTools()
+{
+	return _ppuTools.get();
 }

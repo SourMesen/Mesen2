@@ -157,6 +157,7 @@ enum class TileFormat
 	DirectColor,
 	Mode7,
 	Mode7DirectColor,
+	NesBpp2
 };
 
 enum class TileLayout

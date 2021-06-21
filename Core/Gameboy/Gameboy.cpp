@@ -449,7 +449,7 @@ shared_ptr<IControlManager> Gameboy::GetControlManager()
 
 ConsoleType Gameboy::GetConsoleType()
 {
-	return ConsoleType::Gameboy;
+	return _model == GameboyModel::GameboyColor ? ConsoleType::GameboyColor : ConsoleType::Gameboy;
 }
 
 double Gameboy::GetFrameDelay()

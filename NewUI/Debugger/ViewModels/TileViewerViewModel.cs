@@ -1,10 +1,12 @@
 ﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
@@ -14,6 +16,9 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class TileViewerViewModel : ViewModelBase
 	{
+		public CpuType CpuType { get; }
+		public ConsoleType ConsoleType { get; }
+
 		[Reactive] public SnesMemoryType MemoryType { get; set; }
 		[Reactive] public TileFormat TileFormat { get; set; }
 		[Reactive] public TileLayout TileLayout { get; set; }
@@ -29,9 +34,18 @@ namespace Mesen.Debugger.ViewModels
 		[ObservableAsProperty] public int AddressIncrement { get; }
 		[ObservableAsProperty] public int MaximumAddress { get; }
 
-		public TileViewerViewModel()
+		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
+		[Reactive] public Enum[] AvailableFormats { get; set; } = Array.Empty<Enum>();
+		[Reactive] public bool ShowFormatDropdown { get; set; }
+
+		//For designer
+		public TileViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes) { }
+
+		public TileViewerViewModel(CpuType cpuType, ConsoleType consoleType)
 		{
-			MemoryType = SnesMemoryType.VideoRam;
+			CpuType = cpuType;
+			ConsoleType = consoleType;
+
 			TileFormat = TileFormat.Bpp2;
 			TileLayout = TileLayout.Normal;
 			TileBackground = TileBackground.Default;
@@ -41,8 +55,31 @@ namespace Mesen.Debugger.ViewModels
 			ColumnCount = 32;
 			RowCount = 64;
 
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			switch(CpuType) {
+				case CpuType.Cpu: 
+					MemoryType = SnesMemoryType.VideoRam;
+					AvailableFormats = new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor };
+					break;
+
+				case CpuType.Nes:
+					MemoryType = AvailableMemoryTypes.Contains(SnesMemoryType.NesChrRom) ? SnesMemoryType.NesChrRom : SnesMemoryType.NesChrRam;
+					AvailableFormats = new Enum[] { TileFormat.NesBpp2 };
+					break;
+
+				case CpuType.Gameboy:
+					MemoryType = SnesMemoryType.GbVideoRam;
+					AvailableFormats = new Enum[] { TileFormat.Bpp2 };
+					break;
+			}
+			ShowFormatDropdown = AvailableFormats.Length > 1;
+
 			this.WhenAnyValue(x => x.TileFormat).Select(x => {
-				if(x == TileFormat.Bpp2) {
+				if(x == TileFormat.Bpp2 || x == TileFormat.NesBpp2) {
 					return PaletteSelectionMode.FourColors;
 				} else if(x == TileFormat.Bpp4) {
 					return PaletteSelectionMode.SixteenColors;
@@ -59,13 +96,14 @@ namespace Mesen.Debugger.ViewModels
 					case TileFormat.DirectColor: bpp = 8; break;
 					case TileFormat.Mode7: bpp = 16; break;
 					case TileFormat.Mode7DirectColor: bpp = 16; break;
+					case TileFormat.NesBpp2: bpp = 2; break;
 					default: bpp = 8; break;
 				}
 				return o.column * o.row * 8 * 8 * bpp / 8;
 			}).ToPropertyEx(this, x => x.AddressIncrement);
 
 			this.WhenAnyValue(x => x.MemoryType).Select(memType => {
-				return DebugApi.GetMemorySize(memType);
+				return DebugApi.GetMemorySize(memType) - 1;
 			}).ToPropertyEx(this, x => x.MaximumAddress);
 		}
 
@@ -83,26 +121,61 @@ namespace Mesen.Debugger.ViewModels
 			return (0xFF000000 | (r << 16) | (g << 8) | b);
 		}
 
-		private UInt32[] _nesPalette = new UInt32[] { 0xFF666666, 0xFF002A88, 0xFF1412A7, 0xFF3B00A4, 0xFF5C007E, 0xFF6E0040, 0xFF6C0600, 0xFF561D00, 0xFF333500, 0xFF0B4800, 0xFF005200, 0xFF004F08, 0xFF00404D, 0xFF000000, 0xFF000000, 0xFF000000, 0xFFADADAD, 0xFF155FD9, 0xFF4240FF, 0xFF7527FE, 0xFFA01ACC, 0xFFB71E7B, 0xFFB53120, 0xFF994E00, 0xFF6B6D00, 0xFF388700, 0xFF0C9300, 0xFF008F32, 0xFF007C8D, 0xFF000000, 0xFF000000, 0xFF000000, 0xFFFFFEFF, 0xFF64B0FF, 0xFF9290FF, 0xFFC676FF, 0xFFF36AFF, 0xFFFE6ECC, 0xFFFE8170, 0xFFEA9E22, 0xFFBCBE00, 0xFF88D800, 0xFF5CE430, 0xFF45E082, 0xFF48CDDE, 0xFF4F4F4F, 0xFF000000, 0xFF000000, 0xFFFFFEFF, 0xFFC0DFFF, 0xFFD3D2FF, 0xFFE8C8FF, 0xFFFBC2FF, 0xFFFEC4EA, 0xFFFECCC5, 0xFFF7D8A5, 0xFFE4E594, 0xFFCFEF96, 0xFFBDF4AB, 0xFFB3F3CC, 0xFFB5EBF2, 0xFFB8B8B8, 0xFF000000, 0xFF000000 };
-
 		public void UpdatePaletteColors()
 		{
-			bool isSnes = DebugApi.GetMemorySize(SnesMemoryType.CGRam) > 0;
-
-			byte[] cgram = DebugApi.GetMemoryState(isSnes ? SnesMemoryType.CGRam : SnesMemoryType.NesPaletteRam);
-
-			UInt32[] colors = new UInt32[256];
-			if(isSnes) {
-				for(int i = 0; i < 256; i++) {
-					colors[i] = ToArgb(cgram[i * 2] | cgram[i * 2 + 1] << 8);
+			switch(CpuType) {
+				case CpuType.Cpu: {
+					byte[] cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
+					UInt32[] colors = new UInt32[256];
+					for(int i = 0; i < 256; i++) {
+						colors[i] = ToArgb(cgram[i * 2] | cgram[i * 2 + 1] << 8);
+					}
+					PaletteColors = colors;
+					break;
 				}
-			} else {
-				for(int i = 0; i < 32; i++) {
-					colors[i] = _nesPalette[cgram[i]];
+
+				case CpuType.Nes: {
+					byte[] cgram = DebugApi.GetMemoryState(SnesMemoryType.NesPaletteRam);
+					UInt32[] colors = new UInt32[32];
+					for(int i = 0; i < 32; i++) {
+						colors[i] = ConfigManager.Config.Nes.UserPalette[cgram[i]];
+					}
+					PaletteColors = colors;
+					break;
+				}
+
+				case CpuType.Gameboy: {
+					GbPpuState ppu = DebugApi.GetPpuState<GbPpuState>(CpuType.Gameboy);
+					if(ConsoleType == ConsoleType.GameboyColor) {
+						UInt32[] colors = new UInt32[64];
+						for(int i = 0; i < 32; i++) {
+							colors[i] = ToArgb(ppu.CgbBgPalettes[i]);
+						}
+
+						for(int i = 0; i < 32; i++) {
+							colors[i+32] = ToArgb(ppu.CgbObjPalettes[i]);
+						}
+						PaletteColors = colors;
+					} else {
+						UInt32[] colors = new UInt32[16];
+						GameboyConfig cfg = ConfigManager.Config.Gameboy;
+
+						for(int i = 0; i < 4; i++) {
+							colors[i] = cfg.BgColors[(ppu.BgPalette >> (i*2)) & 0x03];
+							colors[i+4] = cfg.Obj0Colors[(ppu.ObjPalette0 >> (i * 2)) & 0x03];
+							colors[i+8] = cfg.Obj1Colors[(ppu.ObjPalette1 >> (i * 2)) & 0x03];
+						}
+
+						colors[12] = 0xFFFFFFFF;
+						colors[13] = 0xFFB0B0B0;
+						colors[14] = 0xFF606060;
+						colors[15] = 0xFF000000;
+						PaletteColors = colors;
+					}
+
+					break;
 				}
 			}
-
-			PaletteColors = colors;
 		}
 	}
 }

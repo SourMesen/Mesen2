@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "Shared/BaseState.h"
 
 enum class  WindowMaskLogic
 {
@@ -120,7 +121,7 @@ struct WindowConfig
 	}
 };
 
-struct PpuState
+struct PpuState : public BaseState
 {
 	uint16_t Cycle;
 	uint16_t Scanline;

@@ -1325,11 +1325,24 @@ x == [$150] || y == [10]
 			<Value ID="GameboyMemory">GB - CPU Memory</Value>
 			<Value ID="GbPrgRom">GB - PRG ROM</Value>
 			<Value ID="GbWorkRam">GB - Work RAM</Value>
-			<Value ID="GbVideoRam">GB - Video RAM</Value>
-			<Value ID="GbSpriteRam">GB - Sprite RAM</Value>
 			<Value ID="GbCartRam">GB - Cart RAM</Value>
 			<Value ID="GbHighRam">GB - High RAM</Value>
 			<Value ID="GbBootRom">GB - Boot ROM</Value>
+			<Value ID="GbVideoRam">GB - Video RAM</Value>
+			<Value ID="GbSpriteRam">GB - Sprite RAM</Value>
+
+			<Value ID="NesMemory">CPU Memory</Value>
+			<Value ID="NesPrgRom">PRG ROM</Value>
+			<Value ID="NesInternalRam">NES RAM (2kb)</Value>
+			<Value ID="NesWorkRam">Work RAM</Value>
+			<Value ID="NesSaveRam">Save RAM</Value>
+			<Value ID="NesNametableRam">Nametable RAM</Value>
+			<Value ID="NesSpriteRam">Sprite RAM</Value>
+			<Value ID="NesSecondarySpriteRam">Sprite RAM</Value>
+			<Value ID="NesChrRom">CHR ROM</Value>
+			<Value ID="NesChrRam">CHR RAM</Value>
+			<Value ID="NesPaletteRam">Palette RAM</Value>
+			
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="GameboyModel">

@@ -49,10 +49,12 @@
     <ClInclude Include="Debugger\TraceLogFileSaver.h" />
     <ClInclude Include="Gameboy\Carts\GbsCart.h" />
     <ClInclude Include="Gameboy\Debugger\GbTraceLogger.h" />
+    <ClInclude Include="Gameboy\Debugger\GbPpuTools.h" />
     <ClInclude Include="Gameboy\GbConstants.h" />
     <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
+    <ClInclude Include="NES\Debugger\NesPpuTools.h" />
     <ClInclude Include="NES\Debugger\NesAssembler.h" />
     <ClInclude Include="NES\Debugger\NesEventManager.h" />
     <ClInclude Include="NES\Debugger\NesTraceLogger.h" />
@@ -173,6 +175,7 @@
     <ClInclude Include="Shared\Video\stdafx.h" />
     <ClInclude Include="Shared\Video\SystemHud.h" />
     <ClInclude Include="SNES\AluMulDiv.h" />
+    <ClInclude Include="SNES\Debugger\SnesPpuTools.h" />
     <ClInclude Include="SNES\Debugger\SnesAssembler.h" />
     <ClInclude Include="SNES\BaseCartridge.h" />
     <ClInclude Include="Shared\BaseControlDevice.h" />
@@ -383,9 +386,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
+    <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseNesPpu.cpp" />
+    <ClCompile Include="NES\Debugger\NesPpuTools.cpp" />
     <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
     <ClCompile Include="NES\Debugger\NesEventManager.cpp" />
     <ClCompile Include="NES\Debugger\NesTraceLogger.cpp" />
@@ -426,6 +431,7 @@
     <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
+    <ClCompile Include="SNES\Debugger\SnesPpuTools.cpp" />
     <ClCompile Include="SNES\Debugger\SnesAssembler.cpp" />
     <ClCompile Include="SNES\BaseCartridge.cpp" />
     <ClCompile Include="Shared\BaseControlDevice.cpp" />

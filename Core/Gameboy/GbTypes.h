@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "SnesMemoryType.h"
-#include "Shared/BaseState.h"
+	#include "Shared/BaseState.h"
 
 struct GbCpuState : BaseState
 {
@@ -150,7 +150,7 @@ struct GbPpuFetcher
 	uint8_t HighByte = 0;
 };
 
-struct GbPpuState
+struct GbPpuState : public BaseState
 {
 	uint8_t Scanline;
 	uint16_t Cycle;

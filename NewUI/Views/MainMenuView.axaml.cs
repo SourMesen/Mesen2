@@ -53,8 +53,9 @@ namespace Mesen.Views
 
 		private void OnTileViewerClick(object sender, RoutedEventArgs e)
 		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
 			new TileViewerWindow {
-				DataContext = new TileViewerViewModel(),
+				DataContext = new TileViewerViewModel(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType),
 			}.Show();
 		}
 

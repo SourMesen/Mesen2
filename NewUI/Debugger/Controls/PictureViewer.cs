@@ -3,10 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using Mesen.Debugger;
 using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,9 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> GridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeX), 8);
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowGrid), false);
+
+		private Stopwatch _stopWatch = Stopwatch.StartNew();
+		private DispatcherTimer _timer = new DispatcherTimer();
 
 		public Bitmap Source
 		{
@@ -59,6 +64,25 @@ namespace Mesen.Debugger.Controls
 			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty);
 		}
 
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			base.OnAttachedToVisualTree(e);
+			_timer.Interval = TimeSpan.FromMilliseconds(50);
+			_timer.Tick += timer_Tick;
+			_timer.Start();
+		}
+
+		private void timer_Tick(object? sender, EventArgs e)
+		{
+			InvalidateVisual();
+		}
+
+		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			base.OnDetachedFromVisualTree(e);
+			_timer.Stop();
+		}
+
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
@@ -71,8 +95,8 @@ namespace Mesen.Debugger.Controls
 
 		private void UpdateSize()
 		{
-			Width = Source.PixelSize.Width * Zoom;
-			Height = Source.PixelSize.Height * Zoom;
+			MinWidth = Source.PixelSize.Width * Zoom;
+			MinHeight = Source.PixelSize.Height * Zoom;
 		}
 
 		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
@@ -101,6 +125,7 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerPressed(e);
 			Point p = e.GetCurrentPoint(this).Position;
+			p = new Point(Math.Min(p.X, MinWidth - 1), Math.Min(p.Y, MinHeight - 1));
 			_selectedTile = new PixelPoint((int)(p.X / GridSizeX / Zoom), (int)(p.Y / GridSizeY / Zoom));
 			InvalidateVisual();
 		}
@@ -113,6 +138,8 @@ namespace Mesen.Debugger.Controls
 
 			int width = Source.PixelSize.Width * Zoom;
 			int height = Source.PixelSize.Height * Zoom;
+
+			context.FillRectangle(new SolidColorBrush(0xFF333333), new Rect(Bounds.Size));
 
 			context.DrawImage(
 				Source,
@@ -140,9 +167,11 @@ namespace Mesen.Debugger.Controls
 					gridSizeX + 1,
 					gridSizeY + 1
 				);
+
 				
-				context.DrawRectangle(new Pen(Brushes.White), rect);
-				context.DrawRectangle(new Pen(Brushes.Black), rect.Inflate(1));
+				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
+				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
+				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), rect.Inflate(0.5));
 			}
 
 			//TODO delete?

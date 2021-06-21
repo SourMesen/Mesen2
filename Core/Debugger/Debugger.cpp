@@ -71,7 +71,6 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, this));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
-	_ppuTools.reset(new PpuTools(this, _emu));
 	_scriptManager.reset(new ScriptManager(this));
 	_traceLogSaver.reset(new TraceLogFileSaver());
 
@@ -212,17 +211,12 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memo
 template<CpuType type>
 void Debugger::ProcessPpuCycle()
 {
-	int16_t scanline;
-	uint16_t cycle;
-
 	switch(type) {
-		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuCycle(scanline, cycle); break;
-		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuCycle(scanline, cycle); break;
-		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuCycle(scanline, cycle); break;
+		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuCycle(); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuCycle(); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuCycle(); break;
 		default: throw std::runtime_error("Invalid cpu type");
 	}
-
-	_ppuTools->UpdateViewers(scanline, cycle, type);
 }
 
 void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
@@ -421,6 +415,30 @@ BaseState& Debugger::GetStateRef(CpuType cpuType)
 	return _debuggers[(int)cpuType].Debugger->GetState();
 }
 
+void Debugger::GetPpuState(BaseState& state, CpuType cpuType)
+{
+	switch(cpuType) {
+		case CpuType::Cpu:
+		case CpuType::Spc:
+		case CpuType::NecDsp:
+		case CpuType::Sa1:
+		case CpuType::Gsu:
+		case CpuType::Cx4: {
+			_debuggers[(int)CpuType::Cpu].Debugger->GetPpuState(state);
+			break;
+		}
+
+		case CpuType::Gameboy: {
+			_debuggers[(int)CpuType::Gameboy].Debugger->GetPpuState(state);
+			break;
+		}
+
+		case CpuType::Nes: {
+			_debuggers[(int)CpuType::Nes].Debugger->GetPpuState(state);
+			break;
+		}
+	}
+}
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 {
 	return _console->GetAbsoluteAddress(relAddress);
@@ -641,9 +659,12 @@ shared_ptr<Disassembler> Debugger::GetDisassembler()
 	return _disassembler;
 }
 
-shared_ptr<PpuTools> Debugger::GetPpuTools()
+PpuTools* Debugger::GetPpuTools(CpuType cpuType)
 {
-	return _ppuTools;
+	if(_debuggers[(int)cpuType].Debugger) {
+		return _debuggers[(int)cpuType].Debugger->GetPpuTools();
+	}
+	return nullptr;
 }
 
 shared_ptr<IEventManager> Debugger::GetEventManager(CpuType cpuType)

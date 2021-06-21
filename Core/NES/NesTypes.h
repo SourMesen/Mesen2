@@ -137,7 +137,7 @@ struct NesSpriteInfo
 	uint8_t PaletteOffset;
 };
 
-struct NesPpuState
+struct NesPpuState : public BaseState
 {
 	PPUStatusFlags StatusFlags;
 	int32_t Scanline;

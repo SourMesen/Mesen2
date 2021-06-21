@@ -3,8 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +28,9 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<bool> ShowIndexesProperty = AvaloniaProperty.Register<PaletteSelector, bool>(nameof(ShowIndexes));
 
 		public static readonly RoutedEvent<ColorClickEventArgs> ColorClickEvent = RoutedEvent.Register<PaletteSelector, ColorClickEventArgs>(nameof(ColorClick), RoutingStrategies.Direct);
+
+		private Stopwatch _stopWatch = Stopwatch.StartNew();
+		private DispatcherTimer _timer = new DispatcherTimer();
 
 		public event EventHandler<ColorClickEventArgs> ColorClick
 		{
@@ -87,6 +92,25 @@ namespace Mesen.Debugger.Controls
 
 			Focusable = true;
 			ClipToBounds = true;
+		}
+
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			base.OnAttachedToVisualTree(e);
+			_timer.Interval = TimeSpan.FromMilliseconds(50);
+			_timer.Tick += timer_Tick;
+			_timer.Start();
+		}
+
+		private void timer_Tick(object? sender, EventArgs e)
+		{
+			InvalidateVisual();
+		}
+
+		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			base.OnDetachedFromVisualTree(e);
+			_timer.Stop();
 		}
 
 		protected override Size MeasureOverride(Size availableSize)
@@ -178,19 +202,21 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			Pen pen = new Pen(Colors.LightGray.ToUint32(), 2, DashStyle.Dash);
+			DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
+			Rect selectionRect = Rect.Empty;
 			if(SelectionMode == PaletteSelectionMode.SingleColor) {
 				int selectedRow = SelectedPalette / columnCount;
-				context.DrawRectangle(pen, new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height));
+				selectionRect = new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height);
 			} else if(SelectionMode == PaletteSelectionMode.FourColors) {
 				int selectedRow = (SelectedPalette * 4) / columnCount;
-				context.DrawRectangle(pen, new Rect((SelectedPalette % (columnCount / 4)) * width * 4, selectedRow * height, width * 4, height));
+				selectionRect = new Rect((SelectedPalette % (columnCount / 4)) * width * 4, selectedRow * height, width * 4, height);
 			} else if(SelectionMode == PaletteSelectionMode.SixteenColors) {
 				int selectedRow = (SelectedPalette * 16) / columnCount;
-				if(columnCount >= 16) {
-					context.DrawRectangle(pen, new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height));
-				}
+				selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
 			}
+			
+			context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
+			context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)

@@ -8,6 +8,7 @@ class IAssembler;
 class IEventManager;
 class CodeDataLogger;
 class ITraceLogger;
+class PpuTools;
 struct BaseState;
 enum class EventType;
 enum class MemoryOperationType;
@@ -31,6 +32,8 @@ public:
 	virtual shared_ptr<IEventManager> GetEventManager() = 0;
 	virtual shared_ptr<CodeDataLogger> GetCodeDataLogger() = 0;
 	virtual ITraceLogger* GetTraceLogger() = 0;
+	virtual PpuTools* GetPpuTools() { return nullptr; }
 
 	virtual BaseState& GetState() = 0;
+	virtual void GetPpuState(BaseState& state) {};
 };

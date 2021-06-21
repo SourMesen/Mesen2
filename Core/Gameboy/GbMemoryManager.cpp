@@ -199,12 +199,7 @@ void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 uint8_t GbMemoryManager::DebugRead(uint16_t addr)
 {
 	if(_state.IsReadRegister[addr >> 8]) {
-		if(addr >= 0xFE00) {
-			return PeekRegister(addr);
-		} else {
-			//Avoid potential read side effects
-			return 0xFF;
-		}
+		return PeekRegister(addr);
 	} else if(_reads[addr >> 8]) {
 		return _reads[addr >> 8][(uint8_t)addr];
 	}
@@ -238,7 +233,8 @@ uint8_t GbMemoryManager::PeekRegister(uint16_t addr)
 	} else if(addr >= 0xFF10 && addr <= 0xFF3F) {
 		return _apu->Peek(addr);
 	} else {
-		return ReadRegister(addr);
+		//Avoid side effects
+		return 0xFF;
 	}
 }
 
