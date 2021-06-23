@@ -194,6 +194,9 @@
     <Compile Update="Debugger\Views\SnesEventViewerConfigView.axaml.cs">
       <DependentUpon>SnesEventViewerConfigView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\NesPpuView.axaml.cs">
+      <DependentUpon>NesPpuView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\WatchListView.axaml.cs">
       <DependentUpon>WatchListView.axaml</DependentUpon>
     </Compile>

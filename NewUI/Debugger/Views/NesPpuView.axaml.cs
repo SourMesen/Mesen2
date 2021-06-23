@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Mesen.Debugger.Views
 {
-	public class NesPpuView : UserControl
+	public class SnesPpuView : UserControl
 	{
-		public NesPpuView()
+		public SnesPpuView()
 		{
 			InitializeComponent();
 		}

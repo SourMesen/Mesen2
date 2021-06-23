@@ -63,7 +63,7 @@ namespace Mesen.Debugger.Windows
 
 		private void UpdateDebugger()
 		{
-			_model.UpdateCpuState();
+			_model.UpdateCpuPpuState();
 			_model.UpdateDisassembly();
 			_model.WatchList.UpdateWatch();
 			_model.CallStack.UpdateCallStack();

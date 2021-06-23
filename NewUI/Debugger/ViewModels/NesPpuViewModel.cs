@@ -6,20 +6,18 @@ using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class SnesPpuViewModel : ViewModelBase
+	public class NesPpuViewModel : ViewModelBase
 	{
 		[ObservableAsProperty] public string? Cycle { get; }
 		[ObservableAsProperty] public string? Scanline { get; }
-		[ObservableAsProperty] public string? HClock { get; }
 		
-		[Reactive] public PpuState State { get; set; }
+		[Reactive] public NesPpuState State { get; set; }
 
-		public SnesPpuViewModel()
+		public NesPpuViewModel()
 		{
-			this.State = new PpuState();
+			this.State = new NesPpuState();
 			this.WhenAnyValue(x => x.State).Select(st => st.Cycle.ToString()).ToPropertyEx(this, x => x.Cycle);
 			this.WhenAnyValue(x => x.State).Select(st => st.Scanline.ToString()).ToPropertyEx(this, x => x.Scanline);
-			this.WhenAnyValue(x => x.State).Select(st => st.HClock.ToString()).ToPropertyEx(this, x => x.HClock);
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace Mesen.Debugger.ViewModels
 				case ConsoleType.Nes:
 					CpuType = CpuType.Nes;
 					DockFactory.CpuStatusTool.StatusViewModel = new NesCpuViewModel();
-					//DockFactory.PpuStatusTool.StatusViewModel = new NesPpuViewModel();
+					DockFactory.PpuStatusTool.StatusViewModel = new NesPpuViewModel();
 					ConfigApi.SetDebuggerFlag(DebuggerFlags.NesDebuggerEnabled, true);
 					break;
 
@@ -84,26 +84,34 @@ namespace Mesen.Debugger.ViewModels
 			Disassembly.ScrollPosition = (Disassembly.StyleProvider?.ActiveAddress ?? 0);
 		}
 
-		public void UpdateCpuState()
+		public void UpdateCpuPpuState()
 		{
 			switch(CpuType) {
 				case CpuType.Cpu:
-					if(DockFactory.CpuStatusTool.StatusViewModel is SnesCpuViewModel snesModel) {
+					if(DockFactory.CpuStatusTool.StatusViewModel is SnesCpuViewModel snesCpuModel) {
 						CpuState state = DebugApi.GetState<CpuState>(CpuType);
-						snesModel.UpdateState(state);
+						snesCpuModel.UpdateState(state);
 						if(Disassembly.StyleProvider != null) {
 							Disassembly.StyleProvider.ActiveAddress = (state.K << 16) | state.PC;
 						}
 					}
+
+					if(DockFactory.PpuStatusTool.StatusViewModel is SnesPpuViewModel snesPpuModel) {
+						snesPpuModel.State = DebugApi.GetPpuState<PpuState>(CpuType);
+					}
 					break;
 
 				case CpuType.Nes:
-					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel nesModel) {
+					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel nesCpuModel) {
 						NesCpuState state = DebugApi.GetState<NesCpuState>(CpuType);
-						nesModel.UpdateState(state);
+						nesCpuModel.UpdateState(state);
 						if(Disassembly.StyleProvider != null) {
 							Disassembly.StyleProvider.ActiveAddress = state.PC;
 						}
+					}
+
+					if(DockFactory.PpuStatusTool.StatusViewModel is NesPpuViewModel nesPpuModel) {
+						nesPpuModel.State = DebugApi.GetPpuState<NesPpuState>(CpuType);
 					}
 					break;
 			}

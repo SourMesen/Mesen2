@@ -15,7 +15,7 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
 	x:Class="Mesen.Debugger.Windows.ProfilerWindow"
-	Icon="/Assets/Script.png"
+	Icon="/Assets/Speed.png"
 	Width="700" Height="500"
 	x:DataType="vm:ProfilerWindowViewModel"
 	Title="{l:Translate wndTitle}"
