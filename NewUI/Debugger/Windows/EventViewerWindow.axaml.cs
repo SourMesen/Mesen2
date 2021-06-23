@@ -88,7 +88,7 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is EventViewerViewModel model) {
 				_model = model;
 			} else {
-				throw new Exception("Unexception model");
+				throw new Exception("Unexpected model");
 			}
 		}
 

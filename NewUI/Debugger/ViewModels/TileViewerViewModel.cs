@@ -16,8 +16,8 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class TileViewerViewModel : ViewModelBase
 	{
-		public CpuType CpuType { get; }
-		public ConsoleType ConsoleType { get; }
+		private CpuType _cpuType { get; }
+		private ConsoleType _consoleType { get; }
 
 		[Reactive] public SnesMemoryType MemoryType { get; set; }
 		[Reactive] public TileFormat TileFormat { get; set; }
@@ -43,8 +43,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public TileViewerViewModel(CpuType cpuType, ConsoleType consoleType)
 		{
-			CpuType = cpuType;
-			ConsoleType = consoleType;
+			_cpuType = cpuType;
+			_consoleType = consoleType;
 
 			TileFormat = TileFormat.Bpp2;
 			TileLayout = TileLayout.Normal;
@@ -60,7 +60,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
-			switch(CpuType) {
+			switch(_cpuType) {
 				case CpuType.Cpu: 
 					MemoryType = SnesMemoryType.VideoRam;
 					AvailableFormats = new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor };
@@ -107,75 +107,9 @@ namespace Mesen.Debugger.ViewModels
 			}).ToPropertyEx(this, x => x.MaximumAddress);
 		}
 
-		private uint To8Bit(int color)
-		{
-			return (uint)((color << 3) + (color >> 2));
-		}
-
-		public uint ToArgb(int rgb555)
-		{
-			uint b = To8Bit(rgb555 >> 10);
-			uint g = To8Bit((rgb555 >> 5) & 0x1F);
-			uint r = To8Bit(rgb555 & 0x1F);
-
-			return (0xFF000000 | (r << 16) | (g << 8) | b);
-		}
-
 		public void UpdatePaletteColors()
 		{
-			switch(CpuType) {
-				case CpuType.Cpu: {
-					byte[] cgram = DebugApi.GetMemoryState(SnesMemoryType.CGRam);
-					UInt32[] colors = new UInt32[256];
-					for(int i = 0; i < 256; i++) {
-						colors[i] = ToArgb(cgram[i * 2] | cgram[i * 2 + 1] << 8);
-					}
-					PaletteColors = colors;
-					break;
-				}
-
-				case CpuType.Nes: {
-					byte[] cgram = DebugApi.GetMemoryState(SnesMemoryType.NesPaletteRam);
-					UInt32[] colors = new UInt32[32];
-					for(int i = 0; i < 32; i++) {
-						colors[i] = ConfigManager.Config.Nes.UserPalette[cgram[i]];
-					}
-					PaletteColors = colors;
-					break;
-				}
-
-				case CpuType.Gameboy: {
-					GbPpuState ppu = DebugApi.GetPpuState<GbPpuState>(CpuType.Gameboy);
-					if(ConsoleType == ConsoleType.GameboyColor) {
-						UInt32[] colors = new UInt32[64];
-						for(int i = 0; i < 32; i++) {
-							colors[i] = ToArgb(ppu.CgbBgPalettes[i]);
-						}
-
-						for(int i = 0; i < 32; i++) {
-							colors[i+32] = ToArgb(ppu.CgbObjPalettes[i]);
-						}
-						PaletteColors = colors;
-					} else {
-						UInt32[] colors = new UInt32[16];
-						GameboyConfig cfg = ConfigManager.Config.Gameboy;
-
-						for(int i = 0; i < 4; i++) {
-							colors[i] = cfg.BgColors[(ppu.BgPalette >> (i*2)) & 0x03];
-							colors[i+4] = cfg.Obj0Colors[(ppu.ObjPalette0 >> (i * 2)) & 0x03];
-							colors[i+8] = cfg.Obj1Colors[(ppu.ObjPalette1 >> (i * 2)) & 0x03];
-						}
-
-						colors[12] = 0xFFFFFFFF;
-						colors[13] = 0xFFB0B0B0;
-						colors[14] = 0xFF606060;
-						colors[15] = 0xFF000000;
-						PaletteColors = colors;
-					}
-
-					break;
-				}
-			}
+			PaletteColors = PaletteHelper.GetConvertedPalette(_cpuType, _consoleType);
 		}
 	}
 }

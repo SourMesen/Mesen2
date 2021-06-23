@@ -94,7 +94,10 @@ extern "C"
 	DllExport void __stdcall SetCdlData(CpuType cpuType, uint8_t* cdlData, uint32_t length) { GetDebugger()->SetCdlData(cpuType, cdlData, length); }
 	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { GetDebugger()->MarkBytesAs(cpuType, start, end, flags); }
 	
-	DllExport void __stdcall GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState& state, uint8_t *vram, uint32_t* palette, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetTilemap(options, state, vram, palette, buffer); }
+	DllExport FrameInfo __stdcall GetTilemapSize(CpuType cpuType, GetTilemapOptions options, BaseState& state) { return GetDebugger()->GetPpuTools(cpuType)->GetTilemapSize(options, state); }
+	DllExport FrameInfo __stdcall GetSpritePreviewSize(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state) { return GetDebugger()->GetPpuTools(cpuType)->GetSpritePreviewSize(options, state); }
+
+	DllExport void __stdcall GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState& state, uint8_t *vram, uint32_t* palette, uint32_t *outputBuffer) { GetDebugger()->GetPpuTools(cpuType)->GetTilemap(options, state, vram, palette, outputBuffer); }
 	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetTileView(options, source, srcSize, colors, buffer); }
 	DllExport void __stdcall GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t *oamRam, uint32_t* palette, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetSpritePreview(options, state, vram, oamRam, palette, buffer); }
 

@@ -55,6 +55,9 @@ class NesMemoryManager : public ISerializable
 
 		uint8_t* GetInternalRAM();
 
+		uint8_t DebugReadVram(uint16_t addr);
+		void DebugWriteVram(uint16_t addr, uint8_t value);
+
 		uint8_t Read(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 		void Write(uint16_t addr, uint8_t value, MemoryOperationType operationType);
 

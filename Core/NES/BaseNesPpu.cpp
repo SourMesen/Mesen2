@@ -7,6 +7,7 @@ void BaseNesPpu::GetState(NesPpuState& state)
 {
 	//TODO
 	//state.ControlFlags = _flags;
+	state.ControlReg = _controlReg;
 	state.StatusFlags = _statusFlags;
 	//state.State = _state;
 	state.Cycle = _cycle;
@@ -55,4 +56,34 @@ uint16_t BaseNesPpu::GetCurrentBgColor()
 		color = _paletteRAM[_videoRamAddr & 0x1F];
 	}
 	return (color & _paletteRamMask) | _intensifyColorBits;
+}
+
+uint8_t BaseNesPpu::ReadPaletteRam(uint16_t addr)
+{
+	addr &= 0x1F;
+	if(addr == 0x10 || addr == 0x14 || addr == 0x18 || addr == 0x1C) {
+		addr &= ~0x10;
+	}
+	return _paletteRAM[addr];
+}
+
+void BaseNesPpu::WritePaletteRam(uint16_t addr, uint8_t value)
+{
+	addr &= 0x1F;
+	value &= 0x3F;
+	if(addr == 0x00 || addr == 0x10) {
+		_paletteRAM[0x00] = value;
+		_paletteRAM[0x10] = value;
+	} else if(addr == 0x04 || addr == 0x14) {
+		_paletteRAM[0x04] = value;
+		_paletteRAM[0x14] = value;
+	} else if(addr == 0x08 || addr == 0x18) {
+		_paletteRAM[0x08] = value;
+		_paletteRAM[0x18] = value;
+	} else if(addr == 0x0C || addr == 0x1C) {
+		_paletteRAM[0x0C] = value;
+		_paletteRAM[0x1C] = value;
+	} else {
+		_paletteRAM[addr] = value;
+	}
 }

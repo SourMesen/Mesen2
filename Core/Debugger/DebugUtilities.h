@@ -79,9 +79,11 @@ public:
 			case SnesMemoryType::NesMemory:
 			case SnesMemoryType::NesNametableRam:
 			case SnesMemoryType::NesPaletteRam:
+			case SnesMemoryType::NesPpuMemory:
 			case SnesMemoryType::NesPrgRom:
 			case SnesMemoryType::NesSaveRam:
 			case SnesMemoryType::NesSpriteRam:
+			case SnesMemoryType::NesSecondarySpriteRam:
 			case SnesMemoryType::NesWorkRam:
 				return CpuType::Nes;
 
@@ -94,7 +96,8 @@ public:
 
 	static constexpr SnesMemoryType GetLastCpuMemoryType()
 	{
-		return SnesMemoryType::NesMemory;
+		//TODO refactor to "IsRelativeMemory"?
+		return SnesMemoryType::NesPpuMemory;
 	}
 
 	static constexpr bool IsPpuMemory(SnesMemoryType memType)
@@ -111,6 +114,8 @@ public:
 			case SnesMemoryType::NesSpriteRam:
 			case SnesMemoryType::NesPaletteRam:
 			case SnesMemoryType::NesNametableRam:
+			case SnesMemoryType::NesSecondarySpriteRam:
+			case SnesMemoryType::NesPpuMemory:
 				return true;
 
 			default: 

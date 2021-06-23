@@ -4,7 +4,7 @@
 #include "DebugTypes.h"
 
 class MemoryManager;
-class NesMemoryManager;
+class NesConsole;
 class BaseCartridge;
 class Ppu;
 class Spc;
@@ -22,7 +22,7 @@ private:
 	Spc* _spc = nullptr;
 	Gameboy* _gameboy = nullptr;
 	MemoryManager* _memoryManager = nullptr;
-	NesMemoryManager* _nesMemoryManager = nullptr;
+	NesConsole* _nesConsole = nullptr;
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;
 	Disassembler* _disassembler = nullptr;

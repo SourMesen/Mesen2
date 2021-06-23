@@ -148,6 +148,9 @@ public:
 
 	uint16_t GetCurrentBgColor();
 
+	uint8_t ReadPaletteRam(uint16_t addr);
+	void WritePaletteRam(uint16_t addr, uint8_t value);
+
 	virtual PpuModel GetPpuModel() = 0;
 	virtual uint32_t GetPixelBrightness(uint8_t x, uint8_t y) = 0;
 

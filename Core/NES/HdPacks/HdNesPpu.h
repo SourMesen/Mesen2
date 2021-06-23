@@ -87,12 +87,12 @@ public:
 
 			tileInfo.Grayscale = _paletteRamMask == 0x30;
 			tileInfo.EmphasisBits = _intensifyColorBits >> 6;
-			tileInfo.Tile.PpuBackgroundColor = ReadPaletteRAM(0);
+			tileInfo.Tile.PpuBackgroundColor = ReadPaletteRam(0);
 			tileInfo.Tile.BgColorIndex = backgroundColor;
 			if(backgroundColor == 0) {
 				tileInfo.Tile.BgColor = tileInfo.Tile.PpuBackgroundColor;
 			} else {
-				tileInfo.Tile.BgColor = ReadPaletteRAM(tilePalette + backgroundColor);
+				tileInfo.Tile.BgColor = ReadPaletteRam(tilePalette + backgroundColor);
 			}
 
 			tileInfo.XScroll = _xScroll;
@@ -133,9 +133,9 @@ public:
 						}
 
 						if(tileInfo.Sprite[j].SpriteColorIndex == 0) {
-							tileInfo.Sprite[j].SpriteColor = ReadPaletteRAM(0);
+							tileInfo.Sprite[j].SpriteColor = ReadPaletteRam(0);
 						} else {
-							tileInfo.Sprite[j].SpriteColor = ReadPaletteRAM(sprite.PaletteOffset + tileInfo.Sprite[j].SpriteColorIndex);
+							tileInfo.Sprite[j].SpriteColor = ReadPaletteRam(sprite.PaletteOffset + tileInfo.Sprite[j].SpriteColorIndex);
 						}
 
 						tileInfo.Sprite[j].PpuBackgroundColor = tileInfo.Tile.PpuBackgroundColor;
@@ -169,7 +169,7 @@ public:
 			}
 		} else {
 			//"If the current VRAM address points in the range $3F00-$3FFF during forced blanking, the color indicated by this palette location will be shown on screen instead of the backdrop color."
-			pixel = ReadPaletteRAM(_videoRamAddr) | _intensifyColorBits;
+			pixel = ReadPaletteRam(_videoRamAddr) | _intensifyColorBits;
 			_info->ScreenTiles[bufferOffset].Tile.TileIndex = HdPpuTileInfo::NoTile;
 			_info->ScreenTiles[bufferOffset].SpriteCount = 0;
 		}

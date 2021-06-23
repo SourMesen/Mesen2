@@ -236,6 +236,10 @@ void SoundManager::Pause()
 
 void SoundManager::Stop()
 {
+	if(!_playing) {
+		return;
+	}
+
 	if(_secondaryBuffer) {
 		_secondaryBuffer->Stop();
 		ClearSecondaryBuffer();

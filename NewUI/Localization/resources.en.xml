@@ -782,6 +782,15 @@
 			<Control ID="Hint">(not recommended)</Control>
 		</Form>
 
+		<Form ID="TilemapViewerWindow">
+			<Control ID="wndTitle">Tilemap Viewer</Control>
+			<Control ID="lblDisplayMode">Display mode: </Control>
+			<Control ID="chkShowGrid">Show tile grid</Control>
+			<Control ID="chkShowAltGrid">Show attribute grid</Control>
+			<Control ID="chkHighlightTileChanges">Highlight tile changes</Control>
+			<Control ID="chkHighlightAttributeChanges">Highlight attribute changes</Control>
+		</Form>
+
 		<Form ID="AssemblerWindow">
 			<Control ID="wndTitle">Assembler</Control>
 			<Control ID="lblStartAddress">Start address: $</Control>
@@ -1332,13 +1341,14 @@ x == [$150] || y == [10]
 			<Value ID="GbSpriteRam">GB - Sprite RAM</Value>
 
 			<Value ID="NesMemory">CPU Memory</Value>
+			<Value ID="NesPpuMemory">PPU Memory</Value>
 			<Value ID="NesPrgRom">PRG ROM</Value>
 			<Value ID="NesInternalRam">NES RAM (2kb)</Value>
 			<Value ID="NesWorkRam">Work RAM</Value>
 			<Value ID="NesSaveRam">Save RAM</Value>
 			<Value ID="NesNametableRam">Nametable RAM</Value>
-			<Value ID="NesSpriteRam">Sprite RAM</Value>
-			<Value ID="NesSecondarySpriteRam">Sprite RAM</Value>
+			<Value ID="NesSpriteRam">Sprite / OAM RAM</Value>
+			<Value ID="NesSecondarySpriteRam">Secondary OAM RAM</Value>
 			<Value ID="NesChrRom">CHR ROM</Value>
 			<Value ID="NesChrRam">CHR RAM</Value>
 			<Value ID="NesPaletteRam">Palette RAM</Value>
@@ -1370,6 +1380,11 @@ x == [$150] || y == [10]
 			<Value ID="Black">Black</Value>
 			<Value ID="White">White</Value>
 			<Value ID="Magenta">Magenta</Value>
+		</Enum>
+		<Enum ID="TilemapDisplayMode">
+			<Value ID="Default">Tilemap</Value>
+			<Value ID="Grayscale">Tilemap (grayscale)</Value>
+			<Value ID="AttributeView">Attribute view</Value>
 		</Enum>
 		<Enum ID="StatusFlagFormat">
 			<Value ID="Hexadecimal">Hexadecimal</Value>

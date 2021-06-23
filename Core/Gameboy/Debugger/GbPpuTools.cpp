@@ -17,7 +17,7 @@ void GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uin
 
 	uint16_t baseTile = state.BgTileSelect ? 0 : 0x1000;
 
-	std::fill(outBuffer, outBuffer + 1024 * 256, 0xFFFFFFFF);
+	std::fill(outBuffer, outBuffer + 256 * 256, 0xFFFFFFFF);
 
 	uint16_t vramMask = isCgb ? 0x3FFF : 0x1FFF;
 
@@ -45,7 +45,7 @@ void GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uin
 					uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
 					uint8_t color = GetTilePixelColor(vram, vramMask, 2, pixelStart, shift, 1);
 
-					outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[bgPalette + color]);
+					outBuffer[((row * 8) + y) * 256 + column * 8 + x] = palette[bgPalette + color];
 				}
 			}
 		}
@@ -116,4 +116,14 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 			}
 		}
 	}
+}
+
+FrameInfo GbPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& state)
+{
+	return { 256, 256 };
+}
+
+FrameInfo GbPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)
+{
+	return { 256, 256 };
 }

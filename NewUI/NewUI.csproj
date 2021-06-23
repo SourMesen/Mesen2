@@ -215,6 +215,9 @@
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\TilemapViewerWindow.axaml.cs">
+      <DependentUpon>TilemapViewerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\TraceLoggerWindow.axaml.cs">
       <DependentUpon>TraceLoggerWindow.axaml</DependentUpon>
     </Compile>

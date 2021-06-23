@@ -23,6 +23,10 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowGrid), false);
 
+		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeX), 8);
+		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
+		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
+
 		private Stopwatch _stopWatch = Stopwatch.StartNew();
 		private DispatcherTimer _timer = new DispatcherTimer();
 
@@ -54,6 +58,24 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(ShowGridProperty); }
 			set { SetValue(ShowGridProperty, value); }
+		}
+
+		public int AltGridSizeX
+		{
+			get { return GetValue(AltGridSizeXProperty); }
+			set { SetValue(AltGridSizeXProperty, value); }
+		}
+
+		public int AltGridSizeY
+		{
+			get { return GetValue(AltGridSizeYProperty); }
+			set { SetValue(AltGridSizeYProperty, value); }
+		}
+
+		public bool ShowAltGrid
+		{
+			get { return GetValue(ShowAltGridProperty); }
+			set { SetValue(ShowAltGridProperty, value); }
 		}
 
 		private Point? _mousePosition = null;
@@ -130,6 +152,28 @@ namespace Mesen.Debugger.Controls
 			InvalidateVisual();
 		}
 
+		private void DrawGrid(DrawingContext context, bool show, int gridX, int gridY, Color color)
+		{
+			if(show) {
+				int width = Source.PixelSize.Width * Zoom;
+				int height = Source.PixelSize.Height * Zoom;
+				int gridSizeX = gridX * Zoom;
+				int gridSizeY = gridY * Zoom;
+
+				Pen pen = new Pen(color.ToUint32(), 1 + (Zoom / 2));
+				double offset = 0;
+				if(Zoom % 2 == 1) {
+					offset = 0.5;
+				}
+				for(int i = 1; i < width / gridSizeX; i++) {
+					context.DrawLine(pen, new Point(i * gridSizeX + offset, 0), new Point(i * gridSizeX + offset, height));
+				}
+				for(int i = 1; i < height / gridSizeY; i++) {
+					context.DrawLine(pen, new Point(0, i * gridSizeY + offset), new Point(width, i * gridSizeY + offset));
+				}
+			}
+		}
+
 		public override void Render(DrawingContext context)
 		{
 			if(Source == null) {
@@ -148,26 +192,19 @@ namespace Mesen.Debugger.Controls
 				Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.Default
 			);
 
-			int gridSizeX = GridSizeX * Zoom;
-			int gridSizeY = GridSizeY * Zoom;
-			if(ShowGrid) {
-				Pen pen = new Pen(Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B).ToUint32());
-				for(int i = 1; i < width / gridSizeX; i++) {
-					context.DrawLine(pen, new Point(i * gridSizeX + 0.5, 0), new Point(i* gridSizeX + 0.5, height));
-				}
-				for(int i = 1; i < height / gridSizeY; i++) {
-					context.DrawLine(pen, new Point(0, i * gridSizeY + 0.5), new Point(width, i * gridSizeY + 0.5));
-				}
-			}
+			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
+			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
 			if(_selectedTile.HasValue) {
+				int gridSizeX = GridSizeX * Zoom;
+				int gridSizeY = GridSizeY * Zoom;
+
 				Rect rect = new Rect(
 					_selectedTile.Value.X * gridSizeX - 0.5,
 					_selectedTile.Value.Y * gridSizeY - 0.5,
 					gridSizeX + 1,
 					gridSizeY + 1
 				);
-
 				
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
 				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));

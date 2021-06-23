@@ -101,4 +101,8 @@ public:
 	RomFormat GetRomFormat() override;
 	AudioTrackInfo GetAudioTrackInfo() override;
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
+	uint8_t DebugRead(uint16_t addr);
+	void DebugWrite(uint16_t addr, uint8_t value);
+	uint8_t DebugReadVram(uint16_t addr);
+	void DebugWriteVram(uint16_t addr, uint8_t value);
 };

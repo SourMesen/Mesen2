@@ -59,6 +59,14 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnTilemapViewerClick(object sender, RoutedEventArgs e)
+		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			new TilemapViewerWindow {
+				DataContext = new TilemapViewerViewModel(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType),
+			}.Show();
+		}
+
 		private void OnMemoryToolsClick(object sender, RoutedEventArgs e)
 		{
 			new MemoryToolsWindow {

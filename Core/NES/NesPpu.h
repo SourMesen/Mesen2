@@ -122,9 +122,6 @@ public:
 
 	PpuModel GetPpuModel() override;
 
-	uint8_t ReadPaletteRAM(uint16_t addr);
-	void WritePaletteRAM(uint16_t addr, uint8_t value);
-
 	uint8_t ReadRam(uint16_t addr) override;
 	uint8_t PeekRam(uint16_t addr) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;

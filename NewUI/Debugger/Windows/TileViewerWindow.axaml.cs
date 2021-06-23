@@ -67,7 +67,7 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is TileViewerViewModel model) {
 				_model = model;
 			} else {
-				throw new Exception("Unexception model");
+				throw new Exception("Unexpected model");
 			}
 		}
 

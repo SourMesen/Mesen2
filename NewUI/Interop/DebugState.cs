@@ -75,7 +75,7 @@ namespace Mesen.Interop
 		public CpuStopState StopState;
 	}
 
-	public struct PpuState
+	public struct PpuState : BaseState
 	{
 		public UInt16 Cycle;
 		public UInt16 Scanline;
@@ -940,6 +940,27 @@ namespace Mesen.Interop
 		public InternalRegisterState InternalRegs;
 		public AluState Alu;
 	}
+
+	public struct NesPpuStatusFlags
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool SpriteOverflow;
+		[MarshalAs(UnmanagedType.I1)] public bool Sprite0Hit;
+		[MarshalAs(UnmanagedType.I1)] public bool VerticalBlank;
+	}
+
+	public struct NesPpuState : BaseState
+	{
+		public NesPpuStatusFlags StatusFlags;
+		public Int32 Scanline;
+		public UInt32 Cycle;
+		public UInt32 FrameCount;
+		public UInt32 NmiScanline;
+		public UInt32 ScanlineCount;
+		public UInt32 SafeOamScanline;
+		public UInt16 BusAddress;
+		public byte MemoryReadBuffer;
+		public byte ControlReg;
+	};
 
 	[Flags]
 	public enum NesCpuFlags

@@ -144,9 +144,20 @@ struct CodeLineData
 	char Comment[1000];
 };
 
+enum class TilemapDisplayMode
+{
+	Default,
+	Grayscale,
+	AttributeView
+};
+
 struct GetTilemapOptions
 {
 	uint8_t Layer;
+	uint8_t* CompareVram;
+	bool HighlightTileChanges;
+	bool HighlightAttributeChanges;
+	TilemapDisplayMode DisplayMode;
 };
 
 enum class TileFormat

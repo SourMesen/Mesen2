@@ -36,7 +36,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_mapper = console->GetMapper();
 
 	_traceLogger.reset(new NesTraceLogger(debugger, _ppu));
-	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator()));
+	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_settings = debugger->GetEmulator()->GetSettings();

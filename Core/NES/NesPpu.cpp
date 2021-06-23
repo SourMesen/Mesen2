@@ -318,7 +318,7 @@ template<class T> uint8_t NesPpu<T>::PeekRam(uint16_t addr)
 			returnValue = _memoryReadBuffer;
 
 			if((_videoRamAddr & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
-				returnValue = ReadPaletteRAM(_videoRamAddr) | (_openBus & 0xC0);
+				returnValue = ReadPaletteRam(_videoRamAddr) | (_openBus & 0xC0);
 				openBusMask = 0xC0;
 			} else {
 				openBusMask = 0x00;
@@ -375,7 +375,7 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 				_memoryReadBuffer = ReadVram(_ppuBusAddress & 0x3FFF, MemoryOperationType::Read);
 
 				if((_ppuBusAddress & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
-					returnValue = ReadPaletteRAM(_ppuBusAddress) | (_openBus & 0xC0);
+					returnValue = ReadPaletteRam(_ppuBusAddress) | (_openBus & 0xC0);
 					//TODO
 					//_emu->DebugProcessVramReadOperation(MemoryOperationType::Read, _ppuBusAddress & 0x3FFF, returnValue);
 					openBusMask = 0xC0;
@@ -461,7 +461,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 			break;
 		case PPURegisters::VideoMemoryData:
 			if((_ppuBusAddress & 0x3FFF) >= 0x3F00) {
-				WritePaletteRAM(_ppuBusAddress, value);
+				WritePaletteRam(_ppuBusAddress, value);
 				//TODO
 				//_console->DebugProcessVramWriteOperation(_ppuBusAddress & 0x3FFF, value);
 			} else {
@@ -479,36 +479,6 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 			break;
 		default:
 			break;
-	}
-}
-
-template<class T> uint8_t NesPpu<T>::ReadPaletteRAM(uint16_t addr)
-{
-	addr &= 0x1F;
-	if(addr == 0x10 || addr == 0x14 || addr == 0x18 || addr == 0x1C) {
-		addr &= ~0x10;
-	}
-	return _paletteRAM[addr];
-}
-
-template<class T> void NesPpu<T>::WritePaletteRAM(uint16_t addr, uint8_t value)
-{
-	addr &= 0x1F;
-	value &= 0x3F;
-	if(addr == 0x00 || addr == 0x10) {
-		_paletteRAM[0x00] = value;
-		_paletteRAM[0x10] = value;
-	} else if(addr == 0x04 || addr == 0x14) {
-		_paletteRAM[0x04] = value;
-		_paletteRAM[0x14] = value;
-	} else if(addr == 0x08 || addr == 0x18) {
-		_paletteRAM[0x08] = value;
-		_paletteRAM[0x18] = value;
-	} else if(addr == 0x0C || addr == 0x1C) {
-		_paletteRAM[0x0C] = value;
-		_paletteRAM[0x1C] = value;
-	} else {
-		_paletteRAM[addr] = value;
 	}
 }
 
@@ -1577,5 +1547,4 @@ template uint32_t NesPpu<NsfPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
 template NesPpu<HdNesPpu>::NesPpu(NesConsole* console);
 template uint16_t* NesPpu<HdNesPpu>::GetScreenBuffer(bool previousBuffer);
 template void NesPpu<HdNesPpu>::Exec();
-template uint8_t NesPpu<HdNesPpu>::ReadPaletteRAM(uint16_t addr);
 template uint32_t NesPpu<HdNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);

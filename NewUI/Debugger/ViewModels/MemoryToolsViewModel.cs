@@ -20,6 +20,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int ScrollPosition { get; set; }
 		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
 
+		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
+
 		[ObservableAsProperty] public int MaxScrollValue { get; }
 
 		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 48, 64, 80, 96, 112, 128 }; }
@@ -33,6 +35,8 @@ namespace Mesen.Debugger.ViewModels
 			if(Design.IsDesignMode) {
 				return;
 			}
+
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			this.WhenAnyValue(x => x.MemoryType).Subscribe(x => DataProvider = new HexEditorDataProvider(
 				x,

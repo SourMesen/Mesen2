@@ -10,6 +10,7 @@ enum class SnesMemoryType
 	Cx4Memory,
 	GameboyMemory,
 	NesMemory,
+	NesPpuMemory,
 
 	PrgRom,
 	WorkRam,

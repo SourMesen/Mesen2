@@ -12,12 +12,7 @@ namespace Mesen.Debugger.ViewModels
 		[ObservableAsProperty] public string? Scanline { get; }
 		[ObservableAsProperty] public string? HClock { get; }
 		
-		private PpuState _state;
-		public PpuState State
-		{
-			get => _state;
-			set => this.RaiseAndSetIfChanged(ref _state, value);
-		}
+		[Reactive] private PpuState State { get; set; }
 
 		public SnesPpuViewModel()
 		{

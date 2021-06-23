@@ -1062,7 +1062,7 @@ int32_t BaseMapper::GetRelativeAddress(AddressInfo& addr)
 		case SnesMemoryType::NesSaveRam: ptrAddress = _saveRam; break;
 		case SnesMemoryType::Register: return (addr.Address) & 0xFFFF; break;
 		case SnesMemoryType::NesInternalRam: return (addr.Address) & 0x1FFF; break;
-		default: return -1;
+		default: return GetPpuRelativeAddress(addr);
 	}
 	ptrAddress += addr.Address;
 

@@ -12,6 +12,7 @@ SnesPpuTools::SnesPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugge
 void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	PpuState& state = (PpuState&)baseState;
+	FrameInfo outputSize = GetTilemapSize(options, state);
 
 	static constexpr uint8_t layerBpp[8][4] = {
 		{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 }
@@ -26,7 +27,7 @@ void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, u
 
 	LayerConfig layer = state.Layers[options.Layer];
 
-	std::fill(outBuffer, outBuffer + 1024*1024, palette[0]);
+	std::fill(outBuffer, outBuffer + outputSize.Width*outputSize.Height, palette[0]);
 
 	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
 	if(bpp == 0) {
@@ -55,7 +56,7 @@ void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, u
 							} else {
 								rgbColor = GetRgbPixelColor(palette, color, 0, 8, false, 0);
 							}
-							outBuffer[((row * 8) + y) * 1024 + column * 8 + x] = rgbColor;
+							outBuffer[((row * 8) + y) * outputSize.Width + column * 8 + x] = rgbColor;
 						}
 					}
 				}
@@ -91,7 +92,7 @@ void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, u
 						uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, bpp, pixelStart, shift, 1);
 						if(color != 0) {
 							uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
-							outBuffer[((row * tileHeight) + y) * 1024 + column * tileWidth + x] = GetRgbPixelColor(palette, color, paletteIndex, bpp, directColor, basePaletteOffset);
+							outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor(palette, color, paletteIndex, bpp, directColor, basePaletteOffset);
 						}
 					}
 				}
@@ -212,4 +213,39 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 			}
 		}
 	}
+}
+
+FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
+{
+	FrameInfo size = { 256, 256 };
+
+	PpuState& state = (PpuState&)baseState;
+	if(state.BgMode == 7) {
+		return { 1024, 1024 };
+	}
+
+	LayerConfig layer = state.Layers[options.Layer];
+	bool largeTileWidth = layer.LargeTiles || state.BgMode == 5 || state.BgMode == 6;
+	bool largeTileHeight = layer.LargeTiles;
+
+	if(largeTileHeight) {
+		size.Height *= 2;
+	}
+	if(layer.DoubleHeight) {
+		size.Height *= 2;
+	}
+
+	if(largeTileWidth) {
+		size.Width *= 2;
+	}
+	if(layer.DoubleWidth) {
+		size.Width *= 2;
+	}
+
+	return size;
+}
+
+FrameInfo SnesPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)
+{
+	return { 256,240 };
 }

@@ -29,6 +29,7 @@
 				DockPanel.Dock="Left"
 				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding MemoryType}"
+				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
 			<ComboBox
 				DockPanel.Dock="Right"

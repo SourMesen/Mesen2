@@ -148,6 +148,7 @@ struct NesPpuState : public BaseState
 	uint32_t SafeOamScanline;
 	uint16_t BusAddress;
 	uint8_t MemoryReadBuffer;
+	uint8_t ControlReg;
 };
 
 struct ApuLengthCounterState

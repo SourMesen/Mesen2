@@ -329,7 +329,11 @@ vector<CpuType> NesConsole::GetCpuTypes()
 
 AddressInfo NesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 {
-	return _mapper->GetAbsoluteAddress(relAddress.Address);
+	if(relAddress.Type == SnesMemoryType::NesMemory) {
+		return _mapper->GetAbsoluteAddress(relAddress.Address);
+	} else {
+		return _mapper->GetPpuAbsoluteAddress(relAddress.Address);
+	}
 }
 
 AddressInfo NesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
@@ -401,3 +405,30 @@ void NesConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	}
 }
 
+uint8_t NesConsole::DebugRead(uint16_t addr)
+{
+	return _memoryManager->DebugRead(addr);
+}
+
+void NesConsole::DebugWrite(uint16_t addr, uint8_t value)
+{
+	_memoryManager->DebugWrite(addr, value);
+}
+
+uint8_t NesConsole::DebugReadVram(uint16_t addr)
+{
+	if(addr >= 0x3F00) {
+		return _ppu->ReadPaletteRam(addr);
+	} else {
+		return _mapper->DebugReadVram(addr);
+	}
+}
+
+void NesConsole::DebugWriteVram(uint16_t addr, uint8_t value)
+{
+	if(addr >= 0x3F00) {
+		_ppu->WritePaletteRam(addr, value);
+	} else {
+		_mapper->DebugWriteVram(addr, value);
+	}
+}

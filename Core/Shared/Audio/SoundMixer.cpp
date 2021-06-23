@@ -129,13 +129,12 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 		}
 
 		if(_audioDevice) {
-			if(!cfg.EnableAudio) {
+			if(cfg.EnableAudio) {
+				_audioDevice->PlayBuffer(out, count, cfg.SampleRate, true);
+				_audioDevice->ProcessEndOfFrame();
+			} else {
 				_audioDevice->Stop();
-				return;
 			}
-
-			_audioDevice->PlayBuffer(out, count, cfg.SampleRate, true);
-			_audioDevice->ProcessEndOfFrame();
 		}
 	}
 }

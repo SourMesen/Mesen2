@@ -30,7 +30,7 @@ void* HdNesPpu::OnBeforeSendFrame()
 	for(uint32_t address : _hdData->WatchedMemoryAddresses) {
 		if(address & HdPackBaseMemoryCondition::PpuMemoryMarker) {
 			if((address & 0x3FFF) >= 0x3F00) {
-				info->WatchedAddressValues[address] = ReadPaletteRAM(address);
+				info->WatchedAddressValues[address] = ReadPaletteRam(address);
 			} else {
 				info->WatchedAddressValues[address] = _console->GetMapper()->DebugReadVram(address & 0x3FFF, true);
 			}

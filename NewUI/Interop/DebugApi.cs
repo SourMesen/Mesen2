@@ -130,12 +130,41 @@ namespace Mesen.Interop
 			return buffer;
 		}
 
-		[DllImport(DllPath)] public static extern void GetTilemap(CpuType cpuType, GetTilemapOptions options, PpuState state, byte[] vram, UInt32[] palette, IntPtr buffer);
+		[DllImport(DllPath)] private static extern void GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
+		public static void GetTilemap<T>(CpuType cpuType, GetTilemapOptions options, T state, byte[] vram, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
+		{
+			GCHandle? handle = null;
+			IntPtr pointer = IntPtr.Zero;
+			handle?.Free();
+
+			if(options.CompareVram != null) {
+				handle = GCHandle.Alloc(options.CompareVram, GCHandleType.Pinned);
+				pointer = handle.Value.AddrOfPinnedObject();
+			}
+
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr ptr = Marshal.AllocHGlobal(len);
+			Marshal.StructureToPtr(state, ptr, false);
+			InteropGetTilemapOptions interopOptions = options.ToInterop();
+			interopOptions.CompareVram = pointer;
+			DebugApi.GetTilemap(cpuType, interopOptions, ptr, vram, palette, outputBuffer);
+
+			if(handle.HasValue) {
+				handle.Value.Free();
+			}
+		}
+
+		[DllImport(DllPath)] private static extern FrameInfo GetTilemapSize(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state);
+		public static FrameInfo GetTilemapSize<T>(CpuType cpuType, GetTilemapOptions options, T state) where T : struct, BaseState
+		{
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr ptr = Marshal.AllocHGlobal(len);
+			Marshal.StructureToPtr(state, ptr, false);
+			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), ptr);
+		}
+
 		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
 		[DllImport(DllPath)] public static extern void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, UInt32[] palette, IntPtr buffer);
-
-		[DllImport(DllPath)] public static extern void GetGameboyTilemap(byte[] vram, GbPpuState state, UInt16 offset, [In, Out] byte[] buffer);
-		[DllImport(DllPath)] public static extern void GetGameboySpritePreview(GetSpritePreviewOptions options, GbPpuState state, byte[] vram, byte[] oamRam, [In, Out] byte[] buffer);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
@@ -242,6 +271,7 @@ namespace Mesen.Interop
 		Cx4Memory,
 		GameboyMemory,
 		NesMemory,
+		NesPpuMemory,
 
 		PrgRom,
 		WorkRam,
@@ -630,9 +660,39 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}
 
-	public struct GetTilemapOptions
+	public enum TilemapDisplayMode
+	{
+		Default,
+		Grayscale,
+		AttributeView
+	}
+
+	public class GetTilemapOptions
 	{
 		public byte Layer;
+		public byte[]? CompareVram;
+		public bool HighlightTileChanges;
+		public bool HighlightAttributeChanges;
+		public TilemapDisplayMode DisplayMode;
+
+		public InteropGetTilemapOptions ToInterop()
+		{
+			return new InteropGetTilemapOptions() {
+				Layer = Layer,
+				HighlightTileChanges = HighlightTileChanges,
+				HighlightAttributeChanges = HighlightAttributeChanges,
+				DisplayMode = DisplayMode
+			};
+		}
+	}
+
+	public struct InteropGetTilemapOptions
+	{
+		public byte Layer;
+		public IntPtr CompareVram;
+		[MarshalAs(UnmanagedType.I1)] public bool HighlightTileChanges;
+		[MarshalAs(UnmanagedType.I1)] public bool HighlightAttributeChanges;
+		public TilemapDisplayMode DisplayMode;
 	}
 
 	public enum TileBackground
@@ -742,6 +802,18 @@ namespace Mesen.Interop
 				case CpuType.Cx4: return SnesMemoryType.Cx4Memory;
 				case CpuType.Gameboy: return SnesMemoryType.GameboyMemory;
 				case CpuType.Nes: return SnesMemoryType.NesMemory;
+
+				default:
+					throw new Exception("Invalid CPU type");
+			}
+		}
+
+		public static SnesMemoryType GetVramMemoryType(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Cpu: return SnesMemoryType.VideoRam;
+				case CpuType.Gameboy: return SnesMemoryType.GbVideoRam;
+				case CpuType.Nes: return SnesMemoryType.NesPpuMemory;
 
 				default:
 					throw new Exception("Invalid CPU type");
