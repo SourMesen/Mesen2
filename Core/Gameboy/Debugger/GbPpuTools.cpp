@@ -2,7 +2,6 @@
 #include "Gameboy/Debugger/GbPpuTools.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/SettingTypes.h"
-#include "SNES/SnesDefaultVideoFilter.h"
 #include "Gameboy/GbTypes.h"
 
 GbPpuTools::GbPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, emu)
@@ -71,21 +70,14 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 		std::fill(filled, filled + 256, 0xFF);
 
 		for(int i = 0; i < 0xA0; i += 4) {
-			uint8_t sprY = oamRam[i];
-			if(sprY > row || sprY + height <= row) {
+			DebugSpriteInfo sprite = GetSpriteInfo(i / 4, options, state, oamRam);
+			if(sprite.Y > row || sprite.Y + height <= row) {
 				continue;
 			}
 
-			int y = row - sprY;
-			uint8_t sprX = oamRam[i + 1];
-			uint8_t tileIndex = oamRam[i + 2];
-			uint8_t attributes = oamRam[i + 3];
-
-			uint16_t tileBank = isCgb ? ((attributes & 0x08) ? 0x2000 : 0x0000) : 0;
-			uint8_t palette = isCgb ? (attributes & 0x07) << 2 : 0;
-			bool hMirror = (attributes & 0x20) != 0;
-			bool vMirror = (attributes & 0x40) != 0;
-
+			int y = row - sprite.Y;
+			uint8_t tileIndex = (uint8_t)sprite.TileIndex;
+			uint16_t tileBank = sprite.UseSecondTable ? 0x2000 : 0x0000;
 			if(largeSprites) {
 				tileIndex &= 0xFE;
 			}
@@ -93,25 +85,25 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 			uint16_t tileStart = tileIndex * 16;
 			tileStart |= tileBank;
 
-			uint16_t pixelStart = tileStart + (vMirror ? (height - 1 - y) : y) * 2;
+			uint16_t pixelStart = tileStart + (sprite.VerticalMirror ? (height - 1 - y) : y) * 2;
 			for(int x = 0; x < width; x++) {
-				if(sprX + x >= 256) {
+				if(sprite.X + x >= 256) {
 					break;
-				} else if(filled[sprX + x] < sprX) {
+				} else if(filled[sprite.X + x] < sprite.X) {
 					continue;
 				}
 
-				uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
+				uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
 				uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 1);
 
 				if(color > 0) {
+					uint32_t outOffset = (row * 256) + sprite.X + x;
 					if(!isCgb) {
-						color = (((attributes & 0x10) ? state.ObjPalette1 : state.ObjPalette0) >> (color * 2)) & 0x03;
+						outBuffer[outOffset] = palette[4 + (sprite.Palette * 4) + color];
+					} else {
+						outBuffer[outOffset] = palette[32 + (sprite.Palette * 4) + color];
 					}
-
-					uint32_t outOffset = (row * 256) + sprX + x;
-					outBuffer[outOffset] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[palette + color]);
-					filled[sprX + x] = sprX;
+					filled[sprite.X + x] = (uint8_t)sprite.X;
 				}
 			}
 		}
@@ -126,4 +118,35 @@ FrameInfo GbPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& state
 FrameInfo GbPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)
 {
 	return { 256, 256 };
+}
+
+DebugSpriteInfo GbPpuTools::GetSpriteInfo(uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* oamRam)
+{
+	DebugSpriteInfo sprite = {};
+	
+	sprite.SpriteIndex = i;
+	sprite.Y = oamRam[i*4];
+
+	sprite.X = oamRam[i * 4 + 1];
+	sprite.TileIndex = oamRam[i * 4 + 2];
+	uint8_t attributes = oamRam[i * 4 + 3];
+
+	sprite.UseSecondTable = (state.CgbEnabled && (attributes & 0x08)) ? true : false;
+	sprite.Palette = state.CgbEnabled ? (attributes & 0x07) : ((attributes & 0x10) ? 1 : 0);
+	sprite.HorizontalMirror = (attributes & 0x20) != 0;
+	sprite.VerticalMirror = (attributes & 0x40) != 0;
+	sprite.Visible = sprite.X > 0 && sprite.Y > 0 && sprite.Y < 160 && sprite.X < 168;
+	sprite.Width = 8;
+	sprite.Height = state.LargeSprites ? 16 : 8;
+
+	return sprite;
+}
+
+uint32_t GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* oamRam, DebugSpriteInfo outBuffer[])
+{
+	GbPpuState& state = (GbPpuState&)baseState;
+	for(int i = 0; i < 40; i++) {
+		outBuffer[i] = GetSpriteInfo(i, options, state, oamRam);
+	}
+	return 40;
 }

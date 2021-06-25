@@ -26,6 +26,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeX), 8);
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
+		
+		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty);
 
 		private Stopwatch _stopWatch = Stopwatch.StartNew();
 		private DispatcherTimer _timer = new DispatcherTimer();
@@ -78,12 +80,17 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowAltGridProperty, value); }
 		}
 
+		public Rect SelectionRect
+		{
+			get { return GetValue(SelectionRectProperty); }
+			set { SetValue(SelectionRectProperty, value); }
+		}
+
 		private Point? _mousePosition = null;
-		private PixelPoint? _selectedTile = null;
 
 		static PictureViewer()
 		{
-			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty);
+			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty, SelectionRectProperty);
 		}
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -148,8 +155,14 @@ namespace Mesen.Debugger.Controls
 			base.OnPointerPressed(e);
 			Point p = e.GetCurrentPoint(this).Position;
 			p = new Point(Math.Min(p.X, MinWidth - 1), Math.Min(p.Y, MinHeight - 1));
-			_selectedTile = new PixelPoint((int)(p.X / GridSizeX / Zoom), (int)(p.Y / GridSizeY / Zoom));
-			InvalidateVisual();
+
+			Rect selection = new Rect(
+				(int)p.X / GridSizeX * GridSizeX / Zoom,
+				(int)p.Y / GridSizeY * GridSizeY / Zoom,
+				GridSizeX,
+				GridSizeY
+			);
+			SelectionRect = selection;
 		}
 
 		private void DrawGrid(DrawingContext context, bool show, int gridX, int gridY, Color color)
@@ -183,7 +196,7 @@ namespace Mesen.Debugger.Controls
 			int width = Source.PixelSize.Width * Zoom;
 			int height = Source.PixelSize.Height * Zoom;
 
-			context.FillRectangle(new SolidColorBrush(0xFF333333), new Rect(Bounds.Size));
+			context.FillRectangle(new SolidColorBrush(0xFFFFFFFF), new Rect(Bounds.Size));
 
 			context.DrawImage(
 				Source,
@@ -195,15 +208,12 @@ namespace Mesen.Debugger.Controls
 			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
 			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
-			if(_selectedTile.HasValue) {
-				int gridSizeX = GridSizeX * Zoom;
-				int gridSizeY = GridSizeY * Zoom;
-
+			if(SelectionRect != Rect.Empty) {
 				Rect rect = new Rect(
-					_selectedTile.Value.X * gridSizeX - 0.5,
-					_selectedTile.Value.Y * gridSizeY - 0.5,
-					gridSizeX + 1,
-					gridSizeY + 1
+					SelectionRect.X * Zoom - 0.5,
+					SelectionRect.Y * Zoom - 0.5,
+					SelectionRect.Width * Zoom + 1,
+					SelectionRect.Height * Zoom + 1
 				);
 				
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);

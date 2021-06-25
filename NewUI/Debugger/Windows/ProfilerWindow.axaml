@@ -56,7 +56,7 @@
 							VerticalScrollBarVisibility="Auto"
 							Sorting="OnGridSort"
 							CanUserReorderColumns="False"
-					>
+						>
 							<DataGrid.Columns>
 								<DataGridTextColumn Header="{l:Translate colFunction}" Binding="{Binding FunctionName}" Width="*" CanUserResize="True" />
 								<DataGridTextColumn Header="{l:Translate colCallCount}" Binding="{Binding CallCount}" Width="*" CanUserResize="True" />

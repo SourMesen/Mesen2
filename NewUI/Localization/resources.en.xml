@@ -791,6 +791,19 @@
 			<Control ID="chkHighlightAttributeChanges">Highlight attribute changes</Control>
 		</Form>
 
+		<Form ID="SpriteViewerWindow">
+			<Control ID="wndTitle">Sprite Viewer</Control>
+			
+			<Control ID="colSpriteIndex">#</Control>
+			<Control ID="colX">X</Control>
+			<Control ID="colY">Y</Control>
+			<Control ID="colSize">Size</Control>
+			<Control ID="colTileIndex">Tile</Control>
+			<Control ID="colPriority">Priority</Control>
+			<Control ID="colPalette">Palette</Control>
+			<Control ID="colFlags">Flags</Control>
+		</Form>
+
 		<Form ID="AssemblerWindow">
 			<Control ID="wndTitle">Assembler</Control>
 			<Control ID="lblStartAddress">Start address: $</Control>

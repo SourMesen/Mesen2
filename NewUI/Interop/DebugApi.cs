@@ -134,24 +134,22 @@ namespace Mesen.Interop
 		public static void GetTilemap<T>(CpuType cpuType, GetTilemapOptions options, T state, byte[] vram, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
 		{
 			GCHandle? handle = null;
-			IntPtr pointer = IntPtr.Zero;
-			handle?.Free();
+			IntPtr compareVramPtr = IntPtr.Zero;
 
 			if(options.CompareVram != null) {
 				handle = GCHandle.Alloc(options.CompareVram, GCHandleType.Pinned);
-				pointer = handle.Value.AddrOfPinnedObject();
+				compareVramPtr = handle.Value.AddrOfPinnedObject();
 			}
 
 			int len = Marshal.SizeOf(typeof(T));
-			IntPtr ptr = Marshal.AllocHGlobal(len);
-			Marshal.StructureToPtr(state, ptr, false);
+			IntPtr statePtr = Marshal.AllocHGlobal(len);
+			Marshal.StructureToPtr(state, statePtr, false);
 			InteropGetTilemapOptions interopOptions = options.ToInterop();
-			interopOptions.CompareVram = pointer;
-			DebugApi.GetTilemap(cpuType, interopOptions, ptr, vram, palette, outputBuffer);
+			interopOptions.CompareVram = compareVramPtr;
+			DebugApi.GetTilemap(cpuType, interopOptions, statePtr, vram, palette, outputBuffer);
 
-			if(handle.HasValue) {
-				handle.Value.Free();
-			}
+			Marshal.FreeHGlobal(statePtr);
+			handle?.Free();
 		}
 
 		[DllImport(DllPath)] private static extern FrameInfo GetTilemapSize(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state);
@@ -160,11 +158,46 @@ namespace Mesen.Interop
 			int len = Marshal.SizeOf(typeof(T));
 			IntPtr ptr = Marshal.AllocHGlobal(len);
 			Marshal.StructureToPtr(state, ptr, false);
-			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), ptr);
+			FrameInfo size = DebugApi.GetTilemapSize(cpuType, options.ToInterop(), ptr);
+			Marshal.FreeHGlobal(ptr);
+			return size;
 		}
 
 		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
-		[DllImport(DllPath)] public static extern void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, PpuState state, byte[] vram, byte[] oamRam, UInt32[] palette, IntPtr buffer);
+
+		[DllImport(DllPath)] private static extern void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr buffer);
+		public static void GetSpritePreview<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
+		{
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr statePtr = Marshal.AllocHGlobal(len);
+			Marshal.StructureToPtr(state, statePtr, false);
+			DebugApi.GetSpritePreview(cpuType, options, statePtr, vram, spriteRam, palette, outputBuffer);
+			Marshal.FreeHGlobal(statePtr);
+		}
+
+		[DllImport(DllPath)] private static extern FrameInfo GetSpritePreviewSize(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state);
+		public static FrameInfo GetSpritePreviewSize<T>(CpuType cpuType, GetSpritePreviewOptions options, T state) where T : struct, BaseState
+		{
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr ptr = Marshal.AllocHGlobal(len);
+			Marshal.StructureToPtr(state, ptr, false);
+			FrameInfo size = DebugApi.GetSpritePreviewSize(cpuType, options, ptr);
+			Marshal.FreeHGlobal(ptr);
+			return size;
+		}
+
+		[DllImport(DllPath)] private static extern UInt32 GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] spriteRam, [In,Out]DebugSpriteInfo[] sprites);
+		public static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] spriteRam) where T : struct, BaseState
+		{
+			DebugSpriteInfo[] sprites = new DebugSpriteInfo[256];
+			int len = Marshal.SizeOf(typeof(T));
+			IntPtr statePtr = Marshal.AllocHGlobal(len);
+			Marshal.StructureToPtr(state, statePtr, false);
+			UInt32 spriteCount = DebugApi.GetSpriteList(cpuType, options, statePtr, spriteRam, sprites);
+			Array.Resize(ref sprites, (int)spriteCount);
+			Marshal.FreeHGlobal(statePtr);
+			return sprites;
+		}
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
@@ -720,6 +753,23 @@ namespace Mesen.Interop
 		public Int32 SelectedSprite;
 	}
 
+	public struct DebugSpriteInfo
+	{
+		public UInt16 SpriteIndex;
+		public UInt16 TileIndex;
+		public Int16 X;
+		public Int16 Y;
+
+		public byte Palette;
+		public byte Priority;
+		public byte Width;
+		public byte Height;
+		[MarshalAs(UnmanagedType.I1)] public bool HorizontalMirror;
+		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirror;
+		[MarshalAs(UnmanagedType.I1)] public bool UseSecondTable;
+		[MarshalAs(UnmanagedType.I1)] public bool Visible;
+	}
+
 	public enum TileFormat
 	{
 		Bpp2,
@@ -814,6 +864,18 @@ namespace Mesen.Interop
 				case CpuType.Cpu: return SnesMemoryType.VideoRam;
 				case CpuType.Gameboy: return SnesMemoryType.GbVideoRam;
 				case CpuType.Nes: return SnesMemoryType.NesPpuMemory;
+
+				default:
+					throw new Exception("Invalid CPU type");
+			}
+		}
+
+		public static SnesMemoryType GetSpriteRamMemoryType(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Cpu: return SnesMemoryType.SpriteRam;
+				case CpuType.Gameboy: return SnesMemoryType.GbSpriteRam;
+				case CpuType.Nes: return SnesMemoryType.NesSpriteRam;
 
 				default:
 					throw new Exception("Invalid CPU type");

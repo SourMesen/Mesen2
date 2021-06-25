@@ -1,0 +1,76 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
+	x:Class="Mesen.Debugger.Windows.SpriteViewerWindow"
+	x:DataType="dvm:SpriteViewerViewModel"
+	Width="600" Height="600"
+	Title="{l:Translate wndTitle}"
+	Icon="/Assets/PerfTracker.png"
+>
+	<Design.DataContext>
+		<dvm:SpriteViewerViewModel />
+	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="TabControl:singleitem">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="DataGridCell.rowStyle">
+			<Setter Property="Foreground" Value="{Binding Path=Foreground}"/>
+			<Setter Property="FontStyle" Value="{Binding Path=FontStyle}"/>
+		</Style>
+	</Window.Styles>
+
+	<Grid
+		ColumnDefinitions="1*,1*"
+		RowDefinitions="*"
+		HorizontalAlignment="Stretch"
+		VerticalAlignment="Stretch"
+	>
+		<Border BorderBrush="Gray" BorderThickness="1" Margin="1">
+			<ScrollViewer
+				VerticalScrollBarVisibility="Auto"
+				HorizontalScrollBarVisibility="Auto"
+				AllowAutoHide="False"
+			>
+				<dc:PictureViewer
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					x:Name="picViewer"
+				/>
+			</ScrollViewer>
+		</Border>
+		<Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1" Margin="1">
+			<dc:MesenDataGrid
+				Items="{CompiledBinding Sprites}"
+				HorizontalScrollBarVisibility="Auto"
+				VerticalScrollBarVisibility="Auto"
+				CanUserReorderColumns="False"
+				SelectionChanged="OnGridSelectionChanged"
+			>
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="{l:Translate colSpriteIndex}" Binding="{Binding SpriteIndex}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colX}" Binding="{Binding X}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colY}" Binding="{Binding Y}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colSize}" Binding="{Binding Size}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colTileIndex}" Binding="{Binding TileIndex}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colPriority}" Binding="{Binding Priority}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colPalette}" Binding="{Binding Palette}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+					<DataGridTextColumn Header="{l:Translate colFlags}" Binding="{Binding Flags}" Width="*" CanUserResize="True" CellStyleClasses="rowStyle" />
+				</DataGrid.Columns>				
+			</dc:MesenDataGrid>
+		</Border>
+	</Grid>
+</Window>

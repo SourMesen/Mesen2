@@ -14,6 +14,23 @@ struct ViewerRefreshConfig
 	uint16_t Cycle;
 };
 
+struct DebugSpriteInfo
+{
+	uint16_t SpriteIndex;
+	uint16_t TileIndex;
+	int16_t X;
+	int16_t Y;
+
+	uint8_t Palette;
+	uint8_t Priority;
+	uint8_t Width;
+	uint8_t Height;
+	bool HorizontalMirror;
+	bool VerticalMirror;
+	bool UseSecondTable;
+	bool Visible;
+};
+
 class PpuTools
 {
 protected:
@@ -37,6 +54,7 @@ public:
 	
 	virtual FrameInfo GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state) = 0;
 	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
+	virtual uint32_t GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* oamRam, DebugSpriteInfo outBuffer[]) = 0;
 
 	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);
