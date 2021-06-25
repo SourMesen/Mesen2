@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -28,6 +29,15 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
 		
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty);
+
+		public static readonly RoutedEvent<PositionClickedEventArgs> PositionClickedEvent = RoutedEvent.Register<PictureViewer, PositionClickedEventArgs>(nameof(PositionClicked), RoutingStrategies.Bubble);
+		public event EventHandler<PositionClickedEventArgs> PositionClicked
+		{
+			add => AddHandler(PositionClickedEvent, value);
+			remove => RemoveHandler(PositionClickedEvent, value);
+		}
+
+		private delegate void PositionClickedHandler(Point p);
 
 		private Stopwatch _stopWatch = Stopwatch.StartNew();
 		private DispatcherTimer _timer = new DispatcherTimer();
@@ -154,15 +164,20 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerPressed(e);
 			Point p = e.GetCurrentPoint(this).Position;
-			p = new Point(Math.Min(p.X, MinWidth - 1), Math.Min(p.Y, MinHeight - 1));
+			p = new Point(Math.Min(p.X, MinWidth - 1) / Zoom, Math.Min(p.Y, MinHeight - 1) / Zoom);
 
-			Rect selection = new Rect(
-				(int)p.X / GridSizeX * GridSizeX / Zoom,
-				(int)p.Y / GridSizeY * GridSizeY / Zoom,
-				GridSizeX,
-				GridSizeY
-			);
-			SelectionRect = selection;
+			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = p };
+			RaiseEvent(args);
+
+			if(!args.Handled) {
+				Rect selection = new Rect(
+					(int)p.X / GridSizeX * GridSizeX,
+					(int)p.Y / GridSizeY * GridSizeY,
+					GridSizeX,
+					GridSizeY
+				);
+				SelectionRect = selection;
+			}
 		}
 
 		private void DrawGrid(DrawingContext context, bool show, int gridX, int gridY, Color color)
@@ -228,5 +243,10 @@ namespace Mesen.Debugger.Controls
 				context.DrawLine(new Pen(Brushes.Black), new Point(0, p.Y), new Point(Bounds.Width, p.Y));
 			}*/
 		}
+	}
+
+	public class PositionClickedEventArgs : RoutedEventArgs
+	{
+		public Point Position;
 	}
 }

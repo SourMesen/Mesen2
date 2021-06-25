@@ -8,7 +8,7 @@ class Emulator;
 class GbPpuTools : public PpuTools
 {
 private:
-	DebugSpriteInfo GetSpriteInfo(uint16_t spriteIndex, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* oamRam);
+	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 
 public:
 	GbPpuTools(Debugger* debugger, Emulator *emu);
@@ -18,5 +18,5 @@ public:
 
 	void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t *outBuffer) override;
 	FrameInfo GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state) override;
-	uint32_t GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* oamRam, DebugSpriteInfo outBuffer[]) override;
+	uint32_t GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) override;
 };

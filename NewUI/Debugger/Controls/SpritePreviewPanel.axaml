@@ -1,0 +1,21 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="280" d:DesignHeight="200"
+	x:DataType="vm:SpritePreviewModel"
+	x:Class="Mesen.Debugger.Controls.SpritePreviewPanel"
+>
+	<Border Background="#DDD" BorderThickness="1" BorderBrush="Gray" HorizontalAlignment="Left" VerticalAlignment="Top">
+		<Image 
+			Source="{CompiledBinding SpritePreview}"
+			Width="32"
+			Height="32"
+			Stretch="Uniform"
+			StretchDirection="Both"
+		/>
+	</Border>
+</UserControl>

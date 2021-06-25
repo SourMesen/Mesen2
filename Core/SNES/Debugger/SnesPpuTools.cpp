@@ -125,73 +125,40 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 	for(int i = 0; i < (state.OverscanMode ? 239 : 224); i++) {
 		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, 0xFF888888);
 	}
+	
+	DebugSpriteInfo sprite;
+	for(int i = 508; i >= 0; i -= 4) {
+		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
 
-	for(int scanline = 0; scanline < (int)size.Height; scanline++) {
-		for(int i = 508; i >= 0; i -= 4) {
-			DebugSpriteInfo sprite = GetSpriteInfo(i / 4, options, state, oamRam);
-			
-			uint8_t endY = (sprite.Y + (state.ObjInterlace ? (sprite.Height >> 1): sprite.Height)) & 0xFF;
-			bool visible = (scanline >= sprite.Y && scanline < endY) || (endY < sprite.Y && scanline < endY);
-			if(!visible) {
-				//Not visible on this scanline
-				continue;
+		for(int y = 0; y < sprite.Height; y++) {
+			int yPos = sprite.Y + y;
+			if(yPos >= (int)size.Height) {
+				break;
 			}
 
-			int tileRow = (sprite.TileIndex & 0xF0) >> 4;
-			int tileColumn = sprite.TileIndex & 0x0F;
-		
-			uint8_t yOffset;
-			int rowOffset;
-
-			int yGap = (scanline - sprite.Y);
+			/*int yGap = (scanline - sprite.Y);
 			if(state.ObjInterlace) {
 				yGap <<= 1;
 				yGap |= (state.FrameCount & 0x01);
-			}
+			}*/
 
-			if(sprite.VerticalMirror) {
-				yOffset = (sprite.Height - 1 - yGap) & 0x07;
-				rowOffset = (sprite.Height - 1 - yGap) >> 3;
-			} else {
-				yOffset = yGap & 0x07;
-				rowOffset = yGap >> 3;
-			}
-
-			uint8_t row = (tileRow + rowOffset) & 0x0F;
-
-			for(int j = sprite.X; j < sprite.X + sprite.Width && j < 256; j++) {
-				uint32_t outOffset = scanline * size.Width + (256 + j);
-				if(filled[outOffset]) {
-					continue;
+			for(int x = 0; x < sprite.Width; x++) {
+				int xPos = 256 + sprite.X + x;
+				if(xPos >= (int)size.Width) {
+					break;
 				}
 
-				uint8_t xOffset;
-				int columnOffset;
-				if(sprite.HorizontalMirror) {
-					xOffset = (sprite.Width - (j - sprite.X) - 1) & 0x07;
-					columnOffset = (sprite.Width - (j - sprite.X) - 1) >> 3;
-				} else {
-					xOffset = (j - sprite.X) & 0x07;
-					columnOffset = (j - sprite.X) >> 3;
-				}
-
-				uint8_t column = (tileColumn + columnOffset) & 0x0F;
-				uint8_t tileIndex = (row << 4) | column;
-				uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (sprite.UseSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
-
-				uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1);
+				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
 				if(color != 0) {
-					if(options.SelectedSprite == i / 4) {
-						filled[outOffset] = true;
-					}
-					outBuffer[outOffset] = GetRgbPixelColor(palette, color, sprite.Palette + 8, 4, false, 0);
+					uint32_t outOffset = yPos * size.Width + xPos;
+					outBuffer[outOffset] = color;
 				}
 			}
 		}
 	}
 }
 
-DebugSpriteInfo SnesPpuTools::GetSpriteInfo(uint16_t spriteIndex, GetSpritePreviewOptions& options, PpuState& state, uint8_t* oamRam)
+void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint16_t addr = (spriteIndex * 4) & 0x1FF;
 
@@ -218,7 +185,6 @@ DebugSpriteInfo SnesPpuTools::GetSpriteInfo(uint16_t spriteIndex, GetSpritePrevi
 		}
 	}
 
-	DebugSpriteInfo sprite = {};
 	sprite.SpriteIndex = spriteIndex;
 	sprite.X = x;
 	sprite.Y = y;
@@ -231,14 +197,56 @@ DebugSpriteInfo SnesPpuTools::GetSpriteInfo(uint16_t spriteIndex, GetSpritePrevi
 	sprite.VerticalMirror = (flags & 0x80) != 0;
 	sprite.UseSecondTable = (flags & 0x01) != 0;
 	sprite.Visible = visible;
-	return sprite;	
+
+	int tileRow = (sprite.TileIndex & 0xF0) >> 4;
+	int tileColumn = sprite.TileIndex & 0x0F;
+
+	uint8_t yOffset;
+	int rowOffset;
+
+	for(int y = 0; y < sprite.Height; y++) {
+		if(sprite.VerticalMirror) {
+			yOffset = (sprite.Height - y - 1) & 0x07;
+			rowOffset = (sprite.Height - y - 1) >> 3;
+		} else {
+			yOffset = y & 0x07;
+			rowOffset = y >> 3;
+		}
+
+		uint8_t row = (tileRow + rowOffset) & 0x0F;
+
+		for(int x = 0; x < sprite.Width; x++) {
+			uint32_t outOffset = y * sprite.Width + x;
+
+			uint8_t xOffset;
+			int columnOffset;
+			if(sprite.HorizontalMirror) {
+				xOffset = (sprite.Width - x - 1) & 0x07;
+				columnOffset = (sprite.Width - x - 1) >> 3;
+			} else {
+				xOffset = x & 0x07;
+				columnOffset = x >> 3;
+			}
+
+			uint8_t column = (tileColumn + columnOffset) & 0x0F;
+			uint8_t tileIndex = (row << 4) | column;
+			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (sprite.UseSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+
+			uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1);
+			if(color != 0) {
+				sprite.SpritePreview[outOffset] = GetRgbPixelColor(palette, color, sprite.Palette + 8, 4, false, 0);
+			} else {
+				sprite.SpritePreview[outOffset] = 0;
+			}
+		}
+	}
 }
 
-uint32_t SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* oamRam, DebugSpriteInfo outBuffer[])
+uint32_t SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
 	PpuState& state = (PpuState&)baseState;
 	for(int i = 0; i < 128; i++) {
-		outBuffer[i] = GetSpriteInfo(i, options, state, oamRam);
+		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 	return 128;
 }

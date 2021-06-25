@@ -186,14 +186,18 @@ namespace Mesen.Interop
 			return size;
 		}
 
-		[DllImport(DllPath)] private static extern UInt32 GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] spriteRam, [In,Out]DebugSpriteInfo[] sprites);
-		public static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] spriteRam) where T : struct, BaseState
+		[DllImport(DllPath)] private static extern UInt32 GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, [In,Out]DebugSpriteInfo[] sprites);
+		public static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette) where T : struct, BaseState
 		{
-			DebugSpriteInfo[] sprites = new DebugSpriteInfo[256];
+			DebugSpriteInfo[] sprites = new DebugSpriteInfo[128];
+			for(int i = 0; i < 128; i++) {
+				sprites[i].SpritePreview = new UInt32[64 * 64];
+			}
+
 			int len = Marshal.SizeOf(typeof(T));
 			IntPtr statePtr = Marshal.AllocHGlobal(len);
 			Marshal.StructureToPtr(state, statePtr, false);
-			UInt32 spriteCount = DebugApi.GetSpriteList(cpuType, options, statePtr, spriteRam, sprites);
+			UInt32 spriteCount = DebugApi.GetSpriteList(cpuType, options, statePtr, vram, spriteRam, palette, sprites);
 			Array.Resize(ref sprites, (int)spriteCount);
 			Marshal.FreeHGlobal(statePtr);
 			return sprites;
@@ -768,6 +772,9 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirror;
 		[MarshalAs(UnmanagedType.I1)] public bool UseSecondTable;
 		[MarshalAs(UnmanagedType.I1)] public bool Visible;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 64 * 64)]
+		public UInt32[] SpritePreview;
 	}
 
 	public enum TileFormat

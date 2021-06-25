@@ -91,29 +91,13 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	std::fill(outBuffer, outBuffer + 256 * 240, 0xFF666666);
 	std::fill(outBuffer + 256 * 240, outBuffer + 256 * 256, 0xFF333333);
 
+	DebugSpriteInfo sprite;
 	for(int i = 0x100 - 4; i >= 0; i -= 4) {
-		DebugSpriteInfo sprite = GetSpriteInfo(i / 4, options, state, oamRam);
-
-		uint16_t tileStart;
-		if(largeSprites) {
-			if(sprite.TileIndex & 0x01) {
-				tileStart = 0x1000 | ((sprite.TileIndex & 0xFE) * 16);
-			} else {
-				tileStart = 0x0000 | (sprite.TileIndex * 16);
-			}
-		} else {
-			tileStart = (sprite.TileIndex * 16) | sprAddr;
-		}
+		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			if(sprite.Y + y >= 256) {
 				break;
-			}
-
-			uint8_t lineOffset = sprite.VerticalMirror ? (sprite.Height - 1 - y) : y;
-			uint16_t pixelStart = tileStart + lineOffset;
-			if(largeSprites && lineOffset >= 8) {
-				pixelStart += 8;
 			}
 
 			for(int x = 0; x < sprite.Width; x++) {
@@ -121,12 +105,9 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 					break;
 				}
 				
-				uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
-				uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 8);
-
-				if(color > 0) {
-					uint32_t outOffset = ((sprite.Y + y) * 256) + sprite.X + x;
-					outBuffer[outOffset] = palette[16 + (sprite.Palette * 4) + color];
+				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
+				if(color != 0) {
+					outBuffer[((sprite.Y + y) * 256) + sprite.X + x] = color;
 				}
 			}
 		}
@@ -138,10 +119,8 @@ FrameInfo NesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& stat
 	return { 512, 480 };
 }
 
-DebugSpriteInfo NesPpuTools::GetSpriteInfo(uint32_t i, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* oamRam)
+void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
-	DebugSpriteInfo sprite = {};
-
 	sprite.SpriteIndex = i;
 	sprite.Y = oamRam[i * 4] + 1;
 	sprite.X = oamRam[i * 4 + 3];
@@ -158,14 +137,44 @@ DebugSpriteInfo NesPpuTools::GetSpriteInfo(uint32_t i, GetSpritePreviewOptions& 
 	bool largeSprites = (state.ControlReg & 0x20) ? true : false;
 	sprite.Height = largeSprites ? 16 : 8;
 
-	return sprite;
+	uint16_t sprAddr = (state.ControlReg & 0x08) ? 0x1000 : 0x0000;
+	uint16_t tileStart;
+	if(largeSprites) {
+		if(sprite.TileIndex & 0x01) {
+			tileStart = 0x1000 | ((sprite.TileIndex & 0xFE) * 16);
+		} else {
+			tileStart = 0x0000 | (sprite.TileIndex * 16);
+		}
+	} else {
+		tileStart = (sprite.TileIndex * 16) | sprAddr;
+	}
+
+	for(int y = 0; y < sprite.Height; y++) {
+		uint8_t lineOffset = sprite.VerticalMirror ? (sprite.Height - 1 - y) : y;
+		uint16_t pixelStart = tileStart + lineOffset;
+		if(largeSprites && lineOffset >= 8) {
+			pixelStart += 8;
+		}
+
+		for(int x = 0; x < sprite.Width; x++) {
+			uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
+			uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 8);
+
+			uint32_t outOffset = (y * sprite.Width) + x;
+			if(color > 0) {
+				sprite.SpritePreview[outOffset] = palette[16 + (sprite.Palette * 4) + color];
+			} else {
+				sprite.SpritePreview[outOffset] = 0;
+			}
+		}
+	}
 }
 
-uint32_t NesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* oamRam, DebugSpriteInfo outBuffer[])
+uint32_t NesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
 	NesPpuState& state = (NesPpuState&)baseState;
 	for(int i = 0; i < 64; i++) {
-		outBuffer[i] = GetSpriteInfo(i, options, state, oamRam);
+		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 	return 64;
 }

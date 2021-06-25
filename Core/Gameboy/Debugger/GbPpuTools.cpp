@@ -60,50 +60,23 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, 0xFF888866);
 	}
 
-	bool isCgb = state.CgbEnabled;
-	bool largeSprites = state.LargeSprites;
-	uint8_t height = largeSprites ? 16 : 8;
-	constexpr uint8_t width = 8;
+	DebugSpriteInfo sprite;
+	for(int i = 0; i < 0xA0; i += 4) {
+		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
 
-	uint8_t filled[256];
-	for(int row = 0; row < 256; row++) {
-		std::fill(filled, filled + 256, 0xFF);
-
-		for(int i = 0; i < 0xA0; i += 4) {
-			DebugSpriteInfo sprite = GetSpriteInfo(i / 4, options, state, oamRam);
-			if(sprite.Y > row || sprite.Y + height <= row) {
-				continue;
+		for(int y = 0; y < sprite.Height; y++) {
+			if(sprite.Y + y > 256) {
+				break;
 			}
 
-			int y = row - sprite.Y;
-			uint8_t tileIndex = (uint8_t)sprite.TileIndex;
-			uint16_t tileBank = sprite.UseSecondTable ? 0x2000 : 0x0000;
-			if(largeSprites) {
-				tileIndex &= 0xFE;
-			}
-
-			uint16_t tileStart = tileIndex * 16;
-			tileStart |= tileBank;
-
-			uint16_t pixelStart = tileStart + (sprite.VerticalMirror ? (height - 1 - y) : y) * 2;
-			for(int x = 0; x < width; x++) {
+			for(int x = 0; x < sprite.Width; x++) {
 				if(sprite.X + x >= 256) {
 					break;
-				} else if(filled[sprite.X + x] < sprite.X) {
-					continue;
 				}
 
-				uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
-				uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 1);
-
-				if(color > 0) {
-					uint32_t outOffset = (row * 256) + sprite.X + x;
-					if(!isCgb) {
-						outBuffer[outOffset] = palette[4 + (sprite.Palette * 4) + color];
-					} else {
-						outBuffer[outOffset] = palette[32 + (sprite.Palette * 4) + color];
-					}
-					filled[sprite.X + x] = (uint8_t)sprite.X;
+				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
+				if(color != 0) {
+					outBuffer[((sprite.Y + y) * 256) + sprite.X + x] = color;
 				}
 			}
 		}
@@ -120,10 +93,8 @@ FrameInfo GbPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, Base
 	return { 256, 256 };
 }
 
-DebugSpriteInfo GbPpuTools::GetSpriteInfo(uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* oamRam)
+void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
-	DebugSpriteInfo sprite = {};
-	
 	sprite.SpriteIndex = i;
 	sprite.Y = oamRam[i*4];
 
@@ -138,15 +109,42 @@ DebugSpriteInfo GbPpuTools::GetSpriteInfo(uint16_t i, GetSpritePreviewOptions& o
 	sprite.Visible = sprite.X > 0 && sprite.Y > 0 && sprite.Y < 160 && sprite.X < 168;
 	sprite.Width = 8;
 	sprite.Height = state.LargeSprites ? 16 : 8;
+	
+	uint8_t tileIndex = (uint8_t)sprite.TileIndex;
+	uint16_t tileBank = sprite.UseSecondTable ? 0x2000 : 0x0000;
+	if(state.LargeSprites) {
+		tileIndex &= 0xFE;
+	}
 
-	return sprite;
+	uint16_t tileStart = tileIndex * 16;
+	tileStart |= tileBank;
+
+	for(int y = 0; y < sprite.Height; y++) {
+		uint16_t pixelStart = tileStart + (sprite.VerticalMirror ? (sprite.Height - 1 - y) : y) * 2;
+		bool isCgb = state.CgbEnabled;
+		for(int x = 0; x < sprite.Width; x++) {
+			uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
+			uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 1);
+
+			uint32_t outOffset = (y * sprite.Width) + x;
+			if(color > 0) {
+				if(!isCgb) {
+					sprite.SpritePreview[outOffset] = palette[4 + (sprite.Palette * 4) + color];
+				} else {
+					sprite.SpritePreview[outOffset] = palette[32 + (sprite.Palette * 4) + color];
+				}
+			} else {
+				sprite.SpritePreview[outOffset] = 0;
+			}
+		}
+	}
 }
 
-uint32_t GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* oamRam, DebugSpriteInfo outBuffer[])
+uint32_t GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	for(int i = 0; i < 40; i++) {
-		outBuffer[i] = GetSpriteInfo(i, options, state, oamRam);
+		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 	return 40;
 }
