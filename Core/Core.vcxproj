@@ -364,6 +364,7 @@
     <ClInclude Include="SNES\Input\SnesMouse.h" />
     <ClInclude Include="Shared\Audio\SoundMixer.h" />
     <ClInclude Include="Shared\Audio\SoundResampler.h" />
+    <ClInclude Include="SNES\SnesState.h" />
     <ClInclude Include="SNES\Spc.h" />
     <ClInclude Include="SNES\Coprocessors\SPC7110\Spc7110.h" />
     <ClInclude Include="SNES\Coprocessors\SPC7110\Spc7110Decomp.h" />

@@ -14,22 +14,22 @@ namespace Mesen.Debugger
 			switch(cpuType) {
 				case CpuType.Cpu:
 				case CpuType.Sa1: {
-					CpuState state = DebugApi.GetState<CpuState>(cpuType);
+					CpuState state = DebugApi.GetCpuState<CpuState>(cpuType);
 					return (uint)(state.K << 16) | state.PC;
 				}
 
 				case CpuType.Spc: {
-					SpcState state = DebugApi.GetState<SpcState>(cpuType);
+					SpcState state = DebugApi.GetCpuState<SpcState>(cpuType);
 					return (uint)state.PC;
 				}
 
 				case CpuType.Gameboy: {
-					GbCpuState state = DebugApi.GetState<GbCpuState>(cpuType);
+					GbCpuState state = DebugApi.GetCpuState<GbCpuState>(cpuType);
 					return (uint)state.PC;
 				}
 
 				case CpuType.Nes: {
-					NesCpuState state = DebugApi.GetState<NesCpuState>(cpuType);
+					NesCpuState state = DebugApi.GetCpuState<NesCpuState>(cpuType);
 					return (uint)state.PC;
 				}
 

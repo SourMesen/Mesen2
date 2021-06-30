@@ -395,9 +395,9 @@ void Debugger::BreakImmediately(BreakSource source)
 	SleepUntilResume(source);
 }
 
-void Debugger::GetState(BaseState &dstState, CpuType cpuType)
+void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)
 {
-	BaseState& srcState = GetStateRef(cpuType);
+	BaseState& srcState = GetCpuStateRef(cpuType);
 	switch(cpuType) {
 		case CpuType::Cpu: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
 		case CpuType::Spc: memcpy(&dstState, &srcState, sizeof(SpcState)); break;
@@ -410,7 +410,7 @@ void Debugger::GetState(BaseState &dstState, CpuType cpuType)
 	}
 }
 
-BaseState& Debugger::GetStateRef(CpuType cpuType)
+BaseState& Debugger::GetCpuStateRef(CpuType cpuType)
 {
 	return _debuggers[(int)cpuType].Debugger->GetState();
 }
@@ -439,6 +439,12 @@ void Debugger::GetPpuState(BaseState& state, CpuType cpuType)
 		}
 	}
 }
+
+void Debugger::GetConsoleState(BaseState& state, ConsoleType consoleType)
+{
+	_console->GetConsoleState(state, consoleType);
+}
+
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 {
 	return _console->GetAbsoluteAddress(relAddress);

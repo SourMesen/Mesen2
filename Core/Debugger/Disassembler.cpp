@@ -342,7 +342,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 				case CpuType::Cpu:
 				case CpuType::Sa1:
 				{
-					CpuState state = (CpuState&)_debugger->GetStateRef(lineCpuType);
+					CpuState state = (CpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 					state.K = (row.CpuAddress >> 16);
 
@@ -366,7 +366,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 
 				case CpuType::Spc:
 				{
-					SpcState state = (SpcState&)_debugger->GetStateRef(lineCpuType);
+					SpcState state = (SpcState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
 					if(!disInfo.IsInitialized()) {
@@ -388,7 +388,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 
 				case CpuType::Gsu:
 				{
-					GsuState state = (GsuState&)_debugger->GetStateRef(lineCpuType);
+					GsuState state = (GsuState&)_debugger->GetCpuStateRef(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Gsu);
 					} else {
@@ -421,7 +421,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 
 				case CpuType::Gameboy:
 				{
-					GbCpuState state = (GbCpuState&)_debugger->GetStateRef(lineCpuType);
+					GbCpuState state = (GbCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Gameboy);
 					} else {
@@ -436,7 +436,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 
 				case CpuType::Nes:
 				{
-					NesCpuState state = (NesCpuState&)_debugger->GetStateRef(lineCpuType);
+					NesCpuState state = (NesCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Nes);
 					} else {

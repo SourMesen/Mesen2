@@ -17,6 +17,8 @@
 #include "Gameboy/GbPpu.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
+#include "SNES/SnesState.h"
+#include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/Coprocessors/MSU1/Msu1.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
@@ -466,5 +468,39 @@ AddressInfo Console::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType
 
 		default:
 			return { -1, SnesMemoryType::Register };
+	}
+}
+
+void Console::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
+{
+	if(consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor) {
+		_cart->GetGameboy()->GetConsoleState(baseState, consoleType);
+		return;
+	}
+
+	SnesState& state = (SnesState&)baseState;
+	state.MasterClock = GetMasterClock();
+	state.Cpu = _cpu->GetState();
+	_ppu->GetState(state.Ppu, false);
+	state.Spc = _spc->GetState();
+	state.Dsp = _spc->GetDspState();
+
+	for(int i = 0; i < 8; i++) {
+		state.DmaChannels[i] = _dmaController->GetChannelConfig(i);
+	}
+	state.InternalRegs = _internalRegisters->GetState();
+	state.Alu = _internalRegisters->GetAluState();
+
+	if(_cart->GetDsp()) {
+		state.NecDsp = _cart->GetDsp()->GetState();
+	}
+	if(_cart->GetSa1()) {
+		state.Sa1 = _cart->GetSa1()->GetState();
+	}
+	if(_cart->GetGsu()) {
+		state.Gsu = _cart->GetGsu()->GetState();
+	}
+	if(_cart->GetCx4()) {
+		state.Cx4 = _cart->GetCx4()->GetState();
 	}
 }

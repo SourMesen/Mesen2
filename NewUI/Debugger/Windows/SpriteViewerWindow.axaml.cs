@@ -90,9 +90,7 @@ namespace Mesen.Debugger.Windows
 				}
 			} else {
 				for(int i = 0; i < sprites.Length; i++) {
-					SpritePreviewModel model = new SpritePreviewModel();
-					model.Init(ref sprites[i]);
-					_previewPanels[i].DataContext = model;
+					((SpritePreviewModel)_previewPanels[i].DataContext!).Init(ref sprites[i]);
 				}
 			}
 		}

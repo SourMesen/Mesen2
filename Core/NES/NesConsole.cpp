@@ -344,6 +344,17 @@ AddressInfo NesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuT
 	return addr;
 }
 
+void NesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
+{
+	NesState& state = (NesState&)baseState;
+
+	state.ClockRate = GetMasterClockRate();
+	state.Cpu = _cpu->GetState();
+	_ppu->GetState(state.Ppu);
+	state.Cartridge = _mapper->GetState();
+	state.Apu = _apu->GetState();
+}
+
 uint64_t NesConsole::GetMasterClock()
 {
 	return _cpu->GetCycleCount();

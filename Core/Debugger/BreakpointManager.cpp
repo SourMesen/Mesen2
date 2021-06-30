@@ -82,7 +82,7 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 		return -1;
 	}
 
-	BaseState& state =_debugger->GetStateRef(_cpuType);
+	BaseState& state =_debugger->GetCpuStateRef(_cpuType);
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)type];
 	for(size_t i = 0; i < breakpoints.size(); i++) {

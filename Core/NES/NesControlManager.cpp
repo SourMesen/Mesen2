@@ -236,7 +236,6 @@ void NesControlManager::Serialize(Serializer& s)
 	//This is particularely important to ensure proper sync during NetPlay
 	EmuSettings* settings = _emu->GetSettings();
 	ControllerType controllerTypes[4];
-	NesModel nesModel;
 	ExpansionPortDevice expansionDevice;
 	ConsoleType consoleType;
 	bool hasFourScore = false;
@@ -244,7 +243,7 @@ void NesControlManager::Serialize(Serializer& s)
 	uint32_t zapperDetectionRadius = 0;
 	if(s.IsSaving()) {
 		//TODO
-		/*nesModel = _console->GetModel();
+		/*
 		expansionDevice = settings->GetExpansionDevice();
 		consoleType = settings->GetConsoleType();
 		hasFourScore = settings->CheckFlag(EmulationFlags::HasFourScore);
@@ -256,11 +255,11 @@ void NesControlManager::Serialize(Serializer& s)
 	}
 
 	ArrayInfo<ControllerType> types = { controllerTypes, 4 };
-	s.Stream(nesModel, expansionDevice, consoleType, types, hasFourScore, useNes101Hvc101Behavior, zapperDetectionRadius, _lagCounter, _pollCounter);
+	s.Stream(expansionDevice, consoleType, types, hasFourScore, useNes101Hvc101Behavior, zapperDetectionRadius, _lagCounter, _pollCounter);
 
 	if(!s.IsSaving()) {
 		//TODO
-		/*settings->SetRegion(nesModel);
+		/*
 		settings->SetExpansionDevice(expansionDevice);
 		settings->SetConsoleType(consoleType);
 		for(int i = 0; i < 4; i++) {

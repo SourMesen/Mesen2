@@ -378,10 +378,11 @@ enum class AudioChannel
 	Sunsoft5B = 10
 };
 
-enum class NesModel
+struct NesState : public BaseState
 {
-	Auto = 0,
-	NTSC = 1,
-	PAL = 2,
-	Dendy = 3,
+	NesCpuState Cpu;
+	NesPpuState Ppu;
+	CartridgeState Cartridge;
+	ApuState Apu;
+	uint32_t ClockRate;
 };

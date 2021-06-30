@@ -111,10 +111,12 @@ public:
 	void ProcessBreakConditions(bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
 	void SleepUntilResume(BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
 
-	void GetState(BaseState &state, CpuType cpuType);
-	BaseState& GetStateRef(CpuType cpuType);
+	void GetCpuState(BaseState &state, CpuType cpuType);
+	BaseState& GetCpuStateRef(CpuType cpuType);
 
 	void GetPpuState(BaseState& state, CpuType cpuType);
+
+	void GetConsoleState(BaseState& state, ConsoleType consoleType);
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);

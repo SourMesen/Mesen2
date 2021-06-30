@@ -811,6 +811,7 @@
     <ClInclude Include="SNES\Debugger\SnesPpuTools.h" />
     <ClInclude Include="Gameboy\Debugger\GbPpuTools.h" />
     <ClInclude Include="NES\Debugger\NesPpuTools.h" />
+    <ClInclude Include="SNES\SnesState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\Cpu.cpp">

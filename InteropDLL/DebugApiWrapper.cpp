@@ -64,7 +64,8 @@ extern "C"
 	DllExport void __stdcall GetProfilerData(CpuType cpuType, ProfiledFunction* profilerData, uint32_t& functionCount) { GetDebugger()->GetCallstackManager(cpuType)->GetProfiler()->GetProfilerData(profilerData, functionCount); }
 	DllExport void __stdcall ResetProfiler(CpuType cpuType) { GetDebugger()->GetCallstackManager(cpuType)->GetProfiler()->Reset(); }
 
-	DllExport void __stdcall GetState(BaseState& state, CpuType cpuType) { GetDebugger()->GetState(state, cpuType); }
+	DllExport void __stdcall GetConsoleState(BaseState& state, ConsoleType consoleType) { GetDebugger()->GetConsoleState(state, consoleType); }
+	DllExport void __stdcall GetCpuState(BaseState& state, CpuType cpuType) { GetDebugger()->GetCpuState(state, cpuType); }
 	DllExport void __stdcall GetPpuState(BaseState& state, CpuType cpuType) { GetDebugger()->GetPpuState(state, cpuType); }
 	
 	DllExport const char* __stdcall GetDebuggerLog()

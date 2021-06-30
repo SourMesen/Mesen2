@@ -64,30 +64,28 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
-		[DllImport(DllPath, EntryPoint = "GetState")] private static extern void GetState(IntPtr state, CpuType cpuType);
-		
-		public static T GetState<T>(CpuType cpuType) where T : struct, BaseState
+		[DllImport(DllPath)] private static extern void GetCpuState(IntPtr state, CpuType cpuType);
+		public unsafe static T GetCpuState<T>(CpuType cpuType) where T : struct, BaseState
 		{
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr ptr = Marshal.AllocHGlobal(len);
-			DebugApi.GetState(ptr, cpuType);
-
-			T state = Marshal.PtrToStructure<T>(ptr);
-			Marshal.FreeHGlobal(ptr);
-			return state;
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			DebugApi.GetCpuState((IntPtr)ptr, cpuType);
+			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetPpuState")] private static extern void GetPpuState(IntPtr state, CpuType cpuType);
-
-		public static T GetPpuState<T>(CpuType cpuType) where T : struct, BaseState
+		[DllImport(DllPath)] private static extern void GetPpuState(IntPtr state, CpuType cpuType);
+		public unsafe static T GetPpuState<T>(CpuType cpuType) where T : struct, BaseState
 		{
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr ptr = Marshal.AllocHGlobal(len);
-			DebugApi.GetPpuState(ptr, cpuType);
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			DebugApi.GetPpuState((IntPtr)ptr, cpuType);
+			return Marshal.PtrToStructure<T>((IntPtr)ptr);
+		}
 
-			T state = Marshal.PtrToStructure<T>(ptr);
-			Marshal.FreeHGlobal(ptr);
-			return state;
+		[DllImport(DllPath)] private static extern void GetConsoleState(IntPtr state, ConsoleType consoleType);
+		public unsafe static T GetConsoleState<T>(ConsoleType consoleType) where T : struct, BaseState
+		{
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			DebugApi.GetConsoleState((IntPtr)ptr, consoleType);
+			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
 		[DllImport(DllPath)] public static extern void SetScriptTimeout(UInt32 timeout);
@@ -131,7 +129,7 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
-		public static void GetTilemap<T>(CpuType cpuType, GetTilemapOptions options, T state, byte[] vram, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
+		public unsafe static void GetTilemap<T>(CpuType cpuType, GetTilemapOptions options, T state, byte[] vram, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
 		{
 			GCHandle? handle = null;
 			IntPtr compareVramPtr = IntPtr.Zero;
@@ -141,65 +139,49 @@ namespace Mesen.Interop
 				compareVramPtr = handle.Value.AddrOfPinnedObject();
 			}
 
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr statePtr = Marshal.AllocHGlobal(len);
-			Marshal.StructureToPtr(state, statePtr, false);
+			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
 			InteropGetTilemapOptions interopOptions = options.ToInterop();
 			interopOptions.CompareVram = compareVramPtr;
-			DebugApi.GetTilemap(cpuType, interopOptions, statePtr, vram, palette, outputBuffer);
-
-			Marshal.FreeHGlobal(statePtr);
+			DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, vram, palette, outputBuffer);
 			handle?.Free();
 		}
 
 		[DllImport(DllPath)] private static extern FrameInfo GetTilemapSize(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state);
-		public static FrameInfo GetTilemapSize<T>(CpuType cpuType, GetTilemapOptions options, T state) where T : struct, BaseState
+		public unsafe static FrameInfo GetTilemapSize<T>(CpuType cpuType, GetTilemapOptions options, T state) where T : struct, BaseState
 		{
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr ptr = Marshal.AllocHGlobal(len);
-			Marshal.StructureToPtr(state, ptr, false);
-			FrameInfo size = DebugApi.GetTilemapSize(cpuType, options.ToInterop(), ptr);
-			Marshal.FreeHGlobal(ptr);
-			return size;
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
+			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), (IntPtr)ptr);
 		}
 
 		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
 
 		[DllImport(DllPath)] private static extern void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr buffer);
-		public static void GetSpritePreview<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
+		public unsafe static void GetSpritePreview<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
 		{
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr statePtr = Marshal.AllocHGlobal(len);
-			Marshal.StructureToPtr(state, statePtr, false);
-			DebugApi.GetSpritePreview(cpuType, options, statePtr, vram, spriteRam, palette, outputBuffer);
-			Marshal.FreeHGlobal(statePtr);
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
+			DebugApi.GetSpritePreview(cpuType, options, (IntPtr)ptr, vram, spriteRam, palette, outputBuffer);
 		}
 
 		[DllImport(DllPath)] private static extern FrameInfo GetSpritePreviewSize(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state);
-		public static FrameInfo GetSpritePreviewSize<T>(CpuType cpuType, GetSpritePreviewOptions options, T state) where T : struct, BaseState
+		public unsafe static FrameInfo GetSpritePreviewSize<T>(CpuType cpuType, GetSpritePreviewOptions options, T state) where T : struct, BaseState
 		{
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr ptr = Marshal.AllocHGlobal(len);
-			Marshal.StructureToPtr(state, ptr, false);
-			FrameInfo size = DebugApi.GetSpritePreviewSize(cpuType, options, ptr);
-			Marshal.FreeHGlobal(ptr);
-			return size;
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
+			return DebugApi.GetSpritePreviewSize(cpuType, options, (IntPtr)ptr);
 		}
 
 		[DllImport(DllPath)] private static extern UInt32 GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, [In,Out]DebugSpriteInfo[] sprites);
-		public static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette) where T : struct, BaseState
+		public unsafe static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette) where T : struct, BaseState
 		{
 			DebugSpriteInfo[] sprites = new DebugSpriteInfo[128];
-			for(int i = 0; i < 128; i++) {
-				sprites[i].SpritePreview = new UInt32[64 * 64];
-			}
 
-			int len = Marshal.SizeOf(typeof(T));
-			IntPtr statePtr = Marshal.AllocHGlobal(len);
-			Marshal.StructureToPtr(state, statePtr, false);
-			UInt32 spriteCount = DebugApi.GetSpriteList(cpuType, options, statePtr, vram, spriteRam, palette, sprites);
+			byte* statePtr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Marshal.StructureToPtr(state, (IntPtr)statePtr, false);
+			UInt32 spriteCount = DebugApi.GetSpriteList(cpuType, options, (IntPtr)statePtr, vram, spriteRam, palette, sprites);
 			Array.Resize(ref sprites, (int)spriteCount);
-			Marshal.FreeHGlobal(statePtr);
 			return sprites;
 		}
 

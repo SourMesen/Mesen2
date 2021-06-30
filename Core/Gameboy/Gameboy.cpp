@@ -198,6 +198,11 @@ GbState Gameboy::GetState()
 	return state;
 }
 
+void Gameboy::GetConsoleState(BaseState& state, ConsoleType consoleType)
+{
+	(GbState&)state = GetState();
+}
+
 uint32_t Gameboy::DebugGetMemorySize(SnesMemoryType type)
 {
 	switch(type) {

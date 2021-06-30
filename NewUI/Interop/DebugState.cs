@@ -920,7 +920,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool NMIFlag;
 	};
 
-	public struct DebugState
+	public struct SnesState : BaseState
 	{
 		public UInt64 MasterClock;
 		public CpuState Cpu;
@@ -931,8 +931,6 @@ namespace Mesen.Interop
 		public DebugSa1State Sa1;
 		public GsuState Gsu;
 		public Cx4State Cx4;
-		
-		public GbState Gameboy;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
 		public DmaChannelConfig[] DmaChannels;
@@ -981,4 +979,194 @@ namespace Mesen.Interop
 		DMC = 4,
 		FdsDisk = 8,
 	}
+
+
+	public struct DebugState
+	{
+		public NesCpuState Cpu;
+		public NesPpuState Ppu;
+		public CartridgeState Cartridge;
+		public NesApuState Apu;
+		public UInt32 ClockRate;
+	}
+
+	public enum NesPrgMemoryType
+	{
+		PrgRom,
+		SaveRam,
+		WorkRam,
+	}
+
+	public enum NesChrMemoryType
+	{
+		Default,
+		ChrRom,
+		ChrRam,
+		NametableRam
+	}
+
+	public enum NesMemoryAccessType
+	{
+		Unspecified = -1,
+		NoAccess = 0x00,
+		Read = 0x01,
+		Write = 0x02,
+		ReadWrite = 0x03
+	}
+
+	public struct CartridgeState
+	{
+		public UInt32 PrgRomSize;
+		public UInt32 ChrRomSize;
+		public UInt32 ChrRamSize;
+
+		public UInt32 PrgPageCount;
+		public UInt32 PrgPageSize;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
+		public Int32[] PrgMemoryOffset;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
+		public NesPrgMemoryType[] PrgMemoryType;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
+		public NesMemoryAccessType[] PrgMemoryAccess;
+
+		public UInt32 ChrPageCount;
+		public UInt32 ChrPageSize;
+		public UInt32 ChrRamPageSize;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40)]
+		public Int32[] ChrMemoryOffset;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40)]
+		public NesChrMemoryType[] ChrMemoryType;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40)]
+		public NesMemoryAccessType[] ChrMemoryAccess;
+
+		public UInt32 WorkRamPageSize;
+		public UInt32 SaveRamPageSize;
+
+		public NesMirroringType Mirroring;
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool HasBattery;
+	}
+
+	public enum NesMirroringType
+	{
+		Horizontal,
+		Vertical,
+		ScreenAOnly,
+		ScreenBOnly,
+		FourScreens
+	}
+
+	public struct NesApuLengthCounterState
+	{
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Halt;
+		public Byte Counter;
+		public Byte ReloadValue;
+	}
+
+	public struct NesApuEnvelopeState
+	{
+		[MarshalAs(UnmanagedType.I1)]
+		public bool StartFlag;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Loop;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool ConstantVolume;
+		public Byte Divider;
+		public Byte Counter;
+		public Byte Volume;
+	}
+
+	public struct NesApuSquareState
+	{
+		public Byte Duty;
+		public Byte DutyPosition;
+		public UInt16 Period;
+		public UInt16 Timer;
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool SweepEnabled;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool SweepNegate;
+		public Byte SweepPeriod;
+		public Byte SweepShift;
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Enabled;
+		public Byte OutputVolume;
+		public double Frequency;
+
+		public NesApuLengthCounterState LengthCounter;
+		public NesApuEnvelopeState Envelope;
+	}
+
+	public struct NesApuTriangleState
+	{
+		public UInt16 Period;
+		public UInt16 Timer;
+		public Byte SequencePosition;
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Enabled;
+		public double Frequency;
+		public Byte OutputVolume;
+
+		public NesApuLengthCounterState LengthCounter;
+	}
+
+	public struct NesApuNoiseState
+	{
+		public UInt16 Period;
+		public UInt16 Timer;
+		public UInt16 ShiftRegister;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool ModeFlag;
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Enabled;
+		public double Frequency;
+		public Byte OutputVolume;
+
+		public NesApuLengthCounterState LengthCounter;
+		public NesApuEnvelopeState Envelope;
+	}
+
+	public struct NesApuDmcState
+	{
+		public double SampleRate;
+		public UInt16 SampleAddr;
+		public UInt16 SampleLength;
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool Loop;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool IrqEnabled;
+		public UInt16 Period;
+		public UInt16 Timer;
+		public UInt16 BytesRemaining;
+
+		public Byte OutputVolume;
+	}
+
+	public struct NesApuFrameCounterState
+	{
+		[MarshalAs(UnmanagedType.I1)]
+		public bool FiveStepMode;
+		public Byte SequencePosition;
+		[MarshalAs(UnmanagedType.I1)]
+		public bool IrqEnabled;
+	}
+
+	public struct NesApuState
+	{
+		public NesApuSquareState Square1;
+		public NesApuSquareState Square2;
+		public NesApuTriangleState Triangle;
+		public NesApuNoiseState Noise;
+		public NesApuDmcState Dmc;
+		public NesApuFrameCounterState FrameCounter;
+	}
+
 }

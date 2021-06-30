@@ -382,7 +382,7 @@ enum class GbType
 	Cgb = 1,
 };
 
-struct GbState
+struct GbState : public BaseState
 {
 	GbType Type;
 	GbCpuState Cpu;
