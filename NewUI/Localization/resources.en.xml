@@ -855,7 +855,7 @@
 			<Control ID="colValue">Value</Control>
 			<Control ID="colDetails">Details</Control>
 		</Form>
-		
+
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
 			<Control ID="btnReset">Reset</Control>
@@ -871,6 +871,15 @@
 			<Control ID="colMaxCycles">Max. Cycles</Control>
 		</Form>
 		
+		<Form ID="RegisterViewerWindow">
+			<Control ID="wndTitle">Register Viewer</Control>
+
+			<Control ID="colAddress">Address</Control>
+			<Control ID="colName">Name</Control>
+			<Control ID="colValue">Value</Control>
+			<Control ID="colValueHex">Value (Hex)</Control>
+		</Form>
+
 		<Form ID="BreakpointEditWindow">
 			<Control ID="wndTitle">Edit breakpoint...</Control>
 			<Control ID="chkBreakOnRead">Read</Control>

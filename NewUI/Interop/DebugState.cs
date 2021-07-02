@@ -630,7 +630,7 @@ namespace Mesen.Interop
 	{
 		public UInt64 CycleCount;
 		public UInt64 ApuCycleCount;
-		
+
 		public byte CgbWorkRamBank;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbSwitchSpeedRequest;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbHighSpeed;
@@ -651,13 +651,13 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public byte[] IsReadRegister;
-		
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public byte[] IsWriteRegister;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public GbMemoryType[] MemoryType;
-		
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public UInt32[] MemoryOffset;
 
@@ -700,7 +700,7 @@ namespace Mesen.Interop
 		Cgb = 1,
 	}
 
-	public struct GbState
+	public struct GbState : BaseState
 	{
 		public GbType Type;
 		public GbCpuState Cpu;
@@ -797,7 +797,7 @@ namespace Mesen.Interop
 
 		public byte CgbObjPalPosition;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbObjPalAutoInc;
-		
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4 * 8)]
 		public UInt16[] CgbObjPalettes;
 	}
@@ -958,6 +958,13 @@ namespace Mesen.Interop
 		public UInt16 BusAddress;
 		public byte MemoryReadBuffer;
 		public byte ControlReg;
+		public byte MaskReg;
+
+		public UInt16 VideoRamAddr;
+		public UInt16 TmpVideoRamAddr;
+		public byte ScrollX;
+		[MarshalAs(UnmanagedType.I1)] public bool WriteToggle;
+		public byte SpriteRamAddr;
 	};
 
 	[Flags]
@@ -980,12 +987,11 @@ namespace Mesen.Interop
 		FdsDisk = 8,
 	}
 
-
-	public struct DebugState
+	public struct NesState : BaseState
 	{
 		public NesCpuState Cpu;
 		public NesPpuState Ppu;
-		public CartridgeState Cartridge;
+		public NesCartridgeState Cartridge;
 		public NesApuState Apu;
 		public UInt32 ClockRate;
 	}
@@ -1014,7 +1020,61 @@ namespace Mesen.Interop
 		ReadWrite = 0x03
 	}
 
-	public struct CartridgeState
+	public enum MapperStateValueType
+	{
+		None,
+		String,
+		Bool,
+		Number8,
+		Number16,
+		Number32
+	}
+
+	public struct MapperStateEntry
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public byte[] Address;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public byte[] Name;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public byte[] Value;
+		public MapperStateValueType Type;
+
+		public string GetAddress() { return ConvertString(Address); }
+		public string GetName() { return ConvertString(Name); }
+
+		public object? GetValue()
+		{
+			switch(Type) {
+				case MapperStateValueType.None: return null;
+
+				case MapperStateValueType.String: return ConvertString(Value);
+				case MapperStateValueType.Bool: return Value[0] != 0;
+				
+				case MapperStateValueType.Number8:
+				case MapperStateValueType.Number16:
+				case MapperStateValueType.Number32:
+					Int64 value = 0;
+					for(int i = 0; i < 8; i++) {
+						value |= (Int64)Value[i] << (i * 8);
+					}
+					return value;
+			}
+
+			throw new Exception("Invalid value type");
+		}
+
+		private string ConvertString(byte[] stringArray)
+		{
+			int length = 0;
+			for(int i = 0; i < 40; i++) {
+				if(stringArray[i] == 0) {
+					length = i;
+					break;
+				}
+			}
+			return Encoding.UTF8.GetString(stringArray, 0, length);
+		}
+	}
+
+	public struct NesCartridgeState
 	{
 		public UInt32 PrgRomSize;
 		public UInt32 ChrRomSize;
@@ -1047,6 +1107,10 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.I1)]
 		public bool HasBattery;
+
+		public UInt32 CustomEntryCount;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
+		public MapperStateEntry[] CustomEntries;
 	}
 
 	public enum NesMirroringType
@@ -1062,8 +1126,8 @@ namespace Mesen.Interop
 	{
 		[MarshalAs(UnmanagedType.I1)]
 		public bool Halt;
-		public Byte Counter;
-		public Byte ReloadValue;
+		public byte Counter;
+		public byte ReloadValue;
 	}
 
 	public struct NesApuEnvelopeState
@@ -1074,15 +1138,15 @@ namespace Mesen.Interop
 		public bool Loop;
 		[MarshalAs(UnmanagedType.I1)]
 		public bool ConstantVolume;
-		public Byte Divider;
-		public Byte Counter;
-		public Byte Volume;
+		public byte Divider;
+		public byte Counter;
+		public byte Volume;
 	}
 
 	public struct NesApuSquareState
 	{
-		public Byte Duty;
-		public Byte DutyPosition;
+		public byte Duty;
+		public byte DutyPosition;
 		public UInt16 Period;
 		public UInt16 Timer;
 
@@ -1090,12 +1154,12 @@ namespace Mesen.Interop
 		public bool SweepEnabled;
 		[MarshalAs(UnmanagedType.I1)]
 		public bool SweepNegate;
-		public Byte SweepPeriod;
-		public Byte SweepShift;
+		public byte SweepPeriod;
+		public byte SweepShift;
 
 		[MarshalAs(UnmanagedType.I1)]
 		public bool Enabled;
-		public Byte OutputVolume;
+		public byte OutputVolume;
 		public double Frequency;
 
 		public NesApuLengthCounterState LengthCounter;
@@ -1106,12 +1170,15 @@ namespace Mesen.Interop
 	{
 		public UInt16 Period;
 		public UInt16 Timer;
-		public Byte SequencePosition;
+		public byte SequencePosition;
 
-		[MarshalAs(UnmanagedType.I1)]
-		public bool Enabled;
+		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
 		public double Frequency;
-		public Byte OutputVolume;
+		public byte OutputVolume;
+
+		public byte LinearCounter;
+		public byte LinearCounterReload;
+		[MarshalAs(UnmanagedType.I1)] public bool LinearReloadFlag;
 
 		public NesApuLengthCounterState LengthCounter;
 	}
@@ -1127,7 +1194,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)]
 		public bool Enabled;
 		public double Frequency;
-		public Byte OutputVolume;
+		public byte OutputVolume;
 
 		public NesApuLengthCounterState LengthCounter;
 		public NesApuEnvelopeState Envelope;
@@ -1147,14 +1214,14 @@ namespace Mesen.Interop
 		public UInt16 Timer;
 		public UInt16 BytesRemaining;
 
-		public Byte OutputVolume;
+		public byte OutputVolume;
 	}
 
 	public struct NesApuFrameCounterState
 	{
 		[MarshalAs(UnmanagedType.I1)]
 		public bool FiveStepMode;
-		public Byte SequencePosition;
+		public byte SequencePosition;
 		[MarshalAs(UnmanagedType.I1)]
 		public bool IrqEnabled;
 	}

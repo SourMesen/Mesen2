@@ -1139,6 +1139,12 @@ CartridgeState BaseMapper::GetState()
 
 	state.WorkRamPageSize = GetWorkRamPageSize();
 	state.SaveRamPageSize = GetSaveRamPageSize();
+
+	vector<MapperStateEntry> entries = GetMapperStateEntries();
+	state.CustomEntryCount = (uint32_t)entries.size();
+	for(int i = 0; i < entries.size(); i++) {
+		state.CustomEntries[i] = entries[i];
+	}
 	
 	return state;
 }

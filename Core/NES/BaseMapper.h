@@ -12,6 +12,7 @@
 class NesConsole;
 class BaseControlDevice;
 enum class SnesMemoryType;
+struct MapperStateEntry;
 
 class BaseMapper : public INesMemoryHandler, public ISerializable
 {
@@ -152,6 +153,8 @@ protected:
 	MirroringType GetMirroringType();
 
 	uint8_t InternalReadVram(uint16_t addr);
+
+	virtual vector<MapperStateEntry> GetMapperStateEntries() { return {}; }
 
 public:
 	static constexpr uint32_t NametableCount = 0x10;

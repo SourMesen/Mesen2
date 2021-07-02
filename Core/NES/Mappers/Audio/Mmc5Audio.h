@@ -148,4 +148,61 @@ public:
 				break;
 		}
 	}
+
+	void GetMapperStateEntries(vector<MapperStateEntry>& entries)
+	{
+		ApuSquareState sq1 = _square1.GetState();
+		ApuSquareState sq2 = _square2.GetState();
+
+		entries.push_back(MapperStateEntry("$5000-$5015", "MMC5 Audio"));
+
+		entries.push_back(MapperStateEntry("$5000-$5003", "MMC5 Square 1"));
+
+		entries.push_back(MapperStateEntry("$5000.0-3", "Envelope Volume", sq1.Envelope.Volume, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5000.4", "Envelope - Constant Volume", sq1.Envelope.ConstantVolume));
+		entries.push_back(MapperStateEntry("$5000.5", "Length Counter - Halted", sq1.LengthCounter.Halt));
+		entries.push_back(MapperStateEntry("$5000.6-7", "Duty", sq1.Duty, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("$5002/$5003.0-2", "Period", sq1.Period, MapperStateValueType::Number16));
+		entries.push_back(MapperStateEntry("$5003.3-7", "Length Counter - Reload Value", sq1.LengthCounter.ReloadValue, MapperStateValueType::Number16));
+
+		entries.push_back(MapperStateEntry("--", "Enabled", sq1.Enabled));
+		entries.push_back(MapperStateEntry("--", "Timer", sq1.Timer, MapperStateValueType::Number16));
+		entries.push_back(MapperStateEntry("--", "Frequency", std::to_string(sq1.Frequency) + " Hz"));
+		entries.push_back(MapperStateEntry("--", "Duty Position", sq1.DutyPosition, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("--", "Length Counter - Counter", sq1.LengthCounter.Counter, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("--", "Envelope - Counter", sq1.Envelope.Counter, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("--", "Envelope - Divider", sq1.Envelope.Divider, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("--", "Output", sq1.OutputVolume, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("$5004-$5007", "MMC5 Square 2"));
+
+		entries.push_back(MapperStateEntry("$5004.0-3", "Envelope Volume", sq2.Envelope.Volume, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5004.4", "Envelope - Constant Volume", sq2.Envelope.ConstantVolume));
+		entries.push_back(MapperStateEntry("$5004.5", "Length Counter - Halted", sq2.LengthCounter.Halt));
+		entries.push_back(MapperStateEntry("$5004.6-7", "Duty", sq2.Duty, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("$5005/$5006.0-2", "Period", sq2.Period, MapperStateValueType::Number16));
+		entries.push_back(MapperStateEntry("$5006.3-7", "Length Counter - Reload Value", sq2.LengthCounter.ReloadValue, MapperStateValueType::Number16));
+
+		entries.push_back(MapperStateEntry("--", "Enabled", sq2.Enabled));
+		entries.push_back(MapperStateEntry("--", "Timer", sq2.Timer, MapperStateValueType::Number16));
+		entries.push_back(MapperStateEntry("--", "Frequency", std::to_string(sq2.Frequency) + " Hz"));
+		entries.push_back(MapperStateEntry("--", "Duty Position", sq2.DutyPosition, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("--", "Length Counter - Counter", sq2.LengthCounter.Counter, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("--", "Envelope - Counter", sq2.Envelope.Counter, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("--", "Envelope - Divider", sq2.Envelope.Divider, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("--", "Output", sq2.OutputVolume, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("$5010-$5011", "PCM"));
+		entries.push_back(MapperStateEntry("$5010.0", "PCM Read Mode", _pcmReadMode));
+		entries.push_back(MapperStateEntry("$5010.7", "PCM IRQ Enabled", _pcmIrqEnabled));
+		entries.push_back(MapperStateEntry("$5011", "PCM Output", _pcmOutput, MapperStateValueType::Number8));
+	}
 };

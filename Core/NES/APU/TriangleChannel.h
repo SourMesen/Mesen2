@@ -146,6 +146,9 @@ public:
 		state.Period = _timer.GetPeriod();
 		state.Timer = _timer.GetTimer();
 		state.SequencePosition = _sequencePosition;
+		state.LinearCounterReload = _linearCounterReload;
+		state.LinearCounter = _linearCounter;
+		state.LinearReloadFlag = _linearReloadFlag;
 		return state;
 	}
 

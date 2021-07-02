@@ -221,6 +221,9 @@
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\RegisterViewerWindow.axaml.cs">
+      <DependentUpon>RegisterViewerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\SpriteViewerWindow.axaml.cs">
       <DependentUpon>SpriteViewerWindow.axaml</DependentUpon>
     </Compile>

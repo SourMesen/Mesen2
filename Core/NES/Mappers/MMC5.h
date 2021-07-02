@@ -5,6 +5,7 @@
 #include "NES/NesCpu.h"
 #include "NES/Mappers/Audio/Mmc5Audio.h"
 #include "NES/Mappers/Mmc5MemoryHandler.h"
+#include "Utilities/HexUtilities.h"
 
 class MMC5 : public BaseMapper
 {
@@ -596,6 +597,54 @@ protected:
 		}
 
 		return _console->GetMemoryManager()->GetOpenBus();
+	}
+
+	vector<MapperStateEntry> GetMapperStateEntries() override
+	{
+		vector<MapperStateEntry> entries;
+
+		entries.push_back(MapperStateEntry("$5100", "PRG Mode", _prgMode, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5101", "CHR Mode", _chrMode, MapperStateValueType::Number8));
+		
+		entries.push_back(MapperStateEntry("$5102", "Work RAM Write Protect", _prgRamProtect1, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5103", "Work RAM Write Protect", _prgRamProtect1, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5102/3", "Work RAM Write Protected", _prgRamProtect1 != 0x02 || _prgRamProtect2 != 0x01));
+
+		entries.push_back(MapperStateEntry("$5104", "Extended RAM Mode", _extendedRamMode, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5105.0-1", "Nametable 0", _nametableMapping & 0x03, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5105.2-3", "Nametable 1", (_nametableMapping >> 2) & 0x03, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5105.4-5", "Nametable 2", (_nametableMapping >> 4) & 0x03, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5105.6-7", "Nametable 3", (_nametableMapping >> 6) & 0x03, MapperStateValueType::Number8));
+		
+		entries.push_back(MapperStateEntry("$5106", "Fill Mode Tile", _fillModeTile, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5107", "Fill Mode Color", _fillModeColor, MapperStateValueType::Number8));
+
+		for(int i = 0; i < 6; i++) {
+			entries.push_back(MapperStateEntry("$" + HexUtilities::ToHex(0x5113 + i), "PRG Bank Register " + std::to_string(i), _prgBanks[i], MapperStateValueType::Number8));
+		}
+
+		for(int i = 0; i < 12; i++) {
+			entries.push_back(MapperStateEntry("$" + HexUtilities::ToHex(0x5120 + i), "CHR Bank Register " + std::to_string(i), _chrBanks[i], MapperStateValueType::Number8));
+		}
+
+		entries.push_back(MapperStateEntry("$5130", "CHR Upper Bits", _chrUpperBits, MapperStateValueType::Number8));
+		
+		entries.push_back(MapperStateEntry("$5200.0-4", "Vertical Split - Delimiter Tile", _verticalSplitDelimiterTile, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5200.6", "Vertical Split - Right Side", _verticalSplitRightSide));
+		entries.push_back(MapperStateEntry("$5200.7", "Vertical Split - Enabled", _verticalSplitEnabled));
+		entries.push_back(MapperStateEntry("$5201", "Vertical Split - Scroll", _verticalSplitScroll, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5202", "Vertical Split - Bank", _verticalSplitBank, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("$5203", "IRQ Counter Target", _irqCounterTarget, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5204.7", "IRQ Enabled", _irqEnabled));
+
+		entries.push_back(MapperStateEntry("$5205", "Multiplicand", _multiplierValue1, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5206", "Multiplier", _multiplierValue2, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$5205/6", "Multiplication Result", _multiplierValue1*_multiplierValue2, MapperStateValueType::Number16));
+
+		_audio->GetMapperStateEntries(entries);
+
+		return entries;
 	}
 
 public:

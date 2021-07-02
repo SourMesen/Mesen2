@@ -1,0 +1,61 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+	x:Class="Mesen.Debugger.Windows.RegisterViewerWindow"
+	Icon="/Assets/RegisterIcon.png"
+	Width="700" Height="500"
+	x:DataType="vm:RegisterViewerWindowViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:RegisterViewerWindowViewModel />
+	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="DataGridCell">
+			<Setter Property="Background" Value="{Binding Path=Background}"/>
+		</Style>
+	</Window.Styles>
+
+	<TabControl Items="{CompiledBinding Tabs}" Padding="1">
+		<TabControl.ItemTemplate>
+			<DataTemplate>
+				<TextBlock Text="{Binding TabName}" />
+			</DataTemplate>
+		</TabControl.ItemTemplate>
+		
+		<TabControl.ContentTemplate>
+			<DataTemplate>
+				<Border BorderBrush="Gray" BorderThickness="1">
+					<dc:MesenDataGrid
+						Items="{Binding Data}"
+						HorizontalScrollBarVisibility="Auto"
+						VerticalScrollBarVisibility="Auto"
+						CanUserReorderColumns="False"
+						CanUserSortColumns="False"
+					>
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
+							<DataGridTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="*" CanUserResize="True" />
+						</DataGrid.Columns>
+					</dc:MesenDataGrid>
+				</Border>
+			</DataTemplate>
+		</TabControl.ContentTemplate>
+	</TabControl>
+</Window>

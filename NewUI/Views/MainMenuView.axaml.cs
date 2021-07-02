@@ -112,6 +112,13 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnRegisterViewerClick(object sender, RoutedEventArgs e)
+		{
+			new RegisterViewerWindow {
+				DataContext = new RegisterViewerWindowViewModel()
+			}.Show();
+		}
+
 		private void OnTraceLoggerClick(object sender, RoutedEventArgs e)
 		{
 			new TraceLoggerWindow {

@@ -256,6 +256,47 @@ class MMC3 : public BaseMapper
 			_cpu->SetIrqSource(IRQSource::External);
 		}
 
+		vector<MapperStateEntry> GetMapperStateEntries() override
+		{ 
+			bool isMmc6 = _romInfo.MapperID == 4 && _romInfo.SubMapperID == 1;
+
+			vector<MapperStateEntry> entries;
+			entries.push_back(MapperStateEntry("$8000.0-2", "Current Register", _state.Reg8000 & 0x07, MapperStateValueType::Number8));
+			if(isMmc6) {
+				entries.push_back(MapperStateEntry("$8000.5", "Work RAM Enabled", (_state.Reg8000 & 0x20) != 0));
+			}
+			entries.push_back(MapperStateEntry("$8000.6", "PRG Banking Mode", (_state.Reg8000 & 0x40) != 0));
+			entries.push_back(MapperStateEntry("$8000.7", "CHR Banking Mode", (_state.Reg8000 & 0x80) != 0));
+			
+			entries.push_back(MapperStateEntry("$A000.0", "Mirroring", _state.RegA000 & 0x01 ? "Horizontal" : "Vertical"));
+			
+			if(isMmc6) {
+				entries.push_back(MapperStateEntry("$A001.4", "Work RAM Bank 0 Write Enabled", (_state.RegA001 & 0x10) != 0));
+				entries.push_back(MapperStateEntry("$A001.5", "Work RAM Bank 0 Read Enabled", (_state.RegA001 & 0x20) != 0));
+				entries.push_back(MapperStateEntry("$A001.6", "Work RAM Bank 1 Write Enabled", (_state.RegA001 & 0x40) != 0));
+				entries.push_back(MapperStateEntry("$A001.7", "Work RAM Bank 1 Read Enabled", (_state.RegA001 & 0x80) != 0));
+			} else {
+				entries.push_back(MapperStateEntry("$A001.6", "Work RAM Write Protected", (_state.RegA001 & 0x40) != 0));
+				entries.push_back(MapperStateEntry("$A001.7", "Work RAM Enabled", (_state.RegA001 & 0x80) != 0));
+			}
+
+			entries.push_back(MapperStateEntry("$C000", "IRQ Reload Value", _irqReloadValue, MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "IRQ Counter", _irqCounter, MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "IRQ Reload Flag", _irqReload));
+			entries.push_back(MapperStateEntry("$E000/1", "IRQ Enabled", _irqEnabled));
+
+			entries.push_back(MapperStateEntry("", "Register 0 (CHR)", _registers[0], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 1 (CHR)", _registers[1], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 2 (CHR)", _registers[2], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 3 (CHR)", _registers[3], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 4 (CHR)", _registers[4], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 5 (CHR)", _registers[5], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 6 (PRG)", _registers[6], MapperStateValueType::Number8));
+			entries.push_back(MapperStateEntry("", "Register 7 (PRG)", _registers[7], MapperStateValueType::Number8));
+
+			return entries;
+		}
+
 	public:
 		void NotifyVramAddressChange(uint16_t addr) override
 		{

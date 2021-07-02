@@ -86,6 +86,55 @@ enum class MirroringType
 	FourScreens
 };
 
+enum class MapperStateValueType
+{
+	None,
+	String,
+	Bool,
+	Number8,
+	Number16,
+	Number32
+};
+
+struct MapperStateEntry
+{
+	static constexpr int MaxLength = 40;
+	uint8_t Address[MapperStateEntry::MaxLength] = {};
+	uint8_t Name[MapperStateEntry::MaxLength] = {};
+	uint8_t Value[MapperStateEntry::MaxLength] = {};
+	MapperStateValueType Type = MapperStateValueType::Number8;
+
+	MapperStateEntry() {}
+
+	MapperStateEntry(string address, string name)
+	{
+		memcpy(Address, address.c_str(), std::min<size_t>(MapperStateEntry::MaxLength - 1, address.size()));
+		memcpy(Name, name.c_str(), std::min<size_t>(MapperStateEntry::MaxLength - 1, name.size()));
+		Type = MapperStateValueType::None;
+	}
+
+	MapperStateEntry(string address, string name, string value) : MapperStateEntry(address, name)
+	{
+		memcpy(Value, value.c_str(), std::min<size_t>(MapperStateEntry::MaxLength - 1, value.size()));
+		Type = MapperStateValueType::String;
+	}
+
+	MapperStateEntry(string address, string name, bool value) : MapperStateEntry(address, name)
+	{
+		Value[0] = value;
+		Type = MapperStateValueType::Bool;
+	}
+
+	MapperStateEntry(string address, string name, int64_t value, MapperStateValueType length) : MapperStateEntry(address, name)
+	{
+		for(int i = 0; i < 8; i++) {
+			Value[i] = value & 0xFF;
+			value >>= 8;
+		}
+		Type = length;
+	}
+};
+
 struct CartridgeState
 {
 	uint32_t PrgRomSize;
@@ -110,6 +159,9 @@ struct CartridgeState
 
 	MirroringType Mirroring;
 	bool HasBattery;
+
+	uint32_t CustomEntryCount;
+	MapperStateEntry CustomEntries[100];
 };
 
 struct PPUStatusFlags
@@ -149,6 +201,13 @@ struct NesPpuState : public BaseState
 	uint16_t BusAddress;
 	uint8_t MemoryReadBuffer;
 	uint8_t ControlReg;
+	uint8_t MaskReg;
+	
+	uint16_t VideoRamAddr;
+	uint16_t TmpVideoRamAddr;
+	uint8_t ScrollX;
+	bool WriteToggle;
+	uint8_t SpriteRamAddr;
 };
 
 struct ApuLengthCounterState
@@ -197,6 +256,10 @@ struct ApuTriangleState
 	bool Enabled;
 	double Frequency;
 	uint8_t OutputVolume;
+
+	uint8_t LinearCounter;
+	uint8_t LinearCounterReload;
+	bool LinearReloadFlag;
 
 	ApuLengthCounterState LengthCounter;
 };

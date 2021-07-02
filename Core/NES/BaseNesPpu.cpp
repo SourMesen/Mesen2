@@ -8,6 +8,13 @@ void BaseNesPpu::GetState(NesPpuState& state)
 	//TODO
 	//state.ControlFlags = _flags;
 	state.ControlReg = _controlReg;
+	state.MaskReg = _maskReg;
+	state.VideoRamAddr = _videoRamAddr;
+	state.TmpVideoRamAddr = _tmpVideoRamAddr;
+	state.SpriteRamAddr = _spriteRamAddr;
+	state.ScrollX = _xScroll;
+	state.WriteToggle = _writeToggle;
+
 	state.StatusFlags = _statusFlags;
 	//state.State = _state;
 	state.Cycle = _cycle;
