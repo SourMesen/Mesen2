@@ -112,6 +112,10 @@ namespace Mesen.Controls
 
 		private void InitGrid(bool forceUpdate = false)
 		{
+			if(Entries == null) {
+				return;
+			}
+
 			Grid grid = this.FindControl<Grid>("Grid");
 			Size size = grid.Bounds.Size;
 

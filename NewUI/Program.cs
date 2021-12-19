@@ -5,6 +5,10 @@ using Avalonia.ReactiveUI;
 using Mesen.Config;
 using Mesen.Utilities;
 using System;
+using System.IO;
+using System.IO.Compression;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Mesen
 {
@@ -19,11 +23,45 @@ namespace Mesen
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			//Start loading config file in a separate thread
+			Task.Run(() => ConfigManager.LoadConfig());
+
+			//Extract core dll & other native dependencies
+			ExtractNativeDependencies();
+
+			Environment.CurrentDirectory = ConfigManager.HomeFolder;
+
 			using SingleInstance instance = SingleInstance.Instance;
-			instance.Init(args, ConfigManager.Config.Preferences.SingleInstance);
+			instance.Init(args);
 			if(instance.FirstInstance) {
 				Program.CommandLineArgs = (string[])args.Clone();
 				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+			}
+		}
+
+		private static void ExtractNativeDependencies()
+		{
+			using(Stream? depStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Dependencies.zip")) {
+				if(depStream == null) {
+					throw new Exception("Missing dependencies.zip");
+				}
+
+				using ZipArchive zip = new(depStream);
+				foreach(ZipArchiveEntry entry in zip.Entries) {
+					try {
+						string path = Path.Combine(ConfigManager.HomeFolder, entry.Name);
+						if(File.Exists(path)) {
+							FileInfo fileInfo = new(path);
+							if(fileInfo.LastWriteTime != entry.LastWriteTime || fileInfo.Length != entry.Length) {
+								entry.ExtractToFile(Path.Combine(ConfigManager.HomeFolder, entry.Name), true);
+							}
+						} else {
+							entry.ExtractToFile(Path.Combine(ConfigManager.HomeFolder, entry.Name), true);
+						}
+					} catch {
+
+					}
+				}
 			}
 		}
 

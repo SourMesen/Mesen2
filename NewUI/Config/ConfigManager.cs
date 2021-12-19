@@ -56,7 +56,7 @@ namespace Mesen.Config
 			LoadConfig();
 		}
 		
-		private static void LoadConfig()
+		public static void LoadConfig()
 		{
 			if(_config == null) {
 				lock(_initLock) {

@@ -11,7 +11,7 @@ namespace Mesen.Utilities
 		public static Image FromAsset(string source)
 		{
 			IAssetLoader assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
-			return new Image() { Source = new Bitmap(assetLoader.Open(new Uri("avares://Mesen-X/" + source))) };
+			return new Image() { Source = new Bitmap(assetLoader.Open(new Uri("avares://Mesen/" + source))) };
 		}
 	}
 }

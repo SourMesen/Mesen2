@@ -136,26 +136,6 @@ namespace Mesen.Config
 			}
 		}
 
-		public static void ApplyTheme(MesenTheme theme)
-		{
-			Application.Current.Styles.Clear();
-
-			var styles = new List<IStyle> {
-				new FluentTheme(new Uri("avares://Mesen-X/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },
-				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml") },
-				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://Dock.Avalonia/Themes/FluentTheme.axaml") },
-				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("/Styles/MesenStyles.xaml", UriKind.Relative) },
-				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("/ThirdParty/ColorPicker/ColorPicker.axaml", UriKind.Relative) },
-				new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("avares://AvaloniaEdit/AvaloniaEdit.xaml") }
-			};
-
-			if(theme == MesenTheme.Dark) {
-				styles.Add(new StyleInclude(new Uri("avares://Mesen-X/App.axaml")) { Source = new Uri("/Styles/MesenStyles.Dark.xaml", UriKind.Relative) });
-			}
-
-			Application.Current.Styles.AddRange(styles);
-		}
-
 		public void UpdateFileAssociations()
 		{
 			FileAssociationHelper.UpdateFileAssociation("sfc", AssociateSnesRomFiles);

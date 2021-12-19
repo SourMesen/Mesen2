@@ -4,6 +4,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Mesen.Config;
 
 namespace Mesen.Utilities
 {
@@ -11,27 +12,24 @@ namespace Mesen.Utilities
 	{
 		public static SingleInstance Instance { get; private set; } = new SingleInstance();
 
+		private static Guid _identifier = new Guid("{A46696B7-2D1C-4CC5-A52F-43BCAF094AEF}");
+
 		private Mutex? _mutex;
-		private Guid _identifier = Guid.Empty;
 		private bool _disposed = false;
 		private bool _firstInstance = false;
 
 		public bool FirstInstance => _firstInstance;
 		public event EventHandler<ArgumentsReceivedEventArgs>? ArgumentsReceived;
 
-		public void Init(string[] args, bool enableSingleInstanceMode)
+		public void Init(string[] args)
 		{
-			if(enableSingleInstanceMode) {
-				_identifier = new Guid("{A46696B7-2D1C-4CC5-A52F-43BCAF094AEF}");
-				_mutex = new Mutex(true, _identifier.ToString(), out _firstInstance);
+			_mutex = new Mutex(true, _identifier.ToString(), out _firstInstance);
 
-				if(_firstInstance) {
-					Task.Run(() => ListenForArguments());
-				} else {
-					PassArgumentsToFirstInstance(args);
-				}
-			} else {
+			if(_firstInstance || !ConfigManager.Config.Preferences.SingleInstance) {
 				_firstInstance = true;
+				Task.Run(() => ListenForArguments());
+			} else {
+				PassArgumentsToFirstInstance(args);
 			}
 		}
 

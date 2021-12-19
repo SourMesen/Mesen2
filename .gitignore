@@ -185,3 +185,4 @@ packages/*
 !Libretro/hakchi/bin
 
 TestHelper/*
+NewUI/Dependencies.zip

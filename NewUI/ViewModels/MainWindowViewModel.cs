@@ -16,8 +16,7 @@ namespace Mesen.ViewModels
 {
 	public class MainWindowViewModel : ViewModelBase
 	{
-		public MainMenuViewModel MainMenu { get; set; }
-
+		[Reactive] public MainMenuViewModel? MainMenu { get; set; }
 		[Reactive] public RomInfo RomInfo { get; set; }
 		[Reactive] public AudioPlayerViewModel? AudioPlayer { get; private set; }
 		[Reactive] public RecentGamesViewModel RecentGames { get; private set; }
@@ -25,9 +24,12 @@ namespace Mesen.ViewModels
 		public MainWindowViewModel()
 		{
 			RomInfo = new RomInfo();
-			MainMenu = new MainMenuViewModel(this);
-
 			RecentGames = new RecentGamesViewModel();
+		}
+
+		public void Init()
+		{
+			MainMenu = new MainMenuViewModel(this);
 			RecentGames.Init(GameScreenMode.RecentGames);
 
 			this.WhenAnyValue(x => x.RomInfo).Subscribe(x => {

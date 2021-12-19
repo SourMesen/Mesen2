@@ -46,8 +46,6 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
-			
-			
 			_renderer = this.FindControl<NativeRenderer>("Renderer")!;
 			_mainMenu = this.FindControl<MainMenuView>("MainMenu")!;
 
@@ -99,11 +97,20 @@ namespace Mesen.Windows
 			}
 
 			Task.Run(() => {
+				//Load all styles after 15ms to let the UI refresh once with the startup styles
+				System.Threading.Thread.Sleep(15);
+				Dispatcher.UIThread.Post(() => {
+					StyleHelper.ApplyTheme(ConfigManager.Config.Preferences.Theme);
+				});
+			});
+			
+			Task.Run(() => {
 				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl.Handle.Handle, _renderer.Handle, false, false, false);
 
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
 
+				this._model.Init();
 				ConfigManager.Config.InitializeDefaults();
 				ConfigManager.Config.ApplyConfig();
 
@@ -111,6 +118,11 @@ namespace Mesen.Windows
 
 				ConfigManager.Config.Preferences.UpdateFileAssociations();
 				SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
+
+				Dispatcher.UIThread.Post(() => {
+					//Load the debugger window styles once everything else is done
+					StyleHelper.LoadDebuggerStyles();
+				});
 			});
 		}
 

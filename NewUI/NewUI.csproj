@@ -5,9 +5,9 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Nullable>enable</Nullable>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <AssemblyName>Mesen-X</AssemblyName>
+    <AssemblyName>Mesen</AssemblyName>
     <RootNamespace>Mesen</RootNamespace>
-    <StartupObject></StartupObject>
+    <StartupObject>Mesen.Program</StartupObject>
   </PropertyGroup>
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -20,7 +20,7 @@
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <OutputPath>C:\Code\Mesen-S\bin\x64\Release\</OutputPath>
-	  <Optimize>false</Optimize>
+	  <Optimize>True</Optimize>
 	  <DefineConstants>DEBUG</DefineConstants>
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
@@ -151,6 +151,8 @@
 	  <None Remove="Assets\Zoom2x.png" />
 	  <None Remove="Debugger\Highlight6502.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
+	  <None Remove="Dependencies.zip" />
+	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.4" />
@@ -478,6 +480,9 @@
 	  <AvaloniaResource Include="Assets\WebBrowser.png" />
 	  <AvaloniaResource Include="Assets\XbIcon.png" />
 	  <AvaloniaResource Include="Assets\Zoom2x.png" />
+	  <AvaloniaResource Include="Styles\StartupStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\MesenStyles.Dark.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
@@ -489,6 +494,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Debugger\HighlightLua.xshd" />
     <EmbeddedResource Include="Debugger\Highlight6502.xshd" />
+    <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd $(OutDir)&#xD;&#xA;md Dependencies&#xD;&#xA;copy libHarfBuzzSharp.dll Dependencies&#xD;&#xA;copy libSkiaSharp.dll Dependencies&#xD;&#xA;copy MesenSCore.dll Dependencies&#xD;&#xA;DependencyPacker.exe&#xD;&#xA;copy Dependencies.zip $(ProjectDir)" />
+  </Target>
 </Project>
