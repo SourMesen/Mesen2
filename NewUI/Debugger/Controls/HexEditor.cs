@@ -17,7 +17,6 @@ namespace Mesen.Debugger.Controls
 	public partial class HexEditor : Control
 	{
 		//TODO Customizable font/styles
-		//TODO Fix keyboard selection
 		//TODO Support TBL files
 		//TODO Copy+paste
 		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
@@ -104,7 +103,8 @@ namespace Mesen.Debugger.Controls
 		private int VisibleRows => (int)((Bounds.Height - ColumnHeaderHeight) / RowHeight) - 1;
 		private string HexFormat => "X2";
 
-		private int _dragStartPos = -1;
+		private int _cursorPosition = 0;
+		private int _lastClickedPosition = -1;
 		private int _newByteValue = -1;
 		private bool _lastNibble = false;
 		private bool _inStringView = false;
@@ -126,36 +126,91 @@ namespace Mesen.Debugger.Controls
 			Cursor = new Cursor(StandardCursorType.Ibeam);
 		}
 
-		void MoveSelection(int offset)
+		private void MoveCursor(int offset, bool nibbleMode = false)
 		{
-			int pos = this.SelectionStart + offset;
-			this.SelectionStart = Math.Min(Math.Max(0, pos), this.DataProvider.Length);
-			this.SelectionLength = 0;
-			_lastNibble = false;
-
-			ScrollIntoView(this.SelectionStart);
+			if(nibbleMode) {
+				if(_lastNibble) {
+					if(offset > 0) {
+						MoveCursor(1);
+					} else {
+						_lastNibble = false;
+					}
+				} else {
+					if(offset > 0) {
+						_lastNibble = true;
+					} else {
+						MoveCursor(-1);
+						_lastNibble = true;
+					}
+				}
+			} else {
+				int pos = this.SelectionStart + offset;
+				SetCursorPosition(pos);
+			}
 		}
 
-		void ChangeSelectionLength(int offset)
+		private void SetCursorPosition(int pos)
 		{
-			int len = this.SelectionLength + offset;
+			this.SelectionStart = Math.Min(Math.Max(0, pos), this.DataProvider.Length - 1);
+			this.SelectionLength = 0;
+			_cursorPosition = this.SelectionStart;
+			_lastClickedPosition = _cursorPosition;
 			_lastNibble = false;
 
-			if(len < 0) {
-				this.SelectionStart = Math.Max(0, this.SelectionStart + len);
-				this.SelectionLength = -len;
-				
-				ScrollIntoView(this.SelectionStart);
-			} else {
-				this.SelectionLength = Math.Min(len, this.DataProvider.Length - this.SelectionStart - 1);
+			ScrollIntoView(_cursorPosition);
+		}
 
-				ScrollIntoView(this.SelectionLength + this.SelectionStart);
+		private void ChangeSelectionLength(int offset)
+		{
+			_lastNibble = false;
+
+			int start = this.SelectionStart;
+			int end = this.SelectionStart + this.SelectionLength;
+			int length = this.SelectionLength;
+			bool newAnchorEnd = false;
+
+			if(this.SelectionStart == this._cursorPosition) {
+				//Anchored at the start of the selection
+				start += offset;
+				if(end < start) {
+					length = start - end;
+					start = end;
+					newAnchorEnd = true;
+				} else {
+					length -= offset;
+				}
+			} else {
+				//Anchored at the end of the selection
+				length += offset;
+				if(length < 0) {
+					start = start + length;
+					length = -length;
+					newAnchorEnd = false;
+				} else {
+					newAnchorEnd = true;
+				}
 			}
+
+			if(start < 0) {
+				length += start;
+				start = 0;
+			}
+
+			this.SelectionStart = Math.Max(0, Math.Min(this.DataProvider.Length - 1, start));
+			this.SelectionLength = Math.Max(0, Math.Min(length, this.DataProvider.Length - this.SelectionStart));
+			if(newAnchorEnd) {
+				this._cursorPosition = this.SelectionStart + this.SelectionLength;
+			} else {
+				this._cursorPosition = this.SelectionStart;
+			}
+			ScrollIntoView(this._cursorPosition);
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+
+			bool ctrl = e.KeyModifiers.HasFlag(KeyModifiers.Control);
 
 			if(e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
 				switch(e.Key) {
@@ -166,20 +221,42 @@ namespace Mesen.Debugger.Controls
 
 					case Key.PageUp: ChangeSelectionLength(-BytesPerRow * VisibleRows); break;
 					case Key.PageDown: ChangeSelectionLength(BytesPerRow * VisibleRows); break;
-					case Key.Home: ChangeSelectionLength(-(SelectionStart % BytesPerRow)); break;
-					case Key.End: ChangeSelectionLength(BytesPerRow - (SelectionStart % BytesPerRow) - 1); break;
+
+					case Key.Home: {
+						int anchor = _cursorPosition == SelectionStart ? _cursorPosition : SelectionStart + SelectionLength;
+						ChangeSelectionLength(-(anchor % BytesPerRow));
+						break;
+					}
+					
+					case Key.End: {
+						int anchor = _cursorPosition == SelectionStart ? _cursorPosition : SelectionStart + SelectionLength;
+						ChangeSelectionLength(BytesPerRow - (anchor % BytesPerRow));
+						break;
+					}
 				}
 			} else {
 				switch(e.Key) {
-					case Key.Left: MoveSelection(-1); break;
-					case Key.Right: MoveSelection(1); break;
-					case Key.Up: MoveSelection(-BytesPerRow); break;
-					case Key.Down: MoveSelection(BytesPerRow); break;
+					case Key.Left: MoveCursor(-1, ctrl); break;
+					case Key.Right: MoveCursor(1, ctrl); break;
+					case Key.Up: MoveCursor(-BytesPerRow); break;
+					case Key.Down: MoveCursor(BytesPerRow); break;
 					
-					case Key.PageUp: MoveSelection(-BytesPerRow * VisibleRows); break;
-					case Key.PageDown: MoveSelection(BytesPerRow * VisibleRows); break;
-					case Key.Home: MoveSelection(-(SelectionStart % BytesPerRow)); break;
-					case Key.End: MoveSelection(BytesPerRow - (SelectionStart % BytesPerRow) - 1); break;
+					case Key.PageUp: MoveCursor(-BytesPerRow * VisibleRows); break;
+					case Key.PageDown: MoveCursor(BytesPerRow * VisibleRows); break;
+					case Key.Home:
+						if(ctrl) {
+							SetCursorPosition(0);
+						} else {
+							MoveCursor(-(SelectionStart % BytesPerRow));
+						}
+						break;
+					case Key.End:
+						if(ctrl) {
+							SetCursorPosition(DataProvider.Length);
+						} else {
+							MoveCursor(BytesPerRow - (SelectionStart % BytesPerRow) - 1);
+						}
+						break;
 				}
 			}
 		}
@@ -209,7 +286,7 @@ namespace Mesen.Debugger.Controls
 							_newByteValue &= 0xF0;
 							_newByteValue |= keyValue;
 							CommitByteChanges();
-							SelectionStart++;
+							MoveCursor(1);
 						} else {
 							_newByteValue &= 0x0F;
 							_newByteValue |= (keyValue << 4);
@@ -277,7 +354,7 @@ namespace Mesen.Debugger.Controls
 
 		private void ScrollIntoView(int byteIndex)
 		{
-			int topRow = 0;
+			int topRow = TopRow;
 			if(byteIndex < 0) {
 				topRow = 0;
 			} else if(byteIndex >= DataProvider.Length) {
@@ -312,47 +389,65 @@ namespace Mesen.Debugger.Controls
 			if(gridPos != null) {
 				_inStringView = gridPos.Value.InStringView;
 				_lastNibble = gridPos.Value.LastNibble;
-				_dragStartPos = (TopRow + gridPos.Value.Y) * BytesPerRow + gridPos.Value.X;
 
-				this.SelectionStart = _dragStartPos;
-				this.SelectionLength = 0;
+				if(e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
+					MoveSelectionWithMouse(gridPos.Value);
+				} else {
+					int pos = GetByteOffset(gridPos.Value);
+					_lastClickedPosition = pos;
+					_cursorPosition = pos;
+					this.SelectionStart = _lastClickedPosition;
+					this.SelectionLength = 0;
+				}
 			}
+		}
+
+		private int GetByteOffset(GridPoint gridPos)
+		{
+			return Math.Min((TopRow + gridPos.Y) * BytesPerRow + gridPos.X, DataProvider.Length - 1);
+		}
+
+		private void MoveSelectionWithMouse(GridPoint gridPos)
+		{
+			int currentPos = GetByteOffset(gridPos);
+
+			if(currentPos < _lastClickedPosition) {
+				this.SelectionStart = currentPos;
+				this.SelectionLength = _lastClickedPosition - currentPos;
+			} else {
+				this.SelectionStart = _lastClickedPosition;
+				this.SelectionLength = currentPos - _lastClickedPosition + 1;
+			}
+
+			this._cursorPosition = currentPos;
+
+			ScrollIntoView(currentPos);
 		}
 
 		protected override void OnPointerMoved(PointerEventArgs e)
 		{
 			base.OnPointerMoved(e);
 
-			if(_dragStartPos >= 0) {
-				Point p = e.GetPosition(this);
-				GridPoint? gridPos = GetGridPosition(p);
-				_lastNibble = false;
-
-				if(gridPos != null) {
-					if(gridPos.Value.InStringView != _inStringView) {
-						return;
-					}
-
-					int currentPos = (TopRow + gridPos.Value.Y) * BytesPerRow + gridPos.Value.X;
-
-					if(currentPos < _dragStartPos) {
-						this.SelectionStart = currentPos;
-						this.SelectionLength = _dragStartPos - currentPos + 1;
-					} else {
-						this.SelectionStart = _dragStartPos;
-						this.SelectionLength = currentPos - _dragStartPos + 1;
-					}
-
-					ScrollIntoView(currentPos);
-				}
+			if(!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || _lastClickedPosition < 0) {
+				return;
 			}
-		}
 
-		protected override void OnPointerReleased(PointerReleasedEventArgs e)
-		{
-			base.OnPointerReleased(e);
-			if(e.InitialPressMouseButton == MouseButton.Left) {
-				_dragStartPos = -1;
+			Point p = e.GetPosition(this);
+			if(p.Y < ColumnHeaderHeight) {
+				//Allow auto-scroll up when mouse goes over header
+				this.TopRow = Math.Max(0, this.TopRow - 1);
+				p = p.WithY(ColumnHeaderHeight);
+			}
+
+			GridPoint? gridPos = GetGridPosition(p);
+			_lastNibble = false;
+
+			if(gridPos != null) {
+				if(gridPos.Value.InStringView != _inStringView) {
+					return;
+				}
+				
+				MoveSelectionWithMouse(gridPos.Value);
 			}
 		}
 
@@ -389,8 +484,8 @@ namespace Mesen.Debugger.Controls
 			int selectionStart = this.SelectionStart;
 			int selectionLength = this.SelectionLength;
 
-			int selectedColumn = selectionStart % bytesPerRow;
-			int selectedRow = selectionStart / bytesPerRow;
+			int selectedColumn = this._cursorPosition % bytesPerRow;
+			int selectedRow = this._cursorPosition / bytesPerRow;
 
 			double rowWidth = RowWidth;
 			double letterWidth = LetterSize.Width;
