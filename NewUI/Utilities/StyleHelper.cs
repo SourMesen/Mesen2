@@ -41,7 +41,7 @@ namespace Mesen.Utilities
 			//Load the debugger window specific styles
 			var styles = new List<IStyle> {
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml") },
-				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://Dock.Avalonia/Themes/FluentTheme.axaml") },
+				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://Dock.Avalonia/Themes/DockFluentTheme.axaml") },
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/ThirdParty/ColorPicker/ColorPicker.axaml", UriKind.Relative) },
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://AvaloniaEdit/AvaloniaEdit.xaml") }
 			};

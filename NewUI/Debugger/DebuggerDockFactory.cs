@@ -45,7 +45,7 @@ namespace Mesen.Debugger
 								Proportion = 0.60,
 								VisibleDockables = CreateList<IDockable>(DisassemblyTool)
 							},
-							new SplitterDockable(),
+							new ProportionalDockSplitter(),
 							new ProportionalDock {
 								Proportion = 0.40,
 								Orientation = Orientation.Vertical,
@@ -54,12 +54,12 @@ namespace Mesen.Debugger
 										Proportion = double.NaN,
 										VisibleDockables = CreateList<IDockable>(CpuStatusTool)
 									},
-									new SplitterDockable(),
+									new ProportionalDockSplitter(),
 									new ToolDock {
 										Proportion = double.NaN,
 										VisibleDockables = CreateList<IDockable>(PpuStatusTool)
 									},
-									new SplitterDockable(),
+									new ProportionalDockSplitter(),
 									new ToolDock {
 										Proportion = 0.33,
 										VisibleDockables = CreateList<IDockable>(_context.LabelList)
@@ -68,7 +68,7 @@ namespace Mesen.Debugger
 							}
 						)
 					},
-					new SplitterDockable(),
+					new ProportionalDockSplitter(),
 					new ProportionalDock {
 						Proportion = 0.25,
 						Orientation = Orientation.Horizontal,
@@ -77,12 +77,12 @@ namespace Mesen.Debugger
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(_context.WatchList)
 							},
-							new SplitterDockable(),
+							new ProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(_context.BreakpointList)
 							},
-							new SplitterDockable(),
+							new ProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(_context.CallStack)
