@@ -502,12 +502,10 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memor
 {
 	CpuType cpuType = DebugUtilities::ToCpuType(memoryType);
 	shared_ptr<CodeDataLogger> cdl = GetCodeDataLogger(cpuType);
-	if(memoryType == SnesMemoryType::PrgRom || memoryType == SnesMemoryType::GbPrgRom) {
+	SnesMemoryType prgType = cdl->GetPrgMemoryType();
+	if(memoryType == prgType) {
 		cdl->GetCdlData(offset, length, cdlData);
 	} else {
-		bool hasGameboy = _debuggers[(int)CpuType::Gameboy].Debugger != nullptr;
-		SnesMemoryType prgType = hasGameboy ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
-
 		AddressInfo relAddress;
 		relAddress.Type = memoryType;
 		for(uint32_t i = 0; i < length; i++) {

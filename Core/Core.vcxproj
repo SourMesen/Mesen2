@@ -172,6 +172,7 @@
     <ClInclude Include="NES\Input\NesController.h" />
     <ClInclude Include="NES\stdafx.h" />
     <ClInclude Include="NES\APU\TriangleChannel.h" />
+    <ClInclude Include="Shared\TimingInfo.h" />
     <ClInclude Include="Shared\Video\stdafx.h" />
     <ClInclude Include="Shared\Video\SystemHud.h" />
     <ClInclude Include="SNES\AluMulDiv.h" />

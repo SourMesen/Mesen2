@@ -364,6 +364,7 @@ namespace Mesen.Interop
 				case SnesMemoryType.GameboyMemory:
 					return CpuType.Gameboy;
 
+				case SnesMemoryType.NesMemory:
 				case SnesMemoryType.NesPrgRom:
 				case SnesMemoryType.NesWorkRam:
 				case SnesMemoryType.NesSaveRam:
@@ -405,6 +406,7 @@ namespace Mesen.Interop
 				case SnesMemoryType.NecDspMemory:
 				case SnesMemoryType.Cx4Memory:
 				case SnesMemoryType.GameboyMemory:
+				case SnesMemoryType.NesMemory:
 					return true;
 			}
 			return false;
@@ -425,6 +427,10 @@ namespace Mesen.Interop
 				case SnesMemoryType.GbCartRam:
 				case SnesMemoryType.GbHighRam:
 				case SnesMemoryType.GbBootRom:
+				case SnesMemoryType.NesPrgRom:
+				case SnesMemoryType.NesWorkRam:
+				case SnesMemoryType.NesSaveRam:
+				case SnesMemoryType.NesInternalRam:
 					return true;
 			}
 
@@ -441,6 +447,7 @@ namespace Mesen.Interop
 				case SnesMemoryType.NecDspMemory:
 				case SnesMemoryType.Cx4Memory:
 				case SnesMemoryType.GameboyMemory:
+				case SnesMemoryType.NesMemory:
 					return true;
 			}
 

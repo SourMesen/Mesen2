@@ -5,6 +5,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Config;
 using Mesen.Debugger;
 using Mesen.Interop;
+using Mesen.Debugger.Labels;
 
 namespace Mesen.Debugger
 {
@@ -14,7 +15,7 @@ namespace Mesen.Debugger
 		AddressCounters[] _counters = Array.Empty<AddressCounters>();
 		byte[]? _cdlData;
 		bool[] _hasLabel = Array.Empty<bool>();
-		UInt64 _masterClock;
+		TimingInfo _timing;
 		bool _showExec;
 		bool _showWrite;
 		bool _showRead;
@@ -95,8 +96,11 @@ namespace Mesen.Debugger
 					case SnesMemoryType.Cx4Memory:
 					case SnesMemoryType.GsuMemory:
 					case SnesMemoryType.GameboyMemory:
+					case SnesMemoryType.NesMemory:
 					case SnesMemoryType.PrgRom:
 					case SnesMemoryType.GbPrgRom:
+					case SnesMemoryType.NesPrgRom:
+					case SnesMemoryType.NesChrRom:
 						_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 						break;
 				}
@@ -104,24 +108,21 @@ namespace Mesen.Debugger
 
 			_hasLabel = new bool[visibleByteCount];
 			if(_highlightLabelledBytes) {
-				if(_memoryType <= SnesMemoryType.SpcMemory) {
+				if(_memoryType.IsRelativeMemory()) {
 					AddressInfo addr = new AddressInfo();
 					addr.Type = _memoryType;
 					for(long i = 0; i < _hasLabel.Length; i++) {
 						addr.Address = (int)(firstByteIndex + i);
-						//TODO
-						//_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel(addr)?.Label);
+						_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel(addr)?.Label);
 					}
-				} else if(_memoryType == SnesMemoryType.PrgRom || _memoryType == SnesMemoryType.WorkRam || _memoryType == SnesMemoryType.SaveRam) {
+				} else if(_memoryType.SupportsLabels()) {
 					for(long i = 0; i < _hasLabel.Length; i++) {
-						//TODO
-						//_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel((uint)(firstByteIndex + i), _memoryType)?.Label);
+						_hasLabel[i] = !string.IsNullOrWhiteSpace(LabelManager.GetLabel((uint)(firstByteIndex + i), _memoryType)?.Label);
 					}
 				}
 			}
 
-			//TODO
-			_masterClock = 0;
+			_timing = EmuApi.GetTimingInfo();
 		}
 
 		public static Color DarkerColor(Color input, double brightnessPercentage)
@@ -141,11 +142,11 @@ namespace Mesen.Debugger
 		{
 			HexEditorConfig cfg = ConfigManager.Config.Debug.HexEditor;
 
-			const int CyclesPerFrame = 357368;
+			int cyclesPerFrame = (int)(_timing.MasterClockRate / _timing.Fps);
 			long index = byteIndex - _firstByteIndex;
-			double framesSinceExec = (double)(_masterClock - _counters[index].ExecStamp) / CyclesPerFrame;
-			double framesSinceWrite = (double)(_masterClock - _counters[index].WriteStamp) / CyclesPerFrame;
-			double framesSinceRead = (double)(_masterClock - _counters[index].ReadStamp) / CyclesPerFrame;
+			double framesSinceExec = (double)(_timing.MasterClock - _counters[index].ExecStamp) / cyclesPerFrame;
+			double framesSinceWrite = (double)(_timing.MasterClock - _counters[index].WriteStamp) / cyclesPerFrame;
+			double framesSinceRead = (double)(_timing.MasterClock - _counters[index].ReadStamp) / cyclesPerFrame;
 
 			bool isRead = _counters[index].ReadCount > 0;
 			bool isWritten = _counters[index].WriteCount > 0;

@@ -20,6 +20,7 @@
 #include "Shared/CheatManager.h"
 #include "Shared/SystemActionManager.h"
 #include "Shared/Movies/MovieManager.h"
+#include "Shared/TimingInfo.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "SNES/Console.h"
@@ -530,6 +531,16 @@ vector<CpuType> Emulator::GetCpuTypes()
 	} else {
 		return {};
 	}
+}
+
+TimingInfo Emulator::GetTimingInfo()
+{
+	TimingInfo info;
+	info.MasterClock = GetMasterClock();
+	info.MasterClockRate = GetMasterClockRate();
+	info.FrameCount = GetFrameCount();
+	info.Fps = GetFps();
+	return info;
 }
 
 uint64_t Emulator::GetMasterClock()

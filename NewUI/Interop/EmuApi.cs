@@ -77,6 +77,8 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetDisplayLanguage(Language lang);
 		[DllImport(DllPath)] public static extern void SetFullscreenMode([MarshalAs(UnmanagedType.I1)]bool fullscreen, IntPtr windowHandle, UInt32 monitorWidth, UInt32 monitorHeight);
 
+		[DllImport(DllPath)] public static extern TimingInfo GetTimingInfo();
+
 		[DllImport(DllPath)] public static extern double GetAspectRatio();
 		[DllImport(DllPath)] public static extern FrameInfo GetBaseScreenSize();
 		[DllImport(DllPath)] public static extern void SetRendererSize(UInt32 width, UInt32 height);
@@ -114,6 +116,14 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();
+	}
+
+	public struct TimingInfo
+	{
+		public double Fps;
+		public UInt64 MasterClock;
+		public UInt32 MasterClockRate;
+		public UInt32 FrameCount;
 	}
 
 	public struct FrameInfo

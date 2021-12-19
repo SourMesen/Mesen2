@@ -64,7 +64,7 @@ namespace Mesen.Debugger.ViewModels
 					break;
 			}
 
-			LabelManager.SetDefaultLabels();
+			DefaultLabelHelper.SetDefaultLabels();
 			LabelList = new LabelListViewModel(CpuType);
 
 			CallStack = new CallStackViewModel(CpuType);

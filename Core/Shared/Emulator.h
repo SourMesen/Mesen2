@@ -31,6 +31,7 @@ class SystemActionManager;
 class AudioPlayerHud;
 
 struct RomInfo;
+struct TimingInfo;
 
 enum class MemoryOperationType;
 enum class SnesMemoryType;
@@ -179,6 +180,7 @@ public:
 	bool IsRunning();
 	bool IsRunAheadFrame();
 
+	TimingInfo GetTimingInfo();
 	uint32_t GetFrameCount();
 	double GetFps();
 	double GetFrameDelay();

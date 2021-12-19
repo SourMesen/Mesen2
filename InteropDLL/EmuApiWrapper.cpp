@@ -10,6 +10,7 @@
 #include "Core/Shared/Interfaces/INotificationListener.h"
 #include "Core/Shared/KeyManager.h"
 #include "Core/Shared/ShortcutKeyHandler.h"
+#include "Core/Shared/TimingInfo.h"
 #include "Core/Shared/CheatManager.h"
 #include "Core/Netplay/GameClient.h"
 #include "Core/Netplay/GameServer.h"
@@ -144,7 +145,12 @@ extern "C" {
 
 		memcpy(info.Sha1, sha1.c_str(), sha1.size());
 	}
-	
+
+	DllExport TimingInfo __stdcall GetTimingInfo()
+	{
+		return _emu->GetTimingInfo();
+	}
+
 	DllExport void __stdcall TakeScreenshot() { _emu->GetVideoDecoder()->TakeScreenshot(); }
 
 	DllExport void __stdcall ProcessAudioPlayerAction(AudioPlayerActionParams p) { _emu->ProcessAudioPlayerAction(p); }
