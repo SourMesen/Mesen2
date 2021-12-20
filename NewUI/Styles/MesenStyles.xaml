@@ -30,7 +30,8 @@
 				<TabControl>
 					<TabItem Header="Test" />
 				</TabControl>
-				<NumericUpDown />
+				<NumericUpDown Value="1" />
+				<NumericUpDown Value="100" />
 				<ComboBox SelectedIndex="0">
 					<ComboBoxItem>0Test</ComboBoxItem>
 				</ComboBox>
@@ -406,6 +407,21 @@
 		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
 	</Style>
 	
+	<Style Selector="AccessText">
+		<Setter Property="FontSize" Value="11" />
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+	</Style>
+
+	<Style Selector="DatePicker">
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="FontSize" Value="11" />
+	</Style>
+
+	<Style Selector="TimePicker">
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="FontSize" Value="11" />
+	</Style>
+	
 	<Style Selector="TextBox">
 		<Setter Property="FontSize" Value="11" />
 		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
@@ -490,20 +506,17 @@
 	<Style Selector="NumericUpDown">
 		<Setter Property="HorizontalContentAlignment" Value="Left" />
 		<Setter Property="HorizontalAlignment" Value="Left" />
-		<Setter Property="MinWidth" Value="70" />
+		<Setter Property="MinWidth" Value="30" />
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="21" />
-		<Setter Property="Width" Value="0" />
 		<Setter Property="Margin" Value="1" />
+		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="FontSize" Value="11" />
 	</Style>
 
-	<Style Selector="NumericUpDown /template/ TextBox">
-		<Setter Property="MinHeight" Value="0" />
-		<Setter Property="MaxHeight" Value="17" />
-		<Setter Property="BorderThickness" Value="0" />
-		<Setter Property="Margin" Value="10" />
+	<Style Selector="NumericUpDown TextBox Border">
+		<Setter Property="Padding" Value="0 2 0 0" />
 	</Style>
-
 	<Style Selector="NumericUpDown TextBox Border">
 		<Setter Property="BorderThickness" Value="0" />
 	</Style>
@@ -541,8 +554,15 @@
 		<Setter Property="MinHeight" Value="30" />
 	</Style>
 
+	<Style Selector="TimePicker /template/ TextBlock">
+		<Setter Property="Margin" Value="0 2 0 0" />
+		<Setter Property="Padding" Value="0 0 0 0" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+	</Style>
+
 	<Style Selector="DatePicker /template/ TextBlock">
-		<Setter Property="Margin" Value="0" />
+		<Setter Property="Margin" Value="0 2 0 0" />
 		<Setter Property="Padding" Value="0" />
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />

@@ -46,7 +46,7 @@ namespace Mesen.Utilities
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://AvaloniaEdit/AvaloniaEdit.xaml") }
 			};
 
-			Application.Current.Styles.AddRange(styles);
+			Application.Current.Styles.InsertRange(1, styles);
 		}
 	}
 }
