@@ -235,8 +235,8 @@ namespace Mesen.Debugger.Controls
 				cellHeight = BlockSize;
 			}
 
-			int clickedRow = (int)(p.Y / cellHeight);
-			int clickedColumn = (int)(p.X / cellWidth);
+			int clickedRow = Math.Min(rowCount - 1, (int)(p.Y / cellHeight));
+			int clickedColumn = Math.Min(columnCount - 1, (int)(p.X / cellWidth));
 
 			int paletteIndex = clickedRow * columnCount + clickedColumn;
 
