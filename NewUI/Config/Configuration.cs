@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Avalonia;
+using Mesen.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -99,20 +100,13 @@ namespace Mesen.Config
 			ConfigManager.SaveConfig();
 		}
 
-		private static JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { 
-			Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() },
-			IgnoreReadOnlyProperties = true,
-			IncludeFields = true,
-			WriteIndented = true
-		};
-
 		public static Configuration Deserialize(string configFile)
 		{
 			Configuration config;
 
 			try {
 				using(StreamReader reader = new StreamReader(configFile)) {
-					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), _jsonOptions) ?? new Configuration();
+					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), JsonHelper.Options) ?? new Configuration();
 				}
 			} catch {
 				config = new Configuration();
@@ -126,7 +120,7 @@ namespace Mesen.Config
 			try {
 				if(!ConfigManager.DoNotSaveSettings) {
 					using(StreamWriter writer = new StreamWriter(configFile)) {
-						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), _jsonOptions));
+						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options));
 					}
 				}
 				_needToSave = false;

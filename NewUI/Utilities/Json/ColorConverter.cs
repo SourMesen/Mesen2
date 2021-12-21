@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Mesen.Config
+namespace Mesen.Utilities.Json
 {
 	public class TimeSpanConverter : JsonConverter<TimeSpan>
 	{
