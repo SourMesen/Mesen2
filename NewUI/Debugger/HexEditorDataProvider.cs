@@ -11,48 +11,25 @@ namespace Mesen.Debugger
 {
 	public class HexEditorDataProvider : IHexEditorDataProvider
 	{
-		SnesMemoryType _memoryType;
-		AddressCounters[] _counters = Array.Empty<AddressCounters>();
-		byte[]? _cdlData;
-		bool[] _hasLabel = Array.Empty<bool>();
-		TimingInfo _timing;
-		bool _showExec;
-		bool _showWrite;
-		bool _showRead;
-		int _framesToFade;
-		bool _hideUnusedBytes;
-		bool _hideReadBytes;
-		bool _hideWrittenBytes;
-		bool _hideExecutedBytes;
-		bool _highlightDataBytes;
-		bool _highlightCodeBytes;
-		bool _highlightLabelledBytes;
-		bool _highlightBreakpoints;
-		ByteInfo _byteInfo = new ByteInfo();
-		BreakpointTypeFlags[]? _breakpointTypes;
-		byte[] _data = Array.Empty<byte>();
+		public int Length { get; private set; }
 
+		private SnesMemoryType _memoryType;
+		private HexEditorConfig _cfg;
+		private AddressCounters[] _counters = Array.Empty<AddressCounters>();
+		private byte[]? _cdlData;
+		private bool[] _hasLabel = Array.Empty<bool>();
+		private TimingInfo _timing;
+		private ByteInfo _byteInfo = new ByteInfo();
+		private BreakpointTypeFlags[]? _breakpointTypes;
+		private byte[] _data = Array.Empty<byte>();
 		private long _firstByteIndex = 0;
 
-		public HexEditorDataProvider(SnesMemoryType memoryType, bool showExec, bool showWrite, bool showRead, int framesToFade, bool hideUnusedBytes, bool hideReadBytes, bool hideWrittenBytes, bool hideExecutedBytes, bool highlightDataBytes, bool highlightCodeBytes, bool highlightLabelledBytes, bool highlightBreakpoints)
+		public HexEditorDataProvider(SnesMemoryType memoryType, HexEditorConfig cfg)
 		{
 			_memoryType = memoryType;
+			_cfg = cfg;
 			Length = DebugApi.GetMemorySize(memoryType);
-			_showExec = showExec;
-			_showWrite = showWrite;
-			_showRead = showRead;
-			_framesToFade = framesToFade;
-			_hideUnusedBytes = hideUnusedBytes;
-			_hideReadBytes = hideReadBytes;
-			_hideWrittenBytes = hideWrittenBytes;
-			_hideExecutedBytes = hideExecutedBytes;
-			_highlightDataBytes = highlightDataBytes;
-			_highlightCodeBytes = highlightCodeBytes;
-			_highlightLabelledBytes = highlightLabelledBytes;
-			_highlightBreakpoints = highlightBreakpoints;
 		}
-
-		public int Length { get; private set; }
 
 		public void Prepare(int firstByteIndex, int lastByteIndex)
 		{
@@ -68,9 +45,8 @@ namespace Mesen.Debugger
 			_firstByteIndex = firstByteIndex;
 			int visibleByteCount = (int)(lastByteIndex - firstByteIndex + 1);
 
-			if(_highlightBreakpoints) {
-				//TODO
-				/*Breakpoint[] breakpoints = BreakpointManager.Breakpoints.ToArray();
+			if(_cfg.HighlightBreakpoints) {
+				Breakpoint[] breakpoints = BreakpointManager.Breakpoints.ToArray();
 				_breakpointTypes = new BreakpointTypeFlags[visibleByteCount];
 
 				for(int i = 0; i < visibleByteCount; i++) {
@@ -81,7 +57,7 @@ namespace Mesen.Debugger
 							break;
 						}
 					}
-				}*/
+				}
 			} else {
 				_breakpointTypes = null;
 			}
@@ -89,7 +65,7 @@ namespace Mesen.Debugger
 			_counters = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 
 			_cdlData = null;
-			if(_highlightDataBytes || _highlightCodeBytes) {
+			if(_cfg.DataHighlight.Highlight || _cfg.CodeHighlight.Highlight) {
 				switch(_memoryType) {
 					case SnesMemoryType.CpuMemory:
 					case SnesMemoryType.Sa1Memory:
@@ -107,7 +83,7 @@ namespace Mesen.Debugger
 			}
 
 			_hasLabel = new bool[visibleByteCount];
-			if(_highlightLabelledBytes) {
+			if(_cfg.LabelHighlight.Highlight) {
 				if(_memoryType.IsRelativeMemory()) {
 					AddressInfo addr = new AddressInfo();
 					addr.Type = _memoryType;
@@ -125,7 +101,7 @@ namespace Mesen.Debugger
 			_timing = EmuApi.GetTimingInfo();
 		}
 
-		public static Color DarkerColor(Color input, double brightnessPercentage)
+		public static Color DarkerColor(byte alpha, Color input, double brightnessPercentage)
 		{
 			if(double.IsInfinity(brightnessPercentage)) {
 				brightnessPercentage = 1.0;
@@ -135,13 +111,11 @@ namespace Mesen.Debugger
 			} else {
 				brightnessPercentage = 1.0;
 			}
-			return Color.FromRgb((byte)(input.R * brightnessPercentage), (byte)(input.G * brightnessPercentage), (byte)(input.B * brightnessPercentage));
+			return Color.FromArgb(alpha, (byte)(input.R * brightnessPercentage), (byte)(input.G * brightnessPercentage), (byte)(input.B * brightnessPercentage));
 		}
 
 		public ByteInfo GetByte(int byteIndex)
 		{
-			HexEditorConfig cfg = ConfigManager.Config.Debug.HexEditor;
-
 			int cyclesPerFrame = (int)(_timing.MasterClockRate / _timing.Fps);
 			long index = byteIndex - _firstByteIndex;
 			double framesSinceExec = (double)(_timing.MasterClock - _counters[index].ExecStamp) / cyclesPerFrame;
@@ -154,27 +128,27 @@ namespace Mesen.Debugger
 			bool isUnused = !isRead && !isWritten && !isExecuted;
 
 			byte alpha = 0;
-			if(isRead && _hideReadBytes || isWritten && _hideWrittenBytes || isExecuted && _hideExecutedBytes || isUnused && _hideUnusedBytes) {
+			if(isRead && _cfg.HideReadBytes || isWritten && _cfg.HideWrittenBytes || isExecuted && _cfg.HideExecutedBytes || isUnused && _cfg.HideUnusedBytes) {
 				alpha = 128;
 			}
-			if(isRead && !_hideReadBytes || isWritten && !_hideWrittenBytes || isExecuted && !_hideExecutedBytes || isUnused && !_hideUnusedBytes) {
+			if(isRead && !_cfg.HideReadBytes || isWritten && !_cfg.HideWrittenBytes || isExecuted && !_cfg.HideExecutedBytes || isUnused && !_cfg.HideUnusedBytes) {
 				alpha = 255;
 			}
 
 			_byteInfo.BackColor = Colors.Transparent;
 			if(_cdlData != null) {
-				if((_cdlData[index] & (byte)CdlFlags.Code) != 0 && _highlightCodeBytes) {
+				if((_cdlData[index] & (byte)CdlFlags.Code) != 0 && _cfg.CodeHighlight.Highlight) {
 					//Code
-					_byteInfo.BackColor = cfg.CodeByteColor;
-				} else if((_cdlData[index] & (byte)CdlFlags.Data) != 0 && _highlightDataBytes) {
+					_byteInfo.BackColor = _cfg.CodeHighlight.Color;
+				} else if((_cdlData[index] & (byte)CdlFlags.Data) != 0 && _cfg.DataHighlight.Highlight) {
 					//Data
-					_byteInfo.BackColor = cfg.DataByteColor;
+					_byteInfo.BackColor = _cfg.DataHighlight.Color;
 				}
 			}
 
 			if(_hasLabel[index]) {
 				//Labels/comments
-				_byteInfo.BackColor = cfg.LabelledByteColor;
+				_byteInfo.BackColor = _cfg.LabelHighlight.Color;
 			}
 
 			_byteInfo.BorderColor = Colors.Transparent;
@@ -192,12 +166,13 @@ namespace Mesen.Debugger
 				}
 			}
 
-			if(_showExec && _counters[index].ExecStamp != 0 && framesSinceExec >= 0 && (framesSinceExec < _framesToFade || _framesToFade == 0)) {
-				_byteInfo.ForeColor = cfg.ExecColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ExecColor, (_framesToFade - framesSinceExec) / _framesToFade));
-			} else if(_showWrite && _counters[index].WriteStamp != 0 && framesSinceWrite >= 0 && (framesSinceWrite < _framesToFade || _framesToFade == 0)) {
-				_byteInfo.ForeColor = cfg.WriteColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.WriteColor, (_framesToFade - framesSinceWrite) / _framesToFade));
-			} else if(_showRead && _counters[index].ReadStamp != 0 && framesSinceRead >= 0 && (framesSinceRead < _framesToFade || _framesToFade == 0)) {
-				_byteInfo.ForeColor = cfg.ReadColor; //TODO Color.FromArgb(alpha, DarkerColor(cfg.ReadColor, (_framesToFade - framesSinceRead) / _framesToFade));
+			int framesToFade = _cfg.FadeSpeed.ToFrameCount();
+			if(_cfg.ExecHighlight.Highlight && _counters[index].ExecStamp != 0 && framesSinceExec >= 0 && (framesSinceExec < framesToFade || framesToFade == 0)) {
+				_byteInfo.ForeColor = DarkerColor(alpha, _cfg.ExecHighlight.Color, (framesToFade - framesSinceExec) / framesToFade);
+			} else if(_cfg.WriteHighlight.Highlight && _counters[index].WriteStamp != 0 && framesSinceWrite >= 0 && (framesSinceWrite < framesToFade || framesToFade == 0)) {
+				_byteInfo.ForeColor = DarkerColor(alpha, _cfg.WriteHighlight.Color, (framesToFade - framesSinceWrite) / framesToFade);
+			} else if(_cfg.ReadHighlight.Highlight && _counters[index].ReadStamp != 0 && framesSinceRead >= 0 && (framesSinceRead < framesToFade || framesToFade == 0)) {
+				_byteInfo.ForeColor = DarkerColor(alpha, _cfg.ReadHighlight.Color, (framesToFade - framesSinceRead) / framesToFade);
 			} else {
 				_byteInfo.ForeColor = Color.FromArgb(alpha, 0, 0, 0);
 			}

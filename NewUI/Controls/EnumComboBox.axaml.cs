@@ -109,8 +109,11 @@ namespace Mesen.Controls
 			object? selectedItem = cbo.SelectedItem;
 			if(selectedItem is string) {
 				foreach(Enum val in Enum.GetValues(this.EnumType)) {
-					if((selectedItem as string) == ResourceHelper.GetEnumText(val)) {
-						this.SelectedItem = val;
+					if(AvailableValues == null || AvailableValues.Contains(val)) {
+						if((selectedItem as string) == ResourceHelper.GetEnumText(val)) {
+							this.SelectedItem = val;
+							break;
+						}
 					}
 				}
 			}

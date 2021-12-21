@@ -184,11 +184,17 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Controls\ColorCheckbox.axaml.cs">
+      <DependentUpon>ColorCheckbox.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\EventViewerCategoryControl.axaml.cs">
       <DependentUpon>EventViewerCategoryControl.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Controls\SpritePreviewPanel.axaml.cs">
       <DependentUpon>SpritePreviewPanel.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\MemoryToolsDisplayOptionsView.axaml.cs">
+      <DependentUpon>MemoryToolsDisplayOptionsView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\NesEventViewerConfigView.axaml.cs">
       <DependentUpon>NesEventViewerConfigView.axaml</DependentUpon>

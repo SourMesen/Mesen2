@@ -11,10 +11,10 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
 	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
 	x:Class="Mesen.Debugger.Windows.MemoryToolsWindow"
 	x:DataType="dvm:MemoryToolsViewModel"
-	Width="600" Height="600"
 	Icon="/Assets/CheatCode.png"
 	Title="Memory Tools"
 >
@@ -22,22 +22,53 @@
 		<dvm:MemoryToolsViewModel />
 	</Design.DataContext>
 
+	<Window.Styles>
+		<Style Selector="TabStrip:singleitem">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="Padding" Value="1" />
+			
+		</Style>
+		<Style Selector="Button Image">
+			<Setter Property="Margin" Value="1 1 0 0" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+		</Style>
+	</Window.Styles>
+
 	<DockPanel>
-		<DockPanel DockPanel.Dock="Top">
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="File" />
+			<MenuItem Header="View" />
+			<MenuItem Header="Find" />
+		</Menu>
+		<DockPanel DockPanel.Dock="Top" Margin="3 2">
 			<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
 			<c:EnumComboBox
 				DockPanel.Dock="Left"
 				EnumType="{x:Type i:SnesMemoryType}"
-				SelectedItem="{CompiledBinding MemoryType}"
+				SelectedItem="{CompiledBinding Config.MemoryType}"
 				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
+			<Button
+				DockPanel.Dock="Right"
+				ToolTip.Tip="Toggle settings panel"
+				Click="OnSettingsClick"
+			>
+				<Image Source="/Assets/Settings.png" />
+			</Button>
 			<ComboBox
 				DockPanel.Dock="Right"
-				SelectedItem="{CompiledBinding BytesPerRow}"
+				SelectedItem="{CompiledBinding Config.BytesPerRow}"
 				Items="{CompiledBinding AvailableWidths}"
 			/>
 			<TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">Number of Columns: </TextBlock>
 		</DockPanel>
+		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
+			<dv:MemoryToolsDisplayOptionsView DataContext="{CompiledBinding Config}" />
+		</Panel>
 		<ScrollBar
 			DockPanel.Dock="Right"
 			AllowAutoHide="False"
@@ -50,8 +81,11 @@
 		<dc:HexEditor 
 			Name="Hex"
 			DataProvider="{CompiledBinding DataProvider}"
-			BytesPerRow="{CompiledBinding BytesPerRow}"
+			BytesPerRow="{CompiledBinding Config.BytesPerRow}"
 			TopRow="{CompiledBinding ScrollPosition}"
+			FontFamily="{CompiledBinding Config.FontFamily}"
+			FontSize="{CompiledBinding Config.FontSize}"
+			ShowStringView="{CompiledBinding Config.ShowCharacters}"
 		/>
 	</DockPanel>
 </Window>

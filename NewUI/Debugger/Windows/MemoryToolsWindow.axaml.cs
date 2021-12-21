@@ -13,6 +13,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System.ComponentModel;
+using Avalonia.Interactivity;
 
 namespace Mesen.Debugger.Windows
 {
@@ -43,6 +44,8 @@ namespace Mesen.Debugger.Windows
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			_listener?.Dispose();
+			_model.Config.SaveWindowSettings(this);
+			_model.SaveConfig();
 			base.OnClosing(e);
 		}
 
@@ -51,15 +54,21 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
+		{
+			_model.Config.ShowOptionPanel = !_model.Config.ShowOptionPanel;
+		}
+
 		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
 		{
-			DebugApi.SetMemoryValue(_model.MemoryType, (uint)e.ByteOffset, e.Value);
+			DebugApi.SetMemoryValue(_model.Config.MemoryType, (uint)e.ByteOffset, e.Value);
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(this.DataContext is MemoryToolsViewModel model) {
 				_model = model;
+				_model.Config.LoadWindowSettings(this);
 			} else {
 				throw new Exception("Invalid model");
 			}
@@ -67,13 +76,11 @@ namespace Mesen.Debugger.Windows
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType != ConsoleNotificationType.PpuFrameDone) {
-				return;
+			if(e.NotificationType == ConsoleNotificationType.PpuFrameDone || e.NotificationType == ConsoleNotificationType.CodeBreak) {
+				Dispatcher.UIThread.Post(() => {
+					_editor.InvalidateVisual();
+				});
 			}
-
-			Dispatcher.UIThread.Post(() => {
-				_editor.InvalidateVisual();
-			});
 		}
 	}
 }

@@ -1,22 +1,17 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Layout;
-using Avalonia.Media.TextFormatting;
 using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Controls
 {
 	public partial class HexEditor : Control
 	{
-		//TODO Customizable font/styles
 		//TODO Support TBL files
 		//TODO Copy+paste
 		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
@@ -25,6 +20,11 @@ namespace Mesen.Debugger.Controls
 
 		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0);
 		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0);
+
+		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<HexEditor, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
+		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<HexEditor, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
+
+		public static readonly StyledProperty<bool> ShowStringViewProperty = AvaloniaProperty.Register<HexEditor, bool>(nameof(ShowStringView), false);
 
 		public static readonly StyledProperty<SolidColorBrush> SelectedRowColumnColorProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(SelectedRowColumnColor), new SolidColorBrush(0xFFF0F0F0));
 
@@ -63,6 +63,24 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(SelectionLengthProperty); }
 			set { SetValue(SelectionLengthProperty, value); }
+		}
+
+		public bool ShowStringView
+		{
+			get { return GetValue(ShowStringViewProperty); }
+			set { SetValue(ShowStringViewProperty, value); }
+		}
+
+		public string FontFamily
+		{
+			get { return GetValue(FontFamilyProperty); }
+			set { SetValue(FontFamilyProperty, value); }
+		}
+
+		public float FontSize
+		{
+			get { return GetValue(FontSizeProperty); }
+			set { SetValue(FontSizeProperty, value); }
 		}
 
 		public SolidColorBrush SelectedRowColumnColor
@@ -312,7 +330,7 @@ namespace Mesen.Debugger.Controls
 			if(p.X >= RowHeaderWidth && p.Y >= ColumnHeaderHeight) {
 				int row = (int)((p.Y - ColumnHeaderHeight) / RowHeight);
 
-				if(p.X >= RowHeaderWidth + RowWidth + StringViewMargin) {
+				if(ShowStringView && p.X >= RowHeaderWidth + RowWidth + StringViewMargin) {
 					//String view
 					try {
 						int rowStart = row * BytesPerRow;
@@ -460,6 +478,8 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
+			using var clipRect = context.PushClip(new Rect(this.Bounds.Size));
+
 			context.DrawRectangle(ColorHelper.GetBrush(Colors.White), null, new Rect(Bounds.Size));
 
 			//Init font and letter size
@@ -509,7 +529,7 @@ namespace Mesen.Debugger.Controls
 
 				//Draw selected character/byte cursor
 				double xPos;
-				if(_inStringView) {
+				if(ShowStringView && _inStringView) {
 					xPos = RowWidth + StringViewMargin + _startPositionByByte[(selectedRow - TopRow) * bytesPerRow + selectedColumn];
 				} else {
 					xPos = letterWidth * selectedColumn * 3 + (_lastNibble ? letterWidth : 0);
@@ -565,8 +585,8 @@ namespace Mesen.Debugger.Controls
 
 		private void InitFontAndLetterSize()
 		{
-			this.Font = new Typeface(new FontFamily("Consolas"));
-			var text = new FormattedText("A", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			this.Font = new Typeface(new FontFamily(this.FontFamily));
+			var text = new FormattedText("A", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			this.LetterSize = text.Bounds.Size;
 		}
 
@@ -588,7 +608,7 @@ namespace Mesen.Debugger.Controls
 			double y = 0;
 
 			//Draw row headers for each row
-			var text = new FormattedText("", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			var text = new FormattedText("", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			while(y < bounds.Height && headerByte < dataLength) {
 				text.Text = headerByte.ToString("X" + headerCharLength);
 				context.DrawText(ColorHelper.GetBrush(HeaderForeground), new Point(xOffset, y), text);
@@ -606,7 +626,7 @@ namespace Mesen.Debugger.Controls
 				sb.Append(i.ToString(HexFormat) + " ");
 			}
 
-			var text = new FormattedText(sb.ToString(), this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			var text = new FormattedText(sb.ToString(), this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			context.DrawText(ColorHelper.GetBrush(HeaderForeground), new Point(RowHeaderWidth, (this.ColumnHeaderHeight - this.LetterSize.Height) / 2), text);
 		}
 	}

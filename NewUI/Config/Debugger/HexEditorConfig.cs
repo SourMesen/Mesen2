@@ -9,54 +9,74 @@ using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Media;
 using Mesen.Interop;
+using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.Config
 {
-	public class HexEditorConfig
+	public class HexEditorConfig : BaseWindowConfig<HexEditorConfig>
 	{
-		public bool HighDensityTextMode = false;
-		public bool EnablePerByteNavigation = true;
-		public bool ByteEditingMode = true;
-		public bool AutoRefresh = true;
-		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Normal;
-		public bool IgnoreRedundantWrites = false;
-		public bool HighlightCurrentRowColumn = true;
-		public int ColumnCount = 2;
+		[Reactive] public bool ShowOptionPanel { get; set; } = true;
+		[Reactive] public bool AutoRefresh { get; set; } = true;
+		[Reactive] public bool IgnoreRedundantWrites { get; set; } = false;
 
-		public string FontFamily = DebuggerConfig.MonospaceFontFamily;
-		public FontStyle FontStyle = FontStyle.Normal;
-		public float FontSize = DebuggerConfig.DefaultFontSize;
-		public int TextZoom = 100;
+		[Reactive] public int BytesPerRow { get; set; } = 16;
 
-		public bool ShowCharacters = true;
-		public bool ShowLabelInfo = true;
-		public bool HighlightExecution = true;
-		public bool HighlightWrites = true;
-		public bool HighlightReads = true;
-		public int FadeSpeed = 300;
-		public bool HideUnusedBytes = false;
-		public bool HideReadBytes = false;
-		public bool HideWrittenBytes = false;
-		public bool HideExecutedBytes = false;
-		public bool HighlightBreakpoints = false;
-		public bool HighlightLabelledBytes = false;
-		public bool HighlightCodeBytes = false;
-		public bool HighlightDataBytes = false;
+		[Reactive] public string FontFamily { get; set; } = DebuggerConfig.MonospaceFontFamily;
+		[Reactive] public float FontSize { get; set; } = DebuggerConfig.DefaultFontSize;
+		[Reactive] public int TextZoom { get; set; } = 100;
+		[Reactive] public bool HighDensityTextMode { get; set; } = false;
 
-		public Color ReadColor = Colors.Blue;
-		public Color WriteColor = Colors.Red;
-		public Color ExecColor = Colors.Green;
-		public Color LabelledByteColor = Colors.LightPink;
-		public Color CodeByteColor = Colors.DarkSeaGreen;
-		public Color DataByteColor = Colors.LightSteelBlue;
+		[Reactive] public bool ShowCharacters { get; set; } = true;
 
-		public SnesMemoryType MemoryType = SnesMemoryType.CpuMemory;
+		[Reactive] public bool HideUnusedBytes { get; set; } = false;
+		[Reactive] public bool HideReadBytes { get; set; } = false;
+		[Reactive] public bool HideWrittenBytes { get; set; } = false;
+		[Reactive] public bool HideExecutedBytes { get; set; } = false;
 
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
-		
+		[Reactive] public HighlightFadeSpeed FadeSpeed { get; set; } = HighlightFadeSpeed.Normal;
+		[Reactive] public HighlightConfig ReadHighlight { get; set; } = new() { Highlight = true, ColorCode = Colors.Blue.ToUint32() };
+		[Reactive] public HighlightConfig WriteHighlight { get; set; } = new() { Highlight = true, ColorCode = Colors.Red.ToUint32() };
+		[Reactive] public HighlightConfig ExecHighlight { get; set; } = new() { Highlight = true, ColorCode = Colors.Green.ToUint32() };
+
+		[Reactive] public HighlightConfig LabelHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.LightPink.ToUint32() };
+		[Reactive] public HighlightConfig CodeHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.DarkSeaGreen.ToUint32() };
+		[Reactive] public HighlightConfig DataHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.LightSteelBlue.ToUint32() };
+		[Reactive] public bool HighlightBreakpoints { get; set; } = false;
+
+		[Reactive] public SnesMemoryType MemoryType { get; set; } = SnesMemoryType.CpuMemory;
+
 		public HexEditorConfig()
 		{
 		}
+	}
+
+	public enum HighlightFadeSpeed
+	{
+		NoFade,
+		Slow,
+		Normal,
+		Fast
+	}
+
+	public static class HighlightFadeSpeedExtensions
+	{
+		public static int ToFrameCount(this HighlightFadeSpeed speed)
+		{
+			return speed switch {
+				HighlightFadeSpeed.NoFade => 0,
+				HighlightFadeSpeed.Slow => 600,
+				HighlightFadeSpeed.Normal => 300,
+				HighlightFadeSpeed.Fast => 120,
+				_ => 0
+			};
+		}
+	}
+
+	public class HighlightConfig
+	{
+		[Reactive] public bool Highlight { get; set; }
+		[Reactive] public UInt32 ColorCode { get; set; }
+
+		public Color Color => Color.FromUInt32(ColorCode);
 	}
 }

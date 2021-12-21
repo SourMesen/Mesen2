@@ -1,0 +1,89 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="410"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:HexEditorConfig"
+	x:Class="Mesen.Debugger.Views.MemoryToolsDisplayOptionsView"
+>
+	<Design.DataContext>
+		<cfg:HexEditorConfig />
+	</Design.DataContext>
+
+	<StackPanel>
+		<c:OptionSection Header="{l:Translate lblAccessHighlight}" Margin="0">
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightRead}"
+				Checked="{CompiledBinding ReadHighlight.Highlight}"
+				Color="{CompiledBinding ReadHighlight.Color}"
+			/>
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightWrite}"
+				Checked="{CompiledBinding WriteHighlight.Highlight}"
+				Color="{CompiledBinding WriteHighlight.Color}"
+			/>
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightExec}"
+				Checked="{CompiledBinding ExecHighlight.Highlight}"
+				Color="{CompiledBinding ExecHighlight.Color}"
+			/>
+			<WrapPanel>
+				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblFadeSpeed}" />
+				<c:EnumComboBox
+					EnumType="{x:Type cfg:HighlightFadeSpeed}"
+					SelectedItem="{CompiledBinding FadeSpeed}"
+				/>
+			</WrapPanel>
+		</c:OptionSection>
+
+		<c:OptionSection Header="{l:Translate lblDataTypeHighlight}">
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightCode}"
+				Checked="{CompiledBinding CodeHighlight.Highlight}"
+				Color="{CompiledBinding CodeHighlight.Color}"
+			/>
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightData}"
+				Checked="{CompiledBinding DataHighlight.Highlight}"
+				Color="{CompiledBinding DataHighlight.Color}"
+			/>
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightLabel}"
+				Checked="{CompiledBinding LabelHighlight.Highlight}"
+				Color="{CompiledBinding LabelHighlight.Color}"
+			/>
+			<CheckBox
+				Margin="16 0"
+				IsChecked="{CompiledBinding HighlightBreakpoints}"
+				Content="{l:Translate chkHighlightBreakpoints}"
+			/>
+		</c:OptionSection>
+
+		<c:OptionSection Header="{l:Translate lblFontSettings}">
+			<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblFamily}" />
+				<ComboBox Grid.Column="1" x:Name="cboFontFamily" Width="100" SelectedItem="{CompiledBinding FontFamily}" />
+				<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="{l:Translate lblSize}" />
+				<ComboBox Grid.Row="2" Grid.Column="2" x:Name="cboFontSize" Width="100" SelectedItem="{CompiledBinding FontSize}" />
+			</Grid>
+			<CheckBox
+				IsChecked="{CompiledBinding HighDensityTextMode}"
+				Content="{l:Translate chkHighDensityTextMode}"
+			/>
+		</c:OptionSection>
+
+		<c:OptionSection Header="{l:Translate lblMiscSettings}">
+			<CheckBox
+				IsChecked="{CompiledBinding ShowCharacters}"
+				Content="{l:Translate chkShowCharacters}"
+			/>
+		</c:OptionSection>
+	</StackPanel>
+</UserControl>

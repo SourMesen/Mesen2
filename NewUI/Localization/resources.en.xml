@@ -856,6 +856,26 @@
 			<Control ID="colDetails">Details</Control>
 		</Form>
 
+		<Form ID="MemoryToolsDisplayOptionsView">
+			<Control ID="lblAccessHighlight">Access highlighting</Control>
+			<Control ID="lblFadeSpeed">Fade speed: </Control>
+			<Control ID="lblDataTypeHighlight">Data type highlighting</Control>
+			<Control ID="lblFontSettings">Font settings</Control>
+			<Control ID="lblFamily">Family: </Control>
+			<Control ID="lblSize">Size: </Control>
+			<Control ID="lblMiscSettings">Misc. settings</Control>
+
+			<Control ID="chkHighlightRead">Reads</Control>
+			<Control ID="chkHighlightWrite">Writes</Control>
+			<Control ID="chkHighlightExec">Execution</Control>
+			<Control ID="chkHighlightCode">Code</Control>
+			<Control ID="chkHighlightData">Data</Control>
+			<Control ID="chkHighlightLabel">Labels</Control>
+			<Control ID="chkHighlightBreakpoints">Breakpoints</Control>
+			<Control ID="chkHighDensityTextMode">Use high-density text</Control>
+			<Control ID="chkShowCharacters">Show characters</Control>
+		</Form>
+
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
 			<Control ID="btnReset">Reset</Control>
@@ -1437,6 +1457,12 @@ x == [$150] || y == [10]
 			<Value ID="DmaRead">DMA Read</Value>
 			<Value ID="DmaWrite">DMA Write</Value>
 			<Value ID="DummyRead">Dummy Read</Value>
+		</Enum>
+		<Enum ID="HighlightFadeSpeed">
+			<Value ID="NoFade">Do not fade</Value>
+			<Value ID="Slow">Slow</Value>
+			<Value ID="Normal">Normal</Value>
+			<Value ID="Fast">Fast</Value>
 		</Enum>
 	</Enums>
 </Resources>

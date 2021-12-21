@@ -20,8 +20,11 @@ namespace Mesen.Debugger.Controls
 			private HashSet<Color> _fgColors;
 			private Size _letterSize;
 			private int _bytesPerRow;
+			private bool _showStringView;
 			private double _rowHeight;
 			private string _hexFormat;
+			private string _fontFamily;
+			private float _fontSize;
 			private double _stringViewPosition;
 			private Dictionary<Color, SKPaint> _skPaints = new Dictionary<Color, SKPaint>();
 			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
@@ -30,12 +33,15 @@ namespace Mesen.Debugger.Controls
 			{
 				_he = he;
 				Bounds = _he.Bounds;
+				_fontFamily = _he.FontFamily;
+				_fontSize = _he.FontSize;
 				_bytesPerRow = _he.BytesPerRow;
 				_hexFormat = _he.HexFormat;
 				_rowHeight = _he.RowHeight;
 				_dataToDraw = dataToDraw;
 				_fgColors = fgColors;
 				_letterSize = _he.LetterSize;
+				_showStringView = _he.ShowStringView;
 				_stringViewPosition = _he.RowWidth + _he.StringViewMargin;
 
 				foreach(ByteInfo byteInfo in dataToDraw) {
@@ -69,10 +75,12 @@ namespace Mesen.Debugger.Controls
 						DrawHexView(canvas, color);
 					}
 
-					canvas.Translate((float)_stringViewPosition, 0);
-					PrepareStringView();
-					foreach(Color color in _fgColors) {
-						DrawStringView(canvas, color);
+					if(_showStringView) {
+						canvas.Translate((float)_stringViewPosition, 0);
+						PrepareStringView();
+						foreach(Color color in _fgColors) {
+							DrawStringView(canvas, color);
+						}
 					}
 
 					canvas.Restore();
@@ -84,8 +92,8 @@ namespace Mesen.Debugger.Controls
 				SKPaint paint = new SKPaint();
 				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUint32());
 
-				SKTypeface typeface = SKTypeface.FromFamilyName("Consolas");
-				SKFont font = new SKFont(typeface, 14);
+				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
+				SKFont font = new SKFont(typeface, _fontSize);
 
 				using var builder = new SKTextBlobBuilder();
 
@@ -121,7 +129,7 @@ namespace Mesen.Debugger.Controls
 
 			private void PrepareStringView()
 			{
-				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), 14);
+				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
 
 				int pos = 0;
 
@@ -164,9 +172,9 @@ namespace Mesen.Debugger.Controls
 				SKPaint paint = new SKPaint();
 				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUint32());
 
-				SKTypeface typeface = SKTypeface.FromFamilyName("Consolas");
-				SKFont monoFont = new SKFont(typeface, 14);
-				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), 14);
+				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
+				SKFont monoFont = new SKFont(typeface, _fontSize);
+				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
 				
 				using var builder = new SKTextBlobBuilder();
 

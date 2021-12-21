@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -15,8 +16,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class MemoryToolsViewModel : ViewModelBase
 	{
-		[Reactive] public SnesMemoryType MemoryType { get; set; }
-		[Reactive] public int BytesPerRow { get; set; }
+		[Reactive] public HexEditorConfig Config { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
 		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
 
@@ -28,36 +28,32 @@ namespace Mesen.Debugger.ViewModels
 
 		public MemoryToolsViewModel()
 		{
-			this.MemoryType = SnesMemoryType.CpuMemory;
-			this.BytesPerRow = 16;
-			this.ScrollPosition = 0;
+			Config = ConfigManager.Config.Debug.HexEditor.Clone();
+			ScrollPosition = 0;
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
 			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
+				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
+			}
 
-			this.WhenAnyValue(x => x.MemoryType).Subscribe(x => DataProvider = new HexEditorDataProvider(
-				x,
-				true,
-				true,
-				true,
-				60,
-				false,
-				false,
-				false,
-				false,
-				true,
-				true,
-				true,
-				true
+			this.WhenAnyValue(x => x.Config.MemoryType).Subscribe(x => DataProvider = new HexEditorDataProvider(
+				x, Config
 			));
 
 			this.WhenAnyValue(
-				x => x.MemoryType,
-				x => x.BytesPerRow
+				x => x.Config.MemoryType,
+				x => x.Config.BytesPerRow
 			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue);
 		}
-   }
+
+		internal void SaveConfig()
+		{
+			ConfigManager.Config.Debug.HexEditor = Config;
+			ConfigManager.SaveConfig();
+		}
+	}
 }
