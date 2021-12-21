@@ -40,7 +40,13 @@
 
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="File" />
+			<MenuItem Header="File">
+				<MenuItem Header="Load TBL file..." Click="OnLoadTblFileClick">
+					<MenuItem.Icon>
+						<Image Source="/Assets/Folder.png" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 			<MenuItem Header="View" />
 			<MenuItem Header="Find" />
 		</Menu>

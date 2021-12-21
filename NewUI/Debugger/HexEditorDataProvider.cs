@@ -6,6 +6,7 @@ using Mesen.Config;
 using Mesen.Debugger;
 using Mesen.Interop;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger
 {
@@ -23,11 +24,13 @@ namespace Mesen.Debugger
 		private BreakpointTypeFlags[]? _breakpointTypes;
 		private byte[] _data = Array.Empty<byte>();
 		private long _firstByteIndex = 0;
+		private TblByteCharConverter? _tblConverter = null;
 
-		public HexEditorDataProvider(SnesMemoryType memoryType, HexEditorConfig cfg)
+		public HexEditorDataProvider(SnesMemoryType memoryType, HexEditorConfig cfg, TblByteCharConverter? tblConverter)
 		{
 			_memoryType = memoryType;
 			_cfg = cfg;
+			_tblConverter = tblConverter;
 			Length = DebugApi.GetMemorySize(memoryType);
 		}
 
@@ -181,5 +184,33 @@ namespace Mesen.Debugger
 
 			return _byteInfo;
 		}
+
+		public string ConvertValueToString(UInt64 val, out int keyLength)
+		{
+			if(_tblConverter != null) {
+				return _tblConverter.ToChar(val, out keyLength);
+			}
+
+			keyLength = 1;
+			val &= 0xFF;
+
+			if(val < 32 || val >= 127) {
+				return ".";
+			}
+			return ((char)val).ToString();
+		}
+
+		public byte ConvertCharToByte(char c)
+		{
+			if(_tblConverter != null) {
+				return _tblConverter.GetBytes(c.ToString())[0];
+			}
+
+			if(c > 32 && c < 127) {
+				return (byte)c;
+			}
+			return (byte)'.';
+		}
+
 	}
 }

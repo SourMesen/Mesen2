@@ -126,8 +126,8 @@ namespace Mesen.Debugger.Controls
 		private int _newByteValue = -1;
 		private bool _lastNibble = false;
 		private bool _inStringView = false;
-		private List<float> _startPositionByByte = new List<float>();
-		private List<float> _endPositionByByte = new List<float>();
+		private float[] _startPositionByByte = Array.Empty<float>();
+		private float[] _endPositionByByte = Array.Empty<float>();
 
 		static HexEditor()
 		{
@@ -144,7 +144,7 @@ namespace Mesen.Debugger.Controls
 			Cursor = new Cursor(StandardCursorType.Ibeam);
 		}
 
-		private void MoveCursor(int offset, bool nibbleMode = false)
+		private void MoveCursor(int offset, bool nibbleMode = false, bool keepNibble = false)
 		{
 			if(nibbleMode) {
 				if(_lastNibble) {
@@ -163,17 +163,19 @@ namespace Mesen.Debugger.Controls
 				}
 			} else {
 				int pos = this.SelectionStart + offset;
-				SetCursorPosition(pos);
+				SetCursorPosition(pos, keepNibble);
 			}
 		}
 
-		private void SetCursorPosition(int pos)
+		private void SetCursorPosition(int pos, bool keepNibble = false)
 		{
 			this.SelectionStart = Math.Min(Math.Max(0, pos), this.DataProvider.Length - 1);
 			this.SelectionLength = 0;
 			_cursorPosition = this.SelectionStart;
 			_lastClickedPosition = _cursorPosition;
-			_lastNibble = false;
+			if(!keepNibble) {
+				_lastNibble = false;
+			}
 
 			ScrollIntoView(_cursorPosition);
 		}
@@ -256,11 +258,11 @@ namespace Mesen.Debugger.Controls
 				switch(e.Key) {
 					case Key.Left: MoveCursor(-1, ctrl); break;
 					case Key.Right: MoveCursor(1, ctrl); break;
-					case Key.Up: MoveCursor(-BytesPerRow); break;
-					case Key.Down: MoveCursor(BytesPerRow); break;
+					case Key.Up: MoveCursor(-BytesPerRow, keepNibble: true); break;
+					case Key.Down: MoveCursor(BytesPerRow, keepNibble: true); break;
 					
-					case Key.PageUp: MoveCursor(-BytesPerRow * VisibleRows); break;
-					case Key.PageDown: MoveCursor(BytesPerRow * VisibleRows); break;
+					case Key.PageUp: MoveCursor(-BytesPerRow * VisibleRows, keepNibble: true); break;
+					case Key.PageDown: MoveCursor(BytesPerRow * VisibleRows, keepNibble: true); break;
 					case Key.Home:
 						if(ctrl) {
 							SetCursorPosition(0);
@@ -286,9 +288,9 @@ namespace Mesen.Debugger.Controls
 
 				if(_inStringView) {
 					SelectionLength = 0;
-					_newByteValue = ConvertCharToByte(c);
+					_newByteValue = DataProvider.ConvertCharToByte(c);
 					CommitByteChanges();
-					SelectionStart++;
+					MoveCursor(1);
 				} else {
 					if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
 						int keyValue = Int32.Parse(c.ToString(), System.Globalization.NumberStyles.HexNumber);
@@ -319,7 +321,7 @@ namespace Mesen.Debugger.Controls
 		private void CommitByteChanges()
 		{
 			if(_newByteValue >= 0) {
-				this.ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = SelectionStart, Value = (byte)_newByteValue });
+				this.ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = _cursorPosition, Value = (byte)_newByteValue });
 				_lastNibble = false;
 				_newByteValue = -1;
 			}
@@ -334,20 +336,20 @@ namespace Mesen.Debugger.Controls
 					//String view
 					try {
 						int rowStart = row * BytesPerRow;
-						List<float> startPos = _startPositionByByte;
-						float endPos = _endPositionByByte[rowStart + BytesPerRow - 1];
+						float[] startPos = _startPositionByByte;
+						float[] endPos = _endPositionByByte;
 
 						double x = p.X - RowHeaderWidth - RowWidth - StringViewMargin;
 
-						if(x > endPos) {
-							return null;
-						}
-
 						int column = 0;
-						for(int i = BytesPerRow - 1; i >= 0; i--) {
-							if(startPos[rowStart + i] < x) {
-								column = i;
-								break;
+						if(x >= _startPositionByByte[rowStart + BytesPerRow - 1]) {
+							column = BytesPerRow - 1;
+						} else {
+							for(int i = 0, len = BytesPerRow - 1; i < len; i++) {
+								if(startPos[rowStart + i] <= x && _endPositionByByte[rowStart + i] >= x) {
+									column = i;
+									break;
+								}
 							}
 						}
 
@@ -521,21 +523,9 @@ namespace Mesen.Debugger.Controls
 			//Draw data
 			int visibleRows = VisibleRows + 2;
 
-			if(selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
-				if(IsFocused) {
-					//Draw background color for current row
-					context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, (selectedRow - TopRow) * RowHeight, rowWidth, RowHeight));
-				}
-
-				//Draw selected character/byte cursor
-				double xPos;
-				if(ShowStringView && _inStringView) {
-					xPos = RowWidth + StringViewMargin + _startPositionByByte[(selectedRow - TopRow) * bytesPerRow + selectedColumn];
-				} else {
-					xPos = letterWidth * selectedColumn * 3 + (_lastNibble ? letterWidth : 0);
-				}
-
-				context.DrawRectangle(cursorPen, new Rect(xPos, (selectedRow - TopRow) * RowHeight, 1, RowHeight));
+			if(IsFocused && selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
+				//Draw background color for current row
+				context.DrawRectangle(selectedRowColumnColor, null, new Rect(0, (selectedRow - TopRow) * RowHeight, rowWidth, RowHeight));
 			}
 
 			int bytesToDraw = bytesPerRow * visibleRows;
@@ -565,22 +555,20 @@ namespace Mesen.Debugger.Controls
 			}
 
 			context.Custom(new HexViewDrawOperation(this, dataToDraw, fgColors));
-		}
 
-		private string ConvertByteToString(byte b)
-		{
-			if(b < 32 || b >= 127) {
-				return ".";
-			}
-			return ((char)b).ToString();
-		}
+			if(selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
+				//Draw selected character/byte cursor
+				double xPos;
+				if(ShowStringView && _inStringView) {
+					xPos = RowWidth + StringViewMargin + _startPositionByByte[(selectedRow - TopRow) * bytesPerRow + selectedColumn];
+				} else {
+					xPos = letterWidth * selectedColumn * 3 + (_lastNibble ? letterWidth : 0);
+				}
 
-		private byte ConvertCharToByte(char c)
-		{
-			if(c > 32 || c < 127) {
-				return (byte)c;
+				xPos = (int)xPos;
+				double yPos = (int)((selectedRow - TopRow) * RowHeight);
+				context.DrawRectangle(cursorPen, new Rect(xPos, yPos, 1, (int)RowHeight));
 			}
-			return (byte)'.';
 		}
 
 		private void InitFontAndLetterSize()
@@ -636,6 +624,9 @@ namespace Mesen.Debugger.Controls
 		void Prepare(int firstByteIndex, int lastByteIndex);
 		ByteInfo GetByte(int byteIndex);
 		int Length { get; }
+
+		string ConvertValueToString(UInt64 val, out int keyLength);
+		byte ConvertCharToByte(char c);
 	}
 
 	public struct GridPoint
@@ -659,6 +650,10 @@ namespace Mesen.Debugger.Controls
 		public Color BorderColor { get; set; }
 		public bool Selected { get; set; }
 		public byte Value { get; set; }
+
+		public int StringValueKeyLength { get; set; }
+		public string StringValue { get; set; }
+		public bool UseAltFont { get; set; }
 
 		public override bool Equals(object? obj)
 		{

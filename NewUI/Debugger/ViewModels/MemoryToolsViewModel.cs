@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -19,6 +20,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public HexEditorConfig Config { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
 		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
+		[Reactive] public TblByteCharConverter? TblConverter { get; set; }
 
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
 
@@ -40,8 +42,8 @@ namespace Mesen.Debugger.ViewModels
 				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
 			}
 
-			this.WhenAnyValue(x => x.Config.MemoryType).Subscribe(x => DataProvider = new HexEditorDataProvider(
-				x, Config
+			this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((SnesMemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
+				o.memType, Config, o.conv
 			));
 
 			this.WhenAnyValue(

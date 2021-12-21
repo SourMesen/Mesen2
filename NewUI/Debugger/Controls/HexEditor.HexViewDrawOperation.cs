@@ -26,6 +26,7 @@ namespace Mesen.Debugger.Controls
 			private string _fontFamily;
 			private float _fontSize;
 			private double _stringViewPosition;
+			private IHexEditorDataProvider _dataProvider;
 			private Dictionary<Color, SKPaint> _skPaints = new Dictionary<Color, SKPaint>();
 			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
 
@@ -38,6 +39,7 @@ namespace Mesen.Debugger.Controls
 				_bytesPerRow = _he.BytesPerRow;
 				_hexFormat = _he.HexFormat;
 				_rowHeight = _he.RowHeight;
+				_dataProvider = _he.DataProvider;
 				_dataToDraw = dataToDraw;
 				_fgColors = fgColors;
 				_letterSize = _he.LetterSize;
@@ -124,7 +126,10 @@ namespace Mesen.Debugger.Controls
 					sb.Clear();
 				}
 
-				canvas.DrawText(builder.Build(), 0, 0, paint);
+				SKTextBlob? textToDraw = builder.Build();
+				if(textToDraw != null) {
+					canvas.DrawText(textToDraw, 0, 0, paint);
+				}
 			}
 
 			private void PrepareStringView()
@@ -136,31 +141,53 @@ namespace Mesen.Debugger.Controls
 				using var measureText = new SKTextBlobBuilder();
 				var measureBuffer = measureText.AllocateRun(altFont, 1, 0, 0);
 
-				List<float> startPositionByByte = new List<float>(_dataToDraw.Count);
-				List<float> endPositionByByte = new List<float>(_dataToDraw.Count);
+				float[] startPositionByByte = new float[_dataToDraw.Count];
+				float[] endPositionByByte = new float[_dataToDraw.Count];
 				while(pos < _dataToDraw.Count) {
 					double xPos = 0;
-					for(int i = 0; i < _bytesPerRow; i++) {
+					int i;
+					int gap = pos % _bytesPerRow;
+					pos -= gap;
+					for(i = gap; i < _bytesPerRow; i++) {
 						if(pos + i >= _dataToDraw.Count) {
 							break;
 						}
 
-						ByteInfo byteInfo = _dataToDraw[pos + i];
-						string str = _he.ConvertByteToString(byteInfo.Value);
-						int codepoint = Char.ConvertToUtf32(str, 0);
-
-						if(codepoint > 0x024F) {
-							altFont.GetGlyphs(str, measureBuffer.GetGlyphSpan());
-							startPositionByByte.Add((float)xPos);
-							xPos += altFont.MeasureText(measureBuffer.GetGlyphSpan());
-							endPositionByByte.Add((float)xPos);
-						} else {
-							startPositionByByte.Add((float)xPos);
-							xPos += _letterSize.Width * str.Length;
-							endPositionByByte.Add((float)xPos);
+						int index = pos + i;
+						ByteInfo byteInfo = _dataToDraw[index];
+						UInt64 tblKeyValue = (UInt64)byteInfo.Value;
+						for(int j = 1; j < 8; j++) {
+							if(index + j < _dataToDraw.Count) {
+								tblKeyValue += (UInt64)_dataToDraw[index + j].Value << (8 * j);
+							}
 						}
+
+						string str = _dataProvider.ConvertValueToString(tblKeyValue, out int keyLength);
+						byteInfo.StringValue = str;
+						byteInfo.StringValueKeyLength = keyLength;
+
+						int codepoint = Char.ConvertToUtf32(str, 0);
+						if(codepoint > 0x024F) {
+							byteInfo.UseAltFont = true;
+							altFont.GetGlyphs(str, measureBuffer.GetGlyphSpan());
+							startPositionByByte[index] = (float)xPos;
+							xPos += altFont.MeasureText(measureBuffer.GetGlyphSpan());
+							endPositionByByte[index] = (float)xPos;
+						} else {
+							startPositionByByte[index] = (float)xPos;
+							xPos += _letterSize.Width * str.Length;
+							endPositionByByte[index] = (float)xPos;
+						}
+						
+						for(int j = 1; j < byteInfo.StringValueKeyLength && index + j < startPositionByByte.Length; j++) {
+							startPositionByByte[index + j] = startPositionByByte[index];
+							endPositionByByte[index + j] = endPositionByByte[index];
+						}
+
+						i += (byteInfo.StringValueKeyLength - 1);
+						_dataToDraw[index] = byteInfo;
 					}
-					pos += _bytesPerRow;
+					pos += i;
 				}
 
 				_he._startPositionByByte = startPositionByByte;
@@ -191,17 +218,18 @@ namespace Mesen.Debugger.Controls
 				);
 
 				while(pos < _dataToDraw.Count) {
-					for(int i = 0; i < _bytesPerRow; i++) {
+					int i;
+					int gap = pos % _bytesPerRow;
+					pos -= gap;
+					for(i = gap; i < _bytesPerRow; i++) {
 						if(pos + i >= _dataToDraw.Count) {
 							break;
 						}
 
 						ByteInfo byteInfo = _dataToDraw[pos + i];
-						string str = _he.ConvertByteToString(byteInfo.Value);
 
 						if(byteInfo.ForeColor == color) {
-							int codepoint = Char.ConvertToUtf32(str, 0);
-							SKFont currentFont = (codepoint > 0x024F) ? altFont : monoFont;
+							SKFont currentFont = byteInfo.UseAltFont ? altFont : monoFont;
 
 							if(byteInfo.BackColor != Colors.Transparent) {
 								canvas.DrawRect(GetRect(pos+i), _skPaints[byteInfo.BackColor]);
@@ -210,17 +238,22 @@ namespace Mesen.Debugger.Controls
 								canvas.DrawRect(GetRect(pos+i), selectedPaint);
 							}
 
-							int count = currentFont.CountGlyphs(str);
+							int count = currentFont.CountGlyphs(byteInfo.StringValue);
 							var buffer = builder.AllocateRun(currentFont, count, _he._startPositionByByte[pos+i], (float)(row * _rowHeight));
-							currentFont.GetGlyphs(str, buffer.GetGlyphSpan());
+							currentFont.GetGlyphs(byteInfo.StringValue, buffer.GetGlyphSpan());
 						}
+
+						i += (byteInfo.StringValueKeyLength - 1);
 					}
 
-					pos += _bytesPerRow;
+					pos += i;
 					row++;
 				}
 
-				canvas.DrawText(builder.Build(), 0, 0, paint);
+				SKTextBlob? textToDraw = builder.Build();
+				if(textToDraw != null) {
+					canvas.DrawText(textToDraw, 0, 0, paint);
+				}
 			}
 
 			private void DrawBackground(SKCanvas canvas)
