@@ -99,14 +99,20 @@ namespace Mesen.Config
 			ConfigManager.SaveConfig();
 		}
 
+		private static JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { 
+			Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() },
+			IgnoreReadOnlyProperties = true,
+			IncludeFields = true,
+			WriteIndented = true
+		};
+
 		public static Configuration Deserialize(string configFile)
 		{
 			Configuration config;
-			JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() }, IgnoreReadOnlyProperties = true };
 
 			try {
 				using(StreamReader reader = new StreamReader(configFile)) {
-					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), options) ?? new Configuration();
+					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), _jsonOptions) ?? new Configuration();
 				}
 			} catch {
 				config = new Configuration();
@@ -120,8 +126,7 @@ namespace Mesen.Config
 			try {
 				if(!ConfigManager.DoNotSaveSettings) {
 					using(StreamWriter writer = new StreamWriter(configFile)) {
-						JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new TimeSpanConverter(), new JsonStringEnumConverter() }, WriteIndented = true, IgnoreReadOnlyProperties = true, IncludeFields = true };
-						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), options));
+						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), _jsonOptions));
 					}
 				}
 				_needToSave = false;
