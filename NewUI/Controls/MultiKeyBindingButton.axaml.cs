@@ -22,6 +22,11 @@ namespace Mesen.Controls
 			set { SetValue(KeyBindingProperty, value); }
 		}
 
+		static MultiKeyBindingButton()
+		{
+			KeyBindingProperty.Changed.AddClassHandler<MultiKeyBindingButton>((x, e) => x.Content = x.KeyBinding.ToString());
+		}
+
 		public MultiKeyBindingButton()
 		{
 			InitializeComponent();
@@ -43,7 +48,7 @@ namespace Mesen.Controls
 			GetKeyWindow wnd = new GetKeyWindow();
 			wnd.SingleKeyMode = false;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			await wnd.ShowCenteredDialog((Window)this.VisualRoot);
+			await wnd.ShowCenteredDialog(VisualRoot);
 			this.KeyBinding = wnd.ShortcutKey;
 		}
 
@@ -54,15 +59,6 @@ namespace Mesen.Controls
 			//Allow using right mouse button to clear bindings
 			if(e.InitialPressMouseButton == MouseButton.Right) {
 				this.KeyBinding = new KeyCombination();
-			}
-		}
-
-		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
-		{
-			base.OnPropertyChanged(change);
-
-			if(change.Property == KeyBindingProperty) {
-				this.Content = change.NewValue.Value.ToString();
 			}
 		}
 	}

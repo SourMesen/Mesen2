@@ -43,7 +43,7 @@ namespace Mesen.Controls
 			GetKeyWindow wnd = new GetKeyWindow();
 			wnd.SingleKeyMode = true;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			await wnd.ShowCenteredDialog((Window)this.VisualRoot);
+			await wnd.ShowCenteredDialog(VisualRoot);
 			this.KeyBinding = wnd.ShortcutKey.Key1;
 		}
 

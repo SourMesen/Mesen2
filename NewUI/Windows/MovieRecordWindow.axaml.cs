@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using System.Collections.Generic;
 
@@ -28,14 +29,7 @@ namespace Mesen.Windows
 		{
 			MovieRecordConfigViewModel model = (MovieRecordConfigViewModel)DataContext!;
 
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filters = new List<FileDialogFilter> {
-				new FileDialogFilter() { Name = "Mesen Movies", Extensions = { "msm" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-			sfd.Directory = ConfigManager.MovieFolder;
-			sfd.InitialFileName = EmuApi.GetRomInfo().GetRomName() + ".msm";
-			string? filename = await sfd.ShowAsync(VisualRoot as Window);
+			string? filename = await FileDialogHelper.SaveFile(ConfigManager.MovieFolder, EmuApi.GetRomInfo().GetRomName() + ".msm", VisualRoot, FileDialogHelper.MesenMovieExt);
 			if(filename != null) {
 				model.SavePath = filename;
 			}

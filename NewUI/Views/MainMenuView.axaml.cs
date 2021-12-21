@@ -139,7 +139,7 @@ namespace Mesen.Views
 			if(_cfgWindow == null) {
 				_cfgWindow = new ConfigWindow { DataContext = new ConfigViewModel(tab) };
 				_cfgWindow.Closed += cfgWindow_Closed;
-				_cfgWindow.ShowCentered((Window)VisualRoot);
+				_cfgWindow.ShowCentered(VisualRoot);
 			} else {
 				(_cfgWindow.DataContext as ConfigViewModel)!.SelectTab(tab);
 				_cfgWindow.Activate();
@@ -193,20 +193,12 @@ namespace Mesen.Views
 
 		private void OnLogWindowClick(object sender, RoutedEventArgs e)
 		{
-			new LogWindow().ShowCentered((Window)VisualRoot);
+			new LogWindow().ShowCentered(VisualRoot);
 		}
 
 		private async void OnStartAudioRecordingClick(object sender, RoutedEventArgs e)
 		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Wave files", Extensions = { "wav" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-			sfd.Directory = ConfigManager.WaveFolder;
-			sfd.InitialFileName = EmuApi.GetRomInfo().GetRomName() + ".wav";
-
-			string filename = await sfd.ShowAsync(VisualRoot as Window);
+			string? filename = await FileDialogHelper.SaveFile(ConfigManager.WaveFolder, EmuApi.GetRomInfo().GetRomName() + ".wav", VisualRoot, FileDialogHelper.WaveExt);
 			if(filename != null) {
 				RecordApi.WaveRecord(filename);
 			}
@@ -221,7 +213,7 @@ namespace Mesen.Views
 		{
 			new VideoRecordWindow() {
 				DataContext = new VideoRecordConfigViewModel()
-			}.ShowCenteredDialog((Window)VisualRoot);
+			}.ShowCenteredDialog(VisualRoot);
 		}
 
 		private void OnStopVideoRecordingClick(object sender, RoutedEventArgs e)
@@ -236,16 +228,9 @@ namespace Mesen.Views
 
 		private async void OnPlayMovieClick(object sender, RoutedEventArgs e)
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Directory = ConfigManager.MovieFolder;
-			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Mesen Movies", Extensions = { "msm" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
-			string[] filenames = await ofd.ShowAsync((Window)VisualRoot);
-			if(filenames?.Length > 0) {
-				RecordApi.MoviePlay(filenames[0]);
+			string? filename = await FileDialogHelper.OpenFile(ConfigManager.MovieFolder, VisualRoot, FileDialogHelper.MesenMovieExt);
+			if(filename != null) {
+				RecordApi.MoviePlay(filename);
 			}
 		}
 
@@ -253,7 +238,7 @@ namespace Mesen.Views
 		{
 			new MovieRecordWindow() {
 				DataContext = new MovieRecordConfigViewModel()
-			}.ShowCenteredDialog((Window)VisualRoot);
+			}.ShowCenteredDialog(VisualRoot);
 		}
 
 		private void OnStopMovieClick(object sender, RoutedEventArgs e)
@@ -285,7 +270,7 @@ namespace Mesen.Views
 		{
 			new NetplayConnectWindow() {
 				DataContext = ConfigManager.Config.Netplay.Clone()
-			}.ShowCenteredDialog((Window)VisualRoot);
+			}.ShowCenteredDialog(VisualRoot);
 		}
 
 		private void OnNetplayDisconnectClick(object sender, RoutedEventArgs e)
@@ -297,7 +282,7 @@ namespace Mesen.Views
 		{
 			new NetplayStartServerWindow() {
 				DataContext = ConfigManager.Config.Netplay.Clone()
-			}.ShowCenteredDialog((Window)VisualRoot);
+			}.ShowCenteredDialog(VisualRoot);
 		}
 
 		private void OnNetplayStopServerClick(object sender, RoutedEventArgs e)
@@ -379,19 +364,13 @@ namespace Mesen.Views
 
 		private async void OnInstallHdPackClick(object sender, RoutedEventArgs e)
 		{
-			Window window = (Window)VisualRoot;
-
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Filters = new List<FileDialogFilter>() { new FileDialogFilter() { Name = "ZIP files", Extensions = { "zip" } } };
-
-			string[]? filenames = await ofd.ShowAsync(window);
-
-			if(filenames == null || filenames.Length == 0) {
+			string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.ZipExt);
+			if(filename == null) {
 				return;
 			}
 
 			try {
-				using(FileStream stream = File.Open(filenames[0], FileMode.Open)) {
+				using(FileStream stream = File.Open(filename, FileMode.Open)) {
 					ZipArchive zip = new ZipArchive(stream);
 
 					//Find the hires.txt file
@@ -404,7 +383,7 @@ namespace Mesen.Views
 					}
 
 					if(hiresEntry == null) {
- 						await MesenMsgBox.Show(window, "InstallHdPackInvalidPack", MessageBoxButtons.OK, MessageBoxIcon.Error);
+ 						await MesenMsgBox.Show(VisualRoot, "InstallHdPackInvalidPack", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						return;
 					}
 						
@@ -418,7 +397,7 @@ namespace Mesen.Views
 					Match match = supportedRomRegex.Match(hiresData);
 					if(match.Success) {
 						if(!match.Groups[1].Value.ToUpper().Contains(romInfo.Sha1.ToUpper())) {
-							await MesenMsgBox.Show(window, "InstallHdPackWrongRom", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							await MesenMsgBox.Show(VisualRoot, "InstallHdPackWrongRom", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							return;
 						}
 					}
@@ -428,7 +407,7 @@ namespace Mesen.Views
 						string targetFolder = Path.Combine(ConfigManager.HdPackFolder, romInfo.GetRomName());
 						if(Directory.Exists(targetFolder)) {
 							//Warn if the folder already exists
-							if(await MesenMsgBox.Show(window, "InstallHdPackConfirmOverwrite", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, targetFolder) != DialogResult.OK) {
+							if(await MesenMsgBox.Show(VisualRoot, "InstallHdPackConfirmOverwrite", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, targetFolder) != DialogResult.OK) {
 								return;
 							}
 						} else {
@@ -443,7 +422,7 @@ namespace Mesen.Views
 							}
 						}
 					} catch(Exception ex) {
-						await MesenMsgBox.Show(window, "InstallHdPackError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
+						await MesenMsgBox.Show(VisualRoot, "InstallHdPackError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.ToString());
 						return;
 					}
 							
@@ -454,14 +433,14 @@ namespace Mesen.Views
 						ConfigManager.SaveConfig();
 					}
 
-					if(await MesenMsgBox.Show(window, "InstallHdPackConfirmReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
+					if(await MesenMsgBox.Show(VisualRoot, "InstallHdPackConfirmReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
 						//Power cycle game if the user agrees
 						EmuApi.PowerCycle();
 					}
 				}
 			} catch {
 				//Invalid file (file missing, not a zip file, etc.)
-				await MesenMsgBox .Show(window, "InstallHdPackInvalidZipFile", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				await MesenMsgBox .Show(VisualRoot, "InstallHdPackInvalidZipFile", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 	}

@@ -12,7 +12,6 @@ namespace Mesen.Debugger.Controls
 {
 	public partial class HexEditor : Control
 	{
-		//TODO Support TBL files
 		//TODO Copy+paste
 		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
 		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0, false, Avalonia.Data.BindingMode.TwoWay);

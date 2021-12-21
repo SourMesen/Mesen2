@@ -59,27 +59,15 @@ namespace Mesen.Views
 
 		private async void btnLoadPalFile_OnClick(object sender, RoutedEventArgs e)
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Palette files", Extensions = { "pal" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
-			string[] filenames = await ofd.ShowAsync(VisualRoot as Window);
-			if(filenames?.Length > 0) {
-				_model.LoadPaletteFile(filenames[0]);
+			string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.PaletteExt);
+			if(filename != null) {
+				_model.LoadPaletteFile(filename);
 			}
 		}
 
 		private async void btnExportPalette_OnClick(object sender, RoutedEventArgs e)
 		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Palette files", Extensions = { "pal" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
-			string filename = await sfd.ShowAsync(VisualRoot as Window);
+			string? filename = await FileDialogHelper.SaveFile(null, null, VisualRoot, FileDialogHelper.PaletteExt);
 			if(filename != null) {
 				_model.ExportPalette(filename);
 			}

@@ -17,6 +17,7 @@ using Avalonia.Interactivity;
 using System.Collections.Generic;
 using Mesen.Debugger.Utilities;
 using System.IO;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -64,15 +65,9 @@ namespace Mesen.Debugger.Windows
 
 		private async void OnLoadTblFileClick(object sender, RoutedEventArgs e)
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "TBL files", Extensions = { "tbl" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
-			string[] filenames = await ofd.ShowAsync(this.VisualRoot as Window);
-			if(filenames?.Length > 0) {
-				_model.TblConverter = TblLoader.Load(File.ReadAllLines(filenames[0]));
+			string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.TblExt);
+			if(filename != null) {
+				_model.TblConverter = TblLoader.Load(File.ReadAllLines(filename));
 			}
 		}
 

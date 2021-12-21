@@ -110,29 +110,15 @@ namespace Mesen.Utilities
 
 		private async void LoadStateFromFile()
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Directory = ConfigManager.SaveStateFolder;
-			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Mesen Save States", Extensions = { "mss" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
-			string[] filenames = await ofd.ShowAsync(_mainWindow);
-			if(filenames?.Length > 0) {
-				EmuApi.LoadStateFile(filenames[0]);
+			string? filename = await FileDialogHelper.OpenFile(ConfigManager.SaveStateFolder, _mainWindow, FileDialogHelper.MesenSaveStateExt);
+			if(filename != null) {
+				EmuApi.LoadStateFile(filename);
 			}
 		}
 
 		private async void SaveStateToFile()
 		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Directory = ConfigManager.SaveStateFolder;
-			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "Mesen Save States", Extensions = { "mss" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
-			string? filename = await sfd.ShowAsync(_mainWindow);
+			string? filename = await FileDialogHelper.SaveFile(ConfigManager.SaveStateFolder, null, _mainWindow, FileDialogHelper.MesenSaveStateExt);
 			if(filename != null && filename.Length > 0) {
 				EmuApi.SaveStateFile(filename);
 			}
@@ -211,9 +197,9 @@ namespace Mesen.Utilities
 				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
 			};
 
-			string[] filenames = await ofd.ShowAsync(_mainWindow);
-			if(filenames?.Length > 0) {
-				LoadRomHelper.LoadFile(filenames[0]);
+			string? filename = await FileDialogHelper.OpenFile(null, _mainWindow, FileDialogHelper.RomExt);
+			if(filename != null) {
+				LoadRomHelper.LoadFile(filename);
 			}
 		}
 

@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,28 @@ namespace Mesen.Utilities
 			child.Position = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
 		}
 
+		public static void ShowCentered(this Window child, IRenderRoot? parent)
+		{
+			if(parent is Control c) {
+				child.ShowCentered(c);
+			} else {
+				child.Show();
+			}
+		}
+
 		public static void ShowCentered(this Window child, Control parent)
 		{
 			CenterWindow(child, parent);
 			child.Show();
+		}
+
+		public static Task ShowCenteredDialog(this Window child, IRenderRoot? parent)
+		{
+			if(parent is Control c) {
+				return child.ShowCenteredDialog(c);
+			} else {
+				throw new Exception("Invalid parent");
+			}
 		}
 
 		public static Task ShowCenteredDialog(this Window child, Control parent)
@@ -34,7 +53,7 @@ namespace Mesen.Utilities
 		{
 			CenterWindow(child, parent);
 
-			IControl parentWnd = parent;
+			IControl? parentWnd = parent;
 			while(!(parentWnd is Window) && parentWnd != null) {
 				parentWnd = parentWnd.Parent;
 			}

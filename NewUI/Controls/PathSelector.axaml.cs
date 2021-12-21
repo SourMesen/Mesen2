@@ -44,9 +44,11 @@ namespace Mesen.Controls
 		{
 			OpenFolderDialog ofd = new OpenFolderDialog();
 			
-			string folderName = await ofd.ShowAsync(this.VisualRoot as Window);
-			if(folderName.Length > 0) {
-				this.Path = folderName;
+			if(VisualRoot is Window wnd) {
+				string? folderName = await ofd.ShowAsync(wnd);
+				if(folderName?.Length > 0) {
+					this.Path = folderName;
+				}
 			}
 		}
 	}

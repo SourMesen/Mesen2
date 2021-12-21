@@ -6,6 +6,7 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -74,14 +75,7 @@ namespace Mesen.Debugger.Windows
 
 		private async void OnStartLoggingClick(object sender, RoutedEventArgs e)
 		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-			sfd.Directory = ConfigManager.DebuggerFolder;
-			sfd.InitialFileName = EmuApi.GetRomInfo().GetRomName() + ".txt";
-			
-			string filename = await sfd.ShowAsync(VisualRoot as Window);
+			string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, EmuApi.GetRomInfo().GetRomName() + ".txt", VisualRoot, FileDialogHelper.TraceExt);
 			if(filename != null) {
 				Model.IsLoggingToFile = true;
 				DebugApi.StartLogTraceToFile(filename);

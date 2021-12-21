@@ -42,7 +42,7 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			int byteCount = 8;
-			string result;
+			string? result;
 			while(!_tblRules.TryGetValue(new TblKey() { Key = value, Length = byteCount }, out result) && byteCount > 0) {
 				value &= ~(((UInt64)0xFF) << (8 * (byteCount - 1)));
 				byteCount--;
