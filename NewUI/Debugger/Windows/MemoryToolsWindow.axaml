@@ -84,7 +84,7 @@
 			LargeChange="10"
 			Value="{CompiledBinding ScrollPosition}"
 		/>
-		<dc:HexEditor 
+		<dc:HexEditor
 			Name="Hex"
 			DataProvider="{CompiledBinding DataProvider}"
 			BytesPerRow="{CompiledBinding Config.BytesPerRow}"
@@ -92,6 +92,18 @@
 			FontFamily="{CompiledBinding Config.FontFamily}"
 			FontSize="{CompiledBinding Config.FontSize}"
 			ShowStringView="{CompiledBinding Config.ShowCharacters}"
-		/>
+		>
+			<dc:HexEditor.ContextMenu>
+				<ContextMenu Items="{CompiledBinding Actions}" >
+					<ContextMenu.Styles>
+						<Style Selector="MenuItem">
+							<Setter Property="Header" Value="{Binding Name}"/>
+							<Setter Property="Icon" Value="{Binding Icon}"/>
+							<Setter Property="Command" Value="{Binding ClickCommand}"/>
+						</Style>
+					</ContextMenu.Styles>
+				</ContextMenu>
+			</dc:HexEditor.ContextMenu>
+		</dc:HexEditor>
 	</DockPanel>
 </Window>

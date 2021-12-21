@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using Mesen.Debugger.Utilities;
 using System.IO;
 using Mesen.Utilities;
+using Mesen.Localization;
 
 namespace Mesen.Debugger.Windows
 {
@@ -81,6 +82,26 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is MemoryToolsViewModel model) {
 				_model = model;
 				_model.Config.LoadWindowSettings(this);
+
+				_model.SetActions(new object[] {
+					new ContextMenuAction() {
+						Name = ResourceHelper.GetMessage("Copy"),
+						IconFile = "Assets/Copy.png",
+						IsEnabled = () => _editor.SelectionLength > 0,
+						OnClick = () => _editor.CopySelection()
+					},
+					new ContextMenuAction() {
+						Name = ResourceHelper.GetMessage("Paste"),
+						IconFile = "Assets/Paste.png",
+						OnClick = () => _editor.PasteSelection()
+					},
+					new Separator(),
+					new ContextMenuAction() {
+						Name = ResourceHelper.GetMessage("SelectAll"),
+						IconFile = "Assets/SelectAll.png",
+						OnClick = () => _editor.SelectAll()
+					},
+				});
 			} else {
 				throw new Exception("Invalid model");
 			}

@@ -1062,6 +1062,10 @@ x == [$150] || y == [10]
 
 		<Message ID="Player">Player</Message>
 
+		<Message ID="Copy">Copy</Message>
+		<Message ID="Paste">Paste</Message>
+		<Message ID="SelectAll">Select All</Message>
+
 		<Message ID="btnOK">OK</Message>
 		<Message ID="btnCancel">Cancel</Message>
 		<Message ID="btnYes">Yes</Message>

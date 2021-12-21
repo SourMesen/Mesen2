@@ -34,6 +34,11 @@ namespace Mesen.Debugger
 			Length = DebugApi.GetMemorySize(memoryType);
 		}
 
+		public byte[] GetRawBytes(int start, int length)
+		{
+			return DebugApi.GetMemoryValues(_memoryType, (uint)start, (uint)(start + length - 1));
+		}
+
 		public void Prepare(int firstByteIndex, int lastByteIndex)
 		{
 			if(firstByteIndex >= Length) {

@@ -12,7 +12,8 @@ namespace Mesen.Debugger.Controls
 {
 	public partial class HexEditor : Control
 	{
-		//TODO Copy+paste
+		//TODO Search
+		//TODO Paste
 		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
 		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> BytesPerRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(BytesPerRow), 16);
@@ -317,6 +318,47 @@ namespace Mesen.Debugger.Controls
 			base.OnTextInput(e);
 		}
 
+		public void CopySelection()
+		{
+			IHexEditorDataProvider dp = DataProvider;
+			byte[] data = dp.GetRawBytes(SelectionStart, SelectionLength);
+			StringBuilder sb = new StringBuilder();
+			int bytesPerRow = BytesPerRow;
+			for(int i = 0; i < data.Length; i++) {
+				if(_inStringView) {
+					UInt64 tblKeyValue = (UInt64)data[i];
+					for(int j = 1; j < 8; j++) {
+						if(i + j < data.Length) {
+							tblKeyValue += (UInt64)data[i + j] << (8 * j);
+						}
+					}
+					sb.Append(dp.ConvertValueToString(tblKeyValue, out int keyLength));
+					i += keyLength - 1;
+				} else {
+					sb.Append(data[i].ToString("X2"));
+					if((i + 1) % bytesPerRow == 0) {
+						sb.AppendLine();
+					} else if(i < data.Length - 1) {
+						sb.Append(" ");
+					}
+				}
+			}
+
+			Application.Current.Clipboard.SetTextAsync(sb.ToString());
+		}
+
+		public void PasteSelection()
+		{
+			//TODO PASTE
+			string text = Application.Current.Clipboard.GetTextAsync().Result;
+		}
+
+		public void SelectAll()
+		{
+			SetCursorPosition(0);
+			SelectionLength = DataProvider.Length;
+		}
+
 		private void CommitByteChanges()
 		{
 			if(_newByteValue >= 0) {
@@ -341,7 +383,9 @@ namespace Mesen.Debugger.Controls
 						double x = p.X - RowHeaderWidth - RowWidth - StringViewMargin;
 
 						int column = 0;
-						if(x >= _startPositionByByte[rowStart + BytesPerRow - 1]) {
+						if(rowStart + BytesPerRow - 1 >= _startPositionByByte.Length) {
+							return null;
+						} else if(x >= _startPositionByByte[rowStart + BytesPerRow - 1]) {
 							column = BytesPerRow - 1;
 						} else {
 							for(int i = 0, len = BytesPerRow - 1; i < len; i++) {
@@ -398,14 +442,16 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerPressed(e);
 
-			if(!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) {
-				return;
-			}
+			PointerPointProperties props = e.GetCurrentPoint(this).Properties;
 
 			Point p = e.GetPosition(this);
 			GridPoint? gridPos = GetGridPosition(p);
 
-			if(gridPos != null) {
+			if(gridPos == null) {
+				return;
+			}
+
+			if(props.IsLeftButtonPressed) {
 				_inStringView = gridPos.Value.InStringView;
 				_lastNibble = gridPos.Value.LastNibble;
 
@@ -413,10 +459,14 @@ namespace Mesen.Debugger.Controls
 					MoveSelectionWithMouse(gridPos.Value);
 				} else {
 					int pos = GetByteOffset(gridPos.Value);
-					_lastClickedPosition = pos;
-					_cursorPosition = pos;
-					this.SelectionStart = _lastClickedPosition;
-					this.SelectionLength = 0;
+					SetCursorPosition(pos);
+				}
+			} else if(props.IsRightButtonPressed) {
+				int pos = GetByteOffset(gridPos.Value);
+				if(pos >= SelectionStart && pos < SelectionStart + SelectionLength) {
+					_inStringView = gridPos.Value.InStringView;
+				} else {
+					SetCursorPosition(pos);
 				}
 			}
 		}
@@ -623,6 +673,8 @@ namespace Mesen.Debugger.Controls
 		void Prepare(int firstByteIndex, int lastByteIndex);
 		ByteInfo GetByte(int byteIndex);
 		int Length { get; }
+
+		byte[] GetRawBytes(int start, int length);
 
 		string ConvertValueToString(UInt64 val, out int keyLength);
 		byte ConvertCharToByte(char c);

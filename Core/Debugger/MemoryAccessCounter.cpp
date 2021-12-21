@@ -95,7 +95,7 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 		for(uint32_t i = 0; i < length; i++) {
 			addr.Address = offset + i;
 			AddressInfo info = _debugger->GetAbsoluteAddress(addr);
-			if(info.Address >= 0) {
+			if(info.Address >= 0 && info.Type != SnesMemoryType::Register) {
 				counts[i] = _counters[(int)info.Type][info.Address];
 			}
 		}
