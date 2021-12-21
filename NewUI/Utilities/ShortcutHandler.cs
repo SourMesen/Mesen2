@@ -97,7 +97,7 @@ namespace Mesen.Utilities
 						_displayManager.SetFullscreenState(false);
 						restoreFullscreen = false;
 					}*/
-					MainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
+					MainWindowModel.RecentGames.Init(GameScreenMode.SaveState);
 					break;
 			}
 
