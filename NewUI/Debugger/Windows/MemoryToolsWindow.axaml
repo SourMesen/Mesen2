@@ -99,6 +99,7 @@
 						<Style Selector="MenuItem">
 							<Setter Property="Header" Value="{Binding Name}"/>
 							<Setter Property="Icon" Value="{Binding Icon}"/>
+							<Setter Property="Tag" Value="{Binding ShortcutText}"/>
 							<Setter Property="Command" Value="{Binding ClickCommand}"/>
 						</Style>
 					</ContextMenu.Styles>

@@ -1062,10 +1062,6 @@ x == [$150] || y == [10]
 
 		<Message ID="Player">Player</Message>
 
-		<Message ID="Copy">Copy</Message>
-		<Message ID="Paste">Paste</Message>
-		<Message ID="SelectAll">Select All</Message>
-
 		<Message ID="btnOK">OK</Message>
 		<Message ID="btnCancel">Cancel</Message>
 		<Message ID="btnYes">Yes</Message>
@@ -1468,6 +1464,11 @@ x == [$150] || y == [10]
 			<Value ID="Slow">Slow</Value>
 			<Value ID="Normal">Normal</Value>
 			<Value ID="Fast">Fast</Value>
+		</Enum>
+		<Enum ID="ActionType">
+			<Value ID="Copy">Copy</Value>
+			<Value ID="Paste">Paste</Value>
+			<Value ID="SelectAll">Select All</Value>
 		</Enum>
 	</Enums>
 </Resources>

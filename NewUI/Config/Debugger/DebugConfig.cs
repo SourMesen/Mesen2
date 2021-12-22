@@ -12,7 +12,7 @@ namespace Mesen.Config
 {
 	public class DebugConfig
 	{
-		//public DebuggerShortcutsConfig Shortcuts = new DebuggerShortcutsConfig();
+		public DebuggerShortcutsConfig Shortcuts = new DebuggerShortcutsConfig();
 		public TraceLoggerConfig TraceLogger = new TraceLoggerConfig();
 		public HexEditorConfig HexEditor = new HexEditorConfig();
 		public EventViewerConfig EventViewer = new EventViewerConfig();

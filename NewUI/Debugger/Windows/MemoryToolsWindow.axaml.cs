@@ -19,6 +19,7 @@ using Mesen.Debugger.Utilities;
 using System.IO;
 using Mesen.Utilities;
 using Mesen.Localization;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
@@ -83,25 +84,29 @@ namespace Mesen.Debugger.Windows
 				_model = model;
 				_model.Config.LoadWindowSettings(this);
 
-				_model.SetActions(new object[] {
+				DebugConfig cfg = ConfigManager.Config.Debug;
+				object[] actions = new object[] {
 					new ContextMenuAction() {
-						Name = ResourceHelper.GetMessage("Copy"),
-						IconFile = "Assets/Copy.png",
+						ActionType = ActionType.Copy,
 						IsEnabled = () => _editor.SelectionLength > 0,
-						OnClick = () => _editor.CopySelection()
+						OnClick = () => _editor.CopySelection(),
+						Shortcut = () => cfg.Shortcuts.Copy
 					},
 					new ContextMenuAction() {
-						Name = ResourceHelper.GetMessage("Paste"),
-						IconFile = "Assets/Paste.png",
-						OnClick = () => _editor.PasteSelection()
+						ActionType = ActionType.Paste,
+						OnClick = () => _editor.PasteSelection(),
+						Shortcut = () => cfg.Shortcuts.Paste
 					},
 					new Separator(),
 					new ContextMenuAction() {
-						Name = ResourceHelper.GetMessage("SelectAll"),
-						IconFile = "Assets/SelectAll.png",
-						OnClick = () => _editor.SelectAll()
+						ActionType = ActionType.SelectAll,
+						OnClick = () => _editor.SelectAll(),
+						Shortcut = () => cfg.Shortcuts.SelectAll
 					},
-				});
+				};
+
+				DebugShortcutManager.RegisterActions(this, _editor, actions);
+				_model.SetActions(actions);
 			} else {
 				throw new Exception("Invalid model");
 			}

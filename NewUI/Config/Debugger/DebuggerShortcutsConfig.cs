@@ -1,10 +1,5 @@
-﻿/*using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using System.Windows.Forms;
+﻿using Avalonia.Input;
+using System;
 
 namespace Mesen.Config
 {
@@ -12,376 +7,265 @@ namespace Mesen.Config
 	{
 		//Shared
 		[ShortcutName("Increase Font Size")]
-		public XmlKeys IncreaseFontSize = Keys.Control | Keys.Oemplus;
+		public DbgShortKeys IncreaseFontSize = new(KeyModifiers.Control, Key.OemPlus);
 		[ShortcutName("Decrease Font Size")]
-		public XmlKeys DecreaseFontSize = Keys.Control | Keys.OemMinus;
+		public DbgShortKeys DecreaseFontSize = new(KeyModifiers.Control, Key.OemMinus);
 		[ShortcutName("Reset Font Size")]
-		public XmlKeys ResetFontSize = Keys.Control | Keys.D0;
+		public DbgShortKeys ResetFontSize = new(KeyModifiers.Control, Key.D0);
 
 		[ShortcutName("Go To...")]
-		public XmlKeys GoTo = Keys.Control | Keys.G;
+		public DbgShortKeys GoTo = new(KeyModifiers.Control, Key.G);
 
 		[ShortcutName("Find")]
-		public XmlKeys Find = Keys.Control | Keys.F;
+		public DbgShortKeys Find = new(KeyModifiers.Control, Key.F);
 		[ShortcutName("Find Next")]
-		public XmlKeys FindNext = Keys.F3;
+		public DbgShortKeys FindNext = new(Key.F3);
 		[ShortcutName("Find Previous")]
-		public XmlKeys FindPrev = Keys.Shift | Keys.F3;
+		public DbgShortKeys FindPrev = new(KeyModifiers.Shift, Key.F3);
 
 		[ShortcutName("Undo")]
-		public XmlKeys Undo = Keys.Control | Keys.Z;
+		public DbgShortKeys Undo = new(KeyModifiers.Control, Key.Z);
 		[ShortcutName("Copy")]
-		public XmlKeys Copy = Keys.Control | Keys.C;
+		public DbgShortKeys Copy = new(KeyModifiers.Control, Key.C);
 		[ShortcutName("Cut")]
-		public XmlKeys Cut = Keys.Control | Keys.X;
+		public DbgShortKeys Cut = new(KeyModifiers.Control, Key.X);
 		[ShortcutName("Paste")]
-		public XmlKeys Paste = Keys.Control | Keys.V;
+		public DbgShortKeys Paste = new(KeyModifiers.Control, Key.V);
 		[ShortcutName("Select All")]
-		public XmlKeys SelectAll = Keys.Control | Keys.A;
+		public DbgShortKeys SelectAll = new(KeyModifiers.Control, Key.A);
 
 		[ShortcutName("Refresh")]
-		public XmlKeys Refresh = Keys.F5;
+		public DbgShortKeys Refresh = new(Key.F5);
 
 		[ShortcutName("Mark Selection as Code")]
-		public XmlKeys MarkAsCode = Keys.Control | Keys.D1;
+		public DbgShortKeys MarkAsCode = new(KeyModifiers.Control, Key.D1);
 		[ShortcutName("Mark Selection as Data")]
-		public XmlKeys MarkAsData = Keys.Control | Keys.D2;
+		public DbgShortKeys MarkAsData = new(KeyModifiers.Control, Key.D2);
 		[ShortcutName("Mark Selection as Unidentified Code/Data")]
-		public XmlKeys MarkAsUnidentified = Keys.Control | Keys.D3;
+		public DbgShortKeys MarkAsUnidentified = new(KeyModifiers.Control, Key.D3);
 
 		[ShortcutName("Go to All")]
-		public XmlKeys GoToAll = Keys.Control | Keys.Oemcomma;
+		public DbgShortKeys GoToAll = new(KeyModifiers.Control, Key.OemComma);
 
 		[ShortcutName("Zoom In")]
-		public XmlKeys ZoomIn = Keys.Control | Keys.Oemplus;
+		public DbgShortKeys ZoomIn = new(KeyModifiers.Control, Key.OemPlus);
 		[ShortcutName("Zoom Out")]
-		public XmlKeys ZoomOut = Keys.Control | Keys.OemMinus;
+		public DbgShortKeys ZoomOut = new(KeyModifiers.Control, Key.OemMinus);
 
 		[ShortcutName("Save as PNG")]
-		public XmlKeys SaveAsPng = Keys.Control | Keys.S;
+		public DbgShortKeys SaveAsPng = new(KeyModifiers.Control, Key.S);
 
 		[ShortcutName("Edit in Memory Viewer")]
-		public XmlKeys CodeWindow_EditInMemoryViewer = Keys.F1;
+		public DbgShortKeys CodeWindow_EditInMemoryViewer = new(Key.F1);
 		[ShortcutName("View in disassembly")]
-		public XmlKeys MemoryViewer_ViewInDisassembly = Keys.None;
+		public DbgShortKeys MemoryViewer_ViewInDisassembly = new();
 
 		[ShortcutName("Open Assembler")]
-		public XmlKeys OpenAssembler = Keys.Control | Keys.U;
+		public DbgShortKeys OpenAssembler = new(KeyModifiers.Control, Key.U);
 		[ShortcutName("Open Debugger")]
-		public XmlKeys OpenDebugger = Keys.Control | Keys.D;
+		public DbgShortKeys OpenDebugger = new(KeyModifiers.Control, Key.D);
 		[ShortcutName("Open SPC Debugger")]
-		public XmlKeys OpenSpcDebugger = Keys.Control | Keys.F;
+		public DbgShortKeys OpenSpcDebugger = new(KeyModifiers.Control, Key.F);
 		[ShortcutName("Open SA-1 Debugger")]
-		public XmlKeys OpenSa1Debugger = Keys.None;
+		public DbgShortKeys OpenSa1Debugger = new();
 		[ShortcutName("Open GSU Debugger")]
-		public XmlKeys OpenGsuDebugger = Keys.None;
+		public DbgShortKeys OpenGsuDebugger = new();
 		[ShortcutName("Open DSP Debugger")]
-		public XmlKeys OpenNecDspDebugger = Keys.None;
+		public DbgShortKeys OpenNecDspDebugger = new();
 		[ShortcutName("Open CX4 Debugger")]
-		public XmlKeys OpenCx4Debugger = Keys.None;
+		public DbgShortKeys OpenCx4Debugger = new();
 		[ShortcutName("Open Game Boy Debugger")]
-		public XmlKeys OpenGameboyDebugger = Keys.None;
+		public DbgShortKeys OpenGameboyDebugger = new();
 		[ShortcutName("Open Event Viewer")]
-		public XmlKeys OpenEventViewer = Keys.Control | Keys.E;
+		public DbgShortKeys OpenEventViewer = new(KeyModifiers.Control, Key.E);
 		[ShortcutName("Open Memory Tools")]
-		public XmlKeys OpenMemoryTools = Keys.Control | Keys.M;
+		public DbgShortKeys OpenMemoryTools = new(KeyModifiers.Control, Key.M);
 		[ShortcutName("Open Performance Profiler")]
-		public XmlKeys OpenProfiler = Keys.Control | Keys.Y;
+		public DbgShortKeys OpenProfiler = new(KeyModifiers.Control, Key.Y);
 		[ShortcutName("Open Script Window")]
-		public XmlKeys OpenScriptWindow = Keys.Control | Keys.N;
+		public DbgShortKeys OpenScriptWindow = new(KeyModifiers.Control, Key.N);
 		[ShortcutName("Open Trace Logger")]
-		public XmlKeys OpenTraceLogger = Keys.Control | Keys.J;
+		public DbgShortKeys OpenTraceLogger = new(KeyModifiers.Control, Key.J);
 		[ShortcutName("Open Register Viewer")]
-		public XmlKeys OpenRegisterViewer = Keys.Control | Keys.K;
+		public DbgShortKeys OpenRegisterViewer = new(KeyModifiers.Control, Key.K);
 		[ShortcutName("Open Debug Log")]
-		public XmlKeys OpenDebugLog = Keys.Control | Keys.B;
+		public DbgShortKeys OpenDebugLog = new(KeyModifiers.Control, Key.B);
 
 		[ShortcutName("Open Tilemap Viewer")]
-		public XmlKeys OpenTilemapViewer = Keys.Control | Keys.D1;
+		public DbgShortKeys OpenTilemapViewer = new(KeyModifiers.Control, Key.D1);
 		[ShortcutName("Open Tile Viewer")]
-		public XmlKeys OpenTileViewer = Keys.Control | Keys.D2;
+		public DbgShortKeys OpenTileViewer = new(KeyModifiers.Control, Key.D2);
 		[ShortcutName("Open Sprite Viewer")]
-		public XmlKeys OpenSpriteViewer = Keys.Control | Keys.D3;
+		public DbgShortKeys OpenSpriteViewer = new(KeyModifiers.Control, Key.D3);
 		[ShortcutName("Open Palette Viewer")]
-		public XmlKeys OpenPaletteViewer = Keys.Control | Keys.D4;
+		public DbgShortKeys OpenPaletteViewer = new(KeyModifiers.Control, Key.D4);
 
 		//Debugger window
 		[ShortcutName("Reset")]
-		public XmlKeys Reset = Keys.Control | Keys.R;
+		public DbgShortKeys Reset = new(KeyModifiers.Control, Key.R);
 		[ShortcutName("Power Cycle")]
-		public XmlKeys PowerCycle = Keys.Control | Keys.T;
+		public DbgShortKeys PowerCycle = new(KeyModifiers.Control, Key.T);
 		[ShortcutName("Reload ROM")]
-		public XmlKeys ReloadRom = Keys.None;
+		public DbgShortKeys ReloadRom = new();
 
 		[ShortcutName("Continue")]
-		public XmlKeys Continue = Keys.F5;
+		public DbgShortKeys Continue = new(Key.F5);
 		[ShortcutName("Break")]
-		public XmlKeys Break = Keys.Control | Keys.Alt | Keys.Cancel;
+		public DbgShortKeys Break = new(KeyModifiers.Control | KeyModifiers.Alt, Key.Cancel);
 		[ShortcutName("Toggle Break/Continue")]
-		public XmlKeys ToggleBreakContinue = Keys.Escape;
+		public DbgShortKeys ToggleBreakContinue = new(Key.Escape);
 		[ShortcutName("Step Into")]
-		public XmlKeys StepInto = Keys.F11;
+		public DbgShortKeys StepInto = new(Key.F11);
 		[ShortcutName("Step Over")]
-		public XmlKeys StepOver = Keys.F10;
+		public DbgShortKeys StepOver = new(Key.F10);
 		[ShortcutName("Step Out")]
-		public XmlKeys StepOut = Keys.Shift | Keys.F11;
+		public DbgShortKeys StepOut = new(KeyModifiers.Shift, Key.F11);
 		[ShortcutName("Step Back")]
-		public XmlKeys StepBack = Keys.Shift | Keys.F10;
+		public DbgShortKeys StepBack = new(KeyModifiers.Shift, Key.F10);
 
 		[ShortcutName("Run one CPU Cycle")]
-		public XmlKeys RunCpuCycle = Keys.None;
+		public DbgShortKeys RunCpuCycle = new();
 		[ShortcutName("Run one PPU Cycle")]
-		public XmlKeys RunPpuCycle = Keys.F6;
+		public DbgShortKeys RunPpuCycle = new(Key.F6);
 		[ShortcutName("Run one scanline")]
-		public XmlKeys RunPpuScanline = Keys.F7;
+		public DbgShortKeys RunPpuScanline = new(Key.F7);
 		[ShortcutName("Run one frame")]
-		public XmlKeys RunPpuFrame = Keys.F8;
+		public DbgShortKeys RunPpuFrame = new(Key.F8);
 
 		[ShortcutName("Break In...")]
-		public XmlKeys BreakIn = Keys.Control | Keys.B;
+		public DbgShortKeys BreakIn = new(KeyModifiers.Control, Key.B);
 		[ShortcutName("Break On...")]
-		public XmlKeys BreakOn = Keys.Alt | Keys.B;
+		public DbgShortKeys BreakOn = new(KeyModifiers.Alt, Key.B);
 
 		[ShortcutName("Find Occurrences")]
-		public XmlKeys FindOccurrences = Keys.Control | Keys.Shift | Keys.F;
+		public DbgShortKeys FindOccurrences = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F);
 		[ShortcutName("Go To Program Counter")]
-		public XmlKeys GoToProgramCounter = Keys.Alt | Keys.Multiply;
+		public DbgShortKeys GoToProgramCounter = new(KeyModifiers.Alt, Key.Multiply);
 
 		[ShortcutName("Toggle Verified Data Display")]
-		public XmlKeys ToggleVerifiedData = Keys.Alt | Keys.D1;
+		public DbgShortKeys ToggleVerifiedData = new(KeyModifiers.Alt, Key.D1);
 		[ShortcutName("Toggle Unidentified Code/Data Display")]
-		public XmlKeys ToggleUnidentifiedCodeData = Keys.Alt | Keys.D2;
+		public DbgShortKeys ToggleUnidentifiedCodeData = new(KeyModifiers.Alt, Key.D2);
 
 		[ShortcutName("Code Window: Set Next Statement")]
-		public XmlKeys CodeWindow_SetNextStatement = Keys.Control | Keys.Shift | Keys.F10;
+		public DbgShortKeys CodeWindow_SetNextStatement = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F10);
 		[ShortcutName("Code Window: Edit Subroutine")]
-		public XmlKeys CodeWindow_EditSubroutine = Keys.F4;
+		public DbgShortKeys CodeWindow_EditSubroutine = new(Key.F4);
 		[ShortcutName("Code Window: Edit Selected Code")]
-		public XmlKeys CodeWindow_EditSelectedCode = Keys.None;
+		public DbgShortKeys CodeWindow_EditSelectedCode = new();
 		[ShortcutName("Code Window: Edit Source File (Source View)")]
-		public XmlKeys CodeWindow_EditSourceFile = Keys.F4;
+		public DbgShortKeys CodeWindow_EditSourceFile = new(Key.F4);
 		[ShortcutName("Code Window: Edit Label")]
-		public XmlKeys CodeWindow_EditLabel = Keys.F2;
+		public DbgShortKeys CodeWindow_EditLabel = new(Key.F2);
 		[ShortcutName("Code Window: Navigate Back")]
-		public XmlKeys CodeWindow_NavigateBack = Keys.Alt | Keys.Left;
+		public DbgShortKeys CodeWindow_NavigateBack = new(KeyModifiers.Alt, Key.Left);
 		[ShortcutName("Code Window: Navigate Forward")]
-		public XmlKeys CodeWindow_NavigateForward = Keys.Alt | Keys.Right;
+		public DbgShortKeys CodeWindow_NavigateForward = new(KeyModifiers.Alt, Key.Right);
 		[ShortcutName("Code Window: Toggle Breakpoint")]
-		public XmlKeys CodeWindow_ToggleBreakpoint = Keys.F9;
+		public DbgShortKeys CodeWindow_ToggleBreakpoint = new(Key.F9);
 		[ShortcutName("Code Window: Disable/Enable Breakpoint")]
-		public XmlKeys CodeWindow_DisableEnableBreakpoint = Keys.Control | Keys.F9;
+		public DbgShortKeys CodeWindow_DisableEnableBreakpoint = new(KeyModifiers.Control, Key.F9);
 		[ShortcutName("Code Window: Switch View (Disassembly / Source View)")]
-		public XmlKeys CodeWindow_SwitchView = Keys.Control | Keys.Q;
+		public DbgShortKeys CodeWindow_SwitchView = new(KeyModifiers.Control, Key.Q);
 
 		[ShortcutName("Function List: Edit Label")]
-		public XmlKeys FunctionList_EditLabel = Keys.F2;
+		public DbgShortKeys FunctionList_EditLabel = new(Key.F2);
 		[ShortcutName("Function List: Add Breakpoint")]
-		public XmlKeys FunctionList_AddBreakpoint = Keys.None;
+		public DbgShortKeys FunctionList_AddBreakpoint = new();
 		[ShortcutName("Function List: Find Occurrences")]
-		public XmlKeys FunctionList_FindOccurrences = Keys.None;
+		public DbgShortKeys FunctionList_FindOccurrences = new();
 
 		[ShortcutName("Label List: Add Label")]
-		public XmlKeys LabelList_Add = Keys.Insert;
+		public DbgShortKeys LabelList_Add = new(Key.Insert);
 		[ShortcutName("Label List: Edit Label")]
-		public XmlKeys LabelList_Edit = Keys.F2;
+		public DbgShortKeys LabelList_Edit = new(Key.F2);
 		[ShortcutName("Label List: Delete Label")]
-		public XmlKeys LabelList_Delete = Keys.Delete;
+		public DbgShortKeys LabelList_Delete = new(Key.Delete);
 		[ShortcutName("Label List: Add Breakpoint")]
-		public XmlKeys LabelList_AddBreakpoint = Keys.None;
+		public DbgShortKeys LabelList_AddBreakpoint = new();
 		[ShortcutName("Label List: Add to Watch")]
-		public XmlKeys LabelList_AddToWatch = Keys.None;
+		public DbgShortKeys LabelList_AddToWatch = new();
 		[ShortcutName("Label List: Find Occurrences")]
-		public XmlKeys LabelList_FindOccurrences = Keys.None;
+		public DbgShortKeys LabelList_FindOccurrences = new();
 		[ShortcutName("Label List: View in CPU Memory")]
-		public XmlKeys LabelList_ViewInCpuMemory = Keys.None;
+		public DbgShortKeys LabelList_ViewInCpuMemory = new();
 		[ShortcutName("Label List: View in [memory type]")]
-		public XmlKeys LabelList_ViewInMemoryType = Keys.None;
+		public DbgShortKeys LabelList_ViewInMemoryType = new();
 
 		[ShortcutName("Breakpoint List: Add Breakpoint")]
-		public XmlKeys BreakpointList_Add = Keys.Insert;
+		public DbgShortKeys BreakpointList_Add = new(Key.Insert);
 		[ShortcutName("Breakpoint List: Edit Breakpoint")]
-		public XmlKeys BreakpointList_Edit = Keys.F2;
+		public DbgShortKeys BreakpointList_Edit = new(Key.F2);
 		[ShortcutName("Breakpoint List: Go To Location")]
-		public XmlKeys BreakpointList_GoToLocation = Keys.None;
+		public DbgShortKeys BreakpointList_GoToLocation = new();
 		[ShortcutName("Breakpoint List: Delete Breakpoint")]
-		public XmlKeys BreakpointList_Delete = Keys.Delete;
+		public DbgShortKeys BreakpointList_Delete = new(Key.Delete);
 
 		[ShortcutName("Watch List: Delete")]
-		public XmlKeys WatchList_Delete = Keys.Delete;
+		public DbgShortKeys WatchList_Delete = new(Key.Delete);
 		[ShortcutName("Watch List: Move Up")]
-		public XmlKeys WatchList_MoveUp = Keys.Control | Keys.Up;
+		public DbgShortKeys WatchList_MoveUp = new(KeyModifiers.Control, Key.Up);
 		[ShortcutName("Watch List: Move Down")]
-		public XmlKeys WatchList_MoveDown = Keys.Control | Keys.Down;
+		public DbgShortKeys WatchList_MoveDown = new(KeyModifiers.Control, Key.Down);
 
 		[ShortcutName("Save Rom")]
-		public XmlKeys SaveRom = Keys.Control | Keys.S;
+		public DbgShortKeys SaveRom = new(KeyModifiers.Control, Key.S);
 		[ShortcutName("Save Rom As...")]
-		public XmlKeys SaveRomAs = Keys.None;
+		public DbgShortKeys SaveRomAs = new();
 		[ShortcutName("Save edits as IPS patch...")]
-		public XmlKeys SaveEditAsIps = Keys.None;
+		public DbgShortKeys SaveEditAsIps = new();
 		[ShortcutName("Revert PRG/CHR changes")]
-		public XmlKeys RevertPrgChrChanges = Keys.None;
+		public DbgShortKeys RevertPrgChrChanges = new();
 
 		//Memory Tools
 		[ShortcutName("Freeze")]
-		public XmlKeys MemoryViewer_Freeze = Keys.Control | Keys.Q;
+		public DbgShortKeys MemoryViewer_Freeze = new(KeyModifiers.Control, Key.Q);
 		[ShortcutName("Unfreeze")]
-		public XmlKeys MemoryViewer_Unfreeze = Keys.Control | Keys.W;
+		public DbgShortKeys MemoryViewer_Unfreeze = new(KeyModifiers.Control, Key.W);
 		[ShortcutName("Add to Watch")]
-		public XmlKeys MemoryViewer_AddToWatch = Keys.None;
+		public DbgShortKeys MemoryViewer_AddToWatch = new();
 		[ShortcutName("Edit Breakpoint")]
-		public XmlKeys MemoryViewer_EditBreakpoint = Keys.None;
+		public DbgShortKeys MemoryViewer_EditBreakpoint = new();
 		[ShortcutName("Edit Label")]
-		public XmlKeys MemoryViewer_EditLabel = Keys.None;
+		public DbgShortKeys MemoryViewer_EditLabel = new();
 		[ShortcutName("Import")]
-		public XmlKeys MemoryViewer_Import = Keys.Control | Keys.O;
+		public DbgShortKeys MemoryViewer_Import = new(KeyModifiers.Control, Key.O);
 		[ShortcutName("Export")]
-		public XmlKeys MemoryViewer_Export = Keys.Control | Keys.S;
+		public DbgShortKeys MemoryViewer_Export = new(KeyModifiers.Control, Key.S);
 		[ShortcutName("View in CPU/PPU Memory")]
-		public XmlKeys MemoryViewer_ViewInCpuMemory = Keys.None;
+		public DbgShortKeys MemoryViewer_ViewInCpuMemory = new();
 		[ShortcutName("View in [memory type]")]
-		public XmlKeys MemoryViewer_ViewInMemoryType = Keys.None;
+		public DbgShortKeys MemoryViewer_ViewInMemoryType = new();
 
 		//Script Window
 		[ShortcutName("Open Script")]
-		public XmlKeys ScriptWindow_OpenScript = Keys.Control | Keys.N;
+		public DbgShortKeys ScriptWindow_OpenScript = new(KeyModifiers.Control, Key.N);
 		[ShortcutName("Save Script")]
-		public XmlKeys ScriptWindow_SaveScript = Keys.Control | Keys.S;
+		public DbgShortKeys ScriptWindow_SaveScript = new(KeyModifiers.Control, Key.S);
 		[ShortcutName("Run Script")]
-		public XmlKeys ScriptWindow_RunScript = Keys.F5;
+		public DbgShortKeys ScriptWindow_RunScript = new(Key.F5);
 		[ShortcutName("Stop Script")]
-		public XmlKeys ScriptWindow_StopScript = Keys.Escape;
-
-		public static string GetShortcutDisplay(Keys keys)
-		{
-			if(keys == Keys.None) {
-				return "";
-			} else {
-				string keyString = new KeysConverter().ConvertToString(keys);
-				return keyString.Replace("+None", "").Replace("Oemcomma", ",").Replace("Oemplus", "+").Replace("Oemtilde", "Tilde").Replace("OemMinus", "-").Replace("Cancel", "Break").Replace("Escape", "Esc");
-			}
-		}
-		
-		private static Dictionary<WeakReference<ToolStripMenuItem>, string> _bindings = new Dictionary<WeakReference<ToolStripMenuItem>, string>();
-		private static Dictionary<WeakReference<ToolStripMenuItem>, WeakReference<Control>> _parents = new Dictionary<WeakReference<ToolStripMenuItem>, WeakReference<Control>>();
-		public static void RegisterMenuItem(ToolStripMenuItem item, Control parent, string fieldName)
-		{
-			var weakRef = new WeakReference<ToolStripMenuItem>(item);
-			_bindings[weakRef] = fieldName;
-			_parents[weakRef] = new WeakReference<Control>(parent);
-
-			//Remove old references
-			var dictCopy = new Dictionary<WeakReference<ToolStripMenuItem>, string>(_bindings);
-
-			//Iterate on a copy to avoid "collection was modified" error
-			foreach(var kvp in dictCopy) {
-				ToolStripMenuItem menuItem;
-				if(!kvp.Key.TryGetTarget(out menuItem)) {
-					_bindings.Remove(kvp.Key);
-					_parents.Remove(kvp.Key);
-				}
-			}
-		}
-
-		public static void UpdateMenus()
-		{
-			foreach(WeakReference<ToolStripMenuItem> itemRef in _bindings.Keys) {
-				ToolStripMenuItem item;
-				if(itemRef.TryGetTarget(out item)) {
-					string fieldName = _bindings[itemRef];
-					Control parent;
-					_parents[itemRef].TryGetTarget(out parent);
-					if(parent != null) {
-						UpdateShortcutItem(item, parent, fieldName);
-					}
-				}
-			}
-		}
-
-		public static void ClearProcessCmdKeyHandler(ToolStripMenuItem item, Control parent)
-		{
-			Form parentForm = parent.FindForm();
-			if(parentForm is BaseForm) {
-				(parentForm as BaseForm).OnProcessCmdKey -= ((ShortcutInfo)item.Tag).KeyHandler;
-			}
-			((ShortcutInfo)item.Tag).KeyHandler = null;
-		}
-
-		public static void UpdateShortcutItem(ToolStripMenuItem item, Control parent, string fieldName)
-		{
-			if(item.Tag == null) {
-				item.Tag = new ShortcutInfo() { KeyHandler = null, ShortcutKey = fieldName };
-			} else if(((ShortcutInfo)item.Tag).KeyHandler != null) {
-				ClearProcessCmdKeyHandler(item, parent);
-			}
-
-			Keys keys = (XmlKeys)typeof(DebuggerShortcutsConfig).GetField(fieldName).GetValue(ConfigManager.Config.Debug.Shortcuts);
-
-			item.ShortcutKeys = Keys.None;
-			item.ShortcutKeyDisplayString = GetShortcutDisplay(keys);
-
-			Form parentForm = parent.FindForm();
-			if(parentForm is BaseForm) {
-				ProcessCmdKeyHandler onProcessCmdKeyHandler = (Keys keyData, ref bool processed) => {
-					if(!processed && item.Enabled && parent.ContainsFocus && keyData == keys) {
-						if(parent is IShortcutParent && ((IShortcutParent)parent).SuppressShortcut) {
-							return;
-						}
-						item.PerformClick();
-						processed = true;
-					}
-				};
-
-				((ShortcutInfo)item.Tag).KeyHandler = onProcessCmdKeyHandler;
-				(parentForm as BaseForm).OnProcessCmdKey += onProcessCmdKeyHandler;
-			}
-		}
+		public DbgShortKeys ScriptWindow_StopScript = new(Key.Escape);
 	}
 
-	public static class ToolStripMenuItemExtensions
+	public class DbgShortKeys
 	{
-		public static void InitShortcut(this ToolStripMenuItem item, Control parent, string fieldName)
+		public KeyModifiers Modifiers { get; set; }
+		public Key ShortcutKey { get; set; }
+
+		public DbgShortKeys() { }
+
+		public DbgShortKeys(Key key) : this(KeyModifiers.None, key) { }
+
+		public DbgShortKeys(KeyModifiers modifiers, Key key)
 		{
-			DebuggerShortcutsConfig.UpdateShortcutItem(item, parent, fieldName);
-			DebuggerShortcutsConfig.RegisterMenuItem(item, parent, fieldName);
-		}
-	}
-
-	public class ShortcutInfo
-	{
-		public string ShortcutKey;
-		public ProcessCmdKeyHandler KeyHandler;
-	}
-
-	public class XmlKeys
-	{
-		private Keys _keys = Keys.None;
-
-		public XmlKeys() { }
-		public XmlKeys(Keys k) { _keys = k; }
-
-		public static implicit operator Keys(XmlKeys k)
-		{
-			return k._keys;
+			Modifiers = modifiers;
+			ShortcutKey = key;
 		}
 
-		public static implicit operator XmlKeys(Keys k)
+		public override string ToString()
 		{
-			return new XmlKeys(k);
-		}
-
-		[XmlAttribute]
-		public string Value
-		{
-			get { return _keys.ToString(); }
-			set
-			{
-				try {
-					Enum.TryParse<Keys>(value, out _keys);
-				} catch(Exception) {
-					_keys = Keys.None;
-				}
-			}
+			return ShortcutKey != Key.None ? new KeyGesture(ShortcutKey, Modifiers).ToString() : "";
 		}
 	}
 
@@ -394,9 +278,4 @@ namespace Mesen.Config
 			this.Name = name;
 		}
 	}
-
-	public interface IShortcutParent
-	{
-		bool SuppressShortcut { get; }
-	}
-}*/
+}
