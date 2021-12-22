@@ -7,6 +7,7 @@ using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Reactive;
 
 namespace Mesen.Debugger.Utilities
@@ -15,7 +16,18 @@ namespace Mesen.Debugger.Utilities
 	{
 		public ActionType ActionType;
 
-		public string Name => ResourceHelper.GetEnumText(ActionType);
+		public string Name
+		{
+			get
+			{
+				string label = ResourceHelper.GetEnumText(ActionType);
+				if(HintText != null) {
+					label += " (" + HintText() + ")";
+				}
+				return label;
+			}
+		}
+
 		public Image? Icon
 		{
 			get
@@ -28,11 +40,32 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
+		List<ContextMenuAction>? _subActions;
+		public List<ContextMenuAction>? SubActions
+		{
+			get => _subActions;
+			set
+			{
+				_subActions = value;
+
+				if(_subActions != null) {
+					IsEnabled = () => {
+						foreach(ContextMenuAction subAction in _subActions) {
+							if(subAction.IsEnabled == null || subAction.IsEnabled()) {
+								return true;
+							}
+						}
+						return false;
+					};
+				}
+			}
+		}
+
+		public Func<string>? HintText { get; set; }
 		public Func<bool>? IsEnabled { get; set; }
 
 		public Func<DbgShortKeys>? Shortcut { get; set; }
 		public string ShortcutText => Shortcut?.Invoke().ToString() ?? "";
-
 
 		[Reactive] public bool Enabled { get; set; }
 
@@ -70,6 +103,26 @@ namespace Mesen.Debugger.Utilities
 		Paste,
 
 		[IconFile("SelectAll")]
-		SelectAll
+		SelectAll,
+
+		[IconFile("EditLabel")]
+		EditLabel,
+
+		[IconFile("Add")]
+		AddWatch,
+
+		[IconFile("BreakpointEnableDisable")]
+		EditBreakpoint,
+
+		MarkSelectionAs,
+
+		[IconFile("Accept")]
+		MarkAsCode,
+
+		[IconFile("CheatCode")]
+		MarkAsData,
+		
+		[IconFile("Help")]
+		MarkAsUnidentified
 	}
 }

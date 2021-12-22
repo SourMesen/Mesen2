@@ -1469,6 +1469,14 @@ x == [$150] || y == [10]
 			<Value ID="Copy">Copy</Value>
 			<Value ID="Paste">Paste</Value>
 			<Value ID="SelectAll">Select All</Value>
+			<Value ID="EditLabel">Edit Label</Value>
+			<Value ID="AddWatch">Add to Watch</Value>
+			<Value ID="EditBreakpoint">Edit Breakpoint</Value>
+
+			<Value ID="MarkSelectionAs">Mark as...</Value>
+			<Value ID="MarkAsCode">Code</Value>
+			<Value ID="MarkAsData">Data</Value>
+			<Value ID="MarkAsUnidentified">Unknown</Value>
 		</Enum>
 	</Enums>
 </Resources>

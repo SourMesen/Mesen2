@@ -52,7 +52,9 @@ namespace Mesen.Debugger
 
 		public static void AddBreakpoint(Breakpoint bp)
 		{
-			_breakpoints.Add(bp);
+			if(!_breakpoints.Contains(bp)) {
+				_breakpoints.Add(bp);
+			}
 			RefreshBreakpoints(bp);
 		}
 

@@ -20,6 +20,8 @@ using System.IO;
 using Mesen.Utilities;
 using Mesen.Localization;
 using Mesen.Config;
+using Mesen.Debugger.Labels;
+using System.Linq;
 
 namespace Mesen.Debugger.Windows
 {
@@ -83,33 +85,200 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is MemoryToolsViewModel model) {
 				_model = model;
 				_model.Config.LoadWindowSettings(this);
-
-				DebugConfig cfg = ConfigManager.Config.Debug;
-				object[] actions = new object[] {
-					new ContextMenuAction() {
-						ActionType = ActionType.Copy,
-						IsEnabled = () => _editor.SelectionLength > 0,
-						OnClick = () => _editor.CopySelection(),
-						Shortcut = () => cfg.Shortcuts.Copy
-					},
-					new ContextMenuAction() {
-						ActionType = ActionType.Paste,
-						OnClick = () => _editor.PasteSelection(),
-						Shortcut = () => cfg.Shortcuts.Paste
-					},
-					new Separator(),
-					new ContextMenuAction() {
-						ActionType = ActionType.SelectAll,
-						OnClick = () => _editor.SelectAll(),
-						Shortcut = () => cfg.Shortcuts.SelectAll
-					},
-				};
-
-				DebugShortcutManager.RegisterActions(this, _editor, actions);
-				_model.SetActions(actions);
+				InitializeActions();
 			} else {
 				throw new Exception("Invalid model");
 			}
+		}
+
+		private void InitializeActions()
+		{
+			DebugConfig cfg = ConfigManager.Config.Debug;
+			object[] actions = new object[] {
+				GetMarkSelectionAction(),
+				new Separator(),
+				GetAddWatchAction(),
+				GetEditBreakpointAction(),
+				GetEditLabelAction(),
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Copy,
+					IsEnabled = () => _editor.SelectionLength > 0,
+					OnClick = () => _editor.CopySelection(),
+					Shortcut = () => cfg.Shortcuts.Copy
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Paste,
+					OnClick = () => _editor.PasteSelection(),
+					Shortcut = () => cfg.Shortcuts.Paste
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.SelectAll,
+					OnClick = () => _editor.SelectAll(),
+					Shortcut = () => cfg.Shortcuts.SelectAll
+				},
+			};
+
+			DebugShortcutManager.RegisterActions(this, _editor, actions);
+			_model.SetActions(actions);
+		}
+
+		private ContextMenuAction GetEditLabelAction()
+		{
+			AddressInfo? GetAddress(SnesMemoryType memType, int address)
+			{
+				if(memType.IsRelativeMemory()) {
+					AddressInfo relAddress = new AddressInfo() {
+						Address = address,
+						Type = memType
+					};
+
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					return absAddress.Address >= 0 && absAddress.Type.SupportsLabels() ? absAddress : null;
+				} else {
+					return memType.SupportsLabels() ? new AddressInfo() { Address = address, Type = memType } : null;
+				}
+			}
+
+			return new ContextMenuAction() {
+				ActionType = ActionType.EditLabel,
+				HintText = () => "$" + _editor.SelectionStart.ToString("X2"),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MemoryViewer_EditLabel,
+
+				IsEnabled = () => GetAddress(_model.Config.MemoryType, _editor.SelectionStart) != null,
+
+				OnClick = () => {
+					AddressInfo? addr = GetAddress(_model.Config.MemoryType, _editor.SelectionStart);
+					if(addr == null) {
+						return;
+					}
+
+					CodeLabel? label = LabelManager.GetLabel((uint)addr.Value.Address, addr.Value.Type);
+					if(label == null) {
+						label = new CodeLabel() {
+							Address = (uint)addr.Value.Address,
+							MemoryType = addr.Value.Type
+						};
+					}
+
+					LabelEditWindow.EditLabel(this, label);
+				}
+			};
+		}
+
+		private ContextMenuAction GetAddWatchAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.AddWatch,
+				HintText = () => GetAddressRange(),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MemoryViewer_AddToWatch,
+
+				IsEnabled = () => _model.Config.MemoryType.SupportsWatch(),
+
+				OnClick = () => {
+					string[] toAdd = Enumerable.Range(_editor.SelectionStart, Math.Max(1, _editor.SelectionLength)).Select((num) => $"[${num.ToString("X2")}]").ToArray();
+					WatchManager.GetWatchManager(_model.Config.MemoryType.ToCpuType()).AddWatch(toAdd);
+				}
+			};
+		}
+
+		private ContextMenuAction GetEditBreakpointAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.EditBreakpoint,
+				HintText = () => GetAddressRange(),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MemoryViewer_EditBreakpoint,
+
+				OnClick = () => {
+					uint startAddress = (uint)_editor.SelectionStart;
+					uint endAddress = (uint)(_editor.SelectionStart + Math.Max(1, _editor.SelectionLength) - 1);
+
+					SnesMemoryType memType = _model.Config.MemoryType;
+					Breakpoint? bp = BreakpointManager.GetMatchingBreakpoint(startAddress, endAddress, memType);
+					if(bp == null) {
+						bp = new Breakpoint() { 
+							MemoryType = memType, 
+							CpuType = memType.ToCpuType(), 
+							StartAddress = startAddress,
+							EndAddress = endAddress,
+							BreakOnWrite = true,
+							BreakOnRead = true
+						};
+						if(bp.IsCpuBreakpoint) {
+							bp.BreakOnExec = true;
+						}
+					}
+
+					BreakpointEditWindow.EditBreakpoint(bp, this);
+				}
+			};
+		}
+
+		private ContextMenuAction GetMarkSelectionAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.MarkSelectionAs,
+				HintText = () => GetAddressRange(),
+				SubActions = new List<ContextMenuAction>() {
+					new ContextMenuAction() {
+						ActionType = ActionType.MarkAsCode,
+						IsEnabled = () => GetMarkStartEnd(out _, out _),
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MarkAsCode,
+						OnClick = () => MarkSelectionAs(CdlFlags.Code)
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.MarkAsData,
+						IsEnabled = () => GetMarkStartEnd(out _, out _),
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MarkAsData,
+						OnClick = () => MarkSelectionAs(CdlFlags.Data)
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.MarkAsUnidentified,
+						IsEnabled = () => GetMarkStartEnd(out _, out _),
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MarkAsUnidentified,
+						OnClick = () => MarkSelectionAs(CdlFlags.None)
+					}
+				}
+			};
+		}
+
+		private bool GetMarkStartEnd(out int start, out int end)
+		{
+			SnesMemoryType memType = _model.Config.MemoryType;
+			start = _editor.SelectionStart;
+			end = start + Math.Max(1, _editor.SelectionLength) - 1;
+
+			if(memType.IsRelativeMemory()) {
+				AddressInfo startAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = memType });
+				AddressInfo endAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = memType });
+				if(startAddr.Type == endAddr.Type && startAddr.Type.SupportsCdl()) {
+					start = startAddr.Address;
+					end = endAddr.Address;
+				} else {
+					return false;
+				}
+			} else if(!memType.SupportsCdl()) {
+				return false;
+			}
+
+			return start >= 0 && end >= 0 && start <= end;
+		}
+
+		private void MarkSelectionAs(CdlFlags type)
+		{
+			if(GetMarkStartEnd(out int start, out int end)) {
+				DebugApi.MarkBytesAs(_model.Config.MemoryType.ToCpuType(), (UInt32)start, (UInt32)end, type);
+			}
+		}
+
+		private string GetAddressRange()
+		{
+			string address = "$" + _editor.SelectionStart.ToString("X2");
+			if(_editor.SelectionLength > 1) {
+				address += "-$" + (_editor.SelectionStart + _editor.SelectionLength - 1).ToString("X2");
+			}
+			return address;
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)

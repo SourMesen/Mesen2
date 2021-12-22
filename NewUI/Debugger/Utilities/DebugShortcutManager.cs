@@ -33,6 +33,10 @@ namespace Mesen.Debugger.Utilities
 			WeakReference<ContextMenuAction> weakAction = new WeakReference<ContextMenuAction>(action);
 			WeakReference<Window> weakWnd = new WeakReference<Window>(wnd);
 
+			if(action.SubActions != null) {
+				RegisterActions(wnd, focusParent, action.SubActions);
+			}
+
 			EventHandler<KeyEventArgs>? handler = null;
 			handler = (s, e) => {
 				if(weakFocusParent.TryGetTarget(out IInputElement? elem) && weakAction.TryGetTarget(out ContextMenuAction? act)) {

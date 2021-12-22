@@ -97,10 +97,12 @@
 				<ContextMenu Items="{CompiledBinding Actions}" >
 					<ContextMenu.Styles>
 						<Style Selector="MenuItem">
-							<Setter Property="Header" Value="{Binding Name}"/>
-							<Setter Property="Icon" Value="{Binding Icon}"/>
-							<Setter Property="Tag" Value="{Binding ShortcutText}"/>
-							<Setter Property="Command" Value="{Binding ClickCommand}"/>
+							<Setter Property="Header" Value="{Binding Name}" />
+							<Setter Property="Icon" Value="{Binding Icon}" />
+							<Setter Property="IsEnabled" Value="{Binding Enabled}" />
+							<Setter Property="Tag" Value="{Binding ShortcutText}" />
+							<Setter Property="Items" Value="{Binding SubActions}" />
+							<Setter Property="Command" Value="{Binding ClickCommand}" />
 						</Style>
 					</ContextMenu.Styles>
 				</ContextMenu>

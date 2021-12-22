@@ -454,6 +454,21 @@ namespace Mesen.Interop
 			return false;
 		}
 
+		public static bool SupportsCdl(this SnesMemoryType memType)
+		{
+			switch(memType) {
+				case SnesMemoryType.CpuMemory:
+				case SnesMemoryType.GameboyMemory:
+				case SnesMemoryType.NesMemory:				
+				case SnesMemoryType.PrgRom:
+				case SnesMemoryType.GbPrgRom:
+				case SnesMemoryType.NesPrgRom:
+					return true;
+			}
+
+			return false;
+		}
+
 		public static string GetShortName(this SnesMemoryType memType)
 		{
 			return memType switch {

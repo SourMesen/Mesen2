@@ -504,6 +504,6 @@
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="cd $(OutDir)&#xD;&#xA;md Dependencies&#xD;&#xA;copy libHarfBuzzSharp.dll Dependencies&#xD;&#xA;copy libSkiaSharp.dll Dependencies&#xD;&#xA;copy MesenSCore.dll Dependencies&#xD;&#xA;DependencyPacker.exe&#xD;&#xA;copy Dependencies.zip $(ProjectDir)" />
+    <Exec Command="cd $(OutDir)&#xD;&#xA;rd Dependencies /s /q&#xD;&#xA;md Dependencies&#xD;&#xA;copy libHarfBuzzSharp.dll Dependencies&#xD;&#xA;copy libSkiaSharp.dll Dependencies&#xD;&#xA;copy MesenSCore.dll Dependencies&#xD;&#xA;DependencyPacker.exe&#xD;&#xA;copy Dependencies.zip $(ProjectDir)" />
   </Target>
 </Project>

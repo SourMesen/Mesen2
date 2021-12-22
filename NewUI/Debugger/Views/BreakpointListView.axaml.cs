@@ -44,29 +44,22 @@ namespace Mesen.Debugger.Views
 			DataGrid grid = (DataGrid)sender;
 			Breakpoint? bp = grid.SelectedItem as Breakpoint;
 			if(bp != null && grid != null) {
-				EditBreakpoint(bp, this);
+				BreakpointEditWindow.EditBreakpoint(bp, this);
 			}
 		}
 
-		private async void mnuAddBreakpoint_Click(object sender, RoutedEventArgs e)
+		private void mnuAddBreakpoint_Click(object sender, RoutedEventArgs e)
 		{
 			Breakpoint bp = new Breakpoint() { BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true };
-			BreakpointEditWindow wnd = new BreakpointEditWindow() {
-				DataContext = new BreakpointEditViewModel(bp)
-			};
-
-			bool result = await wnd.ShowCenteredDialog<bool>(this);
-			if(result) {
-				BreakpointManager.AddBreakpoint(bp);
-			}
+			BreakpointEditWindow.EditBreakpoint(bp, this);
 		}
 
 		private void mnuEditBreakpoint_Click(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
-			Breakpoint? label = grid.SelectedItem as Breakpoint;
-			if(label != null && grid != null) {
-				EditBreakpoint(label, this);
+			Breakpoint? bp = grid.SelectedItem as Breakpoint;
+			if(bp != null && grid != null) {
+				BreakpointEditWindow.EditBreakpoint(bp, this);
 			}
 		}
 
@@ -77,20 +70,6 @@ namespace Mesen.Debugger.Views
 				if(item is Breakpoint bp) {
 					BreakpointManager.RemoveBreakpoint(bp);
 				}
-			}
-		}
-
-		public async static void EditBreakpoint(Breakpoint bp, Control parent)
-		{
-			Breakpoint copy = bp.Clone();
-			BreakpointEditWindow wnd = new BreakpointEditWindow() {
-				DataContext = new BreakpointEditViewModel(copy)
-			};
-
-			bool result = await wnd.ShowCenteredDialog<bool>(parent);
-			if(result) {
-				bp.CopyFrom(copy);
-				BreakpointManager.RefreshBreakpoints();
 			}
 		}
 	}

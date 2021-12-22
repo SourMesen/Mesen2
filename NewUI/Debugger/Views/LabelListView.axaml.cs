@@ -44,7 +44,7 @@ namespace Mesen.Debugger.Views
 			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
 			CodeLabel ? label = grid.SelectedItem as CodeLabel;
 			if(label != null && grid != null) {
-				EditLabel(label);
+				LabelEditWindow.EditLabel(this, label);
 			}
 		}
 
@@ -64,21 +64,7 @@ namespace Mesen.Debugger.Views
 			DataGrid grid = (DataGrid)sender;
 			CodeLabel? label = grid.SelectedItem as CodeLabel;
 			if(label != null && grid != null) {
-				EditLabel(label);
-			}
-		}
-
-		private async void EditLabel(CodeLabel label)
-		{
-			CodeLabel copy = label.Clone();
-			LabelEditWindow wnd = new LabelEditWindow() {
-				DataContext = new LabelEditViewModel(copy, label)
-			};
-
-			bool result = await wnd.ShowCenteredDialog<bool>(this);
-			if(result) {
-				label.CopyFrom(copy);
-				LabelManager.SetLabel(label, true);
+				LabelEditWindow.EditLabel(this, label);
 			}
 		}
 	}

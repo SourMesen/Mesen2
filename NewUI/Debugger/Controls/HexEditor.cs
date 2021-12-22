@@ -141,7 +141,18 @@ namespace Mesen.Debugger.Controls
 		public HexEditor()
 		{
 			Focusable = true;
+		}
+
+		protected override void OnPointerEnter(PointerEventArgs e)
+		{
+			base.OnPointerEnter(e);
 			Cursor = new Cursor(StandardCursorType.Ibeam);
+		}
+
+		protected override void OnPointerLeave(PointerEventArgs e)
+		{
+			base.OnPointerLeave(e);
+			Cursor = null;
 		}
 
 		private void MoveCursor(int offset, bool nibbleMode = false, bool keepNibble = false)
