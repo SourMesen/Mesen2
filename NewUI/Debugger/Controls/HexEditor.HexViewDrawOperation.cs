@@ -27,7 +27,8 @@ namespace Mesen.Debugger.Controls
 			private float _fontSize;
 			private double _stringViewPosition;
 			private IHexEditorDataProvider _dataProvider;
-			private Dictionary<Color, SKPaint> _skPaints = new Dictionary<Color, SKPaint>();
+			private Dictionary<Color, SKPaint> _skFillPaints = new Dictionary<Color, SKPaint>();
+			private Dictionary<Color, SKPaint> _skBorderPaints = new Dictionary<Color, SKPaint>();
 			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
 
 			public HexViewDrawOperation(HexEditor he, List<ByteInfo> dataToDraw, HashSet<Color> fgColors)
@@ -47,8 +48,10 @@ namespace Mesen.Debugger.Controls
 				_stringViewPosition = _he.RowWidth + _he.StringViewMargin;
 
 				foreach(ByteInfo byteInfo in dataToDraw) {
-					if(!_skPaints.ContainsKey(byteInfo.BackColor)) {
-						_skPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(ColorHelper.GetColor(byteInfo.BackColor).ToUint32()) };
+					if(!_skFillPaints.ContainsKey(byteInfo.BackColor)) {
+						_skFillPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(ColorHelper.GetColor(byteInfo.BackColor).ToUint32()) };
+					} else if(!_skBorderPaints.ContainsKey(byteInfo.BorderColor)) {
+						_skBorderPaints[byteInfo.BorderColor] = new SKPaint() { Style = SKPaintStyle.Stroke, Color = new SKColor(ColorHelper.GetColor(byteInfo.BorderColor).ToUint32()) };
 					}
 				}
 			}
@@ -231,11 +234,15 @@ namespace Mesen.Debugger.Controls
 						if(byteInfo.ForeColor == color) {
 							SKFont currentFont = byteInfo.UseAltFont ? altFont : monoFont;
 
+							SKRect rect = GetRect(pos + i);
 							if(byteInfo.BackColor != Colors.Transparent) {
-								canvas.DrawRect(GetRect(pos+i), _skPaints[byteInfo.BackColor]);
+								canvas.DrawRect(rect, _skFillPaints[byteInfo.BackColor]);
+							}
+							if(byteInfo.BorderColor != Colors.Transparent) {
+								canvas.DrawRect(rect, _skBorderPaints[byteInfo.BorderColor]);
 							}
 							if(byteInfo.Selected) {
-								canvas.DrawRect(GetRect(pos+i), selectedPaint);
+								canvas.DrawRect(rect, selectedPaint);
 							}
 
 							int count = currentFont.CountGlyphs(byteInfo.StringValue);
@@ -272,8 +279,10 @@ namespace Mesen.Debugger.Controls
 
 				while(pos < _dataToDraw.Count) {
 					int bgStartPos = -1;
+					int borderStartPos = -1;
 					int selectedStartPos = -1;
 					Color bgColor = Colors.Transparent;
+					Color borderColor = Colors.Transparent;
 					bool selected = false;
 					for(int i = 0; i < _bytesPerRow; i++) {
 						if(pos + i >= _dataToDraw.Count) {
@@ -284,13 +293,24 @@ namespace Mesen.Debugger.Controls
 
 						if(byteInfo.BackColor != bgColor) {
 							if(bgColor != Colors.Transparent && bgStartPos >= 0) {
-								canvas.DrawRect(GetRect(bgStartPos, i), _skPaints[bgColor]);
+								canvas.DrawRect(GetRect(bgStartPos, i), _skFillPaints[bgColor]);
 								bgStartPos = -1;
 							}
 							if(byteInfo.BackColor != Colors.Transparent) {
 								bgStartPos = i;
 							}
 							bgColor = byteInfo.BackColor;
+						}
+
+						if(byteInfo.BorderColor != borderColor) {
+							if(borderColor != Colors.Transparent && borderStartPos >= 0) {
+								canvas.DrawRect(GetRect(borderStartPos, i), _skBorderPaints[borderColor]);
+								borderStartPos = -1;
+							}
+							if(byteInfo.BorderColor != Colors.Transparent) {
+								borderStartPos = i;
+							}
+							borderColor = byteInfo.BorderColor;
 						}
 
 						if(selected != byteInfo.Selected) {
@@ -307,7 +327,10 @@ namespace Mesen.Debugger.Controls
 					pos += _bytesPerRow;
 
 					if(bgStartPos >= 0) {
-						canvas.DrawRect(GetRect(bgStartPos, _bytesPerRow), _skPaints[bgColor]);
+						canvas.DrawRect(GetRect(bgStartPos, _bytesPerRow), _skFillPaints[bgColor]);
+					}
+					if(borderStartPos >= 0) {
+						canvas.DrawRect(GetRect(borderStartPos, _bytesPerRow), _skBorderPaints[borderColor]);
 					}
 					if(selectedStartPos >= 0) {
 						canvas.DrawRect(GetRect(selectedStartPos, _bytesPerRow), selectedPaint);
