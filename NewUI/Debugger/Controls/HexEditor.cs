@@ -18,8 +18,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> BytesPerRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(BytesPerRow), 16);
 
-		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0);
-		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0);
+		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
 		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<HexEditor, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
 		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<HexEditor, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);

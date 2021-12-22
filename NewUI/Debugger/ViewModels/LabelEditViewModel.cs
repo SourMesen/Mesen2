@@ -1,4 +1,5 @@
-﻿using Dock.Model.ReactiveUI.Controls;
+﻿using Avalonia.Controls;
+using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.ViewModels;
@@ -23,6 +24,10 @@ namespace Mesen.Debugger.ViewModels
 		public LabelEditViewModel(CodeLabel label, CodeLabel? originalLabel = null)
 		{
 			Label = label;
+			
+			if(Design.IsDesignMode) {
+				return;
+			}
 
 			this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;

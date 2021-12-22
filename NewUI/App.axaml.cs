@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Platform;
 using Avalonia.Markup.Xaml;
@@ -19,9 +20,9 @@ namespace Mesen
 		{
 			AvaloniaXamlLoader.Load(this);
 			StyleHelper.LoadStartupStyles();
-#if DEBUG
-			StyleHelper.ApplyTheme(MesenTheme.Light);
-#endif
+			if(Design.IsDesignMode) {
+				StyleHelper.ApplyTheme(MesenTheme.Light);
+			}
 			ResourceHelper.LoadResources(Language.English);
 		}
 

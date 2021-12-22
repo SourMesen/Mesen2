@@ -75,38 +75,47 @@
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
 			<dv:MemoryToolsDisplayOptionsView DataContext="{CompiledBinding Config}" />
 		</Panel>
-		<ScrollBar
-			DockPanel.Dock="Right"
-			AllowAutoHide="False"
-			Minimum="0"
-			Maximum="{CompiledBinding MaxScrollValue}"
-			SmallChange="1"
-			LargeChange="10"
-			Value="{CompiledBinding ScrollPosition}"
-		/>
-		<dc:HexEditor
-			Name="Hex"
-			DataProvider="{CompiledBinding DataProvider}"
-			BytesPerRow="{CompiledBinding Config.BytesPerRow}"
-			TopRow="{CompiledBinding ScrollPosition}"
-			FontFamily="{CompiledBinding Config.FontFamily}"
-			FontSize="{CompiledBinding Config.FontSize}"
-			ShowStringView="{CompiledBinding Config.ShowCharacters}"
-		>
-			<dc:HexEditor.ContextMenu>
-				<ContextMenu Items="{CompiledBinding Actions}" >
-					<ContextMenu.Styles>
-						<Style Selector="MenuItem">
-							<Setter Property="Header" Value="{Binding Name}" />
-							<Setter Property="Icon" Value="{Binding Icon}" />
-							<Setter Property="IsEnabled" Value="{Binding Enabled}" />
-							<Setter Property="Tag" Value="{Binding ShortcutText}" />
-							<Setter Property="Items" Value="{Binding SubActions}" />
-							<Setter Property="Command" Value="{Binding ClickCommand}" />
-						</Style>
-					</ContextMenu.Styles>
-				</ContextMenu>
-			</dc:HexEditor.ContextMenu>
-		</dc:HexEditor>
+		<Panel DockPanel.Dock="Bottom" Margin="3 2">
+			<TextBlock Text="{CompiledBinding StatusBarText}" />
+		</Panel>
+		<Border BorderBrush="LightGray" BorderThickness="1">
+			<DockPanel>
+				<ScrollBar
+					DockPanel.Dock="Right"
+					AllowAutoHide="False"
+					Minimum="0"
+					Maximum="{CompiledBinding MaxScrollValue}"
+					SmallChange="1"
+					LargeChange="10"
+					Value="{CompiledBinding ScrollPosition}"
+				/>
+				<dc:HexEditor
+					Name="Hex"
+					DataProvider="{CompiledBinding DataProvider}"
+					BytesPerRow="{CompiledBinding Config.BytesPerRow}"
+					SelectionStart="{CompiledBinding SelectionStart}"
+					SelectionLength="{CompiledBinding SelectionLength}"
+					TopRow="{CompiledBinding ScrollPosition}"
+					FontFamily="{CompiledBinding Config.FontFamily}"
+					FontSize="{CompiledBinding Config.FontSize}"
+					ShowStringView="{CompiledBinding Config.ShowCharacters}"
+				>
+					<dc:HexEditor.ContextMenu>
+						<ContextMenu Items="{CompiledBinding Actions}" >
+							<ContextMenu.Styles>
+								<Style Selector="MenuItem">
+									<Setter Property="Header" Value="{Binding Name}" />
+									<Setter Property="Icon" Value="{Binding Icon}" />
+									<Setter Property="IsEnabled" Value="{Binding Enabled}" />
+									<Setter Property="Tag" Value="{Binding ShortcutText}" />
+									<Setter Property="Items" Value="{Binding SubActions}" />
+									<Setter Property="Command" Value="{Binding ClickCommand}" />
+								</Style>
+							</ContextMenu.Styles>
+						</ContextMenu>
+					</dc:HexEditor.ContextMenu>
+				</dc:HexEditor>
+			</DockPanel>
+		</Border>
 	</DockPanel>
 </Window>

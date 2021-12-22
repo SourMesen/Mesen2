@@ -2,6 +2,7 @@
 using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -26,6 +27,10 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
 
+		[Reactive] public int SelectionStart { get; set; }
+		[Reactive] public int SelectionLength { get; set; }
+		[Reactive] public string StatusBarText { get; private set; } = "";
+
 		[ObservableAsProperty] public int MaxScrollValue { get; }
 
 		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 48, 64, 80, 96, 112, 128 }; }
@@ -43,6 +48,14 @@ namespace Mesen.Debugger.ViewModels
 			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
 				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
 			}
+
+			this.WhenAnyValue(x => x.SelectionStart, x => x.SelectionLength).Subscribe(((int start, int length) o) => {
+				if(o.length <= 1) {
+					StatusBarText = ResourceHelper.GetMessage("HexEditor_Location", o.start.ToString("X2"));
+				} else {
+					StatusBarText = ResourceHelper.GetMessage("HexEditor_Selection", o.start.ToString("X2"), (o.start + o.length - 1).ToString("X2"), o.length);
+				}
+			});
 
 			this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((SnesMemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
 				o.memType, Config, o.conv
