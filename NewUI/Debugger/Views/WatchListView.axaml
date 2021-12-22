@@ -8,6 +8,7 @@
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	Focusable="True"
 	x:DataType="vm:WatchListViewModel"
 	x:Class="Mesen.Debugger.Views.WatchListView"
 >
@@ -40,16 +41,6 @@
 					IsReadOnly="True"
 				/>
 			</DataGrid.Columns>
-
-			<DataGrid.ContextMenu>
-				<ContextMenu PlacementMode="Pointer">
-					<MenuItem Header="Delete" Click="mnuDeleteWatch_Click">
-						<MenuItem.Icon>
-							<Image Source="/Assets/Close.png" />
-						</MenuItem.Icon>
-					</MenuItem>
-				</ContextMenu>
-			</DataGrid.ContextMenu>
 		</c:MesenDataGrid>
 	</Border>
 </UserControl>

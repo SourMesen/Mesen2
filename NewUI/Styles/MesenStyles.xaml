@@ -48,6 +48,7 @@
 
 	<Styles.Resources>
 		<!-- Custom colors -->
+		<Color x:Key="MesenGridBackground">#FFF</Color>
 		<Color x:Key="MesenMenuBackground">#F1F1F1</Color>
 		<Color x:Key="MesenMenuBackgroundHighlight">#B5D7F3</Color>
 		<Color x:Key="MesenMenuBorderHighlight">#0078D7</Color>
@@ -131,6 +132,15 @@
 			<Thickness x:Key="ComboBoxPadding">12,1,0,3</Thickness>
 			<x:Double x:Key="NavigationViewItemOnLeftMinHeight">32</x:Double>
 		</Style.Resources>
+	</Style>
+
+	<Style Selector="ContextMenu.ActionMenu MenuItem">
+		<Setter Property="Header" Value="{Binding Name}" />
+		<Setter Property="Icon" Value="{Binding Icon}" />
+		<Setter Property="IsEnabled" Value="{Binding Enabled}" />
+		<Setter Property="Tag" Value="{Binding ShortcutText}" />
+		<Setter Property="Items" Value="{Binding SubActions}" />
+		<Setter Property="Command" Value="{Binding ClickCommand}" />
 	</Style>
 
 	<Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
@@ -603,6 +613,9 @@
 	</Style>
 
 	<!-- Data grid -->
+	<Style Selector="DataGrid">
+		<Setter Property="Background" Value="{DynamicResource MesenGridBackground}" />
+	</Style>
 	<Style Selector="DataGridColumnHeader">
 		<Setter Property="MinHeight" Value="18" />
 	</Style>

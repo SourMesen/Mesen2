@@ -1,7 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Rendering;
 using Mesen.Config;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +13,32 @@ namespace Mesen.Debugger.Utilities
 {
 	internal static class DebugShortcutManager
 	{
-		public static void RegisterActions(Window wnd, IInputElement focusParent, IEnumerable<object> actions)
+		public static void CreateContextMenu(Control ctrl, IEnumerable actions)
+		{
+			if(!(ctrl is IInputElement)) {
+				throw new Exception("Invalid control");
+			}
+
+			if(((IInputElement)ctrl).VisualRoot is Window wnd) {
+				ctrl.ContextMenu = new ContextMenu();
+				ctrl.ContextMenu.Classes.Add("ActionMenu");
+				ctrl.ContextMenu.Items = actions;
+				RegisterActions(wnd, ctrl, actions);
+			} else {
+				throw new Exception("Invalid window");
+			}
+		}
+
+		public static void RegisterActions(IRenderRoot? renderRoot, IInputElement focusParent, IEnumerable actions)
+		{
+			if(renderRoot is Window wnd) {
+				RegisterActions(wnd, focusParent, actions);
+			} else {
+				throw new Exception("Invalid window");
+			}
+		}
+
+		public static void RegisterActions(Window wnd, IInputElement focusParent, IEnumerable actions)
 		{
 			foreach(object obj in actions) {
 				if(obj is ContextMenuAction action) {

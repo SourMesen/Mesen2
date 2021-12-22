@@ -8,6 +8,7 @@
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	Focusable="True"
 	x:DataType="vm:BreakpointListViewModel"
 	x:Class="Mesen.Debugger.Views.BreakpointListView"
 >
@@ -29,27 +30,6 @@
 				<DataGridTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
 				<DataGridTextColumn Header="Condition" Binding="{Binding Condition}" Width="3*" CanUserResize="True" />
 			</DataGrid.Columns>
-
-			<DataGrid.ContextMenu>
-				<ContextMenu PlacementMode="Pointer">
-					<MenuItem Header="Add" Click="mnuAddBreakpoint_Click">
-						<MenuItem.Icon>
-							<Image Source="/Assets/Add.png" />
-						</MenuItem.Icon>
-					</MenuItem>
-					<MenuItem Header="Edit" Click="mnuEditBreakpoint_Click">
-						<MenuItem.Icon>
-							<Image Source="/Assets/EditLabel.png" />
-						</MenuItem.Icon>
-					</MenuItem>
-					<Separator />
-					<MenuItem Header="Delete" Click="mnuDeleteBreakpoint_Click">
-						<MenuItem.Icon>
-							<Image Source="/Assets/Close.png" />
-						</MenuItem.Icon>
-					</MenuItem>
-				</ContextMenu>
-			</DataGrid.ContextMenu>
 		</c:MesenDataGrid>
 	</Border>
 </UserControl>

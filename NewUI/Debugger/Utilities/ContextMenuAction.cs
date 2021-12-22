@@ -123,6 +123,15 @@ namespace Mesen.Debugger.Utilities
 		MarkAsData,
 		
 		[IconFile("Help")]
-		MarkAsUnidentified
+		MarkAsUnidentified,
+
+		[IconFile("Add")]
+		Add,
+
+		[IconFile("Edit")]
+		Edit,
+
+		[IconFile("Close")]
+		Delete
 	}
 }

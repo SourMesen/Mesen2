@@ -36,6 +36,7 @@
 
 	<Styles.Resources>
 		<!-- Custom colors -->
+		<Color x:Key="MesenGridBackground">#000</Color>
 		<Color x:Key="MesenMenuBackground">#000</Color>
 		<Color x:Key="MesenMenuBackgroundHighlight">#555</Color>
 		<Color x:Key="MesenMenuBorderHighlight">#777</Color>

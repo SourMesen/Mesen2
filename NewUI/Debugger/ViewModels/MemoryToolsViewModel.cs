@@ -23,8 +23,6 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
 		[Reactive] public TblByteCharConverter? TblConverter { get; set; }
 
-		[Reactive] public object[]? Actions { get; set; }
-
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
 
 		[Reactive] public int SelectionStart { get; set; }
@@ -65,11 +63,6 @@ namespace Mesen.Debugger.ViewModels
 				x => x.Config.MemoryType,
 				x => x.Config.BytesPerRow
 			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue);
-		}
-
-		internal void SetActions(object[] actions)
-		{
-			Actions = actions;
 		}
 
 		internal void SaveConfig()

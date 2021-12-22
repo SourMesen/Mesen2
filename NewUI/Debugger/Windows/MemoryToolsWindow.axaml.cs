@@ -57,6 +57,12 @@ namespace Mesen.Debugger.Windows
 			base.OnClosing(e);
 		}
 
+		protected override void OnOpened(EventArgs e)
+		{
+			base.OnOpened(e);
+			InitializeActions();
+		}
+
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
@@ -85,7 +91,6 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is MemoryToolsViewModel model) {
 				_model = model;
 				_model.Config.LoadWindowSettings(this);
-				InitializeActions();
 			} else {
 				throw new Exception("Invalid model");
 			}
@@ -94,7 +99,8 @@ namespace Mesen.Debugger.Windows
 		private void InitializeActions()
 		{
 			DebugConfig cfg = ConfigManager.Config.Debug;
-			object[] actions = new object[] {
+
+			DebugShortcutManager.CreateContextMenu(_editor, new object[] {
 				GetMarkSelectionAction(),
 				new Separator(),
 				GetAddWatchAction(),
@@ -118,10 +124,7 @@ namespace Mesen.Debugger.Windows
 					OnClick = () => _editor.SelectAll(),
 					Shortcut = () => cfg.Shortcuts.SelectAll
 				},
-			};
-
-			DebugShortcutManager.RegisterActions(this, _editor, actions);
-			_model.SetActions(actions);
+			});
 		}
 
 		private ContextMenuAction GetEditLabelAction()

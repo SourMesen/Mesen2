@@ -10,6 +10,9 @@ using Mesen.Debugger.Windows;
 using Mesen.Utilities;
 using Avalonia.Input;
 using System.Linq;
+using Mesen.Debugger.Utilities;
+using Avalonia.Data;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Views
 {
@@ -25,38 +28,47 @@ namespace Mesen.Debugger.Views
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		private async void mnuAddLabel_Click(object sender, RoutedEventArgs e)
+		protected override void OnInitialized()
 		{
-			CodeLabel newLabel = new CodeLabel();
-			LabelEditWindow wnd = new LabelEditWindow() {
-				DataContext = new LabelEditViewModel(newLabel)
-			};
-
-			bool result = await wnd.ShowCenteredDialog<bool>(this);
-			if(result) {
-				LabelManager.SetLabel(newLabel, true);
-				((LabelListViewModel)DataContext!).UpdateLabelList();
-			}
+			base.OnInitialized();
+			InitContextMenu();
 		}
 
-		private void mnuEditLabel_Click(object sender, RoutedEventArgs e)
+		private void InitContextMenu()
 		{
 			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
-			CodeLabel ? label = grid.SelectedItem as CodeLabel;
-			if(label != null && grid != null) {
-				LabelEditWindow.EditLabel(this, label);
-			}
-		}
 
-		private void mnuDeleteLabel_Click(object sender, RoutedEventArgs e)
-		{
-			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
-			foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
-				if(item is CodeLabel label) {
-					LabelManager.DeleteLabel(label, true);
+			DebugShortcutManager.CreateContextMenu(this, new object[] {
+				new ContextMenuAction() {
+					ActionType = ActionType.Add,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Add,
+					OnClick = () => LabelEditWindow.EditLabel(this, new CodeLabel())
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Edit,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Edit,
+					IsEnabled = () => grid.SelectedItem is CodeLabel,
+					OnClick = () => {
+						CodeLabel? label = grid.SelectedItem as CodeLabel;
+						if(label != null && grid != null) {
+							LabelEditWindow.EditLabel(this, label);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Delete,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Delete,
+					IsEnabled = () => grid.SelectedItems.Count > 0,
+					OnClick = () => {
+						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
+							if(item is CodeLabel label) {
+								LabelManager.DeleteLabel(label, true);
+							}
+						}
+						((LabelListViewModel)DataContext!).UpdateLabelList();
+					}
 				}
-				((LabelListViewModel)DataContext!).UpdateLabelList();
-			}
+			});
 		}
 
 		private void OnGridDoubleClick(object sender, RoutedEventArgs e)

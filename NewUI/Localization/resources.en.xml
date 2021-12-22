@@ -1472,6 +1472,11 @@ x == [$150] || y == [10]
 			<Value ID="Copy">Copy</Value>
 			<Value ID="Paste">Paste</Value>
 			<Value ID="SelectAll">Select All</Value>
+
+			<Value ID="Add">Add...</Value>
+			<Value ID="Edit">Edit</Value>
+			<Value ID="Delete">Delete</Value>
+
 			<Value ID="EditLabel">Edit Label</Value>
 			<Value ID="AddWatch">Add to Watch</Value>
 			<Value ID="EditBreakpoint">Edit Breakpoint</Value>
