@@ -2,93 +2,80 @@
 using Avalonia.Media;
 using Mesen.Debugger;
 using Mesen.Interop;
+using ReactiveUI.Fody.Helpers;
+using System.Reactive.Linq;
+using System.Reactive;
 
 namespace Mesen.Config
 {
-	public class DebuggerConfig
+	public class DebuggerConfig : BaseWindowConfig<DebuggerConfig>
 	{
 		public static string MonospaceFontFamily = "Consolas";
 		public static int DefaultFontSize = 14;
-
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
-		public int? SplitterDistance = null;
-
-		public bool ShowByteCode = false;
-		public bool UseLowerCaseDisassembly = false;
-
-		public bool BreakOnBrk = false;
-		public bool BreakOnCop = false;
-		public bool BreakOnWdm = false;
-		public bool BreakOnStp = false;
-		public bool BreakOnUninitRead = false;
-
-		public bool GbBreakOnInvalidOamAccess = false;
-		public bool GbBreakOnInvalidVramAccess = false;
-		public bool GbBreakOnDisableLcdOutsideVblank = false;
-		public bool GbBreakOnInvalidOpCode = false;
-		public bool GbBreakOnNopLoad = false;
-		public bool GbBreakOnOamCorruption = false;
-
-		public bool BreakOnOpen = true;
-		public bool BreakOnPowerCycleReset = true;
 		
-		public bool AutoResetCdl = true;
+		[Reactive] public bool ShowOptionPanel { get; set; } = true;
 
-		public bool ShowMemoryMappings = true;
+		[Reactive] public bool ShowByteCode { get; set; } = false;
+		[Reactive] public bool UseLowerCaseDisassembly { get; set; } = false;
 
-		public bool BringToFrontOnBreak = true;
-		public bool BringToFrontOnPause = false;
+		[Reactive] public SnesDebuggerConfig Snes { get; set; } = new();
+		[Reactive] public NesDebuggerConfig Nes { get; set; } = new();
+		[Reactive] public GbDebuggerConfig Gameboy { get; set; } = new();
 
-		public CodeDisplayMode UnidentifiedBlockDisplay = CodeDisplayMode.Hide;
-		public CodeDisplayMode VerifiedDataDisplay = CodeDisplayMode.Hide;
+		[Reactive] public bool BreakOnUninitRead { get; set; } = false;
+		[Reactive] public bool BreakOnOpen { get; set; } = true;
+		[Reactive] public bool BreakOnPowerCycleReset { get; set; } = true;
 
-		public bool UseAltSpcOpNames = false;
+		[Reactive] public bool AutoResetCdl { get; set; } = true;
 
-		public int BreakOnValue = 0;
-		public int BreakInCount = 1;
-		public BreakInMetric BreakInMetric = BreakInMetric.CpuInstructions;
+		[Reactive] public bool ShowMemoryMappings { get; set; } = true;
 
-		public string FontFamily = DebuggerConfig.MonospaceFontFamily;
-		public FontStyle FontStyle = FontStyle.Normal;
-		public float FontSize = DebuggerConfig.DefaultFontSize;
-		public int TextZoom = 100;
+		[Reactive] public bool BringToFrontOnBreak { get; set; } = true;
+		[Reactive] public bool BringToFrontOnPause { get; set; } = false;
 
-		public bool ShowSelectionLength = false;
-		public WatchFormatStyle WatchFormat = WatchFormatStyle.Hex;
+		[Reactive] public CodeDisplayMode UnidentifiedBlockDisplay { get; set; } = CodeDisplayMode.Hide;
+		[Reactive] public CodeDisplayMode VerifiedDataDisplay { get; set; } = CodeDisplayMode.Hide;
 
-		public bool ShowCommentsInLabelList = true;
+		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
 
-		public Color CodeOpcodeColor = Color.FromRgb(22, 37, 37);
-		public Color CodeLabelDefinitionColor = Colors.Blue;
-		public Color CodeImmediateColor = Colors.Chocolate;
-		public Color CodeAddressColor = Colors.DarkRed;
-		public Color CodeCommentColor = Colors.Green;
-		public Color CodeEffectiveAddressColor = Colors.SteelBlue;
+		[Reactive] public int BreakOnValue { get; set; } = 0;
+		[Reactive] public int BreakInCount { get; set; } = 1;
+		[Reactive] public BreakInMetric BreakInMetric { get; set; } = BreakInMetric.CpuInstructions;
 
-		public Color CodeVerifiedDataColor = Color.FromRgb(255, 252, 236);
-		public Color CodeUnidentifiedDataColor = Color.FromRgb(255, 242, 242);
-		public Color CodeUnexecutedCodeColor = Color.FromRgb(225, 244, 228);
+		[Reactive] public FontConfig Font { get; set; } = new FontConfig();
 
-		public Color CodeExecBreakpointColor = Color.FromRgb(140, 40, 40);
-		public Color CodeWriteBreakpointColor = Color.FromRgb(40, 120, 80);
-		public Color CodeReadBreakpointColor = Color.FromRgb(40, 40, 200);
-		public Color CodeActiveStatementColor = Colors.Yellow;
+		[Reactive] public bool ShowSelectionLength { get; set; } = false;
+		[Reactive] public WatchFormatStyle WatchFormat { get; set; } = WatchFormatStyle.Hex;
+
+		[Reactive] public bool ShowCommentsInLabelList { get; set; } = true;
+
+		[Reactive] public Color CodeOpcodeColor  { get; set; } = Color.FromRgb(22, 37, 37);
+		[Reactive] public Color CodeLabelDefinitionColor { get; set; } = Colors.Blue;
+		[Reactive] public Color CodeImmediateColor { get; set; } = Colors.Chocolate;
+		[Reactive] public Color CodeAddressColor { get; set; } = Colors.DarkRed;
+		[Reactive] public Color CodeCommentColor { get; set; } = Colors.Green;
+		[Reactive] public Color CodeEffectiveAddressColor { get; set; } = Colors.SteelBlue;
+
+		[Reactive] public Color CodeVerifiedDataColor { get; set; } = Color.FromRgb(255, 252, 236);
+		[Reactive] public Color CodeUnidentifiedDataColor { get; set; } = Color.FromRgb(255, 242, 242);
+		[Reactive] public Color CodeUnexecutedCodeColor { get; set; } = Color.FromRgb(225, 244, 228);
+
+		[Reactive] public Color CodeExecBreakpointColor { get; set; } = Color.FromRgb(140, 40, 40);
+		[Reactive] public Color CodeWriteBreakpointColor { get; set; } = Color.FromRgb(40, 120, 80);
+		[Reactive] public Color CodeReadBreakpointColor { get; set; } = Color.FromRgb(40, 40, 200);
+		[Reactive] public Color CodeActiveStatementColor { get; set; } = Colors.Yellow;
+
+		public DebuggerConfig()
+		{
+		}
 
 		public void ApplyConfig()
 		{
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnBrk, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnCop, BreakOnCop);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnWdm, BreakOnWdm);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnStp, BreakOnStp);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
+			Snes.ApplyConfig();
+			Nes.ApplyConfig();
+			Gameboy.ApplyConfig();
 
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidOamAccess, GbBreakOnInvalidOamAccess);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidVramAccess, GbBreakOnInvalidVramAccess);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnDisableLcdOutsideVblank, GbBreakOnDisableLcdOutsideVblank);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidOpCode, GbBreakOnInvalidOpCode);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnNopLoad, GbBreakOnNopLoad);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnOamCorruption, GbBreakOnOamCorruption);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Show);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);
@@ -101,7 +88,7 @@ namespace Mesen.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.AutoResetCdl, AutoResetCdl);
 		}
 	}
-	
+
 	public enum BreakInMetric
 	{
 		CpuInstructions,

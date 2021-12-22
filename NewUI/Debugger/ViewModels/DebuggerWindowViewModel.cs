@@ -1,9 +1,12 @@
-﻿using Dock.Model.Controls;
+﻿using Avalonia.Controls;
+using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
+using Mesen.Config;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,6 +17,8 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class DebuggerWindowViewModel : ViewModelBase
 	{
+		[Reactive] public DebuggerConfig Config { get; private set; }
+
 		[Reactive] public DisassemblyViewerViewModel Disassembly { get; private set; }
 		[Reactive] public BreakpointListViewModel BreakpointList { get; private set; }
 		[Reactive] public WatchListViewModel WatchList { get; private set; }
@@ -31,14 +36,20 @@ namespace Mesen.Debugger.ViewModels
 
 		public DebuggerWindowViewModel()
 		{
+			Config = ConfigManager.Config.Debug.Debugger;
+
 			ShowBreakpointsCommand = ReactiveCommand.Create(ShowBreakpoints);
 			ShowCpuStatusCommand = ReactiveCommand.Create(ShowCpuStatus);
 			ShowPpuStatusCommand = ReactiveCommand.Create(ShowPpuStatus);
 
-			Disassembly = new DisassemblyViewerViewModel();
+			Disassembly = new DisassemblyViewerViewModel(Config);
 			BreakpointList = new BreakpointListViewModel();
 			
 			DockFactory = new DebuggerDockFactory(this);
+
+			if(Design.IsDesignMode) {
+				return;
+			}
 
 			RomInfo romInfo = EmuApi.GetRomInfo();
 

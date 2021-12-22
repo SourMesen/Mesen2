@@ -1,0 +1,139 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="610"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:DebuggerConfig"
+	x:Class="Mesen.Debugger.Views.DebuggerOptionsView"
+>
+	<Design.DataContext>
+		<cfg:DebuggerConfig />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="WrapPanel > CheckBox">
+			<Setter Property="Margin" Value="0 0 7 0" />
+		</Style>
+	</UserControl.Styles>
+
+	<StackPanel>
+		<c:OptionSection Header="{l:Translate lblDisassemblyOptions}" Margin="0">
+			<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
+				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblVerifiedData}" />
+				<c:EnumComboBox
+					Grid.Column="1"
+					EnumType="{x:Type cfg:CodeDisplayMode}"
+					SelectedItem="{CompiledBinding VerifiedDataDisplay}"
+				/>
+				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblUnidentifiedBlock}" />
+				<c:EnumComboBox
+					Grid.Row="1" Grid.Column="1"
+					EnumType="{x:Type cfg:CodeDisplayMode}"
+					SelectedItem="{CompiledBinding UnidentifiedBlockDisplay}"
+				/>
+			</Grid>
+			<CheckBox
+				IsChecked="{CompiledBinding ShowByteCode}"
+				Content="{l:Translate chkShowByteCode}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding UseLowerCaseDisassembly}"
+				Content="{l:Translate chkUseLowerCaseDisassembly}"
+			/>
+		</c:OptionSection>
+
+		<c:OptionSection Header="{l:Translate lblBreakOptions}">
+			<WrapPanel IsVisible="False">
+				<CheckBox
+					IsChecked="{CompiledBinding Snes.BreakOnBrk}"
+					Content="{l:Translate chkBreakOnBrk}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Snes.BreakOnCop}"
+					Content="{l:Translate chkBreakOnCop}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Snes.BreakOnWdm}"
+					Content="{l:Translate chkBreakOnWdm}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Snes.BreakOnStp}"
+					Content="{l:Translate chkBreakOnStp}"
+				/>
+			</WrapPanel>
+			<StackPanel>
+				<CheckBox
+					IsChecked="{CompiledBinding Nes.BreakOnBrk}"
+					Content="{l:Translate chkBreakOnBrk}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Nes.BreakOnUnofficialOpCode}"
+					Content="{l:Translate chkBreakOnUnofficialOpCode}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Nes.BreakOnCpuCrash}"
+					Content="{l:Translate chkBreakOnCpuCrash}"
+				/>
+				<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
+				<CheckBox
+					IsChecked="{CompiledBinding Nes.BreakOnBusConflict}"
+					Content="{l:Translate chkBreakOnBusConflict}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Nes.BreakOnDecayedOamRead}"
+					Content="{l:Translate chkBreakOnDecayedOamRead}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Nes.BreakOnPpu2006ScrollGlitch}"
+					Content="{l:Translate chkBreakOnPpu2006ScrollGlitch}"
+				/>
+			</StackPanel>
+			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
+			<CheckBox
+				IsChecked="{CompiledBinding BreakOnUninitRead}"
+				Content="{l:Translate chkBreakOnUninitRead}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding BreakOnPowerCycleReset}"
+				Content="{l:Translate chkBreakOnPowerCycleReset}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding BreakOnOpen}"
+				Content="{l:Translate chkBreakOnOpen}"
+			/>
+		</c:OptionSection>
+
+		<c:OptionSection Header="{l:Translate lblFontSettings}">
+			<dv:FontOptionsView  DataContext="{CompiledBinding Font}" />
+			<Button Content="{l:Translate btnConfigureColors}" Margin="0 4" />
+		</c:OptionSection>
+
+		<c:OptionSection Header="{l:Translate lblMiscSettings}">
+			<CheckBox
+				IsChecked="{CompiledBinding AutoResetCdl}"
+				Content="{l:Translate chkAutoResetCdl}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding BringToFrontOnPause}"
+				Content="{l:Translate chkBringToFrontOnPause}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding BringToFrontOnBreak}"
+				Content="{l:Translate chkBringToFrontOnBreak}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding ShowMemoryMappings}"
+				Content="{l:Translate chkShowMemoryMappings}"
+			/>
+			<Button Content="{l:Translate btnConfigureKeys}" Margin="0 4" />
+		</c:OptionSection>
+	</StackPanel>
+</UserControl>

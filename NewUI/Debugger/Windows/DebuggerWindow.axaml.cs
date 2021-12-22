@@ -11,6 +11,8 @@ using Avalonia.Interactivity;
 using System.ComponentModel;
 using Mesen.Debugger.Labels;
 using Avalonia.Threading;
+using Mesen.Utilities;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
@@ -37,6 +39,23 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is DebuggerWindowViewModel model) {
 				_model = model;
 				_model.Disassembly.StyleProvider = new BaseStyleProvider();
+				_model.Config.LoadWindowSettings(this);
+				if(Design.IsDesignMode) {
+					return;
+				}
+
+				AllPropertiesObserver observer = new(() => {
+					_model.Config.ApplyConfig();
+
+					Dispatcher.UIThread.Post(() => {
+						UpdateDebugger();
+					});
+				});
+
+				_model.Config.Changed.Subscribe(observer);
+				_model.Config.Snes.Changed.Subscribe(observer);
+				_model.Config.Nes.Changed.Subscribe(observer);
+				_model.Config.Gameboy.Changed.Subscribe(observer);
 			} else {
 				throw new Exception("Invalid model");
 			}
@@ -58,6 +77,8 @@ namespace Mesen.Debugger.Windows
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			_listener?.Dispose();
+			_model.Config.SaveWindowSettings(this);
+			ConfigManager.SaveConfig();
 			base.OnClosing(e);
 		}
 
@@ -85,6 +106,11 @@ namespace Mesen.Debugger.Windows
 				p.ActiveAddress = null;
 				_model.Disassembly.DataProvider = new CodeDataProvider(_model.CpuType);
 			}
+		}
+
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
+		{
+			_model.Config.ShowOptionPanel = !_model.Config.ShowOptionPanel;
 		}
 
 		private void OnContinueClick(object sender, RoutedEventArgs e)

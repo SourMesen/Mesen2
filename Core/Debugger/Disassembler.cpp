@@ -110,10 +110,10 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint8_t ban
 	vector<DisassemblyResult> results;
 	results.reserve(20000);
 
-	bool disUnident = true;  _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
-	bool disData = false; _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
-	bool showUnident = true;  _settings->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
-	bool showData = true; _settings->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
+	bool disUnident = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
+	bool disData = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
+	bool showUnident = _settings->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
+	bool showData = _settings->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
 
 	bool inUnknownBlock = false;
 	bool inVerifiedBlock = false;

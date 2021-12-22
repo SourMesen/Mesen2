@@ -193,6 +193,12 @@
     <Compile Update="Debugger\Controls\SpritePreviewPanel.axaml.cs">
       <DependentUpon>SpritePreviewPanel.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\DebuggerOptionsView.axaml.cs">
+      <DependentUpon>DebuggerOptionsView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\FontOptionsView.axaml.cs">
+      <DependentUpon>FontOptionsView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\MemoryToolsDisplayOptionsView.axaml.cs">
       <DependentUpon>MemoryToolsDisplayOptionsView.axaml</DependentUpon>
     </Compile>

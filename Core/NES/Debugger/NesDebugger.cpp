@@ -120,7 +120,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled)) {
-			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
 				//Break on BRK
 				breakSource = BreakSource::BreakOnBrk;
 				_step->StepCount = 0;

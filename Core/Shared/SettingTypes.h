@@ -711,6 +711,10 @@ enum class DebuggerFlags : uint64_t
 	SpcDebuggerEnabled = 0x40000000,
 	CpuDebuggerEnabled = 0x80000000,
 
-	NesBreakOnDecayedOamRead = 0x100000000,
-	NesBreakOnPpu2006ScrollGlitch = 0x200000000,
+	NesBreakOnBrk = 0x100000000,
+	NesBreakOnUnofficialOpCode = 0x200000000,
+	NesBreakOnCpuCrash = 0x400000000,
+	NesBreakOnBusConflict = 0x800000000,
+	NesBreakOnDecayedOamRead = 0x1000000000,
+	NesBreakOnPpu2006ScrollGlitch = 0x2000000000
 };

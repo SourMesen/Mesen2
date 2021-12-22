@@ -21,9 +21,7 @@ namespace Mesen.Config
 
 		[Reactive] public int BytesPerRow { get; set; } = 16;
 
-		[Reactive] public string FontFamily { get; set; } = DebuggerConfig.MonospaceFontFamily;
-		[Reactive] public float FontSize { get; set; } = DebuggerConfig.DefaultFontSize;
-		[Reactive] public int TextZoom { get; set; } = 100;
+		[Reactive] public FontConfig Font { get; set; } = new FontConfig();
 		[Reactive] public bool HighDensityTextMode { get; set; } = false;
 
 		[Reactive] public bool ShowCharacters { get; set; } = true;

@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
 using System;
@@ -14,6 +15,10 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<ICodeDataProvider> DataProviderProperty = AvaloniaProperty.Register<DisassemblyViewer, ICodeDataProvider>(nameof(DataProvider));
 		public static readonly StyledProperty<ILineStyleProvider> StyleProviderProperty = AvaloniaProperty.Register<DisassemblyViewer, ILineStyleProvider>(nameof(StyleProviderProperty));
 		public static readonly StyledProperty<int> ScrollPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(ScrollPosition), 0, false, Avalonia.Data.BindingMode.TwoWay);
+
+		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
+		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
+		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
 
 		private static readonly PolylineGeometry ArrowShape = new PolylineGeometry(new List<Point> {
 			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
@@ -37,6 +42,24 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ScrollPositionProperty, value); }
 		}
 
+		public string FontFamily
+		{
+			get { return GetValue(FontFamilyProperty); }
+			set { SetValue(FontFamilyProperty, value); }
+		}
+
+		public float FontSize
+		{
+			get { return GetValue(FontSizeProperty); }
+			set { SetValue(FontSizeProperty, value); }
+		}
+
+		public bool ShowByteCode
+		{
+			get { return GetValue(ShowByteCodeProperty); }
+			set { SetValue(ShowByteCodeProperty, value); }
+		}
+
 		private Typeface Font { get; set; }
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
@@ -47,7 +70,8 @@ namespace Mesen.Debugger.Controls
 
 		static DisassemblyViewer()
 		{
-			//AffectsRender<DisassemblyViewer>(DataProviderProperty, ScrollPositionProperty, StyleProviderProperty);
+			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty);
+
 			DataProviderProperty.Changed.AddClassHandler<DisassemblyViewer>((x, e) => {
 				x.Refresh();
 				x.InvalidateVisual();
@@ -112,8 +136,8 @@ namespace Mesen.Debugger.Controls
 
 		private void InitFontAndLetterSize()
 		{
-			this.Font = new Typeface(new FontFamily("Consolas"));
-			var text = new FormattedText("A", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			this.Font = new Typeface(new FontFamily(this.FontFamily));
+			var text = new FormattedText("A", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			this.LetterSize = text.Bounds.Size;
 		}
 
@@ -145,11 +169,13 @@ namespace Mesen.Debugger.Controls
 			if(DataProvider == null) {
 				return;
 			}
+			
+			InitFontAndLetterSize();
 
 			CodeLineData[] lines = _lines;
 			double y = 0;
-			var text = new FormattedText("", this.Font, 14, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			var smallText = new FormattedText("", this.Font, 12, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			var text = new FormattedText("", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			var smallText = new FormattedText("", this.Font, this.FontSize - 2, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 
 			context.FillRectangle(ColorHelper.GetBrush(Colors.White), Bounds);
 
@@ -165,9 +191,12 @@ namespace Mesen.Debugger.Controls
 			context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(235, 235, 235)), new Rect(0, 0, addressMargin, Bounds.Height));
 			context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin, 0), new Point(addressMargin, Bounds.Height));
 
-			//Draw byte code
-			context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(251, 251, 251)), new Rect(addressMargin, 0, byteCodeMargin, Bounds.Height));
-			context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin + byteCodeMargin, 0), new Point(addressMargin + byteCodeMargin, Bounds.Height));
+			bool showByteCode = ShowByteCode;
+			if(showByteCode) {
+				//Draw byte code
+				context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(251, 251, 251)), new Rect(addressMargin, 0, byteCodeMargin, Bounds.Height));
+				context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin + byteCodeMargin, 0), new Point(addressMargin + byteCodeMargin, Bounds.Height));
+			}
 
 			//Draw code
 			foreach(CodeLineData line in lines) {
@@ -184,10 +213,12 @@ namespace Mesen.Debugger.Controls
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(symbolMargin, y), text);
 				x += addressMargin;
 
-				//Draw byte code
-				text.Text = line.ByteCode;
-				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(x + LetterSize.Width / 2, y), text);
-				x += byteCodeMargin;
+				if(showByteCode) {
+					//Draw byte code
+					text.Text = line.ByteCode;
+					context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(x + LetterSize.Width / 2, y), text);
+					x += byteCodeMargin;
+				}
 
 				if(lineStyle.LineBgColor.HasValue) {
 					SolidColorBrush brush = new(lineStyle.LineBgColor.Value.ToUint32());

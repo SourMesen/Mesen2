@@ -12,15 +12,15 @@
 >
 	<ItemsControl.Template>
 		<ControlTemplate>
-			<StackPanel DataContext="{Binding ElementName=root}">
+			<StackPanel>
 				<TextBlock
-					Text="{Binding Header}"
+					Text="{Binding Header, ElementName=root}"
 					Foreground="Gray"
 					FontSize="13"
-					Margin="0 0 0 5"					
+					Margin="0 0 0 5"
 				/>
 				<StackPanel Margin="10 0 0 0">
-					<ItemsPresenter Items="{Binding Items}" />
+					<ItemsPresenter Items="{Binding Items, ElementName=root}" />
 				</StackPanel>
 			</StackPanel>
 		</ControlTemplate>

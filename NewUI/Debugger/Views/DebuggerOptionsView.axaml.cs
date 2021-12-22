@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace Mesen.Debugger.Views
 {
-	public class MemoryToolsDisplayOptionsView : UserControl
+	public class DebuggerOptionsView : UserControl
 	{
-		public MemoryToolsDisplayOptionsView()
+		public DebuggerOptionsView()
 		{
 			InitializeComponent();
 		}

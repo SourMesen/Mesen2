@@ -1,4 +1,5 @@
-﻿using Dock.Model.ReactiveUI.Controls;
+﻿using Avalonia.Controls;
+using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.ViewModels;
@@ -23,6 +24,11 @@ namespace Mesen.Debugger.ViewModels
 			_cpuType = cpuType;
 			Id = "CallStack";
 			Title = "Call Stack";
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			UpdateCallStack();
 		}
 

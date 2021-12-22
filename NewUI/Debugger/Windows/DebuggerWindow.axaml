@@ -31,6 +31,14 @@
 		<Style Selector="Button">
 			<Setter Property="MinWidth" Value="0" />
 		</Style>
+		<Style Selector=".IconBar Button">
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector=".IconBar Button Image">
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+		</Style>
 	</Window.Styles>
 	
 	<DockPanel>
@@ -41,37 +49,56 @@
 				<MenuItem Command="{CompiledBinding ShowPpuStatusCommand}" Header="Show PPU status" />
 			</MenuItem>
 		</Menu>
-		<StackPanel Classes="Toolbar" Orientation="Horizontal" DockPanel.Dock="Top">
-			<Button ToolTip.Tip="Continue" Click="OnContinueClick">
-				<Image Source="/Assets/MediaPlay.png" />
+		<DockPanel DockPanel.Dock="Top" Classes="IconBar">
+			<Button
+				DockPanel.Dock="Right"
+				Width="21"
+				Height="20"
+				ToolTip.Tip="Toggle settings panel"
+				Click="OnSettingsClick"
+			>
+				<Image Source="/Assets/Settings.png" />
 			</Button>
-			<Button ToolTip.Tip="Break" Click="OnStepIntoClick">
-				<Image Source="/Assets/MediaPause.png" />
-			</Button>
-			<Line />
-			<Button ToolTip.Tip="Step Into" Click="OnStepIntoClick">
-				<Image Source="/Assets/StepInto.png" />
-			</Button>
-			<Button ToolTip.Tip="Step Over" Click="OnStepOverClick">
-				<Image Source="/Assets/StepOver.png"/>
-			</Button>
-			<Button ToolTip.Tip="Step Out" Click="OnStepOutClick">
-				<Image Source="/Assets/StepOut.png"/>
-			</Button>
-			<Button ToolTip.Tip="Step Back" Click="OnStepBackClick">
-				<Image Source="/Assets/StepBack.png"/>
-			</Button>
-			<Line />
-			<Button ToolTip.Tip="Run 1 PPU cycle" Click="OnRunOnePpuCycleClick">
-				<Image Source="/Assets/RunPpuCycle.png"/>
-			</Button>
-			<Button ToolTip.Tip="Run 1 PPU scanline" Click="OnRunOnePpuScanlineClick">
-				<Image Source="/Assets/RunPpuScanline.png"/>
-			</Button>
-			<Button ToolTip.Tip="Run 1 PPU frame" Click="OnRunOnePpuFrameClick">
-				<Image Source="/Assets/RunPpuFrame.png"/>
-			</Button>
-		</StackPanel>
-		<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
+			
+			<StackPanel Classes="Toolbar" Orientation="Horizontal">
+				<Button ToolTip.Tip="Continue" Click="OnContinueClick">
+					<Image Source="/Assets/MediaPlay.png" />
+				</Button>
+				<Button ToolTip.Tip="Break" Click="OnStepIntoClick">
+					<Image Source="/Assets/MediaPause.png" />
+				</Button>
+				<Line />
+				<Button ToolTip.Tip="Step Into" Click="OnStepIntoClick">
+					<Image Source="/Assets/StepInto.png" />
+				</Button>
+				<Button ToolTip.Tip="Step Over" Click="OnStepOverClick">
+					<Image Source="/Assets/StepOver.png"/>
+				</Button>
+				<Button ToolTip.Tip="Step Out" Click="OnStepOutClick">
+					<Image Source="/Assets/StepOut.png"/>
+				</Button>
+				<Button ToolTip.Tip="Step Back" Click="OnStepBackClick">
+					<Image Source="/Assets/StepBack.png"/>
+				</Button>
+				<Line />
+				<Button ToolTip.Tip="Run 1 PPU cycle" Click="OnRunOnePpuCycleClick">
+					<Image Source="/Assets/RunPpuCycle.png"/>
+				</Button>
+				<Button ToolTip.Tip="Run 1 PPU scanline" Click="OnRunOnePpuScanlineClick">
+					<Image Source="/Assets/RunPpuScanline.png"/>
+				</Button>
+				<Button ToolTip.Tip="Run 1 PPU frame" Click="OnRunOnePpuFrameClick">
+					<Image Source="/Assets/RunPpuFrame.png"/>
+				</Button>
+			</StackPanel>
+		</DockPanel>
+		<DockPanel>
+			<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
+				<ScrollViewer>
+					<v:DebuggerOptionsView DataContext="{CompiledBinding Config}" />
+				</ScrollViewer>
+			</Panel>
+			<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
+		</DockPanel>
 	</DockPanel>
 </Window>

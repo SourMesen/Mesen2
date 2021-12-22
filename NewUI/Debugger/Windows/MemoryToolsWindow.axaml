@@ -29,7 +29,6 @@
 		<Style Selector="Button">
 			<Setter Property="MinWidth" Value="0" />
 			<Setter Property="Padding" Value="1" />
-			
 		</Style>
 		<Style Selector="Button Image">
 			<Setter Property="Margin" Value="1 1 0 0" />
@@ -96,8 +95,8 @@
 					SelectionStart="{CompiledBinding SelectionStart}"
 					SelectionLength="{CompiledBinding SelectionLength}"
 					TopRow="{CompiledBinding ScrollPosition}"
-					FontFamily="{CompiledBinding Config.FontFamily}"
-					FontSize="{CompiledBinding Config.FontSize}"
+					FontFamily="{CompiledBinding Config.Font.FontFamily}"
+					FontSize="{CompiledBinding Config.Font.FontSize}"
 					ShowStringView="{CompiledBinding Config.ShowCharacters}"
 				/>
 			</DockPanel>

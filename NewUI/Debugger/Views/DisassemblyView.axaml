@@ -31,6 +31,9 @@
 			DataProvider="{CompiledBinding DataProvider}"
 			StyleProvider="{CompiledBinding StyleProvider}"
 			ScrollPosition="{CompiledBinding ScrollPosition}"
+			FontFamily="{CompiledBinding Config.Font.FontFamily}"
+			FontSize="{CompiledBinding Config.Font.FontSize}"
+			ShowByteCode="{CompiledBinding Config.ShowByteCode}"
 		/>
 	</DockPanel>
 </UserControl>
