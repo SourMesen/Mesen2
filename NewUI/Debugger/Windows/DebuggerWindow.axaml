@@ -43,11 +43,8 @@
 	
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="View">
-				<MenuItem Command="{CompiledBinding ShowBreakpointsCommand}" Header="Show breakpoints" />
-				<MenuItem Command="{CompiledBinding ShowCpuStatusCommand}" Header="Show CPU status" />
-				<MenuItem Command="{CompiledBinding ShowPpuStatusCommand}" Header="Show PPU status" />
-			</MenuItem>
+			<MenuItem Header="Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
+			<MenuItem Header="Options" Classes="ActionMenu" Items="{CompiledBinding OptionMenuItems}" />
 		</Menu>
 		<DockPanel DockPanel.Dock="Top" Classes="IconBar">
 			<Button
@@ -93,7 +90,7 @@
 			</StackPanel>
 		</DockPanel>
 		<DockPanel>
-			<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
+			<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}" Margin="3 0">
 				<ScrollViewer>
 					<v:DebuggerOptionsView DataContext="{CompiledBinding Options}" />
 				</ScrollViewer>

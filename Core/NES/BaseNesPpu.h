@@ -138,6 +138,7 @@ public:
 	uint32_t GetFrameCount() { return _frameCount; }
 	uint32_t GetCurrentCycle() { return _cycle; }
 	int32_t GetCurrentScanline() { return _scanline; }
+	int32_t GetScanlineCount() { return _vblankEnd + 2; }
 	uint32_t GetFrameCycle() { return ((_scanline + 1) * 341) + _cycle; }
 
 	virtual uint16_t* GetScreenBuffer(bool previousBuffer) = 0;

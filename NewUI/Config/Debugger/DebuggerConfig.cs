@@ -13,7 +13,7 @@ namespace Mesen.Config
 		public static string MonospaceFontFamily = "Consolas";
 		public static int DefaultFontSize = 14;
 		
-		[Reactive] public bool ShowOptionPanel { get; set; } = true;
+		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
 		[Reactive] public bool ShowByteCode { get; set; } = false;
 		[Reactive] public bool UseLowerCaseDisassembly { get; set; } = false;

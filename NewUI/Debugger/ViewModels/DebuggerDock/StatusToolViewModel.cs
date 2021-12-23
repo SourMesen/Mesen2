@@ -11,6 +11,7 @@ namespace Mesen.Debugger.ViewModels.DebuggerDock
 		{
 			Id = "CpuStatusTool";
 			Title = "CPU Status";
+			CanPin = false;
 		}
 	}
 }

@@ -1549,6 +1549,31 @@ x == [$150] || y == [10]
 			
 			<Value ID="Import">Import...</Value>
 			<Value ID="Export">Export...</Value>
+
+			<Value ID="ShowBreakpointList">Show Breakpoint List</Value>
+			<Value ID="ShowLabelList">Show Label List</Value>
+			<Value ID="ShowWatchList">Show Watch List</Value>
+			<Value ID="ShowCallStack">Show Call Stack</Value>
+			<Value ID="ShowConsoleStatus">Show Console Status</Value>
+			
+			<Value ID="ShowSettingsPanel">Show Settings Panel</Value>
+			<Value ID="ShowMemoryMappings">Show Memory Mappings</Value>
+
+			<Value ID="Preferences">Preferences</Value>
+
+			<Value ID="Continue">Continue</Value>
+			<Value ID="Break">Break</Value>
+			<Value ID="Reset">Reset</Value>
+			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="StepInto">Step Into</Value>
+			<Value ID="StepOut">Step Out</Value>
+			<Value ID="StepOver">Step Over</Value>
+			<Value ID="StepBack">Step Back</Value>
+			<Value ID="RunPpuCycle">Run one PPU cycle</Value>
+			<Value ID="RunPpuScanline">Run one scanline</Value>
+			<Value ID="RunPpuFrame">Run one frame</Value>
+			<Value ID="BreakIn">Break in...</Value>
+			<Value ID="BreakOn">Break on...</Value>
 		</Enum>
 	</Enums>
 </Resources>

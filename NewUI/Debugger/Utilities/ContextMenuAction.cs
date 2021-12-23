@@ -169,6 +169,54 @@ namespace Mesen.Debugger.Utilities
 		Import,
 
 		[IconFile("Export")]
-		Export
+		Export,
+
+		ShowConsoleStatus,
+		ShowBreakpointList,
+		ShowWatchList,
+		ShowLabelList,
+		ShowCallStack,
+
+		ShowSettingsPanel,
+		ShowMemoryMappings,
+
+		[IconFile("Settings")]
+		Preferences,
+
+		[IconFile("MediaPlay")]
+		Continue,
+
+		[IconFile("MediaPause")]
+		Break,
+
+		[IconFile("StepInto")]
+		StepInto,
+		
+		[IconFile("StepOver")]
+		StepOver,
+		
+		[IconFile("StepOut")]
+		StepOut,
+
+		[IconFile("StepBack")]
+		StepBack,
+
+		[IconFile("RunPpuCycle")]
+		RunPpuCycle,
+
+		[IconFile("RunPpuScanline")]
+		RunPpuScanline,
+
+		[IconFile("RunPpuFrame")]
+		RunPpuFrame,
+
+		BreakIn,
+		BreakOn,
+
+		[IconFile("Refresh")]
+		Reset,
+
+		[IconFile("PowerCycle")]
+		PowerCycle
 	}
 }

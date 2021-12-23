@@ -5,12 +5,14 @@ using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
@@ -30,9 +32,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
 
-		public ReactiveCommand<Unit, Unit> ShowBreakpointsCommand { get; }
-		public ReactiveCommand<Unit, Unit> ShowCpuStatusCommand { get; }
-		public ReactiveCommand<Unit, Unit> ShowPpuStatusCommand { get; }
+		[Reactive] public List<object> DebugMenuItems { get; private set; } = new();
+		[Reactive] public List<object> OptionMenuItems { get; private set; } = new();
 
 		public CpuType CpuType { get; private set; }
 
@@ -44,10 +45,6 @@ namespace Mesen.Debugger.ViewModels
 			Config = ConfigManager.Config.Debug.Debugger;
 
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
-
-			ShowBreakpointsCommand = ReactiveCommand.Create(ShowBreakpoints);
-			ShowCpuStatusCommand = ReactiveCommand.Create(ShowCpuStatus);
-			ShowPpuStatusCommand = ReactiveCommand.Create(ShowPpuStatus);
 
 			Disassembly = new DisassemblyViewerViewModel(Config);
 			BreakpointList = new BreakpointListViewModel();
@@ -163,32 +160,165 @@ namespace Mesen.Debugger.ViewModels
 			return null;
 		}
 
-		private void ShowTool(Tool tool)
+		private bool IsToolVisible(Tool tool)
 		{
-			if((tool.Owner as IDock)?.VisibleDockables?.Contains(tool) == true) {
-				return;
+			return (tool.Owner as IDock)?.VisibleDockables?.Contains(tool) == true;
+		}
+
+		private void ToggleTool(Tool tool)
+		{
+			if(IsToolVisible(tool)) {
+				DockFactory.CloseDockable(tool);
+			} else {
+				if(DockLayout.VisibleDockables?.Count > 0 && DockLayout.VisibleDockables[0] is IDock dock) {
+					DockFactory.SplitToDock(dock, new ToolDock {
+						Proportion = 0.33,
+						VisibleDockables = DockFactory.CreateList<IDockable>(tool)
+					}, DockOperation.Bottom);
+				}
 			}
-
-			ToolDock? dock = FindToolDock(DockLayout);
-			if(dock != null) {
-				tool.Owner = dock;
-				dock.VisibleDockables?.Add(tool);
-			}
 		}
 
-		public void ShowBreakpoints()
+		public void InitializeMenu(Window wnd)
 		{
-			ShowTool(BreakpointList);
-		}
+			Func<bool> isPaused = () => EmuApi.IsPaused();
+			Func<bool> isRunning = () => !EmuApi.IsPaused();
 
-		public void ShowCpuStatus()
-		{
-			ShowTool(DockFactory.CpuStatusTool);
-		}
+			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 
-		public void ShowPpuStatus()
-		{
-			ShowTool(DockFactory.PpuStatusTool);
+			DebugMenuItems = new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Continue,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Continue,
+					IsEnabled = isPaused,
+					OnClick = () => EmuApi.Resume()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Break,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Break,
+					IsEnabled = isRunning,
+					OnClick = () => EmuApi.Pause()
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Reset,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Reset,
+					OnClick = () => EmuApi.Reset()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.PowerCycle,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.PowerCycle,
+					OnClick = () => EmuApi.PowerCycle()
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.StepInto,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepInto,
+					OnClick = () => DebugApi.Step(CpuType, 1, StepType.Step)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepOver,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepOver,
+					OnClick = () => DebugApi.Step(CpuType, 1, StepType.StepOver)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepOut,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepOut,
+					OnClick = () => DebugApi.Step(CpuType, 1, StepType.StepOut)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepBack,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepBack,
+					IsEnabled = () => false,
+					OnClick = () => { } //TODO
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.RunPpuCycle,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuCycle,
+					OnClick = () => DebugApi.Step(CpuType, 1, StepType.PpuStep)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RunPpuScanline,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuScanline,
+					OnClick = () => DebugApi.Step(CpuType, 1, StepType.PpuScanline)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RunPpuFrame,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuFrame,
+					OnClick = () => DebugApi.Step(CpuType, 1, StepType.PpuFrame)
+				},
+
+				new Separator(),
+				
+				new ContextMenuAction() {
+					ActionType = ActionType.BreakIn,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakIn,
+					IsEnabled = () => false,
+					OnClick = () => { } //TODO
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.BreakOn,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakOn,
+					IsEnabled = () => false,
+					OnClick = () => { } //TODO
+				},
+			};
+
+			OptionMenuItems = new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowSettingsPanel,
+					IsSelected = () => cfg.ShowSettingsPanel,
+					OnClick = () => cfg.ShowSettingsPanel = !cfg.ShowSettingsPanel
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowMemoryMappings,
+					IsSelected = () => cfg.ShowMemoryMappings,
+					OnClick = () => cfg.ShowMemoryMappings = !cfg.ShowMemoryMappings
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowWatchList,
+					IsSelected = () => IsToolVisible(WatchList),
+					OnClick = () => ToggleTool(WatchList)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowBreakpointList,
+					IsSelected = () => IsToolVisible(BreakpointList),
+					OnClick = () => ToggleTool(BreakpointList)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowCallStack,
+					IsSelected = () => IsToolVisible(CallStack),
+					OnClick = () => ToggleTool(CallStack)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowLabelList,
+					IsSelected = () => IsToolVisible(LabelList),
+					OnClick = () => ToggleTool(LabelList)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowConsoleStatus,
+					IsSelected = () => IsToolVisible(DockFactory.CpuStatusTool),
+					OnClick = () => ToggleTool(DockFactory.CpuStatusTool)
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Preferences,
+					OnClick = () => {
+
+					}
+				},
+			};
+
+			DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
 		}
 	}
 }

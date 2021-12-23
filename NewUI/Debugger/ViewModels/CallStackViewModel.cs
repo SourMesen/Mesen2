@@ -24,6 +24,7 @@ namespace Mesen.Debugger.ViewModels
 			_cpuType = cpuType;
 			Id = "CallStack";
 			Title = "Call Stack";
+			CanPin = false;
 
 			if(Design.IsDesignMode) {
 				return;

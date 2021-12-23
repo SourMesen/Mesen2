@@ -268,6 +268,8 @@ enum class StepType
 	StepOut,
 	StepOver,
 	PpuStep,
+	PpuScanline,
+	PpuFrame,
 	SpecificScanline,
 };
 

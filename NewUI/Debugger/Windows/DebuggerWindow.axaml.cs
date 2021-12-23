@@ -39,6 +39,7 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is DebuggerWindowViewModel model) {
 				_model = model;
 				_model.Disassembly.StyleProvider = new BaseStyleProvider();
+				_model.InitializeMenu(this);
 				_model.Config.LoadWindowSettings(this);
 				if(Design.IsDesignMode) {
 					return;
@@ -112,7 +113,7 @@ namespace Mesen.Debugger.Windows
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
-			_model.Config.ShowOptionPanel = !_model.Config.ShowOptionPanel;
+			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
 		private void OnContinueClick(object sender, RoutedEventArgs e)

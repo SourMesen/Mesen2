@@ -134,7 +134,7 @@
 		</Style.Resources>
 	</Style>
 
-	<Style Selector="ContextMenu.ActionMenu MenuItem">
+	<Style Selector=".ActionMenu MenuItem">
 		<Setter Property="Header" Value="{Binding Name}" />
 		<Setter Property="Icon" Value="{Binding Icon}" />
 		<Setter Property="IsEnabled" Value="{Binding Enabled}" />

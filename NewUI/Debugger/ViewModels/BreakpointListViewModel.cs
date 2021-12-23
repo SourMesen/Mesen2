@@ -16,6 +16,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Id = "BreakpointList";
 			Title = "Breakpoints";
+			CanPin = false;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 		}
 

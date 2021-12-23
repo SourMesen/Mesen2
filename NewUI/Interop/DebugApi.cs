@@ -952,6 +952,8 @@ namespace Mesen.Interop
 		StepOut,
 		StepOver,
 		PpuStep,
+		PpuScanline,
+		PpuFrame,
 		SpecificScanline,
 	}
 

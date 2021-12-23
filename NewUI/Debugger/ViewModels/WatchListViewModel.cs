@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Id = "WatchList";
 			Title = "Watch";
+			CanPin = false;
 			Manager = WatchManager.GetWatchManager(cpuType);
 			Manager.WatchChanged += WatchListViewModel_WatchChanged;
 			UpdateWatch();

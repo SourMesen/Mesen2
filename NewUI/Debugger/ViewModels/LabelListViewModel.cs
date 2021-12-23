@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 			CpuType = cpuType;
 			Id = "Labels";
 			Title = "Labels";
+			CanPin = false;
 			UpdateLabelList();
 		}
 
