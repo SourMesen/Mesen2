@@ -854,77 +854,82 @@ namespace Mesen.Interop
 	{
 		public static SnesMemoryType ToMemoryType(this CpuType cpuType)
 		{
-			switch(cpuType) {
-				case CpuType.Cpu: return SnesMemoryType.CpuMemory;
-				case CpuType.Spc: return SnesMemoryType.SpcMemory;
-				case CpuType.NecDsp: return SnesMemoryType.NecDspMemory;
-				case CpuType.Sa1: return SnesMemoryType.Sa1Memory;
-				case CpuType.Gsu: return SnesMemoryType.GsuMemory;
-				case CpuType.Cx4: return SnesMemoryType.Cx4Memory;
-				case CpuType.Gameboy: return SnesMemoryType.GameboyMemory;
-				case CpuType.Nes: return SnesMemoryType.NesMemory;
-
-				default:
-					throw new Exception("Invalid CPU type");
-			}
+			return cpuType switch {
+				CpuType.Cpu => SnesMemoryType.CpuMemory,
+				CpuType.Spc => SnesMemoryType.SpcMemory,
+				CpuType.NecDsp => SnesMemoryType.NecDspMemory,
+				CpuType.Sa1 => SnesMemoryType.Sa1Memory,
+				CpuType.Gsu => SnesMemoryType.GsuMemory,
+				CpuType.Cx4 => SnesMemoryType.Cx4Memory,
+				CpuType.Gameboy => SnesMemoryType.GameboyMemory,
+				CpuType.Nes => SnesMemoryType.NesMemory,
+				_ => throw new Exception("Invalid CPU type"),
+			};
 		}
 
 		public static SnesMemoryType GetVramMemoryType(this CpuType cpuType)
 		{
-			switch(cpuType) {
-				case CpuType.Cpu: return SnesMemoryType.VideoRam;
-				case CpuType.Gameboy: return SnesMemoryType.GbVideoRam;
-				case CpuType.Nes: return SnesMemoryType.NesPpuMemory;
-
-				default:
-					throw new Exception("Invalid CPU type");
-			}
+			return cpuType switch {
+				CpuType.Cpu => SnesMemoryType.VideoRam,
+				CpuType.Gameboy => SnesMemoryType.GbVideoRam,
+				CpuType.Nes => SnesMemoryType.NesPpuMemory,
+				_ => throw new Exception("Invalid CPU type"),
+			};
 		}
 
 		public static SnesMemoryType GetSpriteRamMemoryType(this CpuType cpuType)
 		{
-			switch(cpuType) {
-				case CpuType.Cpu: return SnesMemoryType.SpriteRam;
-				case CpuType.Gameboy: return SnesMemoryType.GbSpriteRam;
-				case CpuType.Nes: return SnesMemoryType.NesSpriteRam;
-
-				default:
-					throw new Exception("Invalid CPU type");
-			}
+			return cpuType switch {
+				CpuType.Cpu => SnesMemoryType.SpriteRam,
+				CpuType.Gameboy => SnesMemoryType.GbSpriteRam,
+				CpuType.Nes => SnesMemoryType.NesSpriteRam,
+				_ => throw new Exception("Invalid CPU type"),
+			};
 		}
 
 		public static int GetAddressSize(this CpuType cpuType)
 		{
-			switch(cpuType) {
-				case CpuType.Cpu: return 6;
-				case CpuType.Spc: return 4;
-				case CpuType.NecDsp: return 4;
-				case CpuType.Sa1: return 6;
-				case CpuType.Gsu: return 6;
-				case CpuType.Cx4: return 6;
-				case CpuType.Gameboy: return 4;
-				case CpuType.Nes: return 4;
-
-				default:
-					throw new Exception("Invalid CPU type");
-			}
+			return cpuType switch {
+				CpuType.Cpu => 6,
+				CpuType.Spc => 4,
+				CpuType.NecDsp => 4,
+				CpuType.Sa1 => 6,
+				CpuType.Gsu => 6,
+				CpuType.Cx4 => 6,
+				CpuType.Gameboy => 4,
+				CpuType.Nes => 4,
+				_ => throw new Exception("Invalid CPU type"),
+			};
 		}
 
 		public static int GetByteCodeSize(this CpuType cpuType)
 		{
-			switch(cpuType) {
-				case CpuType.Cpu: return 4;
-				case CpuType.Spc: return 3;
-				case CpuType.NecDsp: return 3;
-				case CpuType.Sa1: return 4;
-				case CpuType.Gsu: return 3;
-				case CpuType.Cx4: return 4;
-				case CpuType.Gameboy: return 3;
-				case CpuType.Nes: return 3;
+			return cpuType switch {
+				CpuType.Cpu => 4,
+				CpuType.Spc => 3,
+				CpuType.NecDsp => 3,
+				CpuType.Sa1 => 4,
+				CpuType.Gsu => 3,
+				CpuType.Cx4 => 4,
+				CpuType.Gameboy => 3,
+				CpuType.Nes => 3,
+				_ => throw new Exception("Invalid CPU type"),
+			};
+		}
 
-				default:
-					throw new Exception("Invalid CPU type");
-			}
+		public static DebuggerFlags GetDebuggerFlag(this CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Cpu => DebuggerFlags.CpuDebuggerEnabled,
+				CpuType.Spc => DebuggerFlags.SpcDebuggerEnabled,
+				CpuType.NecDsp => DebuggerFlags.NecDspDebuggerEnabled,
+				CpuType.Sa1 => DebuggerFlags.Sa1DebuggerEnabled,
+				CpuType.Gsu => DebuggerFlags.GsuDebuggerEnabled,
+				CpuType.Cx4 => DebuggerFlags.Cx4DebuggerEnabled,
+				CpuType.Gameboy => DebuggerFlags.GbDebuggerEnabled,
+				CpuType.Nes => DebuggerFlags.NesDebuggerEnabled,
+				_ => throw new Exception("Invalid CPU type"),
+			};
 		}
 	}
 

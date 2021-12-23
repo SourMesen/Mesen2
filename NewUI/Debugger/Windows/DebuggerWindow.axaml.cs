@@ -78,6 +78,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			_listener?.Dispose();
+			_model.Cleanup();
 			_model.Config.SaveWindowSettings(this);
 			ConfigManager.SaveConfig();
 			base.OnClosing(e);

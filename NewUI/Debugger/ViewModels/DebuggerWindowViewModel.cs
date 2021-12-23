@@ -34,7 +34,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public CpuType CpuType { get; private set; }
 
-		public DebuggerWindowViewModel()
+		//For designer
+		public DebuggerWindowViewModel() : this(null) { }
+
+		public DebuggerWindowViewModel(CpuType? cpuType = null)
 		{
 			Config = ConfigManager.Config.Debug.Debugger;
 
@@ -48,43 +51,49 @@ namespace Mesen.Debugger.ViewModels
 			DockFactory = new DebuggerDockFactory(this);
 
 			if(Design.IsDesignMode) {
-				return;
+				CpuType = CpuType.Cpu;
+			} else if(cpuType != null) {
+				CpuType = cpuType.Value;
+			} else {
+				RomInfo romInfo = EmuApi.GetRomInfo();
+				CpuType = romInfo.ConsoleType.GetMainCpuType();
 			}
 
-			RomInfo romInfo = EmuApi.GetRomInfo();
-
-			switch(romInfo.ConsoleType) {
-				case ConsoleType.Snes:
-					CpuType = CpuType.Cpu;
+			switch(CpuType) {
+				case CpuType.Cpu:
 					DockFactory.CpuStatusTool.StatusViewModel = new SnesCpuViewModel();
 					DockFactory.PpuStatusTool.StatusViewModel = new SnesPpuViewModel();
-					ConfigApi.SetDebuggerFlag(DebuggerFlags.CpuDebuggerEnabled, true);
 					break;
 
-				case ConsoleType.Nes:
-					CpuType = CpuType.Nes;
+				case CpuType.Nes:
 					DockFactory.CpuStatusTool.StatusViewModel = new NesCpuViewModel();
 					DockFactory.PpuStatusTool.StatusViewModel = new NesPpuViewModel();
-					ConfigApi.SetDebuggerFlag(DebuggerFlags.NesDebuggerEnabled, true);
 					break;
 
-				case ConsoleType.Gameboy:
-				case ConsoleType.GameboyColor:
-					CpuType = CpuType.Gameboy;
-					ConfigApi.SetDebuggerFlag(DebuggerFlags.GbDebuggerEnabled, true);
+				case CpuType.Gameboy:
 					break;
 			}
 
 			DefaultLabelHelper.SetDefaultLabels();
 			LabelList = new LabelListViewModel(CpuType);
-
 			CallStack = new CallStackViewModel(CpuType);
 			WatchList = new WatchListViewModel(CpuType);
 
-			BreakpointManager.AddCpuType(CpuType);
-
 			DockLayout = DockFactory.CreateLayout();
 			DockFactory.InitLayout(DockLayout);
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			BreakpointManager.AddCpuType(CpuType);
+			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
+		}
+
+		internal void Cleanup()
+		{
+			BreakpointManager.RemoveCpuType(CpuType);
+			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), false);
 		}
 
 		internal void UpdateDisassembly()
@@ -126,23 +135,6 @@ namespace Mesen.Debugger.ViewModels
 					}
 					break;
 			}
-		}
-
-		public void UpdatePpuState()
-		{
-			/*switch(CpuType) {
-				case CpuType.Cpu:
-					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel snesModel) {
-						snesModel.State = DebugApi.GetState<CpuState>(CpuType);
-					}
-					break;
-
-				case CpuType.Nes:
-					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel nesModel) {
-						nesModel.State = DebugApi.GetState<NesCpuState>(CpuType);
-					}
-					break;
-			}*/
 		}
 
 		private ToolDock? FindToolDock(IDock dock)
