@@ -95,7 +95,7 @@
 		<DockPanel>
 			<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
 				<ScrollViewer>
-					<v:DebuggerOptionsView DataContext="{CompiledBinding Config}" />
+					<v:DebuggerOptionsView DataContext="{CompiledBinding Options}" />
 				</ScrollViewer>
 			</Panel>
 			<idc:DockControl Layout="{CompiledBinding DockLayout}"/>

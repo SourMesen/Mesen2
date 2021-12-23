@@ -19,6 +19,8 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public DebuggerConfig Config { get; private set; }
 
+		[Reactive] public DebuggerOptionsViewModel Options { get; private set; }
+
 		[Reactive] public DisassemblyViewerViewModel Disassembly { get; private set; }
 		[Reactive] public BreakpointListViewModel BreakpointList { get; private set; }
 		[Reactive] public WatchListViewModel WatchList { get; private set; }
@@ -40,6 +42,8 @@ namespace Mesen.Debugger.ViewModels
 		public DebuggerWindowViewModel(CpuType? cpuType = null)
 		{
 			Config = ConfigManager.Config.Debug.Debugger;
+
+			Options = new DebuggerOptionsViewModel(Config, CpuType);
 
 			ShowBreakpointsCommand = ReactiveCommand.Create(ShowBreakpoints);
 			ShowCpuStatusCommand = ReactiveCommand.Create(ShowCpuStatus);

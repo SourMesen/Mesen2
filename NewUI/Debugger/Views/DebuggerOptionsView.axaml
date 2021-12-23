@@ -7,17 +7,18 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:dv="using:Mesen.Debugger.Views"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="610"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
-	x:DataType="cfg:DebuggerConfig"
+	x:DataType="dvm:DebuggerOptionsViewModel"
 	x:Class="Mesen.Debugger.Views.DebuggerOptionsView"
 >
 	<Design.DataContext>
-		<cfg:DebuggerConfig />
+		<dvm:DebuggerOptionsViewModel />
 	</Design.DataContext>
-
+	
 	<UserControl.Styles>
 		<Style Selector="WrapPanel > CheckBox">
 			<Setter Property="Margin" Value="0 0 7 0" />
@@ -31,106 +32,102 @@
 				<c:EnumComboBox
 					Grid.Column="1"
 					EnumType="{x:Type cfg:CodeDisplayMode}"
-					SelectedItem="{CompiledBinding VerifiedDataDisplay}"
+					SelectedItem="{CompiledBinding Config.VerifiedDataDisplay}"
 				/>
 				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblUnidentifiedBlock}" />
 				<c:EnumComboBox
 					Grid.Row="1" Grid.Column="1"
 					EnumType="{x:Type cfg:CodeDisplayMode}"
-					SelectedItem="{CompiledBinding UnidentifiedBlockDisplay}"
+					SelectedItem="{CompiledBinding Config.UnidentifiedBlockDisplay}"
 				/>
 			</Grid>
 			<CheckBox
-				IsChecked="{CompiledBinding ShowByteCode}"
+				IsChecked="{CompiledBinding Config.ShowByteCode}"
 				Content="{l:Translate chkShowByteCode}"
 			/>
 			<CheckBox
-				IsChecked="{CompiledBinding UseLowerCaseDisassembly}"
+				IsChecked="{CompiledBinding Config.UseLowerCaseDisassembly}"
 				Content="{l:Translate chkUseLowerCaseDisassembly}"
 			/>
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblBreakOptions}">
-			<WrapPanel IsVisible="False">
+			<WrapPanel IsVisible="{CompiledBinding IsSnes}">
 				<CheckBox
-					IsChecked="{CompiledBinding Snes.BreakOnBrk}"
+					IsChecked="{CompiledBinding Config.Snes.BreakOnBrk}"
 					Content="{l:Translate chkBreakOnBrk}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Snes.BreakOnCop}"
+					IsChecked="{CompiledBinding Config.Snes.BreakOnCop}"
 					Content="{l:Translate chkBreakOnCop}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Snes.BreakOnWdm}"
+					IsChecked="{CompiledBinding Config.Snes.BreakOnWdm}"
 					Content="{l:Translate chkBreakOnWdm}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Snes.BreakOnStp}"
+					IsChecked="{CompiledBinding Config.Snes.BreakOnStp}"
 					Content="{l:Translate chkBreakOnStp}"
 				/>
 			</WrapPanel>
-			<StackPanel>
+			<StackPanel IsVisible="{CompiledBinding IsNes}">
 				<CheckBox
-					IsChecked="{CompiledBinding Nes.BreakOnBrk}"
+					IsChecked="{CompiledBinding Config.Nes.BreakOnBrk}"
 					Content="{l:Translate chkBreakOnBrk}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Nes.BreakOnUnofficialOpCode}"
+					IsChecked="{CompiledBinding Config.Nes.BreakOnUnofficialOpCode}"
 					Content="{l:Translate chkBreakOnUnofficialOpCode}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Nes.BreakOnCpuCrash}"
+					IsChecked="{CompiledBinding Config.Nes.BreakOnCpuCrash}"
 					Content="{l:Translate chkBreakOnCpuCrash}"
 				/>
 				<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 				<CheckBox
-					IsChecked="{CompiledBinding Nes.BreakOnBusConflict}"
+					IsChecked="{CompiledBinding Config.Nes.BreakOnBusConflict}"
 					Content="{l:Translate chkBreakOnBusConflict}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Nes.BreakOnDecayedOamRead}"
+					IsChecked="{CompiledBinding Config.Nes.BreakOnDecayedOamRead}"
 					Content="{l:Translate chkBreakOnDecayedOamRead}"
 				/>
 				<CheckBox
-					IsChecked="{CompiledBinding Nes.BreakOnPpu2006ScrollGlitch}"
+					IsChecked="{CompiledBinding Config.Nes.BreakOnPpu2006ScrollGlitch}"
 					Content="{l:Translate chkBreakOnPpu2006ScrollGlitch}"
 				/>
 			</StackPanel>
 			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox
-				IsChecked="{CompiledBinding BreakOnUninitRead}"
+				IsChecked="{CompiledBinding Config.BreakOnUninitRead}"
 				Content="{l:Translate chkBreakOnUninitRead}"
 			/>
 			<CheckBox
-				IsChecked="{CompiledBinding BreakOnPowerCycleReset}"
+				IsChecked="{CompiledBinding Config.BreakOnPowerCycleReset}"
 				Content="{l:Translate chkBreakOnPowerCycleReset}"
 			/>
 			<CheckBox
-				IsChecked="{CompiledBinding BreakOnOpen}"
+				IsChecked="{CompiledBinding Config.BreakOnOpen}"
 				Content="{l:Translate chkBreakOnOpen}"
 			/>
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblFontSettings}">
-			<dv:FontOptionsView  DataContext="{CompiledBinding Font}" />
+			<dv:FontOptionsView  DataContext="{CompiledBinding Config.Font}" />
 			<Button Content="{l:Translate btnConfigureColors}" Margin="0 4" />
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblMiscSettings}">
 			<CheckBox
-				IsChecked="{CompiledBinding AutoResetCdl}"
+				IsChecked="{CompiledBinding Config.AutoResetCdl}"
 				Content="{l:Translate chkAutoResetCdl}"
 			/>
 			<CheckBox
-				IsChecked="{CompiledBinding BringToFrontOnPause}"
-				Content="{l:Translate chkBringToFrontOnPause}"
-			/>
-			<CheckBox
-				IsChecked="{CompiledBinding BringToFrontOnBreak}"
+				IsChecked="{CompiledBinding Config.BringToFrontOnBreak}"
 				Content="{l:Translate chkBringToFrontOnBreak}"
 			/>
 			<CheckBox
-				IsChecked="{CompiledBinding ShowMemoryMappings}"
+				IsChecked="{CompiledBinding Config.ShowMemoryMappings}"
 				Content="{l:Translate chkShowMemoryMappings}"
 			/>
 			<Button Content="{l:Translate btnConfigureKeys}" Margin="0 4" />
