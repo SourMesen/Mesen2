@@ -35,13 +35,15 @@ namespace Mesen.Debugger.Utilities
 				IconFileAttribute? attr = ActionType.GetAttribute<IconFileAttribute>();
 				if(!string.IsNullOrEmpty(attr?.Icon)) {
 					return ImageUtilities.FromAsset(attr.Icon);
+				} else if(IsSelected?.Invoke() == true) {
+					return ImageUtilities.FromAsset("Assets/MenuItemChecked.png");
 				}
 				return null;
 			}
 		}
 
-		List<ContextMenuAction>? _subActions;
-		public List<ContextMenuAction>? SubActions
+		List<object>? _subActions;
+		public List<object>? SubActions
 		{
 			get => _subActions;
 			set
@@ -50,9 +52,11 @@ namespace Mesen.Debugger.Utilities
 
 				if(_subActions != null) {
 					IsEnabled = () => {
-						foreach(ContextMenuAction subAction in _subActions) {
-							if(subAction.IsEnabled == null || subAction.IsEnabled()) {
-								return true;
+						foreach(object subAction in _subActions) {
+							if(subAction is ContextMenuAction act) {
+								if(act.IsEnabled == null || act.IsEnabled()) {
+									return true;
+								}
 							}
 						}
 						return false;
@@ -63,6 +67,7 @@ namespace Mesen.Debugger.Utilities
 
 		public Func<string>? HintText { get; set; }
 		public Func<bool>? IsEnabled { get; set; }
+		public Func<bool>? IsSelected { get; set; }
 
 		public Func<DbgShortKeys>? Shortcut { get; set; }
 		public string ShortcutText => Shortcut?.Invoke().ToString() ?? "";
@@ -141,6 +146,29 @@ namespace Mesen.Debugger.Utilities
 		MoveUp,
 
 		[IconFile("MoveDown")]
-		MoveDown
+		MoveDown,
+
+		WatchDecimalDisplay,
+		WatchHexDisplay,
+		WatchBinaryDisplay,
+		
+		RowDisplayFormat,
+		RowFormatBinary,
+		RowFormatHex8Bits,
+		RowFormatHex16Bits,
+		RowFormatHex24Bits,
+		RowFormatSigned8Bits,
+		RowFormatSigned16Bits,
+		RowFormatSigned24Bits,
+		RowFormatUnsigned,
+
+		[IconFile("Close")]
+		ClearFormat,
+
+		[IconFile("Import")]
+		Import,
+
+		[IconFile("Export")]
+		Export
 	}
 }

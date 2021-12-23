@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Mesen.Debugger
 {
-	class WatchManager
+	public class WatchManager
 	{
 		public static Regex FormatSuffixRegex = new Regex(@"^(.*),\s*([B|H|S|U])([\d]){0,1}$", RegexOptions.Compiled);
 		private static Regex _arrayWatchRegex = new Regex(@"\[((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+))\s*,\s*(\d+)\]", RegexOptions.Compiled);
@@ -222,6 +222,47 @@ namespace Mesen.Debugger
 		public void Export(string filename)
 		{
 			File.WriteAllLines(filename, WatchEntries);
+		}
+
+		private string GetFormatString(WatchFormatStyle format, int byteLength)
+		{
+			string formatString = ", ";
+			switch(format) {
+				case WatchFormatStyle.Binary: formatString += "B"; break;
+				case WatchFormatStyle.Hex: formatString += "H"; break;
+				case WatchFormatStyle.Signed: formatString += "S"; break;
+				case WatchFormatStyle.Unsigned: formatString += "U"; break;
+				default: throw new Exception("Unsupported type");
+			}
+			if(byteLength > 1) {
+				formatString += byteLength.ToString();
+			}
+			return formatString;
+		}
+
+		internal void ClearSelectionFormat(int[] indexes)
+		{
+			SetSelectionFormat("", indexes);
+		}
+
+		public void SetSelectionFormat(WatchFormatStyle format, int byteLength, int[] indexes)
+		{
+			string formatString = GetFormatString(format, byteLength);
+			SetSelectionFormat(formatString, indexes);
+		}
+
+		private void SetSelectionFormat(string formatString, int[] indexes)
+		{
+			foreach(int i in indexes) {
+				if(i < _watchEntries.Count) {
+					Match match = WatchManager.FormatSuffixRegex.Match(_watchEntries[i]);
+					if(match.Success) {
+						UpdateWatch(i, match.Groups[1].Value + formatString);
+					} else {
+						UpdateWatch(i, _watchEntries[i] + formatString);
+					}
+				}
+			}
 		}
 	}
 

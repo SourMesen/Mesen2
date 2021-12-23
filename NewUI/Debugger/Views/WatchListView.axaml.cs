@@ -9,6 +9,7 @@ using Mesen.Debugger.Utilities;
 using Mesen.Config;
 using System;
 using Mesen.Debugger.Controls;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Views
 {
@@ -72,7 +73,104 @@ namespace Mesen.Debugger.Views
 					OnClick = () => {
 						_model!.MoveDown(grid.SelectedIndex);
 					}
-				}
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.RowDisplayFormat,
+					SubActions = new() {
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatBinary,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Binary, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new Separator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex8Bits,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Hex, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex16Bits,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Hex, 2, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex24Bits,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Hex, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new Separator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned8Bits,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Signed, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned16Bits,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Signed, 2, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned24Bits,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Signed, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new Separator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatUnsigned,
+							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Unsigned, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new Separator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.ClearFormat,
+							OnClick = () => _model!.ClearSelectionFormat(grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						}
+					}
+				},
+
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.WatchDecimalDisplay,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Unsigned,
+					OnClick = () => {
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Unsigned;
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.WatchHexDisplay,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Hex,
+					OnClick = () => {
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Hex;
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.WatchBinaryDisplay,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Binary,
+					OnClick = () => {
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Binary;
+					}
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Import,
+					OnClick = async () => {
+						string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.WatchFileExt);
+						if(filename !=null) {
+							_model!.Manager.Import(filename);
+						}
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Export,
+					OnClick = async () => {
+						string? filename = await FileDialogHelper.SaveFile(null, null, VisualRoot, FileDialogHelper.WatchFileExt);
+						if(filename != null) {
+							_model!.Manager.Export(filename);
+						}
+					}
+				},
 			});
 		}
 
@@ -86,11 +184,16 @@ namespace Mesen.Debugger.Views
 			}
 		}
 
+		private static bool IsTextKey(Key key)
+		{
+			return key >= Key.A && key <= Key.Z || key >= Key.D0 && key <= Key.D9 || key >= Key.NumPad0 && key <= Key.Divide || key >= Key.OemSemicolon && key <= Key.Oem102;
+		}
+
 		private void OnGridKeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.Key == Key.Escape) {
 				((DataGrid)sender).CancelEdit();
-			} else if(e.Key >= Key.A && e.Key <= Key.Z || e.Key >= Key.D0 && e.Key <= Key.D9) {
+			} else if(IsTextKey(e.Key)) {
 				((DataGrid)sender).CurrentColumn = ((DataGrid)sender).Columns[0];
 				((DataGrid)sender).BeginEdit();
 			}

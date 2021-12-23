@@ -64,7 +64,7 @@ namespace Mesen.Debugger.Utilities
 							}
 						}
 					} else {
-						focusParent.RemoveHandler(InputElement.KeyDownEvent, handler!);
+						elem.RemoveHandler(InputElement.KeyDownEvent, handler!);
 					}
 				}
 			};

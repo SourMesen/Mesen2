@@ -29,10 +29,12 @@
 			CellEditEnded="OnCellEditEnded"
 			KeyDown="OnGridKeyDown"
 			SelectedIndex="{CompiledBinding SelectedIndex}"
+			CanUserSortColumns="False"
+			CanUserReorderColumns="False"
 			IsReadOnly="False"
 		>
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Watch" Binding="{Binding Expression}" Width="1*" CanUserResize="True"  />
+				<DataGridTextColumn Header="Name" Binding="{Binding Expression}" Width="1*" CanUserResize="True"  />
 				<DataGridTextColumn
 					CellStyleClasses="watchValue"
 					Header="Value"

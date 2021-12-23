@@ -223,7 +223,7 @@ namespace Mesen.Debugger.Windows
 			return new ContextMenuAction() {
 				ActionType = ActionType.MarkSelectionAs,
 				HintText = () => GetAddressRange(),
-				SubActions = new List<ContextMenuAction>() {
+				SubActions = new() {
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsCode,
 						IsEnabled = () => GetMarkStartEnd(out _, out _),

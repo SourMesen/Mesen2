@@ -1531,6 +1531,24 @@ x == [$150] || y == [10]
 			<Value ID="MarkAsCode">Code</Value>
 			<Value ID="MarkAsData">Data</Value>
 			<Value ID="MarkAsUnidentified">Unknown</Value>
+
+			<Value ID="WatchDecimalDisplay">Decimal Display</Value>
+			<Value ID="WatchHexDisplay">Hexadecimal Display</Value>
+			<Value ID="WatchBinaryDisplay">Binary Display</Value>
+
+			<Value ID="RowDisplayFormat">Row Display Format</Value>
+			<Value ID="RowFormatBinary">Binary</Value>
+			<Value ID="RowFormatHex8Bits">Hexadecimal (8-bit)</Value>
+			<Value ID="RowFormatHex16Bits">Hexadecimal (16-bit)</Value>
+			<Value ID="RowFormatHex24Bits">Hexadecimal (24-bit)</Value>
+			<Value ID="RowFormatSigned8Bits">Signed decimal (8-bit)</Value>
+			<Value ID="RowFormatSigned16Bits">Signed decimal (16-bit)</Value>
+			<Value ID="RowFormatSigned24Bits">Signed decimal (24-bit)</Value>
+			<Value ID="RowFormatUnsigned">Unsigned decimal</Value>
+			<Value ID="ClearFormat">Clear</Value>
+			
+			<Value ID="Import">Import...</Value>
+			<Value ID="Export">Export...</Value>
 		</Enum>
 	</Enums>
 </Resources>
