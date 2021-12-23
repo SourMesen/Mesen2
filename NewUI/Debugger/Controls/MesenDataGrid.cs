@@ -4,10 +4,6 @@ using Avalonia.Media;
 using Avalonia.Styling;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Controls
 {
@@ -24,7 +20,6 @@ namespace Mesen.Debugger.Controls
 			FontFamily = new FontFamily("Microsoft Sans Serif");
 			GridLinesVisibility = DataGridGridLinesVisibility.All;
 			IsReadOnly = true;
-
 			CellPointerPressed += MesenDataGrid_CellPointerPressed;
 		}
 
@@ -41,6 +36,11 @@ namespace Mesen.Debugger.Controls
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+
+			if(e.KeyModifiers != KeyModifiers.None) {
+				//Disable all alt/ctrl DataGrid shortcuts to use our own shortcuts instead
+				e.Handled = true;
+			}
 
 			if(e.Key == Key.End) {
 				if(Items is IList list) {

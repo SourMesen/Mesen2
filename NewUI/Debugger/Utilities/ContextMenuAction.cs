@@ -132,6 +132,15 @@ namespace Mesen.Debugger.Utilities
 		Edit,
 
 		[IconFile("Close")]
-		Delete
+		Delete,
+
+		[IconFile("Breakpoint")]
+		AddBreakpoint,
+
+		[IconFile("MoveUp")]
+		MoveUp,
+
+		[IconFile("MoveDown")]
+		MoveDown
 	}
 }

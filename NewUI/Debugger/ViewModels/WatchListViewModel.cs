@@ -13,6 +13,7 @@ namespace Mesen.Debugger.ViewModels
 	public class WatchListViewModel : Tool
 	{
 		[Reactive] public List<WatchValueInfo> WatchEntries { get; private set; } = new List<WatchValueInfo>();
+		[Reactive] public int SelectedIndex { get; set; } = 0;
 
 		private WatchManager _manager;
 
@@ -35,6 +36,30 @@ namespace Mesen.Debugger.ViewModels
 		public void EditWatch(int index, string expression)
 		{
 			_manager.UpdateWatch(index, expression);
+		}
+		
+		public void MoveUp(int index)
+		{
+			List<string> entries = _manager.WatchEntries;
+			if(index > 0 && index < entries.Count) {
+				string currentEntry = entries[index];
+				string entryAbove = entries[index - 1];
+				_manager.UpdateWatch(index - 1, currentEntry);
+				_manager.UpdateWatch(index, entryAbove);
+				SelectedIndex = index - 1;
+			}
+		}
+
+		public void MoveDown(int index)
+		{
+			List<string> entries = _manager.WatchEntries;
+			if(index < entries.Count - 1) {
+				string currentEntry = entries[index];
+				string entryBelow = entries[index + 1];
+				_manager.UpdateWatch(index + 1, currentEntry);
+				_manager.UpdateWatch(index, entryBelow);
+				SelectedIndex = index + 1;
+			}
 		}
 
 		private void WatchListViewModel_WatchChanged(object? sender, EventArgs e)

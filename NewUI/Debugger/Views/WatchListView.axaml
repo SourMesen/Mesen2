@@ -28,6 +28,7 @@
 			Items="{CompiledBinding WatchEntries}"
 			CellEditEnded="OnCellEditEnded"
 			KeyDown="OnGridKeyDown"
+			SelectedIndex="{CompiledBinding SelectedIndex}"
 			IsReadOnly="False"
 		>
 			<DataGrid.Columns>

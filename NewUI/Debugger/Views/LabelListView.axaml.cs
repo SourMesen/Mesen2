@@ -13,11 +13,15 @@ using System.Linq;
 using Mesen.Debugger.Utilities;
 using Avalonia.Data;
 using Mesen.Config;
+using Mesen.Interop;
+using System;
 
 namespace Mesen.Debugger.Views
 {
 	public class LabelListView : UserControl
 	{
+		private LabelListViewModel? _model;
+
 		public LabelListView()
 		{
 			InitializeComponent();
@@ -26,6 +30,14 @@ namespace Mesen.Debugger.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is LabelListViewModel model) {
+				_model = model;
+			}
+			base.OnDataContextChanged(e);
 		}
 
 		protected override void OnInitialized()
@@ -44,17 +56,19 @@ namespace Mesen.Debugger.Views
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Add,
 					OnClick = () => LabelEditWindow.EditLabel(this, new CodeLabel())
 				},
+
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Edit,
 					IsEnabled = () => grid.SelectedItem is CodeLabel,
 					OnClick = () => {
 						CodeLabel? label = grid.SelectedItem as CodeLabel;
-						if(label != null && grid != null) {
+						if(label != null) {
 							LabelEditWindow.EditLabel(this, label);
 						}
 					}
 				},
+
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Delete,
@@ -67,7 +81,37 @@ namespace Mesen.Debugger.Views
 						}
 						((LabelListViewModel)DataContext!).UpdateLabelList();
 					}
-				}
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.AddBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_AddBreakpoint,
+					IsEnabled = () => grid.SelectedItem is CodeLabel,
+					OnClick = () => {
+						CodeLabel? label = grid.SelectedItem as CodeLabel;
+						if(label != null) {
+							AddressInfo addr = label.GetAbsoluteAddress();
+							BreakpointManager.AddBreakpoint(addr, _model!.CpuType);
+						}
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.AddWatch,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_AddToWatch,
+					IsEnabled = () => grid.SelectedItem is CodeLabel,
+					OnClick = () => {
+						CodeLabel? label = grid.SelectedItem as CodeLabel;
+						if(label != null) {
+							AddressInfo addr = label.GetRelativeAddress(_model!.CpuType);
+							if(addr.Address >= 0) {
+								WatchManager.GetWatchManager(_model.CpuType).AddWatch("[$" + addr.Address.ToString("X2") + "]");
+							}
+						}
+					}
+				},
 			});
 		}
 

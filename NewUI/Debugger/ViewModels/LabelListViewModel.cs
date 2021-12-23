@@ -11,7 +11,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class LabelListViewModel : Tool
 	{
-		private CpuType _cpuType;
+		public CpuType CpuType { get; }
 
 		[Reactive] public List<CodeLabel> Labels { get; private set; } = new List<CodeLabel>();
 
@@ -20,7 +20,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public LabelListViewModel(CpuType cpuType)
 		{
-			_cpuType = cpuType;
+			CpuType = cpuType;
 			Id = "Labels";
 			Title = "Labels";
 			UpdateLabelList();
@@ -28,7 +28,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateLabelList()
 		{
-  			Labels = LabelManager.GetLabels(_cpuType);
+  			Labels = LabelManager.GetLabels(CpuType);
 		}
 	}
 }

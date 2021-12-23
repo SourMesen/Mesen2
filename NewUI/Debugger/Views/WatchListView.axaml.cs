@@ -7,11 +7,15 @@ using Avalonia.Threading;
 using Avalonia.Input;
 using Mesen.Debugger.Utilities;
 using Mesen.Config;
+using System;
+using Mesen.Debugger.Controls;
 
 namespace Mesen.Debugger.Views
 {
 	public class WatchListView : UserControl
 	{
+		private WatchListViewModel? _model;
+
 		public WatchListView()
 		{
 			InitializeComponent();
@@ -22,6 +26,14 @@ namespace Mesen.Debugger.Views
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is WatchListViewModel model) {
+				_model = model;
+			}
+			base.OnDataContextChanged(e);
+		}
+
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -30,7 +42,7 @@ namespace Mesen.Debugger.Views
 
 		private void InitContextMenu()
 		{
-			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
+			MesenDataGrid grid = this.FindControl<MesenDataGrid>("DataGrid");
 
 			DebugShortcutManager.CreateContextMenu(this, new object[] {
 				new ContextMenuAction() {
@@ -38,7 +50,27 @@ namespace Mesen.Debugger.Views
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.WatchList_Delete,
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
-						((WatchListViewModel)DataContext!).DeleteWatch(grid.SelectedItems.Cast<WatchValueInfo>().ToList());
+						_model!.DeleteWatch(grid.SelectedItems.Cast<WatchValueInfo>().ToList());
+					}
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.MoveUp,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.WatchList_MoveUp,
+					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex > 0,
+					OnClick = () => {
+						_model!.MoveUp(grid.SelectedIndex);
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.MoveDown,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.WatchList_MoveDown,
+					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex < _model!.WatchEntries.Count - 2,
+					OnClick = () => {
+						_model!.MoveDown(grid.SelectedIndex);
 					}
 				}
 			});

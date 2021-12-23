@@ -1519,8 +1519,12 @@ x == [$150] || y == [10]
 			<Value ID="Edit">Edit</Value>
 			<Value ID="Delete">Delete</Value>
 
+			<Value ID="MoveUp">Move Up</Value>
+			<Value ID="MoveDown">Move Down</Value>
+
 			<Value ID="EditLabel">Edit Label</Value>
 			<Value ID="AddWatch">Add to Watch</Value>
+			<Value ID="AddBreakpoint">Add Breakpoint</Value>
 			<Value ID="EditBreakpoint">Edit Breakpoint</Value>
 
 			<Value ID="MarkSelectionAs">Mark as...</Value>

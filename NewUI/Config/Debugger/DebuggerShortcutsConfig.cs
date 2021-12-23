@@ -204,9 +204,9 @@ namespace Mesen.Config
 		[ShortcutName("Watch List: Delete")]
 		public DbgShortKeys WatchList_Delete = new(Key.Delete);
 		[ShortcutName("Watch List: Move Up")]
-		public DbgShortKeys WatchList_MoveUp = new(KeyModifiers.Control, Key.Up);
+		public DbgShortKeys WatchList_MoveUp = new(KeyModifiers.Alt, Key.Up);
 		[ShortcutName("Watch List: Move Down")]
-		public DbgShortKeys WatchList_MoveDown = new(KeyModifiers.Control, Key.Down);
+		public DbgShortKeys WatchList_MoveDown = new(KeyModifiers.Alt, Key.Down);
 
 		[ShortcutName("Save Rom")]
 		public DbgShortKeys SaveRom = new(KeyModifiers.Control, Key.S);

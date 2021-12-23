@@ -58,6 +58,22 @@ namespace Mesen.Debugger
 			RefreshBreakpoints(bp);
 		}
 
+		public static void AddBreakpoint(AddressInfo addr, CpuType cpuType)
+		{
+			if(BreakpointManager.GetMatchingBreakpoint(addr, cpuType) == null) {
+				Breakpoint bp = new Breakpoint() {
+					StartAddress = (uint)addr.Address,
+					EndAddress = (uint)addr.Address,
+					MemoryType = addr.Type,
+					BreakOnExec = true,
+					BreakOnWrite = true,
+					BreakOnRead = true
+				};
+
+				BreakpointManager.AddBreakpoint(bp);
+			}
+		}
+
 		public static Breakpoint? GetMatchingBreakpoint(AddressInfo info, CpuType cpuType)
 		{
 			return Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();

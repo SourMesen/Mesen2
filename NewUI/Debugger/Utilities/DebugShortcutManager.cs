@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Rendering;
 using Mesen.Config;
 using System;
@@ -19,70 +20,56 @@ namespace Mesen.Debugger.Utilities
 				throw new Exception("Invalid control");
 			}
 
-			if(((IInputElement)ctrl).VisualRoot is Window wnd) {
-				ctrl.ContextMenu = new ContextMenu();
-				ctrl.ContextMenu.Classes.Add("ActionMenu");
-				ctrl.ContextMenu.Items = actions;
-				RegisterActions(wnd, ctrl, actions);
-			} else {
-				throw new Exception("Invalid window");
-			}
+			ctrl.ContextMenu = new ContextMenu();
+			ctrl.ContextMenu.Classes.Add("ActionMenu");
+			ctrl.ContextMenu.Items = actions;
+			RegisterActions(ctrl, actions);
 		}
 
-		public static void RegisterActions(IRenderRoot? renderRoot, IInputElement focusParent, IEnumerable actions)
-		{
-			if(renderRoot is Window wnd) {
-				RegisterActions(wnd, focusParent, actions);
-			} else {
-				throw new Exception("Invalid window");
-			}
-		}
-
-		public static void RegisterActions(Window wnd, IInputElement focusParent, IEnumerable actions)
+		public static void RegisterActions(IInputElement focusParent, IEnumerable actions)
 		{
 			foreach(object obj in actions) {
 				if(obj is ContextMenuAction action) {
-					RegisterAction(wnd, focusParent, action);
+					RegisterAction(focusParent, action);
 				}
 			}
 		}
 
-		public static void RegisterActions(Window wnd, IInputElement focusParent, IEnumerable<ContextMenuAction> actions)
+		public static void RegisterActions(IInputElement focusParent, IEnumerable<ContextMenuAction> actions)
 		{
 			foreach(ContextMenuAction action in actions) {
-				RegisterAction(wnd, focusParent, action);
+				RegisterAction(focusParent, action);
 			}
 		}
 
-		public static void RegisterAction(Window wnd, IInputElement focusParent, ContextMenuAction action)
+		public static void RegisterAction(IInputElement focusParent, ContextMenuAction action)
 		{
 			WeakReference<IInputElement> weakFocusParent = new WeakReference<IInputElement>(focusParent);
 			WeakReference<ContextMenuAction> weakAction = new WeakReference<ContextMenuAction>(action);
-			WeakReference<Window> weakWnd = new WeakReference<Window>(wnd);
 
 			if(action.SubActions != null) {
-				RegisterActions(wnd, focusParent, action.SubActions);
+				RegisterActions(focusParent, action.SubActions);
 			}
 
 			EventHandler<KeyEventArgs>? handler = null;
 			handler = (s, e) => {
-				if(weakFocusParent.TryGetTarget(out IInputElement? elem) && weakAction.TryGetTarget(out ContextMenuAction? act)) {
-					if(act.Shortcut != null) {
-						DbgShortKeys keys = act.Shortcut();
-						if(elem.IsKeyboardFocusWithin && e.Key == keys.ShortcutKey && e.KeyModifiers == keys.Modifiers) {
-							if(act.IsEnabled == null || act.IsEnabled()) {
-								act.OnClick();
+				if(weakFocusParent.TryGetTarget(out IInputElement? elem)) {
+					if(weakAction.TryGetTarget(out ContextMenuAction? act)) {
+						if(act.Shortcut != null) {
+							DbgShortKeys keys = act.Shortcut();
+							if(e.Key == keys.ShortcutKey && e.KeyModifiers == keys.Modifiers) {
+								if(act.IsEnabled == null || act.IsEnabled()) {
+									act.OnClick();
+								}
 							}
 						}
-					}
-				} else {
-					if(weakWnd.TryGetTarget(out Window? window)) {
-						window.KeyDown -= handler;
+					} else {
+						focusParent.RemoveHandler(InputElement.KeyDownEvent, handler!);
 					}
 				}
 			};
 
-			wnd.KeyDown += handler;
+			focusParent.AddHandler<KeyEventArgs>(InputElement.KeyDownEvent, handler, RoutingStrategies.Bubble, handledEventsToo: true);
 		}
 	}
 }
