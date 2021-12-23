@@ -44,21 +44,22 @@ namespace Mesen.Debugger.Windows
 					return;
 				}
 
-				AllPropertiesObserver observer = new(() => {
-					_model.Config.ApplyConfig();
-
-					Dispatcher.UIThread.Post(() => {
-						UpdateDebugger();
-					});
-				});
-
-				_model.Config.Changed.Subscribe(observer);
-				_model.Config.Snes.Changed.Subscribe(observer);
-				_model.Config.Nes.Changed.Subscribe(observer);
-				_model.Config.Gameboy.Changed.Subscribe(observer);
+				_model.Config.PropertyChanged += Config_PropertyChanged;
+				_model.Config.Gameboy.PropertyChanged += Config_PropertyChanged;
+				_model.Config.Nes.PropertyChanged += Config_PropertyChanged;
+				_model.Config.Snes.PropertyChanged += Config_PropertyChanged;
 			} else {
 				throw new Exception("Invalid model");
 			}
+		}
+
+		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			_model.Config.ApplyConfig();
+
+			Dispatcher.UIThread.Post(() => {
+				UpdateDebugger();
+			});
 		}
 
 		protected override void OnOpened(EventArgs e)
