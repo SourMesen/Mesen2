@@ -75,6 +75,7 @@
 	  <None Remove="Assets\Icon.ico" />
 	  <None Remove="Assets\Import.png" />
 	  <None Remove="Assets\JumpTarget.png" />
+	  <None Remove="Assets\Keyboard.png" />
 	  <None Remove="Assets\LogWindow.png" />
 	  <None Remove="Assets\MediaEject.png" />
 	  <None Remove="Assets\MediaPause.png" />
@@ -184,6 +185,9 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Controls\ColorPickerField.axaml.cs">
+      <DependentUpon>ColorPickerField.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\ColorCheckbox.axaml.cs">
       <DependentUpon>ColorCheckbox.axaml</DependentUpon>
     </Compile>
@@ -234,6 +238,9 @@
     </Compile>
     <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
       <DependentUpon>SnesPpuView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\DebuggerConfigWindow.axaml.cs">
+      <DependentUpon>DebuggerConfigWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\RegisterViewerWindow.axaml.cs">
       <DependentUpon>RegisterViewerWindow.axaml</DependentUpon>
@@ -419,6 +426,7 @@
 	  <AvaloniaResource Include="Assets\Icon.ico" />
 	  <AvaloniaResource Include="Assets\Import.png" />
 	  <AvaloniaResource Include="Assets\JumpTarget.png" />
+	  <AvaloniaResource Include="Assets\Keyboard.png" />
 	  <AvaloniaResource Include="Assets\LogWindow.png" />
 	  <AvaloniaResource Include="Assets\MediaEject.png" />
 	  <AvaloniaResource Include="Assets\MediaPause.png" />

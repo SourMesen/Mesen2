@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Media;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,26 +9,25 @@ using System.Threading.Tasks;
 
 namespace Mesen.Config
 {
-	public class ScriptWindowConfig
+	public class ScriptWindowConfig : BaseWindowConfig<ScriptWindowConfig>
 	{
 		private const int MaxRecentScripts = 10;
 
-		public List<string> RecentScripts = new List<string>();
+		[Reactive] public List<string> RecentScripts { get; set; } = new List<string>();
 
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
+		[Reactive] public int Zoom { get; set; } = 100;
 
-		public string FontFamily = DebuggerConfig.MonospaceFontFamily;
-		public FontStyle FontStyle = FontStyle.Normal;
-		public float FontSize = DebuggerConfig.DefaultFontSize;
-		public int Zoom = 100;
+		[Reactive] public int CodeWindowHeight { get; set; } = 0;
 
-		public int CodeWindowHeight = 0;
-		public ScriptStartupBehavior ScriptStartupBehavior = ScriptStartupBehavior.ShowTutorial;
-		public bool SaveScriptBeforeRun = true;
-		public bool AutoLoadLastScript = true;
-		public bool AutoRestartScript = true;
-		public UInt32 ScriptTimeout = 1000;
+		[Reactive] public ScriptStartupBehavior ScriptStartupBehavior { get; set; } = ScriptStartupBehavior.ShowTutorial;
+		[Reactive] public bool SaveScriptBeforeRun { get; set; } = true;
+		[Reactive] public bool AutoReloadScriptWhenFileChanges { get; set; } = true;
+		[Reactive] public bool AutoRestartScriptAfterReload { get; set; } = true;
+		
+		[Reactive] public bool AllowIoOsFunctions { get; set; } = false;
+		[Reactive] public bool AllowNetworkAccess { get; set; } = false;
+
+		[Reactive] public UInt32 ScriptTimeout { get; set; } = 1000;
 
 		public void AddRecentScript(string scriptFile)
 		{
@@ -40,7 +40,7 @@ namespace Mesen.Config
 			if(RecentScripts.Count > ScriptWindowConfig.MaxRecentScripts) {
 				RecentScripts.RemoveAt(ScriptWindowConfig.MaxRecentScripts);
 			}
-			//TODO ConfigManager.ApplyChanges();
+			ConfigManager.SaveConfig();
 		}
 	}
 

@@ -6,6 +6,7 @@ using Mesen.Config;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
@@ -32,6 +33,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
 
+		[Reactive] public List<object> ToolbarItems { get; private set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; private set; } = new();
 		[Reactive] public List<object> OptionMenuItems { get; private set; } = new();
 
@@ -179,97 +181,20 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
+		private void ClearActiveAddress()
+		{
+			if(Disassembly.StyleProvider is BaseStyleProvider p) {
+				p.ActiveAddress = null;
+				Disassembly.DataProvider = new CodeDataProvider(CpuType);
+			}
+		}
+
 		public void InitializeMenu(Window wnd)
 		{
-			Func<bool> isPaused = () => EmuApi.IsPaused();
-			Func<bool> isRunning = () => !EmuApi.IsPaused();
-
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
-
-			DebugMenuItems = new List<object>() {
-				new ContextMenuAction() {
-					ActionType = ActionType.Continue,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Continue,
-					IsEnabled = isPaused,
-					OnClick = () => EmuApi.Resume()
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.Break,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Break,
-					IsEnabled = isRunning,
-					OnClick = () => EmuApi.Pause()
-				},
-
-				new Separator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.Reset,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Reset,
-					OnClick = () => EmuApi.Reset()
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.PowerCycle,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.PowerCycle,
-					OnClick = () => EmuApi.PowerCycle()
-				},
-
-				new Separator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.StepInto,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepInto,
-					OnClick = () => DebugApi.Step(CpuType, 1, StepType.Step)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.StepOver,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepOver,
-					OnClick = () => DebugApi.Step(CpuType, 1, StepType.StepOver)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.StepOut,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepOut,
-					OnClick = () => DebugApi.Step(CpuType, 1, StepType.StepOut)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.StepBack,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepBack,
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
-				},
-
-				new Separator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.RunPpuCycle,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuCycle,
-					OnClick = () => DebugApi.Step(CpuType, 1, StepType.PpuStep)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.RunPpuScanline,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuScanline,
-					OnClick = () => DebugApi.Step(CpuType, 1, StepType.PpuScanline)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.RunPpuFrame,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuFrame,
-					OnClick = () => DebugApi.Step(CpuType, 1, StepType.PpuFrame)
-				},
-
-				new Separator(),
-				
-				new ContextMenuAction() {
-					ActionType = ActionType.BreakIn,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakIn,
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.BreakOn,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakOn,
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
-				},
-			};
+			
+			ToolbarItems = GetDebugMenu();
+			DebugMenuItems = GetDebugMenu();
 
 			OptionMenuItems = new List<object>() {
 				new ContextMenuAction() {
@@ -312,13 +237,115 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Preferences,
 					OnClick = () => {
-
+						new DebuggerConfigWindow() {
+							DataContext = new DebuggerConfigWindowViewModel()
+						}.ShowCenteredDialog((Control)wnd);
 					}
 				},
 			};
 
 			DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
 			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
+		}
+
+		private List<object> GetDebugMenu()
+		{
+			Func<bool> isPaused = () => EmuApi.IsPaused();
+			Func<bool> isRunning = () => !EmuApi.IsPaused();
+
+			return new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Continue,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Continue,
+					IsEnabled = isPaused,
+					OnClick = () => {
+						DebugApi.ResumeExecution();
+						ClearActiveAddress();
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Break,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Break,
+					IsEnabled = isRunning,
+					OnClick = () => EmuApi.Pause()
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Reset,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Reset,
+					OnClick = () => EmuApi.Reset()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.PowerCycle,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.PowerCycle,
+					OnClick = () => EmuApi.PowerCycle()
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.StepInto,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepInto,
+					OnClick = () => Step(1, StepType.Step)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepOver,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepOver,
+					OnClick = () => Step(1, StepType.StepOver)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepOut,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepOut,
+					OnClick = () => Step(1, StepType.StepOut)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepBack,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.StepBack,
+					IsEnabled = () => false,
+					OnClick = () => { } //TODO
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.RunPpuCycle,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuCycle,
+					OnClick = () => Step(1, StepType.PpuStep)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RunPpuScanline,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuScanline,
+					OnClick = () => Step(1, StepType.PpuScanline)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RunPpuFrame,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.RunPpuFrame,
+					OnClick = () => Step(1, StepType.PpuFrame)
+				},
+
+				new Separator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.BreakIn,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakIn,
+					IsEnabled = () => false,
+					OnClick = () => { } //TODO
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.BreakOn,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakOn,
+					IsEnabled = () => false,
+					OnClick = () => { } //TODO
+				},
+			};
+		}
+
+		private void Step(int instructionCount, StepType type)
+		{
+			DebugApi.Step(CpuType, instructionCount, type);
+			ClearActiveAddress();
 		}
 	}
 }

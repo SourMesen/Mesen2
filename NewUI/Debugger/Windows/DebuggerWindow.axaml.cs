@@ -13,6 +13,7 @@ using Mesen.Debugger.Labels;
 using Avalonia.Threading;
 using Mesen.Utilities;
 using Mesen.Config;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -20,6 +21,7 @@ namespace Mesen.Debugger.Windows
 	{
 		private DebuggerWindowViewModel _model;
 		private NotificationListener? _listener;
+		private DispatcherTimer _timer;
 
 		public DebuggerWindow()
 		{
@@ -27,6 +29,7 @@ namespace Mesen.Debugger.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
+			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateToolbar());
 		}
 
 		private void InitializeComponent()
@@ -71,6 +74,7 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
+			_timer.Start();
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
 			UpdateDebugger();
@@ -78,6 +82,11 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			_timer.Stop();
 			_listener?.Dispose();
 			_model.Cleanup();
 			_model.Config.SaveWindowSettings(this);
@@ -102,62 +111,18 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		private void Step(Int32 instructionCount, StepType type = StepType.Step)
-		{
-			DebugApi.Step(_model.CpuType, instructionCount, type);
-			if(_model.Disassembly.StyleProvider is BaseStyleProvider p) {
-				p.ActiveAddress = null;
-				_model.Disassembly.DataProvider = new CodeDataProvider(_model.CpuType);
-			}
-		}
-
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
-		private void OnContinueClick(object sender, RoutedEventArgs e)
+		private void UpdateToolbar()
 		{
-			DebugApi.ResumeExecution();
-			if(_model.Disassembly.StyleProvider is BaseStyleProvider p) {
-				p.ActiveAddress = null;
-				_model.Disassembly.DataProvider = new CodeDataProvider(_model.CpuType);
+			foreach(object item in _model.ToolbarItems) {
+				if(item is ContextMenuAction act) {
+					act.Update();
+				}
 			}
-		}
-
-		private void OnStepIntoClick(object sender, RoutedEventArgs e)
-		{
-			Step(1, StepType.Step);
-		}
-
-		private void OnStepOutClick(object sender, RoutedEventArgs e)
-		{
-			Step(1, StepType.StepOut);
-		}
-
-		private void OnStepOverClick(object sender, RoutedEventArgs e)
-		{
-			Step(1, StepType.StepOver);
-		}
-
-		private void OnStepBackClick(object sender, RoutedEventArgs e)
-		{
-			//TODO
-		}
-
-		private void OnRunOnePpuCycleClick(object sender, RoutedEventArgs e)
-		{
-			Step(1, StepType.PpuStep);
-		}
-
-		private void OnRunOnePpuScanlineClick(object sender, RoutedEventArgs e)
-		{
-			//TODO
-		}
-
-		private void OnRunOnePpuFrameClick(object sender, RoutedEventArgs e)
-		{
-			//TODO
 		}
 	}
 }

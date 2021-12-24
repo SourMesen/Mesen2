@@ -878,16 +878,8 @@
 			<Control ID="chkBreakOnDecayedOamRead">Decayed OAM read</Control>
 			<Control ID="chkBreakOnPpu2006ScrollGlitch">PPU $2006 scroll glitch</Control>
 
-			<Control ID="lblFontSettings">Font settings</Control>
 			<Control ID="lblMiscSettings">Misc. settings</Control>
-			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
-			<Control ID="chkBringToFrontOnPause">Bring to front on pause</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
-
-			<Control ID="btnConfigureColors">Configure colors...</Control>
-			<Control ID="btnConfigureKeys">Configure shortcut keys...</Control>
-			
-			<Control ID="chkShowMemoryMappings">Show memory mappings</Control>
 		</Form>
 
 		<Form ID="MemoryToolsDisplayOptionsView">
@@ -911,6 +903,43 @@
 		<Form ID="FontOptionsView">
 			<Control ID="lblFamily">Family: </Control>
 			<Control ID="lblSize">Size: </Control>
+		</Form>
+
+		<Form ID="DebuggerConfigWindow">
+			<Control ID="tabDebugger">Debugger</Control>
+			<Control ID="lblGeneralSettings">General settings</Control>
+			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
+
+			<Control ID="tabScriptWindow">Script Window</Control>
+			<Control ID="lblSandboxing">Sandboxing</Control>
+			<Control ID="lblScriptStartupBehavior">When a script window is opened: </Control>
+			<Control ID="chkSaveScriptBeforeRun">Save scripts to disk before run</Control>
+			<Control ID="chkAutoReloadScriptWhenFileChanges">Auto-reload scripts from disk when file changes</Control>
+			<Control ID="chkAutoRestartScriptAfterReload">Auto-restart script when script is reloaded</Control>
+			<Control ID="chkAllowIoOsFunctions">Allow access to I/O and OS functions</Control>
+			<Control ID="chkAllowNetworkAccess">Allow network access</Control>
+			
+			<Control ID="tabFonts">Fonts &amp; Colors</Control>
+			<Control ID="lblFontSettings">Font settings</Control>
+			<Control ID="lblSyntaxHighlighting">Syntax highlighting</Control>
+			<Control ID="lblCodeOpcodeColor">Opcode</Control>
+			<Control ID="lblCodeLabelDefinitionColor">Label</Control>
+			<Control ID="lblCodeImmediateColor">Immediate Value</Control>
+			<Control ID="lblCodeAddressColor">Address Value</Control>
+			<Control ID="lblCodeCommentColor">Comment</Control>
+			<Control ID="lblCodeEffectiveAddressColor">Effective Address</Control>
+			<Control ID="lblCodeActiveStatementColor">Active Statement</Control>
+			<Control ID="lblCodeVerifiedDataColor">Verified Data</Control>
+			<Control ID="lblCodeUnidentifiedDataColor">Unidentified Block</Control>
+			<Control ID="lblCodeUnexecutedCodeColor">Unexecuted Code</Control>
+			<Control ID="lblCodeExecBreakpointColor">Exec Breakpoint</Control>
+			<Control ID="lblCodeWriteBreakpointColor">Write Breakpoint</Control>
+			<Control ID="lblCodeReadBreakpointColor">Read Breakpoint</Control>
+
+			<Control ID="tabIntegration">Integration</Control>
+			<Control ID="lblIntegrationSettings">Integration settings</Control>
+			
+			<Control ID="tabShortcuts">Shortcuts</Control>
 		</Form>
 
 		<Form ID="ProfilerWindow">
@@ -1509,6 +1538,11 @@ x == [$150] || y == [10]
 			<Value ID="Hide">Hide</Value>
 			<Value ID="Show">Show</Value>
 			<Value ID="Disassemble">Disassemble</Value>
+		</Enum>
+		<Enum ID="ScriptStartupBehavior">
+			<Value ID="ShowTutorial">Display the tutorial script</Value>
+			<Value ID="ShowBlankWindow">Display an empty script</Value>
+			<Value ID="LoadLastScript">Load the previous script</Value>
 		</Enum>
 		<Enum ID="ActionType">
 			<Value ID="Copy">Copy</Value>

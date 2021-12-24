@@ -7,27 +7,25 @@ using Mesen.ViewModels;
 using System;
 using System.ComponentModel;
 using Mesen.Config;
+using Mesen.Debugger.ViewModels;
 
-namespace Mesen.Windows
+namespace Mesen.Debugger.Windows
 {
-	public class ConfigWindow : Window
+	public class DebuggerConfigWindow : Window
 	{
-		private ConfigViewModel? _model;
-		private DispatcherTimer _timer;
+		private DebuggerConfigWindowViewModel? _model;
 
-		public ConfigWindow()
+		public DebuggerConfigWindow()
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
-
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => _model?.ApplyConfig());
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
 		{
-			if(DataContext is ConfigViewModel model) {
+			if(DataContext is DebuggerConfigWindowViewModel model) {
 				_model = model;
 			} else {
 				throw new Exception("Invalid model");
@@ -39,17 +37,6 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected override void OnOpened(EventArgs e)
-		{
-			base.OnOpened(e);
-
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			_timer.Start();
-		}
-
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
 			_model?.SaveConfig();
@@ -59,16 +46,6 @@ namespace Mesen.Windows
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
 			Close();
-		}
-
-		protected override void OnClosing(CancelEventArgs e)
-		{
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			_timer.Stop();
-			ConfigManager.Config.ApplyConfig();
 		}
 	}
 }

@@ -21,7 +21,7 @@
 	</UserControl.Resources>
 
 	<DockPanel>
-		<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 5 20 5" DockPanel.Dock="Top">
+		<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 5 36 5" DockPanel.Dock="Top">
 			<TextBlock Grid.Column="0" Text="{l:Translate colAction}"  />
 			<TextBlock Grid.Column="1" Text="{l:Translate colBinding1}" HorizontalAlignment="Center" />
 			<TextBlock Grid.Column="2" Text="{l:Translate colBinding2}" HorizontalAlignment="Center" />

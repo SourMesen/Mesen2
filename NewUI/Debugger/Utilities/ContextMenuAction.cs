@@ -97,6 +97,11 @@ namespace Mesen.Debugger.Utilities
 				_clickCommand = ReactiveCommand.Create(_onClick, this.WhenAnyValue(x => x.Enabled));
 			}
 		}
+
+		public void Update()
+		{
+			Enabled = IsEnabled?.Invoke() ?? true;
+		}
 	}
 
 	public enum ActionType

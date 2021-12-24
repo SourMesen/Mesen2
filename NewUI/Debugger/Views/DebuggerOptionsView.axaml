@@ -52,7 +52,7 @@
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblBreakOptions}">
-			<WrapPanel IsVisible="{CompiledBinding IsSnes}">
+			<StackPanel IsVisible="{CompiledBinding IsSnes}">
 				<CheckBox
 					IsChecked="{CompiledBinding Config.Snes.BreakOnBrk}"
 					Content="{l:Translate chkBreakOnBrk}"
@@ -69,7 +69,7 @@
 					IsChecked="{CompiledBinding Config.Snes.BreakOnStp}"
 					Content="{l:Translate chkBreakOnStp}"
 				/>
-			</WrapPanel>
+			</StackPanel>
 			<StackPanel IsVisible="{CompiledBinding IsNes}">
 				<CheckBox
 					IsChecked="{CompiledBinding Config.Nes.BreakOnBrk}"
@@ -112,25 +112,11 @@
 			/>
 		</c:OptionSection>
 
-		<c:OptionSection Header="{l:Translate lblFontSettings}">
-			<dv:FontOptionsView  DataContext="{CompiledBinding Config.Font}" />
-			<Button Content="{l:Translate btnConfigureColors}" Margin="0 4" />
-		</c:OptionSection>
-
 		<c:OptionSection Header="{l:Translate lblMiscSettings}">
-			<CheckBox
-				IsChecked="{CompiledBinding Config.AutoResetCdl}"
-				Content="{l:Translate chkAutoResetCdl}"
-			/>
 			<CheckBox
 				IsChecked="{CompiledBinding Config.BringToFrontOnBreak}"
 				Content="{l:Translate chkBringToFrontOnBreak}"
 			/>
-			<CheckBox
-				IsChecked="{CompiledBinding Config.ShowMemoryMappings}"
-				Content="{l:Translate chkShowMemoryMappings}"
-			/>
-			<Button Content="{l:Translate btnConfigureKeys}" Margin="0 4" />
 		</c:OptionSection>
 	</StackPanel>
 </UserControl>
