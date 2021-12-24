@@ -53,13 +53,13 @@ namespace Mesen.Debugger.Views
 			DebugShortcutManager.CreateContextMenu(this, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.Add,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Add,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Add),
 					OnClick = () => LabelEditWindow.EditLabel(this, new CodeLabel())
 				},
 
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Edit,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Edit),
 					IsEnabled = () => grid.SelectedItem is CodeLabel,
 					OnClick = () => {
 						CodeLabel? label = grid.SelectedItem as CodeLabel;
@@ -71,7 +71,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_Delete,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Delete),
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
 						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
@@ -87,7 +87,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.AddBreakpoint,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_AddBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddBreakpoint),
 					IsEnabled = () => grid.SelectedItem is CodeLabel,
 					OnClick = () => {
 						CodeLabel? label = grid.SelectedItem as CodeLabel;
@@ -100,7 +100,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.AddWatch,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.LabelList_AddToWatch,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddToWatch),
 					IsEnabled = () => grid.SelectedItem is CodeLabel,
 					OnClick = () => {
 						CodeLabel? label = grid.SelectedItem as CodeLabel;

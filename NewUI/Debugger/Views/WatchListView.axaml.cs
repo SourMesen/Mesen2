@@ -48,7 +48,7 @@ namespace Mesen.Debugger.Views
 			DebugShortcutManager.CreateContextMenu(this, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.WatchList_Delete,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Delete),
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
 						_model!.DeleteWatch(grid.SelectedItems.Cast<WatchValueInfo>().ToList());
@@ -59,7 +59,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.MoveUp,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.WatchList_MoveUp,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_MoveUp),
 					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex > 0,
 					OnClick = () => {
 						_model!.MoveUp(grid.SelectedIndex);
@@ -68,7 +68,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.MoveDown,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.WatchList_MoveDown,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_MoveDown),
 					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex < _model!.WatchEntries.Count - 2,
 					OnClick = () => {
 						_model!.MoveDown(grid.SelectedIndex);

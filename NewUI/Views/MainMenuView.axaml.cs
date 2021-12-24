@@ -134,6 +134,13 @@ namespace Mesen.Views
 			}.Show();
 		}
 
+		private void OnDebuggerSettingsClick(object sender, RoutedEventArgs e)
+		{
+			new DebuggerConfigWindow {
+				DataContext = new DebuggerConfigWindowViewModel()
+			}.Show();
+		}
+
 		private void OpenConfig(ConfigWindowTab tab)
 		{
 			if(_cfgWindow == null) {

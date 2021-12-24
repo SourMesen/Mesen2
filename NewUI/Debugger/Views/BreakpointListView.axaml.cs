@@ -38,7 +38,7 @@ namespace Mesen.Debugger.Views
 			DebugShortcutManager.CreateContextMenu(this, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.Add,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakpointList_Add,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Add),
 					OnClick = () => {
 						Breakpoint bp = new Breakpoint() { BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true };
 						BreakpointEditWindow.EditBreakpoint(bp, this);
@@ -47,7 +47,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakpointList_Edit,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Edit),
 					IsEnabled = () => grid.SelectedItem is Breakpoint,
 					OnClick = () => {
 						Breakpoint? bp = grid.SelectedItem as Breakpoint;
@@ -59,7 +59,7 @@ namespace Mesen.Debugger.Views
 
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.BreakpointList_Delete,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Delete),
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
 						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {

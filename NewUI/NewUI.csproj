@@ -194,6 +194,12 @@
     <Compile Update="Debugger\Controls\EventViewerCategoryControl.axaml.cs">
       <DependentUpon>EventViewerCategoryControl.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Controls\DebuggerShortcutKeyGrid.axaml.cs">
+      <DependentUpon>DebuggerShortcutKeyGrid.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Controls\DebuggerKeyBindingButton.cs">
+      <DependentUpon>DebuggerKeyBindingButton</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\SpritePreviewPanel.axaml.cs">
       <DependentUpon>SpritePreviewPanel.axaml</DependentUpon>
     </Compile>

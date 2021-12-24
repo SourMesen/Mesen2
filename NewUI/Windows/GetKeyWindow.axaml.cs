@@ -10,6 +10,7 @@ using System.ComponentModel;
 using Mesen.Interop;
 using Avalonia.Threading;
 using Avalonia;
+using Mesen.Config;
 
 namespace Mesen.Windows
 {
@@ -20,6 +21,8 @@ namespace Mesen.Windows
 		private List<UInt32> _prevScanCodes = new List<UInt32>();
 		private TextBlock lblCurrentKey;
 		public bool SingleKeyMode { get; set; } = false;
+		
+		public DbgShortKeys DbgShortcutKey { get; set; } = new DbgShortKeys();
 		public KeyCombination ShortcutKey { get; set; } = new KeyCombination();
 
 		public GetKeyWindow()
@@ -50,6 +53,7 @@ namespace Mesen.Windows
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((int)e.Key, true);
+			DbgShortcutKey = new DbgShortKeys(e.KeyModifiers, e.Key);
 			e.Handled = true;
 		}
 

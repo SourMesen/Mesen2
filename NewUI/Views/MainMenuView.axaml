@@ -430,6 +430,12 @@
 					<Image Source="/Assets/EventViewer.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<Separator />
+			<MenuItem Header="_Settings" Click="OnDebuggerSettingsClick">
+				<MenuItem.Icon>
+					<Image Source="/Assets/Settings.png" />
+				</MenuItem.Icon>
+			</MenuItem>
 		</MenuItem>
 		<MenuItem Header="{l:Translate mnuHelp}">
 			<MenuItem Header="{l:Translate mnuOnlineHelp}">

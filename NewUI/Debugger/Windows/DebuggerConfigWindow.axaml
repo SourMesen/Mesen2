@@ -146,8 +146,21 @@
 					</StackPanel>
 				</TabItem.Header>
 
+				<TabControl>
+					<TabItem Header="{l:Translate tabShared}">
+						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding SharedShortcuts}" />
+					</TabItem>
+					<TabItem Header="{l:Translate tabDebugger}">
+						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding DebuggerShortcuts}" />
+					</TabItem>
+					<TabItem Header="{l:Translate tabMemoryTools}">
+						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding MemoryToolsShortcuts}" />
+					</TabItem>
+					<TabItem Header="{l:Translate tabScriptWindow}">
+						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding ScriptShortcuts}" />
+					</TabItem>
+				</TabControl>
 			</TabItem>
-
 		</TabControl>
 	</DockPanel>
 </Window>

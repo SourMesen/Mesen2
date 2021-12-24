@@ -4,7 +4,7 @@
 		<Form ID="MainWindow">
 			<Control ID="wndTitle">Mesen</Control>
 			<!-- Archive Load Message -->
-			<Control ID="lblExtractingFile">Extracting file, please wait...</Control>
+			<Control ID="lblExtractingFile">Extracting <Value ID="file">file</Value>, please wait...</Control>
 		</Form>
 		<Form ID="MainMenuView">
 			<Control ID="mnuFile">File</Control>
@@ -207,7 +207,7 @@
 
 			<Control ID="chkHideMousePointerForZapper">Hide mouse pointer when using zapper</Control>
 
-			<Control ID="lblKeyBinding">Warning: Your current configuration contains conflicting key bindings - some physical buttons on your keyboard or gamepad are mapped to multiple buttons on the NES controller. If this is not intentional, please review and correct your key bindings.</Control>
+			<Control ID="lblKeyBinding">Warning: Your current configuration contains conflicting key bindings - some physical buttons on your keyboard or gamepad are mapped to multiple buttons on the NES controller. If this is not <Value ID="intentional">intentional</Value>, please review and correct your key bindings.</Control>
 		</Form>
 		<Form ID="OverscanConfig">
 			<Control ID="lblLeft">Left</Control>
@@ -273,13 +273,13 @@
 			<Control ID="lblRewindSpeedHint">%  (0 = Maximum speed)</Control>
 			<Control ID="lblRewindSpeed">Rewind Speed:</Control>
 			<Control ID="lblRunAhead">Run Ahead:</Control>
-			<Control ID="lblRunAheadFrames">frames (reduces input lag, increases CPU usage)</Control>
+			<Control ID="lblRunAheadFrames">frames (reduces input <Value ID="lag">lag</Value>, increases CPU usage)</Control>
 
 			<Control ID="lblRegion">Region:</Control>
 			
 			<Control ID="tpgOverclocking">Overclocking</Control>
 			<Control ID="grpOverclocking">Overclocking</Control>
-			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
+			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To <Value ID="overclock">overclock</Value>, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the <Value ID="game">game</Value>, try lowering the value or using the "after NMI" field instead.</Control>
 			<Control ID="lblClockRate">Clock Rate Multiplier:</Control>
 			<Control ID="lblClockRatePercent">% (Default: 100%)</Control>
 
@@ -307,7 +307,7 @@
 			<Control ID="tpgInput">Input</Control>
 
 			<Control ID="tpgOverclocking">Overclocking</Control>
-			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
+			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To <Value ID="overclock">overclock</Value>, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the <Value ID="game">game</Value>, try lowering the value or using the "after NMI" field instead.</Control>
 			<Control ID="grpPpuTiming">PPU Vertical Blank Configuration</Control>
 			<Control ID="lblExtraScanlinesBeforeNmi">Additional scanlines before NMI:</Control>
 			<Control ID="lblExtraScanlinesAfterNmi">Additional scanlines after NMI:</Control>
@@ -383,7 +383,7 @@
 			<Control ID="lblAngle">angle (in degrees)</Control>
 
 			<Control ID="tpgOverclocking">Overclocking</Control>
-			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
+			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To <Value ID="overclock">overclock</Value>, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the <Value ID="game">game</Value>, try lowering the value or using the "after NMI" field instead.</Control>
 			<Control ID="grpPpuTiming">PPU Vertical Blank Configuration</Control>
 			<Control ID="lblExtraScanlinesBeforeNmi">Additional scanlines before NMI:</Control>
 			<Control ID="lblExtraScanlinesAfterNmi">Additional scanlines after NMI:</Control>
@@ -432,11 +432,16 @@
 			<Control ID="grpVolume">Volume</Control>
 		</Form>
 		<Form ID="ShortcutKeysTabView">
-			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
+			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not <Value ID="intentional">intentional</Value>, please review and correct your key bindings.</Control>
 			<Control ID="colAction">Action</Control>
 			<Control ID="colBinding1">Binding #1</Control>
 			<Control ID="colBinding2">Binding #2</Control>
 		</Form>
+		<Form ID="DebuggerShortcutKeyGrid">
+			<Control ID="colAction">Shortcut</Control>
+			<Control ID="colBinding1">Keys</Control>
+		</Form>
+		
 		<Form ID="PreferencesConfigView" Title="Preferences">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
@@ -468,11 +473,11 @@
 
 			<Control ID="tpgFiles">Folders/Files</Control>
 			<Control ID="grpFileAssociations">File Associations</Control>
-			<Control ID="chkSnesRomFiles">SNES roms: .sfc, .smc, .swc, .fig, .bs</Control>
+			<Control ID="chkSnesRomFiles">SNES roms: .<Value ID="sfc">sfc</Value>, .<Value ID="smc">smc</Value>, .<Value ID="swc">swc</Value>, .<Value ID="fig">fig</Value>, .bs</Control>
 			<Control ID="chkSnesMusicFiles">SNES music: .spc</Control>
-			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .studybox</Control>
-			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>
-			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc</Control>
+			<Control ID="chkNesRomFiles">NES roms: .<Value ID="nes">nes</Value>, .<Value ID="unif">unif</Value>, .<Value ID="fds">fds</Value>, .studybox</Control>
+			<Control ID="chkNesMusicFiles">NES music: .<Value ID="nsf">nsf</Value>, .nsfe</Control>
+			<Control ID="chkGbRomFiles">Game Boy roms: .<Value ID="gb">gb</Value>, .gbc</Control>
 			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>
 			<Control ID="chkMovieFiles">Mesen-S movies: .msm</Control>
 			<Control ID="chkSaveStateFiles">Mesen-S save states: .mss</Control>
@@ -587,7 +592,7 @@
 			<Control ID="radGameGenie">Game Genie (e.g: A1B2-C3D4)</Control>
 			<Control ID="radProActionReplay">Pro Action Replay (e.g: AAAAAAVV)</Control>
 			<Control ID="chkEnabled">Cheat Enabled</Control>
-			<Control ID="lblHint">To enter multiple codes, enter 1 code per line.</Control>
+			<Control ID="lblHint">To enter multiple <Value ID="codes">codes</Value>, enter 1 code per line.</Control>
 			<Control ID="lblInvalidCodes">Some codes do not match the selected format.</Control>
 			
 			<Control ID="btnOK">OK</Control>
@@ -608,9 +613,9 @@
 			<Control ID="lblAudio">Audio:</Control>
 			<Control ID="lblEmulation">Emulation:</Control>
 			<Control ID="lblCheats">Cheats:</Control>
-			<Control ID="lblSpecialThanks">And thank you to everybody who has contributed in any way! (donations, bug reports, testing, sharing information, etc.)</Control>
+			<Control ID="lblSpecialThanks">And thank you to everybody who has contributed in any way! (<Value ID="donations">donations</Value>, bug <Value ID="reports">reports</Value>, <Value ID="testing">testing</Value>, sharing <Value ID="information">information</Value>, etc.)</Control>
 
-			<Control ID="lblDonate">If you want to support Mesen-S, please consider donating.&#13;Thank you for your support!</Control>
+			<Control ID="lblDonate">If you want to support Mesen-<Value ID="S">S</Value>, please consider donating.&#13;Thank you for your support!</Control>
 			<Control ID="okButton">&amp;OK</Control>
 		</Form>
 		<Form ID="frmGameConfig" Title="Game Configuration">
@@ -620,7 +625,7 @@
 			<Control ID="lblLatestVersion">Latest Version:</Control>
 			<Control ID="lblCurrentVersion">Current Version:</Control>
 			<Control ID="lblChangeLog">Changelog:</Control>
-			<Control ID="lblDonate">If you want to support Mesen-S, please consider donating.  Thank you!</Control>
+			<Control ID="lblDonate">If you want to support Mesen-<Value ID="S">S</Value>, please consider donating.  Thank you!</Control>
 			<Control ID="btnUpdate">Update</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
@@ -690,7 +695,7 @@
 			<Control ID="tpgVideoOptions">Video Options</Control>
 			<Control ID="tpgAudioOptions">Audio Options</Control>
 			<Control ID="tpgEmulationOptions">Emulation Options</Control>
-			<Control ID="lblExplanation">This will start Mesen-S in fullscreen mode with the "MyGame.nes" rom loaded.  It will also use the NTSC filter, set at a 2x scale and configure the Overscan settings.  The "DoNotSaveSettings" flag is used to prevent the command line switches from pernanently altering Mesen-S's settings.</Control>
+			<Control ID="lblExplanation">This will start Mesen-S in fullscreen mode with the "MyGame.nes" rom loaded.  It will also use the NTSC <Value ID="filter">filter</Value>, set at a 2x scale and configure the Overscan settings.  The "DoNotSaveSettings" flag is used to prevent the command line switches from pernanently altering Mesen-S's settings.</Control>
 		</Form>
 		<Form ID="frmCopyFiles" Title="Please wait...">
 			<Control ID="lblCopying">Copying:</Control>
@@ -940,6 +945,8 @@
 			<Control ID="lblIntegrationSettings">Integration settings</Control>
 			
 			<Control ID="tabShortcuts">Shortcuts</Control>
+			<Control ID="tabShared">Shared</Control>
+			<Control ID="tabMemoryTools">Memory Tools</Control>
 		</Form>
 
 		<Form ID="ProfilerWindow">
@@ -1006,7 +1013,7 @@ Examples:
 a == 10 || x == $23
 scanline == 10 &amp;&amp; (cycle >= 55 &amp;&amp; cycle &lt;= 100)
 x == [$150] || y == [10]
-[[$15] + y]   -&gt; Reads the value at address $15, adds Y to it and reads the value at the resulting address.
+[[$15] + y]   -&gt; Reads the value at address $<Value ID="15">15</Value>, adds Y to it and reads the value at the resulting address.
 {$FFEA}  -&gt; Returns the NMI handler's address.</Control>
 
 			<Control ID="btnOK">OK</Control>
@@ -1023,9 +1030,9 @@ x == [$150] || y == [10]
 		<Message ID="FilterAvi">Avi files (*.avi)|*.avi|All Files (*.*)|*.*</Message>
 		<Message ID="FilterGif">GIF files (*.gif)|*.gif|All Files (*.*)|*.*</Message>
 		<Message ID="FilterPalette">Palette Files (*.pal)|*.pal|All Files (*.*)|*.*</Message>
-		<Message ID="FilterRom">All supported formats (*.sfc, *.gb, *.gbc, *.bs, *.spc, *.zip, *.7z)|*.SFC;*.SMC;*.SWC;*.FIG;*.ZIP;*.7Z;*.SPC;*.BS;*.GB;*.GBC|SNES Roms (*.sfc)|*.SFC;*.SMC;*.SWC;*.FIG;*.BS|Gameboy Roms (*.gb, *.gbc)|*.GB;*.GBC|SPC Sound Files (*.spc)|*.SPC|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
+		<Message ID="FilterRom">All supported formats (*.<Value ID="sfc">sfc</Value>, *.<Value ID="gb">gb</Value>, *.<Value ID="gbc">gbc</Value>, *.<Value ID="bs">bs</Value>, *.<Value ID="spc">spc</Value>, *.<Value ID="zip">zip</Value>, *.7z)|*.SFC;*.SMC;*.SWC;*.FIG;*.ZIP;*.7Z;*.SPC;*.BS;*.GB;*.GBC|SNES Roms (*.sfc)|*.SFC;*.SMC;*.SWC;*.FIG;*.BS|Gameboy Roms (*.<Value ID="gb">gb</Value>, *.gbc)|*.GB;*.GBC|SPC Sound Files (*.spc)|*.SPC|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
 		<Message ID="FilterTest">Test files (*.mtp)|*.mtp|All (*.*)|*.*</Message>
-		<Message ID="FilterCheat">All supported formats (*.cht, *.xml)|*.cht;*.xml</Message>
+		<Message ID="FilterCheat">All supported formats (*.<Value ID="cht">cht</Value>, *.xml)|*.cht;*.xml</Message>
 		<Message ID="FilterSavestate">Mesen-S Savestates (*.mss)|*.mss|All files (*.*)|*.*</Message>
 		<Message ID="FilterTapeFiles">Family Basic Tape files (*.fbt)|*.fbt|All Files (*.*)|*.*</Message>
 
@@ -1084,7 +1091,7 @@ x == [$150] || y == [10]
 
 		<Message ID="CannotWriteToFolder">The selected folder cannot be written to - please select another folder and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
 		<Message ID="InvalidPaths">The following path overrides are invalid:&#xA;&#xA;{0}&#xA;&#xA;Please use valid and writable folders and try again.</Message>
-		<Message ID="CopyMesenDataPrompt">All files will be copied from:&#xA;&#xA;{0}&#xA;to&#xA;{1}&#xA;&#xA;Once the copy is completed, Mesen-S will restart.&#xA;Continue?</Message>
+		<Message ID="CopyMesenDataPrompt">All files will be copied from:&#xA;&#xA;{0}&#xA;to&#xA;{1}&#xA;&#xA;Once the copy is <Value ID="completed">completed</Value>, Mesen-S will restart.&#xA;Continue?</Message>
 
 		<Message ID="CheatsFound">{0} games in database</Message>
 		<Message ID="CheatsImported">{0} cheats imported for {1}.</Message>
@@ -1129,7 +1136,7 @@ x == [$150] || y == [10]
 		<Message ID="Player">Player</Message>
 
 		<Message ID="HexEditor_Location">Location: ${0}</Message>
-		<Message ID="HexEditor_Selection">Selection: ${0} - ${1}, {2} bytes</Message>
+		<Message ID="HexEditor_Selection">Selection: ${0} - ${1}<Value ID=""></Value>, {2} bytes</Message>
 
 		<Message ID="btnOK">OK</Message>
 		<Message ID="btnCancel">Cancel</Message>
@@ -1387,16 +1394,16 @@ x == [$150] || y == [10]
 		</Enum>
 		<Enum ID="RecordMovieFrom">
 			<Value ID="StartWithoutSaveData">Power on</Value>
-			<Value ID="StartWithSaveData">Power on, with save data</Value>
+			<Value ID="StartWithSaveData">Power <Value ID="on">on</Value>, with save data</Value>
 			<Value ID="CurrentState">Current state</Value>
 		</Enum>
 		<Enum ID="AudioSampleRate">
-			<Value ID="_11025">11,025 Hz</Value>
-			<Value ID="_22050">22,050 Hz</Value>
-			<Value ID="_32000">32,000 Hz</Value>
-			<Value ID="_44100">44,100 Hz</Value>
-			<Value ID="_48000">48,000 Hz</Value>
-			<Value ID="_96000">96,000 Hz</Value>
+			<Value ID="_11025"><Value ID="11">11</Value>,025 Hz</Value>
+			<Value ID="_22050"><Value ID="22">22</Value>,050 Hz</Value>
+			<Value ID="_32000"><Value ID="32">32</Value>,000 Hz</Value>
+			<Value ID="_44100"><Value ID="44">44</Value>,100 Hz</Value>
+			<Value ID="_48000"><Value ID="48">48</Value>,000 Hz</Value>
+			<Value ID="_96000"><Value ID="96">96</Value>,000 Hz</Value>
 		</Enum>
 		<Enum ID="StereoFilter">
 			<Value ID="None">None</Value>
@@ -1516,7 +1523,7 @@ x == [$150] || y == [10]
 			<Value ID="GbInvalidVramAccess">Invalid VRAM access</Value>
 			<Value ID="GbDisableLcdOutsideVblank">Disabled LCD outside vblank</Value>
 			<Value ID="GbInvalidOpCode">Invalid instruction</Value>
-			<Value ID="GbNopLoad">LD B,B (NOP)</Value>
+			<Value ID="GbNopLoad">LD <Value ID="B">B</Value>,B (NOP)</Value>
 			<Value ID="GbOamCorruption">OAM corruption bug triggered</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
@@ -1543,6 +1550,108 @@ x == [$150] || y == [10]
 			<Value ID="ShowTutorial">Display the tutorial script</Value>
 			<Value ID="ShowBlankWindow">Display an empty script</Value>
 			<Value ID="LoadLastScript">Load the previous script</Value>
+		</Enum>
+		<Enum ID="DebuggerShortcut">
+			<Value ID="IncreaseFontSize">Increase Font Size</Value>
+			<Value ID="DecreaseFontSize">Decrease Font Size</Value>
+			<Value ID="ResetFontSize">Reset Font Size</Value>
+			<Value ID="GoTo">Go To...</Value>
+			<Value ID="Find">Find</Value>
+			<Value ID="FindNext">Find Next</Value>
+			<Value ID="FindPrev">Find Previous</Value>
+			<Value ID="Undo">Undo</Value>
+			<Value ID="Copy">Copy</Value>
+			<Value ID="Cut">Cut</Value>
+			<Value ID="Paste">Paste</Value>
+			<Value ID="SelectAll">Select All</Value>
+			<Value ID="Refresh">Refresh</Value>
+			<Value ID="MarkAsCode">Mark Selection as Code</Value>
+			<Value ID="MarkAsData">Mark Selection as Data</Value>
+			<Value ID="MarkAsUnidentified">Mark Selection as Unidentified</Value>
+			<Value ID="GoToAll">Go to All</Value>
+			<Value ID="ZoomIn">Zoom In</Value>
+			<Value ID="ZoomOut">Zoom Out</Value>
+			<Value ID="SaveAsPng">Save As PNG</Value>
+			<Value ID="CodeWindow_EditInMemoryViewer">Edit in Memory Viewer</Value>
+			<Value ID="MemoryViewer_ViewInDisassembly">View in disassembly</Value>
+			<Value ID="OpenAssembler">Open Assembler</Value>
+			<Value ID="OpenDebugger">Open Debugger</Value>
+			<Value ID="OpenSpcDebugger">Open SPC Debugger</Value>
+			<Value ID="OpenSa1Debugger">Open SA-1 Debugger</Value>
+			<Value ID="OpenGsuDebugger">Open GSU Debugger</Value>
+			<Value ID="OpenNecDspDebugger">Open DSP Debugger</Value>
+			<Value ID="OpenCx4Debugger">Open CX4 Debugger</Value>
+			<Value ID="OpenGameboyDebugger">Open Game Boy Debugger</Value>
+			<Value ID="OpenEventViewer">Open Event Viewer</Value>
+			<Value ID="OpenMemoryTools">Open Memory Tools</Value>
+			<Value ID="OpenProfiler">Open Profiler</Value>
+			<Value ID="OpenScriptWindow">Open Script Window</Value>
+			<Value ID="OpenTraceLogger">Open Trace Logger</Value>
+			<Value ID="OpenRegisterViewer">Open Register Viewer</Value>
+			<Value ID="OpenDebugLog">Open Debug Log</Value>
+			<Value ID="OpenTilemapViewer">Open Tilemap Viewer</Value>
+			<Value ID="OpenTileViewer">Open Tile Viewer</Value>
+			<Value ID="OpenSpriteViewer">Open Sprite Viewer</Value>
+			<Value ID="OpenPaletteViewer">Open Palette Viewer</Value>
+			<Value ID="Reset">Reset</Value>
+			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="ReloadRom">Reload ROM</Value>
+			<Value ID="Continue">Continue</Value>
+			<Value ID="Break">Break</Value>
+			<Value ID="ToggleBreakContinue">Toggle Break/Continue</Value>
+			<Value ID="StepInto">Step Into</Value>
+			<Value ID="StepOver">Step Over</Value>
+			<Value ID="StepOut">Step Out</Value>
+			<Value ID="StepBack">Step Back</Value>
+			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
+			<Value ID="RunPpuCycle">Run one PPU Cycle</Value>
+			<Value ID="RunPpuScanline">Run one PPU Scanline</Value>
+			<Value ID="RunPpuFrame">Run one PPU Frame</Value>
+			<Value ID="BreakIn">Break In...</Value>
+			<Value ID="BreakOn">Break On...</Value>
+			<Value ID="FindOccurrences">Find Occurrences</Value>
+			<Value ID="GoToProgramCounter">Go To Program Counter</Value>
+			<Value ID="CodeWindow_SetNextStatement">Code Window: Set Next Statement</Value>
+			<Value ID="CodeWindow_EditSelectedCode">Code Window: Edit Selected Code</Value>
+			<Value ID="CodeWindow_EditSourceFile">Code Window: Edit Source File (Source View)</Value>
+			<Value ID="CodeWindow_EditLabel">Code Window: Edit Label</Value>
+			<Value ID="CodeWindow_NavigateBack">Code Window: Navigate Back</Value>
+			<Value ID="CodeWindow_NavigateForward">Code Window: Navigate Forward</Value>
+			<Value ID="CodeWindow_ToggleBreakpoint">Code Window: Toggle Breakpoint</Value>
+			<Value ID="CodeWindow_DisableEnableBreakpoint">Code Window: Disable/Enable Breakpoint</Value>
+			<Value ID="CodeWindow_SwitchView">Code Window: Switch View (Disassembly / Source View)</Value>
+			<Value ID="LabelList_Add">Label List: Add Label</Value>
+			<Value ID="LabelList_Edit">Label List: Edit Label</Value>
+			<Value ID="LabelList_Delete">Label List: Delete Label</Value>
+			<Value ID="LabelList_AddBreakpoint">Label List: Add Breakpoint</Value>
+			<Value ID="LabelList_AddToWatch">Label List: Add to Watch</Value>
+			<Value ID="LabelList_FindOccurrences">Label List: Find Occurrences</Value>
+			<Value ID="LabelList_ViewInCpuMemory">Label List: View in CPU Memory</Value>
+			<Value ID="LabelList_ViewInMemoryType">Label List: View in [memory type]</Value>
+			<Value ID="BreakpointList_Add">Breakpoint List: Add Breakpoint</Value>
+			<Value ID="BreakpointList_Edit">Breakpoint List: Edit Breakpoint</Value>
+			<Value ID="BreakpointList_GoToLocation">Breakpoint List: Go To Location</Value>
+			<Value ID="BreakpointList_Delete">Breakpoint List: Delete Breakpoint</Value>
+			<Value ID="WatchList_Delete">Watch List: Delete</Value>
+			<Value ID="WatchList_MoveUp">Watch List: Move Up</Value>
+			<Value ID="WatchList_MoveDown">Watch List: Move Down</Value>
+			<Value ID="SaveRom">Save ROM</Value>
+			<Value ID="SaveRomAs">Save ROM As</Value>
+			<Value ID="SaveEditAsIps">Save edits as IPS patch...</Value>
+			<Value ID="MemoryViewer_Freeze">Freeze</Value>
+			<Value ID="MemoryViewer_Unfreeze">Unfreeze</Value>
+			<Value ID="MemoryViewer_AddToWatch">Add to Watch</Value>
+			<Value ID="MemoryViewer_EditBreakpoint">Edit Breakpoint</Value>
+			<Value ID="MemoryViewer_EditLabel">Edit Label</Value>
+			<Value ID="MemoryViewer_Import">Import</Value>
+			<Value ID="MemoryViewer_Export">Export</Value>
+			<Value ID="MemoryViewer_ViewInCpuMemory">View in CPU/PPU Memory</Value>
+			<Value ID="MemoryViewer_ViewInMemoryType">View in [memory type]</Value>
+			<Value ID="ScriptWindow_OpenScript">Open Script</Value>
+			<Value ID="ScriptWindow_SaveScript">Save Script</Value>
+			<Value ID="ScriptWindow_RunScript">Run Script</Value>
+			<Value ID="ScriptWindow_StopScript">Stop Script</Value>
+			
 		</Enum>
 		<Enum ID="ActionType">
 			<Value ID="Copy">Copy</Value>

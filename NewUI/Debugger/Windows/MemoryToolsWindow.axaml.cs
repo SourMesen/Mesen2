@@ -111,18 +111,18 @@ namespace Mesen.Debugger.Windows
 					ActionType = ActionType.Copy,
 					IsEnabled = () => _editor.SelectionLength > 0,
 					OnClick = () => _editor.CopySelection(),
-					Shortcut = () => cfg.Shortcuts.Copy
+					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.Copy)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.Paste,
 					OnClick = () => _editor.PasteSelection(),
-					Shortcut = () => cfg.Shortcuts.Paste
+					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.Paste)
 				},
 				new Separator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.SelectAll,
 					OnClick = () => _editor.SelectAll(),
-					Shortcut = () => cfg.Shortcuts.SelectAll
+					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.SelectAll)
 				},
 			});
 		}
@@ -147,7 +147,7 @@ namespace Mesen.Debugger.Windows
 			return new ContextMenuAction() {
 				ActionType = ActionType.EditLabel,
 				HintText = () => "$" + _editor.SelectionStart.ToString("X2"),
-				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MemoryViewer_EditLabel,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_EditLabel),
 
 				IsEnabled = () => GetAddress(_model.Config.MemoryType, _editor.SelectionStart) != null,
 
@@ -175,7 +175,7 @@ namespace Mesen.Debugger.Windows
 			return new ContextMenuAction() {
 				ActionType = ActionType.AddWatch,
 				HintText = () => GetAddressRange(),
-				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MemoryViewer_AddToWatch,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_AddToWatch),
 
 				IsEnabled = () => _model.Config.MemoryType.SupportsWatch(),
 
@@ -191,7 +191,7 @@ namespace Mesen.Debugger.Windows
 			return new ContextMenuAction() {
 				ActionType = ActionType.EditBreakpoint,
 				HintText = () => GetAddressRange(),
-				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MemoryViewer_EditBreakpoint,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_EditBreakpoint),
 
 				OnClick = () => {
 					uint startAddress = (uint)_editor.SelectionStart;
@@ -227,19 +227,19 @@ namespace Mesen.Debugger.Windows
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsCode,
 						IsEnabled = () => GetMarkStartEnd(out _, out _),
-						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MarkAsCode,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsCode),
 						OnClick = () => MarkSelectionAs(CdlFlags.Code)
 					},
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsData,
 						IsEnabled = () => GetMarkStartEnd(out _, out _),
-						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MarkAsData,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsData),
 						OnClick = () => MarkSelectionAs(CdlFlags.Data)
 					},
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsUnidentified,
 						IsEnabled = () => GetMarkStartEnd(out _, out _),
-						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.MarkAsUnidentified,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsUnidentified),
 						OnClick = () => MarkSelectionAs(CdlFlags.None)
 					}
 				}
