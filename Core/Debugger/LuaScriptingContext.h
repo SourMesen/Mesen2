@@ -19,6 +19,8 @@ private:
 
 	static void ExecutionCountHook(lua_State* lua, lua_Debug* ar);
 
+	void LuaOpenLibs(lua_State* L, bool allowIoOsAccess);
+
 protected:
 	void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType) override;
 	int InternalCallEventCallback(EventType type) override;

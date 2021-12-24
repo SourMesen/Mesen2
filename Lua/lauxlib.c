@@ -37,8 +37,6 @@
 #define LEVELS1	10	/* size of the first part of the stack */
 #define LEVELS2	11	/* size of the second part of the stack */
 
-
-
 /*
 ** search for 'objidx' in table at index -1.
 ** return 1 + string at top if find a good name.
@@ -699,9 +697,13 @@ static int skipcomment (LoadF *lf, int *cp) {
   else return 0;  /* no comment */
 }
 
-
+int SANDBOX_ALLOW_LOADFILE = 0;
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
                                              const char *mode) {
+  if (!SANDBOX_ALLOW_LOADFILE) {
+    return LUA_ERRERR;
+  }
+
   LoadF lf;
   int status, readstatus;
   int c;

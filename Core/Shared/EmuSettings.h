@@ -24,7 +24,7 @@ private:
 	atomic<uint32_t> _flags;
 	atomic<uint32_t> _inputConfigVersion;
 
-	atomic<uint32_t> _debuggerFlags;
+	atomic<uint64_t> _debuggerFlags;
 
 	string _audioDevice;
 	string _saveFolder;

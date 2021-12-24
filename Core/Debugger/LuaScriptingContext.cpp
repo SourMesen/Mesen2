@@ -8,6 +8,8 @@
 #include "LuaCallHelper.h"
 #include "DebugTypes.h"
 #include "Debugger.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "EventType.h"
 
 LuaScriptingContext* LuaScriptingContext::_context = nullptr;
@@ -55,6 +57,36 @@ void LuaScriptingContext::ExecutionCountHook(lua_State *lua, lua_Debug *ar)
 	}
 }
 
+void LuaScriptingContext::LuaOpenLibs(lua_State* L, bool allowIoOsAccess)
+{
+	constexpr luaL_Reg loadedlibs[] = {
+	  {"_G", luaopen_base},
+	  {LUA_LOADLIBNAME, luaopen_package},
+	  {LUA_COLIBNAME, luaopen_coroutine},
+	  {LUA_TABLIBNAME, luaopen_table},
+	  {LUA_IOLIBNAME, luaopen_io},
+	  {LUA_OSLIBNAME, luaopen_os},
+	  {LUA_STRLIBNAME, luaopen_string},
+	  {LUA_MATHLIBNAME, luaopen_math},
+	  {LUA_UTF8LIBNAME, luaopen_utf8},
+	  {LUA_DBLIBNAME, luaopen_debug},
+	  {NULL, NULL}
+	};
+
+	const luaL_Reg* lib;
+	/* "require" functions from 'loadedlibs' and set results to global table */
+	for(lib = loadedlibs; lib->func; lib++) {
+		if(!allowIoOsAccess) {
+			//Skip loading IO, OS and Package lib when sandboxed
+			if(strcmp(lib->name, LUA_IOLIBNAME) == 0 || strcmp(lib->name, LUA_OSLIBNAME) == 0 || strcmp(lib->name, LUA_LOADLIBNAME) == 0) {
+				continue;
+			}
+		}
+		luaL_requiref(L, lib->name, lib->func, 1);
+		lua_pop(L, 1);  /* remove lib */
+	}
+}
+
 bool LuaScriptingContext::LoadScript(string scriptName, string scriptContent, Debugger* debugger)
 {
 	_scriptName = scriptName;
@@ -65,16 +97,23 @@ bool LuaScriptingContext::LoadScript(string scriptName, string scriptContent, De
 	_context = this;
 	LuaApi::SetContext(this);
 
-	luaL_openlibs(_lua);
+	EmuSettings* settings = debugger->GetEmulator()->GetSettings();
+	bool allowIoOsAccess = settings->CheckDebuggerFlag(DebuggerFlags::ScriptAllowIoOsAccess);
+	LuaOpenLibs(_lua, allowIoOsAccess);
+	
+	//Prevent lua code from loading any files
+	SANDBOX_ALLOW_LOADFILE = allowIoOsAccess ? 1 : 0;
 
 	//Load LuaSocket into Lua core
-	lua_getglobal(_lua, "package");
-	lua_getfield(_lua, -1, "preload");
-	lua_pushcfunction(_lua, luaopen_socket_core);
-	lua_setfield(_lua, -2, "socket.core");
-	lua_pushcfunction(_lua, luaopen_mime_core);
-	lua_setfield(_lua, -2, "mime.core");
-	lua_pop(_lua, 2);
+	if(allowIoOsAccess && settings->CheckDebuggerFlag(DebuggerFlags::ScriptAllowNetworkAccess)) {
+		lua_getglobal(_lua, "package");
+		lua_getfield(_lua, -1, "preload");
+		lua_pushcfunction(_lua, luaopen_socket_core);
+		lua_setfield(_lua, -2, "socket.core");
+		lua_pushcfunction(_lua, luaopen_mime_core);
+		lua_setfield(_lua, -2, "mime.core");
+		lua_pop(_lua, 2);
+	}
 
 	luaL_requiref(_lua, "emu", LuaApi::GetLibrary, 1);
 	Log("Loading script...");

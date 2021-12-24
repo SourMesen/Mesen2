@@ -64,8 +64,17 @@
 						<CheckBox IsChecked="{CompiledBinding Script.AutoRestartScriptAfterReload}" Content="{l:Translate chkAutoRestartScriptAfterReload}" />
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblSandboxing}">
-						<CheckBox IsChecked="{CompiledBinding Script.AllowIoOsFunctions}" Content="{l:Translate chkAllowIoOsFunctions}" />
-						<CheckBox IsChecked="{CompiledBinding Script.AllowNetworkAccess}" Content="{l:Translate chkAllowNetworkAccess}" />
+						<CheckBox IsChecked="{CompiledBinding Script.AllowIoOsAccess}" Content="{l:Translate chkAllowIoOsAccess}" />
+						<CheckBox
+							IsChecked="{CompiledBinding Script.AllowNetworkAccess}"
+							IsVisible="{CompiledBinding Script.AllowIoOsAccess}"
+							Content="{l:Translate chkAllowNetworkAccess}"
+						/>
+						<CheckBox
+							IsEnabled="False"
+							IsVisible="{CompiledBinding !Script.AllowIoOsAccess}"
+							Content="{l:Translate chkAllowNetworkAccess}"
+						/>
 					</c:OptionSection>
 				</StackPanel>
 			</TabItem>

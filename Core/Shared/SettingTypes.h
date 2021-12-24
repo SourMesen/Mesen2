@@ -678,43 +678,46 @@ struct ShortcutKeyInfo
 
 enum class DebuggerFlags : uint64_t
 {
-	BreakOnBrk = 0x01,
-	BreakOnCop = 0x02,
-	BreakOnWdm = 0x04,
-	BreakOnStp = 0x08,
-	BreakOnUninitRead = 0x10,
+	BreakOnBrk = (1 << 0),
+	BreakOnCop = (1 << 1),
+	BreakOnWdm = (1 << 2),
+	BreakOnStp = (1 << 3),
+	BreakOnUninitRead = (1 << 4),
 
-	ShowVerifiedData = 0x100,
-	DisassembleVerifiedData = 0x200,
-	
-	ShowUnidentifiedData = 0x400,
-	DisassembleUnidentifiedData = 0x800,
-	
-	UseAltSpcOpNames = 0x1000,
-	UseLowerCaseDisassembly = 0x2000,
-	
-	AutoResetCdl = 0x4000,
+	ShowVerifiedData = (1 << 8),
+	DisassembleVerifiedData = (1 << 9),
 
-	GbBreakOnInvalidOamAccess = 0x10000,
-	GbBreakOnInvalidVramAccess = 0x20000,
-	GbBreakOnDisableLcdOutsideVblank = 0x40000,
-	GbBreakOnInvalidOpCode = 0x80000,
-	GbBreakOnNopLoad = 0x100000,
-	GbBreakOnOamCorruption = 0x200000,
+	ShowUnidentifiedData = (1 << 10),
+	DisassembleUnidentifiedData = (1 << 11),
 
-	NesDebuggerEnabled = 0x01000000,
-	GbDebuggerEnabled = 0x02000000,
-	Cx4DebuggerEnabled = 0x04000000,
-	NecDspDebuggerEnabled = 0x08000000,
-	GsuDebuggerEnabled = 0x10000000,
-	Sa1DebuggerEnabled = 0x20000000,
-	SpcDebuggerEnabled = 0x40000000,
-	CpuDebuggerEnabled = 0x80000000,
+	UseAltSpcOpNames = (1 << 12),
+	UseLowerCaseDisassembly = (1 << 13),
 
-	NesBreakOnBrk = 0x100000000,
-	NesBreakOnUnofficialOpCode = 0x200000000,
-	NesBreakOnCpuCrash = 0x400000000,
-	NesBreakOnBusConflict = 0x800000000,
-	NesBreakOnDecayedOamRead = 0x1000000000,
-	NesBreakOnPpu2006ScrollGlitch = 0x2000000000
+	AutoResetCdl = (1 << 14),
+
+	GbBreakOnInvalidOamAccess = (1 << 16),
+	GbBreakOnInvalidVramAccess = (1 << 17),
+	GbBreakOnDisableLcdOutsideVblank = (1 << 18),
+	GbBreakOnInvalidOpCode = (1 << 19),
+	GbBreakOnNopLoad = (1 << 20),
+	GbBreakOnOamCorruption = (1 << 21),
+
+	NesDebuggerEnabled = (1 << 24),
+	GbDebuggerEnabled = (1 << 25),
+	Cx4DebuggerEnabled = (1 << 26),
+	NecDspDebuggerEnabled = (1 << 27),
+	GsuDebuggerEnabled = (1 << 28),
+	Sa1DebuggerEnabled = (1 << 29),
+	SpcDebuggerEnabled = (1 << 30),
+	CpuDebuggerEnabled = (1LLU << 31),
+
+	NesBreakOnBrk = (1LLU << 32),
+	NesBreakOnUnofficialOpCode = (1LLU << 33),
+	NesBreakOnCpuCrash = (1LLU << 34),
+	NesBreakOnBusConflict = (1LLU << 35),
+	NesBreakOnDecayedOamRead = (1LLU << 36),
+	NesBreakOnPpu2006ScrollGlitch = (1LLU << 37),
+
+	ScriptAllowIoOsAccess = (1LLU << 40),
+	ScriptAllowNetworkAccess = (1LLU << 41)
 };

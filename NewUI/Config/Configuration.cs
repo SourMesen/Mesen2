@@ -85,6 +85,7 @@ namespace Mesen.Config
 			Preferences.ApplyConfig();
 			AudioPlayer.ApplyConfig();
 			Debug.Debugger.ApplyConfig();
+			Debug.ScriptWindow.ApplyConfig();
 		}
 
 		public void InitializeDefaults()

@@ -162,6 +162,8 @@ namespace Mesen.Debugger.ViewModels
 		internal void SaveConfig()
 		{
 			//TODO
+			ConfigManager.Config.ApplyConfig();
+			ConfigManager.SaveConfig();
 		}
 	}
 }

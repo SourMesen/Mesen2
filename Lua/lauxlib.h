@@ -14,7 +14,7 @@
 
 #include "lua.h"
 
-
+extern int SANDBOX_ALLOW_LOADFILE;
 
 /* extra error code for 'luaL_loadfilex' */
 #define LUA_ERRFILE     (LUA_ERRERR+1)

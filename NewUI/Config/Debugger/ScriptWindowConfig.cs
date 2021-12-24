@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Media;
+using Mesen.Interop;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,16 @@ namespace Mesen.Config
 		[Reactive] public bool AutoReloadScriptWhenFileChanges { get; set; } = true;
 		[Reactive] public bool AutoRestartScriptAfterReload { get; set; } = true;
 		
-		[Reactive] public bool AllowIoOsFunctions { get; set; } = false;
+		[Reactive] public bool AllowIoOsAccess { get; set; } = false;
 		[Reactive] public bool AllowNetworkAccess { get; set; } = false;
 
 		[Reactive] public UInt32 ScriptTimeout { get; set; } = 1000;
+
+		public void ApplyConfig()
+		{
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.ScriptAllowIoOsAccess, AllowIoOsAccess);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.ScriptAllowNetworkAccess, AllowIoOsAccess && AllowNetworkAccess);
+		}
 
 		public void AddRecentScript(string scriptFile)
 		{

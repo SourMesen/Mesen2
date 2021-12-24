@@ -921,7 +921,7 @@
 			<Control ID="chkSaveScriptBeforeRun">Save scripts to disk before run</Control>
 			<Control ID="chkAutoReloadScriptWhenFileChanges">Auto-reload scripts from disk when file changes</Control>
 			<Control ID="chkAutoRestartScriptAfterReload">Auto-restart script when script is reloaded</Control>
-			<Control ID="chkAllowIoOsFunctions">Allow access to I/O and OS functions</Control>
+			<Control ID="chkAllowIoOsAccess">Allow access to I/O and OS functions</Control>
 			<Control ID="chkAllowNetworkAccess">Allow network access</Control>
 			
 			<Control ID="tabFonts">Fonts &amp; Colors</Control>

@@ -338,19 +338,19 @@ bool EmuSettings::CheckFlag(EmulationFlags flag)
 void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 {
 	if(enabled) {
-		if((_debuggerFlags & (int)flag) == 0) {
-			_debuggerFlags |= (int)flag;
+		if((_debuggerFlags & (uint64_t)flag) == 0) {
+			_debuggerFlags |= (uint64_t)flag;
 		}
 	} else {
-		if((_debuggerFlags & (int)flag) != 0) {
-			_debuggerFlags &= ~(int)flag;
+		if((_debuggerFlags & (uint64_t)flag) != 0) {
+			_debuggerFlags &= ~(uint64_t)flag;
 		}
 	}
 }
 
 bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 {
-	return (_debuggerFlags & (int)flag) != 0;
+	return (_debuggerFlags & (uint64_t)flag) != 0;
 }
 
 void EmuSettings::InitializeRam(void* data, uint32_t length)
