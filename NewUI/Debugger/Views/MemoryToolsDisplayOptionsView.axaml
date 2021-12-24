@@ -67,15 +67,11 @@
 			/>
 		</c:OptionSection>
 
-		<c:OptionSection Header="{l:Translate lblFontSettings}">
-			<dv:FontOptionsView DataContext="{CompiledBinding Font}" />
+		<c:OptionSection Header="{l:Translate lblMiscSettings}">
 			<CheckBox
 				IsChecked="{CompiledBinding HighDensityTextMode}"
 				Content="{l:Translate chkHighDensityTextMode}"
 			/>
-		</c:OptionSection>
-
-		<c:OptionSection Header="{l:Translate lblMiscSettings}">
 			<CheckBox
 				IsChecked="{CompiledBinding ShowCharacters}"
 				Content="{l:Translate chkShowCharacters}"

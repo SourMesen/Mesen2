@@ -41,7 +41,8 @@
 			<dc:MesenTextEditor
 				Name="Editor"
 				ShowLineNumbers="True"
-				FontFamily="Consolas"
+				FontFamily="{CompiledBinding Font.FontFamilyObject}"
+				FontSize="{CompiledBinding Font.FontSize}"
 			/>
 		</Border>
 		
@@ -50,7 +51,8 @@
 				Name="HexView"
 				IsReadOnly="True"
 				ShowLineNumbers="True"
-				FontFamily="Consolas"
+				FontFamily="{CompiledBinding Font.FontFamilyObject}"
+				FontSize="{CompiledBinding Font.FontSize}"
 				TextBinding="{CompiledBinding ByteCodeView}"
 			/>
 		</Border>

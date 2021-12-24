@@ -95,7 +95,7 @@
 
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblFontSettings}" Margin="0 5 0 0">
-						<dv:FontOptionsView DataContext="{CompiledBinding Debugger.Font}" />
+						<dv:FontOptionsView DataContext="{CompiledBinding Font}" />
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblSyntaxHighlighting}">

@@ -48,7 +48,7 @@ namespace Mesen.Debugger.ViewModels
 
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
 
-			Disassembly = new DisassemblyViewerViewModel(Config);
+			Disassembly = new DisassemblyViewerViewModel(ConfigManager.Config.Debug);
 			BreakpointList = new BreakpointListViewModel();
 			
 			DockFactory = new DebuggerDockFactory(this);

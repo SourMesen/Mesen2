@@ -95,8 +95,8 @@
 					SelectionStart="{CompiledBinding SelectionStart}"
 					SelectionLength="{CompiledBinding SelectionLength}"
 					TopRow="{CompiledBinding ScrollPosition}"
-					FontFamily="{CompiledBinding Config.Font.FontFamily}"
-					FontSize="{CompiledBinding Config.Font.FontSize}"
+					FontFamily="{CompiledBinding FontConfig.FontFamily}"
+					FontSize="{CompiledBinding FontConfig.FontSize}"
 					ShowStringView="{CompiledBinding Config.ShowCharacters}"
 				/>
 			</DockPanel>

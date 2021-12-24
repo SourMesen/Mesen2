@@ -41,8 +41,6 @@ namespace Mesen.Config
 		[Reactive] public int BreakInCount { get; set; } = 1;
 		[Reactive] public BreakInMetric BreakInMetric { get; set; } = BreakInMetric.CpuInstructions;
 
-		[Reactive] public FontConfig Font { get; set; } = new FontConfig();
-
 		[Reactive] public bool ShowSelectionLength { get; set; } = false;
 		[Reactive] public WatchFormatStyle WatchFormat { get; set; } = WatchFormatStyle.Hex;
 

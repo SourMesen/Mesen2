@@ -20,9 +20,6 @@ namespace Mesen.Config
 		public bool AutoRefresh { get; set; } = true;
 		public Size WindowSize { get; set; } = new Size(0, 0);
 		public Point WindowLocation { get; set; } = new Point(0, 0);
-		public string FontFamily { get; set; } = DebuggerConfig.MonospaceFontFamily;
-		public FontStyle FontStyle { get; set; } = FontStyle.Normal;
-		public float FontSize { get; set; } = DebuggerConfig.DefaultFontSize;
 		public int TextZoom { get; set; } = 100;
 
 		public Dictionary<CpuType, TraceLoggerCpuConfig> CpuConfig { get; set; }

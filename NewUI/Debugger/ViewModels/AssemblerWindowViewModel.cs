@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
 using Dock.Model.ReactiveUI.Controls;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
@@ -23,6 +24,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public UInt32 BytesUsed { get; set; }
 		[Reactive] public bool OkEnabled { get; set; } = false;
 		[Reactive] public List<AssemblerError> Errors { get; set; } = new List<AssemblerError>();
+		public FontConfig Font { get; } = ConfigManager.Config.Debug.Font;
 
 		private CpuType _cpuType;
 

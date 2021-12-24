@@ -19,6 +19,7 @@ namespace Mesen.Debugger.ViewModels
 	public class MemoryToolsViewModel : ViewModelBase
 	{
 		[Reactive] public HexEditorConfig Config { get; set; }
+		[Reactive] public FontConfig FontConfig { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
 		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
 		[Reactive] public TblByteCharConverter? TblConverter { get; set; }
@@ -35,7 +36,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public MemoryToolsViewModel()
 		{
-			Config = ConfigManager.Config.Debug.HexEditor.Clone();
+			Config = ConfigManager.Config.Debug.HexEditor;
+			FontConfig = ConfigManager.Config.Debug.Font;
 			ScrollPosition = 0;
 
 			if(Design.IsDesignMode) {
@@ -67,7 +69,6 @@ namespace Mesen.Debugger.ViewModels
 
 		internal void SaveConfig()
 		{
-			ConfigManager.Config.Debug.HexEditor = Config;
 			ConfigManager.SaveConfig();
 		}
 	}

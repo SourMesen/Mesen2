@@ -14,12 +14,12 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int ScrollPosition { get; set; }
 		[Reactive] public int MaxScrollPosition { get; set; } = 0;
 		
-		public DebuggerConfig Config { get; private set; }
+		public DebugConfig Config { get; private set; }
 
 		//For designer
-		public DisassemblyViewerViewModel(): this(new DebuggerConfig()) { }
+		public DisassemblyViewerViewModel(): this(new DebugConfig()) { }
 
-		public DisassemblyViewerViewModel(DebuggerConfig config)
+		public DisassemblyViewerViewModel(DebugConfig config)
 		{
 			Config = config;
 		}

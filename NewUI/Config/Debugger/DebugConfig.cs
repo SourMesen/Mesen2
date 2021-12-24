@@ -12,20 +12,21 @@ namespace Mesen.Config
 {
 	public class DebugConfig
 	{
-		public DebuggerShortcutsConfig Shortcuts = new DebuggerShortcutsConfig();
-		public TraceLoggerConfig TraceLogger = new TraceLoggerConfig();
-		public HexEditorConfig HexEditor = new HexEditorConfig();
-		public EventViewerConfig EventViewer = new EventViewerConfig();
-		public DebuggerConfig Debugger = new DebuggerConfig();
-		public TilemapViewerConfig TilemapViewer = new TilemapViewerConfig();
-		public TileViewerConfig TileViewer = new TileViewerConfig();
-		public RegisterViewerConfig RegisterViewer = new RegisterViewerConfig();
-		public SpriteViewerConfig SpriteViewer = new SpriteViewerConfig();
-		public DbgIntegrationConfig DbgIntegration = new DbgIntegrationConfig();
-		public ScriptWindowConfig ScriptWindow = new ScriptWindowConfig();
-		public ProfilerConfig Profiler = new ProfilerConfig();
-		public AssemblerConfig Assembler = new AssemblerConfig();
-		public DebugLogConfig DebugLog = new DebugLogConfig();
+		public DebuggerShortcutsConfig Shortcuts { get; set; } = new DebuggerShortcutsConfig();
+		public TraceLoggerConfig TraceLogger { get; set; } = new TraceLoggerConfig();
+		public HexEditorConfig HexEditor { get; set; } = new HexEditorConfig();
+		public EventViewerConfig EventViewer { get; set; } = new EventViewerConfig();
+		public DebuggerConfig Debugger { get; set; } = new DebuggerConfig();
+		public TilemapViewerConfig TilemapViewer { get; set; } = new TilemapViewerConfig();
+		public TileViewerConfig TileViewer { get; set; } = new TileViewerConfig();
+		public RegisterViewerConfig RegisterViewer { get; set; } = new RegisterViewerConfig();
+		public SpriteViewerConfig SpriteViewer { get; set; } = new SpriteViewerConfig();
+		public DbgIntegrationConfig DbgIntegration { get; set; } = new DbgIntegrationConfig();
+		public ScriptWindowConfig ScriptWindow { get; set; } = new ScriptWindowConfig();
+		public ProfilerConfig Profiler { get; set; } = new ProfilerConfig();
+		public AssemblerConfig Assembler { get; set; } = new AssemblerConfig();
+		public DebugLogConfig DebugLog { get; set; } = new DebugLogConfig();
+		public FontConfig Font { get; set; } = new FontConfig();
 
 		public DebugConfig()
 		{		

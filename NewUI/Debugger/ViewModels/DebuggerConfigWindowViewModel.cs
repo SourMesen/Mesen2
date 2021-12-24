@@ -11,6 +11,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class DebuggerConfigWindowViewModel : ViewModelBase
 	{
+		public FontConfig Font { get; set; }
 		public DebuggerConfig Debugger { get; set; }
 		public ScriptWindowConfig Script { get; set; }
 		public DbgIntegrationConfig Integration { get; set; }
@@ -24,6 +25,7 @@ namespace Mesen.Debugger.ViewModels
 		public DebuggerConfigWindowViewModel()
 		{
 			Debugger = ConfigManager.Config.Debug.Debugger;
+			Font = ConfigManager.Config.Debug.Font;
 			Script = ConfigManager.Config.Debug.ScriptWindow;
 			Integration = ConfigManager.Config.Debug.DbgIntegration;
 
