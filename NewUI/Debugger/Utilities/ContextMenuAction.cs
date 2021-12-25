@@ -15,11 +15,16 @@ namespace Mesen.Debugger.Utilities
 	public class ContextMenuAction : ViewModelBase
 	{
 		public ActionType ActionType;
+		public string? CustomText { get; set; }
 
 		public string Name
 		{
 			get
 			{
+				if(ActionType == ActionType.Custom) {
+					return CustomText ?? "";
+				}
+
 				string label = ResourceHelper.GetEnumText(ActionType);
 				if(HintText != null) {
 					label += " (" + HintText() + ")";
@@ -106,6 +111,8 @@ namespace Mesen.Debugger.Utilities
 
 	public enum ActionType
 	{
+		Custom,
+
 		[IconFile("Copy")]
 		Copy,
 
@@ -222,6 +229,31 @@ namespace Mesen.Debugger.Utilities
 		Reset,
 
 		[IconFile("PowerCycle")]
-		PowerCycle
+		PowerCycle,
+
+		[IconFile("Script")]
+		NewScript,
+
+		[IconFile("MediaPlay")]
+		RunScript,
+
+		[IconFile("MediaStop")]
+		StopScript,
+
+		[IconFile("Folder")]
+		Open,
+
+		[IconFile("SaveFloppy")]
+		Save,
+		
+		SaveAs,
+
+		[IconFile("Exit")]
+		Exit,
+
+		[IconFile("Help")]
+		HelpApiReference,
+
+		RecentScripts,
 	}
 }

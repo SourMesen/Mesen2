@@ -3,157 +3,199 @@ using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Mesen.Config
 {
-	public class DebuggerShortcutsConfig
+	public class DebuggerShortcutsConfig : IJsonOnDeserialized
 	{
+		private List<DebuggerShortcutInfo> _shortcuts = new();
+		private Dictionary<DebuggerShortcut, DebuggerShortcutInfo> _lookup = new();
+
+		public DebuggerShortcutsConfig()
+		{
+			Init();
+		}
+
+		public List<DebuggerShortcutInfo> Shortcuts
+		{
+			get => _shortcuts;
+			set
+			{
+				_shortcuts = value;
+				InitLookup();
+			}
+		}
+
+		private void InitLookup()
+		{
+			_lookup = new();
+			foreach(DebuggerShortcutInfo shortcut in _shortcuts) {
+				_lookup[shortcut.Shortcut] = shortcut;
+			}
+		}
+
 		public DbgShortKeys Get(DebuggerShortcut shortcut)
 		{
-			DbgShortKeys? binding = Shortcuts.Find(s => s.Shortcut == shortcut)?.KeyBinding;
-			if(binding == null) {
+			if(_lookup.TryGetValue(shortcut, out DebuggerShortcutInfo? info)) {
+				return info.KeyBinding;
+			} else {
 				throw new Exception("Invalid shortcut");
 			}
-			return binding;
 		}
 
 		internal DebuggerShortcutInfo GetBindable(DebuggerShortcut shortcut)
 		{
-			DebuggerShortcutInfo? binding = Shortcuts.Find(s => s.Shortcut == shortcut);
-			if(binding == null) {
+			if(_lookup.TryGetValue(shortcut, out DebuggerShortcutInfo? info)) {
+				return info;
+			} else {
 				throw new Exception("Invalid shortcut");
 			}
-			return binding;
 		}
 
-		public List<DebuggerShortcutInfo> Shortcuts { get; set; } = new() {
+		private void Add(DebuggerShortcutInfo info)
+		{
+			if(!_lookup.ContainsKey(info.Shortcut)) {
+				Shortcuts.Add(info);
+				_lookup[info.Shortcut] = info;
+			}
+		}
+
+		public void OnDeserialized()
+		{
+			Init();
+		}
+
+		private void Init()
+		{
 			//Shared
-			new() { Shortcut = DebuggerShortcut.IncreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemPlus) },
-			new() { Shortcut = DebuggerShortcut.DecreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) },
-			new() { Shortcut = DebuggerShortcut.ResetFontSize, KeyBinding = new(KeyModifiers.Control, Key.D0) },
+			Add(new() { Shortcut = DebuggerShortcut.IncreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemPlus) });
+			Add(new() { Shortcut = DebuggerShortcut.DecreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });
+			Add(new() { Shortcut = DebuggerShortcut.ResetFontSize, KeyBinding = new(KeyModifiers.Control, Key.D0) });
 
-			new() { Shortcut = DebuggerShortcut.GoTo, KeyBinding = new(KeyModifiers.Control, Key.G) },
+			Add(new() { Shortcut = DebuggerShortcut.GoTo, KeyBinding = new(KeyModifiers.Control, Key.G) });
 
-			new() { Shortcut = DebuggerShortcut.Find, KeyBinding = new(KeyModifiers.Control, Key.F) },
-			new() { Shortcut = DebuggerShortcut.FindNext, KeyBinding = new(Key.F3) },
-			new() { Shortcut = DebuggerShortcut.FindPrev, KeyBinding = new(KeyModifiers.Shift, Key.F3) },
+			Add(new() { Shortcut = DebuggerShortcut.Find, KeyBinding = new(KeyModifiers.Control, Key.F) });
+			Add(new() { Shortcut = DebuggerShortcut.FindNext, KeyBinding = new(Key.F3) });
+			Add(new() { Shortcut = DebuggerShortcut.FindPrev, KeyBinding = new(KeyModifiers.Shift, Key.F3) });
 
-			new() { Shortcut = DebuggerShortcut.Undo, KeyBinding = new(KeyModifiers.Control, Key.Z) },
-			new() { Shortcut = DebuggerShortcut.Copy, KeyBinding = new(KeyModifiers.Control, Key.C) },
-			new() { Shortcut = DebuggerShortcut.Cut, KeyBinding = new(KeyModifiers.Control, Key.X) },
-			new() { Shortcut = DebuggerShortcut.Paste, KeyBinding = new(KeyModifiers.Control, Key.V) },
-			new() { Shortcut = DebuggerShortcut.SelectAll, KeyBinding = new(KeyModifiers.Control, Key.A) },
+			Add(new() { Shortcut = DebuggerShortcut.Undo, KeyBinding = new(KeyModifiers.Control, Key.Z) });
+			Add(new() { Shortcut = DebuggerShortcut.Copy, KeyBinding = new(KeyModifiers.Control, Key.C) });
+			Add(new() { Shortcut = DebuggerShortcut.Cut, KeyBinding = new(KeyModifiers.Control, Key.X) });
+			Add(new() { Shortcut = DebuggerShortcut.Paste, KeyBinding = new(KeyModifiers.Control, Key.V) });
+			Add(new() { Shortcut = DebuggerShortcut.SelectAll, KeyBinding = new(KeyModifiers.Control, Key.A) });
 
-			new() { Shortcut = DebuggerShortcut.Refresh, KeyBinding = new(Key.F5) },
+			Add(new() { Shortcut = DebuggerShortcut.Refresh, KeyBinding = new(Key.F5) });
 
-			new() { Shortcut = DebuggerShortcut.MarkAsCode, KeyBinding = new(KeyModifiers.Control, Key.D1) },
-			new() { Shortcut = DebuggerShortcut.MarkAsData, KeyBinding = new(KeyModifiers.Control, Key.D2) },
-			new() { Shortcut = DebuggerShortcut.MarkAsUnidentified, KeyBinding = new(KeyModifiers.Control, Key.D3) },
+			Add(new() { Shortcut = DebuggerShortcut.MarkAsCode, KeyBinding = new(KeyModifiers.Control, Key.D1) });
+			Add(new() { Shortcut = DebuggerShortcut.MarkAsData, KeyBinding = new(KeyModifiers.Control, Key.D2) });
+			Add(new() { Shortcut = DebuggerShortcut.MarkAsUnidentified, KeyBinding = new(KeyModifiers.Control, Key.D3) });
 
-			new() { Shortcut = DebuggerShortcut.GoToAll, KeyBinding = new(KeyModifiers.Control, Key.OemComma) },
+			Add(new() { Shortcut = DebuggerShortcut.GoToAll, KeyBinding = new(KeyModifiers.Control, Key.OemComma) });
 
-			new() { Shortcut = DebuggerShortcut.ZoomIn, KeyBinding = new(KeyModifiers.Control, Key.OemPlus) },
-			new() { Shortcut = DebuggerShortcut.ZoomOut, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) },
+			Add(new() { Shortcut = DebuggerShortcut.ZoomIn, KeyBinding = new(KeyModifiers.Control, Key.OemPlus) });
+			Add(new() { Shortcut = DebuggerShortcut.ZoomOut, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });
 
-			new() { Shortcut = DebuggerShortcut.SaveAsPng, KeyBinding = new(KeyModifiers.Control, Key.S) },
+			Add(new() { Shortcut = DebuggerShortcut.SaveAsPng, KeyBinding = new(KeyModifiers.Control, Key.S) });
 
-			new() { Shortcut = DebuggerShortcut.CodeWindow_EditInMemoryViewer, KeyBinding = new(Key.F1) },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDisassembly, KeyBinding = new() },
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditInMemoryViewer, KeyBinding = new(Key.F1) });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDisassembly, KeyBinding = new() });
 
-			new() { Shortcut = DebuggerShortcut.OpenAssembler, KeyBinding = new(KeyModifiers.Control, Key.U) },
-			new() { Shortcut = DebuggerShortcut.OpenDebugger, KeyBinding = new(KeyModifiers.Control, Key.D) },
-			new() { Shortcut = DebuggerShortcut.OpenSpcDebugger, KeyBinding = new(KeyModifiers.Control, Key.F) },
-			new() { Shortcut = DebuggerShortcut.OpenSa1Debugger, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.OpenGsuDebugger, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.OpenNecDspDebugger, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.OpenCx4Debugger, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.OpenGameboyDebugger, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.OpenEventViewer, KeyBinding = new(KeyModifiers.Control, Key.E) },
-			new() { Shortcut = DebuggerShortcut.OpenMemoryTools, KeyBinding = new(KeyModifiers.Control, Key.M) },
-			new() { Shortcut = DebuggerShortcut.OpenProfiler, KeyBinding = new(KeyModifiers.Control, Key.Y) },
-			new() { Shortcut = DebuggerShortcut.OpenScriptWindow, KeyBinding = new(KeyModifiers.Control, Key.N) },
-			new() { Shortcut = DebuggerShortcut.OpenTraceLogger, KeyBinding = new(KeyModifiers.Control, Key.J) },
-			new() { Shortcut = DebuggerShortcut.OpenRegisterViewer, KeyBinding = new(KeyModifiers.Control, Key.K) },
-			new() { Shortcut = DebuggerShortcut.OpenDebugLog, KeyBinding = new(KeyModifiers.Control, Key.B) },
+			Add(new() { Shortcut = DebuggerShortcut.OpenAssembler, KeyBinding = new(KeyModifiers.Control, Key.U) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenDebugger, KeyBinding = new(KeyModifiers.Control, Key.D) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenSpcDebugger, KeyBinding = new(KeyModifiers.Control, Key.F) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenSa1Debugger, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.OpenGsuDebugger, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.OpenNecDspDebugger, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.OpenCx4Debugger, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.OpenGameboyDebugger, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.OpenEventViewer, KeyBinding = new(KeyModifiers.Control, Key.E) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenMemoryTools, KeyBinding = new(KeyModifiers.Control, Key.M) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenProfiler, KeyBinding = new(KeyModifiers.Control, Key.Y) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenScriptWindow, KeyBinding = new(KeyModifiers.Control, Key.N) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenTraceLogger, KeyBinding = new(KeyModifiers.Control, Key.J) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenRegisterViewer, KeyBinding = new(KeyModifiers.Control, Key.K) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenDebugLog, KeyBinding = new(KeyModifiers.Control, Key.B) });
 
-			new() { Shortcut = DebuggerShortcut.OpenTilemapViewer, KeyBinding = new(KeyModifiers.Control, Key.D1) },
-			new() { Shortcut = DebuggerShortcut.OpenTileViewer, KeyBinding = new(KeyModifiers.Control, Key.D2) },
-			new() { Shortcut = DebuggerShortcut.OpenSpriteViewer, KeyBinding = new(KeyModifiers.Control, Key.D3) },
-			new() { Shortcut = DebuggerShortcut.OpenPaletteViewer, KeyBinding = new(KeyModifiers.Control, Key.D4) },
+			Add(new() { Shortcut = DebuggerShortcut.OpenTilemapViewer, KeyBinding = new(KeyModifiers.Control, Key.D1) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenTileViewer, KeyBinding = new(KeyModifiers.Control, Key.D2) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenSpriteViewer, KeyBinding = new(KeyModifiers.Control, Key.D3) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenPaletteViewer, KeyBinding = new(KeyModifiers.Control, Key.D4) });
 
 			//Debugger window
-			new() { Shortcut = DebuggerShortcut.Reset, KeyBinding = new(KeyModifiers.Control, Key.R) },
-			new() { Shortcut = DebuggerShortcut.PowerCycle, KeyBinding = new(KeyModifiers.Control, Key.T) },
-			new() { Shortcut = DebuggerShortcut.ReloadRom, KeyBinding = new() },
+			Add(new() { Shortcut = DebuggerShortcut.Reset, KeyBinding = new(KeyModifiers.Control, Key.R) });
+			Add(new() { Shortcut = DebuggerShortcut.PowerCycle, KeyBinding = new(KeyModifiers.Control, Key.T) });
+			Add(new() { Shortcut = DebuggerShortcut.ReloadRom, KeyBinding = new() });
 
-			new() { Shortcut = DebuggerShortcut.Continue, KeyBinding = new(Key.F5) },
-			new() { Shortcut = DebuggerShortcut.Break, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Alt, Key.Cancel) },
-			new() { Shortcut = DebuggerShortcut.ToggleBreakContinue, KeyBinding = new(Key.Escape) },
-			new() { Shortcut = DebuggerShortcut.StepInto, KeyBinding = new(Key.F11) },
-			new() { Shortcut = DebuggerShortcut.StepOver, KeyBinding = new(Key.F10) },
-			new() { Shortcut = DebuggerShortcut.StepOut, KeyBinding = new(KeyModifiers.Shift, Key.F11) },
-			new() { Shortcut = DebuggerShortcut.StepBack, KeyBinding = new(KeyModifiers.Shift, Key.F10) },
+			Add(new() { Shortcut = DebuggerShortcut.Continue, KeyBinding = new(Key.F5) });
+			Add(new() { Shortcut = DebuggerShortcut.Break, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Alt, Key.Cancel) });
+			Add(new() { Shortcut = DebuggerShortcut.ToggleBreakContinue, KeyBinding = new(Key.Escape) });
+			Add(new() { Shortcut = DebuggerShortcut.StepInto, KeyBinding = new(Key.F11) });
+			Add(new() { Shortcut = DebuggerShortcut.StepOver, KeyBinding = new(Key.F10) });
+			Add(new() { Shortcut = DebuggerShortcut.StepOut, KeyBinding = new(KeyModifiers.Shift, Key.F11) });
+			Add(new() { Shortcut = DebuggerShortcut.StepBack, KeyBinding = new(KeyModifiers.Shift, Key.F10) });
 
-			new() { Shortcut = DebuggerShortcut.RunCpuCycle, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.RunPpuCycle, KeyBinding = new(Key.F6) },
-			new() { Shortcut = DebuggerShortcut.RunPpuScanline, KeyBinding = new(Key.F7) },
-			new() { Shortcut = DebuggerShortcut.RunPpuFrame, KeyBinding = new(Key.F8) },
+			Add(new() { Shortcut = DebuggerShortcut.RunCpuCycle, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.RunPpuCycle, KeyBinding = new(Key.F6) });
+			Add(new() { Shortcut = DebuggerShortcut.RunPpuScanline, KeyBinding = new(Key.F7) });
+			Add(new() { Shortcut = DebuggerShortcut.RunPpuFrame, KeyBinding = new(Key.F8) });
 
-			new() { Shortcut = DebuggerShortcut.BreakIn, KeyBinding = new(KeyModifiers.Control, Key.B) },
-			new() { Shortcut = DebuggerShortcut.BreakOn, KeyBinding = new(KeyModifiers.Alt, Key.B) },
+			Add(new() { Shortcut = DebuggerShortcut.BreakIn, KeyBinding = new(KeyModifiers.Control, Key.B) });
+			Add(new() { Shortcut = DebuggerShortcut.BreakOn, KeyBinding = new(KeyModifiers.Alt, Key.B) });
 
-			new() { Shortcut = DebuggerShortcut.FindOccurrences, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F) },
-			new() { Shortcut = DebuggerShortcut.GoToProgramCounter, KeyBinding = new(KeyModifiers.Alt, Key.Multiply) },
+			Add(new() { Shortcut = DebuggerShortcut.FindOccurrences, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F) });
+			Add(new() { Shortcut = DebuggerShortcut.GoToProgramCounter, KeyBinding = new(KeyModifiers.Alt, Key.Multiply) });
 
-			new() { Shortcut = DebuggerShortcut.CodeWindow_SetNextStatement, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F10) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_EditSelectedCode, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_EditSourceFile, KeyBinding = new(Key.F4) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_EditLabel, KeyBinding = new(Key.F2) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateBack, KeyBinding = new(KeyModifiers.Alt, Key.Left) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateForward, KeyBinding = new(KeyModifiers.Alt, Key.Right) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_ToggleBreakpoint, KeyBinding = new(Key.F9) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_DisableEnableBreakpoint, KeyBinding = new(KeyModifiers.Control, Key.F9) },
-			new() { Shortcut = DebuggerShortcut.CodeWindow_SwitchView, KeyBinding = new(KeyModifiers.Control, Key.Q) },
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_SetNextStatement, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F10) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSelectedCode, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSourceFile, KeyBinding = new(Key.F4) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditLabel, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateBack, KeyBinding = new(KeyModifiers.Alt, Key.Left) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateForward, KeyBinding = new(KeyModifiers.Alt, Key.Right) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_ToggleBreakpoint, KeyBinding = new(Key.F9) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_DisableEnableBreakpoint, KeyBinding = new(KeyModifiers.Control, Key.F9) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_SwitchView, KeyBinding = new(KeyModifiers.Control, Key.Q) });
 
-			new() { Shortcut = DebuggerShortcut.LabelList_Add, KeyBinding = new(Key.Insert) },
-			new() { Shortcut = DebuggerShortcut.LabelList_Edit, KeyBinding = new(Key.F2) },
-			new() { Shortcut = DebuggerShortcut.LabelList_Delete, KeyBinding = new(Key.Delete) },
-			new() { Shortcut = DebuggerShortcut.LabelList_AddBreakpoint, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.LabelList_AddToWatch, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.LabelList_FindOccurrences, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.LabelList_ViewInCpuMemory, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.LabelList_ViewInMemoryType, KeyBinding = new() },
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_Add, KeyBinding = new(Key.Insert) });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_Edit, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_Delete, KeyBinding = new(Key.Delete) });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_AddBreakpoint, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_AddToWatch, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_FindOccurrences, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_ViewInCpuMemory, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_ViewInMemoryType, KeyBinding = new() });
 
-			new() { Shortcut = DebuggerShortcut.BreakpointList_Add, KeyBinding = new(Key.Insert) },
-			new() { Shortcut = DebuggerShortcut.BreakpointList_Edit, KeyBinding = new(Key.F2) },
-			new() { Shortcut = DebuggerShortcut.BreakpointList_GoToLocation, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.BreakpointList_Delete, KeyBinding = new(Key.Delete) },
+			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Add, KeyBinding = new(Key.Insert) });
+			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Edit, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_GoToLocation, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Delete, KeyBinding = new(Key.Delete) });
 
-			new() { Shortcut = DebuggerShortcut.WatchList_Delete, KeyBinding = new(Key.Delete) },
-			new() { Shortcut = DebuggerShortcut.WatchList_MoveUp, KeyBinding = new(KeyModifiers.Alt, Key.Up) },
-			new() { Shortcut = DebuggerShortcut.WatchList_MoveDown, KeyBinding = new(KeyModifiers.Alt, Key.Down) },
+			Add(new() { Shortcut = DebuggerShortcut.WatchList_Delete, KeyBinding = new(Key.Delete) });
+			Add(new() { Shortcut = DebuggerShortcut.WatchList_MoveUp, KeyBinding = new(KeyModifiers.Alt, Key.Up) });
+			Add(new() { Shortcut = DebuggerShortcut.WatchList_MoveDown, KeyBinding = new(KeyModifiers.Alt, Key.Down) });
 
-			new() { Shortcut = DebuggerShortcut.SaveRom, KeyBinding = new(KeyModifiers.Control, Key.S) },
-			new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.SaveEditAsIps, KeyBinding = new() },
+			Add(new() { Shortcut = DebuggerShortcut.SaveRom, KeyBinding = new(KeyModifiers.Control, Key.S) });
+			Add(new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.SaveEditAsIps, KeyBinding = new() });
 			
 			//Memory Tools
-			//new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) },
-			//new() { Shortcut = eDebuggerShortcut.MemoryViewer_Unfreeze, KeyBinding = new(KeyModifiers.Control, Key.W) },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_AddToWatch, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_EditBreakpoint, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_EditLabel, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_Import, KeyBinding = new(KeyModifiers.Control, Key.O) },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_Export, KeyBinding = new(KeyModifiers.Control, Key.S) },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInCpuMemory, KeyBinding = new() },
-			new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInMemoryType, KeyBinding = new() },
+			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) });
+			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Unfreeze, KeyBinding = new(KeyModifiers.Control, Key.W) });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_AddToWatch, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_EditBreakpoint, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_EditLabel, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Import, KeyBinding = new(KeyModifiers.Control, Key.O) });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Export, KeyBinding = new(KeyModifiers.Control, Key.S) });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInCpuMemory, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInMemoryType, KeyBinding = new() });
 
 			//Script Window
-			new() { Shortcut = DebuggerShortcut.ScriptWindow_OpenScript, KeyBinding = new(KeyModifiers.Control, Key.N) },
-			new() { Shortcut = DebuggerShortcut.ScriptWindow_SaveScript, KeyBinding = new(KeyModifiers.Control, Key.S) },
-			new() { Shortcut = DebuggerShortcut.ScriptWindow_RunScript, KeyBinding = new(Key.F5) },
-			new() { Shortcut = DebuggerShortcut.ScriptWindow_StopScript, KeyBinding = new(Key.Escape) },
-		};
+			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_NewScript, KeyBinding = new(KeyModifiers.Control, Key.N) });
+			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_OpenScript, KeyBinding = new(KeyModifiers.Control, Key.O) });
+			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_SaveScript, KeyBinding = new(KeyModifiers.Control, Key.S) });
+			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_RunScript, KeyBinding = new(Key.F5) });
+			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_StopScript, KeyBinding = new(Key.Escape) });
+		}
 	}
 
 	public enum DebuggerShortcut
@@ -253,6 +295,7 @@ namespace Mesen.Config
 		MemoryViewer_Export,
 		MemoryViewer_ViewInCpuMemory,
 		MemoryViewer_ViewInMemoryType,
+		ScriptWindow_NewScript,
 		ScriptWindow_OpenScript,
 		ScriptWindow_SaveScript,
 		ScriptWindow_RunScript,

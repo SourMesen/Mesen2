@@ -32,24 +32,10 @@
 		<Style Selector="Button">
 			<Setter Property="MinWidth" Value="0" />
 		</Style>
-		<Style Selector=".IconBar Button">
-			<Setter Property="Padding" Value="0" />
-		</Style>
 		<Style Selector=".IconBar Button Image">
 			<Setter Property="Margin" Value="0" />
 			<Setter Property="Width" Value="16" />
 			<Setter Property="Height" Value="16" />
-		</Style>
-		<Style Selector="StackPanel Separator">
-			<Setter Property="Width" Value="2" />
-			<Setter Property="Height" Value="16" />
-			<Setter Property="Margin" Value="2 0" />
-			<Setter Property="Padding" Value="0" />
-			<Setter Property="Template">
-				<ControlTemplate>
-					<Rectangle Stroke="LightGray" StrokeThickness="1" Height="16" Width="1" />
-				</ControlTemplate>
-			</Setter>
 		</Style>
 	</Window.Styles>
 	
@@ -69,28 +55,8 @@
 				<Image Source="/Assets/Settings.png" />
 			</Button>
 			
-			<StackPanel Classes="Toolbar" Orientation="Horizontal">
-				<ItemsPresenter Items="{CompiledBinding ToolbarItems}">
-					<ItemsPresenter.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Horizontal" />
-						</ItemsPanelTemplate>
-					</ItemsPresenter.ItemsPanel>
-					<ItemsPresenter.ItemTemplate>
-						<DataTemplate DataType="{x:Type du:ContextMenuAction}">
-							<Button ToolTip.Tip="{Binding Name}" Command="{Binding ClickCommand}" IsEnabled="{Binding Enabled}">
-								<StackPanel Orientation="Horizontal">
-									<ContentPresenter Content="{Binding Icon}" />
-									<TextBlock
-										Padding="3 0"
-										IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNull}}"
-										Text="{Binding Name}"
-									/>
-								</StackPanel>
-							</Button>
-						</DataTemplate>
-					</ItemsPresenter.ItemTemplate>
-				</ItemsPresenter>
+			<StackPanel Orientation="Horizontal">
+				<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
 			</StackPanel>
 		</DockPanel>
 		<DockPanel>

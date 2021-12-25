@@ -99,9 +99,8 @@ namespace Mesen.Views
 
 		private void OnScriptWindowClick(object sender, RoutedEventArgs e)
 		{
-			RomInfo romInfo = EmuApi.GetRomInfo();
 			new ScriptWindow {
-				DataContext = new ScriptWindowViewModel(romInfo.ConsoleType.GetMainCpuType(), "")
+				DataContext = new ScriptWindowViewModel()
 			}.Show();
 		}
 
@@ -136,9 +135,7 @@ namespace Mesen.Views
 
 		private void OnDebuggerSettingsClick(object sender, RoutedEventArgs e)
 		{
-			new DebuggerConfigWindow {
-				DataContext = new DebuggerConfigWindowViewModel()
-			}.Show();
+			DebuggerConfigWindow.Open(DebugConfigWindowTab.Debugger, VisualRoot);
 		}
 
 		private void OpenConfig(ConfigWindowTab tab)

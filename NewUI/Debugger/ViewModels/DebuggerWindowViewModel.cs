@@ -236,11 +236,7 @@ namespace Mesen.Debugger.ViewModels
 				new Separator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Preferences,
-					OnClick = () => {
-						new DebuggerConfigWindow() {
-							DataContext = new DebuggerConfigWindowViewModel()
-						}.ShowCenteredDialog((Control)wnd);
-					}
+					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.Debugger, wnd)
 				},
 			};
 

@@ -18,7 +18,7 @@ namespace Mesen.Config
 
 		[Reactive] public int Zoom { get; set; } = 100;
 
-		[Reactive] public int CodeWindowHeight { get; set; } = 0;
+		[Reactive] public double LogWindowHeight { get; set; } = 100;
 
 		[Reactive] public ScriptStartupBehavior ScriptStartupBehavior { get; set; } = ScriptStartupBehavior.ShowTutorial;
 		[Reactive] public bool SaveScriptBeforeRun { get; set; } = true;

@@ -8,6 +8,8 @@ using System;
 using System.ComponentModel;
 using Mesen.Config;
 using Mesen.Debugger.ViewModels;
+using Mesen.Utilities;
+using Avalonia.Rendering;
 
 namespace Mesen.Debugger.Windows
 {
@@ -30,6 +32,11 @@ namespace Mesen.Debugger.Windows
 			} else {
 				throw new Exception("Invalid model");
 			}
+		}
+
+		public static void Open(DebugConfigWindowTab tab, IRenderRoot? parent)
+		{
+			new DebuggerConfigWindow() { DataContext = new DebuggerConfigWindowViewModel(tab) }.ShowCentered(parent);
 		}
 
 		private void InitializeComponent()

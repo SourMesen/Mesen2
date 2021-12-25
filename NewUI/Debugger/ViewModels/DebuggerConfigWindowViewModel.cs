@@ -15,15 +15,16 @@ namespace Mesen.Debugger.ViewModels
 		public DebuggerConfig Debugger { get; set; }
 		public ScriptWindowConfig Script { get; set; }
 		public DbgIntegrationConfig Integration { get; set; }
-		[Reactive] public int SelectedIndex { get; set; }
+		[Reactive] public DebugConfigWindowTab SelectedIndex { get; set; }
 
 		public List<DebuggerShortcutInfo> SharedShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> MemoryToolsShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> ScriptShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> DebuggerShortcuts { get; set; } = new();
 
-		public DebuggerConfigWindowViewModel()
+		public DebuggerConfigWindowViewModel(DebugConfigWindowTab tab)
 		{
+			SelectedIndex = tab;
 			Debugger = ConfigManager.Config.Debug.Debugger;
 			Font = ConfigManager.Config.Debug.Font;
 			Script = ConfigManager.Config.Debug.ScriptWindow;
@@ -167,5 +168,14 @@ namespace Mesen.Debugger.ViewModels
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.SaveConfig();
 		}
+	}
+
+	public enum DebugConfigWindowTab
+	{
+		Debugger,
+		ScriptWindow,
+		FontAndColors,
+		Integration,
+		Shortcuts
 	}
 }

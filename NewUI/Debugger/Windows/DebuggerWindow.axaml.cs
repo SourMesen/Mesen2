@@ -21,7 +21,6 @@ namespace Mesen.Debugger.Windows
 	{
 		private DebuggerWindowViewModel _model;
 		private NotificationListener? _listener;
-		private DispatcherTimer _timer;
 
 		public DebuggerWindow()
 		{
@@ -29,7 +28,6 @@ namespace Mesen.Debugger.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateToolbar());
 		}
 
 		private void InitializeComponent()
@@ -74,7 +72,6 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_timer.Start();
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
 			UpdateDebugger();
@@ -86,7 +83,6 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_timer.Stop();
 			_listener?.Dispose();
 			_model.Cleanup();
 			_model.Config.SaveWindowSettings(this);
@@ -114,15 +110,6 @@ namespace Mesen.Debugger.Windows
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
-		}
-
-		private void UpdateToolbar()
-		{
-			foreach(object item in _model.ToolbarItems) {
-				if(item is ContextMenuAction act) {
-					act.Update();
-				}
-			}
 		}
 	}
 }

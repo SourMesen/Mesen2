@@ -1,0 +1,65 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	mc:Ignorable="d" d:DesignWidth="280" d:DesignHeight="200"
+	x:Class="Mesen.Debugger.Controls.ActionToolbar"
+	x:Name="root"
+>
+	<UserControl.Resources>
+		<Color x:Key="ButtonBackground">Transparent</Color>
+		<Color x:Key="ButtonBorderBrush">Transparent</Color>
+	</UserControl.Resources>
+	
+	<UserControl.Styles>
+		<Style Selector="Button">
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="Padding" Value="1" />
+		</Style>
+		<Style Selector="Button:disabled">
+			<Setter Property="Opacity" Value="0.5" />
+		</Style>
+		<Style Selector="Button Image">
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+		</Style>
+		<Style Selector="StackPanel Separator">
+			<Setter Property="Width" Value="2" />
+			<Setter Property="Height" Value="16" />
+			<Setter Property="Margin" Value="2 0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Rectangle Stroke="LightGray" StrokeThickness="1" Height="16" Width="1" />
+				</ControlTemplate>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+	
+	<ItemsPresenter DataContext="{Binding ElementName=root}" Items="{Binding Items}">
+		<ItemsPresenter.ItemsPanel>
+			<ItemsPanelTemplate>
+				<StackPanel Orientation="Horizontal" />
+			</ItemsPanelTemplate>
+		</ItemsPresenter.ItemsPanel>
+		<ItemsPresenter.ItemTemplate>
+			<DataTemplate DataType="{x:Type du:ContextMenuAction}">
+				<Button ToolTip.Tip="{Binding Name}" Command="{Binding ClickCommand}" IsEnabled="{Binding Enabled}">
+					<StackPanel Orientation="Horizontal">
+						<ContentPresenter Content="{Binding Icon}" />
+						<TextBlock
+							Padding="3 0"
+							IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNull}}"
+							Text="{Binding Name}"
+						/>
+					</StackPanel>
+				</Button>
+			</DataTemplate>
+		</ItemsPresenter.ItemTemplate>
+	</ItemsPresenter>
+</UserControl>

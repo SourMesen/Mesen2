@@ -7,6 +7,7 @@
 	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
 	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:i="using:Mesen.Interop"
@@ -16,7 +17,6 @@
 	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
 	x:Class="Mesen.Debugger.Windows.ScriptWindow"
 	Icon="/Assets/Script.png"
-	Width="700" Height="500"	
 	x:DataType="vm:ScriptWindowViewModel"
 	Title="{l:Translate wndTitle}"
 >
@@ -24,36 +24,47 @@
 		<vm:ScriptWindowViewModel />
 	</Design.DataContext>
 
-	<Window.Styles>
-		<Style Selector="Button">
-			<Setter Property="MinWidth" Value="0" />
-		</Style>
-		<Style Selector="Grid.main > Border">
-			<Setter Property="BorderBrush" Value="Gray" />
-			<Setter Property="BorderThickness" Value="1" />
-			<Setter Property="Margin" Value="1" />
-		</Style>
-	</Window.Styles>
-	
-	<Grid Classes="main" ColumnDefinitions="*" RowDefinitions="Auto,*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<StackPanel Classes="Toolbar" Orientation="Horizontal">
-			<Button ToolTip.Tip="{l:Translate btnRun}" Click="OnRunClick">
-				<Image Source="/Assets/MediaPlay.png" />
-			</Button>
-			<Button ToolTip.Tip="{l:Translate btnStop}" Click="OnStopClick">
-				<Image Source="/Assets/MediaStop.png" />
-			</Button>
+	<Window.Resources>
+		<du:GridLengthConverter x:Key="GridLengthConverter" />
+	</Window.Resources>
+
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="File"  Classes="ActionMenu" Items="{CompiledBinding FileMenuActions}" />
+			<MenuItem Header="Script" Classes="ActionMenu" Items="{CompiledBinding ScriptMenuActions}" />
+			<MenuItem Header="Help"  Classes="ActionMenu" Items="{CompiledBinding HelpMenuActions}" />
+		</Menu>
+
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+			<dc:ActionToolbar Items="{CompiledBinding ToolbarActions}" />
 		</StackPanel>
 		
-		<Border Grid.Row="1">
-			<dc:MesenTextEditor
-				Name="Editor"
-				ShowLineNumbers="True"
-				FontFamily="{CompiledBinding Font.FontFamilyObject}"
-				FontSize="{CompiledBinding Font.FontSize}"
+		<Grid ColumnDefinitions="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="4" />
+				<RowDefinition MinHeight="50" Height="{CompiledBinding Config.LogWindowHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}" />
+			</Grid.RowDefinitions>
+
+			<Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Margin="1">
+				<dc:MesenTextEditor
+					Name="Editor"
+					ShowLineNumbers="True"
+					TextBinding="{CompiledBinding Code}"
+					FontFamily="{CompiledBinding Font.FontFamilyObject}"
+					FontSize="{CompiledBinding Font.FontSize}"
+				/>
+			</Border>
+
+			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" />
+
+			<TextBox
+				Grid.Row="2"
+				VerticalContentAlignment="Top"
+				Height="NaN"
+				Text="{CompiledBinding Log}"
+				IsReadOnly="True"
 			/>
-		</Border>
-		
-		<TextBox Grid.Row="2" Height="NaN" VerticalContentAlignment="Top" />
-	</Grid>
+		</Grid>
+	</DockPanel>
 </Window>

@@ -1717,6 +1717,18 @@ x == [$150] || y == [10]
 			<Value ID="RunPpuFrame">Run one frame</Value>
 			<Value ID="BreakIn">Break in...</Value>
 			<Value ID="BreakOn">Break on...</Value>
+
+			<Value ID="RunScript">Run Script</Value>
+			<Value ID="StopScript">Stop Script</Value>
+			<Value ID="NewScript">New Script Window</Value>
+			
+			<Value ID="Open">Open</Value>
+			<Value ID="Save">Save</Value>
+			<Value ID="SaveAs">Save as...</Value>
+			<Value ID="Exit">Exit</Value>
+			
+			<Value ID="HelpApiReference">API Reference</Value>
+			<Value ID="RecentScripts">Recent Scripts</Value>
 		</Enum>
 	</Enums>
 </Resources>

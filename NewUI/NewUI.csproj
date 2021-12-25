@@ -200,6 +200,9 @@
     <Compile Update="Debugger\Controls\DebuggerKeyBindingButton.cs">
       <DependentUpon>DebuggerKeyBindingButton</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Controls\ActionToolbar.axaml.cs">
+      <DependentUpon>ActionToolbar.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\SpritePreviewPanel.axaml.cs">
       <DependentUpon>SpritePreviewPanel.axaml</DependentUpon>
     </Compile>
