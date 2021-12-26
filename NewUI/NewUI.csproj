@@ -156,16 +156,16 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.11-rc.2" />
+    <PackageReference Include="Avalonia" Version="0.10.11" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.9" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.11-rc.2" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.11-rc.2" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.11-rc.2" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11-rc.2" />
-    <PackageReference Include="Dock.Avalonia" Version="0.10.11-rc.2" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.11" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
+    <PackageReference Include="Dock.Avalonia" Version="0.10.11" />
     <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
-    <PackageReference Include="Dock.Model" Version="0.10.11-rc.2" />
-    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.11-rc.2" />
+    <PackageReference Include="Dock.Model" Version="0.10.11" />
+    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.11" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="17.1.9" />
    </ItemGroup>

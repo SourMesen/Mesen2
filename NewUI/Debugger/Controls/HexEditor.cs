@@ -355,13 +355,13 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			Application.Current.Clipboard.SetTextAsync(sb.ToString());
+			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
 		}
 
 		public void PasteSelection()
 		{
 			//TODO PASTE
-			string text = Application.Current.Clipboard.GetTextAsync().Result;
+			//string? text = Application.Current.Clipboard?.GetTextAsync().Result;
 		}
 
 		public void SelectAll()

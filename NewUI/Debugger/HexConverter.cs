@@ -6,7 +6,7 @@ namespace Mesen.Debugger
 {
 	public class HexConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
 		{
 			if(targetType == typeof(string)) {
 				if(parameter is string format && value is IFormattable f) {
@@ -26,7 +26,7 @@ namespace Mesen.Debugger
 		}
 
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
 		{
 			if(value is string s) {
 				if(targetType == typeof(byte)) {

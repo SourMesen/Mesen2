@@ -3,12 +3,10 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using System;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
-using Avalonia.Platform;
 using Mesen.Interop;
 using System.ComponentModel;
 using Mesen.Config;
@@ -19,16 +17,28 @@ namespace Mesen.Debugger.Windows
 	{
 		private NotificationListener _listener;
 		private EventViewerViewModel _model;
-		private PictureViewer _picViewer;
-		private WriteableBitmap _viewerBitmap;
 		private DispatcherTimer _timer;
 
-		public EventViewerWindow()
+		//For designer
+		[Obsolete] public EventViewerWindow() : this(CpuType.Cpu) { }
+
+		public EventViewerWindow(CpuType cpuType)
 		{
 			InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
+
+			_model = new EventViewerViewModel(cpuType, this.FindControl<PictureViewer>("picViewer"), this);
+			_model.Config.LoadWindowSettings(this);
+			DataContext = _model;
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateConfig());
+			_listener = new NotificationListener();
 		}
 
 		private void InitializeComponent()
@@ -38,22 +48,13 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnOpened(EventArgs e)
 		{
-			base.OnOpened(e);
-
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			//Renderer.DrawFps = true;
-			_picViewer = this.FindControl<PictureViewer>("picViewer");
-			_picViewer.Source = _viewerBitmap;
-			InitBitmap();
-
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateConfig());
 			_timer.Start();
-
-			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
+			_model.RefreshViewer();
 		}
 
 		private void UpdateConfig()
@@ -69,46 +70,27 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			_timer?.Stop();
-			_listener?.Dispose();
+			_model.Config.SaveWindowSettings(this);
+			_timer.Stop();
+			_listener.Dispose();
 			_model.SaveConfig();
-			base.OnClosing(e);
-		}
-
-		private void InitBitmap()
-		{
-			FrameInfo size = DebugApi.GetEventViewerDisplaySize(_model.CpuType);
-			if(_viewerBitmap == null || _viewerBitmap.Size.Width != size.Width || _viewerBitmap.Size.Height != size.Height) {
-				_viewerBitmap = new WriteableBitmap(new PixelSize((int)size.Width, (int)size.Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
-			}
-		}
-
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(this.DataContext is EventViewerViewModel model) {
-				_model = model;
-			} else {
-				throw new Exception("Unexpected model");
-			}
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType != ConsoleNotificationType.EventViewerRefresh) {
-				return;
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.EventViewerRefresh:
+					if(_model.Config.AutoRefresh) {
+						_model.RefreshViewer();
+					}
+					break;
+
+				case ConsoleNotificationType.CodeBreak:
+					if(_model.Config.RefreshOnBreakPause) {
+						_model.RefreshViewer();
+					}
+					break;
 			}
-
-			DebugApi.TakeEventSnapshot(_model.CpuType);
-
-			Dispatcher.UIThread.Post(() => {
-				InitBitmap();
-				using(var framebuffer = _viewerBitmap.Lock()) {
-					DebugApi.GetEventViewerOutput(_model.CpuType, framebuffer.Address, (uint)(_viewerBitmap.Size.Width * _viewerBitmap.Size.Height * sizeof(UInt32)));
-				}
-
-				_picViewer.Source = _viewerBitmap;
-				_picViewer.InvalidateVisual();
-			});
 		}
 	}
 }

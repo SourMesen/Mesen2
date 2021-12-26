@@ -58,7 +58,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class ColorToBrushConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is Color c && targetType == typeof(IBrush)) {
 				return new SolidColorBrush(c);
@@ -66,7 +66,7 @@ namespace ThemeEditor.Controls.ColorPicker
 			return AvaloniaProperty.UnsetValue;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is SolidColorBrush b && targetType == typeof(Color)) {
 				return b.Color;
@@ -77,7 +77,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class HexToColorConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is string s && targetType == typeof(Color)) {
 				try {
@@ -91,7 +91,7 @@ namespace ThemeEditor.Controls.ColorPicker
 			return AvaloniaProperty.UnsetValue;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is Color c && targetType == typeof(string)) {
 				try {
@@ -106,7 +106,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class HueConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double v && parameter is double range && targetType == typeof(double)) {
 				return v * range / 360.0;
@@ -114,7 +114,7 @@ namespace ThemeEditor.Controls.ColorPicker
 			return AvaloniaProperty.UnsetValue;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double v && parameter is double range && targetType == typeof(double)) {
 				return v * 360.0 / range;
@@ -125,7 +125,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class SaturationConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double v && parameter is double range && targetType == typeof(double)) {
 				return v * range / 100.0;
@@ -133,7 +133,7 @@ namespace ThemeEditor.Controls.ColorPicker
 			return AvaloniaProperty.UnsetValue;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double v && parameter is double range && targetType == typeof(double)) {
 				return v * 100.0 / range;
@@ -144,7 +144,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class ValueConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double v && parameter is double range && targetType == typeof(double)) {
 				return range - (v * range / 100.0);
@@ -152,7 +152,7 @@ namespace ThemeEditor.Controls.ColorPicker
 			return AvaloniaProperty.UnsetValue;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double v && parameter is double range && targetType == typeof(double)) {
 				return 100.0 - (v * 100.0 / range);
@@ -163,7 +163,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class HsvaToColorConverter : IMultiValueConverter
 	{
-		public object Convert(IList<object> values, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
 		{
 			double[] v = values.OfType<double>().ToArray();
 			if(v.Length == values.Count) {
@@ -175,7 +175,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 	public class HueToColorConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is double h && targetType == typeof(Color)) {
 				return ColorHelpers.FromHSVA(h, 100, 100, 100);
@@ -183,7 +183,7 @@ namespace ThemeEditor.Controls.ColorPicker
 			return AvaloniaProperty.UnsetValue;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is string s && targetType == typeof(double)) {
 				try {
@@ -726,14 +726,14 @@ namespace ThemeEditor.Controls.ColorPicker
 			}
 		}
 
-		private T Convert<T>(IValueConverter converter, T value, T range)
+		private T? Convert<T>(IValueConverter converter, T value, T range)
 		{
-			return (T)converter.Convert(value, typeof(T), range, CultureInfo.CurrentCulture);
+			return (T?)converter.Convert(value, typeof(T), range, CultureInfo.CurrentCulture);
 		}
 
-		private T ConvertBack<T>(IValueConverter converter, T value, T range)
+		private T? ConvertBack<T>(IValueConverter converter, T value, T range)
 		{
-			return (T)converter.ConvertBack(value, typeof(T), range, CultureInfo.CurrentCulture);
+			return (T?)converter.ConvertBack(value, typeof(T), range, CultureInfo.CurrentCulture);
 		}
 
 		private double GetValue1Range() => _hueCanvas?.Bounds.Height ?? 0.0;

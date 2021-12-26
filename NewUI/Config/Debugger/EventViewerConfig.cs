@@ -9,16 +9,12 @@ using System.Threading.Tasks;
 
 namespace Mesen.Config
 {
-		public class EventViewerConfig : BaseConfig<EventViewerConfig>
+	public class EventViewerConfig : BaseWindowConfig<EventViewerConfig>
 	{
-		public Size WindowSize { get; set; } = new Size(0, 0);
-		public Point WindowLocation { get; set; } = new Point(0, 0);
-
 		public int ImageScale { get; set; } = 1;
-		public bool RefreshOnBreakPause { get; set; } = true;
 
+		public bool RefreshOnBreakPause { get; set; } = true;
 		public bool AutoRefresh { get; set; } = true;
-		public RefreshSpeed AutoRefreshSpeed { get; set; } = RefreshSpeed.Normal;
 
 		public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
 		public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();

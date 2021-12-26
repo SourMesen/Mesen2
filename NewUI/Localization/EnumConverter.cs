@@ -5,7 +5,7 @@ namespace Mesen.Localization
 {
 	public class EnumConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
 		{
 			if(value is Enum && targetType == typeof(string)) {
 				return ResourceHelper.GetEnumText((Enum)value);
@@ -15,7 +15,7 @@ namespace Mesen.Localization
 		}
 
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
 		{
 			throw new NotImplementedException();
 		}

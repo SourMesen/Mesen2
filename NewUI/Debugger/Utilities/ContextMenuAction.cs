@@ -255,5 +255,13 @@ namespace Mesen.Debugger.Utilities
 		HelpApiReference,
 
 		RecentScripts,
+
+		[IconFile("Refresh")]
+		Refresh,
+		EnableAutoRefresh,
+		RefreshOnBreakPause,
+		
+		ZoomIn,
+		ZoomOut,
 	}
 }

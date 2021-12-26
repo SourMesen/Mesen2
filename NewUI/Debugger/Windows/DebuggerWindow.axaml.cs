@@ -84,6 +84,10 @@ namespace Mesen.Debugger.Windows
 			}
 
 			_listener?.Dispose();
+			_model.Config.PropertyChanged -= Config_PropertyChanged;
+			_model.Config.Gameboy.PropertyChanged -= Config_PropertyChanged;
+			_model.Config.Nes.PropertyChanged -= Config_PropertyChanged;
+			_model.Config.Snes.PropertyChanged -= Config_PropertyChanged;
 			_model.Cleanup();
 			_model.Config.SaveWindowSettings(this);
 			ConfigManager.SaveConfig();

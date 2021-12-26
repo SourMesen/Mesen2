@@ -31,7 +31,7 @@ namespace Mesen.Controls
 			if(Parent is MenuItem parent) {
 				Action updateShortcut = () => {
 					Header = ResourceHelper.GetEnumText(Filter);
-					Icon = ConfigManager.Config.Video.VideoFilter == Filter ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null!;
+					Icon = (ConfigManager.Config.Video.VideoFilter == Filter ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null)!;
 				};
 
 				updateShortcut();

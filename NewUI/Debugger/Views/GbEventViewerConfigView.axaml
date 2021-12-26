@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:dc="using:Mesen.Debugger.Controls"
-	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	mc:Ignorable="d"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="cfg:GbEventViewerConfig"

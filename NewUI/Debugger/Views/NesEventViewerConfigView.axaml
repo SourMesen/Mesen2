@@ -4,8 +4,9 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
-	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	mc:Ignorable="d"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="cfg:NesEventViewerConfig"
@@ -16,34 +17,42 @@
 	</Design.DataContext>
 
 	<StackPanel>
-		<dc:EventViewerCategoryControl Text="$2000" Config="{CompiledBinding Ppu2000Write}" />
-		<dc:EventViewerCategoryControl Text="$2001" Config="{CompiledBinding Ppu2001Write}" />
-		<dc:EventViewerCategoryControl Text="$2003" Config="{CompiledBinding Ppu2003Write}" />
-		<dc:EventViewerCategoryControl Text="$2004" Config="{CompiledBinding Ppu2004Write}" />
-		<dc:EventViewerCategoryControl Text="$2005" Config="{CompiledBinding Ppu2005Write}" />
-		<dc:EventViewerCategoryControl Text="$2006" Config="{CompiledBinding Ppu2006Write}" />
-		<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Write}" />
+		<Grid ColumnDefinitions="1*, 1*" RowDefinitions="*,*">
+			<c:OptionSection Header="PPU Writes" Margin="0 0 20 0">
+				<dc:EventViewerCategoryControl Text="$2000" Config="{CompiledBinding Ppu2000Write}" />
+				<dc:EventViewerCategoryControl Text="$2001" Config="{CompiledBinding Ppu2001Write}" />
+				<dc:EventViewerCategoryControl Text="$2003" Config="{CompiledBinding Ppu2003Write}" />
+				<dc:EventViewerCategoryControl Text="$2004" Config="{CompiledBinding Ppu2004Write}" />
+				<dc:EventViewerCategoryControl Text="$2005" Config="{CompiledBinding Ppu2005Write}" />
+				<dc:EventViewerCategoryControl Text="$2006" Config="{CompiledBinding Ppu2006Write}" />
+				<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Write}" />
+			</c:OptionSection>
+			<c:OptionSection Header="PPU Reads" Margin="0" Grid.Column="1">
+				<dc:EventViewerCategoryControl Text="$2002" Config="{CompiledBinding Ppu2002Read}" />
+				<dc:EventViewerCategoryControl Text="$2005" Config="{CompiledBinding Ppu2004Read}" />
+				<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Read}" />
+			</c:OptionSection>
+			<c:OptionSection Header="Other Writes" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="APU" Config="{CompiledBinding ApuRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="Mapper" Config="{CompiledBinding MapperRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="Control" Config="{CompiledBinding ControlRegisterReads}" />
+			</c:OptionSection>
+			<c:OptionSection Header="Other Reads" Grid.Column="1" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="APU" Config="{CompiledBinding ApuRegisterWrites}" />
+				<dc:EventViewerCategoryControl Text="Mapper" Config="{CompiledBinding MapperRegisterWrites}" />
+				<dc:EventViewerCategoryControl Text="Control" Config="{CompiledBinding ControlRegisterWrites}" />
+			</c:OptionSection>
+		</Grid>
 
-		<dc:EventViewerCategoryControl Text="$2002" Config="{CompiledBinding Ppu2002Read}" />
-		<dc:EventViewerCategoryControl Text="$2005" Config="{CompiledBinding Ppu2004Read}" />
-		<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Read}" />
+		<c:OptionSection Header="Other events">
+			<dc:EventViewerCategoryControl Text="DMC DMA Read" Config="{CompiledBinding DmcDmaReads}" />
+			<dc:EventViewerCategoryControl Text="Sprite Zero Hit" Config="{CompiledBinding SpriteZeroHit}" />
 
-		<dc:EventViewerCategoryControl Text="APU Read" Config="{CompiledBinding ApuRegisterReads}" />
-		<dc:EventViewerCategoryControl Text="APU Write" Config="{CompiledBinding ApuRegisterWrites}" />
+			<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />
+			<dc:EventViewerCategoryControl Text="NMI" Config="{CompiledBinding Nmi}" />
 
-		<dc:EventViewerCategoryControl Text="Mapper Read" Config="{CompiledBinding MapperRegisterReads}" />
-		<dc:EventViewerCategoryControl Text="Mapper Write" Config="{CompiledBinding MapperRegisterWrites}" />
-
-		<dc:EventViewerCategoryControl Text="Control Read" Config="{CompiledBinding ControlRegisterReads}" />
-		<dc:EventViewerCategoryControl Text="Control Write" Config="{CompiledBinding ControlRegisterWrites}" />
-
-		<dc:EventViewerCategoryControl Text="DMC DMA Read" Config="{CompiledBinding DmcDmaReads}" />
-		<dc:EventViewerCategoryControl Text="Sprite Zero Hit" Config="{CompiledBinding SpriteZeroHit}" />
-		
-		<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />
-		<dc:EventViewerCategoryControl Text="NMI" Config="{CompiledBinding Nmi}" />
-		
-		<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+			<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+		</c:OptionSection>
 
 		<CheckBox IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
 		<CheckBox IsChecked="{CompiledBinding ShowNtscBorders}" Content="Show NTSC borders" />

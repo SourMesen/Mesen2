@@ -128,9 +128,7 @@ namespace Mesen.Views
 		private void OnEventViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new EventViewerWindow {
-				DataContext = new EventViewerViewModel(romInfo.ConsoleType.GetMainCpuType())
-			}.Show();
+			new EventViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
 		}
 
 		private void OnDebuggerSettingsClick(object sender, RoutedEventArgs e)
@@ -304,7 +302,7 @@ namespace Mesen.Views
 			for(int i = 0; i < 5; i++) {
 				MenuItem item = new MenuItem() {
 					Header = ResourceHelper.GetMessage("Player") + " " + (i + 1) + " (" + ResourceHelper.GetEnumText(ConfigApi.GetControllerType(i)) + ")",
-					Icon = currentPort == i ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null!,
+					Icon = (currentPort == i ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null)!,
 					IsEnabled = (availableControllers & (1 << i)) != 0,
 				};
 
@@ -332,7 +330,7 @@ namespace Mesen.Views
 			{
 				MenuItem item = new MenuItem() {
 					Header = ResourceHelper.GetEnumText(r),
-					Icon = region == r ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null!
+					Icon = (region == r ? ImageUtilities.FromAsset("Assets/MenuItemChecked.png") : null)!
 				};
 
 				item.Click += (_, _) => {

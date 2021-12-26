@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -19,7 +20,7 @@ namespace Mesen.Debugger.Controls
 	public class PictureViewer : Control
 	{
 		public static readonly StyledProperty<Bitmap> SourceProperty = AvaloniaProperty.Register<PictureViewer, Bitmap>(nameof(Source));
-		public static readonly StyledProperty<int> ZoomProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(Zoom), 1);
+		public static readonly StyledProperty<int> ZoomProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(Zoom), 1, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<int> GridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeX), 8);
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowGrid), false);
@@ -27,6 +28,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeX), 8);
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
+		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
 		
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty);
 
@@ -52,6 +54,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(ZoomProperty); }
 			set { SetValue(ZoomProperty, value); }
+		}
+		
+		public bool AllowSelection
+		{
+			get { return GetValue(AllowSelectionProperty); }
+			set { SetValue(AllowSelectionProperty, value); }
 		}
 
 		public int GridSizeX
@@ -126,10 +134,24 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerWheelChanged(e);
 			if(e.KeyModifiers == KeyModifiers.Control) {
-				Zoom = Math.Min(20, Math.Max(1, Zoom + (e.Delta.Y > 0 ? 1 : -1)));
+				if(e.Delta.Y > 0) {
+					ZoomIn();
+				} else {
+					ZoomOut();
+				}
 				UpdateSize();
 				e.Handled = true;
 			}
+		}
+
+		public void ZoomIn()
+		{
+			Zoom = Math.Min(20, Math.Max(1, Zoom + 1));
+		}
+
+		public void ZoomOut()
+		{
+			Zoom = Math.Min(20, Math.Max(1, Zoom - 1));
 		}
 
 		private void UpdateSize()
@@ -169,7 +191,7 @@ namespace Mesen.Debugger.Controls
 			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = p };
 			RaiseEvent(args);
 
-			if(!args.Handled) {
+			if(!args.Handled && AllowSelection) {
 				Rect selection = new Rect(
 					(int)p.X / GridSizeX * GridSizeX,
 					(int)p.Y / GridSizeY * GridSizeY,

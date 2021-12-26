@@ -1726,7 +1726,13 @@ x == [$150] || y == [10]
 			<Value ID="Save">Save</Value>
 			<Value ID="SaveAs">Save as...</Value>
 			<Value ID="Exit">Exit</Value>
-			
+
+			<Value ID="Refresh">Refresh</Value>
+			<Value ID="ZoomIn">Zoom In</Value>
+			<Value ID="ZoomOut">Zoom Out</Value>
+			<Value ID="EnableAutoRefresh">Auto-refresh</Value>
+			<Value ID="RefreshOnBreakPause">Refresh on break/pause</Value>
+
 			<Value ID="HelpApiReference">API Reference</Value>
 			<Value ID="RecentScripts">Recent Scripts</Value>
 		</Enum>

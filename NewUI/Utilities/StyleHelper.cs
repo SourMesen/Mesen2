@@ -13,7 +13,7 @@ namespace Mesen.Utilities
 		public static void ApplyTheme(MesenTheme theme)
 		{
 			//Reset styles & load everything needed to display all non-debugger windows
-			Application.Current.Styles.Clear();
+			Application.Current?.Styles.Clear();
 
 			var styles = new List<IStyle> {
 				new FluentTheme(new Uri("avares://Mesen/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },
@@ -24,7 +24,7 @@ namespace Mesen.Utilities
 				styles.Add(new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/MesenStyles.Dark.xaml", UriKind.Relative) });
 			}
 
-			Application.Current.Styles.AddRange(styles);
+			Application.Current?.Styles.AddRange(styles);
 		}
 
 		public static void LoadStartupStyles()
@@ -33,7 +33,7 @@ namespace Mesen.Utilities
 			var styles = new List<IStyle> {
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/StartupStyles.xaml", UriKind.Relative) },
 			};
-			Application.Current.Styles.AddRange(styles);
+			Application.Current?.Styles.AddRange(styles);
 		}
 
 		public static void LoadDebuggerStyles()
@@ -46,7 +46,7 @@ namespace Mesen.Utilities
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://AvaloniaEdit/AvaloniaEdit.xaml") }
 			};
 
-			Application.Current.Styles.InsertRange(1, styles);
+			Application.Current?.Styles.InsertRange(1, styles);
 		}
 	}
 }

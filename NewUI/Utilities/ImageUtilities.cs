@@ -8,10 +8,14 @@ namespace Mesen.Utilities
 {
 	public static class ImageUtilities
 	{
-		public static Image FromAsset(string source)
+		public static Image? FromAsset(string source)
 		{
-			IAssetLoader assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
-			return new Image() { Source = new Bitmap(assetLoader.Open(new Uri("avares://Mesen/" + source))) };
+			IAssetLoader? assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
+			if(assetLoader != null) {
+				return new Image() { Source = new Bitmap(assetLoader.Open(new Uri("avares://Mesen/" + source))) };
+			} else {
+				return null;
+			}
 		}
 	}
 }
