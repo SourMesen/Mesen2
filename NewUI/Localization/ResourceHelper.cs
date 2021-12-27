@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Mesen.Interop;
@@ -25,6 +27,10 @@ namespace Mesen.Localization
 		private static Language _language;
 		private static XmlDocument _resources = new XmlDocument();
 		private static XmlDocument _enResources = new XmlDocument();
+
+		private static Dictionary<Enum, string> _enumLabelCache = new();
+		private static Dictionary<string, string> _viewLabelCache = new();
+		private static Dictionary<string, string> _messageCache = new();
 
 		public static Language GetCurrentLanguage()
 		{
@@ -95,19 +101,38 @@ namespace Mesen.Localization
 				using(StreamReader reader = new StreamReader(assembly.GetManifestResourceStream("Mesen.Localization.resources.en.xml")!)) {
 					_enResources.LoadXml(reader.ReadToEnd());
 				}
+
+				foreach(XmlNode node in _resources.SelectNodes("/Resources/Messages/Message")!) {
+					_messageCache[node.Attributes!["ID"]!.Value] = node.InnerText;
+				}
+
+				Dictionary<string, Type> enumTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsEnum).ToDictionary(t => t.Name);
+				foreach(XmlNode node in _resources.SelectNodes("/Resources/Enums/Enum")!) {
+					if(enumTypes.TryGetValue(node.Attributes!["ID"]!.Value!, out Type? enumType)) {
+						foreach(XmlNode enumNode in node.ChildNodes) {
+							if(Enum.TryParse(enumType, enumNode.Attributes!["ID"]!.Value, out object? value)) {
+								_enumLabelCache[(Enum)value!] = enumNode.InnerText;
+							}
+						}
+					}
+				}
+
+				foreach(XmlNode node in _resources.SelectNodes("/Resources/Forms/Form")!) {
+					string viewName = node.Attributes!["ID"]!.Value;
+					foreach(XmlNode formNode in node.ChildNodes) {
+						if(formNode is XmlElement elem) {
+							_viewLabelCache[viewName + "_" + elem.Attributes!["ID"]!.Value] = elem.InnerText;
+						}
+					}
+				}
 			} catch {
 			}
 		}
 
 		public static string GetMessage(string id, params object[] args)
 		{
-			var baseNode = _resources.SelectSingleNode("/Resources/Messages/Message[@ID='" + id + "']");
-			if(baseNode == null) {
-				baseNode = _enResources.SelectSingleNode("/Resources/Messages/Message[@ID='" + id + "']");
-			}
-
-			if(baseNode != null) {
-				return string.Format(baseNode.InnerText, args);
+			if(_messageCache.TryGetValue(id, out string? text)) {
+				return string.Format(text, args);
 			} else {
 				return "[[" + id + "]]";
 			}
@@ -115,13 +140,8 @@ namespace Mesen.Localization
 
 		public static string GetEnumText(Enum e)
 		{
-			var baseNode = _resources.SelectSingleNode("/Resources/Enums/Enum[@ID='" + e.GetType().Name + "']/Value[@ID='" + e.ToString() + "']");
-			if(baseNode == null) {
-				baseNode = _enResources.SelectSingleNode("/Resources/Enums/Enum[@ID='" + e.GetType().Name + "']/Value[@ID='" + e.ToString() + "']");
-			}
-
-			if(baseNode != null) {
-				return baseNode.InnerText;
+			if(_enumLabelCache.TryGetValue(e, out string? text)) {
+				return text;
 			} else {
 				return "[[" + e.ToString() + "]]";
 			}
@@ -129,13 +149,8 @@ namespace Mesen.Localization
 
 		public static string GetViewLabel(string view, string control)
 		{
-			var baseNode = _resources.SelectSingleNode("/Resources/Forms/Form[@ID='" + view + "']/Control[@ID='" + control + "']");
-			if(baseNode == null) {
-				baseNode = _enResources.SelectSingleNode("/Resources/Forms/Form[@ID='" + view + "']/Control[@ID='" + control + "']");
-			}
-
-			if(baseNode != null) {
-				return baseNode.InnerText;
+			if(_viewLabelCache.TryGetValue(view + "_" + control, out string? text)) {
+				return text;
 			} else {
 				return $"[{view}:{control}]";
 			}

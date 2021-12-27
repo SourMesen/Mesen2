@@ -44,7 +44,7 @@
 		
 		<ContentControl Content="{CompiledBinding ConsoleConfig}" DockPanel.Dock="Right" VerticalAlignment="Top" Margin="3"/>
 
-		<TabControl>
+		<TabControl SelectedIndex="{CompiledBinding SelectedTab}">
 			<TabItem Header="{l:Translate tabPpuView}">
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
@@ -61,17 +61,55 @@
 			</TabItem>
 			<TabItem Header="{l:Translate tabListView}">
 				<Border BorderBrush="Gray" BorderThickness="1">
-					<dc:MesenDataGrid>
-						<DataGrid.Columns>
-							<DataGridTextColumn Header="{l:Translate colPc}" Binding="{Binding ProgramCounter}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colScanline}" Binding="{Binding Scanline}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colCycle}" Binding="{Binding Cycle}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colType}" Binding="{Binding Type}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colDetails}" Binding="{Binding Details}" Width="*" CanUserResize="True" />
-						</DataGrid.Columns>
-					</dc:MesenDataGrid>
+					<DataBox
+						Items="{CompiledBinding DebugEvents}"
+						CanUserResizeColumns="True"
+						GridLinesVisibility="All"
+					>
+						<DataBox.Styles>
+							<Style Selector="TextBlock">
+								<Setter Property="Margin" Value="3 0 0 0" />
+							</Style>
+						</DataBox.Styles>
+						
+						<DataBox.Columns>
+							<DataBoxTemplateColumn Header="PC" Width="1*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding ProgramCounter}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+							<DataBoxTemplateColumn Header="Scanline" Width="1*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Scanline}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+							<DataBoxTemplateColumn Header="Cycle" Width="1*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Cycle}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+							<DataBoxTemplateColumn Header="Type" Width="1*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Type}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+							<DataBoxTemplateColumn Header="Address" Width="1*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Address}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+							<DataBoxTemplateColumn Header="Value" Width="1*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Value}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+							<DataBoxTemplateColumn Header="Details" Width="4*">
+								<DataTemplate DataType="dvm:DebugEventViewModel">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Details}" />
+								</DataTemplate>
+							</DataBoxTemplateColumn>
+						</DataBox.Columns>
+					</DataBox>
 				</Border>
 			</TabItem>
 		</TabControl>

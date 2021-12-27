@@ -1551,6 +1551,12 @@ x == [$150] || y == [10]
 			<Value ID="ShowBlankWindow">Display an empty script</Value>
 			<Value ID="LoadLastScript">Load the previous script</Value>
 		</Enum>
+		<Enum ID="DebugEventType">
+			<Value ID="Register">Register</Value>
+			<Value ID="Nmi">NMI</Value>
+			<Value ID="Irq">IRQ</Value>
+			<Value ID="Breakpoint">Breakpoint</Value>
+		</Enum>
 		<Enum ID="DebuggerShortcut">
 			<Value ID="IncreaseFontSize">Increase Font Size</Value>
 			<Value ID="DecreaseFontSize">Decrease Font Size</Value>

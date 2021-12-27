@@ -18,7 +18,7 @@
 
 	<StackPanel>
 		<Grid ColumnDefinitions="10, 1*, 10, 1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
-			<c:OptionSection Header="PPU Writes" Margin="0" Grid.Column="0" Grid.ColumnSpan="2" />
+			<c:OptionSection Header="PPU Register Writes" Margin="0" Grid.Column="0" Grid.ColumnSpan="2" />
 			<StackPanel Grid.Column="1" Grid.Row="1">
 				<dc:EventViewerCategoryControl Text="VRAM" Config="{CompiledBinding PpuRegisterVramWrites}" />
 				<dc:EventViewerCategoryControl Text="CGRAM" Config="{CompiledBinding PpuRegisterCgramWrites}" />
@@ -36,18 +36,18 @@
 				Grid.Row="3"
 				Grid.Column="1"
 				Grid.ColumnSpan="2"
-				Text="PPU Read"
+				Text="PPU Reg. Read"
 				Config="{CompiledBinding PpuRegisterReads}"
 			/>
 			<StackPanel Grid.Column="1" Grid.Row="4">
-				<dc:EventViewerCategoryControl Text="APU Read" Config="{CompiledBinding ApuRegisterReads}" />
-				<dc:EventViewerCategoryControl Text="CPU Read" Config="{CompiledBinding CpuRegisterReads}" />
-				<dc:EventViewerCategoryControl Text="WRAM Read" Config="{CompiledBinding WorkRamRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="SPC Reg. Read" Config="{CompiledBinding ApuRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="CPU Reg. Read" Config="{CompiledBinding CpuRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="WRAM Reg. Read" Config="{CompiledBinding WorkRamRegisterReads}" />
 			</StackPanel>
 			<StackPanel Grid.Column="3" Grid.Row="4">
-				<dc:EventViewerCategoryControl Text="APU Write" Config="{CompiledBinding ApuRegisterWrites}" />
-				<dc:EventViewerCategoryControl Text="CPU Write" Config="{CompiledBinding CpuRegisterWrites}" />
-				<dc:EventViewerCategoryControl Text="WRAM Write" Config="{CompiledBinding WorkRamRegisterWrites}" />
+				<dc:EventViewerCategoryControl Text="SPC Reg. Write" Config="{CompiledBinding ApuRegisterWrites}" />
+				<dc:EventViewerCategoryControl Text="CPU Reg. Write" Config="{CompiledBinding CpuRegisterWrites}" />
+				<dc:EventViewerCategoryControl Text="WRAM Reg. Write" Config="{CompiledBinding WorkRamRegisterWrites}" />
 			</StackPanel>
 			<StackPanel Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2">
 				<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />

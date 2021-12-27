@@ -162,6 +162,7 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.11" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
+    <PackageReference Include="DataBox" Version="0.10.11" />
     <PackageReference Include="Dock.Avalonia" Version="0.10.11" />
     <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
     <PackageReference Include="Dock.Model" Version="0.10.11" />
