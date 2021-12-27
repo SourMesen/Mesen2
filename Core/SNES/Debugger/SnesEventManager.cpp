@@ -72,12 +72,25 @@ void SnesEventManager::GetEvents(DebugEventInfo *eventArray, uint32_t &maxEventC
 	maxEventCount = eventCount;
 }
 
-DebugEventInfo SnesEventManager::GetEvent(uint16_t scanline, uint16_t cycle)
+DebugEventInfo SnesEventManager::GetEvent(uint16_t y, uint16_t x)
 {
 	auto lock = _lock.AcquireSafe();
 
-	for(DebugEventInfo &evt : _sentEvents) {
-		if(evt.Cycle == cycle && evt.Scanline == scanline) {
+	x *= 2; //convert to hclock value
+	y /= 2; //convert to scanline value
+
+	//Search without including larger background color first
+	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--) {
+		DebugEventInfo& evt = _sentEvents[i];
+		if((x >= evt.Cycle && x <= evt.Cycle + 2) && evt.Scanline == y) {
+			return evt;
+		}
+	}
+
+	//If no exact match, extend to the background color
+	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--) {
+		DebugEventInfo& evt = _sentEvents[i];
+		if((x >= evt.Cycle - 4 && x <= evt.Cycle + 6) && std::abs((int)evt.Scanline - (int)y) <= 1) {
 			return evt;
 		}
 	}
@@ -198,6 +211,10 @@ void SnesEventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint3
 
 	for(int i = iMin; i <= iMax; i++) {
 		for(int j = jMin; j <= jMax; j++) {
+			if(j + x >= SnesEventManager::ScanlineWidth) {
+				continue;
+			}
+
 			int32_t pos = (y + i) * SnesEventManager::ScanlineWidth + x + j;
 			if(pos < 0 || pos >= SnesEventManager::ScanlineWidth * (int)_scanlineCount * 2) {
 				continue;

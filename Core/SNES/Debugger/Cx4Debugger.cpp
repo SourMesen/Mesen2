@@ -32,7 +32,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	
 	_traceLogger.reset(new Cx4TraceLogger(debugger, console->GetPpu().get(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4, debugger->GetEventManager(CpuType::Cpu).get()));
 	_step.reset(new StepRequest());
 }
 

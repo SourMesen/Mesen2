@@ -31,7 +31,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	
 	_traceLogger.reset(new GsuTraceLogger(debugger, console->GetPpu().get(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu, debugger->GetEventManager(CpuType::Cpu).get()));
 	_step.reset(new StepRequest());
 }
 

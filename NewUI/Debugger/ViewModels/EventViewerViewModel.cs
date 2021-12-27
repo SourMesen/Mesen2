@@ -10,12 +10,14 @@ using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.ViewModels;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -63,7 +65,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
-					OnClick = () => RefreshViewer()
+					OnClick = () => RefreshData()
 				},
 				new Separator(),
 				new ContextMenuAction() {
@@ -88,6 +90,8 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => _picViewer.ZoomOut()
 				},
 			};
+
+			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(x));
 
 			if(wnd == null) {
 				return;
@@ -114,10 +118,14 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void RefreshViewer()
+		public void RefreshData()
 		{
 			DebugApi.TakeEventSnapshot(CpuType);
+			RefreshTab(SelectedTab);
+		}
 
+		public void RefreshTab(EventViewerTab tab)
+		{
 			Dispatcher.UIThread.Post(() => {
 				if(SelectedTab == EventViewerTab.PpuView) {
 					InitBitmap();
@@ -157,7 +165,7 @@ namespace Mesen.Debugger.ViewModels
 
 	public class DebugEventViewModel : INotifyPropertyChanged
 	{
-		private const int HdmaChannelFlag = 0x40;
+		public const int HdmaChannelFlag = 0x40;
 
 		private DebugEventInfo[] _events = Array.Empty<DebugEventInfo>();
 		private int _index;

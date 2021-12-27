@@ -57,12 +57,24 @@ void GbEventManager::GetEvents(DebugEventInfo* eventArray, uint32_t& maxEventCou
 	maxEventCount = eventCount;
 }
 
-DebugEventInfo GbEventManager::GetEvent(uint16_t scanline, uint16_t cycle)
+DebugEventInfo GbEventManager::GetEvent(uint16_t y, uint16_t x)
 {
 	auto lock = _lock.AcquireSafe();
 
+	x /= 2; //convert to cycle value
+	y /= 2; //convert to scanline value
+
+	//Search without including larger background color first
 	for(DebugEventInfo& evt : _sentEvents) {
-		if(evt.Cycle == cycle && evt.Scanline == scanline) {
+		if(evt.Cycle == x && evt.Scanline == y) {
+			return evt;
+		}
+	}
+
+	//If no exact match, extend to the background color
+	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--){
+		DebugEventInfo& evt = _sentEvents[i];
+		if(std::abs((int)evt.Cycle - (int)x) <= 1 && std::abs((int)evt.Scanline - (int)y) <= 1) {
 			return evt;
 		}
 	}
@@ -164,6 +176,10 @@ void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_
 
 	for(int i = iMin; i <= iMax; i++) {
 		for(int j = jMin; j <= jMax; j++) {
+			if(j + x >= GbEventManager::ScanlineWidth) {
+				continue;
+			}
+
 			int32_t pos = (y + i) * GbEventManager::ScanlineWidth + x + j;
 			if(pos < 0 || pos >= GbEventManager::ScanlineWidth * (int)_scanlineCount * 2) {
 				continue;

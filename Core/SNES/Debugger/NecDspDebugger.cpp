@@ -27,7 +27,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	
 	_traceLogger.reset(new NecDspTraceLogger(debugger, console->GetPpu().get(), console->GetMemoryManager().get()));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp, debugger->GetEventManager(CpuType::Cpu).get()));
 	_step.reset(new StepRequest());
 }
 

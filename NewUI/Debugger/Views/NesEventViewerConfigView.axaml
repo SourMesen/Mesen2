@@ -33,14 +33,14 @@
 				<dc:EventViewerCategoryControl Text="$2007" Config="{CompiledBinding Ppu2007Read}" />
 			</c:OptionSection>
 			<c:OptionSection Header="Other Writes" Grid.Row="1">
-				<dc:EventViewerCategoryControl Text="APU" Config="{CompiledBinding ApuRegisterReads}" />
-				<dc:EventViewerCategoryControl Text="Mapper" Config="{CompiledBinding MapperRegisterReads}" />
-				<dc:EventViewerCategoryControl Text="Control" Config="{CompiledBinding ControlRegisterReads}" />
-			</c:OptionSection>
-			<c:OptionSection Header="Other Reads" Grid.Column="1" Grid.Row="1">
 				<dc:EventViewerCategoryControl Text="APU" Config="{CompiledBinding ApuRegisterWrites}" />
 				<dc:EventViewerCategoryControl Text="Mapper" Config="{CompiledBinding MapperRegisterWrites}" />
 				<dc:EventViewerCategoryControl Text="Control" Config="{CompiledBinding ControlRegisterWrites}" />
+			</c:OptionSection>
+			<c:OptionSection Header="Other Reads" Grid.Column="1" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="APU" Config="{CompiledBinding ApuRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="Mapper" Config="{CompiledBinding MapperRegisterReads}" />
+				<dc:EventViewerCategoryControl Text="Control" Config="{CompiledBinding ControlRegisterReads}" />
 			</c:OptionSection>
 		</Grid>
 

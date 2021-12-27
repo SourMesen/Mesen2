@@ -30,7 +30,7 @@ private:
 	int InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
 
 public:
-	BreakpointManager(Debugger *debugger, CpuType cpuType, IEventManager* eventManager = nullptr);
+	BreakpointManager(Debugger *debugger, CpuType cpuType, IEventManager* eventManager);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t count);
 	__forceinline int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);

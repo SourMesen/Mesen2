@@ -1,0 +1,29 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Debugger.Controls.DynamicTooltip"
+>
+	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Margin" Value="0 2" />
+		</Style>
+	</UserControl.Styles>
+	
+	<ItemsPresenter DataContext="{Binding, ElementName=root}" Items="{Binding Items}">
+		<ItemsPresenter.ItemTemplate>
+			<DataTemplate DataType="dc:TooltipEntry">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{Binding Name}" FontWeight="Bold" MinWidth="70" />
+					<TextBlock Text="{Binding Value}" />
+				</StackPanel>
+			</DataTemplate>
+		</ItemsPresenter.ItemTemplate>
+	</ItemsPresenter>
+</UserControl>

@@ -566,7 +566,10 @@ namespace Mesen.Interop
 		Register,
 		Nmi,
 		Irq,
-		Breakpoint
+		Breakpoint,
+		BgColorChange,
+		SpriteZeroHit,
+		DmcDmaRead,
 	}
 
 	public struct DmaChannelConfig
@@ -600,7 +603,7 @@ namespace Mesen.Interop
 		public MemoryOperationInfo Operation;
 		public DebugEventType Type;
 		public UInt32 ProgramCounter;
-		public UInt16 Scanline;
+		public Int16 Scanline;
 		public UInt16 Cycle;
 		public Int16 BreakpointId;
 		public byte DmaChannel;

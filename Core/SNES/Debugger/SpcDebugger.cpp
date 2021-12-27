@@ -29,7 +29,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu().get(), console->GetMemoryManager().get()));
 
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc, debugger->GetEventManager(CpuType::Cpu).get()));
 	_step.reset(new StepRequest());
 }
 

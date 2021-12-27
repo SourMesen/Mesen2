@@ -59,12 +59,25 @@ void NesEventManager::GetEvents(DebugEventInfo* eventArray, uint32_t& maxEventCo
 	maxEventCount = eventCount;
 }
 
-DebugEventInfo NesEventManager::GetEvent(uint16_t row, uint16_t column)
+DebugEventInfo NesEventManager::GetEvent(uint16_t y, uint16_t x)
 {
 	auto lock = _lock.AcquireSafe();
 
-	for(DebugEventInfo &evt : _sentEvents) {
-		if(evt.Cycle == column && evt.Scanline + 1 == row) {
+	int cycle = x / 2; //convert to cycle value
+	int scanline = ((int)y / 2) - 1; //convert to scanline value
+	
+	//Search without including larger background color first
+	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--) {
+		DebugEventInfo& evt = _sentEvents[i];
+		if(evt.Cycle == cycle && evt.Scanline == scanline) {
+			return evt;
+		}
+	}
+
+	//If no exact match, extend to the background color
+	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--) {
+		DebugEventInfo& evt = _sentEvents[i];
+		if(std::abs((int)evt.Cycle - cycle) <= 1 && std::abs((int)evt.Scanline - scanline) <= 1) {
 			return evt;
 		}
 	}
@@ -197,6 +210,10 @@ void NesEventManager::DrawDot(uint32_t x, uint32_t y, uint32_t color, bool drawB
 
 	for(int i = iMin; i <= iMax; i++) {
 		for(int j = jMin; j <= jMax; j++) {
+			if(j + x >= NesConstants::CyclesPerLine * 2) {
+				continue;
+			}
+
 			int32_t pos = (y + i) * NesConstants::CyclesPerLine * 2 + x + j;
 			if(pos < 0 || pos >= (int)(NesConstants::CyclesPerLine * 2 * _scanlineCount * 2)) {
 				continue;
