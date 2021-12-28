@@ -8,23 +8,27 @@ using System.Xml;
 using System.Xml.Serialization;
 using Avalonia;
 using Mesen.Debugger;
+using Mesen.Interop;
+using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.Config
 {
-	public class TilemapViewerConfig
+	public class TilemapViewerConfig : BaseWindowConfig<TilemapViewerConfig>
 	{
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
+		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
-		public int ImageScale = 1;
-		public bool ShowScrollOverlay = false;
-		public bool ShowTileGrid = false;
+		[Reactive] public int ImageScale { get; set; } = 1;
 
-		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Low;
+		[Reactive] public bool ShowGrid { get; set; }
+		[Reactive] public bool ShowAltGrid { get; set; }
+		[Reactive] public bool ShowScrollOverlay { get; set; }
+		[Reactive] public bool HighlightTileChanges { get; set; }
+		[Reactive] public bool HighlightAttributeChanges { get; set; }
+		[Reactive] public TilemapDisplayMode DisplayMode { get; set; } = TilemapDisplayMode.Default;
 
-		public bool AutoRefresh = true;
-		public int RefreshScanline = 240;
-		public int RefreshCycle = 0;
+		[Reactive] public bool AutoRefresh { get; set; } = true;
+		[Reactive] public int RefreshScanline { get; set; } = 240;
+		[Reactive] public int RefreshCycle { get; set; } = 0;
 
 		public TilemapViewerConfig()
 		{

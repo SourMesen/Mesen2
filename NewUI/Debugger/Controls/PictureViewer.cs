@@ -19,7 +19,7 @@ namespace Mesen.Debugger.Controls
 {
 	public class PictureViewer : Control
 	{
-		public static readonly StyledProperty<Bitmap> SourceProperty = AvaloniaProperty.Register<PictureViewer, Bitmap>(nameof(Source));
+		public static readonly StyledProperty<IImage> SourceProperty = AvaloniaProperty.Register<PictureViewer, IImage>(nameof(Source));
 		public static readonly StyledProperty<int> ZoomProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(Zoom), 1, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<int> GridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeX), 8);
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeY), 8);
@@ -30,7 +30,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
 		
-		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty);
+		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty, defaultBindingMode: BindingMode.TwoWay);
 
 		public static readonly RoutedEvent<PositionClickedEventArgs> PositionClickedEvent = RoutedEvent.Register<PictureViewer, PositionClickedEventArgs>(nameof(PositionClicked), RoutingStrategies.Bubble);
 		public event EventHandler<PositionClickedEventArgs> PositionClicked
@@ -44,7 +44,7 @@ namespace Mesen.Debugger.Controls
 		private Stopwatch _stopWatch = Stopwatch.StartNew();
 		private DispatcherTimer _timer = new DispatcherTimer();
 
-		public Bitmap Source
+		public IImage Source
 		{
 			get { return GetValue(SourceProperty); }
 			set { SetValue(SourceProperty, value); }
@@ -156,8 +156,8 @@ namespace Mesen.Debugger.Controls
 
 		private void UpdateSize()
 		{
-			MinWidth = Source.PixelSize.Width * Zoom;
-			MinHeight = Source.PixelSize.Height * Zoom;
+			MinWidth = (int)Source.Size.Width * Zoom;
+			MinHeight = (int)Source.Size.Height * Zoom;
 		}
 
 		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
@@ -184,29 +184,46 @@ namespace Mesen.Debugger.Controls
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
 		{
-			base.OnPointerPressed(e);
-			Point p = e.GetCurrentPoint(this).Position;
-			p = new Point(Math.Min(p.X, MinWidth - 1) / Zoom, Math.Min(p.Y, MinHeight - 1) / Zoom);
+			Point p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
 
 			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = p };
 			RaiseEvent(args);
 
 			if(!args.Handled && AllowSelection) {
-				Rect selection = new Rect(
-					(int)p.X / GridSizeX * GridSizeX,
-					(int)p.Y / GridSizeY * GridSizeY,
-					GridSizeX,
-					GridSizeY
-				);
-				SelectionRect = selection;
+				SelectionRect = GetTileRect(p);
 			}
+		}
+
+		private Point GetGridPointFromMousePoint(Point p)
+		{
+			return new Point(Math.Min(p.X, MinWidth - 1) / Zoom, Math.Min(p.Y, MinHeight - 1) / Zoom);
+		}
+
+		private Rect GetTileRect(Point p)
+		{
+			return new Rect(
+				(int)p.X / GridSizeX * GridSizeX,
+				(int)p.Y / GridSizeY * GridSizeY,
+				GridSizeX,
+				GridSizeY
+			);
+		}
+
+		private Rect ToDrawRect(Rect r)
+		{
+			return new Rect(
+				r.X * Zoom - 0.5,
+				r.Y * Zoom - 0.5,
+				r.Width * Zoom + 1,
+				r.Height * Zoom + 1
+			);
 		}
 
 		private void DrawGrid(DrawingContext context, bool show, int gridX, int gridY, Color color)
 		{
 			if(show) {
-				int width = Source.PixelSize.Width * Zoom;
-				int height = Source.PixelSize.Height * Zoom;
+				int width = (int)Source.Size.Width * Zoom;
+				int height = (int)Source.Size.Height * Zoom;
 				int gridSizeX = gridX * Zoom;
 				int gridSizeY = gridY * Zoom;
 
@@ -230,14 +247,14 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			int width = Source.PixelSize.Width * Zoom;
-			int height = Source.PixelSize.Height * Zoom;
+			int width = (int)Source.Size.Width * Zoom;
+			int height = (int)Source.Size.Height * Zoom;
 
 			context.FillRectangle(new SolidColorBrush(0xFFFFFFFF), new Rect(Bounds.Size));
 
 			context.DrawImage(
 				Source,
-				new Rect(0, 0, Source.PixelSize.Width, Source.PixelSize.Height),
+				new Rect(0, 0, (int)Source.Size.Width, (int)Source.Size.Height),
 				new Rect(0, 0, width, height),
 				Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.Default
 			);
@@ -246,24 +263,19 @@ namespace Mesen.Debugger.Controls
 			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
 			if(SelectionRect != Rect.Empty) {
-				Rect rect = new Rect(
-					SelectionRect.X * Zoom - 0.5,
-					SelectionRect.Y * Zoom - 0.5,
-					SelectionRect.Width * Zoom + 1,
-					SelectionRect.Height * Zoom + 1
-				);
-				
+				Rect rect = ToDrawRect(SelectionRect);
+
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
 				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
 				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), rect.Inflate(0.5));
 			}
 
-			//TODO delete?
-			/*if(_mousePosition.HasValue) {
-				Point p = new Point(Math.Floor(_mousePosition.Value.X) + 0.5, Math.Floor(_mousePosition.Value.Y) + 0.5);
-				context.DrawLine(new Pen(Brushes.Black), new Point(p.X, 0), new Point(p.X, Bounds.Height));
-				context.DrawLine(new Pen(Brushes.Black), new Point(0, p.Y), new Point(Bounds.Width, p.Y));
-			}*/
+			if(_mousePosition.HasValue) {
+				Point p = GetGridPointFromMousePoint(_mousePosition.Value);
+				Rect rect = ToDrawRect(GetTileRect(p));
+				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
+				context.DrawRectangle(new Pen(Brushes.White, 2), rect.Inflate(0.5));
+			}
 		}
 	}
 

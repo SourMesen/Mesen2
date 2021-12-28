@@ -20,8 +20,17 @@
 		<ItemsPresenter.ItemTemplate>
 			<DataTemplate DataType="dc:TooltipEntry">
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{Binding Name}" FontWeight="Bold" MinWidth="70" />
-					<TextBlock Text="{Binding Value}" />
+					<TextBlock Text="{Binding Name}" FontWeight="Bold" MinWidth="100" Margin="0 0 10 0" />
+					<ContentControl Content="{Binding Value}">
+						<ContentControl.DataTemplates>
+							<DataTemplate DataType="x:String">
+								<TextBlock Text="{Binding}" />
+							</DataTemplate>
+							<DataTemplate DataType="x:Boolean">
+								<CheckBox IsChecked="{Binding}" />
+							</DataTemplate>
+						</ContentControl.DataTemplates>
+					</ContentControl>
 				</StackPanel>
 			</DataTemplate>
 		</ItemsPresenter.ItemTemplate>

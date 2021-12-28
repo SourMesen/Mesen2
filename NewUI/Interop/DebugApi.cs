@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -153,6 +154,17 @@ namespace Mesen.Interop
 			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), (IntPtr)ptr);
+		}
+
+		[DllImport(DllPath)] private static extern DebugTilemapTileInfo GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, InteropGetTilemapOptions options, byte[] vram, IntPtr state);
+		public unsafe static DebugTilemapTileInfo? GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, GetTilemapOptions options, byte[] vram, BaseState state)
+		{
+			Debug.Assert(state.GetType().IsValueType);
+
+			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
+			DebugTilemapTileInfo info = DebugApi.GetTilemapTileInfo(x, y, cpuType, options.ToInterop(), vram, (IntPtr)ptr);
+			return info.Row >= 0 ? info : null;
 		}
 
 		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
@@ -747,6 +759,34 @@ namespace Mesen.Interop
 		White = 3,
 		Magenta = 4
 	}
+
+	public enum NullableBoolean
+	{
+		Undefined = -1,
+		False = 0,
+		True = 1
+	}
+
+	public struct DebugTilemapTileInfo
+	{
+		public Int32 Row;
+		public Int32 Column;
+
+		public Int32 Width;
+		public Int32 Height;
+
+		public Int32 TileMapAddress;
+
+		public Int32 TileIndex;
+		public Int32 TileAddress;
+
+		public Int32 PaletteIndex;
+		public Int32 PaletteAddress;
+
+		public NullableBoolean HorizontalMirroring;
+		public NullableBoolean VerticalMirroring;
+		public NullableBoolean HighPriority;
+	};
 
 	public struct GetTileViewOptions
 	{

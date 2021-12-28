@@ -40,14 +40,23 @@ namespace Mesen.Debugger.Windows
 			_model.Config.LoadWindowSettings(this);
 			DataContext = _model;
 
-			viewer.PointerMoved += Viewer_PointerMoved;
-
 			if(Design.IsDesignMode) {
 				return;
 			}
 
+			viewer.PointerMoved += Viewer_PointerMoved;
+			viewer.PointerLeave += Viewer_PointerLeave;
+
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateConfig());
 			_listener = new NotificationListener();
+		}
+
+		private void Viewer_PointerLeave(object? sender, PointerEventArgs e)
+		{
+			if(sender is PictureViewer viewer) {
+				ToolTip.SetTip(viewer, null);
+				ToolTip.SetIsOpen(viewer, false);
+			}
 		}
 
 		private void Viewer_PointerMoved(object? sender, PointerEventArgs e)

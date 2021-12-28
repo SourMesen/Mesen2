@@ -35,9 +35,9 @@ namespace Mesen.Debugger.Controls
 	public class TooltipEntry
 	{
 		public string Name { get; set; } = "";
-		public string Value { get; set; } = "";
+		public object Value { get; set; } = "";
 
-		public TooltipEntry(string name, string value)
+		public TooltipEntry(string name, object value)
 		{
 			Name = name;
 			Value = value;

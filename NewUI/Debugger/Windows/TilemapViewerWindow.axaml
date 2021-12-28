@@ -24,36 +24,76 @@
 	</Design.DataContext>
 
 	<Window.Styles>
-		<Style Selector="TabControl:singleitem">
+		<Style Selector="TabStrip:singleitem">
 			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="Padding" Value="1" />
+		</Style>
+		<Style Selector="Button Image">
+			<Setter Property="Margin" Value="1 1 0 0" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
 		</Style>
 	</Window.Styles>
 
 	<DockPanel>
-		<Grid
-			DockPanel.Dock="Right"
-			ColumnDefinitions="Auto,*"
-			RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-			Margin="5 0 5 0"
-			Width="180"
-		>
-			<TextBlock Text="{l:Translate lblDisplayMode}" />
-			<c:EnumComboBox Grid.Row="0" Grid.Column="1" EnumType="{x:Type i:TilemapDisplayMode}" SelectedItem="{CompiledBinding DisplayMode}" />
-			<CheckBox Grid.Row="1" Grid.ColumnSpan="2" Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding ShowGrid}" />
-			<CheckBox Grid.Row="2" Grid.ColumnSpan="2" Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding ShowAltGrid}" />
-			<CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding HighlightTileChanges}" />
-			<CheckBox Grid.Row="4" Grid.ColumnSpan="2" Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding HighlightAttributeChanges}" />
-		</Grid>
+		<Panel DockPanel.Dock="Top">
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Header="File" />
+				<MenuItem Header="View" />
+			</Menu>
+			<Button
+				HorizontalAlignment="Right"
+				DockPanel.Dock="Right"
+				ToolTip.Tip="Toggle settings panel"
+				Click="OnSettingsClick"
+			>
+				<Image Source="/Assets/Settings.png" />
+			</Button>
+		</Panel>
+		<StackPanel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+			<Grid
+				ColumnDefinitions="Auto,*"
+				RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+				Margin="5 0 5 0"
+				Width="180"
+			>
+				<TextBlock Text="{l:Translate lblDisplayMode}" />
+				<c:EnumComboBox Grid.Row="0" Grid.Column="1" EnumType="{x:Type i:TilemapDisplayMode}" SelectedItem="{CompiledBinding Config.DisplayMode}" />
+				<CheckBox Grid.Row="1" Grid.ColumnSpan="2" Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
+				<CheckBox Grid.Row="2" Grid.ColumnSpan="2" Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" />
+				<CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" />
+				<CheckBox Grid.Row="4" Grid.ColumnSpan="2" Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" />
+			</Grid>
 
-		<TabControl Items="{CompiledBinding Tabs}" SelectionChanged="OnTabSelected" Padding="1" DockPanel.Dock="Top">
+			<Border
+				BorderBrush="Gray"
+				BorderThickness="1"
+				Margin="3"
+				Padding="3"
+				IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}" 
+			>
+				<ContentControl Content="{CompiledBinding PreviewPanel}" Margin="0 0 10 0"/>
+			</Border>
+		</StackPanel>
+
+		<TabControl
+			Items="{CompiledBinding Tabs}"
+			SelectedItem="{CompiledBinding SelectedTab}"
+			IsVisible="{CompiledBinding ShowTabs}"
+			Padding="1"
+			DockPanel.Dock="Top"
+		>
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding Title}" />
 				</DataTemplate>
 			</TabControl.ItemTemplate>
-			<TabControl.DataTemplates>
+			<TabControl.ContentTemplate>
 				<DataTemplate></DataTemplate>
-			</TabControl.DataTemplates>
+			</TabControl.ContentTemplate>
 		</TabControl>
 		
 		<Border BorderBrush="Gray" BorderThickness="1">
@@ -66,11 +106,12 @@
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					x:Name="picViewer"
-					ShowGrid="{CompiledBinding ShowGrid}"
-					
+					Zoom="{CompiledBinding Config.ImageScale}"
+					ShowGrid="{CompiledBinding Config.ShowGrid}"
+					SelectionRect="{CompiledBinding SelectionRect}"
 					AltGridSizeX="16"
 					AltGridSizeY="16"
-					ShowAltGrid="{CompiledBinding ShowAltGrid}"
+					ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"
 				/>
 			</ScrollViewer>
 		</Border>

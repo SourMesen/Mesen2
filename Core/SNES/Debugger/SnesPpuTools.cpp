@@ -5,6 +5,10 @@
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "SNES/Ppu.h"
 
+static constexpr uint8_t layerBpp[8][4] = {
+	{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 }
+};
+
 SnesPpuTools::SnesPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, emu)
 {
 }
@@ -13,10 +17,6 @@ void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, u
 {
 	PpuState& state = (PpuState&)baseState;
 	FrameInfo outputSize = GetTilemapSize(options, state);
-
-	static constexpr uint8_t layerBpp[8][4] = {
-		{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 }
-	};
 
 	bool directColor = state.DirectColorMode && (state.BgMode == 3 || state.BgMode == 4 || state.BgMode == 7);
 
@@ -279,6 +279,67 @@ FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& bas
 	}
 
 	return size;
+}
+
+DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+{
+	DebugTilemapTileInfo result;
+
+	FrameInfo size = GetTilemapSize(options, baseState);
+	if(x >= size.Width || y >= size.Height) {
+		return result;
+	}
+
+	PpuState& state = (PpuState&)baseState;
+	LayerConfig layer = state.Layers[options.Layer];
+
+	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
+	if(bpp == 0) {
+		return result;
+	}
+
+	uint16_t basePaletteOffset = 0;
+	if(state.BgMode == 0) {
+		basePaletteOffset = options.Layer * 64;
+	}
+
+	uint32_t row = y / 8;
+	uint32_t column = x / 8;
+
+	result.Row = row;
+	result.Column = column;
+
+	if(state.BgMode == 7) {
+		result.TileMapAddress = row * 256 + column * 2;
+		result.TileIndex = vram[result.TileMapAddress];
+		result.TileAddress = result.TileIndex * 128;
+		result.Height = 8;
+		result.Width = 8;
+	} else {
+		bool largeTileWidth = layer.LargeTiles || state.BgMode == 5 || state.BgMode == 6;
+		bool largeTileHeight = layer.LargeTiles;
+
+		uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
+		uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+
+		uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+
+		result.Height = largeTileHeight ? 16 : 8;
+		result.Width = largeTileWidth ? 16 : 8;
+		result.VerticalMirroring = (NullableBoolean)((vram[addr + 1] & 0x80) != 0);
+		result.HorizontalMirroring = (NullableBoolean)((vram[addr + 1] & 0x40) != 0);
+		result.HighPriority = (NullableBoolean)((vram[addr + 1] & 0x20) != 0);
+		result.PaletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
+		result.TileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
+		result.TileMapAddress = addr;
+		
+		uint16_t tileStart = (layer.ChrAddress << 1) + result.TileIndex * 8 * bpp;
+		result.TileAddress = tileStart;
+
+		result.PaletteAddress = basePaletteOffset + (result.PaletteIndex * (1 << bpp));
+	}
+
+	return result;
 }
 
 FrameInfo SnesPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)

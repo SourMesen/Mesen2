@@ -33,6 +33,33 @@ struct DebugSpriteInfo
 	uint32_t SpritePreview[64 * 64];
 };
 
+enum class NullableBoolean
+{
+	Undefined = -1,
+	False = 0,
+	True = 1
+};
+
+struct DebugTilemapTileInfo
+{
+	int32_t Row = -1;
+	int32_t Column = -1;
+	int32_t Width = -1;
+	int32_t Height = -1;
+
+	int32_t TileMapAddress = -1;
+
+	int32_t TileIndex = -1;
+	int32_t TileAddress = -1;
+	
+	int32_t PaletteIndex = -1;
+	int32_t PaletteAddress = -1;
+
+	NullableBoolean HorizontalMirroring = NullableBoolean::Undefined;
+	NullableBoolean VerticalMirroring = NullableBoolean::Undefined;
+	NullableBoolean HighPriority = NullableBoolean::Undefined;
+};
+
 class PpuTools
 {
 protected:
@@ -51,6 +78,7 @@ public:
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t* palette, uint32_t *outBuffer);
 	
+	virtual DebugTilemapTileInfo GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState) = 0;
 	virtual FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) = 0;
 	virtual void GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;
 	

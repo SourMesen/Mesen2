@@ -57,6 +57,7 @@ namespace Mesen.Windows
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
+			ConfigManager.SaveConfig();
 			EmuApi.Release();
 		}
 

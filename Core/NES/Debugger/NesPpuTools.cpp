@@ -119,6 +119,55 @@ FrameInfo NesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& stat
 	return { 512, 480 };
 }
 
+DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+{
+	DebugTilemapTileInfo result;
+
+	FrameInfo size = GetTilemapSize(options, baseState);
+	if(x >= size.Width || y >= size.Height) {
+		return result;
+	}
+
+	uint8_t row = y / 8;
+	uint8_t column = x / 8;
+	uint8_t nametableIndex = (column >= 32 ? 1 : 0) | (row >= 30 ? 2 : 0);
+
+	column &= 0x1F;
+	if(row > 30) {
+		row -= 30;
+	}
+
+	MMC5* mmc5 = dynamic_cast<MMC5*>(_mapper);
+	NesPpuState& state = (NesPpuState&)baseState;
+
+	uint16_t bgAddr = (state.ControlReg & 0x10) ? 0x1000 : 0;
+	uint16_t baseAddr = 0x2000 + nametableIndex * 0x400;
+	uint16_t baseAttributeAddr = baseAddr + 960;
+	uint16_t ntIndex = (row << 5) + column;
+	uint16_t attributeAddress = baseAttributeAddr + ((row & 0xFC) << 1) + (column >> 2);
+	uint8_t attribute = vram[attributeAddress];
+	uint8_t shift = (column & 0x02) | ((row & 0x02) << 1);
+
+	uint8_t paletteBaseAddr;
+	if(mmc5 && mmc5->IsExtendedAttributes()) {
+		paletteBaseAddr = mmc5->GetExAttributeNtPalette(ntIndex) << 2;
+	} else {
+		paletteBaseAddr = ((attribute >> shift) & 0x03) << 2;
+	}
+	
+	result.Row = row;
+	result.Column = column;
+	result.Width = 8;
+	result.Height = 8;
+	result.TileMapAddress = baseAddr + ntIndex;
+	result.TileIndex = vram[result.TileMapAddress];
+	result.TileAddress = bgAddr + (result.TileIndex << 4);
+	result.PaletteIndex = paletteBaseAddr >> 2;
+	result.PaletteAddress = 0x3F00 | paletteBaseAddr;
+
+	return result;
+}
+
 void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	sprite.SpriteIndex = i;
