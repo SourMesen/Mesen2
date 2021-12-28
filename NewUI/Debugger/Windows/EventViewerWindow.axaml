@@ -37,12 +37,27 @@
 	</Window.DataTemplates>
 	
 	<DockPanel>
-		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuActions}" />
-			<MenuItem Header="{l:Translate mnuView}" Classes="ActionMenu" Items="{CompiledBinding ViewMenuActions}" />
-		</Menu>
-		
-		<ContentControl Content="{CompiledBinding ConsoleConfig}" DockPanel.Dock="Right" VerticalAlignment="Top" Margin="3"/>
+		<Panel DockPanel.Dock="Top">
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" Classes="ActionMenu" Items="{CompiledBinding ViewMenuActions}" />
+			</Menu>
+			<c:IconButton
+				HorizontalAlignment="Right"
+				DockPanel.Dock="Right"
+				ToolTip.Tip="Toggle settings panel"
+				Click="OnSettingsClick"
+				Icon="Assets/Settings.png"
+			/>
+		</Panel>
+
+		<ContentControl
+			IsVisible="{CompiledBinding Config.ShowSettingsPanel}"
+			Content="{CompiledBinding ConsoleConfig}"
+			DockPanel.Dock="Right"
+			VerticalAlignment="Top"
+			Margin="3"
+		/>
 
 		<TabControl SelectedIndex="{CompiledBinding SelectedTab}">
 			<TabItem Header="{l:Translate tabPpuView}">

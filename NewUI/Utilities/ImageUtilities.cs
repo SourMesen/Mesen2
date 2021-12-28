@@ -17,5 +17,15 @@ namespace Mesen.Utilities
 				return null;
 			}
 		}
+
+		public static Bitmap? BitmapFromAsset(string source)
+		{
+			IAssetLoader? assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
+			if(assetLoader != null) {
+				return new Bitmap(assetLoader.Open(new Uri("avares://Mesen/" + source)));
+			} else {
+				return null;
+			}
+		}
 	}
 }

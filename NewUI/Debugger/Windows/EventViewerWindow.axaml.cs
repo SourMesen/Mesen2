@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using Mesen.Localization;
 using Mesen.Debugger.Labels;
 using System.Collections.ObjectModel;
+using Avalonia.Interactivity;
 
 namespace Mesen.Debugger.Windows
 {
@@ -184,6 +185,11 @@ namespace Mesen.Debugger.Windows
 			_timer.Stop();
 			_listener.Dispose();
 			_model.SaveConfig();
+		}
+
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
+		{
+			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)

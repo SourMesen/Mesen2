@@ -6,6 +6,7 @@
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:v="using:Mesen.Debugger.Views"
+	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,11 +14,11 @@
 	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
 	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
 	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
-	mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
 	x:DataType="vm:DebuggerWindowViewModel"
 	Icon="/Assets/Debugger.png"
-	Width="1000" Height="600"
+	Width="500" Height="600"
 	Title="Debugger"
 	x:Name="Debugger"
 >
@@ -29,14 +30,6 @@
 		<Style Selector="TabStrip:singleitem">
 			<Setter Property="IsVisible" Value="False" />
 		</Style>
-		<Style Selector="Button">
-			<Setter Property="MinWidth" Value="0" />
-		</Style>
-		<Style Selector=".IconBar Button Image">
-			<Setter Property="Margin" Value="0" />
-			<Setter Property="Width" Value="16" />
-			<Setter Property="Height" Value="16" />
-		</Style>
 	</Window.Styles>
 	
 	<DockPanel>
@@ -44,17 +37,14 @@
 			<MenuItem Header="Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
 			<MenuItem Header="Options" Classes="ActionMenu" Items="{CompiledBinding OptionMenuItems}" />
 		</Menu>
-		<DockPanel DockPanel.Dock="Top" Classes="IconBar">
-			<Button
+		<DockPanel DockPanel.Dock="Top">
+			<c:IconButton
+				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
-				Width="21"
-				Height="20"
 				ToolTip.Tip="Toggle settings panel"
 				Click="OnSettingsClick"
-			>
-				<Image Source="/Assets/Settings.png" />
-			</Button>
-			
+				Icon="Assets/Settings.png"
+			/>
 			<StackPanel Orientation="Horizontal">
 				<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
 			</StackPanel>

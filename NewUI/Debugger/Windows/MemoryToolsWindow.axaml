@@ -26,15 +26,6 @@
 		<Style Selector="TabStrip:singleitem">
 			<Setter Property="IsVisible" Value="False" />
 		</Style>
-		<Style Selector="Button">
-			<Setter Property="MinWidth" Value="0" />
-			<Setter Property="Padding" Value="1" />
-		</Style>
-		<Style Selector="Button Image">
-			<Setter Property="Margin" Value="1 1 0 0" />
-			<Setter Property="Width" Value="16" />
-			<Setter Property="Height" Value="16" />
-		</Style>
 	</Window.Styles>
 
 	<DockPanel>
@@ -57,13 +48,13 @@
 				SelectedItem="{CompiledBinding Config.MemoryType}"
 				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
-			<Button
+			<c:IconButton
+				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
 				ToolTip.Tip="Toggle settings panel"
 				Click="OnSettingsClick"
-			>
-				<Image Source="/Assets/Settings.png" />
-			</Button>
+				Icon="Assets/Settings.png"
+			/>
 			<ComboBox
 				DockPanel.Dock="Right"
 				SelectedItem="{CompiledBinding Config.BytesPerRow}"
