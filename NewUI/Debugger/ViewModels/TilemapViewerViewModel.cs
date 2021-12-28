@@ -3,14 +3,17 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -24,8 +27,6 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public Rect SelectionRect { get; set; }
 
 		[Reactive] public WriteableBitmap ViewerBitmap { get; private set; }
-		[Reactive] public BaseState? PpuState { get; set; }
-		[Reactive] public byte[]? PrevVram { get; set; }
 
 		[Reactive] public DynamicTooltip? PreviewPanel { get; private set; }
 
@@ -33,14 +34,25 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool ShowTabs { get; private set; }
 		[Reactive] public TilemapViewerTab SelectedTab { get; set; }
 
-		//For designer
-		public TilemapViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes) { }
+		public List<object> FileMenuActions { get; } = new();
+		public List<object> ViewMenuActions { get; } = new();
 
-		public TilemapViewerViewModel(CpuType cpuType, ConsoleType consoleType)
+		private PictureViewer _picViewer;
+		private BaseState? _ppuState;
+		private byte[]? _prevVram;
+		private byte[] _vram = Array.Empty<byte>();
+		private UInt32[] _palette = Array.Empty<UInt32>();
+
+		[Obsolete("For designer only")]
+		public TilemapViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), null) { }
+
+		public TilemapViewerViewModel(CpuType cpuType, ConsoleType consoleType, PictureViewer picViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TilemapViewer;
 			CpuType = cpuType;
 			ConsoleType = consoleType;
+
+			_picViewer = picViewer;
 
 			switch(CpuType) {
 				case CpuType.Cpu: 
@@ -70,7 +82,50 @@ namespace Mesen.Debugger.ViewModels
 
 			InitBitmap(256, 256);
 
+			FileMenuActions = new() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => wnd?.Close()
+				}
+			};
+
+			ViewMenuActions = new() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Refresh,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
+					OnClick = () => RefreshData()
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.EnableAutoRefresh,
+					IsSelected = () => Config.AutoRefresh,
+					OnClick = () => Config.AutoRefresh = !Config.AutoRefresh
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RefreshOnBreakPause,
+					IsSelected = () => Config.RefreshOnBreakPause,
+					OnClick = () => Config.RefreshOnBreakPause = !Config.RefreshOnBreakPause
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ZoomIn,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomIn),
+					OnClick = () => _picViewer.ZoomIn()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ZoomOut,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
+					OnClick = () => _picViewer.ZoomOut()
+				},
+			};
+
+			if(Design.IsDesignMode || wnd == null) {
+				return;
+			}
+
 			this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1);
+
+			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab());
 
 			this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => {
 				if(x.IsEmpty) {
@@ -79,12 +134,17 @@ namespace Mesen.Debugger.ViewModels
 					PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(x.TopLeft, 1));
 				}
 			});
-		}
 
-		public void InitBitmap(int width, int height)
+			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
+			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+		
+		[MemberNotNull(nameof(ViewerBitmap))]
+		private void InitBitmap(int width, int height)
 		{
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
 				ViewerBitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+				_picViewer.Source = ViewerBitmap;
 			}
 		}
 
@@ -99,26 +159,53 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
-		public void UpdateBitmap<T>(T ppuState, byte[] vram, byte[]? prevVram) where T : struct, BaseState
+		private void RefreshData<T>() where T : struct, BaseState
 		{
-			GetTilemapOptions options = GetOptions(prevVram);
-			UInt32[] palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
+			T ppuState = DebugApi.GetPpuState<T>(CpuType);
+			_ppuState = ppuState;
+			_prevVram = _vram;
+			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
+			_palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
 
-			FrameInfo size = DebugApi.GetTilemapSize(CpuType, options, ppuState);
-			InitBitmap((int)size.Width, (int)size.Height);
+			RefreshTab();
+		}
 
-			using(var framebuffer = ViewerBitmap.Lock()) {
-				DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.Address);
+		private void RefreshTab()
+		{
+			Dispatcher.UIThread.Post(() => {
+				if(_ppuState == null) {
+					return;
+				}
+
+				GetTilemapOptions options = GetOptions(_prevVram);
+
+				FrameInfo size = DebugApi.GetTilemapSize(CpuType, options, _ppuState);
+				InitBitmap((int)size.Width, (int)size.Height);
+
+				using(var framebuffer = ViewerBitmap.Lock()) {
+					DebugApi.GetTilemap(CpuType, options, _ppuState, _vram, _palette, framebuffer.Address);
+				}
+
+				_picViewer.InvalidateVisual();
+			});
+		}
+
+		public void RefreshData()
+		{
+			switch(CpuType) {
+				case CpuType.Cpu: RefreshData<PpuState>(); break;
+				case CpuType.Nes: RefreshData<NesPpuState>(); break;
+				case CpuType.Gameboy: RefreshData<GbPpuState>(); break;
 			}
 		}
 
 		public DynamicTooltip? GetPreviewPanel(PixelPoint p)
 		{
-			if(PpuState == null || PrevVram == null) {
+			if(_ppuState == null || _prevVram == null) {
 				return null;
 			}
 
-			DebugTilemapTileInfo? result = DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(), PrevVram, PpuState);
+			DebugTilemapTileInfo? result = DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(), _prevVram, _ppuState);
 			if(result == null) {
 				return null;
 			}

@@ -41,8 +41,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="File" />
-				<MenuItem Header="View" />
+				<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Classes="ActionMenu" Header="View" Items="{CompiledBinding ViewMenuActions}" />
 			</Menu>
 			<Button
 				HorizontalAlignment="Right"

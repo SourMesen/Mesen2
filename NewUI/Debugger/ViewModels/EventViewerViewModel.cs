@@ -91,11 +91,11 @@ namespace Mesen.Debugger.ViewModels
 				},
 			};
 
-			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(x));
-
-			if(wnd == null) {
+			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
+
+			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab());
 
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
@@ -121,10 +121,10 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			DebugApi.TakeEventSnapshot(CpuType);
-			RefreshTab(SelectedTab);
+			RefreshTab();
 		}
 
-		public void RefreshTab(EventViewerTab tab)
+		public void RefreshTab()
 		{
 			Dispatcher.UIThread.Post(() => {
 				if(SelectedTab == EventViewerTab.PpuView) {

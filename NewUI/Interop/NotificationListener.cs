@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia.Controls;
+using System;
 
 namespace Mesen.Interop
 {
@@ -17,11 +18,20 @@ namespace Mesen.Interop
 			_callback = (int type, IntPtr parameter) => {
 				this.ProcessNotification(type, parameter);
 			};
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			_notificationListener = EmuApi.RegisterNotificationCallback(_callback);
 		}
 
 		public void Dispose()
 		{
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			if(_notificationListener != IntPtr.Zero) {
 				EmuApi.UnregisterNotificationCallback(_notificationListener);
 				_notificationListener = IntPtr.Zero;

@@ -22,12 +22,29 @@ namespace Mesen.Debugger.Windows
 		private TilemapViewerViewModel _model;
 		private PictureViewer _picViewer;
 		
-		public TilemapViewerWindow()
+		[Obsolete("For designer only")]
+		public TilemapViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
+
+		public TilemapViewerWindow(CpuType cpuType, ConsoleType consoleType)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
+
+			_picViewer = this.FindControl<PictureViewer>("picViewer");
+			_model = new TilemapViewerViewModel(cpuType, consoleType, _picViewer, this);
+			DataContext = _model;
+			_model.Config.LoadWindowSettings(this);
+			_listener = new NotificationListener();
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			_picViewer.PointerMoved += PicViewer_PointerMoved;
+			_picViewer.PointerLeave += PicViewer_PointerLeave;
+			_picViewer.Source = _model.ViewerBitmap;
 		}
 
 		private void InitializeComponent()
@@ -37,35 +54,18 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnOpened(EventArgs e)
 		{
-			base.OnOpened(e);
-
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			//Renderer.DrawFps = true;
-			_picViewer = this.FindControl<PictureViewer>("picViewer");
-			_picViewer.PointerMoved += PicViewer_PointerMoved;
-			_picViewer.PointerLeave += PicViewer_PointerLeave;
-			_picViewer.Source = _model.ViewerBitmap;
-
-			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
+			_model.RefreshData();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			_listener?.Dispose();
-			base.OnClosing(e);
-		}
-
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(this.DataContext is TilemapViewerViewModel model) {
-				_model = model;
-			} else {
-				throw new Exception("Unexpected model");
-			}
+			_model.Config.SaveWindowSettings(this);
 		}
 
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
@@ -101,33 +101,20 @@ namespace Mesen.Debugger.Windows
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
-		private void UpdateTilemap<T>() where T : struct, BaseState
-		{
-			T ppuState = DebugApi.GetPpuState<T>(_model.CpuType);
-			byte[] vram = DebugApi.GetMemoryState(_model.CpuType.GetVramMemoryType());
-			byte[]? prevVram = _model.PrevVram;
-			_model.PpuState = ppuState;
-			_model.PrevVram = vram;
-			UInt32[] palette = PaletteHelper.GetConvertedPalette(_model.CpuType, _model.ConsoleType);
-
-			Dispatcher.UIThread.Post(() => {
-				_model.UpdateBitmap(ppuState, vram, prevVram);
-
-				_picViewer.Source = _model.ViewerBitmap;
-				_picViewer.InvalidateVisual();
-			});
-		}
-
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType != ConsoleNotificationType.PpuFrameDone) {
-				return;
-			}
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.EventViewerRefresh:
+					if(_model.Config.AutoRefresh) {
+						_model.RefreshData();
+					}
+					break;
 
-			switch(_model.CpuType) {
-				case CpuType.Cpu: UpdateTilemap<PpuState>(); break;
-				case CpuType.Nes: UpdateTilemap<NesPpuState>(); break;
-				case CpuType.Gameboy: UpdateTilemap<GbPpuState>(); break;
+				case ConsoleNotificationType.CodeBreak:
+					if(_model.Config.RefreshOnBreakPause) {
+						_model.RefreshData();
+					}
+					break;
 			}
 		}
 	}

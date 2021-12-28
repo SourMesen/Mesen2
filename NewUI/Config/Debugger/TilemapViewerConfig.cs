@@ -27,6 +27,7 @@ namespace Mesen.Config
 		[Reactive] public TilemapDisplayMode DisplayMode { get; set; } = TilemapDisplayMode.Default;
 
 		[Reactive] public bool AutoRefresh { get; set; } = true;
+		[Reactive] public bool RefreshOnBreakPause { get; set; } = true;
 		[Reactive] public int RefreshScanline { get; set; } = 240;
 		[Reactive] public int RefreshCycle { get; set; } = 0;
 

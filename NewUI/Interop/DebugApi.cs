@@ -130,8 +130,11 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
-		public unsafe static void GetTilemap<T>(CpuType cpuType, GetTilemapOptions options, T state, byte[] vram, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
+		public unsafe static void GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState state, byte[] vram, UInt32[] palette, IntPtr outputBuffer)
 		{
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
+
 			GCHandle? handle = null;
 			IntPtr compareVramPtr = IntPtr.Zero;
 
@@ -140,7 +143,7 @@ namespace Mesen.Interop
 				compareVramPtr = handle.Value.AddrOfPinnedObject();
 			}
 
-			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
 			InteropGetTilemapOptions interopOptions = options.ToInterop();
 			interopOptions.CompareVram = compareVramPtr;
@@ -149,9 +152,12 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern FrameInfo GetTilemapSize(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state);
-		public unsafe static FrameInfo GetTilemapSize<T>(CpuType cpuType, GetTilemapOptions options, T state) where T : struct, BaseState
+		public unsafe static FrameInfo GetTilemapSize(CpuType cpuType, GetTilemapOptions options, BaseState state)
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
+
+			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), (IntPtr)ptr);
 		}
@@ -160,6 +166,7 @@ namespace Mesen.Interop
 		public unsafe static DebugTilemapTileInfo? GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, GetTilemapOptions options, byte[] vram, BaseState state)
 		{
 			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
 			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
@@ -289,6 +296,16 @@ namespace Mesen.Interop
 			UInt32 size = DebugApi.AssembleCodeWrapper(cpuType, code, startAddress, assembledCode);
 			Array.Resize(ref assembledCode, (int)size);
 			return assembledCode;
+		}
+
+		private static bool IsValidPpuState(ref BaseState state, CpuType cpuType)
+		{
+			return cpuType.GetConsoleType() switch {
+				ConsoleType.Snes => state is PpuState,
+				ConsoleType.Nes => state is NesPpuState,
+				ConsoleType.Gameboy => state is GbPpuState,
+				_ => false
+			};
 		}
 	}
 
@@ -971,6 +988,21 @@ namespace Mesen.Interop
 				CpuType.Cx4 => DebuggerFlags.Cx4DebuggerEnabled,
 				CpuType.Gameboy => DebuggerFlags.GbDebuggerEnabled,
 				CpuType.Nes => DebuggerFlags.NesDebuggerEnabled,
+				_ => throw new Exception("Invalid CPU type"),
+			};
+		}
+
+		public static ConsoleType GetConsoleType(this CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Cpu => ConsoleType.Snes,
+				CpuType.Spc => ConsoleType.Snes,
+				CpuType.NecDsp => ConsoleType.Snes,
+				CpuType.Sa1 => ConsoleType.Snes,
+				CpuType.Gsu => ConsoleType.Snes,
+				CpuType.Cx4 => ConsoleType.Snes,
+				CpuType.Gameboy => ConsoleType.Gameboy,
+				CpuType.Nes => ConsoleType.Nes,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}

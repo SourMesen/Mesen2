@@ -175,7 +175,7 @@ namespace Mesen.Debugger.Windows
 				DebugApi.SetEventViewerConfig(_model.CpuType, gbCfg.ToInterop());
 			}
 
-			_model.RefreshTab(_model.SelectedTab);
+			_model.RefreshTab();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)

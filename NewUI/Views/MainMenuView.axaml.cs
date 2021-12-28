@@ -62,9 +62,7 @@ namespace Mesen.Views
 		private void OnTilemapViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new TilemapViewerWindow {
-				DataContext = new TilemapViewerViewModel(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType),
-			}.Show();
+			new TilemapViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
 		}
 
 		private void OnSpriteViewerClick(object sender, RoutedEventArgs e)
