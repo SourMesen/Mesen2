@@ -497,7 +497,11 @@ uint32_t Emulator::GetCrc32()
 
 PpuFrameInfo Emulator::GetPpuFrame()
 {
-	return _console->GetPpuFrame();
+	if(_console) {
+		return _console->GetPpuFrame();
+	} else {
+		return {};
+	}
 }
 
 ConsoleRegion Emulator::GetRegion()
@@ -535,11 +539,18 @@ vector<CpuType> Emulator::GetCpuTypes()
 
 TimingInfo Emulator::GetTimingInfo()
 {
-	TimingInfo info;
-	info.MasterClock = GetMasterClock();
-	info.MasterClockRate = GetMasterClockRate();
-	info.FrameCount = GetFrameCount();
-	info.Fps = GetFps();
+	TimingInfo info = {};
+	if(_console) {
+		info.MasterClock = GetMasterClock();
+		info.MasterClockRate = GetMasterClockRate();
+		info.FrameCount = GetFrameCount();
+		info.Fps = GetFps();
+
+		PpuFrameInfo frameInfo = GetPpuFrame();
+		info.CycleCount = frameInfo.CycleCount;
+		info.ScanlineCount = frameInfo.ScanlineCount;
+		info.FirstScanline = frameInfo.FirstScanline;
+	}
 	return info;
 }
 

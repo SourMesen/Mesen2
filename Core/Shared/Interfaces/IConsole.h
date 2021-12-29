@@ -22,10 +22,13 @@ enum class LoadRomResult
 
 struct PpuFrameInfo
 {
+	uint8_t* FrameBuffer;
 	uint32_t Width;
 	uint32_t Height;
 	uint32_t FrameCount;
-	uint8_t* FrameBuffer;
+	uint32_t ScanlineCount;
+	int32_t FirstScanline;
+	uint32_t CycleCount;
 };
 
 class IConsole : public ISerializable

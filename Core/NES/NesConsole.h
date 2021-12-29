@@ -67,8 +67,6 @@ public:
 	void RunVsSubConsole();
 
 	//TODO
-	bool IsNsf() { return false; }
-	void DebugSetLastFramePpuScroll(uint16_t addr, uint8_t xScroll, bool updateHorizontalScrollOnly) {}
 	void SetNextFrameOverclockStatus(bool enabled) {}
 
 	// Inherited via IConsole

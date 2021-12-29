@@ -247,7 +247,10 @@ void GbDebugger::ProcessPpuCycle()
 {
 	uint8_t scanline = _ppu->GetScanline();
 	uint16_t cycle = _ppu->GetCycle();
-	_ppuTools->UpdateViewers(scanline, cycle);
+
+	if(_ppuTools->HasOpenedViewer()) {
+		_ppuTools->UpdateViewers(scanline, cycle);
+	}
 
 	if(cycle == 0 && scanline == _step->BreakScanline) {
 		_debugger->SleepUntilResume(BreakSource::PpuStep);

@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using Avalonia;
-using Mesen.Debugger;
-using Mesen.Interop;
+﻿using Mesen.Interop;
 using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.Config
@@ -26,10 +16,7 @@ namespace Mesen.Config
 		[Reactive] public bool HighlightAttributeChanges { get; set; }
 		[Reactive] public TilemapDisplayMode DisplayMode { get; set; } = TilemapDisplayMode.Default;
 
-		[Reactive] public bool AutoRefresh { get; set; } = true;
-		[Reactive] public bool RefreshOnBreakPause { get; set; } = true;
-		[Reactive] public int RefreshScanline { get; set; } = 240;
-		[Reactive] public int RefreshCycle { get; set; } = 0;
+		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
 
 		public TilemapViewerConfig()
 		{

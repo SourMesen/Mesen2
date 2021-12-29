@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		public ConsoleType ConsoleType { get; }
 
 		public TilemapViewerConfig Config { get; }
+		public RefreshTimingViewModel RefreshTiming { get; }
 
 		[Reactive] public Rect SelectionRect { get; set; }
 
@@ -49,6 +50,8 @@ namespace Mesen.Debugger.ViewModels
 		public TilemapViewerViewModel(CpuType cpuType, ConsoleType consoleType, PictureViewer picViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TilemapViewer;
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
+
 			CpuType = cpuType;
 			ConsoleType = consoleType;
 
@@ -98,13 +101,13 @@ namespace Mesen.Debugger.ViewModels
 				new Separator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.EnableAutoRefresh,
-					IsSelected = () => Config.AutoRefresh,
-					OnClick = () => Config.AutoRefresh = !Config.AutoRefresh
+					IsSelected = () => Config.RefreshTiming.AutoRefresh,
+					OnClick = () => Config.RefreshTiming.AutoRefresh = !Config.RefreshTiming.AutoRefresh
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.RefreshOnBreakPause,
-					IsSelected = () => Config.RefreshOnBreakPause,
-					OnClick = () => Config.RefreshOnBreakPause = !Config.RefreshOnBreakPause
+					IsSelected = () => Config.RefreshTiming.RefreshOnBreakPause,
+					OnClick = () => Config.RefreshTiming.RefreshOnBreakPause = !Config.RefreshTiming.RefreshOnBreakPause
 				},
 				new Separator(),
 				new ContextMenuAction() {
@@ -177,13 +180,18 @@ namespace Mesen.Debugger.ViewModels
 					return;
 				}
 
-				GetTilemapOptions options = GetOptions(_prevVram);
+				BaseState ppuState = _ppuState;
+				byte[]? prevVram = _prevVram;
+				byte[] vram = _vram;
+				uint[] palette = _palette;
+				
+				GetTilemapOptions options = GetOptions(prevVram);
 
-				FrameInfo size = DebugApi.GetTilemapSize(CpuType, options, _ppuState);
+				FrameInfo size = DebugApi.GetTilemapSize(CpuType, options, ppuState);
 				InitBitmap((int)size.Width, (int)size.Height);
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetTilemap(CpuType, options, _ppuState, _vram, _palette, framebuffer.Address);
+					DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.Address);
 				}
 
 				_picViewer.InvalidateVisual();

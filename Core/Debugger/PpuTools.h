@@ -88,15 +88,18 @@ public:
 
 	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);
+
+	__forceinline bool HasOpenedViewer()
+	{
+		return _updateTimings.size() > 0;
+	}
 	
 	__forceinline void UpdateViewers(uint16_t scanline, uint16_t cycle)
 	{
-		if(_updateTimings.size() > 0) {
-			for(auto updateTiming : _updateTimings) {
-				ViewerRefreshConfig cfg = updateTiming.second;
-				if(cfg.Cycle == cycle && cfg.Scanline == scanline) {
-					_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
-				}
+		for(auto updateTiming : _updateTimings) {
+			ViewerRefreshConfig cfg = updateTiming.second;
+			if(cfg.Cycle == cycle && cfg.Scanline == scanline) {
+				_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
 			}
 		}
 	}

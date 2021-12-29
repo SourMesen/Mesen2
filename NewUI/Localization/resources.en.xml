@@ -794,6 +794,7 @@
 			<Control ID="chkShowAltGrid">Show attribute grid</Control>
 			<Control ID="chkHighlightTileChanges">Highlight tile changes</Control>
 			<Control ID="chkHighlightAttributeChanges">Highlight attribute changes</Control>
+			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
 		</Form>
 
 		<Form ID="SpriteViewerWindow">
@@ -908,6 +909,12 @@
 		<Form ID="FontOptionsView">
 			<Control ID="lblFamily">Family: </Control>
 			<Control ID="lblSize">Size: </Control>
+		</Form>
+
+		<Form ID="RefreshTimingView">
+			<Control ID="lblTitle">Auto-refresh timing</Control>
+			<Control ID="lblScanline">Scanline (V): </Control>
+			<Control ID="lblCycle">Cycle (H): </Control>
 		</Form>
 
 		<Form ID="DebuggerConfigWindow">

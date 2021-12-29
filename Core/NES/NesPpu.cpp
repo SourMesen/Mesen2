@@ -452,7 +452,6 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 				_needStateUpdate = true;
 				_updateVramAddrDelay = 3;
 				_updateVramAddr = _tmpVideoRamAddr;
-				_console->DebugSetLastFramePpuScroll(_updateVramAddr, _xScroll, false);
 			} else {
 				uint16_t newAddr = (_tmpVideoRamAddr & ~0xFF00) | ((value & 0x3F) << 8);
 				ProcessTmpAddrScrollGlitch(newAddr, _console->GetMemoryManager()->GetOpenBus() << 8, 0x0C00);
@@ -915,7 +914,6 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 			if(_prevRenderingEnabled) {
 				//copy horizontal scrolling value from t
 				_videoRamAddr = (_videoRamAddr & ~0x041F) | (_tmpVideoRamAddr & 0x041F);
-				_console->DebugSetLastFramePpuScroll(_videoRamAddr, _xScroll, true);
 			}
 		}
 		if(IsRenderingEnabled()) {
@@ -945,9 +943,6 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 			if(IsRenderingEnabled()) {
 				LoadExtraSprites();
 				_oamCopybuffer = _secondarySpriteRAM[0];
-			}
-			if(_scanline == -1) {
-				_console->DebugSetLastFramePpuScroll(_videoRamAddr, _xScroll, false);
 			}
 		} else if(_prevRenderingEnabled && (_cycle == 328 || _cycle == 336)) {
 			_lowBitShift <<= 8;

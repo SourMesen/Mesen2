@@ -13,12 +13,15 @@
 	<ItemsControl.Template>
 		<ControlTemplate>
 			<StackPanel>
-				<TextBlock
-					Text="{Binding Header, ElementName=root}"
-					Foreground="Gray"
-					FontSize="13"
-					Margin="0 0 0 5"
-				/>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock
+						Text="{Binding Header, ElementName=root}"
+						Foreground="Gray"
+						FontSize="13"
+						Margin="0 0 0 5"
+					/>
+					<ContentControl Content="{Binding Button, ElementName=root}" />
+				</StackPanel>
 				<StackPanel Margin="10 0 0 0">
 					<ItemsPresenter Items="{Binding Items, ElementName=root}" />
 				</StackPanel>

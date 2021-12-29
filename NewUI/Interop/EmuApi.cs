@@ -124,6 +124,10 @@ namespace Mesen.Interop
 		public UInt64 MasterClock;
 		public UInt32 MasterClockRate;
 		public UInt32 FrameCount;
+
+		public UInt32 ScanlineCount;
+		public Int32 FirstScanline;
+		public UInt32 CycleCount;
 	}
 
 	public struct FrameInfo

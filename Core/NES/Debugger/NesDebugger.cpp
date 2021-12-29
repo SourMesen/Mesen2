@@ -231,7 +231,10 @@ void NesDebugger::ProcessPpuCycle()
 {
 	int16_t scanline = _ppu->GetCurrentScanline();
 	uint16_t cycle = _ppu->GetCurrentCycle();
-	_ppuTools->UpdateViewers(scanline, cycle);
+
+	if(_ppuTools->HasOpenedViewer()) {
+		_ppuTools->UpdateViewers(scanline, cycle);
+	}
 
 	if(cycle == 0 && scanline == _step->BreakScanline) {
 		_debugger->SleepUntilResume(BreakSource::PpuStep);

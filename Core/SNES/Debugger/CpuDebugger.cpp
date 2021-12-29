@@ -270,10 +270,11 @@ void CpuDebugger::ProcessPpuCycle()
 	}
 
 	uint16_t scanline = _ppu->GetScanline();
-	uint16_t cycle = _memoryManager->GetHClock();
-	_ppuTools->UpdateViewers(scanline, cycle);
+	if(_ppuTools->HasOpenedViewer()) {
+		_ppuTools->UpdateViewers(scanline, _ppu->GetCycle());
+	}
 
-	if(cycle == 0 && scanline == _step->BreakScanline) {
+	if(scanline == _step->BreakScanline && _memoryManager->GetHClock() == 0) {
 		_debugger->SleepUntilResume(BreakSource::PpuStep);
 	} else if(_step->PpuStepCount > 0) {
 		_step->PpuStepCount--;

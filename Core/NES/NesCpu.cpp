@@ -296,7 +296,7 @@ uint16_t NesCpu::FetchOperand()
 		_emu->GetDebugger(true)->BreakImmediately(BreakSource::BreakOnCpuCrash);
 	}
 	
-	if(_console->IsNsf()) {
+	if(_console->GetRomFormat() == RomFormat::Nsf) {
 		//Don't stop emulation on CPU crash when playing NSFs, reset cpu instead
 		_emu->Reset();
 		return 0;

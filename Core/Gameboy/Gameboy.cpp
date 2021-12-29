@@ -479,6 +479,9 @@ PpuFrameInfo Gameboy::GetPpuFrame()
 	frame.FrameCount = _ppu->GetFrameCount();
 	frame.Width = 160;
 	frame.Height = 144;
+	frame.FirstScanline = 0;
+	frame.ScanlineCount = 154;
+	frame.CycleCount = 456;
 	return frame;
 }
 

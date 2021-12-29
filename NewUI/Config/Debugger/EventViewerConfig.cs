@@ -10,6 +10,7 @@ namespace Mesen.Config
 
 		[Reactive] public bool RefreshOnBreakPause { get; set; } = true;
 		[Reactive] public bool AutoRefresh { get; set; } = true;
+		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
 
 		public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
 		public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();

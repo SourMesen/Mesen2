@@ -219,6 +219,9 @@ PpuFrameInfo Console::GetPpuFrame()
 	frame.Width = 256;
 	frame.Height = 239;
 	frame.FrameCount = _ppu->GetFrameCount();
+	frame.FirstScanline = 0;
+	frame.ScanlineCount = _ppu->GetVblankEndScanline() + 1;
+	frame.CycleCount = 341;
 	return frame;
 }
 

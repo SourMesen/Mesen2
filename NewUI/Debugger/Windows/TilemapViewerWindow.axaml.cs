@@ -13,6 +13,7 @@ using Mesen.Interop;
 using System.ComponentModel;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -35,6 +36,7 @@ namespace Mesen.Debugger.Windows
 			_picViewer = this.FindControl<PictureViewer>("picViewer");
 			_model = new TilemapViewerViewModel(cpuType, consoleType, _picViewer, this);
 			DataContext = _model;
+
 			_model.Config.LoadWindowSettings(this);
 			_listener = new NotificationListener();
 
@@ -103,19 +105,7 @@ namespace Mesen.Debugger.Windows
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			switch(e.NotificationType) {
-				case ConsoleNotificationType.EventViewerRefresh:
-					if(_model.Config.AutoRefresh) {
-						_model.RefreshData();
-					}
-					break;
-
-				case ConsoleNotificationType.CodeBreak:
-					if(_model.Config.RefreshOnBreakPause) {
-						_model.RefreshData();
-					}
-					break;
-			}
+			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model.CpuType, _model.RefreshData);
 		}
 	}
 }
