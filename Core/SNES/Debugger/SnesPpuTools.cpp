@@ -13,7 +13,7 @@ SnesPpuTools::SnesPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugge
 {
 }
 
-void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	PpuState& state = (PpuState&)baseState;
 	FrameInfo outputSize = GetTilemapSize(options, state);
@@ -31,7 +31,7 @@ void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, u
 
 	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
 	if(bpp == 0) {
-		return;
+		return {};
 	}
 
 	bool largeTileWidth = layer.LargeTiles || state.BgMode == 5 || state.BgMode == 6;
@@ -99,6 +99,21 @@ void SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, u
 			}
 		}
 	}
+
+	int hScroll = state.BgMode == 7 ? state.Mode7.HScroll : layer.HScroll;
+	int vScroll = state.BgMode == 7 ? state.Mode7.VScroll : layer.VScroll;
+	int height = state.OverscanMode ? 239 : 224;
+
+	bool isDoubleWidthScreen = state.HiResMode || state.BgMode == 5 || state.BgMode == 6;
+	bool isDoubleHeightScreen = state.ScreenInterlace || state.BgMode == 5 || state.BgMode == 6;
+	
+	DebugTilemapInfo result = {};
+	result.Bpp = bpp;
+	result.ScrollX = hScroll;
+	result.ScrollY = vScroll;
+	result.ScrollWidth = isDoubleWidthScreen ? 512 : 256;
+	result.ScrollHeight = isDoubleHeightScreen ? height * 2 : height;
+	return result;
 }
 
 static constexpr uint8_t _oamSizes[8][2][2] = {

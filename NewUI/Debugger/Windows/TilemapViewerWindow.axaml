@@ -102,6 +102,7 @@
 					Zoom="{CompiledBinding Config.ImageScale}"
 					ShowGrid="{CompiledBinding Config.ShowGrid}"
 					SelectionRect="{CompiledBinding SelectionRect}"
+					OverlayRect="{CompiledBinding ScrollOverlayRect}"
 					AltGridSizeX="16"
 					AltGridSizeY="16"
 					ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"

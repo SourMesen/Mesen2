@@ -33,6 +33,19 @@ struct DebugSpriteInfo
 	uint32_t SpritePreview[64 * 64];
 };
 
+struct DebugTilemapInfo
+{
+	uint32_t Bpp;
+	
+	uint32_t ScrollX;
+	uint32_t ScrollWidth;
+	uint32_t ScrollY;
+	uint32_t ScrollHeight;
+
+	uint32_t CurrentRow;
+	uint32_t CurrentColumn;
+};
+
 enum class NullableBoolean
 {
 	Undefined = -1,
@@ -80,7 +93,7 @@ public:
 	
 	virtual DebugTilemapTileInfo GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState) = 0;
 	virtual FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) = 0;
-	virtual void GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;
+	virtual DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;
 	
 	virtual FrameInfo GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state) = 0;
 	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;

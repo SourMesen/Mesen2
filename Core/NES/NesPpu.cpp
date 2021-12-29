@@ -1273,7 +1273,6 @@ template<class T> void NesPpu<T>::Exec()
 		//Process cycles 1 to 340
 		_cycle++;
 
-		_emu->ProcessPpuCycle<CpuType::Nes>();
 		if(_scanline < 240) {
 			((T*)this)->ProcessScanline();
 		} else if(_cycle == 1 && _scanline == _nmiScanline) {
@@ -1301,6 +1300,8 @@ template<class T> void NesPpu<T>::Exec()
 	if(_needStateUpdate) {
 		UpdateState();
 	}
+
+	_emu->ProcessPpuCycle<CpuType::Nes>();
 }
 
 template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
@@ -1321,8 +1322,6 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 
 		UpdateMinimumDrawCycles();
 	}
-
-	_emu->ProcessPpuCycle<CpuType::Nes>();
 
 	UpdateApuStatus();
 

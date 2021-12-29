@@ -13,7 +13,7 @@ private:
 public:
 	GbPpuTools(Debugger* debugger, Emulator *emu);
 
-	void GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t *outBuffer) override;
+	DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t *outBuffer) override;
 	FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) override;
 	DebugTilemapTileInfo GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState) override;
 

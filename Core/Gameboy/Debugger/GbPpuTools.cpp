@@ -3,12 +3,13 @@
 #include "Debugger/DebugTypes.h"
 #include "Shared/SettingTypes.h"
 #include "Gameboy/GbTypes.h"
+#include "Gameboy/GbConstants.h"
 
 GbPpuTools::GbPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, emu)
 {
 }
 
-void GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	int offset = options.Layer == 1 ? 0x1C00 : 0x1800;
@@ -49,6 +50,14 @@ void GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uin
 			}
 		}
 	}
+
+	DebugTilemapInfo result = {};
+	result.Bpp = 2;
+	result.ScrollX = state.ScrollX;
+	result.ScrollY = state.ScrollY;
+	result.ScrollWidth = GbConstants::ScreenWidth;
+	result.ScrollHeight = GbConstants::ScreenHeight;
+	return result;
 }
 
 void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)

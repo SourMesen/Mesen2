@@ -35,6 +35,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool ShowTabs { get; private set; }
 		[Reactive] public TilemapViewerTab SelectedTab { get; set; }
 
+		[Reactive] public Rect ScrollOverlayRect { get; private set; } = Rect.Empty;
+
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
@@ -138,8 +140,20 @@ namespace Mesen.Debugger.ViewModels
 				}
 			});
 
+			Config.PropertyChanged += Config_PropertyChanged;
+
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private void Config_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			RefreshTab();
+		}
+
+		public void Dispose()
+		{
+			Config.PropertyChanged -= Config_PropertyChanged;
 		}
 		
 		[MemberNotNull(nameof(ViewerBitmap))]
@@ -190,8 +204,20 @@ namespace Mesen.Debugger.ViewModels
 				FrameInfo size = DebugApi.GetTilemapSize(CpuType, options, ppuState);
 				InitBitmap((int)size.Width, (int)size.Height);
 
+				DebugTilemapInfo tilemapInfo;
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.Address);
+					tilemapInfo = DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.Address);
+				}
+
+				if(Config.ShowScrollOverlay) {
+					ScrollOverlayRect = new Rect(
+						tilemapInfo.ScrollX % size.Width,
+						tilemapInfo.ScrollY % size.Height,
+						tilemapInfo.ScrollWidth,
+						tilemapInfo.ScrollHeight
+					);
+				} else {
+					ScrollOverlayRect = Rect.Empty;
 				}
 
 				_picViewer.InvalidateVisual();

@@ -31,6 +31,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
 		
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty, defaultBindingMode: BindingMode.TwoWay);
+		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
 
 		public static readonly RoutedEvent<PositionClickedEventArgs> PositionClickedEvent = RoutedEvent.Register<PictureViewer, PositionClickedEventArgs>(nameof(PositionClicked), RoutingStrategies.Bubble);
 		public event EventHandler<PositionClickedEventArgs> PositionClicked
@@ -104,11 +105,21 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(SelectionRectProperty, value); }
 		}
 
+		public Rect OverlayRect
+		{
+			get { return GetValue(OverlayRectProperty); }
+			set { SetValue(OverlayRectProperty, value); }
+		}
+
 		private Point? _mousePosition = null;
 
 		static PictureViewer()
 		{
-			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty, SelectionRectProperty);
+			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty, SelectionRectProperty, OverlayRectProperty);
+
+			ZoomProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
+				x.UpdateSize();
+			});
 		}
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -139,7 +150,6 @@ namespace Mesen.Debugger.Controls
 				} else {
 					ZoomOut();
 				}
-				UpdateSize();
 				e.Handled = true;
 			}
 		}
@@ -250,6 +260,8 @@ namespace Mesen.Debugger.Controls
 			int width = (int)Source.Size.Width * Zoom;
 			int height = (int)Source.Size.Height * Zoom;
 
+			using var clip = context.PushClip(new Rect(0, 0, width, height));
+
 			context.FillRectangle(new SolidColorBrush(0xFFFFFFFF), new Rect(Bounds.Size));
 
 			context.DrawImage(
@@ -262,6 +274,13 @@ namespace Mesen.Debugger.Controls
 			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
 			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
+			if(_mousePosition.HasValue) {
+				Point p = GetGridPointFromMousePoint(_mousePosition.Value);
+				Rect rect = ToDrawRect(GetTileRect(p));
+				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
+				context.DrawRectangle(new Pen(Brushes.White, 2), rect.Inflate(0.5));
+			}
+
 			if(SelectionRect != Rect.Empty) {
 				Rect rect = ToDrawRect(SelectionRect);
 
@@ -270,11 +289,31 @@ namespace Mesen.Debugger.Controls
 				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), rect.Inflate(0.5));
 			}
 
-			if(_mousePosition.HasValue) {
-				Point p = GetGridPointFromMousePoint(_mousePosition.Value);
-				Rect rect = ToDrawRect(GetTileRect(p));
-				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
-				context.DrawRectangle(new Pen(Brushes.White, 2), rect.Inflate(0.5));
+			if(OverlayRect != Rect.Empty) {
+				Rect rect = ToDrawRect(OverlayRect);
+				Brush brush = new SolidColorBrush(Colors.Gray, 0.4);
+				Pen pen = new Pen(Brushes.White, 2);
+
+				context.FillRectangle(brush, rect);
+				context.DrawRectangle(pen, rect.Inflate(0.5));
+
+				if((rect.Top + rect.Height) > height) {
+					Rect offsetRect = rect.Translate(new Vector(0, -height));
+					context.FillRectangle(brush, offsetRect);
+					context.DrawRectangle(pen, offsetRect.Inflate(0.5));
+				}
+
+				if((rect.Left + rect.Width) > width) {
+					Rect offsetRect = rect.Translate(new Vector(-width, 0));
+					context.FillRectangle(brush, offsetRect);
+					context.DrawRectangle(pen, offsetRect.Inflate(0.5));
+
+					if((rect.Top + rect.Height) > height) {
+						offsetRect = rect.Translate(new Vector(-width, -height));
+						context.FillRectangle(brush, offsetRect);
+						context.DrawRectangle(pen, offsetRect.Inflate(0.5));
+					}
+				}
 			}
 		}
 	}

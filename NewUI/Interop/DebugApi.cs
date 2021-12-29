@@ -129,8 +129,8 @@ namespace Mesen.Interop
 			return buffer;
 		}
 
-		[DllImport(DllPath)] private static extern void GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
-		public unsafe static void GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState state, byte[] vram, UInt32[] palette, IntPtr outputBuffer)
+		[DllImport(DllPath)] private static extern DebugTilemapInfo GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
+		public unsafe static DebugTilemapInfo GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState state, byte[] vram, UInt32[] palette, IntPtr outputBuffer)
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
@@ -147,8 +147,9 @@ namespace Mesen.Interop
 			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
 			InteropGetTilemapOptions interopOptions = options.ToInterop();
 			interopOptions.CompareVram = compareVramPtr;
-			DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, vram, palette, outputBuffer);
+			DebugTilemapInfo result = DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, vram, palette, outputBuffer);
 			handle?.Free();
+			return result;
 		}
 
 		[DllImport(DllPath)] private static extern FrameInfo GetTilemapSize(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state);
@@ -782,6 +783,19 @@ namespace Mesen.Interop
 		Undefined = -1,
 		False = 0,
 		True = 1
+	}
+
+	public struct DebugTilemapInfo
+	{
+		public UInt32 Bpp;
+
+		public UInt32 ScrollX;
+		public UInt32 ScrollWidth;
+		public UInt32 ScrollY;
+		public UInt32 ScrollHeight;
+
+		public UInt32 CurrentRow;
+		public UInt32 CurrentColumn;
 	}
 
 	public struct DebugTilemapTileInfo

@@ -10,7 +10,7 @@ NesPpuTools::NesPpuTools(Debugger* debugger, Emulator *emu, NesConsole* console)
 	_mapper = console->GetMapper();
 }
 
-void NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	MMC5* mmc5 = dynamic_cast<MMC5*>(_mapper);
 	NesPpuState& state = (NesPpuState&)baseState;
@@ -79,6 +79,56 @@ void NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, ui
 			}
 		}
 	}
+
+	DebugTilemapInfo result = {};
+	result.Bpp = 2;
+	result.ScrollWidth = NesConstants::ScreenWidth;
+	result.ScrollHeight = NesConstants::ScreenHeight;
+
+	if(state.Scanline >= 240 || (state.Scanline == 239 && state.Cycle >= 256) || (state.Scanline == -1 && state.Cycle < 328)) {
+		//During vblank, use T instead of V
+		uint16_t t = state.TmpVideoRamAddr;
+		result.ScrollX = ((t & 0x1F) << 3) | ((t & 0x400) ? 256 : 0) | state.ScrollX;
+		result.ScrollY = (((t & 0x3E0) >> 2) | ((t & 0x7000) >> 12)) + ((t & 0x800) ? 240 : 0);
+	} else {
+		//During rendering, use V and substract according to the current scanline/cycle
+		uint16_t v = state.VideoRamAddr;
+		int32_t scrollX = ((v & 0x1F) << 3) | ((v & 0x400) ? 256 : 0);
+		if(state.Cycle <= 256) {
+			if(state.Cycle >= 8) {
+				scrollX -= (state.Cycle & ~0x07);
+			}
+			//Adjust for the 2 x increments at the end of the previous scanline
+			scrollX -= 16;
+		} else if(state.Cycle >= 328) {
+			scrollX -= 8;
+			if(state.Cycle >= 336) {
+				scrollX -= 8;
+			}
+		}
+
+		if(scrollX < 0) {
+			scrollX += 512;
+		}
+		scrollX += state.ScrollX;
+
+		int32_t scrollY = (((v & 0x3E0) >> 2) | ((v & 0x7000) >> 12)) + ((v & 0x800) ? 240 : 0);
+		if(state.Scanline >= 0) {
+			if(state.Cycle < 256) {
+				scrollY -= state.Scanline;
+			} else {
+				scrollY -= state.Scanline + 1;
+			}
+		}
+		if(scrollY < 0) {
+			scrollY += 480;
+		}
+
+		result.ScrollX = (uint32_t)scrollX;
+		result.ScrollY = (uint32_t)scrollY;
+	}
+
+	return result;
 }
 
 void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)

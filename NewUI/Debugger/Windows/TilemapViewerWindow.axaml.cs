@@ -68,6 +68,7 @@ namespace Mesen.Debugger.Windows
 		{
 			_listener?.Dispose();
 			_model.Config.SaveWindowSettings(this);
+			_model.Dispose();
 		}
 
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
