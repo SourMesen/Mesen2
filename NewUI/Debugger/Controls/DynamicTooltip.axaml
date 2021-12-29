@@ -13,6 +13,7 @@
 	<UserControl.Styles>
 		<Style Selector="TextBlock">
 			<Setter Property="Margin" Value="0 2" />
+			<Setter Property="VerticalAlignment" Value="Top" />
 		</Style>
 	</UserControl.Styles>
 	
@@ -20,7 +21,7 @@
 		<ItemsPresenter.ItemTemplate>
 			<DataTemplate DataType="dc:TooltipEntry">
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{Binding Name}" FontWeight="Bold" MinWidth="100" Margin="0 0 10 0" />
+					<TextBlock Text="{Binding Name}" FontWeight="Bold" MinWidth="100" Margin="0 2 10 2" />
 					<ContentControl Content="{Binding Value}">
 						<ContentControl.DataTemplates>
 							<DataTemplate DataType="x:String">

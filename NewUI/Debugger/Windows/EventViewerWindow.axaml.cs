@@ -157,47 +157,6 @@ namespace Mesen.Debugger.Windows
 
 					entries.Add(new("Register", registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "")));
 					entries.Add(new("Value", "$" + evt.Operation.Value.ToString("X2")));
-
-					if(isDma && _model.CpuType != CpuType.Gameboy) {
-						bool indirectHdma = false;
-						string channel = (evt.DmaChannel & 0x07).ToString();
-
-						if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
-							indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
-							channel += indirectHdma ? " (Indirect HDMA)" : " (HDMA)";
-							entries.Add(new("Line Counter", "$" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2")));
-						}
-
-						entries.Add(new("Channel", channel));
-
-						entries.Add(new("Mode", evt.DmaChannelInfo.TransferMode.ToString()));
-
-						int aBusAddress;
-						if(indirectHdma) {
-							aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
-						} else {
-							aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
-						}
-
-						if(!evt.DmaChannelInfo.InvertDirection) {
-							entries.Add(new("Transfer", "$" + aBusAddress.ToString("X4") + " -> $" + evt.DmaChannelInfo.DestAddress.ToString("X2")));
-						} else {
-							entries.Add(new("Transfer", "$" + aBusAddress.ToString("X4") + " <- $" + evt.DmaChannelInfo.DestAddress.ToString("X2")));
-						}
-					}
-					break;
-
-				case DebugEventType.Breakpoint:
-					ReadOnlyCollection<Breakpoint> breakpoints = BreakpointManager.Breakpoints;
-					if(evt.BreakpointId >= 0 && evt.BreakpointId < breakpoints.Count) {
-						Breakpoint bp = breakpoints[evt.BreakpointId];
-						entries.Add(new("CPU Type", ResourceHelper.GetEnumText(bp.CpuType)));
-						entries.Add(new("BP Type", bp.ToReadableType()));
-						entries.Add(new("BP Addresses", bp.GetAddressString(true)));
-						if(bp.Condition.Length > 0) {
-							entries.Add(new("BP Condition", bp.Condition));
-						}
-					}
 					break;
 			}
 

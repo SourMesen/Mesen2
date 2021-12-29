@@ -185,10 +185,15 @@ namespace Mesen.Debugger.ViewModels
 				if(evt.BreakpointId < breakpoints.Count) {
 					Breakpoint bp = breakpoints[evt.BreakpointId];
 					string bpInfo = "Breakpoint - ";
-					bpInfo += " Type: " + bp.ToReadableType();
-					bpInfo += " Addresses: " + bp.GetAddressString(true);
+					bpInfo += "CPU: " + ResourceHelper.GetEnumText(bp.CpuType);
+					bpInfo += singleLine ? " - " : Environment.NewLine;
+					bpInfo += "Type: " + bp.ToReadableType();
+					bpInfo += singleLine ? " - " : Environment.NewLine;
+					bpInfo += "Addresses: " + bp.GetAddressString(true);
+					bpInfo += singleLine ? " - " : Environment.NewLine;
 					if(bp.Condition.Length > 0) {
-						bpInfo += " Condition: " + bp.Condition;
+						bpInfo += singleLine ? " - " : Environment.NewLine;
+						bpInfo += "Condition: " + bp.Condition;
 					}
 					details.Add(bpInfo);
 				}
@@ -199,11 +204,17 @@ namespace Mesen.Debugger.ViewModels
 				bool indirectHdma = false;
 				if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
 					indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
-					dmaInfo += "HDMA #" + (evt.DmaChannel & 0x07).ToString();
+					dmaInfo += "HDMA #" + (evt.DmaChannel & 0x07);
 					dmaInfo += indirectHdma ? " (indirect)" : "";
+					dmaInfo += singleLine ? " - " : Environment.NewLine;
+					dmaInfo += "Line Counter: $" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2");
 				} else {
-					dmaInfo += "DMA #" + (evt.DmaChannel & 0x07).ToString();
+					dmaInfo += "DMA #" + (evt.DmaChannel & 0x07);
 				}
+
+				dmaInfo += singleLine ? " - " : Environment.NewLine;
+				dmaInfo += "Mode: " + evt.DmaChannelInfo.TransferMode;
+				dmaInfo += singleLine ? " - " : Environment.NewLine;
 
 				int aBusAddress;
 				if(indirectHdma) {
@@ -213,12 +224,12 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				if(!evt.DmaChannelInfo.InvertDirection) {
-					dmaInfo += " - $" + aBusAddress.ToString("X4") + " -> $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
+					dmaInfo += "$" + aBusAddress.ToString("X4") + " -> $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
 				} else {
-					dmaInfo += " - $" + aBusAddress.ToString("X4") + " <- $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
+					dmaInfo += "$" + aBusAddress.ToString("X4") + " <- $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
 				}
 
-				details.Add(dmaInfo);
+				details.Add(dmaInfo.Trim());
 			}
 
 			if(singleLine) {
