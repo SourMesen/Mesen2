@@ -25,9 +25,10 @@ namespace Mesen.Debugger.Windows
 		private NotificationListener _listener;
 		private EventViewerViewModel _model;
 		private DispatcherTimer _timer;
+		private Point? _prevMousePos = null;
 
-		//For designer
-		[Obsolete] public EventViewerWindow() : this(CpuType.Cpu) { }
+		[Obsolete("For designer only")]
+		public EventViewerWindow() : this(CpuType.Cpu) { }
 
 		public EventViewerWindow(CpuType cpuType)
 		{
@@ -52,20 +53,68 @@ namespace Mesen.Debugger.Windows
 			_listener = new NotificationListener();
 		}
 
+		private void InitializeComponent()
+		{
+			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnOpened(EventArgs e)
+		{
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			_timer.Start();
+			_listener.OnNotification += listener_OnNotification;
+			_model.RefreshData();
+		}
+
+		private void UpdateConfig()
+		{
+			if(_model.ConsoleConfig is SnesEventViewerConfig snesCfg) {
+				DebugApi.SetEventViewerConfig(_model.CpuType, snesCfg.ToInterop());
+			} else if(_model.ConsoleConfig is NesEventViewerConfig nesCfg) {
+				DebugApi.SetEventViewerConfig(_model.CpuType, nesCfg.ToInterop());
+			} else if(_model.ConsoleConfig is GbEventViewerConfig gbCfg) {
+				DebugApi.SetEventViewerConfig(_model.CpuType, gbCfg.ToInterop());
+			}
+
+			_model.RefreshTab();
+		}
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			_model.Config.SaveWindowSettings(this);
+			_timer.Stop();
+			_listener.Dispose();
+			_model.SaveConfig();
+		}
+
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
+		{
+			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
+		}
+
 		private void Viewer_PointerLeave(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
 				ToolTip.SetTip(viewer, null);
 				ToolTip.SetIsOpen(viewer, false);
 			}
+			_prevMousePos = null;
 		}
 
 		private void Viewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
-				PointerPoint point = e.GetCurrentPoint(viewer);
+				Point point = e.GetCurrentPoint(viewer).Position;
+				if(point == _prevMousePos) {
+					return;
+				}
+				_prevMousePos = point;
+
 				DebugEventInfo evt = new DebugEventInfo();
-				DebugApi.GetEventViewerEvent(_model.CpuType, ref evt, (ushort)(point.Position.Y / _model.Config.ImageScale), (ushort)(point.Position.X / _model.Config.ImageScale));
+				DebugApi.GetEventViewerEvent(_model.CpuType, ref evt, (ushort)(point.Y / _model.Config.ImageScale), (ushort)(point.X / _model.Config.ImageScale));
 
 				if(evt.ProgramCounter != UInt32.MaxValue) {
 					//Force tooltip to update its position
@@ -148,48 +197,6 @@ namespace Mesen.Debugger.Windows
 			}
 
 			return entries;
-		}
-
-		private void InitializeComponent()
-		{
-			AvaloniaXamlLoader.Load(this);
-		}
-
-		protected override void OnOpened(EventArgs e)
-		{
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			_timer.Start();
-			_listener.OnNotification += listener_OnNotification;
-			_model.RefreshData();
-		}
-
-		private void UpdateConfig()
-		{
-			if(_model.ConsoleConfig is SnesEventViewerConfig snesCfg) {
-				DebugApi.SetEventViewerConfig(_model.CpuType, snesCfg.ToInterop());
-			} else if(_model.ConsoleConfig is NesEventViewerConfig nesCfg) {
-				DebugApi.SetEventViewerConfig(_model.CpuType, nesCfg.ToInterop());
-			} else if(_model.ConsoleConfig is GbEventViewerConfig gbCfg) {
-				DebugApi.SetEventViewerConfig(_model.CpuType, gbCfg.ToInterop());
-			}
-
-			_model.RefreshTab();
-		}
-
-		protected override void OnClosing(CancelEventArgs e)
-		{
-			_model.Config.SaveWindowSettings(this);
-			_timer.Stop();
-			_listener.Dispose();
-			_model.SaveConfig();
-		}
-
-		private void OnSettingsClick(object sender, RoutedEventArgs e)
-		{
-			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)
