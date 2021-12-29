@@ -68,6 +68,12 @@ namespace Mesen.Debugger.Utilities
 						refresh();
 					}
 					break;
+
+				case ConsoleNotificationType.GameLoaded:
+					if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
+						DebugApi.SetViewerUpdateTiming(toolInfo.ViewerId, cfg.RefreshScanline, cfg.RefreshCycle, cpuType);
+					}
+					break;
 			}
 		}
 	}
