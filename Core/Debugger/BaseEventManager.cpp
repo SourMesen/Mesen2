@@ -12,8 +12,11 @@ void BaseEventManager::FilterEvents()
 		for(DebugEventInfo& evt : _snapshotPrevFrame) {
 			uint32_t evtKey = ((evt.Scanline + offset) << 16) + evt.Cycle;
 			if(evtKey > key) {
-				_sentEvents.push_back(evt);
-				_sentEvents.back().Flags |= (uint32_t)EventFlags::PreviousFrame;
+				EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
+				if(eventCfg.Visible) {
+					_sentEvents.push_back(evt);
+					_sentEvents.back().Flags |= (uint32_t)EventFlags::PreviousFrame;
+				}
 			}
 		}
 	}
