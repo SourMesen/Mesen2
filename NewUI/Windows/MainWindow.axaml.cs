@@ -54,6 +54,12 @@ namespace Mesen.Windows
 #endif
 		}
 
+		protected override void ArrangeCore(Rect finalRect)
+		{
+			//TODO why is this needed to make resizing the window by setting ClientSize work?
+			base.ArrangeCore(new Rect(ClientSize));
+		}
+
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
