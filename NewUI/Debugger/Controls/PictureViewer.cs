@@ -29,7 +29,9 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
-		
+
+		public static readonly StyledProperty<bool> ShowMousePositionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowMousePosition), true);
+
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
 
@@ -61,6 +63,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(AllowSelectionProperty); }
 			set { SetValue(AllowSelectionProperty, value); }
+		}
+
+		public bool ShowMousePosition
+		{
+			get { return GetValue(ShowMousePositionProperty); }
+			set { SetValue(ShowMousePositionProperty, value); }
 		}
 
 		public int GridSizeX
@@ -274,7 +282,7 @@ namespace Mesen.Debugger.Controls
 			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
 			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
-			if(_mousePosition.HasValue) {
+			if(ShowMousePosition && _mousePosition.HasValue) {
 				Point p = GetGridPointFromMousePoint(_mousePosition.Value);
 				Rect rect = ToDrawRect(GetTileRect(p));
 				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));

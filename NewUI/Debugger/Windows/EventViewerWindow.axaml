@@ -69,6 +69,7 @@
 							x:Name="picViewer"
 							Source="{CompiledBinding ViewerBitmap}"
 							Zoom="{CompiledBinding Config.ImageScale}"
+							ShowMousePosition="False"
 							AllowSelection="False"
 						/>
 					</ScrollViewer>
