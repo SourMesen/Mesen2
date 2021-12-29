@@ -23,6 +23,8 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class EventViewerViewModel : ViewModelBase
 	{
+		public const int HdmaChannelFlag = 0x40;
+
 		[Reactive] public WriteableBitmap ViewerBitmap { get; private set; }
 		[Reactive] public EventViewerTab SelectedTab { get; set; }
 		
@@ -31,7 +33,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public CpuType CpuType { get; }
 		public EventViewerConfig Config { get; }
-		public object ConsoleConfig { get; set; }
+		public ViewModelBase ConsoleConfig { get; set; }
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
@@ -65,7 +67,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
-					OnClick = () => RefreshData()
+					OnClick = () => RefreshData(true)
 				},
 				new Separator(),
 				new ContextMenuAction() {
@@ -95,7 +97,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab());
+			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(true));
 
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
@@ -118,13 +120,13 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void RefreshData()
+		public void RefreshData(bool forceRefresh)
 		{
 			DebugApi.TakeEventSnapshot(CpuType);
-			RefreshTab();
+			RefreshTab(forceRefresh);
 		}
 
-		public void RefreshTab()
+		public void RefreshTab(bool forceRefresh)
 		{
 			Dispatcher.UIThread.Post(() => {
 				if(SelectedTab == EventViewerTab.PpuView) {
@@ -135,6 +137,10 @@ namespace Mesen.Debugger.ViewModels
 
 					_picViewer.InvalidateVisual();
 				} else {
+					if(!forceRefresh && ToolRefreshHelper.LimitFps(this, 15)) {
+						return;
+					}
+
 					_debugEvents = DebugApi.GetDebugEvents(CpuType);
 
 					if(DebugEvents.Count < _debugEvents.Length) {
@@ -161,12 +167,74 @@ namespace Mesen.Debugger.ViewModels
 			PpuView,
 			ListView,
 		}
+
+		public static string GetEventDetails(DebugEventInfo evt, bool singleLine)
+		{
+			bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
+
+			List<string> details = new List<string>();
+			if(evt.Flags.HasFlag(EventFlags.PreviousFrame)) {
+				details.Add("Previous frame");
+			}
+			if(evt.Flags.HasFlag(EventFlags.NesPpuSecondWrite)) {
+				details.Add("2nd register write");
+			}
+
+			if(evt.Type == DebugEventType.Breakpoint && evt.BreakpointId >= 0) {
+				var breakpoints = BreakpointManager.Breakpoints;
+				if(evt.BreakpointId < breakpoints.Count) {
+					Breakpoint bp = breakpoints[evt.BreakpointId];
+					string bpInfo = "Breakpoint - ";
+					bpInfo += " Type: " + bp.ToReadableType();
+					bpInfo += " Addresses: " + bp.GetAddressString(true);
+					if(bp.Condition.Length > 0) {
+						bpInfo += " Condition: " + bp.Condition;
+					}
+					details.Add(bpInfo);
+				}
+			}
+
+			if(isDma) {
+				string dmaInfo = "";
+				bool indirectHdma = false;
+				if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
+					indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
+					dmaInfo += "HDMA #" + (evt.DmaChannel & 0x07).ToString();
+					dmaInfo += indirectHdma ? " (indirect)" : "";
+				} else {
+					dmaInfo += "DMA #" + (evt.DmaChannel & 0x07).ToString();
+				}
+
+				int aBusAddress;
+				if(indirectHdma) {
+					aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
+				} else {
+					aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
+				}
+
+				if(!evt.DmaChannelInfo.InvertDirection) {
+					dmaInfo += " - $" + aBusAddress.ToString("X4") + " -> $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
+				} else {
+					dmaInfo += " - $" + aBusAddress.ToString("X4") + " <- $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
+				}
+
+				details.Add(dmaInfo);
+			}
+
+			if(singleLine) {
+				if(details.Count > 0) {
+					return "[" + string.Join("] [", details) + "]";
+				} else {
+					return "";
+				}
+			} else {
+				return string.Join(Environment.NewLine, details);
+			}
+		}
 	}
 
 	public class DebugEventViewModel : INotifyPropertyChanged
 	{
-		public const int HdmaChannelFlag = 0x40;
-
 		private DebugEventInfo[] _events = Array.Empty<DebugEventInfo>();
 		private int _index;
 
@@ -220,51 +288,7 @@ namespace Mesen.Debugger.ViewModels
 			if(evt.Type == DebugEventType.Register) {
 				Type += evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite ? " (W)" : " (R)";
 			}
-			Details = GetDetails(evt);
-		}
-
-		private string GetDetails(DebugEventInfo evt)
-		{
-			bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
-
-			string details = "";
-			if(evt.Type == DebugEventType.Breakpoint && evt.BreakpointId >= 0) {
-				var breakpoints = BreakpointManager.Breakpoints;
-				if(evt.BreakpointId < breakpoints.Count) {
-					Breakpoint bp = breakpoints[evt.BreakpointId];
-					details += " Type: " + bp.ToReadableType();
-					details += " Addresses: " + bp.GetAddressString(true);
-					if(bp.Condition.Length > 0) {
-						details += " Condition: " + bp.Condition;
-					}
-				}
-			}
-
-			if(isDma) {
-				bool indirectHdma = false;
-				if((evt.DmaChannel & DebugEventViewModel.HdmaChannelFlag) != 0) {
-					indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
-					details += "HDMA #" + (evt.DmaChannel & 0x07).ToString();
-					details += indirectHdma ? " (indirect)" : "";
-				} else {
-					details += "DMA #" + (evt.DmaChannel & 0x07).ToString();
-				}
-
-				int aBusAddress;
-				if(indirectHdma) {
-					aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
-				} else {
-					aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
-				}
-
-				if(!evt.DmaChannelInfo.InvertDirection) {
-					details += " - $" + aBusAddress.ToString("X4") + " -> $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
-				} else {
-					details += " - $" + aBusAddress.ToString("X4") + " <- $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
-				}
-			}
-
-			return details;
+			Details = EventViewerViewModel.GetEventDetails(evt, true);
 		}
 	}
 }

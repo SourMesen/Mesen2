@@ -7,7 +7,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
-#include "Debugger/IEventManager.h"
+#include "Debugger/BaseEventManager.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 
 SnesEventManager::SnesEventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController)
@@ -64,14 +64,6 @@ void SnesEventManager::AddEvent(DebugEventType type)
 	_debugEvents.push_back(evt);
 }
 
-void SnesEventManager::GetEvents(DebugEventInfo *eventArray, uint32_t &maxEventCount)
-{
-	auto lock = _lock.AcquireSafe();
-	uint32_t eventCount = std::min(maxEventCount, (uint32_t)_sentEvents.size());
-	memcpy(eventArray, _sentEvents.data(), eventCount * sizeof(DebugEventInfo));
-	maxEventCount = eventCount;
-}
-
 DebugEventInfo SnesEventManager::GetEvent(uint16_t y, uint16_t x)
 {
 	auto lock = _lock.AcquireSafe();
@@ -100,26 +92,23 @@ DebugEventInfo SnesEventManager::GetEvent(uint16_t y, uint16_t x)
 	return empty;
 }
 
+bool SnesEventManager::ShowPreviousFrameEvents()
+{
+	return _config.ShowPreviousFrameEvents;
+}
+
 void SnesEventManager::SetConfiguration(BaseEventViewerConfig& config)
 {
 	_config = (SnesEventViewerConfig&)config;
 }
 
-uint32_t SnesEventManager::GetEventCount()
-{
-	auto lock = _lock.AcquireSafe();
-	FilterEvents();
-	return (uint32_t)_sentEvents.size();
-}
-
-void SnesEventManager::ClearFrameEvents()
-{
-	_prevDebugEvents = _debugEvents;
-	_debugEvents.clear();
-}
-
 EventViewerCategoryCfg SnesEventManager::GetEventConfig(DebugEventInfo& evt)
 {
+	bool isDma = evt.Operation.Type == MemoryOperationType::DmaWrite || evt.Operation.Type == MemoryOperationType::DmaRead;
+	if(evt.Type == DebugEventType::Register && isDma && !_config.ShowDmaChannels[evt.DmaChannel & 0x07]) {
+		return {};
+	}
+
 	switch(evt.Type) {
 		default: return {};
 		case DebugEventType::Breakpoint: return _config.MarkedBreakpoints;
@@ -162,73 +151,21 @@ EventViewerCategoryCfg SnesEventManager::GetEventConfig(DebugEventInfo& evt)
 	}
 }
 
-void SnesEventManager::FilterEvents()
-{
-	auto lock = _lock.AcquireSafe();
-	_sentEvents.clear();
-
-	vector<DebugEventInfo> events = _snapshot;
-	if(_config.ShowPreviousFrameEvents && _snapshotScanline != 0) {
-		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
-		for(DebugEventInfo &evt : _prevDebugEvents) {
-			uint32_t evtKey = (evt.Scanline << 16) + evt.Cycle;
-			if(evtKey > key) {
-				events.push_back(evt);
-			}
-		}
-	}
-
-	for(DebugEventInfo &evt : events) {
-		bool isDma = evt.Operation.Type == MemoryOperationType::DmaWrite || evt.Operation.Type == MemoryOperationType::DmaRead;
-		EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
-		if(evt.Type == DebugEventType::Register && isDma && !_config.ShowDmaChannels[evt.DmaChannel & 0x07]) {
-			continue;
-		}
-
-		if(eventCfg.Visible) {
-			_sentEvents.push_back(evt);
-		}
-	}
-}
-
 void SnesEventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer)
 {
 	EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
 	uint32_t color = eventCfg.Color;
 
-	if(drawBackground){
-		color = 0xFF000000 | ((color >> 1) & 0x7F7F7F);
-	} else {
-		color |= 0xFF000000;
-	}
-
-	int iMin = drawBackground ? -2 : 0;
-	int iMax = drawBackground ? 3 : 1;
-	int jMin = drawBackground ? -2 : 0;
-	int jMax = drawBackground ? 3 : 1;
 	uint32_t y = std::min<uint32_t>(evt.Scanline * 2, _scanlineCount * 2);
 	uint32_t x = evt.Cycle / 2;
 
-	for(int i = iMin; i <= iMax; i++) {
-		for(int j = jMin; j <= jMax; j++) {
-			if(j + x >= SnesEventManager::ScanlineWidth) {
-				continue;
-			}
-
-			int32_t pos = (y + i) * SnesEventManager::ScanlineWidth + x + j;
-			if(pos < 0 || pos >= SnesEventManager::ScanlineWidth * (int)_scanlineCount * 2) {
-				continue;
-			}
-			buffer[pos] = color;
-		}
-	}
+	DrawDot(x, y, color, drawBackground, buffer);	
 }
 
 uint32_t SnesEventManager::TakeEventSnapshot()
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
-	_snapshot.clear();
 
 	uint16_t cycle = _memoryManager->GetHClock();
 	uint16_t scanline = _ppu->GetScanline();
@@ -246,7 +183,8 @@ uint32_t SnesEventManager::TakeEventSnapshot()
 		memcpy(_ppuBuffer+offset, _ppu->GetPreviousScreenBuffer()+offset, (size - offset) * sizeof(uint16_t));
 	}
 
-	_snapshot = _debugEvents;
+	_snapshotCurrentFrame = _debugEvents;
+	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
 	_scanlineCount = _ppu->GetVblankEndScanline() + 1;

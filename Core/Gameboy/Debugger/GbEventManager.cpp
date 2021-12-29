@@ -6,7 +6,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
-#include "Debugger/IEventManager.h"
+#include "Debugger/BaseEventManager.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 
 GbEventManager::GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu)
@@ -49,14 +49,6 @@ void GbEventManager::AddEvent(DebugEventType type)
 	_debugEvents.push_back(evt);
 }
 
-void GbEventManager::GetEvents(DebugEventInfo* eventArray, uint32_t& maxEventCount)
-{
-	auto lock = _lock.AcquireSafe();
-	uint32_t eventCount = std::min(maxEventCount, (uint32_t)_sentEvents.size());
-	memcpy(eventArray, _sentEvents.data(), eventCount * sizeof(DebugEventInfo));
-	maxEventCount = eventCount;
-}
-
 DebugEventInfo GbEventManager::GetEvent(uint16_t y, uint16_t x)
 {
 	auto lock = _lock.AcquireSafe();
@@ -84,22 +76,14 @@ DebugEventInfo GbEventManager::GetEvent(uint16_t y, uint16_t x)
 	return empty;
 }
 
+bool GbEventManager::ShowPreviousFrameEvents()
+{
+	return _config.ShowPreviousFrameEvents;
+}
+
 void GbEventManager::SetConfiguration(BaseEventViewerConfig& config)
 {
 	_config = (GbEventViewerConfig&)config;
-}
-
-uint32_t GbEventManager::GetEventCount()
-{
-	auto lock = _lock.AcquireSafe();
-	FilterEvents();
-	return (uint32_t)_sentEvents.size();
-}
-
-void GbEventManager::ClearFrameEvents()
-{
-	_prevDebugEvents = _debugEvents;
-	_debugEvents.clear();
 }
 
 EventViewerCategoryCfg GbEventManager::GetEventConfig(DebugEventInfo& evt)
@@ -133,67 +117,20 @@ EventViewerCategoryCfg GbEventManager::GetEventConfig(DebugEventInfo& evt)
 	}
 }
 
-void GbEventManager::FilterEvents()
-{
-	auto lock = _lock.AcquireSafe();
-	_sentEvents.clear();
-
-	vector<DebugEventInfo> events = _snapshot;
-	if(_config.ShowPreviousFrameEvents && _snapshotScanline != 0) {
-		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
-		for(DebugEventInfo& evt : _prevDebugEvents) {
-			uint32_t evtKey = (evt.Scanline << 16) + evt.Cycle;
-			if(evtKey > key) {
-				events.push_back(evt);
-			}
-		}
-	}
-
-	for(DebugEventInfo& evt : events) {
-		if(GetEventConfig(evt).Visible) {
-			_sentEvents.push_back(evt);
-		}
-	}
-}
-
 void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer)
 {
 	EventViewerCategoryCfg evtCfg = GetEventConfig(evt);
 	uint32_t color = evtCfg.Color;
-
-	if(drawBackground) {
-		color = 0xFF000000 | ((color >> 1) & 0x7F7F7F);
-	} else {
-		color |= 0xFF000000;
-	}
-
-	int iMin = drawBackground ? -2 : 0;
-	int iMax = drawBackground ? 3 : 1;
-	int jMin = drawBackground ? -2 : 0;
-	int jMax = drawBackground ? 3 : 1;
 	uint32_t y = std::min<uint32_t>(evt.Scanline * 2, _scanlineCount * 2);
 	uint32_t x = evt.Cycle * 2;
 
-	for(int i = iMin; i <= iMax; i++) {
-		for(int j = jMin; j <= jMax; j++) {
-			if(j + x >= GbEventManager::ScanlineWidth) {
-				continue;
-			}
-
-			int32_t pos = (y + i) * GbEventManager::ScanlineWidth + x + j;
-			if(pos < 0 || pos >= GbEventManager::ScanlineWidth * (int)_scanlineCount * 2) {
-				continue;
-			}
-			buffer[pos] = color;
-		}
-	}
+	DrawDot(x, y, color, drawBackground, buffer);
 }
 
 uint32_t GbEventManager::TakeEventSnapshot()
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
-	_snapshot.clear();
 
 	uint16_t cycle = _ppu->GetState().Cycle;
 	uint16_t scanline = _ppu->GetState().Scanline;
@@ -207,7 +144,8 @@ uint32_t GbEventManager::TakeEventSnapshot()
 		memcpy(_ppuBuffer + offset, _ppu->GetPreviousEventViewerBuffer() + offset, (size - offset) * sizeof(uint16_t));
 	}
 
-	_snapshot = _debugEvents;
+	_snapshotCurrentFrame = _debugEvents;
+	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
 	_scanlineCount = GbEventManager::ScreenHeight;

@@ -138,7 +138,7 @@ shared_ptr<IAssembler> GsuDebugger::GetAssembler()
 	throw std::runtime_error("Assembler not supported for GSU");
 }
 
-shared_ptr<IEventManager> GsuDebugger::GetEventManager()
+shared_ptr<BaseEventManager> GsuDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for GSU");
 }

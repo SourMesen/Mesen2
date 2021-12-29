@@ -13,7 +13,7 @@
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/CodeDataLogger.h"
-#include "Debugger/IEventManager.h"
+#include "Debugger/BaseEventManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Gameboy/Debugger/GbAssembler.h"
 #include "Gameboy/GbPpu.h"
@@ -263,7 +263,7 @@ void GbDebugger::ProcessPpuCycle()
 
 }
 
-shared_ptr<IEventManager> GbDebugger::GetEventManager()
+shared_ptr<BaseEventManager> GbDebugger::GetEventManager()
 {
 	return _eventManager;
 }

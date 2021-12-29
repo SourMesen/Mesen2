@@ -275,7 +275,7 @@ shared_ptr<IAssembler> NesDebugger::GetAssembler()
 	return _assembler;
 }
 
-shared_ptr<IEventManager> NesDebugger::GetEventManager()
+shared_ptr<BaseEventManager> NesDebugger::GetEventManager()
 {
 	return _eventManager;
 }

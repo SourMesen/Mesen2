@@ -14,7 +14,7 @@
 #include "Core/Debugger/ScriptManager.h"
 #include "Core/Debugger/Profiler.h"
 #include "Core/Debugger/IAssembler.h"
-#include "Core/Debugger/IEventManager.h"
+#include "Core/Debugger/BaseEventManager.h"
 #include "Core/Debugger/ITraceLogger.h"
 #include "Core/Debugger/TraceLogFileSaver.h"
 #include "Core/Gameboy/GbTypes.h"

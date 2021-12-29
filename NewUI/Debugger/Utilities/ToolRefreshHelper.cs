@@ -16,6 +16,7 @@ namespace Mesen.Debugger.Utilities
 			internal int Cycle { get; set; } = 0;
 		}
 
+		private static Dictionary<object, DateTime> _lastRefreshStamp = new();
 		private static Dictionary<Window, ToolInfo> _activeWindows = new();
 		private static int _nextId = 0;
 
@@ -75,6 +76,19 @@ namespace Mesen.Debugger.Utilities
 					}
 					break;
 			}
+		}
+
+		public static bool LimitFps(object host, int maxFps)
+		{
+			DateTime now = DateTime.Now;
+			if(_lastRefreshStamp.TryGetValue(host, out DateTime stamp)) {
+				if((now - stamp).TotalMilliseconds < 1000.0 / maxFps) {
+					return true;
+				}
+			}
+
+			_lastRefreshStamp[host] = now;
+			return false;
 		}
 	}
 }

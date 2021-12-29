@@ -17,6 +17,7 @@ using Mesen.Localization;
 using Mesen.Debugger.Labels;
 using System.Collections.ObjectModel;
 using Avalonia.Interactivity;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -24,7 +25,6 @@ namespace Mesen.Debugger.Windows
 	{
 		private NotificationListener _listener;
 		private EventViewerViewModel _model;
-		private DispatcherTimer _timer;
 		private Point? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
@@ -49,7 +49,6 @@ namespace Mesen.Debugger.Windows
 			viewer.PointerMoved += Viewer_PointerMoved;
 			viewer.PointerLeave += Viewer_PointerLeave;
 
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateConfig());
 			_listener = new NotificationListener();
 		}
 
@@ -64,9 +63,15 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_timer.Start();
+			UpdateConfig();
+			ReactiveHelper.RegisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
 			_listener.OnNotification += listener_OnNotification;
-			_model.RefreshData();
+			_model.RefreshData(true);
+		}
+
+		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			UpdateConfig();
 		}
 
 		private void UpdateConfig()
@@ -79,13 +84,13 @@ namespace Mesen.Debugger.Windows
 				DebugApi.SetEventViewerConfig(_model.CpuType, gbCfg.ToInterop());
 			}
 
-			_model.RefreshTab();
+			_model.RefreshTab(true);
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			_model.Config.SaveWindowSettings(this);
-			_timer.Stop();
+			ReactiveHelper.UnregisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
 			_listener.Dispose();
 			_model.SaveConfig();
 		}
@@ -157,7 +162,7 @@ namespace Mesen.Debugger.Windows
 						bool indirectHdma = false;
 						string channel = (evt.DmaChannel & 0x07).ToString();
 
-						if((evt.DmaChannel & DebugEventViewModel.HdmaChannelFlag) != 0) {
+						if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
 							indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
 							channel += indirectHdma ? " (Indirect HDMA)" : " (HDMA)";
 							entries.Add(new("Line Counter", "$" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2")));
@@ -196,6 +201,11 @@ namespace Mesen.Debugger.Windows
 					break;
 			}
 
+			string details = EventViewerViewModel.GetEventDetails(evt, false);
+			if(details.Length > 0) {
+				entries.Add(new("Details", details));
+			}
+
 			return entries;
 		}
 
@@ -204,13 +214,13 @@ namespace Mesen.Debugger.Windows
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.EventViewerRefresh:
 					if(_model.Config.AutoRefresh) {
-						_model.RefreshData();
+						_model.RefreshData(false);
 					}
 					break;
 
 				case ConsoleNotificationType.CodeBreak:
 					if(_model.Config.RefreshOnBreakPause) {
-						_model.RefreshData();
+						_model.RefreshData(true);
 					}
 					break;
 			}

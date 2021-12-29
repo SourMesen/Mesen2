@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "BreakpointManager.h"
-#include "DebugTypes.h"
-#include "Debugger.h"
-#include "Breakpoint.h"
-#include "DebugUtilities.h"
-#include "ExpressionEvaluator.h"
-#include "IEventManager.h"
+#include "Debugger/BreakpointManager.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/Breakpoint.h"
+#include "Debugger/DebugUtilities.h"
+#include "Debugger/ExpressionEvaluator.h"
+#include "Debugger/BaseEventManager.h"
 #include "MemoryOperationType.h"
 
-BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, IEventManager* eventManager)
+BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, BaseEventManager* eventManager)
 {
 	_debugger = debugger;
 	_cpuType = cpuType;

@@ -10,7 +10,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
-#include "Debugger/IEventManager.h"
+#include "Debugger/BaseEventManager.h"
 
 NesEventManager::NesEventManager(Debugger *debugger, NesConsole* console)
 {
@@ -39,6 +39,17 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	evt.Cycle = (uint16_t)_ppu->GetCurrentCycle();
 	evt.BreakpointId = breakpointId;
 	evt.ProgramCounter = _cpu->GetState().PC;
+
+	uint32_t addr = operation.Address;
+	if(operation.Type == MemoryOperationType::Write && (addr & 0xE000) == 0x2000 && ((addr & 0x07) == 5 || (addr & 0x07) == 6)) {
+		//2005/2006 PPU register writes, mark as 2nd write when needed
+		NesPpuState state;
+		_ppu->GetState(state);
+		if(state.WriteToggle) {
+			evt.Flags = (uint32_t)EventFlags::NesPpuSecondWrite;
+		}
+	}
+
 	_debugEvents.push_back(evt);
 }
 
@@ -51,12 +62,10 @@ void NesEventManager::AddEvent(DebugEventType type)
 	AddEvent(type, op, -1);
 }
 
-void NesEventManager::GetEvents(DebugEventInfo* eventArray, uint32_t& maxEventCount)
+void NesEventManager::ClearFrameEvents()
 {
-	auto lock = _lock.AcquireSafe();
-	uint32_t eventCount = std::min(maxEventCount, (uint32_t)_sentEvents.size());
-	memcpy(eventArray, _sentEvents.data(), eventCount * sizeof(DebugEventInfo));
-	maxEventCount = eventCount;
+	BaseEventManager::ClearFrameEvents();
+	AddEvent(DebugEventType::BgColorChange);
 }
 
 DebugEventInfo NesEventManager::GetEvent(uint16_t y, uint16_t x)
@@ -87,23 +96,14 @@ DebugEventInfo NesEventManager::GetEvent(uint16_t y, uint16_t x)
 	return empty;
 }
 
+bool NesEventManager::ShowPreviousFrameEvents()
+{
+	return _config.ShowPreviousFrameEvents;
+}
+
 void NesEventManager::SetConfiguration(BaseEventViewerConfig& config)
 {
 	_config = (NesEventViewerConfig&)config;
-}
-
-uint32_t NesEventManager::GetEventCount()
-{
-	auto lock = _lock.AcquireSafe();
-	FilterEvents();
-	return (uint32_t)_sentEvents.size();
-}
-
-void NesEventManager::ClearFrameEvents()
-{
-	_prevDebugEvents = _debugEvents;
-	_debugEvents.clear();
-	AddEvent(DebugEventType::BgColorChange);
 }
 
 EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
@@ -156,30 +156,6 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 	return {};
 }
 
-void NesEventManager::FilterEvents()
-{
-	auto lock = _lock.AcquireSafe();
-	_sentEvents.clear();
-
-	vector<DebugEventInfo> events = _snapshot;
-	if(_config.ShowPreviousFrameEvents && _snapshotScanline != 0) { //TODO
-		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
-		for(DebugEventInfo& evt : _prevDebugEvents) {
-			uint32_t evtKey = (evt.Scanline << 16) + evt.Cycle;
-			if(evtKey > key) {
-				events.push_back(evt);
-			}
-		}
-	}
-
-	for(DebugEventInfo& evt : events) {
-		EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
-		if(eventCfg.Visible) {
-			_sentEvents.push_back(evt);
-		}
-	}
-}
-
 void NesEventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer)
 {
 	EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
@@ -189,49 +165,18 @@ void NesEventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32
 		return;
 	}
 
-	if(drawBackground) {
-		color = 0xFF000000 | ((color >> 1) & 0x7F7F7F);
-	} else {
-		_sentEvents.push_back(evt);
-		color |= 0xFF000000;
-	}
-
 	uint32_t y = std::min<uint32_t>((evt.Scanline + 1) * 2, _scanlineCount * 2);
 	uint32_t x = evt.Cycle * 2;
 	DrawDot(x, y, color, drawBackground, buffer);
-}
-
-void NesEventManager::DrawDot(uint32_t x, uint32_t y, uint32_t color, bool drawBackground, uint32_t* buffer)
-{
-	int iMin = drawBackground ? -2 : 0;
-	int iMax = drawBackground ? 3 : 1;
-	int jMin = drawBackground ? -2 : 0;
-	int jMax = drawBackground ? 3 : 1;
-
-	for(int i = iMin; i <= iMax; i++) {
-		for(int j = jMin; j <= jMax; j++) {
-			if(j + x >= NesConstants::CyclesPerLine * 2) {
-				continue;
-			}
-
-			int32_t pos = (y + i) * NesConstants::CyclesPerLine * 2 + x + j;
-			if(pos < 0 || pos >= (int)(NesConstants::CyclesPerLine * 2 * _scanlineCount * 2)) {
-				continue;
-			}
-			buffer[pos] = color;
-		}
-	}
 }
 
 uint32_t NesEventManager::TakeEventSnapshot()
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
-	_snapshot.clear();
 
 	uint16_t cycle = _ppu->GetCurrentCycle();
 	uint16_t scanline = _ppu->GetCurrentScanline() + 1;
-	uint32_t key = (scanline << 9) + cycle;
 
 	if(scanline >= 240 || (scanline == 0 && cycle == 0)) {
 		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(false), NesConstants::ScreenPixelCount * sizeof(uint16_t));
@@ -241,21 +186,11 @@ uint32_t NesEventManager::TakeEventSnapshot()
 		memcpy(_ppuBuffer + offset, _ppu->GetScreenBuffer(true) + offset, (NesConstants::ScreenPixelCount - offset) * sizeof(uint16_t));
 	}
 
-	_snapshot = _debugEvents;
+	_snapshotCurrentFrame = _debugEvents;
+	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
-	if(_config.ShowPreviousFrameEvents && scanline != 0) {
-		for(DebugEventInfo &evt : _prevDebugEvents) {
-			uint32_t evtKey = ((evt.Scanline + 1) << 9) + evt.Cycle;
-			if(evtKey > key) {
-				_snapshot.push_back(evt);
-			}
-		}
-	}
-	
-	NesPpuState state;
-	_ppu->GetState(state);
-	_scanlineCount = state.ScanlineCount;
+	_scanlineCount = _ppu->GetScanlineCount();
 	return _scanlineCount;
 }
 
@@ -270,7 +205,6 @@ FrameInfo NesEventManager::GetDisplayBufferSize()
 void NesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
 {
 	auto lock = _lock.AcquireSafe();
-	_sentEvents.clear();
 
 	FrameInfo size = GetDisplayBufferSize();
 	if(_snapshotScanline < 0 || bufferSize < size.Width * size.Height * sizeof(uint32_t)) {
@@ -304,16 +238,19 @@ void NesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
 		}
 	}
 
-	for(DebugEventInfo &evt : _snapshot) {
+	FilterEvents();
+	for(DebugEventInfo &evt : _sentEvents) {
 		DrawEvent(evt, true, buffer);
 	}
-	for(DebugEventInfo &evt : _snapshot) {
+	for(DebugEventInfo &evt : _sentEvents) {
 		DrawEvent(evt, false, buffer);
 	}
 
 	//Draw dot over current pixel
-	DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFF990099, true, buffer);
-	DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFFFF00FF, false, buffer);
+	if(_snapshotScanline != 0 && _snapshotCycle != 0) {
+		DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFF990099, true, buffer);
+		DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFFFF00FF, false, buffer);
+	}
 }
 
 void NesEventManager::DrawPixel(uint32_t *buffer, int32_t x, uint32_t y, uint32_t color)
@@ -340,7 +277,8 @@ void NesEventManager::DrawNtscBorders(uint32_t *buffer)
 	vector<uint16_t> bgColor;
 	bgColor.resize(NesConstants::CyclesPerLine * 243);
 
-	for(DebugEventInfo &evt : _snapshot) {
+	//TODO use bg color changes from previous frame when needed
+	for(DebugEventInfo &evt : _snapshotCurrentFrame) {
 		if(evt.Type == DebugEventType::BgColorChange) {
 			uint32_t pos = ((evt.Scanline + 1) * NesConstants::CyclesPerLine) + evt.Cycle;
 			if(pos >= currentPos && evt.Scanline < 242) {

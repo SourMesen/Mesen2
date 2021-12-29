@@ -27,7 +27,7 @@ class CallstackManager;
 class LabelManager;
 class ScriptManager;
 class Breakpoint;
-class IEventManager;
+class BaseEventManager;
 class IAssembler;
 class IDebugger;
 class ITraceLogger;
@@ -144,7 +144,7 @@ public:
 	shared_ptr<CodeDataLogger> GetCodeDataLogger(CpuType cpuType);
 	shared_ptr<Disassembler> GetDisassembler();
 	PpuTools* GetPpuTools(CpuType cpuType);
-	shared_ptr<IEventManager> GetEventManager(CpuType cpuType);
+	shared_ptr<BaseEventManager> GetEventManager(CpuType cpuType);
 	shared_ptr<LabelManager> GetLabelManager();
 	shared_ptr<ScriptManager> GetScriptManager();
 	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);

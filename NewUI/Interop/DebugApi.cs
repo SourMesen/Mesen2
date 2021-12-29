@@ -628,6 +628,12 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool UnusedFlag;
 	}
 
+	public enum EventFlags
+	{
+		PreviousFrame = 1,
+		NesPpuSecondWrite = 2,
+	}
+
 	public struct DebugEventInfo
 	{
 		public MemoryOperationInfo Operation;
@@ -638,6 +644,7 @@ namespace Mesen.Interop
 		public Int16 BreakpointId;
 		public byte DmaChannel;
 		public DmaChannelConfig DmaChannelInfo;
+		public EventFlags Flags;
 	};
 
 	[StructLayout(LayoutKind.Sequential)]

@@ -181,7 +181,7 @@
     <ClInclude Include="SNES\BaseCartridge.h" />
     <ClInclude Include="Shared\BaseControlDevice.h" />
     <ClInclude Include="SNES\Coprocessors\BaseCoprocessor.h" />
-    <ClInclude Include="Debugger\IEventManager.h" />
+    <ClInclude Include="Debugger\BaseEventManager.h" />
     <ClInclude Include="Shared\BatteryManager.h" />
     <ClInclude Include="SNES\Coprocessors\BSX\BsxCart.h" />
     <ClInclude Include="SNES\Coprocessors\BSX\BsxMemoryPack.h" />
@@ -387,6 +387,7 @@
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Debugger\BaseEventManager.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />
     <ClCompile Include="Gameboy\GbControlManager.cpp" />

@@ -13,7 +13,7 @@ class EmuSettings;
 class ScriptManager;
 class BreakpointManager;
 class IAssembler;
-class IEventManager;
+class BaseEventManager;
 class NesTraceLogger;
 class NesPpuTools;
 
@@ -38,7 +38,7 @@ class NesDebugger final : public IDebugger
 
 	shared_ptr<CodeDataLogger> _codeDataLogger;
 
-	shared_ptr<IEventManager> _eventManager;
+	shared_ptr<BaseEventManager> _eventManager;
 	shared_ptr<IAssembler> _assembler;
 	shared_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
@@ -70,7 +70,7 @@ public:
 	PpuTools* GetPpuTools() override;
 	shared_ptr<CallstackManager> GetCallstackManager() override;
 	shared_ptr<IAssembler> GetAssembler() override;
-	shared_ptr<IEventManager> GetEventManager() override;
+	shared_ptr<BaseEventManager> GetEventManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 
 	BaseState& GetState() override;

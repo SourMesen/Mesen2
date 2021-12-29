@@ -136,7 +136,7 @@ shared_ptr<IAssembler> Cx4Debugger::GetAssembler()
 	throw std::runtime_error("Assembler not supported for CX4");
 }
 
-shared_ptr<IEventManager> Cx4Debugger::GetEventManager()
+shared_ptr<BaseEventManager> Cx4Debugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for CX4");
 }

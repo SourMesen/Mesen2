@@ -318,7 +318,7 @@ shared_ptr<IAssembler> CpuDebugger::GetAssembler()
 	return _assembler;
 }
 
-shared_ptr<IEventManager> CpuDebugger::GetEventManager()
+shared_ptr<BaseEventManager> CpuDebugger::GetEventManager()
 {
 	return _eventManager;
 }

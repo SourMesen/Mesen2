@@ -6,7 +6,7 @@
 
 class ExpressionEvaluator;
 class Debugger;
-class IEventManager;
+class BaseEventManager;
 struct ExpressionData;
 enum class MemoryOperationType;
 
@@ -17,7 +17,7 @@ private:
 
 	Debugger *_debugger;
 	CpuType _cpuType;
-	IEventManager *_eventManager;
+	BaseEventManager *_eventManager;
 	
 	vector<Breakpoint> _breakpoints[BreakpointTypeCount];
 	vector<ExpressionData> _rpnList[BreakpointTypeCount];
@@ -30,7 +30,7 @@ private:
 	int InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
 
 public:
-	BreakpointManager(Debugger *debugger, CpuType cpuType, IEventManager* eventManager);
+	BreakpointManager(Debugger *debugger, CpuType cpuType, BaseEventManager* eventManager);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t count);
 	__forceinline int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);

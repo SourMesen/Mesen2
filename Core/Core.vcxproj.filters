@@ -577,7 +577,7 @@
     <ClInclude Include="Gameboy\Debugger\GbEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
-    <ClInclude Include="Debugger\IEventManager.h">
+    <ClInclude Include="Debugger\BaseEventManager.h">
       <Filter>Debugger\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbDmaController.h">
@@ -1257,6 +1257,7 @@
     <ClCompile Include="SNES\Debugger\SnesPpuTools.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />
     <ClCompile Include="NES\Debugger\NesPpuTools.cpp" />
+    <ClCompile Include="Debugger\BaseEventManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

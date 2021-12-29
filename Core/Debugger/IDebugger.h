@@ -5,7 +5,7 @@ enum class StepType;
 class BreakpointManager;
 class CallstackManager;
 class IAssembler;
-class IEventManager;
+class BaseEventManager;
 class CodeDataLogger;
 class ITraceLogger;
 class PpuTools;
@@ -29,7 +29,7 @@ public:
 	virtual BreakpointManager* GetBreakpointManager() = 0;
 	virtual shared_ptr<CallstackManager> GetCallstackManager() = 0;
 	virtual shared_ptr<IAssembler> GetAssembler() = 0;
-	virtual shared_ptr<IEventManager> GetEventManager() = 0;
+	virtual shared_ptr<BaseEventManager> GetEventManager() = 0;
 	virtual shared_ptr<CodeDataLogger> GetCodeDataLogger() = 0;
 	virtual ITraceLogger* GetTraceLogger() = 0;
 	virtual PpuTools* GetPpuTools() { return nullptr; }

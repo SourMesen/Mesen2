@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Debugger/DebugTypes.h"
-#include "Debugger/IEventManager.h"
+#include "Debugger/BaseEventManager.h"
 #include "Utilities/SimpleLock.h"
 
 enum class DebugEventType;
@@ -44,7 +44,7 @@ struct NesEventViewerConfig : public BaseEventViewerConfig
 	bool ShowNtscBorders;
 };
 
-class NesEventManager : public IEventManager
+class NesEventManager : public BaseEventManager
 {
 private:
 	NesEventViewerConfig _config = {};
@@ -56,22 +56,16 @@ private:
 
 	uint32_t _palette[512] = {};
 
-	vector<DebugEventInfo> _debugEvents;
-	vector<DebugEventInfo> _prevDebugEvents;
-	vector<DebugEventInfo> _sentEvents;
-
-	vector<DebugEventInfo> _snapshot;
-	int16_t _snapshotScanline = -1;
-	uint16_t _snapshotCycle = 0;
-	SimpleLock _lock;
-
 	uint32_t _scanlineCount = 262;
 	uint16_t *_ppuBuffer = nullptr;
 
 	void DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer);
-	void DrawDot(uint32_t x, uint32_t y, uint32_t color, bool drawBackground, uint32_t* buffer);
 	void DrawNtscBorders(uint32_t *buffer);
 	void DrawPixel(uint32_t *buffer, int32_t x, uint32_t y, uint32_t color);
+
+protected:
+	bool ShowPreviousFrameEvents() override;
+	int GetScanlineOffset() override { return 1; }
 
 public:
 	NesEventManager(Debugger *debugger, NesConsole* console);
@@ -80,20 +74,16 @@ public:
 	void AddEvent(DebugEventType type, MemoryOperationInfo& operation, int32_t breakpointId = -1) override;
 	void AddEvent(DebugEventType type) override;
 
-	void GetEvents(DebugEventInfo *eventArray, uint32_t &maxEventCount) override;
-	uint32_t GetEventCount() override;
-	void ClearFrameEvents();
+	void ClearFrameEvents() override;
 
 	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt);
-
-	void FilterEvents();
 
 	uint32_t TakeEventSnapshot();
 
 	FrameInfo GetDisplayBufferSize() override;
 	void GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize) override;
 
-	DebugEventInfo GetEvent(uint16_t scanline, uint16_t cycle) override;
+	DebugEventInfo GetEvent(uint16_t y, uint16_t x) override;
 
 	void SetConfiguration(BaseEventViewerConfig& config) override;
 };

@@ -172,7 +172,7 @@ shared_ptr<IAssembler> SpcDebugger::GetAssembler()
 	throw std::runtime_error("Assembler not supported for SPC");
 }
 
-shared_ptr<IEventManager> SpcDebugger::GetEventManager()
+shared_ptr<BaseEventManager> SpcDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for SPC");
 }

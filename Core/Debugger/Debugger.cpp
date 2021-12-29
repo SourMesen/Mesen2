@@ -13,7 +13,7 @@
 #include "Debugger/ScriptManager.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "Debugger/IEventManager.h"
+#include "Debugger/BaseEventManager.h"
 #include "Debugger/TraceLogFileSaver.h"
 #include "SNES/Cpu.h"
 #include "SNES/Ppu.h"
@@ -276,7 +276,7 @@ void Debugger::ProcessEvent(EventType type)
 
 		case EventType::StartFrame: {
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)_mainCpuType);
-			shared_ptr<IEventManager> evtMgr = GetEventManager(_mainCpuType);
+			shared_ptr<BaseEventManager> evtMgr = GetEventManager(_mainCpuType);
 			if(evtMgr) {
 				evtMgr->ClearFrameEvents();
 			}
@@ -671,7 +671,7 @@ PpuTools* Debugger::GetPpuTools(CpuType cpuType)
 	return nullptr;
 }
 
-shared_ptr<IEventManager> Debugger::GetEventManager(CpuType cpuType)
+shared_ptr<BaseEventManager> Debugger::GetEventManager(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetEventManager();

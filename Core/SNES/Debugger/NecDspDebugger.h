@@ -42,7 +42,7 @@ public:
 	shared_ptr<CallstackManager> GetCallstackManager() override;
 	BreakpointManager* GetBreakpointManager() override;
 	shared_ptr<IAssembler> GetAssembler() override;
-	shared_ptr<IEventManager> GetEventManager() override;
+	shared_ptr<BaseEventManager> GetEventManager() override;
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 	ITraceLogger* GetTraceLogger() override;
 

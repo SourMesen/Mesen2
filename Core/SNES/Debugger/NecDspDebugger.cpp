@@ -111,7 +111,7 @@ shared_ptr<IAssembler> NecDspDebugger::GetAssembler()
 	throw std::runtime_error("Assembler not supported for NEC DSP");
 }
 
-shared_ptr<IEventManager> NecDspDebugger::GetEventManager()
+shared_ptr<BaseEventManager> NecDspDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for NEC DSP");
 }
