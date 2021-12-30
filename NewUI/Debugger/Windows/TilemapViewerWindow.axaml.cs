@@ -22,7 +22,7 @@ namespace Mesen.Debugger.Windows
 		private NotificationListener _listener;
 		private TilemapViewerViewModel _model;
 		private PictureViewer _picViewer;
-		private Point? _prevMousePos = null;
+		private PixelPoint? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
 		public TilemapViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
@@ -75,21 +75,20 @@ namespace Mesen.Debugger.Windows
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
-				Point point = e.GetCurrentPoint(viewer).Position;
+				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
 				if(point == _prevMousePos) {
 					return;
 				}
 				_prevMousePos = point;
 
-				PixelPoint p = PixelPoint.FromPoint(point / viewer.Zoom, 1);
-				DynamicTooltip? tooltip = _model.GetPreviewPanel(p);
+				DynamicTooltip? tooltip = point == null ? null : _model.GetPreviewPanel(point.Value);
 
 				if(tooltip != null) {
 					ToolTip.SetTip(viewer, tooltip);
 
 					//Force tooltip to update its position
-					ToolTip.SetHorizontalOffset(viewer, 4);
-					ToolTip.SetHorizontalOffset(viewer, 5);
+					ToolTip.SetHorizontalOffset(viewer, 14);
+					ToolTip.SetHorizontalOffset(viewer, 15);
 					ToolTip.SetIsOpen(viewer, true);
 				} else {
 					ToolTip.SetTip(viewer, null);

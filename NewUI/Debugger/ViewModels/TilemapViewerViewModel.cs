@@ -253,8 +253,6 @@ namespace Mesen.Debugger.ViewModels
 				BorderThickness = new Thickness(1), 
 				Child = new PictureViewer() { 
 					Source = preview,
-					Width = tileInfo.Width * 6,
-					Height = tileInfo.Height * 6,
 					Zoom = 6
 				}
 			}));

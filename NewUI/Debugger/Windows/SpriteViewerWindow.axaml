@@ -33,8 +33,6 @@
 						<dc:PictureViewer
 							Source="{CompiledBinding SelectedSprite.SpritePreview}"
 							Zoom="{CompiledBinding SelectedSprite.SpritePreviewZoom}"
-							Width="64"
-							Height="64"
 						 />
 					</Border>
 					<StackPanel Grid.Column="1">

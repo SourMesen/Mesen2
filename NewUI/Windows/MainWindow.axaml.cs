@@ -14,6 +14,7 @@ using System.Linq;
 using Mesen.Utilities;
 using Mesen.Interop;
 using Mesen.Views;
+using Avalonia.Layout;
 
 namespace Mesen.Windows
 {
@@ -179,7 +180,8 @@ namespace Mesen.Windows
 						if(_baseScreenSize.Width == 0) {
 							scale = _initialScale;
 						} else {
-							scale = ClientSize.Width / _baseScreenSize.Width;
+							double dpiScale = LayoutHelper.GetLayoutScale(this);
+							scale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
 						}
 						SetScale(scale);
 						_baseScreenSize = EmuApi.GetBaseScreenSize();
@@ -200,6 +202,9 @@ namespace Mesen.Windows
 
 		public void SetScale(double scale)
 		{
+			double dpiScale = LayoutHelper.GetLayoutScale(this);
+			scale /= dpiScale;
+
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
 				_renderer.Width = double.NaN;

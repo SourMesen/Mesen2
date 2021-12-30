@@ -3,17 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using Mesen.Debugger;
-using Mesen.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Controls
 {
@@ -119,12 +113,15 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(OverlayRectProperty, value); }
 		}
 
-		private static SolidColorBrush _bgBrush = new SolidColorBrush(0xFFFFFFFF);
-		private Point? _mousePosition = null;
+		private PixelPoint? _mousePosition = null;
 
 		static PictureViewer()
 		{
 			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty, SelectionRectProperty, OverlayRectProperty);
+
+			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
+				x.UpdateSize();
+			});
 
 			ZoomProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
 				x.UpdateSize();
@@ -134,14 +131,17 @@ namespace Mesen.Debugger.Controls
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
 			base.OnAttachedToVisualTree(e);
-			_timer.Interval = TimeSpan.FromMilliseconds(50);
+			_timer.Interval = TimeSpan.FromMilliseconds(250);
 			_timer.Tick += timer_Tick;
 			_timer.Start();
+			UpdateSize();
 		}
 
 		private void timer_Tick(object? sender, EventArgs e)
 		{
-			InvalidateVisual();
+			if(SelectionRect != Rect.Empty) {
+				InvalidateVisual();
+			}
 		}
 
 		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -175,22 +175,21 @@ namespace Mesen.Debugger.Controls
 
 		private void UpdateSize()
 		{
-			MinWidth = (int)Source.Size.Width * Zoom;
-			MinHeight = (int)Source.Size.Height * Zoom;
-		}
-
-		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
-		{
-			base.OnPropertyChanged(change);
-			if(change.Property == SourceProperty) {
-				UpdateSize();
+			if(Source == null) {
+				MinWidth = 0;
+				MinHeight = 0;
+			} else {
+				double dpiScale = LayoutHelper.GetLayoutScale(this);
+				MinWidth = (int)Source.Size.Width * Zoom / dpiScale;
+				MinHeight = (int)Source.Size.Height * Zoom / dpiScale;
 			}
 		}
 
 		protected override void OnPointerMoved(PointerEventArgs e)
 		{
 			base.OnPointerMoved(e);
-			_mousePosition = e.GetCurrentPoint(this).Position;
+			PixelPoint? p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
+			_mousePosition = p;
 			InvalidateVisual();
 		}
 
@@ -203,26 +202,35 @@ namespace Mesen.Debugger.Controls
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
 		{
-			Point p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
+			PixelPoint? p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
+			if(p == null) {
+				e.Handled = true;
+				return;
+			}
 
-			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = p };
+			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = new Point(p.Value.X, p.Value.Y) };
 			RaiseEvent(args);
 
 			if(!args.Handled && AllowSelection) {
-				SelectionRect = GetTileRect(p);
+				SelectionRect = GetTileRect(p.Value);
 			}
 		}
 
-		private Point GetGridPointFromMousePoint(Point p)
+		public PixelPoint? GetGridPointFromMousePoint(Point p)
 		{
-			return new Point(Math.Min(p.X, MinWidth - 1) / Zoom, Math.Min(p.Y, MinHeight - 1) / Zoom);
+			if(p.X >= MinWidth || p.Y >= MinHeight) {
+				return null;
+			}
+
+			double scale = LayoutHelper.GetLayoutScale(this) / Zoom;
+			return PixelPoint.FromPoint(p, scale);
 		}
 
-		private Rect GetTileRect(Point p)
+		private Rect GetTileRect(PixelPoint p)
 		{
 			return new Rect(
-				(int)p.X / GridSizeX * GridSizeX,
-				(int)p.Y / GridSizeY * GridSizeY,
+				p.X / GridSizeX * GridSizeX,
+				p.Y / GridSizeY * GridSizeY,
 				GridSizeX,
 				GridSizeY
 			);
@@ -269,9 +277,10 @@ namespace Mesen.Debugger.Controls
 			int width = (int)Source.Size.Width * Zoom;
 			int height = (int)Source.Size.Height * Zoom;
 
-			using var clip = context.PushClip(new Rect(0, 0, width, height));
+			double dpiScale = 1 / LayoutHelper.GetLayoutScale(this);
+			using var scale = context.PushPostTransform(Matrix.CreateScale(dpiScale, dpiScale));
 
-			context.FillRectangle(_bgBrush, new Rect(Bounds.Size));
+			using var clip = context.PushClip(new Rect(0, 0, width, height));
 
 			context.DrawImage(
 				Source,
@@ -284,7 +293,7 @@ namespace Mesen.Debugger.Controls
 			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
 			if(ShowMousePosition && _mousePosition.HasValue) {
-				Point p = GetGridPointFromMousePoint(_mousePosition.Value);
+				PixelPoint p = _mousePosition.Value;
 				Rect rect = ToDrawRect(GetTileRect(p));
 				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
 				context.DrawRectangle(new Pen(Brushes.White, 2), rect.Inflate(0.5));

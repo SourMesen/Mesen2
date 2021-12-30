@@ -14,8 +14,6 @@
 		<dc:PictureViewer
 			Source="{CompiledBinding SpritePreview}"
 			Zoom="{CompiledBinding SpritePreviewZoom}"
-			Width="32"
-			Height="32"
 		/>
 	</Border>
 </UserControl>

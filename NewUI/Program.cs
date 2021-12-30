@@ -5,6 +5,7 @@ using Avalonia.ReactiveUI;
 using Mesen.Config;
 using Mesen.Utilities;
 using System;
+using System.Linq;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -35,7 +36,8 @@ namespace Mesen
 			instance.Init(args);
 			if(instance.FirstInstance) {
 				Program.CommandLineArgs = (string[])args.Clone();
-				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+				bool useWgl = args.Any(arg => arg.ToLowerInvariant() == "-wgl");
+				BuildAvaloniaApp(useWgl).StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
 			}
 		}
 
@@ -67,10 +69,15 @@ namespace Mesen
 
 		// Avalonia configuration, don't remove; also used by visual designer.
 		public static AppBuilder BuildAvaloniaApp()
+		{
+			return BuildAvaloniaApp(false);
+		}
+
+		public static AppBuilder BuildAvaloniaApp(bool useWgl)
 			 => AppBuilder.Configure<App>()
 					.UseReactiveUI()
 					.UsePlatformDetect()
-					.With(new Win32PlatformOptions { AllowEglInitialization = true })
+					.With(new Win32PlatformOptions { AllowEglInitialization = true, UseWgl = useWgl })
 					.With(new X11PlatformOptions { UseGpu = false, UseEGL = false })
 					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
 					.LogToTrace();

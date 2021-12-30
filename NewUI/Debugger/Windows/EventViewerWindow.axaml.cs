@@ -25,7 +25,7 @@ namespace Mesen.Debugger.Windows
 	{
 		private NotificationListener _listener;
 		private EventViewerViewModel _model;
-		private Point? _prevMousePos = null;
+		private PixelPoint? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
 		public EventViewerWindow() : this(CpuType.Cpu) { }
@@ -112,19 +112,21 @@ namespace Mesen.Debugger.Windows
 		private void Viewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
-				Point point = e.GetCurrentPoint(viewer).Position;
+				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
 				if(point == _prevMousePos) {
 					return;
 				}
 				_prevMousePos = point;
 
 				DebugEventInfo evt = new DebugEventInfo();
-				DebugApi.GetEventViewerEvent(_model.CpuType, ref evt, (ushort)(point.Y / _model.Config.ImageScale), (ushort)(point.X / _model.Config.ImageScale));
+				if(point != null) {
+					DebugApi.GetEventViewerEvent(_model.CpuType, ref evt, (ushort)point.Value.Y, (ushort)point.Value.X);
+				}
 
-				if(evt.ProgramCounter != UInt32.MaxValue) {
+				if(point != null && evt.ProgramCounter != UInt32.MaxValue) {
 					//Force tooltip to update its position
-					ToolTip.SetHorizontalOffset(viewer, 1);
-					ToolTip.SetHorizontalOffset(viewer, 0);
+					ToolTip.SetHorizontalOffset(viewer, 14);
+					ToolTip.SetHorizontalOffset(viewer, 15);
 
 					ToolTip.SetTip(viewer, new DynamicTooltip() { Items = GetTooltipData(evt) });
 					ToolTip.SetIsOpen(viewer, true);
