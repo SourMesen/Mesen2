@@ -130,7 +130,7 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t *vram, uint8_t *oamRam, uint32_t* palette, uint32_t* outBuffer)
 {
 	PpuState& state = (PpuState&)baseState;
-	FrameInfo size = GetSpritePreviewSize(options, state);
+	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state);
 	//TODO
 	//uint16_t baseAddr = state.EnableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
 	uint16_t baseAddr = 0;
@@ -257,13 +257,12 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 	}
 }
 
-uint32_t SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
 	PpuState& state = (PpuState&)baseState;
 	for(int i = 0; i < 128; i++) {
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
-	return 128;
 }
 
 FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
@@ -357,7 +356,11 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 	return result;
 }
 
-FrameInfo SnesPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
 {
-	return { 512, 256 };
+	DebugSpritePreviewInfo info = {};
+	info.Height = 256;
+	info.Width = 512;
+	info.SpriteCount = 128;
+	return info;
 }

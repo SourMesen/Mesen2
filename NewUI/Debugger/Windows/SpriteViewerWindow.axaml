@@ -23,19 +23,19 @@
 		<dvm:SpriteViewerViewModel />
 	</Design.DataContext>
 
-	<Grid
-		ColumnDefinitions="Auto,*"
-		RowDefinitions="*"
-		HorizontalAlignment="Stretch"
-		VerticalAlignment="Stretch"
-	>
-		<Grid Name="spriteGrid" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="1" />
+	<DockPanel>
+		<Grid Name="spriteGrid" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="1" DockPanel.Dock="Left" />
 		
-		<DockPanel Grid.Column="1">
+		<DockPanel DockPanel.Dock="Right">
 			<Border BorderBrush="Gray" BorderThickness="1" Margin="1" DockPanel.Dock="Top" Padding="2">
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
 					<Border BorderBrush="Gray" BorderThickness="1" Margin="1 1 5 0" HorizontalAlignment="Center" VerticalAlignment="Top">
-						<Image Source="{CompiledBinding SelectedSprite.SpritePreview}" Width="64" Height="64" Stretch="Uniform" StretchDirection="Both" />
+						<dc:PictureViewer
+							Source="{CompiledBinding SelectedSprite.SpritePreview}"
+							Zoom="{CompiledBinding SelectedSprite.SpritePreviewZoom}"
+							Width="64"
+							Height="64"
+						 />
 					</Border>
 					<StackPanel Grid.Column="1">
 						<WrapPanel>
@@ -79,5 +79,5 @@
 				</ScrollViewer>
 			</Border>
 		</DockPanel>
-	</Grid>
+	</DockPanel>
 </Window>

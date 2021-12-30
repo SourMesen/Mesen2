@@ -145,9 +145,13 @@ DebugTilemapTileInfo GbPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint
 	return result;
 }
 
-FrameInfo GbPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
 {
-	return { 256, 256 };
+	DebugSpritePreviewInfo info = {};
+	info.Height = 256;
+	info.Width = 256;
+	info.SpriteCount = 40;
+	return info;
 }
 
 void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
@@ -197,11 +201,10 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 	}
 }
 
-uint32_t GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	for(int i = 0; i < 40; i++) {
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
-	return 40;
 }

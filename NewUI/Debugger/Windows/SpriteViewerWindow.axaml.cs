@@ -24,7 +24,6 @@ namespace Mesen.Debugger.Windows
 		private SpriteViewerViewModel _model;
 		private PictureViewer _picViewer;
 		private WriteableBitmap _viewerBitmap;
-		private int _updateCounter = 0;
 		private Grid _spriteGrid;
 		private List<SpritePreviewPanel> _previewPanels = new List<SpritePreviewPanel>();
 
@@ -171,7 +170,7 @@ namespace Mesen.Debugger.Windows
 				};
 				UInt32[] palette = PaletteHelper.GetConvertedPalette(_model.CpuType, _model.ConsoleType);
 
-				FrameInfo size = DebugApi.GetSpritePreviewSize(_model.CpuType, options, ppuState);
+				DebugSpritePreviewInfo size = DebugApi.GetSpritePreviewInfo(_model.CpuType, options, ppuState);
 				if(_viewerBitmap.PixelSize.Width != size.Width || _viewerBitmap.PixelSize.Height != size.Height) {
 					InitBitmap((int)size.Width, (int)size.Height);
 				}
@@ -183,19 +182,16 @@ namespace Mesen.Debugger.Windows
 				_picViewer.Source = _viewerBitmap;
 				_picViewer.InvalidateVisual();
 
-				if(forceListUpdate || _updateCounter % 4 == 0) { //15 fps
-					DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(_model.CpuType, options, ppuState, vram, spriteRam, palette);
-					InitGrid(sprites);
+				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(_model.CpuType, options, ppuState, vram, spriteRam, palette);
+				InitGrid(sprites);
 
-					int selectedIndex = _model.SelectedSprite?.SpriteIndex ?? -1;
-					if(selectedIndex >= 0 && selectedIndex < _previewPanels.Count) {
-						_model.SelectedSprite = ((SpritePreviewModel)_previewPanels[selectedIndex].DataContext!);
-					} else {
-						_model.SelectedSprite = null;
-					}
-					UpdateSelection(_model.SelectedSprite);
+				int selectedIndex = _model.SelectedSprite?.SpriteIndex ?? -1;
+				if(selectedIndex >= 0 && selectedIndex < _previewPanels.Count) {
+					_model.SelectedSprite = ((SpritePreviewModel)_previewPanels[selectedIndex].DataContext!);
+				} else {
+					_model.SelectedSprite = null;
 				}
-				_updateCounter++;
+				UpdateSelection(_model.SelectedSprite);
 			});
 		}
 

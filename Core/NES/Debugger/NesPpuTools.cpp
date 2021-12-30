@@ -269,16 +269,19 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	}
 }
 
-uint32_t NesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void NesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
 	NesPpuState& state = (NesPpuState&)baseState;
 	for(int i = 0; i < 64; i++) {
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
-	return 64;
 }
 
-FrameInfo NesPpuTools::GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
 {
-	return { 256, 256 };
+	DebugSpritePreviewInfo info = {};
+	info.Height = 256;
+	info.Width = 256;
+	info.SpriteCount = 64;
+	return info;
 }

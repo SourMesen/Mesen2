@@ -119,6 +119,7 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(OverlayRectProperty, value); }
 		}
 
+		private static SolidColorBrush _bgBrush = new SolidColorBrush(0xFFFFFFFF);
 		private Point? _mousePosition = null;
 
 		static PictureViewer()
@@ -270,7 +271,7 @@ namespace Mesen.Debugger.Controls
 
 			using var clip = context.PushClip(new Rect(0, 0, width, height));
 
-			context.FillRectangle(new SolidColorBrush(0xFFFFFFFF), new Rect(Bounds.Size));
+			context.FillRectangle(_bgBrush, new Rect(Bounds.Size));
 
 			context.DrawImage(
 				Source,

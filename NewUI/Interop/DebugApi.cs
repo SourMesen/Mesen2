@@ -185,23 +185,24 @@ namespace Mesen.Interop
 			DebugApi.GetSpritePreview(cpuType, options, (IntPtr)ptr, vram, spriteRam, palette, outputBuffer);
 		}
 
-		[DllImport(DllPath)] private static extern FrameInfo GetSpritePreviewSize(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state);
-		public unsafe static FrameInfo GetSpritePreviewSize<T>(CpuType cpuType, GetSpritePreviewOptions options, T state) where T : struct, BaseState
+		[DllImport(DllPath)] private static extern DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state);
+		public unsafe static DebugSpritePreviewInfo GetSpritePreviewInfo<T>(CpuType cpuType, GetSpritePreviewOptions options, T state) where T : struct, BaseState
 		{
 			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
-			return DebugApi.GetSpritePreviewSize(cpuType, options, (IntPtr)ptr);
+			return DebugApi.GetSpritePreviewInfo(cpuType, options, (IntPtr)ptr);
 		}
 
-		[DllImport(DllPath)] private static extern UInt32 GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, [In,Out]DebugSpriteInfo[] sprites);
+		[DllImport(DllPath)] private static extern void GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr sprites);
 		public unsafe static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette) where T : struct, BaseState
 		{
-			DebugSpriteInfo[] sprites = new DebugSpriteInfo[128];
-
 			byte* statePtr = stackalloc byte[Marshal.SizeOf(typeof(T))];
 			Marshal.StructureToPtr(state, (IntPtr)statePtr, false);
-			UInt32 spriteCount = DebugApi.GetSpriteList(cpuType, options, (IntPtr)statePtr, vram, spriteRam, palette, sprites);
-			Array.Resize(ref sprites, (int)spriteCount);
+
+			DebugSpriteInfo[] sprites = new DebugSpriteInfo[GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr).SpriteCount];
+			fixed(DebugSpriteInfo* spritesPtr = sprites) {
+				DebugApi.GetSpriteList(cpuType, options, (IntPtr)statePtr, vram, spriteRam, palette, (IntPtr)spritesPtr);
+			}
 			return sprites;
 		}
 
@@ -842,7 +843,14 @@ namespace Mesen.Interop
 		public Int32 SelectedSprite;
 	}
 
-	public struct DebugSpriteInfo
+	public struct DebugSpritePreviewInfo
+	{
+		public UInt32 Width;
+		public UInt32 Height;
+		public UInt32 SpriteCount;
+	}
+
+	public unsafe struct DebugSpriteInfo
 	{
 		public UInt16 SpriteIndex;
 		public UInt16 TileIndex;
@@ -858,8 +866,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool UseSecondTable;
 		[MarshalAs(UnmanagedType.I1)] public bool Visible;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 64 * 64)]
-		public UInt32[] SpritePreview;
+		public fixed UInt32 SpritePreview[64*64];
 	}
 
 	public enum TileFormat

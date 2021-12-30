@@ -46,8 +46,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool VerticalMirror { get; set; }
 
 		[Reactive] public Bitmap? SpritePreview { get; set; }
+		[Reactive] public double SpritePreviewZoom { get; set; }
 
-		public void Init(ref DebugSpriteInfo sprite)
+		public unsafe void Init(ref DebugSpriteInfo sprite)
 		{
 			SpriteIndex = sprite.SpriteIndex;
 			X = sprite.X;
@@ -60,13 +61,11 @@ namespace Mesen.Debugger.ViewModels
 			
 			Size = sprite.Width + "x" + sprite.Height;
 
-			GCHandle handle = GCHandle.Alloc(sprite.SpritePreview, GCHandleType.Pinned);
-			IntPtr previewPtr = handle.AddrOfPinnedObject();
-			Bitmap originalPreview = new Bitmap(PixelFormat.Bgra8888, AlphaFormat.Premul, previewPtr, new PixelSize(Width, Height), new Vector(96, 96), Width * 4);
+			fixed(UInt32* p = sprite.SpritePreview) {
+				SpritePreview = new Bitmap(PixelFormat.Bgra8888, AlphaFormat.Premul, (IntPtr)p, new PixelSize(Width, Height), new Vector(96, 96), Width * 4);
+			}
 			
-			int scale = 64 / Math.Max(Width, Height);
-			SpritePreview = originalPreview.CreateScaledBitmap(new PixelSize(Width*scale, Height*scale), Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.Default);
-			handle.Free();
+			SpritePreviewZoom = 32 / Math.Max(Width, Height);
 
 			Visible = sprite.Visible;
 

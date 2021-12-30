@@ -73,6 +73,13 @@ struct DebugTilemapTileInfo
 	NullableBoolean HighPriority = NullableBoolean::Undefined;
 };
 
+struct DebugSpritePreviewInfo
+{
+	uint32_t Width;
+	uint32_t Height;
+	uint32_t SpriteCount;
+};
+
 class PpuTools
 {
 protected:
@@ -95,9 +102,9 @@ public:
 	virtual FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) = 0;
 	virtual DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;
 	
-	virtual FrameInfo GetSpritePreviewSize(GetSpritePreviewOptions options, BaseState& state) = 0;
+	virtual DebugSpritePreviewInfo GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state) = 0;
 	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
-	virtual uint32_t GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
+	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
 
 	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);
