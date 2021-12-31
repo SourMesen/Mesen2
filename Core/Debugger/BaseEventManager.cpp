@@ -6,7 +6,7 @@ void BaseEventManager::FilterEvents()
 	auto lock = _lock.AcquireSafe();
 	_sentEvents.clear();
 
-	if(ShowPreviousFrameEvents() && _snapshotScanline != 0 && _snapshotCycle != 0) {
+	if(ShowPreviousFrameEvents() && (_snapshotScanline != 0 || _snapshotCycle != 0)) {
 		int offset = GetScanlineOffset();
 		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
 		for(DebugEventInfo& evt : _snapshotPrevFrame) {
