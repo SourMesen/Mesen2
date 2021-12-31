@@ -224,12 +224,14 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.Y = oamRam[i * 4] + 1;
 	sprite.X = oamRam[i * 4 + 3];
 	sprite.TileIndex = oamRam[i * 4 + 1];
+	sprite.TileAddress = ((state.ControlReg & 0x08) ? 0x1000 : 0x0000) | (sprite.TileIndex * 16);
 
 	uint8_t attributes = oamRam[i * 4 + 2];
 	sprite.Palette = (attributes & 0x03);
+	sprite.PaletteAddress = 0x3F00 | ((attributes & 0x03) << 2);
 	sprite.HorizontalMirror = (attributes & 0x40) != 0;
 	sprite.VerticalMirror = (attributes & 0x80) != 0;
-	sprite.Priority = (attributes & 0x20) ? 0 : 1;
+	sprite.Priority = (attributes & 0x20) ? DebugSpritePriority::Background : DebugSpritePriority::Foreground;
 	sprite.Visible = sprite.Y < 240;
 	sprite.Width = 8;
 
@@ -273,6 +275,7 @@ void NesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& base
 {
 	NesPpuState& state = (NesPpuState&)baseState;
 	for(int i = 0; i < 64; i++) {
+		outBuffer[i].Init();
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 }

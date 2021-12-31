@@ -20,6 +20,7 @@ namespace Mesen.Debugger.Windows
 	{
 		private NotificationListener _listener;
 		private SpriteViewerViewModel _model;
+		private PixelPoint? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
 		public SpriteViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
@@ -43,6 +44,9 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
+			picViewer.PointerMoved += PicViewer_PointerMoved;
+			picViewer.PointerLeave += PicViewer_PointerLeave;
+			picViewer.PositionClicked += PicViewer_PositionClicked;
 			_listener.OnNotification += listener_OnNotification;
 		}
 
@@ -67,22 +71,60 @@ namespace Mesen.Debugger.Windows
 			_model.Config.SaveWindowSettings(this);
 		}
 
-		private void ScreenPreview_PositionClicked(object? sender, PositionClickedEventArgs e)
+		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
-			Point p = e.Position;
-			if(_model.CpuType == CpuType.Cpu) {
-				p = p.WithX(p.X - 256);
-			}
-
-			foreach(SpritePreviewModel sprite in _model.SpritePreviews) {
-				if(
-					p.X >= sprite.X && p.X < sprite.X + sprite.Width &&
-					p.Y >= sprite.Y && p.Y < sprite.Y + sprite.Height
-				) {
-					_model.SelectedSprite = sprite;
-					_model.UpdateSelection(sprite);
-					break;
+			if(sender is PictureViewer viewer) {
+				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
+				if(point == _prevMousePos) {
+					return;
 				}
+				_prevMousePos = point;
+
+				DynamicTooltip? tooltip = null;
+				if(point != null) {
+					DynamicTooltip? existingTooltip = ToolTip.GetTip(viewer) as DynamicTooltip;
+
+					if(_model.CpuType == CpuType.Cpu) {
+						point = point.Value.WithX(point.Value.X - 256);
+					}
+					SpritePreviewModel? sprite = _model.GetMatchingSprite(point.Value);
+					tooltip = sprite == null ? null : _model.GetPreviewPanel(sprite, existingTooltip);
+				}
+
+				if(tooltip != null) {
+					ToolTip.SetTip(viewer, tooltip);
+
+					//Force tooltip to update its position
+					ToolTip.SetHorizontalOffset(viewer, 14);
+					ToolTip.SetHorizontalOffset(viewer, 15);
+					ToolTip.SetIsOpen(viewer, true);
+				} else {
+					ToolTip.SetTip(viewer, null);
+					ToolTip.SetIsOpen(viewer, false);
+				}
+			}
+		}
+		
+		private void PicViewer_PointerLeave(object? sender, PointerEventArgs e)
+		{
+			if(sender is PictureViewer viewer) {
+				ToolTip.SetTip(viewer, null);
+				ToolTip.SetIsOpen(viewer, false);
+			}
+			_prevMousePos = null;
+		}
+
+		private void PicViewer_PositionClicked(object? sender, PositionClickedEventArgs e)
+		{
+			if(sender is PictureViewer viewer) {
+				PixelPoint p = e.Position;
+				if(_model.CpuType == CpuType.Cpu) {
+					p = p.WithX(p.X - 256);
+				}
+
+				SpritePreviewModel? sprite = _model.GetMatchingSprite(p);
+				_model.SelectedSprite = sprite;
+				_model.UpdateSelection(sprite);
 			}
 			e.Handled = true;
 		}

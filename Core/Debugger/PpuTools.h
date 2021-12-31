@@ -14,23 +14,64 @@ struct ViewerRefreshConfig
 	uint16_t Cycle;
 };
 
+enum class NullableBoolean
+{
+	Undefined = -1,
+	False = 0,
+	True = 1
+};
+
+enum class DebugSpritePriority
+{
+	Undefined = -1,
+	Number0 = 0,
+	Number1 = 1,
+	Number2 = 2,
+	Number3 = 3,
+	Foreground = 4,
+	Background = 5
+};
+
 struct DebugSpriteInfo
 {
+	int32_t TileIndex;
+	int32_t TileAddress;
+	int32_t PaletteAddress;
+
 	uint16_t SpriteIndex;
-	uint16_t TileIndex;
+
 	int16_t X;
 	int16_t Y;
 
-	uint8_t Palette;
-	uint8_t Priority;
-	uint8_t Width;
-	uint8_t Height;
+	int16_t Palette;
+	DebugSpritePriority Priority;
+	int16_t Width;
+	int16_t Height;
 	bool HorizontalMirror;
 	bool VerticalMirror;
-	bool UseSecondTable;
 	bool Visible;
+	NullableBoolean UseSecondTable;
 
 	uint32_t SpritePreview[64 * 64];
+
+public:
+	void Init()
+	{
+		TileIndex = -1;
+		TileAddress = -1;
+		PaletteAddress = -1;
+		SpriteIndex = -1;
+		X = -1;
+		Y = -1;
+		Palette = -1;
+		Priority = DebugSpritePriority::Undefined;
+		Width = -1;
+		Height = -1;
+		HorizontalMirror = false;
+		VerticalMirror = false;
+		Visible = false;
+		UseSecondTable = NullableBoolean::Undefined;
+	}
 };
 
 struct DebugTilemapInfo
@@ -44,13 +85,6 @@ struct DebugTilemapInfo
 
 	uint32_t CurrentRow;
 	uint32_t CurrentColumn;
-};
-
-enum class NullableBoolean
-{
-	Undefined = -1,
-	False = 0,
-	True = 1
 };
 
 struct DebugTilemapTileInfo

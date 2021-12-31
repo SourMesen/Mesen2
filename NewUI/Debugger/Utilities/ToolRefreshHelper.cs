@@ -59,7 +59,7 @@ namespace Mesen.Debugger.Utilities
 
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.ViewerRefresh:
-					if(cfg.AutoRefresh && e.Parameter.ToInt32() == viewerId) {
+					if(cfg.AutoRefresh && e.Parameter.ToInt32() == viewerId && !LimitFps(wnd, 80)) {
 						refresh();
 					}
 					break;

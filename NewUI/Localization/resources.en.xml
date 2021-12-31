@@ -1560,6 +1560,15 @@ x == [$150] || y == [10]
 			<Value ID="ShowBlankWindow">Display an empty script</Value>
 			<Value ID="LoadLastScript">Load the previous script</Value>
 		</Enum>
+		<Enum ID="DebugSpritePriority">
+			<Value ID="Undefined">Undefined</Value>
+			<Value ID="Number0">0</Value>
+			<Value ID="Number1">1</Value>
+			<Value ID="Number2">2</Value>
+			<Value ID="Number3">3</Value>
+			<Value ID="Foreground">Foreground</Value>
+			<Value ID="Background">Background</Value>
+		</Enum>
 		<Enum ID="DebugEventType">
 			<Value ID="Register">Register</Value>
 			<Value ID="Nmi">NMI</Value>

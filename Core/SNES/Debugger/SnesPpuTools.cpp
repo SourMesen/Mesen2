@@ -200,22 +200,25 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 		}
 	}
 
+	bool useSecondTable = (flags & 0x01) != 0;
+
 	sprite.SpriteIndex = spriteIndex;
 	sprite.X = x;
 	sprite.Y = y;
 	sprite.Height = height;
 	sprite.Width = width;
 	sprite.TileIndex = oamRam[addr + 2];
+	sprite.TileAddress = ((state.OamBaseAddress + (sprite.TileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
 	sprite.Palette = ((flags >> 1) & 0x07);
-	sprite.Priority = (flags >> 4) & 0x03;
+	sprite.PaletteAddress = (sprite.Palette + 8) * 16;
+	sprite.Priority = (DebugSpritePriority)((flags >> 4) & 0x03);
 	sprite.HorizontalMirror = (flags & 0x40) != 0;
 	sprite.VerticalMirror = (flags & 0x80) != 0;
-	sprite.UseSecondTable = (flags & 0x01) != 0;
+	sprite.UseSecondTable = useSecondTable ? NullableBoolean::True : NullableBoolean::False;
 	sprite.Visible = visible;
 
 	int tileRow = (sprite.TileIndex & 0xF0) >> 4;
 	int tileColumn = sprite.TileIndex & 0x0F;
-
 	uint8_t yOffset;
 	int rowOffset;
 
@@ -245,7 +248,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 			uint8_t column = (tileColumn + columnOffset) & 0x0F;
 			uint8_t tileIndex = (row << 4) | column;
-			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (sprite.UseSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
 
 			uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1);
 			if(color != 0) {
@@ -261,6 +264,7 @@ void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& bas
 {
 	PpuState& state = (PpuState&)baseState;
 	for(int i = 0; i < 128; i++) {
+		outBuffer[i].Init();
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 }

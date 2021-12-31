@@ -163,22 +163,26 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 	sprite.TileIndex = oamRam[i * 4 + 2];
 	uint8_t attributes = oamRam[i * 4 + 3];
 
-	sprite.UseSecondTable = (state.CgbEnabled && (attributes & 0x08)) ? true : false;
+	bool useSecondTable = (state.CgbEnabled && (attributes & 0x08));
+	sprite.UseSecondTable = useSecondTable ? NullableBoolean::True : NullableBoolean::False;
 	sprite.Palette = state.CgbEnabled ? (attributes & 0x07) : ((attributes & 0x10) ? 1 : 0);
 	sprite.HorizontalMirror = (attributes & 0x20) != 0;
 	sprite.VerticalMirror = (attributes & 0x40) != 0;
 	sprite.Visible = sprite.X > 0 && sprite.Y > 0 && sprite.Y < 160 && sprite.X < 168;
 	sprite.Width = 8;
 	sprite.Height = state.LargeSprites ? 16 : 8;
+	sprite.Priority = (attributes & 0x80) ? DebugSpritePriority::Background : DebugSpritePriority::Foreground;
 	
 	uint8_t tileIndex = (uint8_t)sprite.TileIndex;
-	uint16_t tileBank = sprite.UseSecondTable ? 0x2000 : 0x0000;
+	uint16_t tileBank = useSecondTable ? 0x2000 : 0x0000;
 	if(state.LargeSprites) {
 		tileIndex &= 0xFE;
 	}
 
 	uint16_t tileStart = tileIndex * 16;
 	tileStart |= tileBank;
+
+	sprite.TileAddress = tileStart;
 
 	for(int y = 0; y < sprite.Height; y++) {
 		uint16_t pixelStart = tileStart + (sprite.VerticalMirror ? (sprite.Height - 1 - y) : y) * 2;
@@ -205,6 +209,7 @@ void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseS
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	for(int i = 0; i < 40; i++) {
+		outBuffer[i].Init();
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 }

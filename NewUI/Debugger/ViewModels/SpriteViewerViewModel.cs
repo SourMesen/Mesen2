@@ -9,6 +9,7 @@ using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -101,15 +102,21 @@ namespace Mesen.Debugger.ViewModels
 		{
 			TooltipEntries entries = existingTooltip?.Items ?? new();
 			entries.AddPicture("Sprite", sprite.SpritePreview, (int)sprite.SpritePreviewZoom);
+			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
 			entries.AddEntry("X, Y", sprite.X + ", " + sprite.Y);
 			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
 
 			entries.AddEntry("Tile index", "$" + sprite.TileIndex.ToString("X2"));
-			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
+			entries.AddEntry("Tile address", "$" + sprite.TileAddress.ToString("X4"));
+			entries.AddEntry("Palette index", sprite.Palette.ToString());
+			entries.AddEntry("Palette address", "$" + sprite.PaletteAddress.ToString("X2"));
 			entries.AddEntry("Visible", sprite.Visible);
 			entries.AddEntry("Horizontal mirror", sprite.HorizontalMirror);
 			entries.AddEntry("Vertical mirror", sprite.VerticalMirror);
-			entries.AddEntry("Priority", sprite.Priority);
+			entries.AddEntry("Priority", ResourceHelper.GetEnumText(sprite.Priority));
+			if(sprite.UseSecondTable != NullableBoolean.Undefined) {
+				entries.AddEntry("Second table", sprite.UseSecondTable == NullableBoolean.True);
+			}
 
 			if(existingTooltip != null) {
 				return existingTooltip;
@@ -151,14 +158,40 @@ namespace Mesen.Debugger.ViewModels
 
 				for(int i = 0; i < spriteCount; i++) {
 					SpritePreviewPanel preview = new SpritePreviewPanel();
-					preview.Height = 35.0 / dpiScale;
-					preview.Width = 35.0 / dpiScale;
+					preview.Height = 3 + 32.0 / dpiScale;
+					preview.Width = 3 + 32.0 / dpiScale;
 					Grid.SetColumn(preview, i % 8);
 					Grid.SetRow(preview, i / 8);
 
 					preview.DataContext = SpritePreviews[i];
 					preview.PointerPressed += SpritePreview_PointerPressed;
+					preview.PointerEnter += SpritePreview_PointerEnter;
+					preview.PointerLeave += SpritePreview_PointerLeave;
 					_spriteGrid.Children.Add(preview);
+				}
+			}
+		}
+
+		private void SpritePreview_PointerLeave(object? sender, PointerEventArgs e)
+		{
+			if(sender is SpritePreviewPanel ctrl) {
+				ToolTip.SetTip(ctrl, null);
+				ToolTip.SetIsOpen(ctrl, false);
+			}
+		}
+
+		private void SpritePreview_PointerEnter(object? sender, PointerEventArgs e)
+		{
+			if(sender is Control ctrl && ctrl.DataContext is SpritePreviewModel sprite) {
+				DynamicTooltip? tooltip = GetPreviewPanel(sprite, null);
+
+				if(tooltip != null) {
+					ToolTip.SetTip(ctrl, tooltip);
+					ToolTip.SetHorizontalOffset(ctrl, 15);
+					ToolTip.SetIsOpen(ctrl, true);
+				} else {
+					ToolTip.SetTip(ctrl, null);
+					ToolTip.SetIsOpen(ctrl, false);
 				}
 			}
 		}
@@ -246,6 +279,20 @@ namespace Mesen.Debugger.ViewModels
 				SelectionRect = Rect.Empty;
 			}
 		}
+
+		public SpritePreviewModel? GetMatchingSprite(PixelPoint p)
+		{
+			foreach(SpritePreviewModel sprite in SpritePreviews) {
+				if(
+					p.X >= sprite.X && p.X < sprite.X + sprite.Width &&
+					p.Y >= sprite.Y && p.Y < sprite.Y + sprite.Height
+				) {
+					return sprite;
+				}
+			}
+
+			return null;
+		}
 	}
 
 	public class SpritePreviewModel : ViewModelBase
@@ -256,13 +303,16 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int Width { get; set; }
 		[Reactive] public int Height { get; set; }
 		[Reactive] public int TileIndex { get; set; }
-		[Reactive] public int Priority { get; set; }
+		[Reactive] public int TileAddress { get; set; }
+		[Reactive] public DebugSpritePriority Priority { get; set; }
 		[Reactive] public int Palette { get; set; }
+		[Reactive] public int PaletteAddress { get; set; }
 		[Reactive] public bool Visible { get; set; }
 		[Reactive] public string Size { get; set; } = "";
 		
 		[Reactive] public bool HorizontalMirror { get; set; }
 		[Reactive] public bool VerticalMirror { get; set; }
+		[Reactive] public NullableBoolean UseSecondTable { get; set; }
 
 		[Reactive] public DynamicBitmap SpritePreview { get; set; } = new DynamicBitmap(new PixelSize(1, 1), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 		[Reactive] public double SpritePreviewZoom { get; set; }
@@ -277,7 +327,10 @@ namespace Mesen.Debugger.ViewModels
 			TileIndex = sprite.TileIndex;
 			Priority = sprite.Priority;
 			Palette = sprite.Palette;
-			
+			TileAddress = sprite.TileAddress;
+			PaletteAddress = sprite.PaletteAddress;
+			UseSecondTable = sprite.UseSecondTable;
+
 			Size = sprite.Width + "x" + sprite.Height;
 
 			fixed(UInt32* p = sprite.SpritePreview) {
@@ -297,7 +350,6 @@ namespace Mesen.Debugger.ViewModels
 
 			HorizontalMirror = sprite.HorizontalMirror;
 			VerticalMirror = sprite.VerticalMirror;
-			//flags += sprite.UseSecondTable ? "N" : "";
 		}
 	}
 }

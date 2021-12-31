@@ -16,6 +16,8 @@
 			Zoom="{CompiledBinding SpritePreviewZoom}"
 			ShowMousePosition="False"
 			AllowSelection="False"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
 		/>
 	</Border>
 </UserControl>

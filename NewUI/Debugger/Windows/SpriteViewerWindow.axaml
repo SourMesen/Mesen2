@@ -82,7 +82,6 @@
 						Source="{CompiledBinding ViewerBitmap}"
 						Zoom="{CompiledBinding Config.ImageScale}"
 						SelectionRect="{CompiledBinding SelectionRect}"
-						PositionClicked="ScreenPreview_PositionClicked"
 						ShowMousePosition="False"
 					/>
 				</ScrollViewer>

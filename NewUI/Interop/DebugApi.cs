@@ -850,21 +850,36 @@ namespace Mesen.Interop
 		public UInt32 SpriteCount;
 	}
 
+	public enum DebugSpritePriority
+	{
+		Undefined = -1,
+		Number0 = 0,
+		Number1 = 1,
+		Number2 = 2,
+		Number3 = 3,
+		Foreground = 4,
+		Background = 5
+	}
+
 	public unsafe struct DebugSpriteInfo
 	{
+		public Int32 TileIndex;
+		public Int32 TileAddress;
+		public Int32 PaletteAddress;
+
 		public UInt16 SpriteIndex;
-		public UInt16 TileIndex;
+
 		public Int16 X;
 		public Int16 Y;
 
-		public byte Palette;
-		public byte Priority;
-		public byte Width;
-		public byte Height;
+		public Int16 Palette;
+		public DebugSpritePriority Priority;
+		public Int16 Width;
+		public Int16 Height;
 		[MarshalAs(UnmanagedType.I1)] public bool HorizontalMirror;
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirror;
-		[MarshalAs(UnmanagedType.I1)] public bool UseSecondTable;
 		[MarshalAs(UnmanagedType.I1)] public bool Visible;
+		public NullableBoolean UseSecondTable;
 
 		public fixed UInt32 SpritePreview[64*64];
 	}

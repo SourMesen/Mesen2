@@ -222,7 +222,7 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = new Point(p.Value.X, p.Value.Y) };
+			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = p.Value };
 			RaiseEvent(args);
 
 			if(!args.Handled && AllowSelection) {
@@ -352,6 +352,6 @@ namespace Mesen.Debugger.Controls
 
 	public class PositionClickedEventArgs : RoutedEventArgs
 	{
-		public Point Position;
+		public PixelPoint Position;
 	}
 }
