@@ -8,6 +8,7 @@ using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -27,7 +28,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public Rect SelectionRect { get; set; }
 
-		[Reactive] public WriteableBitmap ViewerBitmap { get; private set; }
+		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 
 		[Reactive] public DynamicTooltip? PreviewPanel { get; private set; }
 
@@ -132,18 +133,21 @@ namespace Mesen.Debugger.ViewModels
 
 			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab());
 
-			this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => {
-				if(x.IsEmpty) {
-					PreviewPanel = null;
-				} else {
-					PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(x.TopLeft, 1));
-				}
-			});
+			this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel());
 
 			Config.PropertyChanged += Config_PropertyChanged;
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private void UpdatePreviewPanel()
+		{
+			if(SelectionRect.IsEmpty) {
+				PreviewPanel = null;
+			} else {
+				PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(SelectionRect.TopLeft, 1), PreviewPanel);
+			}
 		}
 
 		private void Config_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -160,7 +164,7 @@ namespace Mesen.Debugger.ViewModels
 		private void InitBitmap(int width, int height)
 		{
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
-				ViewerBitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+				ViewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 				_picViewer.Source = ViewerBitmap;
 			}
 		}
@@ -206,8 +210,10 @@ namespace Mesen.Debugger.ViewModels
 
 				DebugTilemapInfo tilemapInfo;
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					tilemapInfo = DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.Address);
+					tilemapInfo = DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.FrameBuffer.Address);
 				}
+
+				UpdatePreviewPanel();
 
 				if(Config.ShowScrollOverlay) {
 					ScrollOverlayRect = new Rect(
@@ -219,8 +225,6 @@ namespace Mesen.Debugger.ViewModels
 				} else {
 					ScrollOverlayRect = Rect.Empty;
 				}
-
-				_picViewer.InvalidateVisual();
 			});
 		}
 
@@ -233,7 +237,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public DynamicTooltip? GetPreviewPanel(PixelPoint p)
+		public DynamicTooltip? GetPreviewPanel(PixelPoint p, DynamicTooltip? tooltipToUpdate)
 		{
 			if(_ppuState == null || _prevVram == null) {
 				return null;
@@ -245,46 +249,43 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			DebugTilemapTileInfo tileInfo = result.Value;
-			CroppedBitmap preview = new CroppedBitmap(ViewerBitmap, new PixelRect(p.X / tileInfo.Width * tileInfo.Width, p.Y / tileInfo.Height * tileInfo.Height, tileInfo.Width, tileInfo.Height));
 
-			List<TooltipEntry> entries = new();
-			entries.Add(new("Tile", new Border() { 
-				BorderBrush = Brushes.Gray, 
-				BorderThickness = new Thickness(1), 
-				Child = new PictureViewer() { 
-					Source = preview,
-					Zoom = 6
-				}
-			}));
-			entries.Add(new("Column, Row", tileInfo.Column + ", " + tileInfo.Row));
-			entries.Add(new("Size", tileInfo.Width + "x" + tileInfo.Height));
+			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
+			PixelRect cropRect = new PixelRect(p.X / tileInfo.Width * tileInfo.Width, p.Y / tileInfo.Height * tileInfo.Height, tileInfo.Width, tileInfo.Height);
+			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
+			entries.AddEntry("Column, Row", tileInfo.Column + ", " + tileInfo.Row);
+			entries.AddEntry("Size", tileInfo.Width + "x" + tileInfo.Height);
 
 			if(tileInfo.TileMapAddress >= 0) {
-				entries.Add(new("Tilemap address", "$" + tileInfo.TileMapAddress.ToString("X4")));
+				entries.AddEntry("Tilemap address", "$" + tileInfo.TileMapAddress.ToString("X4"));
 			}
 			if(tileInfo.TileIndex >= 0) {
-				entries.Add(new("Tile index", "$" + tileInfo.TileIndex.ToString("X2")));
+				entries.AddEntry("Tile index", "$" + tileInfo.TileIndex.ToString("X2"));
 			}
 			if(tileInfo.TileAddress >= 0) {
-				entries.Add(new("Tile address", "$" + tileInfo.TileAddress.ToString("X4")));
+				entries.AddEntry("Tile address", "$" + tileInfo.TileAddress.ToString("X4"));
 			}
 			if(tileInfo.PaletteIndex >= 0) {
-				entries.Add(new("Palette index", tileInfo.PaletteIndex.ToString()));
+				entries.AddEntry("Palette index", tileInfo.PaletteIndex.ToString());
 			}
 			if(tileInfo.PaletteAddress >= 0) {
-				entries.Add(new("Palette address", "$" + tileInfo.PaletteAddress.ToString("X2")));
+				entries.AddEntry("Palette address", "$" + tileInfo.PaletteAddress.ToString("X2"));
 			}
 			if(tileInfo.HorizontalMirroring != NullableBoolean.Undefined) {
-				entries.Add(new("Horizontal mirror", tileInfo.HorizontalMirroring == NullableBoolean.True));
+				entries.AddEntry("Horizontal mirror", tileInfo.HorizontalMirroring == NullableBoolean.True);
 			}
 			if(tileInfo.VerticalMirroring != NullableBoolean.Undefined) {
-				entries.Add(new("Vertical mirror", tileInfo.VerticalMirroring == NullableBoolean.True));
+				entries.AddEntry("Vertical mirror", tileInfo.VerticalMirroring == NullableBoolean.True);
 			}
 			if(tileInfo.HighPriority != NullableBoolean.Undefined) {
-				entries.Add(new("High priority", tileInfo.HighPriority == NullableBoolean.True));
+				entries.AddEntry("High priority", tileInfo.HighPriority == NullableBoolean.True);
 			}
 
-			return new DynamicTooltip() { Items = entries };
+			if(tooltipToUpdate != null) {
+				return tooltipToUpdate;
+			} else {
+				return new DynamicTooltip() { Items = entries };
+			}
 		}
 	}
 

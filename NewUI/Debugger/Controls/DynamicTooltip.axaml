@@ -30,6 +30,16 @@
 							<DataTemplate DataType="x:Boolean">
 								<CheckBox IsChecked="{Binding}" />
 							</DataTemplate>
+							<DataTemplate DataType="dc:TooltipPictureEntry">
+								<Border BorderBrush="Gray" BorderThickness="1">
+									<dc:PictureViewer
+										Source="{Binding Source}"
+										Zoom="{Binding Zoom}"
+										AllowSelection="False"
+										ShowMousePosition="False"
+									/>
+								</Border>
+							</DataTemplate>
 						</ContentControl.DataTemplates>
 					</ContentControl>
 				</StackPanel>

@@ -137,14 +137,13 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		private List<TooltipEntry> GetTooltipData(DebugEventInfo evt)
+		private TooltipEntries GetTooltipData(DebugEventInfo evt)
 		{
-			List<TooltipEntry> entries = new() {
-				new("Type", ResourceHelper.GetEnumText(evt.Type)),
-				new("Scanline", evt.Scanline.ToString()),
-				new(_model.CpuType == CpuType.Cpu ? "H-Clock" : "Cycle", evt.Cycle.ToString()),
-				new("PC", "$" + evt.ProgramCounter.ToString("X" + _model.CpuType.GetAddressSize())),
-			};
+			TooltipEntries entries = new();
+			entries.AddEntry("Type", ResourceHelper.GetEnumText(evt.Type));
+			entries.AddEntry("Scanline", evt.Scanline.ToString());
+			entries.AddEntry(_model.CpuType == CpuType.Cpu ? "H-Clock" : "Cycle", evt.Cycle.ToString());
+			entries.AddEntry("PC", "$" + evt.ProgramCounter.ToString("X" + _model.CpuType.GetAddressSize()));
 
 			switch(evt.Type) {
 				case DebugEventType.Register:
@@ -157,14 +156,14 @@ namespace Mesen.Debugger.Windows
 						registerText = label.Label + " (" + registerText + ")";
 					}
 
-					entries.Add(new("Register", registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : "")));
-					entries.Add(new("Value", "$" + evt.Operation.Value.ToString("X2")));
+					entries.AddEntry("Register", registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : ""));
+					entries.AddEntry("Value", "$" + evt.Operation.Value.ToString("X2"));
 					break;
 			}
 
 			string details = EventViewerViewModel.GetEventDetails(evt, false);
 			if(details.Length > 0) {
-				entries.Add(new("Details", details));
+				entries.AddEntry("Details", details);
 			}
 
 			return entries;

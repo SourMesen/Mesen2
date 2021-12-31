@@ -81,7 +81,8 @@ namespace Mesen.Debugger.Windows
 				}
 				_prevMousePos = point;
 
-				DynamicTooltip? tooltip = point == null ? null : _model.GetPreviewPanel(point.Value);
+				DynamicTooltip? existingTooltip = ToolTip.GetTip(viewer) as DynamicTooltip;
+				DynamicTooltip? tooltip = point == null ? null : _model.GetPreviewPanel(point.Value, existingTooltip);
 
 				if(tooltip != null) {
 					ToolTip.SetTip(viewer, tooltip);

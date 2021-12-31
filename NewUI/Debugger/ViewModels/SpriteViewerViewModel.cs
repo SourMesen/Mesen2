@@ -1,31 +1,74 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Mesen.Config;
+using Mesen.Debugger.Controls;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class SpriteViewerViewModel : ViewModelBase
 	{
+		public SpriteViewerConfig Config { get; }
+		public RefreshTimingViewModel RefreshTiming { get; }
 		public CpuType CpuType { get; }
 		public ConsoleType ConsoleType { get; }
 
 		[Reactive] public SpritePreviewModel? SelectedSprite { get; set; }
+		[Reactive] public DynamicTooltip? PreviewPanel { get; set; }
 
-		//For designer
+		public List<object> FileMenuActions { get; } = new();
+		public List<object> ViewMenuActions { get; } = new();
+
+
+		[Obsolete("For designer only")]
 		public SpriteViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes) { }
 
 		public SpriteViewerViewModel(CpuType cpuType, ConsoleType consoleType)
 		{
+			Config = ConfigManager.Config.Debug.SpriteViewer;
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
 			ConsoleType = consoleType;
+
+			this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview());
+		}
+
+		public DynamicTooltip? GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
+		{
+			TooltipEntries entries = existingTooltip?.Items ?? new();
+			entries.AddPicture("Sprite", sprite.SpritePreview, (int)sprite.SpritePreviewZoom);
+			entries.AddEntry("X, Y", sprite.X + ", " + sprite.Y);
+			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
+
+			entries.AddEntry("Tile index", "$" + sprite.TileIndex.ToString("X2"));
+			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
+			entries.AddEntry("Visible", sprite.Visible);
+			entries.AddEntry("Horizontal mirror", sprite.HorizontalMirror);
+			entries.AddEntry("Vertical mirror", sprite.VerticalMirror);
+			entries.AddEntry("Priority", sprite.Priority);
+
+			if(existingTooltip != null) {
+				return existingTooltip;
+			} else {
+				return new DynamicTooltip() { Items = entries };
+			}
+		}
+
+		public void UpdateSelectionPreview()
+		{
+			if(SelectedSprite != null) {
+				PreviewPanel = GetPreviewPanel(SelectedSprite, PreviewPanel);
+			} else {
+				PreviewPanel = null;
+			}
 		}
 	}
 
@@ -45,7 +88,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool HorizontalMirror { get; set; }
 		[Reactive] public bool VerticalMirror { get; set; }
 
-		[Reactive] public Bitmap? SpritePreview { get; set; }
+		[Reactive] public DynamicBitmap SpritePreview { get; set; } = new DynamicBitmap(new PixelSize(1, 1), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 		[Reactive] public double SpritePreviewZoom { get; set; }
 
 		public unsafe void Init(ref DebugSpriteInfo sprite)
@@ -62,7 +105,14 @@ namespace Mesen.Debugger.ViewModels
 			Size = sprite.Width + "x" + sprite.Height;
 
 			fixed(UInt32* p = sprite.SpritePreview) {
-				SpritePreview = new Bitmap(PixelFormat.Bgra8888, AlphaFormat.Premul, (IntPtr)p, new PixelSize(Width, Height), new Vector(96, 96), Width * 4);
+				if(SpritePreview.PixelSize.Width != sprite.Width || SpritePreview.PixelSize.Height != sprite.Height) {
+					SpritePreview = new DynamicBitmap(new PixelSize(Width, Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+				}
+
+				int spriteSize = Width * Height * sizeof(UInt32);
+				using(var bitmapLock = SpritePreview.Lock()) {
+					Buffer.MemoryCopy(p, (void*)bitmapLock.FrameBuffer.Address, spriteSize, spriteSize);
+				}
 			}
 			
 			SpritePreviewZoom = 32 / Math.Max(Width, Height);

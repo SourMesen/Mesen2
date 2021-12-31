@@ -15,6 +15,8 @@ using Avalonia.Media;
 using Mesen.Controls;
 using System.Collections.Generic;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -23,7 +25,7 @@ namespace Mesen.Debugger.Windows
 		private NotificationListener _listener;
 		private SpriteViewerViewModel _model;
 		private PictureViewer _picViewer;
-		private WriteableBitmap _viewerBitmap;
+		private DynamicBitmap _viewerBitmap;
 		private Grid _spriteGrid;
 		private List<SpritePreviewPanel> _previewPanels = new List<SpritePreviewPanel>();
 
@@ -143,9 +145,15 @@ namespace Mesen.Debugger.Windows
 			base.OnClosing(e);
 		}
 
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
+		{
+			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
+		}
+
 		private void InitBitmap(int width, int height)
 		{
-			_viewerBitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+			_viewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+			_picViewer.Source = _viewerBitmap;
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
@@ -176,11 +184,8 @@ namespace Mesen.Debugger.Windows
 				}
 
 				using(var framebuffer = _viewerBitmap.Lock()) {
-					DebugApi.GetSpritePreview(_model.CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.Address);
+					DebugApi.GetSpritePreview(_model.CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);
 				}
-
-				_picViewer.Source = _viewerBitmap;
-				_picViewer.InvalidateVisual();
 
 				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(_model.CpuType, options, ppuState, vram, spriteRam, palette);
 				InitGrid(sprites);
@@ -188,6 +193,7 @@ namespace Mesen.Debugger.Windows
 				int selectedIndex = _model.SelectedSprite?.SpriteIndex ?? -1;
 				if(selectedIndex >= 0 && selectedIndex < _previewPanels.Count) {
 					_model.SelectedSprite = ((SpritePreviewModel)_previewPanels[selectedIndex].DataContext!);
+					_model.UpdateSelectionPreview();
 				} else {
 					_model.SelectedSprite = null;
 				}

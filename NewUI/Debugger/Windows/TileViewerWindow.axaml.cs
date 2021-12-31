@@ -11,6 +11,7 @@ using Mesen.Debugger.ViewModels;
 using Avalonia.Platform;
 using Mesen.Interop;
 using System.ComponentModel;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -19,7 +20,7 @@ namespace Mesen.Debugger.Windows
 		private NotificationListener _listener;
 		private TileViewerViewModel _model;
 		private PictureViewer _picViewer;
-		private WriteableBitmap _viewerBitmap;
+		private DynamicBitmap _viewerBitmap;
 
 		public TileViewerWindow()
 		{
@@ -59,7 +60,8 @@ namespace Mesen.Debugger.Windows
 
 		private void InitBitmap()
 		{
-			_viewerBitmap = new WriteableBitmap(new PixelSize(_model.ColumnCount * 8, _model.RowCount * 8), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+			_viewerBitmap = new DynamicBitmap(new PixelSize(_model.ColumnCount * 8, _model.RowCount * 8), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+			_picViewer.Source = _viewerBitmap;
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
@@ -95,11 +97,8 @@ namespace Mesen.Debugger.Windows
 						Layout = _model.TileLayout,
 						StartAddress = _model.StartAddress,
 						Background = _model.TileBackground
-					}, source, source.Length, _model.PaletteColors, framebuffer.Address);
+					}, source, source.Length, _model.PaletteColors, framebuffer.FrameBuffer.Address);
 				}
-
-				_picViewer.Source = _viewerBitmap;
-				_picViewer.InvalidateVisual();
 			});
 		}
 	}

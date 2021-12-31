@@ -9,6 +9,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,7 +26,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		public const int HdmaChannelFlag = 0x40;
 
-		[Reactive] public WriteableBitmap ViewerBitmap { get; private set; }
+		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 		[Reactive] public EventViewerTab SelectedTab { get; set; }
 		
 		[Reactive] public AvaloniaList<DebugEventViewModel> DebugEvents { get; private set; } = new();
@@ -116,7 +117,7 @@ namespace Mesen.Debugger.ViewModels
 		private void InitBitmap(FrameInfo size)
 		{
 			if(ViewerBitmap == null || ViewerBitmap.Size.Width != size.Width || ViewerBitmap.Size.Height != size.Height) {
-				ViewerBitmap = new WriteableBitmap(new PixelSize((int)size.Width, (int)size.Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+				ViewerBitmap = new DynamicBitmap(new PixelSize((int)size.Width, (int)size.Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 			}
 		}
 
@@ -131,11 +132,9 @@ namespace Mesen.Debugger.ViewModels
 			Dispatcher.UIThread.Post(() => {
 				if(SelectedTab == EventViewerTab.PpuView) {
 					InitBitmap();
-					using(var framebuffer = ViewerBitmap.Lock()) {
-						DebugApi.GetEventViewerOutput(CpuType, framebuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
+					using(var bitmapLock = ViewerBitmap.Lock()) {
+						DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
 					}
-
-					_picViewer.InvalidateVisual();
 				} else {
 					if(!forceRefresh && ToolRefreshHelper.LimitFps(this, 15)) {
 						return;

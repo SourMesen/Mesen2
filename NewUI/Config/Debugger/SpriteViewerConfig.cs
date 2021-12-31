@@ -1,29 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using Avalonia;
-using Mesen.Debugger;
+﻿using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.Config
 {
-	public class SpriteViewerConfig
+	public class SpriteViewerConfig : BaseWindowConfig<SpriteViewerConfig>
 	{
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
-
-		public int ImageScale = 2;
-		public int SplitterDistance = 514;
-		public bool AutoRefresh = true;
-		public bool HideOffscreenSprites = false;
-		public int RefreshScanline = 240;
-		public int RefreshCycle = 0;
-
-		public RefreshSpeed AutoRefreshSpeed = RefreshSpeed.Low;
+		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
+		[Reactive] public int ImageScale { get; set; } = 2;
+		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
+		[Reactive] public bool HideOffscreenSprites { get; set; } = false;
 
 		public SpriteViewerConfig()
 		{

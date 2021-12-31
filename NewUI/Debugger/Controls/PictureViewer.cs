@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Utilities;
 using System;
 using System.Diagnostics;
 
@@ -121,11 +122,24 @@ namespace Mesen.Debugger.Controls
 
 			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
 				x.UpdateSize();
+
+				if(e.OldValue is IDynamicBitmap oldSource) {
+					oldSource.Invalidated -= x.OnSourceInvalidated;
+				}
+
+				if(x.Source is IDynamicBitmap newSource) {
+					newSource.Invalidated += x.OnSourceInvalidated;
+				}
 			});
 
 			ZoomProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
 				x.UpdateSize();
 			});
+		}
+
+		private void OnSourceInvalidated(object? sender, EventArgs e)
+		{
+			InvalidateVisual();
 		}
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

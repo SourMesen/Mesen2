@@ -808,6 +808,8 @@
 			<Control ID="colPriority">Priority</Control>
 			<Control ID="colPalette">Palette</Control>
 			<Control ID="colFlags">Flags</Control>
+			
+			<Control ID="chkHideOffscreenSprites">Hide off-screen sprites</Control>
 		</Form>
 
 		<Form ID="AssemblerWindow">

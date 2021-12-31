@@ -6,6 +6,7 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
+	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:i="using:Mesen.Interop"
 	xmlns:l="using:Mesen.Localization"
@@ -24,44 +25,50 @@
 	</Design.DataContext>
 
 	<DockPanel>
-		<Grid Name="spriteGrid" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="1" DockPanel.Dock="Left" />
+		<Panel DockPanel.Dock="Top">
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Classes="ActionMenu" Header="View" Items="{CompiledBinding ViewMenuActions}" />
+			</Menu>
+			<c:IconButton
+				HorizontalAlignment="Right"
+				DockPanel.Dock="Right"
+				ToolTip.Tip="Toggle settings panel"
+				Click="OnSettingsClick"
+				Icon="Assets/Settings.png"
+			/>
+		</Panel>
+		
+		<Grid
+			Name="spriteGrid"
+			VerticalAlignment="Top"
+			HorizontalAlignment="Left"
+			Margin="1"
+			DockPanel.Dock="Left"
+		/>
+		
+		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+			<ScrollViewer>
+				<StackPanel Margin="5">
+					<CheckBox Content="{l:Translate chkHideOffscreenSprites}" IsChecked="{CompiledBinding Config.HideOffscreenSprites}" />
+
+					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
+
+					<Border
+						BorderBrush="Gray"
+						BorderThickness="1"
+						Margin="0 10"
+						Padding="3"
+						MinWidth="170"
+						IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+					>
+						<ContentControl Content="{CompiledBinding PreviewPanel}" />
+					</Border>
+				</StackPanel>
+			</ScrollViewer>
+		</Panel>
 		
 		<DockPanel DockPanel.Dock="Right">
-			<Border BorderBrush="Gray" BorderThickness="1" Margin="1" DockPanel.Dock="Top" Padding="2">
-				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
-					<Border BorderBrush="Gray" BorderThickness="1" Margin="1 1 5 0" HorizontalAlignment="Center" VerticalAlignment="Top">
-						<dc:PictureViewer
-							Source="{CompiledBinding SelectedSprite.SpritePreview}"
-							Zoom="{CompiledBinding SelectedSprite.SpritePreviewZoom}"
-						 />
-					</Border>
-					<StackPanel Grid.Column="1">
-						<WrapPanel>
-							<TextBlock Text="Sprite index: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.SpriteIndex}" IsReadOnly="True" />
-							<TextBlock Text="  Tile index: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.TileIndex}" IsReadOnly="True" />
-						</WrapPanel>
-						<WrapPanel>
-							<TextBlock Text="X: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.X}" IsReadOnly="True" />
-							<TextBlock Text="  Y: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.Y}" IsReadOnly="True" />
-							<TextBlock Text="  Size: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.Size}" IsReadOnly="True" />
-						</WrapPanel>
-						<WrapPanel>
-							<TextBlock Text="Priority: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.Priority}" IsReadOnly="True" />
-							<TextBlock Text="  Palette: " VerticalAlignment="Center" />
-							<TextBox Text="{CompiledBinding SelectedSprite.Palette}" IsReadOnly="True" />
-						</WrapPanel>
-						<CheckBox Content="Horizontal mirroring" IsChecked="{CompiledBinding SelectedSprite.HorizontalMirror}" IsHitTestVisible="False" />
-						<CheckBox Content="Vertical mirroring" IsChecked="{CompiledBinding SelectedSprite.VerticalMirror}" IsHitTestVisible="False" />
-					</StackPanel>
-				</Grid>
-			</Border>
-			
 			<Border BorderBrush="Gray" BorderThickness="1"  Margin="1">
 				<ScrollViewer
 					VerticalScrollBarVisibility="Auto"
@@ -73,6 +80,7 @@
 						VerticalAlignment="Stretch"
 						x:Name="picViewer"
 						PositionClicked="ScreenPreview_PositionClicked"
+						ShowMousePosition="False"
 					/>
 				</ScrollViewer>
 			</Border>

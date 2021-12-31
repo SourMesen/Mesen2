@@ -14,6 +14,8 @@
 		<dc:PictureViewer
 			Source="{CompiledBinding SpritePreview}"
 			Zoom="{CompiledBinding SpritePreviewZoom}"
+			ShowMousePosition="False"
+			AllowSelection="False"
 		/>
 	</Border>
 </UserControl>
