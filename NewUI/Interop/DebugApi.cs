@@ -178,25 +178,34 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
 
 		[DllImport(DllPath)] private static extern void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr buffer);
-		public unsafe static void GetSpritePreview<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr outputBuffer) where T : struct, BaseState
+		public unsafe static void GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr outputBuffer)
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
+
+			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			DebugApi.GetSpritePreview(cpuType, options, (IntPtr)ptr, vram, spriteRam, palette, outputBuffer);
 		}
 
 		[DllImport(DllPath)] private static extern DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state);
-		public unsafe static DebugSpritePreviewInfo GetSpritePreviewInfo<T>(CpuType cpuType, GetSpritePreviewOptions options, T state) where T : struct, BaseState
+		public unsafe static DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, BaseState state)
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
+
+			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			return DebugApi.GetSpritePreviewInfo(cpuType, options, (IntPtr)ptr);
 		}
 
 		[DllImport(DllPath)] private static extern void GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr sprites);
-		public unsafe static DebugSpriteInfo[] GetSpriteList<T>(CpuType cpuType, GetSpritePreviewOptions options, T state, byte[] vram, byte[] spriteRam, UInt32[] palette) where T : struct, BaseState
+		public unsafe static DebugSpriteInfo[] GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState state, byte[] vram, byte[] spriteRam, UInt32[] palette)
 		{
-			byte* statePtr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
+
+			byte* statePtr = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)statePtr, false);
 
 			DebugSpriteInfo[] sprites = new DebugSpriteInfo[GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr).SpriteCount];
@@ -848,6 +857,8 @@ namespace Mesen.Interop
 		public UInt32 Width;
 		public UInt32 Height;
 		public UInt32 SpriteCount;
+		public Int32 CoordOffsetX;
+		public Int32 CoordOffsetY;
 	}
 
 	public enum DebugSpritePriority

@@ -1,5 +1,3 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -8,10 +6,8 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System.ComponentModel;
-using System.Collections.Generic;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
 using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
@@ -20,7 +16,6 @@ namespace Mesen.Debugger.Windows
 	{
 		private NotificationListener _listener;
 		private SpriteViewerViewModel _model;
-		private PixelPoint? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
 		public SpriteViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
@@ -67,31 +62,28 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			_listener?.Dispose();
+			_listener.Dispose();
 			_model.Config.SaveWindowSettings(this);
+			_model.Dispose();
 		}
 
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
 				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
-				if(point == _prevMousePos) {
+				if(point == _model.ViewerMousePos) {
 					return;
 				}
-				_prevMousePos = point;
+				_model.ViewerMousePos = point;
 
 				DynamicTooltip? tooltip = null;
 				if(point != null) {
-					DynamicTooltip? existingTooltip = ToolTip.GetTip(viewer) as DynamicTooltip;
-
-					if(_model.CpuType == CpuType.Cpu) {
-						point = point.Value.WithX(point.Value.X - 256);
-					}
 					SpritePreviewModel? sprite = _model.GetMatchingSprite(point.Value);
-					tooltip = sprite == null ? null : _model.GetPreviewPanel(sprite, existingTooltip);
+					tooltip = sprite == null ? null : _model.GetPreviewPanel(sprite, _model.ViewerTooltip);
 				}
 
 				if(tooltip != null) {
+					_model.ViewerTooltip = tooltip;
 					ToolTip.SetTip(viewer, tooltip);
 
 					//Force tooltip to update its position
@@ -101,6 +93,7 @@ namespace Mesen.Debugger.Windows
 				} else {
 					ToolTip.SetTip(viewer, null);
 					ToolTip.SetIsOpen(viewer, false);
+					_model.ViewerTooltip = null;
 				}
 			}
 		}
@@ -111,17 +104,14 @@ namespace Mesen.Debugger.Windows
 				ToolTip.SetTip(viewer, null);
 				ToolTip.SetIsOpen(viewer, false);
 			}
-			_prevMousePos = null;
+			_model.ViewerTooltip = null;
+			_model.ViewerMousePos = null;
 		}
 
 		private void PicViewer_PositionClicked(object? sender, PositionClickedEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
 				PixelPoint p = e.Position;
-				if(_model.CpuType == CpuType.Cpu) {
-					p = p.WithX(p.X - 256);
-				}
-
 				SpritePreviewModel? sprite = _model.GetMatchingSprite(p);
 				_model.SelectedSprite = sprite;
 				_model.UpdateSelection(sprite);

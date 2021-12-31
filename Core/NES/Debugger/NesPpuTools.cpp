@@ -144,9 +144,10 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	DebugSpriteInfo sprite;
 	for(int i = 0x100 - 4; i >= 0; i -= 4) {
 		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
+		int spritePosY = sprite.Y + 1;
 
 		for(int y = 0; y < sprite.Height; y++) {
-			if(sprite.Y + y >= 256) {
+			if(spritePosY + y >= 256) {
 				break;
 			}
 
@@ -157,7 +158,7 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 				
 				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
 				if(color != 0) {
-					outBuffer[((sprite.Y + y) * 256) + sprite.X + x] = color;
+					outBuffer[((spritePosY + y) * 256) + sprite.X + x] = color;
 				}
 			}
 		}
@@ -221,7 +222,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	sprite.SpriteIndex = i;
-	sprite.Y = oamRam[i * 4] + 1;
+	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];
 	sprite.TileIndex = oamRam[i * 4 + 1];
 	sprite.TileAddress = ((state.ControlReg & 0x08) ? 0x1000 : 0x0000) | (sprite.TileIndex * 16);
@@ -232,7 +233,7 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.HorizontalMirror = (attributes & 0x40) != 0;
 	sprite.VerticalMirror = (attributes & 0x80) != 0;
 	sprite.Priority = (attributes & 0x20) ? DebugSpritePriority::Background : DebugSpritePriority::Foreground;
-	sprite.Visible = sprite.Y < 240;
+	sprite.Visible = sprite.Y < 239;
 	sprite.Width = 8;
 
 	bool largeSprites = (state.ControlReg & 0x20) ? true : false;
@@ -286,5 +287,7 @@ DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	info.Height = 256;
 	info.Width = 256;
 	info.SpriteCount = 64;
+	info.CoordOffsetX = 0;
+	info.CoordOffsetY = 1;
 	return info;
 }

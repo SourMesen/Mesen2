@@ -808,8 +808,10 @@
 			<Control ID="colPriority">Priority</Control>
 			<Control ID="colPalette">Palette</Control>
 			<Control ID="colFlags">Flags</Control>
-			
+
 			<Control ID="chkHideOffscreenSprites">Hide off-screen sprites</Control>
+			<Control ID="chkShowOutline">Show outline around sprites</Control>
+			<Control ID="chkShowCoordsInHex">Show coordinates in hex</Control>
 		</Form>
 
 		<Form ID="AssemblerWindow">

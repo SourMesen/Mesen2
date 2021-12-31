@@ -8,6 +8,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Mesen.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Mesen.Debugger.Controls
@@ -26,9 +27,12 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
 
 		public static readonly StyledProperty<bool> ShowMousePositionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowMousePosition), true);
+		public static readonly StyledProperty<Rect?> MouseOverRectProperty = AvaloniaProperty.Register<PictureViewer, Rect?>(nameof(MouseOverRect), null, defaultBindingMode: BindingMode.OneWay);
 
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), Rect.Empty, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
+
+		public static readonly StyledProperty<List<Rect>?> HighlightRectsProperty = AvaloniaProperty.Register<PictureViewer, List<Rect>?>(nameof(HighlightRects), null);
 
 		public static readonly RoutedEvent<PositionClickedEventArgs> PositionClickedEvent = RoutedEvent.Register<PictureViewer, PositionClickedEventArgs>(nameof(PositionClicked), RoutingStrategies.Bubble);
 		public event EventHandler<PositionClickedEventArgs> PositionClicked
@@ -114,11 +118,25 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(OverlayRectProperty, value); }
 		}
 
-		private PixelPoint? _mousePosition = null;
+		public Rect? MouseOverRect
+		{
+			get { return GetValue(MouseOverRectProperty); }
+			set { SetValue(MouseOverRectProperty, value); }
+		}
+
+		public List<Rect>? HighlightRects
+		{
+			get { return GetValue(HighlightRectsProperty); }
+			set { SetValue(HighlightRectsProperty, value); }
+		}
 
 		static PictureViewer()
 		{
-			AffectsRender<PictureViewer>(SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty, ShowGridProperty, SelectionRectProperty, OverlayRectProperty);
+			AffectsRender<PictureViewer>(
+				SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty,
+				ShowGridProperty, SelectionRectProperty, OverlayRectProperty,
+				HighlightRectsProperty, MouseOverRectProperty
+			);
 
 			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
 				x.UpdateSize();
@@ -202,16 +220,20 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerMoved(PointerEventArgs e)
 		{
 			base.OnPointerMoved(e);
-			PixelPoint? p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
-			_mousePosition = p;
-			InvalidateVisual();
+			if(ShowMousePosition) {
+				PixelPoint? p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
+				if(p != null) {
+					MouseOverRect = GetTileRect(p.Value);
+				} else {
+					MouseOverRect = null;
+				}
+			}
 		}
 
 		protected override void OnPointerLeave(PointerEventArgs e)
 		{
 			base.OnPointerLeave(e);
-			_mousePosition = null;
-			InvalidateVisual();
+			MouseOverRect = null;
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -306,21 +328,6 @@ namespace Mesen.Debugger.Controls
 			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
 			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
-			if(ShowMousePosition && _mousePosition.HasValue) {
-				PixelPoint p = _mousePosition.Value;
-				Rect rect = ToDrawRect(GetTileRect(p));
-				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
-				context.DrawRectangle(new Pen(Brushes.White, 2), rect.Inflate(0.5));
-			}
-
-			if(SelectionRect != Rect.Empty) {
-				Rect rect = ToDrawRect(SelectionRect);
-
-				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
-				context.DrawRectangle(new Pen(0x40000000, 2), rect.Inflate(0.5));
-				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), rect.Inflate(0.5));
-			}
-
 			if(OverlayRect != Rect.Empty) {
 				Rect rect = ToDrawRect(OverlayRect);
 				Brush brush = new SolidColorBrush(Colors.Gray, 0.4);
@@ -346,6 +353,29 @@ namespace Mesen.Debugger.Controls
 						context.DrawRectangle(pen, offsetRect.Inflate(0.5));
 					}
 				}
+			}
+
+			if(HighlightRects?.Count > 0) {
+				Pen pen = new Pen(Brushes.LightSteelBlue, 1);
+				foreach(Rect highlightRect in HighlightRects) {
+					Rect rect = ToDrawRect(highlightRect);
+					context.DrawRectangle(pen, rect);
+				}
+			}
+			
+			if(MouseOverRect != null && MouseOverRect != Rect.Empty) {
+				Rect rect = ToDrawRect(MouseOverRect.Value);
+				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, 0);
+				context.DrawRectangle(new Pen(Brushes.DimGray, 2), rect.Inflate(0.5));
+				context.DrawRectangle(new Pen(Brushes.LightYellow, 2, dashes), rect.Inflate(0.5));
+			}
+
+			if(SelectionRect != Rect.Empty) {
+				Rect rect = ToDrawRect(SelectionRect);
+				
+				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, _stopWatch.ElapsedMilliseconds / 250.0);
+				context.DrawRectangle(new Pen(Brushes.Black, 2), rect.Inflate(0.5));
+				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), rect.Inflate(0.5));
 			}
 		}
 	}

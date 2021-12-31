@@ -16,11 +16,12 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class SpriteViewerViewModel : ViewModelBase
+	public class SpriteViewerViewModel : ViewModelBase, IDisposable
 	{
 		public SpriteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
@@ -28,15 +29,29 @@ namespace Mesen.Debugger.ViewModels
 		public ConsoleType ConsoleType { get; }
 
 		[Reactive] public SpritePreviewModel? SelectedSprite { get; set; }
-		[Reactive] public DynamicTooltip? PreviewPanel { get; set; }
+		[Reactive] public DynamicTooltip? SelectedPreviewPanel { get; set; }
+		
+		[Reactive] public DynamicTooltip? PreviewPanelTooltip { get; set; }
+		[Reactive] public SpritePreviewModel? PreviewPanelSprite { get; set; }
+
+		[Reactive] public DynamicTooltip? ViewerTooltip { get; set; }
+		[Reactive] public PixelPoint? ViewerMousePos { get; set; }
+
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 		[Reactive] public Rect SelectionRect { get; set; }
+		[Reactive] public Rect? MouseOverRect { get; set; }
+
 		[Reactive] public List<SpritePreviewModel> SpritePreviews { get; set; } = new();
+		[Reactive] public List<Rect>? SpriteRects { get; set; } = null;
 
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
 		private Grid _spriteGrid;
+		private BaseState? _ppuState;
+		private byte[] _spriteRam = Array.Empty<byte>();
+		private byte[] _vram = Array.Empty<byte>();
+		private UInt32[] _palette = Array.Empty<UInt32>();
 
 		[Obsolete("For designer only")]
 		public SpriteViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), new Grid(), null) { }
@@ -93,17 +108,34 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview());
-			
+			this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect());
+
+			ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged);
+
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
 
-		public DynamicTooltip? GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
+		public void Dispose()
+		{
+			ReactiveHelper.UnregisterRecursiveObserver(Config, Config_PropertyChanged);
+		}
+
+		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			RefreshTab();
+		}
+
+		public DynamicTooltip GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
 		{
 			TooltipEntries entries = existingTooltip?.Items ?? new();
 			entries.AddPicture("Sprite", sprite.SpritePreview, (int)sprite.SpritePreviewZoom);
 			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
-			entries.AddEntry("X, Y", sprite.X + ", " + sprite.Y);
+			if(Config.ShowCoordsInHex) {
+				entries.AddEntry("X, Y", "$" + sprite.X.ToString("X2") + ", $" + sprite.Y.ToString("X2"));
+			} else {
+				entries.AddEntry("X, Y", sprite.X + ", " + sprite.Y);
+			}
 			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
 
 			entries.AddEntry("Tile index", "$" + sprite.TileIndex.ToString("X2"));
@@ -122,15 +154,6 @@ namespace Mesen.Debugger.ViewModels
 				return existingTooltip;
 			} else {
 				return new DynamicTooltip() { Items = entries };
-			}
-		}
-
-		public void UpdateSelectionPreview()
-		{
-			if(SelectedSprite != null) {
-				PreviewPanel = GetPreviewPanel(SelectedSprite, PreviewPanel);
-			} else {
-				PreviewPanel = null;
 			}
 		}
 
@@ -178,21 +201,19 @@ namespace Mesen.Debugger.ViewModels
 				ToolTip.SetTip(ctrl, null);
 				ToolTip.SetIsOpen(ctrl, false);
 			}
+			PreviewPanelTooltip = null;
+			PreviewPanelSprite = null;
 		}
 
 		private void SpritePreview_PointerEnter(object? sender, PointerEventArgs e)
 		{
 			if(sender is Control ctrl && ctrl.DataContext is SpritePreviewModel sprite) {
-				DynamicTooltip? tooltip = GetPreviewPanel(sprite, null);
+				PreviewPanelTooltip = GetPreviewPanel(sprite, PreviewPanelTooltip);
+				PreviewPanelSprite = sprite;
 
-				if(tooltip != null) {
-					ToolTip.SetTip(ctrl, tooltip);
-					ToolTip.SetHorizontalOffset(ctrl, 15);
-					ToolTip.SetIsOpen(ctrl, true);
-				} else {
-					ToolTip.SetTip(ctrl, null);
-					ToolTip.SetIsOpen(ctrl, false);
-				}
+				ToolTip.SetTip(ctrl, PreviewPanelTooltip);
+				ToolTip.SetHorizontalOffset(ctrl, 15);
+				ToolTip.SetIsOpen(ctrl, true);
 			}
 		}
 
@@ -204,19 +225,19 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private void InitPreviews(DebugSpriteInfo[] sprites)
+		private void InitPreviews(DebugSpriteInfo[] sprites, DebugSpritePreviewInfo previewInfo)
 		{
 			if(SpritePreviews.Count != sprites.Length) {
 				List<SpritePreviewModel> previews = new();
 				for(int i = 0; i < sprites.Length; i++) {
 					SpritePreviewModel model = new SpritePreviewModel();
-					model.Init(ref sprites[i]);
+					model.Init(ref sprites[i], previewInfo);
 					previews.Add(model);
 				}
 				SpritePreviews = previews;
 			} else {
 				for(int i = 0; i < sprites.Length; i++) {
-					SpritePreviews[i].Init(ref sprites[i]);
+					SpritePreviews[i].Init(ref sprites[i], previewInfo);
 				}
 			}
 
@@ -234,26 +255,45 @@ namespace Mesen.Debugger.ViewModels
 
 		private void RefreshData<T>() where T : struct, BaseState
 		{
-			T ppuState = DebugApi.GetPpuState<T>(CpuType);
-			byte[] vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
-			byte[] spriteRam = DebugApi.GetMemoryState(CpuType.GetSpriteRamMemoryType());
-			UInt32[] palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
+			_ppuState = DebugApi.GetPpuState<T>(CpuType);
+			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
+			_spriteRam = DebugApi.GetMemoryState(CpuType.GetSpriteRamMemoryType());
+			_palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
 
+			RefreshTab();
+		}
+
+		private void RefreshTab()
+		{
 			Dispatcher.UIThread.Post(() => {
+				if(_ppuState == null) {
+					return;
+				}
+
 				GetSpritePreviewOptions options = new GetSpritePreviewOptions() {
 					SelectedSprite = -1
 				};
 				UInt32[] palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
 
-				DebugSpritePreviewInfo size = DebugApi.GetSpritePreviewInfo(CpuType, options, ppuState);
-				InitBitmap((int)size.Width, (int)size.Height);
+				DebugSpritePreviewInfo previewInfo = DebugApi.GetSpritePreviewInfo(CpuType, options, _ppuState);
+				InitBitmap((int)previewInfo.Width, (int)previewInfo.Height);
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetSpritePreview(CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);
+					DebugApi.GetSpritePreview(CpuType, options, _ppuState, _vram, _spriteRam, palette, framebuffer.FrameBuffer.Address);
 				}
 
-				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, ppuState, vram, spriteRam, palette);
-				InitPreviews(sprites);
+				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, _ppuState, _vram, _spriteRam, palette);
+				InitPreviews(sprites, previewInfo);
+
+				if(Config.ShowOutline) {
+					List<Rect> spriteRects = new List<Rect>();
+					foreach(SpritePreviewModel sprite in SpritePreviews) {
+						spriteRects.Add(sprite.GetPreviewRect());
+					}
+					SpriteRects = spriteRects;
+				} else {
+					SpriteRects = null;
+				}
 
 				int selectedIndex = SelectedSprite?.SpriteIndex ?? -1;
 				if(selectedIndex >= 0 && selectedIndex < SpritePreviews.Count) {
@@ -263,18 +303,49 @@ namespace Mesen.Debugger.ViewModels
 					SelectedSprite = null;
 				}
 
+				UpdateTooltips();
 				UpdateSelection(SelectedSprite);
+
+				UpdateMouseOverRect();
 			});
+		}
+
+		private void UpdateSelectionPreview()
+		{
+			if(SelectedSprite != null) {
+				SelectedPreviewPanel = GetPreviewPanel(SelectedSprite, SelectedPreviewPanel);
+			} else {
+				SelectedPreviewPanel = null;
+			}
+		}
+
+		private void UpdateMouseOverRect()
+		{
+			if(PreviewPanelSprite != null) {
+				MouseOverRect = PreviewPanelSprite.GetPreviewRect();
+			} else if(ViewerMousePos != null && GetMatchingSprite(ViewerMousePos.Value) is SpritePreviewModel sprite) {
+				MouseOverRect = sprite.GetPreviewRect();
+			} else {
+				MouseOverRect = null;
+			}
+		}
+
+		private void UpdateTooltips()
+		{
+			if(PreviewPanelSprite != null && PreviewPanelTooltip != null) {
+				GetPreviewPanel(PreviewPanelSprite, PreviewPanelTooltip);
+			} else if(ViewerMousePos != null && ViewerTooltip != null) {
+				SpritePreviewModel? sprite = GetMatchingSprite(ViewerMousePos.Value);
+				if(sprite != null) {
+					GetPreviewPanel(sprite, ViewerTooltip);
+				}
+			}
 		}
 
 		public void UpdateSelection(SpritePreviewModel? sprite)
 		{
 			if(sprite != null) {
-				int offset = 0;
-				if(CpuType == CpuType.Cpu) {
-					offset = 256;
-				}
-				SelectionRect = new Rect(sprite.X + offset, sprite.Y, sprite.Width, sprite.Height);
+				SelectionRect = sprite.GetPreviewRect();
 			} else {
 				SelectionRect = Rect.Empty;
 			}
@@ -282,11 +353,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public SpritePreviewModel? GetMatchingSprite(PixelPoint p)
 		{
-			foreach(SpritePreviewModel sprite in SpritePreviews) {
-				if(
-					p.X >= sprite.X && p.X < sprite.X + sprite.Width &&
-					p.Y >= sprite.Y && p.Y < sprite.Y + sprite.Height
-				) {
+			Point point = p.ToPoint(1);
+			for(int i = SpritePreviews.Count - 1; i >= 0; i--) {
+				SpritePreviewModel sprite = SpritePreviews[i];
+				if(sprite.GetPreviewRect().Contains(point)) {
 					return sprite;
 				}
 			}
@@ -300,6 +370,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SpriteIndex { get; set; }
 		[Reactive] public int X { get; set; }
 		[Reactive] public int Y { get; set; }
+		[Reactive] public int PreviewX { get; set; }
+		[Reactive] public int PreviewY { get; set; }
 		[Reactive] public int Width { get; set; }
 		[Reactive] public int Height { get; set; }
 		[Reactive] public int TileIndex { get; set; }
@@ -317,11 +389,13 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DynamicBitmap SpritePreview { get; set; } = new DynamicBitmap(new PixelSize(1, 1), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 		[Reactive] public double SpritePreviewZoom { get; set; }
 
-		public unsafe void Init(ref DebugSpriteInfo sprite)
+		public unsafe void Init(ref DebugSpriteInfo sprite, DebugSpritePreviewInfo previewInfo)
 		{
 			SpriteIndex = sprite.SpriteIndex;
 			X = sprite.X;
 			Y = sprite.Y;
+			PreviewX = sprite.X + previewInfo.CoordOffsetX;
+			PreviewY = sprite.Y + previewInfo.CoordOffsetY;
 			Width = sprite.Width;
 			Height = sprite.Height;
 			TileIndex = sprite.TileIndex;
@@ -350,6 +424,11 @@ namespace Mesen.Debugger.ViewModels
 
 			HorizontalMirror = sprite.HorizontalMirror;
 			VerticalMirror = sprite.VerticalMirror;
+		}
+
+		public Rect GetPreviewRect()
+		{
+			return new Rect(PreviewX, PreviewY, Width, Height);
 		}
 	}
 }

@@ -112,6 +112,8 @@ struct DebugSpritePreviewInfo
 	uint32_t Width;
 	uint32_t Height;
 	uint32_t SpriteCount;
+	int32_t CoordOffsetX;
+	int32_t CoordOffsetY;
 };
 
 class PpuTools

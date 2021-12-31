@@ -366,5 +366,7 @@ DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOption
 	info.Height = 256;
 	info.Width = 512;
 	info.SpriteCount = 128;
+	info.CoordOffsetX = 256;
+	info.CoordOffsetY = 0;
 	return info;
 }
