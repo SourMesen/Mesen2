@@ -6,7 +6,7 @@
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
-	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:i="using:Mesen.Interop"
@@ -25,7 +25,7 @@
 	</Design.DataContext>
 
 	<Window.Resources>
-		<dbg:HexConverter x:Key="Hex" />
+		<du:HexConverter x:Key="Hex" />
 	</Window.Resources>
 
 	<Window.Styles>

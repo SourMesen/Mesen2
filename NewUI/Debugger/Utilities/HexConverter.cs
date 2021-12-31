@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace Mesen.Debugger
+namespace Mesen.Debugger.Utilities
 {
 	public class HexConverter : IValueConverter
 	{

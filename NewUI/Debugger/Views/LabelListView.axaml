@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:c="using:Mesen.Debugger.Controls"
-	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -18,7 +18,7 @@
 	</Design.DataContext>
 
 	<UserControl.Resources>
-		<dbg:HexConverter x:Key="Hex" />
+		<du:HexConverter x:Key="Hex" />
 	</UserControl.Resources>
 	
 	<Border BorderThickness="1" BorderBrush="LightGray">

@@ -6,9 +6,10 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
-		[Reactive] public bool ShowCoordsInHex { get; set; } = false;
 		[Reactive] public bool ShowOutline { get; set; } = false;
-		[Reactive] public bool HideOffscreenSprites { get; set; } = false;
+		
+		[Reactive] public bool ShowListView { get; set; } = false;
+		[Reactive] public double ListViewHeight { get; set; } = 100;
 
 		[Reactive] public int ImageScale { get; set; } = 2;
 		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();

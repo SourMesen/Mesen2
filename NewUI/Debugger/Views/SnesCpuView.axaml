@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="210"
 	VerticalAlignment="Stretch"
@@ -16,7 +16,7 @@
 	</Design.DataContext>
 
 	<UserControl.Resources>
-		<dbg:HexConverter x:Key="Hex" />
+		<du:HexConverter x:Key="Hex" />
 	</UserControl.Resources>
 
 	<UserControl.Styles>

@@ -9,7 +9,10 @@
 	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:i="using:Mesen.Interop"
+	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:l="using:Mesen.Localization"
+	xmlns:u="using:Mesen.Utilities"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
@@ -24,6 +27,12 @@
 		<dvm:SpriteViewerViewModel />
 	</Design.DataContext>
 
+	<Window.Resources>
+		<du:GridLengthConverter x:Key="GridLengthConverter" />
+		<du:HexConverter x:Key="Hex" />
+		<u:EnumConverter x:Key="Enum" />
+	</Window.Resources>
+	
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<Menu DockPanel.Dock="Top">
@@ -38,20 +47,12 @@
 				Icon="Assets/Settings.png"
 			/>
 		</Panel>
-		
-		<Grid
-			Name="spriteGrid"
-			VerticalAlignment="Top"
-			HorizontalAlignment="Left"
-			Margin="1"
-			DockPanel.Dock="Left"
-		/>
-		
+
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<ScrollViewer>
 				<StackPanel Margin="5">
-					<CheckBox Content="{l:Translate chkShowCoordsInHex}" IsChecked="{CompiledBinding Config.ShowCoordsInHex}" />
 					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{CompiledBinding Config.ShowOutline}" />
+					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
 
 					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 
@@ -68,9 +69,26 @@
 				</StackPanel>
 			</ScrollViewer>
 		</Panel>
-		
-		<DockPanel DockPanel.Dock="Right">
-			<Border BorderBrush="Gray" BorderThickness="1"  Margin="1">
+
+		<Grid ColumnDefinitions="Auto,*">
+			<Grid.RowDefinitions>
+				<RowDefinition MinHeight="200" Height="*" />
+				<RowDefinition Height="4" />
+				<RowDefinition
+					Height="{CompiledBinding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+				/>
+			</Grid.RowDefinitions>
+			
+			<ScrollViewer AllowAutoHide="False">
+				<Grid
+					Name="spriteGrid"
+					VerticalAlignment="Top"
+					HorizontalAlignment="Left"
+					Margin="1"
+				/>
+			</ScrollViewer>
+			
+			<Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Margin="1">
 				<ScrollViewer
 					VerticalScrollBarVisibility="Auto"
 					HorizontalScrollBarVisibility="Auto"
@@ -89,6 +107,91 @@
 					/>
 				</ScrollViewer>
 			</Border>
-		</DockPanel>
+
+			<GridSplitter Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" />
+
+			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Margin="1" Grid.ColumnSpan="2" IsVisible="{CompiledBinding Config.ShowListView}">
+				<DataBox
+					Items="{CompiledBinding ListViewSpritePreviews}"
+					CanUserResizeColumns="False"
+					CanUserSortColumns="False"
+					GridLinesVisibility="All"
+				>
+					<DataBox.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="Margin" Value="3 0 0 0" />
+						</Style>
+						<Style Selector="StackPanel">
+							<Setter Property="Margin" Value="3 0 0 0" />
+						</Style>
+						<Style Selector="StackPanel > TextBlock">
+							<Setter Property="Margin" Value="0" />
+						</Style>
+					</DataBox.Styles>
+						
+					<DataBox.Columns>
+						<DataBoxTemplateColumn Header="#" Width="1*">
+							<DataTemplate>
+								<TextBlock VerticalAlignment="Center" Text="{Binding SpriteIndex}" />
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="X" Width="1*">
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<TextBlock VerticalAlignment="Center" Text="$" />
+									<TextBlock VerticalAlignment="Center" Text="{Binding X, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=" (" />
+									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text="{Binding X}" />
+									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=")" />
+								</StackPanel>
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="Y" Width="1*">
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<TextBlock VerticalAlignment="Center" Text="$" />
+									<TextBlock VerticalAlignment="Center" Text="{Binding Y, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=" (" />
+									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text="{Binding Y}" />
+									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=")" />
+								</StackPanel>
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="Size" Width="1*">
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<TextBlock VerticalAlignment="Center" Text="{Binding Width}" />
+									<TextBlock VerticalAlignment="Center" Text="x" />
+									<TextBlock VerticalAlignment="Center" Text="{Binding Height}" />
+								</StackPanel>
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="Tile" Width="1*">
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<TextBlock VerticalAlignment="Center" Text="$" />
+									<TextBlock VerticalAlignment="Center" Text="{Binding TileIndex, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+								</StackPanel>
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="Palette" Width="1*">
+							<DataTemplate>
+								<TextBlock VerticalAlignment="Center" Text="{Binding Palette}" />
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="Priority" Width="1*">
+							<DataTemplate>
+								<TextBlock VerticalAlignment="Center" Text="{Binding Priority, Converter={StaticResource Enum}}" />
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+						<DataBoxTemplateColumn Header="Flags" Width="1*">
+							<DataTemplate>
+								<TextBlock VerticalAlignment="Center" Text="{Binding Flags}" />
+							</DataTemplate>
+						</DataBoxTemplateColumn>
+					</DataBox.Columns>
+				</DataBox>
+			</Border>
+		</Grid>
 	</DockPanel>
 </Window>

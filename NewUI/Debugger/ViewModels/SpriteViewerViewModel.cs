@@ -44,6 +44,10 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<SpritePreviewModel> SpritePreviews { get; set; } = new();
 		[Reactive] public List<Rect>? SpriteRects { get; set; } = null;
 
+		[Reactive] public bool ShowListView { get; set; }
+		[Reactive] public double ListViewHeight { get; set; }
+		[Reactive] public List<SpritePreviewModel>? ListViewSpritePreviews { get; set; } = null;
+
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
@@ -59,6 +63,10 @@ namespace Mesen.Debugger.ViewModels
 		public SpriteViewerViewModel(CpuType cpuType, ConsoleType consoleType, PictureViewer picViewer, Grid spriteGrid, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.SpriteViewer;
+
+			ShowListView = Config.ShowListView;
+			ListViewHeight = Config.ShowListView ? Config.ListViewHeight : 0;
+
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
 			ConsoleType = consoleType;
@@ -109,11 +117,42 @@ namespace Mesen.Debugger.ViewModels
 
 			this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview());
 			this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect());
+			InitListViewObservers();
 
 			ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged);
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private void InitListViewObservers()
+		{
+			//Update list view height based on show list view flag
+			this.WhenAnyValue(x => x.ShowListView).Subscribe(showListView => {
+				Config.ShowListView = showListView;
+				ListViewHeight = showListView ? Config.ListViewHeight : 0;
+				if(showListView) {
+					ListViewSpritePreviews = SpritePreviews;
+				} else {
+					ListViewSpritePreviews = null;
+				}
+			});
+
+			this.WhenAnyValue(x => x.SpritePreviews).Subscribe(x => {
+				if(ShowListView) {
+					ListViewSpritePreviews = x;
+				} else {
+					ListViewSpritePreviews = null;
+				}
+			});
+
+			this.WhenAnyValue(x => x.ListViewHeight).Subscribe(height => {
+				if(ShowListView) {
+					Config.ListViewHeight = height;
+				} else {
+					ListViewHeight = 0;
+				}
+			});
 		}
 
 		public void Dispose()
@@ -131,11 +170,10 @@ namespace Mesen.Debugger.ViewModels
 			TooltipEntries entries = existingTooltip?.Items ?? new();
 			entries.AddPicture("Sprite", sprite.SpritePreview, (int)sprite.SpritePreviewZoom);
 			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
-			if(Config.ShowCoordsInHex) {
-				entries.AddEntry("X, Y", "$" + sprite.X.ToString("X2") + ", $" + sprite.Y.ToString("X2"));
-			} else {
-				entries.AddEntry("X, Y", sprite.X + ", " + sprite.Y);
-			}
+			entries.AddEntry("X, Y", 
+				"$" + sprite.X.ToString("X2") + ", $" + sprite.Y.ToString("X2") + Environment.NewLine +
+				sprite.X + ", " + sprite.Y
+			);
 			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
 
 			entries.AddEntry("Tile index", "$" + sprite.TileIndex.ToString("X2"));
@@ -380,7 +418,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int Palette { get; set; }
 		[Reactive] public int PaletteAddress { get; set; }
 		[Reactive] public bool Visible { get; set; }
-		[Reactive] public string Size { get; set; } = "";
+		[Reactive] public string Flags { get; set; } = "";
 		
 		[Reactive] public bool HorizontalMirror { get; set; }
 		[Reactive] public bool VerticalMirror { get; set; }
@@ -405,8 +443,6 @@ namespace Mesen.Debugger.ViewModels
 			PaletteAddress = sprite.PaletteAddress;
 			UseSecondTable = sprite.UseSecondTable;
 
-			Size = sprite.Width + "x" + sprite.Height;
-
 			fixed(UInt32* p = sprite.SpritePreview) {
 				if(SpritePreview.PixelSize.Width != sprite.Width || SpritePreview.PixelSize.Height != sprite.Height) {
 					SpritePreview = new DynamicBitmap(new PixelSize(Width, Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
@@ -424,6 +460,10 @@ namespace Mesen.Debugger.ViewModels
 
 			HorizontalMirror = sprite.HorizontalMirror;
 			VerticalMirror = sprite.VerticalMirror;
+
+			Flags = sprite.HorizontalMirror ? "H" : "";
+			Flags += sprite.VerticalMirror ? "V" : "";
+			Flags += sprite.UseSecondTable == NullableBoolean.True ? "N" : "";
 		}
 
 		public Rect GetPreviewRect()
