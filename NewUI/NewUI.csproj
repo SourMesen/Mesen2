@@ -348,9 +348,6 @@
     <Compile Update="Windows\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\EnumComboBox.axaml.cs">
-		 <DependentUpon>EnumComboBox.axaml</DependentUpon>
-	 </Compile>
     <Compile Update="Controls\CheckBoxWarning.axaml.cs">
       <DependentUpon>CheckBoxWarning.axaml</DependentUpon>
     </Compile>

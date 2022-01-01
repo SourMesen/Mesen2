@@ -32,7 +32,6 @@
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="0"
-				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding MemoryType}"
 				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
@@ -57,7 +56,6 @@
 			<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="3"
-				EnumType="{x:Type i:TileFormat}"
 				SelectedItem="{CompiledBinding TileFormat}"
 				AvailableValues="{CompiledBinding AvailableFormats}"
 				IsVisible="{CompiledBinding ShowFormatDropdown}"
@@ -66,14 +64,12 @@
 			<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="4"
-				EnumType="{x:Type i:TileLayout}"
 				SelectedItem="{CompiledBinding TileLayout}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="5" Text="Background:" />
 			<c:EnumComboBox
 				Grid.Column="1" Grid.Row="5"				
-				EnumType="{x:Type i:TileBackground}"
 				SelectedItem="{CompiledBinding TileBackground}"
 			/>
 			

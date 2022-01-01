@@ -42,7 +42,6 @@
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
 			<c:EnumComboBox 
 				Grid.Column="1" Grid.Row="0"
-				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding Label.MemoryType}"
 			/>
 

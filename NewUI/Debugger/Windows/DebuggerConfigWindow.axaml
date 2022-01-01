@@ -57,7 +57,7 @@
 					<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0 5 0 0">
 						<WrapPanel>
 							<TextBlock Text="{l:Translate lblScriptStartupBehavior}" VerticalAlignment="Center" />
-							<c:EnumComboBox EnumType="{x:Type cfg:ScriptStartupBehavior}" SelectedItem="{CompiledBinding Script.ScriptStartupBehavior}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Script.ScriptStartupBehavior}" />
 						</WrapPanel>
 						<CheckBox IsChecked="{CompiledBinding Script.SaveScriptBeforeRun}" Content="{l:Translate chkSaveScriptBeforeRun}" />
 						<CheckBox IsChecked="{CompiledBinding Script.AutoReloadScriptWhenFileChanges}" Content="{l:Translate chkAutoReloadScriptWhenFileChanges}" />

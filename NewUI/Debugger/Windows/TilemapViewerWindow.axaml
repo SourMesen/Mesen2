@@ -49,7 +49,7 @@
 				<StackPanel Margin="5">
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
 						<TextBlock Text="{l:Translate lblDisplayMode}" />
-						<c:EnumComboBox Grid.Row="0" Grid.Column="1" EnumType="{x:Type i:TilemapDisplayMode}" SelectedItem="{CompiledBinding Config.DisplayMode}" Width="100" />
+						<c:EnumComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayMode}" Width="100" />
 					</StackPanel>
 					<CheckBox Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
 					<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" />

@@ -30,7 +30,6 @@
 			<c:EnumComboBox
 				Grid.Row="1"
 				Grid.Column="1"
-				EnumType="{x:Type cfg:VideoCodec}"
 				SelectedItem="{CompiledBinding Config.Codec}"
 			/>
 

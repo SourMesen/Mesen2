@@ -23,7 +23,7 @@
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
 					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-						<c:EnumComboBox EnumType="{x:Type cfg:VideoAspectRatio}" SelectedItem="{CompiledBinding Config.AspectRatio}" MinWidth="230" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.AspectRatio}" MinWidth="230" />
 					</StackPanel>
 					
 					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" IsVisible="{CompiledBinding ShowCustomRatio}">
@@ -62,7 +62,7 @@
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="{l:Translate lblVideoFilter}" VerticalAlignment="Center" />
-					<c:EnumComboBox EnumType="{x:Type cfg:VideoFilterType}" SelectedItem="{CompiledBinding Config.VideoFilter}" MinWidth="230" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.VideoFilter}" MinWidth="230" />
 				</StackPanel>
 				<Grid ColumnDefinitions="1*,1*" Margin="0 2 0 0" MinWidth="350">
 					<c:GroupBox Grid.Column="0" Header="{l:Translate lblPictureSettings}" Margin="0 0 1 0">

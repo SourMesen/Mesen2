@@ -27,7 +27,6 @@
 					<c:EnumComboBox
 						Grid.Column="1"
 						Width="130"
-						EnumType="{x:Type cfg:ConsoleRegion}"
 						SelectedItem="{CompiledBinding Config.Region}"
 						AvailableValues="{CompiledBinding AvailableRegions}"
 					/>
@@ -45,7 +44,7 @@
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-					<c:EnumComboBox EnumType="{x:Type cfg:RamState}" SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
 				</StackPanel>
 
 				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />

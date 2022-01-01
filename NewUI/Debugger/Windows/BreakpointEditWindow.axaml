@@ -48,7 +48,6 @@
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblBreakpointType}" />
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
 				<c:EnumComboBox
-					EnumType="{x:Type i:SnesMemoryType}"
 					SelectedItem="{CompiledBinding Breakpoint.MemoryType}"
 					Width="150"
 				/>

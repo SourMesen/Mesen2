@@ -60,7 +60,6 @@
 					<c:EnumComboBox
 						Grid.Column="1"
 						Width="130"
-						EnumType="{x:Type cfg:ConsoleRegion}"
 						SelectedItem="{CompiledBinding Config.Region}"
 					/>
 				</StackPanel>
@@ -79,7 +78,6 @@
 						<c:EnumComboBox
 							Grid.Column="1"
 							Width="130"
-							EnumType="{x:Type cfg:VsDualOutputOption}"
 							SelectedItem="{CompiledBinding Config.VsDualAudioOutput}"
 						/>
 						
@@ -88,7 +86,6 @@
 							Grid.Row="1"
 							Grid.Column="1"
 							Width="130"
-							EnumType="{x:Type cfg:VsDualOutputOption}"
 							SelectedItem="{CompiledBinding Config.VsDualVideoOutput}"
 						/>
 					</Grid>
@@ -111,10 +108,9 @@
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblStereoEffect}" />
 							<c:EnumComboBox
-								EnumType="{x:Type cfg:StereoFilter}"
 								SelectedItem="{CompiledBinding Config.StereoFilter}"
 								Width="100"
-						/>
+							/>
 							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsDelayStereoEffect}">
 								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoDelay}" />
 								<TextBlock Text="{l:Translate lblMs}" Margin="5 0 0 0" />
@@ -296,7 +292,7 @@
 				<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-						<c:EnumComboBox EnumType="{x:Type cfg:RamState}" SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
 					</StackPanel>
 					
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeMapperPowerOnState}" Text="{l:Translate chkMapperRandomPowerOnState}" />
@@ -310,7 +306,7 @@
 				<c:OptionSection Header="{l:Translate lblMiscSettings}">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="{l:Translate lblConsoleType}" Margin="0 0 5 0" />
-						<c:EnumComboBox EnumType="{x:Type cfg:NesConsoleType}" SelectedItem="{CompiledBinding Config.ConsoleType}" MinWidth="200" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.ConsoleType}" MinWidth="200" />
 					</StackPanel>
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
 					

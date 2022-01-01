@@ -48,7 +48,6 @@
 					<c:EnumComboBox
 						Grid.Row="1"
 						Grid.Column="1"
-						EnumType="{x:Type cfg:AudioSampleRate}"
 						SelectedItem="{CompiledBinding Config.SampleRate}"
 						HorizontalAlignment="Left"
 						Width="100"

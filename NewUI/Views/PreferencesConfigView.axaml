@@ -23,7 +23,7 @@
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Theme:" Margin="3 0 5 0" />
-					<c:EnumComboBox EnumType="{x:Type cfg:MesenTheme}" SelectedItem="{CompiledBinding Config.Theme}" Width="75" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.Theme}" Width="75" />
 				</StackPanel>
 				<CheckBox Content="{l:Translate chkAutomaticallyCheckForUpdates}" IsChecked="{CompiledBinding Config.AutomaticallyCheckForUpdates}" />
 				<CheckBox Content="{l:Translate chkSingleInstance}" IsChecked="{CompiledBinding Config.SingleInstance}" />

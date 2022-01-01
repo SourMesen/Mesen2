@@ -23,7 +23,6 @@
 			<c:EnumComboBox
 				Grid.Row="0" Grid.Column="1"
 				Margin="5 0"
-				EnumType="{x:Type cfg:ControllerType}"
 				SelectedItem="{CompiledBinding Config.Controllers[0].Type}"
 				AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
 			/>
@@ -39,7 +38,6 @@
 			<c:EnumComboBox
 				Grid.Row="1" Grid.Column="1"
 				Margin="5 0"
-				EnumType="{x:Type cfg:ControllerType}"
 				SelectedItem="{CompiledBinding Config.Controllers[1].Type}"
 				AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
 			/>
@@ -63,7 +61,6 @@
 					<c:EnumComboBox
 						Grid.Row="0" Grid.Column="1"
 						Margin="5 0"
-						EnumType="{x:Type cfg:ControllerType}"
 						SelectedItem="{x:Static cfg:ControllerType.SnesController}"
 						AvailableValues="{CompiledBinding AvailableControllerTypesP345}"
 					/>
@@ -79,7 +76,6 @@
 					<c:EnumComboBox
 						Grid.Row="1" Grid.Column="1"
 						Margin="5 0"
-						EnumType="{x:Type cfg:ControllerType}"
 						SelectedItem="{x:Static cfg:ControllerType.SnesController}"
 						AvailableValues="{CompiledBinding AvailableControllerTypesP345}"
 					/>
@@ -95,7 +91,6 @@
 					<c:EnumComboBox
 						Grid.Row="2" Grid.Column="1"
 						Margin="5 0"
-						EnumType="{x:Type cfg:ControllerType}"
 						SelectedItem="{x:Static cfg:ControllerType.SnesController}"
 						AvailableValues="{CompiledBinding AvailableControllerTypesP345}"
 					/>
@@ -111,7 +106,6 @@
 					<c:EnumComboBox
 						Grid.Row="3" Grid.Column="1"
 						Margin="5 0"
-						EnumType="{x:Type cfg:ControllerType}"
 						SelectedItem="{x:Static cfg:ControllerType.SnesController}"
 					/>
 					<Button
@@ -125,28 +119,4 @@
 			</c:GroupBox>
 		</Grid>
 	</StackPanel>
-			<!--<StackPanel>
-				<c:GroupBox Header="{l:Translate grpDisplayInput}" HorizontalAlignment="Left">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort1}" Content="{l:Translate chkDisplayPort1}" />
-						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort2}" Content="{l:Translate chkDisplayPort2}" />
-						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort3}" Content="{l:Translate chkDisplayPort3}" />
-						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort4}" Content="{l:Translate chkDisplayPort4}" />
-						<CheckBox Margin="3 0" IsChecked="{CompiledBinding Config.DisplayInputPort5}" Content="{l:Translate chkDisplayPort5}" />
-					</StackPanel>
-					<StackPanel Orientation="Horizontal" Margin="0 5">
-						<TextBlock Text="{l:Translate lblDisplayPosition}" />
-						<c:EnumComboBox EnumType="{x:Type cfg:InputDisplayPosition}" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" Width="150" />
-					</StackPanel>
-					<CheckBox IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
-				</c:GroupBox>
-				<StackPanel Orientation="Horizontal" Margin="0">
-					<TextBlock Text="{l:Translate lblDeadzone}" Margin="0 -17 0 0" />
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-						<c:MesenSlider Grid.ColumnSpan="2" Minimum="0" Maximum="4" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" Value="{CompiledBinding Config.ControllerDeadzoneSize}" />
-						<TextBlock Grid.Row="1" Grid.Column="0" Text="Small" Margin="5" />
-						<TextBlock Grid.Row="1" Grid.Column="1" Text="Large" HorizontalAlignment="Right" Margin="5" />
-					</Grid>
-				</StackPanel>				
-			</StackPanel>-->
 </UserControl>

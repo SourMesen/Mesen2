@@ -31,13 +31,11 @@
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblVerifiedData}" />
 				<c:EnumComboBox
 					Grid.Column="1"
-					EnumType="{x:Type cfg:CodeDisplayMode}"
 					SelectedItem="{CompiledBinding Config.VerifiedDataDisplay}"
 				/>
 				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblUnidentifiedBlock}" />
 				<c:EnumComboBox
 					Grid.Row="1" Grid.Column="1"
-					EnumType="{x:Type cfg:CodeDisplayMode}"
 					SelectedItem="{CompiledBinding Config.UnidentifiedBlockDisplay}"
 				/>
 			</Grid>

@@ -44,7 +44,6 @@
 			<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
 			<c:EnumComboBox
 				DockPanel.Dock="Left"
-				EnumType="{x:Type i:SnesMemoryType}"
 				SelectedItem="{CompiledBinding Config.MemoryType}"
 				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
