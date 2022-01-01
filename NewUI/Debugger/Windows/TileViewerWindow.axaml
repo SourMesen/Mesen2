@@ -11,6 +11,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
 	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
 	x:Class="Mesen.Debugger.Windows.TileViewerWindow"
 	x:DataType="dvm:TileViewerViewModel"
@@ -23,69 +24,84 @@
 	</Design.DataContext>
 
 	<DockPanel>
-		<Grid
-			DockPanel.Dock="Right"
-			ColumnDefinitions="Auto,Auto"
-			RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-			Margin="5 0 5 0"
-		>
-			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
-			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="0"
-				SelectedItem="{CompiledBinding MemoryType}"
-				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+		<Panel DockPanel.Dock="Top">
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Classes="ActionMenu" Header="View" Items="{CompiledBinding ViewMenuActions}" />
+			</Menu>
+			<c:IconButton
+				HorizontalAlignment="Right"
+				DockPanel.Dock="Right"
+				ToolTip.Tip="Toggle settings panel"
+				Click="OnSettingsClick"
+				Icon="Assets/Settings.png"
 			/>
+		</Panel>
 
-			<TextBlock Grid.Column="0" Grid.Row="1" Text="Display:" />
-			<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-				<NumericUpDown Value="{CompiledBinding ColumnCount}" Minimum="1" Maximum="256" />
-				<TextBlock Margin="5 0">by</TextBlock>
-				<NumericUpDown Value="{CompiledBinding RowCount}" Minimum="1" Maximum="256" />
+		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+			<StackPanel Margin="5 0 5 0">
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+					<TextBlock Grid.Column="0" Grid.Row="0" Text="Source:" />
+					<c:EnumComboBox
+						Grid.Column="1" Grid.Row="0"
+						SelectedItem="{CompiledBinding Config.Source}"
+						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+					/>
+
+					<TextBlock Grid.Column="0" Grid.Row="1" Text="Size:" />
+					<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="1" Maximum="256" />
+						<TextBlock Margin="5 0">by</TextBlock>
+						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="1" Maximum="256" />
+					</StackPanel>
+
+					<TextBlock Grid.Column="0" Grid.Row="2" Text="Address:" />
+					<NumericUpDown
+						Grid.Column="1" Grid.Row="2"
+						Value="{CompiledBinding Config.StartAddress}"
+						Increment="{CompiledBinding AddressIncrement}"
+						Minimum="0"
+						Maximum="{CompiledBinding MaximumAddress}"
+						Width="150"
+					/>
+
+					<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
+					<c:EnumComboBox
+						Grid.Column="1" Grid.Row="3"
+						SelectedItem="{CompiledBinding Config.Format}"
+						AvailableValues="{CompiledBinding AvailableFormats}"
+						IsVisible="{CompiledBinding ShowFormatDropdown}"
+					/>
+
+					<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
+					<c:EnumComboBox
+						Grid.Column="1" Grid.Row="4"
+						SelectedItem="{CompiledBinding Config.Layout}"
+					/>
+
+					<TextBlock Grid.Column="0" Grid.Row="5" Text="Background:" />
+					<c:EnumComboBox
+						Grid.Column="1" Grid.Row="5"
+						SelectedItem="{CompiledBinding Config.Background}"
+					/>
+
+					<CheckBox Grid.Row="6" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
+
+					<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
+						<dc:PaletteSelector
+							ColumnCount="16"
+							BlockSize="14"
+							SelectionMode="{CompiledBinding PaletteSelectionMode}"
+							SelectedPalette="{CompiledBinding Config.SelectedPalette}"
+							PaletteColors="{CompiledBinding PaletteColors}"
+						/>
+					</Border>
+				</Grid>
+
+				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 			</StackPanel>
-
-			<TextBlock Grid.Column="0" Grid.Row="2" Text="Address:" />
-			<NumericUpDown
-				Grid.Column="1" Grid.Row="2"
-				Value="{CompiledBinding StartAddress}"
-				Increment="{CompiledBinding AddressIncrement}"
-				Minimum="0"
-				Maximum="{CompiledBinding MaximumAddress}"
-				Width="150"
-			/>
-
-			<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
-			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="3"
-				SelectedItem="{CompiledBinding TileFormat}"
-				AvailableValues="{CompiledBinding AvailableFormats}"
-				IsVisible="{CompiledBinding ShowFormatDropdown}"
-			/>
-
-			<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
-			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="4"
-				SelectedItem="{CompiledBinding TileLayout}"
-			/>
-
-			<TextBlock Grid.Column="0" Grid.Row="5" Text="Background:" />
-			<c:EnumComboBox
-				Grid.Column="1" Grid.Row="5"				
-				SelectedItem="{CompiledBinding TileBackground}"
-			/>
+		</ScrollViewer>
 			
-			<CheckBox Grid.Row="6" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding ShowGrid}" />
-
-			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
-				<dc:PaletteSelector
-					ColumnCount="16"
-					BlockSize="14"
-					SelectionMode="{CompiledBinding PaletteSelectionMode}"
-					SelectedPalette="{CompiledBinding SelectedPalette}"
-					PaletteColors="{CompiledBinding PaletteColors}"
-			/>
-			</Border>
-		</Grid>
-		
 		<Border BorderBrush="Gray" BorderThickness="1">
 			<ScrollViewer 
 				VerticalScrollBarVisibility="Auto"
@@ -96,7 +112,8 @@
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					x:Name="picViewer"
-					ShowGrid="{CompiledBinding ShowGrid}"
+					Source="{CompiledBinding ViewerBitmap}"
+					ShowGrid="{CompiledBinding Config.ShowTileGrid}"
 				/>
 			</ScrollViewer>
 		</Border>

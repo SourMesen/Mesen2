@@ -165,7 +165,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
 				ViewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
-				_picViewer.Source = ViewerBitmap;
 			}
 		}
 

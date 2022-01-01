@@ -3,15 +3,13 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
-using Avalonia.Threading;
 using System;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
-using Avalonia.Platform;
 using Mesen.Interop;
 using System.ComponentModel;
-using Mesen.Utilities;
+using Avalonia.Interactivity;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -19,15 +17,32 @@ namespace Mesen.Debugger.Windows
 	{
 		private NotificationListener _listener;
 		private TileViewerViewModel _model;
-		private PictureViewer _picViewer;
-		private DynamicBitmap _viewerBitmap;
 
-		public TileViewerWindow()
+		[Obsolete("For designer only")]
+		public TileViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
+
+		public TileViewerWindow(CpuType cpuType, ConsoleType consoleType)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
+
+			PictureViewer picViewer = this.FindControl<PictureViewer>("picViewer");
+			_model = new TileViewerViewModel(cpuType, consoleType, picViewer, this);
+			DataContext = _model;
+
+			_model.Config.LoadWindowSettings(this);
+			_listener = new NotificationListener();
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			//picViewer.PointerMoved += PicViewer_PointerMoved;
+			//picViewer.PointerLeave += PicViewer_PointerLeave;
+			//picViewer.PositionClicked += PicViewer_PositionClicked;
+			_listener.OnNotification += listener_OnNotification;
 		}
 
 		private void InitializeComponent()
@@ -37,69 +52,29 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnOpened(EventArgs e)
 		{
-			base.OnOpened(e);
-
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			//Renderer.DrawFps = true;
-			_picViewer = this.FindControl<PictureViewer>("picViewer");
-			_picViewer.Source = _viewerBitmap;
-			InitBitmap();
-
-			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
+			_model.RefreshData();
 		}
-		
+
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			_listener?.Dispose();
-			base.OnClosing(e);
+			_listener.Dispose();
+			_model.Config.SaveWindowSettings(this);
+			_model.Dispose();
 		}
 
-		private void InitBitmap()
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
-			_viewerBitmap = new DynamicBitmap(new PixelSize(_model.ColumnCount * 8, _model.RowCount * 8), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
-			_picViewer.Source = _viewerBitmap;
-		}
-
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(this.DataContext is TileViewerViewModel model) {
-				_model = model;
-			} else {
-				throw new Exception("Unexpected model");
-			}
+			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType != ConsoleNotificationType.PpuFrameDone) {
-				return;
-			}
-
-			_model.UpdatePaletteColors();
-
-			byte[] source = DebugApi.GetMemoryState(_model.MemoryType);
-
-			if(_viewerBitmap.PixelSize.Width != _model.ColumnCount * 8 || _viewerBitmap.PixelSize.Height != _model.RowCount * 8) {
-				InitBitmap();
-			}
-
-			Dispatcher.UIThread.Post(() => {
-				using(var framebuffer = _viewerBitmap.Lock()) {
-					DebugApi.GetTileView(CpuType.Cpu, new GetTileViewOptions() {
-						Format = _model.TileFormat,
-						Width = _model.ColumnCount,
-						Height = _model.RowCount,
-						Palette = _model.SelectedPalette,
-						Layout = _model.TileLayout,
-						StartAddress = _model.StartAddress,
-						Background = _model.TileBackground
-					}, source, source.Length, _model.PaletteColors, framebuffer.FrameBuffer.Address);
-				}
-			});
+			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model.CpuType, _model.RefreshData);
 		}
 	}
 }

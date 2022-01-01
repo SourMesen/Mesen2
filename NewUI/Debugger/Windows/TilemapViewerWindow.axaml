@@ -44,33 +44,31 @@
 				Icon="Assets/Settings.png"
 			/>
 		</Panel>
-		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
-			<ScrollViewer>
-				<StackPanel Margin="5">
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-						<TextBlock Text="{l:Translate lblDisplayMode}" />
-						<c:EnumComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayMode}" Width="100" />
-					</StackPanel>
-					<CheckBox Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
-					<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" />
-					<CheckBox Content="{l:Translate chkShowScrollOverlay}" IsChecked="{CompiledBinding Config.ShowScrollOverlay}" />
-					<CheckBox Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" />
-					<CheckBox Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" />
-
-					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
-
-					<Border
-						BorderBrush="Gray"
-						BorderThickness="1"
-						Margin="0 10"
-						Padding="3"
-						IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
-					>
-						<ContentControl Content="{CompiledBinding PreviewPanel}" />
-					</Border>
+		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+			<StackPanel Margin="5">
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+					<TextBlock Text="{l:Translate lblDisplayMode}" />
+					<c:EnumComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayMode}" Width="100" />
 				</StackPanel>
-			</ScrollViewer>
-		</Panel>
+				<CheckBox Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
+				<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" />
+				<CheckBox Content="{l:Translate chkShowScrollOverlay}" IsChecked="{CompiledBinding Config.ShowScrollOverlay}" />
+				<CheckBox Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" />
+				<CheckBox Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" />
+
+				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
+
+				<Border
+					BorderBrush="Gray"
+					BorderThickness="1"
+					Margin="0 10"
+					Padding="3"
+					IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+				>
+					<ContentControl Content="{CompiledBinding PreviewPanel}" />
+				</Border>
+			</StackPanel>
+		</ScrollViewer>
 		
 		<TabControl
 			Items="{CompiledBinding Tabs}"
@@ -99,6 +97,7 @@
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					x:Name="picViewer"
+					Source="{CompiledBinding ViewerBitmap}"
 					Zoom="{CompiledBinding Config.ImageScale}"
 					ShowGrid="{CompiledBinding Config.ShowGrid}"
 					SelectionRect="{CompiledBinding SelectionRect}"
