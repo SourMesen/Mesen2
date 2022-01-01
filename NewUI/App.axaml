@@ -2,17 +2,17 @@
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:dbg="using:Mesen.Debugger"
-	xmlns:u="using:Mesen.Utilities"
+	xmlns:l="using:Mesen.Localization"
 	x:Class="Mesen.App"
 >
 	<Application.Resources>
-		<u:EnumConverter x:Key="Enum" />
+		<l:EnumConverter x:Key="Enum" />
 	</Application.Resources>
 	
 	<Application.DataTemplates>
 		<dbg:DebuggerViewLocator />
 
-		<DataTemplate DataType="{x:Type x:Enum}">
+		<DataTemplate DataType="x:Enum">
 			<TextBlock Text="{Binding, Converter={StaticResource Enum}}" />
 		</DataTemplate>
 	</Application.DataTemplates>

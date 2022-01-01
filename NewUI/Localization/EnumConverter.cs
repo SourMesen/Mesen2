@@ -11,7 +11,7 @@ namespace Mesen.Localization
 				return ResourceHelper.GetEnumText((Enum)value);
 			}
 
-			throw new Exception("unsupported");
+			return value?.ToString() ?? "null value";
 		}
 
 

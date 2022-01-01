@@ -811,6 +811,9 @@
 
 			<Control ID="chkShowOutline">Show outline around sprites</Control>
 			<Control ID="chkShowListView">Show list view</Control>
+			<Control ID="lblDataSource">Data Source</Control>
+			<Control ID="lblSource">Source:</Control>
+			<Control ID="lblSourceOffset">Offset (bytes): $</Control>
 		</Form>
 
 		<Form ID="AssemblerWindow">
@@ -1560,6 +1563,10 @@ x == [$150] || y == [10]
 			<Value ID="ShowTutorial">Display the tutorial script</Value>
 			<Value ID="ShowBlankWindow">Display an empty script</Value>
 			<Value ID="LoadLastScript">Load the previous script</Value>
+		</Enum>
+		<Enum ID="SpriteViewerSource">
+			<Value ID="SpriteRam">Sprite RAM</Value>
+			<Value ID="CpuMemory">CPU Memory</Value>
 		</Enum>
 		<Enum ID="DebugSpritePriority">
 			<Value ID="Undefined">Undefined</Value>

@@ -30,7 +30,7 @@
 	<Window.Resources>
 		<du:GridLengthConverter x:Key="GridLengthConverter" />
 		<du:HexConverter x:Key="Hex" />
-		<u:EnumConverter x:Key="Enum" />
+		<l:EnumConverter x:Key="Enum" />
 	</Window.Resources>
 	
 	<DockPanel>
@@ -54,6 +54,24 @@
 					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{CompiledBinding Config.ShowOutline}" />
 					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
 
+					<c:OptionSection Header="{l:Translate lblDataSource}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblSource}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.Source}" Width="120" />
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding !!Config.Source}">
+							<TextBlock Text="{l:Translate lblSourceOffset}" />
+							<NumericUpDown
+								Minimum="0"
+								Maximum="{CompiledBinding MaxSourceOffset}"
+								Increment="256"
+								Width="80"
+								Value="{CompiledBinding Config.SourceOffset}"
+							/>
+						</StackPanel>
+					</c:OptionSection>
+					
 					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 
 					<Border
@@ -73,8 +91,9 @@
 		<Grid ColumnDefinitions="Auto,*">
 			<Grid.RowDefinitions>
 				<RowDefinition MinHeight="200" Height="*" />
-				<RowDefinition Height="4" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition
+					MinHeight="100"
 					Height="{CompiledBinding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
 				/>
 			</Grid.RowDefinitions>
@@ -108,7 +127,12 @@
 				</ScrollViewer>
 			</Border>
 
-			<GridSplitter Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" />
+			<GridSplitter
+				Grid.Row="1"
+				Grid.ColumnSpan="2"
+				HorizontalAlignment="Stretch"
+				IsVisible="{CompiledBinding Config.ShowListView}"
+			/>
 
 			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Margin="1" Grid.ColumnSpan="2" IsVisible="{CompiledBinding Config.ShowListView}">
 				<DataBox

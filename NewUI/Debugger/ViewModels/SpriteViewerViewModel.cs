@@ -47,6 +47,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool ShowListView { get; set; }
 		[Reactive] public double ListViewHeight { get; set; }
 		[Reactive] public List<SpritePreviewModel>? ListViewSpritePreviews { get; set; } = null;
+		
+		[Reactive] public int MaxSourceOffset { get; set; } = 0;
 
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
@@ -117,6 +119,9 @@ namespace Mesen.Debugger.ViewModels
 
 			this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview());
 			this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect());
+
+			this.WhenAnyValue(x => x.Config.Source, x => x.Config.SourceOffset).Subscribe(x => RefreshData());
+
 			InitListViewObservers();
 
 			ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged);
@@ -295,7 +300,18 @@ namespace Mesen.Debugger.ViewModels
 		{
 			_ppuState = DebugApi.GetPpuState<T>(CpuType);
 			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
-			_spriteRam = DebugApi.GetMemoryState(CpuType.GetSpriteRamMemoryType());
+
+			SnesMemoryType spriteMemType = CpuType.GetSpriteRamMemoryType();
+			int spriteRamSize = DebugApi.GetMemorySize(spriteMemType);
+
+			if(Config.Source == SpriteViewerSource.SpriteRam) {
+				_spriteRam = DebugApi.GetMemoryState(spriteMemType);
+			} else {
+				SnesMemoryType cpuMemory = CpuType.ToMemoryType();
+				_spriteRam = DebugApi.GetMemoryValues(cpuMemory, (uint)Config.SourceOffset, (uint)(Config.SourceOffset + spriteRamSize - 1));
+				MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
+			}
+
 			_palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
 
 			RefreshTab();
@@ -311,16 +327,15 @@ namespace Mesen.Debugger.ViewModels
 				GetSpritePreviewOptions options = new GetSpritePreviewOptions() {
 					SelectedSprite = -1
 				};
-				UInt32[] palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
 
 				DebugSpritePreviewInfo previewInfo = DebugApi.GetSpritePreviewInfo(CpuType, options, _ppuState);
 				InitBitmap((int)previewInfo.Width, (int)previewInfo.Height);
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetSpritePreview(CpuType, options, _ppuState, _vram, _spriteRam, palette, framebuffer.FrameBuffer.Address);
+					DebugApi.GetSpritePreview(CpuType, options, _ppuState, _vram, _spriteRam, _palette, framebuffer.FrameBuffer.Address);
 				}
 
-				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, _ppuState, _vram, _spriteRam, palette);
+				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, _ppuState, _vram, _spriteRam, _palette);
 				InitPreviews(sprites, previewInfo);
 
 				if(Config.ShowOutline) {
