@@ -12,6 +12,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
@@ -40,6 +41,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
+
+		private byte[] _sourceData = Array.Empty<byte>();
 
 		[Obsolete("For designer only")]
 		public TileViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), null) { }
@@ -97,6 +100,8 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
+			ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged);
+
 			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			if(!AvailableMemoryTypes.Contains(Config.Source)) {
@@ -139,17 +144,26 @@ namespace Mesen.Debugger.ViewModels
 			});
 		}
 
+		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			RefreshTab();
+		}
+
 		public void RefreshData()
 		{
-			UpdatePaletteColors();
+			PaletteColors = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
+			_sourceData = DebugApi.GetMemoryState(Config.Source);
 
-			byte[] source = DebugApi.GetMemoryState(Config.Source);
+			RefreshTab();
+		}
 
+		private void RefreshTab()
+		{
 			Dispatcher.UIThread.Post(() => {
 				InitBitmap();
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetTileView(CpuType.Cpu, GetOptions(), source, source.Length, PaletteColors, framebuffer.FrameBuffer.Address);
+					DebugApi.GetTileView(CpuType.Cpu, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
 				}
 			});
 		}
@@ -165,11 +179,6 @@ namespace Mesen.Debugger.ViewModels
 				StartAddress = Config.StartAddress,
 				Background = Config.Background
 			};
-		}
-
-		public void UpdatePaletteColors()
-		{
-			PaletteColors = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
 		}
 
 		[MemberNotNull(nameof(ViewerBitmap))]

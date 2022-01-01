@@ -290,11 +290,8 @@ namespace Mesen.Debugger.Controls
 				int gridSizeX = gridX * Zoom;
 				int gridSizeY = gridY * Zoom;
 
-				Pen pen = new Pen(color.ToUint32(), 1 + (Zoom / 2));
-				double offset = 0;
-				if(Zoom % 2 == 1) {
-					offset = 0.5;
-				}
+				Pen pen = new Pen(color.ToUint32(), 1);
+				double offset = 0.5;
 				for(int i = 1; i < width / gridSizeX; i++) {
 					context.DrawLine(pen, new Point(i * gridSizeX + offset, 0), new Point(i * gridSizeX + offset, height));
 				}
@@ -325,8 +322,8 @@ namespace Mesen.Debugger.Controls
 				Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.Default
 			);
 
-			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(128, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
-			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(128, Colors.Red.R, Colors.Red.G, Colors.Red.B));
+			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(192, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
+			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(192, Colors.Red.R, Colors.Red.G, Colors.Red.B));
 
 			if(OverlayRect != Rect.Empty) {
 				Rect rect = ToDrawRect(OverlayRect);

@@ -113,6 +113,7 @@
 					VerticalAlignment="Stretch"
 					x:Name="picViewer"
 					Source="{CompiledBinding ViewerBitmap}"
+					Zoom="{CompiledBinding Config.ImageScale}"
 					ShowGrid="{CompiledBinding Config.ShowTileGrid}"
 				/>
 			</ScrollViewer>
