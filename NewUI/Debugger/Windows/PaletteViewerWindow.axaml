@@ -1,0 +1,77 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+	x:Class="Mesen.Debugger.Windows.PaletteViewerWindow"
+	x:DataType="dvm:PaletteViewerViewModel"
+	Width="600" Height="400"
+	Title="{l:Translate wndTitle}"
+	Icon="/Assets/VideoFilter.png"
+>
+	<Design.DataContext>
+		<dvm:PaletteViewerViewModel />
+	</Design.DataContext>
+
+	<DockPanel>
+		<Panel DockPanel.Dock="Top">
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Classes="ActionMenu" Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Classes="ActionMenu" Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
+			</Menu>
+			<c:IconButton
+				HorizontalAlignment="Right"
+				DockPanel.Dock="Right"
+				ToolTip.Tip="{l:Translate btnToggleSettings}"
+				Click="OnSettingsClick"
+				Icon="Assets/Settings.png"
+			/>
+		</Panel>
+
+		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+			<StackPanel Margin="3">
+				<CheckBox Content="{l:Translate chkShowPaletteIndexes}" IsChecked="{CompiledBinding Config.ShowPaletteIndexes}" />
+
+				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
+				
+				<Border
+					BorderBrush="Gray"
+					BorderThickness="1"
+					Padding="2"
+					Margin="0 10 0 0"
+					MinWidth="195"
+				>
+					<ContentControl Content="{CompiledBinding PreviewPanel}" />
+				</Border>
+			</StackPanel>
+		</ScrollViewer>
+			
+		<Border BorderBrush="Gray" BorderThickness="1">
+			<ScrollViewer
+				VerticalScrollBarVisibility="Auto"
+				HorizontalScrollBarVisibility="Auto"
+				AllowAutoHide="False"
+			>
+				<dc:PaletteSelector
+					Name="palSelector"
+					PaletteColors="{CompiledBinding PaletteColors}"
+					ColumnCount="{CompiledBinding PaletteColumnCount}"
+					SelectedPalette="{CompiledBinding SelectedPalette}"
+					SelectionMode="SingleColor"
+					BlockSize="{CompiledBinding BlockSize}"
+					ShowIndexes="{CompiledBinding Config.ShowPaletteIndexes}"
+				/>
+			</ScrollViewer>
+		</Border>
+	</DockPanel>
+</Window>

@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using System;
@@ -214,31 +215,38 @@ namespace Mesen.Debugger.Controls
 				int selectedRow = (SelectedPalette * 16) / columnCount;
 				selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
 			}
-			
-			context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
-			context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
+
+			if(!selectionRect.IsEmpty) {
+				context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
+				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
+			}
+		}
+
+		public int GetPaletteIndexFromPoint(Point point)
+		{
+			PixelPoint p = PixelPoint.FromPoint(point, 1.0);
+			PixelSize size = PixelSize.FromSize(Bounds.Size, 1.0);
+
+			int columnCount = ColumnCount;
+			int rowCount = PaletteColors.Length / columnCount;
+			int cellWidth = size.Width / columnCount;
+			int cellHeight = size.Height / rowCount;
+			if(BlockSize > 0) {
+				cellWidth = BlockSize;
+				cellHeight = BlockSize;
+			}
+
+			int clickedRow = Math.Min(rowCount - 1, p.Y / cellHeight);
+			int clickedColumn = Math.Min(columnCount - 1, p.X / cellWidth);
+
+			return clickedRow * columnCount + clickedColumn;
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
 		{
 			base.OnPointerPressed(e);
 
-			Point p = e.GetCurrentPoint(this).Position;
-
-			Size size = Bounds.Size;
-			int columnCount = ColumnCount;
-			int rowCount = PaletteColors.Length / columnCount;
-			double cellWidth = size.Width / columnCount;
-			double cellHeight = size.Height / rowCount;
-			if(BlockSize > 0) {
-				cellWidth = BlockSize;
-				cellHeight = BlockSize;
-			}
-
-			int clickedRow = Math.Min(rowCount - 1, (int)(p.Y / cellHeight));
-			int clickedColumn = Math.Min(columnCount - 1, (int)(p.X / cellWidth));
-
-			int paletteIndex = clickedRow * columnCount + clickedColumn;
+			int paletteIndex = GetPaletteIndexFromPoint(e.GetCurrentPoint(this).Position);
 
 			RaiseEvent(new ColorClickEventArgs() { ColorIndex = paletteIndex, Color = Color.FromUInt32(PaletteColors[paletteIndex]) });
 

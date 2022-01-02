@@ -19,6 +19,7 @@ namespace Mesen.Config
 		public DebuggerConfig Debugger { get; set; } = new DebuggerConfig();
 		public TilemapViewerConfig TilemapViewer { get; set; } = new TilemapViewerConfig();
 		public TileViewerConfig TileViewer { get; set; } = new TileViewerConfig();
+		public PaletteViewerConfig PaletteViewer { get; set; } = new PaletteViewerConfig();
 		public RegisterViewerConfig RegisterViewer { get; set; } = new RegisterViewerConfig();
 		public SpriteViewerConfig SpriteViewer { get; set; } = new SpriteViewerConfig();
 		public DbgIntegrationConfig DbgIntegration { get; set; } = new DbgIntegrationConfig();

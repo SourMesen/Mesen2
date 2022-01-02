@@ -273,6 +273,9 @@
     <Compile Update="Debugger\Windows\TilemapViewerWindow.axaml.cs">
       <DependentUpon>TilemapViewerWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\PaletteViewerWindow.axaml.cs">
+      <DependentUpon>PaletteViewerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\TraceLoggerWindow.axaml.cs">
       <DependentUpon>TraceLoggerWindow.axaml</DependentUpon>
     </Compile>

@@ -797,6 +797,14 @@
 			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
 		</Form>
 
+		<Form ID="PaletteViewerWindow">
+			<Control ID="wndTitle">Palette Viewer</Control>
+			<Control ID="mnuFile">File</Control>
+			<Control ID="mnuView">View</Control>
+			<Control ID="btnToggleSettings">Toggle settings panel</Control>
+			<Control ID="chkShowPaletteIndexes">Show palette indexes</Control>
+		</Form>
+
 		<Form ID="SpriteViewerWindow">
 			<Control ID="wndTitle">Sprite Viewer</Control>
 			

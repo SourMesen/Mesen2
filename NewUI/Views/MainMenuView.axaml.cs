@@ -69,6 +69,12 @@ namespace Mesen.Views
 			new SpriteViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
 		}
 
+		private void OnPaletteViewerClick(object sender, RoutedEventArgs e)
+		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			new PaletteViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
+		}
+
 		private void OnMemoryToolsClick(object sender, RoutedEventArgs e)
 		{
 			new MemoryToolsWindow {

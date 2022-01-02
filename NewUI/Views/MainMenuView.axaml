@@ -416,6 +416,11 @@
 					<Image Source="/Assets/PerfTracker.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<MenuItem Header="_Palette Viewer" Click="OnPaletteViewerClick">
+				<MenuItem.Icon>
+					<Image Source="/Assets/VideoFilter.png" />
+				</MenuItem.Icon>
+			</MenuItem>
 			<Separator />
 			<MenuItem Header="_Assembler" Click="OnAssemblerClick">
 				<MenuItem.Icon>

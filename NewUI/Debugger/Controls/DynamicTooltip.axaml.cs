@@ -9,6 +9,7 @@ using Mesen.ViewModels;
 using Mesen.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace Mesen.Debugger.Controls
@@ -103,6 +104,17 @@ namespace Mesen.Debugger.Controls
 			}
 			Zoom = zoom;
 			CropRect = cropRect;
+		}
+	}
+
+	public class TooltipColorEntry : ReactiveObject
+	{
+		[Reactive] public UInt32[] Color { get; set; }
+
+		public TooltipColorEntry(UInt32 color)
+		{
+			Color = new UInt32[1];
+			Color[0] = color;
 		}
 	}
 }
