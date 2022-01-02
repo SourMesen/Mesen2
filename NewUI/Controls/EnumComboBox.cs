@@ -47,7 +47,11 @@ namespace Mesen.Controls
 		private void InitComboBox()
 		{
 			if(_enumType == null) {
-				throw new Exception("Enum type is not set");
+				if(AvailableValues.Length > 0) {
+					_enumType = AvailableValues[0].GetType();
+				} else {
+					throw new Exception("Enum type is not set");
+				}
 			}
 
 			Enum? selectedItem = SelectedItem as Enum;

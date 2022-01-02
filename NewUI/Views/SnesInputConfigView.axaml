@@ -107,6 +107,7 @@
 						Grid.Row="3" Grid.Column="1"
 						Margin="5 0"
 						SelectedItem="{x:Static cfg:ControllerType.SnesController}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP345}"
 					/>
 					<Button
 						Grid.Row="3"

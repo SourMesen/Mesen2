@@ -46,7 +46,6 @@ namespace Mesen.ViewModels
 		};
 
 		public Enum[] AvailableControllerTypesP345 => new Enum[] {
-			ControllerType.None,
 			ControllerType.SnesController
 		};
 
