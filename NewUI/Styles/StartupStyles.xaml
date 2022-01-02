@@ -116,12 +116,15 @@
 		</Setter>
 	</Style>
 
+	<Style Selector="MenuItem AccessText">
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="FontFamily" Value="Segoe UI" />
+	</Style>
+	
 	<Style Selector="MenuItem">
 		<Setter Property="Height" Value="22" />
-		<Setter Property="FontSize" Value="12" />
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="8 2" />
-		<Setter Property="FontFamily" Value="Segoe UI" />
 
 		<Setter Property="BorderBrush" Value="Transparent" />
 		<Setter Property="BorderThickness" Value="1" />
