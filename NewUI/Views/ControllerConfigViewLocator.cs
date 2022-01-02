@@ -19,7 +19,11 @@ namespace Mesen.Views
 			if(mappings != null) {
 				Control? ctrl = null;
 				switch(mappings.Type) {
-					case ControllerType.SnesController: ctrl = new SnesControllerView(); break;
+					case ControllerType.Multitap:
+					case ControllerType.SnesController:
+						ctrl = new SnesControllerView();
+						break;
+
 					case ControllerType.NesController: ctrl = new NesControllerView(); break;
 				}
 				if(ctrl != null) {
