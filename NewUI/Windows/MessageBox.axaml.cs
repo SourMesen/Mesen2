@@ -22,7 +22,7 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		public static Task<DialogResult> Show(Window parent, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
+		public static Task<DialogResult> Show(Window? parent, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
 		{
 			DialogResult result = DialogResult.OK;
 			MessageBox msgbox = new MessageBox() { Title = title };

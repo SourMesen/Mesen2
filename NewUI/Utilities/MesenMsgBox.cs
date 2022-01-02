@@ -14,7 +14,8 @@ namespace Mesen.Utilities
 	{
 		public static Task<DialogResult> Show(IRenderRoot? parent, string text, MessageBoxButtons buttons, MessageBoxIcon icon, params string[] args)
 		{
-			if(!(parent is Window wnd)) {
+			Window? wnd = parent as Window;
+			if(parent != null && wnd == null) {
 				throw new Exception("Invalid parent window");
 			}
 

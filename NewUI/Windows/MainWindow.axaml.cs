@@ -72,8 +72,6 @@ namespace Mesen.Windows
 		{
 			if(DataContext is MainWindowViewModel model) {
 				_model = model;
-			} else {
-				throw new Exception("Invalid model");
 			}
 		}
 
@@ -156,6 +154,7 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.GameLoaded:
 					RomInfo romInfo = EmuApi.GetRomInfo();
 					Dispatcher.UIThread.Post(() => {
+						Focus(); //Remove focus from game selection screen to avoid enter pressing the currently focused (hidden) button
 						_model.RecentGames.Visible = false;
 						_model.RomInfo = romInfo;
 					});
@@ -163,6 +162,7 @@ namespace Mesen.Windows
 
 				case ConsoleNotificationType.GameResumed:
 					Dispatcher.UIThread.Post(() => {
+						Focus(); //Remove focus from game selection screen to avoid enter pressing the currently focused (hidden) button
 						_model.RecentGames.Visible = false;
 					});
 					break;

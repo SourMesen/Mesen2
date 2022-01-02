@@ -93,8 +93,6 @@ namespace Mesen.Debugger.Windows
 			if(this.DataContext is MemoryToolsViewModel model) {
 				_model = model;
 				_model.Config.LoadWindowSettings(this);
-			} else {
-				throw new Exception("Invalid model");
 			}
 		}
 

@@ -29,8 +29,6 @@ namespace Mesen.Windows
 		{
 			if(DataContext is ConfigViewModel model) {
 				_model = model;
-			} else {
-				throw new Exception("Invalid model");
 			}
 		}
 

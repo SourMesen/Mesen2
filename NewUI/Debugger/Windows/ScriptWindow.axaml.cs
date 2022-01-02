@@ -73,8 +73,6 @@ namespace Mesen.Debugger.Windows
 				_model = model;
 				_model.InitActions(this);
 				_model.Config.LoadWindowSettings(this);
-			} else {
-				throw new Exception("Invalid DataContext");
 			}
 		}
 

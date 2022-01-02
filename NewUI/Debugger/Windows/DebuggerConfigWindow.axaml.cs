@@ -29,8 +29,6 @@ namespace Mesen.Debugger.Windows
 		{
 			if(DataContext is DebuggerConfigWindowViewModel model) {
 				_model = model;
-			} else {
-				throw new Exception("Invalid model");
 			}
 		}
 

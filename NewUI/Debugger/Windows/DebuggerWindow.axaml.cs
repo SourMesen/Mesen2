@@ -50,8 +50,6 @@ namespace Mesen.Debugger.Windows
 				_model.Config.Gameboy.PropertyChanged += Config_PropertyChanged;
 				_model.Config.Nes.PropertyChanged += Config_PropertyChanged;
 				_model.Config.Snes.PropertyChanged += Config_PropertyChanged;
-			} else {
-				throw new Exception("Invalid model");
 			}
 		}
 
