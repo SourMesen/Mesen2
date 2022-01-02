@@ -2,7 +2,9 @@
 #include "NES/Debugger/NesPpuTools.h"
 #include "NES/Mappers/MMC5.h"
 #include "NES/NesConsole.h"
+#include "NES/NesDefaultVideoFilter.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/MemoryDumper.h"
 #include "Shared/SettingTypes.h"
 
 NesPpuTools::NesPpuTools(Debugger* debugger, Emulator *emu, NesConsole* console) : PpuTools(debugger, emu)
@@ -221,6 +223,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 
 void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
+	sprite.Bpp = 2;
 	sprite.SpriteIndex = i;
 	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];
@@ -289,5 +292,25 @@ DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	info.SpriteCount = 64;
 	info.CoordOffsetX = 0;
 	info.CoordOffsetY = 1;
+	return info;
+}
+
+DebugPaletteInfo NesPpuTools::GetPaletteInfo()
+{
+	DebugPaletteInfo info = {};
+	info.BgColorCount = 4 * 4;
+	info.SpriteColorCount = 4 * 4;
+	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
+
+	NesConsole* console = ((NesConsole*)_emu->GetConsole());
+	uint32_t rgbPalette[512];
+	NesDefaultVideoFilter::GetFullPalette(rgbPalette, console->GetNesConfig(), console->GetPpu()->GetPpuModel());
+
+	uint8_t* paletteRam = _debugger->GetMemoryDumper()->GetMemoryBuffer(SnesMemoryType::NesPaletteRam);
+	for(int i = 0; i < 32; i++) {
+		info.RawPalette[i] = paletteRam[i];
+		info.RgbPalette[i] = rgbPalette[paletteRam[i]];
+	}
+
 	return info;
 }

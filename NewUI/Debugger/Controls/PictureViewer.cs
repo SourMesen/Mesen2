@@ -16,7 +16,7 @@ namespace Mesen.Debugger.Controls
 	public class PictureViewer : Control
 	{
 		public static readonly StyledProperty<IImage> SourceProperty = AvaloniaProperty.Register<PictureViewer, IImage>(nameof(Source));
-		public static readonly StyledProperty<int> ZoomProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(Zoom), 1, defaultBindingMode: BindingMode.TwoWay);
+		public static readonly StyledProperty<double> ZoomProperty = AvaloniaProperty.Register<PictureViewer, double>(nameof(Zoom), 1, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<int> GridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeX), 8);
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowGrid), false);
@@ -52,7 +52,7 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(SourceProperty, value); }
 		}
 
-		public int Zoom
+		public double Zoom
 		{
 			get { return GetValue(ZoomProperty); }
 			set { SetValue(ZoomProperty, value); }
@@ -290,10 +290,10 @@ namespace Mesen.Debugger.Controls
 		private void DrawGrid(DrawingContext context, bool show, int gridX, int gridY, Color color)
 		{
 			if(show) {
-				int width = (int)Source.Size.Width * Zoom;
-				int height = (int)Source.Size.Height * Zoom;
-				int gridSizeX = gridX * Zoom;
-				int gridSizeY = gridY * Zoom;
+				int width = (int)(Source.Size.Width * Zoom);
+				int height = (int)(Source.Size.Height * Zoom);
+				int gridSizeX = (int)(gridX * Zoom);
+				int gridSizeY = (int)(gridY * Zoom);
 
 				Pen pen = new Pen(color.ToUint32(), 1);
 				double offset = 0.5;
@@ -312,8 +312,8 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			int width = (int)Source.Size.Width * Zoom;
-			int height = (int)Source.Size.Height * Zoom;
+			int width = (int)(Source.Size.Width * Zoom);
+			int height = (int)(Source.Size.Height * Zoom);
 
 			double dpiScale = 1 / LayoutHelper.GetLayoutScale(this);
 			using var scale = context.PushPostTransform(Matrix.CreateScale(dpiScale, dpiScale));

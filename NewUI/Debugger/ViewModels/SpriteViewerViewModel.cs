@@ -58,7 +58,7 @@ namespace Mesen.Debugger.ViewModels
 		private BaseState? _ppuState;
 		private byte[] _spriteRam = Array.Empty<byte>();
 		private byte[] _vram = Array.Empty<byte>();
-		private UInt32[] _palette = Array.Empty<UInt32>();
+		private DebugPaletteInfo _palette = new();
 
 		[Obsolete("For designer only")]
 		public SpriteViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), new Grid(), null) { }
@@ -170,7 +170,16 @@ namespace Mesen.Debugger.ViewModels
 		public DynamicTooltip GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
 		{
 			TooltipEntries entries = existingTooltip?.Items ?? new();
-			entries.AddPicture("Sprite", sprite.SpritePreview, (int)sprite.SpritePreviewZoom);
+			entries.AddPicture("Sprite", sprite.SpritePreview, 48.0 / sprite.Width);
+
+			DebugPaletteInfo palette = _palette;
+			int paletteSize = (int)Math.Pow(2, sprite.Bpp);
+			int paletteIndex = sprite.Palette >= 0 ? sprite.Palette : 0;
+			UInt32[] spritePalette = new UInt32[paletteSize];
+			Array.Copy(palette.RgbPalette, palette.BgColorCount + paletteIndex * paletteSize, spritePalette, 0, paletteSize);
+
+			entries.AddEntry("Palette", spritePalette);
+
 			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
 			entries.AddEntry("X, Y", 
 				"$" + sprite.X.ToString("X2") + ", $" + sprite.Y.ToString("X2") + Environment.NewLine +
@@ -309,7 +318,7 @@ namespace Mesen.Debugger.ViewModels
 				MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
 			}
 
-			_palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
+			_palette = DebugApi.GetPaletteInfo(CpuType);
 
 			RefreshTab();
 		}
@@ -328,11 +337,16 @@ namespace Mesen.Debugger.ViewModels
 				DebugSpritePreviewInfo previewInfo = DebugApi.GetSpritePreviewInfo(CpuType, options, _ppuState);
 				InitBitmap((int)previewInfo.Width, (int)previewInfo.Height);
 
+				BaseState? ppuState = _ppuState;
+				byte[] vram = _vram;
+				byte[] spriteRam = _spriteRam;
+				UInt32[] palette = _palette.RgbPalette;
+
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetSpritePreview(CpuType, options, _ppuState, _vram, _spriteRam, _palette, framebuffer.FrameBuffer.Address);
+					DebugApi.GetSpritePreview(CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);
 				}
 
-				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, _ppuState, _vram, _spriteRam, _palette);
+				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, ppuState, vram, spriteRam, palette);
 				InitPreviews(sprites, previewInfo);
 
 				if(Config.ShowOutline) {
@@ -427,6 +441,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int TileIndex { get; set; }
 		[Reactive] public int TileAddress { get; set; }
 		[Reactive] public DebugSpritePriority Priority { get; set; }
+		[Reactive] public int Bpp { get; set; }
 		[Reactive] public int Palette { get; set; }
 		[Reactive] public int PaletteAddress { get; set; }
 		[Reactive] public bool Visible { get; set; }
@@ -450,6 +465,7 @@ namespace Mesen.Debugger.ViewModels
 			Height = sprite.Height;
 			TileIndex = sprite.TileIndex;
 			Priority = sprite.Priority;
+			Bpp = sprite.Bpp;
 			Palette = sprite.Palette;
 			TileAddress = sprite.TileAddress;
 			PaletteAddress = sprite.PaletteAddress;

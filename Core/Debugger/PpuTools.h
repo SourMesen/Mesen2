@@ -43,6 +43,7 @@ struct DebugSpriteInfo
 	int16_t X;
 	int16_t Y;
 
+	int16_t Bpp;
 	int16_t Palette;
 	DebugSpritePriority Priority;
 	int16_t Width;
@@ -63,6 +64,7 @@ public:
 		SpriteIndex = -1;
 		X = -1;
 		Y = -1;
+		Bpp = 2;
 		Palette = -1;
 		Priority = DebugSpritePriority::Undefined;
 		Width = -1;
@@ -116,6 +118,16 @@ struct DebugSpritePreviewInfo
 	int32_t CoordOffsetY;
 };
 
+struct DebugPaletteInfo
+{
+	uint32_t ColorCount;
+	uint32_t BgColorCount;
+	uint32_t SpriteColorCount;
+
+	uint32_t RawPalette[512];
+	uint32_t RgbPalette[512];
+};
+
 class PpuTools
 {
 protected:
@@ -131,6 +143,8 @@ protected:
 
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
+
+	virtual DebugPaletteInfo GetPaletteInfo() = 0;
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t* palette, uint32_t *outBuffer);
 	

@@ -1,21 +1,15 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using System;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System.ComponentModel;
 using Mesen.Config;
-using Avalonia.VisualTree;
 using Avalonia.Input;
-using System.Collections.Generic;
 using Mesen.Localization;
 using Mesen.Debugger.Labels;
-using System.Collections.ObjectModel;
 using Avalonia.Interactivity;
 using Mesen.Utilities;
 
@@ -41,6 +35,7 @@ namespace Mesen.Debugger.Windows
 			_model = new EventViewerViewModel(cpuType, viewer, this);
 			_model.Config.LoadWindowSettings(this);
 			DataContext = _model;
+			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
@@ -48,8 +43,6 @@ namespace Mesen.Debugger.Windows
 
 			viewer.PointerMoved += Viewer_PointerMoved;
 			viewer.PointerLeave += Viewer_PointerLeave;
-
-			_listener = new NotificationListener();
 		}
 
 		private void InitializeComponent()

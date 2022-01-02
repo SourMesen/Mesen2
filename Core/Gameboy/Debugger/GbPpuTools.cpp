@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "SNES/SnesDefaultVideoFilter.h"
 #include "Gameboy/Debugger/GbPpuTools.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/SettingTypes.h"
@@ -158,6 +159,7 @@ DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions 
 
 void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
+	sprite.Bpp = 2;
 	sprite.SpriteIndex = i;
 	sprite.Y = oamRam[i*4];
 
@@ -214,4 +216,48 @@ void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseS
 		outBuffer[i].Init();
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
+}
+
+DebugPaletteInfo GbPpuTools::GetPaletteInfo()
+{
+	DebugPaletteInfo info = {};
+	if(_emu->GetConsoleType() == ConsoleType::GameboyColor) {
+		info.BgColorCount = 8 * 4;
+		info.SpriteColorCount = 8 * 4;
+		info.ColorCount = info.BgColorCount + info.SpriteColorCount;
+
+		GbPpuState state;
+		_debugger->GetPpuState(state, CpuType::Gameboy);
+
+		for(int i = 0; i < 8 * 4; i++) {
+			info.RawPalette[i] = state.CgbBgPalettes[i];
+			info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[i]);
+		}
+		for(int i = 0; i < 8 * 4; i++) {
+			info.RawPalette[i+32] = state.CgbObjPalettes[i];
+			info.RgbPalette[i+32] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[i]);
+		}
+	} else {
+		info.BgColorCount = 4;
+		info.SpriteColorCount = 2 * 4;
+		info.ColorCount = info.BgColorCount + info.SpriteColorCount;
+
+		GbPpuState state;
+		_debugger->GetPpuState(state, CpuType::Gameboy);
+
+		for(int i = 0; i < 4; i++) {
+			info.RawPalette[i] = (state.BgPalette >> (i * 2)) & 0x03;
+			info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[i]);
+
+			int objPal0Color = (state.ObjPalette0 >> (i * 2)) & 0x03;
+			info.RawPalette[i + 4] = objPal0Color;
+			info.RgbPalette[i + 4] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[objPal0Color]);
+
+			int objPal1Color = (state.ObjPalette1 >> (i * 2)) & 0x03;
+			info.RawPalette[i + 8] = objPal1Color;
+			info.RgbPalette[i + 8] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[objPal1Color+4]);
+		}
+	}
+
+	return info;
 }

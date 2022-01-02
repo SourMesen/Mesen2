@@ -31,6 +31,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public UInt32[] PaletteColors { get; set; } = Array.Empty<UInt32>();
 		[Reactive] public PaletteSelectionMode PaletteSelectionMode { get; private set; }
+		[Reactive] public int PaletteColumnCount { get; private set; } = 16;
 
 		[Reactive] public int AddressIncrement { get; private set; }
 		[Reactive] public int MaximumAddress { get; private set; }
@@ -154,7 +155,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			PaletteColors = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
+			PaletteColors = DebugApi.GetPaletteInfo(CpuType).RgbPalette;
+			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
 			_sourceData = DebugApi.GetMemoryState(Config.Source);
 
 			RefreshTab();

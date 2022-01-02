@@ -105,6 +105,8 @@ extern "C"
 	DllExport void __stdcall GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t *oamRam, uint32_t* palette, uint32_t *buffer) { GetDebugger()->GetPpuTools(cpuType)->GetSpritePreview(options, state, vram, oamRam, palette, buffer); }
 	DllExport void __stdcall GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo sprites[]) { GetDebugger()->GetPpuTools(cpuType)->GetSpriteList(options, state, vram, oamRam, palette, sprites); }
 
+	DllExport DebugPaletteInfo __stdcall GetPaletteInfo(CpuType cpuType) { return GetDebugger()->GetPpuTools(cpuType)->GetPaletteInfo(); }
+
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { GetDebugger()->GetPpuTools(cpuType)->SetViewerUpdateTiming(viewerId, scanline, cycle); }
 
 	DllExport void __stdcall SetEventViewerConfig(CpuType cpuType, BaseEventViewerConfig& config) { GetDebugger()->GetEventManager(cpuType)->SetConfiguration(config); }

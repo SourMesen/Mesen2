@@ -50,7 +50,7 @@
 
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<ScrollViewer>
-				<StackPanel Margin="5">
+				<StackPanel Margin="3">
 					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{CompiledBinding Config.ShowOutline}" />
 					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
 
@@ -79,7 +79,7 @@
 						BorderBrush="Gray"
 						BorderThickness="1"
 						Margin="0 10"
-						Padding="3"
+						Padding="2"
 						MinWidth="170"
 						IsVisible="{CompiledBinding SelectedPreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
 					>

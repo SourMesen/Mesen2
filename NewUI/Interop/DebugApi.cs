@@ -215,6 +215,12 @@ namespace Mesen.Interop
 			return sprites;
 		}
 
+		[DllImport(DllPath, EntryPoint = "GetPaletteInfo")] private static extern InteropDebugPaletteInfo GetPaletteInfoWrapper(CpuType cpuType);
+		public static DebugPaletteInfo GetPaletteInfo(CpuType cpuType)
+		{
+			return new(GetPaletteInfoWrapper(cpuType));
+		}
+
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
 		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(CpuType cpuType);
@@ -883,6 +889,7 @@ namespace Mesen.Interop
 		public Int16 X;
 		public Int16 Y;
 
+		public Int16 Bpp;
 		public Int16 Palette;
 		public DebugSpritePriority Priority;
 		public Int16 Width;
@@ -894,6 +901,59 @@ namespace Mesen.Interop
 
 		public fixed UInt32 SpritePreview[64*64];
 	}
+
+	public unsafe struct InteropDebugPaletteInfo
+	{
+		public UInt32 ColorCount;
+		public UInt32 BgColorCount;
+		public UInt32 SpriteColorCount;
+
+		public fixed UInt32 RawPalette[512];
+		public fixed UInt32 RgbPalette[512];
+
+		public unsafe UInt32[] GetRgbPalette()
+		{
+			UInt32[] result = new UInt32[ColorCount];
+			fixed(UInt32* pal = RgbPalette) {
+				for(int i = 0; i < ColorCount; i++) {
+					result[i] = pal[i];
+				}
+			}
+			return result;
+		}
+
+		public unsafe UInt32[] GetRawPalette()
+		{
+			UInt32[] result = new UInt32[ColorCount];
+			fixed(UInt32* pal = RawPalette) {
+				for(int i = 0; i < ColorCount; i++) {
+					result[i] = pal[i];
+				}
+			}
+			return result;
+		}
+	};
+
+	public class DebugPaletteInfo
+	{
+		public UInt32 ColorCount { get; }
+		public UInt32 BgColorCount { get; }
+		public UInt32 SpriteColorCount { get; }
+		public UInt32[] RawPalette { get; } = Array.Empty<UInt32>();
+		public UInt32[] RgbPalette { get; } = Array.Empty<UInt32>();
+
+		public DebugPaletteInfo() { }
+
+		public DebugPaletteInfo(InteropDebugPaletteInfo info)
+		{
+			ColorCount = info.ColorCount;
+			BgColorCount = info.BgColorCount;
+			SpriteColorCount = info.SpriteColorCount;
+			RawPalette = info.GetRawPalette();
+			RgbPalette = info.GetRgbPalette();
+		}
+	}
+
 
 	public enum TileFormat
 	{

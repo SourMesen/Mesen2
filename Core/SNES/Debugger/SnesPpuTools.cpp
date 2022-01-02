@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Debugger/SnesPpuTools.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/MemoryDumper.h"
 #include "Shared/SettingTypes.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "SNES/Ppu.h"
@@ -202,6 +203,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 	bool useSecondTable = (flags & 0x01) != 0;
 
+	sprite.Bpp = 4;
 	sprite.SpriteIndex = spriteIndex;
 	sprite.X = x;
 	sprite.Y = y;
@@ -368,5 +370,21 @@ DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOption
 	info.SpriteCount = 128;
 	info.CoordOffsetX = 256;
 	info.CoordOffsetY = 0;
+	return info;
+}
+
+DebugPaletteInfo SnesPpuTools::GetPaletteInfo()
+{
+	DebugPaletteInfo info = {};
+	info.BgColorCount = 16 * 8;
+	info.SpriteColorCount = 16 * 8;
+	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
+
+	uint8_t* cgram= _debugger->GetMemoryDumper()->GetMemoryBuffer(SnesMemoryType::CGRam);
+	for(int i = 0; i < 256; i++) {
+		info.RawPalette[i] = cgram[i*2] | (cgram[i*2+1] << 8);
+		info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);
+	}
+
 	return info;
 }

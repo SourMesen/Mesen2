@@ -40,6 +40,16 @@
 									/>
 								</Border>
 							</DataTemplate>
+							<DataTemplate DataType="x:Array">
+								<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
+									<dc:PaletteSelector
+										PaletteColors="{Binding}"
+										BlockSize="12"
+										ColumnCount="4"
+										SelectionMode="{x:Static dc:PaletteSelectionMode.None}"
+									/>
+								</Border>
+							</DataTemplate>
 						</ContentControl.DataTemplates>
 					</ContentControl>
 				</StackPanel>

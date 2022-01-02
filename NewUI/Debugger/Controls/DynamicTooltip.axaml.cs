@@ -50,7 +50,7 @@ namespace Mesen.Debugger.Controls
 	{
 		private Dictionary<string, TooltipEntry> _entries = new();
 
-		public void AddPicture(string name, IImage source, int zoom, PixelRect? cropRect = null)
+		public void AddPicture(string name, IImage source, double zoom, PixelRect? cropRect = null)
 		{
 			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
 				if(entry.Value is TooltipPictureEntry picEntry) {
@@ -89,11 +89,11 @@ namespace Mesen.Debugger.Controls
 	public class TooltipPictureEntry : ReactiveObject
 	{
 		[Reactive] public IImage Source { get; set; }
-		[Reactive] public int Zoom { get; set; }
+		[Reactive] public double Zoom { get; set; }
 		[Reactive] public PixelRect? CropRect { get; set; }
 		public IImage OriginalSource { get; }
 
-		public TooltipPictureEntry(IImage src, int zoom, PixelRect? cropRect)
+		public TooltipPictureEntry(IImage src, double zoom, PixelRect? cropRect)
 		{
 			OriginalSource = src;
 			if(cropRect != null) {

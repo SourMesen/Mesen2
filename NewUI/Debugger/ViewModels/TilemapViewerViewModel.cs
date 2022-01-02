@@ -31,6 +31,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 
 		[Reactive] public DynamicTooltip? PreviewPanel { get; private set; }
+		
+		[Reactive] public DynamicTooltip? ViewerTooltip { get; set; }
+		[Reactive] public PixelPoint? ViewerMousePos { get; set; }
 
 		[Reactive] public List<TilemapViewerTab> Tabs { get; private set; } = new List<TilemapViewerTab>();
 		[Reactive] public bool ShowTabs { get; private set; }
@@ -41,11 +44,12 @@ namespace Mesen.Debugger.ViewModels
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
+		private DebugTilemapInfo _tilemapInfo;
 		private PictureViewer _picViewer;
 		private BaseState? _ppuState;
 		private byte[]? _prevVram;
 		private byte[] _vram = Array.Empty<byte>();
-		private UInt32[] _palette = Array.Empty<UInt32>();
+		private DebugPaletteInfo _palette = new();
 
 		[Obsolete("For designer only")]
 		public TilemapViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), null) { }
@@ -145,6 +149,10 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(SelectionRect.TopLeft, 1), PreviewPanel);
 			}
+
+			if(ViewerTooltip != null && ViewerMousePos != null) {
+				GetPreviewPanel(ViewerMousePos.Value, ViewerTooltip);
+			}
 		}
 
 		private void Config_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -177,7 +185,7 @@ namespace Mesen.Debugger.ViewModels
 			_ppuState = ppuState;
 			_prevVram = _vram;
 			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
-			_palette = PaletteHelper.GetConvertedPalette(CpuType, ConsoleType);
+			_palette = DebugApi.GetPaletteInfo(CpuType);
 
 			RefreshTab();
 		}
@@ -192,26 +200,25 @@ namespace Mesen.Debugger.ViewModels
 				BaseState ppuState = _ppuState;
 				byte[]? prevVram = _prevVram;
 				byte[] vram = _vram;
-				uint[] palette = _palette;
+				uint[] palette = _palette.RgbPalette;
 				
 				GetTilemapOptions options = GetOptions(prevVram);
 
 				FrameInfo size = DebugApi.GetTilemapSize(CpuType, options, ppuState);
 				InitBitmap((int)size.Width, (int)size.Height);
 
-				DebugTilemapInfo tilemapInfo;
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					tilemapInfo = DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.FrameBuffer.Address);
+					_tilemapInfo = DebugApi.GetTilemap(CpuType, options, ppuState, vram, palette, framebuffer.FrameBuffer.Address);
 				}
 
 				UpdatePreviewPanel();
 
 				if(Config.ShowScrollOverlay) {
 					ScrollOverlayRect = new Rect(
-						tilemapInfo.ScrollX % size.Width,
-						tilemapInfo.ScrollY % size.Height,
-						tilemapInfo.ScrollWidth,
-						tilemapInfo.ScrollHeight
+						_tilemapInfo.ScrollX % size.Width,
+						_tilemapInfo.ScrollY % size.Height,
+						_tilemapInfo.ScrollWidth,
+						_tilemapInfo.ScrollHeight
 					);
 				} else {
 					ScrollOverlayRect = Rect.Empty;
@@ -244,6 +251,16 @@ namespace Mesen.Debugger.ViewModels
 			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
 			PixelRect cropRect = new PixelRect(p.X / tileInfo.Width * tileInfo.Width, p.Y / tileInfo.Height * tileInfo.Height, tileInfo.Width, tileInfo.Height);
 			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
+
+			if(_tilemapInfo.Bpp <= 4) {
+				int paletteSize = (int)Math.Pow(2, _tilemapInfo.Bpp);
+				int paletteIndex = tileInfo.PaletteIndex >= 0 ? tileInfo.PaletteIndex : 0;
+				UInt32[] tilePalette = new UInt32[paletteSize];
+				Array.Copy(_palette.RgbPalette, paletteIndex * paletteSize, tilePalette, 0, paletteSize);
+
+				entries.AddEntry("Palette", tilePalette);
+			}
+
 			entries.AddEntry("Column, Row", tileInfo.Column + ", " + tileInfo.Row);
 			entries.AddEntry("Size", tileInfo.Width + "x" + tileInfo.Height);
 

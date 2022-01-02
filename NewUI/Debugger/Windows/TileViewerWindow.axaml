@@ -39,7 +39,7 @@
 		</Panel>
 
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
-			<StackPanel Margin="5 0 5 0">
+			<StackPanel Margin="3">
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 					<TextBlock Grid.Column="0" Grid.Row="0" Text="Source:" />
 					<c:EnumComboBox
@@ -86,18 +86,20 @@
 					/>
 
 					<CheckBox Grid.Row="6" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
+				</Grid>
 
-					<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
+				<c:OptionSection Header="Palette Selection">
+					<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
 						<dc:PaletteSelector
-							ColumnCount="16"
+							ColumnCount="{CompiledBinding PaletteColumnCount}"
 							BlockSize="14"
 							SelectionMode="{CompiledBinding PaletteSelectionMode}"
 							SelectedPalette="{CompiledBinding Config.SelectedPalette}"
 							PaletteColors="{CompiledBinding PaletteColors}"
 						/>
 					</Border>
-				</Grid>
-
+				</c:OptionSection>
+				
 				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 			</StackPanel>
 		</ScrollViewer>

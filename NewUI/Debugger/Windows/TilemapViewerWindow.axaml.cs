@@ -1,14 +1,9 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
-using Avalonia.Threading;
 using System;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
-using Avalonia.Platform;
 using Mesen.Interop;
 using System.ComponentModel;
 using Avalonia.Input;
@@ -22,7 +17,6 @@ namespace Mesen.Debugger.Windows
 		private NotificationListener _listener;
 		private TilemapViewerViewModel _model;
 		private PictureViewer _picViewer;
-		private PixelPoint? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
 		public TilemapViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
@@ -78,22 +72,22 @@ namespace Mesen.Debugger.Windows
 		{
 			if(sender is PictureViewer viewer) {
 				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
-				if(point == _prevMousePos) {
+				if(point == _model.ViewerMousePos) {
 					return;
 				}
-				_prevMousePos = point;
+				_model.ViewerMousePos = point;
 
-				DynamicTooltip? existingTooltip = ToolTip.GetTip(viewer) as DynamicTooltip;
-				DynamicTooltip? tooltip = point == null ? null : _model.GetPreviewPanel(point.Value, existingTooltip);
+				_model.ViewerTooltip = point == null ? null : _model.GetPreviewPanel(point.Value, _model.ViewerTooltip);
 
-				if(tooltip != null) {
-					ToolTip.SetTip(viewer, tooltip);
+				if(_model.ViewerTooltip != null) {
+					ToolTip.SetTip(viewer, _model.ViewerTooltip);
 
 					//Force tooltip to update its position
 					ToolTip.SetHorizontalOffset(viewer, 14);
 					ToolTip.SetHorizontalOffset(viewer, 15);
 					ToolTip.SetIsOpen(viewer, true);
 				} else {
+					_model.ViewerTooltip = null;
 					ToolTip.SetTip(viewer, null);
 					ToolTip.SetIsOpen(viewer, false);
 				}
@@ -106,7 +100,8 @@ namespace Mesen.Debugger.Windows
 				ToolTip.SetTip(viewer, null);
 				ToolTip.SetIsOpen(viewer, false);
 			}
-			_prevMousePos = null;
+			_model.ViewerTooltip = null;
+			_model.ViewerMousePos = null;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
