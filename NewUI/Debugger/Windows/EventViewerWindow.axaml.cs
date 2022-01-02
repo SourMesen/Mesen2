@@ -89,10 +89,13 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
 			ReactiveHelper.UnregisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
 			_listener.Dispose();
 			_model.SaveConfig();
+			_model.Dispose();
+			DataContext = null;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)

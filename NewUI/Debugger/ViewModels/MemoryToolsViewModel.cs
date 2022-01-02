@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class MemoryToolsViewModel : ViewModelBase
+	public class MemoryToolsViewModel : DisposableViewModel
 	{
 		[Reactive] public HexEditorConfig Config { get; set; }
 		[Reactive] public FontConfig FontConfig { get; set; }
@@ -49,22 +49,22 @@ namespace Mesen.Debugger.ViewModels
 				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
 			}
 
-			this.WhenAnyValue(x => x.SelectionStart, x => x.SelectionLength).Subscribe(((int start, int length) o) => {
+			AddDisposable(this.WhenAnyValue(x => x.SelectionStart, x => x.SelectionLength).Subscribe(((int start, int length) o) => {
 				if(o.length <= 1) {
 					StatusBarText = ResourceHelper.GetMessage("HexEditor_Location", o.start.ToString("X2"));
 				} else {
 					StatusBarText = ResourceHelper.GetMessage("HexEditor_Selection", o.start.ToString("X2"), (o.start + o.length - 1).ToString("X2"), o.length);
 				}
-			});
+			}));
 
-			this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((SnesMemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
+			AddDisposable(this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((SnesMemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
 				o.memType, Config, o.conv
-			));
+			)));
 
-			this.WhenAnyValue(
+			AddDisposable(this.WhenAnyValue(
 				x => x.Config.MemoryType,
 				x => x.Config.BytesPerRow
-			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue);
+			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue));
 		}
 
 		internal void SaveConfig()

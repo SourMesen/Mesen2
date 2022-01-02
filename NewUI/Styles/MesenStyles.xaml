@@ -37,6 +37,9 @@
 				</ComboBox>
 				<TextBox Text="00bc" />
 				<Button Content="Testgpq" />
+				<Button Content="Disabled" IsEnabled="False" />
+				<RepeatButton Content="Repeat" />
+				<RepeatButton Content="Disabled" IsEnabled="False" />
 				<RadioButton Content="Test"/>
 				<RadioButton Content="Test" IsChecked="True"/>				
 				<DatePicker />
@@ -69,6 +72,8 @@
 		<Color x:Key="ComboBoxBackgroundPointerOver">#E5F1FB</Color>
 		<Color x:Key="ComboBoxBorderBrushPointerOver">#0078D7</Color>
 
+		<Color x:Key="RepeatButtonBackground">#E1E1E1</Color>
+		<Color x:Key="RepeatButtonBorderBrush">#ADADAD</Color>
 		<Color x:Key="RepeatButtonBackgroundPointerOver">#E5F1FB</Color>
 		<Color x:Key="RepeatButtonBorderBrushPointerOver">#0078D7</Color>
 		<Color x:Key="RepeatButtonBackgroundPressed">#CCE4F7</Color>
@@ -404,37 +409,25 @@
 		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 
-	<Style Selector="Button">
+	<Style Selector="Button, RepeatButton">
 		<Setter Property="Height" Value="21" />
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="4 3" />
 		<Setter Property="MinWidth" Value="60" />
 		<Setter Property="HorizontalContentAlignment" Value="Center" />
 	</Style>
-	
-	<Style Selector="TextBlock">
+
+	<Style Selector="DatePicker, TimePicker, TextBox, NumericUpDown">
 		<Setter Property="FontSize" Value="11" />
 		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
 	</Style>
 	
-	<Style Selector="AccessText">
+	<Style Selector="TextBlock, AccessText">
 		<Setter Property="FontSize" Value="11" />
 		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
 	</Style>
 
-	<Style Selector="DatePicker">
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
-		<Setter Property="FontSize" Value="11" />
-	</Style>
-
-	<Style Selector="TimePicker">
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
-		<Setter Property="FontSize" Value="11" />
-	</Style>
-	
 	<Style Selector="TextBox">
-		<Setter Property="FontSize" Value="11" />
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
 		<Setter Property="MinWidth" Value="30" />
 		
 		<Setter Property="VerticalContentAlignment" Value="Center" />
@@ -520,10 +513,13 @@
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="21" />
 		<Setter Property="Margin" Value="1" />
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
-		<Setter Property="FontSize" Value="11" />
 	</Style>
 
+	<Style Selector="NumericUpDown RepeatButton">
+		<Setter Property="Height" Value="19" />
+		<Setter Property="Margin" Value="0" />
+	</Style>
+	
 	<Style Selector="NumericUpDown TextBox Border">
 		<Setter Property="Padding" Value="0 2 0 0" />
 	</Style>

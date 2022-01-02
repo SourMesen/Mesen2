@@ -43,6 +43,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_listener?.Dispose();
+			DataContext = null;
 		}
 
 		private void listener_OnNotification(NotificationEventArgs e)

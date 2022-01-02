@@ -63,12 +63,14 @@ namespace Mesen.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			base.OnClosing(e);
 			if(Design.IsDesignMode) {
 				return;
 			}
 
 			_timer.Stop();
 			ConfigManager.Config.ApplyConfig();
+			DataContext = null;
 		}
 	}
 }

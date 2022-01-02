@@ -55,21 +55,22 @@
 					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
 
 					<c:OptionSection Header="{l:Translate lblDataSource}">
-						<StackPanel Orientation="Horizontal">
+						<Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
 							<TextBlock Text="{l:Translate lblSource}" />
-							<c:EnumComboBox SelectedItem="{CompiledBinding Config.Source}" Width="120" />
-						</StackPanel>
+							<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.Source}" Width="120" />
 
-						<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding !!Config.Source}">
-							<TextBlock Text="{l:Translate lblSourceOffset}" />
-							<NumericUpDown
+							<TextBlock Grid.Row="1" Text="{l:Translate lblSourceOffset}" IsVisible="{CompiledBinding !!Config.Source}" />
+							<dc:HexInput
+								IsVisible="{CompiledBinding !!Config.Source}"
+								Grid.Row="1"
+								Grid.Column="1"
 								Minimum="0"
 								Maximum="{CompiledBinding MaxSourceOffset}"
-								Increment="256"
-								Width="80"
+								SmallIncrement="1"
+								LargeIncrement="256"
 								Value="{CompiledBinding Config.SourceOffset}"
 							/>
-						</StackPanel>
+						</Grid>
 					</c:OptionSection>
 					
 					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
@@ -93,7 +94,7 @@
 				<RowDefinition MinHeight="200" Height="*" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition
-					MinHeight="100"
+					MinHeight="{CompiledBinding MinListViewHeight}"
 					Height="{CompiledBinding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
 				/>
 			</Grid.RowDefinitions>

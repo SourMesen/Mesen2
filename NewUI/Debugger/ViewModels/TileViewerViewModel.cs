@@ -19,7 +19,7 @@ using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TileViewerViewModel : ViewModelBase, IDisposable
+	public class TileViewerViewModel : DisposableViewModel
 	{
 		public CpuType CpuType { get; }
 		public ConsoleType ConsoleType { get; }
@@ -60,14 +60,14 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			FileMenuActions = new() {
+			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
-			};
+			});
 
-			ViewMenuActions = new() {
+			ViewMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
@@ -95,15 +95,12 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
 					OnClick = () => picViewer.ZoomOut()
 				},
-			};
+			});
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
-			ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged);
-
 			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
-
 			if(!AvailableMemoryTypes.Contains(Config.Source)) {
 				Config.Source = cpuType.GetVramMemoryType();
 			}
@@ -115,17 +112,20 @@ namespace Mesen.Debugger.ViewModels
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
+			if(AvailableFormats.Contains(Config.Format)) {
+				Config.Format = (TileFormat)AvailableFormats[0];
+			}
 			ShowFormatDropdown = AvailableFormats.Length > 1;
 
-			this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
 				PaletteSelectionMode = x switch {
 					TileFormat.Bpp2 or TileFormat.NesBpp2 => PaletteSelectionMode.FourColors,
 					TileFormat.Bpp4 => PaletteSelectionMode.SixteenColors,
 					_ => PaletteSelectionMode.None
 				};
-			});
+			}));
 
-			this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
 				int bpp = Config.Format switch {
 					TileFormat.Bpp2 => 2,
 					TileFormat.Bpp4 => 4,
@@ -137,11 +137,14 @@ namespace Mesen.Debugger.ViewModels
 				};
 
 				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * bpp / 8;
-			});
+			}));
 
-			this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
+			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
 				MaximumAddress = DebugApi.GetMemorySize(memType) - 1;
-			});
+				RefreshData();
+			}));
+			
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -189,10 +192,6 @@ namespace Mesen.Debugger.ViewModels
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
 				ViewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 			}
-		}
-
-		public void Dispose()
-		{
 		}
 	}
 }

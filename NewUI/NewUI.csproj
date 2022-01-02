@@ -189,6 +189,9 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Controls\HexInput.axaml.cs">
+      <DependentUpon>HexInput.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\DynamicTooltip.axaml.cs">
       <DependentUpon>DynamicTooltip.axaml</DependentUpon>
     </Compile>

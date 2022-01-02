@@ -21,7 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class SpriteViewerViewModel : ViewModelBase, IDisposable
+	public class SpriteViewerViewModel : DisposableViewModel
 	{
 		public SpriteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
@@ -45,6 +45,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<Rect>? SpriteRects { get; set; } = null;
 
 		[Reactive] public bool ShowListView { get; set; }
+		[Reactive] public double MinListViewHeight { get; set; }
 		[Reactive] public double ListViewHeight { get; set; }
 		[Reactive] public List<SpritePreviewModel>? ListViewSpritePreviews { get; set; } = null;
 		
@@ -76,14 +77,14 @@ namespace Mesen.Debugger.ViewModels
 
 			InitBitmap(256, 256);
 
-			FileMenuActions = new() {
+			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
-			};
+			});
 
-			ViewMenuActions = new() {
+			ViewMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
@@ -111,20 +112,20 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
 					OnClick = () => picViewer.ZoomOut()
 				},
-			};
+			});
 
 			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
 
-			this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview());
-			this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect());
+			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview()));
+			AddDisposable(this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect()));
 
-			this.WhenAnyValue(x => x.Config.Source, x => x.Config.SourceOffset).Subscribe(x => RefreshData());
+			AddDisposable(this.WhenAnyValue(x => x.Config.Source, x => x.Config.SourceOffset).Subscribe(x => RefreshData()));
 
 			InitListViewObservers();
 
-			ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged);
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
@@ -133,36 +134,32 @@ namespace Mesen.Debugger.ViewModels
 		private void InitListViewObservers()
 		{
 			//Update list view height based on show list view flag
-			this.WhenAnyValue(x => x.ShowListView).Subscribe(showListView => {
+			AddDisposable(this.WhenAnyValue(x => x.ShowListView).Subscribe(showListView => {
 				Config.ShowListView = showListView;
 				ListViewHeight = showListView ? Config.ListViewHeight : 0;
+				MinListViewHeight = showListView ? 100 : 0;
 				if(showListView) {
 					ListViewSpritePreviews = SpritePreviews;
 				} else {
 					ListViewSpritePreviews = null;
 				}
-			});
+			}));
 
-			this.WhenAnyValue(x => x.SpritePreviews).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.SpritePreviews).Subscribe(x => {
 				if(ShowListView) {
 					ListViewSpritePreviews = x;
 				} else {
 					ListViewSpritePreviews = null;
 				}
-			});
+			}));
 
-			this.WhenAnyValue(x => x.ListViewHeight).Subscribe(height => {
+			AddDisposable(this.WhenAnyValue(x => x.ListViewHeight).Subscribe(height => {
 				if(ShowListView) {
 					Config.ListViewHeight = height;
 				} else {
 					ListViewHeight = 0;
 				}
-			});
-		}
-
-		public void Dispose()
-		{
-			ReactiveHelper.UnregisterRecursiveObserver(Config, Config_PropertyChanged);
+			}));
 		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -224,8 +221,8 @@ namespace Mesen.Debugger.ViewModels
 
 				for(int i = 0; i < spriteCount; i++) {
 					SpritePreviewPanel preview = new SpritePreviewPanel();
-					preview.Height = 3 + 32.0 / dpiScale;
-					preview.Width = 3 + 32.0 / dpiScale;
+					preview.Height = 2 + 32.0 / dpiScale;
+					preview.Width = 2 + 32.0 / dpiScale;
 					Grid.SetColumn(preview, i % 8);
 					Grid.SetRow(preview, i / 8);
 

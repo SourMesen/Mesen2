@@ -12,7 +12,7 @@ using System.Reactive;
 
 namespace Mesen.Debugger.Utilities
 {
-	public class ContextMenuAction : ViewModelBase
+	public class ContextMenuAction : ViewModelBase, IDisposable
 	{
 		public ActionType ActionType;
 		public string? CustomText { get; set; }
@@ -106,6 +106,23 @@ namespace Mesen.Debugger.Utilities
 		public void Update()
 		{
 			Enabled = IsEnabled?.Invoke() ?? true;
+		}
+
+		public void Dispose()
+		{
+			_onClick = () => { };
+			_clickCommand?.Dispose();
+			_clickCommand = null;
+			Shortcut = null;
+			IsSelected = null;
+			IsEnabled = null;
+			if(_subActions != null) {
+				foreach(object subAction in _subActions) {
+					if(subAction is ContextMenuAction action) {
+						action.Dispose();
+					}
+				}
+			}
 		}
 	}
 

@@ -56,13 +56,13 @@
 					</StackPanel>
 
 					<TextBlock Grid.Column="0" Grid.Row="2" Text="Address:" />
-					<NumericUpDown
+					<dc:HexInput
 						Grid.Column="1" Grid.Row="2"
 						Value="{CompiledBinding Config.StartAddress}"
-						Increment="{CompiledBinding AddressIncrement}"
+						LargeIncrement="{CompiledBinding AddressIncrement}"
+						SmallIncrement="1"
 						Minimum="0"
 						Maximum="{CompiledBinding MaximumAddress}"
-						Width="150"
 					/>
 
 					<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />

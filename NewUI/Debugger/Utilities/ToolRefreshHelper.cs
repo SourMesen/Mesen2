@@ -16,7 +16,18 @@ namespace Mesen.Debugger.Utilities
 			internal int Cycle { get; set; } = 0;
 		}
 
-		private static Dictionary<object, DateTime> _lastRefreshStamp = new();
+		public class LastRefreshInfo
+		{
+			public WeakReference<object> Host;
+			public DateTime Stamp;
+
+			public LastRefreshInfo(object host)
+			{
+				Host = new(host);
+			}
+		}
+
+		private static List<LastRefreshInfo> _lastRefreshStamp = new();
 		private static Dictionary<Window, ToolInfo> _activeWindows = new();
 		private static int _nextId = 0;
 
@@ -27,16 +38,21 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			int newId = Interlocked.Increment(ref _nextId);
-			wnd.Closed += (s, e) => {
-				_activeWindows.Remove(wnd);
-				//TODO
-				//DebugApi.RemoveViewer(newId);
-			};
+			wnd.Closed += OnWindowClosedHandler;
+
 			_activeWindows.Add(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle });
 
 			DebugApi.SetViewerUpdateTiming(newId, cfg.RefreshScanline, cfg.RefreshCycle, cpuType);
 
 			return newId;
+		}
+
+		private static void OnWindowClosedHandler(object? sender, EventArgs e)
+		{
+			if(sender is Window wnd) {
+				_activeWindows.Remove(wnd);
+				wnd.Closed -= OnWindowClosedHandler;
+			}
 		}
 
 		private static int GetViewerId(Window wnd, RefreshTimingConfig cfg, CpuType cpuType)
@@ -81,13 +97,19 @@ namespace Mesen.Debugger.Utilities
 		public static bool LimitFps(object host, int maxFps)
 		{
 			DateTime now = DateTime.Now;
-			if(_lastRefreshStamp.TryGetValue(host, out DateTime stamp)) {
-				if((now - stamp).TotalMilliseconds < 1000.0 / maxFps) {
-					return true;
+			for(int i = _lastRefreshStamp.Count - 1; i >= 0; i--) {
+				if(_lastRefreshStamp[i].Host.TryGetTarget(out object? target)) {
+					if(object.ReferenceEquals(target, host)) {
+						if((now - _lastRefreshStamp[i].Stamp).TotalMilliseconds < 1000.0 / maxFps) {
+							return true;
+						}
+					}
+				} else {
+					_lastRefreshStamp.RemoveAt(i);
 				}
 			}
 
-			_lastRefreshStamp[host] = now;
+			_lastRefreshStamp.Add(new LastRefreshInfo(host) { Stamp = now });
 			return false;
 		}
 	}

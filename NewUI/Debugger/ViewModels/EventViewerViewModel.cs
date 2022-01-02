@@ -22,7 +22,7 @@ using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class EventViewerViewModel : ViewModelBase
+	public class EventViewerViewModel : DisposableViewModel
 	{
 		public const int HdmaChannelFlag = 0x40;
 
@@ -57,14 +57,14 @@ namespace Mesen.Debugger.ViewModels
 				_ => throw new Exception("Invalid cpu type")
 			};
 
-			FileMenuActions = new() {
+			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
-			};
+			});
 
-			ViewMenuActions = new() {
+			ViewMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
@@ -92,13 +92,13 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
 					OnClick = () => _picViewer.ZoomOut()
 				},
-			};
+			});
 
 			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
 
-			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(true));
+			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(true)));
 
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}

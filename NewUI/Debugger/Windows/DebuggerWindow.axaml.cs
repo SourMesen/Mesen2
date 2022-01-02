@@ -79,6 +79,8 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			base.OnClosing(e);
+
 			if(Design.IsDesignMode) {
 				return;
 			}
@@ -91,7 +93,7 @@ namespace Mesen.Debugger.Windows
 			_model.Cleanup();
 			_model.Config.SaveWindowSettings(this);
 			ConfigManager.SaveConfig();
-			base.OnClosing(e);
+			DataContext = null;
 		}
 
 		private void UpdateDebugger()

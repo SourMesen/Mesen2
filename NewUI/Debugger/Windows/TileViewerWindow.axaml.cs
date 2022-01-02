@@ -62,9 +62,11 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			base.OnClosing(e);
 			_listener.Dispose();
 			_model.Config.SaveWindowSettings(this);
 			_model.Dispose();
+			DataContext = null;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)

@@ -10,7 +10,14 @@
 	x:DataType="vm:SpritePreviewModel"
 	x:Class="Mesen.Debugger.Controls.SpritePreviewPanel"
 >
-	<Border Background="#DDD" BorderThickness="1" BorderBrush="Gray" HorizontalAlignment="Left" VerticalAlignment="Top">
+	<Border
+		Background="#DDD"
+		BorderThickness="1"
+		BorderBrush="Gray"
+		HorizontalAlignment="Stretch"
+		VerticalAlignment="Stretch"
+		Margin="0 0 1 1"
+	>
 		<dc:PictureViewer
 			Source="{CompiledBinding SpritePreview}"
 			Zoom="{CompiledBinding SpritePreviewZoom}"

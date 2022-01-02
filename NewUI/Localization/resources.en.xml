@@ -813,7 +813,7 @@
 			<Control ID="chkShowListView">Show list view</Control>
 			<Control ID="lblDataSource">Data Source</Control>
 			<Control ID="lblSource">Source:</Control>
-			<Control ID="lblSourceOffset">Offset (bytes): $</Control>
+			<Control ID="lblSourceOffset">Offset:</Control>
 		</Form>
 
 		<Form ID="AssemblerWindow">

@@ -18,7 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TilemapViewerViewModel : ViewModelBase
+	public class TilemapViewerViewModel : DisposableViewModel
 	{
 		public CpuType CpuType { get; }
 		public ConsoleType ConsoleType { get; }
@@ -88,14 +88,14 @@ namespace Mesen.Debugger.ViewModels
 
 			InitBitmap(256, 256);
 
-			FileMenuActions = new() {
+			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
-			};
+			});
 
-			ViewMenuActions = new() {
+			ViewMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
@@ -123,19 +123,16 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
 					OnClick = () => _picViewer.ZoomOut()
 				},
-			};
+			});
 
 			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
 
-			this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1);
-
-			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab());
-
-			this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel());
-
-			Config.PropertyChanged += Config_PropertyChanged;
+			AddDisposable(this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1));
+			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab()));
+			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
@@ -155,11 +152,6 @@ namespace Mesen.Debugger.ViewModels
 			RefreshTab();
 		}
 
-		public void Dispose()
-		{
-			Config.PropertyChanged -= Config_PropertyChanged;
-		}
-		
 		[MemberNotNull(nameof(ViewerBitmap))]
 		private void InitBitmap(int width, int height)
 		{

@@ -155,6 +155,11 @@ namespace Mesen.Debugger.Controls
 			});
 		}
 
+		public PictureViewer()
+		{
+			Focusable = true;
+		}
+
 		private void OnSourceInvalidated(object? sender, EventArgs e)
 		{
 			InvalidateVisual();
