@@ -137,11 +137,31 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint8_t ban
 	int32_t bankEnd = (bank + 1) << 16;
 
 	AddressInfo addrInfo = {};
+
+	auto pushEndBlock = [&relAddress, &prevAddrInfo, &results, &inVerifiedBlock, &inUnknownBlock, &byteCounter, showData, showUnident, bytesPerRow]() {
+		if(inUnknownBlock || inVerifiedBlock) {
+			int flags = LineFlags::BlockEnd;
+			if(inVerifiedBlock) {
+				flags |= LineFlags::VerifiedData;
+			}
+			if((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) {
+				flags |= LineFlags::ShowAsData;
+			}
+
+			results[results.size() - 1].SetByteCount(bytesPerRow - byteCounter + 1);
+			results.push_back(DisassemblyResult(prevAddrInfo, relAddress.Address - 1, flags));
+			inUnknownBlock = false;
+			inVerifiedBlock = false;
+			byteCounter = 0;
+		}
+	};
+
 	for(int32_t i = bankStart; i < bankEnd; i++) {
 		relAddress.Address = i;
 		AddressInfo addrInfo = _console->GetAbsoluteAddress(relAddress);
 
 		if(addrInfo.Address < 0 || addrInfo.Type == SnesMemoryType::Register) {
+			pushEndBlock();
 			inUnmappedBlock = true;
 			continue;
 		}
@@ -169,14 +189,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint8_t ban
 		}
 
 		if(opSize > 0) {
-			if(inUnknownBlock || inVerifiedBlock) {
-				int flags = LineFlags::BlockEnd | (inVerifiedBlock ? LineFlags::VerifiedData : 0) | (((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) ? LineFlags::ShowAsData : 0);
-				results[results.size() - 1].SetByteCount(bytesPerRow - byteCounter + 1);
-				results.push_back(DisassemblyResult(prevAddrInfo, i - 1, flags));
-				inUnknownBlock = false;
-				inVerifiedBlock = false;
-			}
-			byteCounter = 0;
+			pushEndBlock();
 
 			if(addrInfo.Type == SnesMemoryType::PrgRom && cdl->IsSubEntryPoint(addrInfo.Address)) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
@@ -225,20 +238,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint8_t ban
 		} else {
 			if(showData || showUnident) {
 				if((isData && inUnknownBlock) || (!isData && inVerifiedBlock)) {
-					results[results.size() - 1].SetByteCount(bytesPerRow - byteCounter + 1);
-
-					if(isData && inUnknownBlock) {
-						//In an unknown block and the next byte is data, end the block
-						results.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd | (showUnident ? LineFlags::ShowAsData : 0)));
-					} else {
-						//In a verified data block and the next byte is unknown, end the block
-						results.push_back(DisassemblyResult(prevAddrInfo, i - 1, LineFlags::BlockEnd | LineFlags::VerifiedData | (showData ? LineFlags::ShowAsData : 0)));
-					}
-
-					inUnknownBlock = false;
-					inVerifiedBlock = false;
-
-					byteCounter = 0;
+					pushEndBlock();
 				}
 			}
 
