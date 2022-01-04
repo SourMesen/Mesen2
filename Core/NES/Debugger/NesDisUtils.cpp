@@ -33,10 +33,10 @@ void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 		} 
 		
 		if(operand.GetSize() == 0) {
-			if(opSize == 2) {
-				operand.WriteAll('$', HexUtilities::ToHex((uint8_t)opAddr));
-			} else if(opSize == 3) {
+			if(opSize == 3 || addrMode == NesAddrMode::Rel) {
 				operand.WriteAll('$', HexUtilities::ToHex((uint16_t)opAddr));
+			} else if(opSize == 2) {
+				operand.WriteAll('$', HexUtilities::ToHex((uint8_t)opAddr));
 			}
 		}
 	}
