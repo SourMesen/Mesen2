@@ -65,17 +65,18 @@
 		<ScrollBar
 			DockPanel.Dock="Right"
 			Orientation="Vertical"
-			Minimum="0"
-			Maximum="{CompiledBinding MaxScrollPosition}"
 			VerticalAlignment="Stretch"
 			AllowAutoHide="False"
+			Minimum="0"
+			Maximum="{CompiledBinding MaxScrollPosition}"
 			Value="{CompiledBinding ScrollPosition}"
 		/>
 
 		<dc:DisassemblyViewer
-			DataProvider="{CompiledBinding DataProvider}"
+			Name="disViewer"
+			Lines="{CompiledBinding TraceLogLines}"
 			StyleProvider="{CompiledBinding StyleProvider}"
-			ScrollPosition="{CompiledBinding ScrollPosition}"
+			PointerWheelChanged="Disassembly_PointerWheelChanged"
 		/>
 	</DockPanel>
 </Window>

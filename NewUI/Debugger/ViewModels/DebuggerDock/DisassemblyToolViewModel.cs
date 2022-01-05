@@ -4,9 +4,9 @@ namespace Mesen.Debugger.ViewModels.DebuggerDock
 {
 	public class DisassemblyToolViewModel : Tool
 	{
-		public DisassemblyViewerViewModel DisassemblyViewerViewModel { get; set; }
+		public DisassemblyViewModel DisassemblyViewerViewModel { get; set; }
 
-		public DisassemblyToolViewModel(DisassemblyViewerViewModel disassemblyViewerViewModel)
+		public DisassemblyToolViewModel(DisassemblyViewModel disassemblyViewerViewModel)
 		{
 			Id = "DiassemblyTool";
 			Title = "Disassembly";

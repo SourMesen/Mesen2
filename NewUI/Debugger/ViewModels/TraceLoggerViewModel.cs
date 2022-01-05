@@ -16,10 +16,14 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class TraceLoggerViewModel : ViewModelBase
 	{
+		public const int TraceLogBufferSize = 30000;
+
 		[Reactive] public TraceLoggerCodeDataProvider? DataProvider { get; set; }
 		[Reactive] public TraceLoggerStyleProvider StyleProvider { get; set; } = new TraceLoggerStyleProvider();
+		[Reactive] public CodeLineData[] TraceLogLines { get; set; } = Array.Empty<CodeLineData>();
+		[Reactive] public int VisibleRowCount { get; set; } = 100;
 		[Reactive] public int ScrollPosition { get; set; } = 0;
-		[Reactive] public int MaxScrollPosition { get; set; } = 0;
+		[Reactive] public int MaxScrollPosition { get; set; } = TraceLoggerViewModel.TraceLogBufferSize;
 		[Reactive] public bool IsLoggingToFile { get; set; } = false;
 
 		[Reactive] public List<TraceLoggerOptionTab> Tabs { get; set; } = new List<TraceLoggerOptionTab>();
@@ -32,6 +36,14 @@ namespace Mesen.Debugger.ViewModels
 
 			DataProvider = new TraceLoggerCodeDataProvider();
 			UpdateAvailableTabs();
+
+			this.WhenAnyValue(x => x.ScrollPosition).Subscribe(x => {
+				ScrollPosition = Math.Max(0, Math.Min(x, MaxScrollPosition));
+				UpdateTraceLogLines();
+			});
+			this.WhenAnyValue(x => x.MaxScrollPosition).Subscribe(x => {
+				ScrollPosition = Math.Min(ScrollPosition, MaxScrollPosition);
+			});
 		}
 
 		public void UpdateAvailableTabs()
@@ -77,9 +89,30 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.SetTraceOptions(tab.CpuType, options);
 			}
 
-			DataProvider = new TraceLoggerCodeDataProvider();
-			MaxScrollPosition = DataProvider.GetLineCount();
-			ScrollPosition = MaxScrollPosition - 0x20;
+			UpdateTraceLogLines();
+			ScrollToBottom();
+		}
+
+		private void UpdateTraceLogLines()
+		{
+			if(DataProvider != null) {
+				TraceLogLines = DataProvider.GetCodeLines(ScrollPosition, VisibleRowCount);
+			}
+		}
+
+		public void Scroll(int offset)
+		{
+			ScrollPosition += offset;
+		}
+
+		public void ScrollToTop()
+		{
+			ScrollPosition = 0;
+		}
+
+		public void ScrollToBottom()
+		{
+			ScrollPosition = MaxScrollPosition;
 		}
 	}
 
@@ -103,7 +136,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public int GetLineCount()
 		{
-			return 30000;
+			return TraceLoggerViewModel.TraceLogBufferSize;
 		}
 
 		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
@@ -113,7 +146,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public CodeLineData[] GetCodeLines(int startIndex, int rowCount)
 		{
-			TraceRow[] rows = DebugApi.GetExecutionTrace((uint)(30000 - startIndex), (uint)rowCount);
+			TraceRow[] rows = DebugApi.GetExecutionTrace((uint)(TraceLoggerViewModel.TraceLogBufferSize - startIndex - rowCount), (uint)rowCount);
 
 			List<CodeLineData> lines = new(rowCount);
 			for(int i = 0; i < rows.Length; i++) {
@@ -130,6 +163,11 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			return lines.ToArray();
+		}
+
+		public int GetRowAddress(int address, int rowOffset)
+		{
+			return Math.Max(0, Math.Min(GetLineCount() - 1, address + rowOffset));
 		}
 	}
 

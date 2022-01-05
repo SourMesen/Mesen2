@@ -1,10 +1,5 @@
 ﻿using Mesen.Debugger.Controls;
 using Mesen.Interop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Disassembly
 {
@@ -26,6 +21,11 @@ namespace Mesen.Debugger.Disassembly
 		public CodeLineData[] GetCodeLines(int startPosition, int rowCount)
 		{
 			return DebugApi.GetDisassemblyOutput(_type, (uint)startPosition, (uint)rowCount);
+		}
+
+		public int GetRowAddress(int address, int rowOffset)
+		{
+			return DebugApi.GetDisassemblyRowAddress(_type, (uint)address, rowOffset);
 		}
 
 		public bool UseOptimizedSearch { get { return true; } }

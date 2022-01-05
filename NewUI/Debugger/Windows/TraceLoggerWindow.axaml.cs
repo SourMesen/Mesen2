@@ -1,14 +1,15 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Mesen.Config;
+using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using Mesen.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
@@ -19,11 +20,20 @@ namespace Mesen.Debugger.Windows
 		private TraceLoggerViewModel Model => ((TraceLoggerViewModel)DataContext!);
 		private int _refreshCounter = 0;
 
+		static TraceLoggerWindow()
+		{
+			BoundsProperty.Changed.AddClassHandler<TraceLoggerWindow>((x, e) => {
+				DisassemblyViewer viewer = x.FindControl<DisassemblyViewer>("disViewer");
+				x.Model.VisibleRowCount = viewer.GetVisibleRowCount() - 1;
+				x.Model.MaxScrollPosition = TraceLoggerViewModel.TraceLogBufferSize - x.Model.VisibleRowCount;
+			});
+		}
+
 		public TraceLoggerWindow()
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 		}
 
@@ -43,6 +53,8 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_listener?.Dispose();
+			DebugApi.StopLogTraceToFile();
+			Model.SaveConfig();
 			DataContext = null;
 		}
 
@@ -55,17 +67,17 @@ namespace Mesen.Debugger.Windows
 
 				case ConsoleNotificationType.CodeBreak: {
 					Dispatcher.UIThread.Post(() => {
-						Model.UpdateLog();
+						Model?.UpdateLog();
 					});
 					break;
 				}
 
 				case ConsoleNotificationType.PpuFrameDone: {
 					_refreshCounter++;
-					if(_refreshCounter == 9) {
-						//Refresh every 9 frames, ~7fps
+					if(_refreshCounter == 6) {
+						//Refresh every 6 frames, 10fps
 						Dispatcher.UIThread.Post(() => {
-							Model.UpdateLog();
+							Model?.UpdateLog();
 						});
 						_refreshCounter = 0;
 					}
@@ -89,11 +101,19 @@ namespace Mesen.Debugger.Windows
 			DebugApi.StopLogTraceToFile();
 		}
 
-		protected override void OnClosed(EventArgs e)
+		public void Disassembly_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
 		{
-			base.OnClosed(e);
-			DebugApi.StopLogTraceToFile();
-			Model.SaveConfig();
+			Model.Scroll((int)(-e.Delta.Y * 3));
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			switch(e.Key) {
+				case Key.PageDown: Model.Scroll(Model.VisibleRowCount - 2); e.Handled = true; break;
+				case Key.PageUp: Model.Scroll(-(Model.VisibleRowCount - 2)); e.Handled = true; break;
+				case Key.Home: Model.ScrollToTop(); e.Handled = true; break;
+				case Key.End: Model.ScrollToBottom(); e.Handled = true; break;
+			}
 		}
 
 		private void InitializeComponent()

@@ -63,6 +63,7 @@ namespace Mesen.Interop
 			return result;
 		}
 
+		[DllImport(DllPath)] public static extern int GetDisassemblyRowAddress(CpuType type, UInt32 address, int rowOffset);
 		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
 
 		[DllImport(DllPath)] private static extern void GetCpuState(IntPtr state, CpuType cpuType);
@@ -505,7 +506,7 @@ namespace Mesen.Interop
 			switch(memType) {
 				case SnesMemoryType.CpuMemory:
 				case SnesMemoryType.GameboyMemory:
-				case SnesMemoryType.NesMemory:				
+				case SnesMemoryType.NesMemory:
 				case SnesMemoryType.PrgRom:
 				case SnesMemoryType.GbPrgRom:
 				case SnesMemoryType.NesPrgRom:

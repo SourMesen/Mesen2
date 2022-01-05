@@ -110,5 +110,10 @@ namespace Mesen.Debugger.Disassembly
 		{
 			throw new NotImplementedException();
 		}
+
+		public int GetRowAddress(int address, int rowOffset)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

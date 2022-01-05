@@ -50,6 +50,7 @@ extern "C"
 	DllExport void __stdcall Step(CpuType cpuType, uint32_t count, StepType type) { GetDebugger()->Step(cpuType, count, type); }
 
 	DllExport uint32_t __stdcall GetDisassemblyOutput(CpuType type, uint32_t lineIndex, CodeLineData output[], uint32_t rowCount) { return GetDebugger()->GetDisassembler()->GetDisassemblyOutput(type, lineIndex, output, rowCount); }
+	DllExport uint32_t __stdcall GetDisassemblyRowAddress(CpuType type, uint32_t address, int32_t rowOffset) { return GetDebugger()->GetDisassembler()->GetDisassemblyRowAddress(type, address, rowOffset); }
 	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return GetDebugger()->GetDisassembler()->SearchDisassembly(type, searchString, startPosition, endPosition, searchBackwards); }
 
 	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { GetDebugger()->GetTraceLogger(type)->SetOptions(options); }

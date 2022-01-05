@@ -128,8 +128,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint8_t ban
 	AddressInfo relAddress = {};
 	relAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);
 
-	int32_t maxBank = (_memoryDumper->GetMemorySize(relAddress.Type) - 1) >> 16;
-	if(bank > maxBank) {
+	if(bank > GetMaxBank(cpuType)) {
 		return results;
 	}
 
@@ -494,11 +493,8 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 	return data;
 }
 
-uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, CodeLineData output[], uint32_t rowCount)
+int32_t Disassembler::GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address)
 {
-	uint8_t bank = address >> 16;
-	vector<DisassemblyResult> rows = Disassemble(type, bank);
-
 	int32_t i;
 	for(i = 0; i < (int32_t)rows.size(); i++) {
 		if(rows[i].CpuAddress == (int32_t)address) {
@@ -510,8 +506,16 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 			break;
 		}
 	}
+	return std::max(0, i);
+}
 
-	i = std::max(0, i);
+uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, CodeLineData output[], uint32_t rowCount)
+{
+	uint16_t bank = address >> 16;
+	Timer timer;
+	vector<DisassemblyResult> rows = Disassemble(type, bank);
+
+	int32_t i = GetMatchingRow(rows, address);
 
 	if(i >= (int32_t)rows.size()) {
 		return 0;
@@ -539,6 +543,70 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 	}
 
 	return row;
+}
+
+uint16_t Disassembler::GetMaxBank(CpuType cpuType)
+{
+	AddressInfo relAddress = {};
+	relAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);
+	return (_memoryDumper->GetMemorySize(relAddress.Type) - 1) >> 16;
+}
+
+int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address, int32_t rowOffset)
+{
+	uint16_t bank = address >> 16;
+	vector<DisassemblyResult> rows = Disassemble(cpuType, bank);
+	int32_t len = (int32_t)rows.size();
+	if(len == 0) {
+		return address;
+	}
+
+	uint16_t maxBank = GetMaxBank(cpuType);
+	int32_t i = GetMatchingRow(rows, address);
+
+	if(rowOffset > 0) {
+		while(len > 0) {
+			for(; i < len; i++) {
+				rowOffset--;
+				if(rowOffset <= 0 && rows[i].CpuAddress >= 0) {
+					return rows[i].CpuAddress;
+				}
+			}
+
+			//End of bank, didn't find an appropriate row to jump to, try the next bank
+			if(bank == maxBank) {
+				//Reached bottom of last bank, return the bottom row
+				return rows[len - 1].CpuAddress >= 0 ? rows[len - 1].CpuAddress : address;
+			}
+
+			bank++;
+			rows = Disassemble(cpuType, bank);
+			len = (int32_t)rows.size();
+			i = 0;
+		}
+	} else if(rowOffset < 0) {
+		while(len > 0) {
+			for(; i >= 0; i--) {
+				rowOffset++;
+				if(rowOffset >= 0 && rows[i].CpuAddress >= 0) {
+					return rows[i].CpuAddress;
+				}
+			}
+
+			//Start of bank, didn't find an appropriate row to jump to, try the previous bank
+			if(bank == 0) {
+				//Reached top of first bank, return the top row
+				return rows[0].CpuAddress >= 0 ? rows[0].CpuAddress : address;
+			}
+
+			bank--;
+			rows = Disassemble(cpuType, bank);
+			len = (int32_t)rows.size();
+			i = len - 1;
+		}
+	}
+
+	return address;
 }
 
 int32_t Disassembler::SearchDisassembly(CpuType type, const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)

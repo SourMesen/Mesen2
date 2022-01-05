@@ -12,9 +12,8 @@ namespace Mesen.Debugger.Controls
 {
 	public class DisassemblyViewer : Control
 	{
-		public static readonly StyledProperty<ICodeDataProvider> DataProviderProperty = AvaloniaProperty.Register<DisassemblyViewer, ICodeDataProvider>(nameof(DataProvider));
+		public static readonly StyledProperty<CodeLineData[]> LinesProperty = AvaloniaProperty.Register<DisassemblyViewer, CodeLineData[]>(nameof(Lines));
 		public static readonly StyledProperty<ILineStyleProvider> StyleProviderProperty = AvaloniaProperty.Register<DisassemblyViewer, ILineStyleProvider>(nameof(StyleProviderProperty));
-		public static readonly StyledProperty<int> ScrollPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(ScrollPosition), 0, false, Avalonia.Data.BindingMode.TwoWay);
 
 		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
 		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
@@ -24,22 +23,16 @@ namespace Mesen.Debugger.Controls
 			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
 		}, true);
 
-		public ICodeDataProvider DataProvider
+		public CodeLineData[] Lines
 		{
-			get { return GetValue(DataProviderProperty); }
-			set { SetValue(DataProviderProperty, value); }
+			get { return GetValue(LinesProperty); }
+			set { SetValue(LinesProperty, value); }
 		}
 
 		public ILineStyleProvider StyleProvider
 		{
 			get { return GetValue(StyleProviderProperty); }
 			set { SetValue(StyleProviderProperty, value); }
-		}
-
-		public int ScrollPosition
-		{
-			get { return GetValue(ScrollPositionProperty); }
-			set { SetValue(ScrollPositionProperty, value); }
 		}
 
 		public string FontFamily
@@ -63,42 +56,19 @@ namespace Mesen.Debugger.Controls
 		private Typeface Font { get; set; }
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
-		private int VisibleRows => (int)(Bounds.Height / RowHeight) - 1;
+		
+		public int GetVisibleRowCount()
+		{
+			InitFontAndLetterSize();
+			return (int)Math.Ceiling(Bounds.Height / RowHeight);
+		}
 
-		private bool _scrollByAddress = false;
-		private bool _updatingScroll = false;
+		public delegate void RowClickedEventHandler(DisassemblyViewer sender, RowClickedEventArgs args);
+		public event RowClickedEventHandler? RowClicked;
 
 		static DisassemblyViewer()
 		{
-			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty);
-
-			DataProviderProperty.Changed.AddClassHandler<DisassemblyViewer>((x, e) => {
-				x.Refresh();
-				x.InvalidateVisual();
-			});
-
-			ScrollPositionProperty.Changed.AddClassHandler<DisassemblyViewer>((x, e) => {
-				if(x._updatingScroll) {
-					return;
-				}
-
-				x.Refresh();
-
-				if(x._scrollByAddress) {
-					x._updatingScroll = true;
-					CodeLineData[] lines = x._lines;
-					if(e.OldValue is int oldValue && e.NewValue is int newValue && oldValue < newValue) {
-						foreach(CodeLineData line in lines) {
-							if(line.Address >= 0 && newValue < line.Address) {
-								x.ScrollPosition = line.Address;
-								break;
-							}
-						}
-					}
-					x._updatingScroll = false;
-				}
-				x.InvalidateVisual();
-			});
+			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty);
 		}
 
 		public DisassemblyViewer()
@@ -110,28 +80,13 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerPressed(e);
 			PointerPoint p = e.GetCurrentPoint(this);
-			if(p.Position.X < 20) {
-				int rowNumber = (int)(p.Position.Y / LetterSize.Height);
-				CodeLineData[] lines = _lines;
-				if(rowNumber < lines.Length) {
-					CpuType cpuType = lines[rowNumber].CpuType;
-					AddressInfo relAddress = new AddressInfo() {
-						Address = lines[rowNumber].Address,
-						Type = cpuType.ToMemoryType()
-					};
-
-					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
-				}
+			int rowNumber = (int)(p.Position.Y / LetterSize.Height);
+			bool marginClicked = p.Position.X < 20;
+			if(rowNumber < Lines.Length) {
+				RowClicked?.Invoke(this, new RowClickedEventArgs(Lines[rowNumber], rowNumber, marginClicked, e.GetCurrentPoint(this).Properties));
 			}
 
 			InvalidateVisual();
-		}
-
-		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
-		{
-			base.OnPointerWheelChanged(e);
-			ScrollPosition = Math.Max(0, Math.Min(ScrollPosition - (int)(e.Delta.Y * 3), DataProvider.GetLineCount() - 1));
 		}
 
 		private void InitFontAndLetterSize()
@@ -141,38 +96,17 @@ namespace Mesen.Debugger.Controls
 			this.LetterSize = text.Bounds.Size;
 		}
 
-		private CodeLineData[] _lines = new CodeLineData[0];
-		public void Refresh()
-		{
-			ICodeDataProvider dp = this.DataProvider;
-			int scrollPosition = ScrollPosition;
-
-			InitFontAndLetterSize();
-
-			_lines = dp?.GetCodeLines(scrollPosition, VisibleRows + 3) ?? new CodeLineData[0];
-			if(_scrollByAddress) {
-				foreach(CodeLineData line in _lines) {
-					if(line.Address >= 0) {
-						if(ScrollPosition != line.Address) {
-							_updatingScroll = true;
-							ScrollPosition = line.Address;
-							_updatingScroll = false;
-						}
-						break;
-					}
-				}
-			}
-		}
-
 		public override void Render(DrawingContext context)
 		{
-			if(DataProvider == null) {
+			CodeLineData[] lines = Lines;
+			if(lines.Length == 0) {
 				return;
 			}
+
+			CpuType cpuType = lines[0].CpuType;
 			
 			InitFontAndLetterSize();
 
-			CodeLineData[] lines = _lines;
 			double y = 0;
 			var text = new FormattedText("", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			var smallText = new FormattedText("", this.Font, this.FontSize - 2, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
@@ -181,10 +115,10 @@ namespace Mesen.Debugger.Controls
 
 			ILineStyleProvider styleProvider = this.StyleProvider;
 
-			string addrFormat = "X" + DataProvider.CpuType.GetAddressSize();
+			string addrFormat = "X" + cpuType.GetAddressSize();
 			double symbolMargin = 20;
-			double addressMargin = Math.Floor(LetterSize.Width * DataProvider.CpuType.GetAddressSize() + symbolMargin) + 0.5;
-			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * DataProvider.CpuType.GetByteCodeSize()));
+			double addressMargin = Math.Floor(LetterSize.Width * cpuType.GetAddressSize() + symbolMargin) + 0.5;
+			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * cpuType.GetByteCodeSize()));
 			double codeIndent = Math.Floor(LetterSize.Width * 2) + 0.5;
 
 			//Draw margin (address)
@@ -295,11 +229,29 @@ namespace Mesen.Debugger.Controls
 		}
 	}
 
+	public class RowClickedEventArgs
+	{
+		public CodeLineData CodeLineData { get; private set; }
+		public int RowNumber { get; private set; }
+		public bool MarginClicked { get; private set; }
+		public PointerPointProperties Properties { get; private set; }
+
+		public RowClickedEventArgs(CodeLineData codeLineData, int rowNumber, bool marginClicked, PointerPointProperties properties)
+		{
+			this.CodeLineData = codeLineData;
+			this.RowNumber = rowNumber;
+			this.MarginClicked = marginClicked;
+			this.Properties = properties;
+		}
+	}
+
 	public interface ICodeDataProvider
 	{
 		CpuType CpuType { get; }
 
 		CodeLineData[] GetCodeLines(int address, int rowCount);
+
+		int GetRowAddress(int address, int rowOffset);
 
 		int GetLineCount();
 		int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards);
