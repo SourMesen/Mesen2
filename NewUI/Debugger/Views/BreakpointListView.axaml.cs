@@ -40,8 +40,10 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.Add,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Add),
 					OnClick = () => {
-						Breakpoint bp = new Breakpoint() { BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true };
-						BreakpointEditWindow.EditBreakpoint(bp, this);
+						if(DataContext is BreakpointListViewModel model) {
+							Breakpoint bp = new Breakpoint() { BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true, CpuType = model.CpuType };
+							BreakpointEditWindow.EditBreakpoint(bp, this);
+						}
 					}
 				},
 

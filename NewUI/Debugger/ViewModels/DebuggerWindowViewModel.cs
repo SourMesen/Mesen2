@@ -45,12 +45,9 @@ namespace Mesen.Debugger.ViewModels
 		public DebuggerWindowViewModel(CpuType? cpuType = null)
 		{
 			Config = ConfigManager.Config.Debug.Debugger;
-
-			Options = new DebuggerOptionsViewModel(Config, CpuType);
-
-			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug);
-			BreakpointList = new BreakpointListViewModel();
 			
+			Options = new DebuggerOptionsViewModel(Config, CpuType);
+			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug);
 			DockFactory = new DebuggerDockFactory(this);
 
 			if(Design.IsDesignMode) {
@@ -78,6 +75,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			DefaultLabelHelper.SetDefaultLabels();
+			BreakpointList = new BreakpointListViewModel(CpuType);
 			LabelList = new LabelListViewModel(CpuType);
 			CallStack = new CallStackViewModel(CpuType);
 			WatchList = new WatchListViewModel(CpuType);

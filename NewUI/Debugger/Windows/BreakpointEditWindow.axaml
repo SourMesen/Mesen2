@@ -49,6 +49,7 @@
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
 				<c:EnumComboBox
 					SelectedItem="{CompiledBinding Breakpoint.MemoryType}"
+					AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 					Width="150"
 				/>
 				<TextBlock Margin="3 0 0 0" Text="{CompiledBinding MaxAddress}" Foreground="Gray" />

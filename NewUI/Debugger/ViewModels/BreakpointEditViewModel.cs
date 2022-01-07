@@ -22,6 +22,8 @@ namespace Mesen.Debugger.ViewModels
 		[ObservableAsProperty] public bool IsConditionValid { get; }
 		[ObservableAsProperty] public bool OkEnabled { get; }
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
+		
+		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 
 		//For designer
 		public BreakpointEditViewModel() : this(null!) { }
@@ -29,6 +31,8 @@ namespace Mesen.Debugger.ViewModels
 		public BreakpointEditViewModel(Breakpoint bp)
 		{
 			Breakpoint = bp;
+
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			this.WhenAnyValue(x => x.Breakpoint.StartAddress)
 				.Buffer(2, 1)

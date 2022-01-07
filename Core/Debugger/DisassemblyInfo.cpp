@@ -310,6 +310,8 @@ bool DisassemblyInfo::IsJump()
 				opCode == 0xF0 //BEQ
 			);
 	}
+
+	return false;
 }
 
 void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
