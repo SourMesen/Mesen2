@@ -52,15 +52,13 @@ SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 	return (SnesMemoryType)(key >> 32);
 }
 
-string LabelManager::GetLabel(AddressInfo address)
+string LabelManager::GetLabel(AddressInfo address, bool checkRegisterLabels)
 {
 	string label;
 	if(address.Type <= DebugUtilities::GetLastCpuMemoryType()) {
-		if(address.Type == SnesMemoryType::GameboyMemory) {
-			//Labels for GB registers
-			if(InternalGetLabel(address, label)) {
-				return label;
-			}
+		if(checkRegisterLabels && InternalGetLabel(address, label)) {
+			//Labels for registers
+			return label;
 		}
 		address = _debugger->GetAbsoluteAddress(address);
 	}

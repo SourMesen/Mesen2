@@ -42,7 +42,7 @@ public:
 
 	int32_t GetLabelRelativeAddress(string &label, CpuType cpuType = CpuType::Cpu);
 
-	string GetLabel(AddressInfo address);
+	string GetLabel(AddressInfo address, bool checkRegisterLabels = true);
 	string GetComment(AddressInfo absAddress);
 	bool GetLabelAndComment(AddressInfo address, LabelInfo &label);
 

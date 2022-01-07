@@ -26,7 +26,7 @@ void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	if(opSize > 1) {
 		if(addrMode != NesAddrMode::Imm) {
 			AddressInfo address { (int32_t)opAddr, SnesMemoryType::NesMemory };
-			string label = labelManager ? labelManager->GetLabel(address) : "";
+			string label = labelManager ? labelManager->GetLabel(address, !info.IsJump()) : "";
 			if(label.size()) {
 				operand.Write(label, true);
 			}

@@ -45,6 +45,7 @@ public:
 	static bool IsReturnInstruction(uint8_t opCode, CpuType type);
 
 	bool IsUnconditionalJump();
+	bool IsJump();
 	void UpdateCpuFlags(uint8_t& cpuFlags);
 
 	int32_t GetEffectiveAddress(Debugger* debugger, void *cpuState, CpuType type);

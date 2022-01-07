@@ -271,6 +271,47 @@ bool DisassemblyInfo::IsUnconditionalJump()
 	throw std::runtime_error("IsUnconditionalJump - Unsupported CPU type");
 }
 
+bool DisassemblyInfo::IsJump()
+{
+	if(IsUnconditionalJump()) {
+		return true;
+	}
+
+	uint8_t opCode = GetOpCode();
+	switch(_cpuType) {
+		case CpuType::Sa1:
+		case CpuType::Cpu:
+			//TODO
+			return false;
+
+		case CpuType::Gameboy:
+			//TODO
+			return false;
+
+		case CpuType::Gsu:
+		case CpuType::Spc:
+		case CpuType::Cx4:
+			//TODO
+			return false;
+
+		case CpuType::NecDsp:
+			//TODO
+			return false;
+
+		case CpuType::Nes:
+			return (
+				opCode == 0x10 || //BPL
+				opCode == 0x30 || //BMI
+				opCode == 0x50 || //BVC
+				opCode == 0x70 || //BVS
+				opCode == 0x90 || //BCC
+				opCode == 0xB0 || //BCS
+				opCode == 0xD0 || //BNE
+				opCode == 0xF0 //BEQ
+			);
+	}
+}
+
 void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 {
 	if(_cpuType == CpuType::Cpu || _cpuType == CpuType::Sa1) {
