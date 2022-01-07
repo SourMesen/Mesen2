@@ -8,6 +8,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
@@ -17,6 +18,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public CodeLabel Label { get; set; }
 		[ObservableAsProperty] public bool OkEnabled { get; }
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
+		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 
 		//For designer
 		public LabelEditViewModel() : this(new CodeLabel()) { }
@@ -28,6 +30,8 @@ namespace Mesen.Debugger.ViewModels
 			if(Design.IsDesignMode) {
 				return;
 			}
+
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;

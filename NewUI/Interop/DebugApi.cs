@@ -462,6 +462,7 @@ namespace Mesen.Interop
 		public static bool SupportsLabels(this SnesMemoryType memType)
 		{
 			switch(memType) {
+				//SNES
 				case SnesMemoryType.PrgRom:
 				case SnesMemoryType.WorkRam:
 				case SnesMemoryType.SaveRam:
@@ -469,15 +470,21 @@ namespace Mesen.Interop
 				case SnesMemoryType.SpcRam:
 				case SnesMemoryType.SpcRom:
 				case SnesMemoryType.Sa1InternalRam:
+				
+				//Gameboy
 				case SnesMemoryType.GbPrgRom:
 				case SnesMemoryType.GbWorkRam:
 				case SnesMemoryType.GbCartRam:
 				case SnesMemoryType.GbHighRam:
 				case SnesMemoryType.GbBootRom:
+				case SnesMemoryType.GameboyMemory:
+
+				//NES
 				case SnesMemoryType.NesPrgRom:
 				case SnesMemoryType.NesWorkRam:
 				case SnesMemoryType.NesSaveRam:
 				case SnesMemoryType.NesInternalRam:
+				case SnesMemoryType.NesMemory:
 					return true;
 			}
 
