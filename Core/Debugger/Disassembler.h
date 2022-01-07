@@ -37,7 +37,7 @@ private:
 
 	CodeLineData GetLineData(DisassemblyResult& result, CpuType type, SnesMemoryType memType);
 	int32_t GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address);
-	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint8_t bank);
+	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint16_t bank);
 	uint16_t GetMaxBank(CpuType cpuType);
 
 public:

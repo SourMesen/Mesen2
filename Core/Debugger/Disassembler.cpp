@@ -103,7 +103,7 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
 	}
 }
 
-vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint8_t bank)
+vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t bank)
 {
 	constexpr int bytesPerRow = 8;
 
@@ -567,10 +567,10 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	if(rowOffset > 0) {
 		while(len > 0) {
 			for(; i < len; i++) {
-				rowOffset--;
 				if(rowOffset <= 0 && rows[i].CpuAddress >= 0) {
 					return rows[i].CpuAddress;
 				}
+				rowOffset--;
 			}
 
 			//End of bank, didn't find an appropriate row to jump to, try the next bank
@@ -587,10 +587,10 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	} else if(rowOffset < 0) {
 		while(len > 0) {
 			for(; i >= 0; i--) {
-				rowOffset++;
 				if(rowOffset >= 0 && rows[i].CpuAddress >= 0) {
 					return rows[i].CpuAddress;
 				}
+				rowOffset++;
 			}
 
 			//Start of bank, didn't find an appropriate row to jump to, try the previous bank
