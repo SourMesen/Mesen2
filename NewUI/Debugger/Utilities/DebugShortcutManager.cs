@@ -21,9 +21,16 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			ctrl.ContextMenu = new ContextMenu();
+			ctrl.ContextMenu.MenuOpened += ContextMenu_MenuOpened;
 			ctrl.ContextMenu.Classes.Add("ActionMenu");
 			ctrl.ContextMenu.Items = actions;
 			RegisterActions(ctrl, actions);
+		}
+
+		private static void ContextMenu_MenuOpened(object? sender, RoutedEventArgs e)
+		{
+			//TODO PATCH - this somehow prevents a bug that makes the contextmenu appear at the top left corner of the screen
+			System.Threading.Thread.Sleep(30);
 		}
 
 		public static void RegisterActions(IInputElement focusParent, IEnumerable actions)
