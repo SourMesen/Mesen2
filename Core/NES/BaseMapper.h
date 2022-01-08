@@ -82,7 +82,7 @@ protected:
 	virtual uint16_t GetChrRamPageSize() { return 0x2000; }
 
 	//Save ram is battery backed and saved to disk
-	virtual uint32_t GetSaveRamSize() { return HasBattery() ? 0x2000 : 0; }
+	virtual uint32_t GetSaveRamSize() { return 0x2000; }
 	virtual uint32_t GetSaveRamPageSize() { return 0x2000; }
 	virtual bool ForceChrBattery() { return false; }
 	
@@ -92,7 +92,7 @@ protected:
 	virtual uint32_t GetChrRamSize() { return 0x0000; }
 
 	//Work ram is NOT saved - aka Expansion ram, etc.
-	virtual uint32_t GetWorkRamSize() { return HasBattery() ? 0 : 0x2000; }
+	virtual uint32_t GetWorkRamSize() { return 0x2000; }
 	virtual uint32_t GetWorkRamPageSize() { return 0x2000; }
 	
 	virtual uint16_t RegisterStartAddress() { return 0x8000; }

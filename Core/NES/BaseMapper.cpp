@@ -544,7 +544,7 @@ void BaseMapper::RestorePrgChrState()
 	}
 }
 
-void BaseMapper::Initialize(NesConsole* console, RomData &romData)
+void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -552,15 +552,19 @@ void BaseMapper::Initialize(NesConsole* console, RomData &romData)
 	_romInfo = romData.Info;
 
 	_batteryFilename = GetBatteryFilename();
-	
-	if(romData.SaveRamSize == -1 || ForceSaveRamSize()) {
+
+	if(romData.SaveRamSize == -1) {
+		_saveRamSize = HasBattery() ? GetSaveRamSize() : 0;
+	} else if(ForceSaveRamSize()) {
 		_saveRamSize = GetSaveRamSize();
 	} else {
 		_saveRamSize = romData.SaveRamSize;
 	}
 
-	if(romData.WorkRamSize == -1 || ForceWorkRamSize()) {
-		_workRamSize = GetWorkRamSize();
+	if(romData.WorkRamSize == -1) {
+		_workRamSize = HasBattery() ? 0 : GetWorkRamSize();
+	} else if(ForceSaveRamSize()) {
+		_workRamSize = ForceWorkRamSize();
 	} else {
 		_workRamSize = romData.WorkRamSize;
 	}
@@ -612,7 +616,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData &romData)
 
 	_nametableCount = 2;
 	_nametableRam = new uint8_t[BaseMapper::NametableSize*BaseMapper::NametableCount];
-	_emu->RegisterMemory(SnesMemoryType::NesNametableRam, _nametableRam, BaseMapper::NametableSize * BaseMapper::NametableCount);
+	_emu->RegisterMemory(SnesMemoryType::NesNametableRam, _nametableRam, _nametableCount * BaseMapper::NametableSize);
 	settings->InitializeRam(_nametableRam, BaseMapper::NametableSize*BaseMapper::NametableCount);
 
 	for(int i = 0; i < 0x100; i++) {
@@ -697,6 +701,7 @@ uint8_t* BaseMapper::GetNametable(uint8_t nametableIndex)
 		return _nametableRam;
 	}
 	_nametableCount = std::max<uint8_t>(_nametableCount, nametableIndex + 1);
+	_emu->RegisterMemory(SnesMemoryType::NesNametableRam, _nametableRam, _nametableCount* BaseMapper::NametableSize);
 
 	return _nametableRam + (nametableIndex * BaseMapper::NametableSize);
 }
@@ -710,6 +715,7 @@ void BaseMapper::SetNametable(uint8_t index, uint8_t nametableIndex)
 		return;
 	}
 	_nametableCount = std::max<uint8_t>(_nametableCount, nametableIndex + 1);
+	_emu->RegisterMemory(SnesMemoryType::NesNametableRam, _nametableRam, _nametableCount* BaseMapper::NametableSize);
 
 	SetPpuMemoryMapping(0x2000 + index * 0x400, 0x2000 + (index + 1) * 0x400 - 1, nametableIndex, ChrMemoryType::NametableRam);
 	
