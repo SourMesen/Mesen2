@@ -62,13 +62,13 @@ namespace Mesen.Debugger.Controls
 	{
 		[Reactive] public string Name { get; set; } = "";
 		[Reactive] public object Value { get; set; } = "";
-		[Reactive] public FontFamily? Font { get; set; } = null;
+		[Reactive] public FontFamily Font { get; set; }
 
 		public TooltipEntry(string name, object value, FontFamily? font = null)
 		{
 			Name = name;
 			Value = value;
-			Font = font;
+			Font = font ?? FontFamily.Default;
 		}
 	}
 
@@ -105,9 +105,8 @@ namespace Mesen.Debugger.Controls
 				entry = new TooltipEntry(name, new TooltipPictureEntry(source, zoom, cropRect));
 				_entries[entry.Name] = entry;
 				base.Add(entry);
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
-
-			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
 		public void AddEntry(string name, object value, FontFamily? font = null)
@@ -118,9 +117,8 @@ namespace Mesen.Debugger.Controls
 				entry = new TooltipEntry(name, value, font);
 				_entries[entry.Name] = entry;
 				base.Add(entry);
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
-
-			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 	}
 
