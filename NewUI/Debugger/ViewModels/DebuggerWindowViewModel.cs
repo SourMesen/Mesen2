@@ -99,7 +99,12 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateDisassembly()
 		{
+			//Scroll to the active address and highlight it
 			Disassembly.SetActiveAddress(DebugUtilities.GetProgramCounter(CpuType));
+			if(!EmuApi.IsPaused()) {
+				//Clear the highlight if the emulation is still running
+				Disassembly.StyleProvider.ActiveAddress = null;
+			}
 			Disassembly.Refresh();
 		}
 

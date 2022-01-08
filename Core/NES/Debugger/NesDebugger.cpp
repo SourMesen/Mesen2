@@ -24,6 +24,7 @@
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
+#include "NES/Debugger/NesDisUtils.h"
 
 NesDebugger::NesDebugger(Debugger* debugger)
 {
@@ -123,6 +124,9 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
 				//Break on BRK
 				breakSource = BreakSource::BreakOnBrk;
+				_step->StepCount = 0;
+			} else if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnUnofficialOpCode) && NesDisUtils::IsOpUnofficial(value)) {
+				breakSource = BreakSource::NesBreakOnUnofficialOpCode;
 				_step->StepCount = 0;
 			}
 		}

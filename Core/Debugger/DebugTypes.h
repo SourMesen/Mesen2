@@ -253,6 +253,7 @@ enum class BreakSource
 
 	NesBreakOnDecayedOamRead = 100,
 	NesBreakOnPpu2006ScrollGlitch = 101,
+	NesBreakOnUnofficialOpCode = 102,
 };
 
 struct BreakEvent

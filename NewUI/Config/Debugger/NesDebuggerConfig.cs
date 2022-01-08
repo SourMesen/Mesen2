@@ -22,11 +22,11 @@ namespace Mesen.Config
 		public void ApplyConfig()
 		{
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnBrk, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnUnofficialOpCode, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnCpuCrash, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnBusConflict, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnDecayedOamRead, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnPpu2006ScrollGlitch, BreakOnBrk);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnUnofficialOpCode, BreakOnUnofficialOpCode);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnCpuCrash, BreakOnCpuCrash);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnBusConflict, BreakOnBusConflict);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnDecayedOamRead, BreakOnDecayedOamRead);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.NesBreakOnPpu2006ScrollGlitch, BreakOnPpu2006ScrollGlitch);
 		}
 	}
 }

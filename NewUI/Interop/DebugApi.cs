@@ -1172,6 +1172,12 @@ namespace Mesen.Interop
 		GbInvalidOpCode = 11,
 		GbNopLoad = 12,
 		GbOamCorruption = 13,
+
+		BreakOnCpuCrash = 14,
+
+		NesBreakOnDecayedOamRead = 100,
+		NesBreakOnPpu2006ScrollGlitch = 101,
+		NesBreakOnUnofficialOpCode = 102,
 	}
 
 	public struct BreakEvent

@@ -304,8 +304,8 @@ void NesAssembler::AssembleInstruction(NesLineData& lineData, uint32_t &instruct
 		foundMatch = true;
 	} else {
 		for(int i = 0; i < 256; i++) {
-			NesAddrMode opMode = NesDisUtils::OpMode[i];
-			if(lineData.OpCode.compare(NesDisUtils::OpName[i]) == 0) {
+			NesAddrMode opMode = NesDisUtils::GetOpMode(i);
+			if(lineData.OpCode.compare(NesDisUtils::GetOpName(i)) == 0) {
 				bool modeMatch = opMode == lineData.Mode;
 				if(!modeMatch) {
 					if((lineData.Mode == NesAddrMode::Imp && opMode == NesAddrMode::Acc) ||
@@ -391,10 +391,11 @@ NesAssembler::NesAssembler(shared_ptr<LabelManager> labelManager)
 uint32_t NesAssembler::AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode)
 {
 	for(uint8_t i = 0; i < 255; i++) {
-		if(_availableModesByOpName.find(NesDisUtils::OpName[i]) == _availableModesByOpName.end()) {
-			_availableModesByOpName[NesDisUtils::OpName[i]] = std::unordered_set<int>();
+		string opName = NesDisUtils::GetOpName(i);
+		if(_availableModesByOpName.find(opName) == _availableModesByOpName.end()) {
+			_availableModesByOpName[opName] = std::unordered_set<int>();
 		}
-		_availableModesByOpName[NesDisUtils::OpName[i]].emplace((int)NesDisUtils::OpMode[i]);
+		_availableModesByOpName[opName].emplace((int)NesDisUtils::GetOpMode(i));
 	}
 
 	std::unordered_map<string, uint16_t> temporaryLabels;
