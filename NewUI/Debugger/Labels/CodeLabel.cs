@@ -142,6 +142,9 @@ namespace Mesen.Debugger.Labels
 
 		public AddressInfo GetRelativeAddress(CpuType cpuType)
 		{
+			if(MemoryType.IsRelativeMemory()) {
+				return GetAbsoluteAddress();
+			}
 			return DebugApi.GetRelativeAddress(GetAbsoluteAddress(), cpuType);
 		}
 

@@ -15,7 +15,7 @@
 						<MenuItem Header="Abcd" />
 					</MenuItem>
 				</Menu>
-				<CheckBox Content="Test" />
+				<CheckBox Content="Test" ToolTip.Tip="Tooltip test" />
 				<CheckBox Content="Test" IsChecked="True" />
 				<TabControl>
 					<TabItem Header="Test" />
@@ -76,7 +76,11 @@
 		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPressed">#000</Color>
 		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedPressed">#000</Color>
 		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">Black</Color>
-
+		
+		<!-- dark tooltips -->
+		<Color x:Key="ToolTipForeground">#FFF</Color>
+		<Color x:Key="ToolTipBackground">#444</Color>
+		
 		<!-- Misc fluent overrides -->
 		<x:Double x:Key="DatePickerThemeMinWidth">150</x:Double>
 		<x:Double x:Key="TimePickerThemeMinWidth">150</x:Double>

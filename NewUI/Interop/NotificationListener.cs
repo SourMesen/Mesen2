@@ -61,6 +61,7 @@ namespace Mesen.Interop
 		GamePaused,
 		GameResumed,
 		CodeBreak,
+		DebuggerResumed,
 		PpuFrameDone,
 		ResolutionChanged,
 		ConfigChanged,

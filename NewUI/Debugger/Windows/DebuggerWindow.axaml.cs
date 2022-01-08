@@ -26,7 +26,7 @@ namespace Mesen.Debugger.Windows
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 		}
 
@@ -39,7 +39,6 @@ namespace Mesen.Debugger.Windows
 		{
 			if(this.DataContext is DebuggerWindowViewModel model) {
 				_model = model;
-				_model.Disassembly.StyleProvider = new BaseStyleProvider();
 				_model.InitializeMenu(this);
 				_model.Config.LoadWindowSettings(this);
 				if(Design.IsDesignMode) {
@@ -104,10 +103,18 @@ namespace Mesen.Debugger.Windows
 
 		private void _listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType == ConsoleNotificationType.CodeBreak) {
-				Dispatcher.UIThread.Post(() => {
-					UpdateDebugger();
-				});
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.CodeBreak:
+					Dispatcher.UIThread.Post(() => {
+						UpdateDebugger();
+					});
+					break;
+
+				case ConsoleNotificationType.DebuggerResumed:
+					Dispatcher.UIThread.Post(() => {
+						_model.ClearActiveAddress();
+					});
+					break;
 			}
 		}
 

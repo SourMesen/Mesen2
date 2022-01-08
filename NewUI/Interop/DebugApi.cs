@@ -295,10 +295,10 @@ namespace Mesen.Interop
 			return counts;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, SnesMemoryType memType, [In,Out] byte[] cdlData);
-		public static byte[] GetCdlData(UInt32 offset, UInt32 length, SnesMemoryType memType)
+		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, SnesMemoryType memType, [In,Out] CdlFlags[] cdlData);
+		public static CdlFlags[] GetCdlData(UInt32 offset, UInt32 length, SnesMemoryType memType)
 		{
-			byte[] cdlData = new byte[length];
+			CdlFlags[] cdlData = new CdlFlags[length];
 			DebugApi.GetCdlDataWrapper(offset, length, memType, cdlData);
 			return cdlData;
 		}

@@ -227,6 +227,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 
 	_executionStopped = true;
 	
+	bool notificationSent = false;
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
 		_emu->GetSoundMixer()->StopAudio();
 
@@ -239,10 +240,15 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 		}
 		_waitForBreakResume = true;
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
+		notificationSent = true;
 	}
 
 	while((_waitForBreakResume && !_suspendRequestCount) || _breakRequestCount) {
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(_breakRequestCount ? 1 : 10));
+	}
+
+	if(notificationSent) {
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::DebuggerResumed);
 	}
 
 	_executionStopped = false;

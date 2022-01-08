@@ -30,15 +30,32 @@ namespace Mesen.Debugger.Disassembly
 					Match m;
 					if(foundOpCode && (m = _operand.Match(codeString)).Success) {
 						string operand = m.Value;
-						Color operandColor = operand.Length > 0 ? (operand[0] == '#' ? (Color)cfg.CodeImmediateColor : (operand[0] == '$' ? (Color)cfg.CodeAddressColor : (Color)cfg.CodeLabelDefinitionColor)) : Colors.Black;
-						colors.Add(new CodeColor() { Text = m.Value, Color = textColor.HasValue ? textColor.Value : operandColor });
+						Color operandColor = Colors.Black;
+						CodeSegmentType type = CodeSegmentType.None;
+						if(operand.Length > 0) {
+							switch(operand[0]) {
+								case '#':
+									operandColor = cfg.CodeImmediateColor;
+									type = CodeSegmentType.ImmediateValue;
+									break;
+								case '$':
+									operandColor = cfg.CodeAddressColor;
+									type = CodeSegmentType.Address;
+									break;
+								default:
+									operandColor = cfg.CodeLabelDefinitionColor;
+									type = CodeSegmentType.Label;
+									break;
+							}
+						}
+						colors.Add(new CodeColor(m.Value, textColor ?? operandColor, type));
 					} else if(!foundOpCode && (m = _opCode.Match(codeString)).Success) {
 						foundOpCode = true;
-						colors.Add(new CodeColor() { Text = m.Value, Color = textColor.HasValue ? textColor.Value : (Color)cfg.CodeOpcodeColor });
+						colors.Add(new CodeColor(m.Value, textColor ?? cfg.CodeOpcodeColor, CodeSegmentType.OpCode));
 					} else if((m = _syntax.Match(codeString)).Success) {
-						colors.Add(new CodeColor() { Text = m.Value, Color = textColor.HasValue ? textColor.Value : defaultColor });
+						colors.Add(new CodeColor(m.Value, textColor ?? defaultColor, CodeSegmentType.Syntax));
 					} else if((m = _space.Match(codeString)).Success) {
-						colors.Add(new CodeColor() { Text = m.Value, Color = textColor.HasValue ? textColor.Value : defaultColor });
+						colors.Add(new CodeColor(m.Value, textColor ?? defaultColor, CodeSegmentType.None));
 					}
 
 					if(m.Success) {
@@ -49,20 +66,24 @@ namespace Mesen.Debugger.Disassembly
 				}
 
 				//Display the rest of the line (used by trace logger)
-				colors.Add(new CodeColor() { Text = codeString, Color = defaultColor });
+				colors.Add(new CodeColor(codeString, defaultColor, CodeSegmentType.None));
 
 				if(lineData.EffectiveAddress >= 0) {
-					colors.Add(new CodeColor() { Text = " " + lineData.GetEffectiveAddressString(addressFormat), Color = cfg.CodeEffectiveAddressColor });
+					string effAddress = lineData.GetEffectiveAddressString(addressFormat, out CodeSegmentType type);
+					colors.Add(new CodeColor(" " + effAddress, cfg.CodeEffectiveAddressColor, type));
 				}
 
 				if(showMemoryValues && lineData.ValueSize > 0) {
-					colors.Add(new CodeColor() { Text = lineData.GetValueString(), Color = defaultColor });
+					colors.Add(new CodeColor(lineData.GetValueString(), defaultColor, CodeSegmentType.MemoryValue));
 				}
 
 				return colors;
 			} else {
-				Color color = codeString.EndsWith(":") ? (Color)cfg.CodeLabelDefinitionColor : (textColor ?? defaultColor);
-				return new List<CodeColor>() { new CodeColor() { Text = codeString, Color = color } };
+				if(codeString.EndsWith(":")) {
+					return new List<CodeColor>() { new CodeColor(codeString, cfg.CodeLabelDefinitionColor, CodeSegmentType.Label) };
+				} else {
+					return new List<CodeColor>() { new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None) };
+				}
 			}
 		}
 	}

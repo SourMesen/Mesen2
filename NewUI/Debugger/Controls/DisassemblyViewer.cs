@@ -53,18 +53,18 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowByteCodeProperty, value); }
 		}
 
+		public delegate void RowClickedEventHandler(DisassemblyViewer sender, RowClickedEventArgs args);
+		public event RowClickedEventHandler? RowClicked;
+
+		public delegate void CodePointerMovedEventHandler(DisassemblyViewer sender, CodePointerMovedEventArgs args);
+		public event CodePointerMovedEventHandler? CodePointerMoved;
+
 		private Typeface Font { get; set; }
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
-		
-		public int GetVisibleRowCount()
-		{
-			InitFontAndLetterSize();
-			return (int)Math.Ceiling(Bounds.Height / RowHeight);
-		}
-
-		public delegate void RowClickedEventHandler(DisassemblyViewer sender, RowClickedEventArgs args);
-		public event RowClickedEventHandler? RowClicked;
+		private List<CodeSegmentInfo> _visibleCodeSegments = new();
+		private Point _previousPointerPos;
+		private CodeSegmentInfo? _prevPointerOverSegment = null;
 
 		static DisassemblyViewer()
 		{
@@ -87,6 +87,47 @@ namespace Mesen.Debugger.Controls
 			}
 
 			InvalidateVisual();
+		}
+
+		protected override void OnPointerMoved(PointerEventArgs e)
+		{
+			base.OnPointerMoved(e);
+
+			Point p = e.GetCurrentPoint(this).Position;
+
+			if(_previousPointerPos == p) {
+				//Pointer didn't move, don't trigger the pointer event
+				return;
+			}
+			_previousPointerPos = p;
+
+			foreach(var codeSegment in _visibleCodeSegments) {
+				if(codeSegment.Bounds.Contains(p)) {
+					//Don't trigger an event if this is the same segment
+					if(_prevPointerOverSegment != codeSegment) {
+						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(codeSegment));
+						_prevPointerOverSegment = codeSegment;
+					}
+					return;
+				}
+			}
+
+			_prevPointerOverSegment = null;
+			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(null));
+		}
+
+		protected override void OnPointerLeave(PointerEventArgs e)
+		{
+			base.OnPointerLeave(e);
+			_previousPointerPos = new Point(0, 0);
+			_prevPointerOverSegment = null;
+			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(null));
+		}
+
+		public int GetVisibleRowCount()
+		{
+			InitFontAndLetterSize();
+			return (int)Math.Ceiling(Bounds.Height / RowHeight);
 		}
 
 		private void InitFontAndLetterSize()
@@ -131,6 +172,8 @@ namespace Mesen.Debugger.Controls
 				context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(251, 251, 251)), new Rect(addressMargin, 0, byteCodeMargin, Bounds.Height));
 				context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin + byteCodeMargin, 0), new Point(addressMargin + byteCodeMargin, Bounds.Height));
 			}
+
+			_visibleCodeSegments.Clear();
 
 			//Draw code
 			foreach(CodeLineData line in lines) {
@@ -184,8 +227,10 @@ namespace Mesen.Debugger.Controls
 					}
 
 					foreach(CodeColor part in lineParts) {
+						Point pos = new Point(x + codeIndent, y);
 						text.Text = part.Text;
-						context.DrawText(ColorHelper.GetBrush(part.Color), new Point(x + codeIndent, y), text);
+						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
+						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(new Vector(pos.X, pos.Y))));
 						x += text.Bounds.Width;
 					}
 				}
@@ -227,6 +272,30 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 		}
+	}
+
+	public class CodePointerMovedEventArgs : EventArgs
+	{
+		public CodePointerMovedEventArgs(CodeSegmentInfo? codeSegment)
+		{
+			this.CodeSegment = codeSegment;
+		}
+
+		public CodeSegmentInfo? CodeSegment { get; }
+	}
+
+	public class CodeSegmentInfo
+	{
+		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds)
+		{
+			this.Text = text;
+			this.Type = type;
+			this.Bounds = bounds;
+		}
+
+		public string Text { get; }
+		public CodeSegmentType Type { get; }
+		public Rect Bounds { get; }
 	}
 
 	public class RowClickedEventArgs
@@ -296,9 +365,29 @@ namespace Mesen.Debugger.Controls
 		Plus = 16
 	}
 
+	public enum CodeSegmentType
+	{
+		OpCode,
+		ImmediateValue,
+		Address,
+		Label,
+		EffectiveAddress,
+		MemoryValue,
+		None,
+		Syntax,
+	}
+
 	public class CodeColor
 	{
-		public string Text = "";
+		public string Text;
 		public Color Color;
+		public CodeSegmentType Type;
+
+		public CodeColor(string text, Color color, CodeSegmentType type)
+		{
+			Text = text;
+			Color = color;
+			Type = type;
+		}
 	}
 }

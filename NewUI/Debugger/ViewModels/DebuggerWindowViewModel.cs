@@ -44,12 +44,6 @@ namespace Mesen.Debugger.ViewModels
 
 		public DebuggerWindowViewModel(CpuType? cpuType = null)
 		{
-			Config = ConfigManager.Config.Debug.Debugger;
-			
-			Options = new DebuggerOptionsViewModel(Config, CpuType);
-			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug);
-			DockFactory = new DebuggerDockFactory(this);
-
 			if(Design.IsDesignMode) {
 				CpuType = CpuType.Cpu;
 			} else if(cpuType != null) {
@@ -58,6 +52,18 @@ namespace Mesen.Debugger.ViewModels
 				RomInfo romInfo = EmuApi.GetRomInfo();
 				CpuType = romInfo.ConsoleType.GetMainCpuType();
 			}
+
+			Config = ConfigManager.Config.Debug.Debugger;
+
+			DefaultLabelHelper.SetDefaultLabels();
+			Options = new DebuggerOptionsViewModel(Config, CpuType);
+			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug, CpuType);
+			BreakpointList = new BreakpointListViewModel(CpuType);
+			LabelList = new LabelListViewModel(CpuType);
+			CallStack = new CallStackViewModel(CpuType);
+			WatchList = new WatchListViewModel(CpuType);
+
+			DockFactory = new DebuggerDockFactory(this);
 
 			switch(CpuType) {
 				case CpuType.Cpu:
@@ -74,12 +80,6 @@ namespace Mesen.Debugger.ViewModels
 					break;
 			}
 
-			DefaultLabelHelper.SetDefaultLabels();
-			BreakpointList = new BreakpointListViewModel(CpuType);
-			LabelList = new LabelListViewModel(CpuType);
-			CallStack = new CallStackViewModel(CpuType);
-			WatchList = new WatchListViewModel(CpuType);
-
 			DockLayout = DockFactory.CreateLayout();
 			DockFactory.InitLayout(DockLayout);
 
@@ -91,16 +91,22 @@ namespace Mesen.Debugger.ViewModels
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
 		}
 
-		internal void Cleanup()
+		public void Cleanup()
 		{
 			BreakpointManager.RemoveCpuType(CpuType);
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), false);
 		}
 
-		internal void UpdateDisassembly()
+		public void UpdateDisassembly()
 		{
-			Disassembly.DataProvider = new CodeDataProvider(CpuType);
 			Disassembly.SetActiveAddress(DebugUtilities.GetProgramCounter(CpuType));
+			Disassembly.Refresh();
+		}
+
+		public void ClearActiveAddress()
+		{
+			Disassembly.StyleProvider.ActiveAddress = null;
+			Disassembly.Refresh();
 		}
 
 		public void UpdateCpuPpuState()
@@ -171,14 +177,6 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private void ClearActiveAddress()
-		{
-			if(Disassembly.StyleProvider is BaseStyleProvider p) {
-				p.ActiveAddress = null;
-				Disassembly.DataProvider = new CodeDataProvider(CpuType);
-			}
-		}
-
 		public void InitializeMenu(Window wnd)
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
@@ -246,7 +244,6 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = isPaused,
 					OnClick = () => {
 						DebugApi.ResumeExecution();
-						ClearActiveAddress();
 					}
 				},
 				new ContextMenuAction() {
@@ -331,7 +328,6 @@ namespace Mesen.Debugger.ViewModels
 		private void Step(int instructionCount, StepType type)
 		{
 			DebugApi.Step(CpuType, instructionCount, type);
-			ClearActiveAddress();
 		}
 	}
 }

@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Mesen.Debugger.Controls;
+using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 
@@ -42,6 +43,21 @@ namespace Mesen.Debugger.Views
 
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 				BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+			}
+		}
+
+		public void Disassembly_CodePointerMoved(DisassemblyViewer sender, CodePointerMovedEventArgs e)
+		{
+			DynamicTooltip? tooltip;
+			ICodeDataProvider? dp = Model.DataProvider;
+			if(e.CodeSegment != null && dp != null && (tooltip = CodeTooltipHelper.GetTooltip(dp.CpuType, e.CodeSegment.Text, e.CodeSegment.Type)) != null) {
+				ToolTip.SetTip(this, tooltip);
+				ToolTip.SetHorizontalOffset(this, 14);
+				ToolTip.SetHorizontalOffset(this, 15);
+				ToolTip.SetIsOpen(this, true);
+			} else {
+				ToolTip.SetIsOpen(this, false);
+				ToolTip.SetTip(this, null);
 			}
 		}
 

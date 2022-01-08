@@ -21,11 +21,22 @@
 		<ItemsPresenter.ItemTemplate>
 			<DataTemplate DataType="dc:TooltipEntry">
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{Binding Name}" FontWeight="Bold" MinWidth="100" Margin="0 2 10 2" />
+					<TextBlock
+						Name="Header"
+						Text="{Binding Name}"
+						FontWeight="Bold"
+						MinWidth="{Binding FirstColumnWidth, ElementName=root}"
+						IsVisible="{Binding Name.Length}"
+						Margin="0 2 10 2"
+					/>
 					<ContentControl Content="{Binding Value}">
 						<ContentControl.DataTemplates>
 							<DataTemplate DataType="x:String">
-								<TextBlock Text="{Binding}" />
+								<TextBlock
+									Text="{Binding}"
+									FontFamily="{Binding $parent[StackPanel].DataContext.Font}"
+									FontSize="12"
+								/>
 							</DataTemplate>
 							<DataTemplate DataType="x:Boolean">
 								<CheckBox IsChecked="{Binding}" />

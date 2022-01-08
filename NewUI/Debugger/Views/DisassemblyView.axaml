@@ -37,6 +37,7 @@
 			ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
 			RowClicked="Diassembly_RowClicked"
 			PointerWheelChanged="Disassembly_PointerWheelChanged"
+			CodePointerMoved="Disassembly_CodePointerMoved"
 		/>
 	</DockPanel>
 </UserControl>

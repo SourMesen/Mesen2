@@ -1,27 +1,38 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Mesen.Config;
 using Mesen.Utilities;
-using Mesen.ViewModels;
-using Mesen.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace Mesen.Debugger.Controls
 {
 	public class DynamicTooltip : UserControl
 	{
 		public static readonly StyledProperty<TooltipEntries> ItemsProperty = AvaloniaProperty.Register<DynamicTooltip, TooltipEntries>(nameof(Items));
+		public static readonly StyledProperty<int> FirstColumnWidthProperty = AvaloniaProperty.Register<DynamicTooltip, int>(nameof(FirstColumnWidth));
 
 		public TooltipEntries Items
 		{
 			get { return GetValue(ItemsProperty); }
 			set { SetValue(ItemsProperty, value); }
+		}
+
+		public int FirstColumnWidth
+		{
+			get { return GetValue(FirstColumnWidthProperty); }
+			set { SetValue(FirstColumnWidthProperty, value); }
+		}
+
+		static DynamicTooltip()
+		{
+			ItemsProperty.Changed.AddClassHandler<DynamicTooltip>((x, e) => {
+				x.ComputeColumnWidth();
+			});
 		}
 
 		public DynamicTooltip()
@@ -33,23 +44,45 @@ namespace Mesen.Debugger.Controls
 		{
 			AvaloniaXamlLoader.Load(this);
 		}
+
+		private void ComputeColumnWidth()
+		{
+			//TODO, remove hardcoded font name+size+weight
+			int maxWidth = 0;
+			var text = new FormattedText("", new Typeface("Microsoft Sans Serif", FontStyle.Normal, FontWeight.Bold), 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			foreach(var item in Items) {
+				text.Text = item.Name;
+				maxWidth = Math.Max(maxWidth, (int)text.Bounds.Width);
+			}
+			FirstColumnWidth = maxWidth;
+		}
 	}
 
 	public class TooltipEntry : ReactiveObject
 	{
 		[Reactive] public string Name { get; set; } = "";
 		[Reactive] public object Value { get; set; } = "";
+		[Reactive] public FontFamily? Font { get; set; } = null;
 
-		public TooltipEntry(string name, object value)
+		public TooltipEntry(string name, object value, FontFamily? font = null)
 		{
 			Name = name;
 			Value = value;
+			Font = font;
 		}
 	}
 
-	public class TooltipEntries : List<TooltipEntry>
+	public class TooltipEntries : List<TooltipEntry>, INotifyCollectionChanged
 	{
 		private Dictionary<string, TooltipEntry> _entries = new();
+
+		public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+		[Obsolete("Do not use")]
+		public new void Add(TooltipEntry entry)
+		{
+			throw new NotImplementedException();
+		}
 
 		public void AddPicture(string name, IImage source, double zoom, PixelRect? cropRect = null)
 		{
@@ -71,19 +104,23 @@ namespace Mesen.Debugger.Controls
 			} else {
 				entry = new TooltipEntry(name, new TooltipPictureEntry(source, zoom, cropRect));
 				_entries[entry.Name] = entry;
-				Add(entry);
+				base.Add(entry);
 			}
+
+			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
-		public void AddEntry(string name, object value)
+		public void AddEntry(string name, object value, FontFamily? font = null)
 		{
 			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
 				entry.Value = value;
 			} else {
-				entry = new TooltipEntry(name, value);
+				entry = new TooltipEntry(name, value, font);
 				_entries[entry.Name] = entry;
-				Add(entry);
+				base.Add(entry);
 			}
+
+			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 	}
 

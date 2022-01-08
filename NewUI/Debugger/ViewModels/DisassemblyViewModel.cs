@@ -1,6 +1,7 @@
 ﻿using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
+using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -24,11 +25,13 @@ namespace Mesen.Debugger.ViewModels
 		private int _ignoreScrollUpdates = 0;
 
 		[Obsolete("For designer only")]
-		public DisassemblyViewModel(): this(new DebugConfig()) { }
+		public DisassemblyViewModel(): this(new DebugConfig(), CpuType.Cpu) { }
 
-		public DisassemblyViewModel(DebugConfig config)
+		public DisassemblyViewModel(DebugConfig config, CpuType cpuType)
 		{
 			Config = config;
+
+			DataProvider = new CodeDataProvider(cpuType);
 
 			this.WhenAnyValue(x => x.DataProvider).Subscribe(x => Refresh());
 			this.WhenAnyValue(x => x.TopAddress).Subscribe(x => Refresh());

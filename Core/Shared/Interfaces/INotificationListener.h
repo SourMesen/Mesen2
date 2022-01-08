@@ -11,6 +11,7 @@ enum class ConsoleNotificationType
 	GamePaused,
 	GameResumed,
 	CodeBreak,
+	DebuggerResumed,
 	PpuFrameDone,
 	ResolutionChanged,
 	ConfigChanged,

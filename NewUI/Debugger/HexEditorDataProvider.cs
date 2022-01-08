@@ -17,7 +17,7 @@ namespace Mesen.Debugger
 		private SnesMemoryType _memoryType;
 		private HexEditorConfig _cfg;
 		private AddressCounters[] _counters = Array.Empty<AddressCounters>();
-		private byte[]? _cdlData;
+		private CdlFlags[]? _cdlData;
 		private bool[] _hasLabel = Array.Empty<bool>();
 		private TimingInfo _timing;
 		private ByteInfo _byteInfo = new ByteInfo();
@@ -145,10 +145,10 @@ namespace Mesen.Debugger
 
 			_byteInfo.BackColor = Colors.Transparent;
 			if(_cdlData != null) {
-				if((_cdlData[index] & (byte)CdlFlags.Code) != 0 && _cfg.CodeHighlight.Highlight) {
+				if(_cdlData[index].HasFlag(CdlFlags.Code) && _cfg.CodeHighlight.Highlight) {
 					//Code
 					_byteInfo.BackColor = _cfg.CodeHighlight.Color;
-				} else if((_cdlData[index] & (byte)CdlFlags.Data) != 0 && _cfg.DataHighlight.Highlight) {
+				} else if(_cdlData[index].HasFlag(CdlFlags.Data) && _cfg.DataHighlight.Highlight) {
 					//Data
 					_byteInfo.BackColor = _cfg.DataHighlight.Color;
 				}
