@@ -107,6 +107,9 @@ namespace Mesen.Debugger.Windows
 				case ConsoleNotificationType.CodeBreak:
 					Dispatcher.UIThread.Post(() => {
 						UpdateDebugger();
+						if(_model.Config.BringToFrontOnBreak) {
+							Activate();
+						}
 					});
 					break;
 
