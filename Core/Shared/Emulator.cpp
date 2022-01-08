@@ -305,10 +305,7 @@ void Emulator::Stop(bool sendNotification)
 
 void Emulator::Reset()
 {
-	shared_ptr<Debugger> debugger = _debugger;
-
-	_lockCounter++;
-	_runLock.Acquire();
+	Lock();
 
 	_console->Reset();
 	GetControlManager()->UpdateInputState();
@@ -316,22 +313,11 @@ void Emulator::Reset()
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
 	ProcessEvent(EventType::Reset);
 
-	if(debugger) {
-		//Debugger was suspended in SystemActionManager::Reset(), resume debugger here
-		debugger->SuspendDebugger(true);
-	}
-
-	_runLock.Release();
-	_lockCounter--;
+	Unlock();
 }
 
 void Emulator::ReloadRom(bool forPowerCycle)
 {
-	shared_ptr<Debugger> debugger = _debugger;
-	if(debugger) {
-		debugger->Run();
-	}
-
 	RomInfo info = GetRomInfo();
 	Lock();
 	LoadRom(info.RomFile, info.PatchFile, false, forPowerCycle);

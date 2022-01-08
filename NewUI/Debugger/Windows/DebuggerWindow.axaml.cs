@@ -72,6 +72,10 @@ namespace Mesen.Debugger.Windows
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
 			UpdateDebugger();
+
+			if(_model.Config.BreakOnOpen) {
+				EmuApi.Pause();
+			}
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -117,6 +121,13 @@ namespace Mesen.Debugger.Windows
 					Dispatcher.UIThread.Post(() => {
 						_model.ClearActiveAddress();
 					});
+					break;
+
+				case ConsoleNotificationType.GameReset:
+				case ConsoleNotificationType.GameLoaded:
+					if(_model.Config.BreakOnPowerCycleReset) {
+						EmuApi.Pause();
+					}
 					break;
 			}
 		}
