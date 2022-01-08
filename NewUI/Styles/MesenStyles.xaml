@@ -36,6 +36,7 @@
 					<ComboBoxItem>0Test</ComboBoxItem>
 				</ComboBox>
 				<TextBox Text="00bc" />
+				<TextBox Text="test&#13;test&#13;test" AcceptsReturn="True" />
 				<Button Content="Testgpq" />
 				<Button Content="Disabled" IsEnabled="False" />
 				<RepeatButton Content="Repeat" />
@@ -444,6 +445,12 @@
 		<Setter Property="Padding" Value="2 0" />
 		<Setter Property="MinHeight" Value="21" />
 		<Setter Property="Height" Value="21" />
+	</Style>
+
+	<Style Selector="TextBox[AcceptsReturn=True]">
+		<Setter Property="Padding" Value="2" />
+		<Setter Property="VerticalContentAlignment" Value="Top" />
+		<Setter Property="MinHeight" Value="44" />
 	</Style>
 
 	<Style Selector="ComboBox">

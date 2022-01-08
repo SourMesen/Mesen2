@@ -243,24 +243,38 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	_eventManager->AddEvent(DebugEventType::Irq);
 }
 
+void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
+	AddressInfo addressInfo { addr, memoryType };
+	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
+}
+
+void GbDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
+	AddressInfo addressInfo { addr, memoryType };
+	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _gameboy->GetMasterClock());
+}
+
 void GbDebugger::ProcessPpuCycle()
 {
-	uint8_t scanline = _ppu->GetScanline();
-	uint16_t cycle = _ppu->GetCycle();
-
 	if(_ppuTools->HasOpenedViewer()) {
-		_ppuTools->UpdateViewers(scanline, cycle);
+		_ppuTools->UpdateViewers(_ppu->GetScanline(), _ppu->GetCycle());
 	}
 
-	if(cycle == 0 && scanline == _step->BreakScanline) {
-		_debugger->SleepUntilResume(BreakSource::PpuStep);
-	} else if(_step->PpuStepCount > 0) {
-		_step->PpuStepCount--;
-		if(_step->PpuStepCount == 0) {
+	if(_step->HasRequest) {
+		if(_step->HasScanlineBreakRequest() && _ppu->GetCycle() == 0 && _ppu->GetScanline() == _step->BreakScanline) {
 			_debugger->SleepUntilResume(BreakSource::PpuStep);
+		} else if(_step->PpuStepCount > 0) {
+			_step->PpuStepCount--;
+			if(_step->PpuStepCount == 0) {
+				_debugger->SleepUntilResume(BreakSource::PpuStep);
+			}
 		}
 	}
-
 }
 
 shared_ptr<BaseEventManager> GbDebugger::GetEventManager()

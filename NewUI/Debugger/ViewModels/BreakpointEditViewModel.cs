@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -22,17 +23,22 @@ namespace Mesen.Debugger.ViewModels
 		[ObservableAsProperty] public bool IsConditionValid { get; }
 		[ObservableAsProperty] public bool OkEnabled { get; }
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
-		
+		[ObservableAsProperty] public bool CanExec { get; } = false;
+
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 
-		//For designer
+		[Obsolete("For designer only")]
 		public BreakpointEditViewModel() : this(null!) { }
 
 		public BreakpointEditViewModel(Breakpoint bp)
 		{
 			Breakpoint = bp;
 
-			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			this.WhenAnyValue(x => x.Breakpoint.StartAddress)
 				.Buffer(2, 1)
@@ -42,6 +48,10 @@ namespace Mesen.Debugger.ViewModels
 						Breakpoint.EndAddress = t.Current;
 					}
 				});
+			
+			this.WhenAnyValue(x => x.Breakpoint.MemoryType, (memoryType) => {
+				return !memoryType.IsPpuMemory();
+			}).ToPropertyEx(this, x => x.CanExec);
 
 			this.WhenAnyValue(x => x.Breakpoint.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;

@@ -187,25 +187,23 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 template<CpuType type>
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	AddressInfo addressInfo { addr, memoryType };
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
-	
-	BreakpointManager* bpManager = _debuggers[(int)type].Debugger->GetBreakpointManager();
-	ProcessBreakConditions(false, bpManager, operation, addressInfo);
-
-	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock());
+	switch(type) {
+		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
+		default: throw std::runtime_error("Invalid cpu type");
+	}
 }
 
 template<CpuType type>
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	AddressInfo addressInfo { addr, memoryType };
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
-	
-	BreakpointManager* bpManager = _debuggers[(int)type].Debugger->GetBreakpointManager();
-	ProcessBreakConditions(false, bpManager, operation, addressInfo);
-
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _emu->GetMasterClock());
+	switch(type) {
+		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
+		default: throw std::runtime_error("Invalid cpu type");
+	}
 }
 
 template<CpuType type>

@@ -195,8 +195,7 @@ public:
 	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
 		uint8_t value = MapperReadVram(addr, type);
-		//TODO
-		//_emu->ProcessPpuRead<CpuType::Nes>(addr, value, SnesMemoryType::NesVideoRam);
+		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, SnesMemoryType::NesPpuMemory);
 		return value;
 	}
 
@@ -224,6 +223,7 @@ public:
 	void WriteMemory(SnesMemoryType type, uint8_t* buffer, int32_t length);
 
 	AddressInfo GetAbsoluteAddress(uint32_t relativeAddr);
+	void GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info);
 	AddressInfo GetPpuAbsoluteAddress(uint32_t relativeAddr);
 	int32_t GetRelativeAddress(AddressInfo& addr);
 	int32_t GetPpuRelativeAddress(AddressInfo& addr);

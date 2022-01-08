@@ -59,7 +59,12 @@
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1">
 				<CheckBox Content="{l:Translate chkBreakOnRead}" IsChecked="{CompiledBinding Breakpoint.BreakOnRead}" />
 				<CheckBox Content="{l:Translate chkBreakOnWrite}" IsChecked="{CompiledBinding Breakpoint.BreakOnWrite}" Margin="10 0 0 0" />
-				<CheckBox Content="{l:Translate chkBreakOnExec}" IsChecked="{CompiledBinding Breakpoint.BreakOnExec}" Margin="10 0 0 0" />
+				<CheckBox
+					Content="{l:Translate chkBreakOnExec}"
+					IsChecked="{CompiledBinding Breakpoint.BreakOnExec}"
+					Margin="10 0 0 0"
+					IsVisible="{CompiledBinding CanExec}"
+				/>
 			</StackPanel>
 
 			<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblAddress}" />
@@ -75,8 +80,6 @@
 			<Grid ColumnDefinitions="*, Auto, Auto" Grid.Column="1" Grid.Row="3">
 				<TextBox
 					AcceptsReturn="True"
-					Height="50"
-					VerticalContentAlignment="Top"
 					Text="{CompiledBinding Breakpoint.Condition}"
 				/>
 

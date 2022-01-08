@@ -36,6 +36,7 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 
 	_debugger = debugger;
 	Console* console = (Console*)debugger->GetConsole();
+	_console = console;
 	_disassembler = debugger->GetDisassembler().get();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
 	_cpu = console->GetCpu().get();
@@ -260,26 +261,44 @@ void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
+void CpuDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
+	AddressInfo addressInfo { addr, memoryType };
+	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
+}
+
+void CpuDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+{
+	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
+	AddressInfo addressInfo { addr, memoryType };
+	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
+}
+
 void CpuDebugger::ProcessPpuCycle()
 {
 	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
 	if(_spcTraceLogger->IsEnabled()) {
 		_spc->Run();
-	} else if(_dspTraceLogger && _dspTraceLogger->IsEnabled()) {
+	}
+	if(_dspTraceLogger && _dspTraceLogger->IsEnabled()) {
 		_cart->RunCoprocessors();
 	}
 
-	uint16_t scanline = _ppu->GetScanline();
 	if(_ppuTools->HasOpenedViewer()) {
-		_ppuTools->UpdateViewers(scanline, _ppu->GetCycle());
+		_ppuTools->UpdateViewers(_ppu->GetScanline(), _ppu->GetCycle());
 	}
 
-	if(scanline == _step->BreakScanline && _memoryManager->GetHClock() == 0) {
-		_debugger->SleepUntilResume(BreakSource::PpuStep);
-	} else if(_step->PpuStepCount > 0) {
-		_step->PpuStepCount--;
-		if(_step->PpuStepCount == 0) {
+	if(_step->HasRequest) {
+		if(_step->HasScanlineBreakRequest() && _ppu->GetScanline() == _step->BreakScanline && _memoryManager->GetHClock() == 0) {
 			_debugger->SleepUntilResume(BreakSource::PpuStep);
+		} else if(_step->PpuStepCount > 0) {
+			_step->PpuStepCount--;
+			if(_step->PpuStepCount == 0) {
+				_debugger->SleepUntilResume(BreakSource::PpuStep);
+			}
 		}
 	}
 }

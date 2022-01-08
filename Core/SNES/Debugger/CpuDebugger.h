@@ -4,6 +4,7 @@
 #include "Debugger/IDebugger.h"
 #include "SNES/CpuTypes.h"
 
+class Console;
 class Disassembler;
 class Debugger;
 class SnesCpuTraceLogger;
@@ -33,6 +34,7 @@ class CpuDebugger final : public IDebugger
 	MemoryAccessCounter* _memoryAccessCounter;
 	MemoryManager* _memoryManager;
 	EmuSettings* _settings;
+	Console* _console;
 	Cpu* _cpu;
 	Sa1* _sa1;
 	BaseCartridge* _cart;
@@ -70,6 +72,8 @@ public:
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
+	void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuCycle();
 
 	void Run() override;

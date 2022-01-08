@@ -883,8 +883,7 @@ void BaseMapper::DebugWriteVram(uint16_t addr, uint8_t value, bool disableSideEf
 
 void BaseMapper::WriteVram(uint16_t addr, uint8_t value)
 {
-	//TODO
-	//_emu->ProcessPpuWrite<CpuType::Nes>(addr, value, SnesMemoryType::NesVideoRam);
+	_emu->ProcessPpuWrite<CpuType::Nes>(addr, value, SnesMemoryType::NesPpuMemory);
 
 	if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
 		_chrPages[addr >> 8][(uint8_t)addr] = value;
@@ -1027,14 +1026,13 @@ AddressInfo BaseMapper::GetAbsoluteAddress(uint32_t relativeAddr)
 	return info;
 }
 
-AddressInfo BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr)
+void BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info)
 {
-	AddressInfo info;
 	if(relativeAddr >= 0x3F00) {
 		info.Address = relativeAddr & 0x1F;
 		info.Type = SnesMemoryType::NesPaletteRam;
 	} else {
-		uint8_t *addr = _chrPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
+		uint8_t* addr = _chrPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
 		if(addr >= _chrRom && addr < _chrRom + _chrRomSize) {
 			info.Address = (uint32_t)(addr - _chrRom);
 			info.Type = SnesMemoryType::NesChrRom;
@@ -1049,6 +1047,12 @@ AddressInfo BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr)
 			info.Type = SnesMemoryType::NesMemory;
 		}
 	}
+}
+
+AddressInfo BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr)
+{
+	AddressInfo info;
+	GetPpuAbsoluteAddress(relativeAddr, info);
 	return info;
 }
 

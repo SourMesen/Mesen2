@@ -5,7 +5,12 @@
 
 bool Breakpoint::Matches(uint32_t memoryAddr, AddressInfo &info)
 {
-	if(_memoryType <= DebugUtilities::GetLastCpuMemoryType() && !DebugUtilities::IsPpuMemory(info.Type)) {
+	if(DebugUtilities::IsPpuMemory(_memoryType) != DebugUtilities::IsPpuMemory(info.Type)) {
+		//Don't break on a PPU breakpoint if the operation is for a CPU, or vice versa
+		return false;
+	}
+
+	if(DebugUtilities::IsRelativeMemory(_memoryType)) {
 		return (int32_t)memoryAddr >= _startAddr && (int32_t)memoryAddr <= _endAddr;
 	} else if(_memoryType == info.Type) {
 		return info.Address >= _startAddr && info.Address <= _endAddr;

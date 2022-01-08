@@ -94,6 +94,11 @@ public:
 		throw std::runtime_error("Invalid CPU type");
 	}
 
+	static constexpr bool IsRelativeMemory(SnesMemoryType memType)
+	{
+		return memType <= GetLastCpuMemoryType();
+	}
+
 	static constexpr SnesMemoryType GetLastCpuMemoryType()
 	{
 		//TODO refactor to "IsRelativeMemory"?

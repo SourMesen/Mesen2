@@ -3,6 +3,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/IDebugger.h"
 
+class NesConsole;
 class Disassembler;
 class Debugger;
 class CallstackManager;
@@ -32,6 +33,7 @@ class NesDebugger final : public IDebugger
 	MemoryAccessCounter* _memoryAccessCounter;
 	EmuSettings* _settings;
 
+	NesConsole* _console;
 	NesCpu* _cpu;
 	BaseNesPpu* _ppu;
 	BaseMapper* _mapper;
@@ -60,6 +62,8 @@ public:
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
+	void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+	void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 	void ProcessPpuCycle();
 
 	void Run() override;

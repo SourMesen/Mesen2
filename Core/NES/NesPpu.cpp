@@ -360,6 +360,7 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 					returnValue = _oamCopybuffer;
 				} else {
 					returnValue = ReadSpriteRam(_spriteRamAddr);
+					_emu->ProcessPpuWrite<CpuType::Nes>(_spriteRamAddr, returnValue, SnesMemoryType::NesSpriteRam);
 				}
 				openBusMask = 0x00;
 			}
@@ -376,8 +377,7 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 
 				if((_ppuBusAddress & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
 					returnValue = ReadPaletteRam(_ppuBusAddress) | (_openBus & 0xC0);
-					//TODO
-					//_emu->DebugProcessVramReadOperation(MemoryOperationType::Read, _ppuBusAddress & 0x3FFF, returnValue);
+					_emu->ProcessPpuRead<CpuType::Nes>(_ppuBusAddress & 0x1F, returnValue, SnesMemoryType::NesPaletteRam);
 					openBusMask = 0xC0;
 				} else {
 					openBusMask = 0x00;
@@ -426,6 +426,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 					value &= 0xE3;
 				}
 				WriteSpriteRam(_spriteRamAddr, value);
+				_emu->ProcessPpuWrite<CpuType::Nes>(_spriteRamAddr, value, SnesMemoryType::NesSpriteRam);
 				_spriteRamAddr = (_spriteRamAddr + 1) & 0xFF;
 			} else {
 				//"Writes to OAMDATA during rendering (on the pre-render line and the visible lines 0-239, provided either sprite or background rendering is enabled) do not modify values in OAM, 
@@ -461,8 +462,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 		case PPURegisters::VideoMemoryData:
 			if((_ppuBusAddress & 0x3FFF) >= 0x3F00) {
 				WritePaletteRam(_ppuBusAddress, value);
-				//TODO
-				//_console->DebugProcessVramWriteOperation(_ppuBusAddress & 0x3FFF, value);
+				_emu->ProcessPpuWrite<CpuType::Nes>(_ppuBusAddress & 0x1F, value, SnesMemoryType::NesPaletteRam);
 			} else {
 				if(_scanline >= 240 || !IsRenderingEnabled()) {
 					_mapper->WriteVram(_ppuBusAddress & 0x3FFF, value);
