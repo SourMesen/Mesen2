@@ -79,7 +79,6 @@ namespace Mesen.Debugger.Views
 								LabelManager.DeleteLabel(label, true);
 							}
 						}
-						((LabelListViewModel)DataContext!).UpdateLabelList();
 					}
 				},
 

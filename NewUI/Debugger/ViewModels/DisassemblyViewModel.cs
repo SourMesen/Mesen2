@@ -6,6 +6,7 @@ using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Linq;
 using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
@@ -73,6 +74,12 @@ namespace Mesen.Debugger.ViewModels
 		public void ScrollToBottom()
 		{
 			SetTopAddress((DataProvider?.GetLineCount() ?? 0) - 1);
+		}
+
+		public void InvalidateVisual()
+		{
+			//Force DisassemblyViewer to refresh
+			Lines = Lines.ToArray();
 		}
 
 		public void Refresh()

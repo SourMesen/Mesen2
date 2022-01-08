@@ -85,8 +85,6 @@ namespace Mesen.Debugger.Controls
 			if(rowNumber < Lines.Length) {
 				RowClicked?.Invoke(this, new RowClickedEventArgs(Lines[rowNumber], rowNumber, marginClicked, e.GetCurrentPoint(this).Properties));
 			}
-
-			InvalidateVisual();
 		}
 
 		protected override void OnPointerMoved(PointerEventArgs e)

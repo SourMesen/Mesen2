@@ -87,12 +87,34 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			WatchList.Manager.WatchChanged += Manager_WatchChanged;
+			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
+			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 			BreakpointManager.AddCpuType(CpuType);
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
 		}
 
+		private void Manager_WatchChanged(object? sender, EventArgs e)
+		{
+			WatchList.UpdateWatch();
+		}
+
+		private void LabelManager_OnLabelUpdated(object? sender, EventArgs e)
+		{
+			LabelList.UpdateLabelList();
+		}
+
+		private void BreakpointManager_BreakpointsChanged(object? sender, EventArgs e)
+		{
+			Disassembly.InvalidateVisual();
+			BreakpointList.UpdateBreakpoints();
+		}
+
 		public void Cleanup()
 		{
+			WatchList.Manager.WatchChanged -= Manager_WatchChanged;
+			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
+			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
 			BreakpointManager.RemoveCpuType(CpuType);
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), false);
 		}

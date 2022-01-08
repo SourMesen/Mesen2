@@ -23,17 +23,11 @@ namespace Mesen.Debugger.ViewModels
 			Title = "Breakpoints";
 			CanPin = false;
 			CpuType = cpuType;
-			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 		}
 
 		public void UpdateBreakpoints()
 		{
 			Breakpoints = new List<Breakpoint>(BreakpointManager.Breakpoints);
-		}
-
-		private void BreakpointManager_BreakpointsChanged(object? sender, EventArgs e)
-		{
-			UpdateBreakpoints();
 		}
 	}
 }

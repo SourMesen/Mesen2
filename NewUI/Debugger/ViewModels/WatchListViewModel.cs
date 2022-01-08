@@ -25,7 +25,6 @@ namespace Mesen.Debugger.ViewModels
 			Title = "Watch";
 			CanPin = false;
 			Manager = WatchManager.GetWatchManager(cpuType);
-			Manager.WatchChanged += WatchListViewModel_WatchChanged;
 			UpdateWatch();
 		}
 
@@ -67,11 +66,6 @@ namespace Mesen.Debugger.ViewModels
 				Manager.UpdateWatch(index, entryBelow);
 				SelectedIndex = index + 1;
 			}
-		}
-
-		private void WatchListViewModel_WatchChanged(object? sender, EventArgs e)
-		{
-			UpdateWatch();
 		}
 
 		private int[] GetIndexes(List<WatchValueInfo> items)
