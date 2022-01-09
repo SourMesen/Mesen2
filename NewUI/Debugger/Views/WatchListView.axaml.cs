@@ -60,9 +60,14 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.Add,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Add),
 					OnClick = () => {
-						grid.CurrentColumn = grid.Columns[0];
 						grid.SelectedIndex = _model!.WatchEntries.Count - 1;
-						grid.BeginEdit();
+						grid.ScrollIntoView(grid.SelectedItem, grid.Columns[0]);
+						Dispatcher.UIThread.Post(() => {
+							//This needs to be done as a post, otherwise the edit operation doesn't
+							//start properly when the user right-clicks outside the grid
+							grid.CurrentColumn = grid.Columns[0];
+							grid.BeginEdit();
+						});
 					}
 				},
 
