@@ -158,6 +158,7 @@ namespace Mesen.Debugger.ViewModels
 
 			UpdateCpuPpuState();
 			UpdateDisassembly(forBreak);
+			LabelList.RefreshLabelList();
 			WatchList.UpdateWatch();
 			CallStack.UpdateCallStack();
 		}

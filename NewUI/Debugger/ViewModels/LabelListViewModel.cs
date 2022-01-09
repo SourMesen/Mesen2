@@ -1,15 +1,16 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
-using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Mesen.Debugger.ViewModels
@@ -19,7 +20,7 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
 
-		[Reactive] public List<CodeLabel> Labels { get; private set; } = new List<CodeLabel>();
+		[Reactive] public List<LabelViewModel> Labels { get; private set; } = new();
 
 		[Obsolete("For designer only")]
 		public LabelListViewModel() : this(CpuType.Cpu, new()) { }
@@ -36,7 +37,14 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateLabelList()
 		{
-  			Labels = LabelManager.GetLabels(CpuType);
+  			Labels = LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)).ToList();
+		}
+
+		public void RefreshLabelList()
+		{
+			foreach(LabelViewModel label in Labels) {
+				label.Refresh();
+			}
 		}
 
 		public void InitContextMenu(Control parent, DataGrid grid)
@@ -51,11 +59,10 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Edit),
-					IsEnabled = () => grid.SelectedItem is CodeLabel,
+					IsEnabled = () => grid.SelectedItem is LabelViewModel,
 					OnClick = () => {
-						CodeLabel? label = grid.SelectedItem as CodeLabel;
-						if(label != null) {
-							LabelEditWindow.EditLabel(parent, label);
+						if(grid.SelectedItem is LabelViewModel vm) {
+							LabelEditWindow.EditLabel(parent, vm.Label);
 						}
 					}
 				},
@@ -66,8 +73,8 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
 						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
-							if(item is CodeLabel label) {
-								LabelManager.DeleteLabel(label, true);
+							if(item is LabelViewModel vm) {
+								LabelManager.DeleteLabel(vm.Label, true);
 							}
 						}
 					}
@@ -78,10 +85,10 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.AddBreakpoint,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddBreakpoint),
-					IsEnabled = () => grid.SelectedItem is CodeLabel,
+					IsEnabled = () => grid.SelectedItem is LabelViewModel,
 					OnClick = () => {
-						if(grid.SelectedItem is CodeLabel label) {
-							AddressInfo addr = label.GetAbsoluteAddress();
+						if(grid.SelectedItem is LabelViewModel vm) {
+							AddressInfo addr = vm.Label.GetAbsoluteAddress();
 							BreakpointManager.AddBreakpoint(addr, CpuType);
 						}
 					}
@@ -90,10 +97,10 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.AddWatch,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddToWatch),
-					IsEnabled = () => grid.SelectedItem is CodeLabel,
+					IsEnabled = () => grid.SelectedItem is LabelViewModel,
 					OnClick = () => {
-						if(grid.SelectedItem is CodeLabel label) {
-							AddressInfo addr = label.GetRelativeAddress(CpuType);
+						if(grid.SelectedItem is LabelViewModel vm) {
+							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
 							if(addr.Address >= 0) {
 								WatchManager.GetWatchManager(CpuType).AddWatch("[$" + addr.Address.ToString("X2") + "]");
 							}
@@ -104,10 +111,10 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_GoToLocation),
-					IsEnabled = () => grid.SelectedItem is CodeLabel label && label.GetRelativeAddress(CpuType).Address >= 0,
+					IsEnabled = () => grid.SelectedItem is LabelViewModel vm && vm.Label.GetRelativeAddress(CpuType).Address >= 0,
 					OnClick = () => {
-						if(grid.SelectedItem is CodeLabel label) {
-							AddressInfo addr = label.GetRelativeAddress(CpuType);
+						if(grid.SelectedItem is LabelViewModel vm) {
+							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
 							if(addr.Address >= 0) {
 								Disassembly.ScrollToAddress((uint)addr.Address);
 							}
@@ -115,6 +122,47 @@ namespace Mesen.Debugger.ViewModels
 					}
 				},
 			});
+		}
+
+		public class LabelViewModel : INotifyPropertyChanged
+		{
+			private int _relAddress;
+			private string _format;
+
+			public CodeLabel Label { get; set; }
+			public CpuType CpuType { get; }
+			public string AbsAddressDisplay { get; }
+
+			public string RelAddressDisplay => _relAddress >= 0 ? ("$" + _relAddress.ToString(_format)) : "<unavailable>";
+			public object RowBrush => _relAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
+			public FontStyle RowStyle => _relAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
+
+			public event PropertyChangedEventHandler? PropertyChanged;
+
+			public void Refresh()
+			{
+				int addr = Label.GetRelativeAddress(CpuType).Address;
+				if(addr != _relAddress) {
+					_relAddress = addr;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowBrush)));
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowStyle)));
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RelAddressDisplay)));
+				}
+			}
+
+			public LabelViewModel(CodeLabel label, CpuType cpuType)
+			{
+				Label = label;
+				CpuType = cpuType;
+				_relAddress = Label.GetRelativeAddress(CpuType).Address;
+				_format = "X" + cpuType.GetAddressSize();
+
+				if(Label.MemoryType.IsRelativeMemory()) {
+					AbsAddressDisplay = "";
+				} else {
+					AbsAddressDisplay = "$" + label.Address.ToString(_format) + " [" + label.MemoryType.GetShortName() + "]";
+				}
+			}
 		}
 	}
 }

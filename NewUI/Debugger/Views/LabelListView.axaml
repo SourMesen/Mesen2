@@ -17,9 +17,18 @@
 		<vm:LabelListViewModel />
 	</Design.DataContext>
 
-	<UserControl.Resources>
-		<du:HexConverter x:Key="Hex" />
-	</UserControl.Resources>
+	<UserControl.Styles>
+		<Style Selector="DataGridCell">
+			<Setter Property="Foreground" Value="{Binding RowBrush}" />
+			<Setter Property="FontStyle" Value="{Binding RowStyle}" />
+		</Style>
+		<Style Selector="DataGridCell.comment">
+			<Setter Property="ToolTip.Tip" Value="{Binding Label.Comment}" />
+		</Style>
+		<Style Selector="ToolTip TextBlock">
+			<Setter Property="FontFamily" Value="Consolas" />
+		</Style>
+	</UserControl.Styles>
 	
 	<Border BorderThickness="1" BorderBrush="LightGray">
 		<c:MesenDataGrid
@@ -28,10 +37,10 @@
 			DoubleTapped="OnGridDoubleClick"
 		>
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="1*" CanUserResize="True"  />
-				<DataGridTextColumn Header="CPU Addr" Width="1*" CanUserResize="True"  />
-				<DataGridTextColumn Header="ROM Addr" Binding="{Binding Address, Converter={StaticResource Hex}, ConverterParameter='$X4'}}" Width="1*" CanUserResize="True" />
-				<DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn CellStyleClasses="comment" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
 			</DataGrid.Columns>
 		</c:MesenDataGrid>
 	</Border>
