@@ -8,6 +8,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -33,11 +34,15 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
 
+		[Reactive] public string BreakReason { get; private set; } = "";
+		[Reactive] public string BreakElapsedCycles { get; private set; } = "";
+
 		[Reactive] public List<object> ToolbarItems { get; private set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; private set; } = new();
 		[Reactive] public List<object> OptionMenuItems { get; private set; } = new();
 
 		public CpuType CpuType { get; private set; }
+		private UInt64 _masterClock = 0;
 
 		//For designer
 		public DebuggerWindowViewModel() : this(null) { }
@@ -119,13 +124,51 @@ namespace Mesen.Debugger.ViewModels
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), false);
 		}
 
-		public void UpdateDisassembly()
+		public void UpdateDebugger(bool forBreak = false, BreakEvent? evt = null)
 		{
-			//Scroll to the active address and highlight it
-			Disassembly.SetActiveAddress(DebugUtilities.GetProgramCounter(CpuType));
-			if(!EmuApi.IsPaused()) {
-				//Clear the highlight if the emulation is still running
-				Disassembly.StyleProvider.ActiveAddress = null;
+			if(forBreak) {
+				UInt64 prevMasterClock = _masterClock;
+				_masterClock = EmuApi.GetTimingInfo().MasterClock;
+				if(prevMasterClock > 0) {
+					BreakElapsedCycles = $"{_masterClock - prevMasterClock} cycles elapsed";
+				}
+
+				if(evt != null) {
+					string breakReason = "";
+					BreakEvent brkEvent = evt.Value;
+					if(brkEvent.Source != BreakSource.Unspecified) {
+						breakReason = ResourceHelper.GetEnumText(brkEvent.Source);
+						if(brkEvent.Source == BreakSource.Breakpoint) {
+							breakReason += (
+								": " +
+								ResourceHelper.GetEnumText(brkEvent.Operation.Type) + " " +
+								brkEvent.Operation.MemType.GetShortName() +
+								" ($" + brkEvent.Operation.Address.ToString("X4") +
+								":$" + brkEvent.Operation.Value.ToString("X2") + ")"
+							);
+						}
+					}
+					BreakReason = breakReason;
+				} else {
+					BreakReason = "";
+				}
+			}
+
+			UpdateCpuPpuState();
+			UpdateDisassembly(forBreak);
+			WatchList.UpdateWatch();
+			CallStack.UpdateCallStack();
+		}
+
+		private void UpdateDisassembly(bool scrollToActiveAddress)
+		{
+			if(scrollToActiveAddress) {
+				//Scroll to the active address and highlight it
+				Disassembly.SetActiveAddress(DebugUtilities.GetProgramCounter(CpuType));
+				if(!EmuApi.IsPaused()) {
+					//Clear the highlight if the emulation is still running
+					Disassembly.StyleProvider.ActiveAddress = null;
+				}
 			}
 			Disassembly.Refresh();
 		}

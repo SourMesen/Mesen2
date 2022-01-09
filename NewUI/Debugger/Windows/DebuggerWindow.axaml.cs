@@ -14,6 +14,7 @@ using Avalonia.Threading;
 using Mesen.Utilities;
 using Mesen.Config;
 using Mesen.Debugger.Utilities;
+using System.Runtime.InteropServices;
 
 namespace Mesen.Debugger.Windows
 {
@@ -57,7 +58,7 @@ namespace Mesen.Debugger.Windows
 			_model.Config.ApplyConfig();
 
 			Dispatcher.UIThread.Post(() => {
-				UpdateDebugger();
+				_model.UpdateDebugger();
 			});
 		}
 
@@ -71,7 +72,7 @@ namespace Mesen.Debugger.Windows
 
 			_listener = new NotificationListener();
 			_listener.OnNotification += _listener_OnNotification;
-			UpdateDebugger();
+			_model.UpdateDebugger(true);
 
 			if(_model.Config.BreakOnOpen) {
 				EmuApi.Pause();
@@ -97,20 +98,13 @@ namespace Mesen.Debugger.Windows
 			DataContext = null;
 		}
 
-		private void UpdateDebugger()
-		{
-			_model.UpdateCpuPpuState();
-			_model.UpdateDisassembly();
-			_model.WatchList.UpdateWatch();
-			_model.CallStack.UpdateCallStack();
-		}
-
 		private void _listener_OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
+					BreakEvent evt = Marshal.PtrToStructure<BreakEvent>(e.Parameter);
 					Dispatcher.UIThread.Post(() => {
-						UpdateDebugger();
+						_model.UpdateDebugger(true, evt);
 						if(_model.Config.BringToFrontOnBreak) {
 							Activate();
 						}

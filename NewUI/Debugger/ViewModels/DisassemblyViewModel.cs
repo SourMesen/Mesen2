@@ -1,4 +1,5 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Interop;
@@ -31,6 +32,10 @@ namespace Mesen.Debugger.ViewModels
 		public DisassemblyViewModel(DebugConfig config, CpuType cpuType)
 		{
 			Config = config;
+
+			if(Design.IsDesignMode) {
+				return;
+			}
 
 			DataProvider = new CodeDataProvider(cpuType);
 

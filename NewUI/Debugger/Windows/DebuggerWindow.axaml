@@ -14,11 +14,11 @@
 	xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
 	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
 	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
 	x:DataType="vm:DebuggerWindowViewModel"
 	Icon="/Assets/Debugger.png"
-	Width="500" Height="600"
+	Width="400" Height="500"
 	Title="Debugger"
 	x:Name="Debugger"
 >
@@ -29,6 +29,10 @@
 	<Window.Styles>
 		<Style Selector="TabStrip:singleitem">
 			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="0" />
 		</Style>
 	</Window.Styles>
 	
@@ -55,6 +59,32 @@
 					<v:DebuggerOptionsView DataContext="{CompiledBinding Options}" />
 				</ScrollViewer>
 			</Panel>
+			<DockPanel DockPanel.Dock="Bottom" Height="20">
+				<Image
+					DockPanel.Dock="Left"
+					Source="/Assets/Breakpoint.png"
+					Stretch="None"
+					IsVisible="{CompiledBinding BreakReason.Length}"
+				/>
+				<TextBlock
+					DockPanel.Dock="Left"
+					Text="{CompiledBinding BreakReason}"
+					VerticalAlignment="Center"
+				/>
+				<TextBlock
+					DockPanel.Dock="Right"
+					Text="{CompiledBinding BreakElapsedCycles}"
+					VerticalAlignment="Center"
+					Margin="3 0"
+				/>
+				<Image
+					DockPanel.Dock="Right"
+					Source="/Assets/Speed.png"
+					Stretch="None"
+					IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
+				/>
+				<TextBlock />
+			</DockPanel>
 			<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
 		</DockPanel>
 	</DockPanel>
