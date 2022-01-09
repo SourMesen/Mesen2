@@ -64,7 +64,7 @@ namespace Mesen.Debugger.ViewModels
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
 			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug, CpuType);
 			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
-			LabelList = new LabelListViewModel(CpuType);
+			LabelList = new LabelListViewModel(CpuType, Disassembly);
 			CallStack = new CallStackViewModel(CpuType);
 			WatchList = new WatchListViewModel(CpuType);
 

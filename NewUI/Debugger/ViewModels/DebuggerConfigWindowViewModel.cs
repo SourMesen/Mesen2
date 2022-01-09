@@ -140,6 +140,7 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.LabelList_FindOccurrences,
 				DebuggerShortcut.LabelList_ViewInCpuMemory,
 				DebuggerShortcut.LabelList_ViewInMemoryType,
+				DebuggerShortcut.LabelList_GoToLocation,
 				DebuggerShortcut.BreakpointList_Add,
 				DebuggerShortcut.BreakpointList_Edit,
 				DebuggerShortcut.BreakpointList_GoToLocation,
