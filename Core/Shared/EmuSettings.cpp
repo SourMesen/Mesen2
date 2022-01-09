@@ -215,6 +215,7 @@ void EmuSettings::SetShortcutKey(EmulatorShortcut shortcut, KeyCombination keyCo
 
 void EmuSettings::SetShortcutKeys(vector<ShortcutKeyInfo> shortcuts)
 {
+	auto lock = _updateShortcutsLock.AcquireSafe();
 	ClearShortcutKeys();
 
 	for(ShortcutKeyInfo &shortcut : shortcuts) {
@@ -228,6 +229,7 @@ void EmuSettings::SetShortcutKeys(vector<ShortcutKeyInfo> shortcuts)
 
 KeyCombination EmuSettings::GetShortcutKey(EmulatorShortcut shortcut, int keySetIndex)
 {
+	auto lock = _updateShortcutsLock.AcquireSafe();
 	auto result = _emulatorKeys[keySetIndex].find((int)shortcut);
 	if(result != _emulatorKeys[keySetIndex].end()) {
 		return result->second;
@@ -237,6 +239,7 @@ KeyCombination EmuSettings::GetShortcutKey(EmulatorShortcut shortcut, int keySet
 
 vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortcut, int keySetIndex)
 {
+	auto lock = _updateShortcutsLock.AcquireSafe();
 	return _shortcutSupersets[keySetIndex][(uint32_t)shortcut];
 }
 

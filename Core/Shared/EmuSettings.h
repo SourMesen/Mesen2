@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "SettingTypes.h"
+#include "Utilities/SimpleLock.h"
 #include <random>
 
 class Emulator;
@@ -33,6 +34,8 @@ private:
 
 	std::unordered_map<uint32_t, KeyCombination> _emulatorKeys[3];
 	std::unordered_map<uint32_t, vector<KeyCombination>> _shortcutSupersets[3];
+
+	SimpleLock _updateShortcutsLock;
 
 	void ProcessString(string &str, const char** strPointer);
 
