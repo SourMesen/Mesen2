@@ -263,16 +263,7 @@ extern "C" {
 
 	DllExport double __stdcall GetAspectRatio()
 	{
-		double ratio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion());
-		if(ratio == 0.0) {
-			if(_emu->GetVideoDecoder()) {
-				FrameInfo frame = _emu->GetVideoDecoder()->GetFrameInfo();
-				return (double)frame.Width / frame.Height;
-			} else {
-				return 256.0 / 240.0;
-			}
-		}
-		return ratio;
+		return _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), _emu->GetVideoDecoder()->GetBaseFrameInfo(true));
 	}
 
 	DllExport FrameInfo __stdcall GetBaseScreenSize()

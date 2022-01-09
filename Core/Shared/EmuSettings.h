@@ -80,7 +80,7 @@ public:
 	OverscanDimensions GetOverscan();
 	uint32_t GetRewindBufferSize();
 	uint32_t GetEmulationSpeed();
-	double GetAspectRatio(ConsoleRegion region);
+	double GetAspectRatio(ConsoleRegion region, FrameInfo baseFrameSize);
 
 	void SetFlag(EmulationFlags flag);
 	void SetFlagState(EmulationFlags flag, bool enabled);

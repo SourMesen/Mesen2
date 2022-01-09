@@ -293,13 +293,18 @@ uint32_t EmuSettings::GetEmulationSpeed()
 	}
 }
 
-double EmuSettings::GetAspectRatio(ConsoleRegion region)
+double EmuSettings::GetAspectRatio(ConsoleRegion region, FrameInfo baseFrameSize)
 {
+	double screenAspectRatio = (double)baseFrameSize.Width / baseFrameSize.Height;
+
 	switch(_video.AspectRatio) {
-		case VideoAspectRatio::NoStretching: return 0.0;
-		case VideoAspectRatio::Auto: return (region == ConsoleRegion::Pal || region == ConsoleRegion::Dendy) ? (11.0 / 8.0) : (8.0 / 7.0);
-		case VideoAspectRatio::NTSC: return 8.0 / 7.0;
-		case VideoAspectRatio::PAL: return 11.0 / 8.0;
+		case VideoAspectRatio::NoStretching: return screenAspectRatio;
+		
+		//For auto, ntsc and pal, these are PAR ratios, so multiply them with the base screen's aspect ratio to get the expected screen aspect ratio
+		case VideoAspectRatio::Auto: return screenAspectRatio * ((region == ConsoleRegion::Pal || region == ConsoleRegion::Dendy) ? (11.0 / 8.0) : (8.0 / 7.0));
+		case VideoAspectRatio::NTSC: return screenAspectRatio * 8.0 / 7.0;
+		case VideoAspectRatio::PAL: return screenAspectRatio * 11.0 / 8.0;
+
 		case VideoAspectRatio::Standard: return 4.0 / 3.0;
 		case VideoAspectRatio::Widescreen: return 16.0 / 9.0;
 		case VideoAspectRatio::Custom: return _video.CustomAspectRatio;

@@ -210,7 +210,8 @@ namespace Mesen.Windows
 				_renderer.Width = double.NaN;
 				_renderer.Height = double.NaN;
 
-				ClientSize = new Size(screenSize.Width * scale, screenSize.Height * scale + _mainMenu.Bounds.Height);
+				double aspectRatio = EmuApi.GetAspectRatio();
+				ClientSize = new Size(screenSize.Width * scale, screenSize.Width * scale / aspectRatio + _mainMenu.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				_renderer.Width = screenSize.Width * scale;
