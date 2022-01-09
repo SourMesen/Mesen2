@@ -1675,7 +1675,9 @@ x == [$150] || y == [10]
 			<Value ID="BreakpointList_Edit">Breakpoint List: Edit Breakpoint</Value>
 			<Value ID="BreakpointList_GoToLocation">Breakpoint List: Go To Location</Value>
 			<Value ID="BreakpointList_Delete">Breakpoint List: Delete Breakpoint</Value>
-			<Value ID="WatchList_Delete">Watch List: Delete</Value>
+			<Value ID="WatchList_Add">Watch List: Add Entry</Value>
+			<Value ID="WatchList_Edit">Watch List: Edit Entry</Value>
+			<Value ID="WatchList_Delete">Watch List: Delete Entry</Value>
 			<Value ID="WatchList_MoveUp">Watch List: Move Up</Value>
 			<Value ID="WatchList_MoveDown">Watch List: Move Down</Value>
 			<Value ID="SaveRom">Save ROM</Value>

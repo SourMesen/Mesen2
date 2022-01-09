@@ -41,11 +41,41 @@ namespace Mesen.Debugger.Views
 			InitContextMenu();
 		}
 
+		private void Grid_PreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
+		{
+			Dispatcher.UIThread.Post(() => {
+				//This needs to be done as a post, otherwise the focus doesn't work properly
+				//and the user can't type when using BeginEdit(). DataGrid bug?
+				e.EditingElement?.Focus();
+			});
+		}
+
 		private void InitContextMenu()
 		{
 			MesenDataGrid grid = this.FindControl<MesenDataGrid>("DataGrid");
+			grid.PreparingCellForEdit += Grid_PreparingCellForEdit;
 
 			DebugShortcutManager.CreateContextMenu(this, new object[] {
+				new ContextMenuAction() {
+					ActionType = ActionType.Add,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Add),
+					OnClick = () => {
+						grid.CurrentColumn = grid.Columns[0];
+						grid.SelectedIndex = _model!.WatchEntries.Count - 1;
+						grid.BeginEdit();
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Edit,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Edit),
+					IsEnabled = () => grid.SelectedItems.Count == 1,
+					OnClick = () => {
+						grid.CurrentColumn = grid.Columns[0];
+						grid.BeginEdit();
+					}
+				},
+
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Delete),

@@ -144,6 +144,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.BreakpointList_Edit,
 				DebuggerShortcut.BreakpointList_GoToLocation,
 				DebuggerShortcut.BreakpointList_Delete,
+				DebuggerShortcut.WatchList_Add,
+				DebuggerShortcut.WatchList_Edit,
 				DebuggerShortcut.WatchList_Delete,
 				DebuggerShortcut.WatchList_MoveUp,
 				DebuggerShortcut.WatchList_MoveDown,

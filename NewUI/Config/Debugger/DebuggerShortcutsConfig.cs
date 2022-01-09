@@ -170,6 +170,8 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_GoToLocation, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Delete, KeyBinding = new(Key.Delete) });
 
+			Add(new() { Shortcut = DebuggerShortcut.WatchList_Add, KeyBinding = new(Key.Insert) });
+			Add(new() { Shortcut = DebuggerShortcut.WatchList_Edit, KeyBinding = new(Key.F2) });
 			Add(new() { Shortcut = DebuggerShortcut.WatchList_Delete, KeyBinding = new(Key.Delete) });
 			Add(new() { Shortcut = DebuggerShortcut.WatchList_MoveUp, KeyBinding = new(KeyModifiers.Alt, Key.Up) });
 			Add(new() { Shortcut = DebuggerShortcut.WatchList_MoveDown, KeyBinding = new(KeyModifiers.Alt, Key.Down) });
@@ -280,6 +282,8 @@ namespace Mesen.Config
 		BreakpointList_Edit,
 		BreakpointList_GoToLocation,
 		BreakpointList_Delete,
+		WatchList_Add,
+		WatchList_Edit,
 		WatchList_Delete,
 		WatchList_MoveUp,
 		WatchList_MoveDown,
