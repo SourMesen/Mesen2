@@ -1,14 +1,8 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Mesen.ViewModels;
-using Mesen.Debugger;
 using Mesen.Debugger.ViewModels;
-using Mesen.Debugger.Labels;
-using Mesen.Debugger.Windows;
-using Mesen.Utilities;
-using Avalonia.Input;
+using Mesen.Interop;
 
 namespace Mesen.Debugger.Views
 {
@@ -22,6 +16,17 @@ namespace Mesen.Debugger.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		{
+			DataGrid grid = (DataGrid)sender;
+			if(grid.SelectedItem is CallStackViewModel.StackInfo stack && DataContext is CallStackViewModel model) {
+				bool isMapped = DebugApi.GetRelativeAddress(stack.Address, model.CpuType).Address >= 0;
+				if(isMapped) {
+					model.Disassembly.ScrollToAddress(stack.RelAddress);
+				}
+			}
 		}
 	}
 }

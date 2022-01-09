@@ -10,7 +10,11 @@ namespace Mesen.Debugger.Utilities
 		{
 			if(targetType == typeof(string)) {
 				if(parameter is string format && value is IFormattable f) {
-					return f.ToString(format, null);
+					if(format.StartsWith("$")) {
+						return "$" + f.ToString(format.Substring(1), null);
+					} else {
+						return f.ToString(format, null);
+					}
 				}
 
 				if(value is byte || value is sbyte) {
@@ -29,6 +33,10 @@ namespace Mesen.Debugger.Utilities
 		public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
 		{
 			if(value is string s) {
+				if(s.StartsWith("$")) {
+					s = s.Substring(1);
+				}
+
 				if(targetType == typeof(byte)) {
 					byte.TryParse(s, NumberStyles.HexNumber, null, out byte v);
 					return v;

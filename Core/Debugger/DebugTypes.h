@@ -230,7 +230,9 @@ enum class StackFrameFlags
 struct StackFrameInfo
 {
 	uint32_t Source;
+	AddressInfo AbsSource;
 	uint32_t Target;
+	AddressInfo AbsTarget;
 	uint32_t Return;
 	AddressInfo AbsReturn;
 	StackFrameFlags Flags;

@@ -1,4 +1,6 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
@@ -12,16 +14,20 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class CallStackViewModel : Tool
 	{
-		private CpuType _cpuType;
+		public CpuType CpuType { get; }
+		public DisassemblyViewModel Disassembly { get; }
 
-		[Reactive] public List<StackInfo> StackFrames { get; private set; } = new List<StackInfo>();
+		[Reactive] public List<StackInfo> CallStackContent { get; private set; } = new List<StackInfo>();
 
-		//For designer
-		public CallStackViewModel() : this(CpuType.Cpu) { }
+		private StackFrameInfo[] _stackFrames = Array.Empty<StackFrameInfo>();
 
-		public CallStackViewModel(CpuType cpuType)
+		[Obsolete("For designer only")]
+		public CallStackViewModel() : this(CpuType.Cpu, new()) { }
+
+		public CallStackViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
 		{
-			_cpuType = cpuType;
+			Disassembly = disassembly;
+			CpuType = cpuType;
 			Id = "CallStack";
 			Title = "Call Stack";
 			CanPin = false;
@@ -35,59 +41,70 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateCallStack()
 		{
-			StackFrames = GetStackInfo();
+			_stackFrames = DebugApi.GetCallstack(CpuType);
+			RefreshCallStack();
+		}
+
+		public void RefreshCallStack()
+		{
+			CallStackContent = GetStackInfo();
 		}
 
 		private List<StackInfo> GetStackInfo()
 		{
-			StackFrameInfo[] stackFrames = DebugApi.GetCallstack(_cpuType);
-
-			int relDestinationAddr = -1;
+			StackFrameInfo[] stackFrames = _stackFrames;
 
 			List<StackInfo> stack = new List<StackInfo>();
-			for(int i = 0, len = stackFrames.Length; i < len; i++) {
-				int relSubEntryAddr = i == 0 ? -1 : (int)stackFrames[i - 1].Target;
-
+			for(int i = 0; i < stackFrames.Length; i++) {
+				bool isMapped = DebugApi.GetRelativeAddress(stackFrames[i].AbsSource, CpuType).Address >= 0;
 				stack.Insert(0, new StackInfo() {
-					SubName = this.GetFunctionName(relSubEntryAddr, i == 0 ? StackFrameFlags.None : stackFrames[i - 1].Flags),
-					Address = stackFrames[i].Source,
+					EntryPoint = GetEntryPoint(i == 0 ? null : stackFrames[i - 1]),
+					RelAddress = stackFrames[i].Source,
+					Address = stackFrames[i].AbsSource,
+					RowBrush = isMapped ? AvaloniaProperty.UnsetValue : Brushes.Gray,
+					RowStyle = isMapped ? FontStyle.Normal : FontStyle.Italic
 				});
-
-				relDestinationAddr = (int)stackFrames[i].Target;
 			}
 
 			//Add current location
 			stack.Insert(0, new StackInfo() {
-				SubName = this.GetFunctionName(relDestinationAddr, stackFrames.Length == 0 ? StackFrameFlags.None : stackFrames[^1].Flags),
-				Address = DebugUtilities.GetProgramCounter(_cpuType),
+				EntryPoint = GetEntryPoint(stackFrames.Length > 0 ? stackFrames[^1] : null),
+				RelAddress = DebugUtilities.GetProgramCounter(CpuType),
+				Address = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)DebugUtilities.GetProgramCounter(CpuType), Type = CpuType.ToMemoryType() })
 			});
 
 			return stack;
 		}
 
-		private string GetFunctionName(int relSubEntryAddr, StackFrameFlags flags)
+		private string GetEntryPoint(StackFrameInfo? stackFrame)
 		{
-			if(relSubEntryAddr < 0) {
+			if(stackFrame == null) {
 				return "[bottom of stack]";
 			}
 
-			string format = "X" + _cpuType.GetAddressSize();
-			CodeLabel? label = relSubEntryAddr >= 0 ? LabelManager.GetLabel(new AddressInfo() { Address = relSubEntryAddr, Type = _cpuType.ToMemoryType() }) : null;
+			StackFrameInfo entry = stackFrame.Value;
+
+			string format = "X" + CpuType.GetAddressSize();
+			CodeLabel? label = LabelManager.GetLabel(entry.AbsTarget);
 			if(label != null) {
-				return label.Label + " ($" + relSubEntryAddr.ToString(format) + ")";
-			} else if(flags == StackFrameFlags.Nmi) {
-				return "[nmi] $" + relSubEntryAddr.ToString(format);
-			} else if(flags == StackFrameFlags.Irq) {
-				return "[irq] $" + relSubEntryAddr.ToString(format);
+				return label.Label + " ($" + entry.Target.ToString(format) + ")";
+			} else if(entry.Flags == StackFrameFlags.Nmi) {
+				return "[nmi] $" + entry.Target.ToString(format);
+			} else if(entry.Flags == StackFrameFlags.Irq) {
+				return "[irq] $" + entry.Target.ToString(format);
 			}
 
-			return "$" + relSubEntryAddr.ToString(format);
+			return "$" + entry.Target.ToString(format);
 		}
 
 		public class StackInfo
 		{
-			public string SubName { get; set; } = "";
-			public UInt32 Address { get; set; }
+			public string EntryPoint { get; set; } = "";
+			public UInt32 RelAddress { get; set; }
+			public AddressInfo Address { get; set; }
+
+			public object RowBrush { get; set; } = AvaloniaProperty.UnsetValue;
+			public FontStyle RowStyle { get; set; }
 		}
 	}
 }

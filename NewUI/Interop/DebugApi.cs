@@ -812,7 +812,9 @@ namespace Mesen.Interop
 	public struct StackFrameInfo
 	{
 		public UInt32 Source;
+		public AddressInfo AbsSource;
 		public UInt32 Target;
+		public AddressInfo AbsTarget;
 		public UInt32 Return;
 		public AddressInfo AbsReturn;
 		public StackFrameFlags Flags;

@@ -31,8 +31,7 @@ namespace Mesen.Debugger.Views
 		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
-			CodeLabel? label = grid.SelectedItem as CodeLabel;
-			if(label != null && grid != null) {
+			if(grid.SelectedItem is CodeLabel label) {
 				LabelEditWindow.EditLabel(this, label);
 			}
 		}

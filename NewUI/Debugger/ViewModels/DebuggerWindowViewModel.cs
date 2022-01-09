@@ -65,7 +65,7 @@ namespace Mesen.Debugger.ViewModels
 			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug, CpuType);
 			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
 			LabelList = new LabelListViewModel(CpuType, Disassembly);
-			CallStack = new CallStackViewModel(CpuType);
+			CallStack = new CallStackViewModel(CpuType, Disassembly);
 			WatchList = new WatchListViewModel(CpuType);
 
 			DockFactory = new DebuggerDockFactory(this);
@@ -107,6 +107,8 @@ namespace Mesen.Debugger.ViewModels
 		private void LabelManager_OnLabelUpdated(object? sender, EventArgs e)
 		{
 			LabelList.UpdateLabelList();
+			CallStack.RefreshCallStack();
+			Disassembly.InvalidateVisual();
 		}
 
 		private void BreakpointManager_BreakpointsChanged(object? sender, EventArgs e)

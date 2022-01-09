@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
@@ -18,23 +19,36 @@
 	<UserControl.Resources>
 		<du:HexConverter x:Key="Hex" />
 	</UserControl.Resources>
-	
+
+	<UserControl.Styles>
+		<Style Selector="DataGridCell.gridCell">
+			<Setter Property="Foreground" Value="{Binding Path=RowBrush}"/>
+			<Setter Property="FontStyle" Value="{Binding Path=RowStyle}"/>
+		</Style>
+	</UserControl.Styles>
+
 	<Border BorderThickness="1" BorderBrush="LightGray">
-		<DataGrid
+		<c:MesenDataGrid
 			Name="DataGrid"
-			Items="{CompiledBinding StackFrames}"
-			CanUserSortColumns="True"
-			CanUserResizeColumns="True"
-			CanUserReorderColumns="True"
-			SelectionMode="Extended"
-			FontFamily="Microsoft Sans Serif"
-			GridLinesVisibility="All"
-			IsReadOnly="True"
+			Items="{CompiledBinding CallStackContent}"
+			DoubleTapped="OnGridDoubleClick"
 		>
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Function (Entry Address)" Binding="{Binding SubName}" Width="1*" CanUserResize="True"  />
-				<DataGridTextColumn Header="PC Address" Binding="{Binding Address, Converter={StaticResource Hex}, ConverterParameter='X4'}}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn
+					CellStyleClasses="gridCell"
+					Header="Function (Entry Address)"
+					Binding="{Binding EntryPoint}"
+					Width="1*" 
+					CanUserResize="True"
+				/>
+				<DataGridTextColumn
+					CellStyleClasses="gridCell"
+					Header="PC Address"
+					Binding="{Binding RelAddress, Converter={StaticResource Hex}, ConverterParameter='$X4'}}"
+					Width="1*"
+					CanUserResize="True"
+				/>
 			</DataGrid.Columns>
-		</DataGrid>
+		</c:MesenDataGrid>
 	</Border>
 </UserControl>

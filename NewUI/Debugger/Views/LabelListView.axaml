@@ -30,7 +30,7 @@
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="1*" CanUserResize="True"  />
 				<DataGridTextColumn Header="CPU Addr" Width="1*" CanUserResize="True"  />
-				<DataGridTextColumn Header="ROM Addr" Binding="{Binding Address, Converter={StaticResource Hex}, ConverterParameter='X4'}}" Width="1*" CanUserResize="True" />
+				<DataGridTextColumn Header="ROM Addr" Binding="{Binding Address, Converter={StaticResource Hex}, ConverterParameter='$X4'}}" Width="1*" CanUserResize="True" />
 				<DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="1*" CanUserResize="True" />
 			</DataGrid.Columns>
 		</c:MesenDataGrid>
