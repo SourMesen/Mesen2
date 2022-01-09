@@ -40,10 +40,11 @@ void Renderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t m
 void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
-	if(_nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
+	FrameInfo rendererSize = _emu->GetVideoRenderer()->GetRendererSize();
+	if(_nesFrameHeight != height || _nesFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
-		if(_nesFrameHeight != height || _nesFrameWidth != width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
+		if(_nesFrameHeight != height || _nesFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen || _useBilinearInterpolation != cfg.UseBilinearInterpolation) {
 			_nesFrameHeight = height;
 			_nesFrameWidth = width;
 			_newFrameBufferSize = width*height;
@@ -60,7 +61,6 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 
 			_fullscreen = _newFullscreen;
 
-			FrameInfo rendererSize = _emu->GetVideoRenderer()->GetRendererSize();
 			_screenHeight = rendererSize.Height;
 			_screenWidth = rendererSize.Width;
 

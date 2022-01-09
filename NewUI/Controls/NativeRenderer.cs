@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Platform;
 using Mesen.Interop;
 using System;
@@ -37,7 +38,7 @@ namespace Mesen
 				width = height * aspectRatio;
 			}
 
-			EmuApi.SetRendererSize((uint)width, (uint)height);
+			EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));
 			return new Size(width, height);
 		}
 	}
