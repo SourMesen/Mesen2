@@ -21,7 +21,7 @@ namespace Mesen.Debugger.Utilities
 			if(segmentType == CodeSegmentType.Address || segmentType == CodeSegmentType.EffectiveAddress) {
 				string addressText = text.Trim(' ', '[', ']', '$');
 				int.TryParse(addressText, System.Globalization.NumberStyles.HexNumber, null, out address);
-			} else if(segmentType == CodeSegmentType.Label) {
+			} else if(segmentType == CodeSegmentType.Label || segmentType == CodeSegmentType.LabelDefinition) {
 				string labelText = text.Trim(' ', ',', ':', ']', '[');
 				label = LabelManager.GetLabel(labelText);
 				if(label != null) {

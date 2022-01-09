@@ -225,7 +225,9 @@ namespace Mesen.Debugger.Controls
 					}
 
 					foreach(CodeColor part in lineParts) {
-						Point pos = new Point(x + codeIndent, y);
+						double indent = part.Type == CodeSegmentType.LabelDefinition ? 0.5 : codeIndent; //Don't indent label definitions
+
+						Point pos = new Point(x + indent, y);
 						text.Text = part.Text;
 						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
 						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(new Vector(pos.X, pos.Y))));
@@ -373,6 +375,7 @@ namespace Mesen.Debugger.Controls
 		MemoryValue,
 		None,
 		Syntax,
+		LabelDefinition,
 	}
 
 	public class CodeColor

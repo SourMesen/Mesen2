@@ -108,7 +108,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			LabelList.UpdateLabelList();
 			CallStack.RefreshCallStack();
-			Disassembly.InvalidateVisual();
+			Disassembly.Refresh();
 		}
 
 		private void BreakpointManager_BreakpointsChanged(object? sender, EventArgs e)

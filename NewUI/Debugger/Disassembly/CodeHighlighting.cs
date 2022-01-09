@@ -80,7 +80,7 @@ namespace Mesen.Debugger.Disassembly
 				return colors;
 			} else {
 				if(codeString.EndsWith(":")) {
-					return new List<CodeColor>() { new CodeColor(codeString, cfg.CodeLabelDefinitionColor, CodeSegmentType.Label) };
+					return new List<CodeColor>() { new CodeColor(codeString, cfg.CodeLabelDefinitionColor, CodeSegmentType.LabelDefinition) };
 				} else {
 					return new List<CodeColor>() { new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None) };
 				}
