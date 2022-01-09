@@ -60,8 +60,9 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 
 			_fullscreen = _newFullscreen;
 
-			_screenHeight = height;
-			_screenWidth = width;
+			FrameInfo rendererSize = _emu->GetVideoRenderer()->GetRendererSize();
+			_screenHeight = rendererSize.Height;
+			_screenWidth = rendererSize.Width;
 
 			if(_fullscreen) {
 				_realScreenHeight = _monitorHeight;
@@ -78,8 +79,8 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 					}
 				}
 			} else {
-				_realScreenHeight = height;
-				_realScreenWidth = width;
+				_realScreenHeight = _screenHeight;
+				_realScreenWidth = _screenWidth;
 			}
 
 			_leftMargin = (_realScreenWidth - _screenWidth) / 2;
