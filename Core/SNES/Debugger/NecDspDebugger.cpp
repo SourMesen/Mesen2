@@ -38,7 +38,7 @@ void NecDspDebugger::Reset()
 void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = { (int32_t)addr, type == MemoryOperationType::ExecOpCode ? SnesMemoryType::DspProgramRom : SnesMemoryType::DspDataRom };
-	MemoryOperationInfo operation { (uint32_t)addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::NecDspMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
@@ -51,10 +51,7 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 		}
 
 		_prevProgramCounter = addr;
-
-		if(_step->StepCount > 0) {
-			_step->StepCount--;
-		}
+		_step->ProcessCpuExec();
 	}
 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
@@ -63,7 +60,7 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::DspDataRam }; //Writes never affect the DSP ROM
-	MemoryOperationInfo operation { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::NecDspMemory);
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {

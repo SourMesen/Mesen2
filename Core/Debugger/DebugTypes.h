@@ -15,6 +15,23 @@ struct MemoryOperationInfo
 	uint32_t Address;
 	int32_t Value;
 	MemoryOperationType Type;
+	SnesMemoryType MemType;
+
+	MemoryOperationInfo()
+	{
+		Address = 0;
+		Value = 0;
+		Type = (MemoryOperationType)0;
+		MemType = (SnesMemoryType)0;
+	}
+
+	MemoryOperationInfo(uint32_t addr, int32_t val, MemoryOperationType opType, SnesMemoryType memType)
+	{
+		Address = addr;
+		Value = val;
+		Type = opType;
+		MemType = memType;
+	}
 };
 
 enum class BreakpointTypeFlags
@@ -293,6 +310,16 @@ struct StepRequest
 		BreakAddress = obj.BreakAddress;
 		BreakScanline = obj.BreakScanline;
 		HasRequest = (StepCount != -1 || PpuStepCount != -1 || BreakAddress != -1 || BreakScanline != INT32_MIN);
+	}
+
+	__forceinline void ProcessCpuExec(BreakSource* source = nullptr)
+	{
+		if(StepCount > 0) {
+			StepCount--;
+			if(StepCount == 0 && source) {
+				*source = BreakSource::CpuStep;
+			}
+		}
 	}
 
 	bool HasScanlineBreakRequest()

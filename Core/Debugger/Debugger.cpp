@@ -313,7 +313,7 @@ void Debugger::ProcessEvent(EventType type)
 
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
-	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read };
+	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, SnesMemoryType::Register };
 	BaseState& state = _debuggers[(int)cpuType].Debugger->GetState();
 	if(useCache) {
 		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, state, resultType, operationInfo);

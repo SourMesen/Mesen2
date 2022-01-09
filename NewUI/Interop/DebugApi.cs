@@ -407,7 +407,9 @@ namespace Mesen.Interop
 		ExecOperand = 3,
 		DmaRead = 4,
 		DmaWrite = 5,
-		DummyRead = 6
+		DummyRead = 6,
+		DummyWrite = 7,
+		PpuRenderingRead = 8
 	}
 
 	public struct MemoryOperationInfo
@@ -415,6 +417,7 @@ namespace Mesen.Interop
 		public UInt32 Address;
 		public Int32 Value;
 		public MemoryOperationType Type;
+		public SnesMemoryType MemType;
 	}
 
 	public enum DebugEventType

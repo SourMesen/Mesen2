@@ -48,7 +48,7 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GsuMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(addressInfo.Type == SnesMemoryType::PrgRom) {
@@ -70,9 +70,8 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_prevOpCode = value;
 		_prevProgramCounter = addr;
 
-		if(_step->StepCount > 0) {
-			_step->StepCount--;
-		}
+		_step->ProcessCpuExec();
+
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
 		if(addressInfo.Type == SnesMemoryType::PrgRom) {
@@ -90,7 +89,7 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 void GsuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GsuMemory);
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {

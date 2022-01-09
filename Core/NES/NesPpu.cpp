@@ -377,7 +377,7 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 
 				if((_ppuBusAddress & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
 					returnValue = ReadPaletteRam(_ppuBusAddress) | (_openBus & 0xC0);
-					_emu->ProcessPpuRead<CpuType::Nes>(_ppuBusAddress & 0x1F, returnValue, SnesMemoryType::NesPaletteRam);
+					_emu->ProcessPpuRead<CpuType::Nes>(_ppuBusAddress, returnValue, SnesMemoryType::NesPpuMemory);
 					openBusMask = 0xC0;
 				} else {
 					openBusMask = 0x00;
@@ -462,7 +462,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 		case PPURegisters::VideoMemoryData:
 			if((_ppuBusAddress & 0x3FFF) >= 0x3F00) {
 				WritePaletteRam(_ppuBusAddress, value);
-				_emu->ProcessPpuWrite<CpuType::Nes>(_ppuBusAddress & 0x1F, value, SnesMemoryType::NesPaletteRam);
+				_emu->ProcessPpuWrite<CpuType::Nes>(_ppuBusAddress, value, SnesMemoryType::NesPpuMemory);
 			} else {
 				if(_scanline >= 240 || !IsRenderingEnabled()) {
 					_mapper->WriteVram(_ppuBusAddress & 0x3FFF, value);

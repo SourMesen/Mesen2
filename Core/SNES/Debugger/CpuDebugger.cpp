@@ -91,7 +91,7 @@ void CpuDebugger::Reset()
 void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation = { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::CpuMemory);
 	CpuState& state = GetCpuState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
@@ -135,14 +135,13 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
 			//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 			_step->StepCount = 0;
+			breakSource = BreakSource::CpuStep;
 		}
 
 		_prevOpCode = value;
 		_prevProgramCounter = pc;
 
-		if(_step->StepCount > 0) {
-			_step->StepCount--;
-		}
+		_step->ProcessCpuExec(&breakSource);
 
 		if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled)) {
 			if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
@@ -200,7 +199,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation = { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::CpuMemory);
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, _cpuType);
 	}
@@ -263,7 +262,7 @@ void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 
 void CpuDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
@@ -271,7 +270,7 @@ void CpuDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType me
 
 void CpuDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());

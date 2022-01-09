@@ -58,18 +58,23 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 {
 	switch(type) {
-		default:
 		case MemoryOperationType::ExecOperand:
 		case MemoryOperationType::ExecOpCode:
 			return BreakpointType::Execute;
 
 		case MemoryOperationType::DmaRead:
 		case MemoryOperationType::Read:
+		case MemoryOperationType::DummyRead:
+		case MemoryOperationType::PpuRenderingRead:
 			return BreakpointType::Read;
 
 		case MemoryOperationType::DmaWrite:
 		case MemoryOperationType::Write:
+		case MemoryOperationType::DummyWrite:
 			return BreakpointType::Write;
+
+		default:
+			throw std::runtime_error("Unsupported memory operation type");
 	}
 }
 
@@ -85,7 +90,7 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)type];
 	for(size_t i = 0; i < breakpoints.size(); i++) {
-		if(breakpoints[i].Matches(operationInfo.Address, address)) {
+		if(breakpoints[i].Matches(operationInfo, address)) {
 			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)type][i], state, resultType, operationInfo)) {
 				if(breakpoints[i].IsMarked()) {
 					_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());

@@ -67,7 +67,7 @@ void NesDebugger::Reset()
 void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation = { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::NesMemory);
 	NesCpuState& state = _cpu->GetState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
@@ -112,14 +112,13 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40)) {
 			//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 			_step->StepCount = 0;
+			breakSource = BreakSource::CpuStep;
 		}
 
 		_prevOpCode = value;
 		_prevProgramCounter = pc;
-
-		if(_step->StepCount > 0) {
-			_step->StepCount--;
-		}
+		
+		_step->ProcessCpuExec(&breakSource);
 
 		if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled)) {
 			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
@@ -176,7 +175,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation = { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::NesMemory);
 	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Nes);
 	}
@@ -234,7 +233,7 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 
 void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);
@@ -245,7 +244,7 @@ void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType me
 
 void NesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);

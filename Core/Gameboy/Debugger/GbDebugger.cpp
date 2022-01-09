@@ -71,7 +71,7 @@ void GbDebugger::Reset()
 void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GameboyMemory);
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	GbCpuState& state = _cpu->GetState();
@@ -131,9 +131,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		_prevOpCode = value;
 		_prevProgramCounter = pc;
 
-		if(_step->StepCount > 0) {
-			_step->StepCount--;
-		}
+		_step->ProcessCpuExec(&breakSource);
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
@@ -182,7 +180,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation { addr, value, type };
+	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GameboyMemory);
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
 	if(addressInfo.Type == SnesMemoryType::GbWorkRam || addressInfo.Type == SnesMemoryType::GbCartRam || addressInfo.Type == SnesMemoryType::GbHighRam) {
@@ -245,7 +243,7 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 
 void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Read };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
@@ -253,7 +251,7 @@ void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType mem
 
 void GbDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
-	MemoryOperationInfo operation { addr, value, MemoryOperationType::Write };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _gameboy->GetMasterClock());
