@@ -753,7 +753,7 @@ void ExpressionEvaluator::RunTests()
 	//Some basic unit tests to run in debug mode
 	auto test = [=](string expr, EvalResultType expectedType, int expectedResult) {
 		BaseState state = { };
-		MemoryOperationInfo opInfo { 0, 0, MemoryOperationType::Read };
+		MemoryOperationInfo opInfo = {};
 		EvalResultType type;
 		int32_t result = Evaluate(expr, state, type, opInfo);
 
