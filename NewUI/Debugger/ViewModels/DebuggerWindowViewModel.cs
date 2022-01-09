@@ -63,7 +63,7 @@ namespace Mesen.Debugger.ViewModels
 			DefaultLabelHelper.SetDefaultLabels();
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
 			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug, CpuType);
-			BreakpointList = new BreakpointListViewModel(CpuType);
+			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
 			LabelList = new LabelListViewModel(CpuType);
 			CallStack = new CallStackViewModel(CpuType);
 			WatchList = new WatchListViewModel(CpuType);

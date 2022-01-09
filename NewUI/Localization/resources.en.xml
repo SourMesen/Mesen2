@@ -1780,6 +1780,8 @@ x == [$150] || y == [10]
 
 			<Value ID="HelpApiReference">API Reference</Value>
 			<Value ID="RecentScripts">Recent Scripts</Value>
+
+			<Value ID="GoToLocation">Go To Location</Value>
 		</Enum>
 	</Enums>
 </Resources>

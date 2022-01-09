@@ -116,7 +116,11 @@ namespace Mesen.Debugger.ViewModels
 		public void SetActiveAddress(uint pc)
 		{
 			StyleProvider.ActiveAddress = (int)pc;
+			ScrollToAddress(pc);
+		}
 
+		public void ScrollToAddress(uint pc)
+		{
 			for(int i = 1; i < VisibleRowCount - 2 && i < Lines.Length; i++) {
 				if(Lines[i].Address == (int)pc) {
 					//Row is already visible, don't scroll

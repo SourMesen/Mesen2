@@ -280,5 +280,8 @@ namespace Mesen.Debugger.Utilities
 		
 		ZoomIn,
 		ZoomOut,
+
+		[IconFile("Expand")]
+		GoToLocation,
 	}
 }

@@ -10,6 +10,7 @@ using Mesen.Debugger.Windows;
 using Mesen.Utilities;
 using Mesen.Debugger.Utilities;
 using Mesen.Config;
+using System;
 
 namespace Mesen.Debugger.Views
 {
@@ -25,53 +26,12 @@ namespace Mesen.Debugger.Views
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected override void OnInitialized()
+		protected override void OnDataContextChanged(EventArgs e)
 		{
-			base.OnInitialized();
-			InitContextMenu();
-		}
-
-		private void InitContextMenu()
-		{
-			DataGrid grid = this.FindControl<DataGrid>("DataGrid");
-
-			DebugShortcutManager.CreateContextMenu(this, new object[] {
-				new ContextMenuAction() {
-					ActionType = ActionType.Add,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Add),
-					OnClick = () => {
-						if(DataContext is BreakpointListViewModel model) {
-							Breakpoint bp = new Breakpoint() { BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true, CpuType = model.CpuType };
-							BreakpointEditWindow.EditBreakpoint(bp, this);
-						}
-					}
-				},
-
-				new ContextMenuAction() {
-					ActionType = ActionType.Edit,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Edit),
-					IsEnabled = () => grid.SelectedItem is Breakpoint,
-					OnClick = () => {
-						Breakpoint? bp = grid.SelectedItem as Breakpoint;
-						if(bp != null && grid != null) {
-							BreakpointEditWindow.EditBreakpoint(bp, this);
-						}
-					}
-				},
-
-				new ContextMenuAction() {
-					ActionType = ActionType.Delete,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Delete),
-					IsEnabled = () => grid.SelectedItems.Count > 0,
-					OnClick = () => {
-						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
-							if(item is Breakpoint bp) {
-								BreakpointManager.RemoveBreakpoint(bp);
-							}
-						}
-					}
-				}
-			});
+			if(DataContext is BreakpointListViewModel vm) {
+				vm.InitContextMenu(this, this.FindControl<DataGrid>("DataGrid"));
+			}
+			base.OnDataContextChanged(e);
 		}
 
 		private void OnGridClick(object sender, RoutedEventArgs e)

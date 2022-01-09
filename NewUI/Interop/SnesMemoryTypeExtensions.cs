@@ -87,6 +87,7 @@ namespace Mesen.Interop
 				case SnesMemoryType.Cx4Memory:
 				case SnesMemoryType.GameboyMemory:
 				case SnesMemoryType.NesMemory:
+				case SnesMemoryType.NesPpuMemory:
 					return true;
 			}
 			return false;
