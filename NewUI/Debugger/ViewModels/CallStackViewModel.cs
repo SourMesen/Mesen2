@@ -2,7 +2,10 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Dock.Model.ReactiveUI.Controls;
+using Mesen.Config;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
@@ -59,6 +62,7 @@ namespace Mesen.Debugger.ViewModels
 				bool isMapped = DebugApi.GetRelativeAddress(stackFrames[i].AbsSource, CpuType).Address >= 0;
 				stack.Insert(0, new StackInfo() {
 					EntryPoint = GetEntryPoint(i == 0 ? null : stackFrames[i - 1]),
+					EntryPointAddr = i == 0 ? null : stackFrames[i - 1].AbsTarget,
 					RelAddress = stackFrames[i].Source,
 					Address = stackFrames[i].AbsSource,
 					RowBrush = isMapped ? AvaloniaProperty.UnsetValue : Brushes.Gray,
@@ -69,6 +73,7 @@ namespace Mesen.Debugger.ViewModels
 			//Add current location
 			stack.Insert(0, new StackInfo() {
 				EntryPoint = GetEntryPoint(stackFrames.Length > 0 ? stackFrames[^1] : null),
+				EntryPointAddr = stackFrames.Length > 0 ? stackFrames[^1].AbsTarget : null,
 				RelAddress = DebugUtilities.GetProgramCounter(CpuType),
 				Address = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)DebugUtilities.GetProgramCounter(CpuType), Type = CpuType.ToMemoryType() })
 			});
@@ -97,9 +102,53 @@ namespace Mesen.Debugger.ViewModels
 			return "$" + entry.Target.ToString(format);
 		}
 
+		private bool IsMapped(StackInfo entry)
+		{
+			return DebugApi.GetRelativeAddress(entry.Address, CpuType).Address >= 0;
+		}
+
+		public void GoToLocation(StackInfo entry)
+		{
+			if(IsMapped(entry)) {
+				Disassembly.ScrollToAddress(entry.RelAddress);
+			}
+		}
+
+		public void InitContextMenu(Control parent, DataGrid grid)
+		{
+			DebugShortcutManager.CreateContextMenu(parent, new object[] {
+				new ContextMenuAction() {
+					ActionType = ActionType.EditLabel,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CallStack_EditLabel),
+					IsEnabled = () => grid.SelectedItem is StackInfo entry && entry.EntryPointAddr != null,
+					OnClick = () => {
+						if(grid.SelectedItem is StackInfo entry && entry.EntryPointAddr != null) {
+							LabelEditWindow.EditLabel(parent, new CodeLabel() {
+								Address = (uint)entry.EntryPointAddr.Value.Address,
+								MemoryType = entry.EntryPointAddr.Value.Type
+							});
+						}
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToLocation,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CallStack_GoToLocation),
+					IsEnabled = () => grid.SelectedItem is StackInfo entry && IsMapped(entry),
+					OnClick = () => {
+						if(grid.SelectedItem is StackInfo entry) {
+							GoToLocation(entry);
+						}
+					}
+				},
+			});
+		}
+
 		public class StackInfo
 		{
 			public string EntryPoint { get; set; } = "";
+			public AddressInfo? EntryPointAddr { get; set; }
+
 			public UInt32 RelAddress { get; set; }
 			public AddressInfo Address { get; set; }
 

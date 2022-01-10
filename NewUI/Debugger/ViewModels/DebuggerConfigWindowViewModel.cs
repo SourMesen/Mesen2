@@ -150,6 +150,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.WatchList_Delete,
 				DebuggerShortcut.WatchList_MoveUp,
 				DebuggerShortcut.WatchList_MoveDown,
+				DebuggerShortcut.CallStack_EditLabel,
+				DebuggerShortcut.CallStack_GoToLocation,
 				//DebuggerShortcut.SaveRom,
 				DebuggerShortcut.SaveRomAs,
 				DebuggerShortcut.SaveEditAsIps,

@@ -177,6 +177,9 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.WatchList_MoveUp, KeyBinding = new(KeyModifiers.Alt, Key.Up) });
 			Add(new() { Shortcut = DebuggerShortcut.WatchList_MoveDown, KeyBinding = new(KeyModifiers.Alt, Key.Down) });
 
+			Add(new() { Shortcut = DebuggerShortcut.CallStack_EditLabel, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.CallStack_GoToLocation, KeyBinding = new() });
+
 			Add(new() { Shortcut = DebuggerShortcut.SaveRom, KeyBinding = new(KeyModifiers.Control, Key.S) });
 			Add(new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.SaveEditAsIps, KeyBinding = new() });
@@ -289,6 +292,8 @@ namespace Mesen.Config
 		WatchList_Delete,
 		WatchList_MoveUp,
 		WatchList_MoveDown,
+		CallStack_EditLabel,
+		CallStack_GoToLocation,
 		SaveRom,
 		SaveRomAs,
 		SaveEditAsIps,
@@ -305,7 +310,7 @@ namespace Mesen.Config
 		ScriptWindow_OpenScript,
 		ScriptWindow_SaveScript,
 		ScriptWindow_RunScript,
-		ScriptWindow_StopScript
+		ScriptWindow_StopScript,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase
