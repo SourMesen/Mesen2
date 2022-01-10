@@ -97,13 +97,10 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.AddWatch,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddToWatch),
-					IsEnabled = () => grid.SelectedItem is LabelViewModel,
+					IsEnabled = () => grid.SelectedItem is LabelViewModel vm && vm.RelAddress >= 0,
 					OnClick = () => {
 						if(grid.SelectedItem is LabelViewModel vm) {
-							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
-							if(addr.Address >= 0) {
-								WatchManager.GetWatchManager(CpuType).AddWatch("[$" + addr.Address.ToString("X2") + "]");
-							}
+							WatchManager.GetWatchManager(CpuType).AddWatch("[" + vm.RelAddressDisplay + "]");
 						}
 					}
 				},
@@ -126,24 +123,24 @@ namespace Mesen.Debugger.ViewModels
 
 		public class LabelViewModel : INotifyPropertyChanged
 		{
-			private int _relAddress;
 			private string _format;
 
 			public CodeLabel Label { get; set; }
 			public CpuType CpuType { get; }
 			public string AbsAddressDisplay { get; }
 
-			public string RelAddressDisplay => _relAddress >= 0 ? ("$" + _relAddress.ToString(_format)) : "<unavailable>";
-			public object RowBrush => _relAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
-			public FontStyle RowStyle => _relAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
+			public int RelAddress { get; private set; }
+			public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
+			public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
+			public FontStyle RowStyle => RelAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
 
 			public event PropertyChangedEventHandler? PropertyChanged;
 
 			public void Refresh()
 			{
 				int addr = Label.GetRelativeAddress(CpuType).Address;
-				if(addr != _relAddress) {
-					_relAddress = addr;
+				if(addr != RelAddress) {
+					RelAddress = addr;
 					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowBrush)));
 					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowStyle)));
 					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RelAddressDisplay)));
@@ -154,7 +151,7 @@ namespace Mesen.Debugger.ViewModels
 			{
 				Label = label;
 				CpuType = cpuType;
-				_relAddress = Label.GetRelativeAddress(CpuType).Address;
+				RelAddress = Label.GetRelativeAddress(CpuType).Address;
 				_format = "X" + cpuType.GetAddressSize();
 
 				if(Label.MemoryType.IsRelativeMemory()) {
