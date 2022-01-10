@@ -1,21 +1,23 @@
-﻿using Avalonia.Media;
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Mesen.Utilities.Json
 {
-	public class ColorConverter : JsonConverter<Color>
+	public class TimeSpanConverter : JsonConverter<TimeSpan>
 	{
-		public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			UInt32 value = reader.GetUInt32();
-			return Color.FromUInt32(value);
+			string? value = reader.GetString();
+			if(value == null) {
+				throw new ArgumentException("Invalid value for timespan");
+			}
+			return TimeSpan.Parse(value);
 		}
 
-		public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)
+		public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
 		{
-			writer.WriteNumberValue(value.ToUint32());
+			writer.WriteStringValue(value.ToString());
 		}
 	}
 }
