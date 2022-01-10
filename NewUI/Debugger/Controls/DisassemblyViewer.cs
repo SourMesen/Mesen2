@@ -226,9 +226,13 @@ namespace Mesen.Debugger.Controls
 						context.DrawRectangle(b, p, new Rect(Math.Round(x + codeIndent) + 0.5, Math.Round(y) + 0.5, Math.Round(text.Bounds.Width), Math.Round(text.Bounds.Height)));
 					}
 
-					foreach(CodeColor part in lineParts) {
-						double indent = part.Type == CodeSegmentType.LabelDefinition ? 0.5 : codeIndent; //Don't indent label definitions
+					double indent = codeIndent;
+					if(lineParts.Count == 1 && (lineParts[0].Type == CodeSegmentType.LabelDefinition || lineParts[0].Type == CodeSegmentType.Comment)) {
+						//Don't indent multi-line comments/label definitions
+						indent = 0.5;
+					}
 
+					foreach(CodeColor part in lineParts) {
 						Point pos = new Point(x + indent, y);
 						text.Text = part.Text;
 						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
@@ -381,6 +385,7 @@ namespace Mesen.Debugger.Controls
 		Syntax,
 		LabelDefinition,
 		MarginAddress,
+		Comment,
 	}
 
 	public class CodeColor

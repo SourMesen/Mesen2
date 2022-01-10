@@ -23,8 +23,8 @@ namespace Mesen.Debugger.Disassembly
 			string codeString = lineData.Text;
 			Color defaultColor = Color.FromRgb(60, 60, 60);
 
+			List<CodeColor> colors = new List<CodeColor>();
 			if(codeString.Length > 0 && highlightCode && !lineData.Flags.HasFlag(LineFlags.Label)) {
-				List<CodeColor> colors = new List<CodeColor>();
 				bool foundOpCode = false;
 				while(codeString.Length > 0) {
 					Match m;
@@ -77,14 +77,20 @@ namespace Mesen.Debugger.Disassembly
 					colors.Add(new CodeColor(lineData.GetValueString(), defaultColor, CodeSegmentType.MemoryValue));
 				}
 
-				return colors;
+				if(!string.IsNullOrWhiteSpace(lineData.Comment)) {
+					colors.Add(new CodeColor(" " + lineData.Comment, cfg.CodeCommentColor, CodeSegmentType.Comment));
+				}
 			} else {
-				if(codeString.EndsWith(":")) {
-					return new List<CodeColor>() { new CodeColor(codeString, cfg.CodeLabelDefinitionColor, CodeSegmentType.LabelDefinition) };
+				if(lineData.Flags.HasFlag(LineFlags.Comment)) {
+					colors.Add(new CodeColor(lineData.Comment, cfg.CodeCommentColor, CodeSegmentType.Comment));
+				} else if(codeString.EndsWith(":")) {
+					colors.Add(new CodeColor(codeString, cfg.CodeLabelDefinitionColor, CodeSegmentType.LabelDefinition));
 				} else {
-					return new List<CodeColor>() { new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None) };
+					colors.Add(new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None));
 				}
 			}
+
+			return colors;
 		}
 	}
 }
