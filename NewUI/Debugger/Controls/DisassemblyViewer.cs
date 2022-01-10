@@ -185,7 +185,9 @@ namespace Mesen.Debugger.Controls
 
 				//Draw address in margin
 				text.Text = line.Address >= 0 ? line.Address.ToString(addrFormat) : "..";
-				context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(symbolMargin, y), text);
+				Point marginAddressPos = new Point(symbolMargin, y);
+				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);
+				_visibleCodeSegments.Add(new CodeSegmentInfo(text.Text, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));
 				x += addressMargin;
 
 				if(showByteCode) {
@@ -230,7 +232,7 @@ namespace Mesen.Debugger.Controls
 						Point pos = new Point(x + indent, y);
 						text.Text = part.Text;
 						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
-						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(new Vector(pos.X, pos.Y))));
+						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(new Vector(pos.X, pos.Y)), line));
 						x += text.Bounds.Width;
 					}
 				}
@@ -286,16 +288,18 @@ namespace Mesen.Debugger.Controls
 
 	public class CodeSegmentInfo
 	{
-		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds)
+		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds, CodeLineData data)
 		{
-			this.Text = text;
-			this.Type = type;
-			this.Bounds = bounds;
+			Text = text;
+			Type = type;
+			Bounds = bounds;
+			Data = data;
 		}
 
 		public string Text { get; }
 		public CodeSegmentType Type { get; }
 		public Rect Bounds { get; }
+		public CodeLineData Data { get; }
 	}
 
 	public class RowClickedEventArgs
@@ -376,6 +380,7 @@ namespace Mesen.Debugger.Controls
 		None,
 		Syntax,
 		LabelDefinition,
+		MarginAddress,
 	}
 
 	public class CodeColor

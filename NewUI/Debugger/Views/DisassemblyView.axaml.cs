@@ -50,7 +50,7 @@ namespace Mesen.Debugger.Views
 		{
 			DynamicTooltip? tooltip;
 			ICodeDataProvider? dp = Model.DataProvider;
-			if(e.CodeSegment != null && dp != null && (tooltip = CodeTooltipHelper.GetTooltip(dp.CpuType, e.CodeSegment.Text, e.CodeSegment.Type)) != null) {
+			if(e.CodeSegment != null && dp != null && (tooltip = CodeTooltipHelper.GetTooltip(dp.CpuType, e.CodeSegment)) != null) {
 				ToolTip.SetTip(this, tooltip);
 				ToolTip.SetHorizontalOffset(this, 14);
 				ToolTip.SetHorizontalOffset(this, 15);
