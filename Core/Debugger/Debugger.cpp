@@ -492,8 +492,7 @@ void Debugger::RebuildPrgCache(CpuType cpuType)
 
 	uint32_t prgRomSize = cdl->GetPrgSize();
 	AddressInfo addrInfo;
-	//TODO
-	addrInfo.Type = cpuType == CpuType::Gameboy ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
+	addrInfo.Type = cdl->GetPrgMemoryType();
 	for(uint32_t i = 0; i < prgRomSize; i++) {
 		if(cdl->IsCode(i)) {
 			addrInfo.Address = (int32_t)i;

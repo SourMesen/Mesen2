@@ -151,15 +151,15 @@ uint8_t CodeDataLogger::GetCpuFlags(uint32_t absoluteAddr)
 
 CpuType CodeDataLogger::GetCpuType(uint32_t absoluteAddr)
 {
-	if(_cpuType == CpuType::Gameboy) {
-		return _cpuType;
-	} else if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
-		return CpuType::Gsu;
-	} else if(_cdlData[absoluteAddr] & CdlFlags::Cx4) {
-		return CpuType::Cx4;
+	//TODO?
+	if(_cpuType == CpuType::Cpu) {
+		if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
+			return CpuType::Gsu;
+		} else if(_cdlData[absoluteAddr] & CdlFlags::Cx4) {
+			return CpuType::Cx4;
+		}
 	}
-
-	return CpuType::Cpu;
+	return _cpuType;
 }
 
 void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
