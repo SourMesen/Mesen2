@@ -24,7 +24,7 @@ namespace Mesen.Debugger.Disassembly
 			_cpuType = type;
 			_symbolProvider = symbolProvider;
 			_file = file;
-			_lineCount = file.Data.Length;
+			_lineCount = file.Data?.Length ?? 0;
 
 			string filename = file.Name.ToLower();
 			_isC = filename.EndsWith(".h") || filename.EndsWith(".c");

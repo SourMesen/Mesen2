@@ -4,6 +4,7 @@ using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Disassembly;
+using Mesen.Debugger.Integration;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
@@ -15,6 +16,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
@@ -56,6 +58,12 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				RomInfo romInfo = EmuApi.GetRomInfo();
 				CpuType = romInfo.ConsoleType.GetMainCpuType();
+
+				//TODO temporary - try to load DBG file if it exists
+				string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
+				if(File.Exists(dbgPath)) {
+					DbgImporter dbgImporter = DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true);
+				}
 			}
 
 			Config = ConfigManager.Config.Debug.Debugger;

@@ -39,6 +39,16 @@ namespace Mesen.Interop
 			};
 		}
 
+		public static SnesMemoryType GetPrgRomMemoryType(this CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Cpu => SnesMemoryType.PrgRom,
+				CpuType.Gameboy => SnesMemoryType.GbPrgRom,
+				CpuType.Nes => SnesMemoryType.NesPrgRom,
+				_ => throw new Exception("Invalid CPU type"),
+			};
+		}
+
 		public static int GetAddressSize(this CpuType cpuType)
 		{
 			return cpuType switch {
