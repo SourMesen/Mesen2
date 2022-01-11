@@ -184,21 +184,16 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint1
 	uint32_t pageCount = 0;
 	uint32_t pageSize = 0;
 	uint8_t defaultAccessType = MemoryAccessType::Read;
+	if(type == ChrMemoryType::Default) {
+		if(_chrRomSize > 0) {
+			type = ChrMemoryType::ChrRom;
+		} else {
+			type = ChrMemoryType::ChrRam;
+		}
+	}
+
 	switch(type) {
 		case ChrMemoryType::Default:
-			pageSize = InternalGetChrPageSize();
-			if(pageSize == 0) {
-				#ifdef _DEBUG
-				MessageManager::DisplayMessage("Debug", "Tried to map undefined chr rom/ram.");
-				#endif
-				return;
-			}
-			pageCount = GetCHRPageCount();
-			if(_onlyChrRam) {
-				defaultAccessType |= MemoryAccessType::Write;
-			}
-			break;
-
 		case ChrMemoryType::ChrRom:
 			pageSize = InternalGetChrPageSize();
 			if(pageSize == 0) {
@@ -257,17 +252,21 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint1
 void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMemoryType type, uint32_t sourceOffset, int8_t accessType)
 {
 	uint8_t* sourceMemory = nullptr;
+
+	if(type == ChrMemoryType::Default) {
+		type = _chrRomSize > 0 ? ChrMemoryType::ChrRom : ChrMemoryType::ChrRam;
+	}
+
 	switch(type) {
-		default:
 		case ChrMemoryType::Default: 
-			sourceMemory = _onlyChrRam ? _chrRam : _chrRom; 
-			type = _onlyChrRam ? ChrMemoryType::ChrRam : ChrMemoryType::ChrRom;
+		case ChrMemoryType::ChrRom:
+			sourceMemory = _chrRom;
 			break;
 
-		case ChrMemoryType::ChrRom: sourceMemory = _chrRom; break;
 		case ChrMemoryType::ChrRam: sourceMemory = _chrRam; break;
 		case ChrMemoryType::NametableRam: sourceMemory = _nametableRam; break;
 	}
+
 	int firstSlot = startAddr >> 8;
 	int slotCount = (endAddr - startAddr + 1) >> 8;
 	for(int i = 0; i < slotCount; i++) {
@@ -472,7 +471,7 @@ bool BaseMapper::HasChrRam()
 
 bool BaseMapper::HasChrRom()
 {
-	return !_onlyChrRam;
+	return _chrRomSize > 0;
 }
 
 void BaseMapper::AddRegisterRange(uint16_t startAddr, uint16_t endAddr, MemoryOperation operation)
@@ -634,12 +633,10 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 
 	if(_chrRomSize == 0) {
 		//Assume there is CHR RAM if no CHR ROM exists
-		_onlyChrRam = true;
 		InitializeChrRam(romData.ChrRamSize);
 
 		//Map CHR RAM to 0x0000-0x1FFF by default when no CHR ROM exists
 		SetPpuMemoryMapping(0x0000, 0x1FFF, 0, ChrMemoryType::ChrRam);
-		_chrRomSize = _chrRamSize;
 	} else if(romData.ChrRamSize >= 0) {
 		InitializeChrRam(romData.ChrRamSize);
 	} else if(GetChrRamSize()) {
@@ -948,7 +945,7 @@ uint32_t BaseMapper::GetMemorySize(SnesMemoryType type)
 {
 	switch(type) {
 		default: return 0;
-		case SnesMemoryType::NesChrRom: return _onlyChrRam ? 0 : _chrRomSize;
+		case SnesMemoryType::NesChrRom: return _chrRomSize;
 		case SnesMemoryType::NesChrRam: return _chrRamSize;
 		case SnesMemoryType::NesNametableRam: return _nametableCount * BaseMapper::NametableSize;
 		case SnesMemoryType::NesSaveRam: return _saveRamSize;
@@ -1128,14 +1125,14 @@ CartridgeState BaseMapper::GetState()
 	state.HasBattery = _romInfo.HasBattery;
 
 	state.PrgRomSize = _prgSize;
-	state.ChrRomSize = _onlyChrRam ? 0 : _chrRomSize;
+	state.ChrRomSize = _chrRomSize;
 	state.ChrRamSize = _chrRamSize;
 
 	state.PrgPageCount = GetPRGPageCount();
 	state.PrgPageSize = InternalGetPrgPageSize();
 	state.ChrPageCount = GetCHRPageCount();
 	state.ChrPageSize = InternalGetChrPageSize();
-	state.ChrRamPageSize = _onlyChrRam ? InternalGetChrPageSize() : InternalGetChrRamPageSize();
+	state.ChrRamPageSize = InternalGetChrRamPageSize();
 	for(int i = 0; i < 0x100; i++) {
 		state.PrgMemoryOffset[i] = _prgMemoryOffset[i];
 		state.PrgType[i] = _prgMemoryType[i];
@@ -1196,20 +1193,16 @@ void BaseMapper::GetRomFileData(vector<uint8_t> &out, bool asIpsFile, uint8_t* h
 vector<uint8_t> BaseMapper::GetPrgChrCopy()
 {
 	vector<uint8_t> data;
-	data.resize(_prgSize + (_onlyChrRam ? 0 : _chrRomSize));
+	data.resize(_prgSize + _chrRomSize);
 	memcpy(data.data(), _prgRom, _prgSize);
-	if(!_onlyChrRam) {
-		memcpy(data.data() + _prgSize, _chrRom, _chrRomSize);
-	}
+	memcpy(data.data() + _prgSize, _chrRom, _chrRomSize);
 	return data;
 }
 
 void BaseMapper::RestorePrgChrBackup(vector<uint8_t> &backupData)
 {
 	memcpy(_prgRom, backupData.data(), _prgSize);
-	if(!_onlyChrRam) {
-		memcpy(_chrRom, backupData.data() + _prgSize, _chrRomSize);
-	}
+	memcpy(_chrRom, backupData.data() + _prgSize, _chrRomSize);
 }
 
 void BaseMapper::RevertPrgChrChanges()
@@ -1237,9 +1230,7 @@ void BaseMapper::CopyPrgChrRom(shared_ptr<BaseMapper> mapper)
 {
 	if(_prgSize == mapper->_prgSize && _chrRomSize == mapper->_chrRomSize) {
 		memcpy(_prgRom, mapper->_prgRom, _prgSize);
-		if(!_onlyChrRam) {
-			memcpy(_chrRom, mapper->_chrRom, _chrRomSize);
-		}
+		memcpy(_chrRom, mapper->_chrRom, _chrRomSize);
 	}
 }
 

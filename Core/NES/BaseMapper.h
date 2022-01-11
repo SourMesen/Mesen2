@@ -30,7 +30,6 @@ private:
 	uint8_t *_nametableRam = nullptr;
 	uint8_t _nametableCount = 2;
 
-	bool _onlyChrRam = false;
 	bool _hasBusConflicts = false;
 	
 	bool _allowRegisterRead = false;
