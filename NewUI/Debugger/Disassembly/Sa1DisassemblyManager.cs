@@ -9,7 +9,7 @@ namespace Mesen.Debugger.Disassembly
 		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.Sa1Memory; } }
 		public override bool AllowSourceView { get { return false; } }
 
-		public override void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file)
+		public override void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo? file)
 		{
 			this._provider = new CodeDataProvider(CpuType.Sa1);
 		}

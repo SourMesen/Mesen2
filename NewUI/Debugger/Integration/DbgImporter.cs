@@ -15,11 +15,8 @@ namespace Mesen.Debugger.Integration
 	{
 		private static Regex _segmentRegex = new Regex("^seg\tid=([0-9]+),.*start=0x([0-9a-fA-F]+),.*size=0x([0-9A-Fa-f]+)", RegexOptions.Compiled);
 		private static Regex _segmentPrgRomRegex = new Regex("^seg\tid=([0-9]+),.*start=0x([0-9a-fA-F]+),.*size=0x([0-9A-Fa-f]+),.*ooffs=([0-9]+)", RegexOptions.Compiled);
-		private static Regex _lineRegex = new Regex("^line\tid=([0-9]+),.*file=([0-9]+),.*line=([0-9]+)(,.*type=([0-9]+)){0,1}(,.*span=([0-9+]+)){0,1}", RegexOptions.Compiled);
 		private static Regex _fileRegex = new Regex("^file\tid=([0-9]+),.*name=\"([^\"]+)\"", RegexOptions.Compiled);
-		private static Regex _spanRegex = new Regex("^span\tid=([0-9]+),.*seg=([0-9]+),.*start=([0-9]+),.*size=([0-9]+)(,.*type=([0-9]+)){0,1}", RegexOptions.Compiled);
 		private static Regex _scopeRegex = new Regex("^scope\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*sym=([0-9+]+)){0,1}(,.*span=([0-9+]+)){0,1}", RegexOptions.Compiled);
-		private static Regex _symbolRegex = new Regex("^sym\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*size=([0-9]+)){0,1}(,.*def=([0-9+]+)){0,1}(,.*ref=([0-9+]+)){0,1}(,.*val=0x([0-9a-fA-F]+)){0,1}(,.*seg=([0-9]+)){0,1}(,.*exp=([0-9]+)){0,1}", RegexOptions.Compiled);
 		private static Regex _cSymbolRegex = new Regex("^csym\tid=([0-9]+),.*name=\"([0-9a-zA-Z@_-]+)\"(,.*sym=([0-9+]+)){0,1}", RegexOptions.Compiled);
 
 		private static Regex _asmFirstLineRegex = new Regex(";(.*)", RegexOptions.Compiled);
@@ -47,7 +44,7 @@ namespace Mesen.Debugger.Integration
 		private int _errorCount = 0;
 
 		private Dictionary<int, SourceCodeLocation> _linesByPrgAddress = new Dictionary<int, SourceCodeLocation>();
-		private Dictionary<int, LineInfo[]> _linesByFile = new Dictionary<int, LineInfo[]>();
+		private Dictionary<int, LineInfo?[]> _linesByFile = new Dictionary<int, LineInfo?[]>();
 		private Dictionary<string, int> _prgAddressByLine = new Dictionary<string, int>();
 		protected HashSet<int> _scopeSpans = new HashSet<int>();
 
@@ -92,7 +89,7 @@ namespace Mesen.Debugger.Integration
 
 		private int GetPrgAddress(SpanInfo span)
 		{
-			SegmentInfo? segment;
+			SegmentInfo segment;
 			if(_segments.TryGetValue(span.SegmentID, out segment)) {
 				if(!segment.IsRam && span.Size != segment.Size) {
 					return span.Offset + segment.FileOffset - _headerSize;
@@ -103,8 +100,7 @@ namespace Mesen.Debugger.Integration
 
 		public SourceCodeLocation? GetSourceCodeLineInfo(AddressInfo address)
 		{
-			SourceCodeLocation? line;
-			if(address.Type == _prgMemType && _linesByPrgAddress.TryGetValue(address.Address, out line)) {
+			if(address.Type == _prgMemType && _linesByPrgAddress.TryGetValue(address.Address, out SourceCodeLocation line)) {
 				return line;
 			}
 			return null;
@@ -114,8 +110,7 @@ namespace Mesen.Debugger.Integration
 		{
 			if(prgRomAddress >= 0) {
 				try {
-					SourceCodeLocation? line;
-					if(_linesByPrgAddress.TryGetValue(prgRomAddress, out line)) {
+					if(_linesByPrgAddress.TryGetValue(prgRomAddress, out SourceCodeLocation line)) {
 						string output = "";
 						SourceFileInfo file = line.File;
 						if(file.Data == null) {
@@ -132,7 +127,7 @@ namespace Mesen.Debugger.Integration
 
 		private SourceCodeLocation? GetReferenceInfo(int referenceId)
 		{
-			if(_lines.TryGetValue(referenceId, out LineInfo? line)) {
+			if(_lines.TryGetValue(referenceId, out LineInfo line)) {
 				string lineContent = "";
 				if(_files.TryGetValue(line.FileID, out FileInfo? file) && file.Data != null && file.Data.Length > line.LineNumber) {
 					lineContent = file.Data[line.LineNumber];
@@ -158,9 +153,9 @@ namespace Mesen.Debugger.Integration
 			return null;
 		}
 
-		private List<SourceCodeLocation> GetSymbolReferences(SymbolInfo symbol)
+		private List<SourceCodeLocation?> GetSymbolReferences(SymbolInfo symbol)
 		{
-			List<SourceCodeLocation> references = new List<SourceCodeLocation>();
+			List<SourceCodeLocation?> references = new();
 			foreach(int reference in symbol.References) {
 				SourceCodeLocation? refInfo = GetReferenceInfo(reference);
 				if(refInfo != null) {
@@ -173,17 +168,18 @@ namespace Mesen.Debugger.Integration
 		private SpanInfo? GetSymbolDefinitionSpan(SymbolInfo symbol)
 		{
 			foreach(int definition in symbol.Definitions) {
-				if(_lines.TryGetValue(definition, out LineInfo? definitionLine)) {
+				if(_lines.TryGetValue(definition, out LineInfo definitionLine)) {
+					LineInfo? line = definitionLine;
 					if(_files.TryGetValue(definitionLine.FileID, out FileInfo? file)) {
 						int lineNumber = definitionLine.LineNumber;
-						while(!(definitionLine?.SpanIDs.Length > 0) && lineNumber < _linesByFile[file.ID].Length - 1) {
+						while(!(line?.SpanIDs.Length > 0) && lineNumber < _linesByFile[file.ID].Length - 1) {
 							//Definition line contains no code, try the next line
 							lineNumber++;
-							definitionLine = _linesByFile[file.ID][lineNumber];
+							line = _linesByFile[file.ID][lineNumber];
 						}
 
-						if(definitionLine != null && definitionLine.SpanIDs.Length > 0) {
-							if(_spans.TryGetValue(definitionLine.SpanIDs[0], out SpanInfo? span)) {
+						if(line != null && definitionLine.SpanIDs.Length > 0) {
+							if(_spans.TryGetValue(definitionLine.SpanIDs[0], out SpanInfo span)) {
 								return span;
 							}
 						}
@@ -235,7 +231,7 @@ namespace Mesen.Debugger.Integration
 					if(symbol.Name == word && symbol.SymbolID.HasValue) {
 						SymbolInfo? matchingSymbol = GetMatchingSymbol(_symbols[symbol.SymbolID.Value], prgStartAddress, prgEndAddress);
 						if(matchingSymbol != null) {
-							return matchingSymbol.SourceSymbol;
+							return matchingSymbol.Value.SourceSymbol;
 						}
 					}
 				}
@@ -244,7 +240,7 @@ namespace Mesen.Debugger.Integration
 					if(symbol.Name == word) {
 						SymbolInfo? matchingSymbol = GetMatchingSymbol(symbol, prgStartAddress, prgEndAddress);
 						if(matchingSymbol != null) {
-							return matchingSymbol.SourceSymbol;
+							return matchingSymbol.Value.SourceSymbol;
 						}
 					}
 				}
@@ -343,31 +339,32 @@ namespace Mesen.Debugger.Integration
 
 		private bool LoadLines(string row)
 		{
-			Match match = _lineRegex.Match(row);
-			if(match.Success) {
-				int id = Int32.Parse(match.Groups[1].Value);
-				int fileID = Int32.Parse(match.Groups[2].Value);
-				int lineNumber = Int32.Parse(match.Groups[3].Value) - 1;
-				LineType type = match.Groups[5].Success ? (LineType)Int32.Parse(match.Groups[5].Value) : LineType.Assembly;
+			int? id = null;
+			int? fileID = null;
+			int? lineNumber = null;
+			LineType type = LineType.Assembly;
+			int[] spanIds = Array.Empty<int>();
 
-				int[] spanIds = Array.Empty<int>();
-				if(match.Groups[7].Success) {
-					string[] spanIDs = match.Groups[7].Value.Split('+');
-					spanIds = new int[spanIDs.Length];
-					int j = 0;
-					for(int i = spanIDs.Length - 1; i >= 0; i--) {
-						//Read them backwards to get them in order
-						spanIds[j] = Int32.Parse(spanIDs[i]);
-						j++;
-					}
+			DbgReader.ReadEntry(row, (ref ReadOnlySpan<char> name, ref ReadOnlySpan<char> data) => {
+				if(name.IsEqual("id")) {
+					id = Int32.Parse(data);
+				} else if(name.IsEqual("file")) {
+					fileID = Int32.Parse(data);
+				} else if(name.IsEqual("line")) {
+					lineNumber = Int32.Parse(data) - 1;
+				} else if(name.IsEqual("type")) {
+					type = (LineType)Int32.Parse(data);
+				} else if(name.IsEqual("span")) {
+					spanIds = DbgReader.ReadIntArray(data);
 				}
+			});
 
-				LineInfo line = new LineInfo(id, fileID, lineNumber, type, _files[fileID].SourceFile, spanIds);
-
+			if(id != null && fileID != null && lineNumber != null) {
+				LineInfo line = new LineInfo(id.Value, fileID.Value, lineNumber.Value, type, _files[fileID.Value].SourceFile, spanIds);
 				_usedFileIds.Add(line.FileID);
 				_lines.Add(line.ID, line);
 				return true;
-			} else if(row.StartsWith("line")) {
+			} else {
 				System.Diagnostics.Debug.Fail("Regex doesn't match line");
 			}
 
@@ -376,18 +373,31 @@ namespace Mesen.Debugger.Integration
 
 		private bool LoadSpans(string row)
 		{
-			Match match = _spanRegex.Match(row);
-			if(match.Success) {
-				int id = Int32.Parse(match.Groups[1].Value);
-				int segmentID = Int32.Parse(match.Groups[2].Value);
-				int offset = Int32.Parse(match.Groups[3].Value);
-				int size = Int32.Parse(match.Groups[4].Value);
-				bool isData = match.Groups[6].Success;
+			int? id = null;
+			int? segmentID = null;
+			int? offset = null;
+			int? size = null;
+			bool isData = false;
 
-				SpanInfo span = new SpanInfo(id, segmentID, offset, size, isData);
+			DbgReader.ReadEntry(row, (ref ReadOnlySpan<char> name, ref ReadOnlySpan<char> data) => {
+				if(name.IsEqual("id")) {
+					id = Int32.Parse(data);
+				} else if(name.IsEqual("seg")) {
+					segmentID = Int32.Parse(data);
+				} else if(name.IsEqual("start")) {
+					offset = Int32.Parse(data);
+				} else if(name.IsEqual("size")) {
+					size = Int32.Parse(data);
+				} else if(name.IsEqual("type")) {
+					isData = true;
+				}
+			});
+
+			if(id != null && segmentID != null && offset != null && size != null) {
+				SpanInfo span = new SpanInfo(id.Value, segmentID.Value, offset.Value, size.Value, isData);
 				_spans.Add(span.ID, span);
 				return true;
-			} else if(row.StartsWith("span")) {
+			} else {
 				System.Diagnostics.Debug.Fail("Regex doesn't match span");
 			}
 
@@ -405,7 +415,7 @@ namespace Mesen.Debugger.Integration
 				CSymbolInfo symbol = new CSymbolInfo(id, name, symbolID);
 				_cSymbols.Add(symbol.ID, symbol);
 				return true;
-			} else if(row.StartsWith("csym")) {
+			} else {
 				System.Diagnostics.Debug.Fail("Regex doesn't match csym");
 			}
 
@@ -432,31 +442,49 @@ namespace Mesen.Debugger.Integration
 				}
 				_scopes.Add(scope.ID, scope);
 				return true;
-			} /*else if(row.StartsWith("scope")) {
-				System.Diagnostics.Debug.Fail("Regex doesn't match scope");
-			}*/
+			} else {
+				//System.Diagnostics.Debug.Fail("Regex doesn't match scope");
+			}
 
 			return false;
 		}
 
 		private bool LoadSymbols(string row)
 		{
-			Match match = _symbolRegex.Match(row);
-			if(match.Success) {
-				int id = Int32.Parse(match.Groups[1].Value);
-				string name = match.Groups[2].Value;
-				int? address = match.Groups[10].Success ? Int32.Parse(match.Groups[10].Value, NumberStyles.HexNumber) : null;
-				int? segmentId = match.Groups[12].Success ? Int32.Parse(match.Groups[12].Value) : null;
-				int? exportSymbolId = match.Groups[14].Success ? Int32.Parse(match.Groups[14].Value) : null;
-				int? size = match.Groups[4].Success ? Int32.Parse(match.Groups[4].Value) : null;
-				int[] definitions = match.Groups[6].Success ? match.Groups[6].Value.Split('+').Select(o => Int32.Parse(o)).ToArray() : Array.Empty<int>();
-				int[] references = match.Groups[8].Success ? match.Groups[8].Value.Split('+').Select(o => Int32.Parse(o)).ToArray() : Array.Empty<int>();
+			int? id = null;
+			string? symbolName = null;
+			int? address = null;
+			int? segmentId = null;
+			int? exportSymbolId = null;
+			int? size = null;
+			int[] definitions = Array.Empty<int>();
+			int[] references = Array.Empty<int>();
 
-				SymbolInfo symbol = new SymbolInfo(id, name, address, segmentId, exportSymbolId, size, definitions, references);
+			DbgReader.ReadEntry(row, (ref ReadOnlySpan<char> name, ref ReadOnlySpan<char> data) => {
+				if(name.IsEqual("id")) {
+					id = Int32.Parse(data);
+				} else if(name.IsEqual("name")) {
+					symbolName = data.Slice(1, data.Length - 2).ToString();
+				} else if(name.IsEqual("size")) {
+					size = Int32.Parse(data);
+				} else if(name.IsEqual("val")) {
+					address = Int32.Parse(data.Slice(2), NumberStyles.HexNumber);
+				} else if(name.IsEqual("seg")) {
+					segmentId = Int32.Parse(data);
+				} else if(name.IsEqual("exp")) {
+					exportSymbolId = Int32.Parse(data);
+				} else if(name.IsEqual("ref")) {
+					references = DbgReader.ReadIntArray(data);
+				} else if(name.IsEqual("def")) {
+					definitions = DbgReader.ReadIntArray(data);
+				}
+			});
 
+			if(id != null && symbolName != null) {
+				SymbolInfo symbol = new SymbolInfo(id.Value, symbolName, address, segmentId, exportSymbolId, size, definitions, references);
 				_symbols.Add(symbol.ID, symbol);
 				return true;
-			} else if(row.StartsWith("sym")) {
+			} else {
 				System.Diagnostics.Debug.Fail("Regex doesn't match sym");
 			}
 
@@ -484,7 +512,7 @@ namespace Mesen.Debugger.Integration
 					//This symbol actually denotes the start of a scope (.scope or .proc) and isn't actually data, return a size of 1
 					return 1;
 				} else {
-					return (defSpan == null || defSpan.IsData) ? (symbol.Size ?? 1) : 1;
+					return (defSpan == null || defSpan.Value.IsData) ? (symbol.Size ?? 1) : 1;
 				}
 			}
 
@@ -560,7 +588,6 @@ namespace Mesen.Debugger.Integration
 
 		private void LoadComments()
 		{
-			DbgIntegrationConfig config = ConfigManager.Config.Debug.DbgIntegration;
 			SortedDictionary<string, int> constants = GetConstants();
 			foreach(KeyValuePair<int, LineInfo> kvp in _lines) {
 				try {
@@ -585,10 +612,6 @@ namespace Mesen.Debugger.Integration
 					string comment = "";
 					for(int i = line.LineNumber; i >= 0; i--) {
 						string sourceCodeLine = _files[line.FileID].Data[i];
-						if(sourceCodeLine.Trim().Length == 0) {
-							//Ignore empty lines
-							continue;
-						}
 
 						Regex regex;
 						if(i == line.LineNumber) {
@@ -689,6 +712,14 @@ namespace Mesen.Debugger.Integration
 				}
 			}
 
+			foreach(LineInfo line in _lines.Values) {
+				if(!_linesByFile.TryGetValue(line.FileID, out LineInfo?[]? fileLines)) {
+					fileLines = new LineInfo?[maxLineCountByFile[line.FileID] + 1];
+					_linesByFile[line.FileID] = fileLines;
+				}
+				fileLines[line.LineNumber] = line;
+			}
+
 			foreach(FileInfo file in _files.Values) {
 				if(_usedFileIds.Contains(file.ID)) {
 					try {
@@ -705,16 +736,8 @@ namespace Mesen.Debugger.Integration
 						}
 
 						if(File.Exists(sourceFile)) {
-							file.LoadData(File.ReadAllLines(sourceFile));
+							file.SetSourceFile(sourceFile);
 						}
-
-						LineInfo[] fileInfos = new LineInfo[maxLineCountByFile[file.ID] + 1];
-						foreach(LineInfo line in _lines.Values) {
-							if(line.FileID == file.ID) {
-								fileInfos[line.LineNumber] = line;
-							}
-						}
-						_linesByFile[file.ID] = fileInfos;
 					} catch {
 						_errorCount++;
 					}
@@ -769,8 +792,8 @@ namespace Mesen.Debugger.Integration
 				}
 
 				foreach(int reference in symbol.References) {
-					if(_lines.TryGetValue(reference, out LineInfo? line) && line.SpanIDs.Length > 0) {
-						if(_spans.TryGetValue(line.SpanIDs[0], out SpanInfo? span) && !span.IsData && span.Size <= 4) {
+					if(_lines.TryGetValue(reference, out LineInfo line) && line.SpanIDs.Length > 0) {
+						if(_spans.TryGetValue(line.SpanIDs[0], out SpanInfo span) && !span.IsData && span.Size <= 4) {
 							int referencePrgAddr = GetPrgAddress(span);
 							if(referencePrgAddr >= 0 && referencePrgAddr < prgRomContent.Length) {
 								byte opCode = prgRomContent[referencePrgAddr];
@@ -778,7 +801,7 @@ namespace Mesen.Debugger.Integration
 									//This symbol is used with a JSR/jump instruction, so it's either a function or jump target
 									SpanInfo? definitionSpan = GetSymbolDefinitionSpan(symbol);
 									if(definitionSpan != null) {
-										int definitionPrgAddr = GetPrgAddress(definitionSpan);
+										int definitionPrgAddr = GetPrgAddress(definitionSpan.Value);
 										if(definitionPrgAddr >= 0 && definitionPrgAddr < prgRomContent.Length) {
 											bool isJsr = IsJumpToSubroutine(opCode);
 											cdlFile[definitionPrgAddr] |= (byte)(isJsr ? CdlFlags.SubEntryPoint : CdlFlags.JumpTarget);
@@ -815,14 +838,20 @@ namespace Mesen.Debugger.Integration
 		private void Import(string path, bool importComments, bool silent = false)
 		{
 			SymbolFileStamp = File.GetLastWriteTime(path);
-			string[] fileRows = File.ReadAllLines(path);
 
 			string basePath = Path.GetDirectoryName(path) ?? "";
 			SymbolPath = basePath;
-			foreach(string row in fileRows) {
+
+			foreach(string row in File.ReadLines(path)) {
 				try {
-					if(LoadLines(row) || LoadSpans(row) || LoadSymbols(row) || LoadCSymbols(row) || LoadScopes(row) || LoadFiles(row, basePath) || LoadSegments(row)) {
-						continue;
+					switch(row.Substring(0, 3)) {
+						case "lin": LoadLines(row); break;
+						case "spa": LoadSpans(row); break;
+						case "sym": LoadSymbols(row); break;
+						case "csy": LoadCSymbols(row); break;
+						case "sco": LoadScopes(row); break;
+						case "fil": LoadFiles(row, basePath); break;
+						case "seg": LoadSegments(row); break;
 					}
 				} catch {
 					_errorCount++;
@@ -834,13 +863,14 @@ namespace Mesen.Debugger.Integration
 			BuildCdlData();
 
 			foreach(LineInfo line in _lines.Values) {
+				SourceCodeLocation location = line.GetLocation();
 				foreach(int spanID in line.SpanIDs) {
-					if(_spans.TryGetValue(spanID, out SpanInfo? span)) {
-						if(_segments.TryGetValue(span.SegmentID, out SegmentInfo? segment) && !segment.IsRam) {
+					if(_spans.TryGetValue(spanID, out SpanInfo span)) {
+						if(_segments.TryGetValue(span.SegmentID, out SegmentInfo segment) && !segment.IsRam) {
 							for(int i = 0; i < span.Size; i++) {
 								int prgAddress = segment.FileOffset - _headerSize + span.Offset + i;
 
-								if(_linesByPrgAddress.TryGetValue(prgAddress, out SourceCodeLocation? existingLine)) {
+								if(_linesByPrgAddress.TryGetValue(prgAddress, out SourceCodeLocation existingLine)) {
 									//If the line was already assigned to a line marked as "External", keep that instead of overwriting it
 									//This is usually used to denote lines that are C code (rather than assembly)
 									if(existingLine.InternalLine is LineInfo internalLine && internalLine.Type == LineType.External) {
@@ -848,7 +878,7 @@ namespace Mesen.Debugger.Integration
 									}
 								}
 
-								_linesByPrgAddress[prgAddress] = line.Location;
+								_linesByPrgAddress[prgAddress] = location;
 								if(i == 0 && spanID == line.SpanIDs[0]) {
 									//Mark the first byte of the first span representing this line as the PRG address for this line of code
 									FileInfo file = _files[line.FileID];
@@ -902,7 +932,7 @@ namespace Mesen.Debugger.Integration
 			}
 		}
 
-		private class SegmentInfo
+		private readonly struct SegmentInfo
 		{
 			public int ID { get; }
 			public int Start { get; }
@@ -922,38 +952,55 @@ namespace Mesen.Debugger.Integration
 			}
 		}
 
-		private class FileInfo
+		private class FileInfo : IFileDataProvider
 		{
 			public int ID { get; }
 			public string Name { get; }
-			public string[] Data { get; private set; }
 			public bool IsAssembly { get; }
 			public SourceFileInfo SourceFile { get; }
+
+			private string[]? _data = null;
+			private string? _sourceFile = null;
+			public string[] Data
+			{
+				get
+				{
+					if(_data != null) {
+						return _data;
+					} else if(_sourceFile == null || !File.Exists(_sourceFile)) {
+						_data = Array.Empty<string>();
+					} else {
+						_data = File.ReadAllLines(_sourceFile);
+					}
+
+					return _data;
+				}
+			}
 
 			public FileInfo(int id, string filename, bool isAsm)
 			{
 				ID = id;
 				Name = filename;
-				Data = Array.Empty<string>();
 				IsAssembly = isAsm;
 				SourceFile = new SourceFileInfo(Name, this);
 			}
 
-			public void LoadData(string[] data)
+			public void SetSourceFile(string sourceFile)
 			{
-				Data = data;
-				SourceFile.Data = data;
+				_sourceFile = sourceFile;
 			}
 		}
 
-		private class LineInfo
+		private readonly struct LineInfo
 		{
 			public int ID { get; }
 			public int FileID { get; }
 			public int[] SpanIDs { get; }
 			public LineType Type { get; }
 			public int LineNumber { get; }
-			public SourceCodeLocation Location { get; }
+			public SourceFileInfo SourceFile { get; }
+			
+			public SourceCodeLocation GetLocation() => new SourceCodeLocation(SourceFile, LineNumber, this);
 
 			public LineInfo(int id, int fileID, int lineNumber, LineType type, SourceFileInfo sourceFile, int[] spanIds)
 			{
@@ -961,7 +1008,7 @@ namespace Mesen.Debugger.Integration
 				FileID = fileID;
 				LineNumber = lineNumber;
 				Type = type;
-				Location = new SourceCodeLocation(sourceFile, lineNumber, this);
+				SourceFile = sourceFile;
 				SpanIDs = spanIds;
 			}
 		}
@@ -973,7 +1020,7 @@ namespace Mesen.Debugger.Integration
 			Macro = 2
 		}
 
-		private class SpanInfo
+		private readonly struct SpanInfo
 		{
 			public int ID { get; }
 			public int SegmentID { get; }
@@ -991,7 +1038,7 @@ namespace Mesen.Debugger.Integration
 			}
 		}
 
-		private class SymbolInfo
+		private readonly struct SymbolInfo
 		{
 			public int ID { get; }
 			public string Name { get; }
@@ -1001,7 +1048,7 @@ namespace Mesen.Debugger.Integration
 			public int? Size { get; }
 			public int[] References { get; }
 			public int[] Definitions { get; }
-			public SourceSymbol SourceSymbol { get; }
+			public SourceSymbol SourceSymbol { get => new SourceSymbol(Name, Address, this); }
 
 			public SymbolInfo(int id, string name, int? address, int? segmentId, int? exportSymbolId, int? size, int[] definitions, int[] references)
 			{
@@ -1013,11 +1060,10 @@ namespace Mesen.Debugger.Integration
 				Size = size;
 				Definitions = definitions;
 				References = references;
-				SourceSymbol = new SourceSymbol(Name, Address, this);
 			}
 		}
 
-		private class ScopeInfo
+		private readonly struct ScopeInfo
 		{
 			public ScopeInfo(int id, string name, int? symbolID, int[] spans)
 			{

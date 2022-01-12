@@ -24,14 +24,18 @@ namespace Mesen.Debugger.Integration
 		//int GetSymbolSize(SourceSymbol symbol);
 	}
 
-	public class SourceFileInfo
+	public interface IFileDataProvider
 	{
-		public string Name;
-		public string[]? Data;
-		
-		public object InternalFile;
+		string[] Data { get; }
+	}
 
-		public SourceFileInfo(string name, object internalFile)
+	public readonly struct SourceFileInfo
+	{
+		public string Name { get; }
+		public IFileDataProvider InternalFile { get; }
+		public string[] Data => InternalFile.Data;
+
+		public SourceFileInfo(string name, IFileDataProvider internalFile)
 		{
 			Name = name;
 			InternalFile = internalFile;
@@ -49,11 +53,11 @@ namespace Mesen.Debugger.Integration
 		}
 	}
 
-	public class SourceSymbol
+	public readonly struct SourceSymbol
 	{
-		public string Name;
-		public int? Address;
-		public object InternalSymbol;
+		public string Name { get; }
+		public int? Address { get; }
+		public object InternalSymbol { get; }
 
 		public SourceSymbol(string name, int? address, object internalSymbol)
 		{
@@ -63,11 +67,11 @@ namespace Mesen.Debugger.Integration
 		}
 	}
 
-	public class SourceCodeLocation
+	public readonly struct SourceCodeLocation
 	{
-		public SourceFileInfo File;
-		public int LineNumber;
-		public object InternalLine;
+		public SourceFileInfo File { get; }
+		public int LineNumber { get; }
+		public object InternalLine { get; }
 
 		public SourceCodeLocation(SourceFileInfo file, int lineNumber, object internalLine)
 		{

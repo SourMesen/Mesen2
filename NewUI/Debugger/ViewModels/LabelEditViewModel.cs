@@ -13,36 +13,37 @@ using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class LabelEditViewModel : ViewModelBase
+	public class LabelEditViewModel : DisposableViewModel
 	{
-		[Reactive] public CodeLabel Label { get; set; }
+		[Reactive] public ReactiveCodeLabel Label { get; set; }
+
 		[ObservableAsProperty] public bool OkEnabled { get; }
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 
-		//For designer
+		[Obsolete("For designer only")]
 		public LabelEditViewModel() : this(new CodeLabel()) { }
 
 		public LabelEditViewModel(CodeLabel label, CodeLabel? originalLabel = null)
 		{
-			Label = label;
-			
+			Label = new ReactiveCodeLabel(label);
+
 			if(Design.IsDesignMode) {
 				return;
 			}
 
 			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
-			this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
+			AddDisposable(this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;
 				if(maxAddress <= 0) {
 					return "(unavailable)";
 				} else {
 					return "(Max: $" + maxAddress.ToString("X4") + ")";
 				}
-			}).ToPropertyEx(this, x => x.MaxAddress);
+			}).ToPropertyEx(this, x => x.MaxAddress));
 
-			this.WhenAnyValue(x => x.Label.Label, x => x.Label.Comment, x => x.Label.Length, x => x.Label.MemoryType, x => x.Label.Address, (label, comment, length, memoryType, address) => {
+			AddDisposable(this.WhenAnyValue(x => x.Label.Label, x => x.Label.Comment, x => x.Label.Length, x => x.Label.MemoryType, x => x.Label.Address, (label, comment, length, memoryType, address) => {
 				CodeLabel? sameLabel = LabelManager.GetLabel(label);
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;
 
@@ -69,7 +70,46 @@ namespace Mesen.Debugger.ViewModels
 					&& (label.Length > 0 || comment.Length > 0)
 					&& !comment.Contains('\x1')
 					&& (label.Length == 0 || LabelManager.LabelRegex.IsMatch(label));
-			}).ToPropertyEx(this, x => x.OkEnabled);
+			}).ToPropertyEx(this, x => x.OkEnabled));
+		}
+
+		public void Commit()
+		{
+			Label.Commit();
+		}
+
+		public class ReactiveCodeLabel : ReactiveObject
+		{
+			private CodeLabel _originalLabel;
+
+			public ReactiveCodeLabel(CodeLabel label)
+			{
+				_originalLabel = label;
+
+				Address = label.Address;
+				Label = label.Label;
+				Comment = label.Comment;
+				MemoryType = label.MemoryType;
+				Flags = label.Flags;
+				Length = label.Length;
+			}
+
+			public void Commit()
+			{
+				_originalLabel.Address = Address;
+				_originalLabel.Label = Label;
+				_originalLabel.Comment = Comment;
+				_originalLabel.MemoryType = MemoryType;
+				_originalLabel.Flags = Flags;
+				_originalLabel.Length = Length;
+			}
+
+			[Reactive] public UInt32 Address { get; set; }
+			[Reactive] public SnesMemoryType MemoryType { get; set; }
+			[Reactive] public string Label { get; set; } = "";
+			[Reactive] public string Comment { get; set; } = "";
+			[Reactive] public CodeLabelFlags Flags { get; set; }
+			[Reactive] public UInt32 Length { get; set; } = 1;
 		}
 	}
 }

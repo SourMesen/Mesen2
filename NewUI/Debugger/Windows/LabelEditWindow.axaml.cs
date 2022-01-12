@@ -26,15 +26,17 @@ namespace Mesen.Debugger.Windows
 		public static async void EditLabel(Control parent, CodeLabel label)
 		{
 			CodeLabel copy = label.Clone();
-			LabelEditWindow wnd = new LabelEditWindow() {
-				DataContext = new LabelEditViewModel(copy, label)
-			};
+			LabelEditViewModel model = new LabelEditViewModel(copy, label);
+			LabelEditWindow wnd = new LabelEditWindow() { DataContext = model };
 
 			bool result = await wnd.ShowCenteredDialog<bool>(parent);
 			if(result) {
+				model.Commit();
 				label.CopyFrom(copy);
 				LabelManager.SetLabel(label, true);
 			}
+
+			model.Dispose();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

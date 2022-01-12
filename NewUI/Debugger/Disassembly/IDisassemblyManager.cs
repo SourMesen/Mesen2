@@ -21,7 +21,7 @@ namespace Mesen.Debugger.Disassembly
 		int ByteCodeSize { get; }
 		bool AllowSourceView { get; }
 
-		void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file);
+		void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo? file);
 
 		//Dictionary<string, string>? GetTooltipData(string word, int lineIndex);
 		//LocationInfo GetLocationInfo(string lastWord, int lineIndex);

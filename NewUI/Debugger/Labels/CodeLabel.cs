@@ -8,14 +8,14 @@ using System.Text;
 
 namespace Mesen.Debugger.Labels
 {
-	public class CodeLabel : ReactiveObject
+	public class CodeLabel
 	{
-		[Reactive] public UInt32 Address { get; set; }
-		[Reactive] public SnesMemoryType MemoryType { get; set; }
-		[Reactive] public string Label { get; set; } = "";
-		[Reactive] public string Comment { get; set; } = "";
-		[Reactive] public CodeLabelFlags Flags { get; set; }
-		[Reactive] public UInt32 Length { get; set; } = 1;
+		public UInt32 Address { get; set; }
+		public SnesMemoryType MemoryType { get; set; }
+		public string Label { get; set; } = "";
+		public string Comment { get; set; } = "";
+		public CodeLabelFlags Flags { get; set; }
+		public UInt32 Length { get; set; } = 1;
 
 		public override string ToString()
 		{
