@@ -26,13 +26,13 @@ namespace Mesen.Debugger.Disassembly
 		public virtual int ByteCodeSize { get { return 4; } }
 		public virtual bool AllowSourceView { get { return true; } }
 
-		public virtual void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo? file)
+		public virtual void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo file)
 		{
 			_symbolProvider = symbolProvider;
 			if(file == null) {
 				this._provider = new CodeDataProvider(CpuType.Cpu);
 			} else {
-				this._provider = new SymbolCodeDataProvider(CpuType.Cpu, symbolProvider, file.Value);
+				this._provider = new SymbolCodeDataProvider(CpuType.Cpu, symbolProvider, file);
 			}
 		}
 

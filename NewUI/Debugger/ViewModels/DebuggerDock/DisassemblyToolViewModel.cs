@@ -1,4 +1,5 @@
-﻿using Dock.Model.ReactiveUI.Controls;
+﻿using Dock.Model.Core;
+using Dock.Model.ReactiveUI.Controls;
 
 namespace Mesen.Debugger.ViewModels.DebuggerDock
 {
@@ -14,6 +15,7 @@ namespace Mesen.Debugger.ViewModels.DebuggerDock
 			CanPin = false;
 			CanFloat = false;
 			DisassemblyViewerViewModel = disassemblyViewerViewModel;
+			DisassemblyViewerViewModel.ParentTool = this;
 		}
 	}
 

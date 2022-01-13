@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Dock.Model.Core;
+using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
@@ -8,7 +10,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Linq;
-using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -23,6 +24,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public DebugConfig Config { get; private set; }
 		public int VisibleRowCount { get; set; } = 100;
+		public Tool? ParentTool { get; set; }
 
 		private int _ignoreScrollUpdates = 0;
 
@@ -44,6 +46,11 @@ namespace Mesen.Debugger.ViewModels
 
 			int lastValue = ScrollPosition;
 			this.WhenAnyValue(x => x.ScrollPosition).Subscribe(scrollPos => {
+				if(ParentTool?.Owner is IDock dock && dock.ActiveDockable != ParentTool) {
+					ScrollPosition = lastValue;
+					return;
+				}
+
 				int gap = scrollPos - lastValue;
 				lastValue = scrollPos;
 				if(_ignoreScrollUpdates > 0) {

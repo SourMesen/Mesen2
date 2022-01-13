@@ -982,7 +982,7 @@ namespace Mesen.Debugger.Integration
 				ID = id;
 				Name = filename;
 				IsAssembly = isAsm;
-				SourceFile = new SourceFileInfo(Name, this);
+				SourceFile = new SourceFileInfo(Name, IsAssembly, this);
 			}
 
 			public void SetSourceFile(string sourceFile)

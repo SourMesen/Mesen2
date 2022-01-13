@@ -29,15 +29,18 @@ namespace Mesen.Debugger.Integration
 		string[] Data { get; }
 	}
 
-	public readonly struct SourceFileInfo
+	public class SourceFileInfo
 	{
 		public string Name { get; }
 		public IFileDataProvider InternalFile { get; }
+		public bool IsAssembly { get; }
 		public string[] Data => InternalFile.Data;
+		public string FileData => string.Join(Environment.NewLine, InternalFile.Data);
 
-		public SourceFileInfo(string name, IFileDataProvider internalFile)
+		public SourceFileInfo(string name, bool isAssembly, IFileDataProvider internalFile)
 		{
 			Name = name;
+			IsAssembly = isAssembly;
 			InternalFile = internalFile;
 		}
 
@@ -48,7 +51,7 @@ namespace Mesen.Debugger.Integration
 			if(string.IsNullOrWhiteSpace(folderName)) {
 				return fileName;
 			} else {
-				return $"{fileName} ({folderName})";
+				return $"{folderName}/{fileName}";
 			}
 		}
 	}

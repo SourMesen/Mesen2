@@ -32,6 +32,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public WatchListViewModel WatchList { get; private set; }
 		[Reactive] public LabelListViewModel LabelList { get; private set; }
 		[Reactive] public CallStackViewModel CallStack { get; private set; }
+		[Reactive] public SourceViewViewModel? SourceView { get; private set; }
 
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
@@ -62,7 +63,7 @@ namespace Mesen.Debugger.ViewModels
 				//TODO temporary - try to load DBG file if it exists
 				string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
 				if(File.Exists(dbgPath)) {
-					DbgImporter dbgImporter = DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true);
+					SourceView = new(DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true), CpuType);
 				}
 			}
 
@@ -137,38 +138,44 @@ namespace Mesen.Debugger.ViewModels
 		public void UpdateDebugger(bool forBreak = false, BreakEvent? evt = null)
 		{
 			if(forBreak) {
-				UInt64 prevMasterClock = _masterClock;
-				_masterClock = EmuApi.GetTimingInfo().MasterClock;
-				if(prevMasterClock > 0) {
-					BreakElapsedCycles = $"{_masterClock - prevMasterClock} cycles elapsed";
-				}
-
-				if(evt != null) {
-					string breakReason = "";
-					BreakEvent brkEvent = evt.Value;
-					if(brkEvent.Source != BreakSource.Unspecified) {
-						breakReason = ResourceHelper.GetEnumText(brkEvent.Source);
-						if(brkEvent.Source == BreakSource.Breakpoint) {
-							breakReason += (
-								": " +
-								ResourceHelper.GetEnumText(brkEvent.Operation.Type) + " " +
-								brkEvent.Operation.MemType.GetShortName() +
-								" ($" + brkEvent.Operation.Address.ToString("X4") +
-								":$" + brkEvent.Operation.Value.ToString("X2") + ")"
-							);
-						}
-					}
-					BreakReason = breakReason;
-				} else {
-					BreakReason = "";
-				}
+				UpdateStatusBar(evt);
 			}
 
 			UpdateCpuPpuState();
 			UpdateDisassembly(forBreak);
+			SourceView?.Refresh(Disassembly.StyleProvider.ActiveAddress);
 			LabelList.RefreshLabelList();
 			WatchList.UpdateWatch();
 			CallStack.UpdateCallStack();
+		}
+
+		private void UpdateStatusBar(BreakEvent? evt)
+		{
+			UInt64 prevMasterClock = _masterClock;
+			_masterClock = EmuApi.GetTimingInfo().MasterClock;
+			if(prevMasterClock > 0) {
+				BreakElapsedCycles = $"{_masterClock - prevMasterClock} cycles elapsed";
+			}
+
+			if(evt != null) {
+				string breakReason = "";
+				BreakEvent brkEvent = evt.Value;
+				if(brkEvent.Source != BreakSource.Unspecified) {
+					breakReason = ResourceHelper.GetEnumText(brkEvent.Source);
+					if(brkEvent.Source == BreakSource.Breakpoint) {
+						breakReason += (
+							": " +
+							ResourceHelper.GetEnumText(brkEvent.Operation.Type) + " " +
+							brkEvent.Operation.MemType.GetShortName() +
+							" ($" + brkEvent.Operation.Address.ToString("X4") +
+							":$" + brkEvent.Operation.Value.ToString("X2") + ")"
+						);
+					}
+				}
+				BreakReason = breakReason;
+			} else {
+				BreakReason = "";
+			}
 		}
 
 		private void UpdateDisassembly(bool scrollToActiveAddress)
@@ -188,6 +195,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Disassembly.StyleProvider.ActiveAddress = null;
 			Disassembly.Refresh();
+			SourceView?.Refresh(null);
 		}
 
 		public void UpdateCpuPpuState()
