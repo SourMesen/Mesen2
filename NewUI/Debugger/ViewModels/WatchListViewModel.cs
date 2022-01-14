@@ -1,16 +1,13 @@
-﻿using Dock.Model.ReactiveUI.Controls;
-using ReactiveUI.Fody.Helpers;
-using System;
+﻿using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Linq;
 using Mesen.Interop;
-using Avalonia.Controls;
+using Mesen.ViewModels;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class WatchListViewModel : Tool
+	public class WatchListViewModel : ViewModelBase
 	{
 		[Reactive] public List<WatchValueInfo> WatchEntries { get; private set; } = new List<WatchValueInfo>();
 		[Reactive] public int SelectedIndex { get; set; } = 0;
@@ -21,9 +18,6 @@ namespace Mesen.Debugger.ViewModels
 
 		public WatchListViewModel(CpuType cpuType)
 		{
-			Id = "WatchList";
-			Title = "Watch";
-			CanPin = false;
 			Manager = WatchManager.GetWatchManager(cpuType);
 			UpdateWatch();
 		}

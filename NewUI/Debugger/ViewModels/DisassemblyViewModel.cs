@@ -24,7 +24,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public DebugConfig Config { get; private set; }
 		public int VisibleRowCount { get; set; } = 100;
-		public Tool? ParentTool { get; set; }
+		public bool ViewerActive { get; set; }
 
 		private int _ignoreScrollUpdates = 0;
 
@@ -46,7 +46,7 @@ namespace Mesen.Debugger.ViewModels
 
 			int lastValue = ScrollPosition;
 			this.WhenAnyValue(x => x.ScrollPosition).Subscribe(scrollPos => {
-				if(ParentTool?.Owner is IDock dock && dock.ActiveDockable != ParentTool) {
+				if(!ViewerActive) {
 					ScrollPosition = lastValue;
 					return;
 				}

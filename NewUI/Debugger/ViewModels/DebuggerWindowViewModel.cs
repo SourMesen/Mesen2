@@ -30,6 +30,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DisassemblyViewModel Disassembly { get; private set; }
 		[Reactive] public BreakpointListViewModel BreakpointList { get; private set; }
 		[Reactive] public WatchListViewModel WatchList { get; private set; }
+		[Reactive] public BaseConsoleStatusViewModel? ConsoleStatus { get; private set; }
 		[Reactive] public LabelListViewModel LabelList { get; private set; }
 		[Reactive] public CallStackViewModel CallStack { get; private set; }
 		[Reactive] public SourceViewViewModel? SourceView { get; private set; }
@@ -47,10 +48,10 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; private set; }
 		private UInt64 _masterClock = 0;
 
-		//For designer
+		[Obsolete("For designer only")]
 		public DebuggerWindowViewModel() : this(null) { }
 
-		public DebuggerWindowViewModel(CpuType? cpuType = null)
+		public DebuggerWindowViewModel(CpuType? cpuType)
 		{
 			if(Design.IsDesignMode) {
 				CpuType = CpuType.Cpu;
@@ -76,24 +77,22 @@ namespace Mesen.Debugger.ViewModels
 			LabelList = new LabelListViewModel(CpuType, Disassembly);
 			CallStack = new CallStackViewModel(CpuType, Disassembly);
 			WatchList = new WatchListViewModel(CpuType);
+			ConsoleStatus = CpuType switch {
+				CpuType.Cpu => new SnesStatusViewModel(),
+				CpuType.Nes => new NesStatusViewModel(),
+				_ => null
+			};
 
-			DockFactory = new DebuggerDockFactory(this);
+			DockFactory = new DebuggerDockFactory();
 
-			switch(CpuType) {
-				case CpuType.Cpu:
-					DockFactory.CpuStatusTool.StatusViewModel = new SnesCpuViewModel();
-					DockFactory.PpuStatusTool.StatusViewModel = new SnesPpuViewModel();
-					break;
-
-				case CpuType.Nes:
-					DockFactory.CpuStatusTool.StatusViewModel = new NesCpuViewModel();
-					DockFactory.PpuStatusTool.StatusViewModel = new NesPpuViewModel();
-					break;
-
-				case CpuType.Gameboy:
-					break;
-			}
-
+			DockFactory.BreakpointListTool.Model = BreakpointList;
+			DockFactory.LabelListTool.Model = LabelList;
+			DockFactory.CallStackTool.Model = CallStack;
+			DockFactory.WatchListTool.Model = WatchList;
+			DockFactory.DisassemblyTool.Model = Disassembly;
+			DockFactory.SourceViewTool.Model = SourceView;
+			DockFactory.StatusTool.Model = ConsoleStatus;
+			
 			DockLayout = DockFactory.CreateLayout();
 			DockFactory.InitLayout(DockLayout);
 
@@ -138,10 +137,13 @@ namespace Mesen.Debugger.ViewModels
 		public void UpdateDebugger(bool forBreak = false, BreakEvent? evt = null)
 		{
 			if(forBreak) {
+				if(ConsoleStatus != null) {
+					ConsoleStatus.EditAllowed = true;
+				}
 				UpdateStatusBar(evt);
 			}
 
-			UpdateCpuPpuState();
+			ConsoleStatus?.UpdateUiState();
 			UpdateDisassembly(forBreak);
 			SourceView?.Refresh(Disassembly.StyleProvider.ActiveAddress);
 			LabelList.RefreshLabelList();
@@ -191,38 +193,14 @@ namespace Mesen.Debugger.ViewModels
 			Disassembly.Refresh();
 		}
 
-		public void ClearActiveAddress()
+		public void ProcessResumeEvent()
 		{
+			if(ConsoleStatus != null) {
+				ConsoleStatus.EditAllowed = false;
+			}
 			Disassembly.StyleProvider.ActiveAddress = null;
 			Disassembly.Refresh();
 			SourceView?.Refresh(null);
-		}
-
-		public void UpdateCpuPpuState()
-		{
-			switch(CpuType) {
-				case CpuType.Cpu:
-					if(DockFactory.CpuStatusTool.StatusViewModel is SnesCpuViewModel snesCpuModel) {
-						CpuState state = DebugApi.GetCpuState<CpuState>(CpuType);
-						snesCpuModel.UpdateState(state);
-					}
-
-					if(DockFactory.PpuStatusTool.StatusViewModel is SnesPpuViewModel snesPpuModel) {
-						snesPpuModel.State = DebugApi.GetPpuState<PpuState>(CpuType);
-					}
-					break;
-
-				case CpuType.Nes:
-					if(DockFactory.CpuStatusTool.StatusViewModel is NesCpuViewModel nesCpuModel) {
-						NesCpuState state = DebugApi.GetCpuState<NesCpuState>(CpuType);
-						nesCpuModel.UpdateState(state);
-					}
-
-					if(DockFactory.PpuStatusTool.StatusViewModel is NesPpuViewModel nesPpuModel) {
-						nesPpuModel.State = DebugApi.GetPpuState<NesPpuState>(CpuType);
-					}
-					break;
-			}
 		}
 
 		private ToolDock? FindToolDock(IDock dock)
@@ -287,28 +265,28 @@ namespace Mesen.Debugger.ViewModels
 				new Separator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowWatchList,
-					IsSelected = () => IsToolVisible(WatchList),
-					OnClick = () => ToggleTool(WatchList)
+					IsSelected = () => IsToolVisible(DockFactory.WatchListTool),
+					OnClick = () => ToggleTool(DockFactory.WatchListTool)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowBreakpointList,
-					IsSelected = () => IsToolVisible(BreakpointList),
-					OnClick = () => ToggleTool(BreakpointList)
+					IsSelected = () => IsToolVisible(DockFactory.BreakpointListTool),
+					OnClick = () => ToggleTool(DockFactory.BreakpointListTool)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowCallStack,
-					IsSelected = () => IsToolVisible(CallStack),
-					OnClick = () => ToggleTool(CallStack)
+					IsSelected = () => IsToolVisible(DockFactory.CallStackTool),
+					OnClick = () => ToggleTool(DockFactory.CallStackTool)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowLabelList,
-					IsSelected = () => IsToolVisible(LabelList),
-					OnClick = () => ToggleTool(LabelList)
+					IsSelected = () => IsToolVisible(DockFactory.LabelListTool),
+					OnClick = () => ToggleTool(DockFactory.LabelListTool)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowConsoleStatus,
-					IsSelected = () => IsToolVisible(DockFactory.CpuStatusTool),
-					OnClick = () => ToggleTool(DockFactory.CpuStatusTool)
+					IsSelected = () => IsToolVisible(DockFactory.StatusTool),
+					OnClick = () => ToggleTool(DockFactory.StatusTool)
 				},
 				new Separator(),
 				new ContextMenuAction() {

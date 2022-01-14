@@ -17,26 +17,32 @@ namespace Mesen.Debugger
 {
 	public class DebuggerDockFactory : Factory
 	{
-		private DebuggerWindowViewModel _context;
+		public ToolContainerViewModel<DisassemblyViewModel> DisassemblyTool { get; private set; }
+		public ToolContainerViewModel<SourceViewViewModel> SourceViewTool { get; private set; }
+		public ToolContainerViewModel<BaseConsoleStatusViewModel> StatusTool { get; private set; }
+		public ToolContainerViewModel<BreakpointListViewModel> BreakpointListTool { get; private set; }
+		public ToolContainerViewModel<WatchListViewModel> WatchListTool { get; private set; }
+		public ToolContainerViewModel<CallStackViewModel> CallStackTool { get; private set; }
+		public ToolContainerViewModel<LabelListViewModel> LabelListTool { get; private set; }
 
-		public DisassemblyToolViewModel DisassemblyTool { get; private set; }
-		public StatusToolViewModel CpuStatusTool { get; private set; }
-		public StatusToolViewModel PpuStatusTool { get; private set; }
-
-		public DebuggerDockFactory(DebuggerWindowViewModel context)
+		public DebuggerDockFactory()
 		{
-			_context = context;
-			DisassemblyTool = new DisassemblyToolViewModel(_context.Disassembly);
-			CpuStatusTool = new StatusToolViewModel() { Id = "CpuStatusTool", Title = "CPU Status" };
-			PpuStatusTool = new StatusToolViewModel() { Id = "PpuStatusTool", Title = "PPU Status" };
+			DisassemblyTool = new("Disassembly");
+			DisassemblyTool.CanClose = false;
+			SourceViewTool = new("Source View");
+			SourceViewTool.CanClose = false;
+
+			StatusTool = new("Status");
+			BreakpointListTool = new("Breakpoints");
+			WatchListTool = new("Watch");
+			CallStackTool = new("Call Stack");
+			LabelListTool = new("Labels");
 		}
 
 		public override IRootDock CreateLayout()
 		{
 			var codeDockables = CreateList<IDockable>(DisassemblyTool);
-			if(_context.SourceView != null) {
-				codeDockables.Add(_context.SourceView);
-			}
+			codeDockables.Add(SourceViewTool);
 
 			var mainLayout = new ProportionalDock {
 				Orientation = Orientation.Vertical,
@@ -56,18 +62,13 @@ namespace Mesen.Debugger
 								Orientation = Orientation.Vertical,
 								VisibleDockables = CreateList<IDockable>(
 									new ToolDock {
-										Proportion = double.NaN,
-										VisibleDockables = CreateList<IDockable>(CpuStatusTool)
+										Proportion = 0.5,
+										VisibleDockables = CreateList<IDockable>(StatusTool)
 									},
 									new ProportionalDockSplitter(),
 									new ToolDock {
-										Proportion = double.NaN,
-										VisibleDockables = CreateList<IDockable>(PpuStatusTool)
-									},
-									new ProportionalDockSplitter(),
-									new ToolDock {
-										Proportion = 0.33,
-										VisibleDockables = CreateList<IDockable>(_context.LabelList)
+										Proportion = 0.5,
+										VisibleDockables = CreateList<IDockable>(LabelListTool)
 									}
 								)
 							}
@@ -80,17 +81,17 @@ namespace Mesen.Debugger
 						VisibleDockables = CreateList<IDockable>(
 							new ToolDock {
 								Proportion = 0.33,
-								VisibleDockables = CreateList<IDockable>(_context.WatchList)
+								VisibleDockables = CreateList<IDockable>(WatchListTool)
 							},
 							new ProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
-								VisibleDockables = CreateList<IDockable>(_context.BreakpointList)
+								VisibleDockables = CreateList<IDockable>(BreakpointListTool)
 							},
 							new ProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
-								VisibleDockables = CreateList<IDockable>(_context.CallStack)
+								VisibleDockables = CreateList<IDockable>(CallStackTool)
 							}
 						)
 					}

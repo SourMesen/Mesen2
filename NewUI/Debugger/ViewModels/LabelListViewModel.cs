@@ -7,6 +7,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ using System.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class LabelListViewModel : Tool
+	public class LabelListViewModel : ViewModelBase
 	{
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
@@ -28,9 +29,6 @@ namespace Mesen.Debugger.ViewModels
 		public LabelListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
 		{
 			CpuType = cpuType;
-			Id = "Labels";
-			Title = "Labels";
-			CanPin = false;
 			Disassembly = disassembly;
 			UpdateLabelList();
 		}

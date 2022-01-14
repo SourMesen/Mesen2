@@ -113,7 +113,7 @@ namespace Mesen.Debugger.Windows
 
 				case ConsoleNotificationType.DebuggerResumed:
 					Dispatcher.UIThread.Post(() => {
-						_model.ClearActiveAddress();
+						_model.ProcessResumeEvent();
 					});
 					break;
 

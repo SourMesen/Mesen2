@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
@@ -30,6 +31,16 @@ namespace Mesen.Debugger.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			Model.ViewerActive = true;
+		}
+
+		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			Model.ViewerActive = false;
 		}
 
 		public void Diassembly_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)

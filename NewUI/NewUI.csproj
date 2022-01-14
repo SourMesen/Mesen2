@@ -240,9 +240,6 @@
     <Compile Update="Debugger\Views\SnesEventViewerConfigView.axaml.cs">
       <DependentUpon>SnesEventViewerConfigView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\NesPpuView.axaml.cs">
-      <DependentUpon>NesPpuView.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Debugger\Views\WatchListView.axaml.cs">
       <DependentUpon>WatchListView.axaml</DependentUpon>
     </Compile>
@@ -252,17 +249,11 @@
     <Compile Update="Debugger\Views\LabelListView.axaml.cs">
       <DependentUpon>LabelListView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\DebuggerDock\StatusToolView.axaml.cs">
-      <DependentUpon>StatusToolView.axaml</DependentUpon>
+    <Compile Update="Debugger\Views\DebuggerDock\ToolContainerView.axaml.cs">
+      <DependentUpon>ToolContainerView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\DebuggerDock\DisassemblyToolView.axaml.cs">
-      <DependentUpon>DisassemblyToolView.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Debugger\Views\NesCpuView.axaml.cs">
-      <DependentUpon>NesCpuView.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Debugger\Views\SnesPpuView.axaml.cs">
-      <DependentUpon>SnesPpuView.axaml</DependentUpon>
+    <Compile Update="Debugger\Views\NesStatusView.axaml.cs">
+      <DependentUpon>NesStatusView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\DebuggerConfigWindow.axaml.cs">
       <DependentUpon>DebuggerConfigWindow.axaml</DependentUpon>
@@ -390,8 +381,8 @@
     <Compile Update="Views\AudioConfigView.axaml.cs">
       <DependentUpon>AudioConfigView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\SnesCpuView.axaml.cs">
-      <DependentUpon>SnesCpuView.axaml</DependentUpon>
+    <Compile Update="Debugger\Views\SnesStatusView.axaml.cs">
+      <DependentUpon>SnesStatusView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\DisassemblyView.axaml.cs">
       <DependentUpon>DisassemblyView.axaml</DependentUpon>

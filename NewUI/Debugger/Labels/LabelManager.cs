@@ -36,16 +36,18 @@ namespace Mesen.Debugger.Labels
 			return label;
 		}
 
-		public static CodeLabel? GetLabel(AddressInfo relAddress)
+		public static CodeLabel? GetLabel(AddressInfo addr)
 		{
-			CodeLabel? label = GetLabel((UInt32)relAddress.Address, relAddress.Type);
+			CodeLabel? label = GetLabel((UInt32)addr.Address, addr.Type);
 			if(label != null) {
 				return label;
 			}
 
-			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-			if(absAddress.Address >= 0) {
-				return GetLabel((UInt32)absAddress.Address, absAddress.Type);
+			if(addr.Type.IsRelativeMemory()) {
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(addr);
+				if(absAddress.Address >= 0) {
+					return GetLabel((UInt32)absAddress.Address, absAddress.Type);
+				}
 			}
 			return null;
 		}

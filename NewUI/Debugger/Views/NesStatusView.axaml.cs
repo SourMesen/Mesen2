@@ -2,11 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Mesen.Debugger.Views.DebuggerDock
+namespace Mesen.Debugger.Views
 {
-	public class StatusToolView : UserControl
+	public class NesStatusView : UserControl
 	{
-		public StatusToolView()
+		public NesStatusView()
 		{
 			InitializeComponent();
 		}

@@ -15,7 +15,7 @@ using System.Collections.ObjectModel;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class CallStackViewModel : Tool
+	public class CallStackViewModel : ViewModelBase
 	{
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
@@ -31,10 +31,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Disassembly = disassembly;
 			CpuType = cpuType;
-			Id = "CallStack";
-			Title = "Call Stack";
-			CanPin = false;
-
+			
 			if(Design.IsDesignMode) {
 				return;
 			}

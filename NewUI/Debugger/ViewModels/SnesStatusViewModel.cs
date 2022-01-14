@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -11,7 +9,7 @@ using System.Text;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class SnesCpuViewModel : ViewModelBase
+	public class SnesStatusViewModel : BaseConsoleStatusViewModel
 	{
 		[Reactive] public UInt16 RegA { get; set; }
 		[Reactive] public UInt16 RegX { get; set; }
@@ -35,24 +33,31 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool FlagNmi { get; set; }
 		[Reactive] public bool FlagIrq { get; set; }
 
-		[Reactive] public string StackPreview { get; set; }
+		[Reactive] public int Cycle { get; private set; }
+		[Reactive] public int Scanline { get; private set; }
+		[Reactive] public int HClock { get; private set; }
 
-		public SnesCpuViewModel()
+		[Reactive] public string StackPreview { get; set; } = "";
+
+		public SnesStatusViewModel()
 		{
 		}
 
-		public void UpdateState(CpuState state)
+		public override void UpdateUiState()
 		{
-			RegA = state.A;
-			RegX = state.X;
-			RegY = state.Y;
-			RegSP = state.SP;
-			RegD = state.D;
-			RegPC = state.PC;
+			CpuState cpu = DebugApi.GetCpuState<CpuState>(CpuType.Cpu);
+			PpuState ppu = DebugApi.GetPpuState<PpuState>(CpuType.Cpu);
 
-			RegK = state.K;
-			RegDBR = state.DBR;
-			RegPS = (byte)state.PS;
+			RegA = cpu.A;
+			RegX = cpu.X;
+			RegY = cpu.Y;
+			RegSP = cpu.SP;
+			RegD = cpu.D;
+			RegPC = cpu.PC;
+
+			RegK = cpu.K;
+			RegDBR = cpu.DBR;
+			RegPS = (byte)cpu.PS;
 
 			//TODO
 			/*
@@ -70,7 +75,7 @@ namespace Mesen.Debugger.ViewModels
 			*/
 
 			StringBuilder sb = new StringBuilder();
-			for(UInt32 i = (uint)state.SP + 1; (i & 0xFF) != 0; i++) {
+			for(UInt32 i = (uint)cpu.SP + 1; (i & 0xFF) != 0; i++) {
 				sb.Append("$");
 				sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, i).ToString("X2"));
 				sb.Append(", ");
@@ -80,6 +85,15 @@ namespace Mesen.Debugger.ViewModels
 				stack = stack.Substring(0, stack.Length - 2);
 			}
 			StackPreview = stack;
+
+			Cycle = ppu.Cycle;
+			HClock = ppu.HClock;
+			Scanline = ppu.Scanline;
+		}
+
+		public override void UpdateEmulationState()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

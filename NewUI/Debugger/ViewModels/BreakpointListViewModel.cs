@@ -11,10 +11,11 @@ using Mesen.Config;
 using Mesen.Debugger.Windows;
 using Avalonia.Controls;
 using System.Collections;
+using Mesen.ViewModels;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class BreakpointListViewModel : Tool
+	public class BreakpointListViewModel : ViewModelBase
 	{
 		[Reactive] public List<Breakpoint> Breakpoints { get; private set; } = new List<Breakpoint>();
 		public CpuType CpuType { get; }
@@ -25,9 +26,6 @@ namespace Mesen.Debugger.ViewModels
 
 		public BreakpointListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
 		{
-			Id = "BreakpointList";
-			Title = "Breakpoints";
-			CanPin = false;
 			CpuType = cpuType;
 			Disassembly = disassembly;
 		}

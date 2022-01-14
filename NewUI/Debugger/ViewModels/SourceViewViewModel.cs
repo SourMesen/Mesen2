@@ -12,10 +12,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Mesen.ViewModels;
 
 namespace Mesen.Debugger.ViewModels;
 
-public class SourceViewViewModel : Tool
+public class SourceViewViewModel : ViewModelBase
 {
 	public ISymbolProvider SymbolProvider { get; set; }
 	
@@ -32,10 +33,6 @@ public class SourceViewViewModel : Tool
 
 	public SourceViewViewModel(ISymbolProvider symbolProvider, CpuType cpuType)
 	{
-		Id = "SourceView";
-		Title = "Source View";
-		CanPin = false;
-
 		CpuType = cpuType;
 		SymbolProvider = symbolProvider;
 		Font = ConfigManager.Config.Debug.Font;

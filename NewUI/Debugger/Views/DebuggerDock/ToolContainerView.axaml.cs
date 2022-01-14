@@ -2,11 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Mesen.Debugger.Views
+namespace Mesen.Debugger.Views.DebuggerDock
 {
-	public class SnesCpuView : UserControl
+	public class ToolContainerView : UserControl
 	{
-		public SnesCpuView()
+		public ToolContainerView()
 		{
 			InitializeComponent();
 		}

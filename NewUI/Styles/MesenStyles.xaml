@@ -5,7 +5,7 @@
 	xmlns:c="using:Mesen.Controls"
 >
 	<Design.PreviewWith>
-		<Window Width="440" Height="420" Padding="5">
+		<Window Width="440" Height="620" Padding="5">
 			<StackPanel>
 				<Menu VerticalAlignment="Top">
 					<MenuItem Header="File">
@@ -42,10 +42,13 @@
 				<RepeatButton Content="Repeat" />
 				<RepeatButton Content="Disabled" IsEnabled="False" />
 				<RadioButton Content="Test"/>
-				<RadioButton Content="Test" IsChecked="True"/>				
+				<RadioButton Content="Test" IsChecked="True"/>
 				<DatePicker />
 				<TimePicker />
 				<Slider />
+				<TextBox IsEnabled="False" Text="Test" />
+				<CheckBox IsEnabled="False" Content="Test" />
+				<CheckBox IsChecked="True" IsEnabled="False" Content="Test" />
 			</StackPanel>
 		</Window>
 	</Design.PreviewWith>
@@ -60,6 +63,15 @@
 		<!-- Fluent color overrides -->
 		<Color x:Key="MenuFlyoutPresenterBackground">#FDFDFD</Color>
 		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
+
+		<!-- Disabled colors -->
+		<Color x:Key="TextControlBackgroundDisabled">#F0F0F0</Color>
+		<Color x:Key="CheckBoxForegroundCheckedDisabled">#555</Color>
+		<Color x:Key="CheckBoxCheckBackgroundFillCheckedDisabled">#E5E5E5</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled">#000</Color>
+		<Color x:Key="CheckBoxForegroundUncheckedDisabled">#555</Color>
+		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedDisabled">#E5E5E5</Color>
+		<Color x:Key="CheckBoxCheckGlyphForegroundUncheckedDisabled">#000</Color>
 
 		<Color x:Key="ButtonBackground">#E1E1E1</Color>
 		<Color x:Key="ButtonBorderBrush">#ADADAD</Color>

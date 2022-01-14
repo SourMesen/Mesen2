@@ -8,11 +8,11 @@
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="210"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
-	x:DataType="vm:SnesCpuViewModel"
-	x:Class="Mesen.Debugger.Views.SnesCpuView"
+	x:DataType="vm:SnesStatusViewModel"
+	x:Class="Mesen.Debugger.Views.SnesStatusView"
 >
 	<Design.DataContext>
-		<vm:SnesCpuViewModel />
+		<vm:SnesStatusViewModel />
 	</Design.DataContext>
 
 	<UserControl.Resources>
@@ -105,7 +105,16 @@
 				<TextBlock Width="33">IRQ</TextBlock>
 				<CheckBox IsChecked="{Binding FlagE}" />
 				<TextBlock>E</TextBlock>
-			</StackPanel>			
+			</StackPanel>
 		</DockPanel>
+		
+		<StackPanel Orientation="Horizontal">
+			<TextBlock>Scanline:</TextBlock>
+			<TextBox Classes="h1" Text="{CompiledBinding Scanline}" />
+			<TextBlock>Cycle:</TextBlock>
+			<TextBox  Classes="h1" Text="{CompiledBinding Cycle}" />
+			<TextBlock>HClock:</TextBlock>
+			<TextBox Classes="h1" Text="{CompiledBinding HClock}" />
+		</StackPanel>
 	</StackPanel>
 </UserControl>
