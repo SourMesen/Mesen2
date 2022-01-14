@@ -102,9 +102,9 @@ private:
 
 	uint16_t ReadWord()
 	{
-		uint16_t value = MemoryReadWord(_state.PC, MemoryOperationType::ExecOperand);
-		_state.PC += 2;
-		return value;
+		uint8_t low = ReadByte();
+		uint8_t high = ReadByte();
+		return (high << 8) | low;
 	}
 
 	void ClearFlags(uint8_t flags)
