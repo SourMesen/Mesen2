@@ -16,10 +16,6 @@
 		<vm:NesStatusViewModel />
 	</Design.DataContext>
 
-	<UserControl.Resources>
-		<du:HexConverter x:Key="Hex" />
-	</UserControl.Resources>
-
 	<UserControl.Styles>
 		<Style Selector="TextBlock">
 			<Setter Property="VerticalAlignment" Value="Center" />
@@ -55,7 +51,7 @@
 		<Style Selector="TextBox">
 			<Setter Property="FontFamily" Value="Consolas" />
 			<Setter Property="FontSize" Value="12" />
-			<Setter Property="MinWidth" Value="18" />
+			<Setter Property="MinWidth" Value="19" />
 			
 			<Setter Property="Height" Value="16" />
 			<Setter Property="MinHeight" Value="16" />
@@ -68,7 +64,7 @@
 				<StackPanel DockPanel.Dock="Right">
 					<StackPanel Orientation="Horizontal" IsEnabled="{CompiledBinding EditAllowed}">
 						<TextBlock Margin="0">SP:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Converter="{StaticResource Hex}" Max="255" />
+						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="255" />
 					</StackPanel>
 					<TextBox
 						TextWrapping="Wrap"
@@ -85,19 +81,19 @@
 					<WrapPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>A:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Converter="{StaticResource Hex}" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="255" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>X:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Converter="{StaticResource Hex}" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Hex="True" Max="255" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Y:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Converter="{StaticResource Hex}" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Hex="True" Max="255" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>PC:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Converter="{StaticResource Hex}" Max="65535" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="65535" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Cycle:</TextBlock>
@@ -110,7 +106,7 @@
 					<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 						<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
 							<TextBlock>P:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Converter="{StaticResource Hex}" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Hex="True" Max="255" />
 						</StackPanel>
 
 						<WrapPanel>
@@ -156,13 +152,13 @@
 						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" Max="261" Min="-1" />
 
 						<TextBlock Grid.Row="2">Bus:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Converter="{StaticResource Hex}" Max="16383" />
+						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Hex="True" Max="16383" />
 						<TextBlock Grid.Row="3">V:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Converter="{StaticResource Hex}" Max="16383" />
+						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Hex="True" Max="16383" />
 						<TextBlock Grid.Row="4">T:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Converter="{StaticResource Hex}" Max="16383" />
+						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Hex="True" Max="16383" />
 						<TextBlock Grid.Row="5">X:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{CompiledBinding ScrollX}" Converter="{StaticResource Hex}" Max="7" />
+						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{CompiledBinding ScrollX}" Hex="True" Max="7" />
 					</Grid>
 					<StackPanel Margin="5 0 2 0">
 						<CheckBox IsChecked="{CompiledBinding Sprite0Hit}" Content="Sprite 0 Hit" />

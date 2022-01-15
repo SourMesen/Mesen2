@@ -1,20 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using Mesen.Config;
-using Mesen.Localization;
 using Avalonia.Interactivity;
-using Mesen.Config.Shortcuts;
-using Avalonia.LogicalTree;
-using Mesen.Interop;
 using Avalonia.Styling;
-using System.IO;
-using Avalonia.Data.Converters;
 using Avalonia.Input;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Controls
 {
@@ -22,15 +12,17 @@ namespace Mesen.Controls
 	{
 		Type IStyleable.StyleKey => typeof(TextBox);
 
-		public static readonly StyledProperty<IValueConverter?> ConverterProperty = AvaloniaProperty.Register<MesenNumericTextBox, IValueConverter?>(nameof(Converter));
-		public static readonly StyledProperty<IComparable> ValueProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable>(nameof(Value), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
-		public static readonly StyledProperty<IComparable?> MinProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable?>(nameof(Min), null);
-		public static readonly StyledProperty<IComparable?> MaxProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable?>(nameof(Max), null);
+		private static HexConverter _hexConverter = new HexConverter();
 
-		public IValueConverter? Converter
+		public static readonly StyledProperty<bool> HexProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Hex));
+		public static readonly StyledProperty<IComparable> ValueProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable>(nameof(Value), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<int?> MinProperty = AvaloniaProperty.Register<MesenNumericTextBox, int?>(nameof(Min), null);
+		public static readonly StyledProperty<int?> MaxProperty = AvaloniaProperty.Register<MesenNumericTextBox, int?>(nameof(Max), null);
+
+		public bool Hex
 		{
-			get { return GetValue(ConverterProperty); }
-			set { SetValue(ConverterProperty, value); }
+			get { return GetValue(HexProperty); }
+			set { SetValue(HexProperty, value); }
 		}
 
 		public IComparable Value
@@ -39,13 +31,13 @@ namespace Mesen.Controls
 			set { SetValue(ValueProperty, value); }
 		}
 
-		public IComparable? Min
+		public int? Min
 		{
 			get { return GetValue(MinProperty); }
 			set { SetValue(MinProperty, value); }
 		}
 
-		public IComparable? Max
+		public int? Max
 		{
 			get { return GetValue(MaxProperty); }
 			set { SetValue(MaxProperty, value); }
@@ -55,6 +47,11 @@ namespace Mesen.Controls
 		{
 			ValueProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
 				x.UpdateText();
+				x.MaxLength = x.GetMaxLength();
+			});
+
+			MaxProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
+				x.MaxLength = x.GetMaxLength();
 			});
 		}
 
@@ -64,16 +61,39 @@ namespace Mesen.Controls
 
 		protected override void OnTextInput(TextInputEventArgs e)
 		{
+			if(e.Text == null) {
+				e.Handled = true;
+				return;
+			}
+
+			if(Hex) {
+				foreach(char c in e.Text.ToLowerInvariant()) {
+					if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
+						//not hex
+						e.Handled = true;
+						return;
+					}
+				}
+			} else {
+				foreach(char c in e.Text) {
+					if(c < '0' || c > '9') {
+						//not a number
+						e.Handled = true;
+						return;
+					}
+				}
+			}
+
 			base.OnTextInput(e);
-			UpdateValue();
+			UpdateValueFromText();
 			UpdateText();
 		}
 
-		private void UpdateValue()
+		private void UpdateValueFromText()
 		{
 			IComparable? val;
-			if(Converter != null) {
-				val = (IComparable?)Converter.ConvertBack(Text, Value.GetType(), null, System.Globalization.CultureInfo.InvariantCulture);
+			if(Hex) {
+				val = (IComparable?)_hexConverter.ConvertBack(Text, Value.GetType(), null, System.Globalization.CultureInfo.InvariantCulture);
 			} else {
 				if(!long.TryParse(Text, out long parsedValue)) {
 					val = Value;
@@ -83,28 +103,55 @@ namespace Mesen.Controls
 			}
 
 			if(val != null) {
-				if(Max != null && val.CompareTo(Convert.ChangeType(Max, val.GetType())) > 0) {
-					val = (IComparable)Convert.ChangeType(Max, val.GetType());
-				} else if(Min != null && val.CompareTo(Convert.ChangeType(Min, val.GetType())) < 0) {
-					val = (IComparable)Convert.ChangeType(Min, val.GetType());
-				} else if(Min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
-					val = 0;
-				}
-
-				Value = val;
+				SetNewValue(val);
 			}
+		}
+
+		private int GetMaxLength()
+		{
+			IFormattable max;
+			if(Max != null) {
+				max = Max;
+			} else {
+				max = Value switch {
+					byte _ => byte.MaxValue,
+					sbyte _ => sbyte.MaxValue,
+					short _ => short.MaxValue,
+					ushort _ => ushort.MaxValue,
+					int _ => int.MaxValue,
+					uint _ => uint.MaxValue,
+					long _ => long.MaxValue,
+					ulong _ => ulong.MaxValue,
+					_ => throw new Exception("invalid value type")
+				};
+			}
+
+			return max.ToString(Hex ? "X" : null, null).Length;
+		}
+
+		private void SetNewValue(IComparable val)
+		{
+			if(Max != null && val.CompareTo(Convert.ChangeType(Max, val.GetType())) > 0) {
+				val = (IComparable)Convert.ChangeType(Max, val.GetType());
+			} else if(Min != null && val.CompareTo(Convert.ChangeType(Min, val.GetType())) < 0) {
+				val = (IComparable)Convert.ChangeType(Min, val.GetType());
+			} else if(Min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
+				val = 0;
+			}
+
+			Value = val;
 		}
 
 		private void UpdateText(bool force = false)
 		{
 			string? text;
-			if(Converter != null) {
-				text = (string?)Converter.Convert(Value, typeof(string), null, System.Globalization.CultureInfo.InvariantCulture);
+			if(Hex) {
+				text = (string?)_hexConverter.Convert(Value, typeof(string), null, System.Globalization.CultureInfo.InvariantCulture);
 			} else {
 				text = Value.ToString();
 			}
 
-			if(force || text?.Trim('0', ' ') != Text?.Trim('0', ' ')) {
+			if(force || text?.Trim('0', ' ').ToLowerInvariant() != Text?.Trim('0', ' ').ToLowerInvariant()) {
 				Text = text;
 			}
 		}
@@ -112,7 +159,7 @@ namespace Mesen.Controls
 		protected override void OnLostFocus(RoutedEventArgs e)
 		{
 			base.OnLostFocus(e);
-			UpdateValue();
+			UpdateValueFromText();
 			UpdateText(true);
 		}
 	}
