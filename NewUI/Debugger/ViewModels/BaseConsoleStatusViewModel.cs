@@ -8,6 +8,6 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool EditAllowed { get; set; }
 
 		public abstract void UpdateUiState();
-		public abstract void UpdateEmulationState();
+		public abstract void UpdateConsoleState();
 	}
 }

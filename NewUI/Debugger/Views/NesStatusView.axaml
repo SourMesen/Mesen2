@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
-	mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="210"
+	mc:Ignorable="d" d:DesignWidth="350"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="vm:NesStatusViewModel"
@@ -148,7 +148,7 @@
 				<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 4" />
 
 				<WrapPanel>
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="*,*,*,*,*,*">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 						<TextBlock>Cycle:</TextBlock>
 						<TextBox Grid.Column="1" Text="{CompiledBinding Cycle}" IsReadOnly="True" />
 						<TextBlock Grid.Row="1">Scanline:</TextBlock>
@@ -169,20 +169,21 @@
 						<CheckBox IsChecked="{CompiledBinding VerticalBlank}" Content="Vertical Blank" />
 						<CheckBox IsChecked="{CompiledBinding WriteToggle}" Content="Write Toggle" />
 
-						<CheckBox IsChecked="{CompiledBinding BgEnabled}" Margin="0 5 0 0" Content="BG Enabled" />
-						<CheckBox IsChecked="{CompiledBinding SpritesEnabled}" Content="Sprites Enabled" />
-					</StackPanel>
-					<StackPanel>
-						<CheckBox IsChecked="{CompiledBinding LargeSprites}" Content="Large Sprites" />
+						<CheckBox IsChecked="{CompiledBinding LargeSprites}" Content="Large Sprites" Margin="0 5 0 0" />
 						<CheckBox IsChecked="{CompiledBinding VerticalWrite}" Content="Vertical Write" />
 						<CheckBox IsChecked="{CompiledBinding NmiOnVBlank}" Content="NMI on VBlank" />
-						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="*,*" Margin="0 5 0 0 ">
-							<TextBlock Grid.Row="0">BG Addr:</TextBlock>
-							<TextBox Grid.Row="0" Grid.Column="1" Text="{CompiledBinding BgAddr, Converter={StaticResource Hex}}" />
-
-							<TextBlock Grid.Row="1">Sprite Addr:</TextBlock>
-							<TextBox Grid.Row="1" Grid.Column="1" Text="{CompiledBinding SpriteAddr, Converter={StaticResource Hex}}" />
-						</Grid>
+						<CheckBox IsChecked="{CompiledBinding BgAt1000}" Content="BG at $1000" />
+						<CheckBox IsChecked="{CompiledBinding SpritesAt1000}" Content="Sprites at $1000" />
+					</StackPanel>
+					<StackPanel>
+						<CheckBox IsChecked="{CompiledBinding BgEnabled}"  Content="BG Enabled" />
+						<CheckBox IsChecked="{CompiledBinding SpritesEnabled}" Content="Sprites Enabled" />
+						<CheckBox IsChecked="{CompiledBinding BgMaskLeft}" Content="BG Mask" />
+						<CheckBox IsChecked="{CompiledBinding SpriteMaskLeft}" Content="Sprite Mask" />
+						<CheckBox IsChecked="{CompiledBinding Grayscale}" Content="Grayscale" />
+						<CheckBox IsChecked="{CompiledBinding IntensifyRed}" Content="Intensify Red" />
+						<CheckBox IsChecked="{CompiledBinding IntensifyGreen}" Content="Intensify Green" />
+						<CheckBox IsChecked="{CompiledBinding IntensifyBlue}" Content="Intensify Blue" />
 					</StackPanel>
 				</WrapPanel>
 			</StackPanel>

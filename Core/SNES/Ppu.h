@@ -222,6 +222,7 @@ public:
 	uint16_t GetVblankStart();
 
 	PpuState GetState();
+	PpuState& GetStateRef();
 	void GetState(PpuState &state, bool returnPartialState);
 
 	bool ProcessEndOfScanline(uint16_t hClock);

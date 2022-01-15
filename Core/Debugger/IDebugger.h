@@ -36,4 +36,5 @@ public:
 
 	virtual BaseState& GetState() = 0;
 	virtual void GetPpuState(BaseState& state) {};
+	virtual void SetPpuState(BaseState& state) {};
 };

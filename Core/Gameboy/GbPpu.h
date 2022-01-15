@@ -79,6 +79,7 @@ public:
 	void Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager, GbDmaController* dmaController, uint8_t* vram, uint8_t* oam);
 
 	GbPpuState GetState();
+	GbPpuState& GetStateRef();
 	uint16_t* GetOutputBuffer();
 	uint16_t* GetEventViewerBuffer();
 	uint16_t* GetPreviousEventViewerBuffer();

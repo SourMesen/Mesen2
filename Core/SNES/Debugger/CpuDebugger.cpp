@@ -358,5 +358,11 @@ BaseState& CpuDebugger::GetState()
 
 void CpuDebugger::GetPpuState(BaseState& state)
 {
-	((PpuState&)state) = _ppu->GetState();
+	(PpuState&)state = _ppu->GetStateRef();
+}
+
+void CpuDebugger::SetPpuState(BaseState& srcState)
+{
+	PpuState& dstState = _ppu->GetStateRef();
+	dstState = (PpuState&)srcState;
 }

@@ -91,9 +91,8 @@ namespace Mesen.Debugger.ViewModels
 			Scanline = ppu.Scanline;
 		}
 
-		public override void UpdateEmulationState()
+		public override void UpdateConsoleState()
 		{
-			throw new NotImplementedException();
 		}
 	}
 }

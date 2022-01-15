@@ -60,6 +60,11 @@ GbPpuState GbPpu::GetState()
 	return _state;
 }
 
+GbPpuState& GbPpu::GetStateRef()
+{
+	return _state;
+}
+
 uint16_t* GbPpu::GetOutputBuffer()
 {
 	return _currentBuffer;

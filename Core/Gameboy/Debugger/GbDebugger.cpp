@@ -307,7 +307,13 @@ BaseState& GbDebugger::GetState()
 
 void GbDebugger::GetPpuState(BaseState& state)
 {
-	(GbPpuState&)state =_ppu->GetState();
+	(GbPpuState&)state = _ppu->GetStateRef();
+}
+
+void GbDebugger::SetPpuState(BaseState& srcState)
+{
+	GbPpuState& dstState = _ppu->GetStateRef();
+	dstState = (GbPpuState&)srcState;
 }
 
 ITraceLogger* GbDebugger::GetTraceLogger()

@@ -82,6 +82,28 @@ namespace Mesen.Interop
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
+		[DllImport(DllPath)] private static extern void SetPpuState(IntPtr state, CpuType cpuType);
+		public unsafe static void SetPpuState(BaseState state, CpuType cpuType)
+		{
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidPpuState(ref state, cpuType));
+
+			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
+			DebugApi.SetPpuState((IntPtr)stateBuffer, cpuType);
+		}
+
+		[DllImport(DllPath)] private static extern void SetCpuState(IntPtr state, CpuType cpuType);
+		public unsafe static void SetCpuState(BaseState state, CpuType cpuType)
+		{
+			Debug.Assert(state.GetType().IsValueType);
+			Debug.Assert(IsValidCpuState(ref state, cpuType));
+
+			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
+			DebugApi.SetCpuState((IntPtr)stateBuffer, cpuType);
+		}
+
 		[DllImport(DllPath)] private static extern void GetConsoleState(IntPtr state, ConsoleType consoleType);
 		public unsafe static T GetConsoleState<T>(ConsoleType consoleType) where T : struct, BaseState
 		{
@@ -314,6 +336,16 @@ namespace Mesen.Interop
 			UInt32 size = DebugApi.AssembleCodeWrapper(cpuType, code, startAddress, assembledCode);
 			Array.Resize(ref assembledCode, (int)size);
 			return assembledCode;
+		}
+
+		private static bool IsValidCpuState(ref BaseState state, CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Cpu => state is CpuState,
+				CpuType.Nes => state is NesCpuState,
+				CpuType.Gameboy => state is GbCpuState,
+				_ => false
+			};
 		}
 
 		private static bool IsValidPpuState(ref BaseState state, CpuType cpuType)

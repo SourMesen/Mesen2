@@ -492,9 +492,9 @@ template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr
 
 template<class T> void NesPpu<T>::SetControlRegister(uint8_t value)
 {
-	_controlReg = value;
+	_controlReg = value & 0xFC; //Don't keep nametable bits, they update v/t
 
-	uint8_t nameTable = (_controlReg & 0x03);
+	uint8_t nameTable = (value & 0x03);
 
 	uint16_t normalAddr = (_tmpVideoRamAddr & ~0x0C00) | (nameTable << 10);
 	ProcessTmpAddrScrollGlitch(normalAddr, _console->GetMemoryManager()->GetOpenBus() << 10, 0x0400);

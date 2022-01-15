@@ -320,6 +320,11 @@ void NesDebugger::GetPpuState(BaseState& state)
 	_ppu->GetState((NesPpuState&)state);
 }
 
+void NesDebugger::SetPpuState(BaseState& state)
+{
+	_ppu->SetState((NesPpuState&)state);
+}
+
 ITraceLogger* NesDebugger::GetTraceLogger()
 {
 	return _traceLogger.get();

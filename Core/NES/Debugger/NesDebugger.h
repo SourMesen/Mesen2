@@ -78,5 +78,6 @@ public:
 	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
 
 	BaseState& GetState() override;
-	void GetPpuState(BaseState& state);
+	void GetPpuState(BaseState& state) override;
+	void SetPpuState(BaseState& state) override;
 };

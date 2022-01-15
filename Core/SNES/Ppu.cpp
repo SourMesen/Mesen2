@@ -126,6 +126,11 @@ PpuState Ppu::GetState()
 	return state;
 }
 
+PpuState& Ppu::GetStateRef()
+{
+	return _state;
+}
+
 void Ppu::GetState(PpuState &state, bool returnPartialState)
 {
 	if(!returnPartialState) {

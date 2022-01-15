@@ -414,6 +414,21 @@ void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)
 	}
 }
 
+void Debugger::SetCpuState(BaseState& srcState, CpuType cpuType)
+{
+	BaseState& dstState = GetCpuStateRef(cpuType);
+	switch(cpuType) {
+		case CpuType::Cpu: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Spc: memcpy(&dstState, &srcState, sizeof(SpcState)); break;
+		case CpuType::NecDsp: memcpy(&dstState, &srcState, sizeof(NecDspState)); break;
+		case CpuType::Sa1: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Gsu: memcpy(&dstState, &srcState, sizeof(GsuState)); break;
+		case CpuType::Cx4: memcpy(&dstState, &srcState, sizeof(Cx4State)); break;
+		case CpuType::Gameboy: memcpy(&dstState, &srcState, sizeof(GbCpuState)); break;
+		case CpuType::Nes: memcpy(&dstState, &srcState, sizeof(NesCpuState)); break;
+	}
+}
+
 BaseState& Debugger::GetCpuStateRef(CpuType cpuType)
 {
 	return _debuggers[(int)cpuType].Debugger->GetState();
@@ -428,17 +443,42 @@ void Debugger::GetPpuState(BaseState& state, CpuType cpuType)
 		case CpuType::Sa1:
 		case CpuType::Gsu:
 		case CpuType::Cx4: {
-			_debuggers[(int)CpuType::Cpu].Debugger->GetPpuState(state);
+			GetDebugger<CpuType::Cpu, CpuDebugger>()->GetPpuState(state);
 			break;
 		}
 
 		case CpuType::Gameboy: {
-			_debuggers[(int)CpuType::Gameboy].Debugger->GetPpuState(state);
+			GetDebugger<CpuType::Gameboy, GbDebugger>()->GetPpuState(state);
 			break;
 		}
 
 		case CpuType::Nes: {
-			_debuggers[(int)CpuType::Nes].Debugger->GetPpuState(state);
+			GetDebugger<CpuType::Nes, NesDebugger>()->GetPpuState(state);
+			break;
+		}
+	}
+}
+
+void Debugger::SetPpuState(BaseState& state, CpuType cpuType)
+{
+	switch(cpuType) {
+		case CpuType::Cpu:
+		case CpuType::Spc:
+		case CpuType::NecDsp:
+		case CpuType::Sa1:
+		case CpuType::Gsu:
+		case CpuType::Cx4: {
+			GetDebugger<CpuType::Cpu, CpuDebugger>()->SetPpuState(state);
+			break;
+		}
+
+		case CpuType::Gameboy: {
+			GetDebugger<CpuType::Gameboy, GbDebugger>()->SetPpuState(state);
+			break;
+		}
+
+		case CpuType::Nes: {
+			GetDebugger<CpuType::Nes, NesDebugger>()->SetPpuState(state);
 			break;
 		}
 	}

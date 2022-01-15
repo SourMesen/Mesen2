@@ -39,16 +39,24 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool VerticalBlank { get; set; }
 		[Reactive] public bool WriteToggle { get; set; }
 		
+		//Mask
 		[Reactive] public bool BgEnabled { get; set; }
 		[Reactive] public bool SpritesEnabled { get; set; }
+		[Reactive] public bool BgMaskLeft { get; set; }
+		[Reactive] public bool SpriteMaskLeft { get; set; }
+		[Reactive] public bool Grayscale { get; set; }
+		[Reactive] public bool IntensifyRed { get; set; }
+		[Reactive] public bool IntensifyGreen { get; set; }
+		[Reactive] public bool IntensifyBlue { get; set; }
+
+		//Control
 		[Reactive] public bool LargeSprites { get; set; }
 		[Reactive] public bool NmiOnVBlank { get; set; }
 		[Reactive] public bool VerticalWrite { get; set; }
-		
-		[Reactive] public UInt16 BgAddr { get; private set; }
-		[Reactive] public UInt16 SpriteAddr { get; private set; }
+		[Reactive] public bool BgAt1000 { get; set; }
+		[Reactive] public bool SpritesAt1000 { get; set; }
 
-		[Reactive] public UInt64 CycleCount { get; private set; }
+		[Reactive] public UInt64 CycleCount { get; set; }
 		[Reactive] public string StackPreview { get; private set; } = "";
 
 		public NesStatusViewModel()
@@ -105,16 +113,83 @@ namespace Mesen.Debugger.ViewModels
 			LargeSprites = (ppu.ControlReg & 0x20) != 0;
 			NmiOnVBlank = (ppu.ControlReg & 0x80) != 0;
 			VerticalWrite = (ppu.ControlReg & 0x04) != 0;
-			BgAddr = (UInt16)((ppu.ControlReg & 0x10) != 0 ? 0x1000 : 0);
-			SpriteAddr = (UInt16)((ppu.ControlReg & 0x08) != 0 ? 0x1000 : 0);
+			BgAt1000 = (ppu.ControlReg & 0x10) != 0;
+			SpritesAt1000 = (ppu.ControlReg & 0x08) != 0;
 			
 			BgEnabled = (ppu.MaskReg & 0x08) != 0;
 			SpritesEnabled = (ppu.MaskReg & 0x10) != 0;
+			BgMaskLeft = (ppu.MaskReg & 0x02) != 0;
+			SpriteMaskLeft = (ppu.MaskReg & 0x04) != 0;
+			Grayscale = (ppu.MaskReg & 0x01) != 0;
+			IntensifyRed = (ppu.MaskReg & 0x20) != 0;
+			IntensifyGreen = (ppu.MaskReg & 0x40) != 0;
+			IntensifyBlue = (ppu.MaskReg & 0x80) != 0;
 		}
 
-		public override void UpdateEmulationState()
+		public override void UpdateConsoleState()
 		{
-			
+			NesCpuState cpu = DebugApi.GetCpuState<NesCpuState>(CpuType.Nes);
+			NesPpuState ppu = DebugApi.GetPpuState<NesPpuState>(CpuType.Nes);
+
+			cpu.A = RegA;
+			cpu.X = RegX;
+			cpu.Y = RegY;
+			cpu.SP = RegSP;
+			cpu.PC = RegPC;
+			cpu.PS = RegPS;
+
+			cpu.NMIFlag = FlagNmi;
+
+			cpu.IRQFlag = (byte)(
+				(FlagIrqExternal ? NesIrqSources.External : 0) |
+				(FlagIrqFrameCount ? NesIrqSources.FrameCounter : 0) |
+				(FlagIrqDmc ? NesIrqSources.DMC : 0) |
+				(FlagIrqFdsDisk ? NesIrqSources.FdsDisk : 0)
+			);
+
+			FlagN = (RegPS & (byte)NesCpuFlags.Negative) != 0;
+			FlagV = (RegPS & (byte)NesCpuFlags.Overflow) != 0;
+			FlagD = (RegPS & (byte)NesCpuFlags.Decimal) != 0;
+			FlagI = (RegPS & (byte)NesCpuFlags.IrqDisable) != 0;
+			FlagZ = (RegPS & (byte)NesCpuFlags.Zero) != 0;
+			FlagC = (RegPS & (byte)NesCpuFlags.Carry) != 0;
+
+			ppu.Cycle = Cycle;
+			ppu.Scanline = Scanline;
+			ppu.VideoRamAddr = VramAddr;
+			ppu.TmpVideoRamAddr = TmpVramAddr;
+			ppu.ScrollX = ScrollX;
+			ppu.BusAddress = BusAddr;
+
+			ppu.StatusFlags.Sprite0Hit = Sprite0Hit;
+			ppu.StatusFlags.SpriteOverflow = SpriteOverflow;
+			ppu.StatusFlags.VerticalBlank = VerticalBlank;
+			ppu.WriteToggle = WriteToggle;
+
+			ppu.ControlReg = (byte)(
+				(NmiOnVBlank ? 0x80 : 0) |
+				(LargeSprites ? 0x20 : 0) |
+				(BgAt1000 ? 0x10 : 0) |
+				(SpritesAt1000 ? 0x08 : 0) |
+				(VerticalWrite ? 0x04 : 0)
+			);
+
+			ppu.MaskReg = (byte)(
+				(Grayscale ? 0x01 : 0) |
+				(BgMaskLeft ? 0x02 : 0) |
+				(SpriteMaskLeft ? 0x04 : 0) |
+				(BgEnabled ? 0x08 : 0) |
+				(SpritesEnabled ? 0x10 : 0) |
+				(IntensifyRed ? 0x20 : 0) |
+				(IntensifyGreen ? 0x40 : 0) |
+				(IntensifyBlue ? 0x80 : 0)
+			);
+
+			BgEnabled = (ppu.MaskReg & 0x08) != 0;
+			SpritesEnabled = (ppu.MaskReg & 0x10) != 0;
+
+			DebugApi.SetCpuState(cpu, CpuType.Nes);
+			DebugApi.SetPpuState(ppu, CpuType.Nes);
 		}
 	}
 }

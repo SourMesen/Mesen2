@@ -69,6 +69,9 @@ extern "C"
 	DllExport void __stdcall GetCpuState(BaseState& state, CpuType cpuType) { GetDebugger()->GetCpuState(state, cpuType); }
 	DllExport void __stdcall GetPpuState(BaseState& state, CpuType cpuType) { GetDebugger()->GetPpuState(state, cpuType); }
 	
+	DllExport void __stdcall SetCpuState(BaseState& state, CpuType cpuType) { GetDebugger()->SetCpuState(state, cpuType); }
+	DllExport void __stdcall SetPpuState(BaseState& state, CpuType cpuType) { GetDebugger()->SetPpuState(state, cpuType); }
+
 	DllExport const char* __stdcall GetDebuggerLog()
 	{
 		_logString = GetDebugger()->GetLog();

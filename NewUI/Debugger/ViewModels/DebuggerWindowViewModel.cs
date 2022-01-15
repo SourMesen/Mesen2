@@ -107,6 +107,11 @@ namespace Mesen.Debugger.ViewModels
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
 		}
 
+		public void UpdateConsoleState()
+		{
+			ConsoleStatus?.UpdateConsoleState();
+		}
+
 		private void Manager_WatchChanged(object? sender, EventArgs e)
 		{
 			WatchList.UpdateWatch();

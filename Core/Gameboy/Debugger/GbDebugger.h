@@ -72,4 +72,5 @@ public:
 
 	BaseState& GetState() override;
 	void GetPpuState(BaseState& state) override;
+	void SetPpuState(BaseState& state) override;
 };

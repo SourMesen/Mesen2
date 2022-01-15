@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "BaseNesPpu.h"
 #include "NES/NesTypes.h"
+#include "NES/NesConsole.h"
 #include "Shared/SettingTypes.h"
 
 void BaseNesPpu::GetState(NesPpuState& state)
 {
-	//TODO
-	//state.ControlFlags = _flags;
 	state.ControlReg = _controlReg;
 	state.MaskReg = _maskReg;
 	state.VideoRamAddr = _videoRamAddr;
@@ -16,7 +15,6 @@ void BaseNesPpu::GetState(NesPpuState& state)
 	state.WriteToggle = _writeToggle;
 
 	state.StatusFlags = _statusFlags;
-	//state.State = _state;
 	state.Cycle = _cycle;
 	state.Scanline = _scanline;
 	state.FrameCount = _frameCount;
@@ -29,16 +27,42 @@ void BaseNesPpu::GetState(NesPpuState& state)
 
 void BaseNesPpu::SetState(NesPpuState& state)
 {
-	//TODO
-	//_flags = state.ControlFlags;
+	_controlReg = state.ControlReg;
+	_verticalWrite = (_controlReg & 0x04) == 0x04;
+	_spritePatternAddr = ((_controlReg & 0x08) == 0x08) ? 0x1000 : 0x0000;
+	_backgroundPatternAddr = ((_controlReg & 0x10) == 0x10) ? 0x1000 : 0x0000;
+	_largeSprites = (_controlReg & 0x20) == 0x20;
+	_vBlank = (_controlReg & 0x80) == 0x80;
+	
+	_maskReg = state.MaskReg;
+	_grayscale = (_maskReg & 0x01) == 0x01;
+	_backgroundMask = (_maskReg & 0x02) == 0x02;
+	_spriteMask = (_maskReg & 0x04) == 0x04;
+	_backgroundEnabled = (_maskReg & 0x08) == 0x08;
+	_spritesEnabled = (_maskReg & 0x10) == 0x10;
+	_intensifyRed = (_maskReg & 0x20) == 0x20;
+	_intensifyGreen = (_maskReg & 0x40) == 0x40;
+	_intensifyBlue = (_maskReg & 0x80) == 0x80;
+
+	_videoRamAddr = state.VideoRamAddr;
+	_tmpVideoRamAddr = state.TmpVideoRamAddr;
+	_xScroll = state.ScrollX;
+	_writeToggle = state.WriteToggle;
+	//_spriteRamAddr = state.SpriteRamAddr;
+
 	_statusFlags = state.StatusFlags;
-	//_state = state.State;
 	_cycle = state.Cycle;
 	_scanline = state.Scanline;
 	_frameCount = state.FrameCount;
+	_ppuBusAddress = state.BusAddress;
+	_memoryReadBuffer = state.MemoryReadBuffer;
 
-	//TODO
-	//UpdateMinimumDrawCycles();
+	_minimumDrawBgCycle = _backgroundEnabled ? ((_backgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
+	_minimumDrawSpriteCycle = _spritesEnabled ? ((_spriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
+	_minimumDrawSpriteStandardCycle = _spritesEnabled ? (_spriteMask ? 0 : 8) : 300;
+
+	_emulatorBgEnabled = _console->GetNesConfig().BackgroundEnabled;
+	_emulatorSpritesEnabled = _console->GetNesConfig().SpritesEnabled;
 
 	_paletteRamMask = _grayscale ? 0x30 : 0x3F;
 	if(_region == ConsoleRegion::Ntsc) {
