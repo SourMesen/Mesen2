@@ -6,15 +6,16 @@
 
 void BaseNesPpu::GetState(NesPpuState& state)
 {
-	state.ControlReg = _controlReg;
-	state.MaskReg = _maskReg;
+	state.Control = _control;
+	state.Mask = _mask;
+	state.StatusFlags = _statusFlags;
+
 	state.VideoRamAddr = _videoRamAddr;
 	state.TmpVideoRamAddr = _tmpVideoRamAddr;
 	state.SpriteRamAddr = _spriteRamAddr;
 	state.ScrollX = _xScroll;
 	state.WriteToggle = _writeToggle;
 
-	state.StatusFlags = _statusFlags;
 	state.Cycle = _cycle;
 	state.Scanline = _scanline;
 	state.FrameCount = _frameCount;
@@ -27,50 +28,28 @@ void BaseNesPpu::GetState(NesPpuState& state)
 
 void BaseNesPpu::SetState(NesPpuState& state)
 {
-	_controlReg = state.ControlReg;
-	_verticalWrite = (_controlReg & 0x04) == 0x04;
-	_spritePatternAddr = ((_controlReg & 0x08) == 0x08) ? 0x1000 : 0x0000;
-	_backgroundPatternAddr = ((_controlReg & 0x10) == 0x10) ? 0x1000 : 0x0000;
-	_largeSprites = (_controlReg & 0x20) == 0x20;
-	_vBlank = (_controlReg & 0x80) == 0x80;
-	
-	_maskReg = state.MaskReg;
-	_grayscale = (_maskReg & 0x01) == 0x01;
-	_backgroundMask = (_maskReg & 0x02) == 0x02;
-	_spriteMask = (_maskReg & 0x04) == 0x04;
-	_backgroundEnabled = (_maskReg & 0x08) == 0x08;
-	_spritesEnabled = (_maskReg & 0x10) == 0x10;
-	_intensifyRed = (_maskReg & 0x20) == 0x20;
-	_intensifyGreen = (_maskReg & 0x40) == 0x40;
-	_intensifyBlue = (_maskReg & 0x80) == 0x80;
+	_control = state.Control;
+	_mask = state.Mask;
+	_statusFlags = state.StatusFlags;
 
 	_videoRamAddr = state.VideoRamAddr;
 	_tmpVideoRamAddr = state.TmpVideoRamAddr;
 	_xScroll = state.ScrollX;
 	_writeToggle = state.WriteToggle;
-	//_spriteRamAddr = state.SpriteRamAddr;
+	_spriteRamAddr = state.SpriteRamAddr;
 
-	_statusFlags = state.StatusFlags;
 	_cycle = state.Cycle;
 	_scanline = state.Scanline;
 	_frameCount = state.FrameCount;
 	_ppuBusAddress = state.BusAddress;
 	_memoryReadBuffer = state.MemoryReadBuffer;
 
-	_minimumDrawBgCycle = _backgroundEnabled ? ((_backgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
-	_minimumDrawSpriteCycle = _spritesEnabled ? ((_spriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
-	_minimumDrawSpriteStandardCycle = _spritesEnabled ? (_spriteMask ? 0 : 8) : 300;
-
-	_emulatorBgEnabled = _console->GetNesConfig().BackgroundEnabled;
-	_emulatorSpritesEnabled = _console->GetNesConfig().SpritesEnabled;
-
-	_paletteRamMask = _grayscale ? 0x30 : 0x3F;
-	if(_region == ConsoleRegion::Ntsc) {
-		_intensifyColorBits = (_intensifyGreen ? 0x40 : 0x00) | (_intensifyRed ? 0x80 : 0x00) | (_intensifyBlue ? 0x100 : 0x00);
-	} else if(_region == ConsoleRegion::Pal || _region == ConsoleRegion::Dendy) {
-		//"Note that on the Dendy and PAL NES, the green and red bits swap meaning."
-		_intensifyColorBits = (_intensifyRed ? 0x40 : 0x00) | (_intensifyGreen ? 0x80 : 0x00) | (_intensifyBlue ? 0x100 : 0x00);
+	//Update internal flags based on new state
+	if(_renderingEnabled != (_mask.BackgroundEnabled | _mask.SpritesEnabled)) {
+		_needStateUpdate = true;
 	}
+	UpdateMinimumDrawCycles();
+	UpdateGrayscaleAndIntensifyBits();
 }
 
 bool BaseNesPpu::IsRenderingEnabled()
@@ -117,4 +96,58 @@ void BaseNesPpu::WritePaletteRam(uint16_t addr, uint8_t value)
 	} else {
 		_paletteRAM[addr] = value;
 	}
+}
+
+/* Applies the effect of grayscale/intensify bits to the output buffer (batched) */
+void BaseNesPpu::UpdateGrayscaleAndIntensifyBits()
+{
+	if(_scanline < 0 || _scanline > _nmiScanline) {
+		UpdateColorBitMasks();
+		return;
+	}
+
+	int pixelNumber;
+	if(_scanline >= 240) {
+		pixelNumber = 61439;
+	} else if(_cycle < 3) {
+		pixelNumber = (_scanline << 8) - 1;
+	} else if(_cycle <= 258) {
+		pixelNumber = (_scanline << 8) + _cycle - 3;
+	} else {
+		pixelNumber = (_scanline << 8) + 255;
+	}
+
+	if(_paletteRamMask == 0x3F && _intensifyColorBits == 0) {
+		//Nothing to do (most common case)
+		_lastUpdatedPixel = pixelNumber;
+		return;
+	}
+
+	if(_lastUpdatedPixel < pixelNumber) {
+		uint16_t* out = _currentOutputBuffer + _lastUpdatedPixel + 1;
+		while(_lastUpdatedPixel < pixelNumber) {
+			*out = (*out & _paletteRamMask) | _intensifyColorBits;
+			out++;
+			_lastUpdatedPixel++;
+		}
+	}
+
+	UpdateColorBitMasks();
+}
+
+void BaseNesPpu::UpdateColorBitMasks()
+{
+	//"Bit 0 controls a greyscale mode, which causes the palette to use only the colors from the grey column: $00, $10, $20, $30. This is implemented as a bitwise AND with $30 on any value read from PPU $3F00-$3FFF"
+	_paletteRamMask = _mask.Grayscale ? 0x30 : 0x3F;
+	_intensifyColorBits = (_mask.IntensifyRed ? 0x40 : 0x00) | (_mask.IntensifyGreen ? 0x80 : 0x00) | (_mask.IntensifyBlue ? 0x100 : 0x00);
+}
+
+void BaseNesPpu::UpdateMinimumDrawCycles()
+{
+	_minimumDrawBgCycle = _mask.BackgroundEnabled ? ((_mask.BackgroundMask || _console->GetNesConfig().ForceBackgroundFirstColumn) ? 0 : 8) : 300;
+	_minimumDrawSpriteCycle = _mask.SpritesEnabled ? ((_mask.SpriteMask || _console->GetNesConfig().ForceSpritesFirstColumn) ? 0 : 8) : 300;
+	_minimumDrawSpriteStandardCycle = _mask.SpritesEnabled ? (_mask.SpriteMask ? 0 : 8) : 300;
+
+	_emulatorBgEnabled = _console->GetNesConfig().BackgroundEnabled;
+	_emulatorSpritesEnabled = _console->GetNesConfig().SpritesEnabled;
 }

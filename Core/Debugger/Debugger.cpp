@@ -416,6 +416,7 @@ void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)
 
 void Debugger::SetCpuState(BaseState& srcState, CpuType cpuType)
 {
+	DebugBreakHelper helper(this);
 	BaseState& dstState = GetCpuStateRef(cpuType);
 	switch(cpuType) {
 		case CpuType::Cpu: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
@@ -461,6 +462,7 @@ void Debugger::GetPpuState(BaseState& state, CpuType cpuType)
 
 void Debugger::SetPpuState(BaseState& state, CpuType cpuType)
 {
+	DebugBreakHelper helper(this);
 	switch(cpuType) {
 		case CpuType::Cpu:
 		case CpuType::Spc:

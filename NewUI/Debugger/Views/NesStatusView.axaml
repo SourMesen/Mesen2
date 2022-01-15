@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="350"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -67,7 +68,7 @@
 				<StackPanel DockPanel.Dock="Right">
 					<StackPanel Orientation="Horizontal" IsEnabled="{CompiledBinding EditAllowed}">
 						<TextBlock Margin="0">SP:</TextBlock>
-						<TextBox Text="{CompiledBinding RegSP, Converter={StaticResource Hex}}" />
+						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Converter="{StaticResource Hex}" Max="255" />
 					</StackPanel>
 					<TextBox
 						TextWrapping="Wrap"
@@ -84,23 +85,23 @@
 					<WrapPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>A:</TextBlock>
-							<TextBox Text="{CompiledBinding RegA, Converter={StaticResource Hex}}" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Converter="{StaticResource Hex}" Max="255" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>X:</TextBlock>
-							<TextBox Text="{CompiledBinding RegX, Converter={StaticResource Hex}}" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Converter="{StaticResource Hex}" Max="255" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Y:</TextBlock>
-							<TextBox Text="{CompiledBinding RegY, Converter={StaticResource Hex}}" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Converter="{StaticResource Hex}" Max="255" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>PC:</TextBlock>
-							<TextBox Text="{CompiledBinding RegPC, Converter={StaticResource Hex}}" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Converter="{StaticResource Hex}" Max="65535" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Cycle:</TextBlock>
-							<TextBox Width="70" Text="{CompiledBinding CycleCount}" IsReadOnly="True" />
+							<c:MesenNumericTextBox Width="70" Value="{CompiledBinding CycleCount}" IsEnabled="False" />
 						</StackPanel>
 					</WrapPanel>
 
@@ -109,7 +110,7 @@
 					<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 						<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
 							<TextBlock>P:</TextBlock>
-							<TextBox Text="{CompiledBinding RegPS, Converter={StaticResource Hex}}" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Converter="{StaticResource Hex}" Max="255" />
 						</StackPanel>
 
 						<WrapPanel>
@@ -148,20 +149,20 @@
 				<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 4" />
 
 				<WrapPanel>
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 						<TextBlock>Cycle:</TextBlock>
-						<TextBox Grid.Column="1" Text="{CompiledBinding Cycle}" IsReadOnly="True" />
+						<c:MesenNumericTextBox Grid.Column="1" Value="{CompiledBinding Cycle}" IsEnabled="False" Max="340" />
 						<TextBlock Grid.Row="1">Scanline:</TextBlock>
-						<TextBox Grid.Row="1" Grid.Column="1" Text="{CompiledBinding Scanline}" IsReadOnly="True" />
+						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" Max="261" Min="-1" />
 
 						<TextBlock Grid.Row="2">Bus:</TextBlock>
-						<TextBox Grid.Row="2" Grid.Column="1" Text="{CompiledBinding BusAddr, Converter={StaticResource Hex}}" />
+						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Converter="{StaticResource Hex}" Max="16383" />
 						<TextBlock Grid.Row="3">V:</TextBlock>
-						<TextBox Grid.Row="3" Grid.Column="1" Text="{CompiledBinding VramAddr, Converter={StaticResource Hex}}" />
+						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Converter="{StaticResource Hex}" Max="16383" />
 						<TextBlock Grid.Row="4">T:</TextBlock>
-						<TextBox Grid.Row="4" Grid.Column="1" Text="{CompiledBinding TmpVramAddr, Converter={StaticResource Hex}}" />
+						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Converter="{StaticResource Hex}" Max="16383" />
 						<TextBlock Grid.Row="5">X:</TextBlock>
-						<TextBox Grid.Row="5" Grid.Column="1" Text="{CompiledBinding ScrollX, Converter={StaticResource Hex}}" />
+						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{CompiledBinding ScrollX}" Converter="{StaticResource Hex}" Max="7" />
 					</Grid>
 					<StackPanel Margin="5 0 2 0">
 						<CheckBox IsChecked="{CompiledBinding Sprite0Hit}" Content="Sprite 0 Hit" />

@@ -946,9 +946,33 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalBlank;
 	}
 
+	public struct NesPpuMaskFlags
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool Grayscale;
+		[MarshalAs(UnmanagedType.I1)] public bool BackgroundMask;
+		[MarshalAs(UnmanagedType.I1)] public bool SpriteMask;
+		[MarshalAs(UnmanagedType.I1)] public bool BackgroundEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool SpritesEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool IntensifyRed;
+		[MarshalAs(UnmanagedType.I1)] public bool IntensifyGreen;
+		[MarshalAs(UnmanagedType.I1)] public bool IntensifyBlue;
+	}
+
+	public struct NesPpuControlFlags
+	{
+		public UInt16 BackgroundPatternAddr;
+		public UInt16 SpritePatternAddr;
+		[MarshalAs(UnmanagedType.I1)] public bool VerticalWrite;
+		[MarshalAs(UnmanagedType.I1)] public bool LargeSprites;
+		[MarshalAs(UnmanagedType.I1)] public bool SecondaryPpu;
+		[MarshalAs(UnmanagedType.I1)] public bool NmiOnVerticalBlank;
+	}
+
 	public struct NesPpuState : BaseState
 	{
 		public NesPpuStatusFlags StatusFlags;
+		public NesPpuMaskFlags Mask;
+		public NesPpuControlFlags Control;
 		public Int32 Scanline;
 		public UInt32 Cycle;
 		public UInt32 FrameCount;
@@ -957,8 +981,6 @@ namespace Mesen.Interop
 		public UInt32 SafeOamScanline;
 		public UInt16 BusAddress;
 		public byte MemoryReadBuffer;
-		public byte ControlReg;
-		public byte MaskReg;
 
 		public UInt16 VideoRamAddr;
 		public UInt16 TmpVideoRamAddr;

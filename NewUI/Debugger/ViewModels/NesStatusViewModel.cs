@@ -30,6 +30,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public uint Cycle { get; private set; }
 		[Reactive] public int Scanline { get; private set; }
+		[Reactive] public UInt32 FrameCount { get; private set; }
 		[Reactive] public UInt16 VramAddr { get; set; }
 		[Reactive] public UInt16 TmpVramAddr { get; set; }
 		[Reactive] public UInt16 BusAddr { get; set; }
@@ -100,6 +101,7 @@ namespace Mesen.Debugger.ViewModels
 
 			Cycle = ppu.Cycle;
 			Scanline = ppu.Scanline;
+			FrameCount = ppu.FrameCount;
 			VramAddr = ppu.VideoRamAddr;
 			TmpVramAddr = ppu.TmpVideoRamAddr;
 			ScrollX = ppu.ScrollX;
@@ -110,20 +112,20 @@ namespace Mesen.Debugger.ViewModels
 			VerticalBlank = ppu.StatusFlags.VerticalBlank;
 			WriteToggle = ppu.WriteToggle;
 
-			LargeSprites = (ppu.ControlReg & 0x20) != 0;
-			NmiOnVBlank = (ppu.ControlReg & 0x80) != 0;
-			VerticalWrite = (ppu.ControlReg & 0x04) != 0;
-			BgAt1000 = (ppu.ControlReg & 0x10) != 0;
-			SpritesAt1000 = (ppu.ControlReg & 0x08) != 0;
-			
-			BgEnabled = (ppu.MaskReg & 0x08) != 0;
-			SpritesEnabled = (ppu.MaskReg & 0x10) != 0;
-			BgMaskLeft = (ppu.MaskReg & 0x02) != 0;
-			SpriteMaskLeft = (ppu.MaskReg & 0x04) != 0;
-			Grayscale = (ppu.MaskReg & 0x01) != 0;
-			IntensifyRed = (ppu.MaskReg & 0x20) != 0;
-			IntensifyGreen = (ppu.MaskReg & 0x40) != 0;
-			IntensifyBlue = (ppu.MaskReg & 0x80) != 0;
+			LargeSprites = ppu.Control.LargeSprites;
+			NmiOnVBlank = ppu.Control.NmiOnVerticalBlank;
+			VerticalWrite = ppu.Control.VerticalWrite;
+			BgAt1000 = ppu.Control.BackgroundPatternAddr == 0x1000;
+			SpritesAt1000 = ppu.Control.SpritePatternAddr == 0x1000;
+
+			BgEnabled = ppu.Mask.BackgroundEnabled;
+			SpritesEnabled = ppu.Mask.SpritesEnabled;
+			BgMaskLeft = ppu.Mask.BackgroundMask;
+			SpriteMaskLeft = ppu.Mask.SpriteMask;
+			Grayscale = ppu.Mask.Grayscale;
+			IntensifyRed = ppu.Mask.IntensifyRed;
+			IntensifyGreen = ppu.Mask.IntensifyGreen;
+			IntensifyBlue = ppu.Mask.IntensifyBlue;
 		}
 
 		public override void UpdateConsoleState()
@@ -166,27 +168,20 @@ namespace Mesen.Debugger.ViewModels
 			ppu.StatusFlags.VerticalBlank = VerticalBlank;
 			ppu.WriteToggle = WriteToggle;
 
-			ppu.ControlReg = (byte)(
-				(NmiOnVBlank ? 0x80 : 0) |
-				(LargeSprites ? 0x20 : 0) |
-				(BgAt1000 ? 0x10 : 0) |
-				(SpritesAt1000 ? 0x08 : 0) |
-				(VerticalWrite ? 0x04 : 0)
-			);
+			ppu.Control.LargeSprites = LargeSprites;
+			ppu.Control.NmiOnVerticalBlank = NmiOnVBlank;
+			ppu.Control.VerticalWrite = VerticalWrite;
+			ppu.Control.BackgroundPatternAddr = (UInt16)(BgAt1000 ? 0x1000 : 0);
+			ppu.Control.SpritePatternAddr = (UInt16)(SpritesAt1000 ? 0x1000 : 0);
 
-			ppu.MaskReg = (byte)(
-				(Grayscale ? 0x01 : 0) |
-				(BgMaskLeft ? 0x02 : 0) |
-				(SpriteMaskLeft ? 0x04 : 0) |
-				(BgEnabled ? 0x08 : 0) |
-				(SpritesEnabled ? 0x10 : 0) |
-				(IntensifyRed ? 0x20 : 0) |
-				(IntensifyGreen ? 0x40 : 0) |
-				(IntensifyBlue ? 0x80 : 0)
-			);
-
-			BgEnabled = (ppu.MaskReg & 0x08) != 0;
-			SpritesEnabled = (ppu.MaskReg & 0x10) != 0;
+			ppu.Mask.BackgroundEnabled = BgEnabled;
+			ppu.Mask.SpritesEnabled = SpritesEnabled;
+			ppu.Mask.BackgroundMask = BgMaskLeft;
+			ppu.Mask.SpriteMask = SpriteMaskLeft;
+			ppu.Mask.Grayscale = Grayscale;
+			ppu.Mask.IntensifyRed = IntensifyRed;
+			ppu.Mask.IntensifyGreen = IntensifyGreen;
+			ppu.Mask.IntensifyBlue = IntensifyBlue;
 
 			DebugApi.SetCpuState(cpu, CpuType.Nes);
 			DebugApi.SetPpuState(ppu, CpuType.Nes);

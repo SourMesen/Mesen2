@@ -1,4 +1,5 @@
-﻿using Avalonia.Data.Converters;
+﻿using Avalonia;
+using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
 
@@ -37,24 +38,20 @@ namespace Mesen.Debugger.Utilities
 					s = s.Substring(1);
 				}
 
+				long.TryParse(s, NumberStyles.HexNumber, null, out long v);
+
 				if(targetType == typeof(byte)) {
-					byte.TryParse(s, NumberStyles.HexNumber, null, out byte v);
-					return v;
+					return (byte)Math.Min(byte.MaxValue, Math.Max(v, byte.MinValue));
 				} else if(targetType == typeof(sbyte)) {
-					sbyte.TryParse(s, NumberStyles.HexNumber, null, out sbyte v);
-					return v;
+					return (sbyte)Math.Min(sbyte.MaxValue, Math.Max(v, sbyte.MinValue));
 				} else if(targetType == typeof(Int16)) {
-					Int16.TryParse(s, NumberStyles.HexNumber, null, out Int16 v);
-					return v;
+					return (Int16)Math.Min(Int16.MaxValue, Math.Max(v, Int16.MinValue));
 				} else if(targetType == typeof(UInt16)) {
-					UInt16.TryParse(s, NumberStyles.HexNumber, null, out UInt16 v);
-					return v;
+					return (UInt16)Math.Min(UInt16.MaxValue, Math.Max(v, UInt16.MinValue));
 				} else if(targetType == typeof(Int32)) {
-					Int32.TryParse(s, NumberStyles.HexNumber, null, out Int32 v);
-					return v;
+					return (Int32)Math.Min(Int32.MaxValue, Math.Max(v, Int32.MinValue));
 				} else if(targetType == typeof(UInt32)) {
-					UInt32.TryParse(s, NumberStyles.HexNumber, null, out UInt32 v);
-					return v;
+					return (UInt32)Math.Min(UInt32.MaxValue, Math.Max(v, UInt32.MinValue));
 				}
 			}
 

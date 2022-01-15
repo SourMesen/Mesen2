@@ -171,6 +171,28 @@ struct PPUStatusFlags
 	bool VerticalBlank;
 };
 
+struct PpuControlFlags
+{
+	uint16_t BackgroundPatternAddr;
+	uint16_t SpritePatternAddr;
+	bool VerticalWrite;
+	bool LargeSprites;
+	bool SecondaryPpu;
+	bool NmiOnVerticalBlank;
+};
+
+struct PpuMaskFlags
+{
+	bool Grayscale;
+	bool BackgroundMask;
+	bool SpriteMask;
+	bool BackgroundEnabled;
+	bool SpritesEnabled;
+	bool IntensifyRed;
+	bool IntensifyGreen;
+	bool IntensifyBlue;
+};
+
 struct TileInfo
 {
 	uint16_t TileAddr;
@@ -192,6 +214,9 @@ struct NesSpriteInfo
 struct NesPpuState : public BaseState
 {
 	PPUStatusFlags StatusFlags;
+	PpuMaskFlags Mask;
+	PpuControlFlags Control;
+
 	int32_t Scanline;
 	uint32_t Cycle;
 	uint32_t FrameCount;
@@ -200,14 +225,18 @@ struct NesPpuState : public BaseState
 	uint32_t SafeOamScanline;
 	uint16_t BusAddress;
 	uint8_t MemoryReadBuffer;
-	uint8_t ControlReg;
-	uint8_t MaskReg;
 	
 	uint16_t VideoRamAddr;
 	uint16_t TmpVideoRamAddr;
 	uint8_t ScrollX;
 	bool WriteToggle;
 	uint8_t SpriteRamAddr;
+
+	bool VerticalWrite;
+	bool SpritePatternAddr;
+	bool BackgroundPatternAddr;
+	bool LargeSprites;
+	bool VerticalBlank;
 };
 
 struct ApuLengthCounterState

@@ -54,7 +54,7 @@ public:
 		_currentTileEx = _nextTileEx;
 
 		uint8_t tileIndex = ReadVram(GetNameTableAddr());
-		uint16_t tileAddr = (tileIndex << 4) | (_videoRamAddr >> 12) | _backgroundPatternAddr;
+		uint16_t tileAddr = (tileIndex << 4) | (_videoRamAddr >> 12) | _control.BackgroundPatternAddr;
 
 		_nextTileEx.OffsetY = _videoRamAddr >> 12;
 		_nextTileEx.AbsoluteTileAddr = _mapper->GetPpuAbsoluteAddress(tileAddr).Address;
@@ -79,7 +79,7 @@ public:
 			uint8_t tilePalette = usePrev ? _previousTilePalette : _currentTilePalette;
 			NesTileInfoEx& lastTileEx = usePrev ? _previousTileEx : _currentTileEx;
 			uint32_t backgroundColor = 0;
-			if(_backgroundEnabled && _cycle > _minimumDrawBgCycle) {
+			if(_mask.BackgroundEnabled && _cycle > _minimumDrawBgCycle) {
 				backgroundColor = (((_lowBitShift << _xScroll) & 0x8000) >> 15) | (((_highBitShift << _xScroll) & 0x8000) >> 14);
 			}
 
@@ -98,7 +98,7 @@ public:
 			tileInfo.XScroll = _xScroll;
 			tileInfo.TmpVideoRamAddr = _tmpVideoRamAddr;
 
-			if(_lastSprite && _spritesEnabled) {
+			if(_lastSprite && _mask.SpritesEnabled) {
 				int j = 0;
 				for(uint8_t i = 0; i < _spriteCount; i++) {
 					int32_t shift = (int32_t)_cycle - _spriteTiles[i].SpriteX - 1;
@@ -152,7 +152,7 @@ public:
 				tileInfo.SpriteCount = 0;
 			}
 
-			if(_backgroundEnabled && _cycle > _minimumDrawBgCycle) {
+			if(_mask.BackgroundEnabled && _cycle > _minimumDrawBgCycle) {
 				tileInfo.Tile.TileIndex = lastTileEx.AbsoluteTileAddr / 16;
 				if(_isChrRam) {
 					_console->GetMapper()->CopyChrTile(lastTileEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Tile.TileData);

@@ -22,12 +22,12 @@ protected:
 	bool _emulatorSpritesEnabled;
 	//16
 	uint16_t _videoRamAddr;
+	uint16_t _tmpVideoRamAddr;
 	uint16_t _highBitShift;
 	uint16_t _lowBitShift;
-	uint16_t _backgroundPatternAddr;
 	uint8_t _masterClockDivider;
 	uint8_t _spriteRamAddr;
-	bool _largeSprites;
+	uint8_t _openBus;
 	uint8_t _xScroll;
 	bool _enableOamDecay;
 	bool _needStateUpdate;
@@ -63,37 +63,23 @@ protected:
 	uint16_t _nmiScanline;
 	uint8_t _currentTilePalette;
 	uint8_t _previousTilePalette;
-	uint16_t _tmpVideoRamAddr;
-	uint16_t _spritePatternAddr;
-	//144
-	uint32_t _spriteIndex;
-	int32_t _lastUpdatedPixel;
-	uint16_t _updateVramAddr;
 	uint16_t _intensifyColorBits;
 	uint8_t _paletteRamMask;
 	uint8_t _updateVramAddrDelay;
-	bool _verticalWrite; //not used in rendering
+	//144
+	uint32_t _spriteIndex;
+	int32_t _lastUpdatedPixel;
+	uint32_t _frameCount;
+	uint16_t _updateVramAddr;
+	bool _preventVblFlag;
 	bool _writeToggle; //not used in rendering
 	//160
 	NesSpriteInfo* _lastSprite; //used by HD ppu
 	NesConsole* _console;
 	//176
-	uint32_t _frameCount;
-	bool _preventVblFlag;
-	bool _vBlank; //not used in rendering
-
-	uint8_t _statusReg; //not used in rendering
-	uint8_t _controlReg; //not used in rendering
-	uint8_t _maskReg; //not used in rendering
-	bool _grayscale; //not used in rendering
-	bool _backgroundMask; //not used in rendering
-	bool _spriteMask; //not used in rendering
-	bool _backgroundEnabled; //not used in rendering
-	bool _spritesEnabled; //not used in rendering
-	bool _intensifyRed; //not used in rendering
-	bool _intensifyGreen; //not used in rendering
-
-	////////////////////////
+	PpuControlFlags _control; // 8 bytes
+	PpuMaskFlags _mask; // 8 bytes
+  ////////////////////////
 	//192 : end of cache line
 	////////////////////////
 	uint8_t _spriteRAM[0x100];
@@ -103,8 +89,6 @@ protected:
 	bool _hasSprite[257];
 	//705
 	NesSpriteInfo _spriteTiles[64];
-
-	bool _intensifyBlue; //not used in rendering
 
 	Emulator* _emu;
 	EmuSettings* _settings;
@@ -123,13 +107,15 @@ protected:
 	uint8_t _lastVisibleSpriteAddr; //For extra sprites
 
 	uint32_t _ignoreVramRead;
-	uint8_t _openBus;
 	int32_t _openBusDecayStamp[8];
 
 	uint64_t _oamDecayCycles[0x40];
 	bool _corruptOamRow[32];
 	
 	__forceinline bool IsRenderingEnabled();
+	void UpdateGrayscaleAndIntensifyBits();
+	void UpdateColorBitMasks();
+	void UpdateMinimumDrawCycles();
 
 public:
 	virtual void Reset() = 0;

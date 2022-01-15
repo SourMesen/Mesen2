@@ -74,11 +74,8 @@ protected:
 	void SetOamCorruptionFlags();
 	void ProcessOamCorruption();
 
-	void UpdateMinimumDrawCycles();
-
 	__forceinline uint8_t GetPixelColor();
 
-	void UpdateGrayscaleAndIntensifyBits();
 	void SendFrame();
 
 	void SendFrameVsDualSystem();

@@ -2,6 +2,7 @@
 #include "NES/Debugger/NesPpuTools.h"
 #include "NES/Mappers/MMC5.h"
 #include "NES/NesConsole.h"
+#include "NES/NesTypes.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/MemoryDumper.h"
@@ -16,7 +17,7 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 {
 	MMC5* mmc5 = dynamic_cast<MMC5*>(_mapper);
 	NesPpuState& state = (NesPpuState&)baseState;
-	uint16_t bgAddr = (state.ControlReg & 0x10) ? 0x1000 : 0;
+	uint16_t bgAddr = state.Control.BackgroundPatternAddr;
 
 	uint8_t* prevVram = options.CompareVram != nullptr ? options.CompareVram : vram;
 	constexpr uint32_t grayscalePalette[4] = { 0xFF000000, 0xFF808080, 0xFFC0C0C0, 0xFFFFFFFF };
@@ -137,8 +138,8 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 {
 	NesPpuState& state = (NesPpuState&)baseState;
 	
-	bool largeSprites = (state.ControlReg & 0x20) ? true : false;
-	uint16_t sprAddr = (state.ControlReg & 0x08) ? 0x1000 : 0x0000;
+	bool largeSprites = state.Control.LargeSprites;
+	uint16_t sprAddr = state.Control.SpritePatternAddr;
 
 	std::fill(outBuffer, outBuffer + 256 * 240, 0xFF666666);
 	std::fill(outBuffer + 256 * 240, outBuffer + 256 * 256, 0xFF333333);
@@ -193,7 +194,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	MMC5* mmc5 = dynamic_cast<MMC5*>(_mapper);
 	NesPpuState& state = (NesPpuState&)baseState;
 
-	uint16_t bgAddr = (state.ControlReg & 0x10) ? 0x1000 : 0;
+	uint16_t bgAddr = state.BackgroundPatternAddr;
 	uint16_t baseAddr = 0x2000 + nametableIndex * 0x400;
 	uint16_t baseAttributeAddr = baseAddr + 960;
 	uint16_t ntIndex = (row << 5) + column;
@@ -228,7 +229,7 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];
 	sprite.TileIndex = oamRam[i * 4 + 1];
-	sprite.TileAddress = ((state.ControlReg & 0x08) ? 0x1000 : 0x0000) | (sprite.TileIndex * 16);
+	sprite.TileAddress = state.Control.BackgroundPatternAddr | (sprite.TileIndex * 16);
 
 	uint8_t attributes = oamRam[i * 4 + 2];
 	sprite.Palette = (attributes & 0x03);
@@ -239,10 +240,10 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.Visible = sprite.Y < 239;
 	sprite.Width = 8;
 
-	bool largeSprites = (state.ControlReg & 0x20) ? true : false;
+	bool largeSprites = state.Control.LargeSprites;
 	sprite.Height = largeSprites ? 16 : 8;
 
-	uint16_t sprAddr = (state.ControlReg & 0x08) ? 0x1000 : 0x0000;
+	uint16_t sprAddr = state.Control.SpritePatternAddr;
 	uint16_t tileStart;
 	if(largeSprites) {
 		if(sprite.TileIndex & 0x01) {
