@@ -167,6 +167,10 @@
 		</Style.Resources>
 	</Style>
 
+	<Style Selector="ItemsRepeater,ItemsPresenter">
+		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
+	</Style>
+
 	<Style Selector=".ActionMenu MenuItem">
 		<Setter Property="Header" Value="{Binding Name}" />
 		<Setter Property="Icon" Value="{Binding Icon}" />
