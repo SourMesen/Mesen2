@@ -231,12 +231,6 @@ struct NesPpuState : public BaseState
 	uint8_t ScrollX;
 	bool WriteToggle;
 	uint8_t SpriteRamAddr;
-
-	bool VerticalWrite;
-	bool SpritePatternAddr;
-	bool BackgroundPatternAddr;
-	bool LargeSprites;
-	bool VerticalBlank;
 };
 
 struct ApuLengthCounterState

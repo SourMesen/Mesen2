@@ -1,4 +1,5 @@
 ﻿using Mesen.Interop;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Text;
@@ -62,6 +63,25 @@ namespace Mesen.Debugger.ViewModels
 
 		public NesStatusViewModel()
 		{
+			this.WhenAnyValue(x => x.FlagC, x => x.FlagD, x => x.FlagI, x => x.FlagN, x => x.FlagV, x => x.FlagZ).Subscribe(x => {
+				RegPS = (byte)(
+					(FlagN ? (byte)NesCpuFlags.Negative : 0) |
+					(FlagV ? (byte)NesCpuFlags.Overflow : 0) |
+					(FlagD ? (byte)NesCpuFlags.Decimal : 0) |
+					(FlagI ? (byte)NesCpuFlags.IrqDisable : 0) |
+					(FlagZ ? (byte)NesCpuFlags.Zero : 0) |
+					(FlagC ? (byte)NesCpuFlags.Carry : 0)
+				);
+			});
+
+			this.WhenAnyValue(x => x.RegPS).Subscribe(x => {
+				FlagN = (RegPS & (byte)NesCpuFlags.Negative) != 0;
+				FlagV = (RegPS & (byte)NesCpuFlags.Overflow) != 0;
+				FlagD = (RegPS & (byte)NesCpuFlags.Decimal) != 0;
+				FlagI = (RegPS & (byte)NesCpuFlags.IrqDisable) != 0;
+				FlagZ = (RegPS & (byte)NesCpuFlags.Zero) != 0;
+				FlagC = (RegPS & (byte)NesCpuFlags.Carry) != 0;
+			});
 		}
 
 		public override void UpdateUiState()
@@ -83,13 +103,6 @@ namespace Mesen.Debugger.ViewModels
 			FlagIrqFrameCount = (cpu.IRQFlag & (byte)NesIrqSources.FrameCounter) != 0;
 			FlagIrqDmc = (cpu.IRQFlag & (byte)NesIrqSources.DMC) != 0;
 			FlagIrqFdsDisk = (cpu.IRQFlag & (byte)NesIrqSources.FdsDisk) != 0;
-
-			FlagN = (RegPS & (byte)NesCpuFlags.Negative) != 0;
-			FlagV = (RegPS & (byte)NesCpuFlags.Overflow) != 0;
-			FlagD = (RegPS & (byte)NesCpuFlags.Decimal) != 0;
-			FlagI = (RegPS & (byte)NesCpuFlags.IrqDisable) != 0;
-			FlagZ = (RegPS & (byte)NesCpuFlags.Zero) != 0;
-			FlagC = (RegPS & (byte)NesCpuFlags.Carry) != 0;
 
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (UInt32)0x100 + cpu.SP + 1; i < 0x200; i++) {
@@ -148,13 +161,6 @@ namespace Mesen.Debugger.ViewModels
 				(FlagIrqDmc ? NesIrqSources.DMC : 0) |
 				(FlagIrqFdsDisk ? NesIrqSources.FdsDisk : 0)
 			);
-
-			FlagN = (RegPS & (byte)NesCpuFlags.Negative) != 0;
-			FlagV = (RegPS & (byte)NesCpuFlags.Overflow) != 0;
-			FlagD = (RegPS & (byte)NesCpuFlags.Decimal) != 0;
-			FlagI = (RegPS & (byte)NesCpuFlags.IrqDisable) != 0;
-			FlagZ = (RegPS & (byte)NesCpuFlags.Zero) != 0;
-			FlagC = (RegPS & (byte)NesCpuFlags.Carry) != 0;
 
 			ppu.Cycle = Cycle;
 			ppu.Scanline = Scanline;

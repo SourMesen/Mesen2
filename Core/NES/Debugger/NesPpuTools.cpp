@@ -194,7 +194,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	MMC5* mmc5 = dynamic_cast<MMC5*>(_mapper);
 	NesPpuState& state = (NesPpuState&)baseState;
 
-	uint16_t bgAddr = state.BackgroundPatternAddr;
+	uint16_t bgAddr = state.Control.BackgroundPatternAddr;
 	uint16_t baseAddr = 0x2000 + nametableIndex * 0x400;
 	uint16_t baseAttributeAddr = baseAddr + 960;
 	uint16_t ntIndex = (row << 5) + column;
