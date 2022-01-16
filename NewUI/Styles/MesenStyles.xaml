@@ -470,6 +470,7 @@
 		<Setter Property="Padding" Value="2 0" />
 		<Setter Property="MinHeight" Value="21" />
 		<Setter Property="Height" Value="21" />
+		<Setter Property="SelectionForegroundBrush" Value="#FFF" />
 	</Style>
 
 	<Style Selector="TextBox[AcceptsReturn=True]">

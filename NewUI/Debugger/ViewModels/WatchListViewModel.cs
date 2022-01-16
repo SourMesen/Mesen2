@@ -10,7 +10,7 @@ namespace Mesen.Debugger.ViewModels
 	public class WatchListViewModel : ViewModelBase
 	{
 		[Reactive] public List<WatchValueInfo> WatchEntries { get; private set; } = new List<WatchValueInfo>();
-		[Reactive] public int SelectedIndex { get; set; } = 0;
+		[Reactive] public int SelectedIndex { get; set; } = -1;
 
 		public WatchManager Manager { get; }
 
@@ -26,10 +26,12 @@ namespace Mesen.Debugger.ViewModels
 		{
 			int selection = SelectedIndex;
 			WatchEntries = Manager.GetWatchContent(WatchEntries);
-			if(selection < WatchEntries.Count) {
-				SelectedIndex = selection;
-			} else {
-				SelectedIndex = WatchEntries.Count - 1;
+			if(selection >= 0) {
+				if(selection < WatchEntries.Count) {
+					SelectedIndex = selection;
+				} else {
+					SelectedIndex = WatchEntries.Count - 1;
+				}
 			}
 		}
 

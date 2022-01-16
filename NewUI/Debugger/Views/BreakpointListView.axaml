@@ -24,11 +24,11 @@
 			DoubleTapped="OnGridDoubleClick"
 		>
 			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Header="E" Binding="{Binding Enabled}" Width="21" />
-				<DataGridCheckBoxColumn Header="M" Binding="{Binding MarkEvent}" Width="21" />
+				<DataGridCheckBoxColumn Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
+				<DataGridCheckBoxColumn Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
 				<DataGridTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
 				<DataGridTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
-				<DataGridTextColumn Header="Condition" Binding="{Binding Condition}" Width="3*" CanUserResize="True" />
+				<DataGridTextColumn Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
 			</DataGrid.Columns>
 		</c:MesenDataGrid>
 	</Border>

@@ -120,6 +120,7 @@ namespace Mesen.Debugger.ViewModels
 		private void LabelManager_OnLabelUpdated(object? sender, EventArgs e)
 		{
 			LabelList.UpdateLabelList();
+			BreakpointList.RefreshBreakpointList();
 			CallStack.RefreshCallStack();
 			Disassembly.Refresh();
 		}
@@ -151,6 +152,7 @@ namespace Mesen.Debugger.ViewModels
 			ConsoleStatus?.UpdateUiState();
 			UpdateDisassembly(forBreak);
 			SourceView?.Refresh(Disassembly.StyleProvider.ActiveAddress);
+			BreakpointList.RefreshBreakpointList();
 			LabelList.RefreshLabelList();
 			WatchList.UpdateWatch();
 			CallStack.UpdateCallStack();

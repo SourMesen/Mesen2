@@ -24,13 +24,8 @@ namespace Mesen.Debugger
 		[Reactive] public bool AnyAddress { get; set; } = false;
 		[Reactive] public string Condition { get; set; } = "";
 
-		[ObservableAsProperty] public string? TypeDisplay { get; }
-		[ObservableAsProperty] public string? AddressDisplay { get; }
-
 		public Breakpoint()
 		{
-			this.WhenAnyValue(_ => _.MemoryType, _ => _.BreakOnRead, _ => _.BreakOnWrite, _ => _.BreakOnExec).Select(x => ToReadableType()).ToPropertyEx(this, x => x.TypeDisplay);
-			this.WhenAnyValue(_ => _.MemoryType, _ => _.StartAddress, _ => _.EndAddress).Select(x => GetAddressString(true)).ToPropertyEx(this, x => x.AddressDisplay);
 		}
 
 		public bool IsAbsoluteAddress { get { return !MemoryType.IsRelativeMemory(); } }
@@ -111,7 +106,7 @@ namespace Mesen.Debugger
 		public string GetAddressString(bool showLabel)
 		{
 			string addr = "";
-			string format = (MemoryType == SnesMemoryType.SpcMemory || MemoryType == SnesMemoryType.GameboyMemory) ? "X4" : "X6";
+			string format = "X" + CpuType.GetAddressSize();
 			if(StartAddress == EndAddress) {
 				addr += $"${StartAddress.ToString(format)}";
 			} else {
@@ -129,15 +124,8 @@ namespace Mesen.Debugger
 
 		public string GetAddressLabel()
 		{
-			UInt32 address = StartAddress;
-
 			if(IsCpuBreakpoint) {
-				CodeLabel? label;
-				if(IsAbsoluteAddress) {
-					label = LabelManager.GetLabel(address, this.MemoryType);
-				} else {
-					label = LabelManager.GetLabel(new AddressInfo() { Address = (int)address, Type = this.MemoryType });
-				}
+				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)StartAddress, Type = MemoryType });
 				return label?.Label ?? string.Empty;
 			}
 			return string.Empty;

@@ -24,7 +24,7 @@ namespace Mesen.ViewModels
 			DisposeView();
 		}
 
-		public virtual void DisposeView() { }
+		protected virtual void DisposeView() { }
 
 		public void AddDisposable(IDisposable obj)
 		{

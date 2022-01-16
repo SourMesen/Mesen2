@@ -5,6 +5,7 @@ using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.Windows;
 using System;
+using static Mesen.Debugger.ViewModels.LabelListViewModel;
 
 namespace Mesen.Debugger.Views
 {
@@ -31,8 +32,8 @@ namespace Mesen.Debugger.Views
 		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
-			if(grid.SelectedItem is CodeLabel label) {
-				LabelEditWindow.EditLabel(this, label);
+			if(grid.SelectedItem is LabelViewModel label) {
+				LabelEditWindow.EditLabel(this, label.Label);
 			}
 		}
 	}

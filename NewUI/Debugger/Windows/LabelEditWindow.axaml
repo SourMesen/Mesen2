@@ -23,10 +23,6 @@
 		<vm:LabelEditViewModel />
 	</Design.DataContext>
 
-	<Window.Resources>
-		<du:HexConverter x:Key="Hex" />
-	</Window.Resources>
-
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="OK" IsEnabled="{CompiledBinding OkEnabled}" />
@@ -49,7 +45,7 @@
 			<TextBlock Grid.Column="0" Grid.Row="1" Text="Address:" />
 			<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
 				<TextBlock Margin="0 0 3 0">$</TextBlock>
-				<TextBox Text="{CompiledBinding Label.Address, Converter={StaticResource Hex}, ConverterParameter='X'}" Width="50" />
+				<c:MesenNumericTextBox Value="{CompiledBinding Label.Address}" Hex="True" Trim="True" Width="60" />
 				<TextBlock Margin="3 0 0 0" Text="{CompiledBinding MaxAddress}" Foreground="Gray" />
 			</StackPanel>
 

@@ -13,17 +13,14 @@ using Avalonia.Controls;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class BreakpointEditViewModel : ViewModelBase
+	public class BreakpointEditViewModel : DisposableViewModel
 	{
 		[Reactive] public Breakpoint Breakpoint { get; set; }
 		
-		[ObservableAsProperty] public bool StartValid { get; }
-		[ObservableAsProperty] public bool EndValid { get; }
-
-		[ObservableAsProperty] public bool IsConditionValid { get; }
-		[ObservableAsProperty] public bool OkEnabled { get; }
-		[ObservableAsProperty] public string MaxAddress { get; } = "";
-		[ObservableAsProperty] public bool CanExec { get; } = false;
+		[Reactive] public bool IsConditionValid { get; private set; }
+		[Reactive] public bool OkEnabled { get; private set; }
+		[Reactive] public string MaxAddress { get; private set; } = "";
+		[Reactive] public bool CanExec { get; private set; } = false;
 
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 
@@ -39,64 +36,64 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(!AvailableMemoryTypes.Contains(Breakpoint.MemoryType)) {
+				Breakpoint.MemoryType = (SnesMemoryType)AvailableMemoryTypes[0];
+			}
 
-			this.WhenAnyValue(x => x.Breakpoint.StartAddress)
+			AddDisposable(this.WhenAnyValue(x => x.Breakpoint.StartAddress)
 				.Buffer(2, 1)
 				.Select(b => (Previous: b[0], Current: b[1]))
 				.Subscribe(t => {
 					if(t.Previous == Breakpoint.EndAddress) {
 						Breakpoint.EndAddress = t.Current;
 					}
-				});
-			
-			this.WhenAnyValue(x => x.Breakpoint.MemoryType, (memoryType) => {
-				return !memoryType.IsPpuMemory();
-			}).ToPropertyEx(this, x => x.CanExec);
+				}
+			));
 
-			this.WhenAnyValue(x => x.Breakpoint.MemoryType, (memoryType) => {
+			AddDisposable(this.WhenAnyValue(x => x.Breakpoint.MemoryType).Subscribe(memoryType => {
+				CanExec = !memoryType.IsPpuMemory();
+			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.Breakpoint.MemoryType).Subscribe(memoryType => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;
 				if(maxAddress <= 0) {
-					return "(unavailable)";
+					MaxAddress = "(unavailable)";
 				} else {
-					return "(Max: $" + maxAddress.ToString("X4") + ")";
+					MaxAddress = "(Max: $" + maxAddress.ToString("X4") + ")";
 				}
-			}).ToPropertyEx(this, x => x.MaxAddress);
+			}));
 
-			this.WhenAnyValue(x => x.Breakpoint.Condition).Select(condition => {
+			AddDisposable(this.WhenAnyValue(x => x.Breakpoint.Condition).Subscribe(condition => {
 				if(!string.IsNullOrWhiteSpace(condition)) {
 					EvalResultType resultType;
 					DebugApi.EvaluateExpression(condition.Replace(Environment.NewLine, " "), Breakpoint.CpuType, out resultType, false);
 					if(resultType == EvalResultType.Invalid) {
-						return false;
+						IsConditionValid = false;
+						return;
 					}
 				}
-				return true;
-			}).ToPropertyEx(this, x => x.IsConditionValid);
+				IsConditionValid = true;
+			}));
 
-			this.WhenAnyValue(
-				x => x.Breakpoint.BreakOnExec,
-				x => x.Breakpoint.BreakOnRead,
-				x => x.Breakpoint.BreakOnWrite,
+			AddDisposable(this.WhenAnyValue(
+				x => x.Breakpoint.Type,
 				x => x.Breakpoint.MemoryType,
 				x => x.Breakpoint.StartAddress,
 				x => x.Breakpoint.EndAddress,
-				x => x.Breakpoint.Condition
-			).Select(x => {
-				if(Breakpoint.Type == BreakpointTypeFlags.None) {
-					return false;
-				}
+				x => x.IsConditionValid
+			).Subscribe(_ => {
+				bool enabled = true;
+				if(Breakpoint.Type == BreakpointTypeFlags.None || !IsConditionValid) {
+					enabled = false;
+				} else {
 
-				int maxAddress = DebugApi.GetMemorySize(Breakpoint.MemoryType) - 1;
-				if(Breakpoint.StartAddress > maxAddress || Breakpoint.EndAddress > maxAddress || Breakpoint.StartAddress > Breakpoint.EndAddress) {
-					return false;
+					int maxAddress = DebugApi.GetMemorySize(Breakpoint.MemoryType) - 1;
+					if(Breakpoint.StartAddress > maxAddress || Breakpoint.EndAddress > maxAddress || Breakpoint.StartAddress > Breakpoint.EndAddress) {
+						enabled = false;
+					}
 				}
-
-				if(!IsConditionValid) {
-					return false;
-				}
-
-				return true;
-			}).ToPropertyEx(this, x => x.OkEnabled);
+				OkEnabled = enabled;
+			}));
 		}
 	}
 }

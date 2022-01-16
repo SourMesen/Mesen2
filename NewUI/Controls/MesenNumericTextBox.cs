@@ -14,6 +14,7 @@ namespace Mesen.Controls
 
 		private static HexConverter _hexConverter = new HexConverter();
 
+		public static readonly StyledProperty<bool> TrimProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Trim));
 		public static readonly StyledProperty<bool> HexProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Hex));
 		public static readonly StyledProperty<IComparable> ValueProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable>(nameof(Value), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int?> MinProperty = AvaloniaProperty.Register<MesenNumericTextBox, int?>(nameof(Min), null);
@@ -23,6 +24,12 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(HexProperty); }
 			set { SetValue(HexProperty, value); }
+		}
+
+		public bool Trim
+		{
+			get { return GetValue(TrimProperty); }
+			set { SetValue(TrimProperty, value); }
 		}
 
 		public IComparable Value
@@ -52,6 +59,11 @@ namespace Mesen.Controls
 
 			MaxProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
 				x.MaxLength = x.GetMaxLength();
+			});
+
+			TextProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
+				x.UpdateValueFromText();
+				x.UpdateText();
 			});
 		}
 
@@ -85,8 +97,6 @@ namespace Mesen.Controls
 			}
 
 			base.OnTextInput(e);
-			UpdateValueFromText();
-			UpdateText();
 		}
 
 		private void UpdateValueFromText()
@@ -152,6 +162,14 @@ namespace Mesen.Controls
 			}
 
 			if(force || text?.Trim('0', ' ').ToLowerInvariant() != Text?.Trim('0', ' ').ToLowerInvariant()) {
+				if(Trim) {
+					text = text?.Trim('0', ' ');
+				}
+
+				if(text?.Length == 0) {
+					text = "0";
+				}
+				
 				Text = text;
 			}
 		}

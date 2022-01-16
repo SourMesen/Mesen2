@@ -35,15 +35,16 @@ namespace Mesen.Debugger.Windows
 		public static async void EditBreakpoint(Breakpoint bp, Control parent)
 		{
 			Breakpoint copy = bp.Clone();
-			BreakpointEditWindow wnd = new BreakpointEditWindow() {
-				DataContext = new BreakpointEditViewModel(copy)
-			};
+			BreakpointEditViewModel model = new BreakpointEditViewModel(copy);
+			BreakpointEditWindow wnd = new BreakpointEditWindow() { DataContext = model };
 
 			bool result = await wnd.ShowCenteredDialog<bool>(parent);
 			if(result) {
 				bp.CopyFrom(copy);
 				BreakpointManager.AddBreakpoint(bp);
 			}
+
+			model.Dispose();
 		}
 	}
 }

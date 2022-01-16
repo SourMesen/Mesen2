@@ -12,12 +12,13 @@ using Mesen.Debugger.Windows;
 using Avalonia.Controls;
 using System.Collections;
 using Mesen.ViewModels;
+using System.ComponentModel;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class BreakpointListViewModel : ViewModelBase
 	{
-		[Reactive] public List<Breakpoint> Breakpoints { get; private set; } = new List<Breakpoint>();
+		[Reactive] public List<BreakpointViewModel> Breakpoints { get; private set; } = new List<BreakpointViewModel>();
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
 
@@ -32,7 +33,14 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateBreakpoints()
 		{
-			Breakpoints = new List<Breakpoint>(BreakpointManager.Breakpoints);
+			Breakpoints = BreakpointManager.Breakpoints.Select(bp => new BreakpointViewModel(bp)).ToList();
+		}
+
+		public void RefreshBreakpointList()
+		{
+			foreach(BreakpointViewModel bp in Breakpoints) {
+				bp.Refresh();
+			}
 		}
 
 		public void InitContextMenu(Control parent, DataGrid grid)
@@ -87,6 +95,26 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			});
+		}
+
+		public class BreakpointViewModel : INotifyPropertyChanged
+		{
+			public Breakpoint Breakpoint { get; set; }
+			public string TypeDisplay => Breakpoint.ToReadableType();
+			public string AddressDisplay => Breakpoint.GetAddressString(true);
+
+			public event PropertyChangedEventHandler? PropertyChanged;
+
+			public void Refresh()
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TypeDisplay)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AddressDisplay)));
+			}
+
+			public BreakpointViewModel(Breakpoint bp)
+			{
+				Breakpoint = bp;
+			}
 		}
 	}
 }
