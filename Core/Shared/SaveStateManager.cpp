@@ -97,10 +97,7 @@ bool SaveStateManager::SaveState(string filepath)
 		_emu->Unlock();
 		file.close();
 
-		shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
-		if(debugger) {
-			debugger->ProcessEvent(EventType::StateSaved);
-		}
+		_emu->ProcessEvent(EventType::StateSaved);
 		return true;
 	}
 	return false;
@@ -230,10 +227,7 @@ bool SaveStateManager::LoadState(string filepath, bool hashCheckRequired)
 		file.close();
 
 		if(result) {
-			shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
-			if(debugger) {
-				debugger->ProcessEvent(EventType::StateLoaded);
-			}
+			_emu->ProcessEvent(EventType::StateLoaded);
 		}
 	} else {
 		MessageManager::DisplayMessage("SaveStates", "SaveStateEmpty");

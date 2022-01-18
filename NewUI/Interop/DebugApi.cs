@@ -266,7 +266,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropNesEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropGbEventViewerConfig config);
 		
-		[DllImport(DllPath)] public static extern void GetEventViewerEvent(CpuType cpuType, ref DebugEventInfo evtInfo, UInt16 scanline, UInt16 cycle);
+		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(CpuType cpuType, UInt16 scanline, UInt16 cycle);
 		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType);
 
 		[DllImport(DllPath)] public static extern FrameInfo GetEventViewerDisplaySize(CpuType cpuType);

@@ -30,7 +30,7 @@
 		</Style>
 	</Window.Styles>
 
-	<TabControl Items="{Binding ProfilerTabs}" SelectionChanged="OnTabSelected" Padding="1">
+	<TabControl Items="{CompiledBinding ProfilerTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
 		<TabControl.ItemTemplate>
 			<DataTemplate>
 				<TextBlock Text="{Binding TabName}" />

@@ -8,6 +8,8 @@ using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
+using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
 
@@ -18,6 +20,7 @@ namespace Mesen.Debugger.Windows
 		private static IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
 		private MesenTextEditor _hexView;
+		private AssemblerWindowViewModel _model;
 
 		static AssemblerWindow()
 		{
@@ -26,20 +29,39 @@ namespace Mesen.Debugger.Windows
 			_highlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
 		}
 
-		public AssemblerWindow()
+		[Obsolete("For designer only")]
+		public AssemblerWindow() : this(new()) { }
+
+		public AssemblerWindow(AssemblerWindowViewModel model)
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 
+			_model = model;
+			DataContext = model;
 			_textEditor = this.FindControl<MesenTextEditor>("Editor");
 			_hexView = this.FindControl<MesenTextEditor>("HexView");
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			_textEditor.TextChanged += textEditor_TextChanged;
 			_textEditor.TemplateApplied += textEditor_TemplateApplied;
 			_hexView.TemplateApplied += hexView_TemplateApplied;
 			
 			_textEditor.SyntaxHighlighting = _highlighting;
+
+			_model.Config.LoadWindowSettings(this);
+		}
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			_model.Config.SaveWindowSettings(this);
+			DataContext = null;
 		}
 
 		private void hexView_TemplateApplied(object? sender, Avalonia.Controls.Primitives.TemplateAppliedEventArgs e)
@@ -64,7 +86,7 @@ namespace Mesen.Debugger.Windows
 
 		private void textEditor_TextChanged(object? sender, System.EventArgs e)
 		{
-			((AssemblerWindowViewModel)DataContext!).Code = _textEditor.Text;
+			_model.Code = _textEditor.Text;
 		}
 
 		private void OnCellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)

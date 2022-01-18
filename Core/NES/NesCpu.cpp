@@ -293,7 +293,8 @@ uint16_t NesCpu::FetchOperand()
 
 	if(_console->GetNesConfig().BreakOnCrash) {
 		//When "Break on Crash" is enabled, open the debugger and break immediately if a crash occurs
-		_emu->GetDebugger(true)->BreakImmediately(BreakSource::BreakOnCpuCrash);
+		_emu->InitDebugger();
+		_emu->BreakIfDebugging(BreakSource::BreakOnCpuCrash);
 	}
 	
 	if(_console->GetRomFormat() == RomFormat::Nsf) {

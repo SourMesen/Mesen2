@@ -1,16 +1,11 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Media;
-using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
-using Mesen.Debugger.Controls;
-using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Text;
 
@@ -18,6 +13,8 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class AssemblerWindowViewModel : ViewModelBase
 	{
+		public AssemblerConfig Config { get; }
+
 		[Reactive] public string Code { get; set; } = "";
 		[Reactive] public string ByteCodeView { get; set; } = "";
 		[Reactive] public UInt32 StartAddress { get; set; }
@@ -28,11 +25,12 @@ namespace Mesen.Debugger.ViewModels
 
 		private CpuType _cpuType;
 
-		//For designer
+		[Obsolete("For designer only")]
 		public AssemblerWindowViewModel() : this(CpuType.Cpu, "") { }
 
-		public AssemblerWindowViewModel(CpuType cpuType, string code)
+		public AssemblerWindowViewModel(CpuType cpuType, string code = "")
 		{
+			Config = ConfigManager.Config.Debug.Assembler;
 			Code = code;
 			_cpuType = cpuType;
 

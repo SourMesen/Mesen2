@@ -14,12 +14,10 @@ using Mesen.ViewModels;
 
 namespace Mesen.Config
 {
-	public class TraceLoggerConfig : ViewModelBase
+	public class TraceLoggerConfig : BaseWindowConfig<TraceLoggerConfig>
 	{
 		//TODO
 		public bool AutoRefresh { get; set; } = true;
-		public Size WindowSize { get; set; } = new Size(0, 0);
-		public Point WindowLocation { get; set; } = new Point(0, 0);
 		public int TextZoom { get; set; } = 100;
 
 		public Dictionary<CpuType, TraceLoggerCpuConfig> CpuConfig { get; set; }

@@ -18,16 +18,16 @@ namespace Mesen.Debugger.Windows
 		private PaletteViewerViewModel _model;
 
 		[Obsolete("For designer only")]
-		public PaletteViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
+		public PaletteViewerWindow() : this(CpuType.Cpu) { }
 
-		public PaletteViewerWindow(CpuType cpuType, ConsoleType consoleType)
+		public PaletteViewerWindow(CpuType cpuType)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
 
-			_model = new PaletteViewerViewModel(cpuType, consoleType, this);
+			_model = new PaletteViewerViewModel(cpuType, this);
 			DataContext = _model;
 
 			_model.Config.LoadWindowSettings(this);
@@ -118,7 +118,7 @@ namespace Mesen.Debugger.Windows
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model.CpuType, _model.RefreshData);
+			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model, _model.RefreshData);
 		}
 	}
 }

@@ -54,32 +54,30 @@ namespace Mesen.Views
 		private void OnTileViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new TileViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
+			new TileViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
 		}
 
 		private void OnTilemapViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new TilemapViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
+			new TilemapViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
 		}
 
 		private void OnSpriteViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new SpriteViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
+			new SpriteViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
 		}
 
 		private void OnPaletteViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new PaletteViewerWindow(romInfo.ConsoleType.GetMainCpuType(), romInfo.ConsoleType).Show();
+			new PaletteViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
 		}
 
 		private void OnMemoryToolsClick(object sender, RoutedEventArgs e)
 		{
-			new MemoryToolsWindow {
-				DataContext = new MemoryToolsViewModel(),
-			}.Show();
+			new MemoryToolsWindow(new MemoryToolsViewModel()).Show();
 		}
 
 		private void OnDebuggerClick(object sender, RoutedEventArgs e)
@@ -92,37 +90,27 @@ namespace Mesen.Views
 		private void OnAssemblerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new AssemblerWindow {
-				DataContext = new AssemblerWindowViewModel(romInfo.ConsoleType.GetMainCpuType(), "")
-			}.Show();
+			new AssemblerWindow(new AssemblerWindowViewModel(romInfo.ConsoleType.GetMainCpuType())).Show();
 		}
 
 		private void OnScriptWindowClick(object sender, RoutedEventArgs e)
 		{
-			new ScriptWindow {
-				DataContext = new ScriptWindowViewModel()
-			}.Show();
+			new ScriptWindow(new ScriptWindowViewModel()).Show();
 		}
 
 		private void OnProfilerClick(object sender, RoutedEventArgs e)
 		{
-			new ProfilerWindow {
-				DataContext = new ProfilerWindowViewModel()
-			}.Show();
+			new ProfilerWindow(new ProfilerWindowViewModel()).Show();
 		}
 
 		private void OnRegisterViewerClick(object sender, RoutedEventArgs e)
 		{
-			new RegisterViewerWindow {
-				DataContext = new RegisterViewerWindowViewModel()
-			}.Show();
+			new RegisterViewerWindow(new RegisterViewerWindowViewModel()).Show();
 		}
 
 		private void OnTraceLoggerClick(object sender, RoutedEventArgs e)
 		{
-			new TraceLoggerWindow {
-				DataContext = new TraceLoggerViewModel()
-			}.Show();
+			new TraceLoggerWindow(new TraceLoggerViewModel()).Show();
 		}
 
 		private void OnEventViewerClick(object sender, RoutedEventArgs e)

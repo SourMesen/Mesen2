@@ -727,7 +727,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 				if(!_state.LcdEnabled) {
 					//Reset LCD to top of screen when it gets turned off
 					if(_state.Mode != PpuMode::VBlank) {
-						_emu->BreakImmediately(BreakSource::GbDisableLcdOutsideVblank);
+						_emu->BreakIfDebugging(BreakSource::GbDisableLcdOutsideVblank);
 						SendFrame();
 					}
 
@@ -820,7 +820,7 @@ uint8_t GbPpu::ReadVram(uint16_t addr)
 		_emu->ProcessPpuRead<CpuType::Gameboy>(vramAddr, _vram[vramAddr], SnesMemoryType::GbVideoRam);
 		return _vram[vramAddr];
 	} else {
-		_emu->BreakImmediately(BreakSource::GbInvalidVramAccess);
+		_emu->BreakIfDebugging(BreakSource::GbInvalidVramAccess);
 		return 0xFF;
 	}
 }
@@ -837,7 +837,7 @@ void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 		_emu->ProcessPpuWrite<CpuType::Gameboy>(vramAddr, value, SnesMemoryType::GbVideoRam);
 		_vram[vramAddr] = value;
 	} else {
-		_emu->BreakImmediately(BreakSource::GbInvalidVramAccess);
+		_emu->BreakIfDebugging(BreakSource::GbInvalidVramAccess);
 	}
 }
 
@@ -882,7 +882,7 @@ uint8_t GbPpu::ReadOam(uint8_t addr)
 			_emu->ProcessPpuRead<CpuType::Gameboy>(addr, _oam[addr], SnesMemoryType::GbSpriteRam);
 			return _oam[addr];
 		} else {
-			_emu->BreakImmediately(BreakSource::GbInvalidOamAccess);
+			_emu->BreakIfDebugging(BreakSource::GbInvalidOamAccess);
 			return 0xFF;
 		}
 	}
@@ -902,7 +902,7 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 			_oam[addr] = value;
 			_emu->ProcessPpuWrite<CpuType::Gameboy>(addr, value, SnesMemoryType::GbSpriteRam);
 		} else {
-			_emu->BreakImmediately(BreakSource::GbInvalidOamAccess);
+			_emu->BreakIfDebugging(BreakSource::GbInvalidOamAccess);
 		}
 	}
 }

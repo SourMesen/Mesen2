@@ -1,24 +1,16 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System.ComponentModel;
 using Avalonia.Interactivity;
-using System.Collections.Generic;
 using Mesen.Debugger.Utilities;
 using System.IO;
 using Mesen.Utilities;
-using Mesen.Localization;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
 using System.Linq;
@@ -31,21 +23,27 @@ namespace Mesen.Debugger.Windows
 		private HexEditor _editor;
 		private MemoryToolsViewModel _model;
 
-		public MemoryToolsWindow()
+		[Obsolete("For designer only")]
+		public MemoryToolsWindow() : this(new MemoryToolsViewModel()) { }
+
+		public MemoryToolsWindow(MemoryToolsViewModel model)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
 
+			_model = model;
+			DataContext = model;
+			_editor = this.FindControl<HexEditor>("Hex");
+			_listener = new NotificationListener();
+
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			_editor = this.FindControl<HexEditor>("Hex");
+			_model.Config.LoadWindowSettings(this);
 			_editor.ByteUpdated += editor_ByteUpdated;
-
-			_listener = new NotificationListener();
 			_listener.OnNotification += listener_OnNotification;
 		}
 
@@ -92,7 +90,6 @@ namespace Mesen.Debugger.Windows
 		{
 			if(this.DataContext is MemoryToolsViewModel model) {
 				_model = model;
-				_model.Config.LoadWindowSettings(this);
 			}
 		}
 
@@ -286,10 +283,23 @@ namespace Mesen.Debugger.Windows
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			if(e.NotificationType == ConsoleNotificationType.PpuFrameDone || e.NotificationType == ConsoleNotificationType.CodeBreak) {
-				Dispatcher.UIThread.Post(() => {
-					_editor.InvalidateVisual();
-				});
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.PpuFrameDone:
+				case ConsoleNotificationType.CodeBreak:
+					Dispatcher.UIThread.Post(() => {
+						_editor.InvalidateVisual();
+					});
+					break;
+
+				case ConsoleNotificationType.GameLoaded:
+					_model.UpdateAvailableMemoryTypes();
+					break;
+
+				case ConsoleNotificationType.EmulationStopped:
+					Dispatcher.UIThread.Post(() => {
+						Close();
+					});
+					break;
 			}
 		}
 	}

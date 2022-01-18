@@ -44,10 +44,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
-			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
-				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
-			}
+			UpdateAvailableMemoryTypes();
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectionStart, x => x.SelectionLength).Subscribe(((int start, int length) o) => {
 				if(o.length <= 1) {
@@ -65,6 +62,14 @@ namespace Mesen.Debugger.ViewModels
 				x => x.Config.MemoryType,
 				x => x.Config.BytesPerRow
 			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue));
+		}
+
+		public void UpdateAvailableMemoryTypes()
+		{
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
+				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
+			}
 		}
 
 		internal void SaveConfig()

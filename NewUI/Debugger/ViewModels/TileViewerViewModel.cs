@@ -19,10 +19,9 @@ using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TileViewerViewModel : DisposableViewModel
+	public class TileViewerViewModel : DisposableViewModel, ICpuTypeModel
 	{
-		public CpuType CpuType { get; }
-		public ConsoleType ConsoleType { get; }
+		[Reactive] public CpuType CpuType { get; set; }
 
 		public TileViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
@@ -46,14 +45,13 @@ namespace Mesen.Debugger.ViewModels
 		private byte[] _sourceData = Array.Empty<byte>();
 
 		[Obsolete("For designer only")]
-		public TileViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), null) { }
+		public TileViewerViewModel() : this(CpuType.Cpu, new PictureViewer(), null) { }
 
-		public TileViewerViewModel(CpuType cpuType, ConsoleType consoleType, PictureViewer picViewer, Window? wnd)
+		public TileViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TileViewer;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
-			ConsoleType = consoleType;
 
 			InitBitmap();
 
@@ -101,22 +99,12 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
-			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
-			if(!AvailableMemoryTypes.Contains(Config.Source)) {
-				Config.Source = cpuType.GetVramMemoryType();
-			}
+			InitForCpuType();
 
-			AvailableFormats = cpuType switch {
-				CpuType.Cpu => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor },
-				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
-				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
-				_ => throw new Exception("Unsupported CPU type")
-			};
-
-			if(AvailableFormats.Contains(Config.Format)) {
-				Config.Format = (TileFormat)AvailableFormats[0];
-			}
-			ShowFormatDropdown = AvailableFormats.Length > 1;
+			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
+				InitForCpuType();
+				RefreshData();
+			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
 				PaletteSelectionMode = x switch {
@@ -144,8 +132,28 @@ namespace Mesen.Debugger.ViewModels
 				MaximumAddress = DebugApi.GetMemorySize(memType) - 1;
 				RefreshData();
 			}));
-			
+
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
+		}
+
+		private void InitForCpuType()
+		{
+			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(!AvailableMemoryTypes.Contains(Config.Source)) {
+				Config.Source = CpuType.GetVramMemoryType();
+			}
+
+			AvailableFormats = CpuType switch {
+				CpuType.Cpu => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor },
+				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
+				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
+				_ => throw new Exception("Unsupported CPU type")
+			};
+
+			if(AvailableFormats.Contains(Config.Format)) {
+				Config.Format = (TileFormat)AvailableFormats[0];
+			}
+			ShowFormatDropdown = AvailableFormats.Length > 1;
 		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)

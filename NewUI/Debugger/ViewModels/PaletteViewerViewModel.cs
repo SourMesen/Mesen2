@@ -15,10 +15,9 @@ using System.Runtime.InteropServices;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class PaletteViewerViewModel : DisposableViewModel
+	public class PaletteViewerViewModel : DisposableViewModel, ICpuTypeModel
 	{
-		public CpuType CpuType { get; }
-		public ConsoleType ConsoleType { get; }
+		[Reactive] public CpuType CpuType { get; set; }
 
 		public PaletteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
@@ -39,15 +38,14 @@ namespace Mesen.Debugger.ViewModels
 		private DebugPaletteInfo? _palette;
 
 		[Obsolete("For designer only")]
-		public PaletteViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, null) { }
+		public PaletteViewerViewModel() : this(CpuType.Cpu, null) { }
 
-		public PaletteViewerViewModel(CpuType cpuType, ConsoleType consoleType, Window? wnd)
+		public PaletteViewerViewModel(CpuType cpuType, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.PaletteViewer;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
-			ConsoleType = consoleType;
-
+			
 			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
@@ -89,6 +87,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
+			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => RefreshData()));
 			AddDisposable(this.WhenAnyValue(x => x.Config.Zoom).Subscribe(x => BlockSize = x * 16));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedPalette).Subscribe(x => UpdatePreviewPanel()));
 

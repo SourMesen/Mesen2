@@ -1,18 +1,12 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.LogicalTree;
+﻿using Avalonia.Controls;
 using Avalonia.Media;
-using Mesen.Debugger.Controls;
-using Mesen.Debugger.Labels;
+using Mesen.Config;
 using Mesen.Interop;
-using Mesen.Localization;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using static Mesen.Debugger.ViewModels.RegEntry;
 
 namespace Mesen.Debugger.ViewModels
@@ -20,11 +14,14 @@ namespace Mesen.Debugger.ViewModels
 	public class RegisterViewerWindowViewModel : ViewModelBase
 	{
 		[Reactive] public List<RegisterViewerTab> Tabs { get; set; } = new List<RegisterViewerTab>();
+		public RegisterViewerConfig Config { get; }
 
 		private RomInfo _romInfo = new RomInfo();
 
 		public RegisterViewerWindowViewModel()
 		{
+			Config = ConfigManager.Config.Debug.RegisterViewer;
+
 			if(Design.IsDesignMode) {
 				return;
 			}

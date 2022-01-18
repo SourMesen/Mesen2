@@ -19,6 +19,10 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	NesPpuState& state = (NesPpuState&)baseState;
 	uint16_t bgAddr = state.Control.BackgroundPatternAddr;
 
+	for(int i = 0; i < 32; i+=4) {
+		palette[i] = palette[0];
+	}
+
 	uint8_t* prevVram = options.CompareVram != nullptr ? options.CompareVram : vram;
 	constexpr uint32_t grayscalePalette[4] = { 0xFF000000, 0xFF808080, 0xFFC0C0C0, 0xFFFFFFFF };
 	for(int nametableIndex = 0; nametableIndex < 4; nametableIndex++) {
@@ -47,7 +51,7 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 					for(uint8_t y = 0; y < 8; y++) {
 						for(uint8_t x = 0; x < 8; x++) {
 							uint8_t color = ((x & 0x04) >> 2) + ((y & 0x04) >> 1);
-							outBuffer[bufferOffset + (row << 12) + (column << 3) + (y << 9) + x] = palette[color == 0 ? 0 : (paletteBaseAddr + color)];
+							outBuffer[bufferOffset + (row << 12) + (column << 3) + (y << 9) + x] = palette[paletteBaseAddr + color];
 						}
 					}
 				} else {
@@ -61,19 +65,19 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 							highByte = vram[tileAddr + y + 8];
 						}
 
+						uint32_t offset = bufferOffset + (row << 12) + (column << 3) + (y << 9);
 						for(uint8_t x = 0; x < 8; x++) {
 							uint8_t color = ((lowByte >> (7 - x)) & 0x01) | (((highByte >> (7 - x)) & 0x01) << 1);
-							uint32_t offset = bufferOffset + (row << 12) + (column << 3) + (y << 9) + x;
 							if(options.DisplayMode == TilemapDisplayMode::Grayscale) {
-								outBuffer[offset] = grayscalePalette[color];
+								outBuffer[offset+x] = grayscalePalette[color];
 							} else {
-								outBuffer[offset] = palette[color == 0 ? 0 : (paletteBaseAddr + color)];
+								outBuffer[offset+x] = palette[paletteBaseAddr + color];
 								if(tileChanged) {
 									uint32_t tileChangedColor = 0x80FF0000;
-									BlendColors((uint8_t*)&outBuffer[offset], (uint8_t*)&tileChangedColor);
+									BlendColors((uint8_t*)&outBuffer[offset+x], (uint8_t*)&tileChangedColor);
 								} else if(attrChanged) {
 									uint32_t attrChangedColor = 0x80FFFF00;
-									BlendColors((uint8_t*)&outBuffer[offset], (uint8_t*)&attrChangedColor);
+									BlendColors((uint8_t*)&outBuffer[offset+x], (uint8_t*)&attrChangedColor);
 								}
 							}
 						}

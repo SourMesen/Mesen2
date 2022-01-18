@@ -17,9 +17,9 @@ namespace Mesen.Debugger.Windows
 		private TileViewerViewModel _model;
 
 		[Obsolete("For designer only")]
-		public TileViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
+		public TileViewerWindow() : this(CpuType.Cpu) { }
 
-		public TileViewerWindow(CpuType cpuType, ConsoleType consoleType)
+		public TileViewerWindow(CpuType cpuType)
 		{
 			InitializeComponent();
 #if DEBUG
@@ -27,7 +27,7 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			PictureViewer picViewer = this.FindControl<PictureViewer>("picViewer");
-			_model = new TileViewerViewModel(cpuType, consoleType, picViewer, this);
+			_model = new TileViewerViewModel(cpuType, picViewer, this);
 			DataContext = _model;
 
 			_model.Config.LoadWindowSettings(this);
@@ -74,7 +74,7 @@ namespace Mesen.Debugger.Windows
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model.CpuType, _model.RefreshData);
+			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model, _model.RefreshData);
 		}
 	}
 }

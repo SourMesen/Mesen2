@@ -1,7 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.LogicalTree;
-using Mesen.Debugger.Controls;
+﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -11,16 +9,20 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class ProfilerWindowViewModel : ViewModelBase
 	{
 		[Reactive] public List<ProfilerTab> ProfilerTabs { get; set; } = new List<ProfilerTab>();
+		[Reactive] public ProfilerTab SelectedTab { get; set; } = null!;
+
+		public ProfilerConfig Config { get; }
 
 		public ProfilerWindowViewModel()
 		{
+			Config = ConfigManager.Config.Debug.Profiler;
+
 			if(Design.IsDesignMode) {
 				return;
 			}
@@ -39,6 +41,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			ProfilerTabs = tabs;
+			SelectedTab = tabs[0];
 		}
 	}
 
@@ -91,6 +94,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateRow(int index, ProfiledFunctionViewModel row)
 		{
+			if(index >= _profilerData.Length) {
+				return;
+			}
+
 			ProfiledFunction func = _profilerData[index];
 
 			row.FunctionName = GetFunctionName(func);

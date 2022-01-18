@@ -84,6 +84,9 @@ private:
 	atomic<bool> _pauseOnNextFrame;
 	atomic<bool> _threadPaused;
 
+	atomic<int> _debugRequestCount;
+	atomic<bool> _allowDebuggerRequest;
+
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;
 
@@ -102,7 +105,39 @@ private:
 	bool ProcessSystemActions();
 	void RunFrameWithRunAhead();
 
+	void BlockDebuggerRequests();
+
 public:
+	class DebuggerRequest
+	{
+	private:
+		shared_ptr<Debugger> _debugger;
+		Emulator* _emu = nullptr;
+
+	public:
+		DebuggerRequest(Emulator* emu)
+		{
+			if(emu) {
+				_emu = emu;
+				_debugger = _emu->_debugger;
+				_emu->_debugRequestCount++;
+			}
+		}
+
+		~DebuggerRequest()
+		{
+			if(_emu) {
+				_emu->_debugRequestCount--;
+			}
+		}
+
+		Debugger* GetDebugger()
+		{
+			return _debugger.get();
+		}
+	};
+
+
 	Emulator();
 	~Emulator();
 
@@ -164,8 +199,9 @@ public:
 	
 	BaseVideoFilter* GetVideoFilter();
 
-	shared_ptr<Debugger> GetDebugger(bool autoStart = true);
+	void InitDebugger();
 	void StopDebugger();
+	DebuggerRequest GetDebugger(bool autoInit = false);
 	bool IsDebugging();
 
 	thread::id GetEmulationThreadId();
@@ -230,7 +266,7 @@ public:
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 	template<CpuType cpuType> void AddDebugEvent(DebugEventType evtType);
-	void BreakImmediately(BreakSource source);
+	void BreakIfDebugging(BreakSource source);
 };
 
 enum class HashType

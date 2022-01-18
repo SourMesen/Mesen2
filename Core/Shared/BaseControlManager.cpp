@@ -129,10 +129,7 @@ void BaseControlManager::UpdateInputState()
 		//log += "|" + device->GetTextState();
 	}
 
-	shared_ptr<Debugger> debugger = _emu->GetDebugger(false);
-	if(debugger) {
-		debugger->ProcessEvent(EventType::InputPolled);
-	}
+	_emu->ProcessEvent(EventType::InputPolled);
 
 	if(!_emu->IsRunAheadFrame()) {
 		for(IInputRecorder* recorder : _inputRecorders) {

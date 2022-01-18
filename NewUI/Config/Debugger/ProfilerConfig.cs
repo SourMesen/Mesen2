@@ -1,10 +1,6 @@
-﻿using Avalonia;
-
-namespace Mesen.Config
+﻿namespace Mesen.Config
 {
-	public class ProfilerConfig
+	public class ProfilerConfig : BaseWindowConfig<ProfilerConfig>
 	{
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
 	}
 }

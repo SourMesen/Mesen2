@@ -53,6 +53,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public DebuggerWindowViewModel(CpuType? cpuType)
 		{
+			if(!Design.IsDesignMode) {
+				DebugApi.InitializeDebugger();
+			}
+
 			if(Design.IsDesignMode) {
 				CpuType = CpuType.Cpu;
 			} else if(cpuType != null) {

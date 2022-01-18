@@ -11,32 +11,35 @@ namespace Mesen.Debugger.Windows
 {
 	public class RegisterViewerWindow : Window
 	{
-		private NotificationListener? _listener = null;
-		private RegisterViewerWindowViewModel Model => ((RegisterViewerWindowViewModel)DataContext!);
+		private NotificationListener _listener;
+		private RegisterViewerWindowViewModel _model;
 
-		public RegisterViewerWindow()
+		[Obsolete("For designer only")]
+		public RegisterViewerWindow() : this(new()) { }
+
+		public RegisterViewerWindow(RegisterViewerWindowViewModel model)
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
-		}
 
-		protected override void OnOpened(EventArgs e)
-		{
-			base.OnOpened(e);
+			_model = model;
+			DataContext = model;
+			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			_listener = new NotificationListener();
+			_model.Config.LoadWindowSettings(this);
 			_listener.OnNotification += listener_OnNotification;
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
+			_model.Config.SaveWindowSettings(this);
 			_listener?.Dispose();
 			DataContext = null;
 		}
@@ -44,14 +47,18 @@ namespace Mesen.Debugger.Windows
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.EmulationStopped:
+					Dispatcher.UIThread.Post(() => Close());
+					break;
+
 				case ConsoleNotificationType.GameLoaded:
-					Model.UpdateAvailableTabs(true);
+					_model.UpdateAvailableTabs(true);
 					break;
 
 				case ConsoleNotificationType.CodeBreak:
 				case ConsoleNotificationType.PpuFrameDone:
 					Dispatcher.UIThread.Post(() => {
-						Model.UpdateAvailableTabs(false);
+						_model.UpdateAvailableTabs(false);
 					});
 					break;
 			}

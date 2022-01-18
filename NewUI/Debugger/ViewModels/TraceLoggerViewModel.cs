@@ -5,6 +5,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Interop;
 using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,11 +15,12 @@ using System.Text;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TraceLoggerViewModel : ViewModelBase
+	public class TraceLoggerViewModel : DisposableViewModel
 	{
 		public const int TraceLogBufferSize = 30000;
 
-		[Reactive] public TraceLoggerCodeDataProvider? DataProvider { get; set; }
+		public TraceLoggerConfig Config { get; }
+		[Reactive] public TraceLoggerCodeDataProvider DataProvider { get; set; }
 		[Reactive] public TraceLoggerStyleProvider StyleProvider { get; set; } = new TraceLoggerStyleProvider();
 		[Reactive] public CodeLineData[] TraceLogLines { get; set; } = Array.Empty<CodeLineData>();
 		[Reactive] public int VisibleRowCount { get; set; } = 100;
@@ -30,20 +32,26 @@ namespace Mesen.Debugger.ViewModels
 
 		public TraceLoggerViewModel()
 		{
+			Config = ConfigManager.Config.Debug.TraceLogger;
+			DataProvider = new TraceLoggerCodeDataProvider();
+
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			DataProvider = new TraceLoggerCodeDataProvider();
 			UpdateAvailableTabs();
+			UpdateCoreOptions();
 
-			this.WhenAnyValue(x => x.ScrollPosition).Subscribe(x => {
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => UpdateCoreOptions()));
+
+			AddDisposable(this.WhenAnyValue(x => x.ScrollPosition).Subscribe(x => {
 				ScrollPosition = Math.Max(0, Math.Min(x, MaxScrollPosition));
 				UpdateTraceLogLines();
-			});
-			this.WhenAnyValue(x => x.MaxScrollPosition).Subscribe(x => {
+			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.MaxScrollPosition).Subscribe(x => {
 				ScrollPosition = Math.Min(ScrollPosition, MaxScrollPosition);
-			});
+			}));
 		}
 
 		public void UpdateAvailableTabs()
@@ -57,7 +65,7 @@ namespace Mesen.Debugger.ViewModels
 				tabs.Add(new TraceLoggerOptionTab() {
 					TabName = ResourceHelper.GetEnumText(type),
 					CpuType = type,
-					Options = ConfigManager.Config.Debug.TraceLogger.CpuConfig[type].Clone()
+					Options = Config.CpuConfig[type].Clone()
 				});
 			}
 
@@ -66,14 +74,13 @@ namespace Mesen.Debugger.ViewModels
 
 		public void SaveConfig()
 		{
-			TraceLoggerConfig cfg = ConfigManager.Config.Debug.TraceLogger;
 			foreach(TraceLoggerOptionTab tab in Tabs) {
-				cfg.CpuConfig[tab.CpuType] = tab.Options;
+				Config.CpuConfig[tab.CpuType] = tab.Options;
 			}
 			ConfigManager.Config.Save();
 		}
 
-		public void UpdateLog()
+		private void UpdateCoreOptions()
 		{
 			foreach(TraceLoggerOptionTab tab in Tabs) {
 				InteropTraceLoggerOptions options = new InteropTraceLoggerOptions() {
@@ -88,16 +95,16 @@ namespace Mesen.Debugger.ViewModels
 
 				DebugApi.SetTraceOptions(tab.CpuType, options);
 			}
+		}
 
+		public void UpdateLog()
+		{
 			UpdateTraceLogLines();
-			ScrollToBottom();
 		}
 
 		private void UpdateTraceLogLines()
 		{
-			if(DataProvider != null) {
-				TraceLogLines = DataProvider.GetCodeLines(ScrollPosition, VisibleRowCount);
-			}
+			TraceLogLines = DataProvider.GetCodeLines(ScrollPosition, VisibleRowCount);
 		}
 
 		public void Scroll(int offset)

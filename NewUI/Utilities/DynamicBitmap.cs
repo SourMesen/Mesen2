@@ -11,7 +11,7 @@ namespace Mesen.Utilities
 		public event EventHandler? Invalidated;
 
 		public DynamicBitmap(PixelSize size, Vector dpi, PixelFormat format, AlphaFormat alphaFormat)
-			: base(size, dpi, format, alphaFormat)
+			: base(size.Width == 0 && size.Height == 0 ? new PixelSize(100, 100) : size, dpi, format, alphaFormat)
 		{
 		}
 

@@ -23,7 +23,7 @@ namespace Mesen.Debugger.Windows
 		private static IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
 		private DispatcherTimer _timer;
-		private ScriptWindowViewModel? _model;
+		private ScriptWindowViewModel _model;
 
 		static ScriptWindow()
 		{
@@ -32,16 +32,28 @@ namespace Mesen.Debugger.Windows
 			_highlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
 		}
 
-		public ScriptWindow()
+		[Obsolete("For designer only")]
+		public ScriptWindow() : this(new()) { }
+
+		public ScriptWindow(ScriptWindowViewModel model)
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 
+			_model = model;
 			_textEditor = this.FindControl<MesenTextEditor>("Editor");
-			_textEditor.SyntaxHighlighting = _highlighting;
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateLog());
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			_model.InitActions(this);
+			_model.Config.LoadWindowSettings(this);
+
+			_textEditor.SyntaxHighlighting = _highlighting;
 		}
 
 		protected override void OnOpened(EventArgs e)
@@ -62,23 +74,14 @@ namespace Mesen.Debugger.Windows
 			}
 
 			_timer.Stop();
-			_model?.Config.SaveWindowSettings(this);
+			_model.Config.SaveWindowSettings(this);
 			ConfigManager.Config.Save();
 			DataContext = null;
 		}
 
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(DataContext is ScriptWindowViewModel model) {
-				_model = model;
-				_model.InitActions(this);
-				_model.Config.LoadWindowSettings(this);
-			}
-		}
-
 		private void UpdateLog()
 		{
-			if(_model?.ScriptId >= 0) {
+			if(_model.ScriptId >= 0) {
 				_model.Log = DebugApi.GetScriptLog(_model.ScriptId);
 			}
 		}

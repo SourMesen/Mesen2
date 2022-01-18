@@ -26,21 +26,22 @@ namespace Mesen.Debugger.ViewModels
 	{
 		public const int HdmaChannelFlag = 0x40;
 
+		[Reactive] public CpuType CpuType { get; set; }
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 		[Reactive] public EventViewerTab SelectedTab { get; set; }
 		
 		[Reactive] public AvaloniaList<DebugEventViewModel> DebugEvents { get; private set; } = new();
+		[Reactive] public ViewModelBase ConsoleConfig { get; set; }
+		
 		private DebugEventInfo[] _debugEvents = new DebugEventInfo[0];
 
-		public CpuType CpuType { get; }
 		public EventViewerConfig Config { get; }
-		public ViewModelBase ConsoleConfig { get; set; }
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
 		private PictureViewer _picViewer;
 
-		//For designer
+		[Obsolete("For designer only")]
 		public EventViewerViewModel() : this(CpuType.Nes, new PictureViewer(), null) { }
 
 		public EventViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
@@ -49,13 +50,7 @@ namespace Mesen.Debugger.ViewModels
 			_picViewer = picViewer;
 			Config = ConfigManager.Config.Debug.EventViewer;
 			InitBitmap(new FrameInfo() { Width = 1, Height = 1 });
-
-			ConsoleConfig = cpuType switch {
-				CpuType.Cpu => Config.SnesConfig,
-				CpuType.Nes => Config.NesConfig,
-				CpuType.Gameboy => Config.GbConfig,
-				_ => throw new Exception("Invalid cpu type")
-			};
+			InitForCpuType();
 
 			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
@@ -98,9 +93,25 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
+				InitForCpuType();
+				RefreshData(true);
+			}));
+
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(true)));
 
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		[MemberNotNull(nameof(EventViewerViewModel.ConsoleConfig))]
+		private void InitForCpuType()
+		{
+			ConsoleConfig = CpuType switch {
+				CpuType.Cpu => Config.SnesConfig,
+				CpuType.Nes => Config.NesConfig,
+				CpuType.Gameboy => Config.GbConfig,
+				_ => throw new Exception("Invalid cpu type")
+			};
 		}
 
 		public void SaveConfig()

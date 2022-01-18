@@ -21,12 +21,12 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class SpriteViewerViewModel : DisposableViewModel
+	public class SpriteViewerViewModel : DisposableViewModel, ICpuTypeModel
 	{
 		public SpriteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
-		public CpuType CpuType { get; }
-		public ConsoleType ConsoleType { get; }
+		
+		[Reactive] public CpuType CpuType { get; set; }
 
 		[Reactive] public SpritePreviewModel? SelectedSprite { get; set; }
 		[Reactive] public DynamicTooltip? SelectedPreviewPanel { get; set; }
@@ -61,9 +61,9 @@ namespace Mesen.Debugger.ViewModels
 		private DebugPaletteInfo _palette = new();
 
 		[Obsolete("For designer only")]
-		public SpriteViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), new Grid(), null) { }
+		public SpriteViewerViewModel() : this(CpuType.Cpu, new PictureViewer(), new Grid(), null) { }
 
-		public SpriteViewerViewModel(CpuType cpuType, ConsoleType consoleType, PictureViewer picViewer, Grid spriteGrid, Window? wnd)
+		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, Grid spriteGrid, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.SpriteViewer;
 
@@ -72,7 +72,6 @@ namespace Mesen.Debugger.ViewModels
 
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
-			ConsoleType = consoleType;
 			_spriteGrid = spriteGrid;
 
 			InitBitmap(256, 256);
@@ -117,6 +116,10 @@ namespace Mesen.Debugger.ViewModels
 			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
+
+			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
+				RefreshData();
+			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview()));
 			AddDisposable(this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect()));
@@ -218,6 +221,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			double dpiScale = LayoutHelper.GetLayoutScale(_spriteGrid);
 			if(_spriteGrid.Children.Count != spriteCount) {
+				_spriteGrid.Children.Clear();
 				_spriteGrid.ColumnDefinitions.Clear();
 				_spriteGrid.RowDefinitions.Clear();
 				for(int i = 0; i < 8; i++) {

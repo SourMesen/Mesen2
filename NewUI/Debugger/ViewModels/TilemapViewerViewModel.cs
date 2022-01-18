@@ -18,9 +18,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TilemapViewerViewModel : DisposableViewModel
+	public class TilemapViewerViewModel : DisposableViewModel, ICpuTypeModel
 	{
-		public CpuType CpuType { get; }
+		[Reactive] public CpuType CpuType { get; set; }
 		public ConsoleType ConsoleType { get; }
 
 		public TilemapViewerConfig Config { get; }
@@ -52,41 +52,17 @@ namespace Mesen.Debugger.ViewModels
 		private DebugPaletteInfo _palette = new();
 
 		[Obsolete("For designer only")]
-		public TilemapViewerViewModel() : this(CpuType.Cpu, ConsoleType.Snes, new PictureViewer(), null) { }
+		public TilemapViewerViewModel() : this(CpuType.Cpu, new PictureViewer(), null) { }
 
-		public TilemapViewerViewModel(CpuType cpuType, ConsoleType consoleType, PictureViewer picViewer, Window? wnd)
+		public TilemapViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TilemapViewer;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 
 			CpuType = cpuType;
-			ConsoleType = consoleType;
 
 			_picViewer = picViewer;
-
-			switch(CpuType) {
-				case CpuType.Cpu: 
-					Tabs = new List<TilemapViewerTab>() {
-						new() { Title = "Layer 1", Layer = 0 },
-						new() { Title = "Layer 2", Layer = 1 },
-						new() { Title = "Layer 3", Layer = 2 },
-						new() { Title = "Layer 4", Layer = 3 },
-					};
-					break;
-
-				case CpuType.Nes:
-					Tabs = new List<TilemapViewerTab>() {
-						new() { Title = "", Layer = 0 }
-					};
-					break;
-
-				case CpuType.Gameboy:
-					Tabs = new List<TilemapViewerTab>() {
-						new() { Title = "Layer 1", Layer = 0 },
-						new() { Title = "Layer 2", Layer = 1 }
-					};
-					break;
-			}
+			InitForCpuType();
 
 			SelectedTab = Tabs[0];
 
@@ -133,6 +109,11 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
+				InitForCpuType();
+				RefreshData();
+			}));
+
 			AddDisposable(this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab()));
 			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
@@ -140,6 +121,33 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private void InitForCpuType()
+		{
+			switch(CpuType) {
+				case CpuType.Cpu:
+					Tabs = new List<TilemapViewerTab>() {
+						new() { Title = "Layer 1", Layer = 0 },
+						new() { Title = "Layer 2", Layer = 1 },
+						new() { Title = "Layer 3", Layer = 2 },
+						new() { Title = "Layer 4", Layer = 3 },
+					};
+					break;
+
+				case CpuType.Nes:
+					Tabs = new List<TilemapViewerTab>() {
+						new() { Title = "", Layer = 0 }
+					};
+					break;
+
+				case CpuType.Gameboy:
+					Tabs = new List<TilemapViewerTab>() {
+						new() { Title = "Layer 1", Layer = 0 },
+						new() { Title = "Layer 2", Layer = 1 }
+					};
+					break;
+			}
 		}
 
 		private void UpdatePreviewPanel()

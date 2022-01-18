@@ -49,6 +49,9 @@ Emulator::Emulator()
 	_isRunAheadFrame = false;
 	_lockCounter = 0;
 	_threadPaused = false;
+	
+	_debugRequestCount = 0;
+	_allowDebuggerRequest = true;
 }
 
 Emulator::~Emulator()
@@ -257,6 +260,8 @@ void Emulator::RunSingleFrame()
 
 void Emulator::Stop(bool sendNotification)
 {
+	BlockDebuggerRequests();
+
 	_stopFlag = true;
 
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameUnload);
@@ -337,6 +342,15 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		return false;
 	}
 
+	_debuggerLock.Acquire();
+	BlockDebuggerRequests();
+
+	//Keep a reference to the original debugger, and reset the member to avoid any calls to the debugger by the init process
+	bool debuggerActive = _debugger != nullptr;
+	shared_ptr<Debugger> debugger = _debugger;
+	_debugger.reset();
+	_debuggerLock.Release();
+
 	if(patchFile.IsValid()) {
 		if(romFile.ApplyPatch(patchFile)) {
 			MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
@@ -386,10 +400,16 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	if(result != LoadRomResult::Success) {
 		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
+		_debugger = debugger;
+		_allowDebuggerRequest = true;
 		return false;
 	}
 
-	bool debuggerActive = _debugger != nullptr;
+	//Cleanup debugger instance if one was active
+	if(debugger) {
+		debugger->Release();
+		debugger.reset();
+	}
 
 	if(stopRom) {
 		Stop(false);
@@ -415,13 +435,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_cheatManager->ClearCheats(false);
 
-	auto debuggerLock = _debuggerLock.AcquireSafe();
-	if(_debugger) {
-		//Reset debugger if it was running before
-		_debugger->Release();
-		_debugger.reset();
-	}
-
 	//TODO
 	//UpdateRegion();
 
@@ -429,7 +442,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	console->Init();
 
 	if(debuggerActive) {
-		GetDebugger();
+		InitDebugger();
 	}
 
 	_rewindManager.reset(new RewindManager(shared_from_this()));
@@ -440,6 +453,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	GetControlManager()->UpdateInputState();
 	//UpdateRegion();
 
+	_allowDebuggerRequest = true;
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
 
 	_paused = false;
@@ -457,7 +471,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
-		
+
 	return true;
 }
 
@@ -811,10 +825,34 @@ BaseVideoFilter* Emulator::GetVideoFilter()
 	}
 }
 
-shared_ptr<Debugger> Emulator::GetDebugger(bool autoStart)
+void Emulator::BlockDebuggerRequests()
+{
+	//Block all new debugger calls
+	_allowDebuggerRequest = false;
+	while(_debugRequestCount > 0) {
+		//Wait until debugger calls are all done
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+	}
+}
+
+Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
+{
+	if(IsRunning() && _allowDebuggerRequest) {
+		auto lock = _debuggerLock.AcquireSafe();
+		if(IsRunning() && _allowDebuggerRequest) {
+			if(!_debugger && autoInit) {
+				InitDebugger();
+			}
+			return DebuggerRequest(this);
+		}
+	}
+	return DebuggerRequest(nullptr);
+}
+
+void Emulator::InitDebugger()
 {
 	shared_ptr<Debugger> debugger = _debugger;
-	if(!debugger && autoStart) {
+	if(!debugger) {
 		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
 		auto lock = _debuggerLock.AcquireSafe();
 		debugger = _debugger;
@@ -823,7 +861,6 @@ shared_ptr<Debugger> Emulator::GetDebugger(bool autoStart)
 			_debugger = debugger;
 		}
 	}
-	return debugger;
 }
 
 void Emulator::StopDebugger()
@@ -913,7 +950,7 @@ void Emulator::AddDebugEvent(DebugEventType evtType)
 	}
 }
 
-void Emulator::BreakImmediately(BreakSource source)
+void Emulator::BreakIfDebugging(BreakSource source)
 {
 	if(_debugger) {
 		_debugger->BreakImmediately(source);

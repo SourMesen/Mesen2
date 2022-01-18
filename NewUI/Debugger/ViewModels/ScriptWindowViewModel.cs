@@ -63,7 +63,7 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.NewScript,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_NewScript),
 					OnClick = () => {
-						new ScriptWindow { DataContext = new ScriptWindowViewModel() }.Show();
+						new ScriptWindow(new ScriptWindowViewModel()).Show();
 					}
 				},
 				new ContextMenuAction() {

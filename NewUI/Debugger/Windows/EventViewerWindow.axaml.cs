@@ -12,6 +12,8 @@ using Mesen.Localization;
 using Mesen.Debugger.Labels;
 using Avalonia.Interactivity;
 using Mesen.Utilities;
+using System.Linq;
+using Avalonia.Threading;
 
 namespace Mesen.Debugger.Windows
 {
@@ -28,7 +30,7 @@ namespace Mesen.Debugger.Windows
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 
 			PictureViewer viewer = this.FindControl<PictureViewer>("picViewer");
@@ -116,7 +118,7 @@ namespace Mesen.Debugger.Windows
 
 				DebugEventInfo evt = new DebugEventInfo();
 				if(point != null) {
-					DebugApi.GetEventViewerEvent(_model.CpuType, ref evt, (ushort)point.Value.Y, (ushort)point.Value.X);
+					evt = DebugApi.GetEventViewerEvent(_model.CpuType, (ushort)point.Value.Y, (ushort)point.Value.X);
 				}
 
 				if(point != null && evt.ProgramCounter != UInt32.MaxValue) {
@@ -168,6 +170,16 @@ namespace Mesen.Debugger.Windows
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
+						_model.CpuType = EmuApi.GetRomInfo().CpuTypes.First();
+					}
+					break;
+
+				case ConsoleNotificationType.EmulationStopped:
+					Dispatcher.UIThread.Post(() => Close());
+					break;
+
 				case ConsoleNotificationType.EventViewerRefresh:
 					if(_model.Config.AutoRefresh) {
 						_model.RefreshData(false);

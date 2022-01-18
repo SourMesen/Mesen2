@@ -18,9 +18,9 @@ namespace Mesen.Debugger.Windows
 		private SpriteViewerViewModel _model;
 
 		[Obsolete("For designer only")]
-		public SpriteViewerWindow() : this(CpuType.Cpu, ConsoleType.Snes) { }
+		public SpriteViewerWindow() : this(CpuType.Cpu) { }
 
-		public SpriteViewerWindow(CpuType cpuType, ConsoleType consoleType)
+		public SpriteViewerWindow(CpuType cpuType)
 		{
 			InitializeComponent();
 #if DEBUG
@@ -29,7 +29,7 @@ namespace Mesen.Debugger.Windows
 
 			PictureViewer picViewer = this.FindControl<PictureViewer>("picViewer");
 			Grid spriteGrid = this.FindControl<Grid>("spriteGrid");
-			_model = new SpriteViewerViewModel(cpuType, consoleType, picViewer, spriteGrid, this);
+			_model = new SpriteViewerViewModel(cpuType, picViewer, spriteGrid, this);
 			DataContext = _model;
 		
 			_model.Config.LoadWindowSettings(this);
@@ -112,12 +112,10 @@ namespace Mesen.Debugger.Windows
 
 		private void PicViewer_PositionClicked(object? sender, PositionClickedEventArgs e)
 		{
-			if(sender is PictureViewer viewer) {
-				PixelPoint p = e.Position;
-				SpritePreviewModel? sprite = _model.GetMatchingSprite(p);
-				_model.SelectedSprite = sprite;
-				_model.UpdateSelection(sprite);
-			}
+			PixelPoint p = e.Position;
+			SpritePreviewModel? sprite = _model.GetMatchingSprite(p);
+			_model.SelectedSprite = sprite;
+			_model.UpdateSelection(sprite);
 			e.Handled = true;
 		}
 
@@ -128,7 +126,7 @@ namespace Mesen.Debugger.Windows
 
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
-			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model.CpuType, _model.RefreshData);
+			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model, _model.RefreshData);
 		}
 	}
 }
