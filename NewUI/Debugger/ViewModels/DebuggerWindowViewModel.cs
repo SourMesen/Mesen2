@@ -16,12 +16,13 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class DebuggerWindowViewModel : ViewModelBase
+	public class DebuggerWindowViewModel : DisposableViewModel
 	{
 		[Reactive] public DebuggerConfig Config { get; private set; }
 
@@ -103,11 +104,28 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
+
 			WatchList.Manager.WatchChanged += Manager_WatchChanged;
 			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 			BreakpointManager.AddCpuType(CpuType);
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
+		}
+
+		protected override void DisposeView()
+		{
+			WatchList.Manager.WatchChanged -= Manager_WatchChanged;
+			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
+			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
+			BreakpointManager.RemoveCpuType(CpuType);
+			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), false);
+		}
+
+		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			Config.ApplyConfig();
+			UpdateDebugger();
 		}
 
 		public void UpdateConsoleState()
@@ -132,15 +150,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Disassembly.InvalidateVisual();
 			BreakpointList.UpdateBreakpoints();
-		}
-
-		public void Cleanup()
-		{
-			WatchList.Manager.WatchChanged -= Manager_WatchChanged;
-			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
-			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
-			BreakpointManager.RemoveCpuType(CpuType);
-			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), false);
 		}
 
 		public void UpdateDebugger(bool forBreak = false, BreakEvent? evt = null)

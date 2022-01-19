@@ -43,22 +43,11 @@ namespace Mesen.Debugger.Windows
 
 			_model.UpdateDebugger(true);
 			_model.Config.LoadWindowSettings(this);
-
-			ReactiveHelper.RegisterRecursiveObserver(_model.Config, Config_PropertyChanged);
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
-		}
-
-		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			_model.Config.ApplyConfig();
-
-			Dispatcher.UIThread.Post(() => {
-				_model.UpdateDebugger();
-			});
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -69,16 +58,10 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			DetachDebugger();
+			_model.Dispose();
 			_model.Config.SaveWindowSettings(this);
 			ConfigManager.SaveConfig();
-			//DataContext = null;
-		}
-
-		private void DetachDebugger()
-		{
-			ReactiveHelper.UnregisterRecursiveObserver(_model.Config, Config_PropertyChanged);
-			_model.Cleanup();
+			DataContext = null;
 		}
 
 		public void ProcessNotification(NotificationEventArgs e)
@@ -109,15 +92,17 @@ namespace Mesen.Debugger.Windows
 
 				case ConsoleNotificationType.GameLoaded:
 					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
-						DebugWindowManager.PreventNotifications(this);
-						DetachDebugger();
+						_model.Dispose();
+						_model = new DebuggerWindowViewModel(null);
+						
 						Dispatcher.UIThread.Post(() => {
-							Close();
+							_model.InitializeMenu(this);
+							DataContext = _model;
 						});
-					} else {
-						if(_model.Config.BreakOnPowerCycleReset) {
-							EmuApi.Pause();
-						}
+					}
+
+					if(_model.Config.BreakOnPowerCycleReset) {
+						EmuApi.Pause();
 					}
 					break;
 			}

@@ -11,7 +11,6 @@ namespace Mesen.Debugger.Utilities
 	{
 		private static int _debugWindowCounter = 0;
 		private static ConcurrentDictionary<Window, bool> _openedWindows = new();
-		private static ConcurrentDictionary<Window, bool> _preventNotifications = new();
 
 		public static void OpenDebugWindow<T>(Func<T> createWindow) where T : Window
 		{
@@ -52,7 +51,7 @@ namespace Mesen.Debugger.Utilities
 		public static void ProcessNotification(NotificationEventArgs e)
 		{
 			foreach(Window window in _openedWindows.Keys) {
-				if(window is INotificationHandler handler && !_preventNotifications.ContainsKey(window)) {
+				if(window is INotificationHandler handler) {
 					handler.ProcessNotification(e);
 				}
 			}
@@ -66,11 +65,6 @@ namespace Mesen.Debugger.Utilities
 					DebugWindowManager.CloseAllWindows();
 					break;
 			}
-		}
-
-		public static void PreventNotifications(Window wnd)
-		{
-			_preventNotifications.TryAdd(wnd, true);
 		}
 	}
 }
