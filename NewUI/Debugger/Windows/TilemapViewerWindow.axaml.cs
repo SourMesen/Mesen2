@@ -12,9 +12,8 @@ using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
-	public class TilemapViewerWindow : Window
+	public class TilemapViewerWindow : Window, INotificationHandler
 	{
-		private NotificationListener _listener;
 		private TilemapViewerViewModel _model;
 		private PictureViewer _picViewer;
 
@@ -33,7 +32,6 @@ namespace Mesen.Debugger.Windows
 			DataContext = _model;
 
 			_model.Config.LoadWindowSettings(this);
-			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
@@ -55,14 +53,12 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_listener.OnNotification += listener_OnNotification;
 			_model.RefreshData();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
-			_listener?.Dispose();
 			_model.Config.SaveWindowSettings(this);
 			_model.Dispose();
 			DataContext = null;
@@ -109,7 +105,7 @@ namespace Mesen.Debugger.Windows
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
-		private void listener_OnNotification(NotificationEventArgs e)
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model, _model.RefreshData);
 		}

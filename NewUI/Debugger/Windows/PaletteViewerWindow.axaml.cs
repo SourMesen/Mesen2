@@ -12,9 +12,8 @@ using Avalonia.Input;
 
 namespace Mesen.Debugger.Windows
 {
-	public class PaletteViewerWindow : Window
+	public class PaletteViewerWindow : Window, INotificationHandler
 	{
-		private NotificationListener _listener;
 		private PaletteViewerViewModel _model;
 
 		[Obsolete("For designer only")]
@@ -31,7 +30,6 @@ namespace Mesen.Debugger.Windows
 			DataContext = _model;
 
 			_model.Config.LoadWindowSettings(this);
-			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
@@ -41,7 +39,6 @@ namespace Mesen.Debugger.Windows
 			palSelector.PointerMoved += PalSelector_PointerMoved;
 			palSelector.PointerLeave += PalSelector_PointerLeave;
 			PointerWheelChanged += Window_PointerWheelChanged;
-			_listener.OnNotification += listener_OnNotification;
 		}
 
 		private void Window_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
@@ -98,14 +95,12 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_listener.OnNotification += listener_OnNotification;
 			_model.RefreshData();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
-			_listener.Dispose();
 			_model.Config.SaveWindowSettings(this);
 			_model.Dispose();
 			DataContext = null;
@@ -116,7 +111,7 @@ namespace Mesen.Debugger.Windows
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
-		private void listener_OnNotification(NotificationEventArgs e)
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			ToolRefreshHelper.ProcessNotification(this, e, _model.Config.RefreshTiming, _model, _model.RefreshData);
 		}

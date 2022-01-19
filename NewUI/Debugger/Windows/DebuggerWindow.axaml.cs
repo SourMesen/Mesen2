@@ -9,14 +9,15 @@ using System.ComponentModel;
 using Avalonia.Threading;
 using Mesen.Config;
 using System.Runtime.InteropServices;
+using Mesen.Debugger.Utilities;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
-	public class DebuggerWindow : Window
+	public class DebuggerWindow : Window, INotificationHandler
 	{
 		private DebuggerWindowViewModel _model;
-		private NotificationListener _listener;
-
+		
 		[Obsolete("For designer only")]
 		public DebuggerWindow() : this(null) { }
 
@@ -30,8 +31,6 @@ namespace Mesen.Debugger.Windows
 			_model = new DebuggerWindowViewModel(cpuType);
 			DataContext = _model;
 
-			_listener = new NotificationListener();
-			_listener.OnNotification += _listener_OnNotification;
 			_model.InitializeMenu(this);
 
 			if(Design.IsDesignMode) {
@@ -45,10 +44,7 @@ namespace Mesen.Debugger.Windows
 			_model.UpdateDebugger(true);
 			_model.Config.LoadWindowSettings(this);
 
-			_model.Config.PropertyChanged += Config_PropertyChanged;
-			_model.Config.Gameboy.PropertyChanged += Config_PropertyChanged;
-			_model.Config.Nes.PropertyChanged += Config_PropertyChanged;
-			_model.Config.Snes.PropertyChanged += Config_PropertyChanged;
+			ReactiveHelper.RegisterRecursiveObserver(_model.Config, Config_PropertyChanged);
 		}
 
 		private void InitializeComponent()
@@ -73,18 +69,19 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_listener.Dispose();
-			_model.Config.PropertyChanged -= Config_PropertyChanged;
-			_model.Config.Gameboy.PropertyChanged -= Config_PropertyChanged;
-			_model.Config.Nes.PropertyChanged -= Config_PropertyChanged;
-			_model.Config.Snes.PropertyChanged -= Config_PropertyChanged;
-			_model.Cleanup();
+			DetachDebugger();
 			_model.Config.SaveWindowSettings(this);
 			ConfigManager.SaveConfig();
-			DataContext = null;
+			//DataContext = null;
 		}
 
-		private void _listener_OnNotification(NotificationEventArgs e)
+		private void DetachDebugger()
+		{
+			ReactiveHelper.UnregisterRecursiveObserver(_model.Config, Config_PropertyChanged);
+			_model.Cleanup();
+		}
+
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
@@ -105,9 +102,22 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.GameReset:
-				case ConsoleNotificationType.GameLoaded:
 					if(_model.Config.BreakOnPowerCycleReset) {
 						EmuApi.Pause();
+					}
+					break;
+
+				case ConsoleNotificationType.GameLoaded:
+					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
+						DebugWindowManager.PreventNotifications(this);
+						DetachDebugger();
+						Dispatcher.UIThread.Post(() => {
+							Close();
+						});
+					} else {
+						if(_model.Config.BreakOnPowerCycleReset) {
+							EmuApi.Pause();
+						}
 					}
 					break;
 			}

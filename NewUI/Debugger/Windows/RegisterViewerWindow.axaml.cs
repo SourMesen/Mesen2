@@ -9,9 +9,8 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
-	public class RegisterViewerWindow : Window
+	public class RegisterViewerWindow : Window, INotificationHandler
 	{
-		private NotificationListener _listener;
 		private RegisterViewerWindowViewModel _model;
 
 		[Obsolete("For designer only")]
@@ -26,25 +25,22 @@ namespace Mesen.Debugger.Windows
 
 			_model = model;
 			DataContext = model;
-			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
 			_model.Config.LoadWindowSettings(this);
-			_listener.OnNotification += listener_OnNotification;
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-			_listener?.Dispose();
 			DataContext = null;
 		}
 
-		private void listener_OnNotification(NotificationEventArgs e)
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:

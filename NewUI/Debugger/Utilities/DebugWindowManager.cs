@@ -1,7 +1,8 @@
 ﻿using Avalonia.Controls;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 
 namespace Mesen.Debugger.Utilities
@@ -9,7 +10,8 @@ namespace Mesen.Debugger.Utilities
 	public static class DebugWindowManager
 	{
 		private static int _debugWindowCounter = 0;
-		private static List<Window> _openedWindows = new();
+		private static ConcurrentDictionary<Window, bool> _openedWindows = new();
+		private static ConcurrentDictionary<Window, bool> _preventNotifications = new();
 
 		public static void OpenDebugWindow<T>(Func<T> createWindow) where T : Window
 		{
@@ -24,7 +26,7 @@ namespace Mesen.Debugger.Utilities
 					CloseDebugWindow(window);
 				}
 			};
-			_openedWindows.Add(wnd);
+			_openedWindows.TryAdd(wnd, true);
 			wnd.Show();
 		}
 
@@ -36,15 +38,39 @@ namespace Mesen.Debugger.Utilities
 				DebugApi.ReleaseDebugger();
 			}
 
-			_openedWindows.Remove(wnd);
+			_openedWindows.TryRemove(wnd, out _);
 		}
 
 		public static void CloseAllWindows()
 		{
 			//Iterate on a copy of the list since it will change during iteration
-			foreach(Window window in _openedWindows.ToArray()) {
+			foreach(Window window in _openedWindows.Keys) {
 				window.Close();
 			}
+		}
+
+		public static void ProcessNotification(NotificationEventArgs e)
+		{
+			foreach(Window window in _openedWindows.Keys) {
+				if(window is INotificationHandler handler && !_preventNotifications.ContainsKey(window)) {
+					handler.ProcessNotification(e);
+				}
+			}
+
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					DebugWorkspaceManager.Load();
+					break;
+
+				case ConsoleNotificationType.EmulationStopped:
+					DebugWindowManager.CloseAllWindows();
+					break;
+			}
+		}
+
+		public static void PreventNotifications(Window wnd)
+		{
+			_preventNotifications.TryAdd(wnd, true);
 		}
 	}
 }

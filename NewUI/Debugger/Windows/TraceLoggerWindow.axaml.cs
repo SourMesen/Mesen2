@@ -15,10 +15,9 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
-	public class TraceLoggerWindow : Window
+	public class TraceLoggerWindow : Window, INotificationHandler
 	{
 		private TraceLoggerViewModel _model;
-		private NotificationListener _listener;
 		
 		static TraceLoggerWindow()
 		{
@@ -41,8 +40,6 @@ namespace Mesen.Debugger.Windows
 
 			_model = model;
 			DataContext = model;
-			_listener = new NotificationListener();
-			_listener.OnNotification += listener_OnNotification;
 			
 			if(Design.IsDesignMode) {
 				return;
@@ -55,14 +52,13 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-			_listener?.Dispose();
 			DebugApi.StopLogTraceToFile();
 			_model.SaveConfig();
 			_model.Dispose();
 			DataContext = null;
 		}
 
-		private void listener_OnNotification(NotificationEventArgs e)
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:

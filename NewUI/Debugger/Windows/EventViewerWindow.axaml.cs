@@ -13,13 +13,11 @@ using Mesen.Debugger.Labels;
 using Avalonia.Interactivity;
 using Mesen.Utilities;
 using System.Linq;
-using Avalonia.Threading;
 
 namespace Mesen.Debugger.Windows
 {
-	public class EventViewerWindow : Window
+	public class EventViewerWindow : Window, INotificationHandler
 	{
-		private NotificationListener _listener;
 		private EventViewerViewModel _model;
 		private PixelPoint? _prevMousePos = null;
 
@@ -37,7 +35,6 @@ namespace Mesen.Debugger.Windows
 			_model = new EventViewerViewModel(cpuType, viewer, this);
 			_model.Config.LoadWindowSettings(this);
 			DataContext = _model;
-			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
@@ -60,7 +57,6 @@ namespace Mesen.Debugger.Windows
 
 			UpdateConfig();
 			ReactiveHelper.RegisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
-			_listener.OnNotification += listener_OnNotification;
 			_model.RefreshData(true);
 		}
 
@@ -87,7 +83,6 @@ namespace Mesen.Debugger.Windows
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
 			ReactiveHelper.UnregisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
-			_listener.Dispose();
 			_model.SaveConfig();
 			_model.Dispose();
 			DataContext = null;
@@ -167,7 +162,7 @@ namespace Mesen.Debugger.Windows
 			return entries;
 		}
 
-		private void listener_OnNotification(NotificationEventArgs e)
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:

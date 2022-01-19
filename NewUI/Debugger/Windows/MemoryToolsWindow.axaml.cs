@@ -17,9 +17,8 @@ using System.Linq;
 
 namespace Mesen.Debugger.Windows
 {
-	public class MemoryToolsWindow : Window
+	public class MemoryToolsWindow : Window, INotificationHandler
 	{
-		private NotificationListener _listener;
 		private HexEditor _editor;
 		private MemoryToolsViewModel _model;
 
@@ -36,7 +35,6 @@ namespace Mesen.Debugger.Windows
 			_model = model;
 			DataContext = model;
 			_editor = this.FindControl<HexEditor>("Hex");
-			_listener = new NotificationListener();
 
 			if(Design.IsDesignMode) {
 				return;
@@ -44,13 +42,11 @@ namespace Mesen.Debugger.Windows
 
 			_model.Config.LoadWindowSettings(this);
 			_editor.ByteUpdated += editor_ByteUpdated;
-			_listener.OnNotification += listener_OnNotification;
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
-			_listener?.Dispose();
 			_model.Config.SaveWindowSettings(this);
 			_model.SaveConfig();
 			_model.Dispose();
@@ -281,7 +277,7 @@ namespace Mesen.Debugger.Windows
 			return address;
 		}
 
-		private void listener_OnNotification(NotificationEventArgs e)
+		public void ProcessNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.PpuFrameDone:
