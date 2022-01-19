@@ -454,8 +454,9 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//UpdateRegion();
 
 	_allowDebuggerRequest = true;
+	_threadPaused = true; //To avoid deadlocks with DebugBreakHelper if GameLoaded event starts the debugger
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
-
+	_threadPaused = false;
 	_paused = false;
 
 	if(!forPowerCycle && !_audioPlayerHud) {
@@ -670,6 +671,8 @@ void Emulator::WaitForPauseEnd()
 	}
 
 	PlatformUtilities::DisableScreensaver();
+	PlatformUtilities::EnableHighResolutionTimer();
+
 	_runLock.Acquire();
 	if(!_stopFlag) {
 		_notificationManager->SendNotification(ConsoleNotificationType::GameResumed);
