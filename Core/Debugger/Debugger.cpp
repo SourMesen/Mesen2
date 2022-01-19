@@ -95,14 +95,17 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 
 	for(CpuType type : _cpuTypes) {
 		_debuggers[(int)type].Debugger->Init();
+		
+	}
+
+	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
+	shared_ptr<CodeDataLogger> cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
+	if(cdl) {
+		cdl->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());
 	}
 
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
-
-	//TODO
-	/*string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	GetCodeDataLogger(CpuType::Cpu)->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());*/
 
 	RefreshCodeCache();
 
@@ -119,11 +122,11 @@ Debugger::~Debugger()
 
 void Debugger::Release()
 {
-	//TODO
-	/*bool hasGameboy = _debuggers[(int)CpuType::Gameboy].Debugger != nullptr;
-	CpuType cpuType = hasGameboy ? CpuType::Gameboy : CpuType::Cpu;
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	GetCodeDataLogger(cpuType)->SaveCdlFile(cdlFile, _emu->GetCrc32());*/
+	shared_ptr<CodeDataLogger> cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
+	if(cdl) {
+		cdl->SaveCdlFile(cdlFile, _emu->GetCrc32());
+	}
 
 	while(_executionStopped) {
 		Run();
