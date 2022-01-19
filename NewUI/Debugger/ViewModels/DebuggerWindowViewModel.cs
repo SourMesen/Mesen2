@@ -74,7 +74,6 @@ namespace Mesen.Debugger.ViewModels
 
 			Config = ConfigManager.Config.Debug.Debugger;
 
-			DefaultLabelHelper.SetDefaultLabels();
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
 			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug, CpuType);
 			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);

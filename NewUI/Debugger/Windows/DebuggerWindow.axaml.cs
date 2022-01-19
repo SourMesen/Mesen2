@@ -1,19 +1,13 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using System;
 using Mesen.Debugger.ViewModels;
-using Mesen.Debugger.Disassembly;
 using Mesen.Interop;
 using Avalonia.Interactivity;
 using System.ComponentModel;
-using Mesen.Debugger.Labels;
 using Avalonia.Threading;
-using Mesen.Utilities;
 using Mesen.Config;
-using Mesen.Debugger.Utilities;
 using System.Runtime.InteropServices;
 
 namespace Mesen.Debugger.Windows
@@ -21,36 +15,45 @@ namespace Mesen.Debugger.Windows
 	public class DebuggerWindow : Window
 	{
 		private DebuggerWindowViewModel _model;
-		private NotificationListener? _listener;
+		private NotificationListener _listener;
 
-		public DebuggerWindow()
+		[Obsolete("For designer only")]
+		public DebuggerWindow() : this(null) { }
+
+		public DebuggerWindow(CpuType? cpuType)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
+
+			_model = new DebuggerWindowViewModel(cpuType);
+			DataContext = _model;
+
+			_listener = new NotificationListener();
+			_listener.OnNotification += _listener_OnNotification;
+			_model.InitializeMenu(this);
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			if(_model.Config.BreakOnOpen) {
+				EmuApi.Pause();
+			}
+
+			_model.UpdateDebugger(true);
+			_model.Config.LoadWindowSettings(this);
+
+			_model.Config.PropertyChanged += Config_PropertyChanged;
+			_model.Config.Gameboy.PropertyChanged += Config_PropertyChanged;
+			_model.Config.Nes.PropertyChanged += Config_PropertyChanged;
+			_model.Config.Snes.PropertyChanged += Config_PropertyChanged;
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
-		}
-
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(this.DataContext is DebuggerWindowViewModel model) {
-				_model = model;
-				_model.InitializeMenu(this);
-				_model.Config.LoadWindowSettings(this);
-				if(Design.IsDesignMode) {
-					return;
-				}
-
-				_model.Config.PropertyChanged += Config_PropertyChanged;
-				_model.Config.Gameboy.PropertyChanged += Config_PropertyChanged;
-				_model.Config.Nes.PropertyChanged += Config_PropertyChanged;
-				_model.Config.Snes.PropertyChanged += Config_PropertyChanged;
-			}
 		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -62,23 +65,6 @@ namespace Mesen.Debugger.Windows
 			});
 		}
 
-		protected override void OnOpened(EventArgs e)
-		{
-			base.OnOpened(e);
-
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			_listener = new NotificationListener();
-			_listener.OnNotification += _listener_OnNotification;
-			_model.UpdateDebugger(true);
-
-			if(_model.Config.BreakOnOpen) {
-				EmuApi.Pause();
-			}
-		}
-
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
@@ -87,7 +73,7 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_listener?.Dispose();
+			_listener.Dispose();
 			_model.Config.PropertyChanged -= Config_PropertyChanged;
 			_model.Config.Gameboy.PropertyChanged -= Config_PropertyChanged;
 			_model.Config.Nes.PropertyChanged -= Config_PropertyChanged;

@@ -20,6 +20,17 @@ namespace Mesen.Debugger
 
 		public static List<Breakpoint> Asserts { internal get; set; } = new List<Breakpoint>();
 
+		public static List<Breakpoint> GetBreakpoints(CpuType cpuType)
+		{
+			List<Breakpoint> breakpoints = new List<Breakpoint>();
+			foreach(Breakpoint bp in _breakpoints) {
+				if(bp.CpuType == cpuType) {
+					breakpoints.Add(bp);
+				}
+			}
+			return breakpoints;
+		}
+
 		public static void AddCpuType(CpuType cpuType)
 		{
 			_activeCpuTypes.Add(cpuType);
@@ -38,9 +49,15 @@ namespace Mesen.Debugger
 			SetBreakpoints();
 		}
 
-		public static void SetBreakpoints(List<Breakpoint> breakpoints)
+		public static void ClearBreakpoints()
 		{
-			_breakpoints = breakpoints.ToList();
+			_breakpoints = new();
+			RefreshBreakpoints();
+		}
+
+		public static void AddBreakpoints(List<Breakpoint> breakpoints)
+		{
+			_breakpoints.AddRange(breakpoints);
 			RefreshBreakpoints();
 		}
 

@@ -176,10 +176,6 @@ namespace Mesen.Debugger.Windows
 					}
 					break;
 
-				case ConsoleNotificationType.EmulationStopped:
-					Dispatcher.UIThread.Post(() => Close());
-					break;
-
 				case ConsoleNotificationType.EventViewerRefresh:
 					if(_model.Config.AutoRefresh) {
 						_model.RefreshData(false);

@@ -16,6 +16,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Mesen.Localization;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Views
 {
@@ -54,69 +55,67 @@ namespace Mesen.Views
 		private void OnTileViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new TileViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new TileViewerWindow(romInfo.ConsoleType.GetMainCpuType()));
 		}
 
 		private void OnTilemapViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new TilemapViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new TilemapViewerWindow(romInfo.ConsoleType.GetMainCpuType()));
 		}
 
 		private void OnSpriteViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new SpriteViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new SpriteViewerWindow(romInfo.ConsoleType.GetMainCpuType()));
 		}
 
 		private void OnPaletteViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new PaletteViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new PaletteViewerWindow(romInfo.ConsoleType.GetMainCpuType()));
 		}
 
 		private void OnMemoryToolsClick(object sender, RoutedEventArgs e)
 		{
-			new MemoryToolsWindow(new MemoryToolsViewModel()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
 		}
 
 		private void OnDebuggerClick(object sender, RoutedEventArgs e)
 		{
-			new DebuggerWindow {
-				DataContext = new DebuggerWindowViewModel(null),
-			}.Show();
+			DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(null));
 		}
 
 		private void OnAssemblerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new AssemblerWindow(new AssemblerWindowViewModel(romInfo.ConsoleType.GetMainCpuType())).Show();
+			DebugWindowManager.OpenDebugWindow(() => new AssemblerWindow(new AssemblerWindowViewModel(romInfo.ConsoleType.GetMainCpuType())));
 		}
 
 		private void OnScriptWindowClick(object sender, RoutedEventArgs e)
 		{
-			new ScriptWindow(new ScriptWindowViewModel()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(new ScriptWindowViewModel()));
 		}
 
 		private void OnProfilerClick(object sender, RoutedEventArgs e)
 		{
-			new ProfilerWindow(new ProfilerWindowViewModel()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new ProfilerWindow(new ProfilerWindowViewModel()));
 		}
 
 		private void OnRegisterViewerClick(object sender, RoutedEventArgs e)
 		{
-			new RegisterViewerWindow(new RegisterViewerWindowViewModel()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new RegisterViewerWindow(new RegisterViewerWindowViewModel()));
 		}
 
 		private void OnTraceLoggerClick(object sender, RoutedEventArgs e)
 		{
-			new TraceLoggerWindow(new TraceLoggerViewModel()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new TraceLoggerWindow(new TraceLoggerViewModel()));
 		}
 
 		private void OnEventViewerClick(object sender, RoutedEventArgs e)
 		{
 			RomInfo romInfo = EmuApi.GetRomInfo();
-			new EventViewerWindow(romInfo.ConsoleType.GetMainCpuType()).Show();
+			DebugWindowManager.OpenDebugWindow(() => new EventViewerWindow(romInfo.ConsoleType.GetMainCpuType()));
 		}
 
 		private void OnDebuggerSettingsClick(object sender, RoutedEventArgs e)

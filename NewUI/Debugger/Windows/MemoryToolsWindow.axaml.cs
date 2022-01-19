@@ -294,12 +294,6 @@ namespace Mesen.Debugger.Windows
 				case ConsoleNotificationType.GameLoaded:
 					_model.UpdateAvailableMemoryTypes();
 					break;
-
-				case ConsoleNotificationType.EmulationStopped:
-					Dispatcher.UIThread.Post(() => {
-						Close();
-					});
-					break;
 			}
 		}
 	}

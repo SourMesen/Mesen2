@@ -88,10 +88,6 @@ namespace Mesen.Debugger.Utilities
 					}
 					break;
 
-				case ConsoleNotificationType.EmulationStopped:
-					Dispatcher.UIThread.Post(() => wnd.Close());
-					break;
-
 				case ConsoleNotificationType.GameLoaded:
 					if(!EmuApi.GetRomInfo().CpuTypes.Contains(model.CpuType)) {
 						model.CpuType = EmuApi.GetRomInfo().CpuTypes.First();

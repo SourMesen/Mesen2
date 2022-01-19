@@ -15,6 +15,7 @@ using Mesen.Utilities;
 using Mesen.Interop;
 using Mesen.Views;
 using Avalonia.Layout;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Windows
 {
@@ -157,6 +158,7 @@ namespace Mesen.Windows
 						Focus(); //Remove focus from game selection screen to avoid enter pressing the currently focused (hidden) button
 						_model.RecentGames.Visible = false;
 						_model.RomInfo = romInfo;
+						DebugWorkspaceManager.Load();
 					});
 					break;
 
@@ -171,6 +173,7 @@ namespace Mesen.Windows
 					Dispatcher.UIThread.Post(() => {
 						_model.RomInfo = new RomInfo();
 						_model.RecentGames.Init(GameScreenMode.RecentGames);
+						DebugWindowManager.CloseAllWindows();
 					});
 					break;
 

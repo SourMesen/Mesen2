@@ -105,9 +105,7 @@ namespace Mesen.Config
 			Configuration config;
 
 			try {
-				using(StreamReader reader = new StreamReader(configFile)) {
-					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), JsonHelper.Options) ?? new Configuration();
-				}
+				config = JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFile), JsonHelper.Options) ?? new Configuration();
 			} catch {
 				config = new Configuration();
 			}
@@ -119,9 +117,7 @@ namespace Mesen.Config
 		{
 			try {
 				if(!ConfigManager.DoNotSaveSettings) {
-					using(StreamWriter writer = new StreamWriter(configFile)) {
-						writer.Write(JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options));
-					}
+					File.WriteAllText(configFile, JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options));
 				}
 				_needToSave = false;
 			} catch {

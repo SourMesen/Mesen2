@@ -851,14 +851,11 @@ Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 
 void Emulator::InitDebugger()
 {
-	shared_ptr<Debugger> debugger = _debugger;
-	if(!debugger) {
+	if(!_debugger) {
 		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
 		auto lock = _debuggerLock.AcquireSafe();
-		debugger = _debugger;
-		if(!debugger) {
-			debugger.reset(new Debugger(this, _console.get()));
-			_debugger = debugger;
+		if(!_debugger) {
+			_debugger.reset(new Debugger(this, _console.get()));
 		}
 	}
 }
@@ -868,12 +865,15 @@ void Emulator::StopDebugger()
 	//Pause/unpause the regular emulation thread based on the debugger's pause state
 	_paused = IsPaused();
 
-	shared_ptr<Debugger> debugger = _debugger;
-	debugger->SuspendDebugger(false);
-	Lock();
-	_debugger.reset();
-
-	Unlock();
+	if(_debugger) {
+		auto lock = _debuggerLock.AcquireSafe();
+		if(_debugger) {
+			_debugger->SuspendDebugger(false);
+			Lock();
+			_debugger.reset();
+			Unlock();
+		}
+	}
 }
 
 bool Emulator::IsDebugging()

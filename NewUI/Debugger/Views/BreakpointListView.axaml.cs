@@ -11,6 +11,7 @@ using Mesen.Utilities;
 using Mesen.Debugger.Utilities;
 using Mesen.Config;
 using System;
+using static Mesen.Debugger.ViewModels.BreakpointListViewModel;
 
 namespace Mesen.Debugger.Views
 {
@@ -37,8 +38,8 @@ namespace Mesen.Debugger.Views
 		private void OnGridClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid? grid = (sender as DataGrid);
-			Breakpoint? bp = grid?.SelectedItem as Breakpoint;
-			if(bp != null && grid != null) {
+			if(grid?.SelectedItem is BreakpointViewModel vm) {
+				Breakpoint bp = vm.Breakpoint;
 				string? header = grid.CurrentColumn.Header.ToString();
 				if(header == "E") {
 					bp.Enabled = !bp.Enabled;
@@ -53,9 +54,8 @@ namespace Mesen.Debugger.Views
 		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
-			Breakpoint? bp = grid.SelectedItem as Breakpoint;
-			if(bp != null && grid != null) {
-				BreakpointEditWindow.EditBreakpoint(bp, this);
+			if(grid?.SelectedItem is BreakpointViewModel vm) {
+				BreakpointEditWindow.EditBreakpoint(vm.Breakpoint, this);
 			}
 		}
 	}

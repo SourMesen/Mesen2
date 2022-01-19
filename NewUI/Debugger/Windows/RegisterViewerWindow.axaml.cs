@@ -47,10 +47,6 @@ namespace Mesen.Debugger.Windows
 		private void listener_OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
-				case ConsoleNotificationType.EmulationStopped:
-					Dispatcher.UIThread.Post(() => Close());
-					break;
-
 				case ConsoleNotificationType.GameLoaded:
 					_model.UpdateAvailableTabs(true);
 					break;

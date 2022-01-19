@@ -29,6 +29,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			CpuType = cpuType;
 			Disassembly = disassembly;
+			UpdateBreakpoints();
 		}
 
 		public void UpdateBreakpoints()
@@ -60,8 +61,8 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Edit),
 					IsEnabled = () => grid.SelectedItem is Breakpoint,
 					OnClick = () => {
-						if(grid.SelectedItem is Breakpoint bp) {
-							BreakpointEditWindow.EditBreakpoint(bp, parent);
+						if(grid.SelectedItem is BreakpointViewModel vm) {
+							BreakpointEditWindow.EditBreakpoint(vm.Breakpoint, parent);
 						}
 					}
 				},
@@ -72,8 +73,8 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
 						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
-							if(item is Breakpoint bp) {
-								BreakpointManager.RemoveBreakpoint(bp);
+							if(item is BreakpointViewModel vm) {
+								BreakpointManager.RemoveBreakpoint(vm.Breakpoint);
 							}
 						}
 					}
@@ -84,10 +85,10 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_GoToLocation),
-					IsEnabled = () => grid.SelectedItem is Breakpoint bp && bp.IsCpuBreakpoint && bp.GetRelativeAddress() >= 0,
+					IsEnabled = () => grid.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint && vm.Breakpoint.GetRelativeAddress() >= 0,
 					OnClick = () => {
-						if(grid.SelectedItem is Breakpoint bp && bp.IsCpuBreakpoint) {
-							int addr = bp.GetRelativeAddress();
+						if(grid.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint) {
+							int addr = vm.Breakpoint.GetRelativeAddress();
 							if(addr >= 0) {
 								Disassembly.ScrollToAddress((uint)addr);
 							}
