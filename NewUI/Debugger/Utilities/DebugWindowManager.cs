@@ -50,6 +50,10 @@ namespace Mesen.Debugger.Utilities
 
 		public static void ProcessNotification(NotificationEventArgs e)
 		{
+			if(_openedWindows.Count == 0) {
+				return;
+			}
+
 			foreach(Window window in _openedWindows.Keys) {
 				if(window is INotificationHandler handler) {
 					handler.ProcessNotification(e);
