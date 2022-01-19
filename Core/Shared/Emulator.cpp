@@ -866,6 +866,8 @@ void Emulator::StopDebugger()
 	_paused = IsPaused();
 
 	if(_debugger) {
+		BlockDebuggerRequests();
+
 		auto lock = _debuggerLock.AcquireSafe();
 		if(_debugger) {
 			_debugger->SuspendDebugger(false);
@@ -873,6 +875,8 @@ void Emulator::StopDebugger()
 			_debugger.reset();
 			Unlock();
 		}
+
+		_allowDebuggerRequest = true;
 	}
 }
 
