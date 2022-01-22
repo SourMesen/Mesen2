@@ -210,17 +210,7 @@ public:
 	bool HasChrRom();
 
 	CartridgeState GetState();
-	uint8_t* GetPrgRom();
-	uint8_t* GetWorkRam();
-	uint8_t* GetSaveRam();
 	
-	uint8_t GetMemoryValue(MemoryType memoryType, uint32_t address);
-	void SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value);
-	uint32_t GetMemorySize(MemoryType type);
-
-	uint32_t CopyMemory(MemoryType type, uint8_t* buffer);
-	void WriteMemory(MemoryType type, uint8_t* buffer, int32_t length);
-
 	AddressInfo GetAbsoluteAddress(uint32_t relativeAddr);
 	void GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info);
 	AddressInfo GetPpuAbsoluteAddress(uint32_t relativeAddr);

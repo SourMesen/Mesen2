@@ -101,7 +101,7 @@ void NsfMapper::Reset(bool softReset)
 
 	//Clear internal + work RAM
 	memset(mm->GetInternalRAM(), 0, NesMemoryManager::InternalRAMSize);
-	memset(GetWorkRam(), 0, GetWorkRamSize());
+	memset(_workRam, 0, _workRamSize);
 
 	//Reset APU
 	for(uint16_t i = 0x4000; i < 0x4013; i++) {

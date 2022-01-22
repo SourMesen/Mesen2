@@ -899,108 +899,12 @@ bool BaseMapper::IsNes20()
 }
 
 //Debugger Helper Functions
-uint8_t* BaseMapper::GetPrgRom()
-{
-	return _prgRom;
-}
-
-uint8_t* BaseMapper::GetSaveRam()
-{
-	return _saveRam;
-}
-
-uint8_t* BaseMapper::GetWorkRam()
-{
-	return _workRam;
-}
-
-uint32_t BaseMapper::CopyMemory(MemoryType type, uint8_t* buffer)
-{
-	uint32_t size = GetMemorySize(type);
-	switch(type) {
-		default: break;
-		case MemoryType::NesChrRam: memcpy(buffer, _chrRam, size); break;
-		case MemoryType::NesChrRom: memcpy(buffer, _chrRom, size); break;
-		case MemoryType::NesNametableRam: memcpy(buffer, _nametableRam, size); break;
-		case MemoryType::NesSaveRam: memcpy(buffer, _saveRam, size); break;
-		case MemoryType::NesPrgRom: memcpy(buffer, _prgRom, size); break;
-		case MemoryType::NesWorkRam: memcpy(buffer, _workRam, size); break;
-	}
-	return size;
-}
-
-void BaseMapper::WriteMemory(MemoryType type, uint8_t* buffer, int32_t length)
-{
-	int32_t size = std::min(length, (int32_t)GetMemorySize(type));
-	switch(type) {
-		default: break;
-		case MemoryType::NesChrRam: memcpy(_chrRam, buffer, size); break;
-		case MemoryType::NesSaveRam: memcpy(_saveRam, buffer, size); break;
-		case MemoryType::NesWorkRam: memcpy(_workRam, buffer, size); break;
-		case MemoryType::NesNametableRam: memcpy(_nametableRam, buffer, size); break;
-	}
-}
-
-uint32_t BaseMapper::GetMemorySize(MemoryType type)
-{
-	switch(type) {
-		default: return 0;
-		case MemoryType::NesChrRom: return _chrRomSize;
-		case MemoryType::NesChrRam: return _chrRamSize;
-		case MemoryType::NesNametableRam: return _nametableCount * BaseMapper::NametableSize;
-		case MemoryType::NesSaveRam: return _saveRamSize;
-		case MemoryType::NesPrgRom: return _prgSize;
-		case MemoryType::NesWorkRam: return _workRamSize;
-	}
-}
-
 void BaseMapper::CopyChrTile(uint32_t address, uint8_t *dest)
 {
 	if(_chrRamSize > 0 && address <= _chrRamSize - 16) {
 		memcpy(dest, _chrRam + address, 16);
 	} else if(_chrRomSize > 0 && address <= _chrRomSize - 16) {
 		memcpy(dest, _chrRom + address, 16);
-	}
-}
-
-uint8_t BaseMapper::GetMemoryValue(MemoryType memoryType, uint32_t address)
-{
-	uint32_t memorySize = GetMemorySize(memoryType);
-	if(memorySize > 0) {
-		if(address > memorySize) {
-			address %= memorySize;
-		}
-
-		switch(memoryType) {
-			default: break;
-			case MemoryType::NesChrRom: return _chrRom[address];
-			case MemoryType::NesChrRam: return _chrRam[address];
-			case MemoryType::NesSaveRam: return _saveRam[address];
-			case MemoryType::NesPrgRom: return _prgRom[address];
-			case MemoryType::NesWorkRam: return _workRam[address];
-			case MemoryType::NesNametableRam: return _nametableRam[address];
-		}
-	}
-	return 0;
-}
-
-void BaseMapper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value)
-{
-	uint32_t memorySize = GetMemorySize(memoryType);
-	if(memorySize > 0) {
-		if(address > memorySize) {
-			address %= memorySize;
-		}
-
-		switch(memoryType) {
-			default: break;
-			case MemoryType::NesChrRom: _chrRom[address] = value; break;
-			case MemoryType::NesChrRam: _chrRam[address] = value; break;
-			case MemoryType::NesSaveRam: _saveRam[address] = value; break;
-			case MemoryType::NesPrgRom: _prgRom[address] = value; break;
-			case MemoryType::NesWorkRam: _workRam[address] = value; break;
-			case MemoryType::NesNametableRam: _nametableRam[address] = value; break;
-		}
 	}
 }
 
